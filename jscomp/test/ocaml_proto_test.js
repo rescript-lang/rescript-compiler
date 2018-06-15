@@ -6270,23 +6270,17 @@ function rev_split_by_naming_convention(s) {
           var start_i = param[1];
           var l = param[0];
           if (c !== 95) {
-            if (param[2]) {
+            if (param[2] || !is_uppercase(c)) {
               return /* tuple */[
                       l,
                       start_i,
                       is_uppercase(c)
                     ];
-            } else if (is_uppercase(c)) {
+            } else {
               return /* tuple */[
                       add_sub_string(start_i, i, l),
                       i,
                       true
-                    ];
-            } else {
-              return /* tuple */[
-                      l,
-                      start_i,
-                      is_uppercase(c)
                     ];
             }
           } else {
@@ -6501,9 +6495,7 @@ function compile_field_type(field_name, all_types, file_options, field_options, 
   var int32_type;
   if (match$2) {
     var match$3 = match$2[0];
-    int32_type = match$3.tag === 4 ? (
-        match$3[0] === "int_t" ? /* Ft_basic_type */Block.__(0, [/* Bt_int */2]) : /* Ft_basic_type */Block.__(0, [/* Bt_int32 */3])
-      ) : /* Ft_basic_type */Block.__(0, [/* Bt_int32 */3]);
+    int32_type = match$3.tag === 4 && match$3[0] === "int_t" ? /* Ft_basic_type */Block.__(0, [/* Bt_int */2]) : /* Ft_basic_type */Block.__(0, [/* Bt_int32 */3]);
   } else {
     int32_type = /* Ft_basic_type */Block.__(0, [/* Bt_int32 */3]);
   }
@@ -6511,9 +6503,7 @@ function compile_field_type(field_name, all_types, file_options, field_options, 
   var int64_type;
   if (match$4) {
     var match$5 = match$4[0];
-    int64_type = match$5.tag === 4 ? (
-        match$5[0] === "int_t" ? /* Ft_basic_type */Block.__(0, [/* Bt_int */2]) : /* Ft_basic_type */Block.__(0, [/* Bt_int64 */4])
-      ) : /* Ft_basic_type */Block.__(0, [/* Bt_int64 */4]);
+    int64_type = match$5.tag === 4 && match$5[0] === "int_t" ? /* Ft_basic_type */Block.__(0, [/* Bt_int */2]) : /* Ft_basic_type */Block.__(0, [/* Bt_int64 */4]);
   } else {
     int64_type = /* Ft_basic_type */Block.__(0, [/* Bt_int64 */4]);
   }

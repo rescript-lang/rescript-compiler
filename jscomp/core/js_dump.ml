@@ -794,6 +794,9 @@ and
   (* | Caml_uninitialized_obj (tag, size)
     ->  (* FIXME *)
     expression_desc cxt l f (Object [Length, size ; Tag, tag])     *)
+  | Optional_block (e) -> 
+    pp_comment f "Some";
+    expression_desc cxt l f (Caml_block([e],Immutable,E.zero_int_literal, Blk_some)) 
   | Caml_block( el, mutable_flag, tag, tag_info)
     ->
     (* Note that, if we ignore more than tag [0] we loose some information
@@ -1136,6 +1139,7 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
       | Str _
       | Unicode _
       | Array _
+      | Optional_block _
       | Caml_block  _
       | FlatCall _
       | Typeof _

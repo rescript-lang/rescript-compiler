@@ -53,9 +53,7 @@ function mergeInter(s1, s2) {
 
 function mergeUnion(s1, s2) {
   var m = Belt_Map.merge(s1, s2, (function (_, v1, v2) {
-          if (v1) {
-            return /* Some */[/* () */0];
-          } else if (v2) {
+          if (v1 || v2) {
             return /* Some */[/* () */0];
           } else {
             return /* None */0;

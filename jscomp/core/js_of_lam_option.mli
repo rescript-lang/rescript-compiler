@@ -49,7 +49,16 @@ val get_default_undefined :
   J.expression
 
 
-val some : J.expression -> J.expression
+val destruct_optional : 
+  for_sure_none:'a ->
+  for_sure_some:(J.expression -> 'a) ->
+  not_sure:(unit -> 'a) ->
+  J.expression -> 
+  'a
+
+val some : 
+  J.expression -> 
+  J.expression
 
 val null_to_opt : 
   J.expression -> 

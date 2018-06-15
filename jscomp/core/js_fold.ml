@@ -364,6 +364,7 @@ class virtual fold =
       | Array (_x, _x_i1) ->
           let o = o#list (fun o -> o#expression) _x in
           let o = o#mutable_flag _x_i1 in o
+      | Optional_block _x -> let o = o#expression _x in o
       | Caml_block (_x, _x_i1, _x_i2, _x_i3) ->
           let o = o#list (fun o -> o#expression) _x in
           let o = o#mutable_flag _x_i1 in

@@ -35,7 +35,10 @@ type option_unwrap_time =
 
 
 let val_from_option (arg : J.expression) =   
-  E.index arg 0l 
+  match arg.expression_desc with 
+  | Optional_block x -> x 
+  | _ -> 
+    E.index arg 0l 
 (**
   Invrariant: 
   - optional encoding
@@ -58,6 +61,7 @@ let get_default_undefined_from_optional
   match arg.expression_desc with
   | Number _ -> E.undefined
   | Array ([x],_)
+  | Optional_block x 
   | Caml_block([x],_,_,_) -> x (* invariant: option encoding *)
   | _ ->
     if Js_analyzer.is_okay_to_duplicate arg then
@@ -69,6 +73,7 @@ let get_default_undefined_from_optional
 let get_default_undefined (arg : J.expression) : J.expression =
   match arg.expression_desc with
   | Number _ -> E.undefined
+  | Optional_block x 
   | Array ([x],_)
   | Caml_block([x],_,_,_) -> 
     Js_of_lam_polyvar.get_field x 
@@ -79,6 +84,21 @@ let get_default_undefined (arg : J.expression) : J.expression =
         (Js_of_lam_polyvar.get_field (val_from_option arg)) E.undefined
     else
       E.runtime_call Js_runtime_modules.js_primitive "option_get_unwrap" [arg]
+
+let destruct_optional
+  ~for_sure_none
+  ~for_sure_some
+  ~not_sure 
+  (arg : J.expression)
+  =       
+  match arg.expression_desc with 
+  | Number _ -> for_sure_none
+  | Optional_block x 
+  | Array ([x],_)
+  | Caml_block([x],_,_,_) -> 
+    for_sure_some x 
+  | _ -> not_sure ()
+
 
 (** Another way: 
     {[

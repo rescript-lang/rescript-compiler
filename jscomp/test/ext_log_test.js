@@ -120,36 +120,20 @@ function info(str, f) {
                     ], f)), str);
 }
 
-function iinfo(b, str, f) {
-  if (b) {
-    return Curry._1(Format.fprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */[
-                        /* String_literal */Block.__(11, [
-                            "INFO: ",
-                            /* String */Block.__(2, [
-                                /* No_padding */0,
-                                /* Char_literal */Block.__(12, [
-                                    /* " " */32,
-                                    /* End_of_format */0
-                                  ])
-                              ])
-                          ]),
-                        "INFO: %s "
-                      ], f)), str);
-  } else {
-    return Curry._1(Format.fprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */[
-                        /* String_literal */Block.__(11, [
-                            "INFO: ",
-                            /* String */Block.__(2, [
-                                /* No_padding */0,
-                                /* Char_literal */Block.__(12, [
-                                    /* " " */32,
-                                    /* End_of_format */0
-                                  ])
-                              ])
-                          ]),
-                        "INFO: %s "
-                      ], f)), str);
-  }
+function iinfo(_, str, f) {
+  return Curry._1(Format.fprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */[
+                      /* String_literal */Block.__(11, [
+                          "INFO: ",
+                          /* String */Block.__(2, [
+                              /* No_padding */0,
+                              /* Char_literal */Block.__(12, [
+                                  /* " " */32,
+                                  /* End_of_format */0
+                                ])
+                            ])
+                        ]),
+                      "INFO: %s "
+                    ], f)), str);
 }
 
 exports.err = err;
