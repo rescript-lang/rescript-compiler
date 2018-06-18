@@ -29,7 +29,8 @@ type bigarray_kind = Lambda.bigarray_kind
 type bigarray_layout = Lambda.bigarray_layout
 type compile_time_constant = Lambda.compile_time_constant
 
-type tag_info = Lambda.tag_info
+type tag_info = Lam_tag_info.t
+
 type mutable_flag = Asttypes.mutable_flag
 type field_dbg_info = Lambda.field_dbg_info 
 type set_field_dbg_info = Lambda.set_field_dbg_info
@@ -71,7 +72,7 @@ type constant =
   | Const_int64 of int64
   | Const_nativeint of nativeint
   | Const_pointer of int * pointer_info
-  | Const_block of int * Lambda.tag_info * constant list
+  | Const_block of int * tag_info * constant list
   | Const_float_array of string list
   | Const_immstring of string
   | Const_some of constant
@@ -80,7 +81,7 @@ type primitive =
   | Pbytes_to_string
   | Pbytes_of_string
   | Pglobal_exception of ident 
-  | Pmakeblock of int * Lambda.tag_info * Asttypes.mutable_flag
+  | Pmakeblock of int * tag_info * Asttypes.mutable_flag
   | Pfield of int * Lambda.field_dbg_info
   | Psetfield of int  * Lambda.set_field_dbg_info
   | Pfloatfield of int * Lambda.field_dbg_info

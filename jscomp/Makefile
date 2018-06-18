@@ -274,6 +274,7 @@ CORE_SRCS= js_runtime_modules \
 	bs_conditional_initial \
 	ocaml_options \
 	ocaml_parse\
+	lam_tag_info\
 	js_op\
 	lam_module_ident\
 	lam_arity\
