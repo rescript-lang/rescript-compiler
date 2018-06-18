@@ -75,7 +75,8 @@ let get_default_undefined (arg : J.expression) : J.expression =
   | Number _ -> E.undefined
   | Optional_block x 
   | Array ([x],_)
-  | Caml_block([x],_,_,_) -> 
+  | Caml_block([x],_,_,_) 
+    -> 
     Js_of_lam_polyvar.get_field x 
     (* invariant: option encoding *)
   | _ ->
@@ -111,12 +112,9 @@ let destruct_optional
 let none : J.expression = 
   {expression_desc = Number (Int {i = 0l; c  = None}); comment = Some "None" }
 
-let some x : J.expression = 
-  {expression_desc = 
-    Caml_block ( [x], Immutable, E.zero_int_literal , Blk_some );
-   comment = None}
 
-
+let some  = E.optional_block 
+  
 let null_to_opt e = 
   E.econd (E.is_null e) none (some e)           
 

@@ -795,7 +795,6 @@ and
     ->  (* FIXME *)
     expression_desc cxt l f (Object [Length, size ; Tag, tag])     *)
   | Optional_block (e) -> 
-    pp_comment f "Some";
     expression_desc cxt l f (Caml_block([e],Immutable,E.zero_int_literal, Blk_some)) 
   | Caml_block( el, mutable_flag, tag, tag_info)
     ->

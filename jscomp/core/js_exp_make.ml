@@ -157,9 +157,9 @@ let merge_outer_comment comment (e : t )  =
 
 let optional_block e  : J.expression =                 
   { expression_desc = Optional_block e ; 
-    comment = None
+    comment = Some "Some"
   }
-  
+
 let make_block ?comment tag tag_info es mutable_flag : t = 
   let comment = 
     match comment with 
