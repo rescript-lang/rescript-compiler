@@ -33,6 +33,7 @@ let rec struct_const ppf (cst : Lam.constant) =
   |  (Const_int64 n) -> fprintf ppf "%LiL" n
   |  (Const_nativeint n) -> fprintf ppf "%nin" n
   | Const_pointer (n,_) -> fprintf ppf "%ia" n
+  | Const_some n -> fprintf ppf "[some-c]%a" struct_const n
   | Const_block(tag,_, []) ->
     fprintf ppf "[%i]" tag
   | Const_block(tag,_, sc1::scl) ->

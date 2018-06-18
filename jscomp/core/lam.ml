@@ -87,7 +87,11 @@ type constant =
   | Const_block of int * Lambda.tag_info * constant list
   | Const_float_array of string list
   | Const_immstring of string
-
+  | Const_some of constant 
+    (* eventually we can remove it, since we know
+      [constant] is [undefined] or not 
+    *)
+  
 type primitive =
   | Pbytes_to_string
   | Pbytes_of_string
@@ -1481,6 +1485,7 @@ let if_ (a : t) (b : t) c =
       | Const_float _
       | Const_unicode _
       | Const_block _
+      | Const_some _ 
       | Const_float_array _
       | Const_immstring _ -> b
     end
@@ -1996,7 +2001,16 @@ let convert exports lam : _ * _  =
     | Const_float_array (s) -> Const_float_array(s)
     | Const_immstring s -> Const_immstring s
     | Const_block (i,t,xs) ->
-      Const_block (i,t, Ext_list.map convert_constant xs)
+      begin match t with 
+      | Blk_some -> 
+        begin match xs with 
+        | [x] -> 
+          Const_some (convert_constant x)
+        | _ -> assert false
+        end 
+      | _ ->   
+        Const_block (i,t, Ext_list.map convert_constant xs)
+      end
   and convert_aux (lam : Lambda.lambda) : t =
     match lam with
     | Lvar x ->

@@ -326,6 +326,7 @@ and size_constant x =
   | Const_js_null | Const_js_undefined
   | Const_js_true | Const_js_false
     -> 1 
+  | Const_some s -> size_constant s   
   | Const_block (_, _, str) 
     ->  List.fold_left (fun acc x -> acc + size_constant x ) 0 str
   | Const_float_array xs  -> List.length xs

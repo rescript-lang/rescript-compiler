@@ -74,6 +74,7 @@ type constant =
   | Const_block of int * Lambda.tag_info * constant list
   | Const_float_array of string list
   | Const_immstring of string
+  | Const_some of constant
 
 type primitive = 
   | Pbytes_to_string

@@ -626,7 +626,7 @@ let rec econd ?comment (b : t) (t : t) (f : t) : t =
   | Bool false,  _, _ -> f
   | Number ((Int { i = 0l; _}) ), _, _ 
     -> f  (* TODO: constant folding: could be refined *)
-  | (Number _ | Array _ | Caml_block _), _, _ when no_side_effect b 
+  | (Number _ | Array _ | Caml_block _ | Optional_block _), _, _ when no_side_effect b 
     -> t  (* a block can not be false in OCAML, CF - relies on flow inference*)
   | Bool true, _, _ -> t   
   | (Bin (Ge, 

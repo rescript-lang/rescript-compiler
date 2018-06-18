@@ -51,7 +51,7 @@ let eval_as_event (arg : J.expression) (dispatches : (int * string) list ) =
   match arg.expression_desc with
   | Array ([{expression_desc = Number (Int {i} | Uint i)}; cb], _)
   | Caml_block([{expression_desc = Number (Int {i} | Uint i)}; cb], _, _, _)
-    ->
+    -> (* FIXME - to polyvar*)
     let v = Ext_list.assoc_by_int None (Int32.to_int i) dispatches in
     Splice2(E.str v , cb )
   | _ ->
