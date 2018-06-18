@@ -172,10 +172,13 @@ let translate  loc
   | Pupdate_mod ->
     E.runtime_call Js_runtime_modules.module_ "update_mod" args
   | Psome_general -> 
+    (* begin match args with 
+    | [arg ] -> E.optional_block arg
+    | _ -> assert false
+    end  *)
     E.make_block  
     E.zero_int_literal 
-    Blk_some args 
-    Immutable
+    Blk_some args Immutable
   | Pmakeblock(tag, tag_info, mutable_flag ) ->  (* RUNTIME *)
     Js_of_lam_block.make_block 
       (Js_op_util.of_lam_mutable_flag mutable_flag) 
@@ -183,7 +186,7 @@ let translate  loc
   | Pval_from_option_general -> 
     begin match args with 
     | [ e ] -> 
-      E.index e 0l
+      Js_of_lam_option.val_from_option e 
     | _ -> assert false
     end
   | Pfield (i, fld_info) -> 

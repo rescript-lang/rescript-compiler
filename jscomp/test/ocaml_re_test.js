@@ -2093,12 +2093,8 @@ function eq_list(_l1, _l2) {
 }
 
 function sequence(l) {
-  if (l) {
-    if (l[1]) {
-      return /* Sequence */Block.__(1, [l]);
-    } else {
-      return l[0];
-    }
+  if (l && !l[1]) {
+    return l[0];
   } else {
     return /* Sequence */Block.__(1, [l]);
   }
@@ -2615,24 +2611,16 @@ function anchored(_param) {
 }
 
 function alt$1(l) {
-  if (l) {
-    if (l[1]) {
-      return /* Alternative */Block.__(2, [l]);
-    } else {
-      return l[0];
-    }
+  if (l && !l[1]) {
+    return l[0];
   } else {
     return /* Alternative */Block.__(2, [l]);
   }
 }
 
 function seq$2(l) {
-  if (l) {
-    if (l[1]) {
-      return /* Sequence */Block.__(1, [l]);
-    } else {
-      return l[0];
-    }
+  if (l && !l[1]) {
+    return l[0];
   } else {
     return /* Sequence */Block.__(1, [l]);
   }

@@ -322,6 +322,7 @@
 ../lib/whole_compiler.ml : ./core/js_implementation.ml
 ../lib/whole_compiler.ml : ./core/js_of_lam_module.mli
 ../lib/whole_compiler.ml : ./core/js_of_lam_option.mli
+../lib/whole_compiler.ml : ./core/js_of_lam_polyvar.ml
 ../lib/whole_compiler.ml : ./core/js_of_lam_record.mli
 ../lib/whole_compiler.ml : ./core/js_of_lam_string.mli
 ../lib/whole_compiler.ml : ./core/js_of_lam_variant.ml
@@ -358,6 +359,7 @@
 ../lib/whole_compiler.ml : ../vendor/ocaml/typing/typetexp.mli
 ../lib/whole_compiler.ml : ../vendor/ocaml/utils/consistbl.mli
 ../lib/whole_compiler.ml : ./core/js_implementation.mli
+../lib/whole_compiler.ml : ./core/js_of_lam_polyvar.mli
 ../lib/whole_compiler.ml : ./core/js_of_lam_variant.mli
 ../lib/whole_compiler.ml : ./core/js_packages_state.mli
 ../lib/whole_compiler.ml : ./core/js_runtime_modules.ml

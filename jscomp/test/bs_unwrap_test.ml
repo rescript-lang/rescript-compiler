@@ -79,3 +79,13 @@ let _ = log4 (`Options [%bs.obj { foo = 1 }])
 
 let dyn_log4 = log4
 let _ = dyn_log4 (`Options [%bs.obj { foo = 2 }])
+
+
+let f x = dyn_log4 x 
+
+external log5: ?h:([`A of int | `B of string] [@bs.unwrap]) -> int -> unit = "console.log" [@@bs.val]
+
+
+let ff0 x p = log5 ?h:x p 
+
+let ff1 x p = log5 ?h:(x ()) p 

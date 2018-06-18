@@ -50,15 +50,15 @@ var v = JSON.parse(" { \"x\" : [1, 2, 3 ] } ");
 
 add_test("File \"js_json_test.ml\", line 23, characters 11-18", (function () {
         var ty = Js_json.classify(v);
-        if (typeof ty === "number") {
+        if (typeof ty === "number" || ty.tag !== 2) {
           return /* Ok */Block.__(4, [false]);
-        } else if (ty.tag === 2) {
+        } else {
           var match = ty[0]["x"];
           if (match !== undefined) {
             var ty2 = Js_json.classify(match);
-            if (typeof ty2 === "number") {
+            if (typeof ty2 === "number" || ty2.tag !== 3) {
               return /* Ok */Block.__(4, [false]);
-            } else if (ty2.tag === 3) {
+            } else {
               ty2[0].forEach((function (x) {
                       var ty3 = Js_json.classify(x);
                       if (typeof ty3 === "number") {
@@ -84,14 +84,10 @@ add_test("File \"js_json_test.ml\", line 23, characters 11-18", (function () {
                       }
                     }));
               return /* Ok */Block.__(4, [true]);
-            } else {
-              return /* Ok */Block.__(4, [false]);
             }
           } else {
             return /* Ok */Block.__(4, [false]);
           }
-        } else {
-          return /* Ok */Block.__(4, [false]);
         }
       }));
 

@@ -86,7 +86,8 @@ let ocaml_to_js_eff
   : arg_expression * E.t list  =
   let arg =
     match arg_label with
-    | Optional label -> Js_of_lam_option.get_default_undefined raw_arg
+    | Optional label -> 
+      Js_of_lam_option.get_default_undefined_from_optional raw_arg
     | Label (_, None) | Empty None -> raw_arg
     | Label (_, Some _) 
     | Empty ( Some _)
@@ -130,17 +131,7 @@ let ocaml_to_js_eff
            - if ocaml arg is `Some x`, unwrap the arg to get the `x`, then
              unwrap the `x` itself
         *)
-        Js_of_lam_option.get_default_undefined
-          ~map:(fun opt_unwrapping exp ->
-              match opt_unwrapping with
-              | Static_unwrapped ->
-                (* If we can unwrap the option statically, do `arg[1]` *)
-                E.index exp 1l
-              | Runtime_maybe_unwrapped ->
-                (* If we can't, do Js_primitive.option_get_unwrap(arg) *)
-                E.runtime_call Js_runtime_modules.js_primitive "option_get_unwrap" [raw_arg]
-            )
-          raw_arg
+        Js_of_lam_option.get_default_undefined raw_arg
       | _ ->
         Js_of_lam_variant.eval_as_unwrap raw_arg
     in

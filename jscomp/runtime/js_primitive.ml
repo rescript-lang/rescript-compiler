@@ -49,8 +49,9 @@ let option_get (x : 'a option) : 'a Js_undefined.t =
   | None -> Js_undefined.empty
   | Some x -> Js_undefined.return x 
 
-let option_get_unwrap (x : 'a option) : 'b Js_undefined.t =
+(** [input] is optional polymorphic variant *)  
+let option_get_unwrap (x : 'a option) : _ Js_undefined.t =
   match x with
-  | None -> Js_undefined.empty
-  | Some x -> Js_undefined.return ((Obj.magic x).(1))
+  | None -> Js.undefined
+  | Some x -> Js_undefined.return (Obj.field (Obj.repr x) 1)
 

@@ -1,5 +1,6 @@
 'use strict';
 
+var Curry = require("../../lib/js/curry.js");
 var Js_primitive = require("../../lib/js/js_primitive.js");
 
 console.log(/* tuple */[
@@ -77,6 +78,21 @@ console.log({
       foo: 2
     });
 
+function f(x) {
+  console.log(x[1]);
+  return /* () */0;
+}
+
+function ff0(x, p) {
+  console.log(x ? x[0][1] : undefined, p);
+  return /* () */0;
+}
+
+function ff1(x, p) {
+  console.log(Js_primitive.option_get_unwrap(Curry._1(x, /* () */0)), p);
+  return /* () */0;
+}
+
 var none_arg = /* None */0;
 
 exports.arg_string = arg_string;
@@ -85,4 +101,7 @@ exports.some_arg = some_arg;
 exports.none_arg = none_arg;
 exports.dyn_log3 = dyn_log3;
 exports.dyn_log4 = dyn_log4;
+exports.f = f;
+exports.ff0 = ff0;
+exports.ff1 = ff1;
 /*  Not a pure module */

@@ -2050,12 +2050,7 @@ function check_collisions(collid, all_collids, state) {
           ];
         } else {
           var match = check_collision(c$1, h);
-          new_objs = match ? (
-              h[2][/* id */3] !== c_obj[/* id */3] ? process_collision(match[0], c$1, h, state$2) : /* tuple */[
-                  /* None */0,
-                  /* None */0
-                ]
-            ) : /* tuple */[
+          new_objs = match && h[2][/* id */3] !== c_obj[/* id */3] ? process_collision(match[0], c$1, h, state$2) : /* tuple */[
               /* None */0,
               /* None */0
             ];

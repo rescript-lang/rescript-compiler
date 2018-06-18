@@ -3,23 +3,16 @@
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function blackify(s) {
-  if (s) {
-    if (s[0]) {
-      return /* tuple */[
-              /* Node */[
-                /* Black */0,
-                s[1],
-                s[2],
-                s[3]
-              ],
-              false
-            ];
-    } else {
-      return /* tuple */[
-              s,
-              true
-            ];
-    }
+  if (s && s[0]) {
+    return /* tuple */[
+            /* Node */[
+              /* Black */0,
+              s[1],
+              s[2],
+              s[3]
+            ],
+            false
+          ];
   } else {
     return /* tuple */[
             s,
@@ -356,77 +349,59 @@ function unbalanced_right(param) {
 }
 
 function lbalance(x1, x2, x3) {
-  if (x1) {
-    if (x1[0]) {
-      var r = x1[3];
-      var l = x1[1];
-      var exit = 0;
-      if (l && l[0]) {
+  if (x1 && x1[0]) {
+    var r = x1[3];
+    var l = x1[1];
+    var exit = 0;
+    if (l && l[0]) {
+      return /* Node */[
+              /* Red */1,
+              /* Node */[
+                /* Black */0,
+                l[1],
+                l[2],
+                l[3]
+              ],
+              x1[2],
+              /* Node */[
+                /* Black */0,
+                r,
+                x2,
+                x3
+              ]
+            ];
+    } else {
+      exit = 1;
+    }
+    if (exit === 1) {
+      if (r && r[0]) {
+        var y = r[2];
         return /* Node */[
                 /* Red */1,
                 /* Node */[
                   /* Black */0,
-                  l[1],
-                  l[2],
-                  l[3]
+                  l,
+                  y,
+                  r[1]
                 ],
-                x1[2],
+                y,
                 /* Node */[
                   /* Black */0,
-                  r,
+                  r[3],
                   x2,
                   x3
                 ]
               ];
       } else {
-        exit = 1;
+        return /* Node */[
+                /* Black */0,
+                x1,
+                x2,
+                x3
+              ];
       }
-      if (exit === 1) {
-        if (r) {
-          if (r[0]) {
-            var y = r[2];
-            return /* Node */[
-                    /* Red */1,
-                    /* Node */[
-                      /* Black */0,
-                      l,
-                      y,
-                      r[1]
-                    ],
-                    y,
-                    /* Node */[
-                      /* Black */0,
-                      r[3],
-                      x2,
-                      x3
-                    ]
-                  ];
-          } else {
-            return /* Node */[
-                    /* Black */0,
-                    x1,
-                    x2,
-                    x3
-                  ];
-          }
-        } else {
-          return /* Node */[
-                  /* Black */0,
-                  x1,
-                  x2,
-                  x3
-                ];
-        }
-      }
-      
-    } else {
-      return /* Node */[
-              /* Black */0,
-              x1,
-              x2,
-              x3
-            ];
     }
+    
   } else {
     return /* Node */[
             /* Black */0,

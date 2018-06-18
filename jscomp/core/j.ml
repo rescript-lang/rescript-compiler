@@ -172,6 +172,7 @@ and expression_desc =
   (* literally raw JS code 
   *)
   | Array of expression list * mutable_flag
+  | Optional_block of expression 
   | Caml_block of expression list * mutable_flag * expression * tag_info 
   (* The third argument is [tag] , forth is [tag_info] *)
   (* | Caml_uninitialized_obj of expression * expression *)

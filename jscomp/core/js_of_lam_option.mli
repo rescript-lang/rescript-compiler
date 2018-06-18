@@ -31,10 +31,34 @@ type option_unwrap_time =
   | Static_unwrapped
   | Runtime_maybe_unwrapped
 
-val get_default_undefined : ?map:(option_unwrap_time -> J.expression -> J.expression) -> J.expression -> J.expression
+
+(** Given [Some a ], return [a] *)  
+val val_from_option:
+  J.expression -> 
+  J.expression 
+
+(** Given [Some x] or [None], return [x]*)  
+val get_default_undefined_from_optional:
+  J.expression -> 
+  J.expression  
+
+(** Given [Some (`a x)] or [None], 
+    return [x] *)  
+val get_default_undefined : 
+  J.expression ->
+  J.expression
 
 
-val some : J.expression -> J.expression
+val destruct_optional : 
+  for_sure_none:'a ->
+  for_sure_some:(J.expression -> 'a) ->
+  not_sure:(unit -> 'a) ->
+  J.expression -> 
+  'a
+
+val some : 
+  J.expression -> 
+  J.expression
 
 val null_to_opt : 
   J.expression -> 

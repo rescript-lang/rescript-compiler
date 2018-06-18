@@ -252,6 +252,10 @@ val array :
   J.expression list ->
   t
 
+val optional_block :
+  J.expression -> 
+  J.expression 
+  
 val make_block : 
   ?comment:string ->
   J.expression -> (* tag *)

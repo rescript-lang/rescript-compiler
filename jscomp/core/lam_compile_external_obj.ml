@@ -69,22 +69,17 @@ let assemble_args_obj (labels : External_arg_spec.t list)  (args : J.expression 
     | ({arg_label = Optional label; arg_type } as arg_kind)::labels, arg::args 
       -> 
       let (accs, eff, assign) as r = aux labels args  in 
-      begin match arg.expression_desc with 
-        | Number _ -> (*Invariant: None encoding*)
-          r
-        | Array ([x],_)
-        | Caml_block ([x],_,_,_) ->
-          let acc, new_eff = Lam_compile_external_call.ocaml_to_js_eff 
+      Js_of_lam_option.destruct_optional arg 
+        ~for_sure_none:r 
+        ~for_sure_some:(fun x -> let acc, new_eff = Lam_compile_external_call.ocaml_to_js_eff 
             ({arg_label = External_arg_spec.label label None; arg_type}) x in 
           begin match acc with 
           | Splice2 _
           | Splice0 -> assert false 
           | Splice1 x ->
             (label, x) :: accs , Ext_list.append new_eff  eff , assign
-          end   
-        | _ ->                 
-          accs, eff , (arg_kind,arg)::assign 
-      end
+          end )
+        ~not_sure:(fun _ -> accs, eff , (arg_kind,arg)::assign )
     | {arg_label = Empty None | Label (_,None) | Optional _  } :: _ , [] -> assert false 
     | [],  _ :: _  -> assert false 
   in 
@@ -118,7 +113,7 @@ let assemble_args_obj (labels : External_arg_spec.t list)  (args : J.expression 
             Lam_compile_external_call.ocaml_to_js_eff 
             {xlabel with arg_label =
              External_arg_spec.empty_label}
-              (E.index arg 0l ) in 
+              (Js_of_lam_option.val_from_option arg) in 
           begin match acc with 
           | Splice1 v  ->                         
             [S.if_ arg [S.exp (E.assign (E.dot var_v label) 
@@ -136,7 +131,7 @@ let assemble_args_obj (labels : External_arg_spec.t list)  (args : J.expression 
             Lam_compile_external_call.ocaml_to_js_eff 
             {xlabel with arg_label =
              External_arg_spec.empty_label}
-              (E.index arg 0l ) in 
+              (Js_of_lam_option.val_from_option arg) in 
           begin match acc with 
           | Splice1 v  ->        
             st ::  

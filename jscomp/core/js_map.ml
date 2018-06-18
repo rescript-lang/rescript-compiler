@@ -403,6 +403,7 @@ class virtual map =
       | Array (_x, _x_i1) ->
           let _x = o#list (fun o -> o#expression) _x in
           let _x_i1 = o#mutable_flag _x_i1 in Array (_x, _x_i1)
+      | Optional_block _x -> let _x = o#expression _x in Optional_block _x
       | Caml_block (_x, _x_i1, _x_i2, _x_i3) ->
           let _x = o#list (fun o -> o#expression) _x in
           let _x_i1 = o#mutable_flag _x_i1 in

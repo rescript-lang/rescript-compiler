@@ -7,9 +7,7 @@ function f(match) {
   if (Caml_exceptions.isCamlExceptionOrOpenVariant(match)) {
     if (match === Caml_builtin_exceptions.not_found) {
       return /* Some */[0];
-    } else if (match[0] === Caml_builtin_exceptions.invalid_argument) {
-      return /* Some */[1];
-    } else if (match === Caml_builtin_exceptions.stack_overflow) {
+    } else if (match[0] === Caml_builtin_exceptions.invalid_argument || match === Caml_builtin_exceptions.stack_overflow) {
       return /* Some */[1];
     } else if (match[0] === Caml_builtin_exceptions.sys_error) {
       return /* Some */[2];
@@ -27,15 +25,11 @@ var B = Caml_exceptions.create("Exn_error_pattern.B");
 
 function g(match) {
   if (Caml_exceptions.isCamlExceptionOrOpenVariant(match)) {
-    if (match === Caml_builtin_exceptions.not_found) {
-      return /* Some */[0];
-    } else if (match[0] === Caml_builtin_exceptions.invalid_argument) {
+    if (match === Caml_builtin_exceptions.not_found || match[0] === Caml_builtin_exceptions.invalid_argument) {
       return /* Some */[0];
     } else if (match[0] === Caml_builtin_exceptions.sys_error) {
       return /* Some */[2];
-    } else if (match[0] === A) {
-      return /* Some */[match[1]];
-    } else if (match[0] === B) {
+    } else if (match[0] === A || match[0] === B) {
       return /* Some */[match[1]];
     } else {
       return /* None */0;
