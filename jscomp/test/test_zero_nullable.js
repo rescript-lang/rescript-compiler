@@ -86,7 +86,7 @@ function f9(x) {
   if (x === null) {
     return /* None */0;
   } else {
-    return [x];
+    return /* Some */[x];
   }
 }
 
@@ -171,7 +171,7 @@ function f9$1(x) {
   if (x === undefined) {
     return /* None */0;
   } else {
-    return [x];
+    return /* Some */[x];
   }
 }
 
@@ -254,7 +254,7 @@ function f9$2(x) {
   if (x == null) {
     return /* None */0;
   } else {
-    return [x];
+    return /* Some */[x];
   }
 }
 
