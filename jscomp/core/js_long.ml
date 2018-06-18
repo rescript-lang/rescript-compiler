@@ -35,7 +35,7 @@ let int64_call (fn : string) args  =
 
 
 (* TODO: make layout easier to change later *)
-let record_info = Lambda.Blk_record [| "hi"; "lo"|]
+let record_info : Lam_tag_info.t = Blk_record [| "hi"; "lo"|]
 let make_const ~lo ~hi = 
   E.make_block 
     ~comment:"int64" (E.zero_int_literal) 

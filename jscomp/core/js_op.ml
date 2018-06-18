@@ -233,17 +233,7 @@ type module_id = { id : Ident.t; kind  : kind}
 type required_modules = module_id list
 
 
-type tag_info = Lambda.tag_info = 
-  | Blk_constructor of string * int
-  | Blk_tuple
-  | Blk_array
-  | Blk_variant of string 
-  | Blk_record of string array
-  | Blk_module of string list option
-  | Blk_exception
-  | Blk_extension
-  | Blk_na
-  | Blk_some
+type tag_info = Lam_tag_info.t
 
 type length_object = 
   | Array 

@@ -30,7 +30,7 @@ type bigarray_kind = Lambda.bigarray_kind
 type bigarray_layout = Lambda.bigarray_layout
 type compile_time_constant = Lambda.compile_time_constant
 
-type tag_info = Lambda.tag_info = 
+type tag_info = Lam_tag_info.t = 
   | Blk_constructor of string * int
   | Blk_tuple
   | Blk_array
@@ -39,8 +39,7 @@ type tag_info = Lambda.tag_info =
   | Blk_module of string list option
   | Blk_exception
   | Blk_extension
-  | Blk_na
-  | Blk_some
+  | Blk_na  
 
 type mutable_flag = Asttypes.mutable_flag
 type field_dbg_info = Lambda.field_dbg_info
@@ -84,10 +83,14 @@ type constant =
   | Const_int64 of int64
   | Const_nativeint of nativeint
   | Const_pointer of int * pointer_info
-  | Const_block of int * Lambda.tag_info * constant list
+  | Const_block of int * tag_info * constant list
   | Const_float_array of string list
   | Const_immstring of string
-
+  | Const_some of constant 
+    (* eventually we can remove it, since we know
+      [constant] is [undefined] or not 
+    *)
+  
 type primitive =
   | Pbytes_to_string
   | Pbytes_of_string
@@ -1481,6 +1484,7 @@ let if_ (a : t) (b : t) c =
       | Const_float _
       | Const_unicode _
       | Const_block _
+      | Const_some _ 
       | Const_float_array _
       | Const_immstring _ -> b
     end
@@ -1618,7 +1622,32 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : t =
     begin match info with 
     | Blk_some ->
       prim ~primitive:Psome_general ~args loc 
-    | _ ->  
+    | Blk_constructor(xs,i) ->  
+      let info = Blk_constructor(xs,i) in
+      prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
+    | Blk_tuple  -> 
+      let info = Blk_tuple in
+      prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
+    | Blk_array -> 
+      let info = Blk_array in
+      prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
+    | Blk_variant s -> 
+      let info = Blk_variant s in
+      prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
+    | Blk_record s -> 
+      let info = Blk_record s in
+      prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
+    | Blk_module s -> 
+      let info = Blk_module s in
+      prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
+    | Blk_exception -> 
+      let info = Blk_exception in
+      prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
+    | Blk_extension -> 
+      let info = Blk_extension in
+      prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc    
+    | Blk_na -> 
+      let info = Blk_na in
       prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
     end  
   | Pfield (id,info)
@@ -1938,7 +1967,7 @@ let convert exports lam : _ * _  =
         | "#apply7"
         | "#apply8" -> Pjs_apply
         | "#makemutablelist" ->
-          Pmakeblock(0,Lambda.Blk_constructor("::",1),Mutable)
+          Pmakeblock(0, Blk_constructor("::",1),Mutable)
         | "#setfield1" ->
           Psetfield(1,  Fld_set_na)
         | "#undefined_to_opt" -> Pundefined_to_opt
@@ -1996,7 +2025,41 @@ let convert exports lam : _ * _  =
     | Const_float_array (s) -> Const_float_array(s)
     | Const_immstring s -> Const_immstring s
     | Const_block (i,t,xs) ->
-      Const_block (i,t, Ext_list.map convert_constant xs)
+      begin match t with 
+      | Blk_some -> 
+        begin match xs with 
+        | [x] -> 
+          Const_some (convert_constant x)
+        | _ -> assert false
+        end 
+      | Blk_constructor(a,b) ->   
+        let t = Blk_constructor(a,b) in 
+        Const_block (i,t, Ext_list.map convert_constant xs)
+      | Blk_tuple ->   
+        let t = Blk_tuple in 
+        Const_block (i,t, Ext_list.map convert_constant xs)
+      | Blk_array -> 
+        let t = Blk_array in 
+        Const_block (i,t, Ext_list.map convert_constant xs)
+      | Blk_variant s -> 
+        let t = Blk_variant s in 
+        Const_block (i,t, Ext_list.map convert_constant xs)      
+      | Blk_record s -> 
+        let t = Blk_record s in 
+        Const_block (i,t, Ext_list.map convert_constant xs)
+      | Blk_module s -> 
+        let t = Blk_module s in 
+        Const_block (i,t, Ext_list.map convert_constant xs)    
+      | Blk_exception -> 
+        let t = Blk_exception in 
+        Const_block (i,t, Ext_list.map convert_constant xs)      
+      | Blk_extension -> 
+        let t = Blk_extension in 
+        Const_block (i,t, Ext_list.map convert_constant xs)      
+      | Blk_na -> 
+        let t = Blk_na in 
+        Const_block (i,t, Ext_list.map convert_constant xs)      
+      end
   and convert_aux (lam : Lambda.lambda) : t =
     match lam with
     | Lvar x ->

@@ -148,6 +148,7 @@
 ../lib/whole_compiler.ml : ./core/lam_coercion.ml
 ../lib/whole_compiler.ml : ./core/lam_compile.mli
 ../lib/whole_compiler.ml : ./core/lam_id_kind.mli
+../lib/whole_compiler.ml : ./core/lam_tag_info.ml
 ../lib/whole_compiler.ml : ./core/ocaml_parse.mli
 ../lib/whole_compiler.ml : ./core/ocaml_types.mli
 ../lib/whole_compiler.ml : ./ext/ext_filename.mli

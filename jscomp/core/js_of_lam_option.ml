@@ -60,9 +60,8 @@ let get_default_undefined_from_optional
     : J.expression =
   match arg.expression_desc with
   | Number _ -> E.undefined
-  | Array ([x],_)
   | Optional_block x 
-  | Caml_block([x],_,_,_) -> x (* invariant: option encoding *)
+    -> x (* invariant: option encoding *)
   | _ ->
     if Js_analyzer.is_okay_to_duplicate arg then
       E.econd arg 
@@ -74,8 +73,7 @@ let get_default_undefined (arg : J.expression) : J.expression =
   match arg.expression_desc with
   | Number _ -> E.undefined
   | Optional_block x 
-  | Array ([x],_)
-  | Caml_block([x],_,_,_) -> 
+    -> 
     Js_of_lam_polyvar.get_field x 
     (* invariant: option encoding *)
   | _ ->
@@ -94,8 +92,7 @@ let destruct_optional
   match arg.expression_desc with 
   | Number _ -> for_sure_none
   | Optional_block x 
-  | Array ([x],_)
-  | Caml_block([x],_,_,_) -> 
+    ->
     for_sure_some x 
   | _ -> not_sure ()
 
@@ -111,12 +108,9 @@ let destruct_optional
 let none : J.expression = 
   {expression_desc = Number (Int {i = 0l; c  = None}); comment = Some "None" }
 
-let some x : J.expression = 
-  {expression_desc = 
-    Caml_block ( [x], Immutable, E.zero_int_literal , Blk_some );
-   comment = None}
 
-
+let some  = E.optional_block 
+  
 let null_to_opt e = 
   E.econd (E.is_null e) none (some e)           
 

@@ -35,7 +35,6 @@ let tag_is_zero (tag : J.expression) =
   | Blk_variant _ 
   | Blk_module _    
   | Blk_record _   
-  | Blk_some  (* FIXME *)
   | Blk_constructor _   -> true
   | Blk_tuple 
   | Blk_array   
@@ -52,8 +51,7 @@ let needBlockRuntimeInReleaseMode (tag : J.expression) (tag_info : J.tag_info) =
   | Blk_array -> false   
   | Blk_constructor (_, 1)      
   | Blk_na -> not (tag_is_zero tag)
-  | Blk_constructor _   -> true
-  | Blk_some (* FIXME *)
+  | Blk_constructor _   -> true  
   | Blk_exception 
   | Blk_extension  -> false 
     (* converted to [Pcreate_extension] in the beginning*)
@@ -109,7 +107,7 @@ class count_hard_dependencies =
             (Ident.create_persistent Js_runtime_modules.curry));
         super#expression x             
       | {expression_desc = Caml_block(_,_, tag, tag_info); _}
-        -> 
+        -> (* FIXME: Optional_block *)
         if needBlockRuntime tag tag_info then
           add_lam_module_ident hard_dependencies 
               (Lam_module_ident.of_runtime               

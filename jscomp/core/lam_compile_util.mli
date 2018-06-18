@@ -34,6 +34,6 @@
 
 val jsop_of_comp : Lambda.comparison -> Js_op.binop
 
-val comment_of_tag_info : Lambda.tag_info -> string option
+val comment_of_tag_info : Lam_tag_info.t -> string option
 
 val comment_of_pointer_info : Lam.pointer_info -> string option
