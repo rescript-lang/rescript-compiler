@@ -39,7 +39,8 @@ type tag_info =
   | Blk_extension
   | Blk_na
   | Blk_some
-
+  | Blk_some_not_nested
+    
 let default_tag_info : tag_info = Blk_na
 
 type field_dbg_info = 
