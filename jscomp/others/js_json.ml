@@ -28,7 +28,8 @@ type t
 
 type _ kind = 
   | String : Js_string.t kind
-  | Number : float kind 
+  | Number : float kind
+  | NumberString : string kind
   | Object : t Js_dict.t kind 
   | Array : t array kind 
   | Boolean : bool kind
