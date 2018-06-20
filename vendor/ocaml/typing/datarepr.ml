@@ -48,6 +48,33 @@ let constructor_has_optional_shape ({cstr_attributes = attrs} : constructor_desc
   List.exists (fun (x,_) -> x.txt = internal_optional) attrs
 
 
+(**  [Types.constructor_description]
+     records the type at the definition type so for ['a option]
+     it will always be [Tvar]
+*)
+let cannot_inhabit_none_like_value (typ : Types.type_expr) =
+  match (Btype.repr typ).desc with
+  |  Tconstr(p, _,_) ->
+      (* all built in types could not inhabit none-like values:
+         int, char, float, bool, unit, exn, array, list, nativeint,
+         int32, int64, lazy_t, bytes
+      *)
+      if Predef.type_is_builtin_path_but_option p then true
+      else false (* TODO: refine *)
+  | Ttuple _
+  | Tvariant _
+  | Tpackage _ 
+  | Tarrow _ -> true
+  | Tfield _ 
+  | Tpoly _ 
+  | Tunivar _ 
+  | Tlink _ 
+  | Tsubst _
+  | Tnil 
+  | Tvar _
+  | Tobject _ 
+    -> false
+    
 let constructor_descrs ty_res cstrs priv =
   let num_consts = ref 0 and num_nonconsts = ref 0  and num_normal = ref 0 in
   List.iter

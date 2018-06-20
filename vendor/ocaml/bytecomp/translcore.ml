@@ -947,9 +947,17 @@ and transl_exp0 e =
             | _ -> (Lambda.Pt_constructor cstr.cstr_name)
             ))
       | Cstr_block n ->
-          let tag_info =
+          let tag_info : Lambda.tag_info =
             if Datarepr.constructor_has_optional_shape cstr then
-              Lambda.Blk_some
+              begin 
+                match args with
+                | [arg] when  Datarepr.cannot_inhabit_none_like_value arg.exp_type 
+                  ->
+                    (* Format.fprintf Format.err_formatter "@[special boxingl@]@."; *)
+                    Blk_some_not_nested
+                | _ ->
+                    Blk_some
+              end
             else (Lambda.Blk_constructor (cstr.cstr_name, cstr.cstr_nonconsts)) in
           begin try
             Lconst(Const_block(n,tag_info, List.map extract_constant ll))

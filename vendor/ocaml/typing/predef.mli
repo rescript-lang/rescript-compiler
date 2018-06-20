@@ -63,3 +63,6 @@ val build_initial_env:
 
 val builtin_values: (string * Ident.t) list
 val builtin_idents: (string * Ident.t) list
+
+
+val type_is_builtin_path_but_option : Path.t -> bool

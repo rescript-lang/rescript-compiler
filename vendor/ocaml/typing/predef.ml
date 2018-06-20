@@ -26,6 +26,7 @@ let wrap create s =
 let ident_create = wrap Ident.create
 let ident_create_predef_exn = wrap Ident.create_predef_exn
 
+
 let ident_int = ident_create "int"
 and ident_char = ident_create "char"
 and ident_string = ident_create "string"
@@ -41,6 +42,15 @@ and ident_int32 = ident_create "int32"
 and ident_int64 = ident_create "int64"
 and ident_lazy_t = ident_create "lazy_t"
 and ident_bytes = ident_create "bytes"
+
+
+let type_is_builtin_path_but_option p =
+  match p with
+  | Pident {stamp} ->
+      stamp >= ident_int.stamp
+      && stamp  <= ident_bytes.stamp
+      && (stamp <> ident_option.stamp)
+  | _ -> false
 
 let path_int = Pident ident_int
 and path_char = Pident ident_char
