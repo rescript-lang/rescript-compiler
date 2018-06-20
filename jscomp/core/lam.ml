@@ -1620,7 +1620,15 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : t =
   | Pmakeblock (tag,info, mutable_flag)
     -> 
     begin match info with 
-    | Blk_some ->
+    | Blk_some_not_nested 
+      -> 
+      (* begin match args with 
+      | [arg] ->  arg 
+      | _ -> assert false
+      end  *)
+      prim ~primitive:Psome_general ~args loc 
+    | Blk_some 
+      ->    
       prim ~primitive:Psome_general ~args loc 
     | Blk_constructor(xs,i) ->  
       let info = Blk_constructor(xs,i) in
@@ -1907,7 +1915,17 @@ let convert exports lam : _ * _  =
     match () with
     | _ when s = "#is_none" -> 
       prim ~primitive:Pis_none_general ~args:(Ext_list.map convert_aux args) loc 
-    | _ when s = "#val_from_option" -> 
+    | _ when s = "#val_from_unnest_option" 
+      -> 
+      begin match args with 
+      | [arg] -> 
+        prim ~primitive:Pval_from_option_general
+        ~args:[convert_aux arg] loc
+        (* convert_aux arg  *)
+      | _ -> assert false 
+      end      
+    | _ when s = "#val_from_option" 
+      -> 
       prim ~primitive:Pval_from_option_general
         ~args:(Ext_list.map convert_aux args) loc
     | _ when s = "#raw_expr" ->
@@ -2026,6 +2044,14 @@ let convert exports lam : _ * _  =
     | Const_immstring s -> Const_immstring s
     | Const_block (i,t,xs) ->
       begin match t with 
+      | Blk_some_not_nested 
+        -> 
+        begin match xs with 
+        | [x] -> 
+          Const_some (convert_constant x)
+        | _ -> assert false
+        end 
+
       | Blk_some -> 
         begin match xs with 
         | [x] -> 
