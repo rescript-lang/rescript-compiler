@@ -51,9 +51,10 @@ type boxed_nullable
   | Undefined 
   | Null 
   | Null_undefined
-  | Normal 
+
 
 type t = 
+  | Normal_optional of Lam.t (* Some [x] *)
   | OptionalBlock of Lam.t * boxed_nullable
   | ImmutableBlock of element array 
   | MutableBlock of element array
@@ -76,7 +77,7 @@ let print fmt (kind : t) =
   match kind with 
   | ImmutableBlock (arr) -> 
     pp fmt "Imm(%d)" (Array.length arr)
-  | OptionalBlock (_, Normal) 
+  | Normal_optional _
     -> pp fmt "Some"
   | OptionalBlock(_, Null) 
     -> pp fmt "?Null"

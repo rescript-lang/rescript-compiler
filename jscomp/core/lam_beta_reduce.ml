@@ -93,9 +93,9 @@ let propogate_beta_reduce
            Ident_hashtbl.replace meta.ident_tbl param 
              (Lam_util.kind_of_lambda_block args ); (** *)
            arg           
-         | Lprim {primitive = Psome_general; args = [v]; _} -> 
+         | Lprim {primitive = Psome | Psome_not_nest; args = [v]; _} -> 
            Ident_hashtbl.replace meta.ident_tbl param 
-            (OptionalBlock(v,Normal));
+            (Normal_optional(v));
            arg
          | _ -> arg in
        Lam_util.refine_let ~kind:Strict param arg l) 
@@ -156,9 +156,9 @@ let propogate_beta_reduce_with_map
            Ident_hashtbl.replace meta.ident_tbl param 
              (Lam_util.kind_of_lambda_block args ); (** *)
            arg
-         | Lprim {primitive = Psome_general; args = [v]} -> 
+         | Lprim {primitive = Psome | Psome_not_nest; args = [v]} -> 
            Ident_hashtbl.replace meta.ident_tbl param 
-            (OptionalBlock(v,Normal));
+            (Normal_optional(v));
            arg 
          | _ -> arg in
        Lam_util.refine_let ~kind:Strict param arg l) 

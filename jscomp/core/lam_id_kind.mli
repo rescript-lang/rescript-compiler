@@ -44,9 +44,10 @@ type boxed_nullable
   | Undefined 
   | Null 
   | Null_undefined
-  | Normal 
+
 
 type t = 
+  | Normal_optional of Lam.t
   | OptionalBlock of Lam.t * boxed_nullable
   | ImmutableBlock of element array
   | MutableBlock of element array

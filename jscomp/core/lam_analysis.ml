@@ -89,7 +89,8 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pjs_typeof
       | Pis_null
       | Pis_not_none
-      | Psome_general
+      | Psome
+      | Psome_not_nest
       | Pis_undefined
       | Pis_null_undefined
       | Pnull_to_opt       
@@ -103,7 +104,8 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pglobal_exception _
       | Pmakeblock _  (* whether it's mutable or not *)
       | Pfield _
-      | Pval_from_option_general
+      | Pval_from_option
+      | Pval_from_option_not_nest
       | Pfloatfield _ 
       | Pduprecord _ 
       (* Boolean operations *)
@@ -514,7 +516,8 @@ and eq_primitive ( lhs : Lam.primitive) (rhs : Lam.primitive) =
   | Plslint -> rhs = Plslint
   | Plsrint -> rhs = Plsrint
   | Pasrint -> rhs = Pasrint      
-  | Pval_from_option_general -> rhs = Pval_from_option_general
+  | Pval_from_option -> rhs = Pval_from_option
+  | Pval_from_option_not_nest -> rhs = Pval_from_option_not_nest
   | Plazyforce -> rhs = Plazyforce
   | Pintoffloat -> rhs = Pintoffloat
   | Pfloatofint -> rhs = Pfloatofint
@@ -540,7 +543,8 @@ and eq_primitive ( lhs : Lam.primitive) (rhs : Lam.primitive) =
   | Pnull_undefined_to_opt -> rhs = Pnull_undefined_to_opt  
   | Pis_null -> rhs = Pis_null
   | Pis_not_none -> rhs = Pis_not_none 
-  | Psome_general -> rhs = Psome_general
+  | Psome -> rhs = Psome
+  | Psome_not_nest -> rhs = Psome_not_nest 
   | Pis_undefined -> rhs = Pis_undefined
   | Pis_null_undefined -> rhs = Pis_null_undefined
   | Pjs_typeof -> rhs = Pjs_typeof

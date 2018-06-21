@@ -67,8 +67,8 @@ let collect_helper  (meta : Lam_stats.t) (lam : Lam.t)  =
       Ident_hashtbl.replace meta.ident_tbl ident 
         (Lam_util.kind_of_lambda_block ls);
       List.iter collect ls     
-    | Lprim {primitive = Psome_general; args = [v]} -> 
-      Ident_hashtbl.replace meta.ident_tbl ident (OptionalBlock(v,Normal));
+    | Lprim {primitive = Psome | Psome_not_nest; args = [v]} -> 
+      Ident_hashtbl.replace meta.ident_tbl ident (Normal_optional(v));
       collect v   
     | Lprim{primitive = Praw_js_function(_,raw_args); args = _ }           
       ->
