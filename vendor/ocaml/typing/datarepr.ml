@@ -126,8 +126,8 @@ let constructor_descrs ty_res cstrs priv =
     [ ({name = "None"} as a_id, ({cstr_args = []} as a_descr) )  ;
       ({ name = "Some"} as b_id, ({ cstr_args = [_]} as b_descr))
     ] |
-    [ ({name = "Some"} as a_id, ({cstr_args = []} as a_descr) )  ;
-      ({ name = "None"} as b_id, ({ cstr_args = [_]} as b_descr))
+    [ ({name = "Some"} as a_id, ({cstr_args = [_]} as a_descr) )  ;
+      ({ name = "None"} as b_id, ({ cstr_args = []} as b_descr))
     ]
    )
     ->
