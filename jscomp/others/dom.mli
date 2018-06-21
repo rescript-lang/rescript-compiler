@@ -65,6 +65,10 @@ type 'a htmlElement_like = 'a _htmlElement element_like
 type htmlElement = _baseClass htmlElement_like
 type _htmlSlotElement
 type htmlSlotElement = _htmlSlotElement htmlElement_like
+type _htmlFormElement
+type htmlFormElement = _htmlFormElement htmlElement_like
+type _htmlInputElement
+type htmlInputElement = _htmlInputElement htmlElement_like
 type location
 type window
 type _xmlDocument
