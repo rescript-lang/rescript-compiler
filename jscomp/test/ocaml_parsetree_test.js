@@ -1365,7 +1365,7 @@ function highlight_locations(ppf, locs) {
     if (typeof match === "number") {
       if (match !== 0) {
         var match$1 = input_lexbuf[0];
-        if (match$1) {
+        if (match$1 !== /* None */0) {
           var norepeat;
           try {
             norepeat = Caml_sys.caml_sys_getenv("TERM") === "norepeat";
@@ -1402,7 +1402,7 @@ function highlight_locations(ppf, locs) {
       }
     } else {
       var match$2 = input_lexbuf[0];
-      if (match$2) {
+      if (match$2 !== /* None */0) {
         try {
           highlight_terminfo(ppf, match[0], match$2[0], locs);
           return true;
@@ -1708,9 +1708,9 @@ function print_phanton_error_prefix(ppf) {
 }
 
 function errorf($staropt$star, $staropt$star$1, $staropt$star$2, fmt) {
-  var loc = $staropt$star ? $staropt$star[0] : none;
-  var sub = $staropt$star$1 ? $staropt$star$1[0] : /* [] */0;
-  var if_highlight = $staropt$star$2 ? $staropt$star$2[0] : "";
+  var loc = $staropt$star !== /* None */0 ? $staropt$star[0] : none;
+  var sub = $staropt$star$1 !== /* None */0 ? $staropt$star$1[0] : /* [] */0;
+  var if_highlight = $staropt$star$2 !== /* None */0 ? $staropt$star$2[0] : "";
   var before = /* Some */[print_phanton_error_prefix];
   var k = function (msg) {
     return /* record */[
@@ -1724,7 +1724,7 @@ function errorf($staropt$star, $staropt$star$1, $staropt$star$2, fmt) {
   var buf = $$Buffer.create(64);
   var ppf = Format.formatter_of_buffer(buf);
   Curry._1(Misc_043[/* set_color_tag_handling */5], ppf);
-  if (before) {
+  if (before !== /* None */0) {
     Curry._1(before[0], ppf);
   }
   return Format.kfprintf((function () {
@@ -1833,7 +1833,7 @@ function is_mocha() {
 }
 
 function close_enough($staropt$star, a, b) {
-  var threshold = $staropt$star ? $staropt$star[0] : 0.0000001;
+  var threshold = $staropt$star !== /* None */0 ? $staropt$star[0] : 0.0000001;
   return Math.abs(a - b) < threshold;
 }
 
@@ -2061,12 +2061,12 @@ function docs_attr(ds) {
 
 function add_docs_attrs(docs, attrs) {
   var match = docs[/* docs_pre */0];
-  var attrs$1 = match ? /* :: */[
+  var attrs$1 = match !== /* None */0 ? /* :: */[
       docs_attr(match[0]),
       attrs
     ] : attrs;
   var match$1 = docs[/* docs_post */1];
-  if (match$1) {
+  if (match$1 !== /* None */0) {
     return Pervasives.$at(attrs$1, /* :: */[
                 docs_attr(match$1[0]),
                 /* [] */0
@@ -2077,7 +2077,7 @@ function add_docs_attrs(docs, attrs) {
 }
 
 function add_info_attrs(info, attrs) {
-  if (info) {
+  if (info !== /* None */0) {
     return Pervasives.$at(attrs, /* :: */[
                 docs_attr(info[0]),
                 /* [] */0
@@ -2391,8 +2391,8 @@ function init() {
 var default_loc = [none];
 
 function mk($staropt$star, $staropt$star$1, d) {
-  var loc = $staropt$star ? $staropt$star[0] : default_loc[0];
-  var attrs = $staropt$star$1 ? $staropt$star$1[0] : /* [] */0;
+  var loc = $staropt$star !== /* None */0 ? $staropt$star[0] : default_loc[0];
+  var attrs = $staropt$star$1 !== /* None */0 ? $staropt$star$1[0] : /* [] */0;
   return /* record */[
           /* ptyp_desc */d,
           /* ptyp_loc */loc,
@@ -2412,8 +2412,8 @@ function attr(d, a) {
 }
 
 function mk$1($staropt$star, $staropt$star$1, d) {
-  var loc = $staropt$star ? $staropt$star[0] : default_loc[0];
-  var attrs = $staropt$star$1 ? $staropt$star$1[0] : /* [] */0;
+  var loc = $staropt$star !== /* None */0 ? $staropt$star[0] : default_loc[0];
+  var attrs = $staropt$star$1 !== /* None */0 ? $staropt$star$1[0] : /* [] */0;
   return /* record */[
           /* ppat_desc */d,
           /* ppat_loc */loc,
@@ -2433,8 +2433,8 @@ function attr$1(d, a) {
 }
 
 function mk$2($staropt$star, $staropt$star$1, d) {
-  var loc = $staropt$star ? $staropt$star[0] : default_loc[0];
-  var attrs = $staropt$star$1 ? $staropt$star$1[0] : /* [] */0;
+  var loc = $staropt$star !== /* None */0 ? $staropt$star[0] : default_loc[0];
+  var attrs = $staropt$star$1 !== /* None */0 ? $staropt$star$1[0] : /* [] */0;
   return /* record */[
           /* pexp_desc */d,
           /* pexp_loc */loc,
@@ -2675,8 +2675,8 @@ function $$case(lhs, guard, rhs) {
 }
 
 function mk$3($staropt$star, $staropt$star$1, d) {
-  var loc = $staropt$star ? $staropt$star[0] : default_loc[0];
-  var attrs = $staropt$star$1 ? $staropt$star$1[0] : /* [] */0;
+  var loc = $staropt$star !== /* None */0 ? $staropt$star[0] : default_loc[0];
+  var attrs = $staropt$star$1 !== /* None */0 ? $staropt$star$1[0] : /* [] */0;
   return /* record */[
           /* pmty_desc */d,
           /* pmty_loc */loc,
@@ -2700,8 +2700,8 @@ function alias(loc, attrs, a) {
 }
 
 function mk$4($staropt$star, $staropt$star$1, d) {
-  var loc = $staropt$star ? $staropt$star[0] : default_loc[0];
-  var attrs = $staropt$star$1 ? $staropt$star$1[0] : /* [] */0;
+  var loc = $staropt$star !== /* None */0 ? $staropt$star[0] : default_loc[0];
+  var attrs = $staropt$star$1 !== /* None */0 ? $staropt$star$1[0] : /* [] */0;
   return /* record */[
           /* pmod_desc */d,
           /* pmod_loc */loc,
@@ -2721,7 +2721,7 @@ function attr$4(d, a) {
 }
 
 function mk$5($staropt$star, d) {
-  var loc = $staropt$star ? $staropt$star[0] : default_loc[0];
+  var loc = $staropt$star !== /* None */0 ? $staropt$star[0] : default_loc[0];
   return /* record */[
           /* psig_desc */d,
           /* psig_loc */loc
@@ -2737,7 +2737,7 @@ function text(txt) {
 }
 
 function mk$6($staropt$star, d) {
-  var loc = $staropt$star ? $staropt$star[0] : default_loc[0];
+  var loc = $staropt$star !== /* None */0 ? $staropt$star[0] : default_loc[0];
   return /* record */[
           /* pstr_desc */d,
           /* pstr_loc */loc
@@ -2753,8 +2753,8 @@ function text$1(txt) {
 }
 
 function mk$7($staropt$star, $staropt$star$1, d) {
-  var loc = $staropt$star ? $staropt$star[0] : default_loc[0];
-  var attrs = $staropt$star$1 ? $staropt$star$1[0] : /* [] */0;
+  var loc = $staropt$star !== /* None */0 ? $staropt$star[0] : default_loc[0];
+  var attrs = $staropt$star$1 !== /* None */0 ? $staropt$star$1[0] : /* [] */0;
   return /* record */[
           /* pcl_desc */d,
           /* pcl_loc */loc,
@@ -2774,8 +2774,8 @@ function attr$5(d, a) {
 }
 
 function mk$8($staropt$star, $staropt$star$1, d) {
-  var loc = $staropt$star ? $staropt$star[0] : default_loc[0];
-  var attrs = $staropt$star$1 ? $staropt$star$1[0] : /* [] */0;
+  var loc = $staropt$star !== /* None */0 ? $staropt$star[0] : default_loc[0];
+  var attrs = $staropt$star$1 !== /* None */0 ? $staropt$star$1[0] : /* [] */0;
   return /* record */[
           /* pcty_desc */d,
           /* pcty_loc */loc,
@@ -2795,9 +2795,9 @@ function attr$6(d, a) {
 }
 
 function mk$9($staropt$star, $staropt$star$1, $staropt$star$2, d) {
-  var loc = $staropt$star ? $staropt$star[0] : default_loc[0];
-  var attrs = $staropt$star$1 ? $staropt$star$1[0] : /* [] */0;
-  var docs = $staropt$star$2 ? $staropt$star$2[0] : empty_docs;
+  var loc = $staropt$star !== /* None */0 ? $staropt$star[0] : default_loc[0];
+  var attrs = $staropt$star$1 !== /* None */0 ? $staropt$star$1[0] : /* [] */0;
+  var docs = $staropt$star$2 !== /* None */0 ? $staropt$star$2[0] : empty_docs;
   return /* record */[
           /* pctf_desc */d,
           /* pctf_loc */loc,
@@ -2860,9 +2860,9 @@ function attr$7(d, a) {
 }
 
 function mk$10($staropt$star, $staropt$star$1, $staropt$star$2, d) {
-  var loc = $staropt$star ? $staropt$star[0] : default_loc[0];
-  var attrs = $staropt$star$1 ? $staropt$star$1[0] : /* [] */0;
-  var docs = $staropt$star$2 ? $staropt$star$2[0] : empty_docs;
+  var loc = $staropt$star !== /* None */0 ? $staropt$star[0] : default_loc[0];
+  var attrs = $staropt$star$1 !== /* None */0 ? $staropt$star$1[0] : /* [] */0;
+  var docs = $staropt$star$2 !== /* None */0 ? $staropt$star$2[0] : empty_docs;
   return /* record */[
           /* pcf_desc */d,
           /* pcf_loc */loc,
@@ -2942,10 +2942,10 @@ function attr$8(d, a) {
 }
 
 function mk$11($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, name, typ) {
-  var loc = $staropt$star ? $staropt$star[0] : default_loc[0];
-  var attrs = $staropt$star$1 ? $staropt$star$1[0] : /* [] */0;
-  var docs = $staropt$star$2 ? $staropt$star$2[0] : empty_docs;
-  var prim = $staropt$star$3 ? $staropt$star$3[0] : /* [] */0;
+  var loc = $staropt$star !== /* None */0 ? $staropt$star[0] : default_loc[0];
+  var attrs = $staropt$star$1 !== /* None */0 ? $staropt$star$1[0] : /* [] */0;
+  var docs = $staropt$star$2 !== /* None */0 ? $staropt$star$2[0] : empty_docs;
+  var prim = $staropt$star$3 !== /* None */0 ? $staropt$star$3[0] : /* [] */0;
   return /* record */[
           /* pval_name */name,
           /* pval_type */typ,
@@ -2956,10 +2956,10 @@ function mk$11($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3,
 }
 
 function mk$12($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, name, typ) {
-  var loc = $staropt$star ? $staropt$star[0] : default_loc[0];
-  var attrs = $staropt$star$1 ? $staropt$star$1[0] : /* [] */0;
-  var docs = $staropt$star$2 ? $staropt$star$2[0] : empty_docs;
-  var text = $staropt$star$3 ? $staropt$star$3[0] : /* [] */0;
+  var loc = $staropt$star !== /* None */0 ? $staropt$star[0] : default_loc[0];
+  var attrs = $staropt$star$1 !== /* None */0 ? $staropt$star$1[0] : /* [] */0;
+  var docs = $staropt$star$2 !== /* None */0 ? $staropt$star$2[0] : empty_docs;
+  var text = $staropt$star$3 !== /* None */0 ? $staropt$star$3[0] : /* [] */0;
   return /* record */[
           /* pmd_name */name,
           /* pmd_type */typ,
@@ -2969,10 +2969,10 @@ function mk$12($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3,
 }
 
 function mk$13($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, typ, name) {
-  var loc = $staropt$star ? $staropt$star[0] : default_loc[0];
-  var attrs = $staropt$star$1 ? $staropt$star$1[0] : /* [] */0;
-  var docs = $staropt$star$2 ? $staropt$star$2[0] : empty_docs;
-  var text = $staropt$star$3 ? $staropt$star$3[0] : /* [] */0;
+  var loc = $staropt$star !== /* None */0 ? $staropt$star[0] : default_loc[0];
+  var attrs = $staropt$star$1 !== /* None */0 ? $staropt$star$1[0] : /* [] */0;
+  var docs = $staropt$star$2 !== /* None */0 ? $staropt$star$2[0] : empty_docs;
+  var text = $staropt$star$3 !== /* None */0 ? $staropt$star$3[0] : /* [] */0;
   return /* record */[
           /* pmtd_name */name,
           /* pmtd_type */typ,
@@ -2982,10 +2982,10 @@ function mk$13($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3,
 }
 
 function mk$14($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, name, expr) {
-  var loc = $staropt$star ? $staropt$star[0] : default_loc[0];
-  var attrs = $staropt$star$1 ? $staropt$star$1[0] : /* [] */0;
-  var docs = $staropt$star$2 ? $staropt$star$2[0] : empty_docs;
-  var text = $staropt$star$3 ? $staropt$star$3[0] : /* [] */0;
+  var loc = $staropt$star !== /* None */0 ? $staropt$star[0] : default_loc[0];
+  var attrs = $staropt$star$1 !== /* None */0 ? $staropt$star$1[0] : /* [] */0;
+  var docs = $staropt$star$2 !== /* None */0 ? $staropt$star$2[0] : empty_docs;
+  var text = $staropt$star$3 !== /* None */0 ? $staropt$star$3[0] : /* [] */0;
   return /* record */[
           /* pmb_name */name,
           /* pmb_expr */expr,
@@ -2995,10 +2995,10 @@ function mk$14($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3,
 }
 
 function mk$15($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, lid) {
-  var loc = $staropt$star ? $staropt$star[0] : default_loc[0];
-  var attrs = $staropt$star$1 ? $staropt$star$1[0] : /* [] */0;
-  var docs = $staropt$star$2 ? $staropt$star$2[0] : empty_docs;
-  var override = $staropt$star$3 ? $staropt$star$3[0] : /* Fresh */1;
+  var loc = $staropt$star !== /* None */0 ? $staropt$star[0] : default_loc[0];
+  var attrs = $staropt$star$1 !== /* None */0 ? $staropt$star$1[0] : /* [] */0;
+  var docs = $staropt$star$2 !== /* None */0 ? $staropt$star$2[0] : empty_docs;
+  var override = $staropt$star$3 !== /* None */0 ? $staropt$star$3[0] : /* Fresh */1;
   return /* record */[
           /* popen_lid */lid,
           /* popen_override */override,
@@ -3008,9 +3008,9 @@ function mk$15($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3,
 }
 
 function mk$16($staropt$star, $staropt$star$1, $staropt$star$2, mexpr) {
-  var loc = $staropt$star ? $staropt$star[0] : default_loc[0];
-  var attrs = $staropt$star$1 ? $staropt$star$1[0] : /* [] */0;
-  var docs = $staropt$star$2 ? $staropt$star$2[0] : empty_docs;
+  var loc = $staropt$star !== /* None */0 ? $staropt$star[0] : default_loc[0];
+  var attrs = $staropt$star$1 !== /* None */0 ? $staropt$star$1[0] : /* [] */0;
+  var docs = $staropt$star$2 !== /* None */0 ? $staropt$star$2[0] : empty_docs;
   return /* record */[
           /* pincl_mod */mexpr,
           /* pincl_loc */loc,
@@ -3019,10 +3019,10 @@ function mk$16($staropt$star, $staropt$star$1, $staropt$star$2, mexpr) {
 }
 
 function mk$17($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, pat, expr) {
-  var loc = $staropt$star ? $staropt$star[0] : default_loc[0];
-  var attrs = $staropt$star$1 ? $staropt$star$1[0] : /* [] */0;
-  var docs = $staropt$star$2 ? $staropt$star$2[0] : empty_docs;
-  var text = $staropt$star$3 ? $staropt$star$3[0] : /* [] */0;
+  var loc = $staropt$star !== /* None */0 ? $staropt$star[0] : default_loc[0];
+  var attrs = $staropt$star$1 !== /* None */0 ? $staropt$star$1[0] : /* [] */0;
+  var docs = $staropt$star$2 !== /* None */0 ? $staropt$star$2[0] : empty_docs;
+  var text = $staropt$star$3 !== /* None */0 ? $staropt$star$3[0] : /* [] */0;
   return /* record */[
           /* pvb_pat */pat,
           /* pvb_expr */expr,
@@ -3032,12 +3032,12 @@ function mk$17($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3,
 }
 
 function mk$18($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, $staropt$star$4, $staropt$star$5, name, expr) {
-  var loc = $staropt$star ? $staropt$star[0] : default_loc[0];
-  var attrs = $staropt$star$1 ? $staropt$star$1[0] : /* [] */0;
-  var docs = $staropt$star$2 ? $staropt$star$2[0] : empty_docs;
-  var text = $staropt$star$3 ? $staropt$star$3[0] : /* [] */0;
-  var virt = $staropt$star$4 ? $staropt$star$4[0] : /* Concrete */1;
-  var params = $staropt$star$5 ? $staropt$star$5[0] : /* [] */0;
+  var loc = $staropt$star !== /* None */0 ? $staropt$star[0] : default_loc[0];
+  var attrs = $staropt$star$1 !== /* None */0 ? $staropt$star$1[0] : /* [] */0;
+  var docs = $staropt$star$2 !== /* None */0 ? $staropt$star$2[0] : empty_docs;
+  var text = $staropt$star$3 !== /* None */0 ? $staropt$star$3[0] : /* [] */0;
+  var virt = $staropt$star$4 !== /* None */0 ? $staropt$star$4[0] : /* Concrete */1;
+  var params = $staropt$star$5 !== /* None */0 ? $staropt$star$5[0] : /* [] */0;
   return /* record */[
           /* pci_virt */virt,
           /* pci_params */params,
@@ -3049,14 +3049,14 @@ function mk$18($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3,
 }
 
 function mk$19($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, $staropt$star$4, $staropt$star$5, $staropt$star$6, $staropt$star$7, manifest, name) {
-  var loc = $staropt$star ? $staropt$star[0] : default_loc[0];
-  var attrs = $staropt$star$1 ? $staropt$star$1[0] : /* [] */0;
-  var docs = $staropt$star$2 ? $staropt$star$2[0] : empty_docs;
-  var text = $staropt$star$3 ? $staropt$star$3[0] : /* [] */0;
-  var params = $staropt$star$4 ? $staropt$star$4[0] : /* [] */0;
-  var cstrs = $staropt$star$5 ? $staropt$star$5[0] : /* [] */0;
-  var kind = $staropt$star$6 ? $staropt$star$6[0] : /* Ptype_abstract */0;
-  var priv = $staropt$star$7 ? $staropt$star$7[0] : /* Public */1;
+  var loc = $staropt$star !== /* None */0 ? $staropt$star[0] : default_loc[0];
+  var attrs = $staropt$star$1 !== /* None */0 ? $staropt$star$1[0] : /* [] */0;
+  var docs = $staropt$star$2 !== /* None */0 ? $staropt$star$2[0] : empty_docs;
+  var text = $staropt$star$3 !== /* None */0 ? $staropt$star$3[0] : /* [] */0;
+  var params = $staropt$star$4 !== /* None */0 ? $staropt$star$4[0] : /* [] */0;
+  var cstrs = $staropt$star$5 !== /* None */0 ? $staropt$star$5[0] : /* [] */0;
+  var kind = $staropt$star$6 !== /* None */0 ? $staropt$star$6[0] : /* Ptype_abstract */0;
+  var priv = $staropt$star$7 !== /* None */0 ? $staropt$star$7[0] : /* Public */1;
   return /* record */[
           /* ptype_name */name,
           /* ptype_params */params,
@@ -3070,10 +3070,10 @@ function mk$19($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3,
 }
 
 function constructor($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, res, name) {
-  var loc = $staropt$star ? $staropt$star[0] : default_loc[0];
-  var attrs = $staropt$star$1 ? $staropt$star$1[0] : /* [] */0;
-  var info = $staropt$star$2 ? $staropt$star$2[0] : /* None */0;
-  var args = $staropt$star$3 ? $staropt$star$3[0] : /* [] */0;
+  var loc = $staropt$star !== /* None */0 ? $staropt$star[0] : default_loc[0];
+  var attrs = $staropt$star$1 !== /* None */0 ? $staropt$star$1[0] : /* [] */0;
+  var info = $staropt$star$2 !== /* None */0 ? $staropt$star$2[0] : /* None */0;
+  var args = $staropt$star$3 !== /* None */0 ? $staropt$star$3[0] : /* [] */0;
   return /* record */[
           /* pcd_name */name,
           /* pcd_args */args,
@@ -3084,10 +3084,10 @@ function constructor($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$s
 }
 
 function field$1($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, name, typ) {
-  var loc = $staropt$star ? $staropt$star[0] : default_loc[0];
-  var attrs = $staropt$star$1 ? $staropt$star$1[0] : /* [] */0;
-  var info = $staropt$star$2 ? $staropt$star$2[0] : /* None */0;
-  var mut = $staropt$star$3 ? $staropt$star$3[0] : /* Immutable */0;
+  var loc = $staropt$star !== /* None */0 ? $staropt$star[0] : default_loc[0];
+  var attrs = $staropt$star$1 !== /* None */0 ? $staropt$star$1[0] : /* [] */0;
+  var info = $staropt$star$2 !== /* None */0 ? $staropt$star$2[0] : /* None */0;
+  var mut = $staropt$star$3 !== /* None */0 ? $staropt$star$3[0] : /* Immutable */0;
   return /* record */[
           /* pld_name */name,
           /* pld_mutable */mut,
@@ -3098,10 +3098,10 @@ function field$1($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$
 }
 
 function mk$20($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, path, constructors) {
-  var attrs = $staropt$star ? $staropt$star[0] : /* [] */0;
-  var docs = $staropt$star$1 ? $staropt$star$1[0] : empty_docs;
-  var params = $staropt$star$2 ? $staropt$star$2[0] : /* [] */0;
-  var priv = $staropt$star$3 ? $staropt$star$3[0] : /* Public */1;
+  var attrs = $staropt$star !== /* None */0 ? $staropt$star[0] : /* [] */0;
+  var docs = $staropt$star$1 !== /* None */0 ? $staropt$star$1[0] : empty_docs;
+  var params = $staropt$star$2 !== /* None */0 ? $staropt$star$2[0] : /* [] */0;
+  var priv = $staropt$star$3 !== /* None */0 ? $staropt$star$3[0] : /* Public */1;
   return /* record */[
           /* ptyext_path */path,
           /* ptyext_params */params,
@@ -3112,11 +3112,11 @@ function mk$20($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3,
 }
 
 function decl($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, $staropt$star$4, res, name) {
-  var loc = $staropt$star ? $staropt$star[0] : default_loc[0];
-  var attrs = $staropt$star$1 ? $staropt$star$1[0] : /* [] */0;
-  var docs = $staropt$star$2 ? $staropt$star$2[0] : empty_docs;
-  var info = $staropt$star$3 ? $staropt$star$3[0] : /* None */0;
-  var args = $staropt$star$4 ? $staropt$star$4[0] : /* [] */0;
+  var loc = $staropt$star !== /* None */0 ? $staropt$star[0] : default_loc[0];
+  var attrs = $staropt$star$1 !== /* None */0 ? $staropt$star$1[0] : /* [] */0;
+  var docs = $staropt$star$2 !== /* None */0 ? $staropt$star$2[0] : empty_docs;
+  var info = $staropt$star$3 !== /* None */0 ? $staropt$star$3[0] : /* None */0;
+  var args = $staropt$star$4 !== /* None */0 ? $staropt$star$4[0] : /* [] */0;
   return /* record */[
           /* pext_name */name,
           /* pext_kind : Pext_decl */Block.__(0, [
@@ -3129,10 +3129,10 @@ function decl($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, 
 }
 
 function rebind($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, name, lid) {
-  var loc = $staropt$star ? $staropt$star[0] : default_loc[0];
-  var attrs = $staropt$star$1 ? $staropt$star$1[0] : /* [] */0;
-  var docs = $staropt$star$2 ? $staropt$star$2[0] : empty_docs;
-  var info = $staropt$star$3 ? $staropt$star$3[0] : /* None */0;
+  var loc = $staropt$star !== /* None */0 ? $staropt$star[0] : default_loc[0];
+  var attrs = $staropt$star$1 !== /* None */0 ? $staropt$star$1[0] : /* [] */0;
+  var docs = $staropt$star$2 !== /* None */0 ? $staropt$star$2[0] : empty_docs;
+  var info = $staropt$star$3 !== /* None */0 ? $staropt$star$3[0] : /* None */0;
   return /* record */[
           /* pext_name */name,
           /* pext_kind : Pext_rebind */Block.__(1, [lid]),
@@ -3619,8 +3619,8 @@ function mkstrexp(e, attrs) {
 function mkexp_constraint(e, param) {
   var t2 = param[1];
   var t1 = param[0];
-  if (t1) {
-    if (t2) {
+  if (t1 !== /* None */0) {
+    if (t2 !== /* None */0) {
       return ghexp(/* Pexp_coerce */Block.__(20, [
                     e,
                     t1,
@@ -3632,7 +3632,7 @@ function mkexp_constraint(e, param) {
                     t1[0]
                   ]));
     }
-  } else if (t2) {
+  } else if (t2 !== /* None */0) {
     return ghexp(/* Pexp_coerce */Block.__(20, [
                   e,
                   t1,
@@ -3903,7 +3903,7 @@ function wrap_exp_attrs(body, param) {
     body_001,
     body_002
   ];
-  if (ext) {
+  if (ext !== /* None */0) {
     return ghexp(/* Pexp_extension */Block.__(33, [/* tuple */[
                     ext[0],
                     /* PStr */Block.__(0, [/* :: */[
@@ -4488,7 +4488,7 @@ var yyact = /* array */[
               ]));
       }
       var match = lbs[/* lbs_extension */2];
-      if (match) {
+      if (match !== /* None */0) {
         var d = /* Pstr_extension */Block.__(14, [
             /* tuple */[
               match[0],
@@ -7789,7 +7789,7 @@ var yyact = /* array */[
       var _5 = Parsing.peek_val(__caml_parser_env, 2);
       var _7 = Parsing.peek_val(__caml_parser_env, 0);
       var info_before_semi = get_info(Parsing.rhs_end_pos(5));
-      var info = info_before_semi ? info_before_semi : get_info(Parsing.symbol_end_pos(/* () */0));
+      var info = info_before_semi !== /* None */0 ? info_before_semi : get_info(Parsing.symbol_end_pos(/* () */0));
       return field$1(/* Some */[symbol_rloc(/* () */0)], /* Some */[Pervasives.$at(_5, _7)], /* Some */[info], /* Some */[_1], mkrhs(_2, 2), _4);
     }),
   (function (__caml_parser_env) {
@@ -9518,7 +9518,7 @@ function directive_parse(token_with_comments, lexbuf) {
   var look_ahead = [/* None */0];
   var token = function () {
     var v = look_ahead[0];
-    if (v) {
+    if (v !== /* None */0) {
       look_ahead[0] = /* None */0;
       return v[0];
     } else {
@@ -10535,7 +10535,7 @@ function get_label_name(lexbuf) {
 
 function update_loc(lexbuf, file, line, absolute, chars) {
   var pos = lexbuf[/* lex_curr_p */11];
-  var new_file = file ? file[0] : pos[/* pos_fname */0];
+  var new_file = file !== /* None */0 ? file[0] : pos[/* pos_fname */0];
   lexbuf[/* lex_curr_p */11] = /* record */[
     /* pos_fname */new_file,
     /* pos_lnum */absolute ? line : pos[/* pos_lnum */1] + line | 0,
@@ -11437,7 +11437,7 @@ function at_bol(lexbuf) {
 
 function token_with_comments(lexbuf) {
   var match = preprocessor[0];
-  if (match) {
+  if (match !== /* None */0) {
     return Curry._2(match[0][1], token, lexbuf);
   } else {
     return token(lexbuf);
@@ -11752,7 +11752,7 @@ function token$1(lexbuf) {
     };
   };
   var match = sharp_look_ahead[0];
-  if (match) {
+  if (match !== /* None */0) {
     sharp_look_ahead[0] = /* None */0;
     return match[0];
   } else {
@@ -11767,7 +11767,7 @@ function init$1() {
   comment_start_loc[0] = /* [] */0;
   comment_list[0] = /* [] */0;
   var match = preprocessor[0];
-  if (match) {
+  if (match !== /* None */0) {
     return Curry._1(match[0][0], /* () */0);
   } else {
     return /* () */0;
@@ -11921,7 +11921,7 @@ if (match) {
                 if (match$12[/* pos_fname */0] === "" && !(match$12[/* pos_lnum */1] !== 1 || match$12[/* pos_bol */2] !== 0 || match$12[/* pos_cnum */3] !== 5 || match$10[/* loc_ghost */2] || match$4[/* ppat_attributes */2])) {
                   var match$13 = match$3[/* pvb_expr */1];
                   var match$14 = match$13[/* pexp_desc */0];
-                  if (match$14.tag === 4 && match$14[0] === "" && !match$14[1]) {
+                  if (match$14.tag === 4 && match$14[0] === "" && match$14[1] === /* None */0) {
                     var match$15 = match$14[2];
                     var match$16 = match$15[/* ppat_desc */0];
                     if (typeof match$16 === "number" || match$16.tag) {

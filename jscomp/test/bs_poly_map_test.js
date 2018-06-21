@@ -41,7 +41,7 @@ function emptyMap() {
 
 function mergeInter(s1, s2) {
   var m = Belt_Map.merge(s1, s2, (function (_, v1, v2) {
-          if (v1 && v2) {
+          if (v1 !== /* None */0 && v2 !== /* None */0) {
             return /* Some */[/* () */0];
           } else {
             return /* None */0;
@@ -53,7 +53,7 @@ function mergeInter(s1, s2) {
 
 function mergeUnion(s1, s2) {
   var m = Belt_Map.merge(s1, s2, (function (_, v1, v2) {
-          if (v1 || v2) {
+          if (v1 !== /* None */0 || v2 !== /* None */0) {
             return /* Some */[/* () */0];
           } else {
             return /* None */0;
@@ -65,7 +65,7 @@ function mergeUnion(s1, s2) {
 
 function mergeDiff(s1, s2) {
   var m = Belt_Map.merge(s1, s2, (function (_, v1, v2) {
-          if (v1 && !v2) {
+          if (v1 !== /* None */0 && v2 === /* None */0) {
             return /* Some */[/* () */0];
           } else {
             return /* None */0;
@@ -117,7 +117,7 @@ var a1 = Belt_Map.set(a0, 3, 33);
 var a2 = Belt_Map.remove(a1, 3);
 
 var a3 = Belt_Map.update(a2, 3, (function (k) {
-        if (k) {
+        if (k !== /* None */0) {
           return /* Some */[k[0] + 1 | 0];
         } else {
           return /* Some */[11];
@@ -125,7 +125,7 @@ var a3 = Belt_Map.update(a2, 3, (function (k) {
       }));
 
 var a4 = Belt_Map.update(a2, 3, (function (k) {
-        if (k) {
+        if (k !== /* None */0) {
           return /* Some */[k[0] + 1 | 0];
         } else {
           return /* None */0;
@@ -190,7 +190,7 @@ function acc(m, is) {
                 var m = a;
                 var i$1 = i;
                 return Belt_Map.update(m, i$1, (function (n) {
-                              if (n) {
+                              if (n !== /* None */0) {
                                 return /* Some */[n[0] + 1 | 0];
                               } else {
                                 return /* Some */[1];
@@ -243,7 +243,7 @@ b("File \"bs_poly_map_test.ml\", line 117, characters 4-11", Belt_Map.eq(v1, v2,
           })));
 
 function inc(x) {
-  if (x) {
+  if (x !== /* None */0) {
     return /* Some */[x[0] + 1 | 0];
   } else {
     return /* Some */[0];
@@ -262,15 +262,15 @@ var match$1 = match[0];
 
 var match$2 = Belt_Map.get(v3, 10);
 
-b("File \"bs_poly_map_test.ml\", line 126, characters 4-11", match$2 ? match$2[0] === 11 : false);
+b("File \"bs_poly_map_test.ml\", line 126, characters 4-11", match$2 !== /* None */0 ? match$2[0] === 11 : false);
 
 var match$3 = Belt_Map.get(v3, -10);
 
-b("File \"bs_poly_map_test.ml\", line 127, characters 4-11", match$3 ? false : true);
+b("File \"bs_poly_map_test.ml\", line 127, characters 4-11", match$3 !== /* None */0 ? false : true);
 
 var match$4 = Belt_Map.get(v4, -10);
 
-b("File \"bs_poly_map_test.ml\", line 128, characters 4-11", match$4 ? match$4[0] === 0 : false);
+b("File \"bs_poly_map_test.ml\", line 128, characters 4-11", match$4 !== /* None */0 ? match$4[0] === 0 : false);
 
 var map = Belt_Map.remove({
       cmp: Icmp[/* cmp */0],
@@ -286,7 +286,7 @@ var map$1 = Belt_Map.removeMany({
 
 b("File \"bs_poly_map_test.ml\", line 130, characters 4-11", Belt_MapDict.isEmpty(map$1.data));
 
-b("File \"bs_poly_map_test.ml\", line 131, characters 4-11", pres ? pres[0] === 5000 : false);
+b("File \"bs_poly_map_test.ml\", line 131, characters 4-11", pres !== /* None */0 ? pres[0] === 5000 : false);
 
 b("File \"bs_poly_map_test.ml\", line 132, characters 4-11", Belt_Array.eq(Belt_MapDict.keysToArray(match$1[0].data), Belt_Array.makeBy(5000, (function (i) {
                 return i;
@@ -302,7 +302,7 @@ var match$5 = Belt_Map.split(v7, 5000);
 
 var match$6 = match$5[0];
 
-b("File \"bs_poly_map_test.ml\", line 137, characters 4-11", match$5[1] ? false : true);
+b("File \"bs_poly_map_test.ml\", line 137, characters 4-11", match$5[1] !== /* None */0 ? false : true);
 
 b("File \"bs_poly_map_test.ml\", line 138, characters 4-11", Belt_Array.eq(Belt_MapDict.keysToArray(match$6[0].data), Belt_Array.makeBy(5000, (function (i) {
                 return i;

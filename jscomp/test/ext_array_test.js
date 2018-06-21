@@ -98,7 +98,7 @@ function filter_map(f, a) {
       var v = a[i];
       var match = Curry._1(f, v);
       _i = i + 1 | 0;
-      if (match) {
+      if (match !== /* None */0) {
         _acc = /* :: */[
           match[0],
           acc
@@ -147,7 +147,7 @@ function tolist_aux(a, f, _i, _res) {
     } else {
       var v = a[i];
       var match = Curry._1(f, v);
-      _res = match ? /* :: */[
+      _res = match !== /* None */0 ? /* :: */[
           match[0],
           res
         ] : res;

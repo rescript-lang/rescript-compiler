@@ -108,6 +108,9 @@ let destruct_optional
 let none : J.expression = 
   {expression_desc = Number (Int {i = 0l; c  = None}); comment = Some "None" }
 
+let is_not_none  (e : J.expression) : J.expression = 
+  E.not (E.triple_equal e none)
+  
 
 let some  = E.optional_block 
   

@@ -27,7 +27,7 @@ function bufferize(f) {
   return /* tuple */[
           (function () {
               var match = buf[0];
-              if (match) {
+              if (match !== /* None */0) {
                 buf[0] = /* None */0;
                 return match[0];
               } else {
@@ -190,7 +190,7 @@ function next() {
       throw exn;
     }
   }
-  if (match) {
+  if (match !== /* None */0) {
     var c = match[0];
     var exit = 0;
     if (c !== 34) {

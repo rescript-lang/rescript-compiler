@@ -88,7 +88,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
       (* | Pcreate_exception _ *)
       | Pjs_typeof
       | Pis_null
-      | Pis_none_general
+      | Pis_not_none
       | Psome_general
       | Pis_undefined
       | Pis_null_undefined
@@ -279,7 +279,7 @@ let rec size (lam : Lam.t) =
             args =  [ Lglobal_module _]
            ;  _}
       -> 1
-    | Lprim {primitive = Praise | Pis_none_general ; args =  [l ];  _} 
+    | Lprim {primitive = Praise | Pis_not_none ; args =  [l ];  _} 
       -> size l
     | Lam.Lglobal_module _ -> 1       
     | Lprim {primitive = 
@@ -539,7 +539,7 @@ and eq_primitive ( lhs : Lam.primitive) (rhs : Lam.primitive) =
   | Pnull_to_opt -> rhs = Pnull_to_opt
   | Pnull_undefined_to_opt -> rhs = Pnull_undefined_to_opt  
   | Pis_null -> rhs = Pis_null
-  | Pis_none_general -> rhs = Pis_none_general 
+  | Pis_not_none -> rhs = Pis_not_none 
   | Psome_general -> rhs = Psome_general
   | Pis_undefined -> rhs = Pis_undefined
   | Pis_null_undefined -> rhs = Pis_null_undefined

@@ -348,7 +348,7 @@ var ID_MONAD = /* module */[
 ];
 
 function make($staropt$star, refill) {
-  var bufsize = $staropt$star ? $staropt$star[0] : 1024;
+  var bufsize = $staropt$star !== /* None */0 ? $staropt$star[0] : 1024;
   var bufsize$1 = Caml_primitive.caml_int_min(bufsize > 16 ? bufsize : 16, Sys.max_string_length);
   return /* record */[
           /* buf */Caml_string.caml_create_string(bufsize$1),
@@ -567,7 +567,7 @@ function expr_list(acc, k, t) {
       if (exit === 1) {
         return expr_starting_with(c, (function (last, e) {
                       var exit = 0;
-                      if (last) {
+                      if (last !== /* None */0) {
                         var match = last[0];
                         if (match !== 40) {
                           if (match !== 41) {
@@ -980,7 +980,7 @@ function parse_file_list(filename) {
 function MakeDecode(funarg) {
   var $great$great$eq = funarg[/* >>= */1];
   var make = function ($staropt$star, refill) {
-    var bufsize = $staropt$star ? $staropt$star[0] : 1024;
+    var bufsize = $staropt$star !== /* None */0 ? $staropt$star[0] : 1024;
     var bufsize$1 = Caml_primitive.caml_int_min(bufsize > 16 ? bufsize : 16, Sys.max_string_length);
     return /* record */[
             /* buf */Caml_string.caml_create_string(bufsize$1),
@@ -1192,7 +1192,7 @@ function MakeDecode(funarg) {
         if (exit === 1) {
           return expr_starting_with(c, (function (last, e) {
                         var exit = 0;
-                        if (last) {
+                        if (last !== /* None */0) {
                           var match = last[0];
                           if (match !== 40) {
                             if (match !== 41) {

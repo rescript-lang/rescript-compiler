@@ -224,7 +224,7 @@ type primitive =
 
   (* | Pcreate_exception of string  *)
   | Pcreate_extension of string
-  | Pis_none_general (* no info about its type *)
+  | Pis_not_none (* no info about its type *)
   | Pval_from_option_general
   | Psome_general
 
@@ -1914,7 +1914,7 @@ let convert exports lam : _ * _  =
     let s = p.prim_name in
     match () with
     | _ when s = "#is_none" -> 
-      prim ~primitive:Pis_none_general ~args:(Ext_list.map convert_aux args) loc 
+      prim ~primitive:Pis_not_none ~args:(Ext_list.map convert_aux args) loc 
     | _ when s = "#val_from_unnest_option" 
       -> 
       begin match args with 

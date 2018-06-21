@@ -194,7 +194,7 @@ test(true);
 test(false);
 
 function option_get(param) {
-  if (param) {
+  if (param !== /* None */0) {
     return param[0];
   } else {
     throw [

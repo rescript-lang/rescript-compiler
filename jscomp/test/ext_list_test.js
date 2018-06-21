@@ -11,7 +11,7 @@ function filter_map(f, _xs) {
     if (xs) {
       var ys = xs[1];
       var match = Curry._1(f, xs[0]);
-      if (match) {
+      if (match !== /* None */0) {
         return /* :: */[
                 match[0],
                 filter_map(f, ys)
@@ -166,7 +166,7 @@ function filter_mapi(f, xs) {
       if (xs) {
         var ys = xs[1];
         var match = Curry._2(f, i, xs[0]);
-        if (match) {
+        if (match !== /* None */0) {
           return /* :: */[
                   match[0],
                   aux(i + 1 | 0, ys)
@@ -193,7 +193,7 @@ function filter_map2(f, _xs, _ys) {
         var vs = ys[1];
         var us = xs[1];
         var match = Curry._2(f, xs[0], ys[0]);
-        if (match) {
+        if (match !== /* None */0) {
           return /* :: */[
                   match[0],
                   filter_map2(f, us, vs)
@@ -231,7 +231,7 @@ function filter_map2i(f, xs, ys) {
           var vs = ys[1];
           var us = xs[1];
           var match = Curry._3(f, i, xs[0], ys[0]);
-          if (match) {
+          if (match !== /* None */0) {
             return /* :: */[
                     match[0],
                     aux(i + 1 | 0, us, vs)
@@ -631,7 +631,7 @@ function for_all_opt(p, _param) {
     var param = _param;
     if (param) {
       var v = Curry._1(p, param[0]);
-      if (v) {
+      if (v !== /* None */0) {
         return v;
       } else {
         _param = param[1];
@@ -730,7 +730,7 @@ function find_opt(p, _param) {
     var param = _param;
     if (param) {
       var v = Curry._1(p, param[0]);
-      if (v) {
+      if (v !== /* None */0) {
         return v;
       } else {
         _param = param[1];
@@ -910,7 +910,7 @@ function assoc_by_string(def, k, _lst) {
         _lst = lst[1];
         continue ;
       }
-    } else if (def) {
+    } else if (def !== /* None */0) {
       return def[0];
     } else {
       throw [
@@ -936,7 +936,7 @@ function assoc_by_int(def, k, _lst) {
         _lst = lst[1];
         continue ;
       }
-    } else if (def) {
+    } else if (def !== /* None */0) {
       return def[0];
     } else {
       throw [
