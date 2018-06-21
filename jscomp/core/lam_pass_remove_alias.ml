@@ -97,7 +97,7 @@ let simplify_alias
       | _ ->  
         Lam.prim ~primitive ~args:[simpl arg] loc 
       end
-    | Lprim {primitive = Pval_from_option_general; args = [Lvar v]} as x -> 
+    | Lprim {primitive = Pval_from_option; args = [Lvar v]} as x -> 
       begin match Ident_hashtbl.find_opt meta.ident_tbl v with 
       | Some (OptionalBlock (l,_)) -> l
       | _ -> x 

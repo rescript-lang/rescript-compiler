@@ -171,7 +171,7 @@ let translate  loc
     E.runtime_call Js_runtime_modules.module_ "init_mod" args
   | Pupdate_mod ->
     E.runtime_call Js_runtime_modules.module_ "update_mod" args
-  | Psome_general ->     
+  | Psome ->     
     begin match args with 
     | [arg ] -> E.optional_block arg
     | _ -> assert false
@@ -183,7 +183,7 @@ let translate  loc
     Js_of_lam_block.make_block 
       (Js_op_util.of_lam_mutable_flag mutable_flag) 
       tag_info (E.small_int tag) args 
-  | Pval_from_option_general -> 
+  | Pval_from_option -> 
     begin match args with 
     | [ e ] -> 
       Js_of_lam_option.val_from_option e 

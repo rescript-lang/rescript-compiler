@@ -225,8 +225,9 @@ type primitive =
   (* | Pcreate_exception of string  *)
   | Pcreate_extension of string
   | Pis_not_none (* no info about its type *)
-  | Pval_from_option_general
-  | Psome_general
+  | Pval_from_option
+  | Psome
+  
 
 type apply_status =
   | App_na
@@ -1626,10 +1627,10 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : t =
       | [arg] ->  arg 
       | _ -> assert false
       end  *)
-      prim ~primitive:Psome_general ~args loc 
+      prim ~primitive:Psome ~args loc 
     | Blk_some 
       ->    
-      prim ~primitive:Psome_general ~args loc 
+      prim ~primitive:Psome ~args loc 
     | Blk_constructor(xs,i) ->  
       let info = Blk_constructor(xs,i) in
       prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
@@ -1919,14 +1920,14 @@ let convert exports lam : _ * _  =
       -> 
       begin match args with 
       | [arg] -> 
-        prim ~primitive:Pval_from_option_general
+        prim ~primitive:Pval_from_option
         ~args:[convert_aux arg] loc
         (* convert_aux arg  *)
       | _ -> assert false 
       end      
     | _ when s = "#val_from_option" 
       -> 
-      prim ~primitive:Pval_from_option_general
+      prim ~primitive:Pval_from_option
         ~args:(Ext_list.map convert_aux args) loc
     | _ when s = "#raw_expr" ->
       begin match args with
