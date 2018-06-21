@@ -61,11 +61,11 @@ type + 'a null_undefined = 'a nullable
 (** value of this type can be [undefined], [null] or ['a]
     this type is the same as {!Js.Null_undefined.t}*)
 
-external toOption : 'a nullable  -> 'a option = "#null_undefined_to_opt"
+external toOption : 'a nullable  -> 'a option = "#nullable_to_opt"
 external undefinedToOption : 'a undefined -> 'a option = "#undefined_to_opt"
 external nullToOption : 'a null -> 'a option = "#null_to_opt"
-external test : 'a nullable -> bool = "#is_nil_undef"
-external testAny : 'a -> bool = "#is_nil_undef"
+external test : 'a nullable -> bool = "#is_nullable"
+external testAny : 'a -> bool = "#is_nullable"
 
 
 (* I'd like to move this and the other types into a Js_core module that can be

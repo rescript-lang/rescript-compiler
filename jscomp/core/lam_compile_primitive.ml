@@ -111,7 +111,7 @@ let translate  loc
           | _ ->
             E.runtime_call 
               Js_runtime_modules.js_primitive        
-              "null_undefined_to_opt" args 
+              "nullable_to_opt" args 
         end
       | _ -> assert false  
     end   

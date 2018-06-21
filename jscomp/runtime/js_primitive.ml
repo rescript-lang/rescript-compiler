@@ -24,14 +24,7 @@
 
 
 
-
-
-(** *)
-
-let is_nil_undef (x : _ Js.null_undefined) = 
-  (Obj.magic x) == Js.null ||  (Obj.magic x) == Js.undefined
-
-let null_undefined_to_opt ( x : 'a Js.null_undefined) = 
+let nullable_to_opt ( x : 'a Js.null_undefined) = 
   if (Obj.magic x) == Js.null ||  (Obj.magic x) == Js.undefined then 
     None 
   else Some (Obj.magic x : 'a)

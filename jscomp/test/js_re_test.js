@@ -36,7 +36,7 @@ var suites_001 = /* :: */[
         var contentOf = function (tag, xmlString) {
           var param = new RegExp("<" + (tag + (">(.*?)<\\/" + (tag + ">")))).exec(xmlString);
           if (param !== null) {
-            return Js_primitive.null_undefined_to_opt(Caml_array.caml_array_get(param, 1));
+            return Js_primitive.nullable_to_opt(Caml_array.caml_array_get(param, 1));
           } else {
             return /* None */0;
           }
