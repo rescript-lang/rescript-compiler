@@ -29,7 +29,7 @@
 let id_is_for_sure_true_in_boolean (tbl : Lam_stats.ident_tbl) id = 
   match Ident_hashtbl.find_opt tbl id with 
   | Some (ImmutableBlock(_))
-  | Some (OptionalBlock (_, Normal) )
+  | Some (Normal_optional _ )
   | Some (MutableBlock _) -> true
   | Some 
     (Constant _  | Module _ | FunctionId _ | Exception | Parameter | NA
@@ -110,7 +110,7 @@ let simplify_alias
       -> 
       begin match Ident_hashtbl.find_opt meta.ident_tbl id with 
       | Some (ImmutableBlock ( _) | (MutableBlock _  ) 
-      | OptionalBlock (_,Normal) )      
+      | Normal_optional _)
         -> simpl l2 
       | Some (OptionalBlock(l, Null)) -> 
         Lam.if_ 

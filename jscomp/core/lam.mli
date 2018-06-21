@@ -209,7 +209,7 @@ type primitive =
   | Pis_not_none
   | Pval_from_option
   | Psome
-  
+  | Psome_not_nest
 type switch  =
   { sw_numconsts: int;
     sw_consts: (int * t) list;

@@ -227,7 +227,7 @@ type primitive =
   | Pis_not_none (* no info about its type *)
   | Pval_from_option
   | Psome
-  
+  | Psome_not_nest  
 
 type apply_status =
   | App_na
@@ -1627,7 +1627,7 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : t =
       | [arg] ->  arg 
       | _ -> assert false
       end  *)
-      prim ~primitive:Psome ~args loc 
+      prim ~primitive:Psome_not_nest ~args loc 
     | Blk_some 
       ->    
       prim ~primitive:Psome ~args loc 

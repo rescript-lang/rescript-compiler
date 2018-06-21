@@ -175,10 +175,15 @@ let translate  loc
     begin match args with 
     | [arg ] -> E.optional_block arg
     | _ -> assert false
-    end 
+    end     
     (* E.make_block  
     E.zero_int_literal 
     Blk_some args Immutable *)
+  | Psome_not_nest ->   
+    begin match args with 
+    | [arg] -> E.optional_block arg 
+    | _ -> assert false
+    end 
   | Pmakeblock(tag, tag_info, mutable_flag ) ->  (* RUNTIME *)
     Js_of_lam_block.make_block 
       (Js_op_util.of_lam_mutable_flag mutable_flag) 
