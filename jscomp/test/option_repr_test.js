@@ -18,6 +18,35 @@ function f1(u) {
   }
 }
 
+function f2(x, y, $staropt$star, _) {
+  var z = $staropt$star ? $staropt$star[0] : 3;
+  console.log(x);
+  if (y) {
+    return y[0] + z | 0;
+  } else {
+    return 0;
+  }
+}
+
+function f3(x) {
+  if (x) {
+    return 1;
+  } else {
+    return 0;
+  }
+}
+
+function f4(x) {
+  if (x) {
+    return x[0] + 1 | 0;
+  } else {
+    return 0;
+  }
+}
+
 exports.f0 = f0;
 exports.f1 = f1;
+exports.f2 = f2;
+exports.f3 = f3;
+exports.f4 = f4;
 /* No side effect */
