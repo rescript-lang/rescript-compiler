@@ -49,9 +49,9 @@ let translate  loc
   (* | Pcreate_exception s  *)
   (*   ->  *)
   (*   Js_of_lam_exception.make_exception (E.str s) *)
-  | Pis_none_general -> 
+  | Pis_not_none -> 
     begin match args with 
-    | [arg] -> arg 
+    | [arg] -> Js_of_lam_option.is_not_none arg 
     | _ -> assert false
     end 
   | Pcreate_extension s 

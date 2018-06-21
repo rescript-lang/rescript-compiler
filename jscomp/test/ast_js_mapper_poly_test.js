@@ -54,13 +54,13 @@ function eqU(x, y) {
 }
 
 function eqUOpt(x, y) {
-  if (x) {
-    if (y) {
+  if (x !== /* None */0) {
+    if (y !== /* None */0) {
       return x[0] === y[0];
     } else {
       return false;
     }
-  } else if (y) {
+  } else if (y !== /* None */0) {
     return false;
   } else {
     return true;
@@ -105,13 +105,13 @@ function eqV(x, y) {
 }
 
 function eqVOpt(x, y) {
-  if (x) {
-    if (y) {
+  if (x !== /* None */0) {
+    if (y !== /* None */0) {
       return x[0] === y[0];
     } else {
       return false;
     }
-  } else if (y) {
+  } else if (y !== /* None */0) {
     return false;
   } else {
     return true;

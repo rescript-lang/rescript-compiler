@@ -11,7 +11,7 @@ var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function split_by($staropt$star, is_delim, str) {
-  var keep_empty = $staropt$star ? $staropt$star[0] : false;
+  var keep_empty = $staropt$star !== /* None */0 ? $staropt$star[0] : false;
   var len = str.length;
   var _acc = /* [] */0;
   var _last_pos = len;
@@ -275,7 +275,7 @@ function unsafe_is_sub(sub, i, s, j, len) {
 var Local_exit = Caml_exceptions.create("Ext_string_test.Local_exit");
 
 function find($staropt$star, sub, s) {
-  var start = $staropt$star ? $staropt$star[0] : 0;
+  var start = $staropt$star !== /* None */0 ? $staropt$star[0] : 0;
   var n = sub.length;
   var s_len = s.length;
   var i = start;
@@ -546,7 +546,7 @@ function is_valid_source_name(name) {
           ]
         ]
       ]);
-  if (match) {
+  if (match !== /* None */0) {
     if (is_valid_module_file(match[0])) {
       return /* Good */0;
     } else {

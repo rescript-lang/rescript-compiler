@@ -41,7 +41,7 @@ function read_lines(inc) {
         throw exn;
       }
     }
-    if (match) {
+    if (match !== /* None */0) {
       _acc = /* :: */[
         match[0],
         acc

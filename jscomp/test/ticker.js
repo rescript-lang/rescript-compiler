@@ -61,7 +61,7 @@ function split(delim, s) {
 }
 
 function string_of_float_option(param) {
-  if (param) {
+  if (param !== /* None */0) {
     return Pervasives.string_of_float(param[0]);
   } else {
     return "nan";
@@ -508,7 +508,7 @@ function concat(t1, t2) {
 }
 
 function concat_or_join(t1, v, d, t2) {
-  if (d) {
+  if (d !== /* None */0) {
     return join(t1, v, d[0], t2);
   } else {
     return concat(t1, t2);
@@ -857,7 +857,7 @@ function process_quote(ticker_map, new_ticker, new_value) {
                   var match$2 = match$1[/* lhs */2][/* value */0];
                   var match$3 = match$1[/* rhs */1][/* value */0];
                   var value;
-                  if (match$2 && match$3) {
+                  if (match$2 !== /* None */0 && match$3 !== /* None */0) {
                     var y = match$3[0];
                     var x = match$2[0];
                     value = match$1[/* op */0] ? /* Some */[x - y] : /* Some */[x + y];
@@ -907,7 +907,7 @@ function process_input_line(ticker_map, all_tickers, line) {
                       "Invalid input line"
                     ];
               } else {
-                var ticker_map$1 = ticker_map ? ticker_map[0] : compute_update_sequences(all_tickers);
+                var ticker_map$1 = ticker_map !== /* None */0 ? ticker_map[0] : compute_update_sequences(all_tickers);
                 var value = Caml_format.caml_float_of_string(match$1[0]);
                 process_quote(ticker_map$1, match[0], value);
                 return /* tuple */[

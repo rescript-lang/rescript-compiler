@@ -34,7 +34,7 @@ var b = {
 };
 
 function map(f, x) {
-  if (x) {
+  if (x !== /* None */0) {
     return /* Some */[Curry._1(f, x[0])];
   } else {
     return /* None */0;

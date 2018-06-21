@@ -629,7 +629,7 @@ function first(f, _param) {
     var param = _param;
     if (param) {
       var res = Curry._1(f, param[0]);
-      if (res) {
+      if (res !== /* None */0) {
         return res;
       } else {
         _param = param[1];
@@ -1214,7 +1214,7 @@ function delta_1(marks, c, next_cat, prev_cat, x, rem) {
                     
                   }
                 }), y$prime$1);
-          var match$2 = match$1 ? /* tuple */[
+          var match$2 = match$1 !== /* None */0 ? /* tuple */[
               Curry._1(remove_matches, y$prime$1),
               match$1[0]
             ] : /* tuple */[
@@ -1309,7 +1309,7 @@ function delta_seq(c, next_cat, prev_cat, kind, y, z, rem) {
             
           }
         }), y);
-  if (match) {
+  if (match !== /* None */0) {
     var marks = match[0];
     if (kind !== -730718166) {
       if (kind >= 332064784) {
@@ -1373,7 +1373,7 @@ function flatten_match(m) {
 
 function status(s) {
   var match = s[/* status */3];
-  if (match) {
+  if (match !== /* None */0) {
     return match[0];
   } else {
     var match$1 = s[/* desc */2];
@@ -1678,7 +1678,7 @@ function cadd(c, s) {
 
 function trans_set(cache, cm, s) {
   var match = one_char(s);
-  if (match) {
+  if (match !== /* None */0) {
     return single(Caml_bytes.get(cm, match[0]));
   } else {
     var v_000 = hash_rec(s);
@@ -2304,7 +2304,7 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _par
             var kind$prime = match$1[1];
             var cr = match$1[0];
             var rem;
-            if (j) {
+            if (j !== /* None */0) {
               var f = greedy >= 620821490 ? (function(cr,kind$prime){
                 return function (rem) {
                   return alt(ids, /* :: */[
@@ -2637,7 +2637,7 @@ function repn(r, i, j) {
           "Re.repn"
         ];
   }
-  if (j) {
+  if (j !== /* None */0) {
     if (j[0] < i) {
       throw [
             Caml_builtin_exceptions.invalid_argument,
@@ -2862,8 +2862,8 @@ var xdigit = alt$1(/* :: */[
     ]);
 
 function exec_internal(name, $staropt$star, $staropt$star$1, groups, re, s) {
-  var pos = $staropt$star ? $staropt$star[0] : 0;
-  var len = $staropt$star$1 ? $staropt$star$1[0] : -1;
+  var pos = $staropt$star !== /* None */0 ? $staropt$star[0] : 0;
+  var len = $staropt$star$1 !== /* None */0 ? $staropt$star$1[0] : -1;
   if (pos < 0 || len < -1 || (pos + len | 0) > s.length) {
     throw [
           Caml_builtin_exceptions.invalid_argument,
@@ -3168,13 +3168,13 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
       return greedy_mod(repn(r, 0, /* Some */[1]));
     } else if (accept(/* "{" */123)) {
       var match = integer(/* () */0);
-      if (match) {
+      if (match !== /* None */0) {
         var i$1 = match[0];
         var j = accept(/* "," */44) ? integer(/* () */0) : /* Some */[i$1];
         if (!accept(/* "}" */125)) {
           throw Parse_error;
         }
-        if (j) {
+        if (j !== /* None */0) {
           if (j[0] < i$1) {
             throw Parse_error;
           }
@@ -3714,7 +3714,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
 }
 
 function re($staropt$star, pat) {
-  var flags = $staropt$star ? $staropt$star[0] : /* [] */0;
+  var flags = $staropt$star !== /* None */0 ? $staropt$star[0] : /* [] */0;
   var opts = List.map((function (param) {
           if (param !== 601676297) {
             if (param >= 613575188) {
@@ -3728,7 +3728,7 @@ function re($staropt$star, pat) {
         }), flags);
   var $staropt$star$1 = /* Some */[opts];
   var s = pat;
-  var opts$1 = $staropt$star$1 ? $staropt$star$1[0] : /* [] */0;
+  var opts$1 = $staropt$star$1 !== /* None */0 ? $staropt$star$1[0] : /* [] */0;
   var r = parse(List.memq(/* Multiline */1071952589, opts$1), List.memq(/* Dollar_endonly */-712595228, opts$1), List.memq(/* Dotall */-424303016, opts$1), List.memq(/* Ungreedy */-243745063, opts$1), s);
   var r$1 = List.memq(/* Anchored */616470068, opts$1) ? seq$2(/* :: */[
           /* Start */8,

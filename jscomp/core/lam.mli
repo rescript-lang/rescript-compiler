@@ -206,7 +206,7 @@ type primitive =
 
   (* | Pcreate_exception of string  *)
   | Pcreate_extension of string 
-  | Pis_none_general
+  | Pis_not_none
   | Pval_from_option_general
   | Psome_general
   

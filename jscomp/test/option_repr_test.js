@@ -3,7 +3,7 @@
 
 function f0(x) {
   var match = x[1];
-  if (match && match[0]) {
+  if (match !== /* None */0 && match[0]) {
     return 1;
   } else {
     return 2;
@@ -19,9 +19,9 @@ function f1(u) {
 }
 
 function f2(x, y, $staropt$star, _) {
-  var z = $staropt$star ? $staropt$star[0] : 3;
+  var z = $staropt$star !== /* None */0 ? $staropt$star[0] : 3;
   console.log(x);
-  if (y) {
+  if (y !== /* None */0) {
     return y[0] + z | 0;
   } else {
     return 0;
@@ -29,7 +29,7 @@ function f2(x, y, $staropt$star, _) {
 }
 
 function f3(x) {
-  if (x) {
+  if (x !== /* None */0) {
     return 1;
   } else {
     return 0;
@@ -37,7 +37,7 @@ function f3(x) {
 }
 
 function f4(x) {
-  if (x) {
+  if (x !== /* None */0) {
     return x[0] + 1 | 0;
   } else {
     return 0;

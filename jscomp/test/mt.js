@@ -51,7 +51,7 @@ function from_suites(name, suite) {
 }
 
 function close_enough($staropt$star, a, b) {
-  var threshold = $staropt$star ? $staropt$star[0] : 0.0000001;
+  var threshold = $staropt$star !== /* None */0 ? $staropt$star[0] : 0.0000001;
   return Math.abs(a - b) < threshold;
 }
 

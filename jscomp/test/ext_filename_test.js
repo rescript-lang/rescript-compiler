@@ -69,7 +69,7 @@ function absolute_path(s) {
 }
 
 function chop_extension($staropt$star, name) {
-  var loc = $staropt$star ? $staropt$star[0] : "";
+  var loc = $staropt$star !== /* None */0 ? $staropt$star[0] : "";
   try {
     return Filename.chop_extension(name);
   }

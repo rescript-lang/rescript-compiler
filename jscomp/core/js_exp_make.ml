@@ -531,6 +531,9 @@ let rec triple_equal ?comment (e0 : t) (e1 : t ) : t =
   | Undefined, Null -> caml_false
   | Null, Null
   | Undefined, Undefined -> caml_true
+  (* FIXME - this will change after we change the representation*)
+  | (Number _ | Undefined), Optional_block _  
+  | Optional_block _, (Number _ | Undefined)-> caml_false
   | _ -> 
      {expression_desc = Bin(EqEqEq, e0,e1); comment}
 
