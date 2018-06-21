@@ -139,6 +139,7 @@ let primitive ppf (prim : Lam.primitive) = match prim with
   | Psome -> fprintf ppf "[some]"
   | Psome_not_nest -> fprintf ppf "[some-not-nest]"
   | Pval_from_option -> fprintf ppf "[?unbox]"
+  | Pval_from_option_not_nest -> fprintf ppf "[?unbox-not-nest]"
   | Pis_undefined -> fprintf ppf "[?undefined]"
   | Pis_null_undefined -> fprintf ppf "[?null?undefined]"
   (* | Psetglobal id -> fprintf ppf "setglobal %a" Ident.print id *)

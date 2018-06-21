@@ -208,6 +208,7 @@ type primitive =
   | Pcreate_extension of string 
   | Pis_not_none
   | Pval_from_option
+  | Pval_from_option_not_nest
   | Psome
   | Psome_not_nest
 type switch  =

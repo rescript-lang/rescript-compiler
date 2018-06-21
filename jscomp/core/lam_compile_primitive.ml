@@ -194,6 +194,12 @@ let translate  loc
       Js_of_lam_option.val_from_option e 
     | _ -> assert false
     end
+  | Pval_from_option_not_nest -> 
+    begin match args with 
+    | [ e ] -> 
+      Js_of_lam_option.val_from_option e 
+    | _ -> assert false
+    end
   | Pfield (i, fld_info) -> 
     begin match args with 
       | [ e ]  -> 

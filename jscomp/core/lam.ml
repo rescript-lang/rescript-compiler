@@ -226,6 +226,7 @@ type primitive =
   | Pcreate_extension of string
   | Pis_not_none (* no info about its type *)
   | Pval_from_option
+  | Pval_from_option_not_nest
   | Psome
   | Psome_not_nest  
 
@@ -1920,7 +1921,7 @@ let convert exports lam : _ * _  =
       -> 
       begin match args with 
       | [arg] -> 
-        prim ~primitive:Pval_from_option
+        prim ~primitive:Pval_from_option_not_nest
         ~args:[convert_aux arg] loc
         (* convert_aux arg  *)
       | _ -> assert false 

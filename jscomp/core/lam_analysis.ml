@@ -105,6 +105,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pmakeblock _  (* whether it's mutable or not *)
       | Pfield _
       | Pval_from_option
+      | Pval_from_option_not_nest
       | Pfloatfield _ 
       | Pduprecord _ 
       (* Boolean operations *)
@@ -516,6 +517,7 @@ and eq_primitive ( lhs : Lam.primitive) (rhs : Lam.primitive) =
   | Plsrint -> rhs = Plsrint
   | Pasrint -> rhs = Pasrint      
   | Pval_from_option -> rhs = Pval_from_option
+  | Pval_from_option_not_nest -> rhs = Pval_from_option_not_nest
   | Plazyforce -> rhs = Plazyforce
   | Pintoffloat -> rhs = Pintoffloat
   | Pfloatofint -> rhs = Pfloatofint
