@@ -41,7 +41,7 @@ var suites_001 = /* :: */[
         (function () {
             return /* Eq */Block.__(0, [
                       /* Some */["foo"],
-                      Js_primitive.null_undefined_to_opt("foo")
+                      Js_primitive.nullable_to_opt("foo")
                     ]);
           })
       ],
@@ -51,7 +51,7 @@ var suites_001 = /* :: */[
           (function () {
               return /* Eq */Block.__(0, [
                         /* Some */["something"],
-                        Js_primitive.null_undefined_to_opt("something")
+                        Js_primitive.nullable_to_opt("something")
                       ]);
             })
         ],

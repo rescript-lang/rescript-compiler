@@ -1991,9 +1991,9 @@ let convert exports lam : _ * _  =
         | "#setfield1" ->
           Psetfield(1,  Fld_set_na)
         | "#undefined_to_opt" -> Pundefined_to_opt
-        | "#null_undefined_to_opt" -> Pnull_undefined_to_opt
+        | "#nullable_to_opt" -> Pnull_undefined_to_opt
         | "#null_to_opt" -> Pnull_to_opt
-        | "#is_nil_undef" -> Pis_null_undefined
+        | "#is_nullable" -> Pis_null_undefined
         | "#string_append" -> Pstringadd
         | "#obj_set_length" -> Pcaml_obj_set_length
         | "#obj_length" -> Pcaml_obj_length

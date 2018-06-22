@@ -60,7 +60,7 @@ let f_null xs i =
     | Some k -> k 
 
 external get_null_undefined : int array -> int -> int option = "" 
-[@@bs.get_index] [@@bs.return null_undefined_to_opt ]
+[@@bs.get_index] [@@bs.return nullable ]
 
 
 let f_null_undefined xs i = 
