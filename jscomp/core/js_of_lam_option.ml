@@ -115,7 +115,12 @@ let destruct_optional
 
 
 let is_not_none  (e : J.expression) : J.expression = 
-  E.not (E.triple_equal e none)
+  let desc = e.expression_desc in 
+  if is_none_static desc then E.caml_false 
+  else match desc with 
+  | Optional_block x -> E.caml_true
+  | _ -> 
+    E.not (E.triple_equal e none)
   
 
 let some  = E.optional_block 
