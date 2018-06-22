@@ -58,8 +58,8 @@ let val_from_option (arg : J.expression) =
 let get_default_undefined_from_optional
     (arg : J.expression)
     : J.expression =
-  match arg.expression_desc with
-  | Number _ -> E.undefined
+  match arg.expression_desc with  
+  | Number _ -> E.undefined (* FIXME*)
   | Optional_block x 
     -> x (* invariant: option encoding *)
   | _ ->
