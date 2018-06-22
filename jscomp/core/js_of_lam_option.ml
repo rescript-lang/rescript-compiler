@@ -33,6 +33,19 @@ type option_unwrap_time =
   | Static_unwrapped
   | Runtime_maybe_unwrapped
 
+(** Another way: 
+    {[
+      | Var _  ->
+        can only bd detected at runtime thing
+          (E.triple_equal (E.typeof arg)
+             (E.str "number"))
+    ]}
+*)
+let none : J.expression = 
+  {expression_desc = Number (Int {i = 0l; c  = None}); comment = Some "None" }
+
+let is_none_static (arg : J.expression_desc ) =   
+  match arg with Number _ -> true | _ -> false
 
 let val_from_option (arg : J.expression) =   
   match arg.expression_desc with 
@@ -58,8 +71,9 @@ let val_from_option (arg : J.expression) =
 let get_default_undefined_from_optional
     (arg : J.expression)
     : J.expression =
-  match arg.expression_desc with
-  | Number _ -> E.undefined
+  let desc = arg.expression_desc in 
+  if is_none_static desc then E.undefined else 
+  match desc with  
   | Optional_block x 
     -> x (* invariant: option encoding *)
   | _ ->
@@ -70,8 +84,9 @@ let get_default_undefined_from_optional
       (E.runtime_call Js_runtime_modules.js_primitive "option_get" [arg])
 
 let get_default_undefined (arg : J.expression) : J.expression =
-  match arg.expression_desc with
-  | Number _ -> E.undefined
+  let desc = arg.expression_desc in
+  if is_none_static desc then E.undefined else
+  match desc with
   | Optional_block x 
     -> 
     Js_of_lam_polyvar.get_field x 
@@ -89,24 +104,15 @@ let destruct_optional
   ~not_sure 
   (arg : J.expression)
   =       
-  match arg.expression_desc with 
-  | Number _ -> for_sure_none
+  let desc = arg.expression_desc in 
+  if is_none_static desc then for_sure_none else
+  match desc with 
   | Optional_block x 
     ->
     for_sure_some x 
   | _ -> not_sure ()
 
 
-(** Another way: 
-    {[
-      | Var _  ->
-        can only bd detected at runtime thing
-          (E.triple_equal (E.typeof arg)
-             (E.str "number"))
-    ]}
-*)
-let none : J.expression = 
-  {expression_desc = Number (Int {i = 0l; c  = None}); comment = Some "None" }
 
 let is_not_none  (e : J.expression) : J.expression = 
   E.not (E.triple_equal e none)

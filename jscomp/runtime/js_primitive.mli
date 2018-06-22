@@ -29,6 +29,10 @@ val undefined_to_opt : 'a Js.undefined -> 'a option
 
 val null_to_opt : 'a Js.null -> 'a option
 
-val option_get : 'a option -> 'a Js_undefined.t 
+val valFromOption : Obj.t -> Obj.t 
+
+val some : Obj.t -> Obj.t 
+
+val option_get : Obj.t option -> Obj.t Js_undefined.t 
 
 val option_get_unwrap : 'a option -> Obj.t Js_undefined.t

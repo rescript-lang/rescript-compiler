@@ -37,6 +37,30 @@ let null_to_opt ( x : 'a Js.null) =
   if (Obj.magic x) == Js.null then None 
   else Some (Obj.magic x : 'a) 
 
+external valFromOption : 'a option -> 'a = 
+  "#val_from_option"  
+
+let undefinedHeader = [| |]
+
+(** The input is already of [Some] form, [x] is not None, 
+    make sure [x[0]] will not throw *)
+let valFromOption (x : Obj.t) : Obj.t =   
+  if  x != Obj.repr Js_null.empty && fst (Obj.magic x)  == Obj.repr undefinedHeader 
+  then 
+    let depth : int = snd  (Obj.magic x)  in 
+    if depth = 0 then Obj.magic None
+    else Obj.magic (undefinedHeader, depth - 1)
+  else Obj.magic x   
+
+let some ( x : Obj.t) : Obj.t = 
+  if Obj.magic x =  None then 
+    Obj.repr (undefinedHeader, 0)
+  else 
+    if x != Obj.repr Js_null.empty && fst (Obj.magic x ) == Obj.repr undefinedHeader then   
+      Obj.repr (undefinedHeader, snd (Obj.magic x) + 1)
+    else  x 
+
+
 let option_get (x : 'a option) : 'a Js_undefined.t = 
   match x with 
   | None -> Js_undefined.empty
