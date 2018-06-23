@@ -794,7 +794,7 @@ and
   (* | Caml_uninitialized_obj (tag, size)
     ->  (* FIXME *)
     expression_desc cxt l f (Object [Length, size ; Tag, tag])     *)
-  | Optional_block (e) -> 
+  | Optional_block (e,_) -> 
     expression_desc cxt l f (Caml_block([e],Immutable,E.zero_int_literal, Blk_na)) 
   | Caml_block( el, mutable_flag, tag, tag_info)
     ->

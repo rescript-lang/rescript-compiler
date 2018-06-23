@@ -171,7 +171,7 @@ class virtual fold =
      *)
                  (* It is escaped string, print delimited by '"'*)
                  (* literally raw JS code 
-  *)
+  *) (* [true] means [identity] *)
                  (* The third argument is [tag] , forth is [tag_info] *)
                  (* | Caml_uninitialized_obj of expression * expression *)
                  (* [tag] and [size] tailed  for [Obj.new_block] *)
@@ -364,7 +364,8 @@ class virtual fold =
       | Array (_x, _x_i1) ->
           let o = o#list (fun o -> o#expression) _x in
           let o = o#mutable_flag _x_i1 in o
-      | Optional_block _x -> let o = o#expression _x in o
+      | Optional_block (_x, _x_i1) ->
+          let o = o#expression _x in let o = o#bool _x_i1 in o
       | Caml_block (_x, _x_i1, _x_i2, _x_i3) ->
           let o = o#list (fun o -> o#expression) _x in
           let o = o#mutable_flag _x_i1 in

@@ -103,7 +103,7 @@ let rec no_side_effect_expression_desc (x : J.expression_desc)  =
         the block is mutable does not mean this operation is non-pure
     *)
     List.for_all no_side_effect  xs 
-  | Optional_block x -> no_side_effect x   
+  | Optional_block (x,_) -> no_side_effect x   
   | Object kvs -> 
     List.for_all (fun (_property_name, y) -> no_side_effect y ) kvs 
   | String_append (a,b)
@@ -251,9 +251,9 @@ let rec eq_expression
         | Bool b0 -> a0 = b0
         | _ -> false 
       end
-    | Optional_block a0 -> 
+    | Optional_block (a0,b0) -> 
       begin match y0 with   
-      | Optional_block b0 -> eq_expression a0 b0
+      | Optional_block (a1,b1) -> b0 = b1 && eq_expression a0 a1
       | _ -> false 
       end 
     | Caml_block (ls0,flag0,tag0,_) ->    

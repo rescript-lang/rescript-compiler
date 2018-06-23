@@ -256,6 +256,10 @@ val optional_block :
   J.expression -> 
   J.expression 
   
+val optional_not_nest_block : 
+  J.expression -> 
+  J.expression  
+
 val make_block : 
   ?comment:string ->
   J.expression -> (* tag *)

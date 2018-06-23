@@ -155,10 +155,16 @@ let merge_outer_comment comment (e : t )  =
                 comment 
                 = Some (comment ^ sep ^ s)} 
 
+let some_comment = Some "Some"                
 let optional_block e  : J.expression =                 
-  { expression_desc = Optional_block e ; 
-    comment = Some "Some"
+  { expression_desc = Optional_block (e,false) ; 
+    comment = some_comment
   }
+let optional_not_nest_block e : J.expression = 
+  {
+    expression_desc = Optional_block(e,true);
+    comment = some_comment
+  } 
 
 let make_block ?comment tag tag_info es mutable_flag : t = 
   let comment = 
@@ -526,7 +532,7 @@ let rec triple_equal ?comment (e0 : t) (e1 : t ) : t =
     -> 
     bool (i0 = i1)      
   | Char_of_int a , Char_of_int b 
-  | Optional_block a, Optional_block b 
+  | Optional_block (a,_), Optional_block (b,_)
     -> 
     triple_equal ?comment a b     
   | Undefined, Optional_block _  
