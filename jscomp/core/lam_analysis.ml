@@ -368,7 +368,7 @@ let destruct_pattern (body : Lam.t) params args =
       | Some _ | None -> false
     end        
   | Lifthenelse(Lvar v, then_, else_)
-    -> (* FIXME *)
+    -> (* -FIXME *)
     begin match aux v params args with
       | Some (Lconst _ as lam) ->
         size (Lam.if_ lam then_ else_) < small_inline_size

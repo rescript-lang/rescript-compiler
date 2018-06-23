@@ -525,7 +525,9 @@ let rec triple_equal ?comment (e0 : t) (e1 : t ) : t =
   | Number (Int {i = i0; _}), Number (Int {i = i1; _}) 
     -> 
     bool (i0 = i1)      
-  | Char_of_int a , Char_of_int b -> 
+  | Char_of_int a , Char_of_int b 
+  | Optional_block a, Optional_block b 
+    -> 
     triple_equal ?comment a b     
   | Undefined, Optional_block _  
   | Optional_block _, Undefined   
@@ -904,8 +906,13 @@ let rec int_comp (cmp : Lambda.comparison) ?comment  (e0 : t) (e1 : t) =
             {fn with expression_desc = 
               Var(Qualified (ident,Runtime, Some "caml_equal")) 
             } , args, call_info)}
+  | Ceq, Optional_block _,  Number _
+  | Ceq, Number _, Optional_block _
+    -> caml_false           
   | Ceq, _, _ -> int_equal e0 e1 
-  (* FIXME: it should not be called [int_comp] *)
+  (* -FIXME: it should not be called [int_comp] *)
+  | Cneq, Optional_block _, Number _
+  | Cneq, Number _, Optional_block _
   | Cneq, Caml_block _ ,  Number _ 
   | Cneq, Number _, Caml_block _  
     -> caml_true

@@ -36,3 +36,10 @@ let f4 x =
   match x with 
   | None -> 0 
   | Some x -> x + 1
+
+  
+let f5 a  =   
+  Some a = None
+
+let f6 a =   
+  Some a <> None
