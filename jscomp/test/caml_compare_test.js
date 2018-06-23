@@ -343,10 +343,7 @@ var suites_001 = /* :: */[
                             (function () {
                                 return /* Eq */Block.__(0, [
                                           false,
-                                          /* None */0 === /* Some */[/* array */[
-                                              1,
-                                              30
-                                            ]]
+                                          false
                                         ]);
                               })
                           ],
@@ -356,10 +353,7 @@ var suites_001 = /* :: */[
                               (function () {
                                   return /* Eq */Block.__(0, [
                                             false,
-                                            /* Some */[/* array */[
-                                                1,
-                                                30
-                                              ]] === /* None */0
+                                            false
                                           ]);
                                 })
                             ],

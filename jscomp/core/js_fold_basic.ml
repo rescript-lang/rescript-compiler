@@ -107,7 +107,7 @@ class count_hard_dependencies =
             (Ident.create_persistent Js_runtime_modules.curry));
         super#expression x             
       | {expression_desc = Caml_block(_,_, tag, tag_info); _}
-        -> (* FIXME: Optional_block *)
+        -> (* -FIXME: Optional_block *)
         if needBlockRuntime tag tag_info then
           add_lam_module_ident hard_dependencies 
               (Lam_module_ident.of_runtime               

@@ -44,9 +44,19 @@ function f4(x) {
   }
 }
 
+function f5() {
+  return false;
+}
+
+function f6() {
+  return true;
+}
+
 exports.f0 = f0;
 exports.f1 = f1;
 exports.f2 = f2;
 exports.f3 = f3;
 exports.f4 = f4;
+exports.f5 = f5;
+exports.f6 = f6;
 /* No side effect */
