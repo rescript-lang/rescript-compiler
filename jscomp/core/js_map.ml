@@ -184,7 +184,7 @@ class virtual map =
      *)
                  (* It is escaped string, print delimited by '"'*)
                  (* literally raw JS code 
-  *)
+  *) (* [true] means [identity] *)
                  (* The third argument is [tag] , forth is [tag_info] *)
                  (* | Caml_uninitialized_obj of expression * expression *)
                  (* [tag] and [size] tailed  for [Obj.new_block] *)
@@ -403,7 +403,9 @@ class virtual map =
       | Array (_x, _x_i1) ->
           let _x = o#list (fun o -> o#expression) _x in
           let _x_i1 = o#mutable_flag _x_i1 in Array (_x, _x_i1)
-      | Optional_block _x -> let _x = o#expression _x in Optional_block _x
+      | Optional_block (_x, _x_i1) ->
+          let _x = o#expression _x in
+          let _x_i1 = o#bool _x_i1 in Optional_block (_x, _x_i1)
       | Caml_block (_x, _x_i1, _x_i2, _x_i3) ->
           let _x = o#list (fun o -> o#expression) _x in
           let _x_i1 = o#mutable_flag _x_i1 in

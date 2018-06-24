@@ -52,6 +52,24 @@ function f6() {
   return true;
 }
 
+var f10 = /* Some */[/* Some */[/* Some */[/* Some */[/* None */0]]]];
+
+var f11 = /* Some */[f10];
+
+var f7 = /* None */0;
+
+var f8 = /* Some */[/* None */0];
+
+var f9 = /* Some */[/* Some */[/* None */0]];
+
+var f12 = /* Some */[/* Some */[/* Some */[/* Some */[/* :: */[
+          /* tuple */[
+            1,
+            2
+          ],
+          /* [] */0
+        ]]]]];
+
 exports.f0 = f0;
 exports.f1 = f1;
 exports.f2 = f2;
@@ -59,4 +77,10 @@ exports.f3 = f3;
 exports.f4 = f4;
 exports.f5 = f5;
 exports.f6 = f6;
+exports.f7 = f7;
+exports.f8 = f8;
+exports.f9 = f9;
+exports.f10 = f10;
+exports.f11 = f11;
+exports.f12 = f12;
 /* No side effect */

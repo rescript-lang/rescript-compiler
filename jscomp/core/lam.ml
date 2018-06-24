@@ -1202,7 +1202,8 @@ let unit : t =
   Lconst (Const_pointer( 0, Pt_constructor "()"))
 
 
-let none : constant = 
+let lam_none : constant = 
+    (* -FIXME *)
    (Const_pointer(0, Pt_constructor "None"))
 
 (* let assert_false_unit : t =
@@ -2039,7 +2040,7 @@ let convert exports lam : _ * _  =
       | Pt_module_alias -> Const_pointer(i, Pt_module_alias)
       | Pt_builtin_boolean -> if i = 0 then Const_js_false else Const_js_true
       | Pt_shape_none ->
-         none
+         lam_none
       | Pt_na ->  Const_pointer(i, Pt_na)      
        end 
     | Const_float_array (s) -> Const_float_array(s)

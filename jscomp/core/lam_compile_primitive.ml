@@ -176,12 +176,9 @@ let translate  loc
     | [arg ] -> E.optional_block arg
     | _ -> assert false
     end     
-    (* E.make_block  
-    E.zero_int_literal 
-    Blk_some args Immutable *)
   | Psome_not_nest ->   
     begin match args with 
-    | [arg] -> E.optional_block arg 
+    | [arg] -> E.optional_not_nest_block arg 
     | _ -> assert false
     end 
   | Pmakeblock(tag, tag_info, mutable_flag ) ->  (* RUNTIME *)

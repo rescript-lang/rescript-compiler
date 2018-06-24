@@ -38,8 +38,23 @@ let f4 x =
   | Some x -> x + 1
 
   
+type 'a t =   
+   | None 
+   | Some of 'a
 let f5 a  =   
   Some a = None
 
 let f6 a =   
   Some a <> None
+
+let f7 =  None
+
+let f8 = Some None 
+
+let f9 = Some (Some None)
+
+let f10 = Some (Some (Some (Some None)))
+
+let f11 = Some f10
+
+let f12 = Some (Some (Some (Some [1,2])))

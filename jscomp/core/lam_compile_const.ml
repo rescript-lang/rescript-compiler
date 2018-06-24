@@ -31,8 +31,26 @@
 
 module E = Js_exp_make
 
-let rec translate (x : Lam.constant ) : J.expression = 
+(** return [val < 0] if not nested [Some (Some (Some None))]*)
+let rec is_some_none_aux (x : Lam.constant) acc = 
   match x with 
+  | Const_some v -> is_some_none_aux v (acc + 1)
+  | Const_js_undefined -> acc 
+  | _ -> -1
+
+let rec nested_some_none   n none = 
+  if n  = 0 then none
+  else nested_some_none (n - 1) (E.optional_block none)
+
+
+let rec 
+translate_some (x : Lam.constant) : J.expression = 
+  let depth = is_some_none_aux x 0 in 
+  if depth < 0 then E.optional_not_nest_block (translate x )
+  else nested_some_none depth (E.optional_block (translate Const_js_undefined))
+and translate (x : Lam.constant ) : J.expression = 
+  match x with 
+  | Const_some s ->  translate_some s   
   | Const_js_true -> E.bool true 
   | Const_js_false -> E.bool false
   | Const_js_null -> E.nil
@@ -71,7 +89,7 @@ let rec translate (x : Lam.constant ) : J.expression =
   | Const_pointer (c,pointer_info) ->     
     E.int ?comment:(Lam_compile_util.comment_of_pointer_info pointer_info)
       (Int32.of_int c )
-  | Const_some s -> E.optional_block (translate s)  
+
   | Const_block(tag, tag_info, xs ) -> 
     Js_of_lam_block.make_block NA tag_info 
       (E.small_int  tag) (Ext_list.map translate xs)
@@ -96,6 +114,10 @@ let rec translate (x : Lam.constant ) : J.expression =
   | Const_immstring s ->  (*TODO *)
     E.str s  (* TODO: check *)
 
+(* and translate_optional s = 
+  let  b = 
+  match s with 
+  | Const_js_undefined -> E.optional_block (translate s) *)
 
 let translate_arg_cst (cst : External_arg_spec.cst) = 
   match cst with 

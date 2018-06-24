@@ -42,6 +42,7 @@ type option_unwrap_time =
     ]}
 *)
 let none : J.expression = 
+  (* -FIXME *)
   {expression_desc = Number (Int {i = 0l; c  = None}); comment = Some "None" }
 
 let is_none_static (arg : J.expression_desc ) =   
@@ -49,9 +50,9 @@ let is_none_static (arg : J.expression_desc ) =
 
 let val_from_option (arg : J.expression) =   
   match arg.expression_desc with 
-  | Optional_block x -> x 
+  | Optional_block (x,_) -> x 
   | _ -> 
-    E.index arg 0l 
+    E.index arg 0l (* -FIXME *)
 (**
   Invrariant: 
   - optional encoding
@@ -74,7 +75,7 @@ let get_default_undefined_from_optional
   let desc = arg.expression_desc in 
   if is_none_static desc then E.undefined else 
   match desc with  
-  | Optional_block x 
+  | Optional_block (x,_) 
     -> x (* invariant: option encoding *)
   | _ ->
     if Js_analyzer.is_okay_to_duplicate arg then
@@ -87,7 +88,7 @@ let get_default_undefined (arg : J.expression) : J.expression =
   let desc = arg.expression_desc in
   if is_none_static desc then E.undefined else
   match desc with
-  | Optional_block x 
+  | Optional_block (x,_) 
     -> 
     Js_of_lam_polyvar.get_field x 
     (* invariant: option encoding *)
@@ -107,7 +108,7 @@ let destruct_optional
   let desc = arg.expression_desc in 
   if is_none_static desc then for_sure_none else
   match desc with 
-  | Optional_block x 
+  | Optional_block (x,_) 
     ->
     for_sure_some x 
   | _ -> not_sure ()
@@ -118,7 +119,7 @@ let is_not_none  (e : J.expression) : J.expression =
   let desc = e.expression_desc in 
   if is_none_static desc then E.caml_false 
   else match desc with 
-  | Optional_block x -> E.caml_true
+  | Optional_block _ -> E.caml_true
   | _ -> 
     E.not (E.triple_equal e none)
   
