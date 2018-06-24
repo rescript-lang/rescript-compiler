@@ -114,6 +114,12 @@ class count_hard_dependencies =
                 (Ident.create_persistent Js_runtime_modules.block))
         ;
         super#expression x 
+      | {expression_desc = Optional_block (_,false)} ->   
+        add_lam_module_ident hard_dependencies
+        (Lam_module_ident.of_runtime 
+          (Ident.create_persistent Js_runtime_modules.js_primitive))
+        ;
+        super#expression x
       | _ -> super#expression x
     method get_hard_dependencies = hard_dependencies
   end

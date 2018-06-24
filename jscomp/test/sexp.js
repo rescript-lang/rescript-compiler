@@ -6,6 +6,7 @@ var Hashtbl = require("../../lib/js/hashtbl.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_format = require("../../lib/js/caml_format.js");
+var Js_primitive = require("../../lib/js/js_primitive.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var equal = Caml_obj.caml_equal;
@@ -143,22 +144,22 @@ function of_record(l) {
 }
 
 function $$return(x) {
-  return /* Some */[x];
+  return Js_primitive.some(x);
 }
 
 function $great$pipe$eq(e, f) {
-  if (e !== /* None */0) {
-    return /* Some */[Curry._1(f, e[0])];
+  if (e !== undefined) {
+    return Js_primitive.some(Curry._1(f, Js_primitive.valFromOption(e)));
   } else {
-    return /* None */0;
+    return undefined;
   }
 }
 
 function $great$great$eq(e, f) {
-  if (e !== /* None */0) {
-    return Curry._1(f, e[0]);
+  if (e !== undefined) {
+    return Curry._1(f, Js_primitive.valFromOption(e));
   } else {
-    return /* None */0;
+    return undefined;
   }
 }
 
@@ -170,18 +171,18 @@ function map_opt(f, l) {
     var acc = _acc;
     if (l$1) {
       var match = Curry._1(f, l$1[0]);
-      if (match !== /* None */0) {
+      if (match !== undefined) {
         _l = l$1[1];
         _acc = /* :: */[
-          match[0],
+          Js_primitive.valFromOption(match),
           acc
         ];
         continue ;
       } else {
-        return /* None */0;
+        return undefined;
       }
     } else {
-      return /* Some */[List.rev(acc)];
+      return List.rev(acc);
     }
   };
 }
@@ -194,18 +195,18 @@ function list_any(f, e) {
       var l = _l;
       if (l) {
         var res = Curry._1(f$1, l[0]);
-        if (res !== /* None */0) {
+        if (res !== undefined) {
           return res;
         } else {
           _l = l[1];
           continue ;
         }
       } else {
-        return /* None */0;
+        return undefined;
       }
     };
   } else {
-    return /* None */0;
+    return undefined;
   }
 }
 
@@ -221,9 +222,9 @@ function list_all(f, e) {
         var tl = l[1];
         var match = Curry._1(f$1, l[0]);
         _l = tl;
-        if (match !== /* None */0) {
+        if (match !== undefined) {
           _acc = /* :: */[
-            match[0],
+            Js_primitive.valFromOption(match),
             acc
           ];
           continue ;
@@ -241,13 +242,13 @@ function list_all(f, e) {
 
 function _try_atom(e, f) {
   if (e[0] >= 848054398) {
-    return /* None */0;
+    return undefined;
   } else {
     try {
-      return /* Some */[Curry._1(f, e[1])];
+      return Js_primitive.some(Curry._1(f, e[1]));
     }
     catch (exn){
-      return /* None */0;
+      return undefined;
     }
   }
 }
@@ -272,21 +273,21 @@ function to_string(e) {
 
 function to_pair(e) {
   if (typeof e === "number" || e[0] !== 848054398) {
-    return /* None */0;
+    return undefined;
   } else {
     var match = e[1];
     if (match) {
       var match$1 = match[1];
       if (match$1 && !match$1[1]) {
-        return /* Some */[/* tuple */[
-                  match[0],
-                  match$1[0]
-                ]];
+        return /* tuple */[
+                match[0],
+                match$1[0]
+              ];
       } else {
-        return /* None */0;
+        return undefined;
       }
     } else {
-      return /* None */0;
+      return undefined;
     }
   }
 }
@@ -296,10 +297,10 @@ function to_pair_with(f1, f2, e) {
                 var y = param[1];
                 return $great$great$eq(Curry._1(f1, param[0]), (function (x) {
                               return $great$great$eq(Curry._1(f2, y), (function (y) {
-                                            return /* Some */[/* tuple */[
-                                                      x,
-                                                      y
-                                                    ]];
+                                            return Js_primitive.some(/* tuple */[
+                                                        x,
+                                                        y
+                                                      ]);
                                           }));
                             }));
               }));
@@ -307,7 +308,7 @@ function to_pair_with(f1, f2, e) {
 
 function to_triple(e) {
   if (typeof e === "number" || e[0] !== 848054398) {
-    return /* None */0;
+    return undefined;
   } else {
     var match = e[1];
     if (match) {
@@ -315,19 +316,19 @@ function to_triple(e) {
       if (match$1) {
         var match$2 = match$1[1];
         if (match$2 && !match$2[1]) {
-          return /* Some */[/* tuple */[
-                    match[0],
-                    match$1[0],
-                    match$2[0]
-                  ]];
+          return /* tuple */[
+                  match[0],
+                  match$1[0],
+                  match$2[0]
+                ];
         } else {
-          return /* None */0;
+          return undefined;
         }
       } else {
-        return /* None */0;
+        return undefined;
       }
     } else {
-      return /* None */0;
+      return undefined;
     }
   }
 }
@@ -339,11 +340,11 @@ function to_triple_with(f1, f2, f3, e) {
                 return $great$great$eq(Curry._1(f1, param[0]), (function (x) {
                               return $great$great$eq(Curry._1(f2, y), (function (y) {
                                             return $great$great$eq(Curry._1(f3, z), (function (z) {
-                                                          return /* Some */[/* tuple */[
-                                                                    x,
-                                                                    y,
-                                                                    z
-                                                                  ]];
+                                                          return Js_primitive.some(/* tuple */[
+                                                                      x,
+                                                                      y,
+                                                                      z
+                                                                    ]);
                                                         }));
                                           }));
                             }));
@@ -352,9 +353,9 @@ function to_triple_with(f1, f2, f3, e) {
 
 function to_list(e) {
   if (e[0] >= 848054398) {
-    return /* Some */[e[1]];
+    return Js_primitive.some(e[1]);
   } else {
-    return /* None */0;
+    return undefined;
   }
 }
 
@@ -362,7 +363,7 @@ function to_list_with(f, e) {
   if (e[0] >= 848054398) {
     return map_opt(f, e[1]);
   } else {
-    return /* None */0;
+    return undefined;
   }
 }
 
@@ -397,7 +398,7 @@ function get_field(name, e) {
                   _l = l[1];
                   continue ;
                 } else if (Caml_obj.caml_equal(name$1, match$2[1])) {
-                  return /* Some */[match$3[0]];
+                  return match$3[0];
                 } else {
                   _l = l[1];
                   continue ;
@@ -413,11 +414,11 @@ function get_field(name, e) {
           }
         }
       } else {
-        return /* None */0;
+        return undefined;
       }
     };
   } else {
-    return /* None */0;
+    return undefined;
   }
 }
 
@@ -447,7 +448,7 @@ function _get_field_list(name, _l) {
             _l = l[1];
             continue ;
           } else if (Caml_obj.caml_equal(name, match$2[1])) {
-            return /* Some */[match$1[1]];
+            return match$1[1];
           } else {
             _l = l[1];
             continue ;
@@ -458,7 +459,7 @@ function _get_field_list(name, _l) {
         }
       }
     } else {
-      return /* None */0;
+      return undefined;
     }
   };
 }
@@ -467,7 +468,7 @@ function field_list(name, f, e) {
   if (e[0] >= 848054398) {
     return $great$great$eq(_get_field_list(name, e[1]), f);
   } else {
-    return /* None */0;
+    return undefined;
   }
 }
 
@@ -483,7 +484,7 @@ function _get_variant(s, args, _l) {
         continue ;
       }
     } else {
-      return /* None */0;
+      return undefined;
     }
   };
 }
@@ -494,12 +495,12 @@ function get_variant(l, e) {
     if (match) {
       var match$1 = match[0];
       if (typeof match$1 === "number" || match$1[0] !== 726615281) {
-        return /* None */0;
+        return undefined;
       } else {
         return _get_variant(match$1[1], match[1], l);
       }
     } else {
-      return /* None */0;
+      return undefined;
     }
   } else {
     return _get_variant(e[1], /* [] */0, l);
@@ -507,8 +508,8 @@ function get_variant(l, e) {
 }
 
 function get_exn(e) {
-  if (e !== /* None */0) {
-    return e[0];
+  if (e !== undefined) {
+    return Js_primitive.valFromOption(e);
   } else {
     throw [
           Caml_builtin_exceptions.failure,

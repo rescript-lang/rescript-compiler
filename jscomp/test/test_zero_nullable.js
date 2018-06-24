@@ -3,6 +3,7 @@
 var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
+var Js_primitive = require("../../lib/js/js_primitive.js");
 
 var suites = [/* [] */0];
 
@@ -80,13 +81,13 @@ function f8(x) {
   }
 }
 
-var u = f8(/* None */0);
+var u = f8(undefined);
 
 function f9(x) {
   if (x === null) {
-    return /* None */0;
+    return undefined;
   } else {
-    return /* Some */[x];
+    return Js_primitive.some(x);
   }
 }
 
@@ -165,13 +166,13 @@ function f8$1(x) {
   }
 }
 
-var u$1 = f8$1(/* None */0);
+var u$1 = f8$1(undefined);
 
 function f9$1(x) {
   if (x === undefined) {
-    return /* None */0;
+    return undefined;
   } else {
-    return /* Some */[x];
+    return Js_primitive.some(x);
   }
 }
 
@@ -248,13 +249,13 @@ function f8$2(x) {
   }
 }
 
-var u$2 = f8$2(/* None */0);
+var u$2 = f8$2(undefined);
 
 function f9$2(x) {
   if (x == null) {
-    return /* None */0;
+    return undefined;
   } else {
-    return /* Some */[x];
+    return Js_primitive.some(x);
   }
 }
 

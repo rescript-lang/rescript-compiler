@@ -53,13 +53,16 @@ let () =
   let v = Js.Undefined.empty in 
   
   b __LOC__ (not (eqUndefined 3 ~box:v));
-  b __LOC__ (not (eqUndefined None ~box:v));
+  b __LOC__ ((eqUndefined None ~box:v));
   b __LOC__ (not (eqUndefined "3" v));
   b __LOC__ (not (eqUndefined '3' v));
   b __LOC__ (not (eqUndefined 0L v));
   b __LOC__ (not (eqUndefined 0n v));
   b __LOC__ (not (eqUndefined 0. v));
-  b __LOC__ (not (eqUndefined (f ()) v));
+  b __LOC__ ((eqUndefined (f ()) v)); 
+  (* [ None === undefined]
+     [ None === Js.Undefined.return None]
+  *)
   b __LOC__ (not (eqUndefined (shouldBeNull ()) v));
   b __LOC__ (not (eqUndefined 1 (Js.Undefined.return 3)));
   b __LOC__ ( (eqUndefined None (Js.Undefined.return None)));

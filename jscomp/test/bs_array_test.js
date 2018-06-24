@@ -70,11 +70,11 @@ eq("File \"bs_array_test.ml\", line 25, characters 5-12", /* tuple */[
       Belt_Array.get(v, 3),
       Belt_Array.get(v, -1)
     ], /* tuple */[
-      /* Some */[1],
-      /* Some */[2],
-      /* None */0,
-      /* None */0,
-      /* None */0
+      1,
+      2,
+      undefined,
+      undefined,
+      undefined
     ]);
 
 $$throw("File \"bs_array_test.ml\", line 28, characters 8-15", (function () {
@@ -531,9 +531,9 @@ var v1 = Belt_Array.keep(v$6, (function (x) {
 
 var v2 = Belt_Array.keepMap(v$6, (function (x) {
         if (x % 2 === 0) {
-          return /* Some */[x + 1 | 0];
+          return x + 1 | 0;
         } else {
-          return /* None */0;
+          return undefined;
         }
       }));
 

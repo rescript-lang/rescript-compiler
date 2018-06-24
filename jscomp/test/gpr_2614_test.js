@@ -20,14 +20,14 @@ function ff() {
   return /* () */0;
 }
 
-var partial_arg = /* Some */["x"];
+var partial_arg = "x";
 
 function h0() {
   var tmp = {
     hi: 2
   };
   if (partial_arg) {
-    tmp["lo-x"] = partial_arg[0];
+    tmp["lo-x"] = Js_primitive.valFromOption(partial_arg);
   }
   return tmp;
 }

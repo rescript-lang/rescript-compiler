@@ -22,53 +22,57 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+ let undefinedHeader = [| |]
 
+let some ( x : Obj.t) : Obj.t = 
+  if Obj.magic x =  None then 
+    Obj.repr (undefinedHeader, 0)
+  else 
+    if x != Obj.repr Js.null && fst (Obj.magic x ) == Obj.repr undefinedHeader then   
+      Obj.repr (undefinedHeader, snd (Obj.magic x) + 1)
+    else  x 
 
-let nullable_to_opt ( x : 'a Js.null_undefined) = 
+let nullable_to_opt (type t) ( x : t Js.null_undefined) : t option = 
   if (Obj.magic x) == Js.null ||  (Obj.magic x) == Js.undefined then 
     None 
-  else Some (Obj.magic x : 'a)
+  else Obj.magic (some (Obj.magic x : 'a))
 
-let undefined_to_opt ( x : 'a Js.undefined) = 
+let undefined_to_opt (type t) ( x : t Js.undefined) : t option = 
     if (Obj.magic x) == Js.undefined then None 
-    else Some (Obj.magic x : 'a)
+    else Obj.magic (some (Obj.magic x : 'a))
 
-let null_to_opt ( x : 'a Js.null) = 
+let null_to_opt (type t ) ( x : t Js.null) : t option = 
   if (Obj.magic x) == Js.null then None 
-  else Some (Obj.magic x : 'a) 
+  else Obj.magic (some (Obj.magic x : 'a) )
 
-external valFromOption : 'a option -> 'a = 
-  "#val_from_option"  
+(* external valFromOption : 'a option -> 'a = 
+  "#val_from_option"   *)
 
-let undefinedHeader = [| |]
+
 
 (** The input is already of [Some] form, [x] is not None, 
     make sure [x[0]] will not throw *)
 let valFromOption (x : Obj.t) : Obj.t =   
-  if  x != Obj.repr Js_null.empty && fst (Obj.magic x)  == Obj.repr undefinedHeader 
+  if  x != Obj.repr Js.null && fst (Obj.magic x)  == Obj.repr undefinedHeader 
   then 
     let depth : int = snd  (Obj.magic x)  in 
     if depth = 0 then Obj.magic None
     else Obj.magic (undefinedHeader, depth - 1)
   else Obj.magic x   
 
-let some ( x : Obj.t) : Obj.t = 
-  if Obj.magic x =  None then 
-    Obj.repr (undefinedHeader, 0)
-  else 
-    if x != Obj.repr Js_null.empty && fst (Obj.magic x ) == Obj.repr undefinedHeader then   
-      Obj.repr (undefinedHeader, snd (Obj.magic x) + 1)
-    else  x 
 
-
-let option_get (x : 'a option) : 'a Js_undefined.t = 
-  match x with 
+let option_get (x : 'a option) : 'a Js.undefined = 
+  if x = None then Js.undefined
+  else Obj.magic (valFromOption (Obj.repr x))
+  (* match x with 
   | None -> Js_undefined.empty
-  | Some x -> Js_undefined.return x 
+  | Some x -> Js_undefined.return x  *)
 
 (** [input] is optional polymorphic variant *)  
-let option_get_unwrap (x : 'a option) : _ Js_undefined.t =
-  match x with
+let option_get_unwrap (x : 'a option) : _ Js.undefined =
+  if x = None then Js.undefined
+  else Obj.magic (Obj.field (Obj.repr (valFromOption (Obj.repr x))) 1 )
+  (* match x with
   | None -> Js.undefined
-  | Some x -> Js_undefined.return (Obj.field (Obj.repr x) 1)
+  | Some x -> Js_undefined.return (Obj.field (Obj.repr x) 1) *)
 

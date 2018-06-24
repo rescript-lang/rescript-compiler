@@ -1,3 +1,7 @@
+let suites :  Mt.pair_suites ref  = ref []
+let test_id = ref 0
+let eq loc x y = Mt.eq_suites ~suites ~test_id loc x y
+let b loc v  = Mt.bool_suites ~suites ~test_id loc v
 
 type 'a u = 'a option = 
   private 
@@ -58,3 +62,49 @@ let f10 = Some (Some (Some (Some None)))
 let f11 = Some f10
 
 let f12 = Some (Some (Some (Some [1,2])))
+
+let randomized = ref false
+
+let create ?(random= !randomized) () = 
+  if random then 2 
+  else 1
+
+let ff = create ~random:false  ()
+
+
+let f13 ?(x =3) ?(y=4) () = x + y
+
+let a = f13 ~x:2 ()
+
+let f12  (x : _ list) = Some (x)
+
+module N = Belt.List
+
+let length_8_id : int list = N.makeBy 8 (fun x -> x)
+let length_10_id : int list = N.makeBy 10 (fun x -> x) 
+
+type 'a xx = 'a option = 
+   | None
+   | Some  of 'a
+let f13 () = 
+  N.take length_10_id 8 = (Some [1;2;3] : _ option)
+
+
+let () =   
+  b __LOC__ (None < Some Js.null);
+  b __LOC__ (None < Some Js.undefined)
+
+external log3 :
+  req:([ `String of string
+       | `Int of int
+       ] [@bs.unwrap])
+  -> ?opt:([ `String of string
+           | `Bool of bool
+           ] [@bs.unwrap])
+  -> unit
+  -> unit = "console.log" [@@bs.val]
+
+let none_arg = None
+let _ = log3 ~req:(`Int 6) ?opt:none_arg ()
+
+;; Mt.from_pair_suites __FILE__ !suites

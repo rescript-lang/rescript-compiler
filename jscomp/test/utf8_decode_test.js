@@ -46,9 +46,9 @@ function classify(chr) {
 function utf8_decode(strm) {
   return Stream.slazy((function () {
                 var match = Stream.peek(strm);
-                if (match !== /* None */0) {
+                if (match !== undefined) {
                   Stream.junk(strm);
-                  var match$1 = classify(match[0]);
+                  var match$1 = classify(match);
                   if (typeof match$1 === "number") {
                     throw [
                           Stream.$$Error,

@@ -6,7 +6,7 @@ console.log("list");
 console.log("list");
 
 function f(param) {
-  if (param !== /* None */0) {
+  if (param !== undefined) {
     return "Some";
   } else {
     return "None";
@@ -14,7 +14,7 @@ function f(param) {
 }
 
 console.log(/* tuple */[
-      f(/* Some */[3]),
+      f(3),
       "None",
       "Some"
     ]);

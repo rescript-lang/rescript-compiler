@@ -187,9 +187,9 @@ function zToJs(param) {
 
 function zFromJs(param) {
   if (param <= 2 && 0 <= param) {
-    return /* Some */[param - 0 | 0];
+    return param - 0 | 0;
   } else {
-    return /* None */0;
+    return undefined;
   }
 }
 

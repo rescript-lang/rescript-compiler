@@ -794,8 +794,13 @@ and
   (* | Caml_uninitialized_obj (tag, size)
     ->  (* FIXME *)
     expression_desc cxt l f (Object [Length, size ; Tag, tag])     *)
-  | Optional_block (e,_) -> 
-    expression_desc cxt l f (Caml_block([e],Immutable,E.zero_int_literal, Blk_na)) 
+  | Optional_block (e,identity) -> 
+    if identity then 
+      expression l cxt f e 
+    else 
+      expression l cxt f 
+        (E.runtime_call Js_runtime_modules.js_primitive "some" [e])
+      (* expression_desc cxt l f (Caml_block([e],Immutable,E.zero_int_literal, Blk_na))  *)
   | Caml_block( el, mutable_flag, tag, tag_info)
     ->
     (* Note that, if we ignore more than tag [0] we loose some information

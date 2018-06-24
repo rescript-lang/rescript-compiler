@@ -5,6 +5,7 @@ var Caml_obj = require("../../lib/js/caml_obj.js");
 var Belt_List = require("../../lib/js/belt_List.js");
 var Belt_Array = require("../../lib/js/belt_Array.js");
 var Caml_int32 = require("../../lib/js/caml_int32.js");
+var Js_primitive = require("../../lib/js/js_primitive.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 
 var suites = [/* [] */0];
@@ -86,7 +87,7 @@ eq("File \"bs_list_test.ml\", line 31, characters 5-12", Belt_List.getBy(/* :: *
           ]
         ], (function (x) {
             return x % 2 === 0;
-          })), /* Some */[4]);
+          })), 4);
 
 eq("File \"bs_list_test.ml\", line 32, characters 5-12", Belt_List.getBy(/* :: */[
           1,
@@ -102,7 +103,7 @@ eq("File \"bs_list_test.ml\", line 32, characters 5-12", Belt_List.getBy(/* :: *
           ]
         ], (function (x) {
             return x % 5 === 0;
-          })), /* None */0);
+          })), undefined);
 
 eq("FLATTEN", Belt_List.flatten(/* :: */[
           /* :: */[
@@ -771,23 +772,15 @@ eq("TAKE", Belt_List.take(/* :: */[
               /* [] */0
             ]
           ]
-        ], 2), /* Some */[/* :: */[
-        1,
-        /* :: */[
-          2,
-          /* [] */0
-        ]
-      ]]);
+        ], 2), /* :: */[
+      1,
+      /* :: */[
+        2,
+        /* [] */0
+      ]
+    ]);
 
-eq("TAKE", Belt_List.take(/* [] */0, 1), /* None */0);
-
-eq("TAKE", Belt_List.take(/* :: */[
-          1,
-          /* :: */[
-            2,
-            /* [] */0
-          ]
-        ], 3), /* None */0);
+eq("TAKE", Belt_List.take(/* [] */0, 1), undefined);
 
 eq("TAKE", Belt_List.take(/* :: */[
           1,
@@ -795,76 +788,103 @@ eq("TAKE", Belt_List.take(/* :: */[
             2,
             /* [] */0
           ]
-        ], 2), /* Some */[/* :: */[
-        1,
-        /* :: */[
-          2,
-          /* [] */0
-        ]
-      ]]);
+        ], 3), undefined);
 
-eq("TAKE", Belt_List.take(length_10_id, 8), /* Some */[length_8_id]);
+eq("TAKE", Belt_List.take(/* :: */[
+          1,
+          /* :: */[
+            2,
+            /* [] */0
+          ]
+        ], 2), /* :: */[
+      1,
+      /* :: */[
+        2,
+        /* [] */0
+      ]
+    ]);
 
-eq("TAKE", Belt_List.take(length_10_id, 0), /* Some */[/* [] */0]);
+eq("TAKE", Belt_List.take(length_10_id, 8), Js_primitive.some(length_8_id));
 
-eq("TAKE", Belt_List.take(length_8_id, -2), /* None */0);
+eq("TAKE", Belt_List.take(length_10_id, 0), /* [] */0);
 
-eq("DROP", Belt_List.drop(length_10_id, 10), /* Some */[/* [] */0]);
+eq("TAKE", Belt_List.take(length_8_id, -2), undefined);
 
-eq("DROP", Belt_List.drop(length_10_id, 8), /* Some */[/* :: */[
-        8,
-        /* :: */[
-          9,
-          /* [] */0
-        ]
-      ]]);
+eq("DROP", Belt_List.drop(length_10_id, 10), /* [] */0);
 
-eq("DROP", Belt_List.drop(length_10_id, 0), /* Some */[length_10_id]);
+eq("DROP", Belt_List.drop(length_10_id, 8), /* :: */[
+      8,
+      /* :: */[
+        9,
+        /* [] */0
+      ]
+    ]);
 
-eq("DROP", Belt_List.drop(length_8_id, -1), /* None */0);
+eq("DROP", Belt_List.drop(length_10_id, 0), Js_primitive.some(length_10_id));
+
+eq("DROP", Belt_List.drop(length_8_id, -1), undefined);
 
 var a = Belt_List.makeBy(5, id);
 
-eq("SPLIT", Belt_List.splitAt(/* [] */0, 1), /* None */0);
+eq("SPLIT", Belt_List.splitAt(/* [] */0, 1), undefined);
 
-eq("SPLIT", Belt_List.splitAt(a, 6), /* None */0);
+eq("SPLIT", Belt_List.splitAt(a, 6), undefined);
 
-eq("SPLIT", Belt_List.splitAt(a, 5), /* Some */[/* tuple */[
-        a,
-        /* [] */0
-      ]]);
+eq("SPLIT", Belt_List.splitAt(a, 5), /* tuple */[
+      a,
+      /* [] */0
+    ]);
 
-eq("SPLIT", Belt_List.splitAt(a, 4), /* Some */[/* tuple */[
+eq("SPLIT", Belt_List.splitAt(a, 4), /* tuple */[
+      /* :: */[
+        0,
         /* :: */[
-          0,
+          1,
           /* :: */[
-            1,
+            2,
             /* :: */[
-              2,
-              /* :: */[
-                3,
-                /* [] */0
-              ]
+              3,
+              /* [] */0
             ]
           ]
-        ],
+        ]
+      ],
+      /* :: */[
+        4,
+        /* [] */0
+      ]
+    ]);
+
+eq("SPLIT", Belt_List.splitAt(a, 3), /* tuple */[
+      /* :: */[
+        0,
+        /* :: */[
+          1,
+          /* :: */[
+            2,
+            /* [] */0
+          ]
+        ]
+      ],
+      /* :: */[
+        3,
         /* :: */[
           4,
           /* [] */0
         ]
-      ]]);
+      ]
+    ]);
 
-eq("SPLIT", Belt_List.splitAt(a, 3), /* Some */[/* tuple */[
+eq("SPLIT", Belt_List.splitAt(a, 2), /* tuple */[
+      /* :: */[
+        0,
         /* :: */[
-          0,
-          /* :: */[
-            1,
-            /* :: */[
-              2,
-              /* [] */0
-            ]
-          ]
-        ],
+          1,
+          /* [] */0
+        ]
+      ],
+      /* :: */[
+        2,
         /* :: */[
           3,
           /* :: */[
@@ -872,16 +892,16 @@ eq("SPLIT", Belt_List.splitAt(a, 3), /* Some */[/* tuple */[
             /* [] */0
           ]
         ]
-      ]]);
+      ]
+    ]);
 
-eq("SPLIT", Belt_List.splitAt(a, 2), /* Some */[/* tuple */[
-        /* :: */[
-          0,
-          /* :: */[
-            1,
-            /* [] */0
-          ]
-        ],
+eq("SPLIT", Belt_List.splitAt(a, 1), /* tuple */[
+      /* :: */[
+        0,
+        /* [] */0
+      ],
+      /* :: */[
+        1,
         /* :: */[
           2,
           /* :: */[
@@ -892,34 +912,15 @@ eq("SPLIT", Belt_List.splitAt(a, 2), /* Some */[/* tuple */[
             ]
           ]
         ]
-      ]]);
+      ]
+    ]);
 
-eq("SPLIT", Belt_List.splitAt(a, 1), /* Some */[/* tuple */[
-        /* :: */[
-          0,
-          /* [] */0
-        ],
-        /* :: */[
-          1,
-          /* :: */[
-            2,
-            /* :: */[
-              3,
-              /* :: */[
-                4,
-                /* [] */0
-              ]
-            ]
-          ]
-        ]
-      ]]);
+eq("SPLIT", Belt_List.splitAt(a, 0), /* tuple */[
+      /* [] */0,
+      a
+    ]);
 
-eq("SPLIT", Belt_List.splitAt(a, 0), /* Some */[/* tuple */[
-        /* [] */0,
-        a
-      ]]);
-
-eq("SPLIT", Belt_List.splitAt(a, -1), /* None */0);
+eq("SPLIT", Belt_List.splitAt(a, -1), undefined);
 
 function succx(x) {
   return x + 1 | 0;
@@ -1419,7 +1420,7 @@ b("File \"bs_list_test.ml\", line 201, characters 4-11", Caml_obj.caml_equal(Bel
                   /* [] */0
                 ]
               ]
-            ], 2, Caml_obj.caml_equal), /* Some */["b"]));
+            ], 2, Caml_obj.caml_equal), "b"));
 
 b("File \"bs_list_test.ml\", line 202, characters 4-11", Belt_List.getAssoc(/* :: */[
           /* tuple */[
@@ -1439,17 +1440,17 @@ b("File \"bs_list_test.ml\", line 202, characters 4-11", Belt_List.getAssoc(/* :
               /* [] */0
             ]
           ]
-        ], 4, Caml_obj.caml_equal) === /* None */0);
+        ], 4, Caml_obj.caml_equal) === undefined);
 
 eq("File \"bs_list_test.ml\", line 206, characters 5-12", /* tuple */[
       Belt_List.head(length_10_id),
       Belt_List.tail(length_10_id)
     ], /* tuple */[
-      /* Some */[0],
+      0,
       Belt_List.drop(length_10_id, 1)
     ]);
 
-eq("File \"bs_list_test.ml\", line 209, characters 5-12", Belt_List.head(/* [] */0), /* None */0);
+eq("File \"bs_list_test.ml\", line 209, characters 5-12", Belt_List.head(/* [] */0), undefined);
 
 $$throw("File \"bs_list_test.ml\", line 210, characters 8-15", (function () {
         return Belt_List.headExn(/* [] */0);
@@ -1515,20 +1516,20 @@ eq("File \"bs_list_test.ml\", line 216, characters 5-12", Belt_List.tailExn(/* :
         ]), /* [] */0);
 
 Belt_List.forEachWithIndex(length_10_id, (function (i, x) {
-        return eq("File \"bs_list_test.ml\", line 218, characters 9-16", Belt_List.get(length_10_id, i), /* Some */[x]);
+        return eq("File \"bs_list_test.ml\", line 218, characters 9-16", Belt_List.get(length_10_id, i), x);
       }));
 
-eq("File \"bs_list_test.ml\", line 219, characters 5-12", Belt_List.tail(/* [] */0), /* None */0);
+eq("File \"bs_list_test.ml\", line 219, characters 5-12", Belt_List.tail(/* [] */0), undefined);
 
-eq("File \"bs_list_test.ml\", line 220, characters 5-12", Belt_List.drop(/* [] */0, 3), /* None */0);
+eq("File \"bs_list_test.ml\", line 220, characters 5-12", Belt_List.drop(/* [] */0, 3), undefined);
 
 eq("File \"bs_list_test.ml\", line 221, characters 5-12", Belt_List.mapWithIndex(/* [] */0, (function (i, x) {
             return i + x | 0;
           })), /* [] */0);
 
-eq("File \"bs_list_test.ml\", line 222, characters 5-12", Belt_List.get(length_10_id, -1), /* None */0);
+eq("File \"bs_list_test.ml\", line 222, characters 5-12", Belt_List.get(length_10_id, -1), undefined);
 
-eq("File \"bs_list_test.ml\", line 223, characters 5-12", Belt_List.get(length_10_id, 12), /* None */0);
+eq("File \"bs_list_test.ml\", line 223, characters 5-12", Belt_List.get(length_10_id, 12), undefined);
 
 eq("File \"bs_list_test.ml\", line 224, characters 5-12", sum(/* [] */0), 0);
 
@@ -2335,9 +2336,9 @@ var u0 = Belt_List.makeBy(20, (function (x) {
 
 var u1 = Belt_List.keepMap(u0, (function (x) {
         if (x % 7 === 0) {
-          return /* Some */[x + 1 | 0];
+          return x + 1 | 0;
         } else {
-          return /* None */0;
+          return undefined;
         }
       }));
 
@@ -2366,9 +2367,9 @@ b("File \"bs_list_test.ml\", line 334, characters 4-11", Caml_obj.caml_equal(Bel
               ]
             ], (function (x) {
                 if (x % 2 === 0) {
-                  return /* Some */[-x | 0];
+                  return -x | 0;
                 } else {
-                  return /* None */0;
+                  return undefined;
                 }
               })), /* :: */[
           -2,
@@ -2392,9 +2393,9 @@ b("File \"bs_list_test.ml\", line 338, characters 4-11", Belt_List.keepMap(/* ::
           ]
         ], (function (x) {
             if (x % 5 === 0) {
-              return /* Some */[x];
+              return x;
             } else {
-              return /* None */0;
+              return undefined;
             }
           })) === /* [] */0);
 

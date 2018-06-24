@@ -205,7 +205,7 @@ var suites_001 = /* :: */[
                         "pop",
                         (function () {
                             return /* Eq */Block.__(0, [
-                                      /* Some */[3],
+                                      3,
                                       Js_primitive.undefined_to_opt(/* array */[
                                               1,
                                               2,
@@ -219,7 +219,7 @@ var suites_001 = /* :: */[
                           "pop - empty array",
                           (function () {
                               return /* Eq */Block.__(0, [
-                                        /* None */0,
+                                        undefined,
                                         Js_primitive.undefined_to_opt(/* array */[].pop())
                                       ]);
                             })
@@ -275,7 +275,7 @@ var suites_001 = /* :: */[
                                   "shift",
                                   (function () {
                                       return /* Eq */Block.__(0, [
-                                                /* Some */[1],
+                                                1,
                                                 Js_primitive.undefined_to_opt(/* array */[
                                                         1,
                                                         2,
@@ -289,7 +289,7 @@ var suites_001 = /* :: */[
                                     "shift - empty array",
                                     (function () {
                                         return /* Eq */Block.__(0, [
-                                                  /* None */0,
+                                                  undefined,
                                                   Js_primitive.undefined_to_opt(/* array */[].shift())
                                                 ]);
                                       })
@@ -781,7 +781,7 @@ var suites_001 = /* :: */[
                                                                                           "find",
                                                                                           (function () {
                                                                                               return /* Eq */Block.__(0, [
-                                                                                                        /* Some */[2],
+                                                                                                        2,
                                                                                                         Js_primitive.undefined_to_opt(/* array */[
                                                                                                                 1,
                                                                                                                 2,
@@ -798,7 +798,7 @@ var suites_001 = /* :: */[
                                                                                             "find - no match",
                                                                                             (function () {
                                                                                                 return /* Eq */Block.__(0, [
-                                                                                                          /* None */0,
+                                                                                                          undefined,
                                                                                                           Js_primitive.undefined_to_opt(/* array */[
                                                                                                                   1,
                                                                                                                   2,
@@ -815,7 +815,7 @@ var suites_001 = /* :: */[
                                                                                               "findi",
                                                                                               (function () {
                                                                                                   return /* Eq */Block.__(0, [
-                                                                                                            /* Some */[1],
+                                                                                                            1,
                                                                                                             Js_primitive.undefined_to_opt(/* array */[
                                                                                                                     1,
                                                                                                                     2,
@@ -832,7 +832,7 @@ var suites_001 = /* :: */[
                                                                                                 "findi - no match",
                                                                                                 (function () {
                                                                                                     return /* Eq */Block.__(0, [
-                                                                                                              /* None */0,
+                                                                                                              undefined,
                                                                                                               Js_primitive.undefined_to_opt(/* array */[
                                                                                                                       1,
                                                                                                                       2,

@@ -15,6 +15,7 @@ var Caml_bytes = require("../../lib/js/caml_bytes.js");
 var Caml_int32 = require("../../lib/js/caml_int32.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_string = require("../../lib/js/caml_string.js");
+var Js_primitive = require("../../lib/js/js_primitive.js");
 var Caml_missing_polyfill = require("../../lib/js/caml_missing_polyfill.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
@@ -23,19 +24,19 @@ var dbg = [true];
 var inch = [Pervasives.stdin];
 
 function bufferize(f) {
-  var buf = [/* None */0];
+  var buf = [undefined];
   return /* tuple */[
           (function () {
               var match = buf[0];
-              if (match !== /* None */0) {
-                buf[0] = /* None */0;
-                return match[0];
+              if (match !== undefined) {
+                buf[0] = undefined;
+                return Js_primitive.valFromOption(match);
               } else {
                 return Curry._1(f, /* () */0);
               }
             }),
           (function (x) {
-              if (buf[0] !== /* None */0) {
+              if (buf[0] !== undefined) {
                 throw [
                       Caml_builtin_exceptions.assert_failure,
                       [
@@ -45,7 +46,7 @@ function bufferize(f) {
                       ]
                     ];
               }
-              buf[0] = /* Some */[x];
+              buf[0] = Js_primitive.some(x);
               return /* () */0;
             })
         ];
@@ -181,17 +182,17 @@ function skip(_param) {
 function next() {
   var match;
   try {
-    match = /* Some */[skip(/* () */0)];
+    match = skip(/* () */0);
   }
   catch (exn){
     if (exn === Caml_builtin_exceptions.end_of_file) {
-      match = /* None */0;
+      match = undefined;
     } else {
       throw exn;
     }
   }
-  if (match !== /* None */0) {
-    var c = match[0];
+  if (match !== undefined) {
+    var c = match;
     var exit = 0;
     if (c !== 34) {
       if (c >= 48) {

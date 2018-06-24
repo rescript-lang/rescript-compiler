@@ -19,9 +19,9 @@ var XXX = Caml_exceptions.create("Exception_def.XXX");
 
 Printexc.register_printer((function (param) {
         if (param[0] === A) {
-          return /* Some */["A"];
+          return "A";
         } else {
-          return /* None */0;
+          return undefined;
         }
       }));
 

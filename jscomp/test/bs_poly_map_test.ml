@@ -55,9 +55,9 @@ let () =
   let a0 = mapOfArray (randomRange 0 10) in
   let a1 = M.set a0 3 33 in (* (3,3) *)
   let a2 = M.remove a1 3 in  (* no 3 *)
-  let a3 = M.update a2 3 (fun    k ->
+  let a3 = M.update a2 3 (fun  (k : int option) ->
       match k with
-      | Some k -> Some (k + 1)
+      | Some (k : int) -> Some (k + 1)
       | None  ->  Some 11
     ) in  (* 3, 11 *)
   let a4 = M.update a2 3 (fun    k ->

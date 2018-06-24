@@ -144,7 +144,7 @@ function add_digest_ib(ob, ib) {
   var scan_line = function (ib, f) {
     return Curry._1(Scanf.bscanf(ib, /* Format */[
                     /* Scan_char_set */Block.__(20, [
-                        /* None */0,
+                        undefined,
                         "\xff\xdb\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff",
                         /* Char_literal */Block.__(12, [
                             /* "\n" */10,

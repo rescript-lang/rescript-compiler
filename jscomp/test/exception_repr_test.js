@@ -37,25 +37,25 @@ var A = Caml_exceptions.create("Exception_repr_test.A");
 
 Printexc.register_printer((function (param) {
         if (param === Hi) {
-          return /* Some */["hey"];
+          return "hey";
         } else if (param[0] === A) {
-          return /* Some */[Curry._1(Format.asprintf(/* Format */[
-                            /* String_literal */Block.__(11, [
-                                "A(",
-                                /* Int */Block.__(4, [
-                                    /* Int_d */0,
-                                    /* No_padding */0,
-                                    /* No_precision */0,
-                                    /* Char_literal */Block.__(12, [
-                                        /* ")" */41,
-                                        /* End_of_format */0
-                                      ])
-                                  ])
-                              ]),
-                            "A(%d)"
-                          ]), param[1])];
+          return Curry._1(Format.asprintf(/* Format */[
+                          /* String_literal */Block.__(11, [
+                              "A(",
+                              /* Int */Block.__(4, [
+                                  /* Int_d */0,
+                                  /* No_padding */0,
+                                  /* No_precision */0,
+                                  /* Char_literal */Block.__(12, [
+                                      /* ")" */41,
+                                      /* End_of_format */0
+                                    ])
+                                ])
+                            ]),
+                          "A(%d)"
+                        ]), param[1]);
         } else {
-          return /* None */0;
+          return undefined;
         }
       }));
 

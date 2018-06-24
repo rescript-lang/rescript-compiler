@@ -155,15 +155,18 @@ let merge_outer_comment comment (e : t )  =
                 comment 
                 = Some (comment ^ sep ^ s)} 
 
-let some_comment = Some "Some"                
+let some_comment = None
+
 let optional_block e  : J.expression =                 
   { expression_desc = Optional_block (e,false) ; 
     comment = some_comment
   }
+
+  
 let optional_not_nest_block e : J.expression = 
   {
     expression_desc = Optional_block(e,true);
-    comment = some_comment
+    comment = None
   } 
 
 let make_block ?comment tag tag_info es mutable_flag : t = 
@@ -912,13 +915,13 @@ let rec int_comp (cmp : Lambda.comparison) ?comment  (e0 : t) (e1 : t) =
             {fn with expression_desc = 
               Var(Qualified (ident,Runtime, Some "caml_equal")) 
             } , args, call_info)}
-  | Ceq, Optional_block _,  Number _
-  | Ceq, Number _, Optional_block _
+  | Ceq, Optional_block _,  Undefined
+  | Ceq, Undefined, Optional_block _
     -> caml_false           
   | Ceq, _, _ -> int_equal e0 e1 
-  (* -FIXME: it should not be called [int_comp] *)
-  | Cneq, Optional_block _, Number _
-  | Cneq, Number _, Optional_block _
+
+  | Cneq, Optional_block _, Undefined
+  | Cneq, Undefined , Optional_block _
   | Cneq, Caml_block _ ,  Number _ 
   | Cneq, Number _, Caml_block _  
     -> caml_true

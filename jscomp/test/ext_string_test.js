@@ -11,7 +11,7 @@ var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function split_by($staropt$star, is_delim, str) {
-  var keep_empty = $staropt$star !== /* None */0 ? $staropt$star[0] : false;
+  var keep_empty = $staropt$star !== undefined ? $staropt$star : false;
   var len = str.length;
   var _acc = /* [] */0;
   var _last_pos = len;
@@ -90,7 +90,7 @@ function split(keep_empty, str, on) {
 }
 
 function quick_split_by_ws(str) {
-  return split_by(/* Some */[false], (function (x) {
+  return split_by(false, (function (x) {
                 if (x === /* "\t" */9 || x === /* "\n" */10) {
                   return true;
                 } else {
@@ -144,9 +144,9 @@ function ends_with(s, end_) {
 function ends_with_then_chop(s, beg) {
   var i = ends_with_index(s, beg);
   if (i >= 0) {
-    return /* Some */[$$String.sub(s, 0, i)];
+    return $$String.sub(s, 0, i);
   } else {
-    return /* None */0;
+    return undefined;
   }
 }
 
@@ -163,13 +163,13 @@ function check_any_suffix_case_then_chop(s, suffixes) {
     if (suffixes$1) {
       var id = ends_with_index(s, suffixes$1[0]);
       if (id >= 0) {
-        return /* Some */[$$String.sub(s, 0, id)];
+        return $$String.sub(s, 0, id);
       } else {
         _suffixes = suffixes$1[1];
         continue ;
       }
     } else {
-      return /* None */0;
+      return undefined;
     }
   };
 }
@@ -275,7 +275,7 @@ function unsafe_is_sub(sub, i, s, j, len) {
 var Local_exit = Caml_exceptions.create("Ext_string_test.Local_exit");
 
 function find($staropt$star, sub, s) {
-  var start = $staropt$star !== /* None */0 ? $staropt$star[0] : 0;
+  var start = $staropt$star !== undefined ? $staropt$star : 0;
   var n = sub.length;
   var s_len = s.length;
   var i = start;
@@ -298,7 +298,7 @@ function find($staropt$star, sub, s) {
 }
 
 function contain_substring(s, sub) {
-  return find(/* None */0, sub, s) >= 0;
+  return find(undefined, sub, s) >= 0;
 }
 
 function non_overlap_count(sub, s) {
@@ -314,7 +314,7 @@ function non_overlap_count(sub, s) {
     while(true) {
       var off = _off;
       var acc = _acc;
-      var i = find(/* Some */[off], sub, s);
+      var i = find(off, sub, s);
       if (i < 0) {
         return acc;
       } else {
@@ -439,9 +439,9 @@ function rindex_rec_opt(s, _i, c) {
   while(true) {
     var i = _i;
     if (i < 0) {
-      return /* None */0;
+      return undefined;
     } else if (s.charCodeAt(i) === c) {
-      return /* Some */[i];
+      return i;
     } else {
       _i = i - 1 | 0;
       continue ;
@@ -546,8 +546,8 @@ function is_valid_source_name(name) {
           ]
         ]
       ]);
-  if (match !== /* None */0) {
-    if (is_valid_module_file(match[0])) {
+  if (match !== undefined) {
+    if (is_valid_module_file(match)) {
       return /* Good */0;
     } else {
       return /* Invalid_module_name */1;
