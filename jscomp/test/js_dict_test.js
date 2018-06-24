@@ -27,7 +27,7 @@ var suites_001 = /* :: */[
     "get",
     (function () {
         return /* Eq */Block.__(0, [
-                  /* Some */[43],
+                  [43],
                   Js_primitive.undefined_to_opt(({
                             foo: 43,
                             bar: 86
@@ -71,7 +71,7 @@ var suites_001 = /* :: */[
               };
               o["foo"] = 36;
               return /* Eq */Block.__(0, [
-                        /* Some */[36],
+                        [36],
                         Js_primitive.undefined_to_opt(o["foo"])
                       ]);
             })

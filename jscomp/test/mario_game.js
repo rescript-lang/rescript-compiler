@@ -46,10 +46,10 @@ function make_enemy(param) {
   var dir = param[1];
   switch (param[0]) {
     case 0 : 
-        return setup_sprite(/* None */0, /* Some */[/* tuple */[
+        return setup_sprite(/* None */0, [/* tuple */[
                       1,
                       1
-                    ]], /* Some */[/* tuple */[
+                    ]], [/* tuple */[
                       14,
                       14
                     ]], "enemies.png", 2, 10, /* tuple */[
@@ -61,10 +61,10 @@ function make_enemy(param) {
                   ]);
     case 1 : 
         if (dir) {
-          return setup_sprite(/* None */0, /* Some */[/* tuple */[
+          return setup_sprite(/* None */0, [/* tuple */[
                         1,
                         10
-                      ]], /* Some */[/* tuple */[
+                      ]], [/* tuple */[
                         11,
                         16
                       ]], "enemies.png", 2, 10, /* tuple */[
@@ -75,10 +75,10 @@ function make_enemy(param) {
                       69
                     ]);
         } else {
-          return setup_sprite(/* None */0, /* Some */[/* tuple */[
+          return setup_sprite(/* None */0, [/* tuple */[
                         4,
                         10
-                      ]], /* Some */[/* tuple */[
+                      ]], [/* tuple */[
                         11,
                         16
                       ]], "enemies.png", 2, 10, /* tuple */[
@@ -91,10 +91,10 @@ function make_enemy(param) {
         }
     case 2 : 
         if (dir) {
-          return setup_sprite(/* None */0, /* Some */[/* tuple */[
+          return setup_sprite(/* None */0, [/* tuple */[
                         1,
                         10
-                      ]], /* Some */[/* tuple */[
+                      ]], [/* tuple */[
                         11,
                         16
                       ]], "enemies.png", 2, 10, /* tuple */[
@@ -105,10 +105,10 @@ function make_enemy(param) {
                       5
                     ]);
         } else {
-          return setup_sprite(/* None */0, /* Some */[/* tuple */[
+          return setup_sprite(/* None */0, [/* tuple */[
                         4,
                         10
-                      ]], /* Some */[/* tuple */[
+                      ]], [/* tuple */[
                         11,
                         16
                       ]], "enemies.png", 2, 10, /* tuple */[
@@ -120,10 +120,10 @@ function make_enemy(param) {
                     ]);
         }
     case 3 : 
-        return setup_sprite(/* None */0, /* Some */[/* tuple */[
+        return setup_sprite(/* None */0, [/* tuple */[
                       2,
                       2
-                    ]], /* Some */[/* tuple */[
+                    ]], [/* tuple */[
                       12,
                       13
                     ]], "enemies.png", 4, 10, /* tuple */[
@@ -134,10 +134,10 @@ function make_enemy(param) {
                     96
                   ]);
     case 4 : 
-        return setup_sprite(/* None */0, /* Some */[/* tuple */[
+        return setup_sprite(/* None */0, [/* tuple */[
                       2,
                       2
-                    ]], /* Some */[/* tuple */[
+                    ]], [/* tuple */[
                       12,
                       13
                     ]], "enemies.png", 4, 10, /* tuple */[
@@ -259,10 +259,10 @@ function make_type(typ, dir) {
           if (param[1]) {
             switch (typ$1) {
               case 0 : 
-                  return setup_sprite(/* None */0, /* Some */[/* tuple */[
+                  return setup_sprite(/* None */0, [/* tuple */[
                                 1,
                                 1
-                              ]], /* Some */[/* tuple */[
+                              ]], [/* tuple */[
                                 11,
                                 15
                               ]], "mario-small.png", 1, 0, /* tuple */[
@@ -273,10 +273,10 @@ function make_type(typ, dir) {
                               32
                             ]);
               case 1 : 
-                  return setup_sprite(/* None */0, /* Some */[/* tuple */[
+                  return setup_sprite(/* None */0, [/* tuple */[
                                 2,
                                 1
-                              ]], /* Some */[/* tuple */[
+                              ]], [/* tuple */[
                                 13,
                                 15
                               ]], "mario-small.png", 2, 10, /* tuple */[
@@ -287,10 +287,10 @@ function make_type(typ, dir) {
                               48
                             ]);
               case 2 : 
-                  return setup_sprite(/* None */0, /* Some */[/* tuple */[
+                  return setup_sprite(/* None */0, [/* tuple */[
                                 2,
                                 1
-                              ]], /* Some */[/* tuple */[
+                              ]], [/* tuple */[
                                 12,
                                 15
                               ]], "mario-small.png", 3, 5, /* tuple */[
@@ -301,10 +301,10 @@ function make_type(typ, dir) {
                               32
                             ]);
               case 3 : 
-                  return setup_sprite(/* None */0, /* Some */[/* tuple */[
+                  return setup_sprite(/* None */0, [/* tuple */[
                                 1,
                                 5
-                              ]], /* Some */[/* tuple */[
+                              ]], [/* tuple */[
                                 14,
                                 10
                               ]], "mario-small.png", 1, 0, /* tuple */[
@@ -319,10 +319,10 @@ function make_type(typ, dir) {
           } else {
             switch (typ$1) {
               case 0 : 
-                  return setup_sprite(/* None */0, /* Some */[/* tuple */[
+                  return setup_sprite(/* None */0, [/* tuple */[
                                 3,
                                 1
-                              ]], /* Some */[/* tuple */[
+                              ]], [/* tuple */[
                                 11,
                                 15
                               ]], "mario-small.png", 1, 0, /* tuple */[
@@ -333,10 +333,10 @@ function make_type(typ, dir) {
                               0
                             ]);
               case 1 : 
-                  return setup_sprite(/* None */0, /* Some */[/* tuple */[
+                  return setup_sprite(/* None */0, [/* tuple */[
                                 2,
                                 1
-                              ]], /* Some */[/* tuple */[
+                              ]], [/* tuple */[
                                 13,
                                 15
                               ]], "mario-small.png", 2, 10, /* tuple */[
@@ -347,10 +347,10 @@ function make_type(typ, dir) {
                               16
                             ]);
               case 2 : 
-                  return setup_sprite(/* None */0, /* Some */[/* tuple */[
+                  return setup_sprite(/* None */0, [/* tuple */[
                                 2,
                                 1
-                              ]], /* Some */[/* tuple */[
+                              ]], [/* tuple */[
                                 12,
                                 15
                               ]], "mario-small.png", 3, 5, /* tuple */[
@@ -361,10 +361,10 @@ function make_type(typ, dir) {
                               0
                             ]);
               case 3 : 
-                  return setup_sprite(/* None */0, /* Some */[/* tuple */[
+                  return setup_sprite(/* None */0, [/* tuple */[
                                 1,
                                 5
-                              ]], /* Some */[/* tuple */[
+                              ]], [/* tuple */[
                                 14,
                                 10
                               ]], "mario-small.png", 1, 0, /* tuple */[
@@ -383,10 +383,10 @@ function make_type(typ, dir) {
           if (param$1[1]) {
             switch (typ$2) {
               case 0 : 
-                  return setup_sprite(/* None */0, /* Some */[/* tuple */[
+                  return setup_sprite(/* None */0, [/* tuple */[
                                 1,
                                 1
-                              ]], /* Some */[/* tuple */[
+                              ]], [/* tuple */[
                                 13,
                                 25
                               ]], "mario-big.png", 1, 0, /* tuple */[
@@ -397,10 +397,10 @@ function make_type(typ, dir) {
                               69
                             ]);
               case 1 : 
-                  return setup_sprite(/* None */0, /* Some */[/* tuple */[
+                  return setup_sprite(/* None */0, [/* tuple */[
                                 2,
                                 1
-                              ]], /* Some */[/* tuple */[
+                              ]], [/* tuple */[
                                 12,
                                 25
                               ]], "mario-big.png", 1, 0, /* tuple */[
@@ -411,10 +411,10 @@ function make_type(typ, dir) {
                               70
                             ]);
               case 2 : 
-                  return setup_sprite(/* None */0, /* Some */[/* tuple */[
+                  return setup_sprite(/* None */0, [/* tuple */[
                                 2,
                                 1
-                              ]], /* Some */[/* tuple */[
+                              ]], [/* tuple */[
                                 13,
                                 25
                               ]], "mario-big.png", 4, 10, /* tuple */[
@@ -425,10 +425,10 @@ function make_type(typ, dir) {
                               101
                             ]);
               case 3 : 
-                  return setup_sprite(/* None */0, /* Some */[/* tuple */[
+                  return setup_sprite(/* None */0, [/* tuple */[
                                 2,
                                 10
-                              ]], /* Some */[/* tuple */[
+                              ]], [/* tuple */[
                                 13,
                                 17
                               ]], "mario-big.png", 1, 0, /* tuple */[
@@ -443,10 +443,10 @@ function make_type(typ, dir) {
           } else {
             switch (typ$2) {
               case 0 : 
-                  return setup_sprite(/* None */0, /* Some */[/* tuple */[
+                  return setup_sprite(/* None */0, [/* tuple */[
                                 2,
                                 1
-                              ]], /* Some */[/* tuple */[
+                              ]], [/* tuple */[
                                 13,
                                 25
                               ]], "mario-big.png", 1, 0, /* tuple */[
@@ -457,10 +457,10 @@ function make_type(typ, dir) {
                               5
                             ]);
               case 1 : 
-                  return setup_sprite(/* None */0, /* Some */[/* tuple */[
+                  return setup_sprite(/* None */0, [/* tuple */[
                                 2,
                                 1
-                              ]], /* Some */[/* tuple */[
+                              ]], [/* tuple */[
                                 12,
                                 25
                               ]], "mario-big.png", 1, 0, /* tuple */[
@@ -471,10 +471,10 @@ function make_type(typ, dir) {
                               6
                             ]);
               case 2 : 
-                  return setup_sprite(/* None */0, /* Some */[/* tuple */[
+                  return setup_sprite(/* None */0, [/* tuple */[
                                 2,
                                 1
-                              ]], /* Some */[/* tuple */[
+                              ]], [/* tuple */[
                                 13,
                                 25
                               ]], "mario-big.png", 4, 10, /* tuple */[
@@ -485,10 +485,10 @@ function make_type(typ, dir) {
                               37
                             ]);
               case 3 : 
-                  return setup_sprite(/* None */0, /* Some */[/* tuple */[
+                  return setup_sprite(/* None */0, [/* tuple */[
                                 2,
                                 10
-                              ]], /* Some */[/* tuple */[
+                              ]], [/* tuple */[
                                 13,
                                 17
                               ]], "mario-big.png", 1, 0, /* tuple */[
@@ -511,10 +511,10 @@ function make_type(typ, dir) {
         var param$2 = typ[0];
         switch (param$2) {
           case 0 : 
-              return setup_sprite(/* None */0, /* Some */[/* tuple */[
+              return setup_sprite(/* None */0, [/* tuple */[
                             2,
                             0
-                          ]], /* Some */[/* tuple */[
+                          ]], [/* tuple */[
                             12,
                             16
                           ]], "items.png", 1, 0, /* tuple */[
@@ -541,10 +541,10 @@ function make_type(typ, dir) {
                           48
                         ]);
           case 3 : 
-              return setup_sprite(/* None */0, /* Some */[/* tuple */[
+              return setup_sprite(/* None */0, [/* tuple */[
                             3,
                             0
-                          ]], /* Some */[/* tuple */[
+                          ]], [/* tuple */[
                             12,
                             16
                           ]], "items.png", 3, 15, /* tuple */[
@@ -760,7 +760,7 @@ function make_score(score, pos, ctx) {
           score !== 100 && score >= 200 ? /* Score200 */4 : /* Score100 */3
         )
     );
-  return make$1(/* Some */[/* tuple */[
+  return make$1([/* tuple */[
                 0.5,
                 -0.7
               ]], /* None */0, t, pos, ctx);
@@ -816,23 +816,23 @@ function set_vel_to_speed(obj) {
 function make_type$2(param) {
   switch (param.tag | 0) {
     case 0 : 
-        return setup_obj(/* None */0, /* Some */[2.8], /* () */0);
+        return setup_obj(/* None */0, [2.8], /* () */0);
     case 1 : 
         var param$1 = param[0];
         if (param$1 >= 3) {
-          return setup_obj(/* None */0, /* Some */[3], /* () */0);
+          return setup_obj(/* None */0, [3], /* () */0);
         } else {
           return setup_obj(/* None */0, /* None */0, /* () */0);
         }
     case 2 : 
         var param$2 = param[0];
         if (param$2 >= 3) {
-          return setup_obj(/* Some */[false], /* None */0, /* () */0);
+          return setup_obj([false], /* None */0, /* () */0);
         } else {
           return setup_obj(/* None */0, /* None */0, /* () */0);
         }
     case 3 : 
-        return setup_obj(/* Some */[false], /* None */0, /* () */0);
+        return setup_obj([false], /* None */0, /* () */0);
     
   }
 }
@@ -1002,7 +1002,7 @@ function update_player(player, keys, context) {
   player[/* vel */2][/* x */0] = vel_damped;
   var pl_typ = player[/* health */9] <= 1 ? /* SmallM */1 : /* BigM */0;
   if (!prev_jumping && player[/* jumping */4]) {
-    return /* Some */[/* tuple */[
+    return [/* tuple */[
               pl_typ,
               make(/* SPlayer */Block.__(0, [
                       pl_typ,
@@ -1010,7 +1010,7 @@ function update_player(player, keys, context) {
                     ]), player[/* dir */6], context)
             ]];
   } else if (prev_dir !== player[/* dir */6] || prev_vx === 0 && Math.abs(player[/* vel */2][/* x */0]) > 0 && !player[/* jumping */4]) {
-    return /* Some */[/* tuple */[
+    return [/* tuple */[
               pl_typ,
               make(/* SPlayer */Block.__(0, [
                       pl_typ,
@@ -1018,7 +1018,7 @@ function update_player(player, keys, context) {
                     ]), player[/* dir */6], context)
             ]];
   } else if (prev_dir !== player[/* dir */6] && player[/* jumping */4] && prev_jumping) {
-    return /* Some */[/* tuple */[
+    return [/* tuple */[
               pl_typ,
               make(/* SPlayer */Block.__(0, [
                       pl_typ,
@@ -1026,7 +1026,7 @@ function update_player(player, keys, context) {
                     ]), player[/* dir */6], context)
             ]];
   } else if (player[/* vel */2][/* y */1] === 0 && player[/* crouch */10]) {
-    return /* Some */[/* tuple */[
+    return [/* tuple */[
               pl_typ,
               make(/* SPlayer */Block.__(0, [
                       pl_typ,
@@ -1034,7 +1034,7 @@ function update_player(player, keys, context) {
                     ]), player[/* dir */6], context)
             ]];
   } else if (player[/* vel */2][/* y */1] === 0 && player[/* vel */2][/* x */0] === 0) {
-    return /* Some */[/* tuple */[
+    return [/* tuple */[
               pl_typ,
               make(/* SPlayer */Block.__(0, [
                       pl_typ,
@@ -1285,17 +1285,17 @@ function check_collision(c1, c2) {
       if (ox >= oy) {
         if (vy > 0) {
           o1[/* pos */1][/* y */1] = o1[/* pos */1][/* y */1] + oy;
-          return /* Some */[/* North */0];
+          return [/* North */0];
         } else {
           o1[/* pos */1][/* y */1] = o1[/* pos */1][/* y */1] - oy;
-          return /* Some */[/* South */1];
+          return [/* South */1];
         }
       } else if (vx > 0) {
         o1[/* pos */1][/* x */0] = o1[/* pos */1][/* x */0] + ox;
-        return /* Some */[/* West */3];
+        return [/* West */3];
       } else {
         o1[/* pos */1][/* x */0] = o1[/* pos */1][/* x */0] - ox;
-        return /* Some */[/* East */2];
+        return [/* East */2];
       }
     } else {
       return /* None */0;
@@ -1347,31 +1347,31 @@ function kill(collid, ctx) {
             pos_000$1,
             pos_001$1
           ];
-          var p1 = make$1(/* Some */[/* tuple */[
+          var p1 = make$1([/* tuple */[
                   -5,
                   -5
-                ]], /* Some */[/* tuple */[
+                ]], [/* tuple */[
                   0,
                   0.2
                 ]], /* BrickChunkL */1, pos$1, ctx);
-          var p2 = make$1(/* Some */[/* tuple */[
+          var p2 = make$1([/* tuple */[
                   -3,
                   -4
-                ]], /* Some */[/* tuple */[
+                ]], [/* tuple */[
                   0,
                   0.2
                 ]], /* BrickChunkL */1, pos$1, ctx);
-          var p3 = make$1(/* Some */[/* tuple */[
+          var p3 = make$1([/* tuple */[
                   3,
                   -4
-                ]], /* Some */[/* tuple */[
+                ]], [/* tuple */[
                   0,
                   0.2
                 ]], /* BrickChunkR */2, pos$1, ctx);
-          var p4 = make$1(/* Some */[/* tuple */[
+          var p4 = make$1([/* tuple */[
                   5,
                   -5
-                ]], /* Some */[/* tuple */[
+                ]], [/* tuple */[
                   0,
                   0.2
                 ]], /* BrickChunkR */2, pos$1, ctx);

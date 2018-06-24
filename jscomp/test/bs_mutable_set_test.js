@@ -145,9 +145,9 @@ b("File \"bs_mutable_set_test.ml\", line 71, characters 4-11", Belt_MutableSetIn
           data: Belt_internalAVLset.empty
         }));
 
-eq("File \"bs_mutable_set_test.ml\", line 72, characters 5-12", Belt_internalAVLset.minimum(v.data), /* Some */[500]);
+eq("File \"bs_mutable_set_test.ml\", line 72, characters 5-12", Belt_internalAVLset.minimum(v.data), [500]);
 
-eq("File \"bs_mutable_set_test.ml\", line 73, characters 5-12", Belt_internalAVLset.maximum(v.data), /* Some */[2000]);
+eq("File \"bs_mutable_set_test.ml\", line 73, characters 5-12", Belt_internalAVLset.maximum(v.data), [2000]);
 
 eq("File \"bs_mutable_set_test.ml\", line 74, characters 5-12", Belt_internalAVLset.minUndefined(v.data), 500);
 
@@ -169,7 +169,7 @@ Belt_internalAVLset.checkInvariantInternal(v.data);
 
 eq("File \"bs_mutable_set_test.ml\", line 80, characters 5-12", Belt_internalSetInt.get(v.data, 3), /* None */0);
 
-eq("File \"bs_mutable_set_test.ml\", line 81, characters 5-12", Belt_internalSetInt.get(v.data, 1200), /* Some */[1200]);
+eq("File \"bs_mutable_set_test.ml\", line 81, characters 5-12", Belt_internalSetInt.get(v.data, 1200), [1200]);
 
 var match = Belt_MutableSetInt.split(v, 1000);
 

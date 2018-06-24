@@ -25,7 +25,7 @@ var suites_000 = /* tuple */[
   (function () {
       return /* Eq */Block.__(0, [
                 true,
-                Caml_obj.caml_lessthan(/* None */0, /* Some */[1])
+                Caml_obj.caml_lessthan(/* None */0, [1])
               ]);
     })
 ];
@@ -36,7 +36,7 @@ var suites_001 = /* :: */[
     (function () {
         return /* Eq */Block.__(0, [
                   true,
-                  Caml_obj.caml_lessthan(/* Some */[1], /* Some */[2])
+                  Caml_obj.caml_lessthan([1], [2])
                 ]);
       })
   ],
@@ -173,7 +173,7 @@ var suites_001 = /* :: */[
                   (function () {
                       return /* Eq */Block.__(0, [
                                 true,
-                                Caml_obj.caml_lessthan(/* None */0, /* Some */[1])
+                                Caml_obj.caml_lessthan(/* None */0, [1])
                               ]);
                     })
                 ],
@@ -183,7 +183,7 @@ var suites_001 = /* :: */[
                     (function () {
                         return /* Eq */Block.__(0, [
                                   true,
-                                  Caml_obj.caml_lessthan(/* None */0, /* Some */[/* array */[
+                                  Caml_obj.caml_lessthan(/* None */0, [/* array */[
                                           1,
                                           30
                                         ]])
@@ -196,7 +196,7 @@ var suites_001 = /* :: */[
                       (function () {
                           return /* Eq */Block.__(0, [
                                     true,
-                                    Caml_obj.caml_greaterthan(/* Some */[/* array */[
+                                    Caml_obj.caml_greaterthan([/* array */[
                                             1,
                                             30
                                           ]], /* None */0)

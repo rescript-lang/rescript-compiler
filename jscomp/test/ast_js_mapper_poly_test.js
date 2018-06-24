@@ -67,11 +67,11 @@ function eqUOpt(x, y) {
   }
 }
 
-eq("File \"ast_js_mapper_poly_test.ml\", line 25, characters 5-12", eqUOpt(uFromJs("x"), /* Some */[/* f */102]), true);
+eq("File \"ast_js_mapper_poly_test.ml\", line 25, characters 5-12", eqUOpt(uFromJs("x"), [/* f */102]), true);
 
-eq("File \"ast_js_mapper_poly_test.ml\", line 26, characters 5-12", eqUOpt(uFromJs("D"), /* Some */[/* D */68]), true);
+eq("File \"ast_js_mapper_poly_test.ml\", line 26, characters 5-12", eqUOpt(uFromJs("D"), [/* D */68]), true);
 
-eq("File \"ast_js_mapper_poly_test.ml\", line 27, characters 5-12", eqUOpt(uFromJs("C"), /* Some */[/* C */67]), true);
+eq("File \"ast_js_mapper_poly_test.ml\", line 27, characters 5-12", eqUOpt(uFromJs("C"), [/* C */67]), true);
 
 eq("File \"ast_js_mapper_poly_test.ml\", line 28, characters 5-12", eqUOpt(uFromJs("f"), /* None */0), true);
 
@@ -153,12 +153,12 @@ eq("File \"ast_js_mapper_poly_test.ml\", line 55, characters 5-12", $$Array.map(
           5,
           6
         ]), /* array */[
-      /* Some */[/* A0 */0],
+      [/* A0 */0],
       /* None */0,
       /* None */0,
-      /* Some */[/* A1 */1],
-      /* Some */[/* A2 */2],
-      /* Some */[/* A3 */3],
+      [/* A1 */1],
+      [/* A2 */2],
+      [/* A3 */3],
       /* None */0
     ]);
 
@@ -168,7 +168,7 @@ function v1ToJs(param) {
 
 function v1FromJs(param) {
   if (param <= 5 && 0 <= param) {
-    return /* Some */[param - 0 | 0];
+    return [param - 0 | 0];
   } else {
     return /* None */0;
   }
@@ -201,12 +201,12 @@ eq("File \"ast_js_mapper_poly_test.ml\", line 69, characters 5-12", $$Array.map(
           6
         ]), /* array */[
       /* None */0,
-      /* Some */[/* B0 */0],
-      /* Some */[/* B1 */1],
-      /* Some */[/* B2 */2],
-      /* Some */[/* B3 */3],
-      /* Some */[/* B4 */4],
-      /* Some */[/* B5 */5],
+      [/* B0 */0],
+      [/* B1 */1],
+      [/* B2 */2],
+      [/* B3 */3],
+      [/* B4 */4],
+      [/* B5 */5],
       /* None */0
     ]);
 
@@ -216,7 +216,7 @@ function v2ToJs(param) {
 
 function v2FromJs(param) {
   if (param <= 7 && 2 <= param) {
-    return /* Some */[param - 2 | 0];
+    return [param - 2 | 0];
   } else {
     return /* None */0;
   }

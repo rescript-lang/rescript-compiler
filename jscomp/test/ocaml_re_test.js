@@ -3165,12 +3165,12 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
     } else if (accept(/* "+" */43)) {
       return greedy_mod(repn(r, 1, /* None */0));
     } else if (accept(/* "?" */63)) {
-      return greedy_mod(repn(r, 0, /* Some */[1]));
+      return greedy_mod(repn(r, 0, [1]));
     } else if (accept(/* "{" */123)) {
       var match = integer(/* () */0);
       if (match !== /* None */0) {
         var i$1 = match[0];
-        var j = accept(/* "," */44) ? integer(/* () */0) : /* Some */[i$1];
+        var j = accept(/* "," */44) ? integer(/* () */0) : [i$1];
         if (!accept(/* "}" */125)) {
           throw Parse_error;
         }
@@ -3464,12 +3464,12 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
         while(true) {
           var i$1 = _i;
           if (i[0] === l) {
-            return /* Some */[i$1];
+            return [i$1];
           } else {
             var d$1 = get(/* () */0);
             if (d$1 > 57 || d$1 < 48) {
               i[0] = i[0] - 1 | 0;
-              return /* Some */[i$1];
+              return [i$1];
             } else {
               var i$prime = Caml_int32.imul(10, i$1) + (d$1 - /* "0" */48 | 0) | 0;
               if (i$prime < i$1) {
@@ -3726,7 +3726,7 @@ function re($staropt$star, pat) {
             return /* Caseless */604571177;
           }
         }), flags);
-  var $staropt$star$1 = /* Some */[opts];
+  var $staropt$star$1 = [opts];
   var s = pat;
   var opts$1 = $staropt$star$1 !== /* None */0 ? $staropt$star$1[0] : /* [] */0;
   var r = parse(List.memq(/* Multiline */1071952589, opts$1), List.memq(/* Dollar_endonly */-712595228, opts$1), List.memq(/* Dotall */-424303016, opts$1), List.memq(/* Ungreedy */-243745063, opts$1), s);

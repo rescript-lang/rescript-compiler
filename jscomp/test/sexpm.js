@@ -672,7 +672,7 @@ function atom(k, t) {
             $$Buffer.add_char(t[/* atom */2], c);
             continue ;
         case 2 : 
-            return _return_atom(/* Some */[c], k, t);
+            return _return_atom([c], k, t);
         
       }
     }
@@ -899,7 +899,7 @@ function parse_string(s) {
       return n;
     }
   };
-  var d = make(/* Some */[n], refill);
+  var d = make([n], refill);
   var res = next(d);
   if (typeof res === "number") {
     return /* `Error */[
@@ -935,7 +935,7 @@ function parse_chan_gen(bufsize, ic) {
       if (typeof e === "number") {
         return /* None */0;
       } else {
-        return /* Some */[e];
+        return [e];
       }
     });
 }
@@ -1295,7 +1295,7 @@ function MakeDecode(funarg) {
               $$Buffer.add_char(t[/* atom */2], c);
               continue ;
           case 2 : 
-              return _return_atom(/* Some */[c], k, t);
+              return _return_atom([c], k, t);
           
         }
       }

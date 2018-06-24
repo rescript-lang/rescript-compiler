@@ -99,7 +99,7 @@ var suites_001 = /* :: */[
                     "codePointAt",
                     (function () {
                         return /* Eq */Block.__(0, [
-                                  /* Some */[97],
+                                  [97],
                                   Js_primitive.undefined_to_opt("foobar".codePointAt(4))
                                 ]);
                       })
@@ -229,7 +229,7 @@ var suites_001 = /* :: */[
                                               "match",
                                               (function () {
                                                   return /* Eq */Block.__(0, [
-                                                            /* Some */[/* array */[
+                                                            [/* array */[
                                                                 "na",
                                                                 "na"
                                                               ]],

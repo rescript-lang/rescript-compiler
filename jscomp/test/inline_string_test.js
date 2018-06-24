@@ -14,7 +14,7 @@ function f(param) {
 }
 
 console.log(/* tuple */[
-      f(/* Some */[3]),
+      f([3]),
       "None",
       "Some"
     ]);

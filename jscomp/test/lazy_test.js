@@ -70,7 +70,7 @@ function f(param) {
 var s = [/* None */0];
 
 var set_true = Block.__(246, [(function () {
-        s[0] = /* Some */[1];
+        s[0] = [1];
         return /* () */0;
       })]);
 

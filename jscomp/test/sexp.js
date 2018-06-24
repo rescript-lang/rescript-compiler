@@ -181,7 +181,7 @@ function map_opt(f, l) {
         return /* None */0;
       }
     } else {
-      return /* Some */[List.rev(acc)];
+      return [List.rev(acc)];
     }
   };
 }
@@ -278,7 +278,7 @@ function to_pair(e) {
     if (match) {
       var match$1 = match[1];
       if (match$1 && !match$1[1]) {
-        return /* Some */[/* tuple */[
+        return [/* tuple */[
                   match[0],
                   match$1[0]
                 ]];
@@ -315,7 +315,7 @@ function to_triple(e) {
       if (match$1) {
         var match$2 = match$1[1];
         if (match$2 && !match$2[1]) {
-          return /* Some */[/* tuple */[
+          return [/* tuple */[
                     match[0],
                     match$1[0],
                     match$2[0]
@@ -397,7 +397,7 @@ function get_field(name, e) {
                   _l = l[1];
                   continue ;
                 } else if (Caml_obj.caml_equal(name$1, match$2[1])) {
-                  return /* Some */[match$3[0]];
+                  return [match$3[0]];
                 } else {
                   _l = l[1];
                   continue ;
@@ -447,7 +447,7 @@ function _get_field_list(name, _l) {
             _l = l[1];
             continue ;
           } else if (Caml_obj.caml_equal(name, match$2[1])) {
-            return /* Some */[match$1[1]];
+            return [match$1[1]];
           } else {
             _l = l[1];
             continue ;

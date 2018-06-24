@@ -43,7 +43,7 @@ var suites_001 = /* :: */[
         };
         return /* Eq */Block.__(0, [
                   contentOf("div", "<div>Hi</div>"),
-                  /* Some */["Hi"]
+                  ["Hi"]
                 ]);
       })
   ],

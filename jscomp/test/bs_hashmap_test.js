@@ -56,7 +56,7 @@ Belt_HashMap.mergeMany(empty, /* array */[
       ]
     ]);
 
-eqx("File \"bs_hashmap_test.ml\", line 31, characters 6-13", Belt_HashMap.get(empty, 2), /* Some */[2]);
+eqx("File \"bs_hashmap_test.ml\", line 31, characters 6-13", Belt_HashMap.get(empty, 2), [2]);
 
 eqx("File \"bs_hashmap_test.ml\", line 32, characters 6-13", empty.size, 3);
 

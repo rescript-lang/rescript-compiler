@@ -42,7 +42,7 @@ function emptyMap() {
 function mergeInter(s1, s2) {
   var m = Belt_Map.merge(s1, s2, (function (_, v1, v2) {
           if (v1 !== /* None */0 && v2 !== /* None */0) {
-            return /* Some */[/* () */0];
+            return [/* () */0];
           } else {
             return /* None */0;
           }
@@ -54,7 +54,7 @@ function mergeInter(s1, s2) {
 function mergeUnion(s1, s2) {
   var m = Belt_Map.merge(s1, s2, (function (_, v1, v2) {
           if (v1 !== /* None */0 || v2 !== /* None */0) {
-            return /* Some */[/* () */0];
+            return [/* () */0];
           } else {
             return /* None */0;
           }
@@ -66,7 +66,7 @@ function mergeUnion(s1, s2) {
 function mergeDiff(s1, s2) {
   var m = Belt_Map.merge(s1, s2, (function (_, v1, v2) {
           if (v1 !== /* None */0 && v2 === /* None */0) {
-            return /* Some */[/* () */0];
+            return [/* () */0];
           } else {
             return /* None */0;
           }
@@ -120,7 +120,7 @@ var a3 = Belt_Map.update(a2, 3, (function (k) {
         if (k !== /* None */0) {
           return /* Some */[k[0] + 1 | 0];
         } else {
-          return /* Some */[11];
+          return [11];
         }
       }));
 
@@ -181,9 +181,9 @@ var u0$1 = Belt_Map.fromArray(x$7, Icmp);
 
 var u1$1 = Belt_Map.set(u0$1, 3, 32);
 
-eq("File \"bs_poly_map_test.ml\", line 90, characters 5-12", Belt_Map.get(u1$1, 3), /* Some */[32]);
+eq("File \"bs_poly_map_test.ml\", line 90, characters 5-12", Belt_Map.get(u1$1, 3), [32]);
 
-eq("File \"bs_poly_map_test.ml\", line 91, characters 5-12", Belt_Map.get(u0$1, 3), /* Some */[3]);
+eq("File \"bs_poly_map_test.ml\", line 91, characters 5-12", Belt_Map.get(u0$1, 3), [3]);
 
 function acc(m, is) {
   return Belt_Array.reduce(is, m, (function (a, i) {
@@ -191,9 +191,9 @@ function acc(m, is) {
                 var i$1 = i;
                 return Belt_Map.update(m, i$1, (function (n) {
                               if (n !== /* None */0) {
-                                return /* Some */[n[0] + 1 | 0];
+                                return [n[0] + 1 | 0];
                               } else {
-                                return /* Some */[1];
+                                return [1];
                               }
                             }));
               }));
@@ -244,9 +244,9 @@ b("File \"bs_poly_map_test.ml\", line 117, characters 4-11", Belt_Map.eq(v1, v2,
 
 function inc(x) {
   if (x !== /* None */0) {
-    return /* Some */[x[0] + 1 | 0];
+    return [x[0] + 1 | 0];
   } else {
-    return /* Some */[0];
+    return [0];
   }
 }
 

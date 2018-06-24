@@ -37,9 +37,9 @@ var A = Caml_exceptions.create("Exception_repr_test.A");
 
 Printexc.register_printer((function (param) {
         if (param === Hi) {
-          return /* Some */["hey"];
+          return ["hey"];
         } else if (param[0] === A) {
-          return /* Some */[Curry._1(Format.asprintf(/* Format */[
+          return [Curry._1(Format.asprintf(/* Format */[
                             /* String_literal */Block.__(11, [
                                 "A(",
                                 /* Int */Block.__(4, [

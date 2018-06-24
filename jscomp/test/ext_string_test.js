@@ -90,7 +90,7 @@ function split(keep_empty, str, on) {
 }
 
 function quick_split_by_ws(str) {
-  return split_by(/* Some */[false], (function (x) {
+  return split_by([false], (function (x) {
                 if (x === /* "\t" */9 || x === /* "\n" */10) {
                   return true;
                 } else {
@@ -144,7 +144,7 @@ function ends_with(s, end_) {
 function ends_with_then_chop(s, beg) {
   var i = ends_with_index(s, beg);
   if (i >= 0) {
-    return /* Some */[$$String.sub(s, 0, i)];
+    return [$$String.sub(s, 0, i)];
   } else {
     return /* None */0;
   }
@@ -163,7 +163,7 @@ function check_any_suffix_case_then_chop(s, suffixes) {
     if (suffixes$1) {
       var id = ends_with_index(s, suffixes$1[0]);
       if (id >= 0) {
-        return /* Some */[$$String.sub(s, 0, id)];
+        return [$$String.sub(s, 0, id)];
       } else {
         _suffixes = suffixes$1[1];
         continue ;
@@ -314,7 +314,7 @@ function non_overlap_count(sub, s) {
     while(true) {
       var off = _off;
       var acc = _acc;
-      var i = find(/* Some */[off], sub, s);
+      var i = find([off], sub, s);
       if (i < 0) {
         return acc;
       } else {
@@ -441,7 +441,7 @@ function rindex_rec_opt(s, _i, c) {
     if (i < 0) {
       return /* None */0;
     } else if (s.charCodeAt(i) === c) {
-      return /* Some */[i];
+      return [i];
     } else {
       _i = i - 1 | 0;
       continue ;

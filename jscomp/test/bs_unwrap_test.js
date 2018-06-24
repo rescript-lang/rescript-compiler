@@ -39,7 +39,7 @@ console.log(3, "hi");
 
 console.log(4, undefined);
 
-var some_arg = /* Some */[/* `Bool */[
+var some_arg = [/* `Bool */[
     737456202,
     true
   ]];
@@ -58,7 +58,7 @@ function dyn_log3(prim, prim$1, _) {
 dyn_log3(/* `Int */[
       3654863,
       8
-    ], /* Some */[/* `Bool */[
+    ], [/* `Bool */[
         737456202,
         true
       ]], /* () */0);

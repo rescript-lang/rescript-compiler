@@ -55,7 +55,7 @@ b("File \"equal_box_test.ml\", line 33, characters 4-11", true);
 
 b("File \"equal_box_test.ml\", line 34, characters 4-11", true);
 
-b("File \"equal_box_test.ml\", line 35, characters 4-11", !Caml_obj.caml_equal_null(/* Some */[3], /* None */0));
+b("File \"equal_box_test.ml\", line 35, characters 4-11", !Caml_obj.caml_equal_null([3], /* None */0));
 
 var v = null;
 
@@ -84,7 +84,7 @@ b("File \"equal_box_test.ml\", line 48, characters 4-11", true);
 
 b("File \"equal_box_test.ml\", line 49, characters 4-11", true);
 
-b("File \"equal_box_test.ml\", line 50, characters 4-11", !Caml_obj.caml_equal_nullable(/* Some */[3], /* None */0));
+b("File \"equal_box_test.ml\", line 50, characters 4-11", !Caml_obj.caml_equal_nullable([3], /* None */0));
 
 var v$1 = undefined;
 
@@ -113,7 +113,7 @@ b("File \"equal_box_test.ml\", line 64, characters 4-11", true);
 
 b("File \"equal_box_test.ml\", line 65, characters 4-11", true);
 
-b("File \"equal_box_test.ml\", line 66, characters 4-11", !Caml_obj.caml_equal_undefined(/* Some */[3], /* None */0));
+b("File \"equal_box_test.ml\", line 66, characters 4-11", !Caml_obj.caml_equal_undefined([3], /* None */0));
 
 Mt.from_pair_suites("File \"equal_box_test.ml\", line 71, characters 23-30", suites[0]);
 

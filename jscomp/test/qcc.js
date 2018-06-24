@@ -181,7 +181,7 @@ function skip(_param) {
 function next() {
   var match;
   try {
-    match = /* Some */[skip(/* () */0)];
+    match = [skip(/* () */0)];
   }
   catch (exn){
     if (exn === Caml_builtin_exceptions.end_of_file) {

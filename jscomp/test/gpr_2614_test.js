@@ -20,7 +20,7 @@ function ff() {
   return /* () */0;
 }
 
-var partial_arg = /* Some */["x"];
+var partial_arg = ["x"];
 
 function h0() {
   var tmp = {

@@ -54,7 +54,7 @@ var option_suites_001 = /* :: */[
           (function () {
               return /* Eq */Block.__(0, [
                         true,
-                        Js_option.isSomeValue(simpleEq, 2, /* Some */[2])
+                        Js_option.isSomeValue(simpleEq, 2, [2])
                       ]);
             })
         ],
@@ -64,7 +64,7 @@ var option_suites_001 = /* :: */[
             (function () {
                 return /* Eq */Block.__(0, [
                           false,
-                          Js_option.isSomeValue(simpleEq, 1, /* Some */[2])
+                          Js_option.isSomeValue(simpleEq, 1, [2])
                         ]);
               })
           ],
@@ -84,7 +84,7 @@ var option_suites_001 = /* :: */[
                 (function () {
                     return /* Eq */Block.__(0, [
                               2,
-                              Js_option.getExn(/* Some */[2])
+                              Js_option.getExn([2])
                             ]);
                   })
               ],
@@ -94,7 +94,7 @@ var option_suites_001 = /* :: */[
                   (function () {
                       return /* Eq */Block.__(0, [
                                 true,
-                                Js_option.equal(simpleEq, /* Some */[2], /* Some */[2])
+                                Js_option.equal(simpleEq, [2], [2])
                               ]);
                     })
                 ],
@@ -104,7 +104,7 @@ var option_suites_001 = /* :: */[
                     (function () {
                         return /* Eq */Block.__(0, [
                                   false,
-                                  Js_option.equal(simpleEq, /* Some */[1], /* Some */[2])
+                                  Js_option.equal(simpleEq, [1], [2])
                                 ]);
                       })
                   ],
@@ -114,7 +114,7 @@ var option_suites_001 = /* :: */[
                       (function () {
                           return /* Eq */Block.__(0, [
                                     false,
-                                    Js_option.equal(simpleEq, /* Some */[1], /* None */0)
+                                    Js_option.equal(simpleEq, [1], /* None */0)
                                   ]);
                         })
                     ],
@@ -125,8 +125,8 @@ var option_suites_001 = /* :: */[
                             return /* Eq */Block.__(0, [
                                       true,
                                       Js_option.isSomeValue(simpleEq, 3, Js_option.andThen((function (a) {
-                                                  return /* Some */[a + 1 | 0];
-                                                }), /* Some */[2]))
+                                                  return [a + 1 | 0];
+                                                }), [2]))
                                     ]);
                           })
                       ],
@@ -138,7 +138,7 @@ var option_suites_001 = /* :: */[
                                         false,
                                         Js_option.isSomeValue(simpleEq, 3, Js_option.andThen((function () {
                                                     return /* None */0;
-                                                  }), /* Some */[2]))
+                                                  }), [2]))
                                       ]);
                             })
                         ],
@@ -150,7 +150,7 @@ var option_suites_001 = /* :: */[
                                           true,
                                           Js_option.isSomeValue(simpleEq, 3, Js_option.map((function (a) {
                                                       return a + 1 | 0;
-                                                    }), /* Some */[2]))
+                                                    }), [2]))
                                         ]);
                               })
                           ],
@@ -172,7 +172,7 @@ var option_suites_001 = /* :: */[
                                 (function () {
                                     return /* Eq */Block.__(0, [
                                               2,
-                                              Js_option.getWithDefault(3, /* Some */[2])
+                                              Js_option.getWithDefault(3, [2])
                                             ]);
                                   })
                               ],
@@ -194,7 +194,7 @@ var option_suites_001 = /* :: */[
                                                   true,
                                                   Js_option.isSomeValue(simpleEq, 2, Js_option.filter((function (a) {
                                                               return a % 2 === 0;
-                                                            }), /* Some */[2]))
+                                                            }), [2]))
                                                 ]);
                                       })
                                   ],
@@ -206,7 +206,7 @@ var option_suites_001 = /* :: */[
                                                     /* None */0,
                                                     Js_option.filter((function (a) {
                                                             return a % 3 === 0;
-                                                          }), /* Some */[2])
+                                                          }), [2])
                                                   ]);
                                         })
                                     ],
@@ -228,7 +228,7 @@ var option_suites_001 = /* :: */[
                                           (function () {
                                               return /* Eq */Block.__(0, [
                                                         true,
-                                                        Js_option.isSomeValue(simpleEq, 3, Js_option.firstSome(/* Some */[3], /* Some */[2]))
+                                                        Js_option.isSomeValue(simpleEq, 3, Js_option.firstSome([3], [2]))
                                                       ]);
                                             })
                                         ],
@@ -238,7 +238,7 @@ var option_suites_001 = /* :: */[
                                             (function () {
                                                 return /* Eq */Block.__(0, [
                                                           true,
-                                                          Js_option.isSomeValue(simpleEq, 2, Js_option.firstSome(/* None */0, /* Some */[2]))
+                                                          Js_option.isSomeValue(simpleEq, 2, Js_option.firstSome(/* None */0, [2]))
                                                         ]);
                                               })
                                           ],

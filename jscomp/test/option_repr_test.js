@@ -52,17 +52,17 @@ function f6() {
   return true;
 }
 
-var f10 = /* Some */[/* Some */[/* Some */[/* Some */[/* None */0]]]];
+var f10 = [[[[/* None */0]]]];
 
 var f11 = /* Some */[f10];
 
 var f7 = /* None */0;
 
-var f8 = /* Some */[/* None */0];
+var f8 = [/* None */0];
 
-var f9 = /* Some */[/* Some */[/* None */0]];
+var f9 = [[/* None */0]];
 
-var f12 = /* Some */[/* Some */[/* Some */[/* Some */[/* :: */[
+var f12 = [[[[/* :: */[
           /* tuple */[
             1,
             2
