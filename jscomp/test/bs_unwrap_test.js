@@ -39,29 +39,29 @@ console.log(3, "hi");
 
 console.log(4, undefined);
 
-var some_arg = [/* `Bool */[
-    737456202,
-    true
-  ]];
+var some_arg = /* `Bool */[
+  737456202,
+  true
+];
 
-console.log(5, some_arg ? some_arg[0][1] : undefined);
+console.log(5, some_arg !== undefined ? Js_primitive.valFromOption(some_arg)[1] : undefined);
 
 console.log(6, undefined);
 
-console.log(7, Js_primitive.option_get_unwrap((console.log("trace"), /* None */0)));
+console.log(7, Js_primitive.option_get_unwrap((console.log("trace"), undefined)));
 
 function dyn_log3(prim, prim$1, _) {
-  console.log(prim[1], prim$1 ? prim$1[0][1] : undefined);
+  console.log(prim[1], prim$1 !== undefined ? Js_primitive.valFromOption(prim$1)[1] : undefined);
   return /* () */0;
 }
 
 dyn_log3(/* `Int */[
       3654863,
       8
-    ], [/* `Bool */[
-        737456202,
-        true
-      ]], /* () */0);
+    ], /* `Bool */[
+      737456202,
+      true
+    ], /* () */0);
 
 console.log("foo");
 
@@ -84,7 +84,7 @@ function f(x) {
 }
 
 function ff0(x, p) {
-  console.log(x ? x[0][1] : undefined, p);
+  console.log(x !== undefined ? Js_primitive.valFromOption(x)[1] : undefined, p);
   return /* () */0;
 }
 
@@ -93,7 +93,7 @@ function ff1(x, p) {
   return /* () */0;
 }
 
-var none_arg = /* None */0;
+var none_arg = undefined;
 
 exports.arg_string = arg_string;
 exports.arg_pair = arg_pair;

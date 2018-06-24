@@ -7,14 +7,14 @@ var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 Belt_Debug.setupChromeDebugger(/* () */0);
 
 var v = /* record */[
-  /* a */[3],
+  /* a */3,
   /* b : record */[
     /* xx */2,
     /* yy */3
   ]
 ];
 
-var u_000 = /* a */[2];
+var u_000 = /* a */2;
 
 var u_001 = /* b : record */[
   /* xx */2,

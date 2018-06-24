@@ -14,13 +14,13 @@ function test_js_error() {
     var exn = Js_exn.internalToOCamlException(raw_exn);
     if (exn[0] === Js_exn.$$Error) {
       console.log(Js_primitive.undefined_to_opt(exn[1].stack));
-      return /* None */0;
+      return undefined;
     } else {
       throw exn;
     }
   }
   if (exit === 1) {
-    return /* Some */[e];
+    return Js_primitive.some(e);
   }
   
 }
@@ -51,25 +51,25 @@ function example1() {
     var exn = Js_exn.internalToOCamlException(raw_exn);
     if (exn[0] === Js_exn.$$Error) {
       console.log(Js_primitive.undefined_to_opt(exn[1].stack));
-      return /* None */0;
+      return undefined;
     } else {
       throw exn;
     }
   }
   if (exit === 1) {
-    return /* Some */[v];
+    return Js_primitive.some(v);
   }
   
 }
 
 function example2() {
   try {
-    return /* Some */[JSON.parse(" {\"x\"}")];
+    return Js_primitive.some(JSON.parse(" {\"x\"}"));
   }
   catch (raw_exn){
     var exn = Js_exn.internalToOCamlException(raw_exn);
     if (exn[0] === Js_exn.$$Error) {
-      return /* None */0;
+      return undefined;
     } else {
       throw exn;
     }

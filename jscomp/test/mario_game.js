@@ -8,6 +8,7 @@ var Random = require("../../lib/js/random.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_int32 = require("../../lib/js/caml_int32.js");
 var Pervasives = require("../../lib/js/pervasives.js");
+var Js_primitive = require("../../lib/js/js_primitive.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
@@ -16,12 +17,12 @@ var Actors = /* module */[];
 var Dom_html = /* module */[];
 
 function setup_sprite($staropt$star, $staropt$star$1, $staropt$star$2, img_src, max_frames, max_ticks, frame_size, src_offset) {
-  var loop = $staropt$star !== /* None */0 ? $staropt$star[0] : true;
-  var bbox_offset = $staropt$star$1 !== /* None */0 ? $staropt$star$1[0] : /* tuple */[
+  var loop = $staropt$star !== undefined ? $staropt$star : true;
+  var bbox_offset = $staropt$star$1 !== undefined ? Js_primitive.valFromOption($staropt$star$1) : /* tuple */[
       0,
       0
     ];
-  var bbox_size = $staropt$star$2 !== /* None */0 ? $staropt$star$2[0] : /* tuple */[
+  var bbox_size = $staropt$star$2 !== undefined ? Js_primitive.valFromOption($staropt$star$2) : /* tuple */[
       0,
       0
     ];
@@ -46,13 +47,13 @@ function make_enemy(param) {
   var dir = param[1];
   switch (param[0]) {
     case 0 : 
-        return setup_sprite(/* None */0, [/* tuple */[
-                      1,
-                      1
-                    ]], [/* tuple */[
-                      14,
-                      14
-                    ]], "enemies.png", 2, 10, /* tuple */[
+        return setup_sprite(undefined, /* tuple */[
+                    1,
+                    1
+                  ], /* tuple */[
+                    14,
+                    14
+                  ], "enemies.png", 2, 10, /* tuple */[
                     16,
                     16
                   ], /* tuple */[
@@ -61,13 +62,13 @@ function make_enemy(param) {
                   ]);
     case 1 : 
         if (dir) {
-          return setup_sprite(/* None */0, [/* tuple */[
-                        1,
-                        10
-                      ]], [/* tuple */[
-                        11,
-                        16
-                      ]], "enemies.png", 2, 10, /* tuple */[
+          return setup_sprite(undefined, /* tuple */[
+                      1,
+                      10
+                    ], /* tuple */[
+                      11,
+                      16
+                    ], "enemies.png", 2, 10, /* tuple */[
                       16,
                       27
                     ], /* tuple */[
@@ -75,13 +76,13 @@ function make_enemy(param) {
                       69
                     ]);
         } else {
-          return setup_sprite(/* None */0, [/* tuple */[
-                        4,
-                        10
-                      ]], [/* tuple */[
-                        11,
-                        16
-                      ]], "enemies.png", 2, 10, /* tuple */[
+          return setup_sprite(undefined, /* tuple */[
+                      4,
+                      10
+                    ], /* tuple */[
+                      11,
+                      16
+                    ], "enemies.png", 2, 10, /* tuple */[
                       16,
                       27
                     ], /* tuple */[
@@ -91,13 +92,13 @@ function make_enemy(param) {
         }
     case 2 : 
         if (dir) {
-          return setup_sprite(/* None */0, [/* tuple */[
-                        1,
-                        10
-                      ]], [/* tuple */[
-                        11,
-                        16
-                      ]], "enemies.png", 2, 10, /* tuple */[
+          return setup_sprite(undefined, /* tuple */[
+                      1,
+                      10
+                    ], /* tuple */[
+                      11,
+                      16
+                    ], "enemies.png", 2, 10, /* tuple */[
                       16,
                       27
                     ], /* tuple */[
@@ -105,13 +106,13 @@ function make_enemy(param) {
                       5
                     ]);
         } else {
-          return setup_sprite(/* None */0, [/* tuple */[
-                        4,
-                        10
-                      ]], [/* tuple */[
-                        11,
-                        16
-                      ]], "enemies.png", 2, 10, /* tuple */[
+          return setup_sprite(undefined, /* tuple */[
+                      4,
+                      10
+                    ], /* tuple */[
+                      11,
+                      16
+                    ], "enemies.png", 2, 10, /* tuple */[
                       16,
                       27
                     ], /* tuple */[
@@ -120,13 +121,13 @@ function make_enemy(param) {
                     ]);
         }
     case 3 : 
-        return setup_sprite(/* None */0, [/* tuple */[
-                      2,
-                      2
-                    ]], [/* tuple */[
-                      12,
-                      13
-                    ]], "enemies.png", 4, 10, /* tuple */[
+        return setup_sprite(undefined, /* tuple */[
+                    2,
+                    2
+                  ], /* tuple */[
+                    12,
+                    13
+                  ], "enemies.png", 4, 10, /* tuple */[
                     16,
                     16
                   ], /* tuple */[
@@ -134,13 +135,13 @@ function make_enemy(param) {
                     96
                   ]);
     case 4 : 
-        return setup_sprite(/* None */0, [/* tuple */[
-                      2,
-                      2
-                    ]], [/* tuple */[
-                      12,
-                      13
-                    ]], "enemies.png", 4, 10, /* tuple */[
+        return setup_sprite(undefined, /* tuple */[
+                    2,
+                    2
+                  ], /* tuple */[
+                    12,
+                    13
+                  ], "enemies.png", 4, 10, /* tuple */[
                     16,
                     16
                   ], /* tuple */[
@@ -154,7 +155,7 @@ function make_enemy(param) {
 function make_particle(param) {
   switch (param) {
     case 0 : 
-        return setup_sprite(/* None */0, /* None */0, /* None */0, "enemies.png", 1, 0, /* tuple */[
+        return setup_sprite(undefined, undefined, undefined, "enemies.png", 1, 0, /* tuple */[
                     16,
                     16
                   ], /* tuple */[
@@ -162,7 +163,7 @@ function make_particle(param) {
                     144
                   ]);
     case 1 : 
-        return setup_sprite(/* None */0, /* None */0, /* None */0, "chunks.png", 1, 0, /* tuple */[
+        return setup_sprite(undefined, undefined, undefined, "chunks.png", 1, 0, /* tuple */[
                     8,
                     8
                   ], /* tuple */[
@@ -170,7 +171,7 @@ function make_particle(param) {
                     0
                   ]);
     case 2 : 
-        return setup_sprite(/* None */0, /* None */0, /* None */0, "chunks.png", 1, 0, /* tuple */[
+        return setup_sprite(undefined, undefined, undefined, "chunks.png", 1, 0, /* tuple */[
                     8,
                     8
                   ], /* tuple */[
@@ -178,7 +179,7 @@ function make_particle(param) {
                     0
                   ]);
     case 3 : 
-        return setup_sprite(/* None */0, /* None */0, /* None */0, "score.png", 1, 0, /* tuple */[
+        return setup_sprite(undefined, undefined, undefined, "score.png", 1, 0, /* tuple */[
                     12,
                     8
                   ], /* tuple */[
@@ -186,7 +187,7 @@ function make_particle(param) {
                     0
                   ]);
     case 4 : 
-        return setup_sprite(/* None */0, /* None */0, /* None */0, "score.png", 1, 0, /* tuple */[
+        return setup_sprite(undefined, undefined, undefined, "score.png", 1, 0, /* tuple */[
                     12,
                     9
                   ], /* tuple */[
@@ -194,7 +195,7 @@ function make_particle(param) {
                     9
                   ]);
     case 5 : 
-        return setup_sprite(/* None */0, /* None */0, /* None */0, "score.png", 1, 0, /* tuple */[
+        return setup_sprite(undefined, undefined, undefined, "score.png", 1, 0, /* tuple */[
                     12,
                     9
                   ], /* tuple */[
@@ -202,7 +203,7 @@ function make_particle(param) {
                     18
                   ]);
     case 6 : 
-        return setup_sprite(/* None */0, /* None */0, /* None */0, "score.png", 1, 0, /* tuple */[
+        return setup_sprite(undefined, undefined, undefined, "score.png", 1, 0, /* tuple */[
                     12,
                     9
                   ], /* tuple */[
@@ -210,7 +211,7 @@ function make_particle(param) {
                     27
                   ]);
     case 7 : 
-        return setup_sprite(/* None */0, /* None */0, /* None */0, "score.png", 1, 0, /* tuple */[
+        return setup_sprite(undefined, undefined, undefined, "score.png", 1, 0, /* tuple */[
                     14,
                     9
                   ], /* tuple */[
@@ -218,7 +219,7 @@ function make_particle(param) {
                     0
                   ]);
     case 8 : 
-        return setup_sprite(/* None */0, /* None */0, /* None */0, "score.png", 1, 0, /* tuple */[
+        return setup_sprite(undefined, undefined, undefined, "score.png", 1, 0, /* tuple */[
                     14,
                     9
                   ], /* tuple */[
@@ -226,7 +227,7 @@ function make_particle(param) {
                     9
                   ]);
     case 9 : 
-        return setup_sprite(/* None */0, /* None */0, /* None */0, "score.png", 1, 0, /* tuple */[
+        return setup_sprite(undefined, undefined, undefined, "score.png", 1, 0, /* tuple */[
                     14,
                     9
                   ], /* tuple */[
@@ -234,7 +235,7 @@ function make_particle(param) {
                     18
                   ]);
     case 10 : 
-        return setup_sprite(/* None */0, /* None */0, /* None */0, "score.png", 1, 0, /* tuple */[
+        return setup_sprite(undefined, undefined, undefined, "score.png", 1, 0, /* tuple */[
                     14,
                     9
                   ], /* tuple */[
@@ -259,13 +260,13 @@ function make_type(typ, dir) {
           if (param[1]) {
             switch (typ$1) {
               case 0 : 
-                  return setup_sprite(/* None */0, [/* tuple */[
-                                1,
-                                1
-                              ]], [/* tuple */[
-                                11,
-                                15
-                              ]], "mario-small.png", 1, 0, /* tuple */[
+                  return setup_sprite(undefined, /* tuple */[
+                              1,
+                              1
+                            ], /* tuple */[
+                              11,
+                              15
+                            ], "mario-small.png", 1, 0, /* tuple */[
                               16,
                               16
                             ], /* tuple */[
@@ -273,13 +274,13 @@ function make_type(typ, dir) {
                               32
                             ]);
               case 1 : 
-                  return setup_sprite(/* None */0, [/* tuple */[
-                                2,
-                                1
-                              ]], [/* tuple */[
-                                13,
-                                15
-                              ]], "mario-small.png", 2, 10, /* tuple */[
+                  return setup_sprite(undefined, /* tuple */[
+                              2,
+                              1
+                            ], /* tuple */[
+                              13,
+                              15
+                            ], "mario-small.png", 2, 10, /* tuple */[
                               16,
                               16
                             ], /* tuple */[
@@ -287,13 +288,13 @@ function make_type(typ, dir) {
                               48
                             ]);
               case 2 : 
-                  return setup_sprite(/* None */0, [/* tuple */[
-                                2,
-                                1
-                              ]], [/* tuple */[
-                                12,
-                                15
-                              ]], "mario-small.png", 3, 5, /* tuple */[
+                  return setup_sprite(undefined, /* tuple */[
+                              2,
+                              1
+                            ], /* tuple */[
+                              12,
+                              15
+                            ], "mario-small.png", 3, 5, /* tuple */[
                               16,
                               16
                             ], /* tuple */[
@@ -301,13 +302,13 @@ function make_type(typ, dir) {
                               32
                             ]);
               case 3 : 
-                  return setup_sprite(/* None */0, [/* tuple */[
-                                1,
-                                5
-                              ]], [/* tuple */[
-                                14,
-                                10
-                              ]], "mario-small.png", 1, 0, /* tuple */[
+                  return setup_sprite(undefined, /* tuple */[
+                              1,
+                              5
+                            ], /* tuple */[
+                              14,
+                              10
+                            ], "mario-small.png", 1, 0, /* tuple */[
                               16,
                               16
                             ], /* tuple */[
@@ -319,13 +320,13 @@ function make_type(typ, dir) {
           } else {
             switch (typ$1) {
               case 0 : 
-                  return setup_sprite(/* None */0, [/* tuple */[
-                                3,
-                                1
-                              ]], [/* tuple */[
-                                11,
-                                15
-                              ]], "mario-small.png", 1, 0, /* tuple */[
+                  return setup_sprite(undefined, /* tuple */[
+                              3,
+                              1
+                            ], /* tuple */[
+                              11,
+                              15
+                            ], "mario-small.png", 1, 0, /* tuple */[
                               16,
                               16
                             ], /* tuple */[
@@ -333,13 +334,13 @@ function make_type(typ, dir) {
                               0
                             ]);
               case 1 : 
-                  return setup_sprite(/* None */0, [/* tuple */[
-                                2,
-                                1
-                              ]], [/* tuple */[
-                                13,
-                                15
-                              ]], "mario-small.png", 2, 10, /* tuple */[
+                  return setup_sprite(undefined, /* tuple */[
+                              2,
+                              1
+                            ], /* tuple */[
+                              13,
+                              15
+                            ], "mario-small.png", 2, 10, /* tuple */[
                               16,
                               16
                             ], /* tuple */[
@@ -347,13 +348,13 @@ function make_type(typ, dir) {
                               16
                             ]);
               case 2 : 
-                  return setup_sprite(/* None */0, [/* tuple */[
-                                2,
-                                1
-                              ]], [/* tuple */[
-                                12,
-                                15
-                              ]], "mario-small.png", 3, 5, /* tuple */[
+                  return setup_sprite(undefined, /* tuple */[
+                              2,
+                              1
+                            ], /* tuple */[
+                              12,
+                              15
+                            ], "mario-small.png", 3, 5, /* tuple */[
                               16,
                               16
                             ], /* tuple */[
@@ -361,13 +362,13 @@ function make_type(typ, dir) {
                               0
                             ]);
               case 3 : 
-                  return setup_sprite(/* None */0, [/* tuple */[
-                                1,
-                                5
-                              ]], [/* tuple */[
-                                14,
-                                10
-                              ]], "mario-small.png", 1, 0, /* tuple */[
+                  return setup_sprite(undefined, /* tuple */[
+                              1,
+                              5
+                            ], /* tuple */[
+                              14,
+                              10
+                            ], "mario-small.png", 1, 0, /* tuple */[
                               16,
                               16
                             ], /* tuple */[
@@ -383,13 +384,13 @@ function make_type(typ, dir) {
           if (param$1[1]) {
             switch (typ$2) {
               case 0 : 
-                  return setup_sprite(/* None */0, [/* tuple */[
-                                1,
-                                1
-                              ]], [/* tuple */[
-                                13,
-                                25
-                              ]], "mario-big.png", 1, 0, /* tuple */[
+                  return setup_sprite(undefined, /* tuple */[
+                              1,
+                              1
+                            ], /* tuple */[
+                              13,
+                              25
+                            ], "mario-big.png", 1, 0, /* tuple */[
                               16,
                               26
                             ], /* tuple */[
@@ -397,13 +398,13 @@ function make_type(typ, dir) {
                               69
                             ]);
               case 1 : 
-                  return setup_sprite(/* None */0, [/* tuple */[
-                                2,
-                                1
-                              ]], [/* tuple */[
-                                12,
-                                25
-                              ]], "mario-big.png", 1, 0, /* tuple */[
+                  return setup_sprite(undefined, /* tuple */[
+                              2,
+                              1
+                            ], /* tuple */[
+                              12,
+                              25
+                            ], "mario-big.png", 1, 0, /* tuple */[
                               16,
                               26
                             ], /* tuple */[
@@ -411,13 +412,13 @@ function make_type(typ, dir) {
                               70
                             ]);
               case 2 : 
-                  return setup_sprite(/* None */0, [/* tuple */[
-                                2,
-                                1
-                              ]], [/* tuple */[
-                                13,
-                                25
-                              ]], "mario-big.png", 4, 10, /* tuple */[
+                  return setup_sprite(undefined, /* tuple */[
+                              2,
+                              1
+                            ], /* tuple */[
+                              13,
+                              25
+                            ], "mario-big.png", 4, 10, /* tuple */[
                               16,
                               27
                             ], /* tuple */[
@@ -425,13 +426,13 @@ function make_type(typ, dir) {
                               101
                             ]);
               case 3 : 
-                  return setup_sprite(/* None */0, [/* tuple */[
-                                2,
-                                10
-                              ]], [/* tuple */[
-                                13,
-                                17
-                              ]], "mario-big.png", 1, 0, /* tuple */[
+                  return setup_sprite(undefined, /* tuple */[
+                              2,
+                              10
+                            ], /* tuple */[
+                              13,
+                              17
+                            ], "mario-big.png", 1, 0, /* tuple */[
                               16,
                               27
                             ], /* tuple */[
@@ -443,13 +444,13 @@ function make_type(typ, dir) {
           } else {
             switch (typ$2) {
               case 0 : 
-                  return setup_sprite(/* None */0, [/* tuple */[
-                                2,
-                                1
-                              ]], [/* tuple */[
-                                13,
-                                25
-                              ]], "mario-big.png", 1, 0, /* tuple */[
+                  return setup_sprite(undefined, /* tuple */[
+                              2,
+                              1
+                            ], /* tuple */[
+                              13,
+                              25
+                            ], "mario-big.png", 1, 0, /* tuple */[
                               16,
                               27
                             ], /* tuple */[
@@ -457,13 +458,13 @@ function make_type(typ, dir) {
                               5
                             ]);
               case 1 : 
-                  return setup_sprite(/* None */0, [/* tuple */[
-                                2,
-                                1
-                              ]], [/* tuple */[
-                                12,
-                                25
-                              ]], "mario-big.png", 1, 0, /* tuple */[
+                  return setup_sprite(undefined, /* tuple */[
+                              2,
+                              1
+                            ], /* tuple */[
+                              12,
+                              25
+                            ], "mario-big.png", 1, 0, /* tuple */[
                               16,
                               26
                             ], /* tuple */[
@@ -471,13 +472,13 @@ function make_type(typ, dir) {
                               6
                             ]);
               case 2 : 
-                  return setup_sprite(/* None */0, [/* tuple */[
-                                2,
-                                1
-                              ]], [/* tuple */[
-                                13,
-                                25
-                              ]], "mario-big.png", 4, 10, /* tuple */[
+                  return setup_sprite(undefined, /* tuple */[
+                              2,
+                              1
+                            ], /* tuple */[
+                              13,
+                              25
+                            ], "mario-big.png", 4, 10, /* tuple */[
                               16,
                               27
                             ], /* tuple */[
@@ -485,13 +486,13 @@ function make_type(typ, dir) {
                               37
                             ]);
               case 3 : 
-                  return setup_sprite(/* None */0, [/* tuple */[
-                                2,
-                                10
-                              ]], [/* tuple */[
-                                13,
-                                17
-                              ]], "mario-big.png", 1, 0, /* tuple */[
+                  return setup_sprite(undefined, /* tuple */[
+                              2,
+                              10
+                            ], /* tuple */[
+                              13,
+                              17
+                            ], "mario-big.png", 1, 0, /* tuple */[
                               16,
                               27
                             ], /* tuple */[
@@ -511,13 +512,13 @@ function make_type(typ, dir) {
         var param$2 = typ[0];
         switch (param$2) {
           case 0 : 
-              return setup_sprite(/* None */0, [/* tuple */[
-                            2,
-                            0
-                          ]], [/* tuple */[
-                            12,
-                            16
-                          ]], "items.png", 1, 0, /* tuple */[
+              return setup_sprite(undefined, /* tuple */[
+                          2,
+                          0
+                        ], /* tuple */[
+                          12,
+                          16
+                        ], "items.png", 1, 0, /* tuple */[
                           16,
                           16
                         ], /* tuple */[
@@ -525,7 +526,7 @@ function make_type(typ, dir) {
                           0
                         ]);
           case 1 : 
-              return setup_sprite(/* None */0, /* None */0, /* None */0, "items.png", 1, 0, /* tuple */[
+              return setup_sprite(undefined, undefined, undefined, "items.png", 1, 0, /* tuple */[
                           16,
                           16
                         ], /* tuple */[
@@ -533,7 +534,7 @@ function make_type(typ, dir) {
                           188
                         ]);
           case 2 : 
-              return setup_sprite(/* None */0, /* None */0, /* None */0, "items.png", 1, 0, /* tuple */[
+              return setup_sprite(undefined, undefined, undefined, "items.png", 1, 0, /* tuple */[
                           16,
                           16
                         ], /* tuple */[
@@ -541,13 +542,13 @@ function make_type(typ, dir) {
                           48
                         ]);
           case 3 : 
-              return setup_sprite(/* None */0, [/* tuple */[
-                            3,
-                            0
-                          ]], [/* tuple */[
-                            12,
-                            16
-                          ]], "items.png", 3, 15, /* tuple */[
+              return setup_sprite(undefined, /* tuple */[
+                          3,
+                          0
+                        ], /* tuple */[
+                          12,
+                          16
+                        ], "items.png", 3, 15, /* tuple */[
                           16,
                           16
                         ], /* tuple */[
@@ -561,7 +562,7 @@ function make_type(typ, dir) {
         if (typeof param$3 === "number") {
           switch (param$3) {
             case 0 : 
-                return setup_sprite(/* None */0, /* None */0, /* None */0, "blocks.png", 1, 0, /* tuple */[
+                return setup_sprite(undefined, undefined, undefined, "blocks.png", 1, 0, /* tuple */[
                             16,
                             16
                           ], /* tuple */[
@@ -569,7 +570,7 @@ function make_type(typ, dir) {
                             32
                           ]);
             case 1 : 
-                return setup_sprite(/* None */0, /* None */0, /* None */0, "blocks.png", 5, 10, /* tuple */[
+                return setup_sprite(undefined, undefined, undefined, "blocks.png", 5, 10, /* tuple */[
                             16,
                             16
                           ], /* tuple */[
@@ -577,7 +578,7 @@ function make_type(typ, dir) {
                             0
                           ]);
             case 2 : 
-                return setup_sprite(/* None */0, /* None */0, /* None */0, "blocks.png", 1, 0, /* tuple */[
+                return setup_sprite(undefined, undefined, undefined, "blocks.png", 1, 0, /* tuple */[
                             16,
                             16
                           ], /* tuple */[
@@ -585,7 +586,7 @@ function make_type(typ, dir) {
                             48
                           ]);
             case 3 : 
-                return setup_sprite(/* None */0, /* None */0, /* None */0, "blocks.png", 1, 0, /* tuple */[
+                return setup_sprite(undefined, undefined, undefined, "blocks.png", 1, 0, /* tuple */[
                             16,
                             16
                           ], /* tuple */[
@@ -593,7 +594,7 @@ function make_type(typ, dir) {
                             64
                           ]);
             case 4 : 
-                return setup_sprite(/* None */0, /* None */0, /* None */0, "panel.png", 3, 15, /* tuple */[
+                return setup_sprite(undefined, undefined, undefined, "panel.png", 3, 15, /* tuple */[
                             26,
                             26
                           ], /* tuple */[
@@ -601,7 +602,7 @@ function make_type(typ, dir) {
                             0
                           ]);
             case 5 : 
-                return setup_sprite(/* None */0, /* None */0, /* None */0, "ground.png", 1, 0, /* tuple */[
+                return setup_sprite(undefined, undefined, undefined, "ground.png", 1, 0, /* tuple */[
                             16,
                             16
                           ], /* tuple */[
@@ -611,7 +612,7 @@ function make_type(typ, dir) {
             
           }
         } else {
-          return setup_sprite(/* None */0, /* None */0, /* None */0, "blocks.png", 4, 15, /* tuple */[
+          return setup_sprite(undefined, undefined, undefined, "blocks.png", 4, 15, /* tuple */[
                       16,
                       16
                     ], /* tuple */[
@@ -641,7 +642,7 @@ function make(spawn, dir, context) {
 }
 
 function make_bgd(context) {
-  var params = setup_sprite(/* None */0, /* None */0, /* None */0, "bgd-1.png", 1, 0, /* tuple */[
+  var params = setup_sprite(undefined, undefined, undefined, "bgd-1.png", 1, 0, /* tuple */[
         512,
         256
       ], /* tuple */[
@@ -717,11 +718,11 @@ function make_type$1(typ, ctx) {
 }
 
 function make$1($staropt$star, $staropt$star$1, part_type, pos, ctx) {
-  var vel = $staropt$star !== /* None */0 ? $staropt$star[0] : /* tuple */[
+  var vel = $staropt$star !== undefined ? $staropt$star : /* tuple */[
       0,
       0
     ];
-  var acc = $staropt$star$1 !== /* None */0 ? $staropt$star$1[0] : /* tuple */[
+  var acc = $staropt$star$1 !== undefined ? $staropt$star$1 : /* tuple */[
       0,
       0
     ];
@@ -760,10 +761,10 @@ function make_score(score, pos, ctx) {
           score !== 100 && score >= 200 ? /* Score200 */4 : /* Score100 */3
         )
     );
-  return make$1([/* tuple */[
-                0.5,
-                -0.7
-              ]], /* None */0, t, pos, ctx);
+  return make$1(/* tuple */[
+              0.5,
+              -0.7
+            ], undefined, t, pos, ctx);
 }
 
 function update_vel(part) {
@@ -793,8 +794,8 @@ var Particle = /* module */[
 var id_counter = [Pervasives.min_int];
 
 function setup_obj($staropt$star, $staropt$star$1, _) {
-  var has_gravity = $staropt$star !== /* None */0 ? $staropt$star[0] : true;
-  var speed = $staropt$star$1 !== /* None */0 ? $staropt$star$1[0] : 1;
+  var has_gravity = $staropt$star !== undefined ? $staropt$star : true;
+  var speed = $staropt$star$1 !== undefined ? $staropt$star$1 : 1;
   return /* record */[
           /* has_gravity */has_gravity,
           /* speed */speed
@@ -816,23 +817,23 @@ function set_vel_to_speed(obj) {
 function make_type$2(param) {
   switch (param.tag | 0) {
     case 0 : 
-        return setup_obj(/* None */0, [2.8], /* () */0);
+        return setup_obj(undefined, 2.8, /* () */0);
     case 1 : 
         var param$1 = param[0];
         if (param$1 >= 3) {
-          return setup_obj(/* None */0, [3], /* () */0);
+          return setup_obj(undefined, 3, /* () */0);
         } else {
-          return setup_obj(/* None */0, /* None */0, /* () */0);
+          return setup_obj(undefined, undefined, /* () */0);
         }
     case 2 : 
         var param$2 = param[0];
         if (param$2 >= 3) {
-          return setup_obj([false], /* None */0, /* () */0);
+          return setup_obj(false, undefined, /* () */0);
         } else {
-          return setup_obj(/* None */0, /* None */0, /* () */0);
+          return setup_obj(undefined, undefined, /* () */0);
         }
     case 3 : 
-        return setup_obj([false], /* None */0, /* () */0);
+        return setup_obj(false, undefined, /* () */0);
     
   }
 }
@@ -843,11 +844,11 @@ function new_id() {
 }
 
 function make$2($staropt$star, $staropt$star$1, spawnable, context, param) {
-  var id = $staropt$star !== /* None */0 ? $staropt$star[0] : /* None */0;
-  var dir = $staropt$star$1 !== /* None */0 ? $staropt$star$1[0] : /* Left */0;
+  var id = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : undefined;
+  var dir = $staropt$star$1 !== undefined ? Js_primitive.valFromOption($staropt$star$1) : /* Left */0;
   var spr = make(spawnable, dir, context);
   var params = make_type$2(spawnable);
-  var id$1 = id !== /* None */0 ? id[0] : new_id(/* () */0);
+  var id$1 = id !== undefined ? id : new_id(/* () */0);
   var obj = /* record */[
     /* params */params,
     /* pos : record */[
@@ -875,7 +876,7 @@ function make$2($staropt$star, $staropt$star$1, spawnable, context, param) {
 }
 
 function spawn(spawnable, context, param) {
-  var match = make$2(/* None */0, /* None */0, spawnable, context, /* tuple */[
+  var match = make$2(undefined, undefined, spawnable, context, /* tuple */[
         param[0],
         param[1]
       ]);
@@ -1002,47 +1003,47 @@ function update_player(player, keys, context) {
   player[/* vel */2][/* x */0] = vel_damped;
   var pl_typ = player[/* health */9] <= 1 ? /* SmallM */1 : /* BigM */0;
   if (!prev_jumping && player[/* jumping */4]) {
-    return [/* tuple */[
-              pl_typ,
-              make(/* SPlayer */Block.__(0, [
-                      pl_typ,
-                      /* Jumping */1
-                    ]), player[/* dir */6], context)
-            ]];
+    return /* tuple */[
+            pl_typ,
+            make(/* SPlayer */Block.__(0, [
+                    pl_typ,
+                    /* Jumping */1
+                  ]), player[/* dir */6], context)
+          ];
   } else if (prev_dir !== player[/* dir */6] || prev_vx === 0 && Math.abs(player[/* vel */2][/* x */0]) > 0 && !player[/* jumping */4]) {
-    return [/* tuple */[
-              pl_typ,
-              make(/* SPlayer */Block.__(0, [
-                      pl_typ,
-                      /* Running */2
-                    ]), player[/* dir */6], context)
-            ]];
+    return /* tuple */[
+            pl_typ,
+            make(/* SPlayer */Block.__(0, [
+                    pl_typ,
+                    /* Running */2
+                  ]), player[/* dir */6], context)
+          ];
   } else if (prev_dir !== player[/* dir */6] && player[/* jumping */4] && prev_jumping) {
-    return [/* tuple */[
-              pl_typ,
-              make(/* SPlayer */Block.__(0, [
-                      pl_typ,
-                      /* Jumping */1
-                    ]), player[/* dir */6], context)
-            ]];
+    return /* tuple */[
+            pl_typ,
+            make(/* SPlayer */Block.__(0, [
+                    pl_typ,
+                    /* Jumping */1
+                  ]), player[/* dir */6], context)
+          ];
   } else if (player[/* vel */2][/* y */1] === 0 && player[/* crouch */10]) {
-    return [/* tuple */[
-              pl_typ,
-              make(/* SPlayer */Block.__(0, [
-                      pl_typ,
-                      /* Crouching */3
-                    ]), player[/* dir */6], context)
-            ]];
+    return /* tuple */[
+            pl_typ,
+            make(/* SPlayer */Block.__(0, [
+                    pl_typ,
+                    /* Crouching */3
+                  ]), player[/* dir */6], context)
+          ];
   } else if (player[/* vel */2][/* y */1] === 0 && player[/* vel */2][/* x */0] === 0) {
-    return [/* tuple */[
-              pl_typ,
-              make(/* SPlayer */Block.__(0, [
-                      pl_typ,
-                      /* Standing */0
-                    ]), player[/* dir */6], context)
-            ]];
+    return /* tuple */[
+            pl_typ,
+            make(/* SPlayer */Block.__(0, [
+                    pl_typ,
+                    /* Standing */0
+                  ]), player[/* dir */6], context)
+          ];
   } else {
-    return /* None */0;
+    return undefined;
   }
 }
 
@@ -1089,7 +1090,7 @@ function normalize_origin(pos, spr) {
 }
 
 function collide_block($staropt$star, dir, obj) {
-  var check_x = $staropt$star !== /* None */0 ? $staropt$star[0] : true;
+  var check_x = $staropt$star !== undefined ? $staropt$star : true;
   if (dir !== 1) {
     if (dir !== 0) {
       if (check_x) {
@@ -1121,33 +1122,33 @@ function evolve_enemy(player_dir, typ, spr, obj, context) {
   switch (typ) {
     case 0 : 
         obj[/* kill */8] = true;
-        return /* None */0;
+        return undefined;
     case 1 : 
-        var match = make$2(/* None */0, /* Some */[obj[/* dir */6]], /* SEnemy */Block.__(1, [/* GKoopaShell */3]), context, /* tuple */[
+        var match = make$2(undefined, Js_primitive.some(obj[/* dir */6]), /* SEnemy */Block.__(1, [/* GKoopaShell */3]), context, /* tuple */[
               obj[/* pos */1][/* x */0],
               obj[/* pos */1][/* y */1]
             ]);
         var new_obj = match[1];
         var new_spr = match[0];
         normalize_pos(new_obj[/* pos */1], spr[/* params */0], new_spr[/* params */0]);
-        return /* Some */[/* Enemy */Block.__(1, [
-                    /* GKoopaShell */3,
-                    new_spr,
-                    new_obj
-                  ])];
+        return Js_primitive.some(/* Enemy */Block.__(1, [
+                      /* GKoopaShell */3,
+                      new_spr,
+                      new_obj
+                    ]));
     case 2 : 
-        var match$1 = make$2(/* None */0, /* Some */[obj[/* dir */6]], /* SEnemy */Block.__(1, [/* RKoopaShell */4]), context, /* tuple */[
+        var match$1 = make$2(undefined, Js_primitive.some(obj[/* dir */6]), /* SEnemy */Block.__(1, [/* RKoopaShell */4]), context, /* tuple */[
               obj[/* pos */1][/* x */0],
               obj[/* pos */1][/* y */1]
             ]);
         var new_obj$1 = match$1[1];
         var new_spr$1 = match$1[0];
         normalize_pos(new_obj$1[/* pos */1], spr[/* params */0], new_spr$1[/* params */0]);
-        return /* Some */[/* Enemy */Block.__(1, [
-                    /* RKoopaShell */4,
-                    new_spr$1,
-                    new_obj$1
-                  ])];
+        return Js_primitive.some(/* Enemy */Block.__(1, [
+                      /* RKoopaShell */4,
+                      new_spr$1,
+                      new_obj$1
+                    ]));
     case 3 : 
     case 4 : 
         exit = 1;
@@ -1161,7 +1162,7 @@ function evolve_enemy(player_dir, typ, spr, obj, context) {
     } else {
       set_vel_to_speed(obj);
     }
-    return /* None */0;
+    return undefined;
   }
   
 }
@@ -1188,7 +1189,7 @@ function dec_health(obj) {
 
 function evolve_block(obj, context) {
   dec_health(obj);
-  var match = make$2(/* None */0, /* None */0, /* SBlock */Block.__(3, [/* QBlockUsed */0]), context, /* tuple */[
+  var match = make$2(undefined, undefined, /* SBlock */Block.__(3, [/* QBlockUsed */0]), context, /* tuple */[
         obj[/* pos */1][/* x */0],
         obj[/* pos */1][/* y */1]
       ]);
@@ -1273,7 +1274,7 @@ function check_collision(c1, c2) {
   var b2 = get_aabb(c2);
   var o1 = c1[2];
   if (col_bypass(c1, c2)) {
-    return /* None */0;
+    return undefined;
   } else {
     var vx = b1[/* center */0][/* x */0] - b2[/* center */0][/* x */0];
     var vy = b1[/* center */0][/* y */1] - b2[/* center */0][/* y */1];
@@ -1285,20 +1286,20 @@ function check_collision(c1, c2) {
       if (ox >= oy) {
         if (vy > 0) {
           o1[/* pos */1][/* y */1] = o1[/* pos */1][/* y */1] + oy;
-          return [/* North */0];
+          return /* North */0;
         } else {
           o1[/* pos */1][/* y */1] = o1[/* pos */1][/* y */1] - oy;
-          return [/* South */1];
+          return /* South */1;
         }
       } else if (vx > 0) {
         o1[/* pos */1][/* x */0] = o1[/* pos */1][/* x */0] + ox;
-        return [/* West */3];
+        return /* West */3;
       } else {
         o1[/* pos */1][/* x */0] = o1[/* pos */1][/* x */0] - ox;
-        return [/* East */2];
+        return /* East */2;
       }
     } else {
-      return /* None */0;
+      return undefined;
     }
   }
 }
@@ -1320,7 +1321,7 @@ function kill(collid, ctx) {
             /* [] */0
           ] : /* [] */0;
         var remains = collid[0] !== 0 ? /* [] */0 : /* :: */[
-            make$1(/* None */0, /* None */0, /* GoombaSquish */0, pos, ctx),
+            make$1(undefined, undefined, /* GoombaSquish */0, pos, ctx),
             /* [] */0
           ];
         return Pervasives.$at(score, remains);
@@ -1347,34 +1348,34 @@ function kill(collid, ctx) {
             pos_000$1,
             pos_001$1
           ];
-          var p1 = make$1([/* tuple */[
-                  -5,
-                  -5
-                ]], [/* tuple */[
-                  0,
-                  0.2
-                ]], /* BrickChunkL */1, pos$1, ctx);
-          var p2 = make$1([/* tuple */[
-                  -3,
-                  -4
-                ]], [/* tuple */[
-                  0,
-                  0.2
-                ]], /* BrickChunkL */1, pos$1, ctx);
-          var p3 = make$1([/* tuple */[
-                  3,
-                  -4
-                ]], [/* tuple */[
-                  0,
-                  0.2
-                ]], /* BrickChunkR */2, pos$1, ctx);
-          var p4 = make$1([/* tuple */[
-                  5,
-                  -5
-                ]], [/* tuple */[
-                  0,
-                  0.2
-                ]], /* BrickChunkR */2, pos$1, ctx);
+          var p1 = make$1(/* tuple */[
+                -5,
+                -5
+              ], /* tuple */[
+                0,
+                0.2
+              ], /* BrickChunkL */1, pos$1, ctx);
+          var p2 = make$1(/* tuple */[
+                -3,
+                -4
+              ], /* tuple */[
+                0,
+                0.2
+              ], /* BrickChunkL */1, pos$1, ctx);
+          var p3 = make$1(/* tuple */[
+                3,
+                -4
+              ], /* tuple */[
+                0,
+                0.2
+              ], /* BrickChunkR */2, pos$1, ctx);
+          var p4 = make$1(/* tuple */[
+                5,
+                -5
+              ], /* tuple */[
+                0,
+                0.2
+              ], /* BrickChunkR */2, pos$1, ctx);
           return /* :: */[
                   p1,
                   /* :: */[
@@ -1628,8 +1629,8 @@ function process_collision(dir, c1, c2, state) {
         switch (c2.tag | 0) {
           case 0 : 
               return /* tuple */[
-                      /* None */0,
-                      /* None */0
+                      undefined,
+                      undefined
                     ];
           case 1 : 
               var o2$3 = c2[2];
@@ -1665,25 +1666,25 @@ function process_collision(dir, c1, c2, state) {
                 if (typeof t === "number" && t === 4) {
                   game_win(state[/* ctx */1]);
                   return /* tuple */[
-                          /* None */0,
-                          /* None */0
+                          undefined,
+                          undefined
                         ];
                 } else {
                   exit$1 = 4;
                 }
                 if (exit$1 === 4) {
                   if (dir !== 1) {
-                    collide_block(/* None */0, dir, o1$3);
+                    collide_block(undefined, dir, o1$3);
                     return /* tuple */[
-                            /* None */0,
-                            /* None */0
+                            undefined,
+                            undefined
                           ];
                   } else {
                     state[/* multiplier */6] = 1;
-                    collide_block(/* None */0, dir, o1$3);
+                    collide_block(undefined, dir, o1$3);
                     return /* tuple */[
-                            /* None */0,
-                            /* None */0
+                            undefined,
+                            undefined
                           ];
                   }
                 }
@@ -1691,39 +1692,39 @@ function process_collision(dir, c1, c2, state) {
               } else if (typeof t === "number") {
                 if (t !== 1) {
                   if (t !== 4) {
-                    collide_block(/* None */0, dir, o1$3);
+                    collide_block(undefined, dir, o1$3);
                     return /* tuple */[
-                            /* None */0,
-                            /* None */0
+                            undefined,
+                            undefined
                           ];
                   } else {
                     game_win(state[/* ctx */1]);
                     return /* tuple */[
-                            /* None */0,
-                            /* None */0
+                            undefined,
+                            undefined
                           ];
                   }
                 } else if (c1[0] === /* BigM */0) {
-                  collide_block(/* None */0, dir, o1$3);
+                  collide_block(undefined, dir, o1$3);
                   dec_health(o2$4);
                   return /* tuple */[
-                          /* None */0,
-                          /* None */0
+                          undefined,
+                          undefined
                         ];
                 } else {
-                  collide_block(/* None */0, dir, o1$3);
+                  collide_block(undefined, dir, o1$3);
                   return /* tuple */[
-                          /* None */0,
-                          /* None */0
+                          undefined,
+                          undefined
                         ];
                 }
               } else {
                 var updated_block = evolve_block(o2$4, context);
                 var spawned_item = spawn_above(o1$3[/* dir */6], o2$4, t[0], context);
-                collide_block(/* None */0, dir, o1$3);
+                collide_block(undefined, dir, o1$3);
                 return /* tuple */[
-                        /* Some */[spawned_item],
-                        /* Some */[updated_block]
+                        Js_primitive.some(spawned_item),
+                        Js_primitive.some(updated_block)
                       ];
               }
               break;
@@ -1769,8 +1770,8 @@ function process_collision(dir, c1, c2, state) {
                     dec_health(o1$6);
                     dec_health(o2$5);
                     return /* tuple */[
-                            /* None */0,
-                            /* None */0
+                            undefined,
+                            undefined
                           ];
                   } else {
                     exit$2 = 1;
@@ -1779,35 +1780,35 @@ function process_collision(dir, c1, c2, state) {
                   if (o2$5[/* vel */2][/* x */0] === 0) {
                     rev_dir(o1$6, t1$1, s1$5);
                     return /* tuple */[
-                            /* None */0,
-                            /* None */0
+                            undefined,
+                            undefined
                           ];
                   } else {
                     dec_health(o1$6);
                     return /* tuple */[
-                            /* None */0,
-                            /* None */0
+                            undefined,
+                            undefined
                           ];
                   }
                 } else if (dir$1 >= 2) {
                   rev_dir(o1$6, t1$1, s1$5);
                   rev_dir(o2$5, t2$2, s2$3);
                   return /* tuple */[
-                          /* None */0,
-                          /* None */0
+                          undefined,
+                          undefined
                         ];
                 } else {
                   return /* tuple */[
-                          /* None */0,
-                          /* None */0
+                          undefined,
+                          undefined
                         ];
                 }
               } else if (t2$2 >= 3) {
                 dec_health(o1$6);
                 dec_health(o2$5);
                 return /* tuple */[
-                        /* None */0,
-                        /* None */0
+                        undefined,
+                        undefined
                       ];
               } else {
                 exit$2 = 1;
@@ -1816,21 +1817,21 @@ function process_collision(dir, c1, c2, state) {
                 if (o1$6[/* vel */2][/* x */0] === 0) {
                   rev_dir(o2$5, t2$2, s2$3);
                   return /* tuple */[
-                          /* None */0,
-                          /* None */0
+                          undefined,
+                          undefined
                         ];
                 } else {
                   dec_health(o2$5);
                   return /* tuple */[
-                          /* None */0,
-                          /* None */0
+                          undefined,
+                          undefined
                         ];
                 }
               }
               case 2 : 
               return /* tuple */[
-                      /* None */0,
-                      /* None */0
+                      undefined,
+                      undefined
                     ];
           case 3 : 
               var o2$6 = c2[2];
@@ -1841,15 +1842,15 @@ function process_collision(dir, c1, c2, state) {
                     if (t2$3 !== 1) {
                       rev_dir(o1$4, t1, s1$3);
                       return /* tuple */[
-                              /* None */0,
-                              /* None */0
+                              undefined,
+                              undefined
                             ];
                     } else {
                       dec_health(o2$6);
                       reverse_left_right(o1$4);
                       return /* tuple */[
-                              /* None */0,
-                              /* None */0
+                              undefined,
+                              undefined
                             ];
                     }
                   } else {
@@ -1857,22 +1858,22 @@ function process_collision(dir, c1, c2, state) {
                     var spawned_item$1 = spawn_above(o1$4[/* dir */6], o2$6, t2$3[0], context);
                     rev_dir(o1$4, t1, s1$3);
                     return /* tuple */[
-                            /* Some */[updated_block$1],
-                            /* Some */[spawned_item$1]
+                            Js_primitive.some(updated_block$1),
+                            Js_primitive.some(spawned_item$1)
                           ];
                   }
                 } else {
                   rev_dir(o1$4, t1, s1$3);
                   return /* tuple */[
-                          /* None */0,
-                          /* None */0
+                          undefined,
+                          undefined
                         ];
                 }
               } else {
-                collide_block(/* None */0, dir, o1$4);
+                collide_block(undefined, dir, o1$4);
                 return /* tuple */[
-                        /* None */0,
-                        /* None */0
+                        undefined,
+                        undefined
                       ];
               }
           
@@ -1890,21 +1891,21 @@ function process_collision(dir, c1, c2, state) {
           case 1 : 
           case 2 : 
               return /* tuple */[
-                      /* None */0,
-                      /* None */0
+                      undefined,
+                      undefined
                     ];
           case 3 : 
               if (dir >= 2) {
                 reverse_left_right(o2$7);
                 return /* tuple */[
-                        /* None */0,
-                        /* None */0
+                        undefined,
+                        undefined
                       ];
               } else {
-                collide_block(/* None */0, dir, o2$7);
+                collide_block(undefined, dir, o2$7);
                 return /* tuple */[
-                        /* None */0,
-                        /* None */0
+                        undefined,
+                        undefined
                       ];
               }
           
@@ -1912,8 +1913,8 @@ function process_collision(dir, c1, c2, state) {
         break;
     case 3 : 
         return /* tuple */[
-                /* None */0,
-                /* None */0
+                undefined,
+                undefined
               ];
     
   }
@@ -1933,7 +1934,7 @@ function process_collision(dir, c1, c2, state) {
           o1$7[/* vel */2][/* y */1] = -4;
           o1$7[/* pos */1][/* y */1] = o1$7[/* pos */1][/* y */1] - 5;
           return /* tuple */[
-                  /* None */0,
+                  undefined,
                   r2
                 ];
         } else {
@@ -1943,7 +1944,7 @@ function process_collision(dir, c1, c2, state) {
             update_score(state$1, 800);
             o2$8[/* score */11] = 800;
             return /* tuple */[
-                    /* None */0,
+                    undefined,
                     evolve_enemy(o1$7[/* dir */6], typ$2, s2$4, o2$8, context$1)
                   ];
           } else {
@@ -1952,7 +1953,7 @@ function process_collision(dir, c1, c2, state) {
             o2$8[/* score */11] = score;
             state$1[/* multiplier */6] = (state$1[/* multiplier */6] << 1);
             return /* tuple */[
-                    /* None */0,
+                    undefined,
                     evolve_enemy(o1$7[/* dir */6], typ$2, s2$4, o2$8, context$1)
                   ];
           }
@@ -1964,17 +1965,17 @@ function process_collision(dir, c1, c2, state) {
         var o2$9 = o2$1;
         var context$2 = context;
         if (t2$4 >= 3) {
-          var r2$1 = o2$9[/* vel */2][/* x */0] === 0 ? evolve_enemy(o1$8[/* dir */6], t2$4, s2$5, o2$9, context$2) : (dec_health(o1$8), o1$8[/* invuln */7] = 60, /* None */0);
+          var r2$1 = o2$9[/* vel */2][/* x */0] === 0 ? evolve_enemy(o1$8[/* dir */6], t2$4, s2$5, o2$9, context$2) : (dec_health(o1$8), o1$8[/* invuln */7] = 60, undefined);
           return /* tuple */[
-                  /* None */0,
+                  undefined,
                   r2$1
                 ];
         } else {
           dec_health(o1$8);
           o1$8[/* invuln */7] = 60;
           return /* tuple */[
-                  /* None */0,
-                  /* None */0
+                  undefined,
+                  undefined
                 ];
         }
     case 3 : 
@@ -1984,15 +1985,15 @@ function process_collision(dir, c1, c2, state) {
             dec_health(o2$2);
             update_score(state, 100);
             return /* tuple */[
-                    /* None */0,
-                    /* None */0
+                    undefined,
+                    undefined
                   ];
           } else {
             dec_health(o2$2);
             update_score(state, 1000);
             return /* tuple */[
-                    /* None */0,
-                    /* None */0
+                    undefined,
+                    undefined
                   ];
           }
         } else {
@@ -2005,8 +2006,8 @@ function process_collision(dir, c1, c2, state) {
           update_score(state, 1000);
           o2$2[/* score */11] = 1000;
           return /* tuple */[
-                  /* None */0,
-                  /* None */0
+                  undefined,
+                  undefined
                 ];
         }
     
@@ -2045,25 +2046,25 @@ function check_collisions(collid, all_collids, state) {
         var new_objs;
         if (equals(c$1, h)) {
           new_objs = /* tuple */[
-            /* None */0,
-            /* None */0
+            undefined,
+            undefined
           ];
         } else {
           var match = check_collision(c$1, h);
-          new_objs = match !== /* None */0 && h[2][/* id */3] !== c_obj[/* id */3] ? process_collision(match[0], c$1, h, state$2) : /* tuple */[
-              /* None */0,
-              /* None */0
+          new_objs = match !== undefined && h[2][/* id */3] !== c_obj[/* id */3] ? process_collision(Js_primitive.valFromOption(match), c$1, h, state$2) : /* tuple */[
+              undefined,
+              undefined
             ];
         }
         var match$1 = new_objs[0];
         var acc$1;
-        if (match$1 !== /* None */0) {
+        if (match$1 !== undefined) {
           var match$2 = new_objs[1];
-          var o = match$1[0];
-          acc$1 = match$2 !== /* None */0 ? /* :: */[
+          var o = Js_primitive.valFromOption(match$1);
+          acc$1 = match$2 !== undefined ? /* :: */[
               o,
               /* :: */[
-                match$2[0],
+                Js_primitive.valFromOption(match$2),
                 acc
               ]
             ] : /* :: */[
@@ -2072,8 +2073,8 @@ function check_collisions(collid, all_collids, state) {
             ];
         } else {
           var match$3 = new_objs[1];
-          acc$1 = match$3 !== /* None */0 ? /* :: */[
-              match$3[0],
+          acc$1 = match$3 !== undefined ? /* :: */[
+              Js_primitive.valFromOption(match$3),
               acc
             ] : acc;
         }
@@ -2175,8 +2176,8 @@ function run_update_collid(state, collid, all_collids) {
     o[/* crouch */10] = false;
     var match = update_player(o, keys, state[/* ctx */1]);
     var player;
-    if (match !== /* None */0) {
-      var match$1 = match[0];
+    if (match !== undefined) {
+      var match$1 = match;
       var new_spr = match$1[1];
       normalize_pos(o[/* pos */1], collid[1][/* params */0], new_spr[/* params */0]);
       player = /* Player */Block.__(0, [

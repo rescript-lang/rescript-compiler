@@ -43,16 +43,29 @@ type option_unwrap_time =
 *)
 let none : J.expression = 
   (* -FIXME *)
-  {expression_desc = Number (Int {i = 0l; c  = None}); comment = Some "None" }
+  E.undefined
+  (* {expression_desc = Number (Int {i = 0l; c  = None}); comment = Some "None" } *)
 
-let is_none_static (arg : J.expression_desc ) =   
-  match arg with Number _ -> true | _ -> false
+let is_none_static (arg : J.expression_desc ) = arg = Undefined
+  (* -FIXME *)
+  (* match arg with Number _ -> true | _ -> false *)
 
+let is_not_none  (e : J.expression) : J.expression = 
+  let desc = e.expression_desc in 
+  if is_none_static desc then E.caml_false 
+  else match desc with 
+  | Optional_block _ -> E.caml_true
+  | _ -> 
+    E.not (E.triple_equal e none)
+  
 let val_from_option (arg : J.expression) =   
   match arg.expression_desc with 
   | Optional_block (x,_) -> x 
   | _ -> 
-    E.index arg 0l (* -FIXME *)
+    E.runtime_call Js_runtime_modules.js_primitive
+      "valFromOption" [arg]
+    (* E.index arg 0l  *)
+    (* -FIXME *)
 (**
   Invrariant: 
   - optional encoding
@@ -79,7 +92,7 @@ let get_default_undefined_from_optional
     -> x (* invariant: option encoding *)
   | _ ->
     if Js_analyzer.is_okay_to_duplicate arg then
-      E.econd arg 
+      E.econd (is_not_none arg )
         (val_from_option arg) E.undefined
     else
       (E.runtime_call Js_runtime_modules.js_primitive "option_get" [arg])
@@ -94,7 +107,7 @@ let get_default_undefined (arg : J.expression) : J.expression =
     (* invariant: option encoding *)
   | _ ->
     if Js_analyzer.is_okay_to_duplicate arg then
-      E.econd arg 
+      E.econd (is_not_none arg) 
         (Js_of_lam_polyvar.get_field (val_from_option arg)) E.undefined
     else
       E.runtime_call Js_runtime_modules.js_primitive "option_get_unwrap" [arg]
@@ -115,14 +128,6 @@ let destruct_optional
 
 
 
-let is_not_none  (e : J.expression) : J.expression = 
-  let desc = e.expression_desc in 
-  if is_none_static desc then E.caml_false 
-  else match desc with 
-  | Optional_block _ -> E.caml_true
-  | _ -> 
-    E.not (E.triple_equal e none)
-  
 
 let some  = E.optional_block 
   

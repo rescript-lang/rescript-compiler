@@ -5,6 +5,7 @@ var $$Array = require("../../lib/js/array.js");
 var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var String_set = require("./string_set.js");
+var Js_primitive = require("../../lib/js/js_primitive.js");
 
 var suites = [/* [] */0];
 
@@ -34,10 +35,10 @@ var b = {
 };
 
 function map(f, x) {
-  if (x !== /* None */0) {
-    return /* Some */[Curry._1(f, x[0])];
+  if (x !== undefined) {
+    return Js_primitive.some(Curry._1(f, Js_primitive.valFromOption(x)));
   } else {
-    return /* None */0;
+    return undefined;
   }
 }
 
@@ -48,15 +49,15 @@ function make(foo) {
   return (function () {
       var tmp = { };
       if (partial_arg) {
-        tmp.foo = partial_arg[0];
+        tmp.foo = Js_primitive.valFromOption(partial_arg);
       }
       return tmp;
     });
 }
 
-var a_ = make(/* None */0)(/* () */0);
+var a_ = make(undefined)(/* () */0);
 
-var b_ = make([42])(/* () */0);
+var b_ = make(42)(/* () */0);
 
 eq("File \"gpr_1409_test.ml\", line 30, characters 6-13", b_.foo, "42");
 
@@ -76,10 +77,10 @@ function test3(_open, xx__hi) {
     hi: 2
   };
   if (_open) {
-    tmp.open = _open[0];
+    tmp.open = Js_primitive.valFromOption(_open);
   }
   if (xx__hi) {
-    tmp.xx = xx__hi[0];
+    tmp.xx = Js_primitive.valFromOption(xx__hi);
   }
   return tmp;
 }
@@ -91,7 +92,7 @@ function test4(_open, xx__hi) {
     hi: 2
   };
   if (xx__hi) {
-    tmp.xx = xx__hi[0];
+    tmp.xx = Js_primitive.valFromOption(xx__hi);
   }
   return tmp;
 }
@@ -103,11 +104,11 @@ function test5(f, x) {
   };
   var tmp$1 = Curry._1(f, x);
   if (tmp$1) {
-    tmp.open = tmp$1[0];
+    tmp.open = Js_primitive.valFromOption(tmp$1);
   }
   var tmp$2 = Curry._1(f, x);
   if (tmp$2) {
-    tmp.xx = tmp$2[0];
+    tmp.xx = Js_primitive.valFromOption(tmp$2);
   }
   return tmp;
 }
@@ -118,13 +119,13 @@ function test6(f, _) {
   var tmp = {
     hi: 2
   };
-  var tmp$1 = (x[0] = x[0] + 1 | 0, [x[0]]);
+  var tmp$1 = (x[0] = x[0] + 1 | 0, x[0]);
   if (tmp$1) {
-    tmp.open = tmp$1[0];
+    tmp.open = Js_primitive.valFromOption(tmp$1);
   }
   var tmp$2 = f(x);
   if (tmp$2) {
-    tmp.xx = tmp$2[0];
+    tmp.xx = Js_primitive.valFromOption(tmp$2);
   }
   return tmp;
 }
@@ -136,7 +137,7 @@ function keys(xs, ys) {
 eq("File \"gpr_1409_test.ml\", line 69, characters 6-13", keys(/* :: */[
           "hi",
           /* [] */0
-        ], Object.keys(test3(/* None */0, /* None */0))), true);
+        ], Object.keys(test3(undefined, undefined))), true);
 
 eq("File \"gpr_1409_test.ml\", line 71, characters 6-13", keys(/* :: */[
           "hi",
@@ -144,7 +145,7 @@ eq("File \"gpr_1409_test.ml\", line 71, characters 6-13", keys(/* :: */[
             "open",
             /* [] */0
           ]
-        ], Object.keys(test3([2], /* None */0))), true);
+        ], Object.keys(test3(2, undefined))), true);
 
 eq("File \"gpr_1409_test.ml\", line 73, characters 6-13", keys(/* :: */[
           "hi",
@@ -155,7 +156,7 @@ eq("File \"gpr_1409_test.ml\", line 73, characters 6-13", keys(/* :: */[
               /* [] */0
             ]
           ]
-        ], Object.keys(test3([2], [2]))), true);
+        ], Object.keys(test3(2, 2))), true);
 
 Mt.from_pair_suites("gpr_1409_test.ml", suites[0]);
 

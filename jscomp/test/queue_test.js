@@ -18,7 +18,7 @@ function to_array(q) {
 function queue_1(x) {
   var q = /* record */[
     /* length */0,
-    /* tail : None */0
+    /* tail */undefined
   ];
   $$Array.iter((function (x) {
           return Queue.add(x, q);

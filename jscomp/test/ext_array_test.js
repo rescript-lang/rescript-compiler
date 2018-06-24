@@ -4,6 +4,7 @@ var List = require("../../lib/js/list.js");
 var $$Array = require("../../lib/js/array.js");
 var Curry = require("../../lib/js/curry.js");
 var Caml_array = require("../../lib/js/caml_array.js");
+var Js_primitive = require("../../lib/js/js_primitive.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function reverse_range(a, i, len) {
@@ -98,9 +99,9 @@ function filter_map(f, a) {
       var v = a[i];
       var match = Curry._1(f, v);
       _i = i + 1 | 0;
-      if (match !== /* None */0) {
+      if (match !== undefined) {
         _acc = /* :: */[
-          match[0],
+          Js_primitive.valFromOption(match),
           acc
         ];
         continue ;
@@ -147,8 +148,8 @@ function tolist_aux(a, f, _i, _res) {
     } else {
       var v = a[i];
       var match = Curry._1(f, v);
-      _res = match !== /* None */0 ? /* :: */[
-          match[0],
+      _res = match !== undefined ? /* :: */[
+          Js_primitive.valFromOption(match),
           res
         ] : res;
       _i = i - 1 | 0;

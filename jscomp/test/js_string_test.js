@@ -99,7 +99,7 @@ var suites_001 = /* :: */[
                     "codePointAt",
                     (function () {
                         return /* Eq */Block.__(0, [
-                                  [97],
+                                  97,
                                   Js_primitive.undefined_to_opt("foobar".codePointAt(4))
                                 ]);
                       })
@@ -109,7 +109,7 @@ var suites_001 = /* :: */[
                       "codePointAt - out of bounds",
                       (function () {
                           return /* Eq */Block.__(0, [
-                                    /* None */0,
+                                    undefined,
                                     Js_primitive.undefined_to_opt("foobar".codePointAt(98))
                                   ]);
                         })
@@ -229,10 +229,10 @@ var suites_001 = /* :: */[
                                               "match",
                                               (function () {
                                                   return /* Eq */Block.__(0, [
-                                                            [/* array */[
-                                                                "na",
-                                                                "na"
-                                                              ]],
+                                                            /* array */[
+                                                              "na",
+                                                              "na"
+                                                            ],
                                                             Js_primitive.null_to_opt("banana".match((/na+/g)))
                                                           ]);
                                                 })
@@ -242,7 +242,7 @@ var suites_001 = /* :: */[
                                                 "match - no match",
                                                 (function () {
                                                     return /* Eq */Block.__(0, [
-                                                              /* None */0,
+                                                              undefined,
                                                               Js_primitive.null_to_opt("banana".match((/nanana+/g)))
                                                             ]);
                                                   })

@@ -61,7 +61,7 @@ var u = /* array */[/* String */[
     $$String.compare
   ]];
 
-var ghh = Curry._2(MoreLabels.Hashtbl[/* create */0], /* None */0, 30);
+var ghh = Curry._2(MoreLabels.Hashtbl[/* create */0], undefined, 30);
 
 var hh = 1;
 

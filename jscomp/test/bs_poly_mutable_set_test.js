@@ -150,9 +150,9 @@ b("File \"bs_poly_mutable_set_test.ml\", line 69, characters 4-11", Belt_Mutable
           data: Belt_internalAVLset.empty
         }));
 
-eq("File \"bs_poly_mutable_set_test.ml\", line 70, characters 5-12", Belt_internalAVLset.minimum(v.data), [500]);
+eq("File \"bs_poly_mutable_set_test.ml\", line 70, characters 5-12", Belt_internalAVLset.minimum(v.data), 500);
 
-eq("File \"bs_poly_mutable_set_test.ml\", line 71, characters 5-12", Belt_internalAVLset.maximum(v.data), [2000]);
+eq("File \"bs_poly_mutable_set_test.ml\", line 71, characters 5-12", Belt_internalAVLset.maximum(v.data), 2000);
 
 eq("File \"bs_poly_mutable_set_test.ml\", line 72, characters 5-12", Belt_internalAVLset.minUndefined(v.data), 500);
 
@@ -172,9 +172,9 @@ eq("File \"bs_poly_mutable_set_test.ml\", line 76, characters 5-12", Belt_intern
 
 Belt_internalAVLset.checkInvariantInternal(v.data);
 
-eq("File \"bs_poly_mutable_set_test.ml\", line 78, characters 5-12", Belt_MutableSet.get(v, 3), /* None */0);
+eq("File \"bs_poly_mutable_set_test.ml\", line 78, characters 5-12", Belt_MutableSet.get(v, 3), undefined);
 
-eq("File \"bs_poly_mutable_set_test.ml\", line 79, characters 5-12", Belt_MutableSet.get(v, 1200), [1200]);
+eq("File \"bs_poly_mutable_set_test.ml\", line 79, characters 5-12", Belt_MutableSet.get(v, 1200), 1200);
 
 var match = Belt_MutableSet.split(v, 1000);
 
