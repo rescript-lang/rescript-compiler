@@ -31,4 +31,8 @@ function create() {
     fs.writeFileSync(path.join(__dirname, '..', 'jscomp', 'runtime', '.extradepend'), deps, 'utf8')
 }
 
+
+if (require.main === module){
+    create()
+}
 exports.create = create
