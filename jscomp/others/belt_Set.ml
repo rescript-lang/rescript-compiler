@@ -40,11 +40,36 @@ module S = struct
 end 
 
 type ('value, 'id) t = ('value, 'id) S.t
-    
+
+module ComparableInt = Belt.Id.MakeComparable(struct
+  type t = int
+  let cmp (a:int) (b:int) = compare a b
+end)
+
+type intId = ComparableInt.identity
+
+let intId : (int, intId) Belt.Id.comparable = (module ComparableInt)
+
+let fromSetInt (s : Int.t) : (int, intId) t =
+  let data = Obj.magic s in
+  S.t ~cmp:ComparableInt.cmp ~data
+
+let toSetInt (x: (int, intId) t) : Int.t =
+  Obj.magic (S.data x)
+
+let toSetIntMaybe (x: (int, _) t) : Int.t option =
+  if S.cmp x == (Obj.magic ComparableInt.cmp)
+  then Some (Obj.magic (S.data x))
+  else None
+
 let fromArray (type value) (type identity) data ~(id : (value,identity) id)  = 
   let module M = (val id ) in
   let cmp = M.cmp in 
-  S.t ~cmp ~data:(Dict.fromArray ~cmp data)
+  if cmp == (Obj.magic ComparableInt.cmp)
+  then (* example fast path *)
+    S.t ~cmp:cmp ~data:(Obj.magic (Int.fromArray (Obj.magic(data))))
+  else
+    S.t ~cmp ~data:(Dict.fromArray ~cmp data)
 
 let remove m e =      
   let cmp, data  = S.cmp m, S.data m  in

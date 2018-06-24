@@ -4,20 +4,25 @@ let eq loc x y = Mt.eq_suites ~suites ~test_id loc x y
 
 let b loc v  = Mt.bool_suites ~suites ~test_id loc v 
 
-module N = Belt.Set.Int
+let ofA a = Belt.Set.fromArray ~id:Belt.Set.intId a
+
+module N = struct
+  include Belt.Set
+  let empty = Belt.Set.make ~id:Belt.Set.intId
+  let fromArray = ofA
+end
 module I = Array_data_util
 module A = Belt.Array
 let (=~) s i = 
-  N.(eq (fromArray i) s)
+  Belt.Set.eq (ofA i) s
 let (=*) a b =  
-  N.(eq (fromArray a) (fromArray b))
-let ofA = N.fromArray
+  Belt.Set.eq (ofA a) (ofA b)
 
 let ()= 
   b __LOC__ 
   ([|1;2;3|] =*
     [|3;2;1|])
-let u = N.(intersect (ofA [|1;2;3|]) (ofA [|3;4;5|]) )
+let u = Belt.Set.(intersect ((ofA [|1;2;3|])) ((ofA [|3;4;5|])) )
 
 let ()= 
   b __LOC__ 
