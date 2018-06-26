@@ -1,5 +1,6 @@
 'use strict';
 
+var Js_primitive = require("../../lib/js/js_primitive.js");
 
 function v(displayName, _) {
   var tmp = {
@@ -8,7 +9,7 @@ function v(displayName, _) {
     hi: "ghos"
   };
   if (displayName) {
-    tmp.displayName = displayName[0];
+    tmp.displayName = Js_primitive.valFromOption(displayName);
   }
   return tmp;
 }

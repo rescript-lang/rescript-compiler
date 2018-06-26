@@ -5,6 +5,7 @@ var Oo = require("../../lib/js/oo.js");
 var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
+var Js_primitive = require("../../lib/js/js_primitive.js");
 var Caml_oo_curry = require("../../lib/js/caml_oo_curry.js");
 var CamlinternalOO = require("../../lib/js/camlinternalOO.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
@@ -129,14 +130,14 @@ function backup_init($$class) {
         save,
         (function (self$3) {
             var copy$1 = Caml_exceptions.caml_set_oo_id(Caml_obj.caml_obj_dup(self$3));
-            self$3[copy] = /* Some */[(copy$1[copy] = /* None */0, copy$1)];
+            self$3[copy] = Js_primitive.some((copy$1[copy] = undefined, copy$1));
             return /* () */0;
           }),
         restore,
         (function (self$3) {
             var match = self$3[copy];
-            if (match !== /* None */0) {
-              return match[0];
+            if (match !== undefined) {
+              return Js_primitive.valFromOption(match);
             } else {
               return self$3;
             }
@@ -144,7 +145,7 @@ function backup_init($$class) {
       ]);
   return (function (_, self) {
       var self$1 = CamlinternalOO.create_object_opt(self, $$class);
-      self$1[copy] = /* None */0;
+      self$1[copy] = undefined;
       return self$1;
     });
 }
@@ -225,27 +226,27 @@ function backup2_init($$class) {
   CamlinternalOO.set_methods($$class, /* array */[
         save,
         (function (self$5) {
-            self$5[copy] = /* Some */[Caml_exceptions.caml_set_oo_id(Caml_obj.caml_obj_dup(self$5))];
+            self$5[copy] = Js_primitive.some(Caml_exceptions.caml_set_oo_id(Caml_obj.caml_obj_dup(self$5)));
             return /* () */0;
           }),
         restore,
         (function (self$5) {
             var match = self$5[copy];
-            if (match !== /* None */0) {
-              return match[0];
+            if (match !== undefined) {
+              return Js_primitive.valFromOption(match);
             } else {
               return self$5;
             }
           }),
         clear,
         (function (self$5) {
-            self$5[copy] = /* None */0;
+            self$5[copy] = undefined;
             return /* () */0;
           })
       ]);
   return (function (_, self) {
       var self$1 = CamlinternalOO.create_object_opt(self, $$class);
-      self$1[copy] = /* None */0;
+      self$1[copy] = undefined;
       return self$1;
     });
 }
@@ -314,7 +315,7 @@ function window_init($$class) {
         }));
   return (function (_, self) {
       var self$1 = CamlinternalOO.create_object_opt(self, $$class);
-      self$1[top_widget$1] = /* None */0;
+      self$1[top_widget$1] = undefined;
       return self$1;
     });
 }

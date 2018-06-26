@@ -174,11 +174,11 @@ b("File \"bs_poly_set_test.ml\", line 82, characters 4-11", Belt_Set.subset(u21,
 
 b("File \"bs_poly_set_test.ml\", line 83, characters 4-11", 47 === Belt_Set.getUndefined(u22, 47));
 
-b("File \"bs_poly_set_test.ml\", line 84, characters 4-11", Caml_obj.caml_equal([47], Belt_Set.get(u22, 47)));
+b("File \"bs_poly_set_test.ml\", line 84, characters 4-11", Caml_obj.caml_equal(47, Belt_Set.get(u22, 47)));
 
 b("File \"bs_poly_set_test.ml\", line 85, characters 4-11", Belt_Set.getUndefined(u22, 59) === undefined);
 
-b("File \"bs_poly_set_test.ml\", line 86, characters 4-11", /* None */0 === Belt_Set.get(u22, 59));
+b("File \"bs_poly_set_test.ml\", line 86, characters 4-11", undefined === Belt_Set.get(u22, 59));
 
 eq("File \"bs_poly_set_test.ml\", line 88, characters 5-12", Belt_SetDict.size(u25.data), 60);
 
@@ -187,14 +187,14 @@ var m = {
   data: Belt_SetDict.empty
 };
 
-b("File \"bs_poly_set_test.ml\", line 89, characters 4-11", Belt_SetDict.minimum(m.data) === /* None */0);
+b("File \"bs_poly_set_test.ml\", line 89, characters 4-11", Belt_SetDict.minimum(m.data) === undefined);
 
 var m$1 = {
   cmp: IntCmp[/* cmp */0],
   data: Belt_SetDict.empty
 };
 
-b("File \"bs_poly_set_test.ml\", line 90, characters 4-11", Belt_SetDict.maximum(m$1.data) === /* None */0);
+b("File \"bs_poly_set_test.ml\", line 90, characters 4-11", Belt_SetDict.maximum(m$1.data) === undefined);
 
 var m$2 = {
   cmp: IntCmp[/* cmp */0],
@@ -362,9 +362,9 @@ eq("File \"bs_poly_set_test.ml\", line 145, characters 5-12", Belt_SetDict.toLis
             return i + 201 | 0;
           })));
 
-eq("File \"bs_poly_set_test.ml\", line 146, characters 5-12", Belt_SetDict.minimum(a8.data), [0]);
+eq("File \"bs_poly_set_test.ml\", line 146, characters 5-12", Belt_SetDict.minimum(a8.data), 0);
 
-eq("File \"bs_poly_set_test.ml\", line 147, characters 5-12", Belt_SetDict.minimum(a9.data), [201]);
+eq("File \"bs_poly_set_test.ml\", line 147, characters 5-12", Belt_SetDict.minimum(a9.data), 201);
 
 Belt_List.forEach(/* :: */[
       a0,

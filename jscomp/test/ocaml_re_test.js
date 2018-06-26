@@ -16,6 +16,7 @@ var Caml_bytes = require("../../lib/js/caml_bytes.js");
 var Caml_int32 = require("../../lib/js/caml_int32.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_string = require("../../lib/js/caml_string.js");
+var Js_primitive = require("../../lib/js/js_primitive.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
@@ -275,12 +276,12 @@ function one_char(param) {
     var match = param[0];
     var i = match[0];
     if (Caml_obj.caml_equal(i, match[1])) {
-      return /* Some */[i];
+      return Js_primitive.some(i);
     } else {
-      return /* None */0;
+      return undefined;
     }
   } else {
-    return /* None */0;
+    return undefined;
   }
 }
 
@@ -629,14 +630,14 @@ function first(f, _param) {
     var param = _param;
     if (param) {
       var res = Curry._1(f, param[0]);
-      if (res !== /* None */0) {
+      if (res !== undefined) {
         return res;
       } else {
         _param = param[1];
         continue ;
       }
     } else {
-      return /* None */0;
+      return undefined;
     }
   };
 }
@@ -909,7 +910,7 @@ var dummy = /* record */[
   /* idx */-1,
   /* category */-1,
   /* desc : [] */0,
-  /* status : None */0,
+  /* status */undefined,
   /* hash */-1
 ];
 
@@ -922,7 +923,7 @@ function mk(idx, cat, desc) {
           /* idx */idx,
           /* category */cat,
           /* desc */desc,
-          /* status : None */0,
+          /* status */undefined,
           /* hash */hash$2(idx, cat, desc)
         ];
 }
@@ -1208,15 +1209,15 @@ function delta_1(marks, c, next_cat, prev_cat, x, rem) {
                   switch (param.tag | 0) {
                     case 0 : 
                     case 1 : 
-                        return /* None */0;
+                        return undefined;
                     case 2 : 
-                        return /* Some */[param[0]];
+                        return Js_primitive.some(param[0]);
                     
                   }
                 }), y$prime$1);
-          var match$2 = match$1 !== /* None */0 ? /* tuple */[
+          var match$2 = match$1 !== undefined ? /* tuple */[
               Curry._1(remove_matches, y$prime$1),
-              match$1[0]
+              Js_primitive.valFromOption(match$1)
             ] : /* tuple */[
               y$prime$1,
               marks
@@ -1303,14 +1304,14 @@ function delta_seq(c, next_cat, prev_cat, kind, y, z, rem) {
           switch (param.tag | 0) {
             case 0 : 
             case 1 : 
-                return /* None */0;
+                return undefined;
             case 2 : 
-                return /* Some */[param[0]];
+                return Js_primitive.some(param[0]);
             
           }
         }), y);
-  if (match !== /* None */0) {
-    var marks = match[0];
+  if (match !== undefined) {
+    var marks = Js_primitive.valFromOption(match);
     if (kind !== -730718166) {
       if (kind >= 332064784) {
         var match$1 = split_at_match_rec(/* [] */0, y);
@@ -1373,8 +1374,8 @@ function flatten_match(m) {
 
 function status(s) {
   var match = s[/* status */3];
-  if (match !== /* None */0) {
-    return match[0];
+  if (match !== undefined) {
+    return Js_primitive.valFromOption(match);
   } else {
     var match$1 = s[/* desc */2];
     var st;
@@ -1397,7 +1398,7 @@ function status(s) {
     } else {
       st = /* Failed */0;
     }
-    s[/* status */3] = /* Some */[st];
+    s[/* status */3] = Js_primitive.some(st);
     return st;
   }
 }
@@ -1678,8 +1679,8 @@ function cadd(c, s) {
 
 function trans_set(cache, cm, s) {
   var match = one_char(s);
-  if (match !== /* None */0) {
-    return single(Caml_bytes.get(cm, match[0]));
+  if (match !== undefined) {
+    return single(Caml_bytes.get(cm, Js_primitive.valFromOption(match)));
   } else {
     var v_000 = hash_rec(s);
     var v = /* tuple */[
@@ -2304,7 +2305,7 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _par
             var kind$prime = match$1[1];
             var cr = match$1[0];
             var rem;
-            if (j !== /* None */0) {
+            if (j !== undefined) {
               var f = greedy >= 620821490 ? (function(cr,kind$prime){
                 return function (rem) {
                   return alt(ids, /* :: */[
@@ -2326,7 +2327,7 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _par
                             ]);
                 }
                 }(cr,kind$prime));
-              rem = iter(j[0] - i | 0, f, mk_expr(ids, /* Eps */0));
+              rem = iter(j - i | 0, f, mk_expr(ids, /* Eps */0));
             } else {
               rem = rep(ids, greedy, kind$prime, cr);
             }
@@ -2637,8 +2638,8 @@ function repn(r, i, j) {
           "Re.repn"
         ];
   }
-  if (j !== /* None */0) {
-    if (j[0] < i) {
+  if (j !== undefined) {
+    if (j < i) {
       throw [
             Caml_builtin_exceptions.invalid_argument,
             "Re.repn"
@@ -2862,8 +2863,8 @@ var xdigit = alt$1(/* :: */[
     ]);
 
 function exec_internal(name, $staropt$star, $staropt$star$1, groups, re, s) {
-  var pos = $staropt$star !== /* None */0 ? $staropt$star[0] : 0;
-  var len = $staropt$star$1 !== /* None */0 ? $staropt$star$1[0] : -1;
+  var pos = $staropt$star !== undefined ? $staropt$star : 0;
+  var len = $staropt$star$1 !== undefined ? $staropt$star$1 : -1;
   if (pos < 0 || len < -1 || (pos + len | 0) > s.length) {
     throw [
           Caml_builtin_exceptions.invalid_argument,
@@ -3161,21 +3162,21 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
   var piece = function () {
     var r = atom(/* () */0);
     if (accept(/* "*" */42)) {
-      return greedy_mod(repn(r, 0, /* None */0));
+      return greedy_mod(repn(r, 0, undefined));
     } else if (accept(/* "+" */43)) {
-      return greedy_mod(repn(r, 1, /* None */0));
+      return greedy_mod(repn(r, 1, undefined));
     } else if (accept(/* "?" */63)) {
-      return greedy_mod(repn(r, 0, [1]));
+      return greedy_mod(repn(r, 0, 1));
     } else if (accept(/* "{" */123)) {
       var match = integer(/* () */0);
-      if (match !== /* None */0) {
-        var i$1 = match[0];
-        var j = accept(/* "," */44) ? integer(/* () */0) : [i$1];
+      if (match !== undefined) {
+        var i$1 = match;
+        var j = accept(/* "," */44) ? integer(/* () */0) : i$1;
         if (!accept(/* "}" */125)) {
           throw Parse_error;
         }
-        if (j !== /* None */0) {
-          if (j[0] < i$1) {
+        if (j !== undefined) {
+          if (j < i$1) {
             throw Parse_error;
           }
           
@@ -3453,23 +3454,23 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
   };
   var integer = function () {
     if (i[0] === l) {
-      return /* None */0;
+      return undefined;
     } else {
       var d = get(/* () */0);
       if (d > 57 || d < 48) {
         i[0] = i[0] - 1 | 0;
-        return /* None */0;
+        return undefined;
       } else {
         var _i = d - /* "0" */48 | 0;
         while(true) {
           var i$1 = _i;
           if (i[0] === l) {
-            return [i$1];
+            return i$1;
           } else {
             var d$1 = get(/* () */0);
             if (d$1 > 57 || d$1 < 48) {
               i[0] = i[0] - 1 | 0;
-              return [i$1];
+              return i$1;
             } else {
               var i$prime = Caml_int32.imul(10, i$1) + (d$1 - /* "0" */48 | 0) | 0;
               if (i$prime < i$1) {
@@ -3714,7 +3715,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
 }
 
 function re($staropt$star, pat) {
-  var flags = $staropt$star !== /* None */0 ? $staropt$star[0] : /* [] */0;
+  var flags = $staropt$star !== undefined ? $staropt$star : /* [] */0;
   var opts = List.map((function (param) {
           if (param !== 601676297) {
             if (param >= 613575188) {
@@ -3726,9 +3727,9 @@ function re($staropt$star, pat) {
             return /* Caseless */604571177;
           }
         }), flags);
-  var $staropt$star$1 = [opts];
+  var $staropt$star$1 = opts;
   var s = pat;
-  var opts$1 = $staropt$star$1 !== /* None */0 ? $staropt$star$1[0] : /* [] */0;
+  var opts$1 = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
   var r = parse(List.memq(/* Multiline */1071952589, opts$1), List.memq(/* Dollar_endonly */-712595228, opts$1), List.memq(/* Dotall */-424303016, opts$1), List.memq(/* Ungreedy */-243745063, opts$1), s);
   var r$1 = List.memq(/* Anchored */616470068, opts$1) ? seq$2(/* :: */[
           /* Start */8,
@@ -3749,7 +3750,7 @@ function regexp(flags, pat) {
   var regexp$1 = anchored(r) ? /* Group */Block.__(6, [r]) : seq$2(/* :: */[
           /* Sem */Block.__(4, [
               /* Shortest */-1034406550,
-              repn(any, 0, /* None */0)
+              repn(any, 0, undefined)
             ]),
           /* :: */[
             /* Group */Block.__(6, [r]),
@@ -3789,7 +3790,7 @@ function regexp(flags, pat) {
 
 function exec(rex, pos, s) {
   var pos$1 = pos;
-  var len = /* None */0;
+  var len = undefined;
   var re = rex;
   var s$1 = s;
   var match = exec_internal("Re.exec", pos$1, len, true, re, s$1);
@@ -3802,7 +3803,7 @@ function exec(rex, pos, s) {
 
 var s = Caml_string.bytes_to_string(Bytes.make(1048575, /* "a" */97)) + "b";
 
-eq("File \"xx.ml\", line 7, characters 3-10", get(exec(regexp(/* None */0, "aa?b"), /* None */0, s), 0), "aab");
+eq("File \"xx.ml\", line 7, characters 3-10", get(exec(regexp(undefined, "aa?b"), undefined, s), 0), "aab");
 
 Mt.from_pair_suites("xx.ml", suites[0]);
 

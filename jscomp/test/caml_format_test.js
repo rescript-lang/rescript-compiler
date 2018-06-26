@@ -379,7 +379,7 @@ var formatter_suites_001 = /* :: */[
                                   ]),
                                 "%S %03d %L %a"
                               ])), "32", 33, 33, "a", 33, 3, (function (param, param$1) {
-                          return Format.pp_print_list(/* None */0, Format.pp_print_int, param, param$1);
+                          return Format.pp_print_list(undefined, Format.pp_print_int, param, param$1);
                         }), /* :: */[
                         1,
                         /* :: */[

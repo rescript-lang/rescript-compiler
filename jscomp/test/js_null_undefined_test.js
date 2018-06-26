@@ -9,8 +9,8 @@ var suites_000 = /* tuple */[
   "toOption - null",
   (function () {
       return /* Eq */Block.__(0, [
-                /* None */0,
-                /* None */0
+                undefined,
+                undefined
               ]);
     })
 ];
@@ -20,8 +20,8 @@ var suites_001 = /* :: */[
     "toOption - undefined",
     (function () {
         return /* Eq */Block.__(0, [
-                  /* None */0,
-                  /* None */0
+                  undefined,
+                  undefined
                 ]);
       })
   ],
@@ -30,8 +30,8 @@ var suites_001 = /* :: */[
       "toOption - empty",
       (function () {
           return /* Eq */Block.__(0, [
-                    /* None */0,
-                    /* None */0
+                    undefined,
+                    undefined
                   ]);
         })
     ],
@@ -40,7 +40,7 @@ var suites_001 = /* :: */[
         "toOption - 'a",
         (function () {
             return /* Eq */Block.__(0, [
-                      ["foo"],
+                      "foo",
                       Js_primitive.nullable_to_opt("foo")
                     ]);
           })
@@ -50,7 +50,7 @@ var suites_001 = /* :: */[
           "return",
           (function () {
               return /* Eq */Block.__(0, [
-                        ["something"],
+                        "something",
                         Js_primitive.nullable_to_opt("something")
                       ]);
             })
@@ -209,7 +209,7 @@ var suites_001 = /* :: */[
                                     (function () {
                                         return /* Eq */Block.__(0, [
                                                   undefined,
-                                                  Js_null_undefined.fromOption(/* None */0)
+                                                  Js_null_undefined.fromOption(undefined)
                                                 ]);
                                       })
                                   ],
@@ -219,7 +219,7 @@ var suites_001 = /* :: */[
                                       (function () {
                                           return /* Eq */Block.__(0, [
                                                     2,
-                                                    Js_null_undefined.fromOption([2])
+                                                    Js_null_undefined.fromOption(2)
                                                   ]);
                                         })
                                     ],

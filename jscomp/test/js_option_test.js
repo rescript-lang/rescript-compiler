@@ -54,7 +54,7 @@ var option_suites_001 = /* :: */[
           (function () {
               return /* Eq */Block.__(0, [
                         true,
-                        Js_option.isSomeValue(simpleEq, 2, [2])
+                        Js_option.isSomeValue(simpleEq, 2, 2)
                       ]);
             })
         ],
@@ -64,7 +64,7 @@ var option_suites_001 = /* :: */[
             (function () {
                 return /* Eq */Block.__(0, [
                           false,
-                          Js_option.isSomeValue(simpleEq, 1, [2])
+                          Js_option.isSomeValue(simpleEq, 1, 2)
                         ]);
               })
           ],
@@ -74,7 +74,7 @@ var option_suites_001 = /* :: */[
               (function () {
                   return /* Eq */Block.__(0, [
                             false,
-                            Js_option.isSomeValue(simpleEq, 1, /* None */0)
+                            Js_option.isSomeValue(simpleEq, 1, undefined)
                           ]);
                 })
             ],
@@ -84,7 +84,7 @@ var option_suites_001 = /* :: */[
                 (function () {
                     return /* Eq */Block.__(0, [
                               2,
-                              Js_option.getExn([2])
+                              Js_option.getExn(2)
                             ]);
                   })
               ],
@@ -94,7 +94,7 @@ var option_suites_001 = /* :: */[
                   (function () {
                       return /* Eq */Block.__(0, [
                                 true,
-                                Js_option.equal(simpleEq, [2], [2])
+                                Js_option.equal(simpleEq, 2, 2)
                               ]);
                     })
                 ],
@@ -104,7 +104,7 @@ var option_suites_001 = /* :: */[
                     (function () {
                         return /* Eq */Block.__(0, [
                                   false,
-                                  Js_option.equal(simpleEq, [1], [2])
+                                  Js_option.equal(simpleEq, 1, 2)
                                 ]);
                       })
                   ],
@@ -114,7 +114,7 @@ var option_suites_001 = /* :: */[
                       (function () {
                           return /* Eq */Block.__(0, [
                                     false,
-                                    Js_option.equal(simpleEq, [1], /* None */0)
+                                    Js_option.equal(simpleEq, 1, undefined)
                                   ]);
                         })
                     ],
@@ -125,8 +125,8 @@ var option_suites_001 = /* :: */[
                             return /* Eq */Block.__(0, [
                                       true,
                                       Js_option.isSomeValue(simpleEq, 3, Js_option.andThen((function (a) {
-                                                  return [a + 1 | 0];
-                                                }), [2]))
+                                                  return a + 1 | 0;
+                                                }), 2))
                                     ]);
                           })
                       ],
@@ -137,8 +137,8 @@ var option_suites_001 = /* :: */[
                               return /* Eq */Block.__(0, [
                                         false,
                                         Js_option.isSomeValue(simpleEq, 3, Js_option.andThen((function () {
-                                                    return /* None */0;
-                                                  }), [2]))
+                                                    return undefined;
+                                                  }), 2))
                                       ]);
                             })
                         ],
@@ -150,7 +150,7 @@ var option_suites_001 = /* :: */[
                                           true,
                                           Js_option.isSomeValue(simpleEq, 3, Js_option.map((function (a) {
                                                       return a + 1 | 0;
-                                                    }), [2]))
+                                                    }), 2))
                                         ]);
                               })
                           ],
@@ -159,10 +159,10 @@ var option_suites_001 = /* :: */[
                               "option_map_None",
                               (function () {
                                   return /* Eq */Block.__(0, [
-                                            /* None */0,
+                                            undefined,
                                             Js_option.map((function (a) {
                                                     return a + 1 | 0;
-                                                  }), /* None */0)
+                                                  }), undefined)
                                           ]);
                                 })
                             ],
@@ -172,7 +172,7 @@ var option_suites_001 = /* :: */[
                                 (function () {
                                     return /* Eq */Block.__(0, [
                                               2,
-                                              Js_option.getWithDefault(3, [2])
+                                              Js_option.getWithDefault(3, 2)
                                             ]);
                                   })
                               ],
@@ -182,7 +182,7 @@ var option_suites_001 = /* :: */[
                                   (function () {
                                       return /* Eq */Block.__(0, [
                                                 3,
-                                                Js_option.getWithDefault(3, /* None */0)
+                                                Js_option.getWithDefault(3, undefined)
                                               ]);
                                     })
                                 ],
@@ -194,7 +194,7 @@ var option_suites_001 = /* :: */[
                                                   true,
                                                   Js_option.isSomeValue(simpleEq, 2, Js_option.filter((function (a) {
                                                               return a % 2 === 0;
-                                                            }), [2]))
+                                                            }), 2))
                                                 ]);
                                       })
                                   ],
@@ -203,10 +203,10 @@ var option_suites_001 = /* :: */[
                                       "option_filter_Reject",
                                       (function () {
                                           return /* Eq */Block.__(0, [
-                                                    /* None */0,
+                                                    undefined,
                                                     Js_option.filter((function (a) {
                                                             return a % 3 === 0;
-                                                          }), [2])
+                                                          }), 2)
                                                   ]);
                                         })
                                     ],
@@ -215,10 +215,10 @@ var option_suites_001 = /* :: */[
                                         "option_filter_None",
                                         (function () {
                                             return /* Eq */Block.__(0, [
-                                                      /* None */0,
+                                                      undefined,
                                                       Js_option.filter((function (a) {
                                                               return a % 3 === 0;
-                                                            }), /* None */0)
+                                                            }), undefined)
                                                     ]);
                                           })
                                       ],
@@ -228,7 +228,7 @@ var option_suites_001 = /* :: */[
                                           (function () {
                                               return /* Eq */Block.__(0, [
                                                         true,
-                                                        Js_option.isSomeValue(simpleEq, 3, Js_option.firstSome([3], [2]))
+                                                        Js_option.isSomeValue(simpleEq, 3, Js_option.firstSome(3, 2))
                                                       ]);
                                             })
                                         ],
@@ -238,7 +238,7 @@ var option_suites_001 = /* :: */[
                                             (function () {
                                                 return /* Eq */Block.__(0, [
                                                           true,
-                                                          Js_option.isSomeValue(simpleEq, 2, Js_option.firstSome(/* None */0, [2]))
+                                                          Js_option.isSomeValue(simpleEq, 2, Js_option.firstSome(undefined, 2))
                                                         ]);
                                               })
                                           ],
@@ -247,8 +247,8 @@ var option_suites_001 = /* :: */[
                                               "option_firstSome_None",
                                               (function () {
                                                   return /* Eq */Block.__(0, [
-                                                            /* None */0,
-                                                            Js_option.firstSome(/* None */0, /* None */0)
+                                                            undefined,
+                                                            Js_option.firstSome(undefined, undefined)
                                                           ]);
                                                 })
                                             ],

@@ -42,11 +42,10 @@ type option_unwrap_time =
     ]}
 *)
 let none : J.expression = 
-  (* -FIXME *)
-  {expression_desc = Number (Int {i = 0l; c  = None}); comment = Some "None" }
+  E.undefined
 
-let is_none_static (arg : J.expression_desc ) =   
-  match arg with Number _ -> true | _ -> false
+
+let is_none_static (arg : J.expression_desc ) = arg = Undefined
 
 let is_not_none  (e : J.expression) : J.expression = 
   let desc = e.expression_desc in 
@@ -60,7 +59,8 @@ let val_from_option (arg : J.expression) =
   match arg.expression_desc with 
   | Optional_block (x,_) -> x 
   | _ -> 
-    E.index arg 0l (* -FIXME *)
+    E.runtime_call Js_runtime_modules.js_primitive
+      "valFromOption" [arg]
 (**
   Invrariant: 
   - optional encoding
@@ -87,6 +87,7 @@ let get_default_undefined_from_optional
     -> x (* invariant: option encoding *)
   | _ ->
     if Js_analyzer.is_okay_to_duplicate arg then
+      (* FIXME: no need do such inlining*)
       E.econd (is_not_none arg )
         (val_from_option arg) E.undefined
     else
@@ -101,6 +102,7 @@ let get_default_undefined (arg : J.expression) : J.expression =
     Js_of_lam_polyvar.get_field x 
     (* invariant: option encoding *)
   | _ ->
+    (* FIXME: no need do such inlining*)
     if Js_analyzer.is_okay_to_duplicate arg then
       E.econd (is_not_none arg) 
         (Js_of_lam_polyvar.get_field (val_from_option arg)) E.undefined

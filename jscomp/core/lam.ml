@@ -1203,8 +1203,8 @@ let unit : t =
 
 
 let lam_none : constant = 
-    (* -FIXME *)
-   (Const_pointer(0, Pt_constructor "None"))
+   Const_js_undefined 
+
 
 (* let assert_false_unit : t =
   Lconst (Const_pointer( 0, Pt_constructor "impossible branch")) *)

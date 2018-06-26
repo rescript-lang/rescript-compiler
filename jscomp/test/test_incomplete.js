@@ -18,7 +18,7 @@ function f(x) {
 }
 
 function f2(x) {
-  if (x !== /* None */0) {
+  if (x !== undefined) {
     return 0;
   } else {
     return 1;

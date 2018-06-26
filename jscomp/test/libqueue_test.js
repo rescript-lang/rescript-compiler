@@ -50,7 +50,7 @@ function does_raise(f, q) {
 
 var q = /* record */[
   /* length */0,
-  /* tail : None */0
+  /* tail */undefined
 ];
 
 if (!(to_list(q) === /* [] */0 && q[/* length */0] === 0)) {
@@ -265,7 +265,7 @@ if (!does_raise(Queue.take, q)) {
 
 var q$1 = /* record */[
   /* length */0,
-  /* tail : None */0
+  /* tail */undefined
 ];
 
 Queue.add(1, q$1);
@@ -329,7 +329,7 @@ if (q$1[/* length */0] !== 0) {
 
 var q$2 = /* record */[
   /* length */0,
-  /* tail : None */0
+  /* tail */undefined
 ];
 
 Queue.add(1, q$2);
@@ -461,7 +461,7 @@ if (!does_raise(Queue.peek, q$2)) {
 
 var q$3 = /* record */[
   /* length */0,
-  /* tail : None */0
+  /* tail */undefined
 ];
 
 for(var i = 1; i <= 10; ++i){
@@ -494,7 +494,7 @@ if (!does_raise(Queue.take, q$3)) {
 
 if (!Caml_obj.caml_equal(q$3, /* record */[
         /* length */0,
-        /* tail : None */0
+        /* tail */undefined
       ])) {
   throw [
         Caml_builtin_exceptions.assert_failure,
@@ -521,7 +521,7 @@ if (Queue.take(q$3) !== 42) {
 
 var q1 = /* record */[
   /* length */0,
-  /* tail : None */0
+  /* tail */undefined
 ];
 
 for(var i$1 = 1; i$1 <= 10; ++i$1){
@@ -664,7 +664,7 @@ for(var i$3 = 1; i$3 <= 10; ++i$3){
 
 var q$4 = /* record */[
   /* length */0,
-  /* tail : None */0
+  /* tail */undefined
 ];
 
 if (q$4[/* length */0] !== 0) {
@@ -751,7 +751,7 @@ if (q$4[/* length */0] !== 0) {
 
 var q$5 = /* record */[
   /* length */0,
-  /* tail : None */0
+  /* tail */undefined
 ];
 
 for(var i$6 = 1; i$6 <= 10; ++i$6){
@@ -777,12 +777,12 @@ Queue.iter((function (j) {
 
 var q1$1 = /* record */[
   /* length */0,
-  /* tail : None */0
+  /* tail */undefined
 ];
 
 var q2$1 = /* record */[
   /* length */0,
-  /* tail : None */0
+  /* tail */undefined
 ];
 
 if (q1$1[/* length */0] !== 0) {
@@ -877,12 +877,12 @@ if (to_list(q2$1) !== /* [] */0) {
 
 var q1$2 = /* record */[
   /* length */0,
-  /* tail : None */0
+  /* tail */undefined
 ];
 
 var q2$2 = /* record */[
   /* length */0,
-  /* tail : None */0
+  /* tail */undefined
 ];
 
 for(var i$8 = 1; i$8 <= 4; ++i$8){
@@ -1005,12 +1005,12 @@ if (!Caml_obj.caml_equal(to_list(q2$2), /* :: */[
 
 var q1$3 = /* record */[
   /* length */0,
-  /* tail : None */0
+  /* tail */undefined
 ];
 
 var q2$3 = /* record */[
   /* length */0,
-  /* tail : None */0
+  /* tail */undefined
 ];
 
 for(var i$9 = 5; i$9 <= 8; ++i$9){
@@ -1133,12 +1133,12 @@ if (!Caml_obj.caml_equal(to_list(q2$3), /* :: */[
 
 var q1$4 = /* record */[
   /* length */0,
-  /* tail : None */0
+  /* tail */undefined
 ];
 
 var q2$4 = /* record */[
   /* length */0,
-  /* tail : None */0
+  /* tail */undefined
 ];
 
 for(var i$10 = 1; i$10 <= 4; ++i$10){

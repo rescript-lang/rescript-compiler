@@ -32,18 +32,18 @@ function read_lines(inc) {
     var acc = _acc;
     var match;
     try {
-      match = [Pervasives.input_line(inc)];
+      match = Pervasives.input_line(inc);
     }
     catch (exn){
       if (exn === Caml_builtin_exceptions.end_of_file) {
-        match = /* None */0;
+        match = undefined;
       } else {
         throw exn;
       }
     }
-    if (match !== /* None */0) {
+    if (match !== undefined) {
       _acc = /* :: */[
-        match[0],
+        match,
         acc
       ];
       continue ;

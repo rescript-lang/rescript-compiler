@@ -196,7 +196,7 @@ let subst_map name = object (self)
         List.fold_left 
           (fun  (i,e,  acc) (x : J.expression) -> 
              match x.expression_desc with 
-             | J.Var _ | Number _ | Str _ | J.Bool _
+             | J.Var _ | Number _ | Str _ | J.Bool _ | Undefined
                ->  (* TODO: check the optimization *)
                (i + 1, x :: e, acc)
              | _ ->                
@@ -247,7 +247,7 @@ let subst_map name = object (self)
              turn a runtime crash into compile time crash : )
           *)          
           begin match List.nth ls (Int32.to_int i) with 
-            | {expression_desc = J.Var _ | Number _ | Str _ } as x 
+            | {expression_desc = J.Var _ | Number _ | Str _ | Undefined} as x 
               -> x 
             | exception _ ->
               begin
