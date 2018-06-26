@@ -5,7 +5,6 @@ var Caml_obj = require("../../lib/js/caml_obj.js");
 var Belt_List = require("../../lib/js/belt_List.js");
 var Belt_Array = require("../../lib/js/belt_Array.js");
 var Caml_int32 = require("../../lib/js/caml_int32.js");
-var Js_primitive = require("../../lib/js/js_primitive.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 
 var suites = [/* [] */0];
@@ -804,7 +803,7 @@ eq("TAKE", Belt_List.take(/* :: */[
       ]
     ]);
 
-eq("TAKE", Belt_List.take(length_10_id, 8), Js_primitive.some(length_8_id));
+eq("TAKE", Belt_List.take(length_10_id, 8), length_8_id);
 
 eq("TAKE", Belt_List.take(length_10_id, 0), /* [] */0);
 
@@ -820,7 +819,7 @@ eq("DROP", Belt_List.drop(length_10_id, 8), /* :: */[
       ]
     ]);
 
-eq("DROP", Belt_List.drop(length_10_id, 0), Js_primitive.some(length_10_id));
+eq("DROP", Belt_List.drop(length_10_id, 0), length_10_id);
 
 eq("DROP", Belt_List.drop(length_8_id, -1), undefined);
 

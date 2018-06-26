@@ -1627,7 +1627,7 @@ function highlight_locations(ppf, locs) {
           } else {
             var loc1 = List.hd(locs);
             try {
-              highlight_dumb(ppf, Js_primitive.valFromOption(match$1), loc1);
+              highlight_dumb(ppf, match$1, loc1);
               return true;
             }
             catch (exn$1){
@@ -1649,7 +1649,7 @@ function highlight_locations(ppf, locs) {
       var match$2 = input_lexbuf[0];
       if (match$2 !== undefined) {
         try {
-          highlight_terminfo(ppf, match[0], Js_primitive.valFromOption(match$2), locs);
+          highlight_terminfo(ppf, match[0], match$2, locs);
           return true;
         }
         catch (exn$2){
@@ -1953,7 +1953,7 @@ function print_phanton_error_prefix(ppf) {
 }
 
 function errorf($staropt$star, $staropt$star$1, $staropt$star$2, fmt) {
-  var loc = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : none;
+  var loc = $staropt$star !== undefined ? $staropt$star : none;
   var sub = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
   var if_highlight = $staropt$star$2 !== undefined ? $staropt$star$2 : "";
   var before = print_phanton_error_prefix;
@@ -1979,7 +1979,7 @@ function errorf($staropt$star, $staropt$star$1, $staropt$star$2, fmt) {
 }
 
 function error($staropt$star, $staropt$star$1, $staropt$star$2, msg) {
-  var loc = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : none;
+  var loc = $staropt$star !== undefined ? $staropt$star : none;
   var sub = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
   var if_highlight = $staropt$star$2 !== undefined ? $staropt$star$2 : "";
   return /* record */[
@@ -2001,7 +2001,7 @@ function register_error_of_exn(f) {
 }
 
 function error_of_printer(loc, print, x) {
-  return Curry._2(errorf(Js_primitive.some(loc), undefined, undefined, /* Format */[
+  return Curry._2(errorf(loc, undefined, undefined, /* Format */[
                   /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
                           /* FFlush */2,
                           /* End_of_format */0
@@ -2016,32 +2016,32 @@ function error_of_printer_file(print, x) {
 
 register_error_of_exn((function (param) {
         if (param[0] === Caml_builtin_exceptions.sys_error) {
-          return Js_primitive.some(Curry._1(errorf(Js_primitive.some(in_file(input_name[0])), undefined, undefined, /* Format */[
-                              /* String_literal */Block.__(11, [
-                                  "I/O error: ",
-                                  /* String */Block.__(2, [
-                                      /* No_padding */0,
+          return Curry._1(errorf(in_file(input_name[0]), undefined, undefined, /* Format */[
+                          /* String_literal */Block.__(11, [
+                              "I/O error: ",
+                              /* String */Block.__(2, [
+                                  /* No_padding */0,
+                                  /* End_of_format */0
+                                ])
+                            ]),
+                          "I/O error: %s"
+                        ]), param[1]);
+        } else if (param[0] === Errors) {
+          return Curry._1(errorf(in_file(input_name[0]), undefined, undefined, /* Format */[
+                          /* String_literal */Block.__(11, [
+                              "Some fatal warnings were triggered (",
+                              /* Int */Block.__(4, [
+                                  /* Int_d */0,
+                                  /* No_padding */0,
+                                  /* No_precision */0,
+                                  /* String_literal */Block.__(11, [
+                                      " occurrences)",
                                       /* End_of_format */0
                                     ])
-                                ]),
-                              "I/O error: %s"
-                            ]), param[1]));
-        } else if (param[0] === Errors) {
-          return Js_primitive.some(Curry._1(errorf(Js_primitive.some(in_file(input_name[0])), undefined, undefined, /* Format */[
-                              /* String_literal */Block.__(11, [
-                                  "Some fatal warnings were triggered (",
-                                  /* Int */Block.__(4, [
-                                      /* Int_d */0,
-                                      /* No_padding */0,
-                                      /* No_precision */0,
-                                      /* String_literal */Block.__(11, [
-                                          " occurrences)",
-                                          /* End_of_format */0
-                                        ])
-                                    ])
-                                ]),
-                              "Some fatal warnings were triggered (%d occurrences)"
-                            ]), param[1]));
+                                ])
+                            ]),
+                          "Some fatal warnings were triggered (%d occurrences)"
+                        ]), param[1]);
         } else {
           return undefined;
         }
@@ -2051,7 +2051,7 @@ var $$Error = Caml_exceptions.create("Ocaml_typedtree_test.Location.Error");
 
 register_error_of_exn((function (param) {
         if (param[0] === $$Error) {
-          return Js_primitive.some(param[1]);
+          return param[1];
         } else {
           return undefined;
         }
@@ -2260,7 +2260,7 @@ function add(id, data, param) {
               /* record */[
                 /* ident */id,
                 /* data */data,
-                /* previous */Js_primitive.some(k)
+                /* previous */k
               ],
               r,
               param[3]
@@ -2299,7 +2299,7 @@ function find_same(id, _param) {
           while(true) {
             var param$1 = _param$1;
             if (param$1 !== undefined) {
-              var k$1 = Js_primitive.valFromOption(param$1);
+              var k$1 = param$1;
               if (k$1[/* ident */0][/* stamp */0] === s) {
                 return k$1[/* data */1];
               } else {
@@ -2341,7 +2341,7 @@ function find_name(name, _param) {
 
 function get_all(param) {
   if (param !== undefined) {
-    var k = Js_primitive.valFromOption(param);
+    var k = param;
     return /* :: */[
             k[/* data */1],
             get_all(k[/* previous */2])
@@ -4000,7 +4000,7 @@ var dummy_method = "*dummy method*";
 
 function default_mty(param) {
   if (param !== undefined) {
-    return Js_primitive.valFromOption(param);
+    return param;
   } else {
     return /* Mty_signature */Block.__(1, [/* [] */0]);
   }
@@ -4014,7 +4014,7 @@ function field_kind_repr(_kind) {
     } else {
       var match = kind[0][/* contents */0];
       if (match !== undefined) {
-        _kind = Js_primitive.valFromOption(match);
+        _kind = match;
         continue ;
       } else {
         return kind;
@@ -4076,7 +4076,7 @@ function row_field_repr_aux(_tl, _fi) {
       var tl$prime = fi[1];
       var match = r[/* contents */0];
       if (match !== undefined) {
-        _fi = Js_primitive.valFromOption(match);
+        _fi = match;
         _tl = Pervasives.$at(tl, tl$prime);
         continue ;
       } else {
@@ -4088,7 +4088,7 @@ function row_field_repr_aux(_tl, _fi) {
                 ]);
       }
     } else if (fi[0] !== undefined && tl !== /* [] */0) {
-      return /* Rpresent */Block.__(0, [Js_primitive.some(List.hd(tl))]);
+      return /* Rpresent */Block.__(0, [List.hd(tl)]);
     } else {
       return fi;
     }
@@ -4369,7 +4369,7 @@ function iter_row(f, _row) {
             } else {
               var match$1 = match[0];
               if (match$1 !== undefined) {
-                return Curry._1(f, Js_primitive.valFromOption(match$1));
+                return Curry._1(f, match$1);
               } else {
                 return /* () */0;
               }
@@ -4637,7 +4637,7 @@ function copy_row(f, fixed, row, keep, more) {
               ]);
           } else {
             var match$1 = match[0];
-            tmp = match$1 !== undefined ? /* Rpresent */Block.__(0, [Js_primitive.some(Curry._1(f, Js_primitive.valFromOption(match$1)))]) : fi;
+            tmp = match$1 !== undefined ? /* Rpresent */Block.__(0, [Curry._1(f, match$1)]) : fi;
           }
           return /* tuple */[
                   param[0],
@@ -4684,7 +4684,7 @@ function copy_kind(_param) {
     } else {
       var match = param[0][/* contents */0];
       if (match !== undefined) {
-        _param = Js_primitive.valFromOption(match);
+        _param = match;
         continue ;
       } else {
         return /* Fvar */[[undefined]];
@@ -4880,7 +4880,7 @@ function dup_kind(r) {
       r$prime,
       new_kinds[0]
     ];
-    r[0] = Js_primitive.some(/* Fvar */[r$prime]);
+    r[0] = /* Fvar */[r$prime];
     return /* () */0;
   }
 }
@@ -4985,7 +4985,7 @@ function find_expans(priv, p1, _param) {
       _param = rem;
       continue ;
     } else if (param[0] >= priv && same(p1, param[1])) {
-      return Js_primitive.some(param[3]);
+      return param[3];
     } else {
       _param = param[4];
       continue ;
@@ -5139,11 +5139,11 @@ function log_change(ch) {
   var match = Caml_weak.caml_weak_get(trail, 0);
   if (match !== undefined) {
     var r$prime = [/* Unchanged */0];
-    Js_primitive.valFromOption(match)[0] = /* Change */[
+    match[0] = /* Change */[
       ch,
       r$prime
     ];
-    return Caml_weak.caml_weak_set(trail, 0, Js_primitive.some(r$prime));
+    return Caml_weak.caml_weak_set(trail, 0, r$prime);
   } else {
     return /* () */0;
   }
@@ -5195,7 +5195,7 @@ function set_univar(rty, ty) {
           rty,
           rty[0]
         ]));
-  rty[0] = Js_primitive.some(ty);
+  rty[0] = ty;
   return /* () */0;
 }
 
@@ -5213,7 +5213,7 @@ function set_row_field(e, v) {
           e,
           e[0]
         ]));
-  e[0] = Js_primitive.some(v);
+  e[0] = v;
   return /* () */0;
 }
 
@@ -5222,7 +5222,7 @@ function set_kind(rk, k) {
           rk,
           rk[0]
         ]));
-  rk[0] = Js_primitive.some(k);
+  rk[0] = k;
   return /* () */0;
 }
 
@@ -5250,12 +5250,12 @@ function snapshot() {
   var match = Caml_weak.caml_weak_get(trail, 0);
   if (match !== undefined) {
     return /* tuple */[
-            Js_primitive.valFromOption(match),
+            match,
             old
           ];
   } else {
     var r = [/* Unchanged */0];
-    Caml_weak.caml_weak_set(trail, 0, Js_primitive.some(r));
+    Caml_weak.caml_weak_set(trail, 0, r);
     return /* tuple */[
             r,
             old
@@ -5314,7 +5314,7 @@ function backtrack(param) {
     List.iter(undo_change, backlog);
     changes[0] = /* Unchanged */0;
     last_snapshot[0] = old;
-    return Caml_weak.caml_weak_set(trail, 0, Js_primitive.some(changes));
+    return Caml_weak.caml_weak_set(trail, 0, changes);
   }
 }
 
@@ -5460,7 +5460,7 @@ function report_error(ppf, param) {
 
 register_error_of_exn((function (param) {
         if (param[0] === $$Error$1) {
-          return Js_primitive.some(error_of_printer_file(report_error, param[1]));
+          return error_of_printer_file(report_error, param[1]);
         } else {
           return undefined;
         }
@@ -5516,7 +5516,7 @@ function free_vars(ty) {
 
 function extension_descr(path_ext, ext) {
   var match = ext[/* ext_ret_type */3];
-  var ty_res = match !== undefined ? Js_primitive.valFromOption(match) : newty2(100000000, /* Tconstr */Block.__(3, [
+  var ty_res = match !== undefined ? match : newty2(100000000, /* Tconstr */Block.__(3, [
             ext[/* ext_type_path */0],
             ext[/* ext_type_params */1],
             [/* Mnil */0]
@@ -5529,7 +5529,7 @@ function extension_descr(path_ext, ext) {
   var match$1 = ext[/* ext_ret_type */3];
   var existentials;
   if (match$1 !== undefined) {
-    var ret_vars = free_vars(Js_primitive.valFromOption(match$1));
+    var ret_vars = free_vars(match$1);
     var arg_vars = free_vars(newty2(100000000, /* Ttuple */Block.__(2, [ext[/* ext_args */2]])));
     existentials = elements_aux$1(/* [] */0, diff$1(arg_vars, ret_vars));
   } else {
@@ -6027,7 +6027,7 @@ function common_initial_env(add_type, add_extension, empty_env) {
 function build_initial_env(add_type, add_exception, empty_env) {
   var common = common_initial_env(add_type, add_exception, empty_env);
   var safe_string = Curry._3(add_type, ident_bytes, decl_abstr, common);
-  var decl_bytes_unsafe_004 = /* type_manifest */Js_primitive.some(type_string);
+  var decl_bytes_unsafe_004 = /* type_manifest */type_string;
   var decl_bytes_unsafe = /* record */[
     /* type_params : [] */0,
     /* type_arity */0,
@@ -6176,13 +6176,13 @@ function docs_attr(ds) {
 function add_docs_attrs(docs, attrs) {
   var match = docs[/* docs_pre */0];
   var attrs$1 = match !== undefined ? /* :: */[
-      docs_attr(Js_primitive.valFromOption(match)),
+      docs_attr(match),
       attrs
     ] : attrs;
   var match$1 = docs[/* docs_post */1];
   if (match$1 !== undefined) {
     return Pervasives.$at(attrs$1, /* :: */[
-                docs_attr(Js_primitive.valFromOption(match$1)),
+                docs_attr(match$1),
                 /* [] */0
               ]);
   } else {
@@ -6193,7 +6193,7 @@ function add_docs_attrs(docs, attrs) {
 function add_info_attrs(info, attrs) {
   if (info !== undefined) {
     return Pervasives.$at(attrs, /* :: */[
-                docs_attr(Js_primitive.valFromOption(info)),
+                docs_attr(info),
                 /* [] */0
               ]);
   } else {
@@ -6248,7 +6248,7 @@ function get_docstring(info, dsl) {
       var match = ds[/* ds_attached */2];
       if (match !== 1) {
         ds[/* ds_attached */2] = info ? /* Info */1 : /* Docs */2;
-        return Js_primitive.some(ds);
+        return ds;
       } else {
         _param = param[1];
         continue ;
@@ -6505,8 +6505,8 @@ function init() {
 var default_loc = [none];
 
 function mk($staropt$star, $staropt$star$1, d) {
-  var loc = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : default_loc[0];
-  var attrs = $staropt$star$1 !== undefined ? Js_primitive.valFromOption($staropt$star$1) : /* [] */0;
+  var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
+  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
   return /* record */[
           /* ptyp_desc */d,
           /* ptyp_loc */loc,
@@ -6604,14 +6604,14 @@ function force_poly(t) {
     return t;
   }
   if (exit === 1) {
-    return poly(Js_primitive.some(t[/* ptyp_loc */1]), undefined, /* [] */0, t);
+    return poly(t[/* ptyp_loc */1], undefined, /* [] */0, t);
   }
   
 }
 
 function mk$1($staropt$star, $staropt$star$1, d) {
-  var loc = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : default_loc[0];
-  var attrs = $staropt$star$1 !== undefined ? Js_primitive.valFromOption($staropt$star$1) : /* [] */0;
+  var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
+  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
   return /* record */[
           /* ppat_desc */d,
           /* ppat_loc */loc,
@@ -6716,8 +6716,8 @@ function extension$1(loc, attrs, a) {
 }
 
 function mk$2($staropt$star, $staropt$star$1, d) {
-  var loc = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : default_loc[0];
-  var attrs = $staropt$star$1 !== undefined ? Js_primitive.valFromOption($staropt$star$1) : /* [] */0;
+  var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
+  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
   return /* record */[
           /* pexp_desc */d,
           /* pexp_loc */loc,
@@ -6958,8 +6958,8 @@ function $$case(lhs, guard, rhs) {
 }
 
 function mk$3($staropt$star, $staropt$star$1, d) {
-  var loc = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : default_loc[0];
-  var attrs = $staropt$star$1 !== undefined ? Js_primitive.valFromOption($staropt$star$1) : /* [] */0;
+  var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
+  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
   return /* record */[
           /* pmty_desc */d,
           /* pmty_loc */loc,
@@ -7014,8 +7014,8 @@ function extension$3(loc, attrs, a) {
 }
 
 function mk$4($staropt$star, $staropt$star$1, d) {
-  var loc = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : default_loc[0];
-  var attrs = $staropt$star$1 !== undefined ? Js_primitive.valFromOption($staropt$star$1) : /* [] */0;
+  var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
+  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
   return /* record */[
           /* pmod_desc */d,
           /* pmod_loc */loc,
@@ -7073,7 +7073,7 @@ function extension$4(loc, attrs, a) {
 }
 
 function mk$5($staropt$star, d) {
-  var loc = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : default_loc[0];
+  var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
   return /* record */[
           /* psig_desc */d,
           /* psig_loc */loc
@@ -7081,7 +7081,7 @@ function mk$5($staropt$star, d) {
 }
 
 function extension$5(loc, $staropt$star, a) {
-  var attrs = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : /* [] */0;
+  var attrs = $staropt$star !== undefined ? $staropt$star : /* [] */0;
   return mk$5(loc, /* Psig_extension */Block.__(12, [
                 a,
                 attrs
@@ -7091,13 +7091,13 @@ function extension$5(loc, $staropt$star, a) {
 function text(txt) {
   return List.map((function (ds) {
                 var a = text_attr(ds);
-                var loc = Js_primitive.some(ds[/* ds_loc */1]);
+                var loc = ds[/* ds_loc */1];
                 return mk$5(loc, /* Psig_attribute */Block.__(11, [a]));
               }), txt);
 }
 
 function mk$6($staropt$star, d) {
-  var loc = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : default_loc[0];
+  var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
   return /* record */[
           /* pstr_desc */d,
           /* pstr_loc */loc
@@ -7105,7 +7105,7 @@ function mk$6($staropt$star, d) {
 }
 
 function $$eval(loc, $staropt$star, a) {
-  var attrs = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : /* [] */0;
+  var attrs = $staropt$star !== undefined ? $staropt$star : /* [] */0;
   return mk$6(loc, /* Pstr_eval */Block.__(0, [
                 a,
                 attrs
@@ -7120,7 +7120,7 @@ function value(loc, a, b) {
 }
 
 function extension$6(loc, $staropt$star, a) {
-  var attrs = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : /* [] */0;
+  var attrs = $staropt$star !== undefined ? $staropt$star : /* [] */0;
   return mk$6(loc, /* Pstr_extension */Block.__(14, [
                 a,
                 attrs
@@ -7130,14 +7130,14 @@ function extension$6(loc, $staropt$star, a) {
 function text$1(txt) {
   return List.map((function (ds) {
                 var a = text_attr(ds);
-                var loc = Js_primitive.some(ds[/* ds_loc */1]);
+                var loc = ds[/* ds_loc */1];
                 return mk$6(loc, /* Pstr_attribute */Block.__(13, [a]));
               }), txt);
 }
 
 function mk$7($staropt$star, $staropt$star$1, d) {
-  var loc = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : default_loc[0];
-  var attrs = $staropt$star$1 !== undefined ? Js_primitive.valFromOption($staropt$star$1) : /* [] */0;
+  var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
+  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
   return /* record */[
           /* pcl_desc */d,
           /* pcl_loc */loc,
@@ -7203,8 +7203,8 @@ function extension$7(loc, attrs, a) {
 }
 
 function mk$8($staropt$star, $staropt$star$1, d) {
-  var loc = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : default_loc[0];
-  var attrs = $staropt$star$1 !== undefined ? Js_primitive.valFromOption($staropt$star$1) : /* [] */0;
+  var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
+  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
   return /* record */[
           /* pcty_desc */d,
           /* pcty_loc */loc,
@@ -7247,9 +7247,9 @@ function extension$8(loc, attrs, a) {
 }
 
 function mk$9($staropt$star, $staropt$star$1, $staropt$star$2, d) {
-  var loc = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : default_loc[0];
-  var attrs = $staropt$star$1 !== undefined ? Js_primitive.valFromOption($staropt$star$1) : /* [] */0;
-  var docs = $staropt$star$2 !== undefined ? Js_primitive.valFromOption($staropt$star$2) : empty_docs;
+  var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
+  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
+  var docs = $staropt$star$2 !== undefined ? $staropt$star$2 : empty_docs;
   return /* record */[
           /* pctf_desc */d,
           /* pctf_loc */loc,
@@ -7296,7 +7296,7 @@ function attribute(loc, a) {
 
 function text$2(txt) {
   return List.map((function (ds) {
-                return attribute(Js_primitive.some(ds[/* ds_loc */1]), text_attr(ds));
+                return attribute(ds[/* ds_loc */1], text_attr(ds));
               }), txt);
 }
 
@@ -7312,9 +7312,9 @@ function attr$7(d, a) {
 }
 
 function mk$10($staropt$star, $staropt$star$1, $staropt$star$2, d) {
-  var loc = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : default_loc[0];
-  var attrs = $staropt$star$1 !== undefined ? Js_primitive.valFromOption($staropt$star$1) : /* [] */0;
-  var docs = $staropt$star$2 !== undefined ? Js_primitive.valFromOption($staropt$star$2) : empty_docs;
+  var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
+  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
+  var docs = $staropt$star$2 !== undefined ? $staropt$star$2 : empty_docs;
   return /* record */[
           /* pcf_desc */d,
           /* pcf_loc */loc,
@@ -7367,7 +7367,7 @@ function attribute$1(loc, a) {
 
 function text$3(txt) {
   return List.map((function (ds) {
-                return attribute$1(Js_primitive.some(ds[/* ds_loc */1]), text_attr(ds));
+                return attribute$1(ds[/* ds_loc */1], text_attr(ds));
               }), txt);
 }
 
@@ -7394,9 +7394,9 @@ function attr$8(d, a) {
 }
 
 function mk$11($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, name, typ) {
-  var loc = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : default_loc[0];
-  var attrs = $staropt$star$1 !== undefined ? Js_primitive.valFromOption($staropt$star$1) : /* [] */0;
-  var docs = $staropt$star$2 !== undefined ? Js_primitive.valFromOption($staropt$star$2) : empty_docs;
+  var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
+  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
+  var docs = $staropt$star$2 !== undefined ? $staropt$star$2 : empty_docs;
   var prim = $staropt$star$3 !== undefined ? $staropt$star$3 : /* [] */0;
   return /* record */[
           /* pval_name */name,
@@ -7408,10 +7408,10 @@ function mk$11($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3,
 }
 
 function mk$12($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, name, typ) {
-  var loc = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : default_loc[0];
-  var attrs = $staropt$star$1 !== undefined ? Js_primitive.valFromOption($staropt$star$1) : /* [] */0;
-  var docs = $staropt$star$2 !== undefined ? Js_primitive.valFromOption($staropt$star$2) : empty_docs;
-  var text = $staropt$star$3 !== undefined ? Js_primitive.valFromOption($staropt$star$3) : /* [] */0;
+  var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
+  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
+  var docs = $staropt$star$2 !== undefined ? $staropt$star$2 : empty_docs;
+  var text = $staropt$star$3 !== undefined ? $staropt$star$3 : /* [] */0;
   return /* record */[
           /* pmd_name */name,
           /* pmd_type */typ,
@@ -7421,10 +7421,10 @@ function mk$12($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3,
 }
 
 function mk$13($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, typ, name) {
-  var loc = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : default_loc[0];
-  var attrs = $staropt$star$1 !== undefined ? Js_primitive.valFromOption($staropt$star$1) : /* [] */0;
-  var docs = $staropt$star$2 !== undefined ? Js_primitive.valFromOption($staropt$star$2) : empty_docs;
-  var text = $staropt$star$3 !== undefined ? Js_primitive.valFromOption($staropt$star$3) : /* [] */0;
+  var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
+  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
+  var docs = $staropt$star$2 !== undefined ? $staropt$star$2 : empty_docs;
+  var text = $staropt$star$3 !== undefined ? $staropt$star$3 : /* [] */0;
   return /* record */[
           /* pmtd_name */name,
           /* pmtd_type */typ,
@@ -7434,10 +7434,10 @@ function mk$13($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3,
 }
 
 function mk$14($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, name, expr) {
-  var loc = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : default_loc[0];
-  var attrs = $staropt$star$1 !== undefined ? Js_primitive.valFromOption($staropt$star$1) : /* [] */0;
-  var docs = $staropt$star$2 !== undefined ? Js_primitive.valFromOption($staropt$star$2) : empty_docs;
-  var text = $staropt$star$3 !== undefined ? Js_primitive.valFromOption($staropt$star$3) : /* [] */0;
+  var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
+  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
+  var docs = $staropt$star$2 !== undefined ? $staropt$star$2 : empty_docs;
+  var text = $staropt$star$3 !== undefined ? $staropt$star$3 : /* [] */0;
   return /* record */[
           /* pmb_name */name,
           /* pmb_expr */expr,
@@ -7447,10 +7447,10 @@ function mk$14($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3,
 }
 
 function mk$15($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, lid) {
-  var loc = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : default_loc[0];
-  var attrs = $staropt$star$1 !== undefined ? Js_primitive.valFromOption($staropt$star$1) : /* [] */0;
-  var docs = $staropt$star$2 !== undefined ? Js_primitive.valFromOption($staropt$star$2) : empty_docs;
-  var override = $staropt$star$3 !== undefined ? Js_primitive.valFromOption($staropt$star$3) : /* Fresh */1;
+  var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
+  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
+  var docs = $staropt$star$2 !== undefined ? $staropt$star$2 : empty_docs;
+  var override = $staropt$star$3 !== undefined ? $staropt$star$3 : /* Fresh */1;
   return /* record */[
           /* popen_lid */lid,
           /* popen_override */override,
@@ -7460,9 +7460,9 @@ function mk$15($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3,
 }
 
 function mk$16($staropt$star, $staropt$star$1, $staropt$star$2, mexpr) {
-  var loc = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : default_loc[0];
-  var attrs = $staropt$star$1 !== undefined ? Js_primitive.valFromOption($staropt$star$1) : /* [] */0;
-  var docs = $staropt$star$2 !== undefined ? Js_primitive.valFromOption($staropt$star$2) : empty_docs;
+  var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
+  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
+  var docs = $staropt$star$2 !== undefined ? $staropt$star$2 : empty_docs;
   return /* record */[
           /* pincl_mod */mexpr,
           /* pincl_loc */loc,
@@ -7471,10 +7471,10 @@ function mk$16($staropt$star, $staropt$star$1, $staropt$star$2, mexpr) {
 }
 
 function mk$17($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, pat, expr) {
-  var loc = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : default_loc[0];
-  var attrs = $staropt$star$1 !== undefined ? Js_primitive.valFromOption($staropt$star$1) : /* [] */0;
-  var docs = $staropt$star$2 !== undefined ? Js_primitive.valFromOption($staropt$star$2) : empty_docs;
-  var text = $staropt$star$3 !== undefined ? Js_primitive.valFromOption($staropt$star$3) : /* [] */0;
+  var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
+  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
+  var docs = $staropt$star$2 !== undefined ? $staropt$star$2 : empty_docs;
+  var text = $staropt$star$3 !== undefined ? $staropt$star$3 : /* [] */0;
   return /* record */[
           /* pvb_pat */pat,
           /* pvb_expr */expr,
@@ -7484,11 +7484,11 @@ function mk$17($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3,
 }
 
 function mk$18($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, $staropt$star$4, $staropt$star$5, name, expr) {
-  var loc = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : default_loc[0];
-  var attrs = $staropt$star$1 !== undefined ? Js_primitive.valFromOption($staropt$star$1) : /* [] */0;
-  var docs = $staropt$star$2 !== undefined ? Js_primitive.valFromOption($staropt$star$2) : empty_docs;
-  var text = $staropt$star$3 !== undefined ? Js_primitive.valFromOption($staropt$star$3) : /* [] */0;
-  var virt = $staropt$star$4 !== undefined ? Js_primitive.valFromOption($staropt$star$4) : /* Concrete */1;
+  var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
+  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
+  var docs = $staropt$star$2 !== undefined ? $staropt$star$2 : empty_docs;
+  var text = $staropt$star$3 !== undefined ? $staropt$star$3 : /* [] */0;
+  var virt = $staropt$star$4 !== undefined ? $staropt$star$4 : /* Concrete */1;
   var params = $staropt$star$5 !== undefined ? $staropt$star$5 : /* [] */0;
   return /* record */[
           /* pci_virt */virt,
@@ -7501,14 +7501,14 @@ function mk$18($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3,
 }
 
 function mk$19($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, $staropt$star$4, $staropt$star$5, $staropt$star$6, $staropt$star$7, manifest, name) {
-  var loc = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : default_loc[0];
-  var attrs = $staropt$star$1 !== undefined ? Js_primitive.valFromOption($staropt$star$1) : /* [] */0;
-  var docs = $staropt$star$2 !== undefined ? Js_primitive.valFromOption($staropt$star$2) : empty_docs;
-  var text = $staropt$star$3 !== undefined ? Js_primitive.valFromOption($staropt$star$3) : /* [] */0;
+  var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
+  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
+  var docs = $staropt$star$2 !== undefined ? $staropt$star$2 : empty_docs;
+  var text = $staropt$star$3 !== undefined ? $staropt$star$3 : /* [] */0;
   var params = $staropt$star$4 !== undefined ? $staropt$star$4 : /* [] */0;
   var cstrs = $staropt$star$5 !== undefined ? $staropt$star$5 : /* [] */0;
-  var kind = $staropt$star$6 !== undefined ? Js_primitive.valFromOption($staropt$star$6) : /* Ptype_abstract */0;
-  var priv = $staropt$star$7 !== undefined ? Js_primitive.valFromOption($staropt$star$7) : /* Public */1;
+  var kind = $staropt$star$6 !== undefined ? $staropt$star$6 : /* Ptype_abstract */0;
+  var priv = $staropt$star$7 !== undefined ? $staropt$star$7 : /* Public */1;
   return /* record */[
           /* ptype_name */name,
           /* ptype_params */params,
@@ -7522,8 +7522,8 @@ function mk$19($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3,
 }
 
 function constructor($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, res, name) {
-  var loc = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : default_loc[0];
-  var attrs = $staropt$star$1 !== undefined ? Js_primitive.valFromOption($staropt$star$1) : /* [] */0;
+  var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
+  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
   var info = $staropt$star$2 !== undefined ? Js_primitive.valFromOption($staropt$star$2) : undefined;
   var args = $staropt$star$3 !== undefined ? $staropt$star$3 : /* [] */0;
   return /* record */[
@@ -7536,10 +7536,10 @@ function constructor($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$s
 }
 
 function field$1($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, name, typ) {
-  var loc = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : default_loc[0];
-  var attrs = $staropt$star$1 !== undefined ? Js_primitive.valFromOption($staropt$star$1) : /* [] */0;
+  var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
+  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
   var info = $staropt$star$2 !== undefined ? Js_primitive.valFromOption($staropt$star$2) : undefined;
-  var mut = $staropt$star$3 !== undefined ? Js_primitive.valFromOption($staropt$star$3) : /* Immutable */0;
+  var mut = $staropt$star$3 !== undefined ? $staropt$star$3 : /* Immutable */0;
   return /* record */[
           /* pld_name */name,
           /* pld_mutable */mut,
@@ -7550,10 +7550,10 @@ function field$1($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$
 }
 
 function mk$20($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, path, constructors) {
-  var attrs = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : /* [] */0;
-  var docs = $staropt$star$1 !== undefined ? Js_primitive.valFromOption($staropt$star$1) : empty_docs;
+  var attrs = $staropt$star !== undefined ? $staropt$star : /* [] */0;
+  var docs = $staropt$star$1 !== undefined ? $staropt$star$1 : empty_docs;
   var params = $staropt$star$2 !== undefined ? $staropt$star$2 : /* [] */0;
-  var priv = $staropt$star$3 !== undefined ? Js_primitive.valFromOption($staropt$star$3) : /* Public */1;
+  var priv = $staropt$star$3 !== undefined ? $staropt$star$3 : /* Public */1;
   return /* record */[
           /* ptyext_path */path,
           /* ptyext_params */params,
@@ -7564,9 +7564,9 @@ function mk$20($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3,
 }
 
 function constructor$1($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, name, kind) {
-  var loc = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : default_loc[0];
-  var attrs = $staropt$star$1 !== undefined ? Js_primitive.valFromOption($staropt$star$1) : /* [] */0;
-  var docs = $staropt$star$2 !== undefined ? Js_primitive.valFromOption($staropt$star$2) : empty_docs;
+  var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
+  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
+  var docs = $staropt$star$2 !== undefined ? $staropt$star$2 : empty_docs;
   var info = $staropt$star$3 !== undefined ? Js_primitive.valFromOption($staropt$star$3) : undefined;
   return /* record */[
           /* pext_name */name,
@@ -7577,9 +7577,9 @@ function constructor$1($staropt$star, $staropt$star$1, $staropt$star$2, $staropt
 }
 
 function decl($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, $staropt$star$4, res, name) {
-  var loc = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : default_loc[0];
-  var attrs = $staropt$star$1 !== undefined ? Js_primitive.valFromOption($staropt$star$1) : /* [] */0;
-  var docs = $staropt$star$2 !== undefined ? Js_primitive.valFromOption($staropt$star$2) : empty_docs;
+  var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
+  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
+  var docs = $staropt$star$2 !== undefined ? $staropt$star$2 : empty_docs;
   var info = $staropt$star$3 !== undefined ? Js_primitive.valFromOption($staropt$star$3) : undefined;
   var args = $staropt$star$4 !== undefined ? $staropt$star$4 : /* [] */0;
   return /* record */[
@@ -7594,9 +7594,9 @@ function decl($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, 
 }
 
 function rebind($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, name, lid) {
-  var loc = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : default_loc[0];
-  var attrs = $staropt$star$1 !== undefined ? Js_primitive.valFromOption($staropt$star$1) : /* [] */0;
-  var docs = $staropt$star$2 !== undefined ? Js_primitive.valFromOption($staropt$star$2) : empty_docs;
+  var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
+  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
+  var docs = $staropt$star$2 !== undefined ? $staropt$star$2 : empty_docs;
   var info = $staropt$star$3 !== undefined ? Js_primitive.valFromOption($staropt$star$3) : undefined;
   return /* record */[
           /* pext_name */name,
@@ -7714,17 +7714,17 @@ function map$1(sub, param) {
   var loc = Curry._2(sub[/* location */20], sub, param[/* ptyp_loc */1]);
   var attrs = Curry._2(sub[/* attributes */1], sub, param[/* ptyp_attributes */2]);
   if (typeof desc === "number") {
-    return mk(Js_primitive.some(loc), Js_primitive.some(attrs), /* Ptyp_any */0);
+    return mk(loc, attrs, /* Ptyp_any */0);
   } else {
     switch (desc.tag | 0) {
       case 0 : 
-          return $$var(Js_primitive.some(loc), Js_primitive.some(attrs), desc[0]);
+          return $$var(loc, attrs, desc[0]);
       case 1 : 
-          return arrow(Js_primitive.some(loc), Js_primitive.some(attrs), desc[0], Curry._2(sub[/* typ */33], sub, desc[1]), Curry._2(sub[/* typ */33], sub, desc[2]));
+          return arrow(loc, attrs, desc[0], Curry._2(sub[/* typ */33], sub, desc[1]), Curry._2(sub[/* typ */33], sub, desc[2]));
       case 2 : 
-          return tuple(Js_primitive.some(loc), Js_primitive.some(attrs), List.map(Curry._1(sub[/* typ */33], sub), desc[0]));
+          return tuple(loc, attrs, List.map(Curry._1(sub[/* typ */33], sub), desc[0]));
       case 3 : 
-          return constr(Js_primitive.some(loc), Js_primitive.some(attrs), map_loc(sub, desc[0]), List.map(Curry._1(sub[/* typ */33], sub), desc[1]));
+          return constr(loc, attrs, map_loc(sub, desc[0]), List.map(Curry._1(sub[/* typ */33], sub), desc[1]));
       case 4 : 
           var f = function (param) {
             return /* tuple */[
@@ -7733,13 +7733,13 @@ function map$1(sub, param) {
                     Curry._2(sub[/* typ */33], sub, param[2])
                   ];
           };
-          return object_(Js_primitive.some(loc), Js_primitive.some(attrs), List.map(f, desc[0]), desc[1]);
+          return object_(loc, attrs, List.map(f, desc[0]), desc[1]);
       case 5 : 
-          return class_(Js_primitive.some(loc), Js_primitive.some(attrs), map_loc(sub, desc[0]), List.map(Curry._1(sub[/* typ */33], sub), desc[1]));
+          return class_(loc, attrs, map_loc(sub, desc[0]), List.map(Curry._1(sub[/* typ */33], sub), desc[1]));
       case 6 : 
-          return alias(Js_primitive.some(loc), Js_primitive.some(attrs), Curry._2(sub[/* typ */33], sub, desc[0]), desc[1]);
+          return alias(loc, attrs, Curry._2(sub[/* typ */33], sub, desc[0]), desc[1]);
       case 7 : 
-          return variant(Js_primitive.some(loc), Js_primitive.some(attrs), List.map((function (param) {
+          return variant(loc, attrs, List.map((function (param) {
                             var sub$1 = sub;
                             var param$1 = param;
                             if (param$1.tag) {
@@ -7754,17 +7754,17 @@ function map$1(sub, param) {
                             }
                           }), desc[0]), desc[1], desc[2]);
       case 8 : 
-          return poly(Js_primitive.some(loc), Js_primitive.some(attrs), desc[0], Curry._2(sub[/* typ */33], sub, desc[1]));
+          return poly(loc, attrs, desc[0], Curry._2(sub[/* typ */33], sub, desc[1]));
       case 9 : 
           var match = desc[0];
           var partial_arg = Curry._1(sub[/* typ */33], sub);
-          return $$package(Js_primitive.some(loc), Js_primitive.some(attrs), map_loc(sub, match[0]), List.map((function (param) {
+          return $$package(loc, attrs, map_loc(sub, match[0]), List.map((function (param) {
                             return map_tuple((function (param) {
                                           return map_loc(sub, param);
                                         }), partial_arg, param);
                           }), match[1]));
       case 10 : 
-          return extension(Js_primitive.some(loc), Js_primitive.some(attrs), Curry._2(sub[/* extension */15], sub, desc[0]));
+          return extension(loc, attrs, Curry._2(sub[/* extension */15], sub, desc[0]));
       
     }
   }
@@ -7775,7 +7775,7 @@ function map_type_declaration(sub, param) {
   var partial_arg$1 = Curry._1(sub[/* location */20], sub);
   var partial_arg$2 = Curry._1(sub[/* typ */33], sub);
   var partial_arg$3 = Curry._1(sub[/* typ */33], sub);
-  return mk$19(Js_primitive.some(Curry._2(sub[/* location */20], sub, param[/* ptype_loc */7])), Js_primitive.some(Curry._2(sub[/* attributes */1], sub, param[/* ptype_attributes */6])), undefined, undefined, List.map((function (param) {
+  return mk$19(Curry._2(sub[/* location */20], sub, param[/* ptype_loc */7]), Curry._2(sub[/* attributes */1], sub, param[/* ptype_attributes */6]), undefined, undefined, List.map((function (param) {
                     return map_fst(partial_arg, param);
                   }), param[/* ptype_params */1]), List.map((function (param) {
                     var f1 = partial_arg$3;
@@ -7787,7 +7787,7 @@ function map_type_declaration(sub, param) {
                             Curry._1(f2, param$1[1]),
                             Curry._1(f3, param$1[2])
                           ];
-                  }), param[/* ptype_cstrs */2]), Js_primitive.some(Curry._2(sub[/* type_kind */36], sub, param[/* ptype_kind */3])), Js_primitive.some(param[/* ptype_private */4]), map_opt(Curry._1(sub[/* typ */33], sub), param[/* ptype_manifest */5]), map_loc(sub, param[/* ptype_name */0]));
+                  }), param[/* ptype_cstrs */2]), Curry._2(sub[/* type_kind */36], sub, param[/* ptype_kind */3]), param[/* ptype_private */4], map_opt(Curry._1(sub[/* typ */33], sub), param[/* ptype_manifest */5]), map_loc(sub, param[/* ptype_name */0]));
 }
 
 function map_type_kind(sub, param) {
@@ -7806,9 +7806,9 @@ function map_type_kind(sub, param) {
 
 function map_type_extension(sub, param) {
   var partial_arg = Curry._1(sub[/* typ */33], sub);
-  return mk$20(Js_primitive.some(Curry._2(sub[/* attributes */1], sub, param[/* ptyext_attributes */4])), undefined, List.map((function (param) {
+  return mk$20(Curry._2(sub[/* attributes */1], sub, param[/* ptyext_attributes */4]), undefined, List.map((function (param) {
                     return map_fst(partial_arg, param);
-                  }), param[/* ptyext_params */1]), Js_primitive.some(param[/* ptyext_private */3]), map_loc(sub, param[/* ptyext_path */0]), List.map(Curry._1(sub[/* extension_constructor */16], sub), param[/* ptyext_constructors */2]));
+                  }), param[/* ptyext_params */1]), param[/* ptyext_private */3], map_loc(sub, param[/* ptyext_path */0]), List.map(Curry._1(sub[/* extension_constructor */16], sub), param[/* ptyext_constructors */2]));
 }
 
 function map_extension_constructor_kind(sub, param) {
@@ -7823,7 +7823,7 @@ function map_extension_constructor_kind(sub, param) {
 }
 
 function map_extension_constructor(sub, param) {
-  return constructor$1(Js_primitive.some(Curry._2(sub[/* location */20], sub, param[/* pext_loc */2])), Js_primitive.some(Curry._2(sub[/* attributes */1], sub, param[/* pext_attributes */3])), undefined, undefined, map_loc(sub, param[/* pext_name */0]), map_extension_constructor_kind(sub, param[/* pext_kind */1]));
+  return constructor$1(Curry._2(sub[/* location */20], sub, param[/* pext_loc */2]), Curry._2(sub[/* attributes */1], sub, param[/* pext_attributes */3]), undefined, undefined, map_loc(sub, param[/* pext_name */0]), map_extension_constructor_kind(sub, param[/* pext_kind */1]));
 }
 
 function map$2(sub, param) {
@@ -7832,13 +7832,13 @@ function map$2(sub, param) {
   var attrs = Curry._2(sub[/* attributes */1], sub, param[/* pcty_attributes */2]);
   switch (desc.tag | 0) {
     case 0 : 
-        return constr$2(Js_primitive.some(loc), Js_primitive.some(attrs), map_loc(sub, desc[0]), List.map(Curry._1(sub[/* typ */33], sub), desc[1]));
+        return constr$2(loc, attrs, map_loc(sub, desc[0]), List.map(Curry._1(sub[/* typ */33], sub), desc[1]));
     case 1 : 
-        return signature$1(Js_primitive.some(loc), Js_primitive.some(attrs), Curry._2(sub[/* class_signature */8], sub, desc[0]));
+        return signature$1(loc, attrs, Curry._2(sub[/* class_signature */8], sub, desc[0]));
     case 2 : 
-        return arrow$1(Js_primitive.some(loc), Js_primitive.some(attrs), desc[0], Curry._2(sub[/* typ */33], sub, desc[1]), Curry._2(sub[/* class_type */10], sub, desc[2]));
+        return arrow$1(loc, attrs, desc[0], Curry._2(sub[/* typ */33], sub, desc[1]), Curry._2(sub[/* class_type */10], sub, desc[2]));
     case 3 : 
-        return extension$8(Js_primitive.some(loc), Js_primitive.some(attrs), Curry._2(sub[/* extension */15], sub, desc[0]));
+        return extension$8(loc, attrs, Curry._2(sub[/* extension */15], sub, desc[0]));
     
   }
 }
@@ -7849,20 +7849,20 @@ function map_field(sub, param) {
   var attrs = Curry._2(sub[/* attributes */1], sub, param[/* pctf_attributes */2]);
   switch (desc.tag | 0) {
     case 0 : 
-        return Curry._3(Ast_helper_019[/* inherit_ */2], Js_primitive.some(loc), Js_primitive.some(attrs), Curry._2(sub[/* class_type */10], sub, desc[0]));
+        return Curry._3(Ast_helper_019[/* inherit_ */2], loc, attrs, Curry._2(sub[/* class_type */10], sub, desc[0]));
     case 1 : 
         var match = desc[0];
-        return Curry._6(Ast_helper_019[/* val_ */3], Js_primitive.some(loc), Js_primitive.some(attrs), match[0], match[1], match[2], Curry._2(sub[/* typ */33], sub, match[3]));
+        return Curry._6(Ast_helper_019[/* val_ */3], loc, attrs, match[0], match[1], match[2], Curry._2(sub[/* typ */33], sub, match[3]));
     case 2 : 
         var match$1 = desc[0];
-        return Curry._6(Ast_helper_019[/* method_ */4], Js_primitive.some(loc), Js_primitive.some(attrs), match$1[0], match$1[1], match$1[2], Curry._2(sub[/* typ */33], sub, match$1[3]));
+        return Curry._6(Ast_helper_019[/* method_ */4], loc, attrs, match$1[0], match$1[1], match$1[2], Curry._2(sub[/* typ */33], sub, match$1[3]));
     case 3 : 
         var match$2 = desc[0];
-        return Curry._4(Ast_helper_019[/* constraint_ */5], Js_primitive.some(loc), Js_primitive.some(attrs), Curry._2(sub[/* typ */33], sub, match$2[0]), Curry._2(sub[/* typ */33], sub, match$2[1]));
+        return Curry._4(Ast_helper_019[/* constraint_ */5], loc, attrs, Curry._2(sub[/* typ */33], sub, match$2[0]), Curry._2(sub[/* typ */33], sub, match$2[1]));
     case 4 : 
-        return Curry._2(Ast_helper_019[/* attribute */7], Js_primitive.some(loc), Curry._2(sub[/* attribute */0], sub, desc[0]));
+        return Curry._2(Ast_helper_019[/* attribute */7], loc, Curry._2(sub[/* attribute */0], sub, desc[0]));
     case 5 : 
-        return Curry._3(Ast_helper_019[/* extension */6], Js_primitive.some(loc), Js_primitive.some(attrs), Curry._2(sub[/* extension */15], sub, desc[0]));
+        return Curry._3(Ast_helper_019[/* extension */6], loc, attrs, Curry._2(sub[/* extension */15], sub, desc[0]));
     
   }
 }
@@ -7880,19 +7880,19 @@ function map$3(sub, param) {
   var attrs = Curry._2(sub[/* attributes */1], sub, param[/* pmty_attributes */2]);
   switch (desc.tag | 0) {
     case 0 : 
-        return ident$1(Js_primitive.some(loc), Js_primitive.some(attrs), map_loc(sub, desc[0]));
+        return ident$1(loc, attrs, map_loc(sub, desc[0]));
     case 1 : 
-        return signature(Js_primitive.some(loc), Js_primitive.some(attrs), Curry._2(sub[/* signature */29], sub, desc[0]));
+        return signature(loc, attrs, Curry._2(sub[/* signature */29], sub, desc[0]));
     case 2 : 
-        return functor_(Js_primitive.some(loc), Js_primitive.some(attrs), map_loc(sub, desc[0]), may_map(Curry._1(sub[/* module_type */24], sub), desc[1]), Curry._2(sub[/* module_type */24], sub, desc[2]));
+        return functor_(loc, attrs, map_loc(sub, desc[0]), may_map(Curry._1(sub[/* module_type */24], sub), desc[1]), Curry._2(sub[/* module_type */24], sub, desc[2]));
     case 3 : 
-        return with_(Js_primitive.some(loc), Js_primitive.some(attrs), Curry._2(sub[/* module_type */24], sub, desc[0]), List.map(Curry._1(sub[/* with_constraint */39], sub), desc[1]));
+        return with_(loc, attrs, Curry._2(sub[/* module_type */24], sub, desc[0]), List.map(Curry._1(sub[/* with_constraint */39], sub), desc[1]));
     case 4 : 
-        return typeof_(Js_primitive.some(loc), Js_primitive.some(attrs), Curry._2(sub[/* module_expr */23], sub, desc[0]));
+        return typeof_(loc, attrs, Curry._2(sub[/* module_expr */23], sub, desc[0]));
     case 5 : 
-        return extension$3(Js_primitive.some(loc), Js_primitive.some(attrs), Curry._2(sub[/* extension */15], sub, desc[0]));
+        return extension$3(loc, attrs, Curry._2(sub[/* extension */15], sub, desc[0]));
     case 6 : 
-        return alias$2(Js_primitive.some(loc), Js_primitive.some(attrs), map_loc(sub, desc[0]));
+        return alias$2(loc, attrs, map_loc(sub, desc[0]));
     
   }
 }
@@ -7926,42 +7926,42 @@ function map_signature_item(sub, param) {
   switch (desc.tag | 0) {
     case 0 : 
         var a = Curry._2(sub[/* value_description */38], sub, desc[0]);
-        return mk$5(Js_primitive.some(loc), /* Psig_value */Block.__(0, [a]));
+        return mk$5(loc, /* Psig_value */Block.__(0, [a]));
     case 1 : 
         var a$1 = List.map(Curry._1(sub[/* type_declaration */34], sub), desc[0]);
-        return mk$5(Js_primitive.some(loc), /* Psig_type */Block.__(1, [a$1]));
+        return mk$5(loc, /* Psig_type */Block.__(1, [a$1]));
     case 2 : 
         var a$2 = Curry._2(sub[/* type_extension */35], sub, desc[0]);
-        return mk$5(Js_primitive.some(loc), /* Psig_typext */Block.__(2, [a$2]));
+        return mk$5(loc, /* Psig_typext */Block.__(2, [a$2]));
     case 3 : 
         var a$3 = Curry._2(sub[/* extension_constructor */16], sub, desc[0]);
-        return mk$5(Js_primitive.some(loc), /* Psig_exception */Block.__(3, [a$3]));
+        return mk$5(loc, /* Psig_exception */Block.__(3, [a$3]));
     case 4 : 
         var a$4 = Curry._2(sub[/* module_declaration */22], sub, desc[0]);
-        return mk$5(Js_primitive.some(loc), /* Psig_module */Block.__(4, [a$4]));
+        return mk$5(loc, /* Psig_module */Block.__(4, [a$4]));
     case 5 : 
         var a$5 = List.map(Curry._1(sub[/* module_declaration */22], sub), desc[0]);
-        return mk$5(Js_primitive.some(loc), /* Psig_recmodule */Block.__(5, [a$5]));
+        return mk$5(loc, /* Psig_recmodule */Block.__(5, [a$5]));
     case 6 : 
         var a$6 = Curry._2(sub[/* module_type_declaration */25], sub, desc[0]);
-        return mk$5(Js_primitive.some(loc), /* Psig_modtype */Block.__(6, [a$6]));
+        return mk$5(loc, /* Psig_modtype */Block.__(6, [a$6]));
     case 7 : 
         var a$7 = Curry._2(sub[/* open_description */26], sub, desc[0]);
-        return mk$5(Js_primitive.some(loc), /* Psig_open */Block.__(7, [a$7]));
+        return mk$5(loc, /* Psig_open */Block.__(7, [a$7]));
     case 8 : 
         var a$8 = Curry._2(sub[/* include_description */18], sub, desc[0]);
-        return mk$5(Js_primitive.some(loc), /* Psig_include */Block.__(8, [a$8]));
+        return mk$5(loc, /* Psig_include */Block.__(8, [a$8]));
     case 9 : 
         var a$9 = List.map(Curry._1(sub[/* class_description */5], sub), desc[0]);
-        return mk$5(Js_primitive.some(loc), /* Psig_class */Block.__(9, [a$9]));
+        return mk$5(loc, /* Psig_class */Block.__(9, [a$9]));
     case 10 : 
         var a$10 = List.map(Curry._1(sub[/* class_type_declaration */11], sub), desc[0]);
-        return mk$5(Js_primitive.some(loc), /* Psig_class_type */Block.__(10, [a$10]));
+        return mk$5(loc, /* Psig_class_type */Block.__(10, [a$10]));
     case 11 : 
         var a$11 = Curry._2(sub[/* attribute */0], sub, desc[0]);
-        return mk$5(Js_primitive.some(loc), /* Psig_attribute */Block.__(11, [a$11]));
+        return mk$5(loc, /* Psig_attribute */Block.__(11, [a$11]));
     case 12 : 
-        return extension$5(Js_primitive.some(loc), Js_primitive.some(Curry._2(sub[/* attributes */1], sub, desc[1])), Curry._2(sub[/* extension */15], sub, desc[0]));
+        return extension$5(loc, Curry._2(sub[/* attributes */1], sub, desc[1]), Curry._2(sub[/* extension */15], sub, desc[0]));
     
   }
 }
@@ -7972,19 +7972,19 @@ function map$4(sub, param) {
   var attrs = Curry._2(sub[/* attributes */1], sub, param[/* pmod_attributes */2]);
   switch (desc.tag | 0) {
     case 0 : 
-        return ident$2(Js_primitive.some(loc), Js_primitive.some(attrs), map_loc(sub, desc[0]));
+        return ident$2(loc, attrs, map_loc(sub, desc[0]));
     case 1 : 
-        return structure(Js_primitive.some(loc), Js_primitive.some(attrs), Curry._2(sub[/* structure */31], sub, desc[0]));
+        return structure(loc, attrs, Curry._2(sub[/* structure */31], sub, desc[0]));
     case 2 : 
-        return functor_$1(Js_primitive.some(loc), Js_primitive.some(attrs), map_loc(sub, desc[0]), may_map(Curry._1(sub[/* module_type */24], sub), desc[1]), Curry._2(sub[/* module_expr */23], sub, desc[2]));
+        return functor_$1(loc, attrs, map_loc(sub, desc[0]), may_map(Curry._1(sub[/* module_type */24], sub), desc[1]), Curry._2(sub[/* module_expr */23], sub, desc[2]));
     case 3 : 
-        return apply$1(Js_primitive.some(loc), Js_primitive.some(attrs), Curry._2(sub[/* module_expr */23], sub, desc[0]), Curry._2(sub[/* module_expr */23], sub, desc[1]));
+        return apply$1(loc, attrs, Curry._2(sub[/* module_expr */23], sub, desc[0]), Curry._2(sub[/* module_expr */23], sub, desc[1]));
     case 4 : 
-        return constraint_$2(Js_primitive.some(loc), Js_primitive.some(attrs), Curry._2(sub[/* module_expr */23], sub, desc[0]), Curry._2(sub[/* module_type */24], sub, desc[1]));
+        return constraint_$2(loc, attrs, Curry._2(sub[/* module_expr */23], sub, desc[0]), Curry._2(sub[/* module_type */24], sub, desc[1]));
     case 5 : 
-        return unpack$1(Js_primitive.some(loc), Js_primitive.some(attrs), Curry._2(sub[/* expr */14], sub, desc[0]));
+        return unpack$1(loc, attrs, Curry._2(sub[/* expr */14], sub, desc[0]));
     case 6 : 
-        return extension$4(Js_primitive.some(loc), Js_primitive.some(attrs), Curry._2(sub[/* extension */15], sub, desc[0]));
+        return extension$4(loc, attrs, Curry._2(sub[/* extension */15], sub, desc[0]));
     
   }
 }
@@ -7994,47 +7994,47 @@ function map_structure_item(sub, param) {
   var loc = Curry._2(sub[/* location */20], sub, param[/* pstr_loc */1]);
   switch (desc.tag | 0) {
     case 0 : 
-        return $$eval(Js_primitive.some(loc), Js_primitive.some(Curry._2(sub[/* attributes */1], sub, desc[1])), Curry._2(sub[/* expr */14], sub, desc[0]));
+        return $$eval(loc, Curry._2(sub[/* attributes */1], sub, desc[1]), Curry._2(sub[/* expr */14], sub, desc[0]));
     case 1 : 
-        return value(Js_primitive.some(loc), desc[0], List.map(Curry._1(sub[/* value_binding */37], sub), desc[1]));
+        return value(loc, desc[0], List.map(Curry._1(sub[/* value_binding */37], sub), desc[1]));
     case 2 : 
         var a = Curry._2(sub[/* value_description */38], sub, desc[0]);
-        return mk$6(Js_primitive.some(loc), /* Pstr_primitive */Block.__(2, [a]));
+        return mk$6(loc, /* Pstr_primitive */Block.__(2, [a]));
     case 3 : 
         var a$1 = List.map(Curry._1(sub[/* type_declaration */34], sub), desc[0]);
-        return mk$6(Js_primitive.some(loc), /* Pstr_type */Block.__(3, [a$1]));
+        return mk$6(loc, /* Pstr_type */Block.__(3, [a$1]));
     case 4 : 
         var a$2 = Curry._2(sub[/* type_extension */35], sub, desc[0]);
-        return mk$6(Js_primitive.some(loc), /* Pstr_typext */Block.__(4, [a$2]));
+        return mk$6(loc, /* Pstr_typext */Block.__(4, [a$2]));
     case 5 : 
         var a$3 = Curry._2(sub[/* extension_constructor */16], sub, desc[0]);
-        return mk$6(Js_primitive.some(loc), /* Pstr_exception */Block.__(5, [a$3]));
+        return mk$6(loc, /* Pstr_exception */Block.__(5, [a$3]));
     case 6 : 
         var a$4 = Curry._2(sub[/* module_binding */21], sub, desc[0]);
-        return mk$6(Js_primitive.some(loc), /* Pstr_module */Block.__(6, [a$4]));
+        return mk$6(loc, /* Pstr_module */Block.__(6, [a$4]));
     case 7 : 
         var a$5 = List.map(Curry._1(sub[/* module_binding */21], sub), desc[0]);
-        return mk$6(Js_primitive.some(loc), /* Pstr_recmodule */Block.__(7, [a$5]));
+        return mk$6(loc, /* Pstr_recmodule */Block.__(7, [a$5]));
     case 8 : 
         var a$6 = Curry._2(sub[/* module_type_declaration */25], sub, desc[0]);
-        return mk$6(Js_primitive.some(loc), /* Pstr_modtype */Block.__(8, [a$6]));
+        return mk$6(loc, /* Pstr_modtype */Block.__(8, [a$6]));
     case 9 : 
         var a$7 = Curry._2(sub[/* open_description */26], sub, desc[0]);
-        return mk$6(Js_primitive.some(loc), /* Pstr_open */Block.__(9, [a$7]));
+        return mk$6(loc, /* Pstr_open */Block.__(9, [a$7]));
     case 10 : 
         var a$8 = List.map(Curry._1(sub[/* class_declaration */4], sub), desc[0]);
-        return mk$6(Js_primitive.some(loc), /* Pstr_class */Block.__(10, [a$8]));
+        return mk$6(loc, /* Pstr_class */Block.__(10, [a$8]));
     case 11 : 
         var a$9 = List.map(Curry._1(sub[/* class_type_declaration */11], sub), desc[0]);
-        return mk$6(Js_primitive.some(loc), /* Pstr_class_type */Block.__(11, [a$9]));
+        return mk$6(loc, /* Pstr_class_type */Block.__(11, [a$9]));
     case 12 : 
         var a$10 = Curry._2(sub[/* include_declaration */17], sub, desc[0]);
-        return mk$6(Js_primitive.some(loc), /* Pstr_include */Block.__(12, [a$10]));
+        return mk$6(loc, /* Pstr_include */Block.__(12, [a$10]));
     case 13 : 
         var a$11 = Curry._2(sub[/* attribute */0], sub, desc[0]);
-        return mk$6(Js_primitive.some(loc), /* Pstr_attribute */Block.__(13, [a$11]));
+        return mk$6(loc, /* Pstr_attribute */Block.__(13, [a$11]));
     case 14 : 
-        return extension$6(Js_primitive.some(loc), Js_primitive.some(Curry._2(sub[/* attributes */1], sub, desc[1])), Curry._2(sub[/* extension */15], sub, desc[0]));
+        return extension$6(loc, Curry._2(sub[/* attributes */1], sub, desc[1]), Curry._2(sub[/* extension */15], sub, desc[0]));
     
   }
 }
@@ -8045,86 +8045,86 @@ function map$5(sub, param) {
   var attrs = Curry._2(sub[/* attributes */1], sub, param[/* pexp_attributes */2]);
   switch (desc.tag | 0) {
     case 0 : 
-        return Curry._3(Ast_helper_004[/* ident */2], Js_primitive.some(loc), Js_primitive.some(attrs), map_loc(sub, desc[0]));
+        return Curry._3(Ast_helper_004[/* ident */2], loc, attrs, map_loc(sub, desc[0]));
     case 1 : 
-        return Curry._3(Ast_helper_004[/* constant */3], Js_primitive.some(loc), Js_primitive.some(attrs), desc[0]);
+        return Curry._3(Ast_helper_004[/* constant */3], loc, attrs, desc[0]);
     case 2 : 
-        return Curry._5(Ast_helper_004[/* let_ */4], Js_primitive.some(loc), Js_primitive.some(attrs), desc[0], List.map(Curry._1(sub[/* value_binding */37], sub), desc[1]), Curry._2(sub[/* expr */14], sub, desc[2]));
+        return Curry._5(Ast_helper_004[/* let_ */4], loc, attrs, desc[0], List.map(Curry._1(sub[/* value_binding */37], sub), desc[1]), Curry._2(sub[/* expr */14], sub, desc[2]));
     case 3 : 
-        return Curry._3(Ast_helper_004[/* function_ */6], Js_primitive.some(loc), Js_primitive.some(attrs), Curry._2(sub[/* cases */3], sub, desc[0]));
+        return Curry._3(Ast_helper_004[/* function_ */6], loc, attrs, Curry._2(sub[/* cases */3], sub, desc[0]));
     case 4 : 
-        return Curry._6(Ast_helper_004[/* fun_ */5], Js_primitive.some(loc), Js_primitive.some(attrs), desc[0], map_opt(Curry._1(sub[/* expr */14], sub), desc[1]), Curry._2(sub[/* pat */27], sub, desc[2]), Curry._2(sub[/* expr */14], sub, desc[3]));
+        return Curry._6(Ast_helper_004[/* fun_ */5], loc, attrs, desc[0], map_opt(Curry._1(sub[/* expr */14], sub), desc[1]), Curry._2(sub[/* pat */27], sub, desc[2]), Curry._2(sub[/* expr */14], sub, desc[3]));
     case 5 : 
         var partial_arg = Curry._1(sub[/* expr */14], sub);
-        return Curry._4(Ast_helper_004[/* apply */7], Js_primitive.some(loc), Js_primitive.some(attrs), Curry._2(sub[/* expr */14], sub, desc[0]), List.map((function (param) {
+        return Curry._4(Ast_helper_004[/* apply */7], loc, attrs, Curry._2(sub[/* expr */14], sub, desc[0]), List.map((function (param) {
                           return map_snd(partial_arg, param);
                         }), desc[1]));
     case 6 : 
-        return Curry._4(Ast_helper_004[/* match_ */8], Js_primitive.some(loc), Js_primitive.some(attrs), Curry._2(sub[/* expr */14], sub, desc[0]), Curry._2(sub[/* cases */3], sub, desc[1]));
+        return Curry._4(Ast_helper_004[/* match_ */8], loc, attrs, Curry._2(sub[/* expr */14], sub, desc[0]), Curry._2(sub[/* cases */3], sub, desc[1]));
     case 7 : 
-        return Curry._4(Ast_helper_004[/* try_ */9], Js_primitive.some(loc), Js_primitive.some(attrs), Curry._2(sub[/* expr */14], sub, desc[0]), Curry._2(sub[/* cases */3], sub, desc[1]));
+        return Curry._4(Ast_helper_004[/* try_ */9], loc, attrs, Curry._2(sub[/* expr */14], sub, desc[0]), Curry._2(sub[/* cases */3], sub, desc[1]));
     case 8 : 
-        return Curry._3(Ast_helper_004[/* tuple */10], Js_primitive.some(loc), Js_primitive.some(attrs), List.map(Curry._1(sub[/* expr */14], sub), desc[0]));
+        return Curry._3(Ast_helper_004[/* tuple */10], loc, attrs, List.map(Curry._1(sub[/* expr */14], sub), desc[0]));
     case 9 : 
-        return Curry._4(Ast_helper_004[/* construct */11], Js_primitive.some(loc), Js_primitive.some(attrs), map_loc(sub, desc[0]), map_opt(Curry._1(sub[/* expr */14], sub), desc[1]));
+        return Curry._4(Ast_helper_004[/* construct */11], loc, attrs, map_loc(sub, desc[0]), map_opt(Curry._1(sub[/* expr */14], sub), desc[1]));
     case 10 : 
-        return Curry._4(Ast_helper_004[/* variant */12], Js_primitive.some(loc), Js_primitive.some(attrs), desc[0], map_opt(Curry._1(sub[/* expr */14], sub), desc[1]));
+        return Curry._4(Ast_helper_004[/* variant */12], loc, attrs, desc[0], map_opt(Curry._1(sub[/* expr */14], sub), desc[1]));
     case 11 : 
         var partial_arg$1 = Curry._1(sub[/* expr */14], sub);
-        return Curry._4(Ast_helper_004[/* record */13], Js_primitive.some(loc), Js_primitive.some(attrs), List.map((function (param) {
+        return Curry._4(Ast_helper_004[/* record */13], loc, attrs, List.map((function (param) {
                           return map_tuple((function (param) {
                                         return map_loc(sub, param);
                                       }), partial_arg$1, param);
                         }), desc[0]), map_opt(Curry._1(sub[/* expr */14], sub), desc[1]));
     case 12 : 
-        return Curry._4(Ast_helper_004[/* field */14], Js_primitive.some(loc), Js_primitive.some(attrs), Curry._2(sub[/* expr */14], sub, desc[0]), map_loc(sub, desc[1]));
+        return Curry._4(Ast_helper_004[/* field */14], loc, attrs, Curry._2(sub[/* expr */14], sub, desc[0]), map_loc(sub, desc[1]));
     case 13 : 
-        return Curry._5(Ast_helper_004[/* setfield */15], Js_primitive.some(loc), Js_primitive.some(attrs), Curry._2(sub[/* expr */14], sub, desc[0]), map_loc(sub, desc[1]), Curry._2(sub[/* expr */14], sub, desc[2]));
+        return Curry._5(Ast_helper_004[/* setfield */15], loc, attrs, Curry._2(sub[/* expr */14], sub, desc[0]), map_loc(sub, desc[1]), Curry._2(sub[/* expr */14], sub, desc[2]));
     case 14 : 
-        return Curry._3(Ast_helper_004[/* array */16], Js_primitive.some(loc), Js_primitive.some(attrs), List.map(Curry._1(sub[/* expr */14], sub), desc[0]));
+        return Curry._3(Ast_helper_004[/* array */16], loc, attrs, List.map(Curry._1(sub[/* expr */14], sub), desc[0]));
     case 15 : 
-        return Curry._5(Ast_helper_004[/* ifthenelse */17], Js_primitive.some(loc), Js_primitive.some(attrs), Curry._2(sub[/* expr */14], sub, desc[0]), Curry._2(sub[/* expr */14], sub, desc[1]), map_opt(Curry._1(sub[/* expr */14], sub), desc[2]));
+        return Curry._5(Ast_helper_004[/* ifthenelse */17], loc, attrs, Curry._2(sub[/* expr */14], sub, desc[0]), Curry._2(sub[/* expr */14], sub, desc[1]), map_opt(Curry._1(sub[/* expr */14], sub), desc[2]));
     case 16 : 
-        return Curry._4(Ast_helper_004[/* sequence */18], Js_primitive.some(loc), Js_primitive.some(attrs), Curry._2(sub[/* expr */14], sub, desc[0]), Curry._2(sub[/* expr */14], sub, desc[1]));
+        return Curry._4(Ast_helper_004[/* sequence */18], loc, attrs, Curry._2(sub[/* expr */14], sub, desc[0]), Curry._2(sub[/* expr */14], sub, desc[1]));
     case 17 : 
-        return Curry._4(Ast_helper_004[/* while_ */19], Js_primitive.some(loc), Js_primitive.some(attrs), Curry._2(sub[/* expr */14], sub, desc[0]), Curry._2(sub[/* expr */14], sub, desc[1]));
+        return Curry._4(Ast_helper_004[/* while_ */19], loc, attrs, Curry._2(sub[/* expr */14], sub, desc[0]), Curry._2(sub[/* expr */14], sub, desc[1]));
     case 18 : 
-        return Curry._7(Ast_helper_004[/* for_ */20], Js_primitive.some(loc), Js_primitive.some(attrs), Curry._2(sub[/* pat */27], sub, desc[0]), Curry._2(sub[/* expr */14], sub, desc[1]), Curry._2(sub[/* expr */14], sub, desc[2]), desc[3], Curry._2(sub[/* expr */14], sub, desc[4]));
+        return Curry._7(Ast_helper_004[/* for_ */20], loc, attrs, Curry._2(sub[/* pat */27], sub, desc[0]), Curry._2(sub[/* expr */14], sub, desc[1]), Curry._2(sub[/* expr */14], sub, desc[2]), desc[3], Curry._2(sub[/* expr */14], sub, desc[4]));
     case 19 : 
-        return Curry._4(Ast_helper_004[/* constraint_ */22], Js_primitive.some(loc), Js_primitive.some(attrs), Curry._2(sub[/* expr */14], sub, desc[0]), Curry._2(sub[/* typ */33], sub, desc[1]));
+        return Curry._4(Ast_helper_004[/* constraint_ */22], loc, attrs, Curry._2(sub[/* expr */14], sub, desc[0]), Curry._2(sub[/* typ */33], sub, desc[1]));
     case 20 : 
-        return Curry._5(Ast_helper_004[/* coerce */21], Js_primitive.some(loc), Js_primitive.some(attrs), Curry._2(sub[/* expr */14], sub, desc[0]), map_opt(Curry._1(sub[/* typ */33], sub), desc[1]), Curry._2(sub[/* typ */33], sub, desc[2]));
+        return Curry._5(Ast_helper_004[/* coerce */21], loc, attrs, Curry._2(sub[/* expr */14], sub, desc[0]), map_opt(Curry._1(sub[/* typ */33], sub), desc[1]), Curry._2(sub[/* typ */33], sub, desc[2]));
     case 21 : 
-        return Curry._4(Ast_helper_004[/* send */23], Js_primitive.some(loc), Js_primitive.some(attrs), Curry._2(sub[/* expr */14], sub, desc[0]), desc[1]);
+        return Curry._4(Ast_helper_004[/* send */23], loc, attrs, Curry._2(sub[/* expr */14], sub, desc[0]), desc[1]);
     case 22 : 
-        return Curry._3(Ast_helper_004[/* new_ */24], Js_primitive.some(loc), Js_primitive.some(attrs), map_loc(sub, desc[0]));
+        return Curry._3(Ast_helper_004[/* new_ */24], loc, attrs, map_loc(sub, desc[0]));
     case 23 : 
-        return Curry._4(Ast_helper_004[/* setinstvar */25], Js_primitive.some(loc), Js_primitive.some(attrs), map_loc(sub, desc[0]), Curry._2(sub[/* expr */14], sub, desc[1]));
+        return Curry._4(Ast_helper_004[/* setinstvar */25], loc, attrs, map_loc(sub, desc[0]), Curry._2(sub[/* expr */14], sub, desc[1]));
     case 24 : 
         var partial_arg$2 = Curry._1(sub[/* expr */14], sub);
-        return Curry._3(Ast_helper_004[/* override */26], Js_primitive.some(loc), Js_primitive.some(attrs), List.map((function (param) {
+        return Curry._3(Ast_helper_004[/* override */26], loc, attrs, List.map((function (param) {
                           return map_tuple((function (param) {
                                         return map_loc(sub, param);
                                       }), partial_arg$2, param);
                         }), desc[0]));
     case 25 : 
-        return Curry._5(Ast_helper_004[/* letmodule */27], Js_primitive.some(loc), Js_primitive.some(attrs), map_loc(sub, desc[0]), Curry._2(sub[/* module_expr */23], sub, desc[1]), Curry._2(sub[/* expr */14], sub, desc[2]));
+        return Curry._5(Ast_helper_004[/* letmodule */27], loc, attrs, map_loc(sub, desc[0]), Curry._2(sub[/* module_expr */23], sub, desc[1]), Curry._2(sub[/* expr */14], sub, desc[2]));
     case 26 : 
-        return Curry._3(Ast_helper_004[/* assert_ */28], Js_primitive.some(loc), Js_primitive.some(attrs), Curry._2(sub[/* expr */14], sub, desc[0]));
+        return Curry._3(Ast_helper_004[/* assert_ */28], loc, attrs, Curry._2(sub[/* expr */14], sub, desc[0]));
     case 27 : 
-        return Curry._3(Ast_helper_004[/* lazy_ */29], Js_primitive.some(loc), Js_primitive.some(attrs), Curry._2(sub[/* expr */14], sub, desc[0]));
+        return Curry._3(Ast_helper_004[/* lazy_ */29], loc, attrs, Curry._2(sub[/* expr */14], sub, desc[0]));
     case 28 : 
-        return Curry._4(Ast_helper_004[/* poly */30], Js_primitive.some(loc), Js_primitive.some(attrs), Curry._2(sub[/* expr */14], sub, desc[0]), map_opt(Curry._1(sub[/* typ */33], sub), desc[1]));
+        return Curry._4(Ast_helper_004[/* poly */30], loc, attrs, Curry._2(sub[/* expr */14], sub, desc[0]), map_opt(Curry._1(sub[/* typ */33], sub), desc[1]));
     case 29 : 
-        return Curry._3(Ast_helper_004[/* object_ */31], Js_primitive.some(loc), Js_primitive.some(attrs), Curry._2(sub[/* class_structure */9], sub, desc[0]));
+        return Curry._3(Ast_helper_004[/* object_ */31], loc, attrs, Curry._2(sub[/* class_structure */9], sub, desc[0]));
     case 30 : 
-        return Curry._4(Ast_helper_004[/* newtype */32], Js_primitive.some(loc), Js_primitive.some(attrs), desc[0], Curry._2(sub[/* expr */14], sub, desc[1]));
+        return Curry._4(Ast_helper_004[/* newtype */32], loc, attrs, desc[0], Curry._2(sub[/* expr */14], sub, desc[1]));
     case 31 : 
-        return Curry._3(Ast_helper_004[/* pack */33], Js_primitive.some(loc), Js_primitive.some(attrs), Curry._2(sub[/* module_expr */23], sub, desc[0]));
+        return Curry._3(Ast_helper_004[/* pack */33], loc, attrs, Curry._2(sub[/* module_expr */23], sub, desc[0]));
     case 32 : 
-        return Curry._5(Ast_helper_004[/* open_ */34], Js_primitive.some(loc), Js_primitive.some(attrs), desc[0], map_loc(sub, desc[1]), Curry._2(sub[/* expr */14], sub, desc[2]));
+        return Curry._5(Ast_helper_004[/* open_ */34], loc, attrs, desc[0], map_loc(sub, desc[1]), Curry._2(sub[/* expr */14], sub, desc[2]));
     case 33 : 
-        return Curry._3(Ast_helper_004[/* extension */35], Js_primitive.some(loc), Js_primitive.some(attrs), Curry._2(sub[/* extension */15], sub, desc[0]));
+        return Curry._3(Ast_helper_004[/* extension */35], loc, attrs, Curry._2(sub[/* extension */15], sub, desc[0]));
     
   }
 }
@@ -8134,46 +8134,46 @@ function map$6(sub, param) {
   var loc = Curry._2(sub[/* location */20], sub, param[/* ppat_loc */1]);
   var attrs = Curry._2(sub[/* attributes */1], sub, param[/* ppat_attributes */2]);
   if (typeof desc === "number") {
-    return mk$1(Js_primitive.some(loc), Js_primitive.some(attrs), /* Ppat_any */0);
+    return mk$1(loc, attrs, /* Ppat_any */0);
   } else {
     switch (desc.tag | 0) {
       case 0 : 
-          return $$var$1(Js_primitive.some(loc), Js_primitive.some(attrs), map_loc(sub, desc[0]));
+          return $$var$1(loc, attrs, map_loc(sub, desc[0]));
       case 1 : 
-          return alias$1(Js_primitive.some(loc), Js_primitive.some(attrs), Curry._2(sub[/* pat */27], sub, desc[0]), map_loc(sub, desc[1]));
+          return alias$1(loc, attrs, Curry._2(sub[/* pat */27], sub, desc[0]), map_loc(sub, desc[1]));
       case 2 : 
-          return constant(Js_primitive.some(loc), Js_primitive.some(attrs), desc[0]);
+          return constant(loc, attrs, desc[0]);
       case 3 : 
-          return interval(Js_primitive.some(loc), Js_primitive.some(attrs), desc[0], desc[1]);
+          return interval(loc, attrs, desc[0], desc[1]);
       case 4 : 
-          return tuple$1(Js_primitive.some(loc), Js_primitive.some(attrs), List.map(Curry._1(sub[/* pat */27], sub), desc[0]));
+          return tuple$1(loc, attrs, List.map(Curry._1(sub[/* pat */27], sub), desc[0]));
       case 5 : 
-          return construct(Js_primitive.some(loc), Js_primitive.some(attrs), map_loc(sub, desc[0]), map_opt(Curry._1(sub[/* pat */27], sub), desc[1]));
+          return construct(loc, attrs, map_loc(sub, desc[0]), map_opt(Curry._1(sub[/* pat */27], sub), desc[1]));
       case 6 : 
-          return variant$1(Js_primitive.some(loc), Js_primitive.some(attrs), desc[0], map_opt(Curry._1(sub[/* pat */27], sub), desc[1]));
+          return variant$1(loc, attrs, desc[0], map_opt(Curry._1(sub[/* pat */27], sub), desc[1]));
       case 7 : 
           var partial_arg = Curry._1(sub[/* pat */27], sub);
-          return record(Js_primitive.some(loc), Js_primitive.some(attrs), List.map((function (param) {
+          return record(loc, attrs, List.map((function (param) {
                             return map_tuple((function (param) {
                                           return map_loc(sub, param);
                                         }), partial_arg, param);
                           }), desc[0]), desc[1]);
       case 8 : 
-          return array(Js_primitive.some(loc), Js_primitive.some(attrs), List.map(Curry._1(sub[/* pat */27], sub), desc[0]));
+          return array(loc, attrs, List.map(Curry._1(sub[/* pat */27], sub), desc[0]));
       case 9 : 
-          return or_(Js_primitive.some(loc), Js_primitive.some(attrs), Curry._2(sub[/* pat */27], sub, desc[0]), Curry._2(sub[/* pat */27], sub, desc[1]));
+          return or_(loc, attrs, Curry._2(sub[/* pat */27], sub, desc[0]), Curry._2(sub[/* pat */27], sub, desc[1]));
       case 10 : 
-          return constraint_(Js_primitive.some(loc), Js_primitive.some(attrs), Curry._2(sub[/* pat */27], sub, desc[0]), Curry._2(sub[/* typ */33], sub, desc[1]));
+          return constraint_(loc, attrs, Curry._2(sub[/* pat */27], sub, desc[0]), Curry._2(sub[/* typ */33], sub, desc[1]));
       case 11 : 
-          return type_(Js_primitive.some(loc), Js_primitive.some(attrs), map_loc(sub, desc[0]));
+          return type_(loc, attrs, map_loc(sub, desc[0]));
       case 12 : 
-          return lazy_(Js_primitive.some(loc), Js_primitive.some(attrs), Curry._2(sub[/* pat */27], sub, desc[0]));
+          return lazy_(loc, attrs, Curry._2(sub[/* pat */27], sub, desc[0]));
       case 13 : 
-          return unpack(Js_primitive.some(loc), Js_primitive.some(attrs), map_loc(sub, desc[0]));
+          return unpack(loc, attrs, map_loc(sub, desc[0]));
       case 14 : 
-          return exception_(Js_primitive.some(loc), Js_primitive.some(attrs), Curry._2(sub[/* pat */27], sub, desc[0]));
+          return exception_(loc, attrs, Curry._2(sub[/* pat */27], sub, desc[0]));
       case 15 : 
-          return extension$1(Js_primitive.some(loc), Js_primitive.some(attrs), Curry._2(sub[/* extension */15], sub, desc[0]));
+          return extension$1(loc, attrs, Curry._2(sub[/* extension */15], sub, desc[0]));
       
     }
   }
@@ -8185,22 +8185,22 @@ function map$7(sub, param) {
   var attrs = Curry._2(sub[/* attributes */1], sub, param[/* pcl_attributes */2]);
   switch (desc.tag | 0) {
     case 0 : 
-        return constr$1(Js_primitive.some(loc), Js_primitive.some(attrs), map_loc(sub, desc[0]), List.map(Curry._1(sub[/* typ */33], sub), desc[1]));
+        return constr$1(loc, attrs, map_loc(sub, desc[0]), List.map(Curry._1(sub[/* typ */33], sub), desc[1]));
     case 1 : 
-        return structure$1(Js_primitive.some(loc), Js_primitive.some(attrs), Curry._2(sub[/* class_structure */9], sub, desc[0]));
+        return structure$1(loc, attrs, Curry._2(sub[/* class_structure */9], sub, desc[0]));
     case 2 : 
-        return fun_$1(Js_primitive.some(loc), Js_primitive.some(attrs), desc[0], map_opt(Curry._1(sub[/* expr */14], sub), desc[1]), Curry._2(sub[/* pat */27], sub, desc[2]), Curry._2(sub[/* class_expr */6], sub, desc[3]));
+        return fun_$1(loc, attrs, desc[0], map_opt(Curry._1(sub[/* expr */14], sub), desc[1]), Curry._2(sub[/* pat */27], sub, desc[2]), Curry._2(sub[/* class_expr */6], sub, desc[3]));
     case 3 : 
         var partial_arg = Curry._1(sub[/* expr */14], sub);
-        return apply$2(Js_primitive.some(loc), Js_primitive.some(attrs), Curry._2(sub[/* class_expr */6], sub, desc[0]), List.map((function (param) {
+        return apply$2(loc, attrs, Curry._2(sub[/* class_expr */6], sub, desc[0]), List.map((function (param) {
                           return map_snd(partial_arg, param);
                         }), desc[1]));
     case 4 : 
-        return let_$1(Js_primitive.some(loc), Js_primitive.some(attrs), desc[0], List.map(Curry._1(sub[/* value_binding */37], sub), desc[1]), Curry._2(sub[/* class_expr */6], sub, desc[2]));
+        return let_$1(loc, attrs, desc[0], List.map(Curry._1(sub[/* value_binding */37], sub), desc[1]), Curry._2(sub[/* class_expr */6], sub, desc[2]));
     case 5 : 
-        return constraint_$3(Js_primitive.some(loc), Js_primitive.some(attrs), Curry._2(sub[/* class_expr */6], sub, desc[0]), Curry._2(sub[/* class_type */10], sub, desc[1]));
+        return constraint_$3(loc, attrs, Curry._2(sub[/* class_expr */6], sub, desc[0]), Curry._2(sub[/* class_type */10], sub, desc[1]));
     case 6 : 
-        return extension$7(Js_primitive.some(loc), Js_primitive.some(attrs), Curry._2(sub[/* extension */15], sub, desc[0]));
+        return extension$7(loc, attrs, Curry._2(sub[/* extension */15], sub, desc[0]));
     
   }
 }
@@ -8222,22 +8222,22 @@ function map_field$1(sub, param) {
   var attrs = Curry._2(sub[/* attributes */1], sub, param[/* pcf_attributes */2]);
   switch (desc.tag | 0) {
     case 0 : 
-        return Curry._5(Ast_helper_021[/* inherit_ */2], Js_primitive.some(loc), Js_primitive.some(attrs), desc[0], Curry._2(sub[/* class_expr */6], sub, desc[1]), desc[2]);
+        return Curry._5(Ast_helper_021[/* inherit_ */2], loc, attrs, desc[0], Curry._2(sub[/* class_expr */6], sub, desc[1]), desc[2]);
     case 1 : 
         var match = desc[0];
-        return Curry._5(Ast_helper_021[/* val_ */3], Js_primitive.some(loc), Js_primitive.some(attrs), map_loc(sub, match[0]), match[1], map_kind(sub, match[2]));
+        return Curry._5(Ast_helper_021[/* val_ */3], loc, attrs, map_loc(sub, match[0]), match[1], map_kind(sub, match[2]));
     case 2 : 
         var match$1 = desc[0];
-        return Curry._5(Ast_helper_021[/* method_ */4], Js_primitive.some(loc), Js_primitive.some(attrs), map_loc(sub, match$1[0]), match$1[1], map_kind(sub, match$1[2]));
+        return Curry._5(Ast_helper_021[/* method_ */4], loc, attrs, map_loc(sub, match$1[0]), match$1[1], map_kind(sub, match$1[2]));
     case 3 : 
         var match$2 = desc[0];
-        return Curry._4(Ast_helper_021[/* constraint_ */5], Js_primitive.some(loc), Js_primitive.some(attrs), Curry._2(sub[/* typ */33], sub, match$2[0]), Curry._2(sub[/* typ */33], sub, match$2[1]));
+        return Curry._4(Ast_helper_021[/* constraint_ */5], loc, attrs, Curry._2(sub[/* typ */33], sub, match$2[0]), Curry._2(sub[/* typ */33], sub, match$2[1]));
     case 4 : 
-        return Curry._3(Ast_helper_021[/* initializer_ */6], Js_primitive.some(loc), Js_primitive.some(attrs), Curry._2(sub[/* expr */14], sub, desc[0]));
+        return Curry._3(Ast_helper_021[/* initializer_ */6], loc, attrs, Curry._2(sub[/* expr */14], sub, desc[0]));
     case 5 : 
-        return Curry._2(Ast_helper_021[/* attribute */8], Js_primitive.some(loc), Curry._2(sub[/* attribute */0], sub, desc[0]));
+        return Curry._2(Ast_helper_021[/* attribute */8], loc, Curry._2(sub[/* attribute */0], sub, desc[0]));
     case 6 : 
-        return Curry._3(Ast_helper_021[/* extension */7], Js_primitive.some(loc), Js_primitive.some(attrs), Curry._2(sub[/* extension */15], sub, desc[0]));
+        return Curry._3(Ast_helper_021[/* extension */7], loc, attrs, Curry._2(sub[/* extension */15], sub, desc[0]));
     
   }
 }
@@ -8251,7 +8251,7 @@ function map_structure(sub, param) {
 
 function class_infos(sub, f, param) {
   var partial_arg = Curry._1(sub[/* typ */33], sub);
-  return mk$18(Js_primitive.some(Curry._2(sub[/* location */20], sub, param[/* pci_loc */4])), Js_primitive.some(Curry._2(sub[/* attributes */1], sub, param[/* pci_attributes */5])), undefined, undefined, Js_primitive.some(param[/* pci_virt */0]), List.map((function (param) {
+  return mk$18(Curry._2(sub[/* location */20], sub, param[/* pci_loc */4]), Curry._2(sub[/* attributes */1], sub, param[/* pci_attributes */5]), undefined, undefined, param[/* pci_virt */0], List.map((function (param) {
                     return map_fst(partial_arg, param);
                   }), param[/* pci_params */1]), map_loc(sub, param[/* pci_name */2]), Curry._1(f, param[/* pci_expr */3]));
 }
@@ -8301,7 +8301,7 @@ function default_mapper_011($$this) {
 }
 
 function default_mapper_013($$this, param) {
-  return constructor(Js_primitive.some(Curry._2($$this[/* location */20], $$this, param[/* pcd_loc */3])), Js_primitive.some(Curry._2($$this[/* attributes */1], $$this, param[/* pcd_attributes */4])), undefined, List.map(Curry._1($$this[/* typ */33], $$this), param[/* pcd_args */1]), map_opt(Curry._1($$this[/* typ */33], $$this), param[/* pcd_res */2]), map_loc($$this, param[/* pcd_name */0]));
+  return constructor(Curry._2($$this[/* location */20], $$this, param[/* pcd_loc */3]), Curry._2($$this[/* attributes */1], $$this, param[/* pcd_attributes */4]), undefined, List.map(Curry._1($$this[/* typ */33], $$this), param[/* pcd_args */1]), map_opt(Curry._1($$this[/* typ */33], $$this), param[/* pcd_res */2]), map_loc($$this, param[/* pcd_name */0]));
 }
 
 function default_mapper_015($$this, param) {
@@ -8312,15 +8312,15 @@ function default_mapper_015($$this, param) {
 }
 
 function default_mapper_017($$this, param) {
-  return mk$16(Js_primitive.some(Curry._2($$this[/* location */20], $$this, param[/* pincl_loc */1])), Js_primitive.some(Curry._2($$this[/* attributes */1], $$this, param[/* pincl_attributes */2])), undefined, Curry._2($$this[/* module_expr */23], $$this, param[/* pincl_mod */0]));
+  return mk$16(Curry._2($$this[/* location */20], $$this, param[/* pincl_loc */1]), Curry._2($$this[/* attributes */1], $$this, param[/* pincl_attributes */2]), undefined, Curry._2($$this[/* module_expr */23], $$this, param[/* pincl_mod */0]));
 }
 
 function default_mapper_018($$this, param) {
-  return mk$16(Js_primitive.some(Curry._2($$this[/* location */20], $$this, param[/* pincl_loc */1])), Js_primitive.some(Curry._2($$this[/* attributes */1], $$this, param[/* pincl_attributes */2])), undefined, Curry._2($$this[/* module_type */24], $$this, param[/* pincl_mod */0]));
+  return mk$16(Curry._2($$this[/* location */20], $$this, param[/* pincl_loc */1]), Curry._2($$this[/* attributes */1], $$this, param[/* pincl_attributes */2]), undefined, Curry._2($$this[/* module_type */24], $$this, param[/* pincl_mod */0]));
 }
 
 function default_mapper_019($$this, param) {
-  return field$1(Js_primitive.some(Curry._2($$this[/* location */20], $$this, param[/* pld_loc */3])), Js_primitive.some(Curry._2($$this[/* attributes */1], $$this, param[/* pld_attributes */4])), undefined, Js_primitive.some(param[/* pld_mutable */1]), map_loc($$this, param[/* pld_name */0]), Curry._2($$this[/* typ */33], $$this, param[/* pld_type */2]));
+  return field$1(Curry._2($$this[/* location */20], $$this, param[/* pld_loc */3]), Curry._2($$this[/* attributes */1], $$this, param[/* pld_attributes */4]), undefined, param[/* pld_mutable */1], map_loc($$this, param[/* pld_name */0]), Curry._2($$this[/* typ */33], $$this, param[/* pld_type */2]));
 }
 
 function default_mapper_020(_, l) {
@@ -8328,19 +8328,19 @@ function default_mapper_020(_, l) {
 }
 
 function default_mapper_021($$this, param) {
-  return mk$14(Js_primitive.some(Curry._2($$this[/* location */20], $$this, param[/* pmb_loc */3])), Js_primitive.some(Curry._2($$this[/* attributes */1], $$this, param[/* pmb_attributes */2])), undefined, undefined, map_loc($$this, param[/* pmb_name */0]), Curry._2($$this[/* module_expr */23], $$this, param[/* pmb_expr */1]));
+  return mk$14(Curry._2($$this[/* location */20], $$this, param[/* pmb_loc */3]), Curry._2($$this[/* attributes */1], $$this, param[/* pmb_attributes */2]), undefined, undefined, map_loc($$this, param[/* pmb_name */0]), Curry._2($$this[/* module_expr */23], $$this, param[/* pmb_expr */1]));
 }
 
 function default_mapper_022($$this, param) {
-  return mk$12(Js_primitive.some(Curry._2($$this[/* location */20], $$this, param[/* pmd_loc */3])), Js_primitive.some(Curry._2($$this[/* attributes */1], $$this, param[/* pmd_attributes */2])), undefined, undefined, map_loc($$this, param[/* pmd_name */0]), Curry._2($$this[/* module_type */24], $$this, param[/* pmd_type */1]));
+  return mk$12(Curry._2($$this[/* location */20], $$this, param[/* pmd_loc */3]), Curry._2($$this[/* attributes */1], $$this, param[/* pmd_attributes */2]), undefined, undefined, map_loc($$this, param[/* pmd_name */0]), Curry._2($$this[/* module_type */24], $$this, param[/* pmd_type */1]));
 }
 
 function default_mapper_025($$this, param) {
-  return mk$13(Js_primitive.some(Curry._2($$this[/* location */20], $$this, param[/* pmtd_loc */3])), Js_primitive.some(Curry._2($$this[/* attributes */1], $$this, param[/* pmtd_attributes */2])), undefined, undefined, map_opt(Curry._1($$this[/* module_type */24], $$this), param[/* pmtd_type */1]), map_loc($$this, param[/* pmtd_name */0]));
+  return mk$13(Curry._2($$this[/* location */20], $$this, param[/* pmtd_loc */3]), Curry._2($$this[/* attributes */1], $$this, param[/* pmtd_attributes */2]), undefined, undefined, map_opt(Curry._1($$this[/* module_type */24], $$this), param[/* pmtd_type */1]), map_loc($$this, param[/* pmtd_name */0]));
 }
 
 function default_mapper_026($$this, param) {
-  return mk$15(Js_primitive.some(Curry._2($$this[/* location */20], $$this, param[/* popen_loc */2])), Js_primitive.some(Curry._2($$this[/* attributes */1], $$this, param[/* popen_attributes */3])), undefined, Js_primitive.some(param[/* popen_override */1]), map_loc($$this, param[/* popen_lid */0]));
+  return mk$15(Curry._2($$this[/* location */20], $$this, param[/* popen_loc */2]), Curry._2($$this[/* attributes */1], $$this, param[/* popen_attributes */3]), undefined, param[/* popen_override */1], map_loc($$this, param[/* popen_lid */0]));
 }
 
 function default_mapper_028($$this, param) {
@@ -8367,11 +8367,11 @@ function default_mapper_031($$this, l) {
 }
 
 function default_mapper_037($$this, param) {
-  return mk$17(Js_primitive.some(Curry._2($$this[/* location */20], $$this, param[/* pvb_loc */3])), Js_primitive.some(Curry._2($$this[/* attributes */1], $$this, param[/* pvb_attributes */2])), undefined, undefined, Curry._2($$this[/* pat */27], $$this, param[/* pvb_pat */0]), Curry._2($$this[/* expr */14], $$this, param[/* pvb_expr */1]));
+  return mk$17(Curry._2($$this[/* location */20], $$this, param[/* pvb_loc */3]), Curry._2($$this[/* attributes */1], $$this, param[/* pvb_attributes */2]), undefined, undefined, Curry._2($$this[/* pat */27], $$this, param[/* pvb_pat */0]), Curry._2($$this[/* expr */14], $$this, param[/* pvb_expr */1]));
 }
 
 function default_mapper_038($$this, param) {
-  return mk$11(Js_primitive.some(Curry._2($$this[/* location */20], $$this, param[/* pval_loc */4])), Js_primitive.some(Curry._2($$this[/* attributes */1], $$this, param[/* pval_attributes */3])), undefined, param[/* pval_prim */2], map_loc($$this, param[/* pval_name */0]), Curry._2($$this[/* typ */33], $$this, param[/* pval_type */1]));
+  return mk$11(Curry._2($$this[/* location */20], $$this, param[/* pval_loc */4]), Curry._2($$this[/* attributes */1], $$this, param[/* pval_attributes */3]), undefined, param[/* pval_prim */2], map_loc($$this, param[/* pval_name */0]), Curry._2($$this[/* typ */33], $$this, param[/* pval_type */1]));
 }
 
 var default_mapper = /* record */[
@@ -9048,7 +9048,7 @@ function type_declaration(s, decl) {
         }), decl[/* type_params */0]);
   var decl_001 = /* type_arity */decl[/* type_arity */1];
   var decl_003 = /* type_private */decl[/* type_private */3];
-  var decl_004 = /* type_manifest */match$1 !== undefined ? Js_primitive.some(typexp(s, Js_primitive.valFromOption(match$1))) : undefined;
+  var decl_004 = /* type_manifest */match$1 !== undefined ? typexp(s, match$1) : undefined;
   var decl_005 = /* type_variance */decl[/* type_variance */5];
   var decl_007 = /* type_loc */loc(s, decl[/* type_loc */7]);
   var decl_008 = /* type_attributes */attrs(s, decl[/* type_attributes */8]);
@@ -9119,7 +9119,7 @@ function class_declaration(s, decl) {
           }), decl[/* cty_params */0]),
     /* cty_type */class_type(s, decl[/* cty_type */1]),
     /* cty_path */type_path(s, decl[/* cty_path */2]),
-    /* cty_new */match !== undefined ? Js_primitive.some(typexp(s, Js_primitive.valFromOption(match))) : undefined,
+    /* cty_new */match !== undefined ? typexp(s, match) : undefined,
     /* cty_variance */decl[/* cty_variance */4],
     /* cty_loc */loc(s, decl[/* cty_loc */5]),
     /* cty_attributes */attrs(s, decl[/* cty_attributes */6])
@@ -9780,7 +9780,7 @@ function check_consistency(ps) {
                 add_import(name);
                 var tbl = crc_units;
                 var name$1 = name;
-                var crc = Js_primitive.valFromOption(crco);
+                var crc = crco;
                 var source = ps[/* ps_filename */5];
                 try {
                   var match = Hashtbl.find(tbl, name$1);
@@ -9832,7 +9832,7 @@ function check_consistency(ps) {
 
 function save_pers_struct(crc, ps) {
   var modname = ps[/* ps_name */0];
-  Hashtbl.add(persistent_structures, modname, Js_primitive.some(ps));
+  Hashtbl.add(persistent_structures, modname, ps);
   set$1(crc_units, modname, crc, ps[/* ps_filename */5]);
   return add_import(modname);
 }
@@ -9881,7 +9881,7 @@ function read_pers_struct(modname, filename) {
                 ];
           }
         }), ps[/* ps_flags */6]);
-  Hashtbl.add(persistent_structures, modname, Js_primitive.some(ps));
+  Hashtbl.add(persistent_structures, modname, ps);
   return ps;
 }
 
@@ -9905,7 +9905,7 @@ function find_pers_struct($staropt$star, name) {
   if (r !== undefined) {
     var match = Js_primitive.valFromOption(r);
     if (match !== undefined) {
-      ps = Js_primitive.valFromOption(match);
+      ps = match;
     } else {
       throw Caml_builtin_exceptions.not_found;
     }
@@ -10171,7 +10171,7 @@ function normalize_path$1(oloc, env, path) {
         throw [
               $$Error$2,
               /* Missing_module */Block.__(3, [
-                  Js_primitive.valFromOption(oloc),
+                  oloc,
                   path,
                   normalize_path(true, env, path)
                 ])
@@ -10197,7 +10197,7 @@ function find_type_expansion(path, env) {
   var match = decl[/* type_manifest */4];
   var exit = 0;
   if (match !== undefined) {
-    var body = Js_primitive.valFromOption(match);
+    var body = match;
     if (decl[/* type_private */3] === /* Public */1 || decl[/* type_kind */2] !== /* Type_abstract */0 || has_constr_row(body)) {
       return /* tuple */[
               decl[/* type_params */0],
@@ -10239,7 +10239,7 @@ function find_type_expansion_opt(path, env) {
   if (match !== undefined) {
     return /* tuple */[
             decl[/* type_params */0],
-            Js_primitive.valFromOption(match),
+            match,
             may_map((function (prim) {
                     return prim[1];
                   }), decl[/* type_newtype_level */6])
@@ -10267,7 +10267,7 @@ function find_type_expansion_opt(path, env) {
 function find_modtype_expansion(path, env) {
   var match = find_modtype(path, env)[/* mtd_type */0];
   if (match !== undefined) {
-    return Js_primitive.valFromOption(match);
+    return match;
   } else {
     throw Caml_builtin_exceptions.not_found;
   }
@@ -11078,7 +11078,7 @@ function iter_types(f) {
                       /* name */s,
                       /* flags */1
                     ]]);
-                return iter_components(id, id, Js_primitive.valFromOption(pso)[/* ps_comps */2]);
+                return iter_components(id, id, pso[/* ps_comps */2]);
               } else {
                 return /* () */0;
               }
@@ -11329,7 +11329,7 @@ function scrape_alias(env, path, mty) {
     case 3 : 
         var path$1 = mty[0];
         try {
-          return scrape_alias(env, Js_primitive.some(path$1), find_module(false, path$1, env)[/* md_type */0]);
+          return scrape_alias(env, path$1, find_module(false, path$1, env)[/* md_type */0]);
         }
         catch (exn$1){
           if (exn$1 === Caml_builtin_exceptions.not_found) {
@@ -11342,7 +11342,7 @@ function scrape_alias(env, path, mty) {
   }
   if (exit === 1) {
     if (path !== undefined) {
-      return Curry._3(strengthen[0], env, mty, Js_primitive.valFromOption(path));
+      return Curry._3(strengthen[0], env, mty, path);
     } else {
       return mty;
     }
@@ -11386,7 +11386,7 @@ function constructors_of_type(ty_path, decl) {
         var cd_res = match[/* cd_res */2];
         var cd_args = match[/* cd_args */1];
         var cd_id = match[/* cd_id */0];
-        var ty_res$1 = cd_res !== undefined ? Js_primitive.valFromOption(cd_res) : ty_res;
+        var ty_res$1 = cd_res !== undefined ? cd_res : ty_res;
         var match$1 = cd_args ? /* tuple */[
             /* Cstr_block */Block.__(1, [idx_nonconst]),
             describe_constructors(idx_const, idx_nonconst + 1 | 0, rem)
@@ -11396,7 +11396,7 @@ function constructors_of_type(ty_path, decl) {
           ];
         var existentials;
         if (cd_res !== undefined) {
-          var res_vars = free_vars(Js_primitive.valFromOption(cd_res));
+          var res_vars = free_vars(cd_res);
           var arg_vars = free_vars(newty2(100000000, /* Ttuple */Block.__(2, [cd_args])));
           existentials = elements_aux$1(/* [] */0, diff$1(arg_vars, res_vars));
         } else {
@@ -12533,7 +12533,7 @@ function open_signature(slot, root, sg, env0) {
 }
 
 function open_signature$1($staropt$star, $staropt$star$1, ovf, root, sg, env) {
-  var loc = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : none;
+  var loc = $staropt$star !== undefined ? $staropt$star : none;
   var toplevel = $staropt$star$1 !== undefined ? $staropt$star$1 : false;
   if (!toplevel && ovf === /* Fresh */1 && !loc[/* loc_ghost */2] && (is_active(/* Unused_open */Block.__(17, [""])) || is_active(/* Open_shadow_identifier */Block.__(27, [
               "",
@@ -12661,7 +12661,7 @@ function save_signature(sg, modname, filename) {
       /* ps_crcs : :: */[
         /* tuple */[
           modname$1,
-          Js_primitive.some(crc)
+          crc
         ],
         imports$1
       ],
@@ -12682,7 +12682,7 @@ function save_signature(sg, modname, filename) {
 
 function find_all$1(proj1, proj2, f, lid, env, acc) {
   if (lid !== undefined) {
-    var match = lookup_module_descr(Js_primitive.valFromOption(lid), env);
+    var match = lookup_module_descr(lid, env);
     var p = match[0];
     var match$1 = force(components_of_module_maker, match[1]);
     if (match$1.tag) {
@@ -12705,7 +12705,7 @@ function find_all$1(proj1, proj2, f, lid, env, acc) {
 
 function find_all_simple_list(proj1, proj2, f, lid, env, acc) {
   if (lid !== undefined) {
-    var match = lookup_module_descr(Js_primitive.valFromOption(lid), env);
+    var match = lookup_module_descr(lid, env);
     var match$1 = force(components_of_module_maker, match[1]);
     if (match$1.tag) {
       return acc;
@@ -12727,7 +12727,7 @@ function find_all_simple_list(proj1, proj2, f, lid, env, acc) {
 
 function fold_modules(f, lid, env, acc) {
   if (lid !== undefined) {
-    var match = lookup_module_descr(Js_primitive.valFromOption(lid), env);
+    var match = lookup_module_descr(lid, env);
     var p = match[0];
     var match$1 = force(components_of_module_maker, match[1]);
     if (match$1.tag) {
@@ -12751,7 +12751,7 @@ function fold_modules(f, lid, env, acc) {
                                     /* stamp */0,
                                     /* name */name,
                                     /* flags */1
-                                  ]]), md(/* Mty_signature */Block.__(1, [Js_primitive.valFromOption(ps)[/* ps_sig */1]])), acc);
+                                  ]]), md(/* Mty_signature */Block.__(1, [ps[/* ps_sig */1]])), acc);
                   } else {
                     return acc;
                   }
@@ -13183,14 +13183,14 @@ register_error_of_exn((function (param) {
                 exit = 1;
                 break;
             default:
-              return Js_primitive.some(error_of_printer_file(report_error$1, err));
+              return error_of_printer_file(report_error$1, err);
           }
           if (exit === 1) {
             var loc = err[0];
             if (Caml_obj.caml_notequal(loc, none)) {
-              return Js_primitive.some(error_of_printer(loc, report_error$1, err));
+              return error_of_printer(loc, report_error$1, err);
             } else {
-              return Js_primitive.some(error_of_printer_file(report_error$1, err));
+              return error_of_printer_file(report_error$1, err);
             }
           }
           
@@ -13380,8 +13380,8 @@ function prepare_error(param) {
     case 0 : 
         var closing = param[3];
         var opening = param[1];
-        return Curry._1(errorf(Js_primitive.some(param[2]), /* :: */[
-                        Curry._1(errorf(Js_primitive.some(param[0]), undefined, undefined, /* Format */[
+        return Curry._1(errorf(param[2], /* :: */[
+                        Curry._1(errorf(param[0], undefined, undefined, /* Format */[
                                   /* String_literal */Block.__(11, [
                                       "This '",
                                       /* String */Block.__(2, [
@@ -13427,7 +13427,7 @@ function prepare_error(param) {
                         "Syntax error: '%s' expected"
                       ]), closing);
     case 1 : 
-        return Curry._1(errorf(Js_primitive.some(param[0]), undefined, undefined, /* Format */[
+        return Curry._1(errorf(param[0], undefined, undefined, /* Format */[
                         /* String_literal */Block.__(11, [
                             "Syntax error: ",
                             /* String */Block.__(2, [
@@ -13441,7 +13441,7 @@ function prepare_error(param) {
                         "Syntax error: %s expected."
                       ]), param[1]);
     case 2 : 
-        return Curry._1(errorf(Js_primitive.some(param[0]), undefined, undefined, /* Format */[
+        return Curry._1(errorf(param[0], undefined, undefined, /* Format */[
                         /* String_literal */Block.__(11, [
                             "Syntax error: ",
                             /* String */Block.__(2, [
@@ -13455,7 +13455,7 @@ function prepare_error(param) {
                         "Syntax error: %s not expected."
                       ]), param[1]);
     case 3 : 
-        return errorf(Js_primitive.some(param[0]), undefined, undefined, /* Format */[
+        return errorf(param[0], undefined, undefined, /* Format */[
                     /* String_literal */Block.__(11, [
                         "Syntax error: applicative paths of the form F(X).t are not supported when the option -no-app-func is set.",
                         /* End_of_format */0
@@ -13464,7 +13464,7 @@ function prepare_error(param) {
                   ]);
     case 4 : 
         var $$var = param[1];
-        return Curry._2(errorf(Js_primitive.some(param[0]), undefined, undefined, /* Format */[
+        return Curry._2(errorf(param[0], undefined, undefined, /* Format */[
                         /* String_literal */Block.__(11, [
                             "In this scoped type, variable '",
                             /* String */Block.__(2, [
@@ -13484,7 +13484,7 @@ function prepare_error(param) {
                         "In this scoped type, variable '%s is reserved for the local type %s."
                       ]), $$var, $$var);
     case 5 : 
-        return errorf(Js_primitive.some(param[0]), undefined, undefined, /* Format */[
+        return errorf(param[0], undefined, undefined, /* Format */[
                     /* String_literal */Block.__(11, [
                         "Syntax error",
                         /* End_of_format */0
@@ -13492,7 +13492,7 @@ function prepare_error(param) {
                     "Syntax error"
                   ]);
     case 6 : 
-        return Curry._1(errorf(Js_primitive.some(param[0]), undefined, undefined, /* Format */[
+        return Curry._1(errorf(param[0], undefined, undefined, /* Format */[
                         /* String_literal */Block.__(11, [
                             "broken invariant in parsetree: ",
                             /* String */Block.__(2, [
@@ -13508,7 +13508,7 @@ function prepare_error(param) {
 
 register_error_of_exn((function (param) {
         if (param[0] === $$Error$3) {
-          return Js_primitive.some(prepare_error(param[1]));
+          return prepare_error(param[1]);
         } else {
           return undefined;
         }
@@ -13525,47 +13525,47 @@ function ill_formed_ast(loc, s) {
 }
 
 function mktyp(d) {
-  return mk(Js_primitive.some(symbol_rloc(/* () */0)), undefined, d);
+  return mk(symbol_rloc(/* () */0), undefined, d);
 }
 
 function mkpat(d) {
-  return mk$1(Js_primitive.some(symbol_rloc(/* () */0)), undefined, d);
+  return mk$1(symbol_rloc(/* () */0), undefined, d);
 }
 
 function mkexp(d) {
-  return Curry._3(Ast_helper_004[/* mk */0], Js_primitive.some(symbol_rloc(/* () */0)), undefined, d);
+  return Curry._3(Ast_helper_004[/* mk */0], symbol_rloc(/* () */0), undefined, d);
 }
 
 function mkmty(d) {
-  return mk$3(Js_primitive.some(symbol_rloc(/* () */0)), undefined, d);
+  return mk$3(symbol_rloc(/* () */0), undefined, d);
 }
 
 function mksig(d) {
-  return mk$5(Js_primitive.some(symbol_rloc(/* () */0)), d);
+  return mk$5(symbol_rloc(/* () */0), d);
 }
 
 function mkmod(d) {
-  return mk$4(Js_primitive.some(symbol_rloc(/* () */0)), undefined, d);
+  return mk$4(symbol_rloc(/* () */0), undefined, d);
 }
 
 function mkstr(d) {
-  return mk$6(Js_primitive.some(symbol_rloc(/* () */0)), d);
+  return mk$6(symbol_rloc(/* () */0), d);
 }
 
 function mkclass(d) {
-  return mk$7(Js_primitive.some(symbol_rloc(/* () */0)), undefined, d);
+  return mk$7(symbol_rloc(/* () */0), undefined, d);
 }
 
 function mkcty(d) {
-  return mk$8(Js_primitive.some(symbol_rloc(/* () */0)), undefined, d);
+  return mk$8(symbol_rloc(/* () */0), undefined, d);
 }
 
 function mkctf(attrs, docs, d) {
-  return Curry._4(Ast_helper_019[/* mk */0], Js_primitive.some(symbol_rloc(/* () */0)), attrs, docs, d);
+  return Curry._4(Ast_helper_019[/* mk */0], symbol_rloc(/* () */0), attrs, docs, d);
 }
 
 function mkcf(attrs, docs, d) {
-  return Curry._4(Ast_helper_021[/* mk */0], Js_primitive.some(symbol_rloc(/* () */0)), attrs, docs, d);
+  return Curry._4(Ast_helper_021[/* mk */0], symbol_rloc(/* () */0), attrs, docs, d);
 }
 
 function mkrhs(rhs, pos) {
@@ -13584,7 +13584,7 @@ function mkoption(d) {
     loc_001,
     /* loc_ghost */true
   ];
-  return mk(Js_primitive.some(loc), undefined, /* Ptyp_constr */Block.__(3, [
+  return mk(loc, undefined, /* Ptyp_constr */Block.__(3, [
                 /* record */[
                   /* txt : Ldot */Block.__(1, [
                       /* Lident */Block.__(0, ["*predef*"]),
@@ -13617,26 +13617,26 @@ function reloc_exp(x) {
 
 function mkoperator(name, pos) {
   var loc = rhs_loc(pos);
-  return Curry._3(Ast_helper_004[/* mk */0], Js_primitive.some(loc), undefined, /* Pexp_ident */Block.__(0, [/* record */[
+  return Curry._3(Ast_helper_004[/* mk */0], loc, undefined, /* Pexp_ident */Block.__(0, [/* record */[
                   /* txt : Lident */Block.__(0, [name]),
                   /* loc */loc
                 ]]));
 }
 
 function mkpatvar(name, pos) {
-  return mk$1(Js_primitive.some(rhs_loc(pos)), undefined, /* Ppat_var */Block.__(0, [mkrhs(name, pos)]));
+  return mk$1(rhs_loc(pos), undefined, /* Ppat_var */Block.__(0, [mkrhs(name, pos)]));
 }
 
 function ghexp(d) {
-  return Curry._3(Ast_helper_004[/* mk */0], Js_primitive.some(symbol_gloc(/* () */0)), undefined, d);
+  return Curry._3(Ast_helper_004[/* mk */0], symbol_gloc(/* () */0), undefined, d);
 }
 
 function ghpat(d) {
-  return mk$1(Js_primitive.some(symbol_gloc(/* () */0)), undefined, d);
+  return mk$1(symbol_gloc(/* () */0), undefined, d);
 }
 
 function ghtyp(d) {
-  return mk(Js_primitive.some(symbol_gloc(/* () */0)), undefined, d);
+  return mk(symbol_gloc(/* () */0), undefined, d);
 }
 
 function ghloc(d) {
@@ -13674,22 +13674,22 @@ function neg_float_string(f) {
 }
 
 function mkexp_cons(consloc, args, loc) {
-  return Curry._3(Ast_helper_004[/* mk */0], Js_primitive.some(loc), undefined, /* Pexp_construct */Block.__(9, [
+  return Curry._3(Ast_helper_004[/* mk */0], loc, undefined, /* Pexp_construct */Block.__(9, [
                 /* record */[
                   /* txt : Lident */Block.__(0, ["::"]),
                   /* loc */consloc
                 ],
-                Js_primitive.some(args)
+                args
               ]));
 }
 
 function mkpat_cons(consloc, args, loc) {
-  return mk$1(Js_primitive.some(loc), undefined, /* Ppat_construct */Block.__(5, [
+  return mk$1(loc, undefined, /* Ppat_construct */Block.__(5, [
                 /* record */[
                   /* txt : Lident */Block.__(0, ["::"]),
                   /* loc */consloc
                 ],
-                Js_primitive.some(args)
+                args
               ]));
 }
 
@@ -13704,7 +13704,7 @@ function mktailexp(nilloc, param) {
       loc_001,
       /* loc_ghost */true
     ];
-    var arg = Curry._3(Ast_helper_004[/* mk */0], Js_primitive.some(loc), undefined, /* Pexp_tuple */Block.__(8, [/* :: */[
+    var arg = Curry._3(Ast_helper_004[/* mk */0], loc, undefined, /* Pexp_tuple */Block.__(8, [/* :: */[
               e1,
               /* :: */[
                 exp_el,
@@ -13729,7 +13729,7 @@ function mktailexp(nilloc, param) {
       nil_000,
       /* loc */loc$1
     ];
-    return Curry._3(Ast_helper_004[/* mk */0], Js_primitive.some(loc$1), undefined, /* Pexp_construct */Block.__(9, [
+    return Curry._3(Ast_helper_004[/* mk */0], loc$1, undefined, /* Pexp_construct */Block.__(9, [
                   nil,
                   undefined
                 ]));
@@ -13747,7 +13747,7 @@ function mktailpat(nilloc, param) {
       loc_001,
       /* loc_ghost */true
     ];
-    var arg = mk$1(Js_primitive.some(loc), undefined, /* Ppat_tuple */Block.__(4, [/* :: */[
+    var arg = mk$1(loc, undefined, /* Ppat_tuple */Block.__(4, [/* :: */[
               p1,
               /* :: */[
                 pat_pl,
@@ -13772,7 +13772,7 @@ function mktailpat(nilloc, param) {
       nil_000,
       /* loc */loc$1
     ];
-    return mk$1(Js_primitive.some(loc$1), undefined, /* Ppat_construct */Block.__(5, [
+    return mk$1(loc$1, undefined, /* Ppat_construct */Block.__(5, [
                   nil,
                   undefined
                 ]));
@@ -13797,19 +13797,19 @@ function mkexp_constraint(e, param) {
       return ghexp(/* Pexp_coerce */Block.__(20, [
                     e,
                     t1,
-                    Js_primitive.valFromOption(t2)
+                    t2
                   ]));
     } else {
       return ghexp(/* Pexp_constraint */Block.__(19, [
                     e,
-                    Js_primitive.valFromOption(t1)
+                    t1
                   ]));
     }
   } else if (t2 !== undefined) {
     return ghexp(/* Pexp_coerce */Block.__(20, [
                   e,
                   t1,
-                  Js_primitive.valFromOption(t2)
+                  t2
                 ]));
   } else {
     throw [
@@ -14078,7 +14078,7 @@ function wrap_exp_attrs(body, param) {
   ];
   if (ext !== undefined) {
     return ghexp(/* Pexp_extension */Block.__(33, [/* tuple */[
-                    Js_primitive.valFromOption(ext),
+                    ext,
                     /* PStr */Block.__(0, [/* :: */[
                           mkstrexp(body$1, /* [] */0),
                           /* [] */0
@@ -14445,7 +14445,7 @@ var yyact = /* array */[
       var _4 = Parsing.peek_val(__caml_parser_env, 1);
       return /* tuple */[
               mkrhs(_2, 2),
-              Js_primitive.some(_4)
+              _4
             ];
     }),
   (function (__caml_parser_env) {
@@ -14550,7 +14550,7 @@ var yyact = /* array */[
       var _7 = Parsing.peek_val(__caml_parser_env, 1);
       return mkmod(/* Pmod_unpack */Block.__(5, [ghexp(/* Pexp_coerce */Block.__(20, [
                             _3,
-                            Js_primitive.some(ghtyp(/* Ptyp_package */Block.__(9, [_5]))),
+                            ghtyp(/* Ptyp_package */Block.__(9, [_5])),
                             ghtyp(/* Ptyp_package */Block.__(9, [_7]))
                           ]))]));
     }),
@@ -14649,11 +14649,11 @@ var yyact = /* array */[
                 var tag = lzarg.tag | 0;
                 var lzarg$1 = lb[/* lb_text */4];
                 var tag$1 = lzarg$1.tag | 0;
-                return mk$17(Js_primitive.some(lb[/* lb_loc */5]), Js_primitive.some(lb[/* lb_attributes */2]), Js_primitive.some(tag === 250 ? lzarg[0] : (
-                                  tag === 246 ? CamlinternalLazy.force_lazy_block(lzarg) : lzarg
-                                )), Js_primitive.some(tag$1 === 250 ? lzarg$1[0] : (
-                                  tag$1 === 246 ? CamlinternalLazy.force_lazy_block(lzarg$1) : lzarg$1
-                                )), lb[/* lb_pattern */0], lb[/* lb_expression */1]);
+                return mk$17(lb[/* lb_loc */5], lb[/* lb_attributes */2], tag === 250 ? lzarg[0] : (
+                              tag === 246 ? CamlinternalLazy.force_lazy_block(lzarg) : lzarg
+                            ), tag$1 === 250 ? lzarg$1[0] : (
+                              tag$1 === 246 ? CamlinternalLazy.force_lazy_block(lzarg$1) : lzarg$1
+                            ), lb[/* lb_pattern */0], lb[/* lb_expression */1]);
               }), bindings);
         str = mkstr(/* Pstr_value */Block.__(1, [
                 lbs[/* lbs_rec */1],
@@ -14664,7 +14664,7 @@ var yyact = /* array */[
       if (match !== undefined) {
         var d = /* Pstr_extension */Block.__(14, [
             /* tuple */[
-              Js_primitive.valFromOption(match),
+              match,
               /* PStr */Block.__(0, [/* :: */[
                     str,
                     /* [] */0
@@ -14672,7 +14672,7 @@ var yyact = /* array */[
             ],
             /* [] */0
           ]);
-        return mk$6(Js_primitive.some(symbol_gloc(/* () */0)), d);
+        return mk$6(symbol_gloc(/* () */0), d);
       } else {
         return str;
       }
@@ -14737,7 +14737,7 @@ var yyact = /* array */[
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$16(Js_primitive.some(symbol_rloc(/* () */0)), Js_primitive.some(_3), Js_primitive.some(symbol_docs(/* () */0)), _2);
+      return mk$16(symbol_rloc(/* () */0), _3, symbol_docs(/* () */0), _2);
     }),
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);
@@ -14763,7 +14763,7 @@ var yyact = /* array */[
       var _2 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 1);
       var _4 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$14(Js_primitive.some(symbol_rloc(/* () */0)), Js_primitive.some(_4), Js_primitive.some(symbol_docs(/* () */0)), undefined, mkrhs(_2, 2), _3);
+      return mk$14(symbol_rloc(/* () */0), _4, symbol_docs(/* () */0), undefined, mkrhs(_2, 2), _3);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
@@ -14784,13 +14784,13 @@ var yyact = /* array */[
       var _3 = Parsing.peek_val(__caml_parser_env, 2);
       var _4 = Parsing.peek_val(__caml_parser_env, 1);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$14(Js_primitive.some(symbol_rloc(/* () */0)), Js_primitive.some(_5), Js_primitive.some(symbol_docs(/* () */0)), undefined, mkrhs(_3, 3), _4);
+      return mk$14(symbol_rloc(/* () */0), _5, symbol_docs(/* () */0), undefined, mkrhs(_3, 3), _4);
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 1);
       var _4 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$14(Js_primitive.some(symbol_rloc(/* () */0)), Js_primitive.some(_4), Js_primitive.some(symbol_docs(/* () */0)), Js_primitive.some(get_text(Parsing.symbol_start_pos(/* () */0))), mkrhs(_2, 2), _3);
+      return mk$14(symbol_rloc(/* () */0), _4, symbol_docs(/* () */0), get_text(Parsing.symbol_start_pos(/* () */0)), mkrhs(_2, 2), _3);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
@@ -14927,12 +14927,12 @@ var yyact = /* array */[
       var _2 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 1);
       var _4 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$15(Js_primitive.some(symbol_rloc(/* () */0)), Js_primitive.some(_4), Js_primitive.some(symbol_docs(/* () */0)), Js_primitive.some(_2), mkrhs(_3, 3));
+      return mk$15(symbol_rloc(/* () */0), _4, symbol_docs(/* () */0), _2, mkrhs(_3, 3));
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$16(Js_primitive.some(symbol_rloc(/* () */0)), Js_primitive.some(_3), Js_primitive.some(symbol_docs(/* () */0)), _2);
+      return mk$16(symbol_rloc(/* () */0), _3, symbol_docs(/* () */0), _2);
     }),
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);
@@ -14943,7 +14943,7 @@ var yyact = /* array */[
       var _6 = Parsing.peek_val(__caml_parser_env, 0);
       return mkmty(/* Pmty_functor */Block.__(2, [
                     mkrhs(_2, 2),
-                    Js_primitive.some(_4),
+                    _4,
                     _6
                   ]));
     }),
@@ -14959,13 +14959,13 @@ var yyact = /* array */[
       var _2 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 1);
       var _4 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$12(Js_primitive.some(symbol_rloc(/* () */0)), Js_primitive.some(_4), Js_primitive.some(symbol_docs(/* () */0)), undefined, mkrhs(_2, 2), _3);
+      return mk$12(symbol_rloc(/* () */0), _4, symbol_docs(/* () */0), undefined, mkrhs(_2, 2), _3);
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 3);
       var _4 = Parsing.peek_val(__caml_parser_env, 1);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$12(Js_primitive.some(symbol_rloc(/* () */0)), Js_primitive.some(_5), Js_primitive.some(symbol_docs(/* () */0)), undefined, mkrhs(_2, 2), alias$2(Js_primitive.some(rhs_loc(4)), undefined, mkrhs(_4, 4)));
+      return mk$12(symbol_rloc(/* () */0), _5, symbol_docs(/* () */0), undefined, mkrhs(_2, 2), alias$2(rhs_loc(4), undefined, mkrhs(_4, 4)));
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
@@ -14986,25 +14986,25 @@ var yyact = /* array */[
       var _3 = Parsing.peek_val(__caml_parser_env, 3);
       var _5 = Parsing.peek_val(__caml_parser_env, 1);
       var _6 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$12(Js_primitive.some(symbol_rloc(/* () */0)), Js_primitive.some(_6), Js_primitive.some(symbol_docs(/* () */0)), undefined, mkrhs(_3, 3), _5);
+      return mk$12(symbol_rloc(/* () */0), _6, symbol_docs(/* () */0), undefined, mkrhs(_3, 3), _5);
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 3);
       var _4 = Parsing.peek_val(__caml_parser_env, 1);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$12(Js_primitive.some(symbol_rloc(/* () */0)), Js_primitive.some(_5), Js_primitive.some(symbol_docs(/* () */0)), Js_primitive.some(get_text(Parsing.symbol_start_pos(/* () */0))), mkrhs(_2, 2), _4);
+      return mk$12(symbol_rloc(/* () */0), _5, symbol_docs(/* () */0), get_text(Parsing.symbol_start_pos(/* () */0)), mkrhs(_2, 2), _4);
     }),
   (function () {
       return undefined;
     }),
   (function (__caml_parser_env) {
-      return Js_primitive.some(Parsing.peek_val(__caml_parser_env, 0));
+      return Parsing.peek_val(__caml_parser_env, 0);
     }),
   (function (__caml_parser_env) {
       var _3 = Parsing.peek_val(__caml_parser_env, 2);
       var _4 = Parsing.peek_val(__caml_parser_env, 1);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$13(Js_primitive.some(symbol_rloc(/* () */0)), Js_primitive.some(_5), Js_primitive.some(symbol_docs(/* () */0)), undefined, _4, mkrhs(_3, 3));
+      return mk$13(symbol_rloc(/* () */0), _5, symbol_docs(/* () */0), undefined, _4, mkrhs(_3, 3));
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
@@ -15027,7 +15027,7 @@ var yyact = /* array */[
       var _4 = Parsing.peek_val(__caml_parser_env, 2);
       var _5 = Parsing.peek_val(__caml_parser_env, 1);
       var _6 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$18(Js_primitive.some(symbol_rloc(/* () */0)), Js_primitive.some(_6), Js_primitive.some(symbol_docs(/* () */0)), undefined, Js_primitive.some(_2), _3, mkrhs(_4, 4), _5);
+      return mk$18(symbol_rloc(/* () */0), _6, symbol_docs(/* () */0), undefined, _2, _3, mkrhs(_4, 4), _5);
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 4);
@@ -15035,7 +15035,7 @@ var yyact = /* array */[
       var _4 = Parsing.peek_val(__caml_parser_env, 2);
       var _5 = Parsing.peek_val(__caml_parser_env, 1);
       var _6 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$18(Js_primitive.some(symbol_rloc(/* () */0)), Js_primitive.some(_6), Js_primitive.some(symbol_docs(/* () */0)), Js_primitive.some(get_text(Parsing.symbol_start_pos(/* () */0))), Js_primitive.some(_2), _3, mkrhs(_4, 4), _5);
+      return mk$18(symbol_rloc(/* () */0), _6, symbol_docs(/* () */0), get_text(Parsing.symbol_start_pos(/* () */0)), _2, _3, mkrhs(_4, 4), _5);
     }),
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);
@@ -15113,7 +15113,7 @@ var yyact = /* array */[
                         ])
                     ];
               }
-              return mk$17(Js_primitive.some(lb[/* lb_loc */5]), undefined, undefined, undefined, lb[/* lb_pattern */0], lb[/* lb_expression */1]);
+              return mk$17(lb[/* lb_loc */5], undefined, undefined, undefined, lb[/* lb_pattern */0], lb[/* lb_expression */1]);
             }), lbs[/* lbs_bindings */0]);
       if (lbs[/* lbs_extension */2] !== undefined) {
         throw [
@@ -15232,7 +15232,7 @@ var yyact = /* array */[
       var _3 = Parsing.peek_val(__caml_parser_env, 2);
       var _4 = Parsing.peek_val(__caml_parser_env, 1);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return mkcf(Js_primitive.some(_5), Js_primitive.some(symbol_docs(/* () */0)), /* Pcf_inherit */Block.__(0, [
+      return mkcf(_5, symbol_docs(/* () */0), /* Pcf_inherit */Block.__(0, [
                     _2,
                     _3,
                     _4
@@ -15241,27 +15241,27 @@ var yyact = /* array */[
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return mkcf(Js_primitive.some(_3), Js_primitive.some(symbol_docs(/* () */0)), /* Pcf_val */Block.__(1, [_2]));
+      return mkcf(_3, symbol_docs(/* () */0), /* Pcf_val */Block.__(1, [_2]));
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return mkcf(Js_primitive.some(_3), Js_primitive.some(symbol_docs(/* () */0)), /* Pcf_method */Block.__(2, [_2]));
+      return mkcf(_3, symbol_docs(/* () */0), /* Pcf_method */Block.__(2, [_2]));
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return mkcf(Js_primitive.some(_3), Js_primitive.some(symbol_docs(/* () */0)), /* Pcf_constraint */Block.__(3, [_2]));
+      return mkcf(_3, symbol_docs(/* () */0), /* Pcf_constraint */Block.__(3, [_2]));
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return mkcf(Js_primitive.some(_3), Js_primitive.some(symbol_docs(/* () */0)), /* Pcf_initializer */Block.__(4, [_2]));
+      return mkcf(_3, symbol_docs(/* () */0), /* Pcf_initializer */Block.__(4, [_2]));
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return mkcf(Js_primitive.some(_2), Js_primitive.some(symbol_docs(/* () */0)), /* Pcf_extension */Block.__(6, [_1]));
+      return mkcf(_2, symbol_docs(/* () */0), /* Pcf_extension */Block.__(6, [_1]));
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
@@ -15399,7 +15399,7 @@ var yyact = /* array */[
                   _1,
                   ghexp(/* Pexp_poly */Block.__(28, [
                           _7,
-                          Js_primitive.some(_5)
+                          _5
                         ]))
                 ])
             ];
@@ -15422,7 +15422,7 @@ var yyact = /* array */[
                   _1,
                   ghexp(/* Pexp_poly */Block.__(28, [
                           match[0],
-                          Js_primitive.some(match[1])
+                          match[1]
                         ]))
                 ])
             ];
@@ -15532,19 +15532,19 @@ var yyact = /* array */[
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return mkctf(Js_primitive.some(_3), Js_primitive.some(symbol_docs(/* () */0)), /* Pctf_inherit */Block.__(0, [_2]));
+      return mkctf(_3, symbol_docs(/* () */0), /* Pctf_inherit */Block.__(0, [_2]));
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return mkctf(Js_primitive.some(_3), Js_primitive.some(symbol_docs(/* () */0)), /* Pctf_val */Block.__(1, [_2]));
+      return mkctf(_3, symbol_docs(/* () */0), /* Pctf_val */Block.__(1, [_2]));
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 4);
       var _3 = Parsing.peek_val(__caml_parser_env, 3);
       var _5 = Parsing.peek_val(__caml_parser_env, 1);
       var _6 = Parsing.peek_val(__caml_parser_env, 0);
-      return mkctf(Js_primitive.some(_6), Js_primitive.some(symbol_docs(/* () */0)), /* Pctf_method */Block.__(2, [/* tuple */[
+      return mkctf(_6, symbol_docs(/* () */0), /* Pctf_method */Block.__(2, [/* tuple */[
                       _3,
                       _2[0],
                       _2[1],
@@ -15554,12 +15554,12 @@ var yyact = /* array */[
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return mkctf(Js_primitive.some(_3), Js_primitive.some(symbol_docs(/* () */0)), /* Pctf_constraint */Block.__(3, [_2]));
+      return mkctf(_3, symbol_docs(/* () */0), /* Pctf_constraint */Block.__(3, [_2]));
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return mkctf(Js_primitive.some(_2), Js_primitive.some(symbol_docs(/* () */0)), /* Pctf_extension */Block.__(5, [_1]));
+      return mkctf(_2, symbol_docs(/* () */0), /* Pctf_extension */Block.__(5, [_1]));
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
@@ -15636,7 +15636,7 @@ var yyact = /* array */[
       var _4 = Parsing.peek_val(__caml_parser_env, 3);
       var _6 = Parsing.peek_val(__caml_parser_env, 1);
       var _7 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$18(Js_primitive.some(symbol_rloc(/* () */0)), Js_primitive.some(_7), Js_primitive.some(symbol_docs(/* () */0)), undefined, Js_primitive.some(_2), _3, mkrhs(_4, 4), _6);
+      return mk$18(symbol_rloc(/* () */0), _7, symbol_docs(/* () */0), undefined, _2, _3, mkrhs(_4, 4), _6);
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 5);
@@ -15644,7 +15644,7 @@ var yyact = /* array */[
       var _4 = Parsing.peek_val(__caml_parser_env, 3);
       var _6 = Parsing.peek_val(__caml_parser_env, 1);
       var _7 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$18(Js_primitive.some(symbol_rloc(/* () */0)), Js_primitive.some(_7), Js_primitive.some(symbol_docs(/* () */0)), Js_primitive.some(get_text(Parsing.symbol_start_pos(/* () */0))), Js_primitive.some(_2), _3, mkrhs(_4, 4), _6);
+      return mk$18(symbol_rloc(/* () */0), _7, symbol_docs(/* () */0), get_text(Parsing.symbol_start_pos(/* () */0)), _2, _3, mkrhs(_4, 4), _6);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
@@ -15667,7 +15667,7 @@ var yyact = /* array */[
       var _5 = Parsing.peek_val(__caml_parser_env, 3);
       var _7 = Parsing.peek_val(__caml_parser_env, 1);
       var _8 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$18(Js_primitive.some(symbol_rloc(/* () */0)), Js_primitive.some(_8), Js_primitive.some(symbol_docs(/* () */0)), undefined, Js_primitive.some(_3), _4, mkrhs(_5, 5), _7);
+      return mk$18(symbol_rloc(/* () */0), _8, symbol_docs(/* () */0), undefined, _3, _4, mkrhs(_5, 5), _7);
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 5);
@@ -15675,7 +15675,7 @@ var yyact = /* array */[
       var _4 = Parsing.peek_val(__caml_parser_env, 3);
       var _6 = Parsing.peek_val(__caml_parser_env, 1);
       var _7 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$18(Js_primitive.some(symbol_rloc(/* () */0)), Js_primitive.some(_7), Js_primitive.some(symbol_docs(/* () */0)), Js_primitive.some(get_text(Parsing.symbol_start_pos(/* () */0))), Js_primitive.some(_2), _3, mkrhs(_4, 4), _6);
+      return mk$18(symbol_rloc(/* () */0), _7, symbol_docs(/* () */0), get_text(Parsing.symbol_start_pos(/* () */0)), _2, _3, mkrhs(_4, 4), _6);
     }),
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);
@@ -15771,7 +15771,7 @@ var yyact = /* array */[
       return undefined;
     }),
   (function (__caml_parser_env) {
-      return Js_primitive.some(Parsing.peek_val(__caml_parser_env, 0));
+      return Parsing.peek_val(__caml_parser_env, 0);
     }),
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);
@@ -15831,7 +15831,7 @@ var yyact = /* array */[
                         ])
                     ];
               }
-              return mk$17(Js_primitive.some(lb[/* lb_loc */5]), undefined, undefined, undefined, lb[/* lb_pattern */0], lb[/* lb_expression */1]);
+              return mk$17(lb[/* lb_loc */5], undefined, undefined, undefined, lb[/* lb_pattern */0], lb[/* lb_expression */1]);
             }), lbs[/* lbs_bindings */0]);
       var d_000 = lbs[/* lbs_rec */1];
       var d_001 = List.rev(bindings);
@@ -15936,7 +15936,7 @@ var yyact = /* array */[
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
       return mkexp(/* Pexp_construct */Block.__(9, [
                     mkrhs(_1, 1),
-                    Js_primitive.some(_2)
+                    _2
                   ]));
     }),
   (function (__caml_parser_env) {
@@ -15944,7 +15944,7 @@ var yyact = /* array */[
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
       return mkexp(/* Pexp_variant */Block.__(10, [
                     _1,
-                    Js_primitive.some(_2)
+                    _2
                   ]));
     }),
   (function (__caml_parser_env) {
@@ -15955,7 +15955,7 @@ var yyact = /* array */[
       return wrap_exp_attrs(mkexp(/* Pexp_ifthenelse */Block.__(15, [
                         _3,
                         _5,
-                        Js_primitive.some(_7)
+                        _7
                       ])), _2);
     }),
   (function (__caml_parser_env) {
@@ -17136,7 +17136,7 @@ var yyact = /* array */[
       var _1 = Parsing.peek_val(__caml_parser_env, 4);
       var _3 = Parsing.peek_val(__caml_parser_env, 2);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return Curry._3(Ast_helper_004[/* case */36], _1, Js_primitive.some(_3), _5);
+      return Curry._3(Ast_helper_004[/* case */36], _1, _3, _5);
     }),
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);
@@ -17182,7 +17182,7 @@ var yyact = /* array */[
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
       return /* tuple */[
-              Js_primitive.some(_1),
+              _1,
               _3
             ];
     }),
@@ -17271,7 +17271,7 @@ var yyact = /* array */[
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
       return /* tuple */[
-              Js_primitive.some(_2),
+              _2,
               undefined
             ];
     }),
@@ -17279,15 +17279,15 @@ var yyact = /* array */[
       var _2 = Parsing.peek_val(__caml_parser_env, 2);
       var _4 = Parsing.peek_val(__caml_parser_env, 0);
       return /* tuple */[
-              Js_primitive.some(_2),
-              Js_primitive.some(_4)
+              _2,
+              _4
             ];
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
       return /* tuple */[
               undefined,
-              Js_primitive.some(_2)
+              _2
             ];
     }),
   (function () {
@@ -17320,7 +17320,7 @@ var yyact = /* array */[
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
       return mkpat(/* Ppat_construct */Block.__(5, [
                     mkrhs(_1, 1),
-                    Js_primitive.some(_2)
+                    _2
                   ]));
     }),
   (function (__caml_parser_env) {
@@ -17328,7 +17328,7 @@ var yyact = /* array */[
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
       return mkpat(/* Ppat_variant */Block.__(6, [
                     _1,
-                    Js_primitive.some(_2)
+                    _2
                   ]));
     }),
   (function (__caml_parser_env) {
@@ -17605,7 +17605,7 @@ var yyact = /* array */[
       var _2 = Parsing.peek_val(__caml_parser_env, 3);
       var _4 = Parsing.peek_val(__caml_parser_env, 1);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$11(Js_primitive.some(symbol_rloc(/* () */0)), Js_primitive.some(_5), Js_primitive.some(symbol_docs(/* () */0)), undefined, mkrhs(_2, 2), _4);
+      return mk$11(symbol_rloc(/* () */0), _5, symbol_docs(/* () */0), undefined, mkrhs(_2, 2), _4);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
@@ -17627,7 +17627,7 @@ var yyact = /* array */[
       var _4 = Parsing.peek_val(__caml_parser_env, 3);
       var _6 = Parsing.peek_val(__caml_parser_env, 1);
       var _7 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$11(Js_primitive.some(symbol_rloc(/* () */0)), Js_primitive.some(_7), Js_primitive.some(symbol_docs(/* () */0)), _6, mkrhs(_2, 2), _4);
+      return mk$11(symbol_rloc(/* () */0), _7, symbol_docs(/* () */0), _6, mkrhs(_2, 2), _4);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
@@ -17651,7 +17651,7 @@ var yyact = /* array */[
       var _5 = Parsing.peek_val(__caml_parser_env, 2);
       var _6 = Parsing.peek_val(__caml_parser_env, 1);
       var _7 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$19(Js_primitive.some(symbol_rloc(/* () */0)), Js_primitive.some(add_nonrec(_2, _7, 2)), Js_primitive.some(symbol_docs(/* () */0)), undefined, _3, List.rev(_6), Js_primitive.some(_5[0]), Js_primitive.some(_5[1]), _5[2], mkrhs(_4, 4));
+      return mk$19(symbol_rloc(/* () */0), add_nonrec(_2, _7, 2), symbol_docs(/* () */0), undefined, _3, List.rev(_6), _5[0], _5[1], _5[2], mkrhs(_4, 4));
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 4);
@@ -17659,7 +17659,7 @@ var yyact = /* array */[
       var _4 = Parsing.peek_val(__caml_parser_env, 2);
       var _5 = Parsing.peek_val(__caml_parser_env, 1);
       var _6 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$19(Js_primitive.some(symbol_rloc(/* () */0)), Js_primitive.some(_6), Js_primitive.some(symbol_docs(/* () */0)), Js_primitive.some(get_text(Parsing.symbol_start_pos(/* () */0))), _2, List.rev(_5), Js_primitive.some(_4[0]), Js_primitive.some(_4[1]), _4[2], mkrhs(_3, 3));
+      return mk$19(symbol_rloc(/* () */0), _6, symbol_docs(/* () */0), get_text(Parsing.symbol_start_pos(/* () */0)), _2, List.rev(_5), _4[0], _4[1], _4[2], mkrhs(_3, 3));
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
@@ -17684,7 +17684,7 @@ var yyact = /* array */[
       return /* tuple */[
               /* Ptype_abstract */0,
               /* Public */1,
-              Js_primitive.some(_2)
+              _2
             ];
     }),
   (function (__caml_parser_env) {
@@ -17692,7 +17692,7 @@ var yyact = /* array */[
       return /* tuple */[
               /* Ptype_abstract */0,
               /* Private */0,
-              Js_primitive.some(_3)
+              _3
             ];
     }),
   (function (__caml_parser_env) {
@@ -17734,7 +17734,7 @@ var yyact = /* array */[
       return /* tuple */[
               /* Ptype_variant */Block.__(0, [List.rev(_5)]),
               _4,
-              Js_primitive.some(_2)
+              _2
             ];
     }),
   (function (__caml_parser_env) {
@@ -17742,7 +17742,7 @@ var yyact = /* array */[
       return /* tuple */[
               /* Ptype_open */1,
               /* Public */1,
-              Js_primitive.some(_2)
+              _2
             ];
     }),
   (function (__caml_parser_env) {
@@ -17752,7 +17752,7 @@ var yyact = /* array */[
       return /* tuple */[
               /* Ptype_record */Block.__(1, [_6]),
               _4,
-              Js_primitive.some(_2)
+              _2
             ];
     }),
   (function () {
@@ -17873,13 +17873,13 @@ var yyact = /* array */[
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return constructor(Js_primitive.some(symbol_rloc(/* () */0)), Js_primitive.some(_3), Js_primitive.some(get_info(Parsing.symbol_end_pos(/* () */0))), _2[0], _2[1], mkrhs(_1, 1));
+      return constructor(symbol_rloc(/* () */0), _3, Js_primitive.some(get_info(Parsing.symbol_end_pos(/* () */0))), _2[0], _2[1], mkrhs(_1, 1));
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 1);
       var _4 = Parsing.peek_val(__caml_parser_env, 0);
-      return constructor(Js_primitive.some(symbol_rloc(/* () */0)), Js_primitive.some(_4), Js_primitive.some(get_info(Parsing.symbol_end_pos(/* () */0))), _3[0], _3[1], mkrhs(_2, 2));
+      return constructor(symbol_rloc(/* () */0), _4, Js_primitive.some(get_info(Parsing.symbol_end_pos(/* () */0))), _3[0], _3[1], mkrhs(_2, 2));
     }),
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);
@@ -17889,14 +17889,14 @@ var yyact = /* array */[
       var _4 = Parsing.peek_val(__caml_parser_env, 2);
       var _5 = Parsing.peek_val(__caml_parser_env, 1);
       var _6 = Parsing.peek_val(__caml_parser_env, 0);
-      return rebind(Js_primitive.some(symbol_rloc(/* () */0)), Js_primitive.some(Pervasives.$at(_5, _6)), Js_primitive.some(symbol_docs(/* () */0)), undefined, mkrhs(_2, 2), mkrhs(_4, 4));
+      return rebind(symbol_rloc(/* () */0), Pervasives.$at(_5, _6), symbol_docs(/* () */0), undefined, mkrhs(_2, 2), mkrhs(_4, 4));
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 3);
       var _3 = Parsing.peek_val(__caml_parser_env, 2);
       var _4 = Parsing.peek_val(__caml_parser_env, 1);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return decl(Js_primitive.some(symbol_rloc(/* () */0)), Js_primitive.some(Pervasives.$at(_4, _5)), Js_primitive.some(symbol_docs(/* () */0)), undefined, _3[0], _3[1], mkrhs(_2, 2));
+      return decl(symbol_rloc(/* () */0), Pervasives.$at(_4, _5), symbol_docs(/* () */0), undefined, _3[0], _3[1], mkrhs(_2, 2));
     }),
   (function () {
       return /* tuple */[
@@ -17916,14 +17916,14 @@ var yyact = /* array */[
       var _4 = Parsing.peek_val(__caml_parser_env, 0);
       return /* tuple */[
               List.rev(_2),
-              Js_primitive.some(_4)
+              _4
             ];
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
       return /* tuple */[
               /* [] */0,
-              Js_primitive.some(_2)
+              _2
             ];
     }),
   (function (__caml_parser_env) {
@@ -17953,7 +17953,7 @@ var yyact = /* array */[
       var _2 = Parsing.peek_val(__caml_parser_env, 3);
       var _4 = Parsing.peek_val(__caml_parser_env, 1);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return field$1(Js_primitive.some(symbol_rloc(/* () */0)), Js_primitive.some(_5), Js_primitive.some(get_info(Parsing.symbol_end_pos(/* () */0))), Js_primitive.some(_1), mkrhs(_2, 2), _4);
+      return field$1(symbol_rloc(/* () */0), _5, Js_primitive.some(get_info(Parsing.symbol_end_pos(/* () */0))), _1, mkrhs(_2, 2), _4);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 6);
@@ -17963,7 +17963,7 @@ var yyact = /* array */[
       var _7 = Parsing.peek_val(__caml_parser_env, 0);
       var info_before_semi = get_info(Parsing.rhs_end_pos(5));
       var info = info_before_semi !== undefined ? info_before_semi : get_info(Parsing.symbol_end_pos(/* () */0));
-      return field$1(Js_primitive.some(symbol_rloc(/* () */0)), Js_primitive.some(Pervasives.$at(_5, _7)), Js_primitive.some(info), Js_primitive.some(_1), mkrhs(_2, 2), _4);
+      return field$1(symbol_rloc(/* () */0), Pervasives.$at(_5, _7), Js_primitive.some(info), _1, mkrhs(_2, 2), _4);
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 6);
@@ -17975,7 +17975,7 @@ var yyact = /* array */[
       if (_2 !== /* Recursive */1) {
         not_expecting(2, "nonrec flag");
       }
-      return mk$20(Js_primitive.some(_8), Js_primitive.some(symbol_docs(/* () */0)), _3, Js_primitive.some(_6), mkrhs(_4, 4), List.rev(_7));
+      return mk$20(_8, symbol_docs(/* () */0), _3, _6, mkrhs(_4, 4), List.rev(_7));
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 6);
@@ -17987,7 +17987,7 @@ var yyact = /* array */[
       if (_2 !== /* Recursive */1) {
         not_expecting(2, "nonrec flag");
       }
-      return mk$20(Js_primitive.some(_8), Js_primitive.some(symbol_docs(/* () */0)), _3, Js_primitive.some(_6), mkrhs(_4, 4), List.rev(_7));
+      return mk$20(_8, symbol_docs(/* () */0), _3, _6, mkrhs(_4, 4), List.rev(_7));
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
@@ -18059,25 +18059,25 @@ var yyact = /* array */[
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return decl(Js_primitive.some(symbol_rloc(/* () */0)), Js_primitive.some(_3), undefined, Js_primitive.some(get_info(Parsing.symbol_end_pos(/* () */0))), _2[0], _2[1], mkrhs(_1, 1));
+      return decl(symbol_rloc(/* () */0), _3, undefined, Js_primitive.some(get_info(Parsing.symbol_end_pos(/* () */0))), _2[0], _2[1], mkrhs(_1, 1));
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 1);
       var _4 = Parsing.peek_val(__caml_parser_env, 0);
-      return decl(Js_primitive.some(symbol_rloc(/* () */0)), Js_primitive.some(_4), undefined, Js_primitive.some(get_info(Parsing.symbol_end_pos(/* () */0))), _3[0], _3[1], mkrhs(_2, 2));
+      return decl(symbol_rloc(/* () */0), _4, undefined, Js_primitive.some(get_info(Parsing.symbol_end_pos(/* () */0))), _3[0], _3[1], mkrhs(_2, 2));
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 3);
       var _3 = Parsing.peek_val(__caml_parser_env, 1);
       var _4 = Parsing.peek_val(__caml_parser_env, 0);
-      return rebind(Js_primitive.some(symbol_rloc(/* () */0)), Js_primitive.some(_4), undefined, Js_primitive.some(get_info(Parsing.symbol_end_pos(/* () */0))), mkrhs(_1, 1), mkrhs(_3, 3));
+      return rebind(symbol_rloc(/* () */0), _4, undefined, Js_primitive.some(get_info(Parsing.symbol_end_pos(/* () */0))), mkrhs(_1, 1), mkrhs(_3, 3));
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 3);
       var _4 = Parsing.peek_val(__caml_parser_env, 1);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return rebind(Js_primitive.some(symbol_rloc(/* () */0)), Js_primitive.some(_5), undefined, Js_primitive.some(get_info(Parsing.symbol_end_pos(/* () */0))), mkrhs(_2, 2), mkrhs(_4, 4));
+      return rebind(symbol_rloc(/* () */0), _5, undefined, Js_primitive.some(get_info(Parsing.symbol_end_pos(/* () */0))), mkrhs(_2, 2), mkrhs(_4, 4));
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
@@ -18102,14 +18102,14 @@ var yyact = /* array */[
       var _6 = Parsing.peek_val(__caml_parser_env, 0);
       return /* Pwith_type */Block.__(0, [
                 mkrhs(_3, 3),
-                mk$19(Js_primitive.some(symbol_rloc(/* () */0)), undefined, undefined, undefined, _2, List.rev(_6), undefined, Js_primitive.some(_4), Js_primitive.some(_5), mkrhs(last$1(_3), 3))
+                mk$19(symbol_rloc(/* () */0), undefined, undefined, undefined, _2, List.rev(_6), undefined, _4, _5, mkrhs(last$1(_3), 3))
               ]);
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 3);
       var _3 = Parsing.peek_val(__caml_parser_env, 2);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* Pwith_typesubst */Block.__(2, [mk$19(Js_primitive.some(symbol_rloc(/* () */0)), undefined, undefined, undefined, _2, undefined, undefined, undefined, Js_primitive.some(_5), mkrhs(_3, 3))]);
+      return /* Pwith_typesubst */Block.__(2, [mk$19(symbol_rloc(/* () */0), undefined, undefined, undefined, _2, undefined, undefined, undefined, _5, mkrhs(_3, 3))]);
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 2);
@@ -19325,7 +19325,7 @@ var yyact = /* array */[
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
       return /* tuple */[
-              Js_primitive.some(_2),
+              _2,
               _3
             ];
     }),
@@ -19365,7 +19365,7 @@ var yyact = /* array */[
       var _4 = Parsing.peek_val(__caml_parser_env, 0);
       return /* PPat */Block.__(2, [
                 _2,
-                Js_primitive.some(_4)
+                _4
               ]);
     }),
   (function (__caml_parser_env) {
@@ -19693,7 +19693,7 @@ function directive_parse(token_with_comments, lexbuf) {
     var v = look_ahead[0];
     if (v !== undefined) {
       look_ahead[0] = undefined;
-      return Js_primitive.valFromOption(v);
+      return v;
     } else {
       var _param = /* () */0;
       while(true) {
@@ -19736,7 +19736,7 @@ function directive_parse(token_with_comments, lexbuf) {
             ]
           ];
     }
-    look_ahead[0] = Js_primitive.some(e);
+    look_ahead[0] = e;
     return /* () */0;
   };
   var token_op = function (calc, no, lhs) {
@@ -20919,7 +20919,7 @@ function report_error$2(ppf, param) {
 
 register_error_of_exn((function (param) {
         if (param[0] === $$Error$4) {
-          return Js_primitive.some(error_of_printer(param[2], report_error$2, param[1]));
+          return error_of_printer(param[2], report_error$2, param[1]);
         } else {
           return undefined;
         }
@@ -21666,7 +21666,7 @@ function token$1(lexbuf) {
                 }
                 }(lines,docs));
                 var look_ahead = function (token) {
-                  sharp_look_ahead[0] = Js_primitive.some(token);
+                  sharp_look_ahead[0] = token;
                   return /* SHARP */84;
                 };
                 var if_then_else$1 = if_then_else[0];
@@ -21927,7 +21927,7 @@ function token$1(lexbuf) {
   var match = sharp_look_ahead[0];
   if (match !== undefined) {
     sharp_look_ahead[0] = undefined;
-    return Js_primitive.valFromOption(match);
+    return match;
   } else {
     return loop(/* NoLine */0, /* Initial */0, lexbuf);
   }
@@ -22098,7 +22098,7 @@ function map_pattern_desc(f, d) {
           if (match !== undefined) {
             return /* Tpat_variant */Block.__(5, [
                       d[0],
-                      Js_primitive.some(Curry._1(f, Js_primitive.valFromOption(match))),
+                      Curry._1(f, match),
                       d[2]
                     ]);
           } else {
@@ -22683,7 +22683,7 @@ function TypedtreeMap_000(funarg) {
               map_expression(match[0]),
               List.map((function (param) {
                       var expo = param[1];
-                      var expo$1 = expo !== undefined ? Js_primitive.some(map_expression(Js_primitive.valFromOption(expo))) : expo;
+                      var expo$1 = expo !== undefined ? map_expression(expo) : expo;
                       return /* tuple */[
                               param[0],
                               expo$1,
@@ -22718,7 +22718,7 @@ function TypedtreeMap_000(funarg) {
           break;
       case 9 : 
           var expo = match[1];
-          var expo$1 = expo !== undefined ? Js_primitive.some(map_expression(Js_primitive.valFromOption(expo))) : expo;
+          var expo$1 = expo !== undefined ? map_expression(expo) : expo;
           exp_desc = /* Texp_variant */Block.__(9, [
               match[0],
               expo$1
@@ -22733,7 +22733,7 @@ function TypedtreeMap_000(funarg) {
                           map_expression(param[2])
                         ];
                 }), match[0]);
-          var expo$3 = expo$2 !== undefined ? Js_primitive.some(map_expression(Js_primitive.valFromOption(expo$2))) : expo$2;
+          var expo$3 = expo$2 !== undefined ? map_expression(expo$2) : expo$2;
           exp_desc = /* Texp_record */Block.__(10, [
               list,
               expo$3
@@ -22762,7 +22762,7 @@ function TypedtreeMap_000(funarg) {
           exp_desc = /* Texp_ifthenelse */Block.__(14, [
               map_expression(match[0]),
               map_expression(match[1]),
-              expo$4 !== undefined ? Js_primitive.some(map_expression(Js_primitive.valFromOption(expo$4))) : expo$4
+              expo$4 !== undefined ? map_expression(expo$4) : expo$4
             ]);
           break;
       case 15 : 
@@ -22916,7 +22916,7 @@ function TypedtreeMap_000(funarg) {
           var cl = match[0];
           cl_desc = match$1 !== undefined ? /* Tcl_constraint */Block.__(5, [
                 map_class_expr(cl),
-                Js_primitive.some(map_class_type(Js_primitive.valFromOption(match$1))),
+                map_class_type(match$1),
                 match[2],
                 match[3],
                 match[4]
@@ -22961,7 +22961,7 @@ function TypedtreeMap_000(funarg) {
           if (match !== undefined) {
             return /* tuple */[
                     /* Texp_coerce */Block.__(1, [
-                        Js_primitive.some(map_core_type(Js_primitive.valFromOption(match))),
+                        map_core_type(match),
                         map_core_type(desc[1])
                       ]),
                     loc,
@@ -22981,7 +22981,7 @@ function TypedtreeMap_000(funarg) {
           var match$1 = desc[0];
           if (match$1 !== undefined) {
             return /* tuple */[
-                    /* Texp_poly */Block.__(3, [Js_primitive.some(map_core_type(Js_primitive.valFromOption(match$1)))]),
+                    /* Texp_poly */Block.__(3, [map_core_type(match$1)]),
                     loc,
                     attrs
                   ];
@@ -23127,7 +23127,7 @@ function TypedtreeMap_000(funarg) {
             break;
         case 5 : 
             var pato = match[1];
-            var pato$1 = pato !== undefined ? Js_primitive.some(map_pattern(Js_primitive.valFromOption(pato))) : pato;
+            var pato$1 = pato !== undefined ? map_pattern(pato) : pato;
             pat_desc = /* Tpat_variant */Block.__(5, [
                 match[0],
                 pato$1,
@@ -23904,7 +23904,7 @@ function save_cmt(filename, modname, binary_annots, sourcefile, initial_env, sg)
         /* cmi_crcs */imports$1,
         cmi_003
       ];
-      this_crc = Js_primitive.some(output_cmi(filename, oc, cmi));
+      this_crc = output_cmi(filename, oc, cmi);
     } else {
       this_crc = undefined;
     }
@@ -23944,49 +23944,48 @@ var Tags = Caml_exceptions.create("Ocaml_typedtree_test.Ctype.Tags");
 
 register_error_of_exn((function (param) {
         if (param[0] === Tags) {
-          return Js_primitive.some(Curry._2(errorf(Js_primitive.some(in_file(input_name[0])), undefined, undefined, /* Format */[
-                              /* String_literal */Block.__(11, [
-                                  "In this program,",
-                                  /* Formatting_lit */Block.__(17, [
-                                      /* Break */Block.__(0, [
-                                          "@ ",
-                                          1,
-                                          0
-                                        ]),
-                                      /* String_literal */Block.__(11, [
-                                          "variant constructors",
-                                          /* Formatting_lit */Block.__(17, [
-                                              /* Break */Block.__(0, [
-                                                  "@ ",
-                                                  1,
-                                                  0
-                                                ]),
-                                              /* Char_literal */Block.__(12, [
-                                                  /* "`" */96,
-                                                  /* String */Block.__(2, [
-                                                      /* No_padding */0,
-                                                      /* String_literal */Block.__(11, [
-                                                          " and `",
-                                                          /* String */Block.__(2, [
-                                                              /* No_padding */0,
-                                                              /* Formatting_lit */Block.__(17, [
-                                                                  /* Break */Block.__(0, [
-                                                                      "@ ",
-                                                                      1,
-                                                                      0
-                                                                    ]),
-                                                                  /* String_literal */Block.__(11, [
-                                                                      "have the same hash value.",
-                                                                      /* Formatting_lit */Block.__(17, [
-                                                                          /* Break */Block.__(0, [
-                                                                              "@ ",
-                                                                              1,
-                                                                              0
-                                                                            ]),
-                                                                          /* String_literal */Block.__(11, [
-                                                                              "Change one of them.",
-                                                                              /* End_of_format */0
-                                                                            ])
+          return Curry._2(errorf(in_file(input_name[0]), undefined, undefined, /* Format */[
+                          /* String_literal */Block.__(11, [
+                              "In this program,",
+                              /* Formatting_lit */Block.__(17, [
+                                  /* Break */Block.__(0, [
+                                      "@ ",
+                                      1,
+                                      0
+                                    ]),
+                                  /* String_literal */Block.__(11, [
+                                      "variant constructors",
+                                      /* Formatting_lit */Block.__(17, [
+                                          /* Break */Block.__(0, [
+                                              "@ ",
+                                              1,
+                                              0
+                                            ]),
+                                          /* Char_literal */Block.__(12, [
+                                              /* "`" */96,
+                                              /* String */Block.__(2, [
+                                                  /* No_padding */0,
+                                                  /* String_literal */Block.__(11, [
+                                                      " and `",
+                                                      /* String */Block.__(2, [
+                                                          /* No_padding */0,
+                                                          /* Formatting_lit */Block.__(17, [
+                                                              /* Break */Block.__(0, [
+                                                                  "@ ",
+                                                                  1,
+                                                                  0
+                                                                ]),
+                                                              /* String_literal */Block.__(11, [
+                                                                  "have the same hash value.",
+                                                                  /* Formatting_lit */Block.__(17, [
+                                                                      /* Break */Block.__(0, [
+                                                                          "@ ",
+                                                                          1,
+                                                                          0
+                                                                        ]),
+                                                                      /* String_literal */Block.__(11, [
+                                                                          "Change one of them.",
+                                                                          /* End_of_format */0
                                                                         ])
                                                                     ])
                                                                 ])
@@ -23997,9 +23996,10 @@ register_error_of_exn((function (param) {
                                             ])
                                         ])
                                     ])
-                                ]),
-                              "In this program,@ variant constructors@ `%s and `%s@ have the same hash value.@ Change one of them."
-                            ]), param[1], param[2]));
+                                ])
+                            ]),
+                          "In this program,@ variant constructors@ `%s and `%s@ have the same hash value.@ Change one of them."
+                        ]), param[1], param[2]);
         } else {
           return undefined;
         }
@@ -25011,7 +25011,7 @@ function closed_type_decl(decl) {
     }
     var match$1 = decl[/* type_manifest */4];
     if (match$1 !== undefined) {
-      closed_type(Js_primitive.valFromOption(match$1));
+      closed_type(match$1);
     }
     it_type_declaration(unmark_iterators, decl);
     return undefined;
@@ -25020,7 +25020,7 @@ function closed_type_decl(decl) {
     var exn = Js_exn.internalToOCamlException(raw_exn);
     if (exn[0] === Non_closed) {
       it_type_declaration(unmark_iterators, decl);
-      return Js_primitive.some(exn[1]);
+      return exn[1];
     } else {
       throw exn;
     }
@@ -25041,7 +25041,7 @@ function closed_extension_constructor(ext) {
     var exn = Js_exn.internalToOCamlException(raw_exn);
     if (exn[0] === Non_closed) {
       unmark_extension_constructor(ext);
-      return Js_primitive.some(exn[1]);
+      return exn[1];
     } else {
       throw exn;
     }
@@ -25102,7 +25102,7 @@ function closed_class(params, sign) {
       iter_type_expr(mark_type, repr(sign[/* csig_self */0]));
       List.iter(unmark_type, params);
       unmark_class_signature(sign);
-      return Js_primitive.some(exn[1]);
+      return exn[1];
     } else {
       throw exn;
     }
@@ -25267,7 +25267,7 @@ function normalize_package_path(env, _p) {
       }
     }
     if (t !== undefined) {
-      var match = Js_primitive.valFromOption(t);
+      var match = t;
       if (match.tag) {
         return p;
       } else {
@@ -25709,7 +25709,7 @@ function find_repr(p1, _param) {
       continue ;
     } else if (param[0]) {
       if (same(p1, param[1])) {
-        return Js_primitive.some(param[2]);
+        return param[2];
       } else {
         _param = param[4];
         continue ;
@@ -25793,7 +25793,7 @@ function copy(env, partial, keep_names, ty) {
                 var match$3 = find_repr(p, abbrevs[0]);
                 var exit$1 = 0;
                 if (match$3 !== undefined) {
-                  var ty$2 = Js_primitive.valFromOption(match$3);
+                  var ty$2 = match$3;
                   if (repr(ty$2) !== t) {
                     tmp = /* Tlink */Block.__(6, [ty$2]);
                   } else {
@@ -26471,7 +26471,7 @@ function subst(env, level, priv, abbrev, ty, params, args, body) {
   try {
     var body0 = newvar(undefined, /* () */0);
     if (ty !== undefined) {
-      var ty$1 = Js_primitive.valFromOption(ty);
+      var ty$1 = ty;
       var match = ty$1[/* desc */0];
       if (typeof match === "number") {
         throw [
@@ -26549,7 +26549,7 @@ function expand_abbrev_gen(kind, find_type_expansion, env, ty) {
     var lookup_abbrev = proper_abbrevs(path, args, abbrev);
     var match$1 = find_expans(kind, path, lookup_abbrev[0]);
     if (match$1 !== undefined) {
-      var ty$1 = Js_primitive.valFromOption(match$1);
+      var ty$1 = match$1;
       if (level !== 100000000) {
         try {
           update_level(env, level, ty$1);
@@ -26575,7 +26575,7 @@ function expand_abbrev_gen(kind, find_type_expansion, env, ty) {
           throw exn$1;
         }
       }
-      var ty$prime = subst(env, level, kind, abbrev, Js_primitive.some(ty), match$2[0], args, match$2[1]);
+      var ty$prime = subst(env, level, kind, abbrev, ty, match$2[0], args, match$2[1]);
       var ty$2 = repr(ty$prime);
       var match$3 = ty$2[/* desc */0];
       if (typeof match$3 !== "number") {
@@ -26931,7 +26931,7 @@ function generic_private_abbrev(env, path) {
     if (typeof match$1 === "number" && !(match$1 !== 0 || match[/* type_private */3])) {
       var match$2 = match[/* type_manifest */4];
       if (match$2 !== undefined) {
-        return repr(Js_primitive.valFromOption(match$2))[/* level */1] === 100000000;
+        return repr(match$2)[/* level */1] === 100000000;
       } else {
         return false;
       }
@@ -27134,11 +27134,11 @@ function unify_univar(t1, t2, _param) {
       var match$1 = find_univ(t1, match[0]);
       var match$2 = find_univ(t2, match[1]);
       if (match$1 !== undefined) {
-        var r1 = Js_primitive.valFromOption(match$1);
+        var r1 = match$1;
         var match$3 = r1[/* contents */0];
         if (match$3 !== undefined) {
           if (match$2 !== undefined) {
-            if (t2 === repr(Js_primitive.valFromOption(match$3))) {
+            if (t2 === repr(match$3)) {
               return /* () */0;
             } else {
               throw [
@@ -27153,7 +27153,7 @@ function unify_univar(t1, t2, _param) {
                 ];
           }
         } else if (match$2 !== undefined) {
-          var r2 = Js_primitive.valFromOption(match$2);
+          var r2 = match$2;
           var match$4 = r2[/* contents */0];
           if (match$4 !== undefined) {
             throw [
@@ -28170,7 +28170,7 @@ function mcomp(type_pairs, env, _t1, _t2) {
                                               } else {
                                                 var match$2 = match$1[0];
                                                 if (match$2 !== undefined) {
-                                                  var t2 = Js_primitive.valFromOption(match$2);
+                                                  var t2 = match$2;
                                                   return List.iter((function (param) {
                                                                 return mcomp(type_pairs$3, env$3, t2, param);
                                                               }), match[1]);
@@ -28189,7 +28189,7 @@ function mcomp(type_pairs, env, _t1, _t2) {
                                             } else {
                                               var match$3 = match[0];
                                               if (match$3 !== undefined) {
-                                                var t1 = Js_primitive.valFromOption(match$3);
+                                                var t1 = match$3;
                                                 if (typeof match$1 === "number") {
                                                   throw [
                                                         Unify,
@@ -28209,7 +28209,7 @@ function mcomp(type_pairs, env, _t1, _t2) {
                                                 } else {
                                                   var match$4 = match$1[0];
                                                   if (match$4 !== undefined) {
-                                                    return mcomp(type_pairs$3, env$3, t1, Js_primitive.valFromOption(match$4));
+                                                    return mcomp(type_pairs$3, env$3, t1, match$4);
                                                   } else {
                                                     throw [
                                                           Unify,
@@ -28508,7 +28508,7 @@ function mcomp_kind(k1, k2) {
 function mcomp_type_option(type_pairs, env, t, t$prime) {
   if (t !== undefined) {
     if (t$prime !== undefined) {
-      return mcomp(type_pairs, env, Js_primitive.valFromOption(t), Js_primitive.valFromOption(t$prime));
+      return mcomp(type_pairs, env, t, t$prime);
     } else {
       throw [
             Unify,
@@ -28622,7 +28622,7 @@ function find_newtype_level(env, path) {
 function add_gadt_equation(env, source, destination) {
   var destination$1 = duplicate_type(destination);
   var source_lev = find_newtype_level(env[0], /* Pident */Block.__(0, [source]));
-  var decl = new_declaration(source_lev, Js_primitive.some(destination$1));
+  var decl = new_declaration(source_lev, destination$1);
   var newtype_level = get_newtype_level(/* () */0);
   env[0] = add_local_constraint(source, decl, newtype_level, env[0]);
   return cleanup_abbrev(/* () */0);
@@ -28754,7 +28754,7 @@ function complete_type_list($staropt$star, env, nl1, lv2, mty2, nl2, tl2) {
                     return /* :: */[
                             /* tuple */[
                               n,
-                              nondep_instance(env$prime, lv2, id2, Js_primitive.valFromOption(match$2))
+                              nondep_instance(env$prime, lv2, id2, match$2)
                             ],
                             complete(nl, ntl2)
                           ];
@@ -30179,7 +30179,7 @@ function unify_row(env, row1, row2) {
                                       /* [] */0
                                     ];
                               } else {
-                                var t2 = Js_primitive.valFromOption(match$1);
+                                var t2 = match$1;
                                 var e1$1 = f1$2[3];
                                 set_row_field(e1$1, f2$2);
                                 update_level(env$1[0], repr(more$1)[/* level */1], t2);
@@ -30205,7 +30205,7 @@ function unify_row(env, row1, row2) {
                         } else {
                           var match$2 = f1$2[0];
                           if (match$2 !== undefined) {
-                            var t1$1 = Js_primitive.valFromOption(match$2);
+                            var t1$1 = match$2;
                             if (typeof f2$2 === "number") {
                               throw [
                                     Unify,
@@ -30241,7 +30241,7 @@ function unify_row(env, row1, row2) {
                             } else {
                               var match$3 = f2$2[0];
                               if (match$3 !== undefined) {
-                                return unify(env$1, t1$1, Js_primitive.valFromOption(match$3));
+                                return unify(env$1, t1$1, match$3);
                               } else {
                                 throw [
                                       Unify,
@@ -30933,7 +30933,7 @@ function moregen(inst_nongen, type_pairs, env, t1, t2) {
                                               var match = f2[0];
                                               if (match !== undefined) {
                                                 if (may_inst) {
-                                                  var t2 = Js_primitive.valFromOption(match);
+                                                  var t2 = match;
                                                   set_row_field(f1[3], f2);
                                                   return List.iter((function (t1) {
                                                                 return moregen(inst_nongen$1, type_pairs$1, env$1, t1, t2);
@@ -31024,7 +31024,7 @@ function moregen(inst_nongen, type_pairs, env, t1, t2) {
                                               } else {
                                                 var match$2 = f2[0];
                                                 if (match$2 !== undefined) {
-                                                  return moregen(inst_nongen$1, type_pairs$1, env$1, Js_primitive.valFromOption(match$1), Js_primitive.valFromOption(match$2));
+                                                  return moregen(inst_nongen$1, type_pairs$1, env$1, match$1, match$2);
                                                 } else {
                                                   throw [
                                                         Unify,
@@ -31845,7 +31845,7 @@ function eqtype(rename, type_pairs, subst, env, t1, t2) {
                                                 } else {
                                                   var match$5 = match$1[0];
                                                   if (match$5 !== undefined) {
-                                                    return eqtype(rename$1, type_pairs$1, subst$1, env$1, Js_primitive.valFromOption(match$4), Js_primitive.valFromOption(match$5));
+                                                    return eqtype(rename$1, type_pairs$1, subst$1, env$1, match$4, match$5);
                                                   } else {
                                                     throw [
                                                           Unify,
@@ -32885,7 +32885,7 @@ function find_cltype_for_path(env, p) {
   var cl_abbr = match[1];
   var match$1 = cl_abbr[/* type_manifest */4];
   if (match$1 !== undefined) {
-    var ty = Js_primitive.valFromOption(match$1);
+    var ty = match$1;
     var match$2 = repr(ty)[/* desc */0];
     if (typeof match$2 === "number") {
       throw Caml_builtin_exceptions.not_found;
@@ -33314,7 +33314,7 @@ function build_subtype(env, visited, loops, posi, level, t) {
                     } else {
                       var match$1 = match[0];
                       if (match$1 !== undefined) {
-                        var match$2 = build_subtype(env, visited$5, loops, posi, level$prime$2, Js_primitive.valFromOption(match$1));
+                        var match$2 = build_subtype(env, visited$5, loops, posi, level$prime$2, match$1);
                         var t$prime = match$2[0];
                         var f = posi && level > 0 ? /* Reither */Block.__(1, [
                               false,
@@ -33324,7 +33324,7 @@ function build_subtype(env, visited, loops, posi, level, t) {
                               ],
                               false,
                               [undefined]
-                            ]) : /* Rpresent */Block.__(0, [Js_primitive.some(t$prime)]);
+                            ]) : /* Rpresent */Block.__(0, [t$prime]);
                         return /* tuple */[
                                 /* tuple */[
                                   l,
@@ -33776,8 +33776,8 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                                                         } else {
                                                           var match$5 = match$1[0];
                                                           if (match$5 !== undefined) {
-                                                            t1 = Js_primitive.valFromOption(match$4);
-                                                            t2 = Js_primitive.valFromOption(match$5);
+                                                            t1 = match$4;
+                                                            t2 = match$5;
                                                             exit = 1;
                                                           } else {
                                                             throw Pervasives.Exit;
@@ -33852,7 +33852,7 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                                                     } else {
                                                       var match$3 = match$1[0];
                                                       if (match$3 !== undefined) {
-                                                        var t2 = Js_primitive.valFromOption(match$3);
+                                                        var t2 = match$3;
                                                         return subtype_rec(env$3, /* :: */[
                                                                     /* tuple */[
                                                                       t1,
@@ -33871,7 +33871,7 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                                               } else {
                                                 var match$4 = match[0];
                                                 if (match$4 !== undefined) {
-                                                  var t1$1 = Js_primitive.valFromOption(match$4);
+                                                  var t1$1 = match$4;
                                                   if (typeof match$1 === "number") {
                                                     throw Pervasives.Exit;
                                                   } else if (match$1.tag) {
@@ -33879,7 +33879,7 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                                                   } else {
                                                     var match$5 = match$1[0];
                                                     if (match$5 !== undefined) {
-                                                      var t2$1 = Js_primitive.valFromOption(match$5);
+                                                      var t2$1 = match$5;
                                                       return subtype_rec(env$3, /* :: */[
                                                                   /* tuple */[
                                                                     t1$1,
@@ -34762,7 +34762,7 @@ function nondep_type_decl(env, mid, id, is_covariant, decl) {
     var tm;
     try {
       var match$1 = decl[/* type_manifest */4];
-      tm = match$1 !== undefined ? Js_primitive.some(unroll_abbrev(id, params, nondep_type_rec(env, mid, Js_primitive.valFromOption(match$1)))) : undefined;
+      tm = match$1 !== undefined ? unroll_abbrev(id, params, nondep_type_rec(env, mid, match$1)) : undefined;
     }
     catch (exn$1){
       if (exn$1 === Caml_builtin_exceptions.not_found) {
@@ -34776,7 +34776,7 @@ function nondep_type_decl(env, mid, id, is_covariant, decl) {
       }
     }
     clear_hash(/* () */0);
-    var priv = tm !== undefined && has_constr_row(Js_primitive.valFromOption(tm)) ? /* Private */0 : decl[/* type_private */3];
+    var priv = tm !== undefined && has_constr_row(tm) ? /* Private */0 : decl[/* type_private */3];
     return /* record */[
             /* type_params */params,
             /* type_arity */decl[/* type_arity */1],
@@ -34928,7 +34928,7 @@ function nondep_class_declaration(env, id, decl) {
           }), decl[/* cty_params */0]),
     /* cty_type */nondep_class_type(env, id, decl[/* cty_type */1]),
     /* cty_path */decl[/* cty_path */2],
-    /* cty_new */match !== undefined ? Js_primitive.some(nondep_type_rec(env, id, Js_primitive.valFromOption(match))) : undefined,
+    /* cty_new */match !== undefined ? nondep_type_rec(env, id, match) : undefined,
     /* cty_variance */decl[/* cty_variance */4],
     /* cty_loc */decl[/* cty_loc */5],
     /* cty_attributes */decl[/* cty_attributes */6]
@@ -36263,7 +36263,7 @@ function print_out_class_type(ppf, param) {
                                   ])
                               ]),
                             "@ @[(%a)@]"
-                          ]), out_type[0], Js_primitive.valFromOption(param));
+                          ]), out_type[0], param);
           } else {
             return /* () */0;
           }
@@ -36500,7 +36500,7 @@ function print_out_functor(ppf, m) {
                             ])
                         ]),
                       "(%s : %a) %a"
-                    ]), m[0], print_out_module_type, Js_primitive.valFromOption(match), print_out_functor, m[2]);
+                    ]), m[0], print_out_module_type, match, print_out_functor, m[2]);
     } else {
       return Curry._2(Format.fprintf(ppf, /* Format */[
                       /* String_literal */Block.__(11, [
@@ -36535,7 +36535,7 @@ function print_out_constr(ppf, param) {
   var tyl = param[1];
   var name = param[0];
   if (ret_type_opt !== undefined) {
-    var ret_type = Js_primitive.valFromOption(ret_type_opt);
+    var ret_type = ret_type_opt;
     if (tyl) {
       return Curry._5(Format.fprintf(ppf, /* Format */[
                       /* Formatting_gen */Block.__(18, [
@@ -38134,7 +38134,7 @@ function safe_kind_repr(_v, _param) {
     } else {
       var match = param[0][/* contents */0];
       if (match !== undefined) {
-        var k = Js_primitive.valFromOption(match);
+        var k = match;
         if (List.memq(k, v)) {
           return "Fvar loop";
         } else {
@@ -39099,7 +39099,7 @@ function raw_field(ppf, param) {
                                           ])
                                       ]),
                                     "@,@[<1>(%a)@]"
-                                  ]), raw_field, Js_primitive.valFromOption(match));
+                                  ]), raw_field, match);
                   } else {
                     return Format.fprintf(ppf, /* Format */[
                                 /* String_literal */Block.__(11, [
@@ -39141,7 +39141,7 @@ function raw_field(ppf, param) {
                             ])
                         ]),
                       "@[<1>Rpresent(Some@,%a)@]"
-                    ]), raw_type, Js_primitive.valFromOption(match));
+                    ]), raw_type, match);
     } else {
       return Format.fprintf(ppf, /* Format */[
                   /* String_literal */Block.__(11, [
@@ -40251,7 +40251,7 @@ function tree_of_typexp(sch, ty) {
                                     l,
                                     false,
                                     /* :: */[
-                                      tree_of_typexp(sch$1, Js_primitive.valFromOption(match$1)),
+                                      tree_of_typexp(sch$1, match$1),
                                       /* [] */0
                                     ]
                                   ];
@@ -40504,7 +40504,7 @@ function tree_of_constructor(cd) {
   if (match !== undefined) {
     var nm = names[0];
     names[0] = /* [] */0;
-    var ret = tree_of_typexp(false, Js_primitive.valFromOption(match));
+    var ret = tree_of_typexp(false, match);
     var args = List.map((function (param) {
             return tree_of_typexp(false, param);
           }), cd[/* cd_args */1]);
@@ -40512,7 +40512,7 @@ function tree_of_constructor(cd) {
     return /* tuple */[
             name,
             args,
-            Js_primitive.some(ret)
+            ret
           ];
   } else {
     return /* tuple */[
@@ -40538,7 +40538,7 @@ function tree_of_type_decl(id, decl) {
   var params = filter_params(decl[/* type_params */0]);
   var match = decl[/* type_manifest */4];
   if (match !== undefined) {
-    var vars = free_variables$1(undefined, Js_primitive.valFromOption(match));
+    var vars = free_variables$1(undefined, match);
     List.iter((function (ty) {
             var match = ty[/* desc */0];
             if (typeof match === "number" || match.tag) {
@@ -40560,7 +40560,7 @@ function tree_of_type_decl(id, decl) {
   var match$1 = decl[/* type_manifest */4];
   var ty_manifest;
   if (match$1 !== undefined) {
-    var ty = Js_primitive.valFromOption(match$1);
+    var ty = match$1;
     var match$2 = repr(ty);
     var match$3 = match$2[/* desc */0];
     var ty$1;
@@ -40593,7 +40593,7 @@ function tree_of_type_decl(id, decl) {
       }
     }
     mark_loops(ty$1);
-    ty_manifest = Js_primitive.some(ty$1);
+    ty_manifest = ty$1;
   } else {
     ty_manifest = undefined;
   }
@@ -40650,7 +40650,7 @@ function tree_of_type_decl(id, decl) {
   var tree_of_manifest = function (ty1) {
     if (ty_manifest !== undefined) {
       return /* Otyp_manifest */Block.__(4, [
-                tree_of_typexp(false, Js_primitive.valFromOption(ty_manifest)),
+                tree_of_typexp(false, ty_manifest),
                 ty1
               ]);
     } else {
@@ -40664,7 +40664,7 @@ function tree_of_type_decl(id, decl) {
   match$9 = typeof match$8 === "number" ? (
       match$8 === 0 ? (
           ty_manifest !== undefined ? /* tuple */[
-              tree_of_typexp(false, Js_primitive.valFromOption(ty_manifest)),
+              tree_of_typexp(false, ty_manifest),
               decl[/* type_private */3]
             ] : /* tuple */[
               /* Otyp_abstract */0,
@@ -40726,14 +40726,14 @@ function tree_of_extension_constructor(id, ext, es) {
   if (match !== undefined) {
     var nm = names[0];
     names[0] = /* [] */0;
-    var ret = tree_of_typexp(false, Js_primitive.valFromOption(match));
+    var ret = tree_of_typexp(false, match);
     var args = List.map((function (param) {
             return tree_of_typexp(false, param);
           }), ext[/* ext_args */2]);
     names[0] = nm;
     match$1 = /* tuple */[
       args,
-      Js_primitive.some(ret)
+      ret
     ];
   } else {
     match$1 = /* tuple */[
@@ -40872,10 +40872,10 @@ function tree_of_class_type(sch, params, _param) {
       case 1 : 
           var sign = param[0];
           var sty$1 = repr(sign[/* csig_self */0]);
-          var self_ty = is_aliased(sty$1) ? Js_primitive.some(/* Otyp_var */Block.__(10, [
-                    false,
-                    name_of_type(proxy(sty$1))
-                  ])) : undefined;
+          var self_ty = is_aliased(sty$1) ? /* Otyp_var */Block.__(10, [
+                false,
+                name_of_type(proxy(sty$1))
+              ]) : undefined;
           var match = flatten_fields(object_fields(sign[/* csig_self */0]));
           var csil = List.fold_left((function (csil, param) {
                   return /* :: */[
@@ -41217,7 +41217,7 @@ function tree_of_modtype(param) {
         var param$1 = param[0];
         var res;
         if (ty_arg !== undefined) {
-          var mty = Js_primitive.valFromOption(ty_arg);
+          var mty = ty_arg;
           var partial_arg = true;
           res = wrap_env((function (param$2) {
                   return add_module$1(partial_arg, param$1, mty, param$2);
@@ -41344,7 +41344,7 @@ function tree_of_signature_rec(env$prime, in_type_group, param) {
 
 function tree_of_modtype_declaration(id, decl) {
   var match = decl[/* mtd_type */0];
-  var mty = match !== undefined ? tree_of_modtype(Js_primitive.valFromOption(match)) : /* Omty_abstract */0;
+  var mty = match !== undefined ? tree_of_modtype(match) : /* Omty_abstract */0;
   return /* Osig_modtype */Block.__(3, [
             id[/* name */1],
             mty
@@ -43489,7 +43489,7 @@ function type_manifest(env, ty1, params1, ty2, params2, priv2) {
                                   } else {
                                     var match$4 = match$1[0];
                                     if (match$4 !== undefined) {
-                                      t2 = Js_primitive.valFromOption(match$4);
+                                      t2 = match$4;
                                       exit = 1;
                                     } else {
                                       return false;
@@ -43498,7 +43498,7 @@ function type_manifest(env, ty1, params1, ty2, params2, priv2) {
                                   if (exit === 1) {
                                     to_equal[0] = /* :: */[
                                       /* tuple */[
-                                        Js_primitive.valFromOption(match$2),
+                                        match$2,
                                         t2
                                       ],
                                       to_equal[0]
@@ -43807,10 +43807,10 @@ function compare_variants(env, decl1, decl2, _n, _cstrs1, _cstrs2) {
           var exit = 0;
           if (ret1 !== undefined) {
             if (ret2 !== undefined && equal$4(env, true, /* :: */[
-                    Js_primitive.valFromOption(ret1),
+                    ret1,
                     /* [] */0
                   ], /* :: */[
-                    Js_primitive.valFromOption(ret2),
+                    ret2,
                     /* [] */0
                   ])) {
               exit = 1;
@@ -44005,7 +44005,7 @@ function type_declarations$1($staropt$star, env, name, decl1, id, decl2) {
       var err$2;
       if (match$3 !== undefined) {
         if (match$2 !== undefined) {
-          err$2 = type_manifest(env, Js_primitive.valFromOption(match$2), decl1[/* type_params */0], Js_primitive.valFromOption(match$3), decl2[/* type_params */0], decl2[/* type_private */3]) ? /* [] */0 : /* :: */[
+          err$2 = type_manifest(env, match$2, decl1[/* type_params */0], match$3, decl2[/* type_params */0], decl2[/* type_private */3]) ? /* [] */0 : /* :: */[
               /* Manifest */4,
               /* [] */0
             ];
@@ -44020,7 +44020,7 @@ function type_declarations$1($staropt$star, env, name, decl1, id, decl2) {
                     ty1,
                     /* [] */0
                   ], /* :: */[
-                    Js_primitive.valFromOption(match$3),
+                    match$3,
                     /* [] */0
                   ]) ? /* [] */0 : /* :: */[
                   /* Manifest */4,
@@ -44108,10 +44108,10 @@ function extension_constructors(env, id, ext1, ext2) {
     var exit = 0;
     if (match !== undefined) {
       if (match$1 !== undefined && equal$4(env, true, /* :: */[
-              Js_primitive.valFromOption(match),
+              match,
               /* [] */0
             ], /* :: */[
-              Js_primitive.valFromOption(match$1),
+              match$1,
               /* [] */0
             ])) {
         exit = 1;
@@ -44215,15 +44215,15 @@ function strengthen_sig(env, sg, p) {
             exit = 1;
           }
           if (exit === 1) {
-            var manif = Js_primitive.some(newty2(100000000, /* Tconstr */Block.__(3, [
-                        /* Pdot */Block.__(1, [
-                            p,
-                            id[/* name */1],
-                            -1
-                          ]),
-                        decl[/* type_params */0],
-                        [/* Mnil */0]
-                      ])));
+            var manif = newty2(100000000, /* Tconstr */Block.__(3, [
+                    /* Pdot */Block.__(1, [
+                        p,
+                        id[/* name */1],
+                        -1
+                      ]),
+                    decl[/* type_params */0],
+                    [/* Mnil */0]
+                  ]));
             newdecl = decl[/* type_kind */2] === /* Type_abstract */0 ? /* record */[
                 /* type_params */decl[/* type_params */0],
                 /* type_arity */decl[/* type_arity */1],
@@ -44275,11 +44275,11 @@ function strengthen_sig(env, sg, p) {
           var id$2 = sigelt[0];
           var match$3 = decl$1[/* mtd_type */0];
           var newdecl$1 = match$3 !== undefined ? decl$1 : /* record */[
-              /* mtd_type */Js_primitive.some(/* Mty_ident */Block.__(0, [/* Pdot */Block.__(1, [
-                          p,
-                          id$2[/* name */1],
-                          -1
-                        ])])),
+              /* mtd_type *//* Mty_ident */Block.__(0, [/* Pdot */Block.__(1, [
+                      p,
+                      id$2[/* name */1],
+                      -1
+                    ])]),
               /* mtd_attributes */decl$1[/* mtd_attributes */1],
               /* mtd_loc */decl$1[/* mtd_loc */2]
             ];
@@ -44498,11 +44498,11 @@ function enrich_typedecl(env, p, decl) {
                 /* type_arity */decl[/* type_arity */1],
                 /* type_kind */decl[/* type_kind */2],
                 /* type_private */decl[/* type_private */3],
-                /* type_manifest */Js_primitive.some(newty2(100000000, /* Tconstr */Block.__(3, [
-                            p,
-                            decl[/* type_params */0],
-                            [/* Mnil */0]
-                          ]))),
+                /* type_manifest */newty2(100000000, /* Tconstr */Block.__(3, [
+                        p,
+                        decl[/* type_params */0],
+                        [/* Mnil */0]
+                      ])),
                 /* type_variance */decl[/* type_variance */5],
                 /* type_newtype_level */decl[/* type_newtype_level */6],
                 /* type_loc */decl[/* type_loc */7],
@@ -44638,7 +44638,7 @@ function contains_type(env, _param) {
           try {
             var match = find_modtype(param[0], env)[/* mtd_type */0];
             if (match !== undefined) {
-              return contains_type(env, Js_primitive.valFromOption(match));
+              return contains_type(env, match);
             } else {
               throw Pervasives.Exit;
             }
@@ -45912,11 +45912,11 @@ function try_modtypes(env, cxt, subst, _mty1, mty2) {
               case 2 : 
                   var match$1 = mty2[1];
                   if (match$1 !== undefined) {
-                    var arg2$prime = modtype(subst, Js_primitive.valFromOption(match$1));
+                    var arg2$prime = modtype(subst, match$1);
                     var cc_arg = modtypes(env, /* :: */[
                           /* Arg */Block.__(2, [param1]),
                           cxt
-                        ], identity, arg2$prime, Js_primitive.valFromOption(match));
+                        ], identity, arg2$prime, match);
                     var cc_res = modtypes(add_module$1(undefined, param1, arg2$prime, env), /* :: */[
                           /* Body */Block.__(3, [param1]),
                           cxt
@@ -45997,7 +45997,7 @@ function try_modtypes(env, cxt, subst, _mty1, mty2) {
           } else {
             var p1$3;
             try {
-              p1$3 = normalize_path$1(Js_primitive.some(none), env, p1$1);
+              p1$3 = normalize_path$1(none, env, p1$1);
             }
             catch (raw_exn){
               var exn = Js_exn.internalToOCamlException(raw_exn);
@@ -46400,12 +46400,12 @@ function modtype_infos(env, cxt, subst, id, info1, info2) {
     var match$1 = info2$1[/* mtd_type */0];
     if (match !== undefined) {
       if (match$1 !== undefined) {
-        return check_modtype_equiv(env, cxt$prime, Js_primitive.valFromOption(match), Js_primitive.valFromOption(match$1));
+        return check_modtype_equiv(env, cxt$prime, match, match$1);
       } else {
         return /* () */0;
       }
     } else if (match$1 !== undefined) {
-      return check_modtype_equiv(env, cxt$prime, /* Mty_ident */Block.__(0, [/* Pident */Block.__(0, [id])]), Js_primitive.valFromOption(match$1));
+      return check_modtype_equiv(env, cxt$prime, /* Mty_ident */Block.__(0, [/* Pident */Block.__(0, [id])]), match$1);
     } else {
       return /* () */0;
     }
@@ -47519,7 +47519,7 @@ function report_error$4(ppf, errs) {
 
 register_error_of_exn((function (param) {
         if (param[0] === $$Error$5) {
-          return Js_primitive.some(error_of_printer_file(report_error$4, param[1]));
+          return error_of_printer_file(report_error$4, param[1]);
         } else {
           return undefined;
         }
@@ -47801,8 +47801,8 @@ function compat(_p, _q) {
                   case 5 : 
                       var match$3 = match$1[1];
                       if (match$3 !== undefined && l1 === match$1[0]) {
-                        _q = Js_primitive.valFromOption(match$3);
-                        _p = Js_primitive.valFromOption(match$2);
+                        _q = match$3;
+                        _p = match$2;
                         continue ;
                       } else {
                         return false;
@@ -48405,7 +48405,7 @@ function pretty_val(ppf, v) {
                                     ])
                                 ]),
                               "@[<2>`%s@ %a@]"
-                            ]), l, pretty_arg, Js_primitive.valFromOption(match$3));
+                            ]), l, pretty_arg, match$3);
             } else {
               return Curry._1(Format.fprintf(ppf, /* Format */[
                               /* Char_literal */Block.__(12, [
@@ -48908,7 +48908,7 @@ function simple_match_args(p1, _p2) {
             var match$1 = match[1];
             if (match$1 !== undefined) {
               return /* :: */[
-                      Js_primitive.valFromOption(match$1),
+                      match$1,
                       /* [] */0
                     ];
             } else {
@@ -49201,7 +49201,7 @@ function do_set_args(erase_mutable, q, r) {
           if (match[1] !== undefined) {
             if (r) {
               match$3 = /* tuple */[
-                Js_primitive.some(r[0]),
+                r[0],
                 r[1]
               ];
             } else {
@@ -49905,7 +49905,7 @@ function should_extend(ext, env) {
       }
       if (exit === 1) {
         var path = get_type_path(p[/* pat_type */3], p[/* pat_env */4]);
-        return same(path, Js_primitive.valFromOption(ext));
+        return same(path, ext);
       }
       
     }
@@ -50062,7 +50062,7 @@ function complete_constrs(p, all_tags) {
                   if (List.exists((function (tag) {
                             return equal_tag(tag, cnstr[/* cstr_tag */5]);
                           }), not_tags)) {
-                    return Js_primitive.some(cnstr);
+                    return cnstr;
                   } else {
                     return undefined;
                   }
@@ -50408,7 +50408,7 @@ function build_other(ext, env) {
             }
             if (exit === 1) {
               var exit$1 = 0;
-              if (ext !== undefined && same(Js_primitive.valFromOption(ext), get_type_path(p[/* pat_type */3], p[/* pat_env */4]))) {
+              if (ext !== undefined && same(ext, get_type_path(p[/* pat_type */3], p[/* pat_env */4]))) {
                 return extra_pat;
               } else {
                 exit$1 = 2;
@@ -50456,7 +50456,7 @@ function build_other(ext, env) {
                   }), env);
             var row = row_of_pat(p);
             var make_other_pat = function (tag, $$const) {
-              var arg = $$const ? undefined : Js_primitive.some(omega);
+              var arg = $$const ? undefined : omega;
               return make_pat(/* Tpat_variant */Block.__(5, [
                             tag,
                             arg,
@@ -50592,7 +50592,7 @@ function has_instance(_p) {
             if (is_absent(match[0], match[2])) {
               return false;
             } else if (match$1 !== undefined) {
-              _p = Js_primitive.valFromOption(match$1);
+              _p = match$1;
               continue ;
             } else {
               return true;
@@ -51654,8 +51654,8 @@ function le_pat(_p, _q) {
                   case 5 : 
                       var match$3 = match$1[1];
                       if (match$3 !== undefined && l1 === match$1[0]) {
-                        _q = Js_primitive.valFromOption(match$3);
-                        _p = Js_primitive.valFromOption(match$2);
+                        _q = match$3;
+                        _p = match$2;
                         continue ;
                       } else {
                         return false;
@@ -52138,7 +52138,7 @@ function conv(typed) {
                           return function (lst) {
                             var arg;
                             if (lst) {
-                              arg = lst[1] ? Js_primitive.some(mkpat$1(/* Ppat_tuple */Block.__(4, [lst]))) : Js_primitive.some(lst[0]);
+                              arg = lst[1] ? mkpat$1(/* Ppat_tuple */Block.__(4, [lst])) : lst[0];
                             } else {
                               throw [
                                     Caml_builtin_exceptions.assert_failure,
@@ -52168,12 +52168,12 @@ function conv(typed) {
               var p_opt = match[1];
               var label = match[0];
               if (p_opt !== undefined) {
-                var results$2 = loop(Js_primitive.valFromOption(p_opt));
+                var results$2 = loop(p_opt);
                 return List.map((function(label){
                           return function (p) {
                             return mkpat$1(/* Ppat_variant */Block.__(6, [
                                           label,
-                                          Js_primitive.some(p)
+                                          p
                                         ]));
                           }
                           }(label)), results$2);
@@ -52255,10 +52255,10 @@ function do_check_partial(pred, exhaust, loc, casel, pss) {
           var match$2 = conv(u);
           v = get_first(Curry._2(pred, match$2[1], match$2[2]), match$2[0]);
         } else {
-          v = Js_primitive.some(u);
+          v = u;
         }
         if (v !== undefined) {
-          var v$1 = Js_primitive.valFromOption(v);
+          var v$1 = v;
           var match$3 = v$1[/* pat_desc */0];
           var errmsg;
           var exit = 0;
@@ -52356,7 +52356,7 @@ function collect_paths_from_pat(_r, _p) {
         case 5 : 
             var match$1 = match[1];
             if (match$1 !== undefined) {
-              _p = Js_primitive.valFromOption(match$1);
+              _p = match$1;
               continue ;
             } else {
               return r;
@@ -52390,7 +52390,7 @@ function do_check_fragile_param(exhaust, loc, casel, pss) {
   if (exts && pss) {
     var ps = pss[0];
     return List.iter((function (ext) {
-                  var match = Curry._3(exhaust, Js_primitive.some(ext), pss, List.length(ps));
+                  var match = Curry._3(exhaust, ext, pss, List.length(ps));
                   if (match) {
                     return /* () */0;
                   } else {
@@ -52475,7 +52475,7 @@ function error_of_extension(ext) {
         exit = 1;
         break;
     default:
-      return Curry._1(errorf(Js_primitive.some(match[/* loc */1]), undefined, undefined, /* Format */[
+      return Curry._1(errorf(match[/* loc */1], undefined, undefined, /* Format */[
                       /* String_literal */Block.__(11, [
                           "Uninterpreted extension '",
                           /* String */Block.__(2, [
@@ -52502,7 +52502,7 @@ function error_of_extension(ext) {
                 ];
         } else {
           return /* :: */[
-                  Curry._1(errorf(Js_primitive.some(loc), undefined, undefined, /* Format */[
+                  Curry._1(errorf(loc, undefined, undefined, /* Format */[
                             /* String_literal */Block.__(11, [
                                 "Invalid syntax for sub-error of extension '",
                                 /* String */Block.__(2, [
@@ -52547,7 +52547,7 @@ function error_of_extension(ext) {
                       if (match$6.tag === 1) {
                         var match$7 = match$6[0];
                         if (match$7.tag === 2) {
-                          return error(Js_primitive.some(loc), sub_from(inner[1]), match$7[0], msg);
+                          return error(loc, sub_from(inner[1]), match$7[0], msg);
                         } else {
                           exit$2 = 3;
                         }
@@ -52559,7 +52559,7 @@ function error_of_extension(ext) {
                     exit$2 = 3;
                   }
                   if (exit$2 === 3) {
-                    return error(Js_primitive.some(loc), sub_from(inner), undefined, msg);
+                    return error(loc, sub_from(inner), undefined, msg);
                   }
                   
                 } else {
@@ -52580,7 +52580,7 @@ function error_of_extension(ext) {
       
     }
     if (exit$1 === 2) {
-      return Curry._1(errorf(Js_primitive.some(loc), undefined, undefined, /* Format */[
+      return Curry._1(errorf(loc, undefined, undefined, /* Format */[
                       /* String_literal */Block.__(11, [
                           "Invalid syntax for extension '",
                           /* String */Block.__(2, [
@@ -52987,7 +52987,7 @@ function create_package_mty(fake, loc, env, param) {
                     /* txt */last$1(s[/* txt */0]),
                     /* loc */s[/* loc */1]
                   ];
-                  var d_005 = /* ptype_manifest */fake ? undefined : Js_primitive.some(param[1]);
+                  var d_005 = /* ptype_manifest */fake ? undefined : param[1];
                   var d = /* record */[
                     d_000,
                     /* ptype_params : [] */0,
@@ -52998,7 +52998,7 @@ function create_package_mty(fake, loc, env, param) {
                     /* ptype_attributes : [] */0,
                     /* ptype_loc */loc
                   ];
-                  return mk$3(Js_primitive.some(loc), undefined, /* Pmty_with */Block.__(3, [
+                  return mk$3(loc, undefined, /* Pmty_with */Block.__(3, [
                                 mty,
                                 /* :: */[
                                   /* Pwith_type */Block.__(0, [
@@ -53011,7 +53011,7 @@ function create_package_mty(fake, loc, env, param) {
                                   /* [] */0
                                 ]
                               ]));
-                }), mk$3(Js_primitive.some(loc), undefined, /* Pmty_ident */Block.__(0, [param[0]])), l)
+                }), mk$3(loc, undefined, /* Pmty_ident */Block.__(0, [param[0]])), l)
         ];
 }
 
@@ -53282,7 +53282,7 @@ function transl_type(env, policy, styp) {
                 }), stl$2);
           var params = instance_list(empty, decl[/* type_params */0]);
           var match$2 = decl[/* type_manifest */4];
-          var unify_param = match$2 !== undefined && repr(Js_primitive.valFromOption(match$2))[/* level */1] !== 100000000 ? unify$2 : unify_var;
+          var unify_param = match$2 !== undefined && repr(match$2)[/* level */1] !== 100000000 ? unify$2 : unify_var;
           List.iter2((function (param, ty$prime) {
                   try {
                     return Curry._3(unify_param, env, ty$prime, param[1][/* ctyp_type */1]);
@@ -53351,7 +53351,7 @@ function transl_type(env, policy, styp) {
                 var decl = _decl;
                 var match = decl[/* type_manifest */4];
                 if (match !== undefined) {
-                  var match$1 = repr(Js_primitive.valFromOption(match))[/* desc */0];
+                  var match$1 = repr(match)[/* desc */0];
                   if (typeof match$1 === "number") {
                     throw Caml_builtin_exceptions.not_found;
                   } else {
@@ -53520,7 +53520,7 @@ function transl_type(env, policy, styp) {
                             tmp = match$1 !== undefined ? /* Reither */Block.__(1, [
                                   false,
                                   /* :: */[
-                                    Js_primitive.valFromOption(match$1),
+                                    match$1,
                                     /* [] */0
                                   ],
                                   false,
@@ -53864,7 +53864,7 @@ function transl_type(env, policy, styp) {
                           f$1 = match !== undefined ? /* Reither */Block.__(1, [
                                 false,
                                 /* :: */[
-                                  Js_primitive.valFromOption(match),
+                                  match,
                                   /* [] */0
                                 ],
                                 false,
@@ -53914,7 +53914,7 @@ function transl_type(env, policy, styp) {
                         /* Present_has_conjunction */Block.__(8, [l])
                       ];
                 }
-                f = tl ? /* Rpresent */Block.__(0, [Js_primitive.some(tl[0][/* ctyp_type */1])]) : /* Rpresent */Block.__(0, [undefined]);
+                f = tl ? /* Rpresent */Block.__(0, [tl[0][/* ctyp_type */1]]) : /* Rpresent */Block.__(0, [undefined]);
               }
               add_typed_field(styp[/* ptyp_loc */1], l, f);
               return /* Ttag */Block.__(0, [
@@ -54405,7 +54405,7 @@ function spellcheck(ppf, fold, env, lid) {
         var s$1 = lid[1];
         return handle(Curry._4(fold, (function (param, param$1) {
                           return compare(s$1, param, param$1);
-                        }), Js_primitive.some(lid[0]), env, init));
+                        }), lid[0], env, init));
     case 2 : 
         return /* () */0;
     
@@ -54435,120 +54435,119 @@ function spellcheck$1(ppf, fold) {
 register_error_of_exn((function (param) {
         if (param[0] === $$Error$6) {
           var env = param[2];
-          return Js_primitive.some(error_of_printer(param[1], (function (param, param$1) {
-                            var env$1 = env;
-                            var ppf = param;
-                            var param$2 = param$1;
-                            if (typeof param$2 === "number") {
-                              if (param$2 === 0) {
-                                return Format.fprintf(ppf, /* Format */[
-                                            /* String_literal */Block.__(11, [
-                                                "This type is recursive",
-                                                /* End_of_format */0
-                                              ]),
-                                            "This type is recursive"
-                                          ]);
-                              } else {
-                                return Format.fprintf(ppf, /* Format */[
-                                            /* String_literal */Block.__(11, [
-                                                "Illegal recursive module reference",
-                                                /* End_of_format */0
-                                              ]),
-                                            "Illegal recursive module reference"
-                                          ]);
-                              }
-                            } else {
-                              switch (param$2.tag | 0) {
-                                case 0 : 
-                                    return Curry._1(Format.fprintf(ppf, /* Format */[
-                                                    /* String_literal */Block.__(11, [
-                                                        "Unbound type parameter ",
-                                                        /* String */Block.__(2, [
-                                                            /* No_padding */0,
-                                                            /* Formatting_lit */Block.__(17, [
-                                                                /* Flush_newline */4,
-                                                                /* End_of_format */0
-                                                              ])
-                                                          ])
-                                                      ]),
-                                                    "Unbound type parameter %s@."
-                                                  ]), param$2[0]);
-                                case 1 : 
-                                    var lid = param$2[0];
-                                    Curry._2(Format.fprintf(ppf, /* Format */[
-                                              /* String_literal */Block.__(11, [
-                                                  "Unbound type constructor ",
-                                                  /* Alpha */Block.__(15, [/* End_of_format */0])
-                                                ]),
-                                              "Unbound type constructor %a"
-                                            ]), longident, lid);
-                                    return spellcheck$1(ppf, fold_types)(env$1, lid);
-                                case 2 : 
-                                    return Curry._2(Format.fprintf(ppf, /* Format */[
-                                                    /* String_literal */Block.__(11, [
-                                                        "The type constructor",
+          return error_of_printer(param[1], (function (param, param$1) {
+                        var env$1 = env;
+                        var ppf = param;
+                        var param$2 = param$1;
+                        if (typeof param$2 === "number") {
+                          if (param$2 === 0) {
+                            return Format.fprintf(ppf, /* Format */[
+                                        /* String_literal */Block.__(11, [
+                                            "This type is recursive",
+                                            /* End_of_format */0
+                                          ]),
+                                        "This type is recursive"
+                                      ]);
+                          } else {
+                            return Format.fprintf(ppf, /* Format */[
+                                        /* String_literal */Block.__(11, [
+                                            "Illegal recursive module reference",
+                                            /* End_of_format */0
+                                          ]),
+                                        "Illegal recursive module reference"
+                                      ]);
+                          }
+                        } else {
+                          switch (param$2.tag | 0) {
+                            case 0 : 
+                                return Curry._1(Format.fprintf(ppf, /* Format */[
+                                                /* String_literal */Block.__(11, [
+                                                    "Unbound type parameter ",
+                                                    /* String */Block.__(2, [
+                                                        /* No_padding */0,
                                                         /* Formatting_lit */Block.__(17, [
-                                                            /* Break */Block.__(0, [
-                                                                "@ ",
-                                                                1,
-                                                                0
-                                                              ]),
-                                                            /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
-                                                                    /* Break */Block.__(0, [
-                                                                        "@ ",
-                                                                        1,
-                                                                        0
-                                                                      ]),
-                                                                    /* String_literal */Block.__(11, [
-                                                                        "is not yet completely defined",
-                                                                        /* End_of_format */0
-                                                                      ])
-                                                                  ])])
+                                                            /* Flush_newline */4,
+                                                            /* End_of_format */0
                                                           ])
-                                                      ]),
-                                                    "The type constructor@ %a@ is not yet completely defined"
-                                                  ]), path, param$2[0]);
-                                case 3 : 
-                                    return Curry._4(Format.fprintf(ppf, /* Format */[
-                                                    /* Formatting_gen */Block.__(18, [
-                                                        /* Open_box */Block.__(1, [/* Format */[
-                                                              /* End_of_format */0,
-                                                              ""
-                                                            ]]),
-                                                        /* String_literal */Block.__(11, [
-                                                            "The type constructor ",
-                                                            /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
-                                                                    /* Break */Block.__(0, [
-                                                                        "@ ",
-                                                                        1,
-                                                                        0
-                                                                      ]),
-                                                                    /* String_literal */Block.__(11, [
-                                                                        "expects ",
-                                                                        /* Int */Block.__(4, [
-                                                                            /* Int_i */3,
-                                                                            /* No_padding */0,
-                                                                            /* No_precision */0,
-                                                                            /* String_literal */Block.__(11, [
-                                                                                " argument(s),",
-                                                                                /* Formatting_lit */Block.__(17, [
-                                                                                    /* Break */Block.__(0, [
-                                                                                        "@ ",
-                                                                                        1,
-                                                                                        0
-                                                                                      ]),
-                                                                                    /* String_literal */Block.__(11, [
-                                                                                        "but is here applied to ",
-                                                                                        /* Int */Block.__(4, [
-                                                                                            /* Int_i */3,
-                                                                                            /* No_padding */0,
-                                                                                            /* No_precision */0,
-                                                                                            /* String_literal */Block.__(11, [
-                                                                                                " argument(s)",
-                                                                                                /* Formatting_lit */Block.__(17, [
-                                                                                                    /* Close_box */0,
-                                                                                                    /* End_of_format */0
-                                                                                                  ])
+                                                      ])
+                                                  ]),
+                                                "Unbound type parameter %s@."
+                                              ]), param$2[0]);
+                            case 1 : 
+                                var lid = param$2[0];
+                                Curry._2(Format.fprintf(ppf, /* Format */[
+                                          /* String_literal */Block.__(11, [
+                                              "Unbound type constructor ",
+                                              /* Alpha */Block.__(15, [/* End_of_format */0])
+                                            ]),
+                                          "Unbound type constructor %a"
+                                        ]), longident, lid);
+                                return spellcheck$1(ppf, fold_types)(env$1, lid);
+                            case 2 : 
+                                return Curry._2(Format.fprintf(ppf, /* Format */[
+                                                /* String_literal */Block.__(11, [
+                                                    "The type constructor",
+                                                    /* Formatting_lit */Block.__(17, [
+                                                        /* Break */Block.__(0, [
+                                                            "@ ",
+                                                            1,
+                                                            0
+                                                          ]),
+                                                        /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
+                                                                /* Break */Block.__(0, [
+                                                                    "@ ",
+                                                                    1,
+                                                                    0
+                                                                  ]),
+                                                                /* String_literal */Block.__(11, [
+                                                                    "is not yet completely defined",
+                                                                    /* End_of_format */0
+                                                                  ])
+                                                              ])])
+                                                      ])
+                                                  ]),
+                                                "The type constructor@ %a@ is not yet completely defined"
+                                              ]), path, param$2[0]);
+                            case 3 : 
+                                return Curry._4(Format.fprintf(ppf, /* Format */[
+                                                /* Formatting_gen */Block.__(18, [
+                                                    /* Open_box */Block.__(1, [/* Format */[
+                                                          /* End_of_format */0,
+                                                          ""
+                                                        ]]),
+                                                    /* String_literal */Block.__(11, [
+                                                        "The type constructor ",
+                                                        /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
+                                                                /* Break */Block.__(0, [
+                                                                    "@ ",
+                                                                    1,
+                                                                    0
+                                                                  ]),
+                                                                /* String_literal */Block.__(11, [
+                                                                    "expects ",
+                                                                    /* Int */Block.__(4, [
+                                                                        /* Int_i */3,
+                                                                        /* No_padding */0,
+                                                                        /* No_precision */0,
+                                                                        /* String_literal */Block.__(11, [
+                                                                            " argument(s),",
+                                                                            /* Formatting_lit */Block.__(17, [
+                                                                                /* Break */Block.__(0, [
+                                                                                    "@ ",
+                                                                                    1,
+                                                                                    0
+                                                                                  ]),
+                                                                                /* String_literal */Block.__(11, [
+                                                                                    "but is here applied to ",
+                                                                                    /* Int */Block.__(4, [
+                                                                                        /* Int_i */3,
+                                                                                        /* No_padding */0,
+                                                                                        /* No_precision */0,
+                                                                                        /* String_literal */Block.__(11, [
+                                                                                            " argument(s)",
+                                                                                            /* Formatting_lit */Block.__(17, [
+                                                                                                /* Close_box */0,
+                                                                                                /* End_of_format */0
                                                                                               ])
                                                                                           ])
                                                                                       ])
@@ -54556,210 +54555,210 @@ register_error_of_exn((function (param) {
                                                                               ])
                                                                           ])
                                                                       ])
-                                                                  ])])
-                                                          ])
-                                                      ]),
-                                                    "@[The type constructor %a@ expects %i argument(s),@ but is here applied to %i argument(s)@]"
-                                                  ]), longident, param$2[0], param$2[1], param$2[2]);
-                                case 4 : 
-                                    return Curry._1(Format.fprintf(ppf, /* Format */[
-                                                    /* String_literal */Block.__(11, [
-                                                        "Already bound type parameter '",
-                                                        /* String */Block.__(2, [
-                                                            /* No_padding */0,
+                                                                  ])
+                                                              ])])
+                                                      ])
+                                                  ]),
+                                                "@[The type constructor %a@ expects %i argument(s),@ but is here applied to %i argument(s)@]"
+                                              ]), longident, param$2[0], param$2[1], param$2[2]);
+                            case 4 : 
+                                return Curry._1(Format.fprintf(ppf, /* Format */[
+                                                /* String_literal */Block.__(11, [
+                                                    "Already bound type parameter '",
+                                                    /* String */Block.__(2, [
+                                                        /* No_padding */0,
+                                                        /* End_of_format */0
+                                                      ])
+                                                  ]),
+                                                "Already bound type parameter '%s"
+                                              ]), param$2[0]);
+                            case 5 : 
+                                return Curry._2(Format.fprintf(ppf, /* Format */[
+                                                /* String_literal */Block.__(11, [
+                                                    "Unbound row variable in #",
+                                                    /* Alpha */Block.__(15, [/* End_of_format */0])
+                                                  ]),
+                                                "Unbound row variable in #%a"
+                                              ]), longident, param$2[0]);
+                            case 6 : 
+                                return report_unification_error(ppf, empty, undefined, param$2[0], (function (ppf) {
+                                              return Format.fprintf(ppf, /* Format */[
+                                                          /* String_literal */Block.__(11, [
+                                                              "This type",
+                                                              /* End_of_format */0
+                                                            ]),
+                                                          "This type"
+                                                        ]);
+                                            }), (function (ppf) {
+                                              return Format.fprintf(ppf, /* Format */[
+                                                          /* String_literal */Block.__(11, [
+                                                              "should be an instance of type",
+                                                              /* End_of_format */0
+                                                            ]),
+                                                          "should be an instance of type"
+                                                        ]);
+                                            }));
+                            case 7 : 
+                                return report_unification_error(ppf, empty, undefined, param$2[0], (function (ppf) {
+                                              return Format.fprintf(ppf, /* Format */[
+                                                          /* String_literal */Block.__(11, [
+                                                              "This alias is bound to type",
+                                                              /* End_of_format */0
+                                                            ]),
+                                                          "This alias is bound to type"
+                                                        ]);
+                                            }), (function (ppf) {
+                                              return Format.fprintf(ppf, /* Format */[
+                                                          /* String_literal */Block.__(11, [
+                                                              "but is used as an instance of type",
+                                                              /* End_of_format */0
+                                                            ]),
+                                                          "but is used as an instance of type"
+                                                        ]);
+                                            }));
+                            case 8 : 
+                                return Curry._1(Format.fprintf(ppf, /* Format */[
+                                                /* String_literal */Block.__(11, [
+                                                    "The present constructor ",
+                                                    /* String */Block.__(2, [
+                                                        /* No_padding */0,
+                                                        /* String_literal */Block.__(11, [
+                                                            " has a conjunctive type",
                                                             /* End_of_format */0
                                                           ])
-                                                      ]),
-                                                    "Already bound type parameter '%s"
-                                                  ]), param$2[0]);
-                                case 5 : 
-                                    return Curry._2(Format.fprintf(ppf, /* Format */[
-                                                    /* String_literal */Block.__(11, [
-                                                        "Unbound row variable in #",
-                                                        /* Alpha */Block.__(15, [/* End_of_format */0])
-                                                      ]),
-                                                    "Unbound row variable in #%a"
-                                                  ]), longident, param$2[0]);
-                                case 6 : 
-                                    return report_unification_error(ppf, empty, undefined, param$2[0], (function (ppf) {
-                                                  return Format.fprintf(ppf, /* Format */[
-                                                              /* String_literal */Block.__(11, [
-                                                                  "This type",
-                                                                  /* End_of_format */0
-                                                                ]),
-                                                              "This type"
-                                                            ]);
-                                                }), (function (ppf) {
-                                                  return Format.fprintf(ppf, /* Format */[
-                                                              /* String_literal */Block.__(11, [
-                                                                  "should be an instance of type",
-                                                                  /* End_of_format */0
-                                                                ]),
-                                                              "should be an instance of type"
-                                                            ]);
-                                                }));
-                                case 7 : 
-                                    return report_unification_error(ppf, empty, undefined, param$2[0], (function (ppf) {
-                                                  return Format.fprintf(ppf, /* Format */[
-                                                              /* String_literal */Block.__(11, [
-                                                                  "This alias is bound to type",
-                                                                  /* End_of_format */0
-                                                                ]),
-                                                              "This alias is bound to type"
-                                                            ]);
-                                                }), (function (ppf) {
-                                                  return Format.fprintf(ppf, /* Format */[
-                                                              /* String_literal */Block.__(11, [
-                                                                  "but is used as an instance of type",
-                                                                  /* End_of_format */0
-                                                                ]),
-                                                              "but is used as an instance of type"
-                                                            ]);
-                                                }));
-                                case 8 : 
-                                    return Curry._1(Format.fprintf(ppf, /* Format */[
-                                                    /* String_literal */Block.__(11, [
-                                                        "The present constructor ",
-                                                        /* String */Block.__(2, [
-                                                            /* No_padding */0,
-                                                            /* String_literal */Block.__(11, [
-                                                                " has a conjunctive type",
-                                                                /* End_of_format */0
-                                                              ])
-                                                          ])
-                                                      ]),
-                                                    "The present constructor %s has a conjunctive type"
-                                                  ]), param$2[0]);
-                                case 9 : 
-                                    return Curry._1(Format.fprintf(ppf, /* Format */[
-                                                    /* String_literal */Block.__(11, [
-                                                        "The present constructor ",
-                                                        /* String */Block.__(2, [
-                                                            /* No_padding */0,
-                                                            /* String_literal */Block.__(11, [
-                                                                " has no type",
-                                                                /* End_of_format */0
-                                                              ])
-                                                          ])
-                                                      ]),
-                                                    "The present constructor %s has no type"
-                                                  ]), param$2[0]);
-                                case 10 : 
-                                    var ty$prime = param$2[1];
-                                    var ty = param$2[0];
-                                    return wrap_printing_env(env$1, (function () {
-                                                  reset_and_mark_loops_list(/* :: */[
-                                                        ty,
-                                                        /* :: */[
-                                                          ty$prime,
-                                                          /* [] */0
-                                                        ]
-                                                      ]);
-                                                  return Curry._6(Format.fprintf(ppf, /* Format */[
-                                                                  /* Formatting_gen */Block.__(18, [
-                                                                      /* Open_box */Block.__(1, [/* Format */[
-                                                                            /* String_literal */Block.__(11, [
-                                                                                "<hov>",
-                                                                                /* End_of_format */0
-                                                                              ]),
-                                                                            "<hov>"
-                                                                          ]]),
-                                                                      /* String */Block.__(2, [
-                                                                          /* No_padding */0,
-                                                                          /* Char_literal */Block.__(12, [
-                                                                              /* " " */32,
-                                                                              /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
-                                                                                      /* Break */Block.__(0, [
-                                                                                          "@ ",
-                                                                                          1,
-                                                                                          0
-                                                                                        ]),
-                                                                                      /* String */Block.__(2, [
-                                                                                          /* No_padding */0,
-                                                                                          /* Formatting_lit */Block.__(17, [
-                                                                                              /* Break */Block.__(0, [
-                                                                                                  "@ ",
-                                                                                                  1,
-                                                                                                  0
-                                                                                                ]),
-                                                                                              /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
-                                                                                                      /* Close_box */0,
-                                                                                                      /* End_of_format */0
-                                                                                                    ])])
-                                                                                            ])
-                                                                                        ])
-                                                                                    ])])
-                                                                            ])
-                                                                        ])
-                                                                    ]),
-                                                                  "@[<hov>%s %a@ %s@ %a@]"
-                                                                ]), "This variant type contains a constructor", type_expr$1, ty, "which should be", type_expr$1, ty$prime);
-                                                }));
-                                case 11 : 
-                                    var ty$1 = param$2[0];
-                                    reset(/* () */0);
-                                    mark_loops(ty$1);
-                                    return Curry._2(Format.fprintf(ppf, /* Format */[
-                                                    /* Formatting_gen */Block.__(18, [
-                                                        /* Open_box */Block.__(1, [/* Format */[
-                                                              /* End_of_format */0,
-                                                              ""
-                                                            ]]),
+                                                      ])
+                                                  ]),
+                                                "The present constructor %s has a conjunctive type"
+                                              ]), param$2[0]);
+                            case 9 : 
+                                return Curry._1(Format.fprintf(ppf, /* Format */[
+                                                /* String_literal */Block.__(11, [
+                                                    "The present constructor ",
+                                                    /* String */Block.__(2, [
+                                                        /* No_padding */0,
                                                         /* String_literal */Block.__(11, [
-                                                            "The type ",
-                                                            /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
-                                                                    /* Break */Block.__(0, [
-                                                                        "@ ",
-                                                                        1,
-                                                                        0
-                                                                      ]),
-                                                                    /* String_literal */Block.__(11, [
-                                                                        "is not a polymorphic variant type",
-                                                                        /* Formatting_lit */Block.__(17, [
-                                                                            /* Close_box */0,
+                                                            " has no type",
+                                                            /* End_of_format */0
+                                                          ])
+                                                      ])
+                                                  ]),
+                                                "The present constructor %s has no type"
+                                              ]), param$2[0]);
+                            case 10 : 
+                                var ty$prime = param$2[1];
+                                var ty = param$2[0];
+                                return wrap_printing_env(env$1, (function () {
+                                              reset_and_mark_loops_list(/* :: */[
+                                                    ty,
+                                                    /* :: */[
+                                                      ty$prime,
+                                                      /* [] */0
+                                                    ]
+                                                  ]);
+                                              return Curry._6(Format.fprintf(ppf, /* Format */[
+                                                              /* Formatting_gen */Block.__(18, [
+                                                                  /* Open_box */Block.__(1, [/* Format */[
+                                                                        /* String_literal */Block.__(11, [
+                                                                            "<hov>",
                                                                             /* End_of_format */0
-                                                                          ])
+                                                                          ]),
+                                                                        "<hov>"
+                                                                      ]]),
+                                                                  /* String */Block.__(2, [
+                                                                      /* No_padding */0,
+                                                                      /* Char_literal */Block.__(12, [
+                                                                          /* " " */32,
+                                                                          /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
+                                                                                  /* Break */Block.__(0, [
+                                                                                      "@ ",
+                                                                                      1,
+                                                                                      0
+                                                                                    ]),
+                                                                                  /* String */Block.__(2, [
+                                                                                      /* No_padding */0,
+                                                                                      /* Formatting_lit */Block.__(17, [
+                                                                                          /* Break */Block.__(0, [
+                                                                                              "@ ",
+                                                                                              1,
+                                                                                              0
+                                                                                            ]),
+                                                                                          /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
+                                                                                                  /* Close_box */0,
+                                                                                                  /* End_of_format */0
+                                                                                                ])])
+                                                                                        ])
+                                                                                    ])
+                                                                                ])])
+                                                                        ])
+                                                                    ])
+                                                                ]),
+                                                              "@[<hov>%s %a@ %s@ %a@]"
+                                                            ]), "This variant type contains a constructor", type_expr$1, ty, "which should be", type_expr$1, ty$prime);
+                                            }));
+                            case 11 : 
+                                var ty$1 = param$2[0];
+                                reset(/* () */0);
+                                mark_loops(ty$1);
+                                return Curry._2(Format.fprintf(ppf, /* Format */[
+                                                /* Formatting_gen */Block.__(18, [
+                                                    /* Open_box */Block.__(1, [/* Format */[
+                                                          /* End_of_format */0,
+                                                          ""
+                                                        ]]),
+                                                    /* String_literal */Block.__(11, [
+                                                        "The type ",
+                                                        /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
+                                                                /* Break */Block.__(0, [
+                                                                    "@ ",
+                                                                    1,
+                                                                    0
+                                                                  ]),
+                                                                /* String_literal */Block.__(11, [
+                                                                    "is not a polymorphic variant type",
+                                                                    /* Formatting_lit */Block.__(17, [
+                                                                        /* Close_box */0,
+                                                                        /* End_of_format */0
                                                                       ])
-                                                                  ])])
-                                                          ])
-                                                      ]),
-                                                    "@[The type %a@ is not a polymorphic variant type@]"
-                                                  ]), type_expr$1, ty$1);
-                                case 12 : 
-                                    return Curry._3(Format.fprintf(ppf, /* Format */[
-                                                    /* Formatting_gen */Block.__(18, [
-                                                        /* Open_box */Block.__(1, [/* Format */[
-                                                              /* End_of_format */0,
-                                                              ""
-                                                            ]]),
-                                                        /* String_literal */Block.__(11, [
-                                                            "Variant tags `",
-                                                            /* String */Block.__(2, [
-                                                                /* No_padding */0,
-                                                                /* Formatting_lit */Block.__(17, [
-                                                                    /* Break */Block.__(0, [
-                                                                        "@ ",
-                                                                        1,
-                                                                        0
-                                                                      ]),
-                                                                    /* String_literal */Block.__(11, [
-                                                                        "and `",
-                                                                        /* String */Block.__(2, [
-                                                                            /* No_padding */0,
-                                                                            /* String_literal */Block.__(11, [
-                                                                                " have the same hash value.",
-                                                                                /* Formatting_lit */Block.__(17, [
-                                                                                    /* Break */Block.__(0, [
-                                                                                        "@ ",
-                                                                                        1,
-                                                                                        0
-                                                                                      ]),
-                                                                                    /* String */Block.__(2, [
-                                                                                        /* No_padding */0,
-                                                                                        /* Formatting_lit */Block.__(17, [
-                                                                                            /* Close_box */0,
-                                                                                            /* End_of_format */0
-                                                                                          ])
+                                                                  ])
+                                                              ])])
+                                                      ])
+                                                  ]),
+                                                "@[The type %a@ is not a polymorphic variant type@]"
+                                              ]), type_expr$1, ty$1);
+                            case 12 : 
+                                return Curry._3(Format.fprintf(ppf, /* Format */[
+                                                /* Formatting_gen */Block.__(18, [
+                                                    /* Open_box */Block.__(1, [/* Format */[
+                                                          /* End_of_format */0,
+                                                          ""
+                                                        ]]),
+                                                    /* String_literal */Block.__(11, [
+                                                        "Variant tags `",
+                                                        /* String */Block.__(2, [
+                                                            /* No_padding */0,
+                                                            /* Formatting_lit */Block.__(17, [
+                                                                /* Break */Block.__(0, [
+                                                                    "@ ",
+                                                                    1,
+                                                                    0
+                                                                  ]),
+                                                                /* String_literal */Block.__(11, [
+                                                                    "and `",
+                                                                    /* String */Block.__(2, [
+                                                                        /* No_padding */0,
+                                                                        /* String_literal */Block.__(11, [
+                                                                            " have the same hash value.",
+                                                                            /* Formatting_lit */Block.__(17, [
+                                                                                /* Break */Block.__(0, [
+                                                                                    "@ ",
+                                                                                    1,
+                                                                                    0
+                                                                                  ]),
+                                                                                /* String */Block.__(2, [
+                                                                                    /* No_padding */0,
+                                                                                    /* Formatting_lit */Block.__(17, [
+                                                                                        /* Close_box */0,
+                                                                                        /* End_of_format */0
                                                                                       ])
                                                                                   ])
                                                                               ])
@@ -54768,94 +54767,51 @@ register_error_of_exn((function (param) {
                                                                   ])
                                                               ])
                                                           ])
-                                                      ]),
-                                                    "@[Variant tags `%s@ and `%s have the same hash value.@ %s@]"
-                                                  ]), param$2[0], param$2[1], "Change one of them.");
-                                case 13 : 
-                                    return Curry._1(Format.fprintf(ppf, /* Format */[
+                                                      ])
+                                                  ]),
+                                                "@[Variant tags `%s@ and `%s have the same hash value.@ %s@]"
+                                              ]), param$2[0], param$2[1], "Change one of them.");
+                            case 13 : 
+                                return Curry._1(Format.fprintf(ppf, /* Format */[
+                                                /* String_literal */Block.__(11, [
+                                                    "The type variable name ",
+                                                    /* String */Block.__(2, [
+                                                        /* No_padding */0,
+                                                        /* String_literal */Block.__(11, [
+                                                            " is not allowed in programs",
+                                                            /* End_of_format */0
+                                                          ])
+                                                      ])
+                                                  ]),
+                                                "The type variable name %s is not allowed in programs"
+                                              ]), param$2[0]);
+                            case 14 : 
+                                var v = param$2[1];
+                                return Curry._2(Format.fprintf(ppf, /* Format */[
+                                                /* Formatting_gen */Block.__(18, [
+                                                    /* Open_box */Block.__(1, [/* Format */[
+                                                          /* String_literal */Block.__(11, [
+                                                              "<hov>",
+                                                              /* End_of_format */0
+                                                            ]),
+                                                          "<hov>"
+                                                        ]]),
                                                     /* String_literal */Block.__(11, [
-                                                        "The type variable name ",
+                                                        "The universal type variable '",
                                                         /* String */Block.__(2, [
                                                             /* No_padding */0,
                                                             /* String_literal */Block.__(11, [
-                                                                " is not allowed in programs",
-                                                                /* End_of_format */0
-                                                              ])
-                                                          ])
-                                                      ]),
-                                                    "The type variable name %s is not allowed in programs"
-                                                  ]), param$2[0]);
-                                case 14 : 
-                                    var v = param$2[1];
-                                    return Curry._2(Format.fprintf(ppf, /* Format */[
-                                                    /* Formatting_gen */Block.__(18, [
-                                                        /* Open_box */Block.__(1, [/* Format */[
-                                                              /* String_literal */Block.__(11, [
-                                                                  "<hov>",
-                                                                  /* End_of_format */0
-                                                                ]),
-                                                              "<hov>"
-                                                            ]]),
-                                                        /* String_literal */Block.__(11, [
-                                                            "The universal type variable '",
-                                                            /* String */Block.__(2, [
-                                                                /* No_padding */0,
-                                                                /* String_literal */Block.__(11, [
-                                                                    " cannot be generalized:",
-                                                                    /* Formatting_lit */Block.__(17, [
-                                                                        /* Break */Block.__(0, [
-                                                                            "@ ",
-                                                                            1,
-                                                                            0
-                                                                          ]),
-                                                                        /* String */Block.__(2, [
-                                                                            /* No_padding */0,
-                                                                            /* Char_literal */Block.__(12, [
-                                                                                /* "." */46,
-                                                                                /* Formatting_lit */Block.__(17, [
-                                                                                    /* Close_box */0,
-                                                                                    /* End_of_format */0
-                                                                                  ])
-                                                                              ])
-                                                                          ])
-                                                                      ])
-                                                                  ])
-                                                              ])
-                                                          ])
-                                                      ]),
-                                                    "@[<hov>The universal type variable '%s cannot be generalized:@ %s.@]"
-                                                  ]), param$2[0], is_Tvar(v) ? "it escapes its scope" : (
-                                                  is_Tunivar(v) ? "it is already bound to another variable" : "it is not a variable"
-                                                ));
-                                case 15 : 
-                                    return Curry._2(Format.fprintf(ppf, /* Format */[
-                                                    /* String_literal */Block.__(11, [
-                                                        "Multiple constraints for type ",
-                                                        /* Alpha */Block.__(15, [/* End_of_format */0])
-                                                      ]),
-                                                    "Multiple constraints for type %a"
-                                                  ]), longident, param$2[0]);
-                                case 16 : 
-                                    return Curry._2(Format.fprintf(ppf, /* Format */[
-                                                    /* Formatting_gen */Block.__(18, [
-                                                        /* Open_box */Block.__(1, [/* Format */[
-                                                              /* End_of_format */0,
-                                                              ""
-                                                            ]]),
-                                                        /* String_literal */Block.__(11, [
-                                                            "This is the second method `",
-                                                            /* String */Block.__(2, [
-                                                                /* No_padding */0,
-                                                                /* String_literal */Block.__(11, [
-                                                                    "' of this object type.",
-                                                                    /* Formatting_lit */Block.__(17, [
-                                                                        /* Break */Block.__(0, [
-                                                                            "@ ",
-                                                                            1,
-                                                                            0
-                                                                          ]),
-                                                                        /* String */Block.__(2, [
-                                                                            /* No_padding */0,
+                                                                " cannot be generalized:",
+                                                                /* Formatting_lit */Block.__(17, [
+                                                                    /* Break */Block.__(0, [
+                                                                        "@ ",
+                                                                        1,
+                                                                        0
+                                                                      ]),
+                                                                    /* String */Block.__(2, [
+                                                                        /* No_padding */0,
+                                                                        /* Char_literal */Block.__(12, [
+                                                                            /* "." */46,
                                                                             /* Formatting_lit */Block.__(17, [
                                                                                 /* Close_box */0,
                                                                                 /* End_of_format */0
@@ -54865,108 +54821,152 @@ register_error_of_exn((function (param) {
                                                                   ])
                                                               ])
                                                           ])
-                                                      ]),
-                                                    "@[This is the second method `%s' of this object type.@ %s@]"
-                                                  ]), param$2[0], "Multiple occurences are not allowed.");
-                                case 17 : 
-                                    var lid$1 = param$2[0];
-                                    Curry._2(Format.fprintf(ppf, /* Format */[
-                                              /* String_literal */Block.__(11, [
-                                                  "Unbound value ",
-                                                  /* Alpha */Block.__(15, [/* End_of_format */0])
-                                                ]),
-                                              "Unbound value %a"
-                                            ]), longident, lid$1);
-                                    return spellcheck$1(ppf, fold_values)(env$1, lid$1);
-                                case 18 : 
-                                    var lid$2 = param$2[0];
-                                    Curry._2(Format.fprintf(ppf, /* Format */[
-                                              /* String_literal */Block.__(11, [
-                                                  "Unbound constructor ",
-                                                  /* Alpha */Block.__(15, [/* End_of_format */0])
-                                                ]),
-                                              "Unbound constructor %a"
-                                            ]), longident, lid$2);
-                                    return spellcheck_simple(ppf, fold_constructors, (function (d) {
-                                                    return d[/* cstr_name */0];
-                                                  }))(env$1, lid$2);
-                                case 19 : 
-                                    var lid$3 = param$2[0];
-                                    Curry._2(Format.fprintf(ppf, /* Format */[
-                                              /* String_literal */Block.__(11, [
-                                                  "Unbound record field ",
-                                                  /* Alpha */Block.__(15, [/* End_of_format */0])
-                                                ]),
-                                              "Unbound record field %a"
-                                            ]), longident, lid$3);
-                                    return spellcheck_simple(ppf, fold_labels, (function (d) {
-                                                    return d[/* lbl_name */0];
-                                                  }))(env$1, lid$3);
-                                case 20 : 
-                                    var lid$4 = param$2[0];
-                                    Curry._2(Format.fprintf(ppf, /* Format */[
-                                              /* String_literal */Block.__(11, [
-                                                  "Unbound module ",
-                                                  /* Alpha */Block.__(15, [/* End_of_format */0])
-                                                ]),
-                                              "Unbound module %a"
-                                            ]), longident, lid$4);
-                                    return spellcheck$1(ppf, fold_modules)(env$1, lid$4);
-                                case 21 : 
-                                    var lid$5 = param$2[0];
-                                    Curry._2(Format.fprintf(ppf, /* Format */[
-                                              /* String_literal */Block.__(11, [
-                                                  "Unbound class ",
-                                                  /* Alpha */Block.__(15, [/* End_of_format */0])
-                                                ]),
-                                              "Unbound class %a"
-                                            ]), longident, lid$5);
-                                    return spellcheck$1(ppf, fold_classs)(env$1, lid$5);
-                                case 22 : 
-                                    var lid$6 = param$2[0];
-                                    Curry._2(Format.fprintf(ppf, /* Format */[
-                                              /* String_literal */Block.__(11, [
-                                                  "Unbound module type ",
-                                                  /* Alpha */Block.__(15, [/* End_of_format */0])
-                                                ]),
-                                              "Unbound module type %a"
-                                            ]), longident, lid$6);
-                                    return spellcheck$1(ppf, fold_modtypes)(env$1, lid$6);
-                                case 23 : 
-                                    var lid$7 = param$2[0];
-                                    Curry._2(Format.fprintf(ppf, /* Format */[
-                                              /* String_literal */Block.__(11, [
-                                                  "Unbound class type ",
-                                                  /* Alpha */Block.__(15, [/* End_of_format */0])
-                                                ]),
-                                              "Unbound class type %a"
-                                            ]), longident, lid$7);
-                                    return spellcheck$1(ppf, fold_cltypes)(env$1, lid$7);
-                                case 24 : 
-                                    return Curry._2(Format.fprintf(ppf, /* Format */[
+                                                      ])
+                                                  ]),
+                                                "@[<hov>The universal type variable '%s cannot be generalized:@ %s.@]"
+                                              ]), param$2[0], is_Tvar(v) ? "it escapes its scope" : (
+                                              is_Tunivar(v) ? "it is already bound to another variable" : "it is not a variable"
+                                            ));
+                            case 15 : 
+                                return Curry._2(Format.fprintf(ppf, /* Format */[
+                                                /* String_literal */Block.__(11, [
+                                                    "Multiple constraints for type ",
+                                                    /* Alpha */Block.__(15, [/* End_of_format */0])
+                                                  ]),
+                                                "Multiple constraints for type %a"
+                                              ]), longident, param$2[0]);
+                            case 16 : 
+                                return Curry._2(Format.fprintf(ppf, /* Format */[
+                                                /* Formatting_gen */Block.__(18, [
+                                                    /* Open_box */Block.__(1, [/* Format */[
+                                                          /* End_of_format */0,
+                                                          ""
+                                                        ]]),
                                                     /* String_literal */Block.__(11, [
-                                                        "Ill-typed functor application ",
-                                                        /* Alpha */Block.__(15, [/* End_of_format */0])
-                                                      ]),
-                                                    "Ill-typed functor application %a"
-                                                  ]), longident, param$2[0]);
-                                case 25 : 
-                                    return Curry._2(Format.fprintf(ppf, /* Format */[
-                                                    /* String_literal */Block.__(11, [
-                                                        "The module ",
-                                                        /* Alpha */Block.__(15, [/* String_literal */Block.__(11, [
-                                                                " is a functor, not a structure",
-                                                                /* End_of_format */0
-                                                              ])])
-                                                      ]),
-                                                    "The module %a is a functor, not a structure"
-                                                  ]), longident, param$2[0]);
-                                
-                              }
-                            }
-                          }), param[3]));
+                                                        "This is the second method `",
+                                                        /* String */Block.__(2, [
+                                                            /* No_padding */0,
+                                                            /* String_literal */Block.__(11, [
+                                                                "' of this object type.",
+                                                                /* Formatting_lit */Block.__(17, [
+                                                                    /* Break */Block.__(0, [
+                                                                        "@ ",
+                                                                        1,
+                                                                        0
+                                                                      ]),
+                                                                    /* String */Block.__(2, [
+                                                                        /* No_padding */0,
+                                                                        /* Formatting_lit */Block.__(17, [
+                                                                            /* Close_box */0,
+                                                                            /* End_of_format */0
+                                                                          ])
+                                                                      ])
+                                                                  ])
+                                                              ])
+                                                          ])
+                                                      ])
+                                                  ]),
+                                                "@[This is the second method `%s' of this object type.@ %s@]"
+                                              ]), param$2[0], "Multiple occurences are not allowed.");
+                            case 17 : 
+                                var lid$1 = param$2[0];
+                                Curry._2(Format.fprintf(ppf, /* Format */[
+                                          /* String_literal */Block.__(11, [
+                                              "Unbound value ",
+                                              /* Alpha */Block.__(15, [/* End_of_format */0])
+                                            ]),
+                                          "Unbound value %a"
+                                        ]), longident, lid$1);
+                                return spellcheck$1(ppf, fold_values)(env$1, lid$1);
+                            case 18 : 
+                                var lid$2 = param$2[0];
+                                Curry._2(Format.fprintf(ppf, /* Format */[
+                                          /* String_literal */Block.__(11, [
+                                              "Unbound constructor ",
+                                              /* Alpha */Block.__(15, [/* End_of_format */0])
+                                            ]),
+                                          "Unbound constructor %a"
+                                        ]), longident, lid$2);
+                                return spellcheck_simple(ppf, fold_constructors, (function (d) {
+                                                return d[/* cstr_name */0];
+                                              }))(env$1, lid$2);
+                            case 19 : 
+                                var lid$3 = param$2[0];
+                                Curry._2(Format.fprintf(ppf, /* Format */[
+                                          /* String_literal */Block.__(11, [
+                                              "Unbound record field ",
+                                              /* Alpha */Block.__(15, [/* End_of_format */0])
+                                            ]),
+                                          "Unbound record field %a"
+                                        ]), longident, lid$3);
+                                return spellcheck_simple(ppf, fold_labels, (function (d) {
+                                                return d[/* lbl_name */0];
+                                              }))(env$1, lid$3);
+                            case 20 : 
+                                var lid$4 = param$2[0];
+                                Curry._2(Format.fprintf(ppf, /* Format */[
+                                          /* String_literal */Block.__(11, [
+                                              "Unbound module ",
+                                              /* Alpha */Block.__(15, [/* End_of_format */0])
+                                            ]),
+                                          "Unbound module %a"
+                                        ]), longident, lid$4);
+                                return spellcheck$1(ppf, fold_modules)(env$1, lid$4);
+                            case 21 : 
+                                var lid$5 = param$2[0];
+                                Curry._2(Format.fprintf(ppf, /* Format */[
+                                          /* String_literal */Block.__(11, [
+                                              "Unbound class ",
+                                              /* Alpha */Block.__(15, [/* End_of_format */0])
+                                            ]),
+                                          "Unbound class %a"
+                                        ]), longident, lid$5);
+                                return spellcheck$1(ppf, fold_classs)(env$1, lid$5);
+                            case 22 : 
+                                var lid$6 = param$2[0];
+                                Curry._2(Format.fprintf(ppf, /* Format */[
+                                          /* String_literal */Block.__(11, [
+                                              "Unbound module type ",
+                                              /* Alpha */Block.__(15, [/* End_of_format */0])
+                                            ]),
+                                          "Unbound module type %a"
+                                        ]), longident, lid$6);
+                                return spellcheck$1(ppf, fold_modtypes)(env$1, lid$6);
+                            case 23 : 
+                                var lid$7 = param$2[0];
+                                Curry._2(Format.fprintf(ppf, /* Format */[
+                                          /* String_literal */Block.__(11, [
+                                              "Unbound class type ",
+                                              /* Alpha */Block.__(15, [/* End_of_format */0])
+                                            ]),
+                                          "Unbound class type %a"
+                                        ]), longident, lid$7);
+                                return spellcheck$1(ppf, fold_cltypes)(env$1, lid$7);
+                            case 24 : 
+                                return Curry._2(Format.fprintf(ppf, /* Format */[
+                                                /* String_literal */Block.__(11, [
+                                                    "Ill-typed functor application ",
+                                                    /* Alpha */Block.__(15, [/* End_of_format */0])
+                                                  ]),
+                                                "Ill-typed functor application %a"
+                                              ]), longident, param$2[0]);
+                            case 25 : 
+                                return Curry._2(Format.fprintf(ppf, /* Format */[
+                                                /* String_literal */Block.__(11, [
+                                                    "The module ",
+                                                    /* Alpha */Block.__(15, [/* String_literal */Block.__(11, [
+                                                            " is a functor, not a structure",
+                                                            /* End_of_format */0
+                                                          ])])
+                                                  ]),
+                                                "The module %a is a functor, not a structure"
+                                              ]), longident, param$2[0]);
+                            
+                          }
+                        }
+                      }), param[3]);
         } else if (param[0] === Error_forward) {
-          return Js_primitive.some(param[1]);
+          return param[1];
         } else {
           return undefined;
         }
@@ -55652,9 +55652,9 @@ function finalize_variant(pat) {
         var match$4 = match$3[1];
         if (match$4 && !row[/* row_closed */3]) {
           var ty = match$4[0];
-          set_row_field(match$3[3], /* Rpresent */Block.__(0, [Js_primitive.some(ty)]));
+          set_row_field(match$3[3], /* Rpresent */Block.__(0, [ty]));
           if (opat !== undefined) {
-            var pat$1 = Js_primitive.valFromOption(opat);
+            var pat$1 = opat;
             var partial_arg = pat$1[/* pat_env */4];
             return List.iter((function (param) {
                           return unify_pat(partial_arg, pat$1, param);
@@ -56000,7 +56000,7 @@ function build_as_type(env, _p) {
             var row = match[2];
             var p2 = match[1];
             if (row !== undefined) {
-              var row$1 = row_repr_aux(/* [] */0, Js_primitive.valFromOption(row));
+              var row$1 = row_repr_aux(/* [] */0, row);
               var desc$1 = /* Tvariant */Block.__(8, [/* record */[
                     /* row_fields */row$1[/* row_fields */0],
                     /* row_more */newvar(undefined, /* () */0),
@@ -56075,19 +56075,19 @@ function build_or_pat(env, loc, lid) {
           } else {
             var match$1 = match[0];
             if (match$1 !== undefined) {
-              var ty = Js_primitive.valFromOption(match$1);
+              var ty = match$1;
               return /* tuple */[
                       /* :: */[
                         /* tuple */[
                           l,
-                          Js_primitive.some(/* record */[
-                                /* pat_desc : Tpat_any */0,
-                                /* pat_loc */none,
-                                /* pat_extra : [] */0,
-                                /* pat_type */ty,
-                                /* pat_env */env,
-                                /* pat_attributes : [] */0
-                              ])
+                          /* record */[
+                            /* pat_desc : Tpat_any */0,
+                            /* pat_loc */none,
+                            /* pat_extra : [] */0,
+                            /* pat_type */ty,
+                            /* pat_env */env,
+                            /* pat_attributes : [] */0
+                          ]
                         ],
                         pats
                       ],
@@ -56185,7 +56185,7 @@ function build_or_pat(env, loc, lid) {
                     /* pat_desc : Tpat_or */Block.__(8, [
                         pat0,
                         pat,
-                        Js_primitive.some(row0)
+                        row0
                       ]),
                     /* pat_loc */gloc,
                     /* pat_extra : [] */0,
@@ -56221,7 +56221,7 @@ function expand_path(env, _p) {
     var p = _p;
     var decl;
     try {
-      decl = Js_primitive.some(find_type_full(p, env)[0]);
+      decl = find_type_full(p, env)[0];
     }
     catch (exn){
       if (exn === Caml_builtin_exceptions.not_found) {
@@ -56232,9 +56232,9 @@ function expand_path(env, _p) {
     }
     var exit = 0;
     if (decl !== undefined) {
-      var match = Js_primitive.valFromOption(decl)[/* type_manifest */4];
+      var match = decl[/* type_manifest */4];
       if (match !== undefined) {
-        var match$1 = repr(Js_primitive.valFromOption(match));
+        var match$1 = repr(match);
         var match$2 = match$1[/* desc */0];
         if (typeof match$2 === "number" || match$2.tag !== 3) {
           return p;
@@ -56713,7 +56713,7 @@ function find_record_qual(_param) {
       var match = param[0][0][/* txt */0];
       switch (match.tag | 0) {
         case 1 : 
-            return Js_primitive.some(match[0]);
+            return match[0];
         case 0 : 
         case 2 : 
             _param = param[1];
@@ -56779,7 +56779,7 @@ function type_label_a_list(labels, loc, closed, env, type_lbl_a, opath, lid_a_li
     var match$1 = find_record_qual(lid_a_list);
     var lid_a_list$1;
     if (match$1 !== undefined) {
-      var modname = Js_primitive.valFromOption(match$1);
+      var modname = match$1;
       lid_a_list$1 = List.map((function (lid_a) {
               var lid = lid_a[0];
               var match = lid[/* txt */0];
@@ -57138,8 +57138,8 @@ function unify_head_only(loc, env, ty, constr) {
 
 function type_pat(constrs, labels, no_existentials, mode, env, sp, expected_ty) {
   var type_pat$1 = function ($staropt$star, $staropt$star$1) {
-    var mode$1 = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : mode;
-    var env$1 = $staropt$star$1 !== undefined ? Js_primitive.valFromOption($staropt$star$1) : env;
+    var mode$1 = $staropt$star !== undefined ? $staropt$star : mode;
+    var env$1 = $staropt$star$1 !== undefined ? $staropt$star$1 : env;
     return (function (param, param$1) {
         return type_pat(constrs, labels, no_existentials, mode$1, env$1, param, param$1);
       });
@@ -57218,9 +57218,9 @@ function type_pat(constrs, labels, no_existentials, mode, env, sp, expected_ty) 
               ];
               var loop = function (c1, c2) {
                 if (c1 === c2) {
-                  return constant(Js_primitive.some(gloc), undefined, /* Const_char */Block.__(1, [c1]));
+                  return constant(gloc, undefined, /* Const_char */Block.__(1, [c1]));
                 } else {
-                  return or_(Js_primitive.some(gloc), undefined, constant(Js_primitive.some(gloc), undefined, /* Const_char */Block.__(1, [c1])), loop(Char.chr(c1 + 1 | 0), c2));
+                  return or_(gloc, undefined, constant(gloc, undefined, /* Const_char */Block.__(1, [c1])), loop(Char.chr(c1 + 1 | 0), c2));
                 }
               };
               var p = c1 <= c2 ? loop(c1, c2) : loop(c2, c1);
@@ -57363,7 +57363,7 @@ function type_pat(constrs, labels, no_existentials, mode, env, sp, expected_ty) 
           }
           var sargs;
           if (sarg !== undefined) {
-            var sp$1 = Js_primitive.valFromOption(sarg);
+            var sp$1 = sarg;
             var match$5 = sp$1[/* ppat_desc */0];
             if (typeof match$5 === "number") {
               if (constr[/* cstr_arity */4] !== 1) {
@@ -57452,7 +57452,7 @@ function type_pat(constrs, labels, no_existentials, mode, env, sp, expected_ty) 
             /* row_name */undefined
           ];
           unify_pat_types(loc, env[0], newty2(current_level[0], /* Tvariant */Block.__(8, [row])), expected_ty);
-          var arg = sarg$1 !== undefined && arg_type && !arg_type[1] ? Js_primitive.some(type_pat$1(undefined, undefined)(Js_primitive.valFromOption(sarg$1), arg_type[0])) : undefined;
+          var arg = sarg$1 !== undefined && arg_type && !arg_type[1] ? type_pat$1(undefined, undefined)(sarg$1, arg_type[0]) : undefined;
           return rp(/* record */[
                       /* pat_desc : Tpat_variant */Block.__(5, [
                           l,
@@ -57852,7 +57852,7 @@ function partial_pred(lev, env, expected_ty, constrs, labels, p) {
     reset_pattern(undefined, true);
     var typed_p = type_pat$1(true, Js_primitive.some(constrs), Js_primitive.some(labels), lev, [env], p, expected_ty);
     backtrack(snap);
-    return Js_primitive.some(typed_p);
+    return typed_p;
   }
   catch (exn){
     backtrack(snap);
@@ -58298,7 +58298,7 @@ function is_nonexpansive_mod(_mexp) {
 
 function is_nonexpansive_opt(param) {
   if (param !== undefined) {
-    return is_nonexpansive(Js_primitive.valFromOption(param));
+    return is_nonexpansive(param);
   } else {
     return true;
   }
@@ -58447,7 +58447,7 @@ function type_approx(env, _sexp) {
       case 20 : 
           var approx_ty_opt = function (param) {
             if (param !== undefined) {
-              return approx_type(env, Js_primitive.valFromOption(param));
+              return approx_type(env, param);
             } else {
               return newvar(undefined, /* () */0);
             }
@@ -58637,7 +58637,7 @@ var self_coercion = [/* [] */0];
 function wrap_unpacks(sexp, unpacks) {
   return List.fold_left((function (sexp, param) {
                 var name = param[0];
-                return Curry._5(Ast_helper_004[/* letmodule */27], Js_primitive.some(sexp[/* pexp_loc */1]), undefined, name, unpack$1(Js_primitive.some(param[1]), undefined, Curry._3(Ast_helper_004[/* ident */2], Js_primitive.some(name[/* loc */1]), undefined, /* record */[
+                return Curry._5(Ast_helper_004[/* letmodule */27], sexp[/* pexp_loc */1], undefined, name, unpack$1(param[1], undefined, Curry._3(Ast_helper_004[/* ident */2], name[/* loc */1], undefined, /* record */[
                                     /* txt : Lident */Block.__(0, [name[/* txt */0]]),
                                     /* loc */name[/* loc */1]
                                   ])), sexp);
@@ -58801,7 +58801,7 @@ function check_absent_variant(env) {
                         return /* () */0;
                       } else {
                         var ty_arg = arg !== undefined ? /* :: */[
-                            duplicate_type(Js_primitive.valFromOption(arg)[/* pat_type */3]),
+                            duplicate_type(arg[/* pat_type */3]),
                             /* [] */0
                           ] : /* [] */0;
                         var row$prime_000 = /* row_fields : :: */[
@@ -59093,7 +59093,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
             exit$1 = 2;
           }
           if (exit$1 === 2) {
-            scp = rec_flag ? Js_primitive.some(/* Idef */Block.__(1, [loc])) : Js_primitive.some(/* Idef */Block.__(1, [sbody[/* pexp_loc */1]]));
+            scp = rec_flag ? /* Idef */Block.__(1, [loc]) : /* Idef */Block.__(1, [sbody[/* pexp_loc */1]]);
           }
           var match$10 = type_let(undefined, undefined, env, rec_flag, match[1], scp, true);
           var body = type_expect(undefined, match$10[1], wrap_unpacks(sbody, match$10[2]), ty_expected);
@@ -59117,7 +59117,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
         var match$11 = match[1];
         var l = match[0];
         if (match$11 !== undefined) {
-          var $$default = Js_primitive.valFromOption(match$11);
+          var $$default = match$11;
           if (!is_optional(l)) {
             throw [
                   Caml_builtin_exceptions.assert_failure,
@@ -59129,21 +59129,21 @@ function type_expect_(in_function, env, sexp, ty_expected) {
                 ];
           }
           var default_loc = $$default[/* pexp_loc */1];
-          var scases_000 = Curry._3(Ast_helper_004[/* case */36], construct(Js_primitive.some(default_loc), undefined, /* record */[
+          var scases_000 = Curry._3(Ast_helper_004[/* case */36], construct(default_loc, undefined, /* record */[
                     /* txt : Ldot */Block.__(1, [
                         /* Lident */Block.__(0, ["*predef*"]),
                         "Some"
                       ]),
                     /* loc */none
-                  ], Js_primitive.some($$var$1(Js_primitive.some(default_loc), undefined, /* record */[
-                            /* txt */"*sth*",
-                            /* loc */none
-                          ]))), undefined, Curry._3(Ast_helper_004[/* ident */2], Js_primitive.some(default_loc), undefined, /* record */[
+                  ], $$var$1(default_loc, undefined, /* record */[
+                        /* txt */"*sth*",
+                        /* loc */none
+                      ])), undefined, Curry._3(Ast_helper_004[/* ident */2], default_loc, undefined, /* record */[
                     /* txt : Lident */Block.__(0, ["*sth*"]),
                     /* loc */none
                   ]));
           var scases_001 = /* :: */[
-            Curry._3(Ast_helper_004[/* case */36], construct(Js_primitive.some(default_loc), undefined, /* record */[
+            Curry._3(Ast_helper_004[/* case */36], construct(default_loc, undefined, /* record */[
                       /* txt : Ldot */Block.__(1, [
                           /* Lident */Block.__(0, ["*predef*"]),
                           "None"
@@ -59156,23 +59156,23 @@ function type_expect_(in_function, env, sexp, ty_expected) {
             scases_000,
             scases_001
           ];
-          var smatch = Curry._4(Ast_helper_004[/* match_ */8], Js_primitive.some(loc), undefined, Curry._3(Ast_helper_004[/* ident */2], Js_primitive.some(loc), undefined, /* record */[
+          var smatch = Curry._4(Ast_helper_004[/* match_ */8], loc, undefined, Curry._3(Ast_helper_004[/* ident */2], loc, undefined, /* record */[
                     /* txt : Lident */Block.__(0, ["*opt*"]),
                     /* loc */none
                   ]), scases);
-          var sfun = Curry._6(Ast_helper_004[/* fun_ */5], Js_primitive.some(loc), undefined, l, undefined, $$var$1(Js_primitive.some(loc), undefined, /* record */[
+          var sfun = Curry._6(Ast_helper_004[/* fun_ */5], loc, undefined, l, undefined, $$var$1(loc, undefined, /* record */[
                     /* txt */"*opt*",
                     /* loc */none
-                  ]), Curry._5(Ast_helper_004[/* let_ */4], Js_primitive.some(loc), Js_primitive.some(/* :: */[
-                        /* tuple */[
-                          /* record */[
-                            /* txt */"#default",
-                            /* loc */none
-                          ],
-                          /* PStr */Block.__(0, [/* [] */0])
-                        ],
-                        /* [] */0
-                      ]), /* Nonrecursive */0, /* :: */[
+                  ]), Curry._5(Ast_helper_004[/* let_ */4], loc, /* :: */[
+                    /* tuple */[
+                      /* record */[
+                        /* txt */"#default",
+                        /* loc */none
+                      ],
+                      /* PStr */Block.__(0, [/* [] */0])
+                    ],
+                    /* [] */0
+                  ], /* Nonrecursive */0, /* :: */[
                     mk$17(undefined, undefined, undefined, undefined, match[2], smatch),
                     /* [] */0
                   ], match[3]));
@@ -59405,7 +59405,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
         check_deprecated(loc$1, constr[/* cstr_attributes */12], constr[/* cstr_name */0]);
         var sargs$1;
         if (sarg !== undefined) {
-          var se = Js_primitive.valFromOption(sarg);
+          var se = sarg;
           var match$18 = se[/* pexp_desc */0];
           sargs$1 = match$18.tag === 8 && (constr[/* cstr_arity */4] > 1 || explicit_arity(attrs)) ? match$18[0] : /* :: */[
               se,
@@ -59554,11 +59554,11 @@ function type_expect_(in_function, env, sexp, ty_expected) {
                     } else {
                       var match$29 = match$27[0];
                       if (match$29 !== undefined) {
-                        var arg$1 = type_argument(env, Js_primitive.valFromOption(sarg$1), Js_primitive.valFromOption(match$28), Js_primitive.valFromOption(match$29));
+                        var arg$1 = type_argument(env, sarg$1, match$28, match$29);
                         return re(/* record */[
                                     /* exp_desc : Texp_variant */Block.__(9, [
                                         l$1,
-                                        Js_primitive.some(arg$1)
+                                        arg$1
                                       ]),
                                     /* exp_loc */loc,
                                     /* exp_extra : [] */0,
@@ -59632,12 +59632,12 @@ function type_expect_(in_function, env, sexp, ty_expected) {
           if (principal[0]) {
             begin_def(/* () */0);
           }
-          var exp = type_exp(env, Js_primitive.valFromOption(opt_sexp));
+          var exp = type_exp(env, opt_sexp);
           if (principal[0]) {
             end_def(/* () */0);
             generalize_structure$1(current_level[0], exp[/* exp_type */3]);
           }
-          opt_exp = Js_primitive.some(exp);
+          opt_exp = exp;
         } else {
           opt_exp = undefined;
         }
@@ -59666,7 +59666,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
             op
           ];
         } else if (opt_exp !== undefined) {
-          var op$1 = get_path(Js_primitive.valFromOption(opt_exp)[/* exp_type */3]);
+          var op$1 = get_path(opt_exp[/* exp_type */3]);
           if (op$1 !== undefined) {
             var p$prime = op$1[1];
             var decl = find_type_full(p$prime, env)[0];
@@ -59730,7 +59730,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
         var opt_exp$1;
         if (opt_exp !== undefined) {
           if (lbl_exp_list) {
-            var exp$1 = Js_primitive.valFromOption(opt_exp);
+            var exp$1 = opt_exp;
             var ty_exp$1 = instance(undefined, env, exp$1[/* exp_type */3]);
             var unify_kept = function (lbl) {
               if (List.for_all((function (param) {
@@ -59746,14 +59746,14 @@ function type_expect_(in_function, env, sexp, ty_expected) {
               }
             };
             $$Array.iter(unify_kept, lbl_exp_list[0][1][/* lbl_all */5]);
-            opt_exp$1 = Js_primitive.some(/* record */[
-                  /* exp_desc */exp$1[/* exp_desc */0],
-                  /* exp_loc */exp$1[/* exp_loc */1],
-                  /* exp_extra */exp$1[/* exp_extra */2],
-                  /* exp_type */ty_exp$1,
-                  /* exp_env */exp$1[/* exp_env */4],
-                  /* exp_attributes */exp$1[/* exp_attributes */5]
-                ]);
+            opt_exp$1 = /* record */[
+              /* exp_desc */exp$1[/* exp_desc */0],
+              /* exp_loc */exp$1[/* exp_loc */1],
+              /* exp_extra */exp$1[/* exp_extra */2],
+              /* exp_type */ty_exp$1,
+              /* exp_env */exp$1[/* exp_env */4],
+              /* exp_attributes */exp$1[/* exp_attributes */5]
+            ];
           } else {
             throw [
                   Caml_builtin_exceptions.assert_failure,
@@ -59900,13 +59900,13 @@ function type_expect_(in_function, env, sexp, ty_expected) {
         var cond = type_expect(undefined, env, match[0], type_bool);
         if (sifnot !== undefined) {
           var ifso = type_expect(undefined, env, sifso, ty_expected);
-          var ifnot = type_expect(undefined, env, Js_primitive.valFromOption(sifnot), ty_expected);
+          var ifnot = type_expect(undefined, env, sifnot, ty_expected);
           unify_exp(env, ifnot, ifso[/* exp_type */3]);
           return re(/* record */[
                       /* exp_desc : Texp_ifthenelse */Block.__(14, [
                           cond,
                           ifso,
-                          Js_primitive.some(ifnot)
+                          ifnot
                         ]),
                       /* exp_loc */loc,
                       /* exp_extra : [] */0,
@@ -60039,7 +60039,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
         var match$37;
         if (sty !== undefined) {
           begin_def(/* () */0);
-          var match$38 = transl_simple_type_delayed(env, Js_primitive.valFromOption(sty));
+          var match$38 = transl_simple_type_delayed(env, sty);
           var cty$1 = match$38[0];
           var match$39 = transl_simple_type_delayed(env, sty$prime);
           var cty$prime = match$39[0];
@@ -60073,7 +60073,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
           match$37 = /* tuple */[
             type_argument(env, sarg$3, ty$4, instance(undefined, env, ty$4)),
             instance(undefined, env, ty$prime),
-            Js_primitive.some(cty$1),
+            cty$1,
             cty$prime
           ];
         } else {
@@ -60305,18 +60305,18 @@ function type_expect_(in_function, env, sexp, ty_expected) {
                       var exp_001 = /* :: */[
                         /* tuple */[
                           "",
-                          Js_primitive.some(/* record */[
-                                /* exp_desc : Texp_ident */Block.__(0, [
-                                    match$52[0],
-                                    lid$4,
-                                    desc$3
-                                  ]),
-                                /* exp_loc */obj[/* exp_loc */1],
-                                /* exp_extra : [] */0,
-                                /* exp_type */desc$3[/* val_type */0],
-                                /* exp_env */env,
-                                /* exp_attributes : [] */0
+                          /* record */[
+                            /* exp_desc : Texp_ident */Block.__(0, [
+                                match$52[0],
+                                lid$4,
+                                desc$3
                               ]),
+                            /* exp_loc */obj[/* exp_loc */1],
+                            /* exp_extra : [] */0,
+                            /* exp_type */desc$3[/* val_type */0],
+                            /* exp_env */env,
+                            /* exp_attributes : [] */0
+                          ],
                           /* Required */0
                         ],
                         /* [] */0
@@ -60327,14 +60327,14 @@ function type_expect_(in_function, env, sexp, ty_expected) {
                         ]);
                       match$48 = /* tuple */[
                         /* Tmeth_name */Block.__(0, [met]),
-                        Js_primitive.some(re(/* record */[
-                                  /* exp_desc */exp$2,
-                                  /* exp_loc */loc,
-                                  /* exp_extra : [] */0,
-                                  /* exp_type */typ$1,
-                                  /* exp_env */env,
-                                  /* exp_attributes : [] */0
-                                ])),
+                        re(/* record */[
+                              /* exp_desc */exp$2,
+                              /* exp_loc */loc,
+                              /* exp_extra : [] */0,
+                              /* exp_type */typ$1,
+                              /* exp_env */env,
+                              /* exp_attributes : [] */0
+                            ]),
                         typ$1
                       ];
                     } else {
@@ -60455,7 +60455,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
                         ]),
                       /* exp_loc */loc,
                       /* exp_extra : [] */0,
-                      /* exp_type */instance_def(Js_primitive.valFromOption(match$58)),
+                      /* exp_type */instance_def(match$58),
                       /* exp_env */env,
                       /* exp_attributes */sexp[/* pexp_attributes */2]
                     ]);
@@ -60704,11 +60704,11 @@ function type_expect_(in_function, env, sexp, ty_expected) {
         }
         var match$67;
         if (sty$1 !== undefined) {
-          var sty$2 = force_poly(Js_primitive.valFromOption(sty$1));
+          var sty$2 = force_poly(sty$1);
           var cty$2 = transl_simple_type(env, false, sty$2);
           match$67 = /* tuple */[
             repr(cty$2[/* ctyp_type */1]),
-            Js_primitive.some(cty$2)
+            cty$2
           ];
         } else {
           match$67 = /* tuple */[
@@ -61163,11 +61163,11 @@ function type_format(loc, str, env) {
           name
         ]);
       var arg = args ? (
-          args[1] ? Js_primitive.some(/* record */[
-                  /* pexp_desc : Pexp_tuple */Block.__(8, [args]),
-                  /* pexp_loc */loc$1,
-                  /* pexp_attributes : [] */0
-                ]) : Js_primitive.some(args[0])
+          args[1] ? /* record */[
+              /* pexp_desc : Pexp_tuple */Block.__(8, [args]),
+              /* pexp_loc */loc$1,
+              /* pexp_attributes : [] */0
+            ] : args[0]
         ) : undefined;
       return /* record */[
               /* pexp_desc : Pexp_construct */Block.__(9, [
@@ -61391,11 +61391,11 @@ function type_format(loc, str, env) {
         return /* record */[
                 /* pexp_desc : Pexp_construct */Block.__(9, [
                     lid_loc,
-                    Js_primitive.some(/* record */[
-                          /* pexp_desc : Pexp_constant */Block.__(1, [/* Const_int */Block.__(0, [n_opt])]),
-                          /* pexp_loc */loc$1,
-                          /* pexp_attributes : [] */0
-                        ])
+                    /* record */[
+                      /* pexp_desc : Pexp_constant */Block.__(1, [/* Const_int */Block.__(0, [n_opt])]),
+                      /* pexp_loc */loc$1,
+                      /* pexp_attributes : [] */0
+                    ]
                   ]),
                 /* pexp_loc */loc$1,
                 /* pexp_attributes : [] */0
@@ -62066,7 +62066,7 @@ function type_argument(env, sarg, ty_expected$prime, ty_expected) {
         case 15 : 
             var match$1 = match[2];
             if (match$1 !== undefined && is_inferred(match[1])) {
-              _sexp = Js_primitive.valFromOption(match$1);
+              _sexp = match$1;
               continue ;
             } else {
               return false;
@@ -62132,7 +62132,7 @@ function type_argument(env, sarg, ty_expected$prime, ty_expected) {
                     _args = /* :: */[
                       /* tuple */[
                         l,
-                        Js_primitive.some(ty),
+                        ty,
                         /* Optional */1
                       ],
                       args
@@ -62241,7 +62241,7 @@ function type_argument(env, sarg, ty_expected$prime, ty_expected) {
                 Pervasives.$at(args, /* :: */[
                       /* tuple */[
                         "",
-                        Js_primitive.some(eta_var),
+                        eta_var,
                         /* Required */0
                       ],
                       /* [] */0
@@ -62705,7 +62705,7 @@ function type_application(env, funct, sargs) {
                               if (match !== undefined) {
                                 return /* tuple */[
                                         l,
-                                        Js_primitive.some(Curry._1(match, /* () */0)),
+                                        Curry._1(match, /* () */0),
                                         param[2]
                                       ];
                               } else {
@@ -62758,7 +62758,7 @@ function type_application(env, funct, sargs) {
                 /* :: */[
                   /* tuple */[
                     "",
-                    Js_primitive.some(exp),
+                    exp,
                     /* Required */0
                   ],
                   /* [] */0
@@ -62870,7 +62870,7 @@ function type_cases(in_function, env, ty_arg, ty_res, partial_flag, loc, caselis
           if (pc_guard !== undefined) {
             var init = pc_rhs[/* pexp_loc */1];
             loc = /* record */[
-              /* loc_start */Js_primitive.valFromOption(pc_guard)[/* pexp_loc */1][/* loc_start */0],
+              /* loc_start */pc_guard[/* pexp_loc */1][/* loc_start */0],
               /* loc_end */init[/* loc_end */1],
               /* loc_ghost */init[/* loc_ghost */2]
             ];
@@ -62880,7 +62880,7 @@ function type_cases(in_function, env, ty_arg, ty_res, partial_flag, loc, caselis
           if (principal[0]) {
             begin_def(/* () */0);
           }
-          var scope = Js_primitive.some(/* Idef */Block.__(1, [loc]));
+          var scope = /* Idef */Block.__(1, [loc]);
           var partial = principal[0] || erase_either ? false : undefined;
           var ty_arg$2 = instance(partial, env$2, ty_arg$1);
           var match = type_pattern(lev$1, env$2, param[/* pc_lhs */0], scope, ty_arg$2);
@@ -62950,7 +62950,7 @@ function type_cases(in_function, env, ty_arg, ty_res, partial_flag, loc, caselis
           } else {
             ty_res$prime = contains_gadt(env$2, param$1[/* pc_lhs */0]) ? duplicate_type(ty_res$1) : ty_res$1;
           }
-          var guard = pc_guard !== undefined ? Js_primitive.some(type_expect(undefined, ext_env, wrap_unpacks(Js_primitive.valFromOption(pc_guard), unpacks), type_bool)) : undefined;
+          var guard = pc_guard !== undefined ? type_expect(undefined, ext_env, wrap_unpacks(pc_guard, unpacks), type_bool) : undefined;
           var exp = type_expect(in_function$1, ext_env, sexp, ty_res$prime);
           return /* record */[
                   /* c_lhs */param[0],
@@ -63126,11 +63126,11 @@ function type_let($staropt$star, $staropt$star$1, env, rec_flag, spat_sexp_list,
           if (exit === 1) {
             if (principal[0]) {
               var init = spat[/* ppat_loc */1];
-              return constraint_(Js_primitive.some(/* record */[
-                              /* loc_start */init[/* loc_start */0],
-                              /* loc_end */init[/* loc_end */1],
-                              /* loc_ghost */true
-                            ]), undefined, spat, sty);
+              return constraint_(/* record */[
+                          /* loc_start */init[/* loc_start */0],
+                          /* loc_end */init[/* loc_end */1],
+                          /* loc_ghost */true
+                        ], undefined, spat, sty);
             } else {
               return spat;
             }
@@ -63214,7 +63214,7 @@ function type_let($staropt$star, $staropt$star$1, env, rec_flag, spat_sexp_list,
                     var callback = function () {
                       var match = current_slot[0];
                       if (match !== undefined) {
-                        var slot$1 = Js_primitive.valFromOption(match);
+                        var slot$1 = match;
                         slot$1[0] = /* :: */[
                           /* tuple */[
                             name,
@@ -63255,7 +63255,7 @@ function type_let($staropt$star, $staropt$star$1, env, rec_flag, spat_sexp_list,
                   }), pat_bound_idents(pat));
             return /* tuple */[
                     pat,
-                    Js_primitive.some(slot)
+                    slot
                   ];
           } else {
             return /* tuple */[
@@ -63394,218 +63394,217 @@ function type_expression(env, sexp) {
 register_error_of_exn((function (param) {
         if (param[0] === $$Error$7) {
           var env = param[2];
-          return Js_primitive.some(error_of_printer(param[1], (function (param, param$1) {
-                            var env$1 = env;
-                            var ppf = param;
-                            var err = param$1;
-                            return wrap_printing_env(env$1, (function () {
-                                          var env$2 = env$1;
-                                          var ppf$1 = ppf;
-                                          var param = err;
-                                          if (typeof param === "number") {
-                                            switch (param) {
-                                              case 0 : 
-                                                  return Format.fprintf(ppf$1, /* Format */[
+          return error_of_printer(param[1], (function (param, param$1) {
+                        var env$1 = env;
+                        var ppf = param;
+                        var err = param$1;
+                        return wrap_printing_env(env$1, (function () {
+                                      var env$2 = env$1;
+                                      var ppf$1 = ppf;
+                                      var param = err;
+                                      if (typeof param === "number") {
+                                        switch (param) {
+                                          case 0 : 
+                                              return Format.fprintf(ppf$1, /* Format */[
+                                                          /* String_literal */Block.__(11, [
+                                                              "This object duplication occurs outside a method definition",
+                                                              /* End_of_format */0
+                                                            ]),
+                                                          "This object duplication occurs outside a method definition"
+                                                        ]);
+                                          case 1 : 
+                                              Format.fprintf(ppf$1, /* Format */[
+                                                    /* String_literal */Block.__(11, [
+                                                        "This function is applied to arguments",
+                                                        /* Formatting_lit */Block.__(17, [
+                                                            /* Break */Block.__(0, [
+                                                                "@ ",
+                                                                1,
+                                                                0
+                                                              ]),
+                                                            /* End_of_format */0
+                                                          ])
+                                                      ]),
+                                                    "This function is applied to arguments@ "
+                                                  ]);
+                                              Format.fprintf(ppf$1, /* Format */[
+                                                    /* String_literal */Block.__(11, [
+                                                        "in an order different from other calls.",
+                                                        /* Formatting_lit */Block.__(17, [
+                                                            /* Break */Block.__(0, [
+                                                                "@ ",
+                                                                1,
+                                                                0
+                                                              ]),
+                                                            /* End_of_format */0
+                                                          ])
+                                                      ]),
+                                                    "in an order different from other calls.@ "
+                                                  ]);
+                                              return Format.fprintf(ppf$1, /* Format */[
+                                                          /* String_literal */Block.__(11, [
+                                                              "This is only allowed when the real type is known.",
+                                                              /* End_of_format */0
+                                                            ]),
+                                                          "This is only allowed when the real type is known."
+                                                        ]);
+                                          case 2 : 
+                                              return Format.fprintf(ppf$1, /* Format */[
+                                                          /* String_literal */Block.__(11, [
+                                                              "Modules are not allowed in this pattern.",
+                                                              /* End_of_format */0
+                                                            ]),
+                                                          "Modules are not allowed in this pattern."
+                                                        ]);
+                                          case 3 : 
+                                              return Format.fprintf(ppf$1, /* Format */[
+                                                          /* String_literal */Block.__(11, [
+                                                              "The signature for this packaged module couldn't be inferred.",
+                                                              /* End_of_format */0
+                                                            ]),
+                                                          "The signature for this packaged module couldn't be inferred."
+                                                        ]);
+                                          case 4 : 
+                                              return Format.fprintf(ppf$1, /* Format */[
+                                                          /* String_literal */Block.__(11, [
+                                                              "Unexpected existential",
+                                                              /* End_of_format */0
+                                                            ]),
+                                                          "Unexpected existential"
+                                                        ]);
+                                          case 5 : 
+                                              return Format.fprintf(ppf$1, /* Format */[
+                                                          /* Formatting_gen */Block.__(18, [
+                                                              /* Open_box */Block.__(1, [/* Format */[
+                                                                    /* End_of_format */0,
+                                                                    ""
+                                                                  ]]),
                                                               /* String_literal */Block.__(11, [
-                                                                  "This object duplication occurs outside a method definition",
-                                                                  /* End_of_format */0
-                                                                ]),
-                                                              "This object duplication occurs outside a method definition"
-                                                            ]);
-                                              case 1 : 
-                                                  Format.fprintf(ppf$1, /* Format */[
-                                                        /* String_literal */Block.__(11, [
-                                                            "This function is applied to arguments",
-                                                            /* Formatting_lit */Block.__(17, [
-                                                                /* Break */Block.__(0, [
-                                                                    "@ ",
-                                                                    1,
-                                                                    0
-                                                                  ]),
-                                                                /* End_of_format */0
-                                                              ])
-                                                          ]),
-                                                        "This function is applied to arguments@ "
-                                                      ]);
-                                                  Format.fprintf(ppf$1, /* Format */[
-                                                        /* String_literal */Block.__(11, [
-                                                            "in an order different from other calls.",
-                                                            /* Formatting_lit */Block.__(17, [
-                                                                /* Break */Block.__(0, [
-                                                                    "@ ",
-                                                                    1,
-                                                                    0
-                                                                  ]),
-                                                                /* End_of_format */0
-                                                              ])
-                                                          ]),
-                                                        "in an order different from other calls.@ "
-                                                      ]);
-                                                  return Format.fprintf(ppf$1, /* Format */[
+                                                                  "Only character intervals are supported in patterns.",
+                                                                  /* Formatting_lit */Block.__(17, [
+                                                                      /* Close_box */0,
+                                                                      /* End_of_format */0
+                                                                    ])
+                                                                ])
+                                                            ]),
+                                                          "@[Only character intervals are supported in patterns.@]"
+                                                        ]);
+                                          case 6 : 
+                                              return Format.fprintf(ppf$1, /* Format */[
+                                                          /* Formatting_gen */Block.__(18, [
+                                                              /* Open_box */Block.__(1, [/* Format */[
+                                                                    /* End_of_format */0,
+                                                                    ""
+                                                                  ]]),
                                                               /* String_literal */Block.__(11, [
-                                                                  "This is only allowed when the real type is known.",
-                                                                  /* End_of_format */0
-                                                                ]),
-                                                              "This is only allowed when the real type is known."
-                                                            ]);
-                                              case 2 : 
-                                                  return Format.fprintf(ppf$1, /* Format */[
+                                                                  "Invalid for-loop index: only variables and _ are allowed.",
+                                                                  /* Formatting_lit */Block.__(17, [
+                                                                      /* Close_box */0,
+                                                                      /* End_of_format */0
+                                                                    ])
+                                                                ])
+                                                            ]),
+                                                          "@[Invalid for-loop index: only variables and _ are allowed.@]"
+                                                        ]);
+                                          case 7 : 
+                                              return Format.fprintf(ppf$1, /* Format */[
+                                                          /* String_literal */Block.__(11, [
+                                                              "None of the patterns in this 'match' expression match values.",
+                                                              /* End_of_format */0
+                                                            ]),
+                                                          "None of the patterns in this 'match' expression match values."
+                                                        ]);
+                                          case 8 : 
+                                              return Format.fprintf(ppf$1, /* Format */[
+                                                          /* Formatting_gen */Block.__(18, [
+                                                              /* Open_box */Block.__(1, [/* Format */[
+                                                                    /* End_of_format */0,
+                                                                    ""
+                                                                  ]]),
                                                               /* String_literal */Block.__(11, [
-                                                                  "Modules are not allowed in this pattern.",
-                                                                  /* End_of_format */0
-                                                                ]),
-                                                              "Modules are not allowed in this pattern."
-                                                            ]);
-                                              case 3 : 
-                                                  return Format.fprintf(ppf$1, /* Format */[
-                                                              /* String_literal */Block.__(11, [
-                                                                  "The signature for this packaged module couldn't be inferred.",
-                                                                  /* End_of_format */0
-                                                                ]),
-                                                              "The signature for this packaged module couldn't be inferred."
-                                                            ]);
-                                              case 4 : 
-                                                  return Format.fprintf(ppf$1, /* Format */[
-                                                              /* String_literal */Block.__(11, [
-                                                                  "Unexpected existential",
-                                                                  /* End_of_format */0
-                                                                ]),
-                                                              "Unexpected existential"
-                                                            ]);
-                                              case 5 : 
-                                                  return Format.fprintf(ppf$1, /* Format */[
+                                                                  "Exception patterns must be at the top level of a match case.",
+                                                                  /* Formatting_lit */Block.__(17, [
+                                                                      /* Close_box */0,
+                                                                      /* End_of_format */0
+                                                                    ])
+                                                                ])
+                                                            ]),
+                                                          "@[Exception patterns must be at the top level of a match case.@]"
+                                                        ]);
+                                          
+                                        }
+                                      } else {
+                                        switch (param.tag | 0) {
+                                          case 0 : 
+                                              return Curry._3(Format.fprintf(ppf$1, /* Format */[
                                                               /* Formatting_gen */Block.__(18, [
                                                                   /* Open_box */Block.__(1, [/* Format */[
                                                                         /* End_of_format */0,
                                                                         ""
                                                                       ]]),
                                                                   /* String_literal */Block.__(11, [
-                                                                      "Only character intervals are supported in patterns.",
-                                                                      /* Formatting_lit */Block.__(17, [
-                                                                          /* Close_box */0,
-                                                                          /* End_of_format */0
-                                                                        ])
-                                                                    ])
-                                                                ]),
-                                                              "@[Only character intervals are supported in patterns.@]"
-                                                            ]);
-                                              case 6 : 
-                                                  return Format.fprintf(ppf$1, /* Format */[
-                                                              /* Formatting_gen */Block.__(18, [
-                                                                  /* Open_box */Block.__(1, [/* Format */[
-                                                                        /* End_of_format */0,
-                                                                        ""
-                                                                      ]]),
-                                                                  /* String_literal */Block.__(11, [
-                                                                      "Invalid for-loop index: only variables and _ are allowed.",
-                                                                      /* Formatting_lit */Block.__(17, [
-                                                                          /* Close_box */0,
-                                                                          /* End_of_format */0
-                                                                        ])
-                                                                    ])
-                                                                ]),
-                                                              "@[Invalid for-loop index: only variables and _ are allowed.@]"
-                                                            ]);
-                                              case 7 : 
-                                                  return Format.fprintf(ppf$1, /* Format */[
-                                                              /* String_literal */Block.__(11, [
-                                                                  "None of the patterns in this 'match' expression match values.",
-                                                                  /* End_of_format */0
-                                                                ]),
-                                                              "None of the patterns in this 'match' expression match values."
-                                                            ]);
-                                              case 8 : 
-                                                  return Format.fprintf(ppf$1, /* Format */[
-                                                              /* Formatting_gen */Block.__(18, [
-                                                                  /* Open_box */Block.__(1, [/* Format */[
-                                                                        /* End_of_format */0,
-                                                                        ""
-                                                                      ]]),
-                                                                  /* String_literal */Block.__(11, [
-                                                                      "Exception patterns must be at the top level of a match case.",
-                                                                      /* Formatting_lit */Block.__(17, [
-                                                                          /* Close_box */0,
-                                                                          /* End_of_format */0
-                                                                        ])
-                                                                    ])
-                                                                ]),
-                                                              "@[Exception patterns must be at the top level of a match case.@]"
-                                                            ]);
-                                              
-                                            }
-                                          } else {
-                                            switch (param.tag | 0) {
-                                              case 0 : 
-                                                  return Curry._3(Format.fprintf(ppf$1, /* Format */[
-                                                                  /* Formatting_gen */Block.__(18, [
-                                                                      /* Open_box */Block.__(1, [/* Format */[
-                                                                            /* End_of_format */0,
-                                                                            ""
-                                                                          ]]),
-                                                                      /* String_literal */Block.__(11, [
-                                                                          "The record field ",
-                                                                          /* Alpha */Block.__(15, [/* String_literal */Block.__(11, [
-                                                                                  " is polymorphic.",
-                                                                                  /* Formatting_lit */Block.__(17, [
-                                                                                      /* Break */Block.__(0, [
-                                                                                          "@ ",
-                                                                                          1,
-                                                                                          0
-                                                                                        ]),
-                                                                                      /* String */Block.__(2, [
-                                                                                          /* No_padding */0,
-                                                                                          /* Formatting_lit */Block.__(17, [
-                                                                                              /* Close_box */0,
-                                                                                              /* End_of_format */0
-                                                                                            ])
-                                                                                        ])
-                                                                                    ])
-                                                                                ])])
-                                                                        ])
-                                                                    ]),
-                                                                  "@[The record field %a is polymorphic.@ %s@]"
-                                                                ]), longident, param[0], "You cannot instantiate it in a pattern.");
-                                              case 1 : 
-                                                  return Curry._4(Format.fprintf(ppf$1, /* Format */[
-                                                                  /* Formatting_gen */Block.__(18, [
-                                                                      /* Open_box */Block.__(1, [/* Format */[
-                                                                            /* End_of_format */0,
-                                                                            ""
-                                                                          ]]),
-                                                                      /* String_literal */Block.__(11, [
-                                                                          "The constructor ",
-                                                                          /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
+                                                                      "The record field ",
+                                                                      /* Alpha */Block.__(15, [/* String_literal */Block.__(11, [
+                                                                              " is polymorphic.",
+                                                                              /* Formatting_lit */Block.__(17, [
                                                                                   /* Break */Block.__(0, [
                                                                                       "@ ",
                                                                                       1,
                                                                                       0
                                                                                     ]),
-                                                                                  /* String_literal */Block.__(11, [
-                                                                                      "expects ",
-                                                                                      /* Int */Block.__(4, [
-                                                                                          /* Int_i */3,
-                                                                                          /* No_padding */0,
-                                                                                          /* No_precision */0,
-                                                                                          /* String_literal */Block.__(11, [
-                                                                                              " argument(s),",
-                                                                                              /* Formatting_lit */Block.__(17, [
-                                                                                                  /* Break */Block.__(0, [
-                                                                                                      "@ ",
-                                                                                                      1,
-                                                                                                      0
-                                                                                                    ]),
-                                                                                                  /* String_literal */Block.__(11, [
-                                                                                                      "but is applied here to ",
-                                                                                                      /* Int */Block.__(4, [
-                                                                                                          /* Int_i */3,
-                                                                                                          /* No_padding */0,
-                                                                                                          /* No_precision */0,
-                                                                                                          /* String_literal */Block.__(11, [
-                                                                                                              " argument(s)",
-                                                                                                              /* Formatting_lit */Block.__(17, [
-                                                                                                                  /* Close_box */0,
-                                                                                                                  /* End_of_format */0
-                                                                                                                ])
+                                                                                  /* String */Block.__(2, [
+                                                                                      /* No_padding */0,
+                                                                                      /* Formatting_lit */Block.__(17, [
+                                                                                          /* Close_box */0,
+                                                                                          /* End_of_format */0
+                                                                                        ])
+                                                                                    ])
+                                                                                ])
+                                                                            ])])
+                                                                    ])
+                                                                ]),
+                                                              "@[The record field %a is polymorphic.@ %s@]"
+                                                            ]), longident, param[0], "You cannot instantiate it in a pattern.");
+                                          case 1 : 
+                                              return Curry._4(Format.fprintf(ppf$1, /* Format */[
+                                                              /* Formatting_gen */Block.__(18, [
+                                                                  /* Open_box */Block.__(1, [/* Format */[
+                                                                        /* End_of_format */0,
+                                                                        ""
+                                                                      ]]),
+                                                                  /* String_literal */Block.__(11, [
+                                                                      "The constructor ",
+                                                                      /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
+                                                                              /* Break */Block.__(0, [
+                                                                                  "@ ",
+                                                                                  1,
+                                                                                  0
+                                                                                ]),
+                                                                              /* String_literal */Block.__(11, [
+                                                                                  "expects ",
+                                                                                  /* Int */Block.__(4, [
+                                                                                      /* Int_i */3,
+                                                                                      /* No_padding */0,
+                                                                                      /* No_precision */0,
+                                                                                      /* String_literal */Block.__(11, [
+                                                                                          " argument(s),",
+                                                                                          /* Formatting_lit */Block.__(17, [
+                                                                                              /* Break */Block.__(0, [
+                                                                                                  "@ ",
+                                                                                                  1,
+                                                                                                  0
+                                                                                                ]),
+                                                                                              /* String_literal */Block.__(11, [
+                                                                                                  "but is applied here to ",
+                                                                                                  /* Int */Block.__(4, [
+                                                                                                      /* Int_i */3,
+                                                                                                      /* No_padding */0,
+                                                                                                      /* No_precision */0,
+                                                                                                      /* String_literal */Block.__(11, [
+                                                                                                          " argument(s)",
+                                                                                                          /* Formatting_lit */Block.__(17, [
+                                                                                                              /* Close_box */0,
+                                                                                                              /* End_of_format */0
                                                                                                             ])
                                                                                                         ])
                                                                                                     ])
@@ -63613,139 +63612,289 @@ register_error_of_exn((function (param) {
                                                                                             ])
                                                                                         ])
                                                                                     ])
+                                                                                ])
+                                                                            ])])
+                                                                    ])
+                                                                ]),
+                                                              "@[The constructor %a@ expects %i argument(s),@ but is applied here to %i argument(s)@]"
+                                                            ]), longident, param[0], param[1], param[2]);
+                                          case 2 : 
+                                              var lid = param[0];
+                                              return report_unification_error(ppf$1, env$2, undefined, param[1], (function (ppf) {
+                                                            return Curry._2(Format.fprintf(ppf, /* Format */[
+                                                                            /* String_literal */Block.__(11, [
+                                                                                "The record field ",
+                                                                                /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
+                                                                                        /* Break */Block.__(0, [
+                                                                                            "@ ",
+                                                                                            1,
+                                                                                            0
+                                                                                          ]),
+                                                                                        /* String_literal */Block.__(11, [
+                                                                                            "belongs to the type",
+                                                                                            /* End_of_format */0
+                                                                                          ])
+                                                                                      ])])
+                                                                              ]),
+                                                                            "The record field %a@ belongs to the type"
+                                                                          ]), longident, lid);
+                                                          }), (function (ppf) {
+                                                            return Format.fprintf(ppf, /* Format */[
+                                                                        /* String_literal */Block.__(11, [
+                                                                            "but is mixed here with fields of type",
+                                                                            /* End_of_format */0
+                                                                          ]),
+                                                                        "but is mixed here with fields of type"
+                                                                      ]);
+                                                          }));
+                                          case 3 : 
+                                              return report_unification_error(ppf$1, env$2, undefined, param[0], (function (ppf) {
+                                                            return Format.fprintf(ppf, /* Format */[
+                                                                        /* String_literal */Block.__(11, [
+                                                                            "This pattern matches values of type",
+                                                                            /* End_of_format */0
+                                                                          ]),
+                                                                        "This pattern matches values of type"
+                                                                      ]);
+                                                          }), (function (ppf) {
+                                                            return Format.fprintf(ppf, /* Format */[
+                                                                        /* String_literal */Block.__(11, [
+                                                                            "but a pattern was expected which matches values of type",
+                                                                            /* End_of_format */0
+                                                                          ]),
+                                                                        "but a pattern was expected which matches values of type"
+                                                                      ]);
+                                                          }));
+                                          case 4 : 
+                                              var id = param[0];
+                                              return report_unification_error(ppf$1, env$2, undefined, param[1], (function (ppf) {
+                                                            return Curry._1(Format.fprintf(ppf, /* Format */[
+                                                                            /* String_literal */Block.__(11, [
+                                                                                "The variable ",
+                                                                                /* String */Block.__(2, [
+                                                                                    /* No_padding */0,
+                                                                                    /* String_literal */Block.__(11, [
+                                                                                        " on the left-hand side of this or-pattern has type",
+                                                                                        /* End_of_format */0
+                                                                                      ])
+                                                                                  ])
+                                                                              ]),
+                                                                            "The variable %s on the left-hand side of this or-pattern has type"
+                                                                          ]), id[/* name */1]);
+                                                          }), (function (ppf) {
+                                                            return Format.fprintf(ppf, /* Format */[
+                                                                        /* String_literal */Block.__(11, [
+                                                                            "but on the right-hand side it has type",
+                                                                            /* End_of_format */0
+                                                                          ]),
+                                                                        "but on the right-hand side it has type"
+                                                                      ]);
+                                                          }));
+                                          case 5 : 
+                                              return Curry._1(Format.fprintf(ppf$1, /* Format */[
+                                                              /* String_literal */Block.__(11, [
+                                                                  "Variable ",
+                                                                  /* String */Block.__(2, [
+                                                                      /* No_padding */0,
+                                                                      /* String_literal */Block.__(11, [
+                                                                          " is bound several times in this matching",
+                                                                          /* End_of_format */0
+                                                                        ])
+                                                                    ])
+                                                                ]),
+                                                              "Variable %s is bound several times in this matching"
+                                                            ]), param[0]);
+                                          case 6 : 
+                                              return Curry._1(Format.fprintf(ppf$1, /* Format */[
+                                                              /* String_literal */Block.__(11, [
+                                                                  "Variable ",
+                                                                  /* String */Block.__(2, [
+                                                                      /* No_padding */0,
+                                                                      /* String_literal */Block.__(11, [
+                                                                          " must occur on both sides of this | pattern",
+                                                                          /* End_of_format */0
+                                                                        ])
+                                                                    ])
+                                                                ]),
+                                                              "Variable %s must occur on both sides of this | pattern"
+                                                            ]), param[0][/* name */1]);
+                                          case 7 : 
+                                              return report_unification_error(ppf$1, env$2, undefined, param[0], (function (ppf) {
+                                                            return Format.fprintf(ppf, /* Format */[
+                                                                        /* String_literal */Block.__(11, [
+                                                                            "This expression has type",
+                                                                            /* End_of_format */0
+                                                                          ]),
+                                                                        "This expression has type"
+                                                                      ]);
+                                                          }), (function (ppf) {
+                                                            return Format.fprintf(ppf, /* Format */[
+                                                                        /* String_literal */Block.__(11, [
+                                                                            "but an expression was expected of type",
+                                                                            /* End_of_format */0
+                                                                          ]),
+                                                                        "but an expression was expected of type"
+                                                                      ]);
+                                                          }));
+                                          case 8 : 
+                                              var typ = param[0];
+                                              reset(/* () */0);
+                                              mark_loops(typ);
+                                              var match = repr(typ)[/* desc */0];
+                                              var exit = 0;
+                                              if (typeof match === "number" || match.tag !== 1) {
+                                                exit = 1;
+                                              } else {
+                                                Curry._2(Format.fprintf(ppf$1, /* Format */[
+                                                          /* Formatting_gen */Block.__(18, [
+                                                              /* Open_box */Block.__(1, [/* Format */[
+                                                                    /* String_literal */Block.__(11, [
+                                                                        "<v>",
+                                                                        /* End_of_format */0
+                                                                      ]),
+                                                                    "<v>"
+                                                                  ]]),
+                                                              /* Formatting_gen */Block.__(18, [
+                                                                  /* Open_box */Block.__(1, [/* Format */[
+                                                                        /* String_literal */Block.__(11, [
+                                                                            "<2>",
+                                                                            /* End_of_format */0
+                                                                          ]),
+                                                                        "<2>"
+                                                                      ]]),
+                                                                  /* String_literal */Block.__(11, [
+                                                                      "This function has type",
+                                                                      /* Formatting_lit */Block.__(17, [
+                                                                          /* Break */Block.__(0, [
+                                                                              "@ ",
+                                                                              1,
+                                                                              0
+                                                                            ]),
+                                                                          /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
+                                                                                  /* Close_box */0,
+                                                                                  /* End_of_format */0
                                                                                 ])])
                                                                         ])
-                                                                    ]),
-                                                                  "@[The constructor %a@ expects %i argument(s),@ but is applied here to %i argument(s)@]"
-                                                                ]), longident, param[0], param[1], param[2]);
-                                              case 2 : 
-                                                  var lid = param[0];
-                                                  return report_unification_error(ppf$1, env$2, undefined, param[1], (function (ppf) {
-                                                                return Curry._2(Format.fprintf(ppf, /* Format */[
-                                                                                /* String_literal */Block.__(11, [
-                                                                                    "The record field ",
-                                                                                    /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
+                                                                    ])
+                                                                ])
+                                                            ]),
+                                                          "@[<v>@[<2>This function has type@ %a@]"
+                                                        ]), type_expr$1, typ);
+                                                return Curry._1(Format.fprintf(ppf$1, /* Format */[
+                                                                /* Formatting_lit */Block.__(17, [
+                                                                    /* Break */Block.__(0, [
+                                                                        "@ ",
+                                                                        1,
+                                                                        0
+                                                                      ]),
+                                                                    /* Formatting_gen */Block.__(18, [
+                                                                        /* Open_box */Block.__(1, [/* Format */[
+                                                                              /* End_of_format */0,
+                                                                              ""
+                                                                            ]]),
+                                                                        /* String_literal */Block.__(11, [
+                                                                            "It is applied to too many arguments;",
+                                                                            /* Formatting_lit */Block.__(17, [
+                                                                                /* Break */Block.__(0, [
+                                                                                    "@ ",
+                                                                                    1,
+                                                                                    0
+                                                                                  ]),
+                                                                                /* String */Block.__(2, [
+                                                                                    /* No_padding */0,
+                                                                                    /* Formatting_lit */Block.__(17, [
+                                                                                        /* Close_box */0,
+                                                                                        /* Formatting_lit */Block.__(17, [
+                                                                                            /* Close_box */0,
+                                                                                            /* End_of_format */0
+                                                                                          ])
+                                                                                      ])
+                                                                                  ])
+                                                                              ])
+                                                                          ])
+                                                                      ])
+                                                                  ]),
+                                                                "@ @[It is applied to too many arguments;@ %s@]@]"
+                                                              ]), "maybe you forgot a `;'.");
+                                              }
+                                              if (exit === 1) {
+                                                return Curry._3(Format.fprintf(ppf$1, /* Format */[
+                                                                /* Formatting_gen */Block.__(18, [
+                                                                    /* Open_box */Block.__(1, [/* Format */[
+                                                                          /* String_literal */Block.__(11, [
+                                                                              "<v>",
+                                                                              /* End_of_format */0
+                                                                            ]),
+                                                                          "<v>"
+                                                                        ]]),
+                                                                    /* Formatting_gen */Block.__(18, [
+                                                                        /* Open_box */Block.__(1, [/* Format */[
+                                                                              /* String_literal */Block.__(11, [
+                                                                                  "<2>",
+                                                                                  /* End_of_format */0
+                                                                                ]),
+                                                                              "<2>"
+                                                                            ]]),
+                                                                        /* String_literal */Block.__(11, [
+                                                                            "This expression has type",
+                                                                            /* Formatting_lit */Block.__(17, [
+                                                                                /* Break */Block.__(0, [
+                                                                                    "@ ",
+                                                                                    1,
+                                                                                    0
+                                                                                  ]),
+                                                                                /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
+                                                                                        /* Close_box */0,
+                                                                                        /* Formatting_lit */Block.__(17, [
                                                                                             /* Break */Block.__(0, [
                                                                                                 "@ ",
                                                                                                 1,
                                                                                                 0
                                                                                               ]),
-                                                                                            /* String_literal */Block.__(11, [
-                                                                                                "belongs to the type",
-                                                                                                /* End_of_format */0
+                                                                                            /* String */Block.__(2, [
+                                                                                                /* No_padding */0,
+                                                                                                /* Formatting_lit */Block.__(17, [
+                                                                                                    /* Close_box */0,
+                                                                                                    /* End_of_format */0
+                                                                                                  ])
                                                                                               ])
-                                                                                          ])])
-                                                                                  ]),
-                                                                                "The record field %a@ belongs to the type"
-                                                                              ]), longident, lid);
-                                                              }), (function (ppf) {
-                                                                return Format.fprintf(ppf, /* Format */[
-                                                                            /* String_literal */Block.__(11, [
-                                                                                "but is mixed here with fields of type",
-                                                                                /* End_of_format */0
-                                                                              ]),
-                                                                            "but is mixed here with fields of type"
-                                                                          ]);
-                                                              }));
-                                              case 3 : 
-                                                  return report_unification_error(ppf$1, env$2, undefined, param[0], (function (ppf) {
-                                                                return Format.fprintf(ppf, /* Format */[
-                                                                            /* String_literal */Block.__(11, [
-                                                                                "This pattern matches values of type",
-                                                                                /* End_of_format */0
-                                                                              ]),
-                                                                            "This pattern matches values of type"
-                                                                          ]);
-                                                              }), (function (ppf) {
-                                                                return Format.fprintf(ppf, /* Format */[
-                                                                            /* String_literal */Block.__(11, [
-                                                                                "but a pattern was expected which matches values of type",
-                                                                                /* End_of_format */0
-                                                                              ]),
-                                                                            "but a pattern was expected which matches values of type"
-                                                                          ]);
-                                                              }));
-                                              case 4 : 
-                                                  var id = param[0];
-                                                  return report_unification_error(ppf$1, env$2, undefined, param[1], (function (ppf) {
-                                                                return Curry._1(Format.fprintf(ppf, /* Format */[
-                                                                                /* String_literal */Block.__(11, [
-                                                                                    "The variable ",
-                                                                                    /* String */Block.__(2, [
-                                                                                        /* No_padding */0,
-                                                                                        /* String_literal */Block.__(11, [
-                                                                                            " on the left-hand side of this or-pattern has type",
-                                                                                            /* End_of_format */0
                                                                                           ])
-                                                                                      ])
-                                                                                  ]),
-                                                                                "The variable %s on the left-hand side of this or-pattern has type"
-                                                                              ]), id[/* name */1]);
-                                                              }), (function (ppf) {
-                                                                return Format.fprintf(ppf, /* Format */[
-                                                                            /* String_literal */Block.__(11, [
-                                                                                "but on the right-hand side it has type",
-                                                                                /* End_of_format */0
-                                                                              ]),
-                                                                            "but on the right-hand side it has type"
-                                                                          ]);
-                                                              }));
-                                              case 5 : 
-                                                  return Curry._1(Format.fprintf(ppf$1, /* Format */[
+                                                                                      ])])
+                                                                              ])
+                                                                          ])
+                                                                      ])
+                                                                  ]),
+                                                                "@[<v>@[<2>This expression has type@ %a@]@ %s@]"
+                                                              ]), type_expr$1, typ, "This is not a function; it cannot be applied.");
+                                              }
+                                              break;
+                                          case 9 : 
+                                              var ty = param[1];
+                                              var print_label = function (ppf, l) {
+                                                if (l === "") {
+                                                  return Format.fprintf(ppf, /* Format */[
+                                                              /* String_literal */Block.__(11, [
+                                                                  "without label",
+                                                                  /* End_of_format */0
+                                                                ]),
+                                                              "without label"
+                                                            ]);
+                                                } else {
+                                                  return Curry._1(Format.fprintf(ppf, /* Format */[
                                                                   /* String_literal */Block.__(11, [
-                                                                      "Variable ",
+                                                                      "with label ",
                                                                       /* String */Block.__(2, [
                                                                           /* No_padding */0,
-                                                                          /* String_literal */Block.__(11, [
-                                                                              " is bound several times in this matching",
-                                                                              /* End_of_format */0
-                                                                            ])
+                                                                          /* End_of_format */0
                                                                         ])
                                                                     ]),
-                                                                  "Variable %s is bound several times in this matching"
-                                                                ]), param[0]);
-                                              case 6 : 
-                                                  return Curry._1(Format.fprintf(ppf$1, /* Format */[
-                                                                  /* String_literal */Block.__(11, [
-                                                                      "Variable ",
-                                                                      /* String */Block.__(2, [
-                                                                          /* No_padding */0,
-                                                                          /* String_literal */Block.__(11, [
-                                                                              " must occur on both sides of this | pattern",
-                                                                              /* End_of_format */0
-                                                                            ])
-                                                                        ])
-                                                                    ]),
-                                                                  "Variable %s must occur on both sides of this | pattern"
-                                                                ]), param[0][/* name */1]);
-                                              case 7 : 
-                                                  return report_unification_error(ppf$1, env$2, undefined, param[0], (function (ppf) {
-                                                                return Format.fprintf(ppf, /* Format */[
-                                                                            /* String_literal */Block.__(11, [
-                                                                                "This expression has type",
-                                                                                /* End_of_format */0
-                                                                              ]),
-                                                                            "This expression has type"
-                                                                          ]);
-                                                              }), (function (ppf) {
-                                                                return Format.fprintf(ppf, /* Format */[
-                                                                            /* String_literal */Block.__(11, [
-                                                                                "but an expression was expected of type",
-                                                                                /* End_of_format */0
-                                                                              ]),
-                                                                            "but an expression was expected of type"
-                                                                          ]);
-                                                              }));
-                                              case 8 : 
-                                                  var typ = param[0];
-                                                  reset(/* () */0);
-                                                  mark_loops(typ);
-                                                  var match = repr(typ)[/* desc */0];
-                                                  var exit = 0;
-                                                  if (typeof match === "number" || match.tag !== 1) {
-                                                    exit = 1;
-                                                  } else {
-                                                    Curry._2(Format.fprintf(ppf$1, /* Format */[
+                                                                  "with label %s"
+                                                                ]), prefixed_label_name(l));
+                                                }
+                                              };
+                                              reset(/* () */0);
+                                              mark_loops(ty);
+                                              return Curry._4(Format.fprintf(ppf$1, /* Format */[
                                                               /* Formatting_gen */Block.__(18, [
                                                                   /* Open_box */Block.__(1, [/* Format */[
                                                                         /* String_literal */Block.__(11, [
@@ -63763,7 +63912,7 @@ register_error_of_exn((function (param) {
                                                                             "<2>"
                                                                           ]]),
                                                                       /* String_literal */Block.__(11, [
-                                                                          "This function has type",
+                                                                          "The function applied to this argument has type",
                                                                           /* Formatting_lit */Block.__(17, [
                                                                               /* Break */Block.__(0, [
                                                                                   "@ ",
@@ -63772,938 +63921,427 @@ register_error_of_exn((function (param) {
                                                                                 ]),
                                                                               /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
                                                                                       /* Close_box */0,
-                                                                                      /* End_of_format */0
+                                                                                      /* Formatting_lit */Block.__(17, [
+                                                                                          /* Flush_newline */4,
+                                                                                          /* String_literal */Block.__(11, [
+                                                                                              "This argument cannot be applied ",
+                                                                                              /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
+                                                                                                      /* Close_box */0,
+                                                                                                      /* End_of_format */0
+                                                                                                    ])])
+                                                                                            ])
+                                                                                        ])
                                                                                     ])])
                                                                             ])
                                                                         ])
                                                                     ])
                                                                 ]),
-                                                              "@[<v>@[<2>This function has type@ %a@]"
-                                                            ]), type_expr$1, typ);
-                                                    return Curry._1(Format.fprintf(ppf$1, /* Format */[
-                                                                    /* Formatting_lit */Block.__(17, [
-                                                                        /* Break */Block.__(0, [
-                                                                            "@ ",
-                                                                            1,
-                                                                            0
-                                                                          ]),
-                                                                        /* Formatting_gen */Block.__(18, [
-                                                                            /* Open_box */Block.__(1, [/* Format */[
-                                                                                  /* End_of_format */0,
-                                                                                  ""
-                                                                                ]]),
-                                                                            /* String_literal */Block.__(11, [
-                                                                                "It is applied to too many arguments;",
-                                                                                /* Formatting_lit */Block.__(17, [
-                                                                                    /* Break */Block.__(0, [
-                                                                                        "@ ",
-                                                                                        1,
-                                                                                        0
-                                                                                      ]),
-                                                                                    /* String */Block.__(2, [
-                                                                                        /* No_padding */0,
-                                                                                        /* Formatting_lit */Block.__(17, [
-                                                                                            /* Close_box */0,
-                                                                                            /* Formatting_lit */Block.__(17, [
-                                                                                                /* Close_box */0,
-                                                                                                /* End_of_format */0
-                                                                                              ])
-                                                                                          ])
-                                                                                      ])
-                                                                                  ])
-                                                                              ])
-                                                                          ])
-                                                                      ]),
-                                                                    "@ @[It is applied to too many arguments;@ %s@]@]"
-                                                                  ]), "maybe you forgot a `;'.");
-                                                  }
-                                                  if (exit === 1) {
-                                                    return Curry._3(Format.fprintf(ppf$1, /* Format */[
-                                                                    /* Formatting_gen */Block.__(18, [
-                                                                        /* Open_box */Block.__(1, [/* Format */[
-                                                                              /* String_literal */Block.__(11, [
-                                                                                  "<v>",
-                                                                                  /* End_of_format */0
-                                                                                ]),
-                                                                              "<v>"
-                                                                            ]]),
-                                                                        /* Formatting_gen */Block.__(18, [
-                                                                            /* Open_box */Block.__(1, [/* Format */[
-                                                                                  /* String_literal */Block.__(11, [
-                                                                                      "<2>",
-                                                                                      /* End_of_format */0
-                                                                                    ]),
-                                                                                  "<2>"
-                                                                                ]]),
-                                                                            /* String_literal */Block.__(11, [
-                                                                                "This expression has type",
-                                                                                /* Formatting_lit */Block.__(17, [
-                                                                                    /* Break */Block.__(0, [
-                                                                                        "@ ",
-                                                                                        1,
-                                                                                        0
-                                                                                      ]),
-                                                                                    /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
-                                                                                            /* Close_box */0,
-                                                                                            /* Formatting_lit */Block.__(17, [
-                                                                                                /* Break */Block.__(0, [
-                                                                                                    "@ ",
-                                                                                                    1,
-                                                                                                    0
-                                                                                                  ]),
-                                                                                                /* String */Block.__(2, [
-                                                                                                    /* No_padding */0,
-                                                                                                    /* Formatting_lit */Block.__(17, [
-                                                                                                        /* Close_box */0,
-                                                                                                        /* End_of_format */0
-                                                                                                      ])
-                                                                                                  ])
-                                                                                              ])
-                                                                                          ])])
-                                                                                  ])
-                                                                              ])
-                                                                          ])
-                                                                      ]),
-                                                                    "@[<v>@[<2>This expression has type@ %a@]@ %s@]"
-                                                                  ]), type_expr$1, typ, "This is not a function; it cannot be applied.");
-                                                  }
-                                                  break;
-                                              case 9 : 
-                                                  var ty = param[1];
-                                                  var print_label = function (ppf, l) {
-                                                    if (l === "") {
-                                                      return Format.fprintf(ppf, /* Format */[
-                                                                  /* String_literal */Block.__(11, [
-                                                                      "without label",
-                                                                      /* End_of_format */0
-                                                                    ]),
-                                                                  "without label"
-                                                                ]);
-                                                    } else {
-                                                      return Curry._1(Format.fprintf(ppf, /* Format */[
-                                                                      /* String_literal */Block.__(11, [
-                                                                          "with label ",
-                                                                          /* String */Block.__(2, [
-                                                                              /* No_padding */0,
-                                                                              /* End_of_format */0
-                                                                            ])
-                                                                        ]),
-                                                                      "with label %s"
-                                                                    ]), prefixed_label_name(l));
-                                                    }
-                                                  };
-                                                  reset(/* () */0);
-                                                  mark_loops(ty);
-                                                  return Curry._4(Format.fprintf(ppf$1, /* Format */[
-                                                                  /* Formatting_gen */Block.__(18, [
-                                                                      /* Open_box */Block.__(1, [/* Format */[
-                                                                            /* String_literal */Block.__(11, [
-                                                                                "<v>",
-                                                                                /* End_of_format */0
-                                                                              ]),
-                                                                            "<v>"
-                                                                          ]]),
-                                                                      /* Formatting_gen */Block.__(18, [
-                                                                          /* Open_box */Block.__(1, [/* Format */[
-                                                                                /* String_literal */Block.__(11, [
-                                                                                    "<2>",
-                                                                                    /* End_of_format */0
-                                                                                  ]),
-                                                                                "<2>"
-                                                                              ]]),
-                                                                          /* String_literal */Block.__(11, [
-                                                                              "The function applied to this argument has type",
-                                                                              /* Formatting_lit */Block.__(17, [
-                                                                                  /* Break */Block.__(0, [
-                                                                                      "@ ",
-                                                                                      1,
-                                                                                      0
-                                                                                    ]),
-                                                                                  /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
-                                                                                          /* Close_box */0,
-                                                                                          /* Formatting_lit */Block.__(17, [
-                                                                                              /* Flush_newline */4,
-                                                                                              /* String_literal */Block.__(11, [
-                                                                                                  "This argument cannot be applied ",
-                                                                                                  /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
-                                                                                                          /* Close_box */0,
-                                                                                                          /* End_of_format */0
-                                                                                                        ])])
-                                                                                                ])
-                                                                                            ])
-                                                                                        ])])
-                                                                                ])
-                                                                            ])
-                                                                        ])
-                                                                    ]),
-                                                                  "@[<v>@[<2>The function applied to this argument has type@ %a@]@.This argument cannot be applied %a@]"
-                                                                ]), type_expr$1, ty, print_label, param[0]);
-                                              case 10 : 
-                                                  return Curry._1(Format.fprintf(ppf$1, /* Format */[
-                                                                  /* String_literal */Block.__(11, [
-                                                                      "The record field label ",
-                                                                      /* String */Block.__(2, [
-                                                                          /* No_padding */0,
-                                                                          /* String_literal */Block.__(11, [
-                                                                              " is defined several times",
-                                                                              /* End_of_format */0
-                                                                            ])
-                                                                        ])
-                                                                    ]),
-                                                                  "The record field label %s is defined several times"
-                                                                ]), param[0]);
-                                              case 11 : 
-                                                  var print_labels = function (ppf) {
-                                                    return (function (param) {
-                                                        return List.iter((function (lbl) {
-                                                                      return Curry._1(Format.fprintf(ppf, /* Format */[
-                                                                                      /* Formatting_lit */Block.__(17, [
-                                                                                          /* Break */Block.__(0, [
-                                                                                              "@ ",
-                                                                                              1,
-                                                                                              0
-                                                                                            ]),
-                                                                                          /* String */Block.__(2, [
-                                                                                              /* No_padding */0,
-                                                                                              /* End_of_format */0
-                                                                                            ])
-                                                                                        ]),
-                                                                                      "@ %s"
-                                                                                    ]), lbl[/* name */1]);
-                                                                    }), param);
-                                                      });
-                                                  };
-                                                  return Curry._2(Format.fprintf(ppf$1, /* Format */[
-                                                                  /* Formatting_gen */Block.__(18, [
-                                                                      /* Open_box */Block.__(1, [/* Format */[
-                                                                            /* String_literal */Block.__(11, [
-                                                                                "<hov>",
-                                                                                /* End_of_format */0
-                                                                              ]),
-                                                                            "<hov>"
-                                                                          ]]),
-                                                                      /* String_literal */Block.__(11, [
-                                                                          "Some record fields are undefined:",
-                                                                          /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
-                                                                                  /* Close_box */0,
-                                                                                  /* End_of_format */0
-                                                                                ])])
-                                                                        ])
-                                                                    ]),
-                                                                  "@[<hov>Some record fields are undefined:%a@]"
-                                                                ]), print_labels, param[0]);
-                                              case 12 : 
-                                                  return Curry._2(Format.fprintf(ppf$1, /* Format */[
-                                                                  /* String_literal */Block.__(11, [
-                                                                      "The record field ",
-                                                                      /* Alpha */Block.__(15, [/* String_literal */Block.__(11, [
-                                                                              " is not mutable",
-                                                                              /* End_of_format */0
-                                                                            ])])
-                                                                    ]),
-                                                                  "The record field %a is not mutable"
-                                                                ]), longident, param[0]);
-                                              case 13 : 
-                                                  var lid$1 = param[4];
-                                                  var p = param[3];
-                                                  var kind = param[2];
-                                                  var ty$1 = param[1];
-                                                  reset(/* () */0);
-                                                  mark_loops(ty$1);
-                                                  Curry._3(Format.fprintf(ppf$1, /* Format */[
-                                                            /* Formatting_gen */Block.__(18, [
-                                                                /* Open_box */Block.__(1, [/* Format */[
-                                                                      /* End_of_format */0,
-                                                                      ""
-                                                                    ]]),
-                                                                /* Formatting_gen */Block.__(18, [
-                                                                    /* Open_box */Block.__(1, [/* Format */[
-                                                                          /* String_literal */Block.__(11, [
-                                                                              "<2>",
-                                                                              /* End_of_format */0
-                                                                            ]),
-                                                                          "<2>"
-                                                                        ]]),
-                                                                    /* String */Block.__(2, [
-                                                                        /* No_padding */0,
-                                                                        /* String_literal */Block.__(11, [
-                                                                            " type",
-                                                                            /* Formatting_lit */Block.__(17, [
-                                                                                /* Break */Block.__(0, [
-                                                                                    "@ ",
-                                                                                    1,
-                                                                                    0
-                                                                                  ]),
-                                                                                /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
-                                                                                        /* Close_box */0,
-                                                                                        /* Formatting_lit */Block.__(17, [
-                                                                                            /* Break */Block.__(0, [
-                                                                                                "@ ",
-                                                                                                1,
-                                                                                                0
-                                                                                              ]),
-                                                                                            /* End_of_format */0
-                                                                                          ])
-                                                                                      ])])
-                                                                              ])
-                                                                          ])
-                                                                      ])
-                                                                  ])
-                                                              ]),
-                                                            "@[@[<2>%s type@ %a@]@ "
-                                                          ]), param[0], type_expr$1, ty$1);
-                                                  Curry._5(Format.fprintf(ppf$1, /* Format */[
-                                                            /* String_literal */Block.__(11, [
-                                                                "The ",
-                                                                /* String */Block.__(2, [
-                                                                    /* No_padding */0,
-                                                                    /* Char_literal */Block.__(12, [
-                                                                        /* " " */32,
-                                                                        /* Alpha */Block.__(15, [/* String_literal */Block.__(11, [
-                                                                                " does not belong to type ",
-                                                                                /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
-                                                                                        /* Close_box */0,
-                                                                                        /* End_of_format */0
-                                                                                      ])])
-                                                                              ])])
-                                                                      ])
-                                                                  ])
-                                                              ]),
-                                                            "The %s %a does not belong to type %a@]"
-                                                          ]), kind === "record" ? "field" : "constructor", longident, lid$1, path, p);
-                                                  if (kind === "record") {
-                                                    var ppf$2 = ppf$1;
-                                                    var env$3 = env$2;
-                                                    var p$1 = p;
-                                                    var lid$2 = lid$1;
-                                                    return spellcheck_simple(ppf$2, fold_labels, (function (d) {
-                                                                    if (compare_type_path(env$3, p$1, get_type_path$1(env$3, d))) {
-                                                                      return d[/* lbl_name */0];
-                                                                    } else {
-                                                                      return "";
-                                                                    }
-                                                                  }))(env$3, lid$2);
-                                                  } else {
-                                                    var ppf$3 = ppf$1;
-                                                    var env$4 = env$2;
-                                                    var p$2 = p;
-                                                    var lid$3 = lid$1;
-                                                    return spellcheck_simple(ppf$3, fold_constructors, (function (d) {
-                                                                    if (compare_type_path(env$4, p$2, get_type_path$2(env$4, d))) {
-                                                                      return d[/* cstr_name */0];
-                                                                    } else {
-                                                                      return "";
-                                                                    }
-                                                                  }))(env$4, lid$3);
-                                                  }
-                                              case 14 : 
-                                                  var lid$4 = param[1];
-                                                  var kind$1 = param[0];
-                                                  var name = kind$1 === "record" ? "field" : "constructor";
-                                                  var ppf$4 = ppf$1;
-                                                  var env$5 = env$2;
-                                                  var param$1 = param[2];
-                                                  var tpl = param[3];
-                                                  var txt1 = function (ppf) {
-                                                    return Curry._4(Format.fprintf(ppf, /* Format */[
-                                                                    /* String_literal */Block.__(11, [
-                                                                        "The ",
-                                                                        /* String */Block.__(2, [
-                                                                            /* No_padding */0,
-                                                                            /* Char_literal */Block.__(12, [
-                                                                                /* " " */32,
-                                                                                /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
-                                                                                        /* Break */Block.__(0, [
-                                                                                            "@ ",
-                                                                                            1,
-                                                                                            0
-                                                                                          ]),
-                                                                                        /* String_literal */Block.__(11, [
-                                                                                            "belongs to the ",
-                                                                                            /* String */Block.__(2, [
-                                                                                                /* No_padding */0,
-                                                                                                /* String_literal */Block.__(11, [
-                                                                                                    " type",
-                                                                                                    /* End_of_format */0
-                                                                                                  ])
-                                                                                              ])
-                                                                                          ])
-                                                                                      ])])
-                                                                              ])
-                                                                          ])
-                                                                      ]),
-                                                                    "The %s %a@ belongs to the %s type"
-                                                                  ]), name, longident, lid$4, kind$1);
-                                                  };
-                                                  var txt2 = function (ppf) {
-                                                    return Curry._4(Format.fprintf(ppf, /* Format */[
-                                                                    /* String_literal */Block.__(11, [
-                                                                        "The ",
-                                                                        /* String */Block.__(2, [
-                                                                            /* No_padding */0,
-                                                                            /* Char_literal */Block.__(12, [
-                                                                                /* " " */32,
-                                                                                /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
-                                                                                        /* Break */Block.__(0, [
-                                                                                            "@ ",
-                                                                                            1,
-                                                                                            0
-                                                                                          ]),
-                                                                                        /* String_literal */Block.__(11, [
-                                                                                            "belongs to one of the following ",
-                                                                                            /* String */Block.__(2, [
-                                                                                                /* No_padding */0,
-                                                                                                /* String_literal */Block.__(11, [
-                                                                                                    " types:",
-                                                                                                    /* End_of_format */0
-                                                                                                  ])
-                                                                                              ])
-                                                                                          ])
-                                                                                      ])])
-                                                                              ])
-                                                                          ])
-                                                                      ]),
-                                                                    "The %s %a@ belongs to one of the following %s types:"
-                                                                  ]), name, longident, lid$4, kind$1);
-                                                  };
-                                                  var txt3 = function (ppf) {
-                                                    return Curry._2(Format.fprintf(ppf, /* Format */[
-                                                                    /* String_literal */Block.__(11, [
-                                                                        "but a ",
-                                                                        /* String */Block.__(2, [
-                                                                            /* No_padding */0,
-                                                                            /* String_literal */Block.__(11, [
-                                                                                " was expected belonging to the ",
-                                                                                /* String */Block.__(2, [
-                                                                                    /* No_padding */0,
-                                                                                    /* String_literal */Block.__(11, [
-                                                                                        " type",
-                                                                                        /* End_of_format */0
-                                                                                      ])
-                                                                                  ])
-                                                                              ])
-                                                                          ])
-                                                                      ]),
-                                                                    "but a %s was expected belonging to the %s type"
-                                                                  ]), name, kind$1);
-                                                  };
-                                                  var tp0$prime = param$1[1];
-                                                  var tp0 = param$1[0];
-                                                  return wrap_printing_env(env$5, (function () {
-                                                                reset(/* () */0);
-                                                                List.iter((function (param) {
-                                                                        path_same_name(tp0, param[0]);
-                                                                        return path_same_name(tp0$prime, param[1]);
-                                                                      }), tpl);
-                                                                if (tpl) {
-                                                                  if (tpl[1]) {
-                                                                    return Curry._6(Format.fprintf(ppf$4, /* Format */[
-                                                                                    /* Formatting_gen */Block.__(18, [
-                                                                                        /* Open_box */Block.__(1, [/* Format */[
-                                                                                              /* End_of_format */0,
-                                                                                              ""
-                                                                                            ]]),
-                                                                                        /* Theta */Block.__(16, [/* Formatting_lit */Block.__(17, [
-                                                                                                /* Break */Block.__(0, [
-                                                                                                    "@;<1 2>",
-                                                                                                    1,
-                                                                                                    2
-                                                                                                  ]),
-                                                                                                /* Formatting_gen */Block.__(18, [
-                                                                                                    /* Open_box */Block.__(1, [/* Format */[
-                                                                                                          /* String_literal */Block.__(11, [
-                                                                                                              "<hv>",
-                                                                                                              /* End_of_format */0
-                                                                                                            ]),
-                                                                                                          "<hv>"
-                                                                                                        ]]),
-                                                                                                    /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
-                                                                                                            /* Close_box */0,
-                                                                                                            /* Formatting_lit */Block.__(17, [
-                                                                                                                /* Break */Block.__(0, [
-                                                                                                                    "@ ",
-                                                                                                                    1,
-                                                                                                                    0
-                                                                                                                  ]),
-                                                                                                                /* Theta */Block.__(16, [/* Formatting_lit */Block.__(17, [
-                                                                                                                        /* Break */Block.__(0, [
-                                                                                                                            "@;<1 2>",
-                                                                                                                            1,
-                                                                                                                            2
-                                                                                                                          ]),
-                                                                                                                        /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
-                                                                                                                                /* Close_box */0,
-                                                                                                                                /* End_of_format */0
-                                                                                                                              ])])
-                                                                                                                      ])])
-                                                                                                              ])
-                                                                                                          ])])
-                                                                                                  ])
-                                                                                              ])])
-                                                                                      ]),
-                                                                                    "@[%t@;<1 2>@[<hv>%a@]@ %t@;<1 2>%a@]"
-                                                                                  ]), txt2, type_path_list, tpl, txt3, (function (param, param$1) {
-                                                                                  return type_path_expansion(tp0, param, param$1);
-                                                                                }), tp0$prime);
-                                                                  } else {
-                                                                    var match = tpl[0];
-                                                                    var tp = match[0];
-                                                                    return Curry._6(Format.fprintf(ppf$4, /* Format */[
-                                                                                    /* Formatting_gen */Block.__(18, [
-                                                                                        /* Open_box */Block.__(1, [/* Format */[
-                                                                                              /* End_of_format */0,
-                                                                                              ""
-                                                                                            ]]),
-                                                                                        /* Theta */Block.__(16, [/* Formatting_lit */Block.__(17, [
-                                                                                                /* Break */Block.__(0, [
-                                                                                                    "@;<1 2>",
-                                                                                                    1,
-                                                                                                    2
-                                                                                                  ]),
-                                                                                                /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
-                                                                                                        /* Break */Block.__(0, [
-                                                                                                            "@ ",
-                                                                                                            1,
-                                                                                                            0
-                                                                                                          ]),
-                                                                                                        /* Theta */Block.__(16, [/* Formatting_lit */Block.__(17, [
-                                                                                                                /* Break */Block.__(0, [
-                                                                                                                    "@;<1 2>",
-                                                                                                                    1,
-                                                                                                                    2
-                                                                                                                  ]),
-                                                                                                                /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
-                                                                                                                        /* Close_box */0,
-                                                                                                                        /* End_of_format */0
-                                                                                                                      ])])
-                                                                                                              ])])
-                                                                                                      ])])
-                                                                                              ])])
-                                                                                      ]),
-                                                                                    "@[%t@;<1 2>%a@ %t@;<1 2>%a@]"
-                                                                                  ]), txt1, (function (param, param$1) {
-                                                                                  return type_path_expansion(tp, param, param$1);
-                                                                                }), match[1], txt3, (function (param, param$1) {
-                                                                                  return type_path_expansion(tp0, param, param$1);
-                                                                                }), tp0$prime);
-                                                                  }
-                                                                } else {
-                                                                  throw [
-                                                                        Caml_builtin_exceptions.assert_failure,
-                                                                        [
-                                                                          "printtyp.ml",
-                                                                          1498,
-                                                                          12
-                                                                        ]
-                                                                      ];
-                                                                }
-                                                              }));
-                                              case 15 : 
-                                                  return Curry._1(Format.fprintf(ppf$1, /* Format */[
+                                                              "@[<v>@[<2>The function applied to this argument has type@ %a@]@.This argument cannot be applied %a@]"
+                                                            ]), type_expr$1, ty, print_label, param[0]);
+                                          case 10 : 
+                                              return Curry._1(Format.fprintf(ppf$1, /* Format */[
+                                                              /* String_literal */Block.__(11, [
+                                                                  "The record field label ",
                                                                   /* String */Block.__(2, [
                                                                       /* No_padding */0,
-                                                                      /* End_of_format */0
-                                                                    ]),
-                                                                  "%s"
-                                                                ]), param[0]);
-                                              case 16 : 
-                                                  var ty$2 = param[0];
-                                                  reset(/* () */0);
-                                                  mark_loops(ty$2);
-                                                  return Curry._3(Format.fprintf(ppf$1, /* Format */[
-                                                                  /* Formatting_gen */Block.__(18, [
-                                                                      /* Open_box */Block.__(1, [/* Format */[
-                                                                            /* String_literal */Block.__(11, [
-                                                                                "<v>",
-                                                                                /* End_of_format */0
-                                                                              ]),
-                                                                            "<v>"
-                                                                          ]]),
-                                                                      /* Formatting_gen */Block.__(18, [
-                                                                          /* Open_box */Block.__(1, [/* Format */[
-                                                                                /* End_of_format */0,
-                                                                                ""
-                                                                              ]]),
-                                                                          /* String_literal */Block.__(11, [
-                                                                              "This expression has type",
-                                                                              /* Formatting_lit */Block.__(17, [
-                                                                                  /* Break */Block.__(0, [
-                                                                                      "@;<1 2>",
-                                                                                      1,
-                                                                                      2
-                                                                                    ]),
-                                                                                  /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
-                                                                                          /* Close_box */0,
-                                                                                          /* Formatting_lit */Block.__(17, [
-                                                                                              /* Break */Block.__(0, [
-                                                                                                  "@,",
-                                                                                                  0,
-                                                                                                  0
-                                                                                                ]),
-                                                                                              /* String_literal */Block.__(11, [
-                                                                                                  "It has no method ",
-                                                                                                  /* String */Block.__(2, [
-                                                                                                      /* No_padding */0,
-                                                                                                      /* Formatting_lit */Block.__(17, [
-                                                                                                          /* Close_box */0,
-                                                                                                          /* End_of_format */0
-                                                                                                        ])
-                                                                                                    ])
-                                                                                                ])
-                                                                                            ])
-                                                                                        ])])
-                                                                                ])
-                                                                            ])
-                                                                        ])
-                                                                    ]),
-                                                                  "@[<v>@[This expression has type@;<1 2>%a@]@,It has no method %s@]"
-                                                                ]), type_expr$1, ty$2, param[1]);
-                                              case 17 : 
-                                                  return Curry._1(Format.fprintf(ppf$1, /* Format */[
-                                                                  /* String_literal */Block.__(11, [
-                                                                      "This expression has no method ",
-                                                                      /* String */Block.__(2, [
-                                                                          /* No_padding */0,
-                                                                          /* End_of_format */0
-                                                                        ])
-                                                                    ]),
-                                                                  "This expression has no method %s"
-                                                                ]), param[0]);
-                                              case 18 : 
-                                                  return Curry._2(Format.fprintf(ppf$1, /* Format */[
-                                                                  /* String_literal */Block.__(11, [
-                                                                      "Cannot instantiate the virtual class ",
-                                                                      /* Alpha */Block.__(15, [/* End_of_format */0])
-                                                                    ]),
-                                                                  "Cannot instantiate the virtual class %a"
-                                                                ]), longident, param[0]);
-                                              case 19 : 
-                                                  return Curry._2(Format.fprintf(ppf$1, /* Format */[
-                                                                  /* String_literal */Block.__(11, [
-                                                                      "Cannot create values of the private type ",
-                                                                      /* Alpha */Block.__(15, [/* End_of_format */0])
-                                                                    ]),
-                                                                  "Cannot create values of the private type %a"
-                                                                ]), type_expr$1, param[0]);
-                                              case 20 : 
-                                                  return Curry._4(Format.fprintf(ppf$1, /* Format */[
-                                                                  /* String_literal */Block.__(11, [
-                                                                      "Cannot assign field ",
-                                                                      /* Alpha */Block.__(15, [/* String_literal */Block.__(11, [
-                                                                              " of the private type ",
-                                                                              /* Alpha */Block.__(15, [/* End_of_format */0])
-                                                                            ])])
-                                                                    ]),
-                                                                  "Cannot assign field %a of the private type %a"
-                                                                ]), longident, param[0], type_expr$1, param[1]);
-                                              case 21 : 
-                                                  return Curry._1(Format.fprintf(ppf$1, /* Format */[
-                                                                  /* String_literal */Block.__(11, [
-                                                                      "Unbound instance variable ",
-                                                                      /* String */Block.__(2, [
-                                                                          /* No_padding */0,
-                                                                          /* End_of_format */0
-                                                                        ])
-                                                                    ]),
-                                                                  "Unbound instance variable %s"
-                                                                ]), param[0]);
-                                              case 22 : 
-                                                  var v = param[1];
-                                                  if (param[0]) {
-                                                    return Curry._1(Format.fprintf(ppf$1, /* Format */[
-                                                                    /* String_literal */Block.__(11, [
-                                                                        "The instance variable ",
-                                                                        /* String */Block.__(2, [
-                                                                            /* No_padding */0,
-                                                                            /* String_literal */Block.__(11, [
-                                                                                " is not mutable",
-                                                                                /* End_of_format */0
-                                                                              ])
-                                                                          ])
-                                                                      ]),
-                                                                    "The instance variable %s is not mutable"
-                                                                  ]), v);
-                                                  } else {
-                                                    return Curry._1(Format.fprintf(ppf$1, /* Format */[
-                                                                    /* String_literal */Block.__(11, [
-                                                                        "The value ",
-                                                                        /* String */Block.__(2, [
-                                                                            /* No_padding */0,
-                                                                            /* String_literal */Block.__(11, [
-                                                                                " is not an instance variable",
-                                                                                /* End_of_format */0
-                                                                              ])
-                                                                          ])
-                                                                      ]),
-                                                                    "The value %s is not an instance variable"
-                                                                  ]), v);
-                                                  }
-                                              case 23 : 
-                                                  var ppf$5 = ppf$1;
-                                                  var env$6 = env$2;
-                                                  var tr1 = param[0];
-                                                  var txt1$1 = "is not a subtype of";
-                                                  var tr2 = param[1];
-                                                  return wrap_printing_env(env$6, (function () {
-                                                                reset(/* () */0);
-                                                                var tr1$1 = List.map(prepare_expansion, tr1);
-                                                                var tr2$1 = List.map(prepare_expansion, tr2);
-                                                                var partial_arg = tr2$1 === /* [] */0;
-                                                                Curry._2(Format.fprintf(ppf$5, /* Format */[
-                                                                          /* Formatting_gen */Block.__(18, [
-                                                                              /* Open_box */Block.__(1, [/* Format */[
-                                                                                    /* String_literal */Block.__(11, [
-                                                                                        "<v>",
-                                                                                        /* End_of_format */0
-                                                                                      ]),
-                                                                                    "<v>"
-                                                                                  ]]),
-                                                                              /* Alpha */Block.__(15, [/* End_of_format */0])
-                                                                            ]),
-                                                                          "@[<v>%a"
-                                                                        ]), (function (param, param$1) {
-                                                                        return trace$1(true, partial_arg, txt1$1, param, param$1);
-                                                                      }), tr1$1);
-                                                                if (tr2$1 === /* [] */0) {
-                                                                  return Format.fprintf(ppf$5, /* Format */[
-                                                                              /* Formatting_lit */Block.__(17, [
-                                                                                  /* Close_box */0,
-                                                                                  /* End_of_format */0
-                                                                                ]),
-                                                                              "@]"
-                                                                            ]);
-                                                                } else {
-                                                                  var mis = mismatch(true, tr2$1);
-                                                                  var partial_arg$1 = mis === undefined;
-                                                                  return Curry._3(Format.fprintf(ppf$5, /* Format */[
-                                                                                  /* Alpha */Block.__(15, [/* Theta */Block.__(16, [/* Formatting_lit */Block.__(17, [
-                                                                                              /* Close_box */0,
-                                                                                              /* End_of_format */0
-                                                                                            ])])]),
-                                                                                  "%a%t@]"
-                                                                                ]), (function (param, param$1) {
-                                                                                return trace$1(false, partial_arg$1, "is not compatible with type", param, param$1);
-                                                                              }), tr2$1, (function (param) {
-                                                                                return explanation(true, mis, param);
-                                                                              }));
-                                                                }
-                                                              }));
-                                              case 24 : 
-                                                  return Curry._1(Format.fprintf(ppf$1, /* Format */[
-                                                                  /* String_literal */Block.__(11, [
-                                                                      "The instance variable ",
-                                                                      /* String */Block.__(2, [
-                                                                          /* No_padding */0,
-                                                                          /* String_literal */Block.__(11, [
-                                                                              " is overridden several times",
-                                                                              /* End_of_format */0
-                                                                            ])
-                                                                        ])
-                                                                    ]),
-                                                                  "The instance variable %s is overridden several times"
-                                                                ]), param[0]);
-                                              case 25 : 
-                                                  var ty$prime = param[1];
-                                                  var ty$3 = param[0];
-                                                  report_unification_error(ppf$1, env$2, undefined, param[2], (function (ppf) {
-                                                          var match = prepare_expansion(/* tuple */[
-                                                                ty$3,
-                                                                ty$prime
-                                                              ]);
-                                                          var ty$4 = match[0];
-                                                          return Curry._2(Format.fprintf(ppf, /* Format */[
-                                                                          /* String_literal */Block.__(11, [
-                                                                              "This expression cannot be coerced to type",
-                                                                              /* Formatting_lit */Block.__(17, [
-                                                                                  /* Break */Block.__(0, [
-                                                                                      "@;<1 2>",
-                                                                                      1,
-                                                                                      2
-                                                                                    ]),
-                                                                                  /* Alpha */Block.__(15, [/* Char_literal */Block.__(12, [
-                                                                                          /* ";" */59,
-                                                                                          /* Formatting_lit */Block.__(17, [
-                                                                                              /* Break */Block.__(0, [
-                                                                                                  "@ ",
-                                                                                                  1,
-                                                                                                  0
-                                                                                                ]),
-                                                                                              /* String_literal */Block.__(11, [
-                                                                                                  "it has type",
-                                                                                                  /* End_of_format */0
-                                                                                                ])
-                                                                                            ])
-                                                                                        ])])
-                                                                                ])
-                                                                            ]),
-                                                                          "This expression cannot be coerced to type@;<1 2>%a;@ it has type"
-                                                                        ]), (function (param, param$1) {
-                                                                        return type_expansion(ty$4, param, param$1);
-                                                                      }), match[1]);
-                                                        }), (function (ppf) {
-                                                          return Format.fprintf(ppf, /* Format */[
                                                                       /* String_literal */Block.__(11, [
-                                                                          "but is here used with type",
+                                                                          " is defined several times",
+                                                                          /* End_of_format */0
+                                                                        ])
+                                                                    ])
+                                                                ]),
+                                                              "The record field label %s is defined several times"
+                                                            ]), param[0]);
+                                          case 11 : 
+                                              var print_labels = function (ppf) {
+                                                return (function (param) {
+                                                    return List.iter((function (lbl) {
+                                                                  return Curry._1(Format.fprintf(ppf, /* Format */[
+                                                                                  /* Formatting_lit */Block.__(17, [
+                                                                                      /* Break */Block.__(0, [
+                                                                                          "@ ",
+                                                                                          1,
+                                                                                          0
+                                                                                        ]),
+                                                                                      /* String */Block.__(2, [
+                                                                                          /* No_padding */0,
+                                                                                          /* End_of_format */0
+                                                                                        ])
+                                                                                    ]),
+                                                                                  "@ %s"
+                                                                                ]), lbl[/* name */1]);
+                                                                }), param);
+                                                  });
+                                              };
+                                              return Curry._2(Format.fprintf(ppf$1, /* Format */[
+                                                              /* Formatting_gen */Block.__(18, [
+                                                                  /* Open_box */Block.__(1, [/* Format */[
+                                                                        /* String_literal */Block.__(11, [
+                                                                            "<hov>",
+                                                                            /* End_of_format */0
+                                                                          ]),
+                                                                        "<hov>"
+                                                                      ]]),
+                                                                  /* String_literal */Block.__(11, [
+                                                                      "Some record fields are undefined:",
+                                                                      /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
+                                                                              /* Close_box */0,
+                                                                              /* End_of_format */0
+                                                                            ])])
+                                                                    ])
+                                                                ]),
+                                                              "@[<hov>Some record fields are undefined:%a@]"
+                                                            ]), print_labels, param[0]);
+                                          case 12 : 
+                                              return Curry._2(Format.fprintf(ppf$1, /* Format */[
+                                                              /* String_literal */Block.__(11, [
+                                                                  "The record field ",
+                                                                  /* Alpha */Block.__(15, [/* String_literal */Block.__(11, [
+                                                                          " is not mutable",
+                                                                          /* End_of_format */0
+                                                                        ])])
+                                                                ]),
+                                                              "The record field %a is not mutable"
+                                                            ]), longident, param[0]);
+                                          case 13 : 
+                                              var lid$1 = param[4];
+                                              var p = param[3];
+                                              var kind = param[2];
+                                              var ty$1 = param[1];
+                                              reset(/* () */0);
+                                              mark_loops(ty$1);
+                                              Curry._3(Format.fprintf(ppf$1, /* Format */[
+                                                        /* Formatting_gen */Block.__(18, [
+                                                            /* Open_box */Block.__(1, [/* Format */[
+                                                                  /* End_of_format */0,
+                                                                  ""
+                                                                ]]),
+                                                            /* Formatting_gen */Block.__(18, [
+                                                                /* Open_box */Block.__(1, [/* Format */[
+                                                                      /* String_literal */Block.__(11, [
+                                                                          "<2>",
                                                                           /* End_of_format */0
                                                                         ]),
-                                                                      "but is here used with type"
-                                                                    ]);
-                                                        }));
-                                                  if (param[3]) {
-                                                    return Curry._2(Format.fprintf(ppf$1, /* Format */[
-                                                                    /* Char_literal */Block.__(12, [
-                                                                        /* "." */46,
+                                                                      "<2>"
+                                                                    ]]),
+                                                                /* String */Block.__(2, [
+                                                                    /* No_padding */0,
+                                                                    /* String_literal */Block.__(11, [
+                                                                        " type",
                                                                         /* Formatting_lit */Block.__(17, [
-                                                                            /* Flush_newline */4,
-                                                                            /* Formatting_gen */Block.__(18, [
-                                                                                /* Open_box */Block.__(1, [/* Format */[
-                                                                                      /* String_literal */Block.__(11, [
-                                                                                          "<hov>",
-                                                                                          /* End_of_format */0
-                                                                                        ]),
-                                                                                      "<hov>"
-                                                                                    ]]),
-                                                                                /* String */Block.__(2, [
-                                                                                    /* No_padding */0,
+                                                                            /* Break */Block.__(0, [
+                                                                                "@ ",
+                                                                                1,
+                                                                                0
+                                                                              ]),
+                                                                            /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
+                                                                                    /* Close_box */0,
                                                                                     /* Formatting_lit */Block.__(17, [
                                                                                         /* Break */Block.__(0, [
                                                                                             "@ ",
                                                                                             1,
                                                                                             0
                                                                                           ]),
+                                                                                        /* End_of_format */0
+                                                                                      ])
+                                                                                  ])])
+                                                                          ])
+                                                                      ])
+                                                                  ])
+                                                              ])
+                                                          ]),
+                                                        "@[@[<2>%s type@ %a@]@ "
+                                                      ]), param[0], type_expr$1, ty$1);
+                                              Curry._5(Format.fprintf(ppf$1, /* Format */[
+                                                        /* String_literal */Block.__(11, [
+                                                            "The ",
+                                                            /* String */Block.__(2, [
+                                                                /* No_padding */0,
+                                                                /* Char_literal */Block.__(12, [
+                                                                    /* " " */32,
+                                                                    /* Alpha */Block.__(15, [/* String_literal */Block.__(11, [
+                                                                            " does not belong to type ",
+                                                                            /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
+                                                                                    /* Close_box */0,
+                                                                                    /* End_of_format */0
+                                                                                  ])])
+                                                                          ])])
+                                                                  ])
+                                                              ])
+                                                          ]),
+                                                        "The %s %a does not belong to type %a@]"
+                                                      ]), kind === "record" ? "field" : "constructor", longident, lid$1, path, p);
+                                              if (kind === "record") {
+                                                var ppf$2 = ppf$1;
+                                                var env$3 = env$2;
+                                                var p$1 = p;
+                                                var lid$2 = lid$1;
+                                                return spellcheck_simple(ppf$2, fold_labels, (function (d) {
+                                                                if (compare_type_path(env$3, p$1, get_type_path$1(env$3, d))) {
+                                                                  return d[/* lbl_name */0];
+                                                                } else {
+                                                                  return "";
+                                                                }
+                                                              }))(env$3, lid$2);
+                                              } else {
+                                                var ppf$3 = ppf$1;
+                                                var env$4 = env$2;
+                                                var p$2 = p;
+                                                var lid$3 = lid$1;
+                                                return spellcheck_simple(ppf$3, fold_constructors, (function (d) {
+                                                                if (compare_type_path(env$4, p$2, get_type_path$2(env$4, d))) {
+                                                                  return d[/* cstr_name */0];
+                                                                } else {
+                                                                  return "";
+                                                                }
+                                                              }))(env$4, lid$3);
+                                              }
+                                          case 14 : 
+                                              var lid$4 = param[1];
+                                              var kind$1 = param[0];
+                                              var name = kind$1 === "record" ? "field" : "constructor";
+                                              var ppf$4 = ppf$1;
+                                              var env$5 = env$2;
+                                              var param$1 = param[2];
+                                              var tpl = param[3];
+                                              var txt1 = function (ppf) {
+                                                return Curry._4(Format.fprintf(ppf, /* Format */[
+                                                                /* String_literal */Block.__(11, [
+                                                                    "The ",
+                                                                    /* String */Block.__(2, [
+                                                                        /* No_padding */0,
+                                                                        /* Char_literal */Block.__(12, [
+                                                                            /* " " */32,
+                                                                            /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
+                                                                                    /* Break */Block.__(0, [
+                                                                                        "@ ",
+                                                                                        1,
+                                                                                        0
+                                                                                      ]),
+                                                                                    /* String_literal */Block.__(11, [
+                                                                                        "belongs to the ",
                                                                                         /* String */Block.__(2, [
                                                                                             /* No_padding */0,
-                                                                                            /* Formatting_lit */Block.__(17, [
-                                                                                                /* Close_box */0,
+                                                                                            /* String_literal */Block.__(11, [
+                                                                                                " type",
                                                                                                 /* End_of_format */0
                                                                                               ])
                                                                                           ])
                                                                                       ])
+                                                                                  ])])
+                                                                          ])
+                                                                      ])
+                                                                  ]),
+                                                                "The %s %a@ belongs to the %s type"
+                                                              ]), name, longident, lid$4, kind$1);
+                                              };
+                                              var txt2 = function (ppf) {
+                                                return Curry._4(Format.fprintf(ppf, /* Format */[
+                                                                /* String_literal */Block.__(11, [
+                                                                    "The ",
+                                                                    /* String */Block.__(2, [
+                                                                        /* No_padding */0,
+                                                                        /* Char_literal */Block.__(12, [
+                                                                            /* " " */32,
+                                                                            /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
+                                                                                    /* Break */Block.__(0, [
+                                                                                        "@ ",
+                                                                                        1,
+                                                                                        0
+                                                                                      ]),
+                                                                                    /* String_literal */Block.__(11, [
+                                                                                        "belongs to one of the following ",
+                                                                                        /* String */Block.__(2, [
+                                                                                            /* No_padding */0,
+                                                                                            /* String_literal */Block.__(11, [
+                                                                                                " types:",
+                                                                                                /* End_of_format */0
+                                                                                              ])
+                                                                                          ])
+                                                                                      ])
+                                                                                  ])])
+                                                                          ])
+                                                                      ])
+                                                                  ]),
+                                                                "The %s %a@ belongs to one of the following %s types:"
+                                                              ]), name, longident, lid$4, kind$1);
+                                              };
+                                              var txt3 = function (ppf) {
+                                                return Curry._2(Format.fprintf(ppf, /* Format */[
+                                                                /* String_literal */Block.__(11, [
+                                                                    "but a ",
+                                                                    /* String */Block.__(2, [
+                                                                        /* No_padding */0,
+                                                                        /* String_literal */Block.__(11, [
+                                                                            " was expected belonging to the ",
+                                                                            /* String */Block.__(2, [
+                                                                                /* No_padding */0,
+                                                                                /* String_literal */Block.__(11, [
+                                                                                    " type",
+                                                                                    /* End_of_format */0
                                                                                   ])
                                                                               ])
                                                                           ])
-                                                                      ]),
-                                                                    ".@.@[<hov>%s@ %s@]"
-                                                                  ]), "This simple coercion was not fully general.", "Consider using a double coercion.");
-                                                  } else {
-                                                    return 0;
-                                                  }
-                                              case 26 : 
-                                                  var ty$4 = param[1];
-                                                  reset(/* () */0);
-                                                  mark_loops(ty$4);
-                                                  if (param[0]) {
-                                                    Format.fprintf(ppf$1, /* Format */[
-                                                          /* String_literal */Block.__(11, [
-                                                              "This function expects too many arguments,",
-                                                              /* Formatting_lit */Block.__(17, [
-                                                                  /* Break */Block.__(0, [
-                                                                      "@ ",
-                                                                      1,
-                                                                      0
-                                                                    ]),
+                                                                      ])
+                                                                  ]),
+                                                                "but a %s was expected belonging to the %s type"
+                                                              ]), name, kind$1);
+                                              };
+                                              var tp0$prime = param$1[1];
+                                              var tp0 = param$1[0];
+                                              return wrap_printing_env(env$5, (function () {
+                                                            reset(/* () */0);
+                                                            List.iter((function (param) {
+                                                                    path_same_name(tp0, param[0]);
+                                                                    return path_same_name(tp0$prime, param[1]);
+                                                                  }), tpl);
+                                                            if (tpl) {
+                                                              if (tpl[1]) {
+                                                                return Curry._6(Format.fprintf(ppf$4, /* Format */[
+                                                                                /* Formatting_gen */Block.__(18, [
+                                                                                    /* Open_box */Block.__(1, [/* Format */[
+                                                                                          /* End_of_format */0,
+                                                                                          ""
+                                                                                        ]]),
+                                                                                    /* Theta */Block.__(16, [/* Formatting_lit */Block.__(17, [
+                                                                                            /* Break */Block.__(0, [
+                                                                                                "@;<1 2>",
+                                                                                                1,
+                                                                                                2
+                                                                                              ]),
+                                                                                            /* Formatting_gen */Block.__(18, [
+                                                                                                /* Open_box */Block.__(1, [/* Format */[
+                                                                                                      /* String_literal */Block.__(11, [
+                                                                                                          "<hv>",
+                                                                                                          /* End_of_format */0
+                                                                                                        ]),
+                                                                                                      "<hv>"
+                                                                                                    ]]),
+                                                                                                /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
+                                                                                                        /* Close_box */0,
+                                                                                                        /* Formatting_lit */Block.__(17, [
+                                                                                                            /* Break */Block.__(0, [
+                                                                                                                "@ ",
+                                                                                                                1,
+                                                                                                                0
+                                                                                                              ]),
+                                                                                                            /* Theta */Block.__(16, [/* Formatting_lit */Block.__(17, [
+                                                                                                                    /* Break */Block.__(0, [
+                                                                                                                        "@;<1 2>",
+                                                                                                                        1,
+                                                                                                                        2
+                                                                                                                      ]),
+                                                                                                                    /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
+                                                                                                                            /* Close_box */0,
+                                                                                                                            /* End_of_format */0
+                                                                                                                          ])])
+                                                                                                                  ])])
+                                                                                                          ])
+                                                                                                      ])])
+                                                                                              ])
+                                                                                          ])])
+                                                                                  ]),
+                                                                                "@[%t@;<1 2>@[<hv>%a@]@ %t@;<1 2>%a@]"
+                                                                              ]), txt2, type_path_list, tpl, txt3, (function (param, param$1) {
+                                                                              return type_path_expansion(tp0, param, param$1);
+                                                                            }), tp0$prime);
+                                                              } else {
+                                                                var match = tpl[0];
+                                                                var tp = match[0];
+                                                                return Curry._6(Format.fprintf(ppf$4, /* Format */[
+                                                                                /* Formatting_gen */Block.__(18, [
+                                                                                    /* Open_box */Block.__(1, [/* Format */[
+                                                                                          /* End_of_format */0,
+                                                                                          ""
+                                                                                        ]]),
+                                                                                    /* Theta */Block.__(16, [/* Formatting_lit */Block.__(17, [
+                                                                                            /* Break */Block.__(0, [
+                                                                                                "@;<1 2>",
+                                                                                                1,
+                                                                                                2
+                                                                                              ]),
+                                                                                            /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
+                                                                                                    /* Break */Block.__(0, [
+                                                                                                        "@ ",
+                                                                                                        1,
+                                                                                                        0
+                                                                                                      ]),
+                                                                                                    /* Theta */Block.__(16, [/* Formatting_lit */Block.__(17, [
+                                                                                                            /* Break */Block.__(0, [
+                                                                                                                "@;<1 2>",
+                                                                                                                1,
+                                                                                                                2
+                                                                                                              ]),
+                                                                                                            /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
+                                                                                                                    /* Close_box */0,
+                                                                                                                    /* End_of_format */0
+                                                                                                                  ])])
+                                                                                                          ])])
+                                                                                                  ])])
+                                                                                          ])])
+                                                                                  ]),
+                                                                                "@[%t@;<1 2>%a@ %t@;<1 2>%a@]"
+                                                                              ]), txt1, (function (param, param$1) {
+                                                                              return type_path_expansion(tp, param, param$1);
+                                                                            }), match[1], txt3, (function (param, param$1) {
+                                                                              return type_path_expansion(tp0, param, param$1);
+                                                                            }), tp0$prime);
+                                                              }
+                                                            } else {
+                                                              throw [
+                                                                    Caml_builtin_exceptions.assert_failure,
+                                                                    [
+                                                                      "printtyp.ml",
+                                                                      1498,
+                                                                      12
+                                                                    ]
+                                                                  ];
+                                                            }
+                                                          }));
+                                          case 15 : 
+                                              return Curry._1(Format.fprintf(ppf$1, /* Format */[
+                                                              /* String */Block.__(2, [
+                                                                  /* No_padding */0,
                                                                   /* End_of_format */0
-                                                                ])
-                                                            ]),
-                                                          "This function expects too many arguments,@ "
-                                                        ]);
-                                                    return Curry._2(Format.fprintf(ppf$1, /* Format */[
-                                                                    /* String_literal */Block.__(11, [
-                                                                        "it should have type",
-                                                                        /* Formatting_lit */Block.__(17, [
-                                                                            /* Break */Block.__(0, [
-                                                                                "@ ",
-                                                                                1,
-                                                                                0
-                                                                              ]),
-                                                                            /* Alpha */Block.__(15, [/* End_of_format */0])
-                                                                          ])
-                                                                      ]),
-                                                                    "it should have type@ %a"
-                                                                  ]), type_expr$1, ty$4);
-                                                  } else {
-                                                    Format.fprintf(ppf$1, /* Format */[
-                                                          /* String_literal */Block.__(11, [
-                                                              "This expression should not be a function,",
-                                                              /* Formatting_lit */Block.__(17, [
-                                                                  /* Break */Block.__(0, [
-                                                                      "@ ",
-                                                                      1,
-                                                                      0
-                                                                    ]),
-                                                                  /* End_of_format */0
-                                                                ])
-                                                            ]),
-                                                          "This expression should not be a function,@ "
-                                                        ]);
-                                                    return Curry._2(Format.fprintf(ppf$1, /* Format */[
-                                                                    /* String_literal */Block.__(11, [
-                                                                        "the expected type is",
-                                                                        /* Formatting_lit */Block.__(17, [
-                                                                            /* Break */Block.__(0, [
-                                                                                "@ ",
-                                                                                1,
-                                                                                0
-                                                                              ]),
-                                                                            /* Alpha */Block.__(15, [/* End_of_format */0])
-                                                                          ])
-                                                                      ]),
-                                                                    "the expected type is@ %a"
-                                                                  ]), type_expr$1, ty$4);
-                                                  }
-                                              case 27 : 
-                                                  var ty$5 = param[1];
-                                                  var label_mark = function (l) {
-                                                    if (l === "") {
-                                                      return "but its first argument is not labelled";
-                                                    } else {
-                                                      return Curry._1(Format.sprintf(/* Format */[
-                                                                      /* String_literal */Block.__(11, [
-                                                                          "but its first argument is labelled ",
-                                                                          /* String */Block.__(2, [
-                                                                              /* No_padding */0,
-                                                                              /* End_of_format */0
-                                                                            ])
-                                                                        ]),
-                                                                      "but its first argument is labelled %s"
-                                                                    ]), prefixed_label_name(l));
-                                                    }
-                                                  };
-                                                  reset(/* () */0);
-                                                  mark_loops(ty$5);
-                                                  return Curry._3(Format.fprintf(ppf$1, /* Format */[
+                                                                ]),
+                                                              "%s"
+                                                            ]), param[0]);
+                                          case 16 : 
+                                              var ty$2 = param[0];
+                                              reset(/* () */0);
+                                              mark_loops(ty$2);
+                                              return Curry._3(Format.fprintf(ppf$1, /* Format */[
+                                                              /* Formatting_gen */Block.__(18, [
+                                                                  /* Open_box */Block.__(1, [/* Format */[
+                                                                        /* String_literal */Block.__(11, [
+                                                                            "<v>",
+                                                                            /* End_of_format */0
+                                                                          ]),
+                                                                        "<v>"
+                                                                      ]]),
                                                                   /* Formatting_gen */Block.__(18, [
                                                                       /* Open_box */Block.__(1, [/* Format */[
-                                                                            /* String_literal */Block.__(11, [
-                                                                                "<v>",
-                                                                                /* End_of_format */0
-                                                                              ]),
-                                                                            "<v>"
+                                                                            /* End_of_format */0,
+                                                                            ""
                                                                           ]]),
-                                                                      /* Formatting_gen */Block.__(18, [
-                                                                          /* Open_box */Block.__(1, [/* Format */[
-                                                                                /* String_literal */Block.__(11, [
-                                                                                    "<2>",
-                                                                                    /* End_of_format */0
-                                                                                  ]),
-                                                                                "<2>"
-                                                                              ]]),
-                                                                          /* String_literal */Block.__(11, [
-                                                                              "This function should have type",
-                                                                              /* Formatting_lit */Block.__(17, [
-                                                                                  /* Break */Block.__(0, [
-                                                                                      "@ ",
-                                                                                      1,
-                                                                                      0
-                                                                                    ]),
-                                                                                  /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
-                                                                                          /* Close_box */0,
-                                                                                          /* Formatting_lit */Block.__(17, [
-                                                                                              /* Break */Block.__(0, [
-                                                                                                  "@,",
-                                                                                                  0,
-                                                                                                  0
-                                                                                                ]),
+                                                                      /* String_literal */Block.__(11, [
+                                                                          "This expression has type",
+                                                                          /* Formatting_lit */Block.__(17, [
+                                                                              /* Break */Block.__(0, [
+                                                                                  "@;<1 2>",
+                                                                                  1,
+                                                                                  2
+                                                                                ]),
+                                                                              /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
+                                                                                      /* Close_box */0,
+                                                                                      /* Formatting_lit */Block.__(17, [
+                                                                                          /* Break */Block.__(0, [
+                                                                                              "@,",
+                                                                                              0,
+                                                                                              0
+                                                                                            ]),
+                                                                                          /* String_literal */Block.__(11, [
+                                                                                              "It has no method ",
                                                                                               /* String */Block.__(2, [
                                                                                                   /* No_padding */0,
                                                                                                   /* Formatting_lit */Block.__(17, [
@@ -64712,188 +64350,550 @@ register_error_of_exn((function (param) {
                                                                                                     ])
                                                                                                 ])
                                                                                             ])
-                                                                                        ])])
-                                                                                ])
+                                                                                        ])
+                                                                                    ])])
                                                                             ])
                                                                         ])
-                                                                    ]),
-                                                                  "@[<v>@[<2>This function should have type@ %a@]@,%s@]"
-                                                                ]), type_expr$1, ty$5, label_mark(param[0]));
-                                              case 28 : 
-                                                  var ty$6 = param[1];
-                                                  reset(/* () */0);
-                                                  mark_loops(ty$6);
-                                                  Curry._2(Format.fprintf(ppf$1, /* Format */[
-                                                            /* String_literal */Block.__(11, [
-                                                                "This `let module' expression has type",
-                                                                /* Formatting_lit */Block.__(17, [
-                                                                    /* Break */Block.__(0, [
-                                                                        "@ ",
-                                                                        1,
-                                                                        0
-                                                                      ]),
-                                                                    /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
-                                                                            /* Break */Block.__(0, [
-                                                                                "@ ",
-                                                                                1,
-                                                                                0
-                                                                              ]),
-                                                                            /* End_of_format */0
-                                                                          ])])
-                                                                  ])
-                                                              ]),
-                                                            "This `let module' expression has type@ %a@ "
-                                                          ]), type_expr$1, ty$6);
-                                                  return Curry._1(Format.fprintf(ppf$1, /* Format */[
-                                                                  /* String_literal */Block.__(11, [
-                                                                      "In this type, the locally bound module name ",
-                                                                      /* String */Block.__(2, [
-                                                                          /* No_padding */0,
-                                                                          /* String_literal */Block.__(11, [
-                                                                              " escapes its scope",
-                                                                              /* End_of_format */0
-                                                                            ])
-                                                                        ])
-                                                                    ]),
-                                                                  "In this type, the locally bound module name %s escapes its scope"
-                                                                ]), param[0]);
-                                              case 29 : 
-                                                  return Curry._2(Format.fprintf(ppf$1, /* Format */[
-                                                                  /* String_literal */Block.__(11, [
-                                                                      "The instance variable ",
-                                                                      /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
-                                                                              /* Break */Block.__(0, [
-                                                                                  "@ ",
-                                                                                  1,
-                                                                                  0
-                                                                                ]),
-                                                                              /* String_literal */Block.__(11, [
-                                                                                  "cannot be accessed from the definition of another instance variable",
-                                                                                  /* End_of_format */0
-                                                                                ])
-                                                                            ])])
-                                                                    ]),
-                                                                  "The instance variable %a@ cannot be accessed from the definition of another instance variable"
-                                                                ]), longident, param[0]);
-                                              case 30 : 
-                                                  return Curry._2(Format.fprintf(ppf$1, /* Format */[
-                                                                  /* String_literal */Block.__(11, [
-                                                                      "The type ",
-                                                                      /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
-                                                                              /* Break */Block.__(0, [
-                                                                                  "@ ",
-                                                                                  1,
-                                                                                  0
-                                                                                ]),
-                                                                              /* String_literal */Block.__(11, [
-                                                                                  "is not a variant type",
-                                                                                  /* End_of_format */0
-                                                                                ])
-                                                                            ])])
-                                                                    ]),
-                                                                  "The type %a@ is not a variant type"
-                                                                ]), longident, param[0]);
-                                              case 31 : 
-                                                  var kind$2 = param[0];
-                                                  return report_unification_error(ppf$1, env$2, undefined, param[1], (function (ppf) {
-                                                                return Curry._1(Format.fprintf(ppf, /* Format */[
-                                                                                /* String_literal */Block.__(11, [
-                                                                                    "This ",
-                                                                                    /* String */Block.__(2, [
-                                                                                        /* No_padding */0,
-                                                                                        /* String_literal */Block.__(11, [
-                                                                                            " has type",
-                                                                                            /* End_of_format */0
-                                                                                          ])
-                                                                                      ])
-                                                                                  ]),
-                                                                                "This %s has type"
-                                                                              ]), kind$2);
-                                                              }), (function (ppf) {
-                                                                return Format.fprintf(ppf, /* Format */[
-                                                                            /* String_literal */Block.__(11, [
-                                                                                "which is less general than",
-                                                                                /* End_of_format */0
-                                                                              ]),
-                                                                            "which is less general than"
-                                                                          ]);
-                                                              }));
-                                              case 32 : 
-                                                  return Curry._2(Format.fprintf(ppf$1, /* Format */[
-                                                                  /* String_literal */Block.__(11, [
-                                                                      "This expression is packed module, but the expected type is",
-                                                                      /* Formatting_lit */Block.__(17, [
-                                                                          /* Break */Block.__(0, [
-                                                                              "@ ",
-                                                                              1,
-                                                                              0
-                                                                            ]),
+                                                                    ])
+                                                                ]),
+                                                              "@[<v>@[This expression has type@;<1 2>%a@]@,It has no method %s@]"
+                                                            ]), type_expr$1, ty$2, param[1]);
+                                          case 17 : 
+                                              return Curry._1(Format.fprintf(ppf$1, /* Format */[
+                                                              /* String_literal */Block.__(11, [
+                                                                  "This expression has no method ",
+                                                                  /* String */Block.__(2, [
+                                                                      /* No_padding */0,
+                                                                      /* End_of_format */0
+                                                                    ])
+                                                                ]),
+                                                              "This expression has no method %s"
+                                                            ]), param[0]);
+                                          case 18 : 
+                                              return Curry._2(Format.fprintf(ppf$1, /* Format */[
+                                                              /* String_literal */Block.__(11, [
+                                                                  "Cannot instantiate the virtual class ",
+                                                                  /* Alpha */Block.__(15, [/* End_of_format */0])
+                                                                ]),
+                                                              "Cannot instantiate the virtual class %a"
+                                                            ]), longident, param[0]);
+                                          case 19 : 
+                                              return Curry._2(Format.fprintf(ppf$1, /* Format */[
+                                                              /* String_literal */Block.__(11, [
+                                                                  "Cannot create values of the private type ",
+                                                                  /* Alpha */Block.__(15, [/* End_of_format */0])
+                                                                ]),
+                                                              "Cannot create values of the private type %a"
+                                                            ]), type_expr$1, param[0]);
+                                          case 20 : 
+                                              return Curry._4(Format.fprintf(ppf$1, /* Format */[
+                                                              /* String_literal */Block.__(11, [
+                                                                  "Cannot assign field ",
+                                                                  /* Alpha */Block.__(15, [/* String_literal */Block.__(11, [
+                                                                          " of the private type ",
                                                                           /* Alpha */Block.__(15, [/* End_of_format */0])
-                                                                        ])
-                                                                    ]),
-                                                                  "This expression is packed module, but the expected type is@ %a"
-                                                                ]), type_expr$1, param[0]);
-                                              case 33 : 
-                                                  return report_unification_error(ppf$1, env$2, undefined, param[0], (function (ppf) {
-                                                                return Format.fprintf(ppf, /* Format */[
-                                                                            /* String_literal */Block.__(11, [
-                                                                                "Recursive local constraint when unifying",
-                                                                                /* End_of_format */0
-                                                                              ]),
-                                                                            "Recursive local constraint when unifying"
-                                                                          ]);
-                                                              }), (function (ppf) {
-                                                                return Format.fprintf(ppf, /* Format */[
-                                                                            /* String_literal */Block.__(11, [
-                                                                                "with",
-                                                                                /* End_of_format */0
-                                                                              ]),
-                                                                            "with"
-                                                                          ]);
-                                                              }));
-                                              case 34 : 
-                                                  return Curry._4(Format.fprintf(ppf$1, /* Format */[
-                                                                  /* Formatting_gen */Block.__(18, [
-                                                                      /* Open_box */Block.__(1, [/* Format */[
-                                                                            /* End_of_format */0,
-                                                                            ""
-                                                                          ]]),
+                                                                        ])])
+                                                                ]),
+                                                              "Cannot assign field %a of the private type %a"
+                                                            ]), longident, param[0], type_expr$1, param[1]);
+                                          case 21 : 
+                                              return Curry._1(Format.fprintf(ppf$1, /* Format */[
+                                                              /* String_literal */Block.__(11, [
+                                                                  "Unbound instance variable ",
+                                                                  /* String */Block.__(2, [
+                                                                      /* No_padding */0,
+                                                                      /* End_of_format */0
+                                                                    ])
+                                                                ]),
+                                                              "Unbound instance variable %s"
+                                                            ]), param[0]);
+                                          case 22 : 
+                                              var v = param[1];
+                                              if (param[0]) {
+                                                return Curry._1(Format.fprintf(ppf$1, /* Format */[
+                                                                /* String_literal */Block.__(11, [
+                                                                    "The instance variable ",
+                                                                    /* String */Block.__(2, [
+                                                                        /* No_padding */0,
+                                                                        /* String_literal */Block.__(11, [
+                                                                            " is not mutable",
+                                                                            /* End_of_format */0
+                                                                          ])
+                                                                      ])
+                                                                  ]),
+                                                                "The instance variable %s is not mutable"
+                                                              ]), v);
+                                              } else {
+                                                return Curry._1(Format.fprintf(ppf$1, /* Format */[
+                                                                /* String_literal */Block.__(11, [
+                                                                    "The value ",
+                                                                    /* String */Block.__(2, [
+                                                                        /* No_padding */0,
+                                                                        /* String_literal */Block.__(11, [
+                                                                            " is not an instance variable",
+                                                                            /* End_of_format */0
+                                                                          ])
+                                                                      ])
+                                                                  ]),
+                                                                "The value %s is not an instance variable"
+                                                              ]), v);
+                                              }
+                                          case 23 : 
+                                              var ppf$5 = ppf$1;
+                                              var env$6 = env$2;
+                                              var tr1 = param[0];
+                                              var txt1$1 = "is not a subtype of";
+                                              var tr2 = param[1];
+                                              return wrap_printing_env(env$6, (function () {
+                                                            reset(/* () */0);
+                                                            var tr1$1 = List.map(prepare_expansion, tr1);
+                                                            var tr2$1 = List.map(prepare_expansion, tr2);
+                                                            var partial_arg = tr2$1 === /* [] */0;
+                                                            Curry._2(Format.fprintf(ppf$5, /* Format */[
+                                                                      /* Formatting_gen */Block.__(18, [
+                                                                          /* Open_box */Block.__(1, [/* Format */[
+                                                                                /* String_literal */Block.__(11, [
+                                                                                    "<v>",
+                                                                                    /* End_of_format */0
+                                                                                  ]),
+                                                                                "<v>"
+                                                                              ]]),
+                                                                          /* Alpha */Block.__(15, [/* End_of_format */0])
+                                                                        ]),
+                                                                      "@[<v>%a"
+                                                                    ]), (function (param, param$1) {
+                                                                    return trace$1(true, partial_arg, txt1$1, param, param$1);
+                                                                  }), tr1$1);
+                                                            if (tr2$1 === /* [] */0) {
+                                                              return Format.fprintf(ppf$5, /* Format */[
+                                                                          /* Formatting_lit */Block.__(17, [
+                                                                              /* Close_box */0,
+                                                                              /* End_of_format */0
+                                                                            ]),
+                                                                          "@]"
+                                                                        ]);
+                                                            } else {
+                                                              var mis = mismatch(true, tr2$1);
+                                                              var partial_arg$1 = mis === undefined;
+                                                              return Curry._3(Format.fprintf(ppf$5, /* Format */[
+                                                                              /* Alpha */Block.__(15, [/* Theta */Block.__(16, [/* Formatting_lit */Block.__(17, [
+                                                                                          /* Close_box */0,
+                                                                                          /* End_of_format */0
+                                                                                        ])])]),
+                                                                              "%a%t@]"
+                                                                            ]), (function (param, param$1) {
+                                                                            return trace$1(false, partial_arg$1, "is not compatible with type", param, param$1);
+                                                                          }), tr2$1, (function (param) {
+                                                                            return explanation(true, mis, param);
+                                                                          }));
+                                                            }
+                                                          }));
+                                          case 24 : 
+                                              return Curry._1(Format.fprintf(ppf$1, /* Format */[
+                                                              /* String_literal */Block.__(11, [
+                                                                  "The instance variable ",
+                                                                  /* String */Block.__(2, [
+                                                                      /* No_padding */0,
                                                                       /* String_literal */Block.__(11, [
-                                                                          "The GADT constructor ",
-                                                                          /* String */Block.__(2, [
-                                                                              /* No_padding */0,
-                                                                              /* String_literal */Block.__(11, [
-                                                                                  " of type ",
-                                                                                  /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
+                                                                          " is overridden several times",
+                                                                          /* End_of_format */0
+                                                                        ])
+                                                                    ])
+                                                                ]),
+                                                              "The instance variable %s is overridden several times"
+                                                            ]), param[0]);
+                                          case 25 : 
+                                              var ty$prime = param[1];
+                                              var ty$3 = param[0];
+                                              report_unification_error(ppf$1, env$2, undefined, param[2], (function (ppf) {
+                                                      var match = prepare_expansion(/* tuple */[
+                                                            ty$3,
+                                                            ty$prime
+                                                          ]);
+                                                      var ty$4 = match[0];
+                                                      return Curry._2(Format.fprintf(ppf, /* Format */[
+                                                                      /* String_literal */Block.__(11, [
+                                                                          "This expression cannot be coerced to type",
+                                                                          /* Formatting_lit */Block.__(17, [
+                                                                              /* Break */Block.__(0, [
+                                                                                  "@;<1 2>",
+                                                                                  1,
+                                                                                  2
+                                                                                ]),
+                                                                              /* Alpha */Block.__(15, [/* Char_literal */Block.__(12, [
+                                                                                      /* ";" */59,
+                                                                                      /* Formatting_lit */Block.__(17, [
                                                                                           /* Break */Block.__(0, [
                                                                                               "@ ",
                                                                                               1,
                                                                                               0
                                                                                             ]),
-                                                                                          /* String */Block.__(2, [
-                                                                                              /* No_padding */0,
-                                                                                              /* Char_literal */Block.__(12, [
-                                                                                                  /* "." */46,
-                                                                                                  /* Formatting_lit */Block.__(17, [
-                                                                                                      /* Close_box */0,
-                                                                                                      /* End_of_format */0
-                                                                                                    ])
-                                                                                                ])
+                                                                                          /* String_literal */Block.__(11, [
+                                                                                              "it has type",
+                                                                                              /* End_of_format */0
                                                                                             ])
-                                                                                        ])])
-                                                                                ])
+                                                                                        ])
+                                                                                    ])])
                                                                             ])
+                                                                        ]),
+                                                                      "This expression cannot be coerced to type@;<1 2>%a;@ it has type"
+                                                                    ]), (function (param, param$1) {
+                                                                    return type_expansion(ty$4, param, param$1);
+                                                                  }), match[1]);
+                                                    }), (function (ppf) {
+                                                      return Format.fprintf(ppf, /* Format */[
+                                                                  /* String_literal */Block.__(11, [
+                                                                      "but is here used with type",
+                                                                      /* End_of_format */0
+                                                                    ]),
+                                                                  "but is here used with type"
+                                                                ]);
+                                                    }));
+                                              if (param[3]) {
+                                                return Curry._2(Format.fprintf(ppf$1, /* Format */[
+                                                                /* Char_literal */Block.__(12, [
+                                                                    /* "." */46,
+                                                                    /* Formatting_lit */Block.__(17, [
+                                                                        /* Flush_newline */4,
+                                                                        /* Formatting_gen */Block.__(18, [
+                                                                            /* Open_box */Block.__(1, [/* Format */[
+                                                                                  /* String_literal */Block.__(11, [
+                                                                                      "<hov>",
+                                                                                      /* End_of_format */0
+                                                                                    ]),
+                                                                                  "<hov>"
+                                                                                ]]),
+                                                                            /* String */Block.__(2, [
+                                                                                /* No_padding */0,
+                                                                                /* Formatting_lit */Block.__(17, [
+                                                                                    /* Break */Block.__(0, [
+                                                                                        "@ ",
+                                                                                        1,
+                                                                                        0
+                                                                                      ]),
+                                                                                    /* String */Block.__(2, [
+                                                                                        /* No_padding */0,
+                                                                                        /* Formatting_lit */Block.__(17, [
+                                                                                            /* Close_box */0,
+                                                                                            /* End_of_format */0
+                                                                                          ])
+                                                                                      ])
+                                                                                  ])
+                                                                              ])
+                                                                          ])
+                                                                      ])
+                                                                  ]),
+                                                                ".@.@[<hov>%s@ %s@]"
+                                                              ]), "This simple coercion was not fully general.", "Consider using a double coercion.");
+                                              } else {
+                                                return 0;
+                                              }
+                                          case 26 : 
+                                              var ty$4 = param[1];
+                                              reset(/* () */0);
+                                              mark_loops(ty$4);
+                                              if (param[0]) {
+                                                Format.fprintf(ppf$1, /* Format */[
+                                                      /* String_literal */Block.__(11, [
+                                                          "This function expects too many arguments,",
+                                                          /* Formatting_lit */Block.__(17, [
+                                                              /* Break */Block.__(0, [
+                                                                  "@ ",
+                                                                  1,
+                                                                  0
+                                                                ]),
+                                                              /* End_of_format */0
+                                                            ])
+                                                        ]),
+                                                      "This function expects too many arguments,@ "
+                                                    ]);
+                                                return Curry._2(Format.fprintf(ppf$1, /* Format */[
+                                                                /* String_literal */Block.__(11, [
+                                                                    "it should have type",
+                                                                    /* Formatting_lit */Block.__(17, [
+                                                                        /* Break */Block.__(0, [
+                                                                            "@ ",
+                                                                            1,
+                                                                            0
+                                                                          ]),
+                                                                        /* Alpha */Block.__(15, [/* End_of_format */0])
+                                                                      ])
+                                                                  ]),
+                                                                "it should have type@ %a"
+                                                              ]), type_expr$1, ty$4);
+                                              } else {
+                                                Format.fprintf(ppf$1, /* Format */[
+                                                      /* String_literal */Block.__(11, [
+                                                          "This expression should not be a function,",
+                                                          /* Formatting_lit */Block.__(17, [
+                                                              /* Break */Block.__(0, [
+                                                                  "@ ",
+                                                                  1,
+                                                                  0
+                                                                ]),
+                                                              /* End_of_format */0
+                                                            ])
+                                                        ]),
+                                                      "This expression should not be a function,@ "
+                                                    ]);
+                                                return Curry._2(Format.fprintf(ppf$1, /* Format */[
+                                                                /* String_literal */Block.__(11, [
+                                                                    "the expected type is",
+                                                                    /* Formatting_lit */Block.__(17, [
+                                                                        /* Break */Block.__(0, [
+                                                                            "@ ",
+                                                                            1,
+                                                                            0
+                                                                          ]),
+                                                                        /* Alpha */Block.__(15, [/* End_of_format */0])
+                                                                      ])
+                                                                  ]),
+                                                                "the expected type is@ %a"
+                                                              ]), type_expr$1, ty$4);
+                                              }
+                                          case 27 : 
+                                              var ty$5 = param[1];
+                                              var label_mark = function (l) {
+                                                if (l === "") {
+                                                  return "but its first argument is not labelled";
+                                                } else {
+                                                  return Curry._1(Format.sprintf(/* Format */[
+                                                                  /* String_literal */Block.__(11, [
+                                                                      "but its first argument is labelled ",
+                                                                      /* String */Block.__(2, [
+                                                                          /* No_padding */0,
+                                                                          /* End_of_format */0
                                                                         ])
                                                                     ]),
-                                                                  "@[The GADT constructor %s of type %a@ %s.@]"
-                                                                ]), param[1], path, param[0], "must be qualified in this pattern");
-                                              
-                                            }
-                                          }
-                                        }));
-                          }), param[3]));
+                                                                  "but its first argument is labelled %s"
+                                                                ]), prefixed_label_name(l));
+                                                }
+                                              };
+                                              reset(/* () */0);
+                                              mark_loops(ty$5);
+                                              return Curry._3(Format.fprintf(ppf$1, /* Format */[
+                                                              /* Formatting_gen */Block.__(18, [
+                                                                  /* Open_box */Block.__(1, [/* Format */[
+                                                                        /* String_literal */Block.__(11, [
+                                                                            "<v>",
+                                                                            /* End_of_format */0
+                                                                          ]),
+                                                                        "<v>"
+                                                                      ]]),
+                                                                  /* Formatting_gen */Block.__(18, [
+                                                                      /* Open_box */Block.__(1, [/* Format */[
+                                                                            /* String_literal */Block.__(11, [
+                                                                                "<2>",
+                                                                                /* End_of_format */0
+                                                                              ]),
+                                                                            "<2>"
+                                                                          ]]),
+                                                                      /* String_literal */Block.__(11, [
+                                                                          "This function should have type",
+                                                                          /* Formatting_lit */Block.__(17, [
+                                                                              /* Break */Block.__(0, [
+                                                                                  "@ ",
+                                                                                  1,
+                                                                                  0
+                                                                                ]),
+                                                                              /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
+                                                                                      /* Close_box */0,
+                                                                                      /* Formatting_lit */Block.__(17, [
+                                                                                          /* Break */Block.__(0, [
+                                                                                              "@,",
+                                                                                              0,
+                                                                                              0
+                                                                                            ]),
+                                                                                          /* String */Block.__(2, [
+                                                                                              /* No_padding */0,
+                                                                                              /* Formatting_lit */Block.__(17, [
+                                                                                                  /* Close_box */0,
+                                                                                                  /* End_of_format */0
+                                                                                                ])
+                                                                                            ])
+                                                                                        ])
+                                                                                    ])])
+                                                                            ])
+                                                                        ])
+                                                                    ])
+                                                                ]),
+                                                              "@[<v>@[<2>This function should have type@ %a@]@,%s@]"
+                                                            ]), type_expr$1, ty$5, label_mark(param[0]));
+                                          case 28 : 
+                                              var ty$6 = param[1];
+                                              reset(/* () */0);
+                                              mark_loops(ty$6);
+                                              Curry._2(Format.fprintf(ppf$1, /* Format */[
+                                                        /* String_literal */Block.__(11, [
+                                                            "This `let module' expression has type",
+                                                            /* Formatting_lit */Block.__(17, [
+                                                                /* Break */Block.__(0, [
+                                                                    "@ ",
+                                                                    1,
+                                                                    0
+                                                                  ]),
+                                                                /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
+                                                                        /* Break */Block.__(0, [
+                                                                            "@ ",
+                                                                            1,
+                                                                            0
+                                                                          ]),
+                                                                        /* End_of_format */0
+                                                                      ])])
+                                                              ])
+                                                          ]),
+                                                        "This `let module' expression has type@ %a@ "
+                                                      ]), type_expr$1, ty$6);
+                                              return Curry._1(Format.fprintf(ppf$1, /* Format */[
+                                                              /* String_literal */Block.__(11, [
+                                                                  "In this type, the locally bound module name ",
+                                                                  /* String */Block.__(2, [
+                                                                      /* No_padding */0,
+                                                                      /* String_literal */Block.__(11, [
+                                                                          " escapes its scope",
+                                                                          /* End_of_format */0
+                                                                        ])
+                                                                    ])
+                                                                ]),
+                                                              "In this type, the locally bound module name %s escapes its scope"
+                                                            ]), param[0]);
+                                          case 29 : 
+                                              return Curry._2(Format.fprintf(ppf$1, /* Format */[
+                                                              /* String_literal */Block.__(11, [
+                                                                  "The instance variable ",
+                                                                  /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
+                                                                          /* Break */Block.__(0, [
+                                                                              "@ ",
+                                                                              1,
+                                                                              0
+                                                                            ]),
+                                                                          /* String_literal */Block.__(11, [
+                                                                              "cannot be accessed from the definition of another instance variable",
+                                                                              /* End_of_format */0
+                                                                            ])
+                                                                        ])])
+                                                                ]),
+                                                              "The instance variable %a@ cannot be accessed from the definition of another instance variable"
+                                                            ]), longident, param[0]);
+                                          case 30 : 
+                                              return Curry._2(Format.fprintf(ppf$1, /* Format */[
+                                                              /* String_literal */Block.__(11, [
+                                                                  "The type ",
+                                                                  /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
+                                                                          /* Break */Block.__(0, [
+                                                                              "@ ",
+                                                                              1,
+                                                                              0
+                                                                            ]),
+                                                                          /* String_literal */Block.__(11, [
+                                                                              "is not a variant type",
+                                                                              /* End_of_format */0
+                                                                            ])
+                                                                        ])])
+                                                                ]),
+                                                              "The type %a@ is not a variant type"
+                                                            ]), longident, param[0]);
+                                          case 31 : 
+                                              var kind$2 = param[0];
+                                              return report_unification_error(ppf$1, env$2, undefined, param[1], (function (ppf) {
+                                                            return Curry._1(Format.fprintf(ppf, /* Format */[
+                                                                            /* String_literal */Block.__(11, [
+                                                                                "This ",
+                                                                                /* String */Block.__(2, [
+                                                                                    /* No_padding */0,
+                                                                                    /* String_literal */Block.__(11, [
+                                                                                        " has type",
+                                                                                        /* End_of_format */0
+                                                                                      ])
+                                                                                  ])
+                                                                              ]),
+                                                                            "This %s has type"
+                                                                          ]), kind$2);
+                                                          }), (function (ppf) {
+                                                            return Format.fprintf(ppf, /* Format */[
+                                                                        /* String_literal */Block.__(11, [
+                                                                            "which is less general than",
+                                                                            /* End_of_format */0
+                                                                          ]),
+                                                                        "which is less general than"
+                                                                      ]);
+                                                          }));
+                                          case 32 : 
+                                              return Curry._2(Format.fprintf(ppf$1, /* Format */[
+                                                              /* String_literal */Block.__(11, [
+                                                                  "This expression is packed module, but the expected type is",
+                                                                  /* Formatting_lit */Block.__(17, [
+                                                                      /* Break */Block.__(0, [
+                                                                          "@ ",
+                                                                          1,
+                                                                          0
+                                                                        ]),
+                                                                      /* Alpha */Block.__(15, [/* End_of_format */0])
+                                                                    ])
+                                                                ]),
+                                                              "This expression is packed module, but the expected type is@ %a"
+                                                            ]), type_expr$1, param[0]);
+                                          case 33 : 
+                                              return report_unification_error(ppf$1, env$2, undefined, param[0], (function (ppf) {
+                                                            return Format.fprintf(ppf, /* Format */[
+                                                                        /* String_literal */Block.__(11, [
+                                                                            "Recursive local constraint when unifying",
+                                                                            /* End_of_format */0
+                                                                          ]),
+                                                                        "Recursive local constraint when unifying"
+                                                                      ]);
+                                                          }), (function (ppf) {
+                                                            return Format.fprintf(ppf, /* Format */[
+                                                                        /* String_literal */Block.__(11, [
+                                                                            "with",
+                                                                            /* End_of_format */0
+                                                                          ]),
+                                                                        "with"
+                                                                      ]);
+                                                          }));
+                                          case 34 : 
+                                              return Curry._4(Format.fprintf(ppf$1, /* Format */[
+                                                              /* Formatting_gen */Block.__(18, [
+                                                                  /* Open_box */Block.__(1, [/* Format */[
+                                                                        /* End_of_format */0,
+                                                                        ""
+                                                                      ]]),
+                                                                  /* String_literal */Block.__(11, [
+                                                                      "The GADT constructor ",
+                                                                      /* String */Block.__(2, [
+                                                                          /* No_padding */0,
+                                                                          /* String_literal */Block.__(11, [
+                                                                              " of type ",
+                                                                              /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
+                                                                                      /* Break */Block.__(0, [
+                                                                                          "@ ",
+                                                                                          1,
+                                                                                          0
+                                                                                        ]),
+                                                                                      /* String */Block.__(2, [
+                                                                                          /* No_padding */0,
+                                                                                          /* Char_literal */Block.__(12, [
+                                                                                              /* "." */46,
+                                                                                              /* Formatting_lit */Block.__(17, [
+                                                                                                  /* Close_box */0,
+                                                                                                  /* End_of_format */0
+                                                                                                ])
+                                                                                            ])
+                                                                                        ])
+                                                                                    ])])
+                                                                            ])
+                                                                        ])
+                                                                    ])
+                                                                ]),
+                                                              "@[The GADT constructor %s of type %a@ %s.@]"
+                                                            ]), param[1], path, param[0], "must be qualified in this pattern");
+                                          
+                                        }
+                                      }
+                                    }));
+                      }), param[3]);
         } else if (param[0] === Error_forward$1) {
-          return Js_primitive.some(param[1]);
+          return param[1];
         } else {
           return undefined;
         }
@@ -64910,7 +64910,7 @@ function enter_type$1(env, sdecl, id) {
         }), sdecl[/* ptype_params */1]);
   var decl_001 = /* type_arity */List.length(sdecl[/* ptype_params */1]);
   var decl_003 = /* type_private */sdecl[/* ptype_private */4];
-  var decl_004 = /* type_manifest */match !== undefined ? Js_primitive.some(newvar(undefined, /* () */0)) : undefined;
+  var decl_004 = /* type_manifest */match !== undefined ? newvar(undefined, /* () */0) : undefined;
   var decl_005 = /* type_variance */List.map((function () {
           return Types_003[/* full */1];
         }), sdecl[/* ptype_params */1]);
@@ -64933,7 +64933,7 @@ function enter_type$1(env, sdecl, id) {
 function is_fixed_type(sd) {
   var match = sd[/* ptype_manifest */5];
   if (match !== undefined && sd[/* ptype_kind */3] === /* Ptype_abstract */0 && sd[/* ptype_private */4] === /* Private */0) {
-    var _sty = Js_primitive.valFromOption(match);
+    var _sty = match;
     while(true) {
       var sty = _sty;
       var match$1 = sty[/* ptyp_desc */0];
@@ -64972,7 +64972,7 @@ function set_fixed_row(env, loc, p, decl) {
   var match = decl[/* type_manifest */4];
   var tm;
   if (match !== undefined) {
-    tm = expand_head(env, Js_primitive.valFromOption(match));
+    tm = expand_head(env, match);
   } else {
     throw [
           Caml_builtin_exceptions.assert_failure,
@@ -65171,7 +65171,7 @@ function make_params(env, params) {
 
 function make_constructor(env, type_path, type_params, sargs, sret_type) {
   if (sret_type !== undefined) {
-    var sret_type$1 = Js_primitive.valFromOption(sret_type);
+    var sret_type$1 = sret_type;
     var z = narrow(/* () */0);
     reset_type_variables(/* () */0);
     var targs = List.map((function (param) {
@@ -65202,9 +65202,9 @@ function make_constructor(env, type_path, type_params, sargs, sret_type) {
     widen(z);
     return /* tuple */[
             targs,
-            Js_primitive.some(tret_type),
+            tret_type,
             args,
-            Js_primitive.some(ret_type)
+            ret_type
           ];
   } else {
     var targs$1 = List.map((function (param) {
@@ -65239,7 +65239,7 @@ function generalize_decl(decl) {
   }
   var match$1 = decl[/* type_manifest */4];
   if (match$1 !== undefined) {
-    return iter_generalize$1([/* [] */0], Js_primitive.valFromOption(match$1));
+    return iter_generalize$1([/* [] */0], match$1);
   } else {
     return /* () */0;
   }
@@ -65458,7 +65458,7 @@ function check_coherence(env, loc, id, decl) {
   if (exit === 1) {
     var match$1 = decl[/* type_manifest */4];
     if (match$1 !== undefined) {
-      var ty = Js_primitive.valFromOption(match$1);
+      var ty = match$1;
       var match$2 = repr(ty)[/* desc */0];
       if (typeof match$2 === "number") {
         throw [
@@ -65882,7 +65882,7 @@ function compute_variance(env, visited, vari, ty) {
                       } else {
                         var match$1 = match[0];
                         if (match$1 !== undefined) {
-                          return compute_variance_rec(vari$1, Js_primitive.valFromOption(match$1));
+                          return compute_variance_rec(vari$1, match$1);
                         } else {
                           return /* () */0;
                         }
@@ -66116,7 +66116,7 @@ function compute_variance_gadt(env, check, rloc, decl, param) {
   var tl = param[0];
   var loc = rloc[1];
   if (ret_type_opt !== undefined) {
-    var match = repr(Js_primitive.valFromOption(ret_type_opt));
+    var match = repr(ret_type_opt);
     var match$1 = match[/* desc */0];
     if (typeof match$1 === "number") {
       throw [
@@ -66228,7 +66228,7 @@ function compute_variance_decl(env, check, decl, rloc) {
     var mn = match !== undefined ? /* :: */[
         /* tuple */[
           false,
-          Js_primitive.valFromOption(match)
+          match
         ],
         /* [] */0
       ] : /* [] */0;
@@ -66520,7 +66520,7 @@ function name_recursion(sdecl, id, decl) {
   if (typeof match === "number" && !(match !== 0 || decl[/* type_private */3])) {
     var match$1 = decl[/* type_manifest */4];
     if (match$1 !== undefined && is_fixed_type(sdecl)) {
-      var ty = repr(Js_primitive.valFromOption(match$1));
+      var ty = repr(match$1);
       var ty$prime = newty2(ty[/* level */1], ty[/* desc */0]);
       if (deep_occur(ty, ty$prime)) {
         var td_000 = /* Pident */Block.__(0, [id]);
@@ -66537,7 +66537,7 @@ function name_recursion(sdecl, id, decl) {
                 /* type_arity */decl[/* type_arity */1],
                 /* type_kind */decl[/* type_kind */2],
                 /* type_private */decl[/* type_private */3],
-                /* type_manifest */Js_primitive.some(ty$prime),
+                /* type_manifest */ty$prime,
                 /* type_variance */decl[/* type_variance */5],
                 /* type_newtype_level */decl[/* type_newtype_level */6],
                 /* type_loc */decl[/* type_loc */7],
@@ -66590,7 +66590,7 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
       set_type_used_callback(name, td, (function (old_callback) {
               var match = current_slot[0];
               if (match !== undefined) {
-                var slot$1 = Js_primitive.valFromOption(match);
+                var slot$1 = match;
                 slot$1[0] = /* :: */[
                   /* tuple */[
                     name,
@@ -66608,7 +66608,7 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
             }));
       return /* tuple */[
               id,
-              Js_primitive.some(slot)
+              slot
             ];
     } else {
       return /* tuple */[
@@ -66776,10 +66776,10 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
     var match$4;
     if (match$3 !== undefined) {
       var no_row = !is_fixed_type(sdecl);
-      var cty = transl_simple_type(env, no_row, Js_primitive.valFromOption(match$3));
+      var cty = transl_simple_type(env, no_row, match$3);
       match$4 = /* tuple */[
-        Js_primitive.some(cty),
-        Js_primitive.some(cty[/* ctyp_type */1])
+        cty,
+        cty[/* ctyp_type */1]
       ];
     } else {
       match$4 = /* tuple */[
@@ -66852,7 +66852,7 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
       set_fixed_row(env, sdecl[/* ptype_loc */7], match$5[0], decl);
     }
     if (man !== undefined) {
-      if (cyclic_abbrev(env, id, Js_primitive.valFromOption(man))) {
+      if (cyclic_abbrev(env, id, man)) {
         throw [
               $$Error$8,
               sdecl[/* ptype_loc */7],
@@ -66900,7 +66900,7 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
                       return newvar(undefined, /* () */0);
                     }), decl[/* type_params */0]);
               try {
-                return unify$2(env, newconstr(path, params), Js_primitive.valFromOption(match));
+                return unify$2(env, newconstr(path, params), match);
               }
               catch (raw_exn){
                 var exn = Js_exn.internalToOCamlException(raw_exn);
@@ -66980,7 +66980,7 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
                   $$Error$8,
                   sdecl[/* ptype_loc */7],
                   /* Unbound_type_var */Block.__(9, [
-                      Js_primitive.valFromOption(match),
+                      match,
                       decl
                     ])
                 ];
@@ -67051,7 +67051,7 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
                             return check_constraints_rec(env, sty[/* ptyp_loc */1], visited, ty);
                           }), match[/* pcd_args */1], param[/* cd_args */1]);
                     if (sret_type !== undefined && ret_type !== undefined) {
-                      return check_constraints_rec(env, Js_primitive.valFromOption(sret_type)[/* ptyp_loc */1], visited, Js_primitive.valFromOption(ret_type));
+                      return check_constraints_rec(env, sret_type[/* ptyp_loc */1], visited, ret_type);
                     } else {
                       return /* () */0;
                     }
@@ -67113,7 +67113,7 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
             var match$2 = sdecl[/* ptype_manifest */5];
             var sty;
             if (match$2 !== undefined) {
-              sty = Js_primitive.valFromOption(match$2);
+              sty = match$2;
             } else {
               throw [
                     Caml_builtin_exceptions.assert_failure,
@@ -67124,7 +67124,7 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
                     ]
                   ];
             }
-            return check_constraints_rec(env, sty[/* ptyp_loc */1], visited, Js_primitive.valFromOption(match$1));
+            return check_constraints_rec(env, sty[/* ptyp_loc */1], visited, match$1);
           } else {
             return /* () */0;
           }
@@ -67188,7 +67188,7 @@ function transl_extension_constructor(env, _, type_path, type_params, typext_par
     if (cdescr[/* cstr_generalized */9]) {
       var params = instance_list(env, type_params);
       var res = newconstr(type_path, params);
-      var ret_type = Js_primitive.some(newconstr(type_path, params));
+      var ret_type = newconstr(type_path, params);
       match$3 = /* tuple */[
         res,
         ret_type
@@ -67470,7 +67470,7 @@ function transl_type_extension(check_open, env, loc, styext) {
                   $$Error$8,
                   ext[/* ext_loc */4],
                   /* Unbound_type_var_ext */Block.__(19, [
-                      Js_primitive.valFromOption(match),
+                      match,
                       ext[/* ext_type */2]
                     ])
                 ];
@@ -67518,7 +67518,7 @@ function transl_exception(env, sext) {
           $$Error$8,
           ext[/* ext_loc */4],
           /* Unbound_type_var_ext */Block.__(19, [
-              Js_primitive.valFromOption(match),
+              match,
               ext[/* ext_type */2]
             ])
         ];
@@ -67645,10 +67645,10 @@ function transl_with_constraint(env, id, row_path, orig_decl, sdecl) {
   var match = sdecl[/* ptype_manifest */5];
   var match$1;
   if (match !== undefined) {
-    var cty = transl_simple_type(env, no_row, Js_primitive.valFromOption(match));
+    var cty = transl_simple_type(env, no_row, match);
     match$1 = /* tuple */[
-      Js_primitive.some(cty),
-      Js_primitive.some(cty[/* ctyp_type */1])
+      cty,
+      cty[/* ctyp_type */1]
     ];
   } else {
     match$1 = /* tuple */[
@@ -67679,7 +67679,7 @@ function transl_with_constraint(env, id, row_path, orig_decl, sdecl) {
     decl_008
   ];
   if (row_path !== undefined) {
-    set_fixed_row(env, sdecl[/* ptype_loc */7], Js_primitive.valFromOption(row_path), decl);
+    set_fixed_row(env, sdecl[/* ptype_loc */7], row_path, decl);
   }
   var match$2 = closed_type_decl(decl);
   if (match$2 !== undefined) {
@@ -67687,7 +67687,7 @@ function transl_with_constraint(env, id, row_path, orig_decl, sdecl) {
           $$Error$8,
           sdecl[/* ptype_loc */7],
           /* Unbound_type_var */Block.__(9, [
-              Js_primitive.valFromOption(match$2),
+              match$2,
               decl
             ])
         ];
@@ -68289,7 +68289,7 @@ function report_error$5(ppf, param) {
             if (match === 0 && match$1 !== undefined) {
               var ppf$1 = ppf;
               var tv = ty$4;
-              var ty$5 = Js_primitive.valFromOption(match$1);
+              var ty$5 = match$1;
               var trivial = function (ty) {
                 return explain_unbound(ppf$1, tv, /* :: */[
                             ty,
@@ -68335,7 +68335,7 @@ function report_error$5(ppf, param) {
                                       } else {
                                         var match$1 = match[0];
                                         if (match$1 !== undefined) {
-                                          return Js_primitive.valFromOption(match$1);
+                                          return match$1;
                                         } else {
                                           return newty2(100000000, /* Ttuple */Block.__(2, [/* [] */0]));
                                         }
@@ -68888,7 +68888,7 @@ function report_error$5(ppf, param) {
 
 register_error_of_exn((function (param) {
         if (param[0] === $$Error$8) {
-          return Js_primitive.some(error_of_printer(param[1], report_error$5, param[2]));
+          return error_of_printer(param[1], report_error$5, param[2]);
         } else {
           return undefined;
         }
@@ -69174,7 +69174,7 @@ function enter_val(cl_num, vars, inh, lab, mut, virt, ty, val_env, met_env, par_
     }
     unify$2(val_env, instance(undefined, val_env, ty), instance(undefined, val_env, match$1[3]));
     match = /* tuple */[
-      inh ? undefined : Js_primitive.some(match$1[0]),
+      inh ? undefined : match$1[0],
       virt$prime === /* Concrete */1 ? virt$prime : virt
     ];
   }
@@ -69202,7 +69202,7 @@ function enter_val(cl_num, vars, inh, lab, mut, virt, ty, val_env, met_env, par_
   }
   var id = match[0];
   var result = id !== undefined ? /* tuple */[
-      Js_primitive.valFromOption(id),
+      id,
       val_env,
       met_env,
       par_env
@@ -69295,7 +69295,7 @@ function inheritance(self_type, env, ovf, concr_meths, warn_vals, loc, parent) {
         var concr_vals$1 = concr_vals(cl_sig[/* csig_vars */1]);
         var over_vals = inter$1(concr_vals$1, warn_vals);
         if (ovf !== undefined) {
-          if (Js_primitive.valFromOption(ovf)) {
+          if (ovf) {
             var cname;
             switch (parent.tag | 0) {
               case 0 : 
@@ -69476,7 +69476,7 @@ function type_constraint(val_env, sty, sty$prime, loc) {
 }
 
 function make_method(loc, cl_num, expr) {
-  return Curry._6(Ast_helper_004[/* fun_ */5], Js_primitive.some(expr[/* pexp_loc */1]), undefined, "", undefined, alias$1(Js_primitive.some(loc), undefined, $$var$1(Js_primitive.some(loc), undefined, /* record */[
+  return Curry._6(Ast_helper_004[/* fun_ */5], expr[/* pexp_loc */1], undefined, "", undefined, alias$1(loc, undefined, $$var$1(loc, undefined, /* record */[
                       /* txt */"self-*",
                       /* loc */loc
                     ]), /* record */[
@@ -69936,7 +69936,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                       break;
                   
                 }
-                var match$2 = inheritance(self_type$1, val_env, Js_primitive.some(ovf), concr_meths, warn_vals, sparent[/* pcl_loc */1], parent[/* cl_type */2]);
+                var match$2 = inheritance(self_type$1, val_env, ovf, concr_meths, warn_vals, sparent[/* pcl_loc */1], parent[/* cl_type */2]);
                 var cl_sig = match$2[0];
                 var match$3 = fold((function (lab, info, param) {
                         var match = enter_val(cl_num$1, vars$1, true, lab, info[0], info[1], info[2], param[0], param[1], param[2], sparent[/* pcl_loc */1]);
@@ -70157,7 +70157,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                   var ovf$2 = match$12[0];
                   var match$13 = expr[/* pexp_desc */0];
                   var expr$1;
-                  expr$1 = match$13.tag === 28 ? expr : Curry._4(Ast_helper_004[/* poly */30], Js_primitive.some(expr[/* pexp_loc */1]), undefined, expr, undefined);
+                  expr$1 = match$13.tag === 28 ? expr : Curry._4(Ast_helper_004[/* poly */30], expr[/* pexp_loc */1], undefined, expr, undefined);
                   if (mem$2(lab$1[/* txt */0], local_meths)) {
                     throw [
                           $$Error$9,
@@ -70196,7 +70196,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                       var sty = match$15[1];
                       var sbody = match$15[0];
                       if (sty !== undefined) {
-                        var sty$1 = force_poly(Js_primitive.valFromOption(sty));
+                        var sty$1 = force_poly(sty);
                         var cty$prime = transl_simple_type(val_env, false, sty$1);
                         var ty$prime = cty$prime[/* ctyp_type */1];
                         unify$2(val_env, ty$prime, ty$1);
@@ -70666,23 +70666,23 @@ function class_expr(cl_num, val_env, met_env, _scl) {
           var match$5 = match[1];
           var l = match[0];
           if (match$5 !== undefined) {
-            var $$default = Js_primitive.valFromOption(match$5);
+            var $$default = match$5;
             var loc = $$default[/* pexp_loc */1];
-            var scases_000 = Curry._3(Ast_helper_004[/* case */36], construct(Js_primitive.some(loc), undefined, /* record */[
+            var scases_000 = Curry._3(Ast_helper_004[/* case */36], construct(loc, undefined, /* record */[
                       /* txt : Ldot */Block.__(1, [
                           /* Lident */Block.__(0, ["*predef*"]),
                           "Some"
                         ]),
                       /* loc */none
-                    ], Js_primitive.some($$var$1(Js_primitive.some(loc), undefined, /* record */[
-                              /* txt */"*sth*",
-                              /* loc */none
-                            ]))), undefined, Curry._3(Ast_helper_004[/* ident */2], Js_primitive.some(loc), undefined, /* record */[
+                    ], $$var$1(loc, undefined, /* record */[
+                          /* txt */"*sth*",
+                          /* loc */none
+                        ])), undefined, Curry._3(Ast_helper_004[/* ident */2], loc, undefined, /* record */[
                       /* txt : Lident */Block.__(0, ["*sth*"]),
                       /* loc */none
                     ]));
             var scases_001 = /* :: */[
-              Curry._3(Ast_helper_004[/* case */36], construct(Js_primitive.some(loc), undefined, /* record */[
+              Curry._3(Ast_helper_004[/* case */36], construct(loc, undefined, /* record */[
                         /* txt : Ldot */Block.__(1, [
                             /* Lident */Block.__(0, ["*predef*"]),
                             "None"
@@ -70695,14 +70695,14 @@ function class_expr(cl_num, val_env, met_env, _scl) {
               scases_000,
               scases_001
             ];
-            var smatch = Curry._4(Ast_helper_004[/* match_ */8], Js_primitive.some(loc), undefined, Curry._3(Ast_helper_004[/* ident */2], Js_primitive.some(loc), undefined, /* record */[
+            var smatch = Curry._4(Ast_helper_004[/* match_ */8], loc, undefined, Curry._3(Ast_helper_004[/* ident */2], loc, undefined, /* record */[
                       /* txt : Lident */Block.__(0, ["*opt*"]),
                       /* loc */none
                     ]), scases);
-            var sfun = fun_$1(Js_primitive.some(scl[/* pcl_loc */1]), undefined, l, undefined, $$var$1(Js_primitive.some(loc), undefined, /* record */[
+            var sfun = fun_$1(scl[/* pcl_loc */1], undefined, l, undefined, $$var$1(loc, undefined, /* record */[
                       /* txt */"*opt*",
                       /* loc */none
-                    ]), let_$1(Js_primitive.some(scl[/* pcl_loc */1]), undefined, /* Nonrecursive */0, /* :: */[
+                    ]), let_$1(scl[/* pcl_loc */1], undefined, /* Nonrecursive */0, /* :: */[
                       mk$17(undefined, undefined, undefined, undefined, match[2], smatch),
                       /* [] */0
                     ], match[3]));
@@ -70897,7 +70897,7 @@ function class_expr(cl_num, val_env, met_env, _scl) {
                                   match = /* tuple */[
                                     /* [] */0,
                                     more_sargs[1],
-                                    Js_primitive.some(type_argument(val_env, sarg0, ty, ty0))
+                                    type_argument(val_env, sarg0, ty, ty0)
                                   ];
                                 }
                               } else {
@@ -70942,12 +70942,12 @@ function class_expr(cl_num, val_env, met_env, _scl) {
                                 }
                                 var tmp;
                                 if (optional === /* Required */0 || is_optional(l$prime$1)) {
-                                  tmp = Js_primitive.some(type_argument(val_env, sarg0$1, ty, ty0));
+                                  tmp = type_argument(val_env, sarg0$1, ty, ty0);
                                 } else {
                                   var ty$prime = extract_option_type(val_env, ty);
                                   var ty0$prime = extract_option_type(val_env, ty0);
                                   var arg = type_argument(val_env, sarg0$1, ty$prime, ty0$prime);
-                                  tmp = Js_primitive.some(option_some(arg));
+                                  tmp = option_some(arg);
                                 }
                                 match = /* tuple */[
                                   match$3[2],
@@ -70960,7 +70960,7 @@ function class_expr(cl_num, val_env, met_env, _scl) {
                                   match = /* tuple */[
                                     sargs,
                                     more_sargs,
-                                    is_optional(l) && (List.mem_assoc("", sargs) || List.mem_assoc("", more_sargs)) ? Js_primitive.some(option_none(ty0, none)) : undefined
+                                    is_optional(l) && (List.mem_assoc("", sargs) || List.mem_assoc("", more_sargs)) ? option_none(ty0, none) : undefined
                                   ];
                                 } else {
                                   throw exn$1;
@@ -71168,7 +71168,7 @@ function class_expr(cl_num, val_env, met_env, _scl) {
           return rc(/* record */[
                       /* cl_desc : Tcl_constraint */Block.__(5, [
                           cl$4,
-                          Js_primitive.some(clty$1),
+                          clty$1,
                           match$12[0],
                           match$12[1],
                           match$12[2]
@@ -71250,7 +71250,7 @@ function temp_abbrev(loc, env, id, arity) {
         /* type_arity */arity,
         /* type_kind : Type_abstract */0,
         /* type_private : Public */1,
-        /* type_manifest */Js_primitive.some(ty),
+        /* type_manifest */ty,
         /* type_variance */replicate_list(Types_003[/* full */1], arity),
         /* type_newtype_level */undefined,
         /* type_loc */loc,
@@ -71337,7 +71337,7 @@ function type_classes(define_class, approx, kind, env, cls) {
             /* cty_params : [] */0,
             /* cty_type */dummy_cty,
             /* cty_path */unbound_class,
-            /* cty_new */match$2 ? Js_primitive.some(constr_type) : undefined,
+            /* cty_new */match$2 ? constr_type : undefined,
             /* cty_variance : [] */0,
             /* cty_loc */none,
             /* cty_attributes : [] */0
@@ -71586,7 +71586,7 @@ function type_classes(define_class, approx, kind, env, cls) {
             /* cty_params */params,
             /* cty_type */typ,
             /* cty_path : Pident */Block.__(0, [obj_id]),
-            /* cty_new */match$4 ? Js_primitive.some(constr_type) : undefined,
+            /* cty_new */match$4 ? constr_type : undefined,
             /* cty_variance */cty_variance,
             /* cty_loc */cl[/* pci_loc */4],
             /* cty_attributes */cl[/* pci_attributes */5]
@@ -71646,13 +71646,13 @@ function type_classes(define_class, approx, kind, env, cls) {
             /* cty_params */params$prime,
             /* cty_type */typ$prime,
             /* cty_path : Pident */Block.__(0, [obj_id]),
-            /* cty_new */match$7 ? Js_primitive.some(instance(undefined, env$1, constr_type)) : undefined,
+            /* cty_new */match$7 ? instance(undefined, env$1, constr_type) : undefined,
             /* cty_variance */cty_variance,
             /* cty_loc */cl[/* pci_loc */4],
             /* cty_attributes */cl[/* pci_attributes */5]
           ];
           var obj_abbr_001 = /* type_arity */List.length(obj_params);
-          var obj_abbr_004 = /* type_manifest */Js_primitive.some(obj_ty);
+          var obj_abbr_004 = /* type_manifest */obj_ty;
           var obj_abbr_005 = /* type_variance */List.map((function () {
                   return Types_003[/* full */1];
                 }), obj_params);
@@ -71674,7 +71674,7 @@ function type_classes(define_class, approx, kind, env, cls) {
           hide_private_methods(cl_ty$1);
           set_object_name(obj_id, row_variable(cl_ty$1), cl_params$1, cl_ty$1);
           var cl_abbr_001 = /* type_arity */List.length(cl_params$1);
-          var cl_abbr_004 = /* type_manifest */Js_primitive.some(cl_ty$1);
+          var cl_abbr_004 = /* type_manifest */cl_ty$1;
           var cl_abbr_005 = /* type_variance */List.map((function () {
                   return Types_003[/* full */1];
                 }), cl_params$1);
@@ -71783,7 +71783,7 @@ function type_classes(define_class, approx, kind, env, cls) {
                   env$2,
                   /* Unbound_type_var */Block.__(16, [
                       printer,
-                      Js_primitive.valFromOption(match)
+                      match
                     ])
                 ];
           }
@@ -71839,8 +71839,8 @@ function type_classes(define_class, approx, kind, env, cls) {
             var match$2;
             if (match !== undefined) {
               if (match$1 !== undefined) {
-                var match$3 = instance_parameterized_type(undefined, cl_abbr[/* type_params */0], Js_primitive.valFromOption(match));
-                var match$4 = instance_parameterized_type(undefined, obj_abbr[/* type_params */0], Js_primitive.valFromOption(match$1));
+                var match$3 = instance_parameterized_type(undefined, cl_abbr[/* type_params */0], match);
+                var match$4 = instance_parameterized_type(undefined, obj_abbr[/* type_params */0], match$1);
                 List.iter2((function (param, param$1) {
                         return unify$2(env$3, param, param$1);
                       }), match$3[0], match$4[0]);
@@ -72039,7 +72039,7 @@ type_object[0] = type_object$1;
 
 function approx_class(sdecl) {
   var self$prime = mk(undefined, undefined, /* Ptyp_any */0);
-  var clty$prime = signature$1(Js_primitive.some(sdecl[/* pci_expr */3][/* pcty_loc */1]), undefined, /* record */[
+  var clty$prime = signature$1(sdecl[/* pci_expr */3][/* pcty_loc */1], undefined, /* record */[
         /* pcsig_self */self$prime,
         /* pcsig_fields : [] */0
       ]);
@@ -72060,450 +72060,192 @@ function approx_class_declarations(env, sdecls) {
 register_error_of_exn((function (param) {
         if (param[0] === $$Error$9) {
           var env = param[2];
-          return Js_primitive.some(error_of_printer(param[1], (function (param, param$1) {
-                            var env$1 = env;
-                            var ppf = param;
-                            var err = param$1;
-                            return wrap_printing_env(env$1, (function () {
-                                          var env$2 = env$1;
-                                          var ppf$1 = ppf;
-                                          var param = err;
-                                          if (typeof param === "number") {
-                                            return Format.fprintf(ppf$1, /* Format */[
-                                                        /* String_literal */Block.__(11, [
-                                                            "A type parameter occurs several times",
+          return error_of_printer(param[1], (function (param, param$1) {
+                        var env$1 = env;
+                        var ppf = param;
+                        var err = param$1;
+                        return wrap_printing_env(env$1, (function () {
+                                      var env$2 = env$1;
+                                      var ppf$1 = ppf;
+                                      var param = err;
+                                      if (typeof param === "number") {
+                                        return Format.fprintf(ppf$1, /* Format */[
+                                                    /* String_literal */Block.__(11, [
+                                                        "A type parameter occurs several times",
+                                                        /* End_of_format */0
+                                                      ]),
+                                                    "A type parameter occurs several times"
+                                                  ]);
+                                      } else {
+                                        switch (param.tag | 0) {
+                                          case 0 : 
+                                              Format.fprintf(ppf$1, /* Format */[
+                                                    /* String_literal */Block.__(11, [
+                                                        "The class constraints are not consistent.",
+                                                        /* Formatting_lit */Block.__(17, [
+                                                            /* Flush_newline */4,
                                                             /* End_of_format */0
-                                                          ]),
-                                                        "A type parameter occurs several times"
-                                                      ]);
-                                          } else {
-                                            switch (param.tag | 0) {
-                                              case 0 : 
-                                                  Format.fprintf(ppf$1, /* Format */[
-                                                        /* String_literal */Block.__(11, [
-                                                            "The class constraints are not consistent.",
-                                                            /* Formatting_lit */Block.__(17, [
-                                                                /* Flush_newline */4,
-                                                                /* End_of_format */0
-                                                              ])
-                                                          ]),
-                                                        "The class constraints are not consistent.@."
-                                                      ]);
-                                                  return report_unification_error(ppf$1, env$2, undefined, param[0], (function (ppf) {
-                                                                return Format.fprintf(ppf, /* Format */[
+                                                          ])
+                                                      ]),
+                                                    "The class constraints are not consistent.@."
+                                                  ]);
+                                              return report_unification_error(ppf$1, env$2, undefined, param[0], (function (ppf) {
+                                                            return Format.fprintf(ppf, /* Format */[
+                                                                        /* String_literal */Block.__(11, [
+                                                                            "Type",
+                                                                            /* End_of_format */0
+                                                                          ]),
+                                                                        "Type"
+                                                                      ]);
+                                                          }), (function (ppf) {
+                                                            return Format.fprintf(ppf, /* Format */[
+                                                                        /* String_literal */Block.__(11, [
+                                                                            "is not compatible with type",
+                                                                            /* End_of_format */0
+                                                                          ]),
+                                                                        "is not compatible with type"
+                                                                      ]);
+                                                          }));
+                                          case 1 : 
+                                              var m = param[1];
+                                              var k = param[0];
+                                              return report_unification_error(ppf$1, env$2, undefined, param[2], (function (ppf) {
+                                                            return Curry._2(Format.fprintf(ppf, /* Format */[
                                                                             /* String_literal */Block.__(11, [
-                                                                                "Type",
-                                                                                /* End_of_format */0
-                                                                              ]),
-                                                                            "Type"
-                                                                          ]);
-                                                              }), (function (ppf) {
-                                                                return Format.fprintf(ppf, /* Format */[
-                                                                            /* String_literal */Block.__(11, [
-                                                                                "is not compatible with type",
-                                                                                /* End_of_format */0
-                                                                              ]),
-                                                                            "is not compatible with type"
-                                                                          ]);
-                                                              }));
-                                              case 1 : 
-                                                  var m = param[1];
-                                                  var k = param[0];
-                                                  return report_unification_error(ppf$1, env$2, undefined, param[2], (function (ppf) {
-                                                                return Curry._2(Format.fprintf(ppf, /* Format */[
-                                                                                /* String_literal */Block.__(11, [
-                                                                                    "The ",
-                                                                                    /* String */Block.__(2, [
-                                                                                        /* No_padding */0,
-                                                                                        /* Char_literal */Block.__(12, [
-                                                                                            /* " " */32,
-                                                                                            /* String */Block.__(2, [
-                                                                                                /* No_padding */0,
-                                                                                                /* Formatting_lit */Block.__(17, [
-                                                                                                    /* Break */Block.__(0, [
-                                                                                                        "@ ",
-                                                                                                        1,
-                                                                                                        0
-                                                                                                      ]),
-                                                                                                    /* String_literal */Block.__(11, [
-                                                                                                        "has type",
-                                                                                                        /* End_of_format */0
-                                                                                                      ])
+                                                                                "The ",
+                                                                                /* String */Block.__(2, [
+                                                                                    /* No_padding */0,
+                                                                                    /* Char_literal */Block.__(12, [
+                                                                                        /* " " */32,
+                                                                                        /* String */Block.__(2, [
+                                                                                            /* No_padding */0,
+                                                                                            /* Formatting_lit */Block.__(17, [
+                                                                                                /* Break */Block.__(0, [
+                                                                                                    "@ ",
+                                                                                                    1,
+                                                                                                    0
+                                                                                                  ]),
+                                                                                                /* String_literal */Block.__(11, [
+                                                                                                    "has type",
+                                                                                                    /* End_of_format */0
                                                                                                   ])
                                                                                               ])
                                                                                           ])
                                                                                       ])
-                                                                                  ]),
-                                                                                "The %s %s@ has type"
-                                                                              ]), k, m);
-                                                              }), (function (ppf) {
-                                                                return Format.fprintf(ppf, /* Format */[
-                                                                            /* String_literal */Block.__(11, [
-                                                                                "but is expected to have type",
-                                                                                /* End_of_format */0
+                                                                                  ])
                                                                               ]),
-                                                                            "but is expected to have type"
-                                                                          ]);
-                                                              }));
-                                              case 2 : 
-                                                  return Curry._2(Format.fprintf(ppf$1, /* Format */[
-                                                                  /* Formatting_gen */Block.__(18, [
-                                                                      /* Open_box */Block.__(1, [/* Format */[
-                                                                            /* End_of_format */0,
-                                                                            ""
-                                                                          ]]),
-                                                                      /* String_literal */Block.__(11, [
-                                                                          "This class expression is not a class structure; it has type",
-                                                                          /* Formatting_lit */Block.__(17, [
-                                                                              /* Break */Block.__(0, [
-                                                                                  "@ ",
-                                                                                  1,
-                                                                                  0
-                                                                                ]),
-                                                                              /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
-                                                                                      /* Close_box */0,
-                                                                                      /* End_of_format */0
-                                                                                    ])])
-                                                                            ])
-                                                                        ])
-                                                                    ]),
-                                                                  "@[This class expression is not a class structure; it has type@ %a@]"
-                                                                ]), class_type$1, param[0]);
-                                              case 3 : 
-                                                  return Format.fprintf(ppf$1, /* Format */[
-                                                              /* String_literal */Block.__(11, [
-                                                                  "This class expression is not a class function, it cannot be applied",
-                                                                  /* End_of_format */0
-                                                                ]),
-                                                              "This class expression is not a class function, it cannot be applied"
-                                                            ]);
-                                              case 4 : 
-                                                  var mark_label = function (l) {
-                                                    if (l === "") {
-                                                      return "out label";
-                                                    } else {
-                                                      return Curry._1(Format.sprintf(/* Format */[
-                                                                      /* String_literal */Block.__(11, [
-                                                                          " label ~",
-                                                                          /* String */Block.__(2, [
-                                                                              /* No_padding */0,
-                                                                              /* End_of_format */0
-                                                                            ])
-                                                                        ]),
-                                                                      " label ~%s"
-                                                                    ]), l);
-                                                    }
-                                                  };
-                                                  return Curry._1(Format.fprintf(ppf$1, /* Format */[
+                                                                            "The %s %s@ has type"
+                                                                          ]), k, m);
+                                                          }), (function (ppf) {
+                                                            return Format.fprintf(ppf, /* Format */[
+                                                                        /* String_literal */Block.__(11, [
+                                                                            "but is expected to have type",
+                                                                            /* End_of_format */0
+                                                                          ]),
+                                                                        "but is expected to have type"
+                                                                      ]);
+                                                          }));
+                                          case 2 : 
+                                              return Curry._2(Format.fprintf(ppf$1, /* Format */[
+                                                              /* Formatting_gen */Block.__(18, [
+                                                                  /* Open_box */Block.__(1, [/* Format */[
+                                                                        /* End_of_format */0,
+                                                                        ""
+                                                                      ]]),
                                                                   /* String_literal */Block.__(11, [
-                                                                      "This argument cannot be applied with",
+                                                                      "This class expression is not a class structure; it has type",
+                                                                      /* Formatting_lit */Block.__(17, [
+                                                                          /* Break */Block.__(0, [
+                                                                              "@ ",
+                                                                              1,
+                                                                              0
+                                                                            ]),
+                                                                          /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
+                                                                                  /* Close_box */0,
+                                                                                  /* End_of_format */0
+                                                                                ])])
+                                                                        ])
+                                                                    ])
+                                                                ]),
+                                                              "@[This class expression is not a class structure; it has type@ %a@]"
+                                                            ]), class_type$1, param[0]);
+                                          case 3 : 
+                                              return Format.fprintf(ppf$1, /* Format */[
+                                                          /* String_literal */Block.__(11, [
+                                                              "This class expression is not a class function, it cannot be applied",
+                                                              /* End_of_format */0
+                                                            ]),
+                                                          "This class expression is not a class function, it cannot be applied"
+                                                        ]);
+                                          case 4 : 
+                                              var mark_label = function (l) {
+                                                if (l === "") {
+                                                  return "out label";
+                                                } else {
+                                                  return Curry._1(Format.sprintf(/* Format */[
+                                                                  /* String_literal */Block.__(11, [
+                                                                      " label ~",
                                                                       /* String */Block.__(2, [
                                                                           /* No_padding */0,
                                                                           /* End_of_format */0
                                                                         ])
                                                                     ]),
-                                                                  "This argument cannot be applied with%s"
-                                                                ]), mark_label(param[0]));
-                                              case 5 : 
-                                                  var ty = param[0];
-                                                  reset(/* () */0);
-                                                  mark_loops(ty);
-                                                  return Curry._3(Format.fprintf(ppf$1, /* Format */[
-                                                                  /* Formatting_gen */Block.__(18, [
-                                                                      /* Open_box */Block.__(1, [/* Format */[
-                                                                            /* End_of_format */0,
-                                                                            ""
-                                                                          ]]),
-                                                                      /* String */Block.__(2, [
-                                                                          /* No_padding */0,
-                                                                          /* Formatting_lit */Block.__(17, [
-                                                                              /* Break */Block.__(0, [
-                                                                                  "@ ",
-                                                                                  1,
-                                                                                  0
-                                                                                ]),
-                                                                              /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
-                                                                                      /* Close_box */0,
-                                                                                      /* End_of_format */0
-                                                                                    ])])
-                                                                            ])
-                                                                        ])
-                                                                    ]),
-                                                                  "@[%s@ %a@]"
-                                                                ]), "This pattern cannot match self: it only matches values of type", type_expr$1, ty);
-                                              case 6 : 
-                                                  return Curry._2(Format.fprintf(ppf$1, /* Format */[
-                                                                  /* Formatting_gen */Block.__(18, [
-                                                                      /* Open_box */Block.__(1, [/* Format */[
-                                                                            /* End_of_format */0,
-                                                                            ""
-                                                                          ]]),
-                                                                      /* String_literal */Block.__(11, [
-                                                                          "The class",
-                                                                          /* Formatting_lit */Block.__(17, [
-                                                                              /* Break */Block.__(0, [
-                                                                                  "@ ",
-                                                                                  1,
-                                                                                  0
-                                                                                ]),
-                                                                              /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
-                                                                                      /* Break */Block.__(0, [
-                                                                                          "@ ",
-                                                                                          1,
-                                                                                          0
-                                                                                        ]),
-                                                                                      /* String_literal */Block.__(11, [
-                                                                                          "is not yet completely defined",
-                                                                                          /* Formatting_lit */Block.__(17, [
-                                                                                              /* Close_box */0,
-                                                                                              /* End_of_format */0
-                                                                                            ])
-                                                                                        ])
-                                                                                    ])])
-                                                                            ])
-                                                                        ])
-                                                                    ]),
-                                                                  "@[The class@ %a@ is not yet completely defined@]"
-                                                                ]), longident, param[0]);
-                                              case 7 : 
-                                                  return Curry._2(Format.fprintf(ppf$1, /* Format */[
-                                                                  /* Formatting_gen */Block.__(18, [
-                                                                      /* Open_box */Block.__(1, [/* Format */[
-                                                                            /* End_of_format */0,
-                                                                            ""
-                                                                          ]]),
-                                                                      /* String_literal */Block.__(11, [
-                                                                          "The class type",
-                                                                          /* Formatting_lit */Block.__(17, [
-                                                                              /* Break */Block.__(0, [
-                                                                                  "@ ",
-                                                                                  1,
-                                                                                  0
-                                                                                ]),
-                                                                              /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
-                                                                                      /* Break */Block.__(0, [
-                                                                                          "@ ",
-                                                                                          1,
-                                                                                          0
-                                                                                        ]),
-                                                                                      /* String_literal */Block.__(11, [
-                                                                                          "is not yet completely defined",
-                                                                                          /* Formatting_lit */Block.__(17, [
-                                                                                              /* Close_box */0,
-                                                                                              /* End_of_format */0
-                                                                                            ])
-                                                                                        ])
-                                                                                    ])])
-                                                                            ])
-                                                                        ])
-                                                                    ]),
-                                                                  "@[The class type@ %a@ is not yet completely defined@]"
-                                                                ]), longident, param[0]);
-                                              case 8 : 
-                                                  var expected = param[2];
-                                                  var actual = param[1];
-                                                  var abbrev = param[0];
-                                                  reset_and_mark_loops_list(/* :: */[
-                                                        abbrev,
-                                                        /* :: */[
-                                                          actual,
-                                                          /* :: */[
-                                                            expected,
-                                                            /* [] */0
-                                                          ]
-                                                        ]
-                                                      ]);
-                                                  return Curry._6(Format.fprintf(ppf$1, /* Format */[
-                                                                  /* Formatting_gen */Block.__(18, [
-                                                                      /* Open_box */Block.__(1, [/* Format */[
-                                                                            /* End_of_format */0,
-                                                                            ""
-                                                                          ]]),
-                                                                      /* String_literal */Block.__(11, [
-                                                                          "The abbreviation",
-                                                                          /* Formatting_lit */Block.__(17, [
-                                                                              /* Break */Block.__(0, [
-                                                                                  "@ ",
-                                                                                  1,
-                                                                                  0
-                                                                                ]),
-                                                                              /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
-                                                                                      /* Break */Block.__(0, [
-                                                                                          "@ ",
-                                                                                          1,
-                                                                                          0
-                                                                                        ]),
-                                                                                      /* String_literal */Block.__(11, [
-                                                                                          "expands to type",
-                                                                                          /* Formatting_lit */Block.__(17, [
-                                                                                              /* Break */Block.__(0, [
-                                                                                                  "@ ",
-                                                                                                  1,
-                                                                                                  0
-                                                                                                ]),
-                                                                                              /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
-                                                                                                      /* Break */Block.__(0, [
-                                                                                                          "@ ",
-                                                                                                          1,
-                                                                                                          0
-                                                                                                        ]),
-                                                                                                      /* String_literal */Block.__(11, [
-                                                                                                          "but is used with type",
-                                                                                                          /* Formatting_lit */Block.__(17, [
-                                                                                                              /* Break */Block.__(0, [
-                                                                                                                  "@ ",
-                                                                                                                  1,
-                                                                                                                  0
-                                                                                                                ]),
-                                                                                                              /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
-                                                                                                                      /* Close_box */0,
-                                                                                                                      /* End_of_format */0
-                                                                                                                    ])])
-                                                                                                            ])
-                                                                                                        ])
-                                                                                                    ])])
-                                                                                            ])
-                                                                                        ])
-                                                                                    ])])
-                                                                            ])
-                                                                        ])
-                                                                    ]),
-                                                                  "@[The abbreviation@ %a@ expands to type@ %a@ but is used with type@ %a@]"
-                                                                ]), type_expr$1, abbrev, type_expr$1, actual, type_expr$1, expected);
-                                              case 9 : 
-                                                  var c = param[0];
-                                                  return report_unification_error(ppf$1, env$2, undefined, param[1], (function (ppf) {
-                                                                return Curry._1(Format.fprintf(ppf, /* Format */[
-                                                                                /* String_literal */Block.__(11, [
-                                                                                    "The expression \"new ",
-                                                                                    /* String */Block.__(2, [
-                                                                                        /* No_padding */0,
-                                                                                        /* String_literal */Block.__(11, [
-                                                                                            "\" has type",
-                                                                                            /* End_of_format */0
-                                                                                          ])
-                                                                                      ])
-                                                                                  ]),
-                                                                                "The expression \"new %s\" has type"
-                                                                              ]), c);
-                                                              }), (function (ppf) {
-                                                                return Format.fprintf(ppf, /* Format */[
-                                                                            /* String_literal */Block.__(11, [
-                                                                                "but is used with type",
-                                                                                /* End_of_format */0
-                                                                              ]),
-                                                                            "but is used with type"
-                                                                          ]);
-                                                              }));
-                                              case 10 : 
-                                                  var vals = param[3];
-                                                  var mets = param[2];
-                                                  var imm = param[1];
-                                                  var cl = param[0];
-                                                  var print_mets = function (ppf, mets) {
-                                                    return List.iter((function (met) {
-                                                                  return Curry._1(Format.fprintf(ppf, /* Format */[
-                                                                                  /* Formatting_lit */Block.__(17, [
-                                                                                      /* Break */Block.__(0, [
-                                                                                          "@ ",
-                                                                                          1,
-                                                                                          0
-                                                                                        ]),
-                                                                                      /* String */Block.__(2, [
-                                                                                          /* No_padding */0,
-                                                                                          /* End_of_format */0
-                                                                                        ])
-                                                                                    ]),
-                                                                                  "@ %s"
-                                                                                ]), met);
-                                                                }), mets);
-                                                  };
-                                                  var missings = mets ? (
-                                                      vals ? "methods and variables" : "methods"
-                                                    ) : "variables";
-                                                  var print_msg = function (ppf) {
-                                                    if (imm) {
-                                                      return Curry._1(Format.fprintf(ppf, /* Format */[
-                                                                      /* String_literal */Block.__(11, [
-                                                                          "This object has virtual ",
-                                                                          /* String */Block.__(2, [
-                                                                              /* No_padding */0,
-                                                                              /* End_of_format */0
-                                                                            ])
-                                                                        ]),
-                                                                      "This object has virtual %s"
-                                                                    ]), missings);
-                                                    } else if (cl) {
-                                                      return Format.fprintf(ppf, /* Format */[
-                                                                  /* String_literal */Block.__(11, [
-                                                                      "This class should be virtual",
+                                                                  " label ~%s"
+                                                                ]), l);
+                                                }
+                                              };
+                                              return Curry._1(Format.fprintf(ppf$1, /* Format */[
+                                                              /* String_literal */Block.__(11, [
+                                                                  "This argument cannot be applied with",
+                                                                  /* String */Block.__(2, [
+                                                                      /* No_padding */0,
                                                                       /* End_of_format */0
-                                                                    ]),
-                                                                  "This class should be virtual"
-                                                                ]);
-                                                    } else {
-                                                      return Format.fprintf(ppf, /* Format */[
+                                                                    ])
+                                                                ]),
+                                                              "This argument cannot be applied with%s"
+                                                            ]), mark_label(param[0]));
+                                          case 5 : 
+                                              var ty = param[0];
+                                              reset(/* () */0);
+                                              mark_loops(ty);
+                                              return Curry._3(Format.fprintf(ppf$1, /* Format */[
+                                                              /* Formatting_gen */Block.__(18, [
+                                                                  /* Open_box */Block.__(1, [/* Format */[
+                                                                        /* End_of_format */0,
+                                                                        ""
+                                                                      ]]),
+                                                                  /* String */Block.__(2, [
+                                                                      /* No_padding */0,
+                                                                      /* Formatting_lit */Block.__(17, [
+                                                                          /* Break */Block.__(0, [
+                                                                              "@ ",
+                                                                              1,
+                                                                              0
+                                                                            ]),
+                                                                          /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
+                                                                                  /* Close_box */0,
+                                                                                  /* End_of_format */0
+                                                                                ])])
+                                                                        ])
+                                                                    ])
+                                                                ]),
+                                                              "@[%s@ %a@]"
+                                                            ]), "This pattern cannot match self: it only matches values of type", type_expr$1, ty);
+                                          case 6 : 
+                                              return Curry._2(Format.fprintf(ppf$1, /* Format */[
+                                                              /* Formatting_gen */Block.__(18, [
+                                                                  /* Open_box */Block.__(1, [/* Format */[
+                                                                        /* End_of_format */0,
+                                                                        ""
+                                                                      ]]),
                                                                   /* String_literal */Block.__(11, [
-                                                                      "This class type should be virtual",
-                                                                      /* End_of_format */0
-                                                                    ]),
-                                                                  "This class type should be virtual"
-                                                                ]);
-                                                    }
-                                                  };
-                                                  return Curry._4(Format.fprintf(ppf$1, /* Format */[
-                                                                  /* Formatting_gen */Block.__(18, [
-                                                                      /* Open_box */Block.__(1, [/* Format */[
-                                                                            /* End_of_format */0,
-                                                                            ""
-                                                                          ]]),
-                                                                      /* Theta */Block.__(16, [/* Char_literal */Block.__(12, [
-                                                                              /* "." */46,
-                                                                              /* Formatting_lit */Block.__(17, [
-                                                                                  /* Break */Block.__(0, [
-                                                                                      "@ ",
-                                                                                      1,
-                                                                                      0
-                                                                                    ]),
-                                                                                  /* Formatting_gen */Block.__(18, [
-                                                                                      /* Open_box */Block.__(1, [/* Format */[
-                                                                                            /* String_literal */Block.__(11, [
-                                                                                                "<2>",
-                                                                                                /* End_of_format */0
-                                                                                              ]),
-                                                                                            "<2>"
-                                                                                          ]]),
-                                                                                      /* String_literal */Block.__(11, [
-                                                                                          "The following ",
-                                                                                          /* String */Block.__(2, [
-                                                                                              /* No_padding */0,
-                                                                                              /* String_literal */Block.__(11, [
-                                                                                                  " are undefined :",
-                                                                                                  /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
-                                                                                                          /* Close_box */0,
-                                                                                                          /* Formatting_lit */Block.__(17, [
-                                                                                                              /* Close_box */0,
-                                                                                                              /* End_of_format */0
-                                                                                                            ])
-                                                                                                        ])])
-                                                                                                ])
-                                                                                            ])
-                                                                                        ])
-                                                                                    ])
-                                                                                ])
-                                                                            ])])
-                                                                    ]),
-                                                                  "@[%t.@ @[<2>The following %s are undefined :%a@]@]"
-                                                                ]), print_msg, missings, print_mets, Pervasives.$at(mets, vals));
-                                              case 11 : 
-                                                  return Curry._4(Format.fprintf(ppf$1, /* Format */[
-                                                                  /* Formatting_gen */Block.__(18, [
-                                                                      /* Open_box */Block.__(1, [/* Format */[
-                                                                            /* End_of_format */0,
-                                                                            ""
-                                                                          ]]),
-                                                                      /* String_literal */Block.__(11, [
-                                                                          "The class constructor ",
+                                                                      "The class",
+                                                                      /* Formatting_lit */Block.__(17, [
+                                                                          /* Break */Block.__(0, [
+                                                                              "@ ",
+                                                                              1,
+                                                                              0
+                                                                            ]),
                                                                           /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
                                                                                   /* Break */Block.__(0, [
                                                                                       "@ ",
@@ -72511,79 +72253,33 @@ register_error_of_exn((function (param) {
                                                                                       0
                                                                                     ]),
                                                                                   /* String_literal */Block.__(11, [
-                                                                                      "expects ",
-                                                                                      /* Int */Block.__(4, [
-                                                                                          /* Int_i */3,
-                                                                                          /* No_padding */0,
-                                                                                          /* No_precision */0,
-                                                                                          /* String_literal */Block.__(11, [
-                                                                                              " type argument(s),",
-                                                                                              /* Formatting_lit */Block.__(17, [
-                                                                                                  /* Break */Block.__(0, [
-                                                                                                      "@ ",
-                                                                                                      1,
-                                                                                                      0
-                                                                                                    ]),
-                                                                                                  /* String_literal */Block.__(11, [
-                                                                                                      "but is here applied to ",
-                                                                                                      /* Int */Block.__(4, [
-                                                                                                          /* Int_i */3,
-                                                                                                          /* No_padding */0,
-                                                                                                          /* No_precision */0,
-                                                                                                          /* String_literal */Block.__(11, [
-                                                                                                              " type argument(s)",
-                                                                                                              /* Formatting_lit */Block.__(17, [
-                                                                                                                  /* Close_box */0,
-                                                                                                                  /* End_of_format */0
-                                                                                                                ])
-                                                                                                            ])
-                                                                                                        ])
-                                                                                                    ])
-                                                                                                ])
-                                                                                            ])
+                                                                                      "is not yet completely defined",
+                                                                                      /* Formatting_lit */Block.__(17, [
+                                                                                          /* Close_box */0,
+                                                                                          /* End_of_format */0
                                                                                         ])
                                                                                     ])
                                                                                 ])])
                                                                         ])
-                                                                    ]),
-                                                                  "@[The class constructor %a@ expects %i type argument(s),@ but is here applied to %i type argument(s)@]"
-                                                                ]), longident, param[0], param[1], param[2]);
-                                              case 12 : 
-                                                  return report_unification_error(ppf$1, env$2, undefined, param[0], (function (ppf) {
-                                                                return Format.fprintf(ppf, /* Format */[
-                                                                            /* String_literal */Block.__(11, [
-                                                                                "The type parameter",
-                                                                                /* End_of_format */0
-                                                                              ]),
-                                                                            "The type parameter"
-                                                                          ]);
-                                                              }), (function (ppf) {
-                                                                return Format.fprintf(ppf, /* Format */[
-                                                                            /* String_literal */Block.__(11, [
-                                                                                "does not meet its constraint: it should be",
-                                                                                /* End_of_format */0
-                                                                              ]),
-                                                                            "does not meet its constraint: it should be"
-                                                                          ]);
-                                                              }));
-                                              case 13 : 
-                                                  var cstrs = param[2];
-                                                  var params = param[1];
-                                                  reset_and_mark_loops_list(/* :: */[
-                                                        params,
-                                                        /* :: */[
-                                                          cstrs,
-                                                          /* [] */0
-                                                        ]
-                                                      ]);
-                                                  return Curry._6(Format.fprintf(ppf$1, /* Format */[
-                                                                  /* Formatting_gen */Block.__(18, [
-                                                                      /* Open_box */Block.__(1, [/* Format */[
-                                                                            /* End_of_format */0,
-                                                                            ""
-                                                                          ]]),
-                                                                      /* String_literal */Block.__(11, [
-                                                                          "The abbreviation ",
+                                                                    ])
+                                                                ]),
+                                                              "@[The class@ %a@ is not yet completely defined@]"
+                                                            ]), longident, param[0]);
+                                          case 7 : 
+                                              return Curry._2(Format.fprintf(ppf$1, /* Format */[
+                                                              /* Formatting_gen */Block.__(18, [
+                                                                  /* Open_box */Block.__(1, [/* Format */[
+                                                                        /* End_of_format */0,
+                                                                        ""
+                                                                      ]]),
+                                                                  /* String_literal */Block.__(11, [
+                                                                      "The class type",
+                                                                      /* Formatting_lit */Block.__(17, [
+                                                                          /* Break */Block.__(0, [
+                                                                              "@ ",
+                                                                              1,
+                                                                              0
+                                                                            ]),
                                                                           /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
                                                                                   /* Break */Block.__(0, [
                                                                                       "@ ",
@@ -72591,7 +72287,54 @@ register_error_of_exn((function (param) {
                                                                                       0
                                                                                     ]),
                                                                                   /* String_literal */Block.__(11, [
-                                                                                      "is used with parameters",
+                                                                                      "is not yet completely defined",
+                                                                                      /* Formatting_lit */Block.__(17, [
+                                                                                          /* Close_box */0,
+                                                                                          /* End_of_format */0
+                                                                                        ])
+                                                                                    ])
+                                                                                ])])
+                                                                        ])
+                                                                    ])
+                                                                ]),
+                                                              "@[The class type@ %a@ is not yet completely defined@]"
+                                                            ]), longident, param[0]);
+                                          case 8 : 
+                                              var expected = param[2];
+                                              var actual = param[1];
+                                              var abbrev = param[0];
+                                              reset_and_mark_loops_list(/* :: */[
+                                                    abbrev,
+                                                    /* :: */[
+                                                      actual,
+                                                      /* :: */[
+                                                        expected,
+                                                        /* [] */0
+                                                      ]
+                                                    ]
+                                                  ]);
+                                              return Curry._6(Format.fprintf(ppf$1, /* Format */[
+                                                              /* Formatting_gen */Block.__(18, [
+                                                                  /* Open_box */Block.__(1, [/* Format */[
+                                                                        /* End_of_format */0,
+                                                                        ""
+                                                                      ]]),
+                                                                  /* String_literal */Block.__(11, [
+                                                                      "The abbreviation",
+                                                                      /* Formatting_lit */Block.__(17, [
+                                                                          /* Break */Block.__(0, [
+                                                                              "@ ",
+                                                                              1,
+                                                                              0
+                                                                            ]),
+                                                                          /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
+                                                                                  /* Break */Block.__(0, [
+                                                                                      "@ ",
+                                                                                      1,
+                                                                                      0
+                                                                                    ]),
+                                                                                  /* String_literal */Block.__(11, [
+                                                                                      "expands to type",
                                                                                       /* Formatting_lit */Block.__(17, [
                                                                                           /* Break */Block.__(0, [
                                                                                               "@ ",
@@ -72605,7 +72348,7 @@ register_error_of_exn((function (param) {
                                                                                                       0
                                                                                                     ]),
                                                                                                   /* String_literal */Block.__(11, [
-                                                                                                      "wich are incompatible with constraints",
+                                                                                                      "but is used with type",
                                                                                                       /* Formatting_lit */Block.__(17, [
                                                                                                           /* Break */Block.__(0, [
                                                                                                               "@ ",
@@ -72623,221 +72366,439 @@ register_error_of_exn((function (param) {
                                                                                     ])
                                                                                 ])])
                                                                         ])
-                                                                    ]),
-                                                                  "@[The abbreviation %a@ is used with parameters@ %a@ wich are incompatible with constraints@ %a@]"
-                                                                ]), ident$3, param[0], type_expr$1, params, type_expr$1, cstrs);
-                                              case 14 : 
-                                                  return report_error$3(ppf$1, param[0]);
-                                              case 15 : 
-                                                  return Curry._1(Format.fprintf(ppf$1, /* Format */[
+                                                                    ])
+                                                                ]),
+                                                              "@[The abbreviation@ %a@ expands to type@ %a@ but is used with type@ %a@]"
+                                                            ]), type_expr$1, abbrev, type_expr$1, actual, type_expr$1, expected);
+                                          case 9 : 
+                                              var c = param[0];
+                                              return report_unification_error(ppf$1, env$2, undefined, param[1], (function (ppf) {
+                                                            return Curry._1(Format.fprintf(ppf, /* Format */[
+                                                                            /* String_literal */Block.__(11, [
+                                                                                "The expression \"new ",
+                                                                                /* String */Block.__(2, [
+                                                                                    /* No_padding */0,
+                                                                                    /* String_literal */Block.__(11, [
+                                                                                        "\" has type",
+                                                                                        /* End_of_format */0
+                                                                                      ])
+                                                                                  ])
+                                                                              ]),
+                                                                            "The expression \"new %s\" has type"
+                                                                          ]), c);
+                                                          }), (function (ppf) {
+                                                            return Format.fprintf(ppf, /* Format */[
+                                                                        /* String_literal */Block.__(11, [
+                                                                            "but is used with type",
+                                                                            /* End_of_format */0
+                                                                          ]),
+                                                                        "but is used with type"
+                                                                      ]);
+                                                          }));
+                                          case 10 : 
+                                              var vals = param[3];
+                                              var mets = param[2];
+                                              var imm = param[1];
+                                              var cl = param[0];
+                                              var print_mets = function (ppf, mets) {
+                                                return List.iter((function (met) {
+                                                              return Curry._1(Format.fprintf(ppf, /* Format */[
+                                                                              /* Formatting_lit */Block.__(17, [
+                                                                                  /* Break */Block.__(0, [
+                                                                                      "@ ",
+                                                                                      1,
+                                                                                      0
+                                                                                    ]),
+                                                                                  /* String */Block.__(2, [
+                                                                                      /* No_padding */0,
+                                                                                      /* End_of_format */0
+                                                                                    ])
+                                                                                ]),
+                                                                              "@ %s"
+                                                                            ]), met);
+                                                            }), mets);
+                                              };
+                                              var missings = mets ? (
+                                                  vals ? "methods and variables" : "methods"
+                                                ) : "variables";
+                                              var print_msg = function (ppf) {
+                                                if (imm) {
+                                                  return Curry._1(Format.fprintf(ppf, /* Format */[
                                                                   /* String_literal */Block.__(11, [
-                                                                      "Unbound instance variable ",
+                                                                      "This object has virtual ",
                                                                       /* String */Block.__(2, [
                                                                           /* No_padding */0,
                                                                           /* End_of_format */0
                                                                         ])
                                                                     ]),
-                                                                  "Unbound instance variable %s"
-                                                                ]), param[0]);
-                                              case 16 : 
-                                                  var print_common = function (ppf, kind, ty0, real, lab, ty) {
-                                                    var ty1 = real ? ty0 : newty2(100000000, /* Tobject */Block.__(4, [
-                                                              ty0,
-                                                              [undefined]
-                                                            ]));
-                                                    mark_loops(ty1);
-                                                    return Curry._6(Format.fprintf(ppf, /* Format */[
-                                                                    /* String_literal */Block.__(11, [
-                                                                        "The ",
-                                                                        /* String */Block.__(2, [
-                                                                            /* No_padding */0,
-                                                                            /* Char_literal */Block.__(12, [
-                                                                                /* " " */32,
-                                                                                /* String */Block.__(2, [
-                                                                                    /* No_padding */0,
-                                                                                    /* Formatting_lit */Block.__(17, [
-                                                                                        /* Break */Block.__(0, [
-                                                                                            "@ ",
-                                                                                            1,
-                                                                                            0
-                                                                                          ]),
-                                                                                        /* String_literal */Block.__(11, [
-                                                                                            "has type",
-                                                                                            /* Formatting_lit */Block.__(17, [
-                                                                                                /* Break */Block.__(0, [
-                                                                                                    "@;<1 2>",
-                                                                                                    1,
-                                                                                                    2
-                                                                                                  ]),
-                                                                                                /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
-                                                                                                        /* Break */Block.__(0, [
-                                                                                                            "@ ",
-                                                                                                            1,
-                                                                                                            0
-                                                                                                          ]),
-                                                                                                        /* String_literal */Block.__(11, [
-                                                                                                            "where",
-                                                                                                            /* Formatting_lit */Block.__(17, [
-                                                                                                                /* Break */Block.__(0, [
-                                                                                                                    "@ ",
-                                                                                                                    1,
-                                                                                                                    0
-                                                                                                                  ]),
-                                                                                                                /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
-                                                                                                                        /* Break */Block.__(0, [
-                                                                                                                            "@ ",
-                                                                                                                            1,
-                                                                                                                            0
-                                                                                                                          ]),
-                                                                                                                        /* String_literal */Block.__(11, [
-                                                                                                                            "is unbound",
-                                                                                                                            /* End_of_format */0
-                                                                                                                          ])
-                                                                                                                      ])])
-                                                                                                              ])
-                                                                                                          ])
-                                                                                                      ])])
-                                                                                              ])
-                                                                                          ])
-                                                                                      ])
-                                                                                  ])
-                                                                              ])
-                                                                          ])
-                                                                      ]),
-                                                                    "The %s %s@ has type@;<1 2>%a@ where@ %a@ is unbound"
-                                                                  ]), kind, lab, type_expr$1, ty, type_expr$1, ty0);
-                                                  };
-                                                  var print_reason = function (ppf, param) {
-                                                    if (param.tag) {
-                                                      return print_common(ppf, "instance variable", param[0], param[1], param[2], param[3]);
-                                                    } else {
-                                                      return print_common(ppf, "method", param[0], param[1], param[2], param[3]);
-                                                    }
-                                                  };
-                                                  reset(/* () */0);
-                                                  return Curry._3(Format.fprintf(ppf$1, /* Format */[
-                                                                  /* Formatting_gen */Block.__(18, [
-                                                                      /* Open_box */Block.__(1, [/* Format */[
-                                                                            /* String_literal */Block.__(11, [
-                                                                                "<v>",
-                                                                                /* End_of_format */0
-                                                                              ]),
-                                                                            "<v>"
-                                                                          ]]),
-                                                                      /* Formatting_gen */Block.__(18, [
-                                                                          /* Open_box */Block.__(1, [/* Format */[
-                                                                                /* End_of_format */0,
-                                                                                ""
-                                                                              ]]),
-                                                                          /* String_literal */Block.__(11, [
-                                                                              "Some type variables are unbound in this type:",
-                                                                              /* Formatting_lit */Block.__(17, [
-                                                                                  /* Break */Block.__(0, [
-                                                                                      "@;<1 2>",
-                                                                                      1,
-                                                                                      2
-                                                                                    ]),
-                                                                                  /* Theta */Block.__(16, [/* Formatting_lit */Block.__(17, [
-                                                                                          /* Close_box */0,
-                                                                                          /* Formatting_lit */Block.__(17, [
-                                                                                              /* Break */Block.__(0, [
-                                                                                                  "@ ",
-                                                                                                  1,
-                                                                                                  0
-                                                                                                ]),
-                                                                                              /* Formatting_gen */Block.__(18, [
-                                                                                                  /* Open_box */Block.__(1, [/* Format */[
-                                                                                                        /* End_of_format */0,
-                                                                                                        ""
-                                                                                                      ]]),
-                                                                                                  /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
-                                                                                                          /* Close_box */0,
-                                                                                                          /* Formatting_lit */Block.__(17, [
-                                                                                                              /* Close_box */0,
-                                                                                                              /* End_of_format */0
-                                                                                                            ])
-                                                                                                        ])])
-                                                                                                ])
-                                                                                            ])
-                                                                                        ])])
-                                                                                ])
-                                                                            ])
-                                                                        ])
-                                                                    ]),
-                                                                  "@[<v>@[Some type variables are unbound in this type:@;<1 2>%t@]@ @[%a@]@]"
-                                                                ]), param[0], print_reason, param[1]);
-                                              case 17 : 
-                                                  return Curry._2(Format.fprintf(ppf$1, /* Format */[
-                                                                  /* Formatting_gen */Block.__(18, [
-                                                                      /* Open_box */Block.__(1, [/* Format */[
-                                                                            /* String_literal */Block.__(11, [
-                                                                                "<v>",
-                                                                                /* End_of_format */0
-                                                                              ]),
-                                                                            "<v>"
-                                                                          ]]),
-                                                                      /* Formatting_gen */Block.__(18, [
-                                                                          /* Open_box */Block.__(1, [/* Format */[
-                                                                                /* End_of_format */0,
-                                                                                ""
-                                                                              ]]),
-                                                                          /* String_literal */Block.__(11, [
-                                                                              "Self type should not occur in the non-generic type",
-                                                                              /* Formatting_lit */Block.__(17, [
-                                                                                  /* Break */Block.__(0, [
-                                                                                      "@;<1 2>",
-                                                                                      1,
-                                                                                      2
-                                                                                    ]),
-                                                                                  /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
-                                                                                          /* Close_box */0,
-                                                                                          /* Formatting_lit */Block.__(17, [
-                                                                                              /* Break */Block.__(0, [
-                                                                                                  "@,",
-                                                                                                  0,
-                                                                                                  0
-                                                                                                ]),
-                                                                                              /* String_literal */Block.__(11, [
-                                                                                                  "It would escape the scope of its class",
-                                                                                                  /* Formatting_lit */Block.__(17, [
-                                                                                                      /* Close_box */0,
-                                                                                                      /* End_of_format */0
-                                                                                                    ])
-                                                                                                ])
-                                                                                            ])
-                                                                                        ])])
-                                                                                ])
-                                                                            ])
-                                                                        ])
-                                                                    ]),
-                                                                  "@[<v>@[Self type should not occur in the non-generic type@;<1 2>%a@]@,It would escape the scope of its class@]"
-                                                                ]), type_scheme, param[0]);
-                                              case 18 : 
-                                                  var id = param[0];
-                                                  return Curry._2(Format.fprintf(ppf$1, /* Format */[
-                                                                  /* Formatting_gen */Block.__(18, [
-                                                                      /* Open_box */Block.__(1, [/* Format */[
-                                                                            /* End_of_format */0,
-                                                                            ""
-                                                                          ]]),
-                                                                      /* String_literal */Block.__(11, [
-                                                                          "The type of this class,",
+                                                                  "This object has virtual %s"
+                                                                ]), missings);
+                                                } else if (cl) {
+                                                  return Format.fprintf(ppf, /* Format */[
+                                                              /* String_literal */Block.__(11, [
+                                                                  "This class should be virtual",
+                                                                  /* End_of_format */0
+                                                                ]),
+                                                              "This class should be virtual"
+                                                            ]);
+                                                } else {
+                                                  return Format.fprintf(ppf, /* Format */[
+                                                              /* String_literal */Block.__(11, [
+                                                                  "This class type should be virtual",
+                                                                  /* End_of_format */0
+                                                                ]),
+                                                              "This class type should be virtual"
+                                                            ]);
+                                                }
+                                              };
+                                              return Curry._4(Format.fprintf(ppf$1, /* Format */[
+                                                              /* Formatting_gen */Block.__(18, [
+                                                                  /* Open_box */Block.__(1, [/* Format */[
+                                                                        /* End_of_format */0,
+                                                                        ""
+                                                                      ]]),
+                                                                  /* Theta */Block.__(16, [/* Char_literal */Block.__(12, [
+                                                                          /* "." */46,
                                                                           /* Formatting_lit */Block.__(17, [
                                                                               /* Break */Block.__(0, [
                                                                                   "@ ",
                                                                                   1,
                                                                                   0
                                                                                 ]),
-                                                                              /* Alpha */Block.__(15, [/* Char_literal */Block.__(12, [
-                                                                                      /* "," */44,
+                                                                              /* Formatting_gen */Block.__(18, [
+                                                                                  /* Open_box */Block.__(1, [/* Format */[
+                                                                                        /* String_literal */Block.__(11, [
+                                                                                            "<2>",
+                                                                                            /* End_of_format */0
+                                                                                          ]),
+                                                                                        "<2>"
+                                                                                      ]]),
+                                                                                  /* String_literal */Block.__(11, [
+                                                                                      "The following ",
+                                                                                      /* String */Block.__(2, [
+                                                                                          /* No_padding */0,
+                                                                                          /* String_literal */Block.__(11, [
+                                                                                              " are undefined :",
+                                                                                              /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
+                                                                                                      /* Close_box */0,
+                                                                                                      /* Formatting_lit */Block.__(17, [
+                                                                                                          /* Close_box */0,
+                                                                                                          /* End_of_format */0
+                                                                                                        ])
+                                                                                                    ])])
+                                                                                            ])
+                                                                                        ])
+                                                                                    ])
+                                                                                ])
+                                                                            ])
+                                                                        ])])
+                                                                ]),
+                                                              "@[%t.@ @[<2>The following %s are undefined :%a@]@]"
+                                                            ]), print_msg, missings, print_mets, Pervasives.$at(mets, vals));
+                                          case 11 : 
+                                              return Curry._4(Format.fprintf(ppf$1, /* Format */[
+                                                              /* Formatting_gen */Block.__(18, [
+                                                                  /* Open_box */Block.__(1, [/* Format */[
+                                                                        /* End_of_format */0,
+                                                                        ""
+                                                                      ]]),
+                                                                  /* String_literal */Block.__(11, [
+                                                                      "The class constructor ",
+                                                                      /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
+                                                                              /* Break */Block.__(0, [
+                                                                                  "@ ",
+                                                                                  1,
+                                                                                  0
+                                                                                ]),
+                                                                              /* String_literal */Block.__(11, [
+                                                                                  "expects ",
+                                                                                  /* Int */Block.__(4, [
+                                                                                      /* Int_i */3,
+                                                                                      /* No_padding */0,
+                                                                                      /* No_precision */0,
+                                                                                      /* String_literal */Block.__(11, [
+                                                                                          " type argument(s),",
+                                                                                          /* Formatting_lit */Block.__(17, [
+                                                                                              /* Break */Block.__(0, [
+                                                                                                  "@ ",
+                                                                                                  1,
+                                                                                                  0
+                                                                                                ]),
+                                                                                              /* String_literal */Block.__(11, [
+                                                                                                  "but is here applied to ",
+                                                                                                  /* Int */Block.__(4, [
+                                                                                                      /* Int_i */3,
+                                                                                                      /* No_padding */0,
+                                                                                                      /* No_precision */0,
+                                                                                                      /* String_literal */Block.__(11, [
+                                                                                                          " type argument(s)",
+                                                                                                          /* Formatting_lit */Block.__(17, [
+                                                                                                              /* Close_box */0,
+                                                                                                              /* End_of_format */0
+                                                                                                            ])
+                                                                                                        ])
+                                                                                                    ])
+                                                                                                ])
+                                                                                            ])
+                                                                                        ])
+                                                                                    ])
+                                                                                ])
+                                                                            ])])
+                                                                    ])
+                                                                ]),
+                                                              "@[The class constructor %a@ expects %i type argument(s),@ but is here applied to %i type argument(s)@]"
+                                                            ]), longident, param[0], param[1], param[2]);
+                                          case 12 : 
+                                              return report_unification_error(ppf$1, env$2, undefined, param[0], (function (ppf) {
+                                                            return Format.fprintf(ppf, /* Format */[
+                                                                        /* String_literal */Block.__(11, [
+                                                                            "The type parameter",
+                                                                            /* End_of_format */0
+                                                                          ]),
+                                                                        "The type parameter"
+                                                                      ]);
+                                                          }), (function (ppf) {
+                                                            return Format.fprintf(ppf, /* Format */[
+                                                                        /* String_literal */Block.__(11, [
+                                                                            "does not meet its constraint: it should be",
+                                                                            /* End_of_format */0
+                                                                          ]),
+                                                                        "does not meet its constraint: it should be"
+                                                                      ]);
+                                                          }));
+                                          case 13 : 
+                                              var cstrs = param[2];
+                                              var params = param[1];
+                                              reset_and_mark_loops_list(/* :: */[
+                                                    params,
+                                                    /* :: */[
+                                                      cstrs,
+                                                      /* [] */0
+                                                    ]
+                                                  ]);
+                                              return Curry._6(Format.fprintf(ppf$1, /* Format */[
+                                                              /* Formatting_gen */Block.__(18, [
+                                                                  /* Open_box */Block.__(1, [/* Format */[
+                                                                        /* End_of_format */0,
+                                                                        ""
+                                                                      ]]),
+                                                                  /* String_literal */Block.__(11, [
+                                                                      "The abbreviation ",
+                                                                      /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
+                                                                              /* Break */Block.__(0, [
+                                                                                  "@ ",
+                                                                                  1,
+                                                                                  0
+                                                                                ]),
+                                                                              /* String_literal */Block.__(11, [
+                                                                                  "is used with parameters",
+                                                                                  /* Formatting_lit */Block.__(17, [
+                                                                                      /* Break */Block.__(0, [
+                                                                                          "@ ",
+                                                                                          1,
+                                                                                          0
+                                                                                        ]),
+                                                                                      /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
+                                                                                              /* Break */Block.__(0, [
+                                                                                                  "@ ",
+                                                                                                  1,
+                                                                                                  0
+                                                                                                ]),
+                                                                                              /* String_literal */Block.__(11, [
+                                                                                                  "wich are incompatible with constraints",
+                                                                                                  /* Formatting_lit */Block.__(17, [
+                                                                                                      /* Break */Block.__(0, [
+                                                                                                          "@ ",
+                                                                                                          1,
+                                                                                                          0
+                                                                                                        ]),
+                                                                                                      /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
+                                                                                                              /* Close_box */0,
+                                                                                                              /* End_of_format */0
+                                                                                                            ])])
+                                                                                                    ])
+                                                                                                ])
+                                                                                            ])])
+                                                                                    ])
+                                                                                ])
+                                                                            ])])
+                                                                    ])
+                                                                ]),
+                                                              "@[The abbreviation %a@ is used with parameters@ %a@ wich are incompatible with constraints@ %a@]"
+                                                            ]), ident$3, param[0], type_expr$1, params, type_expr$1, cstrs);
+                                          case 14 : 
+                                              return report_error$3(ppf$1, param[0]);
+                                          case 15 : 
+                                              return Curry._1(Format.fprintf(ppf$1, /* Format */[
+                                                              /* String_literal */Block.__(11, [
+                                                                  "Unbound instance variable ",
+                                                                  /* String */Block.__(2, [
+                                                                      /* No_padding */0,
+                                                                      /* End_of_format */0
+                                                                    ])
+                                                                ]),
+                                                              "Unbound instance variable %s"
+                                                            ]), param[0]);
+                                          case 16 : 
+                                              var print_common = function (ppf, kind, ty0, real, lab, ty) {
+                                                var ty1 = real ? ty0 : newty2(100000000, /* Tobject */Block.__(4, [
+                                                          ty0,
+                                                          [undefined]
+                                                        ]));
+                                                mark_loops(ty1);
+                                                return Curry._6(Format.fprintf(ppf, /* Format */[
+                                                                /* String_literal */Block.__(11, [
+                                                                    "The ",
+                                                                    /* String */Block.__(2, [
+                                                                        /* No_padding */0,
+                                                                        /* Char_literal */Block.__(12, [
+                                                                            /* " " */32,
+                                                                            /* String */Block.__(2, [
+                                                                                /* No_padding */0,
+                                                                                /* Formatting_lit */Block.__(17, [
+                                                                                    /* Break */Block.__(0, [
+                                                                                        "@ ",
+                                                                                        1,
+                                                                                        0
+                                                                                      ]),
+                                                                                    /* String_literal */Block.__(11, [
+                                                                                        "has type",
+                                                                                        /* Formatting_lit */Block.__(17, [
+                                                                                            /* Break */Block.__(0, [
+                                                                                                "@;<1 2>",
+                                                                                                1,
+                                                                                                2
+                                                                                              ]),
+                                                                                            /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
+                                                                                                    /* Break */Block.__(0, [
+                                                                                                        "@ ",
+                                                                                                        1,
+                                                                                                        0
+                                                                                                      ]),
+                                                                                                    /* String_literal */Block.__(11, [
+                                                                                                        "where",
+                                                                                                        /* Formatting_lit */Block.__(17, [
+                                                                                                            /* Break */Block.__(0, [
+                                                                                                                "@ ",
+                                                                                                                1,
+                                                                                                                0
+                                                                                                              ]),
+                                                                                                            /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
+                                                                                                                    /* Break */Block.__(0, [
+                                                                                                                        "@ ",
+                                                                                                                        1,
+                                                                                                                        0
+                                                                                                                      ]),
+                                                                                                                    /* String_literal */Block.__(11, [
+                                                                                                                        "is unbound",
+                                                                                                                        /* End_of_format */0
+                                                                                                                      ])
+                                                                                                                  ])])
+                                                                                                          ])
+                                                                                                      ])
+                                                                                                  ])])
+                                                                                          ])
+                                                                                      ])
+                                                                                  ])
+                                                                              ])
+                                                                          ])
+                                                                      ])
+                                                                  ]),
+                                                                "The %s %s@ has type@;<1 2>%a@ where@ %a@ is unbound"
+                                                              ]), kind, lab, type_expr$1, ty, type_expr$1, ty0);
+                                              };
+                                              var print_reason = function (ppf, param) {
+                                                if (param.tag) {
+                                                  return print_common(ppf, "instance variable", param[0], param[1], param[2], param[3]);
+                                                } else {
+                                                  return print_common(ppf, "method", param[0], param[1], param[2], param[3]);
+                                                }
+                                              };
+                                              reset(/* () */0);
+                                              return Curry._3(Format.fprintf(ppf$1, /* Format */[
+                                                              /* Formatting_gen */Block.__(18, [
+                                                                  /* Open_box */Block.__(1, [/* Format */[
+                                                                        /* String_literal */Block.__(11, [
+                                                                            "<v>",
+                                                                            /* End_of_format */0
+                                                                          ]),
+                                                                        "<v>"
+                                                                      ]]),
+                                                                  /* Formatting_gen */Block.__(18, [
+                                                                      /* Open_box */Block.__(1, [/* Format */[
+                                                                            /* End_of_format */0,
+                                                                            ""
+                                                                          ]]),
+                                                                      /* String_literal */Block.__(11, [
+                                                                          "Some type variables are unbound in this type:",
+                                                                          /* Formatting_lit */Block.__(17, [
+                                                                              /* Break */Block.__(0, [
+                                                                                  "@;<1 2>",
+                                                                                  1,
+                                                                                  2
+                                                                                ]),
+                                                                              /* Theta */Block.__(16, [/* Formatting_lit */Block.__(17, [
+                                                                                      /* Close_box */0,
                                                                                       /* Formatting_lit */Block.__(17, [
                                                                                           /* Break */Block.__(0, [
                                                                                               "@ ",
                                                                                               1,
                                                                                               0
                                                                                             ]),
+                                                                                          /* Formatting_gen */Block.__(18, [
+                                                                                              /* Open_box */Block.__(1, [/* Format */[
+                                                                                                    /* End_of_format */0,
+                                                                                                    ""
+                                                                                                  ]]),
+                                                                                              /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
+                                                                                                      /* Close_box */0,
+                                                                                                      /* Formatting_lit */Block.__(17, [
+                                                                                                          /* Close_box */0,
+                                                                                                          /* End_of_format */0
+                                                                                                        ])
+                                                                                                    ])])
+                                                                                            ])
+                                                                                        ])
+                                                                                    ])])
+                                                                            ])
+                                                                        ])
+                                                                    ])
+                                                                ]),
+                                                              "@[<v>@[Some type variables are unbound in this type:@;<1 2>%t@]@ @[%a@]@]"
+                                                            ]), param[0], print_reason, param[1]);
+                                          case 17 : 
+                                              return Curry._2(Format.fprintf(ppf$1, /* Format */[
+                                                              /* Formatting_gen */Block.__(18, [
+                                                                  /* Open_box */Block.__(1, [/* Format */[
+                                                                        /* String_literal */Block.__(11, [
+                                                                            "<v>",
+                                                                            /* End_of_format */0
+                                                                          ]),
+                                                                        "<v>"
+                                                                      ]]),
+                                                                  /* Formatting_gen */Block.__(18, [
+                                                                      /* Open_box */Block.__(1, [/* Format */[
+                                                                            /* End_of_format */0,
+                                                                            ""
+                                                                          ]]),
+                                                                      /* String_literal */Block.__(11, [
+                                                                          "Self type should not occur in the non-generic type",
+                                                                          /* Formatting_lit */Block.__(17, [
+                                                                              /* Break */Block.__(0, [
+                                                                                  "@;<1 2>",
+                                                                                  1,
+                                                                                  2
+                                                                                ]),
+                                                                              /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
+                                                                                      /* Close_box */0,
+                                                                                      /* Formatting_lit */Block.__(17, [
+                                                                                          /* Break */Block.__(0, [
+                                                                                              "@,",
+                                                                                              0,
+                                                                                              0
+                                                                                            ]),
                                                                                           /* String_literal */Block.__(11, [
-                                                                                              "contains type variables that cannot be generalized",
+                                                                                              "It would escape the scope of its class",
                                                                                               /* Formatting_lit */Block.__(17, [
                                                                                                   /* Close_box */0,
                                                                                                   /* End_of_format */0
@@ -72847,149 +72808,28 @@ register_error_of_exn((function (param) {
                                                                                     ])])
                                                                             ])
                                                                         ])
-                                                                    ]),
-                                                                  "@[The type of this class,@ %a,@ contains type variables that cannot be generalized@]"
-                                                                ]), (function (param, param$1) {
-                                                                return class_declaration$1(id, param, param$1);
-                                                              }), param[1]);
-                                              case 19 : 
-                                                  return Curry._2(Format.fprintf(ppf$1, /* Format */[
-                                                                  /* Formatting_gen */Block.__(18, [
-                                                                      /* Open_box */Block.__(1, [/* Format */[
-                                                                            /* End_of_format */0,
-                                                                            ""
-                                                                          ]]),
-                                                                      /* String_literal */Block.__(11, [
-                                                                          "The type of self cannot be coerced to",
-                                                                          /* Formatting_lit */Block.__(17, [
-                                                                              /* Break */Block.__(0, [
-                                                                                  "@ ",
-                                                                                  1,
-                                                                                  0
-                                                                                ]),
-                                                                              /* String_literal */Block.__(11, [
-                                                                                  "the type of the current class:",
-                                                                                  /* Formatting_lit */Block.__(17, [
-                                                                                      /* Break */Block.__(0, [
-                                                                                          "@ ",
-                                                                                          1,
-                                                                                          0
-                                                                                        ]),
-                                                                                      /* Alpha */Block.__(15, [/* Char_literal */Block.__(12, [
-                                                                                              /* "." */46,
-                                                                                              /* Formatting_lit */Block.__(17, [
-                                                                                                  /* Flush_newline */4,
-                                                                                                  /* String_literal */Block.__(11, [
-                                                                                                      "Some occurrences are contravariant",
-                                                                                                      /* Formatting_lit */Block.__(17, [
-                                                                                                          /* Close_box */0,
-                                                                                                          /* End_of_format */0
-                                                                                                        ])
-                                                                                                    ])
-                                                                                                ])
-                                                                                            ])])
-                                                                                    ])
-                                                                                ])
-                                                                            ])
-                                                                        ])
-                                                                    ]),
-                                                                  "@[The type of self cannot be coerced to@ the type of the current class:@ %a.@.Some occurrences are contravariant@]"
-                                                                ]), type_scheme, param[0]);
-                                              case 20 : 
-                                                  var id$1 = param[0];
-                                                  Curry._2(Format.fprintf(ppf$1, /* Format */[
-                                                            /* Formatting_gen */Block.__(18, [
-                                                                /* Open_box */Block.__(1, [/* Format */[
-                                                                      /* End_of_format */0,
-                                                                      ""
-                                                                    ]]),
-                                                                /* String_literal */Block.__(11, [
-                                                                    "The type of this class,",
-                                                                    /* Formatting_lit */Block.__(17, [
-                                                                        /* Break */Block.__(0, [
-                                                                            "@ ",
-                                                                            1,
-                                                                            0
-                                                                          ]),
-                                                                        /* Alpha */Block.__(15, [/* Char_literal */Block.__(12, [
-                                                                                /* "," */44,
-                                                                                /* Formatting_lit */Block.__(17, [
-                                                                                    /* Break */Block.__(0, [
-                                                                                        "@ ",
-                                                                                        1,
-                                                                                        0
-                                                                                      ]),
-                                                                                    /* String_literal */Block.__(11, [
-                                                                                        "contains non-collapsible conjunctive types in constraints",
-                                                                                        /* Formatting_lit */Block.__(17, [
-                                                                                            /* Close_box */0,
-                                                                                            /* End_of_format */0
-                                                                                          ])
-                                                                                      ])
-                                                                                  ])
-                                                                              ])])
-                                                                      ])
-                                                                  ])
-                                                              ]),
-                                                            "@[The type of this class,@ %a,@ contains non-collapsible conjunctive types in constraints@]"
-                                                          ]), (function (param, param$1) {
-                                                          return class_declaration$1(id$1, param, param$1);
-                                                        }), param[1]);
-                                                  return report_unification_error(ppf$1, env$2, undefined, param[2], (function (ppf) {
-                                                                return Format.fprintf(ppf, /* Format */[
-                                                                            /* String_literal */Block.__(11, [
-                                                                                "Type",
-                                                                                /* End_of_format */0
-                                                                              ]),
-                                                                            "Type"
-                                                                          ]);
-                                                              }), (function (ppf) {
-                                                                return Format.fprintf(ppf, /* Format */[
-                                                                            /* String_literal */Block.__(11, [
-                                                                                "is not compatible with type",
-                                                                                /* End_of_format */0
-                                                                              ]),
-                                                                            "is not compatible with type"
-                                                                          ]);
-                                                              }));
-                                              case 21 : 
-                                                  return report_unification_error(ppf$1, env$2, undefined, param[0], (function (ppf) {
-                                                                return Format.fprintf(ppf, /* Format */[
-                                                                            /* String_literal */Block.__(11, [
-                                                                                "This object is expected to have type",
-                                                                                /* End_of_format */0
-                                                                              ]),
-                                                                            "This object is expected to have type"
-                                                                          ]);
-                                                              }), (function (ppf) {
-                                                                return Format.fprintf(ppf, /* Format */[
-                                                                            /* String_literal */Block.__(11, [
-                                                                                "but actually has type",
-                                                                                /* End_of_format */0
-                                                                              ]),
-                                                                            "but actually has type"
-                                                                          ]);
-                                                              }));
-                                              case 22 : 
-                                                  var match = param[1] === /* Immutable */0 ? /* tuple */[
-                                                      "mutable",
-                                                      "immutable"
-                                                    ] : /* tuple */[
-                                                      "immutable",
-                                                      "mutable"
-                                                    ];
-                                                  return Curry._2(Format.fprintf(ppf$1, /* Format */[
-                                                                  /* Formatting_gen */Block.__(18, [
-                                                                      /* Open_box */Block.__(1, [/* Format */[
-                                                                            /* End_of_format */0,
-                                                                            ""
-                                                                          ]]),
-                                                                      /* String_literal */Block.__(11, [
-                                                                          "The instance variable is ",
-                                                                          /* String */Block.__(2, [
-                                                                              /* No_padding */0,
-                                                                              /* Char_literal */Block.__(12, [
-                                                                                  /* ";" */59,
+                                                                    ])
+                                                                ]),
+                                                              "@[<v>@[Self type should not occur in the non-generic type@;<1 2>%a@]@,It would escape the scope of its class@]"
+                                                            ]), type_scheme, param[0]);
+                                          case 18 : 
+                                              var id = param[0];
+                                              return Curry._2(Format.fprintf(ppf$1, /* Format */[
+                                                              /* Formatting_gen */Block.__(18, [
+                                                                  /* Open_box */Block.__(1, [/* Format */[
+                                                                        /* End_of_format */0,
+                                                                        ""
+                                                                      ]]),
+                                                                  /* String_literal */Block.__(11, [
+                                                                      "The type of this class,",
+                                                                      /* Formatting_lit */Block.__(17, [
+                                                                          /* Break */Block.__(0, [
+                                                                              "@ ",
+                                                                              1,
+                                                                              0
+                                                                            ]),
+                                                                          /* Alpha */Block.__(15, [/* Char_literal */Block.__(12, [
+                                                                                  /* "," */44,
                                                                                   /* Formatting_lit */Block.__(17, [
                                                                                       /* Break */Block.__(0, [
                                                                                           "@ ",
@@ -72997,9 +72837,276 @@ register_error_of_exn((function (param) {
                                                                                           0
                                                                                         ]),
                                                                                       /* String_literal */Block.__(11, [
-                                                                                          "it cannot be redefined as ",
-                                                                                          /* String */Block.__(2, [
-                                                                                              /* No_padding */0,
+                                                                                          "contains type variables that cannot be generalized",
+                                                                                          /* Formatting_lit */Block.__(17, [
+                                                                                              /* Close_box */0,
+                                                                                              /* End_of_format */0
+                                                                                            ])
+                                                                                        ])
+                                                                                    ])
+                                                                                ])])
+                                                                        ])
+                                                                    ])
+                                                                ]),
+                                                              "@[The type of this class,@ %a,@ contains type variables that cannot be generalized@]"
+                                                            ]), (function (param, param$1) {
+                                                            return class_declaration$1(id, param, param$1);
+                                                          }), param[1]);
+                                          case 19 : 
+                                              return Curry._2(Format.fprintf(ppf$1, /* Format */[
+                                                              /* Formatting_gen */Block.__(18, [
+                                                                  /* Open_box */Block.__(1, [/* Format */[
+                                                                        /* End_of_format */0,
+                                                                        ""
+                                                                      ]]),
+                                                                  /* String_literal */Block.__(11, [
+                                                                      "The type of self cannot be coerced to",
+                                                                      /* Formatting_lit */Block.__(17, [
+                                                                          /* Break */Block.__(0, [
+                                                                              "@ ",
+                                                                              1,
+                                                                              0
+                                                                            ]),
+                                                                          /* String_literal */Block.__(11, [
+                                                                              "the type of the current class:",
+                                                                              /* Formatting_lit */Block.__(17, [
+                                                                                  /* Break */Block.__(0, [
+                                                                                      "@ ",
+                                                                                      1,
+                                                                                      0
+                                                                                    ]),
+                                                                                  /* Alpha */Block.__(15, [/* Char_literal */Block.__(12, [
+                                                                                          /* "." */46,
+                                                                                          /* Formatting_lit */Block.__(17, [
+                                                                                              /* Flush_newline */4,
+                                                                                              /* String_literal */Block.__(11, [
+                                                                                                  "Some occurrences are contravariant",
+                                                                                                  /* Formatting_lit */Block.__(17, [
+                                                                                                      /* Close_box */0,
+                                                                                                      /* End_of_format */0
+                                                                                                    ])
+                                                                                                ])
+                                                                                            ])
+                                                                                        ])])
+                                                                                ])
+                                                                            ])
+                                                                        ])
+                                                                    ])
+                                                                ]),
+                                                              "@[The type of self cannot be coerced to@ the type of the current class:@ %a.@.Some occurrences are contravariant@]"
+                                                            ]), type_scheme, param[0]);
+                                          case 20 : 
+                                              var id$1 = param[0];
+                                              Curry._2(Format.fprintf(ppf$1, /* Format */[
+                                                        /* Formatting_gen */Block.__(18, [
+                                                            /* Open_box */Block.__(1, [/* Format */[
+                                                                  /* End_of_format */0,
+                                                                  ""
+                                                                ]]),
+                                                            /* String_literal */Block.__(11, [
+                                                                "The type of this class,",
+                                                                /* Formatting_lit */Block.__(17, [
+                                                                    /* Break */Block.__(0, [
+                                                                        "@ ",
+                                                                        1,
+                                                                        0
+                                                                      ]),
+                                                                    /* Alpha */Block.__(15, [/* Char_literal */Block.__(12, [
+                                                                            /* "," */44,
+                                                                            /* Formatting_lit */Block.__(17, [
+                                                                                /* Break */Block.__(0, [
+                                                                                    "@ ",
+                                                                                    1,
+                                                                                    0
+                                                                                  ]),
+                                                                                /* String_literal */Block.__(11, [
+                                                                                    "contains non-collapsible conjunctive types in constraints",
+                                                                                    /* Formatting_lit */Block.__(17, [
+                                                                                        /* Close_box */0,
+                                                                                        /* End_of_format */0
+                                                                                      ])
+                                                                                  ])
+                                                                              ])
+                                                                          ])])
+                                                                  ])
+                                                              ])
+                                                          ]),
+                                                        "@[The type of this class,@ %a,@ contains non-collapsible conjunctive types in constraints@]"
+                                                      ]), (function (param, param$1) {
+                                                      return class_declaration$1(id$1, param, param$1);
+                                                    }), param[1]);
+                                              return report_unification_error(ppf$1, env$2, undefined, param[2], (function (ppf) {
+                                                            return Format.fprintf(ppf, /* Format */[
+                                                                        /* String_literal */Block.__(11, [
+                                                                            "Type",
+                                                                            /* End_of_format */0
+                                                                          ]),
+                                                                        "Type"
+                                                                      ]);
+                                                          }), (function (ppf) {
+                                                            return Format.fprintf(ppf, /* Format */[
+                                                                        /* String_literal */Block.__(11, [
+                                                                            "is not compatible with type",
+                                                                            /* End_of_format */0
+                                                                          ]),
+                                                                        "is not compatible with type"
+                                                                      ]);
+                                                          }));
+                                          case 21 : 
+                                              return report_unification_error(ppf$1, env$2, undefined, param[0], (function (ppf) {
+                                                            return Format.fprintf(ppf, /* Format */[
+                                                                        /* String_literal */Block.__(11, [
+                                                                            "This object is expected to have type",
+                                                                            /* End_of_format */0
+                                                                          ]),
+                                                                        "This object is expected to have type"
+                                                                      ]);
+                                                          }), (function (ppf) {
+                                                            return Format.fprintf(ppf, /* Format */[
+                                                                        /* String_literal */Block.__(11, [
+                                                                            "but actually has type",
+                                                                            /* End_of_format */0
+                                                                          ]),
+                                                                        "but actually has type"
+                                                                      ]);
+                                                          }));
+                                          case 22 : 
+                                              var match = param[1] === /* Immutable */0 ? /* tuple */[
+                                                  "mutable",
+                                                  "immutable"
+                                                ] : /* tuple */[
+                                                  "immutable",
+                                                  "mutable"
+                                                ];
+                                              return Curry._2(Format.fprintf(ppf$1, /* Format */[
+                                                              /* Formatting_gen */Block.__(18, [
+                                                                  /* Open_box */Block.__(1, [/* Format */[
+                                                                        /* End_of_format */0,
+                                                                        ""
+                                                                      ]]),
+                                                                  /* String_literal */Block.__(11, [
+                                                                      "The instance variable is ",
+                                                                      /* String */Block.__(2, [
+                                                                          /* No_padding */0,
+                                                                          /* Char_literal */Block.__(12, [
+                                                                              /* ";" */59,
+                                                                              /* Formatting_lit */Block.__(17, [
+                                                                                  /* Break */Block.__(0, [
+                                                                                      "@ ",
+                                                                                      1,
+                                                                                      0
+                                                                                    ]),
+                                                                                  /* String_literal */Block.__(11, [
+                                                                                      "it cannot be redefined as ",
+                                                                                      /* String */Block.__(2, [
+                                                                                          /* No_padding */0,
+                                                                                          /* Formatting_lit */Block.__(17, [
+                                                                                              /* Close_box */0,
+                                                                                              /* End_of_format */0
+                                                                                            ])
+                                                                                        ])
+                                                                                    ])
+                                                                                ])
+                                                                            ])
+                                                                        ])
+                                                                    ])
+                                                                ]),
+                                                              "@[The instance variable is %s;@ it cannot be redefined as %s@]"
+                                                            ]), match[0], match[1]);
+                                          case 23 : 
+                                              var name = param[1];
+                                              if (name === "") {
+                                                return Curry._1(Format.fprintf(ppf$1, /* Format */[
+                                                                /* Formatting_gen */Block.__(18, [
+                                                                    /* Open_box */Block.__(1, [/* Format */[
+                                                                          /* End_of_format */0,
+                                                                          ""
+                                                                        ]]),
+                                                                    /* String_literal */Block.__(11, [
+                                                                        "This inheritance does not override any method",
+                                                                        /* Formatting_lit */Block.__(17, [
+                                                                            /* Break */Block.__(0, [
+                                                                                "@ ",
+                                                                                1,
+                                                                                0
+                                                                              ]),
+                                                                            /* String */Block.__(2, [
+                                                                                /* No_padding */0,
+                                                                                /* Formatting_lit */Block.__(17, [
+                                                                                    /* Close_box */0,
+                                                                                    /* End_of_format */0
+                                                                                  ])
+                                                                              ])
+                                                                          ])
+                                                                      ])
+                                                                  ]),
+                                                                "@[This inheritance does not override any method@ %s@]"
+                                                              ]), "instance variable");
+                                              } else {
+                                                return Curry._2(Format.fprintf(ppf$1, /* Format */[
+                                                                /* Formatting_gen */Block.__(18, [
+                                                                    /* Open_box */Block.__(1, [/* Format */[
+                                                                          /* End_of_format */0,
+                                                                          ""
+                                                                        ]]),
+                                                                    /* String_literal */Block.__(11, [
+                                                                        "The ",
+                                                                        /* String */Block.__(2, [
+                                                                            /* No_padding */0,
+                                                                            /* String_literal */Block.__(11, [
+                                                                                " `",
+                                                                                /* String */Block.__(2, [
+                                                                                    /* No_padding */0,
+                                                                                    /* Char_literal */Block.__(12, [
+                                                                                        /* "'" */39,
+                                                                                        /* Formatting_lit */Block.__(17, [
+                                                                                            /* Break */Block.__(0, [
+                                                                                                "@ ",
+                                                                                                1,
+                                                                                                0
+                                                                                              ]),
+                                                                                            /* String_literal */Block.__(11, [
+                                                                                                "has no previous definition",
+                                                                                                /* Formatting_lit */Block.__(17, [
+                                                                                                    /* Close_box */0,
+                                                                                                    /* End_of_format */0
+                                                                                                  ])
+                                                                                              ])
+                                                                                          ])
+                                                                                      ])
+                                                                                  ])
+                                                                              ])
+                                                                          ])
+                                                                      ])
+                                                                  ]),
+                                                                "@[The %s `%s'@ has no previous definition@]"
+                                                              ]), param[0], name);
+                                              }
+                                          case 24 : 
+                                              return Curry._2(Format.fprintf(ppf$1, /* Format */[
+                                                              /* Formatting_gen */Block.__(18, [
+                                                                  /* Open_box */Block.__(1, [/* Format */[
+                                                                        /* End_of_format */0,
+                                                                        ""
+                                                                      ]]),
+                                                                  /* String_literal */Block.__(11, [
+                                                                      "The ",
+                                                                      /* String */Block.__(2, [
+                                                                          /* No_padding */0,
+                                                                          /* String_literal */Block.__(11, [
+                                                                              " `",
+                                                                              /* String */Block.__(2, [
+                                                                                  /* No_padding */0,
+                                                                                  /* Char_literal */Block.__(12, [
+                                                                                      /* "'" */39,
+                                                                                      /* Formatting_lit */Block.__(17, [
+                                                                                          /* Break */Block.__(0, [
+                                                                                              "@ ",
+                                                                                              1,
+                                                                                              0
+                                                                                            ]),
+                                                                                          /* String_literal */Block.__(11, [
+                                                                                              "has multiple definitions in this object",
                                                                                               /* Formatting_lit */Block.__(17, [
                                                                                                   /* Close_box */0,
                                                                                                   /* End_of_format */0
@@ -73010,124 +73117,17 @@ register_error_of_exn((function (param) {
                                                                                 ])
                                                                             ])
                                                                         ])
-                                                                    ]),
-                                                                  "@[The instance variable is %s;@ it cannot be redefined as %s@]"
-                                                                ]), match[0], match[1]);
-                                              case 23 : 
-                                                  var name = param[1];
-                                                  if (name === "") {
-                                                    return Curry._1(Format.fprintf(ppf$1, /* Format */[
-                                                                    /* Formatting_gen */Block.__(18, [
-                                                                        /* Open_box */Block.__(1, [/* Format */[
-                                                                              /* End_of_format */0,
-                                                                              ""
-                                                                            ]]),
-                                                                        /* String_literal */Block.__(11, [
-                                                                            "This inheritance does not override any method",
-                                                                            /* Formatting_lit */Block.__(17, [
-                                                                                /* Break */Block.__(0, [
-                                                                                    "@ ",
-                                                                                    1,
-                                                                                    0
-                                                                                  ]),
-                                                                                /* String */Block.__(2, [
-                                                                                    /* No_padding */0,
-                                                                                    /* Formatting_lit */Block.__(17, [
-                                                                                        /* Close_box */0,
-                                                                                        /* End_of_format */0
-                                                                                      ])
-                                                                                  ])
-                                                                              ])
-                                                                          ])
-                                                                      ]),
-                                                                    "@[This inheritance does not override any method@ %s@]"
-                                                                  ]), "instance variable");
-                                                  } else {
-                                                    return Curry._2(Format.fprintf(ppf$1, /* Format */[
-                                                                    /* Formatting_gen */Block.__(18, [
-                                                                        /* Open_box */Block.__(1, [/* Format */[
-                                                                              /* End_of_format */0,
-                                                                              ""
-                                                                            ]]),
-                                                                        /* String_literal */Block.__(11, [
-                                                                            "The ",
-                                                                            /* String */Block.__(2, [
-                                                                                /* No_padding */0,
-                                                                                /* String_literal */Block.__(11, [
-                                                                                    " `",
-                                                                                    /* String */Block.__(2, [
-                                                                                        /* No_padding */0,
-                                                                                        /* Char_literal */Block.__(12, [
-                                                                                            /* "'" */39,
-                                                                                            /* Formatting_lit */Block.__(17, [
-                                                                                                /* Break */Block.__(0, [
-                                                                                                    "@ ",
-                                                                                                    1,
-                                                                                                    0
-                                                                                                  ]),
-                                                                                                /* String_literal */Block.__(11, [
-                                                                                                    "has no previous definition",
-                                                                                                    /* Formatting_lit */Block.__(17, [
-                                                                                                        /* Close_box */0,
-                                                                                                        /* End_of_format */0
-                                                                                                      ])
-                                                                                                  ])
-                                                                                              ])
-                                                                                          ])
-                                                                                      ])
-                                                                                  ])
-                                                                              ])
-                                                                          ])
-                                                                      ]),
-                                                                    "@[The %s `%s'@ has no previous definition@]"
-                                                                  ]), param[0], name);
-                                                  }
-                                              case 24 : 
-                                                  return Curry._2(Format.fprintf(ppf$1, /* Format */[
-                                                                  /* Formatting_gen */Block.__(18, [
-                                                                      /* Open_box */Block.__(1, [/* Format */[
-                                                                            /* End_of_format */0,
-                                                                            ""
-                                                                          ]]),
-                                                                      /* String_literal */Block.__(11, [
-                                                                          "The ",
-                                                                          /* String */Block.__(2, [
-                                                                              /* No_padding */0,
-                                                                              /* String_literal */Block.__(11, [
-                                                                                  " `",
-                                                                                  /* String */Block.__(2, [
-                                                                                      /* No_padding */0,
-                                                                                      /* Char_literal */Block.__(12, [
-                                                                                          /* "'" */39,
-                                                                                          /* Formatting_lit */Block.__(17, [
-                                                                                              /* Break */Block.__(0, [
-                                                                                                  "@ ",
-                                                                                                  1,
-                                                                                                  0
-                                                                                                ]),
-                                                                                              /* String_literal */Block.__(11, [
-                                                                                                  "has multiple definitions in this object",
-                                                                                                  /* Formatting_lit */Block.__(17, [
-                                                                                                      /* Close_box */0,
-                                                                                                      /* End_of_format */0
-                                                                                                    ])
-                                                                                                ])
-                                                                                            ])
-                                                                                        ])
-                                                                                    ])
-                                                                                ])
-                                                                            ])
-                                                                        ])
-                                                                    ]),
-                                                                  "@[The %s `%s'@ has multiple definitions in this object@]"
-                                                                ]), param[0], param[1]);
-                                              
-                                            }
-                                          }
-                                        }));
-                          }), param[3]));
+                                                                    ])
+                                                                ]),
+                                                              "@[The %s `%s'@ has multiple definitions in this object@]"
+                                                            ]), param[0], param[1]);
+                                          
+                                        }
+                                      }
+                                    }));
+                      }), param[3]);
         } else if (param[0] === Error_forward$2) {
-          return Js_primitive.some(param[1]);
+          return param[1];
         } else {
           return undefined;
         }
@@ -73202,7 +73202,7 @@ function type_open_(toplevel, ovf, env, loc, lid) {
   var sg = extract_sig_open(env, lid[/* loc */1], match[1][/* md_type */0]);
   return /* tuple */[
           path,
-          open_signature$1(Js_primitive.some(loc), toplevel, ovf, path, sg, env)
+          open_signature$1(loc, toplevel, ovf, path, sg, env)
         ];
 }
 
@@ -73264,7 +73264,7 @@ function add_rec_types(_env, _param) {
 
 function check_type_decl(env, loc, id, row_id, newdecl, decl, rs, rem) {
   var env$1 = add_type$1(true, id, newdecl, env);
-  var env$2 = row_id !== undefined ? add_type$1(true, Js_primitive.valFromOption(row_id), newdecl, env$1) : env$1;
+  var env$2 = row_id !== undefined ? add_type$1(true, row_id, newdecl, env$1) : env$1;
   var env$3 = rs === /* Trec_not */0 ? env$2 : add_rec_types(env$2, rem);
   type_declarations$3(env$3, id, newdecl, decl);
   return check_coherence(env$3, loc, id, newdecl);
@@ -73400,7 +73400,7 @@ function merge_constraint(initial_env, loc, sg, constr) {
                         ];
                         var id_row = create(s + "#row");
                         var initial_env$1 = add_type$1(true, id_row, decl_row, initial_env);
-                        var tdecl = transl_with_constraint(initial_env$1, id, Js_primitive.some(/* Pident */Block.__(0, [id_row])), decl, sdecl);
+                        var tdecl = transl_with_constraint(initial_env$1, id, /* Pident */Block.__(0, [id_row]), decl, sdecl);
                         var newdecl = tdecl[/* typ_type */3];
                         check_type_decl(env, sdecl[/* ptype_loc */7], id, row_id, newdecl, decl, rs, rem);
                         var decl_row_000$1 = /* type_params */newdecl[/* type_params */0];
@@ -73480,7 +73480,7 @@ function merge_constraint(initial_env, loc, sg, constr) {
                 }
                 if (exit$1 === 2) {
                   if (id[/* name */1] === s + "#row") {
-                    _row_id = Js_primitive.some(id);
+                    _row_id = id;
                     _sg = rem;
                     continue ;
                   } else if (constr.tag) {
@@ -73489,7 +73489,7 @@ function merge_constraint(initial_env, loc, sg, constr) {
                       var tdecl$2 = transl_with_constraint(initial_env, id, undefined, decl, sdecl$1);
                       var newdecl$2 = tdecl$2[/* typ_type */3];
                       check_type_decl(env, sdecl$1[/* ptype_loc */7], id, row_id, newdecl$2, decl, rs, rem);
-                      real_id[0] = Js_primitive.some(id);
+                      real_id[0] = id;
                       return /* tuple */[
                               /* tuple */[
                                 /* Pident */Block.__(0, [id]),
@@ -73572,7 +73572,7 @@ function merge_constraint(initial_env, loc, sg, constr) {
                           var path$1 = match$2[0];
                           var newmd$1 = strengthen_decl(env, match$2[1], path$1);
                           modtypes$1(env, newmd$1[/* md_type */0], md[/* md_type */0]);
-                          real_id[0] = Js_primitive.some(id$1);
+                          real_id[0] = id$1;
                           return /* tuple */[
                                   /* tuple */[
                                     /* Pident */Block.__(0, [id$1]),
@@ -73663,7 +73663,7 @@ function merge_constraint(initial_env, loc, sg, constr) {
             var match$1 = real_id[0];
             var id;
             if (match$1 !== undefined) {
-              id = Js_primitive.valFromOption(match$1);
+              id = match$1;
             } else {
               throw [
                     Caml_builtin_exceptions.assert_failure,
@@ -73678,7 +73678,7 @@ function merge_constraint(initial_env, loc, sg, constr) {
             try {
               var match$2 = sdecl[/* ptype_manifest */5];
               if (match$2 !== undefined) {
-                var match$3 = Js_primitive.valFromOption(match$2)[/* ptyp_desc */0];
+                var match$3 = match$2[/* ptyp_desc */0];
                 if (typeof match$3 === "number") {
                   throw Pervasives.Exit;
                 } else if (match$3.tag === 3) {
@@ -73751,7 +73751,7 @@ function merge_constraint(initial_env, loc, sg, constr) {
             var match$5 = real_id[0];
             var id$1;
             if (match$5 !== undefined) {
-              id$1 = Js_primitive.valFromOption(match$5);
+              id$1 = match$5;
             } else {
               throw [
                     Caml_builtin_exceptions.assert_failure,
@@ -74999,7 +74999,7 @@ function path_of_module(_mexp) {
 
 function path_of_module$1(mexp) {
   try {
-    return Js_primitive.some(path_of_module(mexp));
+    return path_of_module(mexp);
   }
   catch (exn){
     if (exn === Not_a_path) {
@@ -75040,11 +75040,11 @@ function closed_signature_item(param) {
 
 function anchor_submodule(name, anchor) {
   if (anchor !== undefined) {
-    return Js_primitive.some(/* Pdot */Block.__(1, [
-                  Js_primitive.valFromOption(anchor),
-                  name,
-                  -1
-                ]));
+    return /* Pdot */Block.__(1, [
+              anchor,
+              name,
+              -1
+            ]);
   } else {
     return undefined;
   }
@@ -75052,7 +75052,7 @@ function anchor_submodule(name, anchor) {
 
 function enrich_type_decls(anchor, decls, oldenv, newenv) {
   if (anchor !== undefined) {
-    var p = Js_primitive.valFromOption(anchor);
+    var p = anchor;
     return List.fold_left((function (e, info) {
                   var id = info[/* typ_id */0];
                   var info$prime = enrich_typedecl(oldenv, /* Pdot */Block.__(1, [
@@ -75070,7 +75070,7 @@ function enrich_type_decls(anchor, decls, oldenv, newenv) {
 function enrich_module_type(anchor, name, mty, env) {
   if (anchor !== undefined) {
     return enrich_modtype(env, /* Pdot */Block.__(1, [
-                  Js_primitive.valFromOption(anchor),
+                  anchor,
                   name,
                   -1
                 ]), mty);
@@ -75198,7 +75198,7 @@ function package_constraints(env, loc, mty, constrs) {
                                   /* type_arity */td[/* type_arity */1],
                                   /* type_kind */td[/* type_kind */2],
                                   /* type_private */td[/* type_private */3],
-                                  /* type_manifest */Js_primitive.some(ty),
+                                  /* type_manifest */ty,
                                   /* type_variance */td[/* type_variance */5],
                                   /* type_newtype_level */td[/* type_newtype_level */6],
                                   /* type_loc */td[/* type_loc */7],
@@ -75273,7 +75273,7 @@ function modtype_of_package(env, loc, p, nl, tl) {
     var match = find_modtype(p, env)[/* mtd_type */0];
     var exit = 0;
     if (match !== undefined && nl !== /* [] */0) {
-      return package_constraints(env, loc, Js_primitive.valFromOption(match), List.combine(List.map(flatten, nl), tl));
+      return package_constraints(env, loc, match, List.combine(List.map(flatten, nl), tl));
     } else {
       exit = 1;
     }
@@ -75392,7 +75392,7 @@ function type_module$1($staropt$star, sttn, funct_body, anchor, env, smod) {
           var mty = find_module(false, path, env)[/* md_type */0];
           var exit = 0;
           if (mty.tag === 3 && !alias) {
-            var p1 = normalize_path$1(Js_primitive.some(smod[/* pmod_loc */1]), env, mty[0]);
+            var p1 = normalize_path$1(smod[/* pmod_loc */1], env, mty[0]);
             var mty$1 = expand_module_alias(env, /* [] */0, p1);
             tmp = /* record */[
               /* mod_desc : Tmod_constraint */Block.__(4, [
@@ -75450,7 +75450,7 @@ function type_module$1($staropt$star, sttn, funct_body, anchor, env, smod) {
                 return m[/* mty_type */1];
               }), mty$3);
         var match$2 = ty_arg !== undefined ? /* tuple */[
-            enter_module(true, name[/* txt */0], Js_primitive.valFromOption(ty_arg), env),
+            enter_module(true, name[/* txt */0], ty_arg, env),
             true
           ] : /* tuple */[
             /* tuple */[
@@ -75529,7 +75529,7 @@ function type_module$1($staropt$star, sttn, funct_body, anchor, env, smod) {
           }
           var mty_appl;
           if (path$1 !== undefined) {
-            mty_appl = modtype(add_module(param, Js_primitive.valFromOption(path$1), identity), mty_res);
+            mty_appl = modtype(add_module(param, path$1, identity), mty_res);
           } else if (generative) {
             mty_appl = mty_res;
           } else {
@@ -75682,18 +75682,18 @@ function type_structure($staropt$star, funct_body, anchor, env, sstr, scope) {
           var rec_flag = desc[0];
           var scope$1;
           if (rec_flag) {
-            scope$1 = Js_primitive.some(/* Idef */Block.__(1, [/* record */[
-                      /* loc_start */loc[/* loc_start */0],
-                      /* loc_end */scope[/* loc_end */1],
-                      /* loc_ghost */scope[/* loc_ghost */2]
-                    ]]));
+            scope$1 = /* Idef */Block.__(1, [/* record */[
+                  /* loc_start */loc[/* loc_start */0],
+                  /* loc_end */scope[/* loc_end */1],
+                  /* loc_ghost */scope[/* loc_ghost */2]
+                ]]);
           } else {
             var start = srem ? srem[0][/* pstr_loc */1][/* loc_start */0] : loc[/* loc_end */1];
-            scope$1 = Js_primitive.some(/* Idef */Block.__(1, [/* record */[
-                      /* loc_start */start,
-                      /* loc_end */scope[/* loc_end */1],
-                      /* loc_ghost */scope[/* loc_ghost */2]
-                    ]]));
+            scope$1 = /* Idef */Block.__(1, [/* record */[
+                  /* loc_start */start,
+                  /* loc_end */scope[/* loc_end */1],
+                  /* loc_ghost */scope[/* loc_ghost */2]
+                ]]);
           }
           var match = type_binding(env, rec_flag, desc[1], scope$1);
           var newenv = match[1];
@@ -75845,7 +75845,7 @@ function type_structure($staropt$star, funct_body, anchor, env, sstr, scope) {
           var decls$1 = match$7[0];
           var bindings1 = List.map2((function (param, param$1) {
                   var id = param[/* md_id */0];
-                  var modl = type_module$1(undefined, true, funct_body, Js_primitive.some(/* Pident */Block.__(0, [id])), newenv$1, param$1[2]);
+                  var modl = type_module$1(undefined, true, funct_body, /* Pident */Block.__(0, [id]), newenv$1, param$1[2]);
                   var mty$prime = enrich_module_type(anchor, id[/* name */1], modl[/* mod_type */2], newenv$1);
                   return /* tuple */[
                           id,
@@ -76431,7 +76431,7 @@ function type_implementation_more(sourcefile, outputprefix, modulename, initial_
         force_delayed_checks(/* () */0);
         if (!dont_write_files[0]) {
           var sg$1 = save_signature(simple_sg, modulename, outputprefix + ".cmi");
-          save_cmt(outputprefix + ".cmt", modulename, /* Implementation */Block.__(1, [str]), sourcefile, initial_env, Js_primitive.some(sg$1));
+          save_cmt(outputprefix + ".cmt", modulename, /* Implementation */Block.__(1, [str]), sourcefile, initial_env, sg$1);
         }
         return /* tuple */[
                 str,
@@ -76459,429 +76459,144 @@ function type_implementation(sourcefile, outputprefix, modulename, initial_env, 
 register_error_of_exn((function (param) {
         if (param[0] === $$Error$10) {
           var env = param[2];
-          return Js_primitive.some(error_of_printer(param[1], (function (param, param$1) {
-                            var env$1 = env;
-                            var ppf = param;
-                            var err = param$1;
-                            return wrap_printing_env(env$1, (function () {
-                                          var ppf$1 = ppf;
-                                          var param = err;
-                                          if (typeof param === "number") {
-                                            switch (param) {
-                                              case 0 : 
-                                                  return Format.fprintf(ppf$1, /* Format */[
-                                                              /* String_literal */Block.__(11, [
-                                                                  "This module type is not a signature",
-                                                                  /* End_of_format */0
-                                                                ]),
-                                                              "This module type is not a signature"
-                                                            ]);
-                                              case 1 : 
-                                                  return Curry._1(Format.fprintf(ppf$1, /* Format */[
-                                                                  /* Formatting_gen */Block.__(18, [
-                                                                      /* Open_box */Block.__(1, [/* Format */[
-                                                                            /* End_of_format */0,
-                                                                            ""
-                                                                          ]]),
-                                                                      /* String_literal */Block.__(11, [
-                                                                          "This expression creates fresh types.",
-                                                                          /* Formatting_lit */Block.__(17, [
-                                                                              /* Break */Block.__(0, [
-                                                                                  "@ ",
-                                                                                  1,
-                                                                                  0
-                                                                                ]),
-                                                                              /* String */Block.__(2, [
-                                                                                  /* No_padding */0,
-                                                                                  /* Formatting_lit */Block.__(17, [
-                                                                                      /* Close_box */0,
-                                                                                      /* End_of_format */0
-                                                                                    ])
+          return error_of_printer(param[1], (function (param, param$1) {
+                        var env$1 = env;
+                        var ppf = param;
+                        var err = param$1;
+                        return wrap_printing_env(env$1, (function () {
+                                      var ppf$1 = ppf;
+                                      var param = err;
+                                      if (typeof param === "number") {
+                                        switch (param) {
+                                          case 0 : 
+                                              return Format.fprintf(ppf$1, /* Format */[
+                                                          /* String_literal */Block.__(11, [
+                                                              "This module type is not a signature",
+                                                              /* End_of_format */0
+                                                            ]),
+                                                          "This module type is not a signature"
+                                                        ]);
+                                          case 1 : 
+                                              return Curry._1(Format.fprintf(ppf$1, /* Format */[
+                                                              /* Formatting_gen */Block.__(18, [
+                                                                  /* Open_box */Block.__(1, [/* Format */[
+                                                                        /* End_of_format */0,
+                                                                        ""
+                                                                      ]]),
+                                                                  /* String_literal */Block.__(11, [
+                                                                      "This expression creates fresh types.",
+                                                                      /* Formatting_lit */Block.__(17, [
+                                                                          /* Break */Block.__(0, [
+                                                                              "@ ",
+                                                                              1,
+                                                                              0
+                                                                            ]),
+                                                                          /* String */Block.__(2, [
+                                                                              /* No_padding */0,
+                                                                              /* Formatting_lit */Block.__(17, [
+                                                                                  /* Close_box */0,
+                                                                                  /* End_of_format */0
                                                                                 ])
                                                                             ])
                                                                         ])
-                                                                    ]),
-                                                                  "@[This expression creates fresh types.@ %s@]"
-                                                                ]), "It is not allowed inside applicative functors.");
-                                              case 2 : 
-                                                  return Format.fprintf(ppf$1, /* Format */[
-                                                              /* String_literal */Block.__(11, [
-                                                                  "Only type constructors with identical parameters can be substituted.",
-                                                                  /* End_of_format */0
+                                                                    ])
                                                                 ]),
-                                                              "Only type constructors with identical parameters can be substituted."
-                                                            ]);
-                                              case 3 : 
-                                                  return Format.fprintf(ppf$1, /* Format */[
-                                                              /* String_literal */Block.__(11, [
-                                                                  "Recursive modules require an explicit module type.",
-                                                                  /* End_of_format */0
-                                                                ]),
-                                                              "Recursive modules require an explicit module type."
-                                                            ]);
-                                              case 4 : 
-                                                  return Format.fprintf(ppf$1, /* Format */[
-                                                              /* String_literal */Block.__(11, [
-                                                                  "This is a generative functor. It can only be applied to ()",
-                                                                  /* End_of_format */0
-                                                                ]),
-                                                              "This is a generative functor. It can only be applied to ()"
-                                                            ]);
-                                              
-                                            }
-                                          } else {
-                                            switch (param.tag | 0) {
-                                              case 0 : 
-                                                  return Curry._2(Format.fprintf(ppf$1, /* Format */[
-                                                                  /* Formatting_gen */Block.__(18, [
-                                                                      /* Open_box */Block.__(1, [/* Format */[
-                                                                            /* End_of_format */0,
-                                                                            ""
-                                                                          ]]),
-                                                                      /* String_literal */Block.__(11, [
-                                                                          "This module is not a functor; it has type",
-                                                                          /* Formatting_lit */Block.__(17, [
-                                                                              /* Break */Block.__(0, [
-                                                                                  "@ ",
-                                                                                  1,
-                                                                                  0
-                                                                                ]),
-                                                                              /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
-                                                                                      /* Close_box */0,
-                                                                                      /* End_of_format */0
-                                                                                    ])])
-                                                                            ])
-                                                                        ])
-                                                                    ]),
-                                                                  "@[This module is not a functor; it has type@ %a@]"
-                                                                ]), modtype$1, param[0]);
-                                              case 1 : 
-                                                  return Curry._2(Format.fprintf(ppf$1, /* Format */[
-                                                                  /* Formatting_gen */Block.__(18, [
-                                                                      /* Open_box */Block.__(1, [/* Format */[
-                                                                            /* String_literal */Block.__(11, [
-                                                                                "<v>",
-                                                                                /* End_of_format */0
-                                                                              ]),
-                                                                            "<v>"
-                                                                          ]]),
-                                                                      /* String_literal */Block.__(11, [
-                                                                          "Signature mismatch:",
-                                                                          /* Formatting_lit */Block.__(17, [
-                                                                              /* Break */Block.__(0, [
-                                                                                  "@ ",
-                                                                                  1,
-                                                                                  0
-                                                                                ]),
-                                                                              /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
-                                                                                      /* Close_box */0,
-                                                                                      /* End_of_format */0
-                                                                                    ])])
-                                                                            ])
-                                                                        ])
-                                                                    ]),
-                                                                  "@[<v>Signature mismatch:@ %a@]"
-                                                                ]), report_error$4, param[0]);
-                                              case 2 : 
-                                                  return Curry._2(Format.fprintf(ppf$1, /* Format */[
-                                                                  /* Formatting_gen */Block.__(18, [
-                                                                      /* Open_box */Block.__(1, [/* Format */[
-                                                                            /* End_of_format */0,
-                                                                            ""
-                                                                          ]]),
-                                                                      /* String_literal */Block.__(11, [
-                                                                          "This functor has type",
-                                                                          /* Formatting_lit */Block.__(17, [
-                                                                              /* Break */Block.__(0, [
-                                                                                  "@ ",
-                                                                                  1,
-                                                                                  0
-                                                                                ]),
-                                                                              /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
-                                                                                      /* Break */Block.__(0, [
-                                                                                          "@ ",
-                                                                                          1,
-                                                                                          0
-                                                                                        ]),
-                                                                                      /* String_literal */Block.__(11, [
-                                                                                          "The parameter cannot be eliminated in the result type.",
-                                                                                          /* Formatting_lit */Block.__(17, [
-                                                                                              /* Break */Block.__(0, [
-                                                                                                  "@ ",
-                                                                                                  1,
-                                                                                                  0
-                                                                                                ]),
-                                                                                              /* String_literal */Block.__(11, [
-                                                                                                  " Please bind the argument to a module identifier.",
-                                                                                                  /* Formatting_lit */Block.__(17, [
-                                                                                                      /* Close_box */0,
-                                                                                                      /* End_of_format */0
-                                                                                                    ])
-                                                                                                ])
-                                                                                            ])
-                                                                                        ])
-                                                                                    ])])
-                                                                            ])
-                                                                        ])
-                                                                    ]),
-                                                                  "@[This functor has type@ %a@ The parameter cannot be eliminated in the result type.@  Please bind the argument to a module identifier.@]"
-                                                                ]), modtype$1, param[0]);
-                                              case 3 : 
-                                                  return Curry._2(Format.fprintf(ppf$1, /* Format */[
-                                                                  /* Formatting_gen */Block.__(18, [
-                                                                      /* Open_box */Block.__(1, [/* Format */[
-                                                                            /* End_of_format */0,
-                                                                            ""
-                                                                          ]]),
-                                                                      /* String_literal */Block.__(11, [
-                                                                          "This module is not a structure; it has type",
-                                                                          /* Formatting_lit */Block.__(17, [
-                                                                              /* Break */Block.__(0, [
-                                                                                  "@ ",
-                                                                                  1,
-                                                                                  0
-                                                                                ]),
-                                                                              /* Alpha */Block.__(15, [/* End_of_format */0])
-                                                                            ])
-                                                                        ])
-                                                                    ]),
-                                                                  "@[This module is not a structure; it has type@ %a"
-                                                                ]), modtype$1, param[0]);
-                                              case 4 : 
-                                                  return Curry._2(Format.fprintf(ppf$1, /* Format */[
-                                                                  /* Formatting_gen */Block.__(18, [
-                                                                      /* Open_box */Block.__(1, [/* Format */[
-                                                                            /* End_of_format */0,
-                                                                            ""
-                                                                          ]]),
-                                                                      /* String_literal */Block.__(11, [
-                                                                          "The signature constrained by `with' has no component named ",
+                                                              "@[This expression creates fresh types.@ %s@]"
+                                                            ]), "It is not allowed inside applicative functors.");
+                                          case 2 : 
+                                              return Format.fprintf(ppf$1, /* Format */[
+                                                          /* String_literal */Block.__(11, [
+                                                              "Only type constructors with identical parameters can be substituted.",
+                                                              /* End_of_format */0
+                                                            ]),
+                                                          "Only type constructors with identical parameters can be substituted."
+                                                        ]);
+                                          case 3 : 
+                                              return Format.fprintf(ppf$1, /* Format */[
+                                                          /* String_literal */Block.__(11, [
+                                                              "Recursive modules require an explicit module type.",
+                                                              /* End_of_format */0
+                                                            ]),
+                                                          "Recursive modules require an explicit module type."
+                                                        ]);
+                                          case 4 : 
+                                              return Format.fprintf(ppf$1, /* Format */[
+                                                          /* String_literal */Block.__(11, [
+                                                              "This is a generative functor. It can only be applied to ()",
+                                                              /* End_of_format */0
+                                                            ]),
+                                                          "This is a generative functor. It can only be applied to ()"
+                                                        ]);
+                                          
+                                        }
+                                      } else {
+                                        switch (param.tag | 0) {
+                                          case 0 : 
+                                              return Curry._2(Format.fprintf(ppf$1, /* Format */[
+                                                              /* Formatting_gen */Block.__(18, [
+                                                                  /* Open_box */Block.__(1, [/* Format */[
+                                                                        /* End_of_format */0,
+                                                                        ""
+                                                                      ]]),
+                                                                  /* String_literal */Block.__(11, [
+                                                                      "This module is not a functor; it has type",
+                                                                      /* Formatting_lit */Block.__(17, [
+                                                                          /* Break */Block.__(0, [
+                                                                              "@ ",
+                                                                              1,
+                                                                              0
+                                                                            ]),
                                                                           /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
                                                                                   /* Close_box */0,
                                                                                   /* End_of_format */0
                                                                                 ])])
                                                                         ])
-                                                                    ]),
-                                                                  "@[The signature constrained by `with' has no component named %a@]"
-                                                                ]), longident, param[0]);
-                                              case 5 : 
-                                                  return Curry._4(Format.fprintf(ppf$1, /* Format */[
-                                                                  /* Formatting_gen */Block.__(18, [
-                                                                      /* Open_box */Block.__(1, [/* Format */[
-                                                                            /* String_literal */Block.__(11, [
-                                                                                "<v>",
-                                                                                /* End_of_format */0
-                                                                              ]),
-                                                                            "<v>"
-                                                                          ]]),
-                                                                      /* Formatting_gen */Block.__(18, [
-                                                                          /* Open_box */Block.__(1, [/* Format */[
-                                                                                /* End_of_format */0,
-                                                                                ""
-                                                                              ]]),
-                                                                          /* String_literal */Block.__(11, [
-                                                                              "In this `with' constraint, the new definition of ",
-                                                                              /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
-                                                                                      /* Break */Block.__(0, [
-                                                                                          "@ ",
-                                                                                          1,
-                                                                                          0
-                                                                                        ]),
-                                                                                      /* String_literal */Block.__(11, [
-                                                                                          "does not match its original definition",
-                                                                                          /* Formatting_lit */Block.__(17, [
-                                                                                              /* Break */Block.__(0, [
-                                                                                                  "@ ",
-                                                                                                  1,
-                                                                                                  0
-                                                                                                ]),
-                                                                                              /* String_literal */Block.__(11, [
-                                                                                                  "in the constrained signature:",
-                                                                                                  /* Formatting_lit */Block.__(17, [
-                                                                                                      /* Close_box */0,
-                                                                                                      /* Formatting_lit */Block.__(17, [
-                                                                                                          /* Break */Block.__(0, [
-                                                                                                              "@ ",
-                                                                                                              1,
-                                                                                                              0
-                                                                                                            ]),
-                                                                                                          /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
-                                                                                                                  /* Close_box */0,
-                                                                                                                  /* End_of_format */0
-                                                                                                                ])])
-                                                                                                        ])
-                                                                                                    ])
-                                                                                                ])
-                                                                                            ])
-                                                                                        ])
-                                                                                    ])])
-                                                                            ])
+                                                                    ])
+                                                                ]),
+                                                              "@[This module is not a functor; it has type@ %a@]"
+                                                            ]), modtype$1, param[0]);
+                                          case 1 : 
+                                              return Curry._2(Format.fprintf(ppf$1, /* Format */[
+                                                              /* Formatting_gen */Block.__(18, [
+                                                                  /* Open_box */Block.__(1, [/* Format */[
+                                                                        /* String_literal */Block.__(11, [
+                                                                            "<v>",
+                                                                            /* End_of_format */0
+                                                                          ]),
+                                                                        "<v>"
+                                                                      ]]),
+                                                                  /* String_literal */Block.__(11, [
+                                                                      "Signature mismatch:",
+                                                                      /* Formatting_lit */Block.__(17, [
+                                                                          /* Break */Block.__(0, [
+                                                                              "@ ",
+                                                                              1,
+                                                                              0
+                                                                            ]),
+                                                                          /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
+                                                                                  /* Close_box */0,
+                                                                                  /* End_of_format */0
+                                                                                ])])
                                                                         ])
-                                                                    ]),
-                                                                  "@[<v>@[In this `with' constraint, the new definition of %a@ does not match its original definition@ in the constrained signature:@]@ %a@]"
-                                                                ]), longident, param[0], report_error$4, param[1]);
-                                              case 6 : 
-                                                  return Curry._2(Format.fprintf(ppf$1, /* Format */[
-                                                                  /* Formatting_gen */Block.__(18, [
-                                                                      /* Open_box */Block.__(1, [/* Format */[
-                                                                            /* End_of_format */0,
-                                                                            ""
-                                                                          ]]),
-                                                                      /* String_literal */Block.__(11, [
-                                                                          "Multiple definition of the ",
-                                                                          /* String */Block.__(2, [
-                                                                              /* No_padding */0,
-                                                                              /* String_literal */Block.__(11, [
-                                                                                  " name ",
-                                                                                  /* String */Block.__(2, [
-                                                                                      /* No_padding */0,
-                                                                                      /* Char_literal */Block.__(12, [
-                                                                                          /* "." */46,
-                                                                                          /* Formatting_lit */Block.__(17, [
-                                                                                              /* Break */Block.__(0, [
-                                                                                                  "@ ",
-                                                                                                  1,
-                                                                                                  0
-                                                                                                ]),
-                                                                                              /* String_literal */Block.__(11, [
-                                                                                                  "Names must be unique in a given structure or signature.",
-                                                                                                  /* Formatting_lit */Block.__(17, [
-                                                                                                      /* Close_box */0,
-                                                                                                      /* End_of_format */0
-                                                                                                    ])
-                                                                                                ])
-                                                                                            ])
-                                                                                        ])
-                                                                                    ])
-                                                                                ])
-                                                                            ])
-                                                                        ])
-                                                                    ]),
-                                                                  "@[Multiple definition of the %s name %s.@ Names must be unique in a given structure or signature.@]"
-                                                                ]), param[0], param[1]);
-                                              case 7 : 
-                                                  return Curry._2(Format.fprintf(ppf$1, /* Format */[
-                                                                  /* Formatting_gen */Block.__(18, [
-                                                                      /* Open_box */Block.__(1, [/* Format */[
-                                                                            /* End_of_format */0,
-                                                                            ""
-                                                                          ]]),
-                                                                      /* String_literal */Block.__(11, [
-                                                                          "The type of this expression,",
-                                                                          /* Formatting_lit */Block.__(17, [
-                                                                              /* Break */Block.__(0, [
-                                                                                  "@ ",
-                                                                                  1,
-                                                                                  0
-                                                                                ]),
-                                                                              /* Alpha */Block.__(15, [/* Char_literal */Block.__(12, [
-                                                                                      /* "," */44,
-                                                                                      /* Formatting_lit */Block.__(17, [
-                                                                                          /* Break */Block.__(0, [
-                                                                                              "@ ",
-                                                                                              1,
-                                                                                              0
-                                                                                            ]),
-                                                                                          /* String_literal */Block.__(11, [
-                                                                                              "contains type variables that cannot be generalized",
-                                                                                              /* Formatting_lit */Block.__(17, [
-                                                                                                  /* Close_box */0,
-                                                                                                  /* End_of_format */0
-                                                                                                ])
-                                                                                            ])
-                                                                                        ])
-                                                                                    ])])
-                                                                            ])
-                                                                        ])
-                                                                    ]),
-                                                                  "@[The type of this expression,@ %a,@ contains type variables that cannot be generalized@]"
-                                                                ]), type_scheme, param[0]);
-                                              case 8 : 
-                                                  var id = param[0];
-                                                  return Curry._2(Format.fprintf(ppf$1, /* Format */[
-                                                                  /* Formatting_gen */Block.__(18, [
-                                                                      /* Open_box */Block.__(1, [/* Format */[
-                                                                            /* End_of_format */0,
-                                                                            ""
-                                                                          ]]),
-                                                                      /* String_literal */Block.__(11, [
-                                                                          "The type of this class,",
-                                                                          /* Formatting_lit */Block.__(17, [
-                                                                              /* Break */Block.__(0, [
-                                                                                  "@ ",
-                                                                                  1,
-                                                                                  0
-                                                                                ]),
-                                                                              /* Alpha */Block.__(15, [/* Char_literal */Block.__(12, [
-                                                                                      /* "," */44,
-                                                                                      /* Formatting_lit */Block.__(17, [
-                                                                                          /* Break */Block.__(0, [
-                                                                                              "@ ",
-                                                                                              1,
-                                                                                              0
-                                                                                            ]),
-                                                                                          /* String_literal */Block.__(11, [
-                                                                                              "contains type variables that cannot be generalized",
-                                                                                              /* Formatting_lit */Block.__(17, [
-                                                                                                  /* Close_box */0,
-                                                                                                  /* End_of_format */0
-                                                                                                ])
-                                                                                            ])
-                                                                                        ])
-                                                                                    ])])
-                                                                            ])
-                                                                        ])
-                                                                    ]),
-                                                                  "@[The type of this class,@ %a,@ contains type variables that cannot be generalized@]"
-                                                                ]), (function (param, param$1) {
-                                                                return class_declaration$1(id, param, param$1);
-                                                              }), param[1]);
-                                              case 9 : 
-                                                  return Curry._2(Format.fprintf(ppf$1, /* Format */[
-                                                                  /* Formatting_gen */Block.__(18, [
-                                                                      /* Open_box */Block.__(1, [/* Format */[
-                                                                            /* End_of_format */0,
-                                                                            ""
-                                                                          ]]),
-                                                                      /* String_literal */Block.__(11, [
-                                                                          "The type of this module,",
-                                                                          /* Formatting_lit */Block.__(17, [
-                                                                              /* Break */Block.__(0, [
-                                                                                  "@ ",
-                                                                                  1,
-                                                                                  0
-                                                                                ]),
-                                                                              /* Alpha */Block.__(15, [/* Char_literal */Block.__(12, [
-                                                                                      /* "," */44,
-                                                                                      /* Formatting_lit */Block.__(17, [
-                                                                                          /* Break */Block.__(0, [
-                                                                                              "@ ",
-                                                                                              1,
-                                                                                              0
-                                                                                            ]),
-                                                                                          /* String_literal */Block.__(11, [
-                                                                                              "contains type variables that cannot be generalized",
-                                                                                              /* Formatting_lit */Block.__(17, [
-                                                                                                  /* Close_box */0,
-                                                                                                  /* End_of_format */0
-                                                                                                ])
-                                                                                            ])
-                                                                                        ])
-                                                                                    ])])
-                                                                            ])
-                                                                        ])
-                                                                    ]),
-                                                                  "@[The type of this module,@ %a,@ contains type variables that cannot be generalized@]"
-                                                                ]), modtype$1, param[0]);
-                                              case 10 : 
-                                                  return Curry._2(Format.fprintf(ppf$1, /* Format */[
-                                                                  /* Formatting_gen */Block.__(18, [
-                                                                      /* Open_box */Block.__(1, [/* Format */[
-                                                                            /* End_of_format */0,
-                                                                            ""
-                                                                          ]]),
-                                                                      /* String_literal */Block.__(11, [
-                                                                          "The interface ",
+                                                                    ])
+                                                                ]),
+                                                              "@[<v>Signature mismatch:@ %a@]"
+                                                            ]), report_error$4, param[0]);
+                                          case 2 : 
+                                              return Curry._2(Format.fprintf(ppf$1, /* Format */[
+                                                              /* Formatting_gen */Block.__(18, [
+                                                                  /* Open_box */Block.__(1, [/* Format */[
+                                                                        /* End_of_format */0,
+                                                                        ""
+                                                                      ]]),
+                                                                  /* String_literal */Block.__(11, [
+                                                                      "This functor has type",
+                                                                      /* Formatting_lit */Block.__(17, [
+                                                                          /* Break */Block.__(0, [
+                                                                              "@ ",
+                                                                              1,
+                                                                              0
+                                                                            ]),
                                                                           /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
                                                                                   /* Break */Block.__(0, [
                                                                                       "@ ",
@@ -76889,7 +76604,7 @@ register_error_of_exn((function (param) {
                                                                                       0
                                                                                     ]),
                                                                                   /* String_literal */Block.__(11, [
-                                                                                      "declares values, not just types.",
+                                                                                      "The parameter cannot be eliminated in the result type.",
                                                                                       /* Formatting_lit */Block.__(17, [
                                                                                           /* Break */Block.__(0, [
                                                                                               "@ ",
@@ -76897,7 +76612,7 @@ register_error_of_exn((function (param) {
                                                                                               0
                                                                                             ]),
                                                                                           /* String_literal */Block.__(11, [
-                                                                                              "An implementation must be provided.",
+                                                                                              " Please bind the argument to a module identifier.",
                                                                                               /* Formatting_lit */Block.__(17, [
                                                                                                   /* Close_box */0,
                                                                                                   /* End_of_format */0
@@ -76907,105 +76622,390 @@ register_error_of_exn((function (param) {
                                                                                     ])
                                                                                 ])])
                                                                         ])
-                                                                    ]),
-                                                                  "@[The interface %a@ declares values, not just types.@ An implementation must be provided.@]"
-                                                                ]), print_filename, param[0]);
-                                              case 11 : 
-                                                  return Curry._2(Format.fprintf(ppf$1, /* Format */[
+                                                                    ])
+                                                                ]),
+                                                              "@[This functor has type@ %a@ The parameter cannot be eliminated in the result type.@  Please bind the argument to a module identifier.@]"
+                                                            ]), modtype$1, param[0]);
+                                          case 3 : 
+                                              return Curry._2(Format.fprintf(ppf$1, /* Format */[
+                                                              /* Formatting_gen */Block.__(18, [
+                                                                  /* Open_box */Block.__(1, [/* Format */[
+                                                                        /* End_of_format */0,
+                                                                        ""
+                                                                      ]]),
+                                                                  /* String_literal */Block.__(11, [
+                                                                      "This module is not a structure; it has type",
+                                                                      /* Formatting_lit */Block.__(17, [
+                                                                          /* Break */Block.__(0, [
+                                                                              "@ ",
+                                                                              1,
+                                                                              0
+                                                                            ]),
+                                                                          /* Alpha */Block.__(15, [/* End_of_format */0])
+                                                                        ])
+                                                                    ])
+                                                                ]),
+                                                              "@[This module is not a structure; it has type@ %a"
+                                                            ]), modtype$1, param[0]);
+                                          case 4 : 
+                                              return Curry._2(Format.fprintf(ppf$1, /* Format */[
+                                                              /* Formatting_gen */Block.__(18, [
+                                                                  /* Open_box */Block.__(1, [/* Format */[
+                                                                        /* End_of_format */0,
+                                                                        ""
+                                                                      ]]),
+                                                                  /* String_literal */Block.__(11, [
+                                                                      "The signature constrained by `with' has no component named ",
+                                                                      /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
+                                                                              /* Close_box */0,
+                                                                              /* End_of_format */0
+                                                                            ])])
+                                                                    ])
+                                                                ]),
+                                                              "@[The signature constrained by `with' has no component named %a@]"
+                                                            ]), longident, param[0]);
+                                          case 5 : 
+                                              return Curry._4(Format.fprintf(ppf$1, /* Format */[
+                                                              /* Formatting_gen */Block.__(18, [
+                                                                  /* Open_box */Block.__(1, [/* Format */[
+                                                                        /* String_literal */Block.__(11, [
+                                                                            "<v>",
+                                                                            /* End_of_format */0
+                                                                          ]),
+                                                                        "<v>"
+                                                                      ]]),
                                                                   /* Formatting_gen */Block.__(18, [
                                                                       /* Open_box */Block.__(1, [/* Format */[
                                                                             /* End_of_format */0,
                                                                             ""
                                                                           ]]),
                                                                       /* String_literal */Block.__(11, [
-                                                                          "Could not find the .cmi file for interface",
-                                                                          /* Formatting_lit */Block.__(17, [
+                                                                          "In this `with' constraint, the new definition of ",
+                                                                          /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
+                                                                                  /* Break */Block.__(0, [
+                                                                                      "@ ",
+                                                                                      1,
+                                                                                      0
+                                                                                    ]),
+                                                                                  /* String_literal */Block.__(11, [
+                                                                                      "does not match its original definition",
+                                                                                      /* Formatting_lit */Block.__(17, [
+                                                                                          /* Break */Block.__(0, [
+                                                                                              "@ ",
+                                                                                              1,
+                                                                                              0
+                                                                                            ]),
+                                                                                          /* String_literal */Block.__(11, [
+                                                                                              "in the constrained signature:",
+                                                                                              /* Formatting_lit */Block.__(17, [
+                                                                                                  /* Close_box */0,
+                                                                                                  /* Formatting_lit */Block.__(17, [
+                                                                                                      /* Break */Block.__(0, [
+                                                                                                          "@ ",
+                                                                                                          1,
+                                                                                                          0
+                                                                                                        ]),
+                                                                                                      /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
+                                                                                                              /* Close_box */0,
+                                                                                                              /* End_of_format */0
+                                                                                                            ])])
+                                                                                                    ])
+                                                                                                ])
+                                                                                            ])
+                                                                                        ])
+                                                                                    ])
+                                                                                ])])
+                                                                        ])
+                                                                    ])
+                                                                ]),
+                                                              "@[<v>@[In this `with' constraint, the new definition of %a@ does not match its original definition@ in the constrained signature:@]@ %a@]"
+                                                            ]), longident, param[0], report_error$4, param[1]);
+                                          case 6 : 
+                                              return Curry._2(Format.fprintf(ppf$1, /* Format */[
+                                                              /* Formatting_gen */Block.__(18, [
+                                                                  /* Open_box */Block.__(1, [/* Format */[
+                                                                        /* End_of_format */0,
+                                                                        ""
+                                                                      ]]),
+                                                                  /* String_literal */Block.__(11, [
+                                                                      "Multiple definition of the ",
+                                                                      /* String */Block.__(2, [
+                                                                          /* No_padding */0,
+                                                                          /* String_literal */Block.__(11, [
+                                                                              " name ",
+                                                                              /* String */Block.__(2, [
+                                                                                  /* No_padding */0,
+                                                                                  /* Char_literal */Block.__(12, [
+                                                                                      /* "." */46,
+                                                                                      /* Formatting_lit */Block.__(17, [
+                                                                                          /* Break */Block.__(0, [
+                                                                                              "@ ",
+                                                                                              1,
+                                                                                              0
+                                                                                            ]),
+                                                                                          /* String_literal */Block.__(11, [
+                                                                                              "Names must be unique in a given structure or signature.",
+                                                                                              /* Formatting_lit */Block.__(17, [
+                                                                                                  /* Close_box */0,
+                                                                                                  /* End_of_format */0
+                                                                                                ])
+                                                                                            ])
+                                                                                        ])
+                                                                                    ])
+                                                                                ])
+                                                                            ])
+                                                                        ])
+                                                                    ])
+                                                                ]),
+                                                              "@[Multiple definition of the %s name %s.@ Names must be unique in a given structure or signature.@]"
+                                                            ]), param[0], param[1]);
+                                          case 7 : 
+                                              return Curry._2(Format.fprintf(ppf$1, /* Format */[
+                                                              /* Formatting_gen */Block.__(18, [
+                                                                  /* Open_box */Block.__(1, [/* Format */[
+                                                                        /* End_of_format */0,
+                                                                        ""
+                                                                      ]]),
+                                                                  /* String_literal */Block.__(11, [
+                                                                      "The type of this expression,",
+                                                                      /* Formatting_lit */Block.__(17, [
+                                                                          /* Break */Block.__(0, [
+                                                                              "@ ",
+                                                                              1,
+                                                                              0
+                                                                            ]),
+                                                                          /* Alpha */Block.__(15, [/* Char_literal */Block.__(12, [
+                                                                                  /* "," */44,
+                                                                                  /* Formatting_lit */Block.__(17, [
+                                                                                      /* Break */Block.__(0, [
+                                                                                          "@ ",
+                                                                                          1,
+                                                                                          0
+                                                                                        ]),
+                                                                                      /* String_literal */Block.__(11, [
+                                                                                          "contains type variables that cannot be generalized",
+                                                                                          /* Formatting_lit */Block.__(17, [
+                                                                                              /* Close_box */0,
+                                                                                              /* End_of_format */0
+                                                                                            ])
+                                                                                        ])
+                                                                                    ])
+                                                                                ])])
+                                                                        ])
+                                                                    ])
+                                                                ]),
+                                                              "@[The type of this expression,@ %a,@ contains type variables that cannot be generalized@]"
+                                                            ]), type_scheme, param[0]);
+                                          case 8 : 
+                                              var id = param[0];
+                                              return Curry._2(Format.fprintf(ppf$1, /* Format */[
+                                                              /* Formatting_gen */Block.__(18, [
+                                                                  /* Open_box */Block.__(1, [/* Format */[
+                                                                        /* End_of_format */0,
+                                                                        ""
+                                                                      ]]),
+                                                                  /* String_literal */Block.__(11, [
+                                                                      "The type of this class,",
+                                                                      /* Formatting_lit */Block.__(17, [
+                                                                          /* Break */Block.__(0, [
+                                                                              "@ ",
+                                                                              1,
+                                                                              0
+                                                                            ]),
+                                                                          /* Alpha */Block.__(15, [/* Char_literal */Block.__(12, [
+                                                                                  /* "," */44,
+                                                                                  /* Formatting_lit */Block.__(17, [
+                                                                                      /* Break */Block.__(0, [
+                                                                                          "@ ",
+                                                                                          1,
+                                                                                          0
+                                                                                        ]),
+                                                                                      /* String_literal */Block.__(11, [
+                                                                                          "contains type variables that cannot be generalized",
+                                                                                          /* Formatting_lit */Block.__(17, [
+                                                                                              /* Close_box */0,
+                                                                                              /* End_of_format */0
+                                                                                            ])
+                                                                                        ])
+                                                                                    ])
+                                                                                ])])
+                                                                        ])
+                                                                    ])
+                                                                ]),
+                                                              "@[The type of this class,@ %a,@ contains type variables that cannot be generalized@]"
+                                                            ]), (function (param, param$1) {
+                                                            return class_declaration$1(id, param, param$1);
+                                                          }), param[1]);
+                                          case 9 : 
+                                              return Curry._2(Format.fprintf(ppf$1, /* Format */[
+                                                              /* Formatting_gen */Block.__(18, [
+                                                                  /* Open_box */Block.__(1, [/* Format */[
+                                                                        /* End_of_format */0,
+                                                                        ""
+                                                                      ]]),
+                                                                  /* String_literal */Block.__(11, [
+                                                                      "The type of this module,",
+                                                                      /* Formatting_lit */Block.__(17, [
+                                                                          /* Break */Block.__(0, [
+                                                                              "@ ",
+                                                                              1,
+                                                                              0
+                                                                            ]),
+                                                                          /* Alpha */Block.__(15, [/* Char_literal */Block.__(12, [
+                                                                                  /* "," */44,
+                                                                                  /* Formatting_lit */Block.__(17, [
+                                                                                      /* Break */Block.__(0, [
+                                                                                          "@ ",
+                                                                                          1,
+                                                                                          0
+                                                                                        ]),
+                                                                                      /* String_literal */Block.__(11, [
+                                                                                          "contains type variables that cannot be generalized",
+                                                                                          /* Formatting_lit */Block.__(17, [
+                                                                                              /* Close_box */0,
+                                                                                              /* End_of_format */0
+                                                                                            ])
+                                                                                        ])
+                                                                                    ])
+                                                                                ])])
+                                                                        ])
+                                                                    ])
+                                                                ]),
+                                                              "@[The type of this module,@ %a,@ contains type variables that cannot be generalized@]"
+                                                            ]), modtype$1, param[0]);
+                                          case 10 : 
+                                              return Curry._2(Format.fprintf(ppf$1, /* Format */[
+                                                              /* Formatting_gen */Block.__(18, [
+                                                                  /* Open_box */Block.__(1, [/* Format */[
+                                                                        /* End_of_format */0,
+                                                                        ""
+                                                                      ]]),
+                                                                  /* String_literal */Block.__(11, [
+                                                                      "The interface ",
+                                                                      /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
                                                                               /* Break */Block.__(0, [
                                                                                   "@ ",
                                                                                   1,
                                                                                   0
                                                                                 ]),
-                                                                              /* Alpha */Block.__(15, [/* Char_literal */Block.__(12, [
-                                                                                      /* "." */46,
-                                                                                      /* Formatting_lit */Block.__(17, [
-                                                                                          /* Close_box */0,
-                                                                                          /* End_of_format */0
+                                                                              /* String_literal */Block.__(11, [
+                                                                                  "declares values, not just types.",
+                                                                                  /* Formatting_lit */Block.__(17, [
+                                                                                      /* Break */Block.__(0, [
+                                                                                          "@ ",
+                                                                                          1,
+                                                                                          0
+                                                                                        ]),
+                                                                                      /* String_literal */Block.__(11, [
+                                                                                          "An implementation must be provided.",
+                                                                                          /* Formatting_lit */Block.__(17, [
+                                                                                              /* Close_box */0,
+                                                                                              /* End_of_format */0
+                                                                                            ])
                                                                                         ])
-                                                                                    ])])
-                                                                            ])
-                                                                        ])
-                                                                    ]),
-                                                                  "@[Could not find the .cmi file for interface@ %a.@]"
-                                                                ]), print_filename, param[0]);
-                                              case 12 : 
-                                                  return Curry._2(Format.fprintf(ppf$1, /* Format */[
+                                                                                    ])
+                                                                                ])
+                                                                            ])])
+                                                                    ])
+                                                                ]),
+                                                              "@[The interface %a@ declares values, not just types.@ An implementation must be provided.@]"
+                                                            ]), print_filename, param[0]);
+                                          case 11 : 
+                                              return Curry._2(Format.fprintf(ppf$1, /* Format */[
+                                                              /* Formatting_gen */Block.__(18, [
+                                                                  /* Open_box */Block.__(1, [/* Format */[
+                                                                        /* End_of_format */0,
+                                                                        ""
+                                                                      ]]),
                                                                   /* String_literal */Block.__(11, [
-                                                                      "This expression is not a packed module. It has type",
+                                                                      "Could not find the .cmi file for interface",
                                                                       /* Formatting_lit */Block.__(17, [
                                                                           /* Break */Block.__(0, [
                                                                               "@ ",
                                                                               1,
                                                                               0
                                                                             ]),
-                                                                          /* Alpha */Block.__(15, [/* End_of_format */0])
+                                                                          /* Alpha */Block.__(15, [/* Char_literal */Block.__(12, [
+                                                                                  /* "." */46,
+                                                                                  /* Formatting_lit */Block.__(17, [
+                                                                                      /* Close_box */0,
+                                                                                      /* End_of_format */0
+                                                                                    ])
+                                                                                ])])
                                                                         ])
-                                                                    ]),
-                                                                  "This expression is not a packed module. It has type@ %a"
-                                                                ]), type_expr$1, param[0]);
-                                              case 13 : 
-                                                  return Curry._2(Format.fprintf(ppf$1, /* Format */[
-                                                                  /* String_literal */Block.__(11, [
-                                                                      "The type of this packed module contains variables:",
-                                                                      /* Formatting_lit */Block.__(17, [
-                                                                          /* Break */Block.__(0, [
-                                                                              "@ ",
-                                                                              1,
-                                                                              0
-                                                                            ]),
-                                                                          /* Alpha */Block.__(15, [/* End_of_format */0])
-                                                                        ])
-                                                                    ]),
-                                                                  "The type of this packed module contains variables:@ %a"
-                                                                ]), type_expr$1, param[0]);
-                                              case 14 : 
-                                                  Curry._2(Format.fprintf(ppf$1, /* Format */[
-                                                            /* String_literal */Block.__(11, [
-                                                                "The type ",
-                                                                /* Alpha */Block.__(15, [/* String_literal */Block.__(11, [
-                                                                        " in this module cannot be exported.",
-                                                                        /* Formatting_lit */Block.__(17, [
-                                                                            /* Break */Block.__(0, [
-                                                                                "@ ",
-                                                                                1,
-                                                                                0
-                                                                              ]),
-                                                                            /* End_of_format */0
-                                                                          ])
-                                                                      ])])
-                                                              ]),
-                                                            "The type %a in this module cannot be exported.@ "
-                                                          ]), longident, param[0]);
-                                                  return Curry._2(Format.fprintf(ppf$1, /* Format */[
-                                                                  /* String_literal */Block.__(11, [
-                                                                      "Its type contains local dependencies:",
-                                                                      /* Formatting_lit */Block.__(17, [
-                                                                          /* Break */Block.__(0, [
-                                                                              "@ ",
-                                                                              1,
-                                                                              0
-                                                                            ]),
-                                                                          /* Alpha */Block.__(15, [/* End_of_format */0])
-                                                                        ])
-                                                                    ]),
-                                                                  "Its type contains local dependencies:@ %a"
-                                                                ]), type_expr$1, param[1]);
-                                              
-                                            }
-                                          }
-                                        }));
-                          }), param[3]));
+                                                                    ])
+                                                                ]),
+                                                              "@[Could not find the .cmi file for interface@ %a.@]"
+                                                            ]), print_filename, param[0]);
+                                          case 12 : 
+                                              return Curry._2(Format.fprintf(ppf$1, /* Format */[
+                                                              /* String_literal */Block.__(11, [
+                                                                  "This expression is not a packed module. It has type",
+                                                                  /* Formatting_lit */Block.__(17, [
+                                                                      /* Break */Block.__(0, [
+                                                                          "@ ",
+                                                                          1,
+                                                                          0
+                                                                        ]),
+                                                                      /* Alpha */Block.__(15, [/* End_of_format */0])
+                                                                    ])
+                                                                ]),
+                                                              "This expression is not a packed module. It has type@ %a"
+                                                            ]), type_expr$1, param[0]);
+                                          case 13 : 
+                                              return Curry._2(Format.fprintf(ppf$1, /* Format */[
+                                                              /* String_literal */Block.__(11, [
+                                                                  "The type of this packed module contains variables:",
+                                                                  /* Formatting_lit */Block.__(17, [
+                                                                      /* Break */Block.__(0, [
+                                                                          "@ ",
+                                                                          1,
+                                                                          0
+                                                                        ]),
+                                                                      /* Alpha */Block.__(15, [/* End_of_format */0])
+                                                                    ])
+                                                                ]),
+                                                              "The type of this packed module contains variables:@ %a"
+                                                            ]), type_expr$1, param[0]);
+                                          case 14 : 
+                                              Curry._2(Format.fprintf(ppf$1, /* Format */[
+                                                        /* String_literal */Block.__(11, [
+                                                            "The type ",
+                                                            /* Alpha */Block.__(15, [/* String_literal */Block.__(11, [
+                                                                    " in this module cannot be exported.",
+                                                                    /* Formatting_lit */Block.__(17, [
+                                                                        /* Break */Block.__(0, [
+                                                                            "@ ",
+                                                                            1,
+                                                                            0
+                                                                          ]),
+                                                                        /* End_of_format */0
+                                                                      ])
+                                                                  ])])
+                                                          ]),
+                                                        "The type %a in this module cannot be exported.@ "
+                                                      ]), longident, param[0]);
+                                              return Curry._2(Format.fprintf(ppf$1, /* Format */[
+                                                              /* String_literal */Block.__(11, [
+                                                                  "Its type contains local dependencies:",
+                                                                  /* Formatting_lit */Block.__(17, [
+                                                                      /* Break */Block.__(0, [
+                                                                          "@ ",
+                                                                          1,
+                                                                          0
+                                                                        ]),
+                                                                      /* Alpha */Block.__(15, [/* End_of_format */0])
+                                                                    ])
+                                                                ]),
+                                                              "Its type contains local dependencies:@ %a"
+                                                            ]), type_expr$1, param[1]);
+                                          
+                                        }
+                                      }
+                                    }));
+                      }), param[3]);
         } else if (param[0] === Error_forward$3) {
-          return Js_primitive.some(param[1]);
+          return param[1];
         } else {
           return undefined;
         }

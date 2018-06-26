@@ -1397,9 +1397,9 @@ let make_constr_matching p def ctx = function
                 match p.pat_desc with
                 | Tpat_construct(_, _,
                                  [ {
-                                   pat_type 
+                                   pat_type ; pat_env
                                  } ])
-                  when Datarepr.cannot_inhabit_none_like_value pat_type
+                  when Typeopt.cannot_inhabit_none_like_value pat_type pat_env
                   -> val_from_unnest_option_bs_primitive
                 | _ -> val_from_option_bs_primitive in 
               (Lprim (from_option, [arg], p.pat_loc), Alias) :: argl

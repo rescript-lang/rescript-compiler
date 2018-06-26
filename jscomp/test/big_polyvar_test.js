@@ -1,7 +1,6 @@
 'use strict';
 
 var Js_mapperRt = require("../../lib/js/js_mapperRt.js");
-var Js_primitive = require("../../lib/js/js_primitive.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var jsMapperConstantArray = /* array */[
@@ -1218,7 +1217,7 @@ function tFromJs(param) {
 function eq(x, y) {
   if (x !== undefined) {
     if (y !== undefined) {
-      return Js_primitive.valFromOption(x) === Js_primitive.valFromOption(y);
+      return x === y;
     } else {
       return false;
     }
