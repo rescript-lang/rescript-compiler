@@ -17,6 +17,9 @@ open Types
 open Typedtree
 open Lambda
 
+
+
+
 let scrape env ty =
   (Ctype.repr (Ctype.expand_head_opt env (Ctype.correct_levels ty))).desc
 
@@ -24,6 +27,48 @@ let has_base_type exp base_ty_path =
   match scrape exp.exp_env exp.exp_type with
   | Tconstr(p, _, _) -> Path.same p base_ty_path
   | _ -> false
+
+
+(**  [Types.constructor_description]
+     records the type at the definition type so for ['a option]
+     it will always be [Tvar]
+*)
+let cannot_inhabit_none_like_value (typ : Types.type_expr) (env : Env.t) =
+  match scrape env typ with
+  |  Tconstr(p, _,_) ->
+      (* all built in types could not inhabit none-like values:
+         int, char, float, bool, unit, exn, array, list, nativeint,
+         int32, int64, lazy_t, bytes
+      *)
+      if Predef.type_is_builtin_path_but_option p then true
+      else
+        begin match (Env.find_type p env).type_kind with
+        | exception _ -> 
+            false
+        | Type_abstract | Type_open -> false
+        | Type_record _ -> true
+        | Type_variant
+            ([{cd_id = {name="None"}; cd_args = [] };
+             {cd_id = {name = "Some"}; cd_args = [_]}]
+            |
+             [{cd_id = {name="Some"}; cd_args = [_] };
+              {cd_id = {name = "None"}; cd_args = []}]
+            ) -> false (* conservative *)
+        | Type_variant _ -> true
+        end
+  | Ttuple _
+  | Tvariant _
+  | Tpackage _ 
+  | Tarrow _ -> true
+  | Tfield _ 
+  | Tpoly _ 
+  | Tunivar _ 
+  | Tlink _ 
+  | Tsubst _
+  | Tnil 
+  | Tvar _
+  | Tobject _ 
+    -> false
 
 let maybe_pointer exp =
   match scrape exp.exp_env exp.exp_type with
