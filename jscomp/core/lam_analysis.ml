@@ -632,5 +632,11 @@ and eq_primitive ( lhs : Lam.primitive) (rhs : Lam.primitive) =
 let safe_to_inline (lam : Lam.t) = 
   match lam with 
   | Lfunction _ ->  true
-  | Lconst (Const_pointer _  | Const_immstring _ | Const_js_true | Const_js_false) -> true
+  | Lconst 
+    (Const_pointer _  
+    | Const_immstring _ 
+    | Const_js_true 
+    | Const_js_false
+    | Const_js_undefined
+    ) -> true
   | _ -> false
