@@ -860,14 +860,14 @@ function process_quote(ticker_map, new_ticker, new_value) {
                   if (match$2 !== /* None */0 && match$3 !== /* None */0) {
                     var y = match$3[0];
                     var x = match$2[0];
-                    value = match$1[/* op */0] ? /* Some */[x - y] : /* Some */[x + y];
+                    value = match$1[/* op */0] ? [x - y] : [x + y];
                   } else {
                     value = /* None */0;
                   }
                   ticker[/* value */0] = value;
                   return /* () */0;
                 } else if (ticker[/* ticker_name */2] === new_ticker) {
-                  ticker[/* value */0] = /* Some */[new_value];
+                  ticker[/* value */0] = [new_value];
                   return /* () */0;
                 } else {
                   throw [

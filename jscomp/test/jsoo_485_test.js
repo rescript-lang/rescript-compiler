@@ -2,7 +2,7 @@
 
 
 function f() {
-  /* Some */[3];
+  [3];
   return /* () */0;
 }
 

@@ -40,7 +40,7 @@ var suites_001 = /* :: */[
         "toOption - 'a",
         (function () {
             return /* Eq */Block.__(0, [
-                      /* Some */["foo"],
+                      ["foo"],
                       Js_primitive.nullable_to_opt("foo")
                     ]);
           })
@@ -50,7 +50,7 @@ var suites_001 = /* :: */[
           "return",
           (function () {
               return /* Eq */Block.__(0, [
-                        /* Some */["something"],
+                        ["something"],
                         Js_primitive.nullable_to_opt("something")
                       ]);
             })
@@ -219,7 +219,7 @@ var suites_001 = /* :: */[
                                       (function () {
                                           return /* Eq */Block.__(0, [
                                                     2,
-                                                    Js_null_undefined.fromOption(/* Some */[2])
+                                                    Js_null_undefined.fromOption([2])
                                                   ]);
                                         })
                                     ],

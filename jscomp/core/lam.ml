@@ -1287,7 +1287,11 @@ let has_boolean_type (x : t) =
   match x with 
   | Lprim {primitive =
     Pnot | Psequand |
-    Psequor | Pisout | Pintcomp _ | Pfloatcomp _; loc}
+    Psequor 
+    | Pisout 
+    | Pintcomp _ 
+    | Pis_not_none
+    | Pfloatcomp _; loc}
   | Lprim {primitive = 
     Pccall {prim_name = "caml_string_equal" | "caml_string_notequal"};
     loc

@@ -174,7 +174,7 @@ b("File \"bs_poly_set_test.ml\", line 82, characters 4-11", Belt_Set.subset(u21,
 
 b("File \"bs_poly_set_test.ml\", line 83, characters 4-11", 47 === Belt_Set.getUndefined(u22, 47));
 
-b("File \"bs_poly_set_test.ml\", line 84, characters 4-11", Caml_obj.caml_equal(/* Some */[47], Belt_Set.get(u22, 47)));
+b("File \"bs_poly_set_test.ml\", line 84, characters 4-11", Caml_obj.caml_equal([47], Belt_Set.get(u22, 47)));
 
 b("File \"bs_poly_set_test.ml\", line 85, characters 4-11", Belt_Set.getUndefined(u22, 59) === undefined);
 
@@ -362,9 +362,9 @@ eq("File \"bs_poly_set_test.ml\", line 145, characters 5-12", Belt_SetDict.toLis
             return i + 201 | 0;
           })));
 
-eq("File \"bs_poly_set_test.ml\", line 146, characters 5-12", Belt_SetDict.minimum(a8.data), /* Some */[0]);
+eq("File \"bs_poly_set_test.ml\", line 146, characters 5-12", Belt_SetDict.minimum(a8.data), [0]);
 
-eq("File \"bs_poly_set_test.ml\", line 147, characters 5-12", Belt_SetDict.minimum(a9.data), /* Some */[201]);
+eq("File \"bs_poly_set_test.ml\", line 147, characters 5-12", Belt_SetDict.minimum(a9.data), [201]);
 
 Belt_List.forEach(/* :: */[
       a0,

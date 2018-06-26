@@ -79,7 +79,7 @@ eq("File \"js_list_test.ml\", line 11, characters 7-14", Js_list.flatten(/* :: *
 
 eq("File \"js_list_test.ml\", line 14, characters 7-14", Js_list.filterMap((function (x) {
             if (x % 2 === 0) {
-              return /* Some */[x];
+              return [x];
             } else {
               return /* None */0;
             }
@@ -117,7 +117,7 @@ eq("File \"js_list_test.ml\", line 14, characters 7-14", Js_list.filterMap((func
 
 eq("File \"js_list_test.ml\", line 17, characters 7-14", Js_list.filterMap((function (x) {
             if (x % 2 === 0) {
-              return /* Some */[x];
+              return [x];
             } else {
               return /* None */0;
             }

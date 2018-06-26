@@ -1711,7 +1711,7 @@ function errorf($staropt$star, $staropt$star$1, $staropt$star$2, fmt) {
   var loc = $staropt$star !== /* None */0 ? $staropt$star[0] : none;
   var sub = $staropt$star$1 !== /* None */0 ? $staropt$star$1[0] : /* [] */0;
   var if_highlight = $staropt$star$2 !== /* None */0 ? $staropt$star$2[0] : "";
-  var before = /* Some */[print_phanton_error_prefix];
+  var before = [print_phanton_error_prefix];
   var k = function (msg) {
     return /* record */[
             /* loc */loc,
@@ -1874,7 +1874,7 @@ function from_pair_suites(name, suites) {
                                       case 6 : 
                                           var b$1 = match[2];
                                           var a$1 = match[1];
-                                          if (close_enough(/* Some */[match[0]], a$1, b$1)) {
+                                          if (close_enough([match[0]], a$1, b$1)) {
                                             return 0;
                                           } else {
                                             Assert.deepEqual(a$1, b$1);
@@ -3217,7 +3217,7 @@ function prepare_error(param) {
     case 0 : 
         var closing = param[3];
         var opening = param[1];
-        return Curry._1(errorf(/* Some */[param[2]], /* Some */[/* :: */[
+        return Curry._1(errorf(/* Some */[param[2]], [/* :: */[
                           Curry._1(errorf(/* Some */[param[0]], /* None */0, /* None */0, /* Format */[
                                     /* String_literal */Block.__(11, [
                                         "This '",
@@ -3232,7 +3232,7 @@ function prepare_error(param) {
                                     "This '%s' might be unmatched"
                                   ]), opening),
                           /* [] */0
-                        ]], /* Some */[Curry._2(Printf.sprintf(/* Format */[
+                        ]], [Curry._2(Printf.sprintf(/* Format */[
                                   /* String_literal */Block.__(11, [
                                       "Syntax error: '",
                                       /* String */Block.__(2, [
@@ -4854,7 +4854,7 @@ var yyact = /* array */[
       var _4 = Parsing.peek_val(__caml_parser_env, 2);
       var _5 = Parsing.peek_val(__caml_parser_env, 1);
       var _6 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$18(/* Some */[symbol_rloc(/* () */0)], /* Some */[_6], /* Some */[symbol_docs(/* () */0)], /* None */0, /* Some */[_2], /* Some */[_3], mkrhs(_4, 4), _5);
+      return mk$18(/* Some */[symbol_rloc(/* () */0)], /* Some */[_6], /* Some */[symbol_docs(/* () */0)], /* None */0, /* Some */[_2], [_3], mkrhs(_4, 4), _5);
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 4);
@@ -4862,7 +4862,7 @@ var yyact = /* array */[
       var _4 = Parsing.peek_val(__caml_parser_env, 2);
       var _5 = Parsing.peek_val(__caml_parser_env, 1);
       var _6 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$18(/* Some */[symbol_rloc(/* () */0)], /* Some */[_6], /* Some */[symbol_docs(/* () */0)], /* Some */[get_text(Parsing.symbol_start_pos(/* () */0))], /* Some */[_2], /* Some */[_3], mkrhs(_4, 4), _5);
+      return mk$18(/* Some */[symbol_rloc(/* () */0)], /* Some */[_6], /* Some */[symbol_docs(/* () */0)], /* Some */[get_text(Parsing.symbol_start_pos(/* () */0))], /* Some */[_2], [_3], mkrhs(_4, 4), _5);
     }),
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);
@@ -5096,7 +5096,7 @@ var yyact = /* array */[
       return mkcf(/* None */0, /* None */0, /* Pcf_attribute */Block.__(5, [_1]));
     }),
   (function (__caml_parser_env) {
-      return /* Some */[Parsing.peek_val(__caml_parser_env, 0)];
+      return [Parsing.peek_val(__caml_parser_env, 0)];
     }),
   (function () {
       return /* None */0;
@@ -5463,7 +5463,7 @@ var yyact = /* array */[
       var _4 = Parsing.peek_val(__caml_parser_env, 3);
       var _6 = Parsing.peek_val(__caml_parser_env, 1);
       var _7 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$18(/* Some */[symbol_rloc(/* () */0)], /* Some */[_7], /* Some */[symbol_docs(/* () */0)], /* None */0, /* Some */[_2], /* Some */[_3], mkrhs(_4, 4), _6);
+      return mk$18(/* Some */[symbol_rloc(/* () */0)], /* Some */[_7], /* Some */[symbol_docs(/* () */0)], /* None */0, /* Some */[_2], [_3], mkrhs(_4, 4), _6);
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 5);
@@ -5471,7 +5471,7 @@ var yyact = /* array */[
       var _4 = Parsing.peek_val(__caml_parser_env, 3);
       var _6 = Parsing.peek_val(__caml_parser_env, 1);
       var _7 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$18(/* Some */[symbol_rloc(/* () */0)], /* Some */[_7], /* Some */[symbol_docs(/* () */0)], /* Some */[get_text(Parsing.symbol_start_pos(/* () */0))], /* Some */[_2], /* Some */[_3], mkrhs(_4, 4), _6);
+      return mk$18(/* Some */[symbol_rloc(/* () */0)], /* Some */[_7], /* Some */[symbol_docs(/* () */0)], /* Some */[get_text(Parsing.symbol_start_pos(/* () */0))], /* Some */[_2], [_3], mkrhs(_4, 4), _6);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
@@ -5494,7 +5494,7 @@ var yyact = /* array */[
       var _5 = Parsing.peek_val(__caml_parser_env, 3);
       var _7 = Parsing.peek_val(__caml_parser_env, 1);
       var _8 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$18(/* Some */[symbol_rloc(/* () */0)], /* Some */[_8], /* Some */[symbol_docs(/* () */0)], /* None */0, /* Some */[_3], /* Some */[_4], mkrhs(_5, 5), _7);
+      return mk$18(/* Some */[symbol_rloc(/* () */0)], /* Some */[_8], /* Some */[symbol_docs(/* () */0)], /* None */0, /* Some */[_3], [_4], mkrhs(_5, 5), _7);
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 5);
@@ -5502,7 +5502,7 @@ var yyact = /* array */[
       var _4 = Parsing.peek_val(__caml_parser_env, 3);
       var _6 = Parsing.peek_val(__caml_parser_env, 1);
       var _7 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$18(/* Some */[symbol_rloc(/* () */0)], /* Some */[_7], /* Some */[symbol_docs(/* () */0)], /* Some */[get_text(Parsing.symbol_start_pos(/* () */0))], /* Some */[_2], /* Some */[_3], mkrhs(_4, 4), _6);
+      return mk$18(/* Some */[symbol_rloc(/* () */0)], /* Some */[_7], /* Some */[symbol_docs(/* () */0)], /* Some */[get_text(Parsing.symbol_start_pos(/* () */0))], /* Some */[_2], [_3], mkrhs(_4, 4), _6);
     }),
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);
@@ -7454,7 +7454,7 @@ var yyact = /* array */[
       var _4 = Parsing.peek_val(__caml_parser_env, 3);
       var _6 = Parsing.peek_val(__caml_parser_env, 1);
       var _7 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$11(/* Some */[symbol_rloc(/* () */0)], /* Some */[_7], /* Some */[symbol_docs(/* () */0)], /* Some */[_6], mkrhs(_2, 2), _4);
+      return mk$11(/* Some */[symbol_rloc(/* () */0)], /* Some */[_7], /* Some */[symbol_docs(/* () */0)], [_6], mkrhs(_2, 2), _4);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
@@ -7478,7 +7478,7 @@ var yyact = /* array */[
       var _5 = Parsing.peek_val(__caml_parser_env, 2);
       var _6 = Parsing.peek_val(__caml_parser_env, 1);
       var _7 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$19(/* Some */[symbol_rloc(/* () */0)], /* Some */[add_nonrec(_2, _7, 2)], /* Some */[symbol_docs(/* () */0)], /* None */0, /* Some */[_3], /* Some */[List.rev(_6)], /* Some */[_5[0]], /* Some */[_5[1]], _5[2], mkrhs(_4, 4));
+      return mk$19(/* Some */[symbol_rloc(/* () */0)], /* Some */[add_nonrec(_2, _7, 2)], /* Some */[symbol_docs(/* () */0)], /* None */0, [_3], [List.rev(_6)], /* Some */[_5[0]], /* Some */[_5[1]], _5[2], mkrhs(_4, 4));
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 4);
@@ -7486,7 +7486,7 @@ var yyact = /* array */[
       var _4 = Parsing.peek_val(__caml_parser_env, 2);
       var _5 = Parsing.peek_val(__caml_parser_env, 1);
       var _6 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$19(/* Some */[symbol_rloc(/* () */0)], /* Some */[_6], /* Some */[symbol_docs(/* () */0)], /* Some */[get_text(Parsing.symbol_start_pos(/* () */0))], /* Some */[_2], /* Some */[List.rev(_5)], /* Some */[_4[0]], /* Some */[_4[1]], _4[2], mkrhs(_3, 3));
+      return mk$19(/* Some */[symbol_rloc(/* () */0)], /* Some */[_6], /* Some */[symbol_docs(/* () */0)], /* Some */[get_text(Parsing.symbol_start_pos(/* () */0))], [_2], [List.rev(_5)], /* Some */[_4[0]], /* Some */[_4[1]], _4[2], mkrhs(_3, 3));
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
@@ -7700,13 +7700,13 @@ var yyact = /* array */[
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return constructor(/* Some */[symbol_rloc(/* () */0)], /* Some */[_3], /* Some */[get_info(Parsing.symbol_end_pos(/* () */0))], /* Some */[_2[0]], _2[1], mkrhs(_1, 1));
+      return constructor(/* Some */[symbol_rloc(/* () */0)], /* Some */[_3], /* Some */[get_info(Parsing.symbol_end_pos(/* () */0))], [_2[0]], _2[1], mkrhs(_1, 1));
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 1);
       var _4 = Parsing.peek_val(__caml_parser_env, 0);
-      return constructor(/* Some */[symbol_rloc(/* () */0)], /* Some */[_4], /* Some */[get_info(Parsing.symbol_end_pos(/* () */0))], /* Some */[_3[0]], _3[1], mkrhs(_2, 2));
+      return constructor(/* Some */[symbol_rloc(/* () */0)], /* Some */[_4], /* Some */[get_info(Parsing.symbol_end_pos(/* () */0))], [_3[0]], _3[1], mkrhs(_2, 2));
     }),
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);
@@ -7723,7 +7723,7 @@ var yyact = /* array */[
       var _3 = Parsing.peek_val(__caml_parser_env, 2);
       var _4 = Parsing.peek_val(__caml_parser_env, 1);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return decl(/* Some */[symbol_rloc(/* () */0)], /* Some */[Pervasives.$at(_4, _5)], /* Some */[symbol_docs(/* () */0)], /* None */0, /* Some */[_3[0]], _3[1], mkrhs(_2, 2));
+      return decl(/* Some */[symbol_rloc(/* () */0)], /* Some */[Pervasives.$at(_4, _5)], /* Some */[symbol_docs(/* () */0)], /* None */0, [_3[0]], _3[1], mkrhs(_2, 2));
     }),
   (function () {
       return /* tuple */[
@@ -7802,7 +7802,7 @@ var yyact = /* array */[
       if (_2 !== /* Recursive */1) {
         not_expecting(2, "nonrec flag");
       }
-      return mk$20(/* Some */[_8], /* Some */[symbol_docs(/* () */0)], /* Some */[_3], /* Some */[_6], mkrhs(_4, 4), List.rev(_7));
+      return mk$20(/* Some */[_8], /* Some */[symbol_docs(/* () */0)], [_3], /* Some */[_6], mkrhs(_4, 4), List.rev(_7));
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 6);
@@ -7814,7 +7814,7 @@ var yyact = /* array */[
       if (_2 !== /* Recursive */1) {
         not_expecting(2, "nonrec flag");
       }
-      return mk$20(/* Some */[_8], /* Some */[symbol_docs(/* () */0)], /* Some */[_3], /* Some */[_6], mkrhs(_4, 4), List.rev(_7));
+      return mk$20(/* Some */[_8], /* Some */[symbol_docs(/* () */0)], [_3], /* Some */[_6], mkrhs(_4, 4), List.rev(_7));
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
@@ -7886,13 +7886,13 @@ var yyact = /* array */[
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return decl(/* Some */[symbol_rloc(/* () */0)], /* Some */[_3], /* None */0, /* Some */[get_info(Parsing.symbol_end_pos(/* () */0))], /* Some */[_2[0]], _2[1], mkrhs(_1, 1));
+      return decl(/* Some */[symbol_rloc(/* () */0)], /* Some */[_3], /* None */0, /* Some */[get_info(Parsing.symbol_end_pos(/* () */0))], [_2[0]], _2[1], mkrhs(_1, 1));
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 1);
       var _4 = Parsing.peek_val(__caml_parser_env, 0);
-      return decl(/* Some */[symbol_rloc(/* () */0)], /* Some */[_4], /* None */0, /* Some */[get_info(Parsing.symbol_end_pos(/* () */0))], /* Some */[_3[0]], _3[1], mkrhs(_2, 2));
+      return decl(/* Some */[symbol_rloc(/* () */0)], /* Some */[_4], /* None */0, /* Some */[get_info(Parsing.symbol_end_pos(/* () */0))], [_3[0]], _3[1], mkrhs(_2, 2));
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 3);
@@ -7929,14 +7929,14 @@ var yyact = /* array */[
       var _6 = Parsing.peek_val(__caml_parser_env, 0);
       return /* Pwith_type */Block.__(0, [
                 mkrhs(_3, 3),
-                mk$19(/* Some */[symbol_rloc(/* () */0)], /* None */0, /* None */0, /* None */0, /* Some */[_2], /* Some */[List.rev(_6)], /* None */0, /* Some */[_4], /* Some */[_5], mkrhs(last(_3), 3))
+                mk$19(/* Some */[symbol_rloc(/* () */0)], /* None */0, /* None */0, /* None */0, [_2], [List.rev(_6)], /* None */0, /* Some */[_4], /* Some */[_5], mkrhs(last(_3), 3))
               ]);
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 3);
       var _3 = Parsing.peek_val(__caml_parser_env, 2);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* Pwith_typesubst */Block.__(2, [mk$19(/* Some */[symbol_rloc(/* () */0)], /* None */0, /* None */0, /* None */0, /* Some */[_2], /* None */0, /* None */0, /* None */0, /* Some */[_5], mkrhs(_3, 3))]);
+      return /* Pwith_typesubst */Block.__(2, [mk$19(/* Some */[symbol_rloc(/* () */0)], /* None */0, /* None */0, /* None */0, [_2], /* None */0, /* None */0, /* None */0, /* Some */[_5], mkrhs(_3, 3))]);
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 2);
@@ -8213,7 +8213,7 @@ var yyact = /* array */[
       return mktyp(/* Ptyp_variant */Block.__(7, [
                     List.rev(_3),
                     /* Closed */0,
-                    /* Some */[/* [] */0]
+                    [/* [] */0]
                   ]));
     }),
   (function (__caml_parser_env) {
@@ -8223,7 +8223,7 @@ var yyact = /* array */[
       return mktyp(/* Ptyp_variant */Block.__(7, [
                     List.rev(_3),
                     /* Closed */0,
-                    /* Some */[List.rev(_5)]
+                    [List.rev(_5)]
                   ]));
     }),
   (function (__caml_parser_env) {
@@ -10920,7 +10920,7 @@ function token(lexbuf) {
             lexbuf$1[/* lex_start_p */10] = string_start$1;
             return /* STRING */Block.__(16, [/* tuple */[
                         get_stored_string(/* () */0),
-                        /* Some */[delim$1]
+                        [delim$1]
                       ]]);
         case 21 : 
             update_loc(lexbuf$1, /* None */0, 1, false, 1);

@@ -9,7 +9,7 @@ var suites_000 = /* tuple */[
   "split",
   (function () {
       return /* Eq */Block.__(0, [
-                Ext_string_test.split(/* Some */[true], "hihi", /* "i" */105),
+                Ext_string_test.split([true], "hihi", /* "i" */105),
                 /* :: */[
                   "h",
                   /* :: */[
@@ -45,7 +45,7 @@ var suites_001 = /* :: */[
       "split_empty",
       (function () {
           return /* Eq */Block.__(0, [
-                    Ext_string_test.split(/* Some */[true], "", /* "i" */105),
+                    Ext_string_test.split([true], "", /* "i" */105),
                     /* [] */0
                   ]);
         })
@@ -55,7 +55,7 @@ var suites_001 = /* :: */[
         "split_normal",
         (function () {
             return /* Eq */Block.__(0, [
-                      Ext_string_test.split(/* Some */[true], "h i i", /* " " */32),
+                      Ext_string_test.split([true], "h i i", /* " " */32),
                       /* :: */[
                         "h",
                         /* :: */[

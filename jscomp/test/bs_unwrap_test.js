@@ -39,26 +39,26 @@ console.log(3, "hi");
 
 console.log(4, undefined);
 
-var some_arg = /* Some */[/* `Bool */[
+var some_arg = [/* `Bool */[
     737456202,
     true
   ]];
 
-console.log(5, some_arg ? some_arg[0][1] : undefined);
+console.log(5, some_arg !== /* None */0 ? some_arg[0][1] : undefined);
 
 console.log(6, undefined);
 
 console.log(7, Js_primitive.option_get_unwrap((console.log("trace"), /* None */0)));
 
 function dyn_log3(prim, prim$1, _) {
-  console.log(prim[1], prim$1 ? prim$1[0][1] : undefined);
+  console.log(prim[1], prim$1 !== /* None */0 ? prim$1[0][1] : undefined);
   return /* () */0;
 }
 
 dyn_log3(/* `Int */[
       3654863,
       8
-    ], /* Some */[/* `Bool */[
+    ], [/* `Bool */[
         737456202,
         true
       ]], /* () */0);
@@ -84,7 +84,7 @@ function f(x) {
 }
 
 function ff0(x, p) {
-  console.log(x ? x[0][1] : undefined, p);
+  console.log(x !== /* None */0 ? x[0][1] : undefined, p);
   return /* () */0;
 }
 

@@ -156,14 +156,17 @@ let merge_outer_comment comment (e : t )  =
                 = Some (comment ^ sep ^ s)} 
 
 let some_comment = Some "Some"                
+
 let optional_block e  : J.expression =                 
   { expression_desc = Optional_block (e,false) ; 
     comment = some_comment
   }
+
+  
 let optional_not_nest_block e : J.expression = 
   {
     expression_desc = Optional_block(e,true);
-    comment = some_comment
+    comment = None
   } 
 
 let make_block ?comment tag tag_info es mutable_flag : t = 

@@ -32,7 +32,7 @@ function read_lines(inc) {
     var acc = _acc;
     var match;
     try {
-      match = /* Some */[Pervasives.input_line(inc)];
+      match = [Pervasives.input_line(inc)];
     }
     catch (exn){
       if (exn === Caml_builtin_exceptions.end_of_file) {

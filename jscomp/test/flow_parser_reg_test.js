@@ -1132,7 +1132,7 @@ function parse_body(_f) {
           /* negative */init[/* negative */0],
           /* mantissa */init[/* mantissa */1],
           /* exponent */init[/* exponent */2],
-          /* decimal_exponent : Some */[0],
+          /* decimal_exponent */[0],
           /* todo */init[/* todo */4]
         ];
         continue ;
@@ -1152,7 +1152,7 @@ function parse_body(_f) {
         }
         var value = c - ref_char_code | 0;
         var match$1 = f[/* decimal_exponent */3];
-        var decimal_exponent = match$1 !== /* None */0 ? /* Some */[match$1[0] - 4 | 0] : /* None */0;
+        var decimal_exponent = match$1 !== /* None */0 ? [match$1[0] - 4 | 0] : /* None */0;
         var mantissa = (f[/* mantissa */1] << 4) + value | 0;
         var init$1 = eat(f);
         _f = /* record */[
@@ -2343,763 +2343,763 @@ function jsx_text(env, mode, buf, raw, lexbuf) {
             var code$2;
             switch (entity) {
               case "'int'" : 
-                  code$2 = /* Some */[8747];
+                  code$2 = [8747];
                   break;
               case "AElig" : 
-                  code$2 = /* Some */[198];
+                  code$2 = [198];
                   break;
               case "Aacute" : 
-                  code$2 = /* Some */[193];
+                  code$2 = [193];
                   break;
               case "Acirc" : 
-                  code$2 = /* Some */[194];
+                  code$2 = [194];
                   break;
               case "Agrave" : 
-                  code$2 = /* Some */[192];
+                  code$2 = [192];
                   break;
               case "Alpha" : 
-                  code$2 = /* Some */[913];
+                  code$2 = [913];
                   break;
               case "Aring" : 
-                  code$2 = /* Some */[197];
+                  code$2 = [197];
                   break;
               case "Atilde" : 
-                  code$2 = /* Some */[195];
+                  code$2 = [195];
                   break;
               case "Auml" : 
-                  code$2 = /* Some */[196];
+                  code$2 = [196];
                   break;
               case "Beta" : 
-                  code$2 = /* Some */[914];
+                  code$2 = [914];
                   break;
               case "Ccedil" : 
-                  code$2 = /* Some */[199];
+                  code$2 = [199];
                   break;
               case "Chi" : 
-                  code$2 = /* Some */[935];
+                  code$2 = [935];
                   break;
               case "Dagger" : 
-                  code$2 = /* Some */[8225];
+                  code$2 = [8225];
                   break;
               case "Delta" : 
-                  code$2 = /* Some */[916];
+                  code$2 = [916];
                   break;
               case "ETH" : 
-                  code$2 = /* Some */[208];
+                  code$2 = [208];
                   break;
               case "Eacute" : 
-                  code$2 = /* Some */[201];
+                  code$2 = [201];
                   break;
               case "Ecirc" : 
-                  code$2 = /* Some */[202];
+                  code$2 = [202];
                   break;
               case "Egrave" : 
-                  code$2 = /* Some */[200];
+                  code$2 = [200];
                   break;
               case "Epsilon" : 
-                  code$2 = /* Some */[917];
+                  code$2 = [917];
                   break;
               case "Eta" : 
-                  code$2 = /* Some */[919];
+                  code$2 = [919];
                   break;
               case "Euml" : 
-                  code$2 = /* Some */[203];
+                  code$2 = [203];
                   break;
               case "Gamma" : 
-                  code$2 = /* Some */[915];
+                  code$2 = [915];
                   break;
               case "Iacute" : 
-                  code$2 = /* Some */[205];
+                  code$2 = [205];
                   break;
               case "Icirc" : 
-                  code$2 = /* Some */[206];
+                  code$2 = [206];
                   break;
               case "Igrave" : 
-                  code$2 = /* Some */[204];
+                  code$2 = [204];
                   break;
               case "Iota" : 
-                  code$2 = /* Some */[921];
+                  code$2 = [921];
                   break;
               case "Iuml" : 
-                  code$2 = /* Some */[207];
+                  code$2 = [207];
                   break;
               case "Kappa" : 
-                  code$2 = /* Some */[922];
+                  code$2 = [922];
                   break;
               case "Lambda" : 
-                  code$2 = /* Some */[923];
+                  code$2 = [923];
                   break;
               case "Mu" : 
-                  code$2 = /* Some */[924];
+                  code$2 = [924];
                   break;
               case "Ntilde" : 
-                  code$2 = /* Some */[209];
+                  code$2 = [209];
                   break;
               case "Nu" : 
-                  code$2 = /* Some */[925];
+                  code$2 = [925];
                   break;
               case "OElig" : 
-                  code$2 = /* Some */[338];
+                  code$2 = [338];
                   break;
               case "Oacute" : 
-                  code$2 = /* Some */[211];
+                  code$2 = [211];
                   break;
               case "Ocirc" : 
-                  code$2 = /* Some */[212];
+                  code$2 = [212];
                   break;
               case "Ograve" : 
-                  code$2 = /* Some */[210];
+                  code$2 = [210];
                   break;
               case "Omega" : 
-                  code$2 = /* Some */[937];
+                  code$2 = [937];
                   break;
               case "Omicron" : 
-                  code$2 = /* Some */[927];
+                  code$2 = [927];
                   break;
               case "Oslash" : 
-                  code$2 = /* Some */[216];
+                  code$2 = [216];
                   break;
               case "Otilde" : 
-                  code$2 = /* Some */[213];
+                  code$2 = [213];
                   break;
               case "Ouml" : 
-                  code$2 = /* Some */[214];
+                  code$2 = [214];
                   break;
               case "Phi" : 
-                  code$2 = /* Some */[934];
+                  code$2 = [934];
                   break;
               case "Pi" : 
-                  code$2 = /* Some */[928];
+                  code$2 = [928];
                   break;
               case "Prime" : 
-                  code$2 = /* Some */[8243];
+                  code$2 = [8243];
                   break;
               case "Psi" : 
-                  code$2 = /* Some */[936];
+                  code$2 = [936];
                   break;
               case "Rho" : 
-                  code$2 = /* Some */[929];
+                  code$2 = [929];
                   break;
               case "Scaron" : 
-                  code$2 = /* Some */[352];
+                  code$2 = [352];
                   break;
               case "Sigma" : 
-                  code$2 = /* Some */[931];
+                  code$2 = [931];
                   break;
               case "THORN" : 
-                  code$2 = /* Some */[222];
+                  code$2 = [222];
                   break;
               case "Tau" : 
-                  code$2 = /* Some */[932];
+                  code$2 = [932];
                   break;
               case "Theta" : 
-                  code$2 = /* Some */[920];
+                  code$2 = [920];
                   break;
               case "Uacute" : 
-                  code$2 = /* Some */[218];
+                  code$2 = [218];
                   break;
               case "Ucirc" : 
-                  code$2 = /* Some */[219];
+                  code$2 = [219];
                   break;
               case "Ugrave" : 
-                  code$2 = /* Some */[217];
+                  code$2 = [217];
                   break;
               case "Upsilon" : 
-                  code$2 = /* Some */[933];
+                  code$2 = [933];
                   break;
               case "Uuml" : 
-                  code$2 = /* Some */[220];
+                  code$2 = [220];
                   break;
               case "Xi" : 
-                  code$2 = /* Some */[926];
+                  code$2 = [926];
                   break;
               case "Yacute" : 
-                  code$2 = /* Some */[221];
+                  code$2 = [221];
                   break;
               case "Yuml" : 
-                  code$2 = /* Some */[376];
+                  code$2 = [376];
                   break;
               case "Zeta" : 
-                  code$2 = /* Some */[918];
+                  code$2 = [918];
                   break;
               case "aacute" : 
-                  code$2 = /* Some */[225];
+                  code$2 = [225];
                   break;
               case "acirc" : 
-                  code$2 = /* Some */[226];
+                  code$2 = [226];
                   break;
               case "acute" : 
-                  code$2 = /* Some */[180];
+                  code$2 = [180];
                   break;
               case "aelig" : 
-                  code$2 = /* Some */[230];
+                  code$2 = [230];
                   break;
               case "agrave" : 
-                  code$2 = /* Some */[224];
+                  code$2 = [224];
                   break;
               case "alefsym" : 
-                  code$2 = /* Some */[8501];
+                  code$2 = [8501];
                   break;
               case "alpha" : 
-                  code$2 = /* Some */[945];
+                  code$2 = [945];
                   break;
               case "amp" : 
-                  code$2 = /* Some */[38];
+                  code$2 = [38];
                   break;
               case "and" : 
-                  code$2 = /* Some */[8743];
+                  code$2 = [8743];
                   break;
               case "ang" : 
-                  code$2 = /* Some */[8736];
+                  code$2 = [8736];
                   break;
               case "apos" : 
-                  code$2 = /* Some */[39];
+                  code$2 = [39];
                   break;
               case "aring" : 
-                  code$2 = /* Some */[229];
+                  code$2 = [229];
                   break;
               case "asymp" : 
-                  code$2 = /* Some */[8776];
+                  code$2 = [8776];
                   break;
               case "atilde" : 
-                  code$2 = /* Some */[227];
+                  code$2 = [227];
                   break;
               case "auml" : 
-                  code$2 = /* Some */[228];
+                  code$2 = [228];
                   break;
               case "bdquo" : 
-                  code$2 = /* Some */[8222];
+                  code$2 = [8222];
                   break;
               case "beta" : 
-                  code$2 = /* Some */[946];
+                  code$2 = [946];
                   break;
               case "brvbar" : 
-                  code$2 = /* Some */[166];
+                  code$2 = [166];
                   break;
               case "bull" : 
-                  code$2 = /* Some */[8226];
+                  code$2 = [8226];
                   break;
               case "cap" : 
-                  code$2 = /* Some */[8745];
+                  code$2 = [8745];
                   break;
               case "ccedil" : 
-                  code$2 = /* Some */[231];
+                  code$2 = [231];
                   break;
               case "cedil" : 
-                  code$2 = /* Some */[184];
+                  code$2 = [184];
                   break;
               case "cent" : 
-                  code$2 = /* Some */[162];
+                  code$2 = [162];
                   break;
               case "chi" : 
-                  code$2 = /* Some */[967];
+                  code$2 = [967];
                   break;
               case "circ" : 
-                  code$2 = /* Some */[710];
+                  code$2 = [710];
                   break;
               case "clubs" : 
-                  code$2 = /* Some */[9827];
+                  code$2 = [9827];
                   break;
               case "cong" : 
-                  code$2 = /* Some */[8773];
+                  code$2 = [8773];
                   break;
               case "copy" : 
-                  code$2 = /* Some */[169];
+                  code$2 = [169];
                   break;
               case "crarr" : 
-                  code$2 = /* Some */[8629];
+                  code$2 = [8629];
                   break;
               case "cup" : 
-                  code$2 = /* Some */[8746];
+                  code$2 = [8746];
                   break;
               case "curren" : 
-                  code$2 = /* Some */[164];
+                  code$2 = [164];
                   break;
               case "dArr" : 
-                  code$2 = /* Some */[8659];
+                  code$2 = [8659];
                   break;
               case "dagger" : 
-                  code$2 = /* Some */[8224];
+                  code$2 = [8224];
                   break;
               case "darr" : 
-                  code$2 = /* Some */[8595];
+                  code$2 = [8595];
                   break;
               case "deg" : 
-                  code$2 = /* Some */[176];
+                  code$2 = [176];
                   break;
               case "delta" : 
-                  code$2 = /* Some */[948];
+                  code$2 = [948];
                   break;
               case "diams" : 
-                  code$2 = /* Some */[9830];
+                  code$2 = [9830];
                   break;
               case "divide" : 
-                  code$2 = /* Some */[247];
+                  code$2 = [247];
                   break;
               case "eacute" : 
-                  code$2 = /* Some */[233];
+                  code$2 = [233];
                   break;
               case "ecirc" : 
-                  code$2 = /* Some */[234];
+                  code$2 = [234];
                   break;
               case "egrave" : 
-                  code$2 = /* Some */[232];
+                  code$2 = [232];
                   break;
               case "empty" : 
-                  code$2 = /* Some */[8709];
+                  code$2 = [8709];
                   break;
               case "emsp" : 
-                  code$2 = /* Some */[8195];
+                  code$2 = [8195];
                   break;
               case "ensp" : 
-                  code$2 = /* Some */[8194];
+                  code$2 = [8194];
                   break;
               case "epsilon" : 
-                  code$2 = /* Some */[949];
+                  code$2 = [949];
                   break;
               case "equiv" : 
-                  code$2 = /* Some */[8801];
+                  code$2 = [8801];
                   break;
               case "eta" : 
-                  code$2 = /* Some */[951];
+                  code$2 = [951];
                   break;
               case "eth" : 
-                  code$2 = /* Some */[240];
+                  code$2 = [240];
                   break;
               case "euml" : 
-                  code$2 = /* Some */[235];
+                  code$2 = [235];
                   break;
               case "euro" : 
-                  code$2 = /* Some */[8364];
+                  code$2 = [8364];
                   break;
               case "exist" : 
-                  code$2 = /* Some */[8707];
+                  code$2 = [8707];
                   break;
               case "fnof" : 
-                  code$2 = /* Some */[402];
+                  code$2 = [402];
                   break;
               case "forall" : 
-                  code$2 = /* Some */[8704];
+                  code$2 = [8704];
                   break;
               case "frac12" : 
-                  code$2 = /* Some */[189];
+                  code$2 = [189];
                   break;
               case "frac14" : 
-                  code$2 = /* Some */[188];
+                  code$2 = [188];
                   break;
               case "frac34" : 
-                  code$2 = /* Some */[190];
+                  code$2 = [190];
                   break;
               case "frasl" : 
-                  code$2 = /* Some */[8260];
+                  code$2 = [8260];
                   break;
               case "gamma" : 
-                  code$2 = /* Some */[947];
+                  code$2 = [947];
                   break;
               case "ge" : 
-                  code$2 = /* Some */[8805];
+                  code$2 = [8805];
                   break;
               case "gt" : 
-                  code$2 = /* Some */[62];
+                  code$2 = [62];
                   break;
               case "hArr" : 
-                  code$2 = /* Some */[8660];
+                  code$2 = [8660];
                   break;
               case "harr" : 
-                  code$2 = /* Some */[8596];
+                  code$2 = [8596];
                   break;
               case "hearts" : 
-                  code$2 = /* Some */[9829];
+                  code$2 = [9829];
                   break;
               case "hellip" : 
-                  code$2 = /* Some */[8230];
+                  code$2 = [8230];
                   break;
               case "iacute" : 
-                  code$2 = /* Some */[237];
+                  code$2 = [237];
                   break;
               case "icirc" : 
-                  code$2 = /* Some */[238];
+                  code$2 = [238];
                   break;
               case "iexcl" : 
-                  code$2 = /* Some */[161];
+                  code$2 = [161];
                   break;
               case "igrave" : 
-                  code$2 = /* Some */[236];
+                  code$2 = [236];
                   break;
               case "image" : 
-                  code$2 = /* Some */[8465];
+                  code$2 = [8465];
                   break;
               case "infin" : 
-                  code$2 = /* Some */[8734];
+                  code$2 = [8734];
                   break;
               case "iota" : 
-                  code$2 = /* Some */[953];
+                  code$2 = [953];
                   break;
               case "iquest" : 
-                  code$2 = /* Some */[191];
+                  code$2 = [191];
                   break;
               case "isin" : 
-                  code$2 = /* Some */[8712];
+                  code$2 = [8712];
                   break;
               case "iuml" : 
-                  code$2 = /* Some */[239];
+                  code$2 = [239];
                   break;
               case "kappa" : 
-                  code$2 = /* Some */[954];
+                  code$2 = [954];
                   break;
               case "lArr" : 
-                  code$2 = /* Some */[8656];
+                  code$2 = [8656];
                   break;
               case "lambda" : 
-                  code$2 = /* Some */[955];
+                  code$2 = [955];
                   break;
               case "lang" : 
-                  code$2 = /* Some */[10216];
+                  code$2 = [10216];
                   break;
               case "laquo" : 
-                  code$2 = /* Some */[171];
+                  code$2 = [171];
                   break;
               case "larr" : 
-                  code$2 = /* Some */[8592];
+                  code$2 = [8592];
                   break;
               case "lceil" : 
-                  code$2 = /* Some */[8968];
+                  code$2 = [8968];
                   break;
               case "ldquo" : 
-                  code$2 = /* Some */[8220];
+                  code$2 = [8220];
                   break;
               case "le" : 
-                  code$2 = /* Some */[8804];
+                  code$2 = [8804];
                   break;
               case "lfloor" : 
-                  code$2 = /* Some */[8970];
+                  code$2 = [8970];
                   break;
               case "lowast" : 
-                  code$2 = /* Some */[8727];
+                  code$2 = [8727];
                   break;
               case "loz" : 
-                  code$2 = /* Some */[9674];
+                  code$2 = [9674];
                   break;
               case "lrm" : 
-                  code$2 = /* Some */[8206];
+                  code$2 = [8206];
                   break;
               case "lsaquo" : 
-                  code$2 = /* Some */[8249];
+                  code$2 = [8249];
                   break;
               case "lsquo" : 
-                  code$2 = /* Some */[8216];
+                  code$2 = [8216];
                   break;
               case "lt" : 
-                  code$2 = /* Some */[60];
+                  code$2 = [60];
                   break;
               case "macr" : 
-                  code$2 = /* Some */[175];
+                  code$2 = [175];
                   break;
               case "mdash" : 
-                  code$2 = /* Some */[8212];
+                  code$2 = [8212];
                   break;
               case "micro" : 
-                  code$2 = /* Some */[181];
+                  code$2 = [181];
                   break;
               case "middot" : 
-                  code$2 = /* Some */[183];
+                  code$2 = [183];
                   break;
               case "minus" : 
-                  code$2 = /* Some */[8722];
+                  code$2 = [8722];
                   break;
               case "mu" : 
-                  code$2 = /* Some */[956];
+                  code$2 = [956];
                   break;
               case "nabla" : 
-                  code$2 = /* Some */[8711];
+                  code$2 = [8711];
                   break;
               case "nbsp" : 
-                  code$2 = /* Some */[160];
+                  code$2 = [160];
                   break;
               case "ndash" : 
-                  code$2 = /* Some */[8211];
+                  code$2 = [8211];
                   break;
               case "ne" : 
-                  code$2 = /* Some */[8800];
+                  code$2 = [8800];
                   break;
               case "ni" : 
-                  code$2 = /* Some */[8715];
+                  code$2 = [8715];
                   break;
               case "not" : 
-                  code$2 = /* Some */[172];
+                  code$2 = [172];
                   break;
               case "notin" : 
-                  code$2 = /* Some */[8713];
+                  code$2 = [8713];
                   break;
               case "nsub" : 
-                  code$2 = /* Some */[8836];
+                  code$2 = [8836];
                   break;
               case "ntilde" : 
-                  code$2 = /* Some */[241];
+                  code$2 = [241];
                   break;
               case "nu" : 
-                  code$2 = /* Some */[957];
+                  code$2 = [957];
                   break;
               case "oacute" : 
-                  code$2 = /* Some */[243];
+                  code$2 = [243];
                   break;
               case "ocirc" : 
-                  code$2 = /* Some */[244];
+                  code$2 = [244];
                   break;
               case "oelig" : 
-                  code$2 = /* Some */[339];
+                  code$2 = [339];
                   break;
               case "ograve" : 
-                  code$2 = /* Some */[242];
+                  code$2 = [242];
                   break;
               case "oline" : 
-                  code$2 = /* Some */[8254];
+                  code$2 = [8254];
                   break;
               case "omega" : 
-                  code$2 = /* Some */[969];
+                  code$2 = [969];
                   break;
               case "omicron" : 
-                  code$2 = /* Some */[959];
+                  code$2 = [959];
                   break;
               case "oplus" : 
-                  code$2 = /* Some */[8853];
+                  code$2 = [8853];
                   break;
               case "or" : 
-                  code$2 = /* Some */[8744];
+                  code$2 = [8744];
                   break;
               case "ordf" : 
-                  code$2 = /* Some */[170];
+                  code$2 = [170];
                   break;
               case "ordm" : 
-                  code$2 = /* Some */[186];
+                  code$2 = [186];
                   break;
               case "oslash" : 
-                  code$2 = /* Some */[248];
+                  code$2 = [248];
                   break;
               case "otilde" : 
-                  code$2 = /* Some */[245];
+                  code$2 = [245];
                   break;
               case "otimes" : 
-                  code$2 = /* Some */[8855];
+                  code$2 = [8855];
                   break;
               case "ouml" : 
-                  code$2 = /* Some */[246];
+                  code$2 = [246];
                   break;
               case "para" : 
-                  code$2 = /* Some */[182];
+                  code$2 = [182];
                   break;
               case "part" : 
-                  code$2 = /* Some */[8706];
+                  code$2 = [8706];
                   break;
               case "permil" : 
-                  code$2 = /* Some */[8240];
+                  code$2 = [8240];
                   break;
               case "perp" : 
-                  code$2 = /* Some */[8869];
+                  code$2 = [8869];
                   break;
               case "phi" : 
-                  code$2 = /* Some */[966];
+                  code$2 = [966];
                   break;
               case "pi" : 
-                  code$2 = /* Some */[960];
+                  code$2 = [960];
                   break;
               case "piv" : 
-                  code$2 = /* Some */[982];
+                  code$2 = [982];
                   break;
               case "plusmn" : 
-                  code$2 = /* Some */[177];
+                  code$2 = [177];
                   break;
               case "pound" : 
-                  code$2 = /* Some */[163];
+                  code$2 = [163];
                   break;
               case "prime" : 
-                  code$2 = /* Some */[8242];
+                  code$2 = [8242];
                   break;
               case "prod" : 
-                  code$2 = /* Some */[8719];
+                  code$2 = [8719];
                   break;
               case "prop" : 
-                  code$2 = /* Some */[8733];
+                  code$2 = [8733];
                   break;
               case "psi" : 
-                  code$2 = /* Some */[968];
+                  code$2 = [968];
                   break;
               case "quot" : 
-                  code$2 = /* Some */[34];
+                  code$2 = [34];
                   break;
               case "rArr" : 
-                  code$2 = /* Some */[8658];
+                  code$2 = [8658];
                   break;
               case "radic" : 
-                  code$2 = /* Some */[8730];
+                  code$2 = [8730];
                   break;
               case "rang" : 
-                  code$2 = /* Some */[10217];
+                  code$2 = [10217];
                   break;
               case "raquo" : 
-                  code$2 = /* Some */[187];
+                  code$2 = [187];
                   break;
               case "rarr" : 
-                  code$2 = /* Some */[8594];
+                  code$2 = [8594];
                   break;
               case "rceil" : 
-                  code$2 = /* Some */[8969];
+                  code$2 = [8969];
                   break;
               case "rdquo" : 
-                  code$2 = /* Some */[8221];
+                  code$2 = [8221];
                   break;
               case "real" : 
-                  code$2 = /* Some */[8476];
+                  code$2 = [8476];
                   break;
               case "reg" : 
-                  code$2 = /* Some */[174];
+                  code$2 = [174];
                   break;
               case "rfloor" : 
-                  code$2 = /* Some */[8971];
+                  code$2 = [8971];
                   break;
               case "rho" : 
-                  code$2 = /* Some */[961];
+                  code$2 = [961];
                   break;
               case "rlm" : 
-                  code$2 = /* Some */[8207];
+                  code$2 = [8207];
                   break;
               case "rsaquo" : 
-                  code$2 = /* Some */[8250];
+                  code$2 = [8250];
                   break;
               case "rsquo" : 
-                  code$2 = /* Some */[8217];
+                  code$2 = [8217];
                   break;
               case "sbquo" : 
-                  code$2 = /* Some */[8218];
+                  code$2 = [8218];
                   break;
               case "scaron" : 
-                  code$2 = /* Some */[353];
+                  code$2 = [353];
                   break;
               case "sdot" : 
-                  code$2 = /* Some */[8901];
+                  code$2 = [8901];
                   break;
               case "sect" : 
-                  code$2 = /* Some */[167];
+                  code$2 = [167];
                   break;
               case "shy" : 
-                  code$2 = /* Some */[173];
+                  code$2 = [173];
                   break;
               case "sigma" : 
-                  code$2 = /* Some */[963];
+                  code$2 = [963];
                   break;
               case "sigmaf" : 
-                  code$2 = /* Some */[962];
+                  code$2 = [962];
                   break;
               case "sim" : 
-                  code$2 = /* Some */[8764];
+                  code$2 = [8764];
                   break;
               case "spades" : 
-                  code$2 = /* Some */[9824];
+                  code$2 = [9824];
                   break;
               case "sub" : 
-                  code$2 = /* Some */[8834];
+                  code$2 = [8834];
                   break;
               case "sube" : 
-                  code$2 = /* Some */[8838];
+                  code$2 = [8838];
                   break;
               case "sum" : 
-                  code$2 = /* Some */[8721];
+                  code$2 = [8721];
                   break;
               case "sup" : 
-                  code$2 = /* Some */[8835];
+                  code$2 = [8835];
                   break;
               case "sup1" : 
-                  code$2 = /* Some */[185];
+                  code$2 = [185];
                   break;
               case "sup2" : 
-                  code$2 = /* Some */[178];
+                  code$2 = [178];
                   break;
               case "sup3" : 
-                  code$2 = /* Some */[179];
+                  code$2 = [179];
                   break;
               case "supe" : 
-                  code$2 = /* Some */[8839];
+                  code$2 = [8839];
                   break;
               case "szlig" : 
-                  code$2 = /* Some */[223];
+                  code$2 = [223];
                   break;
               case "tau" : 
-                  code$2 = /* Some */[964];
+                  code$2 = [964];
                   break;
               case "there4" : 
-                  code$2 = /* Some */[8756];
+                  code$2 = [8756];
                   break;
               case "theta" : 
-                  code$2 = /* Some */[952];
+                  code$2 = [952];
                   break;
               case "thetasym" : 
-                  code$2 = /* Some */[977];
+                  code$2 = [977];
                   break;
               case "thinsp" : 
-                  code$2 = /* Some */[8201];
+                  code$2 = [8201];
                   break;
               case "thorn" : 
-                  code$2 = /* Some */[254];
+                  code$2 = [254];
                   break;
               case "tilde" : 
-                  code$2 = /* Some */[732];
+                  code$2 = [732];
                   break;
               case "times" : 
-                  code$2 = /* Some */[215];
+                  code$2 = [215];
                   break;
               case "trade" : 
-                  code$2 = /* Some */[8482];
+                  code$2 = [8482];
                   break;
               case "uArr" : 
-                  code$2 = /* Some */[8657];
+                  code$2 = [8657];
                   break;
               case "uacute" : 
-                  code$2 = /* Some */[250];
+                  code$2 = [250];
                   break;
               case "uarr" : 
-                  code$2 = /* Some */[8593];
+                  code$2 = [8593];
                   break;
               case "ucirc" : 
-                  code$2 = /* Some */[251];
+                  code$2 = [251];
                   break;
               case "ugrave" : 
-                  code$2 = /* Some */[249];
+                  code$2 = [249];
                   break;
               case "uml" : 
-                  code$2 = /* Some */[168];
+                  code$2 = [168];
                   break;
               case "upsih" : 
-                  code$2 = /* Some */[978];
+                  code$2 = [978];
                   break;
               case "upsilon" : 
-                  code$2 = /* Some */[965];
+                  code$2 = [965];
                   break;
               case "uuml" : 
-                  code$2 = /* Some */[252];
+                  code$2 = [252];
                   break;
               case "weierp" : 
-                  code$2 = /* Some */[8472];
+                  code$2 = [8472];
                   break;
               case "xi" : 
-                  code$2 = /* Some */[958];
+                  code$2 = [958];
                   break;
               case "yacute" : 
-                  code$2 = /* Some */[253];
+                  code$2 = [253];
                   break;
               case "yen" : 
-                  code$2 = /* Some */[165];
+                  code$2 = [165];
                   break;
               case "yuml" : 
-                  code$2 = /* Some */[255];
+                  code$2 = [255];
                   break;
               case "zeta" : 
-                  code$2 = /* Some */[950];
+                  code$2 = [950];
                   break;
               case "zwj" : 
-                  code$2 = /* Some */[8205];
+                  code$2 = [8205];
                   break;
               case "zwnj" : 
-                  code$2 = /* Some */[8204];
+                  code$2 = [8204];
                   break;
               default:
                 code$2 = /* None */0;
@@ -4565,7 +4565,7 @@ function lex(t) {
   ];
   var cloned_env = with_lexbuf(lexbuf$1, lex_env$1);
   t[/* la_lex_env */3] = lex_env$1;
-  Caml_array.caml_array_set(t[/* la_results */0], t[/* la_num_lexed */1], /* Some */[/* tuple */[
+  Caml_array.caml_array_set(t[/* la_results */0], t[/* la_num_lexed */1], [/* tuple */[
           cloned_env,
           match$1[1]
         ]]);
@@ -4764,7 +4764,7 @@ function with_no_call(no_call, env) {
 
 function with_error_callback(error_callback, env) {
   var newrecord = Caml_array.caml_array_dup(env);
-  newrecord[/* error_callback */15] = /* Some */[error_callback];
+  newrecord[/* error_callback */15] = [error_callback];
   return newrecord;
 }
 
@@ -4827,27 +4827,27 @@ function is_restricted(param) {
 
 function token$2($staropt$star, env) {
   var i = $staropt$star !== /* None */0 ? $staropt$star[0] : 0;
-  return lookahead(/* Some */[i], env)[/* lex_token */0];
+  return lookahead([i], env)[/* lex_token */0];
 }
 
 function value($staropt$star, env) {
   var i = $staropt$star !== /* None */0 ? $staropt$star[0] : 0;
-  return lookahead(/* Some */[i], env)[/* lex_value */2];
+  return lookahead([i], env)[/* lex_value */2];
 }
 
 function loc($staropt$star, env) {
   var i = $staropt$star !== /* None */0 ? $staropt$star[0] : 0;
-  return lookahead(/* Some */[i], env)[/* lex_loc */1];
+  return lookahead([i], env)[/* lex_loc */1];
 }
 
 function errors($staropt$star, env) {
   var i = $staropt$star !== /* None */0 ? $staropt$star[0] : 0;
-  return lookahead(/* Some */[i], env)[/* lex_errors */3];
+  return lookahead([i], env)[/* lex_errors */3];
 }
 
 function comments($staropt$star, env) {
   var i = $staropt$star !== /* None */0 ? $staropt$star[0] : 0;
-  return lookahead(/* Some */[i], env)[/* lex_comments */4];
+  return lookahead([i], env)[/* lex_comments */4];
 }
 
 function lex_env($staropt$star, env) {
@@ -4897,8 +4897,8 @@ function is_implicit_semicolon(env) {
 
 function semicolon_loc($staropt$star, env) {
   var i = $staropt$star !== /* None */0 ? $staropt$star[0] : 0;
-  if (token$2(/* Some */[i], env) === /* T_SEMICOLON */7) {
-    return /* Some */[loc(/* Some */[i], env)];
+  if (token$2([i], env) === /* T_SEMICOLON */7) {
+    return /* Some */[loc([i], env)];
   } else {
     return /* None */0;
   }
@@ -4906,8 +4906,8 @@ function semicolon_loc($staropt$star, env) {
 
 function is_identifier($staropt$star, env) {
   var i = $staropt$star !== /* None */0 ? $staropt$star[0] : 0;
-  var name = value(/* Some */[i], env);
-  var match = token$2(/* Some */[i], env);
+  var name = value([i], env);
+  var match = token$2([i], env);
   if (is_strict_reserved(name) || is_restricted(name) || is_future_reserved(name)) {
     return true;
   } else if (typeof match === "number") {
@@ -4924,10 +4924,10 @@ function is_identifier($staropt$star, env) {
 
 function is_function($staropt$star, env) {
   var i = $staropt$star !== /* None */0 ? $staropt$star[0] : 0;
-  if (token$2(/* Some */[i], env) === /* T_FUNCTION */13) {
+  if (token$2([i], env) === /* T_FUNCTION */13) {
     return true;
-  } else if (token$2(/* Some */[i], env) === /* T_ASYNC */61) {
-    return token$2(/* Some */[i + 1 | 0], env) === /* T_FUNCTION */13;
+  } else if (token$2([i], env) === /* T_ASYNC */61) {
+    return token$2([i + 1 | 0], env) === /* T_FUNCTION */13;
   } else {
     return false;
   }
@@ -4935,7 +4935,7 @@ function is_function($staropt$star, env) {
 
 function is_class($staropt$star, env) {
   var i = $staropt$star !== /* None */0 ? $staropt$star[0] : 0;
-  var match = token$2(/* Some */[i], env);
+  var match = token$2([i], env);
   if (typeof match === "number") {
     if (match !== 12) {
       return match === 38;
@@ -5154,10 +5154,10 @@ function save_state(env) {
       /* length */0,
       /* tail : None */0
     ];
-    env[/* token_sink */19][0] = /* Some */[(function (token_data) {
+    env[/* token_sink */19][0] = [(function (token_data) {
           return Queue.add(token_data, buffer);
         })];
-    token_buffer = /* Some */[/* tuple */[
+    token_buffer = [/* tuple */[
         match[0],
         buffer
       ]];
@@ -5178,7 +5178,7 @@ function reset_token_sink(flush, env, token_buffer_info) {
   if (token_buffer_info !== /* None */0) {
     var match = token_buffer_info[0];
     var orig_token_sink = match[0];
-    env[/* token_sink */19][0] = /* Some */[orig_token_sink];
+    env[/* token_sink */19][0] = [orig_token_sink];
     if (flush) {
       return Queue.iter(orig_token_sink, match[1]);
     } else {
@@ -5741,22 +5741,22 @@ function primitive(param) {
       if (param >= 107) {
         switch (param - 107 | 0) {
           case 0 : 
-              return /* Some */[/* Any */0];
+              return [/* Any */0];
           case 1 : 
-              return /* Some */[/* Boolean */5];
+              return [/* Boolean */5];
           case 2 : 
-              return /* Some */[/* Number */3];
+              return [/* Number */3];
           case 3 : 
-              return /* Some */[/* String */4];
+              return [/* String */4];
           case 4 : 
-              return /* Some */[/* Void */1];
+              return [/* Void */1];
           
         }
       } else {
         return /* None */0;
       }
     } else {
-      return /* Some */[/* Null */2];
+      return [/* Null */2];
     }
   } else {
     return /* None */0;
@@ -6043,7 +6043,7 @@ function param_list_or_type(env) {
   if (exit === 1) {
     var match = primitive(token$5);
     if (match !== /* None */0) {
-      var match$1 = Curry._2(Parser_env_048[/* token */0], /* Some */[1], env);
+      var match$1 = Curry._2(Parser_env_048[/* token */0], [1], env);
       if (typeof match$1 === "number" && (match$1 === 77 || match$1 === 76)) {
         var match$2 = Curry._1(Parse[/* identifier_or_reserved_keyword */11], env);
         var name = match$2[0];
@@ -6177,8 +6177,8 @@ function params$1(env, allow_default, _require_default, _acc) {
     var match = Curry._2(Parser_env_048[/* token */0], /* None */0, env);
     var variance = typeof match === "number" ? (
         match !== 94 ? (
-            match !== 95 ? /* None */0 : (token$3(env), /* Some */[/* Minus */1])
-          ) : (token$3(env), /* Some */[/* Plus */0])
+            match !== 95 ? /* None */0 : (token$3(env), [/* Minus */1])
+          ) : (token$3(env), [/* Plus */0])
       ) : /* None */0;
     var match$1 = Curry._2(Parse[/* identifier_with_type */12], env, /* StrictParamName */28);
     var id = match$1[1];
@@ -6700,7 +6700,7 @@ function annotation(env) {
 function annotation_opt(env) {
   var match = Curry._2(Parser_env_048[/* token */0], /* None */0, env);
   if (typeof match === "number" && match === 77) {
-    return /* Some */[annotation(env)];
+    return [annotation(env)];
   } else {
     return /* None */0;
   }
@@ -6728,7 +6728,7 @@ function type_parameter_declaration$1(param) {
 
 function _object$1($staropt$star, env) {
   var allow_static = $staropt$star !== /* None */0 ? $staropt$star[0] : false;
-  return wrap(Curry._1(_object, /* Some */[allow_static]), env);
+  return wrap(Curry._1(_object, [allow_static]), env);
 }
 
 function pattern(check_env, _param) {
@@ -7009,7 +7009,7 @@ function _function(env) {
         exit = 1;
       } else {
         var typeParams = Curry._1(type_parameter_declaration$1, env);
-        var id = Curry._2(Parser_env_048[/* token */0], /* None */0, env) === /* T_LPAREN */3 ? /* None */0 : /* Some */[Curry._2(Parse[/* identifier */10], /* Some */[/* StrictFunctionName */30], env)];
+        var id = Curry._2(Parser_env_048[/* token */0], /* None */0, env) === /* T_LPAREN */3 ? /* None */0 : /* Some */[Curry._2(Parse[/* identifier */10], [/* StrictFunctionName */30], env)];
         match$2 = /* tuple */[
           typeParams,
           id
@@ -7025,7 +7025,7 @@ function _function(env) {
     exit = 1;
   }
   if (exit === 1) {
-    var id$1 = Curry._2(Parse[/* identifier */10], /* Some */[/* StrictFunctionName */30], env);
+    var id$1 = Curry._2(Parse[/* identifier */10], [/* StrictFunctionName */30], env);
     match$2 = /* tuple */[
       Curry._1(type_parameter_declaration$1, env),
       /* Some */[id$1]
@@ -7273,43 +7273,43 @@ function assignment_op(env) {
     } else {
       switch (switcher) {
         case 0 : 
-            op = /* Some */[/* RShift3Assign */9];
+            op = [/* RShift3Assign */9];
             break;
         case 1 : 
-            op = /* Some */[/* RShiftAssign */8];
+            op = [/* RShiftAssign */8];
             break;
         case 2 : 
-            op = /* Some */[/* LShiftAssign */7];
+            op = [/* LShiftAssign */7];
             break;
         case 3 : 
-            op = /* Some */[/* BitXorAssign */11];
+            op = [/* BitXorAssign */11];
             break;
         case 4 : 
-            op = /* Some */[/* BitOrAssign */10];
+            op = [/* BitOrAssign */10];
             break;
         case 5 : 
-            op = /* Some */[/* BitAndAssign */12];
+            op = [/* BitAndAssign */12];
             break;
         case 6 : 
-            op = /* Some */[/* ModAssign */6];
+            op = [/* ModAssign */6];
             break;
         case 7 : 
-            op = /* Some */[/* DivAssign */5];
+            op = [/* DivAssign */5];
             break;
         case 8 : 
-            op = /* Some */[/* MultAssign */3];
+            op = [/* MultAssign */3];
             break;
         case 9 : 
-            op = /* Some */[/* ExpAssign */4];
+            op = [/* ExpAssign */4];
             break;
         case 10 : 
-            op = /* Some */[/* MinusAssign */2];
+            op = [/* MinusAssign */2];
             break;
         case 11 : 
-            op = /* Some */[/* PlusAssign */1];
+            op = [/* PlusAssign */1];
             break;
         case 12 : 
-            op = /* Some */[/* Assign */0];
+            op = [/* Assign */0];
             break;
         
       }
@@ -7356,34 +7356,34 @@ function peek_unary_op(env) {
         } else {
           switch (match - 94 | 0) {
             case 0 : 
-                return /* Some */[/* Plus */1];
+                return [/* Plus */1];
             case 1 : 
-                return /* Some */[/* Minus */0];
+                return [/* Minus */0];
             case 2 : 
             case 3 : 
             case 4 : 
             case 5 : 
                 return /* None */0;
             case 6 : 
-                return /* Some */[/* Not */2];
+                return [/* Not */2];
             case 7 : 
-                return /* Some */[/* BitNot */3];
+                return [/* BitNot */3];
             
           }
         }
       } else if (match !== 62 || !env[/* allow_await */14]) {
         return /* None */0;
       } else {
-        return /* Some */[/* Await */7];
+        return [/* Await */7];
       }
     } else if (match >= 43) {
       switch (match - 43 | 0) {
         case 0 : 
-            return /* Some */[/* Delete */6];
+            return [/* Delete */6];
         case 1 : 
-            return /* Some */[/* Typeof */4];
+            return [/* Typeof */4];
         case 2 : 
-            return /* Some */[/* Void */5];
+            return [/* Void */5];
         
       }
     } else {
@@ -7427,8 +7427,8 @@ function unary(env) {
     var match = Curry._2(Parser_env_048[/* token */0], /* None */0, env);
     var op$1 = typeof match === "number" ? (
         match !== 102 ? (
-            match !== 103 ? /* None */0 : /* Some */[/* Decrement */1]
-          ) : /* Some */[/* Increment */0]
+            match !== 103 ? /* None */0 : [/* Decrement */1]
+          ) : [/* Increment */0]
       ) : /* None */0;
     if (op$1 !== /* None */0) {
       token$3(env);
@@ -7466,8 +7466,8 @@ function unary(env) {
         var match$2 = Curry._2(Parser_env_048[/* token */0], /* None */0, env$1);
         var op$2 = typeof match$2 === "number" ? (
             match$2 !== 102 ? (
-                match$2 !== 103 ? /* None */0 : /* Some */[/* Decrement */1]
-              ) : /* Some */[/* Increment */0]
+                match$2 !== 103 ? /* None */0 : [/* Decrement */1]
+              ) : [/* Increment */0]
           ) : /* None */0;
         if (op$2 !== /* None */0) {
           if (!is_lhs(argument$2)) {
@@ -7640,7 +7640,7 @@ function _new(env, _finish_fn) {
       var callee$1;
       callee$1 = typeof match$1 === "number" || match$1.tag !== 2 ? callee : tagged_template(env, callee, match$1[0]);
       var match$2 = Curry._2(Parser_env_048[/* token */0], /* None */0, env);
-      var args = typeof match$2 === "number" && match$2 === 3 ? /* Some */[Curry._1($$arguments, env)] : /* None */0;
+      var args = typeof match$2 === "number" && match$2 === 3 ? [Curry._1($$arguments, env)] : /* None */0;
       return Curry._2(finish_fn, callee$1, args);
     }
     
@@ -7698,7 +7698,7 @@ function _function$1(env) {
     ];
   } else {
     var match$1 = Curry._2(Parser_env_048[/* token */0], /* None */0, env);
-    var id = typeof match$1 === "number" && match$1 === 89 ? /* None */0 : /* Some */[Curry._2(Parse[/* identifier */10], /* Some */[/* StrictFunctionName */30], env)];
+    var id = typeof match$1 === "number" && match$1 === 89 ? /* None */0 : /* Some */[Curry._2(Parse[/* identifier */10], [/* StrictFunctionName */30], env)];
     match = /* tuple */[
       id,
       Curry._1(type_parameter_declaration$1, env)
@@ -8114,7 +8114,7 @@ function identifier_or_reserved_keyword(env) {
       err = /* None */0;
     }
     if (exit$1 === 2) {
-      err = /* Some */[/* tuple */[
+      err = [/* tuple */[
           lex_loc,
           get_unexpected_error(/* tuple */[
                 lex_token,
@@ -8352,11 +8352,11 @@ function binary_op(env) {
   if (typeof match === "number") {
     var switcher = match - 15 | 0;
     if (switcher === 0 || switcher === 1) {
-      ret = switcher !== 0 ? /* Some */[/* tuple */[
+      ret = switcher !== 0 ? [/* tuple */[
             /* Instanceof */21,
             /* Left_assoc */Block.__(0, [6])
           ]] : (
-          env[/* no_in */10] ? /* None */0 : /* Some */[/* tuple */[
+          env[/* no_in */10] ? /* None */0 : [/* tuple */[
                 /* In */20,
                 /* Left_assoc */Block.__(0, [6])
               ]]
@@ -8364,121 +8364,121 @@ function binary_op(env) {
     } else if (switcher >= 65) {
       switch (switcher - 65 | 0) {
         case 0 : 
-            ret = /* Some */[/* tuple */[
+            ret = [/* tuple */[
                 /* BitOr */17,
                 /* Left_assoc */Block.__(0, [2])
               ]];
             break;
         case 1 : 
-            ret = /* Some */[/* tuple */[
+            ret = [/* tuple */[
                 /* Xor */18,
                 /* Left_assoc */Block.__(0, [3])
               ]];
             break;
         case 2 : 
-            ret = /* Some */[/* tuple */[
+            ret = [/* tuple */[
                 /* BitAnd */19,
                 /* Left_assoc */Block.__(0, [4])
               ]];
             break;
         case 3 : 
-            ret = /* Some */[/* tuple */[
+            ret = [/* tuple */[
                 /* Equal */0,
                 /* Left_assoc */Block.__(0, [5])
               ]];
             break;
         case 4 : 
-            ret = /* Some */[/* tuple */[
+            ret = [/* tuple */[
                 /* NotEqual */1,
                 /* Left_assoc */Block.__(0, [5])
               ]];
             break;
         case 5 : 
-            ret = /* Some */[/* tuple */[
+            ret = [/* tuple */[
                 /* StrictEqual */2,
                 /* Left_assoc */Block.__(0, [5])
               ]];
             break;
         case 6 : 
-            ret = /* Some */[/* tuple */[
+            ret = [/* tuple */[
                 /* StrictNotEqual */3,
                 /* Left_assoc */Block.__(0, [5])
               ]];
             break;
         case 7 : 
-            ret = /* Some */[/* tuple */[
+            ret = [/* tuple */[
                 /* LessThanEqual */5,
                 /* Left_assoc */Block.__(0, [6])
               ]];
             break;
         case 8 : 
-            ret = /* Some */[/* tuple */[
+            ret = [/* tuple */[
                 /* GreaterThanEqual */7,
                 /* Left_assoc */Block.__(0, [6])
               ]];
             break;
         case 9 : 
-            ret = /* Some */[/* tuple */[
+            ret = [/* tuple */[
                 /* LessThan */4,
                 /* Left_assoc */Block.__(0, [6])
               ]];
             break;
         case 10 : 
-            ret = /* Some */[/* tuple */[
+            ret = [/* tuple */[
                 /* GreaterThan */6,
                 /* Left_assoc */Block.__(0, [6])
               ]];
             break;
         case 11 : 
-            ret = /* Some */[/* tuple */[
+            ret = [/* tuple */[
                 /* LShift */8,
                 /* Left_assoc */Block.__(0, [7])
               ]];
             break;
         case 12 : 
-            ret = /* Some */[/* tuple */[
+            ret = [/* tuple */[
                 /* RShift */9,
                 /* Left_assoc */Block.__(0, [7])
               ]];
             break;
         case 13 : 
-            ret = /* Some */[/* tuple */[
+            ret = [/* tuple */[
                 /* RShift3 */10,
                 /* Left_assoc */Block.__(0, [7])
               ]];
             break;
         case 14 : 
-            ret = /* Some */[/* tuple */[
+            ret = [/* tuple */[
                 /* Plus */11,
                 /* Left_assoc */Block.__(0, [8])
               ]];
             break;
         case 15 : 
-            ret = /* Some */[/* tuple */[
+            ret = [/* tuple */[
                 /* Minus */12,
                 /* Left_assoc */Block.__(0, [8])
               ]];
             break;
         case 16 : 
-            ret = /* Some */[/* tuple */[
+            ret = [/* tuple */[
                 /* Div */15,
                 /* Left_assoc */Block.__(0, [9])
               ]];
             break;
         case 17 : 
-            ret = /* Some */[/* tuple */[
+            ret = [/* tuple */[
                 /* Mult */13,
                 /* Left_assoc */Block.__(0, [9])
               ]];
             break;
         case 18 : 
-            ret = /* Some */[/* tuple */[
+            ret = [/* tuple */[
                 /* Exp */14,
                 /* Right_assoc */Block.__(1, [10])
               ]];
             break;
         case 19 : 
-            ret = /* Some */[/* tuple */[
+            ret = [/* tuple */[
                 /* Mod */16,
                 /* Left_assoc */Block.__(0, [9])
               ]];
@@ -8922,11 +8922,11 @@ function error_callback$1(_, param) {
 function try_arrow_function(env) {
   var env$1 = with_error_callback(error_callback$1, env);
   var start_loc = Curry._2(Parser_env_048[/* loc */2], /* None */0, env$1);
-  var async$1 = Curry._2(Parser_env_048[/* token */0], /* Some */[1], env$1) !== /* T_ARROW */10 && async(env$1);
+  var async$1 = Curry._2(Parser_env_048[/* token */0], [1], env$1) !== /* T_ARROW */10 && async(env$1);
   var typeParameters = Curry._1(type_parameter_declaration$1, env$1);
   var match;
   if (Curry._2(Parser_env_048[/* is_identifier */8], /* None */0, env$1) && typeParameters === /* None */0) {
-    var id = Curry._2(Parse[/* identifier */10], /* Some */[/* StrictParamName */28], env$1);
+    var id = Curry._2(Parse[/* identifier */10], [/* StrictParamName */28], env$1);
     var param_000 = id[0];
     var param_001 = /* Identifier */Block.__(3, [id]);
     var param = /* tuple */[
@@ -9191,7 +9191,7 @@ function property$1(env) {
                 /* record */[/* argument */argument]
               ]]);
   } else {
-    var async$1 = Curry._2(Parser_env_048[/* is_identifier */8], /* Some */[1], env) && async(env);
+    var async$1 = Curry._2(Parser_env_048[/* is_identifier */8], [1], env) && async(env);
     var match = generator(env, async$1);
     var match$1 = key(env);
     var tmp;
@@ -9735,7 +9735,7 @@ function class_element(env) {
   var start_loc = Curry._2(Parser_env_048[/* loc */2], /* None */0, env);
   var decorators = decorator_list(env);
   var $$static = maybe(env, /* T_STATIC */40);
-  var async$1 = Curry._2(Parser_env_048[/* token */0], /* Some */[1], env) !== /* T_LPAREN */3 && Curry._2(Parser_env_048[/* token */0], /* Some */[1], env) !== /* T_COLON */77 && async(env);
+  var async$1 = Curry._2(Parser_env_048[/* token */0], [1], env) !== /* T_LPAREN */3 && Curry._2(Parser_env_048[/* token */0], [1], env) !== /* T_COLON */77 && async(env);
   var generator$1 = generator(env, async$1);
   var match = key(env);
   var exit = 0;
@@ -10054,7 +10054,7 @@ function declare_function(env, start_loc) {
     loc,
     value_001
   ];
-  var typeAnnotation = /* Some */[/* tuple */[
+  var typeAnnotation = [/* tuple */[
       loc,
       value
     ]];
@@ -10089,7 +10089,7 @@ function declare($staropt$star, env) {
     error$1(env, /* UnexpectedTypeDeclaration */7);
   }
   var start_loc = Curry._2(Parser_env_048[/* loc */2], /* None */0, env);
-  var match = Curry._2(Parser_env_048[/* token */0], /* Some */[1], env);
+  var match = Curry._2(Parser_env_048[/* token */0], [1], env);
   var exit = 0;
   if (typeof match === "number") {
     if (match >= 22) {
@@ -10109,7 +10109,7 @@ function declare($staropt$star, env) {
                       ];
             case 9 : 
                 if (in_module) {
-                  return declare_export_declaration(/* Some */[in_module], env);
+                  return declare_export_declaration([in_module], env);
                 } else {
                   exit = 1;
                 }
@@ -10156,7 +10156,7 @@ function declare($staropt$star, env) {
         return declare_var_statement(env, start_loc);
       }
     } else if (match !== 13) {
-      if (match !== 0 || Curry._2(Parser_env_048[/* value */1], /* Some */[1], env) !== "module") {
+      if (match !== 0 || Curry._2(Parser_env_048[/* value */1], [1], env) !== "module") {
         exit = 1;
       } else {
         token$4(env, /* T_DECLARE */58);
@@ -10393,7 +10393,7 @@ function declare_function_statement(env, start_loc) {
 }
 
 function type_alias(env) {
-  if (Curry._2(Parser_env_048[/* is_identifier */8], /* Some */[1], env)) {
+  if (Curry._2(Parser_env_048[/* is_identifier */8], [1], env)) {
     var match = type_alias_helper(env);
     return /* tuple */[
             match[0],
@@ -10413,7 +10413,7 @@ function declare_var_statement(env, start_loc) {
 }
 
 function $$interface(env) {
-  if (Curry._2(Parser_env_048[/* is_identifier */8], /* Some */[1], env)) {
+  if (Curry._2(Parser_env_048[/* is_identifier */8], [1], env)) {
     var match = Curry._1(interface_helper, env);
     return /* tuple */[
             match[0],
@@ -10452,7 +10452,7 @@ function declare_export_declaration($staropt$star, env) {
           var source = export_source(env$1);
           var match$1 = Curry._2(Parser_env_048[/* semicolon_loc */7], /* None */0, env$1);
           var end_loc = match$1 !== /* None */0 ? match$1[0] : source[0];
-          var source$1 = /* Some */[source];
+          var source$1 = [source];
           semicolon(env$1);
           return /* tuple */[
                   btwn(start_loc, end_loc),
@@ -10606,7 +10606,7 @@ function declare_export_declaration($staropt$star, env) {
         var specifiers$1 = /* Some */[/* ExportSpecifiers */Block.__(0, [match$8[0]])];
         var end_loc$2 = Curry._2(Parser_env_048[/* loc */2], /* None */0, env$1);
         token$4(env$1, /* T_RCURLY */2);
-        var source$2 = Curry._2(Parser_env_048[/* value */1], /* None */0, env$1) === "from" ? /* Some */[export_source(env$1)] : (List.iter((function (param) {
+        var source$2 = Curry._2(Parser_env_048[/* value */1], /* None */0, env$1) === "from" ? [export_source(env$1)] : (List.iter((function (param) {
                     return error_at(env$1, param);
                   }), match$8[1]), /* None */0);
         var match$9 = Curry._2(Parser_env_048[/* semicolon_loc */7], /* None */0, env$1);
@@ -10725,7 +10725,7 @@ function interface_helper(env) {
   var id = Curry._2(Parse[/* identifier */10], /* None */0, env);
   var typeParameters = Curry._1(type_parameter_declaration_with_defaults, env);
   var $$extends = Curry._2(Parser_env_048[/* token */0], /* None */0, env) === /* T_EXTENDS */39 ? (token$4(env, /* T_EXTENDS */39), supers(env, /* [] */0)) : /* [] */0;
-  var body = _object$1(/* Some */[true], env);
+  var body = _object$1([true], env);
   var loc = btwn(start_loc, body[0]);
   return /* tuple */[
           loc,
@@ -10765,7 +10765,7 @@ function declare_class(env, start_loc) {
   var typeParameters = Curry._1(type_parameter_declaration_with_defaults, env$1);
   var $$extends = Curry._2(Parser_env_048[/* token */0], /* None */0, env$1) === /* T_EXTENDS */39 ? (token$4(env$1, /* T_EXTENDS */39), supers$1(env$1, /* [] */0)) : /* [] */0;
   var mixins = Curry._2(Parser_env_048[/* value */1], /* None */0, env$1) === "mixins" ? (contextual(env$1, "mixins"), supers$1(env$1, /* [] */0)) : /* [] */0;
-  var body = _object$1(/* Some */[true], env$1);
+  var body = _object$1([true], env$1);
   var loc = btwn(start_loc, body[0]);
   return /* tuple */[
           loc,
@@ -10794,7 +10794,7 @@ function module_items(env, _module_kind, _acc) {
       exit = 1;
     }
     if (exit === 1) {
-      var stmt = declare(/* Some */[true], env);
+      var stmt = declare([true], env);
       var stmt$1 = stmt[1];
       var loc = stmt[0];
       var module_kind$1;
@@ -11342,7 +11342,7 @@ function _object$2(restricted_error) {
       var exit = 0;
       if (typeof match$2 === "number" && match$2 === 77) {
         token$4(env, /* T_COLON */77);
-        prop = /* Some */[/* tuple */[
+        prop = [/* tuple */[
             pattern$1(env, restricted_error),
             false
           ]];
@@ -11359,7 +11359,7 @@ function _object$2(restricted_error) {
                 pattern_000,
                 pattern_001
               ];
-              prop = /* Some */[/* tuple */[
+              prop = [/* tuple */[
                   pattern$2,
                   true
                 ]];
@@ -12038,7 +12038,7 @@ function module_item(env) {
   if (typeof match === "number") {
     var switcher = match - 47 | 0;
     if (switcher > 11 || switcher < 0) {
-      return statement_list_item(/* Some */[decorators], env);
+      return statement_list_item([decorators], env);
     } else {
       switch (switcher) {
         case 0 : 
@@ -12090,7 +12090,7 @@ function module_item(env) {
                                       ]])
                                 ];
                       case 8 : 
-                          if (Curry._2(Parser_env_048[/* token */0], /* Some */[1], env$2) !== /* T_LCURLY */1) {
+                          if (Curry._2(Parser_env_048[/* token */0], [1], env$2) !== /* T_LCURLY */1) {
                             if (!env$2[/* parse_options */20][/* types */4]) {
                               error$1(env$2, /* UnexpectedTypeExport */9);
                             }
@@ -12155,7 +12155,7 @@ function module_item(env) {
                   var source$1 = export_source(env$2);
                   var match$4 = Curry._2(Parser_env_048[/* semicolon_loc */7], /* None */0, env$2);
                   var end_loc$2 = match$4 !== /* None */0 ? match$4[0] : source$1[0];
-                  var source$2 = /* Some */[source$1];
+                  var source$2 = [source$1];
                   semicolon(env$2);
                   return /* tuple */[
                           btwn(start_loc, end_loc$2),
@@ -12266,7 +12266,7 @@ function module_item(env) {
                   var specifiers$1 = /* Some */[/* ExportSpecifiers */Block.__(0, [match$9[0]])];
                   var end_loc$4 = Curry._2(Parser_env_048[/* loc */2], /* None */0, env$2);
                   token$4(env$2, /* T_RCURLY */2);
-                  var source$3 = Curry._2(Parser_env_048[/* value */1], /* None */0, env$2) === "from" ? /* Some */[export_source(env$2)] : (List.iter((function (param) {
+                  var source$3 = Curry._2(Parser_env_048[/* value */1], /* None */0, env$2) === "from" ? [export_source(env$2)] : (List.iter((function (param) {
                               return error_at(env$2, param);
                             }), match$9[1]), /* None */0);
                   var match$10 = Curry._2(Parser_env_048[/* semicolon_loc */7], /* None */0, env$2);
@@ -12285,7 +12285,7 @@ function module_item(env) {
                               ]])
                         ];
               case 2 : 
-                  var stmt = Curry._2(Parse[/* statement_list_item */2], /* Some */[decorators$1], env$2);
+                  var stmt = Curry._2(Parse[/* statement_list_item */2], [decorators$1], env$2);
                   var match$11 = stmt[1];
                   var loc$1 = stmt[0];
                   var names;
@@ -12526,19 +12526,19 @@ function module_item(env) {
         case 8 : 
         case 9 : 
         case 10 : 
-            return statement_list_item(/* Some */[decorators], env);
+            return statement_list_item([decorators], env);
         case 11 : 
-            if (Curry._2(Parser_env_048[/* token */0], /* Some */[1], env) === /* T_EXPORT */47) {
+            if (Curry._2(Parser_env_048[/* token */0], [1], env) === /* T_EXPORT */47) {
               error_on_decorators(env)(decorators);
               return declare_export_declaration(/* None */0, env);
             } else {
-              return statement_list_item(/* Some */[decorators], env);
+              return statement_list_item([decorators], env);
             }
         
       }
     }
   } else {
-    return statement_list_item(/* Some */[decorators], env);
+    return statement_list_item([decorators], env);
   }
 }
 
@@ -12638,7 +12638,7 @@ function statement(env) {
                   var start_loc$4 = Curry._2(Parser_env_048[/* loc */2], /* None */0, env$6);
                   token$4(env$6, /* T_CATCH */32);
                   token$4(env$6, /* T_LPAREN */3);
-                  var id = Curry._2(Parse[/* identifier */10], /* Some */[/* StrictCatchVariable */26], env$6);
+                  var id = Curry._2(Parse[/* identifier */10], [/* StrictCatchVariable */26], env$6);
                   var param_000 = id[0];
                   var param_001 = /* Identifier */Block.__(3, [id]);
                   var param = /* tuple */[
@@ -12648,7 +12648,7 @@ function statement(env) {
                   token$4(env$6, /* T_RPAREN */4);
                   var body = Curry._1(Parse[/* block_body */13], env$6);
                   var loc$1 = btwn(start_loc$4, body[0]);
-                  handler = /* Some */[/* tuple */[
+                  handler = [/* tuple */[
                       loc$1,
                       /* record */[
                         /* param */param,
@@ -12660,7 +12660,7 @@ function statement(env) {
                   handler = /* None */0;
                 }
                 var match$5 = Curry._2(Parser_env_048[/* token */0], /* None */0, env$6);
-                var finalizer = typeof match$5 === "number" && match$5 === 36 ? (token$4(env$6, /* T_FINALLY */36), /* Some */[Curry._1(Parse[/* block_body */13], env$6)]) : /* None */0;
+                var finalizer = typeof match$5 === "number" && match$5 === 36 ? (token$4(env$6, /* T_FINALLY */36), [Curry._1(Parse[/* block_body */13], env$6)]) : /* None */0;
                 var end_loc$3 = finalizer !== /* None */0 ? finalizer[0][0] : (
                     handler !== /* None */0 ? handler[0][0] : (error_at(env$6, /* tuple */[
                               block[0],
@@ -12757,7 +12757,7 @@ function statement(env) {
                   if (!mem$1(name$1, env$10[/* labels */2])) {
                     error$1(env$10, /* UnknownLabel */Block.__(4, [name$1]));
                   }
-                  label$2 = /* Some */[label$3];
+                  label$2 = [label$3];
                 }
                 var match$7 = Curry._2(Parser_env_048[/* semicolon_loc */7], /* None */0, env$10);
                 var end_loc$5 = match$7 !== /* None */0 ? match$7[0] : (
@@ -13596,12 +13596,12 @@ function predicate(env) {
       var rparen_loc = Curry._2(Parser_env_048[/* loc */2], /* None */0, env);
       token$4(env, /* T_RPAREN */4);
       var loc = btwn(checks_loc, rparen_loc);
-      return /* Some */[/* tuple */[
+      return [/* tuple */[
                 loc,
                 /* Declared */[exp]
               ]];
     } else {
-      return /* Some */[/* tuple */[
+      return [/* tuple */[
                 checks_loc,
                 /* Inferred */0
               ]];
@@ -13722,7 +13722,7 @@ function regexp$1(loc, pattern, flags) {
 
 function parse(content, _) {
   try {
-    var match = program$1(/* Some */[false], /* None */0, /* Some */[/* None */0], content);
+    var match = program$1([false], /* None */0, /* Some */[/* None */0], content);
     translation_errors[0] = /* [] */0;
     var array_of_list = function (fn, list) {
       return Curry._1(array, $$Array.of_list(List.map(fn, list)));

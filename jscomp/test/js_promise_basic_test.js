@@ -70,7 +70,7 @@ function andThenTest() {
 var h = Promise.resolve(/* () */0);
 
 function assertIsNotFound(x) {
-  var match = Caml_exceptions.isCamlExceptionOrOpenVariant(x) && x === Caml_builtin_exceptions.not_found ? /* Some */[0] : /* None */0;
+  var match = Caml_exceptions.isCamlExceptionOrOpenVariant(x) && x === Caml_builtin_exceptions.not_found ? [0] : /* None */0;
   if (match !== /* None */0) {
     return h;
   } else {
@@ -131,7 +131,7 @@ function orElseRejectedRejectTest() {
   return p.catch((function () {
                     return Promise.reject(Caml_builtin_exceptions.stack_overflow);
                   })).then(fail).catch((function (error) {
-                var match = Caml_exceptions.isCamlExceptionOrOpenVariant(error) && error === Caml_builtin_exceptions.stack_overflow ? /* Some */[0] : /* None */0;
+                var match = Caml_exceptions.isCamlExceptionOrOpenVariant(error) && error === Caml_builtin_exceptions.stack_overflow ? [0] : /* None */0;
                 if (match !== /* None */0) {
                   return h;
                 } else {
