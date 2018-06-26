@@ -43514,10 +43514,8 @@ function type_manifest(env, ty1, params1, ty2, params2, priv2) {
                                   } else {
                                     return false;
                                   }
-                                } else if (match$1[0] !== /* None */0) {
-                                  return false;
                                 } else {
-                                  return true;
+                                  return match$1[0] === /* None */0;
                                 }
                               }
                             }), match$9[2])) {
@@ -64955,10 +64953,10 @@ function is_fixed_type(sd) {
               _sty = match$1[0];
               continue ;
           case 7 : 
-              if (match$1[1] || match$1[2] !== /* None */0) {
+              if (match$1[1]) {
                 return true;
               } else {
-                return false;
+                return match$1[2] !== /* None */0;
               }
           default:
             return false;

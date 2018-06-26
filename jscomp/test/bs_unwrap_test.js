@@ -44,14 +44,14 @@ var some_arg = [/* `Bool */[
     true
   ]];
 
-console.log(5, some_arg ? some_arg[0][1] : undefined);
+console.log(5, some_arg !== /* None */0 ? some_arg[0][1] : undefined);
 
 console.log(6, undefined);
 
 console.log(7, Js_primitive.option_get_unwrap((console.log("trace"), /* None */0)));
 
 function dyn_log3(prim, prim$1, _) {
-  console.log(prim[1], prim$1 ? prim$1[0][1] : undefined);
+  console.log(prim[1], prim$1 !== /* None */0 ? prim$1[0][1] : undefined);
   return /* () */0;
 }
 
@@ -84,7 +84,7 @@ function f(x) {
 }
 
 function ff0(x, p) {
-  console.log(x ? x[0][1] : undefined, p);
+  console.log(x !== /* None */0 ? x[0][1] : undefined, p);
   return /* () */0;
 }
 

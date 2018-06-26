@@ -75,7 +75,7 @@ function message(content, message_name) {
 function $$import($$public, file_name) {
   return /* record */[
           /* file_name */file_name,
-          /* public */$$public !== /* None */0 ? true : false
+          /* public */$$public !== /* None */0
         ];
 }
 
@@ -4741,7 +4741,7 @@ function type_decl_of_and(param) {
 function gen_type_record(mutable_, and_, param, sc) {
   var r_fields = param[/* r_fields */1];
   var r_name = param[/* r_name */0];
-  var mutable_$1 = mutable_ !== /* None */0 ? true : false;
+  var mutable_$1 = mutable_ !== /* None */0;
   var is_imperative_type = function (param) {
     switch (param.tag | 0) {
       case 2 : 

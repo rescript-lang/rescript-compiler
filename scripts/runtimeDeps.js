@@ -28,7 +28,7 @@ function readDeps(name) {
 
 function create() {
     var deps = possibleJsFiles.filter(x => readDeps(x).length !== 0).map(x => `${x}.cmj: ${(readDeps(x).map(x => x + '.cmj')).join(' ')}`).reduce((x, y) => x + '\n' + y)
-    fs.writeFileSync(path.join(__dirname, '..', 'jscomp', 'runtime', '.extradepend'), deps, 'utf8')
+    fs.writeFileSync(path.join(__dirname, '..', 'jscomp', 'runtime', '.extradepend'), deps+'\n', 'utf8')
 }
 
 

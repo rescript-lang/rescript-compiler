@@ -266,7 +266,7 @@ b("File \"bs_poly_map_test.ml\", line 126, characters 4-11", match$2 !== /* None
 
 var match$3 = Belt_Map.get(v3, -10);
 
-b("File \"bs_poly_map_test.ml\", line 127, characters 4-11", match$3 !== /* None */0 ? false : true);
+b("File \"bs_poly_map_test.ml\", line 127, characters 4-11", match$3 === /* None */0);
 
 var match$4 = Belt_Map.get(v4, -10);
 
@@ -302,7 +302,7 @@ var match$5 = Belt_Map.split(v7, 5000);
 
 var match$6 = match$5[0];
 
-b("File \"bs_poly_map_test.ml\", line 137, characters 4-11", match$5[1] !== /* None */0 ? false : true);
+b("File \"bs_poly_map_test.ml\", line 137, characters 4-11", match$5[1] === /* None */0);
 
 b("File \"bs_poly_map_test.ml\", line 138, characters 4-11", Belt_Array.eq(Belt_MapDict.keysToArray(match$6[0].data), Belt_Array.makeBy(5000, (function (i) {
                 return i;

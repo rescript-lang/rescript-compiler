@@ -60,10 +60,8 @@ function eqUOpt(x, y) {
     } else {
       return false;
     }
-  } else if (y !== /* None */0) {
-    return false;
   } else {
-    return true;
+    return y === /* None */0;
   }
 }
 
@@ -111,10 +109,8 @@ function eqVOpt(x, y) {
     } else {
       return false;
     }
-  } else if (y !== /* None */0) {
-    return false;
   } else {
-    return true;
+    return y === /* None */0;
   }
 }
 
