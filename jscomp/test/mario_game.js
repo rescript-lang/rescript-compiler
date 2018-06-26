@@ -18,11 +18,11 @@ var Dom_html = /* module */[];
 
 function setup_sprite($staropt$star, $staropt$star$1, $staropt$star$2, img_src, max_frames, max_ticks, frame_size, src_offset) {
   var loop = $staropt$star !== undefined ? $staropt$star : true;
-  var bbox_offset = $staropt$star$1 !== undefined ? Js_primitive.valFromOption($staropt$star$1) : /* tuple */[
+  var bbox_offset = $staropt$star$1 !== undefined ? $staropt$star$1 : /* tuple */[
       0,
       0
     ];
-  var bbox_size = $staropt$star$2 !== undefined ? Js_primitive.valFromOption($staropt$star$2) : /* tuple */[
+  var bbox_size = $staropt$star$2 !== undefined ? $staropt$star$2 : /* tuple */[
       0,
       0
     ];
@@ -845,7 +845,7 @@ function new_id() {
 
 function make$2($staropt$star, $staropt$star$1, spawnable, context, param) {
   var id = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : undefined;
-  var dir = $staropt$star$1 !== undefined ? Js_primitive.valFromOption($staropt$star$1) : /* Left */0;
+  var dir = $staropt$star$1 !== undefined ? $staropt$star$1 : /* Left */0;
   var spr = make(spawnable, dir, context);
   var params = make_type$2(spawnable);
   var id$1 = id !== undefined ? id : new_id(/* () */0);
@@ -1124,31 +1124,31 @@ function evolve_enemy(player_dir, typ, spr, obj, context) {
         obj[/* kill */8] = true;
         return undefined;
     case 1 : 
-        var match = make$2(undefined, Js_primitive.some(obj[/* dir */6]), /* SEnemy */Block.__(1, [/* GKoopaShell */3]), context, /* tuple */[
+        var match = make$2(undefined, obj[/* dir */6], /* SEnemy */Block.__(1, [/* GKoopaShell */3]), context, /* tuple */[
               obj[/* pos */1][/* x */0],
               obj[/* pos */1][/* y */1]
             ]);
         var new_obj = match[1];
         var new_spr = match[0];
         normalize_pos(new_obj[/* pos */1], spr[/* params */0], new_spr[/* params */0]);
-        return Js_primitive.some(/* Enemy */Block.__(1, [
-                      /* GKoopaShell */3,
-                      new_spr,
-                      new_obj
-                    ]));
+        return /* Enemy */Block.__(1, [
+                  /* GKoopaShell */3,
+                  new_spr,
+                  new_obj
+                ]);
     case 2 : 
-        var match$1 = make$2(undefined, Js_primitive.some(obj[/* dir */6]), /* SEnemy */Block.__(1, [/* RKoopaShell */4]), context, /* tuple */[
+        var match$1 = make$2(undefined, obj[/* dir */6], /* SEnemy */Block.__(1, [/* RKoopaShell */4]), context, /* tuple */[
               obj[/* pos */1][/* x */0],
               obj[/* pos */1][/* y */1]
             ]);
         var new_obj$1 = match$1[1];
         var new_spr$1 = match$1[0];
         normalize_pos(new_obj$1[/* pos */1], spr[/* params */0], new_spr$1[/* params */0]);
-        return Js_primitive.some(/* Enemy */Block.__(1, [
-                      /* RKoopaShell */4,
-                      new_spr$1,
-                      new_obj$1
-                    ]));
+        return /* Enemy */Block.__(1, [
+                  /* RKoopaShell */4,
+                  new_spr$1,
+                  new_obj$1
+                ]);
     case 3 : 
     case 4 : 
         exit = 1;
@@ -1723,8 +1723,8 @@ function process_collision(dir, c1, c2, state) {
                 var spawned_item = spawn_above(o1$3[/* dir */6], o2$4, t[0], context);
                 collide_block(undefined, dir, o1$3);
                 return /* tuple */[
-                        Js_primitive.some(spawned_item),
-                        Js_primitive.some(updated_block)
+                        spawned_item,
+                        updated_block
                       ];
               }
               break;
@@ -1858,8 +1858,8 @@ function process_collision(dir, c1, c2, state) {
                     var spawned_item$1 = spawn_above(o1$4[/* dir */6], o2$6, t2$3[0], context);
                     rev_dir(o1$4, t1, s1$3);
                     return /* tuple */[
-                            Js_primitive.some(updated_block$1),
-                            Js_primitive.some(spawned_item$1)
+                            updated_block$1,
+                            spawned_item$1
                           ];
                   }
                 } else {
@@ -2051,7 +2051,7 @@ function check_collisions(collid, all_collids, state) {
           ];
         } else {
           var match = check_collision(c$1, h);
-          new_objs = match !== undefined && h[2][/* id */3] !== c_obj[/* id */3] ? process_collision(Js_primitive.valFromOption(match), c$1, h, state$2) : /* tuple */[
+          new_objs = match !== undefined && h[2][/* id */3] !== c_obj[/* id */3] ? process_collision(match, c$1, h, state$2) : /* tuple */[
               undefined,
               undefined
             ];
@@ -2060,11 +2060,11 @@ function check_collisions(collid, all_collids, state) {
         var acc$1;
         if (match$1 !== undefined) {
           var match$2 = new_objs[1];
-          var o = Js_primitive.valFromOption(match$1);
+          var o = match$1;
           acc$1 = match$2 !== undefined ? /* :: */[
               o,
               /* :: */[
-                Js_primitive.valFromOption(match$2),
+                match$2,
                 acc
               ]
             ] : /* :: */[
@@ -2074,7 +2074,7 @@ function check_collisions(collid, all_collids, state) {
         } else {
           var match$3 = new_objs[1];
           acc$1 = match$3 !== undefined ? /* :: */[
-              Js_primitive.valFromOption(match$3),
+              match$3,
               acc
             ] : acc;
         }

@@ -1211,13 +1211,13 @@ function delta_1(marks, c, next_cat, prev_cat, x, rem) {
                     case 1 : 
                         return undefined;
                     case 2 : 
-                        return Js_primitive.some(param[0]);
+                        return param[0];
                     
                   }
                 }), y$prime$1);
           var match$2 = match$1 !== undefined ? /* tuple */[
               Curry._1(remove_matches, y$prime$1),
-              Js_primitive.valFromOption(match$1)
+              match$1
             ] : /* tuple */[
               y$prime$1,
               marks
@@ -1306,12 +1306,12 @@ function delta_seq(c, next_cat, prev_cat, kind, y, z, rem) {
             case 1 : 
                 return undefined;
             case 2 : 
-                return Js_primitive.some(param[0]);
+                return param[0];
             
           }
         }), y);
   if (match !== undefined) {
-    var marks = Js_primitive.valFromOption(match);
+    var marks = match;
     if (kind !== -730718166) {
       if (kind >= 332064784) {
         var match$1 = split_at_match_rec(/* [] */0, y);
@@ -1375,7 +1375,7 @@ function flatten_match(m) {
 function status(s) {
   var match = s[/* status */3];
   if (match !== undefined) {
-    return Js_primitive.valFromOption(match);
+    return match;
   } else {
     var match$1 = s[/* desc */2];
     var st;
@@ -1398,7 +1398,7 @@ function status(s) {
     } else {
       st = /* Failed */0;
     }
-    s[/* status */3] = Js_primitive.some(st);
+    s[/* status */3] = st;
     return st;
   }
 }
@@ -1680,7 +1680,7 @@ function cadd(c, s) {
 function trans_set(cache, cm, s) {
   var match = one_char(s);
   if (match !== undefined) {
-    return single(Caml_bytes.get(cm, Js_primitive.valFromOption(match)));
+    return single(Caml_bytes.get(cm, match));
   } else {
     var v_000 = hash_rec(s);
     var v = /* tuple */[

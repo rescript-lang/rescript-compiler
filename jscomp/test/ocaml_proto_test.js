@@ -22,7 +22,7 @@ var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function field($staropt$star, label, number, type_, name) {
-  var options = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : /* [] */0;
+  var options = $staropt$star !== undefined ? $staropt$star : /* [] */0;
   return /* record */[
           /* field_name */name,
           /* field_number */number,
@@ -33,7 +33,7 @@ function field($staropt$star, label, number, type_, name) {
 }
 
 function map($staropt$star, number, key_type, value_type, name) {
-  var map_options = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : /* [] */0;
+  var map_options = $staropt$star !== undefined ? $staropt$star : /* [] */0;
   return /* record */[
           /* map_name */name,
           /* map_number */number,
@@ -44,7 +44,7 @@ function map($staropt$star, number, key_type, value_type, name) {
 }
 
 function oneof_field($staropt$star, number, type_, name) {
-  var options = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : /* [] */0;
+  var options = $staropt$star !== undefined ? $staropt$star : /* [] */0;
   return /* record */[
           /* field_name */name,
           /* field_number */number,
@@ -90,7 +90,7 @@ function extend(extend_name, extend_body) {
 }
 
 function proto(syntax, file_option, $$package, $$import, message, $$enum, proto$1, extend, _) {
-  var proto$2 = proto$1 !== undefined ? Js_primitive.valFromOption(proto$1) : /* record */[
+  var proto$2 = proto$1 !== undefined ? proto$1 : /* record */[
       /* syntax */syntax,
       /* imports : [] */0,
       /* file_options : [] */0,
@@ -123,7 +123,7 @@ function proto(syntax, file_option, $$package, $$import, message, $$enum, proto$
       /* file_options */proto$4[/* file_options */2],
       /* package */proto$4[/* package */3],
       /* messages : :: */[
-        Js_primitive.valFromOption(message),
+        message,
         proto$2[/* messages */4]
       ],
       /* enums */proto$4[/* enums */5],
@@ -136,7 +136,7 @@ function proto(syntax, file_option, $$package, $$import, message, $$enum, proto$
       /* package */proto$5[/* package */3],
       /* messages */proto$5[/* messages */4],
       /* enums : :: */[
-        Js_primitive.valFromOption($$enum),
+        $$enum,
         proto$2[/* enums */5]
       ],
       /* extends */proto$5[/* extends */6]
@@ -144,7 +144,7 @@ function proto(syntax, file_option, $$package, $$import, message, $$enum, proto$
   var proto$7 = $$import !== undefined ? /* record */[
       /* syntax */proto$6[/* syntax */0],
       /* imports : :: */[
-        Js_primitive.valFromOption($$import),
+        $$import,
         proto$2[/* imports */1]
       ],
       /* file_options */proto$6[/* file_options */2],
@@ -157,7 +157,7 @@ function proto(syntax, file_option, $$package, $$import, message, $$enum, proto$
       /* syntax */proto$7[/* syntax */0],
       /* imports */proto$7[/* imports */1],
       /* file_options : :: */[
-        Js_primitive.valFromOption(file_option),
+        file_option,
         proto$2[/* file_options */2]
       ],
       /* package */proto$7[/* package */3],
@@ -174,7 +174,7 @@ function proto(syntax, file_option, $$package, $$import, message, $$enum, proto$
             /* messages */proto$8[/* messages */4],
             /* enums */proto$8[/* enums */5],
             /* extends : :: */[
-              Js_primitive.valFromOption(extend),
+              extend,
               proto$2[/* extends */6]
             ]
           ];
@@ -198,7 +198,7 @@ function file_option(file_options, name) {
     }
   }
   if (exit === 1) {
-    return Js_primitive.some(x);
+    return x;
   }
   
 }
@@ -816,18 +816,18 @@ var yyact = /* array */[
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return proto(_1, undefined, undefined, undefined, undefined, undefined, Js_primitive.some(_2), undefined, /* () */0);
+      return proto(_1, undefined, undefined, undefined, undefined, undefined, _2, undefined, /* () */0);
     }),
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return proto(undefined, undefined, undefined, Js_primitive.some(_1), undefined, undefined, undefined, undefined, /* () */0);
+      return proto(undefined, undefined, undefined, _1, undefined, undefined, undefined, undefined, /* () */0);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return proto(undefined, Js_primitive.some(_1), undefined, undefined, undefined, undefined, undefined, undefined, /* () */0);
+      return proto(undefined, _1, undefined, undefined, undefined, undefined, undefined, undefined, /* () */0);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
@@ -835,45 +835,45 @@ var yyact = /* array */[
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return proto(undefined, undefined, undefined, undefined, Js_primitive.some(_1), undefined, undefined, undefined, /* () */0);
+      return proto(undefined, undefined, undefined, undefined, _1, undefined, undefined, undefined, /* () */0);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return proto(undefined, undefined, undefined, undefined, undefined, Js_primitive.some(_1), undefined, undefined, /* () */0);
+      return proto(undefined, undefined, undefined, undefined, undefined, _1, undefined, undefined, /* () */0);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
-      return proto(undefined, undefined, undefined, undefined, undefined, undefined, undefined, Js_primitive.some(_1), /* () */0);
+      return proto(undefined, undefined, undefined, undefined, undefined, undefined, undefined, _1, /* () */0);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return proto(undefined, undefined, undefined, Js_primitive.some(_1), undefined, undefined, Js_primitive.some(_2), undefined, /* () */0);
+      return proto(undefined, undefined, undefined, _1, undefined, undefined, _2, undefined, /* () */0);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return proto(undefined, Js_primitive.some(_1), undefined, undefined, undefined, undefined, Js_primitive.some(_2), undefined, /* () */0);
+      return proto(undefined, _1, undefined, undefined, undefined, undefined, _2, undefined, /* () */0);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return proto(undefined, undefined, _1, undefined, undefined, undefined, Js_primitive.some(_2), undefined, /* () */0);
+      return proto(undefined, undefined, _1, undefined, undefined, undefined, _2, undefined, /* () */0);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return proto(undefined, undefined, undefined, undefined, Js_primitive.some(_1), undefined, Js_primitive.some(_2), undefined, /* () */0);
+      return proto(undefined, undefined, undefined, undefined, _1, undefined, _2, undefined, /* () */0);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return proto(undefined, undefined, undefined, undefined, undefined, Js_primitive.some(_1), Js_primitive.some(_2), undefined, /* () */0);
+      return proto(undefined, undefined, undefined, undefined, undefined, _1, _2, undefined, /* () */0);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return proto(undefined, undefined, undefined, undefined, undefined, undefined, Js_primitive.some(_2), Js_primitive.some(_1), /* () */0);
+      return proto(undefined, undefined, undefined, undefined, undefined, undefined, _2, _1, /* () */0);
     }),
   (function (__caml_parser_env) {
       var _3 = Parsing.peek_val(__caml_parser_env, 1);
@@ -1054,7 +1054,7 @@ var yyact = /* array */[
       var _4 = Parsing.peek_val(__caml_parser_env, 2);
       var _5 = Parsing.peek_val(__caml_parser_env, 1);
       Parsing.peek_val(__caml_parser_env, 0);
-      return oneof_field(Js_primitive.some(_5), _4, _1[1], _2);
+      return oneof_field(_5, _4, _1[1], _2);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 4);
@@ -1078,7 +1078,7 @@ var yyact = /* array */[
       var _9 = Parsing.peek_val(__caml_parser_env, 2);
       var _10 = Parsing.peek_val(__caml_parser_env, 1);
       Parsing.peek_val(__caml_parser_env, 0);
-      return map(Js_primitive.some(_10), _9, _3[1], _5[1], _7);
+      return map(_10, _9, _3[1], _5[1], _7);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 6);
@@ -1087,7 +1087,7 @@ var yyact = /* array */[
       var _5 = Parsing.peek_val(__caml_parser_env, 2);
       var _6 = Parsing.peek_val(__caml_parser_env, 1);
       Parsing.peek_val(__caml_parser_env, 0);
-      return field(Js_primitive.some(_6), _1, _5, _2[1], _3);
+      return field(_6, _1, _5, _2[1], _3);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 5);
@@ -4069,7 +4069,7 @@ function compile_default_p2(all_types, field) {
   var field_type$1 = field_type(field);
   var field_default$1 = field_default(field);
   if (field_default$1 !== undefined) {
-    var constant = Js_primitive.valFromOption(field_default$1);
+    var constant = field_default$1;
     var exit = 0;
     if (typeof field_type$1 === "number") {
       switch (field_type$1) {
@@ -4093,7 +4093,7 @@ function compile_default_p2(all_types, field) {
             break;
         case 12 : 
             if (constant.tag === 1) {
-              return Js_primitive.some(constant);
+              return constant;
             } else {
               return invalid_default_value(field_name$1, "invalid default type (bool expected)", /* () */0);
             }
@@ -4101,7 +4101,7 @@ function compile_default_p2(all_types, field) {
             if (constant.tag) {
               return invalid_default_value(field_name$1, "invalid default type (string expected)", /* () */0);
             } else {
-              return Js_primitive.some(constant);
+              return constant;
             }
         case 14 : 
             return invalid_default_value(field_name$1, "default value not supported for bytes", /* () */0);
@@ -4123,7 +4123,7 @@ function compile_default_p2(all_types, field) {
                 }
               }), spec[0][/* enum_values */1]);
         if (default_enum_value$1 !== undefined) {
-          return Js_primitive.some(constant);
+          return constant;
         } else {
           return invalid_default_value(field_name$1, "Invalid default enum value", /* () */0);
         }
@@ -4135,22 +4135,22 @@ function compile_default_p2(all_types, field) {
       case 1 : 
           switch (constant.tag | 0) {
             case 2 : 
-                return Js_primitive.some(/* Constant_float */Block.__(3, [constant[0]]));
+                return /* Constant_float */Block.__(3, [constant[0]]);
             case 3 : 
-                return Js_primitive.some(constant);
+                return constant;
             default:
               return invalid_default_value(field_name$1, "invalid default type (float/int expected)", /* () */0);
           }
       case 2 : 
           if (constant.tag === 2) {
-            return Js_primitive.some(constant);
+            return constant;
           } else {
             return invalid_default_value(field_name$1, "invalid default type (int expected)", /* () */0);
           }
       case 3 : 
           if (constant.tag === 2) {
             if (constant[0] >= 0) {
-              return Js_primitive.some(constant);
+              return constant;
             } else {
               return invalid_default_value(field_name$1, "negative default value for unsigned int", /* () */0);
             }
@@ -5619,7 +5619,7 @@ function default_value_of_field_type(field_name, field_type, field_default) {
     switch (basic_type) {
       case 0 : 
           if (field_default$1 !== undefined) {
-            var match = Js_primitive.valFromOption(field_default$1);
+            var match = field_default$1;
             if (match.tag) {
               return invalid_default_value(field_name$1, "invalid default type", /* () */0);
             } else {
@@ -5642,7 +5642,7 @@ function default_value_of_field_type(field_name, field_type, field_default) {
           }
       case 1 : 
           if (field_default$1 !== undefined) {
-            var match$1 = Js_primitive.valFromOption(field_default$1);
+            var match$1 = field_default$1;
             if (match$1.tag === 3) {
               return Pervasives.string_of_float(match$1[0]);
             } else {
@@ -5653,7 +5653,7 @@ function default_value_of_field_type(field_name, field_type, field_default) {
           }
       case 2 : 
           if (field_default$1 !== undefined) {
-            var match$2 = Js_primitive.valFromOption(field_default$1);
+            var match$2 = field_default$1;
             if (match$2.tag === 2) {
               return String(match$2[0]);
             } else {
@@ -5664,7 +5664,7 @@ function default_value_of_field_type(field_name, field_type, field_default) {
           }
       case 3 : 
           if (field_default$1 !== undefined) {
-            var match$3 = Js_primitive.valFromOption(field_default$1);
+            var match$3 = field_default$1;
             if (match$3.tag === 2) {
               return Curry._1(Printf.sprintf(/* Format */[
                               /* Int */Block.__(4, [
@@ -5686,7 +5686,7 @@ function default_value_of_field_type(field_name, field_type, field_default) {
           }
       case 4 : 
           if (field_default$1 !== undefined) {
-            var match$4 = Js_primitive.valFromOption(field_default$1);
+            var match$4 = field_default$1;
             if (match$4.tag === 2) {
               return Curry._1(Printf.sprintf(/* Format */[
                               /* Int */Block.__(4, [
@@ -5708,7 +5708,7 @@ function default_value_of_field_type(field_name, field_type, field_default) {
           }
       case 5 : 
           if (field_default$1 !== undefined) {
-            var match$5 = Js_primitive.valFromOption(field_default$1);
+            var match$5 = field_default$1;
             if (match$5.tag) {
               return invalid_default_value(field_name$1, "invalid default type", /* () */0);
             } else {
@@ -5731,7 +5731,7 @@ function default_value_of_field_type(field_name, field_type, field_default) {
           }
       case 6 : 
           if (field_default$1 !== undefined) {
-            var match$6 = Js_primitive.valFromOption(field_default$1);
+            var match$6 = field_default$1;
             if (match$6.tag === 1) {
               var b = match$6[0];
               if (b) {
@@ -6461,7 +6461,7 @@ function encoding_of_field(all_types, field) {
   var match = field_option(field, "packed");
   var packed;
   if (match !== undefined) {
-    var match$1 = Js_primitive.valFromOption(match);
+    var match$1 = match;
     if (match$1.tag === 1) {
       packed = match$1[0];
     } else {
@@ -6487,7 +6487,7 @@ function compile_field_type(field_name, all_types, file_options, field_options, 
   var match = find_field_option(field_options, "ocaml_type");
   var ocaml_type;
   if (match !== undefined) {
-    var match$1 = Js_primitive.valFromOption(match);
+    var match$1 = match;
     ocaml_type = match$1.tag === 4 && match$1[0] === "int_t" ? /* Int_t */-783406652 : /* None */870530776;
   } else {
     ocaml_type = /* None */870530776;
@@ -6495,7 +6495,7 @@ function compile_field_type(field_name, all_types, file_options, field_options, 
   var match$2 = file_option(file_options, "int32_type");
   var int32_type;
   if (match$2 !== undefined) {
-    var match$3 = Js_primitive.valFromOption(match$2);
+    var match$3 = match$2;
     int32_type = match$3.tag === 4 && match$3[0] === "int_t" ? /* Ft_basic_type */Block.__(0, [/* Bt_int */2]) : /* Ft_basic_type */Block.__(0, [/* Bt_int32 */3]);
   } else {
     int32_type = /* Ft_basic_type */Block.__(0, [/* Bt_int32 */3]);
@@ -6503,7 +6503,7 @@ function compile_field_type(field_name, all_types, file_options, field_options, 
   var match$4 = file_option(file_options, "int64_type");
   var int64_type;
   if (match$4 !== undefined) {
-    var match$5 = Js_primitive.valFromOption(match$4);
+    var match$5 = match$4;
     int64_type = match$5.tag === 4 && match$5[0] === "int_t" ? /* Ft_basic_type */Block.__(0, [/* Bt_int */2]) : /* Ft_basic_type */Block.__(0, [/* Bt_int64 */4]);
   } else {
     int64_type = /* Ft_basic_type */Block.__(0, [/* Bt_int64 */4]);
@@ -6595,7 +6595,7 @@ function compile_field_type(field_name, all_types, file_options, field_options, 
 function is_mutable(field_name, field_options) {
   var match = find_field_option(field_options, "ocaml_mutable");
   if (match !== undefined) {
-    var match$1 = Js_primitive.valFromOption(match);
+    var match$1 = match;
     if (match$1.tag === 1) {
       return match$1[0];
     } else {
@@ -6612,7 +6612,7 @@ function is_mutable(field_name, field_options) {
 function ocaml_container(field_options) {
   var match = find_field_option(field_options, "ocaml_container");
   if (match !== undefined) {
-    var match$1 = Js_primitive.valFromOption(match);
+    var match$1 = match;
     if (match$1.tag === 4) {
       return match$1[0];
     } else {

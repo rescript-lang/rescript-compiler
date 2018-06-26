@@ -7,7 +7,6 @@ var Belt_Set = require("../../lib/js/belt_Set.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Belt_Array = require("../../lib/js/belt_Array.js");
 var Belt_MapDict = require("../../lib/js/belt_MapDict.js");
-var Js_primitive = require("../../lib/js/js_primitive.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Array_data_util = require("./array_data_util.js");
 
@@ -119,7 +118,7 @@ var a2 = Belt_Map.remove(a1, 3);
 
 var a3 = Belt_Map.update(a2, 3, (function (k) {
         if (k !== undefined) {
-          return Js_primitive.some(k + 1 | 0);
+          return k + 1 | 0;
         } else {
           return 11;
         }
@@ -127,7 +126,7 @@ var a3 = Belt_Map.update(a2, 3, (function (k) {
 
 var a4 = Belt_Map.update(a2, 3, (function (k) {
         if (k !== undefined) {
-          return Js_primitive.some(Js_primitive.valFromOption(k) + 1 | 0);
+          return k + 1 | 0;
         } else {
           return undefined;
         }
@@ -263,7 +262,7 @@ var match$1 = match[0];
 
 var match$2 = Belt_Map.get(v3, 10);
 
-b("File \"bs_poly_map_test.ml\", line 126, characters 4-11", match$2 !== undefined ? Js_primitive.valFromOption(match$2) === 11 : false);
+b("File \"bs_poly_map_test.ml\", line 126, characters 4-11", match$2 !== undefined ? match$2 === 11 : false);
 
 var match$3 = Belt_Map.get(v3, -10);
 
@@ -271,7 +270,7 @@ b("File \"bs_poly_map_test.ml\", line 127, characters 4-11", match$3 === undefin
 
 var match$4 = Belt_Map.get(v4, -10);
 
-b("File \"bs_poly_map_test.ml\", line 128, characters 4-11", match$4 !== undefined ? Js_primitive.valFromOption(match$4) === 0 : false);
+b("File \"bs_poly_map_test.ml\", line 128, characters 4-11", match$4 !== undefined ? match$4 === 0 : false);
 
 var map = Belt_Map.remove({
       cmp: Icmp[/* cmp */0],
@@ -287,7 +286,7 @@ var map$1 = Belt_Map.removeMany({
 
 b("File \"bs_poly_map_test.ml\", line 130, characters 4-11", Belt_MapDict.isEmpty(map$1.data));
 
-b("File \"bs_poly_map_test.ml\", line 131, characters 4-11", pres !== undefined ? Js_primitive.valFromOption(pres) === 5000 : false);
+b("File \"bs_poly_map_test.ml\", line 131, characters 4-11", pres !== undefined ? pres === 5000 : false);
 
 b("File \"bs_poly_map_test.ml\", line 132, characters 4-11", Belt_Array.eq(Belt_MapDict.keysToArray(match$1[0].data), Belt_Array.makeBy(5000, (function (i) {
                 return i;

@@ -1383,7 +1383,7 @@ function highlight_locations(ppf, locs) {
           } else {
             var loc1 = List.hd(locs);
             try {
-              highlight_dumb(ppf, Js_primitive.valFromOption(match$1), loc1);
+              highlight_dumb(ppf, match$1, loc1);
               return true;
             }
             catch (exn$1){
@@ -1405,7 +1405,7 @@ function highlight_locations(ppf, locs) {
       var match$2 = input_lexbuf[0];
       if (match$2 !== undefined) {
         try {
-          highlight_terminfo(ppf, match[0], Js_primitive.valFromOption(match$2), locs);
+          highlight_terminfo(ppf, match[0], match$2, locs);
           return true;
         }
         catch (exn$2){
@@ -1709,7 +1709,7 @@ function print_phanton_error_prefix(ppf) {
 }
 
 function errorf($staropt$star, $staropt$star$1, $staropt$star$2, fmt) {
-  var loc = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : none;
+  var loc = $staropt$star !== undefined ? $staropt$star : none;
   var sub = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
   var if_highlight = $staropt$star$2 !== undefined ? $staropt$star$2 : "";
   var before = print_phanton_error_prefix;
@@ -1745,7 +1745,7 @@ function register_error_of_exn(f) {
 }
 
 function error_of_printer(loc, print, x) {
-  return Curry._2(errorf(Js_primitive.some(loc), undefined, undefined, /* Format */[
+  return Curry._2(errorf(loc, undefined, undefined, /* Format */[
                   /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
                           /* FFlush */2,
                           /* End_of_format */0
@@ -1756,32 +1756,32 @@ function error_of_printer(loc, print, x) {
 
 register_error_of_exn((function (param) {
         if (param[0] === Caml_builtin_exceptions.sys_error) {
-          return Js_primitive.some(Curry._1(errorf(Js_primitive.some(in_file(input_name[0])), undefined, undefined, /* Format */[
-                              /* String_literal */Block.__(11, [
-                                  "I/O error: ",
-                                  /* String */Block.__(2, [
-                                      /* No_padding */0,
+          return Curry._1(errorf(in_file(input_name[0]), undefined, undefined, /* Format */[
+                          /* String_literal */Block.__(11, [
+                              "I/O error: ",
+                              /* String */Block.__(2, [
+                                  /* No_padding */0,
+                                  /* End_of_format */0
+                                ])
+                            ]),
+                          "I/O error: %s"
+                        ]), param[1]);
+        } else if (param[0] === Errors) {
+          return Curry._1(errorf(in_file(input_name[0]), undefined, undefined, /* Format */[
+                          /* String_literal */Block.__(11, [
+                              "Some fatal warnings were triggered (",
+                              /* Int */Block.__(4, [
+                                  /* Int_d */0,
+                                  /* No_padding */0,
+                                  /* No_precision */0,
+                                  /* String_literal */Block.__(11, [
+                                      " occurrences)",
                                       /* End_of_format */0
                                     ])
-                                ]),
-                              "I/O error: %s"
-                            ]), param[1]));
-        } else if (param[0] === Errors) {
-          return Js_primitive.some(Curry._1(errorf(Js_primitive.some(in_file(input_name[0])), undefined, undefined, /* Format */[
-                              /* String_literal */Block.__(11, [
-                                  "Some fatal warnings were triggered (",
-                                  /* Int */Block.__(4, [
-                                      /* Int_d */0,
-                                      /* No_padding */0,
-                                      /* No_precision */0,
-                                      /* String_literal */Block.__(11, [
-                                          " occurrences)",
-                                          /* End_of_format */0
-                                        ])
-                                    ])
-                                ]),
-                              "Some fatal warnings were triggered (%d occurrences)"
-                            ]), param[1]));
+                                ])
+                            ]),
+                          "Some fatal warnings were triggered (%d occurrences)"
+                        ]), param[1]);
         } else {
           return undefined;
         }
@@ -1791,7 +1791,7 @@ var $$Error = Caml_exceptions.create("Ocaml_parsetree_test.Location.Error");
 
 register_error_of_exn((function (param) {
         if (param[0] === $$Error) {
-          return Js_primitive.some(param[1]);
+          return param[1];
         } else {
           return undefined;
         }
@@ -2063,13 +2063,13 @@ function docs_attr(ds) {
 function add_docs_attrs(docs, attrs) {
   var match = docs[/* docs_pre */0];
   var attrs$1 = match !== undefined ? /* :: */[
-      docs_attr(Js_primitive.valFromOption(match)),
+      docs_attr(match),
       attrs
     ] : attrs;
   var match$1 = docs[/* docs_post */1];
   if (match$1 !== undefined) {
     return Pervasives.$at(attrs$1, /* :: */[
-                docs_attr(Js_primitive.valFromOption(match$1)),
+                docs_attr(match$1),
                 /* [] */0
               ]);
   } else {
@@ -2080,7 +2080,7 @@ function add_docs_attrs(docs, attrs) {
 function add_info_attrs(info, attrs) {
   if (info !== undefined) {
     return Pervasives.$at(attrs, /* :: */[
-                docs_attr(Js_primitive.valFromOption(info)),
+                docs_attr(info),
                 /* [] */0
               ]);
   } else {
@@ -2135,7 +2135,7 @@ function get_docstring(info, dsl) {
       var match = ds[/* ds_attached */2];
       if (match !== 1) {
         ds[/* ds_attached */2] = info ? /* Info */1 : /* Docs */2;
-        return Js_primitive.some(ds);
+        return ds;
       } else {
         _param = param[1];
         continue ;
@@ -2392,8 +2392,8 @@ function init() {
 var default_loc = [none];
 
 function mk($staropt$star, $staropt$star$1, d) {
-  var loc = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : default_loc[0];
-  var attrs = $staropt$star$1 !== undefined ? Js_primitive.valFromOption($staropt$star$1) : /* [] */0;
+  var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
+  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
   return /* record */[
           /* ptyp_desc */d,
           /* ptyp_loc */loc,
@@ -2413,8 +2413,8 @@ function attr(d, a) {
 }
 
 function mk$1($staropt$star, $staropt$star$1, d) {
-  var loc = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : default_loc[0];
-  var attrs = $staropt$star$1 !== undefined ? Js_primitive.valFromOption($staropt$star$1) : /* [] */0;
+  var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
+  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
   return /* record */[
           /* ppat_desc */d,
           /* ppat_loc */loc,
@@ -2434,8 +2434,8 @@ function attr$1(d, a) {
 }
 
 function mk$2($staropt$star, $staropt$star$1, d) {
-  var loc = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : default_loc[0];
-  var attrs = $staropt$star$1 !== undefined ? Js_primitive.valFromOption($staropt$star$1) : /* [] */0;
+  var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
+  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
   return /* record */[
           /* pexp_desc */d,
           /* pexp_loc */loc,
@@ -2676,8 +2676,8 @@ function $$case(lhs, guard, rhs) {
 }
 
 function mk$3($staropt$star, $staropt$star$1, d) {
-  var loc = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : default_loc[0];
-  var attrs = $staropt$star$1 !== undefined ? Js_primitive.valFromOption($staropt$star$1) : /* [] */0;
+  var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
+  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
   return /* record */[
           /* pmty_desc */d,
           /* pmty_loc */loc,
@@ -2701,8 +2701,8 @@ function alias(loc, attrs, a) {
 }
 
 function mk$4($staropt$star, $staropt$star$1, d) {
-  var loc = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : default_loc[0];
-  var attrs = $staropt$star$1 !== undefined ? Js_primitive.valFromOption($staropt$star$1) : /* [] */0;
+  var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
+  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
   return /* record */[
           /* pmod_desc */d,
           /* pmod_loc */loc,
@@ -2722,7 +2722,7 @@ function attr$4(d, a) {
 }
 
 function mk$5($staropt$star, d) {
-  var loc = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : default_loc[0];
+  var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
   return /* record */[
           /* psig_desc */d,
           /* psig_loc */loc
@@ -2732,13 +2732,13 @@ function mk$5($staropt$star, d) {
 function text(txt) {
   return List.map((function (ds) {
                 var a = text_attr(ds);
-                var loc = Js_primitive.some(ds[/* ds_loc */1]);
+                var loc = ds[/* ds_loc */1];
                 return mk$5(loc, /* Psig_attribute */Block.__(11, [a]));
               }), txt);
 }
 
 function mk$6($staropt$star, d) {
-  var loc = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : default_loc[0];
+  var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
   return /* record */[
           /* pstr_desc */d,
           /* pstr_loc */loc
@@ -2748,14 +2748,14 @@ function mk$6($staropt$star, d) {
 function text$1(txt) {
   return List.map((function (ds) {
                 var a = text_attr(ds);
-                var loc = Js_primitive.some(ds[/* ds_loc */1]);
+                var loc = ds[/* ds_loc */1];
                 return mk$6(loc, /* Pstr_attribute */Block.__(13, [a]));
               }), txt);
 }
 
 function mk$7($staropt$star, $staropt$star$1, d) {
-  var loc = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : default_loc[0];
-  var attrs = $staropt$star$1 !== undefined ? Js_primitive.valFromOption($staropt$star$1) : /* [] */0;
+  var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
+  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
   return /* record */[
           /* pcl_desc */d,
           /* pcl_loc */loc,
@@ -2775,8 +2775,8 @@ function attr$5(d, a) {
 }
 
 function mk$8($staropt$star, $staropt$star$1, d) {
-  var loc = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : default_loc[0];
-  var attrs = $staropt$star$1 !== undefined ? Js_primitive.valFromOption($staropt$star$1) : /* [] */0;
+  var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
+  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
   return /* record */[
           /* pcty_desc */d,
           /* pcty_loc */loc,
@@ -2796,9 +2796,9 @@ function attr$6(d, a) {
 }
 
 function mk$9($staropt$star, $staropt$star$1, $staropt$star$2, d) {
-  var loc = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : default_loc[0];
-  var attrs = $staropt$star$1 !== undefined ? Js_primitive.valFromOption($staropt$star$1) : /* [] */0;
-  var docs = $staropt$star$2 !== undefined ? Js_primitive.valFromOption($staropt$star$2) : empty_docs;
+  var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
+  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
+  var docs = $staropt$star$2 !== undefined ? $staropt$star$2 : empty_docs;
   return /* record */[
           /* pctf_desc */d,
           /* pctf_loc */loc,
@@ -2845,7 +2845,7 @@ function attribute(loc, a) {
 
 function text$2(txt) {
   return List.map((function (ds) {
-                return attribute(Js_primitive.some(ds[/* ds_loc */1]), text_attr(ds));
+                return attribute(ds[/* ds_loc */1], text_attr(ds));
               }), txt);
 }
 
@@ -2861,9 +2861,9 @@ function attr$7(d, a) {
 }
 
 function mk$10($staropt$star, $staropt$star$1, $staropt$star$2, d) {
-  var loc = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : default_loc[0];
-  var attrs = $staropt$star$1 !== undefined ? Js_primitive.valFromOption($staropt$star$1) : /* [] */0;
-  var docs = $staropt$star$2 !== undefined ? Js_primitive.valFromOption($staropt$star$2) : empty_docs;
+  var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
+  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
+  var docs = $staropt$star$2 !== undefined ? $staropt$star$2 : empty_docs;
   return /* record */[
           /* pcf_desc */d,
           /* pcf_loc */loc,
@@ -2916,7 +2916,7 @@ function attribute$1(loc, a) {
 
 function text$3(txt) {
   return List.map((function (ds) {
-                return attribute$1(Js_primitive.some(ds[/* ds_loc */1]), text_attr(ds));
+                return attribute$1(ds[/* ds_loc */1], text_attr(ds));
               }), txt);
 }
 
@@ -2943,9 +2943,9 @@ function attr$8(d, a) {
 }
 
 function mk$11($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, name, typ) {
-  var loc = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : default_loc[0];
-  var attrs = $staropt$star$1 !== undefined ? Js_primitive.valFromOption($staropt$star$1) : /* [] */0;
-  var docs = $staropt$star$2 !== undefined ? Js_primitive.valFromOption($staropt$star$2) : empty_docs;
+  var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
+  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
+  var docs = $staropt$star$2 !== undefined ? $staropt$star$2 : empty_docs;
   var prim = $staropt$star$3 !== undefined ? $staropt$star$3 : /* [] */0;
   return /* record */[
           /* pval_name */name,
@@ -2957,10 +2957,10 @@ function mk$11($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3,
 }
 
 function mk$12($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, name, typ) {
-  var loc = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : default_loc[0];
-  var attrs = $staropt$star$1 !== undefined ? Js_primitive.valFromOption($staropt$star$1) : /* [] */0;
-  var docs = $staropt$star$2 !== undefined ? Js_primitive.valFromOption($staropt$star$2) : empty_docs;
-  var text = $staropt$star$3 !== undefined ? Js_primitive.valFromOption($staropt$star$3) : /* [] */0;
+  var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
+  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
+  var docs = $staropt$star$2 !== undefined ? $staropt$star$2 : empty_docs;
+  var text = $staropt$star$3 !== undefined ? $staropt$star$3 : /* [] */0;
   return /* record */[
           /* pmd_name */name,
           /* pmd_type */typ,
@@ -2970,10 +2970,10 @@ function mk$12($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3,
 }
 
 function mk$13($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, typ, name) {
-  var loc = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : default_loc[0];
-  var attrs = $staropt$star$1 !== undefined ? Js_primitive.valFromOption($staropt$star$1) : /* [] */0;
-  var docs = $staropt$star$2 !== undefined ? Js_primitive.valFromOption($staropt$star$2) : empty_docs;
-  var text = $staropt$star$3 !== undefined ? Js_primitive.valFromOption($staropt$star$3) : /* [] */0;
+  var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
+  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
+  var docs = $staropt$star$2 !== undefined ? $staropt$star$2 : empty_docs;
+  var text = $staropt$star$3 !== undefined ? $staropt$star$3 : /* [] */0;
   return /* record */[
           /* pmtd_name */name,
           /* pmtd_type */typ,
@@ -2983,10 +2983,10 @@ function mk$13($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3,
 }
 
 function mk$14($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, name, expr) {
-  var loc = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : default_loc[0];
-  var attrs = $staropt$star$1 !== undefined ? Js_primitive.valFromOption($staropt$star$1) : /* [] */0;
-  var docs = $staropt$star$2 !== undefined ? Js_primitive.valFromOption($staropt$star$2) : empty_docs;
-  var text = $staropt$star$3 !== undefined ? Js_primitive.valFromOption($staropt$star$3) : /* [] */0;
+  var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
+  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
+  var docs = $staropt$star$2 !== undefined ? $staropt$star$2 : empty_docs;
+  var text = $staropt$star$3 !== undefined ? $staropt$star$3 : /* [] */0;
   return /* record */[
           /* pmb_name */name,
           /* pmb_expr */expr,
@@ -2996,10 +2996,10 @@ function mk$14($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3,
 }
 
 function mk$15($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, lid) {
-  var loc = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : default_loc[0];
-  var attrs = $staropt$star$1 !== undefined ? Js_primitive.valFromOption($staropt$star$1) : /* [] */0;
-  var docs = $staropt$star$2 !== undefined ? Js_primitive.valFromOption($staropt$star$2) : empty_docs;
-  var override = $staropt$star$3 !== undefined ? Js_primitive.valFromOption($staropt$star$3) : /* Fresh */1;
+  var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
+  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
+  var docs = $staropt$star$2 !== undefined ? $staropt$star$2 : empty_docs;
+  var override = $staropt$star$3 !== undefined ? $staropt$star$3 : /* Fresh */1;
   return /* record */[
           /* popen_lid */lid,
           /* popen_override */override,
@@ -3009,9 +3009,9 @@ function mk$15($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3,
 }
 
 function mk$16($staropt$star, $staropt$star$1, $staropt$star$2, mexpr) {
-  var loc = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : default_loc[0];
-  var attrs = $staropt$star$1 !== undefined ? Js_primitive.valFromOption($staropt$star$1) : /* [] */0;
-  var docs = $staropt$star$2 !== undefined ? Js_primitive.valFromOption($staropt$star$2) : empty_docs;
+  var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
+  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
+  var docs = $staropt$star$2 !== undefined ? $staropt$star$2 : empty_docs;
   return /* record */[
           /* pincl_mod */mexpr,
           /* pincl_loc */loc,
@@ -3020,10 +3020,10 @@ function mk$16($staropt$star, $staropt$star$1, $staropt$star$2, mexpr) {
 }
 
 function mk$17($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, pat, expr) {
-  var loc = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : default_loc[0];
-  var attrs = $staropt$star$1 !== undefined ? Js_primitive.valFromOption($staropt$star$1) : /* [] */0;
-  var docs = $staropt$star$2 !== undefined ? Js_primitive.valFromOption($staropt$star$2) : empty_docs;
-  var text = $staropt$star$3 !== undefined ? Js_primitive.valFromOption($staropt$star$3) : /* [] */0;
+  var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
+  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
+  var docs = $staropt$star$2 !== undefined ? $staropt$star$2 : empty_docs;
+  var text = $staropt$star$3 !== undefined ? $staropt$star$3 : /* [] */0;
   return /* record */[
           /* pvb_pat */pat,
           /* pvb_expr */expr,
@@ -3033,11 +3033,11 @@ function mk$17($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3,
 }
 
 function mk$18($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, $staropt$star$4, $staropt$star$5, name, expr) {
-  var loc = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : default_loc[0];
-  var attrs = $staropt$star$1 !== undefined ? Js_primitive.valFromOption($staropt$star$1) : /* [] */0;
-  var docs = $staropt$star$2 !== undefined ? Js_primitive.valFromOption($staropt$star$2) : empty_docs;
-  var text = $staropt$star$3 !== undefined ? Js_primitive.valFromOption($staropt$star$3) : /* [] */0;
-  var virt = $staropt$star$4 !== undefined ? Js_primitive.valFromOption($staropt$star$4) : /* Concrete */1;
+  var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
+  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
+  var docs = $staropt$star$2 !== undefined ? $staropt$star$2 : empty_docs;
+  var text = $staropt$star$3 !== undefined ? $staropt$star$3 : /* [] */0;
+  var virt = $staropt$star$4 !== undefined ? $staropt$star$4 : /* Concrete */1;
   var params = $staropt$star$5 !== undefined ? $staropt$star$5 : /* [] */0;
   return /* record */[
           /* pci_virt */virt,
@@ -3050,14 +3050,14 @@ function mk$18($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3,
 }
 
 function mk$19($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, $staropt$star$4, $staropt$star$5, $staropt$star$6, $staropt$star$7, manifest, name) {
-  var loc = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : default_loc[0];
-  var attrs = $staropt$star$1 !== undefined ? Js_primitive.valFromOption($staropt$star$1) : /* [] */0;
-  var docs = $staropt$star$2 !== undefined ? Js_primitive.valFromOption($staropt$star$2) : empty_docs;
-  var text = $staropt$star$3 !== undefined ? Js_primitive.valFromOption($staropt$star$3) : /* [] */0;
+  var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
+  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
+  var docs = $staropt$star$2 !== undefined ? $staropt$star$2 : empty_docs;
+  var text = $staropt$star$3 !== undefined ? $staropt$star$3 : /* [] */0;
   var params = $staropt$star$4 !== undefined ? $staropt$star$4 : /* [] */0;
   var cstrs = $staropt$star$5 !== undefined ? $staropt$star$5 : /* [] */0;
-  var kind = $staropt$star$6 !== undefined ? Js_primitive.valFromOption($staropt$star$6) : /* Ptype_abstract */0;
-  var priv = $staropt$star$7 !== undefined ? Js_primitive.valFromOption($staropt$star$7) : /* Public */1;
+  var kind = $staropt$star$6 !== undefined ? $staropt$star$6 : /* Ptype_abstract */0;
+  var priv = $staropt$star$7 !== undefined ? $staropt$star$7 : /* Public */1;
   return /* record */[
           /* ptype_name */name,
           /* ptype_params */params,
@@ -3071,8 +3071,8 @@ function mk$19($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3,
 }
 
 function constructor($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, res, name) {
-  var loc = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : default_loc[0];
-  var attrs = $staropt$star$1 !== undefined ? Js_primitive.valFromOption($staropt$star$1) : /* [] */0;
+  var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
+  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
   var info = $staropt$star$2 !== undefined ? Js_primitive.valFromOption($staropt$star$2) : undefined;
   var args = $staropt$star$3 !== undefined ? $staropt$star$3 : /* [] */0;
   return /* record */[
@@ -3085,10 +3085,10 @@ function constructor($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$s
 }
 
 function field$1($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, name, typ) {
-  var loc = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : default_loc[0];
-  var attrs = $staropt$star$1 !== undefined ? Js_primitive.valFromOption($staropt$star$1) : /* [] */0;
+  var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
+  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
   var info = $staropt$star$2 !== undefined ? Js_primitive.valFromOption($staropt$star$2) : undefined;
-  var mut = $staropt$star$3 !== undefined ? Js_primitive.valFromOption($staropt$star$3) : /* Immutable */0;
+  var mut = $staropt$star$3 !== undefined ? $staropt$star$3 : /* Immutable */0;
   return /* record */[
           /* pld_name */name,
           /* pld_mutable */mut,
@@ -3099,10 +3099,10 @@ function field$1($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$
 }
 
 function mk$20($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, path, constructors) {
-  var attrs = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : /* [] */0;
-  var docs = $staropt$star$1 !== undefined ? Js_primitive.valFromOption($staropt$star$1) : empty_docs;
+  var attrs = $staropt$star !== undefined ? $staropt$star : /* [] */0;
+  var docs = $staropt$star$1 !== undefined ? $staropt$star$1 : empty_docs;
   var params = $staropt$star$2 !== undefined ? $staropt$star$2 : /* [] */0;
-  var priv = $staropt$star$3 !== undefined ? Js_primitive.valFromOption($staropt$star$3) : /* Public */1;
+  var priv = $staropt$star$3 !== undefined ? $staropt$star$3 : /* Public */1;
   return /* record */[
           /* ptyext_path */path,
           /* ptyext_params */params,
@@ -3113,9 +3113,9 @@ function mk$20($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3,
 }
 
 function decl($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, $staropt$star$4, res, name) {
-  var loc = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : default_loc[0];
-  var attrs = $staropt$star$1 !== undefined ? Js_primitive.valFromOption($staropt$star$1) : /* [] */0;
-  var docs = $staropt$star$2 !== undefined ? Js_primitive.valFromOption($staropt$star$2) : empty_docs;
+  var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
+  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
+  var docs = $staropt$star$2 !== undefined ? $staropt$star$2 : empty_docs;
   var info = $staropt$star$3 !== undefined ? Js_primitive.valFromOption($staropt$star$3) : undefined;
   var args = $staropt$star$4 !== undefined ? $staropt$star$4 : /* [] */0;
   return /* record */[
@@ -3130,9 +3130,9 @@ function decl($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, 
 }
 
 function rebind($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, name, lid) {
-  var loc = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : default_loc[0];
-  var attrs = $staropt$star$1 !== undefined ? Js_primitive.valFromOption($staropt$star$1) : /* [] */0;
-  var docs = $staropt$star$2 !== undefined ? Js_primitive.valFromOption($staropt$star$2) : empty_docs;
+  var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
+  var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
+  var docs = $staropt$star$2 !== undefined ? $staropt$star$2 : empty_docs;
   var info = $staropt$star$3 !== undefined ? Js_primitive.valFromOption($staropt$star$3) : undefined;
   return /* record */[
           /* pext_name */name,
@@ -3218,8 +3218,8 @@ function prepare_error(param) {
     case 0 : 
         var closing = param[3];
         var opening = param[1];
-        return Curry._1(errorf(Js_primitive.some(param[2]), /* :: */[
-                        Curry._1(errorf(Js_primitive.some(param[0]), undefined, undefined, /* Format */[
+        return Curry._1(errorf(param[2], /* :: */[
+                        Curry._1(errorf(param[0], undefined, undefined, /* Format */[
                                   /* String_literal */Block.__(11, [
                                       "This '",
                                       /* String */Block.__(2, [
@@ -3265,7 +3265,7 @@ function prepare_error(param) {
                         "Syntax error: '%s' expected"
                       ]), closing);
     case 1 : 
-        return Curry._1(errorf(Js_primitive.some(param[0]), undefined, undefined, /* Format */[
+        return Curry._1(errorf(param[0], undefined, undefined, /* Format */[
                         /* String_literal */Block.__(11, [
                             "Syntax error: ",
                             /* String */Block.__(2, [
@@ -3279,7 +3279,7 @@ function prepare_error(param) {
                         "Syntax error: %s expected."
                       ]), param[1]);
     case 2 : 
-        return Curry._1(errorf(Js_primitive.some(param[0]), undefined, undefined, /* Format */[
+        return Curry._1(errorf(param[0], undefined, undefined, /* Format */[
                         /* String_literal */Block.__(11, [
                             "Syntax error: ",
                             /* String */Block.__(2, [
@@ -3293,7 +3293,7 @@ function prepare_error(param) {
                         "Syntax error: %s not expected."
                       ]), param[1]);
     case 3 : 
-        return errorf(Js_primitive.some(param[0]), undefined, undefined, /* Format */[
+        return errorf(param[0], undefined, undefined, /* Format */[
                     /* String_literal */Block.__(11, [
                         "Syntax error: applicative paths of the form F(X).t are not supported when the option -no-app-func is set.",
                         /* End_of_format */0
@@ -3302,7 +3302,7 @@ function prepare_error(param) {
                   ]);
     case 4 : 
         var $$var = param[1];
-        return Curry._2(errorf(Js_primitive.some(param[0]), undefined, undefined, /* Format */[
+        return Curry._2(errorf(param[0], undefined, undefined, /* Format */[
                         /* String_literal */Block.__(11, [
                             "In this scoped type, variable '",
                             /* String */Block.__(2, [
@@ -3322,7 +3322,7 @@ function prepare_error(param) {
                         "In this scoped type, variable '%s is reserved for the local type %s."
                       ]), $$var, $$var);
     case 5 : 
-        return errorf(Js_primitive.some(param[0]), undefined, undefined, /* Format */[
+        return errorf(param[0], undefined, undefined, /* Format */[
                     /* String_literal */Block.__(11, [
                         "Syntax error",
                         /* End_of_format */0
@@ -3330,7 +3330,7 @@ function prepare_error(param) {
                     "Syntax error"
                   ]);
     case 6 : 
-        return Curry._1(errorf(Js_primitive.some(param[0]), undefined, undefined, /* Format */[
+        return Curry._1(errorf(param[0], undefined, undefined, /* Format */[
                         /* String_literal */Block.__(11, [
                             "broken invariant in parsetree: ",
                             /* String */Block.__(2, [
@@ -3346,54 +3346,54 @@ function prepare_error(param) {
 
 register_error_of_exn((function (param) {
         if (param[0] === $$Error$1) {
-          return Js_primitive.some(prepare_error(param[1]));
+          return prepare_error(param[1]);
         } else {
           return undefined;
         }
       }));
 
 function mktyp(d) {
-  return mk(Js_primitive.some(symbol_rloc(/* () */0)), undefined, d);
+  return mk(symbol_rloc(/* () */0), undefined, d);
 }
 
 function mkpat(d) {
-  return mk$1(Js_primitive.some(symbol_rloc(/* () */0)), undefined, d);
+  return mk$1(symbol_rloc(/* () */0), undefined, d);
 }
 
 function mkexp(d) {
-  return Curry._3(Ast_helper_004[/* mk */0], Js_primitive.some(symbol_rloc(/* () */0)), undefined, d);
+  return Curry._3(Ast_helper_004[/* mk */0], symbol_rloc(/* () */0), undefined, d);
 }
 
 function mkmty(d) {
-  return mk$3(Js_primitive.some(symbol_rloc(/* () */0)), undefined, d);
+  return mk$3(symbol_rloc(/* () */0), undefined, d);
 }
 
 function mksig(d) {
-  return mk$5(Js_primitive.some(symbol_rloc(/* () */0)), d);
+  return mk$5(symbol_rloc(/* () */0), d);
 }
 
 function mkmod(d) {
-  return mk$4(Js_primitive.some(symbol_rloc(/* () */0)), undefined, d);
+  return mk$4(symbol_rloc(/* () */0), undefined, d);
 }
 
 function mkstr(d) {
-  return mk$6(Js_primitive.some(symbol_rloc(/* () */0)), d);
+  return mk$6(symbol_rloc(/* () */0), d);
 }
 
 function mkclass(d) {
-  return mk$7(Js_primitive.some(symbol_rloc(/* () */0)), undefined, d);
+  return mk$7(symbol_rloc(/* () */0), undefined, d);
 }
 
 function mkcty(d) {
-  return mk$8(Js_primitive.some(symbol_rloc(/* () */0)), undefined, d);
+  return mk$8(symbol_rloc(/* () */0), undefined, d);
 }
 
 function mkctf(attrs, docs, d) {
-  return Curry._4(Ast_helper_019[/* mk */0], Js_primitive.some(symbol_rloc(/* () */0)), attrs, docs, d);
+  return Curry._4(Ast_helper_019[/* mk */0], symbol_rloc(/* () */0), attrs, docs, d);
 }
 
 function mkcf(attrs, docs, d) {
-  return Curry._4(Ast_helper_021[/* mk */0], Js_primitive.some(symbol_rloc(/* () */0)), attrs, docs, d);
+  return Curry._4(Ast_helper_021[/* mk */0], symbol_rloc(/* () */0), attrs, docs, d);
 }
 
 function mkrhs(rhs, pos) {
@@ -3412,7 +3412,7 @@ function mkoption(d) {
     loc_001,
     /* loc_ghost */true
   ];
-  return mk(Js_primitive.some(loc), undefined, /* Ptyp_constr */Block.__(3, [
+  return mk(loc, undefined, /* Ptyp_constr */Block.__(3, [
                 /* record */[
                   /* txt : Ldot */Block.__(1, [
                       /* Lident */Block.__(0, ["*predef*"]),
@@ -3445,26 +3445,26 @@ function reloc_exp(x) {
 
 function mkoperator(name, pos) {
   var loc = rhs_loc(pos);
-  return Curry._3(Ast_helper_004[/* mk */0], Js_primitive.some(loc), undefined, /* Pexp_ident */Block.__(0, [/* record */[
+  return Curry._3(Ast_helper_004[/* mk */0], loc, undefined, /* Pexp_ident */Block.__(0, [/* record */[
                   /* txt : Lident */Block.__(0, [name]),
                   /* loc */loc
                 ]]));
 }
 
 function mkpatvar(name, pos) {
-  return mk$1(Js_primitive.some(rhs_loc(pos)), undefined, /* Ppat_var */Block.__(0, [mkrhs(name, pos)]));
+  return mk$1(rhs_loc(pos), undefined, /* Ppat_var */Block.__(0, [mkrhs(name, pos)]));
 }
 
 function ghexp(d) {
-  return Curry._3(Ast_helper_004[/* mk */0], Js_primitive.some(symbol_gloc(/* () */0)), undefined, d);
+  return Curry._3(Ast_helper_004[/* mk */0], symbol_gloc(/* () */0), undefined, d);
 }
 
 function ghpat(d) {
-  return mk$1(Js_primitive.some(symbol_gloc(/* () */0)), undefined, d);
+  return mk$1(symbol_gloc(/* () */0), undefined, d);
 }
 
 function ghtyp(d) {
-  return mk(Js_primitive.some(symbol_gloc(/* () */0)), undefined, d);
+  return mk(symbol_gloc(/* () */0), undefined, d);
 }
 
 function ghloc(d) {
@@ -3502,22 +3502,22 @@ function neg_float_string(f) {
 }
 
 function mkexp_cons(consloc, args, loc) {
-  return Curry._3(Ast_helper_004[/* mk */0], Js_primitive.some(loc), undefined, /* Pexp_construct */Block.__(9, [
+  return Curry._3(Ast_helper_004[/* mk */0], loc, undefined, /* Pexp_construct */Block.__(9, [
                 /* record */[
                   /* txt : Lident */Block.__(0, ["::"]),
                   /* loc */consloc
                 ],
-                Js_primitive.some(args)
+                args
               ]));
 }
 
 function mkpat_cons(consloc, args, loc) {
-  return mk$1(Js_primitive.some(loc), undefined, /* Ppat_construct */Block.__(5, [
+  return mk$1(loc, undefined, /* Ppat_construct */Block.__(5, [
                 /* record */[
                   /* txt : Lident */Block.__(0, ["::"]),
                   /* loc */consloc
                 ],
-                Js_primitive.some(args)
+                args
               ]));
 }
 
@@ -3532,7 +3532,7 @@ function mktailexp(nilloc, param) {
       loc_001,
       /* loc_ghost */true
     ];
-    var arg = Curry._3(Ast_helper_004[/* mk */0], Js_primitive.some(loc), undefined, /* Pexp_tuple */Block.__(8, [/* :: */[
+    var arg = Curry._3(Ast_helper_004[/* mk */0], loc, undefined, /* Pexp_tuple */Block.__(8, [/* :: */[
               e1,
               /* :: */[
                 exp_el,
@@ -3557,7 +3557,7 @@ function mktailexp(nilloc, param) {
       nil_000,
       /* loc */loc$1
     ];
-    return Curry._3(Ast_helper_004[/* mk */0], Js_primitive.some(loc$1), undefined, /* Pexp_construct */Block.__(9, [
+    return Curry._3(Ast_helper_004[/* mk */0], loc$1, undefined, /* Pexp_construct */Block.__(9, [
                   nil,
                   undefined
                 ]));
@@ -3575,7 +3575,7 @@ function mktailpat(nilloc, param) {
       loc_001,
       /* loc_ghost */true
     ];
-    var arg = mk$1(Js_primitive.some(loc), undefined, /* Ppat_tuple */Block.__(4, [/* :: */[
+    var arg = mk$1(loc, undefined, /* Ppat_tuple */Block.__(4, [/* :: */[
               p1,
               /* :: */[
                 pat_pl,
@@ -3600,7 +3600,7 @@ function mktailpat(nilloc, param) {
       nil_000,
       /* loc */loc$1
     ];
-    return mk$1(Js_primitive.some(loc$1), undefined, /* Ppat_construct */Block.__(5, [
+    return mk$1(loc$1, undefined, /* Ppat_construct */Block.__(5, [
                   nil,
                   undefined
                 ]));
@@ -3625,19 +3625,19 @@ function mkexp_constraint(e, param) {
       return ghexp(/* Pexp_coerce */Block.__(20, [
                     e,
                     t1,
-                    Js_primitive.valFromOption(t2)
+                    t2
                   ]));
     } else {
       return ghexp(/* Pexp_constraint */Block.__(19, [
                     e,
-                    Js_primitive.valFromOption(t1)
+                    t1
                   ]));
     }
   } else if (t2 !== undefined) {
     return ghexp(/* Pexp_coerce */Block.__(20, [
                   e,
                   t1,
-                  Js_primitive.valFromOption(t2)
+                  t2
                 ]));
   } else {
     throw [
@@ -3906,7 +3906,7 @@ function wrap_exp_attrs(body, param) {
   ];
   if (ext !== undefined) {
     return ghexp(/* Pexp_extension */Block.__(33, [/* tuple */[
-                    Js_primitive.valFromOption(ext),
+                    ext,
                     /* PStr */Block.__(0, [/* :: */[
                           mkstrexp(body$1, /* [] */0),
                           /* [] */0
@@ -4273,7 +4273,7 @@ var yyact = /* array */[
       var _4 = Parsing.peek_val(__caml_parser_env, 1);
       return /* tuple */[
               mkrhs(_2, 2),
-              Js_primitive.some(_4)
+              _4
             ];
     }),
   (function (__caml_parser_env) {
@@ -4378,7 +4378,7 @@ var yyact = /* array */[
       var _7 = Parsing.peek_val(__caml_parser_env, 1);
       return mkmod(/* Pmod_unpack */Block.__(5, [ghexp(/* Pexp_coerce */Block.__(20, [
                             _3,
-                            Js_primitive.some(ghtyp(/* Ptyp_package */Block.__(9, [_5]))),
+                            ghtyp(/* Ptyp_package */Block.__(9, [_5])),
                             ghtyp(/* Ptyp_package */Block.__(9, [_7]))
                           ]))]));
     }),
@@ -4477,11 +4477,11 @@ var yyact = /* array */[
                 var tag = lzarg.tag | 0;
                 var lzarg$1 = lb[/* lb_text */4];
                 var tag$1 = lzarg$1.tag | 0;
-                return mk$17(Js_primitive.some(lb[/* lb_loc */5]), Js_primitive.some(lb[/* lb_attributes */2]), Js_primitive.some(tag === 250 ? lzarg[0] : (
-                                  tag === 246 ? CamlinternalLazy.force_lazy_block(lzarg) : lzarg
-                                )), Js_primitive.some(tag$1 === 250 ? lzarg$1[0] : (
-                                  tag$1 === 246 ? CamlinternalLazy.force_lazy_block(lzarg$1) : lzarg$1
-                                )), lb[/* lb_pattern */0], lb[/* lb_expression */1]);
+                return mk$17(lb[/* lb_loc */5], lb[/* lb_attributes */2], tag === 250 ? lzarg[0] : (
+                              tag === 246 ? CamlinternalLazy.force_lazy_block(lzarg) : lzarg
+                            ), tag$1 === 250 ? lzarg$1[0] : (
+                              tag$1 === 246 ? CamlinternalLazy.force_lazy_block(lzarg$1) : lzarg$1
+                            ), lb[/* lb_pattern */0], lb[/* lb_expression */1]);
               }), bindings);
         str = mkstr(/* Pstr_value */Block.__(1, [
                 lbs[/* lbs_rec */1],
@@ -4492,7 +4492,7 @@ var yyact = /* array */[
       if (match !== undefined) {
         var d = /* Pstr_extension */Block.__(14, [
             /* tuple */[
-              Js_primitive.valFromOption(match),
+              match,
               /* PStr */Block.__(0, [/* :: */[
                     str,
                     /* [] */0
@@ -4500,7 +4500,7 @@ var yyact = /* array */[
             ],
             /* [] */0
           ]);
-        return mk$6(Js_primitive.some(symbol_gloc(/* () */0)), d);
+        return mk$6(symbol_gloc(/* () */0), d);
       } else {
         return str;
       }
@@ -4565,7 +4565,7 @@ var yyact = /* array */[
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$16(Js_primitive.some(symbol_rloc(/* () */0)), Js_primitive.some(_3), Js_primitive.some(symbol_docs(/* () */0)), _2);
+      return mk$16(symbol_rloc(/* () */0), _3, symbol_docs(/* () */0), _2);
     }),
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);
@@ -4591,7 +4591,7 @@ var yyact = /* array */[
       var _2 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 1);
       var _4 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$14(Js_primitive.some(symbol_rloc(/* () */0)), Js_primitive.some(_4), Js_primitive.some(symbol_docs(/* () */0)), undefined, mkrhs(_2, 2), _3);
+      return mk$14(symbol_rloc(/* () */0), _4, symbol_docs(/* () */0), undefined, mkrhs(_2, 2), _3);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
@@ -4612,13 +4612,13 @@ var yyact = /* array */[
       var _3 = Parsing.peek_val(__caml_parser_env, 2);
       var _4 = Parsing.peek_val(__caml_parser_env, 1);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$14(Js_primitive.some(symbol_rloc(/* () */0)), Js_primitive.some(_5), Js_primitive.some(symbol_docs(/* () */0)), undefined, mkrhs(_3, 3), _4);
+      return mk$14(symbol_rloc(/* () */0), _5, symbol_docs(/* () */0), undefined, mkrhs(_3, 3), _4);
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 1);
       var _4 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$14(Js_primitive.some(symbol_rloc(/* () */0)), Js_primitive.some(_4), Js_primitive.some(symbol_docs(/* () */0)), Js_primitive.some(get_text(Parsing.symbol_start_pos(/* () */0))), mkrhs(_2, 2), _3);
+      return mk$14(symbol_rloc(/* () */0), _4, symbol_docs(/* () */0), get_text(Parsing.symbol_start_pos(/* () */0)), mkrhs(_2, 2), _3);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
@@ -4755,12 +4755,12 @@ var yyact = /* array */[
       var _2 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 1);
       var _4 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$15(Js_primitive.some(symbol_rloc(/* () */0)), Js_primitive.some(_4), Js_primitive.some(symbol_docs(/* () */0)), Js_primitive.some(_2), mkrhs(_3, 3));
+      return mk$15(symbol_rloc(/* () */0), _4, symbol_docs(/* () */0), _2, mkrhs(_3, 3));
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$16(Js_primitive.some(symbol_rloc(/* () */0)), Js_primitive.some(_3), Js_primitive.some(symbol_docs(/* () */0)), _2);
+      return mk$16(symbol_rloc(/* () */0), _3, symbol_docs(/* () */0), _2);
     }),
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);
@@ -4771,7 +4771,7 @@ var yyact = /* array */[
       var _6 = Parsing.peek_val(__caml_parser_env, 0);
       return mkmty(/* Pmty_functor */Block.__(2, [
                     mkrhs(_2, 2),
-                    Js_primitive.some(_4),
+                    _4,
                     _6
                   ]));
     }),
@@ -4787,13 +4787,13 @@ var yyact = /* array */[
       var _2 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 1);
       var _4 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$12(Js_primitive.some(symbol_rloc(/* () */0)), Js_primitive.some(_4), Js_primitive.some(symbol_docs(/* () */0)), undefined, mkrhs(_2, 2), _3);
+      return mk$12(symbol_rloc(/* () */0), _4, symbol_docs(/* () */0), undefined, mkrhs(_2, 2), _3);
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 3);
       var _4 = Parsing.peek_val(__caml_parser_env, 1);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$12(Js_primitive.some(symbol_rloc(/* () */0)), Js_primitive.some(_5), Js_primitive.some(symbol_docs(/* () */0)), undefined, mkrhs(_2, 2), alias(Js_primitive.some(rhs_loc(4)), undefined, mkrhs(_4, 4)));
+      return mk$12(symbol_rloc(/* () */0), _5, symbol_docs(/* () */0), undefined, mkrhs(_2, 2), alias(rhs_loc(4), undefined, mkrhs(_4, 4)));
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
@@ -4814,25 +4814,25 @@ var yyact = /* array */[
       var _3 = Parsing.peek_val(__caml_parser_env, 3);
       var _5 = Parsing.peek_val(__caml_parser_env, 1);
       var _6 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$12(Js_primitive.some(symbol_rloc(/* () */0)), Js_primitive.some(_6), Js_primitive.some(symbol_docs(/* () */0)), undefined, mkrhs(_3, 3), _5);
+      return mk$12(symbol_rloc(/* () */0), _6, symbol_docs(/* () */0), undefined, mkrhs(_3, 3), _5);
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 3);
       var _4 = Parsing.peek_val(__caml_parser_env, 1);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$12(Js_primitive.some(symbol_rloc(/* () */0)), Js_primitive.some(_5), Js_primitive.some(symbol_docs(/* () */0)), Js_primitive.some(get_text(Parsing.symbol_start_pos(/* () */0))), mkrhs(_2, 2), _4);
+      return mk$12(symbol_rloc(/* () */0), _5, symbol_docs(/* () */0), get_text(Parsing.symbol_start_pos(/* () */0)), mkrhs(_2, 2), _4);
     }),
   (function () {
       return undefined;
     }),
   (function (__caml_parser_env) {
-      return Js_primitive.some(Parsing.peek_val(__caml_parser_env, 0));
+      return Parsing.peek_val(__caml_parser_env, 0);
     }),
   (function (__caml_parser_env) {
       var _3 = Parsing.peek_val(__caml_parser_env, 2);
       var _4 = Parsing.peek_val(__caml_parser_env, 1);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$13(Js_primitive.some(symbol_rloc(/* () */0)), Js_primitive.some(_5), Js_primitive.some(symbol_docs(/* () */0)), undefined, _4, mkrhs(_3, 3));
+      return mk$13(symbol_rloc(/* () */0), _5, symbol_docs(/* () */0), undefined, _4, mkrhs(_3, 3));
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
@@ -4855,7 +4855,7 @@ var yyact = /* array */[
       var _4 = Parsing.peek_val(__caml_parser_env, 2);
       var _5 = Parsing.peek_val(__caml_parser_env, 1);
       var _6 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$18(Js_primitive.some(symbol_rloc(/* () */0)), Js_primitive.some(_6), Js_primitive.some(symbol_docs(/* () */0)), undefined, Js_primitive.some(_2), _3, mkrhs(_4, 4), _5);
+      return mk$18(symbol_rloc(/* () */0), _6, symbol_docs(/* () */0), undefined, _2, _3, mkrhs(_4, 4), _5);
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 4);
@@ -4863,7 +4863,7 @@ var yyact = /* array */[
       var _4 = Parsing.peek_val(__caml_parser_env, 2);
       var _5 = Parsing.peek_val(__caml_parser_env, 1);
       var _6 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$18(Js_primitive.some(symbol_rloc(/* () */0)), Js_primitive.some(_6), Js_primitive.some(symbol_docs(/* () */0)), Js_primitive.some(get_text(Parsing.symbol_start_pos(/* () */0))), Js_primitive.some(_2), _3, mkrhs(_4, 4), _5);
+      return mk$18(symbol_rloc(/* () */0), _6, symbol_docs(/* () */0), get_text(Parsing.symbol_start_pos(/* () */0)), _2, _3, mkrhs(_4, 4), _5);
     }),
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);
@@ -4941,7 +4941,7 @@ var yyact = /* array */[
                         ])
                     ];
               }
-              return mk$17(Js_primitive.some(lb[/* lb_loc */5]), undefined, undefined, undefined, lb[/* lb_pattern */0], lb[/* lb_expression */1]);
+              return mk$17(lb[/* lb_loc */5], undefined, undefined, undefined, lb[/* lb_pattern */0], lb[/* lb_expression */1]);
             }), lbs[/* lbs_bindings */0]);
       if (lbs[/* lbs_extension */2] !== undefined) {
         throw [
@@ -5060,7 +5060,7 @@ var yyact = /* array */[
       var _3 = Parsing.peek_val(__caml_parser_env, 2);
       var _4 = Parsing.peek_val(__caml_parser_env, 1);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return mkcf(Js_primitive.some(_5), Js_primitive.some(symbol_docs(/* () */0)), /* Pcf_inherit */Block.__(0, [
+      return mkcf(_5, symbol_docs(/* () */0), /* Pcf_inherit */Block.__(0, [
                     _2,
                     _3,
                     _4
@@ -5069,27 +5069,27 @@ var yyact = /* array */[
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return mkcf(Js_primitive.some(_3), Js_primitive.some(symbol_docs(/* () */0)), /* Pcf_val */Block.__(1, [_2]));
+      return mkcf(_3, symbol_docs(/* () */0), /* Pcf_val */Block.__(1, [_2]));
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return mkcf(Js_primitive.some(_3), Js_primitive.some(symbol_docs(/* () */0)), /* Pcf_method */Block.__(2, [_2]));
+      return mkcf(_3, symbol_docs(/* () */0), /* Pcf_method */Block.__(2, [_2]));
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return mkcf(Js_primitive.some(_3), Js_primitive.some(symbol_docs(/* () */0)), /* Pcf_constraint */Block.__(3, [_2]));
+      return mkcf(_3, symbol_docs(/* () */0), /* Pcf_constraint */Block.__(3, [_2]));
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return mkcf(Js_primitive.some(_3), Js_primitive.some(symbol_docs(/* () */0)), /* Pcf_initializer */Block.__(4, [_2]));
+      return mkcf(_3, symbol_docs(/* () */0), /* Pcf_initializer */Block.__(4, [_2]));
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return mkcf(Js_primitive.some(_2), Js_primitive.some(symbol_docs(/* () */0)), /* Pcf_extension */Block.__(6, [_1]));
+      return mkcf(_2, symbol_docs(/* () */0), /* Pcf_extension */Block.__(6, [_1]));
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
@@ -5227,7 +5227,7 @@ var yyact = /* array */[
                   _1,
                   ghexp(/* Pexp_poly */Block.__(28, [
                           _7,
-                          Js_primitive.some(_5)
+                          _5
                         ]))
                 ])
             ];
@@ -5250,7 +5250,7 @@ var yyact = /* array */[
                   _1,
                   ghexp(/* Pexp_poly */Block.__(28, [
                           match[0],
-                          Js_primitive.some(match[1])
+                          match[1]
                         ]))
                 ])
             ];
@@ -5360,19 +5360,19 @@ var yyact = /* array */[
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return mkctf(Js_primitive.some(_3), Js_primitive.some(symbol_docs(/* () */0)), /* Pctf_inherit */Block.__(0, [_2]));
+      return mkctf(_3, symbol_docs(/* () */0), /* Pctf_inherit */Block.__(0, [_2]));
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return mkctf(Js_primitive.some(_3), Js_primitive.some(symbol_docs(/* () */0)), /* Pctf_val */Block.__(1, [_2]));
+      return mkctf(_3, symbol_docs(/* () */0), /* Pctf_val */Block.__(1, [_2]));
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 4);
       var _3 = Parsing.peek_val(__caml_parser_env, 3);
       var _5 = Parsing.peek_val(__caml_parser_env, 1);
       var _6 = Parsing.peek_val(__caml_parser_env, 0);
-      return mkctf(Js_primitive.some(_6), Js_primitive.some(symbol_docs(/* () */0)), /* Pctf_method */Block.__(2, [/* tuple */[
+      return mkctf(_6, symbol_docs(/* () */0), /* Pctf_method */Block.__(2, [/* tuple */[
                       _3,
                       _2[0],
                       _2[1],
@@ -5382,12 +5382,12 @@ var yyact = /* array */[
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return mkctf(Js_primitive.some(_3), Js_primitive.some(symbol_docs(/* () */0)), /* Pctf_constraint */Block.__(3, [_2]));
+      return mkctf(_3, symbol_docs(/* () */0), /* Pctf_constraint */Block.__(3, [_2]));
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 1);
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return mkctf(Js_primitive.some(_2), Js_primitive.some(symbol_docs(/* () */0)), /* Pctf_extension */Block.__(5, [_1]));
+      return mkctf(_2, symbol_docs(/* () */0), /* Pctf_extension */Block.__(5, [_1]));
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
@@ -5464,7 +5464,7 @@ var yyact = /* array */[
       var _4 = Parsing.peek_val(__caml_parser_env, 3);
       var _6 = Parsing.peek_val(__caml_parser_env, 1);
       var _7 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$18(Js_primitive.some(symbol_rloc(/* () */0)), Js_primitive.some(_7), Js_primitive.some(symbol_docs(/* () */0)), undefined, Js_primitive.some(_2), _3, mkrhs(_4, 4), _6);
+      return mk$18(symbol_rloc(/* () */0), _7, symbol_docs(/* () */0), undefined, _2, _3, mkrhs(_4, 4), _6);
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 5);
@@ -5472,7 +5472,7 @@ var yyact = /* array */[
       var _4 = Parsing.peek_val(__caml_parser_env, 3);
       var _6 = Parsing.peek_val(__caml_parser_env, 1);
       var _7 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$18(Js_primitive.some(symbol_rloc(/* () */0)), Js_primitive.some(_7), Js_primitive.some(symbol_docs(/* () */0)), Js_primitive.some(get_text(Parsing.symbol_start_pos(/* () */0))), Js_primitive.some(_2), _3, mkrhs(_4, 4), _6);
+      return mk$18(symbol_rloc(/* () */0), _7, symbol_docs(/* () */0), get_text(Parsing.symbol_start_pos(/* () */0)), _2, _3, mkrhs(_4, 4), _6);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
@@ -5495,7 +5495,7 @@ var yyact = /* array */[
       var _5 = Parsing.peek_val(__caml_parser_env, 3);
       var _7 = Parsing.peek_val(__caml_parser_env, 1);
       var _8 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$18(Js_primitive.some(symbol_rloc(/* () */0)), Js_primitive.some(_8), Js_primitive.some(symbol_docs(/* () */0)), undefined, Js_primitive.some(_3), _4, mkrhs(_5, 5), _7);
+      return mk$18(symbol_rloc(/* () */0), _8, symbol_docs(/* () */0), undefined, _3, _4, mkrhs(_5, 5), _7);
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 5);
@@ -5503,7 +5503,7 @@ var yyact = /* array */[
       var _4 = Parsing.peek_val(__caml_parser_env, 3);
       var _6 = Parsing.peek_val(__caml_parser_env, 1);
       var _7 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$18(Js_primitive.some(symbol_rloc(/* () */0)), Js_primitive.some(_7), Js_primitive.some(symbol_docs(/* () */0)), Js_primitive.some(get_text(Parsing.symbol_start_pos(/* () */0))), Js_primitive.some(_2), _3, mkrhs(_4, 4), _6);
+      return mk$18(symbol_rloc(/* () */0), _7, symbol_docs(/* () */0), get_text(Parsing.symbol_start_pos(/* () */0)), _2, _3, mkrhs(_4, 4), _6);
     }),
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);
@@ -5599,7 +5599,7 @@ var yyact = /* array */[
       return undefined;
     }),
   (function (__caml_parser_env) {
-      return Js_primitive.some(Parsing.peek_val(__caml_parser_env, 0));
+      return Parsing.peek_val(__caml_parser_env, 0);
     }),
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);
@@ -5659,7 +5659,7 @@ var yyact = /* array */[
                         ])
                     ];
               }
-              return mk$17(Js_primitive.some(lb[/* lb_loc */5]), undefined, undefined, undefined, lb[/* lb_pattern */0], lb[/* lb_expression */1]);
+              return mk$17(lb[/* lb_loc */5], undefined, undefined, undefined, lb[/* lb_pattern */0], lb[/* lb_expression */1]);
             }), lbs[/* lbs_bindings */0]);
       var d_000 = lbs[/* lbs_rec */1];
       var d_001 = List.rev(bindings);
@@ -5764,7 +5764,7 @@ var yyact = /* array */[
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
       return mkexp(/* Pexp_construct */Block.__(9, [
                     mkrhs(_1, 1),
-                    Js_primitive.some(_2)
+                    _2
                   ]));
     }),
   (function (__caml_parser_env) {
@@ -5772,7 +5772,7 @@ var yyact = /* array */[
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
       return mkexp(/* Pexp_variant */Block.__(10, [
                     _1,
-                    Js_primitive.some(_2)
+                    _2
                   ]));
     }),
   (function (__caml_parser_env) {
@@ -5783,7 +5783,7 @@ var yyact = /* array */[
       return wrap_exp_attrs(mkexp(/* Pexp_ifthenelse */Block.__(15, [
                         _3,
                         _5,
-                        Js_primitive.some(_7)
+                        _7
                       ])), _2);
     }),
   (function (__caml_parser_env) {
@@ -6964,7 +6964,7 @@ var yyact = /* array */[
       var _1 = Parsing.peek_val(__caml_parser_env, 4);
       var _3 = Parsing.peek_val(__caml_parser_env, 2);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return Curry._3(Ast_helper_004[/* case */36], _1, Js_primitive.some(_3), _5);
+      return Curry._3(Ast_helper_004[/* case */36], _1, _3, _5);
     }),
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);
@@ -7010,7 +7010,7 @@ var yyact = /* array */[
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
       return /* tuple */[
-              Js_primitive.some(_1),
+              _1,
               _3
             ];
     }),
@@ -7099,7 +7099,7 @@ var yyact = /* array */[
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
       return /* tuple */[
-              Js_primitive.some(_2),
+              _2,
               undefined
             ];
     }),
@@ -7107,15 +7107,15 @@ var yyact = /* array */[
       var _2 = Parsing.peek_val(__caml_parser_env, 2);
       var _4 = Parsing.peek_val(__caml_parser_env, 0);
       return /* tuple */[
-              Js_primitive.some(_2),
-              Js_primitive.some(_4)
+              _2,
+              _4
             ];
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
       return /* tuple */[
               undefined,
-              Js_primitive.some(_2)
+              _2
             ];
     }),
   (function () {
@@ -7148,7 +7148,7 @@ var yyact = /* array */[
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
       return mkpat(/* Ppat_construct */Block.__(5, [
                     mkrhs(_1, 1),
-                    Js_primitive.some(_2)
+                    _2
                   ]));
     }),
   (function (__caml_parser_env) {
@@ -7156,7 +7156,7 @@ var yyact = /* array */[
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
       return mkpat(/* Ppat_variant */Block.__(6, [
                     _1,
-                    Js_primitive.some(_2)
+                    _2
                   ]));
     }),
   (function (__caml_parser_env) {
@@ -7433,7 +7433,7 @@ var yyact = /* array */[
       var _2 = Parsing.peek_val(__caml_parser_env, 3);
       var _4 = Parsing.peek_val(__caml_parser_env, 1);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$11(Js_primitive.some(symbol_rloc(/* () */0)), Js_primitive.some(_5), Js_primitive.some(symbol_docs(/* () */0)), undefined, mkrhs(_2, 2), _4);
+      return mk$11(symbol_rloc(/* () */0), _5, symbol_docs(/* () */0), undefined, mkrhs(_2, 2), _4);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
@@ -7455,7 +7455,7 @@ var yyact = /* array */[
       var _4 = Parsing.peek_val(__caml_parser_env, 3);
       var _6 = Parsing.peek_val(__caml_parser_env, 1);
       var _7 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$11(Js_primitive.some(symbol_rloc(/* () */0)), Js_primitive.some(_7), Js_primitive.some(symbol_docs(/* () */0)), _6, mkrhs(_2, 2), _4);
+      return mk$11(symbol_rloc(/* () */0), _7, symbol_docs(/* () */0), _6, mkrhs(_2, 2), _4);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
@@ -7479,7 +7479,7 @@ var yyact = /* array */[
       var _5 = Parsing.peek_val(__caml_parser_env, 2);
       var _6 = Parsing.peek_val(__caml_parser_env, 1);
       var _7 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$19(Js_primitive.some(symbol_rloc(/* () */0)), Js_primitive.some(add_nonrec(_2, _7, 2)), Js_primitive.some(symbol_docs(/* () */0)), undefined, _3, List.rev(_6), Js_primitive.some(_5[0]), Js_primitive.some(_5[1]), _5[2], mkrhs(_4, 4));
+      return mk$19(symbol_rloc(/* () */0), add_nonrec(_2, _7, 2), symbol_docs(/* () */0), undefined, _3, List.rev(_6), _5[0], _5[1], _5[2], mkrhs(_4, 4));
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 4);
@@ -7487,7 +7487,7 @@ var yyact = /* array */[
       var _4 = Parsing.peek_val(__caml_parser_env, 2);
       var _5 = Parsing.peek_val(__caml_parser_env, 1);
       var _6 = Parsing.peek_val(__caml_parser_env, 0);
-      return mk$19(Js_primitive.some(symbol_rloc(/* () */0)), Js_primitive.some(_6), Js_primitive.some(symbol_docs(/* () */0)), Js_primitive.some(get_text(Parsing.symbol_start_pos(/* () */0))), _2, List.rev(_5), Js_primitive.some(_4[0]), Js_primitive.some(_4[1]), _4[2], mkrhs(_3, 3));
+      return mk$19(symbol_rloc(/* () */0), _6, symbol_docs(/* () */0), get_text(Parsing.symbol_start_pos(/* () */0)), _2, List.rev(_5), _4[0], _4[1], _4[2], mkrhs(_3, 3));
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
@@ -7512,7 +7512,7 @@ var yyact = /* array */[
       return /* tuple */[
               /* Ptype_abstract */0,
               /* Public */1,
-              Js_primitive.some(_2)
+              _2
             ];
     }),
   (function (__caml_parser_env) {
@@ -7520,7 +7520,7 @@ var yyact = /* array */[
       return /* tuple */[
               /* Ptype_abstract */0,
               /* Private */0,
-              Js_primitive.some(_3)
+              _3
             ];
     }),
   (function (__caml_parser_env) {
@@ -7562,7 +7562,7 @@ var yyact = /* array */[
       return /* tuple */[
               /* Ptype_variant */Block.__(0, [List.rev(_5)]),
               _4,
-              Js_primitive.some(_2)
+              _2
             ];
     }),
   (function (__caml_parser_env) {
@@ -7570,7 +7570,7 @@ var yyact = /* array */[
       return /* tuple */[
               /* Ptype_open */1,
               /* Public */1,
-              Js_primitive.some(_2)
+              _2
             ];
     }),
   (function (__caml_parser_env) {
@@ -7580,7 +7580,7 @@ var yyact = /* array */[
       return /* tuple */[
               /* Ptype_record */Block.__(1, [_6]),
               _4,
-              Js_primitive.some(_2)
+              _2
             ];
     }),
   (function () {
@@ -7701,13 +7701,13 @@ var yyact = /* array */[
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return constructor(Js_primitive.some(symbol_rloc(/* () */0)), Js_primitive.some(_3), Js_primitive.some(get_info(Parsing.symbol_end_pos(/* () */0))), _2[0], _2[1], mkrhs(_1, 1));
+      return constructor(symbol_rloc(/* () */0), _3, Js_primitive.some(get_info(Parsing.symbol_end_pos(/* () */0))), _2[0], _2[1], mkrhs(_1, 1));
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 1);
       var _4 = Parsing.peek_val(__caml_parser_env, 0);
-      return constructor(Js_primitive.some(symbol_rloc(/* () */0)), Js_primitive.some(_4), Js_primitive.some(get_info(Parsing.symbol_end_pos(/* () */0))), _3[0], _3[1], mkrhs(_2, 2));
+      return constructor(symbol_rloc(/* () */0), _4, Js_primitive.some(get_info(Parsing.symbol_end_pos(/* () */0))), _3[0], _3[1], mkrhs(_2, 2));
     }),
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);
@@ -7717,14 +7717,14 @@ var yyact = /* array */[
       var _4 = Parsing.peek_val(__caml_parser_env, 2);
       var _5 = Parsing.peek_val(__caml_parser_env, 1);
       var _6 = Parsing.peek_val(__caml_parser_env, 0);
-      return rebind(Js_primitive.some(symbol_rloc(/* () */0)), Js_primitive.some(Pervasives.$at(_5, _6)), Js_primitive.some(symbol_docs(/* () */0)), undefined, mkrhs(_2, 2), mkrhs(_4, 4));
+      return rebind(symbol_rloc(/* () */0), Pervasives.$at(_5, _6), symbol_docs(/* () */0), undefined, mkrhs(_2, 2), mkrhs(_4, 4));
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 3);
       var _3 = Parsing.peek_val(__caml_parser_env, 2);
       var _4 = Parsing.peek_val(__caml_parser_env, 1);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return decl(Js_primitive.some(symbol_rloc(/* () */0)), Js_primitive.some(Pervasives.$at(_4, _5)), Js_primitive.some(symbol_docs(/* () */0)), undefined, _3[0], _3[1], mkrhs(_2, 2));
+      return decl(symbol_rloc(/* () */0), Pervasives.$at(_4, _5), symbol_docs(/* () */0), undefined, _3[0], _3[1], mkrhs(_2, 2));
     }),
   (function () {
       return /* tuple */[
@@ -7744,14 +7744,14 @@ var yyact = /* array */[
       var _4 = Parsing.peek_val(__caml_parser_env, 0);
       return /* tuple */[
               List.rev(_2),
-              Js_primitive.some(_4)
+              _4
             ];
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
       return /* tuple */[
               /* [] */0,
-              Js_primitive.some(_2)
+              _2
             ];
     }),
   (function (__caml_parser_env) {
@@ -7781,7 +7781,7 @@ var yyact = /* array */[
       var _2 = Parsing.peek_val(__caml_parser_env, 3);
       var _4 = Parsing.peek_val(__caml_parser_env, 1);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return field$1(Js_primitive.some(symbol_rloc(/* () */0)), Js_primitive.some(_5), Js_primitive.some(get_info(Parsing.symbol_end_pos(/* () */0))), Js_primitive.some(_1), mkrhs(_2, 2), _4);
+      return field$1(symbol_rloc(/* () */0), _5, Js_primitive.some(get_info(Parsing.symbol_end_pos(/* () */0))), _1, mkrhs(_2, 2), _4);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 6);
@@ -7791,7 +7791,7 @@ var yyact = /* array */[
       var _7 = Parsing.peek_val(__caml_parser_env, 0);
       var info_before_semi = get_info(Parsing.rhs_end_pos(5));
       var info = info_before_semi !== undefined ? info_before_semi : get_info(Parsing.symbol_end_pos(/* () */0));
-      return field$1(Js_primitive.some(symbol_rloc(/* () */0)), Js_primitive.some(Pervasives.$at(_5, _7)), Js_primitive.some(info), Js_primitive.some(_1), mkrhs(_2, 2), _4);
+      return field$1(symbol_rloc(/* () */0), Pervasives.$at(_5, _7), Js_primitive.some(info), _1, mkrhs(_2, 2), _4);
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 6);
@@ -7803,7 +7803,7 @@ var yyact = /* array */[
       if (_2 !== /* Recursive */1) {
         not_expecting(2, "nonrec flag");
       }
-      return mk$20(Js_primitive.some(_8), Js_primitive.some(symbol_docs(/* () */0)), _3, Js_primitive.some(_6), mkrhs(_4, 4), List.rev(_7));
+      return mk$20(_8, symbol_docs(/* () */0), _3, _6, mkrhs(_4, 4), List.rev(_7));
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 6);
@@ -7815,7 +7815,7 @@ var yyact = /* array */[
       if (_2 !== /* Recursive */1) {
         not_expecting(2, "nonrec flag");
       }
-      return mk$20(Js_primitive.some(_8), Js_primitive.some(symbol_docs(/* () */0)), _3, Js_primitive.some(_6), mkrhs(_4, 4), List.rev(_7));
+      return mk$20(_8, symbol_docs(/* () */0), _3, _6, mkrhs(_4, 4), List.rev(_7));
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
@@ -7887,25 +7887,25 @@ var yyact = /* array */[
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return decl(Js_primitive.some(symbol_rloc(/* () */0)), Js_primitive.some(_3), undefined, Js_primitive.some(get_info(Parsing.symbol_end_pos(/* () */0))), _2[0], _2[1], mkrhs(_1, 1));
+      return decl(symbol_rloc(/* () */0), _3, undefined, Js_primitive.some(get_info(Parsing.symbol_end_pos(/* () */0))), _2[0], _2[1], mkrhs(_1, 1));
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 1);
       var _4 = Parsing.peek_val(__caml_parser_env, 0);
-      return decl(Js_primitive.some(symbol_rloc(/* () */0)), Js_primitive.some(_4), undefined, Js_primitive.some(get_info(Parsing.symbol_end_pos(/* () */0))), _3[0], _3[1], mkrhs(_2, 2));
+      return decl(symbol_rloc(/* () */0), _4, undefined, Js_primitive.some(get_info(Parsing.symbol_end_pos(/* () */0))), _3[0], _3[1], mkrhs(_2, 2));
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 3);
       var _3 = Parsing.peek_val(__caml_parser_env, 1);
       var _4 = Parsing.peek_val(__caml_parser_env, 0);
-      return rebind(Js_primitive.some(symbol_rloc(/* () */0)), Js_primitive.some(_4), undefined, Js_primitive.some(get_info(Parsing.symbol_end_pos(/* () */0))), mkrhs(_1, 1), mkrhs(_3, 3));
+      return rebind(symbol_rloc(/* () */0), _4, undefined, Js_primitive.some(get_info(Parsing.symbol_end_pos(/* () */0))), mkrhs(_1, 1), mkrhs(_3, 3));
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 3);
       var _4 = Parsing.peek_val(__caml_parser_env, 1);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return rebind(Js_primitive.some(symbol_rloc(/* () */0)), Js_primitive.some(_5), undefined, Js_primitive.some(get_info(Parsing.symbol_end_pos(/* () */0))), mkrhs(_2, 2), mkrhs(_4, 4));
+      return rebind(symbol_rloc(/* () */0), _5, undefined, Js_primitive.some(get_info(Parsing.symbol_end_pos(/* () */0))), mkrhs(_2, 2), mkrhs(_4, 4));
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
@@ -7930,14 +7930,14 @@ var yyact = /* array */[
       var _6 = Parsing.peek_val(__caml_parser_env, 0);
       return /* Pwith_type */Block.__(0, [
                 mkrhs(_3, 3),
-                mk$19(Js_primitive.some(symbol_rloc(/* () */0)), undefined, undefined, undefined, _2, List.rev(_6), undefined, Js_primitive.some(_4), Js_primitive.some(_5), mkrhs(last(_3), 3))
+                mk$19(symbol_rloc(/* () */0), undefined, undefined, undefined, _2, List.rev(_6), undefined, _4, _5, mkrhs(last(_3), 3))
               ]);
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 3);
       var _3 = Parsing.peek_val(__caml_parser_env, 2);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* Pwith_typesubst */Block.__(2, [mk$19(Js_primitive.some(symbol_rloc(/* () */0)), undefined, undefined, undefined, _2, undefined, undefined, undefined, Js_primitive.some(_5), mkrhs(_3, 3))]);
+      return /* Pwith_typesubst */Block.__(2, [mk$19(symbol_rloc(/* () */0), undefined, undefined, undefined, _2, undefined, undefined, undefined, _5, mkrhs(_3, 3))]);
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 2);
@@ -9153,7 +9153,7 @@ var yyact = /* array */[
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
       return /* tuple */[
-              Js_primitive.some(_2),
+              _2,
               _3
             ];
     }),
@@ -9193,7 +9193,7 @@ var yyact = /* array */[
       var _4 = Parsing.peek_val(__caml_parser_env, 0);
       return /* PPat */Block.__(2, [
                 _2,
-                Js_primitive.some(_4)
+                _4
               ]);
     }),
   (function (__caml_parser_env) {
@@ -9521,7 +9521,7 @@ function directive_parse(token_with_comments, lexbuf) {
     var v = look_ahead[0];
     if (v !== undefined) {
       look_ahead[0] = undefined;
-      return Js_primitive.valFromOption(v);
+      return v;
     } else {
       var _param = /* () */0;
       while(true) {
@@ -9564,7 +9564,7 @@ function directive_parse(token_with_comments, lexbuf) {
             ]
           ];
     }
-    look_ahead[0] = Js_primitive.some(e);
+    look_ahead[0] = e;
     return /* () */0;
   };
   var token_op = function (calc, no, lhs) {
@@ -10747,7 +10747,7 @@ function report_error(ppf, param) {
 
 register_error_of_exn((function (param) {
         if (param[0] === $$Error$2) {
-          return Js_primitive.some(error_of_printer(param[2], report_error, param[1]));
+          return error_of_printer(param[2], report_error, param[1]);
         } else {
           return undefined;
         }
@@ -11494,7 +11494,7 @@ function token$1(lexbuf) {
                 }
                 }(lines,docs));
                 var look_ahead = function (token) {
-                  sharp_look_ahead[0] = Js_primitive.some(token);
+                  sharp_look_ahead[0] = token;
                   return /* SHARP */84;
                 };
                 var if_then_else$1 = if_then_else[0];
@@ -11755,7 +11755,7 @@ function token$1(lexbuf) {
   var match = sharp_look_ahead[0];
   if (match !== undefined) {
     sharp_look_ahead[0] = undefined;
-    return Js_primitive.valFromOption(match);
+    return match;
   } else {
     return loop(/* NoLine */0, /* Initial */0, lexbuf);
   }

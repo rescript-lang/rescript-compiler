@@ -4,7 +4,6 @@ var Mt = require("./mt.js");
 var $$Array = require("../../lib/js/array.js");
 var Block = require("../../lib/js/block.js");
 var Js_mapperRt = require("../../lib/js/js_mapperRt.js");
-var Js_primitive = require("../../lib/js/js_primitive.js");
 
 var suites = [/* [] */0];
 
@@ -57,7 +56,7 @@ function eqU(x, y) {
 function eqUOpt(x, y) {
   if (x !== undefined) {
     if (y !== undefined) {
-      return Js_primitive.valFromOption(x) === Js_primitive.valFromOption(y);
+      return x === y;
     } else {
       return false;
     }
@@ -106,7 +105,7 @@ function eqV(x, y) {
 function eqVOpt(x, y) {
   if (x !== undefined) {
     if (y !== undefined) {
-      return Js_primitive.valFromOption(x) === Js_primitive.valFromOption(y);
+      return x === y;
     } else {
       return false;
     }
@@ -249,7 +248,7 @@ eq("File \"ast_js_mapper_poly_test.ml\", line 89, characters 5-12", $$Array.map(
               undefined,
               undefined
             ], $$Array.map((function (x) {
-                    return Js_primitive.some(x);
+                    return x;
                   }), /* array */[
                   /* C0 */0,
                   /* C1 */1,
