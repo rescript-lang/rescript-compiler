@@ -348,7 +348,7 @@ var ID_MONAD = /* module */[
 ];
 
 function make($staropt$star, refill) {
-  var bufsize = $staropt$star !== /* None */0 ? $staropt$star[0] : 1024;
+  var bufsize = $staropt$star !== undefined ? $staropt$star : 1024;
   var bufsize$1 = Caml_primitive.caml_int_min(bufsize > 16 ? bufsize : 16, Sys.max_string_length);
   return /* record */[
           /* buf */Caml_string.caml_create_string(bufsize$1),
@@ -554,7 +554,7 @@ function expr_list(acc, k, t) {
         if (switcher !== 32) {
           exit = 1;
         } else {
-          return Curry._2(k, /* None */0, /* `List */[
+          return Curry._2(k, undefined, /* `List */[
                       848054398,
                       List.rev(acc)
                     ]);
@@ -567,13 +567,13 @@ function expr_list(acc, k, t) {
       if (exit === 1) {
         return expr_starting_with(c, (function (last, e) {
                       var exit = 0;
-                      if (last !== /* None */0) {
-                        var match = last[0];
+                      if (last !== undefined) {
+                        var match = last;
                         if (match !== 40) {
                           if (match !== 41) {
                             exit = 1;
                           } else {
-                            return Curry._2(k, /* None */0, /* `List */[
+                            return Curry._2(k, undefined, /* `List */[
                                         848054398,
                                         List.rev(/* :: */[
                                               e,
@@ -621,7 +621,7 @@ function atom(k, t) {
       return _refill(t, (function (param) {
                     return atom(k, param);
                   }), (function (param) {
-                    return _return_atom(/* None */0, k, param);
+                    return _return_atom(undefined, k, param);
                   }));
     } else {
       var c = _get(t);
@@ -672,7 +672,7 @@ function atom(k, t) {
             $$Buffer.add_char(t[/* atom */2], c);
             continue ;
         case 2 : 
-            return _return_atom([c], k, t);
+            return _return_atom(c, k, t);
         
       }
     }
@@ -698,7 +698,7 @@ function quoted(k, t) {
                       }), t);
         }
       } else {
-        return _return_atom(/* None */0, k, t);
+        return _return_atom(undefined, k, t);
       }
       if (exit === 1) {
         $$Buffer.add_char(t[/* atom */2], c);
@@ -847,7 +847,7 @@ function skip_comment(k, t) {
       if (match !== 10) {
         continue ;
       } else {
-        return Curry._2(k, /* None */0, /* () */0);
+        return Curry._2(k, undefined, /* () */0);
       }
     }
   };
@@ -899,7 +899,7 @@ function parse_string(s) {
       return n;
     }
   };
-  var d = make([n], refill);
+  var d = make(n, refill);
   var res = next(d);
   if (typeof res === "number") {
     return /* `Error */[
@@ -933,9 +933,9 @@ function parse_chan_gen(bufsize, ic) {
   return (function () {
       var e = next(d);
       if (typeof e === "number") {
-        return /* None */0;
+        return undefined;
       } else {
-        return [e];
+        return e;
       }
     });
 }
@@ -967,20 +967,20 @@ function parse_chan_list(bufsize, ic) {
 
 function parse_file(filename) {
   return _with_in(filename, (function (ic) {
-                return parse_chan(/* None */0, ic);
+                return parse_chan(undefined, ic);
               }));
 }
 
 function parse_file_list(filename) {
   return _with_in(filename, (function (ic) {
-                return parse_chan_list(/* None */0, ic);
+                return parse_chan_list(undefined, ic);
               }));
 }
 
 function MakeDecode(funarg) {
   var $great$great$eq = funarg[/* >>= */1];
   var make = function ($staropt$star, refill) {
-    var bufsize = $staropt$star !== /* None */0 ? $staropt$star[0] : 1024;
+    var bufsize = $staropt$star !== undefined ? $staropt$star : 1024;
     var bufsize$1 = Caml_primitive.caml_int_min(bufsize > 16 ? bufsize : 16, Sys.max_string_length);
     return /* record */[
             /* buf */Caml_string.caml_create_string(bufsize$1),
@@ -1179,7 +1179,7 @@ function MakeDecode(funarg) {
           if (switcher !== 32) {
             exit = 1;
           } else {
-            return Curry._2(k, /* None */0, /* `List */[
+            return Curry._2(k, undefined, /* `List */[
                         848054398,
                         List.rev(acc)
                       ]);
@@ -1192,13 +1192,13 @@ function MakeDecode(funarg) {
         if (exit === 1) {
           return expr_starting_with(c, (function (last, e) {
                         var exit = 0;
-                        if (last !== /* None */0) {
-                          var match = last[0];
+                        if (last !== undefined) {
+                          var match = last;
                           if (match !== 40) {
                             if (match !== 41) {
                               exit = 1;
                             } else {
-                              return Curry._2(k, /* None */0, /* `List */[
+                              return Curry._2(k, undefined, /* `List */[
                                           848054398,
                                           List.rev(/* :: */[
                                                 e,
@@ -1244,7 +1244,7 @@ function MakeDecode(funarg) {
         return _refill(t, (function (param) {
                       return atom(k, param);
                     }), (function (param) {
-                      return _return_atom(/* None */0, k, param);
+                      return _return_atom(undefined, k, param);
                     }));
       } else {
         var c = _get(t);
@@ -1295,7 +1295,7 @@ function MakeDecode(funarg) {
               $$Buffer.add_char(t[/* atom */2], c);
               continue ;
           case 2 : 
-              return _return_atom([c], k, t);
+              return _return_atom(c, k, t);
           
         }
       }
@@ -1320,7 +1320,7 @@ function MakeDecode(funarg) {
                         }), t);
           }
         } else {
-          return _return_atom(/* None */0, k, t);
+          return _return_atom(undefined, k, t);
         }
         if (exit === 1) {
           $$Buffer.add_char(t[/* atom */2], c);
@@ -1465,7 +1465,7 @@ function MakeDecode(funarg) {
         if (match !== 10) {
           continue ;
         } else {
-          return Curry._2(k, /* None */0, /* () */0);
+          return Curry._2(k, undefined, /* () */0);
         }
       }
     };

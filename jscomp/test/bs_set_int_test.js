@@ -173,9 +173,9 @@ var minv$1 = Belt_SetInt.minimum(v$2);
 
 var maxv$1 = Belt_SetInt.maximum(v$2);
 
-eq("File \"bs_set_int_test.ml\", line 79, characters 5-12", minv$1, [-1]);
+eq("File \"bs_set_int_test.ml\", line 79, characters 5-12", minv$1, -1);
 
-eq("File \"bs_set_int_test.ml\", line 80, characters 5-12", maxv$1, [222]);
+eq("File \"bs_set_int_test.ml\", line 80, characters 5-12", maxv$1, 222);
 
 var v$3 = Belt_SetInt.remove(v$2, 222);
 
@@ -183,9 +183,9 @@ var minv$2 = Belt_SetInt.minimum(v$3);
 
 var maxv$2 = Belt_SetInt.maximum(v$3);
 
-eq("File \"bs_set_int_test.ml\", line 83, characters 5-12", minv$2, [-1]);
+eq("File \"bs_set_int_test.ml\", line 83, characters 5-12", minv$2, -1);
 
-eq("File \"bs_set_int_test.ml\", line 84, characters 5-12", maxv$2, [33]);
+eq("File \"bs_set_int_test.ml\", line 84, characters 5-12", maxv$2, 33);
 
 var v$4 = Belt_SetInt.remove(v$3, -1);
 
@@ -193,9 +193,9 @@ var minv$3 = Belt_SetInt.minimum(v$4);
 
 var maxv$3 = Belt_SetInt.maximum(v$4);
 
-eq("File \"bs_set_int_test.ml\", line 87, characters 5-12", minv$3, [0]);
+eq("File \"bs_set_int_test.ml\", line 87, characters 5-12", minv$3, 0);
 
-eq("File \"bs_set_int_test.ml\", line 88, characters 5-12", maxv$3, [33]);
+eq("File \"bs_set_int_test.ml\", line 88, characters 5-12", maxv$3, 33);
 
 var v$5 = Belt_SetInt.remove(v$4, 0);
 
@@ -362,9 +362,9 @@ b("File \"bs_set_int_test.ml\", line 173, characters 4-11", Belt_SetInt.subset(v
 
 b("File \"bs_set_int_test.ml\", line 174, characters 4-11", !Belt_SetInt.subset(v1, v0));
 
-eq("File \"bs_set_int_test.ml\", line 175, characters 5-12", Belt_SetInt.get(v$12, 30), [30]);
+eq("File \"bs_set_int_test.ml\", line 175, characters 5-12", Belt_SetInt.get(v$12, 30), 30);
 
-eq("File \"bs_set_int_test.ml\", line 176, characters 5-12", Belt_SetInt.get(v$12, 3000), /* None */0);
+eq("File \"bs_set_int_test.ml\", line 176, characters 5-12", Belt_SetInt.get(v$12, 3000), undefined);
 
 Mt.from_pair_suites("bs_set_int_test.ml", suites[0]);
 

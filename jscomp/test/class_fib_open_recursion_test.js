@@ -70,7 +70,7 @@ function memo_fib_init($$class) {
         }));
   return (function (_, self) {
       var self$1 = CamlinternalOO.create_object_opt(self, $$class);
-      self$1[cache] = Hashtbl.create(/* None */0, 31);
+      self$1[cache] = Hashtbl.create(undefined, 31);
       Curry._1(obj_init, self$1);
       return CamlinternalOO.run_initializers_opt(self, self$1, $$class);
     });

@@ -249,7 +249,7 @@ Mt.from_pair_suites("string_test.ml", /* :: */[
                         (function () {
                             return /* Eq */Block.__(0, [
                                       /* [] */0,
-                                      Ext_string_test.split(/* None */0, "", /* "_" */95)
+                                      Ext_string_test.split(undefined, "", /* "_" */95)
                                     ]);
                           })
                       ],
@@ -262,7 +262,7 @@ Mt.from_pair_suites("string_test.ml", /* :: */[
                                           "test_unsafe_obj_ffi_ppx.cmi",
                                           /* [] */0
                                         ],
-                                        Ext_string_test.split([false], " test_unsafe_obj_ffi_ppx.cmi", /* " " */32)
+                                        Ext_string_test.split(false, " test_unsafe_obj_ffi_ppx.cmi", /* " " */32)
                                       ]);
                             })
                         ],
@@ -302,7 +302,7 @@ Mt.from_pair_suites("string_test.ml", /* :: */[
                                   (function () {
                                       return /* Eq */Block.__(0, [
                                                 0,
-                                                Ext_string_test.find(/* None */0, "__", "__index__js")
+                                                Ext_string_test.find(undefined, "__", "__index__js")
                                               ]);
                                     })
                                 ],
@@ -312,7 +312,7 @@ Mt.from_pair_suites("string_test.ml", /* :: */[
                                     (function () {
                                         return /* Eq */Block.__(0, [
                                                   6,
-                                                  Ext_string_test.find(/* None */0, "__", "_index__js")
+                                                  Ext_string_test.find(undefined, "__", "_index__js")
                                                 ]);
                                       })
                                   ],
@@ -322,7 +322,7 @@ Mt.from_pair_suites("string_test.ml", /* :: */[
                                       (function () {
                                           return /* Eq */Block.__(0, [
                                                     -1,
-                                                    Ext_string_test.find(/* None */0, "__", "_index_js")
+                                                    Ext_string_test.find(undefined, "__", "_index_js")
                                                   ]);
                                         })
                                     ],

@@ -72,15 +72,15 @@ b("File \"bs_min_max_test.ml\", line 30, characters 4-11", Caml_int64.eq(Caml_in
           /* lo */3
         ]));
 
-eq("File \"bs_min_max_test.ml\", line 31, characters 5-12", Caml_obj.caml_min(/* None */0, [3]), /* None */0);
+eq("File \"bs_min_max_test.ml\", line 31, characters 5-12", Caml_obj.caml_min(undefined, 3), undefined);
 
-eq("File \"bs_min_max_test.ml\", line 32, characters 5-12", Caml_obj.caml_min([3], /* None */0), /* None */0);
+eq("File \"bs_min_max_test.ml\", line 32, characters 5-12", Caml_obj.caml_min(3, undefined), undefined);
 
-eq("File \"bs_min_max_test.ml\", line 33, characters 5-12", Caml_obj.caml_max([3], /* None */0), [3]);
+eq("File \"bs_min_max_test.ml\", line 33, characters 5-12", Caml_obj.caml_max(3, undefined), 3);
 
-eq("File \"bs_min_max_test.ml\", line 34, characters 5-12", Caml_obj.caml_max(/* None */0, [3]), [3]);
+eq("File \"bs_min_max_test.ml\", line 34, characters 5-12", Caml_obj.caml_max(undefined, 3), 3);
 
-b("File \"bs_min_max_test.ml\", line 35, characters 4-11", Caml_obj.caml_greaterequal([5], /* None */0));
+b("File \"bs_min_max_test.ml\", line 35, characters 4-11", Caml_obj.caml_greaterequal(5, undefined));
 
 Mt.from_pair_suites("bs_min_max_test.ml", suites[0]);
 

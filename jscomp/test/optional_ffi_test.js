@@ -69,7 +69,7 @@ var counter2 = [0];
 
 function side_effect2(x) {
   x[0] = x[0] + 1 | 0;
-  return [x[0]];
+  return x[0];
 }
 
 var v = bug_to_fix(side_effect, counter);

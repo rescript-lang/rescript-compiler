@@ -5,7 +5,7 @@ var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 
 var v = /* record */[
-  /* syntax : None */0,
+  /* syntax */undefined,
   /* imports */0,
   /* file_options */0,
   /* package */0,
@@ -15,7 +15,7 @@ var v = /* record */[
 ];
 
 var u_v = /* record */[
-  /* syntax : None */0,
+  /* syntax */undefined,
   /* imports */0,
   /* file_options */0,
   /* package */0,
@@ -55,7 +55,7 @@ var suites = /* :: */[
 Mt.from_pair_suites("record_with_test.ml", suites);
 
 var uv = /* record */[
-  /* syntax : None */0,
+  /* syntax */undefined,
   /* imports */1,
   /* file_options */0,
   /* package */0,

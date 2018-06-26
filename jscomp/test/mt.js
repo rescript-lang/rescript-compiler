@@ -51,7 +51,7 @@ function from_suites(name, suite) {
 }
 
 function close_enough($staropt$star, a, b) {
-  var threshold = $staropt$star !== /* None */0 ? $staropt$star[0] : 0.0000001;
+  var threshold = $staropt$star !== undefined ? $staropt$star : 0.0000001;
   return Math.abs(a - b) < threshold;
 }
 
@@ -75,7 +75,7 @@ function handleCode(spec) {
     case 5 : 
         var b = spec[1];
         var a = spec[0];
-        if (close_enough(/* None */0, a, b)) {
+        if (close_enough(undefined, a, b)) {
           return 0;
         } else {
           Assert.deepEqual(a, b);
@@ -84,7 +84,7 @@ function handleCode(spec) {
     case 6 : 
         var b$1 = spec[2];
         var a$1 = spec[1];
-        if (close_enough([spec[0]], a$1, b$1)) {
+        if (close_enough(spec[0], a$1, b$1)) {
           return 0;
         } else {
           Assert.deepEqual(a$1, b$1);

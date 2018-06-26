@@ -1,5 +1,6 @@
 'use strict';
 
+var Js_primitive = require("../../lib/js/js_primitive.js");
 var Js_undefined = require("../../lib/js/js_undefined.js");
 var Belt_MutableQueue = require("../../lib/js/belt_MutableQueue.js");
 var Belt_MutableStack = require("../../lib/js/belt_MutableStack.js");
@@ -85,7 +86,7 @@ function n(l, r, a) {
         };
 }
 
-var test1 = n(/* Some */[n(/* Some */[n(/* None */0, /* None */0, 4)], /* Some */[n(/* None */0, /* None */0, 5)], 2)], /* Some */[n(/* None */0, /* None */0, 3)], 1);
+var test1 = n(Js_primitive.some(n(Js_primitive.some(n(undefined, undefined, 4)), Js_primitive.some(n(undefined, undefined, 5)), 2)), Js_primitive.some(n(undefined, undefined, 3)), 1);
 
 function pushAllLeft(st1, s1) {
   var current = st1;
@@ -97,9 +98,9 @@ function pushAllLeft(st1, s1) {
   return /* () */0;
 }
 
-var test2 = n(/* Some */[n(/* Some */[n(/* Some */[n(/* Some */[n(/* None */0, /* None */0, 4)], /* None */0, 2)], /* None */0, 5)], /* None */0, 1)], /* None */0, 3);
+var test2 = n(Js_primitive.some(n(Js_primitive.some(n(Js_primitive.some(n(Js_primitive.some(n(undefined, undefined, 4)), undefined, 2)), undefined, 5)), undefined, 1)), undefined, 3);
 
-var test3 = n(/* Some */[n(/* Some */[n(/* Some */[n(/* None */0, /* None */0, 4)], /* None */0, 2)], /* None */0, 5)], /* Some */[n(/* None */0, /* None */0, 3)], 1);
+var test3 = n(Js_primitive.some(n(Js_primitive.some(n(Js_primitive.some(n(undefined, undefined, 4)), undefined, 2)), undefined, 5)), Js_primitive.some(n(undefined, undefined, 3)), 1);
 
 console.log(inOrder(test1));
 

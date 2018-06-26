@@ -37,7 +37,7 @@ try {
 catch (raw_exn){
   var exn = Js_exn.internalToOCamlException(raw_exn);
   if (exn[0] === Caml_builtin_exceptions.failure) {
-    y = [exn[1]];
+    y = exn[1];
   } else {
     throw exn;
   }
@@ -56,7 +56,7 @@ try {
 catch (raw_exn$1){
   var exn$1 = Js_exn.internalToOCamlException(raw_exn$1);
   if (exn$1[0] === Caml_builtin_exceptions.failure) {
-    x = [exn$1[1]];
+    x = exn$1[1];
   } else {
     throw exn$1;
   }
@@ -64,12 +64,12 @@ catch (raw_exn$1){
 
 if (exit === 1) {
   console.log("ok");
-  x = /* None */0;
+  x = undefined;
 }
 
-eq("File \"gpr_2316_test.ml\", line 20, characters 5-12", y, ["boo"]);
+eq("File \"gpr_2316_test.ml\", line 20, characters 5-12", y, "boo");
 
-eq("File \"gpr_2316_test.ml\", line 21, characters 5-12", x, ["boo"]);
+eq("File \"gpr_2316_test.ml\", line 21, characters 5-12", x, "boo");
 
 Mt.from_pair_suites("gpr_2316_test.ml", suites[0]);
 

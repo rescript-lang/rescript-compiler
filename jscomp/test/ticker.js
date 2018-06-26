@@ -8,6 +8,7 @@ var $$String = require("../../lib/js/string.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_format = require("../../lib/js/caml_format.js");
+var Js_primitive = require("../../lib/js/js_primitive.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
@@ -61,8 +62,8 @@ function split(delim, s) {
 }
 
 function string_of_float_option(param) {
-  if (param !== /* None */0) {
-    return Pervasives.string_of_float(param[0]);
+  if (param !== undefined) {
+    return Pervasives.string_of_float(param);
   } else {
     return "nan";
   }
@@ -508,8 +509,8 @@ function concat(t1, t2) {
 }
 
 function concat_or_join(t1, v, d, t2) {
-  if (d !== /* None */0) {
-    return join(t1, v, d[0], t2);
+  if (d !== undefined) {
+    return join(t1, v, Js_primitive.valFromOption(d), t2);
   } else {
     return concat(t1, t2);
   }
@@ -525,7 +526,7 @@ function split$1(x, param) {
     if (c === 0) {
       return /* tuple */[
               l,
-              /* Some */[d],
+              Js_primitive.some(d),
               r
             ];
     } else if (c < 0) {
@@ -546,7 +547,7 @@ function split$1(x, param) {
   } else {
     return /* tuple */[
             /* Empty */0,
-            /* None */0,
+            undefined,
             /* Empty */0
           ];
   }
@@ -558,7 +559,7 @@ function merge(f, s1, s2) {
     var v1 = s1[1];
     if (s1[4] >= height(s2)) {
       var match = split$1(v1, s2);
-      return concat_or_join(merge(f, s1[0], match[0]), v1, Curry._3(f, v1, /* Some */[s1[2]], match[1]), merge(f, s1[3], match[2]));
+      return concat_or_join(merge(f, s1[0], match[0]), v1, Curry._3(f, v1, Js_primitive.some(s1[2]), match[1]), merge(f, s1[3], match[2]));
     } else {
       exit = 1;
     }
@@ -571,7 +572,7 @@ function merge(f, s1, s2) {
     if (s2) {
       var v2 = s2[1];
       var match$1 = split$1(v2, s1);
-      return concat_or_join(merge(f, match$1[0], s2[0]), v2, Curry._3(f, v2, match$1[1], /* Some */[s2[2]]), merge(f, match$1[2], s2[3]));
+      return concat_or_join(merge(f, match$1[0], s2[0]), v2, Curry._3(f, v2, match$1[1], Js_primitive.some(s2[2])), merge(f, match$1[2], s2[3]));
     } else {
       throw [
             Caml_builtin_exceptions.assert_failure,
@@ -857,17 +858,17 @@ function process_quote(ticker_map, new_ticker, new_value) {
                   var match$2 = match$1[/* lhs */2][/* value */0];
                   var match$3 = match$1[/* rhs */1][/* value */0];
                   var value;
-                  if (match$2 !== /* None */0 && match$3 !== /* None */0) {
-                    var y = match$3[0];
-                    var x = match$2[0];
-                    value = match$1[/* op */0] ? [x - y] : [x + y];
+                  if (match$2 !== undefined && match$3 !== undefined) {
+                    var y = match$3;
+                    var x = match$2;
+                    value = match$1[/* op */0] ? x - y : x + y;
                   } else {
-                    value = /* None */0;
+                    value = undefined;
                   }
                   ticker[/* value */0] = value;
                   return /* () */0;
                 } else if (ticker[/* ticker_name */2] === new_ticker) {
-                  ticker[/* value */0] = [new_value];
+                  ticker[/* value */0] = new_value;
                   return /* () */0;
                 } else {
                   throw [
@@ -883,7 +884,7 @@ function process_input_line(ticker_map, all_tickers, line) {
     var lhs$1 = find_ticker_by_name(all_tickers, lhs);
     var rhs$1 = find_ticker_by_name(all_tickers, rhs);
     return /* record */[
-            /* value : None */0,
+            /* value */undefined,
             /* rank : Uninitialized */0,
             /* ticker_name */ticker_name,
             /* type_ : Binary_op */[/* record */[
@@ -907,12 +908,12 @@ function process_input_line(ticker_map, all_tickers, line) {
                       "Invalid input line"
                     ];
               } else {
-                var ticker_map$1 = ticker_map !== /* None */0 ? ticker_map[0] : compute_update_sequences(all_tickers);
+                var ticker_map$1 = ticker_map !== undefined ? Js_primitive.valFromOption(ticker_map) : compute_update_sequences(all_tickers);
                 var value = Caml_format.caml_float_of_string(match$1[0]);
                 process_quote(ticker_map$1, match[0], value);
                 return /* tuple */[
                         all_tickers,
-                        /* Some */[ticker_map$1]
+                        Js_primitive.some(ticker_map$1)
                       ];
               }
             } else {
@@ -1006,7 +1007,7 @@ function process_input_line(ticker_map, all_tickers, line) {
                       return /* tuple */[
                               /* :: */[
                                 /* record */[
-                                  /* value : None */0,
+                                  /* value */undefined,
                                   /* rank : Uninitialized */0,
                                   /* ticker_name */ticker_name,
                                   /* type_ : Market */0

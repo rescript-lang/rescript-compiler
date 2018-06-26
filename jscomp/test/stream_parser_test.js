@@ -14,7 +14,7 @@ var Parse_error = Caml_exceptions.create("Stream_parser_test.Parse_error");
 function parse(token) {
   var look_ahead = /* record */[
     /* length */0,
-    /* tail : None */0
+    /* tail */undefined
   ];
   var token$1 = function () {
     if (look_ahead[/* length */0] === 0) {
@@ -141,7 +141,7 @@ function token(chars) {
 function l_parse(token) {
   var look_ahead = /* record */[
     /* length */0,
-    /* tail : None */0
+    /* tail */undefined
   ];
   var token$1 = function () {
     if (look_ahead[/* length */0] === 0) {

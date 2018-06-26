@@ -3,6 +3,7 @@
 var List = require("../../lib/js/list.js");
 var $$Array = require("../../lib/js/array.js");
 var Curry = require("../../lib/js/curry.js");
+var Js_primitive = require("../../lib/js/js_primitive.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function filter_map(f, _xs) {
@@ -11,9 +12,9 @@ function filter_map(f, _xs) {
     if (xs) {
       var ys = xs[1];
       var match = Curry._1(f, xs[0]);
-      if (match !== /* None */0) {
+      if (match !== undefined) {
         return /* :: */[
-                match[0],
+                Js_primitive.valFromOption(match),
                 filter_map(f, ys)
               ];
       } else {
@@ -67,7 +68,7 @@ function excludes(p, l) {
 }
 
 function exclude_with_fact(p, l) {
-  var excluded = [/* None */0];
+  var excluded = [undefined];
   var aux = function (_accu, _param) {
     while(true) {
       var param = _param;
@@ -76,7 +77,7 @@ function exclude_with_fact(p, l) {
         var l = param[1];
         var x = param[0];
         if (Curry._1(p, x)) {
-          excluded[0] = /* Some */[x];
+          excluded[0] = Js_primitive.some(x);
           _param = l;
           continue ;
         } else {
@@ -95,13 +96,13 @@ function exclude_with_fact(p, l) {
   var v = aux(/* [] */0, l);
   return /* tuple */[
           excluded[0],
-          excluded[0] !== /* None */0 ? v : l
+          excluded[0] !== undefined ? v : l
         ];
 }
 
 function exclude_with_fact2(p1, p2, l) {
-  var excluded1 = [/* None */0];
-  var excluded2 = [/* None */0];
+  var excluded1 = [undefined];
+  var excluded2 = [undefined];
   var aux = function (_accu, _param) {
     while(true) {
       var param = _param;
@@ -110,11 +111,11 @@ function exclude_with_fact2(p1, p2, l) {
         var l = param[1];
         var x = param[0];
         if (Curry._1(p1, x)) {
-          excluded1[0] = /* Some */[x];
+          excluded1[0] = Js_primitive.some(x);
           _param = l;
           continue ;
         } else if (Curry._1(p2, x)) {
-          excluded2[0] = /* Some */[x];
+          excluded2[0] = Js_primitive.some(x);
           _param = l;
           continue ;
         } else {
@@ -134,7 +135,7 @@ function exclude_with_fact2(p1, p2, l) {
   return /* tuple */[
           excluded1[0],
           excluded2[0],
-          excluded1[0] !== /* None */0 && excluded2[0] !== /* None */0 ? v : l
+          excluded1[0] !== undefined && excluded2[0] !== undefined ? v : l
         ];
 }
 
@@ -166,9 +167,9 @@ function filter_mapi(f, xs) {
       if (xs) {
         var ys = xs[1];
         var match = Curry._2(f, i, xs[0]);
-        if (match !== /* None */0) {
+        if (match !== undefined) {
           return /* :: */[
-                  match[0],
+                  Js_primitive.valFromOption(match),
                   aux(i + 1 | 0, ys)
                 ];
         } else {
@@ -193,9 +194,9 @@ function filter_map2(f, _xs, _ys) {
         var vs = ys[1];
         var us = xs[1];
         var match = Curry._2(f, xs[0], ys[0]);
-        if (match !== /* None */0) {
+        if (match !== undefined) {
           return /* :: */[
-                  match[0],
+                  Js_primitive.valFromOption(match),
                   filter_map2(f, us, vs)
                 ];
         } else {
@@ -231,9 +232,9 @@ function filter_map2i(f, xs, ys) {
           var vs = ys[1];
           var us = xs[1];
           var match = Curry._3(f, i, xs[0], ys[0]);
-          if (match !== /* None */0) {
+          if (match !== undefined) {
             return /* :: */[
-                    match[0],
+                    Js_primitive.valFromOption(match),
                     aux(i + 1 | 0, us, vs)
                   ];
           } else {
@@ -618,10 +619,10 @@ function find_first_not(p, _param) {
         _param = param[1];
         continue ;
       } else {
-        return /* Some */[a];
+        return Js_primitive.some(a);
       }
     } else {
-      return /* None */0;
+      return undefined;
     }
   };
 }
@@ -631,14 +632,14 @@ function for_all_opt(p, _param) {
     var param = _param;
     if (param) {
       var v = Curry._1(p, param[0]);
-      if (v !== /* None */0) {
+      if (v !== undefined) {
         return v;
       } else {
         _param = param[1];
         continue ;
       }
     } else {
-      return /* None */0;
+      return undefined;
     }
   };
 }
@@ -714,13 +715,13 @@ function find_no_exn(p, _param) {
     if (param) {
       var x = param[0];
       if (Curry._1(p, x)) {
-        return /* Some */[x];
+        return Js_primitive.some(x);
       } else {
         _param = param[1];
         continue ;
       }
     } else {
-      return /* None */0;
+      return undefined;
     }
   };
 }
@@ -730,14 +731,14 @@ function find_opt(p, _param) {
     var param = _param;
     if (param) {
       var v = Curry._1(p, param[0]);
-      if (v !== /* None */0) {
+      if (v !== undefined) {
         return v;
       } else {
         _param = param[1];
         continue ;
       }
     } else {
-      return /* None */0;
+      return undefined;
     }
   };
 }
@@ -910,8 +911,8 @@ function assoc_by_string(def, k, _lst) {
         _lst = lst[1];
         continue ;
       }
-    } else if (def !== /* None */0) {
-      return def[0];
+    } else if (def !== undefined) {
+      return Js_primitive.valFromOption(def);
     } else {
       throw [
             Caml_builtin_exceptions.assert_failure,
@@ -936,8 +937,8 @@ function assoc_by_int(def, k, _lst) {
         _lst = lst[1];
         continue ;
       }
-    } else if (def !== /* None */0) {
-      return def[0];
+    } else if (def !== undefined) {
+      return Js_primitive.valFromOption(def);
     } else {
       throw [
             Caml_builtin_exceptions.assert_failure,

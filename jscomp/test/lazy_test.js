@@ -40,7 +40,7 @@ function f(param) {
     
   }
   var match$1 = param[2][/* contents */0];
-  if (match$1 !== /* None */0) {
+  if (match$1 !== undefined) {
     var match$2 = param[1];
     var tag$1 = match$2.tag | 0;
     if (tag$1 !== 250) {
@@ -50,7 +50,7 @@ function f(param) {
       
     }
     var match$3 = param[2][/* contents */0];
-    if (match$3 !== /* None */0) {
+    if (match$3 !== undefined) {
       return 1;
     } else {
       throw [
@@ -67,15 +67,15 @@ function f(param) {
   }
 }
 
-var s = [/* None */0];
+var s = [undefined];
 
 var set_true = Block.__(246, [(function () {
-        s[0] = [1];
+        s[0] = 1;
         return /* () */0;
       })]);
 
 var set_false = Block.__(246, [(function () {
-        s[0] = /* None */0;
+        s[0] = undefined;
         return /* () */0;
       })]);
 

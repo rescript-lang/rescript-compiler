@@ -1,6 +1,7 @@
 'use strict';
 
 var Curry = require("../../lib/js/curry.js");
+var Js_primitive = require("../../lib/js/js_primitive.js");
 
 function t0(x, f) {
   return Curry._1(f, Curry._1(f, Curry._1(f, x)));
@@ -63,19 +64,19 @@ function f5(a, b, c, d) {
 }
 
 function f6(a) {
-  return /* Some */[a];
+  return Js_primitive.some(a);
 }
 
 function f7(a) {
   return /* tuple */[
-          /* Some */[a],
-          /* Some */[a],
-          /* Some */[a]
+          Js_primitive.some(a),
+          Js_primitive.some(a),
+          Js_primitive.some(a)
         ];
 }
 
 function f8(a) {
-  return /* Some */[/* Some */[a]];
+  return Js_primitive.some(Js_primitive.some(a));
 }
 
 exports.t0 = t0;

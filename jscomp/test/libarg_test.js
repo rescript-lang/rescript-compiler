@@ -7,6 +7,7 @@ var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Printf = require("../../lib/js/printf.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
+var Js_primitive = require("../../lib/js/js_primitive.js");
 
 var current = [0];
 
@@ -365,7 +366,7 @@ function test(argv) {
   r_int[0] = 0;
   r_float[0] = 0.0;
   accum[0] = /* [] */0;
-  Arg.parse_argv(/* Some */[current], argv, spec, f_anon, "usage");
+  Arg.parse_argv(Js_primitive.some(current), argv, spec, f_anon, "usage");
   var result = List.rev(accum[0]);
   var reference = /* :: */[
     "anon(anon1)",

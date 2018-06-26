@@ -20,7 +20,7 @@ function eq(f, param) {
 function scan_rest(ib, accu) {
   return Curry._1(Scanf.bscanf(ib, /* Format */[
                   /* Scan_char_set */Block.__(20, [
-                      /* None */0,
+                      undefined,
                       "\0\0\0\0\0\0\0\0\0\0\0 \0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
                       /* End_of_format */0
                     ]),
@@ -53,7 +53,7 @@ function scan_rest(ib, accu) {
                                 ];
                                 return Curry._1(Scanf.bscanf(ib$2, /* Format */[
                                                 /* Scan_char_set */Block.__(20, [
-                                                    [1],
+                                                    1,
                                                     "\0\0\0\0\0\0\0\b\0\0\0 \0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
                                                     /* End_of_format */0
                                                   ]),
