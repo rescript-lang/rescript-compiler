@@ -150,17 +150,15 @@ function $$return(x) {
 function $great$pipe$eq(e, f) {
   if (e !== undefined) {
     return Js_primitive.some(Curry._1(f, Js_primitive.valFromOption(e)));
-  } else {
-    return undefined;
   }
+  
 }
 
 function $great$great$eq(e, f) {
   if (e !== undefined) {
     return Curry._1(f, Js_primitive.valFromOption(e));
-  } else {
-    return undefined;
   }
+  
 }
 
 function map_opt(f, l) {
@@ -205,9 +203,8 @@ function list_any(f, e) {
         return undefined;
       }
     };
-  } else {
-    return undefined;
   }
+  
 }
 
 function list_all(f, e) {
@@ -354,17 +351,15 @@ function to_triple_with(f1, f2, f3, e) {
 function to_list(e) {
   if (e[0] >= 848054398) {
     return Js_primitive.some(e[1]);
-  } else {
-    return undefined;
   }
+  
 }
 
 function to_list_with(f, e) {
   if (e[0] >= 848054398) {
     return map_opt(f, e[1]);
-  } else {
-    return undefined;
   }
+  
 }
 
 function get_field(name, e) {
@@ -417,9 +412,8 @@ function get_field(name, e) {
         return undefined;
       }
     };
-  } else {
-    return undefined;
   }
+  
 }
 
 function field(name, f, e) {
@@ -467,9 +461,8 @@ function _get_field_list(name, _l) {
 function field_list(name, f, e) {
   if (e[0] >= 848054398) {
     return $great$great$eq(_get_field_list(name, e[1]), f);
-  } else {
-    return undefined;
   }
+  
 }
 
 function _get_variant(s, args, _l) {

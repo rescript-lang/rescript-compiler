@@ -56,9 +56,8 @@ function myHandler(match) {
     } else {
       return undefined;
     }
-  } else {
-    return undefined;
   }
+  
 }
 
 function f(x) {

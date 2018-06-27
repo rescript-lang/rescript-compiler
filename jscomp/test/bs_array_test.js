@@ -532,9 +532,8 @@ var v1 = Belt_Array.keep(v$6, (function (x) {
 var v2 = Belt_Array.keepMap(v$6, (function (x) {
         if (x % 2 === 0) {
           return x + 1 | 0;
-        } else {
-          return undefined;
         }
+        
       }));
 
 eq("File \"bs_array_test.ml\", line 146, characters 5-12", v0, /* array */[

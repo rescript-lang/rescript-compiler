@@ -145,9 +145,8 @@ function ends_with_then_chop(s, beg) {
   var i = ends_with_index(s, beg);
   if (i >= 0) {
     return $$String.sub(s, 0, i);
-  } else {
-    return undefined;
   }
+  
 }
 
 function check_any_suffix_case(s, suffixes) {

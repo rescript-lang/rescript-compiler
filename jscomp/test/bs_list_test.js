@@ -2336,9 +2336,8 @@ var u0 = Belt_List.makeBy(20, (function (x) {
 var u1 = Belt_List.keepMap(u0, (function (x) {
         if (x % 7 === 0) {
           return x + 1 | 0;
-        } else {
-          return undefined;
         }
+        
       }));
 
 eq("File \"bs_list_test.ml\", line 333, characters 5-12", u1, /* :: */[
@@ -2367,9 +2366,8 @@ b("File \"bs_list_test.ml\", line 334, characters 4-11", Caml_obj.caml_equal(Bel
             ], (function (x) {
                 if (x % 2 === 0) {
                   return -x | 0;
-                } else {
-                  return undefined;
                 }
+                
               })), /* :: */[
           -2,
           /* :: */[
@@ -2393,9 +2391,8 @@ b("File \"bs_list_test.ml\", line 338, characters 4-11", Belt_List.keepMap(/* ::
         ], (function (x) {
             if (x % 5 === 0) {
               return x;
-            } else {
-              return undefined;
             }
+            
           })) === /* [] */0);
 
 Mt.from_pair_suites("bs_list_test.ml", suites[0]);

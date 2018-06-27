@@ -20,9 +20,8 @@ var XXX = Caml_exceptions.create("Exception_def.XXX");
 Printexc.register_printer((function (param) {
         if (param[0] === A) {
           return "A";
-        } else {
-          return undefined;
         }
+        
       }));
 
 var a = 3;

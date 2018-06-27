@@ -251,7 +251,7 @@ and  pp_function method_
               else
                 cxt
             in
-            statement_list false cxt f b
+            function_body cxt f b
           );
 
       end
@@ -260,7 +260,7 @@ and  pp_function method_
             formal_parameter_list inner_cxt  f method_ l env )
         in
         P.space f ;
-        ignore @@ P.brace_vgroup f 1 (fun _ -> statement_list false cxt f b );
+        ignore @@ P.brace_vgroup f 1 (fun _ -> function_body cxt f b );
       end
     in
     let lexical : Ident_set.t = Js_fun_env.get_lexical_scope env in
@@ -1447,6 +1447,26 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
         P.space f;
         block cxt f b
     end
+and function_body cxt f b =
+  match b with
+  | []     -> cxt
+  | [s]    ->
+    begin match s.statement_desc with
+    | If (bool,
+          then_,
+          Some [{
+              statement_desc =
+                Return {return_value = {expression_desc = Undefined}} }])
+        ->
+        statement false cxt f {s with statement_desc = If(bool,then_,None)}
+    | _ ->        
+      statement false  cxt f  s
+    end
+  | s :: r ->
+    let cxt = statement false cxt f s in
+    P.newline f;
+    function_body cxt f  r
+
 (* similar to [block] but no braces *)
 and statement_list top cxt f  b =
   match b with

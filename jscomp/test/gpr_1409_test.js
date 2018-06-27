@@ -37,9 +37,8 @@ var b = {
 function map(f, x) {
   if (x !== undefined) {
     return Js_primitive.some(Curry._1(f, Js_primitive.valFromOption(x)));
-  } else {
-    return undefined;
   }
+  
 }
 
 function make(foo) {

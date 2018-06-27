@@ -1792,9 +1792,8 @@ var $$Error = Caml_exceptions.create("Ocaml_parsetree_test.Location.Error");
 register_error_of_exn((function (param) {
         if (param[0] === $$Error) {
           return param[1];
-        } else {
-          return undefined;
         }
+        
       }));
 
 function last(param) {
@@ -3347,9 +3346,8 @@ function prepare_error(param) {
 register_error_of_exn((function (param) {
         if (param[0] === $$Error$1) {
           return prepare_error(param[1]);
-        } else {
-          return undefined;
         }
+        
       }));
 
 function mktyp(d) {
@@ -10748,9 +10746,8 @@ function report_error(ppf, param) {
 register_error_of_exn((function (param) {
         if (param[0] === $$Error$2) {
           return error_of_printer(param[2], report_error, param[1]);
-        } else {
-          return undefined;
         }
+        
       }));
 
 var __ocaml_lex_tables = /* record */[
