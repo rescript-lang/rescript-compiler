@@ -173,7 +173,22 @@ let translate  loc
     E.runtime_call Js_runtime_modules.module_ "update_mod" args
   | Psome ->     
     begin match args with 
-    | [arg ] -> E.optional_block arg
+    | [arg ] -> 
+      begin match arg.J.expression_desc with 
+      | Null 
+      | Object _ 
+      | Number _
+      | Caml_block _      
+      | Array _
+      | Str _
+        -> 
+        (* This makes sense when type info 
+          is not available at the definition
+          site, and inline recovered it
+        *)
+        E.optional_not_nest_block arg 
+      | _ -> E.optional_block arg
+      end
     | _ -> assert false
     end     
   | Psome_not_nest ->   

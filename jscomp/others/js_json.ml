@@ -92,7 +92,7 @@ let decodeArray json =
   then Some (Obj.magic (json:t) : t array)
   else None 
 
-let decodeBoolean json = 
+let decodeBoolean (json : t) = 
   if Js.typeof json = "boolean"
   then Some (Obj.magic (json:t) : bool)
   else None 

@@ -297,10 +297,10 @@ function to_pair_with(f1, f2, e) {
                 var y = param[1];
                 return $great$great$eq(Curry._1(f1, param[0]), (function (x) {
                               return $great$great$eq(Curry._1(f2, y), (function (y) {
-                                            return Js_primitive.some(/* tuple */[
-                                                        x,
-                                                        y
-                                                      ]);
+                                            return /* tuple */[
+                                                    x,
+                                                    y
+                                                  ];
                                           }));
                             }));
               }));
@@ -340,11 +340,11 @@ function to_triple_with(f1, f2, f3, e) {
                 return $great$great$eq(Curry._1(f1, param[0]), (function (x) {
                               return $great$great$eq(Curry._1(f2, y), (function (y) {
                                             return $great$great$eq(Curry._1(f3, z), (function (z) {
-                                                          return Js_primitive.some(/* tuple */[
-                                                                      x,
-                                                                      y,
-                                                                      z
-                                                                    ]);
+                                                          return /* tuple */[
+                                                                  x,
+                                                                  y,
+                                                                  z
+                                                                ];
                                                         }));
                                           }));
                             }));

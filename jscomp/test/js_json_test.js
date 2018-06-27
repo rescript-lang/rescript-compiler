@@ -545,7 +545,7 @@ eq("File \"js_json_test.ml\", line 340, characters 5-12", Js_json.decodeObject(/
 
 eq("File \"js_json_test.ml\", line 342, characters 5-12", Js_json.decodeObject(null), undefined);
 
-eq("File \"js_json_test.ml\", line 344, characters 5-12", Js_json.decodeObject({ }), Js_primitive.some({ }));
+eq("File \"js_json_test.ml\", line 344, characters 5-12", Js_json.decodeObject({ }), { });
 
 eq("File \"js_json_test.ml\", line 347, characters 5-12", Js_json.decodeObject(1.23), undefined);
 
@@ -579,7 +579,7 @@ eq("File \"js_json_test.ml\", line 381, characters 5-12", Js_json.decodeNull(tru
 
 eq("File \"js_json_test.ml\", line 383, characters 5-12", Js_json.decodeNull(/* array */[]), undefined);
 
-eq("File \"js_json_test.ml\", line 385, characters 5-12", Js_json.decodeNull(null), Js_primitive.some(null));
+eq("File \"js_json_test.ml\", line 385, characters 5-12", Js_json.decodeNull(null), null);
 
 eq("File \"js_json_test.ml\", line 387, characters 5-12", Js_json.decodeNull({ }), undefined);
 
