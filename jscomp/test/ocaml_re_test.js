@@ -280,9 +280,8 @@ function one_char(param) {
     } else {
       return undefined;
     }
-  } else {
-    return undefined;
   }
+  
 }
 
 function compare(param, param$1) {

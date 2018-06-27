@@ -4510,9 +4510,8 @@ function grow(t, n) {
     var filler = function (i) {
       if (i < t[/* la_results */0].length) {
         return Caml_array.caml_array_get(t[/* la_results */0], i);
-      } else {
-        return undefined;
       }
+      
     };
     var new_arr = $$Array.init(new_size, filler);
     t[/* la_results */0] = new_arr;
@@ -4900,9 +4899,8 @@ function semicolon_loc($staropt$star, env) {
   var i = $staropt$star !== undefined ? $staropt$star : 0;
   if (token$2(i, env) === /* T_SEMICOLON */7) {
     return loc(i, env);
-  } else {
-    return undefined;
   }
+  
 }
 
 function is_identifier($staropt$star, env) {
@@ -5759,9 +5757,8 @@ function primitive(param) {
     } else {
       return /* Null */2;
     }
-  } else {
-    return undefined;
   }
+  
 }
 
 function function_param_or_generic_type(env) {
@@ -6119,9 +6116,8 @@ function type_parameter_instantiation(env) {
             loc,
             /* record */[/* params */params$1]
           ];
-  } else {
-    return undefined;
   }
+  
 }
 
 function param(env) {
@@ -6265,9 +6261,8 @@ function type_parameter_declaration(allow_default, env) {
             loc,
             /* record */[/* params */params$2]
           ];
-  } else {
-    return undefined;
   }
+  
 }
 
 function intersection_with(env, left) {
@@ -6702,9 +6697,8 @@ function annotation_opt(env) {
   var match = Curry._2(Parser_env_048[/* token */0], undefined, env);
   if (typeof match === "number" && match === 77) {
     return annotation(env);
-  } else {
-    return undefined;
   }
+  
 }
 
 function wrap(f, env) {
@@ -7390,9 +7384,8 @@ function peek_unary_op(env) {
     } else {
       return undefined;
     }
-  } else {
-    return undefined;
   }
+  
 }
 
 function unary(env) {
@@ -11215,9 +11208,8 @@ function from_expr(env, param) {
                                       match$2[1]
                                     ])]);
                     }
-                  } else {
-                    return undefined;
                   }
+                  
                 }), param$1[1][/* elements */0]);
           return /* tuple */[
                   param$1[0],
@@ -13607,9 +13599,8 @@ function predicate(env) {
               /* Inferred */0
             ];
     }
-  } else {
-    return undefined;
   }
+  
 }
 
 Caml_module.update_mod([[

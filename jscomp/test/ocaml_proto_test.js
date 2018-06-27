@@ -694,9 +694,8 @@ function add_loc(loc, exn) {
 Printexc.register_printer((function (exn) {
         if (exn[0] === Compilation_error) {
           return prepare_error(exn[1]);
-        } else {
-          return undefined;
         }
+        
       }));
 
 function invalid_default_value(field_name, info, _) {
@@ -4118,9 +4117,8 @@ function compile_default_p2(all_types, field) {
                 var enum_value_name = param[/* enum_value_name */0];
                 if (enum_value_name === default_enum_value) {
                   return enum_value_name;
-                } else {
-                  return undefined;
                 }
+                
               }), spec[0][/* enum_values */1]);
         if (default_enum_value$1 !== undefined) {
           return constant;
@@ -4159,9 +4157,8 @@ function compile_default_p2(all_types, field) {
           }
       
     }
-  } else {
-    return undefined;
   }
+  
 }
 
 function get_default(_, field_options, _$1) {
@@ -6618,9 +6615,8 @@ function ocaml_container(field_options) {
     } else {
       return undefined;
     }
-  } else {
-    return undefined;
   }
+  
 }
 
 function variant_of_oneof(include_oneof_name, outer_message_names, all_types, file_options, file_name, oneof_field) {

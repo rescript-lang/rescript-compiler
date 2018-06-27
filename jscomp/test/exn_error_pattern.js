@@ -14,9 +14,8 @@ function f(match) {
     } else {
       return undefined;
     }
-  } else {
-    return undefined;
   }
+  
 }
 
 var A = Caml_exceptions.create("Exn_error_pattern.A");
@@ -34,9 +33,8 @@ function g(match) {
     } else {
       return undefined;
     }
-  } else {
-    return undefined;
   }
+  
 }
 
 exports.f = f;

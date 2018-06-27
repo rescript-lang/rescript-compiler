@@ -188,9 +188,8 @@ function zToJs(param) {
 function zFromJs(param) {
   if (param <= 2 && 0 <= param) {
     return param - 0 | 0;
-  } else {
-    return undefined;
   }
+  
 }
 
 Mt.from_pair_suites("ast_abstract_test.ml", suites[0]);

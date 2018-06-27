@@ -211,9 +211,8 @@ function may(f, param) {
 function may_map(f, param) {
   if (param !== undefined) {
     return Js_primitive.some(Curry._1(f, Js_primitive.valFromOption(param)));
-  } else {
-    return undefined;
   }
+  
 }
 
 function find_in_path_uncap(path, name) {
@@ -2052,9 +2051,8 @@ var $$Error = Caml_exceptions.create("Ocaml_typedtree_test.Location.Error");
 register_error_of_exn((function (param) {
         if (param[0] === $$Error) {
           return param[1];
-        } else {
-          return undefined;
         }
+        
       }));
 
 var currentstamp = [0];
@@ -5461,9 +5459,8 @@ function report_error(ppf, param) {
 register_error_of_exn((function (param) {
         if (param[0] === $$Error$1) {
           return error_of_printer_file(report_error, param[1]);
-        } else {
-          return undefined;
         }
+        
       }));
 
 var Inconsistency = Caml_exceptions.create("Ocaml_typedtree_test.Consistbl.Inconsistency");
@@ -7697,9 +7694,8 @@ function map_tuple(f1, f2, param) {
 function map_opt(f, param) {
   if (param !== undefined) {
     return Js_primitive.some(Curry._1(f, Js_primitive.valFromOption(param)));
-  } else {
-    return undefined;
   }
+  
 }
 
 function map_loc(sub, param) {
@@ -13194,9 +13190,8 @@ register_error_of_exn((function (param) {
             }
           }
           
-        } else {
-          return undefined;
         }
+        
       }));
 
 function assert_fail(msg) {
@@ -13509,9 +13504,8 @@ function prepare_error(param) {
 register_error_of_exn((function (param) {
         if (param[0] === $$Error$3) {
           return prepare_error(param[1]);
-        } else {
-          return undefined;
         }
+        
       }));
 
 function ill_formed_ast(loc, s) {
@@ -20920,9 +20914,8 @@ function report_error$2(ppf, param) {
 register_error_of_exn((function (param) {
         if (param[0] === $$Error$4) {
           return error_of_printer(param[2], report_error$2, param[1]);
-        } else {
-          return undefined;
         }
+        
       }));
 
 var __ocaml_lex_tables = /* record */[
@@ -24000,9 +23993,8 @@ register_error_of_exn((function (param) {
                             ]),
                           "In this program,@ variant constructors@ `%s and `%s@ have the same hash value.@ Change one of them."
                         ]), param[1], param[2]);
-        } else {
-          return undefined;
         }
+        
       }));
 
 var Subtype = Caml_exceptions.create("Ocaml_typedtree_test.Ctype.Subtype");
@@ -25995,9 +25987,8 @@ function simple_copy(t) {
 function gadt_env(env) {
   if (env[/* local_constraints */11]) {
     return Js_primitive.some(env);
-  } else {
-    return undefined;
   }
+  
 }
 
 function instance(partial, env, sch) {
@@ -41927,9 +41918,8 @@ function mismatch(unif, param) {
             ]
           ];
     }
-  } else {
-    return undefined;
   }
+  
 }
 
 function explanation(unif, mis, ppf) {
@@ -47520,9 +47510,8 @@ function report_error$4(ppf, errs) {
 register_error_of_exn((function (param) {
         if (param[0] === $$Error$5) {
           return error_of_printer_file(report_error$4, param[1]);
-        } else {
-          return undefined;
         }
+        
       }));
 
 function get_location(ti) {
@@ -50063,9 +50052,8 @@ function complete_constrs(p, all_tags) {
                             return equal_tag(tag, cnstr[/* cstr_tag */5]);
                           }), not_tags)) {
                     return cnstr;
-                  } else {
-                    return undefined;
                   }
+                  
                 }), constrs);
   }
 }
@@ -53060,9 +53048,8 @@ function validate_name(s) {
     } else {
       return undefined;
     }
-  } else {
-    return undefined;
   }
+  
 }
 
 function new_global_var(name, _) {
@@ -68889,9 +68876,8 @@ function report_error$5(ppf, param) {
 register_error_of_exn((function (param) {
         if (param[0] === $$Error$8) {
           return error_of_printer(param[1], report_error$5, param[2]);
-        } else {
-          return undefined;
         }
+        
       }));
 
 var $$Error$9 = Caml_exceptions.create("Ocaml_typedtree_test.Typeclass.Error");
@@ -75045,9 +75031,8 @@ function anchor_submodule(name, anchor) {
               name,
               -1
             ]);
-  } else {
-    return undefined;
   }
+  
 }
 
 function enrich_type_decls(anchor, decls, oldenv, newenv) {

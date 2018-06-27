@@ -165,9 +165,8 @@ function v1ToJs(param) {
 function v1FromJs(param) {
   if (param <= 5 && 0 <= param) {
     return param - 0 | 0;
-  } else {
-    return undefined;
   }
+  
 }
 
 eq("File \"ast_js_mapper_poly_test.ml\", line 68, characters 5-12", $$Array.map(v1ToJs, /* array */[
@@ -213,9 +212,8 @@ function v2ToJs(param) {
 function v2FromJs(param) {
   if (param <= 7 && 2 <= param) {
     return param - 2 | 0;
-  } else {
-    return undefined;
   }
+  
 }
 
 eq("File \"ast_js_mapper_poly_test.ml\", line 86, characters 5-12", $$Array.map(v2ToJs, /* array */[
