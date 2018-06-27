@@ -437,6 +437,8 @@ let suites = Mt.[
       Eq("1976-03-08T11:11:56.789Z", Js.Date.toISOString (date ())));
     "toJSON", (fun _ ->
       Eq("1976-03-08T11:11:56.789Z", Js.Date.toJSON (date ())));
+    "toJSONUnsafe", (fun _ ->
+      Eq("1976-03-08T11:11:56.789Z", Js.Date.toJSONUnsafe (date ())));
     (* locale dependent
     "toLocaleDateString", (fun _ ->
       Eq("3/8/1976", Js.Date.toLocaleDateString (date ())));
