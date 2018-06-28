@@ -380,7 +380,7 @@ js_json_test.cmj : mt.cmj ../others/js_json.cmj ../others/js_dict.cmj \
     ../runtime/js.cmj ../stdlib/array.cmj
 js_list_test.cmj : mt.cmj ../runtime/js.cmj
 js_math_test.cmj : mt.cmj ../runtime/js.cmj
-js_null_test.cmj : mt.cmj ../runtime/js_null.cmj
+js_null_test.cmj : mt.cmj ../runtime/js_null.cmj ../runtime/js.cmj
 js_null_undefined_test.cmj : mt.cmj ../others/js_null_undefined.cmj \
     ../runtime/js.cmj
 js_nullable_test.cmj : mt.cmj ../runtime/js.cmj
@@ -392,7 +392,7 @@ js_re_test.cmj : mt.cmj ../runtime/js.cmj ../stdlib/array.cmj
 js_string_test.cmj : mt.cmj ../runtime/js.cmj
 js_typed_array_test.cmj : mt.cmj ../runtime/js_typed_array.cmj \
     ../runtime/js.cmj ../stdlib/int32.cmj ../stdlib/array.cmj
-js_undefined_test.cmj : mt.cmj ../runtime/js_undefined.cmj
+js_undefined_test.cmj : mt.cmj ../runtime/js_undefined.cmj ../runtime/js.cmj
 js_val.cmj :
 jsoo_400_test.cmj : ../stdlib/string.cmj mt.cmj
 jsoo_485.cmj :

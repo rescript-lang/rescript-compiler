@@ -45,23 +45,6 @@ type _ t =
   | Symbol : symbol t
 
 
-let reify_type (type a) (x : 'a) :  (a t * a ) =  
-  if Js.typeof x = "undefined" then 
-    (Obj.magic Undefined, Obj.magic x)
-  else if x == (Obj.magic Js_null.empty)  then 
-    (Obj.magic Null, Obj.magic x) 
-  else if Js.typeof x = "number" then 
-    (Obj.magic Number, Obj.magic x ) 
-  else if Js.typeof x = "string" then 
-    (Obj.magic String, Obj.magic x) 
-  else if Js.typeof x = "boolean" then 
-    (Obj.magic Boolean, Obj.magic x) 
-  else if Js.typeof x = "function" then 
-    (Obj.magic Function, Obj.magic x) 
-  else if Js.typeof x = "object" then 
-    (Obj.magic Object, Obj.magic x) 
-  else  (Obj.magic Symbol, Obj.magic x) 
-  (* TODO: may change according to engines ?*)
 
 type tagged_t = 
   | JSFalse

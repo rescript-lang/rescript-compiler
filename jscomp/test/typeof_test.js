@@ -5,25 +5,29 @@ var Block = require("../../lib/js/block.js");
 var Js_types = require("../../lib/js/js_types.js");
 
 function string_or_number(x) {
-  var match = Js_types.reify_type(x);
-  var v = match[1];
-  switch (match[0]) {
-    case 3 : 
-        console.log(v + 3);
-        return true;
-    case 4 : 
-        console.log(v + "hei");
-        return true;
-    case 5 : 
-        console.log("Function");
+  var ty = Js_types.classify(x);
+  if (typeof ty === "number") {
+    switch (ty) {
+      case 0 : 
+      case 1 : 
+          return false;
+      default:
         return false;
-    case 0 : 
-    case 1 : 
-    case 2 : 
-    case 6 : 
-    case 7 : 
+    }
+  } else {
+    switch (ty.tag | 0) {
+      case 0 : 
+          console.log(ty[0] + 3);
+          return true;
+      case 1 : 
+          console.log(ty[0] + "hei");
+          return true;
+      case 2 : 
+          console.log("Function");
+          return false;
+      default:
         return false;
-    
+    }
   }
 }
 

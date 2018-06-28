@@ -1,16 +1,16 @@
 
 
 let string_or_number (type t) x = 
-  let ty , v  = Js.Types.reify_type x in
-  match  (ty : t Js.Types.t) with 
-  | Js.Types.String   -> Js.log (v ^ "hei") ; true (* type check *)
-  | Js.Types.Number -> Js.log (v +. 3.); true (* type check *)
-  | Js.Types.Undefined ->  false
-  | Js.Types.Null ->  false
-  | Js.Types.Boolean -> false
-  | Js.Types.Function -> Js.log ("Function"); false
-  | Js.Types.Object ->  false
-  | Js.Types.Symbol ->  false 
+  let ty   = Js.Types.classify x in
+  match  ty with 
+  | JSString v   -> Js.log (v ^ "hei") ; true (* type check *)
+  | JSNumber v -> Js.log (v +. 3.); true (* type check *)
+  | JSUndefined ->  false
+  | JSNull ->  false
+  | JSFalse | JSTrue -> false
+  | JSFunction _ -> Js.log ("Function"); false
+  | JSObject _ ->  false
+  | JSSymbol _ ->  false 
 
 let suites = Mt.[
     "int_type", (fun _ -> Eq(Js.typeof 3, "number") );

@@ -71,9 +71,9 @@ let u = f8 (Js.Null.return (Js.Null.return None))
 
 let f9 x = Js.Null.toOption x 
 
-let f10 x = Js.Null.test x 
+let f10 x = x = Js.null
 
-let f11 =  (Js.Null.test @@ Js.Null.return 3)
+let f11 =  (Js.Null.return 3 = Js.null)
 
 end
 
@@ -145,8 +145,8 @@ module Test_def = struct
 
   let f9 x = Js.Undefined.toOption x 
 
-  let f10 x = Js.Undefined.test x 
-  let f11 = Js.Undefined.test (Js.Undefined.return 3 )
+  let f10 x =  x = Js.undefined
+  let f11 = Js.Undefined.return 3 = Js.undefined
 end
 
 

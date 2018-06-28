@@ -36,7 +36,7 @@ let test3 () =
 
 
 let f x = 
-  Js.Undefined.test x   
+  x = Js.undefined  
 
 
 
