@@ -46,96 +46,96 @@ let add q x =
   let cell = return @@ node 
       ~content:x
       ~next:null in
-  match Js.nullToOption (last q )with
+  match Js.nullToOption (lastGet q )with
   | None ->
     lengthSet  q 1;
     firstSet q cell;
     lastSet q cell
   | Some last ->
-    lengthSet q (length q + 1);
+    lengthSet q (lengthGet q + 1);
     nextSet last  cell;
     lastSet q  cell
 
 
   
 let peek q =
-  match Js.nullToOption (first q ) with
+  match Js.nullToOption (firstGet q ) with
   | None -> None
-  | Some v -> Some (content v)
+  | Some v -> Some (contentGet v)
 
 let peekUndefined q =
-  match Js.nullToOption (first q ) with
+  match Js.nullToOption (firstGet q ) with
   | None -> Js.undefined
-  | Some v -> Js.Undefined.return (content v)
+  | Some v -> Js.Undefined.return (contentGet v)
 
 
 let peekExn q =
-  match Js.nullToOption (first q ) with
+  match Js.nullToOption (firstGet q ) with
   | None -> [%assert "Belt.Queue.Empty"]
-  | Some v -> content v
+  | Some v -> contentGet v
 
 let pop q =
-  match Js.nullToOption (first q ) with
+  match Js.nullToOption (firstGet q ) with
   | None -> None
   | Some x  ->
-    let next = next x in 
+    let next = nextGet x in 
     if next = Js.null then 
       begin (* only one element*)
         clear q;
-        Some (content x)
+        Some (contentGet x)
       end
     else begin 
-      lengthSet q (length q - 1);
+      lengthSet q (lengthGet q - 1);
       firstSet q next;
-      Some(content x) 
+      Some(contentGet x) 
     end
 
 let popExn q =
-  match Js.nullToOption (first q ) with
+  match Js.nullToOption (firstGet q ) with
   | None -> [%assert "Empty"]
   | Some x  ->
-    let next = next x in 
+    let next = nextGet x in 
     if next = Js.null then 
       begin (* only one element*)
         clear q;
-        content x
+        contentGet x
       end
     else begin 
-      lengthSet q (length q - 1);
+      lengthSet q (lengthGet q - 1);
       firstSet q next;
-      content x 
+      contentGet x 
     end    
 
 let popUndefined q =
-  match Js.nullToOption (first q ) with
+  match Js.nullToOption (firstGet q ) with
   | None -> Js.undefined
   | Some x  ->
-    let next = next x in 
+    let next = nextGet x in 
     if next = Js.null then 
       begin (* only one element*)
         clear q;
-        Js.Undefined.return (content x)
+        Js.Undefined.return (contentGet x)
       end
     else begin 
-      lengthSet q (length q - 1);
+      lengthSet q (lengthGet q - 1);
       firstSet q next;
-      Js.Undefined.return (content x) 
+      Js.Undefined.return (contentGet x) 
     end
 
 let rec copyAux qRes prev cell =
   match Js.nullToOption cell with
   | None -> lastSet qRes  prev; qRes
   | Some x  ->
-    let content = content x in 
+    let content = contentGet x in 
     let res = return @@ node ~content ~next:null in
     begin match Js.nullToOption prev with
       | None -> firstSet qRes res
       | Some p -> nextSet p  res
     end;
-    copyAux qRes res (next x)
+    copyAux qRes res (nextGet x)
 
 let copy q =
-  copyAux (t  ~length:(length q) ~first:null ~last:null)  null (first q)
+  copyAux (t  ~length:(lengthGet q) ~first:null ~last:null)  null (firstGet q)
 
 
       
@@ -143,34 +143,34 @@ let rec copyMapAux qRes prev cell f =
   match Js.nullToOption cell with
   | None -> lastSet qRes  prev; qRes
   | Some x  ->
-    let content = f (content x) [@bs] in 
+    let content = f (contentGet x) [@bs] in 
     let res = return @@ node ~content ~next:null in
     begin match Js.nullToOption prev with (*TODO: optimize to remove such check*)
       | None -> firstSet qRes res
       | Some p -> nextSet p  res
     end;
-    copyMapAux qRes res (next x) f
+    copyMapAux qRes res (nextGet x) f
 
 let mapU q f =
-  copyMapAux (t  ~length:(length q) ~first:null ~last:null)  null (first q) f
+  copyMapAux (t  ~length:(lengthGet q) ~first:null ~last:null)  null (firstGet q) f
     
 let map q f = mapU q (fun [@bs] a -> f a)
     
 let isEmpty q =
-  length q = 0
+  lengthGet q = 0
 
 let size q =
-  length q
+  lengthGet q
 
 let rec iterAux cell f =
   match Js.nullToOption cell with
   | None -> ()
   | Some x  ->
-    f (content x) [@bs];
-    iterAux (next x) f
+    f (contentGet x) [@bs];
+    iterAux (nextGet x) f
 
 let forEachU q f =
-  iterAux (first q) f
+  iterAux (firstGet q) f
 
 let forEach q f = forEachU q (fun[@bs] a -> f a)
     
@@ -178,38 +178,38 @@ let rec foldAux f accu cell =
   match Js.nullToOption cell with
   | None -> accu
   | Some x  ->
-    let accu = f accu (content x) [@bs] in
-    foldAux f accu (next x)
+    let accu = f accu (contentGet x) [@bs] in
+    foldAux f accu (nextGet x)
 
 let reduceU q  accu f =
-  foldAux f accu (first q)
+  foldAux f accu (firstGet q)
 
 let reduce q accu f = reduceU q accu (fun[@bs] a b -> f a b)
     
 let transfer q1 q2 =
-  if length q1 > 0 then
-    match Js.nullToOption (last q2) with
+  if lengthGet q1 > 0 then
+    match Js.nullToOption (lastGet q2) with
     | None ->
-      lengthSet q2 (length q1);
-      firstSet q2 (first q1);
-      lastSet q2 (last q1);
+      lengthSet q2 (lengthGet q1);
+      firstSet q2 (firstGet q1);
+      lastSet q2 (lastGet q1);
       clear q1
     | Some l ->
-      lengthSet q2  (length q2 + length q1);
-      nextSet l (first q1);
-      lastSet q2 (last  q1);
+      lengthSet q2  (lengthGet q2 + lengthGet q1);
+      nextSet l (firstGet q1);
+      lastSet q2 (lastGet  q1);
       clear q1
 
 let rec fillAux i arr cell =       
   match Js.nullToOption cell with 
   | None -> ()
   | Some x ->
-    A.setUnsafe arr i (content x);
-    fillAux (i + 1) arr (next x) 
+    A.setUnsafe arr i (contentGet x);
+    fillAux (i + 1) arr (nextGet x) 
 
 let toArray x =         
-  let v = A.makeUninitializedUnsafe (length x) in 
-  fillAux 0 v (first x);
+  let v = A.makeUninitializedUnsafe (lengthGet x) in 
+  fillAux 0 v (firstGet x);
   v
 
 (*TODO: optimize *)

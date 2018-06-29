@@ -38,10 +38,10 @@ module A = Belt_Array
 
 let rec copy ( x : _ t) : _ t= 
   C.container
-    ~hash:(C.hash x)
-    ~eq:(C.eq x)
-    ~size:(C.size x)
-    ~buckets:(copyBuckets (C.buckets x))
+    ~hash:(C.hashGet x)
+    ~eq:(C.eqGet x)
+    ~size:(C.sizeGet x)
+    ~buckets:(copyBuckets (C.bucketsGet x))
 and copyBuckets ( buckets : _ bucket C.opt array) =  
   let len = A.length buckets in 
   let newBuckets = A.makeUninitializedUnsafe len in 
@@ -54,18 +54,18 @@ and copyBucket c =
   match C.toOpt c with 
   | None -> c 
   | Some c -> 
-    let head = (bucket ~key:(key c) ~value:(value c)
+    let head = (bucket ~key:(keyGet c) ~value:(valueGet c)
                   ~next:(C.emptyOpt)) in 
-    copyAuxCont (next c) head;
+    copyAuxCont (nextGet c) head;
     C.return head
 and copyAuxCont c prec =       
   match C.toOpt c with 
   | None -> ()
   | Some nc -> 
     let ncopy = 
-        bucket ~key:(key nc) ~value:(value nc) ~next:C.emptyOpt in 
+        bucket ~key:(keyGet nc) ~value:(valueGet nc) ~next:C.emptyOpt in 
     nextSet prec (C.return ncopy) ;
-    copyAuxCont (next nc) ncopy
+    copyAuxCont (nextGet nc) ncopy
 
 
 
@@ -73,7 +73,7 @@ and copyAuxCont c prec =
 let rec bucketLength accu buckets = 
   match C.toOpt buckets with 
   | None -> accu
-  | Some cell -> bucketLength (accu + 1) (next cell)
+  | Some cell -> bucketLength (accu + 1) (nextGet cell)
 
 
 
@@ -82,10 +82,10 @@ let rec do_bucket_iter ~f buckets =
   | None ->
     ()
   | Some cell ->
-    f (key cell)  (value cell) [@bs]; do_bucket_iter ~f (next cell)
+    f (keyGet cell)  (valueGet cell) [@bs]; do_bucket_iter ~f (nextGet cell)
 
 let forEachU h f =
-  let d = C.buckets h in
+  let d = C.bucketsGet h in
   for i = 0 to A.length d - 1 do
     do_bucket_iter f (A.getUnsafe d i)
   done
@@ -97,10 +97,10 @@ let rec do_bucket_fold ~f b accu =
   | None ->
     accu
   | Some cell ->
-    do_bucket_fold ~f (next cell) (f accu (key cell) (value cell)  [@bs]) 
+    do_bucket_fold ~f (nextGet cell) (f accu (keyGet cell) (valueGet cell)  [@bs]) 
 
 let reduceU  h init f =
-  let d = C.buckets h in
+  let d = C.bucketsGet h in
   let accu = ref init in
   for i = 0 to A.length d - 1 do
     accu := do_bucket_fold ~f (A.getUnsafe d i) !accu
@@ -111,7 +111,7 @@ let reduce h init f = reduceU h init (fun [@bs] a b c -> f a b c)
 
 
 let getMaxBucketLength h =
-  A.reduceU (C.buckets h) 0
+  A.reduceU (C.bucketsGet h) 0
     (fun[@bs] m b -> 
        let len = bucketLength 0 b in
        Pervasives.max m len)
@@ -119,7 +119,7 @@ let getMaxBucketLength h =
 let getBucketHistogram h =
   let mbl = getMaxBucketLength h in 
   let histo = A.makeByU (mbl + 1) (fun[@bs] _ -> 0) in
-  A.forEachU (C.buckets h)
+  A.forEachU (C.bucketsGet h)
     (fun[@bs] b ->
        let l = bucketLength 0 b in
        A.setUnsafe histo l (A.getUnsafe histo l + 1)
@@ -128,29 +128,29 @@ let getBucketHistogram h =
 
 let logStats h =
   let histogram = getBucketHistogram h in 
-  Js.log [%obj{ bindings = C.size h;
-                buckets = A.length (C.buckets h);
+  Js.log [%obj{ bindings = C.sizeGet h;
+                buckets = A.length (C.bucketsGet h);
                 histogram}]
 
 
 (** iterate the Buckets, in place remove the elements *)                
 let rec filterMapInplaceBucket f h i prec cell =
-  let n = next cell in
-  begin match f (key cell) (value cell) [@bs] with
+  let n = nextGet cell in
+  begin match f (keyGet cell) (valueGet cell) [@bs] with
     | None ->
-      C.sizeSet h (C.size h - 1); (* delete *)
+      C.sizeSet h (C.sizeGet h - 1); (* delete *)
       begin match C.toOpt n with 
         | Some nextCell -> 
           filterMapInplaceBucket f h i prec nextCell
         | None -> 
           match C.toOpt prec with 
-          | None -> A.setUnsafe (C.buckets h) i prec
+          | None -> A.setUnsafe (C.bucketsGet h) i prec
           | Some cell -> nextSet cell n
       end
     | Some data -> (* replace *)
       let bucket = C.return cell in 
       begin match C.toOpt prec with
-        | None -> A.setUnsafe (C.buckets h) i  bucket 
+        | None -> A.setUnsafe (C.bucketsGet h) i  bucket 
         | Some c -> nextSet cell bucket
       end;
       valueSet cell data;
@@ -161,7 +161,7 @@ let rec filterMapInplaceBucket f h i prec cell =
   end
 
 let keepMapInPlaceU h f =
-  let h_buckets = C.buckets h in
+  let h_buckets = C.bucketsGet h in
   for i = 0 to A.length h_buckets - 1 do
     let v = A.getUnsafe h_buckets i in 
     match C.toOpt v with 
@@ -172,15 +172,15 @@ let keepMapInPlaceU h f =
 let keepMapInPlace h f = keepMapInPlaceU h (fun [@bs] a b -> f a b)
     
 let rec fillArray i arr cell =  
-  A.setUnsafe arr i (key cell, value cell);
-  match C.toOpt (next cell) with 
+  A.setUnsafe arr i (keyGet cell, valueGet cell);
+  match C.toOpt (nextGet cell) with 
   | None -> i + 1
   | Some v -> fillArray (i + 1) arr v 
 
 let toArray h = 
-  let d = C.buckets h in 
+  let d = C.bucketsGet h in 
   let current = ref 0 in 
-  let arr = A.makeUninitializedUnsafe (C.size h) in 
+  let arr = A.makeUninitializedUnsafe (C.sizeGet h) in 
   for i = 0 to A.length d - 1 do  
     let cell = A.getUnsafe d i in 
     match C.toOpt cell with 
@@ -192,14 +192,14 @@ let toArray h =
 
 let rec fillArrayMap i arr cell f =  
   A.setUnsafe arr i (f cell [@bs]);
-  match C.toOpt (next cell) with 
+  match C.toOpt (nextGet cell) with 
   | None -> i + 1
   | Some v -> fillArrayMap (i + 1) arr v f
 
 let linear h f = 
-  let d = C.buckets h in 
+  let d = C.bucketsGet h in 
   let current = ref 0 in 
-  let arr = A.makeUninitializedUnsafe (C.size h) in 
+  let arr = A.makeUninitializedUnsafe (C.sizeGet h) in 
   for i = 0 to A.length d - 1 do  
     let cell = A.getUnsafe d i in 
     match C.toOpt cell with 
@@ -209,9 +209,9 @@ let linear h f =
   done;
   arr 
 
-let keysToArray h = linear h (fun [@bs] x -> key x)  
-let valuesToArray h = linear h (fun [@bs] x -> value x)  
-let toArray h = linear h (fun [@bs]x -> key x, value x)
+let keysToArray h = linear h (fun [@bs] x -> keyGet x)  
+let valuesToArray h = linear h (fun [@bs] x -> valueGet x)  
+let toArray h = linear h (fun [@bs]x -> keyGet x, valueGet x)
 
 
 

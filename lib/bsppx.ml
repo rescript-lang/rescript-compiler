@@ -10266,6 +10266,8 @@ val bs_get_arity : attr
 val bs_set : attr
 val bs_return_undefined : attr
 
+val deprecated : string -> attr
+
 end = struct
 #1 "ast_attributes.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -10661,6 +10663,19 @@ let bs_return_undefined : attr
            },[])
       ; pstr_loc = locg}]
 
+let deprecated s : attr =       
+  {txt = "ocaml.deprecated"; loc = locg },
+  PStr
+    [
+      {pstr_desc =
+         Pstr_eval (
+           {pexp_desc =
+              Pexp_constant
+                (Const_string (s,None));
+            pexp_loc = locg;
+            pexp_attributes = []
+           },[])
+      ; pstr_loc = locg}]
 
 end
 module Ast_exp : sig 
@@ -18837,13 +18852,22 @@ let handle_config (config : Parsetree.expression option) =
 
 
 let get_optional_attrs =
-  [Ast_attributes.bs_get; Ast_attributes.bs_return_undefined]
+  [ 
+    Ast_attributes.bs_get; 
+    Ast_attributes.bs_return_undefined
+    ]
 (** For this attributes, its type was wrapped as an option,
    so we can still reuse existing frame work
 *)  
 
 let get_attrs = [ Ast_attributes.bs_get_arity]
 let set_attrs = [Ast_attributes.bs_set]
+
+let deprecated name = 
+  Ast_attributes.deprecated  
+    ("use " ^ name ^ "Get instead")
+
+
 let handleTdcl (tdcl : Parsetree.type_declaration) =
   let core_type = U.core_type_of_type_declaration tdcl in
   let loc = tdcl.ptype_loc in
@@ -18881,17 +18905,28 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
           in
           let prim = [prim_as_name] in 
           let is_optional = Ast_attributes.has_bs_optional pld_attributes in
-          let maker, getter_declaration =
+          
+          let maker, acc =
             if is_optional then
               let optional_type = Ast_core_type.lift_option_type pld_type in
               (Ast_core_type.opt_arrow pld_loc label_name optional_type maker,
-              Val.mk ~loc:pld_loc pld_name 
-                ~attrs:get_optional_attrs ~prim
+              let aux b pld_name = 
+                (Val.mk ~loc:pld_loc
+                 (if b then pld_name else 
+                  {pld_name with txt = pld_name.txt ^ "Get"})
+                ~attrs:(if b then deprecated (pld_name.Asttypes.txt) :: get_optional_attrs  
+                        else get_optional_attrs) ~prim
                 (Typ.arrow ~loc "" core_type optional_type)
-                )
+                ) in 
+               aux true pld_name :: aux false pld_name  :: acc )
             else
               Typ.arrow ~loc:pld_loc label_name pld_type maker,
-              Val.mk ~loc:pld_loc pld_name ~attrs:get_attrs
+              (
+                let aux b pld_name = 
+                Val.mk ~loc:pld_loc 
+                  (if b then pld_name else 
+                    {pld_name with txt = pld_name.txt ^ "Get"}
+                  ) ~attrs:(if b then deprecated pld_name.Asttypes.txt :: get_attrs else get_attrs)
               ~prim:(
                 ["" ; (* Not needed actually*)
                 External_ffi_types.to_string 
@@ -18901,9 +18936,11 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
                   Js_get {js_get_name = prim_as_name; js_get_scopes = []}
                   ))] )
                (Typ.arrow ~loc "" core_type pld_type)
+               in 
+               aux true pld_name ::aux false pld_name :: acc )
           in
-          let acc =
-           getter_declaration :: acc in
+          (* let acc =
+           getter_declaration :: acc in *)
           let is_current_field_mutable = pld_mutable = Mutable in
           let acc =
             if is_current_field_mutable then

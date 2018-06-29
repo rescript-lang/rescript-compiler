@@ -46,10 +46,10 @@ type ('k, 'id) t = ('k, 'id) S.t
 
 
 let rec remove0 nt x ~cmp = 
-  let k = N.value nt in 
+  let k = N.valueGet nt in 
   let c = cmp x k [@bs] in 
   if c = 0 then 
-    let l,r = N.(left nt, right nt) in       
+    let l,r = N.(leftGet nt, rightGet nt) in       
     match N.(toOpt l, toOpt r) with 
     | None, _ -> r 
     | _, None -> l 
@@ -59,13 +59,13 @@ let rec remove0 nt x ~cmp =
    else 
     begin 
       if c < 0 then 
-        match N.toOpt (N.left nt) with         
+        match N.toOpt (N.leftGet nt) with         
         | None -> N.return nt 
         | Some l ->
           N.leftSet nt (remove0 ~cmp l x );
           N.return (N.balMutate nt)
       else 
-        match N.toOpt (N.right nt) with 
+        match N.toOpt (N.rightGet nt) with 
         | None -> N.return nt 
         | Some r -> 
           N.rightSet nt (remove0 ~cmp r x);
@@ -73,11 +73,11 @@ let rec remove0 nt x ~cmp =
     end
 
 let remove  d  v =  
-  let oldRoot = S.data d in 
+  let oldRoot = S.dataGet d in 
   match N.toOpt oldRoot with 
   | None -> ()
   | Some oldRoot2 ->
-    let newRoot = remove0 ~cmp:(Belt_Id.getCmpInternal (S.cmp d)) oldRoot2 v in 
+    let newRoot = remove0 ~cmp:(Belt_Id.getCmpInternal (S.cmpGet d)) oldRoot2 v in 
     if newRoot != oldRoot then 
       S.dataSet d newRoot    
 
@@ -92,22 +92,22 @@ let rec removeMany0 t xs i len ~cmp  =
   else N.return t    
 
 let removeMany d xs =  
-  let oldRoot = S.data d in 
+  let oldRoot = S.dataGet d in 
   match N.toOpt oldRoot with 
   | None -> ()
   | Some nt -> 
     let len = A.length xs in 
     S.dataSet d 
       (removeMany0 nt xs 0 len 
-        ~cmp:(Belt_Id.getCmpInternal (S.cmp d)))
+        ~cmp:(Belt_Id.getCmpInternal (S.cmpGet d)))
 
 
 let rec removeCheck0  nt x removed ~cmp= 
-  let k = N.value nt in 
+  let k = N.valueGet nt in 
   let c = (Belt_Id.getCmpInternal cmp) x k [@bs] in 
   if c = 0 then 
     let () = removed := true in  
-    let l,r = N.(left nt, right nt) in       
+    let l,r = N.(leftGet nt, rightGet nt) in       
     match N.(toOpt l, toOpt r) with 
     | None, _ -> r 
     | _, None -> l  
@@ -117,13 +117,13 @@ let rec removeCheck0  nt x removed ~cmp=
   else 
     begin 
       if c < 0 then 
-        match N.toOpt (N.left nt) with         
+        match N.toOpt (N.leftGet nt) with         
         | None -> N.return nt 
         | Some l ->
           N.leftSet nt (removeCheck0 ~cmp l x removed);
           N.return (N.balMutate nt)
       else 
-        match N.toOpt (N.right nt) with 
+        match N.toOpt (N.rightGet nt) with 
         | None -> N.return nt 
         | Some r -> 
           N.rightSet nt (removeCheck0 ~cmp r x removed);
@@ -133,12 +133,12 @@ let rec removeCheck0  nt x removed ~cmp=
 
 
 let removeCheck d v =  
-  let oldRoot = S.data d in 
+  let oldRoot = S.dataGet d in 
   match N.toOpt oldRoot with 
   | None -> false 
   | Some oldRoot2 ->
     let removed = ref false in 
-    let newRoot = removeCheck0 ~cmp:(S.cmp d) oldRoot2 v removed in 
+    let newRoot = removeCheck0 ~cmp:(S.cmpGet d) oldRoot2 v removed in 
     if newRoot != oldRoot then  
       S.dataSet d newRoot ;   
     !removed
@@ -151,11 +151,11 @@ let rec addCheck0  t x added ~cmp  =
     added := true;
     N.singleton x 
   | Some nt -> 
-    let k = N.value nt in 
+    let k = N.valueGet nt in 
     let c = cmp x k [@bs] in  
     if c = 0 then t 
     else
-      let l, r = N.(left nt, right nt) in 
+      let l, r = N.(leftGet nt, rightGet nt) in 
       (if c < 0 then                   
          let ll = addCheck0 ~cmp l x added in
          N.leftSet nt ll
@@ -165,16 +165,16 @@ let rec addCheck0  t x added ~cmp  =
       N.return (N.balMutate nt)
 
 let addCheck m e = 
-  let oldRoot = S.data m in 
+  let oldRoot = S.dataGet m in 
   let added = ref false in 
-  let newRoot = addCheck0 ~cmp:(Belt_Id.getCmpInternal (S.cmp m)) oldRoot e added in 
+  let newRoot = addCheck0 ~cmp:(Belt_Id.getCmpInternal (S.cmpGet m)) oldRoot e added in 
   if newRoot != oldRoot then 
     S.dataSet m newRoot;
   !added    
 
 let add m e = 
-  let oldRoot = S.data m in 
-  let newRoot = N.addMutate ~cmp:(S.cmp m) oldRoot e  in 
+  let oldRoot = S.dataGet m in 
+  let newRoot = N.addMutate ~cmp:(S.cmpGet m) oldRoot e  in 
   if newRoot != oldRoot then 
     S.dataSet m newRoot
 
@@ -186,7 +186,7 @@ let addArrayMutate t xs ~cmp =
   !v
     
 let mergeMany d xs =   
-  S.dataSet d (addArrayMutate (S.data d) xs ~cmp:(S.cmp d))
+  S.dataSet d (addArrayMutate (S.dataGet d) xs ~cmp:(S.cmpGet d))
 
 
 let make (type value) (type identity) ~(id : (value, identity) id) =
@@ -194,38 +194,38 @@ let make (type value) (type identity) ~(id : (value, identity) id) =
   S.t ~cmp:M.cmp ~data:N.empty
     
 let isEmpty d = 
-  N.isEmpty (S.data d)
+  N.isEmpty (S.dataGet d)
     
 let minimum d = 
-  N.minimum (S.data d)    
+  N.minimum (S.dataGet d)    
 let minUndefined d =
-  N.minUndefined (S.data d)
+  N.minUndefined (S.dataGet d)
 let maximum d = 
-  N.maximum (S.data d)
+  N.maximum (S.dataGet d)
 let maxUndefined d =
-  N.maxUndefined (S.data d)
+  N.maxUndefined (S.dataGet d)
 
-let forEachU d f = N.forEachU (S.data d) f
+let forEachU d f = N.forEachU (S.dataGet d) f
 let forEach d f = forEachU d (fun[@bs] a -> f a)
-let reduceU d acc cb = N.reduceU (S.data d) acc cb
+let reduceU d acc cb = N.reduceU (S.dataGet d) acc cb
 let reduce d acc cb = reduceU d acc (fun[@bs] a b -> cb a b)    
-let everyU d p = N.everyU (S.data d) p
+let everyU d p = N.everyU (S.dataGet d) p
 let every d p = everyU d (fun[@bs] a -> p a)    
-let someU d p = N.someU (S.data d) p
+let someU d p = N.someU (S.dataGet d) p
 let some d p = someU d (fun[@bs] a -> p a)    
 let size d = 
-  N.size (S.data d)
+  N.size (S.dataGet d)
 let toList d =
-  N.toList (S.data d)
+  N.toList (S.dataGet d)
 let toArray d = 
-  N.toArray (S.data d)
+  N.toArray (S.dataGet d)
 
 let fromSortedArrayUnsafe (type value) (type identity) xs ~(id : (value,identity) id) : _ t =
   let module M = (val id) in 
   S.t ~data:(N.fromSortedArrayUnsafe xs) ~cmp:M.cmp
 
 let checkInvariantInternal d = 
-  N.checkInvariantInternal (S.data d)
+  N.checkInvariantInternal (S.dataGet d)
     
     
 let fromArray (type value) (type identity)  data ~(id : (value,identity) id) =
@@ -235,24 +235,24 @@ let fromArray (type value) (type identity)  data ~(id : (value,identity) id) =
 
 
 let cmp d0 d1 = 
-  N.cmp ~cmp:(S.cmp d0) (S.data d0) (S.data d1)
+  N.cmp ~cmp:(S.cmpGet d0) (S.dataGet d0) (S.dataGet d1)
 
 let eq d0  d1 = 
-  N.eq ~cmp:(S.cmp d0) (S.data d0) (S.data d1)
+  N.eq ~cmp:(S.cmpGet d0) (S.dataGet d0) (S.dataGet d1)
     
 let get d x = 
-  N.get ~cmp:(S.cmp d) (S.data d) x
+  N.get ~cmp:(S.cmpGet d) (S.dataGet d) x
     
 let getUndefined  d x = 
-  N.getUndefined ~cmp:(S.cmp d) (S.data d) x
+  N.getUndefined ~cmp:(S.cmpGet d) (S.dataGet d) x
     
 let getExn d x = 
-  N.getExn ~cmp:(S.cmp d) (S.data d) x
+  N.getExn ~cmp:(S.cmpGet d) (S.dataGet d) x
     
 
 let split d  key  =     
-  let arr = N.toArray (S.data d) in
-  let cmp = S.cmp d in 
+  let arr = N.toArray (S.dataGet d) in
+  let cmp = S.cmpGet d in 
   let i = Sort.binarySearchByU arr key (Belt_Id.getCmpInternal cmp)  in   
   let len = A.length arr in 
   if i < 0 then 
@@ -275,23 +275,23 @@ let split d  key  =
     ), true       
 
 let keepU d p = 
-  S.t ~data:(N.keepCopyU (S.data d) p ) ~cmp:(S.cmp d)
+  S.t ~data:(N.keepCopyU (S.dataGet d) p ) ~cmp:(S.cmpGet d)
 
 let keep d p = keepU d (fun[@bs] a -> p a)
     
 let partitionU d p = 
-  let cmp = S.cmp d in 
-  let a, b = N.partitionCopyU (S.data d) p in 
+  let cmp = S.cmpGet d in 
+  let a, b = N.partitionCopyU (S.dataGet d) p in 
   S.t ~data:a ~cmp, S.t ~data:b ~cmp  
 
 let partition d p = partitionU d (fun[@bs] a -> p a)
 
 let subset a b = 
-  N.subset  ~cmp:(S.cmp a) (S.data a) (S.data b)
+  N.subset  ~cmp:(S.cmpGet a) (S.dataGet a) (S.dataGet b)
 
 let intersect a b  : _ t = 
-  let cmp = S.cmp a  in 
-  match N.toOpt (S.data a), N.toOpt (S.data b) with 
+  let cmp = S.cmpGet a  in 
+  match N.toOpt (S.dataGet a), N.toOpt (S.dataGet b) with 
   | None, _ -> S.t ~cmp ~data:N.empty
   | _, None -> S.t ~cmp ~data:N.empty
   | Some dataa0, Some datab0 ->  
@@ -317,9 +317,9 @@ let intersect a b  : _ t =
         ~cmp
         
 let diff a b : _ t = 
-  let cmp = S.cmp a in 
-  let dataa = S.data a in 
-  match N.toOpt dataa, N.toOpt (S.data b) with 
+  let cmp = S.cmpGet a in 
+  let dataa = S.dataGet a in 
+  match N.toOpt dataa, N.toOpt (S.dataGet b) with 
   | None, _ -> S.t ~cmp ~data:N.empty
   | _, None -> 
     S.t ~data:(N.copy dataa) ~cmp
@@ -345,8 +345,8 @@ let diff a b : _ t =
       S.t ~data:(N.fromSortedArrayAux tmp2 0 k) ~cmp
 
 let union a b = 
-  let cmp = S.cmp a in 
-  let dataa, datab =  S.data a, S.data b  in 
+  let cmp = S.cmpGet a in 
+  let dataa, datab =  S.dataGet a, S.dataGet b  in 
   match N.toOpt dataa, N.toOpt datab with 
   | None, _ -> S.t ~data:(N.copy datab) ~cmp
   | _, None -> S.t ~data:(N.copy dataa) ~cmp
@@ -368,8 +368,8 @@ let union a b =
       S.t ~data:(N.fromSortedArrayAux tmp2 0 k) ~cmp
       
 let has d x =
-  N.has ~cmp:(S.cmp d) (S.data d) x
+  N.has ~cmp:(S.cmpGet d) (S.dataGet d) x
 
-let copy d = S.t ~data:(N.copy (S.data d)) ~cmp:(S.cmp d)
+let copy d = S.t ~data:(N.copy (S.dataGet d)) ~cmp:(S.cmpGet d)
 
 
