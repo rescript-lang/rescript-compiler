@@ -23,21 +23,21 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-(* DESIGN:  
+(* DESIGN:
     - It does not have any code, all its code will be inlined so that
        there will never be
        {[ require('js')]}
     - Its interface should be minimal
 *)
 
-(** This library provides bindings and necessary support for JS FFI. 
+(** This library provides bindings and necessary support for JS FFI.
     It contains all bindings into [Js] namespace.
 
     @example {[
         [| 1;2;3;4|]
         |> Js.Array.map (fun x -> x + 1 )
         |> Js.Array.reduce (+) 0
-        |> Js.log 
+        |> Js.log
     ]}
 *)
 
@@ -51,8 +51,8 @@ module Internal = Js_internal
 (** Types for JS objects *)
 
 type +'a t
-(** Js object type.  
-   
+(** Js object type.
+
     @example {[
         let x : < x : int ; y : int > Js.t =
             [%obj{ x = 1 ; y = 2}]
@@ -61,7 +61,7 @@ type +'a t
 
 type + 'a null
 (** nullable, value of this type can be either [null] or ['a]
-    this type is the same as type [t] in {!Null}    
+    this type is the same as type [t] in {!Null}
 *)
 
 type + 'a undefined
@@ -72,42 +72,44 @@ type + 'a nullable
 (** value of this type can be [undefined], [null] or ['a]
     this type is the same as type [t] n {!Null_undefined} *)
 
-type + 'a null_undefined = 'a nullable    
+type + 'a null_undefined = 'a nullable
 
 external toOption : 'a nullable  -> 'a option = "#nullable_to_opt"
 external undefinedToOption : 'a undefined -> 'a option = "#undefined_to_opt"
 external nullToOption : 'a null -> 'a option = "#null_to_opt"
 external test : 'a nullable -> bool = "#is_nullable"
+[@@ocaml.deprecated "Use Js.isNullable instead"]
+external isNullable : 'a nullable -> bool = "#is_nullable"
 
 (** The same as {!test} except that it is more permissive on the types of input *)
 external testAny : 'a -> bool = "#is_nullable"
 
 
 type (+'a, +'e) promise
-(** The promise type, defined here for interoperation across packages 
+(** The promise type, defined here for interoperation across packages
     @deprecated please use {!Js.Promise}
 *)
 
-external null : 'a null = "#null" 
+external null : 'a null = "#null"
 (** The same as [empty] in {!Js.Null} will be compiled as [null]*)
 
-external undefined : 'a undefined = "#undefined" 
+external undefined : 'a undefined = "#undefined"
 (** The same as  [empty] {!Js.Undefined} will be compiled as [undefined]*)
 
 
 
 external typeof : 'a -> string = "#typeof"
-(** [typeof x] will be compiled as [typeof x] in JS 
-    Please consider functions in {!Types} for a type safe way of reflection 
+(** [typeof x] will be compiled as [typeof x] in JS
+    Please consider functions in {!Types} for a type safe way of reflection
 *)
 
-external log : 'a -> unit = "log" 
+external log : 'a -> unit = "log"
 [@@bs.val] [@@bs.scope "console"]
-external log2 : 'a -> 'b -> unit = "log" 
+external log2 : 'a -> 'b -> unit = "log"
 [@@bs.val] [@@bs.scope "console"]
-external log3 : 'a -> 'b -> 'c -> unit = "log" 
+external log3 : 'a -> 'b -> 'c -> unit = "log"
 [@@bs.val] [@@bs.scope "console"]
-external log4 : 'a -> 'b -> 'c -> 'd -> unit = "log" 
+external log4 : 'a -> 'b -> 'c -> 'd -> unit = "log"
 [@@bs.val] [@@bs.scope "console"]
 (** A convenience function to log everything *)
 external logMany : 'a array -> unit = "log"
@@ -116,21 +118,21 @@ external logMany : 'a array -> unit = "log"
 
 external eqNull : 'a -> 'a null -> bool = "%bs_equal_null"
 external eqUndefined : 'a -> 'a undefined -> bool = "%bs_equal_undefined"
-external eqNullable : 'a -> 'a nullable -> bool = "%bs_equal_nullable" 
+external eqNullable : 'a -> 'a nullable -> bool = "%bs_equal_nullable"
 
 (** {4 operators }*)
 
 external unsafe_lt : 'a -> 'a -> bool = "#unsafe_lt"
 (** [unsafe_lt a b] will be compiled as [a < b].
-    It is marked as unsafe, since it is impossible 
+    It is marked as unsafe, since it is impossible
     to give a proper semantics for comparision which applies to any type
  *)
 external unsafe_le : 'a -> 'a -> bool = "#unsafe_le"
-(**  [unsafe_le a b] will be compiled as [a <= b]. 
+(**  [unsafe_le a b] will be compiled as [a <= b].
     See also {!unsafe_lt}
 *)
 external unsafe_gt : 'a -> 'a -> bool = "#unsafe_gt"
-(**  [unsafe_gt a b] will be compiled as [a > b]. 
+(**  [unsafe_gt a b] will be compiled as [a > b].
      See also {!unsafe_lt}
 *)
 external unsafe_ge : 'a -> 'a -> bool = "#unsafe_ge"
@@ -198,9 +200,9 @@ module Option = Js_option
 module Result = Js_result
 (** Define the interface for result *)
 
-module List = Js_list 
+module List = Js_list
 (** Provide utilities for list *)
 
-module Vector = Js_vector 
+module Vector = Js_vector
 
 module Console = Js_console
