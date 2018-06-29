@@ -36934,8 +36934,6 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
                in 
                aux true pld_name ::aux false pld_name :: acc )
           in
-          (* let acc =
-           getter_declaration :: acc in *)
           let is_current_field_mutable = pld_mutable = Mutable in
           let acc =
             if is_current_field_mutable then
