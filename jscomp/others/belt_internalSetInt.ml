@@ -14,18 +14,18 @@ let rec has (t : t) (x : value)  =
   match N.toOpt t with 
   | None -> false
   | Some n  ->                
-    let v = N.value n in 
-    x = v || has (if x < v then N.left n else N.right n) x
+    let v = N.valueGet n in 
+    x = v || has (if x < v then N.leftGet n else N.rightGet n) x
 
 
 let rec compareAux e1 e2  =
     match e1,e2 with 
     | h1::t1, h2::t2 ->
-        let (k1 : value) ,k2 = N.value h1, N.value h2 in 
+        let (k1 : value) ,k2 = N.valueGet h1, N.valueGet h2 in 
         if k1 = k2 then  
           compareAux 
-            (N.stackAllLeft (N.right h1) t1 ) 
-            (N.stackAllLeft (N.right h2) t2)
+            (N.stackAllLeft (N.rightGet h1) t1 ) 
+            (N.stackAllLeft (N.rightGet h2) t2)
         else if k1  < k2 then -1    
         else 1
     | _, _ -> 0   
@@ -52,8 +52,8 @@ let rec subset (s1 : t) (s2 : t) =
   | _, None ->
     false
   | Some t1, Some t2 (* Node (l1, v1, r1, _), (Node (l2, v2, r2, _) as t2) *) ->
-    let l1,v1,r1 = N.(left t1, value t1, right t1) in  
-    let l2,v2,r2 = N.(left t2, value t2, right t2) in 
+    let l1,v1,r1 = N.(leftGet t1, valueGet t1, rightGet t1) in  
+    let l2,v2,r2 = N.(leftGet t2, valueGet t2, rightGet t2) in 
     if v1 = v2 then
       subset l1 l2 && subset r1 r2
     else if v1 < v2 then
@@ -66,9 +66,9 @@ let rec get (n :t) (x : value) =
   match N.toOpt n with 
   | None -> None
   | Some t  ->    
-    let v = N.value t in     
+    let v = N.valueGet t in     
     if x = v then Some v
-    else get (if x < v then N.left t else N.right t) x
+    else get (if x < v then N.leftGet t else N.rightGet t) x
 
 
 
@@ -76,27 +76,27 @@ let rec getUndefined (n :t) (x : value)   =
   match N.toOpt n with 
   | None -> Js.undefined
   | Some t  ->    
-    let v = N.value t in     
+    let v = N.valueGet t in     
     if x = v then Js.Undefined.return v
-    else getUndefined  (if x < v then N.left t else N.right t) x
+    else getUndefined  (if x < v then N.leftGet t else N.rightGet t) x
 
 let rec getExn  (n :t) (x : value) = 
   match N.toOpt n with 
   | None -> [%assert "getExn"]
   | Some t  ->    
-    let v = N.value t in     
+    let v = N.valueGet t in     
     if x = v then  v
-    else getExn (if x < v then N.left t else N.right t) x
+    else getExn (if x < v then N.leftGet t else N.rightGet t) x
 
 (****************************************************************************)
 let rec addMutate  t  (x : value)=   
   match N.toOpt t with 
   | None -> N.singleton x
   | Some nt -> 
-    let k = N.value nt in 
+    let k = N.valueGet nt in 
     if x = k then t 
     else
-      let l, r = N.(left nt, right nt) in 
+      let l, r = N.(leftGet nt, rightGet nt) in 
       (if x < k then                   
          N.leftSet nt (addMutate l x)       
        else   

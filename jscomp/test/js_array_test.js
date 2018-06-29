@@ -460,7 +460,7 @@ var suites_001 = /* :: */[
                                                                       1,
                                                                       2,
                                                                       3
-                                                                    ].concat(4)
+                                                                    ].concat(/* array */[4])
                                                                 ]);
                                                       })
                                                   ],

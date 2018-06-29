@@ -53,15 +53,15 @@ let rec set  t (newK : key) (newD : _)  =
   | None -> 
     N.singleton newK newD
   | Some n  ->
-    let k = N.key n in 
+    let k = N.keyGet n in 
     if newK = k then
       N.return (N.updateValue n newD)
     else
-      let v = N.value n in 
+      let v = N.valueGet n in 
       if newK < k then
-        N.bal (set (N.left n) newK newD) k v (N.right n)
+        N.bal (set (N.leftGet n) newK newD) k v (N.rightGet n)
       else
-        N.bal (N.left n) k v (set (N.right n) newK newD)
+        N.bal (N.leftGet n) k v (set (N.rightGet n) newK newD)
         
 let rec updateU  t (x : key) f  = 
   match N.toOpt t with
@@ -72,23 +72,23 @@ let rec updateU  t (x : key) f  =
       N.singleton x data 
     end 
   | Some n  ->
-    let k = N.key n in 
+    let k = N.keyGet n in 
     if x = k then
-      begin match f (Some (N.value n)) [@bs] with 
+      begin match f (Some (N.valueGet n)) [@bs] with 
       | None ->
-        let l, r = N.left n, N.right n in
+        let l, r = N.leftGet n, N.rightGet n in
         begin match N.toOpt l, N.toOpt r with
           | None, _ -> r
           | _, None -> l
           | _, Some rn ->
-            let kr, vr = ref (N.key rn), ref (N.value rn) in
+            let kr, vr = ref (N.keyGet rn), ref (N.valueGet rn) in
             let r = N.removeMinAuxWithRef rn kr vr in
             N.bal l !kr !vr r 
         end
       | Some data -> N.return (N.updateValue n data )
       end 
     else
-      let l,r,v = N.left n, N.right n , N.value n in 
+      let l,r,v = N.leftGet n, N.rightGet n , N.valueGet n in 
       if x < k then
         let ll = (updateU l x f) in
         if l == ll then t 
@@ -101,13 +101,13 @@ let rec updateU  t (x : key) f  =
 let update t x f = updateU t x (fun[@bs] a -> f a)
     
 let rec removeAux n (x : key) = 
-    let l,v,r = N.(left n, key n, right n) in 
+    let l,v,r = N.(leftGet n, keyGet n, rightGet n) in 
     if x = v then
       match N.toOpt l, N.toOpt r with
       | None, _ -> r 
       | _, None -> l 
       | _, Some rn -> 
-        let kr, vr = ref (N.key rn), ref (N.value rn) in 
+        let kr, vr = ref (N.keyGet rn), ref (N.valueGet rn) in 
         let r = N.removeMinAuxWithRef rn kr vr in 
         N.bal l !kr !vr r 
     else if x < v then
@@ -116,13 +116,13 @@ let rec removeAux n (x : key) =
       | Some left -> 
         let ll = removeAux left x in 
         if ll == l then N.return n 
-        else N.(bal ll v (value n) r)
+        else N.(bal ll v (valueGet n) r)
     else
       match N.toOpt r with 
       | None -> N.return n 
       | Some right -> 
         let rr = removeAux right x  in 
-        N.bal l v (N.value n) rr
+        N.bal l v (N.valueGet n) rr
 
 let remove n x = 
   match N.toOpt n with 

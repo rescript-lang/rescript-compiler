@@ -135,7 +135,7 @@ let suites = Mt.[
 
     "append", (fun _ ->
       Eq([| 1; 2; 3; 4 |],
-         [| 1; 2; 3 |] |> Js.Array.append 4)
+         [| 1; 2; 3 |] |> Js.Array.concat [|4|])
     );
     "concat", (fun _ ->
       Eq([| 1; 2; 3; 4; 5 |],

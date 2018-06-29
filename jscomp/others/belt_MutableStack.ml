@@ -35,46 +35,46 @@ let make () = t ~root:Js.null
 
 let clear s = rootSet s Js.null
 
-let copy (s : _ t) : _ t = t ~root:(root s)
+let copy (s : _ t) : _ t = t ~root:(rootGet s)
 
 let push s x = 
-  rootSet s (Js.Null.return @@ cell ~head:x ~tail:(root s))
+  rootSet s (Js.Null.return @@ cell ~head:x ~tail:(rootGet s))
 
 let topUndefined (s : 'a t) = 
-   match Js.nullToOption (root s) with  
+   match Js.nullToOption (rootGet s) with  
    | None -> Js.undefined
-   | Some x -> Js.Undefined.return (head x) 
+   | Some x -> Js.Undefined.return (headGet x) 
 
 let top s = 
-  match Js.nullToOption (root s) with 
+  match Js.nullToOption (rootGet s) with 
   | None -> None 
-  | Some x -> Some (head x)
+  | Some x -> Some (headGet x)
 
-let isEmpty s = root s = Js.null
+let isEmpty s = rootGet s = Js.null
 
 let popUndefined s =   
-  match Js.nullToOption (root s) with 
+  match Js.nullToOption (rootGet s) with 
   | None -> Js.undefined
   | Some x -> 
-    rootSet s (tail x);    
-    Js.Undefined.return (head x)
+    rootSet s (tailGet x);    
+    Js.Undefined.return (headGet x)
 
 let pop s =     
-    match Js.nullToOption (root s) with 
+    match Js.nullToOption (rootGet s) with 
   | None -> None
   | Some x -> 
-    rootSet s (tail x);
-    Some (head x)
+    rootSet s (tailGet x);
+    Some (headGet x)
 
 
 
 let rec lengthAux (x : _ cell) acc = 
-  match Js.nullToOption (tail x ) with 
+  match Js.nullToOption (tailGet x ) with 
   | None -> acc + 1 
   | Some x -> lengthAux x (acc + 1)
 
 let size s =   
-  match Js.nullToOption (root s) with 
+  match Js.nullToOption (rootGet s) with 
   | None -> 0 
   | Some x -> lengthAux x 0
 
@@ -82,21 +82,21 @@ let rec iterAux (s : _ opt_cell) f =
   match Js.nullToOption s with 
   | None -> ()
   | Some x -> 
-    f (head x) [@bs];
-    iterAux (tail x) f 
+    f (headGet x) [@bs];
+    iterAux (tailGet x) f 
 
 let forEachU s f =   
-  iterAux (root s) f 
+  iterAux (rootGet s) f 
 
 let forEach s f = forEachU s (fun [@bs] x -> f x)
     
 let dynamicPopIterU s f =    
-  let cursor = ref (root s) in 
+  let cursor = ref (rootGet s) in 
   while !cursor != Js.null do 
     let v = Js.Null.getUnsafe !cursor in 
-    rootSet s (tail v);
-    f (head v) [@bs];
-    cursor := root s (* using root, [f] may change it*)
+    rootSet s (tailGet v);
+    f (headGet v) [@bs];
+    cursor := rootGet s (* using root, [f] may change it*)
   done
 
 let dynamicPopIter s f = dynamicPopIterU s (fun [@bs] x -> f x)

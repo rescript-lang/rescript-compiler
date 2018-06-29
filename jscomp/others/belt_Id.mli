@@ -91,12 +91,12 @@ module MakeComparable :
 val comparableU:
   cmp:('a -> 'a -> int [@bs]) ->
   (module Comparable with type t = 'a)
-[@@ocaml.deprecated "Use the MakeComparableU functor API instead"]
+
 
 val comparable:
   cmp:('a -> 'a -> int) ->
   (module Comparable with type t = 'a)
-[@@ocaml.deprecated "Use the MakeComparable functor API instead"]
+
 
 module type Hashable = sig
   type identity
@@ -138,13 +138,13 @@ val hashableU :
   hash:('a -> int [@bs]) ->
   eq:('a -> 'a -> bool [@bs]) ->
   (module Hashable with type t = 'a)
-[@@ocaml.deprecated "Use the MakeHashableU functor API instead"]
+
 
 val hashable :
   hash:('a -> int) ->
   eq:('a -> 'a -> bool ) ->
   (module Hashable with type t = 'a)
-[@@ocaml.deprecated "Use the MakeHashable functor API instead"]
+
 
 
 

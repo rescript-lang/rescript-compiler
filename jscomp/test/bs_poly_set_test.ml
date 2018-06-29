@@ -82,7 +82,7 @@ let () =
   b __LOC__ (N.subset u21 u17 && N.subset u21 u18);
   b __LOC__ (Js.eqUndefined 47 (N.getUndefined u22 47));
   b __LOC__ ( Some 47 = (N.get u22 47));
-  b __LOC__ (Js.Undefined.test (N.getUndefined u22 59));
+  b __LOC__ ((N.getUndefined u22 59) = Js.undefined);
   b __LOC__ (None = (N.get u22 59));
 
   eq __LOC__ (N.size u25) 60;

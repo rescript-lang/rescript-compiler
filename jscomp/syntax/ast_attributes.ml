@@ -391,3 +391,16 @@ let bs_return_undefined : attr
            },[])
       ; pstr_loc = locg}]
 
+let deprecated s : attr =       
+  {txt = "ocaml.deprecated"; loc = locg },
+  PStr
+    [
+      {pstr_desc =
+         Pstr_eval (
+           {pexp_desc =
+              Pexp_constant
+                (Const_string (s,None));
+            pexp_loc = locg;
+            pexp_attributes = []
+           },[])
+      ; pstr_loc = locg}]

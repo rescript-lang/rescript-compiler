@@ -9,10 +9,10 @@ let eq loc x y =
 
 let () = 
     eq __LOC__ Js.Null.empty   Js.Null.empty;
-    (match Js.Types.reify_type Js.Null.empty with 
-    | Js.Types.Null, v -> 
+    (match Js.Types.classify Js.Null.empty with 
+    | JSNull  -> 
         eq __LOC__ true true
-    | _, _ -> 
+    | _ -> 
         eq __LOC__ true false);
     eq __LOC__ true (Js.Types.test Js.Null.empty Null)
 

@@ -14,50 +14,50 @@ type 'a t = {
 
 
 let make () = t ~data:N.empty
-let isEmpty m = N.isEmpty (data m)
+let isEmpty m = N.isEmpty (dataGet m)
 let clear m = dataSet m N.empty
 let singleton k v = t ~data:(N.singleton k v)
 
-let minKeyUndefined m = N.minKeyUndefined (data m)
-let minKey m = N.minKey (data m)
-let maxKeyUndefined m = N.maxKeyUndefined (data m)
-let maxKey m = N.maxKey (data m)
-let minimum m = N.minimum (data m)
-let minUndefined m = N.minUndefined (data m)
-let maximum m = N.maximum (data m)
-let maxUndefined m = N.maxUndefined (data m)
+let minKeyUndefined m = N.minKeyUndefined (dataGet m)
+let minKey m = N.minKey (dataGet m)
+let maxKeyUndefined m = N.maxKeyUndefined (dataGet m)
+let maxKey m = N.maxKey (dataGet m)
+let minimum m = N.minimum (dataGet m)
+let minUndefined m = N.minUndefined (dataGet m)
+let maximum m = N.maximum (dataGet m)
+let maxUndefined m = N.maxUndefined (dataGet m)
 
 let set (m : _ t) k v = 
-  let old_data = data m in 
+  let old_data = dataGet m in 
   let v = I.addMutate old_data k v in 
   if v != old_data then 
     dataSet m v 
 
-let forEachU d f = N.forEachU (data d) f
+let forEachU d f = N.forEachU (dataGet d) f
 let forEach d f = forEachU d (fun[@bs] a b -> f a b)    
-let mapU d f = t ~data:(N.mapU (data d) f)
+let mapU d f = t ~data:(N.mapU (dataGet d) f)
 let map d f = mapU d (fun[@bs] a -> f a )    
-let mapWithKeyU d f = t ~data:(N.mapWithKeyU (data d) f)
+let mapWithKeyU d f = t ~data:(N.mapWithKeyU (dataGet d) f)
 let mapWithKey d f = mapWithKeyU d (fun [@bs] a b -> f a b)    
-let reduceU d acc f  = N.reduceU (data d) acc f
+let reduceU d acc f  = N.reduceU (dataGet d) acc f
 let reduce d acc f = reduceU d acc (fun[@bs] a b c -> f a b c)    
-let everyU d f = N.everyU (data d) f
+let everyU d f = N.everyU (dataGet d) f
 let every d f = everyU d (fun[@bs] a b -> f a b)    
-let someU d f = N.someU (data d) f    
+let someU d f = N.someU (dataGet d) f    
 let some d f = someU d (fun[@bs] a b -> f a b)
-let size d = N.size (data d)
-let toList d = N.toList (data d)
-let toArray d = N.toArray (data d)
-let keysToArray d = N.keysToArray (data d)
-let valuesToArray d = N.valuesToArray (data d)
-let checkInvariantInternal d = N.checkInvariantInternal (data d)
-let has d v = I.has (data d) v 
+let size d = N.size (dataGet d)
+let toList d = N.toList (dataGet d)
+let toArray d = N.toArray (dataGet d)
+let keysToArray d = N.keysToArray (dataGet d)
+let valuesToArray d = N.valuesToArray (dataGet d)
+let checkInvariantInternal d = N.checkInvariantInternal (dataGet d)
+let has d v = I.has (dataGet d) v 
 
 
 let rec removeMutateAux nt (x : key)= 
-  let k = N.key nt in 
+  let k = N.keyGet nt in 
   if x = k then 
-    let l,r = N.(left nt, right nt) in       
+    let l,r = N.(leftGet nt, rightGet nt) in       
     match N.(toOpt l, toOpt r) with
     | None, _ -> r  
     | _, None -> l 
@@ -67,13 +67,13 @@ let rec removeMutateAux nt (x : key)=
   else 
     begin 
       if x < k then 
-        match N.toOpt (N.left nt) with         
+        match N.toOpt (N.leftGet nt) with         
         | None -> N.return nt 
         | Some l ->
           N.leftSet nt (removeMutateAux l x );
           N.return (N.balMutate nt)
       else 
-        match N.toOpt (N.right nt) with 
+        match N.toOpt (N.rightGet nt) with 
         | None -> N.return nt 
         | Some r -> 
           N.rightSet nt (removeMutateAux r x);
@@ -81,7 +81,7 @@ let rec removeMutateAux nt (x : key)=
     end
 
 let remove d v = 
-  let oldRoot = data d in 
+  let oldRoot = dataGet d in 
   match N.toOpt oldRoot with 
   | None -> ()
   | Some root -> 
@@ -97,12 +97,12 @@ let rec updateDone t (x : key)  f  =
     | Some data -> N.singleton x data
     | None -> t)
   | Some nt -> 
-    let k = N.key nt in 
+    let k = N.keyGet nt in 
     (* let  c = (Belt_Cmp.getCmpInternal cmp) x k [@bs] in   *)
     if k = x then begin     
-      match f (Some (N.value nt)) [@bs] with
+      match f (Some (N.valueGet nt)) [@bs] with
       | None ->
-        let l,r = N.left nt, N.right nt in
+        let l,r = N.leftGet nt, N.rightGet nt in
         begin match N.toOpt l, N.toOpt r with
           | None,  _ -> r
           | _, None  -> l
@@ -115,7 +115,7 @@ let rec updateDone t (x : key)  f  =
         N.return nt
     end      
     else
-      let l, r = N.(left nt, right nt) in 
+      let l, r = N.(leftGet nt, rightGet nt) in 
       (if x < k then                   
          let ll = updateDone  l x f in
          N.leftSet nt ll
@@ -125,7 +125,7 @@ let rec updateDone t (x : key)  f  =
       N.return (N.balMutate nt)
         
 let updateU t x f =       
-  let oldRoot = data t in 
+  let oldRoot = dataGet t in 
   let newRoot = updateDone oldRoot x f  in 
   if newRoot != oldRoot then 
     dataSet t newRoot 
@@ -140,7 +140,7 @@ let rec removeArrayMutateAux t xs i len   =
   else N.return t    
 
 let removeMany (type key) (type id) (d : _ t) xs =  
-  let oldRoot = data d in 
+  let oldRoot = dataGet d in 
   match N.toOpt oldRoot with 
   | None -> ()
   | Some nt -> 
@@ -159,14 +159,14 @@ let fromArray xs =
   t  ~data:(I.fromArray xs)
 
 let cmpU d0 d1 f = 
-  I.cmpU (data d0) (data d1) f
+  I.cmpU (dataGet d0) (dataGet d1) f
 let cmp d0 d1 f = cmpU d0 d1 (fun[@bs] a b -> f a b)          
 
 let eqU d0 d1 f = 
-  I.eqU (data d0) (data d1) f
+  I.eqU (dataGet d0) (dataGet d1) f
 let eq d0 d1 f = eqU d0 d1 (fun[@bs] a b -> f a b)    
 
-let get d x =   I.get (data d) x 
-let getUndefined d x = I.getUndefined (data d) x 
-let getWithDefault d x def = I.getWithDefault (data d) x def  
-let getExn d x = I.getExn (data d) x 
+let get d x =   I.get (dataGet d) x 
+let getUndefined d x = I.getUndefined (dataGet d) x 
+let getWithDefault d x def = I.getWithDefault (dataGet d) x def  
+let getExn d x = I.getExn (dataGet d) x 

@@ -880,7 +880,7 @@ var suites_001 = /* :: */[
                                                                                                                         (function () {
                                                                                                                             return /* Eq */Block.__(0, [
                                                                                                                                       "Mon, 08 Mar 1976 11:11:56 GMT",
-                                                                                                                                      new Date("1976-03-08T12:34:56.789+01:23").toGMTString()
+                                                                                                                                      new Date("1976-03-08T12:34:56.789+01:23").toUTCString()
                                                                                                                                     ]);
                                                                                                                           })
                                                                                                                       ],

@@ -51,10 +51,10 @@ let make  ~hash ~eq ~hintSize =
 
 let clear h =
   sizeSet h 0;
-  let h_buckets = buckets h in 
+  let h_buckets = bucketsGet h in 
   let len = A.length h_buckets in
   for i = 0 to len - 1 do
     A.setUnsafe h_buckets i  emptyOpt
   done
 
-let isEmpty h = size h = 0 
+let isEmpty h = sizeGet h = 0 
