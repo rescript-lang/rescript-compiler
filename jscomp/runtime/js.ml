@@ -48,7 +48,7 @@ type +'a t
 
 type + 'a null
 (** nullable, value of this type can be either [null] or ['a]
-    this type is the same as [Js.Null.t] 
+    this type is the same as [Js.Null.t]
     See {!Js.Null}
  *)
 
@@ -56,7 +56,7 @@ type + 'a undefined
 (** value of this type can be either [undefined] or ['a]
     this type is the same as {!Js.Undefined.t}  *)
 
-type + 'a nullable    
+type + 'a nullable
 type + 'a null_undefined = 'a nullable
 (** value of this type can be [undefined], [null] or ['a]
     this type is the same as {!Js.Null_undefined.t}*)
@@ -65,13 +65,14 @@ external toOption : 'a nullable  -> 'a option = "#nullable_to_opt"
 external undefinedToOption : 'a undefined -> 'a option = "#undefined_to_opt"
 external nullToOption : 'a null -> 'a option = "#null_to_opt"
 external test : 'a nullable -> bool = "#is_nullable"
+external isNullable : 'a nullable -> bool = "#is_nullable"
 external testAny : 'a -> bool = "#is_nullable"
 
 
 (* I'd like to move this and the other types into a Js_core module that can be
    included back here, but the dependency hackery confuses me *)
 type (+'a, +'e) promise
-(** The promise type, defined here for interop 
+(** The promise type, defined here for interop
     @deprecated Please use {!Js.Promise} instead
 *)
 
@@ -88,13 +89,13 @@ external undefined : 'a undefined = "#undefined"
 
 external typeof : 'a -> string = "#typeof"
 (** [typeof x] will be compiled as [typeof x] in JS *)
-external log : 'a -> unit = "log" 
+external log : 'a -> unit = "log"
 [@@bs.val] [@@bs.scope "console"]
-external log2 : 'a -> 'b -> unit = "log" 
+external log2 : 'a -> 'b -> unit = "log"
 [@@bs.val] [@@bs.scope "console"]
-external log3 : 'a -> 'b -> 'c -> unit = "log" 
+external log3 : 'a -> 'b -> 'c -> unit = "log"
 [@@bs.val] [@@bs.scope "console"]
-external log4 : 'a -> 'b -> 'c -> 'd -> unit = "log" 
+external log4 : 'a -> 'b -> 'c -> 'd -> unit = "log"
 [@@bs.val] [@@bs.scope "console"]
 (** A convenience function to log *)
 external logMany : 'a array -> unit = "log"
@@ -104,7 +105,7 @@ external logMany : 'a array -> unit = "log"
 
 external eqNull : 'a -> 'a null -> bool = "%bs_equal_null"
 external eqUndefined : 'a -> 'a undefined -> bool = "%bs_equal_undefined"
-external eqNullable : 'a -> 'a nullable -> bool = "%bs_equal_nullable" 
+external eqNullable : 'a -> 'a nullable -> bool = "%bs_equal_nullable"
 
 (** {4 operators }*)
 external unsafe_lt : 'a -> 'a -> bool = "#unsafe_lt"
@@ -146,6 +147,6 @@ module Int = Js_int
 module Promise = Js_promise
 module Option = Js_option
 module Result = Js_result
-module List = Js_list 
+module List = Js_list
 module Vector = Js_vector
 module Console = Js_console

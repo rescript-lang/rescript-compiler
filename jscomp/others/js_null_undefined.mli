@@ -30,8 +30,11 @@ type + 'a t = 'a Js.null_undefined
 (** Constructs a value of ['a Js.null_undefined] containing a value of ['a] *)
 external return : 'a -> 'a t = "%identity"
 
-(** Returns [true] if the given value is [null] or [undefined], [false] otherwise *)
 external test : 'a t -> bool =  "#is_nullable"
+[@@ocaml.deprecated "Use Js.Nullable.isNullable instead"]
+
+(** Returns [true] if the given value is [null] or [undefined], [false] otherwise *)
+external isNullable : 'a t -> bool =  "#is_nullable"
 
 (** The [null] value of type ['a Js.null_undefined]*)
 external null : 'a t = "#null"
@@ -76,7 +79,7 @@ val iter : 'a t -> ('a -> unit [@bs]) -> unit
 *)
 val fromOption : 'a option -> 'a t
 
-val from_opt: 'a option -> 'a t 
+val from_opt: 'a option -> 'a t
 [@@ocaml.deprecated "Use fromOption instead"]
 
 (** Maps ['a Js.null_undefined] to ['a option]
