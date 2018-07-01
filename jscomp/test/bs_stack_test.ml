@@ -20,17 +20,17 @@ let inOrder (v : t) =
   while !current != Js.undefined do 
     let v = Js.Undefined.getUnsafe !current  in 
     S.push s v; 
-    current := left v; 
+    current := leftGet v; 
   done ;
   while not (S.isEmpty s ) do 
     current := S.popUndefined s ;
     let v = Js.Undefined.getUnsafe !current in 
-    Q.add q (value v);
-    current := right v ;
+    Q.add q (valueGet v);
+    current := rightGet v ;
     while !current != Js.undefined do 
       let v = Js.Undefined.getUnsafe !current  in 
       S.push s v; 
-      current := left v; 
+      current := leftGet v; 
     done ;    
   done; 
   Q.toArray q 
@@ -42,15 +42,15 @@ let inOrder3 (v : t) =
   while !current != Js.undefined do 
     let v = Js.Undefined.getUnsafe !current  in 
     S.push s v; 
-    current := left v; 
+    current := leftGet v; 
   done ;
   S.dynamicPopIter s begin fun  popped -> 
-    Q.add q (value popped);
-    let current = ref (right popped) in 
+    Q.add q (valueGet popped);
+    let current = ref (rightGet popped) in 
     while !current != Js.undefined do 
       let v = Js.Undefined.getUnsafe !current in 
       S.push s v;  
-      current := left v
+      current := leftGet v
     done 
   end;
   Q.toArray q 
@@ -65,14 +65,14 @@ let inOrder2 (v : t) =
       (
         let v = (Js.Undefined.getUnsafe !cursor) in 
         S.push s v;
-        cursor := left v)
+        cursor := leftGet v)
     else 
       begin 
         if not (S.isEmpty s) then 
           (cursor := S.popUndefined s ;
            let current = Js.Undefined.getUnsafe !cursor in 
-           Q.add q (value current);
-           cursor := right current)
+           Q.add q (valueGet current);
+           cursor := rightGet current)
         else 
           todo := false
       end 
@@ -98,7 +98,7 @@ let pushAllLeft st1 s1 =
   while !current != Js.undefined do 
     let v = Js.Undefined.getUnsafe !current  in 
     S.push s1 v; 
-    current := left v; 
+    current := leftGet v; 
   done 
 ;;
 

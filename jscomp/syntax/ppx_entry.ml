@@ -103,16 +103,16 @@ let rec unsafe_mapper : Bs_ast_mapper.mapper =
         | Pexp_fun ("", None, pat , body)
           ->
           begin match Ast_attributes.process_attributes_rev e.pexp_attributes with
-            | `Nothing, _
+            | Nothing, _
               -> Bs_ast_mapper.default_mapper.expr self e
-            |   `Uncurry, pexp_attributes
+            | Uncurry _, pexp_attributes
               ->
               {e with
                pexp_desc = Ast_util.to_uncurry_fn loc self pat body  ;
                pexp_attributes}
-            | `Method , _
+            | Method _ , _
               ->  Location.raise_errorf ~loc "bs.meth is not supported in function expression"
-            | `Meth_callback , pexp_attributes
+            | Meth_callback _, pexp_attributes
               ->
               {e with pexp_desc = Ast_util.to_method_callback loc  self pat body ;
                       pexp_attributes }
