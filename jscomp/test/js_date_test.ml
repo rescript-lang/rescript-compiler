@@ -202,7 +202,7 @@ let suites = Mt.[
     "getUTCSeconds", (fun _ ->
       Eq(56., Js.Date.getUTCSeconds (date ())));
     "getYear", (fun _ ->
-      Eq(76., Js.Date.getYear (date ())));
+      Eq(1976., Js.Date.getFullYear (date ())));
 
     "setDate", (fun _ ->
       let d = date () in
