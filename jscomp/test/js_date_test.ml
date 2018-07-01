@@ -9,6 +9,12 @@ let suites = Mt.[
     "make", (fun _ ->
       Ok((Js.Date.make () |> Js.Date.getTime) > 1487223505382.));
 
+    "parseAsFloat", (fun _ ->
+      Eq(Js.Date.parseAsFloat "1976-03-08T12:34:56.789+01:23", 195131516789.));
+
+    "parseAsFloat_invalid", (fun _ ->
+      Ok(Js.Date.parseAsFloat "gibberish" |> Js_float.isNaN));
+
     "fromFloat", (fun _ ->
       Eq("1976-03-08T11:11:56.789Z",
          Js.Date.fromFloat 195131516789. |> Js.Date.toISOString));
