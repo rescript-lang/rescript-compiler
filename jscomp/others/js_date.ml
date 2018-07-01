@@ -51,6 +51,9 @@ external now : unit -> float = "" [@@bs.val "Date.now"]
 (** returns the number of milliseconds since Unix epoch *)
 
 external parse : string -> t = "Date" [@@bs.new]
+[@@ocaml.deprecated "Please use `fromString` instead"]
+
+external parseAsFloat : string -> float = "" [@@bs.val "parse"] [@@bs.scope "Date"]
 (** returns NaN if passed invalid date string *)
 
 external getDate : t -> float = "" [@@bs.send]
