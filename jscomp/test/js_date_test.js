@@ -408,8 +408,8 @@ var suites_001 = /* :: */[
                                                             "getYear",
                                                             (function () {
                                                                 return /* Eq */Block.__(0, [
-                                                                          76,
-                                                                          new Date("1976-03-08T12:34:56.789+01:23").getYear()
+                                                                          1976,
+                                                                          new Date("1976-03-08T12:34:56.789+01:23").getFullYear()
                                                                         ]);
                                                               })
                                                           ],

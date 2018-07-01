@@ -2228,57 +2228,61 @@ end = struct
 
 
 
-type error = 
+type error =
   | Package_not_found of string * string option (* json file *)
   | Json_config of Ext_position.t * string
   | Invalid_json of string
   | Invalid_spec of string
-  | Conflict_module of string * string * string 
-  
+  | Conflict_module of string * string * string
 
-exception Error of error 
+
+exception Error of error
 
 let error err = raise (Error err)
-let package_not_found ~pkg ~json = 
+let package_not_found ~pkg ~json =
   error (Package_not_found(pkg,json))
 
-let print (fmt : Format.formatter) (x : error) = 
-  match x with     
+let print (fmt : Format.formatter) (x : error) =
+  match x with
   | Conflict_module (modname,dir1,dir2) ->
-    Format.fprintf fmt 
+    Format.fprintf fmt
     "@{<error>Error:@} %s found in two directories: (%s, %s)\n\
-    File names must be unique per project" 
+    File names must be unique per project"
       modname dir1 dir2
-  | Package_not_found (name,json_opt) -> 
-    let in_json = match json_opt with 
-    | None -> Ext_string.empty 
-    | Some x -> " in " ^ x in 
-    if Ext_string.equal name Bs_version.package_name then 
-      Format.fprintf fmt 
+  | Package_not_found (name,json_opt) ->
+    let in_json = match json_opt with
+    | None -> Ext_string.empty
+    | Some x -> " in " ^ x in
+    if Ext_string.equal name Bs_version.package_name then
+      Format.fprintf fmt
       "File \"bsconfig.json\", line 1\n\
-       @{<error>Error:@} package bs-platform is not found %s , it is the basic package required, if you have it installed globally\n\
-       Please run 'npm link bs-platform' to make it available" in_json
-    else 
+       @{<error>Error:@} package @{<error>bs-platform@} is not found %s\n\
+       It's the basic, required package. If you have it installed globally,\n\
+       Please run `npm link bs-platform` to make it available" in_json
+    else
       Format.fprintf fmt
         "File \"bsconfig.json\", line 1\n\
-         @{<error>Error:@} package %s not found or built %s, if it is not built\n\
-         Please run 'bsb -make-world', otherwise please install it" name in_json
+         @{<error>Error:@} package @{<error>%s@} not found or built %s\n\
+         - Did you install it?\n\
+         - If you did, did you run `bsb -make-world`?"
+         name
+         in_json
 
   | Json_config (pos,s) ->
     Format.fprintf fmt "File \"bsconfig.json\", line %d:\n\
                         @{<error>Error:@} %s \n\
-                        For more details, please checkout the schema http://bucklescript.github.io/bucklescript/docson/#build-schema.json" 
-                        pos.pos_lnum s 
-  | Invalid_spec s -> 
-    Format.fprintf fmt 
-    "@{<error>Error: Invalid bsconfig.json%s@}" s 
+                        For more details, please checkout the schema http://bucklescript.github.io/bucklescript/docson/#build-schema.json"
+                        pos.pos_lnum s
+  | Invalid_spec s ->
+    Format.fprintf fmt
+    "@{<error>Error: Invalid bsconfig.json%s@}" s
   | Invalid_json s ->
-    Format.fprintf fmt 
+    Format.fprintf fmt
     "File %S, line 1\n\
-    @{<error>Error: Invalid json format@}" s 
-    
-let conflict_module modname dir1 dir2 = 
-  error (Conflict_module (modname,dir1,dir2))    
+    @{<error>Error: Invalid json format@}" s
+
+let conflict_module modname dir1 dir2 =
+  error (Conflict_module (modname,dir1,dir2))
 let errorf ~loc fmt =
   Format.ksprintf (fun s -> error (Json_config (loc,s))) fmt
 
@@ -2292,10 +2296,10 @@ let invalid_spec s = error (Invalid_spec s)
 
 let invalid_json s = error (Invalid_json s)
 
-let () = 
+let () =
   Printexc.register_printer (fun x ->
-      match x with 
-      | Error x -> 
+      match x with
+      | Error x ->
         Some (Format.asprintf "%a" print x )
       | _ -> None
     )
@@ -4161,7 +4165,7 @@ end = struct
 #1 "bsb_pkg.ml"
 
 (* Copyright (C) 2017- Authors of BuckleScript
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -4179,7 +4183,7 @@ end = struct
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -4190,55 +4194,47 @@ let (//) = Filename.concat
 
 
 (** It makes sense to have this function raise, when [bsb] could not resolve a package, it used to mean
-    a failure 
+    a failure
 *)
-let  resolve_bs_package_aux  ~cwd pkg = 
-  let marker = Literals.bsconfig_json in 
+let  resolve_bs_package_aux  ~cwd pkg =
+  let marker = Literals.bsconfig_json in
   let sub_path = pkg // marker  in
-  let rec aux  cwd  = 
-    let abs_marker =  cwd // Literals.node_modules // sub_path in 
+  let rec aux  cwd  =
+    let abs_marker =  cwd // Literals.node_modules // sub_path in
     if Sys.file_exists abs_marker then Filename.dirname abs_marker
-    else 
+    else
       let another_cwd = Filename.dirname cwd in (* TODO: may non-terminating when see symlinks *)
-      if String.length another_cwd < String.length cwd then  
-        aux    another_cwd 
+      if String.length another_cwd < String.length cwd then
+        aux    another_cwd
       else (* To the end try other possiblilities *)
-        begin match Sys.getenv "npm_config_prefix" 
-                    // "lib" // Literals.node_modules // sub_path with 
-        | abs_marker when Sys.file_exists abs_marker -> 
-          Filename.dirname abs_marker              
-        | _ -> 
-          begin 
-            Bsb_log.error
-              "@{<error>Package not found: resolving package %s in %s  @}@." pkg cwd ;             
+        begin match Sys.getenv "npm_config_prefix"
+                    // "lib" // Literals.node_modules // sub_path with
+        | abs_marker when Sys.file_exists abs_marker ->
+          Filename.dirname abs_marker
+        | _ ->
             Bsb_exception.package_not_found ~pkg ~json:None
-          end
-        | exception Not_found -> 
-          begin 
-            Bsb_log.error
-              "@{<error>Package not found: resolving package %s in %s  @}@." pkg cwd ;             
+        | exception Not_found ->
             Bsb_exception.package_not_found ~pkg ~json:None
-          end
         end
   in
-  aux cwd 
+  aux cwd
 
 
-let cache = String_hashtbl.create 0 
+let cache = String_hashtbl.create 0
 
 (** TODO: collect all warnings and print later *)
-let resolve_bs_package ~cwd package = 
-  match String_hashtbl.find_opt cache package with 
-  | None -> 
-    let result = resolve_bs_package_aux ~cwd package in 
-    Bsb_log.info "@{<info>Package@} %s -> %s@." package result ; 
+let resolve_bs_package ~cwd package =
+  match String_hashtbl.find_opt cache package with
+  | None ->
+    let result = resolve_bs_package_aux ~cwd package in
+    Bsb_log.info "@{<info>Package@} %s -> %s@." package result ;
     String_hashtbl.add cache package result ;
-    result 
-  | Some x 
-    -> 
-    let result = resolve_bs_package_aux ~cwd package in 
-    if result <> x then 
-      begin 
+    result
+  | Some x
+    ->
+    let result = resolve_bs_package_aux ~cwd package in
+    if result <> x then
+      begin
         Bsb_log.warn
           "@{<warning>Duplicated package:@} %s %s (chosen) vs %s in %s @." package x result cwd;
       end;
@@ -4247,7 +4243,7 @@ let resolve_bs_package ~cwd package =
 
 
 
-(** The package does not need to be a bspackage 
+(** The package does not need to be a bspackage
     example:
     {[
       resolve_npm_package_file ~cwd "reason/refmt";;
