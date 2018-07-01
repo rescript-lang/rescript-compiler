@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for your help! Due to BuckleScript's nature, the contribution setup isn't all straightforward (though well documentated). If something isn't working, please file an issue or ping us in [Discord](discord.gg/reasonml)!
+Thanks for your help! Due to BuckleScript's nature, the contribution setup isn't all straightforward (though well documentated). If something isn't working, please file an issue or ping us in [Discord](https://discord.gg/reasonml)!
 
 ## Setup
 
@@ -55,14 +55,14 @@ make ../lib/bsc.exe && ./install-bsc.sh # build the compiler and make it availab
 make ../lib/bsb.exe && ./install-bsb.sh # build the build system and make it available globally
 ```
 
-This will substitute the global `bsc.exe` & `bsb.exe` you just installed with the newly built one. Then run `npm build again` in the dummy project and see the changes! The iteration cycle for testing these should be around 2 seconds =).
+This will substitute the global `bsc.exe` & `bsb.exe` you just installed with the newly built one. Then run `npm run build` again in the dummy project and see the changes! The iteration cycle for testing these should be around 2 seconds =).
 
 ## Troubleshooting
 
 Did any of the above step not work?
 
 - If you get compilation errors even from a supposedly clean compilation, you might have skipped the opam reinstall step above: `opam switch reinstall 4.02.3+buckle-master`
-- Make sure you did "eval `opam config env`" In your CLI/bashrc/zshrc
+- Make sure you did ``eval `opam config env` `` In your CLI/bashrc/zshrc
 - **If the vendored ocaml changed between when you last iterated on the repo and now**, you probably skipped the `opam switch reinstall 4.02.3+buckle-master` part. You'll have to do `git clean -xdf` and then restart with the build instructions. Careful, as `git clean` removes your uncommitted changes.
 - **If these fail too**, make sure you do have the correct `ocamlopt` in your environment: `which ocamlopt` should show an `opam` path, not `reason-cli` path. If you see the latter, this means it overrode the global `ocamlopt` BuckleScript needed. In this case, either temporarily uninstall reason-cli or make sure your opam PATH overrides the reason-cli PATH (and not the other way around) in your bashrc/zshrc.
 
