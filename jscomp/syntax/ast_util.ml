@@ -174,7 +174,7 @@ let generic_to_uncurry_type  kind loc (mapper : Bs_ast_mapper.mapper) label
        we should stop 
     *)
     match Ast_attributes.process_attributes_rev typ.ptyp_attributes with 
-    | `Nothing, _   -> 
+    | Nothing, _   -> 
       begin match typ.ptyp_desc with 
         | Ptyp_arrow (label, arg, body)
           -> 
@@ -218,7 +218,7 @@ let generic_to_uncurry_exp kind loc (self : Bs_ast_mapper.mapper)  pat body
   = 
   let rec aux acc (body : Parsetree.expression) = 
     match Ast_attributes.process_attributes_rev body.pexp_attributes with 
-    | `Nothing, _ -> 
+    | Nothing, _ -> 
       begin match body.pexp_desc with 
         | Pexp_fun (label,_, arg, body)
           -> 

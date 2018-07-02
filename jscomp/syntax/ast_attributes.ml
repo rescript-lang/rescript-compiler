@@ -89,23 +89,28 @@ let process_method_attributes_rev (attrs : t) =
         (st, attr::acc  )
     ) ( {get = None ; set = None}, []) attrs
 
+type attr_kind = 
+  | Nothing 
+  | Meth_callback of attr 
+  | Uncurry of attr 
+  | Method of attr
 
-let process_attributes_rev (attrs : t) =
+let process_attributes_rev (attrs : t) : attr_kind * t =
   List.fold_left (fun (st, acc) (({txt; loc}, _) as attr : attr) ->
       match txt, st  with
-      | "bs", (`Nothing | `Uncurry)
+      | "bs", (Nothing | Uncurry _)
         ->
-        `Uncurry, acc
-      | "bs.this", (`Nothing | `Meth_callback)
-        ->  `Meth_callback, acc
-      | "bs.meth",  (`Nothing | `Method)
-        -> `Method, acc
+        Uncurry attr, acc (* TODO: warn unused/duplicated attribute *)
+      | "bs.this", (Nothing | Meth_callback _)
+        ->  Meth_callback attr, acc
+      | "bs.meth",  (Nothing | Method _)
+        -> Method attr, acc
       | "bs", _
       | "bs.this", _
         -> Bs_syntaxerr.err loc Conflict_bs_bs_this_bs_meth
       | _ , _ ->
         st, attr::acc
-    ) ( `Nothing, []) attrs
+    ) ( Nothing, []) attrs
 
 let process_pexp_fun_attributes_rev (attrs : t) =
   List.fold_left (fun (st, acc) (({txt; loc}, _) as attr : attr) ->
@@ -346,14 +351,6 @@ let is_bs (attr : attr) =
   | {Location.txt = "bs"; _}, _ -> true
   | _ -> false
 
-let bs_this : attr
-  =  {txt = "bs.this" ; loc = locg}, Ast_payload.empty
-
-let bs_method : attr
-  =  {txt = "bs.meth"; loc = locg}, Ast_payload.empty
-
-let bs_obj : attr
-  =  {txt = "bs.obj"; loc = locg}, Ast_payload.empty
 
 let bs_get : attr
   =  {txt = "bs.get"; loc = locg}, Ast_payload.empty
