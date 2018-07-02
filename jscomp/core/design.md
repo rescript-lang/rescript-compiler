@@ -1,14 +1,14 @@
 
 # Ideas aobut boolean support
-## Why boolean is not transparent when
+## The cases when boolean representation is not transparent 
 
-1. printing
+- printing
 
 ```ocaml
 Js.log true
 ```
 
-2. pattern match
+- pattern match
 
 ```ocaml
 let f x y = 
@@ -16,7 +16,7 @@ let f x y =
   | true, false -> 0
 ```
 
-3. comparison
+- comparison
 
 ```ocaml
 if v = true then 
@@ -120,21 +120,21 @@ Curry.__N o
 
 ```
 
-# Global exports
+# Toplevel module exports
 
-Global exports identifiers are extracted from {!Translmod.get_export_identifiers} 
+Global exports identifiers are extracted from `Translmod.get_export_identifiers`
 instead of inferred from lambda expression or cmi file.
 
-1. We need be careful about externals.
-2. Reading from fresh generated cmi is expensive.
+- We need be careful about externals.
+- Reading from fresh generated cmi is expensive.
 
-# variable usage
+# Variable usage
 
 Lalias-bound variables are never assigned, so it can only 
 appear in `Lvar`, then it is easy to eliminate it 
 
 
-# externals beta reduction
+# interaction between `bs.splice` and `|>`
 
 Note in general, it is fine whether we do beta reduction or not, it is just optimization. 
 
@@ -190,7 +190,7 @@ Note when we pattern match over the original lamba,`Levent` needs to be removed 
 
 We turned off event generation temporarily
 
-# test undefined
+# safe way to test undefined
 
 Note such logic is already wrong:
 
@@ -202,7 +202,7 @@ if (typeof x === "undefined"){
 ```
 
 
-# primitive handling
+# `#` primitive handling
 
 1. Some primitives introduced are for performance reasons, for example:
 
@@ -229,7 +229,7 @@ http://www.2ality.com/2012/03/converting-to-string.html
 Note that `""+ Symbol()` does not work any more, we should favor `String` instead
 
 
-# name mangling
+# Name mangling
 
 ## let bound identifier mangling
 
@@ -249,7 +249,7 @@ If it is global variable, it is parsable, it may trigger even subtle errors:
 VM1146:1 3
 3
 ```  
-This could be problematic for bindings
+This could be _problematic_ for bindings
 ```ocaml
 let process = 3
 Process.env##OCAML
@@ -272,7 +272,7 @@ var f = { true, false} // parsign rules ambiguity
 If we don't do ES6, we should not go with name mangling, however, it is mostly due to we can 
 not express these keywords, such as `_open` as property in OCaml, so we did the name mangling
 
-# function kind
+# Curry/Tuple: two kinds of function 
 
 OCaml indeed support two kind calling convention.
 
@@ -320,7 +320,7 @@ transl_function exp.exp_loc false ...
 transl_function e.exp_loc !Clflags.native_code ...
 ```
 
-## exception wrap and unwrap
+# JS exception wrap and unwrap
 
 ### Pack and Unpack OCaml exceptions
 
@@ -404,7 +404,7 @@ need check `Praise of raise_kind`
 *Conclusion*: it is very hard to get it right when changig ocaml exception representation and js exception representation at the same time in the combination of *re-raiase*
 
 
-## Several module components can have the same name #978
+# Several module components can have the same name #978
 
 Note BuckleScript compiler simply complain if exports have the same component name, this keeps its soundness.
 A funny thing is that open variants does not have record disambiguion so that 
@@ -418,12 +418,57 @@ type b += A
 The compiler will only expose the last `A`, which means, BuckleScript will not complain, the limitation 
 of the compiler preserves its soundness
 
-## print import module names
+# Print import module names
 
 for `create_js_module`, we first create a mapping to make it a proper
 module name, (also cached in a hashtbl). Note it is not a Js id, which
 fails `Ext_ident.is_js`
 
-## compilation
+# compilation
 
-### static catches
+# static catches
+
+# Comparison semantics
+
+Cases when commparison are specialized (Note we need make sure the specialized version
+is consistent with the generalized version):
+
+- caml_int_max/min
+- caml_bool_max/min
+- caml_float_max/min
+- caml_string_max/min
+- caml_nativeint_max/min
+- caml_int32_max/min
+- caml_int64_max/min
+
+- int_equal[null/undefined/nullable] [not]
+- bool_equal[null/undefined/nullable] [not]
+- float_equal[null/undefined/nullable] [not]
+- string_equal[null/undefined/nullable] [not]
+- nativeintequal[_null/unefined/nullable] [not]
+- int32_equal[_null/undefined/nullable] [not]
+- int64_equal[_null/undefined/nullable] [not]
+
+- int_lessthan[greaterthan] [lessequal] [greaterequal]
+- bool_lessthan[greaterthan] [lessequal] [greaterequal]
+- float_lessthan[greaterthan] [lessequal] [greaterequal]
+- string_lessthan[greaterthan] [lessequal] [greaterequal]
+- nativeint_lessthan[greaterthan] [lessequal] [greaterequal]
+- int32_lessthan[greaterthan] [lessequal] [greaterequal]
+- int64_lessthan[greaterthan] [lessequal] [greaterequal]
+
+- int_compare
+- bool_compare
+- float_compare
+- string_compare
+- nativeint_compare
+- int32_comapre
+- int64_compare
+
+So far we haven't specialized option comparison, but we need be careful when 
+we do the optimizer, e.g, `Js_exp_make.int_comp`, we need make sure the peepwhole is consistent
+
+
+
+
+
