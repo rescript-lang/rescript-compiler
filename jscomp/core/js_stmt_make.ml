@@ -101,7 +101,7 @@ let int_switch ?comment   ?declaration ?default (e : J.expression)  clauses : t 
       begin match Ext_list.find_opt 
         (fun (x : _ J.case_clause) ->
          if x.switch_case = (Int32.to_int i) then
-          Some (fst x.switch_body) else None ) clauses
+          Some x.switch_body else None ) clauses
         with 
         | Some case -> case 
         | None -> 
@@ -139,7 +139,7 @@ let string_switch ?comment ?declaration  ?default (e : J.expression)  clauses : 
       begin match Ext_list.find_opt 
                     (fun  (x : string J.case_clause) ->
                       if x.switch_case = s then 
-                        Some (fst x.switch_body)
+                        Some x.switch_body
                       else None  
                       ) clauses
         with 

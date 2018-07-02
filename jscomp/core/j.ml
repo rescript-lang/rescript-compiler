@@ -326,7 +326,8 @@ and variable_declaration = {
 
 and 'a case_clause = { 
   switch_case : 'a ; 
-  switch_body : block * bool ;  (* true means break *)
+  switch_body : block ;
+  should_break :  bool ;  (* true means break *)
 }
 
 (* TODO: For efficency: block should not be a list, it should be able to 

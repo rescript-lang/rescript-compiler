@@ -52,7 +52,7 @@ let rec has_exit_code exits  (lam : Lam.t)  : bool =
     List.exists (fun (_,l) -> has_exit_code exits l) ls ||
     (match opt with
     | None -> false
-    | Some x -> has_exit_code exits l )
+    | Some x -> has_exit_code exits x )
   | Lstaticraise (v,ls) ->
       exits v ||
     List.exists (has_exit_code exits) ls
