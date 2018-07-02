@@ -515,10 +515,11 @@ and compile_general_cases
                               (Lam_exit_code.has_exit lam)
                         in
                         {J.switch_case ;
-                            switch_body = switch_block, should_break
+                            switch_body = switch_block;
+                            should_break
                         }
                       else
-                        { switch_case; switch_body = [],false }
+                        { switch_case; switch_body = []; should_break = false }
                     )
                    group
               )

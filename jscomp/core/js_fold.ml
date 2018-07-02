@@ -404,12 +404,10 @@ class virtual fold =
     {[ goto : label option ; ]}
   *)
         'a. ('self_type -> 'a -> 'self_type) -> 'a case_clause -> 'self_type =
-      fun _f_a { switch_case = _x; switch_body = _x_i1 } ->
+      fun _f_a { switch_case = _x; switch_body = _x_i1; should_break = _x_i2
+        } ->
         let o = _f_a o _x in
-        let o =
-          (fun (_x, _x_i1) -> let o = o#block _x in let o = o#bool _x_i1 in o)
-            _x_i1
-        in o
+        let o = o#block _x_i1 in let o = o#bool _x_i2 in o
     method block : block -> 'self_type = (* true means break *)
       (* TODO: For efficency: block should not be a list, it should be able to 
    be concatenated in both ways 
