@@ -26,10 +26,17 @@
 
 let some ( x : Obj.t) : Obj.t = 
   if Obj.magic x =  None then 
-    Obj.repr (undefinedHeader, 0)
+    (let block = Obj.repr (undefinedHeader, 0) in
+    Obj.set_tag block 256;
+    block)
   else 
     if x != Obj.repr Js.null && fst (Obj.magic x ) == Obj.repr undefinedHeader then   
-      Obj.repr (undefinedHeader, snd (Obj.magic x) + 1)
+      (
+      let nid =   snd (Obj.magic x) + 1 in 
+      let block = Obj.repr (undefinedHeader, nid) in 
+       Obj.set_tag block 256;        
+       block
+      )
     else  x 
 
 let nullable_to_opt (type t) ( x : t Js.null_undefined) : t option = 

@@ -35,6 +35,12 @@ let suites = Mt.[
         Eq(true, [2;6;1;1;2;1;4;2;1] < [2;6;1;1;2;1;4;2;1;409])
     end;
     __LOC__ , begin fun _ -> 
+        Eq(true, [1] < [1;409])
+    end;
+    __LOC__ , begin fun _ -> 
+        Eq(true, [] < [409])
+    end;
+    __LOC__ , begin fun _ -> 
         Eq(true,  [2;6;1;1;2;1;4;2;1;409] > [2;6;1;1;2;1;4;2;1])
     end;
     
