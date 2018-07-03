@@ -109,17 +109,28 @@ let _ = log3 ~req:(`Int 6) ?opt:none_arg ()
 
 
 let ltx a b =  a < b && b > a 
-
+let gtx a b = a > b && b < a 
 let eqx a b = a = b && b = a
 let neqx a b = a <> b && b <> a 
 
 let all_true xs = Belt.List.every xs (fun x -> x)
+
+;; b __LOC__ 
+  @@ all_true 
+  [ 
+    gtx (Some (Some Js.null)) (Some None)
+  ]
+  
 ;; b __LOC__ 
   @@ all_true
   [
     ltx (Some None)  (Some (Some 3));    
     ltx (Some None) (Some (Some None));
     ltx (Some None) (Some (Some "3"));
+    ltx (Some None) (Some (Some true));
+    ltx (Some None) (Some (Some false));
+    ltx (Some false) (Some (true));    
+    ltx (Some (Some false)) (Some (Some (true)));
     ltx None (Some None);
     ltx None (Some Js.null);
     ltx None (Some (fun x -> x  ));

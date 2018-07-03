@@ -132,6 +132,14 @@ function ltx(a, b) {
   }
 }
 
+function gtx(a, b) {
+  if (Caml_obj.caml_greaterthan(a, b)) {
+    return Caml_obj.caml_lessthan(b, a);
+  } else {
+    return false;
+  }
+}
+
 function eqx(a, b) {
   if (Caml_obj.caml_equal(a, b)) {
     return Caml_obj.caml_equal(b, a);
@@ -154,23 +162,46 @@ function all_true(xs) {
               }));
 }
 
-var xs_000 = ltx(Js_primitive.some(undefined), 3);
+var xs_000 = gtx(Js_primitive.some(null), Js_primitive.some(undefined));
+
+var xs = /* :: */[
+  xs_000,
+  /* [] */0
+];
+
+b("File \"option_repr_test.ml\", line 118, characters 5-12", Belt_List.every(xs, (function (x) {
+            return x;
+          })));
+
+var xs_000$1 = ltx(Js_primitive.some(undefined), 3);
 
 var xs_001 = /* :: */[
   ltx(Js_primitive.some(undefined), Js_primitive.some(Js_primitive.some(undefined))),
   /* :: */[
     ltx(Js_primitive.some(undefined), "3"),
     /* :: */[
-      ltx(undefined, Js_primitive.some(undefined)),
+      ltx(Js_primitive.some(undefined), true),
       /* :: */[
-        ltx(undefined, null),
+        ltx(Js_primitive.some(undefined), false),
         /* :: */[
-          ltx(undefined, (function (x) {
-                  return x;
-                })),
+          ltx(false, true),
           /* :: */[
-            ltx(null, 3),
-            /* [] */0
+            ltx(false, true),
+            /* :: */[
+              ltx(undefined, Js_primitive.some(undefined)),
+              /* :: */[
+                ltx(undefined, null),
+                /* :: */[
+                  ltx(undefined, (function (x) {
+                          return x;
+                        })),
+                  /* :: */[
+                    ltx(null, 3),
+                    /* [] */0
+                  ]
+                ]
+              ]
+            ]
           ]
         ]
       ]
@@ -178,16 +209,16 @@ var xs_001 = /* :: */[
   ]
 ];
 
-var xs = /* :: */[
-  xs_000,
+var xs$1 = /* :: */[
+  xs_000$1,
   xs_001
 ];
 
-b("File \"option_repr_test.ml\", line 117, characters 5-12", Belt_List.every(xs, (function (x) {
+b("File \"option_repr_test.ml\", line 124, characters 5-12", Belt_List.every(xs$1, (function (x) {
             return x;
           })));
 
-var xs_000$1 = eqx(undefined, undefined);
+var xs_000$2 = eqx(undefined, undefined);
 
 var xs_001$1 = /* :: */[
   neqx(undefined, null),
@@ -203,12 +234,12 @@ var xs_001$1 = /* :: */[
   ]
 ];
 
-var xs$1 = /* :: */[
-  xs_000$1,
+var xs$2 = /* :: */[
+  xs_000$2,
   xs_001$1
 ];
 
-b("File \"option_repr_test.ml\", line 129, characters 5-12", Belt_List.every(xs$1, (function (x) {
+b("File \"option_repr_test.ml\", line 140, characters 5-12", Belt_List.every(xs$2, (function (x) {
             return x;
           })));
 
@@ -251,6 +282,7 @@ exports.length_10_id = length_10_id;
 exports.f13 = f13$1;
 exports.none_arg = none_arg;
 exports.ltx = ltx;
+exports.gtx = gtx;
 exports.eqx = eqx;
 exports.neqx = neqx;
 exports.all_true = all_true;
