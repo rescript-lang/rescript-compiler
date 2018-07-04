@@ -176,12 +176,15 @@ let rec caml_compare (a : Obj.t) (b : Obj.t) : int =
   | "string", _ -> 
       (* [b] could be [Some None] or [null] *)
       1 
+  |  _, "string" -> -1  
   | "boolean", "boolean" ->       
       Pervasives.compare (Obj.magic a : bool) (Obj.magic b)
   | "boolean", _ -> 1     
+  | _, "boolean" -> -1
   | "function", "function" -> 
       raise (Invalid_argument "compare: functional value")
   | "function", _ -> 1
+  | _, "function" -> -1 
   | "number", "number" -> 
       Pervasives.compare (Obj.magic a : int) (Obj.magic b : int)
   | "number", _ ->        
