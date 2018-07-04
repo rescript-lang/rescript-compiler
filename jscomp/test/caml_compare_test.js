@@ -276,62 +276,14 @@ var suites_001 = /* :: */[
                           (function () {
                               return /* Eq */Block.__(0, [
                                         true,
-                                        Caml_obj.caml_greaterthan(/* :: */[
-                                              2,
-                                              /* :: */[
-                                                6,
-                                                /* :: */[
-                                                  1,
-                                                  /* :: */[
-                                                    1,
-                                                    /* :: */[
-                                                      2,
-                                                      /* :: */[
-                                                        1,
-                                                        /* :: */[
-                                                          4,
-                                                          /* :: */[
-                                                            2,
-                                                            /* :: */[
-                                                              1,
-                                                              /* :: */[
-                                                                409,
-                                                                /* [] */0
-                                                              ]
-                                                            ]
-                                                          ]
-                                                        ]
-                                                      ]
-                                                    ]
-                                                  ]
-                                                ]
-                                              ]
+                                        Caml_obj.caml_lessthan(/* :: */[
+                                              1,
+                                              /* [] */0
                                             ], /* :: */[
-                                              2,
+                                              1,
                                               /* :: */[
-                                                6,
-                                                /* :: */[
-                                                  1,
-                                                  /* :: */[
-                                                    1,
-                                                    /* :: */[
-                                                      2,
-                                                      /* :: */[
-                                                        1,
-                                                        /* :: */[
-                                                          4,
-                                                          /* :: */[
-                                                            2,
-                                                            /* :: */[
-                                                              1,
-                                                              /* [] */0
-                                                            ]
-                                                          ]
-                                                        ]
-                                                      ]
-                                                    ]
-                                                  ]
-                                                ]
+                                                409,
+                                                /* [] */0
                                               ]
                                             ])
                                       ]);
@@ -339,48 +291,43 @@ var suites_001 = /* :: */[
                         ],
                         /* :: */[
                           /* tuple */[
-                            "File \"caml_compare_test.ml\", line 41, characters 4-11",
+                            "File \"caml_compare_test.ml\", line 40, characters 4-11",
                             (function () {
                                 return /* Eq */Block.__(0, [
-                                          false,
-                                          false
+                                          true,
+                                          Caml_obj.caml_lessthan(/* [] */0, /* :: */[
+                                                409,
+                                                /* [] */0
+                                              ])
                                         ]);
                               })
                           ],
                           /* :: */[
                             /* tuple */[
-                              "File \"caml_compare_test.ml\", line 44, characters 4-11",
+                              "File \"caml_compare_test.ml\", line 43, characters 4-11",
                               (function () {
                                   return /* Eq */Block.__(0, [
-                                            false,
-                                            false
-                                          ]);
-                                })
-                            ],
-                            /* :: */[
-                              /* tuple */[
-                                "File \"caml_compare_test.ml\", line 47, characters 4-11",
-                                (function () {
-                                    return /* Eq */Block.__(0, [
-                                              false,
-                                              Caml_obj.caml_equal(/* :: */[
-                                                    2,
+                                            true,
+                                            Caml_obj.caml_greaterthan(/* :: */[
+                                                  2,
+                                                  /* :: */[
+                                                    6,
                                                     /* :: */[
-                                                      6,
+                                                      1,
                                                       /* :: */[
                                                         1,
                                                         /* :: */[
-                                                          1,
+                                                          2,
                                                           /* :: */[
-                                                            2,
+                                                            1,
                                                             /* :: */[
-                                                              1,
+                                                              4,
                                                               /* :: */[
-                                                                4,
+                                                                2,
                                                                 /* :: */[
-                                                                  2,
+                                                                  1,
                                                                   /* :: */[
-                                                                    1,
+                                                                    409,
                                                                     /* [] */0
                                                                   ]
                                                                 ]
@@ -390,29 +337,26 @@ var suites_001 = /* :: */[
                                                         ]
                                                       ]
                                                     ]
-                                                  ], /* :: */[
-                                                    2,
+                                                  ]
+                                                ], /* :: */[
+                                                  2,
+                                                  /* :: */[
+                                                    6,
                                                     /* :: */[
-                                                      6,
+                                                      1,
                                                       /* :: */[
                                                         1,
                                                         /* :: */[
-                                                          1,
+                                                          2,
                                                           /* :: */[
-                                                            2,
+                                                            1,
                                                             /* :: */[
-                                                              1,
+                                                              4,
                                                               /* :: */[
-                                                                4,
+                                                                2,
                                                                 /* :: */[
-                                                                  2,
-                                                                  /* :: */[
-                                                                    1,
-                                                                    /* :: */[
-                                                                      409,
-                                                                      /* [] */0
-                                                                    ]
-                                                                  ]
+                                                                  1,
+                                                                  /* [] */0
                                                                 ]
                                                               ]
                                                             ]
@@ -420,7 +364,18 @@ var suites_001 = /* :: */[
                                                         ]
                                                       ]
                                                     ]
-                                                  ])
+                                                  ]
+                                                ])
+                                          ]);
+                                })
+                            ],
+                            /* :: */[
+                              /* tuple */[
+                                "File \"caml_compare_test.ml\", line 47, characters 4-11",
+                                (function () {
+                                    return /* Eq */Block.__(0, [
+                                              false,
+                                              false
                                             ]);
                                   })
                               ],
@@ -430,26 +385,34 @@ var suites_001 = /* :: */[
                                   (function () {
                                       return /* Eq */Block.__(0, [
                                                 false,
-                                                Caml_obj.caml_equal(/* :: */[
-                                                      2,
-                                                      /* :: */[
-                                                        6,
+                                                false
+                                              ]);
+                                    })
+                                ],
+                                /* :: */[
+                                  /* tuple */[
+                                    "File \"caml_compare_test.ml\", line 53, characters 4-11",
+                                    (function () {
+                                        return /* Eq */Block.__(0, [
+                                                  false,
+                                                  Caml_obj.caml_equal(/* :: */[
+                                                        2,
                                                         /* :: */[
-                                                          1,
+                                                          6,
                                                           /* :: */[
                                                             1,
                                                             /* :: */[
-                                                              2,
+                                                              1,
                                                               /* :: */[
-                                                                1,
+                                                                2,
                                                                 /* :: */[
-                                                                  4,
+                                                                  1,
                                                                   /* :: */[
-                                                                    2,
+                                                                    4,
                                                                     /* :: */[
-                                                                      1,
+                                                                      2,
                                                                       /* :: */[
-                                                                        409,
+                                                                        1,
                                                                         /* [] */0
                                                                       ]
                                                                     ]
@@ -459,26 +422,29 @@ var suites_001 = /* :: */[
                                                             ]
                                                           ]
                                                         ]
-                                                      ]
-                                                    ], /* :: */[
-                                                      2,
-                                                      /* :: */[
-                                                        6,
+                                                      ], /* :: */[
+                                                        2,
                                                         /* :: */[
-                                                          1,
+                                                          6,
                                                           /* :: */[
                                                             1,
                                                             /* :: */[
-                                                              2,
+                                                              1,
                                                               /* :: */[
-                                                                1,
+                                                                2,
                                                                 /* :: */[
-                                                                  4,
+                                                                  1,
                                                                   /* :: */[
-                                                                    2,
+                                                                    4,
                                                                     /* :: */[
-                                                                      1,
-                                                                      /* [] */0
+                                                                      2,
+                                                                      /* :: */[
+                                                                        1,
+                                                                        /* :: */[
+                                                                          409,
+                                                                          /* [] */0
+                                                                        ]
+                                                                      ]
                                                                     ]
                                                                   ]
                                                                 ]
@@ -486,420 +452,460 @@ var suites_001 = /* :: */[
                                                             ]
                                                           ]
                                                         ]
-                                                      ]
-                                                    ])
-                                              ]);
-                                    })
-                                ],
-                                /* :: */[
-                                  /* tuple */[
-                                    "cmp_id",
-                                    (function () {
-                                        return /* Eq */Block.__(0, [
-                                                  Caml_obj.caml_compare({
-                                                        x: 1,
-                                                        y: 2
-                                                      }, {
-                                                        x: 1,
-                                                        y: 2
-                                                      }),
-                                                  0
+                                                      ])
                                                 ]);
                                       })
                                   ],
                                   /* :: */[
                                     /* tuple */[
-                                      "cmp_val",
+                                      "File \"caml_compare_test.ml\", line 56, characters 4-11",
                                       (function () {
                                           return /* Eq */Block.__(0, [
-                                                    Caml_obj.caml_compare({
-                                                          x: 1
-                                                        }, {
-                                                          x: 2
-                                                        }),
-                                                    -1
+                                                    false,
+                                                    Caml_obj.caml_equal(/* :: */[
+                                                          2,
+                                                          /* :: */[
+                                                            6,
+                                                            /* :: */[
+                                                              1,
+                                                              /* :: */[
+                                                                1,
+                                                                /* :: */[
+                                                                  2,
+                                                                  /* :: */[
+                                                                    1,
+                                                                    /* :: */[
+                                                                      4,
+                                                                      /* :: */[
+                                                                        2,
+                                                                        /* :: */[
+                                                                          1,
+                                                                          /* :: */[
+                                                                            409,
+                                                                            /* [] */0
+                                                                          ]
+                                                                        ]
+                                                                      ]
+                                                                    ]
+                                                                  ]
+                                                                ]
+                                                              ]
+                                                            ]
+                                                          ]
+                                                        ], /* :: */[
+                                                          2,
+                                                          /* :: */[
+                                                            6,
+                                                            /* :: */[
+                                                              1,
+                                                              /* :: */[
+                                                                1,
+                                                                /* :: */[
+                                                                  2,
+                                                                  /* :: */[
+                                                                    1,
+                                                                    /* :: */[
+                                                                      4,
+                                                                      /* :: */[
+                                                                        2,
+                                                                        /* :: */[
+                                                                          1,
+                                                                          /* [] */0
+                                                                        ]
+                                                                      ]
+                                                                    ]
+                                                                  ]
+                                                                ]
+                                                              ]
+                                                            ]
+                                                          ]
+                                                        ])
                                                   ]);
                                         })
                                     ],
                                     /* :: */[
                                       /* tuple */[
-                                        "cmp_val2",
+                                        "cmp_id",
                                         (function () {
                                             return /* Eq */Block.__(0, [
                                                       Caml_obj.caml_compare({
-                                                            x: 2
+                                                            x: 1,
+                                                            y: 2
                                                           }, {
-                                                            x: 1
+                                                            x: 1,
+                                                            y: 2
                                                           }),
-                                                      1
+                                                      0
                                                     ]);
                                           })
                                       ],
                                       /* :: */[
                                         /* tuple */[
-                                          "cmp_empty",
+                                          "cmp_val",
                                           (function () {
                                               return /* Eq */Block.__(0, [
-                                                        Caml_obj.caml_compare(({}), ({})),
-                                                        0
+                                                        Caml_obj.caml_compare({
+                                                              x: 1
+                                                            }, {
+                                                              x: 2
+                                                            }),
+                                                        -1
                                                       ]);
                                             })
                                         ],
                                         /* :: */[
                                           /* tuple */[
-                                            "cmp_empty2",
+                                            "cmp_val2",
                                             (function () {
                                                 return /* Eq */Block.__(0, [
-                                                          Caml_obj.caml_compare(({}), ({x:1})),
-                                                          -1
+                                                          Caml_obj.caml_compare({
+                                                                x: 2
+                                                              }, {
+                                                                x: 1
+                                                              }),
+                                                          1
                                                         ]);
                                               })
                                           ],
                                           /* :: */[
                                             /* tuple */[
-                                              "cmp_swap",
+                                              "cmp_empty",
                                               (function () {
                                                   return /* Eq */Block.__(0, [
-                                                            Caml_obj.caml_compare({
-                                                                  x: 1,
-                                                                  y: 2
-                                                                }, {
-                                                                  y: 2,
-                                                                  x: 1
-                                                                }),
+                                                            Caml_obj.caml_compare(({}), ({})),
                                                             0
                                                           ]);
                                                 })
                                             ],
                                             /* :: */[
                                               /* tuple */[
-                                                "cmp_size",
+                                                "cmp_empty2",
                                                 (function () {
                                                     return /* Eq */Block.__(0, [
-                                                              Caml_obj.caml_compare(({x:1}), ({x:1, y:2})),
+                                                              Caml_obj.caml_compare(({}), ({x:1})),
                                                               -1
                                                             ]);
                                                   })
                                               ],
                                               /* :: */[
                                                 /* tuple */[
-                                                  "cmp_size2",
+                                                  "cmp_swap",
                                                   (function () {
                                                       return /* Eq */Block.__(0, [
-                                                                Caml_obj.caml_compare(({x:1, y:2}), ({x:1})),
-                                                                1
+                                                                Caml_obj.caml_compare({
+                                                                      x: 1,
+                                                                      y: 2
+                                                                    }, {
+                                                                      y: 2,
+                                                                      x: 1
+                                                                    }),
+                                                                0
                                                               ]);
                                                     })
                                                 ],
                                                 /* :: */[
                                                   /* tuple */[
-                                                    "cmp_order",
+                                                    "cmp_size",
                                                     (function () {
                                                         return /* Eq */Block.__(0, [
-                                                                  Caml_obj.caml_compare({
-                                                                        x: 0,
-                                                                        y: 1
-                                                                      }, {
-                                                                        x: 1,
-                                                                        y: 0
-                                                                      }),
+                                                                  Caml_obj.caml_compare(({x:1}), ({x:1, y:2})),
                                                                   -1
                                                                 ]);
                                                       })
                                                   ],
                                                   /* :: */[
                                                     /* tuple */[
-                                                      "cmp_order2",
+                                                      "cmp_size2",
                                                       (function () {
                                                           return /* Eq */Block.__(0, [
-                                                                    Caml_obj.caml_compare({
-                                                                          x: 1,
-                                                                          y: 0
-                                                                        }, {
-                                                                          x: 0,
-                                                                          y: 1
-                                                                        }),
+                                                                    Caml_obj.caml_compare(({x:1, y:2}), ({x:1})),
                                                                     1
                                                                   ]);
                                                         })
                                                     ],
                                                     /* :: */[
                                                       /* tuple */[
-                                                        "cmp_in_list",
+                                                        "cmp_order",
                                                         (function () {
                                                             return /* Eq */Block.__(0, [
-                                                                      Caml_obj.caml_compare(/* :: */[
-                                                                            {
-                                                                              x: 1
-                                                                            },
-                                                                            /* [] */0
-                                                                          ], /* :: */[
-                                                                            {
-                                                                              x: 2
-                                                                            },
-                                                                            /* [] */0
-                                                                          ]),
+                                                                      Caml_obj.caml_compare({
+                                                                            x: 0,
+                                                                            y: 1
+                                                                          }, {
+                                                                            x: 1,
+                                                                            y: 0
+                                                                          }),
                                                                       -1
                                                                     ]);
                                                           })
                                                       ],
                                                       /* :: */[
                                                         /* tuple */[
-                                                          "cmp_in_list2",
+                                                          "cmp_order2",
                                                           (function () {
                                                               return /* Eq */Block.__(0, [
-                                                                        Caml_obj.caml_compare(/* :: */[
-                                                                              {
-                                                                                x: 2
-                                                                              },
-                                                                              /* [] */0
-                                                                            ], /* :: */[
-                                                                              {
-                                                                                x: 1
-                                                                              },
-                                                                              /* [] */0
-                                                                            ]),
+                                                                        Caml_obj.caml_compare({
+                                                                              x: 1,
+                                                                              y: 0
+                                                                            }, {
+                                                                              x: 0,
+                                                                              y: 1
+                                                                            }),
                                                                         1
                                                                       ]);
                                                             })
                                                         ],
                                                         /* :: */[
                                                           /* tuple */[
-                                                            "cmp_with_list",
+                                                            "cmp_in_list",
                                                             (function () {
                                                                 return /* Eq */Block.__(0, [
-                                                                          Caml_obj.caml_compare({
-                                                                                x: /* :: */[
-                                                                                  0,
-                                                                                  /* [] */0
-                                                                                ]
-                                                                              }, {
-                                                                                x: /* :: */[
-                                                                                  1,
-                                                                                  /* [] */0
-                                                                                ]
-                                                                              }),
+                                                                          Caml_obj.caml_compare(/* :: */[
+                                                                                {
+                                                                                  x: 1
+                                                                                },
+                                                                                /* [] */0
+                                                                              ], /* :: */[
+                                                                                {
+                                                                                  x: 2
+                                                                                },
+                                                                                /* [] */0
+                                                                              ]),
                                                                           -1
                                                                         ]);
                                                               })
                                                           ],
                                                           /* :: */[
                                                             /* tuple */[
-                                                              "cmp_with_list2",
+                                                              "cmp_in_list2",
                                                               (function () {
                                                                   return /* Eq */Block.__(0, [
-                                                                            Caml_obj.caml_compare({
-                                                                                  x: /* :: */[
-                                                                                    1,
-                                                                                    /* [] */0
-                                                                                  ]
-                                                                                }, {
-                                                                                  x: /* :: */[
-                                                                                    0,
-                                                                                    /* [] */0
-                                                                                  ]
-                                                                                }),
+                                                                            Caml_obj.caml_compare(/* :: */[
+                                                                                  {
+                                                                                    x: 2
+                                                                                  },
+                                                                                  /* [] */0
+                                                                                ], /* :: */[
+                                                                                  {
+                                                                                    x: 1
+                                                                                  },
+                                                                                  /* [] */0
+                                                                                ]),
                                                                             1
                                                                           ]);
                                                                 })
                                                             ],
                                                             /* :: */[
                                                               /* tuple */[
-                                                                "eq_id",
+                                                                "cmp_with_list",
                                                                 (function () {
-                                                                    return /* Ok */Block.__(4, [Caml_obj.caml_equal({
-                                                                                    x: 1,
-                                                                                    y: 2
+                                                                    return /* Eq */Block.__(0, [
+                                                                              Caml_obj.caml_compare({
+                                                                                    x: /* :: */[
+                                                                                      0,
+                                                                                      /* [] */0
+                                                                                    ]
                                                                                   }, {
-                                                                                    x: 1,
-                                                                                    y: 2
-                                                                                  })]);
+                                                                                    x: /* :: */[
+                                                                                      1,
+                                                                                      /* [] */0
+                                                                                    ]
+                                                                                  }),
+                                                                              -1
+                                                                            ]);
                                                                   })
                                                               ],
                                                               /* :: */[
                                                                 /* tuple */[
-                                                                  "eq_val",
+                                                                  "cmp_with_list2",
                                                                   (function () {
                                                                       return /* Eq */Block.__(0, [
-                                                                                Caml_obj.caml_equal({
-                                                                                      x: 1
+                                                                                Caml_obj.caml_compare({
+                                                                                      x: /* :: */[
+                                                                                        1,
+                                                                                        /* [] */0
+                                                                                      ]
                                                                                     }, {
-                                                                                      x: 2
+                                                                                      x: /* :: */[
+                                                                                        0,
+                                                                                        /* [] */0
+                                                                                      ]
                                                                                     }),
-                                                                                false
+                                                                                1
                                                                               ]);
                                                                     })
                                                                 ],
                                                                 /* :: */[
                                                                   /* tuple */[
-                                                                    "eq_val2",
+                                                                    "eq_id",
                                                                     (function () {
-                                                                        return /* Eq */Block.__(0, [
-                                                                                  Caml_obj.caml_equal({
-                                                                                        x: 2
+                                                                        return /* Ok */Block.__(4, [Caml_obj.caml_equal({
+                                                                                        x: 1,
+                                                                                        y: 2
                                                                                       }, {
-                                                                                        x: 1
-                                                                                      }),
-                                                                                  false
-                                                                                ]);
+                                                                                        x: 1,
+                                                                                        y: 2
+                                                                                      })]);
                                                                       })
                                                                   ],
                                                                   /* :: */[
                                                                     /* tuple */[
-                                                                      "eq_empty",
+                                                                      "eq_val",
                                                                       (function () {
                                                                           return /* Eq */Block.__(0, [
-                                                                                    Caml_obj.caml_equal(({}), ({})),
-                                                                                    true
+                                                                                    Caml_obj.caml_equal({
+                                                                                          x: 1
+                                                                                        }, {
+                                                                                          x: 2
+                                                                                        }),
+                                                                                    false
                                                                                   ]);
                                                                         })
                                                                     ],
                                                                     /* :: */[
                                                                       /* tuple */[
-                                                                        "eq_empty2",
+                                                                        "eq_val2",
                                                                         (function () {
                                                                             return /* Eq */Block.__(0, [
-                                                                                      Caml_obj.caml_equal(({}), ({x:1})),
+                                                                                      Caml_obj.caml_equal({
+                                                                                            x: 2
+                                                                                          }, {
+                                                                                            x: 1
+                                                                                          }),
                                                                                       false
                                                                                     ]);
                                                                           })
                                                                       ],
                                                                       /* :: */[
                                                                         /* tuple */[
-                                                                          "eq_swap",
+                                                                          "eq_empty",
                                                                           (function () {
-                                                                              return /* Ok */Block.__(4, [Caml_obj.caml_equal({
-                                                                                              x: 1,
-                                                                                              y: 2
-                                                                                            }, {
-                                                                                              y: 2,
-                                                                                              x: 1
-                                                                                            })]);
+                                                                              return /* Eq */Block.__(0, [
+                                                                                        Caml_obj.caml_equal(({}), ({})),
+                                                                                        true
+                                                                                      ]);
                                                                             })
                                                                         ],
                                                                         /* :: */[
                                                                           /* tuple */[
-                                                                            "eq_size",
+                                                                            "eq_empty2",
                                                                             (function () {
                                                                                 return /* Eq */Block.__(0, [
-                                                                                          Caml_obj.caml_equal(({x:1}), ({x:1, y:2})),
+                                                                                          Caml_obj.caml_equal(({}), ({x:1})),
                                                                                           false
                                                                                         ]);
                                                                               })
                                                                           ],
                                                                           /* :: */[
                                                                             /* tuple */[
-                                                                              "eq_size2",
+                                                                              "eq_swap",
                                                                               (function () {
-                                                                                  return /* Eq */Block.__(0, [
-                                                                                            Caml_obj.caml_equal(({x:1, y:2}), ({x:1})),
-                                                                                            false
-                                                                                          ]);
+                                                                                  return /* Ok */Block.__(4, [Caml_obj.caml_equal({
+                                                                                                  x: 1,
+                                                                                                  y: 2
+                                                                                                }, {
+                                                                                                  y: 2,
+                                                                                                  x: 1
+                                                                                                })]);
                                                                                 })
                                                                             ],
                                                                             /* :: */[
                                                                               /* tuple */[
-                                                                                "eq_in_list",
+                                                                                "eq_size",
                                                                                 (function () {
                                                                                     return /* Eq */Block.__(0, [
-                                                                                              Caml_obj.caml_equal(/* :: */[
-                                                                                                    {
-                                                                                                      x: 1
-                                                                                                    },
-                                                                                                    /* [] */0
-                                                                                                  ], /* :: */[
-                                                                                                    {
-                                                                                                      x: 2
-                                                                                                    },
-                                                                                                    /* [] */0
-                                                                                                  ]),
+                                                                                              Caml_obj.caml_equal(({x:1}), ({x:1, y:2})),
                                                                                               false
                                                                                             ]);
                                                                                   })
                                                                               ],
                                                                               /* :: */[
                                                                                 /* tuple */[
-                                                                                  "eq_in_list2",
+                                                                                  "eq_size2",
                                                                                   (function () {
                                                                                       return /* Eq */Block.__(0, [
-                                                                                                Caml_obj.caml_equal(/* :: */[
-                                                                                                      {
-                                                                                                        x: 2
-                                                                                                      },
-                                                                                                      /* [] */0
-                                                                                                    ], /* :: */[
-                                                                                                      {
-                                                                                                        x: 2
-                                                                                                      },
-                                                                                                      /* [] */0
-                                                                                                    ]),
-                                                                                                true
+                                                                                                Caml_obj.caml_equal(({x:1, y:2}), ({x:1})),
+                                                                                                false
                                                                                               ]);
                                                                                     })
                                                                                 ],
                                                                                 /* :: */[
                                                                                   /* tuple */[
-                                                                                    "eq_with_list",
+                                                                                    "eq_in_list",
                                                                                     (function () {
                                                                                         return /* Eq */Block.__(0, [
-                                                                                                  Caml_obj.caml_equal({
-                                                                                                        x: /* :: */[
-                                                                                                          0,
-                                                                                                          /* [] */0
-                                                                                                        ]
-                                                                                                      }, {
-                                                                                                        x: /* :: */[
-                                                                                                          0,
-                                                                                                          /* [] */0
-                                                                                                        ]
-                                                                                                      }),
-                                                                                                  true
+                                                                                                  Caml_obj.caml_equal(/* :: */[
+                                                                                                        {
+                                                                                                          x: 1
+                                                                                                        },
+                                                                                                        /* [] */0
+                                                                                                      ], /* :: */[
+                                                                                                        {
+                                                                                                          x: 2
+                                                                                                        },
+                                                                                                        /* [] */0
+                                                                                                      ]),
+                                                                                                  false
                                                                                                 ]);
                                                                                       })
                                                                                   ],
                                                                                   /* :: */[
                                                                                     /* tuple */[
-                                                                                      "eq_with_list2",
+                                                                                      "eq_in_list2",
                                                                                       (function () {
                                                                                           return /* Eq */Block.__(0, [
-                                                                                                    Caml_obj.caml_equal({
-                                                                                                          x: /* :: */[
-                                                                                                            0,
-                                                                                                            /* [] */0
-                                                                                                          ]
-                                                                                                        }, {
-                                                                                                          x: /* :: */[
-                                                                                                            1,
-                                                                                                            /* [] */0
-                                                                                                          ]
-                                                                                                        }),
-                                                                                                    false
+                                                                                                    Caml_obj.caml_equal(/* :: */[
+                                                                                                          {
+                                                                                                            x: 2
+                                                                                                          },
+                                                                                                          /* [] */0
+                                                                                                        ], /* :: */[
+                                                                                                          {
+                                                                                                            x: 2
+                                                                                                          },
+                                                                                                          /* [] */0
+                                                                                                        ]),
+                                                                                                    true
                                                                                                   ]);
                                                                                         })
                                                                                     ],
                                                                                     /* :: */[
                                                                                       /* tuple */[
-                                                                                        "File \"caml_compare_test.ml\", line 81, characters 4-11",
+                                                                                        "eq_with_list",
                                                                                         (function () {
                                                                                             return /* Eq */Block.__(0, [
-                                                                                                      Caml_obj.caml_compare(null, /* :: */[
-                                                                                                            3,
-                                                                                                            /* [] */0
-                                                                                                          ]),
-                                                                                                      -1
+                                                                                                      Caml_obj.caml_equal({
+                                                                                                            x: /* :: */[
+                                                                                                              0,
+                                                                                                              /* [] */0
+                                                                                                            ]
+                                                                                                          }, {
+                                                                                                            x: /* :: */[
+                                                                                                              0,
+                                                                                                              /* [] */0
+                                                                                                            ]
+                                                                                                          }),
+                                                                                                      true
                                                                                                     ]);
                                                                                           })
                                                                                       ],
                                                                                       /* :: */[
                                                                                         /* tuple */[
-                                                                                          "File \"caml_compare_test.ml\", line 84, characters 4-11",
+                                                                                          "eq_with_list2",
                                                                                           (function () {
                                                                                               return /* Eq */Block.__(0, [
-                                                                                                        Caml_obj.caml_compare(/* :: */[
-                                                                                                              3,
-                                                                                                              /* [] */0
-                                                                                                            ], null),
-                                                                                                        1
+                                                                                                        Caml_obj.caml_equal({
+                                                                                                              x: /* :: */[
+                                                                                                                0,
+                                                                                                                /* [] */0
+                                                                                                              ]
+                                                                                                            }, {
+                                                                                                              x: /* :: */[
+                                                                                                                1,
+                                                                                                                /* [] */0
+                                                                                                              ]
+                                                                                                            }),
+                                                                                                        false
                                                                                                       ]);
                                                                                             })
                                                                                         ],
@@ -908,7 +914,10 @@ var suites_001 = /* :: */[
                                                                                             "File \"caml_compare_test.ml\", line 87, characters 4-11",
                                                                                             (function () {
                                                                                                 return /* Eq */Block.__(0, [
-                                                                                                          Caml_obj.caml_compare(null, 0),
+                                                                                                          Caml_obj.caml_compare(null, /* :: */[
+                                                                                                                3,
+                                                                                                                /* [] */0
+                                                                                                              ]),
                                                                                                           -1
                                                                                                         ]);
                                                                                               })
@@ -918,7 +927,10 @@ var suites_001 = /* :: */[
                                                                                               "File \"caml_compare_test.ml\", line 90, characters 4-11",
                                                                                               (function () {
                                                                                                   return /* Eq */Block.__(0, [
-                                                                                                            Caml_obj.caml_compare(0, null),
+                                                                                                            Caml_obj.caml_compare(/* :: */[
+                                                                                                                  3,
+                                                                                                                  /* [] */0
+                                                                                                                ], null),
                                                                                                             1
                                                                                                           ]);
                                                                                                 })
@@ -928,7 +940,7 @@ var suites_001 = /* :: */[
                                                                                                 "File \"caml_compare_test.ml\", line 93, characters 4-11",
                                                                                                 (function () {
                                                                                                     return /* Eq */Block.__(0, [
-                                                                                                              Caml_obj.caml_compare(undefined, 0),
+                                                                                                              Caml_obj.caml_compare(null, 0),
                                                                                                               -1
                                                                                                             ]);
                                                                                                   })
@@ -938,12 +950,34 @@ var suites_001 = /* :: */[
                                                                                                   "File \"caml_compare_test.ml\", line 96, characters 4-11",
                                                                                                   (function () {
                                                                                                       return /* Eq */Block.__(0, [
-                                                                                                                Caml_obj.caml_compare(0, undefined),
+                                                                                                                Caml_obj.caml_compare(0, null),
                                                                                                                 1
                                                                                                               ]);
                                                                                                     })
                                                                                                 ],
-                                                                                                /* [] */0
+                                                                                                /* :: */[
+                                                                                                  /* tuple */[
+                                                                                                    "File \"caml_compare_test.ml\", line 99, characters 4-11",
+                                                                                                    (function () {
+                                                                                                        return /* Eq */Block.__(0, [
+                                                                                                                  Caml_obj.caml_compare(undefined, 0),
+                                                                                                                  -1
+                                                                                                                ]);
+                                                                                                      })
+                                                                                                  ],
+                                                                                                  /* :: */[
+                                                                                                    /* tuple */[
+                                                                                                      "File \"caml_compare_test.ml\", line 102, characters 4-11",
+                                                                                                      (function () {
+                                                                                                          return /* Eq */Block.__(0, [
+                                                                                                                    Caml_obj.caml_compare(0, undefined),
+                                                                                                                    1
+                                                                                                                  ]);
+                                                                                                        })
+                                                                                                    ],
+                                                                                                    /* [] */0
+                                                                                                  ]
+                                                                                                ]
                                                                                               ]
                                                                                             ]
                                                                                           ]

@@ -107,4 +107,43 @@ external log3 :
 let none_arg = None
 let _ = log3 ~req:(`Int 6) ?opt:none_arg ()
 
+
+let ltx a b =  a < b && b > a 
+let gtx a b = a > b && b < a 
+let eqx a b = a = b && b = a
+let neqx a b = a <> b && b <> a 
+
+let all_true xs = Belt.List.every xs (fun x -> x)
+
+;; b __LOC__ 
+  @@ all_true 
+  [ 
+    gtx (Some (Some Js.null)) (Some None)
+  ]
+  
+;; b __LOC__ 
+  @@ all_true
+  [
+    ltx (Some None)  (Some (Some 3));    
+    ltx (Some None) (Some (Some None));
+    ltx (Some None) (Some (Some "3"));
+    ltx (Some None) (Some (Some true));
+    ltx (Some None) (Some (Some false));
+    ltx (Some false) (Some (true));    
+    ltx (Some (Some false)) (Some (Some (true)));
+    ltx None (Some None);
+    ltx None (Some Js.null);
+    ltx None (Some (fun x -> x  ));
+    ltx (Some Js.null) (Some (Js.Null.return 3));
+  ]
+
+;; b __LOC__   
+  @@ all_true [
+    eqx None None;
+    neqx None (Some Js.null);
+    eqx (Some None) (Some None);
+    eqx (Some (Some None)) (Some (Some None));
+    neqx (Some (Some (Some None))) (Some (Some None))
+  ]
+  
 ;; Mt.from_pair_suites __FILE__ !suites

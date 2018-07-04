@@ -143,10 +143,6 @@ module O = struct
   external get_value : Obj.t -> key -> Obj.t = ""[@@bs.get_index]
 end
 
-let unsafe_js_compare x y =
-  if x == y then 0 else
-  if Js.unsafe_lt x y then -1
-  else 1
 (** TODO: investigate total
     [compare x y] returns [0] if [x] is equal to [y],
     a negative integer if [x] is less than [y],
@@ -167,32 +163,44 @@ let unsafe_js_compare x y =
 let rec caml_compare (a : Obj.t) (b : Obj.t) : int =
   if a == b then 0 else
   (*front and formoest, we do not compare function values*)
-  if a == (Obj.repr Js.undefined) then -1 else
-  if b == (Obj.repr Js.undefined) then 1 else
-  if a == (Obj.repr Js.null) then -1 else
-  if b == (Obj.repr Js.null) then 1 else
   let a_type = Js.typeof a in 
   let b_type = Js.typeof b in 
-  if a_type = "string" then
-    Pervasives.compare (Obj.magic a : string) (Obj.magic b )
-  else 
-    let is_a_number = a_type = "number" in 
-    let is_b_number = b_type = "number" in 
-    match is_a_number , is_b_number with 
-    | true, true -> 
+  match a_type, b_type with 
+  | "undefined", _ -> - 1
+  | _, "undefined" -> 1 
+  (** [a] is of type string, b can not be None,
+      [a] could be (Some (Some x)) in that case [b] could be [Some None] or [null]
+       so [b] has to be of type string or null *)       
+  | "string", "string" ->   
+      Pervasives.compare (Obj.magic a : string) (Obj.magic b )
+  | "string", _ -> 
+      (* [b] could be [Some None] or [null] *)
+      1 
+  |  _, "string" -> -1  
+  | "boolean", "boolean" ->       
+      Pervasives.compare (Obj.magic a : bool) (Obj.magic b)
+  | "boolean", _ -> 1     
+  | _, "boolean" -> -1
+  | "function", "function" -> 
+      raise (Invalid_argument "compare: functional value")
+  | "function", _ -> 1
+  | _, "function" -> -1 
+  | "number", "number" -> 
       Pervasives.compare (Obj.magic a : int) (Obj.magic b : int)
-    | true , false -> -1 (* Integer < Block in OCaml runtime GPR #1195 *)
-    | false, true -> 1 
-    | false, false -> 
-      if a_type = "boolean"
-      then (* TODO: refine semantics when comparing with [null] *)
-        unsafe_js_compare a b
-      else if a_type = "function" || b_type = "function"
-      then raise (Invalid_argument "compare: functional value")
-      else
-        (* if #is_instance_array a then  *)
-        (*   0 *)
-        (* else  *)
+  | "number", _ ->        
+      if b == Obj.repr Js.null || Bs_obj.tag b = 256 then 1 (* Some (Some ..) < x *)
+      else 
+        -1 (* Integer < Block in OCaml runtime GPR #1195, except Some.. *)
+  | _, "number" -> 
+      if a == Obj.repr Js.null || Bs_obj.tag a = 256 then -1
+      else 1
+  | _ ->        
+      if a == Obj.repr Js.null then 
+        (** [b] could not be null otherwise would equal *)
+        if Bs_obj.tag b = 256 then 1 else -1
+     else if b == Obj.repr Js.null then 
+        if Bs_obj.tag a = 256 then -1 else 1    
+     else    
         let tag_a = Bs_obj.tag a in
         let tag_b = Bs_obj.tag b in
         (* double_array_tag: 254
@@ -202,6 +210,14 @@ let rec caml_compare (a : Obj.t) (b : Obj.t) : int =
           caml_compare (Obj.field a 0) b
         else if tag_b = 250 then
           caml_compare a (Obj.field b 0)
+        else if tag_a = 256 then   
+          if tag_b = 256 then 
+            Pervasives.compare (Obj.magic (Obj.field a 1) : int)
+             (Obj.magic (Obj.field b 1) : int)
+            (* Some None < Some (Some None)) *)
+          else  (* b could not be undefined/None *)
+             (* Some None < Some ..*) 
+             -1 
         else if tag_a = 248 (* object/exception *)  then
           Pervasives.compare (Obj.magic @@ Obj.field a 1 : int) (Obj.magic @@ Obj.field b 1 )
         else if tag_a = 251 (* abstract_tag *) then
@@ -285,6 +301,7 @@ let rec caml_equal (a : Obj.t) (b : Obj.t) : bool =
       else (* a_type = "object" || "symbol" *)
       if b_type = "number" || b_type = "undefined" || b == Obj.magic Js_null.empty then false 
       else 
+        (* [a] [b] could not be null, so it can not raise *)
         let tag_a = Bs_obj.tag a in
         let tag_b = Bs_obj.tag b in
         (* double_array_tag: 254
@@ -300,7 +317,9 @@ let rec caml_equal (a : Obj.t) (b : Obj.t) : bool =
           raise (Invalid_argument "equal: abstract value")
         else if tag_a <> tag_b then
           false
-        else
+        else if tag_a = 256 then 
+          (Obj.magic (Obj.field a 1) : int) = Obj.magic (Obj.field b 1)
+        else 
           let len_a = Bs_obj.length a in
           let len_b = Bs_obj.length b in
           if len_a = len_b then
