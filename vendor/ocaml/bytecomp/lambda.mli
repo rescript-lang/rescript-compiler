@@ -37,13 +37,14 @@ type tag_info =
   | Blk_variant of string 
   | Blk_record of string array
   | Blk_module of string list option
-  | Blk_exception
-  | Blk_extension
+  | Blk_extension_slot
   | Blk_na
   | Blk_some
   | Blk_some_not_nested (* ['a option] where ['a] can not inhabit a non-like value *)
     
 val default_tag_info : tag_info
+
+val ref_tag_info : tag_info
 
 type field_dbg_info = 
   | Fld_na

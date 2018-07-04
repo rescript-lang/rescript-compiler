@@ -322,7 +322,7 @@ let primitives_table = create_hashtable 57 [
   "%field1", Pfield (1, Fld_na);
   "%setfield0", Psetfield(0, true, Fld_set_na);
   "%makeblock", Pmakeblock(0, Lambda.default_tag_info, Immutable);
-  "%makemutable", Pmakeblock(0,Lambda.default_tag_info,  Mutable);
+  "%makemutable", Pmakeblock(0,Lambda.ref_tag_info,  Mutable);
   "%raise", Praise Raise_regular;
   "%reraise", Praise Raise_reraise;
   "%raise_notrace", Praise Raise_notrace;
@@ -611,7 +611,7 @@ let transl_primitive loc p =
       | 1 -> (* TODO: we should issue a warning ? *)
         let param = Ident.create "prim" in
         Lfunction(Curried, [param],
-          Lprim(Pmakeblock(0, Lambda.default_tag_info, Immutable), [lam; Lvar param], loc))
+          Lprim(Pmakeblock(0, Lambda.Blk_tuple, Immutable), [lam; Lvar param], loc))
       | _ -> assert false
     end
   | _ ->
@@ -806,7 +806,7 @@ let assert_failed exp =
   Lprim(Praise Raise_regular, [event_after exp
     (Lprim(Pmakeblock(0, Lambda.default_tag_info, Immutable),
           [transl_normal_path Predef.path_assert_failure;
-           Lconst(Const_block(0, Lambda.default_tag_info,
+           Lconst(Const_block(0, Lambda.Blk_tuple,
               [Const_base(Const_string (fname, None));
                Const_base(Const_int line);
                Const_base(Const_int char)]))], exp.exp_loc))], exp.exp_loc)

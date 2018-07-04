@@ -3046,7 +3046,7 @@ let partial_function loc () =
 #end  
   Lprim(Praise Raise_regular, [Lprim(Pmakeblock(0, Lambda.default_tag_info, Immutable),
           [transl_normal_path Predef.path_match_failure;
-           Lconst(Const_block(0, Lambda.default_tag_info,
+           Lconst(Const_block(0, Lambda.Blk_tuple,
               [Const_base(Const_string (fname, None));
                Const_base(Const_int line);
                Const_base(Const_int char)]))], loc)], loc)
