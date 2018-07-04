@@ -10,9 +10,9 @@ var bb = Caml_obj.caml_equal_undefined;
 
 var cc = Caml_obj.caml_equal_nullable;
 
-var suites = [/* [] */0];
+var suites = /* record */[/* contents : [] */0];
 
-var test_id = [0];
+var test_id = /* record */[/* contents */0];
 
 function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);

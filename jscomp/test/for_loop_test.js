@@ -8,7 +8,7 @@ var Caml_array = require("../../lib/js/caml_array.js");
 var Caml_int32 = require("../../lib/js/caml_int32.js");
 
 function for_3(x) {
-  var v = [0];
+  var v = /* record */[/* contents */0];
   var arr = $$Array.map((function (_, _$1) {
           return /* () */0;
         }), x);
@@ -28,7 +28,7 @@ function for_3(x) {
 }
 
 function for_4(x) {
-  var v = [0];
+  var v = /* record */[/* contents */0];
   var arr = $$Array.map((function (_, _$1) {
           return /* () */0;
         }), x);
@@ -49,7 +49,7 @@ function for_4(x) {
 }
 
 function for_5(x, u) {
-  var v = [0];
+  var v = /* record */[/* contents */0];
   var arr = $$Array.map((function (_, _$1) {
           return /* () */0;
         }), x);
@@ -69,17 +69,17 @@ function for_5(x, u) {
 }
 
 function for_6(x, u) {
-  var v = [0];
+  var v = /* record */[/* contents */0];
   var arr = $$Array.map((function (_, _$1) {
           return /* () */0;
         }), x);
-  var v4 = [0];
-  var v5 = [0];
+  var v4 = /* record */[/* contents */0];
+  var v5 = /* record */[/* contents */0];
   var inspect_3 = -1;
   v4[0] = v4[0] + 1 | 0;
   for(var j = 0; j <= 1; ++j){
     v5[0] = v5[0] + 1 | 0;
-    var v2 = [0];
+    var v2 = /* record */[/* contents */0];
     (function(v2){
     for(var i = 0 ,i_finish = x.length - 1 | 0; i <= i_finish; ++i){
       var k = Caml_int32.imul((u << 1), u);
@@ -107,7 +107,7 @@ function for_6(x, u) {
 }
 
 function for_7() {
-  var v = [0];
+  var v = /* record */[/* contents */0];
   var arr = Caml_array.caml_make_vect(21, (function () {
           return /* () */0;
         }));
@@ -130,7 +130,7 @@ function for_7() {
 }
 
 function for_8() {
-  var v = [0];
+  var v = /* record */[/* contents */0];
   var arr = Caml_array.caml_make_vect(21, (function () {
           return /* () */0;
         }));
@@ -155,7 +155,7 @@ function for_8() {
 }
 
 function for_9() {
-  var v = [/* [] */0];
+  var v = /* record */[/* contents : [] */0];
   var collect = function (x) {
     v[0] = /* :: */[
       x,
@@ -163,8 +163,8 @@ function for_9() {
     ];
     return /* () */0;
   };
-  var vv = [0];
-  var vv2 = [0];
+  var vv = /* record */[/* contents */0];
+  var vv2 = /* record */[/* contents */0];
   var arr = Caml_array.caml_make_vect(4, (function () {
           return /* () */0;
         }));
@@ -172,7 +172,7 @@ function for_9() {
           return /* () */0;
         }));
   for(var i = 0; i <= 1; ++i){
-    var v$1 = [0];
+    var v$1 = /* record */[/* contents */0];
     v$1[0] = v$1[0] + i | 0;
     (function(v$1){
     for(var j = 0; j <= 1; ++j){

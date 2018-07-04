@@ -28,7 +28,7 @@ function filter_map(f, _xs) {
 }
 
 function excludes(p, l) {
-  var excluded = [false];
+  var excluded = /* record */[/* contents */false];
   var aux = function (_accu, _param) {
     while(true) {
       var param = _param;
@@ -68,7 +68,7 @@ function excludes(p, l) {
 }
 
 function exclude_with_fact(p, l) {
-  var excluded = [undefined];
+  var excluded = /* record */[/* contents */undefined];
   var aux = function (_accu, _param) {
     while(true) {
       var param = _param;
@@ -101,8 +101,8 @@ function exclude_with_fact(p, l) {
 }
 
 function exclude_with_fact2(p1, p2, l) {
-  var excluded1 = [undefined];
-  var excluded2 = [undefined];
+  var excluded1 = /* record */[/* contents */undefined];
+  var excluded2 = /* record */[/* contents */undefined];
   var aux = function (_accu, _param) {
     while(true) {
       var param = _param;
@@ -798,7 +798,7 @@ function reduce_from_left(fn, lst) {
 }
 
 function create_ref_empty() {
-  return [/* [] */0];
+  return /* record */[/* contents : [] */0];
 }
 
 function ref_top(x) {
@@ -916,7 +916,7 @@ function assoc_by_string(def, k, _lst) {
     } else {
       throw [
             Caml_builtin_exceptions.assert_failure,
-            [
+            /* tuple */[
               "ext_list_test.ml",
               399,
               14
@@ -942,7 +942,7 @@ function assoc_by_int(def, k, _lst) {
     } else {
       throw [
             Caml_builtin_exceptions.assert_failure,
-            [
+            /* tuple */[
               "ext_list_test.ml",
               409,
               14

@@ -29,6 +29,5 @@ type t =
   | Blk_variant of string 
   | Blk_record of string array
   | Blk_module of string list option
-  | Blk_exception
-  | Blk_extension
+  | Blk_extension_slot
   | Blk_na

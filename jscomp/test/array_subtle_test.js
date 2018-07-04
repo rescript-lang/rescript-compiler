@@ -5,9 +5,9 @@ var Block = require("../../lib/js/block.js");
 var Caml_array = require("../../lib/js/caml_array.js");
 var Js_primitive = require("../../lib/js/js_primitive.js");
 
-var suites = [/* [] */0];
+var suites = /* record */[/* contents : [] */0];
 
-var test_id = [0];
+var test_id = /* record */[/* contents */0];
 
 function eq(loc, param) {
   var y = param[1];

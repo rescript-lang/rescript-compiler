@@ -21,9 +21,9 @@ var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
-var suites = [/* [] */0];
+var suites = /* record */[/* contents : [] */0];
 
-var test_id = [0];
+var test_id = /* record */[/* contents */0];
 
 function eq(loc, x, y) {
   test_id[0] = test_id[0] + 1 | 0;
@@ -1046,7 +1046,7 @@ function split_at_match_rec(_l$prime, _param) {
     } else {
       throw [
             Caml_builtin_exceptions.assert_failure,
-            [
+            /* tuple */[
               "re_automata.ml",
               429,
               21
@@ -1808,7 +1808,7 @@ var cword = union(/* :: */[
     ], calnum);
 
 function colorize(c, regexp) {
-  var lnl = [false];
+  var lnl = /* record */[/* contents */false];
   var colorize$1 = function (_regexp) {
     while(true) {
       var regexp = _regexp;
@@ -1858,7 +1858,7 @@ function colorize(c, regexp) {
           default:
             throw [
                   Caml_builtin_exceptions.assert_failure,
-                  [
+                  /* tuple */[
                     "re.ml",
                     502,
                     35
@@ -2393,7 +2393,7 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _par
         default:
           throw [
                 Caml_builtin_exceptions.assert_failure,
-                [
+                /* tuple */[
                   "re.ml",
                   714,
                   4
@@ -2436,7 +2436,7 @@ function as_set(param) {
   if (typeof param === "number") {
     throw [
           Caml_builtin_exceptions.assert_failure,
-          [
+          /* tuple */[
             "re.ml",
             747,
             13
@@ -2445,7 +2445,7 @@ function as_set(param) {
   } else if (param.tag) {
     throw [
           Caml_builtin_exceptions.assert_failure,
-          [
+          /* tuple */[
             "re.ml",
             747,
             13
@@ -2998,7 +2998,7 @@ function posix_class_of_string(class_) {
 }
 
 function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
-  var i = [0];
+  var i = /* record */[/* contents */0];
   var l = s.length;
   var test = function (c) {
     if (i[0] !== l) {
@@ -3764,9 +3764,9 @@ function regexp(flags, pat) {
   var col = match[0];
   var lnl = need_lnl ? ncol : -1;
   var ncol$1 = need_lnl ? ncol + 1 | 0 : ncol;
-  var ids = [0];
-  var pos = [0];
-  var match$1 = translate(ids, /* First */332064784, false, false, /* Greedy */-904640576, pos, [/* Empty */0], col, regexp$2);
+  var ids = /* record */[/* contents */0];
+  var pos = /* record */[/* contents */0];
+  var match$1 = translate(ids, /* First */332064784, false, false, /* Greedy */-904640576, pos, /* record */[/* contents : Empty */0], col, regexp$2);
   var r$1 = enforce_kind(ids, /* First */332064784, match$1[1], match$1[0]);
   var init = r$1;
   var cols = col;
@@ -3781,7 +3781,7 @@ function regexp(flags, pat) {
           /* col_repr */col_repr,
           /* ncol */ncol$2,
           /* lnl */lnl$1,
-          /* tbl */[/* array */[false]],
+          /* tbl : record */[/* contents : array */[false]],
           /* states */Curry._1(Re_automata_022[/* Table */2][/* create */0], 97),
           /* group_count */group_count
         ];

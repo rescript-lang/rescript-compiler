@@ -13,7 +13,7 @@ function is_equal() {
   if (Caml_bytes.get(Bytes.make(3, /* "a" */97), 0) !== /* "a" */97) {
     throw [
           Caml_builtin_exceptions.assert_failure,
-          [
+          /* tuple */[
             "equal_exception_test.ml",
             9,
             4
@@ -23,7 +23,7 @@ function is_equal() {
   if (Bytes.make(3, /* "a" */97)[0] !== /* "a" */97) {
     throw [
           Caml_builtin_exceptions.assert_failure,
-          [
+          /* tuple */[
             "equal_exception_test.ml",
             10,
             4
@@ -35,7 +35,7 @@ function is_equal() {
   if (u[0] !== /* "b" */98) {
     throw [
           Caml_builtin_exceptions.assert_failure,
-          [
+          /* tuple */[
             "equal_exception_test.ml",
             13,
             4

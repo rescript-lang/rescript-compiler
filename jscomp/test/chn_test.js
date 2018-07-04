@@ -6,9 +6,9 @@ var Block = require("../../lib/js/block.js");
 var Caml_string = require("../../lib/js/caml_string.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
-var suites = [/* [] */0];
+var suites = /* record */[/* contents : [] */0];
 
-var test_id = [0];
+var test_id = /* record */[/* contents */0];
 
 function eq(loc, x, y) {
   test_id[0] = test_id[0] + 1 | 0;
@@ -39,7 +39,7 @@ function convert(s) {
                     } else {
                       throw [
                             Caml_builtin_exceptions.assert_failure,
-                            [
+                            /* tuple */[
                               "chn_test.ml",
                               20,
                               18

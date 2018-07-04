@@ -3,9 +3,9 @@
 var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 
-var suites = [/* [] */0];
+var suites = /* record */[/* contents : [] */0];
 
-var counter = [0];
+var counter = /* record */[/* contents */0];
 
 function add_test(loc, test) {
   counter[0] = counter[0] + 1 | 0;

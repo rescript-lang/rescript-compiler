@@ -20,7 +20,7 @@ function for_2(x) {
 }
 
 function for_3(x) {
-  var v = [0];
+  var v = /* record */[/* contents */0];
   var arr = $$Array.map((function (_, _$1) {
           return /* () */0;
         }), x);
@@ -40,7 +40,7 @@ function for_3(x) {
 }
 
 function for_4(x) {
-  var v = [0];
+  var v = /* record */[/* contents */0];
   var arr = $$Array.map((function (_, _$1) {
           return /* () */0;
         }), x);
@@ -61,7 +61,7 @@ function for_4(x) {
 }
 
 function for_5(x, u) {
-  var v = [0];
+  var v = /* record */[/* contents */0];
   var arr = $$Array.map((function (_, _$1) {
           return /* () */0;
         }), x);
@@ -81,16 +81,16 @@ function for_5(x, u) {
 }
 
 function for_6(x, u) {
-  var v = [0];
+  var v = /* record */[/* contents */0];
   var arr = $$Array.map((function (_, _$1) {
           return /* () */0;
         }), x);
-  var v4 = [0];
-  var v5 = [0];
+  var v4 = /* record */[/* contents */0];
+  var v5 = /* record */[/* contents */0];
   v4[0] = v4[0] + 1 | 0;
   for(var j = 0; j <= 1; ++j){
     v5[0] = v5[0] + 1 | 0;
-    var v2 = [0];
+    var v2 = /* record */[/* contents */0];
     (function(v2){
     for(var i = 0 ,i_finish = x.length; i <= i_finish; ++i){
       var k = Caml_int32.imul((u << 1), u);

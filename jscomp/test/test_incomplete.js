@@ -6,7 +6,7 @@ function f(x) {
   if (x > 3 || x < 1) {
     throw [
           Caml_builtin_exceptions.match_failure,
-          [
+          /* tuple */[
             "test_incomplete.ml",
             3,
             2

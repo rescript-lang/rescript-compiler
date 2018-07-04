@@ -5,9 +5,9 @@ var Caml_obj = require("../../lib/js/caml_obj.js");
 var Belt_List = require("../../lib/js/belt_List.js");
 var Js_primitive = require("../../lib/js/js_primitive.js");
 
-var suites = [/* [] */0];
+var suites = /* record */[/* contents : [] */0];
 
-var test_id = [0];
+var test_id = /* record */[/* contents */0];
 
 function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
@@ -72,7 +72,7 @@ var f10 = Js_primitive.some(Js_primitive.some(Js_primitive.some(Js_primitive.som
 
 var f11 = Js_primitive.some(f10);
 
-var randomized = [false];
+var randomized = /* record */[/* contents */false];
 
 function create($staropt$star, _) {
   var random = $staropt$star !== undefined ? $staropt$star : randomized[0];

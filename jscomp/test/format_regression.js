@@ -6,7 +6,7 @@ var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js")
 function peek_queue() {
   throw [
         Caml_builtin_exceptions.assert_failure,
-        [
+        /* tuple */[
           "format_regression.ml",
           10,
           19
@@ -17,7 +17,7 @@ function peek_queue() {
 function int_of_size() {
   throw [
         Caml_builtin_exceptions.assert_failure,
-        [
+        /* tuple */[
           "format_regression.ml",
           11,
           20
@@ -28,7 +28,7 @@ function int_of_size() {
 function take_queue() {
   throw [
         Caml_builtin_exceptions.assert_failure,
-        [
+        /* tuple */[
           "format_regression.ml",
           12,
           19
@@ -39,7 +39,7 @@ function take_queue() {
 function format_pp_token(_, _$1) {
   throw [
         Caml_builtin_exceptions.assert_failure,
-        [
+        /* tuple */[
           "format_regression.ml",
           13,
           26

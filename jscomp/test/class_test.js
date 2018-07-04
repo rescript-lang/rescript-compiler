@@ -46,7 +46,7 @@ Caml_oo_curry.js2(-933174511, 2, p, 3);
 
 var three = Caml_oo_curry.js1(291546447, 3, p);
 
-var x0 = [0];
+var x0 = /* record */[/* contents */0];
 
 function point2_init($$class) {
   var ids = CamlinternalOO.new_methods_variables($$class, shared, shared$1);

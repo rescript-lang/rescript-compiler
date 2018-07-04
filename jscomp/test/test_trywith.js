@@ -113,7 +113,7 @@ function f(x) {
   } else if (x.tag) {
     throw [
           Caml_builtin_exceptions.assert_failure,
-          [
+          /* tuple */[
             "test_trywith.ml",
             51,
             9

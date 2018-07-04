@@ -3,7 +3,7 @@
 var Curry = require("../../lib/js/curry.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
-var delayed = [(function () {
+var delayed = /* record */[/* contents */(function () {
       return /* () */0;
     })];
 
@@ -22,7 +22,7 @@ for(var i = 1; i <= 2; ++i){
     } else {
       throw [
             Caml_builtin_exceptions.assert_failure,
-            [
+            /* tuple */[
               "gpr_858_unit2_test.ml",
               6,
               13

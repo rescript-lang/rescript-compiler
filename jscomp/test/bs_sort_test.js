@@ -8,9 +8,9 @@ var Belt_SortArray = require("../../lib/js/belt_SortArray.js");
 var Array_data_util = require("./array_data_util.js");
 var Belt_SortArrayInt = require("../../lib/js/belt_SortArrayInt.js");
 
-var suites = [/* [] */0];
+var suites = /* record */[/* contents : [] */0];
 
-var test_id = [0];
+var test_id = /* record */[/* contents */0];
 
 function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);

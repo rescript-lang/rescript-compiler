@@ -6,21 +6,21 @@ var Pervasives = require("../../lib/js/pervasives.js");
 var CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
 
 function a4(prim) {
-  return [
+  return /* tuple */[
           "File \"test_primitive.ml\", line 30, characters 9-19",
           prim
         ];
 }
 
 function a5(prim) {
-  return [
+  return /* tuple */[
           31,
           prim
         ];
 }
 
 function a6(prim) {
-  return [
+  return /* tuple */[
           /* tuple */[
             "test_primitive.ml",
             32,

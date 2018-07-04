@@ -444,7 +444,7 @@ function Make(Ord) {
       } else {
         throw [
               Caml_builtin_exceptions.assert_failure,
-              [
+              /* tuple */[
                 "inline_map2_test.ml",
                 270,
                 10
@@ -1111,7 +1111,7 @@ function merge(f, s1, s2) {
     } else {
       throw [
             Caml_builtin_exceptions.assert_failure,
-            [
+            /* tuple */[
               "inline_map2_test.ml",
               270,
               10
@@ -1814,7 +1814,7 @@ function merge$1(f, s1, s2) {
     } else {
       throw [
             Caml_builtin_exceptions.assert_failure,
-            [
+            /* tuple */[
               "inline_map2_test.ml",
               270,
               10

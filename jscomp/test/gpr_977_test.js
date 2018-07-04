@@ -4,9 +4,9 @@ var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 var Int32 = require("../../lib/js/int32.js");
 
-var suites = [/* [] */0];
+var suites = /* record */[/* contents : [] */0];
 
-var test_id = [0];
+var test_id = /* record */[/* contents */0];
 
 function eq(loc, x, y) {
   test_id[0] = test_id[0] + 1 | 0;

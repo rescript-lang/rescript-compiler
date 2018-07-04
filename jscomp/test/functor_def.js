@@ -2,7 +2,7 @@
 
 var Curry = require("../../lib/js/curry.js");
 
-var v = [0];
+var v = /* record */[/* contents */0];
 
 function f(_, x) {
   v[0] = v[0] + 1 | 0;

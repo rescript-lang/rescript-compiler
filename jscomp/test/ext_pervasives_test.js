@@ -174,7 +174,7 @@ function dump(r) {
           } else {
             throw [
                   Caml_builtin_exceptions.assert_failure,
-                  [
+                  /* tuple */[
                     "ext_pervasives_test.ml",
                     118,
                     15
@@ -184,7 +184,7 @@ function dump(r) {
         } else {
           throw [
                 Caml_builtin_exceptions.assert_failure,
-                [
+                /* tuple */[
                   "ext_pervasives_test.ml",
                   118,
                   15

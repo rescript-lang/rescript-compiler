@@ -125,7 +125,7 @@ if (!Caml_obj.caml_equal(dfs1(/* :: */[
       ])) {
   throw [
         Caml_builtin_exceptions.assert_failure,
-        [
+        /* tuple */[
           "topsort_test.ml",
           29,
           2
@@ -162,7 +162,7 @@ if (!Caml_obj.caml_equal(dfs1(/* :: */[
       ])) {
   throw [
         Caml_builtin_exceptions.assert_failure,
-        [
+        /* tuple */[
           "topsort_test.ml",
           32,
           2
@@ -224,7 +224,7 @@ if (!Caml_obj.caml_equal(dfs2(/* :: */[
       ])) {
   throw [
         Caml_builtin_exceptions.assert_failure,
-        [
+        /* tuple */[
           "topsort_test.ml",
           47,
           2
@@ -259,7 +259,7 @@ if (!Caml_obj.caml_equal(dfs2(/* :: */[
       ])) {
   throw [
         Caml_builtin_exceptions.assert_failure,
-        [
+        /* tuple */[
           "topsort_test.ml",
           48,
           2
@@ -268,7 +268,7 @@ if (!Caml_obj.caml_equal(dfs2(/* :: */[
 }
 
 function dfs3(nodes, graph) {
-  var visited = [/* [] */0];
+  var visited = /* record */[/* contents : [] */0];
   var aux = function (node, graph) {
     if (List.mem(node, visited[0])) {
       return 0;
@@ -315,7 +315,7 @@ if (!Caml_obj.caml_equal(dfs3(/* :: */[
       ])) {
   throw [
         Caml_builtin_exceptions.assert_failure,
-        [
+        /* tuple */[
           "topsort_test.ml",
           65,
           2
@@ -350,7 +350,7 @@ if (!Caml_obj.caml_equal(dfs3(/* :: */[
       ])) {
   throw [
         Caml_builtin_exceptions.assert_failure,
-        [
+        /* tuple */[
           "topsort_test.ml",
           66,
           2
@@ -397,7 +397,7 @@ var grwork = /* :: */[
 ];
 
 function unsafe_topsort(graph) {
-  var visited = [/* [] */0];
+  var visited = /* record */[/* contents : [] */0];
   var sort_node = function (node) {
     if (List.mem(node, visited[0])) {
       return 0;
@@ -438,7 +438,7 @@ if (!Caml_obj.caml_equal(unsafe_topsort(grwork), /* :: */[
       ])) {
   throw [
         Caml_builtin_exceptions.assert_failure,
-        [
+        /* tuple */[
           "topsort_test.ml",
           110,
           2
@@ -1176,7 +1176,7 @@ function of_list(l) {
                   } else {
                     throw [
                           Caml_builtin_exceptions.assert_failure,
-                          [
+                          /* tuple */[
                             "set.ml",
                             372,
                             18
@@ -1239,7 +1239,7 @@ var String_set = [
 var Cycle = Caml_exceptions.create("Topsort_test.Cycle");
 
 function pathsort(graph) {
-  var visited = [/* [] */0];
+  var visited = /* record */[/* contents : [] */0];
   var empty_path = /* tuple */[
     /* Empty */0,
     /* [] */0
@@ -1309,7 +1309,7 @@ if (!Caml_obj.caml_equal(pathsort(grwork), /* :: */[
       ])) {
   throw [
         Caml_builtin_exceptions.assert_failure,
-        [
+        /* tuple */[
           "topsort_test.ml",
           150,
           4
@@ -1327,7 +1327,7 @@ try {
       ]);
   throw [
         Caml_builtin_exceptions.assert_failure,
-        [
+        /* tuple */[
           "topsort_test.ml",
           156,
           8
@@ -1368,7 +1368,7 @@ catch (raw_exn){
   if (exit === 1) {
     throw [
           Caml_builtin_exceptions.assert_failure,
-          [
+          /* tuple */[
             "topsort_test.ml",
             159,
             11

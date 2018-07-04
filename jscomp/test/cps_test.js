@@ -7,7 +7,7 @@ var Curry = require("../../lib/js/curry.js");
 var Caml_array = require("../../lib/js/caml_array.js");
 
 function test() {
-  var v = [0];
+  var v = /* record */[/* contents */0];
   var f = function (_n, _acc) {
     while(true) {
       var acc = _acc;
@@ -33,7 +33,7 @@ function test() {
 }
 
 function test_closure() {
-  var v = [0];
+  var v = /* record */[/* contents */0];
   var arr = Caml_array.caml_make_vect(6, (function (x) {
           return x;
         }));
@@ -52,7 +52,7 @@ function test_closure() {
 }
 
 function test_closure2() {
-  var v = [0];
+  var v = /* record */[/* contents */0];
   var arr = Caml_array.caml_make_vect(6, (function (x) {
           return x;
         }));

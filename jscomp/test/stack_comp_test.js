@@ -7,9 +7,9 @@ var Stack = require("../../lib/js/stack.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Mt_global = require("./mt_global.js");
 
-var suites = [/* [] */0];
+var suites = /* record */[/* contents : [] */0];
 
-var test_id = [0];
+var test_id = /* record */[/* contents */0];
 
 function eq(f, param) {
   return Mt_global.collect_eq(test_id, suites, f, param[0], param[1]);
@@ -23,7 +23,7 @@ function assert_(loc, v) {
 }
 
 function to_list(s) {
-  var l = [/* [] */0];
+  var l = /* record */[/* contents : [] */0];
   List.iter((function (x) {
           l[0] = /* :: */[
             x,
@@ -322,7 +322,7 @@ for(var i$6 = 10; i$6 >= 1; --i$6){
   Stack.push(i$6, s$5);
 }
 
-var i$7 = [1];
+var i$7 = /* record */[/* contents */1];
 
 List.iter((function (j) {
         assert_("File \"stack_comp_test.ml\", line 112, characters 27-34", i$7[0] === j);

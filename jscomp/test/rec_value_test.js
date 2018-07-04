@@ -51,16 +51,16 @@ function naive(n) {
   }
 }
 
-var four = [2];
+var four = /* record */[/* contents */2];
 
-var three = [3];
+var three = /* record */[/* contents */3];
 
 var h = Block.__(250, [fib]);
 
-var v = [(function () {
+var v = /* record */[/* contents */(function () {
       throw [
             Caml_builtin_exceptions.assert_failure,
-            [
+            /* tuple */[
               "rec_value_test.ml",
               23,
               24
@@ -266,7 +266,7 @@ var suites_001 = /* :: */[
           } else {
             throw [
                   Caml_builtin_exceptions.assert_failure,
-                  [
+                  /* tuple */[
                     "rec_value_test.ml",
                     108,
                     2
@@ -276,7 +276,7 @@ var suites_001 = /* :: */[
         } else {
           throw [
                 Caml_builtin_exceptions.assert_failure,
-                [
+                /* tuple */[
                   "rec_value_test.ml",
                   108,
                   2
@@ -405,7 +405,7 @@ var suites_001 = /* :: */[
                         if (rec_variant_b.tag) {
                           throw [
                                 Caml_builtin_exceptions.assert_failure,
-                                [
+                                /* tuple */[
                                   "rec_value_test.ml",
                                   132,
                                   11
@@ -431,7 +431,7 @@ var suites_001 = /* :: */[
                           } else {
                             throw [
                                   Caml_builtin_exceptions.assert_failure,
-                                  [
+                                  /* tuple */[
                                     "rec_value_test.ml",
                                     137,
                                     11

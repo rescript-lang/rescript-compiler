@@ -11,9 +11,9 @@ var Caml_int64 = require("../../lib/js/caml_int64.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 
-var test_id = [0];
+var test_id = /* record */[/* contents */0];
 
-var suites = [/* [] */0];
+var suites = /* record */[/* contents : [] */0];
 
 function eq(loc) {
   return (function (param, param$1) {

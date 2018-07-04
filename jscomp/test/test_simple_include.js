@@ -2,7 +2,7 @@
 
 var $$Array = require("../../lib/js/array.js");
 
-var v = [32];
+var v = /* record */[/* contents */32];
 
 v[0] = 0;
 
@@ -11,7 +11,7 @@ var N = /* module */[
   /* v */v
 ];
 
-var v$1 = [32];
+var v$1 = /* record */[/* contents */32];
 
 var NN = /* module */[
   /* a */3,

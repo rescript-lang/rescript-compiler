@@ -19,12 +19,12 @@ var Js_primitive = require("../../lib/js/js_primitive.js");
 var Caml_missing_polyfill = require("../../lib/js/caml_missing_polyfill.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
-var dbg = [true];
+var dbg = /* record */[/* contents */true];
 
-var inch = [Pervasives.stdin];
+var inch = /* record */[/* contents */Pervasives.stdin];
 
 function bufferize(f) {
-  var buf = [undefined];
+  var buf = /* record */[/* contents */undefined];
   return /* tuple */[
           (function () {
               var match = buf[0];
@@ -39,7 +39,7 @@ function bufferize(f) {
               if (buf[0] !== undefined) {
                 throw [
                       Caml_builtin_exceptions.assert_failure,
-                      [
+                      /* tuple */[
                         "qcc.ml",
                         17,
                         4
@@ -68,7 +68,7 @@ function peekch() {
 
 var symtab = Caml_array.caml_make_vect(100, "");
 
-var syms = [0];
+var syms = /* record */[/* contents */0];
 
 function find(s, _n) {
   while(true) {
@@ -95,7 +95,7 @@ function symstr(n) {
   if (n >= syms[0]) {
     throw [
           Caml_builtin_exceptions.assert_failure,
-          [
+          /* tuple */[
             "qcc.ml",
             40,
             4
@@ -114,7 +114,7 @@ function symitr(f) {
 
 var glo = Bytes.make(4096, /* "\000" */0);
 
-var gpos = [0];
+var gpos = /* record */[/* contents */0];
 
 var s = Caml_string.caml_create_string(100);
 
@@ -331,7 +331,7 @@ function nextis(t) {
 
 var obuf = Bytes.make(1048576, /* "\000" */0);
 
-var opos = [0];
+var opos = /* record */[/* contents */0];
 
 function out(x) {
   if (x !== 0) {
@@ -361,7 +361,7 @@ function patch(rel, loc, n) {
   if (n >= 0) {
     throw [
           Caml_builtin_exceptions.assert_failure,
-          [
+          /* tuple */[
             "qcc.ml",
             157,
             2
@@ -433,7 +433,7 @@ function test(n, l) {
   return loc;
 }
 
-var align = [0];
+var align = /* record */[/* contents */0];
 
 function push(r) {
   align[0] = align[0] + 1 | 0;
@@ -453,7 +453,7 @@ function pop(r) {
   }
 }
 
-var lval = [/* tuple */[
+var lval = /* record */[/* contents : tuple */[
     /* Mov */Block.__(0, [0]),
     /* Int */0
   ]];
@@ -938,7 +938,7 @@ function unary(stk) {
           if (l <= -256) {
             throw [
                   Caml_builtin_exceptions.assert_failure,
-                  [
+                  /* tuple */[
                     "qcc.ml",
                     295,
                     6
@@ -1208,7 +1208,7 @@ function decl(g, _n, _stk) {
         if ((n << 3) >= 256) {
           throw [
                 Caml_builtin_exceptions.assert_failure,
-                [
+                /* tuple */[
                   "qcc.ml",
                   436,
                   6
@@ -1230,7 +1230,7 @@ function decl(g, _n, _stk) {
   };
 }
 
-var retl = [0];
+var retl = /* record */[/* contents */0];
 
 function stmt(brk, stk) {
   var pexpr = function (stk) {
@@ -1259,7 +1259,7 @@ function stmt(brk, stk) {
     }
     return patch(true, loc$1, opos[0]);
   } else if (Caml_obj.caml_equal(t, tokwhile) || Caml_obj.caml_equal(t, tokfor)) {
-    var bl = [0];
+    var bl = /* record */[/* contents */0];
     var ba = align[0];
     var match;
     if (Caml_obj.caml_equal(t, tokwhile)) {
@@ -1322,7 +1322,7 @@ function stmt(brk, stk) {
     if (n < 0) {
       throw [
             Caml_builtin_exceptions.assert_failure,
-            [
+            /* tuple */[
               "qcc.ml",
               515,
               4
@@ -1472,7 +1472,7 @@ function top(_param) {
         };
         retl[0] = 0;
         block(/* tuple */[
-              [0],
+              /* record */[/* contents */0],
               0
             ], stk);
         patch(true, retl[0], opos[0]);
@@ -1614,7 +1614,7 @@ function elfgen(outf) {
         }));
   opos[0] = opos[0] + 7 & -8;
   var symtab = opos[0];
-  var n = [39];
+  var n = /* record */[/* contents */39];
   opos[0] = opos[0] + 24 | 0;
   itr((function (_, sl, _$1) {
           le(32, n[0]);
@@ -1625,7 +1625,7 @@ function elfgen(outf) {
           return /* () */0;
         }));
   var rel = opos[0];
-  var n$1 = [1];
+  var n$1 = /* record */[/* contents */1];
   itr((function (_, _$1, l) {
           var genrel = function (_l) {
             while(true) {
@@ -1726,7 +1726,7 @@ function elfgen(outf) {
   if (opos[0] !== 232) {
     throw [
           Caml_builtin_exceptions.assert_failure,
-          [
+          /* tuple */[
             "qcc.ml",
             698,
             2
@@ -1813,7 +1813,7 @@ function main() {
   var f = Sys.argv.length < 2 ? "-blk" : Caml_array.caml_array_get(Sys.argv, 1);
   switch (f) {
     case "-blk" : 
-        var partial_arg_000 = [0];
+        var partial_arg_000 = /* record */[/* contents */0];
         var partial_arg = /* tuple */[
           partial_arg_000,
           0

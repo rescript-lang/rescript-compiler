@@ -178,9 +178,9 @@ function eq_list(cmp, _xs, _ys) {
   };
 }
 
-var suites = [/* [] */0];
+var suites = /* record */[/* contents : [] */0];
 
-var test_id = [0];
+var test_id = /* record */[/* contents */0];
 
 function eq(loc, param) {
   var y = param[1];
@@ -205,7 +205,7 @@ function eq(loc, param) {
   return /* () */0;
 }
 
-var v = [/* [] */0];
+var v = /* record */[/* contents : [] */0];
 
 function add(u) {
   v[0] = /* :: */[

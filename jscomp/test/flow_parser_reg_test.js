@@ -1011,7 +1011,7 @@ function eat(f) {
 }
 
 function start(str) {
-  var todo = [/* [] */0];
+  var todo = /* record */[/* contents : [] */0];
   Bytes.iter((function (c) {
           todo[0] = /* :: */[
             c,
@@ -1183,7 +1183,7 @@ function float_of_string(str) {
         if (f[/* todo */4] !== /* [] */0) {
           throw [
                 Caml_builtin_exceptions.assert_failure,
-                [
+                /* tuple */[
                   "lexer_flow.mll",
                   546,
                   4
@@ -1271,7 +1271,7 @@ function oct_to_int(x) {
   if (x > 55 || x < 48) {
     throw [
           Caml_builtin_exceptions.assert_failure,
-          [
+          /* tuple */[
             "lexer_flow.mll",
             604,
             11
@@ -1304,7 +1304,7 @@ function hexa_to_int(x) {
   if (exit === 1) {
     throw [
           Caml_builtin_exceptions.assert_failure,
-          [
+          /* tuple */[
             "lexer_flow.mll",
             610,
             11
@@ -4611,11 +4611,11 @@ function init_env($staropt$star, $staropt$star$1, source, content) {
   var enable_types_in_comments = parse_options$1[/* types */4];
   var lex_env = new_lex_env(source, lb, enable_types_in_comments);
   return /* record */[
-          /* errors */[/* [] */0],
-          /* comments */[/* [] */0],
+          /* errors : record */[/* contents : [] */0],
+          /* comments : record */[/* contents : [] */0],
           /* labels : Empty */0,
-          /* exports */[/* Empty */0],
-          /* last_loc */[undefined],
+          /* exports : record */[/* contents : Empty */0],
+          /* last_loc : record */[/* contents */undefined],
           /* in_strict_mode */parse_options$1[/* use_strict */5],
           /* in_export */false,
           /* in_loop */false,
@@ -4627,13 +4627,13 @@ function init_env($staropt$star, $staropt$star$1, source, content) {
           /* allow_yield */true,
           /* allow_await */false,
           /* error_callback */undefined,
-          /* lex_mode_stack */[/* :: */[
+          /* lex_mode_stack : record */[/* contents : :: */[
               /* NORMAL */0,
               /* [] */0
             ]],
-          /* lex_env */[lex_env],
-          /* lookahead */[create$1(lex_env, /* NORMAL */0)],
-          /* token_sink */[token_sink],
+          /* lex_env : record */[/* contents */lex_env],
+          /* lookahead : record */[/* contents */create$1(lex_env, /* NORMAL */0)],
+          /* token_sink : record */[/* contents */token_sink],
           /* parse_options */parse_options$1,
           /* source */source
         ];
@@ -4687,7 +4687,7 @@ function lookahead($staropt$star, env) {
   if (i >= 2) {
     throw [
           Caml_builtin_exceptions.assert_failure,
-          [
+          /* tuple */[
             "parser_env.ml",
             288,
             2
@@ -5677,7 +5677,7 @@ function rev_nonempty_acc(acc) {
   } else {
     throw [
           Caml_builtin_exceptions.assert_failure,
-          [
+          /* tuple */[
             "parser_flow.ml",
             127,
             13
@@ -5691,7 +5691,7 @@ function rev_nonempty_acc(acc) {
   } else {
     throw [
           Caml_builtin_exceptions.assert_failure,
-          [
+          /* tuple */[
             "parser_flow.ml",
             131,
             13
@@ -6680,7 +6680,7 @@ function annotation(env) {
   } else {
     throw [
           Caml_builtin_exceptions.assert_failure,
-          [
+          /* tuple */[
             "parser_flow.ml",
             121,
             16
@@ -7867,7 +7867,7 @@ function primary$1(env) {
           if (typeof match$4 === "number") {
             throw [
                   Caml_builtin_exceptions.assert_failure,
-                  [
+                  /* tuple */[
                     "parser_flow.ml",
                     1699,
                     15
@@ -7885,7 +7885,7 @@ function primary$1(env) {
           } else {
             throw [
                   Caml_builtin_exceptions.assert_failure,
-                  [
+                  /* tuple */[
                     "parser_flow.ml",
                     1699,
                     15
@@ -8693,7 +8693,7 @@ function template_parts(env, _quasis, _expressions) {
       if (typeof match$1 === "number") {
         throw [
               Caml_builtin_exceptions.assert_failure,
-              [
+              /* tuple */[
                 "parser_flow.ml",
                 1602,
                 19
@@ -8718,7 +8718,7 @@ function template_parts(env, _quasis, _expressions) {
       } else {
         throw [
               Caml_builtin_exceptions.assert_failure,
-              [
+              /* tuple */[
                 "parser_flow.ml",
                 1602,
                 19
@@ -9116,7 +9116,7 @@ function _method(env, kind) {
     case 0 : 
         throw [
               Caml_builtin_exceptions.assert_failure,
-              [
+              /* tuple */[
                 "parser_flow.ml",
                 1954,
                 16
@@ -9464,7 +9464,7 @@ function check_property(env, prop_map, prop) {
         case 2 : 
             throw [
                   Caml_builtin_exceptions.assert_failure,
-                  [
+                  /* tuple */[
                     "parser_flow.ml",
                     2103,
                     30
@@ -10652,7 +10652,7 @@ function declare_export_declaration($staropt$star, env) {
           case 3 : 
               throw [
                     Caml_builtin_exceptions.assert_failure,
-                    [
+                    /* tuple */[
                       "parser_flow.ml",
                       3480,
                       17
@@ -12866,7 +12866,7 @@ function statement(env) {
                       } else {
                         throw [
                               Caml_builtin_exceptions.assert_failure,
-                              [
+                              /* tuple */[
                                 "parser_flow.ml",
                                 2573,
                                 22
@@ -12895,7 +12895,7 @@ function statement(env) {
                     } else {
                       throw [
                             Caml_builtin_exceptions.assert_failure,
-                            [
+                            /* tuple */[
                               "parser_flow.ml",
                               2556,
                               22
@@ -13682,7 +13682,7 @@ function program$1($staropt$star, $staropt$star$1, $staropt$star$2, content) {
         ];
 }
 
-var translation_errors = [/* [] */0];
+var translation_errors = /* record */[/* contents : [] */0];
 
 var string = (function (x) {return x;});
 
@@ -16117,9 +16117,9 @@ function parse(content, _) {
   }
 }
 
-var suites = [/* [] */0];
+var suites = /* record */[/* contents : [] */0];
 
-var test_id = [0];
+var test_id = /* record */[/* contents */0];
 
 function eq(loc, x, y) {
   test_id[0] = test_id[0] + 1 | 0;
@@ -16150,7 +16150,7 @@ if (match !== undefined) {
 } else {
   throw [
         Caml_builtin_exceptions.assert_failure,
-        [
+        /* tuple */[
           "runParser.ml",
           15,
           12

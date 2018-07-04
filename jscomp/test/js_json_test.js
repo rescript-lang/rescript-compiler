@@ -8,9 +8,9 @@ var Caml_array = require("../../lib/js/caml_array.js");
 var Js_primitive = require("../../lib/js/js_primitive.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
-var suites = [/* [] */0];
+var suites = /* record */[/* contents : [] */0];
 
-var counter = [0];
+var counter = /* record */[/* contents */0];
 
 function add_test(loc, test) {
   counter[0] = counter[0] + 1 | 0;
@@ -64,7 +64,7 @@ add_test("File \"js_json_test.ml\", line 23, characters 11-18", (function () {
                       if (typeof ty3 === "number") {
                         throw [
                               Caml_builtin_exceptions.assert_failure,
-                              [
+                              /* tuple */[
                                 "js_json_test.ml",
                                 37,
                                 21
@@ -75,7 +75,7 @@ add_test("File \"js_json_test.ml\", line 23, characters 11-18", (function () {
                       } else {
                         throw [
                               Caml_builtin_exceptions.assert_failure,
-                              [
+                              /* tuple */[
                                 "js_json_test.ml",
                                 37,
                                 21
@@ -199,7 +199,7 @@ function option_get(param) {
   } else {
     throw [
           Caml_builtin_exceptions.assert_failure,
-          [
+          /* tuple */[
             "js_json_test.ml",
             102,
             36

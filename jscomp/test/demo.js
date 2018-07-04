@@ -22,7 +22,7 @@ var data = /* array */[
 
 function ui_layout(compile, lookup, appContext) {
   var init = Curry._1(compile, "bid  - ask");
-  var computeFunction = [(function (env) {
+  var computeFunction = /* record */[/* contents */(function (env) {
         return Curry._1(init, (function (key) {
                       return Curry._2(lookup, env, key);
                     }));

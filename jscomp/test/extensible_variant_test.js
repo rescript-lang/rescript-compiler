@@ -23,7 +23,7 @@ function to_int(x) {
   } else {
     throw [
           Caml_builtin_exceptions.assert_failure,
-          [
+          /* tuple */[
             "extensible_variant_test.ml",
             16,
             9

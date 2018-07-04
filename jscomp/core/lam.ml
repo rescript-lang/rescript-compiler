@@ -37,8 +37,7 @@ type tag_info = Lam_tag_info.t =
   | Blk_variant of string 
   | Blk_record of string array
   | Blk_module of string list option
-  | Blk_exception
-  | Blk_extension
+  | Blk_extension_slot
   | Blk_na  
 
 type mutable_flag = Asttypes.mutable_flag
@@ -1655,12 +1654,9 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : t =
     | Blk_module s -> 
       let info = Blk_module s in
       prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
-    | Blk_exception -> 
-      let info = Blk_exception in
+    | Blk_extension_slot -> 
+      let info = Blk_extension_slot in
       prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
-    | Blk_extension -> 
-      let info = Blk_extension in
-      prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc    
     | Blk_na -> 
       let info = Blk_na in
       prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
@@ -1900,7 +1896,7 @@ let convert exports lam : _ * _  =
         *)
         begin match prim_name  ,  args with
           | "caml_set_oo_id" ,
-            [ Lprim (Pmakeblock(tag,( Blk_exception| Blk_extension), _),
+            [ Lprim (Pmakeblock(tag,Blk_extension_slot, _),
                      Lconst (Const_base(Const_string(name,_))) :: _,
                      loc
                     )]
@@ -2083,11 +2079,8 @@ let convert exports lam : _ * _  =
       | Blk_module s -> 
         let t = Blk_module s in 
         Const_block (i,t, Ext_list.map convert_constant xs)    
-      | Blk_exception -> 
-        let t = Blk_exception in 
-        Const_block (i,t, Ext_list.map convert_constant xs)      
-      | Blk_extension -> 
-        let t = Blk_extension in 
+      | Blk_extension_slot -> 
+        let t = Blk_extension_slot in 
         Const_block (i,t, Ext_list.map convert_constant xs)      
       | Blk_na -> 
         let t = Blk_na in 

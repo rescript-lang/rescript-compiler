@@ -14,9 +14,9 @@ var keys = ( function (x){return Object.keys(x)});
 
 ;
 
-var suites = [/* [] */0];
+var suites = /* record */[/* contents : [] */0];
 
-var test_id = [0];
+var test_id = /* record */[/* contents */0];
 
 function eq(loc, param) {
   var y = param[1];
@@ -106,7 +106,7 @@ eq("File \"ffi_js_test.ml\", line 47, characters 5-12", /* tuple */[
       0
     ]);
 
-var u = [3];
+var u = /* record */[/* contents */3];
 
 var side_effect_config = (u[0] = u[0] + 1 | 0, {
     hi: 3,
