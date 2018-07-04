@@ -8,9 +8,9 @@ var Curry = require("../../lib/js/curry.js");
 var Printf = require("../../lib/js/printf.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 
-var current = [0];
+var current = /* record */[/* contents */0];
 
-var accum = [/* [] */0];
+var accum = /* record */[/* contents : [] */0];
 
 function record(fmt) {
   return Printf.kprintf((function (s) {
@@ -45,9 +45,9 @@ function f_bool(b) {
                 ]), b);
 }
 
-var r_set = [false];
+var r_set = /* record */[/* contents */false];
 
-var r_clear = [true];
+var r_clear = /* record */[/* contents */true];
 
 function f_string(s) {
   return Curry._1(record(/* Format */[
@@ -65,7 +65,7 @@ function f_string(s) {
                 ]), s);
 }
 
-var r_string = [""];
+var r_string = /* record */[/* contents */""];
 
 function f_int(i) {
   return Curry._1(record(/* Format */[
@@ -85,7 +85,7 @@ function f_int(i) {
                 ]), i);
 }
 
-var r_int = [0];
+var r_int = /* record */[/* contents */0];
 
 function f_float(f) {
   return Curry._1(record(/* Format */[
@@ -105,7 +105,7 @@ function f_float(f) {
                 ]), f);
 }
 
-var r_float = [0.0];
+var r_float = /* record */[/* contents */0.0];
 
 function f_symbol(s) {
   return Curry._1(record(/* Format */[

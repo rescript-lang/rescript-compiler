@@ -14,7 +14,7 @@ function assert_f(x) {
   if (x <= 3) {
     throw [
           Caml_builtin_exceptions.assert_failure,
-          [
+          /* tuple */[
             "exception_value_test.ml",
             9,
             12

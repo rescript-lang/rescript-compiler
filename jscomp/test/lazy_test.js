@@ -7,7 +7,7 @@ var Js_exn = require("../../lib/js/js_exn.js");
 var CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
-var u = [3];
+var u = /* record */[/* contents */3];
 
 var v = Block.__(246, [(function () {
         u[0] = 32;
@@ -55,7 +55,7 @@ function f(param) {
     } else {
       throw [
             Caml_builtin_exceptions.match_failure,
-            [
+            /* tuple */[
               "lazy_test.ml",
               11,
               8
@@ -67,7 +67,7 @@ function f(param) {
   }
 }
 
-var s = [undefined];
+var s = /* record */[/* contents */undefined];
 
 var set_true = Block.__(246, [(function () {
         s[0] = 1;
@@ -97,7 +97,7 @@ catch (raw_exn){
   }
 }
 
-var u_v = [0];
+var u_v = /* record */[/* contents */0];
 
 var u$1 = Block.__(246, [(function () {
         u_v[0] = 2;

@@ -775,7 +775,7 @@ var suites_001 = /* :: */[
                                                                                       /* tuple */[
                                                                                         "typed_array - forEach",
                                                                                         (function () {
-                                                                                            var sum = [0];
+                                                                                            var sum = /* record */[/* contents */0];
                                                                                             new Int8Array(/* array */[
                                                                                                     1,
                                                                                                     2,
@@ -794,7 +794,7 @@ var suites_001 = /* :: */[
                                                                                         /* tuple */[
                                                                                           "typed_array - forEachi",
                                                                                           (function () {
-                                                                                              var sum = [0];
+                                                                                              var sum = /* record */[/* contents */0];
                                                                                               new Int8Array(/* array */[
                                                                                                       1,
                                                                                                       2,

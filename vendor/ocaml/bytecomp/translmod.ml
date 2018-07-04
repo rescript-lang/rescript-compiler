@@ -64,10 +64,7 @@ let transl_extension_constructor env path ext =
   let loc = ext.ext_loc in
   match ext.ext_kind with
     Text_decl(args, ret) ->
-      let tag_info =
-        if Path.same ext.ext_type.ext_type_path Predef.path_exn then
-          Blk_exception
-        else Blk_extension in 
+      let tag_info = Blk_extension_slot in 
       Lprim(prim_set_oo_id,
             [Lprim(Pmakeblock(Obj.object_tag, tag_info, Mutable),
                    [Lconst(Const_base(Const_string (name,None)));

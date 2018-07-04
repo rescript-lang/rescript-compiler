@@ -9,9 +9,9 @@ function anno_fun() {
 
 var usage_msg = "Usage:\n";
 
-var compile = [false];
+var compile = /* record */[/* contents */false];
 
-var test = [true];
+var test = /* record */[/* contents */true];
 
 var arg_spec_000 = /* tuple */[
   "-c",

@@ -11,9 +11,9 @@ var Belt_SortArray = require("../../lib/js/belt_SortArray.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Array_data_util = require("./array_data_util.js");
 
-var suites = [/* [] */0];
+var suites = /* record */[/* contents : [] */0];
 
-var test_id = [0];
+var test_id = /* record */[/* contents */0];
 
 function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
@@ -211,7 +211,7 @@ var m$3 = {
 b("File \"bs_poly_set_test.ml\", line 92, characters 4-11", Belt_SetDict.maxUndefined(m$3.data) === undefined);
 
 function testIterToList(xs) {
-  var v = [/* [] */0];
+  var v = /* record */[/* contents : [] */0];
   Belt_Set.forEach(xs, (function (x) {
           v[0] = /* :: */[
             x,
@@ -223,7 +223,7 @@ function testIterToList(xs) {
 }
 
 function testIterToList2(xs) {
-  var v = [/* [] */0];
+  var v = /* record */[/* contents : [] */0];
   Belt_SetDict.forEach(xs.data, (function (x) {
           v[0] = /* :: */[
             x,

@@ -6,9 +6,9 @@ var Belt_Array = require("../../lib/js/belt_Array.js");
 var Belt_MapInt = require("../../lib/js/belt_MapInt.js");
 var Belt_SetInt = require("../../lib/js/belt_SetInt.js");
 
-var suites = [/* [] */0];
+var suites = /* record */[/* contents : [] */0];
 
-var test_id = [0];
+var test_id = /* record */[/* contents */0];
 
 function eq(loc, x, y) {
   test_id[0] = test_id[0] + 1 | 0;

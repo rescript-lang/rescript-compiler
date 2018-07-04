@@ -501,7 +501,7 @@ function merge(f, s1, s2) {
     } else {
       throw [
             Caml_builtin_exceptions.assert_failure,
-            [
+            /* tuple */[
               "map.ml",
               270,
               10
@@ -1150,7 +1150,7 @@ function merge$1(f, s1, s2) {
     } else {
       throw [
             Caml_builtin_exceptions.assert_failure,
-            [
+            /* tuple */[
               "map.ml",
               270,
               10
@@ -1799,7 +1799,7 @@ function merge$2(f, s1, s2) {
     } else {
       throw [
             Caml_builtin_exceptions.assert_failure,
-            [
+            /* tuple */[
               "map.ml",
               270,
               10
@@ -2000,7 +2000,7 @@ var dummy_table = /* record */[
   /* initializers : [] */0
 ];
 
-var table_count = [0];
+var table_count = /* record */[/* contents */0];
 
 var dummy_met = [];
 
@@ -2050,9 +2050,9 @@ function put(array, label, element) {
   return Caml_array.caml_array_set(array[/* methods */1], label, element);
 }
 
-var method_count = [0];
+var method_count = /* record */[/* contents */0];
 
-var inst_var_count = [0];
+var inst_var_count = /* record */[/* contents */0];
 
 function new_method(table) {
   var index = table[/* methods */1].length;
@@ -2147,8 +2147,8 @@ function narrow(table, vars, virt_meths, concr_meths) {
             return tvars;
           }
         }), table[/* vars */6], /* Empty */0);
-  var by_name = [/* Empty */0];
-  var by_label = [/* Empty */0];
+  var by_name = /* record */[/* contents : Empty */0];
+  var by_label = /* record */[/* contents : Empty */0];
   List.iter2((function (met, label) {
           by_name[0] = add$1(met, label, by_name[0]);
           var tmp;
@@ -2260,7 +2260,7 @@ function get_variable(table, name) {
     if (exn === Caml_builtin_exceptions.not_found) {
       throw [
             Caml_builtin_exceptions.assert_failure,
-            [
+            /* tuple */[
               "test_internalOO.ml",
               280,
               50
@@ -2765,7 +2765,7 @@ function method_impl(table, i, arr) {
 
 function set_methods(table, methods) {
   var len = methods.length;
-  var i = [0];
+  var i = /* record */[/* contents */0];
   while(i[0] < len) {
     var label = Caml_array.caml_array_get(methods, i[0]);
     var clo = method_impl(table, i, methods);

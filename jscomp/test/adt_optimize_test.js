@@ -158,7 +158,7 @@ function f11(x) {
   } else if (x.tag) {
     throw [
           Caml_builtin_exceptions.assert_failure,
-          [
+          /* tuple */[
             "adt_optimize_test.ml",
             155,
             9

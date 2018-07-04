@@ -28,13 +28,13 @@ function Make(funarg) {
     var l_labels = Curry._1(H[/* create */0], 97);
     var already_processed = Curry._1(H[/* create */0], 97);
     var on_the_stack = Curry._1(H[/* create */0], 97);
-    var cut_set = [/* [] */0];
-    var counter = [1];
+    var cut_set = /* record */[/* contents : [] */0];
+    var counter = /* record */[/* contents */1];
     var step2 = function (top, rest_of_stack) {
       if (find_default(already_processed, top)) {
         throw [
               Caml_builtin_exceptions.assert_failure,
-              [
+              /* tuple */[
                 "gpr_405_test.ml",
                 43,
                 6
@@ -44,7 +44,7 @@ function Make(funarg) {
       if (find_default(on_the_stack, top)) {
         throw [
               Caml_builtin_exceptions.assert_failure,
-              [
+              /* tuple */[
                 "gpr_405_test.ml",
                 44,
                 6

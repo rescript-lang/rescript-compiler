@@ -7,9 +7,9 @@ var Js_option = require("../../lib/js/js_option.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
-var suites = [/* [] */0];
+var suites = /* record */[/* contents : [] */0];
 
-var test_id = [0];
+var test_id = /* record */[/* contents */0];
 
 function eq(loc, x, y) {
   test_id[0] = test_id[0] + 1 | 0;
@@ -38,7 +38,7 @@ function handler(e) {
   } else {
     throw [
           Caml_builtin_exceptions.assert_failure,
-          [
+          /* tuple */[
             "promise_catch_test.ml",
             22,
             9
@@ -82,7 +82,7 @@ catch (raw_e){
 if (exit === 1) {
   throw [
         Caml_builtin_exceptions.assert_failure,
-        [
+        /* tuple */[
           "promise_catch_test.ml",
           39,
           9

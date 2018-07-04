@@ -10,9 +10,9 @@ var Array_data_util = require("./array_data_util.js");
 var Belt_MutableSet = require("../../lib/js/belt_MutableSet.js");
 var Belt_internalAVLset = require("../../lib/js/belt_internalAVLset.js");
 
-var suites = [/* [] */0];
+var suites = /* record */[/* contents : [] */0];
 
-var test_id = [0];
+var test_id = /* record */[/* contents */0];
 
 function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);

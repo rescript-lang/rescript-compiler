@@ -8,9 +8,9 @@ var Belt_HashSetInt = require("../../lib/js/belt_HashSetInt.js");
 var Belt_SortArrayInt = require("../../lib/js/belt_SortArrayInt.js");
 var Belt_internalBucketsType = require("../../lib/js/belt_internalBucketsType.js");
 
-var suites = [/* [] */0];
+var suites = /* record */[/* contents : [] */0];
 
-var test_id = [0];
+var test_id = /* record */[/* contents */0];
 
 function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
@@ -25,7 +25,7 @@ function add(x, y) {
 }
 
 function sum2(h) {
-  var v = [0];
+  var v = /* record */[/* contents */0];
   Belt_HashSetInt.forEach(h, (function (x) {
           v[0] = v[0] + x | 0;
           return /* () */0;

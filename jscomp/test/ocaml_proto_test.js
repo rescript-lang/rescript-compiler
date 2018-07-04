@@ -54,7 +54,7 @@ function oneof_field($staropt$star, number, type_, name) {
         ];
 }
 
-var message_counter = [0];
+var message_counter = /* record */[/* contents */0];
 
 function extension_range_range(from, to_) {
   var to_$1 = typeof to_ === "number" ? /* To_max */0 : /* To_number */[to_[1]];
@@ -2951,7 +2951,7 @@ var Codegen_decode = /* module */[
   /* ocamldoc_title */"Protobuf Decoding"
 ];
 
-var __log__ = [undefined];
+var __log__ = /* record */[/* contents */undefined];
 
 function log(x) {
   var match = __log__[0];
@@ -5821,7 +5821,7 @@ function record_field_default_info(record_field) {
         } else {
           throw [
                 Caml_builtin_exceptions.assert_failure,
-                [
+                /* tuple */[
                   "codegen_default.ml",
                   74,
                   15
@@ -7050,9 +7050,9 @@ function compile(proto_definition) {
 
 var match = compile("message T {required int32 j = 1; }");
 
-var suites = [/* [] */0];
+var suites = /* record */[/* contents : [] */0];
 
-var test_id = [0];
+var test_id = /* record */[/* contents */0];
 
 function eq(loc, x, y) {
   test_id[0] = test_id[0] + 1 | 0;

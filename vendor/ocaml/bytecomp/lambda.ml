@@ -35,13 +35,14 @@ type tag_info =
   | Blk_variant of string 
   | Blk_record of string array (* when its empty means we dont get such information *)
   | Blk_module of string list option
-  | Blk_exception
-  | Blk_extension
+  | Blk_extension_slot
   | Blk_na
   | Blk_some
   | Blk_some_not_nested
     
 let default_tag_info : tag_info = Blk_na
+
+let ref_tag_info : tag_info = Blk_record [| "contents" |]
 
 type field_dbg_info = 
   | Fld_na

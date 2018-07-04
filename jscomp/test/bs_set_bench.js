@@ -15,7 +15,7 @@ function bench() {
     if (!Belt_SetInt.has(data, i$1)) {
       throw [
             Caml_builtin_exceptions.assert_failure,
-            [
+            /* tuple */[
               "bs_set_bench.ml",
               12,
               4
@@ -35,7 +35,7 @@ function bench() {
   } else {
     throw [
           Caml_builtin_exceptions.assert_failure,
-          [
+          /* tuple */[
             "bs_set_bench.ml",
             17,
             2

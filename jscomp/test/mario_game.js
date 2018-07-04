@@ -630,8 +630,8 @@ function make_from_params(params, context) {
   return /* record */[
           /* params */params,
           /* context */context,
-          /* frame */[0],
-          /* ticks */[0],
+          /* frame : record */[/* contents */0],
+          /* ticks : record */[/* contents */0],
           /* img */img
         ];
 }
@@ -791,7 +791,7 @@ var Particle = /* module */[
   /* process */$$process
 ];
 
-var id_counter = [Pervasives.min_int];
+var id_counter = /* record */[/* contents */Pervasives.min_int];
 
 function setup_obj($staropt$star, $staropt$star$1, _) {
   var has_gravity = $staropt$star !== undefined ? $staropt$star : true;
@@ -1590,11 +1590,11 @@ var pressed_keys = /* record */[
   /* bbox */0
 ];
 
-var collid_objs = [/* [] */0];
+var collid_objs = /* record */[/* contents : [] */0];
 
-var particles = [/* [] */0];
+var particles = /* record */[/* contents : [] */0];
 
-var last_time = [0];
+var last_time = /* record */[/* contents */0];
 
 function calc_fps(t0, t1) {
   var delta = (t1 - t0) / 1000;
@@ -3253,7 +3253,7 @@ var Procedural_generator = /* module */[
   /* generate */generate
 ];
 
-var loadCount = [0];
+var loadCount = /* record */[/* contents */0];
 
 function load() {
   Random.self_init(/* () */0);

@@ -149,7 +149,7 @@ again3(3);
 
 again3(2);
 
-var side_effect = [0];
+var side_effect = /* record */[/* contents */0];
 
 again4(undefined, /* () */0, 166);
 

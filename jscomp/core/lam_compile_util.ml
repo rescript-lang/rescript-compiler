@@ -51,8 +51,7 @@ let comment_of_tag_info  (x : Lam_tag_info.t) =
   | Blk_module _ ->  
      (* Turn it on next time to save some noise diff*)
     Some "module"
-  | Blk_exception -> Some "exception"
-  | Blk_extension -> Some "extension"
+  | Blk_extension_slot -> None
   | Blk_na -> None 
 let comment_of_pointer_info (x :  Lam.pointer_info)= 
   match x with 

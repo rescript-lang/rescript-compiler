@@ -842,7 +842,7 @@ function of_list(l) {
                   } else {
                     throw [
                           Caml_builtin_exceptions.assert_failure,
-                          [
+                          /* tuple */[
                             "set.ml",
                             372,
                             18

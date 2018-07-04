@@ -106,7 +106,7 @@ catch (raw_exn$3){
   } else {
     throw [
           Caml_builtin_exceptions.assert_failure,
-          [
+          /* tuple */[
             "exception_raise_test.ml",
             100,
             9
@@ -165,7 +165,7 @@ Mt.from_pair_suites("exception_raise_test.ml", /* :: */[
               } else {
                 throw [
                       Caml_builtin_exceptions.assert_failure,
-                      [
+                      /* tuple */[
                         "exception_raise_test.ml",
                         118,
                         15

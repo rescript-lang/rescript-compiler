@@ -15,7 +15,7 @@ function bench() {
     if (!Rbset.mem(i$1, data)) {
       throw [
             Caml_builtin_exceptions.assert_failure,
-            [
+            /* tuple */[
               "bs_rbset_int_bench.ml",
               12,
               4
@@ -35,7 +35,7 @@ function bench() {
   } else {
     throw [
           Caml_builtin_exceptions.assert_failure,
-          [
+          /* tuple */[
             "bs_rbset_int_bench.ml",
             17,
             2

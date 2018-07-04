@@ -31,13 +31,13 @@ function getId(bdd) {
   }
 }
 
-var nodeC = [1];
+var nodeC = /* record */[/* contents */1];
 
-var sz_1 = [8191];
+var sz_1 = /* record */[/* contents */8191];
 
-var htab = [Caml_array.caml_make_vect(sz_1[0] + 1 | 0, /* [] */0)];
+var htab = /* record */[/* contents */Caml_array.caml_make_vect(sz_1[0] + 1 | 0, /* [] */0)];
 
-var n_items = [0];
+var n_items = /* record */[/* contents */0];
 
 function hashVal(x, y, v) {
   return ((x << 1) + y | 0) + (v << 2) | 0;
@@ -55,7 +55,7 @@ function resize(newSize) {
         if (typeof n === "number") {
           throw [
                 Caml_builtin_exceptions.assert_failure,
-                [
+                /* tuple */[
                   "bdd.ml",
                   54,
                   27
@@ -125,7 +125,7 @@ function mkNode(low, v, high) {
         if (typeof n === "number") {
           throw [
                 Caml_builtin_exceptions.assert_failure,
-                [
+                /* tuple */[
                   "bdd.ml",
                   99,
                   31
@@ -325,7 +325,7 @@ function hwb(n) {
   return h(0, n - 1 | 0);
 }
 
-var seed = [0];
+var seed = /* record */[/* contents */0];
 
 function random() {
   seed[0] = Caml_int32.imul(seed[0], 25173) + 17431 | 0;
@@ -376,7 +376,7 @@ function main() {
   } else {
     throw [
           Caml_builtin_exceptions.assert_failure,
-          [
+          /* tuple */[
             "bdd.ml",
             233,
             2

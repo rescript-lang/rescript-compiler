@@ -9,9 +9,9 @@ var Random = require("../../lib/js/random.js");
 var Mt_global = require("./mt_global.js");
 var Caml_array = require("../../lib/js/caml_array.js");
 
-var id = [0];
+var id = /* record */[/* contents */0];
 
-var suites = [/* [] */0];
+var suites = /* record */[/* contents : [] */0];
 
 function eq(f) {
   return (function (param, param$1) {

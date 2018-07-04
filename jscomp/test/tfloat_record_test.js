@@ -56,9 +56,9 @@ print_array(b[0]);
 
 print_array(c[0]);
 
-var suites = [/* [] */0];
+var suites = /* record */[/* contents : [] */0];
 
-var test_id = [0];
+var test_id = /* record */[/* contents */0];
 
 function eq(f, a, b) {
   return Mt_global.collect_eq(test_id, suites, f, a, b);

@@ -20,7 +20,7 @@ function assertions() {
   if (!bool_equal(true, true)) {
     throw [
           Caml_builtin_exceptions.assert_failure,
-          [
+          /* tuple */[
             "test_bool_equal.ml",
             21,
             2
@@ -30,7 +30,7 @@ function assertions() {
   if (!bool_equal(false, false)) {
     throw [
           Caml_builtin_exceptions.assert_failure,
-          [
+          /* tuple */[
             "test_bool_equal.ml",
             22,
             2
@@ -40,7 +40,7 @@ function assertions() {
   if (bool_equal(true, false)) {
     throw [
           Caml_builtin_exceptions.assert_failure,
-          [
+          /* tuple */[
             "test_bool_equal.ml",
             23,
             2
@@ -50,7 +50,7 @@ function assertions() {
   if (bool_equal(false, true)) {
     throw [
           Caml_builtin_exceptions.assert_failure,
-          [
+          /* tuple */[
             "test_bool_equal.ml",
             24,
             2

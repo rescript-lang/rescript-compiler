@@ -34,7 +34,7 @@ function f(param) {
 }
 
 function from_tokens(lst) {
-  var l = [lst];
+  var l = /* record */[/* contents */lst];
   return (function () {
       var match = l[0];
       if (match) {
@@ -91,7 +91,7 @@ var lexer_suites_001 = /* :: */[
     /* tuple */[
       "number_lexer",
       (function () {
-          var v = [/* [] */0];
+          var v = /* record */[/* contents : [] */0];
           var add = function (t) {
             v[0] = /* :: */[
               t,

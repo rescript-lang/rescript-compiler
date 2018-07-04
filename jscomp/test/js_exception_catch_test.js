@@ -7,9 +7,9 @@ var Js_exn = require("../../lib/js/js_exn.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
-var suites = [/* [] */0];
+var suites = /* record */[/* contents : [] */0];
 
-var counter = [0];
+var counter = /* record */[/* contents */0];
 
 function add_test(loc, test) {
   counter[0] = counter[0] + 1 | 0;

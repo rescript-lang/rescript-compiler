@@ -2,7 +2,7 @@
 
 var Curry = require("../../lib/js/curry.js");
 
-var v = [0];
+var v = /* record */[/* contents */0];
 
 function reset() {
   v[0] = 0;
@@ -14,7 +14,7 @@ function incr() {
   return /* () */0;
 }
 
-var vv = [0];
+var vv = /* record */[/* contents */0];
 
 function reset2() {
   vv[0] = 0;

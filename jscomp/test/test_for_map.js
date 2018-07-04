@@ -464,7 +464,7 @@ function merge(f, s1, s2) {
     } else {
       throw [
             Caml_builtin_exceptions.assert_failure,
-            [
+            /* tuple */[
               "map.ml",
               270,
               10

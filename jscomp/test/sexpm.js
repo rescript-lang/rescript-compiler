@@ -384,7 +384,7 @@ function _get(t) {
   if (t[/* i */3] >= t[/* len */4]) {
     throw [
           Caml_builtin_exceptions.assert_failure,
-          [
+          /* tuple */[
             "sexpm.ml",
             152,
             4
@@ -530,7 +530,7 @@ function expr_starting_with(c, k, t) {
     case 2 : 
         throw [
               Caml_builtin_exceptions.assert_failure,
-              [
+              /* tuple */[
                 "sexpm.ml",
                 183,
                 27
@@ -889,7 +889,7 @@ function next(t) {
 
 function parse_string(s) {
   var n = s.length;
-  var stop = [false];
+  var stop = /* record */[/* contents */false];
   var refill = function (bytes, i, _) {
     if (stop[0]) {
       return 0;
@@ -1014,7 +1014,7 @@ function MakeDecode(funarg) {
     if (t[/* i */3] >= t[/* len */4]) {
       throw [
             Caml_builtin_exceptions.assert_failure,
-            [
+            /* tuple */[
               "sexpm.ml",
               152,
               4
@@ -1156,7 +1156,7 @@ function MakeDecode(funarg) {
       case 2 : 
           throw [
                 Caml_builtin_exceptions.assert_failure,
-                [
+                /* tuple */[
                   "sexpm.ml",
                   183,
                   27

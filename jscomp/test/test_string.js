@@ -13,7 +13,7 @@ function f(param) {
     default:
       throw [
             Caml_builtin_exceptions.assert_failure,
-            [
+            /* tuple */[
               "test_string.ml",
               4,
               18

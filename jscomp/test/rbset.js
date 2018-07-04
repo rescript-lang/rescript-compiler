@@ -264,7 +264,7 @@ function unbalanced_left(param) {
   if (exit === 1) {
     throw [
           Caml_builtin_exceptions.assert_failure,
-          [
+          /* tuple */[
             "rbset.ml",
             57,
             9
@@ -338,7 +338,7 @@ function unbalanced_right(param) {
   if (exit === 1) {
     throw [
           Caml_builtin_exceptions.assert_failure,
-          [
+          /* tuple */[
             "rbset.ml",
             63,
             9
@@ -572,7 +572,7 @@ function remove_min(param) {
         } else {
           throw [
                 Caml_builtin_exceptions.assert_failure,
-                [
+                /* tuple */[
                   "rbset.ml",
                   115,
                   4
@@ -618,7 +618,7 @@ function remove_min(param) {
   } else {
     throw [
           Caml_builtin_exceptions.assert_failure,
-          [
+          /* tuple */[
             "rbset.ml",
             115,
             4

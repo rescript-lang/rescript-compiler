@@ -6,9 +6,9 @@ var Js_list = require("../../lib/js/js_list.js");
 var Js_vector = require("../../lib/js/js_vector.js");
 var Caml_int32 = require("../../lib/js/caml_int32.js");
 
-var suites = [/* [] */0];
+var suites = /* record */[/* contents : [] */0];
 
-var test_id = [0];
+var test_id = /* record */[/* contents */0];
 
 function eq(loc, x, y) {
   test_id[0] = test_id[0] + 1 | 0;

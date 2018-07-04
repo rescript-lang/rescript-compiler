@@ -55,7 +55,7 @@ function even2(n) {
   }
 }
 
-var v = [0];
+var v = /* record */[/* contents */0];
 
 function obj_000() {
   return v[0];

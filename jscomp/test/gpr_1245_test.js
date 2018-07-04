@@ -3,13 +3,13 @@
 var Curry = require("../../lib/js/curry.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 
-var x = [1];
+var x = /* record */[/* contents */1];
 
-var y = [2];
+var y = /* record */[/* contents */2];
 
 function f(param) {
-  var a = [param[0]];
-  var b = [param[1]];
+  var a = /* record */[/* contents */param[0]];
+  var b = /* record */[/* contents */param[1]];
   console.log(a, b);
   return /* () */0;
 }

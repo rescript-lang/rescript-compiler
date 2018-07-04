@@ -83,7 +83,7 @@ var suites_001 = /* :: */[
               /* tuple */[
                 "iter - empty",
                 (function () {
-                    var hit = [false];
+                    var hit = /* record */[/* contents */false];
                     Js_undefined.iter(undefined, (function () {
                             hit[0] = true;
                             return /* () */0;
@@ -98,7 +98,7 @@ var suites_001 = /* :: */[
                 /* tuple */[
                   "iter - 'a",
                   (function () {
-                      var hit = [0];
+                      var hit = /* record */[/* contents */0];
                       Js_undefined.iter(2, (function (v) {
                               hit[0] = v;
                               return /* () */0;

@@ -5,9 +5,9 @@ var Fs = require("fs");
 var Path = require("path");
 var Block = require("../../lib/js/block.js");
 
-var suites = [/* [] */0];
+var suites = /* record */[/* contents : [] */0];
 
-var test_id = [0];
+var test_id = /* record */[/* contents */0];
 
 function eq(loc, param) {
   var y = param[1];

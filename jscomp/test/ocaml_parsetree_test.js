@@ -37,9 +37,9 @@ var CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
 var Caml_missing_polyfill = require("../../lib/js/caml_missing_polyfill.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
-var fast = [false];
+var fast = /* record */[/* contents */false];
 
-var applicative_functors = [true];
+var applicative_functors = /* record */[/* contents */true];
 
 var bs_vscode;
 
@@ -51,7 +51,7 @@ catch (exn){
   bs_vscode = false;
 }
 
-var color = [/* Auto */0];
+var color = /* record */[/* contents : Auto */0];
 
 var Fatal_error = Caml_exceptions.create("Ocaml_parsetree_test.Misc.Fatal_error");
 
@@ -133,7 +133,7 @@ var default_styles = /* record */[
   ]
 ];
 
-var cur_styles = [default_styles];
+var cur_styles = /* record */[/* contents */default_styles];
 
 function get_styles() {
   return cur_styles[0];
@@ -157,7 +157,7 @@ function style_of_tag(s) {
   }
 }
 
-var color_enabled = [true];
+var color_enabled = /* record */[/* contents */true];
 
 function set_color_tag_handling(ppf) {
   var functions = Format.pp_get_formatter_tag_functions(ppf, /* () */0);
@@ -216,7 +216,7 @@ function set_color_tag_handling(ppf) {
   return Format.pp_set_formatter_tag_functions(ppf, functions$prime);
 }
 
-var first = [true];
+var first = /* record */[/* contents */true];
 
 var formatter_l_001 = /* :: */[
   Format.err_formatter,
@@ -378,7 +378,7 @@ function letter(param) {
   if (switcher > 25 || switcher < 0) {
     throw [
           Caml_builtin_exceptions.assert_failure,
-          [
+          /* tuple */[
             "warnings.ml",
             164,
             9
@@ -552,7 +552,7 @@ function letter(param) {
   }
 }
 
-var current = [/* record */[
+var current = /* record */[/* contents : record */[
     /* active */Caml_array.caml_make_vect(51, true),
     /* error */Caml_array.caml_make_vect(51, false)
   ]];
@@ -812,7 +812,7 @@ function message(param) {
           } else {
             throw [
                   Caml_builtin_exceptions.assert_failure,
-                  [
+                  /* tuple */[
                     "warnings.ml",
                     271,
                     26
@@ -850,7 +850,7 @@ function message(param) {
           } else {
             throw [
                   Caml_builtin_exceptions.assert_failure,
-                  [
+                  /* tuple */[
                     "warnings.ml",
                     291,
                     37
@@ -970,7 +970,7 @@ function message(param) {
             } else {
               throw [
                     Caml_builtin_exceptions.assert_failure,
-                    [
+                    /* tuple */[
                       "warnings.ml",
                       353,
                       39
@@ -993,7 +993,7 @@ function message(param) {
             } else {
               throw [
                     Caml_builtin_exceptions.assert_failure,
-                    [
+                    /* tuple */[
                       "warnings.ml",
                       362,
                       36
@@ -1111,7 +1111,7 @@ function message(param) {
   }
 }
 
-var nerrors = [0];
+var nerrors = /* record */[/* contents */0];
 
 function print(ppf, w) {
   var msg = message(w);
@@ -1142,7 +1142,7 @@ function print(ppf, w) {
 
 var Errors = Caml_exceptions.create("Ocaml_parsetree_test.Warnings.Errors");
 
-var absname = [false];
+var absname = /* record */[/* contents */false];
 
 function in_file(name) {
   var loc = /* record */[
@@ -1192,13 +1192,13 @@ function rhs_loc(n) {
         ];
 }
 
-var input_name = ["_none_"];
+var input_name = /* record */[/* contents */"_none_"];
 
-var input_lexbuf = [undefined];
+var input_lexbuf = /* record */[/* contents */undefined];
 
-var status = [/* Uninitialised */0];
+var status = /* record */[/* contents : Uninitialised */0];
 
-var num_loc_lines = [0];
+var num_loc_lines = /* record */[/* contents */0];
 
 function highlight_terminfo(ppf, num_lines, lb, locs) {
   Format.pp_print_flush(ppf, /* () */0);
@@ -1661,9 +1661,9 @@ function default_warning_printer(loc, ppf, w) {
   }
 }
 
-var warning_printer = [default_warning_printer];
+var warning_printer = /* record */[/* contents */default_warning_printer];
 
-var formatter_for_warnings = [Format.err_formatter];
+var formatter_for_warnings = /* record */[/* contents */Format.err_formatter];
 
 function prerr_warning(loc, w) {
   var loc$1 = loc;
@@ -1734,7 +1734,7 @@ function errorf($staropt$star, $staropt$star$1, $staropt$star$2, fmt) {
               }), ppf, fmt$1);
 }
 
-var error_of_exn = [/* [] */0];
+var error_of_exn = /* record */[/* contents : [] */0];
 
 function register_error_of_exn(f) {
   error_of_exn[0] = /* :: */[
@@ -1980,7 +1980,7 @@ function from_pair_suites(name, suites) {
   }
 }
 
-var docstrings = [/* [] */0];
+var docstrings = /* record */[/* contents : [] */0];
 
 function warn_bad_docstrings() {
   if (is_active(/* Bad_docstring */Block.__(33, [true]))) {
@@ -2388,7 +2388,7 @@ function init() {
   return Hashtbl.reset(post_extra_table);
 }
 
-var default_loc = [none];
+var default_loc = /* record */[/* contents */none];
 
 function mk($staropt$star, $staropt$star$1, d) {
   var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
@@ -3640,7 +3640,7 @@ function mkexp_constraint(e, param) {
   } else {
     throw [
           Caml_builtin_exceptions.assert_failure,
-          [
+          /* tuple */[
             "parsing/parser.mly",
             153,
             18
@@ -9514,7 +9514,7 @@ function value_of_token(loc, t) {
 }
 
 function directive_parse(token_with_comments, lexbuf) {
-  var look_ahead = [undefined];
+  var look_ahead = /* record */[/* contents */undefined];
   var token = function () {
     var v = look_ahead[0];
     if (v !== undefined) {
@@ -9555,7 +9555,7 @@ function directive_parse(token_with_comments, lexbuf) {
     if (look_ahead[0] !== undefined) {
       throw [
             Caml_builtin_exceptions.assert_failure,
-            [
+            /* tuple */[
               "parsing/lexer.mll",
               312,
               4
@@ -9775,7 +9775,7 @@ function directive_parse(token_with_comments, lexbuf) {
       if (exit$4 === 2) {
         throw [
               Caml_builtin_exceptions.assert_failure,
-              [
+              /* tuple */[
                 "parsing/lexer.mll",
                 331,
                 17
@@ -10348,9 +10348,9 @@ var keyword_table = create_hashtable(149, /* :: */[
 
 var initial_string_buffer = Caml_string.caml_create_string(256);
 
-var string_buff = [initial_string_buffer];
+var string_buff = /* record */[/* contents */initial_string_buffer];
 
-var string_index = [0];
+var string_index = /* record */[/* contents */0];
 
 function reset_string_buffer() {
   string_buff[0] = initial_string_buffer;
@@ -10382,17 +10382,17 @@ function get_stored_string() {
   return s;
 }
 
-var string_start_loc = [none];
+var string_start_loc = /* record */[/* contents */none];
 
-var comment_start_loc = [/* [] */0];
+var comment_start_loc = /* record */[/* contents : [] */0];
 
-var is_in_string = [false];
+var is_in_string = /* record */[/* contents */false];
 
-var print_warnings = [true];
+var print_warnings = /* record */[/* contents */true];
 
-var if_then_else = [/* Dir_out */2];
+var if_then_else = /* record */[/* contents : Dir_out */2];
 
-var sharp_look_ahead = [undefined];
+var sharp_look_ahead = /* record */[/* contents */undefined];
 
 function with_comment_buffer(comment, lexbuf) {
   var start_loc = curr(lexbuf);
@@ -10544,15 +10544,15 @@ function update_loc(lexbuf, file, line, absolute, chars) {
   return /* () */0;
 }
 
-var preprocessor = [undefined];
+var preprocessor = /* record */[/* contents */undefined];
 
-var escaped_newlines = [false];
+var escaped_newlines = /* record */[/* contents */false];
 
 function warn_latin1(lexbuf) {
   return prerr_warning(curr(lexbuf), /* Deprecated */Block.__(0, ["ISO-Latin1 characters in identifiers"]));
 }
 
-var comment_list = [/* [] */0];
+var comment_list = /* record */[/* contents : [] */0];
 
 function add_comment(com) {
   comment_list[0] = /* :: */[
@@ -11274,7 +11274,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
             } else {
               throw [
                     Caml_builtin_exceptions.assert_failure,
-                    [
+                    /* tuple */[
                       "parsing/lexer.mll",
                       989,
                       16
@@ -11311,7 +11311,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
                     } else {
                       throw [
                             Caml_builtin_exceptions.assert_failure,
-                            [
+                            /* tuple */[
                               "parsing/lexer.mll",
                               1003,
                               18
@@ -11362,7 +11362,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
                     } else {
                       throw [
                             Caml_builtin_exceptions.assert_failure,
-                            [
+                            /* tuple */[
                               "parsing/lexer.mll",
                               1023,
                               18
@@ -11401,7 +11401,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
             } else {
               throw [
                     Caml_builtin_exceptions.assert_failure,
-                    [
+                    /* tuple */[
                       "parsing/lexer.mll",
                       1053,
                       16
@@ -11871,9 +11871,9 @@ function wrap(parsing_fun, lexbuf) {
   }
 }
 
-var suites = [/* [] */0];
+var suites = /* record */[/* contents : [] */0];
 
-var test_id = [0];
+var test_id = /* record */[/* contents */0];
 
 function eq(loc, x, y) {
   test_id[0] = test_id[0] + 1 | 0;
