@@ -46,16 +46,15 @@ function f() {
 
 List$1.xx();
 
-/* tuple */[
-  List.length(/* :: */[
-        1,
-        /* :: */[
-          2,
-          /* [] */0
-        ]
-      ]),
-  List.length(/* [] */0)
-];
+List.length(/* :: */[
+      1,
+      /* :: */[
+        2,
+        /* [] */0
+      ]
+    ]);
+
+List.length(/* [] */0);
 
 exports.WebpackConfig = WebpackConfig;
 exports.WebpackDevMiddlewareConfig = WebpackDevMiddlewareConfig;
