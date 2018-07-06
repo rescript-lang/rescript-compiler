@@ -1209,12 +1209,13 @@ let lam_none : constant =
   Lconst (Const_pointer( 0, Pt_constructor "impossible branch")) *)
 
 
-let seq a b : t =
-  (* match a, b with
-  | ( Lvar _
-  | Lconst _
-  | Lfunction _), _ -> b
-  | _ -> *) (* TODO *)
+let rec seq (a : t) b : t =
+   match a with
+  | Lprim 
+    {primitive = Pmakeblock(_); 
+     args= x::xs} -> 
+    seq (List.fold_left seq x xs) b 
+  | _ -> 
   Lsequence (a, b)
 
 let append_unit a  =
