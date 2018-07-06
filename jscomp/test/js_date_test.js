@@ -923,15 +923,26 @@ var suites_001 = /* :: */[
                                                                                                                               ],
                                                                                                                               /* :: */[
                                                                                                                                 /* tuple */[
-                                                                                                                                  "toUTCString",
+                                                                                                                                  "toJSONUnsafe",
                                                                                                                                   (function () {
                                                                                                                                       return /* Eq */Block.__(0, [
-                                                                                                                                                "Mon, 08 Mar 1976 11:11:56 GMT",
-                                                                                                                                                new Date("1976-03-08T12:34:56.789+01:23").toUTCString()
+                                                                                                                                                "1976-03-08T11:11:56.789Z",
+                                                                                                                                                new Date("1976-03-08T12:34:56.789+01:23").toJSON()
                                                                                                                                               ]);
                                                                                                                                     })
                                                                                                                                 ],
-                                                                                                                                /* [] */0
+                                                                                                                                /* :: */[
+                                                                                                                                  /* tuple */[
+                                                                                                                                    "toUTCString",
+                                                                                                                                    (function () {
+                                                                                                                                        return /* Eq */Block.__(0, [
+                                                                                                                                                  "Mon, 08 Mar 1976 11:11:56 GMT",
+                                                                                                                                                  new Date("1976-03-08T12:34:56.789+01:23").toUTCString()
+                                                                                                                                                ]);
+                                                                                                                                      })
+                                                                                                                                  ],
+                                                                                                                                  /* [] */0
+                                                                                                                                ]
                                                                                                                               ]
                                                                                                                             ]
                                                                                                                           ]
