@@ -398,9 +398,22 @@ let rec
            begin 
              Unix.unlink (Filename.concat parent f);
              let basename = 
-              match cxt.namespace with  
-              | None -> basename
-              | Some ns -> Ext_namespace.make ~ns basename in 
+               match cxt.namespace with  
+               | None -> basename
+               | Some ns -> Ext_namespace.make ~ns basename in 
+             (
+               match Sys.getenv "BS_CMT_POST_PROCESS_CMD" with 
+               | exception _ -> ()
+               | cmd -> 
+                 try 
+                   Sys.command (
+                     cmd ^ 
+                     " -cmt-rm " ^
+                     Filename.concat lib_parent (basename ^ Literals.suffix_cmt))
+                   |> ignore
+                 with 
+                   _  -> ()
+             );
              try_unlink (Filename.concat lib_parent (basename ^ Literals.suffix_cmi));
              try_unlink (Filename.concat lib_parent (basename ^ Literals.suffix_cmj));
              try_unlink (Filename.concat lib_parent (basename ^ Literals.suffix_cmt));
