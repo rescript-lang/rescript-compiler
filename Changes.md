@@ -1,3 +1,48 @@
+# 4.0.0
+
+Fixes: 
+- #2832 fix compiler crash
+- #2837 `toFixed`, `toExponential` too strict
+- #2841 fix some inconsistency betweeen debug mode and release mode
+- #2865 fix reload latency issue in react-lite theme
+- #2864 fix parallel build random failure
+- #2874 consistency check for global bsb and local bsb
+- #2914 Fix bug on Windows where path has colon in command line arg
+- #2919 fix return value of `Js.Date.toJSON`
+- #2921 bs.deriving label -> labelGet, the `label` accessor is deprecated
+- #2924 rename Js.Nullable.test -> Js.Nullable.isNullable
+- #2923 fix ghost location in error message
+- #2931 fix a codegen bug in optimization pattern match 
+
+Features:
+
+- #2280 prettier output in debug mode (chrome custom formatter) 
+- #2823 add build-success hook
+```
+bsb -make-world -w -build-success 'your_script'
+```
+- #2856 provide websocket intergration with bsb 
+- #2858 add  react-lite theme hot module reloading without webpack
+- #2873 add Belt.Array.sliceToEnd
+- #2825 Add Belt.Array.partition
+- #2882, #2885, #2886, #2889, #2890,#2894, #2896, #2897,#2898, #2900
+  #2901, #2905, #2907, #2908, #2909, #2912, #2913
+  unbox opitonal and code optimziation based on type kinds 
+
+- #2910 fix optional inline regression, better codegen for optional equality
+- #2904 fix Js.Date.parse bidning
+- #2899 Add Dom.htmlFormElement and Dom.htmlInputElement types
+- #2910 Improve package not found message
+
+- #2916 optimize value based optional
+- #2918 adapt polymoprhic comparison for the new optional representation
+- #2917 remove trailing `return undefined`
+- #2935 comments in codegen for `ref` generation
+- #2863 optimize away unused blocks
+
+
+
+
 # 3.1.4
 
 Fixes:

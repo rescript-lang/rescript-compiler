@@ -10,7 +10,7 @@ caml_int64.cmj: caml_int32.cmj caml_utils.cmj caml_primitive.cmj caml_builtin_ex
 caml_io.cmj: curry.cmj caml_builtin_exceptions.cmj
 caml_lexer.cmj: caml_builtin_exceptions.cmj
 caml_module.cmj: caml_obj.cmj caml_builtin_exceptions.cmj
-caml_obj.cmj: block.cmj js_primitive.cmj caml_primitive.cmj caml_builtin_exceptions.cmj
+caml_obj.cmj: block.cmj caml_primitive.cmj caml_builtin_exceptions.cmj
 caml_oo.cmj: caml_array.cmj caml_builtin_exceptions.cmj
 caml_oo_curry.cmj: curry.cmj caml_oo.cmj
 caml_string.cmj: caml_builtin_exceptions.cmj
