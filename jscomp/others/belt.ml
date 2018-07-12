@@ -25,18 +25,19 @@
 
 (** A stdlib shipped with BuckleScript
 
-    This stdlib is still in {i beta} status, but we encourage you to try it out and
-    provide feedback.
+    This stdlib is still in {i beta} but we encourage you to try it out and
+    give us feedback.
 
     {b Motivation }
 
-    The motivation of creating such library is to provide BuckleScript users a
+    The motivation for creating such library is to provide BuckleScript users a
     better end-to-end user experience, since the original OCaml stdlib was not
-    written with JS platform in mind, below are a list of areas this lib aims to
-    improve: {ol
-    {- 1. Consistency in name convention: camlCase, and arguments order}
-    {- 2. Exception thrown functions are all suffixed with {i Exn}, e.g, {i getExn}}
-    {- 3. Better performance and smaller code size running on JS platform}
+    written with JS in mind. Below is a list of areas this lib aims to
+    improve:
+    {ol
+    {- Consistency in name convention: camlCase, and arguments order}
+    {- Exception thrown functions are all suffixed with {i Exn}, e.g, {i getExn}}
+    {- Better performance and smaller code size running on JS platform}
     }
 
     {b Name Convention}
@@ -54,18 +55,16 @@
 
    {b A special encoding for collection safety}
 
-   When we create a collection library for a custom data type, take {i Set} for
-   example, suppose its element type is a pair of ints,
-    it needs a custom {i compare} function. However, the {i Set} could not
-    just be typed as [ Set.t (int * int) ],
-    its customized {i compare} function needs to be
-    manifested in the signature, otherwise, if the user create another
-    customized {i compare} function, and the two collection would mix which
-    would result in runtime error.
+   When we create a collection library for a custom data type we need a way to provide a comparator
+   function. Take {i Set} for example, suppose its element type is a pair of ints,
+    it needs a custom {i compare} function that takes two tuples and returns their order.
+    The {i Set} could not just be typed as [ Set.t (int * int) ], its customized {i compare} function
+    needs to manifest itself in the signature, otherwise, if the user creates another
+    customized {i compare} function, the two collection could mix which would result in runtime error.
 
-    The original OCaml stdlib solved the problem using {i functor} which is a big
-    closure in runtime; it makes dead code elimination much harder.
-    We introduced a phantom type to solve the problem
+    The original OCaml stdlib solved the problem using {i functor} which creates a big
+    closure at runtime and makes dead code elimination much harder.
+    We use a phantom type to solve the problem:
 
     {[
       module Comparable1 = Belt.Id.MakeComparable(struct
@@ -94,7 +93,7 @@
 
     {[
       val mySet1 : ((int * int), Comparable1.identity) t
-      val mySet2 : ((int * int), Comparable2.identity) t
+        val mySet2 : ((int * int), Comparable2.identity) t
     ]}
 
     [Comparable1.identity] and [Comparable2.identity] are not the same using our encoding scheme.
@@ -102,15 +101,15 @@
     {b Collection Hierarchy}
 
     In general, we provide a generic collection module, but also create specialized
-    modules for commonly used data type, take {i Belt.Set} for example
+    modules for commonly used data type. Take {i Belt.Set} for example, we provide:
 
     {[
-      Belt.Set
-      Belt.Set.Int
-      Belt.Set.String
+        Belt.Set
+        Belt.Set.Int
+        Belt.Set.String
     ]}
 
-    The specialized module {i Belt.Set.Int}, {i Belt.Set.String} is in general more
+    The specialized modules {i Belt.Set.Int}, {i Belt.Set.String} are in general more
     efficient.
 
     Currently, both {i Belt_Set} and {i Belt.Set} are accessible to users for some
