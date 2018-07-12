@@ -27,10 +27,10 @@ bsb -make-world -w -build-success 'your_script'
 - #2825 Add Belt.Array.partition
 - #2882, #2885, #2886, #2889, #2890,#2894, #2896, #2897,#2898, #2900
   #2901, #2905, #2907, #2908, #2909, #2912, #2913
-  unbox opitonal and code optimziation based on type kinds 
+  unbox optional and code optimization based on type kinds 
 
 - #2910 fix optional inline regression, better codegen for optional equality
-- #2904 fix Js.Date.parse bidning
+- #2904 fix Js.Date.parse binding
 - #2899 Add Dom.htmlFormElement and Dom.htmlInputElement types
 - #2910 Improve package not found message
 
