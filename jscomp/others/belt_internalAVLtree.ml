@@ -170,6 +170,29 @@ let rec stackAllLeft v s =
   | None -> s
   | Some x -> stackAllLeft (leftGet x) (x::s)
 
+let checkPredicate (candidate: ('k, 'v) node option) (p: 'k -> 'v -> bool [@bs]): ('k * 'v) option = 
+  Belt.Option.flatMap 
+    candidate
+    (fun x ->
+      let  v, d = x |. (keyGet, valueGet) in
+      let pvd = p v d [@bs] in
+      if pvd then Some(v, d) else None)
+
+let rec findFirstByU n p =
+  match toOpt n with
+  | None -> None 
+  | Some n ->
+    let left = n |. leftGet |. findFirstByU p in
+    if Belt.Option.isSome(left) then left 
+      else
+        let pvd = checkPredicate (Some(n)) p in
+        if Belt.Option.isSome(pvd) then pvd 
+          else 
+            let right = n |. rightGet |. findFirstByU  p in
+            if Belt.Option.isSome(right) then right else None
+
+let findFirstBy n p = findFirstByU n (fun [@bs] a b -> p a b)
+
 let rec forEachU n f =
   match toOpt n with
   | None -> ()

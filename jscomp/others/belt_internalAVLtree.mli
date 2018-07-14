@@ -71,6 +71,9 @@ val isEmpty : _ t -> bool
 val stackAllLeft :
   ('a,'b) t -> ('a, 'b) node list -> ('a, 'b) node list
 
+val findFirstByU : ('a, 'b) t -> ('a -> 'b -> bool [@bs]) -> ('a * 'b) option
+val findFirstBy : ('a, 'b) t -> ('a -> 'b -> bool ) -> ('a * 'b) option
+
 val forEachU:  ('a,'b) t -> ('a -> 'b -> unit [@bs]) -> unit
 val forEach:  ('a,'b) t -> ('a -> 'b -> unit) -> unit
   

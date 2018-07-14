@@ -220,6 +220,9 @@ let split  n x ~cmp =
     let v = splitAuxPivot ~cmp n x pres in 
     v, !pres
 
+let findFirstByU = N.findFirstByU
+let findFirstBy = N.findFirstBy 
+
 let rec mergeU s1 s2 f ~cmp =
   match N.(toOpt s1, toOpt s2) with
     (None, None) -> N.empty
