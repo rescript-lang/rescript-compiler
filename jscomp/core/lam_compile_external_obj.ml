@@ -116,7 +116,8 @@ let assemble_args_obj (labels : External_arg_spec.t list)  (args : J.expression 
               (Js_of_lam_option.val_from_option arg) in 
           begin match acc with 
           | Splice1 v  ->                         
-            [S.if_ arg [S.exp (E.assign (E.dot var_v label) 
+            [S.if_ (Js_of_lam_option.is_not_none arg )
+              [S.exp (E.assign (E.dot var_v label) 
             (
               match new_eff with 
               | [] -> v 
@@ -135,7 +136,9 @@ let assemble_args_obj (labels : External_arg_spec.t list)  (args : J.expression 
           begin match acc with 
           | Splice1 v  ->        
             st ::  
-            [S.if_ arg [S.exp (E.assign (E.dot var_v label) 
+            [S.if_ 
+              (Js_of_lam_option.is_not_none arg) 
+              [S.exp (E.assign (E.dot var_v label) 
               (match new_eff with 
               | [] -> v 
               | x :: xs ->

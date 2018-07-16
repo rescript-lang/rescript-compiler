@@ -47,7 +47,7 @@ function make(foo) {
         }), foo);
   return (function () {
       var tmp = { };
-      if (partial_arg) {
+      if (partial_arg !== undefined) {
         tmp.foo = Js_primitive.valFromOption(partial_arg);
       }
       return tmp;
@@ -75,10 +75,10 @@ function test3(_open, xx__hi) {
   var tmp = {
     hi: 2
   };
-  if (_open) {
+  if (_open !== undefined) {
     tmp.open = Js_primitive.valFromOption(_open);
   }
-  if (xx__hi) {
+  if (xx__hi !== undefined) {
     tmp.xx = Js_primitive.valFromOption(xx__hi);
   }
   return tmp;
@@ -90,7 +90,7 @@ function test4(_open, xx__hi) {
     open: _open,
     hi: 2
   };
-  if (xx__hi) {
+  if (xx__hi !== undefined) {
     tmp.xx = Js_primitive.valFromOption(xx__hi);
   }
   return tmp;
@@ -102,11 +102,11 @@ function test5(f, x) {
     hi: 2
   };
   var tmp$1 = Curry._1(f, x);
-  if (tmp$1) {
+  if (tmp$1 !== undefined) {
     tmp.open = Js_primitive.valFromOption(tmp$1);
   }
   var tmp$2 = Curry._1(f, x);
-  if (tmp$2) {
+  if (tmp$2 !== undefined) {
     tmp.xx = Js_primitive.valFromOption(tmp$2);
   }
   return tmp;
@@ -119,11 +119,11 @@ function test6(f, _) {
     hi: 2
   };
   var tmp$1 = (x[0] = x[0] + 1 | 0, x[0]);
-  if (tmp$1) {
+  if (tmp$1 !== undefined) {
     tmp.open = Js_primitive.valFromOption(tmp$1);
   }
   var tmp$2 = f(x);
-  if (tmp$2) {
+  if (tmp$2 !== undefined) {
     tmp.xx = Js_primitive.valFromOption(tmp$2);
   }
   return tmp;

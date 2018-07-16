@@ -26,7 +26,7 @@ function h0() {
   var tmp = {
     hi: 2
   };
-  if (partial_arg) {
+  if (partial_arg !== undefined) {
     tmp["lo-x"] = Js_primitive.valFromOption(partial_arg);
   }
   return tmp;

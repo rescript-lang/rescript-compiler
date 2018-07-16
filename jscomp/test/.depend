@@ -494,6 +494,7 @@ offset.cmj : ../stdlib/string.cmj ../stdlib/set.cmj
 oo_js_test_date.cmj : mt.cmj ../runtime/js.cmj
 option_repr_test.cmj : mt.cmj ../runtime/js.cmj ../others/belt.cmj
 optional_ffi_test.cmj : mt.cmj
+optional_regression_test.cmj : mt.cmj ../runtime/js.cmj
 pipe_send_readline.cmj : ../runtime/js.cmj
 pipe_syntax.cmj :
 poly_type.cmj : ../runtime/js.cmj

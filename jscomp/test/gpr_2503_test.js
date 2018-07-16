@@ -17,7 +17,7 @@ function b(loc, b$1) {
 
 function makeWrapper(foo, _) {
   var tmp = { };
-  if (foo) {
+  if (foo !== undefined) {
     tmp.foo = (function () {
           switch (Js_primitive.valFromOption(foo)) {
             case 97 : 
@@ -52,7 +52,7 @@ makeWrapper2(/* a */97, /* () */0);
 function makeWrapper3(foo, _) {
   console.log(2);
   var tmp = { };
-  if (foo) {
+  if (foo !== undefined) {
     tmp.foo = (function () {
           switch (Js_primitive.valFromOption(foo)) {
             case 97 : 
@@ -72,7 +72,7 @@ function makeWrapper4(foo, _) {
   var tmp$1 = foo > 100 ? undefined : (
       foo > 10 ? /* b */98 : /* a */97
     );
-  if (tmp$1) {
+  if (tmp$1 !== undefined) {
     tmp.foo = (function () {
           switch (Js_primitive.valFromOption(tmp$1)) {
             case 97 : 
