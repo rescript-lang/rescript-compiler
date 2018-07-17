@@ -8,7 +8,7 @@ function v(displayName, _) {
     config: 3,
     hi: "ghos"
   };
-  if (displayName) {
+  if (displayName !== undefined) {
     tmp.displayName = Js_primitive.valFromOption(displayName);
   }
   return tmp;
