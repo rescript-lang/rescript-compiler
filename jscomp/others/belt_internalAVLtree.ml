@@ -175,14 +175,14 @@ let rec findFirstByU n p =
   | None -> None 
   | Some n ->
     let left = n |. leftGet |. findFirstByU p in
-    if Belt.Option.isSome(left) then left 
+    if left <> None then left
       else
         let  v, d = n |. (keyGet, valueGet) in
         let pvd = p v d [@bs] in
         if pvd then Some(v, d)
           else 
             let right = n |. rightGet |. findFirstByU  p in
-            if Belt.Option.isSome(right) then right else None
+            if right <> None then right else None
 
 let findFirstBy n p = findFirstByU n (fun [@bs] a b -> p a b)
 
