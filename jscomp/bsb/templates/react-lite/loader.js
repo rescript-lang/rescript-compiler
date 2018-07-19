@@ -254,9 +254,16 @@ function getPackageName(id) {
     }
     return id.substring(0, index)
 }
-function getPackageJsPromise(id, parent) {
+function getLinkPath(id, parent, packageInfo) {
     var idNodeModulesPrefix = './node_modules/' + id
-    var link = getPathWithJsSuffix(idNodeModulesPrefix, parent)
+    if (!id.includes("/")) {
+      var mainFile = packageInfo.main || "index.js"
+      return getPathWithJsSuffix(`${idNodeModulesPrefix}/${mainFile}`, parent)
+    } else {
+      return getPathWithJsSuffix(idNodeModulesPrefix, parent)
+    }
+}
+function getPackageJsPromise(id, parent) {
     if (parent.endsWith('node_modules/')) {
         // impossible that `node_modules/node_modules/xx/x
         // return falsePromise
@@ -270,10 +277,13 @@ function getPackageJsPromise(id, parent) {
             function (text) {
                 if (text !== false) {
                     // package indeed exist
+                    var packageInfo = JSON.parse(text);
+                    var link = getLinkPath(id, parent, packageInfo);
                     return cachedFetch(link).then(function (text) {
                         if (text !== false) {
                             return { text, link }
                         } else if (!id.endsWith('.js')) {
+                            var idNodeModulesPrefix = "./node_modules/" + id;
                             var linkNew = getPathWithJsSuffix(idNodeModulesPrefix + `/index.js`, parent)
                             return cachedFetch(linkNew)
                                 .then(function (text) {
@@ -310,7 +320,7 @@ function getModulePromise(id, parent) {
     if (!done) {
         return visitIdLocation(id, parent, function () {
             if (id[0] != '.') { // package path
-                return getPackageJsPromise(id, parent)
+                return getPackageJsPromise(id, '')
             } else { // relative path, one shot resolve            
                 let link = getPathWithJsSuffix(id, parent)
                 return cachedFetch(link).then(
