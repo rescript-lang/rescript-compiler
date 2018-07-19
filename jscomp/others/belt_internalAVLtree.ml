@@ -170,6 +170,22 @@ let rec stackAllLeft v s =
   | None -> s
   | Some x -> stackAllLeft (leftGet x) (x::s)
 
+let rec findFirstByU n p =
+  match toOpt n with
+  | None -> None 
+  | Some n ->
+    let left = n |. leftGet |. findFirstByU p in
+    if left <> None then left
+      else
+        let  v, d = n |. (keyGet, valueGet) in
+        let pvd = p v d [@bs] in
+        if pvd then Some(v, d)
+          else 
+            let right = n |. rightGet |. findFirstByU  p in
+            if right <> None then right else None
+
+let findFirstBy n p = findFirstByU n (fun [@bs] a b -> p a b)
+
 let rec forEachU n f =
   match toOpt n with
   | None -> ()

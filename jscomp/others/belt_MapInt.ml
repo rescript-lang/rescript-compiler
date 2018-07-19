@@ -140,6 +140,9 @@ let removeMany t keys =
   | None -> N.empty
   | Some t ->  removeMany0 t keys 0 len
 
+let findFirstByU = N.findFirstByU
+let findFirstBy = N.findFirstBy 
+
 let mergeMany h arr =   
   let len = A.length arr in 
   let v = ref h in  

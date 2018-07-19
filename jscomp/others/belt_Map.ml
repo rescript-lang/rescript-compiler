@@ -87,7 +87,8 @@ let make (type key) (type idx) ~(id: (key, idx) id) =
 let isEmpty map =
   Dict.isEmpty (dataGet map)
 
-
+let findFirstByU m f = Dict.findFirstByU (dataGet m) f
+let findFirstBy m f = findFirstByU m (fun [@bs] a b -> f a b) 
 let forEachU m f = Dict.forEachU (dataGet m) f
 let forEach m f = forEachU m (fun [@bs] a b -> f a b)
 let reduceU m acc f = Dict.reduceU (dataGet m) acc f

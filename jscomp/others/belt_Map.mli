@@ -149,6 +149,17 @@ val eq:
     equal data.  [veq] is the equality predicate used to compare
     the data associated with the keys. *)
 
+val findFirstByU : ('k, 'v, 'id) t -> ('k -> 'v -> bool [@bs]) -> ('k * 'v) option
+val findFirstBy : ('k, 'v, 'id) t -> ('k -> 'v -> bool ) -> ('k * 'v) option
+(** [findFirstBy m p] uses funcion [f] to find the first key value pair
+    to match predicate [p].
+
+    @example {[
+      let s0 = fromArray ~id:(module IntCmp) [|4,"4";1,"1";2,"2,"3""|];;
+      findFirstBy s0 (fun k v -> k = 4 ) = option (4, "4");;
+    ]}
+*)
+
 val forEachU:  ('k, 'v, 'id) t -> ('k -> 'v -> unit [@bs]) -> unit
 val forEach:  ('k, 'v, 'id) t -> ('k -> 'v -> unit) -> unit
 (** [forEach m f] applies [f] to all bindings in map [m].

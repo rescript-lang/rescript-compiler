@@ -19,6 +19,11 @@ val eq: 'v t -> 'v t -> ('v -> 'v -> bool) -> bool
    equal, that is, contain equal keys and associate them with
    equal data. *)
 
+val findFirstByU : 'v t -> (key -> 'v -> bool [@bs]) -> (key * 'v) option
+val findFirstBy : 'v t -> (key -> 'v -> bool) -> (key * 'v) option
+(** [findFirstBy m p] uses funcion [f] to find the first key value pair
+    to match predicate [p]. *)
+
 val forEachU: 'v t -> (key -> 'v -> unit [@bs]) -> unit
 val forEach: 'v t -> (key -> 'v -> unit) -> unit
 (** [forEach m f] applies [f] to all bindings in map [m].
