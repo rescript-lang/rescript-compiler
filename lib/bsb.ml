@@ -14256,7 +14256,7 @@ let root = OCamlRes.Res.([
       \  Component 2:\n\
       \  <div id=\"index2\"></div>\n\
        \n\
-      \  <script src=\"./loader.js\" type=\"module\" data-main=\"./src/index.bs.js\"></script>\n\
+      \  <script src=\"./loader.js\" type=\"module\" data-main=\"./src/Index.bs.js\"></script>\n\
       \  <script src=\"./watcher.js\" type=\"module\"></script>\n\
        </body>\n\
        </html>\n\
