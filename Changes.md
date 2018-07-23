@@ -1,3 +1,8 @@
+# 4.0.1
+
+Fixes:
+- #2949 fix optional regression
+- #2946 fix react-lite theme on Linux
 # 4.0.0
 
 Fixes: 
