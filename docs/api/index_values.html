@@ -56,7 +56,6 @@
 <li><a href="Dom_storage.html">Dom_storage</a></li>
 <li><a href="Js.html">Js</a></li>
 <li><a href="Js_array.html">Js_array</a></li>
-<li><a href="Js_boolean.html">Js_boolean</a></li>
 <li><a href="Js_cast.html">Js_cast</a></li>
 <li><a href="Js_console.html">Js_console</a></li>
 <li><a href="Js_date.html">Js_date</a></li>
@@ -651,12 +650,12 @@ the given function <code class="code">a' -&gt; 'b</code>, then wrapped back up a
 <tr><td><a href="Belt_Array.html#VALblit">blit</a> [<a href="Belt_Array.html">Belt_Array</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    <code class="code">blit ~src:v1 ~srcOffset:o1 ~dst:v2 ~dstOffset:o2 ~len</code> 
+                    <code class="code">blit ~src:v1 ~srcOffset:o1 ~dst:v2 ~dstOffset:o2 ~len</code>
 <p>
 
     copies <code class="code">len</code> elements
    from array <code class="code">v1</code>;starting at element number <code class="code">o1</code>;to array <code class="code">v2</code>,
-   starting at element number <code class="code">o2</code>. 
+   starting at element number <code class="code">o2</code>.
 <p>
 
     It works correctly even if
@@ -664,7 +663,7 @@ the given function <code class="code">a' -&gt; 'b</code>, then wrapped back up a
     destination chunks overlap.
 <p>
 
-    <code class="code">offset</code> can be negative;<code class="code">-1</code> means <code class="code">len - 1</code>;if <code class="code">len + offset</code>  is still 
+    <code class="code">offset</code> can be negative;<code class="code">-1</code> means <code class="code">len - 1</code>;if <code class="code">len + offset</code>  is still
     negative;it will be set as 0
 <p>
 
@@ -2725,12 +2724,6 @@ The return type is <code class="code">float</code> because this function returns
                 </div>
                 </div> </td></tr>
 <tr><td align="left"><br>F</td></tr>
-<tr><td><a href="Js.html#VALfalse_">false_</a> [<a href="Js.html">Js</a>]</td>
-<td> <div class="info">                     
-                <div class="not-examples">
-                     
-                </div>
-                </div> </td></tr>
 <tr><td><a href="Node_fs.html#VALfchownSync">fchownSync</a> [<a href="Node_fs.html">Node_fs</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
@@ -2746,7 +2739,7 @@ The return type is <code class="code">float</code> because this function returns
 <tr><td><a href="Belt_Array.html#VALfill">fill</a> [<a href="Belt_Array.html">Belt_Array</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    <code class="code">fill arr ~offset ~len x</code> 
+                    <code class="code">fill arr ~offset ~len x</code>
 <p>
 
     Modifies <code class="code">arr</code> in place,
@@ -2880,6 +2873,74 @@ The return type is <code class="code">float</code> because this function returns
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_array.html#VALfind">find</a> [<a href="Js_array.html">Js_array</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                     
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Belt_internalAVLtree.html#VALfindFirstBy">findFirstBy</a> [<a href="Belt_internalAVLtree.html">Belt_internalAVLtree</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                     
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Belt_MapDict.html#VALfindFirstBy">findFirstBy</a> [<a href="Belt_MapDict.html">Belt_MapDict</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                    <code class="code">findFirstBy m p</code> uses funcion <code class="code">f</code> to find the first key value pair
+    to match predicate <code class="code">p</code>.<br>
+ 
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Belt_MapString.html#VALfindFirstBy">findFirstBy</a> [<a href="Belt_MapString.html">Belt_MapString</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                    <code class="code">findFirstBy m p</code> uses funcion <code class="code">f</code> to find the first key value pair
+    to match predicate <code class="code">p</code>.<br>
+ 
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Belt_MapInt.html#VALfindFirstBy">findFirstBy</a> [<a href="Belt_MapInt.html">Belt_MapInt</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                    <code class="code">findFirstBy m p</code> uses funcion <code class="code">f</code> to find the first key value pair
+    to match predicate <code class="code">p</code>.<br>
+ 
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Belt_Map.html#VALfindFirstBy">findFirstBy</a> [<a href="Belt_Map.html">Belt_Map</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                    <code class="code">findFirstBy m p</code> uses funcion <code class="code">f</code> to find the first key value pair
+    to match predicate <code class="code">p</code>.<br>
+ 
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Belt_internalAVLtree.html#VALfindFirstByU">findFirstByU</a> [<a href="Belt_internalAVLtree.html">Belt_internalAVLtree</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                     
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Belt_MapDict.html#VALfindFirstByU">findFirstByU</a> [<a href="Belt_MapDict.html">Belt_MapDict</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                     
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Belt_MapString.html#VALfindFirstByU">findFirstByU</a> [<a href="Belt_MapString.html">Belt_MapString</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                     
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Belt_MapInt.html#VALfindFirstByU">findFirstByU</a> [<a href="Belt_MapInt.html">Belt_MapInt</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                     
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Belt_Map.html#VALfindFirstByU">findFirstByU</a> [<a href="Belt_Map.html">Belt_Map</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
                      
@@ -4664,7 +4725,7 @@ Valid flags:
                     <code class="code">get arr i</code>
 <p>
 
-  If <code class="code">i &lt;= 0 &lt;= length arr</code>;returns <code class="code">Some value</code> where <code class="code">value</code> is the item at index <code class="code">i</code> 
+  If <code class="code">i &lt;= 0 &lt;= length arr</code>;returns <code class="code">Some value</code> where <code class="code">value</code> is the item at index <code class="code">i</code>
   If <code class="code">i</code> is out of range;returns <code class="code">None</code><br>
  
                 </div>
@@ -5307,7 +5368,7 @@ Valid flags:
 <p>
 
     It does the samething in the runtime as <a href="Belt_Array.html#VALgetUnsafe"><code class="code">Belt_Array.getUnsafe</code></a>;
-    it is <i>type safe</i> since the return type still track whether it is 
+    it is <i>type safe</i> since the return type still track whether it is
     in range or not<br>
  
                 </div>
@@ -6097,6 +6158,19 @@ therefore necessary to test for <code class="code">_NaN</code>.
  
                 </div>
                 </div> </td></tr>
+<tr><td><a href="Js_null_undefined.html#VALisNullable">isNullable</a> [<a href="Js_null_undefined.html">Js_null_undefined</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                    Returns <code class="code">true</code> if the given value is <code class="code">null</code> or <code class="code">undefined</code>, <code class="code">false</code> otherwise<br>
+ 
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Js.html#VALisNullable">isNullable</a> [<a href="Js.html">Js</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                     
+                </div>
+                </div> </td></tr>
 <tr><td><a href="Belt_Result.html#VALisOk">isOk</a> [<a href="Belt_Result.html">Belt_Result</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
@@ -6144,12 +6218,6 @@ therefore necessary to test for <code class="code">_NaN</code>.
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_SortArray.html#VALisSortedU">isSortedU</a> [<a href="Belt_SortArray.html">Belt_SortArray</a>]</td>
-<td> <div class="info">                     
-                <div class="not-examples">
-                     
-                </div>
-                </div> </td></tr>
-<tr><td><a href="Js_primitive.html#VALis_nil_undef">is_nil_undef</a> [<a href="Js_primitive.html">Js_primitive</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
                      
@@ -6559,6 +6627,19 @@ the given function.<br>
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_Array.html#VALkeepU">keepU</a> [<a href="Belt_Array.html">Belt_Array</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                     
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Belt_Array.html#VALkeepWithIndex">keepWithIndex</a> [<a href="Belt_Array.html">Belt_Array</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                    <code class="code">keepWithIndex xs p </code><br>
+ 
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Belt_Array.html#VALkeepWithIndexU">keepWithIndexU</a> [<a href="Belt_Array.html">Belt_Array</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
                      
@@ -7168,7 +7249,7 @@ flag is set.<br>
 <tr><td><a href="Belt_Array.html#VALmake">make</a> [<a href="Belt_Array.html">Belt_Array</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    <code class="code">make n e</code> 
+                    <code class="code">make n e</code>
     return an array of size <code class="code">n</code> filled  with value <code class="code">e</code><br>
  
                 </div>
@@ -7189,10 +7270,10 @@ flag is set.<br>
 <tr><td><a href="Belt_Array.html#VALmakeBy">makeBy</a> [<a href="Belt_Array.html">Belt_Array</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    <code class="code">makeBy n f</code> 
+                    <code class="code">makeBy n f</code>
 <p>
 
-    return an empty array when <code class="code">n</code> is negative 
+    return an empty array when <code class="code">n</code> is negative
     return an array of size <code class="code">n</code> populated by <code class="code">f i</code> start from <code class="code">0</code> to <code class="code">n - 1</code><br>
  
                 </div>
@@ -8788,7 +8869,7 @@ Consider the character <code class="code">ã</code>, which can be represented as
                      
                 </div>
                 </div> </td></tr>
-<tr><td><a href="Js_primitive.html#VALnull_undefined_to_opt">null_undefined_to_opt</a> [<a href="Js_primitive.html">Js_primitive</a>]</td>
+<tr><td><a href="Js_primitive.html#VALnullable_to_opt">nullable_to_opt</a> [<a href="Js_primitive.html">Js_primitive</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
                      
@@ -8874,7 +8955,8 @@ Consider the character <code class="code">ã</code>, which can be represented as
 <tr><td><a href="Js_primitive.html#VALoption_get_unwrap">option_get_unwrap</a> [<a href="Js_primitive.html">Js_primitive</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">input</code> is optional polymorphic variant<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td align="left"><br>P</td></tr>
@@ -8905,6 +8987,12 @@ Consider the character <code class="code">ã</code>, which can be represented as
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_date.html#VALparse">parse</a> [<a href="Js_date.html">Js_date</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                     
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Js_date.html#VALparseAsFloat">parseAsFloat</a> [<a href="Js_date.html">Js_date</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
                      
@@ -9037,6 +9125,13 @@ Consider the character <code class="code">ã</code>, which can be represented as
  
                 </div>
                 </div> </td></tr>
+<tr><td><a href="Belt_Array.html#VALpartition">partition</a> [<a href="Belt_Array.html">Belt_Array</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                    <code class="code">partition f a</code> split array into tuple of two arrays based on predicate f; first of tuple where predicate cause true, second where predicate cause false<br>
+ 
+                </div>
+                </div> </td></tr>
 <tr><td><a href="Belt_internalAVLset.html#VALpartitionCopy">partitionCopy</a> [<a href="Belt_internalAVLset.html">Belt_internalAVLset</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
@@ -9140,6 +9235,12 @@ Consider the character <code class="code">ã</code>, which can be represented as
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_List.html#VALpartitionU">partitionU</a> [<a href="Belt_List.html">Belt_List</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                     
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Belt_Array.html#VALpartitionU">partitionU</a> [<a href="Belt_Array.html">Belt_Array</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
                      
@@ -9903,14 +10004,6 @@ Consider the character <code class="code">ã</code>, which can be represented as
 <td> <div class="info">                     
                 <div class="not-examples">
                      
-                </div>
-                </div> </td></tr>
-<tr><td><a href="Js_types.html#VALreify_type">reify_type</a> [<a href="Js_types.html">Js_types</a>]</td>
-<td> <div class="info">                     
-                <div class="not-examples">
-                    Given any value it returns its type and the same value.
-    Note that  since <code class="code">'b t</code> is GADT, the type system will reify its type automatically,<br>
- 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_promise.html#VALreject">reject</a> [<a href="Js_promise.html">Js_promise</a>]</td>
@@ -11231,6 +11324,20 @@ If <code class="code">n</code> is greater than the length of <code class="code">
  
                 </div>
                 </div> </td></tr>
+<tr><td><a href="Belt_Array.html#VALsliceToEnd">sliceToEnd</a> [<a href="Belt_Array.html">Belt_Array</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                    <code class="code">sliceToEnd xs offset</code> creates a new array with the elements of <code class="code">xs</code> starting at <code class="code">offset</code>
+<p>
+
+    <code class="code">offset</code> can be negative;and is evaluated as <code class="code">length xs - offset</code>
+    <code class="code">sliceToEnd xs -1</code> means get the last element as a singleton array
+<p>
+
+    <code class="code">sliceToEnd xs 0</code> will return a copy of the array<br>
+ 
+                </div>
+                </div> </td></tr>
 <tr><td><a href="Js_array.html#VALslice_copy">slice_copy</a> [<a href="Js_array.html">Js_array</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
@@ -11238,6 +11345,12 @@ If <code class="code">n</code> is greater than the length of <code class="code">
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_array.html#VALslice_start">slice_start</a> [<a href="Js_array.html">Js_array</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                     
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Js_primitive.html#VALsome">some</a> [<a href="Js_primitive.html">Js_primitive</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
                      
@@ -12238,8 +12351,7 @@ If <code class="code">n</code> is greater than the length of <code class="code">
 <tr><td><a href="Js_null_undefined.html#VALtest">test</a> [<a href="Js_null_undefined.html">Js_null_undefined</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    Returns <code class="code">true</code> if the given value is <code class="code">null</code> or <code class="code">undefined</code>, <code class="code">false</code> otherwise<br>
- 
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_undefined.html#VALtest">test</a> [<a href="Js_undefined.html">Js_undefined</a>]</td>
@@ -12567,6 +12679,12 @@ The output will be rounded or padded with zeroes if necessary.<br>
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_date.html#VALtoJSON">toJSON</a> [<a href="Js_date.html">Js_date</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                     
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Js_date.html#VALtoJSONUnsafe">toJSONUnsafe</a> [<a href="Js_date.html">Js_date</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
                      
@@ -12989,13 +13107,6 @@ value must be in the range [2, 36] (inclusive).
                      
                 </div>
                 </div> </td></tr>
-<tr><td><a href="Js.html#VALto_bool">to_bool</a> [<a href="Js.html">Js</a>]</td>
-<td> <div class="info">                     
-                <div class="not-examples">
-                    convert Js boolean to OCaml bool<br>
- 
-                </div>
-                </div> </td></tr>
 <tr><td><a href="Js_int64.html#VALto_hex">to_hex</a> [<a href="Js_int64.html">Js_int64</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
@@ -13061,12 +13172,6 @@ value must be in the range [2, 36] (inclusive).
  
                 </div>
                 </div> </td></tr>
-<tr><td><a href="Js.html#VALtrue_">true_</a> [<a href="Js.html">Js</a>]</td>
-<td> <div class="info">                     
-                <div class="not-examples">
-                     
-                </div>
-                </div> </td></tr>
 <tr><td><a href="Js_math.html#VALtrunc">trunc</a> [<a href="Js_math.html">Js_math</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
@@ -13097,7 +13202,7 @@ value must be in the range [2, 36] (inclusive).
 <tr><td><a href="Js.html#VALtypeof">typeof</a> [<a href="Js.html">Js</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    <code class="code">typeof x</code> will be compiled as <code class="code">typeof x</code> in JS 
+                    <code class="code">typeof x</code> will be compiled as <code class="code">typeof x</code> in JS
     Please consider functions in <a href="Js.Types.html"><code class="code">Js.Types</code></a> for a type safe way of reflection<br>
  
                 </div>
@@ -13297,7 +13402,7 @@ the offset at which the match begins, and the whole string being matched.<br>
 <tr><td><a href="Js.html#VALunsafe_gt">unsafe_gt</a> [<a href="Js.html">Js</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    <code class="code">unsafe_gt a b</code> will be compiled as <code class="code">a &gt; b</code>. 
+                    <code class="code">unsafe_gt a b</code> will be compiled as <code class="code">a &gt; b</code>.
      See also <a href="Js.html#VALunsafe_lt"><code class="code">Js.unsafe_lt</code></a><br>
  
                 </div>
@@ -13305,7 +13410,7 @@ the offset at which the match begins, and the whole string being matched.<br>
 <tr><td><a href="Js.html#VALunsafe_le">unsafe_le</a> [<a href="Js.html">Js</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    <code class="code">unsafe_le a b</code> will be compiled as <code class="code">a &lt;= b</code>. 
+                    <code class="code">unsafe_le a b</code> will be compiled as <code class="code">a &lt;= b</code>.
     See also <a href="Js.html#VALunsafe_lt"><code class="code">Js.unsafe_lt</code></a><br>
  
                 </div>
@@ -13314,7 +13419,7 @@ the offset at which the match begins, and the whole string being matched.<br>
 <td> <div class="info">                     
                 <div class="not-examples">
                     <code class="code">unsafe_lt a b</code> will be compiled as <code class="code">a &lt; b</code>.
-    It is marked as unsafe, since it is impossible 
+    It is marked as unsafe, since it is impossible
     to give a proper semantics for comparision which applies to any type<br>
  
                 </div>
@@ -13513,6 +13618,14 @@ the offset at which the match begins, and the whole string being matched.<br>
                 </div>
                 </div> </td></tr>
 <tr><td align="left"><br>V</td></tr>
+<tr><td><a href="Js_primitive.html#VALvalFromOption">valFromOption</a> [<a href="Js_primitive.html">Js_primitive</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                    The input is already of <code class="code">Some</code> form, <code class="code">x</code> is not None, 
+    make sure <code class="code">x[0]</code> will not throw<br>
+ 
+                </div>
+                </div> </td></tr>
 <tr><td><a href="Js_date.html#VALvalueOf">valueOf</a> [<a href="Js_date.html">Js_date</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
@@ -13659,7 +13772,7 @@ the offset at which the match begins, and the whole string being matched.<br>
 <tr><td><a href="Belt_Array.html#VALzip">zip</a> [<a href="Belt_Array.html">Belt_Array</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    <code class="code">zip a b</code> 
+                    <code class="code">zip a b</code>
 <p>
 
     Create an array of pairs from corresponding elements of <code class="code">a</code> and <code class="code">b</code>.

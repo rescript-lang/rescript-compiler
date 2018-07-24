@@ -57,7 +57,6 @@
 <li><a href="Dom_storage.html">Dom_storage</a></li>
 <li><a href="Js.html">Js</a></li>
 <li><a href="Js_array.html">Js_array</a></li>
-<li><a href="Js_boolean.html">Js_boolean</a></li>
 <li><a href="Js_cast.html">Js_cast</a></li>
 <li><a href="Js_console.html">Js_console</a></li>
 <li><a href="Js_date.html">Js_date</a></li>
@@ -140,6 +139,21 @@
  
                     </div>
                     
+                    </div>
+
+                  
+<pre><span id="VALfindFirstByU"><span class="keyword">val</span> findFirstByU</span> : <code class="type">'v <a href="Belt_MapInt.html#TYPEt">t</a> -><br>       (<a href="Belt_MapInt.html#TYPEkey">key</a> -> 'v -> bool [@bs]) -> (<a href="Belt_MapInt.html#TYPEkey">key</a> * 'v) option</code></pre>
+<pre><span id="VALfindFirstBy"><span class="keyword">val</span> findFirstBy</span> : <code class="type">'v <a href="Belt_MapInt.html#TYPEt">t</a> -><br>       (<a href="Belt_MapInt.html#TYPEkey">key</a> -> 'v -> bool) -> (<a href="Belt_MapInt.html#TYPEkey">key</a> * 'v) option</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">findFirstBy m p</code> uses funcion <code class="code">f</code> to find the first key value pair
+    to match predicate <code class="code">p</code>.<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">      let s0 = fromArray ~id:(module IntCmp) [|4,"4";1,"1";2,"2,"3""|];;
+      findFirstBy s0 (fun k v -&gt; k = 4 ) = option (4, "4");;
+    </code></pre>  </pre>
+                    </div>
                     </div>
 
                   

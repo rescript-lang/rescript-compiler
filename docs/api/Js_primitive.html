@@ -57,7 +57,6 @@
 <li><a href="Dom_storage.html">Dom_storage</a></li>
 <li><a href="Js.html">Js</a></li>
 <li><a href="Js_array.html">Js_array</a></li>
-<li><a href="Js_boolean.html">Js_boolean</a></li>
 <li><a href="Js_cast.html">Js_cast</a></li>
 <li><a href="Js_console.html">Js_console</a></li>
 <li><a href="Js_date.html">Js_date</a></li>
@@ -102,16 +101,36 @@
 
 <pre><span class="keyword">module</span> Js_primitive: <code class="code">sig</code> <a href="Js_primitive.html">..</a> <code class="code">end</code></pre><div class="info module top">
                     <div class="not-examples">
-                     
+                    The input is already of <code class="code">Some</code> form, <code class="code">x</code> is not None, 
+    make sure <code class="code">x[0]</code> will not throw<br>
+ 
                     </div>
                     
                     </div>
 
                   <hr width="100%">
 
-<pre><span id="VALis_nil_undef"><span class="keyword">val</span> is_nil_undef</span> : <code class="type">'a <a href="Js.html#TYPEnull_undefined">Js.null_undefined</a> -> bool</code></pre>
-<pre><span id="VALnull_undefined_to_opt"><span class="keyword">val</span> null_undefined_to_opt</span> : <code class="type">'a <a href="Js.html#TYPEnull_undefined">Js.null_undefined</a> -> 'a option</code></pre>
+<pre><span id="VALnullable_to_opt"><span class="keyword">val</span> nullable_to_opt</span> : <code class="type">'a <a href="Js.html#TYPEnull_undefined">Js.null_undefined</a> -> 'a option</code></pre>
 <pre><span id="VALundefined_to_opt"><span class="keyword">val</span> undefined_to_opt</span> : <code class="type">'a <a href="Js.html#TYPEundefined">Js.undefined</a> -> 'a option</code></pre>
 <pre><span id="VALnull_to_opt"><span class="keyword">val</span> null_to_opt</span> : <code class="type">'a <a href="Js.html#TYPEnull">Js.null</a> -> 'a option</code></pre>
-<pre><span id="VALoption_get"><span class="keyword">val</span> option_get</span> : <code class="type">'a option -> 'a <a href="Js_undefined.html#TYPEt">Js_undefined.t</a></code></pre>
-<pre><span id="VALoption_get_unwrap"><span class="keyword">val</span> option_get_unwrap</span> : <code class="type">'a option -> 'b <a href="Js_undefined.html#TYPEt">Js_undefined.t</a></code></pre></body></html>
+<pre><span id="VALvalFromOption"><span class="keyword">val</span> valFromOption</span> : <code class="type">Obj.t -> Obj.t</code></pre><div class="info ">
+                    <div class="not-examples">
+                    The input is already of <code class="code">Some</code> form, <code class="code">x</code> is not None, 
+    make sure <code class="code">x[0]</code> will not throw<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALsome"><span class="keyword">val</span> some</span> : <code class="type">Obj.t -> Obj.t</code></pre>
+<pre><span id="VALoption_get"><span class="keyword">val</span> option_get</span> : <code class="type">Obj.t option -> Obj.t <a href="Js_undefined.html#TYPEt">Js_undefined.t</a></code></pre>
+<pre><span id="VALoption_get_unwrap"><span class="keyword">val</span> option_get_unwrap</span> : <code class="type">'a option -> Obj.t <a href="Js_undefined.html#TYPEt">Js_undefined.t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">input</code> is optional polymorphic variant<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  </body></html>
