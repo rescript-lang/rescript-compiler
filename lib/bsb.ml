@@ -5762,7 +5762,20 @@ val mkp : string -> unit
    [bsdep.exe] [bsc.exe] etc.
 *)
 val get_bsc_bsdep : string -> string * string
-val get_bsc_dir : string -> string                               
+
+
+(**
+   if [Sys.executable_name] gives an absolute path, 
+   nothing needs to be done
+   if it is a relative path 
+
+   there are two cases: 
+   - bsb.exe
+   - ./bsb.exe 
+   The first should also not be touched
+   Only the latter need be adapted based on project root  
+*)
+val get_bsc_dir : cwd:string -> string                               
 
 
 val get_list_string_acc : 
@@ -5879,25 +5892,23 @@ let resolve_bsb_magic_file ~cwd ~desc p =
 (** converting a file from Linux path format to Windows *)
 
 (**
-   if [Sys.executable_name] gives an absolute path, 
-   nothing needs to be done
-   if it is a relative path 
-
-   there are two cases: 
-   - bsb.exe
-   - ./bsb.exe 
-   The first should also not be touched
-   Only the latter need be adapted based on project root  
+   If [Sys.executable_name] gives an absolute path, 
+   nothing needs to be done.
+   
+   If [Sys.executable_name] is not an absolute path, for example
+   (rlwrap ./ocaml)
+   it is a relative path, 
+   it needs be adapted based on cwd
 *)
 
-let get_bsc_dir cwd = 
+let get_bsc_dir ~cwd = 
   Filename.dirname 
     (Ext_path.normalize_absolute_path 
        (Ext_path.combine cwd  Sys.executable_name))
 
 
 let get_bsc_bsdep cwd = 
-  let dir = get_bsc_dir cwd in    
+  let dir = get_bsc_dir ~cwd in    
   Filename.concat dir  "bsc.exe", 
   Filename.concat dir  "bsb_helper.exe"
 
@@ -14437,7 +14448,17 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
+type file_type = 
+  | Directory
+  | Non_directory_file
+  | Non_exists 
 
+let classify_file name = 
+  let exists = Sys.file_exists name in 
+  if exists then 
+    if Sys.is_directory name then Directory
+    else Non_directory_file
+  else Non_exists   
 
 let replace s env : string =
   Bsb_regex.global_substitute "\\${bsb:\\([-a-zA-Z0-9]+\\)}"
@@ -14450,10 +14471,35 @@ let replace s env : string =
 
 let (//) = Filename.concat
 
+(* TODO: Check Ext_io.write_file may overwrite, duplicate with Bsb_config_parse *)
+let get_bs_platform_version_if_exists dir = 
+  match 
+    Ext_json_parse.parse_json_from_file 
+    (Filename.concat dir Literals.package_json) with 
+  | Obj {map} 
+    -> 
+    (match String_map.find_exn Bsb_build_schemas.version map with 
+    | Str {str} -> str 
+    | _ -> assert false)
+  | _ -> assert false 
 
-let run_npm_link cwd name  =
-  Format.fprintf Format.std_formatter
-    "Symlink bs-platform in %s @."  (cwd//name);
+let run_npm_link cwd dirname  =
+  let bs_platform_dir =  
+    Filename.concat Literals.node_modules Bs_version.package_name in 
+  if Sys.file_exists bs_platform_dir
+  then  
+    if get_bs_platform_version_if_exists bs_platform_dir = Bs_version.version then 
+      begin 
+        Format.fprintf Format.std_formatter 
+          "bs-platform already exists(version match), no need symlink@."
+      end 
+    else   
+      begin 
+        Format.fprintf Format.err_formatter 
+        "bs-platform already exists, but version mismatch with running bsb@.";
+        exit 2
+      end 
+  else 
   if Ext_sys.is_windows_or_cygwin then
     begin
       let npm_link = "npm link bs-platform" in
@@ -14466,6 +14512,10 @@ let run_npm_link cwd name  =
     end
   else
     begin
+      (* symlink bs-platform and bsb,bsc,bsrefmt to .bin directory
+        we did not run npm link bs-platform for efficiency reasons
+      *)
+      Format.fprintf Format.std_formatter "Symlink bs-platform in %s @."  (cwd//dirname);
       let (//) = Filename.concat in
       let node_bin =  "node_modules" // ".bin" in
       Bsb_build_util.mkp node_bin;
@@ -14479,20 +14529,32 @@ let run_npm_link cwd name  =
         (Filename.dirname (Filename.dirname Sys.executable_name))
         (Filename.concat "node_modules" Bs_version.package_name)
     end
+
 let enter_dir cwd x action =
   Unix.chdir x ;
   match action () with
   | exception e -> Unix.chdir cwd ; raise e
   | v -> v
 
+let mkdir_or_not_if_exists dir = 
+  match classify_file dir with 
+  | Directory -> ()
+  | Non_directory_file 
+    -> 
+    Format.fprintf Format.err_formatter 
+     "%s expected to be added as dir but exist file is not a dir" dir
+  | Non_exists -> Unix.mkdir dir 0o777
 
 let rec process_theme_aux env cwd (x : OCamlRes.Res.node) =
   match x with
   | File (name,content)  ->
-    Ext_io.write_file (cwd // name) (replace content env)
+    let new_file = cwd // name in 
+    if not @@ Sys.file_exists new_file then
+      Ext_io.write_file new_file (replace content env)
   | Dir (current, nodes) ->
-    Unix.mkdir (cwd//current) 0o777;
-    List.iter (fun x -> process_theme_aux env (cwd//current) x ) nodes
+    let new_cwd = cwd // current in 
+    mkdir_or_not_if_exists new_cwd;
+    List.iter (fun x -> process_theme_aux env new_cwd x ) nodes
 
 let list_themes () =
   Format.fprintf Format.std_formatter "Available themes: @.";
@@ -14550,16 +14612,25 @@ let init_sample_project ~cwd ~theme name =
 
     | _ ->
       if Ext_namespace.is_valid_npm_package_name name
-      then begin
-        Format.fprintf Format.std_formatter "Making directory %s@." name;
-        if Sys.file_exists name then
+      then begin        
+        match classify_file name with 
+        | Non_directory_file 
+          -> 
           begin
-            Format.fprintf Format.err_formatter "@{<error>%s already exists@}@." name ;
+            Format.fprintf Format.err_formatter "@{<error>%s already exists but it is not a directory@}@." name ;
             exit 2
           end
-        else
+        | Directory -> 
           begin
-            Unix.mkdir name 0o777;
+            Format.fprintf Format.std_formatter "Adding files into existing dir %s@." name; 
+            String_hashtbl.add env "name" name;
+            enter_dir cwd name action
+          end
+        | Non_exists
+          ->
+          begin
+            Format.fprintf Format.std_formatter "Making directory %s@." name;
+            Unix.mkdir name 0o777;            
             String_hashtbl.add env "name" name;
             enter_dir cwd name action
           end
@@ -14746,7 +14817,7 @@ let install_targets cwd (config : Bsb_config_types.t option) =
 
 let build_bs_deps cwd deps =
 
-  let bsc_dir = Bsb_build_util.get_bsc_dir cwd in
+  let bsc_dir = Bsb_build_util.get_bsc_dir ~cwd in
   let vendor_ninja = bsc_dir // "ninja.exe" in
   Bsb_build_util.walk_all_deps  cwd
     (fun {top; cwd} ->
@@ -14823,7 +14894,7 @@ end = struct
 
 
 let cwd = Sys.getcwd ()
-let bsc_dir = Bsb_build_util.get_bsc_dir cwd 
+let bsc_dir = Bsb_build_util.get_bsc_dir ~cwd 
 let () =  Bsb_log.setup () 
 let (//) = Ext_path.combine
 let force_regenerate = ref false
@@ -14858,9 +14929,6 @@ let bsb_main_flags : (string * Arg.spec * string) list=
     " forced no color output";
     "-w", Arg.Set watch_mode,
     " Watch mode" ;     
-    regen, Arg.Set force_regenerate,
-    " (internal) Always regenerate build.ninja no matter bsconfig.json is changed or not (for debugging purpose)"
-    ;
     "-clean-world", Arg.Unit (fun _ -> 
         Bsb_clean.clean_bs_deps bsc_dir cwd),
     " Clean all bs dependencies";
@@ -14873,6 +14941,9 @@ let bsb_main_flags : (string * Arg.spec * string) list=
     " Init sample project to get started. Note (`bsb -init sample` will create a sample project while `bsb -init .` will reuse current directory)";
     "-theme", Arg.String set_theme,
     " The theme for project initialization, default is basic(https://github.com/bucklescript/bucklescript/tree/master/jscomp/bsb/templates)";
+    
+    regen, Arg.Set force_regenerate,
+    " (internal) Always regenerate build.ninja no matter bsconfig.json is changed or not (for debugging purpose)";
     "-query", Arg.String (fun s -> Bsb_query.query ~cwd ~bsc_dir s ),
     " (internal)Query metadata about the build";
     "-themes", Arg.Unit Bsb_theme_init.list_themes,

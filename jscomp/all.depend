@@ -970,9 +970,10 @@ bsb/bsb_regex.cmx : bsb/bsb_regex.cmi
 bsb/bsb_rule.cmx : ext/string_set.cmx ext/string_map.cmx ext/ext_sys.cmx \
     bsb/bsb_rule.cmi
 bsb/bsb_templates.cmx : bsb/oCamlRes.cmx bsb/bsb_templates.cmi
-bsb/bsb_theme_init.cmx : ext/string_hashtbl.cmx bsb/oCamlRes.cmx \
-    ext/ext_sys.cmx ext/ext_namespace.cmx ext/ext_io.cmx \
-    bsb/bsb_templates.cmx bsb/bsb_regex.cmx bsb/bsb_build_util.cmx \
+bsb/bsb_theme_init.cmx : ext/string_map.cmx ext/string_hashtbl.cmx \
+    bsb/oCamlRes.cmx ext/literals.cmx ext/ext_sys.cmx ext/ext_namespace.cmx \
+    ext/ext_json_parse.cmx ext/ext_io.cmx bsb/bsb_templates.cmx \
+    bsb/bsb_regex.cmx bsb/bsb_build_util.cmx bsb/bsb_build_schemas.cmx \
     common/bs_version.cmx bsb/bsb_theme_init.cmi
 bsb/bsb_unix.cmx : ext/ext_sys.cmx ext/ext_string.cmx bsb/bsb_log.cmx \
     bsb/bsb_unix.cmi
