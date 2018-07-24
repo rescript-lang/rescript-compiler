@@ -57,7 +57,6 @@
 <li><a href="Dom_storage.html">Dom_storage</a></li>
 <li><a href="Js.html">Js</a></li>
 <li><a href="Js_array.html">Js_array</a></li>
-<li><a href="Js_boolean.html">Js_boolean</a></li>
 <li><a href="Js_cast.html">Js_cast</a></li>
 <li><a href="Js_console.html">Js_console</a></li>
 <li><a href="Js_date.html">Js_date</a></li>
@@ -136,6 +135,8 @@
 <pre><span id="VALempty"><span class="keyword">val</span> empty</span> : <code class="type">('a, 'b) t</code></pre>
 <pre><span id="VALisEmpty"><span class="keyword">val</span> isEmpty</span> : <code class="type">('a, 'b) t -> bool</code></pre>
 <pre><span id="VALstackAllLeft"><span class="keyword">val</span> stackAllLeft</span> : <code class="type">('a, 'b) t -> ('a, 'b) node list -> ('a, 'b) node list</code></pre>
+<pre><span id="VALfindFirstByU"><span class="keyword">val</span> findFirstByU</span> : <code class="type">('a, 'b) t -> ('a -> 'b -> bool [@bs]) -> ('a * 'b) option</code></pre>
+<pre><span id="VALfindFirstBy"><span class="keyword">val</span> findFirstBy</span> : <code class="type">('a, 'b) t -> ('a -> 'b -> bool) -> ('a * 'b) option</code></pre>
 <pre><span id="VALforEachU"><span class="keyword">val</span> forEachU</span> : <code class="type">('a, 'b) t -> ('a -> 'b -> unit [@bs]) -> unit</code></pre>
 <pre><span id="VALforEach"><span class="keyword">val</span> forEach</span> : <code class="type">('a, 'b) t -> ('a -> 'b -> unit) -> unit</code></pre>
 <pre><span id="VALmapU"><span class="keyword">val</span> mapU</span> : <code class="type">('c, 'a) t -> ('a -> 'b [@bs]) -> ('c, 'b) t</code></pre>

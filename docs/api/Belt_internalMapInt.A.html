@@ -57,7 +57,6 @@
 <li><a href="Dom_storage.html">Dom_storage</a></li>
 <li><a href="Js.html">Js</a></li>
 <li><a href="Js_array.html">Js_array</a></li>
-<li><a href="Js_boolean.html">Js_boolean</a></li>
 <li><a href="Js_cast.html">Js_cast</a></li>
 <li><a href="Js_console.html">Js_console</a></li>
 <li><a href="Js_date.html">Js_date</a></li>
@@ -125,7 +124,7 @@
                     <code class="code">get arr i</code>
 <p>
 
-  If <code class="code">i &lt;= 0 &lt;= length arr</code>;returns <code class="code">Some value</code> where <code class="code">value</code> is the item at index <code class="code">i</code> 
+  If <code class="code">i &lt;= 0 &lt;= length arr</code>;returns <code class="code">Some value</code> where <code class="code">value</code> is the item at index <code class="code">i</code>
   If <code class="code">i</code> is out of range;returns <code class="code">None</code><br>
  
                     </div>
@@ -172,7 +171,7 @@
 <p>
 
     It does the samething in the runtime as <a href="Belt_Array.html#VALgetUnsafe"><code class="code">Belt_Array.getUnsafe</code></a>;
-    it is <i>type safe</i> since the return type still track whether it is 
+    it is <i>type safe</i> since the return type still track whether it is
     in range or not<br>
  
                     </div>
@@ -282,7 +281,7 @@
                   
 <pre><span id="VALmake"><span class="keyword">val</span> make</span> : <code class="type">int -> 'a -> 'a array</code></pre><div class="info ">
                     <div class="not-examples">
-                    <code class="code">make n e</code> 
+                    <code class="code">make n e</code>
     return an array of size <code class="code">n</code> filled  with value <code class="code">e</code><br>
 <div class="tag"> <b>Returns</b> an empty array when <code class="code">n</code> is negative.<br>
  </div> 
@@ -318,7 +317,7 @@
      rangeBy 33 0 ~step:1 =  [||];;
      rangeBy 33 0 ~step:(-1) = [||];;
      rangeBy 3 12 ~step:(-1) = [||];;
-     rangeBy 3 3 ~step:0 = [||] ;;     
+     rangeBy 3 3 ~step:0 = [||] ;;
      rangeBy 3 3 ~step:(1) = [|3|] ;;
    </code></pre>  </pre>
                     </div>
@@ -328,10 +327,10 @@
 <pre><span id="VALmakeByU"><span class="keyword">val</span> makeByU</span> : <code class="type">int -> (int -> 'a [@bs]) -> 'a array</code></pre>
 <pre><span id="VALmakeBy"><span class="keyword">val</span> makeBy</span> : <code class="type">int -> (int -> 'a) -> 'a array</code></pre><div class="info ">
                     <div class="not-examples">
-                    <code class="code">makeBy n f</code> 
+                    <code class="code">makeBy n f</code>
 <p>
 
-    return an empty array when <code class="code">n</code> is negative 
+    return an empty array when <code class="code">n</code> is negative
     return an array of size <code class="code">n</code> populated by <code class="code">f i</code> start from <code class="code">0</code> to <code class="code">n - 1</code><br>
  
                     </div>
@@ -358,7 +357,7 @@
                   
 <pre><span id="VALzip"><span class="keyword">val</span> zip</span> : <code class="type">'a array -> 'b array -> ('a * 'b) array</code></pre><div class="info ">
                     <div class="not-examples">
-                    <code class="code">zip a b</code> 
+                    <code class="code">zip a b</code>
 <p>
 
     Create an array of pairs from corresponding elements of <code class="code">a</code> and <code class="code">b</code>.
@@ -462,6 +461,26 @@
                     </div>
 
                   
+<pre><span id="VALsliceToEnd"><span class="keyword">val</span> sliceToEnd</span> : <code class="type">'a array -> int -> 'a array</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">sliceToEnd xs offset</code> creates a new array with the elements of <code class="code">xs</code> starting at <code class="code">offset</code>
+<p>
+
+    <code class="code">offset</code> can be negative;and is evaluated as <code class="code">length xs - offset</code>
+    <code class="code">sliceToEnd xs -1</code> means get the last element as a singleton array
+<p>
+
+    <code class="code">sliceToEnd xs 0</code> will return a copy of the array<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">      sliceToEnd [|10;11;12;13;14;15;16|] 2 = [|12;13;14;15;16|];;
+      sliceToEnd [|10;11;12;13;14;15;16|] (-4) = [|13;14;15;16|];;
+    </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
 <pre><span id="VALcopy"><span class="keyword">val</span> copy</span> : <code class="type">'a array -> 'a array</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">copy a</code><br>
@@ -475,7 +494,7 @@
                   
 <pre><span id="VALfill"><span class="keyword">val</span> fill</span> : <code class="type">'a array -> offset:int -> len:int -> 'a -> unit</code></pre><div class="info ">
                     <div class="not-examples">
-                    <code class="code">fill arr ~offset ~len x</code> 
+                    <code class="code">fill arr ~offset ~len x</code>
 <p>
 
     Modifies <code class="code">arr</code> in place,
@@ -502,12 +521,12 @@
                   
 <pre><span id="VALblit"><span class="keyword">val</span> blit</span> : <code class="type">src:'a array -><br>       srcOffset:int -> dst:'a array -> dstOffset:int -> len:int -> unit</code></pre><div class="info ">
                     <div class="not-examples">
-                    <code class="code">blit ~src:v1 ~srcOffset:o1 ~dst:v2 ~dstOffset:o2 ~len</code> 
+                    <code class="code">blit ~src:v1 ~srcOffset:o1 ~dst:v2 ~dstOffset:o2 ~len</code>
 <p>
 
     copies <code class="code">len</code> elements
    from array <code class="code">v1</code>;starting at element number <code class="code">o1</code>;to array <code class="code">v2</code>,
-   starting at element number <code class="code">o2</code>. 
+   starting at element number <code class="code">o2</code>.
 <p>
 
     It works correctly even if
@@ -515,7 +534,7 @@
     destination chunks overlap.
 <p>
 
-    <code class="code">offset</code> can be negative;<code class="code">-1</code> means <code class="code">len - 1</code>;if <code class="code">len + offset</code>  is still 
+    <code class="code">offset</code> can be negative;<code class="code">-1</code> means <code class="code">len - 1</code>;if <code class="code">len + offset</code>  is still
     negative;it will be set as 0
 <p>
 
@@ -560,7 +579,7 @@
         Item: b
         Item: c
       *)
-      
+
       let total = ref 0;;
       forEach [|1;2;3;4|] (fun x -&gt; total := !total + x);;
       !total  = 1 + 2 + 3 + 4;;
@@ -599,6 +618,20 @@
                     </div>
 
                   
+<pre><span id="VALkeepWithIndexU"><span class="keyword">val</span> keepWithIndexU</span> : <code class="type">'a array -> ('a -> int -> bool [@bs]) -> 'a array</code></pre>
+<pre><span id="VALkeepWithIndex"><span class="keyword">val</span> keepWithIndex</span> : <code class="type">'a array -> ('a -> int -> bool) -> 'a array</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">keepWithIndex xs p </code><br>
+<div class="tag"> <b>Returns</b> a new array that keep all elements satisfy <code class="code">p</code><br>
+ </div> 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">      keepWithIndex [|1;2;3|] (fun _x i -&gt; i = 1) = [|2|]
+    </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
 <pre><span id="VALkeepMapU"><span class="keyword">val</span> keepMapU</span> : <code class="type">'a array -> ('a -> 'b option [@bs]) -> 'b array</code></pre>
 <pre><span id="VALkeepMap"><span class="keyword">val</span> keepMap</span> : <code class="type">'a array -> ('a -> 'b option) -> 'b array</code></pre><div class="info ">
                     <div class="not-examples">
@@ -625,8 +658,7 @@
  
                     </div>
                      <div class="examples">
-                    <pre class="example"> <pre class="codepre"><code class="code">    
-      forEach [|"a";"b";"c"|] (fun i x -&gt; Js.log("Item " ^ (string_of_int i) ^ " is " ^ x));;
+                    <pre class="example"> <pre class="codepre"><code class="code">      forEach [|"a";"b";"c"|] (fun i x -&gt; Js.log("Item " ^ (string_of_int i) ^ " is " ^ x));;
       (*  prints:
         Item 0 is a
         Item 1 is b
@@ -654,6 +686,20 @@
                      <div class="examples">
                     <pre class="example"> <pre class="codepre"><code class="code">      mapWithIndex [|1;2;3|] (fun i x -&gt; i + x) =
       [|0 + 1; 1 + 2; 2 + 3|]
+    </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALpartitionU"><span class="keyword">val</span> partitionU</span> : <code class="type">'a array -> ('a -> bool [@bs]) -> 'a array * 'a array</code></pre>
+<pre><span id="VALpartition"><span class="keyword">val</span> partition</span> : <code class="type">'a array -> ('a -> bool) -> 'a array * 'a array</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">partition f a</code> split array into tuple of two arrays based on predicate f; first of tuple where predicate cause true, second where predicate cause false<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">      predicate [|1;2;3;4;5|] (fun x -&gt; if x mod 2 = 0)  = ([|2;4|], [|1;2;3|]);;
+      predicate [|1;2;3;4;5|] (fun x -&gt; if x mod 2 &lt;&gt; 0) = ([|1;2;3|], [|2;4|]);;
     </code></pre>  </pre>
                     </div>
                     </div>

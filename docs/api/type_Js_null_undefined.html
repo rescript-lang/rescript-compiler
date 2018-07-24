@@ -11,7 +11,8 @@
 <code class="code"><span class="keyword">sig</span><br>
 &nbsp;&nbsp;<span class="keyword">type</span>&nbsp;<span class="keywordsign">'</span>a&nbsp;t&nbsp;=&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Js</span>.null_undefined<br>
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;return&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Js_null_undefined</span>.t&nbsp;=&nbsp;<span class="string">"%identity"</span><br>
-&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;test&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Js_null_undefined</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool&nbsp;=&nbsp;<span class="string">"#is_nil_undef"</span><br>
+&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;test&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Js_null_undefined</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool&nbsp;=&nbsp;<span class="string">"#is_nullable"</span><br>
+&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;isNullable&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Js_null_undefined</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool&nbsp;=&nbsp;<span class="string">"#is_nullable"</span><br>
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;null&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Js_null_undefined</span>.t&nbsp;=&nbsp;<span class="string">"#null"</span><br>
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;undefined&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Js_null_undefined</span>.t&nbsp;=&nbsp;<span class="string">"#undefined"</span><br>
 &nbsp;&nbsp;<span class="keyword">val</span>&nbsp;bind&nbsp;:<br>
@@ -20,7 +21,6 @@
 &nbsp;&nbsp;<span class="keyword">val</span>&nbsp;fromOption&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;option&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Js_null_undefined</span>.t<br>
 &nbsp;&nbsp;<span class="keyword">val</span>&nbsp;from_opt&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;option&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Js_null_undefined</span>.t<br>
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;toOption&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Js_null_undefined</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>a&nbsp;option<br>
-&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;<span class="string">"#null_undefined_to_opt"</span><br>
-&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;to_opt&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Js_null_undefined</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>a&nbsp;option<br>
-&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;<span class="string">"#null_undefined_to_opt"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;<span class="string">"#nullable_to_opt"</span><br>
+&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;to_opt&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Js_null_undefined</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>a&nbsp;option&nbsp;=&nbsp;<span class="string">"#nullable_to_opt"</span><br>
 <span class="keyword">end</span></code></body></html>

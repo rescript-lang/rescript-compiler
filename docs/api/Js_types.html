@@ -57,7 +57,6 @@
 <li><a href="Dom_storage.html">Dom_storage</a></li>
 <li><a href="Js.html">Js</a></li>
 <li><a href="Js_array.html">Js_array</a></li>
-<li><a href="Js_boolean.html">Js_boolean</a></li>
 <li><a href="Js_cast.html">Js_cast</a></li>
 <li><a href="Js_console.html">Js_console</a></li>
 <li><a href="Js_date.html">Js_date</a></li>
@@ -214,21 +213,6 @@
 </div>
 
 
-<pre><span id="VALreify_type"><span class="keyword">val</span> reify_type</span> : <code class="type">'a -> 'b <a href="Js_types.html#TYPEt">t</a> * 'b</code></pre><div class="info ">
-                    <div class="not-examples">
-                    Given any value it returns its type and the same value.
-    Note that  since <code class="code">'b t</code> is GADT, the type system will reify its type automatically,<br>
- 
-                    </div>
-                     <div class="examples">
-                    <pre class="example"> <pre class="codepre"><code class="code">    match reify_type "3" with
-    | String, v -&gt; v  ^ " this type safe control flow analysis will infer v as string"
-    | _ -&gt; assert false
-    </code></pre>  </pre>
-                    </div>
-                    </div>
-
-                  
 <pre><span id="VALtest"><span class="keyword">val</span> test</span> : <code class="type">'a -> 'b <a href="Js_types.html#TYPEt">t</a> -> bool</code></pre><div class="info ">
                     <div class="not-examples">
                      

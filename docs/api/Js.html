@@ -57,7 +57,6 @@
 <li><a href="Dom_storage.html">Dom_storage</a></li>
 <li><a href="Js.html">Js</a></li>
 <li><a href="Js_array.html">Js_array</a></li>
-<li><a href="Js_boolean.html">Js_boolean</a></li>
 <li><a href="Js_cast.html">Js_cast</a></li>
 <li><a href="Js_console.html">Js_console</a></li>
 <li><a href="Js_date.html">Js_date</a></li>
@@ -102,7 +101,7 @@
 
 <pre><span class="keyword">module</span> Js: <code class="code">sig</code> <a href="Js.html">..</a> <code class="code">end</code></pre><div class="info module top">
                     <div class="not-examples">
-                    This library provides bindings and necessary support for JS FFI. 
+                    This library provides bindings and necessary support for JS FFI.
     It contains all bindings into <code class="code">Js</code> namespace.<br>
  
                     </div>
@@ -110,7 +109,7 @@
                     <pre class="example"> <pre class="codepre"><code class="code">        [| 1;2;3;4|]
         |&gt; Js.Array.map (fun x -&gt; x + 1 )
         |&gt; Js.Array.reduce (+) 0
-        |&gt; Js.log 
+        |&gt; Js.log
     </code></pre>  </pre>
                     </div>
                     </div>
@@ -189,6 +188,7 @@
 <pre><span id="VALundefinedToOption"><span class="keyword">val</span> undefinedToOption</span> : <code class="type">'a <a href="Js.html#TYPEundefined">undefined</a> -> 'a option</code></pre>
 <pre><span id="VALnullToOption"><span class="keyword">val</span> nullToOption</span> : <code class="type">'a <a href="Js.html#TYPEnull">null</a> -> 'a option</code></pre>
 <pre><span id="VALtest"><span class="keyword">val</span> test</span> : <code class="type">'a <a href="Js.html#TYPEnullable">nullable</a> -> bool</code></pre>
+<pre><span id="VALisNullable"><span class="keyword">val</span> isNullable</span> : <code class="type">'a <a href="Js.html#TYPEnullable">nullable</a> -> bool</code></pre>
 <pre><span id="VALtestAny"><span class="keyword">val</span> testAny</span> : <code class="type">'a -> bool</code></pre><div class="info ">
                     <div class="not-examples">
                     The same as <a href="Js.html#VALtest"><code class="code">Js.test</code></a> except that it is more permissive on the types of input<br>
@@ -198,20 +198,6 @@
                     </div>
 
                   <div class="type-declaration">
-<pre><span id="TYPEboolean"><span class="keyword">type</span> <code class="type"></code>boolean</span> = <code class="type">bool</code> </pre>
-</div>
-<div class="info ">
-                    <div class="not-examples">
-                    The value could be either  <a href="Js.html#VALtrue_"><code class="code">Js.true_</code></a> or <a href="Js.html#VALfalse_"><code class="code">Js.false_</code></a>.
-     Note in BuckleScript, <code class="code">boolean</code> has different representation from OCaml's <code class="code">bool</code>,
-     see conversion functions in <a href="Js.Boolean.html"><code class="code">Js.Boolean</code></a><br>
- 
-                    </div>
-                    
-                    </div>
-
-                  
-<div class="type-declaration">
 <pre><span id="TYPEpromise"><span class="keyword">type</span> <code class="type">(+'a, +'e)</code> promise</span> </pre>
 </div>
 <div class="info ">
@@ -228,8 +214,6 @@
 
                   
 
-<pre><span id="VALtrue_"><span class="keyword">val</span> true_</span> : <code class="type">bool</code></pre>
-<pre><span id="VALfalse_"><span class="keyword">val</span> false_</span> : <code class="type">bool</code></pre>
 <pre><span id="VALnull"><span class="keyword">val</span> null</span> : <code class="type">'a <a href="Js.html#TYPEnull">null</a></code></pre><div class="info ">
                     <div class="not-examples">
                     The same as <code class="code">empty</code> in <a href="Js.Null.html"><code class="code">Js.Null</code></a> will be compiled as <code class="code">null</code><br>
@@ -248,18 +232,9 @@
                     </div>
 
                   
-<pre><span id="VALto_bool"><span class="keyword">val</span> to_bool</span> : <code class="type">bool -> bool</code></pre><div class="info ">
-                    <div class="not-examples">
-                    convert Js boolean to OCaml bool<br>
- 
-                    </div>
-                    
-                    </div>
-
-                  
 <pre><span id="VALtypeof"><span class="keyword">val</span> typeof</span> : <code class="type">'a -> string</code></pre><div class="info ">
                     <div class="not-examples">
-                    <code class="code">typeof x</code> will be compiled as <code class="code">typeof x</code> in JS 
+                    <code class="code">typeof x</code> will be compiled as <code class="code">typeof x</code> in JS
     Please consider functions in <a href="Js.Types.html"><code class="code">Js.Types</code></a> for a type safe way of reflection<br>
  
                     </div>
@@ -302,7 +277,7 @@
 <pre><span id="VALunsafe_lt"><span class="keyword">val</span> unsafe_lt</span> : <code class="type">'a -> 'a -> bool</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">unsafe_lt a b</code> will be compiled as <code class="code">a &lt; b</code>.
-    It is marked as unsafe, since it is impossible 
+    It is marked as unsafe, since it is impossible
     to give a proper semantics for comparision which applies to any type<br>
  
                     </div>
@@ -312,7 +287,7 @@
                   
 <pre><span id="VALunsafe_le"><span class="keyword">val</span> unsafe_le</span> : <code class="type">'a -> 'a -> bool</code></pre><div class="info ">
                     <div class="not-examples">
-                    <code class="code">unsafe_le a b</code> will be compiled as <code class="code">a &lt;= b</code>. 
+                    <code class="code">unsafe_le a b</code> will be compiled as <code class="code">a &lt;= b</code>.
     See also <a href="Js.html#VALunsafe_lt"><code class="code">Js.unsafe_lt</code></a><br>
  
                     </div>
@@ -322,7 +297,7 @@
                   
 <pre><span id="VALunsafe_gt"><span class="keyword">val</span> unsafe_gt</span> : <code class="type">'a -> 'a -> bool</code></pre><div class="info ">
                     <div class="not-examples">
-                    <code class="code">unsafe_gt a b</code> will be compiled as <code class="code">a &gt; b</code>. 
+                    <code class="code">unsafe_gt a b</code> will be compiled as <code class="code">a &gt; b</code>.
      See also <a href="Js.html#VALunsafe_lt"><code class="code">Js.unsafe_lt</code></a><br>
  
                     </div>
@@ -378,12 +353,6 @@
 <pre><span class="keyword">module</span> <a href="Js.String.html">String</a>: <code class="type"><a href="Js_string.html">Js_string</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                     Provide bindings to JS string<br>
- 
-                </div>
-                </div> 
-<pre><span class="keyword">module</span> <a href="Js.Boolean.html">Boolean</a>: <code class="type"><a href="Js_boolean.html">Js_boolean</a></code></pre> <div class="info">                     
-                <div class="not-examples">
-                    Provide utilities for <a href="Js.html#TYPEboolean"><code class="code">Js.boolean</code></a><br>
  
                 </div>
                 </div> 

@@ -16,19 +16,16 @@
 &nbsp;&nbsp;<span class="keyword">type</span>&nbsp;+<span class="keywordsign">'</span>a&nbsp;undefined<br>
 &nbsp;&nbsp;<span class="keyword">type</span>&nbsp;+<span class="keywordsign">'</span>a&nbsp;nullable<br>
 &nbsp;&nbsp;<span class="keyword">type</span>&nbsp;<span class="keywordsign">'</span>a&nbsp;null_undefined&nbsp;=&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Js</span>.nullable<br>
-&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;toOption&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Js</span>.nullable&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>a&nbsp;option&nbsp;=&nbsp;<span class="string">"#null_undefined_to_opt"</span><br>
+&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;toOption&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Js</span>.nullable&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>a&nbsp;option&nbsp;=&nbsp;<span class="string">"#nullable_to_opt"</span><br>
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;undefinedToOption&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Js</span>.undefined&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>a&nbsp;option<br>
 &nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;<span class="string">"#undefined_to_opt"</span><br>
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;nullToOption&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Js</span>.null&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>a&nbsp;option&nbsp;=&nbsp;<span class="string">"#null_to_opt"</span><br>
-&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;test&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Js</span>.nullable&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool&nbsp;=&nbsp;<span class="string">"#is_nil_undef"</span><br>
-&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;testAny&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool&nbsp;=&nbsp;<span class="string">"#is_nil_undef"</span><br>
-&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;boolean&nbsp;=&nbsp;bool<br>
+&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;test&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Js</span>.nullable&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool&nbsp;=&nbsp;<span class="string">"#is_nullable"</span><br>
+&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;isNullable&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Js</span>.nullable&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool&nbsp;=&nbsp;<span class="string">"#is_nullable"</span><br>
+&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;testAny&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool&nbsp;=&nbsp;<span class="string">"#is_nullable"</span><br>
 &nbsp;&nbsp;<span class="keyword">type</span>&nbsp;(+<span class="keywordsign">'</span>a,&nbsp;+<span class="keywordsign">'</span>e)&nbsp;promise<br>
-&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;true_&nbsp;:&nbsp;bool<br>
-&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;false_&nbsp;:&nbsp;bool<br>
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;null&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Js</span>.null&nbsp;=&nbsp;<span class="string">"#null"</span><br>
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;undefined&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Js</span>.undefined&nbsp;=&nbsp;<span class="string">"#undefined"</span><br>
-&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;to_bool&nbsp;:&nbsp;bool&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool&nbsp;=&nbsp;<span class="string">"%identity"</span><br>
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;typeof&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string&nbsp;=&nbsp;<span class="string">"#typeof"</span><br>
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;log&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit&nbsp;=&nbsp;<span class="string">"log"</span>&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;log2&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>b&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit&nbsp;=&nbsp;<span class="string">"log"</span>&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
@@ -50,7 +47,6 @@
 &nbsp;&nbsp;<span class="keyword">module</span>&nbsp;<span class="constructor">Exn</span>&nbsp;=&nbsp;<span class="constructor">Js_exn</span><br>
 &nbsp;&nbsp;<span class="keyword">module</span>&nbsp;<span class="constructor">Array</span>&nbsp;=&nbsp;<span class="constructor">Js_array</span><br>
 &nbsp;&nbsp;<span class="keyword">module</span>&nbsp;<span class="constructor">String</span>&nbsp;=&nbsp;<span class="constructor">Js_string</span><br>
-&nbsp;&nbsp;<span class="keyword">module</span>&nbsp;<span class="constructor">Boolean</span>&nbsp;=&nbsp;<span class="constructor">Js_boolean</span><br>
 &nbsp;&nbsp;<span class="keyword">module</span>&nbsp;<span class="constructor">Re</span>&nbsp;=&nbsp;<span class="constructor">Js_re</span><br>
 &nbsp;&nbsp;<span class="keyword">module</span>&nbsp;<span class="constructor">Promise</span>&nbsp;=&nbsp;<span class="constructor">Js_promise</span><br>
 &nbsp;&nbsp;<span class="keyword">module</span>&nbsp;<span class="constructor">Date</span>&nbsp;=&nbsp;<span class="constructor">Js_date</span><br>

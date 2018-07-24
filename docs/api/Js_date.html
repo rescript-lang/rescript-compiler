@@ -57,7 +57,6 @@
 <li><a href="Dom_storage.html">Dom_storage</a></li>
 <li><a href="Js.html">Js</a></li>
 <li><a href="Js_array.html">Js_array</a></li>
-<li><a href="Js_boolean.html">Js_boolean</a></li>
 <li><a href="Js_cast.html">Js_cast</a></li>
 <li><a href="Js_console.html">Js_console</a></li>
 <li><a href="Js_date.html">Js_date</a></li>
@@ -135,7 +134,8 @@ returns a date representing the current time<br>
 <pre><span id="VALnow"><span class="keyword">val</span> now</span> : <code class="type">unit -> float</code></pre><br>
 returns the number of milliseconds since Unix epoch<br>
 
-<pre><span id="VALparse"><span class="keyword">val</span> parse</span> : <code class="type">string -> <a href="Js_date.html#TYPEt">t</a></code></pre><br>
+<pre><span id="VALparse"><span class="keyword">val</span> parse</span> : <code class="type">string -> <a href="Js_date.html#TYPEt">t</a></code></pre>
+<pre><span id="VALparseAsFloat"><span class="keyword">val</span> parseAsFloat</span> : <code class="type">string -> float</code></pre><br>
 returns NaN if passed invalid date string<br>
 
 <pre><span id="VALgetDate"><span class="keyword">val</span> getDate</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> float</code></pre>
@@ -252,6 +252,7 @@ returns NaN if passed invalid date string<br>
 <pre><span id="VALtoGMTString"><span class="keyword">val</span> toGMTString</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> string</code></pre>
 <pre><span id="VALtoISOString"><span class="keyword">val</span> toISOString</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> string</code></pre>
 <pre><span id="VALtoJSON"><span class="keyword">val</span> toJSON</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> string</code></pre>
+<pre><span id="VALtoJSONUnsafe"><span class="keyword">val</span> toJSONUnsafe</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> string</code></pre>
 <pre><span id="VALtoLocaleDateString"><span class="keyword">val</span> toLocaleDateString</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> string</code></pre>
 <pre><span id="VALtoLocaleString"><span class="keyword">val</span> toLocaleString</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> string</code></pre>
 <pre><span id="VALtoLocaleTimeString"><span class="keyword">val</span> toLocaleTimeString</span> : <code class="type"><a href="Js_date.html#TYPEt">t</a> -> string</code></pre>
