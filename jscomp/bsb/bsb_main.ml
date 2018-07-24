@@ -25,7 +25,7 @@
 
 
 let cwd = Sys.getcwd ()
-let bsc_dir = Bsb_build_util.get_bsc_dir cwd 
+let bsc_dir = Bsb_build_util.get_bsc_dir ~cwd 
 let () =  Bsb_log.setup () 
 let (//) = Ext_path.combine
 let force_regenerate = ref false
@@ -60,9 +60,6 @@ let bsb_main_flags : (string * Arg.spec * string) list=
     " forced no color output";
     "-w", Arg.Set watch_mode,
     " Watch mode" ;     
-    regen, Arg.Set force_regenerate,
-    " (internal) Always regenerate build.ninja no matter bsconfig.json is changed or not (for debugging purpose)"
-    ;
     "-clean-world", Arg.Unit (fun _ -> 
         Bsb_clean.clean_bs_deps bsc_dir cwd),
     " Clean all bs dependencies";
@@ -75,6 +72,9 @@ let bsb_main_flags : (string * Arg.spec * string) list=
     " Init sample project to get started. Note (`bsb -init sample` will create a sample project while `bsb -init .` will reuse current directory)";
     "-theme", Arg.String set_theme,
     " The theme for project initialization, default is basic(https://github.com/bucklescript/bucklescript/tree/master/jscomp/bsb/templates)";
+    
+    regen, Arg.Set force_regenerate,
+    " (internal) Always regenerate build.ninja no matter bsconfig.json is changed or not (for debugging purpose)";
     "-query", Arg.String (fun s -> Bsb_query.query ~cwd ~bsc_dir s ),
     " (internal)Query metadata about the build";
     "-themes", Arg.Unit Bsb_theme_init.list_themes,

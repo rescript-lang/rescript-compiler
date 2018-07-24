@@ -91,25 +91,23 @@ let resolve_bsb_magic_file ~cwd ~desc p =
 (** converting a file from Linux path format to Windows *)
 
 (**
-   if [Sys.executable_name] gives an absolute path, 
-   nothing needs to be done
-   if it is a relative path 
-
-   there are two cases: 
-   - bsb.exe
-   - ./bsb.exe 
-   The first should also not be touched
-   Only the latter need be adapted based on project root  
+   If [Sys.executable_name] gives an absolute path, 
+   nothing needs to be done.
+   
+   If [Sys.executable_name] is not an absolute path, for example
+   (rlwrap ./ocaml)
+   it is a relative path, 
+   it needs be adapted based on cwd
 *)
 
-let get_bsc_dir cwd = 
+let get_bsc_dir ~cwd = 
   Filename.dirname 
     (Ext_path.normalize_absolute_path 
        (Ext_path.combine cwd  Sys.executable_name))
 
 
 let get_bsc_bsdep cwd = 
-  let dir = get_bsc_dir cwd in    
+  let dir = get_bsc_dir ~cwd in    
   Filename.concat dir  "bsc.exe", 
   Filename.concat dir  "bsb_helper.exe"
 
