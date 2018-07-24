@@ -1,0 +1,20 @@
+{
+  "name": "${bsb:name}",
+  "version": "${bsb:proj-version}",
+  "scripts": {
+    "clean": "bsb -clean-world",
+    "build": "bsb -make-world",
+    "watch": "bsb -make-world -w -ws _"
+  },
+  "keywords": [
+    "BuckleScript"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "bs-platform": "^${bsb:bs-version}"
+  },
+  "dependencies": {
+    "bucklescript-tea": "^0.7.3"
+  }
+}

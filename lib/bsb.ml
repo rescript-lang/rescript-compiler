@@ -14300,7 +14300,640 @@ let root = OCamlRes.Res.([
        .bsb.lock\n\
        npm-debug.log\n\
        /lib/bs/\n\
-       /node_modules/")])
+       /node_modules/")]) ;
+  Dir  ("tea", [
+    File  ("watcher.js",
+      "\n\
+       \n\
+       var wsReloader;\n\
+       var LAST_SUCCESS_BUILD_STAMP = (localStorage.getItem('LAST_SUCCESS_BUILD_STAMP') || 0)\n\
+       var WS_PORT = 9999; // configurable\n\
+       \n\
+       function setUpWebScoket() {\n\
+      \    if (wsReloader == null || wsReloader.readyState !== 1) {\n\
+      \        try {\n\
+      \            wsReloader = new WebSocket(`ws://localhost:${WS_PORT}`)\n\
+      \            wsReloader.onmessage = (msg) => {\n\
+      \                var newData = JSON.parse(msg.data).LAST_SUCCESS_BUILD_STAMP\n\
+      \                if (newData > LAST_SUCCESS_BUILD_STAMP) {\n\
+      \                    LAST_SUCCESS_BUILD_STAMP = newData\n\
+      \                    localStorage.setItem('LAST_SUCCESS_BUILD_STAMP', LAST_SUCCESS_BUILD_STAMP)\n\
+      \                    location.reload(true)\n\
+      \                }\n\
+       \n\
+      \            }\n\
+      \        } catch (exn) {\n\
+      \            console.error(\"web socket failed connect\")\n\
+      \        }\n\
+      \    }\n\
+       };\n\
+       \n\
+       setUpWebScoket();\n\
+       setInterval(setUpWebScoket, 2000);") ;
+    Dir  ("src", [
+      File  ("main.ml",
+        "\n\
+         \n\
+         \n\
+         Js.Global.setTimeout\n\
+        \  (fun _ -> \n\
+        \  Demo.main (Web.Document.getElementById \"my-element\") () \n\
+        \  |. ignore\n\
+        \  )  \n\
+         0") ;
+      File  ("demo.ml",
+        "(* This line opens the Tea.App modules into the current scope for Program access functions and types *)\n\
+         open Tea.App\n\
+         \n\
+         (* This opens the Elm-style virtual-dom functions and types into the current scope *)\n\
+         open Tea.Html\n\
+         \n\
+         (* Let's create a new type here to be our main message type that is passed around *)\n\
+         type msg =\n\
+        \  | Increment  (* This will be our message to increment the counter *)\n\
+        \  | Decrement  (* This will be our message to decrement the counter *)\n\
+        \  | Reset      (* This will be our message to reset the counter to 0 *)\n\
+        \  | Set of int (* This will be our message to set the counter to a specific value *)\n\
+        \  [@@bs.deriving {accessors}] (* This is a nice quality-of-life addon from Bucklescript, it will generate function names for each constructor name, optional, but nice to cut down on code, this is unused in this example but good to have regardless *)\n\
+         \n\
+         (* This is optional for such a simple example, but it is good to have an `init` function to define your initial model default values, the model for Counter is just an integer *)\n\
+         let init () = 4\n\
+         \n\
+         (* This is the central message handler, it takes the model as the first argument *)\n\
+         let update model = function (* These should be simple enough to be self-explanatory, mutate the model based on the message, easy to read and follow *)\n\
+        \  | Increment -> model + 1\n\
+        \  | Decrement -> model - 1\n\
+        \  | Reset -> 0\n\
+        \  | Set v -> v\n\
+         \n\
+         (* This is just a helper function for the view, a simple function that returns a button based on some argument *)\n\
+         let view_button title msg =\n\
+        \  button\n\
+        \    [ onClick msg\n\
+        \    ]\n\
+        \    [ text title\n\
+        \    ]\n\
+         \n\
+         (* This is the main callback to generate the virtual-dom.\n\
+        \  This returns a virtual-dom node that becomes the view, only changes from call-to-call are set on the real DOM for efficiency, this is also only called once per frame even with many messages sent in within that frame, otherwise does nothing *)\n\
+         let view model =\n\
+        \  div\n\
+        \    []\n\
+        \    [ span\n\
+        \        [ style \"text-weight\" \"bold\" ]\n\
+        \        [ text (string_of_int model) ]\n\
+        \    ; br []\n\
+        \    ; view_button \"Increment\" Increment\n\
+        \    ; br []\n\
+        \    ; view_button \"Decrement\" Decrement\n\
+        \    ; br []\n\
+        \    ; view_button \"Set to 2\" (Set 42)\n\
+        \    ; br []\n\
+        \    ; if model <> 0 then view_button \"Reset\" Reset else noNode\n\
+        \    ]\n\
+         \n\
+         (* This is the main function, it can be named anything you want but `main` is traditional.\n\
+        \  The Program returned here has a set of callbacks that can easily be called from\n\
+        \  Bucklescript or from javascript for running this main attached to an element,\n\
+        \  or even to pass a message into the event loop.  You can even expose the\n\
+        \  constructors to the messages to javascript via the above [@@bs.deriving {accessors}]\n\
+        \  attribute on the `msg` type or manually, that way even javascript can use it safely. *)\n\
+         let main =\n\
+        \  beginnerProgram { (* The beginnerProgram just takes a set model state and the update and view functions *)\n\
+        \    model = init (); (* Since model is a set value here, we call our init function to generate that value *)\n\
+        \    update;\n\
+        \    view;\n\
+        \  }")]) ;
+    File  ("README.md",
+      "\n\
+       \n\
+       # Build\n\
+       ```\n\
+       npm run build\n\
+       ```\n\
+       \n\
+       # Watch\n\
+       \n\
+       ```\n\
+       npm run watch\n\
+       ```\n\
+       \n\
+       create a http-server\n\
+       \n\
+       ```\n\
+       npm install -g http-server\n\
+       ```\n\
+       \n\
+       Edit the file and see the changes automatically reloaded in the browser\n\
+       ") ;
+    File  ("package.json",
+      "{\n\
+      \  \"name\": \"${bsb:name}\",\n\
+      \  \"version\": \"${bsb:proj-version}\",\n\
+      \  \"scripts\": {\n\
+      \    \"clean\": \"bsb -clean-world\",\n\
+      \    \"build\": \"bsb -make-world\",\n\
+      \    \"watch\": \"bsb -make-world -w -ws _\"\n\
+      \  },\n\
+      \  \"keywords\": [\n\
+      \    \"BuckleScript\"\n\
+      \  ],\n\
+      \  \"author\": \"\",\n\
+      \  \"license\": \"MIT\",\n\
+      \  \"devDependencies\": {\n\
+      \    \"bs-platform\": \"^${bsb:bs-version}\"\n\
+      \  },\n\
+      \  \"dependencies\": {\n\
+      \    \"bucklescript-tea\": \"^0.7.3\"\n\
+      \  }\n\
+       }\n\
+       ") ;
+    File  ("loader.js",
+      "/* Copyright (C) 2018 Authors of BuckleScript\n\
+      \ * \n\
+      \ * This program is free software: you can redistribute it and/or modify\n\
+      \ * it under the terms of the GNU Lesser General Public License as published by\n\
+      \ * the Free Software Foundation, either version 3 of the License, or\n\
+      \ * (at your option) any later version.\n\
+      \ *\n\
+      \ * In addition to the permissions granted to you by the LGPL, you may combine\n\
+      \ * or link a \"work that uses the Library\" with a publicly distributed version\n\
+      \ * of this file to produce a combined library or application, then distribute\n\
+      \ * that combined work under the terms of your choosing, with no requirement\n\
+      \ * to comply with the obligations normally placed on you by section 4 of the\n\
+      \ * LGPL version 3 (or the corresponding section of a later version of the LGPL\n\
+      \ * should you choose to use a later version).\n\
+      \ *\n\
+      \ * This program is distributed in the hope that it will be useful,\n\
+      \ * but WITHOUT ANY WARRANTY; without even the implied warranty of\n\
+      \ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n\
+      \ * GNU Lesser General Public License for more details.\n\
+      \ * \n\
+      \ * You should have received a copy of the GNU Lesser General Public License\n\
+      \ * along with this program; if not, write to the Free Software\n\
+      \ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */\n\
+       \n\
+       \n\
+       \n\
+       //@ts-check\n\
+       \n\
+       // @ts-ignore\n\
+       window.process = { env: { NODE_ENV: 'dev' } }\n\
+       \n\
+       \n\
+       // local to getPath\n\
+       var relativeElement = document.createElement(\"a\");\n\
+       var baseElement = document.createElement(\"base\");\n\
+       document.head.appendChild(baseElement);\n\
+       \n\
+       export function BsGetPath(id, parent) {\n\
+      \    var oldPath = baseElement.href\n\
+      \    baseElement.href = parent\n\
+      \    relativeElement.href = id\n\
+      \    var result = relativeElement.href\n\
+      \    baseElement.href = oldPath\n\
+      \    return result\n\
+       }\n\
+       /**\n\
+      \ * \n\
+      \ * Given current link and its parent, return the new link\n\
+      \ * @param {string} id \n\
+      \ * @param {string} parent \n\
+      \ * @return {string}\n\
+      \ */\n\
+       function getPathWithJsSuffix(id, parent) {\n\
+      \    var oldPath = baseElement.href\n\
+      \    baseElement.href = parent\n\
+      \    relativeElement.href = id\n\
+      \    var result = addSuffixJsIfNot(relativeElement.href)\n\
+      \    baseElement.href = oldPath\n\
+      \    return result\n\
+       }\n\
+       \n\
+       /**\n\
+      \ * \n\
+      \ * @param {string} x \n\
+      \ */\n\
+       function addSuffixJsIfNot(x) {\n\
+      \    if (x.endsWith('.js')) {\n\
+      \        return x\n\
+      \    } else {\n\
+      \        return x + '.js'\n\
+      \    }\n\
+       }\n\
+       \n\
+       \n\
+       var falsePromise = Promise.resolve(false)\n\
+       var fetchConfig = {'cache' : 'no-cache'}\n\
+       // package.json semantics\n\
+       // a string to module object \n\
+       // from url -> module object \n\
+       // Modules : Map<string, Promise < boolean | string > \n\
+       // fetch the link:\n\
+       // - if it is already fetched before, return the stored promise\n\
+       //   otherwise create the promise which will be filled with the text if successful\n\
+       //   or filled with boolean false when failed\n\
+       var MODULES = new Map()\n\
+       function cachedFetch(link) {\n\
+      \    // console.info(link)\n\
+      \    var linkResult = MODULES.get(link)\n\
+      \    if (linkResult) {\n\
+      \        return linkResult\n\
+      \    } else {\n\
+      \        var p = fetch(link, fetchConfig)\n\
+      \            .then(resp => {\n\
+      \                if (resp.ok) {\n\
+      \                    return resp.text()\n\
+      \                } else {\n\
+      \                    return falsePromise\n\
+      \                }\n\
+      \            })\n\
+       \n\
+      \        MODULES.set(link, p)\n\
+      \        return p\n\
+      \    }\n\
+       }\n\
+       \n\
+       // from location id -> url \n\
+       // There are two rounds of caching:\n\
+       // 1. if location and relative path is hit, no need to run \n\
+       // 2. if location and relative path is not hit, but the resolved link is hit, no need \n\
+       //     for network request\n\
+       /**\n\
+      \ * @type {Map<string, Map<string, Promise<any> > > }\n\
+      \ */\n\
+       var IDLocations = new Map()\n\
+       \n\
+       /**\n\
+      \ * @type {Map<string, Map<string, any> > }\n\
+      \ */\n\
+       var SyncedIDLocations = new Map()\n\
+       // Its value is an object \n\
+       // { link : String }\n\
+       // We will first mark it when visiting (to avoid duplicated computation)\n\
+       // and populate its link later\n\
+       \n\
+       /**\n\
+      \ * \n\
+      \ * @param {string} id \n\
+      \ * @param {string} location \n\
+      \ */\n\
+       function getIdLocation(id, location) {\n\
+      \    var idMap = IDLocations.get(location)\n\
+      \    if (idMap) {\n\
+      \        return idMap.get(id)\n\
+      \    }\n\
+       }\n\
+       \n\
+       /**\n\
+      \ * \n\
+      \ * @param {string} id \n\
+      \ * @param {string} location \n\
+      \ */\n\
+       function getIdLocationSync(id, location) {\n\
+      \    var idMap = SyncedIDLocations.get(location)\n\
+      \    if (idMap) {\n\
+      \        return idMap.get(id)\n\
+      \    }\n\
+       }\n\
+       \n\
+       function countIDLocations() {\n\
+      \    var count = 0\n\
+      \    for (let [k, vv] of IDLocations) {\n\
+      \        for (let [kv, v] of vv) {\n\
+      \            count += 1\n\
+      \        }\n\
+      \    }\n\
+      \    console.log(count, 'modules loaded')\n\
+       }\n\
+       \n\
+       \n\
+       /**\n\
+      \ * \n\
+      \ * @param {string} id \n\
+      \ * @param {string} location \n\
+      \ * @param {Function} cb \n\
+      \ * @returns Promise<any>\n\
+      \ */\n\
+       function visitIdLocation(id, location, cb) {\n\
+      \    var result;\n\
+      \    var idMap = IDLocations.get(location)\n\
+      \    if (idMap && (result = idMap.get(id))) {\n\
+      \        return result\n\
+      \    }\n\
+      \    else {\n\
+      \        result = new Promise(resolve => {\n\
+      \            return (cb()).then(res => {\n\
+      \                var idMap = SyncedIDLocations.get(location)\n\
+      \                if (idMap) {\n\
+      \                    idMap.set(id, res)\n\
+      \                } else {\n\
+      \                    SyncedIDLocations.set(location, new Map([[id, res]]))\n\
+      \                }\n\
+      \                return resolve(res)\n\
+      \            })\n\
+      \        })\n\
+      \        if (idMap) {\n\
+      \            idMap.set(id, result)\n\
+      \        }\n\
+      \        else {\n\
+      \            IDLocations.set(location, new Map([[id, result]]))\n\
+      \        }\n\
+      \        return result\n\
+      \    }\n\
+       }\n\
+       \n\
+       \n\
+       \n\
+       /**\n\
+      \ * \n\
+      \ * @param {string} text \n\
+      \ * @return {string[]}\n\
+      \ */\n\
+       function getDeps(text) {\n\
+      \    var deps = []\n\
+      \    text.replace(/(\\/\\*[\\w\\W]*?\\*\\/|\\/\\/[^\\n]*|[.$]r)|\\brequire\\s*\\(\\s*[\"']([^\"']*)[\"']\\s*\\)/g, function (_, ignore, id) {\n\
+      \        if (!ignore) deps.push(id);\n\
+      \    });\n\
+      \    return deps;\n\
+       }\n\
+       \n\
+       \n\
+       \n\
+       // By using a named \"eval\" most browsers will execute in the global scope.\n\
+       // http://www.davidflanagan.com/2010/12/global-eval-in.html\n\
+       var globalEval = eval;\n\
+       \n\
+       // function parentURL(url) {\n\
+       //     if (url.endsWith('/')) {\n\
+       //         return url + '../'\n\
+       //     } else {\n\
+       //         return url + '/../'\n\
+       //     }\n\
+       // }\n\
+       \n\
+       \n\
+       \n\
+       // loader.js:23 http://localhost:8080/node_modules/react-dom/cjs/react-dom.development.js/..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//../ fbjs/lib/containsNode Promise\xC2\xA0{<pending>}\n\
+       // 23:10:02.884 loader.js:23 http://localhost:8080/node_modules/react-dom/cjs/react-dom.development.js/..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//..//../ fbjs/lib/invariant Promise\xC2\xA0{<pending>}\n\
+       \n\
+       \n\
+       /**\n\
+      \ * \n\
+      \ * @param {string} id \n\
+      \ * @param {string} parent \n\
+      \ */\n\
+       function getParentModulePromise(id, parent) {\n\
+      \    var parentLink = BsGetPath('..', parent)\n\
+      \    if (parentLink === parent) {\n\
+      \        return falsePromise\n\
+      \    }\n\
+      \    return getPackageJsPromise(id, parentLink)\n\
+       }\n\
+       // In the beginning\n\
+       // it is `resolveModule('./main.js', '')\n\
+       // return the promise of link and text \n\
+       \n\
+       /**\n\
+      \ * \n\
+      \ * @param {string} id \n\
+      \ */\n\
+       function getPackageName(id) {\n\
+      \    var index = id.indexOf('/')\n\
+      \    if (index === -1) {\n\
+      \        return id\n\
+      \    }\n\
+      \    return id.substring(0, index)\n\
+       }\n\
+       function getPackageJsPromise(id, parent) {\n\
+      \    var idNodeModulesPrefix = './node_modules/' + id\n\
+      \    var link = getPathWithJsSuffix(idNodeModulesPrefix, parent)\n\
+      \    if (parent.endsWith('node_modules/')) {\n\
+      \        // impossible that `node_modules/node_modules/xx/x\n\
+      \        // return falsePromise\n\
+      \        return getParentModulePromise(id, parent)\n\
+      \    }\n\
+       \n\
+      \    var packageJson = BsGetPath(`./node_modules/${getPackageName(id)}/package.json`, parent)\n\
+       \n\
+      \    return cachedFetch(packageJson)\n\
+      \        .then(\n\
+      \            function (text) {\n\
+      \                if (text !== false) {\n\
+      \                    // package indeed exist\n\
+      \                    return cachedFetch(link).then(function (text) {\n\
+      \                        if (text !== false) {\n\
+      \                            return { text, link }\n\
+      \                        } else if (!id.endsWith('.js')) {\n\
+      \                            var linkNew = getPathWithJsSuffix(idNodeModulesPrefix + `/index.js`, parent)\n\
+      \                            return cachedFetch(linkNew)\n\
+      \                                .then(function (text) {\n\
+      \                                    if (text !== false) {\n\
+      \                                        return { text, link: linkNew }\n\
+      \                                    } else {\n\
+      \                                        return getParentModulePromise(id, parent)\n\
+      \                                    }\n\
+      \                                })\n\
+       \n\
+      \                        } else {\n\
+      \                            return getParentModulePromise(id, parent)\n\
+      \                        }\n\
+      \                    })\n\
+      \                }\n\
+      \                else {\n\
+      \                    return getParentModulePromise(id, parent)\n\
+      \                }\n\
+      \            }\n\
+      \        )\n\
+       \n\
+       \n\
+       }\n\
+       \n\
+       /**\n\
+      \ * \n\
+      \ * @param {string} id \n\
+      \ * @param {string} parent \n\
+      \ * can return Promise <boolean | object>, false means\n\
+      \ * this module can not be resolved\n\
+      \ */\n\
+       function getModulePromise(id, parent) {\n\
+      \    var done = getIdLocation(id, parent)\n\
+      \    if (!done) {\n\
+      \        return visitIdLocation(id, parent, function () {\n\
+      \            if (id[0] != '.') { // package path\n\
+      \                return getPackageJsPromise(id, parent)\n\
+      \            } else { // relative path, one shot resolve            \n\
+      \                let link = getPathWithJsSuffix(id, parent)\n\
+      \                return cachedFetch(link).then(\n\
+      \                    function (text) {\n\
+      \                        if (text !== false) {\n\
+      \                            return { text, link }\n\
+      \                        } else {\n\
+      \                            throw new Error(` ${id} : ${parent} could not be resolved`)\n\
+      \                        }\n\
+      \                    }\n\
+      \                )\n\
+      \            }\n\
+      \        })\n\
+      \    } else {\n\
+      \        return done\n\
+      \    }\n\
+       }\n\
+       \n\
+       \n\
+       /**\n\
+      \ * \n\
+      \ * @param {string} id \n\
+      \ * @param {string} parent \n\
+      \ * @returns {Promise<any>}\n\
+      \ */\n\
+       function getAll(id, parent) {\n\
+      \    return getModulePromise(id, parent)\n\
+      \        .then(function (obj) {\n\
+      \            if (obj) {\n\
+      \                var deps = getDeps(obj.text)\n\
+      \                return Promise.all(deps.map(x => getAll(x, obj.link)))\n\
+      \            } else {\n\
+      \                throw new Error(`${id}@${parent} was not resolved successfully`)\n\
+      \            }\n\
+      \        })\n\
+       };\n\
+       \n\
+       /**\n\
+      \ * \n\
+      \ * @param {string} text \n\
+      \ * @param {string} parent \n\
+      \ * @returns {Promise<any>}\n\
+      \ */\n\
+       function getAllFromText(text, parent) {\n\
+      \    var deps = getDeps(text)\n\
+      \    return Promise.all(deps.map(x => getAll(x, parent)))\n\
+       }\n\
+       \n\
+       function loadSync(id, parent) {\n\
+      \    var baseOrModule = getIdLocationSync(id, parent)\n\
+      \    if (baseOrModule) {\n\
+      \        if (!baseOrModule.exports) {\n\
+      \            baseOrModule.exports = {}\n\
+      \            globalEval(`(function(require,exports,module){${baseOrModule.text}\\n})//# sourceURL=${baseOrModule.link}`)(\n\
+      \                function require(id) {\n\
+      \                    return loadSync(id, baseOrModule.link);\n\
+      \                }, // require\n\
+      \                baseOrModule.exports = {}, // exports\n\
+      \                baseOrModule // module\n\
+      \            );\n\
+      \        }\n\
+      \        return baseOrModule.exports\n\
+      \    } else {\n\
+      \        throw new Error(`${id} : ${parent} could not be resolved`)\n\
+      \    }\n\
+       }\n\
+       \n\
+       \n\
+       function genEvalName() {\n\
+      \    return \"eval-\" + ((\"\" + Math.random()).substr(2, 5))\n\
+       }\n\
+       /**\n\
+      \ * \n\
+      \ * @param {string} text \n\
+      \ * @param {string} link\n\
+      \ * In this case [text] evaluated result will not be cached\n\
+      \ */\n\
+       function loadTextSync(text, link) {\n\
+      \    var baseOrModule = { exports: {}, text, link }\n\
+      \    globalEval(`(function(require,exports,module){${baseOrModule.text}\\n})//# sourceURL=${baseOrModule.link}/${genEvalName()}.js`)(\n\
+      \        function require(id) {\n\
+      \            return loadSync(id, baseOrModule.link);\n\
+      \        }, // require\n\
+      \        baseOrModule.exports, // exports\n\
+      \        baseOrModule // module\n\
+      \    );\n\
+      \    return baseOrModule.exports\n\
+       }\n\
+       \n\
+       /**\n\
+      \ * \n\
+      \ * @param {string} text \n\
+      \ */\n\
+       function BSloadText(text) {\n\
+      \    console.time(\"Loading\")\n\
+      \    var parent = BsGetPath(\".\", document.baseURI)\n\
+      \    return getAllFromText(text, parent).then(function () {\n\
+      \        var result = loadTextSync(text, parent)\n\
+      \        console.timeEnd(\"Loading\")\n\
+      \        return result\n\
+      \    })\n\
+       };\n\
+       \n\
+       \n\
+       function load(id, parent) {\n\
+      \    return getAll(id, parent).then(function () {\n\
+      \        return loadSync(id, parent)\n\
+      \    })\n\
+       \n\
+       };\n\
+       \n\
+       \n\
+       export function BSload(id) {\n\
+      \    var parent = BsGetPath(\".\", document.baseURI)\n\
+      \    return load(id, parent)\n\
+       }\n\
+       \n\
+       export var BSLoader = {\n\
+      \    loadText: BSloadText,\n\
+      \    load: BSload,\n\
+      \    SyncedIDLocations: SyncedIDLocations\n\
+       };\n\
+       \n\
+       window.BSLoader = BSLoader;\n\
+       \n\
+       var main = document.querySelector('script[data-main]')\n\
+       if (main) {\n\
+      \    BSload(main.dataset.main)\n\
+       }\n\
+       ") ;
+    File  ("index.html",
+      "<!DOCTYPE html>\n\
+       <html lang=\"en\">\n\
+      \  <head>\n\
+      \    <meta charset=\"utf-8\">\n\
+      \    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">\n\
+      \    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n\
+      \    <meta name=\"description\" content=\"\">\n\
+      \    <meta name=\"author\" content=\"\">\n\
+      \    <title>Bucklescript TEA Starter Kit</title>\n\
+      \  </head>\n\
+      \  \n\
+       \n\
+       \n\
+      \  <body>\n\
+      \    <div id=\"my-element\"> </div>\n\
+      \    <script src=\"./loader.js\" type=\"module\" data-main=\"./src/main.bs.js\"></script>\n\
+      \    <script src=\"./watcher.js\" type=\"module\"></script>\n\
+      \    \n\
+      \  </body>\n\
+       </html>") ;
+    File  ("bsconfig.json",
+      "{\n\
+      \  \"name\": \"tea\",\n\
+      \  \"version\": \"0.1.0\",\n\
+      \  \"sources\": {\n\
+      \    \"dir\" : \"src\",\n\
+      \    \"subdirs\" : true\n\
+      \  },\n\
+      \  \"package-specs\": {\n\
+      \    \"module\": \"commonjs\",\n\
+      \    \"in-source\": true\n\
+      \  },\n\
+      \  \"suffix\": \".bs.js\",\n\
+      \  \"bs-dependencies\": [\n\
+      \      \"bucklescript-tea\"\n\
+      \  ],\n\
+      \  \"warnings\": {\n\
+      \    \"error\" : \"+101\"\n\
+      \  }\n\
+       }\n\
+       ")])
 ])
 
 end

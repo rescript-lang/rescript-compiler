@@ -1,0 +1,19 @@
+{
+  "name": "tea",
+  "version": "0.1.0",
+  "sources": {
+    "dir" : "src",
+    "subdirs" : true
+  },
+  "package-specs": {
+    "module": "commonjs",
+    "in-source": true
+  },
+  "suffix": ".bs.js",
+  "bs-dependencies": [
+      "bucklescript-tea"
+  ],
+  "warnings": {
+    "error" : "+101"
+  }
+}
