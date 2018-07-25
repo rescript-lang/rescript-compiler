@@ -5825,7 +5825,7 @@ end = struct
 
 let flag_concat flag xs = 
   xs 
-  |> Ext_list.flat_map (fun x -> [flag ; x])
+  |> Ext_list.flat_map (fun x -> [flag ; Filename.quote x])
   |> String.concat Ext_string.single_space
 let (//) = Ext_path.combine
 
