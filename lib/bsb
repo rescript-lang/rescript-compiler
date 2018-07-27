@@ -96,7 +96,10 @@ for (var i = 2; i < process_argv.length; ++i) {
     }
 }
 
-
+var tty = require('tty')
+if(tty.isatty(1)){
+    process.env.NINJA_ANSI_FORCED = '1'
+}
 
 try {
     child_process.execFileSync(bsb_exe, delegate_args, { stdio: 'inherit' })
