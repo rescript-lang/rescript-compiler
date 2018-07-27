@@ -1456,7 +1456,7 @@ let root = OCamlRes.Res.([
       \    \"bs-platform\": \"^${bsb:bs-version}\"\n\
       \  },\n\
       \  \"dependencies\": {\n\
-      \    \"bucklescript-tea\": \"^0.7.3\"\n\
+      \    \"bucklescript-tea\": \"^0.7.4\"\n\
       \  }\n\
        }\n\
        ") ;
