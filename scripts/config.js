@@ -9,13 +9,10 @@ exports.is_windows = is_windows
 var sys_extension;
 switch (os.type()) {
     case 'Darwin':
-        sys_extension = ".darwin"; break;
     case 'FreeBSD':
-        sys_extension = ".freebsd"; break;
-    case 'Linux':
-        sys_extension = ".linux64"; break;
+    case 'Linux':        
     case 'Windows_NT':
-        sys_extension = ".win"; break;
+        sys_extension = "." + os.platform(); break;
     default: throw ("Not supported" + os.type())
 }
 

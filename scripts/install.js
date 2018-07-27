@@ -38,7 +38,7 @@ function setUpNinja() {
     var vendor_ninja_version = '1.8.2'
     var ninja_bin_output = path.join(root_dir, 'lib', 'ninja.exe')
     var ninja_source_dir = path.join(root_dir, 'vendor', 'ninja')
-    var ninja_build_dir = path.join(root_dir, 'vendor', 'ninja-build')
+    
 
     function build_ninja() {
         console.log('No prebuilt Ninja, building Ninja now')
@@ -64,7 +64,7 @@ function setUpNinja() {
     };
 
 
-    var ninja_os_path = path.join(ninja_build_dir, 'ninja' + sys_extension)
+    var ninja_os_path = path.join(ninja_source_dir,'snapshot', 'ninja' + sys_extension)
     if (fs.existsSync(ninja_bin_output) && test_ninja_compatible(ninja_bin_output)) {
         console.log("ninja binary is already cached: ", ninja_bin_output)
     }
