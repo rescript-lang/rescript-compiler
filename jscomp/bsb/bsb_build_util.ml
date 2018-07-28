@@ -29,6 +29,13 @@ let flag_concat flag xs =
 let (//) = Ext_path.combine
 
 
+let ppx_flags xs =
+  xs
+  |> List.map Filename.quote
+  |> flag_concat "-ppx"
+
+let include_dirs = flag_concat "-I"
+
 
 (* we use lazy $src_root_dir *)
 

@@ -45,7 +45,6 @@ let merge_module_info_map acc sources : Bsb_db.t =
 let bsc_exe = "bsc.exe"
 let bsb_helper_exe = "bsb_helper.exe"
 let dash_i = "-I"
-let dash_ppx = "-ppx"
 
 
 
@@ -78,16 +77,16 @@ let output_ninja_and_namespace_map
   let bsc = bsc_dir // bsc_exe in   (* The path to [bsc.exe] independent of config  *)
   let bsdep = bsc_dir // bsb_helper_exe in (* The path to [bsb_heler.exe] *)
   let cwd_lib_bs = cwd // Bsb_config.lib_bs in 
-  let ppx_flags = Bsb_build_util.flag_concat dash_ppx ppx_flags in
+  let ppx_flags = Bsb_build_util.ppx_flags ppx_flags in
   let bsc_flags =  String.concat Ext_string.single_space bsc_flags in
   let refmt_flags = String.concat Ext_string.single_space refmt_flags in
   let oc = open_out_bin (cwd_lib_bs // Literals.build_ninja) in
   let bs_package_includes = 
-    Bsb_build_util.flag_concat dash_i @@ Ext_list.map 
+    Bsb_build_util.include_dirs @@ Ext_list.map 
       (fun (x : Bsb_config_types.dependency) -> x.package_install_path) bs_dependencies
   in
   let bs_package_dev_includes = 
-    Bsb_build_util.flag_concat dash_i @@ Ext_list.map 
+    Bsb_build_util.include_dirs @@ Ext_list.map 
       (fun (x : Bsb_config_types.dependency) -> x.package_install_path) bs_dev_dependencies
   in  
   let has_reason_files = ref false in 
@@ -166,7 +165,7 @@ let output_ninja_and_namespace_map
   let emit_bsc_lib_includes source_dirs = 
     Bsb_ninja_util.output_kv
       Bsb_build_schemas.bsc_lib_includes 
-      (Bsb_build_util.flag_concat dash_i @@ 
+      (Bsb_build_util.include_dirs @@ 
        (all_includes 
           (if namespace = None then source_dirs 
            else Filename.current_dir_name :: source_dirs) ))  oc 
@@ -203,7 +202,7 @@ let output_ninja_and_namespace_map
         String_map.iter (fun k _ -> if String_map.mem k lib then failwith ("conflict files found:" ^ k)) c ;
         Bsb_ninja_util.output_kv 
           (Bsb_dir_index.(string_of_bsb_dev_include (of_int i)))
-          (Bsb_build_util.flag_concat dash_i @@ source_dirs.(i)) oc
+          (Bsb_build_util.include_dirs @@ source_dirs.(i)) oc
       done  ;
       bs_groups,source_dirs.((Bsb_dir_index.lib_dir_index:>int)), static_resources
   in
