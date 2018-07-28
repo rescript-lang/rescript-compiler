@@ -1,3 +1,15 @@
+# 4.0.2
+Fixes
+- #2963 fix ppx-flags quoting issue
+
+Features
+- #2951 sync up with reason 
+- #2964 customize ninja to make output less verbose
+        Add NINJA_ANSI_FORCE env variable support so that third party tools running bsb can still preserve colors  
+- #2960 add tea theme support
+- #2959 less verbose bsb output
+- #2958 make `bsb -init` more forgiving
+
 # 4.0.1
 
 Fixes:
