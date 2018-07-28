@@ -135,7 +135,7 @@ let merlin_file_gen ~cwd
     | [] -> ()
     | _ -> 
 
-      Buffer.add_string buffer (merlin_flg ^ Bsb_build_util.flag_concat "-I" external_includes
+      Buffer.add_string buffer (merlin_flg ^ Bsb_build_util.include_dirs external_includes
       ));
     *)
     external_includes 
