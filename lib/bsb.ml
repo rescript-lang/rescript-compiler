@@ -9962,13 +9962,8 @@ let  handle_empty_sources (acc : Bsb_db.t)
   files
 
 
-
-
-
-
-
 let extract_input_output 
-    loc_start 
+    (loc_start : Ext_position.t) 
     (content : Ext_json_types.t array) : string list * string list = 
   let error () = 
     Bsb_exception.errorf ~loc:loc_start {| invalid edge format, expect  ["output" , ":", "input" ]|}
@@ -9978,26 +9973,29 @@ let extract_input_output
           () with 
   | `No_split -> error ()
   | `Split (  output, input) -> 
-    Ext_array.to_list_map (fun (x : Ext_json_types.t) -> 
+    (Ext_array.to_list_map (fun (x : Ext_json_types.t) -> 
         match x with
         | Str {str = ":"} -> 
           error ()
         | Str {str } ->           
           Some str 
-        | _ -> None) output ,
+        | _ -> None) output
+    ,
     Ext_array.to_list_map (fun (x : Ext_json_types.t) -> 
         match x with
         | Str {str = ":"} -> 
           error () 
         | Str {str} -> 
           Some str (* More rigirous error checking: It would trigger a ninja syntax error *)
-        | _ -> None) input
+        | _ -> None) input)
 
 let extract_generators 
     (input : Ext_json_types.t String_map.t) 
-    cut_generators_or_not_dev  dir  : build_generator list * Bsb_db.t ref =
+    (cut_generators_or_not_dev : bool) 
+    (dir : string) 
+    (cur_sources : Bsb_db.t ref)
+     : build_generator list  =
   let generators : build_generator list ref  = ref [] in
-  let cur_sources = ref String_map.empty in 
   begin match String_map.find_opt Bsb_build_schemas.generators input with
     | Some (Arr { content ; loc_start}) ->
       (* Need check is dev build or not *)
@@ -10014,27 +10012,26 @@ let extract_generators
               if not cut_generators_or_not_dev then begin 
                 generators := {input ; output ; command } :: !generators
               end;
-              (* ATTENTION: Now adding source files, 
+              (* ATTENTION: Now adding output as source files, 
                  it may be re-added again later when scanning files (not explicit files input)
               *)
               output |> List.iter begin fun  output -> 
-                begin match Ext_string.is_valid_source_name output with
+                  match Ext_string.is_valid_source_name output with
                   | Good ->
                     cur_sources := Bsb_db.map_update ~dir !cur_sources output
                   | Invalid_module_name ->                  
                     Bsb_log.warn warning_unused_file output dir 
-                  | Suffix_mismatch -> ()
-                end
+                  | Suffix_mismatch -> ()                
               end
             | _ ->
               Bsb_exception.errorf ~loc "Invalid generator format"
           end
         | _ -> Bsb_exception.errorf ~loc:(Ext_json.loc_of x) "Invalid generator format"
       done ;
-    | Some x  -> Bsb_exception.errorf ~loc:(Ext_json.loc_of x ) "Invalid generators format"
+    | Some x  -> Bsb_exception.errorf ~loc:(Ext_json.loc_of x ) "Invalid generator format"
     | None -> ()
   end ;
-  !generators , cur_sources
+  !generators 
 
 (** [parsing_source_dir_map cxt input]
     Major work done in this function, 
@@ -10055,7 +10052,11 @@ let rec
   = 
   let cur_update_queue = ref [] in 
   let cur_globbed_dirs = ref [] in 
-  let generators, cur_sources = extract_generators input (cut_generators || not_dev) dir in 
+  let cur_sources = ref String_map.empty in 
+  let generators= 
+      extract_generators input (cut_generators || not_dev) dir 
+      cur_sources
+  in 
   let sub_dirs_field = String_map.find_opt Bsb_build_schemas.subdirs input in 
   let file_array = lazy (Sys.readdir (Filename.concat cxt.root dir)) in 
   begin 
