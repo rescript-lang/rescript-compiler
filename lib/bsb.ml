@@ -9932,11 +9932,10 @@ let extract_resources (input : Ext_json_types.t String_map.t) =
   | None -> [] 
 
 
-let  handle_list_files (acc : Bsb_db.t)
+let  handle_empty_sources (acc : Bsb_db.t)
     dir 
     (file_array : string array Lazy.t)
-    (loc_start  : Lexing.position)
-    (loc_end  : Lexing.position)
+    ({loc_start; loc_end} : Ext_json_types.json_array) 
     (is_input_or_output : string -> bool)
   : Ext_file_pp.interval list * _ =    
   let files_array = Lazy.force file_array in 
@@ -10081,12 +10080,13 @@ let rec
               | Suffix_mismatch ->  acc
           ) !cur_sources (Lazy.force file_array);
       cur_globbed_dirs :=  [dir]  
-    | Some (Arr {loc_start;loc_end; content = [||] }) -> 
+    | Some (Arr ({content = [||] }as empty_json_array)) -> 
       (* [ ] populatd by scanning the dir (just once) *) 
       let tasks, files =  
-        handle_list_files !cur_sources cxt.cwd 
+        handle_empty_sources !cur_sources cxt.cwd 
           file_array 
-          loc_start loc_end (is_input_or_output  generators) in
+          empty_json_array
+          (is_input_or_output  generators) in
       cur_update_queue := tasks ;
       cur_sources := files
 
