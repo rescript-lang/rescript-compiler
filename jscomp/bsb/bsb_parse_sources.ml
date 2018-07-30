@@ -38,11 +38,7 @@ let is_input_or_output (xs : build_generator list) (x : string)  =
        let it_is = (fun y -> y = x ) in
        List.exists it_is input ||
        List.exists it_is output
-    ) xs 
-
-
-
-  
+    ) xs   
 
 let warning_unused_file : _ format = 
   "@{<warning>IGNORED@}: file %s under %s is ignored because it can't be turned into a valid module name. The build system transforms a file name into a module name by upper-casing the first letter@."
@@ -57,6 +53,9 @@ type cxt = {
   namespace : string option;
 }
 
+(** [public] has a list of modules, we do a sanity check to see if all the listed 
+  modules are indeed valid module components
+*)
 let collect_pub_modules 
     (xs : Ext_json_types.t array)
     (cache : Bsb_db.t) : String_set.t = 
@@ -81,7 +80,7 @@ let collect_pub_modules
   done  ;
   !set
 
-let extract_pub (input : Ext_json_types.t String_map.t) cur_sources =   
+let extract_pub (input : Ext_json_types.t String_map.t) (cur_sources : Bsb_db.t) =   
   match String_map.find_opt Bsb_build_schemas.public input with 
   | Some (Str{str = s; loc}) ->  
     if s = Bsb_build_schemas.export_all then (Export_all : public) else 
@@ -104,11 +103,12 @@ let extract_resources (input : Ext_json_types.t String_map.t) =
   | None -> [] 
 
 
-let  handle_list_files acc
+let  handle_list_files (acc : Bsb_db.t)
     dir 
-    file_array
-    loc_start loc_end 
-    is_input_or_output
+    (file_array : string array Lazy.t)
+    (loc_start  : Lexing.position)
+    (loc_end  : Lexing.position)
+    (is_input_or_output : string -> bool)
   : Ext_file_pp.interval list * _ =    
   let files_array = Lazy.force file_array in 
   let dyn_file_array = String_vec.make (Array.length files_array) in 
