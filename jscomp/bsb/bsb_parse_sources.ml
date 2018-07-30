@@ -22,17 +22,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type public = 
-  | Export_all 
-  | Export_set of String_set.t 
-  | Export_none
 
 
-type build_generator = 
-  { input : string list ;
-    output : string list;
-    command : string}
+type build_generator = Bsb_file_groups.build_generator
 
+type public = Bsb_file_groups.public 
+
+type file_group = Bsb_file_groups.file_group
+
+type t = Bsb_file_groups.t 
 
 let is_input_or_output (xs : build_generator list) (x : string)  = 
   List.exists 
@@ -42,37 +40,9 @@ let is_input_or_output (xs : build_generator list) (x : string)  =
        List.exists it_is output
     ) xs 
 
-type  file_group = 
-  { dir : string ;
-    sources : Bsb_db.t; 
-    resources : string list ;
-    public : public ;
-    dir_index : Bsb_dir_index.t  ;
-    generators : build_generator list ; 
-    (* output of [generators] should be added to [sources],
-       if it is [.ml,.mli,.re,.rei]
-    *)
-  } 
 
-let is_empty (x : file_group) = 
-  String_map.is_empty x.sources &&
-  x.resources = [] &&
-  x.generators = []
 
   
-(**
-    [intervals] are used for side effect so we can patch `bsconfig.json` to add new files 
-     we need add a new line in the end,
-     otherwise it will be idented twice
-*)
-
-type t =   
-  { files :  file_group list ; 
-    intervals :  Ext_file_pp.interval list ;    
-    globbed_dirs : string list ; 
-  }
-
-
 
 let warning_unused_file : _ format = 
   "@{<warning>IGNORED@}: file %s under %s is ignored because it can't be turned into a valid module name. The build system transforms a file name into a module name by upper-casing the first letter@."
@@ -114,7 +84,7 @@ let collect_pub_modules
 let extract_pub (input : Ext_json_types.t String_map.t) cur_sources =   
   match String_map.find_opt Bsb_build_schemas.public input with 
   | Some (Str{str = s; loc}) ->  
-    if s = Bsb_build_schemas.export_all then Export_all else 
+    if s = Bsb_build_schemas.export_all then (Export_all : public) else 
     if s = Bsb_build_schemas.export_none then Export_none else 
       Bsb_exception.errorf ~loc "invalid str for %s "  s 
   | Some (Arr {content = s}) ->         
@@ -168,19 +138,6 @@ let  handle_list_files acc
 
 
 
-let empty = { files = []; intervals  = []; globbed_dirs = [];  }
-
-
-
-let (++) (u : t)  (v : t)  = 
-  if u == empty then v 
-  else if v == empty then u 
-  else 
-    {
-      files = Ext_list.append u.files  v.files ; 
-      intervals = Ext_list.append u.intervals  v.intervals ; 
-      globbed_dirs = Ext_list.append u.globbed_dirs  v.globbed_dirs ; 
-    }
 
 let extract_input_output 
     loc_start 
@@ -344,7 +301,7 @@ let rec
   let cur_sources = !cur_sources in 
   let resources = extract_resources input in
   let public = extract_pub input cur_sources in 
-  let cur_file = 
+  let cur_file : file_group = 
     {dir ; 
      sources = cur_sources; 
      resources ;
@@ -364,21 +321,22 @@ let rec
         Lazy.force file_array
         |> Array.fold_left (fun origin x -> 
             if Sys.is_directory (Filename.concat parent x) then 
+              Bsb_file_groups.merge
               (
                 parsing_source_dir_map
                   {cxt with 
                    cwd = Ext_path.concat cxt.cwd (Ext_filename.simple_convert_node_path_to_os_path x);
                    traverse = true
-                  } String_map.empty ++ origin 
-              )
+                  } String_map.empty)  origin 
+              
             else origin  
-          ) empty in 
+          ) Bsb_file_groups.empty in 
       res.files, res.intervals, res.globbed_dirs 
     | None, false  
     | Some (False _), _  -> [], [], []
 
     | Some s, _  -> 
-      let res  = parse_sources cxt s in 
+      let res : t  = parse_sources cxt s in 
       res.files ,
       res.intervals,
       res.globbed_dirs
@@ -439,7 +397,7 @@ and parsing_single_source ({not_dev; dir_index ; cwd} as cxt ) (x : Ext_json_typ
   match x with 
   | Str  { str = dir }  -> 
     if not_dev && not (Bsb_dir_index.is_lib_dir dir_index) then 
-      empty
+      Bsb_file_groups.empty
     else 
       parsing_source_dir_map 
         {cxt with 
@@ -451,7 +409,8 @@ and parsing_single_source ({not_dev; dir_index ; cwd} as cxt ) (x : Ext_json_typ
       | Some (Str {str="dev"}) -> Bsb_dir_index.get_dev_index ()
       | Some _ -> Bsb_exception.config_error x {|type field expect "dev" literal |}
       | None -> dir_index in 
-    if not_dev && not (Bsb_dir_index.is_lib_dir current_dir_index) then empty 
+    if not_dev && not (Bsb_dir_index.is_lib_dir current_dir_index) then 
+      Bsb_file_groups.empty 
     else 
       let dir = 
         match String_map.find_opt Bsb_build_schemas.dir map with 
@@ -467,11 +426,11 @@ and parsing_single_source ({not_dev; dir_index ; cwd} as cxt ) (x : Ext_json_typ
       parsing_source_dir_map 
         {cxt with dir_index = current_dir_index; 
                   cwd= Ext_path.concat cwd dir} map
-  | _ -> empty 
+  | _ -> Bsb_file_groups.empty
 and  parsing_arr_sources cxt (file_groups : Ext_json_types.t array)  = 
   Array.fold_left (fun  origin x ->
-      parsing_single_source cxt x ++ origin 
-    ) empty  file_groups 
+      Bsb_file_groups.merge (parsing_single_source cxt x) origin 
+    ) Bsb_file_groups.empty  file_groups 
 
 and  parse_sources ( cxt : cxt) (sources : Ext_json_types.t )  = 
   match sources with   

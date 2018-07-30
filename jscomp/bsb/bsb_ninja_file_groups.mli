@@ -36,6 +36,6 @@ val handle_file_groups :
   js_post_build_cmd:string option -> 
   files_to_install:String_hash_set.t ->  
   custom_rules:Bsb_rule.t String_map.t ->
-  Bsb_parse_sources.file_group list ->
+  Bsb_file_groups.file_groups ->
   string option -> 
   info -> info

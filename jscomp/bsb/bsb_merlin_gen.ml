@@ -173,8 +173,8 @@ let merlin_file_gen ~cwd
         Buffer.add_string buffer path ;
       );
 
-    res_files |> List.iter (fun (x : Bsb_parse_sources.file_group) -> 
-        if not (Bsb_parse_sources.is_empty x) then 
+    res_files |> List.iter (fun (x : Bsb_file_groups.file_group) -> 
+        if not (Bsb_file_groups.is_empty x) then 
           begin
             Buffer.add_string buffer merlin_s;
             Buffer.add_string buffer x.dir ;
