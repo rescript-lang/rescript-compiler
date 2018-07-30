@@ -103,17 +103,18 @@ let extract_resources (input : Ext_json_types.t String_map.t) =
   | None -> [] 
 
 
-let  handle_empty_sources (acc : Bsb_db.t)
+let  handle_empty_sources 
+    ( cur_sources : Bsb_db.t ref)
     dir 
     (file_array : string array Lazy.t)
     ({loc_start; loc_end} : Ext_json_types.json_array) 
-    (is_input_or_output : string -> bool)
-  : Ext_file_pp.interval list * _ =    
+    generators
+  : Ext_file_pp.interval list  =    
   let files_array = Lazy.force file_array in 
   let dyn_file_array = String_vec.make (Array.length files_array) in 
   let files  =
     Array.fold_left (fun acc name -> 
-        if is_input_or_output name then acc 
+        if is_input_or_output generators name then acc 
         else
           match Ext_string.is_valid_source_name name with 
           | Good ->   begin 
@@ -126,11 +127,13 @@ let  handle_empty_sources (acc : Bsb_db.t)
               warning_unused_file name dir ;
             acc 
           | Suffix_mismatch -> acc 
-      ) acc files_array in 
+      ) !cur_sources files_array in 
+  cur_sources := files ;    
   [ Ext_file_pp.patch_action dyn_file_array 
       loc_start loc_end
-  ],
-  files
+  ]
+  (* ,
+  files *)
 
 
 let extract_input_output 
@@ -224,7 +227,7 @@ let rec
   let cur_update_queue = ref [] in 
   let cur_globbed_dirs = ref [] in 
   let cur_sources = ref String_map.empty in 
-  let generators= 
+  let generators = 
       extract_generators input (cut_generators || not_dev) dir 
       cur_sources
   in 
@@ -233,7 +236,6 @@ let rec
   begin 
     match String_map.find_opt Bsb_build_schemas.files input with 
     | None ->  (* No setting on [!files]*)
-
       (** We should avoid temporary files *)
       cur_sources := 
         Array.fold_left (fun acc name -> 
@@ -253,16 +255,13 @@ let rec
           ) !cur_sources (Lazy.force file_array);
       cur_globbed_dirs :=  [dir]  
     | Some (Arr ({content = [||] }as empty_json_array)) -> 
-      (* [ ] populatd by scanning the dir (just once) *) 
-      let tasks, files =  
-        handle_empty_sources !cur_sources cxt.cwd 
+      (* [ ] populatd by scanning the dir (just once) *)         
+      cur_update_queue := 
+          handle_empty_sources cur_sources cxt.cwd 
           file_array 
           empty_json_array
-          (is_input_or_output  generators) in
-      cur_update_queue := tasks ;
-      cur_sources := files
-
-    | Some (Arr {loc_start;loc_end; content = s }) -> 
+          generators
+    | Some (Arr {loc_start;loc_end; content = sx }) -> 
       (* [ a,b ] populated by users themselves 
          TODO: still need check?
       *)      
@@ -272,8 +271,9 @@ let rec
             | Str {str = s} -> 
               Bsb_db.map_update ~dir acc s
             | _ -> acc
-          ) !cur_sources s    
+          ) !cur_sources sx    
     | Some (Obj {map = m; loc} ) -> (* { excludes : [], slow_re : "" }*)
+      cur_globbed_dirs := [dir];  
       let excludes = 
         match String_map.find_opt Bsb_build_schemas.excludes m with 
         | None -> []   
@@ -294,9 +294,7 @@ let rec
           if is_input_or_output generators name || not (predicate name) then acc 
           else 
             Bsb_db.map_update  ~dir acc name 
-        ) !cur_sources (Lazy.force file_array);
-      cur_globbed_dirs := [dir]              
-
+        ) !cur_sources (Lazy.force file_array)      
     | Some x -> Bsb_exception.config_error x "files field expect array or object "
   end;
   let cur_sources = !cur_sources in 
@@ -310,6 +308,7 @@ let rec
      dir_index = cxt.dir_index ;
      generators ; 
     } in 
+  (** Doing recursive stuff *)  
   let children, children_update_queue, children_globbed_dirs =     
     match sub_dirs_field, 
           cxt_traverse with 
@@ -318,24 +317,22 @@ let rec
       let root = cxt.root in 
       let parent = Filename.concat root dir in
       let res =
-        (* readdir parent avoiding scanning twice *)
-        Lazy.force file_array
-        |> Array.fold_left (fun origin x -> 
+        (* readdir parent avoiding scanning twice *)        
+        Array.fold_left (fun origin x -> 
             if Sys.is_directory (Filename.concat parent x) then 
               Bsb_file_groups.merge
               (
                 parsing_source_dir_map
                   {cxt with 
-                   cwd = Ext_path.concat cxt.cwd (Ext_filename.simple_convert_node_path_to_os_path x);
+                   cwd = Ext_path.concat cxt.cwd 
+                        (Ext_filename.simple_convert_node_path_to_os_path x);
                    traverse = true
-                  } String_map.empty)  origin 
-              
+                  } String_map.empty)  origin               
             else origin  
-          ) Bsb_file_groups.empty in 
+          ) Bsb_file_groups.empty (Lazy.force file_array) in 
       res.files, res.intervals, res.globbed_dirs 
     | None, false  
     | Some (False _), _  -> [], [], []
-
     | Some s, _  -> 
       let res : t  = parse_sources cxt s in 
       res.files ,
@@ -373,14 +370,14 @@ let rec
                  with 
                    _  -> ()
              );
-             try_unlink (Filename.concat lib_parent (basename ^ Literals.suffix_cmi));
-             try_unlink (Filename.concat lib_parent (basename ^ Literals.suffix_cmj));
-             try_unlink (Filename.concat lib_parent (basename ^ Literals.suffix_cmt));
-             try_unlink (Filename.concat lib_parent (basename ^ Literals.suffix_cmti));
-             try_unlink (Filename.concat lib_parent (basename ^ Literals.suffix_mlast));
-             try_unlink (Filename.concat lib_parent (basename ^ Literals.suffix_mlastd));
-             try_unlink (Filename.concat lib_parent (basename ^ Literals.suffix_mliast));
-             try_unlink (Filename.concat lib_parent (basename ^ Literals.suffix_mliastd));
+             List.iter (fun suffix -> 
+              try_unlink (Filename.concat lib_parent (basename ^ suffix))
+             ) [
+                Literals.suffix_cmi; Literals.suffix_cmj ; 
+                Literals.suffix_cmt; Literals.suffix_cmti ; 
+                Literals.suffix_mlast; Literals.suffix_mlastd;
+                Literals.suffix_mliast; Literals.suffix_mliastd
+             ];
            end           
      done 
   )
