@@ -217,6 +217,52 @@ let try_unlink s =
   with _ -> 
     Bsb_log.info "@{<info>Failed to remove %s}@." s 
 
+
+let clean_staled_bs_js_files 
+    (cxt : cxt) 
+    (cur_sources : _ String_map.t ) 
+    (files : string array)  =     
+  for i = 0 to Array.length files - 1 do 
+    let f = Array.unsafe_get files i in
+    match Ext_namespace.ends_with_bs_suffix_then_chop f  with
+    | None -> ()
+    | Some basename -> (* Found [.bs.js] files *)
+         let parent = Filename.concat cxt.root cxt.cwd in 
+         let lib_parent = 
+           Filename.concat (Filename.concat cxt.root Bsb_config.lib_bs) 
+             cxt.cwd in 
+         if not (String_map.mem (Ext_string.capitalize_ascii basename) cur_sources) then 
+           begin 
+             Unix.unlink (Filename.concat parent f);
+             let basename = 
+               match cxt.namespace with  
+               | None -> basename
+               | Some ns -> Ext_namespace.make ~ns basename in 
+             (
+               match Sys.getenv "BS_CMT_POST_PROCESS_CMD" with 
+               | exception _ -> ()
+               | cmd -> 
+                 try 
+                   Sys.command (
+                     cmd ^ 
+                     " -cmt-rm " ^
+                     Filename.concat lib_parent (basename ^ Literals.suffix_cmt))
+                   |> ignore
+                 with 
+                   _  -> ()
+             );
+             List.iter (fun suffix -> 
+              try_unlink (Filename.concat lib_parent (basename ^ suffix))
+             ) [
+                Literals.suffix_cmi; Literals.suffix_cmj ; 
+                Literals.suffix_cmt; Literals.suffix_cmti ; 
+                Literals.suffix_mlast; Literals.suffix_mlastd;
+                Literals.suffix_mliast; Literals.suffix_mliastd
+             ];
+           end           
+  done
+
+
 let rec 
   parsing_source_dir_map 
     ({ cwd =  dir; not_dev; cut_generators ; 
@@ -300,25 +346,15 @@ let rec
   let cur_sources = !cur_sources in 
   let resources = extract_resources input in
   let public = extract_pub input cur_sources in 
-  let cur_file : file_group = 
-    {dir ; 
-     sources = cur_sources; 
-     resources ;
-     public ;
-     dir_index = cxt.dir_index ;
-     generators ; 
-    } in 
   (** Doing recursive stuff *)  
-  let children, children_update_queue, children_globbed_dirs =     
+  let children =     
     match sub_dirs_field, 
           cxt_traverse with 
     | None , true
     | Some (True _), _ -> 
       let root = cxt.root in 
       let parent = Filename.concat root dir in
-      let res =
-        (* readdir parent avoiding scanning twice *)        
-        Array.fold_left (fun origin x -> 
+      Array.fold_left (fun origin x -> 
             if Sys.is_directory (Filename.concat parent x) then 
               Bsb_file_groups.merge
               (
@@ -329,65 +365,24 @@ let rec
                    traverse = true
                   } String_map.empty)  origin               
             else origin  
-          ) Bsb_file_groups.empty (Lazy.force file_array) in 
-      res.files, res.intervals, res.globbed_dirs 
+          ) Bsb_file_groups.empty (Lazy.force file_array) 
+        (* readdir parent avoiding scanning twice *)        
     | None, false  
-    | Some (False _), _  -> [], [], []
-    | Some s, _  -> 
-      let res : t  = parse_sources cxt s in 
-      res.files ,
-      res.intervals,
-      res.globbed_dirs
+    | Some (False _), _  -> Bsb_file_groups.empty
+    | Some s, _  -> parse_sources cxt s 
   in 
-  (match file_array with 
-   | lazy files -> 
-     for i = 0 to Array.length files - 1 do 
-       let f = Array.unsafe_get files i in
-       match Ext_namespace.ends_with_bs_suffix_then_chop f  with
-       | None -> ()
-       | Some basename -> 
-         let parent = Filename.concat cxt.root cxt.cwd in 
-         let lib_parent = 
-           Filename.concat (Filename.concat cxt.root Bsb_config.lib_bs) 
-             cxt.cwd in 
-         if not (String_map.mem (Ext_string.capitalize_ascii basename) cur_sources) then 
-           begin 
-             Unix.unlink (Filename.concat parent f);
-             let basename = 
-               match cxt.namespace with  
-               | None -> basename
-               | Some ns -> Ext_namespace.make ~ns basename in 
-             (
-               match Sys.getenv "BS_CMT_POST_PROCESS_CMD" with 
-               | exception _ -> ()
-               | cmd -> 
-                 try 
-                   Sys.command (
-                     cmd ^ 
-                     " -cmt-rm " ^
-                     Filename.concat lib_parent (basename ^ Literals.suffix_cmt))
-                   |> ignore
-                 with 
-                   _  -> ()
-             );
-             List.iter (fun suffix -> 
-              try_unlink (Filename.concat lib_parent (basename ^ suffix))
-             ) [
-                Literals.suffix_cmi; Literals.suffix_cmj ; 
-                Literals.suffix_cmt; Literals.suffix_cmti ; 
-                Literals.suffix_mlast; Literals.suffix_mlastd;
-                Literals.suffix_mliast; Literals.suffix_mliastd
-             ];
-           end           
-     done 
-  )
-  ;
-
-  {
-    files =  cur_file :: children;
-    intervals = !cur_update_queue @ children_update_queue ;
-    globbed_dirs = !cur_globbed_dirs @ children_globbed_dirs;
-  } 
+  (** Do some clean up *)  
+  clean_staled_bs_js_files cxt cur_sources (Lazy.force file_array );  
+  Bsb_file_groups.merge {
+    files =  [ { dir ; 
+                 sources = cur_sources; 
+                 resources ;
+                 public ;
+                 dir_index = cxt.dir_index ;
+                generators  } ] ;
+    intervals = !cur_update_queue ;
+    globbed_dirs = !cur_globbed_dirs ;
+  }  children
 
 
 and parsing_single_source ({not_dev; dir_index ; cwd} as cxt ) (x : Ext_json_types.t )
