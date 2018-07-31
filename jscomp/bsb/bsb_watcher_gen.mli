@@ -31,4 +31,4 @@
   mean the duplication of logic in [bsb] and [bsb_watcher]
 *)
 val generate_sourcedirs_meta : 
-  string -> Bsb_parse_sources.t -> unit 
+  string -> Bsb_file_groups.t -> unit 

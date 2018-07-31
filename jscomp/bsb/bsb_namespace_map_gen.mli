@@ -29,5 +29,5 @@
 val output : 
   dir:string ->
   string -> 
-  Bsb_parse_sources.file_group list ->
+  Bsb_file_groups.file_groups ->
   unit 

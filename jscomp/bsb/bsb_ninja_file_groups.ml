@@ -39,11 +39,11 @@ let zero : info =
 
 
 let handle_generators oc 
-    (group : Bsb_parse_sources.file_group) custom_rules =   
+    (group : Bsb_file_groups.file_group) custom_rules =   
   let map_to_source_dir = 
     (fun x -> Bsb_config.proj_rel (group.dir //x )) in
   group.generators
-  |> List.iter (fun  ({output; input; command}  : Bsb_parse_sources.build_generator)-> 
+  |> List.iter (fun  ({output; input; command}  : Bsb_file_groups.build_generator)-> 
       begin match String_map.find_opt command custom_rules with 
         | None -> Ext_pervasives.failwithf ~loc:__LOC__ "custom rule %s used but  not defined" command
         | Some rule -> 
@@ -281,7 +281,7 @@ let handle_file_group
     (files_to_install : String_hash_set.t) 
     (namespace  : string option)
     acc 
-    (group: Bsb_parse_sources.file_group ) 
+    (group: Bsb_file_groups.file_group ) 
   : info =
 
   handle_generators oc group custom_rules ;
@@ -311,7 +311,7 @@ let handle_file_groups
     ~bs_suffix
     ~js_post_build_cmd
     ~files_to_install ~custom_rules
-    (file_groups  :  Bsb_parse_sources.file_group list)
+    (file_groups  :  Bsb_file_groups.file_groups)
     namespace (st : info) : info  =
   List.fold_left 
     (handle_file_group 

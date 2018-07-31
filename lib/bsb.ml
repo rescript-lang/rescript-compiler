@@ -6409,456 +6409,6 @@ let clean_bs_deps bsc_dir proj_dir =
 
 let clean_self bsc_dir proj_dir = clean_bs_garbage bsc_dir proj_dir
 end
-module Ext_namespace : sig 
-#1 "ext_namespace.mli"
-(* Copyright (C) 2017- Authors of BuckleScript
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-(** [make ~ns "a" ]
-    A typical example would return "a-Ns"
-    Note the namespace comes from the output of [namespace_of_package_name]
-*)
-val make : ns:string -> string -> string 
-
-val try_split_module_name :
-  string -> (string * string ) option
-
-(** [ends_with_bs_suffix_then_chop filename]
-  is used to help we have dangling modules
-*)
-val ends_with_bs_suffix_then_chop : 
-  string -> string option   
-
-
-(* Note  we have to output uncapitalized file Name, 
-   or at least be consistent, since by reading cmi file on Case insensitive OS, we don't really know it is `list.cmi` or `List.cmi`, so that `require (./list.js)` or `require(./List.js)`
-   relevant issues: #1609, #913  
-
-   #1933 when removing ns suffix, don't pass the bound
-   of basename
-*)
-val js_name_of_basename :  
-  bool ->
-  string -> string 
-
-type file_kind = 
-  | Upper_js
-  | Upper_bs
-  | Little_js 
-  | Little_bs 
-  (** [js_name_of_modulename ~little A-Ns]
-  *)
-val js_name_of_modulename : file_kind -> string -> string
-
-(* TODO handle cases like 
-   '@angular/core'
-   its directory structure is like 
-   {[
-     @angular
-     |-------- core
-   ]}
-*)
-val is_valid_npm_package_name : string -> bool 
-
-val namespace_of_package_name : string -> string
-
-end = struct
-#1 "ext_namespace.ml"
-
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-(* Note the build system should check the validity of filenames
-   espeically, it should not contain '-'
-*)
-let ns_sep_char = '-'
-let ns_sep = "-"
-
-let make ~ns cunit  = 
-  cunit ^ ns_sep ^ ns
-
-let path_char = Filename.dir_sep.[0]
-
-let rec rindex_rec s i  =
-  if i < 0 then i else
-    let char = String.unsafe_get s i in
-    if char = path_char then -1 
-    else if char = ns_sep_char then i 
-    else
-      rindex_rec s (i - 1) 
-
-let remove_ns_suffix name =
-  let i = rindex_rec name (String.length name - 1)  in 
-  if i < 0 then name 
-  else String.sub name 0 i 
-
-let try_split_module_name name = 
-  let len = String.length name in 
-  let i = rindex_rec name (len - 1)  in 
-  if i < 0 then None 
-  else 
-    Some (String.sub name (i+1) (len - i - 1),
-          String.sub name 0 i )
-type file_kind = 
-  | Upper_js
-  | Upper_bs
-  | Little_js 
-  | Little_bs
-
-let suffix_js = ".js"  
-let bs_suffix_js = ".bs.js"
-
-let ends_with_bs_suffix_then_chop s = 
-  Ext_string.ends_with_then_chop s bs_suffix_js
-  
-let js_name_of_basename bs_suffix s =   
-  remove_ns_suffix  s ^ 
-  (if bs_suffix then bs_suffix_js else  suffix_js )
-
-let js_name_of_modulename little s = 
-  match little with 
-  | Little_js -> 
-    remove_ns_suffix (String.uncapitalize s) ^ suffix_js
-  | Little_bs -> 
-    remove_ns_suffix (String.uncapitalize s) ^ bs_suffix_js
-  | Upper_js ->
-    remove_ns_suffix s ^ suffix_js
-  | Upper_bs -> 
-    remove_ns_suffix s ^ bs_suffix_js
-
-(* https://docs.npmjs.com/files/package.json 
-   Some rules:
-   The name must be less than or equal to 214 characters. This includes the scope for scoped packages.
-   The name can't start with a dot or an underscore.
-   New packages must not have uppercase letters in the name.
-   The name ends up being part of a URL, an argument on the command line, and a folder name. Therefore, the name can't contain any non-URL-safe characters.
-*)
-let is_valid_npm_package_name (s : string) = 
-  let len = String.length s in 
-  len <= 214 && (* magic number forced by npm *)
-  len > 0 &&
-  match String.unsafe_get s 0 with 
-  | 'a' .. 'z' | '@' -> 
-    Ext_string.for_all_from s 1 
-      (fun x -> 
-         match x with 
-         |  'a'..'z' | '0'..'9' | '_' | '-' -> true
-         | _ -> false )
-  | _ -> false 
-
-
-let namespace_of_package_name (s : string) : string = 
-  let len = String.length s in 
-  let buf = Buffer.create len in 
-  let add capital ch = 
-    Buffer.add_char buf 
-      (if capital then 
-         (Char.uppercase ch)
-       else ch) in    
-  let rec aux capital off len =     
-    if off >= len then ()
-    else 
-      let ch = String.unsafe_get s off in
-      match ch with 
-      | 'a' .. 'z' 
-      | 'A' .. 'Z' 
-      | '0' .. '9'
-        ->
-        add capital ch ; 
-        aux false (off + 1) len 
-      | '/'
-      | '-' -> 
-        aux true (off + 1) len 
-      | _ -> aux capital (off+1) len
-  in 
-  aux true 0 len ;
-  Buffer.contents buf 
-
-end
-module Bsb_package_specs : sig 
-#1 "bsb_package_specs.mli"
-(* Copyright (C) 2017 Authors of BuckleScript
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type t
-
-
-val default_package_specs : t
-
-val from_json:
-  Ext_json_types.t -> t 
-
-val get_list_of_output_js : 
-  t -> bool -> string -> string list
-
-(**
-  Sample output: {[ -bs-package-output commonjs:lib/js/jscomp/test]}
-*)
-val package_flag_of_package_specs : 
-  t -> string -> string
-
-
-end = struct
-#1 "bsb_package_specs.ml"
-(* Copyright (C) 2017 Authors of BuckleScript
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-let (//) = Ext_path.combine 
-
-let common_js_prefix p  =  Bsb_config.lib_js  // p
-let amd_js_prefix p = Bsb_config.lib_amd // p 
-let es6_prefix p = Bsb_config.lib_es6 // p 
-let es6_global_prefix p =  Bsb_config.lib_es6_global // p
-let amdjs_global_prefix p = Bsb_config.lib_amd_global // p 
-
-type spec = {
-  format : string;
-  in_source : bool 
-}
-
-module Spec_set = Set.Make( struct type t = spec 
-    let compare = Pervasives.compare 
-  end)
-
-type t = Spec_set.t 
-
-
-
-let supported_format x = 
-  x = Literals.amdjs ||
-  x = Literals.commonjs ||
-  x = Literals.es6 ||
-  x = Literals.es6_global ||
-  x = Literals.amdjs_global
-
-let bad_module_format_message_exn ~loc format =
-  Bsb_exception.errorf ~loc "package-specs: `%s` isn't a valid output module format. It has to be one of: %s, %s, %s, %s or %s"
-    format
-    Literals.amdjs
-    Literals.commonjs
-    Literals.es6
-    Literals.es6_global
-    Literals.amdjs_global
-
-let rec from_array (arr : Ext_json_types.t array) : Spec_set.t =
-  let spec = ref Spec_set.empty in
-  let has_in_source = ref false in
-  arr
-  |> Array.iter (fun (x : Ext_json_types.t) ->
-
-      let result = from_json_single x  in
-      if result.in_source then 
-        (
-          if not !has_in_source then
-            has_in_source:= true
-          else 
-            Bsb_exception.errorf 
-              ~loc:(Ext_json.loc_of x) 
-              "package-specs: we've detected two module formats that are both configured to be in-source." 
-        );
-      spec := Spec_set.add result !spec
-    );
-  !spec
-
-(* TODO: FIXME: better API without mutating *)
-and from_json_single (x : Ext_json_types.t) : spec =
-  match x with
-  | Str {str = format; loc } ->
-    if supported_format format then
-      {format ; in_source = false }
-    else
-      (bad_module_format_message_exn ~loc format)
-  | Obj {map; loc} ->
-    begin match String_map.find_exn "module" map with
-      | Str {str = format} ->
-        let in_source = 
-          match String_map.find_opt Bsb_build_schemas.in_source map with
-          | Some (True _) -> true
-          | Some _
-          | None -> false
-        in
-        if supported_format format then
-          {format ; in_source  }
-        else
-          bad_module_format_message_exn ~loc format
-      | Arr _ ->
-        Bsb_exception.errorf ~loc
-          "package-specs: when the configuration is an object, `module` field should be a string, not an array. If you want to pass multiple module specs, try turning package-specs into an array of objects (or strings) instead."
-      | _ ->
-        Bsb_exception.errorf ~loc
-          "package-specs: the `module` field of the configuration object should be a string."
-      | exception _ ->
-        Bsb_exception.errorf ~loc
-          "package-specs: when the configuration is an object, the `module` field is mandatory."
-    end
-  | _ -> Bsb_exception.errorf ~loc:(Ext_json.loc_of x)
-           "package-specs: we expect either a string or an object."
-
-let  from_json (x : Ext_json_types.t) : Spec_set.t =
-  match x with
-  | Arr {content ; _} -> from_array content
-  | _ -> Spec_set.singleton (from_json_single x )
-
-
-let bs_package_output = "-bs-package-output"
-
-(** Assume input is valid 
-    {[ -bs-package-output commonjs:lib/js/jscomp/test ]}
-*)
-let package_flag ({format; in_source } : spec) dir =
-  Ext_string.inter2
-    bs_package_output 
-    (Ext_string.concat3
-       format
-       Ext_string.single_colon
-       (if in_source then dir else
-          (if format = Literals.amdjs then 
-             amd_js_prefix dir 
-           else if format = Literals.commonjs then 
-             common_js_prefix dir 
-           else if format = Literals.es6 then 
-             es6_prefix dir 
-           else if format = Literals.es6_global then 
-             es6_global_prefix dir   
-           else if format = Literals.amdjs_global then 
-             amdjs_global_prefix dir 
-           else assert false))
-    )
-
-let package_flag_of_package_specs (package_specs : t) 
-    (dirname : string ) = 
-  (Spec_set.fold (fun format acc ->
-       Ext_string.inter2 acc (package_flag format dirname )
-
-     ) package_specs Ext_string.empty)
-
-let default_package_specs = 
-  Spec_set.singleton 
-    { format = Literals.commonjs ; in_source = false }
-(** js output for each package *)
-let package_output ({format; in_source } : spec) output=
-
-  let prefix  =
-    if in_source then fun x -> x 
-    else
-      (if format = Literals.commonjs then
-         common_js_prefix
-       else if format = Literals.amdjs then
-         amd_js_prefix
-       else if format = Literals.es6 then 
-         es6_prefix   
-       else if format = Literals.es6_global then 
-         es6_global_prefix  
-       else  if format = Literals.amdjs_global then 
-         amdjs_global_prefix
-       else assert false)
-  in
-  (Bsb_config.proj_rel @@ prefix output )
-
-(**
-    [get_list_of_output_js specs "src/hi/hello"]
-
-*)
-let get_list_of_output_js 
-    package_specs 
-    bs_suffix
-    output_file_sans_extension = 
-  Spec_set.fold 
-    (fun format acc ->
-       package_output format 
-         ( Ext_namespace.js_name_of_basename bs_suffix
-             output_file_sans_extension)
-       :: acc
-    ) package_specs []
-
-
-end
 module Ext_modulename : sig 
 #1 "ext_modulename.mli"
 (* Copyright (C) 2017 Authors of BuckleScript
@@ -8271,140 +7821,6 @@ let patch_action file_array
   close_in ic *)
 
 end
-module Ext_filename : sig 
-#1 "ext_filename.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-(* TODO:
-   Change the module name, this code is not really an extension of the standard 
-    library but rather specific to JS Module name convention. 
-*)
-
-
-
-
-
-(** An extension module to calculate relative path follow node/npm style. 
-    TODO : this short name will have to change upon renaming the file.
-*)
-
-(** Js_output is node style, which means 
-    separator is only '/'
-
-    if the path contains 'node_modules', 
-    [node_relative_path] will discard its prefix and 
-    just treat it as a library instead
-*)
-
-val cwd : string Lazy.t
-
-(* It is lazy so that it will not hit errors when in script mode *)
-val package_dir : string Lazy.t
-
-
-val simple_convert_node_path_to_os_path : string -> string
-
-
-end = struct
-#1 "ext_filename.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-type t = Ext_path.t
-
-let cwd = lazy (Sys.getcwd ())
-
-
-
-
-(* Input must be absolute directory *)
-let rec find_root_filename ~cwd filename   = 
-  if Sys.file_exists ( Filename.concat cwd  filename) then cwd
-  else 
-    let cwd' = Filename.dirname cwd in 
-    if String.length cwd' < String.length cwd then  
-      find_root_filename ~cwd:cwd'  filename 
-    else 
-      Ext_pervasives.failwithf 
-        ~loc:__LOC__
-        "%s not found from %s" filename cwd
-
-
-let find_package_json_dir cwd  = 
-  find_root_filename ~cwd  Literals.bsconfig_json
-
-let package_dir = lazy (find_package_json_dir (Lazy.force cwd))
-
-
-
-
-
-
-
-
-let simple_convert_node_path_to_os_path =
-  if Sys.unix then fun x -> x 
-  else if Sys.win32 || Sys.cygwin then 
-    Ext_string.replace_slash_backward 
-  else failwith ("Unknown OS : " ^ Sys.os_type)
-
-
-
-end
 module Set_gen
 = struct
 #1 "set_gen.ml"
@@ -9067,9 +8483,10 @@ let print fmt s =
 
 
 end
-module Bsb_parse_sources : sig 
-#1 "bsb_parse_sources.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+module Bsb_file_groups
+= struct
+#1 "bsb_file_groups.ml"
+(* Copyright (C) 2018- Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -9093,133 +8510,18 @@ module Bsb_parse_sources : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type public = 
+
+ type public = 
+  | Export_none
   | Export_all 
   | Export_set of String_set.t 
-  | Export_none
-
-
+  
 
 type build_generator = 
   { input : string list ;
     output : string list;
-    command : string}
+    command : string}  
 
-type  file_group = 
-  { dir : string ; 
-    (* currently relative path expected for ninja file generation *)
-    sources : Bsb_db.t ; 
-    resources : string list ; 
-    (* relative path *)
-    public : public;
-    dir_index : Bsb_dir_index.t; 
-    generators : build_generator list;
-  } 
-
-(** when [is_empty file_group]
-    we don't need issue [-I] [-S] in [.merlin] file
-*)  
-val is_empty : file_group -> bool 
-
-type t = 
-  { files :  file_group list ;
-    (* flattened list of directories *)
-    intervals :  Ext_file_pp.interval list ;
-    globbed_dirs : string list ; 
-
-  }
-
-
-
-
-
-type cxt = {
-  not_dev : bool ;
-  dir_index : Bsb_dir_index.t ; 
-  cwd : string ;
-  root : string ;
-  cut_generators : bool;
-  traverse : bool;
-  namespace : string option;
-}
-
-
-(* val parsing_simple_dir : 
-  cxt -> 
-  string -> 
-  t *)
-
-(* val parsing_source_dir_map :
-  cxt ->
-  Ext_json_types.t String_map.t -> 
-  t *)
-
-(* val parsing_source : 
-  cxt -> 
-  Ext_json_types.t ->     
-  t  *)
-
-(* val parsing_arr_sources :  
-  cxt ->
-  Ext_json_types.t array ->
-  t *)
-
-(** [parse_sources cxt json]
-    entry is to the [sources] in the schema    
-    given a root, return an object which is
-    all relative paths, this function will do the IO
-*)
-val parse_sources : 
-  cxt ->
-  Ext_json_types.t  ->
-  t 
-
-
-end = struct
-#1 "bsb_parse_sources.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type public = 
-  | Export_all 
-  | Export_set of String_set.t 
-  | Export_none
-
-
-type build_generator = 
-  { input : string list ;
-    output : string list;
-    command : string}
-
-
-let is_input_or_output (xs : build_generator list) (x : string)  = 
-  List.exists 
-    (fun  ({input; output} : build_generator) -> 
-       let it_is = (fun y -> y = x ) in
-       List.exists it_is input ||
-       List.exists it_is output
-    ) xs 
 
 type  file_group = 
   { dir : string ;
@@ -9231,127 +8533,28 @@ type  file_group =
     (* output of [generators] should be added to [sources],
        if it is [.ml,.mli,.re,.rei]
     *)
-  } 
+  }     
 
-let is_empty (x : file_group) = 
-  String_map.is_empty x.sources &&
-  x.resources = [] &&
-  x.generators = []
-
-  
-(**
+type file_groups = file_group list 
+  (**
     [intervals] are used for side effect so we can patch `bsconfig.json` to add new files 
      we need add a new line in the end,
      otherwise it will be idented twice
 *)
 
 type t =   
-  { files :  file_group list ; 
+  { files :  file_groups; 
     intervals :  Ext_file_pp.interval list ;    
     globbed_dirs : string list ; 
   }
 
 
 
-let warning_unused_file : _ format = 
-  "@{<warning>IGNORED@}: file %s under %s is ignored because it can't be turned into a valid module name. The build system transforms a file name into a module name by upper-casing the first letter@."
-
-type cxt = {
-  not_dev : bool ;
-  dir_index : Bsb_dir_index.t ; 
-  cwd : string ;
-  root : string;
-  cut_generators : bool;
-  traverse : bool;
-  namespace : string option;
-}
-
-let collect_pub_modules 
-    (xs : Ext_json_types.t array)
-    (cache : Bsb_db.t) : String_set.t = 
-  let set = ref String_set.empty in 
-  for i = 0 to Array.length xs - 1 do 
-    let v = Array.unsafe_get xs i in 
-    match v with 
-    | Str { str ; loc }
-      -> 
-      if String_map.mem str cache then 
-        set := String_set.add str !set
-      else 
-        begin 
-          Bsb_log.warn
-            "@{<warning>IGNORED@} %S in public is ignored since it is not\
-             an existing module@." str
-        end  
-    | _ -> 
-      Bsb_exception.errorf 
-        ~loc:(Ext_json.loc_of v)
-        "public excpect a list of strings"
-  done  ;
-  !set
-
-let extract_pub (input : Ext_json_types.t String_map.t) cur_sources =   
-  match String_map.find_opt Bsb_build_schemas.public input with 
-  | Some (Str{str = s; loc}) ->  
-    if s = Bsb_build_schemas.export_all then Export_all else 
-    if s = Bsb_build_schemas.export_none then Export_none else 
-      Bsb_exception.errorf ~loc "invalid str for %s "  s 
-  | Some (Arr {content = s}) ->         
-    Export_set (collect_pub_modules s cur_sources)
-  | Some config -> 
-    Bsb_exception.config_error config "expect array or string"
-  | None ->
-    Export_all 
-
-let extract_resources (input : Ext_json_types.t String_map.t) =   
-  match String_map.find_opt  Bsb_build_schemas.resources  input with 
-  | Some (Arr {content = s}) ->
-    Bsb_build_util.get_list_string s 
-  | Some config -> 
-    Bsb_exception.config_error config 
-      "expect array "  
-  | None -> [] 
-
-
-let  handle_list_files acc
-    dir 
-    file_array
-    loc_start loc_end 
-    is_input_or_output
-  : Ext_file_pp.interval list * _ =    
-  let files_array = Lazy.force file_array in 
-  let dyn_file_array = String_vec.make (Array.length files_array) in 
-  let files  =
-    Array.fold_left (fun acc name -> 
-        if is_input_or_output name then acc 
-        else
-          match Ext_string.is_valid_source_name name with 
-          | Good ->   begin 
-              let new_acc = Bsb_db.map_update ~dir acc name  in 
-              String_vec.push name dyn_file_array ;
-              new_acc 
-            end 
-          | Invalid_module_name ->
-            Bsb_log.warn
-              warning_unused_file name dir ;
-            acc 
-          | Suffix_mismatch -> acc 
-      ) acc files_array in 
-  [ Ext_file_pp.patch_action dyn_file_array 
-      loc_start loc_end
-  ],
-  files
+let empty : t = { files = []; intervals  = []; globbed_dirs = [];  }
 
 
 
-
-
-
-let empty = { files = []; intervals  = []; globbed_dirs = [];  }
-
-
-
-let (++) (u : t)  (v : t)  = 
+let merge (u : t)  (v : t)  = 
   if u == empty then v 
   else if v == empty then u 
   else 
@@ -9359,306 +8562,464 @@ let (++) (u : t)  (v : t)  =
       files = Ext_list.append u.files  v.files ; 
       intervals = Ext_list.append u.intervals  v.intervals ; 
       globbed_dirs = Ext_list.append u.globbed_dirs  v.globbed_dirs ; 
-    }
+    }  
 
-let extract_input_output 
-    loc_start 
-    (content : Ext_json_types.t array) : string list * string list = 
-  let error () = 
-    Bsb_exception.errorf ~loc:loc_start {| invalid edge format, expect  ["output" , ":", "input" ]|}
-  in  
-  match Ext_array.find_and_split content 
-          (fun x () -> match x with Str { str =":"} -> true | _ -> false )
-          () with 
-  | `No_split -> error ()
-  | `Split (  output, input) -> 
-    Ext_array.to_list_map (fun (x : Ext_json_types.t) -> 
-        match x with
-        | Str {str = ":"} -> 
-          error ()
-        | Str {str } ->           
-          Some str 
-        | _ -> None) output ,
-    Ext_array.to_list_map (fun (x : Ext_json_types.t) -> 
-        match x with
-        | Str {str = ":"} -> 
-          error () 
-        | Str {str} -> 
-          Some str (* More rigirous error checking: It would trigger a ninja syntax error *)
-        | _ -> None) input
 
-let extract_generators 
-    (input : Ext_json_types.t String_map.t) 
-    cut_generators_or_not_dev  dir  : build_generator list * Bsb_db.t ref =
-  let generators : build_generator list ref  = ref [] in
-  let cur_sources = ref String_map.empty in 
-  begin match String_map.find_opt Bsb_build_schemas.generators input with
-    | Some (Arr { content ; loc_start}) ->
-      (* Need check is dev build or not *)
-      for i = 0 to Array.length content - 1 do 
-        let x = Array.unsafe_get content i in 
-        match x with
-        | Obj { map = generator; loc} ->
-          begin match String_map.find_opt Bsb_build_schemas.name generator,
-                      String_map.find_opt Bsb_build_schemas.edge generator
-            with
-            | Some (Str{str = command}), Some (Arr {content })->
+(** when [is_empty file_group]
+    we don't need issue [-I] [-S] in [.merlin] file
+*)  
+let is_empty (x : file_group) = 
+  String_map.is_empty x.sources &&
+  x.resources = [] &&
+  x.generators = []    
+end
+module Ext_namespace : sig 
+#1 "ext_namespace.mli"
+(* Copyright (C) 2017- Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-              let output, input = extract_input_output loc_start content in 
-              if not cut_generators_or_not_dev then begin 
-                generators := {input ; output ; command } :: !generators
-              end;
-              (* ATTENTION: Now adding source files, 
-                 it may be re-added again later when scanning files (not explicit files input)
-              *)
-              output |> List.iter begin fun  output -> 
-                begin match Ext_string.is_valid_source_name output with
-                  | Good ->
-                    cur_sources := Bsb_db.map_update ~dir !cur_sources output
-                  | Invalid_module_name ->                  
-                    Bsb_log.warn warning_unused_file output dir 
-                  | Suffix_mismatch -> ()
-                end
-              end
-            | _ ->
-              Bsb_exception.errorf ~loc "Invalid generator format"
-          end
-        | _ -> Bsb_exception.errorf ~loc:(Ext_json.loc_of x) "Invalid generator format"
-      done ;
-    | Some x  -> Bsb_exception.errorf ~loc:(Ext_json.loc_of x ) "Invalid generators format"
-    | None -> ()
-  end ;
-  !generators , cur_sources
-
-(** [parsing_source_dir_map cxt input]
-    Major work done in this function, 
-    assume [not_dev && not (Bsb_dir_index.is_lib_dir dir_index)]      
-    is already checked, so we don't need check it again    
+(** [make ~ns "a" ]
+    A typical example would return "a-Ns"
+    Note the namespace comes from the output of [namespace_of_package_name]
 *)
-let try_unlink s = 
-  try Unix.unlink s  
-  with _ -> 
-    Bsb_log.info "@{<info>Failed to remove %s}@." s 
+val make : ns:string -> string -> string 
 
-let rec 
-  parsing_source_dir_map 
-    ({ cwd =  dir; not_dev; cut_generators ; 
-       traverse = cxt_traverse ;
-     } as cxt )
-    (input : Ext_json_types.t String_map.t) : t     
-  = 
-  let cur_update_queue = ref [] in 
-  let cur_globbed_dirs = ref [] in 
-  let generators, cur_sources = extract_generators input (cut_generators || not_dev) dir in 
-  let sub_dirs_field = String_map.find_opt Bsb_build_schemas.subdirs input in 
-  let file_array = lazy (Sys.readdir (Filename.concat cxt.root dir)) in 
-  begin 
-    match String_map.find_opt Bsb_build_schemas.files input with 
-    | None ->  (* No setting on [!files]*)
+val try_split_module_name :
+  string -> (string * string ) option
 
-      (** We should avoid temporary files *)
-      cur_sources := 
-        Array.fold_left (fun acc name -> 
-            if is_input_or_output generators name then 
-              acc 
-            else 
-              match Ext_string.is_valid_source_name name with 
-              | Good -> 
-                Bsb_db.map_update  ~dir acc name 
-              | Invalid_module_name ->
-                Bsb_log.warn
-                  warning_unused_file
-                  name dir 
-                ; 
-                acc 
-              | Suffix_mismatch ->  acc
-          ) !cur_sources (Lazy.force file_array);
-      cur_globbed_dirs :=  [dir]  
-    | Some (Arr {loc_start;loc_end; content = [||] }) -> 
-      (* [ ] populatd by scanning the dir (just once) *) 
-      let tasks, files =  
-        handle_list_files !cur_sources cxt.cwd 
-          file_array 
-          loc_start loc_end (is_input_or_output  generators) in
-      cur_update_queue := tasks ;
-      cur_sources := files
+(** [ends_with_bs_suffix_then_chop filename]
+  is used to help we have dangling modules
+*)
+val ends_with_bs_suffix_then_chop : 
+  string -> string option   
 
-    | Some (Arr {loc_start;loc_end; content = s }) -> 
-      (* [ a,b ] populated by users themselves 
-         TODO: still need check?
-      *)      
-      cur_sources := 
-        Array.fold_left (fun acc (s : Ext_json_types.t) ->
-            match s with 
-            | Str {str = s} -> 
-              Bsb_db.map_update ~dir acc s
-            | _ -> acc
-          ) !cur_sources s    
-    | Some (Obj {map = m; loc} ) -> (* { excludes : [], slow_re : "" }*)
-      let excludes = 
-        match String_map.find_opt Bsb_build_schemas.excludes m with 
-        | None -> []   
-        | Some (Arr {content = arr}) -> Bsb_build_util.get_list_string arr 
-        | Some x -> Bsb_exception.config_error x  "excludes expect array "in 
-      let slow_re = String_map.find_opt Bsb_build_schemas.slow_re m in 
-      let predicate = 
-        match slow_re, excludes with 
-        | Some (Str {str = s}), [] -> 
-          let re = Str.regexp s  in 
-          fun name -> Str.string_match re name 0 
-        | Some (Str {str = s}) , _::_ -> 
-          let re = Str.regexp s in   
-          fun name -> Str.string_match re name 0 && not (List.mem name excludes)
-        | Some x, _ -> Bsb_exception.errorf ~loc "slow-re expect a string literal"
-        | None , _ -> Bsb_exception.errorf ~loc  "missing field: slow-re"  in 
-      cur_sources := Array.fold_left (fun acc name -> 
-          if is_input_or_output generators name || not (predicate name) then acc 
-          else 
-            Bsb_db.map_update  ~dir acc name 
-        ) !cur_sources (Lazy.force file_array);
-      cur_globbed_dirs := [dir]              
 
-    | Some x -> Bsb_exception.config_error x "files field expect array or object "
-  end;
-  let cur_sources = !cur_sources in 
-  let resources = extract_resources input in
-  let public = extract_pub input cur_sources in 
-  let cur_file = 
-    {dir ; 
-     sources = cur_sources; 
-     resources ;
-     public ;
-     dir_index = cxt.dir_index ;
-     generators ; 
-    } in 
-  let children, children_update_queue, children_globbed_dirs =     
-    match sub_dirs_field, 
-          cxt_traverse with 
-    | None , true
-    | Some (True _), _ -> 
-      let root = cxt.root in 
-      let parent = Filename.concat root dir in
-      let res =
-        (* readdir parent avoiding scanning twice *)
-        Lazy.force file_array
-        |> Array.fold_left (fun origin x -> 
-            if Sys.is_directory (Filename.concat parent x) then 
-              (
-                parsing_source_dir_map
-                  {cxt with 
-                   cwd = Ext_path.concat cxt.cwd (Ext_filename.simple_convert_node_path_to_os_path x);
-                   traverse = true
-                  } String_map.empty ++ origin 
-              )
-            else origin  
-          ) empty in 
-      res.files, res.intervals, res.globbed_dirs 
-    | None, false  
-    | Some (False _), _  -> [], [], []
+(* Note  we have to output uncapitalized file Name, 
+   or at least be consistent, since by reading cmi file on Case insensitive OS, we don't really know it is `list.cmi` or `List.cmi`, so that `require (./list.js)` or `require(./List.js)`
+   relevant issues: #1609, #913  
 
-    | Some s, _  -> 
-      let res  = parse_sources cxt s in 
-      res.files ,
-      res.intervals,
-      res.globbed_dirs
+   #1933 when removing ns suffix, don't pass the bound
+   of basename
+*)
+val js_name_of_basename :  
+  bool ->
+  string -> string 
+
+type file_kind = 
+  | Upper_js
+  | Upper_bs
+  | Little_js 
+  | Little_bs 
+  (** [js_name_of_modulename ~little A-Ns]
+  *)
+val js_name_of_modulename : file_kind -> string -> string
+
+(* TODO handle cases like 
+   '@angular/core'
+   its directory structure is like 
+   {[
+     @angular
+     |-------- core
+   ]}
+*)
+val is_valid_npm_package_name : string -> bool 
+
+val namespace_of_package_name : string -> string
+
+end = struct
+#1 "ext_namespace.ml"
+
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+(* Note the build system should check the validity of filenames
+   espeically, it should not contain '-'
+*)
+let ns_sep_char = '-'
+let ns_sep = "-"
+
+let make ~ns cunit  = 
+  cunit ^ ns_sep ^ ns
+
+let path_char = Filename.dir_sep.[0]
+
+let rec rindex_rec s i  =
+  if i < 0 then i else
+    let char = String.unsafe_get s i in
+    if char = path_char then -1 
+    else if char = ns_sep_char then i 
+    else
+      rindex_rec s (i - 1) 
+
+let remove_ns_suffix name =
+  let i = rindex_rec name (String.length name - 1)  in 
+  if i < 0 then name 
+  else String.sub name 0 i 
+
+let try_split_module_name name = 
+  let len = String.length name in 
+  let i = rindex_rec name (len - 1)  in 
+  if i < 0 then None 
+  else 
+    Some (String.sub name (i+1) (len - i - 1),
+          String.sub name 0 i )
+type file_kind = 
+  | Upper_js
+  | Upper_bs
+  | Little_js 
+  | Little_bs
+
+let suffix_js = ".js"  
+let bs_suffix_js = ".bs.js"
+
+let ends_with_bs_suffix_then_chop s = 
+  Ext_string.ends_with_then_chop s bs_suffix_js
+  
+let js_name_of_basename bs_suffix s =   
+  remove_ns_suffix  s ^ 
+  (if bs_suffix then bs_suffix_js else  suffix_js )
+
+let js_name_of_modulename little s = 
+  match little with 
+  | Little_js -> 
+    remove_ns_suffix (String.uncapitalize s) ^ suffix_js
+  | Little_bs -> 
+    remove_ns_suffix (String.uncapitalize s) ^ bs_suffix_js
+  | Upper_js ->
+    remove_ns_suffix s ^ suffix_js
+  | Upper_bs -> 
+    remove_ns_suffix s ^ bs_suffix_js
+
+(* https://docs.npmjs.com/files/package.json 
+   Some rules:
+   The name must be less than or equal to 214 characters. This includes the scope for scoped packages.
+   The name can't start with a dot or an underscore.
+   New packages must not have uppercase letters in the name.
+   The name ends up being part of a URL, an argument on the command line, and a folder name. Therefore, the name can't contain any non-URL-safe characters.
+*)
+let is_valid_npm_package_name (s : string) = 
+  let len = String.length s in 
+  len <= 214 && (* magic number forced by npm *)
+  len > 0 &&
+  match String.unsafe_get s 0 with 
+  | 'a' .. 'z' | '@' -> 
+    Ext_string.for_all_from s 1 
+      (fun x -> 
+         match x with 
+         |  'a'..'z' | '0'..'9' | '_' | '-' -> true
+         | _ -> false )
+  | _ -> false 
+
+
+let namespace_of_package_name (s : string) : string = 
+  let len = String.length s in 
+  let buf = Buffer.create len in 
+  let add capital ch = 
+    Buffer.add_char buf 
+      (if capital then 
+         (Char.uppercase ch)
+       else ch) in    
+  let rec aux capital off len =     
+    if off >= len then ()
+    else 
+      let ch = String.unsafe_get s off in
+      match ch with 
+      | 'a' .. 'z' 
+      | 'A' .. 'Z' 
+      | '0' .. '9'
+        ->
+        add capital ch ; 
+        aux false (off + 1) len 
+      | '/'
+      | '-' -> 
+        aux true (off + 1) len 
+      | _ -> aux capital (off+1) len
   in 
-  (match file_array with 
-   | lazy files -> 
-     for i = 0 to Array.length files - 1 do 
-       let f = Array.unsafe_get files i in
-       match Ext_namespace.ends_with_bs_suffix_then_chop f  with
-       | None -> ()
-       | Some basename -> 
-         let parent = Filename.concat cxt.root cxt.cwd in 
-         let lib_parent = 
-           Filename.concat (Filename.concat cxt.root Bsb_config.lib_bs) 
-             cxt.cwd in 
-         if not (String_map.mem (Ext_string.capitalize_ascii basename) cur_sources) then 
-           begin 
-             Unix.unlink (Filename.concat parent f);
-             let basename = 
-               match cxt.namespace with  
-               | None -> basename
-               | Some ns -> Ext_namespace.make ~ns basename in 
-             (
-               match Sys.getenv "BS_CMT_POST_PROCESS_CMD" with 
-               | exception _ -> ()
-               | cmd -> 
-                 try 
-                   Sys.command (
-                     cmd ^ 
-                     " -cmt-rm " ^
-                     Filename.concat lib_parent (basename ^ Literals.suffix_cmt))
-                   |> ignore
-                 with 
-                   _  -> ()
-             );
-             try_unlink (Filename.concat lib_parent (basename ^ Literals.suffix_cmi));
-             try_unlink (Filename.concat lib_parent (basename ^ Literals.suffix_cmj));
-             try_unlink (Filename.concat lib_parent (basename ^ Literals.suffix_cmt));
-             try_unlink (Filename.concat lib_parent (basename ^ Literals.suffix_cmti));
-             try_unlink (Filename.concat lib_parent (basename ^ Literals.suffix_mlast));
-             try_unlink (Filename.concat lib_parent (basename ^ Literals.suffix_mlastd));
-             try_unlink (Filename.concat lib_parent (basename ^ Literals.suffix_mliast));
-             try_unlink (Filename.concat lib_parent (basename ^ Literals.suffix_mliastd));
-           end           
-     done 
-  )
-  ;
+  aux true 0 len ;
+  Buffer.contents buf 
 
-  {
-    files =  cur_file :: children;
-    intervals = !cur_update_queue @ children_update_queue ;
-    globbed_dirs = !cur_globbed_dirs @ children_globbed_dirs;
-  } 
+end
+module Bsb_package_specs : sig 
+#1 "bsb_package_specs.mli"
+(* Copyright (C) 2017 Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type t
 
 
-and parsing_single_source ({not_dev; dir_index ; cwd} as cxt ) (x : Ext_json_types.t )
-  : t  =
-  match x with 
-  | Str  { str = dir }  -> 
-    if not_dev && not (Bsb_dir_index.is_lib_dir dir_index) then 
-      empty
-    else 
-      parsing_source_dir_map 
-        {cxt with 
-         cwd = Ext_path.concat cwd (Ext_filename.simple_convert_node_path_to_os_path dir)}
-        String_map.empty  
-  | Obj {map} ->
-    let current_dir_index = 
-      match String_map.find_opt Bsb_build_schemas.type_ map with 
-      | Some (Str {str="dev"}) -> Bsb_dir_index.get_dev_index ()
-      | Some _ -> Bsb_exception.config_error x {|type field expect "dev" literal |}
-      | None -> dir_index in 
-    if not_dev && not (Bsb_dir_index.is_lib_dir current_dir_index) then empty 
-    else 
-      let dir = 
-        match String_map.find_opt Bsb_build_schemas.dir map with 
-        | Some (Str{str}) -> 
-          Ext_filename.simple_convert_node_path_to_os_path str 
-        | Some x -> Bsb_exception.config_error x "dir expected to be a string"
-        | None -> 
-          Bsb_exception.config_error x
-            (
-              "required field :" ^ Bsb_build_schemas.dir ^ " missing" )
+val default_package_specs : t
 
-      in
-      parsing_source_dir_map 
-        {cxt with dir_index = current_dir_index; 
-                  cwd= Ext_path.concat cwd dir} map
-  | _ -> empty 
-and  parsing_arr_sources cxt (file_groups : Ext_json_types.t array)  = 
-  Array.fold_left (fun  origin x ->
-      parsing_single_source cxt x ++ origin 
-    ) empty  file_groups 
+val from_json:
+  Ext_json_types.t -> t 
 
-and  parse_sources ( cxt : cxt) (sources : Ext_json_types.t )  = 
-  match sources with   
-  | Arr file_groups -> 
-    parsing_arr_sources cxt file_groups.content
-  | _ -> parsing_single_source cxt sources
+val get_list_of_output_js : 
+  t -> bool -> string -> string list
+
+(**
+  Sample output: {[ -bs-package-output commonjs:lib/js/jscomp/test]}
+*)
+val package_flag_of_package_specs : 
+  t -> string -> string
 
 
+end = struct
+#1 "bsb_package_specs.ml"
+(* Copyright (C) 2017 Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+let (//) = Ext_path.combine 
+
+let common_js_prefix p  =  Bsb_config.lib_js  // p
+let amd_js_prefix p = Bsb_config.lib_amd // p 
+let es6_prefix p = Bsb_config.lib_es6 // p 
+let es6_global_prefix p =  Bsb_config.lib_es6_global // p
+let amdjs_global_prefix p = Bsb_config.lib_amd_global // p 
+
+type spec = {
+  format : string;
+  in_source : bool 
+}
+
+module Spec_set = Set.Make( struct type t = spec 
+    let compare = Pervasives.compare 
+  end)
+
+type t = Spec_set.t 
+
+
+
+let supported_format x = 
+  x = Literals.amdjs ||
+  x = Literals.commonjs ||
+  x = Literals.es6 ||
+  x = Literals.es6_global ||
+  x = Literals.amdjs_global
+
+let bad_module_format_message_exn ~loc format =
+  Bsb_exception.errorf ~loc "package-specs: `%s` isn't a valid output module format. It has to be one of: %s, %s, %s, %s or %s"
+    format
+    Literals.amdjs
+    Literals.commonjs
+    Literals.es6
+    Literals.es6_global
+    Literals.amdjs_global
+
+let rec from_array (arr : Ext_json_types.t array) : Spec_set.t =
+  let spec = ref Spec_set.empty in
+  let has_in_source = ref false in
+  arr
+  |> Array.iter (fun (x : Ext_json_types.t) ->
+
+      let result = from_json_single x  in
+      if result.in_source then 
+        (
+          if not !has_in_source then
+            has_in_source:= true
+          else 
+            Bsb_exception.errorf 
+              ~loc:(Ext_json.loc_of x) 
+              "package-specs: we've detected two module formats that are both configured to be in-source." 
+        );
+      spec := Spec_set.add result !spec
+    );
+  !spec
+
+(* TODO: FIXME: better API without mutating *)
+and from_json_single (x : Ext_json_types.t) : spec =
+  match x with
+  | Str {str = format; loc } ->
+    if supported_format format then
+      {format ; in_source = false }
+    else
+      (bad_module_format_message_exn ~loc format)
+  | Obj {map; loc} ->
+    begin match String_map.find_exn "module" map with
+      | Str {str = format} ->
+        let in_source = 
+          match String_map.find_opt Bsb_build_schemas.in_source map with
+          | Some (True _) -> true
+          | Some _
+          | None -> false
+        in
+        if supported_format format then
+          {format ; in_source  }
+        else
+          bad_module_format_message_exn ~loc format
+      | Arr _ ->
+        Bsb_exception.errorf ~loc
+          "package-specs: when the configuration is an object, `module` field should be a string, not an array. If you want to pass multiple module specs, try turning package-specs into an array of objects (or strings) instead."
+      | _ ->
+        Bsb_exception.errorf ~loc
+          "package-specs: the `module` field of the configuration object should be a string."
+      | exception _ ->
+        Bsb_exception.errorf ~loc
+          "package-specs: when the configuration is an object, the `module` field is mandatory."
+    end
+  | _ -> Bsb_exception.errorf ~loc:(Ext_json.loc_of x)
+           "package-specs: we expect either a string or an object."
+
+let  from_json (x : Ext_json_types.t) : Spec_set.t =
+  match x with
+  | Arr {content ; _} -> from_array content
+  | _ -> Spec_set.singleton (from_json_single x )
+
+
+let bs_package_output = "-bs-package-output"
+
+(** Assume input is valid 
+    {[ -bs-package-output commonjs:lib/js/jscomp/test ]}
+*)
+let package_flag ({format; in_source } : spec) dir =
+  Ext_string.inter2
+    bs_package_output 
+    (Ext_string.concat3
+       format
+       Ext_string.single_colon
+       (if in_source then dir else
+          (if format = Literals.amdjs then 
+             amd_js_prefix dir 
+           else if format = Literals.commonjs then 
+             common_js_prefix dir 
+           else if format = Literals.es6 then 
+             es6_prefix dir 
+           else if format = Literals.es6_global then 
+             es6_global_prefix dir   
+           else if format = Literals.amdjs_global then 
+             amdjs_global_prefix dir 
+           else assert false))
+    )
+
+let package_flag_of_package_specs (package_specs : t) 
+    (dirname : string ) = 
+  (Spec_set.fold (fun format acc ->
+       Ext_string.inter2 acc (package_flag format dirname )
+
+     ) package_specs Ext_string.empty)
+
+let default_package_specs = 
+  Spec_set.singleton 
+    { format = Literals.commonjs ; in_source = false }
+(** js output for each package *)
+let package_output ({format; in_source } : spec) output=
+
+  let prefix  =
+    if in_source then fun x -> x 
+    else
+      (if format = Literals.commonjs then
+         common_js_prefix
+       else if format = Literals.amdjs then
+         amd_js_prefix
+       else if format = Literals.es6 then 
+         es6_prefix   
+       else if format = Literals.es6_global then 
+         es6_global_prefix  
+       else  if format = Literals.amdjs_global then 
+         amdjs_global_prefix
+       else assert false)
+  in
+  (Bsb_config.proj_rel @@ prefix output )
+
+(**
+    [get_list_of_output_js specs "src/hi/hello"]
+
+*)
+let get_list_of_output_js 
+    package_specs 
+    bs_suffix
+    output_file_sans_extension = 
+  Spec_set.fold 
+    (fun format acc ->
+       package_output format 
+         ( Ext_namespace.js_name_of_basename bs_suffix
+             output_file_sans_extension)
+       :: acc
+    ) package_specs []
 
 
 end
@@ -10189,7 +9550,7 @@ type t =
     js_post_build_cmd : string option;
     package_specs : Bsb_package_specs.t ; 
     globbed_dirs : string list;
-    bs_file_groups : Bsb_parse_sources.file_group list ;
+    bs_file_groups : Bsb_file_groups.file_groups;
     files_to_install : String_hash_set.t ;
     generate_merlin : bool ; 
     reason_react_jsx : reason_react_jsx ; (* whether apply PPX transform or not*)
@@ -10279,6 +9640,628 @@ let refmt_v3 = "refmt.exe"
 let refmt_none = "refmt.exe"
 
 let main_entries = [Bsb_config_types.JsTarget "Index"]
+
+end
+module Ext_filename : sig 
+#1 "ext_filename.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+(* TODO:
+   Change the module name, this code is not really an extension of the standard 
+    library but rather specific to JS Module name convention. 
+*)
+
+
+
+
+
+(** An extension module to calculate relative path follow node/npm style. 
+    TODO : this short name will have to change upon renaming the file.
+*)
+
+(** Js_output is node style, which means 
+    separator is only '/'
+
+    if the path contains 'node_modules', 
+    [node_relative_path] will discard its prefix and 
+    just treat it as a library instead
+*)
+
+val cwd : string Lazy.t
+
+(* It is lazy so that it will not hit errors when in script mode *)
+val package_dir : string Lazy.t
+
+
+val simple_convert_node_path_to_os_path : string -> string
+
+
+end = struct
+#1 "ext_filename.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+type t = Ext_path.t
+
+let cwd = lazy (Sys.getcwd ())
+
+
+
+
+(* Input must be absolute directory *)
+let rec find_root_filename ~cwd filename   = 
+  if Sys.file_exists ( Filename.concat cwd  filename) then cwd
+  else 
+    let cwd' = Filename.dirname cwd in 
+    if String.length cwd' < String.length cwd then  
+      find_root_filename ~cwd:cwd'  filename 
+    else 
+      Ext_pervasives.failwithf 
+        ~loc:__LOC__
+        "%s not found from %s" filename cwd
+
+
+let find_package_json_dir cwd  = 
+  find_root_filename ~cwd  Literals.bsconfig_json
+
+let package_dir = lazy (find_package_json_dir (Lazy.force cwd))
+
+
+
+
+
+
+
+
+let simple_convert_node_path_to_os_path =
+  if Sys.unix then fun x -> x 
+  else if Sys.win32 || Sys.cygwin then 
+    Ext_string.replace_slash_backward 
+  else failwith ("Unknown OS : " ^ Sys.os_type)
+
+
+
+end
+module Bsb_parse_sources : sig 
+#1 "bsb_parse_sources.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type cxt = {
+  not_dev : bool ;
+  dir_index : Bsb_dir_index.t ; 
+  cwd : string ;
+  root : string ;
+  cut_generators : bool;
+  traverse : bool;
+  namespace : string option;
+}
+
+
+(** [parse_sources cxt json]
+    entry is to the [sources] in the schema    
+    given a root, return an object which is
+    all relative paths, this function will do the IO
+*)
+val parse_sources : 
+  cxt ->
+  Ext_json_types.t  ->
+  Bsb_file_groups.t 
+
+
+end = struct
+#1 "bsb_parse_sources.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+type build_generator = Bsb_file_groups.build_generator
+
+type public = Bsb_file_groups.public 
+
+type file_group = Bsb_file_groups.file_group
+
+type t = Bsb_file_groups.t 
+
+let is_input_or_output (xs : build_generator list) (x : string)  = 
+  List.exists 
+    (fun  ({input; output} : build_generator) -> 
+       let it_is = (fun y -> y = x ) in
+       List.exists it_is input ||
+       List.exists it_is output
+    ) xs   
+
+let warning_unused_file : _ format = 
+  "@{<warning>IGNORED@}: file %s under %s is ignored because it can't be turned into a valid module name. The build system transforms a file name into a module name by upper-casing the first letter@."
+
+type cxt = {
+  not_dev : bool ;
+  dir_index : Bsb_dir_index.t ; 
+  cwd : string ;
+  root : string;
+  cut_generators : bool;
+  traverse : bool;
+  namespace : string option;
+}
+
+(** [public] has a list of modules, we do a sanity check to see if all the listed 
+  modules are indeed valid module components
+*)
+let collect_pub_modules 
+    (xs : Ext_json_types.t array)
+    (cache : Bsb_db.t) : String_set.t = 
+  let set = ref String_set.empty in 
+  for i = 0 to Array.length xs - 1 do 
+    let v = Array.unsafe_get xs i in 
+    match v with 
+    | Str { str ; loc }
+      -> 
+      if String_map.mem str cache then 
+        set := String_set.add str !set
+      else 
+        begin 
+          Bsb_log.warn
+            "@{<warning>IGNORED@} %S in public is ignored since it is not\
+             an existing module@." str
+        end  
+    | _ -> 
+      Bsb_exception.errorf 
+        ~loc:(Ext_json.loc_of v)
+        "public excpect a list of strings"
+  done  ;
+  !set
+
+let extract_pub (input : Ext_json_types.t String_map.t) (cur_sources : Bsb_db.t) =   
+  match String_map.find_opt Bsb_build_schemas.public input with 
+  | Some (Str{str = s; loc}) ->  
+    if s = Bsb_build_schemas.export_all then (Export_all : public) else 
+    if s = Bsb_build_schemas.export_none then Export_none else 
+      Bsb_exception.errorf ~loc "invalid str for %s "  s 
+  | Some (Arr {content = s}) ->         
+    Export_set (collect_pub_modules s cur_sources)
+  | Some config -> 
+    Bsb_exception.config_error config "expect array or string"
+  | None ->
+    Export_all 
+
+let extract_resources (input : Ext_json_types.t String_map.t) =   
+  match String_map.find_opt  Bsb_build_schemas.resources  input with 
+  | Some (Arr {content = s}) ->
+    Bsb_build_util.get_list_string s 
+  | Some config -> 
+    Bsb_exception.config_error config 
+      "expect array "  
+  | None -> [] 
+
+
+let  handle_empty_sources 
+    ( cur_sources : Bsb_db.t ref)
+    dir 
+    (file_array : string array Lazy.t)
+    ({loc_start; loc_end} : Ext_json_types.json_array) 
+    generators
+  : Ext_file_pp.interval list  =    
+  let files_array = Lazy.force file_array in 
+  let dyn_file_array = String_vec.make (Array.length files_array) in 
+  let files  =
+    Array.fold_left (fun acc name -> 
+        if is_input_or_output generators name then acc 
+        else
+          match Ext_string.is_valid_source_name name with 
+          | Good ->   begin 
+              let new_acc = Bsb_db.map_update ~dir acc name  in 
+              String_vec.push name dyn_file_array ;
+              new_acc 
+            end 
+          | Invalid_module_name ->
+            Bsb_log.warn
+              warning_unused_file name dir ;
+            acc 
+          | Suffix_mismatch -> acc 
+      ) !cur_sources files_array in 
+  cur_sources := files ;    
+  [ Ext_file_pp.patch_action dyn_file_array 
+      loc_start loc_end
+  ]
+  (* ,
+  files *)
+
+
+let extract_input_output 
+    (loc_start : Ext_position.t) 
+    (content : Ext_json_types.t array) : string list * string list = 
+  let error () = 
+    Bsb_exception.errorf ~loc:loc_start {| invalid edge format, expect  ["output" , ":", "input" ]|}
+  in  
+  match Ext_array.find_and_split content 
+          (fun x () -> match x with Str { str =":"} -> true | _ -> false )
+          () with 
+  | `No_split -> error ()
+  | `Split (  output, input) -> 
+    (Ext_array.to_list_map (fun (x : Ext_json_types.t) -> 
+        match x with
+        | Str {str = ":"} -> 
+          error ()
+        | Str {str } ->           
+          Some str 
+        | _ -> None) output
+    ,
+    Ext_array.to_list_map (fun (x : Ext_json_types.t) -> 
+        match x with
+        | Str {str = ":"} -> 
+          error () 
+        | Str {str} -> 
+          Some str (* More rigirous error checking: It would trigger a ninja syntax error *)
+        | _ -> None) input)
+
+let extract_generators 
+    (input : Ext_json_types.t String_map.t) 
+    (cut_generators_or_not_dev : bool) 
+    (dir : string) 
+    (cur_sources : Bsb_db.t ref)
+     : build_generator list  =
+  let generators : build_generator list ref  = ref [] in
+  begin match String_map.find_opt Bsb_build_schemas.generators input with
+    | Some (Arr { content ; loc_start}) ->
+      (* Need check is dev build or not *)
+      for i = 0 to Array.length content - 1 do 
+        let x = Array.unsafe_get content i in 
+        match x with
+        | Obj { map = generator; loc} ->
+          begin match String_map.find_opt Bsb_build_schemas.name generator,
+                      String_map.find_opt Bsb_build_schemas.edge generator
+            with
+            | Some (Str{str = command}), Some (Arr {content })->
+
+              let output, input = extract_input_output loc_start content in 
+              if not cut_generators_or_not_dev then begin 
+                generators := {input ; output ; command } :: !generators
+              end;
+              (* ATTENTION: Now adding output as source files, 
+                 it may be re-added again later when scanning files (not explicit files input)
+              *)
+              output |> List.iter begin fun  output -> 
+                  match Ext_string.is_valid_source_name output with
+                  | Good ->
+                    cur_sources := Bsb_db.map_update ~dir !cur_sources output
+                  | Invalid_module_name ->                  
+                    Bsb_log.warn warning_unused_file output dir 
+                  | Suffix_mismatch -> ()                
+              end
+            | _ ->
+              Bsb_exception.errorf ~loc "Invalid generator format"
+          end
+        | _ -> Bsb_exception.errorf ~loc:(Ext_json.loc_of x) "Invalid generator format"
+      done ;
+    | Some x  -> Bsb_exception.errorf ~loc:(Ext_json.loc_of x ) "Invalid generator format"
+    | None -> ()
+  end ;
+  !generators 
+
+(** [parsing_source_dir_map cxt input]
+    Major work done in this function, 
+    assume [not_dev && not (Bsb_dir_index.is_lib_dir dir_index)]      
+    is already checked, so we don't need check it again    
+*)
+let try_unlink s = 
+  try Unix.unlink s  
+  with _ -> 
+    Bsb_log.info "@{<info>Failed to remove %s}@." s 
+
+
+let clean_staled_bs_js_files 
+    (cxt : cxt) 
+    (cur_sources : _ String_map.t ) 
+    (files : string array)  =     
+  for i = 0 to Array.length files - 1 do 
+    let f = Array.unsafe_get files i in
+    match Ext_namespace.ends_with_bs_suffix_then_chop f  with
+    | None -> ()
+    | Some basename -> (* Found [.bs.js] files *)
+         let parent = Filename.concat cxt.root cxt.cwd in 
+         let lib_parent = 
+           Filename.concat (Filename.concat cxt.root Bsb_config.lib_bs) 
+             cxt.cwd in 
+         if not (String_map.mem (Ext_string.capitalize_ascii basename) cur_sources) then 
+           begin 
+             Unix.unlink (Filename.concat parent f);
+             let basename = 
+               match cxt.namespace with  
+               | None -> basename
+               | Some ns -> Ext_namespace.make ~ns basename in 
+             (
+               match Sys.getenv "BS_CMT_POST_PROCESS_CMD" with 
+               | exception _ -> ()
+               | cmd -> 
+                 try 
+                   Sys.command (
+                     cmd ^ 
+                     " -cmt-rm " ^
+                     Filename.concat lib_parent (basename ^ Literals.suffix_cmt))
+                   |> ignore
+                 with 
+                   _  -> ()
+             );
+             List.iter (fun suffix -> 
+              try_unlink (Filename.concat lib_parent (basename ^ suffix))
+             ) [
+                Literals.suffix_cmi; Literals.suffix_cmj ; 
+                Literals.suffix_cmt; Literals.suffix_cmti ; 
+                Literals.suffix_mlast; Literals.suffix_mlastd;
+                Literals.suffix_mliast; Literals.suffix_mliastd
+             ];
+           end           
+  done
+
+
+let rec 
+  parsing_source_dir_map 
+    ({ cwd =  dir; not_dev; cut_generators ; 
+       traverse = cxt_traverse ;
+     } as cxt )
+    (input : Ext_json_types.t String_map.t) : t     
+  = 
+  let cur_update_queue = ref [] in 
+  let cur_globbed_dirs = ref [] in 
+  let cur_sources = ref String_map.empty in 
+  let generators = 
+      extract_generators input (cut_generators || not_dev) dir 
+      cur_sources
+  in 
+  let sub_dirs_field = String_map.find_opt Bsb_build_schemas.subdirs input in 
+  let file_array = lazy (Sys.readdir (Filename.concat cxt.root dir)) in 
+  begin 
+    match String_map.find_opt Bsb_build_schemas.files input with 
+    | None ->  (* No setting on [!files]*)
+      (** We should avoid temporary files *)
+      cur_sources := 
+        Array.fold_left (fun acc name -> 
+            if is_input_or_output generators name then 
+              acc 
+            else 
+              match Ext_string.is_valid_source_name name with 
+              | Good -> 
+                Bsb_db.map_update  ~dir acc name 
+              | Invalid_module_name ->
+                Bsb_log.warn
+                  warning_unused_file
+                  name dir 
+                ; 
+                acc 
+              | Suffix_mismatch ->  acc
+          ) !cur_sources (Lazy.force file_array);
+      cur_globbed_dirs :=  [dir]  
+    | Some (Arr ({content = [||] }as empty_json_array)) -> 
+      (* [ ] populatd by scanning the dir (just once) *)         
+      cur_update_queue := 
+          handle_empty_sources cur_sources cxt.cwd 
+          file_array 
+          empty_json_array
+          generators
+    | Some (Arr {loc_start;loc_end; content = sx }) -> 
+      (* [ a,b ] populated by users themselves 
+         TODO: still need check?
+      *)      
+      cur_sources := 
+        Array.fold_left (fun acc (s : Ext_json_types.t) ->
+            match s with 
+            | Str {str = s} -> 
+              Bsb_db.map_update ~dir acc s
+            | _ -> acc
+          ) !cur_sources sx    
+    | Some (Obj {map = m; loc} ) -> (* { excludes : [], slow_re : "" }*)
+      cur_globbed_dirs := [dir];  
+      let excludes = 
+        match String_map.find_opt Bsb_build_schemas.excludes m with 
+        | None -> []   
+        | Some (Arr {content = arr}) -> Bsb_build_util.get_list_string arr 
+        | Some x -> Bsb_exception.config_error x  "excludes expect array "in 
+      let slow_re = String_map.find_opt Bsb_build_schemas.slow_re m in 
+      let predicate = 
+        match slow_re, excludes with 
+        | Some (Str {str = s}), [] -> 
+          let re = Str.regexp s  in 
+          fun name -> Str.string_match re name 0 
+        | Some (Str {str = s}) , _::_ -> 
+          let re = Str.regexp s in   
+          fun name -> Str.string_match re name 0 && not (List.mem name excludes)
+        | Some x, _ -> Bsb_exception.errorf ~loc "slow-re expect a string literal"
+        | None , _ -> Bsb_exception.errorf ~loc  "missing field: slow-re"  in 
+      cur_sources := Array.fold_left (fun acc name -> 
+          if is_input_or_output generators name || not (predicate name) then acc 
+          else 
+            Bsb_db.map_update  ~dir acc name 
+        ) !cur_sources (Lazy.force file_array)      
+    | Some x -> Bsb_exception.config_error x "files field expect array or object "
+  end;
+  let cur_sources = !cur_sources in 
+  let resources = extract_resources input in
+  let public = extract_pub input cur_sources in 
+  (** Doing recursive stuff *)  
+  let children =     
+    match sub_dirs_field, 
+          cxt_traverse with 
+    | None , true
+    | Some (True _), _ -> 
+      let root = cxt.root in 
+      let parent = Filename.concat root dir in
+      Array.fold_left (fun origin x -> 
+            if Sys.is_directory (Filename.concat parent x) then 
+              Bsb_file_groups.merge
+              (
+                parsing_source_dir_map
+                  {cxt with 
+                   cwd = Ext_path.concat cxt.cwd 
+                        (Ext_filename.simple_convert_node_path_to_os_path x);
+                   traverse = true
+                  } String_map.empty)  origin               
+            else origin  
+          ) Bsb_file_groups.empty (Lazy.force file_array) 
+        (* readdir parent avoiding scanning twice *)        
+    | None, false  
+    | Some (False _), _  -> Bsb_file_groups.empty
+    | Some s, _  -> parse_sources cxt s 
+  in 
+  (** Do some clean up *)  
+  clean_staled_bs_js_files cxt cur_sources (Lazy.force file_array );  
+  Bsb_file_groups.merge {
+    files =  [ { dir ; 
+                 sources = cur_sources; 
+                 resources ;
+                 public ;
+                 dir_index = cxt.dir_index ;
+                generators  } ] ;
+    intervals = !cur_update_queue ;
+    globbed_dirs = !cur_globbed_dirs ;
+  }  children
+
+
+and parsing_single_source ({not_dev; dir_index ; cwd} as cxt ) (x : Ext_json_types.t )
+  : t  =
+  match x with 
+  | Str  { str = dir }  -> 
+    if not_dev && not (Bsb_dir_index.is_lib_dir dir_index) then 
+      Bsb_file_groups.empty
+    else 
+      parsing_source_dir_map 
+        {cxt with 
+         cwd = Ext_path.concat cwd (Ext_filename.simple_convert_node_path_to_os_path dir)}
+        String_map.empty  
+  | Obj {map} ->
+    let current_dir_index = 
+      match String_map.find_opt Bsb_build_schemas.type_ map with 
+      | Some (Str {str="dev"}) -> Bsb_dir_index.get_dev_index ()
+      | Some _ -> Bsb_exception.config_error x {|type field expect "dev" literal |}
+      | None -> dir_index in 
+    if not_dev && not (Bsb_dir_index.is_lib_dir current_dir_index) then 
+      Bsb_file_groups.empty 
+    else 
+      let dir = 
+        match String_map.find_opt Bsb_build_schemas.dir map with 
+        | Some (Str{str}) -> 
+          Ext_filename.simple_convert_node_path_to_os_path str 
+        | Some x -> Bsb_exception.config_error x "dir expected to be a string"
+        | None -> 
+          Bsb_exception.config_error x
+            (
+              "required field :" ^ Bsb_build_schemas.dir ^ " missing" )
+
+      in
+      parsing_source_dir_map 
+        {cxt with dir_index = current_dir_index; 
+                  cwd= Ext_path.concat cwd dir} map
+  | _ -> Bsb_file_groups.empty
+and  parsing_arr_sources cxt (file_groups : Ext_json_types.t array)  = 
+  Array.fold_left (fun  origin x ->
+      Bsb_file_groups.merge (parsing_single_source cxt x) origin 
+    ) Bsb_file_groups.empty  file_groups 
+
+and  parse_sources ( cxt : cxt) (sources : Ext_json_types.t )  = 
+  match sources with   
+  | Arr file_groups -> 
+    parsing_arr_sources cxt file_groups.content
+  | _ -> parsing_single_source cxt sources
+
+
+
 
 end
 module Ext_json_noloc : sig 
@@ -10513,7 +10496,7 @@ module Bsb_watcher_gen : sig
   mean the duplication of logic in [bsb] and [bsb_watcher]
 *)
 val generate_sourcedirs_meta : 
-  string -> Bsb_parse_sources.t -> unit 
+  string -> Bsb_file_groups.t -> unit 
 end = struct
 #1 "bsb_watcher_gen.ml"
 (* Copyright (C) 2017- Authors of BuckleScript
@@ -10545,19 +10528,20 @@ let (//) = Ext_path.combine
 
 let sourcedirs_meta = ".sourcedirs.json"
 
-let generate_sourcedirs_meta cwd (res : Bsb_parse_sources.t) = 
+let generate_sourcedirs_meta cwd (res : Bsb_file_groups.t) = 
   let ochan = open_out_bin (cwd // Bsb_config.lib_bs // sourcedirs_meta) in
   let v = 
     Ext_json_noloc.(
       kvs [
         "dirs" ,
-      arr (Ext_array.of_list_map ( fun (x : Bsb_parse_sources.file_group) -> 
+      arr (Ext_array.of_list_map ( fun (x : Bsb_file_groups.file_group) -> 
       str x.dir 
       ) res.files ) ;
       "generated" ,
-      arr @@ Array.of_list @@ List.fold_left (fun acc (x : Bsb_parse_sources.file_group) -> 
+      arr @@ Array.of_list @@ List.fold_left (fun acc (x : Bsb_file_groups.file_group) -> 
       Ext_list.flat_map_append 
-      (fun x -> Ext_list.map str x.Bsb_parse_sources.output)   
+      (fun (x : Bsb_file_groups.build_generator) -> 
+        Ext_list.map str x.output)   
       x.generators acc
       )  [] res.files 
       ]
@@ -11184,8 +11168,8 @@ let merlin_file_gen ~cwd
         Buffer.add_string buffer path ;
       );
 
-    res_files |> List.iter (fun (x : Bsb_parse_sources.file_group) -> 
-        if not (Bsb_parse_sources.is_empty x) then 
+    res_files |> List.iter (fun (x : Bsb_file_groups.file_group) -> 
+        if not (Bsb_file_groups.is_empty x) then 
           begin
             Buffer.add_string buffer merlin_s;
             Buffer.add_string buffer x.dir ;
@@ -11438,7 +11422,7 @@ module Bsb_namespace_map_gen : sig
 val output : 
   dir:string ->
   string -> 
-  Bsb_parse_sources.file_group list ->
+  Bsb_file_groups.file_groups ->
   unit 
 end = struct
 #1 "bsb_namespace_map_gen.ml"
@@ -11474,12 +11458,12 @@ let (//) = Ext_path.combine
 
 
 let output ~dir namespace 
-    (file_groups : Bsb_parse_sources.file_group list)
+    (file_groups : Bsb_file_groups.file_groups )
   = 
   let fname = namespace ^ Literals.suffix_mlmap in 
   let oc = open_out_bin (dir// fname ) in 
   List.iter
-    (fun  (x : Bsb_parse_sources.file_group) ->
+    (fun  (x : Bsb_file_groups.file_group) ->
       String_map.iter (fun k _ -> 
         output_string oc k ;
         output_string oc "\n"
@@ -12078,7 +12062,7 @@ val handle_file_groups :
   js_post_build_cmd:string option -> 
   files_to_install:String_hash_set.t ->  
   custom_rules:Bsb_rule.t String_map.t ->
-  Bsb_parse_sources.file_group list ->
+  Bsb_file_groups.file_groups ->
   string option -> 
   info -> info
 end = struct
@@ -12124,11 +12108,11 @@ let zero : info =
 
 
 let handle_generators oc 
-    (group : Bsb_parse_sources.file_group) custom_rules =   
+    (group : Bsb_file_groups.file_group) custom_rules =   
   let map_to_source_dir = 
     (fun x -> Bsb_config.proj_rel (group.dir //x )) in
   group.generators
-  |> List.iter (fun  ({output; input; command}  : Bsb_parse_sources.build_generator)-> 
+  |> List.iter (fun  ({output; input; command}  : Bsb_file_groups.build_generator)-> 
       begin match String_map.find_opt command custom_rules with 
         | None -> Ext_pervasives.failwithf ~loc:__LOC__ "custom rule %s used but  not defined" command
         | Some rule -> 
@@ -12366,7 +12350,7 @@ let handle_file_group
     (files_to_install : String_hash_set.t) 
     (namespace  : string option)
     acc 
-    (group: Bsb_parse_sources.file_group ) 
+    (group: Bsb_file_groups.file_group ) 
   : info =
 
   handle_generators oc group custom_rules ;
@@ -12396,7 +12380,7 @@ let handle_file_groups
     ~bs_suffix
     ~js_post_build_cmd
     ~files_to_install ~custom_rules
-    (file_groups  :  Bsb_parse_sources.file_group list)
+    (file_groups  :  Bsb_file_groups.file_groups)
     namespace (st : info) : info  =
   List.fold_left 
     (handle_file_group 
@@ -12623,9 +12607,9 @@ let output_ninja_and_namespace_map
       let bs_group, source_dirs,static_resources  =
         List.fold_left 
           (fun (acc, dirs,acc_resources) 
-            ({Bsb_parse_sources.sources ; dir; resources } as x : Bsb_parse_sources.file_group) ->
+            ({sources ; dir; resources } as x : Bsb_file_groups.file_group) ->
             merge_module_info_map  acc  sources ,  
-            (if Bsb_parse_sources.is_empty x then dirs else  dir::dirs) , 
+            (if Bsb_file_groups.is_empty x then dirs else  dir::dirs) , 
             ( if resources = [] then acc_resources
               else Ext_list.map_append (fun x -> dir // x ) resources  acc_resources)
           ) (String_map.empty,[],[]) bs_file_groups in
@@ -12635,7 +12619,8 @@ let output_ninja_and_namespace_map
       let bs_groups = Array.init  (number_of_dev_groups + 1 ) (fun i -> String_map.empty) in
       let source_dirs = Array.init (number_of_dev_groups + 1 ) (fun i -> []) in
       let static_resources =
-        List.fold_left (fun (acc_resources : string list)  ({Bsb_parse_sources.sources; dir; resources; dir_index})  ->
+        List.fold_left (fun (acc_resources : string list)  
+          ({sources; dir; resources; dir_index} : Bsb_file_groups.file_group)  ->
             let dir_index = (dir_index :> int) in 
             bs_groups.(dir_index) <- merge_module_info_map bs_groups.(dir_index) sources ;
             source_dirs.(dir_index) <- dir :: source_dirs.(dir_index);
@@ -12888,7 +12873,7 @@ end = struct
 let query_sources ({bs_file_groups} : Bsb_config_types.t) : Ext_json_noloc.t 
   = 
   bs_file_groups 
-  |> Ext_array.of_list_map (fun (x : Bsb_parse_sources.file_group) -> 
+  |> Ext_array.of_list_map (fun (x : Bsb_file_groups.file_group) -> 
     Ext_json_noloc.(
       kvs [
         "dir", str x.dir ;

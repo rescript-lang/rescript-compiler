@@ -27,19 +27,20 @@ let (//) = Ext_path.combine
 
 let sourcedirs_meta = ".sourcedirs.json"
 
-let generate_sourcedirs_meta cwd (res : Bsb_parse_sources.t) = 
+let generate_sourcedirs_meta cwd (res : Bsb_file_groups.t) = 
   let ochan = open_out_bin (cwd // Bsb_config.lib_bs // sourcedirs_meta) in
   let v = 
     Ext_json_noloc.(
       kvs [
         "dirs" ,
-      arr (Ext_array.of_list_map ( fun (x : Bsb_parse_sources.file_group) -> 
+      arr (Ext_array.of_list_map ( fun (x : Bsb_file_groups.file_group) -> 
       str x.dir 
       ) res.files ) ;
       "generated" ,
-      arr @@ Array.of_list @@ List.fold_left (fun acc (x : Bsb_parse_sources.file_group) -> 
+      arr @@ Array.of_list @@ List.fold_left (fun acc (x : Bsb_file_groups.file_group) -> 
       Ext_list.flat_map_append 
-      (fun x -> Ext_list.map str x.Bsb_parse_sources.output)   
+      (fun (x : Bsb_file_groups.build_generator) -> 
+        Ext_list.map str x.output)   
       x.generators acc
       )  [] res.files 
       ]

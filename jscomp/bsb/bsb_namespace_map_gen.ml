@@ -30,12 +30,12 @@ let (//) = Ext_path.combine
 
 
 let output ~dir namespace 
-    (file_groups : Bsb_parse_sources.file_group list)
+    (file_groups : Bsb_file_groups.file_groups )
   = 
   let fname = namespace ^ Literals.suffix_mlmap in 
   let oc = open_out_bin (dir// fname ) in 
   List.iter
-    (fun  (x : Bsb_parse_sources.file_group) ->
+    (fun  (x : Bsb_file_groups.file_group) ->
       String_map.iter (fun k _ -> 
         output_string oc k ;
         output_string oc "\n"

@@ -351,6 +351,7 @@ BSB_SRCS= bsb_config\
 	bsb_rule\
 	bsb_ninja_util \
 	bsb_ninja_file_groups\
+	bsb_file_groups\
 	bsb_parse_sources\
 	bsb_default\
 	bsb_ninja_check\

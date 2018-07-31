@@ -176,9 +176,9 @@ let output_ninja_and_namespace_map
       let bs_group, source_dirs,static_resources  =
         List.fold_left 
           (fun (acc, dirs,acc_resources) 
-            ({Bsb_parse_sources.sources ; dir; resources } as x : Bsb_parse_sources.file_group) ->
+            ({sources ; dir; resources } as x : Bsb_file_groups.file_group) ->
             merge_module_info_map  acc  sources ,  
-            (if Bsb_parse_sources.is_empty x then dirs else  dir::dirs) , 
+            (if Bsb_file_groups.is_empty x then dirs else  dir::dirs) , 
             ( if resources = [] then acc_resources
               else Ext_list.map_append (fun x -> dir // x ) resources  acc_resources)
           ) (String_map.empty,[],[]) bs_file_groups in
@@ -188,7 +188,8 @@ let output_ninja_and_namespace_map
       let bs_groups = Array.init  (number_of_dev_groups + 1 ) (fun i -> String_map.empty) in
       let source_dirs = Array.init (number_of_dev_groups + 1 ) (fun i -> []) in
       let static_resources =
-        List.fold_left (fun (acc_resources : string list)  ({Bsb_parse_sources.sources; dir; resources; dir_index})  ->
+        List.fold_left (fun (acc_resources : string list)  
+          ({sources; dir; resources; dir_index} : Bsb_file_groups.file_group)  ->
             let dir_index = (dir_index :> int) in 
             bs_groups.(dir_index) <- merge_module_info_map bs_groups.(dir_index) sources ;
             source_dirs.(dir_index) <- dir :: source_dirs.(dir_index);

@@ -27,7 +27,7 @@
 let query_sources ({bs_file_groups} : Bsb_config_types.t) : Ext_json_noloc.t 
   = 
   bs_file_groups 
-  |> Ext_array.of_list_map (fun (x : Bsb_parse_sources.file_group) -> 
+  |> Ext_array.of_list_map (fun (x : Bsb_file_groups.file_group) -> 
     Ext_json_noloc.(
       kvs [
         "dir", str x.dir ;

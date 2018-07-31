@@ -22,45 +22,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type public = 
-  | Export_all 
-  | Export_set of String_set.t 
-  | Export_none
-
-
-
-type build_generator = 
-  { input : string list ;
-    output : string list;
-    command : string}
-
-type  file_group = 
-  { dir : string ; 
-    (* currently relative path expected for ninja file generation *)
-    sources : Bsb_db.t ; 
-    resources : string list ; 
-    (* relative path *)
-    public : public;
-    dir_index : Bsb_dir_index.t; 
-    generators : build_generator list;
-  } 
-
-(** when [is_empty file_group]
-    we don't need issue [-I] [-S] in [.merlin] file
-*)  
-val is_empty : file_group -> bool 
-
-type t = 
-  { files :  file_group list ;
-    (* flattened list of directories *)
-    intervals :  Ext_file_pp.interval list ;
-    globbed_dirs : string list ; 
-
-  }
-
-
-
-
 
 type cxt = {
   not_dev : bool ;
@@ -73,26 +34,6 @@ type cxt = {
 }
 
 
-(* val parsing_simple_dir : 
-  cxt -> 
-  string -> 
-  t *)
-
-(* val parsing_source_dir_map :
-  cxt ->
-  Ext_json_types.t String_map.t -> 
-  t *)
-
-(* val parsing_source : 
-  cxt -> 
-  Ext_json_types.t ->     
-  t  *)
-
-(* val parsing_arr_sources :  
-  cxt ->
-  Ext_json_types.t array ->
-  t *)
-
 (** [parse_sources cxt json]
     entry is to the [sources] in the schema    
     given a root, return an object which is
@@ -101,5 +42,5 @@ type cxt = {
 val parse_sources : 
   cxt ->
   Ext_json_types.t  ->
-  t 
+  Bsb_file_groups.t 
 

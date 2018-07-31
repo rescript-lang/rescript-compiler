@@ -91,6 +91,7 @@
 ../lib/bsb.ml : ./ext/ext_pervasives.ml
 ../lib/bsb.ml : ./ext/string_hashtbl.ml
 ../lib/bsb.ml : ./bsb/bsb_build_util.mli
+../lib/bsb.ml : ./bsb/bsb_file_groups.ml
 ../lib/bsb.ml : ./bsb/bsb_merlin_gen.mli
 ../lib/bsb.ml : ./bsb/bsb_ninja_check.ml
 ../lib/bsb.ml : ./bsb/bsb_ninja_regen.ml
