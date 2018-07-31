@@ -104,16 +104,6 @@ let trace_both_component_spec = check_each_trace_chunk_bottom_up (function
   | _ -> false
 )
 
-let is_array_wanted_react_element = check_each_trace_chunk_bottom_up (function
-  | ({desc = Tconstr (path1, _, _)},
-    {desc = Tconstr (
-      (Pdot ((Pident {name = "ReasonReact"}), "reactElement", _)),
-      _,
-      _
-    )}) when Path.last path1 = "array"-> true
-  | _ -> false
-)
-
 let is_component_spec_wanted_react_element = check_each_trace_chunk_bottom_up (function
   | ({desc = Tconstr (
       (Pdot ((Pident {name = "ReasonReact"}), "componentSpec", _)),
