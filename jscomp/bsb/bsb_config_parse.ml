@@ -289,16 +289,12 @@ let interpret_json
     |> ignore ;
     begin match String_map.find_opt Bsb_build_schemas.sources map with 
       | Some x -> 
-        let res = Bsb_parse_sources.parse_sources 
-            {not_dev; 
-             dir_index =
-               Bsb_dir_index.lib_dir_index; 
-             cwd = Filename.current_dir_name; 
-             root = cwd;
-             cut_generators = !cut_generators;
-             traverse = false;
-             namespace; 
-            }  x in 
+        let res = Bsb_parse_sources.scan
+            ~not_dev
+            ~root: cwd
+            ~cut_generators: !cut_generators
+            ~namespace
+            x in 
         if generate_watch_metadata then
           Bsb_watcher_gen.generate_sourcedirs_meta cwd res ;     
         begin match List.sort Ext_file_pp.interval_compare  res.intervals with

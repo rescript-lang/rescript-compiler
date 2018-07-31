@@ -23,24 +23,16 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-type cxt = {
-  not_dev : bool ;
-  dir_index : Bsb_dir_index.t ; 
-  cwd : string ;
-  root : string ;
-  cut_generators : bool;
-  traverse : bool;
-  namespace : string option;
-}
 
-
-(** [parse_sources cxt json]
+(** [scan .. cxt json]
     entry is to the [sources] in the schema    
     given a root, return an object which is
     all relative paths, this function will do the IO
 *)
-val parse_sources : 
-  cxt ->
-  Ext_json_types.t  ->
-  Bsb_file_groups.t 
-
+val scan :
+  not_dev: bool -> 
+  root: string ->  
+  cut_generators: bool -> 
+  namespace : string option -> 
+  Ext_json_types.t ->   
+  Bsb_file_groups.t

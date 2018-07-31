@@ -219,23 +219,22 @@ let try_unlink s =
 
 
 let clean_staled_bs_js_files 
-    (cxt : cxt) 
+    (context : cxt) 
     (cur_sources : _ String_map.t ) 
     (files : string array)  =     
-  for i = 0 to Array.length files - 1 do 
-    let f = Array.unsafe_get files i in
-    match Ext_namespace.ends_with_bs_suffix_then_chop f  with
+  Array.iter begin fun current_file -> 
+    match Ext_namespace.ends_with_bs_suffix_then_chop current_file  with
     | None -> ()
     | Some basename -> (* Found [.bs.js] files *)
-         let parent = Filename.concat cxt.root cxt.cwd in 
+         let parent = Filename.concat context.root context.cwd in 
          let lib_parent = 
-           Filename.concat (Filename.concat cxt.root Bsb_config.lib_bs) 
-             cxt.cwd in 
+           Filename.concat (Filename.concat context.root Bsb_config.lib_bs) 
+             context.cwd in 
          if not (String_map.mem (Ext_string.capitalize_ascii basename) cur_sources) then 
            begin 
-             Unix.unlink (Filename.concat parent f);
+             Unix.unlink (Filename.concat parent current_file);
              let basename = 
-               match cxt.namespace with  
+               match context.namespace with  
                | None -> basename
                | Some ns -> Ext_namespace.make ~ns basename in 
              (
@@ -260,8 +259,7 @@ let clean_staled_bs_js_files
                 Literals.suffix_mliast; Literals.suffix_mliastd
              ];
            end           
-  done
-
+  end files
 
 let rec 
   parsing_source_dir_map 
@@ -433,3 +431,13 @@ and  parse_sources ( cxt : cxt) (sources : Ext_json_types.t )  =
 
 
 
+let scan ~not_dev ~root ~cut_generators ~namespace x = 
+  parse_sources {
+    not_dev;
+    dir_index = Bsb_dir_index.lib_dir_index;
+    cwd = Filename.current_dir_name;
+    root ;
+    cut_generators;
+    namespace;
+    traverse = false
+  } x
