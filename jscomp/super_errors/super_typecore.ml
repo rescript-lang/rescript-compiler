@@ -117,7 +117,7 @@ let print_expr_type_clash env trace ppf =
       If so, don't forget to wrap this value in `ReasonReact.element` yourself:@ https://reasonml.github.io/reason-react/docs/en/jsx.html#capitalized@]@,@,\
       @[@{<info>Here's the original error message@}@]@,\
     @]";
-  begin
+    begin
     let bottom_aliases_result = bottom_aliases trace in
     let missing_arguments = match bottom_aliases_result with
     | Some (actual, expected) -> collect_missing_arguments env actual expected
@@ -165,7 +165,6 @@ let print_expr_type_clash env trace ppf =
             fprintf ppf "But somewhere wanted:");
       show_extra_help ppf env trace;
     end
-  end
 (* taken from https://github.com/BuckleScript/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/typing/typecore.ml#L3769 *)
 (* modified branches are commented *)
 let report_error env ppf = function
