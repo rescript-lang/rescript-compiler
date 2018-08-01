@@ -6378,10 +6378,10 @@ let (//) = Ext_path.combine
 let ninja_clean bsc_dir proj_dir = 
   try 
     let cmd = bsc_dir // "ninja.exe" in 
-    let cwd =  proj_dir // Bsb_config.lib_bs in 
+    let cwd = proj_dir // Bsb_config.lib_bs in 
     if Sys.file_exists cwd then 
       let eid = 
-        (Bsb_unix.run_command_execv { cmd ; args = [|cmd; "-t"; "clean"|] ; cwd  }) in
+        Bsb_unix.run_command_execv {cmd ; args = [|cmd; "-t"; "clean"|] ; cwd} in
       if eid <> 0 then  
         Bsb_log.warn "@{<warning>ninja clean failed@}@."
   with  e -> 
@@ -6389,22 +6389,22 @@ let ninja_clean bsc_dir proj_dir =
 
 let clean_bs_garbage bsc_dir proj_dir =
   Bsb_log.info "@{<info>Cleaning:@} in %s@." proj_dir ; 
-  let aux x =
-    let x = (proj_dir // x)  in
+  let try_remove x =
+    let x = proj_dir // x in
     if Sys.file_exists x then
       Bsb_unix.remove_dir_recursive x  in
   try  
     ninja_clean bsc_dir proj_dir ; 
-    List.iter aux Bsb_config.all_lib_artifacts;    
+    List.iter try_remove Bsb_config.all_lib_artifacts;    
   with
     e ->
     Bsb_log.warn "@{<warning>Failed@} to clean due to %s" (Printexc.to_string e)
 
 
 let clean_bs_deps bsc_dir proj_dir =
-  Bsb_build_util.walk_all_deps  proj_dir  (fun { cwd} ->
+  Bsb_build_util.walk_all_deps  proj_dir  (fun pkg_cxt ->
       (* whether top or not always do the cleaning *)
-      clean_bs_garbage bsc_dir cwd
+      clean_bs_garbage bsc_dir pkg_cxt.cwd
     )
 
 let clean_self bsc_dir proj_dir = clean_bs_garbage bsc_dir proj_dir
@@ -9993,8 +9993,7 @@ let extract_generators
   begin match String_map.find_opt Bsb_build_schemas.generators input with
     | Some (Arr { content ; loc_start}) ->
       (* Need check is dev build or not *)
-      for i = 0 to Array.length content - 1 do 
-        let x = Array.unsafe_get content i in 
+      Array.iter begin fun (x : Ext_json_types.t) ->
         match x with
         | Obj { map = generator; loc} ->
           begin match String_map.find_opt Bsb_build_schemas.name generator,
@@ -10021,7 +10020,7 @@ let extract_generators
               Bsb_exception.errorf ~loc "Invalid generator format"
           end
         | _ -> Bsb_exception.errorf ~loc:(Ext_json.loc_of x) "Invalid generator format"
-      done ;
+      end  content 
     | Some x  -> Bsb_exception.errorf ~loc:(Ext_json.loc_of x ) "Invalid generator format"
     | None -> ()
   end ;

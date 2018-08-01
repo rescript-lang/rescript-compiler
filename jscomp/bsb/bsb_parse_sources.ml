@@ -173,8 +173,7 @@ let extract_generators
   begin match String_map.find_opt Bsb_build_schemas.generators input with
     | Some (Arr { content ; loc_start}) ->
       (* Need check is dev build or not *)
-      for i = 0 to Array.length content - 1 do 
-        let x = Array.unsafe_get content i in 
+      Array.iter begin fun (x : Ext_json_types.t) ->
         match x with
         | Obj { map = generator; loc} ->
           begin match String_map.find_opt Bsb_build_schemas.name generator,
@@ -201,7 +200,7 @@ let extract_generators
               Bsb_exception.errorf ~loc "Invalid generator format"
           end
         | _ -> Bsb_exception.errorf ~loc:(Ext_json.loc_of x) "Invalid generator format"
-      done ;
+      end  content 
     | Some x  -> Bsb_exception.errorf ~loc:(Ext_json.loc_of x ) "Invalid generator format"
     | None -> ()
   end ;
