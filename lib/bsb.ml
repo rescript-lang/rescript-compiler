@@ -3458,6 +3458,9 @@ val suffix_re : string
 val suffix_rei : string 
 
 val suffix_d : string
+val suffix_js : string
+val suffix_bs_js : string 
+val suffix_re_js : string
 val suffix_mlastd : string
 val suffix_mliastd : string
 
@@ -3597,7 +3600,9 @@ let suffix_mliast_simple = ".mliast_simple"
 let suffix_d = ".d"
 let suffix_mlastd = ".mlast.d"
 let suffix_mliastd = ".mliast.d"
-
+let suffix_js = ".js"
+let suffix_bs_js = ".bs.js"
+let suffix_re_js = ".re.js"
 
 let commonjs = "commonjs" 
 let amdjs = "amdjs"
@@ -9184,6 +9189,7 @@ type walk_cxt = {
     root : string;
     traverse : bool;
   }
+  
 let rec walk_sources (cxt : walk_cxt) (sources : Ext_json_types.t) = 
   match sources with 
   | Arr {content =  file_groups} -> 
@@ -9212,9 +9218,11 @@ and walk_single_source cxt (x : Ext_json_types.t) =
 and walk_source_dir_map (cxt : walk_cxt) (input : Ext_json_types.t String_map.t) =   
     let working_dir = Filename.concat cxt.root cxt.cwd in 
     let file_array = Sys.readdir working_dir in 
+    (* Format.fprintf Format.err_formatter 
+      "@[Walking %s@]@." working_dir; *)
     file_array |> Array.iter begin fun file -> 
-        if Ext_string.ends_with file ".re.js" then 
-          Sys.remove file 
+        if Ext_string.ends_with file Literals.suffix_re_js then 
+          Sys.remove (Filename.concat working_dir file)
     end; 
     let sub_dirs_field = 
         String_map.find_opt Bsb_build_schemas.subdirs input in 
@@ -10862,6 +10870,18 @@ let interpret_json
         
 
     in 
+    let bs_suffix = 
+          match String_map.find_opt Bsb_build_schemas.suffix map with 
+          | None -> false  
+          | Some (Str {str} as config ) -> 
+            if str = Literals.suffix_js then false 
+            else if str = Literals.suffix_bs_js then true
+            else Bsb_exception.config_error config 
+              "expect .bs.js or .js string here"
+          | Some config -> 
+            Bsb_exception.config_error config 
+              "expect .bs.js or .js string here"
+    in   
     (* The default situation is empty *)
     (match String_map.find_opt Bsb_build_schemas.use_stdlib map with      
      | Some (False _) -> 
@@ -10977,7 +10997,7 @@ let interpret_json
             ~not_dev
             ~root: cwd
             ~cut_generators: !cut_generators
-            ~clean_staled_bs_js:true (*TODO: IMPROVE if not suffix .bs.js *)
+            ~clean_staled_bs_js:bs_suffix
             ~namespace
             x in 
         if generate_watch_metadata then
@@ -11002,15 +11022,7 @@ let interpret_json
           | Some (Obj {map }) -> Bsb_warning.from_map map 
           | Some config -> Bsb_exception.config_error config "expect an object"
         in 
-        let bs_suffix = 
-          match String_map.find_opt Bsb_build_schemas.suffix map with 
-          | None -> false  
-          | Some (Str {str = ".js"} ) -> false 
-          | Some (Str {str = ".bs.js"}) -> true           
-          | Some config -> 
-            Bsb_exception.config_error config 
-              "expect .bs.js or .js string here"
-        in   
+
         {
           bs_suffix ;
           package_name ;

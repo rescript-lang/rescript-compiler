@@ -457,6 +457,7 @@ type walk_cxt = {
     root : string;
     traverse : bool;
   }
+  
 let rec walk_sources (cxt : walk_cxt) (sources : Ext_json_types.t) = 
   match sources with 
   | Arr {content =  file_groups} -> 
@@ -485,9 +486,11 @@ and walk_single_source cxt (x : Ext_json_types.t) =
 and walk_source_dir_map (cxt : walk_cxt) (input : Ext_json_types.t String_map.t) =   
     let working_dir = Filename.concat cxt.root cxt.cwd in 
     let file_array = Sys.readdir working_dir in 
+    (* Format.fprintf Format.err_formatter 
+      "@[Walking %s@]@." working_dir; *)
     file_array |> Array.iter begin fun file -> 
-        if Ext_string.ends_with file ".re.js" then 
-          Sys.remove file 
+        if Ext_string.ends_with file Literals.suffix_re_js then 
+          Sys.remove (Filename.concat working_dir file)
     end; 
     let sub_dirs_field = 
         String_map.find_opt Bsb_build_schemas.subdirs input in 

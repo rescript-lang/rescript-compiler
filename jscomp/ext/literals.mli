@@ -101,6 +101,9 @@ val suffix_re : string
 val suffix_rei : string 
 
 val suffix_d : string
+val suffix_js : string
+val suffix_bs_js : string 
+val suffix_re_js : string
 val suffix_mlastd : string
 val suffix_mliastd : string
 
