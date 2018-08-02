@@ -69,6 +69,8 @@
 ../lib/bsb.ml : ./ext/ext_array.mli
 ../lib/bsb.ml : ./ext/ext_bytes.ml
 ../lib/bsb.ml : ./ext/ext_bytes.mli
+../lib/bsb.ml : ./ext/ext_char.ml
+../lib/bsb.ml : ./ext/ext_char.mli
 ../lib/bsb.ml : ./ext/ext_color.ml
 ../lib/bsb.ml : ./ext/ext_color.mli
 ../lib/bsb.ml : ./ext/ext_file_pp.ml

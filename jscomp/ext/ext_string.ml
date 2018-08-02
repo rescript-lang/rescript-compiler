@@ -337,7 +337,9 @@ let replace_backward_slash (x : string)=
 let empty = ""
 
 #if BS_COMPILER_IN_BROWSER then
-let compare = Bs_hash_stubs.string_length_based_compare    
+let compare = Bs_hash_stubs.string_length_based_compare
+#elif OCAML_VERSION =~ ">4.3.0" then
+external compare : string -> string -> int = "caml_string_length_based_compare" [@@noalloc];;    
 #else    
 external compare : string -> string -> int = "caml_string_length_based_compare" "noalloc";;
 #end
@@ -451,6 +453,14 @@ let capitalize_ascii (s : string) : string =
         Bytes.unsafe_to_string bytes 
       else s 
     end
+
+let uncapitalize_ascii =
+#if OCAML_VERSION =~ ">4.3.0" then
+    String.uncapitalize_ascii
+#else
+    String.uncapitalize
+#end      
+
 
 
 

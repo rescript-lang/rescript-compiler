@@ -72,3 +72,9 @@ let is_lower_case c =
   (c >= 'a' && c <= 'z')
   || (c >= '\224' && c <= '\246')
   || (c >= '\248' && c <= '\254')    
+let uppercase_ascii =
+#if OCAML_VERSION =~ ">4.3.0" then
+    Char.uppercase_ascii
+#else
+    Char.uppercase
+#end      

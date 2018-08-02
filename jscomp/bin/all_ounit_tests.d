@@ -35,8 +35,6 @@ bin/all_ounit_tests.ml : ./ext/ext_position.ml
 bin/all_ounit_tests.ml : ./ext/ext_position.mli
 bin/all_ounit_tests.ml : ./ext/ext_scc.ml
 bin/all_ounit_tests.ml : ./ext/ext_scc.mli
-bin/all_ounit_tests.ml : ./ext/ext_sexp.ml
-bin/all_ounit_tests.ml : ./ext/ext_sexp.mli
 bin/all_ounit_tests.ml : ./ext/ext_string.ml
 bin/all_ounit_tests.ml : ./ext/ext_string.mli
 bin/all_ounit_tests.ml : ./ext/ext_topsort.ml
@@ -109,7 +107,6 @@ bin/all_ounit_tests.ml : ./ounit_tests/ounit_map_tests.ml
 bin/all_ounit_tests.ml : ./ounit_tests/ounit_ordered_hash_set_tests.ml
 bin/all_ounit_tests.ml : ./ounit_tests/ounit_path_tests.ml
 bin/all_ounit_tests.ml : ./ounit_tests/ounit_scc_tests.ml
-bin/all_ounit_tests.ml : ./ounit_tests/ounit_sexp_tests.ml
 bin/all_ounit_tests.ml : ./ounit_tests/ounit_string_tests.ml
 bin/all_ounit_tests.ml : ./ounit_tests/ounit_tests_main.ml
 bin/all_ounit_tests.ml : ./ounit_tests/ounit_tests_main.mli
