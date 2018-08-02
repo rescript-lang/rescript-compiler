@@ -51,6 +51,7 @@ type cxt = {
   cut_generators : bool;
   traverse : bool;
   namespace : string option;
+  clean_staled_bs_js: bool;
 }
 
 (** [public] has a list of modules, we do a sanity check to see if all the listed 
@@ -217,6 +218,9 @@ let try_unlink s =
     Bsb_log.info "@{<info>Failed to remove %s}@." s 
 
 
+(** This is the only place where we do some removal during scanning,
+  configurabl
+*)    
 let clean_staled_bs_js_files 
     (context : cxt) 
     (cur_sources : _ String_map.t ) 
@@ -369,7 +373,10 @@ let rec
     | Some s, _  -> parse_sources cxt s 
   in 
   (** Do some clean up *)  
-  clean_staled_bs_js_files cxt cur_sources (Lazy.force file_array );  
+  if cxt.clean_staled_bs_js then 
+  begin
+    clean_staled_bs_js_files cxt cur_sources (Lazy.force file_array )
+  end;
   Bsb_file_groups.merge {
     files =  [ { dir ; 
                  sources = cur_sources; 
@@ -396,7 +403,8 @@ and parsing_single_source ({not_dev; dir_index ; cwd} as cxt ) (x : Ext_json_typ
   | Obj {map} ->
     let current_dir_index = 
       match String_map.find_opt Bsb_build_schemas.type_ map with 
-      | Some (Str {str="dev"}) -> Bsb_dir_index.get_dev_index ()
+      | Some (Str {str="dev"}) -> 
+        Bsb_dir_index.get_dev_index ()
       | Some _ -> Bsb_exception.config_error x {|type field expect "dev" literal |}
       | None -> dir_index in 
     if not_dev && not (Bsb_dir_index.is_lib_dir current_dir_index) then 
@@ -430,7 +438,7 @@ and  parse_sources ( cxt : cxt) (sources : Ext_json_types.t )  =
 
 
 
-let scan ~not_dev ~root ~cut_generators ~namespace x = 
+let scan ~not_dev ~root ~cut_generators ~namespace ~clean_staled_bs_js x = 
   parse_sources {
     not_dev;
     dir_index = Bsb_dir_index.lib_dir_index;
@@ -438,5 +446,81 @@ let scan ~not_dev ~root ~cut_generators ~namespace x =
     root ;
     cut_generators;
     namespace;
+    clean_staled_bs_js;
     traverse = false
   } x
+
+
+
+type walk_cxt = {
+    cwd : string ;
+    root : string;
+    traverse : bool;
+  }
+let rec walk_sources (cxt : walk_cxt) (sources : Ext_json_types.t) = 
+  match sources with 
+  | Arr {content =  file_groups} -> 
+    Array.iter (fun x -> walk_single_source cxt x) file_groups
+  | x -> walk_single_source  cxt x    
+and walk_single_source cxt (x : Ext_json_types.t) =      
+  match x with 
+  | Str {str = dir} 
+    -> 
+    walk_source_dir_map 
+      {cxt with 
+        cwd = 
+        Ext_path.concat cxt.cwd 
+        (Ext_filename.simple_convert_node_path_to_os_path dir)
+      }
+      String_map.empty   
+  | Obj {map} ->       
+    begin match String_map.find_opt Bsb_build_schemas.dir map with 
+    | Some (Str{str}) -> 
+      let dir = Ext_filename.simple_convert_node_path_to_os_path str  in 
+      walk_source_dir_map 
+      {cxt with cwd = Ext_path.concat cxt.cwd dir} map
+    | _ -> ()
+    end
+  | _ -> ()  
+and walk_source_dir_map (cxt : walk_cxt) (input : Ext_json_types.t String_map.t) =   
+    let working_dir = Filename.concat cxt.root cxt.cwd in 
+    let file_array = Sys.readdir working_dir in 
+    file_array |> Array.iter begin fun file -> 
+        if Ext_string.ends_with file ".re.js" then 
+          Sys.remove file 
+    end; 
+    let sub_dirs_field = 
+        String_map.find_opt Bsb_build_schemas.subdirs input in 
+    let cxt_traverse = cxt.traverse in     
+    match sub_dirs_field, cxt_traverse with     
+    | None, true 
+    | Some(True _), _ -> 
+      file_array |> Array.iter begin fun f -> 
+      if Sys.is_directory (Filename.concat working_dir f ) then 
+        walk_source_dir_map 
+        {cxt with 
+          cwd = 
+            Ext_path.concat cxt.cwd
+            (Ext_filename.simple_convert_node_path_to_os_path f);
+          traverse = true
+          } String_map.empty 
+      end   
+    | None, _ 
+    | Some (False _), _ -> ()      
+    | Some s, _ -> walk_sources cxt s 
+
+let clean_re_js root =     
+  match Ext_json_parse.parse_json_from_file 
+      (Filename.concat root Literals.bsconfig_json) with 
+  | Obj {map ; loc} -> 
+    begin match String_map.find_opt Bsb_build_schemas.sources map with 
+    | Some config -> 
+      (try 
+        walk_sources 
+        { root ; traverse = true; cwd = Filename.current_dir_name} config
+      with _ -> ())
+    | None  -> ()
+    end  
+  | _  -> () 
+  | exception _ -> ()    
+  

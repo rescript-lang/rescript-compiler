@@ -45,6 +45,7 @@ let clean_bs_garbage bsc_dir proj_dir =
     if Sys.file_exists x then
       Bsb_unix.remove_dir_recursive x  in
   try  
+    Bsb_parse_sources.clean_re_js proj_dir; (* clean re.js files*)
     ninja_clean bsc_dir proj_dir ; 
     List.iter try_remove Bsb_config.all_lib_artifacts;    
   with

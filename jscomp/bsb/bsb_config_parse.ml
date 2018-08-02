@@ -293,6 +293,7 @@ let interpret_json
             ~not_dev
             ~root: cwd
             ~cut_generators: !cut_generators
+            ~clean_staled_bs_js:true (*TODO: IMPROVE if not suffix .bs.js *)
             ~namespace
             x in 
         if generate_watch_metadata then
