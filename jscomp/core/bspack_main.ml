@@ -23,7 +23,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-
+module L_string_set = Set.Make(String)
+(* lexical order *)
 
 let (@>) (b, v) acc =
   if b then
@@ -472,24 +473,31 @@ let () =
            | Some file ->
              let output = (Ext_path.chop_extension_if_any file ^ ".d") in
              let sorted_queue = 
-               Queue.fold (fun acc x -> String_set.add x acc) String_set.empty  collection_modules in 
-             Ext_io.write_file 
-               output
-               (
-                 (* Queue.fold *)
-                 String_set.fold
-                   (fun a acc  -> 
-                      acc ^ file ^ " : " ^ 
-                      (*FIXME: now we normalized path,
+               Queue.fold 
+               (fun acc collection_module -> 
+                  L_string_set.add 
+                  (
+                        (*FIXME: now we normalized path,
                         we need a beautiful output too for relative path
                         The relative path should be also be normalized..
                       *)
                       Filename.concat 
                         (Ext_path.rel_normalized_absolute_path
                            ~from:cwd 
-                           (Filename.dirname a)
-                        ) (Filename.basename a)
+                           (Filename.dirname collection_module)
+                        ) (Filename.basename collection_module)
 
+                  )
+                  (* collection_module  *)
+                  acc
+                ) L_string_set.empty  collection_modules in 
+             Ext_io.write_file 
+               output
+               (
+                 L_string_set.fold
+                   (fun collection_module acc  -> 
+                      acc ^ file ^ " : " ^ 
+                      collection_module
                       ^ "\n"
                       (* ^ a ^ " : ; touch " ^ output ^ "\n" *)
                    ) sorted_queue
