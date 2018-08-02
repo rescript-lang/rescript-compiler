@@ -23438,6 +23438,8 @@ val current_dir_lit : string
 
 val capitalize_ascii : string -> string
 
+val uncapitalize_ascii : string -> string
+
 
 end = struct
 #1 "ext_string.ml"
@@ -23892,6 +23894,12 @@ let capitalize_ascii (s : string) : string =
         Bytes.unsafe_to_string bytes 
       else s 
     end
+
+let uncapitalize_ascii =
+
+    String.uncapitalize
+      
+
 
 
 
@@ -27759,7 +27767,9 @@ end = struct
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-# 51
+# 51 "ext/hash_set.cppo.ml"
+[@@@ocaml.warning "-3"]
+(* we used cppo the mixture does not work*)
 external seeded_hash_param :
   int -> int -> int -> 'a -> int = "caml_hash" "noalloc"
 let key_index (h :  _ Hash_set_gen.t ) (key : 'a) =
@@ -27768,7 +27778,7 @@ let eq_key = (=)
 type  'a t = 'a Hash_set_gen.t 
 
 
-# 62
+# 64 "ext/hash_set.cppo.ml"
 let create = Hash_set_gen.create
 let clear = Hash_set_gen.clear
 let reset = Hash_set_gen.reset
@@ -30710,7 +30720,7 @@ let lf = '\010'
 
 # 124 "ext/ext_json_parse.ml"
 let __ocaml_lex_tables = {
-  Lexing.lex_base = 
+  Lexing.lex_base =
    "\000\000\239\255\240\255\241\255\000\000\025\000\011\000\244\255\
     \245\255\246\255\247\255\248\255\249\255\000\000\000\000\000\000\
     \041\000\001\000\254\255\005\000\005\000\253\255\001\000\002\000\
@@ -30719,7 +30729,7 @@ let __ocaml_lex_tables = {
     \001\000\253\255\254\255\023\000\255\255\006\000\246\255\189\000\
     \248\255\215\000\255\255\249\255\249\000\181\000\252\255\009\000\
     \063\000\075\000\234\000\251\255\032\001\250\255";
-  Lexing.lex_backtrk = 
+  Lexing.lex_backtrk =
    "\255\255\255\255\255\255\255\255\013\000\013\000\016\000\255\255\
     \255\255\255\255\255\255\255\255\255\255\016\000\016\000\016\000\
     \016\000\016\000\255\255\000\000\012\000\255\255\255\255\255\255\
@@ -30728,7 +30738,7 @@ let __ocaml_lex_tables = {
     \255\255\255\255\255\255\001\000\255\255\255\255\255\255\008\000\
     \255\255\255\255\255\255\255\255\006\000\006\000\255\255\006\000\
     \001\000\002\000\255\255\255\255\255\255\255\255";
-  Lexing.lex_default = 
+  Lexing.lex_default =
    "\001\000\000\000\000\000\000\000\255\255\255\255\255\255\000\000\
     \000\000\000\000\000\000\000\000\000\000\255\255\255\255\255\255\
     \255\255\255\255\000\000\255\255\020\000\000\000\255\255\255\255\
@@ -30737,7 +30747,7 @@ let __ocaml_lex_tables = {
     \042\000\000\000\000\000\255\255\000\000\047\000\000\000\047\000\
     \000\000\051\000\000\000\000\000\255\255\255\255\000\000\255\255\
     \255\255\255\255\255\255\000\000\255\255\000\000";
-  Lexing.lex_trans = 
+  Lexing.lex_trans =
    "\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
     \000\000\019\000\018\000\018\000\019\000\017\000\019\000\255\255\
     \048\000\019\000\255\255\057\000\000\000\000\000\000\000\000\000\
@@ -30807,7 +30817,7 @@ let __ocaml_lex_tables = {
     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
     \000\000";
-  Lexing.lex_check = 
+  Lexing.lex_check =
    "\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
     \255\255\000\000\000\000\017\000\000\000\000\000\019\000\020\000\
     \045\000\019\000\020\000\055\000\255\255\255\255\255\255\255\255\
@@ -30877,22 +30887,22 @@ let __ocaml_lex_tables = {
     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
     \255\255";
-  Lexing.lex_base_code = 
+  Lexing.lex_base_code =
    "";
-  Lexing.lex_backtrk_code = 
+  Lexing.lex_backtrk_code =
    "";
-  Lexing.lex_default_code = 
+  Lexing.lex_default_code =
    "";
-  Lexing.lex_trans_code = 
+  Lexing.lex_trans_code =
    "";
-  Lexing.lex_check_code = 
+  Lexing.lex_check_code =
    "";
-  Lexing.lex_code = 
+  Lexing.lex_code =
    "";
 }
 
 let rec lex_json buf lexbuf =
-    __ocaml_lex_lex_json_rec buf lexbuf 0
+   __ocaml_lex_lex_json_rec buf lexbuf 0
 and __ocaml_lex_lex_json_rec buf lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
@@ -30994,11 +31004,11 @@ let
           ( error lexbuf (Illegal_character c ))
 # 408 "ext/ext_json_parse.ml"
 
-  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
+  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf;
       __ocaml_lex_lex_json_rec buf lexbuf __ocaml_lex_state
 
 and comment buf lexbuf =
-    __ocaml_lex_comment_rec buf lexbuf 40
+   __ocaml_lex_comment_rec buf lexbuf 40
 and __ocaml_lex_comment_rec buf lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
@@ -31016,11 +31026,11 @@ and __ocaml_lex_comment_rec buf lexbuf __ocaml_lex_state =
        (error lexbuf Unterminated_comment)
 # 430 "ext/ext_json_parse.ml"
 
-  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
+  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf;
       __ocaml_lex_comment_rec buf lexbuf __ocaml_lex_state
 
 and scan_string buf start lexbuf =
-    __ocaml_lex_scan_string_rec buf start lexbuf 45
+   __ocaml_lex_scan_string_rec buf start lexbuf 45
 and __ocaml_lex_scan_string_rec buf start lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
@@ -31142,7 +31152,7 @@ let
       (
         let ofs = lexbuf.lex_start_pos in
         let len = lexbuf.lex_curr_pos - ofs in
-        Buffer.add_substring buf lexbuf.lex_buffer ofs len;
+        Buffer.add_subbytes buf lexbuf.lex_buffer ofs len;
 
         scan_string buf start lexbuf
       )
@@ -31155,7 +31165,7 @@ let
       )
 # 569 "ext/ext_json_parse.ml"
 
-  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
+  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf;
       __ocaml_lex_scan_string_rec buf start lexbuf __ocaml_lex_state
 
 ;;
@@ -32138,7 +32148,7 @@ module Bs_hash_stubs
 = struct
 #1 "bs_hash_stubs.ml"
 
-
+ 
 external hash_string :  string -> int = "caml_bs_hash_string" "noalloc";;
 
 external hash_string_int :  string -> int  -> int = "caml_bs_hash_string_and_int" "noalloc";;
@@ -32215,7 +32225,7 @@ end = struct
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-# 31
+# 31 "ext/hash_set.cppo.ml"
 type key = string 
 let key_index (h :  _ Hash_set_gen.t ) (key : key) =
   (Bs_hash_stubs.hash_string  key) land (Array.length h.data - 1)
@@ -32223,7 +32233,7 @@ let eq_key = Ext_string.equal
 type  t = key  Hash_set_gen.t 
 
 
-# 62
+# 64 "ext/hash_set.cppo.ml"
 let create = Hash_set_gen.create
 let clear = Hash_set_gen.clear
 let reset = Hash_set_gen.reset
@@ -37222,6 +37232,9 @@ val escaped : char -> string
 val valid_hex : char -> bool
 
 val is_lower_case : char -> bool
+
+val uppercase_ascii : char -> char
+
 end = struct
 #1 "ext_char.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -37298,6 +37311,11 @@ let is_lower_case c =
   (c >= 'a' && c <= 'z')
   || (c >= '\224' && c <= '\246')
   || (c >= '\248' && c <= '\254')    
+let uppercase_ascii =
+
+    Char.uppercase
+      
+
 end
 module Ast_utf8_string : sig 
 #1 "ast_utf8_string.mli"

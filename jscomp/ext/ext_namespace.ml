@@ -74,9 +74,9 @@ let js_name_of_basename bs_suffix s =
 let js_name_of_modulename little s = 
   match little with 
   | Little_js -> 
-    remove_ns_suffix (String.uncapitalize s) ^ suffix_js
+    remove_ns_suffix (Ext_string.uncapitalize_ascii s) ^ suffix_js
   | Little_bs -> 
-    remove_ns_suffix (String.uncapitalize s) ^ bs_suffix_js
+    remove_ns_suffix (Ext_string.uncapitalize_ascii s) ^ bs_suffix_js
   | Upper_js ->
     remove_ns_suffix s ^ suffix_js
   | Upper_bs -> 
@@ -109,7 +109,7 @@ let namespace_of_package_name (s : string) : string =
   let add capital ch = 
     Buffer.add_char buf 
       (if capital then 
-         (Char.uppercase ch)
+         (Ext_char.uppercase_ascii ch)
        else ch) in    
   let rec aux capital off len =     
     if off >= len then ()

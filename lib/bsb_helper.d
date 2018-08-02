@@ -14,6 +14,8 @@
 ../lib/bsb_helper.ml : ./ext/ext_array.mli
 ../lib/bsb_helper.ml : ./ext/ext_bytes.ml
 ../lib/bsb_helper.ml : ./ext/ext_bytes.mli
+../lib/bsb_helper.ml : ./ext/ext_char.ml
+../lib/bsb_helper.ml : ./ext/ext_char.mli
 ../lib/bsb_helper.ml : ./ext/ext_json.ml
 ../lib/bsb_helper.ml : ./ext/ext_json.mli
 ../lib/bsb_helper.ml : ./ext/ext_json_types.ml

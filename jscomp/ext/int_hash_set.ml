@@ -22,7 +22,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-# 25
+# 25 "ext/hash_set.cppo.ml"
 type key = int
 let key_index (h :  _ Hash_set_gen.t ) (key : key) =
   (Bs_hash_stubs.hash_int  key) land (Array.length h.data - 1)
@@ -30,7 +30,7 @@ let eq_key = Ext_int.equal
 type  t = key  Hash_set_gen.t 
 
 
-# 62
+# 64 "ext/hash_set.cppo.ml"
 let create = Hash_set_gen.create
 let clear = Hash_set_gen.clear
 let reset = Hash_set_gen.reset

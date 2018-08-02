@@ -1848,6 +1848,8 @@ val current_dir_lit : string
 
 val capitalize_ascii : string -> string
 
+val uncapitalize_ascii : string -> string
+
 
 end = struct
 #1 "ext_string.ml"
@@ -2302,6 +2304,12 @@ let capitalize_ascii (s : string) : string =
         Bytes.unsafe_to_string bytes 
       else s 
     end
+
+let uncapitalize_ascii =
+
+    String.uncapitalize
+      
+
 
 
 
@@ -4582,7 +4590,7 @@ end = struct
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-# 43
+# 43 "ext/hash_set.cppo.ml"
 module Make (H: Hashtbl.HashedType) : (Hash_set_gen.S with type key = H.t) = struct 
 type key = H.t 
 let eq_key = H.equal
@@ -4592,7 +4600,7 @@ type t = key Hash_set_gen.t
 
 
 
-# 62
+# 64 "ext/hash_set.cppo.ml"
 let create = Hash_set_gen.create
 let clear = Hash_set_gen.clear
 let reset = Hash_set_gen.reset
@@ -4652,7 +4660,7 @@ let check_add (h : _ Hash_set_gen.t) key =
 let mem (h :  _ Hash_set_gen.t) key =
   Hash_set_gen.small_bucket_mem eq_key key (Array.unsafe_get h.data (key_index h key)) 
 
-# 122
+# 124 "ext/hash_set.cppo.ml"
 end
   
 
@@ -4733,7 +4741,9 @@ end = struct
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-# 51
+# 51 "ext/hash_set.cppo.ml"
+[@@@ocaml.warning "-3"]
+(* we used cppo the mixture does not work*)
 external seeded_hash_param :
   int -> int -> int -> 'a -> int = "caml_hash" "noalloc"
 let key_index (h :  _ Hash_set_gen.t ) (key : 'a) =
@@ -4742,7 +4752,7 @@ let eq_key = (=)
 type  'a t = 'a Hash_set_gen.t 
 
 
-# 62
+# 64 "ext/hash_set.cppo.ml"
 let create = Hash_set_gen.create
 let clear = Hash_set_gen.clear
 let reset = Hash_set_gen.reset
@@ -4809,7 +4819,7 @@ module Bs_hash_stubs
 = struct
 #1 "bs_hash_stubs.ml"
 
-
+ 
 external hash_string :  string -> int = "caml_bs_hash_string" "noalloc";;
 
 external hash_string_int :  string -> int  -> int = "caml_bs_hash_string_and_int" "noalloc";;
@@ -5241,7 +5251,7 @@ end = struct
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-# 31
+# 31 "ext/hash_set.cppo.ml"
 type key = string 
 let key_index (h :  _ Hash_set_gen.t ) (key : key) =
   (Bs_hash_stubs.hash_string  key) land (Array.length h.data - 1)
@@ -5249,7 +5259,7 @@ let eq_key = Ext_string.equal
 type  t = key  Hash_set_gen.t 
 
 
-# 62
+# 64 "ext/hash_set.cppo.ml"
 let create = Hash_set_gen.create
 let clear = Hash_set_gen.clear
 let reset = Hash_set_gen.reset
@@ -5504,7 +5514,7 @@ end = struct
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-# 25
+# 25 "ext/hash_set.cppo.ml"
 type key = int
 let key_index (h :  _ Hash_set_gen.t ) (key : key) =
   (Bs_hash_stubs.hash_int  key) land (Array.length h.data - 1)
@@ -5512,7 +5522,7 @@ let eq_key = Ext_int.equal
 type  t = key  Hash_set_gen.t 
 
 
-# 62
+# 64 "ext/hash_set.cppo.ml"
 let create = Hash_set_gen.create
 let clear = Hash_set_gen.clear
 let reset = Hash_set_gen.reset
@@ -9797,7 +9807,7 @@ let lf = '\010'
 
 # 124 "ext/ext_json_parse.ml"
 let __ocaml_lex_tables = {
-  Lexing.lex_base = 
+  Lexing.lex_base =
    "\000\000\239\255\240\255\241\255\000\000\025\000\011\000\244\255\
     \245\255\246\255\247\255\248\255\249\255\000\000\000\000\000\000\
     \041\000\001\000\254\255\005\000\005\000\253\255\001\000\002\000\
@@ -9806,7 +9816,7 @@ let __ocaml_lex_tables = {
     \001\000\253\255\254\255\023\000\255\255\006\000\246\255\189\000\
     \248\255\215\000\255\255\249\255\249\000\181\000\252\255\009\000\
     \063\000\075\000\234\000\251\255\032\001\250\255";
-  Lexing.lex_backtrk = 
+  Lexing.lex_backtrk =
    "\255\255\255\255\255\255\255\255\013\000\013\000\016\000\255\255\
     \255\255\255\255\255\255\255\255\255\255\016\000\016\000\016\000\
     \016\000\016\000\255\255\000\000\012\000\255\255\255\255\255\255\
@@ -9815,7 +9825,7 @@ let __ocaml_lex_tables = {
     \255\255\255\255\255\255\001\000\255\255\255\255\255\255\008\000\
     \255\255\255\255\255\255\255\255\006\000\006\000\255\255\006\000\
     \001\000\002\000\255\255\255\255\255\255\255\255";
-  Lexing.lex_default = 
+  Lexing.lex_default =
    "\001\000\000\000\000\000\000\000\255\255\255\255\255\255\000\000\
     \000\000\000\000\000\000\000\000\000\000\255\255\255\255\255\255\
     \255\255\255\255\000\000\255\255\020\000\000\000\255\255\255\255\
@@ -9824,7 +9834,7 @@ let __ocaml_lex_tables = {
     \042\000\000\000\000\000\255\255\000\000\047\000\000\000\047\000\
     \000\000\051\000\000\000\000\000\255\255\255\255\000\000\255\255\
     \255\255\255\255\255\255\000\000\255\255\000\000";
-  Lexing.lex_trans = 
+  Lexing.lex_trans =
    "\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
     \000\000\019\000\018\000\018\000\019\000\017\000\019\000\255\255\
     \048\000\019\000\255\255\057\000\000\000\000\000\000\000\000\000\
@@ -9894,7 +9904,7 @@ let __ocaml_lex_tables = {
     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
     \000\000";
-  Lexing.lex_check = 
+  Lexing.lex_check =
    "\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
     \255\255\000\000\000\000\017\000\000\000\000\000\019\000\020\000\
     \045\000\019\000\020\000\055\000\255\255\255\255\255\255\255\255\
@@ -9964,22 +9974,22 @@ let __ocaml_lex_tables = {
     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
     \255\255";
-  Lexing.lex_base_code = 
+  Lexing.lex_base_code =
    "";
-  Lexing.lex_backtrk_code = 
+  Lexing.lex_backtrk_code =
    "";
-  Lexing.lex_default_code = 
+  Lexing.lex_default_code =
    "";
-  Lexing.lex_trans_code = 
+  Lexing.lex_trans_code =
    "";
-  Lexing.lex_check_code = 
+  Lexing.lex_check_code =
    "";
-  Lexing.lex_code = 
+  Lexing.lex_code =
    "";
 }
 
 let rec lex_json buf lexbuf =
-    __ocaml_lex_lex_json_rec buf lexbuf 0
+   __ocaml_lex_lex_json_rec buf lexbuf 0
 and __ocaml_lex_lex_json_rec buf lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
@@ -10081,11 +10091,11 @@ let
           ( error lexbuf (Illegal_character c ))
 # 408 "ext/ext_json_parse.ml"
 
-  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
+  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf;
       __ocaml_lex_lex_json_rec buf lexbuf __ocaml_lex_state
 
 and comment buf lexbuf =
-    __ocaml_lex_comment_rec buf lexbuf 40
+   __ocaml_lex_comment_rec buf lexbuf 40
 and __ocaml_lex_comment_rec buf lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
@@ -10103,11 +10113,11 @@ and __ocaml_lex_comment_rec buf lexbuf __ocaml_lex_state =
        (error lexbuf Unterminated_comment)
 # 430 "ext/ext_json_parse.ml"
 
-  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
+  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf;
       __ocaml_lex_comment_rec buf lexbuf __ocaml_lex_state
 
 and scan_string buf start lexbuf =
-    __ocaml_lex_scan_string_rec buf start lexbuf 45
+   __ocaml_lex_scan_string_rec buf start lexbuf 45
 and __ocaml_lex_scan_string_rec buf start lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
@@ -10229,7 +10239,7 @@ let
       (
         let ofs = lexbuf.lex_start_pos in
         let len = lexbuf.lex_curr_pos - ofs in
-        Buffer.add_substring buf lexbuf.lex_buffer ofs len;
+        Buffer.add_subbytes buf lexbuf.lex_buffer ofs len;
 
         scan_string buf start lexbuf
       )
@@ -10242,7 +10252,7 @@ let
       )
 # 569 "ext/ext_json_parse.ml"
 
-  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
+  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf;
       __ocaml_lex_scan_string_rec buf start lexbuf __ocaml_lex_state
 
 ;;
@@ -12967,600 +12977,129 @@ let suites =
     ]
 
 end
-module Ext_sexp : sig 
-#1 "ext_sexp.mli"
-type t  =  
-  | Atom of string 
-  | List of t list
-  | Data of t list 
-  | Lit of string 
+module Ext_char : sig 
+#1 "ext_char.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-val token :  Lexing.lexbuf ->  t list
 
-val from_file : string -> t list 
 
-val from_string : string -> t list 
+
+
+(** Extension to Standard char module, avoid locale sensitivity *)
+
+val escaped : char -> string
+
+
+val valid_hex : char -> bool
+
+val is_lower_case : char -> bool
+
+val uppercase_ascii : char -> char
+
 end = struct
-#1 "ext_sexp.ml"
-# 1 "ext/ext_sexp.mll"
- 
-
-type error =
-  | Illegal_character of char
-  | Illegal_escape of string
-  | Unbalanced_paren 
-  | Unterminated_paren
-  | Unterminated_string
-  | Non_sexp_outside
-exception Error of error * Lexing.position * Lexing.position;;
-
-let error  (lexbuf : Lexing.lexbuf) e = 
-  raise (Error (e, lexbuf.lex_start_p, lexbuf.lex_curr_p))
-
-
-let char_for_backslash = function
-  | 'n' -> '\010'
-  | 'r' -> '\013'
-  | 'b' -> '\008'
-  | 't' -> '\009'
-  | c -> c
-
-let lf = '\010'
-
-let dec_code c1 c2 c3 =
-  100 * (Char.code c1 - 48) + 10 * (Char.code c2 - 48) + (Char.code c3 - 48)
-
-let hex_code c1 c2 =
-  let d1 = Char.code c1 in
-  let val1 =
-    if d1 >= 97 then d1 - 87
-    else if d1 >= 65 then d1 - 55
-    else d1 - 48 in
-  let d2 = Char.code c2 in
-  let val2 =
-    if d2 >= 97 then d2 - 87
-    else if d2 >= 65 then d2 - 55
-    else d2 - 48 in
-  val1 * 16 + val2
-
-let update_loc ({ lex_curr_p; _ } as lexbuf : Lexing.lexbuf) diff =
-  lexbuf.lex_curr_p <-
-    {
-      lex_curr_p with
-      pos_lnum = lex_curr_p.pos_lnum + 1;
-      pos_bol = lex_curr_p.pos_cnum - diff;
-    }
-
-let lexeme_len ({ lex_start_pos; lex_curr_pos; _ } : Lexing.lexbuf) =
-  lex_curr_pos - lex_start_pos
+#1 "ext_char.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
 
-type t  =
-  | Atom of string 
-  | List of t list
-  | Data of t list 
-  | Lit of string 
 
 
 
-type st = 
-  { sexps : (t list * bool) Stack.t ; 
-    mutable top : t list   ;
-    mutable has_prime : bool ;
-    buf : Buffer.t;
-    mutable paren_depth : int
-  }
 
-let push_atom lexbuf atom (buf : st ) = 
-  buf.top <- atom:: buf.top
+external string_unsafe_set : string -> int -> char -> unit
+                           = "%string_unsafe_set"
 
-(** entering the new stack *)
-let new_lparen has_prime buf = 
-  buf.paren_depth <- buf.paren_depth + 1 ;
-  Stack.push (buf.top, buf.has_prime) buf.sexps ;
-  buf.top <- [];
-  buf.has_prime <- has_prime
+external string_create: int -> string = "caml_create_string"
 
-(** exit the stack *)
-let new_rparen  buf lexbuf = 
-  buf.paren_depth <- buf.paren_depth - 1 ; 
-  if buf.paren_depth < 0  then
-    error lexbuf Unbalanced_paren
-  else 
-    let new_sexp =
-      if buf.has_prime then 
-        Data (List.rev   buf.top)
-      else List (List.rev   buf.top) 
-    in 
-    let top, has_prime =  Stack.pop buf.sexps in
-    buf.top<- top;
-    buf.has_prime<-has_prime;
-    push_atom lexbuf new_sexp buf 
+external unsafe_chr: int -> char = "%identity"
 
-let get_data buf = buf.top
+(** {!Char.escaped} is locale sensitive in 4.02.3, fixed in the trunk,
+    backport it here
+ *)
+let escaped = function
+  | '\'' -> "\\'"
+  | '\\' -> "\\\\"
+  | '\n' -> "\\n"
+  | '\t' -> "\\t"
+  | '\r' -> "\\r"
+  | '\b' -> "\\b"
+  | ' ' .. '~' as c ->
+      let s = string_create 1 in
+      string_unsafe_set s 0 c;
+      s
+  | c ->
+      let n = Char.code c in
+      let s = string_create 4 in
+      string_unsafe_set s 0 '\\';
+      string_unsafe_set s 1 (unsafe_chr (48 + n / 100));
+      string_unsafe_set s 2 (unsafe_chr (48 + (n / 10) mod 10));
+      string_unsafe_set s 3 (unsafe_chr (48 + n mod 10));
+      s
 
 
-# 101 "ext/ext_sexp.ml"
-let __ocaml_lex_tables = {
-  Lexing.lex_base = 
-   "\000\000\246\255\247\255\078\000\249\255\250\255\251\255\002\000\
-    \001\000\006\000\006\000\255\255\252\255\191\000\246\255\192\000\
-    \248\255\195\000\255\255\249\255\012\001\161\000\252\255\007\000\
-    \011\000\012\000\210\000\251\255\035\001\250\255";
-  Lexing.lex_backtrk = 
-   "\255\255\255\255\255\255\007\000\255\255\255\255\255\255\008\000\
-    \002\000\001\000\008\000\255\255\255\255\255\255\255\255\008\000\
-    \255\255\255\255\255\255\255\255\006\000\006\000\255\255\006\000\
-    \001\000\002\000\255\255\255\255\255\255\255\255";
-  Lexing.lex_default = 
-   "\002\000\000\000\000\000\255\255\000\000\000\000\000\000\255\255\
-    \008\000\255\255\255\255\000\000\000\000\015\000\000\000\015\000\
-    \000\000\019\000\000\000\000\000\255\255\255\255\000\000\255\255\
-    \255\255\255\255\255\255\000\000\255\255\000\000";
-  Lexing.lex_trans = 
-   "\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\009\000\011\000\255\255\009\000\010\000\255\255\009\000\
-    \011\000\025\000\009\000\000\000\024\000\025\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \009\000\000\000\004\000\000\000\000\000\000\000\009\000\007\000\
-    \006\000\005\000\012\000\024\000\025\000\003\000\003\000\000\000\
-    \003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\
-    \003\000\003\000\000\000\008\000\000\000\003\000\000\000\003\000\
-    \000\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\
-    \003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\
-    \003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\
-    \003\000\003\000\003\000\000\000\000\000\000\000\000\000\003\000\
-    \000\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\
-    \003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\
-    \003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\
-    \003\000\003\000\003\000\003\000\003\000\000\000\003\000\003\000\
-    \003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\
-    \000\000\000\000\000\000\003\000\000\000\003\000\000\000\003\000\
-    \003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\
-    \003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\
-    \003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\
-    \003\000\000\000\000\000\000\000\000\000\003\000\000\000\003\000\
-    \003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\
-    \003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\
-    \003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\
-    \003\000\016\000\255\255\000\000\000\000\024\000\000\000\000\000\
-    \023\000\026\000\026\000\026\000\026\000\026\000\026\000\026\000\
-    \026\000\026\000\026\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\018\000\255\255\022\000\000\000\022\000\000\000\000\000\
-    \000\000\000\000\022\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\021\000\021\000\021\000\021\000\021\000\
-    \021\000\021\000\021\000\021\000\021\000\000\000\000\000\000\000\
-    \001\000\255\255\027\000\027\000\027\000\027\000\027\000\027\000\
-    \027\000\027\000\027\000\027\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\017\000\255\255\000\000\000\000\022\000\
-    \000\000\000\000\000\000\000\000\000\000\022\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\022\000\000\000\000\000\000\000\022\000\000\000\022\000\
-    \000\000\000\000\000\000\020\000\028\000\028\000\028\000\028\000\
-    \028\000\028\000\028\000\028\000\028\000\028\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\028\000\028\000\028\000\
-    \028\000\028\000\028\000\029\000\029\000\029\000\029\000\029\000\
-    \029\000\029\000\029\000\029\000\029\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\029\000\029\000\029\000\029\000\
-    \029\000\029\000\000\000\000\000\000\000\028\000\028\000\028\000\
-    \028\000\028\000\028\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\029\000\029\000\029\000\029\000\
-    \029\000\029\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\014\000\
-    \255\255\000\000\000\000\255\255\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000";
-  Lexing.lex_check = 
-   "\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\000\000\000\000\008\000\000\000\000\000\008\000\009\000\
-    \010\000\023\000\009\000\255\255\024\000\025\000\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \000\000\255\255\000\000\255\255\255\255\255\255\009\000\000\000\
-    \000\000\000\000\007\000\024\000\025\000\000\000\000\000\255\255\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\255\255\000\000\255\255\000\000\255\255\000\000\
-    \255\255\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\255\255\255\255\255\255\255\255\000\000\
-    \255\255\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
-    \000\000\000\000\000\000\003\000\003\000\255\255\003\000\003\000\
-    \003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\
-    \255\255\255\255\255\255\003\000\255\255\003\000\255\255\003\000\
-    \003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\
-    \003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\
-    \003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\
-    \003\000\255\255\255\255\255\255\255\255\003\000\255\255\003\000\
-    \003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\
-    \003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\
-    \003\000\003\000\003\000\003\000\003\000\003\000\003\000\003\000\
-    \003\000\013\000\015\000\255\255\255\255\017\000\255\255\255\255\
-    \017\000\021\000\021\000\021\000\021\000\021\000\021\000\021\000\
-    \021\000\021\000\021\000\255\255\255\255\255\255\255\255\255\255\
-    \255\255\013\000\015\000\017\000\255\255\017\000\255\255\255\255\
-    \255\255\255\255\017\000\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\017\000\017\000\017\000\017\000\017\000\
-    \017\000\017\000\017\000\017\000\017\000\255\255\255\255\255\255\
-    \000\000\008\000\026\000\026\000\026\000\026\000\026\000\026\000\
-    \026\000\026\000\026\000\026\000\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\013\000\015\000\255\255\255\255\017\000\
-    \255\255\255\255\255\255\255\255\255\255\017\000\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\017\000\255\255\255\255\255\255\017\000\255\255\017\000\
-    \255\255\255\255\255\255\017\000\020\000\020\000\020\000\020\000\
-    \020\000\020\000\020\000\020\000\020\000\020\000\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\020\000\020\000\020\000\
-    \020\000\020\000\020\000\028\000\028\000\028\000\028\000\028\000\
-    \028\000\028\000\028\000\028\000\028\000\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\028\000\028\000\028\000\028\000\
-    \028\000\028\000\255\255\255\255\255\255\020\000\020\000\020\000\
-    \020\000\020\000\020\000\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\028\000\028\000\028\000\028\000\
-    \028\000\028\000\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\013\000\
-    \015\000\255\255\255\255\017\000\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
-    \255\255\255\255\255\255\255\255";
-  Lexing.lex_base_code = 
-   "";
-  Lexing.lex_backtrk_code = 
-   "";
-  Lexing.lex_default_code = 
-   "";
-  Lexing.lex_trans_code = 
-   "";
-  Lexing.lex_check_code = 
-   "";
-  Lexing.lex_code = 
-   "";
-}
+let valid_hex x = 
+    match x with 
+    | '0' .. '9'
+    | 'a' .. 'f'
+    | 'A' .. 'F' -> true
+    | _ -> false 
 
-let rec main buf lexbuf =
-    __ocaml_lex_main_rec buf lexbuf 0
-and __ocaml_lex_main_rec buf lexbuf __ocaml_lex_state =
-  match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
-      | 0 ->
-# 111 "ext/ext_sexp.mll"
-                     ( 
-    update_loc lexbuf 0;
-    main (buf : st ) lexbuf  )
-# 281 "ext/ext_sexp.ml"
 
-  | 1 ->
-# 114 "ext/ext_sexp.mll"
-           ( main buf lexbuf  )
-# 286 "ext/ext_sexp.ml"
 
-  | 2 ->
-# 115 "ext/ext_sexp.mll"
-                       (  main buf lexbuf )
-# 291 "ext/ext_sexp.ml"
+let is_lower_case c =
+  (c >= 'a' && c <= 'z')
+  || (c >= '\224' && c <= '\246')
+  || (c >= '\248' && c <= '\254')    
+let uppercase_ascii =
 
-  | 3 ->
-# 116 "ext/ext_sexp.mll"
-         (
-    new_lparen true buf; 
-    main buf lexbuf
-  )
-# 299 "ext/ext_sexp.ml"
+    Char.uppercase
+      
 
-  | 4 ->
-# 120 "ext/ext_sexp.mll"
-        ( 
-    new_lparen false buf ; 
-    main buf lexbuf 
-  )
-# 307 "ext/ext_sexp.ml"
-
-  | 5 ->
-# 124 "ext/ext_sexp.mll"
-        ( 
-      new_rparen  buf lexbuf; 
-      main buf lexbuf 
-  )
-# 315 "ext/ext_sexp.ml"
-
-  | 6 ->
-# 129 "ext/ext_sexp.mll"
-      (
-        let pos = Lexing.lexeme_start_p lexbuf in
-        scan_string buf.buf pos lexbuf;
-        push_atom lexbuf  ( Lit (Buffer.contents  buf.buf)) buf;
-        Buffer.clear buf.buf;
-        main buf lexbuf
-      )
-# 326 "ext/ext_sexp.ml"
-
-  | 7 ->
-let
-# 136 "ext/ext_sexp.mll"
-                    s
-# 332 "ext/ext_sexp.ml"
-= Lexing.sub_lexeme lexbuf lexbuf.Lexing.lex_start_pos lexbuf.Lexing.lex_curr_pos in
-# 137 "ext/ext_sexp.mll"
-    ( push_atom lexbuf (Atom s) buf ; 
-      main buf lexbuf
-    )
-# 338 "ext/ext_sexp.ml"
-
-  | 8 ->
-let
-# 140 "ext/ext_sexp.mll"
-         c
-# 344 "ext/ext_sexp.ml"
-= Lexing.sub_lexeme_char lexbuf lexbuf.Lexing.lex_start_pos in
-# 141 "ext/ext_sexp.mll"
-      (  error  lexbuf (Illegal_character c))
-# 348 "ext/ext_sexp.ml"
-
-  | 9 ->
-# 143 "ext/ext_sexp.mll"
-        (
-    if buf.paren_depth > 0 then 
-      error lexbuf Unterminated_paren
-    else 
-      get_data buf )
-# 357 "ext/ext_sexp.ml"
-
-  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
-      __ocaml_lex_main_rec buf lexbuf __ocaml_lex_state
-
-and scan_string buf start lexbuf =
-    __ocaml_lex_scan_string_rec buf start lexbuf 13
-and __ocaml_lex_scan_string_rec buf start lexbuf __ocaml_lex_state =
-  match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
-      | 0 ->
-# 150 "ext/ext_sexp.mll"
-        ( () )
-# 369 "ext/ext_sexp.ml"
-
-  | 1 ->
-# 152 "ext/ext_sexp.mll"
-      (
-        let len = lexeme_len lexbuf - 2 in
-        update_loc lexbuf len;
-
-        scan_string buf start lexbuf
-      )
-# 379 "ext/ext_sexp.ml"
-
-  | 2 ->
-# 159 "ext/ext_sexp.mll"
-      (
-        let len = lexeme_len lexbuf - 3 in
-        update_loc lexbuf len;
-        scan_string buf start lexbuf
-      )
-# 388 "ext/ext_sexp.ml"
-
-  | 3 ->
-let
-# 164 "ext/ext_sexp.mll"
-                                                 c
-# 394 "ext/ext_sexp.ml"
-= Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 1) in
-# 165 "ext/ext_sexp.mll"
-      (
-        Buffer.add_char buf (char_for_backslash c);
-        scan_string buf start lexbuf
-      )
-# 401 "ext/ext_sexp.ml"
-
-  | 4 ->
-let
-# 169 "ext/ext_sexp.mll"
-                   c1
-# 407 "ext/ext_sexp.ml"
-= Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 1)
-and
-# 169 "ext/ext_sexp.mll"
-                                 c2
-# 412 "ext/ext_sexp.ml"
-= Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 2)
-and
-# 169 "ext/ext_sexp.mll"
-                                               c3
-# 417 "ext/ext_sexp.ml"
-= Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 3)
-and
-# 169 "ext/ext_sexp.mll"
-                                                      s
-# 422 "ext/ext_sexp.ml"
-= Lexing.sub_lexeme lexbuf lexbuf.Lexing.lex_start_pos (lexbuf.Lexing.lex_start_pos + 4) in
-# 170 "ext/ext_sexp.mll"
-      (
-        let v = dec_code c1 c2 c3 in
-        if v > 255 then
-          error lexbuf (Illegal_escape s) ;
-        Buffer.add_char buf (Char.chr v);
-
-        scan_string buf start lexbuf
-      )
-# 433 "ext/ext_sexp.ml"
-
-  | 5 ->
-let
-# 178 "ext/ext_sexp.mll"
-                          c1
-# 439 "ext/ext_sexp.ml"
-= Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 2)
-and
-# 178 "ext/ext_sexp.mll"
-                                           c2
-# 444 "ext/ext_sexp.ml"
-= Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 3) in
-# 179 "ext/ext_sexp.mll"
-      (
-        let v = hex_code c1 c2 in
-        Buffer.add_char buf (Char.chr v);
-
-        scan_string buf start lexbuf
-      )
-# 453 "ext/ext_sexp.ml"
-
-  | 6 ->
-let
-# 185 "ext/ext_sexp.mll"
-               c
-# 459 "ext/ext_sexp.ml"
-= Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 1) in
-# 186 "ext/ext_sexp.mll"
-      (
-        Buffer.add_char buf '\\';
-        Buffer.add_char buf c;
-
-        scan_string buf start lexbuf
-      )
-# 468 "ext/ext_sexp.ml"
-
-  | 7 ->
-# 193 "ext/ext_sexp.mll"
-      (
-        update_loc lexbuf 0;
-        Buffer.add_char buf lf;
-
-        scan_string buf start lexbuf
-      )
-# 478 "ext/ext_sexp.ml"
-
-  | 8 ->
-# 200 "ext/ext_sexp.mll"
-      (
-        let ofs = lexbuf.lex_start_pos in
-        let len = lexbuf.lex_curr_pos - ofs in
-        Buffer.add_substring buf lexbuf.lex_buffer ofs len;
-
-        scan_string buf start lexbuf
-      )
-# 489 "ext/ext_sexp.ml"
-
-  | 9 ->
-# 208 "ext/ext_sexp.mll"
-      (
-        error lexbuf Unterminated_string
-      )
-# 496 "ext/ext_sexp.ml"
-
-  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
-      __ocaml_lex_scan_string_rec buf start lexbuf __ocaml_lex_state
-
-;;
-
-# 212 "ext/ext_sexp.mll"
-  
-
-    let token  lexbuf  =
-      List.rev @@ main { 
-        buf = Buffer.create 256 ;
-        sexps = Stack.create () ; 
-        paren_depth = 0; 
-        top = [];
-        has_prime = false } lexbuf
-    let from_string str = 
-      token (Lexing.from_string str)    
-    let from_file file = 
-      let in_channel =  open_in file in 
-      match  token (Lexing.from_channel in_channel) with 
-      | exception  e -> close_in in_channel; raise e 
-      | sexps -> close_in in_channel ; sexps
-
-# 521 "ext/ext_sexp.ml"
-
-end
-module Ounit_sexp_tests
-= struct
-#1 "ounit_sexp_tests.ml"
-let ((>::),
-     (>:::)) = OUnit.((>::),(>:::))
-
-let (=~) = OUnit.assert_equal
-
-let suites = 
-    __FILE__
-    >::: [
-        __LOC__ >:: begin fun _ -> 
-             Ext_sexp.from_string "( a)" =~ 
-             [ List [ Atom "a"]]
-        end;
-        __LOC__ >:: begin fun _ -> 
-             Ext_sexp.from_string "( a ())" =~ 
-             [ List [ Atom "a"; List []]]
-        end;
-        __LOC__ >:: begin fun _ -> 
-             Ext_sexp.from_string "( a (b))" =~ 
-             [ List [ Atom "a"; List [Atom "b"]]]
-        end;
-        __LOC__ >:: begin fun _ -> 
-             Ext_sexp.from_string "( a (b)) (c d)" =~ 
-             [ List [ Atom "a"; List [Atom "b"]];
-                List [ Atom "c"; Atom "d"]
-             ]
-        end;
-        __LOC__ >:: begin fun _ -> 
-             Ext_sexp.from_string "( a (b 1 2 3)  c  d) (c d)" =~ 
-             [ List [ Atom "a"; List [Atom "b"; Atom "1"; Atom "2"; Atom "3"] ; Atom "c"; Atom "d"];
-                List [ Atom "c"; Atom "d"]
-             ];
-        end;
-        __LOC__ ^ "raise" >:: begin fun _ -> 
-            (try ignore @@ Ext_sexp.from_string  {|  (1 2 3  ( a (b) ) |}; false
-            with e -> true) =~ true ;
-
-            match Ext_sexp.from_string {|
-(setq 
- bsc 
- "../bin/bsc.exe"
- bs-external-includes
- '( "../runtime" "../stdlib"  "./others")
- bs-package-name
- "bs-platform")
-
-(setq 
- bsc-flags '("-w" "-40" "-bs-no-version-header " "-bs-diagnose" "-bs-cross-module-opt"))
-
-|}       with 
-        | _ -> ()
-        | exception _ -> OUnit.assert_failure __LOC__
-        end;
-    ]
 end
 module Ext_modulename : sig 
 #1 "ext_modulename.mli"
@@ -13668,8 +13207,9 @@ let rec collect_start buf s off len =
   else 
     let next = succ off in 
     match String.unsafe_get  s off with     
-    | 'a' .. 'z' as c -> 
-      Buffer.add_char buf (Char.uppercase c) ;
+    | 'a' .. 'z' as c ->
+    Buffer.add_char buf (Ext_char.uppercase_ascii c)
+    ;
       collect_next buf s next len
     | 'A' .. 'Z' as c -> 
       Buffer.add_char buf c ;
@@ -13880,9 +13420,9 @@ let js_name_of_basename bs_suffix s =
 let js_name_of_modulename little s = 
   match little with 
   | Little_js -> 
-    remove_ns_suffix (String.uncapitalize s) ^ suffix_js
+    remove_ns_suffix (Ext_string.uncapitalize_ascii s) ^ suffix_js
   | Little_bs -> 
-    remove_ns_suffix (String.uncapitalize s) ^ bs_suffix_js
+    remove_ns_suffix (Ext_string.uncapitalize_ascii s) ^ bs_suffix_js
   | Upper_js ->
     remove_ns_suffix s ^ suffix_js
   | Upper_bs -> 
@@ -13915,7 +13455,7 @@ let namespace_of_package_name (s : string) : string =
   let add capital ch = 
     Buffer.add_char buf 
       (if capital then 
-         (Char.uppercase ch)
+         (Ext_char.uppercase_ascii ch)
        else ch) in    
   let rec aux capital off len =     
     if off >= len then ()
@@ -14508,122 +14048,6 @@ let suites =
     end
 
   ]
-end
-module Ext_char : sig 
-#1 "ext_char.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-(** Extension to Standard char module, avoid locale sensitivity *)
-
-val escaped : char -> string
-
-
-val valid_hex : char -> bool
-
-val is_lower_case : char -> bool
-end = struct
-#1 "ext_char.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-external string_unsafe_set : string -> int -> char -> unit
-                           = "%string_unsafe_set"
-
-external string_create: int -> string = "caml_create_string"
-
-external unsafe_chr: int -> char = "%identity"
-
-(** {!Char.escaped} is locale sensitive in 4.02.3, fixed in the trunk,
-    backport it here
- *)
-let escaped = function
-  | '\'' -> "\\'"
-  | '\\' -> "\\\\"
-  | '\n' -> "\\n"
-  | '\t' -> "\\t"
-  | '\r' -> "\\r"
-  | '\b' -> "\\b"
-  | ' ' .. '~' as c ->
-      let s = string_create 1 in
-      string_unsafe_set s 0 c;
-      s
-  | c ->
-      let n = Char.code c in
-      let s = string_create 4 in
-      string_unsafe_set s 0 '\\';
-      string_unsafe_set s 1 (unsafe_chr (48 + n / 100));
-      string_unsafe_set s 2 (unsafe_chr (48 + (n / 10) mod 10));
-      string_unsafe_set s 3 (unsafe_chr (48 + n mod 10));
-      s
-
-
-let valid_hex x = 
-    match x with 
-    | '0' .. '9'
-    | 'a' .. 'f'
-    | 'A' .. 'F' -> true
-    | _ -> false 
-
-
-
-let is_lower_case c =
-  (c >= 'a' && c <= 'z')
-  || (c >= '\224' && c <= '\246')
-  || (c >= '\248' && c <= '\254')    
 end
 module Ast_utf8_string : sig 
 #1 "ast_utf8_string.mli"
@@ -17125,7 +16549,7 @@ let suites =
     Ounit_hashtbl_tests.suites;
     Ounit_string_tests.suites;
     Ounit_topsort_tests.suites;
-    Ounit_sexp_tests.suites;
+    (* Ounit_sexp_tests.suites; *)
     Ounit_int_vec_tests.suites;
     Ounit_ident_mask_tests.suites;
     Ounit_cmd_tests.suites;

@@ -48,6 +48,8 @@ let key_index (h :  _ Hash_set_gen.t ) key =
 type t = key Hash_set_gen.t
 
 #elif defined TYPE_POLY
+[@@@ocaml.warning "-3"]
+(* we used cppo the mixture does not work*)
 external seeded_hash_param :
   int -> int -> int -> 'a -> int = "caml_hash" "noalloc"
 let key_index (h :  _ Hash_set_gen.t ) (key : 'a) =

@@ -71,7 +71,6 @@ ext/ext_topsort.cmx : ext/set_int.cmx ext/resize_array.cmx ext/int_vec.cmx \
 ext/ext_pp_scope.cmx : ext/string_map.cmx ext/int_map.cmx ext/ident_set.cmx \
     ext/ext_pp.cmx ext/ext_ident.cmx ext/ext_pp_scope.cmi
 ext/ext_io.cmx : ext/ext_pervasives.cmx ext/ext_io.cmi
-ext/ext_sexp.cmx : ext/ext_sexp.cmi
 ext/ext_json_types.cmx : ext/string_map.cmx
 ext/ext_json_noloc.cmx : ext/string_map.cmx ext/ext_array.cmx \
     ext/ext_json_noloc.cmi
@@ -93,8 +92,9 @@ ext/ext_path.cmx : ext/literals.cmx ext/ext_string.cmx \
 ext/ext_filename.cmx : ext/literals.cmx ext/ext_string.cmx \
     ext/ext_pervasives.cmx ext/ext_path.cmx ext/ext_filename.cmi
 ext/ext_modulename.cmx : ext/ext_string.cmx ext/ext_path.cmx \
-    ext/ext_modulename.cmi
-ext/ext_namespace.cmx : ext/ext_string.cmx ext/ext_namespace.cmi
+    ext/ext_char.cmx ext/ext_modulename.cmi
+ext/ext_namespace.cmx : ext/ext_string.cmx ext/ext_char.cmx \
+    ext/ext_namespace.cmi
 ext/literals.cmi :
 ext/ext_util.cmi :
 ext/ext_int.cmi :
@@ -143,7 +143,6 @@ ext/ext_scc.cmi : ext/int_vec_vec.cmi ext/int_vec.cmi
 ext/ext_topsort.cmi : ext/vec_gen.cmx ext/set_int.cmi ext/int_vec.cmi
 ext/ext_pp_scope.cmi : ext/ident_set.cmi ext/ext_pp.cmi
 ext/ext_io.cmi :
-ext/ext_sexp.cmi :
 ext/ext_json_noloc.cmi : ext/string_map.cmi
 ext/ext_json_parse.cmi : ext/ext_json_types.cmx
 ext/ext_json_write.cmi :
@@ -834,7 +833,7 @@ ounit_tests/ounit_js_regex_checker_tests.cmx : ounit/oUnit.cmx \
     ext/ext_js_regex.cmx
 ounit_tests/ounit_topsort_tests.cmx : ext/set_int.cmx ounit/oUnit.cmx \
     ext/int_vec.cmx ext/ext_topsort.cmx
-ounit_tests/ounit_sexp_tests.cmx : ounit/oUnit.cmx ext/ext_sexp.cmx
+ounit_tests/ounit_sexp_tests.cmx :
 ounit_tests/ounit_int_vec_tests.cmx : ounit/oUnit.cmx ext/int_vec_util.cmx \
     ext/int_vec.cmx
 ounit_tests/ounit_ident_mask_tests.cmx : ounit/oUnit.cmx \

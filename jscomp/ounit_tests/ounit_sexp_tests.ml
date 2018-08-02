@@ -1,3 +1,4 @@
+(*
 let ((>::),
      (>:::)) = OUnit.((>::),(>:::))
 
@@ -51,3 +52,5 @@ let suites =
         | exception _ -> OUnit.assert_failure __LOC__
         end;
     ]
+
+*)    

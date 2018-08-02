@@ -200,7 +200,6 @@ EXT_SRCS = 	literals \
 	ext_topsort\
 	ext_pp_scope\
 	ext_io\
-	ext_sexp\
 	ext_json_types\
 	ext_json_noloc\
 	ext_json_parse\
@@ -656,9 +655,9 @@ travis-world-test:
 -include $(SNAPSHOT_DEPS)
 
 clean:
-	rm -f bsb/bs_json.ml ext/sexp_lexer.ml core/js_fold.ml core/js_map.ml
+	rm -f bsb/bs_json.ml  core/js_fold.ml core/js_map.ml
 	rm -f common/bs_version.ml
-	git clean -dfx stubs ext common syntax depends core bsb
+	git clean -dfx stubs ext common syntax depends core bsb .
 
 DOCS_SOURCES+=$(shell ls runtime/*.ml*)
 DOCS_SOURCES+=$(shell ls others/*.ml*)

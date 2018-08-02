@@ -22,7 +22,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-# 43
+# 43 "ext/hash_set.cppo.ml"
 module Make (H: Hashtbl.HashedType) : (Hash_set_gen.S with type key = H.t) = struct 
 type key = H.t 
 let eq_key = H.equal
@@ -32,7 +32,7 @@ type t = key Hash_set_gen.t
 
 
 
-# 62
+# 64 "ext/hash_set.cppo.ml"
 let create = Hash_set_gen.create
 let clear = Hash_set_gen.clear
 let reset = Hash_set_gen.reset
@@ -92,6 +92,6 @@ let check_add (h : _ Hash_set_gen.t) key =
 let mem (h :  _ Hash_set_gen.t) key =
   Hash_set_gen.small_bucket_mem eq_key key (Array.unsafe_get h.data (key_index h key)) 
 
-# 122
+# 124 "ext/hash_set.cppo.ml"
 end
   
