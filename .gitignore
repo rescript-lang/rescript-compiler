@@ -45,6 +45,7 @@ _build
 .idea
 .DS_Store
 
+_opam
 node_modules
 oxml
 test.json

@@ -16,6 +16,8 @@ Prerequisites:
 # Use the correct opam switch for working on BuckleScript
 opam update
 opam switch 4.02.3+buckle-master
+# or, if you're on opam 2.0, want a local switch just for BuckleScript development,
+# opam switch create ./ 4.02.3+buckle-master
 opam switch reinstall 4.02.3+buckle-master # do this if you get errors even from a clean compilation
 opam install camlp4 cppo
 eval `opam config env`
