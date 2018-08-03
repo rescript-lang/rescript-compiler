@@ -1,3 +1,9 @@
+# 4.0.3
+Fixes
+- #2956 clean re.js for genFlow proj
+- #2970 remove one obsolte error
+- #2970 address one regression from refmt
+
 # 4.0.2
 Fixes
 - #2963 fix ppx-flags quoting issue
