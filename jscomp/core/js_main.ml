@@ -242,6 +242,8 @@ let _ =
   Clflags.debug := true;
   Clflags.record_event_when_debug := false;
   Clflags.binary_annotations := true; 
+  Clflags.transparent_modules := true;
+  (* Turn on [-no-alias-deps] by default *)
   Oprint.out_ident := Outcome_printer_ns.out_ident;
   Bs_conditional_initial.setup_env ();
   try

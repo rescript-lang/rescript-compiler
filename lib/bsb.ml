@@ -3251,7 +3251,6 @@ module Bsb_log : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-val color_enabled : bool ref 
 
 val setup : unit -> unit 
 
@@ -3292,11 +3291,29 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-let color_enabled = ref (Unix.isatty Unix.stdout)
+
+
+let ninja_ansi_forced = lazy 
+  (try Sys.getenv "NINJA_ANSI_FORCED" with 
+    Not_found  ->""
+  )  
+let color_enabled = lazy (Unix.isatty Unix.stdout)
+
+(* same logic as [ninja.exe] *)
+let get_color_enabled () = 
+  let colorful = 
+    match ninja_ansi_forced with 
+    | lazy "1" -> true     
+    | lazy ("0" | "false") -> false
+    | _ ->
+      Lazy.force color_enabled  in 
+  colorful 
+
+
 
 let color_functions : Format.formatter_tag_functions = {
-  mark_open_tag = (fun s ->  if !color_enabled then  Ext_color.ansi_of_tag s else Ext_string.empty) ;
-  mark_close_tag = (fun _ ->  if !color_enabled then Ext_color.reset_lit else Ext_string.empty);
+  mark_open_tag = (fun s ->  if get_color_enabled () then  Ext_color.ansi_of_tag s else Ext_string.empty) ;
+  mark_close_tag = (fun _ ->  if get_color_enabled () then Ext_color.reset_lit else Ext_string.empty);
   print_open_tag = (fun _ -> ());
   print_close_tag = (fun _ -> ())
 }
@@ -10478,9 +10495,8 @@ end = struct
 (* for default warning flags, please see bsb_warning.ml *)
 let bsc_flags =
   [
-    "-no-alias-deps";
     "-color"; "always"
-  ]
+  ] 
 
 
 let refmt_flags = ["--print"; "binary"]
@@ -10949,7 +10965,7 @@ let interpret_json
   : Bsb_config_types.t =
 
   let reason_react_jsx = ref None in 
-  let config_json = (cwd // Literals.bsconfig_json) in
+  let config_json = cwd // Literals.bsconfig_json in
   let refmt_flags = ref Bsb_default.refmt_flags in
   let bs_external_includes = ref [] in 
   (** we should not resolve it too early,
@@ -11034,11 +11050,11 @@ let interpret_json
               if str <> Bs_version.version then 
               (
                 Format.fprintf Format.err_formatter
-                "@{<error> bs-platform version mismatch@} Running bsb (%s)@{<info>%s@} vs vendored (%s)@{<info>%s@}@."
-                    (Filename.dirname (Filename.dirname Sys.executable_name))
-                    str 
-                    stdlib_path 
+                "@{<error>bs-platform version mismatch@} Running bsb @{<info>%s@} (%s) vs vendored @{<info>%s@} (%s)@."
                     Bs_version.version
+                    (Filename.dirname (Filename.dirname Sys.executable_name))
+                    str
+                    stdlib_path 
                 ;
               exit 2)
                 
@@ -15785,10 +15801,6 @@ let bsb_main_flags : (string * Arg.spec * string) list=
     " Print version and exit";
     "-verbose", Arg.Unit Bsb_log.verbose,
     " Set the output(from bsb) to be verbose";
-    "-color", Arg.Set Bsb_log.color_enabled,
-    " forced color output";
-    "-no-color", Arg.Clear Bsb_log.color_enabled,
-    " forced no color output";
     "-w", Arg.Set watch_mode,
     " Watch mode" ;     
     "-clean-world", Arg.Unit (fun _ -> 

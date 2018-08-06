@@ -96,11 +96,24 @@ for (var i = 2; i < process_argv.length; ++i) {
     }
 }
 
-var tty = require('tty')
-if(tty.isatty(1)){
-    process.env.NINJA_ANSI_FORCED = '1'
+
+if(
+    process.env.NINJA_ANSI_FORCED === undefined 
+  ){
+
+    if(require ('tty').isatty(1)){
+        process.env.NINJA_ANSI_FORCED = '1'
+    }
+    
+} else {
+    dlog(`NINJA_ANSI_FORCED: "${process.env.NINJA_ANSI_FORCED}"`)
 }
 
+// Note the watch mode flag `-w` is not very useful to bsb.exe
+// A trick is played that for such flags `bsb.exe -make-world -w`
+// it will exit ignoreing `-make-world` since it will be triggered
+// again in bsb
+// The following process atm only spawned `bsb.exe` directly
 try {
     child_process.execFileSync(bsb_exe, delegate_args, { stdio: 'inherit' })
 } catch (e) {
