@@ -22,11 +22,29 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-let color_enabled = ref (Unix.isatty Unix.stdout)
+
+
+let ninja_ansi_forced = lazy 
+  (try Sys.getenv "NINJA_ANSI_FORCED" with 
+    Not_found  ->""
+  )  
+let color_enabled = lazy (Unix.isatty Unix.stdout)
+
+(* same logic as [ninja.exe] *)
+let get_color_enabled () = 
+  let colorful = 
+    match ninja_ansi_forced with 
+    | lazy "1" -> true     
+    | lazy ("0" | "false") -> false
+    | _ ->
+      Lazy.force color_enabled  in 
+  colorful 
+
+
 
 let color_functions : Format.formatter_tag_functions = {
-  mark_open_tag = (fun s ->  if !color_enabled then  Ext_color.ansi_of_tag s else Ext_string.empty) ;
-  mark_close_tag = (fun _ ->  if !color_enabled then Ext_color.reset_lit else Ext_string.empty);
+  mark_open_tag = (fun s ->  if get_color_enabled () then  Ext_color.ansi_of_tag s else Ext_string.empty) ;
+  mark_close_tag = (fun _ ->  if get_color_enabled () then Ext_color.reset_lit else Ext_string.empty);
   print_open_tag = (fun _ -> ());
   print_close_tag = (fun _ -> ())
 }

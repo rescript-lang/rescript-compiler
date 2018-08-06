@@ -26,9 +26,8 @@
 (* for default warning flags, please see bsb_warning.ml *)
 let bsc_flags =
   [
-    "-no-alias-deps";
     "-color"; "always"
-  ]
+  ] 
 
 
 let refmt_flags = ["--print"; "binary"]

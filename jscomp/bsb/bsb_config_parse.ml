@@ -124,7 +124,7 @@ let interpret_json
   : Bsb_config_types.t =
 
   let reason_react_jsx = ref None in 
-  let config_json = (cwd // Literals.bsconfig_json) in
+  let config_json = cwd // Literals.bsconfig_json in
   let refmt_flags = ref Bsb_default.refmt_flags in
   let bs_external_includes = ref [] in 
   (** we should not resolve it too early,
