@@ -1003,7 +1003,7 @@ int NinjaMain::RunBuild(int argc, char** argv) {
     printf("ninja: build stopped: %s.\n", err.c_str());
 #else     
   if(config_.verbosity == BuildConfig::VERBOSE){
-    if(IsAnsiCodeForced()){
+    if(ShouldBeColorFul(false)){
       printf("\x1b[31m" "FAILED:" "\x1b[0m" " %s.\n", err.c_str());    
     } else {
       printf("FAILED: %s.\n", err.c_str());    
