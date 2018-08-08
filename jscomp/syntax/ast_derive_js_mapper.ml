@@ -27,15 +27,14 @@ module U = Ast_derive_util
 type tdcls = Parsetree.type_declaration list 
 
 let js_field (o : Parsetree.expression) m = 
-  Exp.apply 
+  Ast_compatible.app2
     (Exp.ident {txt = Lident "##"; loc = o.pexp_loc})
-    [ 
-      "",o; 
-      "", Exp.ident m
-    ]
-let const_int i = Exp.constant (Const_int i)
-let const_string s = Exp.constant (Const_string (s,None))
+    o
+    (Exp.ident m)
 
+(* let Ast_compatible.const_exp_int i = Exp.constant (Const_int i) *)
+let const_string s = Exp.constant (Const_string (s,None))
+ 
 
 let handle_config (config : Parsetree.expression option) = 
   match config with 
@@ -65,7 +64,7 @@ let noloc = Location.none
 let eraseTypeLit = "jsMapperEraseType"
 let eraseTypeExp = Exp.ident {loc = noloc; txt = Lident eraseTypeLit}
 let eraseType x = 
-  Exp.apply eraseTypeExp ["", x]
+  Ast_compatible.app1 eraseTypeExp  x
 let eraseTypeStr = 
   let any = Typ.any () in 
   Str.primitive 
@@ -73,10 +72,9 @@ let eraseTypeStr =
        (Typ.arrow "" any any)
     )
 
-let app2 f arg1 arg2 = 
-  Exp.apply f ["",arg1; "", arg2]
-let app3 f arg1 arg2 arg3 = 
-  Exp.apply f ["", arg1; "", arg2; "", arg3]
+let app2 = Ast_compatible.app2
+let app3 = Ast_compatible.app3
+
 let (<=~) a b =   
   app2 (Exp.ident {loc = noloc; txt = Lident "<="}) a b 
 let (-~) a b =   
@@ -256,7 +254,7 @@ let init () =
                     begin match attr with 
                       | NullString result -> 
                         let result_len = List.length result in 
-                        let exp_len = const_int result_len in 
+                        let exp_len = Ast_compatible.const_exp_int result_len in 
                         let v = [
                           eraseTypeStr;
                           Ast_comb.single_non_rec_value 
@@ -265,7 +263,7 @@ let init () =
                                (List.map (fun (i,str) -> 
                                     Exp.tuple 
                                       [
-                                        const_int i;
+                                        Ast_compatible.const_exp_int i;
                                         const_string str
                                       ]
                                   ) (List.sort (fun (a,_) (b,_) -> compare (a:int) b) result)));
@@ -317,12 +315,13 @@ let init () =
                    match xs with 
                    | `New xs ->
                      let constantArrayExp = Exp.ident {loc; txt = Lident constantArray} in
-                     let exp_len = const_int (List.length ctors) in
+                     let exp_len = Ast_compatible.const_exp_int (List.length ctors) in
                      let v = [
                        eraseTypeStr;
                        Ast_comb.single_non_rec_value 
                          {loc; txt = constantArray}
-                         (Exp.array (List.map (fun i -> const_int i) xs ))
+                         (Ast_compatible.const_exp_int_list_as_array xs)
+                         (* (Exp.array (List.map (fun i -> Ast_compatible.const_exp_int i) xs )) *)
                        ;
                        toJsBody                        
                          (
@@ -361,12 +360,12 @@ let init () =
                        [  eraseTypeStr;
                           toJsBody (
                             coerceResultToNewType
-                              (eraseType exp_param +~ const_int offset)
+                              (eraseType exp_param +~ Ast_compatible.const_exp_int offset)
                           )
                           ;
                           let len = List.length ctors in 
-                          let range_low = const_int (offset + 0) in 
-                          let range_upper = const_int (offset + len - 1) in 
+                          let range_low = Ast_compatible.const_exp_int (offset + 0) in 
+                          let range_upper = Ast_compatible.const_exp_int (offset + len - 1) in 
 
                           Ast_comb.single_non_rec_value
                             {loc ; txt = fromJs}
@@ -383,7 +382,7 @@ let init () =
                                          (assertExp 
                                             ((exp_param <=~ range_upper) &&~ (range_low <=~ exp_param))
                                          )
-                                         (exp_param  -~ const_int offset))
+                                         (exp_param  -~ Ast_compatible.const_exp_int offset))
                                   )
                                   +>
                                   core_type
@@ -391,7 +390,7 @@ let init () =
                                   (Exp.ifthenelse
                                      ( (exp_param <=~ range_upper) &&~ (range_low <=~ exp_param))
                                      (Exp.construct {loc; txt = Lident "Some"} 
-                                        ( Some (exp_param -~ const_int offset)))
+                                        ( Some (exp_param -~ Ast_compatible.const_exp_int offset)))
                                      (Some (Exp.construct {loc; txt = Lident "None"} None)))
                                   +>
                                   Ast_core_type.lift_option_type core_type

@@ -25552,6 +25552,243 @@ let table_dispatch table (action : action)
     end
 
 end
+module Ast_compatible : sig 
+#1 "ast_compatible.mli"
+(* Copyright (C) 2018 Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type loc = Location.t 
+type attrs = Parsetree.attribute list 
+open Parsetree
+
+
+val const_exp_string:
+  ?loc:Location.t -> 
+  ?attrs:attrs ->    
+  ?delimiter:string -> 
+  string -> 
+  expression
+
+val const_exp_int:
+  ?loc:Location.t -> 
+  ?attrs:attrs -> 
+  int -> 
+  expression 
+
+val const_exp_int_list_as_array:  
+  int list -> 
+  expression 
+
+val apply_simple:
+  ?loc:Location.t -> 
+  ?attrs:attrs -> 
+  expression ->   
+  expression list -> 
+  expression 
+
+val app1:
+  ?loc:Location.t -> 
+  ?attrs:attrs -> 
+  expression ->   
+  expression -> 
+  expression 
+
+val app2:
+  ?loc:Location.t -> 
+  ?attrs:attrs -> 
+  expression ->   
+  expression -> 
+  expression -> 
+  expression 
+
+val app3:
+  ?loc:Location.t -> 
+  ?attrs:attrs -> 
+  expression ->   
+  expression -> 
+  expression -> 
+  expression ->   
+  expression 
+
+(** Note this function would slightly 
+  change its semantics depending on compiler versions
+  for newer version: it means always label
+  for older version: it could be optional (which we should avoid)
+*)  
+val apply_labels:  
+  ?loc:Location.t -> 
+  ?attrs:attrs -> 
+  expression ->   
+  (string * expression) list -> 
+  (* [(label,e)] [label] is strictly interpreted as label *)
+  expression 
+
+val fun_ :  
+  ?loc:Location.t -> 
+  ?attrs:attrs -> 
+  pattern -> 
+  expression -> 
+  expression
+end = struct
+#1 "ast_compatible.ml"
+(* Copyright (C) 2018 Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type loc = Location.t 
+type attrs = Parsetree.attribute list 
+open Parsetree
+let default_loc = Location.none
+
+ 
+
+let const_exp_string 
+  ?(loc = default_loc)
+  ?(attrs = [])
+  ?delimiter
+  (s : string) : expression = 
+  {
+    pexp_loc = loc; 
+    pexp_attributes = attrs;
+    pexp_desc = Pexp_constant(Const_string(s,delimiter))
+  }
+
+
+let const_exp_int 
+  ?(loc = default_loc)
+  ?(attrs = [])
+  (s : int) : expression = 
+  {
+    pexp_loc = loc; 
+    pexp_attributes = attrs;
+    pexp_desc = Pexp_constant(Const_int s)
+  }
+
+
+let const_exp_int_list_as_array xs = 
+  Ast_helper.Exp.array 
+  (Ext_list.map (fun x -> const_exp_int x ) xs)  
+
+let apply_simple
+ ?(loc = default_loc) 
+ ?(attrs = [])
+  fn args : expression = 
+  { pexp_loc = loc; 
+    pexp_attributes = attrs;
+    pexp_desc = 
+      Pexp_apply(
+        fn, 
+        (Ext_list.map (fun x -> "",x) args) ) }
+
+let app1        
+  ?(loc = default_loc)
+  ?(attrs = [])
+  fn arg1 : expression = 
+  { pexp_loc = loc; 
+    pexp_attributes = attrs;
+    pexp_desc = 
+      Pexp_apply(
+        fn, 
+        ["", arg1]
+        ) }
+
+let app2
+  ?(loc = default_loc)
+  ?(attrs = [])
+  fn arg1 arg2 : expression = 
+  { pexp_loc = loc; 
+    pexp_attributes = attrs;
+    pexp_desc = 
+      Pexp_apply(
+        fn, 
+        [
+          "", arg1;
+          "", arg2 ]
+        ) }
+
+let app3
+  ?(loc = default_loc)
+  ?(attrs = [])
+  fn arg1 arg2 arg3 : expression = 
+  { pexp_loc = loc; 
+    pexp_attributes = attrs;
+    pexp_desc = 
+      Pexp_apply(
+        fn, 
+        [
+          "", arg1;
+          "", arg2;
+          "", arg3
+        ]
+        ) }
+
+
+let apply_labels
+ ?(loc = default_loc) 
+ ?(attrs = [])
+  fn args : expression = 
+  { pexp_loc = loc; 
+    pexp_attributes = attrs;
+    pexp_desc = 
+      Pexp_apply(
+        fn, 
+        args ) }
+
+
+let fun_         
+  ?(loc = default_loc) 
+  ?(attrs = [])
+  pat
+  exp = 
+  {
+    pexp_loc = loc; 
+    pexp_attributes = attrs;
+    pexp_desc = Pexp_fun("",None, pat, exp)
+  }
+ 
+end
 module Ast_literal : sig 
 #1 "ast_literal.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -25761,10 +25998,10 @@ module Ast_comb : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-val exp_apply_no_label : 
+(* val exp_apply_no_label : 
   ?loc:Location.t ->
   ?attrs:Parsetree.attributes ->
-  Parsetree.expression -> Parsetree.expression list -> Parsetree.expression
+  Parsetree.expression -> Parsetree.expression list -> Parsetree.expression *)
 
 (* val fun_no_label : 
   ?loc:Location.t ->
@@ -25839,8 +26076,7 @@ end = struct
 
 open Ast_helper 
 
-let exp_apply_no_label ?loc ?attrs a b = 
-  Exp.apply ?loc ?attrs a (Ext_list.map (fun x -> "", x) b)
+
 
 (* let fun_no_label ?loc ?attrs  pat body = 
   Ast_compatible.fun_ ?loc ?attrs  pat body *)
@@ -25849,7 +26085,7 @@ let arrow_no_label ?loc ?attrs b c =
   Typ.arrow ?loc ?attrs "" b c 
 
 let discard_exp_as_unit loc e = 
-  exp_apply_no_label ~loc     
+  Ast_compatible.apply_simple ~loc     
     (Exp.ident ~loc {txt = Ast_literal.Lid.ignore_id; loc})
     [Exp.constraint_ ~loc e 
        (Ast_literal.type_unit ~loc ())]
@@ -28751,238 +28987,6 @@ let deprecated s : attr =
            },[])
       ; pstr_loc = locg}]
 
-end
-module Ast_compatible : sig 
-#1 "ast_compatible.mli"
-(* Copyright (C) 2018 Authors of BuckleScript
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-type loc = Location.t 
-type attrs = Parsetree.attribute list 
-open Parsetree
-
-
-val const_exp_string:
-  ?loc:Location.t -> 
-  ?attrs:attrs ->    
-  ?delimiter:string -> 
-  string -> 
-  expression
-
-val const_exp_int:
-  ?loc:Location.t -> 
-  ?attrs:attrs -> 
-  int -> 
-  expression 
-
-val const_exp_int_list_as_array:  
-  int list -> 
-  expression 
-
-val apply_simple:
-  ?loc:Location.t -> 
-  ?attrs:attrs -> 
-  expression ->   
-  expression list -> 
-  expression 
-
-val app1:
-  ?loc:Location.t -> 
-  ?attrs:attrs -> 
-  expression ->   
-  expression -> 
-  expression 
-
-val app2:
-  ?loc:Location.t -> 
-  ?attrs:attrs -> 
-  expression ->   
-  expression -> 
-  expression -> 
-  expression 
-
-val app3:
-  ?loc:Location.t -> 
-  ?attrs:attrs -> 
-  expression ->   
-  expression -> 
-  expression -> 
-  expression ->   
-  expression 
-
-val apply_labels:  
-  ?loc:Location.t -> 
-  ?attrs:attrs -> 
-  expression ->   
-  (string * expression) list -> 
-  (* [(label,e)] [label] is strictly interpreted as label *)
-  expression 
-
-val fun_ :  
-  ?loc:Location.t -> 
-  ?attrs:attrs -> 
-  pattern -> 
-  expression -> 
-  expression
-end = struct
-#1 "ast_compatible.ml"
-(* Copyright (C) 2018 Authors of BuckleScript
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type loc = Location.t 
-type attrs = Parsetree.attribute list 
-open Parsetree
-let default_loc = Location.none
-
- 
-
-let const_exp_string 
-  ?(loc = default_loc)
-  ?(attrs = [])
-  ?delimiter
-  (s : string) : expression = 
-  {
-    pexp_loc = loc; 
-    pexp_attributes = attrs;
-    pexp_desc = Pexp_constant(Const_string(s,delimiter))
-  }
-
-
-let const_exp_int 
-  ?(loc = default_loc)
-  ?(attrs = [])
-  (s : int) : expression = 
-  {
-    pexp_loc = loc; 
-    pexp_attributes = attrs;
-    pexp_desc = Pexp_constant(Const_int s)
-  }
-
-
-let const_exp_int_list_as_array xs = 
-  Ast_helper.Exp.array 
-  (Ext_list.map (fun x -> const_exp_int x ) xs)  
-
-let apply_simple
- ?(loc = default_loc) 
- ?(attrs = [])
-  fn args : expression = 
-  { pexp_loc = loc; 
-    pexp_attributes = attrs;
-    pexp_desc = 
-      Pexp_apply(
-        fn, 
-        (Ext_list.map (fun x -> "",x) args) ) }
-
-let app1        
-  ?(loc = default_loc)
-  ?(attrs = [])
-  fn arg1 : expression = 
-  { pexp_loc = loc; 
-    pexp_attributes = attrs;
-    pexp_desc = 
-      Pexp_apply(
-        fn, 
-        ["", arg1]
-        ) }
-
-let app2
-  ?(loc = default_loc)
-  ?(attrs = [])
-  fn arg1 arg2 : expression = 
-  { pexp_loc = loc; 
-    pexp_attributes = attrs;
-    pexp_desc = 
-      Pexp_apply(
-        fn, 
-        [
-          "", arg1;
-          "", arg2 ]
-        ) }
-
-let app3
-  ?(loc = default_loc)
-  ?(attrs = [])
-  fn arg1 arg2 arg3 : expression = 
-  { pexp_loc = loc; 
-    pexp_attributes = attrs;
-    pexp_desc = 
-      Pexp_apply(
-        fn, 
-        [
-          "", arg1;
-          "", arg2;
-          "", arg3
-        ]
-        ) }
-
-
-let apply_labels
- ?(loc = default_loc) 
- ?(attrs = [])
-  fn args : expression = 
-  { pexp_loc = loc; 
-    pexp_attributes = attrs;
-    pexp_desc = 
-      Pexp_apply(
-        fn, 
-        args ) }
-
-
-let fun_         
-  ?(loc = default_loc) 
-  ?(attrs = [])
-  pat
-  exp = 
-  {
-    pexp_loc = loc; 
-    pexp_attributes = attrs;
-    pexp_desc = Pexp_fun("",None, pat, exp)
-  }
- 
 end
 module Ast_exp : sig 
 #1 "ast_exp.mli"
@@ -34052,11 +34056,11 @@ let arrow = Typ.arrow
 
 let js_property loc obj name =
   Parsetree.Pexp_send
-    ((Exp.apply ~loc
+    ((Ast_compatible.app1 ~loc
         (Exp.ident ~loc
            {loc;
             txt = Ldot (Ast_literal.Lid.js_unsafe, Literals.unsafe_downgrade)})
-        ["",obj]), name)
+        obj), name)
 
 (* TODO: 
    have a final checking for property arities 
@@ -34239,7 +34243,7 @@ let generic_to_uncurry_exp kind loc (self : Bs_ast_mapper.mapper)  pat body
           lift_js_method_callback loc args_type result_type
       ) in
     Ast_external_mk.local_extern_cont loc ~pval_prim ~pval_type 
-      (fun prim -> Exp.apply ~loc prim ["", body]) 
+      (fun prim -> Ast_compatible.app1 ~loc prim body) 
 
 let to_uncurry_fn   = 
   generic_to_uncurry_exp `Fn
@@ -34277,13 +34281,12 @@ let handle_raw ~check_js_regex loc payload =
 
 let handle_external loc x = 
   let raw_exp : Ast_exp.t = 
-    Ast_helper.Exp.apply 
+    Ast_compatible.app1
     (Exp.ident ~loc 
          {loc; txt = Ldot (Ast_literal.Lid.js_unsafe, 
                            Literals.raw_expr)})
       ~loc 
-      [Ext_string.empty, 
-        Exp.constant ~loc (Const_string (x,Some Ext_string.empty))] in 
+      (Exp.constant ~loc (Const_string (x,Some Ext_string.empty))) in 
   let empty = 
     Exp.ident ~loc 
     {txt = Ldot (Ldot(Lident"Js", "Undefined"), "empty");loc}    
@@ -34293,20 +34296,16 @@ let handle_external loc x =
   let typeof = 
     Exp.ident {loc ; txt = Ldot(Lident "Js","typeof")} in 
 
-  Exp.apply ~loc undefined_typeof [
-    Ext_string.empty,
+  Ast_compatible.app1 ~loc undefined_typeof (
     Exp.ifthenelse ~loc
-    (Exp.apply ~loc 
-      (Exp.ident ~loc {loc ; txt = Ldot (Lident "Pervasives", "=")} )
-      [ 
-        Ext_string.empty,
-        (Exp.apply ~loc typeof [Ext_string.empty,raw_exp]);
-        Ext_string.empty, 
-        Exp.constant ~loc (Const_string ("undefined",None))  
-        ])      
-      (empty)
+    (Ast_compatible.app2 ~loc 
+      (Exp.ident ~loc {loc ; txt = Ldot (Lident "Pervasives", "=")} )            
+        (Ast_compatible.app1 ~loc typeof raw_exp)      
+        (Exp.constant ~loc (Const_string ("undefined",None)))
+        )      
+      empty
       (Some raw_exp)
-      ]
+  )
 
 
 let handle_raw_structure loc payload = 
@@ -34567,7 +34566,7 @@ let ocaml_obj_as_js_object
     loc
     ~pval_prim:(External_process.pval_prim_of_labels labels)
     (fun e ->
-       Exp.apply ~loc e
+       Ast_compatible.apply_labels ~loc e
          (Ext_list.map2 (fun l expr -> l.Asttypes.txt, expr) labels exprs) )
     ~pval_type
 
@@ -34617,10 +34616,10 @@ let convertBsErrorFunction loc  (self : Bs_ast_mapper.mapper) attrs (cases : Par
   Ast_compatible.fun_ ~attrs ~loc ( Pat.var ~loc  {txt; loc })
     (Exp.ifthenelse
     ~loc 
-    (Exp.apply ~loc (Exp.ident ~loc {txt = isCamlExceptionOrOpenVariant ; loc}) ["", txt_expr ])
+    (Ast_compatible.app1 ~loc (Exp.ident ~loc {txt = isCamlExceptionOrOpenVariant ; loc}) txt_expr )
     (Exp.match_ ~loc 
        (Exp.constraint_ ~loc 
-          (Exp.apply  ~loc (Exp.ident ~loc {txt =  obj_magic; loc}) ["", txt_expr])
+          (Ast_compatible.app1  ~loc (Exp.ident ~loc {txt =  obj_magic; loc})  txt_expr)
           (Ast_literal.type_exn ~loc ())
        )
       (Ext_list.map_append (fun (x :Parsetree.case ) ->
@@ -35577,15 +35576,14 @@ module U = Ast_derive_util
 type tdcls = Parsetree.type_declaration list 
 
 let js_field (o : Parsetree.expression) m = 
-  Exp.apply 
+  Ast_compatible.app2
     (Exp.ident {txt = Lident "##"; loc = o.pexp_loc})
-    [ 
-      "",o; 
-      "", Exp.ident m
-    ]
-let const_int i = Exp.constant (Const_int i)
-let const_string s = Exp.constant (Const_string (s,None))
+    o
+    (Exp.ident m)
 
+(* let Ast_compatible.const_exp_int i = Exp.constant (Const_int i) *)
+let const_string s = Exp.constant (Const_string (s,None))
+ 
 
 let handle_config (config : Parsetree.expression option) = 
   match config with 
@@ -35615,7 +35613,7 @@ let noloc = Location.none
 let eraseTypeLit = "jsMapperEraseType"
 let eraseTypeExp = Exp.ident {loc = noloc; txt = Lident eraseTypeLit}
 let eraseType x = 
-  Exp.apply eraseTypeExp ["", x]
+  Ast_compatible.app1 eraseTypeExp  x
 let eraseTypeStr = 
   let any = Typ.any () in 
   Str.primitive 
@@ -35623,10 +35621,9 @@ let eraseTypeStr =
        (Typ.arrow "" any any)
     )
 
-let app2 f arg1 arg2 = 
-  Exp.apply f ["",arg1; "", arg2]
-let app3 f arg1 arg2 arg3 = 
-  Exp.apply f ["", arg1; "", arg2; "", arg3]
+let app2 = Ast_compatible.app2
+let app3 = Ast_compatible.app3
+
 let (<=~) a b =   
   app2 (Exp.ident {loc = noloc; txt = Lident "<="}) a b 
 let (-~) a b =   
@@ -35806,7 +35803,7 @@ let init () =
                     begin match attr with 
                       | NullString result -> 
                         let result_len = List.length result in 
-                        let exp_len = const_int result_len in 
+                        let exp_len = Ast_compatible.const_exp_int result_len in 
                         let v = [
                           eraseTypeStr;
                           Ast_comb.single_non_rec_value 
@@ -35815,7 +35812,7 @@ let init () =
                                (List.map (fun (i,str) -> 
                                     Exp.tuple 
                                       [
-                                        const_int i;
+                                        Ast_compatible.const_exp_int i;
                                         const_string str
                                       ]
                                   ) (List.sort (fun (a,_) (b,_) -> compare (a:int) b) result)));
@@ -35867,12 +35864,13 @@ let init () =
                    match xs with 
                    | `New xs ->
                      let constantArrayExp = Exp.ident {loc; txt = Lident constantArray} in
-                     let exp_len = const_int (List.length ctors) in
+                     let exp_len = Ast_compatible.const_exp_int (List.length ctors) in
                      let v = [
                        eraseTypeStr;
                        Ast_comb.single_non_rec_value 
                          {loc; txt = constantArray}
-                         (Exp.array (List.map (fun i -> const_int i) xs ))
+                         (Ast_compatible.const_exp_int_list_as_array xs)
+                         (* (Exp.array (List.map (fun i -> Ast_compatible.const_exp_int i) xs )) *)
                        ;
                        toJsBody                        
                          (
@@ -35911,12 +35909,12 @@ let init () =
                        [  eraseTypeStr;
                           toJsBody (
                             coerceResultToNewType
-                              (eraseType exp_param +~ const_int offset)
+                              (eraseType exp_param +~ Ast_compatible.const_exp_int offset)
                           )
                           ;
                           let len = List.length ctors in 
-                          let range_low = const_int (offset + 0) in 
-                          let range_upper = const_int (offset + len - 1) in 
+                          let range_low = Ast_compatible.const_exp_int (offset + 0) in 
+                          let range_upper = Ast_compatible.const_exp_int (offset + len - 1) in 
 
                           Ast_comb.single_non_rec_value
                             {loc ; txt = fromJs}
@@ -35933,7 +35931,7 @@ let init () =
                                          (assertExp 
                                             ((exp_param <=~ range_upper) &&~ (range_low <=~ exp_param))
                                          )
-                                         (exp_param  -~ const_int offset))
+                                         (exp_param  -~ Ast_compatible.const_exp_int offset))
                                   )
                                   +>
                                   core_type
@@ -35941,7 +35939,7 @@ let init () =
                                   (Exp.ifthenelse
                                      ( (exp_param <=~ range_upper) &&~ (range_low <=~ exp_param))
                                      (Exp.construct {loc; txt = Lident "Some"} 
-                                        ( Some (exp_param -~ const_int offset)))
+                                        ( Some (exp_param -~ Ast_compatible.const_exp_int offset)))
                                      (Some (Exp.construct {loc; txt = Lident "None"} None)))
                                   +>
                                   Ast_core_type.lift_option_type core_type
@@ -36543,9 +36541,9 @@ let handle_exp_apply
                                 -> 
                                 {fn with pexp_desc = Pexp_construct(ctor, Some bounded_obj_arg)}
                               | _ ->
-                                Exp.apply ~loc:fn.pexp_loc
+                                Ast_compatible.app1 ~loc:fn.pexp_loc
                                   (self.expr self fn )
-                                  ["", bounded_obj_arg]
+                                   bounded_obj_arg
                             ) xs );
                       pexp_attributes = tuple_attrs;
                       pexp_loc = fn.pexp_loc;
@@ -36554,7 +36552,7 @@ let handle_exp_apply
               begin match try_dispatch_by_tuple  with
                 | Some x -> x
                 | None ->
-                  Exp.apply ~loc (self.expr self fn) ["", new_obj_arg]
+                  Ast_compatible.app1 ~loc (self.expr self fn) new_obj_arg
               end
           end
         | _ ->
@@ -36738,17 +36736,16 @@ let handle_extension record_as_js_object e (self : Bs_ast_mapper.mapper)
          begin match pat.ppat_desc, body.pexp_desc with 
          | Ppat_construct ({txt = Lident "()"}, None), Pexp_constant(Const_string(block,_))
            -> 
-            Exp.apply ~loc 
-            (Exp.ident ~loc {txt = Ldot (Ast_literal.Lid.js_unsafe, Literals.raw_function);loc})
-            [ "", 
-              Exp.constant ~loc (Const_string (toString {args = [] ; block }, None))            
-            ]
+            Ast_compatible.app1 ~loc 
+            (Exp.ident ~loc {txt = Ldot (Ast_literal.Lid.js_unsafe, Literals.raw_function);loc})            
+            (Exp.constant ~loc (Const_string (toString {args = [] ; block }, None)))
+            
             
          | Ppat_var ({txt;}), _ -> 
             let acc, block = unroll_function_aux [txt] body in 
-            (Exp.apply ~loc 
+            (Ast_compatible.app1 ~loc 
             (Exp.ident ~loc {txt = Ldot (Ast_literal.Lid.js_unsafe, Literals.raw_function);loc})
-            [ "", Exp.constant ~loc (Const_string (toString {args = List.rev acc ; block },None))]            
+            (Exp.constant ~loc (Const_string (toString {args = List.rev acc ; block },None)))
             )
          | _ -> Location.raise_errorf ~loc "bs.raw can only be applied to a string or a special function form "
          end 
@@ -36785,23 +36782,23 @@ let handle_extension record_as_js_object e (self : Bs_ast_mapper.mapper)
                 file lnum in   
           let e = self.expr self e in 
           Exp.sequence ~loc
-            (Exp.apply ~loc     
+            (Ast_compatible.app1 ~loc     
                (Exp.ident ~loc {loc; 
                                 txt = 
                                   Ldot (Ldot (Lident "Js", "Console"), "timeStart")   
                                })
-               ["", Exp.constant ~loc (Const_string (locString,None))]
+               (Exp.constant ~loc (Const_string (locString,None)))
             )     
             ( Exp.let_ ~loc Nonrecursive
                 [Vb.mk ~loc (Pat.var ~loc {loc; txt = "timed"}) e ;
                 ]
                 (Exp.sequence ~loc
-                   (Exp.apply ~loc     
+                   (Ast_compatible.app1 ~loc     
                       (Exp.ident ~loc {loc; 
                                        txt = 
                                          Ldot (Ldot (Lident "Js", "Console"), "timeEnd")   
                                       })
-                      ["", Exp.constant ~loc (Const_string (locString,None))]
+                      (Exp.constant ~loc (Const_string (locString,None)))
                    )    
                    (Exp.ident ~loc {loc; txt = Lident "timed"})
                 )
@@ -36827,13 +36824,10 @@ let handle_extension record_as_js_object e (self : Bs_ast_mapper.mapper)
               Printf.sprintf "File %S, line %d, characters %d-%d"
                 file lnum cnum enum in   
           let raiseWithString  locString =      
-            (Exp.apply ~loc 
+              Ast_compatible.app1 ~loc 
                (Exp.ident ~loc {loc; txt = 
-                                       Ldot(Ldot (Lident "Js","Exn"),"raiseError")})
-               ["",
-
-                Exp.constant (Const_string (locString,None))    
-               ])
+                                       Ldot(Ldot (Lident "Js","Exn"),"raiseError")})               
+                (Exp.constant (Const_string (locString,None)))               
           in 
           (match e.pexp_desc with
            | Pexp_construct({txt = Lident "false"},None) -> 
@@ -36858,9 +36852,9 @@ let handle_extension record_as_js_object e (self : Bs_ast_mapper.mapper)
                Exp.assert_ ~loc e
              else 
                Exp.ifthenelse ~loc
-                 (Exp.apply ~loc
+                 (Ast_compatible.app1 ~loc
                     (Exp.ident {loc ; txt = Ldot(Lident "Pervasives","not")})
-                    ["", e]
+                    e
                  )
                  (raiseWithString locString)
                  None
@@ -38659,9 +38653,9 @@ let rec unsafe_mapper : Bs_ast_mapper.mapper =
           ->          
           if !Js_config.debug then 
             let open Ast_helper in 
-            Str.eval ~loc (Exp.apply ~loc 
+            Str.eval ~loc (Ast_compatible.app1 ~loc 
             (Exp.ident ~loc {txt = Ldot(Ldot (Lident"Belt","Debug"), "setupChromeDebugger");loc} )
-            ["", Ast_literal.val_unit ~loc ()]
+             (Ast_literal.val_unit ~loc ())
              )
           else Ast_structure.dummy_item loc
         | Pstr_type (_ :: _ as tdcls ) (* [ {ptype_attributes} as tdcl ] *)->

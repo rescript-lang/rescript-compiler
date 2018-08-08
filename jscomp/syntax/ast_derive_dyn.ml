@@ -136,8 +136,8 @@ let rec exp_of_core_type prefix
     Exp.ident (fn_of_lid prefix lid)       
   | Ptyp_constr (lid, params)
     -> 
-    Exp.apply (Exp.ident (fn_of_lid prefix lid))
-      (Ext_list.map (fun x -> "",exp_of_core_type prefix x ) params) 
+    Ast_compatible.apply_simple (Exp.ident (fn_of_lid prefix lid))
+      (Ext_list.map (fun x -> exp_of_core_type prefix x ) params) 
   | Ptyp_tuple lst -> 
     begin match lst with 
     | [x] -> exp_of_core_type prefix x 
@@ -148,8 +148,8 @@ let rec exp_of_core_type prefix
         Location.raise_errorf ~loc "tuple arity > 6 not supported yet"
       else 
         let fn = js_dyn_tuple_to_value len in 
-        let args = Ext_list.map (fun x -> "", exp_of_core_type prefix x) lst in 
-        Exp.apply fn args 
+        let args = Ext_list.map (fun x -> exp_of_core_type prefix x) lst in 
+        Ast_compatible.apply_simple fn args 
     end
 
 
@@ -203,27 +203,27 @@ let case_of_ctdcl (ctdcls : Parsetree.constructor_declaration list) =
       (List.mapi (fun i ctdcl -> 
            let pat, core_type_exprs = destruct_constructor_declaration ctdcl in 
            Exp.case pat 
-             (Exp.apply 
+             (Ast_compatible.app3
                 (js_dyn_variant_to_value ())
-                [("", Exp.ident {txt = Lident shape ; loc});
-                 ("", Ast_compatible.const_exp_int i);
-                 ("", exp_of_core_type_exprs core_type_exprs);
-                ]
+                ( Exp.ident {txt = Lident shape ; loc})
+                ( Ast_compatible.const_exp_int i)
+                ( exp_of_core_type_exprs core_type_exprs)
+                
              )) ctdcls
       )
 let record args = 
-  Exp.apply 
+  Ast_compatible.app2 
     (Exp.ident {txt = Ldot (Lident js_dyn, record_to_value ); loc})
-    ["", Exp.ident {txt = Lident shape ; loc};
-     ("",  args)
-    ]      
+    (Exp.ident {txt = Lident shape ; loc})
+    args
+    
 
 
 let fun_1 name = 
   Ast_compatible.fun_ ~attrs:bs_attrs 
     (Pat.var {txt = "x"; loc})
-    (Exp.apply (Exp.ident name)
-       ["",(Exp.ident {txt = Lident "x"; loc})])
+    (Ast_compatible.app1 (Exp.ident name)
+       (Exp.ident {txt = Lident "x"; loc}))
 
 let record_exp  name core_type  labels : Ast_structure.t = 
   let arg_name : string = "args" in
@@ -233,8 +233,8 @@ let record_exp  name core_type  labels : Ast_structure.t =
   [Str.value Nonrecursive @@ 
    [Vb.mk 
      (Pat.var {txt = shape;  loc}) 
-     (Exp.apply (js_dyn_shape_of_record ())
-        ["", (Ast_derive_util.lift_string_list_to_array labels)]
+     (Ast_compatible.app1 (js_dyn_shape_of_record ())
+        (Ast_derive_util.lift_string_list_to_array labels)
      ) ];
    Str.value Nonrecursive @@ 
    [Vb.mk (Pat.var {txt = name ^ to_value_  ; loc })
@@ -288,10 +288,10 @@ let init ()  =
                          [
                            Str.value Nonrecursive @@ 
                            [Vb.mk (Pat.var {txt = shape ; loc})
-                              (      Exp.apply (js_dyn_shape_of_variant ())
-                                       [ "", (Ast_derive_util.lift_string_list_to_array names);
-                                         "", (Ast_compatible.const_exp_int_list_as_array arities )
-                                       ])];
+                              (      Ast_compatible.app2 (js_dyn_shape_of_variant ())
+                                       (Ast_derive_util.lift_string_list_to_array names)
+                                       (Ast_compatible.const_exp_int_list_as_array arities )
+                                       )];
                            Str.value Nonrecursive @@ 
                            [Vb.mk (Pat.var {txt = name ^ to_value_  ; loc})
                               (case_of_ctdcl cd)

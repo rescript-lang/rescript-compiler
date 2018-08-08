@@ -76,6 +76,11 @@ val app3:
   expression ->   
   expression 
 
+(** Note this function would slightly 
+  change its semantics depending on compiler versions
+  for newer version: it means always label
+  for older version: it could be optional (which we should avoid)
+*)  
 val apply_labels:  
   ?loc:Location.t -> 
   ?attrs:attrs -> 
