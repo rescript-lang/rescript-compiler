@@ -155,9 +155,13 @@ function non_windows_npm_release() {
         child_process.execSync(make + " libs && " + make + " install", root_dir_config)
     } else {
         tryToProvideOCamlCompiler()
-        if(process.env.BS_TRAVIS_CI){
+        if(process.env.BS_TRAVIS_CI === "1"){
             console.log('Enforcing snapshot in CI mode')
-            child_process.execSync("make -C jscomp force-snapshotml", root_dir_config)
+            if(fs.existsSync(path.join(root_dir,'jscomp','Makefile'))){
+                child_process.execSync("make -C jscomp force-snapshotml", root_dir_config)
+            } else {
+                console.log("jscomp/Makefile is missing")
+            }            
         }
         child_process.execSync(make + " world && " + make + " install", root_dir_config)
     }
