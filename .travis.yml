@@ -1,14 +1,13 @@
 language: node_js
 
-git:
-  submodules: false
-# subtree now
 
 env:
   - BS_TRAVIS_CI=1
 node_js:
   - 6
 
+# before_install: make -C jscomp force-snapshotml    
+# https://docs.travis-ci.com/user/customizing-the-build/#the-build-lifecycle
 # script: npm run coveralls
 # if we turn on this script, we should make
 # sure `npm test` is executed

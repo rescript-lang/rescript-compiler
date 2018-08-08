@@ -151,9 +151,14 @@ function non_windows_npm_release() {
         return true // already built before
     }
     if (checkPrebuilt()) {
+        // release mode, already has bsc.exe
         child_process.execSync(make + " libs && " + make + " install", root_dir_config)
     } else {
         tryToProvideOCamlCompiler()
+        if(process.env.BS_TRAVIS_CI){
+            console.log('Enforcing snapshot in CI mode')
+            child_process.execSync("make -C jscomp force-snapshotml", root_dir_config)
+        }
         child_process.execSync(make + " world && " + make + " install", root_dir_config)
     }
 }
