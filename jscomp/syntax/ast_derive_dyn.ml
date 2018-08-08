@@ -206,7 +206,7 @@ let case_of_ctdcl (ctdcls : Parsetree.constructor_declaration list) =
              (Exp.apply 
                 (js_dyn_variant_to_value ())
                 [("", Exp.ident {txt = Lident shape ; loc});
-                 ("", Ast_derive_util.lift_int i);
+                 ("", Ast_compatible.const_exp_int i);
                  ("", exp_of_core_type_exprs core_type_exprs);
                 ]
              )) ctdcls
@@ -220,7 +220,7 @@ let record args =
 
 
 let fun_1 name = 
-  Exp.fun_ "" None ~attrs:bs_attrs 
+  Ast_compatible.fun_ ~attrs:bs_attrs 
     (Pat.var {txt = "x"; loc})
     (Exp.apply (Exp.ident name)
        ["",(Exp.ident {txt = Lident "x"; loc})])
@@ -290,7 +290,7 @@ let init ()  =
                            [Vb.mk (Pat.var {txt = shape ; loc})
                               (      Exp.apply (js_dyn_shape_of_variant ())
                                        [ "", (Ast_derive_util.lift_string_list_to_array names);
-                                         "", (Ast_derive_util.lift_int_list_to_array arities )
+                                         "", (Ast_compatible.const_exp_int_list_as_array arities )
                                        ])];
                            Str.value Nonrecursive @@ 
                            [Vb.mk (Pat.var {txt = name ^ to_value_  ; loc})

@@ -226,6 +226,7 @@ COMMON_SRCS= bs_version\
 COMMON_CMXS= $(addprefix common/, $(addsuffix .cmx, $(COMMON_SRCS)))
 SYNTAX_SRCS= \
 	bs_syntaxerr\
+	ast_compatible\
 	ast_utf8_string\
 	ast_utf8_string_interp\
 	ast_derive_constructor \

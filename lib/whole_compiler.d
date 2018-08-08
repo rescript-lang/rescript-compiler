@@ -443,6 +443,8 @@
 ../lib/whole_compiler.ml : ./syntax/ast_attributes.mli
 ../lib/whole_compiler.ml : ./syntax/ast_comb.ml
 ../lib/whole_compiler.ml : ./syntax/ast_comb.mli
+../lib/whole_compiler.ml : ./syntax/ast_compatible.ml
+../lib/whole_compiler.ml : ./syntax/ast_compatible.mli
 ../lib/whole_compiler.ml : ./syntax/ast_core_type.ml
 ../lib/whole_compiler.ml : ./syntax/ast_core_type.mli
 ../lib/whole_compiler.ml : ./syntax/ast_core_type_class_type.ml

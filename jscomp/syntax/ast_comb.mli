@@ -28,10 +28,10 @@ val exp_apply_no_label :
   ?attrs:Parsetree.attributes ->
   Parsetree.expression -> Parsetree.expression list -> Parsetree.expression
 
-val fun_no_label : 
+(* val fun_no_label : 
   ?loc:Location.t ->
   ?attrs:Parsetree.attributes ->
-  Parsetree.pattern -> Parsetree.expression -> Parsetree.expression
+  Parsetree.pattern -> Parsetree.expression -> Parsetree.expression *)
 
 val arrow_no_label : 
   ?loc:Location.t ->

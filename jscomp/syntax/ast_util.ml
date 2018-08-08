@@ -146,8 +146,8 @@ let generic_apply  kind loc
         ["#method_run" ; string_arity], 
         arrow ~loc "" (lift_method_type loc args_type result_type) fn_type
     in
-    Ast_external_mk.local_external loc ~pval_prim ~pval_type 
-      (("", fn) :: Ext_list.map (fun x -> "",x) args )
+    Ast_external_mk.local_external_apply loc ~pval_prim ~pval_type 
+      (  fn :: args )
 
 
 let uncurry_fn_apply loc self fn args = 
@@ -240,7 +240,7 @@ let generic_to_uncurry_exp kind loc (self : Bs_ast_mapper.mapper)  pat body
 
   let result, rev_extra_args = aux [first_arg] body in 
   let body = 
-    List.fold_left (fun e p -> Ast_comb.fun_no_label ~loc p e )
+    List.fold_left (fun e p -> Ast_compatible.fun_ ~loc p e )
       result rev_extra_args in
   let len = List.length rev_extra_args in 
   let arity = 
@@ -624,7 +624,7 @@ let record_as_js_object
           ({Asttypes.loc = loc ; txt = x} :: labels, (x, self.expr self e) :: args, i + 1)
         | Ldot _ | Lapply _ ->  
           Location.raise_errorf ~loc "invalid js label ") label_exprs ([],[],0) in
-  Ast_external_mk.local_external loc 
+  Ast_external_mk.local_external_obj loc 
     ~pval_prim:(External_process.pval_prim_of_labels labels)
     ~pval_type:(Ast_core_type.from_labels ~loc arity labels) 
     args 
@@ -653,7 +653,7 @@ let convertBsErrorFunction loc  (self : Bs_ast_mapper.mapper) attrs (cases : Par
       (Ast_core_type.lift_option_type (Typ.any ~loc ())) in
   let () = checkCases cases in  
   let cases = self.cases self cases in 
-  Exp.fun_ ~attrs ~loc ""  None ( Pat.var ~loc  {txt; loc })
+  Ast_compatible.fun_ ~attrs ~loc ( Pat.var ~loc  {txt; loc })
     (Exp.ifthenelse
     ~loc 
     (Exp.apply ~loc (Exp.ident ~loc {txt = isCamlExceptionOrOpenVariant ; loc}) ["", txt_expr ])

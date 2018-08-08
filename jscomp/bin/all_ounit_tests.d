@@ -117,6 +117,8 @@ bin/all_ounit_tests.ml : ./ounit_tests/ounit_union_find_tests.ml
 bin/all_ounit_tests.ml : ./ounit_tests/ounit_utf8_test.ml
 bin/all_ounit_tests.ml : ./ounit_tests/ounit_vec_test.ml
 bin/all_ounit_tests.ml : ./stubs/bs_hash_stubs.ml
+bin/all_ounit_tests.ml : ./syntax/ast_compatible.ml
+bin/all_ounit_tests.ml : ./syntax/ast_compatible.mli
 bin/all_ounit_tests.ml : ./syntax/ast_utf8_string.ml
 bin/all_ounit_tests.ml : ./syntax/ast_utf8_string.mli
 bin/all_ounit_tests.ml : ./syntax/ast_utf8_string_interp.ml

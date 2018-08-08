@@ -28,8 +28,8 @@ open Ast_helper
 let exp_apply_no_label ?loc ?attrs a b = 
   Exp.apply ?loc ?attrs a (Ext_list.map (fun x -> "", x) b)
 
-let fun_no_label ?loc ?attrs  pat body = 
-  Exp.fun_ ?loc ?attrs "" None pat body
+(* let fun_no_label ?loc ?attrs  pat body = 
+  Ast_compatible.fun_ ?loc ?attrs  pat body *)
 
 let arrow_no_label ?loc ?attrs b c = 
   Typ.arrow ?loc ?attrs "" b c 

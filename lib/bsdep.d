@@ -89,6 +89,8 @@
 ../lib/bsdep.ml : ./syntax/ast_attributes.mli
 ../lib/bsdep.ml : ./syntax/ast_comb.ml
 ../lib/bsdep.ml : ./syntax/ast_comb.mli
+../lib/bsdep.ml : ./syntax/ast_compatible.ml
+../lib/bsdep.ml : ./syntax/ast_compatible.mli
 ../lib/bsdep.ml : ./syntax/ast_core_type.ml
 ../lib/bsdep.ml : ./syntax/ast_core_type.mli
 ../lib/bsdep.ml : ./syntax/ast_core_type_class_type.ml

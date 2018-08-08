@@ -187,7 +187,7 @@ let init () =
                let newTypeStr = Str.type_ [newTdcl] in   
                let toJsBody body = 
                  Ast_comb.single_non_rec_value patToJs
-                   (Exp.fun_ "" None (Pat.constraint_ (Pat.var pat_param) core_type) 
+                   (Ast_compatible.fun_ (Pat.constraint_ (Pat.var pat_param) core_type) 
                       body )
                in 
                let (+>) a ty = 
@@ -229,7 +229,7 @@ let init () =
                         ) label_declarations) None in 
                  let fromJs = 
                    Ast_comb.single_non_rec_value patFromJs
-                     (Exp.fun_ "" None (Pat.var pat_param)
+                     (Ast_compatible.fun_ (Pat.var pat_param)
                         (if createType then                                             
                            (Exp.let_ Nonrecursive
                               [Vb.mk 
@@ -280,7 +280,7 @@ let init () =
                           );
                           Ast_comb.single_non_rec_value
                             patFromJs
-                            (Exp.fun_ "" None 
+                            (Ast_compatible.fun_
                                (Pat.var pat_param)
                                (if createType then 
                                   revSearchAssert
@@ -334,7 +334,7 @@ let init () =
                        ;
                        Ast_comb.single_non_rec_value
                          patFromJs
-                         (Exp.fun_ "" None 
+                         (Ast_compatible.fun_
                             (Pat.var pat_param)
                             (
                               if createType then 
@@ -370,7 +370,7 @@ let init () =
 
                           Ast_comb.single_non_rec_value
                             {loc ; txt = fromJs}
-                            (Exp.fun_ "" None 
+                            (Ast_compatible.fun_
                                (Pat.var pat_param)
                                (if createType then 
                                   (Exp.let_ Nonrecursive

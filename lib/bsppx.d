@@ -69,6 +69,8 @@
 ../lib/bsppx.ml : ./syntax/ast_attributes.mli
 ../lib/bsppx.ml : ./syntax/ast_comb.ml
 ../lib/bsppx.ml : ./syntax/ast_comb.mli
+../lib/bsppx.ml : ./syntax/ast_compatible.ml
+../lib/bsppx.ml : ./syntax/ast_compatible.mli
 ../lib/bsppx.ml : ./syntax/ast_core_type.ml
 ../lib/bsppx.ml : ./syntax/ast_core_type.mli
 ../lib/bsppx.ml : ./syntax/ast_core_type_class_type.ml
