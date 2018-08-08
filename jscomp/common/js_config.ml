@@ -61,7 +61,7 @@ let diagnose = ref false
 let get_diagnose () = !diagnose
 let set_diagnose b = diagnose := b
 
-let (//) = Filname.concat
+let (//) = Filename.concat
 
 (* let get_packages_info () = !packages_info *)
 
