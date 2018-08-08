@@ -52,6 +52,29 @@ val apply_simple:
   expression list -> 
   expression 
 
+val app1:
+  ?loc:Location.t -> 
+  ?attrs:attrs -> 
+  expression ->   
+  expression -> 
+  expression 
+
+val app2:
+  ?loc:Location.t -> 
+  ?attrs:attrs -> 
+  expression ->   
+  expression -> 
+  expression -> 
+  expression 
+
+val app3:
+  ?loc:Location.t -> 
+  ?attrs:attrs -> 
+  expression ->   
+  expression -> 
+  expression -> 
+  expression ->   
+  expression 
 
 val apply_labels:  
   ?loc:Location.t -> 

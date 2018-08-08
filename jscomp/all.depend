@@ -1,376 +1,467 @@
-bsb/bsb_build_schemas.cmx :
-bsb/bsb_build_util.cmx : ext/string_map.cmx ext/string_hashtbl.cmx \
-    ext/literals.cmx ext/ext_sys.cmx ext/ext_string.cmx ext/ext_path.cmx \
-    ext/ext_list.cmx ext/ext_json_types.cmx ext/ext_json_parse.cmx \
-    ext/ext_json.cmx ext/ext_array.cmx bsb/bsb_pkg.cmx bsb/bsb_log.cmx \
-    bsb/bsb_exception.cmx bsb/bsb_build_schemas.cmx bsb/bsb_build_util.cmi
-bsb/bsb_build_util.cmi : ext/ext_json_types.cmx
-bsb/bsb_clean.cmx : ext/ext_path.cmx bsb/bsb_unix.cmx \
-    bsb/bsb_parse_sources.cmx bsb/bsb_log.cmx bsb/bsb_config.cmx \
-    bsb/bsb_build_util.cmx bsb/bsb_clean.cmi
-bsb/bsb_clean.cmi :
-bsb/bsb_config.cmx : ext/ext_path.cmx bsb/bsb_config.cmi
-bsb/bsb_config.cmi :
-bsb/bsb_config_parse.cmx : ext/string_map.cmx ext/string_hash_set.cmx \
-    ext/literals.cmx ext/ext_path.cmx ext/ext_namespace.cmx ext/ext_list.cmx \
-    ext/ext_json_types.cmx ext/ext_json_parse.cmx ext/ext_json.cmx \
-    ext/ext_file_pp.cmx ext/ext_array.cmx bsb/bsb_watcher_gen.cmx \
-    bsb/bsb_warning.cmx bsb/bsb_pkg.cmx bsb/bsb_parse_sources.cmx \
-    bsb/bsb_package_specs.cmx bsb/bsb_exception.cmx bsb/bsb_default.cmx \
-    bsb/bsb_config_types.cmx bsb/bsb_config.cmx bsb/bsb_build_util.cmx \
-    bsb/bsb_build_schemas.cmx common/bs_version.cmx bsb/bsb_config_parse.cmi
-bsb/bsb_config_parse.cmi : bsb/bsb_package_specs.cmi \
-    bsb/bsb_config_types.cmx
-bsb/bsb_config_types.cmx : ext/string_map.cmx ext/string_hash_set.cmx \
-    bsb/bsb_warning.cmx bsb/bsb_package_specs.cmx bsb/bsb_file_groups.cmx
-bsb/bsb_db.cmx : ext/string_map.cmx ext/ext_string.cmx \
-    ext/ext_pervasives.cmx ext/ext_path.cmx ext/ext_modulename.cmx \
-    bsb/bsb_exception.cmx bsb/bsb_db.cmi
-bsb/bsb_db.cmi : ext/string_map.cmi
-bsb/bsb_default.cmx : bsb/bsb_config_types.cmx bsb/bsb_default.cmi
-bsb/bsb_default.cmi : bsb/bsb_config_types.cmx
-bsb/bsb_dir_index.cmx : bsb/bsb_dir_index.cmi
-bsb/bsb_dir_index.cmi :
-bsb/bsb_exception.cmx : ext/ext_string.cmx ext/ext_position.cmx \
-    ext/ext_json.cmx common/bs_version.cmx bsb/bsb_exception.cmi
-bsb/bsb_exception.cmi : ext/ext_position.cmi ext/ext_json_types.cmx
-bsb/bsb_file.cmx : bsb/bsb_file.cmi
-bsb/bsb_file.cmi :
-bsb/bsb_file_groups.cmx : ext/string_set.cmx ext/string_map.cmx \
-    ext/ext_list.cmx ext/ext_file_pp.cmx bsb/bsb_dir_index.cmx bsb/bsb_db.cmx
-bsb/bsb_helper_dep_graph.cmx : ext/string_set.cmx ext/string_map.cmx \
-    ext/string_hashtbl.cmx bsb/bsb_log.cmx bsb/bsb_helper_dep_graph.cmi
-bsb/bsb_helper_dep_graph.cmi : ext/string_set.cmi ext/string_map.cmi \
-    ext/string_hashtbl.cmi
-bsb/bsb_helper_depfile_gen.cmx : ext/string_map.cmx ext/literals.cmx \
-    ext/ext_string.cmx ext/ext_pervasives.cmx ext/ext_namespace.cmx \
-    bsb/bsb_dir_index.cmx bsb/bsb_db.cmx bsb/bsb_helper_depfile_gen.cmi
-bsb/bsb_helper_depfile_gen.cmi : bsb/bsb_dir_index.cmi
-bsb/bsb_helper_extract.cmx : ext/string_set.cmx ext/ext_string.cmx \
-    bsb/bsb_helper_extract.cmi
-bsb/bsb_helper_extract.cmi : ext/string_set.cmi
-bsb/bsb_helper_linker.cmx : ext/string_map.cmx ext/literals.cmx \
-    ext/ext_path.cmx ext/ext_modulename.cmx bsb/bsb_helper_extract.cmx \
-    bsb/bsb_helper_dep_graph.cmx bsb/bsb_helper_linker.cmi
-bsb/bsb_helper_linker.cmi :
-bsb/bsb_helper_main.cmx : ext/ext_path.cmx bsb/bsb_helper_depfile_gen.cmx \
-    bsb/bsb_dir_index.cmx bsb/bsb_helper_main.cmi
-bsb/bsb_helper_main.cmi :
-bsb/bsb_helper_packer.cmx : ext/string_set.cmx ext/string_map.cmx \
-    ext/literals.cmx ext/ext_path.cmx ext/ext_modulename.cmx \
-    bsb/bsb_helper_extract.cmx bsb/bsb_helper_dep_graph.cmx \
-    bsb/bsb_helper_packer.cmi
-bsb/bsb_helper_packer.cmi :
-bsb/bsb_log.cmx : ext/ext_string.cmx ext/ext_color.cmx bsb/bsb_log.cmi
-bsb/bsb_log.cmi :
-bsb/bsb_main.cmx : ext/ext_sys.cmx ext/ext_string.cmx ext/ext_pervasives.cmx \
-    ext/ext_path.cmx ext/ext_json_parse.cmx ext/ext_array.cmx \
-    bsb/bsb_world.cmx bsb/bsb_theme_init.cmx bsb/bsb_query.cmx \
-    bsb/bsb_ninja_regen.cmx bsb/bsb_log.cmx bsb/bsb_exception.cmx \
-    bsb/bsb_config.cmx bsb/bsb_clean.cmx bsb/bsb_build_util.cmx \
-    common/bs_version.cmx bsb/bsb_main.cmi
-bsb/bsb_main.cmi :
-bsb/bsb_merlin_gen.cmx : ext/literals.cmx ext/ext_string.cmx \
-    ext/ext_path.cmx bsb/bsb_warning.cmx bsb/bsb_file_groups.cmx \
-    bsb/bsb_config_types.cmx bsb/bsb_config.cmx bsb/bsb_merlin_gen.cmi
-bsb/bsb_merlin_gen.cmi : bsb/bsb_config_types.cmx
-bsb/bsb_namespace_map_gen.cmx : ext/string_map.cmx ext/literals.cmx \
-    ext/ext_path.cmx bsb/bsb_file_groups.cmx bsb/bsb_namespace_map_gen.cmi
-bsb/bsb_namespace_map_gen.cmi : bsb/bsb_file_groups.cmx
-bsb/bsb_ninja_check.cmx : ext/ext_array.cmx bsb/bsb_log.cmx \
-    common/bs_version.cmx bsb/bsb_ninja_check.cmi
-bsb/bsb_ninja_check.cmi :
-bsb/bsb_ninja_file_groups.cmx : ext/string_set.cmx ext/string_map.cmx \
-    ext/string_hash_set.cmx ext/literals.cmx ext/ext_string.cmx \
-    ext/ext_pervasives.cmx ext/ext_path.cmx ext/ext_namespace.cmx \
-    ext/ext_list.cmx bsb/bsb_rule.cmx bsb/bsb_package_specs.cmx \
-    bsb/bsb_ninja_util.cmx bsb/bsb_ninja_global_vars.cmx \
-    bsb/bsb_file_groups.cmx bsb/bsb_dir_index.cmx bsb/bsb_db.cmx \
-    bsb/bsb_config.cmx bsb/bsb_build_schemas.cmx \
-    bsb/bsb_ninja_file_groups.cmi
-bsb/bsb_ninja_file_groups.cmi : ext/string_map.cmi ext/string_hash_set.cmi \
-    bsb/bsb_rule.cmi bsb/bsb_package_specs.cmi bsb/bsb_file_groups.cmx
-bsb/bsb_ninja_gen.cmx : ext/string_map.cmx ext/literals.cmx \
-    ext/ext_string.cmx ext/ext_path.cmx ext/ext_list.cmx bsb/bsb_warning.cmx \
-    bsb/bsb_rule.cmx bsb/bsb_ninja_util.cmx bsb/bsb_ninja_global_vars.cmx \
-    bsb/bsb_ninja_file_groups.cmx bsb/bsb_namespace_map_gen.cmx \
-    bsb/bsb_log.cmx bsb/bsb_file_groups.cmx bsb/bsb_exception.cmx \
-    bsb/bsb_dir_index.cmx bsb/bsb_default.cmx bsb/bsb_db.cmx \
-    bsb/bsb_config_types.cmx bsb/bsb_config.cmx bsb/bsb_build_util.cmx \
-    bsb/bsb_build_schemas.cmx bsb/bsb_ninja_gen.cmi
-bsb/bsb_ninja_gen.cmi : bsb/bsb_config_types.cmx
-bsb/bsb_ninja_global_vars.cmx :
-bsb/bsb_ninja_regen.cmx : ext/literals.cmx ext/ext_path.cmx \
-    bsb/bsb_ninja_gen.cmx bsb/bsb_ninja_check.cmx bsb/bsb_merlin_gen.cmx \
-    bsb/bsb_log.cmx bsb/bsb_config_parse.cmx bsb/bsb_config.cmx \
-    bsb/bsb_clean.cmx bsb/bsb_build_util.cmx bsb/bsb_ninja_regen.cmi
-bsb/bsb_ninja_regen.cmi : bsb/bsb_package_specs.cmi bsb/bsb_config_types.cmx
-bsb/bsb_ninja_util.cmx : ext/ext_string.cmx bsb/bsb_rule.cmx \
-    bsb/bsb_ninja_util.cmi
-bsb/bsb_ninja_util.cmi : bsb/bsb_rule.cmi
-bsb/bsb_package_specs.cmx : ext/string_map.cmx ext/literals.cmx \
-    ext/ext_string.cmx ext/ext_path.cmx ext/ext_namespace.cmx \
-    ext/ext_json_types.cmx ext/ext_json.cmx bsb/bsb_exception.cmx \
-    bsb/bsb_config.cmx bsb/bsb_build_schemas.cmx bsb/bsb_package_specs.cmi
-bsb/bsb_package_specs.cmi : ext/ext_json_types.cmx
-bsb/bsb_parse_sources.cmx : ext/string_vec.cmx ext/string_set.cmx \
-    ext/string_map.cmx ext/literals.cmx ext/ext_string.cmx \
-    ext/ext_position.cmx ext/ext_path.cmx ext/ext_namespace.cmx \
-    ext/ext_json_types.cmx ext/ext_json_parse.cmx ext/ext_json.cmx \
-    ext/ext_filename.cmx ext/ext_file_pp.cmx ext/ext_array.cmx \
-    bsb/bsb_log.cmx bsb/bsb_file_groups.cmx bsb/bsb_exception.cmx \
-    bsb/bsb_dir_index.cmx bsb/bsb_db.cmx bsb/bsb_config.cmx \
-    bsb/bsb_build_util.cmx bsb/bsb_build_schemas.cmx \
-    bsb/bsb_parse_sources.cmi
-bsb/bsb_parse_sources.cmi : ext/ext_json_types.cmx bsb/bsb_file_groups.cmx
-bsb/bsb_pkg.cmx : ext/string_hashtbl.cmx ext/literals.cmx bsb/bsb_log.cmx \
-    bsb/bsb_exception.cmx bsb/bsb_pkg.cmi
-bsb/bsb_pkg.cmi :
-bsb/bsb_query.cmx : ext/string_map.cmx ext/ext_json_noloc.cmx \
-    ext/ext_array.cmx bsb/bsb_ninja_regen.cmx bsb/bsb_file_groups.cmx \
-    bsb/bsb_config_types.cmx bsb/bsb_query.cmi
-bsb/bsb_query.cmi :
-bsb/bsb_regex.cmx : bsb/bsb_regex.cmi
-bsb/bsb_regex.cmi :
-bsb/bsb_rule.cmx : ext/string_set.cmx ext/string_map.cmx ext/ext_sys.cmx \
-    bsb/bsb_rule.cmi
-bsb/bsb_rule.cmi : ext/string_map.cmi
-bsb/bsb_templates.cmx : bsb/oCamlRes.cmx bsb/bsb_templates.cmi
-bsb/bsb_templates.cmi : bsb/oCamlRes.cmx
-bsb/bsb_theme_init.cmx : ext/string_map.cmx ext/string_hashtbl.cmx \
-    bsb/oCamlRes.cmx ext/literals.cmx ext/ext_sys.cmx ext/ext_namespace.cmx \
-    ext/ext_json_parse.cmx ext/ext_io.cmx bsb/bsb_templates.cmx \
-    bsb/bsb_regex.cmx bsb/bsb_build_util.cmx bsb/bsb_build_schemas.cmx \
-    common/bs_version.cmx bsb/bsb_theme_init.cmi
-bsb/bsb_theme_init.cmi :
-bsb/bsb_unix.cmx : ext/ext_sys.cmx ext/ext_string.cmx bsb/bsb_log.cmx \
-    bsb/bsb_unix.cmi
-bsb/bsb_unix.cmi :
-bsb/bsb_warning.cmx : ext/string_map.cmx ext/ext_string.cmx \
-    ext/ext_json_types.cmx bsb/bsb_exception.cmx bsb/bsb_build_schemas.cmx \
-    bsb/bsb_warning.cmi
-bsb/bsb_warning.cmi : ext/string_map.cmi ext/ext_json_types.cmx
-bsb/bsb_watcher_gen.cmx : ext/ext_path.cmx ext/ext_list.cmx \
-    ext/ext_json_noloc.cmx ext/ext_array.cmx bsb/bsb_file_groups.cmx \
-    bsb/bsb_config.cmx bsb/bsb_watcher_gen.cmi
-bsb/bsb_watcher_gen.cmi : bsb/bsb_file_groups.cmx
-bsb/bsb_world.cmx : ext/string_hash_set.cmx ext/literals.cmx \
-    ext/ext_path.cmx ext/ext_namespace.cmx bsb/bsb_unix.cmx \
-    bsb/bsb_ninja_regen.cmx bsb/bsb_log.cmx bsb/bsb_file.cmx \
-    bsb/bsb_config_types.cmx bsb/bsb_config_parse.cmx bsb/bsb_config.cmx \
-    bsb/bsb_build_util.cmx bsb/bsb_world.cmi
-bsb/bsb_world.cmi : bsb/bsb_config_types.cmx
-bsb/oCamlRes.cmx :
-common/bs_loc.cmx : common/bs_loc.cmi
-common/bs_loc.cmi :
+stubs/bs_hash_stubs.cmx :
+ext/literals.cmx : ext/literals.cmi
+ext/ext_util.cmx : ext/ext_util.cmi
+ext/ext_int.cmx : ext/ext_int.cmi
+ext/ext_position.cmx : ext/ext_position.cmi
+ext/ext_cmp.cmx : ext/ext_cmp.cmi
+ext/ext_array.cmx : ext/ext_array.cmi
+ext/ext_bytes.cmx : ext/ext_bytes.cmi
+ext/ext_char.cmx : ext/ext_char.cmi
+ext/vec_gen.cmx :
+ext/resize_array.cmx : ext/vec_gen.cmx ext/ext_array.cmx \
+    ext/resize_array.cmi
+ext/string_vec.cmx : ext/resize_array.cmx ext/string_vec.cmi
+ext/int_vec.cmx : ext/ext_array.cmx stubs/bs_hash_stubs.cmx ext/int_vec.cmi
+ext/int_vec_util.cmx : ext/int_vec.cmx ext/int_vec_util.cmi
+ext/int_vec_vec.cmx : ext/resize_array.cmx ext/int_vec.cmx \
+    ext/int_vec_vec.cmi
+ext/set_gen.cmx :
+ext/map_gen.cmx :
+ext/ext_file_pp.cmx : ext/string_vec.cmx ext/ext_file_pp.cmi
+ext/ext_format.cmx : ext/ext_format.cmi
+ext/hashtbl_gen.cmx : ext/ext_util.cmx
+ext/ext_string.cmx : ext/ext_bytes.cmx ext/ext_string.cmi
+ext/ext_utf8.cmx : ext/ext_utf8.cmi
+ext/ext_js_regex.cmx : ext/ext_utf8.cmx ext/ext_js_regex.cmi
+ext/string_hashtbl.cmx : ext/hashtbl_gen.cmx ext/ext_string.cmx \
+    stubs/bs_hash_stubs.cmx ext/string_hashtbl.cmi
+ext/ext_list.cmx : ext/ext_string.cmx ext/ext_list.cmi
+ext/ext_stack.cmx : ext/ext_stack.cmi
+ext/ext_color.cmx : ext/ext_list.cmx ext/ext_color.cmi
+ext/ext_marshal.cmx : ext/ext_marshal.cmi
+ext/ext_option.cmx : ext/ext_option.cmi
+ext/ext_pervasives.cmx : ext/ext_list.cmx ext/ext_pervasives.cmi
+ext/ext_pp.cmx : ext/ext_pervasives.cmx ext/ext_pp.cmi
+ext/ext_ref.cmx : ext/ext_list.cmx ext/ext_ref.cmi
+ext/ext_sys.cmx : ext/ext_sys.cmi
+ext/hash_set_gen.cmx : ext/ext_util.cmx
+ext/hash_set.cmx : ext/hash_set_gen.cmx ext/hash_set.cmi
+ext/string_hash_set.cmx : ext/hash_set_gen.cmx ext/ext_string.cmx \
+    stubs/bs_hash_stubs.cmx ext/string_hash_set.cmi
+ext/ext_ident.cmx : ext/string_hashtbl.cmx ext/string_hash_set.cmx \
+    ext/literals.cmx ext/ext_string.cmx ext/ext_list.cmx ext/ext_ident.cmi
+ext/int_hash_set.cmx : ext/hash_set_gen.cmx ext/ext_int.cmx \
+    stubs/bs_hash_stubs.cmx ext/int_hash_set.cmi
+ext/hash_set_ident_mask.cmx : ext/ext_util.cmx ext/ext_ident.cmx \
+    stubs/bs_hash_stubs.cmx ext/hash_set_ident_mask.cmi
+ext/ordered_hash_set_gen.cmx : ext/ext_util.cmx
+ext/ordered_hash_set_string.cmx : ext/ordered_hash_set_gen.cmx \
+    ext/ext_util.cmx ext/ext_string.cmx stubs/bs_hash_stubs.cmx \
+    ext/ordered_hash_set_string.cmi
+ext/ordered_hash_set_ident.cmx : ext/ordered_hash_set_gen.cmx \
+    ext/ext_util.cmx ext/ext_ident.cmx stubs/bs_hash_stubs.cmx \
+    ext/ordered_hash_set_ident.cmi
+ext/ordered_hash_set_make.cmx : ext/ordered_hash_set_gen.cmx \
+    ext/ext_util.cmx
+ext/ordered_hash_map_gen.cmx : ext/ext_util.cmx
+ext/union_find.cmx : ext/union_find.cmi
+ext/ident_map.cmx : ext/map_gen.cmx ext/ext_ident.cmx ext/ident_map.cmi
+ext/ident_set.cmx : ext/set_gen.cmx ext/ident_set.cmi
+ext/hashtbl_make.cmx : ext/hashtbl_gen.cmx ext/hashtbl_make.cmi
+ext/ordered_hash_map_local_ident.cmx : ext/ordered_hash_map_gen.cmx \
+    ext/ext_ident.cmx stubs/bs_hash_stubs.cmx \
+    ext/ordered_hash_map_local_ident.cmi
+ext/int_map.cmx : ext/map_gen.cmx ext/ext_int.cmx ext/int_map.cmi
+ext/string_map.cmx : ext/map_gen.cmx ext/ext_string.cmx ext/string_map.cmi
+ext/string_set.cmx : ext/set_gen.cmx ext/ext_string.cmx ext/string_set.cmi
+ext/set_int.cmx : ext/set_gen.cmx ext/ext_int.cmx ext/set_int.cmi
+ext/ext_scc.cmx : ext/int_vec_vec.cmx ext/int_vec.cmx ext/ext_scc.cmi
+ext/ext_topsort.cmx : ext/set_int.cmx ext/resize_array.cmx ext/int_vec.cmx \
+    ext/ext_topsort.cmi
+ext/ext_pp_scope.cmx : ext/string_map.cmx ext/int_map.cmx ext/ident_set.cmx \
+    ext/ext_pp.cmx ext/ext_ident.cmx ext/ext_pp_scope.cmi
+ext/ext_io.cmx : ext/ext_pervasives.cmx ext/ext_io.cmi
+ext/ext_json_types.cmx : ext/string_map.cmx
+ext/ext_json_noloc.cmx : ext/string_map.cmx ext/ext_array.cmx \
+    ext/ext_json_noloc.cmi
+ext/ext_json_parse.cmx : ext/string_map.cmx ext/ext_position.cmx \
+    ext/ext_json_types.cmx ext/ext_array.cmx ext/ext_json_parse.cmi
+ext/ext_json_write.cmx : ext/string_map.cmx ext/ext_json_types.cmx \
+    ext/ext_json_write.cmi
+ext/ext_json.cmx : ext/string_map.cmx ext/ext_json_types.cmx \
+    ext/ext_array.cmx ext/ext_json.cmi
+ext/ident_hash_set.cmx : ext/hash_set_gen.cmx ext/ext_ident.cmx \
+    stubs/bs_hash_stubs.cmx ext/ident_hash_set.cmi
+ext/hash_set_poly.cmx : ext/hash_set_gen.cmx ext/hash_set_poly.cmi
+ext/ident_hashtbl.cmx : ext/hashtbl_gen.cmx ext/ext_ident.cmx \
+    stubs/bs_hash_stubs.cmx ext/ident_hashtbl.cmi
+ext/int_hashtbl.cmx : ext/hashtbl_gen.cmx ext/ext_int.cmx \
+    stubs/bs_hash_stubs.cmx ext/int_hashtbl.cmi
+ext/ext_path.cmx : ext/literals.cmx ext/ext_string.cmx \
+    ext/ext_pervasives.cmx ext/ext_list.cmx ext/ext_path.cmi
+ext/ext_filename.cmx : ext/literals.cmx ext/ext_string.cmx \
+    ext/ext_pervasives.cmx ext/ext_path.cmx ext/ext_filename.cmi
+ext/ext_modulename.cmx : ext/ext_string.cmx ext/ext_path.cmx \
+    ext/ext_char.cmx ext/ext_modulename.cmi
+ext/ext_namespace.cmx : ext/ext_string.cmx ext/ext_char.cmx \
+    ext/ext_namespace.cmi
+ext/literals.cmi :
+ext/ext_util.cmi :
+ext/ext_int.cmi :
+ext/ext_position.cmi :
+ext/ext_cmp.cmi :
+ext/ext_array.cmi :
+ext/ext_bytes.cmi :
+ext/ext_char.cmi :
+ext/resize_array.cmi : ext/vec_gen.cmx
+ext/string_vec.cmi : ext/vec_gen.cmx
+ext/int_vec.cmi : ext/vec_gen.cmx
+ext/int_vec_util.cmi : ext/int_vec.cmi
+ext/int_vec_vec.cmi : ext/vec_gen.cmx ext/int_vec.cmi
+ext/ext_file_pp.cmi : ext/string_vec.cmi
+ext/ext_format.cmi :
+ext/ext_string.cmi :
+ext/ext_utf8.cmi :
+ext/ext_js_regex.cmi :
+ext/string_hashtbl.cmi : ext/hashtbl_gen.cmx
+ext/ext_list.cmi :
+ext/ext_stack.cmi :
+ext/ext_color.cmi :
+ext/ext_marshal.cmi :
+ext/ext_option.cmi :
+ext/ext_pervasives.cmi :
+ext/ext_pp.cmi :
+ext/ext_ref.cmi :
+ext/ext_sys.cmi :
+ext/hash_set.cmi : ext/hash_set_gen.cmx
+ext/string_hash_set.cmi : ext/hash_set_gen.cmx
+ext/ext_ident.cmi :
+ext/int_hash_set.cmi : ext/hash_set_gen.cmx
+ext/hash_set_ident_mask.cmi :
+ext/ordered_hash_set_string.cmi : ext/ordered_hash_set_gen.cmx
+ext/ordered_hash_set_ident.cmi : ext/ordered_hash_set_gen.cmx
+ext/union_find.cmi :
+ext/ident_map.cmi : ext/map_gen.cmx
+ext/ident_set.cmi : ext/set_gen.cmx
+ext/hashtbl_make.cmi : ext/hashtbl_gen.cmx
+ext/ordered_hash_map_local_ident.cmi : ext/ordered_hash_map_gen.cmx
+ext/int_map.cmi : ext/map_gen.cmx
+ext/string_map.cmi : ext/map_gen.cmx
+ext/string_set.cmi :
+ext/set_int.cmi : ext/set_gen.cmx
+ext/ext_scc.cmi : ext/int_vec_vec.cmi ext/int_vec.cmi
+ext/ext_topsort.cmi : ext/vec_gen.cmx ext/set_int.cmi ext/int_vec.cmi
+ext/ext_pp_scope.cmi : ext/ident_set.cmi ext/ext_pp.cmi
+ext/ext_io.cmi :
+ext/ext_json_noloc.cmi : ext/string_map.cmi
+ext/ext_json_parse.cmi : ext/ext_json_types.cmx
+ext/ext_json_write.cmi :
+ext/ext_json.cmi : ext/string_map.cmi ext/ext_position.cmi \
+    ext/ext_json_types.cmx
+ext/ident_hash_set.cmi : ext/hash_set_gen.cmx
+ext/hash_set_poly.cmi :
+ext/ident_hashtbl.cmi : ext/hashtbl_gen.cmx
+ext/int_hashtbl.cmi : ext/hashtbl_gen.cmx
+ext/ext_path.cmi :
+ext/ext_filename.cmi :
+ext/ext_modulename.cmi :
+ext/ext_namespace.cmi :
 common/bs_version.cmx : common/bs_version.cmi
-common/bs_version.cmi :
-common/bs_warnings.cmx : common/js_config.cmx common/bs_warnings.cmi
-common/bs_warnings.cmi :
-common/ext_log.cmx : common/js_config.cmx common/ext_log.cmi
-common/ext_log.cmi :
 common/js_config.cmx : ext/ext_string.cmx common/js_config.cmi
-common/js_config.cmi :
+common/ext_log.cmx : common/js_config.cmx common/ext_log.cmi
+common/bs_loc.cmx : common/bs_loc.cmi
+common/bs_warnings.cmx : common/js_config.cmx common/bs_warnings.cmi
 common/lam_methname.cmx : ext/string_hash_set.cmx ext/ext_string.cmx \
     common/lam_methname.cmi
-common/lam_methname.cmi :
 common/ml_binary.cmx : common/ml_binary.cmi
+common/bs_version.cmi :
+common/js_config.cmi :
+common/ext_log.cmi :
+common/bs_loc.cmi :
+common/bs_warnings.cmi :
+common/lam_methname.cmi :
 common/ml_binary.cmi :
-core/astdump_main.cmx : common/ml_binary.cmx ext/ext_path.cmx \
-    bsb/bsb_helper_depfile_gen.cmx
-core/bs_conditional_initial.cmx : common/js_config.cmx common/bs_version.cmx \
-    core/bs_conditional_initial.cmi
-core/bs_conditional_initial.cmi :
-core/bspack_main.cmx : ext/string_hashtbl.cmx ext/ext_string.cmx \
-    ext/ext_pervasives.cmx ext/ext_path.cmx ext/ext_list.cmx ext/ext_io.cmx \
-    depends/ast_extract.cmx core/bspack_main.cmi
-core/bspack_main.cmi :
-core/bspp_main.cmx : core/bspp_main.cmi
-core/bspp_main.cmi :
-core/bsppx_main.cmx : syntax/ppx_entry.cmx
-core/cmjdump_main.cmx : ext/string_map.cmx core/lam_arity.cmx \
-    core/js_packages_info.cmx core/js_cmj_format.cmx
-core/config_util.cmx : ext/ext_string.cmx core/config_util.cmi
+syntax/bs_syntaxerr.cmx : syntax/bs_syntaxerr.cmi
+syntax/ast_compatible.cmx : ext/ext_list.cmx syntax/ast_compatible.cmi
+syntax/ast_utf8_string.cmx : ext/ext_utf8.cmx ext/ext_char.cmx \
+    syntax/ast_utf8_string.cmi
+syntax/ast_utf8_string_interp.cmx : ext/literals.cmx ext/ext_utf8.cmx \
+    ext/ext_string.cmx ext/ext_char.cmx common/bs_loc.cmx \
+    syntax/ast_compatible.cmx syntax/ast_utf8_string_interp.cmi
+syntax/ast_derive_constructor.cmx :
+syntax/ast_derive_util.cmx : ext/ext_list.cmx syntax/ast_compatible.cmx \
+    syntax/ast_derive_util.cmi
+syntax/ast_exp.cmx : syntax/ast_exp.cmi
+syntax/ast_external_mk.cmx : syntax/ast_compatible.cmx \
+    syntax/ast_external_mk.cmi
+syntax/ast_lift.cmx : syntax/ast_lift.cmi
+syntax/ast_literal.cmx : syntax/ast_literal.cmi
+syntax/ast_pat.cmx : syntax/ast_pat.cmi
+syntax/external_arg_spec.cmx : ext/ext_position.cmx ext/ext_json_parse.cmx \
+    syntax/external_arg_spec.cmi
+syntax/ast_payload.cmx : ext/string_map.cmx ext/ext_list.cmx \
+    ext/ext_js_regex.cmx syntax/ast_payload.cmi
+syntax/ast_signature.cmx : syntax/ast_signature.cmi
+syntax/ast_structure.cmx : syntax/ast_signature.cmx syntax/ast_literal.cmx \
+    syntax/ast_structure.cmi
+syntax/bs_ast_iterator.cmx : syntax/bs_ast_iterator.cmi
+syntax/bs_ast_mapper.cmx : syntax/bs_ast_mapper.cmi
+syntax/ast_derive.cmx : ext/string_map.cmx ext/literals.cmx \
+    ext/ext_string.cmx ext/ext_list.cmx syntax/bs_syntaxerr.cmx \
+    syntax/ast_structure.cmx syntax/ast_signature.cmx syntax/ast_payload.cmx \
+    syntax/ast_derive.cmi
+syntax/ast_comb.cmx : ext/ext_list.cmx syntax/ast_literal.cmx \
+    syntax/ast_comb.cmi
+syntax/ast_core_type.cmx : ext/ext_list.cmx syntax/bs_syntaxerr.cmx \
+    syntax/ast_comb.cmx syntax/ast_core_type.cmi
+syntax/bs_ast_invariant.cmx : ext/literals.cmx ext/hash_set_poly.cmx \
+    ext/ext_string.cmx common/bs_warnings.cmx syntax/bs_ast_iterator.cmx \
+    syntax/ast_core_type.cmx syntax/bs_ast_invariant.cmi
+syntax/ast_attributes.cmx : ext/ext_string.cmx syntax/bs_syntaxerr.cmx \
+    syntax/bs_ast_invariant.cmx syntax/ast_payload.cmx \
+    syntax/ast_attributes.cmi
+syntax/ast_polyvar.cmx : syntax/external_arg_spec.cmx ext/ext_pervasives.cmx \
+    ext/ext_list.cmx syntax/bs_syntaxerr.cmx syntax/ast_attributes.cmx \
+    syntax/ast_polyvar.cmi
+syntax/external_ffi_types.cmx : syntax/external_arg_spec.cmx \
+    ext/ext_string.cmx ext/ext_pervasives.cmx common/bs_version.cmx \
+    syntax/external_ffi_types.cmi
+syntax/external_process.cmx : common/lam_methname.cmx \
+    syntax/external_ffi_types.cmx syntax/external_arg_spec.cmx \
+    ext/ext_string.cmx ext/ext_list.cmx common/bs_warnings.cmx \
+    syntax/bs_syntaxerr.cmx common/bs_loc.cmx syntax/bs_ast_invariant.cmx \
+    syntax/ast_polyvar.cmx syntax/ast_payload.cmx syntax/ast_literal.cmx \
+    syntax/ast_core_type.cmx syntax/ast_comb.cmx syntax/ast_attributes.cmx \
+    syntax/external_process.cmi
+syntax/ast_derive_abstract.cmx : syntax/external_process.cmx \
+    syntax/external_ffi_types.cmx syntax/external_arg_spec.cmx \
+    ext/ext_list.cmx syntax/ast_literal.cmx syntax/ast_derive_util.cmx \
+    syntax/ast_core_type.cmx syntax/ast_attributes.cmx \
+    syntax/ast_derive_abstract.cmi
+syntax/ast_derive_dyn.cmx : ext/ext_list.cmx syntax/bs_syntaxerr.cmx \
+    syntax/ast_structure.cmx syntax/ast_derive_util.cmx syntax/ast_derive.cmx \
+    syntax/ast_compatible.cmx syntax/ast_attributes.cmx \
+    syntax/ast_derive_dyn.cmi
+syntax/ast_derive_projector.cmx : ext/ext_string.cmx ext/ext_list.cmx \
+    syntax/ast_derive_util.cmx syntax/ast_derive.cmx \
+    syntax/ast_compatible.cmx syntax/ast_comb.cmx \
+    syntax/ast_derive_projector.cmi
+syntax/ast_derive_js_mapper.cmx : ext/ext_list.cmx syntax/ast_polyvar.cmx \
+    syntax/ast_literal.cmx syntax/ast_derive_util.cmx syntax/ast_derive.cmx \
+    syntax/ast_core_type.cmx syntax/ast_compatible.cmx syntax/ast_comb.cmx \
+    syntax/ast_derive_js_mapper.cmi
+syntax/ast_util.cmx : ext/literals.cmx syntax/external_process.cmx \
+    ext/ext_string.cmx ext/ext_list.cmx syntax/bs_syntaxerr.cmx \
+    syntax/bs_ast_mapper.cmx syntax/ast_payload.cmx syntax/ast_pat.cmx \
+    syntax/ast_literal.cmx syntax/ast_external_mk.cmx syntax/ast_exp.cmx \
+    syntax/ast_core_type.cmx syntax/ast_compatible.cmx syntax/ast_comb.cmx \
+    syntax/ast_attributes.cmx syntax/ast_util.cmi
+syntax/ast_tdcls.cmx : ext/ext_list.cmx syntax/bs_ast_mapper.cmx \
+    syntax/ast_structure.cmx syntax/ast_signature.cmx syntax/ast_payload.cmx \
+    syntax/ast_derive_abstract.cmx syntax/ast_derive.cmx \
+    syntax/ast_attributes.cmx syntax/ast_tdcls.cmi
+syntax/ast_primitive.cmx : syntax/external_process.cmx \
+    syntax/bs_ast_mapper.cmx syntax/ast_primitive.cmi
+syntax/ast_tuple_pattern_flatten.cmx : ext/ext_list.cmx \
+    syntax/bs_ast_mapper.cmx syntax/bs_ast_invariant.cmx \
+    syntax/ast_tuple_pattern_flatten.cmi
+syntax/ast_exp_apply.cmx : ext/literals.cmx ext/ext_list.cmx \
+    syntax/bs_ast_mapper.cmx syntax/bs_ast_invariant.cmx syntax/ast_util.cmx \
+    syntax/ast_tuple_pattern_flatten.cmx syntax/ast_literal.cmx \
+    syntax/ast_attributes.cmx syntax/ast_exp_apply.cmi
+syntax/ast_exp_extension.cmx : ext/literals.cmx ext/ext_string.cmx \
+    ext/ext_ref.cmx ext/ext_pervasives.cmx common/bs_version.cmx \
+    syntax/bs_ast_mapper.cmx syntax/ast_util.cmx syntax/ast_payload.cmx \
+    syntax/ast_literal.cmx syntax/ast_derive.cmx syntax/ast_core_type.cmx \
+    syntax/ast_comb.cmx syntax/ast_exp_extension.cmi
+syntax/ast_core_type_class_type.cmx : ext/literals.cmx ext/ext_ref.cmx \
+    ext/ext_list.cmx syntax/bs_ast_mapper.cmx syntax/ast_util.cmx \
+    syntax/ast_literal.cmx syntax/ast_comb.cmx syntax/ast_attributes.cmx \
+    syntax/ast_core_type_class_type.cmi
+syntax/ppx_entry.cmx : ext/string_map.cmx ext/literals.cmx \
+    common/js_config.cmx ext/ext_string.cmx syntax/bs_ast_mapper.cmx \
+    syntax/bs_ast_invariant.cmx syntax/ast_util.cmx \
+    syntax/ast_utf8_string_interp.cmx syntax/ast_utf8_string.cmx \
+    syntax/ast_tuple_pattern_flatten.cmx syntax/ast_tdcls.cmx \
+    syntax/ast_structure.cmx syntax/ast_primitive.cmx syntax/ast_payload.cmx \
+    syntax/ast_literal.cmx syntax/ast_exp_extension.cmx \
+    syntax/ast_exp_apply.cmx syntax/ast_derive_projector.cmx \
+    syntax/ast_derive_js_mapper.cmx syntax/ast_core_type_class_type.cmx \
+    syntax/ast_attributes.cmx syntax/ppx_entry.cmi
+syntax/bs_syntaxerr.cmi :
+syntax/ast_compatible.cmi :
+syntax/ast_utf8_string.cmi :
+syntax/ast_utf8_string_interp.cmi :
+syntax/ast_derive_util.cmi :
+syntax/ast_exp.cmi :
+syntax/ast_external_mk.cmi :
+syntax/ast_lift.cmi :
+syntax/ast_literal.cmi :
+syntax/ast_pat.cmi :
+syntax/external_arg_spec.cmi :
+syntax/ast_payload.cmi : ext/string_map.cmi
+syntax/ast_signature.cmi :
+syntax/ast_structure.cmi : syntax/ast_signature.cmi
+syntax/bs_ast_iterator.cmi :
+syntax/bs_ast_mapper.cmi :
+syntax/ast_derive.cmi : syntax/ast_structure.cmi syntax/ast_signature.cmi \
+    syntax/ast_payload.cmi
+syntax/ast_comb.cmi :
+syntax/ast_core_type.cmi :
+syntax/bs_ast_invariant.cmi : syntax/bs_ast_iterator.cmi
+syntax/ast_attributes.cmi : syntax/ast_payload.cmi
+syntax/ast_polyvar.cmi : syntax/external_arg_spec.cmi
+syntax/external_ffi_types.cmi : syntax/external_arg_spec.cmi
+syntax/external_process.cmi : common/bs_loc.cmi syntax/ast_core_type.cmi \
+    syntax/ast_attributes.cmi
+syntax/ast_derive_abstract.cmi :
+syntax/ast_derive_dyn.cmi :
+syntax/ast_derive_projector.cmi :
+syntax/ast_derive_js_mapper.cmi :
+syntax/ast_util.cmi : syntax/bs_ast_mapper.cmi syntax/ast_payload.cmi
+syntax/ast_tdcls.cmi : syntax/bs_ast_mapper.cmi syntax/ast_structure.cmi \
+    syntax/ast_signature.cmi
+syntax/ast_primitive.cmi : syntax/bs_ast_mapper.cmi
+syntax/ast_tuple_pattern_flatten.cmi : syntax/bs_ast_mapper.cmi
+syntax/ast_exp_apply.cmi : syntax/bs_ast_mapper.cmi
+syntax/ast_exp_extension.cmi : syntax/bs_ast_mapper.cmi
+syntax/ast_core_type_class_type.cmi : syntax/bs_ast_mapper.cmi
+syntax/ppx_entry.cmi :
+depends/bs_exception.cmi :
+depends/ast_extract.cmi : ext/string_map.cmi ext/string_hashtbl.cmi \
+    common/ml_binary.cmi
+depends/binary_ast.cmi : common/ml_binary.cmi
+depends/bs_exception.cmx : depends/bs_exception.cmi
+depends/ast_extract.cmx : ext/string_map.cmx ext/string_hashtbl.cmx \
+    common/ml_binary.cmx common/js_config.cmx ext/ext_string.cmx \
+    ext/ext_path.cmx ext/ext_modulename.cmx ext/ext_list.cmx \
+    ext/ext_format.cmx depends/bs_exception.cmx depends/ast_extract.cmi
+depends/binary_ast.cmx : common/ml_binary.cmx depends/ast_extract.cmx \
+    depends/binary_ast.cmi
 core/config_util.cmi :
-core/j.cmx : core/js_op.cmx core/js_fun_env.cmx core/js_closure.cmx \
-    core/js_call_info.cmx ext/ident_set.cmx
-core/js_analyzer.cmx : core/js_fun_env.cmx core/js_fold.cmx core/j.cmx \
-    ext/ident_set.cmx core/js_analyzer.cmi
-core/js_analyzer.cmi : core/j.cmx ext/ident_set.cmi
-core/js_arr.cmx : core/js_exp_make.cmx core/js_arr.cmi
-core/js_arr.cmi : core/j.cmx
-core/js_ast_util.cmx : core/js_stmt_make.cmx core/js_exp_make.cmx \
-    core/js_analyzer.cmx core/j.cmx ext/ext_ident.cmx core/js_ast_util.cmi
-core/js_ast_util.cmi : core/j.cmx
-core/js_call_info.cmx : core/js_call_info.cmi
-core/js_call_info.cmi :
-core/js_closure.cmx : ext/ident_set.cmx core/js_closure.cmi
-core/js_closure.cmi : ext/ident_set.cmi
-core/js_cmi_datasets.cmx : ext/string_map.cmx core/js_cmi_datasets.cmi
-core/js_cmi_datasets.cmi : ext/string_map.cmi
-core/js_cmj_datasets.cmx : ext/string_map.cmx core/js_cmj_format.cmx \
-    core/js_cmj_datasets.cmi
-core/js_cmj_datasets.cmi : ext/string_map.cmi core/js_cmj_format.cmi
-core/js_cmj_format.cmx : ext/string_map.cmx core/lam_arity.cmx core/lam.cmx \
-    core/js_packages_info.cmx ext/ext_string.cmx ext/ext_pervasives.cmx \
-    ext/ext_namespace.cmx core/js_cmj_format.cmi
+core/js_packages_info.cmi : core/lam_module_ident.cmi ext/ext_namespace.cmi
+core/js_packages_state.cmi : core/js_packages_info.cmi
+core/ocaml_types.cmi :
+core/bs_conditional_initial.cmi :
+core/ocaml_options.cmi :
+core/ocaml_parse.cmi :
+core/lam_module_ident.cmi : core/js_op.cmx core/j.cmx ext/hashtbl_gen.cmx \
+    ext/hash_set_gen.cmx
+core/lam_arity.cmi :
+core/lam.cmi : core/lam_tag_info.cmx core/lam_module_ident.cmi \
+    ext/ident_set.cmi syntax/external_ffi_types.cmi \
+    syntax/external_arg_spec.cmi
+core/lam_print.cmi : core/lam.cmi
+core/lam_beta_reduce_util.cmi : core/lam.cmi
+core/lam_inline_util.cmi : core/lam.cmi
+core/lam_analysis.cmi : core/lam.cmi
+core/lam_closure.cmi : core/lam.cmi ext/ident_set.cmi ext/ident_map.cmi
 core/js_cmj_format.cmi : ext/string_map.cmi core/lam_arity.cmi core/lam.cmi \
     core/js_packages_info.cmi ext/ext_namespace.cmi
-core/js_cmj_load.cmx : core/js_cmj_format.cmx core/config_util.cmx \
-    depends/bs_exception.cmx core/js_cmj_load.cmi
 core/js_cmj_load.cmi : core/js_cmj_format.cmi
-core/js_dump.cmx : core/js_stmt_make.cmx core/js_runtime_modules.cmx \
-    core/js_op_util.cmx core/js_op.cmx core/js_number.cmx core/js_fun_env.cmx \
-    core/js_fold_basic.cmx core/js_exp_make.cmx core/js_dump_string.cmx \
-    core/js_dump_property.cmx core/js_dump_lit.cmx common/js_config.cmx \
-    core/js_closure.cmx core/j.cmx ext/ident_set.cmx ext/ext_pp_scope.cmx \
-    ext/ext_pp.cmx ext/ext_list.cmx ext/ext_ident.cmx ext/ext_array.cmx \
-    core/js_dump.cmi
-core/js_dump.cmi : core/j.cmx ext/ext_pp_scope.cmi ext/ext_pp.cmi
-core/js_dump_import_export.cmx : core/js_dump_string.cmx \
-    core/js_dump_lit.cmx ext/ext_string.cmx ext/ext_pp_scope.cmx \
-    ext/ext_pp.cmx ext/ext_list.cmx ext/ext_ident.cmx \
-    core/js_dump_import_export.cmi
-core/js_dump_import_export.cmi : ext/ext_pp_scope.cmi ext/ext_pp.cmi
-core/js_dump_lit.cmx : ext/literals.cmx ext/ext_string.cmx
-core/js_dump_program.cmx : core/lam_module_ident.cmx \
-    core/js_packages_info.cmx core/js_name_of_module_id.cmx \
-    core/js_dump_string.cmx core/js_dump_lit.cmx \
-    core/js_dump_import_export.cmx core/js_dump.cmx common/js_config.cmx \
-    core/j.cmx ext/ext_pp_scope.cmx ext/ext_pp.cmx ext/ext_list.cmx \
-    common/bs_version.cmx core/js_dump_program.cmi
-core/js_dump_program.cmi : core/js_packages_info.cmi core/j.cmx \
-    ext/ext_pp.cmi
-core/js_dump_property.cmx : core/js_dump_string.cmx core/js_dump_lit.cmx \
-    ext/ext_string.cmx ext/ext_pp.cmx core/js_dump_property.cmi
-core/js_dump_property.cmi : ext/ext_pp.cmi
-core/js_dump_string.cmx : ext/ext_pp.cmx core/js_dump_string.cmi
-core/js_dump_string.cmi : ext/ext_pp.cmi
-core/js_exp_make.cmx : ext/literals.cmx core/lam_compile_util.cmx \
-    core/js_runtime_modules.cmx core/js_op_util.cmx core/js_fun_env.cmx \
-    core/js_call_info.cmx core/js_analyzer.cmx core/j.cmx ext/ext_string.cmx \
-    ext/ext_pervasives.cmx ext/ext_list.cmx ext/ext_ident.cmx \
-    core/js_exp_make.cmi
-core/js_exp_make.cmi : core/js_op.cmx core/js_call_info.cmi core/j.cmx
-core/js_fold.cmx : core/j.cmx
-core/js_fold_basic.cmx : core/lam_module_ident.cmx \
-    core/js_runtime_modules.cmx core/js_fold.cmx common/js_config.cmx \
-    core/j.cmx ext/ident_set.cmx core/js_fold_basic.cmi
+core/js_fun_env.cmi : ext/ident_set.cmi
+core/js_call_info.cmi :
+core/js_closure.cmi : ext/ident_set.cmi
+core/js_number.cmi :
+core/js_cmj_datasets.cmi : ext/string_map.cmi core/js_cmj_format.cmi
+core/lam_exit_code.cmi : core/lam.cmi
+core/lam_compile_util.cmi : core/lam_tag_info.cmx core/lam.cmi \
+    core/js_op.cmx
+core/lam_id_kind.cmi : core/lam_arity.cmi core/lam.cmi
+core/lam_stats.cmi : core/lam_id_kind.cmi ext/ident_set.cmi \
+    ext/ident_hashtbl.cmi
+core/lam_compile_context.cmi : core/lam_stats.cmi core/lam.cmi core/j.cmx \
+    ext/ident_map.cmi
 core/js_fold_basic.cmi : core/lam_module_ident.cmi core/j.cmx \
     ext/ident_set.cmi
-core/js_fun_env.cmx : ext/ident_set.cmx ext/ext_list.cmx core/js_fun_env.cmi
-core/js_fun_env.cmi : ext/ident_set.cmi
-core/js_implementation.cmx : core/ocaml_parse.cmx ext/literals.cmx \
-    core/lam_compile_main.cmx core/lam_compile_env.cmx common/js_config.cmx \
-    ext/ext_string.cmx ext/ext_pervasives.cmx ext/ext_namespace.cmx \
-    common/ext_log.cmx ext/ext_io.cmx depends/binary_ast.cmx \
-    core/js_implementation.cmi
-core/js_implementation.cmi :
-core/js_long.cmx : core/lam_tag_info.cmx core/js_runtime_modules.cmx \
-    core/js_exp_make.cmx core/js_analyzer.cmx core/j.cmx core/js_long.cmi
+core/js_pass_scope.cmi : core/j.cmx ext/ident_set.cmi
+core/js_op_util.cmi : core/js_op.cmx core/j.cmx
+core/js_analyzer.cmi : core/j.cmx ext/ident_set.cmi
+core/js_shake.cmi : core/j.cmx
+core/js_exp_make.cmi : core/js_op.cmx core/js_call_info.cmi core/j.cmx
 core/js_long.cmi : core/j.cmx
-core/js_main.cmx : super_errors/super_main.cmx \
-    outcome_printer/reason_outcome_printer_main.cmx \
-    outcome_printer/outcome_printer_ns.cmx core/ocaml_parse.cmx \
-    core/ocaml_options.cmx core/ocaml_batch_compile.cmx \
-    core/js_packages_state.cmx core/js_implementation.cmx \
-    common/js_config.cmx ext/ext_string.cmx core/bs_conditional_initial.cmx \
-    core/js_main.cmi
-core/js_main.cmi :
-core/js_map.cmx : core/j.cmx
-core/js_name_of_module_id.cmx : core/lam_compile_env.cmx \
-    core/js_packages_state.cmx core/js_packages_info.cmx \
-    core/js_name_of_module_id.cmi
+core/js_of_lam_exception.cmi : core/j.cmx
+core/js_of_lam_module.cmi : core/j.cmx
+core/js_of_lam_array.cmi : core/j.cmx
+core/js_of_lam_block.cmi : core/lam.cmi core/js_op.cmx core/j.cmx
+core/js_of_lam_string.cmi : core/j.cmx
+core/js_of_lam_tuple.cmi : core/j.cmx
+core/js_of_lam_record.cmi : core/j.cmx
+core/js_of_lam_float_record.cmi : core/j.cmx
+core/js_arr.cmi : core/j.cmx
+core/lam_compile_const.cmi : core/lam.cmi core/j.cmx \
+    syntax/external_arg_spec.cmi
+core/lam_inner.cmi : core/lam.cmi
+core/lam_subst.cmi : core/lam.cmi ext/ident_map.cmi
+core/lam_util.cmi : core/lam_stats.cmi core/lam_id_kind.cmi core/lam.cmi \
+    core/j.cmx
+core/lam_eta_conversion.cmi : core/lam.cmi
+core/lam_group.cmi : core/lam.cmi
+core/lam_pass_deep_flatten.cmi : core/lam.cmi
+core/js_stmt_make.cmi : core/lam.cmi core/js_closure.cmi core/j.cmx
+core/js_pass_flatten.cmi : core/j.cmx
+core/js_of_lam_polyvar.cmi : core/j.cmx
+core/js_pass_tailcall_inline.cmi : core/j.cmx
+core/js_of_lam_variant.cmi : core/j.cmx
+core/js_pass_flatten_and_mark_dead.cmi : core/j.cmx
+core/js_ast_util.cmi : core/j.cmx
+core/lam_dce.cmi : core/lam_group.cmi
+core/lam_compile_env.cmi : core/ocaml_types.cmi core/lam_module_ident.cmi \
+    core/lam.cmi core/js_packages_info.cmi core/js_cmj_format.cmi \
+    syntax/external_ffi_types.cmi
+core/lam_arity_analysis.cmi : core/lam_stats.cmi core/lam_arity.cmi \
+    core/lam.cmi
+core/lam_stats_export.cmi : core/lam_stats.cmi core/lam_module_ident.cmi \
+    core/lam.cmi core/js_cmj_format.cmi ext/ident_map.cmi
+core/lam_pass_alpha_conversion.cmi : core/lam_stats.cmi core/lam.cmi
+core/lam_pass_collect.cmi : core/lam_stats.cmi core/lam.cmi \
+    ext/ident_set.cmi
+core/js_dump_string.cmi : ext/ext_pp.cmi
+core/js_dump_property.cmi : ext/ext_pp.cmi
+core/js_dump_import_export.cmi : ext/ext_pp_scope.cmi ext/ext_pp.cmi
+core/js_dump.cmi : core/j.cmx ext/ext_pp_scope.cmi ext/ext_pp.cmi
 core/js_name_of_module_id.cmi : core/lam_module_ident.cmi \
     core/js_packages_info.cmi
-core/js_number.cmx : core/js_number.cmi
-core/js_number.cmi :
-core/js_of_lam_array.cmx : core/js_exp_make.cmx core/js_of_lam_array.cmi
-core/js_of_lam_array.cmi : core/j.cmx
-core/js_of_lam_block.cmx : core/lam.cmx core/js_of_lam_array.cmx \
-    core/js_exp_make.cmx core/js_of_lam_block.cmi
-core/js_of_lam_block.cmi : core/lam.cmi core/js_op.cmx core/j.cmx
-core/js_of_lam_exception.cmx : ext/literals.cmx core/js_runtime_modules.cmx \
-    core/js_exp_make.cmx core/j.cmx core/js_of_lam_exception.cmi
-core/js_of_lam_exception.cmi : core/j.cmx
-core/js_of_lam_float_record.cmx : core/js_exp_make.cmx \
-    core/js_of_lam_float_record.cmi
-core/js_of_lam_float_record.cmi : core/j.cmx
-core/js_of_lam_module.cmx : core/js_exp_make.cmx core/j.cmx \
-    core/js_of_lam_module.cmi
-core/js_of_lam_module.cmi : core/j.cmx
-core/js_of_lam_option.cmx : core/js_runtime_modules.cmx \
-    core/js_of_lam_polyvar.cmx core/js_exp_make.cmx core/js_analyzer.cmx \
-    core/j.cmx core/js_of_lam_option.cmi
+core/js_dump_program.cmi : core/js_packages_info.cmi core/j.cmx \
+    ext/ext_pp.cmi
+core/js_pass_debug.cmi : core/j.cmx
 core/js_of_lam_option.cmi : core/j.cmx
-core/js_of_lam_polyvar.cmx : core/js_exp_make.cmx core/j.cmx \
-    core/js_of_lam_polyvar.cmi
-core/js_of_lam_polyvar.cmi : core/j.cmx
-core/js_of_lam_record.cmx : core/js_exp_make.cmx core/js_of_lam_record.cmi
-core/js_of_lam_record.cmi : core/j.cmx
-core/js_of_lam_string.cmx : core/js_runtime_modules.cmx core/js_exp_make.cmx \
-    core/j.cmx ext/ext_string.cmx core/js_of_lam_string.cmi
-core/js_of_lam_string.cmi : core/j.cmx
-core/js_of_lam_tuple.cmx : core/js_exp_make.cmx core/j.cmx \
-    core/js_of_lam_tuple.cmi
-core/js_of_lam_tuple.cmi : core/j.cmx
-core/js_of_lam_variant.cmx : core/js_stmt_make.cmx \
-    core/js_of_lam_polyvar.cmx core/js_exp_make.cmx core/j.cmx \
-    ext/ext_list.cmx core/js_of_lam_variant.cmi
-core/js_of_lam_variant.cmi : core/j.cmx
-core/js_op.cmx : core/lam_tag_info.cmx
-core/js_op_util.cmx : core/js_op.cmx core/j.cmx core/js_op_util.cmi
-core/js_op_util.cmi : core/js_op.cmx core/j.cmx
-core/js_output.cmx : core/lam_compile_context.cmx core/lam_analysis.cmx \
-    core/lam.cmx core/js_stmt_make.cmx core/js_exp_make.cmx core/js_dump.cmx \
-    core/js_analyzer.cmx core/j.cmx ext/ext_list.cmx core/js_output.cmi
 core/js_output.cmi : core/lam_compile_context.cmi core/lam.cmi core/j.cmx
+core/lam_compile_global.cmi : core/lam.cmi core/j.cmx
+core/lam_dispatch_primitive.cmi : core/j.cmx
+core/lam_bounded_vars.cmi : core/lam.cmi ext/ident_hashtbl.cmi
+core/lam_beta_reduce.cmi : core/lam_stats.cmi core/lam_closure.cmi \
+    core/lam.cmi ext/ident_map.cmi
+core/lam_compile_external_call.cmi : core/lam_compile_context.cmi \
+    core/js_of_lam_variant.cmi core/j.cmx syntax/external_ffi_types.cmi \
+    syntax/external_arg_spec.cmi
+core/lam_compile_external_obj.cmi : core/j.cmx syntax/external_arg_spec.cmi
+core/lam_compile_primitive.cmi : core/lam_compile_context.cmi core/lam.cmi \
+    core/j.cmx
+core/lam_compile.cmi : core/lam_compile_context.cmi core/lam.cmi \
+    core/js_output.cmi core/j.cmx
+core/lam_pass_exits.cmi : core/lam.cmi
+core/lam_pass_count.cmi : core/lam.cmi ext/ident_hashtbl.cmi
+core/lam_pass_eliminate_ref.cmi : core/lam.cmi
+core/lam_pass_lets_dce.cmi : core/lam.cmi
+core/lam_pass_remove_alias.cmi : core/lam_stats.cmi core/lam.cmi
+core/lam_coercion.cmi : core/lam_stats.cmi core/lam_group.cmi core/lam.cmi \
+    ext/ident_set.cmi ext/ident_map.cmi
+core/lam_compile_main.cmi : core/j.cmx
+core/js_implementation.cmi :
+core/ocaml_batch_compile.cmi :
+core/js_runtime_modules.cmx :
+core/config_util.cmx : ext/ext_string.cmx core/config_util.cmi
 core/js_packages_info.cmx : core/lam_module_ident.cmx ext/ext_sys.cmx \
     ext/ext_string.cmx ext/ext_pervasives.cmx ext/ext_path.cmx \
     ext/ext_namespace.cmx ext/ext_filename.cmx core/config_util.cmx \
     depends/bs_exception.cmx core/js_packages_info.cmi
-core/js_packages_info.cmi : core/lam_module_ident.cmi ext/ext_namespace.cmi
 core/js_packages_state.cmx : core/js_packages_info.cmx \
     ext/ext_pervasives.cmx ext/ext_namespace.cmx core/js_packages_state.cmi
-core/js_packages_state.cmi : core/js_packages_info.cmi
-core/js_pass_debug.cmx : core/js_dump_program.cmx common/js_config.cmx \
-    core/j.cmx ext/ext_pervasives.cmx ext/ext_path.cmx common/ext_log.cmx \
-    core/js_pass_debug.cmi
-core/js_pass_debug.cmi : core/j.cmx
-core/js_pass_flatten.cmx : core/js_stmt_make.cmx core/js_map.cmx \
-    core/js_exp_make.cmx core/js_analyzer.cmx core/j.cmx ext/ext_list.cmx \
-    core/js_pass_flatten.cmi
-core/js_pass_flatten.cmi : core/j.cmx
-core/js_pass_flatten_and_mark_dead.cmx : core/js_stmt_make.cmx \
-    core/js_op_util.cmx core/js_map.cmx core/js_fold.cmx core/js_exp_make.cmx \
-    common/js_config.cmx core/js_analyzer.cmx core/j.cmx ext/ident_set.cmx \
-    ext/ident_hashtbl.cmx common/ext_log.cmx ext/ext_list.cmx \
-    ext/ext_ident.cmx core/js_pass_flatten_and_mark_dead.cmi
-core/js_pass_flatten_and_mark_dead.cmi : core/j.cmx
-core/js_pass_scope.cmx : core/js_fun_env.cmx core/js_fold.cmx \
-    core/js_closure.cmx ext/ident_set.cmx common/ext_log.cmx ext/ext_list.cmx \
-    core/js_pass_scope.cmi
-core/js_pass_scope.cmi : core/j.cmx ext/ident_set.cmi
-core/js_pass_tailcall_inline.cmx : core/js_stmt_make.cmx core/js_op_util.cmx \
-    core/js_map.cmx core/js_fold.cmx core/js_exp_make.cmx \
-    core/js_analyzer.cmx core/j.cmx ext/ident_set.cmx ext/ident_hashtbl.cmx \
-    ext/ext_list.cmx core/js_pass_tailcall_inline.cmi
-core/js_pass_tailcall_inline.cmi : core/j.cmx
-core/js_runtime_modules.cmx :
-core/js_shake.cmx : core/js_analyzer.cmx core/j.cmx ext/ident_set.cmx \
-    ext/ext_string.cmx common/ext_log.cmx ext/ext_list.cmx core/js_shake.cmi
-core/js_shake.cmi : core/j.cmx
-core/js_stmt_make.cmx : core/lam_print.cmx core/lam.cmx core/js_exp_make.cmx \
-    core/js_closure.cmx core/js_analyzer.cmx core/j.cmx ext/ext_list.cmx \
-    core/js_stmt_make.cmi
-core/js_stmt_make.cmi : core/lam.cmi core/js_closure.cmi core/j.cmx
-core/jsoo_main.cmx : super_errors/super_main.cmx ext/string_map.cmx \
-    syntax/ppx_entry.cmx outcome_printer/outcome_printer_ns.cmx \
-    core/lam_compile_main.cmx core/lam_compile_env.cmx \
-    core/js_dump_program.cmx core/js_cmj_format.cmx core/js_cmj_datasets.cmx \
-    ext/ext_pp.cmx bsb/bsb_warning.cmx common/bs_version.cmx \
-    core/bs_conditional_initial.cmx core/jsoo_main.cmi
-core/jsoo_main.cmi :
+core/ocaml_types.cmx : common/ext_log.cmx ext/ext_list.cmx \
+    core/ocaml_types.cmi
+core/bs_conditional_initial.cmx : common/js_config.cmx common/bs_version.cmx \
+    core/bs_conditional_initial.cmi
+core/ocaml_options.cmx : common/bs_version.cmx \
+    core/bs_conditional_initial.cmx core/ocaml_options.cmi
+core/ocaml_parse.cmx : syntax/ppx_entry.cmx common/js_config.cmx \
+    ext/ext_path.cmx core/ocaml_parse.cmi
+core/lam_tag_info.cmx :
+core/js_op.cmx : core/lam_tag_info.cmx
+core/lam_module_ident.cmx : core/js_op.cmx core/j.cmx ext/hashtbl_make.cmx \
+    ext/hash_set.cmx ext/ext_ident.cmx stubs/bs_hash_stubs.cmx \
+    core/lam_module_ident.cmi
+core/lam_arity.cmx : core/lam_arity.cmi
 core/lam.cmx : ext/ordered_hash_map_local_ident.cmx ext/literals.cmx \
     core/lam_tag_info.cmx core/lam_module_ident.cmx ext/int_vec_vec.cmx \
     ext/int_vec_util.cmx ext/int_vec.cmx ext/int_hashtbl.cmx \
@@ -379,41 +470,206 @@ core/lam.cmx : ext/ordered_hash_map_local_ident.cmx ext/literals.cmx \
     syntax/external_arg_spec.cmx ext/ext_string.cmx ext/ext_scc.cmx \
     common/ext_log.cmx ext/ext_list.cmx syntax/ast_exp_extension.cmx \
     core/lam.cmi
-core/lam.cmi : core/lam_tag_info.cmx core/lam_module_ident.cmi \
-    ext/ident_set.cmi syntax/external_ffi_types.cmi \
-    syntax/external_arg_spec.cmi
+core/lam_print.cmx : core/lam.cmx ext/ext_list.cmx core/lam_print.cmi
+core/lam_beta_reduce_util.cmx : core/lam.cmx ext/ident_hashtbl.cmx \
+    core/lam_beta_reduce_util.cmi
+core/lam_inline_util.cmx : core/lam.cmx core/lam_inline_util.cmi
 core/lam_analysis.cmx : core/lam.cmx ext/ext_list.cmx core/lam_analysis.cmi
-core/lam_analysis.cmi : core/lam.cmi
-core/lam_arity.cmx : core/lam_arity.cmi
-core/lam_arity.cmi :
+core/lam_closure.cmx : core/lam_analysis.cmx core/lam.cmx ext/ident_set.cmx \
+    ext/ident_map.cmx ext/ext_list.cmx core/lam_closure.cmi
+core/js_cmj_format.cmx : ext/string_map.cmx core/lam_arity.cmx core/lam.cmx \
+    core/js_packages_info.cmx ext/ext_string.cmx ext/ext_pervasives.cmx \
+    ext/ext_namespace.cmx core/js_cmj_format.cmi
+core/js_cmj_load.cmx : core/js_cmj_format.cmx core/config_util.cmx \
+    depends/bs_exception.cmx core/js_cmj_load.cmi
+core/js_fun_env.cmx : ext/ident_set.cmx ext/ext_list.cmx core/js_fun_env.cmi
+core/js_call_info.cmx : core/js_call_info.cmi
+core/js_closure.cmx : ext/ident_set.cmx core/js_closure.cmi
+core/js_number.cmx : core/js_number.cmi
+core/js_cmj_datasets.cmx : ext/string_map.cmx core/js_cmj_format.cmx \
+    core/js_cmj_datasets.cmi
+core/lam_exit_code.cmx : core/lam.cmx core/lam_exit_code.cmi
+core/j.cmx : core/js_op.cmx core/js_fun_env.cmx core/js_closure.cmx \
+    core/js_call_info.cmx ext/ident_set.cmx
+core/lam_compile_util.cmx : core/lam_tag_info.cmx core/lam.cmx \
+    core/js_op.cmx core/lam_compile_util.cmi
+core/lam_id_kind.cmx : core/lam_arity.cmx core/lam.cmx core/lam_id_kind.cmi
+core/lam_stats.cmx : core/lam_id_kind.cmx ext/ident_set.cmx \
+    ext/ident_hashtbl.cmx core/lam_stats.cmi
+core/lam_compile_context.cmx : core/lam_stats.cmx core/lam.cmx core/j.cmx \
+    ext/int_map.cmx ext/ident_map.cmx ext/ext_list.cmx \
+    core/lam_compile_context.cmi
+core/js_map.cmx : core/j.cmx
+core/js_fold.cmx : core/j.cmx
+core/js_fold_basic.cmx : core/lam_module_ident.cmx \
+    core/js_runtime_modules.cmx core/js_fold.cmx common/js_config.cmx \
+    core/j.cmx ext/ident_set.cmx core/js_fold_basic.cmi
+core/js_pass_scope.cmx : core/js_fun_env.cmx core/js_fold.cmx \
+    core/js_closure.cmx ext/ident_set.cmx common/ext_log.cmx ext/ext_list.cmx \
+    core/js_pass_scope.cmi
+core/js_op_util.cmx : core/js_op.cmx core/j.cmx core/js_op_util.cmi
+core/js_analyzer.cmx : core/js_fun_env.cmx core/js_fold.cmx core/j.cmx \
+    ext/ident_set.cmx core/js_analyzer.cmi
+core/js_shake.cmx : core/js_analyzer.cmx core/j.cmx ext/ident_set.cmx \
+    ext/ext_string.cmx common/ext_log.cmx ext/ext_list.cmx core/js_shake.cmi
+core/js_exp_make.cmx : ext/literals.cmx core/lam_compile_util.cmx \
+    core/js_runtime_modules.cmx core/js_op_util.cmx core/js_fun_env.cmx \
+    core/js_call_info.cmx core/js_analyzer.cmx core/j.cmx ext/ext_string.cmx \
+    ext/ext_pervasives.cmx ext/ext_list.cmx ext/ext_ident.cmx \
+    core/js_exp_make.cmi
+core/js_long.cmx : core/lam_tag_info.cmx core/js_runtime_modules.cmx \
+    core/js_exp_make.cmx core/js_analyzer.cmx core/j.cmx core/js_long.cmi
+core/js_of_lam_exception.cmx : ext/literals.cmx core/js_runtime_modules.cmx \
+    core/js_exp_make.cmx core/j.cmx core/js_of_lam_exception.cmi
+core/js_of_lam_module.cmx : core/js_exp_make.cmx core/j.cmx \
+    core/js_of_lam_module.cmi
+core/js_of_lam_array.cmx : core/js_exp_make.cmx core/js_of_lam_array.cmi
+core/js_of_lam_block.cmx : core/lam.cmx core/js_of_lam_array.cmx \
+    core/js_exp_make.cmx core/js_of_lam_block.cmi
+core/js_of_lam_string.cmx : core/js_runtime_modules.cmx core/js_exp_make.cmx \
+    core/j.cmx ext/ext_string.cmx core/js_of_lam_string.cmi
+core/js_of_lam_tuple.cmx : core/js_exp_make.cmx core/j.cmx \
+    core/js_of_lam_tuple.cmi
+core/js_of_lam_record.cmx : core/js_exp_make.cmx core/js_of_lam_record.cmi
+core/js_of_lam_float_record.cmx : core/js_exp_make.cmx \
+    core/js_of_lam_float_record.cmi
+core/js_arr.cmx : core/js_exp_make.cmx core/js_arr.cmi
+core/lam_compile_const.cmx : core/lam_compile_util.cmx core/lam.cmx \
+    core/js_of_lam_string.cmx core/js_of_lam_block.cmx \
+    core/js_of_lam_array.cmx core/js_long.cmx core/js_exp_make.cmx core/j.cmx \
+    syntax/external_arg_spec.cmx ext/ext_list.cmx core/lam_compile_const.cmi
+core/lam_inner.cmx : core/lam.cmx core/lam_inner.cmi
+core/lam_subst.cmx : core/lam.cmx ext/ident_map.cmx ext/ext_list.cmx \
+    core/lam_subst.cmi
+core/lam_util.cmx : core/lam_stats.cmx core/lam_print.cmx \
+    core/lam_id_kind.cmx core/lam_analysis.cmx core/lam.cmx \
+    common/js_config.cmx ext/ident_set.cmx ext/ident_hashtbl.cmx \
+    ext/ext_path.cmx common/ext_log.cmx ext/ext_list.cmx ext/ext_array.cmx \
+    core/lam_util.cmi
+core/lam_eta_conversion.cmx : ext/literals.cmx core/lam.cmx ext/ext_list.cmx \
+    ext/ext_ident.cmx core/lam_eta_conversion.cmi
+core/lam_group.cmx : core/lam_print.cmx core/lam.cmx core/lam_group.cmi
+core/lam_pass_deep_flatten.cmx : core/lam_util.cmx core/lam_group.cmx \
+    core/lam.cmx ext/int_map.cmx ext/ident_set.cmx ext/ext_list.cmx \
+    core/lam_pass_deep_flatten.cmi
+core/js_stmt_make.cmx : core/lam_print.cmx core/lam.cmx core/js_exp_make.cmx \
+    core/js_closure.cmx core/js_analyzer.cmx core/j.cmx ext/ext_list.cmx \
+    core/js_stmt_make.cmi
+core/js_pass_flatten.cmx : core/js_stmt_make.cmx core/js_map.cmx \
+    core/js_exp_make.cmx core/js_analyzer.cmx core/j.cmx ext/ext_list.cmx \
+    core/js_pass_flatten.cmi
+core/js_of_lam_polyvar.cmx : core/js_exp_make.cmx core/j.cmx \
+    core/js_of_lam_polyvar.cmi
+core/js_pass_tailcall_inline.cmx : core/js_stmt_make.cmx core/js_op_util.cmx \
+    core/js_map.cmx core/js_fold.cmx core/js_exp_make.cmx \
+    core/js_analyzer.cmx core/j.cmx ext/ident_set.cmx ext/ident_hashtbl.cmx \
+    ext/ext_list.cmx core/js_pass_tailcall_inline.cmi
+core/js_of_lam_variant.cmx : core/js_stmt_make.cmx \
+    core/js_of_lam_polyvar.cmx core/js_exp_make.cmx core/j.cmx \
+    ext/ext_list.cmx core/js_of_lam_variant.cmi
+core/js_pass_flatten_and_mark_dead.cmx : core/js_stmt_make.cmx \
+    core/js_op_util.cmx core/js_map.cmx core/js_fold.cmx core/js_exp_make.cmx \
+    common/js_config.cmx core/js_analyzer.cmx core/j.cmx ext/ident_set.cmx \
+    ext/ident_hashtbl.cmx common/ext_log.cmx ext/ext_list.cmx \
+    ext/ext_ident.cmx core/js_pass_flatten_and_mark_dead.cmi
+core/js_ast_util.cmx : core/js_stmt_make.cmx core/js_exp_make.cmx \
+    core/js_analyzer.cmx core/j.cmx ext/ext_ident.cmx core/js_ast_util.cmi
+core/lam_dce.cmx : core/lam_group.cmx core/lam_analysis.cmx core/lam.cmx \
+    ext/ident_set.cmx ext/ident_hashtbl.cmx ext/ident_hash_set.cmx \
+    ext/ext_pervasives.cmx ext/ext_list.cmx ext/ext_ident.cmx \
+    core/lam_dce.cmi
+core/lam_group_pass.cmx : core/lam.cmx
+core/lam_compile_env.cmx : ext/string_map.cmx core/ocaml_types.cmx \
+    ext/literals.cmx core/lam_module_ident.cmx core/lam.cmx \
+    core/js_stmt_make.cmx core/js_exp_make.cmx common/js_config.cmx \
+    core/js_cmj_load.cmx core/js_cmj_format.cmx syntax/external_ffi_types.cmx \
+    ext/ext_string.cmx ext/ext_modulename.cmx core/lam_compile_env.cmi
 core/lam_arity_analysis.cmx : core/lam_stats.cmx core/lam_compile_env.cmx \
     core/lam_arity.cmx core/lam.cmx ext/ident_hashtbl.cmx ext/ext_list.cmx \
     core/lam_arity_analysis.cmi
-core/lam_arity_analysis.cmi : core/lam_stats.cmi core/lam_arity.cmi \
-    core/lam.cmi
+core/lam_stats_export.cmx : ext/string_map.cmx core/lam_stats.cmx \
+    core/lam_module_ident.cmx core/lam_inline_util.cmx core/lam_id_kind.cmx \
+    core/lam_compile_env.cmx core/lam_closure.cmx core/lam_arity_analysis.cmx \
+    core/lam_arity.cmx core/lam_analysis.cmx core/lam.cmx \
+    core/js_packages_state.cmx core/js_cmj_format.cmx ext/ident_set.cmx \
+    ext/ident_map.cmx ext/ident_hashtbl.cmx ext/ext_option.cmx \
+    common/ext_log.cmx ext/ext_list.cmx ext/ext_array.cmx \
+    core/lam_stats_export.cmi
+core/lam_pass_alpha_conversion.cmx : core/lam_stats.cmx \
+    core/lam_eta_conversion.cmx core/lam_arity_analysis.cmx \
+    core/lam_arity.cmx core/lam.cmx ext/ext_list.cmx \
+    core/lam_pass_alpha_conversion.cmi
+core/lam_pass_collect.cmx : core/lam_util.cmx core/lam_stats.cmx \
+    core/lam_arity_analysis.cmx core/lam_arity.cmx core/lam.cmx \
+    ext/ident_set.cmx ext/ident_hashtbl.cmx core/lam_pass_collect.cmi
+core/js_dump_lit.cmx : ext/literals.cmx ext/ext_string.cmx
+core/js_dump_string.cmx : ext/ext_pp.cmx core/js_dump_string.cmi
+core/js_dump_property.cmx : core/js_dump_string.cmx core/js_dump_lit.cmx \
+    ext/ext_string.cmx ext/ext_pp.cmx core/js_dump_property.cmi
+core/js_dump_import_export.cmx : core/js_dump_string.cmx \
+    core/js_dump_lit.cmx ext/ext_string.cmx ext/ext_pp_scope.cmx \
+    ext/ext_pp.cmx ext/ext_list.cmx ext/ext_ident.cmx \
+    core/js_dump_import_export.cmi
+core/js_dump.cmx : core/js_stmt_make.cmx core/js_runtime_modules.cmx \
+    core/js_op_util.cmx core/js_op.cmx core/js_number.cmx core/js_fun_env.cmx \
+    core/js_fold_basic.cmx core/js_exp_make.cmx core/js_dump_string.cmx \
+    core/js_dump_property.cmx core/js_dump_lit.cmx common/js_config.cmx \
+    core/js_closure.cmx core/j.cmx ext/ident_set.cmx ext/ext_pp_scope.cmx \
+    ext/ext_pp.cmx ext/ext_list.cmx ext/ext_ident.cmx ext/ext_array.cmx \
+    core/js_dump.cmi
+core/js_name_of_module_id.cmx : core/lam_compile_env.cmx \
+    core/js_packages_state.cmx core/js_packages_info.cmx \
+    core/js_name_of_module_id.cmi
+core/js_dump_program.cmx : core/lam_module_ident.cmx \
+    core/js_packages_info.cmx core/js_name_of_module_id.cmx \
+    core/js_dump_string.cmx core/js_dump_lit.cmx \
+    core/js_dump_import_export.cmx core/js_dump.cmx common/js_config.cmx \
+    core/j.cmx ext/ext_pp_scope.cmx ext/ext_pp.cmx ext/ext_list.cmx \
+    common/bs_version.cmx core/js_dump_program.cmi
+core/js_pass_debug.cmx : core/js_dump_program.cmx common/js_config.cmx \
+    core/j.cmx ext/ext_pervasives.cmx ext/ext_path.cmx common/ext_log.cmx \
+    core/js_pass_debug.cmi
+core/js_of_lam_option.cmx : core/js_runtime_modules.cmx \
+    core/js_of_lam_polyvar.cmx core/js_exp_make.cmx core/js_analyzer.cmx \
+    core/j.cmx core/js_of_lam_option.cmi
+core/js_output.cmx : core/lam_compile_context.cmx core/lam_analysis.cmx \
+    core/lam.cmx core/js_stmt_make.cmx core/js_exp_make.cmx core/js_dump.cmx \
+    core/js_analyzer.cmx core/j.cmx ext/ext_list.cmx core/js_output.cmi
+core/lam_compile_global.cmx : core/ocaml_types.cmx core/lam_module_ident.cmx \
+    core/lam_compile_env.cmx core/lam.cmx core/js_stmt_make.cmx \
+    core/js_of_lam_module.cmx core/js_exp_make.cmx core/j.cmx \
+    ext/ext_list.cmx core/lam_compile_global.cmi
+core/lam_dispatch_primitive.cmx : core/js_stmt_make.cmx \
+    core/js_runtime_modules.cmx core/js_of_lam_tuple.cmx \
+    core/js_of_lam_exception.cmx core/js_of_lam_array.cmx core/js_long.cmx \
+    core/js_exp_make.cmx common/js_config.cmx core/js_analyzer.cmx core/j.cmx \
+    ext/ext_list.cmx common/bs_warnings.cmx core/lam_dispatch_primitive.cmi
+core/lam_bounded_vars.cmx : core/lam.cmx ext/ident_hashtbl.cmx \
+    ext/ext_list.cmx core/lam_bounded_vars.cmi
 core/lam_beta_reduce.cmx : core/lam_util.cmx core/lam_stats.cmx \
     core/lam_compile_global.cmx core/lam_closure.cmx \
     core/lam_bounded_vars.cmx core/lam_beta_reduce_util.cmx \
     core/lam_analysis.cmx core/lam.cmx ext/ident_map.cmx \
     ext/ident_hashtbl.cmx ext/ext_list.cmx core/lam_beta_reduce.cmi
-core/lam_beta_reduce.cmi : core/lam_stats.cmi core/lam_closure.cmi \
-    core/lam.cmi ext/ident_map.cmi
-core/lam_beta_reduce_util.cmx : core/lam.cmx ext/ident_hashtbl.cmx \
-    core/lam_beta_reduce_util.cmi
-core/lam_beta_reduce_util.cmi : core/lam.cmi
-core/lam_bounded_vars.cmx : core/lam.cmx ext/ident_hashtbl.cmx \
-    ext/ext_list.cmx core/lam_bounded_vars.cmi
-core/lam_bounded_vars.cmi : core/lam.cmi ext/ident_hashtbl.cmi
-core/lam_closure.cmx : core/lam_analysis.cmx core/lam.cmx ext/ident_set.cmx \
-    ext/ident_map.cmx ext/ext_list.cmx core/lam_closure.cmi
-core/lam_closure.cmi : core/lam.cmi ext/ident_set.cmi ext/ident_map.cmi
-core/lam_coercion.cmx : ext/string_hash_set.cmx core/lam_util.cmx \
-    core/lam_stats.cmx core/lam_group.cmx core/lam_dce.cmx \
-    core/lam_arity_analysis.cmx core/lam_arity.cmx core/lam.cmx \
-    ext/ident_set.cmx ext/ident_map.cmx ext/ident_hashtbl.cmx \
-    ext/ext_list.cmx depends/bs_exception.cmx core/lam_coercion.cmi
-core/lam_coercion.cmi : core/lam_stats.cmi core/lam_group.cmi core/lam.cmi \
-    ext/ident_set.cmi ext/ident_map.cmi
+core/lam_compile_external_call.cmx : core/lam_compile_env.cmx \
+    core/lam_compile_context.cmx core/lam_compile_const.cmx \
+    core/js_of_lam_variant.cmx core/js_of_lam_option.cmx core/js_exp_make.cmx \
+    core/js_arr.cmx core/js_analyzer.cmx core/j.cmx \
+    syntax/external_ffi_types.cmx syntax/external_arg_spec.cmx \
+    ext/ext_list.cmx ext/ext_ident.cmx core/lam_compile_external_call.cmi
+core/lam_compile_external_obj.cmx : core/lam_compile_external_call.cmx \
+    core/lam_compile_const.cmx core/js_stmt_make.cmx core/js_op.cmx \
+    core/js_of_lam_option.cmx core/js_exp_make.cmx core/js_ast_util.cmx \
+    core/js_analyzer.cmx core/j.cmx syntax/external_arg_spec.cmx \
+    ext/ext_list.cmx ext/ext_ident.cmx core/lam_compile_external_obj.cmi
+core/lam_compile_primitive.cmx : core/lam_print.cmx \
+    core/lam_dispatch_primitive.cmx core/lam_compile_external_call.cmx \
+    core/lam_compile_context.cmx core/lam.cmx core/js_runtime_modules.cmx \
+    core/js_op_util.cmx core/js_of_lam_string.cmx core/js_of_lam_option.cmx \
+    core/js_of_lam_float_record.cmx core/js_of_lam_exception.cmx \
+    core/js_of_lam_block.cmx core/js_of_lam_array.cmx core/js_long.cmx \
+    core/js_exp_make.cmx common/js_config.cmx core/j.cmx \
+    common/bs_warnings.cmx core/lam_compile_primitive.cmi
 core/lam_compile.cmx : ext/literals.cmx core/lam_util.cmx \
     common/lam_methname.cmx core/lam_exit_code.cmx \
     core/lam_eta_conversion.cmx core/lam_compile_primitive.cmx \
@@ -427,47 +683,29 @@ core/lam_compile.cmx : ext/literals.cmx core/lam_util.cmx \
     core/js_analyzer.cmx core/j.cmx ext/ident_set.cmx ext/ident_map.cmx \
     ext/ext_string.cmx ext/ext_list.cmx ext/ext_ident.cmx \
     core/lam_compile.cmi
-core/lam_compile.cmi : core/lam_compile_context.cmi core/lam.cmi \
-    core/js_output.cmi core/j.cmx
-core/lam_compile_const.cmx : core/lam_compile_util.cmx core/lam.cmx \
-    core/js_of_lam_string.cmx core/js_of_lam_block.cmx \
-    core/js_of_lam_array.cmx core/js_long.cmx core/js_exp_make.cmx core/j.cmx \
-    syntax/external_arg_spec.cmx ext/ext_list.cmx core/lam_compile_const.cmi
-core/lam_compile_const.cmi : core/lam.cmi core/j.cmx \
-    syntax/external_arg_spec.cmi
-core/lam_compile_context.cmx : core/lam_stats.cmx core/lam.cmx core/j.cmx \
-    ext/int_map.cmx ext/ident_map.cmx ext/ext_list.cmx \
-    core/lam_compile_context.cmi
-core/lam_compile_context.cmi : core/lam_stats.cmi core/lam.cmi core/j.cmx \
-    ext/ident_map.cmi
-core/lam_compile_env.cmx : ext/string_map.cmx core/ocaml_types.cmx \
-    ext/literals.cmx core/lam_module_ident.cmx core/lam.cmx \
-    core/js_stmt_make.cmx core/js_exp_make.cmx common/js_config.cmx \
-    core/js_cmj_load.cmx core/js_cmj_format.cmx syntax/external_ffi_types.cmx \
-    ext/ext_string.cmx ext/ext_modulename.cmx core/lam_compile_env.cmi
-core/lam_compile_env.cmi : core/ocaml_types.cmi core/lam_module_ident.cmi \
-    core/lam.cmi core/js_packages_info.cmi core/js_cmj_format.cmi \
-    syntax/external_ffi_types.cmi
-core/lam_compile_external_call.cmx : core/lam_compile_env.cmx \
-    core/lam_compile_context.cmx core/lam_compile_const.cmx \
-    core/js_of_lam_variant.cmx core/js_of_lam_option.cmx core/js_exp_make.cmx \
-    core/js_arr.cmx core/js_analyzer.cmx core/j.cmx \
-    syntax/external_ffi_types.cmx syntax/external_arg_spec.cmx \
-    ext/ext_list.cmx ext/ext_ident.cmx core/lam_compile_external_call.cmi
-core/lam_compile_external_call.cmi : core/lam_compile_context.cmi \
-    core/js_of_lam_variant.cmi core/j.cmx syntax/external_ffi_types.cmi \
-    syntax/external_arg_spec.cmi
-core/lam_compile_external_obj.cmx : core/lam_compile_external_call.cmx \
-    core/lam_compile_const.cmx core/js_stmt_make.cmx core/js_op.cmx \
-    core/js_of_lam_option.cmx core/js_exp_make.cmx core/js_ast_util.cmx \
-    core/js_analyzer.cmx core/j.cmx syntax/external_arg_spec.cmx \
-    ext/ext_list.cmx ext/ext_ident.cmx core/lam_compile_external_obj.cmi
-core/lam_compile_external_obj.cmi : core/j.cmx syntax/external_arg_spec.cmi
-core/lam_compile_global.cmx : core/ocaml_types.cmx core/lam_module_ident.cmx \
-    core/lam_compile_env.cmx core/lam.cmx core/js_stmt_make.cmx \
-    core/js_of_lam_module.cmx core/js_exp_make.cmx core/j.cmx \
-    ext/ext_list.cmx core/lam_compile_global.cmi
-core/lam_compile_global.cmi : core/lam.cmi core/j.cmx
+core/lam_pass_exits.cmx : core/lam_subst.cmx core/lam_bounded_vars.cmx \
+    core/lam_analysis.cmx core/lam.cmx ext/int_hashtbl.cmx ext/ident_map.cmx \
+    ext/ext_list.cmx core/lam_pass_exits.cmi
+core/lam_pass_count.cmx : core/lam_beta_reduce.cmx core/lam.cmx \
+    ext/ident_map.cmx ext/ident_hashtbl.cmx ext/ext_list.cmx \
+    core/lam_pass_count.cmi
+core/lam_pass_eliminate_ref.cmx : core/lam.cmx ext/ident_set.cmx \
+    ext/ext_list.cmx core/lam_pass_eliminate_ref.cmi
+core/lam_pass_lets_dce.cmx : core/lam_util.cmx \
+    core/lam_pass_eliminate_ref.cmx core/lam_pass_count.cmx \
+    core/lam_beta_reduce.cmx core/lam_analysis.cmx core/lam.cmx \
+    ext/ident_hashtbl.cmx common/ext_log.cmx ext/ext_list.cmx \
+    core/lam_pass_lets_dce.cmi
+core/lam_pass_remove_alias.cmx : core/lam_util.cmx core/lam_stats.cmx \
+    core/lam_inline_util.cmx core/lam_compile_env.cmx core/lam_closure.cmx \
+    core/lam_beta_reduce.cmx core/lam_analysis.cmx core/lam.cmx \
+    ext/ident_set.cmx ext/ident_hashtbl.cmx ext/ext_list.cmx \
+    core/lam_pass_remove_alias.cmi
+core/lam_coercion.cmx : ext/string_hash_set.cmx core/lam_util.cmx \
+    core/lam_stats.cmx core/lam_group.cmx core/lam_dce.cmx \
+    core/lam_arity_analysis.cmx core/lam_arity.cmx core/lam.cmx \
+    ext/ident_set.cmx ext/ident_map.cmx ext/ident_hashtbl.cmx \
+    ext/ext_list.cmx depends/bs_exception.cmx core/lam_coercion.cmi
 core/lam_compile_main.cmx : ext/literals.cmx core/lam_util.cmx \
     core/lam_stats_export.cmx core/lam_stats.cmx \
     core/lam_pass_remove_alias.cmx core/lam_pass_lets_dce.cmx \
@@ -486,354 +724,136 @@ core/lam_compile_main.cmx : ext/literals.cmx core/lam_util.cmx \
     ext/ext_pervasives.cmx ext/ext_path.cmx ext/ext_namespace.cmx \
     common/ext_log.cmx ext/ext_list.cmx ext/ext_filename.cmx ext/ext_char.cmx \
     core/lam_compile_main.cmi
-core/lam_compile_main.cmi : core/j.cmx
-core/lam_compile_primitive.cmx : core/lam_print.cmx \
-    core/lam_dispatch_primitive.cmx core/lam_compile_external_call.cmx \
-    core/lam_compile_context.cmx core/lam.cmx core/js_runtime_modules.cmx \
-    core/js_op_util.cmx core/js_of_lam_string.cmx core/js_of_lam_option.cmx \
-    core/js_of_lam_float_record.cmx core/js_of_lam_exception.cmx \
-    core/js_of_lam_block.cmx core/js_of_lam_array.cmx core/js_long.cmx \
-    core/js_exp_make.cmx common/js_config.cmx core/j.cmx \
-    common/bs_warnings.cmx core/lam_compile_primitive.cmi
-core/lam_compile_primitive.cmi : core/lam_compile_context.cmi core/lam.cmi \
-    core/j.cmx
-core/lam_compile_util.cmx : core/lam_tag_info.cmx core/lam.cmx \
-    core/js_op.cmx core/lam_compile_util.cmi
-core/lam_compile_util.cmi : core/lam_tag_info.cmx core/lam.cmi \
-    core/js_op.cmx
-core/lam_dce.cmx : core/lam_group.cmx core/lam_analysis.cmx core/lam.cmx \
-    ext/ident_set.cmx ext/ident_hashtbl.cmx ext/ident_hash_set.cmx \
-    ext/ext_pervasives.cmx ext/ext_list.cmx ext/ext_ident.cmx \
-    core/lam_dce.cmi
-core/lam_dce.cmi : core/lam_group.cmi
-core/lam_dispatch_primitive.cmx : core/js_stmt_make.cmx \
-    core/js_runtime_modules.cmx core/js_of_lam_tuple.cmx \
-    core/js_of_lam_exception.cmx core/js_of_lam_array.cmx core/js_long.cmx \
-    core/js_exp_make.cmx common/js_config.cmx core/js_analyzer.cmx core/j.cmx \
-    ext/ext_list.cmx common/bs_warnings.cmx core/lam_dispatch_primitive.cmi
-core/lam_dispatch_primitive.cmi : core/j.cmx
-core/lam_eta_conversion.cmx : ext/literals.cmx core/lam.cmx ext/ext_list.cmx \
-    ext/ext_ident.cmx core/lam_eta_conversion.cmi
-core/lam_eta_conversion.cmi : core/lam.cmi
-core/lam_exit_code.cmx : core/lam.cmx core/lam_exit_code.cmi
-core/lam_exit_code.cmi : core/lam.cmi
-core/lam_group.cmx : core/lam_print.cmx core/lam.cmx core/lam_group.cmi
-core/lam_group.cmi : core/lam.cmi
-core/lam_group_pass.cmx : core/lam.cmx
-core/lam_id_kind.cmx : core/lam_arity.cmx core/lam.cmx core/lam_id_kind.cmi
-core/lam_id_kind.cmi : core/lam_arity.cmi core/lam.cmi
-core/lam_inline_util.cmx : core/lam.cmx core/lam_inline_util.cmi
-core/lam_inline_util.cmi : core/lam.cmi
-core/lam_inner.cmx : core/lam.cmx core/lam_inner.cmi
-core/lam_inner.cmi : core/lam.cmi
-core/lam_module_ident.cmx : core/js_op.cmx core/j.cmx ext/hashtbl_make.cmx \
-    ext/hash_set.cmx ext/ext_ident.cmx stubs/bs_hash_stubs.cmx \
-    core/lam_module_ident.cmi
-core/lam_module_ident.cmi : core/js_op.cmx core/j.cmx ext/hashtbl_gen.cmx \
-    ext/hash_set_gen.cmx
-core/lam_pass_alpha_conversion.cmx : core/lam_stats.cmx \
-    core/lam_eta_conversion.cmx core/lam_arity_analysis.cmx \
-    core/lam_arity.cmx core/lam.cmx ext/ext_list.cmx \
-    core/lam_pass_alpha_conversion.cmi
-core/lam_pass_alpha_conversion.cmi : core/lam_stats.cmi core/lam.cmi
-core/lam_pass_collect.cmx : core/lam_util.cmx core/lam_stats.cmx \
-    core/lam_arity_analysis.cmx core/lam_arity.cmx core/lam.cmx \
-    ext/ident_set.cmx ext/ident_hashtbl.cmx core/lam_pass_collect.cmi
-core/lam_pass_collect.cmi : core/lam_stats.cmi core/lam.cmi \
-    ext/ident_set.cmi
-core/lam_pass_count.cmx : core/lam_beta_reduce.cmx core/lam.cmx \
-    ext/ident_map.cmx ext/ident_hashtbl.cmx ext/ext_list.cmx \
-    core/lam_pass_count.cmi
-core/lam_pass_count.cmi : core/lam.cmi ext/ident_hashtbl.cmi
-core/lam_pass_deep_flatten.cmx : core/lam_util.cmx core/lam_group.cmx \
-    core/lam.cmx ext/int_map.cmx ext/ident_set.cmx ext/ext_list.cmx \
-    core/lam_pass_deep_flatten.cmi
-core/lam_pass_deep_flatten.cmi : core/lam.cmi
-core/lam_pass_eliminate_ref.cmx : core/lam.cmx ext/ident_set.cmx \
-    ext/ext_list.cmx core/lam_pass_eliminate_ref.cmi
-core/lam_pass_eliminate_ref.cmi : core/lam.cmi
-core/lam_pass_exits.cmx : core/lam_subst.cmx core/lam_bounded_vars.cmx \
-    core/lam_analysis.cmx core/lam.cmx ext/int_hashtbl.cmx ext/ident_map.cmx \
-    ext/ext_list.cmx core/lam_pass_exits.cmi
-core/lam_pass_exits.cmi : core/lam.cmi
-core/lam_pass_lets_dce.cmx : core/lam_util.cmx \
-    core/lam_pass_eliminate_ref.cmx core/lam_pass_count.cmx \
-    core/lam_beta_reduce.cmx core/lam_analysis.cmx core/lam.cmx \
-    ext/ident_hashtbl.cmx common/ext_log.cmx ext/ext_list.cmx \
-    core/lam_pass_lets_dce.cmi
-core/lam_pass_lets_dce.cmi : core/lam.cmi
-core/lam_pass_remove_alias.cmx : core/lam_util.cmx core/lam_stats.cmx \
-    core/lam_inline_util.cmx core/lam_compile_env.cmx core/lam_closure.cmx \
-    core/lam_beta_reduce.cmx core/lam_analysis.cmx core/lam.cmx \
-    ext/ident_set.cmx ext/ident_hashtbl.cmx ext/ext_list.cmx \
-    core/lam_pass_remove_alias.cmi
-core/lam_pass_remove_alias.cmi : core/lam_stats.cmi core/lam.cmi
-core/lam_print.cmx : core/lam.cmx ext/ext_list.cmx core/lam_print.cmi
-core/lam_print.cmi : core/lam.cmi
-core/lam_stats.cmx : core/lam_id_kind.cmx ext/ident_set.cmx \
-    ext/ident_hashtbl.cmx core/lam_stats.cmi
-core/lam_stats.cmi : core/lam_id_kind.cmi ext/ident_set.cmi \
-    ext/ident_hashtbl.cmi
-core/lam_stats_export.cmx : ext/string_map.cmx core/lam_stats.cmx \
-    core/lam_module_ident.cmx core/lam_inline_util.cmx core/lam_id_kind.cmx \
-    core/lam_compile_env.cmx core/lam_closure.cmx core/lam_arity_analysis.cmx \
-    core/lam_arity.cmx core/lam_analysis.cmx core/lam.cmx \
-    core/js_packages_state.cmx core/js_cmj_format.cmx ext/ident_set.cmx \
-    ext/ident_map.cmx ext/ident_hashtbl.cmx ext/ext_option.cmx \
-    common/ext_log.cmx ext/ext_list.cmx ext/ext_array.cmx \
-    core/lam_stats_export.cmi
-core/lam_stats_export.cmi : core/lam_stats.cmi core/lam_module_ident.cmi \
-    core/lam.cmi core/js_cmj_format.cmi ext/ident_map.cmi
-core/lam_subst.cmx : core/lam.cmx ext/ident_map.cmx ext/ext_list.cmx \
-    core/lam_subst.cmi
-core/lam_subst.cmi : core/lam.cmi ext/ident_map.cmi
-core/lam_tag_info.cmx :
-core/lam_util.cmx : core/lam_stats.cmx core/lam_print.cmx \
-    core/lam_id_kind.cmx core/lam_analysis.cmx core/lam.cmx \
-    common/js_config.cmx ext/ident_set.cmx ext/ident_hashtbl.cmx \
-    ext/ext_path.cmx common/ext_log.cmx ext/ext_list.cmx ext/ext_array.cmx \
-    core/lam_util.cmi
-core/lam_util.cmi : core/lam_stats.cmi core/lam_id_kind.cmi core/lam.cmi \
-    core/j.cmx
+core/js_implementation.cmx : core/ocaml_parse.cmx ext/literals.cmx \
+    core/lam_compile_main.cmx core/lam_compile_env.cmx common/js_config.cmx \
+    ext/ext_string.cmx ext/ext_pervasives.cmx ext/ext_namespace.cmx \
+    common/ext_log.cmx ext/ext_io.cmx depends/binary_ast.cmx \
+    core/js_implementation.cmi
 core/ocaml_batch_compile.cmx : core/ocaml_parse.cmx \
     core/js_implementation.cmx common/js_config.cmx ext/ext_ref.cmx \
     ext/ext_pervasives.cmx ext/ext_namespace.cmx ext/ext_modulename.cmx \
     ext/ext_list.cmx ext/ext_format.cmx depends/bs_exception.cmx \
     depends/ast_extract.cmx core/ocaml_batch_compile.cmi
-core/ocaml_batch_compile.cmi :
-core/ocaml_options.cmx : common/bs_version.cmx \
-    core/bs_conditional_initial.cmx core/ocaml_options.cmi
-core/ocaml_options.cmi :
-core/ocaml_parse.cmx : syntax/ppx_entry.cmx common/js_config.cmx \
-    ext/ext_path.cmx core/ocaml_parse.cmi
-core/ocaml_parse.cmi :
-core/ocaml_types.cmx : common/ext_log.cmx ext/ext_list.cmx \
-    core/ocaml_types.cmi
-core/ocaml_types.cmi :
-depends/ast_extract.cmx : ext/string_map.cmx ext/string_hashtbl.cmx \
-    common/ml_binary.cmx common/js_config.cmx ext/ext_string.cmx \
-    ext/ext_path.cmx ext/ext_modulename.cmx ext/ext_list.cmx \
-    ext/ext_format.cmx depends/bs_exception.cmx depends/ast_extract.cmi
-depends/ast_extract.cmi : ext/string_map.cmi ext/string_hashtbl.cmi \
-    common/ml_binary.cmi
-depends/binary_ast.cmx : common/ml_binary.cmx depends/ast_extract.cmx \
-    depends/binary_ast.cmi
-depends/binary_ast.cmi : common/ml_binary.cmi
-depends/bs_exception.cmx : depends/bs_exception.cmi
-depends/bs_exception.cmi :
-ext/ext_array.cmx : ext/ext_array.cmi
-ext/ext_array.cmi :
-ext/ext_bytes.cmx : ext/ext_bytes.cmi
-ext/ext_bytes.cmi :
-ext/ext_char.cmx : ext/ext_char.cmi
-ext/ext_char.cmi :
-ext/ext_cmp.cmx : ext/ext_cmp.cmi
-ext/ext_cmp.cmi :
-ext/ext_color.cmx : ext/ext_list.cmx ext/ext_color.cmi
-ext/ext_color.cmi :
-ext/ext_file_pp.cmx : ext/string_vec.cmx ext/ext_file_pp.cmi
-ext/ext_file_pp.cmi : ext/string_vec.cmi
-ext/ext_filename.cmx : ext/literals.cmx ext/ext_string.cmx \
-    ext/ext_pervasives.cmx ext/ext_path.cmx ext/ext_filename.cmi
-ext/ext_filename.cmi :
-ext/ext_format.cmx : ext/ext_format.cmi
-ext/ext_format.cmi :
-ext/ext_ident.cmx : ext/string_hashtbl.cmx ext/string_hash_set.cmx \
-    ext/literals.cmx ext/ext_string.cmx ext/ext_list.cmx ext/ext_ident.cmi
-ext/ext_ident.cmi :
-ext/ext_int.cmx : ext/ext_int.cmi
-ext/ext_int.cmi :
-ext/ext_io.cmx : ext/ext_pervasives.cmx ext/ext_io.cmi
-ext/ext_io.cmi :
-ext/ext_js_regex.cmx : ext/ext_utf8.cmx ext/ext_js_regex.cmi
-ext/ext_js_regex.cmi :
-ext/ext_json.cmx : ext/string_map.cmx ext/ext_json_types.cmx \
-    ext/ext_array.cmx ext/ext_json.cmi
-ext/ext_json.cmi : ext/string_map.cmi ext/ext_position.cmi \
-    ext/ext_json_types.cmx
-ext/ext_json_noloc.cmx : ext/string_map.cmx ext/ext_array.cmx \
-    ext/ext_json_noloc.cmi
-ext/ext_json_noloc.cmi : ext/string_map.cmi
-ext/ext_json_parse.cmx : ext/string_map.cmx ext/ext_position.cmx \
-    ext/ext_json_types.cmx ext/ext_array.cmx ext/ext_json_parse.cmi
-ext/ext_json_parse.cmi : ext/ext_json_types.cmx
-ext/ext_json_types.cmx : ext/string_map.cmx
-ext/ext_json_write.cmx : ext/string_map.cmx ext/ext_json_types.cmx \
-    ext/ext_json_write.cmi
-ext/ext_json_write.cmi :
-ext/ext_list.cmx : ext/ext_string.cmx ext/ext_list.cmi
-ext/ext_list.cmi :
-ext/ext_marshal.cmx : ext/ext_marshal.cmi
-ext/ext_marshal.cmi :
-ext/ext_modulename.cmx : ext/ext_string.cmx ext/ext_path.cmx \
-    ext/ext_char.cmx ext/ext_modulename.cmi
-ext/ext_modulename.cmi :
-ext/ext_namespace.cmx : ext/ext_string.cmx ext/ext_char.cmx \
-    ext/ext_namespace.cmi
-ext/ext_namespace.cmi :
-ext/ext_option.cmx : ext/ext_option.cmi
-ext/ext_option.cmi :
-ext/ext_path.cmx : ext/literals.cmx ext/ext_string.cmx \
-    ext/ext_pervasives.cmx ext/ext_list.cmx ext/ext_path.cmi
-ext/ext_path.cmi :
-ext/ext_pervasives.cmx : ext/ext_list.cmx ext/ext_pervasives.cmi
-ext/ext_pervasives.cmi :
-ext/ext_position.cmx : ext/ext_position.cmi
-ext/ext_position.cmi :
-ext/ext_pp.cmx : ext/ext_pervasives.cmx ext/ext_pp.cmi
-ext/ext_pp.cmi :
-ext/ext_pp_scope.cmx : ext/string_map.cmx ext/int_map.cmx ext/ident_set.cmx \
-    ext/ext_pp.cmx ext/ext_ident.cmx ext/ext_pp_scope.cmi
-ext/ext_pp_scope.cmi : ext/ident_set.cmi ext/ext_pp.cmi
-ext/ext_ref.cmx : ext/ext_list.cmx ext/ext_ref.cmi
-ext/ext_ref.cmi :
-ext/ext_scc.cmx : ext/int_vec_vec.cmx ext/int_vec.cmx ext/ext_scc.cmi
-ext/ext_scc.cmi : ext/int_vec_vec.cmi ext/int_vec.cmi
-ext/ext_stack.cmx : ext/ext_stack.cmi
-ext/ext_stack.cmi :
-ext/ext_string.cmx : ext/ext_bytes.cmx ext/ext_string.cmi
-ext/ext_string.cmi :
-ext/ext_sys.cmx : ext/ext_sys.cmi
-ext/ext_sys.cmi :
-ext/ext_topsort.cmx : ext/set_int.cmx ext/resize_array.cmx ext/int_vec.cmx \
-    ext/ext_topsort.cmi
-ext/ext_topsort.cmi : ext/vec_gen.cmx ext/set_int.cmi ext/int_vec.cmi
-ext/ext_utf8.cmx : ext/ext_utf8.cmi
-ext/ext_utf8.cmi :
-ext/ext_util.cmx : ext/ext_util.cmi
-ext/ext_util.cmi :
-ext/hash_set.cmx : ext/hash_set_gen.cmx ext/hash_set.cmi
-ext/hash_set.cmi : ext/hash_set_gen.cmx
-ext/hash_set_gen.cmx : ext/ext_util.cmx
-ext/hash_set_ident_mask.cmx : ext/ext_util.cmx ext/ext_ident.cmx \
-    stubs/bs_hash_stubs.cmx ext/hash_set_ident_mask.cmi
-ext/hash_set_ident_mask.cmi :
-ext/hash_set_poly.cmx : ext/hash_set_gen.cmx ext/hash_set_poly.cmi
-ext/hash_set_poly.cmi :
-ext/hashtbl_gen.cmx : ext/ext_util.cmx
-ext/hashtbl_make.cmx : ext/hashtbl_gen.cmx ext/hashtbl_make.cmi
-ext/hashtbl_make.cmi : ext/hashtbl_gen.cmx
-ext/ident_hash_set.cmx : ext/hash_set_gen.cmx ext/ext_ident.cmx \
-    stubs/bs_hash_stubs.cmx ext/ident_hash_set.cmi
-ext/ident_hash_set.cmi : ext/hash_set_gen.cmx
-ext/ident_hashtbl.cmx : ext/hashtbl_gen.cmx ext/ext_ident.cmx \
-    stubs/bs_hash_stubs.cmx ext/ident_hashtbl.cmi
-ext/ident_hashtbl.cmi : ext/hashtbl_gen.cmx
-ext/ident_map.cmx : ext/map_gen.cmx ext/ext_ident.cmx ext/ident_map.cmi
-ext/ident_map.cmi : ext/map_gen.cmx
-ext/ident_set.cmx : ext/set_gen.cmx ext/ident_set.cmi
-ext/ident_set.cmi : ext/set_gen.cmx
-ext/int_hash_set.cmx : ext/hash_set_gen.cmx ext/ext_int.cmx \
-    stubs/bs_hash_stubs.cmx ext/int_hash_set.cmi
-ext/int_hash_set.cmi : ext/hash_set_gen.cmx
-ext/int_hashtbl.cmx : ext/hashtbl_gen.cmx ext/ext_int.cmx \
-    stubs/bs_hash_stubs.cmx ext/int_hashtbl.cmi
-ext/int_hashtbl.cmi : ext/hashtbl_gen.cmx
-ext/int_map.cmx : ext/map_gen.cmx ext/ext_int.cmx ext/int_map.cmi
-ext/int_map.cmi : ext/map_gen.cmx
-ext/int_vec.cmx : ext/ext_array.cmx stubs/bs_hash_stubs.cmx ext/int_vec.cmi
-ext/int_vec.cmi : ext/vec_gen.cmx
-ext/int_vec_util.cmx : ext/int_vec.cmx ext/int_vec_util.cmi
-ext/int_vec_util.cmi : ext/int_vec.cmi
-ext/int_vec_vec.cmx : ext/resize_array.cmx ext/int_vec.cmx \
-    ext/int_vec_vec.cmi
-ext/int_vec_vec.cmi : ext/vec_gen.cmx ext/int_vec.cmi
-ext/literals.cmx : ext/literals.cmi
-ext/literals.cmi :
-ext/map_gen.cmx :
-ext/ordered_hash_map_gen.cmx : ext/ext_util.cmx
-ext/ordered_hash_map_local_ident.cmx : ext/ordered_hash_map_gen.cmx \
-    ext/ext_ident.cmx stubs/bs_hash_stubs.cmx \
-    ext/ordered_hash_map_local_ident.cmi
-ext/ordered_hash_map_local_ident.cmi : ext/ordered_hash_map_gen.cmx
-ext/ordered_hash_set_gen.cmx : ext/ext_util.cmx
-ext/ordered_hash_set_ident.cmx : ext/ordered_hash_set_gen.cmx \
-    ext/ext_util.cmx ext/ext_ident.cmx stubs/bs_hash_stubs.cmx \
-    ext/ordered_hash_set_ident.cmi
-ext/ordered_hash_set_ident.cmi : ext/ordered_hash_set_gen.cmx
-ext/ordered_hash_set_make.cmx : ext/ordered_hash_set_gen.cmx \
-    ext/ext_util.cmx
-ext/ordered_hash_set_string.cmx : ext/ordered_hash_set_gen.cmx \
-    ext/ext_util.cmx ext/ext_string.cmx stubs/bs_hash_stubs.cmx \
-    ext/ordered_hash_set_string.cmi
-ext/ordered_hash_set_string.cmi : ext/ordered_hash_set_gen.cmx
-ext/resize_array.cmx : ext/vec_gen.cmx ext/ext_array.cmx \
-    ext/resize_array.cmi
-ext/resize_array.cmi : ext/vec_gen.cmx
-ext/set_gen.cmx :
-ext/set_int.cmx : ext/set_gen.cmx ext/ext_int.cmx ext/set_int.cmi
-ext/set_int.cmi : ext/set_gen.cmx
-ext/string_hash_set.cmx : ext/hash_set_gen.cmx ext/ext_string.cmx \
-    stubs/bs_hash_stubs.cmx ext/string_hash_set.cmi
-ext/string_hash_set.cmi : ext/hash_set_gen.cmx
-ext/string_hashtbl.cmx : ext/hashtbl_gen.cmx ext/ext_string.cmx \
-    stubs/bs_hash_stubs.cmx ext/string_hashtbl.cmi
-ext/string_hashtbl.cmi : ext/hashtbl_gen.cmx
-ext/string_map.cmx : ext/map_gen.cmx ext/ext_string.cmx ext/string_map.cmi
-ext/string_map.cmi : ext/map_gen.cmx
-ext/string_set.cmx : ext/set_gen.cmx ext/ext_string.cmx ext/string_set.cmi
-ext/string_set.cmi :
-ext/string_vec.cmx : ext/resize_array.cmx ext/string_vec.cmi
-ext/string_vec.cmi : ext/vec_gen.cmx
-ext/union_find.cmx : ext/union_find.cmi
-ext/union_find.cmi :
-ext/vec_gen.cmx :
-jscmj_main.cmx : ext/literals.cmx core/js_cmj_format.cmx ext/ext_string.cmx \
-    ext/ext_pp.cmx ext/ext_pervasives.cmx ext/ext_list.cmx ext/ext_array.cmx \
-    jscmj_main.cmi
-jscmj_main.cmi :
-jsgen_main.cmx : ext/ext_path.cmx ext/ext_array.cmx
+core/bspack_main.cmi :
+core/jsoo_main.cmi :
+core/bspp_main.cmi :
+core/js_cmi_datasets.cmi : ext/string_map.cmi
+core/js_main.cmi :
+core/bsppx_main.cmx : syntax/ppx_entry.cmx
+core/bspack_main.cmx : ext/string_hashtbl.cmx ext/ext_string.cmx \
+    ext/ext_pervasives.cmx ext/ext_path.cmx ext/ext_list.cmx ext/ext_io.cmx \
+    depends/ast_extract.cmx core/bspack_main.cmi
+core/jsoo_main.cmx : super_errors/super_main.cmx ext/string_map.cmx \
+    syntax/ppx_entry.cmx outcome_printer/outcome_printer_ns.cmx \
+    core/lam_compile_main.cmx core/lam_compile_env.cmx \
+    core/js_dump_program.cmx core/js_cmj_format.cmx core/js_cmj_datasets.cmx \
+    ext/ext_pp.cmx bsb/bsb_warning.cmx common/bs_version.cmx \
+    core/bs_conditional_initial.cmx core/jsoo_main.cmi
+core/bspp_main.cmx : core/bspp_main.cmi
+core/js_cmi_datasets.cmx : ext/string_map.cmx core/js_cmi_datasets.cmi
+core/js_main.cmx : super_errors/super_main.cmx \
+    outcome_printer/reason_outcome_printer_main.cmx \
+    outcome_printer/outcome_printer_ns.cmx core/ocaml_parse.cmx \
+    core/ocaml_options.cmx core/ocaml_batch_compile.cmx \
+    core/js_packages_state.cmx core/js_implementation.cmx \
+    common/js_config.cmx ext/ext_string.cmx core/bs_conditional_initial.cmx \
+    core/js_main.cmi
+core/cmjdump_main.cmx : ext/string_map.cmx core/lam_arity.cmx \
+    core/js_packages_info.cmx core/js_cmj_format.cmx
+core/astdump_main.cmx : common/ml_binary.cmx ext/ext_path.cmx \
+    bsb/bsb_helper_depfile_gen.cmx
+ounit/oUnit.cmi :
+ounit/oUnitDiff.cmi :
 ounit/oUnit.cmx : ounit/oUnitUtils.cmx ounit/oUnitTypes.cmx \
     ounit/oUnitLogger.cmx ounit/oUnitChooser.cmx ounit/oUnit.cmi
-ounit/oUnit.cmi :
-ounit/oUnitChooser.cmx : ounit/oUnitTypes.cmx
 ounit/oUnitDiff.cmx : ounit/oUnit.cmx ounit/oUnitDiff.cmi
-ounit/oUnitDiff.cmi :
 ounit/oUnitLogger.cmx : ounit/oUnitUtils.cmx ounit/oUnitTypes.cmx
 ounit/oUnitTypes.cmx :
 ounit/oUnitUtils.cmx : ounit/oUnitTypes.cmx
+ounit/oUnitChooser.cmx : ounit/oUnitTypes.cmx
+super_errors/super_reason_react.cmx : super_errors/super_reason_react.cmi
+super_errors/super_misc.cmx : super_errors/super_misc.cmi
+super_errors/super_warnings.cmx :
+super_errors/super_location.cmx : super_errors/super_warnings.cmx \
+    super_errors/super_misc.cmx
+super_errors/super_env.cmx : super_errors/super_location.cmx
+super_errors/super_pparse.cmx : super_errors/super_location.cmx \
+    ext/ext_string.cmx
+super_errors/super_typecore.cmx : super_errors/super_reason_react.cmx \
+    super_errors/super_location.cmx
+super_errors/super_typemod.cmx : super_errors/super_reason_react.cmx \
+    super_errors/super_location.cmx
+super_errors/super_typetexp.cmx : super_errors/super_location.cmx
+super_errors/super_main.cmx : super_errors/super_typetexp.cmx \
+    super_errors/super_typemod.cmx super_errors/super_typecore.cmx \
+    super_errors/super_pparse.cmx super_errors/super_location.cmx \
+    super_errors/super_env.cmx
+super_errors/super_reason_react.cmi :
+super_errors/super_misc.cmi :
+outcome_printer/reason_syntax_util.cmx : \
+    outcome_printer/reason_syntax_util.cmi
+outcome_printer/outcome_printer_ns.cmx : ext/ext_namespace.cmx \
+    outcome_printer/outcome_printer_ns.cmi
+outcome_printer/tweaked_reason_oprint.cmx : \
+    outcome_printer/reason_syntax_util.cmx
+outcome_printer/reason_outcome_printer_main.cmx : \
+    outcome_printer/tweaked_reason_oprint.cmx
+outcome_printer/reason_syntax_util.cmi :
+outcome_printer/outcome_printer_ns.cmi :
+ounit_tests/ounit_cmd_util.cmi :
+ounit_tests/ounit_tests_main.cmi :
+ounit_tests/ounit_tests_util.cmx :
 ounit_tests/ounit_array_tests.cmx : ounit/oUnit.cmx ext/ext_string.cmx \
     ext/ext_array.cmx
+ounit_tests/ounit_list_test.cmx : ounit/oUnit.cmx ext/ext_list.cmx
 ounit_tests/ounit_bal_tree_tests.cmx : ext/set_int.cmx ext/set_gen.cmx \
     ounit_tests/ounit_tests_util.cmx ounit/oUnit.cmx
-ounit_tests/ounit_bsb_regex_tests.cmx : ounit/oUnit.cmx bsb/bsb_regex.cmx
-ounit_tests/ounit_cmd_tests.cmx : ounit_tests/ounit_cmd_util.cmx \
-    ounit/oUnit.cmx ext/ext_string.cmx
-ounit_tests/ounit_cmd_util.cmx : ext/literals.cmx \
-    ounit_tests/ounit_cmd_util.cmi
-ounit_tests/ounit_cmd_util.cmi :
-ounit_tests/ounit_data_random.cmx :
-ounit_tests/ounit_ffi_error_debug_test.cmx : ounit_tests/ounit_cmd_util.cmx \
-    ounit/oUnit.cmx ext/ext_string.cmx
-ounit_tests/ounit_hash_set_tests.cmx : ext/string_hash_set.cmx \
-    ext/ordered_hash_set_string.cmx ounit/oUnit.cmx ext/hash_set_poly.cmx \
-    ext/hash_set.cmx
+ounit_tests/ounit_path_tests.cmx : ounit/oUnit.cmx ext/ext_string.cmx \
+    ext/ext_path.cmx
+ounit_tests/ounit_union_find_tests.cmx : ext/union_find.cmx ounit/oUnit.cmx \
+    ext/int_vec_vec.cmx ext/int_vec.cmx ext/ext_string.cmx
 ounit_tests/ounit_hash_stubs_test.cmx : ounit_tests/ounit_tests_util.cmx \
     ounit/oUnit.cmx ext/int_hash_set.cmx ext/hash_set_poly.cmx \
     stubs/bs_hash_stubs.cmx
+ounit_tests/ounit_hash_set_tests.cmx : ext/string_hash_set.cmx \
+    ext/ordered_hash_set_string.cmx ounit/oUnit.cmx ext/hash_set_poly.cmx \
+    ext/hash_set.cmx
+ounit_tests/ounit_scc_tests.cmx : ext/string_hashtbl.cmx ounit/oUnit.cmx \
+    ext/int_vec_vec.cmx ext/int_vec.cmx ext/ext_string.cmx ext/ext_scc.cmx
 ounit_tests/ounit_hashtbl_tests.cmx : ext/string_hashtbl.cmx ounit/oUnit.cmx
-ounit_tests/ounit_ident_mask_tests.cmx : ounit/oUnit.cmx \
-    ext/hash_set_ident_mask.cmx
-ounit_tests/ounit_int_vec_tests.cmx : ounit/oUnit.cmx ext/int_vec_util.cmx \
-    ext/int_vec.cmx
-ounit_tests/ounit_js_regex_checker_tests.cmx : ounit/oUnit.cmx \
-    ext/ext_js_regex.cmx
 ounit_tests/ounit_json_tests.cmx : ext/string_map.cmx ounit/oUnit.cmx \
     ext/ext_pervasives.cmx ext/ext_json_types.cmx ext/ext_json_parse.cmx \
     ext/ext_json_noloc.cmx ext/ext_json.cmx
-ounit_tests/ounit_list_test.cmx : ounit/oUnit.cmx ext/ext_list.cmx
 ounit_tests/ounit_map_tests.cmx : ounit/oUnit.cmx ext/int_map.cmx
 ounit_tests/ounit_ordered_hash_set_tests.cmx : \
     ext/ordered_hash_set_string.cmx ounit/oUnit.cmx ext/ext_util.cmx \
     ext/ext_string.cmx
-ounit_tests/ounit_path_tests.cmx : ounit/oUnit.cmx ext/ext_string.cmx \
-    ext/ext_path.cmx
-ounit_tests/ounit_scc_tests.cmx : ext/string_hashtbl.cmx ounit/oUnit.cmx \
-    ext/int_vec_vec.cmx ext/int_vec.cmx ext/ext_string.cmx ext/ext_scc.cmx
-ounit_tests/ounit_sexp_tests.cmx :
+ounit_tests/ounit_vec_test.cmx : ext/set_int.cmx ounit/oUnit.cmx \
+    ext/int_vec.cmx ext/ext_list.cmx ext/ext_json.cmx
+ounit_tests/ounit_data_random.cmx :
 ounit_tests/ounit_string_tests.cmx : ounit_tests/ounit_data_random.cmx \
     ounit/oUnit.cmx ext/ext_string.cmx ext/ext_path.cmx ext/ext_namespace.cmx \
     ext/ext_modulename.cmx
+ounit_tests/ounit_utf8_test.cmx : ounit/oUnit.cmx ext/ext_utf8.cmx
+ounit_tests/ounit_js_regex_checker_tests.cmx : ounit/oUnit.cmx \
+    ext/ext_js_regex.cmx
+ounit_tests/ounit_topsort_tests.cmx : ext/set_int.cmx ounit/oUnit.cmx \
+    ext/int_vec.cmx ext/ext_topsort.cmx
+ounit_tests/ounit_sexp_tests.cmx :
+ounit_tests/ounit_int_vec_tests.cmx : ounit/oUnit.cmx ext/int_vec_util.cmx \
+    ext/int_vec.cmx
+ounit_tests/ounit_ident_mask_tests.cmx : ounit/oUnit.cmx \
+    ext/hash_set_ident_mask.cmx
+ounit_tests/ounit_cmd_util.cmx : ext/literals.cmx \
+    ounit_tests/ounit_cmd_util.cmi
+ounit_tests/ounit_cmd_tests.cmx : ounit_tests/ounit_cmd_util.cmx \
+    ounit/oUnit.cmx ext/ext_string.cmx
+ounit_tests/ounit_ffi_error_debug_test.cmx : ounit_tests/ounit_cmd_util.cmx \
+    ounit/oUnit.cmx ext/ext_string.cmx
+ounit_tests/ounit_unicode_tests.cmx : ounit/oUnit.cmx ext/ext_string.cmx \
+    ext/ext_list.cmx syntax/ast_utf8_string_interp.cmx \
+    syntax/ast_utf8_string.cmx
+ounit_tests/ounit_bsb_regex_tests.cmx : ounit/oUnit.cmx bsb/bsb_regex.cmx
 ounit_tests/ounit_tests_main.cmx : ext/resize_array.cmx \
     ounit_tests/ounit_vec_test.cmx ounit_tests/ounit_utf8_test.cmx \
     ounit_tests/ounit_union_find_tests.cmx \
@@ -852,189 +872,172 @@ ounit_tests/ounit_tests_main.cmx : ext/resize_array.cmx \
     ounit_tests/ounit_cmd_tests.cmx ounit_tests/ounit_bsb_regex_tests.cmx \
     ounit_tests/ounit_bal_tree_tests.cmx ounit_tests/ounit_array_tests.cmx \
     ounit/oUnit.cmx ounit_tests/ounit_tests_main.cmi
-ounit_tests/ounit_tests_main.cmi :
-ounit_tests/ounit_tests_util.cmx :
-ounit_tests/ounit_topsort_tests.cmx : ext/set_int.cmx ounit/oUnit.cmx \
-    ext/int_vec.cmx ext/ext_topsort.cmx
-ounit_tests/ounit_unicode_tests.cmx : ounit/oUnit.cmx ext/ext_string.cmx \
-    ext/ext_list.cmx syntax/ast_utf8_string_interp.cmx \
-    syntax/ast_utf8_string.cmx
-ounit_tests/ounit_union_find_tests.cmx : ext/union_find.cmx ounit/oUnit.cmx \
-    ext/int_vec_vec.cmx ext/int_vec.cmx ext/ext_string.cmx
-ounit_tests/ounit_utf8_test.cmx : ounit/oUnit.cmx ext/ext_utf8.cmx
-ounit_tests/ounit_vec_test.cmx : ext/set_int.cmx ounit/oUnit.cmx \
-    ext/int_vec.cmx ext/ext_list.cmx ext/ext_json.cmx
-outcome_printer/outcome_printer_ns.cmx : ext/ext_namespace.cmx \
-    outcome_printer/outcome_printer_ns.cmi
-outcome_printer/outcome_printer_ns.cmi :
-outcome_printer/reason_outcome_printer_main.cmx : \
-    outcome_printer/tweaked_reason_oprint.cmx
-outcome_printer/reason_syntax_util.cmx : \
-    outcome_printer/reason_syntax_util.cmi
-outcome_printer/reason_syntax_util.cmi :
-outcome_printer/tweaked_reason_oprint.cmx : \
-    outcome_printer/reason_syntax_util.cmx
+bsb/bsb_build_schemas.cmx :
+bsb/bsb_build_util.cmx : ext/string_map.cmx ext/string_hashtbl.cmx \
+    ext/literals.cmx ext/ext_sys.cmx ext/ext_string.cmx ext/ext_path.cmx \
+    ext/ext_list.cmx ext/ext_json_types.cmx ext/ext_json_parse.cmx \
+    ext/ext_json.cmx ext/ext_array.cmx bsb/bsb_pkg.cmx bsb/bsb_log.cmx \
+    bsb/bsb_exception.cmx bsb/bsb_build_schemas.cmx bsb/bsb_build_util.cmi
+bsb/bsb_clean.cmx : ext/ext_path.cmx bsb/bsb_unix.cmx \
+    bsb/bsb_parse_sources.cmx bsb/bsb_log.cmx bsb/bsb_config.cmx \
+    bsb/bsb_build_util.cmx bsb/bsb_clean.cmi
+bsb/bsb_config.cmx : ext/ext_path.cmx bsb/bsb_config.cmi
+bsb/bsb_config_parse.cmx : ext/string_map.cmx ext/string_hash_set.cmx \
+    ext/literals.cmx ext/ext_path.cmx ext/ext_namespace.cmx ext/ext_list.cmx \
+    ext/ext_json_types.cmx ext/ext_json_parse.cmx ext/ext_json.cmx \
+    ext/ext_file_pp.cmx ext/ext_array.cmx bsb/bsb_watcher_gen.cmx \
+    bsb/bsb_warning.cmx bsb/bsb_pkg.cmx bsb/bsb_parse_sources.cmx \
+    bsb/bsb_package_specs.cmx bsb/bsb_exception.cmx bsb/bsb_default.cmx \
+    bsb/bsb_config_types.cmx bsb/bsb_config.cmx bsb/bsb_build_util.cmx \
+    bsb/bsb_build_schemas.cmx common/bs_version.cmx bsb/bsb_config_parse.cmi
+bsb/bsb_config_types.cmx : ext/string_map.cmx ext/string_hash_set.cmx \
+    bsb/bsb_warning.cmx bsb/bsb_package_specs.cmx bsb/bsb_file_groups.cmx
+bsb/bsb_db.cmx : ext/string_map.cmx ext/ext_string.cmx \
+    ext/ext_pervasives.cmx ext/ext_path.cmx ext/ext_modulename.cmx \
+    bsb/bsb_exception.cmx bsb/bsb_db.cmi
+bsb/bsb_default.cmx : bsb/bsb_config_types.cmx bsb/bsb_default.cmi
+bsb/bsb_dir_index.cmx : bsb/bsb_dir_index.cmi
+bsb/bsb_exception.cmx : ext/ext_string.cmx ext/ext_position.cmx \
+    ext/ext_json.cmx common/bs_version.cmx bsb/bsb_exception.cmi
+bsb/bsb_file.cmx : bsb/bsb_file.cmi
+bsb/bsb_file_groups.cmx : ext/string_set.cmx ext/string_map.cmx \
+    ext/ext_list.cmx ext/ext_file_pp.cmx bsb/bsb_dir_index.cmx bsb/bsb_db.cmx
+bsb/bsb_helper_dep_graph.cmx : ext/string_set.cmx ext/string_map.cmx \
+    ext/string_hashtbl.cmx bsb/bsb_log.cmx bsb/bsb_helper_dep_graph.cmi
+bsb/bsb_helper_depfile_gen.cmx : ext/string_map.cmx ext/literals.cmx \
+    ext/ext_string.cmx ext/ext_pervasives.cmx ext/ext_namespace.cmx \
+    bsb/bsb_dir_index.cmx bsb/bsb_db.cmx bsb/bsb_helper_depfile_gen.cmi
+bsb/bsb_helper_extract.cmx : ext/string_set.cmx ext/ext_string.cmx \
+    bsb/bsb_helper_extract.cmi
+bsb/bsb_helper_linker.cmx : ext/string_map.cmx ext/literals.cmx \
+    ext/ext_path.cmx ext/ext_modulename.cmx bsb/bsb_helper_extract.cmx \
+    bsb/bsb_helper_dep_graph.cmx bsb/bsb_helper_linker.cmi
+bsb/bsb_helper_main.cmx : ext/ext_path.cmx bsb/bsb_helper_depfile_gen.cmx \
+    bsb/bsb_dir_index.cmx bsb/bsb_helper_main.cmi
+bsb/bsb_helper_packer.cmx : ext/string_set.cmx ext/string_map.cmx \
+    ext/literals.cmx ext/ext_path.cmx ext/ext_modulename.cmx \
+    bsb/bsb_helper_extract.cmx bsb/bsb_helper_dep_graph.cmx \
+    bsb/bsb_helper_packer.cmi
+bsb/bsb_log.cmx : ext/ext_string.cmx ext/ext_color.cmx bsb/bsb_log.cmi
+bsb/bsb_main.cmx : ext/ext_sys.cmx ext/ext_string.cmx ext/ext_pervasives.cmx \
+    ext/ext_path.cmx ext/ext_json_parse.cmx ext/ext_array.cmx \
+    bsb/bsb_world.cmx bsb/bsb_theme_init.cmx bsb/bsb_query.cmx \
+    bsb/bsb_ninja_regen.cmx bsb/bsb_log.cmx bsb/bsb_exception.cmx \
+    bsb/bsb_config.cmx bsb/bsb_clean.cmx bsb/bsb_build_util.cmx \
+    common/bs_version.cmx bsb/bsb_main.cmi
+bsb/bsb_merlin_gen.cmx : ext/literals.cmx ext/ext_string.cmx \
+    ext/ext_path.cmx bsb/bsb_warning.cmx bsb/bsb_file_groups.cmx \
+    bsb/bsb_config_types.cmx bsb/bsb_config.cmx bsb/bsb_merlin_gen.cmi
+bsb/bsb_namespace_map_gen.cmx : ext/string_map.cmx ext/literals.cmx \
+    ext/ext_path.cmx bsb/bsb_file_groups.cmx bsb/bsb_namespace_map_gen.cmi
+bsb/bsb_ninja_check.cmx : ext/ext_array.cmx bsb/bsb_log.cmx \
+    common/bs_version.cmx bsb/bsb_ninja_check.cmi
+bsb/bsb_ninja_file_groups.cmx : ext/string_set.cmx ext/string_map.cmx \
+    ext/string_hash_set.cmx ext/literals.cmx ext/ext_string.cmx \
+    ext/ext_pervasives.cmx ext/ext_path.cmx ext/ext_namespace.cmx \
+    ext/ext_list.cmx bsb/bsb_rule.cmx bsb/bsb_package_specs.cmx \
+    bsb/bsb_ninja_util.cmx bsb/bsb_ninja_global_vars.cmx \
+    bsb/bsb_file_groups.cmx bsb/bsb_dir_index.cmx bsb/bsb_db.cmx \
+    bsb/bsb_config.cmx bsb/bsb_build_schemas.cmx \
+    bsb/bsb_ninja_file_groups.cmi
+bsb/bsb_ninja_gen.cmx : ext/string_map.cmx ext/literals.cmx \
+    ext/ext_string.cmx ext/ext_path.cmx ext/ext_list.cmx bsb/bsb_warning.cmx \
+    bsb/bsb_rule.cmx bsb/bsb_ninja_util.cmx bsb/bsb_ninja_global_vars.cmx \
+    bsb/bsb_ninja_file_groups.cmx bsb/bsb_namespace_map_gen.cmx \
+    bsb/bsb_log.cmx bsb/bsb_file_groups.cmx bsb/bsb_exception.cmx \
+    bsb/bsb_dir_index.cmx bsb/bsb_default.cmx bsb/bsb_db.cmx \
+    bsb/bsb_config_types.cmx bsb/bsb_config.cmx bsb/bsb_build_util.cmx \
+    bsb/bsb_build_schemas.cmx bsb/bsb_ninja_gen.cmi
+bsb/bsb_ninja_global_vars.cmx :
+bsb/bsb_ninja_regen.cmx : ext/literals.cmx ext/ext_path.cmx \
+    bsb/bsb_ninja_gen.cmx bsb/bsb_ninja_check.cmx bsb/bsb_merlin_gen.cmx \
+    bsb/bsb_log.cmx bsb/bsb_config_parse.cmx bsb/bsb_config.cmx \
+    bsb/bsb_clean.cmx bsb/bsb_build_util.cmx bsb/bsb_ninja_regen.cmi
+bsb/bsb_ninja_util.cmx : ext/ext_string.cmx bsb/bsb_rule.cmx \
+    bsb/bsb_ninja_util.cmi
+bsb/bsb_package_specs.cmx : ext/string_map.cmx ext/literals.cmx \
+    ext/ext_string.cmx ext/ext_path.cmx ext/ext_namespace.cmx \
+    ext/ext_json_types.cmx ext/ext_json.cmx bsb/bsb_exception.cmx \
+    bsb/bsb_config.cmx bsb/bsb_build_schemas.cmx bsb/bsb_package_specs.cmi
+bsb/bsb_parse_sources.cmx : ext/string_vec.cmx ext/string_set.cmx \
+    ext/string_map.cmx ext/literals.cmx ext/ext_string.cmx \
+    ext/ext_position.cmx ext/ext_path.cmx ext/ext_namespace.cmx \
+    ext/ext_json_types.cmx ext/ext_json_parse.cmx ext/ext_json.cmx \
+    ext/ext_filename.cmx ext/ext_file_pp.cmx ext/ext_array.cmx \
+    bsb/bsb_log.cmx bsb/bsb_file_groups.cmx bsb/bsb_exception.cmx \
+    bsb/bsb_dir_index.cmx bsb/bsb_db.cmx bsb/bsb_config.cmx \
+    bsb/bsb_build_util.cmx bsb/bsb_build_schemas.cmx \
+    bsb/bsb_parse_sources.cmi
+bsb/bsb_pkg.cmx : ext/string_hashtbl.cmx ext/literals.cmx bsb/bsb_log.cmx \
+    bsb/bsb_exception.cmx bsb/bsb_pkg.cmi
+bsb/bsb_query.cmx : ext/string_map.cmx ext/ext_json_noloc.cmx \
+    ext/ext_array.cmx bsb/bsb_ninja_regen.cmx bsb/bsb_file_groups.cmx \
+    bsb/bsb_config_types.cmx bsb/bsb_query.cmi
+bsb/bsb_regex.cmx : bsb/bsb_regex.cmi
+bsb/bsb_rule.cmx : ext/string_set.cmx ext/string_map.cmx ext/ext_sys.cmx \
+    bsb/bsb_rule.cmi
+bsb/bsb_templates.cmx : bsb/oCamlRes.cmx bsb/bsb_templates.cmi
+bsb/bsb_theme_init.cmx : ext/string_map.cmx ext/string_hashtbl.cmx \
+    bsb/oCamlRes.cmx ext/literals.cmx ext/ext_sys.cmx ext/ext_namespace.cmx \
+    ext/ext_json_parse.cmx ext/ext_io.cmx bsb/bsb_templates.cmx \
+    bsb/bsb_regex.cmx bsb/bsb_build_util.cmx bsb/bsb_build_schemas.cmx \
+    common/bs_version.cmx bsb/bsb_theme_init.cmi
+bsb/bsb_unix.cmx : ext/ext_sys.cmx ext/ext_string.cmx bsb/bsb_log.cmx \
+    bsb/bsb_unix.cmi
+bsb/bsb_warning.cmx : ext/string_map.cmx ext/ext_string.cmx \
+    ext/ext_json_types.cmx bsb/bsb_exception.cmx bsb/bsb_build_schemas.cmx \
+    bsb/bsb_warning.cmi
+bsb/bsb_watcher_gen.cmx : ext/ext_path.cmx ext/ext_list.cmx \
+    ext/ext_json_noloc.cmx ext/ext_array.cmx bsb/bsb_file_groups.cmx \
+    bsb/bsb_config.cmx bsb/bsb_watcher_gen.cmi
+bsb/bsb_world.cmx : ext/string_hash_set.cmx ext/literals.cmx \
+    ext/ext_path.cmx ext/ext_namespace.cmx bsb/bsb_unix.cmx \
+    bsb/bsb_ninja_regen.cmx bsb/bsb_log.cmx bsb/bsb_file.cmx \
+    bsb/bsb_config_types.cmx bsb/bsb_config_parse.cmx bsb/bsb_config.cmx \
+    bsb/bsb_build_util.cmx bsb/bsb_world.cmi
+bsb/oCamlRes.cmx :
+bsb/bsb_build_util.cmi : ext/ext_json_types.cmx
+bsb/bsb_clean.cmi :
+bsb/bsb_config.cmi :
+bsb/bsb_config_parse.cmi : bsb/bsb_package_specs.cmi \
+    bsb/bsb_config_types.cmx
+bsb/bsb_db.cmi : ext/string_map.cmi
+bsb/bsb_default.cmi : bsb/bsb_config_types.cmx
+bsb/bsb_dir_index.cmi :
+bsb/bsb_exception.cmi : ext/ext_position.cmi ext/ext_json_types.cmx
+bsb/bsb_file.cmi :
+bsb/bsb_helper_dep_graph.cmi : ext/string_set.cmi ext/string_map.cmi \
+    ext/string_hashtbl.cmi
+bsb/bsb_helper_depfile_gen.cmi : bsb/bsb_dir_index.cmi
+bsb/bsb_helper_extract.cmi : ext/string_set.cmi
+bsb/bsb_helper_linker.cmi :
+bsb/bsb_helper_main.cmi :
+bsb/bsb_helper_packer.cmi :
+bsb/bsb_log.cmi :
+bsb/bsb_main.cmi :
+bsb/bsb_merlin_gen.cmi : bsb/bsb_config_types.cmx
+bsb/bsb_namespace_map_gen.cmi : bsb/bsb_file_groups.cmx
+bsb/bsb_ninja_check.cmi :
+bsb/bsb_ninja_file_groups.cmi : ext/string_map.cmi ext/string_hash_set.cmi \
+    bsb/bsb_rule.cmi bsb/bsb_package_specs.cmi bsb/bsb_file_groups.cmx
+bsb/bsb_ninja_gen.cmi : bsb/bsb_config_types.cmx
+bsb/bsb_ninja_regen.cmi : bsb/bsb_package_specs.cmi bsb/bsb_config_types.cmx
+bsb/bsb_ninja_util.cmi : bsb/bsb_rule.cmi
+bsb/bsb_package_specs.cmi : ext/ext_json_types.cmx
+bsb/bsb_parse_sources.cmi : ext/ext_json_types.cmx bsb/bsb_file_groups.cmx
+bsb/bsb_pkg.cmi :
+bsb/bsb_query.cmi :
+bsb/bsb_regex.cmi :
+bsb/bsb_rule.cmi : ext/string_map.cmi
+bsb/bsb_templates.cmi : bsb/oCamlRes.cmx
+bsb/bsb_theme_init.cmi :
+bsb/bsb_unix.cmi :
+bsb/bsb_warning.cmi : ext/string_map.cmi ext/ext_json_types.cmx
+bsb/bsb_watcher_gen.cmi : bsb/bsb_file_groups.cmx
+bsb/bsb_world.cmi : bsb/bsb_config_types.cmx
+jscmj_main.cmx : ext/literals.cmx core/js_cmj_format.cmx ext/ext_string.cmx \
+    ext/ext_pp.cmx ext/ext_pervasives.cmx ext/ext_list.cmx ext/ext_array.cmx \
+    jscmj_main.cmi
+jsgen_main.cmx : ext/ext_path.cmx ext/ext_array.cmx
 rollup_test.cmx :
-stubs/bs_hash_stubs.cmx :
-super_errors/super_env.cmx : super_errors/super_location.cmx
-super_errors/super_location.cmx : super_errors/super_warnings.cmx \
-    super_errors/super_misc.cmx
-super_errors/super_main.cmx : super_errors/super_typetexp.cmx \
-    super_errors/super_typemod.cmx super_errors/super_typecore.cmx \
-    super_errors/super_pparse.cmx super_errors/super_location.cmx \
-    super_errors/super_env.cmx
-super_errors/super_misc.cmx : super_errors/super_misc.cmi
-super_errors/super_misc.cmi :
-super_errors/super_pparse.cmx : super_errors/super_location.cmx \
-    ext/ext_string.cmx
-super_errors/super_reason_react.cmx : super_errors/super_reason_react.cmi
-super_errors/super_reason_react.cmi :
-super_errors/super_typecore.cmx : super_errors/super_reason_react.cmx \
-    super_errors/super_location.cmx
-super_errors/super_typemod.cmx : super_errors/super_reason_react.cmx \
-    super_errors/super_location.cmx
-super_errors/super_typetexp.cmx : super_errors/super_location.cmx
-super_errors/super_warnings.cmx :
-syntax/ast_attributes.cmx : ext/ext_string.cmx syntax/bs_syntaxerr.cmx \
-    syntax/bs_ast_invariant.cmx syntax/ast_payload.cmx \
-    syntax/ast_attributes.cmi
-syntax/ast_attributes.cmi : syntax/ast_payload.cmi
-syntax/ast_comb.cmx : ext/ext_list.cmx syntax/ast_literal.cmx \
-    syntax/ast_comb.cmi
-syntax/ast_comb.cmi :
-syntax/ast_compatible.cmx : ext/ext_list.cmx syntax/ast_compatible.cmi
-syntax/ast_compatible.cmi :
-syntax/ast_core_type.cmx : ext/ext_list.cmx syntax/bs_syntaxerr.cmx \
-    syntax/ast_comb.cmx syntax/ast_core_type.cmi
-syntax/ast_core_type.cmi :
-syntax/ast_core_type_class_type.cmx : ext/literals.cmx ext/ext_ref.cmx \
-    ext/ext_list.cmx syntax/bs_ast_mapper.cmx syntax/ast_util.cmx \
-    syntax/ast_literal.cmx syntax/ast_comb.cmx syntax/ast_attributes.cmx \
-    syntax/ast_core_type_class_type.cmi
-syntax/ast_core_type_class_type.cmi : syntax/bs_ast_mapper.cmi
-syntax/ast_derive.cmx : ext/string_map.cmx ext/literals.cmx \
-    ext/ext_string.cmx ext/ext_list.cmx syntax/bs_syntaxerr.cmx \
-    syntax/ast_structure.cmx syntax/ast_signature.cmx syntax/ast_payload.cmx \
-    syntax/ast_derive.cmi
-syntax/ast_derive.cmi : syntax/ast_structure.cmi syntax/ast_signature.cmi \
-    syntax/ast_payload.cmi
-syntax/ast_derive_abstract.cmx : syntax/external_process.cmx \
-    syntax/external_ffi_types.cmx syntax/external_arg_spec.cmx \
-    ext/ext_list.cmx syntax/ast_literal.cmx syntax/ast_derive_util.cmx \
-    syntax/ast_core_type.cmx syntax/ast_attributes.cmx \
-    syntax/ast_derive_abstract.cmi
-syntax/ast_derive_abstract.cmi :
-syntax/ast_derive_constructor.cmx :
-syntax/ast_derive_dyn.cmx : ext/ext_list.cmx syntax/bs_syntaxerr.cmx \
-    syntax/ast_structure.cmx syntax/ast_derive_util.cmx syntax/ast_derive.cmx \
-    syntax/ast_attributes.cmx syntax/ast_derive_dyn.cmi
-syntax/ast_derive_dyn.cmi :
-syntax/ast_derive_js_mapper.cmx : ext/ext_list.cmx syntax/ast_polyvar.cmx \
-    syntax/ast_literal.cmx syntax/ast_derive_util.cmx syntax/ast_derive.cmx \
-    syntax/ast_core_type.cmx syntax/ast_comb.cmx \
-    syntax/ast_derive_js_mapper.cmi
-syntax/ast_derive_js_mapper.cmi :
-syntax/ast_derive_projector.cmx : ext/ext_string.cmx ext/ext_list.cmx \
-    syntax/ast_derive_util.cmx syntax/ast_derive.cmx syntax/ast_comb.cmx \
-    syntax/ast_derive_projector.cmi
-syntax/ast_derive_projector.cmi :
-syntax/ast_derive_util.cmx : ext/ext_list.cmx syntax/ast_compatible.cmx \
-    syntax/ast_derive_util.cmi
-syntax/ast_derive_util.cmi :
-syntax/ast_exp.cmx : syntax/ast_exp.cmi
-syntax/ast_exp.cmi :
-syntax/ast_exp_apply.cmx : ext/literals.cmx ext/ext_list.cmx \
-    syntax/bs_ast_mapper.cmx syntax/bs_ast_invariant.cmx syntax/ast_util.cmx \
-    syntax/ast_tuple_pattern_flatten.cmx syntax/ast_literal.cmx \
-    syntax/ast_attributes.cmx syntax/ast_exp_apply.cmi
-syntax/ast_exp_apply.cmi : syntax/bs_ast_mapper.cmi
-syntax/ast_exp_extension.cmx : ext/literals.cmx ext/ext_string.cmx \
-    ext/ext_ref.cmx ext/ext_pervasives.cmx common/bs_version.cmx \
-    syntax/bs_ast_mapper.cmx syntax/ast_util.cmx syntax/ast_payload.cmx \
-    syntax/ast_literal.cmx syntax/ast_derive.cmx syntax/ast_core_type.cmx \
-    syntax/ast_comb.cmx syntax/ast_exp_extension.cmi
-syntax/ast_exp_extension.cmi : syntax/bs_ast_mapper.cmi
-syntax/ast_external_mk.cmx : syntax/ast_external_mk.cmi
-syntax/ast_external_mk.cmi :
-syntax/ast_lift.cmx : syntax/ast_lift.cmi
-syntax/ast_lift.cmi :
-syntax/ast_literal.cmx : syntax/ast_literal.cmi
-syntax/ast_literal.cmi :
-syntax/ast_pat.cmx : syntax/ast_pat.cmi
-syntax/ast_pat.cmi :
-syntax/ast_payload.cmx : ext/string_map.cmx ext/ext_list.cmx \
-    ext/ext_js_regex.cmx syntax/ast_payload.cmi
-syntax/ast_payload.cmi : ext/string_map.cmi
-syntax/ast_polyvar.cmx : syntax/external_arg_spec.cmx ext/ext_pervasives.cmx \
-    ext/ext_list.cmx syntax/bs_syntaxerr.cmx syntax/ast_attributes.cmx \
-    syntax/ast_polyvar.cmi
-syntax/ast_polyvar.cmi : syntax/external_arg_spec.cmi
-syntax/ast_primitive.cmx : syntax/external_process.cmx \
-    syntax/bs_ast_mapper.cmx syntax/ast_primitive.cmi
-syntax/ast_primitive.cmi : syntax/bs_ast_mapper.cmi
-syntax/ast_signature.cmx : syntax/ast_signature.cmi
-syntax/ast_signature.cmi :
-syntax/ast_structure.cmx : syntax/ast_signature.cmx syntax/ast_literal.cmx \
-    syntax/ast_structure.cmi
-syntax/ast_structure.cmi : syntax/ast_signature.cmi
-syntax/ast_tdcls.cmx : ext/ext_list.cmx syntax/bs_ast_mapper.cmx \
-    syntax/ast_structure.cmx syntax/ast_signature.cmx syntax/ast_payload.cmx \
-    syntax/ast_derive_abstract.cmx syntax/ast_derive.cmx \
-    syntax/ast_attributes.cmx syntax/ast_tdcls.cmi
-syntax/ast_tdcls.cmi : syntax/bs_ast_mapper.cmi syntax/ast_structure.cmi \
-    syntax/ast_signature.cmi
-syntax/ast_tuple_pattern_flatten.cmx : ext/ext_list.cmx \
-    syntax/bs_ast_mapper.cmx syntax/bs_ast_invariant.cmx \
-    syntax/ast_tuple_pattern_flatten.cmi
-syntax/ast_tuple_pattern_flatten.cmi : syntax/bs_ast_mapper.cmi
-syntax/ast_utf8_string.cmx : ext/ext_utf8.cmx ext/ext_char.cmx \
-    syntax/ast_utf8_string.cmi
-syntax/ast_utf8_string.cmi :
-syntax/ast_utf8_string_interp.cmx : ext/literals.cmx ext/ext_utf8.cmx \
-    ext/ext_string.cmx ext/ext_char.cmx common/bs_loc.cmx \
-    syntax/ast_utf8_string_interp.cmi
-syntax/ast_utf8_string_interp.cmi :
-syntax/ast_util.cmx : ext/literals.cmx syntax/external_process.cmx \
-    ext/ext_string.cmx ext/ext_list.cmx syntax/bs_syntaxerr.cmx \
-    syntax/bs_ast_mapper.cmx syntax/ast_payload.cmx syntax/ast_pat.cmx \
-    syntax/ast_literal.cmx syntax/ast_external_mk.cmx syntax/ast_exp.cmx \
-    syntax/ast_core_type.cmx syntax/ast_comb.cmx syntax/ast_attributes.cmx \
-    syntax/ast_util.cmi
-syntax/ast_util.cmi : syntax/bs_ast_mapper.cmi syntax/ast_payload.cmi
-syntax/bs_ast_invariant.cmx : ext/literals.cmx ext/hash_set_poly.cmx \
-    ext/ext_string.cmx common/bs_warnings.cmx syntax/bs_ast_iterator.cmx \
-    syntax/ast_core_type.cmx syntax/bs_ast_invariant.cmi
-syntax/bs_ast_invariant.cmi : syntax/bs_ast_iterator.cmi
-syntax/bs_ast_iterator.cmx : syntax/bs_ast_iterator.cmi
-syntax/bs_ast_iterator.cmi :
-syntax/bs_ast_mapper.cmx : syntax/bs_ast_mapper.cmi
-syntax/bs_ast_mapper.cmi :
-syntax/bs_syntaxerr.cmx : syntax/bs_syntaxerr.cmi
-syntax/bs_syntaxerr.cmi :
-syntax/external_arg_spec.cmx : ext/ext_position.cmx ext/ext_json_parse.cmx \
-    syntax/external_arg_spec.cmi
-syntax/external_arg_spec.cmi :
-syntax/external_ffi_types.cmx : syntax/external_arg_spec.cmx \
-    ext/ext_string.cmx ext/ext_pervasives.cmx common/bs_version.cmx \
-    syntax/external_ffi_types.cmi
-syntax/external_ffi_types.cmi : syntax/external_arg_spec.cmi
-syntax/external_process.cmx : common/lam_methname.cmx \
-    syntax/external_ffi_types.cmx syntax/external_arg_spec.cmx \
-    ext/ext_string.cmx ext/ext_list.cmx common/bs_warnings.cmx \
-    syntax/bs_syntaxerr.cmx common/bs_loc.cmx syntax/bs_ast_invariant.cmx \
-    syntax/ast_polyvar.cmx syntax/ast_payload.cmx syntax/ast_literal.cmx \
-    syntax/ast_core_type.cmx syntax/ast_comb.cmx syntax/ast_attributes.cmx \
-    syntax/external_process.cmi
-syntax/external_process.cmi : common/bs_loc.cmi syntax/ast_core_type.cmi \
-    syntax/ast_attributes.cmi
-syntax/ppx_entry.cmx : ext/string_map.cmx ext/literals.cmx \
-    common/js_config.cmx ext/ext_string.cmx syntax/bs_ast_mapper.cmx \
-    syntax/bs_ast_invariant.cmx syntax/ast_util.cmx \
-    syntax/ast_utf8_string_interp.cmx syntax/ast_utf8_string.cmx \
-    syntax/ast_tuple_pattern_flatten.cmx syntax/ast_tdcls.cmx \
-    syntax/ast_structure.cmx syntax/ast_primitive.cmx syntax/ast_payload.cmx \
-    syntax/ast_literal.cmx syntax/ast_exp_extension.cmx \
-    syntax/ast_exp_apply.cmx syntax/ast_derive_projector.cmx \
-    syntax/ast_derive_js_mapper.cmx syntax/ast_core_type_class_type.cmx \
-    syntax/ast_attributes.cmx syntax/ppx_entry.cmi
-syntax/ppx_entry.cmi :
+jscmj_main.cmi :

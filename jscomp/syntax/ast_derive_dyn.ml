@@ -89,7 +89,7 @@ let js_dyn_tuple_to_value i =
 
 
 let bs_apply1 f v = 
-  Exp.apply f ["",v] ~attrs:bs_attrs
+  Ast_compatible.app1 f v ~attrs:bs_attrs
 
 
 

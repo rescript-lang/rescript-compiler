@@ -10750,6 +10750,29 @@ val apply_simple:
   expression list -> 
   expression 
 
+val app1:
+  ?loc:Location.t -> 
+  ?attrs:attrs -> 
+  expression ->   
+  expression -> 
+  expression 
+
+val app2:
+  ?loc:Location.t -> 
+  ?attrs:attrs -> 
+  expression ->   
+  expression -> 
+  expression -> 
+  expression 
+
+val app3:
+  ?loc:Location.t -> 
+  ?attrs:attrs -> 
+  expression ->   
+  expression -> 
+  expression -> 
+  expression ->   
+  expression 
 
 val apply_labels:  
   ?loc:Location.t -> 
@@ -10836,6 +10859,49 @@ let apply_simple
         fn, 
         (Ext_list.map (fun x -> "",x) args) ) }
 
+let app1        
+  ?(loc = default_loc)
+  ?(attrs = [])
+  fn arg1 : expression = 
+  { pexp_loc = loc; 
+    pexp_attributes = attrs;
+    pexp_desc = 
+      Pexp_apply(
+        fn, 
+        ["", arg1]
+        ) }
+
+let app2
+  ?(loc = default_loc)
+  ?(attrs = [])
+  fn arg1 arg2 : expression = 
+  { pexp_loc = loc; 
+    pexp_attributes = attrs;
+    pexp_desc = 
+      Pexp_apply(
+        fn, 
+        [
+          "", arg1;
+          "", arg2 ]
+        ) }
+
+let app3
+  ?(loc = default_loc)
+  ?(attrs = [])
+  fn arg1 arg2 arg3 : expression = 
+  { pexp_loc = loc; 
+    pexp_attributes = attrs;
+    pexp_desc = 
+      Pexp_apply(
+        fn, 
+        [
+          "", arg1;
+          "", arg2;
+          "", arg3
+        ]
+        ) }
+
+
 let apply_labels
  ?(loc = default_loc) 
  ?(attrs = [])
@@ -10846,6 +10912,7 @@ let apply_labels
       Pexp_apply(
         fn, 
         args ) }
+
 
 let fun_         
   ?(loc = default_loc) 
