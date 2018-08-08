@@ -28,7 +28,7 @@
 
 
 let find_in_path_uncap path name =
-  let uname = String.uncapitalize name in
+  let uname = Ext_string.uncapitalize_ascii name in
   let rec try_dir = function
     | [] -> None
     | dir::rem ->      

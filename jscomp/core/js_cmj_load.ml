@@ -35,7 +35,7 @@ let find_cmj file : string * Js_cmj_format.t =
     (* ONLY read the stored cmj data in browser environment *)
 #if BS_COMPILER_IN_BROWSER then  
         "BROWSER", (   
-        let target = String.uncapitalize (Filename.basename file) in
+        let target = Ext_string.uncapitalize_ascii (Filename.basename file) in
         match String_map.find_exn  target !Js_cmj_datasets.data_sets with
         | v
           -> 

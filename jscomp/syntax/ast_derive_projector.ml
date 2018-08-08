@@ -41,7 +41,7 @@ let init () =
                     ( {pcd_name = {loc ; txt = con_name} ; pcd_args ; pcd_loc }:
                         Parsetree.constructor_declaration)
                     -> (* TODO: add type annotations *)
-                      let little_con_name = String.uncapitalize con_name  in
+                      let little_con_name = Ext_string.uncapitalize_ascii con_name  in
                       let arity = List.length pcd_args in 
                       Ast_comb.single_non_rec_value {loc ; txt = little_con_name}
                         (
@@ -106,7 +106,7 @@ let init () =
                   (fun  ({pcd_name = {loc ; txt = con_name} ; pcd_args ; pcd_loc }:
                            Parsetree.constructor_declaration)
                     -> 
-                      Ast_comb.single_non_rec_val {loc ; txt = (String.uncapitalize con_name)}
+                      Ast_comb.single_non_rec_val {loc ; txt = (Ext_string.uncapitalize_ascii con_name)}
                         (Ext_list.fold_right 
                            (fun x acc -> Typ.arrow "" x acc) 
                            pcd_args
