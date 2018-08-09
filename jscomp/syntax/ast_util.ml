@@ -91,11 +91,11 @@ let arrow = Typ.arrow
 
 let js_property loc obj name =
   Parsetree.Pexp_send
-    ((Exp.apply ~loc
+    ((Ast_compatible.app1 ~loc
         (Exp.ident ~loc
            {loc;
             txt = Ldot (Ast_literal.Lid.js_unsafe, Literals.unsafe_downgrade)})
-        ["",obj]), name)
+        obj), name)
 
 (* TODO: 
    have a final checking for property arities 
@@ -146,8 +146,8 @@ let generic_apply  kind loc
         ["#method_run" ; string_arity], 
         arrow ~loc "" (lift_method_type loc args_type result_type) fn_type
     in
-    Ast_external_mk.local_external loc ~pval_prim ~pval_type 
-      (("", fn) :: Ext_list.map (fun x -> "",x) args )
+    Ast_external_mk.local_external_apply loc ~pval_prim ~pval_type 
+      (  fn :: args )
 
 
 let uncurry_fn_apply loc self fn args = 
@@ -240,7 +240,7 @@ let generic_to_uncurry_exp kind loc (self : Bs_ast_mapper.mapper)  pat body
 
   let result, rev_extra_args = aux [first_arg] body in 
   let body = 
-    List.fold_left (fun e p -> Ast_comb.fun_no_label ~loc p e )
+    List.fold_left (fun e p -> Ast_compatible.fun_ ~loc p e )
       result rev_extra_args in
   let len = List.length rev_extra_args in 
   let arity = 
@@ -278,7 +278,7 @@ let generic_to_uncurry_exp kind loc (self : Bs_ast_mapper.mapper)  pat body
           lift_js_method_callback loc args_type result_type
       ) in
     Ast_external_mk.local_extern_cont loc ~pval_prim ~pval_type 
-      (fun prim -> Exp.apply ~loc prim ["", body]) 
+      (fun prim -> Ast_compatible.app1 ~loc prim body) 
 
 let to_uncurry_fn   = 
   generic_to_uncurry_exp `Fn
@@ -316,13 +316,12 @@ let handle_raw ~check_js_regex loc payload =
 
 let handle_external loc x = 
   let raw_exp : Ast_exp.t = 
-    Ast_helper.Exp.apply 
+    Ast_compatible.app1
     (Exp.ident ~loc 
          {loc; txt = Ldot (Ast_literal.Lid.js_unsafe, 
                            Literals.raw_expr)})
       ~loc 
-      [Ext_string.empty, 
-        Exp.constant ~loc (Const_string (x,Some Ext_string.empty))] in 
+      (Exp.constant ~loc (Const_string (x,Some Ext_string.empty))) in 
   let empty = 
     Exp.ident ~loc 
     {txt = Ldot (Ldot(Lident"Js", "Undefined"), "empty");loc}    
@@ -332,20 +331,16 @@ let handle_external loc x =
   let typeof = 
     Exp.ident {loc ; txt = Ldot(Lident "Js","typeof")} in 
 
-  Exp.apply ~loc undefined_typeof [
-    Ext_string.empty,
+  Ast_compatible.app1 ~loc undefined_typeof (
     Exp.ifthenelse ~loc
-    (Exp.apply ~loc 
-      (Exp.ident ~loc {loc ; txt = Ldot (Lident "Pervasives", "=")} )
-      [ 
-        Ext_string.empty,
-        (Exp.apply ~loc typeof [Ext_string.empty,raw_exp]);
-        Ext_string.empty, 
-        Exp.constant ~loc (Const_string ("undefined",None))  
-        ])      
-      (empty)
+    (Ast_compatible.app2 ~loc 
+      (Exp.ident ~loc {loc ; txt = Ldot (Lident "Pervasives", "=")} )            
+        (Ast_compatible.app1 ~loc typeof raw_exp)      
+        (Exp.constant ~loc (Const_string ("undefined",None)))
+        )      
+      empty
       (Some raw_exp)
-      ]
+  )
 
 
 let handle_raw_structure loc payload = 
@@ -606,7 +601,7 @@ let ocaml_obj_as_js_object
     loc
     ~pval_prim:(External_process.pval_prim_of_labels labels)
     (fun e ->
-       Exp.apply ~loc e
+       Ast_compatible.apply_labels ~loc e
          (Ext_list.map2 (fun l expr -> l.Asttypes.txt, expr) labels exprs) )
     ~pval_type
 
@@ -624,7 +619,7 @@ let record_as_js_object
           ({Asttypes.loc = loc ; txt = x} :: labels, (x, self.expr self e) :: args, i + 1)
         | Ldot _ | Lapply _ ->  
           Location.raise_errorf ~loc "invalid js label ") label_exprs ([],[],0) in
-  Ast_external_mk.local_external loc 
+  Ast_external_mk.local_external_obj loc 
     ~pval_prim:(External_process.pval_prim_of_labels labels)
     ~pval_type:(Ast_core_type.from_labels ~loc arity labels) 
     args 
@@ -653,13 +648,13 @@ let convertBsErrorFunction loc  (self : Bs_ast_mapper.mapper) attrs (cases : Par
       (Ast_core_type.lift_option_type (Typ.any ~loc ())) in
   let () = checkCases cases in  
   let cases = self.cases self cases in 
-  Exp.fun_ ~attrs ~loc ""  None ( Pat.var ~loc  {txt; loc })
+  Ast_compatible.fun_ ~attrs ~loc ( Pat.var ~loc  {txt; loc })
     (Exp.ifthenelse
     ~loc 
-    (Exp.apply ~loc (Exp.ident ~loc {txt = isCamlExceptionOrOpenVariant ; loc}) ["", txt_expr ])
+    (Ast_compatible.app1 ~loc (Exp.ident ~loc {txt = isCamlExceptionOrOpenVariant ; loc}) txt_expr )
     (Exp.match_ ~loc 
        (Exp.constraint_ ~loc 
-          (Exp.apply  ~loc (Exp.ident ~loc {txt =  obj_magic; loc}) ["", txt_expr])
+          (Ast_compatible.app1  ~loc (Exp.ident ~loc {txt =  obj_magic; loc})  txt_expr)
           (Ast_literal.type_exn ~loc ())
        )
       (Ext_list.map_append (fun (x :Parsetree.case ) ->

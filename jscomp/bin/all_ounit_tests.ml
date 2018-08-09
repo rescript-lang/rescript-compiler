@@ -14296,6 +14296,243 @@ let transform loc s =
 
 
 end
+module Ast_compatible : sig 
+#1 "ast_compatible.mli"
+(* Copyright (C) 2018 Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type loc = Location.t 
+type attrs = Parsetree.attribute list 
+open Parsetree
+
+
+val const_exp_string:
+  ?loc:Location.t -> 
+  ?attrs:attrs ->    
+  ?delimiter:string -> 
+  string -> 
+  expression
+
+val const_exp_int:
+  ?loc:Location.t -> 
+  ?attrs:attrs -> 
+  int -> 
+  expression 
+
+val const_exp_int_list_as_array:  
+  int list -> 
+  expression 
+
+val apply_simple:
+  ?loc:Location.t -> 
+  ?attrs:attrs -> 
+  expression ->   
+  expression list -> 
+  expression 
+
+val app1:
+  ?loc:Location.t -> 
+  ?attrs:attrs -> 
+  expression ->   
+  expression -> 
+  expression 
+
+val app2:
+  ?loc:Location.t -> 
+  ?attrs:attrs -> 
+  expression ->   
+  expression -> 
+  expression -> 
+  expression 
+
+val app3:
+  ?loc:Location.t -> 
+  ?attrs:attrs -> 
+  expression ->   
+  expression -> 
+  expression -> 
+  expression ->   
+  expression 
+
+(** Note this function would slightly 
+  change its semantics depending on compiler versions
+  for newer version: it means always label
+  for older version: it could be optional (which we should avoid)
+*)  
+val apply_labels:  
+  ?loc:Location.t -> 
+  ?attrs:attrs -> 
+  expression ->   
+  (string * expression) list -> 
+  (* [(label,e)] [label] is strictly interpreted as label *)
+  expression 
+
+val fun_ :  
+  ?loc:Location.t -> 
+  ?attrs:attrs -> 
+  pattern -> 
+  expression -> 
+  expression
+end = struct
+#1 "ast_compatible.ml"
+(* Copyright (C) 2018 Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type loc = Location.t 
+type attrs = Parsetree.attribute list 
+open Parsetree
+let default_loc = Location.none
+
+ 
+
+let const_exp_string 
+  ?(loc = default_loc)
+  ?(attrs = [])
+  ?delimiter
+  (s : string) : expression = 
+  {
+    pexp_loc = loc; 
+    pexp_attributes = attrs;
+    pexp_desc = Pexp_constant(Const_string(s,delimiter))
+  }
+
+
+let const_exp_int 
+  ?(loc = default_loc)
+  ?(attrs = [])
+  (s : int) : expression = 
+  {
+    pexp_loc = loc; 
+    pexp_attributes = attrs;
+    pexp_desc = Pexp_constant(Const_int s)
+  }
+
+
+let const_exp_int_list_as_array xs = 
+  Ast_helper.Exp.array 
+  (Ext_list.map (fun x -> const_exp_int x ) xs)  
+
+let apply_simple
+ ?(loc = default_loc) 
+ ?(attrs = [])
+  fn args : expression = 
+  { pexp_loc = loc; 
+    pexp_attributes = attrs;
+    pexp_desc = 
+      Pexp_apply(
+        fn, 
+        (Ext_list.map (fun x -> "",x) args) ) }
+
+let app1        
+  ?(loc = default_loc)
+  ?(attrs = [])
+  fn arg1 : expression = 
+  { pexp_loc = loc; 
+    pexp_attributes = attrs;
+    pexp_desc = 
+      Pexp_apply(
+        fn, 
+        ["", arg1]
+        ) }
+
+let app2
+  ?(loc = default_loc)
+  ?(attrs = [])
+  fn arg1 arg2 : expression = 
+  { pexp_loc = loc; 
+    pexp_attributes = attrs;
+    pexp_desc = 
+      Pexp_apply(
+        fn, 
+        [
+          "", arg1;
+          "", arg2 ]
+        ) }
+
+let app3
+  ?(loc = default_loc)
+  ?(attrs = [])
+  fn arg1 arg2 arg3 : expression = 
+  { pexp_loc = loc; 
+    pexp_attributes = attrs;
+    pexp_desc = 
+      Pexp_apply(
+        fn, 
+        [
+          "", arg1;
+          "", arg2;
+          "", arg3
+        ]
+        ) }
+
+
+let apply_labels
+ ?(loc = default_loc) 
+ ?(attrs = [])
+  fn args : expression = 
+  { pexp_loc = loc; 
+    pexp_attributes = attrs;
+    pexp_desc = 
+      Pexp_apply(
+        fn, 
+        args ) }
+
+
+let fun_         
+  ?(loc = default_loc) 
+  ?(attrs = [])
+  pat
+  exp = 
+  {
+    pexp_loc = loc; 
+    pexp_attributes = attrs;
+    pexp_desc = Pexp_fun("",None, pat, exp)
+  }
+ 
+end
 module Bs_loc : sig 
 #1 "bs_loc.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -14845,10 +15082,10 @@ let concat_exp
   (a : Parsetree.expression)
   (b : Parsetree.expression) : Parsetree.expression = 
   let loc = Bs_loc.merge a.pexp_loc b.pexp_loc in 
-  Exp.apply ~loc 
+  Ast_compatible.apply_simple ~loc 
   (Exp.ident { txt =concat_ident; loc})
-    ["",a ;
-     "",b]
+    [a ;
+     b]
 
 let border = String.length "{j|"
 
@@ -14859,19 +15096,17 @@ let aux loc (segment : segment) =
     begin match kind with 
       | String ->         
         let loc = update border start finish  loc  in 
-        Exp.constant 
-          ~loc
-          (Const_string (content, escaped)) 
+        Ast_compatible.const_exp_string
+          content ?delimiter:escaped ~loc
       | Var (soffset, foffset) ->
         let loc = {
           loc with 
           loc_start = update_position  (soffset + border) start loc.loc_start ;
           loc_end = update_position (foffset + border) finish loc.loc_start
         } in 
-        Exp.apply ~loc 
+        Ast_compatible.apply_simple ~loc 
           (Exp.ident ~loc {loc ; txt = to_string_ident })
           [
-            "",
             Exp.ident ~loc {loc ; txt = Lident content}
           ]
     end 
@@ -14896,8 +15131,8 @@ let transform_interp loc s =
     let rev_segments =  cxt.segments in 
     match rev_segments with 
     | [] -> 
-      Exp.constant ~loc 
-        (Const_string ("", Some Literals.escaped_j_delimiter)) 
+      Ast_compatible.const_exp_string ~loc 
+        ""  ~delimiter:Literals.escaped_j_delimiter
     | [ segment] -> 
       aux loc segment 
     | a::rest -> 

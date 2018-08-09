@@ -391,10 +391,10 @@ let concat_exp
   (a : Parsetree.expression)
   (b : Parsetree.expression) : Parsetree.expression = 
   let loc = Bs_loc.merge a.pexp_loc b.pexp_loc in 
-  Exp.apply ~loc 
+  Ast_compatible.apply_simple ~loc 
   (Exp.ident { txt =concat_ident; loc})
-    ["",a ;
-     "",b]
+    [a ;
+     b]
 
 let border = String.length "{j|"
 
@@ -405,19 +405,17 @@ let aux loc (segment : segment) =
     begin match kind with 
       | String ->         
         let loc = update border start finish  loc  in 
-        Exp.constant 
-          ~loc
-          (Const_string (content, escaped)) 
+        Ast_compatible.const_exp_string
+          content ?delimiter:escaped ~loc
       | Var (soffset, foffset) ->
         let loc = {
           loc with 
           loc_start = update_position  (soffset + border) start loc.loc_start ;
           loc_end = update_position (foffset + border) finish loc.loc_start
         } in 
-        Exp.apply ~loc 
+        Ast_compatible.apply_simple ~loc 
           (Exp.ident ~loc {loc ; txt = to_string_ident })
           [
-            "",
             Exp.ident ~loc {loc ; txt = Lident content}
           ]
     end 
@@ -442,8 +440,8 @@ let transform_interp loc s =
     let rev_segments =  cxt.segments in 
     match rev_segments with 
     | [] -> 
-      Exp.constant ~loc 
-        (Const_string ("", Some Literals.escaped_j_delimiter)) 
+      Ast_compatible.const_exp_string ~loc 
+        ""  ~delimiter:Literals.escaped_j_delimiter
     | [ segment] -> 
       aux loc segment 
     | a::rest -> 

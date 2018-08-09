@@ -44,3 +44,25 @@ so that we don't need bootstrap compiler, everytime we deliver a new feature.
 ## [test](./test)
 
 The directory containing unit-test files, some unit tests are copied from OCaml distribution(4.02)
+
+## compiler sourcetree
+
+    - ext 
+    - common
+    - bsb
+    - depends
+    - core
+    - bspp
+    - outcome_printer
+    - stubs  
+    - super_errors  
+    - syntax 
+## tools (deprecatd code)    
+## xwatcher (dev tools)
+## runtime    
+## build_tests    
+## bin
+## cmd_tests
+## ounit
+## ounit_tests
+## others (belt/stdlib/node bindings)

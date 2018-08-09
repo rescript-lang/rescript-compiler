@@ -23,15 +23,15 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-val exp_apply_no_label : 
+(* val exp_apply_no_label : 
   ?loc:Location.t ->
   ?attrs:Parsetree.attributes ->
-  Parsetree.expression -> Parsetree.expression list -> Parsetree.expression
+  Parsetree.expression -> Parsetree.expression list -> Parsetree.expression *)
 
-val fun_no_label : 
+(* val fun_no_label : 
   ?loc:Location.t ->
   ?attrs:Parsetree.attributes ->
-  Parsetree.pattern -> Parsetree.expression -> Parsetree.expression
+  Parsetree.pattern -> Parsetree.expression -> Parsetree.expression *)
 
 val arrow_no_label : 
   ?loc:Location.t ->

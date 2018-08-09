@@ -106,9 +106,9 @@ let handle_exp_apply
                                 -> 
                                 {fn with pexp_desc = Pexp_construct(ctor, Some bounded_obj_arg)}
                               | _ ->
-                                Exp.apply ~loc:fn.pexp_loc
+                                Ast_compatible.app1 ~loc:fn.pexp_loc
                                   (self.expr self fn )
-                                  ["", bounded_obj_arg]
+                                   bounded_obj_arg
                             ) xs );
                       pexp_attributes = tuple_attrs;
                       pexp_loc = fn.pexp_loc;
@@ -117,7 +117,7 @@ let handle_exp_apply
               begin match try_dispatch_by_tuple  with
                 | Some x -> x
                 | None ->
-                  Exp.apply ~loc (self.expr self fn) ["", new_obj_arg]
+                  Ast_compatible.app1 ~loc (self.expr self fn) new_obj_arg
               end
           end
         | _ ->

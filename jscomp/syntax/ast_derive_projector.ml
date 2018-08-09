@@ -28,7 +28,7 @@ let init () =
                   fun ({pld_name = {loc; txt = pld_label} as pld_name} : Parsetree.label_declaration) -> 
                     let txt = "param" in
                     Ast_comb.single_non_rec_value pld_name
-                      (Exp.fun_ "" None
+                      (Ast_compatible.fun_
                          (Pat.constraint_ (Pat.var {txt ; loc}) core_type )
                          (Exp.field (Exp.ident {txt = Lident txt ; loc}) 
                             {txt = Longident.Lident pld_label ; loc}) )
@@ -69,7 +69,7 @@ let init () =
                                                     ) )) core_type
                               in 
                               Ext_list.fold_right  (fun var b -> 
-                                  Exp.fun_ "" None  (Pat.var {loc ; txt = var}) b 
+                                  Ast_compatible.fun_  (Pat.var {loc ; txt = var}) b 
                                 ) vars exp  
 
                             end)

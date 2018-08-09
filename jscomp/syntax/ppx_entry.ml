@@ -215,9 +215,9 @@ let rec unsafe_mapper : Bs_ast_mapper.mapper =
           ->          
           if !Js_config.debug then 
             let open Ast_helper in 
-            Str.eval ~loc (Exp.apply ~loc 
+            Str.eval ~loc (Ast_compatible.app1 ~loc 
             (Exp.ident ~loc {txt = Ldot(Ldot (Lident"Belt","Debug"), "setupChromeDebugger");loc} )
-            ["", Ast_literal.val_unit ~loc ()]
+             (Ast_literal.val_unit ~loc ())
              )
           else Ast_structure.dummy_item loc
         | Pstr_type (_ :: _ as tdcls ) (* [ {ptype_attributes} as tdcl ] *)->

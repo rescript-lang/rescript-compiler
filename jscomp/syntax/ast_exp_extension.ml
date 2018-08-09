@@ -58,17 +58,16 @@ let handle_extension record_as_js_object e (self : Bs_ast_mapper.mapper)
          begin match pat.ppat_desc, body.pexp_desc with 
          | Ppat_construct ({txt = Lident "()"}, None), Pexp_constant(Const_string(block,_))
            -> 
-            Exp.apply ~loc 
-            (Exp.ident ~loc {txt = Ldot (Ast_literal.Lid.js_unsafe, Literals.raw_function);loc})
-            [ "", 
-              Exp.constant ~loc (Const_string (toString {args = [] ; block }, None))            
-            ]
+            Ast_compatible.app1 ~loc 
+            (Exp.ident ~loc {txt = Ldot (Ast_literal.Lid.js_unsafe, Literals.raw_function);loc})            
+            (Exp.constant ~loc (Const_string (toString {args = [] ; block }, None)))
+            
             
          | Ppat_var ({txt;}), _ -> 
             let acc, block = unroll_function_aux [txt] body in 
-            (Exp.apply ~loc 
+            (Ast_compatible.app1 ~loc 
             (Exp.ident ~loc {txt = Ldot (Ast_literal.Lid.js_unsafe, Literals.raw_function);loc})
-            [ "", Exp.constant ~loc (Const_string (toString {args = List.rev acc ; block },None))]            
+            (Exp.constant ~loc (Const_string (toString {args = List.rev acc ; block },None)))
             )
          | _ -> Location.raise_errorf ~loc "bs.raw can only be applied to a string or a special function form "
          end 
@@ -105,23 +104,23 @@ let handle_extension record_as_js_object e (self : Bs_ast_mapper.mapper)
                 file lnum in   
           let e = self.expr self e in 
           Exp.sequence ~loc
-            (Exp.apply ~loc     
+            (Ast_compatible.app1 ~loc     
                (Exp.ident ~loc {loc; 
                                 txt = 
                                   Ldot (Ldot (Lident "Js", "Console"), "timeStart")   
                                })
-               ["", Exp.constant ~loc (Const_string (locString,None))]
+               (Exp.constant ~loc (Const_string (locString,None)))
             )     
             ( Exp.let_ ~loc Nonrecursive
                 [Vb.mk ~loc (Pat.var ~loc {loc; txt = "timed"}) e ;
                 ]
                 (Exp.sequence ~loc
-                   (Exp.apply ~loc     
+                   (Ast_compatible.app1 ~loc     
                       (Exp.ident ~loc {loc; 
                                        txt = 
                                          Ldot (Ldot (Lident "Js", "Console"), "timeEnd")   
                                       })
-                      ["", Exp.constant ~loc (Const_string (locString,None))]
+                      (Exp.constant ~loc (Const_string (locString,None)))
                    )    
                    (Exp.ident ~loc {loc; txt = Lident "timed"})
                 )
@@ -147,13 +146,10 @@ let handle_extension record_as_js_object e (self : Bs_ast_mapper.mapper)
               Printf.sprintf "File %S, line %d, characters %d-%d"
                 file lnum cnum enum in   
           let raiseWithString  locString =      
-            (Exp.apply ~loc 
+              Ast_compatible.app1 ~loc 
                (Exp.ident ~loc {loc; txt = 
-                                       Ldot(Ldot (Lident "Js","Exn"),"raiseError")})
-               ["",
-
-                Exp.constant (Const_string (locString,None))    
-               ])
+                                       Ldot(Ldot (Lident "Js","Exn"),"raiseError")})               
+                (Exp.constant (Const_string (locString,None)))               
           in 
           (match e.pexp_desc with
            | Pexp_construct({txt = Lident "false"},None) -> 
@@ -178,9 +174,9 @@ let handle_extension record_as_js_object e (self : Bs_ast_mapper.mapper)
                Exp.assert_ ~loc e
              else 
                Exp.ifthenelse ~loc
-                 (Exp.apply ~loc
+                 (Ast_compatible.app1 ~loc
                     (Exp.ident {loc ; txt = Ldot(Lident "Pervasives","not")})
-                    ["", e]
+                    e
                  )
                  (raiseWithString locString)
                  None

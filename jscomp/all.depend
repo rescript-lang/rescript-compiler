@@ -157,7 +157,7 @@ ext/ext_filename.cmi :
 ext/ext_modulename.cmi :
 ext/ext_namespace.cmi :
 common/bs_version.cmx : common/bs_version.cmi
-common/js_config.cmx : common/js_config.cmi
+common/js_config.cmx : ext/ext_string.cmx common/js_config.cmi
 common/ext_log.cmx : common/js_config.cmx common/ext_log.cmi
 common/bs_loc.cmx : common/bs_loc.cmi
 common/bs_warnings.cmx : common/js_config.cmx common/bs_warnings.cmi
@@ -172,15 +172,18 @@ common/bs_warnings.cmi :
 common/lam_methname.cmi :
 common/ml_binary.cmi :
 syntax/bs_syntaxerr.cmx : syntax/bs_syntaxerr.cmi
+syntax/ast_compatible.cmx : ext/ext_list.cmx syntax/ast_compatible.cmi
 syntax/ast_utf8_string.cmx : ext/ext_utf8.cmx ext/ext_char.cmx \
     syntax/ast_utf8_string.cmi
 syntax/ast_utf8_string_interp.cmx : ext/literals.cmx ext/ext_utf8.cmx \
     ext/ext_string.cmx ext/ext_char.cmx common/bs_loc.cmx \
-    syntax/ast_utf8_string_interp.cmi
+    syntax/ast_compatible.cmx syntax/ast_utf8_string_interp.cmi
 syntax/ast_derive_constructor.cmx :
-syntax/ast_derive_util.cmx : ext/ext_list.cmx syntax/ast_derive_util.cmi
+syntax/ast_derive_util.cmx : ext/ext_list.cmx syntax/ast_compatible.cmx \
+    syntax/ast_derive_util.cmi
 syntax/ast_exp.cmx : syntax/ast_exp.cmi
-syntax/ast_external_mk.cmx : syntax/ast_external_mk.cmi
+syntax/ast_external_mk.cmx : syntax/ast_compatible.cmx \
+    syntax/ast_external_mk.cmi
 syntax/ast_lift.cmx : syntax/ast_lift.cmi
 syntax/ast_literal.cmx : syntax/ast_literal.cmi
 syntax/ast_pat.cmx : syntax/ast_pat.cmi
@@ -198,7 +201,7 @@ syntax/ast_derive.cmx : ext/string_map.cmx ext/literals.cmx \
     syntax/ast_structure.cmx syntax/ast_signature.cmx syntax/ast_payload.cmx \
     syntax/ast_derive.cmi
 syntax/ast_comb.cmx : ext/ext_list.cmx syntax/ast_literal.cmx \
-    syntax/ast_comb.cmi
+    syntax/ast_compatible.cmx syntax/ast_comb.cmi
 syntax/ast_core_type.cmx : ext/ext_list.cmx syntax/bs_syntaxerr.cmx \
     syntax/ast_comb.cmx syntax/ast_core_type.cmi
 syntax/bs_ast_invariant.cmx : ext/literals.cmx ext/hash_set_poly.cmx \
@@ -227,20 +230,22 @@ syntax/ast_derive_abstract.cmx : syntax/external_process.cmx \
     syntax/ast_derive_abstract.cmi
 syntax/ast_derive_dyn.cmx : ext/ext_list.cmx syntax/bs_syntaxerr.cmx \
     syntax/ast_structure.cmx syntax/ast_derive_util.cmx syntax/ast_derive.cmx \
-    syntax/ast_attributes.cmx syntax/ast_derive_dyn.cmi
-syntax/ast_derive_projector.cmx : ext/ext_list.cmx \
-    syntax/ast_derive_util.cmx syntax/ast_derive.cmx syntax/ast_comb.cmx \
+    syntax/ast_compatible.cmx syntax/ast_attributes.cmx \
+    syntax/ast_derive_dyn.cmi
+syntax/ast_derive_projector.cmx : ext/ext_string.cmx ext/ext_list.cmx \
+    syntax/ast_derive_util.cmx syntax/ast_derive.cmx \
+    syntax/ast_compatible.cmx syntax/ast_comb.cmx \
     syntax/ast_derive_projector.cmi
 syntax/ast_derive_js_mapper.cmx : ext/ext_list.cmx syntax/ast_polyvar.cmx \
     syntax/ast_literal.cmx syntax/ast_derive_util.cmx syntax/ast_derive.cmx \
-    syntax/ast_core_type.cmx syntax/ast_comb.cmx \
+    syntax/ast_core_type.cmx syntax/ast_compatible.cmx syntax/ast_comb.cmx \
     syntax/ast_derive_js_mapper.cmi
 syntax/ast_util.cmx : ext/literals.cmx syntax/external_process.cmx \
     ext/ext_string.cmx ext/ext_list.cmx syntax/bs_syntaxerr.cmx \
     syntax/bs_ast_mapper.cmx syntax/ast_payload.cmx syntax/ast_pat.cmx \
     syntax/ast_literal.cmx syntax/ast_external_mk.cmx syntax/ast_exp.cmx \
-    syntax/ast_core_type.cmx syntax/ast_comb.cmx syntax/ast_attributes.cmx \
-    syntax/ast_util.cmi
+    syntax/ast_core_type.cmx syntax/ast_compatible.cmx syntax/ast_comb.cmx \
+    syntax/ast_attributes.cmx syntax/ast_util.cmi
 syntax/ast_tdcls.cmx : ext/ext_list.cmx syntax/bs_ast_mapper.cmx \
     syntax/ast_structure.cmx syntax/ast_signature.cmx syntax/ast_payload.cmx \
     syntax/ast_derive_abstract.cmx syntax/ast_derive.cmx \
@@ -253,12 +258,14 @@ syntax/ast_tuple_pattern_flatten.cmx : ext/ext_list.cmx \
 syntax/ast_exp_apply.cmx : ext/literals.cmx ext/ext_list.cmx \
     syntax/bs_ast_mapper.cmx syntax/bs_ast_invariant.cmx syntax/ast_util.cmx \
     syntax/ast_tuple_pattern_flatten.cmx syntax/ast_literal.cmx \
-    syntax/ast_attributes.cmx syntax/ast_exp_apply.cmi
+    syntax/ast_compatible.cmx syntax/ast_attributes.cmx \
+    syntax/ast_exp_apply.cmi
 syntax/ast_exp_extension.cmx : ext/literals.cmx ext/ext_string.cmx \
     ext/ext_ref.cmx ext/ext_pervasives.cmx common/bs_version.cmx \
     syntax/bs_ast_mapper.cmx syntax/ast_util.cmx syntax/ast_payload.cmx \
     syntax/ast_literal.cmx syntax/ast_derive.cmx syntax/ast_core_type.cmx \
-    syntax/ast_comb.cmx syntax/ast_exp_extension.cmi
+    syntax/ast_compatible.cmx syntax/ast_comb.cmx \
+    syntax/ast_exp_extension.cmi
 syntax/ast_core_type_class_type.cmx : ext/literals.cmx ext/ext_ref.cmx \
     ext/ext_list.cmx syntax/bs_ast_mapper.cmx syntax/ast_util.cmx \
     syntax/ast_literal.cmx syntax/ast_comb.cmx syntax/ast_attributes.cmx \
@@ -272,8 +279,9 @@ syntax/ppx_entry.cmx : ext/string_map.cmx ext/literals.cmx \
     syntax/ast_literal.cmx syntax/ast_exp_extension.cmx \
     syntax/ast_exp_apply.cmx syntax/ast_derive_projector.cmx \
     syntax/ast_derive_js_mapper.cmx syntax/ast_core_type_class_type.cmx \
-    syntax/ast_attributes.cmx syntax/ppx_entry.cmi
+    syntax/ast_compatible.cmx syntax/ast_attributes.cmx syntax/ppx_entry.cmi
 syntax/bs_syntaxerr.cmi :
+syntax/ast_compatible.cmi :
 syntax/ast_utf8_string.cmi :
 syntax/ast_utf8_string_interp.cmi :
 syntax/ast_derive_util.cmi :
@@ -435,7 +443,7 @@ core/lam_compile_main.cmi : core/j.cmx
 core/js_implementation.cmi :
 core/ocaml_batch_compile.cmi :
 core/js_runtime_modules.cmx :
-core/config_util.cmx : core/config_util.cmi
+core/config_util.cmx : ext/ext_string.cmx core/config_util.cmi
 core/js_packages_info.cmx : core/lam_module_ident.cmx ext/ext_sys.cmx \
     ext/ext_string.cmx ext/ext_pervasives.cmx ext/ext_path.cmx \
     ext/ext_namespace.cmx ext/ext_filename.cmx core/config_util.cmx \
