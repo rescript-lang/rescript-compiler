@@ -22,6 +22,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+#if OCAML_VERSION =~ ">4.3.0" then 
+#else
+type arg_label = string 
+#end
 
 type loc = Location.t 
 type attrs = Parsetree.attribute list 
@@ -100,3 +104,6 @@ val fun_ :
   pattern -> 
   expression -> 
   expression
+
+val is_arg_label_simple : 
+  arg_label -> bool   
