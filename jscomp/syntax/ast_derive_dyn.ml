@@ -234,7 +234,7 @@ let record_exp  name core_type  labels : Ast_structure.t =
    [Vb.mk 
      (Pat.var {txt = shape;  loc}) 
      (Ast_compatible.app1 (js_dyn_shape_of_record ())
-        (Ast_derive_util.lift_string_list_to_array labels)
+        (Ast_compatible.const_exp_string_list_as_array labels)
      ) ];
    Str.value Nonrecursive @@ 
    [Vb.mk (Pat.var {txt = name ^ to_value_  ; loc })
@@ -289,7 +289,7 @@ let init ()  =
                            Str.value Nonrecursive @@ 
                            [Vb.mk (Pat.var {txt = shape ; loc})
                               (      Ast_compatible.app2 (js_dyn_shape_of_variant ())
-                                       (Ast_derive_util.lift_string_list_to_array names)
+                                       (Ast_compatible.const_exp_string_list_as_array names)
                                        (Ast_compatible.const_exp_int_list_as_array arities )
                                        )];
                            Str.value Nonrecursive @@ 

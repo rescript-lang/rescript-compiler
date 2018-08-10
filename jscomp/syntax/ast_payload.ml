@@ -83,7 +83,7 @@ let as_ident (x : t ) =
 open Ast_helper
 
 let raw_string_payload loc (s : string) : t =
-  PStr [ Str.eval ~loc (Exp.constant ~loc (Const_string (s,None)  ))]
+  PStr [ Str.eval ~loc (Ast_compatible.const_exp_string ~loc s) ]
 
 let as_empty_structure (x : t ) = 
   match x with 

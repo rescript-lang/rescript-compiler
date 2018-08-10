@@ -50,19 +50,7 @@ let new_type_of_type_declaration
         ptype_loc = tdcl.ptype_loc;
         ptype_cstrs = []; ptype_private = Public; ptype_manifest = None}
     )
-
       
-let lift_string_list_to_array (labels : string list) = 
-  Exp.array
-    (Ext_list.map 
-      (* Exp.constant (Const_string (s, None)) *)
-      (fun s -> Ast_compatible.const_exp_string s )
-    labels)
-
-(* let lift_int i = Exp.constant (Const_int i)
-let lift_int_list_to_array (labels : int list) = 
-  Exp.array (Ext_list.map lift_int labels)
- *)
 
 let mk_fun ~loc (typ : Parsetree.core_type) 
     (value : string) body

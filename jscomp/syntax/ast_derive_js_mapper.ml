@@ -32,8 +32,7 @@ let js_field (o : Parsetree.expression) m =
     o
     (Exp.ident m)
 
-(* let Ast_compatible.const_exp_int i = Exp.constant (Const_int i) *)
-let const_string s = Exp.constant (Const_string (s,None))
+
  
 
 let handle_config (config : Parsetree.expression option) = 
@@ -264,7 +263,7 @@ let init () =
                                     Exp.tuple 
                                       [
                                         Ast_compatible.const_exp_int i;
-                                        const_string str
+                                        Ast_compatible.const_exp_string str
                                       ]
                                   ) (List.sort (fun (a,_) (b,_) -> compare (a:int) b) result)));
                           (

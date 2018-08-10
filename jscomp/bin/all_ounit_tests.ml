@@ -14345,6 +14345,11 @@ val const_exp_int_list_as_array:
   int list -> 
   expression 
 
+val const_exp_string_list_as_array:  
+  string list -> 
+  expression 
+
+  
 val apply_simple:
   ?loc:Location.t -> 
   ?attrs:attrs -> 
@@ -14454,6 +14459,10 @@ let const_exp_int
 let const_exp_int_list_as_array xs = 
   Ast_helper.Exp.array 
   (Ext_list.map (fun x -> const_exp_int x ) xs)  
+
+let const_exp_string_list_as_array xs =   
+  Ast_helper.Exp.array 
+  (Ext_list.map (fun x -> const_exp_string x ) xs)  
 
 let apply_simple
  ?(loc = default_loc) 

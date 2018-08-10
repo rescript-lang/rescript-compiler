@@ -60,15 +60,15 @@ let handle_extension record_as_js_object e (self : Bs_ast_mapper.mapper)
            -> 
             Ast_compatible.app1 ~loc 
             (Exp.ident ~loc {txt = Ldot (Ast_literal.Lid.js_unsafe, Literals.raw_function);loc})            
-            (Exp.constant ~loc (Const_string (toString {args = [] ; block }, None)))
+            (Ast_compatible.const_exp_string ~loc ( toString {args = [] ; block } ) )
             
             
          | Ppat_var ({txt;}), _ -> 
             let acc, block = unroll_function_aux [txt] body in 
-            (Ast_compatible.app1 ~loc 
-            (Exp.ident ~loc {txt = Ldot (Ast_literal.Lid.js_unsafe, Literals.raw_function);loc})
-            (Exp.constant ~loc (Const_string (toString {args = List.rev acc ; block },None)))
-            )
+            Ast_compatible.app1 ~loc 
+              (Exp.ident ~loc {txt = Ldot (Ast_literal.Lid.js_unsafe, Literals.raw_function);loc})
+              (Ast_compatible.const_exp_string ~loc (toString {args = List.rev acc ; block }))
+            
          | _ -> Location.raise_errorf ~loc "bs.raw can only be applied to a string or a special function form "
          end 
       | _ ->   Ast_util.handle_raw ~check_js_regex:false loc payload
@@ -109,7 +109,7 @@ let handle_extension record_as_js_object e (self : Bs_ast_mapper.mapper)
                                 txt = 
                                   Ldot (Ldot (Lident "Js", "Console"), "timeStart")   
                                })
-               (Exp.constant ~loc (Const_string (locString,None)))
+               (Ast_compatible.const_exp_string ~loc locString)
             )     
             ( Exp.let_ ~loc Nonrecursive
                 [Vb.mk ~loc (Pat.var ~loc {loc; txt = "timed"}) e ;
@@ -120,7 +120,7 @@ let handle_extension record_as_js_object e (self : Bs_ast_mapper.mapper)
                                        txt = 
                                          Ldot (Ldot (Lident "Js", "Console"), "timeEnd")   
                                       })
-                      (Exp.constant ~loc (Const_string (locString,None)))
+                      (Ast_compatible.const_exp_string ~loc locString)
                    )    
                    (Exp.ident ~loc {loc; txt = Lident "timed"})
                 )
@@ -149,7 +149,7 @@ let handle_extension record_as_js_object e (self : Bs_ast_mapper.mapper)
               Ast_compatible.app1 ~loc 
                (Exp.ident ~loc {loc; txt = 
                                        Ldot(Ldot (Lident "Js","Exn"),"raiseError")})               
-                (Exp.constant (Const_string (locString,None)))               
+                (Ast_compatible.const_exp_string locString)               
           in 
           (match e.pexp_desc with
            | Pexp_construct({txt = Lident "false"},None) -> 

@@ -321,8 +321,8 @@ let handle_external loc x =
          {loc; txt = Ldot (Ast_literal.Lid.js_unsafe, 
                            Literals.raw_expr)})
       ~loc 
-      (Exp.constant ~loc (Const_string (x,Some Ext_string.empty))) in 
-  let empty = 
+      (Ast_compatible.const_exp_string ~loc x  ~delimiter:Ext_string.empty) in 
+  let empty = (* FIXME: the empty delimiter does not make sense*)
     Exp.ident ~loc 
     {txt = Ldot (Ldot(Lident"Js", "Undefined"), "empty");loc}    
   in 
@@ -336,7 +336,7 @@ let handle_external loc x =
     (Ast_compatible.app2 ~loc 
       (Exp.ident ~loc {loc ; txt = Ldot (Lident "Pervasives", "=")} )            
         (Ast_compatible.app1 ~loc typeof raw_exp)      
-        (Exp.constant ~loc (Const_string ("undefined",None)))
+        (Ast_compatible.const_exp_string ~loc "undefined")
         )      
       empty
       (Some raw_exp)
