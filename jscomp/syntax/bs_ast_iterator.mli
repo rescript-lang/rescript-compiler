@@ -12,7 +12,8 @@
 (*   special exception on linking described in the file LICENSE.          *)
 (*                                                                        *)
 (**************************************************************************)
-
+#if OCAML_VERSION =~ ">4.03.0" then 
+#else
 (** {!iterator} allows to implement AST inspection using open recursion.  A
     typical mapper would be based on {!default_iterator}, a trivial iterator,
     and will fall back on it for handling the syntax it does not modify. *)
@@ -70,3 +71,4 @@ type iterator = {
 
 val default_iterator: iterator
 (** A default iterator, which implements a "do not do anything" mapping. *)
+#end

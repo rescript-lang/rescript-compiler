@@ -33,10 +33,10 @@
   ?attrs:Parsetree.attributes ->
   Parsetree.pattern -> Parsetree.expression -> Parsetree.expression *)
 
-val arrow_no_label : 
+(* val arrow_no_label : 
   ?loc:Location.t ->
   ?attrs:Parsetree.attributes ->
-  Parsetree.core_type -> Parsetree.core_type -> Parsetree.core_type
+  Parsetree.core_type -> Parsetree.core_type -> Parsetree.core_type *)
 
 (* note we first declare its type is [unit], 
    then [ignore] it, [ignore] is necessary since 

@@ -86,7 +86,7 @@ let lift_js_method_callback loc
 
 
 
-let arrow = Typ.arrow
+let arrow = Ast_compatible.arrow
 
 
 let js_property loc obj name =
@@ -141,10 +141,10 @@ let generic_apply  kind loc
       match kind with 
       | `Fn | `PropertyFn -> 
         ["#fn_run"; string_arity], 
-        arrow ~loc ""  (lift_curry_type loc args_type result_type ) fn_type
+        arrow ~loc  (lift_curry_type loc args_type result_type ) fn_type
       | `Method -> 
         ["#method_run" ; string_arity], 
-        arrow ~loc "" (lift_method_type loc args_type result_type) fn_type
+        arrow ~loc  (lift_method_type loc args_type result_type) fn_type
     in
     Ast_external_mk.local_external_apply loc ~pval_prim ~pval_type 
       (  fn :: args )
@@ -270,7 +270,7 @@ let generic_to_uncurry_exp kind loc (self : Bs_ast_mapper.mapper)  pat body
             | `Method_callback -> "#fn_method"); 
         string_of_int arity]  in
     let fn_type , args_type, result_type  = Ast_comb.tuple_type_pair ~loc `Make arity  in 
-    let pval_type = arrow ~loc "" fn_type (
+    let pval_type = arrow ~loc  fn_type (
         match kind with 
         | `Fn -> 
           lift_curry_type loc args_type result_type
@@ -413,7 +413,7 @@ let ocaml_obj_as_js_object
       begin match tyvars with
         | x :: rest ->
           let method_rest =
-            Ext_list.fold_right (fun v acc -> Typ.arrow ~loc "" v acc)
+            Ext_list.fold_right (fun v acc -> Ast_compatible.arrow ~loc  v acc)
               rest result in         
           to_method_type loc mapper "" x method_rest
         | _ -> assert false
@@ -440,10 +440,10 @@ let ocaml_obj_as_js_object
       begin match tyvars with
         | x :: rest ->
           let method_rest =
-            Ext_list.fold_right (fun v acc -> Typ.arrow ~loc "" v acc)
+            Ext_list.fold_right (fun v acc -> Ast_compatible.arrow ~loc  v acc)
               rest result in         
           (to_method_callback_type loc mapper  "" self_type
-             (Typ.arrow ~loc "" x method_rest))
+             (Ast_compatible.arrow ~loc  x method_rest))
         | _ -> assert false
       end in          
 

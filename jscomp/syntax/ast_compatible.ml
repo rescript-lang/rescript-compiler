@@ -37,7 +37,8 @@ let no_label : arg_label = ""
 let is_arg_label_simple s = (s : arg_label) = no_label  
 #end
 
-
+let arrow ?(loc=default_loc) ?(attrs = []) a b  =
+  Ast_helper.Typ.arrow ~loc ~attrs no_label a b  
 
 let apply_simple
  ?(loc = default_loc) 

@@ -6404,6 +6404,8 @@ module Ast_compatible : sig
 type arg_label = string 
 
 
+val no_label: arg_label
+
 type loc = Location.t 
 type attrs = Parsetree.attribute list 
 open Parsetree
@@ -6484,6 +6486,13 @@ val fun_ :
 
 val is_arg_label_simple : 
   arg_label -> bool   
+
+val arrow :
+  ?loc:Location.t -> 
+  ?attrs:attrs -> 
+  core_type -> 
+  core_type ->
+  core_type
 end = struct
 #1 "ast_compatible.ml"
 (* Copyright (C) 2018 Authors of BuckleScript
@@ -6517,6 +6526,80 @@ let default_loc = Location.none
 
  
 type arg_label = string
+let no_label : arg_label = ""
+let is_arg_label_simple s = (s : arg_label) = no_label  
+
+
+let arrow ?(loc=default_loc) ?(attrs = []) a b  =
+  Ast_helper.Typ.arrow ~loc ~attrs no_label a b  
+
+let apply_simple
+ ?(loc = default_loc) 
+ ?(attrs = [])
+  fn args : expression = 
+  { pexp_loc = loc; 
+    pexp_attributes = attrs;
+    pexp_desc = 
+      Pexp_apply(
+        fn, 
+        (Ext_list.map (fun x -> no_label, x) args) ) }
+
+let app1        
+  ?(loc = default_loc)
+  ?(attrs = [])
+  fn arg1 : expression = 
+  { pexp_loc = loc; 
+    pexp_attributes = attrs;
+    pexp_desc = 
+      Pexp_apply(
+        fn, 
+        [no_label, arg1]
+        ) }
+
+let app2
+  ?(loc = default_loc)
+  ?(attrs = [])
+  fn arg1 arg2 : expression = 
+  { pexp_loc = loc; 
+    pexp_attributes = attrs;
+    pexp_desc = 
+      Pexp_apply(
+        fn, 
+        [
+          no_label, arg1;
+          no_label, arg2 ]
+        ) }
+
+let app3
+  ?(loc = default_loc)
+  ?(attrs = [])
+  fn arg1 arg2 arg3 : expression = 
+  { pexp_loc = loc; 
+    pexp_attributes = attrs;
+    pexp_desc = 
+      Pexp_apply(
+        fn, 
+        [
+          no_label, arg1;
+          no_label, arg2;
+          no_label, arg3
+        ]
+        ) }
+
+let fun_         
+  ?(loc = default_loc) 
+  ?(attrs = [])
+  pat
+  exp = 
+  {
+    pexp_loc = loc; 
+    pexp_attributes = attrs;
+    pexp_desc = Pexp_fun(no_label,None, pat, exp)
+  }
+
+
+ 
+
 let const_exp_string 
   ?(loc = default_loc)
   ?(attrs = [])
@@ -6540,66 +6623,6 @@ let const_exp_int
   }
 
 
-let const_exp_int_list_as_array xs = 
-  Ast_helper.Exp.array 
-  (Ext_list.map (fun x -> const_exp_int x ) xs)  
-
-let const_exp_string_list_as_array xs =   
-  Ast_helper.Exp.array 
-  (Ext_list.map (fun x -> const_exp_string x ) xs)  
-
-let apply_simple
- ?(loc = default_loc) 
- ?(attrs = [])
-  fn args : expression = 
-  { pexp_loc = loc; 
-    pexp_attributes = attrs;
-    pexp_desc = 
-      Pexp_apply(
-        fn, 
-        (Ext_list.map (fun x -> "",x) args) ) }
-
-let app1        
-  ?(loc = default_loc)
-  ?(attrs = [])
-  fn arg1 : expression = 
-  { pexp_loc = loc; 
-    pexp_attributes = attrs;
-    pexp_desc = 
-      Pexp_apply(
-        fn, 
-        ["", arg1]
-        ) }
-
-let app2
-  ?(loc = default_loc)
-  ?(attrs = [])
-  fn arg1 arg2 : expression = 
-  { pexp_loc = loc; 
-    pexp_attributes = attrs;
-    pexp_desc = 
-      Pexp_apply(
-        fn, 
-        [
-          "", arg1;
-          "", arg2 ]
-        ) }
-
-let app3
-  ?(loc = default_loc)
-  ?(attrs = [])
-  fn arg1 arg2 arg3 : expression = 
-  { pexp_loc = loc; 
-    pexp_attributes = attrs;
-    pexp_desc = 
-      Pexp_apply(
-        fn, 
-        [
-          "", arg1;
-          "", arg2;
-          "", arg3
-        ]
-        ) }
 
 
 let apply_labels
@@ -6614,19 +6637,17 @@ let apply_labels
         args ) }
 
 
-let fun_         
-  ?(loc = default_loc) 
-  ?(attrs = [])
-  pat
-  exp = 
-  {
-    pexp_loc = loc; 
-    pexp_attributes = attrs;
-    pexp_desc = Pexp_fun("",None, pat, exp)
-  }
-
-let is_arg_label_simple s = s = ""  
  
+
+
+let const_exp_int_list_as_array xs = 
+  Ast_helper.Exp.array 
+  (Ext_list.map (fun x -> const_exp_int x ) xs)  
+
+let const_exp_string_list_as_array xs =   
+  Ast_helper.Exp.array 
+  (Ext_list.map (fun x -> const_exp_string x ) xs)  
+
 end
 module Ext_utf8 : sig 
 #1 "ext_utf8.mli"
@@ -7967,10 +7988,10 @@ module Ast_comb : sig
   ?attrs:Parsetree.attributes ->
   Parsetree.pattern -> Parsetree.expression -> Parsetree.expression *)
 
-val arrow_no_label : 
+(* val arrow_no_label : 
   ?loc:Location.t ->
   ?attrs:Parsetree.attributes ->
-  Parsetree.core_type -> Parsetree.core_type -> Parsetree.core_type
+  Parsetree.core_type -> Parsetree.core_type -> Parsetree.core_type *)
 
 (* note we first declare its type is [unit], 
    then [ignore] it, [ignore] is necessary since 
@@ -8040,8 +8061,6 @@ open Ast_helper
 (* let fun_no_label ?loc ?attrs  pat body = 
   Ast_compatible.fun_ ?loc ?attrs  pat body *)
 
-let arrow_no_label ?loc ?attrs b c = 
-  Typ.arrow ?loc ?attrs "" b c 
 
 let discard_exp_as_unit loc e = 
   Ast_compatible.apply_simple ~loc     
@@ -8057,7 +8076,7 @@ let tuple_type_pair ?loc kind arity =
     match kind with 
     | `Run -> ty,  [], ty 
     | `Make -> 
-      (Typ.arrow "" ?loc
+      (Ast_compatible.arrow ?loc
          (Ast_literal.type_unit ?loc ())
          ty ,
        [], ty)
@@ -8068,7 +8087,7 @@ let tuple_type_pair ?loc kind arity =
       )  in
     match tys with 
     | result :: rest -> 
-      Ext_list.reduce_from_left (fun r arg -> Typ.arrow "" ?loc arg r) tys, 
+      Ext_list.reduce_from_left (fun r arg -> Ast_compatible.arrow ?loc arg r) tys, 
       List.rev rest , result
     | [] -> assert false
     
@@ -8679,6 +8698,7 @@ end = struct
 (*   special exception on linking described in the file LICENSE.          *)
 (*                                                                        *)
 (**************************************************************************)
+
 [@@@ocaml.warning "+9"]
 (* A generic Parsetree mapping class *)
 (* Back-ported from 4.04 By Hongbo ZHang, after grading to 4.04, we will remove this file  *)
@@ -10340,6 +10360,9 @@ module Bs_ast_invariant : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+
+type iterator = Bs_ast_iterator.iterator
+
 val mark_used_bs_attribute : 
   Parsetree.attribute -> unit 
 
@@ -10349,7 +10372,7 @@ val mark_used_bs_attribute :
 val warn_unused_attributes :   
   Parsetree.attributes -> unit 
 (** Ast invariant checking for detecting errors *)
-val emit_external_warnings : Bs_ast_iterator.iterator
+val emit_external_warnings : iterator
 
 end = struct
 #1 "bs_ast_invariant.ml"
@@ -10401,9 +10424,14 @@ let warn_unused_attributes attrs =
           Location.prerr_warning loc (Warnings.Bs_unused_attribute txt)
       ) attrs
 
-let emit_external_warnings : Bs_ast_iterator.iterator=
+type iterator = Bs_ast_iterator.iterator      
+let default_iterator = Bs_ast_iterator.default_iterator
+
+(* Note we only used Bs_ast_iterator here, we can reuse compiler-libs instead of 
+   rolling our own*)
+let emit_external_warnings : iterator=
   {
-    Bs_ast_iterator.default_iterator with
+    default_iterator with
     attribute = (fun _ a ->
         match a with
         | {txt ; loc}, _ ->
@@ -10417,7 +10445,7 @@ let emit_external_warnings : Bs_ast_iterator.iterator=
           when Ext_string.equal s Literals.unescaped_j_delimiter 
             || Ext_string.equal s Literals.unescaped_js_delimiter -> 
           Bs_warnings.error_unescaped_delimiter a.pexp_loc s 
-        | _ -> Bs_ast_iterator.default_iterator.expr self a 
+        | _ -> default_iterator.expr self a 
       );
     value_description =
       (fun self v -> 
@@ -10435,8 +10463,7 @@ let emit_external_warnings : Bs_ast_iterator.iterator=
              ~loc:pval_loc
              "%%identity expect its type to be of form 'a -> 'b (arity 1)"
          | _ ->
-           Bs_ast_iterator.default_iterator.value_description self v 
-
+           default_iterator.value_description self v 
       )
   }
 
@@ -16074,7 +16101,7 @@ let lift_js_method_callback loc
 
 
 
-let arrow = Typ.arrow
+let arrow = Ast_compatible.arrow
 
 
 let js_property loc obj name =
@@ -16129,10 +16156,10 @@ let generic_apply  kind loc
       match kind with 
       | `Fn | `PropertyFn -> 
         ["#fn_run"; string_arity], 
-        arrow ~loc ""  (lift_curry_type loc args_type result_type ) fn_type
+        arrow ~loc  (lift_curry_type loc args_type result_type ) fn_type
       | `Method -> 
         ["#method_run" ; string_arity], 
-        arrow ~loc "" (lift_method_type loc args_type result_type) fn_type
+        arrow ~loc  (lift_method_type loc args_type result_type) fn_type
     in
     Ast_external_mk.local_external_apply loc ~pval_prim ~pval_type 
       (  fn :: args )
@@ -16258,7 +16285,7 @@ let generic_to_uncurry_exp kind loc (self : Bs_ast_mapper.mapper)  pat body
             | `Method_callback -> "#fn_method"); 
         string_of_int arity]  in
     let fn_type , args_type, result_type  = Ast_comb.tuple_type_pair ~loc `Make arity  in 
-    let pval_type = arrow ~loc "" fn_type (
+    let pval_type = arrow ~loc  fn_type (
         match kind with 
         | `Fn -> 
           lift_curry_type loc args_type result_type
@@ -16401,7 +16428,7 @@ let ocaml_obj_as_js_object
       begin match tyvars with
         | x :: rest ->
           let method_rest =
-            Ext_list.fold_right (fun v acc -> Typ.arrow ~loc "" v acc)
+            Ext_list.fold_right (fun v acc -> Ast_compatible.arrow ~loc  v acc)
               rest result in         
           to_method_type loc mapper "" x method_rest
         | _ -> assert false
@@ -16428,10 +16455,10 @@ let ocaml_obj_as_js_object
       begin match tyvars with
         | x :: rest ->
           let method_rest =
-            Ext_list.fold_right (fun v acc -> Typ.arrow ~loc "" v acc)
+            Ext_list.fold_right (fun v acc -> Ast_compatible.arrow ~loc  v acc)
               rest result in         
           (to_method_callback_type loc mapper  "" self_type
-             (Typ.arrow ~loc "" x method_rest))
+             (Ast_compatible.arrow ~loc  x method_rest))
         | _ -> assert false
       end in          
 
@@ -17629,7 +17656,7 @@ let eraseTypeStr =
   let any = Typ.any () in 
   Str.primitive 
     (Val.mk ~prim:["%identity"] {loc = noloc; txt = eraseTypeLit}
-       (Typ.arrow "" any any)
+       (Ast_compatible.arrow any any)
     )
 
 let app2 = Ast_compatible.app2
@@ -17646,7 +17673,7 @@ let (+~) a b =
 let (&&~) a b =   
   app2 (Exp.ident {loc = noloc; txt = Ldot(Lident "Pervasives","&&")})
     a b 
-let (->~) a b = Typ.arrow "" a b 
+let (->~) a b = Ast_compatible.arrow a b 
 let jsMapperRt =     
   Longident.Ldot (Lident "Js", "MapperRt")
 
@@ -17983,7 +18010,7 @@ let init () =
                 let patToJs = {Asttypes.loc; txt = toJs} in 
                 let patFromJs = {Asttypes.loc; txt = fromJs} in 
                 let toJsType result = 
-                  Ast_comb.single_non_rec_val patToJs (Typ.arrow "" core_type result) in
+                  Ast_comb.single_non_rec_val patToJs (Ast_compatible.arrow core_type result) in
                 let newType,newTdcl =
                   U.new_type_of_type_declaration tdcl ("abs_" ^ name) in 
                 let newTypeStr = Sig.type_ [newTdcl] in                     
@@ -18195,7 +18222,7 @@ let init () =
                       pld_type
                      } : 
                        Parsetree.label_declaration) -> 
-                    Ast_comb.single_non_rec_val pld_name (Typ.arrow "" core_type pld_type )
+                    Ast_comb.single_non_rec_val pld_name (Ast_compatible.arrow core_type pld_type )
                   )
               | Ptype_variant constructor_declarations 
                 -> 
@@ -18207,7 +18234,7 @@ let init () =
                     -> 
                       Ast_comb.single_non_rec_val {loc ; txt = (Ext_string.uncapitalize_ascii con_name)}
                         (Ext_list.fold_right 
-                           (fun x acc -> Typ.arrow "" x acc) 
+                           (fun x acc -> Ast_compatible.arrow x acc) 
                            pcd_args
                            core_type))
               | Ptype_open | Ptype_abstract -> 
@@ -19209,7 +19236,7 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
                   {pld_name with txt = pld_name.txt ^ "Get"})
                 ~attrs:(if b then deprecated (pld_name.Asttypes.txt) :: get_optional_attrs  
                         else get_optional_attrs) ~prim
-                (Typ.arrow ~loc "" core_type optional_type)
+                (Ast_compatible.arrow ~loc  core_type optional_type)
                 ) in 
                aux true pld_name :: aux false pld_name  :: acc )
             else
@@ -19228,7 +19255,7 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
                   Return_identity,
                   Js_get {js_get_name = prim_as_name; js_get_scopes = []}
                   ))] )
-               (Typ.arrow ~loc "" core_type pld_type)
+               (Ast_compatible.arrow ~loc  core_type pld_type)
                in 
                aux true pld_name ::aux false pld_name :: acc )
           in
@@ -19236,8 +19263,8 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
           let acc =
             if is_current_field_mutable then
               let setter_type =
-                (Typ.arrow "" core_type
-                   (Typ.arrow ""
+                (Ast_compatible.arrow core_type
+                   (Ast_compatible.arrow
                       pld_type (* setter *)
                       (Ast_literal.type_unit ()))) in
               Val.mk ~loc:pld_loc
@@ -19253,7 +19280,7 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
         ) label_declarations
         ([],
          (if has_optional_field then
-            Typ.arrow ~loc "" (Ast_literal.type_unit ()) core_type
+            Ast_compatible.arrow ~loc  (Ast_literal.type_unit ()) core_type
           else  core_type),
          [])
     in

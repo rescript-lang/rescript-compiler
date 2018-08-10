@@ -68,7 +68,7 @@ let eraseTypeStr =
   let any = Typ.any () in 
   Str.primitive 
     (Val.mk ~prim:["%identity"] {loc = noloc; txt = eraseTypeLit}
-       (Typ.arrow "" any any)
+       (Ast_compatible.arrow any any)
     )
 
 let app2 = Ast_compatible.app2
@@ -85,7 +85,7 @@ let (+~) a b =
 let (&&~) a b =   
   app2 (Exp.ident {loc = noloc; txt = Ldot(Lident "Pervasives","&&")})
     a b 
-let (->~) a b = Typ.arrow "" a b 
+let (->~) a b = Ast_compatible.arrow a b 
 let jsMapperRt =     
   Longident.Ldot (Lident "Js", "MapperRt")
 
@@ -422,7 +422,7 @@ let init () =
                 let patToJs = {Asttypes.loc; txt = toJs} in 
                 let patFromJs = {Asttypes.loc; txt = fromJs} in 
                 let toJsType result = 
-                  Ast_comb.single_non_rec_val patToJs (Typ.arrow "" core_type result) in
+                  Ast_comb.single_non_rec_val patToJs (Ast_compatible.arrow core_type result) in
                 let newType,newTdcl =
                   U.new_type_of_type_declaration tdcl ("abs_" ^ name) in 
                 let newTypeStr = Sig.type_ [newTdcl] in                     

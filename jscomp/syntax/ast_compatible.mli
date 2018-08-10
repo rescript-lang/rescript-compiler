@@ -28,6 +28,8 @@ type arg_label = Asttypes.arg_label
 type arg_label = string 
 #end
 
+val no_label: arg_label
+
 type loc = Location.t 
 type attrs = Parsetree.attribute list 
 open Parsetree
@@ -108,3 +110,10 @@ val fun_ :
 
 val is_arg_label_simple : 
   arg_label -> bool   
+
+val arrow :
+  ?loc:Location.t -> 
+  ?attrs:attrs -> 
+  core_type -> 
+  core_type ->
+  core_type

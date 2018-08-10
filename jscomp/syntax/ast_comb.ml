@@ -30,8 +30,6 @@ open Ast_helper
 (* let fun_no_label ?loc ?attrs  pat body = 
   Ast_compatible.fun_ ?loc ?attrs  pat body *)
 
-let arrow_no_label ?loc ?attrs b c = 
-  Typ.arrow ?loc ?attrs "" b c 
 
 let discard_exp_as_unit loc e = 
   Ast_compatible.apply_simple ~loc     
@@ -47,7 +45,7 @@ let tuple_type_pair ?loc kind arity =
     match kind with 
     | `Run -> ty,  [], ty 
     | `Make -> 
-      (Typ.arrow "" ?loc
+      (Ast_compatible.arrow ?loc
          (Ast_literal.type_unit ?loc ())
          ty ,
        [], ty)
@@ -58,7 +56,7 @@ let tuple_type_pair ?loc kind arity =
       )  in
     match tys with 
     | result :: rest -> 
-      Ext_list.reduce_from_left (fun r arg -> Typ.arrow "" ?loc arg r) tys, 
+      Ext_list.reduce_from_left (fun r arg -> Ast_compatible.arrow ?loc arg r) tys, 
       List.rev rest , result
     | [] -> assert false
     
