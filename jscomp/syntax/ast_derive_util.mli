@@ -33,9 +33,6 @@ val new_type_of_type_declaration :
   string -> 
   Parsetree.core_type * Parsetree.type_declaration
 
-val lift_string_list_to_array : string list -> Parsetree.expression
-(* val lift_int : int -> Parsetree.expression
-val lift_int_list_to_array : int list -> Parsetree.expression *)
 
 val mk_fun :
   loc:Location.t ->

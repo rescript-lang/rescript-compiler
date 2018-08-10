@@ -190,7 +190,7 @@ syntax/ast_pat.cmx : syntax/ast_pat.cmi
 syntax/external_arg_spec.cmx : ext/ext_position.cmx ext/ext_json_parse.cmx \
     syntax/external_arg_spec.cmi
 syntax/ast_payload.cmx : ext/string_map.cmx ext/ext_list.cmx \
-    ext/ext_js_regex.cmx syntax/ast_payload.cmi
+    ext/ext_js_regex.cmx syntax/ast_compatible.cmx syntax/ast_payload.cmi
 syntax/ast_signature.cmx : syntax/ast_signature.cmi
 syntax/ast_structure.cmx : syntax/ast_signature.cmx syntax/ast_literal.cmx \
     syntax/ast_structure.cmi

@@ -45,6 +45,11 @@ val const_exp_int_list_as_array:
   int list -> 
   expression 
 
+val const_exp_string_list_as_array:  
+  string list -> 
+  expression 
+
+  
 val apply_simple:
   ?loc:Location.t -> 
   ?attrs:attrs -> 
