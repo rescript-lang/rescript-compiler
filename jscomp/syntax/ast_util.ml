@@ -220,9 +220,9 @@ let generic_to_uncurry_exp kind loc (self : Bs_ast_mapper.mapper)  pat body
     match Ast_attributes.process_attributes_rev body.pexp_attributes with 
     | Nothing, _ -> 
       begin match body.pexp_desc with 
-        | Pexp_fun (label,_, arg, body)
+        | Pexp_fun (arg_label,_, arg, body)
           -> 
-          if label <> "" then
+          if not (Ast_compatible.is_arg_label_simple arg_label)  then
             Bs_syntaxerr.err loc Label_in_uncurried_bs_attribute;
           aux (self.pat self arg :: acc) body 
         | _ -> self.expr self body, acc 
@@ -467,8 +467,10 @@ let ocaml_obj_as_js_object
           ->
           begin match e.pexp_desc with
             | Pexp_poly
-                (({pexp_desc = Pexp_fun ("", None, pat, e)} ),
-                 None) ->  
+                (({pexp_desc = Pexp_fun (arg_label, _, pat, e)} ),
+                 None) 
+              when Ast_compatible.is_arg_label_simple arg_label
+              ->  
               let arity = Ast_pat.arity_of_fun pat e in
               let method_type =
                 generate_arg_type x.pcf_loc mapper label.txt arity in 
@@ -529,8 +531,10 @@ let ocaml_obj_as_js_object
           ->
           begin match e.pexp_desc with
             | Pexp_poly
-                (({pexp_desc = Pexp_fun ("", None, pat, e)} as f),
-                 None) ->  
+                (({pexp_desc = Pexp_fun (arg_label, None, pat, e)} as f),
+                 None)
+              when Ast_compatible.is_arg_label_simple arg_label   
+              ->  
               let arity = Ast_pat.arity_of_fun pat e in
               let alias_type = 
                 if aliased then None 

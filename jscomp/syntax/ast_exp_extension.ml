@@ -28,7 +28,8 @@ let rec unroll_function_aux
   (body : Parsetree.expression) : string list * string =
   match body.pexp_desc with
   | Pexp_constant(Const_string(block,_)) -> acc, block
-  | Pexp_fun("",None,{ppat_desc = Ppat_var s},cont) -> 
+  | Pexp_fun(arg_label,_,{ppat_desc = Ppat_var s},cont)
+    when Ast_compatible.is_arg_label_simple arg_label -> 
     unroll_function_aux (s.txt::acc) cont
   | _ -> 
     Location.raise_errorf ~loc:body.pexp_loc  
@@ -53,7 +54,9 @@ let handle_extension record_as_js_object e (self : Bs_ast_mapper.mapper)
   begin match txt with
     | "bs.raw" | "raw" -> 
       begin match payload with 
-      | PStr [{pstr_desc = Pstr_eval({pexp_desc = Pexp_fun("",None,pat,body)},_)}]
+      | PStr [
+        {pstr_desc = Pstr_eval({pexp_desc = Pexp_fun(arg_label,_,pat,body)},_)}]
+        when Ast_compatible.is_arg_label_simple arg_label
          -> 
          begin match pat.ppat_desc, body.pexp_desc with 
          | Ppat_construct ({txt = Lident "()"}, None), Pexp_constant(Const_string(block,_))

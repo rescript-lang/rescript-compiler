@@ -186,7 +186,7 @@ syntax/ast_external_mk.cmx : syntax/ast_compatible.cmx \
     syntax/ast_external_mk.cmi
 syntax/ast_lift.cmx : syntax/ast_lift.cmi
 syntax/ast_literal.cmx : syntax/ast_literal.cmi
-syntax/ast_pat.cmx : syntax/ast_pat.cmi
+syntax/ast_pat.cmx : syntax/ast_compatible.cmx syntax/ast_pat.cmi
 syntax/external_arg_spec.cmx : ext/ext_position.cmx ext/ext_json_parse.cmx \
     syntax/external_arg_spec.cmi
 syntax/ast_payload.cmx : ext/string_map.cmx ext/ext_list.cmx \

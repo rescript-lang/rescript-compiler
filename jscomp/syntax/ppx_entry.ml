@@ -100,7 +100,8 @@ let rec unsafe_mapper : Bs_ast_mapper.mapper =
             | `Exn, pexp_attributes ->
               Ast_util.convertBsErrorFunction loc self  pexp_attributes cases
           end
-        | Pexp_fun ("", None, pat , body)
+        | Pexp_fun (arg_label, _, pat , body)
+          when Ast_compatible.is_arg_label_simple arg_label
           ->
           begin match Ast_attributes.process_attributes_rev e.pexp_attributes with
             | Nothing, _

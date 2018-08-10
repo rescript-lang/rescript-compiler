@@ -30,7 +30,7 @@ let default_loc = Location.none
 #if OCAML_VERSION =~ ">4.03.0" then 
 
 #else 
-
+type arg_label = string
 let const_exp_string 
   ?(loc = default_loc)
   ?(attrs = [])
@@ -138,4 +138,6 @@ let fun_
     pexp_attributes = attrs;
     pexp_desc = Pexp_fun("",None, pat, exp)
   }
+
+let is_arg_label_simple s = s = ""  
 #end 

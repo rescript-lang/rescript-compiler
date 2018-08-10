@@ -14323,6 +14323,9 @@ module Ast_compatible : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
+type arg_label = string 
+
+
 type loc = Location.t 
 type attrs = Parsetree.attribute list 
 open Parsetree
@@ -14400,6 +14403,9 @@ val fun_ :
   pattern -> 
   expression -> 
   expression
+
+val is_arg_label_simple : 
+  arg_label -> bool   
 end = struct
 #1 "ast_compatible.ml"
 (* Copyright (C) 2018 Authors of BuckleScript
@@ -14432,7 +14438,7 @@ open Parsetree
 let default_loc = Location.none
 
  
-
+type arg_label = string
 let const_exp_string 
   ?(loc = default_loc)
   ?(attrs = [])
@@ -14540,6 +14546,8 @@ let fun_
     pexp_attributes = attrs;
     pexp_desc = Pexp_fun("",None, pat, exp)
   }
+
+let is_arg_label_simple s = s = ""  
  
 end
 module Bs_loc : sig 
