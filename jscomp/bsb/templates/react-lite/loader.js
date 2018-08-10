@@ -254,6 +254,29 @@ function getPackageName(id) {
     }
     return id.substring(0, index)
 }
+
+/**
+ * 
+ * @param {string} s 
+ * @param {string} text 
+ * @returns {undefined | string }
+ */
+function isJustAPackageAndHasMainField(s,text){
+    if(s.indexOf('/') < 0){
+        return 
+    } else {
+        var mainField; 
+        try {
+            mainField = JSON.parse(text).main
+        }catch(_){
+        }
+        if(mainField === undefined){
+            return 
+        } else {
+            return mainField
+        }
+    }
+}
 function getPackageJsPromise(id, parent) {
     var idNodeModulesPrefix = './node_modules/' + id
     var link = getPathWithJsSuffix(idNodeModulesPrefix, parent)
@@ -269,6 +292,19 @@ function getPackageJsPromise(id, parent) {
         .then(
             function (text) {
                 if (text !== false) {
+                    var mainField; 
+                    if( (mainField = isJustAPackageAndHasMainField(id, text)) !== undefined){
+                        var packageLink = BsGetPath(addSuffixJsIfNot(`./node_modules/${id}/${mainField}`), parent)
+                        return cachedFetch(packageLink)
+                            .then(function(text){
+                                if(text !== false){
+                                    return {text, link : packageLink}
+                                } else {
+                                    return getParentModulePromise(id,parent)
+                                }
+                            })
+
+                    } else {
                     // package indeed exist
                     return cachedFetch(link).then(function (text) {
                         if (text !== false) {
@@ -288,6 +324,7 @@ function getPackageJsPromise(id, parent) {
                             return getParentModulePromise(id, parent)
                         }
                     })
+                }
                 }
                 else {
                     return getParentModulePromise(id, parent)
@@ -317,7 +354,19 @@ function getModulePromise(id, parent) {
                     function (text) {
                         if (text !== false) {
                             return { text, link }
-                        } else {
+                        } else if (!id.endsWith('.js')){                            
+                            // could be "./dir"
+                            var newLink = getPathWithJsSuffix( id +"/index.js",parent)
+                            return cachedFetch(newLink)
+                            .then(function(text){
+                                if(text !== false){
+                                    return{text, link : newLink }
+                                } else {
+                                    throw new Error(` ${id} : ${parent} could not be resolved`)
+                                }
+                            })
+                        }
+                        else {
                             throw new Error(` ${id} : ${parent} could not be resolved`)
                         }
                     }
