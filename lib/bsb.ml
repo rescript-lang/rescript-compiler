@@ -9553,7 +9553,7 @@ end
 module Bsb_clean : sig 
 #1 "bsb_clean.mli"
 (* Copyright (C) 2017 Authors of BuckleScript
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -9571,22 +9571,23 @@ module Bsb_clean : sig
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** clean bsc generated artifacts. 
+(** clean bsc generated artifacts.
   TODO: clean staled in source js artifacts
 *)
 
-val clean_bs_deps : string -> string -> unit 
+val clean_bs_deps : string -> string -> unit
 
-val clean_self : string -> string -> unit 
+val clean_self : string -> string -> unit
+
 end = struct
 #1 "bsb_clean.ml"
 (* Copyright (C) 2017 Authors of BuckleScript
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -9604,7 +9605,7 @@ end = struct
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -9613,28 +9614,28 @@ end = struct
 let (//) = Ext_path.combine
 
 
-let ninja_clean bsc_dir proj_dir = 
-  try 
-    let cmd = bsc_dir // "ninja.exe" in 
-    let cwd = proj_dir // Bsb_config.lib_bs in 
-    if Sys.file_exists cwd then 
-      let eid = 
+let ninja_clean bsc_dir proj_dir =
+  try
+    let cmd = bsc_dir // "ninja.exe" in
+    let cwd = proj_dir // Bsb_config.lib_bs in
+    if Sys.file_exists cwd then
+      let eid =
         Bsb_unix.run_command_execv {cmd ; args = [|cmd; "-t"; "clean"|] ; cwd} in
-      if eid <> 0 then  
+      if eid <> 0 then
         Bsb_log.warn "@{<warning>ninja clean failed@}@."
-  with  e -> 
+  with  e ->
     Bsb_log.warn "@{<warning>ninja clean failed@} : %s @." (Printexc.to_string e)
 
 let clean_bs_garbage bsc_dir proj_dir =
-  Bsb_log.info "@{<info>Cleaning:@} in %s@." proj_dir ; 
+  Bsb_log.info "@{<info>Cleaning:@} in %s@." proj_dir ;
   let try_remove x =
     let x = proj_dir // x in
     if Sys.file_exists x then
       Bsb_unix.remove_dir_recursive x  in
-  try  
+  try
     Bsb_parse_sources.clean_re_js proj_dir; (* clean re.js files*)
-    ninja_clean bsc_dir proj_dir ; 
-    List.iter try_remove Bsb_config.all_lib_artifacts;    
+    ninja_clean bsc_dir proj_dir ;
+    List.iter try_remove Bsb_config.all_lib_artifacts;
   with
     e ->
     Bsb_log.warn "@{<warning>Failed@} to clean due to %s" (Printexc.to_string e)
@@ -9647,6 +9648,7 @@ let clean_bs_deps bsc_dir proj_dir =
     )
 
 let clean_self bsc_dir proj_dir = clean_bs_garbage bsc_dir proj_dir
+
 end
 module Bsb_package_specs : sig 
 #1 "bsb_package_specs.mli"

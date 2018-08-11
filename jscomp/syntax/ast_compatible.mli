@@ -23,9 +23,12 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 #if OCAML_VERSION =~ ">4.3.0" then 
+type arg_label = Asttypes.arg_label
 #else
 type arg_label = string 
 #end
+
+val no_label: arg_label
 
 type loc = Location.t 
 type attrs = Parsetree.attribute list 
@@ -107,3 +110,10 @@ val fun_ :
 
 val is_arg_label_simple : 
   arg_label -> bool   
+
+val arrow :
+  ?loc:Location.t -> 
+  ?attrs:attrs -> 
+  core_type -> 
+  core_type ->
+  core_type

@@ -96,7 +96,7 @@ let init () =
                       pld_type
                      } : 
                        Parsetree.label_declaration) -> 
-                    Ast_comb.single_non_rec_val pld_name (Typ.arrow "" core_type pld_type )
+                    Ast_comb.single_non_rec_val pld_name (Ast_compatible.arrow core_type pld_type )
                   )
               | Ptype_variant constructor_declarations 
                 -> 
@@ -108,7 +108,7 @@ let init () =
                     -> 
                       Ast_comb.single_non_rec_val {loc ; txt = (Ext_string.uncapitalize_ascii con_name)}
                         (Ext_list.fold_right 
-                           (fun x acc -> Typ.arrow "" x acc) 
+                           (fun x acc -> Ast_compatible.arrow x acc) 
                            pcd_args
                            core_type))
               | Ptype_open | Ptype_abstract -> 

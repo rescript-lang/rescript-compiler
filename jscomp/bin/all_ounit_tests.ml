@@ -14326,6 +14326,8 @@ module Ast_compatible : sig
 type arg_label = string 
 
 
+val no_label: arg_label
+
 type loc = Location.t 
 type attrs = Parsetree.attribute list 
 open Parsetree
@@ -14406,6 +14408,13 @@ val fun_ :
 
 val is_arg_label_simple : 
   arg_label -> bool   
+
+val arrow :
+  ?loc:Location.t -> 
+  ?attrs:attrs -> 
+  core_type -> 
+  core_type ->
+  core_type
 end = struct
 #1 "ast_compatible.ml"
 (* Copyright (C) 2018 Authors of BuckleScript
@@ -14439,6 +14448,80 @@ let default_loc = Location.none
 
  
 type arg_label = string
+let no_label : arg_label = ""
+let is_arg_label_simple s = (s : arg_label) = no_label  
+
+
+let arrow ?(loc=default_loc) ?(attrs = []) a b  =
+  Ast_helper.Typ.arrow ~loc ~attrs no_label a b  
+
+let apply_simple
+ ?(loc = default_loc) 
+ ?(attrs = [])
+  fn args : expression = 
+  { pexp_loc = loc; 
+    pexp_attributes = attrs;
+    pexp_desc = 
+      Pexp_apply(
+        fn, 
+        (Ext_list.map (fun x -> no_label, x) args) ) }
+
+let app1        
+  ?(loc = default_loc)
+  ?(attrs = [])
+  fn arg1 : expression = 
+  { pexp_loc = loc; 
+    pexp_attributes = attrs;
+    pexp_desc = 
+      Pexp_apply(
+        fn, 
+        [no_label, arg1]
+        ) }
+
+let app2
+  ?(loc = default_loc)
+  ?(attrs = [])
+  fn arg1 arg2 : expression = 
+  { pexp_loc = loc; 
+    pexp_attributes = attrs;
+    pexp_desc = 
+      Pexp_apply(
+        fn, 
+        [
+          no_label, arg1;
+          no_label, arg2 ]
+        ) }
+
+let app3
+  ?(loc = default_loc)
+  ?(attrs = [])
+  fn arg1 arg2 arg3 : expression = 
+  { pexp_loc = loc; 
+    pexp_attributes = attrs;
+    pexp_desc = 
+      Pexp_apply(
+        fn, 
+        [
+          no_label, arg1;
+          no_label, arg2;
+          no_label, arg3
+        ]
+        ) }
+
+let fun_         
+  ?(loc = default_loc) 
+  ?(attrs = [])
+  pat
+  exp = 
+  {
+    pexp_loc = loc; 
+    pexp_attributes = attrs;
+    pexp_desc = Pexp_fun(no_label,None, pat, exp)
+  }
+
+
+ 
+
 let const_exp_string 
   ?(loc = default_loc)
   ?(attrs = [])
@@ -14462,66 +14545,6 @@ let const_exp_int
   }
 
 
-let const_exp_int_list_as_array xs = 
-  Ast_helper.Exp.array 
-  (Ext_list.map (fun x -> const_exp_int x ) xs)  
-
-let const_exp_string_list_as_array xs =   
-  Ast_helper.Exp.array 
-  (Ext_list.map (fun x -> const_exp_string x ) xs)  
-
-let apply_simple
- ?(loc = default_loc) 
- ?(attrs = [])
-  fn args : expression = 
-  { pexp_loc = loc; 
-    pexp_attributes = attrs;
-    pexp_desc = 
-      Pexp_apply(
-        fn, 
-        (Ext_list.map (fun x -> "",x) args) ) }
-
-let app1        
-  ?(loc = default_loc)
-  ?(attrs = [])
-  fn arg1 : expression = 
-  { pexp_loc = loc; 
-    pexp_attributes = attrs;
-    pexp_desc = 
-      Pexp_apply(
-        fn, 
-        ["", arg1]
-        ) }
-
-let app2
-  ?(loc = default_loc)
-  ?(attrs = [])
-  fn arg1 arg2 : expression = 
-  { pexp_loc = loc; 
-    pexp_attributes = attrs;
-    pexp_desc = 
-      Pexp_apply(
-        fn, 
-        [
-          "", arg1;
-          "", arg2 ]
-        ) }
-
-let app3
-  ?(loc = default_loc)
-  ?(attrs = [])
-  fn arg1 arg2 arg3 : expression = 
-  { pexp_loc = loc; 
-    pexp_attributes = attrs;
-    pexp_desc = 
-      Pexp_apply(
-        fn, 
-        [
-          "", arg1;
-          "", arg2;
-          "", arg3
-        ]
-        ) }
 
 
 let apply_labels
@@ -14536,19 +14559,17 @@ let apply_labels
         args ) }
 
 
-let fun_         
-  ?(loc = default_loc) 
-  ?(attrs = [])
-  pat
-  exp = 
-  {
-    pexp_loc = loc; 
-    pexp_attributes = attrs;
-    pexp_desc = Pexp_fun("",None, pat, exp)
-  }
-
-let is_arg_label_simple s = s = ""  
  
+
+
+let const_exp_int_list_as_array xs = 
+  Ast_helper.Exp.array 
+  (Ext_list.map (fun x -> const_exp_int x ) xs)  
+
+let const_exp_string_list_as_array xs =   
+  Ast_helper.Exp.array 
+  (Ext_list.map (fun x -> const_exp_string x ) xs)  
+
 end
 module Bs_loc : sig 
 #1 "bs_loc.mli"

@@ -32,7 +32,7 @@ let current_name_set : string list ref = ref []
 
 let loc = Location.none 
 
-let (+>) = Typ.arrow ""
+let (+>) = Ast_compatible.arrow
 
 type lid = Longident.t Asttypes.loc
 
@@ -72,9 +72,9 @@ let js_dyn_shape_of_record () =
   Exp.ident {txt = Ldot (Lident js_dyn, shape_of_record); loc}
 
 let js_dyn_to_value_type ty  = 
-  Typ.arrow "" ty  (js_dyn_value_type ())
+  Ast_compatible.arrow ty  (js_dyn_value_type ())
 let js_dyn_to_value_uncurry_type ty = 
-  Typ.arrow "" ~attrs:bs_attrs ty (js_dyn_value_type ())
+  Ast_compatible.arrow ~attrs:bs_attrs ty (js_dyn_value_type ())
 
 let js_dyn_variant_to_value () = 
   Exp.ident {txt = Ldot (Lident js_dyn, variant_to_value); loc}

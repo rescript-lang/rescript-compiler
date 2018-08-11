@@ -45,10 +45,19 @@ let warn_unused_attributes attrs =
            not (Hash_set_poly.mem used_attributes a) then 
           Location.prerr_warning loc (Warnings.Bs_unused_attribute txt)
       ) attrs
+#if OCAML_VERSION =~ ">4.03.0" then 
+type iterator = Ast_iterator.iterator
 
-let emit_external_warnings : Bs_ast_iterator.iterator=
+
+#else
+type iterator = Bs_ast_iterator.iterator      
+let default_iterator = Bs_ast_iterator.default_iterator
+#end
+(* Note we only used Bs_ast_iterator here, we can reuse compiler-libs instead of 
+   rolling our own*)
+let emit_external_warnings : iterator=
   {
-    Bs_ast_iterator.default_iterator with
+    default_iterator with
     attribute = (fun _ a ->
         match a with
         | {txt ; loc}, _ ->
@@ -62,7 +71,7 @@ let emit_external_warnings : Bs_ast_iterator.iterator=
           when Ext_string.equal s Literals.unescaped_j_delimiter 
             || Ext_string.equal s Literals.unescaped_js_delimiter -> 
           Bs_warnings.error_unescaped_delimiter a.pexp_loc s 
-        | _ -> Bs_ast_iterator.default_iterator.expr self a 
+        | _ -> default_iterator.expr self a 
       );
     value_description =
       (fun self v -> 
@@ -80,7 +89,6 @@ let emit_external_warnings : Bs_ast_iterator.iterator=
              ~loc:pval_loc
              "%%identity expect its type to be of form 'a -> 'b (arity 1)"
          | _ ->
-           Bs_ast_iterator.default_iterator.value_description self v 
-
+           default_iterator.value_description self v 
       )
   }

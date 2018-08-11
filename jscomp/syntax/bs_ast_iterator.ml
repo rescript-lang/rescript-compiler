@@ -12,6 +12,8 @@
 (*   special exception on linking described in the file LICENSE.          *)
 (*                                                                        *)
 (**************************************************************************)
+#if OCAML_VERSION =~ ">4.03.0" then 
+#else
 [@@@ocaml.warning "+9"]
 (* A generic Parsetree mapping class *)
 (* Back-ported from 4.04 By Hongbo ZHang, after grading to 4.04, we will remove this file  *)
@@ -595,3 +597,4 @@ let default_iterator =
          | PPat (x, g) -> this.pat this x; iter_opt (this.expr this) g
       );
   }
+#end

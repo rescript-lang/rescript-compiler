@@ -101,7 +101,7 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
                   {pld_name with txt = pld_name.txt ^ "Get"})
                 ~attrs:(if b then deprecated (pld_name.Asttypes.txt) :: get_optional_attrs  
                         else get_optional_attrs) ~prim
-                (Typ.arrow ~loc "" core_type optional_type)
+                (Ast_compatible.arrow ~loc  core_type optional_type)
                 ) in 
                aux true pld_name :: aux false pld_name  :: acc )
             else
@@ -120,7 +120,7 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
                   Return_identity,
                   Js_get {js_get_name = prim_as_name; js_get_scopes = []}
                   ))] )
-               (Typ.arrow ~loc "" core_type pld_type)
+               (Ast_compatible.arrow ~loc  core_type pld_type)
                in 
                aux true pld_name ::aux false pld_name :: acc )
           in
@@ -128,8 +128,8 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
           let acc =
             if is_current_field_mutable then
               let setter_type =
-                (Typ.arrow "" core_type
-                   (Typ.arrow ""
+                (Ast_compatible.arrow core_type
+                   (Ast_compatible.arrow
                       pld_type (* setter *)
                       (Ast_literal.type_unit ()))) in
               Val.mk ~loc:pld_loc
@@ -145,7 +145,7 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
         ) label_declarations
         ([],
          (if has_optional_field then
-            Typ.arrow ~loc "" (Ast_literal.type_unit ()) core_type
+            Ast_compatible.arrow ~loc  (Ast_literal.type_unit ()) core_type
           else  core_type),
          [])
     in
