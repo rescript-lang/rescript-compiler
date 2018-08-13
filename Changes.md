@@ -1,3 +1,11 @@
+# 4.0.4
+Fixes
+- #3001 fix regressios in refmt
+- #2986 #2973 #2974 fix bsb websocket exit error
+- #2983 #2988 determinsic behavior 
+  when NINJA_ANSI_FORCED=0 no color
+  when NINJA_ANSI_FORCED=1 yes color
+
 # 4.0.3
 Fixes
 - #2956 clean re.js for genFlow proj
