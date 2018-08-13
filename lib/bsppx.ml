@@ -11320,6 +11320,7 @@ let rec is_single_variable_pattern_conservative  (p : t ) =
 end
 module Bs_ast_mapper : sig 
 #1 "bs_ast_mapper.mli"
+
 (***********************************************************************)
 (*                                                                     *)
 (*                                OCaml                                *)
@@ -11431,9 +11432,10 @@ let () =
 
   val default_mapper: mapper
   (** A default mapper, which implements a "deep identity" mapping. *)
-
+  
 end = struct
 #1 "bs_ast_mapper.ml"
+ 
 (***********************************************************************)
 (*                                                                     *)
 (*                                OCaml                                *)
