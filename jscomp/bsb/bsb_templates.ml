@@ -1016,7 +1016,7 @@ let root = OCamlRes.Res.([
       \ * @returns {undefined | string }\n\
       \ */\n\
        function isJustAPackageAndHasMainField(s,text){\n\
-      \    if(s.indexOf('/') < 0){\n\
+      \    if(s.indexOf('/') >= 0){\n\
       \        return \n\
       \    } else {\n\
       \        var mainField; \n\
@@ -1702,7 +1702,7 @@ let root = OCamlRes.Res.([
       \ * @returns {undefined | string }\n\
       \ */\n\
        function isJustAPackageAndHasMainField(s,text){\n\
-      \    if(s.indexOf('/') < 0){\n\
+      \    if(s.indexOf('/') >= 0){\n\
       \        return \n\
       \    } else {\n\
       \        var mainField; \n\
