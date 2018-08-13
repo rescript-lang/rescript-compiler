@@ -262,7 +262,7 @@ function getPackageName(id) {
  * @returns {undefined | string }
  */
 function isJustAPackageAndHasMainField(s,text){
-    if(s.indexOf('/') < 0){
+    if(s.indexOf('/') >= 0){
         return 
     } else {
         var mainField; 
