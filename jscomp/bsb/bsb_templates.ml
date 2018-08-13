@@ -1008,6 +1008,29 @@ let root = OCamlRes.Res.([
       \    }\n\
       \    return id.substring(0, index)\n\
        }\n\
+       \n\
+       /**\n\
+      \ * \n\
+      \ * @param {string} s \n\
+      \ * @param {string} text \n\
+      \ * @returns {undefined | string }\n\
+      \ */\n\
+       function isJustAPackageAndHasMainField(s,text){\n\
+      \    if(s.indexOf('/') < 0){\n\
+      \        return \n\
+      \    } else {\n\
+      \        var mainField; \n\
+      \        try {\n\
+      \            mainField = JSON.parse(text).main\n\
+      \        }catch(_){\n\
+      \        }\n\
+      \        if(mainField === undefined){\n\
+      \            return \n\
+      \        } else {\n\
+      \            return mainField\n\
+      \        }\n\
+      \    }\n\
+       }\n\
        function getPackageJsPromise(id, parent) {\n\
       \    var idNodeModulesPrefix = './node_modules/' + id\n\
       \    var link = getPathWithJsSuffix(idNodeModulesPrefix, parent)\n\
@@ -1023,6 +1046,19 @@ let root = OCamlRes.Res.([
       \        .then(\n\
       \            function (text) {\n\
       \                if (text !== false) {\n\
+      \                    var mainField; \n\
+      \                    if( (mainField = isJustAPackageAndHasMainField(id, text)) !== undefined){\n\
+      \                        var packageLink = BsGetPath(addSuffixJsIfNot(`./node_modules/${id}/${mainField}`), parent)\n\
+      \                        return cachedFetch(packageLink)\n\
+      \                            .then(function(text){\n\
+      \                                if(text !== false){\n\
+      \                                    return {text, link : packageLink}\n\
+      \                                } else {\n\
+      \                                    return getParentModulePromise(id,parent)\n\
+      \                                }\n\
+      \                            })\n\
+       \n\
+      \                    } else {\n\
       \                    // package indeed exist\n\
       \                    return cachedFetch(link).then(function (text) {\n\
       \                        if (text !== false) {\n\
@@ -1042,6 +1078,7 @@ let root = OCamlRes.Res.([
       \                            return getParentModulePromise(id, parent)\n\
       \                        }\n\
       \                    })\n\
+      \                }\n\
       \                }\n\
       \                else {\n\
       \                    return getParentModulePromise(id, parent)\n\
@@ -1071,7 +1108,19 @@ let root = OCamlRes.Res.([
       \                    function (text) {\n\
       \                        if (text !== false) {\n\
       \                            return { text, link }\n\
-      \                        } else {\n\
+      \                        } else if (!id.endsWith('.js')){                            \n\
+      \                            // could be \"./dir\"\n\
+      \                            var newLink = getPathWithJsSuffix( id +\"/index.js\",parent)\n\
+      \                            return cachedFetch(newLink)\n\
+      \                            .then(function(text){\n\
+      \                                if(text !== false){\n\
+      \                                    return{text, link : newLink }\n\
+      \                                } else {\n\
+      \                                    throw new Error(` ${id} : ${parent} could not be resolved`)\n\
+      \                                }\n\
+      \                            })\n\
+      \                        }\n\
+      \                        else {\n\
       \                            throw new Error(` ${id} : ${parent} could not be resolved`)\n\
       \                        }\n\
       \                    }\n\
@@ -1645,6 +1694,29 @@ let root = OCamlRes.Res.([
       \    }\n\
       \    return id.substring(0, index)\n\
        }\n\
+       \n\
+       /**\n\
+      \ * \n\
+      \ * @param {string} s \n\
+      \ * @param {string} text \n\
+      \ * @returns {undefined | string }\n\
+      \ */\n\
+       function isJustAPackageAndHasMainField(s,text){\n\
+      \    if(s.indexOf('/') < 0){\n\
+      \        return \n\
+      \    } else {\n\
+      \        var mainField; \n\
+      \        try {\n\
+      \            mainField = JSON.parse(text).main\n\
+      \        }catch(_){\n\
+      \        }\n\
+      \        if(mainField === undefined){\n\
+      \            return \n\
+      \        } else {\n\
+      \            return mainField\n\
+      \        }\n\
+      \    }\n\
+       }\n\
        function getPackageJsPromise(id, parent) {\n\
       \    var idNodeModulesPrefix = './node_modules/' + id\n\
       \    var link = getPathWithJsSuffix(idNodeModulesPrefix, parent)\n\
@@ -1660,6 +1732,19 @@ let root = OCamlRes.Res.([
       \        .then(\n\
       \            function (text) {\n\
       \                if (text !== false) {\n\
+      \                    var mainField; \n\
+      \                    if( (mainField = isJustAPackageAndHasMainField(id, text)) !== undefined){\n\
+      \                        var packageLink = BsGetPath(addSuffixJsIfNot(`./node_modules/${id}/${mainField}`), parent)\n\
+      \                        return cachedFetch(packageLink)\n\
+      \                            .then(function(text){\n\
+      \                                if(text !== false){\n\
+      \                                    return {text, link : packageLink}\n\
+      \                                } else {\n\
+      \                                    return getParentModulePromise(id,parent)\n\
+      \                                }\n\
+      \                            })\n\
+       \n\
+      \                    } else {\n\
       \                    // package indeed exist\n\
       \                    return cachedFetch(link).then(function (text) {\n\
       \                        if (text !== false) {\n\
@@ -1679,6 +1764,7 @@ let root = OCamlRes.Res.([
       \                            return getParentModulePromise(id, parent)\n\
       \                        }\n\
       \                    })\n\
+      \                }\n\
       \                }\n\
       \                else {\n\
       \                    return getParentModulePromise(id, parent)\n\
@@ -1708,7 +1794,19 @@ let root = OCamlRes.Res.([
       \                    function (text) {\n\
       \                        if (text !== false) {\n\
       \                            return { text, link }\n\
-      \                        } else {\n\
+      \                        } else if (!id.endsWith('.js')){                            \n\
+      \                            // could be \"./dir\"\n\
+      \                            var newLink = getPathWithJsSuffix( id +\"/index.js\",parent)\n\
+      \                            return cachedFetch(newLink)\n\
+      \                            .then(function(text){\n\
+      \                                if(text !== false){\n\
+      \                                    return{text, link : newLink }\n\
+      \                                } else {\n\
+      \                                    throw new Error(` ${id} : ${parent} could not be resolved`)\n\
+      \                                }\n\
+      \                            })\n\
+      \                        }\n\
+      \                        else {\n\
       \                            throw new Error(` ${id} : ${parent} could not be resolved`)\n\
       \                        }\n\
       \                    }\n\
