@@ -6517,6 +6517,32 @@ val object_:
   (*FIXME shall we use [string loc] instead?*)
   Asttypes.closed_flag ->
   core_type  
+
+val rec_type_str:  
+  ?loc:loc -> 
+  type_declaration list -> 
+  structure_item
+
+val nonrec_type_str:  
+  ?loc:loc -> 
+  type_declaration list -> 
+  structure_item
+
+val rec_type_str:  
+  ?loc:loc -> 
+  type_declaration list -> 
+  structure_item
+
+val nonrec_type_sig:  
+  ?loc:loc -> 
+  type_declaration list -> 
+  signature_item 
+
+val rec_type_sig:  
+  ?loc:loc -> 
+  type_declaration list -> 
+  signature_item
+
 end = struct
 #1 "ast_compatible.ml"
 (* Copyright (C) 2018 Authors of BuckleScript
@@ -6690,6 +6716,40 @@ let opt_arrow ?(loc=default_loc) ?(attrs=[]) s a b : core_type =
       ptyp_loc = loc;
       ptyp_attributes = attrs
   }    
+
+let rec_type_str ?(loc=default_loc)  tds : structure_item = 
+  {
+    pstr_loc = loc;
+    pstr_desc = Pstr_type ( 
+      
+      tds)
+  }
+
+let nonrec_type_str ?(loc=default_loc)  tds : structure_item = 
+  {
+    pstr_loc = loc;
+    pstr_desc = Pstr_type ( 
+      
+      tds)
+  }  
+
+let rec_type_sig ?(loc=default_loc)  tds : signature_item = 
+  {
+    psig_loc = loc;
+    psig_desc = Psig_type ( 
+      
+      tds)
+  }
+
+(* FIXME: need address migration of `[@nonrec]` attributes in older ocaml *)  
+let nonrec_type_sig ?(loc=default_loc)  tds : signature_item = 
+  {
+    psig_loc = loc;
+    psig_desc = Psig_type ( 
+      
+      tds)
+  }  
+
 
 let const_exp_int_list_as_array xs = 
   Ast_helper.Exp.array 
@@ -8418,9 +8478,10 @@ val replace_result : t -> t -> t
 val is_unit : t -> bool
 val is_array : t -> bool
 type arg_label =
-  | Label of string
+  | Nolabel
+  | Labelled of string
   | Optional of string
-  | Empty
+
 
 
 (** for
@@ -8495,10 +8556,6 @@ end = struct
 
 type t = Parsetree.core_type
 
-type arg_label =
-  | Label of string
-  | Optional of string
-  | Empty (* it will be ignored , side effect will be recorded *)
 
 
 
@@ -8588,11 +8645,7 @@ let is_user_int (ty : t) =
 let is_optional_label l =
   String.length l > 0 && l.[0] = '?'
 
-let label_name l : arg_label =
-  if l = "" then Empty else
-  if is_optional_label l
-  then Optional (String.sub l 1 (String.length l - 1))
-  else Label l
+
 
 
 (* Note that OCaml type checker will not allow arbitrary
@@ -8671,6 +8724,18 @@ let list_of_arrow (ty : t) =
     | return_type -> ty, List.rev acc
   in aux ty []
 
+
+type arg_label =
+  | Nolabel (* it will be ignored , side effect will be recorded *)
+  | Labelled of string
+  | Optional of string
+  
+
+let label_name l : arg_label =
+  if l = "" then Nolabel else
+  if is_optional_label l
+  then Optional (String.sub l 1 (String.length l - 1))
+  else Labelled l  
 end
 module Bs_ast_iterator : sig 
 #1 "bs_ast_iterator.mli"
@@ -13866,6 +13931,7 @@ end = struct
 
 
 let hash_label = Ext_pervasives.hash_variant 
+external label_of_name : string -> string = "%identity"
 
 
 let map_row_fields_into_ints ptyp_loc
@@ -13930,7 +13996,7 @@ let map_constructor_declarations_into_ints
     {[ [`a  | `c of int ] ]}       
 *)  
 let map_row_fields_into_strings ptyp_loc 
-    (row_fields : Parsetree.row_field list) = 
+    (row_fields : Parsetree.row_field list) : External_arg_spec.attr = 
   let case, result = 
     (Ext_list.fold_right (fun tag (nullary, acc) -> 
          match nullary, tag with 
@@ -13942,7 +14008,7 @@ let map_row_fields_into_strings ptyp_loc
                `Null, ((hash_label label, name) :: acc )
 
              | None -> 
-               `Null, ((hash_label label, label) :: acc )
+               `Null, ((hash_label label, label_of_name label) :: acc )
            end
          | (`Nothing | `NonNull), Parsetree.Rtag(label, attrs, false, ([ _ ])) 
            -> 
@@ -13950,7 +14016,7 @@ let map_row_fields_into_strings ptyp_loc
              | Some name -> 
                `NonNull, ((hash_label label, name) :: acc)
              | None -> 
-               `NonNull, ((hash_label label, label) :: acc)
+               `NonNull, ((hash_label label, label_of_name label) :: acc)
            end
          | _ -> Bs_syntaxerr.err ptyp_loc Invalid_bs_string_type
 
@@ -13981,7 +14047,11 @@ let is_enum_constructors
   List.for_all 
     (fun (x : Parsetree.constructor_declaration) ->
        match x with 
-       | {pcd_args = []} -> true 
+       | {pcd_args = 
+  
+        []
+        
+        } -> true 
        | _ -> false 
     )
     constructors
@@ -15368,7 +15438,7 @@ let handle_attributes
                let arg_label = Ast_core_type.label_name label in
                let new_arg_label, new_arg_types,  output_tys =
                  match arg_label with
-                 | Empty ->
+                 | Nolabel ->
                    let arg_type, new_ty = get_arg_type ~nolabel:true false ty in
                    begin match arg_type with
                      | Extern_unit ->
@@ -15376,7 +15446,7 @@ let handle_attributes
                      | _ ->
                        Location.raise_errorf ~loc "expect label, optional, or unit here"
                    end
-                 | Label name ->
+                 | Labelled name ->
                    let arg_type, new_ty = get_arg_type ~nolabel:false false ty in
                    begin match arg_type with
                      | Ignore ->
@@ -15470,7 +15540,7 @@ let handle_attributes
         begin
           (
             Ext_list.fold_right (fun (label,ty,attrs,loc) acc ->
-                Ast_helper.Typ.arrow ~loc  ~attrs label ty acc
+                Ast_compatible.label_arrow ~loc  ~attrs label ty acc
               ) new_arg_types_ty result
           ) ,
           prim_name,
@@ -15502,14 +15572,14 @@ let handle_attributes
                  | _ ->
                    External_arg_spec.optional s, arg_type,
                    ((label, Ast_core_type.lift_option_type new_ty , attr,loc) :: arg_types) end
-             | Label s  ->
+             | Labelled s  ->
                begin match get_arg_type ~nolabel:false false  ty with
                  | (Arg_cst ( i) as arg_type), new_ty ->
                    External_arg_spec.label s (Some i), arg_type, arg_types
                  | arg_type, new_ty ->
                    External_arg_spec.label s None, arg_type, (label, new_ty,attr,loc) :: arg_types
                end
-             | Empty ->
+             | Nolabel ->
                begin match get_arg_type ~nolabel:true false  ty with
                  | (Arg_cst ( i) as arg_type), new_ty ->
                    External_arg_spec.empty_lit i , arg_type,  arg_types
@@ -15880,7 +15950,7 @@ let handle_attributes
       in
       (
         Ext_list.fold_right (fun (label,ty,attrs,loc) acc ->
-            Ast_helper.Typ.arrow ~loc  ~attrs label ty acc
+            Ast_compatible.label_arrow ~loc  ~attrs label ty acc
           ) new_arg_types_ty new_result_type
       ) ,
 
@@ -16680,7 +16750,7 @@ let ocaml_obj_as_js_object
   let pval_type =
     Ext_list.fold_right2
       (fun label label_type acc ->
-         Typ.arrow
+         Ast_compatible.label_arrow
            ~loc:label.Asttypes.loc
            label.Asttypes.txt
            label_type acc           
@@ -17838,7 +17908,7 @@ let init () =
                let exp_param = Exp.ident ident_param in 
                let newType,newTdcl =
                  U.new_type_of_type_declaration tdcl ("abs_" ^ name) in 
-               let newTypeStr = Str.type_ [newTdcl] in   
+               let newTypeStr = Ast_compatible.rec_type_str [newTdcl] in   
                let toJsBody body = 
                  Ast_comb.single_non_rec_value patToJs
                    (Ast_compatible.fun_ (Pat.constraint_ (Pat.var pat_param) core_type) 
@@ -18082,7 +18152,7 @@ let init () =
                   Ast_comb.single_non_rec_val patToJs (Ast_compatible.arrow core_type result) in
                 let newType,newTdcl =
                   U.new_type_of_type_declaration tdcl ("abs_" ^ name) in 
-                let newTypeStr = Sig.type_ [newTdcl] in                     
+                let newTypeStr = Ast_compatible.rec_type_sig [newTdcl] in                     
                 let (+?) v rest = if createType then v :: rest else rest in 
                 match tdcl.ptype_kind with  
                 | Ptype_record label_declarations ->            
@@ -19319,7 +19389,7 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
                 ) in 
                aux true pld_name :: aux false pld_name  :: acc )
             else
-              Typ.arrow ~loc:pld_loc label_name pld_type maker,
+              Ast_compatible.label_arrow ~loc:pld_loc label_name pld_type maker,
               (
                 let aux b pld_name = 
                 Val.mk ~loc:pld_loc 
@@ -19394,7 +19464,7 @@ let handleTdclsInStr tdcls =
           Ext_list.map_append (fun x -> Str.primitive x) value_descriptions sts
 
       ) tdcls ([],[])  in
-  Str.type_ tdcls :: code
+Ast_compatible.rec_type_str tdcls :: code
 (* still need perform transformation for non-abstract type*)
 
 let handleTdclsInSig tdcls =
@@ -19406,7 +19476,7 @@ let handleTdclsInSig tdcls =
           Ext_list.map_append (fun x -> Sig.value x) value_descriptions sts
 
       ) tdcls ([],[])  in
-  Sig.type_ tdcls :: code
+  Ast_compatible.rec_type_sig tdcls :: code
 
 end
 module Ast_tdcls : sig 

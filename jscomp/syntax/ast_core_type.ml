@@ -24,10 +24,6 @@
 
 type t = Parsetree.core_type
 
-type arg_label =
-  | Label of string
-  | Optional of string
-  | Empty (* it will be ignored , side effect will be recorded *)
 
 
 
@@ -117,11 +113,7 @@ let is_user_int (ty : t) =
 let is_optional_label l =
   String.length l > 0 && l.[0] = '?'
 
-let label_name l : arg_label =
-  if l = "" then Empty else
-  if is_optional_label l
-  then Optional (String.sub l 1 (String.length l - 1))
-  else Label l
+
 
 
 (* Note that OCaml type checker will not allow arbitrary
@@ -199,3 +191,16 @@ let list_of_arrow (ty : t) =
       Bs_syntaxerr.err ty.ptyp_loc Unhandled_poly_type
     | return_type -> ty, List.rev acc
   in aux ty []
+
+
+type arg_label =
+  | Nolabel (* it will be ignored , side effect will be recorded *)
+  | Labelled of string
+  | Optional of string
+  
+
+let label_name l : arg_label =
+  if l = "" then Nolabel else
+  if is_optional_label l
+  then Optional (String.sub l 1 (String.length l - 1))
+  else Labelled l  

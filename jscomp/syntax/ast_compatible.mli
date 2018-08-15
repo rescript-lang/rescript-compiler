@@ -141,3 +141,28 @@ val object_:
   (*FIXME shall we use [string loc] instead?*)
   Asttypes.closed_flag ->
   core_type  
+
+val rec_type_str:  
+  ?loc:loc -> 
+  type_declaration list -> 
+  structure_item
+
+val nonrec_type_str:  
+  ?loc:loc -> 
+  type_declaration list -> 
+  structure_item
+
+val rec_type_str:  
+  ?loc:loc -> 
+  type_declaration list -> 
+  structure_item
+
+val nonrec_type_sig:  
+  ?loc:loc -> 
+  type_declaration list -> 
+  signature_item 
+
+val rec_type_sig:  
+  ?loc:loc -> 
+  type_declaration list -> 
+  signature_item

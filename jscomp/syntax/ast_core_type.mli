@@ -37,9 +37,10 @@ val replace_result : t -> t -> t
 val is_unit : t -> bool
 val is_array : t -> bool
 type arg_label =
-  | Label of string
+  | Nolabel
+  | Labelled of string
   | Optional of string
-  | Empty
+
 
 
 (** for

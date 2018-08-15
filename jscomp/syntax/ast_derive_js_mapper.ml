@@ -181,7 +181,7 @@ let init () =
                let exp_param = Exp.ident ident_param in 
                let newType,newTdcl =
                  U.new_type_of_type_declaration tdcl ("abs_" ^ name) in 
-               let newTypeStr = Str.type_ [newTdcl] in   
+               let newTypeStr = Ast_compatible.rec_type_str [newTdcl] in   
                let toJsBody body = 
                  Ast_comb.single_non_rec_value patToJs
                    (Ast_compatible.fun_ (Pat.constraint_ (Pat.var pat_param) core_type) 
@@ -425,7 +425,7 @@ let init () =
                   Ast_comb.single_non_rec_val patToJs (Ast_compatible.arrow core_type result) in
                 let newType,newTdcl =
                   U.new_type_of_type_declaration tdcl ("abs_" ^ name) in 
-                let newTypeStr = Sig.type_ [newTdcl] in                     
+                let newTypeStr = Ast_compatible.rec_type_sig [newTdcl] in                     
                 let (+?) v rest = if createType then v :: rest else rest in 
                 match tdcl.ptype_kind with  
                 | Ptype_record label_declarations ->            

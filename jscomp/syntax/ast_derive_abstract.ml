@@ -105,7 +105,7 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
                 ) in 
                aux true pld_name :: aux false pld_name  :: acc )
             else
-              Typ.arrow ~loc:pld_loc label_name pld_type maker,
+              Ast_compatible.label_arrow ~loc:pld_loc label_name pld_type maker,
               (
                 let aux b pld_name = 
                 Val.mk ~loc:pld_loc 
@@ -180,7 +180,7 @@ let handleTdclsInStr tdcls =
           Ext_list.map_append (fun x -> Str.primitive x) value_descriptions sts
 
       ) tdcls ([],[])  in
-  Str.type_ tdcls :: code
+Ast_compatible.rec_type_str tdcls :: code
 (* still need perform transformation for non-abstract type*)
 
 let handleTdclsInSig tdcls =
@@ -192,4 +192,4 @@ let handleTdclsInSig tdcls =
           Ext_list.map_append (fun x -> Sig.value x) value_descriptions sts
 
       ) tdcls ([],[])  in
-  Sig.type_ tdcls :: code
+  Ast_compatible.rec_type_sig tdcls :: code

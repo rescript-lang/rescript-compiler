@@ -598,7 +598,7 @@ let ocaml_obj_as_js_object
   let pval_type =
     Ext_list.fold_right2
       (fun label label_type acc ->
-         Typ.arrow
+         Ast_compatible.label_arrow
            ~loc:label.Asttypes.loc
            label.Asttypes.txt
            label_type acc           

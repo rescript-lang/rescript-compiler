@@ -229,6 +229,48 @@ let opt_arrow ?(loc=default_loc) ?(attrs=[]) s a b : core_type =
       ptyp_attributes = attrs
   }    
 
+let rec_type_str ?(loc=default_loc)  tds : structure_item = 
+  {
+    pstr_loc = loc;
+    pstr_desc = Pstr_type ( 
+#if OCAML_VERSION =~ ">4.03.0" then 
+      Recursive,
+#end      
+      tds)
+  }
+
+let nonrec_type_str ?(loc=default_loc)  tds : structure_item = 
+  {
+    pstr_loc = loc;
+    pstr_desc = Pstr_type ( 
+#if OCAML_VERSION =~ ">4.03.0" then 
+      Nonrecursive,
+#end      
+      tds)
+  }  
+
+let rec_type_sig ?(loc=default_loc)  tds : signature_item = 
+  {
+    psig_loc = loc;
+    psig_desc = Psig_type ( 
+#if OCAML_VERSION =~ ">4.03.0" then 
+      Recursive,
+#end      
+      tds)
+  }
+
+(* FIXME: need address migration of `[@nonrec]` attributes in older ocaml *)  
+let nonrec_type_sig ?(loc=default_loc)  tds : signature_item = 
+  {
+    psig_loc = loc;
+    psig_desc = Psig_type ( 
+#if OCAML_VERSION =~ ">4.03.0" then 
+      Nonrecursive,
+#end      
+      tds)
+  }  
+
+
 let const_exp_int_list_as_array xs = 
   Ast_helper.Exp.array 
   (Ext_list.map (fun x -> const_exp_int x ) xs)  
