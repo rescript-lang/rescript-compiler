@@ -24,9 +24,18 @@
 
 #if OCAML_VERSION =~ ">4.3.0" then 
 type arg_label = Asttypes.arg_label
+type label = arg_label
+external convert: arg_label -> label = "%identity"
 #else
 type arg_label = string 
+type label = 
+  | Nolabel
+  | Labelled of string
+  | Optional of string
+val convert: arg_label -> label
 #end
+
+
 
 val no_label: arg_label
 

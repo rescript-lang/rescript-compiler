@@ -14324,6 +14324,13 @@ module Ast_compatible : sig
 
 
 type arg_label = string 
+type label = 
+  | Nolabel
+  | Labelled of string
+  | Optional of string
+val convert: arg_label -> label
+
+
 
 
 val no_label: arg_label
@@ -14498,8 +14505,25 @@ let default_loc = Location.none
 
  
 type arg_label = string
+type label = 
+  | Nolabel
+  | Labelled of string
+  | Optional of string
 let no_label : arg_label = ""
 let is_arg_label_simple s = (s : arg_label) = no_label  
+
+let is_optional_label l =
+  String.length l > 0 && l.[0] = '?'
+
+(** for
+       [x:t] -> "x"
+       [?x:t] -> "?x"
+*)  
+let convert l : label =
+  if l = "" then Nolabel else
+  if is_optional_label l
+  then Optional (String.sub l 1 (String.length l - 1))
+  else Labelled l  
 
 
 let arrow ?(loc=default_loc) ?(attrs = []) a b  =

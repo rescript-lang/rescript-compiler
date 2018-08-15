@@ -28,13 +28,35 @@ open Parsetree
 let default_loc = Location.none
 
 #if OCAML_VERSION =~ ">4.03.0" then 
-type arg_label = Asttypes.arg_label
+type arg_label = Asttypes.arg_label = 
+  | Nolabel
+  | Labelled of string
+  | Optional of string
 let no_label : arg_label = Nolabel
 let is_arg_label_simple (s : arg_label) = s = (Nolabel : arg_label)  
+type label = arg_label 
+external convert : arg_label -> label = "%identity"
 #else 
 type arg_label = string
+type label = 
+  | Nolabel
+  | Labelled of string
+  | Optional of string
 let no_label : arg_label = ""
 let is_arg_label_simple s = (s : arg_label) = no_label  
+
+let is_optional_label l =
+  String.length l > 0 && l.[0] = '?'
+
+(** for
+       [x:t] -> "x"
+       [?x:t] -> "?x"
+*)  
+let convert l : label =
+  if l = "" then Nolabel else
+  if is_optional_label l
+  then Optional (String.sub l 1 (String.length l - 1))
+  else Labelled l  
 #end
 
 let arrow ?(loc=default_loc) ?(attrs = []) a b  =

@@ -6402,6 +6402,13 @@ module Ast_compatible : sig
 
 
 type arg_label = string 
+type label = 
+  | Nolabel
+  | Labelled of string
+  | Optional of string
+val convert: arg_label -> label
+
+
 
 
 val no_label: arg_label
@@ -6576,8 +6583,25 @@ let default_loc = Location.none
 
  
 type arg_label = string
+type label = 
+  | Nolabel
+  | Labelled of string
+  | Optional of string
 let no_label : arg_label = ""
 let is_arg_label_simple s = (s : arg_label) = no_label  
+
+let is_optional_label l =
+  String.length l > 0 && l.[0] = '?'
+
+(** for
+       [x:t] -> "x"
+       [?x:t] -> "?x"
+*)  
+let convert l : label =
+  if l = "" then Nolabel else
+  if is_optional_label l
+  then Optional (String.sub l 1 (String.length l - 1))
+  else Labelled l  
 
 
 let arrow ?(loc=default_loc) ?(attrs = []) a b  =
@@ -8477,21 +8501,6 @@ val replace_result : t -> t -> t
 
 val is_unit : t -> bool
 val is_array : t -> bool
-type arg_label =
-  | Nolabel
-  | Labelled of string
-  | Optional of string
-
-
-
-(** for
-       [x:t] -> "x"
-       [?x:t] -> "?x"
-*)
-val label_name : string -> arg_label
-
-
-
 
 
 (** return a function type
@@ -8513,7 +8522,7 @@ val is_user_bool : t -> bool
 
 val is_user_int : t -> bool
 
-val is_optional_label : string -> bool
+
 
 (**
   returns 0 when it can not tell arity from the syntax
@@ -8642,8 +8651,6 @@ let is_user_int (ty : t) =
   | Ptyp_constr({txt = Lident "int"},[]) -> true
   | _ -> false
 
-let is_optional_label l =
-  String.length l > 0 && l.[0] = '?'
 
 
 
@@ -8725,7 +8732,7 @@ let list_of_arrow (ty : t) =
   in aux ty []
 
 
-type arg_label =
+(* type arg_label =
   | Nolabel (* it will be ignored , side effect will be recorded *)
   | Labelled of string
   | Optional of string
@@ -8735,7 +8742,7 @@ let label_name l : arg_label =
   if l = "" then Nolabel else
   if is_optional_label l
   then Optional (String.sub l 1 (String.length l - 1))
-  else Labelled l  
+  else Labelled l   *)
 end
 module Bs_ast_iterator : sig 
 #1 "bs_ast_iterator.mli"
@@ -15435,7 +15442,7 @@ let handle_attributes
         let arg_kinds, new_arg_types_ty, result_types =
           Ext_list.fold_right
             (fun (label,ty,attr,loc) ( arg_labels, arg_types, result_types) ->
-               let arg_label = Ast_core_type.label_name label in
+               let arg_label = Ast_compatible.convert label in
                let new_arg_label, new_arg_types,  output_tys =
                  match arg_label with
                  | Nolabel ->
@@ -15557,7 +15564,7 @@ let handle_attributes
     let arg_type_specs, new_arg_types_ty, arg_type_specs_length   =
       Ext_list.fold_right
         (fun (label,ty,attr,loc) (arg_type_specs, arg_types, i) ->
-           let arg_label = Ast_core_type.label_name label in
+           let arg_label = Ast_compatible.convert label in
            let arg_label, arg_type, new_arg_types =
              match arg_label with
              | Optional s  ->
