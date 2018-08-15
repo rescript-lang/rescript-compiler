@@ -558,7 +558,7 @@ let handle_attributes
                    (* ?x:([`x of int ] [@bs.string]) does not make sense *)
                    Location.raise_errorf
                      ~loc
-                     "[@@bs.string] does not work with optional when it has arities in label %s" label
+                     "[@@bs.string] does not work with optional when it has arities in label %s" s
                  | _ ->
                    External_arg_spec.optional s, arg_type,
                    ((label, Ast_core_type.lift_option_type new_ty , attr,loc) :: arg_types) end
@@ -599,7 +599,7 @@ let handle_attributes
                (* more error checking *)
                [External_arg_spec.empty_kind arg_type]
                ,
-               ["", new_ty, [], obj.ptyp_loc]
+               [Ast_compatible.no_label, new_ty, [], obj.ptyp_loc]
                ,0
            end
 

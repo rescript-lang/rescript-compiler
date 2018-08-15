@@ -27,7 +27,13 @@ let rec unroll_function_aux
   (acc : string list)
   (body : Parsetree.expression) : string list * string =
   match body.pexp_desc with
-  | Pexp_constant(Const_string(block,_)) -> acc, block
+  | Pexp_constant(
+#if OCAML_VERSION =~ ">4.03.0" then 
+    Pconst_string
+#else    
+    Const_string
+#end    
+    (block,_)) -> acc, block
   | Pexp_fun(arg_label,_,{ppat_desc = Ppat_var s},cont)
     when Ast_compatible.is_arg_label_simple arg_label -> 
     unroll_function_aux (s.txt::acc) cont
@@ -59,7 +65,13 @@ let handle_extension record_as_js_object e (self : Bs_ast_mapper.mapper)
         when Ast_compatible.is_arg_label_simple arg_label
          -> 
          begin match pat.ppat_desc, body.pexp_desc with 
-         | Ppat_construct ({txt = Lident "()"}, None), Pexp_constant(Const_string(block,_))
+         | Ppat_construct ({txt = Lident "()"}, None), Pexp_constant(
+#if OCAML_VERSION =~ ">4.03.0" then
+          Pconst_string
+#else          
+           Const_string
+#end           
+           (block,_))
            -> 
             Ast_compatible.app1 ~loc 
             (Exp.ident ~loc {txt = Ldot (Ast_literal.Lid.js_unsafe, Literals.raw_function);loc})            
@@ -162,7 +174,13 @@ let handle_extension record_as_js_object e (self : Bs_ast_mapper.mapper)
                  (Exp.construct ~loc {txt = Lident "false";loc} None)
              else 
                (raiseWithString locString)
-           | Pexp_constant (Const_string (r, _)) -> 
+           | Pexp_constant (
+#if OCAML_VERSION =~ ">4.03.0" then 
+    Pconst_string
+#else    
+    Const_string
+#end              
+              (r, _)) -> 
              if !Clflags.noassert then 
                Exp.assert_ ~loc (Exp.construct ~loc {txt = Lident "true"; loc} None)
                (* Need special handling to make it type check*)
