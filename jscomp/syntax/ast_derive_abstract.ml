@@ -105,7 +105,7 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
                 ) in 
                aux true pld_name :: aux false pld_name  :: acc )
             else
-              Typ.arrow ~loc:pld_loc label_name pld_type maker,
+              Ast_compatible.label_arrow ~loc:pld_loc label_name pld_type maker,
               (
                 let aux b pld_name = 
                 Val.mk ~loc:pld_loc 

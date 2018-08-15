@@ -15470,7 +15470,7 @@ let handle_attributes
         begin
           (
             Ext_list.fold_right (fun (label,ty,attrs,loc) acc ->
-                Ast_helper.Typ.arrow ~loc  ~attrs label ty acc
+                Ast_compatible.label_arrow ~loc  ~attrs label ty acc
               ) new_arg_types_ty result
           ) ,
           prim_name,
@@ -15880,7 +15880,7 @@ let handle_attributes
       in
       (
         Ext_list.fold_right (fun (label,ty,attrs,loc) acc ->
-            Ast_helper.Typ.arrow ~loc  ~attrs label ty acc
+            Ast_compatible.label_arrow ~loc  ~attrs label ty acc
           ) new_arg_types_ty new_result_type
       ) ,
 
@@ -16680,7 +16680,7 @@ let ocaml_obj_as_js_object
   let pval_type =
     Ext_list.fold_right2
       (fun label label_type acc ->
-         Typ.arrow
+         Ast_compatible.label_arrow
            ~loc:label.Asttypes.loc
            label.Asttypes.txt
            label_type acc           
@@ -19319,7 +19319,7 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
                 ) in 
                aux true pld_name :: aux false pld_name  :: acc )
             else
-              Typ.arrow ~loc:pld_loc label_name pld_type maker,
+              Ast_compatible.label_arrow ~loc:pld_loc label_name pld_type maker,
               (
                 let aux b pld_name = 
                 Val.mk ~loc:pld_loc 
