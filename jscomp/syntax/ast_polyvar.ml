@@ -22,6 +22,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+#if OCAML_VERSION =~ ">4.03.0" then 
+let hash_label (x : Asttypes.label Asttypes.loc) = Ext_pervasives.hash_variant x.txt
+#else
+let hash_label = Ext_pervasives.hash_variant 
+#end
 
 let map_row_fields_into_ints ptyp_loc
     (row_fields : Parsetree.row_field list) 
@@ -36,10 +41,10 @@ let map_row_fields_into_ints ptyp_loc
             begin match Ast_attributes.iter_process_bs_int_as attrs with 
               | Some i -> 
                 i + 1, 
-                ((Ext_pervasives.hash_variant label , i):: acc ) 
+                ((hash_label label , i):: acc ) 
               | None -> 
                 i + 1 , 
-                ((Ext_pervasives.hash_variant label , i):: acc )
+                ((hash_label label , i):: acc )
             end
           | _ -> 
             Bs_syntaxerr.err ptyp_loc Invalid_bs_int_type
@@ -94,18 +99,18 @@ let map_row_fields_into_strings ptyp_loc
            -> 
            begin match Ast_attributes.iter_process_bs_string_as attrs with 
              | Some name -> 
-               `Null, ((Ext_pervasives.hash_variant label, name) :: acc )
+               `Null, ((hash_label label, name) :: acc )
 
              | None -> 
-               `Null, ((Ext_pervasives.hash_variant label, label) :: acc )
+               `Null, ((hash_label label, label) :: acc )
            end
          | (`Nothing | `NonNull), Parsetree.Rtag(label, attrs, false, ([ _ ])) 
            -> 
            begin match Ast_attributes.iter_process_bs_string_as attrs with 
              | Some name -> 
-               `NonNull, ((Ext_pervasives.hash_variant label, name) :: acc)
+               `NonNull, ((hash_label label, name) :: acc)
              | None -> 
-               `NonNull, ((Ext_pervasives.hash_variant label, label) :: acc)
+               `NonNull, ((hash_label label, label) :: acc)
            end
          | _ -> Bs_syntaxerr.err ptyp_loc Invalid_bs_string_type
 

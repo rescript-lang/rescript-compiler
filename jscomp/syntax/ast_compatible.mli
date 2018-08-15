@@ -117,3 +117,27 @@ val arrow :
   core_type -> 
   core_type ->
   core_type
+
+val label_arrow :
+  ?loc:Location.t -> 
+  ?attrs:attrs -> 
+  string -> 
+  core_type -> 
+  core_type ->
+  core_type
+
+val opt_arrow:
+  ?loc:Location.t -> 
+  ?attrs:attrs -> 
+  string -> 
+  core_type -> 
+  core_type ->
+  core_type
+
+val object_: 
+  ?loc:loc -> 
+  ?attrs:attrs ->
+  (string * attributes * core_type) list -> 
+  (*FIXME shall we use [string loc] instead?*)
+  Asttypes.closed_flag ->
+  core_type  

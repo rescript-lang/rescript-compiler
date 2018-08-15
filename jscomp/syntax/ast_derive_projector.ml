@@ -7,6 +7,14 @@ let invalid_config (config : Parsetree.expression) =
 
 type tdcls = Parsetree.type_declaration list 
 
+(* #if OCAML_VERSION =~ ">4.03.0" then 
+let constructor_arguments_length (xs : Parsetree.constructor_arguments) = 
+  match xs with 
+  | Pcstr_tuple xs -> List.length xs 
+  | Pcstr_record xs -> List.length xs (* inline record FIXME*) 
+#else
+let constructor_arguments_length = List.length 
+#end *)
 let derivingName = "accessors" 
 let init () =
   
@@ -41,6 +49,12 @@ let init () =
                     ( {pcd_name = {loc ; txt = con_name} ; pcd_args ; pcd_loc }:
                         Parsetree.constructor_declaration)
                     -> (* TODO: add type annotations *)
+#if OCAML_VERSION =~ ">4.03.0" then
+                      let pcd_args = 
+                        match pcd_args with 
+                        | Pcstr_tuple pcd_args -> pcd_args 
+                        | Pcstr_record _ -> assert false in  
+#end                        
                       let little_con_name = Ext_string.uncapitalize_ascii con_name  in
                       let arity = List.length pcd_args in 
                       Ast_comb.single_non_rec_value {loc ; txt = little_con_name}
@@ -106,6 +120,12 @@ let init () =
                   (fun  ({pcd_name = {loc ; txt = con_name} ; pcd_args ; pcd_loc }:
                            Parsetree.constructor_declaration)
                     -> 
+#if OCAML_VERSION =~ ">4.03.0" then                                          
+                      let pcd_args = 
+                        match pcd_args with 
+                        | Pcstr_tuple pcd_args -> pcd_args 
+                        | Pcstr_record _ -> assert false in 
+#end                        
                       Ast_comb.single_non_rec_val {loc ; txt = (Ext_string.uncapitalize_ascii con_name)}
                         (Ext_list.fold_right 
                            (fun x acc -> Ast_compatible.arrow x acc) 

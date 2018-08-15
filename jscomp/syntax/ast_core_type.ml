@@ -138,21 +138,20 @@ let from_labels ~loc arity labels
          Typ.var ~loc ("a" ^ string_of_int i)))) in
   let result_type =
     Ast_comb.to_js_type loc
-      (Typ.object_ ~loc
+      (Ast_compatible.object_ ~loc
          (Ext_list.map2 (fun x y -> x.Asttypes.txt ,[], y) labels tyvars) Closed)
   in
   Ext_list.fold_right2
     (fun {Asttypes.loc ; txt = label }
-      tyvar acc -> Typ.arrow ~loc label tyvar acc) labels tyvars  result_type
+      tyvar acc -> Ast_compatible.label_arrow ~loc label tyvar acc) labels tyvars  result_type
 
 
 let make_obj ~loc xs =
   Ast_comb.to_js_type loc
-    (Ast_helper.Typ.object_  ~loc xs Closed)
+    (Ast_compatible.object_  ~loc xs Closed)
 
 
-let opt_arrow loc label ty1 ty2 =
-  Typ.arrow ~loc ("?" ^ label) ty1 ty2
+
 (**
 
 {[ 'a . 'a -> 'b ]}
@@ -169,15 +168,19 @@ let rec get_uncurry_arity_aux  (ty : t) acc =
     | _ -> acc
 
 (**
-   {[ unit -> 'a1 -> a2']}  arity 2
    {[ unit -> 'b ]} return arity 0
+   {[ unit -> 'a1 -> a2']} arity 2
    {[ 'a1 -> 'a2 -> ... 'aN -> 'b ]} return arity N
 *)
 let get_uncurry_arity (ty : t ) =
   match ty.ptyp_desc  with
-  | Ptyp_arrow("", {ptyp_desc = (Ptyp_constr ({txt = Lident "unit"}, []))},
-    ({ptyp_desc = Ptyp_arrow _ } as rest  )) -> `Arity (get_uncurry_arity_aux rest 1 )
-  | Ptyp_arrow("", {ptyp_desc = (Ptyp_constr ({txt = Lident "unit"}, []))}, _) -> `Arity 0
+  | Ptyp_arrow(arg_label, {ptyp_desc = (Ptyp_constr ({txt = Lident "unit"}, []))},
+     rest  ) when Ast_compatible.is_arg_label_simple arg_label -> 
+     begin match rest with 
+     | {ptyp_desc = Ptyp_arrow _ } ->  
+      `Arity (get_uncurry_arity_aux rest 1 )
+    | _ -> `Arity 0 
+    end
   | Ptyp_arrow(_,_,rest ) ->
     `Arity(get_uncurry_arity_aux rest 1)
   | _ -> `Not_function

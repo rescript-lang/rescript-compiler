@@ -141,6 +141,21 @@ let apply_labels
         fn, 
         Ext_list.map (fun (l,a) -> Asttypes.Labelled l, a)  args ) }
 
+let object_ 
+  ?(loc= default_loc)
+  ?(attrs = [])
+  (fields : (string * attributes * core_type) list)
+  (* FIXME after upgrade *)
+  flg : core_type = 
+  {
+    ptyp_desc = 
+      Ptyp_object(
+        Ext_list.map (fun (a,b,c) -> 
+          Parsetree.Otag ({txt = a; loc = c.ptyp_loc},b,c)) fields,flg);
+    ptyp_loc = loc;
+    ptyp_attributes = attrs
+  }
+
 #else 
 
 let const_exp_string 
@@ -179,9 +194,40 @@ let apply_labels
         fn, 
         args ) }
 
+let object_ = Ast_helper.Typ.object_
+
 
 #end 
 
+let label_arrow ?(loc=default_loc) ?(attrs=[]) s a b : core_type = 
+  {
+      ptyp_desc = Ptyp_arrow(
+#if OCAML_VERSION =~ ">4.03.0" then 
+      Asttypes.Labelled s
+#else
+      s
+#end      
+      ,
+      a,
+      b);
+      ptyp_loc = loc;
+      ptyp_attributes = attrs
+  }
+
+let opt_arrow ?(loc=default_loc) ?(attrs=[]) s a b : core_type = 
+  {
+      ptyp_desc = Ptyp_arrow( 
+#if OCAML_VERSION =~ ">4.03.0" then 
+        Asttypes.Optional s
+#else
+        "?" ^ s
+#end        
+        ,
+        a,
+        b);
+      ptyp_loc = loc;
+      ptyp_attributes = attrs
+  }    
 
 let const_exp_int_list_as_array xs = 
   Ast_helper.Exp.array 

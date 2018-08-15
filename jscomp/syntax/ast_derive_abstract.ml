@@ -94,7 +94,7 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
           let maker, acc =
             if is_optional then
               let optional_type = Ast_core_type.lift_option_type pld_type in
-              (Ast_core_type.opt_arrow pld_loc label_name optional_type maker,
+              (Ast_compatible.opt_arrow ~loc:pld_loc label_name optional_type maker,
               let aux b pld_name = 
                 (Val.mk ~loc:pld_loc
                  (if b then pld_name else 

@@ -14415,6 +14415,30 @@ val arrow :
   core_type -> 
   core_type ->
   core_type
+
+val label_arrow :
+  ?loc:Location.t -> 
+  ?attrs:attrs -> 
+  string -> 
+  core_type -> 
+  core_type ->
+  core_type
+
+val opt_arrow:
+  ?loc:Location.t -> 
+  ?attrs:attrs -> 
+  string -> 
+  core_type -> 
+  core_type ->
+  core_type
+
+val object_: 
+  ?loc:loc -> 
+  ?attrs:attrs ->
+  (string * attributes * core_type) list -> 
+  (*FIXME shall we use [string loc] instead?*)
+  Asttypes.closed_flag ->
+  core_type  
 end = struct
 #1 "ast_compatible.ml"
 (* Copyright (C) 2018 Authors of BuckleScript
@@ -14558,9 +14582,36 @@ let apply_labels
         fn, 
         args ) }
 
+let object_ = Ast_helper.Typ.object_
+
 
  
 
+let label_arrow ?(loc=default_loc) ?(attrs=[]) s a b : core_type = 
+  {
+      ptyp_desc = Ptyp_arrow(
+
+      s
+      
+      ,
+      a,
+      b);
+      ptyp_loc = loc;
+      ptyp_attributes = attrs
+  }
+
+let opt_arrow ?(loc=default_loc) ?(attrs=[]) s a b : core_type = 
+  {
+      ptyp_desc = Ptyp_arrow( 
+
+        "?" ^ s
+        
+        ,
+        a,
+        b);
+      ptyp_loc = loc;
+      ptyp_attributes = attrs
+  }    
 
 let const_exp_int_list_as_array xs = 
   Ast_helper.Exp.array 
