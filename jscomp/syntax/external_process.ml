@@ -428,7 +428,7 @@ let handle_attributes
                let arg_label = Ast_core_type.label_name label in
                let new_arg_label, new_arg_types,  output_tys =
                  match arg_label with
-                 | Empty ->
+                 | Nolabel ->
                    let arg_type, new_ty = get_arg_type ~nolabel:true false ty in
                    begin match arg_type with
                      | Extern_unit ->
@@ -436,7 +436,7 @@ let handle_attributes
                      | _ ->
                        Location.raise_errorf ~loc "expect label, optional, or unit here"
                    end
-                 | Label name ->
+                 | Labelled name ->
                    let arg_type, new_ty = get_arg_type ~nolabel:false false ty in
                    begin match arg_type with
                      | Ignore ->
@@ -562,14 +562,14 @@ let handle_attributes
                  | _ ->
                    External_arg_spec.optional s, arg_type,
                    ((label, Ast_core_type.lift_option_type new_ty , attr,loc) :: arg_types) end
-             | Label s  ->
+             | Labelled s  ->
                begin match get_arg_type ~nolabel:false false  ty with
                  | (Arg_cst ( i) as arg_type), new_ty ->
                    External_arg_spec.label s (Some i), arg_type, arg_types
                  | arg_type, new_ty ->
                    External_arg_spec.label s None, arg_type, (label, new_ty,attr,loc) :: arg_types
                end
-             | Empty ->
+             | Nolabel ->
                begin match get_arg_type ~nolabel:true false  ty with
                  | (Arg_cst ( i) as arg_type), new_ty ->
                    External_arg_spec.empty_lit i , arg_type,  arg_types

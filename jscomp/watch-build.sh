@@ -8,6 +8,8 @@ export BS_DEBUG=true
 export npm_package_name=bs-platform
 
 echo "Checking"
+
+# make -r -j5 syntax.cmxa
 make -r -j5  check 
 echo "Linking"
 make -r -j3 ../lib/bsc.exe ../lib/bsb.exe bin/cmjdump.exe ../lib/bsb_helper.exe

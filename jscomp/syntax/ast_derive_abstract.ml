@@ -180,7 +180,7 @@ let handleTdclsInStr tdcls =
           Ext_list.map_append (fun x -> Str.primitive x) value_descriptions sts
 
       ) tdcls ([],[])  in
-  Str.type_ tdcls :: code
+Ast_compatible.rec_type_str tdcls :: code
 (* still need perform transformation for non-abstract type*)
 
 let handleTdclsInSig tdcls =
@@ -192,4 +192,4 @@ let handleTdclsInSig tdcls =
           Ext_list.map_append (fun x -> Sig.value x) value_descriptions sts
 
       ) tdcls ([],[])  in
-  Sig.type_ tdcls :: code
+  Ast_compatible.rec_type_sig tdcls :: code

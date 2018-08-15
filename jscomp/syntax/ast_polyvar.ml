@@ -24,8 +24,10 @@
 
 #if OCAML_VERSION =~ ">4.03.0" then 
 let hash_label (x : Asttypes.label Asttypes.loc) = Ext_pervasives.hash_variant x.txt
+let label_of_name (x : Asttypes.label Asttypes.loc) = x.txt
 #else
 let hash_label = Ext_pervasives.hash_variant 
+external label_of_name : string -> string = "%identity"
 #end
 
 let map_row_fields_into_ints ptyp_loc
@@ -90,7 +92,7 @@ let map_constructor_declarations_into_ints
     {[ [`a  | `c of int ] ]}       
 *)  
 let map_row_fields_into_strings ptyp_loc 
-    (row_fields : Parsetree.row_field list) = 
+    (row_fields : Parsetree.row_field list) : External_arg_spec.attr = 
   let case, result = 
     (Ext_list.fold_right (fun tag (nullary, acc) -> 
          match nullary, tag with 
@@ -102,7 +104,7 @@ let map_row_fields_into_strings ptyp_loc
                `Null, ((hash_label label, name) :: acc )
 
              | None -> 
-               `Null, ((hash_label label, label) :: acc )
+               `Null, ((hash_label label, label_of_name label) :: acc )
            end
          | (`Nothing | `NonNull), Parsetree.Rtag(label, attrs, false, ([ _ ])) 
            -> 
@@ -110,7 +112,7 @@ let map_row_fields_into_strings ptyp_loc
              | Some name -> 
                `NonNull, ((hash_label label, name) :: acc)
              | None -> 
-               `NonNull, ((hash_label label, label) :: acc)
+               `NonNull, ((hash_label label, label_of_name label) :: acc)
            end
          | _ -> Bs_syntaxerr.err ptyp_loc Invalid_bs_string_type
 
@@ -141,7 +143,13 @@ let is_enum_constructors
   List.for_all 
     (fun (x : Parsetree.constructor_declaration) ->
        match x with 
-       | {pcd_args = []} -> true 
+       | {pcd_args = 
+#if OCAML_VERSION =~ ">4.03.0" then 
+  Pcstr_tuple [] (* Note the enum is encoded using [Pcstr_tuple []]*)
+#else  
+        []
+#end        
+        } -> true 
        | _ -> false 
     )
     constructors

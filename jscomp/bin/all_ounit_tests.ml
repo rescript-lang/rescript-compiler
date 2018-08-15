@@ -14439,6 +14439,32 @@ val object_:
   (*FIXME shall we use [string loc] instead?*)
   Asttypes.closed_flag ->
   core_type  
+
+val rec_type_str:  
+  ?loc:loc -> 
+  type_declaration list -> 
+  structure_item
+
+val nonrec_type_str:  
+  ?loc:loc -> 
+  type_declaration list -> 
+  structure_item
+
+val rec_type_str:  
+  ?loc:loc -> 
+  type_declaration list -> 
+  structure_item
+
+val nonrec_type_sig:  
+  ?loc:loc -> 
+  type_declaration list -> 
+  signature_item 
+
+val rec_type_sig:  
+  ?loc:loc -> 
+  type_declaration list -> 
+  signature_item
+
 end = struct
 #1 "ast_compatible.ml"
 (* Copyright (C) 2018 Authors of BuckleScript
@@ -14612,6 +14638,40 @@ let opt_arrow ?(loc=default_loc) ?(attrs=[]) s a b : core_type =
       ptyp_loc = loc;
       ptyp_attributes = attrs
   }    
+
+let rec_type_str ?(loc=default_loc)  tds : structure_item = 
+  {
+    pstr_loc = loc;
+    pstr_desc = Pstr_type ( 
+      
+      tds)
+  }
+
+let nonrec_type_str ?(loc=default_loc)  tds : structure_item = 
+  {
+    pstr_loc = loc;
+    pstr_desc = Pstr_type ( 
+      
+      tds)
+  }  
+
+let rec_type_sig ?(loc=default_loc)  tds : signature_item = 
+  {
+    psig_loc = loc;
+    psig_desc = Psig_type ( 
+      
+      tds)
+  }
+
+(* FIXME: need address migration of `[@nonrec]` attributes in older ocaml *)  
+let nonrec_type_sig ?(loc=default_loc)  tds : signature_item = 
+  {
+    psig_loc = loc;
+    psig_desc = Psig_type ( 
+      
+      tds)
+  }  
+
 
 let const_exp_int_list_as_array xs = 
   Ast_helper.Exp.array 
