@@ -47,8 +47,7 @@ let warn_unused_attributes attrs =
       ) attrs
 #if OCAML_VERSION =~ ">4.03.0" then 
 type iterator = Ast_iterator.iterator
-
-
+let default_iterator = Ast_iterator.default_iterator
 #else
 type iterator = Bs_ast_iterator.iterator      
 let default_iterator = Bs_ast_iterator.default_iterator
@@ -67,7 +66,13 @@ let emit_external_warnings : iterator=
       );
     expr = (fun self a -> 
         match a.Parsetree.pexp_desc with 
-        | Pexp_constant (Const_string (_, Some s)) 
+        | Pexp_constant (
+#if OCAML_VERSION =~ ">4.03.0"  then
+          Pconst_string
+#else          
+          Const_string 
+#end
+          (_, Some s)) 
           when Ext_string.equal s Literals.unescaped_j_delimiter 
             || Ext_string.equal s Literals.unescaped_js_delimiter -> 
           Bs_warnings.error_unescaped_delimiter a.pexp_loc s 

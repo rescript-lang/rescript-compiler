@@ -32,7 +32,7 @@ val lift_option_type : t -> t
 val is_any : t -> bool
 val replace_result : t -> t -> t
 
-val opt_arrow: Location.t -> string -> t -> t -> t
+(* val opt_arrow: Location.t -> string -> t -> t -> t *)
 
 val is_unit : t -> bool
 val is_array : t -> bool
@@ -82,6 +82,6 @@ val get_uncurry_arity : t -> [`Arity of int | `Not_function ]
 (** fails when Ptyp_poly *)
 val list_of_arrow :
   t ->
-  t *  (Asttypes.label * t * Parsetree.attributes * Location.t) list
+  t *  (Ast_compatible.arg_label * t * Parsetree.attributes * Location.t) list
 
 val is_arity_one : t -> bool

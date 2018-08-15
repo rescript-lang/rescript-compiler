@@ -360,12 +360,9 @@ let bs_get_arity : attr
     PStr 
     [{pstr_desc =
          Pstr_eval (
-           {pexp_desc =
-              Pexp_constant
-                (Const_int 1);
-            pexp_loc = locg;
-            pexp_attributes = []
-           },[])
+          Ast_compatible.const_exp_int ~loc:locg 1
+           ,
+           [])
       ; pstr_loc = locg}]
   
 
@@ -394,10 +391,6 @@ let deprecated s : attr =
     [
       {pstr_desc =
          Pstr_eval (
-           {pexp_desc =
-              Pexp_constant
-                (Const_string (s,None));
-            pexp_loc = locg;
-            pexp_attributes = []
-           },[])
+           Ast_compatible.const_exp_string ~loc:locg s, 
+           [])
       ; pstr_loc = locg}]

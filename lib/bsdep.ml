@@ -24551,6 +24551,30 @@ val arrow :
   core_type -> 
   core_type ->
   core_type
+
+val label_arrow :
+  ?loc:Location.t -> 
+  ?attrs:attrs -> 
+  string -> 
+  core_type -> 
+  core_type ->
+  core_type
+
+val opt_arrow:
+  ?loc:Location.t -> 
+  ?attrs:attrs -> 
+  string -> 
+  core_type -> 
+  core_type ->
+  core_type
+
+val object_: 
+  ?loc:loc -> 
+  ?attrs:attrs ->
+  (string * attributes * core_type) list -> 
+  (*FIXME shall we use [string loc] instead?*)
+  Asttypes.closed_flag ->
+  core_type  
 end = struct
 #1 "ast_compatible.ml"
 (* Copyright (C) 2018 Authors of BuckleScript
@@ -24694,9 +24718,36 @@ let apply_labels
         fn, 
         args ) }
 
+let object_ = Ast_helper.Typ.object_
+
 
  
 
+let label_arrow ?(loc=default_loc) ?(attrs=[]) s a b : core_type = 
+  {
+      ptyp_desc = Ptyp_arrow(
+
+      s
+      
+      ,
+      a,
+      b);
+      ptyp_loc = loc;
+      ptyp_attributes = attrs
+  }
+
+let opt_arrow ?(loc=default_loc) ?(attrs=[]) s a b : core_type = 
+  {
+      ptyp_desc = Ptyp_arrow( 
+
+        "?" ^ s
+        
+        ,
+        a,
+        b);
+      ptyp_loc = loc;
+      ptyp_attributes = attrs
+  }    
 
 let const_exp_int_list_as_array xs = 
   Ast_helper.Exp.array 
@@ -25561,7 +25612,7 @@ val is_single_int : t -> int option
 type rtn = Not_String_Lteral | JS_Regex_Check_Failed | Correct of Parsetree.expression
 val as_string_exp : check_js_regex: bool -> t -> rtn
 val as_core_type : Location.t -> t -> Parsetree.core_type    
-val as_empty_structure :  t -> bool 
+(* val as_empty_structure :  t -> bool  *)
 val as_ident : t -> Longident.t Asttypes.loc option
 val raw_string_payload : Location.t -> string -> t 
 val assert_strings :
@@ -25636,13 +25687,18 @@ let is_single_string (x : t ) =
         Pstr_eval (
           {pexp_desc = 
              Pexp_constant 
-               (Const_string (name,dec));
+
+               (Const_string (name,dec))
+               
+              ;
            _},_);
       _}] -> Some (name,dec)
   | _  -> None
 
-let is_single_int (x : t ) = 
-  match x with  (** TODO also need detect empty phrase case *)
+(** TODO also need detect empty phrase case *)  
+
+let is_single_int (x : t ) : int option = 
+  match x with  
   | PStr [ {
       pstr_desc =  
         Pstr_eval (
@@ -25662,7 +25718,10 @@ let as_string_exp ~check_js_regex (x : t ) =
         Pstr_eval (
           {pexp_desc = 
              Pexp_constant 
-               (Const_string (str,_));
+
+               (Const_string (str,_))
+               
+               ;
            _} as e ,_);
       _}] -> if check_js_regex then (if Ext_js_regex.js_regex_checker str then Correct e else JS_Regex_Check_Failed) else Correct e
   | _  -> Not_String_Lteral
@@ -25690,10 +25749,6 @@ open Ast_helper
 let raw_string_payload loc (s : string) : t =
   PStr [ Str.eval ~loc (Ast_compatible.const_exp_string ~loc s) ]
 
-let as_empty_structure (x : t ) = 
-  match x with 
-  | PStr ([]) -> true
-  | PTyp _ | PPat _ | PStr (_ :: _ ) -> false 
 
 type lid = string Asttypes.loc
 type label_expr = lid  * Parsetree.expression
@@ -25785,7 +25840,11 @@ let assert_strings loc (x : t) : string list
     (try 
        strs |> Ext_list.map (fun e ->
            match (e : Parsetree.expression) with
-           | {pexp_desc = Pexp_constant (Const_string (name,_)); _} -> 
+           | {pexp_desc = Pexp_constant (
+              
+              Const_string
+              
+               (name,_)); _} -> 
              name
            | _ -> raise M.Not_str)
      with M.Not_str ->
@@ -25796,10 +25855,13 @@ let assert_strings loc (x : t) : string list
         Pstr_eval (
           {pexp_desc = 
              Pexp_constant 
+               
                (Const_string (name,_));
+               
            _},_);
       _}] ->  [name] 
   | PStr [] ->  []
+
   | PStr _                
   | PTyp _ | PPat _ ->
     Location.raise_errorf ~loc "expect string tuple list"
@@ -26409,7 +26471,7 @@ val lift_option_type : t -> t
 val is_any : t -> bool
 val replace_result : t -> t -> t
 
-val opt_arrow: Location.t -> string -> t -> t -> t
+(* val opt_arrow: Location.t -> string -> t -> t -> t *)
 
 val is_unit : t -> bool
 val is_array : t -> bool
@@ -26459,7 +26521,7 @@ val get_uncurry_arity : t -> [`Arity of int | `Not_function ]
 (** fails when Ptyp_poly *)
 val list_of_arrow :
   t ->
-  t *  (Asttypes.label * t * Parsetree.attributes * Location.t) list
+  t *  (Ast_compatible.arg_label * t * Parsetree.attributes * Location.t) list
 
 val is_arity_one : t -> bool
 
@@ -26605,21 +26667,20 @@ let from_labels ~loc arity labels
          Typ.var ~loc ("a" ^ string_of_int i)))) in
   let result_type =
     Ast_comb.to_js_type loc
-      (Typ.object_ ~loc
+      (Ast_compatible.object_ ~loc
          (Ext_list.map2 (fun x y -> x.Asttypes.txt ,[], y) labels tyvars) Closed)
   in
   Ext_list.fold_right2
     (fun {Asttypes.loc ; txt = label }
-      tyvar acc -> Typ.arrow ~loc label tyvar acc) labels tyvars  result_type
+      tyvar acc -> Ast_compatible.label_arrow ~loc label tyvar acc) labels tyvars  result_type
 
 
 let make_obj ~loc xs =
   Ast_comb.to_js_type loc
-    (Ast_helper.Typ.object_  ~loc xs Closed)
+    (Ast_compatible.object_  ~loc xs Closed)
 
 
-let opt_arrow loc label ty1 ty2 =
-  Typ.arrow ~loc ("?" ^ label) ty1 ty2
+
 (**
 
 {[ 'a . 'a -> 'b ]}
@@ -26636,15 +26697,19 @@ let rec get_uncurry_arity_aux  (ty : t) acc =
     | _ -> acc
 
 (**
-   {[ unit -> 'a1 -> a2']}  arity 2
    {[ unit -> 'b ]} return arity 0
+   {[ unit -> 'a1 -> a2']} arity 2
    {[ 'a1 -> 'a2 -> ... 'aN -> 'b ]} return arity N
 *)
 let get_uncurry_arity (ty : t ) =
   match ty.ptyp_desc  with
-  | Ptyp_arrow("", {ptyp_desc = (Ptyp_constr ({txt = Lident "unit"}, []))},
-    ({ptyp_desc = Ptyp_arrow _ } as rest  )) -> `Arity (get_uncurry_arity_aux rest 1 )
-  | Ptyp_arrow("", {ptyp_desc = (Ptyp_constr ({txt = Lident "unit"}, []))}, _) -> `Arity 0
+  | Ptyp_arrow(arg_label, {ptyp_desc = (Ptyp_constr ({txt = Lident "unit"}, []))},
+     rest  ) when Ast_compatible.is_arg_label_simple arg_label -> 
+     begin match rest with 
+     | {ptyp_desc = Ptyp_arrow _ } ->  
+      `Arity (get_uncurry_arity_aux rest 1 )
+    | _ -> `Arity 0 
+    end
   | Ptyp_arrow(_,_,rest ) ->
     `Arity(get_uncurry_arity_aux rest 1)
   | _ -> `Not_function
@@ -28499,7 +28564,11 @@ let emit_external_warnings : iterator=
       );
     expr = (fun self a -> 
         match a.Parsetree.pexp_desc with 
-        | Pexp_constant (Const_string (_, Some s)) 
+        | Pexp_constant (
+          
+          Const_string 
+
+          (_, Some s)) 
           when Ext_string.equal s Literals.unescaped_j_delimiter 
             || Ext_string.equal s Literals.unescaped_js_delimiter -> 
           Bs_warnings.error_unescaped_delimiter a.pexp_loc s 
@@ -28989,12 +29058,9 @@ let bs_get_arity : attr
     PStr 
     [{pstr_desc =
          Pstr_eval (
-           {pexp_desc =
-              Pexp_constant
-                (Const_int 1);
-            pexp_loc = locg;
-            pexp_attributes = []
-           },[])
+          Ast_compatible.const_exp_int ~loc:locg 1
+           ,
+           [])
       ; pstr_loc = locg}]
   
 
@@ -29023,12 +29089,8 @@ let deprecated s : attr =
     [
       {pstr_desc =
          Pstr_eval (
-           {pexp_desc =
-              Pexp_constant
-                (Const_string (s,None));
-            pexp_loc = locg;
-            pexp_attributes = []
-           },[])
+           Ast_compatible.const_exp_string ~loc:locg s, 
+           [])
       ; pstr_loc = locg}]
 
 end
@@ -31861,6 +31923,9 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
+let hash_label = Ext_pervasives.hash_variant 
+
+
 let map_row_fields_into_ints ptyp_loc
     (row_fields : Parsetree.row_field list) 
   = 
@@ -31874,10 +31939,10 @@ let map_row_fields_into_ints ptyp_loc
             begin match Ast_attributes.iter_process_bs_int_as attrs with 
               | Some i -> 
                 i + 1, 
-                ((Ext_pervasives.hash_variant label , i):: acc ) 
+                ((hash_label label , i):: acc ) 
               | None -> 
                 i + 1 , 
-                ((Ext_pervasives.hash_variant label , i):: acc )
+                ((hash_label label , i):: acc )
             end
           | _ -> 
             Bs_syntaxerr.err ptyp_loc Invalid_bs_int_type
@@ -31932,18 +31997,18 @@ let map_row_fields_into_strings ptyp_loc
            -> 
            begin match Ast_attributes.iter_process_bs_string_as attrs with 
              | Some name -> 
-               `Null, ((Ext_pervasives.hash_variant label, name) :: acc )
+               `Null, ((hash_label label, name) :: acc )
 
              | None -> 
-               `Null, ((Ext_pervasives.hash_variant label, label) :: acc )
+               `Null, ((hash_label label, label) :: acc )
            end
          | (`Nothing | `NonNull), Parsetree.Rtag(label, attrs, false, ([ _ ])) 
            -> 
            begin match Ast_attributes.iter_process_bs_string_as attrs with 
              | Some name -> 
-               `NonNull, ((Ext_pervasives.hash_variant label, name) :: acc)
+               `NonNull, ((hash_label label, name) :: acc)
              | None -> 
-               `NonNull, ((Ext_pervasives.hash_variant label, label) :: acc)
+               `NonNull, ((hash_label label, label) :: acc)
            end
          | _ -> Bs_syntaxerr.err ptyp_loc Invalid_bs_string_type
 
@@ -34298,12 +34363,14 @@ let to_method_callback  =
   generic_to_uncurry_exp `Method_callback 
 
 
-let handle_debugger loc payload = 
-  if Ast_payload.as_empty_structure payload then
+let handle_debugger loc (payload : Ast_payload.t) = 
+  match payload with 
+  | PStr [] -> 
     Parsetree.Pexp_apply
       (Exp.ident {txt = Ldot(Ast_literal.Lid.js_unsafe, Literals.debugger ); loc}, 
        ["", Ast_literal.val_unit ~loc ()])
-  else Location.raise_errorf ~loc "bs.raw can only be applied to a string"
+  | _ ->  
+    Location.raise_errorf ~loc "bs.debugger does not accept payload"
 
 
 let handle_raw ~check_js_regex loc payload =
@@ -36017,7 +36084,7 @@ let init () =
 
                   let objType flag =                     
                     Ast_comb.to_js_type loc @@  
-                    Typ.object_
+                    Ast_compatible.object_
                       (List.map 
                          (fun ({pld_name = {loc; txt }; pld_type } : Parsetree.label_declaration) -> 
                             txt, [], pld_type
@@ -36130,6 +36197,14 @@ let invalid_config (config : Parsetree.expression) =
 
 type tdcls = Parsetree.type_declaration list 
 
+(* #if OCAML_VERSION =~ ">4.03.0" then 
+let constructor_arguments_length (xs : Parsetree.constructor_arguments) = 
+  match xs with 
+  | Pcstr_tuple xs -> List.length xs 
+  | Pcstr_record xs -> List.length xs (* inline record FIXME*) 
+#else
+let constructor_arguments_length = List.length 
+#end *)
 let derivingName = "accessors" 
 let init () =
   
@@ -36164,6 +36239,7 @@ let init () =
                     ( {pcd_name = {loc ; txt = con_name} ; pcd_args ; pcd_loc }:
                         Parsetree.constructor_declaration)
                     -> (* TODO: add type annotations *)
+                        
                       let little_con_name = Ext_string.uncapitalize_ascii con_name  in
                       let arity = List.length pcd_args in 
                       Ast_comb.single_non_rec_value {loc ; txt = little_con_name}
@@ -36229,6 +36305,7 @@ let init () =
                   (fun  ({pcd_name = {loc ; txt = con_name} ; pcd_args ; pcd_loc }:
                            Parsetree.constructor_declaration)
                     -> 
+                        
                       Ast_comb.single_non_rec_val {loc ; txt = (Ext_string.uncapitalize_ascii con_name)}
                         (Ext_list.fold_right 
                            (fun x acc -> Ast_compatible.arrow x acc) 
@@ -37226,7 +37303,7 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
           let maker, acc =
             if is_optional then
               let optional_type = Ast_core_type.lift_option_type pld_type in
-              (Ast_core_type.opt_arrow pld_loc label_name optional_type maker,
+              (Ast_compatible.opt_arrow ~loc:pld_loc label_name optional_type maker,
               let aux b pld_name = 
                 (Val.mk ~loc:pld_loc
                  (if b then pld_name else 

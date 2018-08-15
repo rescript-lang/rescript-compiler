@@ -286,12 +286,14 @@ let to_method_callback  =
   generic_to_uncurry_exp `Method_callback 
 
 
-let handle_debugger loc payload = 
-  if Ast_payload.as_empty_structure payload then
+let handle_debugger loc (payload : Ast_payload.t) = 
+  match payload with 
+  | PStr [] -> 
     Parsetree.Pexp_apply
       (Exp.ident {txt = Ldot(Ast_literal.Lid.js_unsafe, Literals.debugger ); loc}, 
        ["", Ast_literal.val_unit ~loc ()])
-  else Location.raise_errorf ~loc "bs.raw can only be applied to a string"
+  | _ ->  
+    Location.raise_errorf ~loc "bs.debugger does not accept payload"
 
 
 let handle_raw ~check_js_regex loc payload =

@@ -432,7 +432,7 @@ let init () =
 
                   let objType flag =                     
                     Ast_comb.to_js_type loc @@  
-                    Typ.object_
+                    Ast_compatible.object_
                       (List.map 
                          (fun ({pld_name = {loc; txt }; pld_type } : Parsetree.label_declaration) -> 
                             txt, [], pld_type
