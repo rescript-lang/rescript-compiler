@@ -23,7 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-type args = (string * Parsetree.expression) list
+type args = (Ast_compatible.arg_label * Parsetree.expression) list
 type loc = Location.t 
 type label_exprs = (Longident.t Asttypes.loc * Parsetree.expression) list
 type 'a cxt = loc -> Bs_ast_mapper.mapper -> 'a
@@ -38,7 +38,7 @@ type uncurry_expression_gen =
    Parsetree.expression ->
    Parsetree.expression_desc) cxt
 type uncurry_type_gen = 
-  (string -> (* label for error checking *)
+  (Ast_compatible.arg_label -> (* label for error checking *)
    Parsetree.core_type ->
    Parsetree.core_type  ->
    Parsetree.core_type) cxt

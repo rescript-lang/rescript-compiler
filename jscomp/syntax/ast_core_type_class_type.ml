@@ -52,7 +52,13 @@ let process_getter_setter ~not_getter_setter ~get ~set
     in 
     if st.set = None then get_acc 
     else
-      set ty (name ^ Literals.setter_suffix) pctf_attributes         
+      set ty 
+#if OCAML_VERSION =~ ">4.03.0"  then
+    ({name with txt = name.Asttypes.txt ^ Literals.setter_suffix} : _ Asttypes.loc)
+#else
+      (name ^ Literals.setter_suffix)
+#end
+      pctf_attributes         
       :: get_acc 
 
 
@@ -101,7 +107,7 @@ let handle_class_type_field self
                       private_flag,
                       virtual_flag,
                       Ast_util.to_method_type
-                        loc self "" ty
+                        loc self Ast_compatible.no_label ty
                         (Ast_literal.type_unit ~loc ())
                      );
        pctf_attributes} in
@@ -181,7 +187,7 @@ let handle_core_type
               | Meth_callback attr, attrs ->
                 attrs, attr +> ty
             in               
-            name, attrs, Ast_util.to_method_type loc self "" core_type 
+            name, attrs, Ast_util.to_method_type loc self Ast_compatible.no_label core_type 
               (Ast_literal.type_unit ~loc ()) in
           let not_getter_setter ty =
             let attrs, core_type =

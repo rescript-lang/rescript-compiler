@@ -110,8 +110,6 @@ let is_user_int (ty : t) =
   | Ptyp_constr({txt = Lident "int"},[]) -> true
   | _ -> false
 
-let is_optional_label l =
-  String.length l > 0 && l.[0] = '?'
 
 
 
@@ -193,7 +191,7 @@ let list_of_arrow (ty : t) =
   in aux ty []
 
 
-type arg_label =
+(* type arg_label =
   | Nolabel (* it will be ignored , side effect will be recorded *)
   | Labelled of string
   | Optional of string
@@ -203,4 +201,4 @@ let label_name l : arg_label =
   if l = "" then Nolabel else
   if is_optional_label l
   then Optional (String.sub l 1 (String.length l - 1))
-  else Labelled l  
+  else Labelled l   *)

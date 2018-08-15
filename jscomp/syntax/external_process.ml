@@ -425,7 +425,7 @@ let handle_attributes
         let arg_kinds, new_arg_types_ty, result_types =
           Ext_list.fold_right
             (fun (label,ty,attr,loc) ( arg_labels, arg_types, result_types) ->
-               let arg_label = Ast_core_type.label_name label in
+               let arg_label = Ast_compatible.convert label in
                let new_arg_label, new_arg_types,  output_tys =
                  match arg_label with
                  | Nolabel ->
@@ -547,7 +547,7 @@ let handle_attributes
     let arg_type_specs, new_arg_types_ty, arg_type_specs_length   =
       Ext_list.fold_right
         (fun (label,ty,attr,loc) (arg_type_specs, arg_types, i) ->
-           let arg_label = Ast_core_type.label_name label in
+           let arg_label = Ast_compatible.convert label in
            let arg_label, arg_type, new_arg_types =
              match arg_label with
              | Optional s  ->
@@ -558,7 +558,7 @@ let handle_attributes
                    (* ?x:([`x of int ] [@bs.string]) does not make sense *)
                    Location.raise_errorf
                      ~loc
-                     "[@@bs.string] does not work with optional when it has arities in label %s" label
+                     "[@@bs.string] does not work with optional when it has arities in label %s" s
                  | _ ->
                    External_arg_spec.optional s, arg_type,
                    ((label, Ast_core_type.lift_option_type new_ty , attr,loc) :: arg_types) end
@@ -599,7 +599,7 @@ let handle_attributes
                (* more error checking *)
                [External_arg_spec.empty_kind arg_type]
                ,
-               ["", new_ty, [], obj.ptyp_loc]
+               [Ast_compatible.no_label, new_ty, [], obj.ptyp_loc]
                ,0
            end
 

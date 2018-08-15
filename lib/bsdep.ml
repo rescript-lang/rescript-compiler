@@ -24460,6 +24460,13 @@ module Ast_compatible : sig
 
 
 type arg_label = string 
+type label = 
+  | Nolabel
+  | Labelled of string
+  | Optional of string
+val convert: arg_label -> label
+
+
 
 
 val no_label: arg_label
@@ -24634,8 +24641,25 @@ let default_loc = Location.none
 
  
 type arg_label = string
+type label = 
+  | Nolabel
+  | Labelled of string
+  | Optional of string
 let no_label : arg_label = ""
 let is_arg_label_simple s = (s : arg_label) = no_label  
+
+let is_optional_label l =
+  String.length l > 0 && l.[0] = '?'
+
+(** for
+       [x:t] -> "x"
+       [?x:t] -> "?x"
+*)  
+let convert l : label =
+  if l = "" then Nolabel else
+  if is_optional_label l
+  then Optional (String.sub l 1 (String.length l - 1))
+  else Labelled l  
 
 
 let arrow ?(loc=default_loc) ?(attrs = []) a b  =
@@ -26535,21 +26559,6 @@ val replace_result : t -> t -> t
 
 val is_unit : t -> bool
 val is_array : t -> bool
-type arg_label =
-  | Nolabel
-  | Labelled of string
-  | Optional of string
-
-
-
-(** for
-       [x:t] -> "x"
-       [?x:t] -> "?x"
-*)
-val label_name : string -> arg_label
-
-
-
 
 
 (** return a function type
@@ -26571,7 +26580,7 @@ val is_user_bool : t -> bool
 
 val is_user_int : t -> bool
 
-val is_optional_label : string -> bool
+
 
 (**
   returns 0 when it can not tell arity from the syntax
@@ -26700,8 +26709,6 @@ let is_user_int (ty : t) =
   | Ptyp_constr({txt = Lident "int"},[]) -> true
   | _ -> false
 
-let is_optional_label l =
-  String.length l > 0 && l.[0] = '?'
 
 
 
@@ -26783,7 +26790,7 @@ let list_of_arrow (ty : t) =
   in aux ty []
 
 
-type arg_label =
+(* type arg_label =
   | Nolabel (* it will be ignored , side effect will be recorded *)
   | Labelled of string
   | Optional of string
@@ -26793,7 +26800,7 @@ let label_name l : arg_label =
   if l = "" then Nolabel else
   if is_optional_label l
   then Optional (String.sub l 1 (String.length l - 1))
-  else Labelled l  
+  else Labelled l   *)
 end
 module Bs_ast_iterator : sig 
 #1 "bs_ast_iterator.mli"
@@ -33430,7 +33437,7 @@ let handle_attributes
         let arg_kinds, new_arg_types_ty, result_types =
           Ext_list.fold_right
             (fun (label,ty,attr,loc) ( arg_labels, arg_types, result_types) ->
-               let arg_label = Ast_core_type.label_name label in
+               let arg_label = Ast_compatible.convert label in
                let new_arg_label, new_arg_types,  output_tys =
                  match arg_label with
                  | Nolabel ->
@@ -33552,7 +33559,7 @@ let handle_attributes
     let arg_type_specs, new_arg_types_ty, arg_type_specs_length   =
       Ext_list.fold_right
         (fun (label,ty,attr,loc) (arg_type_specs, arg_types, i) ->
-           let arg_label = Ast_core_type.label_name label in
+           let arg_label = Ast_compatible.convert label in
            let arg_label, arg_type, new_arg_types =
              match arg_label with
              | Optional s  ->
@@ -33563,7 +33570,7 @@ let handle_attributes
                    (* ?x:([`x of int ] [@bs.string]) does not make sense *)
                    Location.raise_errorf
                      ~loc
-                     "[@@bs.string] does not work with optional when it has arities in label %s" label
+                     "[@@bs.string] does not work with optional when it has arities in label %s" s
                  | _ ->
                    External_arg_spec.optional s, arg_type,
                    ((label, Ast_core_type.lift_option_type new_ty , attr,loc) :: arg_types) end
@@ -33604,7 +33611,7 @@ let handle_attributes
                (* more error checking *)
                [External_arg_spec.empty_kind arg_type]
                ,
-               ["", new_ty, [], obj.ptyp_loc]
+               [Ast_compatible.no_label, new_ty, [], obj.ptyp_loc]
                ,0
            end
 
@@ -34035,7 +34042,7 @@ module Ast_util : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-type args = (string * Parsetree.expression) list
+type args = (Ast_compatible.arg_label * Parsetree.expression) list
 type loc = Location.t 
 type label_exprs = (Longident.t Asttypes.loc * Parsetree.expression) list
 type 'a cxt = loc -> Bs_ast_mapper.mapper -> 'a
@@ -34050,7 +34057,7 @@ type uncurry_expression_gen =
    Parsetree.expression ->
    Parsetree.expression_desc) cxt
 type uncurry_type_gen = 
-  (string -> (* label for error checking *)
+  (Ast_compatible.arg_label -> (* label for error checking *)
    Parsetree.core_type ->
    Parsetree.core_type  ->
    Parsetree.core_type) cxt
@@ -34172,14 +34179,14 @@ end = struct
 open Ast_helper 
 type 'a cxt = Ast_helper.loc -> Bs_ast_mapper.mapper -> 'a
 type loc = Location.t 
-type args = (string * Parsetree.expression) list
+type args = (Ast_compatible.arg_label * Parsetree.expression) list
 type label_exprs = (Longident.t Asttypes.loc * Parsetree.expression) list
 type uncurry_expression_gen = 
   (Parsetree.pattern ->
    Parsetree.expression ->
    Parsetree.expression_desc) cxt
 type uncurry_type_gen = 
-  (string ->
+  (Ast_compatible.arg_label ->
    Parsetree.core_type ->
    Parsetree.core_type  ->
    Parsetree.core_type) cxt
@@ -34195,9 +34202,14 @@ let method_call_back_id  =
 
 let arity_lit = "Arity_"
 
-let mk_args loc n tys = 
+let mk_args loc (n : int) (tys : Parsetree.core_type list) : Parsetree.core_type = 
   Typ.variant ~loc 
-    [ Rtag (arity_lit ^ string_of_int n, [], (n = 0),  tys)] Closed None
+    [ Rtag (
+
+      arity_lit ^ string_of_int n
+      
+      ,
+       [], (n = 0),  tys)] Closed None
 
 let generic_lift txt loc args result  = 
   let xs =
@@ -34236,13 +34248,17 @@ let lift_js_method_callback loc
 let arrow = Ast_compatible.arrow
 
 
-let js_property loc obj name =
+let js_property loc obj (name : string) =
   Parsetree.Pexp_send
     ((Ast_compatible.app1 ~loc
         (Exp.ident ~loc
            {loc;
             txt = Ldot (Ast_literal.Lid.js_unsafe, Literals.unsafe_downgrade)})
-        obj), name)
+        obj), 
+         
+        name
+
+        )
 
 (* TODO: 
    have a final checking for property arities 
@@ -34257,7 +34273,7 @@ let generic_apply  kind loc
   let obj = self.expr self obj in
   let args =
     Ext_list.map (fun (label,e) ->
-        if label <> "" then
+        if not (Ast_compatible.is_arg_label_simple label) then
           Bs_syntaxerr.err loc Label_in_uncurried_bs_attribute;
         self.expr self e
       ) args in
@@ -34280,7 +34296,7 @@ let generic_apply  kind loc
         Longident.Ldot(Ast_literal.Lid.js_unsafe,
                        Literals.method_run ^ string_of_int arity
                       ) in 
-    Parsetree.Pexp_apply (Exp.ident {txt ; loc}, ("",fn) :: Ext_list.map (fun x -> "",x) args)
+    Parsetree.Pexp_apply (Exp.ident {txt ; loc}, (Ast_compatible.no_label,fn) :: Ext_list.map (fun x -> Ast_compatible.no_label,x) args)
   else 
     let fn_type, args_type, result_type = Ast_comb.tuple_type_pair ~loc `Run arity  in 
     let string_arity = string_of_int arity in
@@ -34311,7 +34327,7 @@ let method_apply loc self obj name args =
 let generic_to_uncurry_type  kind loc (mapper : Bs_ast_mapper.mapper) label
     (first_arg : Parsetree.core_type) 
     (typ : Parsetree.core_type)  =
-  if label <> "" then
+  if not (Ast_compatible.is_arg_label_simple label) then
     Bs_syntaxerr.err loc Label_in_uncurried_bs_attribute;
 
   let rec aux acc (typ : Parsetree.core_type) = 
@@ -34325,7 +34341,7 @@ let generic_to_uncurry_type  kind loc (mapper : Bs_ast_mapper.mapper) label
       begin match typ.ptyp_desc with 
         | Ptyp_arrow (label, arg, body)
           -> 
-          if label <> "" then
+          if not (Ast_compatible.is_arg_label_simple label) then
             Bs_syntaxerr.err typ.ptyp_loc Label_in_uncurried_bs_attribute;
           aux (mapper.typ mapper arg :: acc) body 
         | _ -> mapper.typ mapper typ, acc 
@@ -34408,7 +34424,7 @@ let generic_to_uncurry_exp kind loc (self : Bs_ast_mapper.mapper)  pat body
         Longident.Ldot ( Ast_literal.Lid.js_unsafe, Literals.fn_mk ^ string_of_int arity)
       | `Method_callback -> 
         Longident.Ldot (Ast_literal.Lid.js_unsafe,  Literals.fn_method ^ string_of_int arity) in
-    Parsetree.Pexp_apply (Exp.ident {txt;loc} , ["",body])
+    Parsetree.Pexp_apply (Exp.ident {txt;loc} , [ Ast_compatible.no_label, body])
 
   else 
     let pval_prim =
@@ -34438,7 +34454,7 @@ let handle_debugger loc (payload : Ast_payload.t) =
   | PStr [] -> 
     Parsetree.Pexp_apply
       (Exp.ident {txt = Ldot(Ast_literal.Lid.js_unsafe, Literals.debugger ); loc}, 
-       ["", Ast_literal.val_unit ~loc ()])
+       [ Ast_compatible.no_label, Ast_literal.val_unit ~loc ()])
   | _ ->  
     Location.raise_errorf ~loc "bs.debugger does not accept payload"
 
@@ -34457,7 +34473,7 @@ let handle_raw ~check_js_regex loc payload =
                      txt = 
                        Ldot (Ast_literal.Lid.js_unsafe, 
                              Literals.raw_expr)},
-          ["",exp]
+          [Ast_compatible.no_label,exp]
         )
       in
       { exp with pexp_desc }
@@ -34499,7 +34515,7 @@ let handle_raw_structure loc payload =
       let pexp_desc = 
         Parsetree.Pexp_apply(
           Exp.ident {txt = Ldot (Ast_literal.Lid.js_unsafe,  Literals.raw_stmt); loc},
-          ["",exp]) in 
+          [ Ast_compatible.no_label,exp]) in 
       Ast_helper.Str.eval 
         { exp with pexp_desc }
 
@@ -34540,7 +34556,7 @@ let ocaml_obj_as_js_object
     ((val_name , [], result ) ::
      (if is_mutable then 
         [val_name ^ Literals.setter_suffix,[],
-         to_method_type loc mapper "" result (Ast_literal.type_unit ~loc ()) ]
+         to_method_type loc mapper Ast_compatible.no_label result (Ast_literal.type_unit ~loc ()) ]
       else 
         []) )
   in 
@@ -34553,7 +34569,7 @@ let ocaml_obj_as_js_object
       method_name arity : Ast_core_type.t = 
     let result = Typ.var ~loc method_name in   
     if arity = 0 then
-      to_method_type loc mapper "" (Ast_literal.type_unit ~loc ()) result 
+      to_method_type loc mapper Ast_compatible.no_label (Ast_literal.type_unit ~loc ()) result 
 
     else
       let tyvars =
@@ -34564,7 +34580,7 @@ let ocaml_obj_as_js_object
           let method_rest =
             Ext_list.fold_right (fun v acc -> Ast_compatible.arrow ~loc  v acc)
               rest result in         
-          to_method_type loc mapper "" x method_rest
+          to_method_type loc mapper Ast_compatible.no_label x method_rest
         | _ -> assert false
       end in          
 
@@ -34581,7 +34597,7 @@ let ocaml_obj_as_js_object
       | Some ty -> Typ.alias ~loc ty self_type_lit
     in  
     if arity = 0 then
-      to_method_callback_type loc mapper  "" self_type result      
+      to_method_callback_type loc mapper  Ast_compatible.no_label self_type result      
     else
       let tyvars =
         Ext_list.init arity (fun i -> Typ.var ~loc (method_name ^ string_of_int i))
@@ -34591,7 +34607,7 @@ let ocaml_obj_as_js_object
           let method_rest =
             Ext_list.fold_right (fun v acc -> Ast_compatible.arrow ~loc  v acc)
               rest result in         
-          (to_method_callback_type loc mapper  "" self_type
+          (to_method_callback_type loc mapper  Ast_compatible.no_label self_type
              (Ast_compatible.arrow ~loc  x method_rest))
         | _ -> assert false
       end in          
@@ -35047,7 +35063,11 @@ let process_getter_setter ~not_getter_setter ~get ~set
     in 
     if st.set = None then get_acc 
     else
-      set ty (name ^ Literals.setter_suffix) pctf_attributes         
+      set ty 
+
+      (name ^ Literals.setter_suffix)
+
+      pctf_attributes         
       :: get_acc 
 
 
@@ -35096,7 +35116,7 @@ let handle_class_type_field self
                       private_flag,
                       virtual_flag,
                       Ast_util.to_method_type
-                        loc self "" ty
+                        loc self Ast_compatible.no_label ty
                         (Ast_literal.type_unit ~loc ())
                      );
        pctf_attributes} in
@@ -35176,7 +35196,7 @@ let handle_core_type
               | Meth_callback attr, attrs ->
                 attrs, attr +> ty
             in               
-            name, attrs, Ast_util.to_method_type loc self "" core_type 
+            name, attrs, Ast_util.to_method_type loc self Ast_compatible.no_label core_type 
               (Ast_literal.type_unit ~loc ()) in
           let not_getter_setter ty =
             let attrs, core_type =
@@ -36662,7 +36682,7 @@ let handle_exp_apply
     (e  : exp)
     (self : Bs_ast_mapper.mapper)
     (fn : exp)
-    (args : (Asttypes.label * Parsetree.expression) list)
+    (args : (Ast_compatible.arg_label * Parsetree.expression) list)
   =
   let loc = e.pexp_loc in
   begin match fn.pexp_desc with
@@ -36697,7 +36717,7 @@ let handle_exp_apply
               let fn = self.expr self fn in
               let args = Ext_list.map (fun (lab,exp) -> lab, self.expr self exp ) args in
               Bs_ast_invariant.warn_unused_attributes pexp_attributes;
-              { pexp_desc = Pexp_apply(fn, ("", new_obj_arg) :: args);
+              { pexp_desc = Pexp_apply(fn, (Ast_compatible.no_label, new_obj_arg) :: args);
                 pexp_attributes = [];
                 pexp_loc = pexp_loc}
             | {pexp_desc = Pexp_construct(ctor,None); pexp_loc; pexp_attributes} -> 
@@ -36716,7 +36736,7 @@ let handle_exp_apply
                                 let fn = self.expr self fn in
                                 let args = Ext_list.map (fun (lab,exp) -> lab, self.expr self exp ) args in
                                 Bs_ast_invariant.warn_unused_attributes pexp_attributes;
-                                { Parsetree.pexp_desc = Pexp_apply(fn, ("", bounded_obj_arg) :: args);
+                                { Parsetree.pexp_desc = Pexp_apply(fn, (Ast_compatible.no_label, bounded_obj_arg) :: args);
                                   pexp_attributes = [];
                                   pexp_loc = pexp_loc}
                               | {pexp_desc = Pexp_construct(ctor,None); pexp_loc; pexp_attributes}    
@@ -36801,7 +36821,7 @@ let handle_exp_apply
             { e with
               pexp_desc =
                 Ast_util.method_apply loc self obj
-                  (name ^ Literals.setter_suffix) ["", arg ]  }
+                  (name ^ Literals.setter_suffix) [Ast_compatible.no_label, arg ]  }
             (Ast_literal.type_unit ~loc ())
         | _ -> Bs_ast_mapper.default_mapper.expr self e
       end
@@ -36887,7 +36907,11 @@ let rec unroll_function_aux
   (acc : string list)
   (body : Parsetree.expression) : string list * string =
   match body.pexp_desc with
-  | Pexp_constant(Const_string(block,_)) -> acc, block
+  | Pexp_constant(
+    
+    Const_string
+    
+    (block,_)) -> acc, block
   | Pexp_fun(arg_label,_,{ppat_desc = Ppat_var s},cont)
     when Ast_compatible.is_arg_label_simple arg_label -> 
     unroll_function_aux (s.txt::acc) cont
@@ -36919,7 +36943,11 @@ let handle_extension record_as_js_object e (self : Bs_ast_mapper.mapper)
         when Ast_compatible.is_arg_label_simple arg_label
          -> 
          begin match pat.ppat_desc, body.pexp_desc with 
-         | Ppat_construct ({txt = Lident "()"}, None), Pexp_constant(Const_string(block,_))
+         | Ppat_construct ({txt = Lident "()"}, None), Pexp_constant(
+          
+           Const_string
+           
+           (block,_))
            -> 
             Ast_compatible.app1 ~loc 
             (Exp.ident ~loc {txt = Ldot (Ast_literal.Lid.js_unsafe, Literals.raw_function);loc})            
@@ -37022,7 +37050,11 @@ let handle_extension record_as_js_object e (self : Bs_ast_mapper.mapper)
                  (Exp.construct ~loc {txt = Lident "false";loc} None)
              else 
                (raiseWithString locString)
-           | Pexp_constant (Const_string (r, _)) -> 
+           | Pexp_constant (
+    
+    Const_string
+              
+              (r, _)) -> 
              if !Clflags.noassert then 
                Exp.assert_ ~loc (Exp.construct ~loc {txt = Lident "true"; loc} None)
                (* Need special handling to make it type check*)
@@ -37582,17 +37614,17 @@ let handleTdclsInSigi
                (Mty.typeof_ ~loc
                   (Mod.constraint_ ~loc
                      (Mod.structure ~loc [
-                         { pstr_loc = loc;
-                           pstr_desc =
-                             Pstr_type newTdclsNewAttrs
-                         }] )
+                         Ast_compatible.rec_type_str ~loc newTdclsNewAttrs
+                         ] )
                      (Mty.signature ~loc [])) ) )
           :: (* include module type of struct [processed_code for checking like invariance ]end *)
           self.signature self  codes
         )
     else
       Ast_signature.fuseAll ~loc
-        ( {psig_desc = Psig_type newTdclsNewAttrs; psig_loc = loc}::
+        ( 
+          Ast_compatible.rec_type_sig ~loc newTdclsNewAttrs
+        ::
          self.signature
            self
            (Ast_derive.gen_signature tdcls actions explict_nonrec))
@@ -37616,8 +37648,7 @@ let handleTdclsInStru
     let loc = str.pstr_loc in
     let originalTdclsNewAttrs = newTdcls tdcls newAttrs in
     let newStr : Parsetree.structure_item =
-      { pstr_desc = Pstr_type (self.type_declaration_list self originalTdclsNewAttrs);
-        pstr_loc = loc}
+      Ast_compatible.rec_type_str ~loc (self.type_declaration_list self originalTdclsNewAttrs)
     in
     if Ast_payload.isAbstract actions then
       let codes = Ast_derive_abstract.handleTdclsInStr originalTdclsNewAttrs in

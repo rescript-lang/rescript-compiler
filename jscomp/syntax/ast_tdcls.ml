@@ -66,17 +66,17 @@ let handleTdclsInSigi
                (Mty.typeof_ ~loc
                   (Mod.constraint_ ~loc
                      (Mod.structure ~loc [
-                         { pstr_loc = loc;
-                           pstr_desc =
-                             Pstr_type newTdclsNewAttrs
-                         }] )
+                         Ast_compatible.rec_type_str ~loc newTdclsNewAttrs
+                         ] )
                      (Mty.signature ~loc [])) ) )
           :: (* include module type of struct [processed_code for checking like invariance ]end *)
           self.signature self  codes
         )
     else
       Ast_signature.fuseAll ~loc
-        ( {psig_desc = Psig_type newTdclsNewAttrs; psig_loc = loc}::
+        ( 
+          Ast_compatible.rec_type_sig ~loc newTdclsNewAttrs
+        ::
          self.signature
            self
            (Ast_derive.gen_signature tdcls actions explict_nonrec))
@@ -100,8 +100,7 @@ let handleTdclsInStru
     let loc = str.pstr_loc in
     let originalTdclsNewAttrs = newTdcls tdcls newAttrs in
     let newStr : Parsetree.structure_item =
-      { pstr_desc = Pstr_type (self.type_declaration_list self originalTdclsNewAttrs);
-        pstr_loc = loc}
+      Ast_compatible.rec_type_str ~loc (self.type_declaration_list self originalTdclsNewAttrs)
     in
     if Ast_payload.isAbstract actions then
       let codes = Ast_derive_abstract.handleTdclsInStr originalTdclsNewAttrs in

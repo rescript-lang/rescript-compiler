@@ -36,21 +36,6 @@ val replace_result : t -> t -> t
 
 val is_unit : t -> bool
 val is_array : t -> bool
-type arg_label =
-  | Nolabel
-  | Labelled of string
-  | Optional of string
-
-
-
-(** for
-       [x:t] -> "x"
-       [?x:t] -> "?x"
-*)
-val label_name : string -> arg_label
-
-
-
 
 
 (** return a function type
@@ -72,7 +57,7 @@ val is_user_bool : t -> bool
 
 val is_user_int : t -> bool
 
-val is_optional_label : string -> bool
+
 
 (**
   returns 0 when it can not tell arity from the syntax
