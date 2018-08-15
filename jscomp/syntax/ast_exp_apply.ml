@@ -52,17 +52,19 @@ let handle_exp_apply
     | Pexp_apply (
         {pexp_desc =
            Pexp_ident  {txt = Lident "##"  ; loc} ; _},
-        [("", obj) ;
-         ("", {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _} )
-        ])
+        [(label1, obj) ;
+         (label2, {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _} )
+        ]) 
+          when Ast_compatible.is_arg_label_simple label1 && Ast_compatible.is_arg_label_simple label2
       ->  (* f##paint 1 2 *)
       {e with pexp_desc = Ast_util.method_apply loc self obj name args }
     | Pexp_apply (
         {pexp_desc =
            Pexp_ident  {txt = Lident "#@"  ; loc} ; _},
-        [("", obj) ;
-         ("", {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _} )
+        [(label1, obj) ;
+         (label2, {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _} )
         ])
+         when Ast_compatible.is_arg_label_simple label1 && Ast_compatible.is_arg_label_simple label2
       ->  (* f##paint 1 2 *)
       {e with pexp_desc = Ast_util.property_apply loc self obj name args  }
     | Pexp_ident {txt = Lident "|."} ->
@@ -71,9 +73,11 @@ let handle_exp_apply
         a |. f b c [@bs]  --> f a b c [@bs]
       *)
       begin match args with
-        | [ "", obj_arg ;
-            "", fn
-          ] ->
+        | [ label1, obj_arg ;
+            label2, fn
+          ] 
+          when Ast_compatible.is_arg_label_simple label1 && Ast_compatible.is_arg_label_simple label2          
+            ->
           let new_obj_arg = self.expr self obj_arg in
           begin match fn with
             | {pexp_desc = Pexp_apply (fn, args); pexp_loc; pexp_attributes} ->
@@ -128,14 +132,16 @@ let handle_exp_apply
     | Pexp_ident  {txt = Lident "##" ; loc}
       ->
       begin match args with
-        | [("", obj) ;
-           ("", {pexp_desc = Pexp_apply(
+        | [(label1, obj) ;
+           (label2, {pexp_desc = Pexp_apply(
                 {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _},
                 args
               ); pexp_attributes = attrs }
            (* we should warn when we discard attributes *)
            )
-          ] -> (* f##(paint 1 2 ) *)
+          ] 
+          when Ast_compatible.is_arg_label_simple label1 && Ast_compatible.is_arg_label_simple label2          
+          -> (* f##(paint 1 2 ) *)
           (* gpr#1063 foo##(bar##baz) we should rewrite (bar##baz)
              first  before pattern match.
              currently the pattern match is written in a top down style.
@@ -143,11 +149,13 @@ let handle_exp_apply
           *)
           Bs_ast_invariant.warn_unused_attributes attrs ;
           {e with pexp_desc = Ast_util.method_apply loc self obj name args}
-        | [("", obj) ;
-           ("",
+        | [(label1, obj) ;
+           (label2,
             {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _}
            )  (* f##paint  *)
-          ] ->
+          ] 
+          when Ast_compatible.is_arg_label_simple label1 && Ast_compatible.is_arg_label_simple label2
+          ->
           { e with pexp_desc =
                      Ast_util.js_property loc (self.expr self obj) name
           }
@@ -171,15 +179,17 @@ let handle_exp_apply
     *)
     | Pexp_ident {txt = Lident "#=" } ->
       begin match args with
-        | ["",
+        | [label1,
            {pexp_desc =
               Pexp_apply ({pexp_desc = Pexp_ident {txt = Lident "##"}},
                           ["", obj;
                            "", {pexp_desc = Pexp_ident {txt = Lident name}}
                           ]
                          )};
-           "", arg
-          ] ->
+           label2, arg
+          ] 
+          when Ast_compatible.is_arg_label_simple label1 && Ast_compatible.is_arg_label_simple label2
+          ->
           Exp.constraint_ ~loc
             { e with
               pexp_desc =

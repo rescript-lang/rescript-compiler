@@ -530,7 +530,8 @@ let handle_attributes
         begin
           (
             Ext_list.fold_right (fun (label,ty,attrs,loc) acc ->
-                Ast_compatible.label_arrow ~loc  ~attrs label ty acc
+              assert false
+                (* Ast_compatible.label_arrow ~loc  ~attrs label.txt ty acc *)
               ) new_arg_types_ty result
           ) ,
           prim_name,
@@ -940,7 +941,8 @@ let handle_attributes
       in
       (
         Ext_list.fold_right (fun (label,ty,attrs,loc) acc ->
-            Ast_compatible.label_arrow ~loc  ~attrs label ty acc
+            assert false
+            (* Ast_compatible.label_arrow ~loc  ~attrs label ty acc *)
           ) new_arg_types_ty new_result_type
       ) ,
 
