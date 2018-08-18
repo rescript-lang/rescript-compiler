@@ -22,10 +22,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 open Ast_helper
-let process_getter_setter ~not_getter_setter ~get ~set
+
+let process_getter_setter 
+    ~not_getter_setter
+    ~(get : Parsetree.core_type -> _ -> Parsetree.attributes -> _) ~set
     loc name
     (attrs : Ast_attributes.t)
-    (ty : Parsetree.core_type) acc  =
+    (ty : Parsetree.core_type) (acc : _ list)  =
   match Ast_attributes.process_method_attributes_rev attrs with 
   | {get = None; set = None}, _  ->  not_getter_setter ty :: acc 
   | st , pctf_attributes
@@ -163,7 +166,13 @@ let handle_core_type
     let (+>) attr (typ : Parsetree.core_type) =
       {typ with ptyp_attributes = attr :: typ.ptyp_attributes} in           
     let new_methods =
-      Ext_list.fold_right (fun (label, ptyp_attrs, core_type) acc ->
+      Ext_list.fold_right (fun  meth_ acc ->
+        match meth_ with 
+#if OCAML_VERSION =~ ">4.03.0" then
+        | Parsetree.Oinherit _ -> meth_
+        | Parsetree.Otag 
+#end        
+          (label, ptyp_attrs, core_type) -> 
           let get ty name attrs =
             let attrs, core_type =
               match Ast_attributes.process_attributes_rev attrs with
@@ -175,7 +184,7 @@ let handle_core_type
               | Meth_callback attr, attrs ->
                 attrs, attr +> ty 
             in 
-            name , attrs, self.typ self core_type in
+            Ast_compatible.object_field name  attrs (self.typ self core_type) in
           let set ty name attrs =
             let attrs, core_type =
               match Ast_attributes.process_attributes_rev attrs with
@@ -187,8 +196,8 @@ let handle_core_type
               | Meth_callback attr, attrs ->
                 attrs, attr +> ty
             in               
-            name, attrs, Ast_util.to_method_type loc self Ast_compatible.no_label core_type 
-              (Ast_literal.type_unit ~loc ()) in
+            Ast_compatible.object_field name attrs (Ast_util.to_method_type loc self Ast_compatible.no_label core_type 
+              (Ast_literal.type_unit ~loc ())) in
           let not_getter_setter ty =
             let attrs, core_type =
               match Ast_attributes.process_attributes_rev ptyp_attrs with
@@ -199,7 +208,7 @@ let handle_core_type
                 attrs, attr +> ty 
               | Meth_callback attr, attrs ->
                 attrs, attr +> ty  in            
-            label, attrs, self.typ self core_type in
+            Ast_compatible.object_field label attrs (self.typ self core_type) in
           process_getter_setter ~not_getter_setter ~get ~set
             loc label ptyp_attrs core_type acc
         ) methods [] in      

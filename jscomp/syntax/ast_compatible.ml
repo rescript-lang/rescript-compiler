@@ -312,3 +312,15 @@ let const_exp_string_list_as_array xs =
       ptyp_attributes = attrs
     }
   ) new_arg_types_ty result
+
+type object_field = 
+#if OCAML_VERSION =~ ">4.03.0" then 
+  Parsetree.object_field 
+#else   
+  string * attributes * core_type
+#end  
+
+let object_field   l attrs ty = 
+#if OCAML_VERSION =~ ">4.03.0" then
+  Parsetree.Otag 
+#end (l,attrs,ty)  
