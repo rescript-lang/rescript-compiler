@@ -18664,7 +18664,7 @@ val handle_exp_apply :
   Parsetree.expression ->
   Bs_ast_mapper.mapper ->
   Parsetree.expression ->
-  (Asttypes.label * Parsetree.expression) list ->
+  (Ast_compatible.arg_label * Parsetree.expression) list ->
   Parsetree.expression
 
 end = struct
@@ -18723,16 +18723,23 @@ let handle_exp_apply
     | Pexp_apply (
         {pexp_desc =
            Pexp_ident  {txt = Lident "##"  ; loc} ; _},
-        [("", obj) ;
-         ("", {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _} )
-        ])
+        [
+
+          ("", obj) ;
+          ("", {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _} )
+          
+        ]
+        )
       ->  (* f##paint 1 2 *)
       {e with pexp_desc = Ast_util.method_apply loc self obj name args }
     | Pexp_apply (
         {pexp_desc =
            Pexp_ident  {txt = Lident "#@"  ; loc} ; _},
-        [("", obj) ;
-         ("", {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _} )
+        [
+
+          ("", obj) ;
+          ("", {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _} )
+          
         ])
       ->  (* f##paint 1 2 *)
       {e with pexp_desc = Ast_util.property_apply loc self obj name args  }
@@ -18742,8 +18749,11 @@ let handle_exp_apply
         a |. f b c [@bs]  --> f a b c [@bs]
       *)
       begin match args with
-        | [ "", obj_arg ;
-            "", fn
+        | [ 
+
+          "", obj_arg ;
+          "", fn
+            
           ] ->
           let new_obj_arg = self.expr self obj_arg in
           begin match fn with
@@ -18799,13 +18809,16 @@ let handle_exp_apply
     | Pexp_ident  {txt = Lident "##" ; loc}
       ->
       begin match args with
-        | [("", obj) ;
+        | [
+
+           ("", obj) ;
            ("", {pexp_desc = Pexp_apply(
                 {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _},
                 args
               ); pexp_attributes = attrs }
            (* we should warn when we discard attributes *)
            )
+           
           ] -> (* f##(paint 1 2 ) *)
           (* gpr#1063 foo##(bar##baz) we should rewrite (bar##baz)
              first  before pattern match.
@@ -18814,10 +18827,13 @@ let handle_exp_apply
           *)
           Bs_ast_invariant.warn_unused_attributes attrs ;
           {e with pexp_desc = Ast_util.method_apply loc self obj name args}
-        | [("", obj) ;
+        | [
+
+          ("", obj) ;
            ("",
             {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _}
            )  (* f##paint  *)
+           
           ] ->
           { e with pexp_desc =
                      Ast_util.js_property loc (self.expr self obj) name
@@ -18842,7 +18858,9 @@ let handle_exp_apply
     *)
     | Pexp_ident {txt = Lident "#=" } ->
       begin match args with
-        | ["",
+        | [
+
+          "",
            {pexp_desc =
               Pexp_apply ({pexp_desc = Pexp_ident {txt = Lident "##"}},
                           ["", obj;
@@ -18850,6 +18868,7 @@ let handle_exp_apply
                           ]
                          )};
            "", arg
+           
           ] ->
           Exp.constraint_ ~loc
             { e with
@@ -20765,12 +20784,20 @@ let rec unsafe_mapper : Bs_ast_mapper.mapper =
         (** Its output should not be rewritten anymore *)
         | Pexp_extension extension ->
           Ast_exp_extension.handle_extension record_as_js_object e self extension
-        | Pexp_constant (Const_string (s, (Some delim)))
+        | Pexp_constant (
+            
+            Const_string 
+            
+            (s, (Some delim)))
           ->
           if Ext_string.equal delim Literals.unescaped_js_delimiter then
             let js_str = Ast_utf8_string.transform loc s in
             { e with pexp_desc =
-                       Pexp_constant (Const_string (js_str, Some Literals.escaped_j_delimiter))}
+                       Pexp_constant (
+            
+            Const_string 
+                                     
+                         (js_str, Some Literals.escaped_j_delimiter))}
           else if Ext_string.equal delim Literals.unescaped_j_delimiter then
             Ast_utf8_string_interp.transform_interp loc s
           else e
@@ -20879,7 +20906,9 @@ let rec unsafe_mapper : Bs_ast_mapper.mapper =
       (self : Bs_ast_mapper.mapper)
       (sigi : Parsetree.signature_item) ->
       match sigi.psig_desc with
-      | Psig_type (_ :: _ as tdcls) ->
+      | Psig_type (
+          
+           (_ :: _ as tdcls)) ->  (*FIXME: check recursive handling*)
           Ast_tdcls.handleTdclsInSigi self sigi tdcls
       | Psig_value prim
         when Ast_attributes.process_external prim.pval_attributes
@@ -20889,7 +20918,11 @@ let rec unsafe_mapper : Bs_ast_mapper.mapper =
     end;
     pat = begin fun self (pat : Parsetree.pattern) ->
       match pat with
-      | { ppat_desc = Ppat_constant(Const_string (_, Some "j")); ppat_loc = loc} ->
+      | { ppat_desc = Ppat_constant(
+            
+            Const_string 
+                    
+         (_, Some "j")); ppat_loc = loc} ->
         Location.raise_errorf ~loc  "Unicode string is not allowed in pattern match"
       | _  -> Bs_ast_mapper.default_mapper.pat self pat
 
@@ -20909,7 +20942,9 @@ let rec unsafe_mapper : Bs_ast_mapper.mapper =
              (Ast_literal.val_unit ~loc ())
              )
           else Ast_structure.dummy_item loc
-        | Pstr_type (_ :: _ as tdcls ) (* [ {ptype_attributes} as tdcl ] *)->
+        | Pstr_type (
+          
+          (_ :: _ as tdcls )) (* [ {ptype_attributes} as tdcl ] *)->
           Ast_tdcls.handleTdclsInStru self str tdcls
         | Pstr_primitive prim
           when Ast_attributes.process_external prim.pval_attributes

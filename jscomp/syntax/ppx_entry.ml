@@ -77,12 +77,24 @@ let rec unsafe_mapper : Bs_ast_mapper.mapper =
         (** Its output should not be rewritten anymore *)
         | Pexp_extension extension ->
           Ast_exp_extension.handle_extension record_as_js_object e self extension
-        | Pexp_constant (Const_string (s, (Some delim)))
+        | Pexp_constant (
+#if OCAML_VERSION =~ ">4.03.0" then
+            Pconst_string
+#else            
+            Const_string 
+#end            
+            (s, (Some delim)))
           ->
           if Ext_string.equal delim Literals.unescaped_js_delimiter then
             let js_str = Ast_utf8_string.transform loc s in
             { e with pexp_desc =
-                       Pexp_constant (Const_string (js_str, Some Literals.escaped_j_delimiter))}
+                       Pexp_constant (
+#if OCAML_VERSION =~ ">4.03.0" then
+            Pconst_string
+#else            
+            Const_string 
+#end                                     
+                         (js_str, Some Literals.escaped_j_delimiter))}
           else if Ext_string.equal delim Literals.unescaped_j_delimiter then
             Ast_utf8_string_interp.transform_interp loc s
           else e
@@ -191,7 +203,11 @@ let rec unsafe_mapper : Bs_ast_mapper.mapper =
       (self : Bs_ast_mapper.mapper)
       (sigi : Parsetree.signature_item) ->
       match sigi.psig_desc with
-      | Psig_type (_ :: _ as tdcls) ->
+      | Psig_type (
+#if OCAML_VERSION =~ ">4.03.0" then        
+          _rf, 
+#end          
+           (_ :: _ as tdcls)) ->  (*FIXME: check recursive handling*)
           Ast_tdcls.handleTdclsInSigi self sigi tdcls
       | Psig_value prim
         when Ast_attributes.process_external prim.pval_attributes
@@ -201,7 +217,13 @@ let rec unsafe_mapper : Bs_ast_mapper.mapper =
     end;
     pat = begin fun self (pat : Parsetree.pattern) ->
       match pat with
-      | { ppat_desc = Ppat_constant(Const_string (_, Some "j")); ppat_loc = loc} ->
+      | { ppat_desc = Ppat_constant(
+#if OCAML_VERSION =~ ">4.03.0" then
+            Pconst_string
+#else            
+            Const_string 
+#end                    
+         (_, Some "j")); ppat_loc = loc} ->
         Location.raise_errorf ~loc  "Unicode string is not allowed in pattern match"
       | _  -> Bs_ast_mapper.default_mapper.pat self pat
 
@@ -221,7 +243,11 @@ let rec unsafe_mapper : Bs_ast_mapper.mapper =
              (Ast_literal.val_unit ~loc ())
              )
           else Ast_structure.dummy_item loc
-        | Pstr_type (_ :: _ as tdcls ) (* [ {ptype_attributes} as tdcl ] *)->
+        | Pstr_type (
+#if OCAML_VERSION =~ ">4.03.0" then
+          _rf, 
+#end          
+          (_ :: _ as tdcls )) (* [ {ptype_attributes} as tdcl ] *)->
           Ast_tdcls.handleTdclsInStru self str tdcls
         | Pstr_primitive prim
           when Ast_attributes.process_external prim.pval_attributes
