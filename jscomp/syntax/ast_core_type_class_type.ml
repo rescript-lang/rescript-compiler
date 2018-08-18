@@ -169,7 +169,7 @@ let handle_core_type
       Ext_list.fold_right (fun  meth_ acc ->
         match meth_ with 
 #if OCAML_VERSION =~ ">4.03.0" then
-        | Parsetree.Oinherit _ -> meth_
+        | Parsetree.Oinherit _ -> meth_ :: acc 
         | Parsetree.Otag 
 #end        
           (label, ptyp_attrs, core_type) -> 
