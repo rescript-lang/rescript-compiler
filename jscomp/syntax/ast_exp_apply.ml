@@ -52,16 +52,29 @@ let handle_exp_apply
     | Pexp_apply (
         {pexp_desc =
            Pexp_ident  {txt = Lident "##"  ; loc} ; _},
-        [("", obj) ;
-         ("", {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _} )
-        ])
+        [
+#if OCAML_VERSION =~ ">4.03.0" then 
+          (Nolabel, obj) ;
+          (Nolabel, {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _} )
+#else
+          ("", obj) ;
+          ("", {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _} )
+#end          
+        ]
+        )
       ->  (* f##paint 1 2 *)
       {e with pexp_desc = Ast_util.method_apply loc self obj name args }
     | Pexp_apply (
         {pexp_desc =
            Pexp_ident  {txt = Lident "#@"  ; loc} ; _},
-        [("", obj) ;
-         ("", {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _} )
+        [
+#if OCAML_VERSION =~ ">4.03.0" then 
+          (Nolabel, obj) ;
+          (Nolabel, {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _} )
+#else
+          ("", obj) ;
+          ("", {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _} )
+#end          
         ])
       ->  (* f##paint 1 2 *)
       {e with pexp_desc = Ast_util.property_apply loc self obj name args  }
@@ -71,8 +84,14 @@ let handle_exp_apply
         a |. f b c [@bs]  --> f a b c [@bs]
       *)
       begin match args with
-        | [ "", obj_arg ;
-            "", fn
+        | [ 
+#if OCAML_VERSION =~ ">4.03.0" then 
+          Nolabel, obj_arg ;
+          Nolabel, fn
+#else
+          "", obj_arg ;
+          "", fn
+#end            
           ] ->
           let new_obj_arg = self.expr self obj_arg in
           begin match fn with
@@ -128,13 +147,24 @@ let handle_exp_apply
     | Pexp_ident  {txt = Lident "##" ; loc}
       ->
       begin match args with
-        | [("", obj) ;
+        | [
+#if OCAML_VERSION =~ ">4.03.0" then 
+           (Nolabel, obj) ;
+           (Nolabel, {pexp_desc = Pexp_apply(
+                {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _},
+                args
+              ); pexp_attributes = attrs }
+           (* we should warn when we discard attributes *)
+           )
+#else
+           ("", obj) ;
            ("", {pexp_desc = Pexp_apply(
                 {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _},
                 args
               ); pexp_attributes = attrs }
            (* we should warn when we discard attributes *)
            )
+#end           
           ] -> (* f##(paint 1 2 ) *)
           (* gpr#1063 foo##(bar##baz) we should rewrite (bar##baz)
              first  before pattern match.
@@ -143,10 +173,18 @@ let handle_exp_apply
           *)
           Bs_ast_invariant.warn_unused_attributes attrs ;
           {e with pexp_desc = Ast_util.method_apply loc self obj name args}
-        | [("", obj) ;
+        | [
+#if OCAML_VERSION =~ ">4.03.0" then           
+          (Nolabel, obj) ;
+          (Nolabel,
+            {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _}
+           )  (* f##paint  *)
+#else
+          ("", obj) ;
            ("",
             {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _}
            )  (* f##paint  *)
+#end           
           ] ->
           { e with pexp_desc =
                      Ast_util.js_property loc (self.expr self obj) name
@@ -171,7 +209,18 @@ let handle_exp_apply
     *)
     | Pexp_ident {txt = Lident "#=" } ->
       begin match args with
-        | ["",
+        | [
+#if OCAML_VERSION =~ ">4.03.0" then           
+          Nolabel,
+           {pexp_desc =
+              Pexp_apply ({pexp_desc = Pexp_ident {txt = Lident "##"}},
+                          [Nolabel, obj;
+                           Nolabel, {pexp_desc = Pexp_ident {txt = Lident name}}
+                          ]
+                         )};
+           Nolabel, arg
+#else
+          "",
            {pexp_desc =
               Pexp_apply ({pexp_desc = Pexp_ident {txt = Lident "##"}},
                           ["", obj;
@@ -179,6 +228,7 @@ let handle_exp_apply
                           ]
                          )};
            "", arg
+#end           
           ] ->
           Exp.constraint_ ~loc
             { e with
