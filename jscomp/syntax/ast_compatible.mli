@@ -175,3 +175,8 @@ val rec_type_sig:
   ?loc:loc -> 
   type_declaration list -> 
   signature_item
+
+val mk_fn_type:  
+  (arg_label * core_type * attributes * loc) list -> 
+  core_type -> 
+  core_type

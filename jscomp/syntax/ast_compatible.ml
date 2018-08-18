@@ -300,3 +300,15 @@ let const_exp_int_list_as_array xs =
 let const_exp_string_list_as_array xs =   
   Ast_helper.Exp.array 
   (Ext_list.map (fun x -> const_exp_string x ) xs)  
+
+
+ let mk_fn_type 
+  (new_arg_types_ty : (arg_label * core_type * attributes * loc) list)
+  (result : core_type) : core_type = 
+  Ext_list.fold_right (fun (label, ty, attrs, loc) acc -> 
+    {
+      ptyp_desc = Ptyp_arrow(label,ty,acc);
+      ptyp_loc = loc; 
+      ptyp_attributes = attrs
+    }
+  ) new_arg_types_ty result
