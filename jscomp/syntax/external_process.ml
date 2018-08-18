@@ -527,12 +527,9 @@ let handle_attributes
             snd @@ get_arg_type ~nolabel:true false result_type (* result type can not be labeled *)
 
         in
-        begin
-          (
-            Ext_list.fold_right (fun (label,ty,attrs,loc) acc ->
-                Ast_compatible.label_arrow ~loc  ~attrs label ty acc
-              ) new_arg_types_ty result
-          ) ,
+        begin          
+          Ast_compatible.mk_fn_type new_arg_types_ty result
+          ,
           prim_name,
           Ffi_obj_create arg_kinds,
           left_attrs
@@ -938,12 +935,7 @@ let handle_attributes
       let return_wrapper : External_ffi_types.return_wrapper =
         check_return_wrapper loc st.return_wrapper new_result_type
       in
-      (
-        Ext_list.fold_right (fun (label,ty,attrs,loc) acc ->
-            Ast_compatible.label_arrow ~loc  ~attrs label ty acc
-          ) new_arg_types_ty new_result_type
-      ) ,
-
+      Ast_compatible.mk_fn_type new_arg_types_ty new_result_type,  
       prim_name,
       (Ffi_bs (arg_type_specs,return_wrapper ,  ffi)), left_attrs
     end

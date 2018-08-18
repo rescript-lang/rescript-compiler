@@ -6550,6 +6550,18 @@ val rec_type_sig:
   type_declaration list -> 
   signature_item
 
+val mk_fn_type:  
+  (arg_label * core_type * attributes * loc) list -> 
+  core_type -> 
+  core_type
+
+type object_field = 
+   
+  string * attributes * core_type
+val object_field : string ->  attributes -> core_type -> object_field  
+  
+
+  
 end = struct
 #1 "ast_compatible.ml"
 (* Copyright (C) 2018 Authors of BuckleScript
@@ -6783,6 +6795,25 @@ let const_exp_string_list_as_array xs =
   Ast_helper.Exp.array 
   (Ext_list.map (fun x -> const_exp_string x ) xs)  
 
+
+ let mk_fn_type 
+  (new_arg_types_ty : (arg_label * core_type * attributes * loc) list)
+  (result : core_type) : core_type = 
+  Ext_list.fold_right (fun (label, ty, attrs, loc) acc -> 
+    {
+      ptyp_desc = Ptyp_arrow(label,ty,acc);
+      ptyp_loc = loc; 
+      ptyp_attributes = attrs
+    }
+  ) new_arg_types_ty result
+
+type object_field = 
+   
+  string * attributes * core_type
+  
+
+let object_field   l attrs ty = 
+ (l,attrs,ty)  
 end
 module Ext_utf8 : sig 
 #1 "ext_utf8.mli"
@@ -15544,12 +15575,9 @@ let handle_attributes
             snd @@ get_arg_type ~nolabel:true false result_type (* result type can not be labeled *)
 
         in
-        begin
-          (
-            Ext_list.fold_right (fun (label,ty,attrs,loc) acc ->
-                Ast_compatible.label_arrow ~loc  ~attrs label ty acc
-              ) new_arg_types_ty result
-          ) ,
+        begin          
+          Ast_compatible.mk_fn_type new_arg_types_ty result
+          ,
           prim_name,
           Ffi_obj_create arg_kinds,
           left_attrs
@@ -15955,12 +15983,7 @@ let handle_attributes
       let return_wrapper : External_ffi_types.return_wrapper =
         check_return_wrapper loc st.return_wrapper new_result_type
       in
-      (
-        Ext_list.fold_right (fun (label,ty,attrs,loc) acc ->
-            Ast_compatible.label_arrow ~loc  ~attrs label ty acc
-          ) new_arg_types_ty new_result_type
-      ) ,
-
+      Ast_compatible.mk_fn_type new_arg_types_ty new_result_type,  
       prim_name,
       (Ffi_bs (arg_type_specs,return_wrapper ,  ffi)), left_attrs
     end
@@ -17038,10 +17061,13 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 open Ast_helper
-let process_getter_setter ~not_getter_setter ~get ~set
+
+let process_getter_setter 
+    ~not_getter_setter
+    ~(get : Parsetree.core_type -> _ -> Parsetree.attributes -> _) ~set
     loc name
     (attrs : Ast_attributes.t)
-    (ty : Parsetree.core_type) acc  =
+    (ty : Parsetree.core_type) (acc : _ list)  =
   match Ast_attributes.process_method_attributes_rev attrs with 
   | {get = None; set = None}, _  ->  not_getter_setter ty :: acc 
   | st , pctf_attributes
@@ -17177,7 +17203,10 @@ let handle_core_type
     let (+>) attr (typ : Parsetree.core_type) =
       {typ with ptyp_attributes = attr :: typ.ptyp_attributes} in           
     let new_methods =
-      Ext_list.fold_right (fun (label, ptyp_attrs, core_type) acc ->
+      Ext_list.fold_right (fun  meth_ acc ->
+        match meth_ with 
+        
+          (label, ptyp_attrs, core_type) -> 
           let get ty name attrs =
             let attrs, core_type =
               match Ast_attributes.process_attributes_rev attrs with
@@ -17189,7 +17218,7 @@ let handle_core_type
               | Meth_callback attr, attrs ->
                 attrs, attr +> ty 
             in 
-            name , attrs, self.typ self core_type in
+            Ast_compatible.object_field name  attrs (self.typ self core_type) in
           let set ty name attrs =
             let attrs, core_type =
               match Ast_attributes.process_attributes_rev attrs with
@@ -17201,8 +17230,8 @@ let handle_core_type
               | Meth_callback attr, attrs ->
                 attrs, attr +> ty
             in               
-            name, attrs, Ast_util.to_method_type loc self Ast_compatible.no_label core_type 
-              (Ast_literal.type_unit ~loc ()) in
+            Ast_compatible.object_field name attrs (Ast_util.to_method_type loc self Ast_compatible.no_label core_type 
+              (Ast_literal.type_unit ~loc ())) in
           let not_getter_setter ty =
             let attrs, core_type =
               match Ast_attributes.process_attributes_rev ptyp_attrs with
@@ -17213,7 +17242,7 @@ let handle_core_type
                 attrs, attr +> ty 
               | Meth_callback attr, attrs ->
                 attrs, attr +> ty  in            
-            label, attrs, self.typ self core_type in
+            Ast_compatible.object_field label attrs (self.typ self core_type) in
           process_getter_setter ~not_getter_setter ~get ~set
             loc label ptyp_attrs core_type acc
         ) methods [] in      

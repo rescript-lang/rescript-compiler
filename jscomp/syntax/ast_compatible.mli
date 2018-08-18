@@ -175,3 +175,19 @@ val rec_type_sig:
   ?loc:loc -> 
   type_declaration list -> 
   signature_item
+
+val mk_fn_type:  
+  (arg_label * core_type * attributes * loc) list -> 
+  core_type -> 
+  core_type
+
+type object_field = 
+#if OCAML_VERSION =~ ">4.03.0" then 
+  Parsetree.object_field 
+val object_field : Asttypes.label Asttypes.loc ->  attributes -> core_type -> object_field
+#else   
+  string * attributes * core_type
+val object_field : string ->  attributes -> core_type -> object_field  
+#end  
+
+  

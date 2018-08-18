@@ -14472,6 +14472,18 @@ val rec_type_sig:
   type_declaration list -> 
   signature_item
 
+val mk_fn_type:  
+  (arg_label * core_type * attributes * loc) list -> 
+  core_type -> 
+  core_type
+
+type object_field = 
+   
+  string * attributes * core_type
+val object_field : string ->  attributes -> core_type -> object_field  
+  
+
+  
 end = struct
 #1 "ast_compatible.ml"
 (* Copyright (C) 2018 Authors of BuckleScript
@@ -14705,6 +14717,25 @@ let const_exp_string_list_as_array xs =
   Ast_helper.Exp.array 
   (Ext_list.map (fun x -> const_exp_string x ) xs)  
 
+
+ let mk_fn_type 
+  (new_arg_types_ty : (arg_label * core_type * attributes * loc) list)
+  (result : core_type) : core_type = 
+  Ext_list.fold_right (fun (label, ty, attrs, loc) acc -> 
+    {
+      ptyp_desc = Ptyp_arrow(label,ty,acc);
+      ptyp_loc = loc; 
+      ptyp_attributes = attrs
+    }
+  ) new_arg_types_ty result
+
+type object_field = 
+   
+  string * attributes * core_type
+  
+
+let object_field   l attrs ty = 
+ (l,attrs,ty)  
 end
 module Bs_loc : sig 
 #1 "bs_loc.mli"
