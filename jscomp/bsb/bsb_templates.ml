@@ -1162,9 +1162,14 @@ let root = OCamlRes.Res.([
       \    return Promise.all(deps.map(x => getAll(x, parent)))\n\
        }\n\
        \n\
+       var evaluatedModules = new Map()\n\
+       \n\
        function loadSync(id, parent) {\n\
       \    var baseOrModule = getIdLocationSync(id, parent)\n\
-      \    if (baseOrModule) {\n\
+      \    if (baseOrModule && baseOrModule.link !== undefined) {\n\
+      \        if(evaluatedModules.has(baseOrModule.link)){\n\
+      \            return evaluatedModules.get(baseOrModule.link).exports\n\
+      \        }\n\
       \        if (!baseOrModule.exports) {\n\
       \            baseOrModule.exports = {}\n\
       \            globalEval(`(function(require,exports,module){${baseOrModule.text}\\n})//# sourceURL=${baseOrModule.link}`)(\n\
@@ -1174,6 +1179,9 @@ let root = OCamlRes.Res.([
       \                baseOrModule.exports = {}, // exports\n\
       \                baseOrModule // module\n\
       \            );\n\
+      \        }\n\
+      \        if(!evaluatedModules.has(baseOrModule.link)){\n\
+      \            evaluatedModules.set(baseOrModule.link,baseOrModule)\n\
       \        }\n\
       \        return baseOrModule.exports\n\
       \    } else {\n\
@@ -1848,9 +1856,14 @@ let root = OCamlRes.Res.([
       \    return Promise.all(deps.map(x => getAll(x, parent)))\n\
        }\n\
        \n\
+       var evaluatedModules = new Map()\n\
+       \n\
        function loadSync(id, parent) {\n\
       \    var baseOrModule = getIdLocationSync(id, parent)\n\
-      \    if (baseOrModule) {\n\
+      \    if (baseOrModule && baseOrModule.link !== undefined) {\n\
+      \        if(evaluatedModules.has(baseOrModule.link)){\n\
+      \            return evaluatedModules.get(baseOrModule.link).exports\n\
+      \        }\n\
       \        if (!baseOrModule.exports) {\n\
       \            baseOrModule.exports = {}\n\
       \            globalEval(`(function(require,exports,module){${baseOrModule.text}\\n})//# sourceURL=${baseOrModule.link}`)(\n\
@@ -1860,6 +1873,9 @@ let root = OCamlRes.Res.([
       \                baseOrModule.exports = {}, // exports\n\
       \                baseOrModule // module\n\
       \            );\n\
+      \        }\n\
+      \        if(!evaluatedModules.has(baseOrModule.link)){\n\
+      \            evaluatedModules.set(baseOrModule.link,baseOrModule)\n\
       \        }\n\
       \        return baseOrModule.exports\n\
       \    } else {\n\
