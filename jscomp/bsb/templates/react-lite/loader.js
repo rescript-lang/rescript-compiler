@@ -408,9 +408,14 @@ function getAllFromText(text, parent) {
     return Promise.all(deps.map(x => getAll(x, parent)))
 }
 
+var evaluatedModules = new Map()
+
 function loadSync(id, parent) {
     var baseOrModule = getIdLocationSync(id, parent)
-    if (baseOrModule) {
+    if (baseOrModule && baseOrModule.link !== undefined) {
+        if(evaluatedModules.has(baseOrModule.link)){
+            return evaluatedModules.get(baseOrModule.link).exports
+        }
         if (!baseOrModule.exports) {
             baseOrModule.exports = {}
             globalEval(`(function(require,exports,module){${baseOrModule.text}\n})//# sourceURL=${baseOrModule.link}`)(
@@ -420,6 +425,9 @@ function loadSync(id, parent) {
                 baseOrModule.exports = {}, // exports
                 baseOrModule // module
             );
+        }
+        if(!evaluatedModules.has(baseOrModule.link)){
+            evaluatedModules.set(baseOrModule.link,baseOrModule)
         }
         return baseOrModule.exports
     } else {
