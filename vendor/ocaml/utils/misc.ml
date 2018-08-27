@@ -480,9 +480,10 @@ module Color = struct
         Format.set_mark_tags true;
         List.iter set_color_tag_handling formatter_l;
         color_enabled := (match o with
-          | Clflags.Always -> true
-          | Clflags.Auto -> should_enable_color ()
-          | Clflags.Never -> false
+          | Some Clflags.Always -> true
+          | Some Clflags.Auto -> should_enable_color ()
+          | Some Clflags.Never -> false
+          | None -> should_enable_color ()
         )
       );
       ()

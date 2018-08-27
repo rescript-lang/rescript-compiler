@@ -112,5 +112,5 @@ val no_assert_false : bool ref
 
 type color_setting = Auto | Always | Never
 val parse_color_setting : string -> color_setting option
-val color : color_setting ref
+val color : color_setting option ref
 
