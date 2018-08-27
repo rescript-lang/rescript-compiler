@@ -76,7 +76,7 @@ let implementation ~use_super_errors prefix impl str  : Js.Unsafe.obj =
   let finalenv = ref Env.empty in
   let types_signature = ref [] in
   if use_super_errors then begin
-    Misc.Color.setup Clflags.Always;
+    Misc.Color.setup (Some Clflags.Always);
     Super_main.setup ();
   end;
 

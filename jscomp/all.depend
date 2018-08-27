@@ -316,7 +316,8 @@ syntax/ast_tdcls.cmi : syntax/bs_ast_mapper.cmi syntax/ast_structure.cmi \
     syntax/ast_signature.cmi
 syntax/ast_primitive.cmi : syntax/bs_ast_mapper.cmi
 syntax/ast_tuple_pattern_flatten.cmi : syntax/bs_ast_mapper.cmi
-syntax/ast_exp_apply.cmi : syntax/bs_ast_mapper.cmi
+syntax/ast_exp_apply.cmi : syntax/bs_ast_mapper.cmi \
+    syntax/ast_compatible.cmi
 syntax/ast_exp_extension.cmi : syntax/bs_ast_mapper.cmi
 syntax/ast_core_type_class_type.cmi : syntax/bs_ast_mapper.cmi
 syntax/ppx_entry.cmi :

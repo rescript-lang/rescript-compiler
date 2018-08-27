@@ -136,5 +136,5 @@ let parse_color_setting = function
   | "always" -> Some Always
   | "never" -> Some Never
   | _ -> None
-let color = ref Auto ;; (* -color *)
+let color = ref None ;; (* -color *)
 

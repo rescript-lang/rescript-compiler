@@ -135,7 +135,7 @@ module Options = Main_args.Make_bytecomp_options (struct
   let _color option =
     begin match Clflags.parse_color_setting option with
           | None -> ()
-          | Some setting -> Clflags.color := setting
+          | Some setting -> Clflags.color := Some setting
     end
   let _where = print_standard_library
   let _verbose = set verbose

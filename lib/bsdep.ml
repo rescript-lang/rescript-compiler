@@ -451,7 +451,7 @@ val no_assert_false : bool ref
 
 type color_setting = Auto | Always | Never
 val parse_color_setting : string -> color_setting option
-val color : color_setting ref
+val color : color_setting option ref
 
 
 end = struct
@@ -594,7 +594,7 @@ let parse_color_setting = function
   | "always" -> Some Always
   | "never" -> Some Never
   | _ -> None
-let color = ref Auto ;; (* -color *)
+let color = ref None ;; (* -color *)
 
 
 end
@@ -807,7 +807,7 @@ module Color : sig
   val get_styles: unit -> styles
   val set_styles: styles -> unit
 
-  val setup : Clflags.color_setting -> unit
+  val setup : Clflags.color_setting option -> unit
   (* [setup opt] will enable or disable color handling on standard formatters
      according to the value of color setting [opt].
      Only the first call to this function has an effect. *)
@@ -1301,9 +1301,10 @@ module Color = struct
         Format.set_mark_tags true;
         List.iter set_color_tag_handling formatter_l;
         color_enabled := (match o with
-          | Clflags.Always -> true
-          | Clflags.Auto -> should_enable_color ()
-          | Clflags.Never -> false
+          | Some Clflags.Always -> true
+          | Some Clflags.Auto -> should_enable_color ()
+          | Some Clflags.Never -> false
+          | None -> should_enable_color ()
         )
       );
       ()
@@ -20811,7 +20812,7 @@ let read_OCAMLPARAM ppf position =
               (Warnings.Bad_env_variable ("OCAMLPARAM",
                "bad value for \"color\", \
                 (expected \"auto\", \"always\" or \"never\")"))
-          | Some setting -> color := setting
+          | Some setting -> color := Some setting
           end
 
       | "intf-suffix" -> Config.interface_suffix := v

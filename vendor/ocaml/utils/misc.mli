@@ -205,7 +205,7 @@ module Color : sig
   val get_styles: unit -> styles
   val set_styles: styles -> unit
 
-  val setup : Clflags.color_setting -> unit
+  val setup : Clflags.color_setting option -> unit
   (* [setup opt] will enable or disable color handling on standard formatters
      according to the value of color setting [opt].
      Only the first call to this function has an effect. *)
