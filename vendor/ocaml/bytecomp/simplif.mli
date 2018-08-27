@@ -17,9 +17,6 @@
 
 open Lambda
 
-val simplify_exits: lambda -> lambda
-val eliminate_ref: Lambda.IdentSet.elt -> Lambda.lambda -> Lambda.lambda
-val simplify_lets: Lambda.lambda -> Lambda.lambda
 val simplify_lambda: lambda -> lambda
 
 (* To be filled by asmcomp/selectgen.ml *)
