@@ -185,8 +185,10 @@ let rec unsafe_mapper : Bs_ast_mapper.mapper =
                     pcsig_fields = Ast_core_type_class_type.handle_class_type_fields self pcsig_fields
                   };
                 pcty_attributes
-               }
-
+               }               
+#if OCAML_VERSION =~ ">4.03.0" then 
+            | Pcty_open _ (* let open M in CT *)
+#end
              | Pcty_constr _
              | Pcty_extension _
              | Pcty_arrow _ ->
