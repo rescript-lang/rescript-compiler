@@ -26,13 +26,24 @@ type module_name = private string
 
 module String_set = Depend.StringSet
 
+(* FIXME: [Clflags.open_modules] seems not to be properly used *)
+#if OCAML_VERSION =~ ">4.03.0" then 
+module SMap = Depend.StringMap
+let bound_vars = SMap.empty 
+#else 
+let bound_vars = String_set.empty 
+#end
+
 type 'a kind = 'a Ml_binary.kind 
+
 
 let read_parse_and_extract (type t) (k : t kind) (ast : t) : String_set.t =
   Depend.free_structure_names := String_set.empty;
-  let bound_vars = String_set.empty in
   List.iter
     (fun modname  ->
+#if OCAML_VERSION =~ ">4.03.0" then
+       ignore @@ 
+#end       
        Depend.open_module bound_vars (Longident.Lident modname))
     (!Clflags.open_modules);
   (match k with
