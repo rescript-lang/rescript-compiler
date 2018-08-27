@@ -20889,7 +20889,7 @@ let rec unsafe_mapper : Bs_ast_mapper.mapper =
                     pcsig_fields = Ast_core_type_class_type.handle_class_type_fields self pcsig_fields
                   };
                 pcty_attributes
-               }
+               }               
 
              | Pcty_constr _
              | Pcty_extension _
