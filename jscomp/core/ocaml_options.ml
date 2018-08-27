@@ -280,7 +280,7 @@ let ocaml_options =
   let _color option = 
     match Clflags.parse_color_setting option with
     | None -> ()
-    | Some setting -> Clflags.color := setting in 
+    | Some setting -> Clflags.color := Some setting in 
   let _annot = set annotations in 
   let _binannot = set binary_annotations in 
   let _c = set compile_only in 
