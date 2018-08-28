@@ -103,10 +103,6 @@ val big_endian : bool
 (** Whether the machine currently executing the Caml program is big-endian.
     @since 4.00.0 *)
 
-val is_js : bool 
-(** True if compiled against Javascript backend
-    @since 4.03.0
-*)
 val max_string_length : int
 (** Maximum length of strings and byte sequences. *)
 

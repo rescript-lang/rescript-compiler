@@ -452,7 +452,7 @@ nested_pattern_match_test.cmj :
 noassert.cmj :
 node_fs_test.cmj : ../others/node.cmj ../runtime/js.cmj
 node_path_test.cmj : ../runtime/js.cmj
-number_lexer.cmj : ../stdlib/sys.cmj ../stdlib/lexing.cmj
+number_lexer.cmj : ../stdlib/lexing.cmj
 obj_curry_test.cmj :
 obj_literal_ppx.cmj : ../stdlib/array.cmj
 obj_literal_ppx_test.cmj : ../runtime/js.cmj
