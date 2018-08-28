@@ -594,7 +594,6 @@ let translate loc (prim_name : string)
     | "caml_sys_const_ostype_cygwin" -> E.caml_false 
     | "caml_sys_const_ostype_win32" -> E.caml_false 
     | "caml_sys_const_ostype_unix" -> E.caml_true
-    | "caml_is_js" -> E.caml_true
     | "caml_sys_get_config" ->
       (** No cross compilation *)
       Js_of_lam_tuple.make [E.str Sys.os_type; E.small_int  Sys.word_size; 
