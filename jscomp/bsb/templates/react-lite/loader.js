@@ -249,6 +249,7 @@ function getParentModulePromise(id, parent) {
  */
 function getPackageName(id) {
     var index = id.indexOf('/')
+    if (id[0] === '@') index = id.indexOf('/', index + 1)
     if (index === -1) {
         return id
     }
