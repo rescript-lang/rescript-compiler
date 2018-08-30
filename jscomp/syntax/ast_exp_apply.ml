@@ -76,7 +76,7 @@ let handle_exp_apply
           ("", {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _} )
 #end          
         ])
-      ->  (* f##paint 1 2 *)
+      ->  (* f#@paint 1 2 *)
       {e with pexp_desc = Ast_util.property_apply loc self obj name args  }
     | Pexp_ident {txt = Lident "|."} ->
       (*
