@@ -110,6 +110,22 @@ let js_property loc obj (name : string) =
 #end
         )
 
+
+let js_opt_property loc obj (name : string) =
+  (* TODO unwrap value if necessary *)
+  Parsetree.Pexp_send
+    ((Ast_compatible.app1 ~loc
+        (Exp.ident ~loc
+           {loc;
+            txt = Ldot (Ast_literal.Lid.js_unsafe, Literals.unsafe_downgrade)})
+        obj), 
+#if OCAML_VERSION =~ ">4.03.0" then
+        {loc; txt = name}
+#else         
+        name
+#end
+        )
+
 (* TODO: 
    have a final checking for property arities 
      [#=], 
@@ -173,6 +189,11 @@ let property_apply loc self obj name (args : args)
 let method_apply loc self obj name args = 
   generic_apply `Method loc self obj args 
     (fun loc obj -> Exp.mk ~loc (js_property loc obj name))
+
+
+let method_opt_apply loc self obj name args = 
+  generic_apply `Method loc self obj args 
+    (fun loc obj -> Exp.mk ~loc (js_opt_property loc obj name))
 
 let generic_to_uncurry_type  kind loc (mapper : Bs_ast_mapper.mapper) label
     (first_arg : Parsetree.core_type) 

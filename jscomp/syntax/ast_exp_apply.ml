@@ -66,6 +66,21 @@ let handle_exp_apply
       {e with pexp_desc = Ast_util.method_apply loc self obj name args }
     | Pexp_apply (
         {pexp_desc =
+           Pexp_ident  {txt = Lident "?#"  ; loc} ; _},
+        [
+#if OCAML_VERSION =~ ">4.03.0" then 
+          (Nolabel, obj) ;
+          (Nolabel, {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _} )
+#else
+          ("", obj) ;
+          ("", {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _} )
+#end          
+        ]
+        )
+      ->  (* f##paint 1 2 *)
+      {e with pexp_desc = Ast_util.method_opt_apply loc self obj name args }
+    | Pexp_apply (
+        {pexp_desc =
            Pexp_ident  {txt = Lident "#@"  ; loc} ; _},
         [
 #if OCAML_VERSION =~ ">4.03.0" then 
