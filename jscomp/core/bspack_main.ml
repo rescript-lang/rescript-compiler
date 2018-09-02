@@ -42,7 +42,7 @@ let preprocess_string fn str oc =
     |> Lexer.filter_directive_from_lexbuf   in
   segments
   |> List.iter
-    (fun (start, pos) ->
+    (fun (start, pos, _) ->
        output_substring  oc str start (pos - start)
     )
 

@@ -3006,21 +3006,21 @@ and __ocaml_lex_skip_sharp_bang_rec lexbuf __ocaml_lex_state =
     | None -> ()
     | Some (init, _preprocess) -> init ()
 
-  let rec filter_directive pos   acc lexbuf : (int * int ) list =
+  let rec filter_directive pos   acc lexbuf : (int * int * int) list =
     match token_with_comments lexbuf with
     | SHARP when at_bol lexbuf ->
         (* ^[start_pos]#if ... #then^[end_pos] *)
-        let start_pos = Lexing.lexeme_start lexbuf in 
+        let {pos_cnum; pos_lnum} = Lexing.lexeme_end_p lexbuf in 
         interpret_directive lexbuf 
           (fun lexbuf -> 
              filter_directive 
                (Lexing.lexeme_end lexbuf)
-               ((pos, start_pos) :: acc)
+               ((pos, pos_cnum, pos_lnum) :: acc)
                lexbuf
           
           )
           (fun _token -> filter_directive pos acc lexbuf  )
-    | EOF -> (pos, Lexing.lexeme_end lexbuf) :: acc
+    | EOF -> (pos, Lexing.lexeme_end lexbuf, (Lexing.lexeme_end_p lexbuf).pos_lnum) :: acc
     | _ -> filter_directive pos  acc lexbuf
 
   let filter_directive_from_lexbuf lexbuf = 

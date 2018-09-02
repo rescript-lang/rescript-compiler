@@ -27,12 +27,13 @@ let preprocess fn oc =
     TODO: output line directive
    *)
   |> List.iter
-    (fun (start, stop) ->       
+    (fun (start, stop, ln) ->       
        let len = stop - start in 
        if len <> 0 then 
          begin
            seek_in ic start ; 
            Buffer.add_channel buf ic len ; 
+           Printf.fprintf oc "#%d \"%s\"" ln fn;
            Buffer.output_buffer oc buf ; 
            Buffer.clear buf;
          end

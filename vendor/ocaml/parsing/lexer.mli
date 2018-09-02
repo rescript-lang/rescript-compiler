@@ -89,7 +89,7 @@ val set_preprocessor :
 (** semantic version predicate *)
 val semver : Location.t ->   string -> string -> bool
 
-val filter_directive_from_lexbuf : Lexing.lexbuf -> (int * int) list
+val filter_directive_from_lexbuf : Lexing.lexbuf -> (int * int * int) list
 
 val replace_directive_int : string -> int -> unit
 val replace_directive_string : string -> string -> unit
