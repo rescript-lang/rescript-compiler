@@ -78,7 +78,7 @@ val flatMap : 'a option -> ('a -> 'b option) -> 'b option
   The function [f] must have a return type of ['a option]
   
   @example {[
-    let f (x : float =
+    let f (x : float) =
         if x >= 0.0 then
           Some (sqrt x)
         else
