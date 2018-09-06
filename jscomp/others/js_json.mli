@@ -236,4 +236,25 @@ Js.log \@\@ Js.Json.stringify [| "foo"; "bar" |]
 *)
 
 
+val serializeAnyToJson : 'a -> t
+(** [anyToJson value] turns any [value] into a JSON object
 
+This will throw an error if there are any functions anywhere in the value.
+*)
+
+
+val unserializeAnyFromJsonUnsafe : t -> 'a
+(** [unsafeAnyFromJson json] converts a serialized JSON object back into the bucklescript runtime value.
+
+Warning: marshaling is currently not type-safe. The type of marshaled data is not transmitted along
+the value of the data, making it impossible to check that the data read back possesses the type expected
+by the context. The return type of this function is given as 'a, but this is misleading: the returned
+OCaml value does not possess type 'a for all 'a; it has one, unique type which cannot be determined at
+compile-time.
+
+The programmer should explicitly give the expected type of the returned value, using the following syntax:
+
+  (Js.Json.unserializeAnyFromJsonUnsafe json : type)
+
+Anything can happen at run-time if the object does not correspond to the assumed type.
+*)

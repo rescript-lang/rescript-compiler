@@ -389,4 +389,16 @@ let () =
   eq __LOC__ 
     (Js.Json.decodeNull (Js.Json.number 1.23)) None
 
+(* serializeAny tests *)
+type aRecord = {a: int; b: float option; c: (string, string) Belt.Result.t; d: aRecord list}
+
+let check loc value = eq loc (Js.Json.unserializeAnyFromJsonUnsafe (Js.Json.serializeAnyToJson value)) value
+
+let () =
+  check __LOC__ {a=2; b=None; c=Ok "folks"; d=[]};
+  check __LOC__ [2,3,4,5];
+  check __LOC__ (`Poly 3);
+  check __LOC__ (Belt.Map.String.empty |. Belt.Map.String.set "hello" [2;3;4] |. Belt.Map.String.set "folks" [100]);
+  check __LOC__ [|`A 3; `B 2.0; `C "hi"|]
+
 let () = Mt.from_pair_suites __FILE__ !suites

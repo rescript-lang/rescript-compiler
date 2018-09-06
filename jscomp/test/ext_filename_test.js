@@ -16,7 +16,6 @@ var Test_literals = require("./test_literals.js");
 var Ext_string_test = require("./ext_string_test.js");
 var CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
 var Ext_pervasives_test = require("./ext_pervasives_test.js");
-var Caml_missing_polyfill = require("../../lib/js/caml_missing_polyfill.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var node_sep = "/";
@@ -204,7 +203,7 @@ function node_relative_path(node_modules_shorten, file1, dep_file) {
 function find_root_filename(_cwd, filename) {
   while(true) {
     var cwd = _cwd;
-    if (Caml_missing_polyfill.not_implemented("caml_sys_file_exists")) {
+    if (Caml_sys.caml_sys_file_exists(Filename.concat(cwd, filename))) {
       return cwd;
     } else {
       var cwd$prime = Curry._1(Filename.dirname, cwd);

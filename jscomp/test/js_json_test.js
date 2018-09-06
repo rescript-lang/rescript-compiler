@@ -6,6 +6,7 @@ var Block = require("../../lib/js/block.js");
 var Js_json = require("../../lib/js/js_json.js");
 var Caml_array = require("../../lib/js/caml_array.js");
 var Js_primitive = require("../../lib/js/js_primitive.js");
+var Belt_MapString = require("../../lib/js/belt_MapString.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var suites = /* record */[/* contents : [] */0];
@@ -585,6 +586,61 @@ eq("File \"js_json_test.ml\", line 387, characters 5-12", Js_json.decodeNull({ }
 
 eq("File \"js_json_test.ml\", line 389, characters 5-12", Js_json.decodeNull(1.23), undefined);
 
+function check(loc, value) {
+  return eq(loc, Js_json.unserializeAnyFromJsonUnsafe(Js_json.serializeAnyToJson(value)), value);
+}
+
+check("File \"js_json_test.ml\", line 398, characters 8-15", /* record */[
+      /* a */2,
+      /* b */undefined,
+      /* c : Ok */Block.__(0, ["folks"]),
+      /* d : [] */0
+    ]);
+
+check("File \"js_json_test.ml\", line 399, characters 8-15", /* :: */[
+      /* tuple */[
+        2,
+        3,
+        4,
+        5
+      ],
+      /* [] */0
+    ]);
+
+check("File \"js_json_test.ml\", line 400, characters 8-15", /* `Poly */[
+      892709484,
+      3
+    ]);
+
+check("File \"js_json_test.ml\", line 401, characters 8-15", Belt_MapString.set(Belt_MapString.set(Belt_MapString.empty, "hello", /* :: */[
+              2,
+              /* :: */[
+                3,
+                /* :: */[
+                  4,
+                  /* [] */0
+                ]
+              ]
+            ]), "folks", /* :: */[
+          100,
+          /* [] */0
+        ]));
+
+check("File \"js_json_test.ml\", line 402, characters 8-15", /* array */[
+      /* `A */[
+        65,
+        3
+      ],
+      /* `B */[
+        66,
+        2.0
+      ],
+      /* `C */[
+        67,
+        "hi"
+      ]
+    ]);
+
 Mt.from_pair_suites("js_json_test.ml", suites[0]);
 
 exports.suites = suites;
@@ -594,4 +650,5 @@ exports.false_ = false_;
 exports.true_ = true_;
 exports.option_get = option_get;
 exports.eq_at_i = eq_at_i;
+exports.check = check;
 /* v Not a pure module */
