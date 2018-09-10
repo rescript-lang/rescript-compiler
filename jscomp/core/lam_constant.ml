@@ -1,5 +1,5 @@
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+(* Copyright (C) 2018- Authors of BuckleScript
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,21 +17,29 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-
-
-(** Compile lambda constant to JS *)
-
-val translate : Lam_constant.t -> J.expression
-
-
-val translate_arg_cst : External_arg_spec.cst -> J.expression
+ type t =
+  | Const_js_null
+  | Const_js_undefined
+  | Const_js_true
+  | Const_js_false
+  | Const_int of int
+  | Const_char of char
+  | Const_string of string  (* use record later *)
+  | Const_unicode of string
+  | Const_float of string
+  | Const_int32 of int32
+  | Const_int64 of int64
+  | Const_nativeint of nativeint
+  | Const_pointer of int * Lam_pointer_info.t
+  | Const_block of int * Lam_tag_info.t * t list
+  | Const_float_array of string list
+  | Const_immstring of string
+  | Const_some of t 
+    (* eventually we can remove it, since we know
+      [constant] is [undefined] or not 
+    *) 

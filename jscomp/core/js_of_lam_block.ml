@@ -34,7 +34,7 @@ module E = Js_exp_make
 (* TODO: it would be even better, if the [tag_info] contains more information
    about immutablility
  *)
-let make_block mutable_flag (tag_info : Lam.tag_info) tag args  = 
+let make_block mutable_flag (tag_info : Lam_tag_info.t) tag args  = 
 
   match mutable_flag, tag_info with
   | _, Blk_array -> Js_of_lam_array.make_array mutable_flag  Pgenarray args

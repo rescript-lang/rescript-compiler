@@ -26,7 +26,7 @@
 
 
 (**used in effect analysis, it is sound but not-complete *)
-let not_zero_constant ( x : Lam.constant) =  
+let not_zero_constant ( x : Lam_constant.t) =  
   match x with 
   | Const_int i  -> i <> 0
   | Const_int32 i  -> i <> 0l

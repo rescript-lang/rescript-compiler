@@ -32,7 +32,7 @@
 module E = Js_exp_make
 
 (** return [val < 0] if not nested [Some (Some (Some None))]*)
-let rec is_some_none_aux (x : Lam.constant) acc = 
+let rec is_some_none_aux (x : Lam_constant.t) acc = 
   match x with 
   | Const_some v -> is_some_none_aux v (acc + 1)
   | Const_js_undefined -> acc 
@@ -44,11 +44,11 @@ let rec nested_some_none   n none =
 
 
 let rec 
-translate_some (x : Lam.constant) : J.expression = 
+translate_some (x : Lam_constant.t) : J.expression = 
   let depth = is_some_none_aux x 0 in 
   if depth < 0 then E.optional_not_nest_block (translate x )
   else nested_some_none depth (E.optional_block (translate Const_js_undefined))
-and translate (x : Lam.constant ) : J.expression = 
+and translate (x : Lam_constant.t ) : J.expression = 
   match x with 
   | Const_some s ->  translate_some s   
   | Const_js_true -> E.bool true 

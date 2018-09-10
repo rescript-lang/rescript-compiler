@@ -29,8 +29,6 @@ type bigarray_kind = Lambda.bigarray_kind
 type bigarray_layout = Lambda.bigarray_layout
 type compile_time_constant = Lambda.compile_time_constant
 
-type tag_info = Lam_tag_info.t
-
 type mutable_flag = Asttypes.mutable_flag
 type field_dbg_info = Lambda.field_dbg_info 
 type set_field_dbg_info = Lambda.set_field_dbg_info
@@ -52,36 +50,12 @@ type function_kind
    = Curried
    (* | Tupled *)
 
-type pointer_info = 
-  | Pt_constructor of string 
-  | Pt_variant of string 
-  | Pt_module_alias
-  | Pt_na    
-  
-type constant = 
-  | Const_js_null 
-  | Const_js_undefined 
-  | Const_js_true
-  | Const_js_false  
-  | Const_int of int
-  | Const_char of char
-  | Const_string of string 
-  | Const_unicode of string 
-  | Const_float of string
-  | Const_int32 of int32
-  | Const_int64 of int64
-  | Const_nativeint of nativeint
-  | Const_pointer of int * pointer_info
-  | Const_block of int * tag_info * constant list
-  | Const_float_array of string list
-  | Const_immstring of string
-  | Const_some of constant
 
 type primitive = 
   | Pbytes_to_string
   | Pbytes_of_string
   | Pglobal_exception of ident 
-  | Pmakeblock of int * tag_info * Asttypes.mutable_flag
+  | Pmakeblock of int * Lam_tag_info.t * Asttypes.mutable_flag
   | Pfield of int * Lambda.field_dbg_info
   | Psetfield of int  * Lambda.set_field_dbg_info
   | Pfloatfield of int * Lambda.field_dbg_info
@@ -242,7 +216,7 @@ and function_info = private
 and  t =  private
   | Lvar of ident
   | Lglobal_module of ident
-  | Lconst of constant
+  | Lconst of Lam_constant.t
   | Lapply of apply_info
   | Lfunction of function_info
   | Llet of let_kind * ident * t * t
@@ -290,7 +264,7 @@ val scc : bindings -> t -> t  -> t
 
 val var : ident -> t
 val global_module : ident -> t 
-val const : constant -> t
+val const : Lam_constant.t -> t
 
 val apply : t -> t list -> Location.t -> apply_status -> t
 val function_ : 

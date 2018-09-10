@@ -268,6 +268,8 @@
 ../lib/whole_compiler.ml : ./core/lam_compile_primitive.mli
 ../lib/whole_compiler.ml : ./core/lam_compile_util.ml
 ../lib/whole_compiler.ml : ./core/lam_compile_util.mli
+../lib/whole_compiler.ml : ./core/lam_constant.ml
+../lib/whole_compiler.ml : ./core/lam_constant.mli
 ../lib/whole_compiler.ml : ./core/lam_dce.ml
 ../lib/whole_compiler.ml : ./core/lam_dce.mli
 ../lib/whole_compiler.ml : ./core/lam_dispatch_primitive.ml
@@ -300,6 +302,8 @@
 ../lib/whole_compiler.ml : ./core/lam_pass_lets_dce.mli
 ../lib/whole_compiler.ml : ./core/lam_pass_remove_alias.ml
 ../lib/whole_compiler.ml : ./core/lam_pass_remove_alias.mli
+../lib/whole_compiler.ml : ./core/lam_pointer_info.ml
+../lib/whole_compiler.ml : ./core/lam_pointer_info.mli
 ../lib/whole_compiler.ml : ./core/lam_print.ml
 ../lib/whole_compiler.ml : ./core/lam_print.mli
 ../lib/whole_compiler.ml : ./core/lam_stats.ml

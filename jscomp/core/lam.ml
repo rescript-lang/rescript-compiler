@@ -30,15 +30,7 @@ type bigarray_kind = Lambda.bigarray_kind
 type bigarray_layout = Lambda.bigarray_layout
 type compile_time_constant = Lambda.compile_time_constant
 
-type tag_info = Lam_tag_info.t = 
-  | Blk_constructor of string * int
-  | Blk_tuple
-  | Blk_array
-  | Blk_variant of string 
-  | Blk_record of string array
-  | Blk_module of string list option
-  | Blk_extension_slot
-  | Blk_na  
+
 
 type mutable_flag = Asttypes.mutable_flag
 type field_dbg_info = Lambda.field_dbg_info
@@ -62,40 +54,14 @@ type meth_kind = Lambda.meth_kind
 | Public of string option
 | Cached
 
-type pointer_info = 
-  | Pt_constructor of string 
-  | Pt_variant of string 
-  | Pt_module_alias
-  | Pt_na 
 
-type constant =
-  | Const_js_null
-  | Const_js_undefined
-  | Const_js_true
-  | Const_js_false
-  | Const_int of int
-  | Const_char of char
-  | Const_string of string  (* use record later *)
-  | Const_unicode of string
-  | Const_float of string
-  | Const_int32 of int32
-  | Const_int64 of int64
-  | Const_nativeint of nativeint
-  | Const_pointer of int * pointer_info
-  | Const_block of int * tag_info * constant list
-  | Const_float_array of string list
-  | Const_immstring of string
-  | Const_some of constant 
-    (* eventually we can remove it, since we know
-      [constant] is [undefined] or not 
-    *)
   
 type primitive =
   | Pbytes_to_string
   | Pbytes_of_string
   | Pglobal_exception of ident
   (* Operations on heap blocks *)
-  | Pmakeblock of int * tag_info * mutable_flag
+  | Pmakeblock of int * Lam_tag_info.t * mutable_flag
   | Pfield of int * field_dbg_info
   | Psetfield of int * set_field_dbg_info
   (* could have field info at least for record *)
@@ -288,7 +254,7 @@ module Types = struct
   and t =
     | Lvar of ident
     | Lglobal_module of ident
-    | Lconst of constant
+    | Lconst of Lam_constant.t
     | Lapply of apply_info
     | Lfunction of function_info
     | Llet of let_kind * ident * t * t
@@ -346,7 +312,7 @@ module X = struct
     =
       | Lvar of ident
       | Lglobal_module of ident
-      | Lconst of constant
+      | Lconst of Lam_constant.t
       | Lapply of apply_info
       | Lfunction of function_info
       | Llet of let_kind * ident * t * t
@@ -370,7 +336,7 @@ include Types
 let inner_map (f : t -> X.t ) (l : t) : X.t =
   match l  with
   | Lvar (_ : ident)
-  | Lconst (_ : constant) ->
+  | Lconst (_ : Lam_constant.t) ->
     ( (* Obj.magic *) l : X.t)
   | Lapply ({fn; args; loc; status} )  ->
     let fn = f fn in
@@ -447,7 +413,7 @@ let inner_map (f : t -> X.t ) (l : t) : X.t =
 let inner_iter (f : t -> unit ) (l : t) : unit =
   match l  with
   | Lvar (_ : ident)
-  | Lconst (_ : constant) -> ()
+  | Lconst (_ : Lam_constant.t) -> ()
   | Lapply ({fn; args; loc; status} )  ->
     f fn;
     List.iter f args
@@ -1201,7 +1167,7 @@ let unit : t =
   Lconst (Const_pointer( 0, Pt_constructor "()"))
 
 
-let lam_none : constant = 
+let lam_none : Lam_constant.t = 
    Const_js_undefined 
 
 
@@ -1638,28 +1604,28 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : t =
       ->    
       prim ~primitive:Psome ~args loc 
     | Blk_constructor(xs,i) ->  
-      let info = Blk_constructor(xs,i) in
+      let info : Lam_tag_info.t = Blk_constructor(xs,i) in
       prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
     | Blk_tuple  -> 
-      let info = Blk_tuple in
+      let info : Lam_tag_info.t = Blk_tuple in
       prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
     | Blk_array -> 
-      let info = Blk_array in
+      let info : Lam_tag_info.t = Blk_array in
       prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
     | Blk_variant s -> 
-      let info = Blk_variant s in
+      let info : Lam_tag_info.t = Blk_variant s in
       prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
     | Blk_record s -> 
-      let info = Blk_record s in
+      let info : Lam_tag_info.t = Blk_record s in
       prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
     | Blk_module s -> 
-      let info = Blk_module s in
+      let info : Lam_tag_info.t = Blk_module s in
       prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
     | Blk_extension_slot -> 
-      let info = Blk_extension_slot in
+      let info : Lam_tag_info.t = Blk_extension_slot in
       prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
     | Blk_na -> 
-      let info = Blk_na in
+      let info : Lam_tag_info.t = Blk_na in
       prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
     end  
   | Pfield (id,info)
@@ -2018,7 +1984,7 @@ let convert exports lam : _ * _  =
       in
       let args = Ext_list.map convert_aux args in
       prim ~primitive ~args loc
-  and convert_constant ( const : Lambda.structured_constant) : constant =
+  and convert_constant ( const : Lambda.structured_constant) : Lam_constant.t =
     match const with
     | Const_base (Const_int i) -> (Const_int i)
     | Const_base (Const_char i) -> (Const_char i)
@@ -2063,28 +2029,28 @@ let convert exports lam : _ * _  =
         | _ -> assert false
         end 
       | Blk_constructor(a,b) ->   
-        let t = Blk_constructor(a,b) in 
+        let t : Lam_tag_info.t = Blk_constructor(a,b) in 
         Const_block (i,t, Ext_list.map convert_constant xs)
       | Blk_tuple ->   
-        let t = Blk_tuple in 
+        let t : Lam_tag_info.t = Blk_tuple in 
         Const_block (i,t, Ext_list.map convert_constant xs)
       | Blk_array -> 
-        let t = Blk_array in 
+        let t : Lam_tag_info.t = Blk_array in 
         Const_block (i,t, Ext_list.map convert_constant xs)
       | Blk_variant s -> 
-        let t = Blk_variant s in 
+        let t : Lam_tag_info.t = Blk_variant s in 
         Const_block (i,t, Ext_list.map convert_constant xs)      
       | Blk_record s -> 
-        let t = Blk_record s in 
+        let t : Lam_tag_info.t = Blk_record s in 
         Const_block (i,t, Ext_list.map convert_constant xs)
       | Blk_module s -> 
-        let t = Blk_module s in 
+        let t : Lam_tag_info.t = Blk_module s in 
         Const_block (i,t, Ext_list.map convert_constant xs)    
       | Blk_extension_slot -> 
-        let t = Blk_extension_slot in 
+        let t : Lam_tag_info.t = Blk_extension_slot in 
         Const_block (i,t, Ext_list.map convert_constant xs)      
       | Blk_na -> 
-        let t = Blk_na in 
+        let t : Lam_tag_info.t = Blk_na in 
         Const_block (i,t, Ext_list.map convert_constant xs)      
       end
   and convert_aux (lam : Lambda.lambda) : t =

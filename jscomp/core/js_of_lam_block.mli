@@ -32,7 +32,7 @@
 (** Utilities for creating block of lambda expression in JS IR *)
 
 val make_block : 
-  Js_op.mutable_flag -> Lam.tag_info ->
+  Js_op.mutable_flag -> Lam_tag_info.t ->
   J.expression -> J.expression list -> J.expression
 
 val field : Lambda.field_dbg_info -> J.expression -> J.jsint -> J.expression

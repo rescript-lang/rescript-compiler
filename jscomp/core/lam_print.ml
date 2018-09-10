@@ -17,7 +17,7 @@ open Types
 
 
 
-let rec struct_const ppf (cst : Lam.constant) =
+let rec struct_const ppf (cst : Lam_constant.t) =
   match cst with 
   | Const_js_true -> fprintf ppf "#true"
   | Const_js_false -> fprintf ppf "#false"

@@ -53,7 +53,7 @@ let comment_of_tag_info  (x : Lam_tag_info.t) =
     Some "module"
   | Blk_extension_slot -> None
   | Blk_na -> None 
-let comment_of_pointer_info (x :  Lam.pointer_info)= 
+let comment_of_pointer_info (x :  Lam_pointer_info.t)= 
   match x with 
   | Pt_constructor x -> Some x 
   | Pt_variant x -> Some x 
