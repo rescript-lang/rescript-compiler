@@ -1363,6 +1363,7 @@ and transl_record_bs loc all_labels repres lbl_expr_list opt_init_expr =
        taken from init_expr if any *)
     let lv = Array.make size staticfail in
     let init_id = Ident.create "init" in
+    if opt_init_expr <> None then (* all ops are new not updates *)
     for i = 0 to Array.length all_labels - 1 do
       let access =
         let lbl = all_labels.(i) in

@@ -1003,6 +1003,7 @@ let root = OCamlRes.Res.([
       \ */\n\
        function getPackageName(id) {\n\
       \    var index = id.indexOf('/')\n\
+      \    if (id[0] === '@') index = id.indexOf('/', index + 1)\n\
       \    if (index === -1) {\n\
       \        return id\n\
       \    }\n\
@@ -1697,6 +1698,7 @@ let root = OCamlRes.Res.([
       \ */\n\
        function getPackageName(id) {\n\
       \    var index = id.indexOf('/')\n\
+      \    if (id[0] === '@') index = id.indexOf('/', index + 1)\n\
       \    if (index === -1) {\n\
       \        return id\n\
       \    }\n\

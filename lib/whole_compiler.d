@@ -319,6 +319,8 @@
 ../lib/whole_compiler.ml : ./core/ocaml_parse.mli
 ../lib/whole_compiler.ml : ./core/ocaml_types.ml
 ../lib/whole_compiler.ml : ./core/ocaml_types.mli
+../lib/whole_compiler.ml : ./core/primitive_compat.ml
+../lib/whole_compiler.ml : ./core/primitive_compat.mli
 ../lib/whole_compiler.ml : ./depends/ast_extract.ml
 ../lib/whole_compiler.ml : ./depends/ast_extract.mli
 ../lib/whole_compiler.ml : ./depends/binary_ast.ml
