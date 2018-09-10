@@ -1167,8 +1167,6 @@ let unit : t =
   Lconst (Const_pointer( 0, Pt_constructor "()"))
 
 
-let lam_none : Lam_constant.t = 
-   Const_js_undefined 
 
 
 (* let assert_false_unit : t =
@@ -1984,75 +1982,6 @@ let convert exports lam : _ * _  =
       in
       let args = Ext_list.map convert_aux args in
       prim ~primitive ~args loc
-  and convert_constant ( const : Lambda.structured_constant) : Lam_constant.t =
-    match const with
-    | Const_base (Const_int i) -> (Const_int i)
-    | Const_base (Const_char i) -> (Const_char i)
-    | Const_base (Const_string(i,opt)) ->
-      begin match opt with
-        | Some opt when
-            Ext_string.equal opt Literals.escaped_j_delimiter ->
-          Const_unicode i
-        | _ ->
-          Const_string i
-      end
-    | Const_base (Const_float i) -> (Const_float i)
-    | Const_base (Const_int32 i) -> (Const_int32 i)
-    | Const_base (Const_int64 i) -> (Const_int64 i)
-    | Const_base (Const_nativeint i) -> (Const_nativeint i)
-    | Const_pointer(i,p) ->
-      begin match p with 
-      | Pt_constructor p -> Const_pointer(i, Pt_constructor p)
-      | Pt_variant p -> Const_pointer(i,Pt_variant p)
-      | Pt_module_alias -> Const_pointer(i, Pt_module_alias)
-      | Pt_builtin_boolean -> if i = 0 then Const_js_false else Const_js_true
-      | Pt_shape_none ->
-         lam_none
-      | Pt_na ->  Const_pointer(i, Pt_na)      
-       end 
-    | Const_float_array (s) -> Const_float_array(s)
-    | Const_immstring s -> Const_immstring s
-    | Const_block (i,t,xs) ->
-      begin match t with 
-      | Blk_some_not_nested 
-        -> 
-        begin match xs with 
-        | [x] -> 
-          Const_some (convert_constant x)
-        | _ -> assert false
-        end 
-
-      | Blk_some -> 
-        begin match xs with 
-        | [x] -> 
-          Const_some (convert_constant x)
-        | _ -> assert false
-        end 
-      | Blk_constructor(a,b) ->   
-        let t : Lam_tag_info.t = Blk_constructor(a,b) in 
-        Const_block (i,t, Ext_list.map convert_constant xs)
-      | Blk_tuple ->   
-        let t : Lam_tag_info.t = Blk_tuple in 
-        Const_block (i,t, Ext_list.map convert_constant xs)
-      | Blk_array -> 
-        let t : Lam_tag_info.t = Blk_array in 
-        Const_block (i,t, Ext_list.map convert_constant xs)
-      | Blk_variant s -> 
-        let t : Lam_tag_info.t = Blk_variant s in 
-        Const_block (i,t, Ext_list.map convert_constant xs)      
-      | Blk_record s -> 
-        let t : Lam_tag_info.t = Blk_record s in 
-        Const_block (i,t, Ext_list.map convert_constant xs)
-      | Blk_module s -> 
-        let t : Lam_tag_info.t = Blk_module s in 
-        Const_block (i,t, Ext_list.map convert_constant xs)    
-      | Blk_extension_slot -> 
-        let t : Lam_tag_info.t = Blk_extension_slot in 
-        Const_block (i,t, Ext_list.map convert_constant xs)      
-      | Blk_na -> 
-        let t : Lam_tag_info.t = Blk_na in 
-        Const_block (i,t, Ext_list.map convert_constant xs)      
-      end
   and convert_aux (lam : Lambda.lambda) : t =
     match lam with
     | Lvar x ->
@@ -2062,7 +1991,7 @@ let convert exports lam : _ * _  =
       else
         Lvar var
     | Lconst x ->
-      Lconst (convert_constant x )
+      Lconst (Lam_constant.convert_constant x )
     | Lapply (fn,args,loc)
       ->
       begin match fn with
