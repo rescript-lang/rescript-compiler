@@ -105,7 +105,7 @@ type primitive =
   (* Force lazy values *)
   | Plazyforce
   (* External call *)
-  | Pccall of  Primitive.description
+  | Pccall of  Primitive_compat.t
   | Pjs_call of
       string *  (* prim_name *)
       External_arg_spec.t list * (* arg_types *)
@@ -1883,7 +1883,7 @@ let convert exports lam : _ * _  =
   let may_depends = Lam_module_ident.Hash_set.create 0 in
 
   let rec
-    convert_ccall (a : Primitive.description)  (args : Lambda.lambda list) loc : t=
+    convert_ccall (a : Primitive_compat.t)  (args : Lambda.lambda list) loc : t=
     let prim_name = a.prim_name in
     let prim_name_len  = String.length prim_name in
     match External_ffi_types.from_string a.prim_native_name with
@@ -1914,7 +1914,7 @@ let convert exports lam : _ * _  =
       handle_bs_non_obj_ffi arg_types result_type ffi args loc prim_name
 
 
-  and convert_js_primitive (p: Primitive.description) (args : Lambda.lambda list) loc =
+  and convert_js_primitive (p: Primitive_compat.t) (args : Lambda.lambda list) loc =
     let s = p.prim_name in
     match () with
     | _ when s = "#is_none" -> 
@@ -2237,7 +2237,7 @@ let convert exports lam : _ * _  =
     | Lprim (Prevapply, _, _ ) -> assert false
     | Lprim(Pdirapply, _, _) -> assert false
     | Lprim(Pccall a, args, loc)  ->
-      convert_ccall a args loc
+      convert_ccall (Primitive_compat.of_primitive_description a) args loc
     | Lprim (Pgetglobal id, args, loc) ->
       let args = Ext_list.map convert_aux args in
       if Ident.is_predef_exn id then

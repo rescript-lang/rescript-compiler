@@ -89,7 +89,7 @@ type primitive =
   | Pduprecord of Types.record_representation * int
   | Plazyforce
 
-  | Pccall of  Primitive.description    
+  | Pccall of  Primitive_compat.t
   | Pjs_call of
     (* Location.t *  [loc] is passed down *)
     string *  (* prim_name *)
