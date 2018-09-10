@@ -97,9 +97,15 @@ let () =
 
 let () =   
   let (=~) = eq "UNZIP" in 
-  N.unzip [] =~ ([],[]) ; 
+  N.unzip [] =~ ([],[]); 
   N.unzip [1,2] =~ ([1] ,[2]);
   N.unzip [1,2;3,4] =~ ([1;3], [2;4])
+
+let () =   
+  let (=~) = eq "INTERSECTBY" in 
+  (N.intersectBy (=) [] [1]) =~ []; 
+  (N.intersectBy (=) [2] []) =~ []; 
+  (N.intersectBy (=) [1;4;3;2] [3;4]) =~ [4;3]
 
 let () = 
   let (=~) = eq "FILTER" in 

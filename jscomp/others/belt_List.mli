@@ -563,6 +563,14 @@ val getBy: 'a t -> ('a -> bool) -> 'a option
       getBy [15;13;11] (fun x -> x mod 2 = 0) = None
     ]}
 *)
+
+val intersectBy: ('a -> 'a -> bool) -> 'a t -> 'a t -> 'a t
+(** [intersectBy eq xs ys] returns a list of all elements in [xs] which coincide with the given elements in [ys] per the equality predicate [eq]; returns [] if no elements intersect between the two lists.
+
+  @example {[
+    intersectBy (=) [1;4;3;2] [3;4] = [4;3]
+  ]}
+*)
     
 val keepU: 'a t ->  ('a -> bool [@bs]) -> 'a t
 val keep: 'a t ->  ('a -> bool) -> 'a t
