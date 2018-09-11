@@ -357,8 +357,7 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : t * Lam_module_ident
     | Lprim (Pgetglobal id, args, loc) ->
       let args = Ext_list.map convert_aux args in
       if Ident.is_predef_exn id then
-        (* Lprim {primitive = Pglobal_exception id; args ; loc} *)
-        Lam.prim ~primitive:(Pglobal_exception id) ~args loc (* FIXME*)
+        Lam.prim ~primitive:(Pglobal_exception id) ~args loc 
       else
         begin
           may_depend may_depends (Lam_module_ident.of_ml id);
@@ -432,10 +431,9 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : t * Lam_module_ident
       else
         Lam.try_  body id handler
     | Lifthenelse (b,then_,else_) ->
-      (* FIXME *)
       Lam.if_ (convert_aux b) (convert_aux then_) (convert_aux else_)
     | Lsequence (a,b)
-      -> Lam.seq (convert_aux a) (convert_aux b) (* FIXME *)
+      -> Lam.seq (convert_aux a) (convert_aux b)
     | Lwhile (b,body) ->
       Lam.while_ (convert_aux b) (convert_aux body)
     | Lfor (id, from_, to_, dir, loop) ->

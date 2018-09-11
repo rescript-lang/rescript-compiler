@@ -261,7 +261,14 @@ type bindings = (Ident.t * t) list
 
 val scc_bindings : bindings -> bindings list 
 val scc : bindings -> t -> t  -> t 
+val handle_bs_non_obj_ffi:
+  External_arg_spec.t list ->
+  External_ffi_types.return_wrapper ->
+  External_ffi_types.attr -> t list -> Location.t -> string -> t
+val exception_id_escaped : Ident.t -> t -> bool  
 
+(**************************************************************)
+(** Smart constructors *)
 val var : ident -> t
 val global_module : ident -> t 
 val const : Lam_constant.t -> t
@@ -273,17 +280,28 @@ val function_ :
 
 val let_ : let_kind -> ident -> t -> t -> t
 val letrec : (ident * t) list -> t -> t
+
+(**  constant folding *)
 val if_ : triop
+
+(** constant folding*)
 val switch : t -> switch  -> t 
+(** constant folding*)
 val stringswitch : t -> (string * t) list -> t option -> t 
 
 val true_ : t 
 val false_ : t 
 val unit : t 
 
+(** convert [l || r] to [if l then true else r]*)
 val sequor : binop
+(** convert [l && r] to [if l then r else false *)
 val sequand : binop
+
+(** constant folding *)
 val not_ : Location.t ->  unop
+
+(** drop unused block *)
 val seq : binop
 val while_ : binop
 (* val event : t -> Lambda.lambda_event -> t   *)
@@ -296,7 +314,12 @@ val send :
   t -> t -> t list -> 
   Location.t -> t 
 
+(** constant folding *)  
 val prim : primitive:primitive -> args:t list -> Location.t  ->  t
+
+(** constant folding*)
+val lam_prim: 
+  primitive:Lambda.primitive -> args:t list -> Location.t -> t
 
 val staticcatch : 
   t -> int * ident list -> t -> t
@@ -310,14 +333,5 @@ val for_ :
   t -> Asttypes.direction_flag -> t -> t 
 
 
+(**************************************************************)
 
-
-
-
-val handle_bs_non_obj_ffi:
-  External_arg_spec.t list ->
-  External_ffi_types.return_wrapper ->
-  External_ffi_types.attr -> t list -> Location.t -> string -> t
-val lam_prim: 
-  primitive:Lambda.primitive -> args:t list -> Location.t -> t
-val exception_id_escaped : Ident.t -> t -> bool  

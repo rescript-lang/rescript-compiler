@@ -1006,10 +1006,6 @@ type unop = t -> t
 
 
 
-let var id : t = Lvar id
-let global_module id = Lglobal_module id
-let const ct : t = Lconst ct
-
 
 exception Not_simple_form
 
@@ -1097,13 +1093,8 @@ let apply fn args loc status : t =
     Lapply { fn; args;  loc  ; status }
 
 
-let function_ ~arity ~function_kind ~params ~body : t =
-  Lfunction { arity; function_kind; params ; body}
 
-let let_ kind id e body :  t
-  = Llet (kind,id,e,body)
-let letrec bindings body : t =
-  Lletrec(bindings,body)
+
 
 
 let switch lam (lam_switch : switch) : t =
@@ -1135,10 +1126,6 @@ let unit : t =
 
 
 
-(* let assert_false_unit : t =
-  Lconst (Const_pointer( 0, Pt_constructor "impossible branch")) *)
-
-
 let rec seq (a : t) b : t =
    match a with
   | Lprim 
@@ -1148,9 +1135,17 @@ let rec seq (a : t) b : t =
   | _ -> 
   Lsequence (a, b)
 
-let append_unit a  =
-  Lsequence (a,unit)
 
+let var id : t = Lvar id
+let global_module id = Lglobal_module id
+let const ct : t = Lconst ct
+let function_ ~arity ~function_kind ~params ~body : t =
+  Lfunction { arity; function_kind; params ; body}
+
+let let_ kind id e body :  t
+  = Llet (kind,id,e,body)
+let letrec bindings body : t =
+  Lletrec(bindings,body)
 let while_ a b : t  =
   Lwhile(a,b)
 
@@ -1159,19 +1154,12 @@ let try_  body id  handler : t =
 
 let for_ v e1 e2 dir e3 : t  =
   Lfor(v,e1,e2,dir,e3)
-
-
-
 let ifused v l : t  =
   Lifused (v,l)
-
 let assign v l : t = Lassign(v,l)
-
 let send u m o ll v : t =
   Lsend(u, m, o, ll, v)
-
 let staticcatch  a b c : t = Lstaticcatch(a,b,c)
-
 let staticraise a b : t = Lstaticraise(a,b)
 
 let comparison (cmp : comparison) a b : bool =
@@ -1469,7 +1457,7 @@ let rec no_auto_uncurried_arg_types
 let result_wrap loc (result_type : External_ffi_types.return_wrapper) result  =
   match result_type with
   | Return_replaced_with_unit
-    -> append_unit result
+    -> seq result unit
   | Return_null_to_opt -> prim ~primitive:Pnull_to_opt ~args:[result] loc
   | Return_null_undefined_to_opt -> prim ~primitive:Pnull_undefined_to_opt ~args:[result] loc
   | Return_undefined_to_opt -> prim ~primitive:Pundefined_to_opt ~args:[result] loc
