@@ -483,10 +483,11 @@ core/lam.cmx : core/primitive_compat.cmx \
     ext/hash_set_ident_mask.cmx syntax/external_ffi_types.cmx \
     syntax/external_arg_spec.cmx ext/ext_scc.cmx common/ext_log.cmx \
     ext/ext_list.cmx core/lam.cmi
-core/lam_convert.cmx : core/primitive_compat.cmx core/lam_module_ident.cmx \
-    core/lam_constant.cmx core/lam.cmx ext/int_hashtbl.cmx ext/ident_set.cmx \
-    ext/ident_hashtbl.cmx syntax/external_ffi_types.cmx ext/ext_string.cmx \
-    ext/ext_list.cmx syntax/ast_exp_extension.cmx core/lam_convert.cmi
+core/lam_convert.cmx : core/primitive_compat.cmx core/lam_tag_info.cmx \
+    core/lam_module_ident.cmx core/lam_constant.cmx core/lam.cmx \
+    ext/int_hashtbl.cmx ext/ident_set.cmx ext/ident_hashtbl.cmx \
+    syntax/external_ffi_types.cmx ext/ext_string.cmx ext/ext_list.cmx \
+    syntax/ast_exp_extension.cmx core/lam_convert.cmi
 core/lam_print.cmx : core/lam_constant.cmx core/lam.cmx ext/ext_list.cmx \
     core/lam_print.cmi
 core/lam_beta_reduce_util.cmx : core/lam.cmx ext/ident_hashtbl.cmx \

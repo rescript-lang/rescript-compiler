@@ -317,9 +317,6 @@ val send :
 (** constant folding *)  
 val prim : primitive:primitive -> args:t list -> Location.t  ->  t
 
-(** constant folding*)
-val lam_prim: 
-  primitive:Lambda.primitive -> args:t list -> Location.t -> t
 
 val staticcatch : 
   t -> int * ident list -> t -> t
