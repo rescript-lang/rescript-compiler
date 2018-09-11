@@ -26,8 +26,8 @@ type mutable_flag = Asttypes.mutable_flag
 
 type ident = Ident.t
 
-type function_kind
-  = Curried
+(* type function_kind
+  = Curried *)
 
 
   
@@ -222,7 +222,6 @@ module Types = struct
     }
   and function_info =
     { arity : int ;
-      function_kind : function_kind ;
       params : ident list ;
       body : t
     }
@@ -278,7 +277,6 @@ module X = struct
     = Types.function_info
     =
       { arity : int ;
-        function_kind : function_kind ;
         params : ident list ;
         body : t
       }
@@ -317,9 +315,9 @@ let inner_map (f : t -> X.t ) (l : t) : X.t =
     let fn = f fn in
     let args = Ext_list.map f args in
     Lapply { fn ; args; loc; status }
-  | Lfunction({body; arity; function_kind; params } ) ->
+  | Lfunction({body; arity;  params } ) ->
     let body = f body in
-    Lfunction {body; arity; function_kind ; params}
+    Lfunction {body; arity;  params}
   | Llet(str, id, arg, body) ->
     let arg = f arg in let body =  f body in
     Llet(str,id,arg,body)
@@ -392,7 +390,7 @@ let inner_iter (f : t -> unit ) (l : t) : unit =
   | Lapply ({fn; args; loc; status} )  ->
     f fn;
     List.iter f args
-  | Lfunction({body; arity; function_kind; params } ) ->
+  | Lfunction({body; arity;  params } ) ->
     f body
   | Llet(str, id, arg, body) ->
     f arg ;
@@ -1019,7 +1017,7 @@ let rec is_eta_conversion_exn
 (** FIXME: more robust inlining check later, we should inline it before we add stub code*)
 let apply fn args loc status : t =
   match fn with
-  | Lfunction {function_kind;
+  | Lfunction {
                params;
                body = Lprim {primitive =
                                (Pundefined_to_opt |
@@ -1038,7 +1036,7 @@ let apply fn args loc status : t =
       | exception Not_simple_form ->
         Lapply { fn; args; loc; status }
     end
-  | Lfunction {function_kind;
+  | Lfunction {
                params;
                body =Lprim ({primitive; args = inner_args}as primitive_call) }
     ->
@@ -1049,7 +1047,7 @@ let apply fn args loc status : t =
       | exception _ ->
         Lapply { fn; args;  loc;    status }
     end
-  | Lfunction {function_kind ;
+  | Lfunction {
                params;
                body = Lsequence (Lprim ({primitive; args = inner_args}as primitive_call), (Lconst _ as const )) }
     ->
@@ -1114,8 +1112,8 @@ let rec seq (a : t) b : t =
 let var id : t = Lvar id
 let global_module id = Lglobal_module id
 let const ct : t = Lconst ct
-let function_ ~arity ~function_kind ~params ~body : t =
-  Lfunction { arity; function_kind; params ; body}
+let function_ ~arity  ~params ~body : t =
+  Lfunction { arity;  params ; body}
 
 let let_ kind id e body :  t
   = Llet (kind,id,e,body)

@@ -28,9 +28,6 @@ type mutable_flag = Asttypes.mutable_flag
 
 type ident = Ident.t
 
-type function_kind 
-   = Curried
-   (* | Tupled *)
 
 
 type primitive = 
@@ -191,7 +188,6 @@ and prim_info = private
   }
 and function_info = private
   { arity : int ; 
-    function_kind : function_kind ; 
     params : ident list ;
     body : t 
   }
@@ -258,7 +254,8 @@ val const : Lam_constant.t -> t
 val apply : t -> t list -> Location.t -> apply_status -> t
 val function_ : 
   arity:int ->
-  function_kind:function_kind -> params:ident list -> body:t -> t
+  params:ident list -> 
+  body:t -> t
 
 val let_ : Lam_compat.let_kind -> ident -> t -> t -> t
 val letrec : (ident * t) list -> t -> t

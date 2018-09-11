@@ -474,7 +474,7 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : t * Lam_module_ident
     | Lfunction (Tupled,_,_) -> assert false
     | Lfunction (Curried,  params,body)
       ->  Lam.function_
-            ~arity:(List.length params) ~function_kind:Curried ~params
+            ~arity:(List.length params)  ~params
             ~body:(convert_aux body)
     | Llet (kind,id,e,body)
       ->
