@@ -142,7 +142,7 @@ let compile  ~filename (output_prefix : string) env _sigs
 #end      
     Lam_compile_env.reset () ;
   in 
-  let lam, may_required_modules = Lam.convert export_ident_sets lam in 
+  let lam, may_required_modules = Lam_convert.convert export_ident_sets lam in 
   let _d  = fun s lam -> 
     let result = Lam_util.dump env s lam  in
 #if BS_DEBUG then 
