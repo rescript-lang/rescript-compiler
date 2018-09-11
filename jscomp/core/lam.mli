@@ -336,3 +336,10 @@ val for_ :
 val convert :  Ident_set.t -> Lambda.lambda -> t * Lam_module_ident.Hash_set.t
 
 
+val handle_bs_non_obj_ffi:
+  External_arg_spec.t list ->
+  External_ffi_types.return_wrapper ->
+  External_ffi_types.attr -> t list -> Location.t -> string -> t
+val lam_prim: 
+  primitive:Lambda.primitive -> args:t list -> Location.t -> t
+val exception_id_escaped : Ident.t -> t -> bool  

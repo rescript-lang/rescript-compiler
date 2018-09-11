@@ -270,6 +270,8 @@
 ../lib/whole_compiler.ml : ./core/lam_compile_util.mli
 ../lib/whole_compiler.ml : ./core/lam_constant.ml
 ../lib/whole_compiler.ml : ./core/lam_constant.mli
+../lib/whole_compiler.ml : ./core/lam_convert.ml
+../lib/whole_compiler.ml : ./core/lam_convert.mli
 ../lib/whole_compiler.ml : ./core/lam_dce.ml
 ../lib/whole_compiler.ml : ./core/lam_dce.mli
 ../lib/whole_compiler.ml : ./core/lam_dispatch_primitive.ml
