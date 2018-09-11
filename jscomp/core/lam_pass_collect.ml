@@ -55,7 +55,7 @@ let annotate (meta : Lam_stats.t)  rec_flag  (k:Ident.t) (arity : Lam_arity.t) l
 *)
 let collect_helper  (meta : Lam_stats.t) (lam : Lam.t)  = 
   let rec collect_bind rec_flag
-      (kind : Lam.let_kind) 
+      (kind : Lam_compat.let_kind) 
       (ident : Ident.t)
       (lam : Lam.t) = 
     match lam with 

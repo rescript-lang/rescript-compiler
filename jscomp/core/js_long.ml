@@ -79,7 +79,7 @@ let of_int32 (args : J.expression list) =
     else make_const ~lo:i ~hi:0l
   | _ -> int64_call  "of_int32" args
 
-let comp (cmp : Lambda.comparison) args = 
+let comp (cmp : Lam_compat.comparison) args = 
   E.runtime_call  Js_runtime_modules.int64
     (match cmp with 
      | Ceq -> "eq"

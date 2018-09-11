@@ -31,7 +31,7 @@
 
 
 
-let jsop_of_comp (cmp : Lambda.comparison) : Js_op.binop = 
+let jsop_of_comp (cmp : Lam_compat.comparison) : Js_op.binop = 
   match cmp with 
   | Ceq -> EqEqEq (* comparison*)
   | Cneq -> NotEqEq

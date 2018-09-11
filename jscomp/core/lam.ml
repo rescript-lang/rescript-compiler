@@ -22,34 +22,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type boxed_integer = Lambda.boxed_integer
-type comparison = Lambda.comparison
-type bigarray_kind = Lambda.bigarray_kind
-type bigarray_layout = Lambda.bigarray_layout
-type compile_time_constant = Lambda.compile_time_constant
-
-
 type mutable_flag = Asttypes.mutable_flag
-type field_dbg_info = Lambda.field_dbg_info
-type set_field_dbg_info = Lambda.set_field_dbg_info
 
 type ident = Ident.t
 
 type function_kind
   = Curried
-
-
-
-type let_kind = Lambda.let_kind
-= Strict
-| Alias
-| StrictOpt
-| Variable
-
-type meth_kind = Lambda.meth_kind
-= Self
-| Public of string option
-| Cached
 
 
   
@@ -59,11 +37,11 @@ type primitive =
   | Pglobal_exception of ident
   (* Operations on heap blocks *)
   | Pmakeblock of int * Lam_tag_info.t * mutable_flag
-  | Pfield of int * field_dbg_info
-  | Psetfield of int * set_field_dbg_info
+  | Pfield of int * Lam_compat.field_dbg_info
+  | Psetfield of int * Lam_compat.set_field_dbg_info
   (* could have field info at least for record *)
-  | Pfloatfield of int * field_dbg_info
-  | Psetfloatfield of int * set_field_dbg_info
+  | Pfloatfield of int * Lam_compat.field_dbg_info
+  | Psetfloatfield of int * Lam_compat.set_field_dbg_info
   | Pduprecord of Types.record_representation * int
   (* Force lazy values *)
   | Plazyforce
@@ -82,15 +60,15 @@ type primitive =
   | Pnegint | Paddint | Psubint | Pmulint | Pdivint | Pmodint
   | Pandint | Porint | Pxorint
   | Plslint | Plsrint | Pasrint
-  | Pintcomp of comparison
+  | Pintcomp of Lam_compat.comparison
   | Poffsetint of int
   | Poffsetref of int
   (* Float operations *)
   | Pintoffloat | Pfloatofint
   | Pnegfloat | Pabsfloat
   | Paddfloat | Psubfloat | Pmulfloat | Pdivfloat
-  | Pfloatcomp of comparison
-  | Pjscomp of comparison
+  | Pfloatcomp of Lam_compat.comparison
+  | Pjscomp of Lam_compat.comparison
   | Pjs_apply (*[f;arg0;arg1; arg2; ... argN]*)
   | Pjs_runtime_apply (* [f; [...]] *)
   (* String operations *)
@@ -117,25 +95,25 @@ type primitive =
   (* Bitvect operations *)
   | Pbittest
   (* Operations on boxed integers (Nativeint.t, Int32.t, Int64.t) *)
-  | Pbintofint of boxed_integer
-  | Pintofbint of boxed_integer
-  | Pcvtbint of boxed_integer (*source*) * boxed_integer (*destination*)
-  | Pnegbint of boxed_integer
-  | Paddbint of boxed_integer
-  | Psubbint of boxed_integer
-  | Pmulbint of boxed_integer
-  | Pdivbint of boxed_integer
-  | Pmodbint of boxed_integer
-  | Pandbint of boxed_integer
-  | Porbint of boxed_integer
-  | Pxorbint of boxed_integer
-  | Plslbint of boxed_integer
-  | Plsrbint of boxed_integer
-  | Pasrbint of boxed_integer
-  | Pbintcomp of boxed_integer * comparison
+  | Pbintofint of Lam_compat.boxed_integer
+  | Pintofbint of Lam_compat.boxed_integer
+  | Pcvtbint of Lam_compat.boxed_integer (*source*) * Lam_compat.boxed_integer (*destination*)
+  | Pnegbint of Lam_compat.boxed_integer
+  | Paddbint of Lam_compat.boxed_integer
+  | Psubbint of Lam_compat.boxed_integer
+  | Pmulbint of Lam_compat.boxed_integer
+  | Pdivbint of Lam_compat.boxed_integer
+  | Pmodbint of Lam_compat.boxed_integer
+  | Pandbint of Lam_compat.boxed_integer
+  | Porbint of Lam_compat.boxed_integer
+  | Pxorbint of Lam_compat.boxed_integer
+  | Plslbint of Lam_compat.boxed_integer
+  | Plsrbint of Lam_compat.boxed_integer
+  | Pasrbint of Lam_compat.boxed_integer
+  | Pbintcomp of Lam_compat.boxed_integer * Lam_compat.comparison
   (* Operations on big arrays: (unsafe, #dimensions, kind, layout) *)
-  | Pbigarrayref of bool * int * bigarray_kind * bigarray_layout
-  | Pbigarrayset of bool * int * bigarray_kind * bigarray_layout
+  | Pbigarrayref of bool * int * Lam_compat.bigarray_kind * Lam_compat.bigarray_layout
+  | Pbigarrayset of bool * int * Lam_compat.bigarray_kind * Lam_compat.bigarray_layout
   (* size of the nth dimension of a big array *)
   | Pbigarraydim of int
   (* load/set 16,32,64 bits from a string: (unsafe)*)
@@ -154,10 +132,10 @@ type primitive =
   | Pbigstring_set_32 of bool
   | Pbigstring_set_64 of bool
   (* Compile time constants *)
-  | Pctconst of compile_time_constant
+  | Pctconst of Lam_compat.compile_time_constant
   (* byte swap *)
   | Pbswap16
-  | Pbbswap of boxed_integer
+  | Pbbswap of Lam_compat.boxed_integer
   (* Integer to external pointer *)
 
   | Pdebugger
@@ -254,7 +232,7 @@ module Types = struct
     | Lconst of Lam_constant.t
     | Lapply of apply_info
     | Lfunction of function_info
-    | Llet of let_kind * ident * t * t
+    | Llet of Lam_compat.let_kind * ident * t * t
     | Lletrec of (ident * t) list * t
     | Lprim of prim_info
     | Lswitch of t * switch
@@ -267,7 +245,7 @@ module Types = struct
     | Lwhile of t * t
     | Lfor of ident * t * t * Asttypes.direction_flag * t
     | Lassign of ident * t
-    | Lsend of meth_kind * t * t * t list * Location.t
+    | Lsend of Lam_compat.meth_kind * t * t * t list * Location.t
     | Lifused of ident * t
 end
 
@@ -312,7 +290,7 @@ module X = struct
       | Lconst of Lam_constant.t
       | Lapply of apply_info
       | Lfunction of function_info
-      | Llet of let_kind * ident * t * t
+      | Llet of Lam_compat.let_kind * ident * t * t
       | Lletrec of (ident * t) list * t
       | Lprim of prim_info
       | Lswitch of t * switch
@@ -325,7 +303,7 @@ module X = struct
       | Lwhile of t * t
       | Lfor of ident * t * t * Asttypes.direction_flag * t
       | Lassign of ident * t
-      | Lsend of meth_kind * t * t * t list * Location.t
+      | Lsend of Lam_compat.meth_kind * t * t * t list * Location.t
       | Lifused of ident * t
 end
 include Types
@@ -1159,7 +1137,7 @@ let send u m o ll v : t =
 let staticcatch  a b c : t = Lstaticcatch(a,b,c)
 let staticraise a b : t = Lstaticraise(a,b)
 
-let comparison (cmp : comparison) a b : bool =
+let comparison (cmp : Lam_compat.comparison) a b : bool =
   match cmp with
   | Ceq -> a = b
   | Cneq -> a <> b

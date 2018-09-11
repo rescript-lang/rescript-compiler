@@ -57,11 +57,11 @@ val field_flatten_get :
 
 
 val alias_ident_or_global : Lam_stats.t ->
-  Ident.t -> Ident.t -> Lam_id_kind.t -> Lam.let_kind -> unit 
+  Ident.t -> Ident.t -> Lam_id_kind.t -> Lam_compat.let_kind -> unit 
 
 
 val refine_let : 
-    kind:Lam.let_kind  ->
+    kind:Lam_compat.let_kind  ->
       Ident.t -> Lam.t -> Lam.t -> Lam.t
 
 

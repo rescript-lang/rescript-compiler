@@ -36,7 +36,7 @@ val of_const : int64 -> J.expression
 val to_int32 : int64_call
 
 val of_int32 : int64_call
-val comp : Lambda.comparison -> int64_call
+val comp : Lam_compat.comparison -> int64_call
 val neg : int64_call
 val add : int64_call
 val sub : int64_call

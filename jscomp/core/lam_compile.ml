@@ -413,7 +413,7 @@ and compile_general_cases
   (J.expression -> J.expression -> J.expression) ->
   Lam_compile_context.t ->
   (?default:J.block ->
-   ?declaration:Lam.let_kind * Ident.t  ->
+   ?declaration:Lam_compat.let_kind * Ident.t  ->
    _ -> 'a J.case_clause list ->  J.statement) ->
   _ ->
   ('a * Lam.t) list -> default_case -> J.block
@@ -423,7 +423,7 @@ and compile_general_cases
   (cxt : Lam_compile_context.t)
   (switch :
   ?default:J.block ->
-   ?declaration:Lam.let_kind * Ident.t  ->
+   ?declaration:Lam_compat.let_kind * Ident.t  ->
    _ -> _ J.case_clause list ->  J.statement
    )
    (switch_exp : J.expression)

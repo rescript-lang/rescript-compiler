@@ -26,3 +26,56 @@
  type array_kind = Lambda.array_kind = 
       Pgenarray | Paddrarray | Pintarray | Pfloatarray
   (*TODO: only [Pfloatarray] makes sense *)
+
+
+type boxed_integer = Lambda.boxed_integer = 
+    Pnativeint | Pint32 | Pint64
+
+
+type comparison = Lambda.comparison = 
+    Ceq | Cneq | Clt | Cgt | Cle | Cge
+
+type bigarray_kind = Lambda.bigarray_kind = 
+    Pbigarray_unknown
+  | Pbigarray_float32 | Pbigarray_float64
+  | Pbigarray_sint8 | Pbigarray_uint8
+  | Pbigarray_sint16 | Pbigarray_uint16
+  | Pbigarray_int32 | Pbigarray_int64
+  | Pbigarray_caml_int | Pbigarray_native_int
+  | Pbigarray_complex32 | Pbigarray_complex64
+
+
+type bigarray_layout = Lambda.bigarray_layout = 
+    Pbigarray_unknown_layout
+  | Pbigarray_c_layout
+  | Pbigarray_fortran_layout
+
+
+
+type compile_time_constant = Lambda.compile_time_constant = 
+  | Big_endian
+  | Word_size
+  | Ostype_unix
+  | Ostype_win32
+  | Ostype_cygwin
+
+type let_kind = Lambda.let_kind
+= Strict
+| Alias
+| StrictOpt
+| Variable
+
+type meth_kind = Lambda.meth_kind
+= Self
+| Public of string option
+| Cached
+
+
+type field_dbg_info = Lambda.field_dbg_info =
+  | Fld_na
+  | Fld_record of string
+  | Fld_module of string 
+
+type set_field_dbg_info = Lambda.set_field_dbg_info = 
+  | Fld_set_na
+  | Fld_record_set of string 

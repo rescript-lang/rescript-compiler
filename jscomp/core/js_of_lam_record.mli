@@ -32,5 +32,5 @@
 (* val make : J.mutable_flag -> (string * J.expression) list -> J.expression *)
 
 
-val field : Lambda.field_dbg_info -> J.expression -> J.jsint ->J.expression
+val field : Lam_compat.field_dbg_info -> J.expression -> J.jsint ->J.expression
 

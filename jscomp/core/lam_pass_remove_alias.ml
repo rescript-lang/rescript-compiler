@@ -88,7 +88,7 @@ let simplify_alias
       | Lglobal_module g 
       ->    
         Lam.prim 
-          ~primitive:(Pfield(i,Lambda.Fld_na))
+          ~primitive:(Pfield(i,Lam_compat.Fld_na))
           ~args:[Lam.global_module g ]
           loc
       | Lvar v as l-> 

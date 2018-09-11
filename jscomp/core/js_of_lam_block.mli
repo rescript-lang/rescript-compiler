@@ -35,9 +35,9 @@ val make_block :
   Js_op.mutable_flag -> Lam_tag_info.t ->
   J.expression -> J.expression list -> J.expression
 
-val field : Lambda.field_dbg_info -> J.expression -> J.jsint -> J.expression
+val field : Lam_compat.field_dbg_info -> J.expression -> J.jsint -> J.expression
 
 val set_field : 
-  Lambda.set_field_dbg_info -> 
+  Lam_compat.set_field_dbg_info -> 
   J.expression -> J.jsint -> J.expression -> J.expression
 

@@ -32,10 +32,10 @@
 *)
 
 val set_double_field : 
-  Lambda.set_field_dbg_info -> 
+  Lam_compat.set_field_dbg_info -> 
   J.expression -> J.jsint -> 
   J.expression -> J.expression
 
 val get_double_feild : 
-  Lambda.field_dbg_info -> 
+  Lam_compat.field_dbg_info -> 
   J.expression -> J.jsint -> J.expression

@@ -47,7 +47,7 @@ let rec struct_const ppf (cst : Lam_constant.t) =
       List.iter (fun f -> fprintf ppf "@ %s" f) fl in
     fprintf ppf "@[<1>[|@[%s%a@]|]@]" f1 floats fl
 
-let boxed_integer_name (i : Lambda.boxed_integer) =
+let boxed_integer_name (i : Lam_compat.boxed_integer) =
   match i with 
   | Pnativeint -> "nativeint"
   | Pint32 -> "int32"
@@ -59,7 +59,7 @@ let print_boxed_integer name ppf bi =
 let print_boxed_integer_conversion ppf bi1 bi2 =
   fprintf ppf "%s_of_%s" (boxed_integer_name bi2) (boxed_integer_name bi1)
 
-let boxed_integer_mark name (i : Lambda.boxed_integer) = 
+let boxed_integer_mark name (i : Lam_compat.boxed_integer) = 
   match i with 
   | Pnativeint -> Printf.sprintf "Nativeint.%s" name
   | Pint32 -> Printf.sprintf "Int32.%s" name
@@ -68,12 +68,12 @@ let boxed_integer_mark name (i : Lambda.boxed_integer) =
 let print_boxed_integer name ppf bi =
   fprintf ppf "%s" (boxed_integer_mark name bi);;
 
-let print_bigarray name unsafe (kind : Lambda.bigarray_kind) ppf 
-    (layout : Lambda.bigarray_layout) =
+let print_bigarray name unsafe (kind : Lam_compat.bigarray_kind) ppf 
+    (layout : Lam_compat.bigarray_layout) =
   fprintf ppf "Bigarray.%s[%s,%s]"
     (if unsafe then "unsafe_"^ name else name)
     (match kind with
-     | Lambda.Pbigarray_unknown -> "generic"
+     | Lam_compat.Pbigarray_unknown -> "generic"
      | Pbigarray_float32 -> "float32"
      | Pbigarray_float64 -> "float64"
      | Pbigarray_sint8 -> "sint8"
@@ -87,7 +87,7 @@ let print_bigarray name unsafe (kind : Lambda.bigarray_kind) ppf
      | Pbigarray_complex32 -> "complex32"
      | Pbigarray_complex64 -> "complex64")
     (match layout with
-     | Lambda.Pbigarray_unknown_layout -> "unknown"
+     | Lam_compat.Pbigarray_unknown_layout -> "unknown"
      | Pbigarray_c_layout -> "C"
      | Pbigarray_fortran_layout -> "Fortran")
 
@@ -310,7 +310,7 @@ let kind = function
   | Variable -> "v" 
   | Recursive -> "r"
 
-let to_print_kind (k : Lam.let_kind) : print_kind = 
+let to_print_kind (k : Lam_compat.let_kind) : print_kind = 
   match k with 
   | Alias -> Alias 
   | Strict -> Strict

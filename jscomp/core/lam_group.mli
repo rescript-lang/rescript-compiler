@@ -28,7 +28,7 @@
 
 
 type t =
-  | Single of Lam.let_kind  * Ident.t * Lam.t
+  | Single of Lam_compat.let_kind  * Ident.t * Lam.t
   | Recursive of (Ident.t * Lam.t) list
   | Nop of Lam.t
 
@@ -41,7 +41,7 @@ type t =
 val pp_group : Env.t -> Format.formatter -> t -> unit
 
 val single :
-  Lam.let_kind ->
+  Lam_compat.let_kind ->
   Ident.t ->
   Lam.t ->
   t

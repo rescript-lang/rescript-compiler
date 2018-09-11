@@ -23,28 +23,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-type boxed_integer = Lambda.boxed_integer
-type comparison = Lambda.comparison 
-type bigarray_kind = Lambda.bigarray_kind
-type bigarray_layout = Lambda.bigarray_layout
-type compile_time_constant = Lambda.compile_time_constant
 
 type mutable_flag = Asttypes.mutable_flag
-type field_dbg_info = Lambda.field_dbg_info 
-type set_field_dbg_info = Lambda.set_field_dbg_info
 
 type ident = Ident.t
-
-type let_kind = Lambda.let_kind
-    = Strict
-    | Alias
-    | StrictOpt
-    | Variable
-
-type meth_kind = Lambda.meth_kind 
-  = Self 
-  | Public of string option 
-  | Cached 
 
 type function_kind 
    = Curried
@@ -76,14 +58,14 @@ type primitive =
   | Pnegint | Paddint | Psubint | Pmulint | Pdivint | Pmodint
   | Pandint | Porint | Pxorint
   | Plslint | Plsrint | Pasrint
-  | Pintcomp of Lambda.comparison
+  | Pintcomp of Lam_compat.comparison
   | Poffsetint of int
   | Poffsetref of int
   | Pintoffloat | Pfloatofint
   | Pnegfloat | Pabsfloat
   | Paddfloat | Psubfloat | Pmulfloat | Pdivfloat
-  | Pfloatcomp of Lambda.comparison
-  | Pjscomp of Lambda.comparison
+  | Pfloatcomp of Lam_compat.comparison
+  | Pjscomp of Lam_compat.comparison
   | Pjs_apply (*[f;arg0;arg1; arg2; ... argN]*)
   | Pjs_runtime_apply (* [f; [...]] *)
   | Pstringlength 
@@ -109,25 +91,25 @@ type primitive =
   (* Bitvect operations *)
   | Pbittest
   (* Operations on boxed integers (Nativeint.t, Int32.t, Int64.t) *)
-  | Pbintofint of boxed_integer
-  | Pintofbint of boxed_integer
-  | Pcvtbint of boxed_integer (*source*) * boxed_integer (*destination*)
-  | Pnegbint of boxed_integer
-  | Paddbint of boxed_integer
-  | Psubbint of boxed_integer
-  | Pmulbint of boxed_integer
-  | Pdivbint of boxed_integer
-  | Pmodbint of boxed_integer
-  | Pandbint of boxed_integer
-  | Porbint of boxed_integer
-  | Pxorbint of boxed_integer
-  | Plslbint of boxed_integer
-  | Plsrbint of boxed_integer
-  | Pasrbint of boxed_integer
-  | Pbintcomp of boxed_integer * comparison
+  | Pbintofint of Lam_compat.boxed_integer
+  | Pintofbint of Lam_compat.boxed_integer
+  | Pcvtbint of Lam_compat.boxed_integer (*source*) * Lam_compat.boxed_integer (*destination*)
+  | Pnegbint of Lam_compat.boxed_integer
+  | Paddbint of Lam_compat.boxed_integer
+  | Psubbint of Lam_compat.boxed_integer
+  | Pmulbint of Lam_compat.boxed_integer
+  | Pdivbint of Lam_compat.boxed_integer
+  | Pmodbint of Lam_compat.boxed_integer
+  | Pandbint of Lam_compat.boxed_integer
+  | Porbint of Lam_compat.boxed_integer
+  | Pxorbint of Lam_compat.boxed_integer
+  | Plslbint of Lam_compat.boxed_integer
+  | Plsrbint of Lam_compat.boxed_integer
+  | Pasrbint of Lam_compat.boxed_integer
+  | Pbintcomp of Lam_compat.boxed_integer * Lam_compat.comparison
   (* Operations on big arrays: (unsafe, #dimensions, kind, layout) *)
-  | Pbigarrayref of bool * int * bigarray_kind * bigarray_layout
-  | Pbigarrayset of bool * int * bigarray_kind * bigarray_layout
+  | Pbigarrayref of bool * int * Lam_compat.bigarray_kind * Lam_compat.bigarray_layout
+  | Pbigarrayset of bool * int * Lam_compat.bigarray_kind * Lam_compat.bigarray_layout
   (* size of the nth dimension of a big array *)
   | Pbigarraydim of int
   (* load/set 16,32,64 bits from a string: (unsafe)*)
@@ -146,10 +128,10 @@ type primitive =
   | Pbigstring_set_32 of bool
   | Pbigstring_set_64 of bool
   (* Compile time constants *)
-  | Pctconst of compile_time_constant
+  | Pctconst of Lam_compat.compile_time_constant
   (* byte swap *)
   | Pbswap16
-  | Pbbswap of boxed_integer
+  | Pbbswap of Lam_compat.boxed_integer
   (* Integer to external pointer *)
 
   | Pdebugger
@@ -219,7 +201,7 @@ and  t =  private
   | Lconst of Lam_constant.t
   | Lapply of apply_info
   | Lfunction of function_info
-  | Llet of let_kind * ident * t * t
+  | Llet of Lam_compat.let_kind * ident * t * t
   | Lletrec of (ident * t) list * t
   | Lprim of prim_info
   | Lswitch of t * switch
@@ -278,7 +260,7 @@ val function_ :
   arity:int ->
   function_kind:function_kind -> params:ident list -> body:t -> t
 
-val let_ : let_kind -> ident -> t -> t -> t
+val let_ : Lam_compat.let_kind -> ident -> t -> t -> t
 val letrec : (ident * t) list -> t -> t
 
 (**  constant folding *)
