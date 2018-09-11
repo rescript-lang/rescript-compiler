@@ -282,6 +282,7 @@ CORE_SRCS= js_runtime_modules \
 	lam_module_ident\
 	lam_compat\
 	lam_arity\
+	lam_primitive\
 	lam\
 	lam_convert\
 	lam_print lam_beta_reduce_util lam_inline_util lam_analysis\

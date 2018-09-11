@@ -70,7 +70,7 @@ let alpha_conversion (meta : Lam_stats.t) (lam : Lam.t) : Lam.t =
       let bindings = Ext_list.map (fun (k,l) -> (k, simpl l)) bindings in 
       Lam.letrec bindings (simpl body) 
     | Lglobal_module _ -> lam 
-    | Lprim {primitive = (Lam.Pjs_fn_make len) as primitive ; args = [arg] 
+    | Lprim {primitive = (Pjs_fn_make len) as primitive ; args = [arg] 
       ; loc } -> 
       
       begin match 

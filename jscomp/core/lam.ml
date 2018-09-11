@@ -22,153 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type mutable_flag = Asttypes.mutable_flag
-
 type ident = Ident.t
-
-(* type function_kind
-  = Curried *)
-
-
-  
-type primitive =
-  | Pbytes_to_string
-  | Pbytes_of_string
-  | Pglobal_exception of ident
-  (* Operations on heap blocks *)
-  | Pmakeblock of int * Lam_tag_info.t * mutable_flag
-  | Pfield of int * Lam_compat.field_dbg_info
-  | Psetfield of int * Lam_compat.set_field_dbg_info
-  (* could have field info at least for record *)
-  | Pfloatfield of int * Lam_compat.field_dbg_info
-  | Psetfloatfield of int * Lam_compat.set_field_dbg_info
-  | Pduprecord of Types.record_representation * int
-  (* Force lazy values *)
-  | Plazyforce
-  (* External call *)
-  | Pccall of  Primitive_compat.t
-  | Pjs_call of
-      string *  (* prim_name *)
-      External_arg_spec.t list * (* arg_types *)
-      External_ffi_types.attr  (* ffi *)
-  | Pjs_object_create of External_ffi_types.obj_create
-  (* Exceptions *)
-  | Praise
-  (* Boolean operations *)
-  | Psequand | Psequor | Pnot
-  (* Integer operations *)
-  | Pnegint | Paddint | Psubint | Pmulint | Pdivint | Pmodint
-  | Pandint | Porint | Pxorint
-  | Plslint | Plsrint | Pasrint
-  | Pintcomp of Lam_compat.comparison
-  | Poffsetint of int
-  | Poffsetref of int
-  (* Float operations *)
-  | Pintoffloat | Pfloatofint
-  | Pnegfloat | Pabsfloat
-  | Paddfloat | Psubfloat | Pmulfloat | Pdivfloat
-  | Pfloatcomp of Lam_compat.comparison
-  | Pjscomp of Lam_compat.comparison
-  | Pjs_apply (*[f;arg0;arg1; arg2; ... argN]*)
-  | Pjs_runtime_apply (* [f; [...]] *)
-  (* String operations *)
-  | Pstringlength
-  | Pstringrefu
-  | Pstringrefs
-  | Pstringadd
-  | Pbyteslength
-  | Pbytesrefu
-  | Pbytessetu
-  | Pbytesrefs
-  | Pbytessets
-  (* Array operations *)
-  | Pmakearray of Lam_compat.array_kind
-  | Parraylength 
-  | Parrayrefu of Lam_compat.array_kind
-  | Parraysetu of Lam_compat.array_kind
-  | Parrayrefs of Lam_compat.array_kind
-  | Parraysets of Lam_compat.array_kind
-  (* Test if the argument is a block or an immediate integer *)
-  | Pisint
-  (* Test if the (integer) argument is outside an interval *)
-  | Pisout
-  (* Bitvect operations *)
-  | Pbittest
-  (* Operations on boxed integers (Nativeint.t, Int32.t, Int64.t) *)
-  | Pbintofint of Lam_compat.boxed_integer
-  | Pintofbint of Lam_compat.boxed_integer
-  | Pcvtbint of Lam_compat.boxed_integer (*source*) * Lam_compat.boxed_integer (*destination*)
-  | Pnegbint of Lam_compat.boxed_integer
-  | Paddbint of Lam_compat.boxed_integer
-  | Psubbint of Lam_compat.boxed_integer
-  | Pmulbint of Lam_compat.boxed_integer
-  | Pdivbint of Lam_compat.boxed_integer
-  | Pmodbint of Lam_compat.boxed_integer
-  | Pandbint of Lam_compat.boxed_integer
-  | Porbint of Lam_compat.boxed_integer
-  | Pxorbint of Lam_compat.boxed_integer
-  | Plslbint of Lam_compat.boxed_integer
-  | Plsrbint of Lam_compat.boxed_integer
-  | Pasrbint of Lam_compat.boxed_integer
-  | Pbintcomp of Lam_compat.boxed_integer * Lam_compat.comparison
-  (* Operations on big arrays: (unsafe, #dimensions, kind, layout) *)
-  | Pbigarrayref of bool * int * Lam_compat.bigarray_kind * Lam_compat.bigarray_layout
-  | Pbigarrayset of bool * int * Lam_compat.bigarray_kind * Lam_compat.bigarray_layout
-  (* size of the nth dimension of a big array *)
-  | Pbigarraydim of int
-  (* load/set 16,32,64 bits from a string: (unsafe)*)
-  | Pstring_load_16 of bool
-  | Pstring_load_32 of bool
-  | Pstring_load_64 of bool
-  | Pstring_set_16 of bool
-  | Pstring_set_32 of bool
-  | Pstring_set_64 of bool
-  (* load/set 16,32,64 bits from a
-     (char, int8_unsigned_elt, c_layout) Bigarray.Array1.t : (unsafe) *)
-  | Pbigstring_load_16 of bool
-  | Pbigstring_load_32 of bool
-  | Pbigstring_load_64 of bool
-  | Pbigstring_set_16 of bool
-  | Pbigstring_set_32 of bool
-  | Pbigstring_set_64 of bool
-  (* Compile time constants *)
-  | Pctconst of Lam_compat.compile_time_constant
-  (* byte swap *)
-  | Pbswap16
-  | Pbbswap of Lam_compat.boxed_integer
-  (* Integer to external pointer *)
-
-  | Pdebugger
-  | Pjs_unsafe_downgrade of string * Location.t
-  | Pinit_mod
-  | Pupdate_mod
-  | Praw_js_code_exp of string
-  | Praw_js_code_stmt of string
-  | Praw_js_function of string * string list
-  | Pjs_fn_make of int
-  | Pjs_fn_run of int
-  | Pjs_fn_method of int
-  | Pjs_fn_runmethod of int
-
-  | Pundefined_to_opt
-  | Pnull_to_opt
-  | Pnull_undefined_to_opt
-  | Pis_null
-  | Pis_undefined
-  | Pis_null_undefined
-  | Pjs_typeof
-  | Pjs_function_length
-  | Pcaml_obj_length
-  | Pcaml_obj_set_length
-  | Pwrap_exn (* convert either JS exception or OCaml exception into OCaml format *)
-
-  (* | Pcreate_exception of string  *)
-  | Pcreate_extension of string
-  | Pis_not_none (* no info about its type *)
-  | Pval_from_option
-  | Pval_from_option_not_nest
-  | Psome
-  | Psome_not_nest  
 
 type apply_status =
   | App_na
@@ -210,7 +64,7 @@ module Types = struct
      if [= 0] could not have [some fail]
   *)
   and prim_info =
-    { primitive : primitive ;
+    { primitive : Lam_primitive.t ;
       args : t list ;
       loc : Location.t;
     }
@@ -260,7 +114,7 @@ module X = struct
   and prim_info
     =  Types.prim_info
     =
-      { primitive : primitive ;
+      { primitive : Lam_primitive.t ;
         args : t list ;
         loc : Location.t;
       }
@@ -1176,7 +1030,7 @@ end
 
 
 
-let prim ~primitive:(prim : primitive) ~args loc  : t =
+let prim ~primitive:(prim : Lam_primitive.t) ~args loc  : t =
   let default () : t = Lprim { primitive = prim ;args; loc} in
   match args with
   | [Lconst a] ->

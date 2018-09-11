@@ -105,7 +105,7 @@ let string_of_loc_kind (loc : Lambda.loc_kind) =
   | Loc_POS -> "loc_POS"
   | Loc_LOC -> "loc_LOC"
 
-let primitive ppf (prim : Lam.primitive) = match prim with 
+let primitive ppf (prim : Lam_primitive.t) = match prim with 
   (* | Pcreate_exception s -> fprintf ppf "[exn-create]%S" s  *)
   | Pcreate_extension s -> fprintf ppf "[ext-create]%S" s 
   | Pwrap_exn -> fprintf ppf "#exn"
@@ -125,8 +125,8 @@ let primitive ppf (prim : Lam.primitive) = match prim with
   | Pjs_fn_runmethod i -> fprintf ppf "js_fn_runmethod_%i" i 
   | Pdebugger -> fprintf ppf "debugger"
   | Praw_js_function _ -> fprintf ppf "[raw.fun]"
-  | Lam.Praw_js_code_exp _ -> fprintf ppf "[raw.exp]"
-  | Lam.Praw_js_code_stmt _ -> fprintf ppf "[raw.stmt]"
+  | Praw_js_code_exp _ -> fprintf ppf "[raw.exp]"
+  | Praw_js_code_stmt _ -> fprintf ppf "[raw.stmt]"
   | Pglobal_exception id ->
     fprintf ppf "global exception %a" Ident.print id       
   | Pjs_typeof -> fprintf ppf "[typeof]"

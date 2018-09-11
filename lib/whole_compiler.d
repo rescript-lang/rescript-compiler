@@ -308,6 +308,8 @@
 ../lib/whole_compiler.ml : ./core/lam_pass_remove_alias.mli
 ../lib/whole_compiler.ml : ./core/lam_pointer_info.ml
 ../lib/whole_compiler.ml : ./core/lam_pointer_info.mli
+../lib/whole_compiler.ml : ./core/lam_primitive.ml
+../lib/whole_compiler.ml : ./core/lam_primitive.mli
 ../lib/whole_compiler.ml : ./core/lam_print.ml
 ../lib/whole_compiler.ml : ./core/lam_print.mli
 ../lib/whole_compiler.ml : ./core/lam_stats.ml

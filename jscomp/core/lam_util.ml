@@ -56,7 +56,7 @@ let refine_let
      *)
     -> arg (* TODO: optimize here -- it's safe to do substitution here *)
   | _, _, Lprim {primitive ; args =  [Lvar w]; loc ; _} when Ident.same w param 
-                                                          &&  (function | Lam.Pmakeblock _ -> false | _ ->  true) primitive
+                                                          &&  (function | Lam_primitive.Pmakeblock _ -> false | _ ->  true) primitive
     (* don't inline inside a block *)
     ->  Lam.prim ~primitive ~args:[arg]  loc 
   (* we can not do this substitution when capttured *)

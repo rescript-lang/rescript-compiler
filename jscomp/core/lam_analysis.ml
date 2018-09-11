@@ -492,7 +492,7 @@ let rec
   | Lifused _ -> false    
 
   
-and eq_primitive ( lhs : Lam.primitive) (rhs : Lam.primitive) = 
+and eq_primitive ( lhs : Lam_primitive.t) (rhs : Lam_primitive.t) = 
   match lhs with 
   | Pcreate_extension a -> begin match rhs with Pcreate_extension b -> a = (b : string) | _ -> false end
   (* | Pcreate_exception a -> begin match rhs with Pcreate_exception b -> a = (b : string) | _ -> false end *)

@@ -346,7 +346,7 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : t * Lam_module_ident
       | _ -> prim ~primitive:Pupdate_mod ~args loc
       end
     | _ ->
-      let primitive : Lam.primitive =
+      let primitive : Lam_primitive.t =
         match s with
         | "#apply" -> Pjs_runtime_apply
         | "#apply1"

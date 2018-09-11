@@ -38,5 +38,5 @@
 val translate : 
   Location.t -> 
   Lam_compile_context.t  ->
-  Lam.primitive ->
+  Lam_primitive.t ->
   J.expression list -> J.expression
