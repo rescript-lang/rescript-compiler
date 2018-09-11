@@ -22,7 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type array_kind = Lambda.array_kind
+
 type boxed_integer = Lambda.boxed_integer
 type comparison = Lambda.comparison 
 type bigarray_kind = Lambda.bigarray_kind
@@ -96,12 +96,12 @@ type primitive =
   | Pbytesrefs
   | Pbytessets
   (* Array operations *)
-  | Pmakearray of array_kind
-  | Parraylength of array_kind
-  | Parrayrefu of array_kind
-  | Parraysetu of array_kind
-  | Parrayrefs of array_kind
-  | Parraysets of array_kind
+  | Pmakearray of Lam_compat.array_kind
+  | Parraylength 
+  | Parrayrefu of Lam_compat.array_kind
+  | Parraysetu of Lam_compat.array_kind
+  | Parrayrefs of Lam_compat.array_kind
+  | Parraysets of Lam_compat.array_kind
   (* Test if the argument is a block or an immediate integer *)
   | Pisint
   (* Test if the (integer) argument is outside an interval *)

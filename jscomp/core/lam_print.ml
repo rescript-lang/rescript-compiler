@@ -213,7 +213,7 @@ let primitive ppf (prim : Lam.primitive) = match prim with
   | Pbytesrefs -> fprintf ppf "bytes.get"
   | Pbytessets -> fprintf ppf "bytes.set"
 
-  | Parraylength _ -> fprintf ppf "array.length"
+  | Parraylength  -> fprintf ppf "array.length"
   | Pmakearray _ -> fprintf ppf "makearray "
   | Parrayrefu _ -> fprintf ppf "array.unsafe_get"
   | Parraysetu _ -> fprintf ppf "array.unsafe_set"

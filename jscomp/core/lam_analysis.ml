@@ -130,7 +130,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pbytesrefu
       | Pbytesrefs
       | Pmakearray _ 
-      | Parraylength _ 
+      | Parraylength  
       | Parrayrefu _
       | Parrayrefs _ 
       (* Test if the argument is a block or an immediate integer *)
@@ -393,7 +393,7 @@ let eq_comparison ( p : Lam.comparison) (p1:Lam.comparison) =
   | Ceq -> p1 =  Ceq 
   | Cneq -> p1 =  Cneq 
 
-let eq_array_kind (p : Lam.array_kind) (p1 : Lam.array_kind) = 
+let eq_array_kind (p : Lam_compat.array_kind) (p1 : Lam_compat.array_kind) = 
   match p with 
   | Pgenarray -> p1 = Pgenarray
   | Paddrarray -> p1 = Paddrarray 
@@ -575,7 +575,7 @@ and eq_primitive ( lhs : Lam.primitive) (rhs : Lam.primitive) =
   | Poffsetint i0 ->   (match rhs with  Poffsetint i1 -> i0 = i1 | _ -> false )   
   | Poffsetref i0 ->  (match rhs with Poffsetref i1 -> i0 = i1   | _ -> false)
   | Pmakearray array_kind -> (match rhs with Pmakearray array_kind1 -> eq_array_kind array_kind array_kind1 | _ -> false  )
-  | Parraylength  array_kind -> (match rhs with Parraylength array_kind1 -> eq_array_kind array_kind array_kind1 | _ -> false  )
+  | Parraylength  -> rhs = Parraylength
   | Parrayrefu  array_kind -> (match rhs with Parrayrefu array_kind1 -> eq_array_kind array_kind array_kind1 | _ -> false  )
   | Parraysetu  array_kind -> (match rhs with Parraysetu array_kind1 -> eq_array_kind array_kind array_kind1 | _ -> false  ) 
   | Parrayrefs array_kind -> (match rhs with Parrayrefs array_kind1 -> eq_array_kind array_kind array_kind1 | _ -> false  )

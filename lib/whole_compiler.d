@@ -248,6 +248,8 @@
 ../lib/whole_compiler.ml : ./core/lam_closure.mli
 ../lib/whole_compiler.ml : ./core/lam_coercion.ml
 ../lib/whole_compiler.ml : ./core/lam_coercion.mli
+../lib/whole_compiler.ml : ./core/lam_compat.ml
+../lib/whole_compiler.ml : ./core/lam_compat.mli
 ../lib/whole_compiler.ml : ./core/lam_compile.ml
 ../lib/whole_compiler.ml : ./core/lam_compile.mli
 ../lib/whole_compiler.ml : ./core/lam_compile_const.ml

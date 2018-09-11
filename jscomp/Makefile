@@ -280,6 +280,7 @@ CORE_SRCS= js_runtime_modules \
 	lam_constant\
 	js_op\
 	lam_module_ident\
+	lam_compat\
 	lam_arity\
 	lam\
 	lam_convert\

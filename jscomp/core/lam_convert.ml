@@ -196,7 +196,7 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : t =
   | Poffsetref x -> prim ~primitive:(Poffsetref x) ~args  loc
   | Pfloatcomp x -> prim ~primitive:(Pfloatcomp x) ~args loc
   | Pmakearray x -> prim ~primitive:(Pmakearray x) ~args  loc
-  | Parraylength x -> prim ~primitive:(Parraylength x) ~args loc
+  | Parraylength _ -> prim ~primitive:Parraylength ~args loc
   | Parrayrefu x -> prim ~primitive:(Parrayrefu x) ~args loc
   | Parraysetu x -> prim ~primitive:(Parraysetu x) ~args loc
   | Parrayrefs x -> prim ~primitive:(Parrayrefs x) ~args loc

@@ -630,10 +630,7 @@ let translate  loc
   | Praise  -> assert false (* handled before here *)
 
   (* Runtime encoding relevant *)
-  | Parraylength Pgenarray
-  | Parraylength Paddrarray
-  | Parraylength Pintarray
-  | Parraylength Pfloatarray  -> 
+  | Parraylength -> 
     begin match args with 
       | [e] -> E.array_length e 
       | _ -> assert false

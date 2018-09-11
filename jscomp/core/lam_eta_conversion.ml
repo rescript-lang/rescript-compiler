@@ -170,8 +170,8 @@ let transform_under_supply n loc status fn args =
                        Location.none App_na
                        fn  [] )
               (* let extra_args = Ext_list.init (arity - len) (fun _ ->   (Ident.create Literals.param)) in *)
-              (* let extra_lambdas = Ext_list.map (fun x -> Lambda.Lvar x) extra_args in *)
-              (* Lambda.Lfunction (kind, Ext_list.append extra_args  args , body ) *)
+              (* let extra_lambdas = Ext_list.map (fun x -> Lam.var x) extra_args in *)
+              (* Lam.Lfunction (kind, Ext_list.append extra_args  args , body ) *)
 
                                 | _ -> 
                                 compile_lambda cxt 

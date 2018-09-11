@@ -344,10 +344,11 @@ core/lam_pointer_info.cmi :
 core/lam_constant.cmi : core/lam_tag_info.cmx core/lam_pointer_info.cmi
 core/lam_module_ident.cmi : core/js_op.cmx core/j.cmx ext/hashtbl_gen.cmx \
     ext/hash_set_gen.cmx
+core/lam_compat.cmi :
 core/lam_arity.cmi :
 core/lam.cmi : core/primitive_compat.cmi core/lam_tag_info.cmx \
-    core/lam_constant.cmi ext/ident_set.cmi syntax/external_ffi_types.cmi \
-    syntax/external_arg_spec.cmi
+    core/lam_constant.cmi core/lam_compat.cmi ext/ident_set.cmi \
+    syntax/external_ffi_types.cmi syntax/external_arg_spec.cmi
 core/lam_convert.cmi : core/lam_module_ident.cmi core/lam.cmi \
     ext/ident_set.cmi
 core/lam_print.cmi : core/lam.cmi
@@ -475,14 +476,15 @@ core/js_op.cmx : core/lam_tag_info.cmx
 core/lam_module_ident.cmx : core/js_op.cmx core/j.cmx ext/hashtbl_make.cmx \
     ext/hash_set.cmx ext/ext_ident.cmx stubs/bs_hash_stubs.cmx \
     core/lam_module_ident.cmi
+core/lam_compat.cmx : core/lam_compat.cmi
 core/lam_arity.cmx : core/lam_arity.cmi
 core/lam.cmx : core/primitive_compat.cmx \
     ext/ordered_hash_map_local_ident.cmx core/lam_tag_info.cmx \
-    core/lam_constant.cmx ext/int_vec_vec.cmx ext/int_vec_util.cmx \
-    ext/int_vec.cmx ext/ident_set.cmx ext/ident_hash_set.cmx \
-    ext/hash_set_ident_mask.cmx syntax/external_ffi_types.cmx \
-    syntax/external_arg_spec.cmx ext/ext_scc.cmx common/ext_log.cmx \
-    ext/ext_list.cmx core/lam.cmi
+    core/lam_constant.cmx core/lam_compat.cmx ext/int_vec_vec.cmx \
+    ext/int_vec_util.cmx ext/int_vec.cmx ext/ident_set.cmx \
+    ext/ident_hash_set.cmx ext/hash_set_ident_mask.cmx \
+    syntax/external_ffi_types.cmx syntax/external_arg_spec.cmx \
+    ext/ext_scc.cmx common/ext_log.cmx ext/ext_list.cmx core/lam.cmi
 core/lam_convert.cmx : core/primitive_compat.cmx core/lam_tag_info.cmx \
     core/lam_module_ident.cmx core/lam_constant.cmx core/lam.cmx \
     ext/int_hashtbl.cmx ext/ident_set.cmx ext/ident_hashtbl.cmx \
@@ -493,8 +495,8 @@ core/lam_print.cmx : core/lam_constant.cmx core/lam.cmx ext/ext_list.cmx \
 core/lam_beta_reduce_util.cmx : core/lam.cmx ext/ident_hashtbl.cmx \
     core/lam_beta_reduce_util.cmi
 core/lam_inline_util.cmx : core/lam.cmx core/lam_inline_util.cmi
-core/lam_analysis.cmx : core/lam_constant.cmx core/lam.cmx ext/ext_list.cmx \
-    core/lam_analysis.cmi
+core/lam_analysis.cmx : core/lam_constant.cmx core/lam_compat.cmx \
+    core/lam.cmx ext/ext_list.cmx core/lam_analysis.cmi
 core/lam_closure.cmx : core/lam_analysis.cmx core/lam.cmx ext/ident_set.cmx \
     ext/ident_map.cmx ext/ext_list.cmx core/lam_closure.cmi
 core/js_cmj_format.cmx : ext/string_map.cmx core/lam_arity.cmx core/lam.cmx \
