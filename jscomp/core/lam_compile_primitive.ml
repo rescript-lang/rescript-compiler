@@ -43,7 +43,7 @@ let decorate_side_effect ({st; should_return;_} : Lam_compile_context.t) e : E.t
 
 let translate  loc
     ({ meta = { env; _}; _} as cxt : Lam_compile_context.t) 
-    (prim : Lam.primitive)
+    (prim : Lam_primitive.t)
     (args : J.expression list) : J.expression = 
   match prim with
   (* | Pcreate_exception s  *)
@@ -59,13 +59,13 @@ let translate  loc
     Js_of_lam_exception.make (E.str s)
   | Pwrap_exn -> 
     E.runtime_call Js_runtime_modules.exn "internalToOCamlException" args 
-  | Lam.Praw_js_function(arg,block) -> 
+  | Praw_js_function(arg,block) -> 
     E.raw_js_function arg block
-  | Lam.Praw_js_code_exp s -> 
+  | Praw_js_code_exp s -> 
     E.raw_js_code Exp s  
-  | Lam.Praw_js_code_stmt s -> 
+  | Praw_js_code_stmt s -> 
     E.raw_js_code Stmt s 
-  | Lam.Pjs_runtime_apply -> 
+  | Pjs_runtime_apply -> 
     begin match args with 
       | [f ;  args] -> 
         E.flat_call f args
@@ -78,7 +78,7 @@ let translate  loc
       | _ -> assert false
     end
 
-  | Lam.Pnull_to_opt -> 
+  | Pnull_to_opt -> 
     begin match args with 
       | [e] -> 
         begin match e.expression_desc with 
@@ -90,7 +90,7 @@ let translate  loc
         end
       | _ -> assert false 
     end
-  | Lam.Pundefined_to_opt ->
+  | Pundefined_to_opt ->
     begin match args with 
       | [e] -> 
         begin match e.expression_desc with 
@@ -102,7 +102,7 @@ let translate  loc
         end
       | _ -> assert false 
     end    
-  | Lam.Pnull_undefined_to_opt -> 
+  | Pnull_undefined_to_opt -> 
     begin match args with 
       | [e] -> 
         begin match e.expression_desc with 
@@ -120,12 +120,12 @@ let translate  loc
       | [f] -> E.function_length f
       | _ -> assert false 
     end
-  | Lam.Pcaml_obj_length -> 
+  | Pcaml_obj_length -> 
     begin match args with 
       | [e] -> E.obj_length e 
       | _ -> assert false 
     end
-  | Lam.Pcaml_obj_set_length -> 
+  | Pcaml_obj_set_length -> 
     begin match args with 
       | [a;b] -> E.set_length a b 
       | _ -> assert false 
@@ -630,10 +630,7 @@ let translate  loc
   | Praise  -> assert false (* handled before here *)
 
   (* Runtime encoding relevant *)
-  | Parraylength Pgenarray
-  | Parraylength Paddrarray
-  | Parraylength Pintarray
-  | Parraylength Pfloatarray  -> 
+  | Parraylength -> 
     begin match args with 
       | [e] -> E.array_length e 
       | _ -> assert false

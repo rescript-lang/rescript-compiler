@@ -231,11 +231,11 @@ val float_div : binary_op
 val float_notequal : binary_op
 val float_mod : binary_op  
 
-val int_comp : Lambda.comparison -> binary_op
-val bool_comp : Lambda.comparison -> binary_op
+val int_comp : Lam_compat.comparison -> binary_op
+val bool_comp : Lam_compat.comparison -> binary_op
 val string_comp : Js_op.binop -> binary_op
-val float_comp :  Lambda.comparison -> binary_op
-val js_comp :  Lambda.comparison -> binary_op
+val float_comp :  Lam_compat.comparison -> binary_op
+val js_comp :  Lam_compat.comparison -> binary_op
 
 
 val not : t -> t

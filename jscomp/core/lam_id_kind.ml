@@ -58,7 +58,7 @@ type t =
   | OptionalBlock of Lam.t * boxed_nullable
   | ImmutableBlock of element array 
   | MutableBlock of element array
-  | Constant of Lam.constant
+  | Constant of Lam_constant.t
   | Module of Ident.t
         (** TODO: static module vs first class module *)
   | FunctionId of function_id 

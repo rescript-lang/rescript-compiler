@@ -243,7 +243,7 @@ and compile_recursive_let ~all_bindings
     (id : Ident.t)
     (arg : Lam.t)   : Js_output.t * Ident.t list =
   match arg with
-  |  Lfunction { function_kind; params; body; _}  ->
+  |  Lfunction { params; body; _}  ->
 
     let continue_label = Lam_util.generate_label ~name:id.name () in
     (* TODO: Think about recursive value
@@ -413,7 +413,7 @@ and compile_general_cases
   (J.expression -> J.expression -> J.expression) ->
   Lam_compile_context.t ->
   (?default:J.block ->
-   ?declaration:Lam.let_kind * Ident.t  ->
+   ?declaration:Lam_compat.let_kind * Ident.t  ->
    _ -> 'a J.case_clause list ->  J.statement) ->
   _ ->
   ('a * Lam.t) list -> default_case -> J.block
@@ -423,7 +423,7 @@ and compile_general_cases
   (cxt : Lam_compile_context.t)
   (switch :
   ?default:J.block ->
-   ?declaration:Lam.let_kind * Ident.t  ->
+   ?declaration:Lam_compat.let_kind * Ident.t  ->
    _ -> _ J.case_clause list ->  J.statement
    )
    (switch_exp : J.expression)
@@ -561,7 +561,7 @@ and
     (lam : Lam.t)  : Js_output.t  =
   begin
     match lam with
-    | Lfunction{ function_kind; params; body} ->
+    | Lfunction{ params; body} ->
       Js_output.output_of_expression st should_return lam
         (E.ocaml_fun
            params
@@ -949,7 +949,7 @@ and
       end
     | Lprim {primitive = Pjs_fn_method arity;  args = args_lambda} ->
       begin match args_lambda with
-        | [Lfunction{arity = len; function_kind; params; body} ]
+        | [Lfunction{arity = len; params; body} ]
           when len = arity ->
           Js_output.output_of_block_and_expression
             st

@@ -32,7 +32,7 @@
 (** Compile single lambda IR to JS IR  *)
 
 val compile_let : 
-  Lam.let_kind ->
+  Lam_compat.let_kind ->
   Lam_compile_context.t -> 
   J.ident -> 
   Lam.t -> 

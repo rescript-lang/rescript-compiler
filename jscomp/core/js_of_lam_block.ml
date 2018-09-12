@@ -34,7 +34,7 @@ module E = Js_exp_make
 (* TODO: it would be even better, if the [tag_info] contains more information
    about immutablility
  *)
-let make_block mutable_flag (tag_info : Lam.tag_info) tag args  = 
+let make_block mutable_flag (tag_info : Lam_tag_info.t) tag args  = 
 
   match mutable_flag, tag_info with
   | _, Blk_array -> Js_of_lam_array.make_array mutable_flag  Pgenarray args
@@ -50,10 +50,10 @@ let make_block mutable_flag (tag_info : Lam.tag_info) tag args  =
 
 let field field_info e i =
   match field_info with 
-  | Lambda.Fld_na -> 
+  | Lam_compat.Fld_na -> 
     E.index e i 
-  | Lambda.Fld_record s 
-  | Lambda.Fld_module s 
+  | Lam_compat.Fld_record s 
+  | Lam_compat.Fld_module s 
     -> E.index ~comment:s e i
 
 
@@ -61,7 +61,7 @@ let field field_info e i =
 let set_field field_info e i e0 =
   let comment = 
     match field_info with 
-    | Lambda.Fld_set_na 
+    | Lam_compat.Fld_set_na 
       -> None
     | Fld_record_set s -> Some (s)
   in (* see GPR#631*)

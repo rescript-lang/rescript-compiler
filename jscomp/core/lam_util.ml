@@ -49,14 +49,14 @@ let refine_let
     ~kind param
     (arg : Lam.t) (l : Lam.t)  : Lam.t =
 
-  match (kind : Lam.let_kind ), arg, l  with 
+  match (kind : Lam_compat.let_kind ), arg, l  with 
   | _, _, Lvar w when Ident.same w param 
     (* let k = xx in k
       there is no [rec] so [k] would not appear in [xx]
      *)
     -> arg (* TODO: optimize here -- it's safe to do substitution here *)
   | _, _, Lprim {primitive ; args =  [Lvar w]; loc ; _} when Ident.same w param 
-                                                          &&  (function | Lam.Pmakeblock _ -> false | _ ->  true) primitive
+                                                          &&  (function | Lam_primitive.Pmakeblock _ -> false | _ ->  true) primitive
     (* don't inline inside a block *)
     ->  Lam.prim ~primitive ~args:[arg]  loc 
   (* we can not do this substitution when capttured *)
@@ -120,7 +120,7 @@ let refine_let
     Lam.let_ Strict param arg  l *)
 
 let alias_ident_or_global (meta : Lam_stats.t) (k:Ident.t) (v:Ident.t) 
-    (v_kind : Lam_id_kind.t) (let_kind : Lam.let_kind) =
+    (v_kind : Lam_id_kind.t) (let_kind : Lam_compat.let_kind) =
   (** treat rec as Strict, k is assigned to v 
       {[ let k = v ]}
   *)
@@ -195,7 +195,7 @@ let field_flatten_get
    lam v i (tbl : Lam_id_kind.t Ident_hashtbl.t) : Lam.t =
   match Ident_hashtbl.find_opt tbl v  with 
   | Some (Module g) -> 
-    Lam.prim ~primitive:(Pfield (i, Lambda.Fld_na)) 
+    Lam.prim ~primitive:(Pfield (i, Lam_compat.Fld_na)) 
       ~args:[ Lam.global_module g ] Location.none
   | Some (ImmutableBlock (arr)) -> 
     begin match arr.(i) with 

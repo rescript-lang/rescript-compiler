@@ -17,7 +17,7 @@ open Types
 
 
 
-let rec struct_const ppf (cst : Lam.constant) =
+let rec struct_const ppf (cst : Lam_constant.t) =
   match cst with 
   | Const_js_true -> fprintf ppf "#true"
   | Const_js_false -> fprintf ppf "#false"
@@ -47,7 +47,7 @@ let rec struct_const ppf (cst : Lam.constant) =
       List.iter (fun f -> fprintf ppf "@ %s" f) fl in
     fprintf ppf "@[<1>[|@[%s%a@]|]@]" f1 floats fl
 
-let boxed_integer_name (i : Lambda.boxed_integer) =
+let boxed_integer_name (i : Lam_compat.boxed_integer) =
   match i with 
   | Pnativeint -> "nativeint"
   | Pint32 -> "int32"
@@ -59,7 +59,7 @@ let print_boxed_integer name ppf bi =
 let print_boxed_integer_conversion ppf bi1 bi2 =
   fprintf ppf "%s_of_%s" (boxed_integer_name bi2) (boxed_integer_name bi1)
 
-let boxed_integer_mark name (i : Lambda.boxed_integer) = 
+let boxed_integer_mark name (i : Lam_compat.boxed_integer) = 
   match i with 
   | Pnativeint -> Printf.sprintf "Nativeint.%s" name
   | Pint32 -> Printf.sprintf "Int32.%s" name
@@ -68,12 +68,12 @@ let boxed_integer_mark name (i : Lambda.boxed_integer) =
 let print_boxed_integer name ppf bi =
   fprintf ppf "%s" (boxed_integer_mark name bi);;
 
-let print_bigarray name unsafe (kind : Lambda.bigarray_kind) ppf 
-    (layout : Lambda.bigarray_layout) =
+let print_bigarray name unsafe (kind : Lam_compat.bigarray_kind) ppf 
+    (layout : Lam_compat.bigarray_layout) =
   fprintf ppf "Bigarray.%s[%s,%s]"
     (if unsafe then "unsafe_"^ name else name)
     (match kind with
-     | Lambda.Pbigarray_unknown -> "generic"
+     | Lam_compat.Pbigarray_unknown -> "generic"
      | Pbigarray_float32 -> "float32"
      | Pbigarray_float64 -> "float64"
      | Pbigarray_sint8 -> "sint8"
@@ -87,7 +87,7 @@ let print_bigarray name unsafe (kind : Lambda.bigarray_kind) ppf
      | Pbigarray_complex32 -> "complex32"
      | Pbigarray_complex64 -> "complex64")
     (match layout with
-     | Lambda.Pbigarray_unknown_layout -> "unknown"
+     | Lam_compat.Pbigarray_unknown_layout -> "unknown"
      | Pbigarray_c_layout -> "C"
      | Pbigarray_fortran_layout -> "Fortran")
 
@@ -105,7 +105,7 @@ let string_of_loc_kind (loc : Lambda.loc_kind) =
   | Loc_POS -> "loc_POS"
   | Loc_LOC -> "loc_LOC"
 
-let primitive ppf (prim : Lam.primitive) = match prim with 
+let primitive ppf (prim : Lam_primitive.t) = match prim with 
   (* | Pcreate_exception s -> fprintf ppf "[exn-create]%S" s  *)
   | Pcreate_extension s -> fprintf ppf "[ext-create]%S" s 
   | Pwrap_exn -> fprintf ppf "#exn"
@@ -125,8 +125,8 @@ let primitive ppf (prim : Lam.primitive) = match prim with
   | Pjs_fn_runmethod i -> fprintf ppf "js_fn_runmethod_%i" i 
   | Pdebugger -> fprintf ppf "debugger"
   | Praw_js_function _ -> fprintf ppf "[raw.fun]"
-  | Lam.Praw_js_code_exp _ -> fprintf ppf "[raw.exp]"
-  | Lam.Praw_js_code_stmt _ -> fprintf ppf "[raw.stmt]"
+  | Praw_js_code_exp _ -> fprintf ppf "[raw.exp]"
+  | Praw_js_code_stmt _ -> fprintf ppf "[raw.stmt]"
   | Pglobal_exception id ->
     fprintf ppf "global exception %a" Ident.print id       
   | Pjs_typeof -> fprintf ppf "[typeof]"
@@ -213,7 +213,7 @@ let primitive ppf (prim : Lam.primitive) = match prim with
   | Pbytesrefs -> fprintf ppf "bytes.get"
   | Pbytessets -> fprintf ppf "bytes.set"
 
-  | Parraylength _ -> fprintf ppf "array.length"
+  | Parraylength  -> fprintf ppf "array.length"
   | Pmakearray _ -> fprintf ppf "makearray "
   | Parrayrefu _ -> fprintf ppf "array.unsafe_get"
   | Parraysetu _ -> fprintf ppf "array.unsafe_set"
@@ -310,7 +310,7 @@ let kind = function
   | Variable -> "v" 
   | Recursive -> "r"
 
-let to_print_kind (k : Lam.let_kind) : print_kind = 
+let to_print_kind (k : Lam_compat.let_kind) : print_kind = 
   match k with 
   | Alias -> Alias 
   | Strict -> Strict
@@ -390,10 +390,8 @@ let lambda use_env env ppf v  =
       let lams ppf args =
         List.iter (fun l -> fprintf ppf "@ %a" lam l) args in
       fprintf ppf "@[<2>(apply@ %a%a)@]" lam fn lams args
-    | Lfunction{ function_kind; params; body; _} ->
+    | Lfunction{params; body; _} ->
       let pr_params ppf params =
-        match function_kind with
-        | Curried ->
           List.iter (fun param -> fprintf ppf "@ %a" Ident.print param) params
           (* | Tupled -> *)
           (*     fprintf ppf " ("; *)

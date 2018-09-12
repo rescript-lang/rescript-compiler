@@ -46,7 +46,7 @@ type value = {
     order_id : int
   }
 
-type let_kind = Lam.let_kind
+type let_kind = Lam_compat.let_kind
 
 type continuation = 
   | EffectCall

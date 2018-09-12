@@ -109,7 +109,7 @@ let handle_exports (meta : Lam_stats.t)
             }
             else
              let newid = Ident.rename original_export_id in
-             let kind : Lam.let_kind = Alias in
+             let kind : Lam_compat.let_kind = Alias in
              Lam_util.alias_ident_or_global meta newid id NA kind;
               { acc with
               export_list = newid :: acc.export_list;

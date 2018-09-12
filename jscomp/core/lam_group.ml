@@ -28,13 +28,13 @@
 
 (** This is not a recursive type definition *)
 type t =
-  | Single of Lam.let_kind  * Ident.t * Lam.t
+  | Single of Lam_compat.let_kind  * Ident.t * Lam.t
   | Recursive of (Ident.t * Lam.t) list
   | Nop of Lam.t
 
-let single (kind : Lam.let_kind) id (body : Lam.t) =
+let single (kind : Lam_compat.let_kind) id (body : Lam.t) =
   match kind, body with
-  | (Lam.Strict | StrictOpt),
+  | (Strict | StrictOpt),
     (Lvar _ | Lconst _) ->
     Single(Alias, id,body)
   | _ -> Single(kind,id,body)
@@ -47,7 +47,7 @@ let nop_cons (x : Lam.t) acc =
 
 let pp = Format.fprintf
 
-let str_of_kind (kind : Lam.let_kind) =
+let str_of_kind (kind : Lam_compat.let_kind) =
   match kind with
   | Alias -> "a"
   | Strict -> ""

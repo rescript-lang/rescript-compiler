@@ -22,195 +22,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type array_kind = Lambda.array_kind
-type boxed_integer = Lambda.boxed_integer
-type comparison = Lambda.comparison 
-type bigarray_kind = Lambda.bigarray_kind
-type bigarray_layout = Lambda.bigarray_layout
-type compile_time_constant = Lambda.compile_time_constant
 
-type tag_info = Lam_tag_info.t
 
-type mutable_flag = Asttypes.mutable_flag
-type field_dbg_info = Lambda.field_dbg_info 
-type set_field_dbg_info = Lambda.set_field_dbg_info
+
 
 type ident = Ident.t
 
-type let_kind = Lambda.let_kind
-    = Strict
-    | Alias
-    | StrictOpt
-    | Variable
 
-type meth_kind = Lambda.meth_kind 
-  = Self 
-  | Public of string option 
-  | Cached 
-
-type function_kind 
-   = Curried
-   (* | Tupled *)
-
-type pointer_info = 
-  | Pt_constructor of string 
-  | Pt_variant of string 
-  | Pt_module_alias
-  | Pt_na    
-  
-type constant = 
-  | Const_js_null 
-  | Const_js_undefined 
-  | Const_js_true
-  | Const_js_false  
-  | Const_int of int
-  | Const_char of char
-  | Const_string of string 
-  | Const_unicode of string 
-  | Const_float of string
-  | Const_int32 of int32
-  | Const_int64 of int64
-  | Const_nativeint of nativeint
-  | Const_pointer of int * pointer_info
-  | Const_block of int * tag_info * constant list
-  | Const_float_array of string list
-  | Const_immstring of string
-  | Const_some of constant
-
-type primitive = 
-  | Pbytes_to_string
-  | Pbytes_of_string
-  | Pglobal_exception of ident 
-  | Pmakeblock of int * tag_info * Asttypes.mutable_flag
-  | Pfield of int * Lambda.field_dbg_info
-  | Psetfield of int  * Lambda.set_field_dbg_info
-  | Pfloatfield of int * Lambda.field_dbg_info
-  | Psetfloatfield of int * Lambda.set_field_dbg_info
-  | Pduprecord of Types.record_representation * int
-  | Plazyforce
-
-  | Pccall of  Primitive_compat.t
-  | Pjs_call of
-    (* Location.t *  [loc] is passed down *)
-    string *  (* prim_name *)
-    External_arg_spec.t list * (* arg_types *)
-    External_ffi_types.attr  (* ffi *)
-  | Pjs_object_create of External_ffi_types.obj_create
-
-  | Praise 
-  | Psequand | Psequor | Pnot
-  | Pnegint | Paddint | Psubint | Pmulint | Pdivint | Pmodint
-  | Pandint | Porint | Pxorint
-  | Plslint | Plsrint | Pasrint
-  | Pintcomp of Lambda.comparison
-  | Poffsetint of int
-  | Poffsetref of int
-  | Pintoffloat | Pfloatofint
-  | Pnegfloat | Pabsfloat
-  | Paddfloat | Psubfloat | Pmulfloat | Pdivfloat
-  | Pfloatcomp of Lambda.comparison
-  | Pjscomp of Lambda.comparison
-  | Pjs_apply (*[f;arg0;arg1; arg2; ... argN]*)
-  | Pjs_runtime_apply (* [f; [...]] *)
-  | Pstringlength 
-  | Pstringrefu 
-  | Pstringrefs
-  | Pstringadd    
-  | Pbyteslength
-  | Pbytesrefu
-  | Pbytessetu 
-  | Pbytesrefs
-  | Pbytessets
-  (* Array operations *)
-  | Pmakearray of array_kind
-  | Parraylength of array_kind
-  | Parrayrefu of array_kind
-  | Parraysetu of array_kind
-  | Parrayrefs of array_kind
-  | Parraysets of array_kind
-  (* Test if the argument is a block or an immediate integer *)
-  | Pisint
-  (* Test if the (integer) argument is outside an interval *)
-  | Pisout
-  (* Bitvect operations *)
-  | Pbittest
-  (* Operations on boxed integers (Nativeint.t, Int32.t, Int64.t) *)
-  | Pbintofint of boxed_integer
-  | Pintofbint of boxed_integer
-  | Pcvtbint of boxed_integer (*source*) * boxed_integer (*destination*)
-  | Pnegbint of boxed_integer
-  | Paddbint of boxed_integer
-  | Psubbint of boxed_integer
-  | Pmulbint of boxed_integer
-  | Pdivbint of boxed_integer
-  | Pmodbint of boxed_integer
-  | Pandbint of boxed_integer
-  | Porbint of boxed_integer
-  | Pxorbint of boxed_integer
-  | Plslbint of boxed_integer
-  | Plsrbint of boxed_integer
-  | Pasrbint of boxed_integer
-  | Pbintcomp of boxed_integer * comparison
-  (* Operations on big arrays: (unsafe, #dimensions, kind, layout) *)
-  | Pbigarrayref of bool * int * bigarray_kind * bigarray_layout
-  | Pbigarrayset of bool * int * bigarray_kind * bigarray_layout
-  (* size of the nth dimension of a big array *)
-  | Pbigarraydim of int
-  (* load/set 16,32,64 bits from a string: (unsafe)*)
-  | Pstring_load_16 of bool
-  | Pstring_load_32 of bool
-  | Pstring_load_64 of bool
-  | Pstring_set_16 of bool
-  | Pstring_set_32 of bool
-  | Pstring_set_64 of bool
-  (* load/set 16,32,64 bits from a
-     (char, int8_unsigned_elt, c_layout) Bigarray.Array1.t : (unsafe) *)
-  | Pbigstring_load_16 of bool
-  | Pbigstring_load_32 of bool
-  | Pbigstring_load_64 of bool
-  | Pbigstring_set_16 of bool
-  | Pbigstring_set_32 of bool
-  | Pbigstring_set_64 of bool
-  (* Compile time constants *)
-  | Pctconst of compile_time_constant
-  (* byte swap *)
-  | Pbswap16
-  | Pbbswap of boxed_integer
-  (* Integer to external pointer *)
-
-  | Pdebugger
-  | Pjs_unsafe_downgrade of string * Location.t
-  | Pinit_mod
-  | Pupdate_mod
-
-  | Praw_js_code_exp of string 
-  | Praw_js_code_stmt of string 
-  | Praw_js_function of string * string list
-  | Pjs_fn_make of int 
-  | Pjs_fn_run of int 
-  | Pjs_fn_method of int 
-  | Pjs_fn_runmethod of int 
-  | Pundefined_to_opt
-  | Pnull_to_opt
-  | Pnull_undefined_to_opt 
-  
-  | Pis_null
-  | Pis_undefined
-  | Pis_null_undefined
-
-  | Pjs_typeof
-  | Pjs_function_length 
-  | Pcaml_obj_length
-  | Pcaml_obj_set_length
-  | Pwrap_exn (* convert either JS exception or OCaml exception into OCaml format *)  
-
-  (* | Pcreate_exception of string  *)
-  | Pcreate_extension of string 
-  | Pis_not_none
-  | Pval_from_option
-  | Pval_from_option_not_nest
-  | Psome
-  | Psome_not_nest
 type switch  =
   { sw_numconsts: int;
     sw_consts: (int * t) list;
@@ -229,23 +47,22 @@ and apply_info = private
   }
 
 and prim_info = private
-  { primitive : primitive ; 
+  { primitive : Lam_primitive.t ; 
     args : t list ; 
     loc : Location.t 
   }
 and function_info = private
   { arity : int ; 
-    function_kind : function_kind ; 
     params : ident list ;
     body : t 
   }
 and  t =  private
   | Lvar of ident
   | Lglobal_module of ident
-  | Lconst of constant
+  | Lconst of Lam_constant.t
   | Lapply of apply_info
   | Lfunction of function_info
-  | Llet of let_kind * ident * t * t
+  | Llet of Lam_compat.let_kind * ident * t * t
   | Lletrec of (ident * t) list * t
   | Lprim of prim_info
   | Lswitch of t * switch
@@ -287,29 +104,48 @@ type bindings = (Ident.t * t) list
 
 val scc_bindings : bindings -> bindings list 
 val scc : bindings -> t -> t  -> t 
+val handle_bs_non_obj_ffi:
+  External_arg_spec.t list ->
+  External_ffi_types.return_wrapper ->
+  External_ffi_types.attr -> t list -> Location.t -> string -> t
+val exception_id_escaped : Ident.t -> t -> bool  
 
+(**************************************************************)
+(** Smart constructors *)
 val var : ident -> t
 val global_module : ident -> t 
-val const : constant -> t
+val const : Lam_constant.t -> t
 
 val apply : t -> t list -> Location.t -> apply_status -> t
 val function_ : 
   arity:int ->
-  function_kind:function_kind -> params:ident list -> body:t -> t
+  params:ident list -> 
+  body:t -> t
 
-val let_ : let_kind -> ident -> t -> t -> t
+val let_ : Lam_compat.let_kind -> ident -> t -> t -> t
 val letrec : (ident * t) list -> t -> t
+
+(**  constant folding *)
 val if_ : triop
+
+(** constant folding*)
 val switch : t -> switch  -> t 
+(** constant folding*)
 val stringswitch : t -> (string * t) list -> t option -> t 
 
 val true_ : t 
 val false_ : t 
 val unit : t 
 
+(** convert [l || r] to [if l then true else r]*)
 val sequor : binop
+(** convert [l && r] to [if l then r else false *)
 val sequand : binop
+
+(** constant folding *)
 val not_ : Location.t ->  unop
+
+(** drop unused block *)
 val seq : binop
 val while_ : binop
 (* val event : t -> Lambda.lambda_event -> t   *)
@@ -322,7 +158,9 @@ val send :
   t -> t -> t list -> 
   Location.t -> t 
 
-val prim : primitive:primitive -> args:t list -> Location.t  ->  t
+(** constant folding *)  
+val prim : primitive:Lam_primitive.t -> args:t list -> Location.t  ->  t
+
 
 val staticcatch : 
   t -> int * ident list -> t -> t
@@ -336,29 +174,5 @@ val for_ :
   t -> Asttypes.direction_flag -> t -> t 
 
 
-
-
-(** 
-  [convert exports lam]
-  it also collect [exit_map] and a collection of potential depended modules [may_depends]
-  In this pass we also synchronized aliases so that 
-    {[
-      let a1 = a0 in 
-      let a2 = a1 in 
-      let a3 = a2 in 
-      let a4 = a3 in 
-    ]}
-    converted to 
-    {[
-      let a1 = a0 in 
-      let a2 = a0 in 
-      let a3 = a0 in 
-      let a4 = a0 in 
-    ]}
-    we dont eliminate unused let bindings to leave it for {!Lam_pass_lets_dce}
-    we should remove all those let aliases, otherwise, it will be
-    pushed into alias table again
- *)
-val convert :  Ident_set.t -> Lambda.lambda -> t * Lam_module_ident.Hash_set.t
-
+(**************************************************************)
 

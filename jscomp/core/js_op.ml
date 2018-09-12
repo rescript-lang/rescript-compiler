@@ -139,7 +139,7 @@ type kind =
   | Runtime 
   | External of string
 
-type property = Lambda.let_kind = 
+type property = Lam_compat.let_kind = 
   | Strict
   | Alias
   | StrictOpt 

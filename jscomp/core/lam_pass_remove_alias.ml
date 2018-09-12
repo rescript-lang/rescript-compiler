@@ -88,7 +88,7 @@ let simplify_alias
       | Lglobal_module g 
       ->    
         Lam.prim 
-          ~primitive:(Pfield(i,Lambda.Fld_na))
+          ~primitive:(Pfield(i,Lam_compat.Fld_na))
           ~args:[Lam.global_module g ]
           loc
       | Lvar v as l-> 
@@ -259,7 +259,7 @@ let simplify_alias
 
       end
 
-    | Lapply{ fn = Lfunction{ function_kind = Curried ; params; body}; args; _}
+    | Lapply{ fn = Lfunction{ params; body}; args; _}
       when  Ext_list.same_length params args ->
       simpl (Lam_beta_reduce.propogate_beta_reduce meta params body args)
     (* | Lapply{ fn = Lfunction{function_kind =  Tupled;  params; body};  *)
@@ -272,8 +272,8 @@ let simplify_alias
 
     | Lapply {fn = l1; args =  ll;  loc ; status} ->
       Lam.apply (simpl  l1) (Ext_list.map simpl  ll) loc status
-    | Lfunction {arity; function_kind; params; body = l}
-      -> Lam.function_ ~arity ~function_kind ~params  ~body:(simpl  l)
+    | Lfunction {arity; params; body = l}
+      -> Lam.function_ ~arity ~params  ~body:(simpl  l)
     | Lswitch (l, {sw_failaction; 
                    sw_consts; 
                    sw_blocks;

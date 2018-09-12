@@ -31,7 +31,7 @@
 
 (** Compile lambda constant to JS *)
 
-val translate : Lam.constant -> J.expression
+val translate : Lam_constant.t -> J.expression
 
 
 val translate_arg_cst : External_arg_spec.cst -> J.expression

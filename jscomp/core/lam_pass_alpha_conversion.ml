@@ -70,7 +70,7 @@ let alpha_conversion (meta : Lam_stats.t) (lam : Lam.t) : Lam.t =
       let bindings = Ext_list.map (fun (k,l) -> (k, simpl l)) bindings in 
       Lam.letrec bindings (simpl body) 
     | Lglobal_module _ -> lam 
-    | Lprim {primitive = (Lam.Pjs_fn_make len) as primitive ; args = [arg] 
+    | Lprim {primitive = (Pjs_fn_make len) as primitive ; args = [arg] 
       ; loc } -> 
       
       begin match 
@@ -87,9 +87,9 @@ let alpha_conversion (meta : Lam_stats.t) (lam : Lam.t) : Lam.t =
       end
     | Lprim {primitive; args ; loc} -> 
       Lam.prim ~primitive ~args:(Ext_list.map simpl  args) loc
-    | Lfunction {arity; function_kind; params; body = l} ->
+    | Lfunction {arity; params; body = l} ->
       (* Lam_mk.lfunction kind params (simpl l) *)
-      Lam.function_ ~arity ~function_kind ~params  ~body:(simpl  l)
+      Lam.function_ ~arity  ~params  ~body:(simpl  l)
     | Lswitch (l, {sw_failaction; 
                   sw_consts; 
                   sw_blocks;

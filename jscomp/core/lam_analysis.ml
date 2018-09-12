@@ -26,7 +26,7 @@
 
 
 (**used in effect analysis, it is sound but not-complete *)
-let not_zero_constant ( x : Lam.constant) =  
+let not_zero_constant ( x : Lam_constant.t) =  
   match x with 
   | Const_int i  -> i <> 0
   | Const_int32 i  -> i <> 0l
@@ -130,7 +130,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pbytesrefu
       | Pbytesrefs
       | Pmakearray _ 
-      | Parraylength _ 
+      | Parraylength  
       | Parrayrefu _
       | Parrayrefs _ 
       (* Test if the argument is a block or an immediate integer *)
@@ -384,7 +384,7 @@ let ok_to_inline_fun_when_app ~body params args =
    (s < 10 && no_side_effects body )) 
 
 
-let eq_comparison ( p : Lam.comparison) (p1:Lam.comparison) = 
+let eq_comparison ( p : Lam_compat.comparison) (p1:Lam_compat.comparison) = 
   match p with 
   | Cge -> p1 =  Cge
   | Cgt -> p1 =  Cgt
@@ -393,20 +393,20 @@ let eq_comparison ( p : Lam.comparison) (p1:Lam.comparison) =
   | Ceq -> p1 =  Ceq 
   | Cneq -> p1 =  Cneq 
 
-let eq_array_kind (p : Lam.array_kind) (p1 : Lam.array_kind) = 
+let eq_array_kind (p : Lam_compat.array_kind) (p1 : Lam_compat.array_kind) = 
   match p with 
   | Pgenarray -> p1 = Pgenarray
   | Paddrarray -> p1 = Paddrarray 
   | Pintarray -> p1 = Pintarray
   | Pfloatarray -> p1 = Pfloatarray 
 
-let eq_boxed_integer (p : Lam.boxed_integer) (p1 : Lam.boxed_integer ) = 
+let eq_boxed_integer (p : Lam_compat.boxed_integer) (p1 : Lam_compat.boxed_integer ) = 
   match p with 
   | Pnativeint -> p1 = Pnativeint 
   | Pint32 -> p1 = Pint32
   | Pint64 -> p1 = Pint64
 
-let eq_bigarray_kind (p : Lam.bigarray_kind) (p1 : Lam.bigarray_kind) = 
+let eq_bigarray_kind (p : Lam_compat.bigarray_kind) (p1 : Lam_compat.bigarray_kind) = 
   match p with   
   | Pbigarray_unknown -> p1 = Pbigarray_unknown
   | Pbigarray_float32 -> p1 = Pbigarray_float32
@@ -422,13 +422,13 @@ let eq_bigarray_kind (p : Lam.bigarray_kind) (p1 : Lam.bigarray_kind) =
   | Pbigarray_complex32  -> p1 = Pbigarray_complex32
   | Pbigarray_complex64 -> p1 = Pbigarray_complex64
 
-let eq_bigarray_layout (p : Lam.bigarray_layout) (p1 : Lam.bigarray_layout) = 
+let eq_bigarray_layout (p : Lam_compat.bigarray_layout) (p1 : Lam_compat.bigarray_layout) = 
   match p with 
   | Pbigarray_unknown_layout -> p1 = Pbigarray_unknown_layout
   | Pbigarray_c_layout -> p1 = Pbigarray_c_layout
   | Pbigarray_fortran_layout -> p1 = Pbigarray_fortran_layout
 
-let eq_compile_time_constant ( p : Lam.compile_time_constant) (p1 : Lam.compile_time_constant) = 
+let eq_compile_time_constant ( p : Lam_compat.compile_time_constant) (p1 : Lam_compat.compile_time_constant) = 
   match p with 
   | Big_endian -> p1 = Big_endian
   | Word_size -> p1 = Word_size 
@@ -492,7 +492,7 @@ let rec
   | Lifused _ -> false    
 
   
-and eq_primitive ( lhs : Lam.primitive) (rhs : Lam.primitive) = 
+and eq_primitive ( lhs : Lam_primitive.t) (rhs : Lam_primitive.t) = 
   match lhs with 
   | Pcreate_extension a -> begin match rhs with Pcreate_extension b -> a = (b : string) | _ -> false end
   (* | Pcreate_exception a -> begin match rhs with Pcreate_exception b -> a = (b : string) | _ -> false end *)
@@ -575,7 +575,7 @@ and eq_primitive ( lhs : Lam.primitive) (rhs : Lam.primitive) =
   | Poffsetint i0 ->   (match rhs with  Poffsetint i1 -> i0 = i1 | _ -> false )   
   | Poffsetref i0 ->  (match rhs with Poffsetref i1 -> i0 = i1   | _ -> false)
   | Pmakearray array_kind -> (match rhs with Pmakearray array_kind1 -> eq_array_kind array_kind array_kind1 | _ -> false  )
-  | Parraylength  array_kind -> (match rhs with Parraylength array_kind1 -> eq_array_kind array_kind array_kind1 | _ -> false  )
+  | Parraylength  -> rhs = Parraylength
   | Parrayrefu  array_kind -> (match rhs with Parrayrefu array_kind1 -> eq_array_kind array_kind array_kind1 | _ -> false  )
   | Parraysetu  array_kind -> (match rhs with Parraysetu array_kind1 -> eq_array_kind array_kind array_kind1 | _ -> false  ) 
   | Parrayrefs array_kind -> (match rhs with Parrayrefs array_kind1 -> eq_array_kind array_kind array_kind1 | _ -> false  )

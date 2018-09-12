@@ -892,7 +892,7 @@ let set_length ?comment e tag : t =
 let obj_length ?comment e : t = 
   to_int32 {expression_desc = Length (e, Caml_block); comment }
 
-let rec int_comp (cmp : Lambda.comparison) ?comment  (e0 : t) (e1 : t) = 
+let rec int_comp (cmp : Lam_compat.comparison) ?comment  (e0 : t) (e1 : t) = 
   match cmp, e0.expression_desc, e1.expression_desc with
   | _, Call ({
       expression_desc = 
@@ -928,7 +928,7 @@ let rec int_comp (cmp : Lambda.comparison) ?comment  (e0 : t) (e1 : t) =
   | _ ->          
     bin ?comment (Lam_compile_util.jsop_of_comp cmp) e0 e1
 
-let bool_comp (cmp : Lambda.comparison) ?comment (e0 : t) (e1 : t) = 
+let bool_comp (cmp : Lam_compat.comparison) ?comment (e0 : t) (e1 : t) = 
   match e0, e1 with 
   | {expression_desc = Bool l}, {expression_desc = Bool r}  ->
     bool (match cmp with 

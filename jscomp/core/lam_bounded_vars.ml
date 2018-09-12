@@ -91,10 +91,10 @@ let rewrite (map :   _ Ident_hashtbl.t)
       let bindings = Ext_list.map2 (fun var (_,l) -> var, aux l) vars bindings in 
       let body = aux body in       
       Lam.letrec bindings body
-    | Lfunction{arity; function_kind; params; body} -> 
+    | Lfunction{arity;  params; body} -> 
       let params =  Ext_list.map rebind params in
       let body = aux body in      
-      Lam.function_ ~arity ~function_kind ~params ~body
+      Lam.function_ ~arity ~params ~body
     | Lstaticcatch(l1, (i,xs), l2) -> 
       let l1 = aux l1 in
       let xs = Ext_list.map rebind xs in

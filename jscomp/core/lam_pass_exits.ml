@@ -260,8 +260,8 @@ let subst_helper (subst : subst_tbl) (query : int -> int) lam =
     | Lvar _|Lconst _  -> lam
     | Lapply {fn = l1; args =  ll;  loc; status } -> 
       Lam.apply (simplif l1) (Ext_list.map simplif ll) loc status
-    | Lfunction {arity; function_kind; params; body =  l} -> 
-      Lam.function_ ~arity ~function_kind ~params ~body:(simplif l)
+    | Lfunction {arity; params; body =  l} -> 
+      Lam.function_ ~arity  ~params ~body:(simplif l)
     | Llet (kind, v, l1, l2) -> 
       Lam.let_ kind v (simplif l1) (simplif l2)
     | Lletrec (bindings, body) ->
