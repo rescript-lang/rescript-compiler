@@ -74,7 +74,6 @@
       Lam.assign id (subst_aux e)
     | Lsend (k, met, obj, args, loc) ->
       Lam.send k (subst_aux met) (subst_aux obj) (Ext_list.map subst_aux args) loc
-    | Lifused (v, e) -> Lam.ifused v (subst_aux e)
   and subst_decl (id, exp) = (id, subst_aux exp)
   and subst_case (key, case) = (key, subst_aux case)
   and subst_strcase (key, case) = (key, subst_aux case)

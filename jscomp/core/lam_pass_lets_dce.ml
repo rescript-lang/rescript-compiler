@@ -144,14 +144,6 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
          | _ -> 
            Lam_util.refine_let ~kind v l1 (simplif l2)
         end
-    | Lifused(v, l) ->
-      if used  v then
-        simplif l
-      else Lam.unit
-    | Lsequence(Lifused(v, l1), l2) ->
-      if used v 
-      then Lam.seq (simplif l1) (simplif l2)
-      else simplif l2
     | Lsequence(l1, l2) -> Lam.seq (simplif l1) (simplif l2)
 
     | Lapply{fn = Lfunction{params; body};  args; _}

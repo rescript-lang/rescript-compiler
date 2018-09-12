@@ -1729,12 +1729,6 @@ and
 
         end
       end
+    (* TODO debugging, sourcemap, ignore lambda_event currently *)
 
-    (* [J.Empty,J.N] *)  (* TODO debugging, sourcemap, ignore lambda_event currently *)
-    (*
-        seems to be an optimization trick for [translclass]
-        | Lifused(v, l) ->
-        if count_var v > 0 then simplif l else lambda_unit
-    *)
-    | Lifused(_,lam) -> compile_lambda cxt lam
   end

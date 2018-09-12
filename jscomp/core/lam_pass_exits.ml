@@ -99,7 +99,7 @@ let count_helper  (lam : Lam.t) : int ref Int_hashtbl.t  =
     | Lfor(_, l1, l2, dir, l3) -> count l1; count l2; count l3
     | Lassign(_, l) -> count l
     | Lsend(_, m, o, ll, _) -> count m; count o; List.iter count ll
-    | Lifused(_, l) -> count l 
+
 
   and count_default sw =
     match sw.sw_failaction with
@@ -303,8 +303,6 @@ let subst_helper (subst : subst_tbl) (query : int -> int) lam =
       Lam.assign v (simplif l)
     | Lsend (k, m, o, ll, loc) ->
       Lam.send k (simplif m) (simplif o) (Ext_list.map simplif ll) loc
-    | Lifused (v, l) -> 
-      Lam.ifused v (simplif l)
   in 
   simplif lam 
 

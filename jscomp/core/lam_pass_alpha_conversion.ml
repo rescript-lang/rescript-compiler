@@ -137,7 +137,7 @@ let alpha_conversion (meta : Lam_stats.t) (lam : Lam.t) : Lam.t =
       Lam.assign v (simpl  l)
     | Lsend (u, m, o, ll, v) -> 
       Lam.send u (simpl m) (simpl o) (Ext_list.map simpl ll) v
-    | Lifused (v, l) -> Lam.ifused v (simpl  l)
+
   in 
 
   simpl lam
