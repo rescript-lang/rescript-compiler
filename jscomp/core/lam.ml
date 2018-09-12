@@ -190,18 +190,12 @@ let inner_map (f : t -> X.t ) (l : t) : X.t =
     let arg = f arg in
     let sw_consts = Ext_list.map (fun (key, case) -> key , f case) sw_consts in
     let sw_blocks = Ext_list.map (fun (key, case) -> key, f case) sw_blocks in
-    let sw_failaction = begin match sw_failaction with
-      | None -> None
-      | Some a -> Some (f a)
-    end in
+    let sw_failaction = Ext_option.map sw_failaction f in
     Lswitch(arg, { sw_consts; sw_blocks; sw_failaction; sw_numblocks; sw_numconsts})
   | Lstringswitch (arg,cases,default) ->
     let arg = f arg  in
     let cases = Ext_list.map (fun (k,act) -> k,f act) cases  in
-    let default = begin match default with
-      | None -> None
-      | Some a -> Some (f a)
-    end in
+    let default = Ext_option.map default f in
     Lstringswitch(arg,cases,default)
   | Lstaticraise (id,args) ->
     let args = Ext_list.map f args in
@@ -258,17 +252,11 @@ let inner_iter (f : t -> unit ) (l : t) : unit =
     f arg;
     List.iter (fun (key, case) -> f case) sw_consts;
     List.iter (fun (key, case) ->  f case) sw_blocks ;
-    begin match sw_failaction with
-      | None -> ()
-      | Some a ->  f a
-    end
+    Ext_option.iter sw_failaction f      
   | Lstringswitch (arg,cases,default) ->
     f arg;
     List.iter (fun (k,act) -> f act) cases  ;
-    begin match default with
-      | None -> ()
-      | Some a -> f a
-    end
+    Ext_option.iter default f 
   | Lstaticraise (id,args) ->
     List.iter f args;
   | Lstaticcatch(e1, vars , e2) ->
@@ -291,8 +279,17 @@ let inner_iter (f : t -> unit ) (l : t) : unit =
     f met; f obj; List.iter f args
   
 
-let hit_any_variables (fv : Ident_set.t) l : bool  =
-  let rec hit (l : t) =
+
+let hit_any_variables (fv : Ident_set.t) (l : t) : bool  =
+  let rec 
+  hit_opt (x : t option) = 
+    match x with 
+    | None -> false 
+    | Some a -> hit a
+  and hit_list_snd : 'a. ('a * t ) list -> bool = fun x ->    
+    List.exists (fun (_,a) -> hit a ) x 
+  and hit_list xs = List.exists hit xs 
+  and hit (l : t) =
     begin
       match (l : t) with
       | Lvar id -> Ident_set.mem id fv
@@ -308,33 +305,27 @@ let hit_any_variables (fv : Ident_set.t) l : bool  =
         hit arg || hit body
       | Lletrec(decl, body) ->
         hit body ||
-        List.exists (fun (id, exp) -> hit exp) decl
+        hit_list_snd decl 
       | Lfor(v, e1, e2, dir, e3) ->
         hit e1 || hit e2 || hit e3
       | Lconst _ -> false
       | Lapply{fn; args; _} ->
-        hit fn || List.exists hit args
+        hit fn || hit_list args
       | Lglobal_module _  (* global persistent module, play safe *)
         -> false
       | Lprim {args; _} ->
-        List.exists hit args
+        hit_list args
       | Lswitch(arg, sw) ->
         hit arg ||
-        List.exists (fun (key, case) -> hit case) sw.sw_consts ||
-        List.exists (fun (key, case) -> hit case) sw.sw_blocks ||
-        begin match sw.sw_failaction with
-          | None -> false
-          | Some a -> hit a
-        end
+        hit_list_snd sw.sw_consts ||
+        hit_list_snd sw.sw_blocks ||
+        hit_opt sw.sw_failaction 
       | Lstringswitch (arg,cases,default) ->
         hit arg ||
-        List.exists (fun (_,act) -> hit act) cases ||
-        begin match default with
-          | None -> false
-          | Some a -> hit a
-        end
+        hit_list_snd cases ||
+        hit_opt default 
       | Lstaticraise (_,args) ->
-        List.exists hit args
+        hit_list args
       | Lifthenelse(e1, e2, e3) ->
         hit e1 || hit e2 || hit e3
       | Lsequence(e1, e2) ->
@@ -342,7 +333,7 @@ let hit_any_variables (fv : Ident_set.t) l : bool  =
       | Lwhile(e1, e2) ->
         hit e1 || hit e2
       | Lsend (k, met, obj, args, _) ->
-        hit met || hit obj || List.exists hit args
+        hit met || hit obj ||  hit_list args
     end;
   in hit l
 
@@ -365,7 +356,15 @@ let hit_any_variables (fv : Ident_set.t) l : bool  =
     alias(or if it is passed as an argument) would cause it to be leaked
 *)
 let exception_id_escaped (fv : Ident.t) l : bool  =
-  let rec hit (l : t) =
+  let rec 
+    hit_opt (x : t option) = 
+  match x with 
+  | None -> false
+  | Some a -> hit a   
+  and hit_list_snd : 'a. ('a * t ) list -> bool = fun x ->    
+    List.exists (fun (_,a) -> hit a ) x   
+  and hit_list xs = List.exists hit xs 
+  and hit (l : t) =
     begin
       match (l : t) with
       | Lprim {primitive = Pintcomp _ ;
@@ -378,9 +377,11 @@ let exception_id_escaped (fv : Ident.t) l : bool  =
         end
       | Lprim {primitive = Praise ; args = [Lvar _]} -> false
       | Lprim {primitive ; args; _} ->
-        List.exists hit args
+        hit_list args
       | Lvar id ->
+#if BS_DEBUG then      
         Ext_log.dwarn __LOC__ "[HIT]%s/%d@." id.name id.stamp ;
+#end        
         Ident.same id fv
       | Lassign(id, e) ->
         Ident.same id fv || hit e
@@ -394,31 +395,25 @@ let exception_id_escaped (fv : Ident.t) l : bool  =
         hit arg || hit body
       | Lletrec(decl, body) ->
         hit body ||
-        List.exists (fun (id, exp) -> hit exp) decl
+        hit_list_snd decl
       | Lfor(v, e1, e2, dir, e3) ->
         hit e1 || hit e2 || hit e3
       | Lconst _ -> false
       | Lapply{fn; args; _} ->
-        hit fn || List.exists hit args
+        hit fn || hit_list args
       | Lglobal_module _  (* global persistent module, play safe *)
         -> false
       | Lswitch(arg, sw) ->
         hit arg ||
-        List.exists (fun (key, case) -> hit case) sw.sw_consts ||
-        List.exists (fun (key, case) -> hit case) sw.sw_blocks ||
-        begin match sw.sw_failaction with
-          | None -> false
-          | Some a -> hit a
-        end
+        hit_list_snd sw.sw_consts ||
+        hit_list_snd sw.sw_blocks ||
+        hit_opt sw.sw_failaction 
       | Lstringswitch (arg,cases,default) ->
         hit arg ||
-        List.exists (fun (_,act) -> hit act) cases ||
-        begin match default with
-          | None -> false
-          | Some a -> hit a
-        end
+        hit_list_snd cases ||
+        hit_opt default 
       | Lstaticraise (_,args) ->
-        List.exists hit args
+        hit_list args
       | Lifthenelse(e1, e2, e3) ->
         hit e1 || hit e2 || hit e3
       | Lsequence(e1, e2) ->
@@ -426,8 +421,8 @@ let exception_id_escaped (fv : Ident.t) l : bool  =
       | Lwhile(e1, e2) ->
         hit e1 || hit e2
       | Lsend (k, met, obj, args, _) ->
-        hit met || hit obj || List.exists hit args
-    end;
+        hit met || hit obj || hit_list args
+    end
   in hit l
 
 

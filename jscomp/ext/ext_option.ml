@@ -29,7 +29,12 @@
 
 
 
-let bind v f = 
+let map v f = 
   match v with 
   | None -> None
   | Some x -> Some (f x )
+
+let iter v f =   
+  match v with 
+  | None -> ()
+  | Some x -> f x 

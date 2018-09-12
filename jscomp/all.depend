@@ -492,7 +492,8 @@ core/lam.cmx : ext/ordered_hash_map_local_ident.cmx core/lam_primitive.cmx \
     ext/int_vec_util.cmx ext/int_vec.cmx ext/ident_set.cmx \
     ext/ident_hash_set.cmx ext/hash_set_ident_mask.cmx \
     syntax/external_ffi_types.cmx syntax/external_arg_spec.cmx \
-    ext/ext_scc.cmx common/ext_log.cmx ext/ext_list.cmx core/lam.cmi
+    ext/ext_scc.cmx ext/ext_option.cmx common/ext_log.cmx ext/ext_list.cmx \
+    core/lam.cmi
 core/lam_convert.cmx : core/primitive_compat.cmx core/lam_tag_info.cmx \
     core/lam_primitive.cmx core/lam_module_ident.cmx core/lam_constant.cmx \
     core/lam.cmx ext/int_hashtbl.cmx ext/ident_set.cmx ext/ident_hashtbl.cmx \
