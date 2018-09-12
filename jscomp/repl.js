@@ -88,7 +88,7 @@ var cmi_files =
         `arrayLabels`, `bytesLabels`, `complex`, `gc`, `genlex`, `listLabels`,
         `moreLabels`, `queue`, `scanf`, `sort`,`stack`, `stdLabels`, `stream`,
         `stringLabels`,
-
+        `dom`,
         `belt`,
         `belt_Id`,
         `belt_Array`,
