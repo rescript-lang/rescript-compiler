@@ -25,12 +25,15 @@ var suites_000 = /* tuple */[
   (function () {
       if (!class_tables[0]) {
         var $$class = CamlinternalOO.create_table(["say"]);
+        var env = CamlinternalOO.new_variable($$class, "");
         var say = CamlinternalOO.get_method_label($$class, "say");
         CamlinternalOO.set_method($$class, say, (function (_, x) {
                 return 1 + x | 0;
               }));
-        var env_init = function () {
-          return CamlinternalOO.create_object_opt(0, $$class);
+        var env_init = function (env$1) {
+          var self = CamlinternalOO.create_object_opt(0, $$class);
+          self[env] = env$1;
+          return self;
         };
         CamlinternalOO.init_class($$class);
         class_tables[0] = env_init;

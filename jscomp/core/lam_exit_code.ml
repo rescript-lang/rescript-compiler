@@ -84,8 +84,6 @@ let rec has_exit_code exits  (lam : Lam.t)  : bool =
     has_exit_code exits obj ||
     has_exit_code exits l ||
     List.exists (has_exit_code exits) ls
-  | Lifused (_,b)
-    -> has_exit_code exits b
 
 and has_exit_code_lam_switch exits (lam_switch : Lam.switch) =
   match lam_switch with

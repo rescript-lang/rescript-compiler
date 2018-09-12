@@ -37,6 +37,7 @@ var comparable = [
 ];
 
 function money_init($$class) {
+  var x = CamlinternalOO.new_variable($$class, "");
   var ids = CamlinternalOO.new_methods_variables($$class, [
         "value",
         "leq"
@@ -56,10 +57,11 @@ function money_init($$class) {
             return self$2[repr] <= Caml_oo_curry.js1(834174833, 1, p);
           })
       ]);
-  return (function (_, self, x) {
+  return (function (_, self, x$1) {
       var self$1 = CamlinternalOO.create_object_opt(self, $$class);
+      self$1[x] = x$1;
       Curry._1(obj_init, self$1);
-      self$1[repr] = x;
+      self$1[repr] = x$1;
       return CamlinternalOO.run_initializers_opt(self, self$1, $$class);
     });
 }
@@ -67,6 +69,7 @@ function money_init($$class) {
 var money = CamlinternalOO.make_class(shared$1, money_init);
 
 function money2_init($$class) {
+  var x = CamlinternalOO.new_variable($$class, "");
   var times = CamlinternalOO.get_method_label($$class, "times");
   var inh = CamlinternalOO.inherits($$class, shared, 0, shared$1, money, 1);
   var obj_init = inh[0];
@@ -76,9 +79,10 @@ function money2_init($$class) {
           copy[repr] = k * self$3[repr];
           return copy;
         }));
-  return (function (_, self, x) {
+  return (function (_, self, x$1) {
       var self$1 = CamlinternalOO.create_object_opt(self, $$class);
-      Curry._2(obj_init, self$1, x);
+      self$1[x] = x$1;
+      Curry._2(obj_init, self$1, x$1);
       return CamlinternalOO.run_initializers_opt(self, self$1, $$class);
     });
 }

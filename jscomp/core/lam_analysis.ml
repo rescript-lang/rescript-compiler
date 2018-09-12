@@ -254,7 +254,6 @@ let rec no_side_effects (lam : Lam.t) : bool =
   | Lfor _ -> false 
   | Lassign _ -> false (* actually it depends ... *)
   | Lsend _ -> false 
-  | Lifused _ -> false 
   | Lapply _ -> false (* we need purity analysis .. *)
   
 
@@ -313,7 +312,7 @@ let rec size (lam : Lam.t) =
     | Lfor(flag, l1, l2, dir, l3) -> really_big () 
     | Lassign (_,v) -> 1 + size v  (* This is side effectful,  be careful *)
     | Lsend _  ->  really_big ()
-    | Lifused(v, l) -> size l 
+
   with Too_big_to_inline ->  1000 
 and size_constant x = 
   match x with 
@@ -489,7 +488,7 @@ let rec
   | Ltrywith _ 
   | Lfor (_,_,_,_,_) 
   | Lsend _
-  | Lifused _ -> false    
+    -> false    
 
   
 and eq_primitive ( lhs : Lam_primitive.t) (rhs : Lam_primitive.t) = 

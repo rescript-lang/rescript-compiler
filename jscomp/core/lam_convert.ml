@@ -642,7 +642,8 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : t * Lam_module_ident
       (* disabled by upstream*)
       assert false
     | Lifused (id, e) ->
-      Lam.ifused id (convert_aux e) (* TODO: remove it ASAP *)
+
+      convert_aux e (* TODO: remove it ASAP *)
   and aux_switch (s : Lambda.lambda_switch) : Lam.switch =
     { sw_numconsts = s.sw_numconsts ;
       sw_consts = Ext_list.map (fun (i, lam) -> i, convert_aux lam) s.sw_consts;
@@ -654,3 +655,22 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : t * Lam_module_ident
         | Some a -> Some (convert_aux a)
     }  in
   convert_aux lam , may_depends
+
+
+(** FIXME: more precise analysis of [id], if it is not 
+    used, we can remove it
+        only two places emit [Lifused],
+        {[
+          lsequence (Lifused(id, set_inst_var obj id expr)) rem
+          Lifused (env2, Lprim(Parrayset Paddrarray, [Lvar self; Lvar env2; Lvar env1']))
+        ]}
+
+        Note the variable, [id], or [env2] is already defined, it can be removed if it is not
+        used. This optimization seems useful, but doesnt really matter since it only hit translclass
+
+        more details, see [translclass] and [if_used_test]
+        seems to be an optimization trick for [translclass]
+        
+        | Lifused(v, l) ->
+          if count_var v > 0 then simplif l else lambda_unit
+      *)  

@@ -509,8 +509,6 @@ let lambda use_env env ppf v  =
       let kind =
         if k = Self then "self" else if k = Cached then "cache" else "" in
       fprintf ppf "@[<2>(send%s@ %a@ %a%a)@]" kind lam obj lam met args largs
-    | Lifused(id, expr) ->
-      fprintf ppf "@[<2>(ifused@ %a@ %a)@]" Ident.print id lam expr
 
   and sequence ppf = function
     | Lsequence(l1, l2) ->

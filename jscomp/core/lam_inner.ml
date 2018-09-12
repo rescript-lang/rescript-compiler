@@ -72,6 +72,4 @@ let iter f l =
       f e
   | Lsend (k, met, obj, args, _) ->
       List.iter f (met::obj::args)
-  | Lifused (v, e) ->
-      f e
 

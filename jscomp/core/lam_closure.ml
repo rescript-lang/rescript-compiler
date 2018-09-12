@@ -171,9 +171,8 @@ let free_variables (export_idents : Ident_set.t ) (params : stats Ident_map.t ) 
     | Lsend (_k, met, obj, args, _) ->
       iter no_substitute met ; 
       iter no_substitute obj;
-      List.iter (iter no_substitute) args
-    | Lifused (v, e) ->
-      iter no_substitute e in
+      List.iter (iter no_substitute) args    
+    in
   iter fresh_env  lam ; !fv 
 
 

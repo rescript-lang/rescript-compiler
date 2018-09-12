@@ -162,9 +162,6 @@ let rewrite (map :   _ Ident_hashtbl.t)
       let o = aux o in 
       let ll = Ext_list.map aux ll in
       Lam.send u  m  o  ll v
-    | Lifused(v, l) -> 
-      let l = aux l in 
-      Lam.ifused v  l
   in 
   aux lam
 

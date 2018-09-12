@@ -169,7 +169,7 @@ let collect_helper  (meta : Lam_stats.t) (lam : Lam.t)  =
          v's refcollect *)
       collect  l
     | Lsend(_, m, o, ll, _) -> List.iter collect  (m::o::ll)
-    | Lifused(_, l) -> collect  l in collect lam 
+    in collect lam 
 
 
 

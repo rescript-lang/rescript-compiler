@@ -99,7 +99,6 @@ module Types = struct
     | Lfor of ident * t * t * Asttypes.direction_flag * t
     | Lassign of ident * t
     | Lsend of Lam_compat.meth_kind * t * t * t list * Location.t
-    | Lifused of ident * t
 end
 
 module X = struct
@@ -156,9 +155,12 @@ module X = struct
       | Lfor of ident * t * t * Asttypes.direction_flag * t
       | Lassign of ident * t
       | Lsend of Lam_compat.meth_kind * t * t * t list * Location.t
-      | Lifused of ident * t
 end
 include Types
+
+
+
+
 (** apply [f] to direct successor which has type [Lam.t] *)
 let inner_map (f : t -> X.t ) (l : t) : X.t =
   match l  with
@@ -233,10 +235,6 @@ let inner_map (f : t -> X.t ) (l : t) : X.t =
     let args = Ext_list.map f args in
     Lsend(k,met,obj,args,loc)
 
-  | Lifused (v, e) ->
-    let e = f e in
-    Lifused(v,e)
-
 let inner_iter (f : t -> unit ) (l : t) : unit =
   match l  with
   | Lvar (_ : ident)
@@ -291,103 +289,8 @@ let inner_iter (f : t -> unit ) (l : t) : unit =
     f e
   | Lsend (k, met, obj, args, loc) ->
     f met; f obj; List.iter f args
-  | Lifused (v, e) ->
-    f e
+  
 
-
-(*
-let add_list lst set =
-    List.fold_left (fun acc x -> Ident_set.add x acc) set lst
-let free_variables l =
-  let rec free bounded acc (l : t) =
-      match (l : t) with
-      | Lvar id ->
-        if Ident_set.mem id bounded then acc
-        else Ident_set.add id acc
-      | Lconst _ -> acc
-      | Lapply{fn; args; _} ->
-        let acc = free bounded  acc fn in
-        List.fold_left (fun acc arg -> free bounded acc arg) acc args
-      | Lfunction{body;params} ->
-        let bounded = add_list params bounded in
-        free bounded acc  body
-      | Llet(str, id, arg, body) ->
-        let acc = free bounded acc  arg in
-        let bounded =  Ident_set.add id bounded in
-        free bounded acc body
-      | Lletrec(decl, body) ->
-        let bounded =
-          List.fold_left (fun acc (x,_) -> Ident_set.add x acc) bounded decl
-        in
-        let acc = List.fold_left (fun acc (_,exp) -> free bounded acc exp ) acc decl in
-        free bounded acc body
-      | Lprim {args; _} ->
-        List.fold_left (fun acc arg -> free bounded acc arg) acc args
-      | Lswitch(arg, {sw_consts; sw_blocks; sw_failaction}) ->
-        let acc = free bounded acc arg in
-        let acc = List.fold_left
-          (fun acc (key, case) -> free  bounded acc case) acc sw_consts in
-        let acc =
-          List.fold_left
-          (fun acc (key, case) -> free bounded acc  case) acc sw_blocks in
-        begin match sw_failaction with
-          | None -> acc
-          | Some a -> free bounded acc a
-        end
-      | Lstringswitch (arg,cases,default) ->
-        let acc = free bounded acc arg  in
-        let acc = List.fold_left (fun acc  (_,act) -> free bounded acc act) acc cases  in
-        begin match default with
-          | None -> acc
-          | Some a -> free bounded acc a
-        end
-      | Lstaticraise (_,args) ->
-        List.fold_left (fun acc arg -> free bounded acc arg) acc args
-      | Lstaticcatch(e1, (_,vars), e2) ->
-        let acc = free  bounded acc e1 in
-        let bounded = add_list vars bounded in
-        free bounded acc e2
-      | Ltrywith(e1, exn, e2) ->
-        let acc = free  bounded acc e1 in
-        let bounded = Ident_set.add exn bounded in
-        free  bounded acc e2
-      | Lifthenelse(e1, e2, e3) ->
-        let acc = free  bounded acc e1 in
-        let acc = free  bounded acc e2 in
-        free bounded acc e3
-      | Lwhile(e1, e2)
-      | Lsequence(e1, e2) ->
-        let acc = free bounded acc e1 in
-        free bounded acc e2
-      | Lfor(v, e1, e2, dir, e3) ->
-
-        let acc = free  bounded acc e1 in
-        let acc = free  bounded acc e2 in
-        let bounded = Ident_set.add v bounded in
-        free bounded acc e3
-      | Lassign(id, e) ->
-        let acc = free bounded acc  e in
-        if Ident_set.mem id bounded then acc
-        else Ident_set.add id acc
-      | Lsend (k, met, obj, args, _) ->
-        let acc = free bounded acc met in
-        let acc = free bounded acc obj in
-        List.fold_left (fun ac arg -> free bounded acc arg) acc args
-      | Lifused (v, e) ->
-        free bounded acc e
-  in free Ident_set.empty Ident_set.empty l
-*)
-
-(**
-        [hit_any_variables fv l]
-        check the lambda expression [l] if has some free
-        variables captured by [fv].
-        Note it does not do any checking like below
-        [Llet(str,id,arg,body)]
-        it only check [arg] or [body] is hit or not, there
-        is a case that [id] is hit in [arg] but also exists
-        in [fv], this is ignored.
-*)
 let hit_any_variables (fv : Ident_set.t) l : bool  =
   let rec hit (l : t) =
     begin
@@ -440,8 +343,6 @@ let hit_any_variables (fv : Ident_set.t) l : bool  =
         hit e1 || hit e2
       | Lsend (k, met, obj, args, _) ->
         hit met || hit obj || List.exists hit args
-      | Lifused (v, e) ->
-        hit e
     end;
   in hit l
 
@@ -526,8 +427,6 @@ let exception_id_escaped (fv : Ident.t) l : bool  =
         hit e1 || hit e2
       | Lsend (k, met, obj, args, _) ->
         hit met || hit obj || List.exists hit args
-      | Lifused (v, e) ->
-        hit e
     end;
   in hit l
 
@@ -589,8 +488,6 @@ let hit_mask ( mask : Hash_set_ident_mask.t) l =
       hit e1 || hit e2
     | Lsend (k, met, obj, args, _) ->
       hit met || hit obj || List.exists hit args
-    | Lifused (v, e) ->
-      hit e
 
   and hit_case : 'a. 'a * _ -> bool = fun  (_,case) -> hit case
   in hit l
@@ -657,8 +554,6 @@ let free_variables l =
         free e1; free e2
       | Lsend (k, met, obj, args, _) ->
         free met; free obj; List.iter free args
-      | Lifused (v, e) ->
-        free e
     end;
   in free l;
   !fv
@@ -710,10 +605,6 @@ let rec no_bounded_variables (l : t) =
     no_bounded_variables met  &&
     no_bounded_variables obj &&
     List.for_all no_bounded_variables args
-  | Lifused (v, e) ->
-    no_bounded_variables e
-
-
   | Lstaticcatch(e1, (_,vars), e2) ->
     vars = [] && no_bounded_variables e1 &&  no_bounded_variables e2
   | Lfunction{body;params} ->
@@ -812,8 +703,6 @@ let check file lam =
       | Lsend (k, met, obj, args, _) ->
         iter met; iter obj;
         List.iter iter args
-      | Lifused (v, e) ->
-        iter e
     end;
   in
   begin
@@ -981,8 +870,7 @@ let try_  body id  handler : t =
 
 let for_ v e1 e2 dir e3 : t  =
   Lfor(v,e1,e2,dir,e3)
-let ifused v l : t  =
-  Lifused (v,l)
+
 let assign v l : t = Lassign(v,l)
 let send u m o ll v : t =
   Lsend(u, m, o, ll, v)
@@ -1434,3 +1322,97 @@ let scc  (groups :  bindings)  ( lam : t) ( body : t)
           )  clusters body
   end
 
+
+(*
+let add_list lst set =
+    List.fold_left (fun acc x -> Ident_set.add x acc) set lst
+let free_variables l =
+  let rec free bounded acc (l : t) =
+      match (l : t) with
+      | Lvar id ->
+        if Ident_set.mem id bounded then acc
+        else Ident_set.add id acc
+      | Lconst _ -> acc
+      | Lapply{fn; args; _} ->
+        let acc = free bounded  acc fn in
+        List.fold_left (fun acc arg -> free bounded acc arg) acc args
+      | Lfunction{body;params} ->
+        let bounded = add_list params bounded in
+        free bounded acc  body
+      | Llet(str, id, arg, body) ->
+        let acc = free bounded acc  arg in
+        let bounded =  Ident_set.add id bounded in
+        free bounded acc body
+      | Lletrec(decl, body) ->
+        let bounded =
+          List.fold_left (fun acc (x,_) -> Ident_set.add x acc) bounded decl
+        in
+        let acc = List.fold_left (fun acc (_,exp) -> free bounded acc exp ) acc decl in
+        free bounded acc body
+      | Lprim {args; _} ->
+        List.fold_left (fun acc arg -> free bounded acc arg) acc args
+      | Lswitch(arg, {sw_consts; sw_blocks; sw_failaction}) ->
+        let acc = free bounded acc arg in
+        let acc = List.fold_left
+          (fun acc (key, case) -> free  bounded acc case) acc sw_consts in
+        let acc =
+          List.fold_left
+          (fun acc (key, case) -> free bounded acc  case) acc sw_blocks in
+        begin match sw_failaction with
+          | None -> acc
+          | Some a -> free bounded acc a
+        end
+      | Lstringswitch (arg,cases,default) ->
+        let acc = free bounded acc arg  in
+        let acc = List.fold_left (fun acc  (_,act) -> free bounded acc act) acc cases  in
+        begin match default with
+          | None -> acc
+          | Some a -> free bounded acc a
+        end
+      | Lstaticraise (_,args) ->
+        List.fold_left (fun acc arg -> free bounded acc arg) acc args
+      | Lstaticcatch(e1, (_,vars), e2) ->
+        let acc = free  bounded acc e1 in
+        let bounded = add_list vars bounded in
+        free bounded acc e2
+      | Ltrywith(e1, exn, e2) ->
+        let acc = free  bounded acc e1 in
+        let bounded = Ident_set.add exn bounded in
+        free  bounded acc e2
+      | Lifthenelse(e1, e2, e3) ->
+        let acc = free  bounded acc e1 in
+        let acc = free  bounded acc e2 in
+        free bounded acc e3
+      | Lwhile(e1, e2)
+      | Lsequence(e1, e2) ->
+        let acc = free bounded acc e1 in
+        free bounded acc e2
+      | Lfor(v, e1, e2, dir, e3) ->
+
+        let acc = free  bounded acc e1 in
+        let acc = free  bounded acc e2 in
+        let bounded = Ident_set.add v bounded in
+        free bounded acc e3
+      | Lassign(id, e) ->
+        let acc = free bounded acc  e in
+        if Ident_set.mem id bounded then acc
+        else Ident_set.add id acc
+      | Lsend (k, met, obj, args, _) ->
+        let acc = free bounded acc met in
+        let acc = free bounded acc obj in
+        List.fold_left (fun ac arg -> free bounded acc arg) acc args
+      | Lifused (v, e) ->
+        free bounded acc e
+  in free Ident_set.empty Ident_set.empty l
+*)
+
+(**
+        [hit_any_variables fv l]
+        check the lambda expression [l] if has some free
+        variables captured by [fv].
+        Note it does not do any checking like below
+        [Llet(str,id,arg,body)]
+        it only check [arg] or [body] is hit or not, there
+        is a case that [id] is hit in [arg] but also exists
+        in [fv], this is ignored.
+*)

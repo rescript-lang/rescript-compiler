@@ -174,8 +174,6 @@ let collect_occurs  lam : occ_tbl =
       count bv m ;
       count bv o;
       List.iter (count bv) ll
-    | Lifused(v, l) ->
-      if used v then count bv l
   and count_default bv sw = 
     match sw.sw_failaction with
     | None -> ()

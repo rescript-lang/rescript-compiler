@@ -311,6 +311,4 @@ let deep_flatten
       Lam.assign v (aux  l)
     | Lsend(u, m, o, ll, v) ->
       Lam.send u (aux m) (aux o) (Ext_list.map aux ll) v
-
-    | Lifused(v, l) -> Lam.ifused v (aux  l)
   in aux lam
