@@ -433,7 +433,15 @@ let exception_id_escaped (fv : Ident.t) l : bool  =
     there is no need to iter such lambda any more
 *)
 let hit_mask ( mask : Hash_set_ident_mask.t) l =
-  let rec hit (l : t) =
+  let rec 
+    hit_opt (x : t option) = 
+    match x with 
+    | None -> false 
+    | Some a -> hit a
+    and hit_list_snd : 'a. ('a * t ) list -> bool = fun x ->    
+    List.exists (fun (_,a) -> hit a ) x 
+    and hit_list xs = List.exists hit xs 
+    and hit (l : t) =
     match (l : t) with
     | Lvar id -> Hash_set_ident_mask.mask_check_all_hit id mask
     | Lassign(id, e) ->
@@ -443,38 +451,32 @@ let hit_mask ( mask : Hash_set_ident_mask.t) l =
     | Ltrywith(e1, exn, e2) ->
       hit e1 || hit e2
     | Lfunction{body;params} ->
-      hit body;
+      hit body
     | Llet(str, id, arg, body) ->
       hit arg || hit body
     | Lletrec(decl, body) ->
       hit body ||
-      List.exists (fun (id, exp) -> hit exp) decl
+      hit_list_snd decl
     | Lfor(v, e1, e2, dir, e3) ->
       hit e1 || hit e2 || hit e3
     | Lconst _ -> false
     | Lapply{fn; args; _} ->
-      hit fn || List.exists hit args
+      hit fn || hit_list args
     | Lglobal_module id (* playsafe *)
       -> false
     | Lprim {args; _} ->
-      List.exists hit args
+      hit_list args
     | Lswitch(arg, sw) ->
       hit arg ||
-      List.exists hit_case sw.sw_consts ||
-      List.exists hit_case sw.sw_blocks ||
-      begin match sw.sw_failaction with
-        | None -> false
-        | Some a -> hit a
-      end
+      hit_list_snd sw.sw_consts ||
+      hit_list_snd sw.sw_blocks ||
+      hit_opt sw.sw_failaction
     | Lstringswitch (arg,cases,default) ->
       hit arg ||
-      List.exists hit_case cases ||
-      begin match default with
-        | None -> false
-        | Some a -> hit a
-      end
+      hit_list_snd cases ||
+      hit_opt default
     | Lstaticraise (_,args) ->
-      List.exists hit args
+      hit_list args
     | Lifthenelse(e1, e2, e3) ->
       hit e1 || hit e2 || hit e3
     | Lsequence(e1, e2) ->
@@ -482,9 +484,7 @@ let hit_mask ( mask : Hash_set_ident_mask.t) l =
     | Lwhile(e1, e2) ->
       hit e1 || hit e2
     | Lsend (k, met, obj, args, _) ->
-      hit met || hit obj || List.exists hit args
-
-  and hit_case : 'a. 'a * _ -> bool = fun  (_,case) -> hit case
+      hit met || hit obj || hit_list args  
   in hit l
 
 let free_variables l =
