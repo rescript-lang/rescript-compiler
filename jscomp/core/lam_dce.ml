@@ -62,14 +62,14 @@ let remove export_idents (rest : Lam_group.t list) : Lam_group.t list  =
         | Single(kind, id,lam) ->                   
           begin
             Ident_hashtbl.add ident_free_vars id 
-              (Lam.free_variables  lam);
+              (Lam_free_variables.pass_free_variables lam);
             match kind with
             | Alias | StrictOpt -> acc
             | Strict | Variable -> id :: acc 
           end
         | Recursive bindings -> 
           List.fold_left (fun acc (id,lam) -> 
-              Ident_hashtbl.add ident_free_vars id (Lam.free_variables lam);
+              Ident_hashtbl.add ident_free_vars id (Lam_free_variables.pass_free_variables lam);
               match (lam : Lam.t) with
               | Lfunction _ -> acc 
               | _ -> id :: acc
@@ -78,7 +78,7 @@ let remove export_idents (rest : Lam_group.t list) : Lam_group.t list  =
           if Lam_analysis.no_side_effects lam then acc
           else 
             (** its free varaibles here will be defined above *)
-            Ident_set.fold (fun x acc -> x :: acc )  ( Lam.free_variables lam) acc                
+            Ident_set.fold (fun x acc -> x :: acc )  ( Lam_free_variables.pass_free_variables lam) acc                
       )  export_idents rest in 
   let visited = transitive_closure initial_idents ident_free_vars in 
   List.fold_left (fun (acc : _ list) (x : Lam_group.t) ->

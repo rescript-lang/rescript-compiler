@@ -32,6 +32,54 @@ type boxed_integer = Lambda.boxed_integer =
 type comparison = Lambda.comparison = 
     Ceq | Cneq | Clt | Cgt | Cle | Cge
 
+
+let cmp_int32 (cmp : comparison) (a : int32) b : bool =
+  match cmp with
+  | Ceq -> a = b
+  | Cneq -> a <> b
+  | Cgt -> a > b
+  | Cle -> a <= b
+  | Clt -> a < b
+  | Cge -> a >= b
+
+let cmp_int64 (cmp : comparison) (a : int64) b : bool =
+  match cmp with
+  | Ceq -> a = b
+  | Cneq -> a <> b
+  | Cgt -> a > b
+  | Cle -> a <= b
+  | Clt -> a < b
+  | Cge -> a >= b
+
+let cmp_nativeint (cmp : comparison) (a : nativeint) b : bool =
+  match cmp with
+  | Ceq -> a = b
+  | Cneq -> a <> b
+  | Cgt -> a > b
+  | Cle -> a <= b
+  | Clt -> a < b
+  | Cge -> a >= b
+
+let cmp_float (cmp : comparison) (a : float) b : bool =
+  match cmp with
+  | Ceq -> a = b
+  | Cneq -> a <> b
+  | Cgt -> a > b
+  | Cle -> a <= b
+  | Clt -> a < b
+  | Cge -> a >= b
+
+let cmp_int (cmp : comparison) (a : int) b : bool =
+  match cmp with
+  | Ceq -> a = b
+  | Cneq -> a <> b
+  | Cgt -> a > b
+  | Cle -> a <= b
+  | Clt -> a < b
+  | Cge -> a >= b
+
+
+
 type bigarray_kind = Lambda.bigarray_kind = 
     Pbigarray_unknown
   | Pbigarray_float32 | Pbigarray_float64

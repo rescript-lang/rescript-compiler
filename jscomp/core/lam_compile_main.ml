@@ -147,7 +147,7 @@ let compile  ~filename (output_prefix : string) env _sigs
     let result = Lam_util.dump env s lam  in
 #if BS_DEBUG then 
     Ext_log.dwarn __LOC__ "START CHECKING PASS %s@." s;
-    ignore @@ Lam.check (Js_config.get_current_file ()) lam;
+    ignore @@ Lam_check.check (Js_config.get_current_file ()) lam;
     Ext_log.dwarn __LOC__ "FINISH CHECKING PASS %s@." s;
 #end
     result 
@@ -204,7 +204,7 @@ let compile  ~filename (output_prefix : string) env _sigs
     |> (fun lam -> 
        let () = 
         Ext_log.dwarn __LOC__ "Before coercion: %a@." Lam_stats.print meta in 
-      Lam.check (Js_config.get_current_file ()) lam
+      Lam_check.check (Js_config.get_current_file ()) lam
     ) 
 #end    
   in

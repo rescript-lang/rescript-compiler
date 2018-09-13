@@ -396,7 +396,7 @@ and compile_recursive_lets cxt id_args : Js_output.t  =
   match id_args with
   | [ ] -> Js_output.dummy
   | _ ->
-    let id_args_group = Lam.scc_bindings id_args in
+    let id_args_group = Lam_scc.scc_bindings id_args in
     begin match id_args_group with
       | [ ] -> assert false
       | first::rest  ->

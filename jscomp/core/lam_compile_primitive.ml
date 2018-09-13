@@ -46,9 +46,6 @@ let translate  loc
     (prim : Lam_primitive.t)
     (args : J.expression list) : J.expression = 
   match prim with
-  (* | Pcreate_exception s  *)
-  (*   ->  *)
-  (*   Js_of_lam_exception.make_exception (E.str s) *)
   | Pis_not_none -> 
     begin match args with 
     | [arg] -> Js_of_lam_option.is_not_none arg 

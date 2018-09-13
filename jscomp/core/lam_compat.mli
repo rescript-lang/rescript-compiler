@@ -79,3 +79,9 @@ type field_dbg_info = Lambda.field_dbg_info =
 type set_field_dbg_info = Lambda.set_field_dbg_info = 
   | Fld_set_na
   | Fld_record_set of string 
+
+val cmp_int32 : comparison -> int32 -> int32 -> bool 
+val cmp_int64 : comparison -> int64 -> int64 -> bool 
+val cmp_nativeint : comparison -> nativeint -> nativeint -> bool
+val cmp_float : comparison -> float -> float -> bool 
+val cmp_int : comparison -> int -> int -> bool 
