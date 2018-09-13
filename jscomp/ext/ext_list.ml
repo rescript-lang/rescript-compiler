@@ -580,3 +580,11 @@ let nth_opt l n =
   if n < 0 then None 
   else
     nth_aux l n
+
+let rec iter_snd lst f =     
+  match lst with
+  | [] -> ()
+  | (_,x)::xs -> 
+    f x ; 
+    iter_snd xs f 
+    

@@ -37,7 +37,11 @@ module Types = struct
       sw_numblocks: int;
       sw_blocks: (int * t) list;
       sw_failaction : t option}
-  (* Note that failaction would appear in both
+  (* 
+    Invariant: 
+    length (sw_consts) <= sw_numconsts 
+    when length (sw_consts) >= sw_numconsts -> true 
+    Note that failaction would appear in both
      {[
        match x with
        | ..
@@ -54,7 +58,7 @@ module Types = struct
           sw_failaction = None} in
      ]}
 
-     but there are some edge cases (see MPR#6033)
+     but there are some edge cases (see https://caml.inria.fr/mantis/view.php?id=6033)
      one predicate used is
      {[
        (sw.sw_numconsts - List.length sw.sw_consts) +
