@@ -2342,6 +2342,8 @@ module Ext_list : sig
 
 val map : ('a -> 'b) -> 'a list -> 'b list 
 
+val map_snd : ('a * 'b) list -> ('b -> 'c) -> ('a * 'c) list 
+
 (** [map_last f xs ]
     will pass [true] to [f] for the last element, 
     [false] otherwise. 
@@ -2521,6 +2523,8 @@ val assoc_by_int :
 
 
 val nth_opt : 'a list -> int -> 'a option  
+
+val iter_snd : ('a * 'b) list -> ('b -> unit) -> unit 
 end = struct
 #1 "ext_list.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -2579,6 +2583,37 @@ let rec map f l =
     let y4 = f x4 in
     let y5 = f x5 in
     y1::y2::y3::y4::y5::(map f tail)
+
+
+let rec map_snd l f =
+  match l with
+  | [] ->
+    []
+  | [ v1,x1 ] ->
+    let y1 = f x1 in
+    [v1,y1]
+  | [v1, x1; v2, x2] ->
+    let y1 = f x1 in
+    let y2 = f x2 in
+    [v1, y1; v2, y2]
+  | [ v1, x1; v2, x2; v3, x3] ->
+    let y1 = f x1 in
+    let y2 = f x2 in
+    let y3 = f x3 in
+    [v1, y1; v2, y2; v3, y3]
+  | [ v1, x1; v2, x2; v3, x3; v4, x4] ->
+    let y1 = f x1 in
+    let y2 = f x2 in
+    let y3 = f x3 in
+    let y4 = f x4 in
+    [v1, y1; v2, y2; v3, y3; v4, y4]
+  | (v1, x1) ::(v2, x2) :: (v3, x3)::(v4, x4) :: (v5, x5) ::tail ->
+    let y1 = f x1 in
+    let y2 = f x2 in
+    let y3 = f x3 in
+    let y4 = f x4 in
+    let y5 = f x5 in
+    (v1, y1)::(v2, y2) :: (v3, y3) :: (v4, y4) :: (v5, y5) :: (map_snd tail f)
 
 
 let rec map_last f l =
@@ -3074,6 +3109,14 @@ let nth_opt l n =
   if n < 0 then None 
   else
     nth_aux l n
+
+let rec iter_snd lst f =     
+  match lst with
+  | [] -> ()
+  | (_,x)::xs -> 
+    f x ; 
+    iter_snd xs f 
+    
 end
 module Ext_color : sig 
 #1 "ext_color.mli"

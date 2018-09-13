@@ -32,12 +32,16 @@ type apply_status =
 
 module Types = struct
   type switch =
-    { sw_numconsts: int; (* TODO: refine its representation *)
+    { sw_numconsts: bool; (* TODO: refine its representation *)
       sw_consts: (int * t) list;
-      sw_numblocks: int;
+      sw_numblocks: bool;
       sw_blocks: (int * t) list;
       sw_failaction : t option}
-  (* Note that failaction would appear in both
+  (* 
+    Invariant: 
+    length (sw_consts) <= sw_numconsts 
+    when length (sw_consts) >= sw_numconsts -> true 
+    Note that failaction would appear in both
      {[
        match x with
        | ..
@@ -54,7 +58,7 @@ module Types = struct
           sw_failaction = None} in
      ]}
 
-     but there are some edge cases (see MPR#6033)
+     but there are some edge cases (see https://caml.inria.fr/mantis/view.php?id=6033)
      one predicate used is
      {[
        (sw.sw_numconsts - List.length sw.sw_consts) +
@@ -105,9 +109,9 @@ module X = struct
   type switch
     = Types.switch
     =
-      { sw_numconsts: int;
+      { sw_numconsts: bool;
         sw_consts: (int * t) list;
-        sw_numblocks: int;
+        sw_numblocks: bool;
         sw_blocks: (int * t) list;
         sw_failaction : t option}
   and prim_info
@@ -181,7 +185,7 @@ let inner_map
     Llet(str,id,arg,body)
   | Lletrec(decl, body) ->
     let body = f body in
-    let decl = Ext_list.map (fun (id, exp) -> id, f exp) decl in
+    let decl = Ext_list.map_snd decl f in
     Lletrec(decl,body)
   | Lglobal_module _ -> (l : X.t)
   | Lprim {args; primitive ; loc}  ->
@@ -190,13 +194,13 @@ let inner_map
 
   | Lswitch(arg, {sw_consts; sw_numconsts; sw_blocks; sw_numblocks; sw_failaction}) ->
     let arg = f arg in
-    let sw_consts = Ext_list.map (fun (key, case) -> key , f case) sw_consts in
-    let sw_blocks = Ext_list.map (fun (key, case) -> key, f case) sw_blocks in
+    let sw_consts = Ext_list.map_snd  sw_consts f in
+    let sw_blocks = Ext_list.map_snd  sw_blocks f in
     let sw_failaction = Ext_option.map sw_failaction f in
     Lswitch(arg, { sw_consts; sw_blocks; sw_failaction; sw_numblocks; sw_numconsts})
   | Lstringswitch (arg,cases,default) ->
     let arg = f arg  in
-    let cases = Ext_list.map (fun (k,act) -> k,f act) cases  in
+    let cases = Ext_list.map_snd  cases f in
     let default = Ext_option.map default f in
     Lstringswitch(arg,cases,default)
   | Lstaticraise (id,args) ->

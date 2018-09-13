@@ -30,9 +30,9 @@ type ident = Ident.t
 
 
 type switch  =
-  { sw_numconsts: int;
+  { sw_numconsts: bool;
     sw_consts: (int * t) list;
-    sw_numblocks: int;
+    sw_numblocks: bool;
     sw_blocks: (int * t) list;
     sw_failaction : t option}
 and apply_status =

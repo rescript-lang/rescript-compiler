@@ -56,6 +56,37 @@ let rec map f l =
     y1::y2::y3::y4::y5::(map f tail)
 
 
+let rec map_snd l f =
+  match l with
+  | [] ->
+    []
+  | [ v1,x1 ] ->
+    let y1 = f x1 in
+    [v1,y1]
+  | [v1, x1; v2, x2] ->
+    let y1 = f x1 in
+    let y2 = f x2 in
+    [v1, y1; v2, y2]
+  | [ v1, x1; v2, x2; v3, x3] ->
+    let y1 = f x1 in
+    let y2 = f x2 in
+    let y3 = f x3 in
+    [v1, y1; v2, y2; v3, y3]
+  | [ v1, x1; v2, x2; v3, x3; v4, x4] ->
+    let y1 = f x1 in
+    let y2 = f x2 in
+    let y3 = f x3 in
+    let y4 = f x4 in
+    [v1, y1; v2, y2; v3, y3; v4, y4]
+  | (v1, x1) ::(v2, x2) :: (v3, x3)::(v4, x4) :: (v5, x5) ::tail ->
+    let y1 = f x1 in
+    let y2 = f x2 in
+    let y3 = f x3 in
+    let y4 = f x4 in
+    let y5 = f x5 in
+    (v1, y1)::(v2, y2) :: (v3, y3) :: (v4, y4) :: (v5, y5) :: (map_snd tail f)
+
+
 let rec map_last f l =
   match l with
   | [] ->
@@ -549,3 +580,11 @@ let nth_opt l n =
   if n < 0 then None 
   else
     nth_aux l n
+
+let rec iter_snd lst f =     
+  match lst with
+  | [] -> ()
+  | (_,x)::xs -> 
+    f x ; 
+    iter_snd xs f 
+    
