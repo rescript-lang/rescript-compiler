@@ -673,10 +673,11 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : t * Lam_module_ident
               Lam.switch e
                       {sw_failaction = None;
                        sw_blocks = [];
-                       sw_numblocks = 0;
+                       sw_numblocks = true;
                        sw_consts =
                          Ext_list.map_snd  sw_consts convert_aux;
-                       sw_numconsts
+                       sw_numconsts = 
+                        Ext_list.length_ge sw_consts sw_numconsts
                       }
           end
         | _ -> Lam.switch  e (aux_switch s)
@@ -745,10 +746,10 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : t * Lam_module_ident
 
       convert_aux e (* TODO: remove it ASAP *)
   and aux_switch (s : Lambda.lambda_switch) : Lam.switch =
-    { sw_numconsts = s.sw_numconsts ;
-      sw_consts = Ext_list.map (fun (i, lam) -> i, convert_aux lam) s.sw_consts;
-      sw_numblocks = s.sw_numblocks;
-      sw_blocks = Ext_list.map (fun (i,lam) -> i, convert_aux lam ) s.sw_blocks;
+    { sw_numconsts =  Ext_list.length_ge s.sw_consts s.sw_numconsts ;
+      sw_consts = Ext_list.map_snd  s.sw_consts convert_aux;
+      sw_numblocks = Ext_list.length_ge s.sw_blocks s.sw_numblocks;
+      sw_blocks = Ext_list.map_snd s.sw_blocks convert_aux;
       sw_failaction =
         match s.sw_failaction with
         | None -> None

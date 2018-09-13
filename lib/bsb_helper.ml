@@ -2684,6 +2684,8 @@ val assoc_by_int :
 
 
 val nth_opt : 'a list -> int -> 'a option  
+
+val iter_snd : ('a * 'b) list -> ('b -> unit) -> unit 
 end = struct
 #1 "ext_list.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -3268,6 +3270,14 @@ let nth_opt l n =
   if n < 0 then None 
   else
     nth_aux l n
+
+let rec iter_snd lst f =     
+  match lst with
+  | [] -> ()
+  | (_,x)::xs -> 
+    f x ; 
+    iter_snd xs f 
+    
 end
 module Ext_pervasives : sig 
 #1 "ext_pervasives.mli"

@@ -178,16 +178,14 @@ let collect_occurs  lam : occ_tbl =
     match sw.sw_failaction with
     | None -> ()
     | Some al ->
-      let nconsts = List.length sw.sw_consts
-      and nblocks = List.length sw.sw_blocks in
-      if nconsts < sw.sw_numconsts && nblocks < sw.sw_numblocks
+      if not sw.sw_numconsts && not sw.sw_numblocks
       then 
         begin (* default action will occur twice in native code *)
           count bv al ; count bv al
         end 
       else 
         begin (* default action will occur once *)
-          assert (nconsts < sw.sw_numconsts || nblocks < sw.sw_numblocks) ;
+          assert (not sw.sw_numconsts || not sw.sw_numblocks) ;
           count bv al
         end
   in

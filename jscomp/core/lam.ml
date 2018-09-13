@@ -32,9 +32,9 @@ type apply_status =
 
 module Types = struct
   type switch =
-    { sw_numconsts: int; (* TODO: refine its representation *)
+    { sw_numconsts: bool; (* TODO: refine its representation *)
       sw_consts: (int * t) list;
-      sw_numblocks: int;
+      sw_numblocks: bool;
       sw_blocks: (int * t) list;
       sw_failaction : t option}
   (* 
@@ -109,9 +109,9 @@ module X = struct
   type switch
     = Types.switch
     =
-      { sw_numconsts: int;
+      { sw_numconsts: bool;
         sw_consts: (int * t) list;
-        sw_numblocks: int;
+        sw_numblocks: bool;
         sw_blocks: (int * t) list;
         sw_failaction : t option}
   and prim_info

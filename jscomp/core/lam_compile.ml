@@ -1247,14 +1247,14 @@ and
         match default with
         | None -> Complete
         | Some x ->
-          if Ext_list.length_ge sw_consts sw_numconsts
+          if sw_numconsts
           then Complete
           else Default x in
       let sw_blocks_default =
         match default  with
         | None -> Complete
         | Some x ->
-          if Ext_list.length_ge sw_blocks sw_numblocks
+          if sw_numblocks
           then Complete
           else Default x in
       let compile_whole  (cxt  : Lam_compile_context.t ) =
@@ -1266,9 +1266,9 @@ and
         | {value =  None; _}  -> assert false
         | { block; value = Some e } ->
           block @
-          (if sw_numconsts = 0 then
+          (if sw_numconsts && sw_consts = [] then
              compile_cases cxt (E.tag e)  sw_blocks sw_blocks_default
-           else if sw_numblocks = 0 then
+           else if sw_numblocks && sw_blocks = [] then
              compile_cases cxt e  sw_consts sw_num_default
            else
              (* [e] will be used twice  *)

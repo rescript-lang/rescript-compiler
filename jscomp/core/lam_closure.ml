@@ -129,9 +129,9 @@ let free_variables (export_idents : Ident_set.t ) (params : stats Ident_map.t ) 
         | None -> ()
         | Some x ->
           if  
-            Ext_list.length_ge sw_consts sw_numconsts
+            sw_numconsts
             ||
-            Ext_list.length_ge sw_blocks sw_numblocks
+            sw_numblocks
           then
             iter top x 
           else
