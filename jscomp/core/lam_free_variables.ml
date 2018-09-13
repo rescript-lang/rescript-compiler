@@ -25,7 +25,11 @@
 
  let pass_free_variables (l : Lam.t) : Ident_set.t =
   let fv = ref Ident_set.empty in
-  let rec free (l : Lam.t) =
+  let rec 
+  free_list xs = List.iter free xs 
+  and free_list_snd : 'a. ('a * Lam.t) list -> unit = fun xs -> 
+  List.iter (fun (_,x) -> free x) xs 
+  and free (l : Lam.t) =
     begin
       match l with
       | Lvar id -> fv := Ident_set.add id !fv
@@ -46,37 +50,31 @@
         fv := Ident_set.remove id !fv
       | Lletrec(decl, body) ->
         free body;
-        List.iter (fun (id, exp) -> free exp) decl;
+        free_list_snd decl;
         List.iter (fun (id, exp) -> fv := Ident_set.remove id !fv) decl
       | Lfor(v, e1, e2, dir, e3) ->
         free e1; free e2; free e3;
         fv := Ident_set.remove v !fv
       | Lconst _ -> ()
       | Lapply{fn; args; _} ->
-        free fn; List.iter free args
+        free fn; free_list args
       | Lglobal_module _ -> ()
       (* according to the existing semantics:
          [primitive] is not counted
       *)
       | Lprim {args; _} ->
-        List.iter free args
+        free_list args
       | Lswitch(arg, sw) ->
         free arg;
-        List.iter (fun (key, case) -> free case) sw.sw_consts;
-        List.iter (fun (key, case) -> free case) sw.sw_blocks;
-        begin match sw.sw_failaction with
-          | None -> ()
-          | Some a -> free a
-        end
+        free_list_snd sw.sw_consts;
+        free_list_snd sw.sw_blocks;
+        Ext_option.iter sw.sw_failaction free;
       | Lstringswitch (arg,cases,default) ->
         free arg ;
-        List.iter (fun (_,act) -> free act) cases ;
-        begin match default with
-          | None -> ()
-          | Some a -> free a
-        end
+        free_list_snd cases ;
+        Ext_option.iter default free
       | Lstaticraise (_,args) ->
-        List.iter free args
+        free_list args
       | Lifthenelse(e1, e2, e3) ->
         free e1; free e2; free e3
       | Lsequence(e1, e2) ->
@@ -84,7 +82,7 @@
       | Lwhile(e1, e2) ->
         free e1; free e2
       | Lsend (k, met, obj, args, _) ->
-        free met; free obj; List.iter free args
+        free met; free obj;  free_list args
     end;
   in free l;
   !fv

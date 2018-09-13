@@ -68,7 +68,7 @@ let refine_let
   (* v *)
   | _, _, Lapply {fn; args = [Lvar w]; loc; status} when
    Ident.same w param &&
-    (not (Lam.hit_any_variables (Ident_set.singleton param) fn ))
+    (not (Lam_hit.hit_variables (Ident_set.singleton param) fn ))
    -> 
     (** does not work for multiple args since 
         evaluation order unspecified, does not apply 

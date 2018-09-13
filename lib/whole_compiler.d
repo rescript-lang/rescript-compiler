@@ -286,6 +286,8 @@
 ../lib/whole_compiler.ml : ./core/lam_free_variables.mli
 ../lib/whole_compiler.ml : ./core/lam_group.ml
 ../lib/whole_compiler.ml : ./core/lam_group.mli
+../lib/whole_compiler.ml : ./core/lam_hit.ml
+../lib/whole_compiler.ml : ./core/lam_hit.mli
 ../lib/whole_compiler.ml : ./core/lam_id_kind.ml
 ../lib/whole_compiler.ml : ./core/lam_id_kind.mli
 ../lib/whole_compiler.ml : ./core/lam_inline_util.ml

@@ -82,19 +82,10 @@ and  t =  private
   *)
 
 
+val inner_map :  t -> (t -> t) -> t
 
 
 
-
-
-
-val inner_map : (t -> t) -> t -> t
-val inner_iter : (t -> unit) -> t -> unit 
-
-
-
-
-val hit_any_variables : Ident_set.t -> t -> bool
 
 val handle_bs_non_obj_ffi:
   External_arg_spec.t list ->

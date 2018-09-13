@@ -284,6 +284,8 @@ CORE_SRCS= js_runtime_modules \
 	lam_arity\
 	lam_primitive\
 	lam\
+	lam_iter\
+	lam_hit\
 	lam_free_variables\
 	lam_scc\
 	lam_check\

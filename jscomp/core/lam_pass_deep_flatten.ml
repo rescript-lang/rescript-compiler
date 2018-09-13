@@ -1,4 +1,4 @@
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+(* Copyright (C) 2015- Authors of BuckleScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -34,7 +34,7 @@ let rec eliminate_tuple (id : Ident.t) (lam : Lam.t) acc =
     eliminate_tuple id e2 (Int_map.add i v acc)
     (* it is okay to have duplicates*)
   | _ ->
-    if Lam.hit_any_variables (Ident_set.singleton id) lam then
+    if Lam_hit.hit_variables (Ident_set.singleton id) lam then
       None
     else  Some (acc,lam)
 (* [groups] are in reverse order *)
@@ -219,7 +219,7 @@ let deep_flatten
       *)
       let (rev_bindings, rev_wrap, _) =
         List.fold_left (fun  (inner_recursive_bindings,  wrap,stop)  ((id,lam) )  ->
-          if stop || Lam.hit_any_variables collections lam  then
+          if stop || Lam_hit.hit_variables collections lam  then
               (id, lam) :: inner_recursive_bindings, wrap, true
           else
               (inner_recursive_bindings,  (Lam_group.Single (Strict, id, lam)) :: wrap, false)

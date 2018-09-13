@@ -1,4 +1,4 @@
-(* Copyright (C) 2018 Authors of BuckleScript
+(* Copyright (C) 2018 - Authors of BuckleScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -162,7 +162,9 @@ include Types
 
 
 (** apply [f] to direct successor which has type [Lam.t] *)
-let inner_map (f : t -> X.t ) (l : t) : X.t =
+
+let inner_map 
+   (l : t) (f : t -> X.t ) : X.t =
   match l  with
   | Lvar (_ : ident)
   | Lconst (_ : Lam_constant.t) ->
@@ -229,114 +231,7 @@ let inner_map (f : t -> X.t ) (l : t) : X.t =
     let args = Ext_list.map f args in
     Lsend(k,met,obj,args,loc)
 
-let inner_iter (f : t -> unit ) (l : t) : unit =
-  match l  with
-  | Lvar (_ : ident)
-  | Lconst (_ : Lam_constant.t) -> ()
-  | Lapply ({fn; args; loc; status} )  ->
-    f fn;
-    List.iter f args
-  | Lfunction({body; arity;  params } ) ->
-    f body
-  | Llet(str, id, arg, body) ->
-    f arg ;
-    f body;
-  | Lletrec(decl, body) ->
-    f body;
-    List.iter (fun (id, exp) ->  f exp) decl
-  | Lglobal_module (_ )
-    ->  ()
-  | Lprim {args; primitive ; loc}  ->
-    List.iter f args;
-  | Lswitch(arg, {sw_consts; sw_numconsts; sw_blocks; sw_numblocks; sw_failaction}) ->
-    f arg;
-    List.iter (fun (key, case) -> f case) sw_consts;
-    List.iter (fun (key, case) ->  f case) sw_blocks ;
-    Ext_option.iter sw_failaction f      
-  | Lstringswitch (arg,cases,default) ->
-    f arg;
-    List.iter (fun (k,act) -> f act) cases  ;
-    Ext_option.iter default f 
-  | Lstaticraise (id,args) ->
-    List.iter f args;
-  | Lstaticcatch(e1, vars , e2) ->
-    f e1;
-    f e2
-  | Ltrywith(e1, exn, e2) ->
-    f e1;
-    f e2
-  | Lifthenelse(e1, e2, e3) ->
-    f e1;  f e2 ;  f e3
-  | Lsequence(e1, e2) ->
-    f e1 ;  f e2
-  | Lwhile(e1, e2) ->
-    f e1 ;  f e2
-  | Lfor(v, e1, e2, dir, e3) ->
-    f e1 ;  f e2;  f e3
-  | Lassign(id, e) ->
-    f e
-  | Lsend (k, met, obj, args, loc) ->
-    f met; f obj; List.iter f args
-  
 
-
-let hit_any_variables (fv : Ident_set.t) (l : t) : bool  =
-  let rec 
-  hit_opt (x : t option) = 
-    match x with 
-    | None -> false 
-    | Some a -> hit a
-  and hit_var (id : Ident.t) = Ident_set.mem id fv   
-  and hit_list_snd : 'a. ('a * t ) list -> bool = fun x ->    
-    List.exists (fun (_,a) -> hit a ) x 
-  and hit_list xs = List.exists hit xs 
-  and hit (l : t) =
-    begin
-      match (l : t) with
-      | Lvar id -> hit_var id 
-      | Lassign(id, e) ->
-        hit_var id || hit e
-      | Lstaticcatch(e1, (_,vars), e2) ->
-        hit e1 || hit e2
-      | Ltrywith(e1, exn, e2) ->
-        hit e1 || hit e2
-      | Lfunction{body;params} ->
-        hit body;
-      | Llet(str, id, arg, body) ->
-        hit arg || hit body
-      | Lletrec(decl, body) ->
-        hit body ||
-        hit_list_snd decl 
-      | Lfor(v, e1, e2, dir, e3) ->
-        hit e1 || hit e2 || hit e3
-      | Lconst _ -> false
-      | Lapply{fn; args; _} ->
-        hit fn || hit_list args
-      | Lglobal_module _  (* global persistent module, play safe *)
-        -> false
-      | Lprim {args; _} ->
-        hit_list args
-      | Lswitch(arg, sw) ->
-        hit arg ||
-        hit_list_snd sw.sw_consts ||
-        hit_list_snd sw.sw_blocks ||
-        hit_opt sw.sw_failaction 
-      | Lstringswitch (arg,cases,default) ->
-        hit arg ||
-        hit_list_snd cases ||
-        hit_opt default 
-      | Lstaticraise (_,args) ->
-        hit_list args
-      | Lifthenelse(e1, e2, e3) ->
-        hit e1 || hit e2 || hit e3
-      | Lsequence(e1, e2) ->
-        hit e1 || hit e2
-      | Lwhile(e1, e2) ->
-        hit e1 || hit e2
-      | Lsend (k, met, obj, args, _) ->
-        hit met || hit obj ||  hit_list args
-    end
-  in hit l
 
 
 
