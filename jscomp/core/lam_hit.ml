@@ -82,3 +82,62 @@ let hit_variables (fv : Ident_set.t) (l : t) : bool  =
         hit met || hit obj ||  hit_list args
     end
   in hit l
+
+
+let hit_variable (fv : Ident.t) (l : t) : bool  =
+  let rec 
+  hit_opt (x : t option) = 
+    match x with 
+    | None -> false 
+    | Some a -> hit a
+  and hit_var (id : Ident.t) = Ident.same id fv   
+  and hit_list_snd : 'a. ('a * t ) list -> bool = fun x ->    
+    List.exists (fun (_,a) -> hit a ) x 
+  and hit_list xs = List.exists hit xs 
+  and hit (l : t) =
+    begin
+      match (l : t) with
+      | Lvar id -> hit_var id 
+      | Lassign(id, e) ->
+        hit_var id || hit e
+      | Lstaticcatch(e1, (_,vars), e2) ->
+        hit e1 || hit e2
+      | Ltrywith(e1, exn, e2) ->
+        hit e1 || hit e2
+      | Lfunction{body;params} ->
+        hit body;
+      | Llet(str, id, arg, body) ->
+        hit arg || hit body
+      | Lletrec(decl, body) ->
+        hit body ||
+        hit_list_snd decl 
+      | Lfor(v, e1, e2, dir, e3) ->
+        hit e1 || hit e2 || hit e3
+      | Lconst _ -> false
+      | Lapply{fn; args; _} ->
+        hit fn || hit_list args
+      | Lglobal_module _  (* global persistent module, play safe *)
+        -> false
+      | Lprim {args; _} ->
+        hit_list args
+      | Lswitch(arg, sw) ->
+        hit arg ||
+        hit_list_snd sw.sw_consts ||
+        hit_list_snd sw.sw_blocks ||
+        hit_opt sw.sw_failaction 
+      | Lstringswitch (arg,cases,default) ->
+        hit arg ||
+        hit_list_snd cases ||
+        hit_opt default 
+      | Lstaticraise (_,args) ->
+        hit_list args
+      | Lifthenelse(e1, e2, e3) ->
+        hit e1 || hit e2 || hit e3
+      | Lsequence(e1, e2) ->
+        hit e1 || hit e2
+      | Lwhile(e1, e2) ->
+        hit e1 || hit e2
+      | Lsend (k, met, obj, args, _) ->
+        hit met || hit obj ||  hit_list args
+    end
+  in hit l

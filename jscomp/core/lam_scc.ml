@@ -159,7 +159,7 @@ let scc  (groups :  bindings)  ( lam : Lam.t) ( body : Lam.t)
   =
   begin match groups with
     | [ (id,bind) ] ->
-      if Lam_hit.hit_variables (Ident_set.singleton id) bind
+      if Lam_hit.hit_variable id bind
       then
         lam
       else Lam.let_ Strict id bind body

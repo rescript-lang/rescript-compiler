@@ -25,3 +25,5 @@
 
 
 val hit_variables : Ident_set.t -> Lam.t -> bool
+
+val hit_variable : Ident.t -> Lam.t -> bool 

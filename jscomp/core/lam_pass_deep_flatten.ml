@@ -34,7 +34,7 @@ let rec eliminate_tuple (id : Ident.t) (lam : Lam.t) acc =
     eliminate_tuple id e2 (Int_map.add i v acc)
     (* it is okay to have duplicates*)
   | _ ->
-    if Lam_hit.hit_variables (Ident_set.singleton id) lam then
+    if Lam_hit.hit_variable id lam then
       None
     else  Some (acc,lam)
 (* [groups] are in reverse order *)

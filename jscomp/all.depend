@@ -503,8 +503,7 @@ core/lam_free_variables.cmx : core/lam.cmx ext/ident_set.cmx \
     ext/ext_option.cmx core/lam_free_variables.cmi
 core/lam_scc.cmx : ext/ordered_hash_map_local_ident.cmx core/lam_hit.cmx \
     core/lam.cmx ext/int_vec_vec.cmx ext/int_vec_util.cmx ext/int_vec.cmx \
-    ext/ident_set.cmx ext/hash_set_ident_mask.cmx ext/ext_scc.cmx \
-    core/lam_scc.cmi
+    ext/hash_set_ident_mask.cmx ext/ext_scc.cmx core/lam_scc.cmi
 core/lam_check.cmx : core/lam.cmx ext/ident_hash_set.cmx ext/ext_option.cmx \
     core/lam_check.cmi
 core/lam_convert.cmx : core/primitive_compat.cmx core/lam_tag_info.cmx \
