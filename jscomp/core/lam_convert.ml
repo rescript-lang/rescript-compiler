@@ -23,8 +23,109 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
- let abs_int x = if x < 0 then - x else x
- let no_over_flow x  = abs_int x < 0x1fff_ffff 
+type t = Lam.t 
+
+
+
+(** A conservative approach to avoid packing exceptions
+    for lambda expression like {[
+      try { ... }catch(id){body}
+    ]}
+    we approximate that if [id] is destructed or not.
+    If it is destructed, we need pack it in case it is JS exception.
+    The packing is called Js.Exn.internalTOOCamlException, which is a nop for OCaml exception, 
+    but will wrap as (Error e) when it is an JS exception. 
+
+    {[
+      try .. with 
+      | A (x,y) -> 
+      | Js.Error ..
+    ]}
+
+    Without such wrapping, the code above would raise
+
+    Note it is not guaranteed that exception raised(or re-raised) is a structured
+    ocaml exception but it is guaranteed that if such exception is processed it would
+    still be an ocaml exception.
+    for example {[
+      match x with
+      | exception e -> raise e
+    ]}
+    it will re-raise an exception as it is (we are not packing it anywhere)
+
+    It is hard to judge an exception is destructed or escaped, any potential
+    alias(or if it is passed as an argument) would cause it to be leaked
+*)
+let exception_id_destructed (fv : Ident.t) (l : t) : bool  =
+  let rec 
+    hit_opt (x : t option) = 
+  match x with 
+  | None -> false
+  | Some a -> hit a   
+  and hit_list_snd : 'a. ('a * t ) list -> bool = fun x ->    
+    List.exists (fun (_,a) -> hit a ) x   
+  and hit_list xs = List.exists hit xs 
+  and hit (l : t) =
+    begin
+      match (l : t) with
+      | Lprim {primitive = Pintcomp _ ;
+               args = ([x;y ])  } ->
+        begin match x,y with
+          | Lvar _, Lvar _ -> false
+          | Lvar _, _ -> hit y
+          | _, Lvar _ -> hit x
+          | _, _  -> hit x || hit y
+        end
+      | Lprim {primitive = Praise ; args = [Lvar _]} -> false
+      | Lprim {primitive ; args; _} ->
+        hit_list args
+      | Lvar id ->    
+        Ident.same id fv
+      | Lassign(id, e) ->
+        Ident.same id fv || hit e
+      | Lstaticcatch(e1, (_,vars), e2) ->
+        hit e1 || hit e2
+      | Ltrywith(e1, exn, e2) ->
+        hit e1 || hit e2
+      | Lfunction{body;params} ->
+        hit body;
+      | Llet(str, id, arg, body) ->
+        hit arg || hit body
+      | Lletrec(decl, body) ->
+        hit body ||
+        hit_list_snd decl
+      | Lfor(v, e1, e2, dir, e3) ->
+        hit e1 || hit e2 || hit e3
+      | Lconst _ -> false
+      | Lapply{fn; args; _} ->
+        hit fn || hit_list args
+      | Lglobal_module _  (* global persistent module, play safe *)
+        -> false
+      | Lswitch(arg, sw) ->
+        hit arg ||
+        hit_list_snd sw.sw_consts ||
+        hit_list_snd sw.sw_blocks ||
+        hit_opt sw.sw_failaction 
+      | Lstringswitch (arg,cases,default) ->
+        hit arg ||
+        hit_list_snd cases ||
+        hit_opt default 
+      | Lstaticraise (_,args) ->
+        hit_list args
+      | Lifthenelse(e1, e2, e3) ->
+        hit e1 || hit e2 || hit e3
+      | Lsequence(e1, e2) ->
+        hit e1 || hit e2
+      | Lwhile(e1, e2) ->
+        hit e1 || hit e2
+      | Lsend (k, met, obj, args, _) ->
+        hit met || hit obj || hit_list args
+    end
+  in hit l
+
+
+let abs_int x = if x < 0 then - x else x
+let no_over_flow x  = abs_int x < 0x1fff_ffff 
 
 (** Make sure no int range overflow happens
     also we only check [int]
@@ -56,7 +157,6 @@ let happens_to_be_diff
   | _ -> None 
 
 
-type t = Lam.t 
 let prim = Lam.prim 
 
 type required_modules = Lam_module_ident.Hash_set.t
@@ -502,7 +602,7 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : t * Lam_module_ident
       let bindings = Ext_list.map (fun (id, e) -> id, convert_aux e) bindings in
       let body = convert_aux body in
       let lam = Lam.letrec bindings body in
-      Lam.scc bindings lam body
+      Lam_scc.scc bindings lam body
     (* inlining will affect how mututal recursive behave *)
     | Lprim(Prevapply, [x ; f ],  outer_loc)
     | Lprim(Pdirapply, [f ; x],  outer_loc) ->
@@ -605,7 +705,7 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : t * Lam_module_ident
     | Ltrywith (b, id, handler) ->
       let body = convert_aux b in
       let handler = convert_aux handler in
-      if Lam.exception_id_escaped id handler then
+      if exception_id_destructed id handler then
         let newId = Ident.create ("raw_" ^ id.name) in
         Lam.try_ body newId
                   (Lam.let_ StrictOpt id

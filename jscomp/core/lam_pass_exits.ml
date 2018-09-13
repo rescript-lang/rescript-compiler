@@ -11,6 +11,64 @@
 (***********************************************************************)
 (* Adapted for Javascript backend: Hongbo Zhang                        *)
 
+
+(**
+        [no_bounded_varaibles lambda]
+        checks if [lambda] contains bounded variable, for
+        example [Llet (str,id,arg,body) ] will fail such check.
+        This is used to indicate such lambda expression if it is okay
+        to inline directly since if it contains bounded variables it
+        must be rebounded before inlining
+*)
+let rec 
+  no_list args = List.for_all no_bounded_variables args 
+  and no_list_snd : 'a. ('a * Lam.t ) list -> bool  = fun args ->
+    List.for_all (fun (key, case) -> no_bounded_variables case) args
+  and no_opt x =   
+    match x with 
+    | None -> true 
+    | Some a -> no_bounded_variables a 
+  and no_bounded_variables (l : Lam.t) =
+  match l with
+  | Lvar _ -> true
+  | Lconst _ -> true
+  | Lassign(_id, e) ->
+    no_bounded_variables e
+  | Lapply{fn; args; _} ->
+    no_bounded_variables fn && no_list args
+  | Lglobal_module _ -> true
+  | Lprim {args; primitive = _ ; } ->
+    no_list args
+  | Lswitch(arg, sw) ->
+    no_bounded_variables arg &&
+    no_list_snd sw.sw_consts &&
+    no_list_snd sw.sw_blocks &&
+    no_opt sw.sw_failaction
+  | Lstringswitch (arg,cases,default) ->
+    no_bounded_variables arg &&
+    no_list_snd cases && no_opt default
+  | Lstaticraise (_,args) ->
+    no_list args
+  | Lifthenelse(e1, e2, e3) ->
+    no_bounded_variables e1 && no_bounded_variables e2 && no_bounded_variables e3
+  | Lsequence(e1, e2) ->
+    no_bounded_variables e1 && no_bounded_variables e2
+  | Lwhile(e1, e2) ->
+    no_bounded_variables e1 && no_bounded_variables e2
+  | Lsend (k, met, obj, args, _) ->
+    no_bounded_variables met  &&
+    no_bounded_variables obj &&
+    no_list args
+  | Lstaticcatch(e1, (_,vars), e2) ->
+    vars = [] && no_bounded_variables e1 &&  no_bounded_variables e2
+  | Lfunction{body;params} ->
+    params = [] && no_bounded_variables body;
+  | Lfor _  -> false
+  | Ltrywith _ -> false
+  | Llet _ ->false
+  | Lletrec(decl, body) -> decl = [] && no_bounded_variables body
+
+
 (*
    TODO: 
    we should have a pass called, always inlinable
@@ -236,7 +294,7 @@ let subst_helper (subst : subst_tbl) (query : int -> int) lam =
           *)
           let ok_to_inline = 
             i >=0 && 
-            (Lam.no_bounded_variables l2) &&
+            (no_bounded_variables l2) &&
             (let lam_size = Lam_analysis.size l2 in
              (i_occur <= 2 && lam_size < Lam_analysis.exit_inline_size   )
              || lam_size < 5)

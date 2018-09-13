@@ -282,8 +282,12 @@
 ../lib/whole_compiler.ml : ./core/lam_eta_conversion.mli
 ../lib/whole_compiler.ml : ./core/lam_exit_code.ml
 ../lib/whole_compiler.ml : ./core/lam_exit_code.mli
+../lib/whole_compiler.ml : ./core/lam_free_variables.ml
+../lib/whole_compiler.ml : ./core/lam_free_variables.mli
 ../lib/whole_compiler.ml : ./core/lam_group.ml
 ../lib/whole_compiler.ml : ./core/lam_group.mli
+../lib/whole_compiler.ml : ./core/lam_hit.ml
+../lib/whole_compiler.ml : ./core/lam_hit.mli
 ../lib/whole_compiler.ml : ./core/lam_id_kind.ml
 ../lib/whole_compiler.ml : ./core/lam_id_kind.mli
 ../lib/whole_compiler.ml : ./core/lam_inline_util.ml
@@ -312,6 +316,8 @@
 ../lib/whole_compiler.ml : ./core/lam_primitive.mli
 ../lib/whole_compiler.ml : ./core/lam_print.ml
 ../lib/whole_compiler.ml : ./core/lam_print.mli
+../lib/whole_compiler.ml : ./core/lam_scc.ml
+../lib/whole_compiler.ml : ./core/lam_scc.mli
 ../lib/whole_compiler.ml : ./core/lam_stats.ml
 ../lib/whole_compiler.ml : ./core/lam_stats.mli
 ../lib/whole_compiler.ml : ./core/lam_stats_export.ml

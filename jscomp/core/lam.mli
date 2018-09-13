@@ -82,32 +82,15 @@ and  t =  private
   *)
 
 
+val inner_map :  t -> (t -> t) -> t
 
 
 
-type binop = t -> t -> t 
 
-type triop = t -> t -> t -> t 
-
-type unop = t ->  t
-
-val inner_map : (t -> t) -> t -> t
-val inner_iter : (t -> unit) -> t -> unit 
-val free_variables : t -> Ident_set.t
-
-val no_bounded_variables : t -> bool 
-
-val hit_any_variables : Ident_set.t -> t -> bool
-val check : string -> t -> t 
-type bindings = (Ident.t * t) list
-
-val scc_bindings : bindings -> bindings list 
-val scc : bindings -> t -> t  -> t 
 val handle_bs_non_obj_ffi:
   External_arg_spec.t list ->
   External_ffi_types.return_wrapper ->
   External_ffi_types.attr -> t list -> Location.t -> string -> t
-val exception_id_escaped : Ident.t -> t -> bool  
 
 (**************************************************************)
 (** Smart constructors *)
@@ -125,7 +108,7 @@ val let_ : Lam_compat.let_kind -> ident -> t -> t -> t
 val letrec : (ident * t) list -> t -> t
 
 (**  constant folding *)
-val if_ : triop
+val if_ : t -> t -> t -> t 
 
 (** constant folding*)
 val switch : t -> switch  -> t 
@@ -137,16 +120,16 @@ val false_ : t
 val unit : t 
 
 (** convert [l || r] to [if l then true else r]*)
-val sequor : binop
+val sequor : t -> t -> t
 (** convert [l && r] to [if l then r else false *)
-val sequand : binop
+val sequand : t -> t -> t
 
 (** constant folding *)
-val not_ : Location.t ->  unop
+val not_ : Location.t ->  t -> t 
 
 (** drop unused block *)
-val seq : binop
-val while_ : binop
+val seq : t -> t -> t
+val while_ : t -> t -> t
 (* val event : t -> Lambda.lambda_event -> t   *)
 val try_ : t -> ident -> t  -> t 
 val assign : ident -> t -> t 

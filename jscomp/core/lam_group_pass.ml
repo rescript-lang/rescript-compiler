@@ -33,8 +33,8 @@ let scc  (groups :  bindings)
 *)
 
 let rec scc_pass (lam : Lam.t) =  
-    let lam = Lam.inner_map scc_pass lam in 
+    let lam = Lam.inner_map lam scc_pass in 
     match lam with 
     | Lletrec (bindings, body) -> 
-         Lam.scc bindings lam body   
+         Lam_scc.scc bindings lam body   
     | _ -> lam  
