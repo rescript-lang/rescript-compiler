@@ -1797,7 +1797,23 @@ b("File \"bs_list_test.ml\", line 267, characters 4-11", Caml_obj.caml_equal(Bel
           ]
         ]));
 
-b("File \"bs_list_test.ml\", line 268, characters 4-11", Belt_List.reduceReverse2(/* :: */[
+b("File \"bs_list_test.ml\", line 268, characters 4-11", Belt_List.reduceWithIndex(/* :: */[
+          1,
+          /* :: */[
+            2,
+            /* :: */[
+              3,
+              /* :: */[
+                4,
+                /* [] */0
+              ]
+            ]
+          ]
+        ], 0, (function (acc, x, i) {
+            return (acc + x | 0) + i | 0;
+          })) === 16);
+
+b("File \"bs_list_test.ml\", line 269, characters 4-11", Belt_List.reduceReverse2(/* :: */[
           1,
           /* :: */[
             2,
@@ -1820,21 +1836,21 @@ var a$1 = Belt_List.makeBy(10000, (function (i) {
         return i;
       }));
 
-b("File \"bs_list_test.ml\", line 271, characters 4-11", Belt_List.reduceReverse2(a$1, /* :: */[
+b("File \"bs_list_test.ml\", line 272, characters 4-11", Belt_List.reduceReverse2(a$1, /* :: */[
           0,
           a$1
         ], 0, (function (acc, x, y) {
             return (acc + x | 0) + y | 0;
           })) === 99980001);
 
-eq("File \"bs_list_test.ml\", line 277, characters 5-12", Belt_List.every2(/* [] */0, /* :: */[
+eq("File \"bs_list_test.ml\", line 278, characters 5-12", Belt_List.every2(/* [] */0, /* :: */[
           1,
           /* [] */0
         ], (function (x, y) {
             return x > y;
           })), true);
 
-eq("File \"bs_list_test.ml\", line 278, characters 5-12", Belt_List.every2(/* :: */[
+eq("File \"bs_list_test.ml\", line 279, characters 5-12", Belt_List.every2(/* :: */[
           2,
           /* :: */[
             3,
@@ -1847,7 +1863,7 @@ eq("File \"bs_list_test.ml\", line 278, characters 5-12", Belt_List.every2(/* ::
             return x > y;
           })), true);
 
-eq("File \"bs_list_test.ml\", line 279, characters 5-12", Belt_List.every2(/* :: */[
+eq("File \"bs_list_test.ml\", line 280, characters 5-12", Belt_List.every2(/* :: */[
           2,
           /* [] */0
         ], /* :: */[
@@ -1857,7 +1873,7 @@ eq("File \"bs_list_test.ml\", line 279, characters 5-12", Belt_List.every2(/* ::
             return x > y;
           })), true);
 
-eq("File \"bs_list_test.ml\", line 280, characters 5-12", Belt_List.every2(/* :: */[
+eq("File \"bs_list_test.ml\", line 281, characters 5-12", Belt_List.every2(/* :: */[
           2,
           /* :: */[
             3,
@@ -1873,7 +1889,7 @@ eq("File \"bs_list_test.ml\", line 280, characters 5-12", Belt_List.every2(/* ::
             return x > y;
           })), false);
 
-eq("File \"bs_list_test.ml\", line 281, characters 5-12", Belt_List.every2(/* :: */[
+eq("File \"bs_list_test.ml\", line 282, characters 5-12", Belt_List.every2(/* :: */[
           2,
           /* :: */[
             3,
@@ -1889,14 +1905,14 @@ eq("File \"bs_list_test.ml\", line 281, characters 5-12", Belt_List.every2(/* ::
             return x > y;
           })), true);
 
-eq("File \"bs_list_test.ml\", line 282, characters 5-12", Belt_List.some2(/* [] */0, /* :: */[
+eq("File \"bs_list_test.ml\", line 283, characters 5-12", Belt_List.some2(/* [] */0, /* :: */[
           1,
           /* [] */0
         ], (function (x, y) {
             return x > y;
           })), false);
 
-eq("File \"bs_list_test.ml\", line 283, characters 5-12", Belt_List.some2(/* :: */[
+eq("File \"bs_list_test.ml\", line 284, characters 5-12", Belt_List.some2(/* :: */[
           2,
           /* :: */[
             3,
@@ -1909,7 +1925,7 @@ eq("File \"bs_list_test.ml\", line 283, characters 5-12", Belt_List.some2(/* :: 
             return x > y;
           })), true);
 
-eq("File \"bs_list_test.ml\", line 284, characters 5-12", Belt_List.some2(/* :: */[
+eq("File \"bs_list_test.ml\", line 285, characters 5-12", Belt_List.some2(/* :: */[
           2,
           /* :: */[
             3,
@@ -1925,7 +1941,7 @@ eq("File \"bs_list_test.ml\", line 284, characters 5-12", Belt_List.some2(/* :: 
             return x > y;
           })), true);
 
-eq("File \"bs_list_test.ml\", line 285, characters 5-12", Belt_List.some2(/* :: */[
+eq("File \"bs_list_test.ml\", line 286, characters 5-12", Belt_List.some2(/* :: */[
           0,
           /* :: */[
             3,
@@ -1941,7 +1957,7 @@ eq("File \"bs_list_test.ml\", line 285, characters 5-12", Belt_List.some2(/* :: 
             return x > y;
           })), false);
 
-eq("File \"bs_list_test.ml\", line 286, characters 5-12", Belt_List.some2(/* :: */[
+eq("File \"bs_list_test.ml\", line 287, characters 5-12", Belt_List.some2(/* :: */[
           0,
           /* :: */[
             3,
@@ -1957,7 +1973,7 @@ eq("File \"bs_list_test.ml\", line 286, characters 5-12", Belt_List.some2(/* :: 
             return x > y;
           })), true);
 
-eq("File \"bs_list_test.ml\", line 287, characters 5-12", Belt_List.some2(/* :: */[
+eq("File \"bs_list_test.ml\", line 288, characters 5-12", Belt_List.some2(/* :: */[
           1,
           /* :: */[
             2,
@@ -1977,12 +1993,12 @@ eq("File \"bs_list_test.ml\", line 287, characters 5-12", Belt_List.some2(/* :: 
           })), false);
 
 function makeTest(n) {
-  return eq("File \"bs_list_test.ml\", line 290, characters 5-12", Belt_List.make(n, 3), Belt_List.makeBy(n, (function () {
+  return eq("File \"bs_list_test.ml\", line 291, characters 5-12", Belt_List.make(n, 3), Belt_List.makeBy(n, (function () {
                     return 3;
                   })));
 }
 
-eq("File \"bs_list_test.ml\", line 293, characters 5-12", /* :: */[
+eq("File \"bs_list_test.ml\", line 294, characters 5-12", /* :: */[
       2,
       /* :: */[
         3,
@@ -1996,7 +2012,7 @@ eq("File \"bs_list_test.ml\", line 293, characters 5-12", /* :: */[
       ]
     ]);
 
-b("File \"bs_list_test.ml\", line 299, characters 4-11", Belt_List.cmp(/* :: */[
+b("File \"bs_list_test.ml\", line 300, characters 4-11", Belt_List.cmp(/* :: */[
           1,
           /* :: */[
             2,
@@ -2019,7 +2035,7 @@ b("File \"bs_list_test.ml\", line 299, characters 4-11", Belt_List.cmp(/* :: */[
           ]
         ], Caml_obj.caml_compare) > 0);
 
-b("File \"bs_list_test.ml\", line 300, characters 4-11", Belt_List.cmp(/* :: */[
+b("File \"bs_list_test.ml\", line 301, characters 4-11", Belt_List.cmp(/* :: */[
           1,
           /* :: */[
             2,
@@ -2042,7 +2058,7 @@ b("File \"bs_list_test.ml\", line 300, characters 4-11", Belt_List.cmp(/* :: */[
           ]
         ], Caml_obj.caml_compare) > 0);
 
-b("File \"bs_list_test.ml\", line 301, characters 4-11", Belt_List.cmp(/* :: */[
+b("File \"bs_list_test.ml\", line 302, characters 4-11", Belt_List.cmp(/* :: */[
           1,
           /* :: */[
             2,
@@ -2065,7 +2081,7 @@ b("File \"bs_list_test.ml\", line 301, characters 4-11", Belt_List.cmp(/* :: */[
           ]
         ], Caml_obj.caml_compare) < 0);
 
-b("File \"bs_list_test.ml\", line 302, characters 4-11", Belt_List.cmp(/* :: */[
+b("File \"bs_list_test.ml\", line 303, characters 4-11", Belt_List.cmp(/* :: */[
           1,
           /* :: */[
             2,
@@ -2085,7 +2101,7 @@ b("File \"bs_list_test.ml\", line 302, characters 4-11", Belt_List.cmp(/* :: */[
           ]
         ], Caml_primitive.caml_int_compare) > 0);
 
-b("File \"bs_list_test.ml\", line 303, characters 4-11", Belt_List.cmp(/* :: */[
+b("File \"bs_list_test.ml\", line 304, characters 4-11", Belt_List.cmp(/* :: */[
           1,
           /* :: */[
             2,
@@ -2105,7 +2121,7 @@ b("File \"bs_list_test.ml\", line 303, characters 4-11", Belt_List.cmp(/* :: */[
           ]
         ], Caml_primitive.caml_int_compare) === 0);
 
-b("File \"bs_list_test.ml\", line 304, characters 4-11", Belt_List.cmp(/* :: */[
+b("File \"bs_list_test.ml\", line 305, characters 4-11", Belt_List.cmp(/* :: */[
           1,
           /* :: */[
             2,
@@ -2125,19 +2141,19 @@ b("File \"bs_list_test.ml\", line 304, characters 4-11", Belt_List.cmp(/* :: */[
           ]
         ], Caml_primitive.caml_int_compare) > 0);
 
-b("File \"bs_list_test.ml\", line 305, characters 4-11", Belt_List.cmpByLength(/* [] */0, /* [] */0) === 0);
+b("File \"bs_list_test.ml\", line 306, characters 4-11", Belt_List.cmpByLength(/* [] */0, /* [] */0) === 0);
 
-b("File \"bs_list_test.ml\", line 306, characters 4-11", Belt_List.cmpByLength(/* :: */[
+b("File \"bs_list_test.ml\", line 307, characters 4-11", Belt_List.cmpByLength(/* :: */[
           1,
           /* [] */0
         ], /* [] */0) > 0);
 
-b("File \"bs_list_test.ml\", line 307, characters 4-11", Belt_List.cmpByLength(/* [] */0, /* :: */[
+b("File \"bs_list_test.ml\", line 308, characters 4-11", Belt_List.cmpByLength(/* [] */0, /* :: */[
           1,
           /* [] */0
         ]) < 0);
 
-b("File \"bs_list_test.ml\", line 308, characters 4-11", Belt_List.cmpByLength(/* :: */[
+b("File \"bs_list_test.ml\", line 309, characters 4-11", Belt_List.cmpByLength(/* :: */[
           1,
           /* :: */[
             2,
@@ -2148,7 +2164,7 @@ b("File \"bs_list_test.ml\", line 308, characters 4-11", Belt_List.cmpByLength(/
           /* [] */0
         ]) > 0);
 
-b("File \"bs_list_test.ml\", line 309, characters 4-11", Belt_List.cmpByLength(/* :: */[
+b("File \"bs_list_test.ml\", line 310, characters 4-11", Belt_List.cmpByLength(/* :: */[
           1,
           /* [] */0
         ], /* :: */[
@@ -2159,7 +2175,7 @@ b("File \"bs_list_test.ml\", line 309, characters 4-11", Belt_List.cmpByLength(/
           ]
         ]) < 0);
 
-b("File \"bs_list_test.ml\", line 310, characters 4-11", Belt_List.cmpByLength(/* :: */[
+b("File \"bs_list_test.ml\", line 311, characters 4-11", Belt_List.cmpByLength(/* :: */[
           1,
           /* :: */[
             3,
@@ -2243,7 +2259,7 @@ eq("SORT", Belt_List.sort(/* :: */[
       ]
     ]);
 
-b("File \"bs_list_test.ml\", line 326, characters 4-11", !Belt_List.eq(/* :: */[
+b("File \"bs_list_test.ml\", line 327, characters 4-11", !Belt_List.eq(/* :: */[
           1,
           /* :: */[
             2,
@@ -2262,7 +2278,7 @@ b("File \"bs_list_test.ml\", line 326, characters 4-11", !Belt_List.eq(/* :: */[
             return x === y;
           })));
 
-b("File \"bs_list_test.ml\", line 327, characters 4-11", Belt_List.eq(/* :: */[
+b("File \"bs_list_test.ml\", line 328, characters 4-11", Belt_List.eq(/* :: */[
           1,
           /* :: */[
             2,
@@ -2284,7 +2300,7 @@ b("File \"bs_list_test.ml\", line 327, characters 4-11", Belt_List.eq(/* :: */[
             return x === y;
           })));
 
-b("File \"bs_list_test.ml\", line 328, characters 4-11", !Belt_List.eq(/* :: */[
+b("File \"bs_list_test.ml\", line 329, characters 4-11", !Belt_List.eq(/* :: */[
           1,
           /* :: */[
             2,
@@ -2306,7 +2322,7 @@ b("File \"bs_list_test.ml\", line 328, characters 4-11", !Belt_List.eq(/* :: */[
             return x === y;
           })));
 
-b("File \"bs_list_test.ml\", line 329, characters 4-11", !Belt_List.eq(/* :: */[
+b("File \"bs_list_test.ml\", line 330, characters 4-11", !Belt_List.eq(/* :: */[
           1,
           /* :: */[
             2,
@@ -2340,7 +2356,7 @@ var u1 = Belt_List.keepMap(u0, (function (x) {
         
       }));
 
-eq("File \"bs_list_test.ml\", line 333, characters 5-12", u1, /* :: */[
+eq("File \"bs_list_test.ml\", line 334, characters 5-12", u1, /* :: */[
       1,
       /* :: */[
         8,
@@ -2351,7 +2367,7 @@ eq("File \"bs_list_test.ml\", line 333, characters 5-12", u1, /* :: */[
       ]
     ]);
 
-b("File \"bs_list_test.ml\", line 334, characters 4-11", Caml_obj.caml_equal(Belt_List.keepMap(/* :: */[
+b("File \"bs_list_test.ml\", line 335, characters 4-11", Caml_obj.caml_equal(Belt_List.keepMap(/* :: */[
               1,
               /* :: */[
                 2,
@@ -2376,7 +2392,7 @@ b("File \"bs_list_test.ml\", line 334, characters 4-11", Caml_obj.caml_equal(Bel
           ]
         ]));
 
-b("File \"bs_list_test.ml\", line 338, characters 4-11", Belt_List.keepMap(/* :: */[
+b("File \"bs_list_test.ml\", line 339, characters 4-11", Belt_List.keepMap(/* :: */[
           1,
           /* :: */[
             2,
