@@ -40,20 +40,21 @@ let inner_iter (l : t) (f : t -> unit ) : unit =
     f body;
   | Lletrec(decl, body) ->
     f body;
-    List.iter (fun (id, exp) ->  f exp) decl
+    Ext_list.iter_snd  decl f 
+  | Lswitch(arg, {sw_consts; sw_numconsts; sw_blocks; sw_numblocks; sw_failaction}) ->
+    f arg;
+    Ext_list.iter_snd sw_consts f;
+    Ext_list.iter_snd sw_blocks f;
+    Ext_option.iter sw_failaction f      
+  | Lstringswitch (arg,cases,default) ->
+    f arg;
+    Ext_list.iter_snd cases f;
+    Ext_option.iter default f     
   | Lglobal_module (_ )
     ->  ()
   | Lprim {args; primitive ; loc}  ->
     List.iter f args;
-  | Lswitch(arg, {sw_consts; sw_numconsts; sw_blocks; sw_numblocks; sw_failaction}) ->
-    f arg;
-    List.iter (fun (key, case) -> f case) sw_consts;
-    List.iter (fun (key, case) ->  f case) sw_blocks ;
-    Ext_option.iter sw_failaction f      
-  | Lstringswitch (arg,cases,default) ->
-    f arg;
-    List.iter (fun (k,act) -> f act) cases  ;
-    Ext_option.iter default f 
+  
   | Lstaticraise (id,args) ->
     List.iter f args;
   | Lstaticcatch(e1, vars , e2) ->

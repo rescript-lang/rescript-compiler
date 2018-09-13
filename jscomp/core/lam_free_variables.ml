@@ -28,7 +28,7 @@
   let rec 
   free_list xs = List.iter free xs 
   and free_list_snd : 'a. ('a * Lam.t) list -> unit = fun xs -> 
-  List.iter (fun (_,x) -> free x) xs 
+  Ext_list.iter_snd  xs free
   and free (l : Lam.t) =
     begin
       match l with

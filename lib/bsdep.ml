@@ -23883,6 +23883,8 @@ val assoc_by_int :
 val nth_opt : 'a list -> int -> 'a option  
 
 val iter_snd : ('a * 'b) list -> ('b -> unit) -> unit 
+
+val iter_fst : ('a * 'b) list -> ('a -> unit) -> unit 
 end = struct
 #1 "ext_list.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -24475,6 +24477,13 @@ let rec iter_snd lst f =
     f x ; 
     iter_snd xs f 
     
+let rec iter_fst lst f =     
+  match lst with
+  | [] -> ()
+  | (x,_)::xs -> 
+    f x ; 
+    iter_fst xs f 
+
 end
 module Ast_compatible : sig 
 #1 "ast_compatible.mli"

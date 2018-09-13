@@ -129,27 +129,23 @@ let count_helper  (lam : Lam.t) : int ref Int_hashtbl.t  =
         count l2
     | Lstringswitch(l, sw, d) ->
       count l;
-      List.iter (fun (_, l) -> count l) sw;
-      begin 
-        match  d with
-        | None -> ()
-        | Some d ->  count d
-      end
+      Ext_list.iter_snd sw count;
+      Ext_option.iter d count
     | Lvar _| Lconst _ -> ()
     | Lapply{fn = l1; args =  ll; _} -> count l1; List.iter count ll
     | Lfunction {body = l} -> count l
     | Llet(_, _, l1, l2) ->
       count l2; count l1
     | Lletrec(bindings, body) ->
-      List.iter (fun (_, l) -> count l) bindings;
+      Ext_list.iter_snd bindings count;
       count body
     | Lglobal_module _ -> ()
     | Lprim {args;  _} -> List.iter count args
     | Lswitch(l, sw) ->
       count_default sw ;
       count l;
-      List.iter (fun (_, l) -> count l) sw.sw_consts;
-      List.iter (fun (_, l) -> count l) sw.sw_blocks
+      Ext_list.iter_snd sw.sw_consts count;
+      Ext_list.iter_snd sw.sw_blocks count
     | Ltrywith(l1, v, l2) -> count l1; count l2
     | Lifthenelse(l1, l2, l3) -> count l1; count l2; count l3
     | Lsequence(l1, l2) -> count l1; count l2

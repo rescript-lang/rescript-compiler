@@ -49,7 +49,7 @@ let check file lam =
   let rec 
     iter_list xs = List.iter iter xs   
     and iter_list_snd : 'a. ('a * Lam.t) list -> unit = fun xs ->     
-      List.iter (fun (_,case) -> iter case) xs 
+      Ext_list.iter_snd  xs iter
     and iter (l : Lam.t) =
     begin
       match l with
@@ -68,7 +68,7 @@ let check file lam =
         def id;
         iter body
       | Lletrec(decl, body) ->
-        List.iter (fun (id, exp) ->  def id) decl;
+        Ext_list.iter_fst decl def;
         iter_list_snd  decl;
         iter body
 
