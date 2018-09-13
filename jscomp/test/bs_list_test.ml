@@ -265,6 +265,7 @@ let ()   =
   b __LOC__  (N.reduce [1;2;3;4] 0 (+) = 10);
   b __LOC__  (N.reduce [1;2;3;4] 10 (-) = 0);
   b __LOC__ (N.reduce [1;2;3;4] [] N.add = [4;3;2;1]);
+  b __LOC__  (N.reduceWithIndex [1;2;3;4] 0 (fun acc x i -> acc + x + i) = 16);
   b __LOC__
     (N.reduceReverse2 [1;2;3] [1;2] 0 (fun acc x y -> acc + x + y) = 6);
   let a = N.makeBy 10_000 (fun i -> i) in 

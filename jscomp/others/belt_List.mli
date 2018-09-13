@@ -358,6 +358,19 @@ val reduce:  'a t -> 'b -> ('b -> 'a -> 'b) -> 'b
       reduce [1;2;3;4] [] add = [4;3;2;1];
     ]}
 *)
+
+val reduceWithIndexU:  'a t -> 'b -> ('b -> 'a -> int -> 'b [@bs]) -> 'b
+val reduceWithIndex:  'a t -> 'b -> ('b -> 'a -> int -> 'b) -> 'b
+(** [reduceWithIndex xs f]
+
+    Applies [f] to each element of [xs] from beginning to end. Function [f] has three parameters: the item
+    from the list and an “accumulator”, which starts with a value of [init] and the index of each element. [reduceWithIndex]
+    returns the final value of the accumulator.
+    
+    @example {[
+      reduceWithIndex [1;2;3;4] 0 (fun acc x i -> acc + x + i) = 16;;
+    ]}
+*)
   
 val reduceReverseU: 'a t -> 'b -> ('b -> 'a ->  'b [@bs]) -> 'b
 val reduceReverse: 'a t -> 'b -> ('b -> 'a ->  'b) -> 'b

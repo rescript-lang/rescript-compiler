@@ -516,7 +516,6 @@ let rec reduceU l accu f   =
 let reduce l accu f =   
   reduceU l accu (fun[@bs] acc x -> f acc x )
 
-
 let rec reduceReverseUnsafeU l accu f  =
   match l with
     [] -> accu
@@ -531,6 +530,16 @@ let reduceReverseU (type a ) (type b) (l : a list) (acc : b) f =
       
 let reduceReverse l accu f =   
   reduceReverseU l accu (fun [@bs] a b -> f a b)
+
+let rec reduceWithIndexAuxU l acc f i =
+  match l with
+  | [] -> acc
+  | x::xs -> reduceWithIndexAuxU xs ((f acc x i)[@bs]) f (i + 1)
+
+let reduceWithIndexU l acc f = reduceWithIndexAuxU l acc f 0
+
+let reduceWithIndex l acc f =
+  reduceWithIndexU l acc (fun [@bs] acc x i -> f acc x i)
 
 let rec mapRevAux2 l1 l2 accu f =
   match (l1, l2) with  
