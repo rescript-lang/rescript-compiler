@@ -25,6 +25,8 @@
 
 val map : ('a -> 'b) -> 'a list -> 'b list 
 
+val map_snd : ('a * 'b) list -> ('b -> 'c) -> ('a * 'c) list 
+
 (** [map_last f xs ]
     will pass [true] to [f] for the last element, 
     [false] otherwise. 

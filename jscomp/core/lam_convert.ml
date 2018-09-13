@@ -675,14 +675,14 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : t * Lam_module_ident
                        sw_blocks = [];
                        sw_numblocks = 0;
                        sw_consts =
-                         Ext_list.map (fun (i,lam) -> i, convert_aux lam) sw_consts;
+                         Ext_list.map_snd  sw_consts convert_aux;
                        sw_numconsts
                       }
           end
         | _ -> Lam.switch  e (aux_switch s)
       end
     | Lstringswitch (e, cases, default,_) ->
-      Lam.stringswitch (convert_aux e) (Ext_list.map (fun (x, b) -> x, convert_aux b ) cases)
+      Lam.stringswitch (convert_aux e) (Ext_list.map_snd cases convert_aux)
                      (match default with
                      | None -> None
                      | Some x -> Some (convert_aux x)
