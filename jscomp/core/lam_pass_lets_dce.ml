@@ -164,7 +164,7 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
     | Lconst _ -> lam
     | Lletrec(bindings, body) ->
       Lam.letrec 
-        (Ext_list.map (fun (v, l) -> (v, simplif l)) bindings) 
+        (Ext_list.map_snd  bindings simplif) 
         (simplif body)
     | Lprim {primitive=Pstringadd; args = [l;r]; loc } -> 
       begin
@@ -218,12 +218,9 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
       -> Lam.prim ~primitive ~args:(Ext_list.map simplif args) loc
     | Lswitch(l, sw) ->
       let new_l = simplif l
-      and new_consts =  Ext_list.map (fun (n, e) -> (n, simplif e)) sw.sw_consts
-      and new_blocks =  Ext_list.map (fun (n, e) -> (n, simplif e)) sw.sw_blocks
-      and new_fail = 
-        match sw.sw_failaction with 
-        | None -> None 
-        | Some x -> Some (simplif x)
+      and new_consts =  Ext_list.map_snd sw.sw_consts simplif
+      and new_blocks =  Ext_list.map_snd sw.sw_blocks simplif
+      and new_fail = Ext_option.map sw.sw_failaction simplif
       in
       Lam.switch
         new_l
@@ -231,8 +228,8 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
                  sw_failaction = new_fail}
     | Lstringswitch (l,sw,d) ->
       Lam.stringswitch
-        (simplif l) (Ext_list.map (fun (s,l) -> s,simplif l) sw)
-        (match d with None -> None | Some d -> Some (simplif d))
+        (simplif l) (Ext_list.map_snd  sw simplif)
+        (Ext_option.map d simplif)
     | Lstaticraise (i,ls) ->
       Lam.staticraise i (Ext_list.map simplif ls)
     | Lstaticcatch(l1, (i,args), l2) ->

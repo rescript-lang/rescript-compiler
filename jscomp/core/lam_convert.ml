@@ -599,7 +599,7 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : t * Lam_module_ident
       end
     | Lletrec (bindings,body)
       ->
-      let bindings = Ext_list.map (fun (id, e) -> id, convert_aux e) bindings in
+      let bindings = Ext_list.map_snd  bindings convert_aux in
       let body = convert_aux body in
       let lam = Lam.letrec bindings body in
       Lam_scc.scc bindings lam body
