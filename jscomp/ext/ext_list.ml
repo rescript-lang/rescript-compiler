@@ -594,3 +594,8 @@ let rec iter_fst lst f =
   | (x,_)::xs -> 
     f x ; 
     iter_fst xs f 
+
+let rec exists_snd l p = 
+  match l with 
+    [] -> false
+  | (_, a)::l -> p a || exists_snd l p 

@@ -63,7 +63,7 @@ let exception_id_destructed (fv : Ident.t) (l : t) : bool  =
   | None -> false
   | Some a -> hit a   
   and hit_list_snd : 'a. ('a * t ) list -> bool = fun x ->    
-    List.exists (fun (_,a) -> hit a ) x   
+    Ext_list.exists_snd  x  hit
   and hit_list xs = List.exists hit xs 
   and hit (l : t) =
     begin
