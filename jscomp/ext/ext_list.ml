@@ -588,3 +588,9 @@ let rec iter_snd lst f =
     f x ; 
     iter_snd xs f 
     
+let rec iter_fst lst f =     
+  match lst with
+  | [] -> ()
+  | (x,_)::xs -> 
+    f x ; 
+    iter_fst xs f 

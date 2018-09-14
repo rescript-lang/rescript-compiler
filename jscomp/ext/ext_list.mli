@@ -208,3 +208,5 @@ val assoc_by_int :
 val nth_opt : 'a list -> int -> 'a option  
 
 val iter_snd : ('a * 'b) list -> ('b -> unit) -> unit 
+
+val iter_fst : ('a * 'b) list -> ('a -> unit) -> unit 

@@ -129,27 +129,23 @@ let count_helper  (lam : Lam.t) : int ref Int_hashtbl.t  =
         count l2
     | Lstringswitch(l, sw, d) ->
       count l;
-      List.iter (fun (_, l) -> count l) sw;
-      begin 
-        match  d with
-        | None -> ()
-        | Some d ->  count d
-      end
+      Ext_list.iter_snd sw count;
+      Ext_option.iter d count
     | Lvar _| Lconst _ -> ()
     | Lapply{fn = l1; args =  ll; _} -> count l1; List.iter count ll
     | Lfunction {body = l} -> count l
     | Llet(_, _, l1, l2) ->
       count l2; count l1
     | Lletrec(bindings, body) ->
-      List.iter (fun (_, l) -> count l) bindings;
+      Ext_list.iter_snd bindings count;
       count body
     | Lglobal_module _ -> ()
     | Lprim {args;  _} -> List.iter count args
     | Lswitch(l, sw) ->
       count_default sw ;
       count l;
-      List.iter (fun (_, l) -> count l) sw.sw_consts;
-      List.iter (fun (_, l) -> count l) sw.sw_blocks
+      Ext_list.iter_snd sw.sw_consts count;
+      Ext_list.iter_snd sw.sw_blocks count
     | Ltrywith(l1, v, l2) -> count l1; count l2
     | Lifthenelse(l1, l2, l3) -> count l1; count l2; count l3
     | Lsequence(l1, l2) -> count l1; count l2
@@ -322,7 +318,7 @@ let subst_helper (subst : subst_tbl) (query : int -> int) lam =
       Lam.let_ kind v (simplif l1) (simplif l2)
     | Lletrec (bindings, body) ->
       Lam.letrec
-        ( Ext_list.map (fun (v, l) -> (v, simplif l)) bindings) 
+        (Ext_list.map_snd  bindings simplif) 
         (simplif body)
     | Lglobal_module _ -> lam 
     | Lprim {primitive; args; loc} -> 
@@ -330,12 +326,9 @@ let subst_helper (subst : subst_tbl) (query : int -> int) lam =
       Lam.prim ~primitive ~args loc
     | Lswitch(l, sw) ->
       let new_l = simplif l
-      and new_consts =  Ext_list.map (fun (n, e) -> (n, simplif e)) sw.sw_consts
-      and new_blocks =  Ext_list.map (fun (n, e) -> (n, simplif e)) sw.sw_blocks
-      and new_fail = 
-        begin match sw.sw_failaction with 
-          | None   -> None
-          | Some x -> Some (simplif x) end in
+      and new_consts =  Ext_list.map_snd  sw.sw_consts simplif
+      and new_blocks =  Ext_list.map_snd  sw.sw_blocks simplif
+      and new_fail = Ext_option.map sw.sw_failaction simplif in       
       Lam.switch
         new_l
         { 
@@ -345,8 +338,8 @@ let subst_helper (subst : subst_tbl) (query : int -> int) lam =
           sw_failaction = new_fail}
     | Lstringswitch(l,sw,d) ->
       Lam.stringswitch
-        (simplif l) (Ext_list.map (fun (s,l) -> s,simplif l) sw)
-        (begin match d with None -> None | Some d -> Some (simplif d) end)
+        (simplif l) (Ext_list.map_snd  sw simplif)
+        (Ext_option.map d simplif)
     | Ltrywith (l1, v, l2) -> 
       Lam.try_ (simplif l1) v (simplif l2)
     | Lifthenelse (l1, l2, l3) -> 

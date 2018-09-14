@@ -144,7 +144,7 @@ let simplify_alias
     | Llet(str, v, l1, l2) ->
       Lam.let_ str v (simpl l1) (simpl l2 )
     | Lletrec(bindings, body) ->
-      let bindings = Ext_list.map (fun (k,l) ->  (k, simpl l) ) bindings in 
+      let bindings = Ext_list.map_snd  bindings simpl in 
       Lam.letrec bindings (simpl body) 
  
     (* complicated 
@@ -282,22 +282,16 @@ let simplify_alias
                   }) ->
       Lam.switch (simpl  l)
                {sw_consts = 
-                  Ext_list.map (fun (v, l) -> v, simpl  l) sw_consts;
-                sw_blocks = Ext_list.map (fun (v, l) -> v, simpl  l) sw_blocks;
+                  Ext_list.map_snd  sw_consts simpl;
+                sw_blocks = Ext_list.map_snd sw_blocks simpl;
                 sw_numconsts = sw_numconsts;
                 sw_numblocks = sw_numblocks;
-                sw_failaction = 
-                  begin 
-                    match sw_failaction with 
-                    | None -> None
-                    | Some x -> Some (simpl x)
-                  end}
+                sw_failaction = Ext_option.map sw_failaction simpl
+                }
     | Lstringswitch(l, sw, d) ->
       Lam.stringswitch (simpl  l )
-                    (Ext_list.map (fun (i, l) -> i,simpl  l) sw)
-                    (match d with
-                     | Some d -> Some (simpl d )
-                     | None -> None)
+                    (Ext_list.map_snd  sw simpl)
+                    (Ext_option.map d simpl)
     | Lstaticraise (i,ls) -> 
       Lam.staticraise i (Ext_list.map simpl  ls)
     | Lstaticcatch (l1, ids, l2) -> 

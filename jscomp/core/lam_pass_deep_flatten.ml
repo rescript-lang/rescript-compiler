@@ -184,7 +184,7 @@ let deep_flatten
       flatten
         (
           Recursive
-            (Ext_list.map (fun (id, arg ) -> (id, aux arg)) bind_args)
+            (Ext_list.map_snd bind_args aux)
           :: acc
         )
         body
@@ -272,27 +272,19 @@ let deep_flatten
                  }) ->
       Lam.switch (aux  l)
               {sw_consts =
-                 Ext_list.map (fun (v, l) -> v, aux  l) sw_consts;
-               sw_blocks = Ext_list.map (fun (v, l) -> v, aux  l) sw_blocks;
-               sw_numconsts = sw_numconsts;
-               sw_numblocks = sw_numblocks;
-               sw_failaction =
-                 begin
-                   match sw_failaction with
-                   | None -> None
-                   | Some x -> Some (aux x)
-                 end}
+                 Ext_list.map_snd  sw_consts aux;
+               sw_blocks = Ext_list.map_snd  sw_blocks aux;
+               sw_numconsts;
+               sw_numblocks;
+               sw_failaction = Ext_option.map sw_failaction aux
+              }
     | Lstringswitch(l, sw, d) ->
       Lam.stringswitch (aux  l)
-                    (Ext_list.map (fun (i, l) -> i,aux  l) sw)
-                    (match d with
-                     | Some d -> Some (aux d )
-                     | None -> None)
-
+                    (Ext_list.map_snd  sw aux)
+                    (Ext_option.map d aux)
     | Lstaticraise (i,ls)
       -> Lam.staticraise i (Ext_list.map aux  ls)
-    | Lstaticcatch(l1, ids, l2)
-      ->
+    | Lstaticcatch(l1, ids, l2) ->
       Lam.staticcatch (aux  l1) ids (aux  l2)
     | Ltrywith(l1, v, l2) ->
       Lam.try_ (aux  l1) v (aux  l2)
