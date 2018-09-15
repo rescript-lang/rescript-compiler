@@ -97,7 +97,7 @@ let handle_exp_apply
           begin match fn with
             | {pexp_desc = Pexp_apply (fn, args); pexp_loc; pexp_attributes} ->
               let fn = self.expr self fn in
-              let args = Ext_list.map (fun (lab,exp) -> lab, self.expr self exp ) args in
+              let args = Ext_list.map  args (fun (lab,exp) -> lab, self.expr self exp ) in
               Bs_ast_invariant.warn_unused_attributes pexp_attributes;
               { pexp_desc = Pexp_apply(fn, (Ast_compatible.no_label, new_obj_arg) :: args);
                 pexp_attributes = [];
@@ -111,12 +111,12 @@ let handle_exp_apply
                     {
                       pexp_desc =
                         Pexp_tuple (
-                          Ext_list.map (fun (fn : Parsetree.expression) ->
+                          Ext_list.map xs (fun (fn : Parsetree.expression) ->
                               match fn with
                               | {pexp_desc = Pexp_apply (fn,args); pexp_loc; pexp_attributes }
                                 ->
                                 let fn = self.expr self fn in
-                                let args = Ext_list.map (fun (lab,exp) -> lab, self.expr self exp ) args in
+                                let args = Ext_list.map  args (fun (lab,exp) -> lab, self.expr self exp ) in
                                 Bs_ast_invariant.warn_unused_attributes pexp_attributes;
                                 { Parsetree.pexp_desc = Pexp_apply(fn, (Ast_compatible.no_label, bounded_obj_arg) :: args);
                                   pexp_attributes = [];
@@ -128,7 +128,7 @@ let handle_exp_apply
                                 Ast_compatible.app1 ~loc:fn.pexp_loc
                                   (self.expr self fn )
                                    bounded_obj_arg
-                            ) xs );
+                            ));
                       pexp_attributes = tuple_attrs;
                       pexp_loc = fn.pexp_loc;
                     }

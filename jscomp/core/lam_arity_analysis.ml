@@ -112,12 +112,12 @@ let rec get_arity (meta : Lam_stats.t) (lam : Lam.t) :  Lam_arity.t =
     all_lambdas meta (
       let rest = 
         Ext_list.map_append snd sw_consts
-          (Ext_list.map snd sw_blocks) in
+          (Ext_list.map sw_blocks snd) in
       match sw_failaction with None -> rest | Some x -> x::rest )
   | Lstringswitch(l, sw, d) -> 
     begin match d with 
-      | None -> all_lambdas meta (Ext_list.map snd  sw )
-      | Some v -> all_lambdas meta (v:: Ext_list.map snd  sw)
+      | None -> all_lambdas meta (Ext_list.map sw snd )
+      | Some v -> all_lambdas meta (v:: Ext_list.map sw snd)
     end
   | Lstaticcatch(_, _, handler) -> get_arity meta handler
   | Ltrywith(l1, _, l2) -> 

@@ -23,7 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-val map : ('a -> 'b) -> 'a list -> 'b list 
+val map : 'a list -> ('a -> 'b) ->  'b list 
 
 val map_snd : ('a * 'b) list -> ('b -> 'c) -> ('a * 'c) list 
 

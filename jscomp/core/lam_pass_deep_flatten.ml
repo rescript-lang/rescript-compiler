@@ -240,7 +240,7 @@ let deep_flatten
     (*       aux (beta_reduce params body args) *)
 
     | Lapply{fn = l1; args  = ll; loc; status} ->
-      Lam.apply (aux l1) (Ext_list.map aux ll) loc status
+      Lam.apply (aux l1) (Ext_list.map ll aux) loc status
 
     (* This kind of simple optimizations should be done each time
        and as early as possible *)
@@ -259,7 +259,7 @@ let deep_flatten
     | Lglobal_module _ -> lam
     | Lprim {primitive ; args; loc }
       ->
-      let args = Ext_list.map aux args in
+      let args = Ext_list.map args aux in
       Lam.prim ~primitive ~args loc
 
     | Lfunction{arity;  params;  body = l} ->
@@ -283,7 +283,7 @@ let deep_flatten
                     (Ext_list.map_snd  sw aux)
                     (Ext_option.map d aux)
     | Lstaticraise (i,ls)
-      -> Lam.staticraise i (Ext_list.map aux  ls)
+      -> Lam.staticraise i (Ext_list.map ls aux)
     | Lstaticcatch(l1, ids, l2) ->
       Lam.staticcatch (aux  l1) ids (aux  l2)
     | Ltrywith(l1, v, l2) ->
@@ -302,5 +302,5 @@ let deep_flatten
          v's refaux *)
       Lam.assign v (aux  l)
     | Lsend(u, m, o, ll, v) ->
-      Lam.send u (aux m) (aux o) (Ext_list.map aux ll) v
+      Lam.send u (aux m) (aux o) (Ext_list.map ll aux) v
   in aux lam

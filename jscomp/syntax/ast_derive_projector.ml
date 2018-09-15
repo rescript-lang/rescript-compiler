@@ -30,9 +30,8 @@ let init () =
               let core_type = Ast_derive_util.core_type_of_type_declaration tdcl in 
               match tdcl.ptype_kind with 
               | Ptype_record label_declarations 
-                -> 
-                label_declarations 
-                |> Ext_list.map (
+                ->                  
+                Ext_list.map label_declarations (
                   fun ({pld_name = {loc; txt = pld_label} as pld_name} : Parsetree.label_declaration) -> 
                     let txt = "param" in
                     Ast_comb.single_non_rec_value pld_name
@@ -42,9 +41,8 @@ let init () =
                             {txt = Longident.Lident pld_label ; loc}) )
                 )
               | Ptype_variant constructor_declarations 
-                -> 
-                constructor_declarations
-                |> Ext_list.map 
+                ->                 
+                Ext_list.map constructor_declarations
                   (fun
                     ( {pcd_name = {loc ; txt = con_name} ; pcd_args ; pcd_loc }:
                         Parsetree.constructor_declaration)
@@ -77,9 +75,8 @@ let init () =
                                         if  arity = 1 then 
                                           Exp.ident { loc ; txt = Longident.Lident (List.hd vars )}
                                         else 
-                                          Exp.tuple (Ext_list.map 
-                                                       (fun x -> Exp.ident {loc ; txt = Longident.Lident x})
-                                                       vars 
+                                          Exp.tuple (Ext_list.map vars 
+                                                       (fun x -> Exp.ident {loc ; txt = Longident.Lident x})                                                       
                                                     ) )) core_type
                               in 
                               Ext_list.fold_right  (fun var b -> 
@@ -102,9 +99,8 @@ let init () =
               let core_type = Ast_derive_util.core_type_of_type_declaration tdcl in 
               match tdcl.ptype_kind with 
               | Ptype_record label_declarations 
-                -> 
-                label_declarations 
-                |> Ext_list.map 
+                ->                 
+                Ext_list.map label_declarations 
                   (fun 
                     ({pld_name ;
                       pld_type
@@ -113,10 +109,8 @@ let init () =
                     Ast_comb.single_non_rec_val pld_name (Ast_compatible.arrow core_type pld_type )
                   )
               | Ptype_variant constructor_declarations 
-                -> 
-                constructor_declarations
-                |>
-                Ext_list.map
+                ->                 
+                Ext_list.map constructor_declarations
                   (fun  ({pcd_name = {loc ; txt = con_name} ; pcd_args ; pcd_loc }:
                            Parsetree.constructor_declaration)
                     -> 

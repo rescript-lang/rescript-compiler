@@ -40,7 +40,7 @@ let generate_sourcedirs_meta cwd (res : Bsb_file_groups.t) =
       arr @@ Array.of_list @@ List.fold_left (fun acc (x : Bsb_file_groups.file_group) -> 
       Ext_list.flat_map_append 
       (fun (x : Bsb_file_groups.build_generator) -> 
-        Ext_list.map str x.output)   
+        Ext_list.map x.output str)   
       x.generators acc
       )  [] res.files 
       ]

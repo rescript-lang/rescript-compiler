@@ -95,28 +95,28 @@ let rec convert_constant ( const : Lambda.structured_constant) : t =
         end 
       | Blk_constructor(a,b) ->   
         let t : Lam_tag_info.t = Blk_constructor(a,b) in 
-        Const_block (i,t, Ext_list.map convert_constant xs)
+        Const_block (i,t, Ext_list.map xs convert_constant )
       | Blk_tuple ->   
         let t : Lam_tag_info.t = Blk_tuple in 
-        Const_block (i,t, Ext_list.map convert_constant xs)
+        Const_block (i,t, Ext_list.map xs convert_constant )
       | Blk_array -> 
         let t : Lam_tag_info.t = Blk_array in 
-        Const_block (i,t, Ext_list.map convert_constant xs)
+        Const_block (i,t, Ext_list.map xs convert_constant )
       | Blk_variant s -> 
         let t : Lam_tag_info.t = Blk_variant s in 
-        Const_block (i,t, Ext_list.map convert_constant xs)      
+        Const_block (i,t, Ext_list.map xs convert_constant )      
       | Blk_record s -> 
         let t : Lam_tag_info.t = Blk_record s in 
-        Const_block (i,t, Ext_list.map convert_constant xs)
+        Const_block (i,t, Ext_list.map xs convert_constant )
       | Blk_module s -> 
         let t : Lam_tag_info.t = Blk_module s in 
-        Const_block (i,t, Ext_list.map convert_constant xs)    
+        Const_block (i,t, Ext_list.map xs convert_constant )    
       | Blk_extension_slot -> 
         let t : Lam_tag_info.t = Blk_extension_slot in 
-        Const_block (i,t, Ext_list.map convert_constant xs)      
+        Const_block (i,t, Ext_list.map xs convert_constant )      
       | Blk_na -> 
         let t : Lam_tag_info.t = Blk_na in 
-        Const_block (i,t, Ext_list.map convert_constant xs)      
+        Const_block (i,t, Ext_list.map xs convert_constant )      
       end
       
 

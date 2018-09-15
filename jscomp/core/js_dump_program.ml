@@ -67,13 +67,13 @@ let node_program ~output_dir f ( x : J.deps_program) =
       L.require
       Ext_pp_scope.empty
       f
-      (Ext_list.map 
+      (Ext_list.map x.modules 
          (fun x -> 
             Lam_module_ident.id x,
             Js_name_of_module_id.string_of_module_id ~output_dir
               NodeJS 
               x)
-         x.modules)
+         )
   in
   program f cxt x.program  
 
@@ -125,13 +125,13 @@ let es6_program  ~output_dir fmt f (  x : J.deps_program) =
     Js_dump_import_export.imports
       Ext_pp_scope.empty
       f
-      (Ext_list.map 
+      (Ext_list.map x.modules
          (fun x -> 
             Lam_module_ident.id x,
             Js_name_of_module_id.string_of_module_id ~output_dir
               fmt 
               x)
-         x.modules)
+         )
   in
   let () = P.force_newline f in 
   let cxt = Js_dump.statement_list true cxt f x.program.block in 

@@ -104,7 +104,7 @@ let simplify_alias
       end 
     | Lglobal_module _ -> lam 
     | Lprim {primitive; args; loc } 
-      -> Lam.prim ~primitive ~args:(Ext_list.map simpl  args) loc
+      -> Lam.prim ~primitive ~args:(Ext_list.map args simpl) loc
     
     | Lifthenelse(Lprim {primitive = Pis_not_none; args =  [Lvar id ]} as l1, l2, l3) 
       -> 
@@ -180,7 +180,7 @@ let simplify_alias
                 Lam_beta_reduce.propogate_beta_reduce
                   meta params body args
               | _ -> 
-                Lam.apply (simpl l1) (Ext_list.map simpl args) loc status
+                Lam.apply (simpl l1) (Ext_list.map args simpl) loc status
             
 
       end
@@ -194,7 +194,7 @@ let simplify_alias
       (* Check info for always inlining *)
 
       (* Ext_log.dwarn __LOC__ "%s/%d" v.name v.stamp;     *)
-      let normal () = Lam.apply ( simpl fn) (Ext_list.map simpl args) loc status in
+      let normal () = Lam.apply ( simpl fn) (Ext_list.map args simpl) loc status in
       begin 
         match Ident_hashtbl.find_opt meta.ident_tbl v with
         | Some (FunctionId {lambda = Some(Lfunction {params; body} as _m,
@@ -271,7 +271,7 @@ let simplify_alias
     (*   simpl (Lam_beta_reduce.propogate_beta_reduce meta params body args) *)
 
     | Lapply {fn = l1; args =  ll;  loc ; status} ->
-      Lam.apply (simpl  l1) (Ext_list.map simpl  ll) loc status
+      Lam.apply (simpl  l1) (Ext_list.map ll simpl) loc status
     | Lfunction {arity; params; body = l}
       -> Lam.function_ ~arity ~params  ~body:(simpl  l)
     | Lswitch (l, {sw_failaction; 
@@ -293,7 +293,7 @@ let simplify_alias
                     (Ext_list.map_snd  sw simpl)
                     (Ext_option.map d simpl)
     | Lstaticraise (i,ls) -> 
-      Lam.staticraise i (Ext_list.map simpl  ls)
+      Lam.staticraise i (Ext_list.map ls simpl )
     | Lstaticcatch (l1, ids, l2) -> 
       Lam.staticcatch (simpl  l1) ids (simpl  l2)
     | Ltrywith (l1, v, l2) -> Lam.try_ (simpl  l1) v (simpl  l2)
@@ -310,7 +310,7 @@ let simplify_alias
       Lam.assign v (simpl  l)
     | Lsend (u, m, o, ll, v) 
       -> 
-      Lam.send u (simpl m) (simpl o) (Ext_list.map simpl ll) v
+      Lam.send u (simpl m) (simpl o) (Ext_list.map ll simpl) v
   in 
   simpl lam
 

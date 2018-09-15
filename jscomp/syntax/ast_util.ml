@@ -122,11 +122,11 @@ let generic_apply  kind loc
     (args : args ) cb   =
   let obj = self.expr self obj in
   let args =
-    Ext_list.map (fun (label,e) ->
+    Ext_list.map args (fun (label,e) ->
         if not (Ast_compatible.is_arg_label_simple label) then
           Bs_syntaxerr.err loc Label_in_uncurried_bs_attribute;
         self.expr self e
-      ) args in
+      ) in
   let len = List.length args in 
   let arity, fn, args  = 
     match args with 
@@ -146,7 +146,7 @@ let generic_apply  kind loc
         Longident.Ldot(Ast_literal.Lid.js_unsafe,
                        Literals.method_run ^ string_of_int arity
                       ) in 
-    Parsetree.Pexp_apply (Exp.ident {txt ; loc}, (Ast_compatible.no_label,fn) :: Ext_list.map (fun x -> Ast_compatible.no_label,x) args)
+    Parsetree.Pexp_apply (Exp.ident {txt ; loc}, (Ast_compatible.no_label,fn) :: Ext_list.map args (fun x -> Ast_compatible.no_label,x))
   else 
     let fn_type, args_type, result_type = Ast_comb.tuple_type_pair ~loc `Run arity  in 
     let string_arity = string_of_int arity in

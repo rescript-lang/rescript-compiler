@@ -2340,7 +2340,7 @@ module Ext_list : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-val map : ('a -> 'b) -> 'a list -> 'b list 
+val map : 'a list -> ('a -> 'b) ->  'b list 
 
 val map_snd : ('a * 'b) list -> ('b -> 'c) -> ('a * 'c) list 
 
@@ -2559,7 +2559,7 @@ end = struct
 
 
 
-let rec map f l =
+let rec map l f =
   match l with
   | [] ->
     []
@@ -2587,7 +2587,7 @@ let rec map f l =
     let y3 = f x3 in
     let y4 = f x4 in
     let y5 = f x5 in
-    y1::y2::y3::y4::y5::(map f tail)
+    y1::y2::y3::y4::y5::(map tail f)
 
 
 let rec map_snd l f =
@@ -3278,7 +3278,7 @@ let style_of_tag s = match s with
 
 let ansi_of_tag s = 
   let l = style_of_tag s in
-  let s =  String.concat ";" (Ext_list.map code_of_style l) in
+  let s =  String.concat ";" (Ext_list.map l  code_of_style) in
   "\x1b[" ^ s ^ "m"
 
 
@@ -5268,10 +5268,10 @@ let rec dump r =
     match t with
     | _ when is_list r ->
       let fields = get_list r in
-      "[" ^ String.concat "; " (Ext_list.map dump fields) ^ "]"
+      "[" ^ String.concat "; " (Ext_list.map fields dump) ^ "]"
     | 0 ->
       let fields = get_fields [] s in
-      "(" ^ String.concat ", " (Ext_list.map dump fields) ^ ")"
+      "(" ^ String.concat ", " (Ext_list.map fields dump) ^ ")"
     | x when x = Obj.lazy_tag ->
       (* Note that [lazy_tag .. forward_tag] are < no_scan_tag.  Not
          * clear if very large constructed values could have the same
@@ -5288,7 +5288,7 @@ let rec dump r =
       in
       (* No information on decoding the class (first field).  So just print
          * out the ID and the slots. *)
-      "Object #" ^ dump id ^ " (" ^ String.concat ", " (Ext_list.map dump slots) ^ ")"
+      "Object #" ^ dump id ^ " (" ^ String.concat ", " (Ext_list.map slots dump) ^ ")"
     | x when x = Obj.infix_tag ->
       opaque "infix"
     | x when x = Obj.forward_tag ->
@@ -5296,7 +5296,7 @@ let rec dump r =
     | x when x < Obj.no_scan_tag ->
       let fields = get_fields [] s in
       "Tag" ^ string_of_int t ^
-      " (" ^ String.concat ", " (Ext_list.map dump fields) ^ ")"
+      " (" ^ String.concat ", " (Ext_list.map fields dump) ^ ")"
     | x when x = Obj.string_tag ->
       "\"" ^ String.escaped (Obj.magic r : string) ^ "\""
     | x when x = Obj.double_tag ->
@@ -10850,7 +10850,7 @@ let generate_sourcedirs_meta cwd (res : Bsb_file_groups.t) =
       arr @@ Array.of_list @@ List.fold_left (fun acc (x : Bsb_file_groups.file_group) -> 
       Ext_list.flat_map_append 
       (fun (x : Bsb_file_groups.build_generator) -> 
-        Ext_list.map str x.output)   
+        Ext_list.map x.output str)   
       x.generators acc
       )  [] res.files 
       ]
@@ -11171,20 +11171,19 @@ let interpret_json
         |> ignore
       end)
 
-    |? (Bsb_build_schemas.bs_dependencies, `Arr (fun s -> bs_dependencies := Bsb_build_util.get_list_string s |> Ext_list.map (resolve_package cwd)))
+    |? (Bsb_build_schemas.bs_dependencies, `Arr (fun s -> bs_dependencies :=  Ext_list.map (Bsb_build_util.get_list_string s) (resolve_package cwd)))
     |? (Bsb_build_schemas.bs_dev_dependencies,
         `Arr (fun s ->
             if not  not_dev then 
               bs_dev_dependencies
-              := Bsb_build_util.get_list_string s
-                 |> Ext_list.map (resolve_package cwd))
+              :=  Ext_list.map (Bsb_build_util.get_list_string s) (resolve_package cwd))
        )
 
     (* More design *)
     |? (Bsb_build_schemas.bs_external_includes, `Arr (fun s -> bs_external_includes := get_list_string s))
     |? (Bsb_build_schemas.bsc_flags, `Arr (fun s -> bsc_flags := Bsb_build_util.get_list_string_acc s !bsc_flags))
     |? (Bsb_build_schemas.ppx_flags, `Arr (fun s -> 
-        ppx_flags := s |> get_list_string |> Ext_list.map (fun p ->
+        ppx_flags := Ext_list.map (s |> get_list_string) (fun p ->
             if p = "" then failwith "invalid ppx, empty string found"
             else Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.ppx_flags p
           )
@@ -12429,8 +12428,8 @@ let handle_generators oc
           begin match output, input with
             | output::outputs, input::inputs -> 
               Bsb_ninja_util.output_build oc 
-                ~outputs:(Ext_list.map map_to_source_dir  outputs)
-                ~inputs:(Ext_list.map map_to_source_dir inputs) 
+                ~outputs:(Ext_list.map  outputs  map_to_source_dir)
+                ~inputs:(Ext_list.map inputs map_to_source_dir) 
                 ~output:(map_to_source_dir output)
                 ~input:(map_to_source_dir input)
                 ~rule
@@ -12823,12 +12822,12 @@ let output_ninja_and_namespace_map
   let refmt_flags = String.concat Ext_string.single_space refmt_flags in
   let oc = open_out_bin (cwd_lib_bs // Literals.build_ninja) in
   let bs_package_includes = 
-    Bsb_build_util.include_dirs @@ Ext_list.map 
-      (fun (x : Bsb_config_types.dependency) -> x.package_install_path) bs_dependencies
+    Bsb_build_util.include_dirs @@ Ext_list.map bs_dependencies
+      (fun x  -> x.package_install_path) 
   in
   let bs_package_dev_includes = 
-    Bsb_build_util.include_dirs @@ Ext_list.map 
-      (fun (x : Bsb_config_types.dependency) -> x.package_install_path) bs_dev_dependencies
+    Bsb_build_util.include_dirs @@ Ext_list.map bs_dev_dependencies
+      (fun x -> x.package_install_path) 
   in  
   let has_reason_files = ref false in 
   let bs_package_flags , namespace_flag = 

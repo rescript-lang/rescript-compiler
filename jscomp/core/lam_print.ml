@@ -346,7 +346,7 @@ let  flatten (lam : Lam.t) : (print_kind * Ident.t * Lam.t ) list * Lam.t =
     aux [to_print_kind str, id, arg] body
   | Lletrec(bind_args, body) ->
     aux 
-      (Ext_list.map (fun (id,l) -> (Recursive, id,l)) bind_args) 
+      (Ext_list.map bind_args (fun (id,l) -> (Recursive, id,l))) 
       body
   | _ -> assert false
 

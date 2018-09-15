@@ -31,7 +31,7 @@
 
 let _l idents = 
   Ext_log.err __LOC__ "hey .. %s@." 
-    (String.concat "," @@ Ext_list.map (fun  i -> i.Ident.name ) idents) 
+    (String.concat "," @@ Ext_list.map idents (fun  i -> i.Ident.name ) ) 
 
 (* 
 

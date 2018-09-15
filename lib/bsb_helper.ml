@@ -2501,7 +2501,7 @@ module Ext_list : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-val map : ('a -> 'b) -> 'a list -> 'b list 
+val map : 'a list -> ('a -> 'b) ->  'b list 
 
 val map_snd : ('a * 'b) list -> ('b -> 'c) -> ('a * 'c) list 
 
@@ -2720,7 +2720,7 @@ end = struct
 
 
 
-let rec map f l =
+let rec map l f =
   match l with
   | [] ->
     []
@@ -2748,7 +2748,7 @@ let rec map f l =
     let y3 = f x3 in
     let y4 = f x4 in
     let y5 = f x5 in
-    y1::y2::y3::y4::y5::(map f tail)
+    y1::y2::y3::y4::y5::(map tail f)
 
 
 let rec map_snd l f =
@@ -3467,10 +3467,10 @@ let rec dump r =
     match t with
     | _ when is_list r ->
       let fields = get_list r in
-      "[" ^ String.concat "; " (Ext_list.map dump fields) ^ "]"
+      "[" ^ String.concat "; " (Ext_list.map fields dump) ^ "]"
     | 0 ->
       let fields = get_fields [] s in
-      "(" ^ String.concat ", " (Ext_list.map dump fields) ^ ")"
+      "(" ^ String.concat ", " (Ext_list.map fields dump) ^ ")"
     | x when x = Obj.lazy_tag ->
       (* Note that [lazy_tag .. forward_tag] are < no_scan_tag.  Not
          * clear if very large constructed values could have the same
@@ -3487,7 +3487,7 @@ let rec dump r =
       in
       (* No information on decoding the class (first field).  So just print
          * out the ID and the slots. *)
-      "Object #" ^ dump id ^ " (" ^ String.concat ", " (Ext_list.map dump slots) ^ ")"
+      "Object #" ^ dump id ^ " (" ^ String.concat ", " (Ext_list.map slots dump) ^ ")"
     | x when x = Obj.infix_tag ->
       opaque "infix"
     | x when x = Obj.forward_tag ->
@@ -3495,7 +3495,7 @@ let rec dump r =
     | x when x < Obj.no_scan_tag ->
       let fields = get_fields [] s in
       "Tag" ^ string_of_int t ^
-      " (" ^ String.concat ", " (Ext_list.map dump fields) ^ ")"
+      " (" ^ String.concat ", " (Ext_list.map fields dump) ^ ")"
     | x when x = Obj.string_tag ->
       "\"" ^ String.escaped (Obj.magic r : string) ^ "\""
     | x when x = Obj.double_tag ->

@@ -6127,7 +6127,7 @@ module Ext_list : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-val map : ('a -> 'b) -> 'a list -> 'b list 
+val map : 'a list -> ('a -> 'b) ->  'b list 
 
 val map_snd : ('a * 'b) list -> ('b -> 'c) -> ('a * 'c) list 
 
@@ -6346,7 +6346,7 @@ end = struct
 
 
 
-let rec map f l =
+let rec map l f =
   match l with
   | [] ->
     []
@@ -6374,7 +6374,7 @@ let rec map f l =
     let y3 = f x3 in
     let y4 = f x4 in
     let y5 = f x5 in
-    y1::y2::y3::y4::y5::(map f tail)
+    y1::y2::y3::y4::y5::(map tail f)
 
 
 let rec map_snd l f =
@@ -7078,8 +7078,8 @@ let js_module_table : Ident.t String_hashtbl.t = String_hashtbl.create 31
 *)
 let create_js_module (name : string) : Ident.t =
   let name =
-    String.concat "" @@ Ext_list.map (Ext_string.capitalize_ascii ) @@
-    Ext_string.split name '-' in
+    String.concat "" @@ Ext_list.map 
+    (Ext_string.split name '-')  Ext_string.capitalize_ascii in
   (* TODO: if we do such transformation, we should avoid       collision for example:
       react-dom
       react--dom
@@ -10603,10 +10603,10 @@ let rec dump r =
     match t with
     | _ when is_list r ->
       let fields = get_list r in
-      "[" ^ String.concat "; " (Ext_list.map dump fields) ^ "]"
+      "[" ^ String.concat "; " (Ext_list.map fields dump) ^ "]"
     | 0 ->
       let fields = get_fields [] s in
-      "(" ^ String.concat ", " (Ext_list.map dump fields) ^ ")"
+      "(" ^ String.concat ", " (Ext_list.map fields dump) ^ ")"
     | x when x = Obj.lazy_tag ->
       (* Note that [lazy_tag .. forward_tag] are < no_scan_tag.  Not
          * clear if very large constructed values could have the same
@@ -10623,7 +10623,7 @@ let rec dump r =
       in
       (* No information on decoding the class (first field).  So just print
          * out the ID and the slots. *)
-      "Object #" ^ dump id ^ " (" ^ String.concat ", " (Ext_list.map dump slots) ^ ")"
+      "Object #" ^ dump id ^ " (" ^ String.concat ", " (Ext_list.map slots dump) ^ ")"
     | x when x = Obj.infix_tag ->
       opaque "infix"
     | x when x = Obj.forward_tag ->
@@ -10631,7 +10631,7 @@ let rec dump r =
     | x when x < Obj.no_scan_tag ->
       let fields = get_fields [] s in
       "Tag" ^ string_of_int t ^
-      " (" ^ String.concat ", " (Ext_list.map dump fields) ^ ")"
+      " (" ^ String.concat ", " (Ext_list.map fields dump) ^ ")"
     | x when x = Obj.string_tag ->
       "\"" ^ String.escaped (Obj.magic r : string) ^ "\""
     | x when x = Obj.double_tag ->
@@ -14615,7 +14615,7 @@ let apply_simple
     pexp_desc = 
       Pexp_apply(
         fn, 
-        (Ext_list.map (fun x -> no_label, x) args) ) }
+        (Ext_list.map args (fun x -> no_label, x) ) ) }
 
 let app1        
   ?(loc = default_loc)
@@ -14776,11 +14776,11 @@ let nonrec_type_sig ?(loc=default_loc)  tds : signature_item =
 
 let const_exp_int_list_as_array xs = 
   Ast_helper.Exp.array 
-  (Ext_list.map (fun x -> const_exp_int x ) xs)  
+  (Ext_list.map  xs (fun x -> const_exp_int x ))  
 
 let const_exp_string_list_as_array xs =   
   Ast_helper.Exp.array 
-  (Ext_list.map (fun x -> const_exp_string x ) xs)  
+  (Ext_list.map xs (fun x -> const_exp_string x ) )  
 
 
  let mk_fn_type 
@@ -15428,9 +15428,10 @@ let (=~) a b =
 (** Test for single line *)
 let (==~) a b =
   OUnit.assert_equal
-    (Ast_utf8_string_interp.transform_test a
-     |> List.filter (fun x -> not @@ Ast_utf8_string_interp.empty_segment x)
-     |> Ext_list.map (fun 
+    (
+     Ext_list.map (Ast_utf8_string_interp.transform_test a
+     |> List.filter (fun x -> not @@ Ast_utf8_string_interp.empty_segment x))
+     (fun 
       ({start = {offset = a}; finish = {offset = b}; kind ; content }
        : Ast_utf8_string_interp.segment) -> 
       a,b,kind,content
@@ -15439,10 +15440,11 @@ let (==~) a b =
     b 
 
 let (==*) a b =
-  let segments = 
-    Ast_utf8_string_interp.transform_test a
+  let segments =     
+     Ext_list.map (
+       Ast_utf8_string_interp.transform_test a
      |> List.filter (fun x -> not @@ Ast_utf8_string_interp.empty_segment x)
-     |> Ext_list.map (fun 
+     )(fun 
       ({start = {lnum=la; offset = a}; finish = {lnum = lb; offset = b}; kind ; content } 
         : Ast_utf8_string_interp.segment) -> 
       la,a,lb,b,kind,content
@@ -17001,7 +17003,7 @@ let suites =
       let v = Int_vec.of_list lst in 
       OUnit.assert_equal 
         (Int_vec.map_into_list (fun x -> x + 1) v)
-        (Ext_list.map (fun x -> x + 1) lst)  
+        (Ext_list.map lst (fun x -> x + 1) )  
     end;
     __LOC__ >:: begin fun _ ->
       let v = Int_vec.make 4 in 

@@ -7,9 +7,10 @@ let (=~) a b =
 (** Test for single line *)
 let (==~) a b =
   OUnit.assert_equal
-    (Ast_utf8_string_interp.transform_test a
-     |> List.filter (fun x -> not @@ Ast_utf8_string_interp.empty_segment x)
-     |> Ext_list.map (fun 
+    (
+     Ext_list.map (Ast_utf8_string_interp.transform_test a
+     |> List.filter (fun x -> not @@ Ast_utf8_string_interp.empty_segment x))
+     (fun 
       ({start = {offset = a}; finish = {offset = b}; kind ; content }
        : Ast_utf8_string_interp.segment) -> 
       a,b,kind,content
@@ -18,10 +19,11 @@ let (==~) a b =
     b 
 
 let (==*) a b =
-  let segments = 
-    Ast_utf8_string_interp.transform_test a
+  let segments =     
+     Ext_list.map (
+       Ast_utf8_string_interp.transform_test a
      |> List.filter (fun x -> not @@ Ast_utf8_string_interp.empty_segment x)
-     |> Ext_list.map (fun 
+     )(fun 
       ({start = {lnum=la; offset = a}; finish = {lnum = lb; offset = b}; kind ; content } 
         : Ast_utf8_string_interp.segment) -> 
       la,a,lb,b,kind,content

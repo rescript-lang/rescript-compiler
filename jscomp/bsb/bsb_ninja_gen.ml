@@ -82,12 +82,12 @@ let output_ninja_and_namespace_map
   let refmt_flags = String.concat Ext_string.single_space refmt_flags in
   let oc = open_out_bin (cwd_lib_bs // Literals.build_ninja) in
   let bs_package_includes = 
-    Bsb_build_util.include_dirs @@ Ext_list.map 
-      (fun (x : Bsb_config_types.dependency) -> x.package_install_path) bs_dependencies
+    Bsb_build_util.include_dirs @@ Ext_list.map bs_dependencies
+      (fun x  -> x.package_install_path) 
   in
   let bs_package_dev_includes = 
-    Bsb_build_util.include_dirs @@ Ext_list.map 
-      (fun (x : Bsb_config_types.dependency) -> x.package_install_path) bs_dev_dependencies
+    Bsb_build_util.include_dirs @@ Ext_list.map bs_dev_dependencies
+      (fun x -> x.package_install_path) 
   in  
   let has_reason_files = ref false in 
   let bs_package_flags , namespace_flag = 

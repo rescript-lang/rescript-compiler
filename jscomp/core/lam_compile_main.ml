@@ -229,9 +229,8 @@ let compile  ~filename (output_prefix : string) env _sigs
 #if BS_DEBUG then 
   let () = Ext_log.dwarn __LOC__ "\n@[[TIME:]Pre-compile: %f@]@."  (Sys.time () *. 1000.) in      
 #end  
-  let body  = 
-    groups
-    |> Ext_list.map (fun group -> compile_group meta group)
+  let body  =     
+    Ext_list.map groups (fun group -> compile_group meta group)
     |> Js_output.concat
     |> Js_output.output_as_block
   in

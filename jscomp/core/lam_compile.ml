@@ -37,7 +37,7 @@ let rec flat_catches (acc : Lam_compile_context.handler list) (x : Lam.t)
     when
       acc = [] ||
       (not @@ Lam_exit_code.has_exit_code handler
-         (fun exit -> Ext_list.exists acc (fun { label  = c } -> c = exit) ) )
+         (fun exit -> Ext_list.exists acc (fun { label } -> label = exit) ) )
     -> (* #1698 should not crush exit code here without checking *)
     flat_catches ( {label = code; handler; bindings} ::acc) l
   | _ -> acc, x
@@ -200,7 +200,7 @@ and compile_external_field_apply
                 (fun _ -> Ext_ident.create "param") in
             E.ocaml_fun params
               [S.return_stmt (E.call ~info:{arity=Full; call_info=Call_ml}
-                                acc (Ext_list.append args @@ Ext_list.map E.var params))]
+                                acc (Ext_list.append args @@ Ext_list.map params E.var))]
           else E.call ~info:Js_call_info.dummy acc args
         (* alpha conversion now? --
            Since we did an alpha conversion before so it is not here
@@ -277,9 +277,9 @@ and compile_recursive_let ~all_bindings
              when it is detected by a primitive
           *)
           ~immutable_mask:ret.immutable_mask
-          (Ext_list.map (fun x ->
+          (Ext_list.map params (fun x ->
                Ident_map.find_default x ret.new_params x )
-              params)
+              )
           [
             S.while_ (* ~label:continue_label *)
               E.caml_true
@@ -387,9 +387,9 @@ and compile_recursive_lets_aux cxt id_args : Js_output.t =
   | _ ->
      Js_output.append_output
       (Js_output.make
-      (Ext_list.map
+      (Ext_list.map ids
         (fun id -> S.define_variable ~kind:Variable id (E.dummy_obj ()))
-        ids )
+        )
        )
       output_code
 and compile_recursive_lets cxt id_args : Js_output.t  =
@@ -653,7 +653,7 @@ and
                                    (i+1, (new_param, arg) :: assigns, m)
                                ) (0, [], Ident_map.empty) params args  in
                            let () = ret.new_params <- Ident_map.disjoint_merge new_params ret.new_params in
-                           assigned_params |> Ext_list.map (fun (param, arg) -> S.assign param arg))
+                           Ext_list.map assigned_params (fun (param, arg) -> S.assign param arg))
                          @
                          [S.continue_stmt ()(* label *)]
                          (* Note true and continue needed to be handled together*)
@@ -1381,7 +1381,7 @@ and
         S.define_variable ~kind:Variable exit_id
           E.zero_int_literal ::
         (* we should always make it zero here, since [zero] is reserved in our mapping*)
-        Ext_list.map (fun x -> S.declare_variable ~kind:Variable x ) bindings in
+        Ext_list.map bindings (fun x -> S.declare_variable ~kind:Variable x )  in
 
       begin match  st with
         (* could be optimized when cases are less than 3 *)

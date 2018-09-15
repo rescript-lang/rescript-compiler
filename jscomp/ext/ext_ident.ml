@@ -79,8 +79,8 @@ let js_module_table : Ident.t String_hashtbl.t = String_hashtbl.create 31
 *)
 let create_js_module (name : string) : Ident.t =
   let name =
-    String.concat "" @@ Ext_list.map (Ext_string.capitalize_ascii ) @@
-    Ext_string.split name '-' in
+    String.concat "" @@ Ext_list.map 
+    (Ext_string.split name '-')  Ext_string.capitalize_ascii in
   (* TODO: if we do such transformation, we should avoid       collision for example:
       react-dom
       react--dom

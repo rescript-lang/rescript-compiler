@@ -25,7 +25,7 @@
 
 
 
-let rec map f l =
+let rec map l f =
   match l with
   | [] ->
     []
@@ -53,7 +53,7 @@ let rec map f l =
     let y3 = f x3 in
     let y4 = f x4 in
     let y5 = f x5 in
-    y1::y2::y3::y4::y5::(map f tail)
+    y1::y2::y3::y4::y5::(map tail f)
 
 
 let rec map_snd l f =

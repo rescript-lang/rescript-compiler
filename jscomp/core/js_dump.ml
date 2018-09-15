@@ -829,7 +829,7 @@ and
           P.paren_group f 1 
           (fun _ -> arguments cxt f 
             [E.array Immutable
-             (Ext_list.map E.str labels);
+             (Ext_list.map labels E.str);
               E.array mutable_flag
               (List.map (fun (x :J.expression) -> {x with comment = None}) el)
             ]

@@ -175,7 +175,7 @@ let inner_map
     ( (* Obj.magic *) l : X.t)
   | Lapply ({fn; args; loc; status} )  ->
     let fn = f fn in
-    let args = Ext_list.map f args in
+    let args = Ext_list.map args f in
     Lapply { fn ; args; loc; status }
   | Lfunction({body; arity;  params } ) ->
     let body = f body in
@@ -189,7 +189,7 @@ let inner_map
     Lletrec(decl,body)
   | Lglobal_module _ -> (l : X.t)
   | Lprim {args; primitive ; loc}  ->
-    let args = Ext_list.map f args in
+    let args = Ext_list.map args f in
     Lprim { args; primitive; loc}
 
   | Lswitch(arg, {sw_consts; sw_numconsts; sw_blocks; sw_numblocks; sw_failaction}) ->
@@ -204,7 +204,7 @@ let inner_map
     let default = Ext_option.map default f in
     Lstringswitch(arg,cases,default)
   | Lstaticraise (id,args) ->
-    let args = Ext_list.map f args in
+    let args = Ext_list.map args f in
     Lstaticraise(id,args)
   | Lstaticcatch(e1, vars , e2) ->
     let e1 = f e1 in
@@ -232,7 +232,7 @@ let inner_map
   | Lsend (k, met, obj, args, loc) ->
     let met = f met in
     let obj = f obj in
-    let args = Ext_list.map f args in
+    let args = Ext_list.map args f in
     Lsend(k,met,obj,args,loc)
 
 

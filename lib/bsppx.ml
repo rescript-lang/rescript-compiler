@@ -5640,7 +5640,7 @@ module Ext_list : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-val map : ('a -> 'b) -> 'a list -> 'b list 
+val map : 'a list -> ('a -> 'b) ->  'b list 
 
 val map_snd : ('a * 'b) list -> ('b -> 'c) -> ('a * 'c) list 
 
@@ -5859,7 +5859,7 @@ end = struct
 
 
 
-let rec map f l =
+let rec map l f =
   match l with
   | [] ->
     []
@@ -5887,7 +5887,7 @@ let rec map f l =
     let y3 = f x3 in
     let y4 = f x4 in
     let y5 = f x5 in
-    y1::y2::y3::y4::y5::(map f tail)
+    y1::y2::y3::y4::y5::(map tail f)
 
 
 let rec map_snd l f =
@@ -6694,7 +6694,7 @@ let apply_simple
     pexp_desc = 
       Pexp_apply(
         fn, 
-        (Ext_list.map (fun x -> no_label, x) args) ) }
+        (Ext_list.map args (fun x -> no_label, x) ) ) }
 
 let app1        
   ?(loc = default_loc)
@@ -6855,11 +6855,11 @@ let nonrec_type_sig ?(loc=default_loc)  tds : signature_item =
 
 let const_exp_int_list_as_array xs = 
   Ast_helper.Exp.array 
-  (Ext_list.map (fun x -> const_exp_int x ) xs)  
+  (Ext_list.map  xs (fun x -> const_exp_int x ))  
 
 let const_exp_string_list_as_array xs =   
   Ast_helper.Exp.array 
-  (Ext_list.map (fun x -> const_exp_string x ) xs)  
+  (Ext_list.map xs (fun x -> const_exp_string x ) )  
 
 
  let mk_fn_type 
@@ -7916,7 +7916,7 @@ let ident_or_record_as_config
     -> 
     begin match with_obj with
       | None ->
-        Ext_list.map
+        Ext_list.map label_exprs
           (fun ((x,y) : (Longident.t Asttypes.loc * _) ) -> 
              match (x,y) with 
              | ({txt = Lident name; loc} ) , 
@@ -7929,7 +7929,7 @@ let ident_or_record_as_config
              | _ -> 
                Location.raise_errorf ~loc "Qualified label is not allood"
           )
-          label_exprs
+
       | Some _ -> 
         Location.raise_errorf ~loc "with is not supported"
     end
@@ -7961,7 +7961,7 @@ let assert_strings loc (x : t) : string list
             pstr_loc = loc ;            
             _}] ->
     (try 
-       strs |> Ext_list.map (fun e ->
+        Ext_list.map strs (fun e ->
            match (e : Parsetree.expression) with
            | {pexp_desc = Pexp_constant (
               
@@ -12493,10 +12493,10 @@ let rec dump r =
     match t with
     | _ when is_list r ->
       let fields = get_list r in
-      "[" ^ String.concat "; " (Ext_list.map dump fields) ^ "]"
+      "[" ^ String.concat "; " (Ext_list.map fields dump) ^ "]"
     | 0 ->
       let fields = get_fields [] s in
-      "(" ^ String.concat ", " (Ext_list.map dump fields) ^ ")"
+      "(" ^ String.concat ", " (Ext_list.map fields dump) ^ ")"
     | x when x = Obj.lazy_tag ->
       (* Note that [lazy_tag .. forward_tag] are < no_scan_tag.  Not
          * clear if very large constructed values could have the same
@@ -12513,7 +12513,7 @@ let rec dump r =
       in
       (* No information on decoding the class (first field).  So just print
          * out the ID and the slots. *)
-      "Object #" ^ dump id ^ " (" ^ String.concat ", " (Ext_list.map dump slots) ^ ")"
+      "Object #" ^ dump id ^ " (" ^ String.concat ", " (Ext_list.map slots dump) ^ ")"
     | x when x = Obj.infix_tag ->
       opaque "infix"
     | x when x = Obj.forward_tag ->
@@ -12521,7 +12521,7 @@ let rec dump r =
     | x when x < Obj.no_scan_tag ->
       let fields = get_fields [] s in
       "Tag" ^ string_of_int t ^
-      " (" ^ String.concat ", " (Ext_list.map dump fields) ^ ")"
+      " (" ^ String.concat ", " (Ext_list.map fields dump) ^ ")"
     | x when x = Obj.string_tag ->
       "\"" ^ String.escaped (Obj.magic r : string) ^ "\""
     | x when x = Obj.double_tag ->
@@ -16366,11 +16366,11 @@ let generic_apply  kind loc
     (args : args ) cb   =
   let obj = self.expr self obj in
   let args =
-    Ext_list.map (fun (label,e) ->
+    Ext_list.map args (fun (label,e) ->
         if not (Ast_compatible.is_arg_label_simple label) then
           Bs_syntaxerr.err loc Label_in_uncurried_bs_attribute;
         self.expr self e
-      ) args in
+      ) in
   let len = List.length args in 
   let arity, fn, args  = 
     match args with 
@@ -16390,7 +16390,7 @@ let generic_apply  kind loc
         Longident.Ldot(Ast_literal.Lid.js_unsafe,
                        Literals.method_run ^ string_of_int arity
                       ) in 
-    Parsetree.Pexp_apply (Exp.ident {txt ; loc}, (Ast_compatible.no_label,fn) :: Ext_list.map (fun x -> Ast_compatible.no_label,x) args)
+    Parsetree.Pexp_apply (Exp.ident {txt ; loc}, (Ast_compatible.no_label,fn) :: Ext_list.map args (fun x -> Ast_compatible.no_label,x))
   else 
     let fn_type, args_type, result_type = Ast_comb.tuple_type_pair ~loc `Run arity  in 
     let string_arity = string_of_int arity in
@@ -17052,7 +17052,7 @@ let protect2 r1 r2 v1 v2 body =
     raise x
 
 let protect_list rvs body = 
-  let olds =  Ext_list.map (fun (x,y) -> !x)  rvs in 
+  let olds =  Ext_list.map  rvs (fun (x,y) -> !x) in 
   let () = List.iter (fun (x,y) -> x:=y) rvs in 
   try 
     let res = body () in 
@@ -17758,7 +17758,7 @@ let core_type_of_type_declaration
     } -> 
     Typ.constr 
       {txt = Lident txt ; loc}
-      (Ext_list.map fst ptype_params)
+      (Ext_list.map ptype_params  fst)
 
 let new_type_of_type_declaration 
     (tdcl : Parsetree.type_declaration) newName = 
@@ -17768,7 +17768,7 @@ let new_type_of_type_declaration
     } -> 
     (Typ.constr 
       {txt = Lident newName ; loc}
-      (Ext_list.map fst ptype_params),
+      (Ext_list.map ptype_params fst ),
       { Parsetree.ptype_params = tdcl.ptype_params;
         ptype_name = {txt = newName;loc};
         ptype_kind = Ptype_abstract; 
@@ -18410,9 +18410,8 @@ let init () =
               let core_type = Ast_derive_util.core_type_of_type_declaration tdcl in 
               match tdcl.ptype_kind with 
               | Ptype_record label_declarations 
-                -> 
-                label_declarations 
-                |> Ext_list.map (
+                ->                  
+                Ext_list.map label_declarations (
                   fun ({pld_name = {loc; txt = pld_label} as pld_name} : Parsetree.label_declaration) -> 
                     let txt = "param" in
                     Ast_comb.single_non_rec_value pld_name
@@ -18422,9 +18421,8 @@ let init () =
                             {txt = Longident.Lident pld_label ; loc}) )
                 )
               | Ptype_variant constructor_declarations 
-                -> 
-                constructor_declarations
-                |> Ext_list.map 
+                ->                 
+                Ext_list.map constructor_declarations
                   (fun
                     ( {pcd_name = {loc ; txt = con_name} ; pcd_args ; pcd_loc }:
                         Parsetree.constructor_declaration)
@@ -18452,9 +18450,8 @@ let init () =
                                         if  arity = 1 then 
                                           Exp.ident { loc ; txt = Longident.Lident (List.hd vars )}
                                         else 
-                                          Exp.tuple (Ext_list.map 
-                                                       (fun x -> Exp.ident {loc ; txt = Longident.Lident x})
-                                                       vars 
+                                          Exp.tuple (Ext_list.map vars 
+                                                       (fun x -> Exp.ident {loc ; txt = Longident.Lident x})                                                       
                                                     ) )) core_type
                               in 
                               Ext_list.fold_right  (fun var b -> 
@@ -18477,9 +18474,8 @@ let init () =
               let core_type = Ast_derive_util.core_type_of_type_declaration tdcl in 
               match tdcl.ptype_kind with 
               | Ptype_record label_declarations 
-                -> 
-                label_declarations 
-                |> Ext_list.map 
+                ->                 
+                Ext_list.map label_declarations 
                   (fun 
                     ({pld_name ;
                       pld_type
@@ -18488,10 +18484,8 @@ let init () =
                     Ast_comb.single_non_rec_val pld_name (Ast_compatible.arrow core_type pld_type )
                   )
               | Ptype_variant constructor_declarations 
-                -> 
-                constructor_declarations
-                |>
-                Ext_list.map
+                ->                 
+                Ext_list.map constructor_declarations
                   (fun  ({pcd_name = {loc ; txt = con_name} ; pcd_args ; pcd_loc }:
                            Parsetree.constructor_declaration)
                     -> 
@@ -18825,7 +18819,7 @@ let handle_exp_apply
           begin match fn with
             | {pexp_desc = Pexp_apply (fn, args); pexp_loc; pexp_attributes} ->
               let fn = self.expr self fn in
-              let args = Ext_list.map (fun (lab,exp) -> lab, self.expr self exp ) args in
+              let args = Ext_list.map  args (fun (lab,exp) -> lab, self.expr self exp ) in
               Bs_ast_invariant.warn_unused_attributes pexp_attributes;
               { pexp_desc = Pexp_apply(fn, (Ast_compatible.no_label, new_obj_arg) :: args);
                 pexp_attributes = [];
@@ -18839,12 +18833,12 @@ let handle_exp_apply
                     {
                       pexp_desc =
                         Pexp_tuple (
-                          Ext_list.map (fun (fn : Parsetree.expression) ->
+                          Ext_list.map xs (fun (fn : Parsetree.expression) ->
                               match fn with
                               | {pexp_desc = Pexp_apply (fn,args); pexp_loc; pexp_attributes }
                                 ->
                                 let fn = self.expr self fn in
-                                let args = Ext_list.map (fun (lab,exp) -> lab, self.expr self exp ) args in
+                                let args = Ext_list.map  args (fun (lab,exp) -> lab, self.expr self exp ) in
                                 Bs_ast_invariant.warn_unused_attributes pexp_attributes;
                                 { Parsetree.pexp_desc = Pexp_apply(fn, (Ast_compatible.no_label, bounded_obj_arg) :: args);
                                   pexp_attributes = [];
@@ -18856,7 +18850,7 @@ let handle_exp_apply
                                 Ast_compatible.app1 ~loc:fn.pexp_loc
                                   (self.expr self fn )
                                    bounded_obj_arg
-                            ) xs );
+                            ));
                       pexp_attributes = tuple_attrs;
                       pexp_loc = fn.pexp_loc;
                     }
