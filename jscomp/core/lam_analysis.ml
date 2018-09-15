@@ -383,57 +383,9 @@ let ok_to_inline_fun_when_app ~body params args =
    (s < 10 && no_side_effects body )) 
 
 
-let eq_comparison ( p : Lam_compat.comparison) (p1:Lam_compat.comparison) = 
-  match p with 
-  | Cge -> p1 =  Cge
-  | Cgt -> p1 =  Cgt
-  | Cle -> p1 =  Cle
-  | Clt -> p1 =  Clt 
-  | Ceq -> p1 =  Ceq 
-  | Cneq -> p1 =  Cneq 
 
-let eq_array_kind (p : Lam_compat.array_kind) (p1 : Lam_compat.array_kind) = 
-  match p with 
-  | Pgenarray -> p1 = Pgenarray
-  | Paddrarray -> p1 = Paddrarray 
-  | Pintarray -> p1 = Pintarray
-  | Pfloatarray -> p1 = Pfloatarray 
 
-let eq_boxed_integer (p : Lam_compat.boxed_integer) (p1 : Lam_compat.boxed_integer ) = 
-  match p with 
-  | Pnativeint -> p1 = Pnativeint 
-  | Pint32 -> p1 = Pint32
-  | Pint64 -> p1 = Pint64
 
-let eq_bigarray_kind (p : Lam_compat.bigarray_kind) (p1 : Lam_compat.bigarray_kind) = 
-  match p with   
-  | Pbigarray_unknown -> p1 = Pbigarray_unknown
-  | Pbigarray_float32 -> p1 = Pbigarray_float32
-  | Pbigarray_float64 -> p1 =  Pbigarray_float64
-  | Pbigarray_sint8 -> p1 = Pbigarray_sint8
-  | Pbigarray_uint8 -> p1 = Pbigarray_uint8
-  | Pbigarray_sint16 -> p1 = Pbigarray_sint16 
-  | Pbigarray_uint16 -> p1 = Pbigarray_uint16
-  | Pbigarray_int32  -> p1 = Pbigarray_int32
-  | Pbigarray_int64 -> p1 = Pbigarray_int64
-  | Pbigarray_caml_int -> p1 = Pbigarray_caml_int
-  | Pbigarray_native_int -> p1 = Pbigarray_native_int
-  | Pbigarray_complex32  -> p1 = Pbigarray_complex32
-  | Pbigarray_complex64 -> p1 = Pbigarray_complex64
-
-let eq_bigarray_layout (p : Lam_compat.bigarray_layout) (p1 : Lam_compat.bigarray_layout) = 
-  match p with 
-  | Pbigarray_unknown_layout -> p1 = Pbigarray_unknown_layout
-  | Pbigarray_c_layout -> p1 = Pbigarray_c_layout
-  | Pbigarray_fortran_layout -> p1 = Pbigarray_fortran_layout
-
-let eq_compile_time_constant ( p : Lam_compat.compile_time_constant) (p1 : Lam_compat.compile_time_constant) = 
-  match p with 
-  | Big_endian -> p1 = Big_endian
-  | Word_size -> p1 = Word_size 
-  | Ostype_unix -> p1 = Ostype_unix
-  | Ostype_win32 -> p1 = Ostype_win32
-  | Ostype_cygwin -> p1 = Ostype_cygwin 
 
 let eq_record_representation ( p : Types.record_representation) ( p1 : Types.record_representation) = 
   match p with 
@@ -568,34 +520,34 @@ and eq_primitive ( lhs : Lam_primitive.t) (rhs : Lam_primitive.t) =
   | Pduprecord (record_repesentation0,i1) -> (match rhs with Pduprecord(record_repesentation1,i2) ->  eq_record_representation record_repesentation0 record_repesentation1 && i1 = i2    | _ -> false)
   | Pjs_call (prim_name, arg_types, ffi) ->  ( match rhs with Pjs_call(prim_name1, arg_types1,ffi1) -> prim_name = prim_name1 && arg_types = arg_types1 && ffi = ffi1 | _ -> false)
   | Pjs_object_create obj_create -> (match rhs with Pjs_object_create obj_create1 -> obj_create = obj_create1 | _ -> false )
-  | Pintcomp comparison -> (match rhs with Pintcomp comparison1 -> eq_comparison comparison  comparison1  | _ -> false )    
-  | Pfloatcomp comparison -> (match rhs with Pfloatcomp comparison1 -> eq_comparison comparison  comparison1 | _ -> false)
-  | Pjscomp comparison ->  (match rhs with  Pjscomp comparison1 -> eq_comparison comparison  comparison1  | _ -> false )    
+  | Pintcomp comparison -> (match rhs with Pintcomp comparison1 -> Lam_compat.eq_comparison comparison  comparison1  | _ -> false )    
+  | Pfloatcomp comparison -> (match rhs with Pfloatcomp comparison1 -> Lam_compat.eq_comparison comparison  comparison1 | _ -> false)
+  | Pjscomp comparison ->  (match rhs with  Pjscomp comparison1 -> Lam_compat.eq_comparison comparison  comparison1  | _ -> false )    
   | Poffsetint i0 ->   (match rhs with  Poffsetint i1 -> i0 = i1 | _ -> false )   
   | Poffsetref i0 ->  (match rhs with Poffsetref i1 -> i0 = i1   | _ -> false)
-  | Pmakearray array_kind -> (match rhs with Pmakearray array_kind1 -> eq_array_kind array_kind array_kind1 | _ -> false  )
+  | Pmakearray array_kind -> (match rhs with Pmakearray array_kind1 -> Lam_compat.eq_array_kind array_kind array_kind1 | _ -> false  )
   | Parraylength  -> rhs = Parraylength
-  | Parrayrefu  array_kind -> (match rhs with Parrayrefu array_kind1 -> eq_array_kind array_kind array_kind1 | _ -> false  )
-  | Parraysetu  array_kind -> (match rhs with Parraysetu array_kind1 -> eq_array_kind array_kind array_kind1 | _ -> false  ) 
-  | Parrayrefs array_kind -> (match rhs with Parrayrefs array_kind1 -> eq_array_kind array_kind array_kind1 | _ -> false  )
-  | Parraysets  array_kind -> (match rhs with Parraysets array_kind1 -> eq_array_kind array_kind array_kind1 | _ -> false  )  
-  | Pbintofint  boxed_integer -> (match rhs with Pbintofint boxed_integer1 -> eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
-  | Pintofbint  boxed_integer -> (match rhs with Pintofbint boxed_integer1 -> eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
-  | Pnegbint  boxed_integer -> (match rhs with Pnegbint boxed_integer1 -> eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
-  | Paddbint  boxed_integer -> (match rhs with Paddbint boxed_integer1 -> eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
-  | Psubbint  boxed_integer -> (match rhs with Psubbint boxed_integer1 -> eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
-  | Pmulbint  boxed_integer -> (match rhs with Pmulbint boxed_integer1 -> eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
-  | Pdivbint  boxed_integer -> (match rhs with Pdivbint boxed_integer1 -> eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
-  | Pmodbint  boxed_integer -> (match rhs with Pmodbint boxed_integer1 -> eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
-  | Pandbint  boxed_integer -> (match rhs with Pandbint boxed_integer1 -> eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
-  | Porbint boxed_integer ->   (match rhs with Porbint  boxed_integer1 -> eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
-  | Pxorbint  boxed_integer -> (match rhs with Pxorbint boxed_integer1 -> eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
-  | Plslbint  boxed_integer -> (match rhs with Plslbint boxed_integer1 -> eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
-  | Plsrbint  boxed_integer -> (match rhs with Plsrbint boxed_integer1 -> eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
-  | Pasrbint  boxed_integer -> (match rhs with Pasrbint boxed_integer1 -> eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
-  | Pbbswap boxed_integer ->   (match rhs with Pbbswap boxed_integer1  -> eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
-  | Pcvtbint  (boxed_integer, boxed_integer1) -> (match rhs with Pcvtbint (boxed_integer10, boxed_integer11) -> eq_boxed_integer boxed_integer boxed_integer10 && eq_boxed_integer boxed_integer1 boxed_integer11 | _ -> false )
-  | Pbintcomp  (boxed_integer , comparison) -> (match rhs with Pbintcomp(boxed_integer1, comparison1) -> eq_boxed_integer boxed_integer boxed_integer1 && eq_comparison comparison comparison1 | _ -> false)  
+  | Parrayrefu  array_kind -> (match rhs with Parrayrefu array_kind1 -> Lam_compat.eq_array_kind array_kind array_kind1 | _ -> false  )
+  | Parraysetu  array_kind -> (match rhs with Parraysetu array_kind1 -> Lam_compat.eq_array_kind array_kind array_kind1 | _ -> false  ) 
+  | Parrayrefs array_kind -> (match rhs with Parrayrefs array_kind1 -> Lam_compat.eq_array_kind array_kind array_kind1 | _ -> false  )
+  | Parraysets  array_kind -> (match rhs with Parraysets array_kind1 -> Lam_compat.eq_array_kind array_kind array_kind1 | _ -> false  )  
+  | Pbintofint  boxed_integer -> (match rhs with Pbintofint boxed_integer1 -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
+  | Pintofbint  boxed_integer -> (match rhs with Pintofbint boxed_integer1 -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
+  | Pnegbint  boxed_integer -> (match rhs with Pnegbint boxed_integer1 -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
+  | Paddbint  boxed_integer -> (match rhs with Paddbint boxed_integer1 -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
+  | Psubbint  boxed_integer -> (match rhs with Psubbint boxed_integer1 -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
+  | Pmulbint  boxed_integer -> (match rhs with Pmulbint boxed_integer1 -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
+  | Pdivbint  boxed_integer -> (match rhs with Pdivbint boxed_integer1 -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
+  | Pmodbint  boxed_integer -> (match rhs with Pmodbint boxed_integer1 -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
+  | Pandbint  boxed_integer -> (match rhs with Pandbint boxed_integer1 -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
+  | Porbint boxed_integer ->   (match rhs with Porbint  boxed_integer1 -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
+  | Pxorbint  boxed_integer -> (match rhs with Pxorbint boxed_integer1 -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
+  | Plslbint  boxed_integer -> (match rhs with Plslbint boxed_integer1 -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
+  | Plsrbint  boxed_integer -> (match rhs with Plsrbint boxed_integer1 -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
+  | Pasrbint  boxed_integer -> (match rhs with Pasrbint boxed_integer1 -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
+  | Pbbswap boxed_integer ->   (match rhs with Pbbswap boxed_integer1  -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
+  | Pcvtbint  (boxed_integer, boxed_integer1) -> (match rhs with Pcvtbint (boxed_integer10, boxed_integer11) -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer10 && Lam_compat.eq_boxed_integer boxed_integer1 boxed_integer11 | _ -> false )
+  | Pbintcomp  (boxed_integer , comparison) -> (match rhs with Pbintcomp(boxed_integer1, comparison1) -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer1 && Lam_compat.eq_comparison comparison comparison1 | _ -> false)  
   | Pbigarraydim dim -> (match rhs with Pbigarraydim dim1 -> dim = dim1 | _ -> false )
   | Pstring_load_16 str ->  (match  rhs with Pstring_load_16 str1 -> str = str1  | _ -> false )
   | Pstring_load_32 b -> (match rhs with Pstring_load_32 b1 -> b = b1 | _ -> false )    
@@ -609,7 +561,7 @@ and eq_primitive ( lhs : Lam_primitive.t) (rhs : Lam_primitive.t) =
   | Pbigstring_set_16 b -> (match rhs with Pbigstring_set_16 b1 -> b = b1 | _ -> false )      
   | Pbigstring_set_32 b -> (match rhs with Pbigstring_set_32 b1 -> b = b1 | _ -> false )      
   | Pbigstring_set_64 b -> (match rhs with Pbigstring_set_64 b1 -> b = b1 | _ -> false )      
-  | Pctconst compile_time_constant -> (match rhs with Pctconst compile_time_constant1 -> eq_compile_time_constant compile_time_constant compile_time_constant1 | _ -> false)
+  | Pctconst compile_time_constant -> (match rhs with Pctconst compile_time_constant1 -> Lam_compat.eq_compile_time_constant compile_time_constant compile_time_constant1 | _ -> false)
   | Pjs_unsafe_downgrade ( s,_loc) -> (match rhs with Pjs_unsafe_downgrade (s1,_) -> s = s1 | _ -> false)  
   | Pjs_fn_make i -> (match rhs with Pjs_fn_make i1 -> i = i1 | _ -> false)
   | Pjs_fn_run i -> (match rhs with Pjs_fn_run i1 -> i = i1 | _ -> false)

@@ -85,3 +85,8 @@ val cmp_int64 : comparison -> int64 -> int64 -> bool
 val cmp_nativeint : comparison -> nativeint -> nativeint -> bool
 val cmp_float : comparison -> float -> float -> bool 
 val cmp_int : comparison -> int -> int -> bool 
+
+val eq_comparison : comparison -> comparison -> bool
+val eq_array_kind : array_kind -> array_kind -> bool
+val eq_boxed_integer: boxed_integer -> boxed_integer -> bool
+val eq_compile_time_constant : compile_time_constant -> compile_time_constant -> bool
