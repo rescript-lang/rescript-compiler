@@ -484,7 +484,7 @@ and compile_general_cases
             table
             |> Ext_list.stable_group
               (fun (_,lam) (_,lam1)
-                -> Lam_analysis.eq_lambda lam lam1)
+                -> Lam_analysis.eq_lambda_approx lam lam1)
             |> Ext_list.flat_map
               (fun group ->
                  Ext_list.map_last

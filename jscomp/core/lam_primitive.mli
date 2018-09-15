@@ -26,6 +26,10 @@
 
 type ident = Ident.t 
 
+type record_representation = Types.record_representation =  
+    | Record_regular
+    | Record_float
+
 type t = 
   | Pbytes_to_string
   | Pbytes_of_string
@@ -35,7 +39,7 @@ type t =
   | Psetfield of int  * Lambda.set_field_dbg_info
   | Pfloatfield of int * Lambda.field_dbg_info
   | Psetfloatfield of int * Lambda.set_field_dbg_info
-  | Pduprecord of Types.record_representation * int
+  | Pduprecord of record_representation * int
   | Plazyforce
 
   | Pccall of  Primitive_compat.t
@@ -160,3 +164,5 @@ type t =
   | Pval_from_option_not_nest
   | Psome
   | Psome_not_nest
+
+val eq_primitive_approx : t -> t -> bool  

@@ -23,8 +23,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-
-
 (**used in effect analysis, it is sound but not-complete *)
 let not_zero_constant ( x : Lam_constant.t) =  
   match x with 
@@ -33,6 +31,7 @@ let not_zero_constant ( x : Lam_constant.t) =
   | Const_int64 i  -> i <> 0L
   | Const_nativeint i -> i <> 0n
   | _ -> false 
+
 
 let rec no_side_effects (lam : Lam.t) : bool = 
   match lam with 
@@ -386,17 +385,12 @@ let ok_to_inline_fun_when_app ~body params args =
 
 
 
-
-let eq_record_representation ( p : Types.record_representation) ( p1 : Types.record_representation) = 
-  match p with 
-  | Record_float -> p1 = Record_float
-  | Record_regular -> p1 = Record_regular
 (* compared two lambdas in case analysis, note that we only compare some small lambdas
     Actually this patten is quite common in GADT, people have to write duplicated code 
     due to the type system restriction
 *)
 let rec 
-  eq_lambda (l1 : Lam.t) (l2 : Lam.t) =
+  eq_lambda_approx (l1 : Lam.t) (l2 : Lam.t) =
   match l1 with 
   | Lglobal_module i1 -> 
     begin match l2 with  Lglobal_module i2 -> Ident.same i1  i2  | _ -> false end
@@ -406,30 +400,30 @@ let rec
     begin match l2 with  Lconst c2 -> c1 = c2 (* FIXME *) | _ -> false end 
   | Lapply {fn = l1; args = args1; _} -> 
     begin match l2 with Lapply {fn = l2; args = args2; _} ->
-    eq_lambda l1 l2  && Ext_list.for_all2_no_exn eq_lambda args1 args2
+    eq_lambda_approx l1 l2  && Ext_list.for_all2_no_exn eq_lambda_approx args1 args2
     |_ -> false end 
   | Lifthenelse (a,b,c) -> 
     begin match l2 with  Lifthenelse (a0,b0,c0) ->
-    eq_lambda a a0 && eq_lambda b b0 && eq_lambda c c0
+    eq_lambda_approx a a0 && eq_lambda_approx b b0 && eq_lambda_approx c c0
     | _ -> false end 
   | Lsequence (a,b) -> 
     begin match l2 with Lsequence (a0,b0) ->
-    eq_lambda a a0 && eq_lambda b b0
+    eq_lambda_approx a a0 && eq_lambda_approx b b0
     | _ -> false end 
   | Lwhile (p,b) -> 
-    begin match l2 with  Lwhile (p0,b0) -> eq_lambda p p0 && eq_lambda b b0
+    begin match l2 with  Lwhile (p0,b0) -> eq_lambda_approx p p0 && eq_lambda_approx b b0
     | _ -> false end   
   | Lassign(v0,l0) -> 
-    begin match l2 with  Lassign(v1,l1) -> Ident.same v0 v1 && eq_lambda l0 l1
+    begin match l2 with  Lassign(v1,l1) -> Ident.same v0 v1 && eq_lambda_approx l0 l1
     | _ -> false end 
   | Lstaticraise(id,ls) -> 
     begin match l2 with  Lstaticraise(id1,ls1) -> 
-    (id : int) = id1 && Ext_list.for_all2_no_exn eq_lambda ls ls1 
+    (id : int) = id1 && Ext_list.for_all2_no_exn eq_lambda_approx ls ls1 
     | _ -> false end 
   | Lprim {primitive = p; args = ls; } -> 
     begin match l2 with 
     Lprim {primitive = p1; args = ls1} ->
-    eq_primitive p p1 && Ext_list.for_all2_no_exn eq_lambda ls ls1
+    Lam_primitive.eq_primitive_approx p p1 && Ext_list.for_all2_no_exn eq_lambda_approx ls ls1
     | _ -> false end 
   | Lfunction _  
   | Llet (_,_,_,_)
@@ -441,139 +435,6 @@ let rec
   | Lfor (_,_,_,_,_) 
   | Lsend _
     -> false    
-
-  
-and eq_primitive ( lhs : Lam_primitive.t) (rhs : Lam_primitive.t) = 
-  match lhs with 
-  | Pcreate_extension a -> begin match rhs with Pcreate_extension b -> a = (b : string) | _ -> false end
-  (* | Pcreate_exception a -> begin match rhs with Pcreate_exception b -> a = (b : string) | _ -> false end *)
-  | Pwrap_exn -> rhs = Pwrap_exn
-  | Pbytes_to_string ->  rhs = Pbytes_to_string 
-  | Pbytes_of_string ->  rhs = Pbytes_of_string
-  | Praise -> rhs = Praise
-  | Psequand -> rhs = Psequand
-  | Psequor -> rhs = Psequor 
-  | Pnot -> rhs = Pnot 
-  | Pnegint -> rhs = Pnegint
-  | Paddint -> rhs = Paddint 
-  | Psubint -> rhs = Psubint
-  | Pmulint -> rhs = Pmulint
-  | Pdivint -> rhs = Pdivint
-  | Pmodint -> rhs = Pmodint 
-  | Pandint -> rhs = Pandint
-  | Porint  -> rhs = Porint
-  | Pxorint -> rhs = Pxorint
-  | Plslint -> rhs = Plslint
-  | Plsrint -> rhs = Plsrint
-  | Pasrint -> rhs = Pasrint      
-  | Pval_from_option -> rhs = Pval_from_option
-  | Pval_from_option_not_nest -> rhs = Pval_from_option_not_nest
-  | Plazyforce -> rhs = Plazyforce
-  | Pintoffloat -> rhs = Pintoffloat
-  | Pfloatofint -> rhs = Pfloatofint
-  | Pnegfloat -> rhs =  Pnegfloat
-  | Pabsfloat -> rhs = Pabsfloat
-  | Paddfloat -> rhs = Paddfloat
-  | Psubfloat -> rhs = Psubfloat
-  | Pmulfloat -> rhs = Pmulfloat
-  | Pdivfloat -> rhs = Pdivfloat
-  | Pjs_apply -> rhs = Pjs_apply
-  | Pjs_runtime_apply -> rhs = Pjs_runtime_apply
-  | Pstringlength ->  rhs = Pstringlength
-  | Pstringrefu ->  rhs = Pstringrefu
-  | Pstringrefs ->  rhs = Pstringrefs
-  | Pstringadd  ->  rhs = Pstringadd   
-  | Pbyteslength -> rhs = Pbyteslength
-  | Pbytesrefu ->   rhs = Pbytesrefu
-  | Pbytessetu ->   rhs = Pbytessetu
-  | Pbytesrefs ->   rhs = Pbytesrefs
-  | Pbytessets ->   rhs = Pbytessets  
-  | Pundefined_to_opt -> rhs = Pundefined_to_opt
-  | Pnull_to_opt -> rhs = Pnull_to_opt
-  | Pnull_undefined_to_opt -> rhs = Pnull_undefined_to_opt  
-  | Pis_null -> rhs = Pis_null
-  | Pis_not_none -> rhs = Pis_not_none 
-  | Psome -> rhs = Psome
-  | Psome_not_nest -> rhs = Psome_not_nest 
-  | Pis_undefined -> rhs = Pis_undefined
-  | Pis_null_undefined -> rhs = Pis_null_undefined
-  | Pjs_typeof -> rhs = Pjs_typeof
-  | Pisint -> rhs = Pisint
-  | Pisout -> rhs = Pisout
-  | Pbittest -> rhs = Pbittest
-  | Pdebugger -> rhs = Pdebugger    
-  | Pinit_mod -> rhs = Pinit_mod
-  | Pupdate_mod -> rhs = Pupdate_mod
-  | Pbswap16 -> rhs = Pbswap16
-  | Pjs_function_length -> rhs = Pjs_function_length
-  (* | Pjs_string_of_small_array -> rhs = Pjs_string_of_small_array *)
-  (* | Pjs_is_instance_array -> rhs = Pjs_is_instance_array *)
-  | Pcaml_obj_length -> rhs = Pcaml_obj_length
-  | Pcaml_obj_set_length -> rhs = Pcaml_obj_set_length
-  | Pccall {prim_name = n0 ;  prim_native_name = nn0} ->  (match rhs with Pccall {prim_name = n1; prim_native_name = nn1} ->    n0 = n1 && nn0 = nn1 | _ -> false )    
-  | Pfield (n0, _dbg_info0) ->  (match rhs with Pfield (n1, _dbg_info1) ->  n0 = n1  | _ -> false )    
-  | Psetfield(i0, _dbg_info0) -> (match rhs with Psetfield(i1, _dbg_info1) ->  i0 = i1  | _ -> false)
-  | Pglobal_exception ident -> (match rhs with Pglobal_exception ident2 ->  Ident.same ident ident2 | _ -> false )
-  | Pmakeblock (i, _tag_info, mutable_flag) -> (match rhs with Pmakeblock(i1,_,mutable_flag1) ->  i = i1 && mutable_flag = mutable_flag1  | _ -> false)
-  | Pfloatfield (i0,_dbg_info) -> (match rhs with Pfloatfield (i1,_) -> i0 = i1   | _ -> false)
-  | Psetfloatfield (i0,_dbg_info) ->  (match rhs with Psetfloatfield(i1,_) -> i0 = i1  | _ -> false)
-  | Pduprecord (record_repesentation0,i1) -> (match rhs with Pduprecord(record_repesentation1,i2) ->  eq_record_representation record_repesentation0 record_repesentation1 && i1 = i2    | _ -> false)
-  | Pjs_call (prim_name, arg_types, ffi) ->  ( match rhs with Pjs_call(prim_name1, arg_types1,ffi1) -> prim_name = prim_name1 && arg_types = arg_types1 && ffi = ffi1 | _ -> false)
-  | Pjs_object_create obj_create -> (match rhs with Pjs_object_create obj_create1 -> obj_create = obj_create1 | _ -> false )
-  | Pintcomp comparison -> (match rhs with Pintcomp comparison1 -> Lam_compat.eq_comparison comparison  comparison1  | _ -> false )    
-  | Pfloatcomp comparison -> (match rhs with Pfloatcomp comparison1 -> Lam_compat.eq_comparison comparison  comparison1 | _ -> false)
-  | Pjscomp comparison ->  (match rhs with  Pjscomp comparison1 -> Lam_compat.eq_comparison comparison  comparison1  | _ -> false )    
-  | Poffsetint i0 ->   (match rhs with  Poffsetint i1 -> i0 = i1 | _ -> false )   
-  | Poffsetref i0 ->  (match rhs with Poffsetref i1 -> i0 = i1   | _ -> false)
-  | Pmakearray array_kind -> (match rhs with Pmakearray array_kind1 -> Lam_compat.eq_array_kind array_kind array_kind1 | _ -> false  )
-  | Parraylength  -> rhs = Parraylength
-  | Parrayrefu  array_kind -> (match rhs with Parrayrefu array_kind1 -> Lam_compat.eq_array_kind array_kind array_kind1 | _ -> false  )
-  | Parraysetu  array_kind -> (match rhs with Parraysetu array_kind1 -> Lam_compat.eq_array_kind array_kind array_kind1 | _ -> false  ) 
-  | Parrayrefs array_kind -> (match rhs with Parrayrefs array_kind1 -> Lam_compat.eq_array_kind array_kind array_kind1 | _ -> false  )
-  | Parraysets  array_kind -> (match rhs with Parraysets array_kind1 -> Lam_compat.eq_array_kind array_kind array_kind1 | _ -> false  )  
-  | Pbintofint  boxed_integer -> (match rhs with Pbintofint boxed_integer1 -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
-  | Pintofbint  boxed_integer -> (match rhs with Pintofbint boxed_integer1 -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
-  | Pnegbint  boxed_integer -> (match rhs with Pnegbint boxed_integer1 -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
-  | Paddbint  boxed_integer -> (match rhs with Paddbint boxed_integer1 -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
-  | Psubbint  boxed_integer -> (match rhs with Psubbint boxed_integer1 -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
-  | Pmulbint  boxed_integer -> (match rhs with Pmulbint boxed_integer1 -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
-  | Pdivbint  boxed_integer -> (match rhs with Pdivbint boxed_integer1 -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
-  | Pmodbint  boxed_integer -> (match rhs with Pmodbint boxed_integer1 -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
-  | Pandbint  boxed_integer -> (match rhs with Pandbint boxed_integer1 -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
-  | Porbint boxed_integer ->   (match rhs with Porbint  boxed_integer1 -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
-  | Pxorbint  boxed_integer -> (match rhs with Pxorbint boxed_integer1 -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
-  | Plslbint  boxed_integer -> (match rhs with Plslbint boxed_integer1 -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
-  | Plsrbint  boxed_integer -> (match rhs with Plsrbint boxed_integer1 -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
-  | Pasrbint  boxed_integer -> (match rhs with Pasrbint boxed_integer1 -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
-  | Pbbswap boxed_integer ->   (match rhs with Pbbswap boxed_integer1  -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
-  | Pcvtbint  (boxed_integer, boxed_integer1) -> (match rhs with Pcvtbint (boxed_integer10, boxed_integer11) -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer10 && Lam_compat.eq_boxed_integer boxed_integer1 boxed_integer11 | _ -> false )
-  | Pbintcomp  (boxed_integer , comparison) -> (match rhs with Pbintcomp(boxed_integer1, comparison1) -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer1 && Lam_compat.eq_comparison comparison comparison1 | _ -> false)  
-  | Pbigarraydim dim -> (match rhs with Pbigarraydim dim1 -> dim = dim1 | _ -> false )
-  | Pstring_load_16 str ->  (match  rhs with Pstring_load_16 str1 -> str = str1  | _ -> false )
-  | Pstring_load_32 b -> (match rhs with Pstring_load_32 b1 -> b = b1 | _ -> false )    
-  | Pstring_load_64 b -> (match rhs with Pstring_load_64 b1 -> b = b1 | _ -> false )    
-  | Pstring_set_16 b -> (match rhs with Pstring_set_16 b1 -> b = b1 | _ -> false )    
-  | Pstring_set_32 b -> (match rhs with Pstring_set_32 b1 -> b = b1 | _ -> false )    
-  | Pstring_set_64 b -> (match rhs with Pstring_set_64 b1 -> b = b1 | _ -> false )      
-  | Pbigstring_load_16 b -> (match rhs with Pbigstring_load_16 b1 -> b = b1 | _ -> false )      
-  | Pbigstring_load_32 b -> (match rhs with Pbigstring_load_32 b1 -> b = b1 | _ -> false )      
-  | Pbigstring_load_64 b -> (match rhs with Pbigstring_load_64 b1 -> b = b1 | _ -> false )      
-  | Pbigstring_set_16 b -> (match rhs with Pbigstring_set_16 b1 -> b = b1 | _ -> false )      
-  | Pbigstring_set_32 b -> (match rhs with Pbigstring_set_32 b1 -> b = b1 | _ -> false )      
-  | Pbigstring_set_64 b -> (match rhs with Pbigstring_set_64 b1 -> b = b1 | _ -> false )      
-  | Pctconst compile_time_constant -> (match rhs with Pctconst compile_time_constant1 -> Lam_compat.eq_compile_time_constant compile_time_constant compile_time_constant1 | _ -> false)
-  | Pjs_unsafe_downgrade ( s,_loc) -> (match rhs with Pjs_unsafe_downgrade (s1,_) -> s = s1 | _ -> false)  
-  | Pjs_fn_make i -> (match rhs with Pjs_fn_make i1 -> i = i1 | _ -> false)
-  | Pjs_fn_run i -> (match rhs with Pjs_fn_run i1 -> i = i1 | _ -> false)
-  | Pjs_fn_method i -> (match rhs with Pjs_fn_method i1 -> i = i1 | _ ->  false )
-  | Pjs_fn_runmethod i -> (match rhs with Pjs_fn_runmethod i1 -> i = i1 | _ -> false ) 
-
-  | Pbigarrayref  _ 
-  | Pbigarrayset _ 
-  | Praw_js_function _
-  | Praw_js_code_exp _ 
-  | Praw_js_code_stmt _ -> false (* TOO lazy, here comparison is only approximation*)
-  
 
 
 (* TODO:  We can relax this a bit later,
