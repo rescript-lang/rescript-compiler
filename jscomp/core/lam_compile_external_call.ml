@@ -268,7 +268,7 @@ let translate_ffi
     (* TODO: fix in rest calling convention *)   
     add_eff eff        
       begin 
-        (match cxt.st with 
+        (match cxt.continuation with 
          | Declare (_, id) | Assign id  ->
            (* Format.fprintf Format.err_formatter "%a@."Ident.print  id; *)
            Ext_ident.make_js_object id 
@@ -294,7 +294,7 @@ let translate_ffi
     let fn =  translate_scoped_module_val module_name fn scopes in 
     add_eff eff 
       begin 
-        (match cxt.st with 
+        (match cxt.continuation with 
          | Declare (_, id) | Assign id  ->
            (* Format.fprintf Format.err_formatter "%a@."Ident.print  id; *)
            Ext_ident.make_js_object id 

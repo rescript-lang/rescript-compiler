@@ -69,7 +69,7 @@ type continuation =
 type jmp_table =   value  HandlerMap.t
 
 type t = {
-  st : continuation ;
+  continuation : continuation ;
   should_return : return_type;
   jmp_table : jmp_table;
   meta : Lam_stats.t ;
