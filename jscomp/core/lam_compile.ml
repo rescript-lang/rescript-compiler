@@ -558,12 +558,12 @@ and compile_string_cases cxt switch_exp table default =
     for high order currying *)
 and
   compile_lambda
-    ({continuation = st ; should_return} as lambda_cxt : Lam_compile_context.t)
+    ({continuation = lam_cont ; should_return} as lambda_cxt : Lam_compile_context.t)
     (cur_lam : Lam.t)  : Js_output.t  =
   begin
     match cur_lam with
     | Lfunction{ params; body} ->
-      Js_output.output_of_expression st should_return cur_lam
+      Js_output.output_of_expression lam_cont should_return cur_lam
         (E.ocaml_fun
            params
            (* Invariant:  jmp_table can not across function boundary,
@@ -577,25 +577,24 @@ and
 
 
     | Lapply{
-        fn = Lapply{ fn = an; args =  fn_args; status = App_na ; };
+        fn = Lapply{ fn; args =  fn_args; status = App_na ; };
         args;
         status = App_na; loc }
       ->
       (* After inlining we can generate such code,
          see {!Ari_regress_test}
       *)
-      compile_lambda  lambda_cxt
-        (Lam.apply an (Ext_list.append fn_args  args)  loc  App_na )
+      compile_lambda  lambda_cxt (Lam.apply fn (Ext_list.append fn_args  args)  loc  App_na )
     (* External function calll *)
     | Lapply{ fn =
                 Lprim{primitive = Pfield (n,_);
                       args = [  Lglobal_module id];_};
-              args = args_lambda;
+              args ;
               status = App_na | App_ml_full} ->
       (* Note we skip [App_js_full] since [get_exp_with_args] dont carry
          this information, we should fix [get_exp_with_args]
       *)
-      compile_external_field_apply lambda_cxt cur_lam  args_lambda id n  lambda_cxt.meta.env
+      compile_external_field_apply lambda_cxt cur_lam  args id n  lambda_cxt.meta.env
 
 
     | Lapply{ fn; args = args_lambda;   status} ->
@@ -664,7 +663,7 @@ and
             end
           | _ ->
 
-            Js_output.output_of_block_and_expression st should_return cur_lam args_code
+            Js_output.output_of_block_and_expression lam_cont should_return cur_lam args_code
               (E.call ~info:(match fn, status with
                    | _,  App_ml_full ->
                      {arity = Full ; call_info = Call_ml}
@@ -700,9 +699,9 @@ and
       let v =  compile_recursive_lets lambda_cxt  id_args in
       Js_output.append_output v  (compile_lambda lambda_cxt  body)
 
-    | Lvar id -> Js_output.output_of_expression st  should_return cur_lam (E.var id )
+    | Lvar id -> Js_output.output_of_expression lam_cont  should_return cur_lam (E.var id )
     | Lconst c ->
-      Js_output.output_of_expression st should_return cur_lam (Lam_compile_const.translate c)
+      Js_output.output_of_expression lam_cont should_return cur_lam (Lam_compile_const.translate c)
 
     | Lprim {primitive = Pfield (n,_);
              args = [ Lglobal_module id ]; _}
@@ -741,7 +740,7 @@ and
             | {block = []; value = Some r_expr}
               ->
               Js_output.output_of_block_and_expression
-                st
+                lam_cont
                 should_return cur_lam l_block (E.and_ l_expr r_expr)
             | { block = r_block; value = Some r_expr} ->
               begin match lambda_cxt.continuation with
@@ -795,7 +794,7 @@ and
             | {block = []; value = Some r_expr} ->
               let exp =  E.or_ l_expr r_expr  in
               Js_output.output_of_block_and_expression
-                st should_return cur_lam l_block exp
+                lam_cont should_return cur_lam l_block exp
             | {block = r_block; value = Some r_expr} ->
               begin match lambda_cxt.continuation with
                 | Assign v ->
@@ -835,7 +834,7 @@ and
       ->
       (* [%bs.debugger] guarantees that the expression does not matter
          TODO: make it even safer      *)
-      Js_output.output_of_block_and_expression st should_return cur_lam
+      Js_output.output_of_block_and_expression lam_cont should_return cur_lam
       S.debugger_block E.unit
 
 
@@ -866,7 +865,7 @@ and
                  (Ext_list.append block  [x]),  E.dot (E.var b) property
               )
           in
-          Js_output.output_of_block_and_expression st should_return cur_lam
+          Js_output.output_of_block_and_expression lam_cont should_return cur_lam
             blocks ret
         | _ -> assert false
       end
@@ -891,7 +890,7 @@ and
             let obj_output = compile_lambda  need_value_no_return_cxt obj in
             let arg_output = compile_lambda need_value_no_return_cxt arg in
             let cont obj_block arg_block obj_code =
-              Js_output.output_of_block_and_expression st should_return cur_lam
+              Js_output.output_of_block_and_expression lam_cont should_return cur_lam
                 (
                   match obj_code with
                   | None -> Ext_list.append obj_block  arg_block
@@ -953,7 +952,7 @@ and
         | [Lfunction{arity = len; params; body} ]
           when len = arity ->
           Js_output.output_of_block_and_expression
-            st
+            lam_cont
             should_return
             cur_lam
             []
@@ -984,7 +983,7 @@ and
          2. inline functor application
       *)
       let exp = Lam_compile_global.expand_global_module i lambda_cxt.meta.env  in
-      Js_output.output_of_block_and_expression st should_return cur_lam [] exp
+      Js_output.output_of_block_and_expression lam_cont should_return cur_lam [] exp
     | Lprim{ primitive = Pjs_object_create labels ; args ; loc}
       ->
       let args_block, args_expr =
@@ -998,7 +997,7 @@ and
       let block, exp  =
         Lam_compile_external_obj.assemble_args_obj labels args_expr
       in
-      Js_output.output_of_block_and_expression st should_return cur_lam
+      Js_output.output_of_block_and_expression lam_cont should_return cur_lam
         (Ext_list.append args_code block) exp
 
     | Lprim{primitive = prim; args =  args_lambda; loc} ->
@@ -1013,7 +1012,7 @@ and
       let args_code  : J.block = List.concat args_block in
       let exp  =  (* TODO: all can be done in [compile_primitive] *)
         Lam_compile_primitive.translate loc lambda_cxt  prim args_expr in
-      Js_output.output_of_block_and_expression st should_return cur_lam args_code exp
+      Js_output.output_of_block_and_expression lam_cont should_return cur_lam args_code exp
 
 
     | Lsequence (l1,l2) ->
@@ -1040,7 +1039,7 @@ and
       begin
         match compile_lambda {lambda_cxt with continuation = NeedValue ; should_return = ReturnFalse } p with
         | {block = b; value =  Some e} ->
-          begin match st with
+          begin match lam_cont with
             | NeedValue  ->
               begin match
                   compile_lambda lambda_cxt  t_br,
@@ -1216,7 +1215,7 @@ and
             | Some x -> Default x
             | None -> Complete in
           begin
-            match st with
+            match lam_cont with
             (* TODO: can be avoided when cases are less than 3 *)
             | NeedValue ->
               let v = Ext_ident.create_tmp () in
@@ -1293,7 +1292,7 @@ and
              end )
       in
       begin
-        match st with  (* Needs declare first *)
+        match lam_cont with  (* Needs declare first *)
         | NeedValue ->
           (* Necessary since switch is a statement, we need they return
              the same value for different branches -- can be optmized
@@ -1384,7 +1383,7 @@ and
           (fun {bindings} -> Ext_list.map bindings 
             (fun x -> S.declare_variable ~kind:Variable x))  in
 
-      begin match  st with
+      begin match  lam_cont with
         (* could be optimized when cases are less than 3 *)
         | NeedValue ->
           let v = Ext_ident.create_tmp  () in
@@ -1450,7 +1449,7 @@ and
            ] in
 
          begin
-           match st, should_return  with
+           match lam_cont, should_return  with
            | Declare (_kind, x), _  ->  (* FIXME _kind not used *)
              Js_output.make (Ext_list.append block  [S.declare_unit x ])
            | Assign x, _  ->
@@ -1524,7 +1523,7 @@ and
 
           | _ -> assert false end in
       begin
-        match st, should_return with
+        match lam_cont, should_return with
         | EffectCall, ReturnFalse  -> Js_output.make block
         | EffectCall, ReturnTrue _  ->
           Js_output.make (Ext_list.append block  S.return_unit )
@@ -1558,7 +1557,7 @@ and
           end
       in
       begin
-        match st, should_return with
+        match lam_cont, should_return with
         | EffectCall, ReturnFalse -> Js_output.make block
         | EffectCall, ReturnTrue _ ->
           Js_output.make
@@ -1603,14 +1602,14 @@ and
         ] in
 
       begin
-        match st with
+        match lam_cont with
         | NeedValue ->
           let v = Ext_ident.create_tmp () in
           Js_output.make (S.declare_variable ~kind:Variable v :: aux (Assign v))  ~value:(E.var v )
         | Declare (kind,  id) ->
           Js_output.make (S.declare_variable ~kind
                             id :: aux (Assign id))
-        | Assign _ | EffectCall -> Js_output.make (aux st)
+        | Assign _ | EffectCall -> Js_output.make (aux lam_cont)
       end
 
 
@@ -1685,13 +1684,13 @@ and
           | None ->
             let cont =
               Js_output.output_of_block_and_expression
-                st should_return cur_lam (List.concat args_code)
+                lam_cont should_return cur_lam (List.concat args_code)
             in
             cont (k nobj)
           | Some (obj_code, v) ->
             let cont2 obj_code v =
               Js_output.output_of_block_and_expression
-                st should_return cur_lam
+                lam_cont should_return cur_lam
                 ( List.concat args_code @ [obj_code]) v in
             let cobj = E.var v in
             cont2 obj_code (k cobj)
