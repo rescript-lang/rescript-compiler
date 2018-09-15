@@ -609,13 +609,13 @@ let ocaml_obj_as_js_object
           Location.raise_errorf ~loc "Only method support currently"
       ) clfs  ([], [], [], false) in
   let pval_type =
-    Ext_list.fold_right2
+    Ext_list.fold_right2  labels label_types public_obj_type
       (fun label label_type acc ->
          Ast_compatible.label_arrow
            ~loc:label.Asttypes.loc
            label.Asttypes.txt
            label_type acc           
-      ) labels label_types public_obj_type in
+      ) in
   Ast_external_mk.local_extern_cont
     loc
     ~pval_prim:(External_process.pval_prim_of_labels labels)

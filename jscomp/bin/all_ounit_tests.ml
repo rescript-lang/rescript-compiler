@@ -6150,7 +6150,11 @@ val map_append :  ('b -> 'a) -> 'b list -> 'a list -> 'a list
 
 val fold_right : ('a -> 'b -> 'b) -> 'a list -> 'b -> 'b
 
-val fold_right2 : ('a -> 'b -> 'c -> 'c) -> 'a list -> 'b list -> 'c -> 'c
+val fold_right2 : 
+  'a list -> 
+  'b list -> 
+  'c -> 
+  ('a -> 'b -> 'c -> 'c) ->  'c
 
 val map2 : 
   ('a -> 'b -> 'c) ->
@@ -6159,10 +6163,11 @@ val map2 :
   'c list
 
 val fold_left_with_offset : 
-  (int -> 'acc -> 'a -> 'acc) -> 
-  int -> 
+  'a list -> 
   'acc -> 
-  'a list -> 'acc 
+  int -> 
+  ('a -> 'acc ->  int ->  'acc) ->   
+  'acc 
 
 
 (** @unused *)
@@ -6511,7 +6516,7 @@ let rec fold_right f l acc =
   | a0::a1::a2::a3::a4::rest -> 
     f a0 (f a1 (f a2 (f a3 (f a4 (fold_right f rest acc)))))  
 
-let rec fold_right2 f l r acc = 
+let rec fold_right2 l r acc f = 
   match l,r  with  
   | [],[] -> acc 
   | [a0],[b0] -> f a0 b0 acc 
@@ -6522,7 +6527,7 @@ let rec fold_right2 f l r acc =
   | [a0;a1;a2;a3;a4], [b0;b1;b2;b3;b4] -> 
     f a0 b0 (f a1 b1 (f a2 b2 (f a3 b3 (f a4 b4 acc))))
   | a0::a1::a2::a3::a4::arest, b0::b1::b2::b3::b4::brest -> 
-    f a0 b0 (f a1 b1 (f a2 b2 (f a3 b3 (f a4 b4 (fold_right2 f arest brest acc)))))  
+    f a0 b0 (f a1 b1 (f a2 b2 (f a3 b3 (f a4 b4 (fold_right2 arest brest acc f )))))  
   | _, _ -> invalid_arg "Ext_list.fold_right2"
 
 let rec map2 f l r = 
@@ -6560,10 +6565,15 @@ let rec map2 f l r =
     c0::c1::c2::c3::c4::map2 f arest brest
   | _, _ -> invalid_arg "Ext_list.map2"
 
-let rec fold_left_with_offset f i accu l =
+let rec fold_left_with_offset l accu i f =
   match l with
   | [] -> accu
-  | a::l -> fold_left_with_offset f (succ i) (f i accu a) l
+  | a::l -> 
+    fold_left_with_offset 
+    l     
+    (f  a accu  i)  
+    (i + 1)
+    f  
 
 
 let rec filter_map (f: 'a -> 'b option) xs = 

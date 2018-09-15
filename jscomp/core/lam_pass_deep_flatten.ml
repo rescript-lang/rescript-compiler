@@ -155,7 +155,7 @@ let deep_flatten
            ..
         ]}
       *)
-      let (res,l) = flatten acc arg  in
+      let (res,accux) = flatten acc arg  in
       begin match id.name, str, res with
         | ("match" | "include"| "param"),
           (Alias | Strict | StrictOpt),
@@ -163,21 +163,21 @@ let deep_flatten
           begin match eliminate_tuple id body Int_map.empty with
             | Some (tuple_mapping, body) ->
               flatten (
-                Ext_list.fold_left_with_offset
-                  (fun i acc (arg : Lam.t) ->
+                Ext_list.fold_left_with_offset args accux  0
+                  (fun arg  acc i ->
                      match Int_map.find_opt i tuple_mapping with
                      | None ->
                         Lam_group.nop_cons arg acc
                      | Some key ->
                        Lam_group.single str key arg :: acc
                   )
-                  0
-                  l args
+                  
+                  
               ) body
             | None ->
-              flatten (Single(str, id, res ) :: l) body
+              flatten (Single(str, id, res ) :: accux) body
           end
-        | _ -> flatten (Single(str, id, res ) :: l) body
+        | _ -> flatten (Single(str, id, res ) :: accux) body
       end
     | Lletrec (bind_args, body) ->
 

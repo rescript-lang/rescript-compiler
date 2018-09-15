@@ -131,9 +131,10 @@ let from_labels ~loc arity labels
       (Ast_compatible.object_ ~loc
          (Ext_list.map2 (fun x y -> x.Asttypes.txt ,[], y) labels tyvars) Closed)
   in
-  Ext_list.fold_right2
-    (fun {Asttypes.loc ; txt = label }
-      tyvar acc -> Ast_compatible.label_arrow ~loc label tyvar acc) labels tyvars  result_type
+  Ext_list.fold_right2 labels tyvars  result_type
+    (fun label (* {loc ; txt = label }*)
+      tyvar acc -> 
+      Ast_compatible.label_arrow ~loc:label.loc label.txt tyvar acc) 
 
 
 let make_obj ~loc xs =

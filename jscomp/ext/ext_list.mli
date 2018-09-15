@@ -46,7 +46,11 @@ val map_append :  ('b -> 'a) -> 'b list -> 'a list -> 'a list
 
 val fold_right : ('a -> 'b -> 'b) -> 'a list -> 'b -> 'b
 
-val fold_right2 : ('a -> 'b -> 'c -> 'c) -> 'a list -> 'b list -> 'c -> 'c
+val fold_right2 : 
+  'a list -> 
+  'b list -> 
+  'c -> 
+  ('a -> 'b -> 'c -> 'c) ->  'c
 
 val map2 : 
   ('a -> 'b -> 'c) ->
@@ -55,10 +59,11 @@ val map2 :
   'c list
 
 val fold_left_with_offset : 
-  (int -> 'acc -> 'a -> 'acc) -> 
-  int -> 
+  'a list -> 
   'acc -> 
-  'a list -> 'acc 
+  int -> 
+  ('a -> 'acc ->  int ->  'acc) ->   
+  'acc 
 
 
 (** @unused *)

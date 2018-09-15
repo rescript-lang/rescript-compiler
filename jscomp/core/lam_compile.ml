@@ -1315,8 +1315,10 @@ and
       (* [i] is the jump table, [largs] is the arguments passed to [Lstaticcatch]*)
       begin
         match Lam_compile_context.find_exn i cxt  with
-        | {exit_id; args ; order_id} ->
-          Ext_list.fold_right2
+        | {exit_id; bindings ; order_id} ->
+          Ext_list.fold_right2 largs bindings
+           (Js_output.make [S.assign exit_id (E.small_int  order_id)]
+              ~value:E.undefined)
            (fun (x : Lam.t) (arg: Ident.t) acc ->
             let new_output =
                 match x with
@@ -1327,9 +1329,7 @@ and
                   compile_lambda {cxt with st = Assign arg ; should_return =  ReturnFalse} x
             in Js_output.append_output new_output acc
            )
-           largs args
-           (Js_output.make [S.assign exit_id (E.small_int  order_id)]
-              ~value:E.undefined)
+           
         | exception Not_found ->
           assert false
           (* staticraise is always enclosed by catch  *)

@@ -42,7 +42,7 @@ type jbl_label = int
 
 type value = {
     exit_id : Ident.t ; 
-    args : Ident.t list ;
+    bindings : Ident.t list ;
     order_id : int
   }
 
