@@ -44,7 +44,9 @@ val append : 'a list -> 'a list -> 'a list
 
 val map_append :  ('b -> 'a) -> 'b list -> 'a list -> 'a list
 
-val fold_right : ('a -> 'b -> 'b) -> 'a list -> 'b -> 'b
+val fold_right : 
+  'a list -> 'b -> 
+  ('a -> 'b -> 'b) -> 'b
 
 val fold_right2 : 
   'a list -> 

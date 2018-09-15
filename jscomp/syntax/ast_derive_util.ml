@@ -64,14 +64,14 @@ let destruct_label_declarations ~loc
     (labels : Parsetree.label_declaration list) : 
   (Parsetree.core_type * Parsetree.expression) list * string list 
   =
-  Ext_list.fold_right
-    (fun   ({pld_name = {txt}; pld_type} : Parsetree.label_declaration) 
+  Ext_list.fold_right labels ([], [])
+    (fun {pld_name = {txt}; pld_type} 
       (core_type_exps, labels) -> 
       ((pld_type, 
         Exp.field (Exp.ident {txt = Lident arg_name ; loc}) 
           {txt = Lident txt ; loc}) :: core_type_exps),
       txt :: labels 
-    ) labels ([], [])
+    ) 
 
 let notApplicable 
   loc derivingName = 

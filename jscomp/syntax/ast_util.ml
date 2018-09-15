@@ -428,8 +428,8 @@ let ocaml_obj_as_js_object
       begin match tyvars with
         | x :: rest ->
           let method_rest =
-            Ext_list.fold_right (fun v acc -> Ast_compatible.arrow ~loc  v acc)
-              rest result in         
+            Ext_list.fold_right rest result (fun v acc -> Ast_compatible.arrow ~loc  v acc)
+          in         
           to_method_type loc mapper Ast_compatible.no_label x method_rest
         | _ -> assert false
       end in          
@@ -455,8 +455,8 @@ let ocaml_obj_as_js_object
       begin match tyvars with
         | x :: rest ->
           let method_rest =
-            Ext_list.fold_right (fun v acc -> Ast_compatible.arrow ~loc  v acc)
-              rest result in         
+            Ext_list.fold_right rest result (fun v acc -> Ast_compatible.arrow ~loc  v acc)
+          in         
           (to_method_callback_type loc mapper  Ast_compatible.no_label self_type
              (Ast_compatible.arrow ~loc  x method_rest))
         | _ -> assert false
@@ -470,7 +470,7 @@ let ocaml_obj_as_js_object
       while for label argument it is [@bs.this] which depends internal object
   *)
   let internal_label_attr_types, public_label_attr_types  = 
-    Ext_list.fold_right
+    Ext_list.fold_right clfs ([], []) 
       (fun ({pcf_loc  = loc} as x  : Parsetree.class_field) 
         (label_attr_types, public_label_attr_types) ->
         match x.pcf_desc with
@@ -528,11 +528,11 @@ let ocaml_obj_as_js_object
         | Pcf_extension _
         | Pcf_constraint _ ->
           Location.raise_errorf ~loc "Only method support currently"
-      ) clfs ([], []) in
+      ) in
   let internal_obj_type = Ast_core_type.make_obj ~loc internal_label_attr_types in
   let public_obj_type = Ast_core_type.make_obj ~loc public_label_attr_types in
   let (labels,  label_types, exprs, _) =
-    Ext_list.fold_right
+    Ext_list.fold_right clfs  ([], [], [], false)
       (fun (x  : Parsetree.class_field)
         (labels,
          label_types,
@@ -607,7 +607,7 @@ let ocaml_obj_as_js_object
         | Pcf_extension _
         | Pcf_constraint _ ->
           Location.raise_errorf ~loc "Only method support currently"
-      ) clfs  ([], [], [], false) in
+      )  in
   let pval_type =
     Ext_list.fold_right2  labels label_types public_obj_type
       (fun label label_type acc ->
@@ -632,12 +632,12 @@ let record_as_js_object
   : Parsetree.expression_desc = 
 
   let labels,args, arity =
-    Ext_list.fold_right (fun ({Location.txt ; loc}, e) (labels,args,i) -> 
+    Ext_list.fold_right label_exprs ([],[],0) (fun ({txt ; loc}, e) (labels,args,i) -> 
         match txt with
         | Longident.Lident x ->
           ({Asttypes.loc = loc ; txt = x} :: labels, (x, self.expr self e) :: args, i + 1)
         | Ldot _ | Lapply _ ->  
-          Location.raise_errorf ~loc "invalid js label ") label_exprs ([],[],0) in
+          Location.raise_errorf ~loc "invalid js label ")  in
   Ast_external_mk.local_external_obj loc 
     ~pval_prim:(External_process.pval_prim_of_labels labels)
     ~pval_type:(Ast_core_type.from_labels ~loc arity labels) 

@@ -72,6 +72,12 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
         ) label_declarations in
     let setter_accessor, makeType, labels =
       Ext_list.fold_right
+        label_declarations
+        ([],
+         (if has_optional_field then
+            Ast_compatible.arrow ~loc  (Ast_literal.type_unit ()) core_type
+          else  core_type),
+         [])
         (fun
           ({pld_name =
               {txt = label_name; loc = label_loc} as pld_name;
@@ -142,12 +148,7 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
           acc,
           maker,
           (is_optional, newLabel)::labels
-        ) label_declarations
-        ([],
-         (if has_optional_field then
-            Ast_compatible.arrow ~loc  (Ast_literal.type_unit ()) core_type
-          else  core_type),
-         [])
+        ) 
     in
     newTdcl,
     (if is_private then

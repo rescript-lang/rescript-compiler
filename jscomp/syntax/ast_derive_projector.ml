@@ -79,9 +79,9 @@ let init () =
                                                        (fun x -> Exp.ident {loc ; txt = Longident.Lident x})                                                       
                                                     ) )) core_type
                               in 
-                              Ext_list.fold_right  (fun var b -> 
+                              Ext_list.fold_right vars exp (fun var b -> 
                                   Ast_compatible.fun_  (Pat.var {loc ; txt = var}) b 
-                                ) vars exp  
+                                ) 
 
                             end)
                   )
@@ -121,10 +121,9 @@ let init () =
                         | Pcstr_record _ -> assert false in 
 #end                        
                       Ast_comb.single_non_rec_val {loc ; txt = (Ext_string.uncapitalize_ascii con_name)}
-                        (Ext_list.fold_right 
-                           (fun x acc -> Ast_compatible.arrow x acc) 
-                           pcd_args
-                           core_type))
+                        (Ext_list.fold_right pcd_args core_type
+                           (fun x acc -> Ast_compatible.arrow x acc)
+                           ))
               | Ptype_open | Ptype_abstract -> 
               Ast_derive_util.notApplicable tdcl.ptype_loc derivingName ; 
               [] 

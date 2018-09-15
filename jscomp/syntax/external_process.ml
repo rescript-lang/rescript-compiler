@@ -423,7 +423,7 @@ let handle_attributes
         if String.length prim_name <> 0 then
           Location.raise_errorf ~loc "[@@bs.obj] expect external names to be empty string";
         let arg_kinds, new_arg_types_ty, result_types =
-          Ext_list.fold_right
+          Ext_list.fold_right arg_types_ty ( [], [], [])
             (fun (label,ty,attr,loc) ( arg_labels, arg_types, result_types) ->
                let arg_label = Ast_compatible.convert label in
                let new_arg_label, new_arg_types,  output_tys =
@@ -517,8 +517,7 @@ let handle_attributes
                (
                  new_arg_label::arg_labels,
                  new_arg_types,
-                 output_tys)) arg_types_ty
-            ( [], [], []) in
+                 output_tys)) in
 
         let result =
           if Ast_core_type.is_any  result_type then
@@ -542,7 +541,22 @@ let handle_attributes
   else
     let splice = st.splice in
     let arg_type_specs, new_arg_types_ty, arg_type_specs_length   =
-      Ext_list.fold_right
+      Ext_list.fold_right arg_types_ty
+        (match st with
+         | {val_send_pipe = Some obj; _ } ->
+           let arg_type, new_ty = get_arg_type ~nolabel:true false obj in
+           begin match arg_type with
+             | Arg_cst _ ->
+               Location.raise_errorf ~loc:obj.ptyp_loc "[@bs.as] is not supported in bs.send type "
+             | _ ->
+               (* more error checking *)
+               [External_arg_spec.empty_kind arg_type]
+               ,
+               [Ast_compatible.no_label, new_ty, [], obj.ptyp_loc]
+               ,0
+           end
+
+         | {val_send_pipe = None ; _ } -> [],[], 0)
         (fun (label,ty,attr,loc) (arg_type_specs, arg_types, i) ->
            let arg_label = Ast_compatible.convert label in
            let arg_label, arg_type, new_arg_types =
@@ -585,22 +599,7 @@ let handle_attributes
             if arg_type = Ignore then i
             else i + 1
            )
-        ) arg_types_ty
-        (match st with
-         | {val_send_pipe = Some obj; _ } ->
-           let arg_type, new_ty = get_arg_type ~nolabel:true false obj in
-           begin match arg_type with
-             | Arg_cst _ ->
-               Location.raise_errorf ~loc:obj.ptyp_loc "[@bs.as] is not supported in bs.send type "
-             | _ ->
-               (* more error checking *)
-               [External_arg_spec.empty_kind arg_type]
-               ,
-               [Ast_compatible.no_label, new_ty, [], obj.ptyp_loc]
-               ,0
-           end
-
-         | {val_send_pipe = None ; _ } -> [],[], 0) in
+        )  in
 
     let ffi : External_ffi_types.attr  = match st with
       | {set_index = true;
@@ -953,7 +952,7 @@ let handle_attributes_as_string
 let pval_prim_of_labels (labels : string Asttypes.loc list)
    =
   let arg_kinds =
-    Ext_list.fold_right
+    Ext_list.fold_right labels [] 
       (fun {Asttypes.loc ; txt } arg_kinds
         ->
           let arg_label =
@@ -962,7 +961,7 @@ let pval_prim_of_labels (labels : string Asttypes.loc list)
           {External_arg_spec.arg_type = Nothing ;
            arg_label  } :: arg_kinds
       )
-      labels [] in
+      in
   let encoding =
     External_ffi_types.to_string (Ffi_obj_create arg_kinds) in
   [""; encoding]
@@ -972,8 +971,11 @@ let pval_prim_of_option_labels
 (ends_with_unit : bool)
   =
   let arg_kinds =
-    Ext_list.fold_right
-      (fun (is_option,{Asttypes.loc ; txt }) arg_kinds
+    Ext_list.fold_right labels
+      (if ends_with_unit then
+         [External_arg_spec.empty_kind Extern_unit]
+       else [])
+      (fun (is_option,{loc ; txt }) arg_kinds
         ->
           let label_name = (Lam_methname.translate ~loc txt) in
           let arg_label =
@@ -983,11 +985,7 @@ let pval_prim_of_option_labels
           in
           {External_arg_spec.arg_type = Nothing ;
            arg_label  } :: arg_kinds
-      )
-      labels
-      (if ends_with_unit then
-         [External_arg_spec.empty_kind Extern_unit]
-       else [])
+      )      
   in
   let encoding =
     External_ffi_types.to_string (Ffi_obj_create arg_kinds) in

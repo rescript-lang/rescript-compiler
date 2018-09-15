@@ -305,13 +305,13 @@ let const_exp_string_list_as_array xs =
  let mk_fn_type 
   (new_arg_types_ty : (arg_label * core_type * attributes * loc) list)
   (result : core_type) : core_type = 
-  Ext_list.fold_right (fun (label, ty, attrs, loc) acc -> 
+  Ext_list.fold_right new_arg_types_ty result (fun (label, ty, attrs, loc) acc -> 
     {
       ptyp_desc = Ptyp_arrow(label,ty,acc);
       ptyp_loc = loc; 
       ptyp_attributes = attrs
     }
-  ) new_arg_types_ty result
+  )
 
 type object_field = 
 #if OCAML_VERSION =~ ">4.03.0" then 

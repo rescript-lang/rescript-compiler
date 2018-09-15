@@ -156,8 +156,8 @@ and compile_external_field_apply
   with
   | {id; name;arity; closed_lambda ; _} ->
     let args_code, args =
-      Ext_list.fold_right
-        (fun (x : Lam.t) (args_code, args)  ->
+      Ext_list.fold_right args_lambda ([], [])
+        (fun x  (args_code, args)  ->
            match
              compile_lambda
                {cxt with continuation = NeedValue; should_return = ReturnFalse} x
@@ -165,7 +165,7 @@ and compile_external_field_apply
            | {block = a; value = Some b} ->
              (Ext_list.append a args_code), (b :: args )
            | _ -> assert false
-        ) args_lambda ([], []) in
+        )  in
 
     match closed_lambda with
     | Some (Lfunction{ params; body; _})
@@ -375,12 +375,12 @@ and compile_recursive_let ~all_bindings
 and compile_recursive_lets_aux cxt id_args : Js_output.t =
   (* #1716 *)
   let output_code, ids  =
-    Ext_list.fold_right
+    Ext_list.fold_right id_args (Js_output.dummy, [])
       (fun (ident,arg) (acc, ids) ->
          let code, declare_ids  =
            compile_recursive_let ~all_bindings:id_args cxt ident arg in
          (Js_output.append_output code  acc, Ext_list.append declare_ids  ids )
-      )  id_args (Js_output.dummy, [])
+      ) 
   in
   match ids with
   | [] -> output_code
@@ -605,12 +605,12 @@ and
       *)
       begin
         let [@warning "-8" (* non-exhaustive pattern*)] (args_code, fn_code:: args) =
-          Ext_list.fold_right (fun (x : Lam.t) (args_code, fn_code )->
+          Ext_list.fold_right (fn::args_lambda) ([],[]) (fun x  (args_code, fn_code )->
               match compile_lambda
                       {lambda_cxt with continuation = NeedValue ; should_return =  ReturnFalse} x with
               | {block = a; value =  Some b} -> Ext_list.append a  args_code , b:: fn_code
               | _ -> assert false
-            ) (fn::args_lambda) ([],[]) in
+            )  in
 
 
         begin

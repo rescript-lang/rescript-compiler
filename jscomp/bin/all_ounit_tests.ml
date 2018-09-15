@@ -6148,7 +6148,9 @@ val append : 'a list -> 'a list -> 'a list
 
 val map_append :  ('b -> 'a) -> 'b list -> 'a list -> 'a list
 
-val fold_right : ('a -> 'b -> 'b) -> 'a list -> 'b -> 'b
+val fold_right : 
+  'a list -> 'b -> 
+  ('a -> 'b -> 'b) -> 'b
 
 val fold_right2 : 
   'a list -> 
@@ -6507,7 +6509,7 @@ let rec map_append  f l1 l2 =
 
 
 
-let rec fold_right f l acc = 
+let rec fold_right l acc f  = 
   match l with  
   | [] -> acc 
   | [a0] -> f a0 acc 
@@ -6517,7 +6519,7 @@ let rec fold_right f l acc =
   | [a0;a1;a2;a3;a4] -> 
     f a0 (f a1 (f a2 (f a3 (f a4 acc))))
   | a0::a1::a2::a3::a4::rest -> 
-    f a0 (f a1 (f a2 (f a3 (f a4 (fold_right f rest acc)))))  
+    f a0 (f a1 (f a2 (f a3 (f a4 (fold_right rest acc f )))))  
 
 let rec fold_right2 l r acc f = 
   match l,r  with  
@@ -14799,13 +14801,13 @@ let const_exp_string_list_as_array xs =
  let mk_fn_type 
   (new_arg_types_ty : (arg_label * core_type * attributes * loc) list)
   (result : core_type) : core_type = 
-  Ext_list.fold_right (fun (label, ty, attrs, loc) acc -> 
+  Ext_list.fold_right new_arg_types_ty result (fun (label, ty, attrs, loc) acc -> 
     {
       ptyp_desc = Ptyp_arrow(label,ty,acc);
       ptyp_loc = loc; 
       ptyp_attributes = attrs
     }
-  ) new_arg_types_ty result
+  )
 
 type object_field = 
    

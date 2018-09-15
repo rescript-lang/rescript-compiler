@@ -5661,7 +5661,9 @@ val append : 'a list -> 'a list -> 'a list
 
 val map_append :  ('b -> 'a) -> 'b list -> 'a list -> 'a list
 
-val fold_right : ('a -> 'b -> 'b) -> 'a list -> 'b -> 'b
+val fold_right : 
+  'a list -> 'b -> 
+  ('a -> 'b -> 'b) -> 'b
 
 val fold_right2 : 
   'a list -> 
@@ -6020,7 +6022,7 @@ let rec map_append  f l1 l2 =
 
 
 
-let rec fold_right f l acc = 
+let rec fold_right l acc f  = 
   match l with  
   | [] -> acc 
   | [a0] -> f a0 acc 
@@ -6030,7 +6032,7 @@ let rec fold_right f l acc =
   | [a0;a1;a2;a3;a4] -> 
     f a0 (f a1 (f a2 (f a3 (f a4 acc))))
   | a0::a1::a2::a3::a4::rest -> 
-    f a0 (f a1 (f a2 (f a3 (f a4 (fold_right f rest acc)))))  
+    f a0 (f a1 (f a2 (f a3 (f a4 (fold_right rest acc f )))))  
 
 let rec fold_right2 l r acc f = 
   match l,r  with  
@@ -6878,13 +6880,13 @@ let const_exp_string_list_as_array xs =
  let mk_fn_type 
   (new_arg_types_ty : (arg_label * core_type * attributes * loc) list)
   (result : core_type) : core_type = 
-  Ext_list.fold_right (fun (label, ty, attrs, loc) acc -> 
+  Ext_list.fold_right new_arg_types_ty result (fun (label, ty, attrs, loc) acc -> 
     {
       ptyp_desc = Ptyp_arrow(label,ty,acc);
       ptyp_loc = loc; 
       ptyp_attributes = attrs
     }
-  ) new_arg_types_ty result
+  )
 
 type object_field = 
    
@@ -14116,7 +14118,7 @@ let map_constructor_declarations_into_ints
 let map_row_fields_into_strings ptyp_loc 
     (row_fields : Parsetree.row_field list) : External_arg_spec.attr = 
   let case, result = 
-    (Ext_list.fold_right (fun tag (nullary, acc) -> 
+    Ext_list.fold_right row_fields (`Nothing, []) (fun tag (nullary, acc) -> 
          match nullary, tag with 
          | (`Nothing | `Null), 
            Parsetree.Rtag (label, attrs, true,  [])
@@ -14138,7 +14140,7 @@ let map_row_fields_into_strings ptyp_loc
            end
          | _ -> Bs_syntaxerr.err ptyp_loc Invalid_bs_string_type
 
-       ) row_fields (`Nothing, [])) in 
+       )  in 
   (match case with 
    | `Nothing -> Bs_syntaxerr.err ptyp_loc Invalid_bs_string_type
    | `Null -> External_arg_spec.NullString result 
@@ -15551,7 +15553,7 @@ let handle_attributes
         if String.length prim_name <> 0 then
           Location.raise_errorf ~loc "[@@bs.obj] expect external names to be empty string";
         let arg_kinds, new_arg_types_ty, result_types =
-          Ext_list.fold_right
+          Ext_list.fold_right arg_types_ty ( [], [], [])
             (fun (label,ty,attr,loc) ( arg_labels, arg_types, result_types) ->
                let arg_label = Ast_compatible.convert label in
                let new_arg_label, new_arg_types,  output_tys =
@@ -15645,8 +15647,7 @@ let handle_attributes
                (
                  new_arg_label::arg_labels,
                  new_arg_types,
-                 output_tys)) arg_types_ty
-            ( [], [], []) in
+                 output_tys)) in
 
         let result =
           if Ast_core_type.is_any  result_type then
@@ -15670,7 +15671,22 @@ let handle_attributes
   else
     let splice = st.splice in
     let arg_type_specs, new_arg_types_ty, arg_type_specs_length   =
-      Ext_list.fold_right
+      Ext_list.fold_right arg_types_ty
+        (match st with
+         | {val_send_pipe = Some obj; _ } ->
+           let arg_type, new_ty = get_arg_type ~nolabel:true false obj in
+           begin match arg_type with
+             | Arg_cst _ ->
+               Location.raise_errorf ~loc:obj.ptyp_loc "[@bs.as] is not supported in bs.send type "
+             | _ ->
+               (* more error checking *)
+               [External_arg_spec.empty_kind arg_type]
+               ,
+               [Ast_compatible.no_label, new_ty, [], obj.ptyp_loc]
+               ,0
+           end
+
+         | {val_send_pipe = None ; _ } -> [],[], 0)
         (fun (label,ty,attr,loc) (arg_type_specs, arg_types, i) ->
            let arg_label = Ast_compatible.convert label in
            let arg_label, arg_type, new_arg_types =
@@ -15713,22 +15729,7 @@ let handle_attributes
             if arg_type = Ignore then i
             else i + 1
            )
-        ) arg_types_ty
-        (match st with
-         | {val_send_pipe = Some obj; _ } ->
-           let arg_type, new_ty = get_arg_type ~nolabel:true false obj in
-           begin match arg_type with
-             | Arg_cst _ ->
-               Location.raise_errorf ~loc:obj.ptyp_loc "[@bs.as] is not supported in bs.send type "
-             | _ ->
-               (* more error checking *)
-               [External_arg_spec.empty_kind arg_type]
-               ,
-               [Ast_compatible.no_label, new_ty, [], obj.ptyp_loc]
-               ,0
-           end
-
-         | {val_send_pipe = None ; _ } -> [],[], 0) in
+        )  in
 
     let ffi : External_ffi_types.attr  = match st with
       | {set_index = true;
@@ -16081,7 +16082,7 @@ let handle_attributes_as_string
 let pval_prim_of_labels (labels : string Asttypes.loc list)
    =
   let arg_kinds =
-    Ext_list.fold_right
+    Ext_list.fold_right labels [] 
       (fun {Asttypes.loc ; txt } arg_kinds
         ->
           let arg_label =
@@ -16090,7 +16091,7 @@ let pval_prim_of_labels (labels : string Asttypes.loc list)
           {External_arg_spec.arg_type = Nothing ;
            arg_label  } :: arg_kinds
       )
-      labels [] in
+      in
   let encoding =
     External_ffi_types.to_string (Ffi_obj_create arg_kinds) in
   [""; encoding]
@@ -16100,8 +16101,11 @@ let pval_prim_of_option_labels
 (ends_with_unit : bool)
   =
   let arg_kinds =
-    Ext_list.fold_right
-      (fun (is_option,{Asttypes.loc ; txt }) arg_kinds
+    Ext_list.fold_right labels
+      (if ends_with_unit then
+         [External_arg_spec.empty_kind Extern_unit]
+       else [])
+      (fun (is_option,{loc ; txt }) arg_kinds
         ->
           let label_name = (Lam_methname.translate ~loc txt) in
           let arg_label =
@@ -16111,11 +16115,7 @@ let pval_prim_of_option_labels
           in
           {External_arg_spec.arg_type = Nothing ;
            arg_label  } :: arg_kinds
-      )
-      labels
-      (if ends_with_unit then
-         [External_arg_spec.empty_kind Extern_unit]
-       else [])
+      )      
   in
   let encoding =
     External_ffi_types.to_string (Ffi_obj_create arg_kinds) in
@@ -16686,8 +16686,8 @@ let ocaml_obj_as_js_object
       begin match tyvars with
         | x :: rest ->
           let method_rest =
-            Ext_list.fold_right (fun v acc -> Ast_compatible.arrow ~loc  v acc)
-              rest result in         
+            Ext_list.fold_right rest result (fun v acc -> Ast_compatible.arrow ~loc  v acc)
+          in         
           to_method_type loc mapper Ast_compatible.no_label x method_rest
         | _ -> assert false
       end in          
@@ -16713,8 +16713,8 @@ let ocaml_obj_as_js_object
       begin match tyvars with
         | x :: rest ->
           let method_rest =
-            Ext_list.fold_right (fun v acc -> Ast_compatible.arrow ~loc  v acc)
-              rest result in         
+            Ext_list.fold_right rest result (fun v acc -> Ast_compatible.arrow ~loc  v acc)
+          in         
           (to_method_callback_type loc mapper  Ast_compatible.no_label self_type
              (Ast_compatible.arrow ~loc  x method_rest))
         | _ -> assert false
@@ -16728,7 +16728,7 @@ let ocaml_obj_as_js_object
       while for label argument it is [@bs.this] which depends internal object
   *)
   let internal_label_attr_types, public_label_attr_types  = 
-    Ext_list.fold_right
+    Ext_list.fold_right clfs ([], []) 
       (fun ({pcf_loc  = loc} as x  : Parsetree.class_field) 
         (label_attr_types, public_label_attr_types) ->
         match x.pcf_desc with
@@ -16786,11 +16786,11 @@ let ocaml_obj_as_js_object
         | Pcf_extension _
         | Pcf_constraint _ ->
           Location.raise_errorf ~loc "Only method support currently"
-      ) clfs ([], []) in
+      ) in
   let internal_obj_type = Ast_core_type.make_obj ~loc internal_label_attr_types in
   let public_obj_type = Ast_core_type.make_obj ~loc public_label_attr_types in
   let (labels,  label_types, exprs, _) =
-    Ext_list.fold_right
+    Ext_list.fold_right clfs  ([], [], [], false)
       (fun (x  : Parsetree.class_field)
         (labels,
          label_types,
@@ -16865,7 +16865,7 @@ let ocaml_obj_as_js_object
         | Pcf_extension _
         | Pcf_constraint _ ->
           Location.raise_errorf ~loc "Only method support currently"
-      ) clfs  ([], [], [], false) in
+      )  in
   let pval_type =
     Ext_list.fold_right2  labels label_types public_obj_type
       (fun label label_type acc ->
@@ -16890,12 +16890,12 @@ let record_as_js_object
   : Parsetree.expression_desc = 
 
   let labels,args, arity =
-    Ext_list.fold_right (fun ({Location.txt ; loc}, e) (labels,args,i) -> 
+    Ext_list.fold_right label_exprs ([],[],0) (fun ({txt ; loc}, e) (labels,args,i) -> 
         match txt with
         | Longident.Lident x ->
           ({Asttypes.loc = loc ; txt = x} :: labels, (x, self.expr self e) :: args, i + 1)
         | Ldot _ | Lapply _ ->  
-          Location.raise_errorf ~loc "invalid js label ") label_exprs ([],[],0) in
+          Location.raise_errorf ~loc "invalid js label ")  in
   Ast_external_mk.local_external_obj loc 
     ~pval_prim:(External_process.pval_prim_of_labels labels)
     ~pval_type:(Ast_core_type.from_labels ~loc arity labels) 
@@ -17283,7 +17283,7 @@ let handle_core_type
     let (+>) attr (typ : Parsetree.core_type) =
       {typ with ptyp_attributes = attr :: typ.ptyp_attributes} in           
     let new_methods =
-      Ext_list.fold_right (fun  meth_ acc ->
+      Ext_list.fold_right  methods []  (fun  meth_ acc ->
         match meth_ with 
         
           (label, ptyp_attrs, core_type) -> 
@@ -17325,7 +17325,7 @@ let handle_core_type
             Ast_compatible.object_field label attrs (self.typ self core_type) in
           process_getter_setter ~not_getter_setter ~get ~set
             loc label ptyp_attrs core_type acc
-        ) methods [] in      
+        )in      
     let inner_type =
       { ty
         with ptyp_desc = Ptyp_object(new_methods, closed_flag);
@@ -17336,9 +17336,9 @@ let handle_core_type
   | _ -> super.typ self ty
     
 let handle_class_type_fields self fields = 
-  Ext_list.fold_right 
+  Ext_list.fold_right fields []
   (handle_class_type_field self)
-  fields []
+  
   
 let handle_core_type self typ record_as_js_object =
   handle_core_type 
@@ -17804,14 +17804,14 @@ let destruct_label_declarations ~loc
     (labels : Parsetree.label_declaration list) : 
   (Parsetree.core_type * Parsetree.expression) list * string list 
   =
-  Ext_list.fold_right
-    (fun   ({pld_name = {txt}; pld_type} : Parsetree.label_declaration) 
+  Ext_list.fold_right labels ([], [])
+    (fun {pld_name = {txt}; pld_type} 
       (core_type_exps, labels) -> 
       ((pld_type, 
         Exp.field (Exp.ident {txt = Lident arg_name ; loc}) 
           {txt = Lident txt ; loc}) :: core_type_exps),
       txt :: labels 
-    ) labels ([], [])
+    ) 
 
 let notApplicable 
   loc derivingName = 
@@ -18468,9 +18468,9 @@ let init () =
                                                        (fun x -> Exp.ident {loc ; txt = Longident.Lident x})                                                       
                                                     ) )) core_type
                               in 
-                              Ext_list.fold_right  (fun var b -> 
+                              Ext_list.fold_right vars exp (fun var b -> 
                                   Ast_compatible.fun_  (Pat.var {loc ; txt = var}) b 
-                                ) vars exp  
+                                ) 
 
                             end)
                   )
@@ -18505,10 +18505,9 @@ let init () =
                     -> 
                         
                       Ast_comb.single_non_rec_val {loc ; txt = (Ext_string.uncapitalize_ascii con_name)}
-                        (Ext_list.fold_right 
-                           (fun x acc -> Ast_compatible.arrow x acc) 
-                           pcd_args
-                           core_type))
+                        (Ext_list.fold_right pcd_args core_type
+                           (fun x acc -> Ast_compatible.arrow x acc)
+                           ))
               | Ptype_open | Ptype_abstract -> 
               Ast_derive_util.notApplicable tdcl.ptype_loc derivingName ; 
               [] 
@@ -19510,6 +19509,12 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
         ) label_declarations in
     let setter_accessor, makeType, labels =
       Ext_list.fold_right
+        label_declarations
+        ([],
+         (if has_optional_field then
+            Ast_compatible.arrow ~loc  (Ast_literal.type_unit ()) core_type
+          else  core_type),
+         [])
         (fun
           ({pld_name =
               {txt = label_name; loc = label_loc} as pld_name;
@@ -19580,12 +19585,7 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
           acc,
           maker,
           (is_optional, newLabel)::labels
-        ) label_declarations
-        ([],
-         (if has_optional_field then
-            Ast_compatible.arrow ~loc  (Ast_literal.type_unit ()) core_type
-          else  core_type),
-         [])
+        ) 
     in
     newTdcl,
     (if is_private then

@@ -178,7 +178,7 @@ let rec map_append  f l1 l2 =
 
 
 
-let rec fold_right f l acc = 
+let rec fold_right l acc f  = 
   match l with  
   | [] -> acc 
   | [a0] -> f a0 acc 
@@ -188,7 +188,7 @@ let rec fold_right f l acc =
   | [a0;a1;a2;a3;a4] -> 
     f a0 (f a1 (f a2 (f a3 (f a4 acc))))
   | a0::a1::a2::a3::a4::rest -> 
-    f a0 (f a1 (f a2 (f a3 (f a4 (fold_right f rest acc)))))  
+    f a0 (f a1 (f a2 (f a3 (f a4 (fold_right rest acc f )))))  
 
 let rec fold_right2 l r acc f = 
   match l,r  with  

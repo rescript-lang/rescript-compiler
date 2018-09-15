@@ -39,7 +39,7 @@ let transform_under_supply n loc status fn args =
   let extra_args = Ext_list.init n
       (fun _ ->   (Ident.create Literals.param)) in
   let extra_lambdas = Ext_list.map  extra_args Lam.var in
-  begin match Ext_list.fold_right (fun (lam : Lam.t) (acc, bind) ->
+  begin match Ext_list.fold_right (fn::args) ([],[])  (fun (lam : Lam.t) (acc, bind) ->
       match lam with
       | Lvar _
       | Lconst (Const_int _  
@@ -55,7 +55,7 @@ let transform_under_supply n loc status fn args =
       | _ ->
         let v = Ident.create Literals.partial_arg in
         (Lam.var v :: acc),  ((v, lam) :: bind)
-    ) (fn::args) ([],[])   with 
+    )   with 
   | fn :: args, [] -> 
     (* More than no side effect in the [args], 
        we try to avoid computation, so even if 

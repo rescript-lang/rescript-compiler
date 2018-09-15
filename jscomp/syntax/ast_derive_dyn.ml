@@ -162,7 +162,7 @@ let exp_of_core_type_exprs
     (core_type_exprs : (Parsetree.core_type * Parsetree.expression) list) 
   : Parsetree.expression  = 
     Exp.array 
-      (Ext_list.fold_right (fun (core_type, exp) acc -> 
+      (Ext_list.fold_right core_type_exprs [] (fun (core_type, exp) acc -> 
            bs_apply1
              (exp_of_core_type to_value  core_type) exp
 
@@ -178,7 +178,7 @@ let exp_of_core_type_exprs
               ]}
            *)
            :: acc 
-       ) core_type_exprs [])
+       ) )
 
 let destruct_constructor_declaration 
     ({pcd_name = {txt ;loc}; pcd_args} : Parsetree.constructor_declaration)  = 
@@ -284,8 +284,8 @@ let init ()  =
                      } -> 
                      if explict_nonrec then 
                        let names, arities = 
-                         Ext_list.fold_right 
-                           (fun ( {pcd_name = {txt}; pcd_args} : Parsetree.constructor_declaration) 
+                         Ext_list.fold_right cd ([],[])
+                           (fun {pcd_name = {txt}; pcd_args} 
                              (names,arities) -> 
 #if OCAML_VERSION =~ ">4.03.0" then                               
                              let pcd_args = 
@@ -295,7 +295,7 @@ let init ()  =
 #end                              
                              txt :: names, 
                              List.length pcd_args :: arities
-                           ) cd ([],[]) in 
+                           )  in 
                        constraint_ 
                          [
                            Str.value Nonrecursive @@ 
