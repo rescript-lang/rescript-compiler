@@ -508,7 +508,7 @@ let rec find_opt p = function
 
 
 
-let rec split_map f l = 
+let rec split_map l f = 
   match l with
   | [] ->
     [],[]
@@ -536,7 +536,7 @@ let rec split_map f l =
     let a3,b3 = f x3 in
     let a4,b4 = f x4 in
     let a5,b5 = f x5 in
-    let ass,bss = split_map f tail in 
+    let ass,bss = split_map tail f in 
     a1::a2::a3::a4::a5::ass,
     b1::b2::b3::b4::b5::bss
 

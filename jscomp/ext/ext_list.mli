@@ -186,7 +186,10 @@ val for_all2_no_exn : ('a -> 'b -> bool) -> 'a list -> 'b list -> bool
 
 
 (** [f] is applied follow the list order *)
-val split_map : ('a -> 'b * 'c) -> 'a list -> 'b list * 'c list       
+val split_map : 
+  'a list -> 
+  ('a -> 'b * 'c) -> 
+  'b list * 'c list       
 
 (** [fn] is applied from left to right *)
 val reduce_from_left : 
