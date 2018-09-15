@@ -23,77 +23,19 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
+let has_exit_code lam  exits = 
+  let rec aux (lam : Lam.t) = 
+    match lam with 
+    | Lfunction _ -> false 
+      (* static exit can not cross function boundary *)
+    | Lstaticraise(p,_) 
+      when exits p -> true 
 
-
-
-
-let rec has_exit_code exits  (lam : Lam.t)  : bool =
-  match lam with
-  | Lvar _
-  | Lconst _
-  | Lfunction _ (* static exit can not across function boundary *)
-    -> false
-  | Lapply {fn = l; args; _ }
-    -> has_exit_code exits l || List.exists (fun x -> has_exit_code exits x ) args
-
-  | Llet (_kind,_id,v,body)
-    -> has_exit_code exits v || has_exit_code exits body
-  | Lletrec (binding,body) ->
-    List.exists (fun (_, l) -> has_exit_code exits l ) binding ||
-    has_exit_code exits body
-  | Lam.Lglobal_module _ -> false
-  | Lprim {args; _}
-    -> List.exists (fun x -> has_exit_code exits x) args
-  | Lswitch (l,lam_switch)
-    -> has_exit_code exits l || has_exit_code_lam_switch exits lam_switch
-
-  | Lstringswitch (l,ls,opt) ->
-    has_exit_code exits l ||
-    List.exists (fun (_,l) -> has_exit_code exits l) ls ||
-    (match opt with
-    | None -> false
-    | Some x -> has_exit_code exits x )
-  | Lstaticraise (v,ls) ->
-      exits v ||
-    List.exists (has_exit_code exits) ls
-  | Lstaticcatch (l,_,handler)
-    ->
-    has_exit_code exits l || has_exit_code exits handler
-  | Ltrywith (l,_, handler)
-    ->
-    has_exit_code exits l || has_exit_code exits handler
-  | Lifthenelse (a,b,c)
-    ->
-    has_exit_code exits a || has_exit_code exits b || has_exit_code exits c
-  | Lsequence (a,b)
-    ->
-    has_exit_code exits a || has_exit_code exits b
-  | Lwhile (a,b)
-    ->
-    has_exit_code exits a || has_exit_code exits b
-  | Lfor (_,a,b,_dir,body) ->
-    has_exit_code exits a
-    || has_exit_code exits b
-    || has_exit_code exits body
-
-  | Lassign (_,a)
-    ->
-    has_exit_code exits a
-  | Lsend (_,obj,l,ls,_loc)
-    ->
-    has_exit_code exits obj ||
-    has_exit_code exits l ||
-    List.exists (has_exit_code exits) ls
-
-and has_exit_code_lam_switch exits (lam_switch : Lam.switch) =
-  match lam_switch with
-   | { sw_numconsts = _; sw_consts; sw_numblocks = _ ; sw_blocks; sw_failaction } ->
-     List.exists (fun (_,l) -> has_exit_code exits l) sw_consts ||
-     List.exists (fun (_,l) -> has_exit_code exits l)  sw_blocks ||
-     (match sw_failaction with
-     | None -> false
-     | Some x -> has_exit_code exits x)
-
-
-let has_exit lam =
-  has_exit_code (fun _ -> true) lam
+    | _ -> 
+      Lam_iter.inner_exists lam aux
+  in aux lam  
+let rec has_exit (lam : Lam.t) =   
+  match lam with 
+  | Lfunction _ -> false 
+  | Lstaticraise(_,_) -> true 
+  | _ -> Lam_iter.inner_exists lam has_exit

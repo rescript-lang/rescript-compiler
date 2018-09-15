@@ -36,8 +36,8 @@ let rec flat_catches acc (x : Lam.t)
   | Lstaticcatch(l, (code, bindings), handler)
     when
       acc = [] ||
-      (not @@ Lam_exit_code.has_exit_code
-         (fun exit -> List.exists (fun (c,_,_) -> c = exit) acc) handler)
+      (not @@ Lam_exit_code.has_exit_code handler
+         (fun exit -> List.exists (fun (c,_,_) -> c = exit) acc) )
     -> (* #1698 should not crush exit code here without checking *)
     flat_catches ((code,handler,bindings)::acc) l
   | _ -> acc, x

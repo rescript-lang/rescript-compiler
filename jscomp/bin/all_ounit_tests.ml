@@ -6314,6 +6314,8 @@ val nth_opt : 'a list -> int -> 'a option
 val iter_snd : ('a * 'b) list -> ('b -> unit) -> unit 
 
 val iter_fst : ('a * 'b) list -> ('a -> unit) -> unit 
+
+val exists_snd : ('a * 'b) list -> ('b -> bool) -> bool
 end = struct
 #1 "ext_list.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -6912,6 +6914,11 @@ let rec iter_fst lst f =
   | (x,_)::xs -> 
     f x ; 
     iter_fst xs f 
+
+let rec exists_snd l p = 
+  match l with 
+    [] -> false
+  | (_, a)::l -> p a || exists_snd l p 
 
 end
 module Ext_ident : sig 
