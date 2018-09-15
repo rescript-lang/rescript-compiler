@@ -1370,7 +1370,6 @@ and
       *)
       (* TODO: handle NeedValue *)
       let code_table, body = flatten_nested_caches lam in
-      let bindings = Ext_list.flat_map code_table (fun {bindings} -> bindings)  in
       let exit_id = Ext_ident.create_tmp ~name:"exit" () in
       let exit_expr = E.var exit_id in
       let jmp_table, handlers =
@@ -1381,7 +1380,9 @@ and
         S.define_variable ~kind:Variable exit_id
           E.zero_int_literal ::
         (* we should always make it zero here, since [zero] is reserved in our mapping*)
-        Ext_list.map bindings (fun x -> S.declare_variable ~kind:Variable x )  in
+        Ext_list.flat_map code_table 
+          (fun {bindings} -> Ext_list.map bindings 
+            (fun x -> S.declare_variable ~kind:Variable x))  in
 
       begin match  st with
         (* could be optimized when cases are less than 3 *)
