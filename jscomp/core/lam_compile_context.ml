@@ -77,16 +77,21 @@ type t = {
 
 let empty_handler_map = HandlerMap.empty
 
-
+type handler = {
+  label : jbl_label ; 
+  handler : Lam.t;
+  bindings : Ident.t list; 
+}
 
 (* always keep key id positive, specifically no [0] generated *)
 let add_jmps 
+    m 
     exit_id code_table
-    m = 
+    = 
   let map, handlers = 
     Ext_list.fold_left_with_offset
       (fun order_id (acc,handlers)
-        (l,lam,args)
+        { label = l; handler = lam; bindings = args}
         ->     
           HandlerMap.add l {exit_id;args; order_id } acc, 
           (order_id,lam)::handlers

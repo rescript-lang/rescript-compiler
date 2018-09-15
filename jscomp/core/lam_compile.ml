@@ -30,19 +30,20 @@ let method_cache_id = ref 1 (*TODO: move to js runtime for re-entrant *)
 
 
 (* assume outer is [Lstaticcatch] *)
-let rec flat_catches acc (x : Lam.t)
-  : (int * Lam.t * Ident.t  list ) list * Lam.t =
+let rec flat_catches (acc : Lam_compile_context.handler list) (x : Lam.t)
+  : Lam_compile_context.handler list * Lam.t =
   match x with
   | Lstaticcatch(l, (code, bindings), handler)
     when
       acc = [] ||
       (not @@ Lam_exit_code.has_exit_code handler
-         (fun exit -> List.exists (fun (c,_,_) -> c = exit) acc) )
+         (fun exit -> Ext_list.exists acc (fun { label  = c } -> c = exit) ) )
     -> (* #1698 should not crush exit code here without checking *)
-    flat_catches ((code,handler,bindings)::acc) l
+    flat_catches ( {label = code; handler; bindings} ::acc) l
   | _ -> acc, x
 
-let flatten_caches  x : (int * Lam.t * Ident.t  list ) list * Lam.t =
+let flatten_nested_caches  (x : Lam.t) 
+  : Lam_compile_context.handler list * Lam.t =
   flat_catches [] x
 
 
@@ -480,13 +481,13 @@ and compile_general_cases
             | NonComplete -> None
             | Default lam -> Some (Js_output.output_as_block  (compile_lambda cxt lam))
           in
-          let body =
-            table
-            |> Ext_list.stable_group
+          let body =            
+           Ext_list.flat_map
+           (table
+             |> Ext_list.stable_group
               (fun (_,lam) (_,lam1)
-                -> Lam_analysis.eq_lambda_approx lam lam1)
-            |> Ext_list.flat_map
-              (fun group ->
+                -> Lam_analysis.eq_lambda_approx lam lam1))
+            (fun group ->
                  Ext_list.map_last
                    (fun last (switch_case,lam) ->
                       if last
@@ -1368,12 +1369,12 @@ and
          ]}
       *)
       (* TODO: handle NeedValue *)
-      let code_table, body = flatten_caches lam in
-      let bindings = Ext_list.flat_map (fun (_,_,bindings) -> bindings) code_table in
+      let code_table, body = flatten_nested_caches lam in
+      let bindings = Ext_list.flat_map code_table (fun {bindings} -> bindings)  in
       let exit_id = Ext_ident.create_tmp ~name:"exit" () in
       let exit_expr = E.var exit_id in
       let jmp_table, handlers =
-        Lam_compile_context.add_jmps exit_id code_table jmp_table in
+        Lam_compile_context.add_jmps jmp_table exit_id code_table  in
 
       (* Declaration First, body and handler have the same value *)
       let declares =

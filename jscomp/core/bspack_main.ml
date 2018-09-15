@@ -391,7 +391,7 @@ let () =
          match !exclude_modules with
          | [] -> []
          | xs -> 
-           Ext_list.flat_map (fun x -> [x ^ ".ml" ; x ^ ".mli"] ) xs in 
+           Ext_list.flat_map xs (fun x -> [x ^ ".ml" ; x ^ ".mli"] ) in 
        let extra_dirs = 
          deduplicate_dirs @@
          if not !no_implicit_include then {Ast_extract.dir =  cwd; excludes = []} :: !includes 

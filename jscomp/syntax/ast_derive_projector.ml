@@ -92,7 +92,7 @@ let init () =
                 Ast_derive_util.notApplicable tdcl.ptype_loc derivingName ; 
                []
               (* Location.raise_errorf "projector only works with record" *)
-            in Ext_list.flat_map handle_tdcl tdcls
+            in Ext_list.flat_map tdcls handle_tdcl
 
 
           end;
@@ -135,7 +135,7 @@ let init () =
               Ast_derive_util.notApplicable tdcl.ptype_loc derivingName ; 
               [] 
             in 
-            Ext_list.flat_map handle_tdcl tdcls
+            Ext_list.flat_map tdcls handle_tdcl 
           end;
         expression_gen = None
        }

@@ -6227,8 +6227,8 @@ val rev_map_append : ('a -> 'b) -> 'a list -> 'b list -> 'b list
 
 
 val flat_map : 
-  ('a -> 'b list) -> 
   'a list -> 
+  ('a -> 'b list) -> 
   'b list
 
 val flat_map_append : 
@@ -6315,6 +6315,7 @@ val iter_snd : ('a * 'b) list -> ('b -> unit) -> unit
 
 val iter_fst : ('a * 'b) list -> ('a -> unit) -> unit 
 
+val exists : 'a list -> ('a -> bool) -> bool 
 val exists_snd : ('a * 'b) list -> ('b -> bool) -> bool
 end = struct
 #1 "ext_list.ml"
@@ -6717,7 +6718,7 @@ let rec flat_map_aux f acc append lx =
   | [] -> rev_append acc  append
   | a0::rest -> flat_map_aux f (rev_append (f a0)  acc ) append rest 
 
-let flat_map f lx =
+let flat_map lx f  =
   flat_map_aux f [] [] lx
 
 let flat_map_append f lx append  =
@@ -6914,6 +6915,11 @@ let rec iter_fst lst f =
   | (x,_)::xs -> 
     f x ; 
     iter_fst xs f 
+
+let rec exists l p =     
+  match l with 
+    [] -> false  
+  | x :: xs -> p x || exists xs p
 
 let rec exists_snd l p = 
   match l with 
@@ -10821,7 +10827,7 @@ let suites =
   [
     __LOC__ >:: begin fun _ -> 
       OUnit.assert_equal
-        (Ext_list.flat_map (fun x -> [x;x]) [1;2]) [1;1;2;2] 
+        (Ext_list.flat_map [1;2] (fun x -> [x;x]) ) [1;1;2;2] 
     end;
     __LOC__ >:: begin fun _ -> 
       OUnit.assert_equal
@@ -10831,10 +10837,10 @@ let suites =
     __LOC__ >:: begin fun _ -> 
     
      let (=~)  = OUnit.assert_equal ~printer:printer_int_list in 
-     (Ext_list.flat_map (fun x -> [succ x ]) []) =~ [];
-     (Ext_list.flat_map (fun x -> [x;succ x ]) [1]) =~ [1;2];
-     (Ext_list.flat_map (fun x -> [x;succ x ]) [1;2]) =~ [1;2;2;3];
-     (Ext_list.flat_map (fun x -> [x;succ x ]) [1;2;3]) =~ [1;2;2;3;3;4]
+     (Ext_list.flat_map  [] (fun x -> [succ x ])) =~ [];
+     (Ext_list.flat_map [1] (fun x -> [x;succ x ]) ) =~ [1;2];
+     (Ext_list.flat_map [1;2] (fun x -> [x;succ x ])) =~ [1;2;2;3];
+     (Ext_list.flat_map [1;2;3] (fun x -> [x;succ x ]) ) =~ [1;2;2;3;3;4]
     end
     ;
     __LOC__ >:: begin fun _ ->

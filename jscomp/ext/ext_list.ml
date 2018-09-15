@@ -397,7 +397,7 @@ let rec flat_map_aux f acc append lx =
   | [] -> rev_append acc  append
   | a0::rest -> flat_map_aux f (rev_append (f a0)  acc ) append rest 
 
-let flat_map f lx =
+let flat_map lx f  =
   flat_map_aux f [] [] lx
 
 let flat_map_append f lx append  =
@@ -594,6 +594,11 @@ let rec iter_fst lst f =
   | (x,_)::xs -> 
     f x ; 
     iter_fst xs f 
+
+let rec exists l p =     
+  match l with 
+    [] -> false  
+  | x :: xs -> p x || exists xs p
 
 let rec exists_snd l p = 
   match l with 

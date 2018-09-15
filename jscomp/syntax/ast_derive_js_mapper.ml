@@ -408,7 +408,7 @@ let init () =
                  U.notApplicable tdcl.Parsetree.ptype_loc 
                  derivingName;
                  [] in 
-             Ext_list.flat_map handle_tdcl tdcls 
+             Ext_list.flat_map tdcls handle_tdcl
            );
          signature_gen = 
            (fun (tdcls : tdcls) _ -> 
@@ -495,7 +495,7 @@ let init () =
                   U.notApplicable tdcl.Parsetree.ptype_loc 
                   derivingName;
                   [] in 
-              Ext_list.flat_map handle_tdcl tdcls 
+              Ext_list.flat_map tdcls handle_tdcl
 
            );
          expression_gen = None 

@@ -100,7 +100,7 @@ let assemble_args_obj (labels : External_arg_spec.t list)  (args : J.expression 
         E.obj map 
       | x::xs -> E.seq (E.fuse_to_seq x xs) (E.obj map)     
     end) :: 
-      (Ext_list.flat_map (fun 
+      (Ext_list.flat_map assignment (fun 
         ((xlabel : External_arg_spec.t), (arg  : J.expression )) -> 
       match xlabel with 
       | {arg_label = Optional label } -> 
@@ -149,5 +149,5 @@ let assemble_args_obj (labels : External_arg_spec.t list)  (args : J.expression 
         end 
       |  _ -> assert false    
       )
-      assignment)
+      )
     , var_v                    

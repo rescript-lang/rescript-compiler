@@ -5740,8 +5740,8 @@ val rev_map_append : ('a -> 'b) -> 'a list -> 'b list -> 'b list
 
 
 val flat_map : 
-  ('a -> 'b list) -> 
   'a list -> 
+  ('a -> 'b list) -> 
   'b list
 
 val flat_map_append : 
@@ -5828,6 +5828,7 @@ val iter_snd : ('a * 'b) list -> ('b -> unit) -> unit
 
 val iter_fst : ('a * 'b) list -> ('a -> unit) -> unit 
 
+val exists : 'a list -> ('a -> bool) -> bool 
 val exists_snd : ('a * 'b) list -> ('b -> bool) -> bool
 end = struct
 #1 "ext_list.ml"
@@ -6230,7 +6231,7 @@ let rec flat_map_aux f acc append lx =
   | [] -> rev_append acc  append
   | a0::rest -> flat_map_aux f (rev_append (f a0)  acc ) append rest 
 
-let flat_map f lx =
+let flat_map lx f  =
   flat_map_aux f [] [] lx
 
 let flat_map_append f lx append  =
@@ -6427,6 +6428,11 @@ let rec iter_fst lst f =
   | (x,_)::xs -> 
     f x ; 
     iter_fst xs f 
+
+let rec exists l p =     
+  match l with 
+    [] -> false  
+  | x :: xs -> p x || exists xs p
 
 let rec exists_snd l p = 
   match l with 
@@ -17627,10 +17633,10 @@ let gen_signature
     (actions :  Ast_payload.action list ) 
     (explict_nonrec : bool )
   : Ast_signature.t = 
-  Ext_list.flat_map
+  Ext_list.flat_map actions
     (fun action -> 
        (Ast_payload.table_dispatch !derive_table action).signature_gen
-         tdcls explict_nonrec) actions
+         tdcls explict_nonrec) 
 
 (** used for cases like [%sexp] *)         
 let gen_expression ({Asttypes.txt ; loc}) typ =
@@ -18244,7 +18250,7 @@ let init () =
                  U.notApplicable tdcl.Parsetree.ptype_loc 
                  derivingName;
                  [] in 
-             Ext_list.flat_map handle_tdcl tdcls 
+             Ext_list.flat_map tdcls handle_tdcl
            );
          signature_gen = 
            (fun (tdcls : tdcls) _ -> 
@@ -18331,7 +18337,7 @@ let init () =
                   U.notApplicable tdcl.Parsetree.ptype_loc 
                   derivingName;
                   [] in 
-              Ext_list.flat_map handle_tdcl tdcls 
+              Ext_list.flat_map tdcls handle_tdcl
 
            );
          expression_gen = None 
@@ -18461,7 +18467,7 @@ let init () =
                 Ast_derive_util.notApplicable tdcl.ptype_loc derivingName ; 
                []
               (* Location.raise_errorf "projector only works with record" *)
-            in Ext_list.flat_map handle_tdcl tdcls
+            in Ext_list.flat_map tdcls handle_tdcl
 
 
           end;
@@ -18499,7 +18505,7 @@ let init () =
               Ast_derive_util.notApplicable tdcl.ptype_loc derivingName ; 
               [] 
             in 
-            Ext_list.flat_map handle_tdcl tdcls
+            Ext_list.flat_map tdcls handle_tdcl 
           end;
         expression_gen = None
        }

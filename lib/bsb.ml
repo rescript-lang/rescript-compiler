@@ -2440,8 +2440,8 @@ val rev_map_append : ('a -> 'b) -> 'a list -> 'b list -> 'b list
 
 
 val flat_map : 
-  ('a -> 'b list) -> 
   'a list -> 
+  ('a -> 'b list) -> 
   'b list
 
 val flat_map_append : 
@@ -2528,6 +2528,7 @@ val iter_snd : ('a * 'b) list -> ('b -> unit) -> unit
 
 val iter_fst : ('a * 'b) list -> ('a -> unit) -> unit 
 
+val exists : 'a list -> ('a -> bool) -> bool 
 val exists_snd : ('a * 'b) list -> ('b -> bool) -> bool
 end = struct
 #1 "ext_list.ml"
@@ -2930,7 +2931,7 @@ let rec flat_map_aux f acc append lx =
   | [] -> rev_append acc  append
   | a0::rest -> flat_map_aux f (rev_append (f a0)  acc ) append rest 
 
-let flat_map f lx =
+let flat_map lx f  =
   flat_map_aux f [] [] lx
 
 let flat_map_append f lx append  =
@@ -3127,6 +3128,11 @@ let rec iter_fst lst f =
   | (x,_)::xs -> 
     f x ; 
     iter_fst xs f 
+
+let rec exists l p =     
+  match l with 
+    [] -> false  
+  | x :: xs -> p x || exists xs p
 
 let rec exists_snd l p = 
   match l with 
@@ -5922,9 +5928,8 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-let flag_concat flag xs = 
-  xs 
-  |> Ext_list.flat_map (fun x -> [flag ; x])
+let flag_concat flag xs =   
+  Ext_list.flat_map xs  (fun x -> [flag ; x])
   |> String.concat Ext_string.single_space
 let (//) = Ext_path.combine
 

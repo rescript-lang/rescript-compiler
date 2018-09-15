@@ -86,9 +86,16 @@ type t = {
 
  val empty_handler_map : jmp_table  
 
+type handler = {
+  label : jbl_label ; 
+  handler : Lam.t;
+  bindings : Ident.t list; 
+} 
+
 val add_jmps :
+    jmp_table -> 
     Ident.t ->
-    (jbl_label * Lam.t * Ident.t list) list ->
-    jmp_table -> jmp_table * (jbl_label * Lam.t) list
+    handler list ->
+    jmp_table * (jbl_label * Lam.t) list
 
 val find_exn : jbl_label -> t -> value

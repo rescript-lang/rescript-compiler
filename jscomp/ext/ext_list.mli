@@ -123,8 +123,8 @@ val rev_map_append : ('a -> 'b) -> 'a list -> 'b list -> 'b list
 
 
 val flat_map : 
-  ('a -> 'b list) -> 
   'a list -> 
+  ('a -> 'b list) -> 
   'b list
 
 val flat_map_append : 
@@ -211,4 +211,5 @@ val iter_snd : ('a * 'b) list -> ('b -> unit) -> unit
 
 val iter_fst : ('a * 'b) list -> ('a -> unit) -> unit 
 
+val exists : 'a list -> ('a -> bool) -> bool 
 val exists_snd : ('a * 'b) list -> ('b -> bool) -> bool

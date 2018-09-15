@@ -22,9 +22,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-let flag_concat flag xs = 
-  xs 
-  |> Ext_list.flat_map (fun x -> [flag ; x])
+let flag_concat flag xs =   
+  Ext_list.flat_map xs  (fun x -> [flag ; x])
   |> String.concat Ext_string.single_space
 let (//) = Ext_path.combine
 
