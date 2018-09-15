@@ -38,3 +38,8 @@ let iter v f =
   match v with 
   | None -> ()
   | Some x -> f x 
+
+let exists v f =    
+  match v with 
+  | None -> false
+  | Some x -> f x 

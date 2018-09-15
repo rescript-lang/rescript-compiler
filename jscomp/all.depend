@@ -532,7 +532,8 @@ core/js_closure.cmx : ext/ident_set.cmx core/js_closure.cmi
 core/js_number.cmx : core/js_number.cmi
 core/js_cmj_datasets.cmx : ext/string_map.cmx core/js_cmj_format.cmx \
     core/js_cmj_datasets.cmi
-core/lam_exit_code.cmx : core/lam.cmx core/lam_exit_code.cmi
+core/lam_exit_code.cmx : core/lam_iter.cmx core/lam.cmx \
+    core/lam_exit_code.cmi
 core/j.cmx : core/js_op.cmx core/js_fun_env.cmx core/js_closure.cmx \
     core/js_call_info.cmx ext/ident_set.cmx
 core/lam_compile_util.cmx : core/lam_tag_info.cmx core/lam_pointer_info.cmx \

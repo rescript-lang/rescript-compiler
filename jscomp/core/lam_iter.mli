@@ -25,4 +25,6 @@
 
 
 
- val inner_iter :  Lam.t -> (Lam.t -> unit) -> unit 
+val inner_iter :  Lam.t -> (Lam.t -> unit) -> unit 
+
+val inner_exists : Lam.t -> (Lam.t -> bool) -> bool

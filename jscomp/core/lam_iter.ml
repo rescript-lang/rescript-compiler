@@ -75,3 +75,54 @@ let inner_iter (l : t) (f : t -> unit ) : unit =
     f e
   | Lsend (k, met, obj, args, loc) ->
     f met; f obj; List.iter f args   
+
+
+let inner_exists (l : t) (f : t -> bool) : bool =
+  match l  with
+  | Lvar (_ : ident)
+  | Lglobal_module (_ )
+  | Lconst (_ : Lam_constant.t) -> false
+  | Lapply ({fn; args; loc; status} )  ->
+    f fn ||
+    List.exists f args
+  | Lfunction({body; arity;  params } ) ->
+    f body
+  | Llet(str, id, arg, body) ->
+    f arg ||
+    f body
+  | Lletrec(decl, body) ->
+    f body ||
+    Ext_list.exists_snd  decl f 
+  | Lswitch(arg, {sw_consts; sw_numconsts; sw_blocks; sw_numblocks; sw_failaction}) ->
+    f arg ||
+    Ext_list.exists_snd sw_consts f ||
+    Ext_list.exists_snd sw_blocks f ||
+    Ext_option.exists sw_failaction f      
+  | Lstringswitch (arg,cases,default) ->
+    f arg ||
+    Ext_list.exists_snd cases f ||
+    Ext_option.exists default f     
+  
+  | Lprim {args; primitive ; loc}  ->
+    List.exists f args;
+  
+  | Lstaticraise (id,args) ->
+    List.exists f args;
+  | Lstaticcatch(e1, vars , e2) ->
+    f e1 ||
+    f e2
+  | Ltrywith(e1, exn, e2) ->
+    f e1 ||
+    f e2
+  | Lifthenelse(e1, e2, e3) ->
+    f e1 ||  f e2 ||  f e3
+  | Lsequence(e1, e2) ->
+    f e1 ||  f e2
+  | Lwhile(e1, e2) ->
+    f e1 ||  f e2
+  | Lfor(v, e1, e2, dir, e3) ->
+    f e1 ||  f e2 ||  f e3
+  | Lassign(id, e) ->
+    f e
+  | Lsend (k, met, obj, args, loc) ->
+    f met || f obj || List.exists f args       

@@ -292,6 +292,8 @@
 ../lib/whole_compiler.ml : ./core/lam_id_kind.mli
 ../lib/whole_compiler.ml : ./core/lam_inline_util.ml
 ../lib/whole_compiler.ml : ./core/lam_inline_util.mli
+../lib/whole_compiler.ml : ./core/lam_iter.ml
+../lib/whole_compiler.ml : ./core/lam_iter.mli
 ../lib/whole_compiler.ml : ./core/lam_module_ident.ml
 ../lib/whole_compiler.ml : ./core/lam_module_ident.mli
 ../lib/whole_compiler.ml : ./core/lam_pass_alpha_conversion.ml

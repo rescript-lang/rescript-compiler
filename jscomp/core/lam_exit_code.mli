@@ -23,12 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-
-
-
-
-
-val has_exit_code : (int -> bool ) -> Lam.t -> bool
+val has_exit_code :  Lam.t -> (int -> bool ) -> bool
 
 
 val has_exit : Lam.t -> bool
