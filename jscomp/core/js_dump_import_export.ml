@@ -41,7 +41,7 @@ let exports cxt f (idents : Ident.t list) =
           else (s,str) :: acc ))
       (cxt, []) idents in    
   P.newline f ;
-  Ext_list.rev_iter (fun (s,export) -> 
+  Ext_list.rev_iter reversed_list (fun (s,export) -> 
       P.group f 0 @@ (fun _ ->  
           P.string f L.exports;
           P.string f L.dot;
@@ -52,7 +52,7 @@ let exports cxt f (idents : Ident.t list) =
           P.string f export;          
           P.string f L.semi;);
       P.newline f;
-    ) reversed_list;
+    ) ;
   outer_cxt  
 
 
@@ -73,7 +73,7 @@ let es6_export cxt f (idents : Ident.t list) =
   P.string f L.export ; 
   P.space f ; 
   P.brace_vgroup f 1 begin fun _ -> 
-    Ext_list.rev_iter (fun (s,export) -> 
+    Ext_list.rev_iter reversed_list (fun (s,export) -> 
         P.group f 0 @@ (fun _ ->  
             P.string f export;          
             P.space f ;
@@ -84,7 +84,7 @@ let es6_export cxt f (idents : Ident.t list) =
             end ;             
             P.string f L.comma ;);
         P.newline f;
-      ) reversed_list;
+      ) ;
   end;
   outer_cxt  
   
@@ -100,7 +100,7 @@ let requires require_lit cxt f (modules : (Ident.t * string) list ) =
          cxt, ((str,s) :: acc))
       (cxt, []) modules in
   P.force_newline f ;    
-  Ext_list.rev_iter (fun (s,file) ->
+  Ext_list.rev_iter reversed_list (fun (s,file) ->
       P.string f L.var;
       P.space f ;
       P.string f s ;
@@ -112,7 +112,7 @@ let requires require_lit cxt f (modules : (Ident.t * string) list ) =
           Js_dump_string.pp_string f file  );
       P.string f L.semi;
       P.newline f ;
-    ) reversed_list;
+    ) ;
   outer_cxt  
 
 (** ES6 module style imports *)
@@ -126,7 +126,7 @@ let imports  cxt f (modules : (Ident.t * string) list ) =
          cxt, ((str,s) :: acc))
       (cxt, []) modules in
   P.force_newline f ;    
-  Ext_list.rev_iter (fun (s,file) ->
+  Ext_list.rev_iter reversed_list (fun (s,file) ->
 
       P.string f L.import;
       P.space f ;
@@ -141,5 +141,5 @@ let imports  cxt f (modules : (Ident.t * string) list ) =
       Js_dump_string.pp_string f file ;
       P.string f L.semi ;
       P.newline f ;
-    ) reversed_list;
+    ) ;
   outer_cxt

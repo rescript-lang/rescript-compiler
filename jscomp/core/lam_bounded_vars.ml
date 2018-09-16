@@ -88,7 +88,7 @@ let rewrite (map :   _ Ident_hashtbl.t)
     | Lletrec(bindings, body) ->
       (*order matters see GPR #405*)
       let vars = Ext_list.map bindings (fun (k,_) -> rebind k) in 
-      let bindings = Ext_list.map2 (fun var (_,l) -> var, aux l) vars bindings in 
+      let bindings = Ext_list.map2 vars bindings (fun var (_,l) -> var, aux l) in 
       let body = aux body in       
       Lam.letrec bindings body
     | Lfunction{arity;  params; body} -> 

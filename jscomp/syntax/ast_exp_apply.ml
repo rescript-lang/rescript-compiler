@@ -241,7 +241,8 @@ let handle_exp_apply
     | _ ->
       begin match
           Ext_list.exclude_with_val
-            Ast_attributes.is_bs e.pexp_attributes with
+            e.pexp_attributes 
+            Ast_attributes.is_bs with
       | false, _ -> Bs_ast_mapper.default_mapper.expr self e
       | true, pexp_attributes ->
         {e with pexp_desc = Ast_util.uncurry_fn_apply loc self fn args ;

@@ -174,23 +174,21 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
 
 let handleTdclsInStr tdcls =
   let tdcls, code =
-    List.fold_right (fun tdcl (tdcls, sts)  ->
+    Ext_list.fold_right tdcls ([],[]) (fun tdcl (tdcls, sts)  ->
         match handleTdcl tdcl with
           ntdcl, value_descriptions ->
           ntdcl::tdcls,
-          Ext_list.map_append (fun x -> Str.primitive x) value_descriptions sts
-
-      ) tdcls ([],[])  in
+          Ext_list.map_append value_descriptions sts (fun x -> Str.primitive x) 
+      ) in
 Ast_compatible.rec_type_str tdcls :: code
 (* still need perform transformation for non-abstract type*)
 
 let handleTdclsInSig tdcls =
   let tdcls, code =
-    List.fold_right (fun tdcl (tdcls, sts)  ->
+    Ext_list.fold_right tdcls ([],[]) (fun tdcl (tdcls, sts)  ->
         match handleTdcl tdcl with
           ntdcl, value_descriptions ->
           ntdcl::tdcls,
-          Ext_list.map_append (fun x -> Sig.value x) value_descriptions sts
-
-      ) tdcls ([],[])  in
+          Ext_list.map_append value_descriptions sts (fun x -> Sig.value x) 
+      ) in
   Ast_compatible.rec_type_sig tdcls :: code

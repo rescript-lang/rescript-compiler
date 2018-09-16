@@ -621,7 +621,7 @@ let ocaml_obj_as_js_object
     ~pval_prim:(External_process.pval_prim_of_labels labels)
     (fun e ->
        Ast_compatible.apply_labels ~loc e
-         (Ext_list.map2 (fun l expr -> l.Asttypes.txt, expr) labels exprs) )
+         (Ext_list.map2 labels exprs (fun l expr -> l.txt, expr) ) )
     ~pval_type
 
 
@@ -676,7 +676,9 @@ let convertBsErrorFunction loc  (self : Bs_ast_mapper.mapper) attrs (cases : Par
           (Ast_compatible.app1  ~loc (Exp.ident ~loc {txt =  obj_magic; loc})  txt_expr)
           (Ast_literal.type_exn ~loc ())
        )
-      (Ext_list.map_append (fun (x :Parsetree.case ) ->
+      (Ext_list.map_append cases 
+        [ Exp.case  (Pat.any ~loc ()) none] 
+        (fun x ->
            let pc_rhs = x.pc_rhs in 
            let  loc  = pc_rhs.pexp_loc in
            {
@@ -686,10 +688,7 @@ let convertBsErrorFunction loc  (self : Bs_ast_mapper.mapper) attrs (cases : Par
                         (Ast_core_type.lift_option_type (Typ.any ~loc ())  )
            }
 
-         ) cases 
-      [
-       Exp.case  (Pat.any ~loc ()) none
-     ])
+         ) )
     )
     (Some none))
     

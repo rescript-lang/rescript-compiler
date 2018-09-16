@@ -189,7 +189,7 @@ and compile_external_field_apply
             else x in (* Relax when x = 0 *)
           if  len >= x
           then
-            let first_part, continue =  Ext_list.split_at x args in
+            let first_part, continue =  Ext_list.split_at args x in
             aux
               (E.call ~info:{arity=Full; call_info = Call_ml} acc first_part)
               rest
@@ -483,12 +483,12 @@ and compile_general_cases
           in
           let body =            
            Ext_list.flat_map
-           (table
-             |> Ext_list.stable_group
+           (
+             Ext_list.stable_group table
               (fun (_,lam) (_,lam1)
                 -> Lam_analysis.eq_lambda_approx lam lam1))
             (fun group ->
-                 Ext_list.map_last
+                 Ext_list.map_last group
                    (fun last (switch_case,lam) ->
                       if last
                       then
@@ -522,7 +522,7 @@ and compile_general_cases
                       else
                         { switch_case; switch_body = []; should_break = false }
                     )
-                   group
+                   
               )
               (* TODO: we should also group default *)
               (* The last clause does not need [break]

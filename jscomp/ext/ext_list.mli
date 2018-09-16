@@ -32,7 +32,9 @@ val map_snd : ('a * 'b) list -> ('b -> 'c) -> ('a * 'c) list
     [false] otherwise. 
     For empty list, it returns empty
 *)
-val map_last : (bool -> 'a -> 'b) -> 'a list -> 'b list
+val map_last : 
+    'a list -> 
+    (bool -> 'a -> 'b) -> 'b list
 
 (** [last l]
     return the last element
@@ -40,9 +42,16 @@ val map_last : (bool -> 'a -> 'b) -> 'a list -> 'b list
 *)
 val last : 'a list -> 'a
 
-val append : 'a list -> 'a list -> 'a list 
+val append : 
+  'a list -> 
+  'a list -> 
+  'a list 
 
-val map_append :  ('b -> 'a) -> 'b list -> 'a list -> 'a list
+val map_append :  
+  'b list -> 
+  'a list -> 
+  ('b -> 'a) -> 
+  'a list
 
 val fold_right : 
   'a list -> 'b -> 
@@ -55,9 +64,9 @@ val fold_right2 :
   ('a -> 'b -> 'c -> 'c) ->  'c
 
 val map2 : 
-  ('a -> 'b -> 'c) ->
   'a list ->
   'b list ->
+  ('a -> 'b -> 'c) ->
   'c list
 
 val fold_left_with_offset : 
@@ -69,10 +78,16 @@ val fold_left_with_offset :
 
 
 (** @unused *)
-val filter_map : ('a -> 'b option) -> 'a list -> 'b list  
+val filter_map : 
+  'a list -> 
+  ('a -> 'b option) -> 
+  'b list  
 
 (** [exclude p l] is the opposite of [filter p l] *)
-val exclude : ('a -> bool) -> 'a list -> 'a list 
+val exclude : 
+  'a list -> 
+  ('a -> bool) -> 
+  'a list 
 
 (** [excludes p l]
     return a tuple [excluded,newl]
@@ -80,7 +95,10 @@ val exclude : ('a -> bool) -> 'a list -> 'a list
     element is removed,[newl] is the new list where all [p x] for [x] is false
 
 *)
-val exclude_with_val : ('a -> bool) -> 'a list -> bool * 'a list 
+val exclude_with_val : 
+  'a list -> 
+  ('a -> bool) -> 
+  bool * 'a list 
 
 
 val same_length : 'a list -> 'b list -> bool
@@ -91,7 +109,10 @@ val init : int -> (int -> 'a) -> 'a list
     will split [l] into two lists [a,b], [a] will be of length [n], 
     otherwise, it will raise
 *)
-val split_at : int -> 'a list -> 'a list * 'a list
+val split_at : 
+  'a list -> 
+  int -> 
+  'a list * 'a list
 
 
 (** [split_at_last l]
@@ -100,15 +121,21 @@ val split_at : int -> 'a list -> 'a list * 'a list
 val split_at_last : 'a list -> 'a list * 'a
 
 val filter_mapi : 
-  (int -> 'a -> 'b option) -> 'a list -> 'b list
+  'a list -> 
+  ('a -> int ->  'b option) -> 
+  'b list
 
 val filter_map2 : 
-  ('a -> 'b -> 'c option) -> 'a list -> 'b list -> 'c list
+  'a list -> 
+  'b list -> 
+  ('a -> 'b -> 'c option) -> 
+  'c list
 
 
 val length_compare : 'a list -> int -> [`Gt | `Eq | `Lt ]
 
 val length_ge : 'a list -> int -> bool
+
 (**
 
    {[length xs = length ys + n ]}
@@ -117,7 +144,10 @@ val length_ge : 'a list -> int -> bool
 *)
 
 val length_larger_than_n : 
-  int -> 'a list -> 'a list -> bool
+  'a list -> 
+  'a list -> 
+   int -> 
+   bool
 
 
 (**
@@ -126,7 +156,11 @@ val length_larger_than_n :
    This weird semantics is due to it is the most efficient operation
    we can do
 *)
-val rev_map_append : ('a -> 'b) -> 'a list -> 'b list -> 'b list
+val rev_map_append : 
+  'a list -> 
+  'b list -> 
+  ('a -> 'b) -> 
+  'b list
 
 
 val flat_map : 
@@ -135,9 +169,9 @@ val flat_map :
   'b list
 
 val flat_map_append : 
-  ('a -> 'b list) -> 
   'a list -> 
   'b list  ->
+  ('a -> 'b list) -> 
   'b list
 
 
@@ -155,35 +189,54 @@ val flat_map_append :
     TODO: this is O(n^2) behavior 
     which could be improved later
 *)
-val stable_group : ('a -> 'a -> bool) -> 'a list -> 'a list list 
+val stable_group : 
+  'a list -> 
+  ('a -> 'a -> bool) -> 
+  'a list list 
 
 (** [drop n list]
     raise when [n] is negative
     raise when list's length is less than [n]
 *)
-val drop : int -> 'a list -> 'a list 
+val drop : 
+  'a list -> 
+  int -> 
+  'a list 
 
 (** [find_first_not p lst ]
     if all elements in [lst] pass, return [None] 
     otherwise return the first element [e] as [Some e] which
     fails the predicate
 *)
-val find_first_not : ('a -> bool) -> 'a list -> 'a option 
+val find_first_not : 
+  'a list -> 
+  ('a -> bool) -> 
+  'a option 
 
 (** [find_opt f l] returns [None] if all return [None],  
     otherwise returns the first one. 
 *)
 
-val find_opt : ('a -> 'b option) -> 'a list -> 'b option 
+val find_opt : 
+  'a list -> 
+  ('a -> 'b option) -> 
+  'b option 
 
 
-val rev_iter : ('a -> unit) -> 'a list -> unit 
+val rev_iter : 
+  'a list -> 
+  ('a -> unit) -> 
+  unit 
 
 (** [for_all2_no_exn p xs ys]
     return [true] if all satisfied,
     [false] otherwise or length not equal
 *)
-val for_all2_no_exn : ('a -> 'b -> bool) -> 'a list -> 'b list -> bool
+val for_all2_no_exn : 
+  'a list -> 
+  'b list -> 
+  ('a -> 'b -> bool) -> 
+  bool
 
 
 
@@ -195,10 +248,14 @@ val split_map :
 
 (** [fn] is applied from left to right *)
 val reduce_from_left : 
-  ('a -> 'a -> 'a) -> 'a list -> 'a
+  'a list -> 
+  ('a -> 'a -> 'a) ->
+  'a
 
 val sort_via_array :
-  ('a -> 'a -> int) -> 'a list -> 'a list  
+  'a list -> 
+  ('a -> 'a -> int) -> 
+  'a list  
 
 
 
@@ -209,10 +266,16 @@ val sort_via_array :
     otherwise [assert false ]
 *)
 val assoc_by_string : 
-  'a  option -> string -> (string * 'a) list -> 'a  
+  (string * 'a) list -> 
+  string -> 
+  'a  option ->   
+  'a  
 
 val assoc_by_int : 
-  'a  option -> int -> (int * 'a) list -> 'a   
+  (int * 'a) list -> 
+  int -> 
+  'a  option ->   
+  'a   
 
 
 val nth_opt : 'a list -> int -> 'a option  

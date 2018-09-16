@@ -169,7 +169,7 @@ type package_context = {
 *)
 
 let pp_packages_rev ppf lst = 
-  Ext_list.rev_iter (fun  s ->  Format.fprintf ppf "%s " s) lst
+  Ext_list.rev_iter lst (fun  s ->  Format.fprintf ppf "%s " s) 
 
 let rec walk_all_deps_aux visited paths top dir cb =
   let bsconfig_json =  (dir // Literals.bsconfig_json) in

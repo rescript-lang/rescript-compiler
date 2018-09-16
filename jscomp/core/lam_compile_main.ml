@@ -100,7 +100,7 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.t)
 
  (** Also need analyze its depenency is pure or not *)
 let no_side_effects (rest : Lam_group.t list) : string option = 
-    Ext_list.find_opt (fun (x : Lam_group.t) -> 
+    Ext_list.find_opt rest (fun (x : Lam_group.t) -> 
         match x with 
         | Single(kind,id,body) -> 
           begin 
@@ -112,18 +112,18 @@ let no_side_effects (rest : Lam_group.t list) : string option =
             | _ -> None
           end
         | Recursive bindings -> 
-          Ext_list.find_opt (fun (id,lam) -> 
+          Ext_list.find_opt  bindings (fun (id,lam) -> 
               if not @@ Lam_analysis.no_side_effects lam 
               then Some (Printf.sprintf "%s" id.Ident.name )
               else None
-            ) bindings
+            )
         | Nop lam -> 
           if not @@ Lam_analysis.no_side_effects lam 
           then 
             (*  (Lam_util.string_of_lambda lam) *)
             Some ""
           else None (* TODO :*))
-      rest
+      
 
 
 
@@ -266,10 +266,10 @@ let compile  ~filename (output_prefix : string) env _sigs
         |>
         (fun x ->
            if !Js_config.sort_imports then
-             Ext_list.sort_via_array
-               (fun (id1 : Lam_module_ident.t) (id2 : Lam_module_ident.t) ->
+             Ext_list.sort_via_array x
+               (fun id1 id2 ->
                   Ext_string.compare (Lam_module_ident.name id1) (Lam_module_ident.name id2)
-               ) x
+               ) 
            else
              x
         )

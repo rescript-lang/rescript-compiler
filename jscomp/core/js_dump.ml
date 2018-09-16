@@ -174,10 +174,10 @@ and  pp_function method_
          it can be optimized in to either [u] or [Curry.__n(u)]
       *)
       not method_ &&
-      Ext_list.for_all2_no_exn (fun a (b : J.expression) ->
+      Ext_list.for_all2_no_exn l ls (fun a b ->
           match b.expression_desc with
           | Var (Id i) -> Ident.same a i
-          | _ -> false) l ls ->
+          | _ -> false)  ->
     let optimize  len p cxt f v =
       if p then try_optimize_curry cxt f len function_id
       else

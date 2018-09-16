@@ -35,7 +35,7 @@ let eval (arg : J.expression) (dispatches : (int * string) list ) : E.t =
   if arg == E.undefined then E.undefined else
   match arg.expression_desc with
   | Number (Int {i} | Uint i) ->
-    E.str (Ext_list.assoc_by_int None (Int32.to_int i) dispatches)
+    E.str (Ext_list.assoc_by_int  dispatches (Int32.to_int i) None)
   | _ ->
     E.of_block
       [(S.int_switch arg
@@ -52,7 +52,7 @@ let eval_as_event (arg : J.expression) (dispatches : (int * string) list ) =
   | Array ([{expression_desc = Number (Int {i} | Uint i)}; cb], _)
   | Caml_block([{expression_desc = Number (Int {i} | Uint i)}; cb], _, _, _)
     -> (* FIXME - to polyvar*)
-    let v = Ext_list.assoc_by_int None (Int32.to_int i) dispatches in
+    let v = Ext_list.assoc_by_int dispatches (Int32.to_int i) None in
     Splice2(E.str v , cb )
   | _ ->
     Splice2
@@ -82,7 +82,7 @@ let eval_as_int (arg : J.expression) (dispatches : (int * int) list ) : E.t  =
   if arg == E.undefined then E.undefined else
   match arg.expression_desc with
   | Number (Int {i} | Uint i) ->
-    E.int (Int32.of_int (Ext_list.assoc_by_int None (Int32.to_int i) dispatches))
+    E.int (Int32.of_int (Ext_list.assoc_by_int dispatches (Int32.to_int i) None))
   | _ ->
     E.of_block
       [(S.int_switch arg

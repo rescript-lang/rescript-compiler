@@ -336,16 +336,16 @@ let switch lam (lam_switch : switch) : t =
   match lam with
   | Lconst ((Const_pointer (i,_) |  (Const_int i)))
     ->
-    Ext_list.assoc_by_int lam_switch.sw_failaction i lam_switch.sw_consts
+    Ext_list.assoc_by_int   lam_switch.sw_consts i lam_switch.sw_failaction
   | Lconst (Const_block (i,_,_)) ->
-    Ext_list.assoc_by_int lam_switch.sw_failaction i lam_switch.sw_blocks
+    Ext_list.assoc_by_int lam_switch.sw_blocks i lam_switch.sw_failaction 
   | _ ->
     Lswitch(lam,lam_switch)
 
 let stringswitch (lam : t) cases default : t =
   match lam with
   | Lconst (Const_string a) ->
-    Ext_list.assoc_by_string default a cases
+    Ext_list.assoc_by_string  cases a default
   | _ -> Lstringswitch(lam, cases, default)
 
 

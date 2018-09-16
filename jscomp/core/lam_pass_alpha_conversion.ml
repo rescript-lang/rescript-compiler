@@ -53,7 +53,7 @@ let alpha_conversion (meta : Lam_stats.t) (lam : Lam.t) : Lam.t =
                 Lam_eta_conversion.transform_under_supply (x - len) loc App_ml_full
                   fn args 
               else 
-                let first,rest = Ext_list.split_at x ll in 
+                let first,rest = Ext_list.split_at ll x in 
                 Lam.apply (
                   Lam.apply (simpl l1) 
                          (Ext_list.map first simpl ) 

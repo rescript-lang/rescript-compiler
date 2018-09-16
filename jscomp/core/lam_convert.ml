@@ -618,9 +618,9 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : t * Lam_module_ident
 
         |  Lapply(Lfunction(kind, params,Lprim(external_fn,inner_args,inner_loc)), args, outer_loc ) (* x |> f a *)
 
-          when Ext_list.for_all2_no_exn (fun x y -> match y with Lambda.Lvar y when Ident.same x y  -> true | _ -> false ) params inner_args
+          when Ext_list.for_all2_no_exn params inner_args (fun x y -> match y with Lambda.Lvar y when Ident.same x y  -> true | _ -> false ) 
                &&
-               Ext_list.length_larger_than_n 1 inner_args args
+               Ext_list.length_larger_than_n inner_args args 1 
           ->
 
           convert_aux (Lprim(external_fn, Ext_list.append args [x], outer_loc))

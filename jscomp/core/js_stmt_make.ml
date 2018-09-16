@@ -98,10 +98,10 @@ let int_switch ?comment   ?declaration ?default (e : J.expression)  clauses : t 
   match e.expression_desc with 
   | Number (Int {i; _}) -> 
     let continuation =  
-      begin match Ext_list.find_opt 
+      begin match Ext_list.find_opt clauses
         (fun (x : _ J.case_clause) ->
          if x.switch_case = (Int32.to_int i) then
-          Some x.switch_body else None ) clauses
+          Some x.switch_body else None ) 
         with 
         | Some case -> case 
         | None -> 
@@ -136,12 +136,12 @@ let string_switch ?comment ?declaration  ?default (e : J.expression)  clauses : 
   match e.expression_desc with 
   | Str (_,s) -> 
     let continuation = 
-      begin match Ext_list.find_opt 
+      begin match Ext_list.find_opt clauses
                     (fun  (x : string J.case_clause) ->
                       if x.switch_case = s then 
                         Some x.switch_body
                       else None  
-                      ) clauses
+                      ) 
         with 
         | Some case ->  case
         | None -> 
