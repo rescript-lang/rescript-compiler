@@ -34,6 +34,14 @@ let setupChromeDebugger : unit -> unit = fun%raw unit -> {|
   var colonStyle = {"style": "flex-shrink: 0; padding-right: 5px"}
   var recordNumberStyle = {"style": "flex-shrink: 0; padding-right: 5px; color: rgb(145, 145, 145)"}
 
+  var showObject = function (value) {
+    if (value == undefined) {
+      return value + ''
+    } else {
+      return ["object", {"object": value}]
+    }
+  }
+
   var recordCustomFormatter = function (data, labels) {
     return [
       "ol",
@@ -45,7 +53,7 @@ let setupChromeDebugger : unit -> unit = fun%raw unit -> {|
             ["span", recordNumberStyle, index],
             ["span", {"style": "color: rgb(227, 110, 236)"}, labels[index]],
             ["span", colonStyle, ":"],
-            ["span", {}, ["object", { "object": cur }]],
+            ["span", {}, showObject(cur)],
           ]
       })
     ]
@@ -61,7 +69,7 @@ var listToArray = function (data){
       {},
       ["span", {"style": "color: rgb(227, 110, 236)"}, index],
       ["span", colonStyle, ":"],
-      ["object", {"object": cur[0]}]
+      showObject(cur[0])
     ]);
     cur = cur[1]
     index++
@@ -77,7 +85,7 @@ var variantCustomFormatter = function (data,recordVariant){
       ... listToArray(data)
     ]
   } else {
-      return ["ol", olStyle, ...data.map(function (cur) { return ["object", { "object": cur }] })]
+      return ["ol", olStyle, ...data.map(function (cur) { return showObject(cur) })]
   }
 
 };
@@ -162,10 +170,10 @@ var formatter = {
               return variantCustomFormatter(x,recordVariant)
       }
       else if ((recordPolyVar = x [Symbol.for('BsPolyVar')]) !== undefined){
-        return ["object", {"object" : x[1]}]
+        return showObject(x[1])
       }
       else if(isOCamlExceptionOrExtension(x)){
-        return ["ol", olStyle, ... x.slice(1).map(cur => ["object",{"object" : cur }])]
+        return ["ol", olStyle, ... x.slice(1).map(cur => showObject(cur))]
       }
 
   }
