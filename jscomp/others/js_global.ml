@@ -90,12 +90,32 @@ let count = ref 0
 
 let tick () =
   count := !count + 1; Js.log (string_of_int !count)
-    
+
 let _ =
   Js.Global.setInterval tick 1000
 ]}
 *)
 external setInterval : (unit -> unit) -> int -> intervalId = "" [@@bs.val]
+
+(** {i Repeatedly} executes a callback with a specified interval (in milliseconds) between calls
+
+{b Return} an {! intervalId} that can be passed to {! clearInterval} to cancel the timeout
+
+@see <https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setInterval> MDN
+
+@example {[
+(* Will count up and print the count to the console every second *)
+
+let count = ref 0
+
+let tick () =
+  count := !count + 1; Js.log (string_of_int !count)
+
+let _ =
+  Js.Global.setIntervalFloat tick 1000.0
+]}
+*)
+external setIntervalFloat : (unit -> unit) -> float -> intervalId = "setInterval" [@@bs.val]
 
 
 (** Execute a callback after a specified delay (in milliseconds)
@@ -114,6 +134,23 @@ let _ =
 ]}
 *)
 external setTimeout : (unit -> unit) -> int -> timeoutId = "" [@@bs.val]
+
+(** Execute a callback after a specified delay (in milliseconds)
+
+{b returns} a {! timeoutId} that can be passed to {! clearTimeout} to cancel the timeout
+
+@see <https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setTimeout> MDN
+
+@example {[
+(* Prints "Timed out!" in the console after one second *)
+
+let message = "Timed out!"
+
+let _ =
+  Js.Global.setTimeoutFloat (fun () -> Js.log message) 1000.0
+]}
+*)
+external setTimeoutFloat : (unit -> unit) -> float -> timeoutId = "setTimeout" [@@bs.val]
 
 (** URL-encodes a string.
 
