@@ -75,7 +75,7 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.t)
     (* let lam = Optimizer.simplify_lets [] lam in  *)
     (* can not apply again, it's wrong USE it with care*)
     (* ([Js_stmt_make.comment (Gen_of_env.query_type id  env )], None)  ++ *)
-    Lam_compile.compile_let  kind { st = Declare (kind, id);
+    Lam_compile.compile_let  kind { continuation = Declare (kind, id);
                                     should_return = ReturnFalse;
                                     jmp_table = Lam_compile_context.empty_handler_map;
                                     meta
@@ -83,14 +83,14 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.t)
 
   | Recursive id_lams, _   -> 
     Lam_compile.compile_recursive_lets 
-      { st = EffectCall ;
+      { continuation = EffectCall ;
         should_return = ReturnFalse; 
         jmp_table = Lam_compile_context.empty_handler_map;
         meta
       } 
       id_lams
   | Nop lam, _ -> (* TODO: Side effect callls, log and see statistics *)
-    Lam_compile.compile_lambda {st = EffectCall;
+    Lam_compile.compile_lambda {continuation = EffectCall;
                                 should_return = ReturnFalse;
                                 jmp_table = Lam_compile_context.empty_handler_map;
                                 meta
@@ -100,7 +100,7 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.t)
 
  (** Also need analyze its depenency is pure or not *)
 let no_side_effects (rest : Lam_group.t list) : string option = 
-    Ext_list.find_opt (fun (x : Lam_group.t) -> 
+    Ext_list.find_opt rest (fun (x : Lam_group.t) -> 
         match x with 
         | Single(kind,id,body) -> 
           begin 
@@ -112,18 +112,18 @@ let no_side_effects (rest : Lam_group.t list) : string option =
             | _ -> None
           end
         | Recursive bindings -> 
-          Ext_list.find_opt (fun (id,lam) -> 
+          Ext_list.find_opt  bindings (fun (id,lam) -> 
               if not @@ Lam_analysis.no_side_effects lam 
               then Some (Printf.sprintf "%s" id.Ident.name )
               else None
-            ) bindings
+            )
         | Nop lam -> 
           if not @@ Lam_analysis.no_side_effects lam 
           then 
             (*  (Lam_util.string_of_lambda lam) *)
             Some ""
           else None (* TODO :*))
-      rest
+      
 
 
 
@@ -229,9 +229,8 @@ let compile  ~filename (output_prefix : string) env _sigs
 #if BS_DEBUG then 
   let () = Ext_log.dwarn __LOC__ "\n@[[TIME:]Pre-compile: %f@]@."  (Sys.time () *. 1000.) in      
 #end  
-  let body  = 
-    groups
-    |> Ext_list.map (fun group -> compile_group meta group)
+  let body  =     
+    Ext_list.map groups (fun group -> compile_group meta group)
     |> Js_output.concat
     |> Js_output.output_as_block
   in
@@ -267,10 +266,10 @@ let compile  ~filename (output_prefix : string) env _sigs
         |>
         (fun x ->
            if !Js_config.sort_imports then
-             Ext_list.sort_via_array
-               (fun (id1 : Lam_module_ident.t) (id2 : Lam_module_ident.t) ->
+             Ext_list.sort_via_array x
+               (fun id1 id2 ->
                   Ext_string.compare (Lam_module_ident.name id1) (Lam_module_ident.name id2)
-               ) x
+               ) 
            else
              x
         )

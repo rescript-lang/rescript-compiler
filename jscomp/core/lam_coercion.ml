@@ -92,7 +92,9 @@ let handle_exports (meta : Lam_stats.t)
   let len = List.length original_exports in
   let tbl = String_hash_set.create len in
   let ({export_list ; export_set  ;  groups = coercion_groups } as result)  =
-    Ext_list.fold_right2
+    Ext_list.fold_right2 original_exports
+      lambda_exports
+      {export_list = []; export_set = original_export_set; export_map = Ident_map.empty; groups = []}
       (fun  (original_export_id : Ident.t) (lam : Lam.t) (acc : t)  ->
          let original_name = original_export_id.name in
          if not @@ String_hash_set.check_add tbl original_name then
@@ -151,9 +153,7 @@ let handle_exports (meta : Lam_stats.t)
               groups = Single(Strict, newid, lam) :: acc.groups
             })
       )
-      original_exports
-      lambda_exports
-      {export_list = []; export_set = original_export_set; export_map = Ident_map.empty; groups = []}
+      
 
   in
 

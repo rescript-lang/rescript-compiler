@@ -36,13 +36,13 @@ let newTdcls
   | [ x ] ->
     [{ x with Parsetree.ptype_attributes = newAttrs}]
   | _ ->
-    Ext_list.map_last
+    Ext_list.map_last tdcls
       (fun last x ->
          if last then
            { x with
              Parsetree.ptype_attributes = newAttrs}
          else x )
-      tdcls
+      
 
 
 let handleTdclsInSigi

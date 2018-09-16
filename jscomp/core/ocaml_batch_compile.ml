@@ -85,9 +85,9 @@ let batch_compile ppf search_dirs files main_file =
       let main_module = (Ext_modulename.module_name_of_file main_file) in
       let ast_table, result =
         Ast_extract.collect_from_main ppf 
-          ~extra_dirs:(Ext_list.map
+          ~extra_dirs:(Ext_list.map search_dirs
                          (fun x -> 
-                            ({ dir = x ; excludes = [] } : Ast_extract.dir_spec)) search_dirs)
+                            ({ dir = x ; excludes = [] } : Ast_extract.dir_spec)) )
           Ocaml_parse.lazy_parse_implementation
           Ocaml_parse.lazy_parse_interface         
           Lazy.force

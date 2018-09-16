@@ -71,7 +71,7 @@ let apply_simple
     pexp_desc = 
       Pexp_apply(
         fn, 
-        (Ext_list.map (fun x -> no_label, x) args) ) }
+        (Ext_list.map args (fun x -> no_label, x) ) ) }
 
 let app1        
   ?(loc = default_loc)
@@ -295,23 +295,23 @@ let nonrec_type_sig ?(loc=default_loc)  tds : signature_item =
 
 let const_exp_int_list_as_array xs = 
   Ast_helper.Exp.array 
-  (Ext_list.map (fun x -> const_exp_int x ) xs)  
+  (Ext_list.map  xs (fun x -> const_exp_int x ))  
 
 let const_exp_string_list_as_array xs =   
   Ast_helper.Exp.array 
-  (Ext_list.map (fun x -> const_exp_string x ) xs)  
+  (Ext_list.map xs (fun x -> const_exp_string x ) )  
 
 
  let mk_fn_type 
   (new_arg_types_ty : (arg_label * core_type * attributes * loc) list)
   (result : core_type) : core_type = 
-  Ext_list.fold_right (fun (label, ty, attrs, loc) acc -> 
+  Ext_list.fold_right new_arg_types_ty result (fun (label, ty, attrs, loc) acc -> 
     {
       ptyp_desc = Ptyp_arrow(label,ty,acc);
       ptyp_loc = loc; 
       ptyp_attributes = attrs
     }
-  ) new_arg_types_ty result
+  )
 
 type object_field = 
 #if OCAML_VERSION =~ ">4.03.0" then 

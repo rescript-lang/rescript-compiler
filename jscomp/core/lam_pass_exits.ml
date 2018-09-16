@@ -240,20 +240,18 @@ let subst_helper (subst : subst_tbl) (query : int -> int) lam =
         | None -> lam
       end
     | Lstaticraise (i,ls) ->
-      let ls = Ext_list.map simplif ls in
+      let ls = Ext_list.map  ls simplif in
       begin 
         match Int_hashtbl.find_opt subst i with
         | Some (xs, handler) -> 
           let handler = to_lam handler in 
-          let ys = Ext_list.map Ident.rename xs in
+          let ys = Ext_list.map xs Ident.rename in
           let env =
-            Ext_list.fold_right2
+            Ext_list.fold_right2 xs ys Ident_map.empty 
               (fun x y t -> Ident_map.add x (Lam.var y) t)
-              xs ys Ident_map.empty in
-          Ext_list.fold_right2
+              in
+          Ext_list.fold_right2 ys ls (Lam_subst.subst  env  handler)
             (fun y l r -> Lam.let_ Strict y l r)
-            ys ls 
-            (Lam_subst.subst  env  handler)
         | None -> Lam.staticraise i ls
       end
     | Lstaticcatch (l1,(i,xs),l2) ->
@@ -311,7 +309,7 @@ let subst_helper (subst : subst_tbl) (query : int -> int) lam =
 
     | Lvar _|Lconst _  -> lam
     | Lapply {fn = l1; args =  ll;  loc; status } -> 
-      Lam.apply (simplif l1) (Ext_list.map simplif ll) loc status
+      Lam.apply (simplif l1) (Ext_list.map ll simplif) loc status
     | Lfunction {arity; params; body =  l} -> 
       Lam.function_ ~arity  ~params ~body:(simplif l)
     | Llet (kind, v, l1, l2) -> 
@@ -322,7 +320,7 @@ let subst_helper (subst : subst_tbl) (query : int -> int) lam =
         (simplif body)
     | Lglobal_module _ -> lam 
     | Lprim {primitive; args; loc} -> 
-      let args = Ext_list.map simplif args in
+      let args = Ext_list.map args simplif in
       Lam.prim ~primitive ~args loc
     | Lswitch(l, sw) ->
       let new_l = simplif l
@@ -351,7 +349,7 @@ let subst_helper (subst : subst_tbl) (query : int -> int) lam =
     | Lassign (v, l) -> 
       Lam.assign v (simplif l)
     | Lsend (k, m, o, ll, loc) ->
-      Lam.send k (simplif m) (simplif o) (Ext_list.map simplif ll) loc
+      Lam.send k (simplif m) (simplif o) (Ext_list.map ll simplif ) loc
   in 
   simplif lam 
 

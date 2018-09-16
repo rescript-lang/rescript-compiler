@@ -174,10 +174,10 @@ and  pp_function method_
          it can be optimized in to either [u] or [Curry.__n(u)]
       *)
       not method_ &&
-      Ext_list.for_all2_no_exn (fun a (b : J.expression) ->
+      Ext_list.for_all2_no_exn l ls (fun a b ->
           match b.expression_desc with
           | Var (Id i) -> Ident.same a i
-          | _ -> false) l ls ->
+          | _ -> false)  ->
     let optimize  len p cxt f v =
       if p then try_optimize_curry cxt f len function_id
       else
@@ -829,7 +829,7 @@ and
           P.paren_group f 1 
           (fun _ -> arguments cxt f 
             [E.array Immutable
-             (Ext_list.map E.str labels);
+             (Ext_list.map labels E.str);
               E.array mutable_flag
               (List.map (fun (x :J.expression) -> {x with comment = None}) el)
             ]

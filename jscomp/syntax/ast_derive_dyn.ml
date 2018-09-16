@@ -137,7 +137,7 @@ let rec exp_of_core_type prefix
   | Ptyp_constr (lid, params)
     -> 
     Ast_compatible.apply_simple (Exp.ident (fn_of_lid prefix lid))
-      (Ext_list.map (fun x -> exp_of_core_type prefix x ) params) 
+      (Ext_list.map  params (fun x -> exp_of_core_type prefix x )) 
   | Ptyp_tuple lst -> 
     begin match lst with 
     | [x] -> exp_of_core_type prefix x 
@@ -148,7 +148,7 @@ let rec exp_of_core_type prefix
         Location.raise_errorf ~loc "tuple arity > 6 not supported yet"
       else 
         let fn = js_dyn_tuple_to_value len in 
-        let args = Ext_list.map (fun x -> exp_of_core_type prefix x) lst in 
+        let args = Ext_list.map  lst (fun x -> exp_of_core_type prefix x) in 
         Ast_compatible.apply_simple fn args 
     end
 
@@ -162,7 +162,7 @@ let exp_of_core_type_exprs
     (core_type_exprs : (Parsetree.core_type * Parsetree.expression) list) 
   : Parsetree.expression  = 
     Exp.array 
-      (Ext_list.fold_right (fun (core_type, exp) acc -> 
+      (Ext_list.fold_right core_type_exprs [] (fun (core_type, exp) acc -> 
            bs_apply1
              (exp_of_core_type to_value  core_type) exp
 
@@ -178,7 +178,7 @@ let exp_of_core_type_exprs
               ]}
            *)
            :: acc 
-       ) core_type_exprs [])
+       ) )
 
 let destruct_constructor_declaration 
     ({pcd_name = {txt ;loc}; pcd_args} : Parsetree.constructor_declaration)  = 
@@ -284,8 +284,8 @@ let init ()  =
                      } -> 
                      if explict_nonrec then 
                        let names, arities = 
-                         Ext_list.fold_right 
-                           (fun ( {pcd_name = {txt}; pcd_args} : Parsetree.constructor_declaration) 
+                         Ext_list.fold_right cd ([],[])
+                           (fun {pcd_name = {txt}; pcd_args} 
                              (names,arities) -> 
 #if OCAML_VERSION =~ ">4.03.0" then                               
                              let pcd_args = 
@@ -295,7 +295,7 @@ let init ()  =
 #end                              
                              txt :: names, 
                              List.length pcd_args :: arities
-                           ) cd ([],[]) in 
+                           )  in 
                        constraint_ 
                          [
                            Str.value Nonrecursive @@ 
@@ -354,7 +354,7 @@ let init ()  =
                  let loc = tdcl.ptype_loc in 
                  Sig.value ~loc (Val.mk {txt = name ^ to_value  ; loc}
                                    (js_dyn_to_value_uncurry_type core_type)) in 
-               Ext_list.map handle_tdcl tdcls 
+               Ext_list.map tdcls handle_tdcl 
 
              end
 

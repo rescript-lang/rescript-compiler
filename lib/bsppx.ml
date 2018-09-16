@@ -5640,7 +5640,7 @@ module Ext_list : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-val map : ('a -> 'b) -> 'a list -> 'b list 
+val map : 'a list -> ('a -> 'b) ->  'b list 
 
 val map_snd : ('a * 'b) list -> ('b -> 'c) -> ('a * 'c) list 
 
@@ -5649,7 +5649,9 @@ val map_snd : ('a * 'b) list -> ('b -> 'c) -> ('a * 'c) list
     [false] otherwise. 
     For empty list, it returns empty
 *)
-val map_last : (bool -> 'a -> 'b) -> 'a list -> 'b list
+val map_last : 
+    'a list -> 
+    (bool -> 'a -> 'b) -> 'b list
 
 (** [last l]
     return the last element
@@ -5657,32 +5659,52 @@ val map_last : (bool -> 'a -> 'b) -> 'a list -> 'b list
 *)
 val last : 'a list -> 'a
 
-val append : 'a list -> 'a list -> 'a list 
+val append : 
+  'a list -> 
+  'a list -> 
+  'a list 
 
-val map_append :  ('b -> 'a) -> 'b list -> 'a list -> 'a list
+val map_append :  
+  'b list -> 
+  'a list -> 
+  ('b -> 'a) -> 
+  'a list
 
-val fold_right : ('a -> 'b -> 'b) -> 'a list -> 'b -> 'b
+val fold_right : 
+  'a list -> 'b -> 
+  ('a -> 'b -> 'b) -> 'b
 
-val fold_right2 : ('a -> 'b -> 'c -> 'c) -> 'a list -> 'b list -> 'c -> 'c
+val fold_right2 : 
+  'a list -> 
+  'b list -> 
+  'c -> 
+  ('a -> 'b -> 'c -> 'c) ->  'c
 
 val map2 : 
-  ('a -> 'b -> 'c) ->
   'a list ->
   'b list ->
+  ('a -> 'b -> 'c) ->
   'c list
 
 val fold_left_with_offset : 
-  (int -> 'acc -> 'a -> 'acc) -> 
-  int -> 
+  'a list -> 
   'acc -> 
-  'a list -> 'acc 
+  int -> 
+  ('a -> 'acc ->  int ->  'acc) ->   
+  'acc 
 
 
 (** @unused *)
-val filter_map : ('a -> 'b option) -> 'a list -> 'b list  
+val filter_map : 
+  'a list -> 
+  ('a -> 'b option) -> 
+  'b list  
 
 (** [exclude p l] is the opposite of [filter p l] *)
-val exclude : ('a -> bool) -> 'a list -> 'a list 
+val exclude : 
+  'a list -> 
+  ('a -> bool) -> 
+  'a list 
 
 (** [excludes p l]
     return a tuple [excluded,newl]
@@ -5690,7 +5712,10 @@ val exclude : ('a -> bool) -> 'a list -> 'a list
     element is removed,[newl] is the new list where all [p x] for [x] is false
 
 *)
-val exclude_with_val : ('a -> bool) -> 'a list -> bool * 'a list 
+val exclude_with_val : 
+  'a list -> 
+  ('a -> bool) -> 
+  bool * 'a list 
 
 
 val same_length : 'a list -> 'b list -> bool
@@ -5701,7 +5726,10 @@ val init : int -> (int -> 'a) -> 'a list
     will split [l] into two lists [a,b], [a] will be of length [n], 
     otherwise, it will raise
 *)
-val split_at : int -> 'a list -> 'a list * 'a list
+val split_at : 
+  'a list -> 
+  int -> 
+  'a list * 'a list
 
 
 (** [split_at_last l]
@@ -5710,15 +5738,21 @@ val split_at : int -> 'a list -> 'a list * 'a list
 val split_at_last : 'a list -> 'a list * 'a
 
 val filter_mapi : 
-  (int -> 'a -> 'b option) -> 'a list -> 'b list
+  'a list -> 
+  ('a -> int ->  'b option) -> 
+  'b list
 
 val filter_map2 : 
-  ('a -> 'b -> 'c option) -> 'a list -> 'b list -> 'c list
+  'a list -> 
+  'b list -> 
+  ('a -> 'b -> 'c option) -> 
+  'c list
 
 
 val length_compare : 'a list -> int -> [`Gt | `Eq | `Lt ]
 
 val length_ge : 'a list -> int -> bool
+
 (**
 
    {[length xs = length ys + n ]}
@@ -5727,7 +5761,10 @@ val length_ge : 'a list -> int -> bool
 *)
 
 val length_larger_than_n : 
-  int -> 'a list -> 'a list -> bool
+  'a list -> 
+  'a list -> 
+   int -> 
+   bool
 
 
 (**
@@ -5736,18 +5773,22 @@ val length_larger_than_n :
    This weird semantics is due to it is the most efficient operation
    we can do
 *)
-val rev_map_append : ('a -> 'b) -> 'a list -> 'b list -> 'b list
+val rev_map_append : 
+  'a list -> 
+  'b list -> 
+  ('a -> 'b) -> 
+  'b list
 
 
 val flat_map : 
-  ('a -> 'b list) -> 
   'a list -> 
+  ('a -> 'b list) -> 
   'b list
 
 val flat_map_append : 
-  ('a -> 'b list) -> 
   'a list -> 
   'b list  ->
+  ('a -> 'b list) -> 
   'b list
 
 
@@ -5765,47 +5806,73 @@ val flat_map_append :
     TODO: this is O(n^2) behavior 
     which could be improved later
 *)
-val stable_group : ('a -> 'a -> bool) -> 'a list -> 'a list list 
+val stable_group : 
+  'a list -> 
+  ('a -> 'a -> bool) -> 
+  'a list list 
 
 (** [drop n list]
     raise when [n] is negative
     raise when list's length is less than [n]
 *)
-val drop : int -> 'a list -> 'a list 
+val drop : 
+  'a list -> 
+  int -> 
+  'a list 
 
 (** [find_first_not p lst ]
     if all elements in [lst] pass, return [None] 
     otherwise return the first element [e] as [Some e] which
     fails the predicate
 *)
-val find_first_not : ('a -> bool) -> 'a list -> 'a option 
+val find_first_not : 
+  'a list -> 
+  ('a -> bool) -> 
+  'a option 
 
 (** [find_opt f l] returns [None] if all return [None],  
     otherwise returns the first one. 
 *)
 
-val find_opt : ('a -> 'b option) -> 'a list -> 'b option 
+val find_opt : 
+  'a list -> 
+  ('a -> 'b option) -> 
+  'b option 
 
 
-val rev_iter : ('a -> unit) -> 'a list -> unit 
+val rev_iter : 
+  'a list -> 
+  ('a -> unit) -> 
+  unit 
 
 (** [for_all2_no_exn p xs ys]
     return [true] if all satisfied,
     [false] otherwise or length not equal
 *)
-val for_all2_no_exn : ('a -> 'b -> bool) -> 'a list -> 'b list -> bool
+val for_all2_no_exn : 
+  'a list -> 
+  'b list -> 
+  ('a -> 'b -> bool) -> 
+  bool
 
 
 
 (** [f] is applied follow the list order *)
-val split_map : ('a -> 'b * 'c) -> 'a list -> 'b list * 'c list       
+val split_map : 
+  'a list -> 
+  ('a -> 'b * 'c) -> 
+  'b list * 'c list       
 
 (** [fn] is applied from left to right *)
 val reduce_from_left : 
-  ('a -> 'a -> 'a) -> 'a list -> 'a
+  'a list -> 
+  ('a -> 'a -> 'a) ->
+  'a
 
 val sort_via_array :
-  ('a -> 'a -> int) -> 'a list -> 'a list  
+  'a list -> 
+  ('a -> 'a -> int) -> 
+  'a list  
 
 
 
@@ -5816,10 +5883,16 @@ val sort_via_array :
     otherwise [assert false ]
 *)
 val assoc_by_string : 
-  'a  option -> string -> (string * 'a) list -> 'a  
+  (string * 'a) list -> 
+  string -> 
+  'a  option ->   
+  'a  
 
 val assoc_by_int : 
-  'a  option -> int -> (int * 'a) list -> 'a   
+  (int * 'a) list -> 
+  int -> 
+  'a  option ->   
+  'a   
 
 
 val nth_opt : 'a list -> int -> 'a option  
@@ -5828,6 +5901,7 @@ val iter_snd : ('a * 'b) list -> ('b -> unit) -> unit
 
 val iter_fst : ('a * 'b) list -> ('a -> unit) -> unit 
 
+val exists : 'a list -> ('a -> bool) -> bool 
 val exists_snd : ('a * 'b) list -> ('b -> bool) -> bool
 end = struct
 #1 "ext_list.ml"
@@ -5858,7 +5932,7 @@ end = struct
 
 
 
-let rec map f l =
+let rec map l f =
   match l with
   | [] ->
     []
@@ -5886,7 +5960,7 @@ let rec map f l =
     let y3 = f x3 in
     let y4 = f x4 in
     let y5 = f x5 in
-    y1::y2::y3::y4::y5::(map f tail)
+    y1::y2::y3::y4::y5::(map tail f)
 
 
 let rec map_snd l f =
@@ -5920,7 +5994,7 @@ let rec map_snd l f =
     (v1, y1)::(v2, y2) :: (v3, y3) :: (v4, y4) :: (v5, y5) :: (map_snd tail f)
 
 
-let rec map_last f l =
+let rec map_last l f=
   match l with
   | [] ->
     []
@@ -5948,7 +6022,7 @@ let rec map_last f l =
     let y2 = f false x2 in
     let y3 = f false x3 in
     let y4 = f false x4 in
-    y1::y2::y3::y4::(map_last f tail)
+    y1::y2::y3::y4::(map_last tail f)
 
 let rec last xs =
   match xs with 
@@ -5974,7 +6048,7 @@ let append l1 l2 =
   | _ -> append_aux l1 l2  
 
 
-let rec map_append  f l1 l2 =   
+let rec map_append l1 l2 f =   
   match l1 with
   | [] -> l2
   | [a0] -> f a0::l2
@@ -6007,11 +6081,11 @@ let rec map_append  f l1 l2 =
     let b2 = f a2 in 
     let b3 = f a3 in 
     let b4 = f a4 in 
-    b0::b1::b2::b3::b4::map_append f rest l2 
+    b0::b1::b2::b3::b4::map_append rest l2 f
 
 
 
-let rec fold_right f l acc = 
+let rec fold_right l acc f  = 
   match l with  
   | [] -> acc 
   | [a0] -> f a0 acc 
@@ -6021,9 +6095,9 @@ let rec fold_right f l acc =
   | [a0;a1;a2;a3;a4] -> 
     f a0 (f a1 (f a2 (f a3 (f a4 acc))))
   | a0::a1::a2::a3::a4::rest -> 
-    f a0 (f a1 (f a2 (f a3 (f a4 (fold_right f rest acc)))))  
+    f a0 (f a1 (f a2 (f a3 (f a4 (fold_right rest acc f )))))  
 
-let rec fold_right2 f l r acc = 
+let rec fold_right2 l r acc f = 
   match l,r  with  
   | [],[] -> acc 
   | [a0],[b0] -> f a0 b0 acc 
@@ -6034,10 +6108,10 @@ let rec fold_right2 f l r acc =
   | [a0;a1;a2;a3;a4], [b0;b1;b2;b3;b4] -> 
     f a0 b0 (f a1 b1 (f a2 b2 (f a3 b3 (f a4 b4 acc))))
   | a0::a1::a2::a3::a4::arest, b0::b1::b2::b3::b4::brest -> 
-    f a0 b0 (f a1 b1 (f a2 b2 (f a3 b3 (f a4 b4 (fold_right2 f arest brest acc)))))  
+    f a0 b0 (f a1 b1 (f a2 b2 (f a3 b3 (f a4 b4 (fold_right2 arest brest acc f )))))  
   | _, _ -> invalid_arg "Ext_list.fold_right2"
 
-let rec map2 f l r = 
+let rec map2  l r f = 
   match l,r  with  
   | [],[] -> []
   | [a0],[b0] -> [f a0 b0]
@@ -6069,44 +6143,49 @@ let rec map2 f l r =
     let c2 = f a2 b2 in 
     let c3 = f a3 b3 in 
     let c4 = f a4 b4 in 
-    c0::c1::c2::c3::c4::map2 f arest brest
+    c0::c1::c2::c3::c4::map2 arest brest f
   | _, _ -> invalid_arg "Ext_list.map2"
 
-let rec fold_left_with_offset f i accu l =
+let rec fold_left_with_offset l accu i f =
   match l with
   | [] -> accu
-  | a::l -> fold_left_with_offset f (succ i) (f i accu a) l
+  | a::l -> 
+    fold_left_with_offset 
+    l     
+    (f  a accu  i)  
+    (i + 1)
+    f  
 
 
-let rec filter_map (f: 'a -> 'b option) xs = 
+let rec filter_map xs (f: 'a -> 'b option)= 
   match xs with 
   | [] -> []
   | y :: ys -> 
     begin match f y with 
-      | None -> filter_map f ys
-      | Some z -> z :: filter_map f ys
+      | None -> filter_map ys f 
+      | Some z -> z :: filter_map ys f 
     end
 
-let rec exclude p xs =   
+let rec exclude xs p =   
   match xs with 
   | [] ->  []
   | x::xs -> 
-    if p x then exclude p xs 
-    else x:: exclude p xs  
+    if p x then exclude xs p
+    else x:: exclude xs p
 
-let rec exclude_with_val p l =
+let rec exclude_with_val l p =
   match l with 
   | [] ->  false, l
   | a0::xs -> 
-    if p a0 then true, exclude p xs 
+    if p a0 then true, exclude xs p
     else 
       match xs with 
       | [] -> false, l 
       | a1::rest -> 
         if p a1 then 
-          true, a0:: exclude p rest 
+          true, a0:: exclude rest p
         else 
-          let st,rest = exclude_with_val p rest in 
+          let st,rest = exclude_with_val rest p in 
           if st then 
             st, a0::a1::rest
           else st, l 
@@ -6158,7 +6237,7 @@ let rec small_split_at n acc l =
     | x::xs -> small_split_at (n - 1) (x ::acc) xs 
     | _ -> invalid_arg "Ext_list.split_at"
 
-let split_at n l = 
+let split_at l n = 
   small_split_at n [] l 
 
 let rec split_at_last_aux acc x = 
@@ -6188,32 +6267,32 @@ let split_at_last (x : 'a list) =
 (**
    can not do loop unroll due to state combination
 *)  
-let  filter_mapi (f: int -> 'a -> 'b option) xs = 
+let  filter_mapi xs f  = 
   let rec aux i xs = 
     match xs with 
     | [] -> []
     | y :: ys -> 
-      begin match f i y with 
+      begin match f y i with 
         | None -> aux (i + 1) ys
         | Some z -> z :: aux (i + 1) ys
       end in
   aux 0 xs 
 
-let rec filter_map2 (f: 'a -> 'b -> 'c option) xs ys = 
+let rec filter_map2  xs ys (f: 'a -> 'b -> 'c option) = 
   match xs,ys with 
   | [],[] -> []
   | u::us, v :: vs -> 
     begin match f u v with 
-      | None -> filter_map2 f us vs (* idea: rec f us vs instead? *)
-      | Some z -> z :: filter_map2 f us vs
+      | None -> filter_map2 us vs f (* idea: rec f us vs instead? *)
+      | Some z -> z :: filter_map2  us vs f
     end
   | _ -> invalid_arg "Ext_list.filter_map2"
 
 
-let rec rev_map_append  f l1 l2 =
+let rec rev_map_append l1 l2 f =
   match l1 with
   | [] -> l2
-  | a :: l -> rev_map_append f l (f a :: l2)
+  | a :: l -> rev_map_append l (f a :: l2) f
 
 
 let rec rev_append l1 l2 =
@@ -6230,10 +6309,10 @@ let rec flat_map_aux f acc append lx =
   | [] -> rev_append acc  append
   | a0::rest -> flat_map_aux f (rev_append (f a0)  acc ) append rest 
 
-let flat_map f lx =
+let flat_map lx f  =
   flat_map_aux f [] [] lx
 
-let flat_map_append f lx append  =
+let flat_map_append lx append f =
   flat_map_aux f [] append lx  
 
 
@@ -6257,11 +6336,11 @@ let rec length_ge l n =
 
    {[length xs = length ys + n ]}
 *)
-let rec length_larger_than_n n xs ys =
+let rec length_larger_than_n xs ys n =
   match xs, ys with 
   | _, [] -> length_compare xs n = `Eq   
   | _::xs, _::ys -> 
-    length_larger_than_n n xs ys
+    length_larger_than_n xs ys n
   | [], _ -> false 
 
 
@@ -6283,9 +6362,9 @@ and aux eq (x : 'a)  (xss : 'a list list) : 'a list list =
       y :: aux eq x ys                                 
   | _ :: _ -> assert false    
 
-let stable_group eq lst =  group eq lst |> List.rev  
+let stable_group lst eq =  group eq lst |> List.rev  
 
-let rec drop n h = 
+let rec drop h n = 
   if n < 0 then invalid_arg "Ext_list.drop"
   else
   if n = 0 then h 
@@ -6294,17 +6373,18 @@ let rec drop n h =
     | [] ->
       invalid_arg "Ext_list.drop"
     | _ :: tl ->   
-      drop (n - 1) tl
+      drop tl (n - 1)
 
-let rec find_first_not  p = function
+let rec find_first_not  xs p = 
+  match xs with 
   | [] -> None
   | a::l -> 
     if p a 
-    then find_first_not p l
+    then find_first_not l p 
     else Some a 
 
 
-let rec rev_iter f l = 
+let rec rev_iter l f = 
   match l with
   | [] -> ()    
   | [x1] ->
@@ -6316,27 +6396,28 @@ let rec rev_iter f l =
   | [x1; x2; x3; x4] ->
     f x4; f x3; f x2; f x1 
   | x1::x2::x3::x4::x5::tail ->
-    rev_iter f tail;
+    rev_iter tail f;
     f x5; f x4 ; f x3; f x2 ; f x1
 
 
-let rec for_all2_no_exn p l1 l2 = 
+let rec for_all2_no_exn  l1 l2 p = 
   match (l1, l2) with
   | ([], []) -> true
-  | (a1::l1, a2::l2) -> p a1 a2 && for_all2_no_exn p l1 l2
+  | (a1::l1, a2::l2) -> p a1 a2 && for_all2_no_exn l1 l2 p
   | (_, _) -> false
 
 
-let rec find_opt p = function
+let rec find_opt xs p = 
+  match xs with 
   | [] -> None
   | x :: l -> 
     match  p x with 
     | Some _ as v  ->  v
-    | None -> find_opt p l 
+    | None -> find_opt l p
 
 
 
-let rec split_map f l = 
+let rec split_map l f = 
   match l with
   | [] ->
     [],[]
@@ -6364,18 +6445,18 @@ let rec split_map f l =
     let a3,b3 = f x3 in
     let a4,b4 = f x4 in
     let a5,b5 = f x5 in
-    let ass,bss = split_map f tail in 
+    let ass,bss = split_map tail f in 
     a1::a2::a3::a4::a5::ass,
     b1::b2::b3::b4::b5::bss
 
 
-let reduce_from_left fn lst = 
+let reduce_from_left lst fn = 
   match lst with 
   | first :: rest ->  List.fold_left fn first rest 
   | _ -> invalid_arg "Ext_list.reduce_from_left"
 
 
-let sort_via_array cmp lst =
+let sort_via_array lst cmp =
   let arr = Array.of_list lst  in
   Array.sort cmp arr;
   Array.to_list arr
@@ -6383,7 +6464,7 @@ let sort_via_array cmp lst =
 
 
 
-let rec assoc_by_string def (k : string) lst = 
+let rec assoc_by_string lst (k : string) def  = 
   match lst with 
   | [] -> 
     begin match def with 
@@ -6391,9 +6472,9 @@ let rec assoc_by_string def (k : string) lst =
       | Some x -> x end
   | (k1,v1)::rest -> 
     if Ext_string.equal k1 k then v1 else 
-      assoc_by_string def k rest 
+      assoc_by_string  rest k def 
 
-let rec assoc_by_int def (k : int) lst = 
+let rec assoc_by_int lst (k : int) def = 
   match lst with 
   | [] -> 
     begin match def with
@@ -6401,7 +6482,7 @@ let rec assoc_by_int def (k : int) lst =
       | Some x -> x end
   | (k1,v1)::rest -> 
     if k1 = k then v1 else 
-      assoc_by_int def k rest     
+      assoc_by_int rest k def 
 
 
 let rec nth_aux l n =
@@ -6427,6 +6508,11 @@ let rec iter_fst lst f =
   | (x,_)::xs -> 
     f x ; 
     iter_fst xs f 
+
+let rec exists l p =     
+  match l with 
+    [] -> false  
+  | x :: xs -> p x || exists xs p
 
 let rec exists_snd l p = 
   match l with 
@@ -6688,7 +6774,7 @@ let apply_simple
     pexp_desc = 
       Pexp_apply(
         fn, 
-        (Ext_list.map (fun x -> no_label, x) args) ) }
+        (Ext_list.map args (fun x -> no_label, x) ) ) }
 
 let app1        
   ?(loc = default_loc)
@@ -6849,23 +6935,23 @@ let nonrec_type_sig ?(loc=default_loc)  tds : signature_item =
 
 let const_exp_int_list_as_array xs = 
   Ast_helper.Exp.array 
-  (Ext_list.map (fun x -> const_exp_int x ) xs)  
+  (Ext_list.map  xs (fun x -> const_exp_int x ))  
 
 let const_exp_string_list_as_array xs =   
   Ast_helper.Exp.array 
-  (Ext_list.map (fun x -> const_exp_string x ) xs)  
+  (Ext_list.map xs (fun x -> const_exp_string x ) )  
 
 
  let mk_fn_type 
   (new_arg_types_ty : (arg_label * core_type * attributes * loc) list)
   (result : core_type) : core_type = 
-  Ext_list.fold_right (fun (label, ty, attrs, loc) acc -> 
+  Ext_list.fold_right new_arg_types_ty result (fun (label, ty, attrs, loc) acc -> 
     {
       ptyp_desc = Ptyp_arrow(label,ty,acc);
       ptyp_loc = loc; 
       ptyp_attributes = attrs
     }
-  ) new_arg_types_ty result
+  )
 
 type object_field = 
    
@@ -7910,7 +7996,7 @@ let ident_or_record_as_config
     -> 
     begin match with_obj with
       | None ->
-        Ext_list.map
+        Ext_list.map label_exprs
           (fun ((x,y) : (Longident.t Asttypes.loc * _) ) -> 
              match (x,y) with 
              | ({txt = Lident name; loc} ) , 
@@ -7923,7 +8009,7 @@ let ident_or_record_as_config
              | _ -> 
                Location.raise_errorf ~loc "Qualified label is not allood"
           )
-          label_exprs
+
       | Some _ -> 
         Location.raise_errorf ~loc "with is not supported"
     end
@@ -7955,7 +8041,7 @@ let assert_strings loc (x : t) : string list
             pstr_loc = loc ;            
             _}] ->
     (try 
-       strs |> Ext_list.map (fun e ->
+        Ext_list.map strs (fun e ->
            match (e : Parsetree.expression) with
            | {pexp_desc = Pexp_constant (
               
@@ -8324,7 +8410,7 @@ let tuple_type_pair ?loc kind arity =
       )  in
     match tys with 
     | result :: rest -> 
-      Ext_list.reduce_from_left (fun r arg -> Ast_compatible.arrow ?loc arg r) tys, 
+      Ext_list.reduce_from_left tys (fun r arg -> Ast_compatible.arrow ?loc arg r) , 
       List.rev rest , result
     | [] -> assert false
     
@@ -8761,11 +8847,12 @@ let from_labels ~loc arity labels
   let result_type =
     Ast_comb.to_js_type loc
       (Ast_compatible.object_ ~loc
-         (Ext_list.map2 (fun x y -> x.Asttypes.txt ,[], y) labels tyvars) Closed)
+         (Ext_list.map2 labels tyvars (fun x y -> x.Asttypes.txt ,[], y)) Closed)
   in
-  Ext_list.fold_right2
-    (fun {Asttypes.loc ; txt = label }
-      tyvar acc -> Ast_compatible.label_arrow ~loc label tyvar acc) labels tyvars  result_type
+  Ext_list.fold_right2 labels tyvars  result_type
+    (fun label (* {loc ; txt = label }*)
+      tyvar acc -> 
+      Ast_compatible.label_arrow ~loc:label.loc label.txt tyvar acc) 
 
 
 let make_obj ~loc xs =
@@ -12487,10 +12574,10 @@ let rec dump r =
     match t with
     | _ when is_list r ->
       let fields = get_list r in
-      "[" ^ String.concat "; " (Ext_list.map dump fields) ^ "]"
+      "[" ^ String.concat "; " (Ext_list.map fields dump) ^ "]"
     | 0 ->
       let fields = get_fields [] s in
-      "(" ^ String.concat ", " (Ext_list.map dump fields) ^ ")"
+      "(" ^ String.concat ", " (Ext_list.map fields dump) ^ ")"
     | x when x = Obj.lazy_tag ->
       (* Note that [lazy_tag .. forward_tag] are < no_scan_tag.  Not
          * clear if very large constructed values could have the same
@@ -12507,7 +12594,7 @@ let rec dump r =
       in
       (* No information on decoding the class (first field).  So just print
          * out the ID and the slots. *)
-      "Object #" ^ dump id ^ " (" ^ String.concat ", " (Ext_list.map dump slots) ^ ")"
+      "Object #" ^ dump id ^ " (" ^ String.concat ", " (Ext_list.map slots dump) ^ ")"
     | x when x = Obj.infix_tag ->
       opaque "infix"
     | x when x = Obj.forward_tag ->
@@ -12515,7 +12602,7 @@ let rec dump r =
     | x when x < Obj.no_scan_tag ->
       let fields = get_fields [] s in
       "Tag" ^ string_of_int t ^
-      " (" ^ String.concat ", " (Ext_list.map dump fields) ^ ")"
+      " (" ^ String.concat ", " (Ext_list.map fields dump) ^ ")"
     | x when x = Obj.string_tag ->
       "\"" ^ String.escaped (Obj.magic r : string) ^ "\""
     | x when x = Obj.double_tag ->
@@ -14096,7 +14183,7 @@ let map_constructor_declarations_into_ints
 let map_row_fields_into_strings ptyp_loc 
     (row_fields : Parsetree.row_field list) : External_arg_spec.attr = 
   let case, result = 
-    (Ext_list.fold_right (fun tag (nullary, acc) -> 
+    Ext_list.fold_right row_fields (`Nothing, []) (fun tag (nullary, acc) -> 
          match nullary, tag with 
          | (`Nothing | `Null), 
            Parsetree.Rtag (label, attrs, true,  [])
@@ -14118,7 +14205,7 @@ let map_row_fields_into_strings ptyp_loc
            end
          | _ -> Bs_syntaxerr.err ptyp_loc Invalid_bs_string_type
 
-       ) row_fields (`Nothing, [])) in 
+       )  in 
   (match case with 
    | `Nothing -> Bs_syntaxerr.err ptyp_loc Invalid_bs_string_type
    | `Null -> External_arg_spec.NullString result 
@@ -15531,7 +15618,7 @@ let handle_attributes
         if String.length prim_name <> 0 then
           Location.raise_errorf ~loc "[@@bs.obj] expect external names to be empty string";
         let arg_kinds, new_arg_types_ty, result_types =
-          Ext_list.fold_right
+          Ext_list.fold_right arg_types_ty ( [], [], [])
             (fun (label,ty,attr,loc) ( arg_labels, arg_types, result_types) ->
                let arg_label = Ast_compatible.convert label in
                let new_arg_label, new_arg_types,  output_tys =
@@ -15625,8 +15712,7 @@ let handle_attributes
                (
                  new_arg_label::arg_labels,
                  new_arg_types,
-                 output_tys)) arg_types_ty
-            ( [], [], []) in
+                 output_tys)) in
 
         let result =
           if Ast_core_type.is_any  result_type then
@@ -15650,7 +15736,22 @@ let handle_attributes
   else
     let splice = st.splice in
     let arg_type_specs, new_arg_types_ty, arg_type_specs_length   =
-      Ext_list.fold_right
+      Ext_list.fold_right arg_types_ty
+        (match st with
+         | {val_send_pipe = Some obj; _ } ->
+           let arg_type, new_ty = get_arg_type ~nolabel:true false obj in
+           begin match arg_type with
+             | Arg_cst _ ->
+               Location.raise_errorf ~loc:obj.ptyp_loc "[@bs.as] is not supported in bs.send type "
+             | _ ->
+               (* more error checking *)
+               [External_arg_spec.empty_kind arg_type]
+               ,
+               [Ast_compatible.no_label, new_ty, [], obj.ptyp_loc]
+               ,0
+           end
+
+         | {val_send_pipe = None ; _ } -> [],[], 0)
         (fun (label,ty,attr,loc) (arg_type_specs, arg_types, i) ->
            let arg_label = Ast_compatible.convert label in
            let arg_label, arg_type, new_arg_types =
@@ -15693,22 +15794,7 @@ let handle_attributes
             if arg_type = Ignore then i
             else i + 1
            )
-        ) arg_types_ty
-        (match st with
-         | {val_send_pipe = Some obj; _ } ->
-           let arg_type, new_ty = get_arg_type ~nolabel:true false obj in
-           begin match arg_type with
-             | Arg_cst _ ->
-               Location.raise_errorf ~loc:obj.ptyp_loc "[@bs.as] is not supported in bs.send type "
-             | _ ->
-               (* more error checking *)
-               [External_arg_spec.empty_kind arg_type]
-               ,
-               [Ast_compatible.no_label, new_ty, [], obj.ptyp_loc]
-               ,0
-           end
-
-         | {val_send_pipe = None ; _ } -> [],[], 0) in
+        )  in
 
     let ffi : External_ffi_types.attr  = match st with
       | {set_index = true;
@@ -16061,7 +16147,7 @@ let handle_attributes_as_string
 let pval_prim_of_labels (labels : string Asttypes.loc list)
    =
   let arg_kinds =
-    Ext_list.fold_right
+    Ext_list.fold_right labels [] 
       (fun {Asttypes.loc ; txt } arg_kinds
         ->
           let arg_label =
@@ -16070,7 +16156,7 @@ let pval_prim_of_labels (labels : string Asttypes.loc list)
           {External_arg_spec.arg_type = Nothing ;
            arg_label  } :: arg_kinds
       )
-      labels [] in
+      in
   let encoding =
     External_ffi_types.to_string (Ffi_obj_create arg_kinds) in
   [""; encoding]
@@ -16080,8 +16166,11 @@ let pval_prim_of_option_labels
 (ends_with_unit : bool)
   =
   let arg_kinds =
-    Ext_list.fold_right
-      (fun (is_option,{Asttypes.loc ; txt }) arg_kinds
+    Ext_list.fold_right labels
+      (if ends_with_unit then
+         [External_arg_spec.empty_kind Extern_unit]
+       else [])
+      (fun (is_option,{loc ; txt }) arg_kinds
         ->
           let label_name = (Lam_methname.translate ~loc txt) in
           let arg_label =
@@ -16091,11 +16180,7 @@ let pval_prim_of_option_labels
           in
           {External_arg_spec.arg_type = Nothing ;
            arg_label  } :: arg_kinds
-      )
-      labels
-      (if ends_with_unit then
-         [External_arg_spec.empty_kind Extern_unit]
-       else [])
+      )      
   in
   let encoding =
     External_ffi_types.to_string (Ffi_obj_create arg_kinds) in
@@ -16360,11 +16445,11 @@ let generic_apply  kind loc
     (args : args ) cb   =
   let obj = self.expr self obj in
   let args =
-    Ext_list.map (fun (label,e) ->
+    Ext_list.map args (fun (label,e) ->
         if not (Ast_compatible.is_arg_label_simple label) then
           Bs_syntaxerr.err loc Label_in_uncurried_bs_attribute;
         self.expr self e
-      ) args in
+      ) in
   let len = List.length args in 
   let arity, fn, args  = 
     match args with 
@@ -16384,7 +16469,7 @@ let generic_apply  kind loc
         Longident.Ldot(Ast_literal.Lid.js_unsafe,
                        Literals.method_run ^ string_of_int arity
                       ) in 
-    Parsetree.Pexp_apply (Exp.ident {txt ; loc}, (Ast_compatible.no_label,fn) :: Ext_list.map (fun x -> Ast_compatible.no_label,x) args)
+    Parsetree.Pexp_apply (Exp.ident {txt ; loc}, (Ast_compatible.no_label,fn) :: Ext_list.map args (fun x -> Ast_compatible.no_label,x))
   else 
     let fn_type, args_type, result_type = Ast_comb.tuple_type_pair ~loc `Run arity  in 
     let string_arity = string_of_int arity in
@@ -16666,8 +16751,8 @@ let ocaml_obj_as_js_object
       begin match tyvars with
         | x :: rest ->
           let method_rest =
-            Ext_list.fold_right (fun v acc -> Ast_compatible.arrow ~loc  v acc)
-              rest result in         
+            Ext_list.fold_right rest result (fun v acc -> Ast_compatible.arrow ~loc  v acc)
+          in         
           to_method_type loc mapper Ast_compatible.no_label x method_rest
         | _ -> assert false
       end in          
@@ -16693,8 +16778,8 @@ let ocaml_obj_as_js_object
       begin match tyvars with
         | x :: rest ->
           let method_rest =
-            Ext_list.fold_right (fun v acc -> Ast_compatible.arrow ~loc  v acc)
-              rest result in         
+            Ext_list.fold_right rest result (fun v acc -> Ast_compatible.arrow ~loc  v acc)
+          in         
           (to_method_callback_type loc mapper  Ast_compatible.no_label self_type
              (Ast_compatible.arrow ~loc  x method_rest))
         | _ -> assert false
@@ -16708,7 +16793,7 @@ let ocaml_obj_as_js_object
       while for label argument it is [@bs.this] which depends internal object
   *)
   let internal_label_attr_types, public_label_attr_types  = 
-    Ext_list.fold_right
+    Ext_list.fold_right clfs ([], []) 
       (fun ({pcf_loc  = loc} as x  : Parsetree.class_field) 
         (label_attr_types, public_label_attr_types) ->
         match x.pcf_desc with
@@ -16766,11 +16851,11 @@ let ocaml_obj_as_js_object
         | Pcf_extension _
         | Pcf_constraint _ ->
           Location.raise_errorf ~loc "Only method support currently"
-      ) clfs ([], []) in
+      ) in
   let internal_obj_type = Ast_core_type.make_obj ~loc internal_label_attr_types in
   let public_obj_type = Ast_core_type.make_obj ~loc public_label_attr_types in
   let (labels,  label_types, exprs, _) =
-    Ext_list.fold_right
+    Ext_list.fold_right clfs  ([], [], [], false)
       (fun (x  : Parsetree.class_field)
         (labels,
          label_types,
@@ -16845,21 +16930,21 @@ let ocaml_obj_as_js_object
         | Pcf_extension _
         | Pcf_constraint _ ->
           Location.raise_errorf ~loc "Only method support currently"
-      ) clfs  ([], [], [], false) in
+      )  in
   let pval_type =
-    Ext_list.fold_right2
+    Ext_list.fold_right2  labels label_types public_obj_type
       (fun label label_type acc ->
          Ast_compatible.label_arrow
            ~loc:label.Asttypes.loc
            label.Asttypes.txt
            label_type acc           
-      ) labels label_types public_obj_type in
+      ) in
   Ast_external_mk.local_extern_cont
     loc
     ~pval_prim:(External_process.pval_prim_of_labels labels)
     (fun e ->
        Ast_compatible.apply_labels ~loc e
-         (Ext_list.map2 (fun l expr -> l.Asttypes.txt, expr) labels exprs) )
+         (Ext_list.map2 labels exprs (fun l expr -> l.txt, expr) ) )
     ~pval_type
 
 
@@ -16870,12 +16955,12 @@ let record_as_js_object
   : Parsetree.expression_desc = 
 
   let labels,args, arity =
-    Ext_list.fold_right (fun ({Location.txt ; loc}, e) (labels,args,i) -> 
+    Ext_list.fold_right label_exprs ([],[],0) (fun ({txt ; loc}, e) (labels,args,i) -> 
         match txt with
         | Longident.Lident x ->
           ({Asttypes.loc = loc ; txt = x} :: labels, (x, self.expr self e) :: args, i + 1)
         | Ldot _ | Lapply _ ->  
-          Location.raise_errorf ~loc "invalid js label ") label_exprs ([],[],0) in
+          Location.raise_errorf ~loc "invalid js label ")  in
   Ast_external_mk.local_external_obj loc 
     ~pval_prim:(External_process.pval_prim_of_labels labels)
     ~pval_type:(Ast_core_type.from_labels ~loc arity labels) 
@@ -16914,7 +16999,9 @@ let convertBsErrorFunction loc  (self : Bs_ast_mapper.mapper) attrs (cases : Par
           (Ast_compatible.app1  ~loc (Exp.ident ~loc {txt =  obj_magic; loc})  txt_expr)
           (Ast_literal.type_exn ~loc ())
        )
-      (Ext_list.map_append (fun (x :Parsetree.case ) ->
+      (Ext_list.map_append cases 
+        [ Exp.case  (Pat.any ~loc ()) none] 
+        (fun x ->
            let pc_rhs = x.pc_rhs in 
            let  loc  = pc_rhs.pexp_loc in
            {
@@ -16924,10 +17011,7 @@ let convertBsErrorFunction loc  (self : Bs_ast_mapper.mapper) attrs (cases : Par
                         (Ast_core_type.lift_option_type (Typ.any ~loc ())  )
            }
 
-         ) cases 
-      [
-       Exp.case  (Pat.any ~loc ()) none
-     ])
+         ) )
     )
     (Some none))
     
@@ -17046,7 +17130,7 @@ let protect2 r1 r2 v1 v2 body =
     raise x
 
 let protect_list rvs body = 
-  let olds =  Ext_list.map (fun (x,y) -> !x)  rvs in 
+  let olds =  Ext_list.map  rvs (fun (x,y) -> !x) in 
   let () = List.iter (fun (x,y) -> x:=y) rvs in 
   try 
     let res = body () in 
@@ -17263,7 +17347,7 @@ let handle_core_type
     let (+>) attr (typ : Parsetree.core_type) =
       {typ with ptyp_attributes = attr :: typ.ptyp_attributes} in           
     let new_methods =
-      Ext_list.fold_right (fun  meth_ acc ->
+      Ext_list.fold_right  methods []  (fun  meth_ acc ->
         match meth_ with 
         
           (label, ptyp_attrs, core_type) -> 
@@ -17305,7 +17389,7 @@ let handle_core_type
             Ast_compatible.object_field label attrs (self.typ self core_type) in
           process_getter_setter ~not_getter_setter ~get ~set
             loc label ptyp_attrs core_type acc
-        ) methods [] in      
+        )in      
     let inner_type =
       { ty
         with ptyp_desc = Ptyp_object(new_methods, closed_flag);
@@ -17316,9 +17400,9 @@ let handle_core_type
   | _ -> super.typ self ty
     
 let handle_class_type_fields self fields = 
-  Ext_list.fold_right 
+  Ext_list.fold_right fields []
   (handle_class_type_field self)
-  fields []
+  
   
 let handle_core_type self typ record_as_js_object =
   handle_core_type 
@@ -17627,10 +17711,10 @@ let gen_signature
     (actions :  Ast_payload.action list ) 
     (explict_nonrec : bool )
   : Ast_signature.t = 
-  Ext_list.flat_map
+  Ext_list.flat_map actions
     (fun action -> 
        (Ast_payload.table_dispatch !derive_table action).signature_gen
-         tdcls explict_nonrec) actions
+         tdcls explict_nonrec) 
 
 (** used for cases like [%sexp] *)         
 let gen_expression ({Asttypes.txt ; loc}) typ =
@@ -17752,7 +17836,7 @@ let core_type_of_type_declaration
     } -> 
     Typ.constr 
       {txt = Lident txt ; loc}
-      (Ext_list.map fst ptype_params)
+      (Ext_list.map ptype_params  fst)
 
 let new_type_of_type_declaration 
     (tdcl : Parsetree.type_declaration) newName = 
@@ -17762,7 +17846,7 @@ let new_type_of_type_declaration
     } -> 
     (Typ.constr 
       {txt = Lident newName ; loc}
-      (Ext_list.map fst ptype_params),
+      (Ext_list.map ptype_params fst ),
       { Parsetree.ptype_params = tdcl.ptype_params;
         ptype_name = {txt = newName;loc};
         ptype_kind = Ptype_abstract; 
@@ -17784,14 +17868,14 @@ let destruct_label_declarations ~loc
     (labels : Parsetree.label_declaration list) : 
   (Parsetree.core_type * Parsetree.expression) list * string list 
   =
-  Ext_list.fold_right
-    (fun   ({pld_name = {txt}; pld_type} : Parsetree.label_declaration) 
+  Ext_list.fold_right labels ([], [])
+    (fun {pld_name = {txt}; pld_type} 
       (core_type_exps, labels) -> 
       ((pld_type, 
         Exp.field (Exp.ident {txt = Lident arg_name ; loc}) 
           {txt = Lident txt ; loc}) :: core_type_exps),
       txt :: labels 
-    ) labels ([], [])
+    ) 
 
 let notApplicable 
   loc derivingName = 
@@ -18244,7 +18328,7 @@ let init () =
                  U.notApplicable tdcl.Parsetree.ptype_loc 
                  derivingName;
                  [] in 
-             Ext_list.flat_map handle_tdcl tdcls 
+             Ext_list.flat_map tdcls handle_tdcl
            );
          signature_gen = 
            (fun (tdcls : tdcls) _ -> 
@@ -18331,7 +18415,7 @@ let init () =
                   U.notApplicable tdcl.Parsetree.ptype_loc 
                   derivingName;
                   [] in 
-              Ext_list.flat_map handle_tdcl tdcls 
+              Ext_list.flat_map tdcls handle_tdcl
 
            );
          expression_gen = None 
@@ -18404,9 +18488,8 @@ let init () =
               let core_type = Ast_derive_util.core_type_of_type_declaration tdcl in 
               match tdcl.ptype_kind with 
               | Ptype_record label_declarations 
-                -> 
-                label_declarations 
-                |> Ext_list.map (
+                ->                  
+                Ext_list.map label_declarations (
                   fun ({pld_name = {loc; txt = pld_label} as pld_name} : Parsetree.label_declaration) -> 
                     let txt = "param" in
                     Ast_comb.single_non_rec_value pld_name
@@ -18416,9 +18499,8 @@ let init () =
                             {txt = Longident.Lident pld_label ; loc}) )
                 )
               | Ptype_variant constructor_declarations 
-                -> 
-                constructor_declarations
-                |> Ext_list.map 
+                ->                 
+                Ext_list.map constructor_declarations
                   (fun
                     ( {pcd_name = {loc ; txt = con_name} ; pcd_args ; pcd_loc }:
                         Parsetree.constructor_declaration)
@@ -18446,14 +18528,13 @@ let init () =
                                         if  arity = 1 then 
                                           Exp.ident { loc ; txt = Longident.Lident (List.hd vars )}
                                         else 
-                                          Exp.tuple (Ext_list.map 
-                                                       (fun x -> Exp.ident {loc ; txt = Longident.Lident x})
-                                                       vars 
+                                          Exp.tuple (Ext_list.map vars 
+                                                       (fun x -> Exp.ident {loc ; txt = Longident.Lident x})                                                       
                                                     ) )) core_type
                               in 
-                              Ext_list.fold_right  (fun var b -> 
+                              Ext_list.fold_right vars exp (fun var b -> 
                                   Ast_compatible.fun_  (Pat.var {loc ; txt = var}) b 
-                                ) vars exp  
+                                ) 
 
                             end)
                   )
@@ -18461,7 +18542,7 @@ let init () =
                 Ast_derive_util.notApplicable tdcl.ptype_loc derivingName ; 
                []
               (* Location.raise_errorf "projector only works with record" *)
-            in Ext_list.flat_map handle_tdcl tdcls
+            in Ext_list.flat_map tdcls handle_tdcl
 
 
           end;
@@ -18471,9 +18552,8 @@ let init () =
               let core_type = Ast_derive_util.core_type_of_type_declaration tdcl in 
               match tdcl.ptype_kind with 
               | Ptype_record label_declarations 
-                -> 
-                label_declarations 
-                |> Ext_list.map 
+                ->                 
+                Ext_list.map label_declarations 
                   (fun 
                     ({pld_name ;
                       pld_type
@@ -18482,24 +18562,21 @@ let init () =
                     Ast_comb.single_non_rec_val pld_name (Ast_compatible.arrow core_type pld_type )
                   )
               | Ptype_variant constructor_declarations 
-                -> 
-                constructor_declarations
-                |>
-                Ext_list.map
+                ->                 
+                Ext_list.map constructor_declarations
                   (fun  ({pcd_name = {loc ; txt = con_name} ; pcd_args ; pcd_loc }:
                            Parsetree.constructor_declaration)
                     -> 
                         
                       Ast_comb.single_non_rec_val {loc ; txt = (Ext_string.uncapitalize_ascii con_name)}
-                        (Ext_list.fold_right 
-                           (fun x acc -> Ast_compatible.arrow x acc) 
-                           pcd_args
-                           core_type))
+                        (Ext_list.fold_right pcd_args core_type
+                           (fun x acc -> Ast_compatible.arrow x acc)
+                           ))
               | Ptype_open | Ptype_abstract -> 
               Ast_derive_util.notApplicable tdcl.ptype_loc derivingName ; 
               [] 
             in 
-            Ext_list.flat_map handle_tdcl tdcls
+            Ext_list.flat_map tdcls handle_tdcl 
           end;
         expression_gen = None
        }
@@ -18651,7 +18728,7 @@ let flattern_tuple_pattern_vb
           Ext_list.same_length es xs
         ->
         Bs_ast_invariant.warn_unused_attributes tuple_attributes ; (* will be dropped*)
-        (Ext_list.fold_right2 (fun pat exp acc->
+        Ext_list.fold_right2 xs es acc (fun pat exp acc->
              {Parsetree.
                pvb_pat =
                  pat;
@@ -18671,7 +18748,7 @@ let flattern_tuple_pattern_vb
                pvb_attributes;
                pvb_loc ;
              } :: acc
-           ) xs es) acc
+           ) 
       | _ ->
         {pvb_pat ;
          pvb_expr ;
@@ -18819,7 +18896,7 @@ let handle_exp_apply
           begin match fn with
             | {pexp_desc = Pexp_apply (fn, args); pexp_loc; pexp_attributes} ->
               let fn = self.expr self fn in
-              let args = Ext_list.map (fun (lab,exp) -> lab, self.expr self exp ) args in
+              let args = Ext_list.map  args (fun (lab,exp) -> lab, self.expr self exp ) in
               Bs_ast_invariant.warn_unused_attributes pexp_attributes;
               { pexp_desc = Pexp_apply(fn, (Ast_compatible.no_label, new_obj_arg) :: args);
                 pexp_attributes = [];
@@ -18833,12 +18910,12 @@ let handle_exp_apply
                     {
                       pexp_desc =
                         Pexp_tuple (
-                          Ext_list.map (fun (fn : Parsetree.expression) ->
+                          Ext_list.map xs (fun (fn : Parsetree.expression) ->
                               match fn with
                               | {pexp_desc = Pexp_apply (fn,args); pexp_loc; pexp_attributes }
                                 ->
                                 let fn = self.expr self fn in
-                                let args = Ext_list.map (fun (lab,exp) -> lab, self.expr self exp ) args in
+                                let args = Ext_list.map  args (fun (lab,exp) -> lab, self.expr self exp ) in
                                 Bs_ast_invariant.warn_unused_attributes pexp_attributes;
                                 { Parsetree.pexp_desc = Pexp_apply(fn, (Ast_compatible.no_label, bounded_obj_arg) :: args);
                                   pexp_attributes = [];
@@ -18850,7 +18927,7 @@ let handle_exp_apply
                                 Ast_compatible.app1 ~loc:fn.pexp_loc
                                   (self.expr self fn )
                                    bounded_obj_arg
-                            ) xs );
+                            ));
                       pexp_attributes = tuple_attrs;
                       pexp_loc = fn.pexp_loc;
                     }
@@ -18941,7 +19018,8 @@ let handle_exp_apply
     | _ ->
       begin match
           Ext_list.exclude_with_val
-            Ast_attributes.is_bs e.pexp_attributes with
+            e.pexp_attributes 
+            Ast_attributes.is_bs with
       | false, _ -> Bs_ast_mapper.default_mapper.expr self e
       | true, pexp_attributes ->
         {e with pexp_desc = Ast_util.uncurry_fn_apply loc self fn args ;
@@ -19496,6 +19574,12 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
         ) label_declarations in
     let setter_accessor, makeType, labels =
       Ext_list.fold_right
+        label_declarations
+        ([],
+         (if has_optional_field then
+            Ast_compatible.arrow ~loc  (Ast_literal.type_unit ()) core_type
+          else  core_type),
+         [])
         (fun
           ({pld_name =
               {txt = label_name; loc = label_loc} as pld_name;
@@ -19566,12 +19650,7 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
           acc,
           maker,
           (is_optional, newLabel)::labels
-        ) label_declarations
-        ([],
-         (if has_optional_field then
-            Ast_compatible.arrow ~loc  (Ast_literal.type_unit ()) core_type
-          else  core_type),
-         [])
+        ) 
     in
     newTdcl,
     (if is_private then
@@ -19597,25 +19676,23 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
 
 let handleTdclsInStr tdcls =
   let tdcls, code =
-    List.fold_right (fun tdcl (tdcls, sts)  ->
+    Ext_list.fold_right tdcls ([],[]) (fun tdcl (tdcls, sts)  ->
         match handleTdcl tdcl with
           ntdcl, value_descriptions ->
           ntdcl::tdcls,
-          Ext_list.map_append (fun x -> Str.primitive x) value_descriptions sts
-
-      ) tdcls ([],[])  in
+          Ext_list.map_append value_descriptions sts (fun x -> Str.primitive x) 
+      ) in
 Ast_compatible.rec_type_str tdcls :: code
 (* still need perform transformation for non-abstract type*)
 
 let handleTdclsInSig tdcls =
   let tdcls, code =
-    List.fold_right (fun tdcl (tdcls, sts)  ->
+    Ext_list.fold_right tdcls ([],[]) (fun tdcl (tdcls, sts)  ->
         match handleTdcl tdcl with
           ntdcl, value_descriptions ->
           ntdcl::tdcls,
-          Ext_list.map_append (fun x -> Sig.value x) value_descriptions sts
-
-      ) tdcls ([],[])  in
+          Ext_list.map_append value_descriptions sts (fun x -> Sig.value x) 
+      ) in
   Ast_compatible.rec_type_sig tdcls :: code
 
 end
@@ -19697,13 +19774,13 @@ let newTdcls
   | [ x ] ->
     [{ x with Parsetree.ptype_attributes = newAttrs}]
   | _ ->
-    Ext_list.map_last
+    Ext_list.map_last tdcls
       (fun last x ->
          if last then
            { x with
              Parsetree.ptype_attributes = newAttrs}
          else x )
-      tdcls
+      
 
 
 let handleTdclsInSigi

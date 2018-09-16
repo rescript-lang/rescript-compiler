@@ -166,7 +166,7 @@ let handle_core_type
     let (+>) attr (typ : Parsetree.core_type) =
       {typ with ptyp_attributes = attr :: typ.ptyp_attributes} in           
     let new_methods =
-      Ext_list.fold_right (fun  meth_ acc ->
+      Ext_list.fold_right  methods []  (fun  meth_ acc ->
         match meth_ with 
 #if OCAML_VERSION =~ ">4.03.0" then
         | Parsetree.Oinherit _ -> meth_ :: acc 
@@ -211,7 +211,7 @@ let handle_core_type
             Ast_compatible.object_field label attrs (self.typ self core_type) in
           process_getter_setter ~not_getter_setter ~get ~set
             loc label ptyp_attrs core_type acc
-        ) methods [] in      
+        )in      
     let inner_type =
       { ty
         with ptyp_desc = Ptyp_object(new_methods, closed_flag);
@@ -222,9 +222,9 @@ let handle_core_type
   | _ -> super.typ self ty
     
 let handle_class_type_fields self fields = 
-  Ext_list.fold_right 
+  Ext_list.fold_right fields []
   (handle_class_type_field self)
-  fields []
+  
   
 let handle_core_type self typ record_as_js_object =
   handle_core_type 

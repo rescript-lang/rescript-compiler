@@ -372,14 +372,14 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : t * Lam_module_ident
                     )]
             -> prim ~primitive:(Pcreate_extension name) ~args:[] loc
           | _ , _->
-            let args = Ext_list.map convert_aux args in
+            let args = Ext_list.map args convert_aux in
             prim ~primitive:(Pccall a) ~args loc
         end
     | Ffi_obj_create labels ->
-      let args = Ext_list.map convert_aux args in
+      let args = Ext_list.map args  convert_aux in
       prim ~primitive:(Pjs_object_create labels) ~args loc
     | Ffi_bs(arg_types, result_type, ffi) ->
-      let args = Ext_list.map convert_aux args in
+      let args = Ext_list.map args convert_aux in
       Lam.handle_bs_non_obj_ffi arg_types result_type ffi args loc prim_name
 
 
@@ -387,7 +387,7 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : t * Lam_module_ident
     let s = p.prim_name in
     match () with
     | _ when s = "#is_none" -> 
-      prim ~primitive:Pis_not_none ~args:(Ext_list.map convert_aux args) loc 
+      prim ~primitive:Pis_not_none ~args:(Ext_list.map args convert_aux ) loc 
     | _ when s = "#val_from_unnest_option" 
       -> 
       begin match args with 
@@ -400,7 +400,7 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : t * Lam_module_ident
     | _ when s = "#val_from_option" 
       -> 
       prim ~primitive:Pval_from_option
-        ~args:(Ext_list.map convert_aux args) loc
+        ~args:(Ext_list.map args convert_aux ) loc
     | _ when s = "#raw_expr" ->
       begin match args with
         | [Lconst( Const_base (Const_string(s,_)))] ->
@@ -431,7 +431,7 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : t * Lam_module_ident
     | _ when s = "#undefined" ->
       Lam.const (Const_js_undefined)
     | _ when s = "#init_mod" ->
-      let args = Ext_list.map convert_aux args in
+      let args = Ext_list.map args  convert_aux in
       begin match args with
       | [_loc; Lconst(Const_block(0,_,[Const_block(0,_,[])]))]
         ->
@@ -439,7 +439,7 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : t * Lam_module_ident
       | _ -> prim ~primitive:Pinit_mod ~args loc
       end
     | _ when s = "#update_mod" ->
-      let args = Ext_list.map convert_aux args in
+      let args = Ext_list.map args convert_aux in
       begin match args with
       | [Lconst(Const_block(0,_,[Const_block(0,_,[])]));_;_]
         -> Lam.unit
@@ -485,7 +485,7 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : t * Lam_module_ident
         | _ -> Location.raise_errorf ~loc
                  "@{<error>Error:@} internal error, using unrecorgnized primitive %s" s
       in
-      let args = Ext_list.map convert_aux args in
+      let args = Ext_list.map args convert_aux in
       prim ~primitive ~args loc
   and convert_aux (lam : Lambda.lambda) : t =
     match lam with
@@ -568,7 +568,7 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : t * Lam_module_ident
         | _ ->
 
           (** we need do this eargly in case [aux fn] add some wrapper *)
-          Lam.apply (convert_aux fn) (Ext_list.map convert_aux args)
+          Lam.apply (convert_aux fn) (Ext_list.map args convert_aux )
             loc App_na
       end
     | Lfunction (Tupled,_,_) -> assert false
@@ -618,9 +618,9 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : t * Lam_module_ident
 
         |  Lapply(Lfunction(kind, params,Lprim(external_fn,inner_args,inner_loc)), args, outer_loc ) (* x |> f a *)
 
-          when Ext_list.for_all2_no_exn (fun x y -> match y with Lambda.Lvar y when Ident.same x y  -> true | _ -> false ) params inner_args
+          when Ext_list.for_all2_no_exn params inner_args (fun x y -> match y with Lambda.Lvar y when Ident.same x y  -> true | _ -> false ) 
                &&
-               Ext_list.length_larger_than_n 1 inner_args args
+               Ext_list.length_larger_than_n inner_args args 1 
           ->
 
           convert_aux (Lprim(external_fn, Ext_list.append args [x], outer_loc))
@@ -639,7 +639,7 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : t * Lam_module_ident
     | Lprim(Pccall a, args, loc)  ->
       convert_ccall (Primitive_compat.of_primitive_description a) args loc
     | Lprim (Pgetglobal id, args, loc) ->
-      let args = Ext_list.map convert_aux args in
+      let args = Ext_list.map args convert_aux in
       if Ident.is_predef_exn id then
         Lam.prim ~primitive:(Pglobal_exception id) ~args loc 
       else
@@ -650,7 +650,7 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : t * Lam_module_ident
         end
     | Lprim (primitive,args, loc)
       ->
-      let args = Ext_list.map convert_aux args in
+      let args = Ext_list.map args convert_aux in
       lam_prim ~primitive ~args loc
     | Lswitch (e,s) ->
       let  e = convert_aux e in
@@ -694,7 +694,7 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : t * Lam_module_ident
         | Some new_id -> Lam.staticraise new_id []
       end
     | Lstaticraise (id, args) ->
-      Lam.staticraise id (Ext_list.map convert_aux args)
+      Lam.staticraise id (Ext_list.map args convert_aux )
     | Lstaticcatch (b, (i,[]), Lstaticraise (j,[]) )
       -> (* peep-hole [i] aliased to [j] *)
 
@@ -737,7 +737,7 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : t * Lam_module_ident
             | _ -> assert false
           end
         | b ->
-          Lam.send kind (convert_aux a)  b (Ext_list.map convert_aux ls) loc 
+          Lam.send kind (convert_aux a)  b (Ext_list.map ls convert_aux) loc 
       end
     | Levent (e, event) ->
       (* disabled by upstream*)

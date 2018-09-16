@@ -60,10 +60,10 @@ let gen_signature
     (actions :  Ast_payload.action list ) 
     (explict_nonrec : bool )
   : Ast_signature.t = 
-  Ext_list.flat_map
+  Ext_list.flat_map actions
     (fun action -> 
        (Ast_payload.table_dispatch !derive_table action).signature_gen
-         tdcls explict_nonrec) actions
+         tdcls explict_nonrec) 
 
 (** used for cases like [%sexp] *)         
 let gen_expression ({Asttypes.txt ; loc}) typ =

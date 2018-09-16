@@ -104,7 +104,7 @@ let shake_program (program : J.program) =
       else first_iteration in
 
     let really_set = loop block export_set in 
-    Ext_list.fold_right
+    Ext_list.fold_right block []
       (fun  (st : J.statement) acc -> 
         match st.statement_desc with
         | Variable {ident; value ; _} -> 
@@ -117,7 +117,7 @@ let shake_program (program : J.program) =
                   else st::acc
               end
         | _ -> if Js_analyzer.no_side_effect_statement st then acc else st::acc
-      ) block []
+      ) 
   in
 
   {program with block = shake_block program.block program.export_set}

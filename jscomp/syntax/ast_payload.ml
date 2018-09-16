@@ -153,7 +153,7 @@ let ident_or_record_as_config
     -> 
     begin match with_obj with
       | None ->
-        Ext_list.map
+        Ext_list.map label_exprs
           (fun ((x,y) : (Longident.t Asttypes.loc * _) ) -> 
              match (x,y) with 
              | ({txt = Lident name; loc} ) , 
@@ -166,7 +166,7 @@ let ident_or_record_as_config
              | _ -> 
                Location.raise_errorf ~loc "Qualified label is not allood"
           )
-          label_exprs
+
       | Some _ -> 
         Location.raise_errorf ~loc "with is not supported"
     end
@@ -198,7 +198,7 @@ let assert_strings loc (x : t) : string list
             pstr_loc = loc ;            
             _}] ->
     (try 
-       strs |> Ext_list.map (fun e ->
+        Ext_list.map strs (fun e ->
            match (e : Parsetree.expression) with
            | {pexp_desc = Pexp_constant (
 #if OCAML_VERSION =~ ">4.03.0" then 

@@ -35,15 +35,15 @@ let eval (arg : J.expression) (dispatches : (int * string) list ) : E.t =
   if arg == E.undefined then E.undefined else
   match arg.expression_desc with
   | Number (Int {i} | Uint i) ->
-    E.str (Ext_list.assoc_by_int None (Int32.to_int i) dispatches)
+    E.str (Ext_list.assoc_by_int  dispatches (Int32.to_int i) None)
   | _ ->
     E.of_block
       [(S.int_switch arg
-      (Ext_list.map (fun (i,r) ->
+      (Ext_list.map dispatches (fun (i,r) ->
               {J.switch_case = i ;
                switch_body = [S.return_stmt (E.str r)];
                should_break = false (* FIXME: if true, still print break*)
-              }) dispatches))]
+              })))]
 
 (** invariant: optional is not allowed in this case *)
 (** arg is a polyvar *)
@@ -52,17 +52,17 @@ let eval_as_event (arg : J.expression) (dispatches : (int * string) list ) =
   | Array ([{expression_desc = Number (Int {i} | Uint i)}; cb], _)
   | Caml_block([{expression_desc = Number (Int {i} | Uint i)}; cb], _, _, _)
     -> (* FIXME - to polyvar*)
-    let v = Ext_list.assoc_by_int None (Int32.to_int i) dispatches in
+    let v = Ext_list.assoc_by_int dispatches (Int32.to_int i) None in
     Splice2(E.str v , cb )
   | _ ->
     Splice2
       (E.of_block
       [(S.int_switch (Js_of_lam_polyvar.get_tag arg)
-      (Ext_list.map (fun (i,r) ->
+      (Ext_list.map dispatches (fun (i,r) ->
               {J.switch_case = i ;
                switch_body = [S.return_stmt (E.str r)];
                should_break = false (* FIXME: if true, still print break*)
-              }) dispatches))]
+              }) ))]
       , (* TODO: improve, one dispatch later,
            the problem is that we can not create bindings
            due to the
@@ -82,15 +82,15 @@ let eval_as_int (arg : J.expression) (dispatches : (int * int) list ) : E.t  =
   if arg == E.undefined then E.undefined else
   match arg.expression_desc with
   | Number (Int {i} | Uint i) ->
-    E.int (Int32.of_int (Ext_list.assoc_by_int None (Int32.to_int i) dispatches))
+    E.int (Int32.of_int (Ext_list.assoc_by_int dispatches (Int32.to_int i) None))
   | _ ->
     E.of_block
       [(S.int_switch arg
-      (Ext_list.map (fun (i,r) ->
+      (Ext_list.map dispatches (fun (i,r) ->
               {J.switch_case = i ;
                switch_body = [S.return_stmt (E.int (Int32.of_int  r))];
                should_break = false (* FIXME: if true, still print break*)
-              }) dispatches))]
+              }) ))]
 
 let eval_as_unwrap (arg : J.expression) : E.t =
   match arg.expression_desc with

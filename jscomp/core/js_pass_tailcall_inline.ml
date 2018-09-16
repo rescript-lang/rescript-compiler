@@ -212,10 +212,9 @@ let subst name export_set stats  =
             Js_op_util.update_used_stats v.ident_info Dead_pure;
             let block  = 
               Ext_list.fold_right2 
+              params args  ( self#block block) (* see #278 before changes*)
               (fun param arg acc ->  
-                S.define_variable ~kind:Variable param arg :: acc)
-                params args  ( self#block block) (* see #278 before changes*)
-                                
+                S.define_variable ~kind:Variable param arg :: acc)                                                
             in
             (* Mark a function as dead means it will never be scanned, 
                here we inline the function

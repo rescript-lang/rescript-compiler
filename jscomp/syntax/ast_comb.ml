@@ -56,7 +56,7 @@ let tuple_type_pair ?loc kind arity =
       )  in
     match tys with 
     | result :: rest -> 
-      Ext_list.reduce_from_left (fun r arg -> Ast_compatible.arrow ?loc arg r) tys, 
+      Ext_list.reduce_from_left tys (fun r arg -> Ast_compatible.arrow ?loc arg r) , 
       List.rev rest , result
     | [] -> assert false
     

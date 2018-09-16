@@ -122,11 +122,11 @@ let generic_apply  kind loc
     (args : args ) cb   =
   let obj = self.expr self obj in
   let args =
-    Ext_list.map (fun (label,e) ->
+    Ext_list.map args (fun (label,e) ->
         if not (Ast_compatible.is_arg_label_simple label) then
           Bs_syntaxerr.err loc Label_in_uncurried_bs_attribute;
         self.expr self e
-      ) args in
+      ) in
   let len = List.length args in 
   let arity, fn, args  = 
     match args with 
@@ -146,7 +146,7 @@ let generic_apply  kind loc
         Longident.Ldot(Ast_literal.Lid.js_unsafe,
                        Literals.method_run ^ string_of_int arity
                       ) in 
-    Parsetree.Pexp_apply (Exp.ident {txt ; loc}, (Ast_compatible.no_label,fn) :: Ext_list.map (fun x -> Ast_compatible.no_label,x) args)
+    Parsetree.Pexp_apply (Exp.ident {txt ; loc}, (Ast_compatible.no_label,fn) :: Ext_list.map args (fun x -> Ast_compatible.no_label,x))
   else 
     let fn_type, args_type, result_type = Ast_comb.tuple_type_pair ~loc `Run arity  in 
     let string_arity = string_of_int arity in
@@ -428,8 +428,8 @@ let ocaml_obj_as_js_object
       begin match tyvars with
         | x :: rest ->
           let method_rest =
-            Ext_list.fold_right (fun v acc -> Ast_compatible.arrow ~loc  v acc)
-              rest result in         
+            Ext_list.fold_right rest result (fun v acc -> Ast_compatible.arrow ~loc  v acc)
+          in         
           to_method_type loc mapper Ast_compatible.no_label x method_rest
         | _ -> assert false
       end in          
@@ -455,8 +455,8 @@ let ocaml_obj_as_js_object
       begin match tyvars with
         | x :: rest ->
           let method_rest =
-            Ext_list.fold_right (fun v acc -> Ast_compatible.arrow ~loc  v acc)
-              rest result in         
+            Ext_list.fold_right rest result (fun v acc -> Ast_compatible.arrow ~loc  v acc)
+          in         
           (to_method_callback_type loc mapper  Ast_compatible.no_label self_type
              (Ast_compatible.arrow ~loc  x method_rest))
         | _ -> assert false
@@ -470,7 +470,7 @@ let ocaml_obj_as_js_object
       while for label argument it is [@bs.this] which depends internal object
   *)
   let internal_label_attr_types, public_label_attr_types  = 
-    Ext_list.fold_right
+    Ext_list.fold_right clfs ([], []) 
       (fun ({pcf_loc  = loc} as x  : Parsetree.class_field) 
         (label_attr_types, public_label_attr_types) ->
         match x.pcf_desc with
@@ -528,11 +528,11 @@ let ocaml_obj_as_js_object
         | Pcf_extension _
         | Pcf_constraint _ ->
           Location.raise_errorf ~loc "Only method support currently"
-      ) clfs ([], []) in
+      ) in
   let internal_obj_type = Ast_core_type.make_obj ~loc internal_label_attr_types in
   let public_obj_type = Ast_core_type.make_obj ~loc public_label_attr_types in
   let (labels,  label_types, exprs, _) =
-    Ext_list.fold_right
+    Ext_list.fold_right clfs  ([], [], [], false)
       (fun (x  : Parsetree.class_field)
         (labels,
          label_types,
@@ -607,21 +607,21 @@ let ocaml_obj_as_js_object
         | Pcf_extension _
         | Pcf_constraint _ ->
           Location.raise_errorf ~loc "Only method support currently"
-      ) clfs  ([], [], [], false) in
+      )  in
   let pval_type =
-    Ext_list.fold_right2
+    Ext_list.fold_right2  labels label_types public_obj_type
       (fun label label_type acc ->
          Ast_compatible.label_arrow
            ~loc:label.Asttypes.loc
            label.Asttypes.txt
            label_type acc           
-      ) labels label_types public_obj_type in
+      ) in
   Ast_external_mk.local_extern_cont
     loc
     ~pval_prim:(External_process.pval_prim_of_labels labels)
     (fun e ->
        Ast_compatible.apply_labels ~loc e
-         (Ext_list.map2 (fun l expr -> l.Asttypes.txt, expr) labels exprs) )
+         (Ext_list.map2 labels exprs (fun l expr -> l.txt, expr) ) )
     ~pval_type
 
 
@@ -632,12 +632,12 @@ let record_as_js_object
   : Parsetree.expression_desc = 
 
   let labels,args, arity =
-    Ext_list.fold_right (fun ({Location.txt ; loc}, e) (labels,args,i) -> 
+    Ext_list.fold_right label_exprs ([],[],0) (fun ({txt ; loc}, e) (labels,args,i) -> 
         match txt with
         | Longident.Lident x ->
           ({Asttypes.loc = loc ; txt = x} :: labels, (x, self.expr self e) :: args, i + 1)
         | Ldot _ | Lapply _ ->  
-          Location.raise_errorf ~loc "invalid js label ") label_exprs ([],[],0) in
+          Location.raise_errorf ~loc "invalid js label ")  in
   Ast_external_mk.local_external_obj loc 
     ~pval_prim:(External_process.pval_prim_of_labels labels)
     ~pval_type:(Ast_core_type.from_labels ~loc arity labels) 
@@ -676,7 +676,9 @@ let convertBsErrorFunction loc  (self : Bs_ast_mapper.mapper) attrs (cases : Par
           (Ast_compatible.app1  ~loc (Exp.ident ~loc {txt =  obj_magic; loc})  txt_expr)
           (Ast_literal.type_exn ~loc ())
        )
-      (Ext_list.map_append (fun (x :Parsetree.case ) ->
+      (Ext_list.map_append cases 
+        [ Exp.case  (Pat.any ~loc ()) none] 
+        (fun x ->
            let pc_rhs = x.pc_rhs in 
            let  loc  = pc_rhs.pexp_loc in
            {
@@ -686,10 +688,7 @@ let convertBsErrorFunction loc  (self : Bs_ast_mapper.mapper) attrs (cases : Par
                         (Ast_core_type.lift_option_type (Typ.any ~loc ())  )
            }
 
-         ) cases 
-      [
-       Exp.case  (Pat.any ~loc ()) none
-     ])
+         ) )
     )
     (Some none))
     

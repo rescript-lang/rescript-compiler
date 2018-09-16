@@ -22,9 +22,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-let flag_concat flag xs = 
-  xs 
-  |> Ext_list.flat_map (fun x -> [flag ; x])
+let flag_concat flag xs =   
+  Ext_list.flat_map xs  (fun x -> [flag ; x])
   |> String.concat Ext_string.single_space
 let (//) = Ext_path.combine
 
@@ -170,7 +169,7 @@ type package_context = {
 *)
 
 let pp_packages_rev ppf lst = 
-  Ext_list.rev_iter (fun  s ->  Format.fprintf ppf "%s " s) lst
+  Ext_list.rev_iter lst (fun  s ->  Format.fprintf ppf "%s " s) 
 
 let rec walk_all_deps_aux visited paths top dir cb =
   let bsconfig_json =  (dir // Literals.bsconfig_json) in

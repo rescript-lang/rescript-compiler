@@ -38,26 +38,26 @@
       Ident_map.find_default id s l
     | Lconst sc as l -> l
     | Lapply{fn; args; loc; status} -> 
-      Lam.apply (subst_aux fn) (Ext_list.map subst_aux args) loc status
+      Lam.apply (subst_aux fn) (Ext_list.map args subst_aux ) loc status
     | Lfunction {arity; params; body} -> 
       Lam.function_ ~arity  ~params ~body:(subst_aux body)
     | Llet(str, id, arg, body) -> 
       Lam.let_ str id (subst_aux arg) (subst_aux body)
     | Lletrec(decl, body) -> 
-      Lam.letrec (Ext_list.map subst_decl decl) (subst_aux body)
+      Lam.letrec (Ext_list.map decl subst_decl ) (subst_aux body)
     | Lprim { primitive ; args; loc} -> 
-      Lam.prim ~primitive ~args:(Ext_list.map subst_aux args) loc
+      Lam.prim ~primitive ~args:(Ext_list.map args subst_aux ) loc
     | Lam.Lglobal_module _ -> x  
     | Lswitch(arg, sw) ->
       Lam.switch (subst_aux arg)
-        {sw with sw_consts = Ext_list.map subst_case sw.sw_consts;
-                 sw_blocks = Ext_list.map subst_case sw.sw_blocks;
+        {sw with sw_consts = Ext_list.map sw.sw_consts subst_case ;
+                 sw_blocks = Ext_list.map sw.sw_blocks subst_case ;
                  sw_failaction = subst_opt  sw.sw_failaction; }
     | Lstringswitch (arg,cases,default) ->
       Lam.stringswitch
-        (subst_aux arg) (Ext_list.map subst_strcase cases) (subst_opt default)
+        (subst_aux arg) (Ext_list.map cases subst_strcase ) (subst_opt default)
     | Lstaticraise (i,args)
-      ->  Lam.staticraise i (Ext_list.map subst_aux args)
+      ->  Lam.staticraise i (Ext_list.map args subst_aux)
     | Lstaticcatch(e1, io, e2)
       -> Lam.staticcatch (subst_aux e1) io (subst_aux e2)
     | Ltrywith(e1, exn, e2)
@@ -73,7 +73,7 @@
     | Lassign(id, e) -> 
       Lam.assign id (subst_aux e)
     | Lsend (k, met, obj, args, loc) ->
-      Lam.send k (subst_aux met) (subst_aux obj) (Ext_list.map subst_aux args) loc
+      Lam.send k (subst_aux met) (subst_aux obj) (Ext_list.map args subst_aux) loc
   and subst_decl (id, exp) = (id, subst_aux exp)
   and subst_case (key, case) = (key, subst_aux case)
   and subst_strcase (key, case) = (key, subst_aux case)

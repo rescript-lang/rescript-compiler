@@ -80,15 +80,16 @@ let get_length t = Array.length t.used_mask
 
 let to_string env =  
   String.concat "," 
-    (Ext_list.map (fun (id : Ident.t) -> Printf.sprintf "%s/%d" id.name id.stamp)
-       (Ident_set.elements  env.unbounded ))
+    (Ext_list.map (Ident_set.elements  env.unbounded ) 
+      (fun id  -> Printf.sprintf "%s/%d" id.name id.stamp)
+       )
 
 let get_mutable_params (params : Ident.t list) (x : t ) = 
   match x.immutable_mask with 
   | All_immutable_and_no_tail_call -> []
   | Immutable_mask xs -> 
-      Ext_list.filter_mapi 
-        (fun i p -> if not xs.(i) then Some p else None)  params
+      Ext_list.filter_mapi params
+        (fun p i -> if not xs.(i) then Some p else None) 
 
 
 let get_unbounded t = t.unbounded

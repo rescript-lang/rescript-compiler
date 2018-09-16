@@ -104,13 +104,13 @@ let values_of_export
 let get_effect (meta : Lam_stats.t) maybe_pure external_ids = 
   match maybe_pure with
   | None ->  
-    Ext_option.map ( Ext_list.find_first_not 
-                        (fun (id : Lam_module_ident.t) -> 
+    Ext_option.map ( Ext_list.find_first_not external_ids
+                        (fun id -> 
                            Lam_compile_env.query_and_add_if_not_exist id 
                              (Has_env meta.env )
                              ~not_found:(fun _ -> false ) ~found:(fun i -> 
                                  i.pure)
-                        ) external_ids) (fun x -> Lam_module_ident.name x)
+                        )) (fun x -> Lam_module_ident.name x)
   | Some _ -> maybe_pure
 
 

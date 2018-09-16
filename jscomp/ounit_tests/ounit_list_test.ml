@@ -12,26 +12,26 @@ let suites =
   [
     __LOC__ >:: begin fun _ -> 
       OUnit.assert_equal
-        (Ext_list.flat_map (fun x -> [x;x]) [1;2]) [1;1;2;2] 
+        (Ext_list.flat_map [1;2] (fun x -> [x;x]) ) [1;1;2;2] 
     end;
     __LOC__ >:: begin fun _ -> 
       OUnit.assert_equal
         (Ext_list.flat_map_append 
-          (fun x -> [x;x])  [1;2] [3;4]) [1;1;2;2;3;4] 
+           [1;2] [3;4] (fun x -> [x;x]) ) [1;1;2;2;3;4] 
     end;
     __LOC__ >:: begin fun _ -> 
     
      let (=~)  = OUnit.assert_equal ~printer:printer_int_list in 
-     (Ext_list.flat_map (fun x -> [succ x ]) []) =~ [];
-     (Ext_list.flat_map (fun x -> [x;succ x ]) [1]) =~ [1;2];
-     (Ext_list.flat_map (fun x -> [x;succ x ]) [1;2]) =~ [1;2;2;3];
-     (Ext_list.flat_map (fun x -> [x;succ x ]) [1;2;3]) =~ [1;2;2;3;3;4]
+     (Ext_list.flat_map  [] (fun x -> [succ x ])) =~ [];
+     (Ext_list.flat_map [1] (fun x -> [x;succ x ]) ) =~ [1;2];
+     (Ext_list.flat_map [1;2] (fun x -> [x;succ x ])) =~ [1;2;2;3];
+     (Ext_list.flat_map [1;2;3] (fun x -> [x;succ x ]) ) =~ [1;2;2;3;3;4]
     end
     ;
     __LOC__ >:: begin fun _ ->
       OUnit.assert_equal 
-      (Ext_list.stable_group (=)
-        [1;2;3;4;3]
+      (Ext_list.stable_group 
+        [1;2;3;4;3] (=)
       )
       ([[1];[2];[4];[3;3]])
     end
@@ -39,41 +39,40 @@ let suites =
     __LOC__ >:: begin fun _ -> 
       let (=~)  = OUnit.assert_equal ~printer:printer_int_list in 
       let f b _v = if b then 1 else 0 in 
-      Ext_list.map_last f [] =~ [];
-      Ext_list.map_last f [0] =~ [1];
-      Ext_list.map_last f [0;0] =~ [0;1];
-      Ext_list.map_last f [0;0;0] =~ [0;0;1];
-      Ext_list.map_last f [0;0;0;0] =~ [0;0;0;1];
-      Ext_list.map_last f [0;0;0;0;0] =~ [0;0;0;0;1];
-      Ext_list.map_last f [0;0;0;0;0;0] =~ [0;0;0;0;0;1];
-      Ext_list.map_last f [0;0;0;0;0;0;0] =~ [0;0;0;0;0;0;1];
+      Ext_list.map_last  []  f =~ [];
+      Ext_list.map_last [0] f =~ [1];
+      Ext_list.map_last [0;0] f =~ [0;1];
+      Ext_list.map_last [0;0;0] f =~ [0;0;1];
+      Ext_list.map_last [0;0;0;0] f =~ [0;0;0;1];
+      Ext_list.map_last [0;0;0;0;0] f =~ [0;0;0;0;1];
+      Ext_list.map_last [0;0;0;0;0;0] f =~ [0;0;0;0;0;1];
+      Ext_list.map_last [0;0;0;0;0;0;0] f =~ [0;0;0;0;0;0;1];
     end
     ;
     __LOC__ >:: begin fun _ ->
       OUnit.assert_equal (
-        Ext_list.flat_map_append 
-          (fun x -> if x mod 2 = 0 then [true] else [])
+        Ext_list.flat_map_append           
           [1;2] [false;false] 
+          (fun x -> if x mod 2 = 0 then [true] else [])
       )  [true;false;false]
     end;
     __LOC__ >:: begin fun _ -> 
       OUnit.assert_equal (
         Ext_list.map_append  
-          (fun x -> string_of_int x) 
           [0;1;2] 
           ["1";"2";"3"]
-
+          (fun x -> string_of_int x) 
       )
         ["0";"1";"2"; "1";"2";"3"]
     end;
 
     __LOC__ >:: begin fun _ -> 
-      let (a,b) = Ext_list.split_at 3 [1;2;3;4;5;6] in 
+      let (a,b) = Ext_list.split_at [1;2;3;4;5;6]  3 in 
       OUnit.assert_equal (a,b)
         ([1;2;3],[4;5;6]);
-      OUnit.assert_equal (Ext_list.split_at 1 [1])
+      OUnit.assert_equal (Ext_list.split_at  [1] 1)
         ([1],[])  ;
-      OUnit.assert_equal (Ext_list.split_at 2 [1;2;3])
+      OUnit.assert_equal (Ext_list.split_at [1;2;3]  2 )
         ([1;2],[3])  
     end;
     __LOC__ >:: begin fun _ -> 
@@ -93,11 +92,11 @@ let suites =
       ([1;2;3;4;5;6],7)
     end;
     __LOC__ >:: begin fun _ -> 
-      OUnit.assert_equal (Ext_list.assoc_by_int None 1 [2,"x"; 3,"y"; 1, "z"]) "z"
+      OUnit.assert_equal (Ext_list.assoc_by_int  [2,"x"; 3,"y"; 1, "z"] 1 None) "z"
     end;
     __LOC__ >:: begin fun _ -> 
       OUnit.assert_raise_any
-        (fun _ -> Ext_list.assoc_by_int None 11 [2,"x"; 3,"y"; 1, "z"])
+        (fun _ -> Ext_list.assoc_by_int [2,"x"; 3,"y"; 1, "z"] 11 None )
     end ;
     __LOC__ >:: begin fun _ -> 
       OUnit.assert_equal
@@ -113,11 +112,11 @@ let suites =
     end;
     __LOC__ >:: begin fun _ -> 
       OUnit.assert_bool __LOC__ 
-        (Ext_list.length_larger_than_n 1 [1;2] [1]);
+        (Ext_list.length_larger_than_n [1;2] [1] 1 );
       OUnit.assert_bool __LOC__ 
-        (Ext_list.length_larger_than_n 0 [1;2] [1;2]);
+        (Ext_list.length_larger_than_n [1;2] [1;2] 0);
       OUnit.assert_bool __LOC__ 
-        (Ext_list.length_larger_than_n 2 [1;2] [])
+        (Ext_list.length_larger_than_n [1;2] [] 2)
 
     end;
 
@@ -149,7 +148,7 @@ let suites =
 
         ) in 
 
-      let f = Ext_list.exclude_with_val  in 
+      let f p x = Ext_list.exclude_with_val x p  in 
       f  (fun x -> x = 1) [1;2;3] =~ (true,[2;3]);
       f (fun x -> x = 4) [1;2;3] =~ (false, [1;2;3]);
       f (fun x -> x = 2) [1;2;3;2] =~ (true, [1;3]);

@@ -82,12 +82,12 @@ let output_ninja_and_namespace_map
   let refmt_flags = String.concat Ext_string.single_space refmt_flags in
   let oc = open_out_bin (cwd_lib_bs // Literals.build_ninja) in
   let bs_package_includes = 
-    Bsb_build_util.include_dirs @@ Ext_list.map 
-      (fun (x : Bsb_config_types.dependency) -> x.package_install_path) bs_dependencies
+    Bsb_build_util.include_dirs @@ Ext_list.map bs_dependencies
+      (fun x  -> x.package_install_path) 
   in
   let bs_package_dev_includes = 
-    Bsb_build_util.include_dirs @@ Ext_list.map 
-      (fun (x : Bsb_config_types.dependency) -> x.package_install_path) bs_dev_dependencies
+    Bsb_build_util.include_dirs @@ Ext_list.map bs_dev_dependencies
+      (fun x -> x.package_install_path) 
   in  
   let has_reason_files = ref false in 
   let bs_package_flags , namespace_flag = 
@@ -157,9 +157,9 @@ let output_ninja_and_namespace_map
          [lib/bs], [build] is different from merlin though
       *)
       Ext_list.map_append 
-        (fun x -> if Filename.is_relative x then Bsb_config.rev_lib_bs_prefix  x else x) 
         external_includes
         acc 
+        (fun x -> if Filename.is_relative x then Bsb_config.rev_lib_bs_prefix  x else x) 
 
   in 
   let emit_bsc_lib_includes source_dirs = 
@@ -180,7 +180,7 @@ let output_ninja_and_namespace_map
             merge_module_info_map  acc  sources ,  
             (if Bsb_file_groups.is_empty x then dirs else  dir::dirs) , 
             ( if resources = [] then acc_resources
-              else Ext_list.map_append (fun x -> dir // x ) resources  acc_resources)
+              else Ext_list.map_append resources acc_resources (fun x -> dir // x ) )
           ) (String_map.empty,[],[]) bs_file_groups in
       has_reason_files := Bsb_db.sanity_check bs_group || !has_reason_files;     
       [|bs_group|], source_dirs, static_resources
@@ -193,7 +193,7 @@ let output_ninja_and_namespace_map
             let dir_index = (dir_index :> int) in 
             bs_groups.(dir_index) <- merge_module_info_map bs_groups.(dir_index) sources ;
             source_dirs.(dir_index) <- dir :: source_dirs.(dir_index);
-            Ext_list.map_append (fun x -> dir//x) resources  acc_resources
+            Ext_list.map_append resources  acc_resources (fun x -> dir//x) 
           ) [] bs_file_groups in
       let lib = bs_groups.((Bsb_dir_index.lib_dir_index :> int)) in               
       has_reason_files := Bsb_db.sanity_check lib || !has_reason_files;

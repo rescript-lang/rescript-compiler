@@ -182,8 +182,7 @@ let make_block ?comment tag tag_info es mutable_flag : t =
       List.mapi (fun i (e : t) -> merge_outer_comment des.(i) e) es
     (* TODO: may overriden its previous comments *)
     | Blk_module (Some des) 
-      ->  Ext_list.map2  merge_outer_comment 
-            des es
+      ->  Ext_list.map2 des es merge_outer_comment             
     | _ -> es 
   in
   {

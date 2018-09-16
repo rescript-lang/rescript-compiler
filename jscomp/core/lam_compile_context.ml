@@ -30,7 +30,7 @@ type jbl_label = int
 module HandlerMap = Int_map
 type value = {
   exit_id : Ident.t ;
-  args : Ident.t list ;
+  bindings : Ident.t list ;
   order_id : int
 }
 
@@ -69,7 +69,7 @@ type continuation =
 type jmp_table =   value  HandlerMap.t
 
 type t = {
-  st : continuation ;
+  continuation : continuation ;
   should_return : return_type;
   jmp_table : jmp_table;
   meta : Lam_stats.t ;
@@ -77,20 +77,28 @@ type t = {
 
 let empty_handler_map = HandlerMap.empty
 
-
+type handler = {
+  label : jbl_label ; 
+  handler : Lam.t;
+  bindings : Ident.t list; 
+}
 
 (* always keep key id positive, specifically no [0] generated *)
 let add_jmps 
+    (m  : jmp_table)
     exit_id code_table
-    m = 
+    = 
   let map, handlers = 
-    Ext_list.fold_left_with_offset
-      (fun order_id (acc,handlers)
-        (l,lam,args)
+    Ext_list.fold_left_with_offset 
+      code_table (m,[]) 
+      (HandlerMap.cardinal m + 1 ) 
+      (fun { label; handler; bindings}
+        (acc,handlers)        
+        order_id 
         ->     
-          HandlerMap.add l {exit_id;args; order_id } acc, 
-          (order_id,lam)::handlers
-      ) (HandlerMap.cardinal m + 1 )  (m,[]) code_table in 
+          HandlerMap.add label {exit_id; bindings; order_id } acc, 
+          (order_id,handler)::handlers
+      )   in 
   map, List.rev handlers
 
 
