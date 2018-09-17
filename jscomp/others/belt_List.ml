@@ -174,6 +174,19 @@ let rec copyAuxWitFilter f cellX prec =
       end
     else copyAuxWitFilter f t prec
 
+let rec copyAuxWithFilterIndex f cellX prec i =
+  match cellX with
+  | [] ->
+    ()
+  | h::t ->
+    if f h i [@bs] then
+      begin
+        let next = mutableCell h [] in
+        unsafeMutateTail prec next ;
+        copyAuxWithFilterIndex f t next (i + 1)
+      end
+    else copyAuxWithFilterIndex f t prec (i + 1)
+
 let rec copyAuxWitFilterMap f cellX prec =
   match cellX with
   | [] ->
@@ -729,6 +742,23 @@ let rec keepU xs p  =
       keepU t p
 
 let keep xs p = keepU xs (fun[@bs] x -> p x)
+
+let keepWithIndexU xs p =
+  let rec auxKeepWithIndex xs p i =
+    match xs with
+    | [] -> []
+    | h::t ->
+      if p h i [@bs] then
+        begin
+          let cell = mutableCell h [] in
+          copyAuxWithFilterIndex p t cell (i + 1) ;
+          cell
+        end
+      else
+        auxKeepWithIndex t p (i + 1)
+  in auxKeepWithIndex xs p 0
+
+let keepWithIndex xs p = keepWithIndexU xs (fun [@bs] x i -> p x i)
 
 let rec keepMapU xs p  =
   match xs with
