@@ -935,7 +935,7 @@ and compile_while p body (lambda_cxt : Lam_compile_context.t) =
            | EffectCall, _ -> Js_output.make block
            | NeedValue, _ -> Js_output.make block ~value:E.unit end
        | _ -> assert false )
-and compile_for cur_lam
+and compile_for 
     id start finish direction body (lambda_cxt : Lam_compile_context.t) = 
     (* all non-tail *)
       (* TODO: check semantics should start, finish be executed each time in both
@@ -1005,8 +1005,7 @@ and compile_for cur_lam
           ~output_finished:True
         (* unit -> 0, order does not matter *)
         | (Declare _ | Assign _), ReturnTrue _ -> 
-          (* assert false *)
-          Js_output.make [S.unknown_lambda cur_lam]
+          assert false
         | Declare (_kind, x), ReturnFalse  ->
           (* FIXME _kind unused *)
           Js_output.make (Ext_list.append block    [S.declare_unit x ])
@@ -1471,8 +1470,8 @@ and
                        TODO: could be optimized by inspecting assigment statement *)
                 let id = Ext_ident.create_tmp () in
                 (match
-                   compile_lambda  {lambda_cxt with continuation = Assign id} t_br,
-                   compile_lambda {lambda_cxt with continuation = Assign id} f_br
+                   compile_lambda  {lambda_cxt with continuation = Assign id; should_return = ReturnFalse} t_br,
+                   compile_lambda {lambda_cxt with continuation = Assign id; should_return = ReturnFalse} f_br
                  with
                  | out1 , out2 ->
                    Js_output.make
@@ -1628,7 +1627,7 @@ and
     | Lwhile(p,body) ->
       compile_while p body lambda_cxt
     | Lfor (id,start,finish,direction,body) ->
-      compile_for cur_lam id start finish direction body lambda_cxt
+      compile_for id start finish direction body lambda_cxt
     | Lassign(id,lambda) ->
       compile_assign id lambda lambda_cxt
     | Ltrywith(lam,id, catch) ->  (* generate documentation *)
