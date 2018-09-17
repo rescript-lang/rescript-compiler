@@ -2764,6 +2764,11 @@ val iter_fst : ('a * 'b) list -> ('a -> unit) -> unit
 
 val exists : 'a list -> ('a -> bool) -> bool 
 val exists_snd : ('a * 'b) list -> ('b -> bool) -> bool
+
+val concat_append:
+    'a list list -> 
+    'a list -> 
+    'a list
 end = struct
 #1 "ext_list.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -3380,6 +3385,12 @@ let rec exists_snd l p =
     [] -> false
   | (_, a)::l -> p a || exists_snd l p 
 
+let rec concat_append 
+  (xss : 'a list list)  
+  (xs : 'a list) : 'a list = 
+  match xss with 
+  | [] -> xs 
+  | l::r -> append l (concat_append r xs)
 end
 module Ext_pervasives : sig 
 #1 "ext_pervasives.mli"

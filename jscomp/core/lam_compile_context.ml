@@ -62,8 +62,8 @@ type let_kind = Lam_compat.let_kind
 
 type continuation = 
   | EffectCall
-  | Declare of let_kind * J.ident (* bound value *)
   | NeedValue 
+  | Declare of let_kind * J.ident (* bound value *)
   | Assign of J.ident (* when use [Assign], var is not needed, since it's already declared  *)
 
 type jmp_table =   value  HandlerMap.t

@@ -611,3 +611,10 @@ let rec exists_snd l p =
   match l with 
     [] -> false
   | (_, a)::l -> p a || exists_snd l p 
+
+let rec concat_append 
+  (xss : 'a list list)  
+  (xs : 'a list) : 'a list = 
+  match xss with 
+  | [] -> xs 
+  | l::r -> append l (concat_append r xs)
