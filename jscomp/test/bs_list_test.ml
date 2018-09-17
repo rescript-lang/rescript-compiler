@@ -80,7 +80,10 @@ let () =
   N.zip [] [] =~ [];
   N.zip [1;2;3] [] =~ [] ;
   N.zip [1;2;3] [2;3;4] =~ [1,2;2,3;3,4]
+
 let mod2 = (fun x -> x mod 2 = 0) 
+let evenIndex = (fun _x i -> i mod 2 = 0)
+
 let () =   
   let (=~) = eq "PARTITION" in 
 
@@ -104,6 +107,13 @@ let () =
   N.keep [1;3;41] mod2 =~ [];
   N.keep [] mod2 =~ [];
   N.keep  [2;2;2;4;6] mod2 =~ [2;2;2;4;6]
+
+let () =
+  let (=~) = eq "FILTER2" in
+  N.keepWithIndex [] evenIndex =~ [];
+  N.keepWithIndex [1;2;3;4] evenIndex =~ [1;3];
+  N.keepWithIndex [0;1;2;3;4;5;6;7] evenIndex =~ [0;2;4;6]
+
 let id : int -> int = fun  x -> x 
 
 let () =   

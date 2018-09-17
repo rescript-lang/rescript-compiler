@@ -573,6 +573,18 @@ val keep: 'a t ->  ('a -> bool) -> 'a t
       [2;4]
     ]}
 *)
+
+val keepWithIndexU: 'a t ->  ('a -> int -> bool [@bs]) -> 'a t
+val keepWithIndex: 'a t ->  ('a -> int -> bool) -> 'a t
+(** [keepWithIndex xs p] returns a list of all elements in [xs] which satisfy the predicate function [p]
+
+    @example {[
+      keepWithIndex [1;2;3;4] (fun _x i -> i mod 2 = 0)
+      =
+      [1;3]
+    ]}
+*)
+
 val keepMapU: 'a t -> ('a -> 'b option [@bs]) -> 'b t
 val keepMap: 'a t -> ('a -> 'b option) -> 'b t
 (** [keepMap xs f] applies [f] to each element of [xs]. If [f xi] returns [Some value], then [value] is kept in the resulting list; if [f xi] returns [None], the element is not retained in the result.
