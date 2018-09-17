@@ -286,3 +286,8 @@ val iter_fst : ('a * 'b) list -> ('a -> unit) -> unit
 
 val exists : 'a list -> ('a -> bool) -> bool 
 val exists_snd : ('a * 'b) list -> ('b -> bool) -> bool
+
+val concat_append:
+    'a list list -> 
+    'a list -> 
+    'a list
