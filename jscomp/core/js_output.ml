@@ -50,38 +50,32 @@ let dummy =
 
 let output_of_expression
     (continuation : continuation)
-    (should_return : Lam_compile_context.return_type)
     (lam : Lam.t) (exp : J.expression) : t =
-  begin match continuation, should_return with
-  | EffectCall, ReturnFalse ->
+  begin match continuation with
+  | EffectCall  ReturnFalse ->
       if Lam_analysis.no_side_effects lam
       then dummy
       else {block = []; value  = Some exp ; output_finished = False}
-  | Declare (kind, n), ReturnFalse ->
+  | Declare (kind, n)->
       make [ S.define_variable ~kind n  exp]
-  | Assign n ,ReturnFalse ->
+  | Assign n  ->
       make [S.assign n exp ]
-  | EffectCall, ReturnTrue _ ->
+  | EffectCall (ReturnTrue _) ->
       make [S.return_stmt  exp] ~output_finished:True
-  | (Declare _ | Assign _ ), ReturnTrue _ ->
-      make [S.unknown_lambda lam] ~output_finished:True
-  | NeedValue, _ ->
+  | NeedValue _ ->
     {block = []; value = Some exp; output_finished = False }
   end
 
 let output_of_block_and_expression
     (continuation : continuation)
-    (should_return : Lam_compile_context.return_type)
-    (lam : Lam.t) (block : J.block) exp : t =
-  match continuation, should_return with
-  | EffectCall, ReturnFalse -> make block ~value:exp
-  | Declare (kind,n), ReturnFalse ->
+    (block : J.block) exp : t =
+  match continuation with
+  | EffectCall ReturnFalse -> make block ~value:exp
+  | Declare (kind,n) ->
     make (block @ [ S.define_variable ~kind  n exp])
-  | Assign n, ReturnFalse -> make (block @ [S.assign n exp])
-  | EffectCall, ReturnTrue _ -> make (block @ [S.return_stmt exp]) ~output_finished:True
-  | (Declare _ | Assign _), ReturnTrue _ ->
-    make [S.unknown_lambda lam] ~output_finished:True
-  | NeedValue, (ReturnTrue _ | ReturnFalse) ->
+  | Assign n -> make (block @ [S.assign n exp])
+  | EffectCall (ReturnTrue _) -> make (block @ [S.return_stmt exp]) ~output_finished:True
+  | NeedValue (ReturnTrue _ | ReturnFalse) ->
     make block ~value:exp
 
 

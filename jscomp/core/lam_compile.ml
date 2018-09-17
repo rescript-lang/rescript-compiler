@@ -101,7 +101,7 @@ let rec
     (pos : int)
     (env : Env.t)
   : Js_output.t =
-  let f =   Js_output.output_of_expression cxt.continuation cxt.should_return lam in
+  let f =   Js_output.output_of_expression cxt.continuation  lam in
   match Lam_compile_env.cached_find_ml_id_pos id pos env  with
   | {id; name; closed_lambda } ->
     match id, name, closed_lambda with
@@ -145,7 +145,6 @@ let rec
 
 and compile_external_field_apply
     (cxt : Lam_compile_context.t)
-    (lam : Lam.t) (* original lambda*)
     (args_lambda : Lam.t list)
     (id : Ident.t)
     (pos : int)
@@ -160,7 +159,7 @@ and compile_external_field_apply
         (fun x  (args_code, args)  ->
            match
              compile_lambda
-               {cxt with continuation = NeedValue; should_return = ReturnFalse} x
+               {cxt with continuation = NeedValue ReturnFalse} x
            with
            | {block = a; value = Some b} ->
              (Ext_list.append a args_code), (b :: args )
@@ -219,8 +218,6 @@ and compile_external_field_apply
       in   
       Js_output.output_of_block_and_expression
         cxt.continuation
-        cxt.should_return
-        lam
         args_code expression
 
 
@@ -230,7 +227,7 @@ and  compile_let
   (id : J.ident)
   (arg : Lam.t) : Js_output.t =
   compile_lambda
-    {cxt with continuation = Declare (let_kind, id); should_return = ReturnFalse } arg
+    {cxt with continuation = Declare (let_kind, id)} arg
 (**
     The second return values are values which need to be wrapped using
    [caml_update_dummy]
@@ -264,8 +261,7 @@ and compile_recursive_let ~all_bindings
     let output =
       compile_lambda
         { cxt with
-          continuation = EffectCall;
-          should_return = ReturnTrue (Some ret );
+          continuation = EffectCall (ReturnTrue (Some ret ));
           jmp_table = Lam_compile_context.empty_handler_map}  body in
     let result =
       if ret.triggered then
@@ -295,7 +291,7 @@ and compile_recursive_let ~all_bindings
         E.ocaml_fun params (Js_output.output_as_block output )
     in
     Js_output.output_of_expression (Declare (Alias, id))
-      ReturnFalse arg result, []
+       arg result, []
   | Lprim {primitive = Pmakeblock (0, _, _) ; args =  ls}
     when List.for_all (fun (x : Lam.t) ->
         match x with
@@ -329,7 +325,7 @@ and compile_recursive_let ~all_bindings
     *)
     (* Ext_log.err "@[recursive value %s/%d@]@." id.name id.stamp; *)
     begin
-      match compile_lambda {cxt with continuation = NeedValue; should_return = ReturnFalse } arg with
+      match compile_lambda {cxt with continuation = NeedValue ReturnFalse } arg with
       | { block = b; value = Some v} ->
         (* TODO: check recursive value ..
             could be improved for simple cases
@@ -346,7 +342,7 @@ and compile_recursive_let ~all_bindings
     end
   | Lvar _   ->
     compile_lambda
-      {cxt with continuation = Declare (Alias ,id); should_return = ReturnFalse } arg, []
+      {cxt with continuation = Declare (Alias ,id) } arg, []
   | _ ->
     (* pathological case:
         fail to capture taill call?
@@ -370,7 +366,7 @@ and compile_recursive_let ~all_bindings
        ]}
     *)
     compile_lambda
-      {cxt with continuation = Declare (Alias ,id); should_return = ReturnFalse } arg, []
+      {cxt with continuation = Declare (Alias ,id)} arg, []
 
 and compile_recursive_lets_aux cxt id_args : Js_output.t =
   (* #1716 *)
@@ -497,9 +493,9 @@ and compile_general_cases
                             Js_output.to_break_block (compile_lambda cxt lam)
                         in
                         let should_break =
-                            match cxt.should_return with
-                            | ReturnFalse -> should_break
-                            | ReturnTrue _ ->
+                            if not @@ Lam_compile_context.continuation_is_return cxt.continuation then
+                              should_break
+                            else
                               (** see #2413
                                   In general, we know it is last call,
                                   there is no need to print [break];
@@ -572,7 +568,7 @@ and compile_switch switch_arg sw (lambda_cxt : Lam_compile_context.t) =
       let compile_whole  (cxt  : Lam_compile_context.t ) =
         match
           compile_lambda
-                {cxt with should_return = ReturnFalse; continuation = NeedValue}
+                {cxt with  continuation = NeedValue ReturnFalse}
                 switch_arg
         with
         | {value =  None; _}  -> assert false
@@ -605,7 +601,7 @@ and compile_switch switch_arg sw (lambda_cxt : Lam_compile_context.t) =
       in
       begin
         match lambda_cxt.continuation  with  (* Needs declare first *)
-        | NeedValue ->
+        | NeedValue _ ->
           (* Necessary since switch is a statement, we need they return
              the same value for different branches -- can be optmized
              when branches are minimial (less than 2)
@@ -619,7 +615,7 @@ and compile_switch switch_arg sw (lambda_cxt : Lam_compile_context.t) =
         | Declare (kind,id) ->
           Js_output.make (S.declare_variable ~kind id
                           :: compile_whole {lambda_cxt with continuation = Assign id} )
-        | EffectCall | Assign _  -> Js_output.make (compile_whole lambda_cxt)
+        | EffectCall _ | Assign _  -> Js_output.make (compile_whole lambda_cxt)
       end
 
 and compile_string_cases cxt switch_exp table default =
@@ -642,7 +638,7 @@ and compile_stringswitch l cases default (lambda_cxt : Lam_compile_context.t) =
       *)
     match 
       compile_lambda 
-      {lambda_cxt with should_return = ReturnFalse ; continuation = NeedValue} l
+      {lambda_cxt with continuation = NeedValue ReturnFalse } l
     with
     | {block ; value =  Some e}  ->
           (* when should_return is true -- it's passed down
@@ -654,7 +650,7 @@ and compile_stringswitch l cases default (lambda_cxt : Lam_compile_context.t) =
           begin
             match lambda_cxt.continuation with
             (* TODO: can be avoided when cases are less than 3 *)
-            | NeedValue ->
+            | NeedValue _ ->
               let v = Ext_ident.create_tmp () in
               Js_output.make 
                 (Ext_list.append block (
@@ -692,7 +688,7 @@ and compile_staticraise i (largs : Lam.t list) lambda_cxt  =
 
                 | _ -> (* TODO: should be Assign -- Assign is an optimization *)
                   compile_lambda 
-                    {lambda_cxt with continuation = Assign bind ; should_return =  ReturnFalse} larg
+                    {lambda_cxt with continuation = Assign bind } larg
             in Js_output.append_output new_output acc
            )
 #if BS_DEBUG then            
@@ -746,7 +742,7 @@ and compile_staticcatch (cur_lam : Lam.t) (lambda_cxt  : Lam_compile_context.t)=
             (fun x -> S.declare_variable ~kind:Variable x))  in
     begin match  lambda_cxt.continuation with
         (* could be optimized when cases are less than 3 *)
-        | NeedValue ->
+        | NeedValue _ ->
           let v = Ext_ident.create_tmp  () in
           let lbody = compile_lambda {lambda_cxt with
                                       jmp_table = jmp_table;
@@ -775,7 +771,7 @@ and compile_staticcatch (cur_lam : Lam.t) (lambda_cxt  : Lam_compile_context.t)=
                                we don't know if it's complete
                             *)
                          )))
-        | EffectCall | Assign _  ->
+        | EffectCall _ | Assign _  ->
           let lbody = compile_lambda {lambda_cxt with jmp_table = jmp_table } body in
           Js_output.append_output (Js_output.make declares)
           (Js_output.append_output lbody
@@ -789,13 +785,10 @@ and compile_staticcatch (cur_lam : Lam.t) (lambda_cxt  : Lam_compile_context.t)=
 and compile_sequand 
       (cur_lam : Lam.t) 
       (l : Lam.t) (r : Lam.t) (lambda_cxt : Lam_compile_context.t) =     
-    begin match lambda_cxt with
-        | {should_return = ReturnTrue _ }
-          (* Invariant: if [should_return], then [st] will not be [NeedValue] *)
-          ->
+    begin if Lam_compile_context.continuation_is_return lambda_cxt.continuation then
           compile_lambda lambda_cxt (Lam.sequand  l r )
-        | {should_return = ReturnFalse } ->
-          let new_cxt = {lambda_cxt with continuation = NeedValue} in
+          else
+          let new_cxt = {lambda_cxt with continuation = NeedValue ReturnFalse} in
           match
             compile_lambda new_cxt l with
           | { value = None } -> assert false
@@ -807,7 +800,7 @@ and compile_sequand
               ->
               Js_output.output_of_block_and_expression
                 lambda_cxt.continuation 
-                lambda_cxt.should_return cur_lam l_block (E.and_ l_expr r_expr)
+                l_block (E.and_ l_expr r_expr)
             | { block = r_block; value = Some r_expr} ->
               begin match lambda_cxt.continuation with
                 | Assign v ->
@@ -827,8 +820,8 @@ and compile_sequand
                       [ S.define_variable ~kind:Variable v E.caml_false ;
                         S.if_ l_expr
                           (r_block @ [S.assign v r_expr])])
-                | EffectCall
-                | NeedValue ->
+                | EffectCall _
+                | NeedValue _ ->
                   let v = Ext_ident.create_tmp () in
                   Js_output.make
                     (S.define_variable ~kind:Variable v E.caml_false ::
@@ -844,17 +837,13 @@ and compile_sequand
               end
       end
 and compile_sequor 
-  (cur_lam : Lam.t)
   (l : Lam.t)      
   (r : Lam.t)
   (lambda_cxt : Lam_compile_context.t) = 
-  match lambda_cxt with
-  | {should_return = ReturnTrue _ }
-          (* Invariant: if [should_return], then [st] will not be [NeedValue] *)
-          ->
+  if Lam_compile_context.continuation_is_return lambda_cxt.continuation then  
       compile_lambda lambda_cxt (Lam.sequor l r)
-   | {should_return = ReturnFalse } ->
-      let new_cxt = {lambda_cxt with continuation = NeedValue} in
+  else
+      let new_cxt = {lambda_cxt with continuation = NeedValue ReturnFalse} in
       match compile_lambda new_cxt l with
       | {value = None } -> assert false
       | {block = l_block; value = Some l_expr} ->
@@ -863,7 +852,7 @@ and compile_sequor
           | {block = []; value = Some r_expr} ->
               let exp =  E.or_ l_expr r_expr  in
               Js_output.output_of_block_and_expression
-                lambda_cxt.continuation lambda_cxt.should_return cur_lam l_block exp
+                lambda_cxt.continuation l_block exp
           | {block = r_block; value = Some r_expr} ->
             begin match lambda_cxt.continuation with
             | Assign v ->
@@ -884,8 +873,8 @@ and compile_sequor
                           (r_block @ [S.assign v r_expr])
                       ]
                     )
-            | EffectCall
-            | NeedValue ->
+            | EffectCall _
+            | NeedValue _ ->
                   let v = Ext_ident.create_tmp () in
                   Js_output.make
                     ( l_block @
@@ -905,7 +894,7 @@ and compile_while p body (lambda_cxt : Lam_compile_context.t) =
             while expression, here we generate for statement, leave optimization later.
             (Sine OCaml expression can be really complex..)
       *)
-      (match compile_lambda {lambda_cxt with continuation = NeedValue; should_return = ReturnFalse } p
+      (match compile_lambda {lambda_cxt with continuation = NeedValue ReturnFalse } p
        with
        | {block; value =  Some e} ->
          (* st = NeedValue -- this should be optimized and never happen *)
@@ -919,21 +908,21 @@ and compile_while p body (lambda_cxt : Lam_compile_context.t) =
                e
                (Js_output.output_as_block @@
                 compile_lambda
-                  {lambda_cxt with continuation = EffectCall; should_return = ReturnFalse}
+                  {lambda_cxt with continuation = EffectCall ReturnFalse}
                   body)
            ] in
 
          begin
-           match lambda_cxt.continuation, lambda_cxt.should_return  with
-           | Declare (_kind, x), _  ->  (* FIXME _kind not used *)
+           match lambda_cxt.continuation  with
+           | Declare (_kind, x)  ->  (* FIXME _kind not used *)
              Js_output.make (Ext_list.append block  [S.declare_unit x ])
-           | Assign x, _  ->
+           | Assign x ->
              Js_output.make (Ext_list.append block  [S.assign_unit x ])
-           | EffectCall, ReturnTrue _  ->
+           | EffectCall (ReturnTrue _)  ->
              Js_output.make (Ext_list.append block S.return_unit)
              ~output_finished:True
-           | EffectCall, _ -> Js_output.make block
-           | NeedValue, _ -> Js_output.make block ~value:E.unit end
+           | EffectCall _ -> Js_output.make block
+           | NeedValue _ -> Js_output.make block ~value:E.unit end
        | _ -> assert false )
 and compile_for 
     id start finish direction body (lambda_cxt : Lam_compile_context.t) = 
@@ -951,8 +940,8 @@ and compile_for
 
       let block =
         begin
-          match compile_lambda {lambda_cxt with continuation = NeedValue; should_return = ReturnFalse} start,
-                compile_lambda {lambda_cxt with continuation = NeedValue; should_return = ReturnFalse} finish with
+          match compile_lambda {lambda_cxt with continuation = NeedValue ReturnFalse} start,
+                compile_lambda {lambda_cxt with continuation = NeedValue ReturnFalse} finish with
           | {block = b1; value =  Some e1}, {block = b2; value =  Some e2} ->
 
             (* order b1 -- (e1 -- b2 -- e2)
@@ -970,7 +959,7 @@ and compile_for
               | _,[] ->
                 Ext_list.append b1 [S.for_ (Some e1) e2  id direction
                                       (Js_output.output_as_block @@
-                                       compile_lambda {lambda_cxt with should_return = ReturnFalse ; continuation = EffectCall}
+                                       compile_lambda {lambda_cxt with  continuation = EffectCall ReturnFalse}
                                          body) ]
               | _, _ when Js_analyzer.no_side_effect_expression e1
                 (*
@@ -982,14 +971,14 @@ and compile_for
                 Ext_list.append b1
                   (Ext_list.append b2  [S.for_ (Some e1) e2  id direction
                                           (Js_output.output_as_block @@
-                                           compile_lambda {lambda_cxt with should_return = ReturnFalse ; continuation = EffectCall}
+                                           compile_lambda {lambda_cxt with  continuation = EffectCall ReturnFalse}
                                              body) ])
               | _ , _
                 ->
                 Ext_list.append b1 (S.define_variable ~kind:Variable id e1 :: (Ext_list.append b2   [
                     S.for_ None e2 id direction
                       (Js_output.output_as_block @@
-                       compile_lambda {lambda_cxt with should_return = ReturnFalse ; continuation = EffectCall}
+                       compile_lambda {lambda_cxt with  continuation = EffectCall ReturnFalse}
                          body)
                   ]))
 
@@ -998,20 +987,18 @@ and compile_for
 
           | _ -> assert false end in
       begin
-        match lambda_cxt.continuation, lambda_cxt.should_return with
-        | EffectCall, ReturnFalse  -> Js_output.make block
-        | EffectCall, ReturnTrue _  ->
+        match lambda_cxt.continuation with
+        | EffectCall ReturnFalse  -> Js_output.make block
+        | EffectCall (ReturnTrue _)  ->
           Js_output.make (Ext_list.append block  S.return_unit )
           ~output_finished:True
         (* unit -> 0, order does not matter *)
-        | (Declare _ | Assign _), ReturnTrue _ -> 
-          assert false
-        | Declare (_kind, x), ReturnFalse  ->
+        | Declare (_kind, x)  ->
           (* FIXME _kind unused *)
           Js_output.make (Ext_list.append block    [S.declare_unit x ])
-        | Assign x, ReturnFalse  ->
+        | Assign x  ->
           Js_output.make (Ext_list.append block  [S.assign_unit x ])
-        | NeedValue, _
+        | NeedValue _
           ->
           Js_output.make block ~value:E.unit
           (* TODO: fixme, here it's ok*)
@@ -1026,28 +1013,25 @@ and compile_assign id (lambda : Lam.t) (lambda_cxt : Lam_compile_context.t) =
           ]
         | _ ->
           begin
-            match compile_lambda {lambda_cxt with continuation = NeedValue; should_return = ReturnFalse} lambda with
+            match compile_lambda {lambda_cxt with continuation = NeedValue ReturnFalse} lambda with
             | {block = b; value =  Some v}  ->
               (Ext_list.append b  [S.assign id v ])
             | _ -> assert false
           end
       in
       begin
-        match lambda_cxt.continuation, lambda_cxt.should_return with
-        | EffectCall, ReturnFalse -> Js_output.make block
-        | EffectCall, ReturnTrue _ ->
+        match lambda_cxt.continuation with
+        | EffectCall ReturnFalse -> Js_output.make block
+        | EffectCall (ReturnTrue _) ->
           Js_output.make
             (Ext_list.append block  S.return_unit  )
             ~output_finished:True
-        | (Declare _ | Assign _ ) , ReturnTrue _ ->
-          assert false
-          (* Js_output.make [S.unknown_lambda cur_lam] *)
         (* bound by a name, while in a tail position, this can not happen  *)
-        | Declare (_kind, x) , ReturnFalse ->
+        | Declare (_kind, x) ->
           (* FIXME: unused *)
           Js_output.make (Ext_list.append block  [ S.declare_unit x ])
-        | Assign x, ReturnFalse  -> Js_output.make (Ext_list.append block  [S.assign_unit x ])
-        | NeedValue, _ ->
+        | Assign x  -> Js_output.make (Ext_list.append block  [S.assign_unit x ])
+        | NeedValue _ ->
           Js_output.make block ~value:E.unit
       end   
 and compile_trywith lam id catch (lambda_cxt : Lam_compile_context.t) =          
@@ -1064,31 +1048,32 @@ and compile_trywith lam id catch (lambda_cxt : Lam_compile_context.t) =
          }
          ]}
       *)
-      let aux st =
-        (* should_return is passed down *)
-        (* #1701 *)
-        [ S.try_
-            (Js_output.output_as_block (compile_lambda
-                                   (match lambda_cxt.should_return with
-                                    | ReturnTrue (Some _ ) -> {lambda_cxt with continuation = st; should_return = ReturnTrue None}
-                                    | ReturnTrue None | ReturnFalse -> {lambda_cxt with continuation = st}) lam))
+      let aux (with_context : Lam_compile_context.t) (body_context : Lam_compile_context.t) =
+        (* should_return is passed down 
+          #1701, try should prevent tailcall *)
+        [ S.try_ (Js_output.output_as_block (compile_lambda body_context lam))
             ~with_:(id,
-                    Js_output.output_as_block @@
-                    compile_lambda {lambda_cxt with continuation = st} catch )
+                    Js_output.output_as_block (compile_lambda with_context catch ))
 
         ] in
-
-      begin
         match lambda_cxt.continuation with
-        | NeedValue ->
-          let v = Ext_ident.create_tmp () in
-          Js_output.make (S.declare_variable ~kind:Variable v :: aux (Assign v))  ~value:(E.var v )
         | Declare (kind,  id) ->
+          let context = { lambda_cxt with continuation = Assign id} in  
           Js_output.make (S.declare_variable ~kind
-                            id :: aux (Assign id))
-        | Assign _ | EffectCall -> Js_output.make (aux lambda_cxt.continuation)
-      end
-and compile_send cur_lam (meth_kind : Lam_compat.meth_kind)
+                            id :: aux context context )
+        | Assign _  -> 
+          Js_output.make (aux lambda_cxt lambda_cxt)
+        | NeedValue _ ->
+          let v = Ext_ident.create_tmp () in
+          let context = {lambda_cxt with continuation = Assign v} in 
+          Js_output.make (S.declare_variable ~kind:Variable v :: 
+          aux context context)  ~value:(E.var v )
+        | EffectCall (ReturnTrue (Some _)) -> 
+          Js_output.make (aux lambda_cxt {lambda_cxt with continuation = EffectCall (ReturnTrue None)} )
+        | EffectCall _ -> 
+          Js_output.make (aux lambda_cxt lambda_cxt)
+
+and compile_send  (meth_kind : Lam_compat.meth_kind)
     (met : Lam.t) 
     (obj : Lam.t) (args : Lam.t list) loc 
     (lambda_cxt : Lam_compile_context.t) =       
@@ -1148,7 +1133,7 @@ and compile_send cur_lam (meth_kind : Lam_compat.meth_kind)
               | _ ->
                 begin
                   match compile_lambda
-                          {lambda_cxt with continuation = NeedValue; should_return = ReturnFalse}
+                          {lambda_cxt with continuation = NeedValue ReturnFalse}
                           x with
                   | {block = a; value = Some b} -> a, b
                   | _ -> assert false
@@ -1162,14 +1147,13 @@ and compile_send cur_lam (meth_kind : Lam_compat.meth_kind)
           | None ->
             let cont =
               Js_output.output_of_block_and_expression
-                (* FIXME: why need cur_lam *)
-                lambda_cxt.continuation lambda_cxt.should_return cur_lam (List.concat args_code)
+                lambda_cxt.continuation (List.concat args_code)
             in
             cont (k nobj)
           | Some (obj_code, v) ->
             let cont2 obj_code v =
               Js_output.output_of_block_and_expression
-                lambda_cxt.continuation lambda_cxt.should_return cur_lam
+                lambda_cxt.continuation 
                 ( Ext_list.concat_append args_code  [obj_code]) v in
             let cobj = E.var v in
             cont2 obj_code (k cobj)
@@ -1216,10 +1200,10 @@ and compile_ifthenelse
       (f_branch : Lam.t)
       (lambda_cxt : Lam_compile_context.t) = 
       begin
-        match compile_lambda {lambda_cxt with continuation = NeedValue ; should_return = ReturnFalse } predicate with
+        match compile_lambda {lambda_cxt with continuation = NeedValue ReturnFalse } predicate with
         | {block = b; value =  Some e} ->
           begin match lambda_cxt.continuation with
-            | NeedValue  ->
+            | NeedValue _ ->
               begin match
                   compile_lambda lambda_cxt  t_branch,
                   compile_lambda lambda_cxt  f_branch with
@@ -1231,8 +1215,8 @@ and compile_ifthenelse
                        TODO: could be optimized by inspecting assigment statement *)
                 let id = Ext_ident.create_tmp () in
                 (match
-                   compile_lambda  {lambda_cxt with continuation = Assign id; should_return = ReturnFalse} t_branch,
-                   compile_lambda {lambda_cxt with continuation = Assign id; should_return = ReturnFalse} f_branch
+                   compile_lambda  {lambda_cxt with continuation = Assign id} t_branch,
+                   compile_lambda {lambda_cxt with continuation = Assign id} f_branch
                  with
                  | out1 , out2 ->
                    Js_output.make
@@ -1246,9 +1230,10 @@ and compile_ifthenelse
                 )
               end
             | Declare (kind,id) ->
-              begin match
-                  compile_lambda {lambda_cxt with continuation = NeedValue}  t_branch,
-                  compile_lambda {lambda_cxt with continuation = NeedValue}  f_branch with
+              let cxt1 = {lambda_cxt with continuation = NeedValue ReturnFalse} in 
+              begin match 
+                  compile_lambda cxt1 t_branch,
+                  compile_lambda cxt1  f_branch with
               | {block = []; value =  Some out1},
                 {block = []; value =  Some out2} ->
                 (* Invariant: should_return is false*)
@@ -1266,19 +1251,6 @@ and compile_ifthenelse
                       ])
               end
             | Assign id ->
-              (*
-#if BS_DEBUG then
-            let () = Ext_log.dwarn __LOC__ "\n@[[TIME:]Lifthenelse: %f@]@."  (Sys.time () *. 1000.) in
-#end
-*)
-              (* match
-                                compile_lambda {cxt with st = NeedValue}  t_br,
-                                compile_lambda {cxt with st = NeedValue}  f_br with
-                            | {block = []; value =  Some out1},
-                              {block = []; value =  Some out2} ->
-                              (* Invariant:  should_return is false *)
-                              Js_output.make [S.assign id (E.econd e out1 out2)]
-                            | _, _ -> *)
               let then_output =
                 Js_output.output_as_block @@
                 (compile_lambda lambda_cxt  t_branch) in
@@ -1290,10 +1262,10 @@ and compile_ifthenelse
                     then_output
                     ~else_:else_output
                 ])
-            | EffectCall ->
-              begin match lambda_cxt.should_return,
-                          compile_lambda {lambda_cxt with continuation = NeedValue}  t_branch,
-                          compile_lambda {lambda_cxt with continuation = NeedValue}  f_branch with
+            | EffectCall should_return ->
+              begin match should_return,
+                          compile_lambda {lambda_cxt with continuation = NeedValue should_return}  t_branch,
+                          compile_lambda {lambda_cxt with continuation = NeedValue should_return}  f_branch with
 
               (* see PR#83 *)
               |  ReturnFalse , {block = []; value =  Some out1},
@@ -1379,12 +1351,12 @@ and compile_ifthenelse
       end      
 and
   compile_lambda
-    ({continuation = lam_cont ; should_return} as lambda_cxt : Lam_compile_context.t)
+    ({continuation = lam_cont} as lambda_cxt : Lam_compile_context.t)
     (cur_lam : Lam.t)  : Js_output.t  =
 
     match cur_lam with
     | Lfunction{ params; body} ->
-      Js_output.output_of_expression lam_cont should_return cur_lam
+      Js_output.output_of_expression lam_cont  cur_lam
         (E.ocaml_fun
            params
            (* Invariant:  jmp_table can not across function boundary,
@@ -1392,8 +1364,7 @@ and
            *)
            (Js_output.output_as_block
               ( compile_lambda
-                  { lambda_cxt with continuation = EffectCall;
-                             should_return = ReturnTrue None; (* Refine*)
+                  { lambda_cxt with continuation = EffectCall (ReturnTrue None); (* Refine*)
                              jmp_table = Lam_compile_context.empty_handler_map}  body)))
 
 
@@ -1415,7 +1386,7 @@ and
       (* Note we skip [App_js_full] since [get_exp_with_args] dont carry
          this information, we should fix [get_exp_with_args]
       *)
-      compile_external_field_apply lambda_cxt cur_lam  args id n  lambda_cxt.meta.env
+      compile_external_field_apply lambda_cxt  args id n  lambda_cxt.meta.env
 
 
     | Lapply{ fn; args = args_lambda;   status} ->
@@ -1427,16 +1398,17 @@ and
         let [@warning "-8" (* non-exhaustive pattern*)] (args_code, fn_code:: args) =
           Ext_list.fold_right (fn::args_lambda) ([],[]) (fun x  (args_code, fn_code )->
               match compile_lambda
-                      {lambda_cxt with continuation = NeedValue ; should_return =  ReturnFalse} x with
+                      {lambda_cxt with continuation = NeedValue ReturnFalse} x with
               | {block = a; value =  Some b} -> Ext_list.append a  args_code , b:: fn_code
               | _ -> assert false
             )  in
 
 
         begin
-          match fn, should_return with
+          match fn, lambda_cxt.continuation with
           | (Lvar fn_id,
-             ReturnTrue (Some ({id;label; params; _} as ret))) when Ident.same id fn_id ->
+             (EffectCall (ReturnTrue (Some ret)) | NeedValue (ReturnTrue (Some   ret))))
+              when Ident.same ret.id fn_id ->
 
 
             (* Ext_log.err "@[ %s : %a tailcall @]@."  cxt.meta.filename Ident.print id; *)
@@ -1471,7 +1443,7 @@ and
                                        v, (Ident_map.add param v new_params)
                                      | Some v -> v, new_params  in
                                    (i+1, (new_param, arg) :: assigns, m)
-                               ) (0, [], Ident_map.empty) params args  in
+                               ) (0, [], Ident_map.empty) ret.params args  in
                            let () = ret.new_params <- Ident_map.disjoint_merge new_params ret.new_params in
                            Ext_list.map assigned_params (fun (param, arg) -> S.assign param arg))
                          @
@@ -1484,7 +1456,7 @@ and
             end
           | _ ->
 
-            Js_output.output_of_block_and_expression lam_cont should_return cur_lam args_code
+            Js_output.output_of_block_and_expression lam_cont  args_code
               (E.call ~info:(match fn, status with
                    | _,  App_ml_full ->
                      {arity = Full ; call_info = Call_ml}
@@ -1520,9 +1492,9 @@ and
       let v =  compile_recursive_lets lambda_cxt  id_args in
       Js_output.append_output v  (compile_lambda lambda_cxt  body)
 
-    | Lvar id -> Js_output.output_of_expression lam_cont  should_return cur_lam (E.var id )
+    | Lvar id -> Js_output.output_of_expression lam_cont cur_lam (E.var id )
     | Lconst c ->
-      Js_output.output_of_expression lam_cont should_return cur_lam (Lam_compile_const.translate c)
+      Js_output.output_of_expression lam_cont  cur_lam (Lam_compile_const.translate c)
 
     | Lprim {primitive = Pfield (n,_);
              args = [ Lglobal_module id ]; _}
@@ -1532,7 +1504,7 @@ and
     | Lprim {primitive = Praise ; args =  [ e ]; _} ->
       begin
         match compile_lambda {
-            lambda_cxt with should_return = ReturnFalse; continuation = NeedValue} e with
+            lambda_cxt with  continuation = NeedValue ReturnFalse} e with
         | {block = b; value =  Some v} ->
           Js_output.make
           (Ext_list.append b  [S.throw_stmt v])
@@ -1547,12 +1519,12 @@ and
       compile_sequand cur_lam l r lambda_cxt
     | Lprim {primitive = Psequor; args =  [l;r]}
       ->
-      compile_sequor cur_lam l r lambda_cxt 
+      compile_sequor l r lambda_cxt 
     | Lprim {primitive = Pdebugger ; _}
       ->
       (* [%bs.debugger] guarantees that the expression does not matter
          TODO: make it even safer      *)
-      Js_output.output_of_block_and_expression lam_cont should_return cur_lam
+      Js_output.output_of_block_and_expression lam_cont
       S.debugger_block E.unit
 
 
@@ -1571,7 +1543,7 @@ and
       *)
       let property =  Lam_methname.translate ~loc name  in
       begin
-        match compile_lambda {lambda_cxt with continuation = NeedValue; should_return = ReturnFalse} obj
+        match compile_lambda {lambda_cxt with continuation = NeedValue ReturnFalse} obj
         with
         | {block; value = Some b } ->
           let blocks, ret  =
@@ -1583,7 +1555,7 @@ and
                  (Ext_list.append block  [x]),  E.dot (E.var b) property
               )
           in
-          Js_output.output_of_block_and_expression lam_cont should_return cur_lam
+          Js_output.output_of_block_and_expression lam_cont
             blocks ret
         | _ -> assert false
       end
@@ -1604,11 +1576,11 @@ and
            arg]
           ->
           begin
-            let need_value_no_return_cxt = {lambda_cxt with continuation = NeedValue; should_return = ReturnFalse} in
+            let need_value_no_return_cxt = {lambda_cxt with continuation = NeedValue ReturnFalse} in
             let obj_output = compile_lambda  need_value_no_return_cxt obj in
             let arg_output = compile_lambda need_value_no_return_cxt arg in
             let cont obj_block arg_block obj_code =
-              Js_output.output_of_block_and_expression lam_cont should_return cur_lam
+              Js_output.output_of_block_and_expression lam_cont  
                 (
                   match obj_code with
                   | None -> Ext_list.append obj_block  arg_block
@@ -1670,9 +1642,7 @@ and
         | [Lfunction{arity = len; params; body} ]
           when len = arity ->
           Js_output.output_of_block_and_expression
-            lam_cont
-            should_return
-            cur_lam
+            lam_cont          
             []
             (E.method_
                params
@@ -1681,8 +1651,7 @@ and
                *)
                (Js_output.output_as_block
                   ( compile_lambda
-                      { lambda_cxt with continuation = EffectCall;
-                                 should_return = ReturnTrue None;
+                      { lambda_cxt with continuation = EffectCall ( ReturnTrue None);                                 
                                  jmp_table = Lam_compile_context.empty_handler_map}
                       body)))
         | _ -> assert false
@@ -1701,12 +1670,12 @@ and
          2. inline functor application
       *)
       let exp = Lam_compile_global.expand_global_module i lambda_cxt.meta.env  in
-      Js_output.output_of_block_and_expression lam_cont should_return cur_lam [] exp
+      Js_output.output_of_block_and_expression lam_cont [] exp
     | Lprim{ primitive = Pjs_object_create labels ; args ; loc}
       ->
       let args_block, args_expr =
         Ext_list.split_map args (fun x ->
-            match compile_lambda {lambda_cxt with continuation = NeedValue; should_return = ReturnFalse} x
+            match compile_lambda {lambda_cxt with continuation = NeedValue ReturnFalse} x
             with
             | {block = a; value = Some b} -> a,b
             | _ -> assert false )
@@ -1714,23 +1683,23 @@ and
       let block, exp  =
         Lam_compile_external_obj.assemble_args_obj labels args_expr
       in
-      Js_output.output_of_block_and_expression lam_cont should_return cur_lam
+      Js_output.output_of_block_and_expression lam_cont 
         (Ext_list.concat_append args_block block) exp
 
     | Lprim{primitive; args; loc} ->
       let args_block, args_expr =
         Ext_list.split_map args (fun x ->
-            match compile_lambda {lambda_cxt with continuation = NeedValue; should_return = ReturnFalse} x
+            match compile_lambda {lambda_cxt with continuation = NeedValue ReturnFalse} x
             with
             | {block = a; value = Some b} -> a,b
             | _ -> assert false ) in
       let args_code  : J.block = List.concat args_block in
       let exp  =  (* TODO: all can be done in [compile_primitive] *)
         Lam_compile_primitive.translate loc lambda_cxt  primitive args_expr in
-      Js_output.output_of_block_and_expression lam_cont should_return cur_lam args_code exp
+      Js_output.output_of_block_and_expression lam_cont  args_code exp
     | Lsequence (l1,l2) ->
       let output_l1 =
-        compile_lambda {lambda_cxt with continuation = EffectCall; should_return =  ReturnFalse} l1 in
+        compile_lambda {lambda_cxt with continuation = EffectCall ReturnFalse} l1 in
       let output_l2 =
         compile_lambda lambda_cxt l2  in
       Js_output.append_output output_l1  output_l2
@@ -1753,4 +1722,4 @@ and
     | Ltrywith(lam,id, catch) ->  (* generate documentation *)
       compile_trywith lam id catch lambda_cxt
     | Lsend(meth_kind,met, obj, args,loc) ->
-      compile_send cur_lam meth_kind met obj args loc lambda_cxt
+      compile_send meth_kind met obj args loc lambda_cxt

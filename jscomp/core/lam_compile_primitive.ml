@@ -34,11 +34,11 @@ module E = Js_exp_make
 (* If it is the return value, since it is a side-effect call,
    we return unit, otherwise just return it
 *)
-let decorate_side_effect ({continuation = st; should_return;_} : Lam_compile_context.t) e : E.t = 
-  match st, should_return with 
-  | _, ReturnTrue _ 
-  | (Assign _ | Declare _ | NeedValue), _  -> E.seq e E.unit
-  | EffectCall, ReturnFalse -> e 
+let decorate_side_effect ({continuation = st;_} : Lam_compile_context.t) e : E.t = 
+  match st with 
+  | EffectCall (ReturnTrue _ ) | NeedValue (ReturnTrue _)
+  | Assign _ | Declare _ | NeedValue _  -> E.seq e E.unit
+  | EffectCall ReturnFalse -> e 
 (* NeedValue should return a meaningful expression*)
 
 let translate  loc

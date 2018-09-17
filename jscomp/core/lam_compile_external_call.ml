@@ -272,7 +272,7 @@ let translate_ffi
          | Declare (_, id) | Assign id  ->
            (* Format.fprintf Format.err_formatter "%a@."Ident.print  id; *)
            Ext_ident.make_js_object id 
-         | EffectCall | NeedValue -> ())
+         | EffectCall _ | NeedValue _ -> ())
         ;
         E.new_ fn args
       end            
@@ -298,7 +298,7 @@ let translate_ffi
          | Declare (_, id) | Assign id  ->
            (* Format.fprintf Format.err_formatter "%a@."Ident.print  id; *)
            Ext_ident.make_js_object id 
-         | EffectCall | NeedValue -> ())
+         | EffectCall _ | NeedValue _ -> ())
         ;
         E.new_ fn args
       end            

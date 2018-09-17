@@ -61,16 +61,23 @@ type return_type =
 type let_kind = Lam_compat.let_kind
 
 type continuation = 
-  | EffectCall
-  | NeedValue 
+  | EffectCall of return_type
+  | NeedValue of return_type
   | Declare of let_kind * J.ident (* bound value *)
   | Assign of J.ident (* when use [Assign], var is not needed, since it's already declared  *)
 
 type jmp_table =   value  HandlerMap.t
 
+let continuation_is_return ( x : continuation) =  
+  match x with 
+  | EffectCall (ReturnTrue _) | NeedValue (ReturnTrue _) 
+    -> true 
+  | EffectCall ReturnFalse | NeedValue ReturnFalse 
+  | Declare _ | Assign _
+    -> false
+    
 type t = {
   continuation : continuation ;
-  should_return : return_type;
   jmp_table : jmp_table;
   meta : Lam_stats.t ;
 }
