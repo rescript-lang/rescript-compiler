@@ -101,9 +101,19 @@ function read_lines3(inc) {
   return loop(/* [] */0);
 }
 
+function fff(f, x) {
+  try {
+    return fff(f, x);
+  }
+  catch (exn){
+    return x + 1 | 0;
+  }
+}
+
 exports.Foo = Foo;
 exports.test = test;
 exports.read_lines = read_lines;
 exports.read_lines2 = read_lines2;
 exports.read_lines3 = read_lines3;
+exports.fff = fff;
 /*  Not a pure module */

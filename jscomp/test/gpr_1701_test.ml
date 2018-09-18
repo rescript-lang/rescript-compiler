@@ -40,3 +40,7 @@ let read_lines3 inc =
      with End_of_file -> List.rev acc
    in
    loop []   
+
+
+ let rec fff f x = 
+   try fff f x with _ ->  x + 1
