@@ -46,8 +46,19 @@ let flatten_nested_caches  (x : Lam.t)
   : Lam_compile_context.handler list * Lam.t =
   flat_catches [] x
 
+let morph_declare_to_assign (cxt : Lam_compile_context.t) k =
+    match cxt.continuation with
+    | Declare (kind, did) ->
+        k {cxt with continuation = Assign did} (Some (kind,did))
+    | _ -> k cxt None
 
-
+let group_apply cases callback =     
+   Ext_list.flat_map
+    (
+    Ext_list.stable_group cases
+    (fun (_,lam) (_,lam1) -> 
+      Lam_analysis.eq_lambda_approx lam lam1))
+    (fun group -> Ext_list.map_last group callback ) 
 (* TODO:
     for expression generation,
     name, should_return  is not needed,
@@ -63,9 +74,6 @@ type default_case =
 let no_effects_const  = lazy true
 let has_effects_const = lazy false
 
-(* f (E.str ~pure:false (Printf.sprintf "Err %s %d %d" id.name id.flags pos)) *)
-(* E.index m (pos + 1) *) (** shift by one *)
-(** This can not happen since this id should be already consulted by type checker *)
 (** We drop the ability of cross-compiling
         the compiler has to be the same running
 *)
@@ -409,16 +417,9 @@ and compile_general_cases
    _ -> _ J.case_clause list ->  J.statement
    )
    (switch_exp : J.expression)
-   (table : (_ * Lam.t) list)
+   (cases : (_ * Lam.t) list)
    (default : default_case) ->
-    let morph_declare_to_assign (cxt : Lam_compile_context.t) k =
-        match cxt.continuation with
-        | Declare (kind, did)
-          ->
-          k {cxt with continuation = Assign did} (Some (kind,did))
-        | _ -> k cxt None
-    in
-    match table, default with
+    match cases, default with
     | [], Default lam ->
       Js_output.output_as_block (compile_lambda cxt lam)
     | [], (Complete | NonComplete) ->  []
@@ -453,8 +454,18 @@ and compile_general_cases
           might encourage better inlining strategey
           ---
           TODO: grouping can be delayed untile JS IR
-      *)
-      (*TOOD: disabled temporarily since it's not perfect yet *)
+
+          see #2413
+          In general, we know it is last call,
+          there is no need to print [break];
+          But we need make sure the last call lambda does not
+          have `(exit ..)` due to we pass should_return from Lstaticcath downwards
+          Since this is a rough approximation, some `(exit ..)` does not destroy
+          last call property, we use exiting should_break to improve preciseness
+          (and it indeed help catch 
+          - tailcall or not does not matter, if it is the tailcall
+            break still should not be printed (it will be continuned)                               
+        TOOD: disabled temporarily since it's not perfect yet *)
       morph_declare_to_assign cxt ( fun cxt declaration  ->
           let default =
             match default with
@@ -463,52 +474,27 @@ and compile_general_cases
             | Default lam -> Some (Js_output.output_as_block  (compile_lambda cxt lam))
           in
           let body =            
-           Ext_list.flat_map
-           (
-             Ext_list.stable_group table
-              (fun (_,lam) (_,lam1)
-                -> Lam_analysis.eq_lambda_approx lam lam1))
-            (fun group ->
-                 Ext_list.map_last group
-                   (fun last (switch_case,lam) ->
-                      if last
-                      then
+              group_apply cases (fun last (switch_case,lam) ->
+                      if last then
                         (* merge and shared *)
-                        let switch_block, should_break  =
-                            Js_output.to_break_block (compile_lambda cxt lam)
-                        in
+                        let switch_body, should_break  =
+                            Js_output.to_break_block (compile_lambda cxt lam) in
                         let should_break =
                             if not @@ Lam_compile_context.continuation_is_return cxt.continuation then
                               should_break
                             else
-                              (** see #2413
-                                  In general, we know it is last call,
-                                  there is no need to print [break];
-                                  But we need make sure the last call lambda does not
-                                  have `(exit ..)` due to we pass should_return from Lstaticcath downwards
-                                  Since this is a rough approximation, some `(exit ..)` does not destroy
-                                  last call property, we use exiting should_break to improve preciseness
-                                  (and it indeed help catch more cases)
-
-                                  - tailcall or not does not matter, if it is the tailcall
-                                    break still should not be printed (it will be continuned)
-                               *)
-                              should_break &&
-                              (Lam_exit_code.has_exit lam)
-                        in
+                              should_break && Lam_exit_code.has_exit lam in
                         {J.switch_case ;
-                            switch_body = switch_block;
+                            switch_body;
                             should_break
                         }
                       else
                         { switch_case; switch_body = []; should_break = false }
-                    )
-                   
-              )
+                    )                   
+              
               (* TODO: we should also group default *)
               (* The last clause does not need [break]
                   common break through, *)
-
           in
           [switch ?default ?declaration switch_exp body]
         )
@@ -582,9 +568,7 @@ and compile_switch switch_arg sw (lambda_cxt : Lam_compile_context.t) =
                  let v = Ext_ident.create_tmp () in
                  (* Necessary avoid duplicated computation*)
                  [ S.define_variable ~kind:Variable v e ;  dispatch (E.var v)]
-             end )
-      in
-      begin
+             end ) in
         match lambda_cxt.continuation  with  (* Needs declare first *)
         | NeedValue _ ->
           (* Necessary since switch is a statement, we need they return
@@ -601,7 +585,6 @@ and compile_switch switch_arg sw (lambda_cxt : Lam_compile_context.t) =
           Js_output.make (S.declare_variable ~kind id
                           :: compile_whole {lambda_cxt with continuation = Assign id} )
         | EffectCall _ | Assign _  -> Js_output.make (compile_whole lambda_cxt)
-      end
 
 and compile_string_cases cxt switch_exp table default =
   compile_general_cases
@@ -725,9 +708,9 @@ and compile_staticcatch (cur_lam : Lam.t) (lambda_cxt  : Lam_compile_context.t)=
         Ext_list.flat_map code_table 
           (fun {bindings} -> Ext_list.map bindings 
             (fun x -> S.declare_variable ~kind:Variable x))  in
-    begin match  lambda_cxt.continuation with
-        (* could be optimized when cases are less than 3 *)
-        | NeedValue _ ->
+    match  lambda_cxt.continuation with
+    (* could be optimized when cases are less than 3 *)
+    | NeedValue _ ->
           let v = Ext_ident.create_tmp  () in
           let lbody = compile_lambda {lambda_cxt with
                                       jmp_table = jmp_table;
@@ -740,7 +723,7 @@ and compile_staticcatch (cur_lam : Lam.t) (lambda_cxt  : Lam_compile_context.t)=
               {lambda_cxt with continuation = Assign v;
                         jmp_table = jmp_table}
               exit_expr handlers  NonComplete)  ~value:(E.var v )))
-        | Declare (kind, id)
+    | Declare (kind, id)
           (* declare first this we will do branching*) ->
           let declares =
             S.declare_variable ~kind id  :: declares in
@@ -756,7 +739,7 @@ and compile_staticcatch (cur_lam : Lam.t) (lambda_cxt  : Lam_compile_context.t)=
                                we don't know if it's complete
                             *)
                          )))
-        | EffectCall _ | Assign _  ->
+    | EffectCall _ | Assign _  ->
           let lbody = compile_lambda {lambda_cxt with jmp_table = jmp_table } body in
           Js_output.append_output (Js_output.make declares)
           (Js_output.append_output lbody
@@ -765,11 +748,10 @@ and compile_staticcatch (cur_lam : Lam.t) (lambda_cxt  : Lam_compile_context.t)=
                             exit_expr
                             handlers
                             NonComplete)))
-    end
 
 and compile_sequand 
       (l : Lam.t) (r : Lam.t) (lambda_cxt : Lam_compile_context.t) =     
-    begin if Lam_compile_context.continuation_is_return lambda_cxt.continuation then
+    if Lam_compile_context.continuation_is_return lambda_cxt.continuation then
           compile_lambda lambda_cxt (Lam.sequand  l r )
           else
           let new_cxt = {lambda_cxt with continuation = NeedValue ReturnFalse} in
@@ -786,7 +768,7 @@ and compile_sequand
                 lambda_cxt.continuation 
                 l_block (E.and_ l_expr r_expr)
             | { block = r_block; value = Some r_expr} ->
-              begin match lambda_cxt.continuation with
+                match lambda_cxt.continuation with
                 | Assign v ->
                   (* Refernece Js_output.output_of_block_and_expression *)
                   Js_output.make
@@ -818,8 +800,8 @@ and compile_sequand
                      ]
                     )
                     ~value:(E.var v)
-              end
-      end
+              
+      
 and compile_sequor 
   (l : Lam.t)      
   (r : Lam.t)
