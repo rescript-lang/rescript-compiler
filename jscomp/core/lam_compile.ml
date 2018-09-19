@@ -1263,9 +1263,10 @@ and compile_ifthenelse
                     ~else_:else_output
                 ])
             | EffectCall should_return ->
+              let context1 = {lambda_cxt with continuation = NeedValue should_return} in 
               begin match should_return,
-                          compile_lambda {lambda_cxt with continuation = NeedValue should_return}  t_branch,
-                          compile_lambda {lambda_cxt with continuation = NeedValue should_return}  f_branch with
+                          compile_lambda context1  t_branch,
+                          compile_lambda context1  f_branch with
 
               (* see PR#83 *)
               |  ReturnFalse , {block = []; value =  Some out1},
@@ -1349,26 +1350,11 @@ and compile_ifthenelse
           end
         | {value = None } -> assert false
       end      
-and
-  compile_lambda
-    ({continuation = lam_cont} as lambda_cxt : Lam_compile_context.t)
-    (cur_lam : Lam.t)  : Js_output.t  =
-
-    match cur_lam with
-    | Lfunction{ params; body} ->
-      Js_output.output_of_expression lam_cont  cur_lam
-        (E.ocaml_fun
-           params
-           (* Invariant:  jmp_table can not across function boundary,
-              here we share env
-           *)
-           (Js_output.output_as_block
-              ( compile_lambda
-                  { lambda_cxt with continuation = EffectCall (ReturnTrue None); (* Refine*)
-                             jmp_table = Lam_compile_context.empty_handler_map}  body)))
-
-
-    | Lapply{
+and compile_apply 
+  (appinfo : Lam.apply_info) 
+  (lambda_cxt : Lam_compile_context.t) = 
+    begin match appinfo with 
+    | {
         fn = Lapply{ fn; args =  fn_args; status = App_na ; };
         args;
         status = App_na; loc }
@@ -1378,7 +1364,7 @@ and
       *)
       compile_lambda  lambda_cxt (Lam.apply fn (Ext_list.append fn_args  args)  loc  App_na )
     (* External function calll *)
-    | Lapply{ fn =
+    | { fn =
                 Lprim{primitive = Pfield (n,_);
                       args = [  Lglobal_module id];_};
               args ;
@@ -1389,7 +1375,7 @@ and
       compile_external_field_apply lambda_cxt  args id n  lambda_cxt.meta.env
 
 
-    | Lapply{ fn; args = args_lambda;   status} ->
+    | { fn; args = args_lambda;   status} ->
       (* TODO: ---
          1. check arity, can be simplified for pure expression
          2. no need create names
@@ -1456,7 +1442,7 @@ and
             end
           | _ ->
 
-            Js_output.output_of_block_and_expression lam_cont  args_code
+            Js_output.output_of_block_and_expression lambda_cxt.continuation args_code
               (E.call ~info:(match fn, status with
                    | _,  App_ml_full ->
                      {arity = Full ; call_info = Call_ml}
@@ -1467,8 +1453,28 @@ and
                  ) fn_code args)
         end;
       end
+    end        
+and
+  compile_lambda
+    ({continuation = lam_cont} as lambda_cxt : Lam_compile_context.t)
+    (cur_lam : Lam.t)  : Js_output.t  =
+
+    match cur_lam with
+    | Lfunction{ params; body} ->
+      Js_output.output_of_expression lam_cont  cur_lam
+        (E.ocaml_fun
+           params
+           (* Invariant:  jmp_table can not across function boundary,
+              here we share env
+           *)
+           (Js_output.output_as_block
+              ( compile_lambda
+                  { lambda_cxt with continuation = EffectCall (ReturnTrue None); (* Refine*)
+                             jmp_table = Lam_compile_context.empty_handler_map}  body)))
 
 
+    | Lapply appinfo -> 
+      compile_apply appinfo lambda_cxt
     | Llet (let_kind,id,arg, body) ->
       (* Order matters..  see comment below in [Lletrec] *)
       let args_code =
