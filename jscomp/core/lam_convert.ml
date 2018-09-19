@@ -143,13 +143,13 @@ let happens_to_be_diff
      no_over_flow b0 ->
     let diff = a0 - a in
     if b0 - b = diff then
-      if List.for_all (fun (x, (lam : Lambda.lambda )) ->
+      if Ext_list.for_all rest (fun (x, lam) ->
           match lam with
           | Lconst (Const_pointer(x0,_) | Const_base(Const_int x0))
             when no_over_flow x0 && no_over_flow x ->
             x0 - x = diff
           | _ -> false
-        ) rest  then
+        ) then
         Some diff
       else
         None

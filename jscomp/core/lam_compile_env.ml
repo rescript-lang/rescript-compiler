@@ -57,7 +57,7 @@ type env_value =
 
 
 type ident_info = {
-  id : Ident.t;
+  (* id : Ident.t; *)
   name : string;
   signature : Ocaml_types.t;
   arity : Js_cmj_format.arity; 
@@ -142,7 +142,8 @@ let cached_find_ml_id_pos id pos env : ident_info =
           )
         | None -> Js_cmj_format.single_na, None 
       in
-      {id; 
+      {
+       (* id;  *)
        name ;
        signature ;
        arity ;
@@ -161,7 +162,8 @@ let cached_find_ml_id_pos id pos env : ident_info =
         else None 
       | None -> Js_cmj_format.single_na, None
     in
-    { id;
+    { 
+      (* id; *)
       name; 
       signature;
       arity;

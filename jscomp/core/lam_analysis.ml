@@ -43,7 +43,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
       this expression itself is side effect free
     *)
   | Lprim {primitive;  args; _} -> 
-    List.for_all no_side_effects args && 
+    Ext_list.for_all args  no_side_effects && 
     (
       match primitive with 
       | Pccall {prim_name ; _} ->
@@ -248,7 +248,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
     no_side_effects a && no_side_effects b && no_side_effects c
   | Lsequence (a,b) -> no_side_effects a && no_side_effects b
   | Lletrec (bindings, body) ->
-    List.for_all (fun (_,b) -> no_side_effects b) bindings && no_side_effects body
+    Ext_list.for_all_snd bindings no_side_effects && no_side_effects body
   | Lwhile _ -> false (* conservative here, non-terminating loop does have side effect *)
   | Lfor _ -> false 
   | Lassign _ -> false (* actually it depends ... *)
@@ -332,8 +332,8 @@ and size_constant x =
 
 and size_lams acc (lams : Lam.t list) = 
   List.fold_left (fun acc l -> acc  + size l ) acc lams
-let args_all_const args =
-  List.for_all (fun x -> match x with Lam.Lconst _ -> true | _ -> false) args
+let args_all_const (args : Lam.t list) =
+  Ext_list.for_all args (fun x -> match x with Lconst _ -> true | _ -> false) 
     
 let exit_inline_size = 7 
 let small_inline_size = 5

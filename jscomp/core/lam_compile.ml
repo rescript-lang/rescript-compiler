@@ -60,7 +60,8 @@ type default_case =
   | Complete
   | NonComplete
 
-
+let no_effects_const  = lazy true
+let has_effects_const = lazy false
 
 (* f (E.str ~pure:false (Printf.sprintf "Err %s %d %d" id.name id.flags pos)) *)
 (* E.index m (pos + 1) *) (** shift by one *)
@@ -95,26 +96,21 @@ type default_case =
 *)
 let rec
   compile_external_field (* Like [List.empty]*)
-    (cxt : Lam_compile_context.t)
-    (lam  : Lam.t)
+    (lamba_cxt : Lam_compile_context.t)
     (id : Ident.t)
     (pos : int)
     (env : Env.t)
-  : Js_output.t =
-  let f =   Js_output.output_of_expression cxt.continuation  lam in
-  match Lam_compile_env.cached_find_ml_id_pos id pos env  with
-  | {id; name; closed_lambda } ->
-    match id, name, closed_lambda with
-    | {name = "Sys"; _}, "os_type" , _
-
-      ->  f (E.str Sys.os_type)
-    | _, _, Some lam
+  : Js_output.t =  
+  match Lam_compile_env.cached_find_ml_id_pos id pos env  with      
+  | { closed_lambda = Some lam}
       when Lam_util.not_function lam
-
       ->
-      compile_lambda cxt lam
-    | _ ->
-      f (E.ml_var_dot id name)
+      compile_lambda lamba_cxt lam     
+  | { name} ->
+      Js_output.output_of_expression lamba_cxt.continuation  
+      ~no_effects:no_effects_const
+      (if id.name = "Sys" && name = "os_type" then E.str Sys.os_type
+         else E.ml_var_dot id name )
 
 (* TODO: how nested module call would behave,
    In the future, we should keep in track  of if
@@ -143,39 +139,35 @@ let rec
     however it can not be global -- global can only module
 *)
 
-and compile_external_field_apply
-    (cxt : Lam_compile_context.t)
+and compile_external_field_apply    
     (args_lambda : Lam.t list)
     (id : Ident.t)
     (pos : int)
-    (env : Env.t) : Js_output.t =
-  match
-    Lam_compile_env.cached_find_ml_id_pos
-      id pos env
-  with
-  | {id; name;arity; closed_lambda ; _} ->
-    let args_code, args =
-      Ext_list.fold_right args_lambda ([], [])
-        (fun x  (args_code, args)  ->
-           match
-             compile_lambda
-               {cxt with continuation = NeedValue ReturnFalse} x
-           with
+    (env : Env.t) (lambda_cxt : Lam_compile_context.t): Js_output.t =
+
+  let ident_info =  
+    Lam_compile_env.cached_find_ml_id_pos id pos env in 
+  let args_code, args =
+      let dummy = [], [] in 
+      if args_lambda = [] then dummy
+      else 
+        let arg_cxt = {lambda_cxt with continuation = NeedValue ReturnFalse} in 
+        Ext_list.fold_right args_lambda dummy (fun arg_lambda  (args_code, args)  ->
+           match compile_lambda arg_cxt arg_lambda with
            | {block = a; value = Some b} ->
              (Ext_list.append a args_code), (b :: args )
            | _ -> assert false
         )  in
-
-    match closed_lambda with
-    | Some (Lfunction{ params; body; _})
+  match ident_info.closed_lambda with
+  | Some (Lfunction{ params; body; _})
       when Ext_list.same_length params args_lambda ->
       (* TODO: serialize it when exporting to save compile time *)
       let (_, param_map)  =
         Lam_closure.is_closed_with_map Ident_set.empty params body in
-      compile_lambda cxt
-        (Lam_beta_reduce.propogate_beta_reduce_with_map cxt.meta param_map
+      compile_lambda lambda_cxt
+        (Lam_beta_reduce.propogate_beta_reduce_with_map lambda_cxt.meta param_map
            params body args_lambda)
-    | _ ->
+  | _ ->
       let rec aux (acc : J.expression)
           arity args (len : int)  : E.t =
           if len = 0 then         
@@ -194,9 +186,8 @@ and compile_external_field_apply
               rest
               continue (len - x)
           else (* GPR #1423 *)
-          if List.for_all Js_analyzer.is_okay_to_duplicate args then
-            let params = Ext_list.init (x - len)
-                (fun _ -> Ext_ident.create "param") in
+          if Ext_list.for_all  args Js_analyzer.is_okay_to_duplicate then
+            let params = Ext_list.init (x - len) (fun _ -> Ext_ident.create "param") in
             E.ocaml_fun params
               [S.return_stmt (E.call ~info:{arity=Full; call_info=Call_ml}
                                 acc (Ext_list.append args @@ Ext_list.map params E.var))]
@@ -208,26 +199,19 @@ and compile_external_field_apply
           (* can not happen, unless it's an exception ? *)
           E.call ~info:Js_call_info.dummy acc args
       in
-      let fn = E.ml_var_dot id name in 
+      let fn = E.ml_var_dot id ident_info.name in 
       let initial_args_len = List.length args in 
       let expression = 
-        match arity with 
+        match ident_info.arity with 
         | Submodule _ -> E.call ~info:Js_call_info.dummy fn args 
         | Single x -> 
           aux fn (Lam_arity.extract_arity x) args initial_args_len
       in   
       Js_output.output_of_block_and_expression
-        cxt.continuation
+        lambda_cxt.continuation
         args_code expression
 
 
-and  compile_let
-  (let_kind : Lam_compile_context.let_kind)
-  (cxt : Lam_compile_context.t)
-  (id : J.ident)
-  (arg : Lam.t) : Js_output.t =
-  compile_lambda
-    {cxt with continuation = Declare (let_kind, id)} arg
 (**
     The second return values are values which need to be wrapped using
    [caml_update_dummy]
@@ -290,15 +274,16 @@ and compile_recursive_let ~all_bindings
       else            (* TODO:  save computation of length several times *)
         E.ocaml_fun params (Js_output.output_as_block output )
     in
-    Js_output.output_of_expression (Declare (Alias, id))
-       arg result, []
+    Js_output.output_of_expression 
+      (Declare (Alias, id))
+       result ~no_effects:(lazy (Lam_analysis.no_side_effects arg)), []
   | Lprim {primitive = Pmakeblock (0, _, _) ; args =  ls}
-    when List.for_all (fun (x : Lam.t) ->
+    when Ext_list.for_all ls (fun x ->
         match x with
         | Lvar pid ->
           Ident.same pid id  ||
-          (not @@ List.exists (fun (other,_) -> Ident.same other pid ) all_bindings)
-        | _ -> false) ls
+          (not @@ Ext_list.exists all_bindings (fun (other,_) -> Ident.same other pid ) )
+        | _ -> false) 
     ->
     (* capture cases like for {!Queue}
        {[let rec cell = { content = x; next = cell} ]}
@@ -783,7 +768,6 @@ and compile_staticcatch (cur_lam : Lam.t) (lambda_cxt  : Lam_compile_context.t)=
     end
 
 and compile_sequand 
-      (cur_lam : Lam.t) 
       (l : Lam.t) (r : Lam.t) (lambda_cxt : Lam_compile_context.t) =     
     begin if Lam_compile_context.continuation_is_return lambda_cxt.continuation then
           compile_lambda lambda_cxt (Lam.sequand  l r )
@@ -1263,9 +1247,10 @@ and compile_ifthenelse
                     ~else_:else_output
                 ])
             | EffectCall should_return ->
+              let context1 = {lambda_cxt with continuation = NeedValue should_return} in 
               begin match should_return,
-                          compile_lambda {lambda_cxt with continuation = NeedValue should_return}  t_branch,
-                          compile_lambda {lambda_cxt with continuation = NeedValue should_return}  f_branch with
+                          compile_lambda context1  t_branch,
+                          compile_lambda context1  f_branch with
 
               (* see PR#83 *)
               |  ReturnFalse , {block = []; value =  Some out1},
@@ -1349,26 +1334,11 @@ and compile_ifthenelse
           end
         | {value = None } -> assert false
       end      
-and
-  compile_lambda
-    ({continuation = lam_cont} as lambda_cxt : Lam_compile_context.t)
-    (cur_lam : Lam.t)  : Js_output.t  =
-
-    match cur_lam with
-    | Lfunction{ params; body} ->
-      Js_output.output_of_expression lam_cont  cur_lam
-        (E.ocaml_fun
-           params
-           (* Invariant:  jmp_table can not across function boundary,
-              here we share env
-           *)
-           (Js_output.output_as_block
-              ( compile_lambda
-                  { lambda_cxt with continuation = EffectCall (ReturnTrue None); (* Refine*)
-                             jmp_table = Lam_compile_context.empty_handler_map}  body)))
-
-
-    | Lapply{
+and compile_apply 
+  (appinfo : Lam.apply_info) 
+  (lambda_cxt : Lam_compile_context.t) = 
+    begin match appinfo with 
+    | {
         fn = Lapply{ fn; args =  fn_args; status = App_na ; };
         args;
         status = App_na; loc }
@@ -1378,7 +1348,7 @@ and
       *)
       compile_lambda  lambda_cxt (Lam.apply fn (Ext_list.append fn_args  args)  loc  App_na )
     (* External function calll *)
-    | Lapply{ fn =
+    | { fn =
                 Lprim{primitive = Pfield (n,_);
                       args = [  Lglobal_module id];_};
               args ;
@@ -1386,10 +1356,10 @@ and
       (* Note we skip [App_js_full] since [get_exp_with_args] dont carry
          this information, we should fix [get_exp_with_args]
       *)
-      compile_external_field_apply lambda_cxt  args id n  lambda_cxt.meta.env
+      compile_external_field_apply  args id n  lambda_cxt.meta.env  lambda_cxt
 
 
-    | Lapply{ fn; args = args_lambda;   status} ->
+    | { fn; args = args_lambda;   status} ->
       (* TODO: ---
          1. check arity, can be simplified for pure expression
          2. no need create names
@@ -1456,7 +1426,7 @@ and
             end
           | _ ->
 
-            Js_output.output_of_block_and_expression lam_cont  args_code
+            Js_output.output_of_block_and_expression lambda_cxt.continuation args_code
               (E.call ~info:(match fn, status with
                    | _,  App_ml_full ->
                      {arity = Full ; call_info = Call_ml}
@@ -1467,41 +1437,15 @@ and
                  ) fn_code args)
         end;
       end
-
-
-    | Llet (let_kind,id,arg, body) ->
-      (* Order matters..  see comment below in [Lletrec] *)
-      let args_code =
-        compile_let  let_kind lambda_cxt id arg  in
-      Js_output.append_output
-      args_code
-      (compile_lambda  lambda_cxt  body)
-
-    | Lletrec (id_args, body) ->
-      (* There is a bug in our current design,
-         it requires compile args first (register that some objects are jsidentifiers)
-         and compile body wiht such effect.
-         So here we should compile [id_args] first, then [body] later.
-         Note it has some side effect over cache number as well, mostly the value of
-         [Caml_primitive["caml_get_public_method"](x,hash_tab, number)]
-
-         To fix this,
-         1. scan the lambda layer first, register js identifier before proceeding
-         2. delay the method call into javascript ast
-      *)
-      let v =  compile_recursive_lets lambda_cxt  id_args in
-      Js_output.append_output v  (compile_lambda lambda_cxt  body)
-
-    | Lvar id -> Js_output.output_of_expression lam_cont cur_lam (E.var id )
-    | Lconst c ->
-      Js_output.output_of_expression lam_cont  cur_lam (Lam_compile_const.translate c)
-
-    | Lprim {primitive = Pfield (n,_);
+    end        
+and compile_prim (prim_info : Lam.prim_info) (lambda_cxt : Lam_compile_context.t) =     
+   begin match prim_info with 
+    | {primitive = Pfield (n,_);
              args = [ Lglobal_module id ]; _}
       -> (* should be before Lglobal_global *)
-      compile_external_field lambda_cxt cur_lam  id n lambda_cxt.meta.env
+      compile_external_field lambda_cxt id n lambda_cxt.meta.env
 
-    | Lprim {primitive = Praise ; args =  [ e ]; _} ->
+    | {primitive = Praise ; args =  [ e ]; _} ->
       begin
         match compile_lambda {
             lambda_cxt with  continuation = NeedValue ReturnFalse} e with
@@ -1514,17 +1458,17 @@ and
         *)
         | {value =  None; _} -> assert false
       end
-    | Lprim{primitive = Psequand ; args =  [l;r] ; _}
+    | {primitive = Psequand ; args =  [l;r] ; _}
       ->
-      compile_sequand cur_lam l r lambda_cxt
-    | Lprim {primitive = Psequor; args =  [l;r]}
+      compile_sequand l r lambda_cxt
+    |  {primitive = Psequor; args =  [l;r]}
       ->
       compile_sequor l r lambda_cxt 
-    | Lprim {primitive = Pdebugger ; _}
+    |  {primitive = Pdebugger ; _}
       ->
       (* [%bs.debugger] guarantees that the expression does not matter
          TODO: make it even safer      *)
-      Js_output.output_of_block_and_expression lam_cont
+      Js_output.output_of_block_and_expression lambda_cxt.continuation
       S.debugger_block E.unit
 
 
@@ -1534,7 +1478,7 @@ and
        we need mark something that such eta-conversion can not be simplified in some cases
     *)
 
-    | Lprim {primitive = Pjs_unsafe_downgrade (name,loc);
+    |  {primitive = Pjs_unsafe_downgrade (name,loc);
              args = [obj]}
       when not (Ext_string.ends_with name Literals.setter_suffix)
       ->
@@ -1555,11 +1499,11 @@ and
                  (Ext_list.append block  [x]),  E.dot (E.var b) property
               )
           in
-          Js_output.output_of_block_and_expression lam_cont
+          Js_output.output_of_block_and_expression lambda_cxt.continuation
             blocks ret
         | _ -> assert false
       end
-    | Lprim {primitive = Pjs_fn_run arity;  args = args_lambda}
+    | {primitive = Pjs_fn_run arity;  args = args_lambda}
       ->
       (* 1. prevent eta-conversion
          by using [App_js_full]
@@ -1580,7 +1524,7 @@ and
             let obj_output = compile_lambda  need_value_no_return_cxt obj in
             let arg_output = compile_lambda need_value_no_return_cxt arg in
             let cont obj_block arg_block obj_code =
-              Js_output.output_of_block_and_expression lam_cont  
+              Js_output.output_of_block_and_expression lambda_cxt.continuation  
                 (
                   match obj_code with
                   | None -> Ext_list.append obj_block  arg_block
@@ -1619,7 +1563,7 @@ and
                App_js_full)
         | _ -> assert false
       end
-    | Lprim {primitive = Pjs_fn_runmethod arity ; args }
+    | {primitive = Pjs_fn_runmethod arity ; args }
       ->
       begin match args with
         | (Lprim{primitive = Pjs_unsafe_downgrade (name,loc);
@@ -1637,12 +1581,12 @@ and
           compile_lambda lambda_cxt (Lam.apply fn rest loc App_js_full)
         | _ -> assert false
       end
-    | Lprim {primitive = Pjs_fn_method arity;  args = args_lambda} ->
+    | {primitive = Pjs_fn_method arity;  args = args_lambda} ->
       begin match args_lambda with
         | [Lfunction{arity = len; params; body} ]
           when len = arity ->
           Js_output.output_of_block_and_expression
-            lam_cont          
+            lambda_cxt.continuation
             []
             (E.method_
                params
@@ -1658,20 +1602,14 @@ and
       end
 
 
-    | Lprim {primitive = Pjs_fn_make arity;  args = [fn]; loc } ->
+    |  {primitive = Pjs_fn_make arity;  args = [fn]; loc } ->
       compile_lambda lambda_cxt (Lam_eta_conversion.unsafe_adjust_to_arity loc ~to_:arity ?from:None fn)
 
-    | Lprim {primitive = Pjs_fn_make arity;
+    |  {primitive = Pjs_fn_make arity;
              args = [] | _::_::_ } ->
       assert false
-    | Lglobal_module i ->
-      (* introduced by
-         1. {[ include Array --> let include  = Array  ]}
-         2. inline functor application
-      *)
-      let exp = Lam_compile_global.expand_global_module i lambda_cxt.meta.env  in
-      Js_output.output_of_block_and_expression lam_cont [] exp
-    | Lprim{ primitive = Pjs_object_create labels ; args ; loc}
+
+    | { primitive = Pjs_object_create labels ; args ; loc}
       ->
       let args_block, args_expr =
         Ext_list.split_map args (fun x ->
@@ -1683,10 +1621,10 @@ and
       let block, exp  =
         Lam_compile_external_obj.assemble_args_obj labels args_expr
       in
-      Js_output.output_of_block_and_expression lam_cont 
+      Js_output.output_of_block_and_expression lambda_cxt.continuation
         (Ext_list.concat_append args_block block) exp
 
-    | Lprim{primitive; args; loc} ->
+    | {primitive; args; loc} ->
       let args_block, args_expr =
         Ext_list.split_map args (fun x ->
             match compile_lambda {lambda_cxt with continuation = NeedValue ReturnFalse} x
@@ -1696,7 +1634,67 @@ and
       let args_code  : J.block = List.concat args_block in
       let exp  =  (* TODO: all can be done in [compile_primitive] *)
         Lam_compile_primitive.translate loc lambda_cxt  primitive args_expr in
-      Js_output.output_of_block_and_expression lam_cont  args_code exp
+      Js_output.output_of_block_and_expression lambda_cxt.continuation  args_code exp
+    end  
+and
+  compile_lambda
+    (lambda_cxt : Lam_compile_context.t)
+    (cur_lam : Lam.t)  : Js_output.t  =
+
+    match cur_lam with
+    | Lfunction{ params; body} ->
+      Js_output.output_of_expression lambda_cxt.continuation  ~no_effects:no_effects_const
+        (E.ocaml_fun
+           params
+           (* Invariant:  jmp_table can not across function boundary,
+              here we share env
+           *)
+           (Js_output.output_as_block
+              ( compile_lambda
+                  { lambda_cxt with 
+                    continuation = EffectCall (ReturnTrue None); (* Refine*)
+                    jmp_table = Lam_compile_context.empty_handler_map}
+                  body)))
+
+
+    | Lapply appinfo -> 
+      compile_apply appinfo lambda_cxt
+    | Llet (let_kind,id,arg, body) ->
+      (* Order matters..  see comment below in [Lletrec] *)
+      let args_code =   
+        compile_lambda {lambda_cxt with continuation = Declare(let_kind,id)} arg in 
+      Js_output.append_output
+      args_code (compile_lambda  lambda_cxt  body)
+
+    | Lletrec (id_args, body) ->
+      (* There is a bug in our current design,
+         it requires compile args first (register that some objects are jsidentifiers)
+         and compile body wiht such effect.
+         So here we should compile [id_args] first, then [body] later.
+         Note it has some side effect over cache number as well, mostly the value of
+         [Caml_primitive["caml_get_public_method"](x,hash_tab, number)]
+
+         To fix this,
+         1. scan the lambda layer first, register js identifier before proceeding
+         2. delay the method call into javascript ast
+      *)
+      let v =  compile_recursive_lets lambda_cxt  id_args in
+      Js_output.append_output v  (compile_lambda lambda_cxt  body)
+
+    | Lvar id -> 
+      Js_output.output_of_expression lambda_cxt.continuation ~no_effects:no_effects_const (E.var id )
+    | Lconst c ->
+      Js_output.output_of_expression lambda_cxt.continuation ~no_effects:no_effects_const (Lam_compile_const.translate c)
+    | Lglobal_module i ->
+      (* introduced by
+         1. {[ include Array --> let include  = Array  ]}
+         2. inline functor application
+      *)
+      let exp = Lam_compile_global.expand_global_module i lambda_cxt.meta.env  in
+      Js_output.output_of_block_and_expression lambda_cxt.continuation [] exp
+
+    | Lprim prim_info -> 
+        compile_prim prim_info lambda_cxt
     | Lsequence (l1,l2) ->
       let output_l1 =
         compile_lambda {lambda_cxt with continuation = EffectCall ReturnFalse} l1 in

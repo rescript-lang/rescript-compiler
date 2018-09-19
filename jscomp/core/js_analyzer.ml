@@ -102,10 +102,10 @@ let rec no_side_effect_expression_desc (x : J.expression_desc)  =
 
         the block is mutable does not mean this operation is non-pure
     *)
-    List.for_all no_side_effect  xs 
+    Ext_list.for_all xs no_side_effect 
   | Optional_block (x,_) -> no_side_effect x   
   | Object kvs -> 
-    List.for_all (fun (_property_name, y) -> no_side_effect y ) kvs 
+    Ext_list.for_all_snd  kvs no_side_effect
   | String_append (a,b)
   | Seq (a,b) -> no_side_effect a && no_side_effect b 
   | Length (e, _)
@@ -375,9 +375,9 @@ let rec is_constant (x : J.expression)  =
   | Access (a,b) -> is_constant a && is_constant b 
   | Str (b,_) -> b
   | Number _ -> true (* Can be refined later *)
-  | Array (xs,_mutable_flag)  -> List.for_all is_constant  xs 
+  | Array (xs,_mutable_flag)  -> Ext_list.for_all xs  is_constant 
   | Caml_block(xs, Immutable, tag, _) 
-    -> List.for_all is_constant xs && is_constant tag 
+    -> Ext_list.for_all xs is_constant && is_constant tag 
   | Bin (op, a, b) -> 
     is_constant a && is_constant b     
   | _ -> false 

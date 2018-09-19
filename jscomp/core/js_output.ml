@@ -50,10 +50,10 @@ let dummy =
 
 let output_of_expression
     (continuation : continuation)
-    (lam : Lam.t) (exp : J.expression) : t =
+    (exp : J.expression) ~(no_effects: bool Lazy.t)  =
   begin match continuation with
   | EffectCall  ReturnFalse ->
-      if Lam_analysis.no_side_effects lam
+      if Lazy.force no_effects 
       then dummy
       else {block = []; value  = Some exp ; output_finished = False}
   | Declare (kind, n)->

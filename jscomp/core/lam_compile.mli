@@ -31,13 +31,6 @@
 
 (** Compile single lambda IR to JS IR  *)
 
-val compile_let : 
-  Lam_compat.let_kind ->
-  Lam_compile_context.t -> 
-  J.ident -> 
-  Lam.t -> 
-  Js_output.t
-
 val compile_recursive_lets :
   Lam_compile_context.t ->
   (Ident.t * Lam.t) list -> 

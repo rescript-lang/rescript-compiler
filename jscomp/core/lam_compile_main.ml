@@ -75,10 +75,10 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.t)
     (* let lam = Optimizer.simplify_lets [] lam in  *)
     (* can not apply again, it's wrong USE it with care*)
     (* ([Js_stmt_make.comment (Gen_of_env.query_type id  env )], None)  ++ *)
-    Lam_compile.compile_let  kind { continuation = Declare (kind, id);
+    Lam_compile.compile_lambda { continuation = Declare (kind, id);
                                     jmp_table = Lam_compile_context.empty_handler_map;
                                     meta
-                                  } id  lam
+                                  } lam
 
   | Recursive id_lams, _   -> 
     Lam_compile.compile_recursive_lets 
