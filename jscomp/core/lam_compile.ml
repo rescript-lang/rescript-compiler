@@ -60,7 +60,8 @@ type default_case =
   | Complete
   | NonComplete
 
-
+let no_effects_const  = lazy true
+let has_effects_const = lazy false
 
 (* f (E.str ~pure:false (Printf.sprintf "Err %s %d %d" id.name id.flags pos)) *)
 (* E.index m (pos + 1) *) (** shift by one *)
@@ -95,26 +96,21 @@ type default_case =
 *)
 let rec
   compile_external_field (* Like [List.empty]*)
-    (cxt : Lam_compile_context.t)
-    (lam  : Lam.t)
+    (lamba_cxt : Lam_compile_context.t)
     (id : Ident.t)
     (pos : int)
     (env : Env.t)
-  : Js_output.t =
-  let f =   Js_output.output_of_expression cxt.continuation  lam in
-  match Lam_compile_env.cached_find_ml_id_pos id pos env  with
-  | {id; name; closed_lambda } ->
-    match id, name, closed_lambda with
-    | {name = "Sys"; _}, "os_type" , _
-
-      ->  f (E.str Sys.os_type)
-    | _, _, Some lam
+  : Js_output.t =  
+  match Lam_compile_env.cached_find_ml_id_pos id pos env  with      
+  | { closed_lambda = Some lam}
       when Lam_util.not_function lam
-
       ->
-      compile_lambda cxt lam
-    | _ ->
-      f (E.ml_var_dot id name)
+      compile_lambda lamba_cxt lam     
+  | {id; name} ->
+      Js_output.output_of_expression lamba_cxt.continuation  
+      ~no_effects:no_effects_const
+      (if id.name = "Sys" && name = "os_type" then E.str Sys.os_type
+         else E.ml_var_dot id name )
 
 (* TODO: how nested module call would behave,
    In the future, we should keep in track  of if
@@ -290,8 +286,9 @@ and compile_recursive_let ~all_bindings
       else            (* TODO:  save computation of length several times *)
         E.ocaml_fun params (Js_output.output_as_block output )
     in
-    Js_output.output_of_expression (Declare (Alias, id))
-       arg result, []
+    Js_output.output_of_expression 
+      (Declare (Alias, id))
+       result ~no_effects:(lazy (Lam_analysis.no_side_effects arg)), []
   | Lprim {primitive = Pmakeblock (0, _, _) ; args =  ls}
     when List.for_all (fun (x : Lam.t) ->
         match x with
@@ -783,7 +780,6 @@ and compile_staticcatch (cur_lam : Lam.t) (lambda_cxt  : Lam_compile_context.t)=
     end
 
 and compile_sequand 
-      (cur_lam : Lam.t) 
       (l : Lam.t) (r : Lam.t) (lambda_cxt : Lam_compile_context.t) =     
     begin if Lam_compile_context.continuation_is_return lambda_cxt.continuation then
           compile_lambda lambda_cxt (Lam.sequand  l r )
@@ -1454,12 +1450,12 @@ and compile_apply
         end;
       end
     end        
-and compile_prim (cur_lam : Lam.t) (prim_info : Lam.prim_info) (lambda_cxt : Lam_compile_context.t) =     
+and compile_prim (prim_info : Lam.prim_info) (lambda_cxt : Lam_compile_context.t) =     
    begin match prim_info with 
     | {primitive = Pfield (n,_);
              args = [ Lglobal_module id ]; _}
       -> (* should be before Lglobal_global *)
-      compile_external_field lambda_cxt cur_lam  id n lambda_cxt.meta.env
+      compile_external_field lambda_cxt id n lambda_cxt.meta.env
 
     | {primitive = Praise ; args =  [ e ]; _} ->
       begin
@@ -1476,7 +1472,7 @@ and compile_prim (cur_lam : Lam.t) (prim_info : Lam.prim_info) (lambda_cxt : Lam
       end
     | {primitive = Psequand ; args =  [l;r] ; _}
       ->
-      compile_sequand cur_lam l r lambda_cxt
+      compile_sequand l r lambda_cxt
     |  {primitive = Psequor; args =  [l;r]}
       ->
       compile_sequor l r lambda_cxt 
@@ -1659,7 +1655,7 @@ and
 
     match cur_lam with
     | Lfunction{ params; body} ->
-      Js_output.output_of_expression lambda_cxt.continuation  cur_lam
+      Js_output.output_of_expression lambda_cxt.continuation  ~no_effects:no_effects_const
         (E.ocaml_fun
            params
            (* Invariant:  jmp_table can not across function boundary,
@@ -1678,8 +1674,7 @@ and
       let args_code =
         compile_let  let_kind lambda_cxt id arg  in
       Js_output.append_output
-      args_code
-      (compile_lambda  lambda_cxt  body)
+      args_code (compile_lambda  lambda_cxt  body)
 
     | Lletrec (id_args, body) ->
       (* There is a bug in our current design,
@@ -1696,9 +1691,10 @@ and
       let v =  compile_recursive_lets lambda_cxt  id_args in
       Js_output.append_output v  (compile_lambda lambda_cxt  body)
 
-    | Lvar id -> Js_output.output_of_expression lambda_cxt.continuation cur_lam (E.var id )
+    | Lvar id -> 
+      Js_output.output_of_expression lambda_cxt.continuation ~no_effects:no_effects_const (E.var id )
     | Lconst c ->
-      Js_output.output_of_expression lambda_cxt.continuation  cur_lam (Lam_compile_const.translate c)
+      Js_output.output_of_expression lambda_cxt.continuation ~no_effects:no_effects_const (Lam_compile_const.translate c)
     | Lglobal_module i ->
       (* introduced by
          1. {[ include Array --> let include  = Array  ]}
@@ -1708,7 +1704,7 @@ and
       Js_output.output_of_block_and_expression lambda_cxt.continuation [] exp
 
     | Lprim prim_info -> 
-        compile_prim cur_lam prim_info lambda_cxt
+        compile_prim prim_info lambda_cxt
     | Lsequence (l1,l2) ->
       let output_l1 =
         compile_lambda {lambda_cxt with continuation = EffectCall ReturnFalse} l1 in

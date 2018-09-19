@@ -436,7 +436,7 @@ core/js_dump_program.cmi : core/js_packages_info.cmi core/j.cmx \
     ext/ext_pp.cmi
 core/js_pass_debug.cmi : core/j.cmx
 core/js_of_lam_option.cmi : core/j.cmx
-core/js_output.cmi : core/lam_compile_context.cmi core/lam.cmi core/j.cmx
+core/js_output.cmi : core/lam_compile_context.cmi core/j.cmx
 core/lam_compile_global.cmi : core/lam.cmi core/j.cmx
 core/lam_dispatch_primitive.cmi : core/j.cmx
 core/lam_bounded_vars.cmi : core/lam.cmi ext/ident_hashtbl.cmi
@@ -683,9 +683,9 @@ core/js_pass_debug.cmx : core/js_dump_program.cmx common/js_config.cmx \
 core/js_of_lam_option.cmx : core/js_runtime_modules.cmx \
     core/js_of_lam_polyvar.cmx core/js_exp_make.cmx core/js_analyzer.cmx \
     core/j.cmx core/js_of_lam_option.cmi
-core/js_output.cmx : core/lam_compile_context.cmx core/lam_analysis.cmx \
-    core/lam.cmx core/js_stmt_make.cmx core/js_exp_make.cmx core/js_dump.cmx \
-    core/js_analyzer.cmx core/j.cmx ext/ext_list.cmx core/js_output.cmi
+core/js_output.cmx : core/lam_compile_context.cmx core/js_stmt_make.cmx \
+    core/js_exp_make.cmx core/js_dump.cmx core/js_analyzer.cmx core/j.cmx \
+    ext/ext_list.cmx core/js_output.cmi
 core/lam_compile_global.cmx : core/ocaml_types.cmx core/lam_module_ident.cmx \
     core/lam_compile_env.cmx core/lam.cmx core/js_stmt_make.cmx \
     core/js_of_lam_module.cmx core/js_exp_make.cmx core/j.cmx \
