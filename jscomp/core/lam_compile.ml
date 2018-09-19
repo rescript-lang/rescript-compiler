@@ -106,7 +106,7 @@ let rec
       when Lam_util.not_function lam
       ->
       compile_lambda lamba_cxt lam     
-  | {id; name} ->
+  | { name} ->
       Js_output.output_of_expression lamba_cxt.continuation  
       ~no_effects:no_effects_const
       (if id.name = "Sys" && name = "os_type" then E.str Sys.os_type
@@ -149,7 +149,7 @@ and compile_external_field_apply
     Lam_compile_env.cached_find_ml_id_pos
       id pos env
   with
-  | {id; name;arity; closed_lambda ; _} ->
+  | { name;arity; closed_lambda ; _} ->
     let args_code, args =
       Ext_list.fold_right args_lambda ([], [])
         (fun x  (args_code, args)  ->
