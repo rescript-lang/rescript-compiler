@@ -698,161 +698,148 @@ and compile_staticcatch (cur_lam : Lam.t) (lambda_cxt  : Lam_compile_context.t)=
     let exit_id = Ext_ident.create_tmp ~name:"exit" () in
     let exit_expr = E.var exit_id in
     let jmp_table, handlers =
-        Lam_compile_context.add_jmps lambda_cxt.jmp_table exit_id code_table  in
+      Lam_compile_context.add_jmps lambda_cxt.jmp_table exit_id code_table  in
 
     (* Declaration First, body and handler have the same value *)
     let declares =
-        S.define_variable ~kind:Variable exit_id
-          E.zero_int_literal ::
-        (* we should always make it zero here, since [zero] is reserved in our mapping*)
-        Ext_list.flat_map code_table 
-          (fun {bindings} -> Ext_list.map bindings 
+      S.define_variable ~kind:Variable exit_id
+        E.zero_int_literal ::
+      (* we should always make it zero here, since [zero] is reserved in our mapping*)
+      Ext_list.flat_map code_table 
+        (fun {bindings} -> Ext_list.map bindings 
             (fun x -> S.declare_variable ~kind:Variable x))  in
     match  lambda_cxt.continuation with
     (* could be optimized when cases are less than 3 *)
     | NeedValue _ ->
-          let v = Ext_ident.create_tmp  () in
-          let lbody = compile_lambda {lambda_cxt with
-                                      jmp_table = jmp_table;
-                                      continuation = Assign v
-                                     } body in
-          Js_output.append_output
-          (Js_output.make  (S.declare_variable ~kind:Variable v  :: declares) )
-          (Js_output.append_output lbody (Js_output.make (
-            compile_cases
-              {lambda_cxt with continuation = Assign v;
-                        jmp_table = jmp_table}
-              exit_expr handlers  NonComplete)  ~value:(E.var v )))
+      let v = Ext_ident.create_tmp  () in
+      let new_cxt = {lambda_cxt with jmp_table = jmp_table; continuation = Assign v } in 
+      let lbody = compile_lambda new_cxt body in
+      Js_output.append_output
+        (Js_output.make  (S.declare_variable ~kind:Variable v  :: declares) )
+        (Js_output.append_output lbody (Js_output.make (
+             compile_cases new_cxt exit_expr handlers  NonComplete)  ~value:(E.var v )))
     | Declare (kind, id)
-          (* declare first this we will do branching*) ->
-          let declares =
-            S.declare_variable ~kind id  :: declares in
-          let lbody = compile_lambda {lambda_cxt with jmp_table = jmp_table; continuation = Assign id } body in
-          Js_output.append_output (Js_output.make  declares)
-          (Js_output.append_output lbody
-          (Js_output.make (compile_cases
-                            {lambda_cxt with jmp_table = jmp_table; continuation = Assign id}
-                            exit_expr
-                            handlers
-                            NonComplete
-                            (* place holder -- tell the compiler that
-                               we don't know if it's complete
-                            *)
-                         )))
+      (* declare first this we will do branching*) ->
+      let declares = S.declare_variable ~kind id  :: declares in
+      let new_cxt = {lambda_cxt with jmp_table = jmp_table; continuation = Assign id } in 
+      let lbody = compile_lambda new_cxt body in
+      Js_output.append_output (Js_output.make  declares)
+        (Js_output.append_output lbody
+           (Js_output.make (compile_cases new_cxt exit_expr handlers NonComplete)))
+                              (* place holder -- tell the compiler that
+                                 we don't know if it's complete
+                              *)                           
     | EffectCall _ | Assign _  ->
-          let lbody = compile_lambda {lambda_cxt with jmp_table = jmp_table } body in
-          Js_output.append_output (Js_output.make declares)
-          (Js_output.append_output lbody
-          (Js_output.make (compile_cases
-                            {lambda_cxt with jmp_table = jmp_table}
-                            exit_expr
-                            handlers
-                            NonComplete)))
+      let new_cxt = {lambda_cxt with jmp_table = jmp_table } in 
+      let lbody = compile_lambda new_cxt body in
+      Js_output.append_output (Js_output.make declares)
+        (Js_output.append_output lbody
+           (Js_output.make (compile_cases new_cxt exit_expr handlers NonComplete)))
 
 and compile_sequand 
       (l : Lam.t) (r : Lam.t) (lambda_cxt : Lam_compile_context.t) =     
     if Lam_compile_context.continuation_is_return lambda_cxt.continuation then
-          compile_lambda lambda_cxt (Lam.sequand  l r )
-          else
-          let new_cxt = {lambda_cxt with continuation = NeedValue ReturnFalse} in
-          match
-            compile_lambda new_cxt l with
-          | { value = None } -> assert false
-          | {block = l_block; value = Some l_expr} ->
-            match compile_lambda new_cxt r
-            with
-            | { value = None } -> assert false
-            | {block = []; value = Some r_expr}
-              ->
-              Js_output.output_of_block_and_expression
-                lambda_cxt.continuation 
-                l_block (E.and_ l_expr r_expr)
-            | { block = r_block; value = Some r_expr} ->
-                match lambda_cxt.continuation with
-                | Assign v ->
-                  (* Refernece Js_output.output_of_block_and_expression *)
-                  Js_output.make
-                    (
-                      l_block @
-                      [S.if_ l_expr (r_block @ [ S.assign v r_expr])
-                         ~else_:[S.assign v E.caml_false]
-                      ]
-                    )
-                | Declare (_kind,v) ->
-                  (* Refernece Js_output.output_of_block_and_expression *)
-                  Js_output.make
-                    (
-                      l_block @
-                      [ S.define_variable ~kind:Variable v E.caml_false ;
-                        S.if_ l_expr
-                          (r_block @ [S.assign v r_expr])])
-                | EffectCall _
-                | NeedValue _ ->
-                  let v = Ext_ident.create_tmp () in
-                  Js_output.make
-                    (S.define_variable ~kind:Variable v E.caml_false ::
-                     l_block @
-                     [S.if_ l_expr
-                        (r_block @ [
-                            S.assign v r_expr
-                          ]
-                        )
-                     ]
-                    )
-                    ~value:(E.var v)
-              
-      
+      compile_lambda lambda_cxt (Lam.sequand  l r )
+    else
+      let new_cxt = {lambda_cxt with continuation = NeedValue ReturnFalse} in
+      match
+        compile_lambda new_cxt l with
+      | { value = None } -> assert false
+      | {block = l_block; value = Some l_expr} ->
+        match compile_lambda new_cxt r
+        with
+        | { value = None } -> assert false
+        | {block = []; value = Some r_expr}
+          ->
+          Js_output.output_of_block_and_expression
+            lambda_cxt.continuation 
+            l_block (E.and_ l_expr r_expr)
+        | { block = r_block; value = Some r_expr} ->
+          match lambda_cxt.continuation with
+          | Assign v ->
+            (* Refernece Js_output.output_of_block_and_expression *)
+            Js_output.make
+              (
+                l_block @
+                [S.if_ l_expr (r_block @ [ S.assign v r_expr])
+                   ~else_:[S.assign v E.caml_false]
+                ]
+              )
+          | Declare (_kind,v) ->
+            (* Refernece Js_output.output_of_block_and_expression *)
+            Js_output.make
+              (
+                l_block @
+                [ S.define_variable ~kind:Variable v E.caml_false ;
+                  S.if_ l_expr
+                    (r_block @ [S.assign v r_expr])])
+          | EffectCall _
+          | NeedValue _ ->
+            let v = Ext_ident.create_tmp () in
+            Js_output.make
+              (S.define_variable ~kind:Variable v E.caml_false ::
+               l_block @
+               [S.if_ l_expr
+                  (r_block @ [
+                      S.assign v r_expr
+                    ]
+                  )
+               ]
+              )
+              ~value:(E.var v)
+
+
 and compile_sequor 
-  (l : Lam.t)      
-  (r : Lam.t)
-  (lambda_cxt : Lam_compile_context.t) = 
-  if Lam_compile_context.continuation_is_return lambda_cxt.continuation then  
+    (l : Lam.t)      
+    (r : Lam.t)
+    (lambda_cxt : Lam_compile_context.t) = 
+    if Lam_compile_context.continuation_is_return lambda_cxt.continuation then  
       compile_lambda lambda_cxt (Lam.sequor l r)
-  else
+    else
       let new_cxt = {lambda_cxt with continuation = NeedValue ReturnFalse} in
       match compile_lambda new_cxt l with
       | {value = None } -> assert false
       | {block = l_block; value = Some l_expr} ->
-          match compile_lambda new_cxt r with
-          | {value = None} -> assert false
-          | {block = []; value = Some r_expr} ->
-              let exp =  E.or_ l_expr r_expr  in
-              Js_output.output_of_block_and_expression
-                lambda_cxt.continuation l_block exp
-          | {block = r_block; value = Some r_expr} ->
-            begin match lambda_cxt.continuation with
+        match compile_lambda new_cxt r with
+        | {value = None} -> assert false
+        | {block = []; value = Some r_expr} ->
+          let exp =  E.or_ l_expr r_expr  in
+          Js_output.output_of_block_and_expression
+            lambda_cxt.continuation l_block exp
+        | {block = r_block; value = Some r_expr} ->
+          begin match lambda_cxt.continuation with
             | Assign v ->
-                  (* Reference Js_output.output_of_block_and_expression *)
+              (* Reference Js_output.output_of_block_and_expression *)
               Js_output.make
-                    (l_block @
-                     [ S.if_ (E.not l_expr)
-                         (r_block @ [
-                             S.assign v r_expr
-                           ])
-                         ~else_:[S.assign v E.caml_true] ])
+                (l_block @
+                 [ S.if_ (E.not l_expr)
+                     (r_block @ [
+                         S.assign v r_expr
+                       ])
+                     ~else_:[S.assign v E.caml_true] ])
             | Declare(_kind,v) ->
-                  Js_output.make
-                    (
-                      l_block @
-                      [ S.define_variable ~kind:Variable v E.caml_true;
-                        S.if_ (E.not l_expr)
-                          (r_block @ [S.assign v r_expr])
-                      ]
-                    )
+              Js_output.make
+                (
+                  l_block @
+                  [ S.define_variable ~kind:Variable v E.caml_true;
+                    S.if_ (E.not l_expr)
+                      (r_block @ [S.assign v r_expr])
+                  ]
+                )
             | EffectCall _
             | NeedValue _ ->
-                  let v = Ext_ident.create_tmp () in
-                  Js_output.make
-                    ( l_block @
-                      [S.define_variable ~kind:Variable v E.caml_true;
-                       S.if_ (E.not l_expr)
-                         (r_block @ [
-                             S.assign v r_expr
-                           ])
-                      ]
-                    )
-                    ~value:(E.var v)
-             end
+              let v = Ext_ident.create_tmp () in
+              Js_output.make
+                ( l_block @
+                  [S.define_variable ~kind:Variable v E.caml_true;
+                   S.if_ (E.not l_expr)
+                     (r_block @ [
+                         S.assign v r_expr
+                       ])
+                  ]
+                )
+                ~value:(E.var v)
+          end
 
 and compile_while p body (lambda_cxt : Lam_compile_context.t) =              
       (* Note that ``J.While(expression * statement )``
