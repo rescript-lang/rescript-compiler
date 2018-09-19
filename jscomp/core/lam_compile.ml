@@ -1454,60 +1454,14 @@ and compile_apply
         end;
       end
     end        
-and
-  compile_lambda
-    ({continuation = lam_cont} as lambda_cxt : Lam_compile_context.t)
-    (cur_lam : Lam.t)  : Js_output.t  =
-
-    match cur_lam with
-    | Lfunction{ params; body} ->
-      Js_output.output_of_expression lam_cont  cur_lam
-        (E.ocaml_fun
-           params
-           (* Invariant:  jmp_table can not across function boundary,
-              here we share env
-           *)
-           (Js_output.output_as_block
-              ( compile_lambda
-                  { lambda_cxt with continuation = EffectCall (ReturnTrue None); (* Refine*)
-                             jmp_table = Lam_compile_context.empty_handler_map}  body)))
-
-
-    | Lapply appinfo -> 
-      compile_apply appinfo lambda_cxt
-    | Llet (let_kind,id,arg, body) ->
-      (* Order matters..  see comment below in [Lletrec] *)
-      let args_code =
-        compile_let  let_kind lambda_cxt id arg  in
-      Js_output.append_output
-      args_code
-      (compile_lambda  lambda_cxt  body)
-
-    | Lletrec (id_args, body) ->
-      (* There is a bug in our current design,
-         it requires compile args first (register that some objects are jsidentifiers)
-         and compile body wiht such effect.
-         So here we should compile [id_args] first, then [body] later.
-         Note it has some side effect over cache number as well, mostly the value of
-         [Caml_primitive["caml_get_public_method"](x,hash_tab, number)]
-
-         To fix this,
-         1. scan the lambda layer first, register js identifier before proceeding
-         2. delay the method call into javascript ast
-      *)
-      let v =  compile_recursive_lets lambda_cxt  id_args in
-      Js_output.append_output v  (compile_lambda lambda_cxt  body)
-
-    | Lvar id -> Js_output.output_of_expression lam_cont cur_lam (E.var id )
-    | Lconst c ->
-      Js_output.output_of_expression lam_cont  cur_lam (Lam_compile_const.translate c)
-
-    | Lprim {primitive = Pfield (n,_);
+and compile_prim (cur_lam : Lam.t) (prim_info : Lam.prim_info) (lambda_cxt : Lam_compile_context.t) =     
+   begin match prim_info with 
+    | {primitive = Pfield (n,_);
              args = [ Lglobal_module id ]; _}
       -> (* should be before Lglobal_global *)
       compile_external_field lambda_cxt cur_lam  id n lambda_cxt.meta.env
 
-    | Lprim {primitive = Praise ; args =  [ e ]; _} ->
+    | {primitive = Praise ; args =  [ e ]; _} ->
       begin
         match compile_lambda {
             lambda_cxt with  continuation = NeedValue ReturnFalse} e with
@@ -1520,17 +1474,17 @@ and
         *)
         | {value =  None; _} -> assert false
       end
-    | Lprim{primitive = Psequand ; args =  [l;r] ; _}
+    | {primitive = Psequand ; args =  [l;r] ; _}
       ->
       compile_sequand cur_lam l r lambda_cxt
-    | Lprim {primitive = Psequor; args =  [l;r]}
+    |  {primitive = Psequor; args =  [l;r]}
       ->
       compile_sequor l r lambda_cxt 
-    | Lprim {primitive = Pdebugger ; _}
+    |  {primitive = Pdebugger ; _}
       ->
       (* [%bs.debugger] guarantees that the expression does not matter
          TODO: make it even safer      *)
-      Js_output.output_of_block_and_expression lam_cont
+      Js_output.output_of_block_and_expression lambda_cxt.continuation
       S.debugger_block E.unit
 
 
@@ -1540,7 +1494,7 @@ and
        we need mark something that such eta-conversion can not be simplified in some cases
     *)
 
-    | Lprim {primitive = Pjs_unsafe_downgrade (name,loc);
+    |  {primitive = Pjs_unsafe_downgrade (name,loc);
              args = [obj]}
       when not (Ext_string.ends_with name Literals.setter_suffix)
       ->
@@ -1561,11 +1515,11 @@ and
                  (Ext_list.append block  [x]),  E.dot (E.var b) property
               )
           in
-          Js_output.output_of_block_and_expression lam_cont
+          Js_output.output_of_block_and_expression lambda_cxt.continuation
             blocks ret
         | _ -> assert false
       end
-    | Lprim {primitive = Pjs_fn_run arity;  args = args_lambda}
+    | {primitive = Pjs_fn_run arity;  args = args_lambda}
       ->
       (* 1. prevent eta-conversion
          by using [App_js_full]
@@ -1586,7 +1540,7 @@ and
             let obj_output = compile_lambda  need_value_no_return_cxt obj in
             let arg_output = compile_lambda need_value_no_return_cxt arg in
             let cont obj_block arg_block obj_code =
-              Js_output.output_of_block_and_expression lam_cont  
+              Js_output.output_of_block_and_expression lambda_cxt.continuation  
                 (
                   match obj_code with
                   | None -> Ext_list.append obj_block  arg_block
@@ -1625,7 +1579,7 @@ and
                App_js_full)
         | _ -> assert false
       end
-    | Lprim {primitive = Pjs_fn_runmethod arity ; args }
+    | {primitive = Pjs_fn_runmethod arity ; args }
       ->
       begin match args with
         | (Lprim{primitive = Pjs_unsafe_downgrade (name,loc);
@@ -1643,12 +1597,12 @@ and
           compile_lambda lambda_cxt (Lam.apply fn rest loc App_js_full)
         | _ -> assert false
       end
-    | Lprim {primitive = Pjs_fn_method arity;  args = args_lambda} ->
+    | {primitive = Pjs_fn_method arity;  args = args_lambda} ->
       begin match args_lambda with
         | [Lfunction{arity = len; params; body} ]
           when len = arity ->
           Js_output.output_of_block_and_expression
-            lam_cont          
+            lambda_cxt.continuation
             []
             (E.method_
                params
@@ -1664,20 +1618,14 @@ and
       end
 
 
-    | Lprim {primitive = Pjs_fn_make arity;  args = [fn]; loc } ->
+    |  {primitive = Pjs_fn_make arity;  args = [fn]; loc } ->
       compile_lambda lambda_cxt (Lam_eta_conversion.unsafe_adjust_to_arity loc ~to_:arity ?from:None fn)
 
-    | Lprim {primitive = Pjs_fn_make arity;
+    |  {primitive = Pjs_fn_make arity;
              args = [] | _::_::_ } ->
       assert false
-    | Lglobal_module i ->
-      (* introduced by
-         1. {[ include Array --> let include  = Array  ]}
-         2. inline functor application
-      *)
-      let exp = Lam_compile_global.expand_global_module i lambda_cxt.meta.env  in
-      Js_output.output_of_block_and_expression lam_cont [] exp
-    | Lprim{ primitive = Pjs_object_create labels ; args ; loc}
+
+    | { primitive = Pjs_object_create labels ; args ; loc}
       ->
       let args_block, args_expr =
         Ext_list.split_map args (fun x ->
@@ -1689,10 +1637,10 @@ and
       let block, exp  =
         Lam_compile_external_obj.assemble_args_obj labels args_expr
       in
-      Js_output.output_of_block_and_expression lam_cont 
+      Js_output.output_of_block_and_expression lambda_cxt.continuation
         (Ext_list.concat_append args_block block) exp
 
-    | Lprim{primitive; args; loc} ->
+    | {primitive; args; loc} ->
       let args_block, args_expr =
         Ext_list.split_map args (fun x ->
             match compile_lambda {lambda_cxt with continuation = NeedValue ReturnFalse} x
@@ -1702,7 +1650,65 @@ and
       let args_code  : J.block = List.concat args_block in
       let exp  =  (* TODO: all can be done in [compile_primitive] *)
         Lam_compile_primitive.translate loc lambda_cxt  primitive args_expr in
-      Js_output.output_of_block_and_expression lam_cont  args_code exp
+      Js_output.output_of_block_and_expression lambda_cxt.continuation  args_code exp
+    end  
+and
+  compile_lambda
+    (lambda_cxt : Lam_compile_context.t)
+    (cur_lam : Lam.t)  : Js_output.t  =
+
+    match cur_lam with
+    | Lfunction{ params; body} ->
+      Js_output.output_of_expression lambda_cxt.continuation  cur_lam
+        (E.ocaml_fun
+           params
+           (* Invariant:  jmp_table can not across function boundary,
+              here we share env
+           *)
+           (Js_output.output_as_block
+              ( compile_lambda
+                  { lambda_cxt with continuation = EffectCall (ReturnTrue None); (* Refine*)
+                             jmp_table = Lam_compile_context.empty_handler_map}  body)))
+
+
+    | Lapply appinfo -> 
+      compile_apply appinfo lambda_cxt
+    | Llet (let_kind,id,arg, body) ->
+      (* Order matters..  see comment below in [Lletrec] *)
+      let args_code =
+        compile_let  let_kind lambda_cxt id arg  in
+      Js_output.append_output
+      args_code
+      (compile_lambda  lambda_cxt  body)
+
+    | Lletrec (id_args, body) ->
+      (* There is a bug in our current design,
+         it requires compile args first (register that some objects are jsidentifiers)
+         and compile body wiht such effect.
+         So here we should compile [id_args] first, then [body] later.
+         Note it has some side effect over cache number as well, mostly the value of
+         [Caml_primitive["caml_get_public_method"](x,hash_tab, number)]
+
+         To fix this,
+         1. scan the lambda layer first, register js identifier before proceeding
+         2. delay the method call into javascript ast
+      *)
+      let v =  compile_recursive_lets lambda_cxt  id_args in
+      Js_output.append_output v  (compile_lambda lambda_cxt  body)
+
+    | Lvar id -> Js_output.output_of_expression lambda_cxt.continuation cur_lam (E.var id )
+    | Lconst c ->
+      Js_output.output_of_expression lambda_cxt.continuation  cur_lam (Lam_compile_const.translate c)
+    | Lglobal_module i ->
+      (* introduced by
+         1. {[ include Array --> let include  = Array  ]}
+         2. inline functor application
+      *)
+      let exp = Lam_compile_global.expand_global_module i lambda_cxt.meta.env  in
+      Js_output.output_of_block_and_expression lambda_cxt.continuation [] exp
+
+    | Lprim prim_info -> 
+        compile_prim cur_lam prim_info lambda_cxt
     | Lsequence (l1,l2) ->
       let output_l1 =
         compile_lambda {lambda_cxt with continuation = EffectCall ReturnFalse} l1 in
