@@ -5845,6 +5845,10 @@ val rev_iter :
   ('a -> unit) -> 
   unit 
 
+val for_all:  
+    'a list -> 
+    ('a -> bool) -> 
+    bool
 (** [for_all2_no_exn p xs ys]
     return [true] if all satisfied,
     [false] otherwise or length not equal
@@ -6403,6 +6407,11 @@ let rec rev_iter l f =
   | x1::x2::x3::x4::x5::tail ->
     rev_iter tail f;
     f x5; f x4 ; f x3; f x2 ; f x1
+
+let rec for_all lst p = 
+  match lst with 
+    [] -> true
+  | a::l -> p a && for_all l p
 
 
 let rec for_all2_no_exn  l1 l2 p = 

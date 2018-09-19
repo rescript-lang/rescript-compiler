@@ -448,8 +448,8 @@ core/lam_compile_external_call.cmi : core/lam_compile_context.cmi \
 core/lam_compile_external_obj.cmi : core/j.cmx syntax/external_arg_spec.cmi
 core/lam_compile_primitive.cmi : core/lam_primitive.cmi \
     core/lam_compile_context.cmi core/j.cmx
-core/lam_compile.cmi : core/lam_compile_context.cmi core/lam_compat.cmi \
-    core/lam.cmi core/js_output.cmi core/j.cmx
+core/lam_compile.cmi : core/lam_compile_context.cmi core/lam.cmi \
+    core/js_output.cmi
 core/lam_pass_exits.cmi : core/lam.cmi
 core/lam_pass_count.cmi : core/lam.cmi ext/ident_hashtbl.cmi
 core/lam_pass_eliminate_ref.cmi : core/lam.cmi

@@ -48,7 +48,6 @@ type _ t =
 
 
 type ident_info = {
-  (* id : Ident.t; *)
   name : string;
   signature : Ocaml_types.t;
   arity : Js_cmj_format.arity;

@@ -492,6 +492,11 @@ let rec rev_iter l f =
     rev_iter tail f;
     f x5; f x4 ; f x3; f x2 ; f x1
 
+let rec for_all lst p = 
+  match lst with 
+    [] -> true
+  | a::l -> p a && for_all l p
+
 
 let rec for_all2_no_exn  l1 l2 p = 
   match (l1, l2) with

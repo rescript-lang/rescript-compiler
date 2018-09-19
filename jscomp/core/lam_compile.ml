@@ -139,39 +139,35 @@ let rec
     however it can not be global -- global can only module
 *)
 
-and compile_external_field_apply
-    (cxt : Lam_compile_context.t)
+and compile_external_field_apply    
     (args_lambda : Lam.t list)
     (id : Ident.t)
     (pos : int)
-    (env : Env.t) : Js_output.t =
-  match
-    Lam_compile_env.cached_find_ml_id_pos
-      id pos env
-  with
-  | { name;arity; closed_lambda ; _} ->
-    let args_code, args =
-      Ext_list.fold_right args_lambda ([], [])
-        (fun x  (args_code, args)  ->
-           match
-             compile_lambda
-               {cxt with continuation = NeedValue ReturnFalse} x
-           with
+    (env : Env.t) (lambda_cxt : Lam_compile_context.t): Js_output.t =
+
+  let ident_info =  
+    Lam_compile_env.cached_find_ml_id_pos id pos env in 
+  let args_code, args =
+      let dummy = [], [] in 
+      if args_lambda = [] then dummy
+      else 
+        let arg_cxt = {lambda_cxt with continuation = NeedValue ReturnFalse} in 
+        Ext_list.fold_right args_lambda dummy (fun arg_lambda  (args_code, args)  ->
+           match compile_lambda arg_cxt arg_lambda with
            | {block = a; value = Some b} ->
              (Ext_list.append a args_code), (b :: args )
            | _ -> assert false
         )  in
-
-    match closed_lambda with
-    | Some (Lfunction{ params; body; _})
+  match ident_info.closed_lambda with
+  | Some (Lfunction{ params; body; _})
       when Ext_list.same_length params args_lambda ->
       (* TODO: serialize it when exporting to save compile time *)
       let (_, param_map)  =
         Lam_closure.is_closed_with_map Ident_set.empty params body in
-      compile_lambda cxt
-        (Lam_beta_reduce.propogate_beta_reduce_with_map cxt.meta param_map
+      compile_lambda lambda_cxt
+        (Lam_beta_reduce.propogate_beta_reduce_with_map lambda_cxt.meta param_map
            params body args_lambda)
-    | _ ->
+  | _ ->
       let rec aux (acc : J.expression)
           arity args (len : int)  : E.t =
           if len = 0 then         
@@ -204,26 +200,19 @@ and compile_external_field_apply
           (* can not happen, unless it's an exception ? *)
           E.call ~info:Js_call_info.dummy acc args
       in
-      let fn = E.ml_var_dot id name in 
+      let fn = E.ml_var_dot id ident_info.name in 
       let initial_args_len = List.length args in 
       let expression = 
-        match arity with 
+        match ident_info.arity with 
         | Submodule _ -> E.call ~info:Js_call_info.dummy fn args 
         | Single x -> 
           aux fn (Lam_arity.extract_arity x) args initial_args_len
       in   
       Js_output.output_of_block_and_expression
-        cxt.continuation
+        lambda_cxt.continuation
         args_code expression
 
 
-and  compile_let
-  (let_kind : Lam_compile_context.let_kind)
-  (cxt : Lam_compile_context.t)
-  (id : J.ident)
-  (arg : Lam.t) : Js_output.t =
-  compile_lambda
-    {cxt with continuation = Declare (let_kind, id)} arg
 (**
     The second return values are values which need to be wrapped using
    [caml_update_dummy]
@@ -290,12 +279,12 @@ and compile_recursive_let ~all_bindings
       (Declare (Alias, id))
        result ~no_effects:(lazy (Lam_analysis.no_side_effects arg)), []
   | Lprim {primitive = Pmakeblock (0, _, _) ; args =  ls}
-    when List.for_all (fun (x : Lam.t) ->
+    when Ext_list.for_all ls (fun x ->
         match x with
         | Lvar pid ->
           Ident.same pid id  ||
-          (not @@ List.exists (fun (other,_) -> Ident.same other pid ) all_bindings)
-        | _ -> false) ls
+          (not @@ Ext_list.exists all_bindings (fun (other,_) -> Ident.same other pid ) )
+        | _ -> false) 
     ->
     (* capture cases like for {!Queue}
        {[let rec cell = { content = x; next = cell} ]}
@@ -1368,7 +1357,7 @@ and compile_apply
       (* Note we skip [App_js_full] since [get_exp_with_args] dont carry
          this information, we should fix [get_exp_with_args]
       *)
-      compile_external_field_apply lambda_cxt  args id n  lambda_cxt.meta.env
+      compile_external_field_apply  args id n  lambda_cxt.meta.env  lambda_cxt
 
 
     | { fn; args = args_lambda;   status} ->
@@ -1663,16 +1652,18 @@ and
            *)
            (Js_output.output_as_block
               ( compile_lambda
-                  { lambda_cxt with continuation = EffectCall (ReturnTrue None); (* Refine*)
-                             jmp_table = Lam_compile_context.empty_handler_map}  body)))
+                  { lambda_cxt with 
+                    continuation = EffectCall (ReturnTrue None); (* Refine*)
+                    jmp_table = Lam_compile_context.empty_handler_map}
+                  body)))
 
 
     | Lapply appinfo -> 
       compile_apply appinfo lambda_cxt
     | Llet (let_kind,id,arg, body) ->
       (* Order matters..  see comment below in [Lletrec] *)
-      let args_code =
-        compile_let  let_kind lambda_cxt id arg  in
+      let args_code =   
+        compile_lambda {lambda_cxt with continuation = Declare(let_kind,id)} arg in 
       Js_output.append_output
       args_code (compile_lambda  lambda_cxt  body)
 

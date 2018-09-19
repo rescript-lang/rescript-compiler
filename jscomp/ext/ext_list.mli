@@ -228,6 +228,10 @@ val rev_iter :
   ('a -> unit) -> 
   unit 
 
+val for_all:  
+    'a list -> 
+    ('a -> bool) -> 
+    bool
 (** [for_all2_no_exn p xs ys]
     return [true] if all satisfied,
     [false] otherwise or length not equal
