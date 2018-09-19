@@ -497,6 +497,11 @@ let rec for_all lst p =
     [] -> true
   | a::l -> p a && for_all l p
 
+let rec for_all_snd lst p = 
+  match lst with 
+    [] -> true
+  | (_,a)::l -> p a && for_all_snd l p
+
 
 let rec for_all2_no_exn  l1 l2 p = 
   match (l1, l2) with

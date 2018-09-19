@@ -21,9 +21,9 @@
         must be rebounded before inlining
 *)
 let rec 
-  no_list args = List.for_all no_bounded_variables args 
+  no_list args = Ext_list.for_all args no_bounded_variables 
   and no_list_snd : 'a. ('a * Lam.t ) list -> bool  = fun args ->
-    List.for_all (fun (key, case) -> no_bounded_variables case) args
+    Ext_list.for_all_snd  args no_bounded_variables
   and no_opt x =   
     match x with 
     | None -> true 

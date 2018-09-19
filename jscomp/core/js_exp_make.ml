@@ -60,7 +60,7 @@ let rec remove_pure_sub_exp (x : t)  : t option =
       | _, _ -> Some x 
     end
   | Array (xs,_mutable_flag)  ->
-    if List.for_all (fun x -> remove_pure_sub_exp x = None)  xs then
+    if Ext_list.for_all xs (fun x -> remove_pure_sub_exp x = None) then
       None 
     else Some x 
   | Seq (a,b) -> 

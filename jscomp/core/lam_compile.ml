@@ -186,9 +186,8 @@ and compile_external_field_apply
               rest
               continue (len - x)
           else (* GPR #1423 *)
-          if List.for_all Js_analyzer.is_okay_to_duplicate args then
-            let params = Ext_list.init (x - len)
-                (fun _ -> Ext_ident.create "param") in
+          if Ext_list.for_all  args Js_analyzer.is_okay_to_duplicate then
+            let params = Ext_list.init (x - len) (fun _ -> Ext_ident.create "param") in
             E.ocaml_fun params
               [S.return_stmt (E.call ~info:{arity=Full; call_info=Call_ml}
                                 acc (Ext_list.append args @@ Ext_list.map params E.var))]

@@ -232,6 +232,11 @@ val for_all:
     'a list -> 
     ('a -> bool) -> 
     bool
+val for_all_snd:    
+    ('a * 'b) list -> 
+    ('b -> bool) -> 
+    bool
+    
 (** [for_all2_no_exn p xs ys]
     return [true] if all satisfied,
     [false] otherwise or length not equal

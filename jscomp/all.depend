@@ -555,7 +555,7 @@ core/js_pass_scope.cmx : core/js_fun_env.cmx core/js_fold.cmx \
     core/js_pass_scope.cmi
 core/js_op_util.cmx : core/js_op.cmx core/j.cmx core/js_op_util.cmi
 core/js_analyzer.cmx : core/js_fun_env.cmx core/js_fold.cmx core/j.cmx \
-    ext/ident_set.cmx core/js_analyzer.cmi
+    ext/ident_set.cmx ext/ext_list.cmx core/js_analyzer.cmi
 core/js_shake.cmx : core/js_analyzer.cmx core/j.cmx ext/ident_set.cmx \
     ext/ext_string.cmx common/ext_log.cmx ext/ext_list.cmx core/js_shake.cmi
 core/js_exp_make.cmx : ext/literals.cmx core/lam_compile_util.cmx \
