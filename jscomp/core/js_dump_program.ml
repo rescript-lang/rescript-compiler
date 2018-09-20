@@ -104,16 +104,14 @@ let amd_program ~output_dir kind f (  x : J.deps_program) =
   P.string f L.exports;
 
   let cxt = 
-    List.fold_left (fun cxt x ->         
+    Ext_list.fold_left x.modules cxt (fun x cxt ->         
         let id = Lam_module_ident.id x in
         P.string f L.comma;
         P.space f ; 
-        Ext_pp_scope.ident cxt f id
-      ) cxt x.modules     
-  in
+        Ext_pp_scope.ident cxt f id) in
   P.string f ")";
   let v = P.brace_vgroup f 1 @@ (fun _ -> 
-      let () = P.string f L.strict_directive in 
+      P.string f L.strict_directive;
       program f cxt x.program
     ) in
   P.string f ")";

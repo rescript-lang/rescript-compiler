@@ -312,3 +312,9 @@ val fold_left2:
     'c -> 
     ('a -> 'b -> 'c -> 'c)
     -> 'c 
+
+val fold_left:    
+    'a list -> 
+    'b -> 
+    ('a -> 'b -> 'b) -> 
+    'b

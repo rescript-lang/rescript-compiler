@@ -2791,6 +2791,12 @@ val fold_left2:
     ('a -> 'b -> 'c -> 'c)
     -> 'c 
 
+val fold_left:    
+    'a list -> 
+    'b -> 
+    ('a -> 'b -> 'b) -> 
+    'b
+
 end = struct
 #1 "ext_list.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -3425,6 +3431,10 @@ let rec concat_append
   | [] -> xs 
   | l::r -> append l (concat_append r xs)
 
+let rec fold_left l accu f =
+  match l with
+    [] -> accu
+  | a::l -> fold_left l (f a accu) f 
 
 let rec fold_left2 l1 l2 accu f =
   match (l1, l2) with

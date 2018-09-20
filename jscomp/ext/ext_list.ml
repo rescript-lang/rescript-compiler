@@ -630,6 +630,10 @@ let rec concat_append
   | [] -> xs 
   | l::r -> append l (concat_append r xs)
 
+let rec fold_left l accu f =
+  match l with
+    [] -> accu
+  | a::l -> fold_left l (f a accu) f 
 
 let rec fold_left2 l1 l2 accu f =
   match (l1, l2) with
