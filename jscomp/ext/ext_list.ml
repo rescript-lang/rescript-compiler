@@ -140,6 +140,7 @@ let append l1 l2 =
   | [] -> l1 
   | _ -> append_aux l1 l2  
 
+let append_one l1 x = append_aux l1 [x]  
 
 let rec map_append l1 l2 f =   
   match l1 with
@@ -628,3 +629,10 @@ let rec concat_append
   match xss with 
   | [] -> xs 
   | l::r -> append l (concat_append r xs)
+
+
+let rec fold_left2 l1 l2 accu f =
+  match (l1, l2) with
+    ([], []) -> accu
+  | (a1::l1, a2::l2) -> fold_left2  l1 l2 (f a1 a2 accu) f 
+  | (_, _) -> invalid_arg "List.fold_left2"

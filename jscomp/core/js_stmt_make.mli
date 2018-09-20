@@ -202,5 +202,6 @@ val continue_stmt :
   ?label:J.label ->
   unit  ->
   t
+val continue_ : t   
 
 val debugger_block :  t list
