@@ -124,7 +124,7 @@ let is_function_bind (_, (x : Lam.t)) =
   | _ -> false
 
 let sort_single_binding_group (group : bindings) =
-  if List.for_all is_function_bind group then group
+  if Ext_list.for_all group  is_function_bind then group
   else
     List.sort (fun (_,lama) (_,lamb) ->
         match (lama : Lam.t), (lamb : Lam.t) with

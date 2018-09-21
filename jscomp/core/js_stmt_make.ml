@@ -394,6 +394,11 @@ let continue_stmt  ?comment   ?(label="") unit  : t =
     statement_desc = J.Continue  label;
     comment;
   }
+  
+let continue_ : t = {
+  statement_desc = Continue "" ;
+  comment = None
+}
 
 let debugger_block : t list = 
   [{ statement_desc = J.Debugger ; 

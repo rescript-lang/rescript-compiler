@@ -165,8 +165,8 @@ let simplify_alias
               | {closed_lambda=Some Lfunction{params; body; _} } 
                 (** be more cautious when do cross module inlining *)
                 when
-                  ( Ext_list.same_length params args &&
-                    List.for_all (fun (arg : Lam.t) ->
+                    Ext_list.same_length params args &&
+                    Ext_list.for_all args (fun arg ->
                         match arg with 
                         | Lvar p -> 
                           begin 
@@ -175,7 +175,7 @@ let simplify_alias
                             | None -> true 
                           end
                         |  _ -> true 
-                      ) args) -> 
+                      ) -> 
                 simpl @@
                 Lam_beta_reduce.propogate_beta_reduce
                   meta params body args
@@ -284,8 +284,8 @@ let simplify_alias
                {sw_consts = 
                   Ext_list.map_snd  sw_consts simpl;
                 sw_blocks = Ext_list.map_snd sw_blocks simpl;
-                sw_numconsts = sw_numconsts;
-                sw_numblocks = sw_numblocks;
+                sw_numconsts;
+                sw_numblocks;
                 sw_failaction = Ext_option.map sw_failaction simpl
                 }
     | Lstringswitch(l, sw, d) ->

@@ -59,15 +59,14 @@ let propogate_beta_reduce
   | Some x -> x 
   | None -> 
   let rest_bindings, rev_new_params  = 
-    List.fold_left2 
-      (fun (rest_bindings, acc) old_param (arg : Lam.t) -> 
+    Ext_list.fold_left2 params args ([],[]) (fun old_param arg (rest_bindings, acc) -> 
          match arg with          
          | Lconst _
          | Lvar _  -> rest_bindings , arg :: acc 
          | _ -> 
            let p = Ident.rename old_param in 
            (p,arg) :: rest_bindings , (Lam.var p) :: acc 
-      )  ([],[]) params args in
+      )  in
   let new_body = Lam_bounded_vars.rewrite (Ident_hashtbl.of_list2 (List.rev params) (rev_new_params)) body in
   Ext_list.fold_right rest_bindings new_body
     (fun (param, arg ) l -> 
@@ -107,33 +106,31 @@ let propogate_beta_reduce_with_map
   | Some x -> x
   | None ->
   let rest_bindings, rev_new_params  = 
-    List.fold_left2 
-      (fun (rest_bindings, acc) old_param (arg : Lam.t) -> 
+    Ext_list.fold_left2 params args ([],[])  
+      (fun old_param arg (rest_bindings, acc) -> 
          match arg with          
          | Lconst _
          | Lvar _  -> rest_bindings , arg :: acc 
          | Lglobal_module ident 
-            (* We can pass Global, but you also need keep track of it*)
+           (* We can pass Global, but you also need keep track of it*)
            ->
            let p = Ident.rename old_param in 
            (p,arg) :: rest_bindings , (Lam.var p) :: acc 
 
          | _ -> 
            if  Lam_analysis.no_side_effects arg then
-             begin match Ident_map.find_exn old_param map with 
-               | exception Not_found -> assert false 
-               | {top = true ; times = 0 }
-               | {top = true ; times = 1 } 
-                 -> 
-                 rest_bindings, arg :: acc                
-               | _  ->  
-                 let p = Ident.rename old_param in 
-                 (p,arg) :: rest_bindings , (Lam.var p) :: acc 
-             end
+             match Ident_map.find_exn old_param map with 
+             | exception Not_found -> assert false 
+             | {top = true ; times = 0 }
+             | {top = true ; times = 1 } 
+               -> 
+               rest_bindings, arg :: acc                
+             | _  ->  
+               let p = Ident.rename old_param in 
+               (p,arg) :: rest_bindings , (Lam.var p) :: acc 
            else
              let p = Ident.rename old_param in 
-             (p,arg) :: rest_bindings , (Lam.var p) :: acc 
-      )  ([],[]) params args in
+             (p,arg) :: rest_bindings , (Lam.var p) :: acc ) in
   let new_body = Lam_bounded_vars.rewrite (Ident_hashtbl.of_list2 (List.rev params) (rev_new_params)) body in
   Ext_list.fold_right rest_bindings new_body
     (fun (param, (arg : Lam.t)) l -> 
@@ -170,7 +167,7 @@ let beta_reduce params body args =
   match Lam_beta_reduce_util.simple_beta_reduce params body args with 
   | Some x -> x 
   | None -> 
-    List.fold_left2 
-      (fun l param arg ->
+    Ext_list.fold_left2 params args body 
+      (fun param arg l ->
          Lam_util.refine_let ~kind:Strict param arg l)
-      body params args
+    
