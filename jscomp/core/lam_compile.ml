@@ -374,28 +374,25 @@ and compile_recursive_lets_aux cxt id_args : Js_output.t =
   match ids with
   | [] -> output_code
   | _ ->
-     Js_output.append_output
+    Js_output.append_output
       (Js_output.make
-      (Ext_list.map ids
-        (fun id -> S.define_variable ~kind:Variable id (E.dummy_obj ()))
-        )
-       )
+         (Ext_list.map ids
+            (fun id -> S.define_variable ~kind:Variable id (E.dummy_obj ()))))
       output_code
 and compile_recursive_lets cxt id_args : Js_output.t  =
-
   match id_args with
   | [ ] -> Js_output.dummy
   | _ ->
     let id_args_group = Lam_scc.scc_bindings id_args in
-    begin match id_args_group with
-      | [ ] -> assert false
-      | first::rest  ->
-        let acc = compile_recursive_lets_aux cxt first in
-        List.fold_left
-          (fun acc x ->
-            Js_output.append_output
-             acc  (compile_recursive_lets_aux cxt x )) acc rest
-    end
+    match id_args_group with
+    | [ ] -> assert false
+    | first::rest  ->
+      let acc = compile_recursive_lets_aux cxt first in
+      Ext_list.fold_left rest acc 
+        (fun x acc ->
+           Js_output.append_output
+             acc  (compile_recursive_lets_aux cxt x )) 
+
 and compile_general_cases
  :
   'a .
@@ -510,81 +507,77 @@ and compile_cases cxt switch_exp table default =
     table
     default
 and compile_switch switch_arg sw (lambda_cxt : Lam_compile_context.t) = 
-      (* TODO: if default is None, we can do some optimizations
-          Use switch vs if/then/else
+  (* TODO: if default is None, we can do some optimizations
+      Use switch vs if/then/else
 
-          TODO: switch based optimiztion - hash, group, or using array,
-                also if last statement is throw -- should we drop remaining
-                statement?
-      *)
-      let ({sw_numconsts;
-               sw_consts;
-               sw_numblocks;
-               sw_blocks;
-               sw_failaction } : Lam.switch) = sw in 
-      let  sw_num_default  =
-        match sw_failaction with
-        | None -> Complete
-        | Some x ->
-          if sw_numconsts
-          then Complete
-          else Default x in
-      let sw_blocks_default =
-        match sw_failaction  with
-        | None -> Complete
-        | Some x ->
-          if sw_numblocks
-          then Complete
-          else Default x in
-      let compile_whole  (cxt  : Lam_compile_context.t ) =
-        match
-          compile_lambda
-                {cxt with  continuation = NeedValue ReturnFalse}
-                switch_arg
-        with
-        | {value =  None; _}  -> assert false
-        | { block; value = Some e } ->
-          block @
-          (if sw_numconsts && sw_consts = [] then
-             compile_cases cxt (E.tag e)  sw_blocks sw_blocks_default
-           else if sw_numblocks && sw_blocks = [] then
-             compile_cases cxt e  sw_consts sw_num_default
-           else
-             (* [e] will be used twice  *)
-             let dispatch e =
-               S.if_
-                 (E.is_type_number e )
-                 (compile_cases cxt e sw_consts sw_num_default
-                 )
-                 (* default still needed, could simplified*)
-                 ~else_:
-                   (compile_cases  cxt (E.tag e ) sw_blocks
-                      sw_blocks_default)
-             in
-             begin
-               match e.expression_desc with
-               | J.Var _  -> [ dispatch e]
-               | _ ->
-                 let v = Ext_ident.create_tmp () in
-                 (* Necessary avoid duplicated computation*)
-                 [ S.define_variable ~kind:Variable v e ;  dispatch (E.var v)]
-             end ) in
-        match lambda_cxt.continuation  with  (* Needs declare first *)
-        | NeedValue _ ->
-          (* Necessary since switch is a statement, we need they return
-             the same value for different branches -- can be optmized
-             when branches are minimial (less than 2)
-          *)
-          let v = Ext_ident.create_tmp () in
-          Js_output.make
-            (S.declare_variable ~kind:Variable v   ::
-              compile_whole {lambda_cxt with continuation = Assign v})
-            ~value:(E.var  v)
+      TODO: switch based optimiztion - hash, group, or using array,
+            also if last statement is throw -- should we drop remaining
+            statement?
+  *)
+  let ({sw_numconsts;
+        sw_consts;
+        sw_numblocks;
+        sw_blocks;
+        sw_failaction } : Lam.switch) = sw in 
+  let  sw_num_default  =
+    match sw_failaction with
+    | None -> Complete
+    | Some x ->
+      if sw_numconsts
+      then Complete
+      else Default x in
+  let sw_blocks_default =
+    match sw_failaction  with
+    | None -> Complete
+    | Some x ->
+      if sw_numblocks
+      then Complete
+      else Default x in
+  let compile_whole  (cxt  : Lam_compile_context.t ) =
+    match compile_lambda 
+            {cxt with  continuation = NeedValue ReturnFalse}
+            switch_arg
+    with
+    | {value =  None; _}  -> assert false
+    | { block; value = Some e } ->
+      block @
+      (if sw_numconsts && sw_consts = [] then
+         compile_cases cxt (E.tag e)  sw_blocks sw_blocks_default
+       else if sw_numblocks && sw_blocks = [] then
+         compile_cases cxt e  sw_consts sw_num_default
+       else
+         (* [e] will be used twice  *)
+         let dispatch e =
+           S.if_
+             (E.is_type_number e )
+             (compile_cases cxt e sw_consts sw_num_default
+             )
+             (* default still needed, could simplified*)
+             ~else_:
+               (compile_cases  cxt (E.tag e ) sw_blocks
+                  sw_blocks_default) in
+           match e.expression_desc with
+           | J.Var _  -> [ dispatch e]
+           | _ ->
+             let v = Ext_ident.create_tmp () in
+             (* Necessary avoid duplicated computation*)
+             [ S.define_variable ~kind:Variable v e ;  dispatch (E.var v)]) in
+  match lambda_cxt.continuation  with  (* Needs declare first *)
+  | NeedValue _ ->
+    (* Necessary since switch is a statement, we need they return
+       the same value for different branches -- can be optmized
+       when branches are minimial (less than 2)
+    *)
+    let v = Ext_ident.create_tmp () in
+    Js_output.make
+      (S.declare_variable ~kind:Variable v   ::
+       compile_whole {lambda_cxt with continuation = Assign v})
+      ~value:(E.var  v)
 
-        | Declare (kind,id) ->
-          Js_output.make (S.declare_variable ~kind id
-                          :: compile_whole {lambda_cxt with continuation = Assign id} )
-        | EffectCall _ | Assign _  -> Js_output.make (compile_whole lambda_cxt)
+  | Declare (kind,id) ->
+    Js_output.make (S.declare_variable ~kind id
+                    :: compile_whole {lambda_cxt with continuation = Assign id} )
+  | EffectCall _ | Assign _  -> Js_output.make (compile_whole lambda_cxt)
 
 and compile_string_cases cxt switch_exp table default =
   compile_general_cases
@@ -600,37 +593,35 @@ and compile_string_cases cxt switch_exp table default =
     for high order currying *)    
 
 and compile_stringswitch l cases default (lambda_cxt : Lam_compile_context.t) = 
-      (* TODO might better optimization according to the number of cases
-          Be careful: we should avoid multiple evaluation of l,
-          The [gen] can be elimiated when number of [cases] is less than 3
-      *)
-    match 
-      compile_lambda 
+  (* TODO might better optimization according to the number of cases
+      Be careful: we should avoid multiple evaluation of l,
+      The [gen] can be elimiated when number of [cases] is less than 3
+  *)
+  match 
+    compile_lambda 
       {lambda_cxt with continuation = NeedValue ReturnFalse } l
-    with
-    | {block ; value =  Some e}  ->
-          (* when should_return is true -- it's passed down
-             otherwise it's ok *)
-          let default =
-            match default with
-            | Some x -> Default x
-            | None -> Complete in
-          begin
-            match lambda_cxt.continuation with
-            (* TODO: can be avoided when cases are less than 3 *)
-            | NeedValue _ ->
-              let v = Ext_ident.create_tmp () in
-              Js_output.make 
-                (Ext_list.append block (
-                      compile_string_cases
-                      {lambda_cxt with continuation = Declare (Variable, v)}
-                      e cases default)) ~value:(E.var v)
-            | _ ->
-              Js_output.make
-                (Ext_list.append block 
-                  (compile_string_cases  lambda_cxt e cases default))
-          end
-    | _ -> assert false
+  with
+  | {value = None } -> assert false
+  | {block ; value =  Some e}  ->
+    (* when should_return is true -- it's passed down
+       otherwise it's ok *)
+    let default =
+      match default with
+      | Some x -> Default x
+      | None -> Complete in
+    match lambda_cxt.continuation with
+    (* TODO: can be avoided when cases are less than 3 *)
+    | NeedValue _ ->
+      let v = Ext_ident.create_tmp () in
+      Js_output.make 
+        (Ext_list.append block (
+            compile_string_cases
+              {lambda_cxt with continuation = Declare (Variable, v)}
+              e cases default)) ~value:(E.var v)
+    | _ ->
+      Js_output.make
+        (Ext_list.append block 
+           (compile_string_cases  lambda_cxt e cases default))
    (*
          This should be optimized in lambda layer
          (let (match/1038 = (apply g/1027 x/1028))
@@ -858,16 +849,7 @@ and compile_while (predicate : Lam.t) (body : Lam.t) (lambda_cxt : Lam_compile_c
                {lambda_cxt with continuation = EffectCall ReturnFalse}
                body)
         ] in
-        match lambda_cxt.continuation  with
-        | Declare (_kind, x)  ->  (* FIXME _kind not used *)
-          Js_output.make (Ext_list.append block  [S.declare_unit x ])
-        | Assign x ->
-          Js_output.make (Ext_list.append block  [S.assign_unit x ])
-        | EffectCall (ReturnTrue _)  ->
-          Js_output.make (Ext_list.append block S.return_unit)
-            ~output_finished:True
-        | EffectCall _ -> Js_output.make block
-        | NeedValue _ -> Js_output.make block ~value:E.unit 
+      Js_output.output_of_block_and_expression lambda_cxt.continuation block E.unit
 
 (** all non-tail 
    TODO: check semantics should start, finish be executed each time in both
@@ -1258,9 +1240,6 @@ and compile_apply
       | (Lvar fn_id,
          (EffectCall (ReturnTrue (Some ret)) | NeedValue (ReturnTrue (Some   ret))))
         when Ident.same ret.id fn_id ->
-
-
-        (* Ext_log.err "@[ %s : %a tailcall @]@."  cxt.meta.filename Ident.print id; *)
         ret.triggered <- true;
         (* Here we mark [finished] true, since the continuation
             does not make sense any more (due to that we have [continue])

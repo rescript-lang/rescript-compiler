@@ -50,7 +50,10 @@ val to_list_map_acc :
   'b list -> 
   'b list 
 
-val of_list_map : ('a -> 'b) -> 'a list -> 'b array 
+val of_list_map : 
+  'a list -> 
+  ('a -> 'b) -> 
+  'b array 
 
 val rfind_with_index : 'a array -> ('a -> 'b -> bool) -> 'b -> int
 
@@ -76,3 +79,8 @@ val for_all2_no_exn :
   'a array ->
   'b array -> 
   bool
+
+val map :   
+  'a array -> 
+  ('a -> 'b) -> 
+  'b array

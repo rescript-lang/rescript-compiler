@@ -235,22 +235,11 @@ let simplify_alias
                 | false, (_, param_map)
                 | true, (true, param_map) -> 
                   if rec_flag = Rec then               
-                    begin
-                      (* Ext_log.dwarn __LOC__ "beta rec.. %s/%d" v.name v.stamp ; *)
-                      (* Lam_beta_reduce.propogate_beta_reduce meta params body args *)
-                      Lam_beta_reduce.propogate_beta_reduce_with_map meta param_map params body args
-                    end
+                    Lam_beta_reduce.propogate_beta_reduce_with_map meta param_map params body args
                   else 
-                    begin
-                      (* Ext_log.dwarn __LOC__ "beta  nonrec..[%d] [%a]  %s/%d"  *)
-                      (*   (List.length args)  *)
-                      (*   Printlambda.lambda body                      *)
-                      (*   v.name v.stamp ; *)
-                      simpl (Lam_beta_reduce.propogate_beta_reduce_with_map meta param_map params body args)
-
-                    end
+                    simpl (Lam_beta_reduce.propogate_beta_reduce_with_map meta param_map params body args)
                 | _ -> normal ()
-              else 
+            else 
                 normal ()
           else
             normal ()

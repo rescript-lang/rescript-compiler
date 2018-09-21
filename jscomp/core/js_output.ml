@@ -78,7 +78,7 @@ let output_of_block_and_expression
   | Declare (kind,n) ->
     make (Ext_list.append_one block (S.define_variable ~kind  n exp))
   | Assign n -> make (Ext_list.append_one block (S.assign n exp))
-  | NeedValue (ReturnTrue _ | ReturnFalse) ->
+  | NeedValue _ ->
     make block ~value:exp
 
 

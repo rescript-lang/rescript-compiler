@@ -25,34 +25,21 @@
 (** [is_closed_by map lam]
     return [true] if all unbound variables
     belongs to the given [map] *)
-val is_closed_by : Ident_set.t -> Lam.t -> bool
+(* val is_closed_by : Ident_set.t -> Lam.t -> bool *)
 
 val is_closed : Lam.t -> bool
 
 
-
-
-
-type stats = 
-  { 
-    top : bool ; 
-    (* all appearances are in the top,  substitution is fine 
-       whether it is pure or not
-       {[
-         (fun x y          
-           ->  x + y + (f x )) (32) (console.log('hi'), 33)
-       ]}       
-       since in ocaml, the application order is intentionally undefined, 
-       note if [times] is not one, this field does not make sense       
-    *)    
-    times : int ; 
-  }
-
+(** The output is mostly used in betat reduction *)
 val is_closed_with_map : 
   Ident_set.t ->
-  Ident.t list -> Lam.t -> bool * stats Ident_map.t
+  Ident.t list -> 
+  Lam.t -> 
+  bool * Lam_var_stats.stats Ident_map.t
 
-(* val param_map_of_list : Ident.t list -> stats Ident_map.t *)
-
-val free_variables : Ident_set.t -> stats Ident_map.t -> Lam.t -> stats Ident_map.t
+val free_variables : 
+  Ident_set.t -> 
+  Lam_var_stats.stats Ident_map.t -> 
+  Lam.t -> 
+  Lam_var_stats.stats Ident_map.t
 

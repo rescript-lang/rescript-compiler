@@ -193,7 +193,7 @@ let assemble_args call_loc ffi  js_splice arg_types args : E.t list * E.t option
   args,
   begin  match eff with
     | [] -> None 
-    | x::xs ->  
+    | x::xs ->  (** FIXME: the order of effects? *)
       Some (E.fuse_to_seq x xs) 
   end
 

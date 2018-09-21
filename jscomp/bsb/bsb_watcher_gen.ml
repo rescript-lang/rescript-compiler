@@ -33,9 +33,9 @@ let generate_sourcedirs_meta cwd (res : Bsb_file_groups.t) =
     Ext_json_noloc.(
       kvs [
         "dirs" ,
-      arr (Ext_array.of_list_map ( fun (x : Bsb_file_groups.file_group) -> 
+      arr (Ext_array.of_list_map res.files ( fun x -> 
       str x.dir 
-      ) res.files ) ;
+      ) ) ;
       "generated" ,
       arr @@ Array.of_list @@ List.fold_left (fun acc (x : Bsb_file_groups.file_group) -> 
       Ext_list.flat_map_append x.generators acc

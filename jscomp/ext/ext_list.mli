@@ -233,6 +233,11 @@ val rev_iter :
   ('a -> unit) -> 
   unit 
 
+val iter:   
+   'a list ->  
+   ('a -> unit) -> 
+   unit
+   
 val for_all:  
     'a list -> 
     ('a -> bool) -> 
@@ -312,3 +317,9 @@ val fold_left2:
     'c -> 
     ('a -> 'b -> 'c -> 'c)
     -> 'c 
+
+val fold_left:    
+    'a list -> 
+    'b -> 
+    ('a -> 'b -> 'b) -> 
+    'b

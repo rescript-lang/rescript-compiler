@@ -237,7 +237,10 @@ val to_list_map_acc :
   'b list -> 
   'b list 
 
-val of_list_map : ('a -> 'b) -> 'a list -> 'b array 
+val of_list_map : 
+  'a list -> 
+  ('a -> 'b) -> 
+  'b array 
 
 val rfind_with_index : 'a array -> ('a -> 'b -> bool) -> 'b -> int
 
@@ -263,6 +266,11 @@ val for_all2_no_exn :
   'a array ->
   'b array -> 
   bool
+
+val map :   
+  'a array -> 
+  ('a -> 'b) -> 
+  'b array
 end = struct
 #1 "ext_array.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -386,7 +394,7 @@ let to_list_map_acc f a acc =
   tolist_aux a f (Array.length a - 1) acc
 
 
-let of_list_map f a = 
+let of_list_map a f = 
   match a with 
   | [] -> [||]
   | [a0] -> 
@@ -506,6 +514,19 @@ let for_all2_no_exn p xs ys =
   let len_ys = Array.length ys in 
   len_xs = len_ys &&    
   unsafe_loop 0 len_xs p xs ys
+
+
+let map a f =
+  let open Array in 
+  let l = length a in
+  if l = 0 then [||] else begin
+    let r = make l (f(unsafe_get a 0)) in
+    for i = 1 to l - 1 do
+      unsafe_set r i (f(unsafe_get a i))
+    done;
+    r
+  end
+
 end
 module Ext_bytes : sig 
 #1 "ext_bytes.mli"
@@ -2711,6 +2732,11 @@ val rev_iter :
   ('a -> unit) -> 
   unit 
 
+val iter:   
+   'a list ->  
+   ('a -> unit) -> 
+   unit
+   
 val for_all:  
     'a list -> 
     ('a -> bool) -> 
@@ -2790,6 +2816,12 @@ val fold_left2:
     'c -> 
     ('a -> 'b -> 'c -> 'c)
     -> 'c 
+
+val fold_left:    
+    'a list -> 
+    'b -> 
+    ('a -> 'b -> 'b) -> 
+    'b
 
 end = struct
 #1 "ext_list.ml"
@@ -3288,6 +3320,22 @@ let rec rev_iter l f =
     rev_iter tail f;
     f x5; f x4 ; f x3; f x2 ; f x1
 
+let rec iter l f = 
+  match l with
+  | [] -> ()    
+  | [x1] ->
+    f x1 
+  | [x1; x2] ->
+    f x1 ; f x2
+  | [x1; x2; x3] ->
+    f x1 ; f x2 ; f x3
+  | [x1; x2; x3; x4] ->
+    f x1; f x2; f x3; f x4
+  | x1::x2::x3::x4::x5::tail ->
+    f x1; f x2 ; f x3; f x4 ; f x5;
+    iter tail f 
+
+
 let rec for_all lst p = 
   match lst with 
     [] -> true
@@ -3425,6 +3473,10 @@ let rec concat_append
   | [] -> xs 
   | l::r -> append l (concat_append r xs)
 
+let rec fold_left l accu f =
+  match l with
+    [] -> accu
+  | a::l -> fold_left l (f a accu) f 
 
 let rec fold_left2 l1 l2 accu f =
   match (l1, l2) with

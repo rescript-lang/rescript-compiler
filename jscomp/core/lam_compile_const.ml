@@ -106,7 +106,7 @@ and translate (x : Lam_constant.t ) : J.expression =
         we  deoptimized this in js backend? so it is actually mutable 
     *)
     (* TODO-- *)
-    Js_of_lam_array.make_array Mutable Pfloatarray 
+    Js_of_lam_array.make_array Mutable
       (Ext_list.map ars E.float )
   (* E.arr Mutable ~comment:"float array" *)
   (*   (Ext_list.map (fun x ->  E.float  x ) ars) *)

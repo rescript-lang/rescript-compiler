@@ -297,10 +297,10 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : t =
   | Pfloatcomp x -> prim ~primitive:(Pfloatcomp x) ~args loc
   | Pmakearray x -> prim ~primitive:(Pmakearray x) ~args  loc
   | Parraylength _ -> prim ~primitive:Parraylength ~args loc
-  | Parrayrefu x -> prim ~primitive:(Parrayrefu x) ~args loc
-  | Parraysetu x -> prim ~primitive:(Parraysetu x) ~args loc
-  | Parrayrefs x -> prim ~primitive:(Parrayrefs x) ~args loc
-  | Parraysets x -> prim ~primitive:(Parraysets x) ~args loc
+  | Parrayrefu _ -> prim ~primitive:(Parrayrefu ) ~args loc
+  | Parraysetu _ -> prim ~primitive:(Parraysetu ) ~args loc
+  | Parrayrefs _ -> prim ~primitive:(Parrayrefs ) ~args loc
+  | Parraysets _ -> prim ~primitive:(Parraysets ) ~args loc
   | Pbintofint x -> prim ~primitive:(Pbintofint x) ~args loc
   | Pintofbint x -> prim ~primitive:(Pintofbint x) ~args loc
   | Pnegbint x -> prim ~primitive:(Pnegbint x) ~args loc

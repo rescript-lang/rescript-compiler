@@ -493,6 +493,22 @@ let rec rev_iter l f =
     rev_iter tail f;
     f x5; f x4 ; f x3; f x2 ; f x1
 
+let rec iter l f = 
+  match l with
+  | [] -> ()    
+  | [x1] ->
+    f x1 
+  | [x1; x2] ->
+    f x1 ; f x2
+  | [x1; x2; x3] ->
+    f x1 ; f x2 ; f x3
+  | [x1; x2; x3; x4] ->
+    f x1; f x2; f x3; f x4
+  | x1::x2::x3::x4::x5::tail ->
+    f x1; f x2 ; f x3; f x4 ; f x5;
+    iter tail f 
+
+
 let rec for_all lst p = 
   match lst with 
     [] -> true
@@ -630,6 +646,10 @@ let rec concat_append
   | [] -> xs 
   | l::r -> append l (concat_append r xs)
 
+let rec fold_left l accu f =
+  match l with
+    [] -> accu
+  | a::l -> fold_left l (f a accu) f 
 
 let rec fold_left2 l1 l2 accu f =
   match (l1, l2) with
