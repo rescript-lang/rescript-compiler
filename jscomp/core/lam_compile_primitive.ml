@@ -34,7 +34,7 @@ module E = Js_exp_make
 (* If it is the return value, since it is a side-effect call,
    we return unit, otherwise just return it
 *)
-let decorate_side_effect ({continuation = st;_} : Lam_compile_context.t) e : E.t = 
+let ensure_value_unit (st : Lam_compile_context.continuation) e : E.t = 
   match st with 
   | EffectCall (ReturnTrue _ ) | NeedValue (ReturnTrue _)
   | Assign _ | Declare _ | NeedValue _  -> E.seq e E.unit
@@ -42,15 +42,14 @@ let decorate_side_effect ({continuation = st;_} : Lam_compile_context.t) e : E.t
 (* NeedValue should return a meaningful expression*)
 
 let translate  loc
-    ({ meta = { env; _}; _} as cxt : Lam_compile_context.t) 
+    (cxt : Lam_compile_context.t) 
     (prim : Lam_primitive.t)
     (args : J.expression list) : J.expression = 
   match prim with
   | Pis_not_none -> 
-    begin match args with 
-    | [arg] -> Js_of_lam_option.is_not_none arg 
-    | _ -> assert false
-    end 
+      (match args with 
+      | [arg] -> Js_of_lam_option.is_not_none arg 
+      | _ -> assert false)    
   | Pcreate_extension s 
     -> 
     Js_of_lam_exception.make (E.str s)
@@ -63,42 +62,37 @@ let translate  loc
   | Praw_js_code_stmt s -> 
     E.raw_js_code Stmt s 
   | Pjs_runtime_apply -> 
-    begin match args with 
-      | [f ;  args] -> 
-        E.flat_call f args
-      | _ -> assert false 
-    end
+    (match args with 
+     | [f ;  args] -> 
+       E.flat_call f args
+     | _ -> assert false)
   | Pjs_apply -> 
-    begin match args with 
-      | fn :: rest -> 
-        E.call ~info:{arity=Full; call_info =  Call_na} fn rest 
-      | _ -> assert false
-    end
-
+    (match args with 
+     | fn :: rest -> 
+       E.call ~info:{arity=Full; call_info =  Call_na} fn rest 
+     | _ -> assert false)
   | Pnull_to_opt -> 
-    begin match args with 
-      | [e] -> 
-        begin match e.expression_desc with 
-          | Var _ | Undefined | Null -> 
-            Js_of_lam_option.null_to_opt e 
-          | _ ->
-            E.runtime_call Js_runtime_modules.js_primitive
-              "null_to_opt" args 
-        end
-      | _ -> assert false 
-    end
+    (match args with 
+     | [e] -> 
+       (match e.expression_desc with 
+        | Var _ | Undefined | Null -> 
+          Js_of_lam_option.null_to_opt e 
+        | _ ->
+          E.runtime_call Js_runtime_modules.js_primitive
+            "null_to_opt" args)         
+     | _ -> assert false )
+    
   | Pundefined_to_opt ->
-    begin match args with 
-      | [e] -> 
-        begin match e.expression_desc with 
-          | Var _ | Undefined | Null -> 
-            Js_of_lam_option.undef_to_opt e 
-          | _ -> 
-            E.runtime_call Js_runtime_modules.js_primitive  
-              "undefined_to_opt" args 
-        end
-      | _ -> assert false 
-    end    
+    (match args with 
+     | [e] -> 
+       (match e.expression_desc with 
+        | Var _ | Undefined | Null -> 
+          Js_of_lam_option.undef_to_opt e 
+        | _ -> 
+          E.runtime_call Js_runtime_modules.js_primitive  
+            "undefined_to_opt" args )
+     | _ -> assert false )
+    
   | Pnull_undefined_to_opt -> 
     begin match args with 
       | [e] -> 
@@ -170,28 +164,28 @@ let translate  loc
     E.runtime_call Js_runtime_modules.module_ "update_mod" args
   | Psome ->     
     begin match args with 
-    | [arg ] -> 
-      begin match arg.J.expression_desc with 
-      | Null 
-      | Object _ 
-      | Number _
-      | Caml_block _      
-      | Array _
-      | Str _
-        -> 
-        (* This makes sense when type info 
-          is not available at the definition
-          site, and inline recovered it
-        *)
-        E.optional_not_nest_block arg 
-      | _ -> E.optional_block arg
-      end
-    | _ -> assert false
+      | [arg ] -> 
+        begin match arg.J.expression_desc with 
+          | Null 
+          | Object _ 
+          | Number _
+          | Caml_block _      
+          | Array _
+          | Str _
+            -> 
+            (* This makes sense when type info 
+               is not available at the definition
+               site, and inline recovered it
+            *)
+            E.optional_not_nest_block arg 
+          | _ -> E.optional_block arg
+        end
+      | _ -> assert false
     end     
   | Psome_not_nest ->   
     begin match args with 
-    | [arg] -> E.optional_not_nest_block arg 
-    | _ -> assert false
+      | [arg] -> E.optional_not_nest_block arg 
+      | _ -> assert false
     end 
   | Pmakeblock(tag, tag_info, mutable_flag ) ->  (* RUNTIME *)
     Js_of_lam_block.make_block 
@@ -199,14 +193,14 @@ let translate  loc
       tag_info (E.small_int tag) args 
   | Pval_from_option -> 
     begin match args with 
-    | [ e ] -> 
-      Js_of_lam_option.val_from_option e 
-    | _ -> assert false
+      | [ e ] -> 
+        Js_of_lam_option.val_from_option e 
+      | _ -> assert false
     end
   | Pval_from_option_not_nest -> 
     begin match args with 
-    | [ e ] -> e
-    | _ -> assert false
+      | [ e ] -> e
+      | _ -> assert false
     end
   | Pfield (i, fld_info) -> 
     begin match args with 
@@ -583,17 +577,15 @@ let translate  loc
   *)
   | Pbytessetu
   | Pbytessets -> 
-    begin match args with
-      | [e;e0;e1] -> decorate_side_effect cxt 
-                       (Js_of_lam_string.set_byte e e0 e1)
-
-      | _ -> assert false
-    end
+    (match args with
+     | [e;e0;e1] -> ensure_value_unit cxt.continuation 
+                      (Js_of_lam_string.set_byte e e0 e1)
+     | _ -> assert false)
   | Pbytesrefu ->
-    begin match args with
-      | [e;e1] -> Js_of_lam_string.ref_byte e e1
-      | _ -> assert false
-    end
+    (match args with
+     | [e;e1] -> Js_of_lam_string.ref_byte e e1
+     | _ -> assert false)
+
 
   | Pbytesrefs ->
     begin match args with
@@ -633,48 +625,38 @@ let translate  loc
       | _ -> assert false
     end
   | Psetfield (i, field_info) -> 
-    begin match args with 
-      | [e0;e1] ->  (** RUNTIME *)
-        decorate_side_effect cxt 
-          (Js_of_lam_block.set_field field_info e0 (Int32.of_int i) e1)
-      (*TODO: get rid of [E.unit ()]*)
-      | _ -> assert false
-    end
+    (match args with 
+     | [e0;e1] ->  (** RUNTIME *)
+       ensure_value_unit cxt.continuation 
+         (Js_of_lam_block.set_field field_info e0 (Int32.of_int i) e1)
+     (*TODO: get rid of [E.unit ()]*)
+     | _ -> assert false)    
   | Psetfloatfield (i,field_info)
     -> (** RUNTIME --  RETURN VALUE SHOULD BE UNIT *)
-    begin 
-      match args with 
-      | [e;e0] -> 
-        decorate_side_effect cxt 
-          (Js_of_lam_float_record.set_double_field field_info e (Int32.of_int i) e0 ) 
-      | _ -> assert false
-    end
-
-
-  | Pfloatfield (i, field_info) -> (** RUNTIME *)
-    begin 
-      match args with 
-      | [e] ->
-        Js_of_lam_float_record.get_double_feild field_info e
-          (Int32.of_int i) 
-      | _ -> assert false 
-    end
-  | Parrayrefu _kind ->  
-    begin match args with
-      | [e;e1] -> Js_of_lam_array.ref_array e e1 (* Todo: Constant Folding *)
-      | _ -> assert false
-    end
-  | Parrayrefs _kind ->
+    (match args with 
+     | [e;e0] -> 
+       ensure_value_unit cxt.continuation 
+         (Js_of_lam_float_record.set_double_field field_info e (Int32.of_int i) e0 ) 
+     | _ -> assert false)
+  | Pfloatfield (i, field_info) -> (** RUNTIME *)    
+    (match args with 
+     | [e] ->
+       Js_of_lam_float_record.get_double_feild field_info e
+         (Int32.of_int i) 
+     | _ -> assert false )    
+  | Parrayrefu ->  
+    (match args with
+     | [e;e1] -> Js_of_lam_array.ref_array e e1 (* Todo: Constant Folding *)
+     | _ -> assert false)    
+  | Parrayrefs ->
     Lam_dispatch_primitive.translate loc "caml_array_get" args
-  | Pmakearray kind -> 
-    Js_of_lam_array.make_array Mutable kind args 
-  | Parraysetu _kind -> 
-    begin match args with (* wrong*)
-      | [e;e0;e1] -> decorate_side_effect cxt @@ Js_of_lam_array.set_array  e e0 e1
-      | _ -> assert false
-    end
-
-  | Parraysets _kind -> 
+  | Pmakearray _kind -> 
+    Js_of_lam_array.make_array Mutable  args 
+  | Parraysetu  -> 
+      (match args with (* wrong*)
+      | [e;e0;e1] -> ensure_value_unit cxt.continuation (Js_of_lam_array.set_array  e e0 e1)
+      | _ -> assert false)    
+  | Parraysets  -> 
     Lam_dispatch_primitive.translate loc "caml_array_set" args
   | Pccall prim -> 
     Lam_dispatch_primitive.translate loc prim.prim_name  args
@@ -780,12 +762,11 @@ let translate  loc
   | Pstring_load_64 unsafe
     -> Js_long.get64 args
 
-  | Plazyforce
-  (* | Plazyforce -> *)
-  (*     let parm = Ident.create "prim" in *)
-  (*     Lfunction(Curried, [parm], *)
-  (*               Matching.inline_lazy_force (Lvar parm) Location.none) *)
-  (* It is inlined, this should not appear here *)    
+  | Plazyforce  
+  (*   let parm = Ident.create "prim" in 
+       Lfunction(Curried, [parm], 
+                 Matching.inline_lazy_force (Lvar parm) Location.none) 
+   It is inlined, this should not appear here *)    
   | Pbittest 
 
   | Pstring_set_16 _

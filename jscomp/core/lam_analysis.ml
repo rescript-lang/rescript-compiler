@@ -130,8 +130,8 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pbytesrefs
       | Pmakearray _ 
       | Parraylength  
-      | Parrayrefu _
-      | Parrayrefs _ 
+      | Parrayrefu 
+      | Parrayrefs  
       (* Test if the argument is a block or an immediate integer *)
       | Pisint
       (* Test if the (integer) argument is outside an interval *)
@@ -182,7 +182,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
       (* Bitvect operations *)
       | Pbittest
       (* Operations on boxed integers (Nativeint.t, Int32.t, Int64.t) *)
-      | Parraysets _
+      | Parraysets 
       | Pbigarrayset _
       (* size of the nth dimension of a big array *)
       | Pbigarraydim _
@@ -204,7 +204,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
       (* byte swap *)
       | Pbswap16
       | Pbbswap _
-      | Parraysetu _ 
+      | Parraysetu  
       | Poffsetref _ 
       | Praise
       | Plazyforce 

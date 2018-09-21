@@ -36,9 +36,9 @@ module E = Js_exp_make
  *)
 let make_block mutable_flag (tag_info : Lam_tag_info.t) tag args  = 
 
-  match mutable_flag, tag_info with
-  | _, Blk_array -> Js_of_lam_array.make_array mutable_flag  Pgenarray args
-  | _ , _ -> E.make_block tag tag_info args mutable_flag
+  match tag_info with
+  | Blk_array -> Js_of_lam_array.make_array mutable_flag  args
+  |  _ -> E.make_block tag tag_info args mutable_flag
   (* | _, (  Tuple | Variant _ ) -> (\** TODO: check with inline record *\) *)
   (*     E.arr Immutable *)
   (*       (E.small_int  ?comment:(Lam_compile_util.comment_of_tag_info tag_info) tag   *)

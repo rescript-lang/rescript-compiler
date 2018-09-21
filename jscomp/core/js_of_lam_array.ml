@@ -55,7 +55,7 @@ module E  = Js_exp_make
 
 
 (* Parrayref(u|s) *)
-let make_array mt (kind : Lam_compat.array_kind) args = 
+let make_array mt  args = 
   E.array ~comment:"array" mt args 
  
 let set_array  e e0 e1 = 

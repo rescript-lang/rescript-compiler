@@ -83,10 +83,10 @@ type t =
   (* Array operations *)
   | Pmakearray of Lam_compat.array_kind
   | Parraylength 
-  | Parrayrefu of Lam_compat.array_kind
-  | Parraysetu of Lam_compat.array_kind
-  | Parrayrefs of Lam_compat.array_kind
-  | Parraysets of Lam_compat.array_kind
+  | Parrayrefu
+  | Parraysetu
+  | Parrayrefs
+  | Parraysets
   (* Test if the argument is a block or an immediate integer *)
   | Pisint
   (* Test if the (integer) argument is outside an interval *)
@@ -259,10 +259,10 @@ let eq_primitive_approx ( lhs : t) (rhs : t) =
   | Poffsetref i0 ->  (match rhs with Poffsetref i1 -> i0 = i1   | _ -> false)
   | Pmakearray array_kind -> (match rhs with Pmakearray array_kind1 -> Lam_compat.eq_array_kind array_kind array_kind1 | _ -> false  )
   | Parraylength  -> rhs = Parraylength
-  | Parrayrefu  array_kind -> (match rhs with Parrayrefu array_kind1 -> Lam_compat.eq_array_kind array_kind array_kind1 | _ -> false  )
-  | Parraysetu  array_kind -> (match rhs with Parraysetu array_kind1 -> Lam_compat.eq_array_kind array_kind array_kind1 | _ -> false  ) 
-  | Parrayrefs array_kind -> (match rhs with Parrayrefs array_kind1 -> Lam_compat.eq_array_kind array_kind array_kind1 | _ -> false  )
-  | Parraysets  array_kind -> (match rhs with Parraysets array_kind1 -> Lam_compat.eq_array_kind array_kind array_kind1 | _ -> false  )  
+  | Parrayrefu  -> rhs = Parrayrefu
+  | Parraysetu  -> rhs = Parraysetu
+  | Parrayrefs -> rhs = Parrayrefs
+  | Parraysets -> rhs = Parraysets
   | Pbintofint  boxed_integer -> (match rhs with Pbintofint boxed_integer1 -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
   | Pintofbint  boxed_integer -> (match rhs with Pintofbint boxed_integer1 -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )
   | Pnegbint  boxed_integer -> (match rhs with Pnegbint boxed_integer1 -> Lam_compat.eq_boxed_integer boxed_integer boxed_integer1 | _ -> false )

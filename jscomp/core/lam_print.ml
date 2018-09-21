@@ -215,10 +215,10 @@ let primitive ppf (prim : Lam_primitive.t) = match prim with
 
   | Parraylength  -> fprintf ppf "array.length"
   | Pmakearray _ -> fprintf ppf "makearray "
-  | Parrayrefu _ -> fprintf ppf "array.unsafe_get"
-  | Parraysetu _ -> fprintf ppf "array.unsafe_set"
-  | Parrayrefs _ -> fprintf ppf "array.get"
-  | Parraysets _ -> fprintf ppf "array.set"
+  | Parrayrefu  -> fprintf ppf "array.unsafe_get"
+  | Parraysetu  -> fprintf ppf "array.unsafe_set"
+  | Parrayrefs  -> fprintf ppf "array.get"
+  | Parraysets  -> fprintf ppf "array.set"
   | Pctconst c ->
     let const_name = match c with
       | Big_endian -> "big_endian"

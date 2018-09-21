@@ -391,7 +391,7 @@ core/js_exp_make.cmi : core/lam_compat.cmi core/js_op.cmx \
 core/js_long.cmi : core/lam_compat.cmi core/j.cmx
 core/js_of_lam_exception.cmi : core/j.cmx
 core/js_of_lam_module.cmi : core/j.cmx
-core/js_of_lam_array.cmi : core/lam_compat.cmi core/j.cmx
+core/js_of_lam_array.cmi : core/j.cmx
 core/js_of_lam_block.cmi : core/lam_tag_info.cmx core/lam_compat.cmi \
     core/js_op.cmx core/j.cmx
 core/js_of_lam_string.cmi : core/j.cmx
@@ -570,8 +570,7 @@ core/js_of_lam_exception.cmx : ext/literals.cmx core/js_runtime_modules.cmx \
     core/js_exp_make.cmx core/j.cmx core/js_of_lam_exception.cmi
 core/js_of_lam_module.cmx : core/js_exp_make.cmx core/j.cmx \
     core/js_of_lam_module.cmi
-core/js_of_lam_array.cmx : core/lam_compat.cmx core/js_exp_make.cmx \
-    core/js_of_lam_array.cmi
+core/js_of_lam_array.cmx : core/js_exp_make.cmx core/js_of_lam_array.cmi
 core/js_of_lam_block.cmx : core/lam_tag_info.cmx core/lam_compat.cmx \
     core/js_of_lam_array.cmx core/js_exp_make.cmx core/js_of_lam_block.cmi
 core/js_of_lam_string.cmx : core/js_runtime_modules.cmx core/js_exp_make.cmx \

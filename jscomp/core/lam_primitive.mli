@@ -77,10 +77,10 @@ type t =
   (* Array operations *)
   | Pmakearray of Lam_compat.array_kind
   | Parraylength 
-  | Parrayrefu of Lam_compat.array_kind
-  | Parraysetu of Lam_compat.array_kind
-  | Parrayrefs of Lam_compat.array_kind
-  | Parraysets of Lam_compat.array_kind
+  | Parrayrefu 
+  | Parraysetu 
+  | Parrayrefs 
+  | Parraysets 
   (* Test if the argument is a block or an immediate integer *)
   | Pisint
   (* Test if the (integer) argument is outside an interval *)
