@@ -30836,7 +30836,10 @@ val to_list_map_acc :
   'b list -> 
   'b list 
 
-val of_list_map : ('a -> 'b) -> 'a list -> 'b array 
+val of_list_map : 
+  'a list -> 
+  ('a -> 'b) -> 
+  'b array 
 
 val rfind_with_index : 'a array -> ('a -> 'b -> bool) -> 'b -> int
 
@@ -30862,6 +30865,11 @@ val for_all2_no_exn :
   'a array ->
   'b array -> 
   bool
+
+val map :   
+  'a array -> 
+  ('a -> 'b) -> 
+  'b array
 end = struct
 #1 "ext_array.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -30985,7 +30993,7 @@ let to_list_map_acc f a acc =
   tolist_aux a f (Array.length a - 1) acc
 
 
-let of_list_map f a = 
+let of_list_map a f = 
   match a with 
   | [] -> [||]
   | [a0] -> 
@@ -31105,6 +31113,19 @@ let for_all2_no_exn p xs ys =
   let len_ys = Array.length ys in 
   len_xs = len_ys &&    
   unsafe_loop 0 len_xs p xs ys
+
+
+let map a f =
+  let open Array in 
+  let l = length a in
+  if l = 0 then [||] else begin
+    let r = make l (f(unsafe_get a 0)) in
+    for i = 1 to l - 1 do
+      unsafe_set r i (f(unsafe_get a i))
+    done;
+    r
+  end
+
 end
 module Ext_json_types
 = struct

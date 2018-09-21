@@ -37,7 +37,7 @@ let suites =
     end     ;
     __LOC__ >:: begin fun _ -> 
         let (=~) = OUnit.assert_equal ~printer:printer_int_array in 
-        let k = Ext_array.of_list_map in 
+        let k x y = Ext_array.of_list_map y x in 
         k succ [] =~ [||];
         k succ [1]  =~ [|2|];
         k succ [1;2;3]  =~ [|2;3;4|];

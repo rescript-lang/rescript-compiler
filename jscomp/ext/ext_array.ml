@@ -119,7 +119,7 @@ let to_list_map_acc f a acc =
   tolist_aux a f (Array.length a - 1) acc
 
 
-let of_list_map f a = 
+let of_list_map a f = 
   match a with 
   | [] -> [||]
   | [a0] -> 
@@ -239,3 +239,15 @@ let for_all2_no_exn p xs ys =
   let len_ys = Array.length ys in 
   len_xs = len_ys &&    
   unsafe_loop 0 len_xs p xs ys
+
+
+let map a f =
+  let open Array in 
+  let l = length a in
+  if l = 0 then [||] else begin
+    let r = make l (f(unsafe_get a 0)) in
+    for i = 1 to l - 1 do
+      unsafe_set r i (f(unsafe_get a i))
+    done;
+    r
+  end

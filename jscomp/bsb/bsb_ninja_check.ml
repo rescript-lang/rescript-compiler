@@ -93,11 +93,11 @@ let read (fname : string) cont =
 
 let record ~cwd ~file  file_or_dirs =
   let file_stamps = 
-    Ext_array.of_list_map
+    Ext_array.of_list_map file_or_dirs
       (fun  x -> 
          {dir_or_file = x ;
           st_mtime = (Unix.stat (Filename.concat cwd  x )).st_mtime
-         })  file_or_dirs
+         })
   in 
   write file
     { file_stamps ;

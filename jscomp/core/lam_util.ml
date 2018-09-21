@@ -188,8 +188,8 @@ let element_of_lambda (lam : Lam.t) : Lam_id_kind.element =
   | _ -> NA 
 
 let kind_of_lambda_block (xs : Lam.t list) : Lam_id_kind.t = 
-  ImmutableBlock( Ext_array.of_list_map (fun x -> 
-    element_of_lambda x ) xs )
+  ImmutableBlock( Ext_array.of_list_map xs (fun x -> 
+    element_of_lambda x ))
 
 let field_flatten_get
    lam v i (tbl : Lam_id_kind.t Ident_hashtbl.t) : Lam.t =

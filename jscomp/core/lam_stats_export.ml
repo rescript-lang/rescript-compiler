@@ -46,7 +46,7 @@ let values_of_export
          match Ident_hashtbl.find_opt meta.ident_tbl x with 
          | Some (FunctionId {arity ; _}) -> Single arity 
          | Some (ImmutableBlock(elems)) ->  
-           Submodule(elems |> Array.map (fun (x : Lam_id_kind.element) -> 
+           Submodule(Ext_array.map elems (fun x -> 
                match x with 
                | NA -> Lam_arity.na
                | SimpleForm lam -> Lam_arity_analysis.get_arity  meta lam)
@@ -55,9 +55,8 @@ let values_of_export
          | None ->
            begin match Ident_map.find_opt x export_map with 
              | Some (Lprim {primitive = Pmakeblock (_,_, Immutable); args }) ->
-               Submodule (args |> Ext_array.of_list_map (fun lam -> 
-                   Lam_arity_analysis.get_arity meta lam
-                 ))
+               Submodule (Ext_array.of_list_map args (fun lam -> 
+                   Lam_arity_analysis.get_arity meta lam))
              | Some _
              | None -> single_na
            end
@@ -93,8 +92,7 @@ let values_of_export
                else None
            else
              None
-         | None
-           -> None  in 
+         | None -> None  in 
        String_map.add x.name  Js_cmj_format.({arity ; closed_lambda }) acc          
     )
 
