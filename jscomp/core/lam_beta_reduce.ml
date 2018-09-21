@@ -101,7 +101,7 @@ let propogate_beta_reduce
      
 
 let propogate_beta_reduce_with_map  
-    (meta : Lam_stats.t) (map : Lam_closure.stats Ident_map.t ) params body args =
+    (meta : Lam_stats.t) (map : Lam_var_stats.stats Ident_map.t ) params body args =
   match Lam_beta_reduce_util.simple_beta_reduce params body args with
   | Some x -> x
   | None ->
@@ -122,7 +122,7 @@ let propogate_beta_reduce_with_map
              match Ident_map.find_exn old_param map with 
              | exception Not_found -> assert false 
              | stat -> 
-               if Lam_closure.top_and_used_zero_or_one stat then 
+               if Lam_var_stats.top_and_used_zero_or_one stat then 
                  rest_bindings, arg :: acc                
                else 
                  let p = Ident.rename old_param in 

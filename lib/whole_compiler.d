@@ -329,6 +329,8 @@
 ../lib/whole_compiler.ml : ./core/lam_tag_info.ml
 ../lib/whole_compiler.ml : ./core/lam_util.ml
 ../lib/whole_compiler.ml : ./core/lam_util.mli
+../lib/whole_compiler.ml : ./core/lam_var_stats.ml
+../lib/whole_compiler.ml : ./core/lam_var_stats.mli
 ../lib/whole_compiler.ml : ./core/ocaml_batch_compile.ml
 ../lib/whole_compiler.ml : ./core/ocaml_batch_compile.mli
 ../lib/whole_compiler.ml : ./core/ocaml_options.ml
