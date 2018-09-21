@@ -121,13 +121,12 @@ let propogate_beta_reduce_with_map
            if  Lam_analysis.no_side_effects arg then
              match Ident_map.find_exn old_param map with 
              | exception Not_found -> assert false 
-             | {top = true ; times = 0 }
-             | {top = true ; times = 1 } 
-               -> 
-               rest_bindings, arg :: acc                
-             | _  ->  
-               let p = Ident.rename old_param in 
-               (p,arg) :: rest_bindings , (Lam.var p) :: acc 
+             | stat -> 
+               if Lam_closure.top_and_used_zero_or_one stat then 
+                 rest_bindings, arg :: acc                
+               else 
+                 let p = Ident.rename old_param in 
+                 (p,arg) :: rest_bindings , (Lam.var p) :: acc 
            else
              let p = Ident.rename old_param in 
              (p,arg) :: rest_bindings , (Lam.var p) :: acc ) in

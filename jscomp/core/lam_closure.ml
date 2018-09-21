@@ -40,17 +40,17 @@ type stats =
     *)    
     times : int ; 
   }
-type env = 
+type position = 
   { top  : bool ; 
     loop : bool 
   }
 
-let no_substitute = { top = false; loop = true }
-let fresh_env = {top = true; loop = false }
+let no_substitute : position = { top = false; loop = true }
+let fresh_env : position = {top = true; loop = false }
 let fresh_stats  : stats = { top = true; times = 0 }
 
 let param_map_of_list lst : stats Ident_map.t = 
-  List.fold_left  (fun acc l -> Ident_map.add l fresh_stats acc) Ident_map.empty  lst 
+  Ext_list.fold_left lst Ident_map.empty (fun l acc -> Ident_map.add l fresh_stats acc) 
 
 (** Sanity check, remove all varaibles in [local_set] in the last pass *)  
 
@@ -62,56 +62,57 @@ let loop_use = 100 (** Used in loop, huge punishment *)
    given [param_stats] it tries to return a new stats with updated usage of 
    recorded params and unbound parameters
 *)
-let free_variables (export_idents : Ident_set.t ) (params : stats Ident_map.t ) lam = 
+let free_variables 
+    (export_idents : Ident_set.t ) 
+    (params : stats Ident_map.t ) 
+    (lam : Lam.t )
+  : stats Ident_map.t = 
   let fv = ref params in
   let local_set = ref export_idents in
-
   let local_add k =
     local_set := Ident_set.add k !local_set in
   let local_add_list ks = 
     local_set :=  
-      List.fold_left (fun acc k -> Ident_set.add k acc) !local_set ks 
-  in    
+      Ext_list.fold_left ks !local_set (fun k acc -> Ident_set.add k acc) in    
   (* base don the envrionmet, recoring the use cases of arguments *)
-  let map_use {top; loop} v = 
+  let use_at_position {top; loop} v = 
     (* relies on [identifier] uniquely bound *)    
     if not (Ident_set.mem v !local_set) then 
       fv := Ident_map.adjust 
           v
           (fun _ -> {top; times = if loop then loop_use else 1})
           (fun v -> {times = if loop then loop_use else v.times + 1 ; top = v.top && top})
-          !fv 
-  in
-  let new_env lam (env : env) : env = 
+          !fv in
+  let new_position_after_lam lam (env : position) : position = 
     if env.top then 
       if Lam_analysis.no_side_effects lam 
       then env 
       (* no side effect, if argument has no side effect and used only once we can simply do the replacement *)
       else { env with top = false}
-    else env      
-  in    
-  let rec iter (top : env) (lam : Lam.t) =
+    else env  in    
+  let rec iter (top : position) (lam : Lam.t) =
     match lam with 
-    | Lvar v -> map_use top v 
+    | Lvar v -> use_at_position top v 
     | Lconst _ -> ()
     | Lapply {fn; args; _} ->
       iter top  fn; 
-      let top = new_env fn top in
-      List.iter (fun lam -> iter top lam ) args  
+      let top = new_position_after_lam fn top in
+      Ext_list.iter args (fun lam -> iter top lam ) 
     | Lprim {args ; _} -> 
       (* Check: can top be propoaged for all primitives *)
-      List.iter (iter top) args
-    | Lam.Lglobal_module _ -> ()
+      Ext_list.iter args (iter top) 
+    | Lglobal_module _ -> ()
     | Lfunction{ params; body} ->
       local_add_list params;
-      iter no_substitute body 
-    | Llet(_let_kind, id, arg, body) ->
+      iter no_substitute body (* Do we need continue *)
+    | Llet(_, id, arg, body) ->
+      iter top arg;
       local_add id ;  
-      iter top  arg; iter no_substitute body
+      iter no_substitute body
     | Lletrec(decl, body) ->
-      local_set := List.fold_left (fun acc (id, _) -> 
-          Ident_set.add id acc) !local_set decl;        
-      List.iter (fun (_, exp) -> iter no_substitute exp) decl;
+      local_set := Ext_list.fold_left decl !local_set  (fun (id, _) acc -> 
+          Ident_set.add id acc) ;        
+      Ext_list.iter decl (fun (_, exp) -> iter no_substitute exp);
       iter no_substitute body
     | Lswitch(arg, 
               ({sw_consts; 
@@ -121,7 +122,7 @@ let free_variables (export_idents : Ident_set.t ) (params : stats Ident_map.t ) 
                 sw_numblocks
                })) ->
       iter top arg; 
-      let top = new_env arg top  in       
+      let top = new_position_after_lam arg top  in       
       List.iter (fun (_, case) -> iter top case) sw_consts;
       List.iter (fun (_, case) -> iter top  case) sw_blocks;
 
@@ -140,7 +141,7 @@ let free_variables (export_idents : Ident_set.t ) (params : stats Ident_map.t ) 
 
     | Lstringswitch (arg,cases,default) ->
       iter top arg ;
-      let top = new_env arg top  in       
+      let top = new_position_after_lam arg top  in       
       List.iter (fun (_,act) -> iter top  act) cases ;
       begin match default with 
         | None -> ()
@@ -156,7 +157,7 @@ let free_variables (export_idents : Ident_set.t ) (params : stats Ident_map.t ) 
       iter top  e1; iter no_substitute  e2
     | Lifthenelse(e1, e2, e3) ->
       iter top e1; 
-      let top = new_env e1 top  in
+      let top = new_position_after_lam e1 top  in
       iter top e2; iter top e3
     | Lsequence(e1, e2) ->
       iter top e1; iter no_substitute e2
@@ -166,14 +167,14 @@ let free_variables (export_idents : Ident_set.t ) (params : stats Ident_map.t ) 
       local_add v ; 
       iter no_substitute e1; iter no_substitute e2; iter no_substitute e3
     | Lassign(id, e) ->
-      map_use top  id ; 
+      use_at_position top  id ; 
       iter top e
     | Lsend (_k, met, obj, args, _) ->
       iter no_substitute met ; 
       iter no_substitute obj;
-      List.iter (iter no_substitute) args    
-    in
-  iter fresh_env  lam ; !fv 
+      List.iter (iter no_substitute) args in
+  iter fresh_env  lam ; 
+  !fv 
 
 
 let is_closed_by set lam = 

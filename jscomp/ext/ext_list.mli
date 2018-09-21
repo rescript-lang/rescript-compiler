@@ -233,6 +233,11 @@ val rev_iter :
   ('a -> unit) -> 
   unit 
 
+val iter:   
+   'a list ->  
+   ('a -> unit) -> 
+   unit
+   
 val for_all:  
     'a list -> 
     ('a -> bool) -> 

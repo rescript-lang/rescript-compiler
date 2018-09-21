@@ -446,16 +446,13 @@ let translate  loc
   | Pbintcomp (Pnativeint ,cmp)
   | Pfloatcomp cmp
   | Pintcomp cmp
-  | Pbintcomp (Pint32 ,cmp)
-    ->
-    begin 
-      (* Global Builtin Exception is an int, like 
-         [Not_found] or [Invalid_argument] ?
-      *)
-      match args with 
-      | [e1;e2] -> E.int_comp cmp e1 e2
-      | _ -> assert false 
-    end
+  | Pbintcomp (Pint32 ,cmp) ->
+    (* Global Builtin Exception is an int, like 
+       [Not_found] or [Invalid_argument] ?
+    *)
+    (match args with 
+     | [e1;e2] -> E.int_comp cmp e1 e2
+     | _ -> assert false )
   (* List --> stamp = 0 
      Assert_false --> stamp = 26 
   *)
