@@ -605,7 +605,7 @@ let output_ninja_and_namespace_map
       (* @Todo @CrossPlatform Fix this super ghetto environment variable setup... This is not cross platform! *)
       let envvars = "export BSLIB=" ^ ocaml_lib ^ " && " 
                   ^ "export OCAML_SYSTHREADS=" ^ (ocaml_dir // "otherlibs" // "systhreads") ^ " && " 
-                  ^ "export PATH=" ^ (root_project_dir // Literals.node_modules // ".bin") ^ ":" ^ ocaml_dir ^ ":" ^ (root_project_dir // Literals.node_modules // "bs-platform" // "bin") ^ ":$$PATH && " in
+                  ^ "export PATH=" ^ (root_project_dir // Literals.node_modules // ".bin") ^ ":" ^ ocaml_dir ^ ":" ^ bsc_dir ^ ":$$PATH && " in
       (* We move out of lib/bs/XYZ so that the command is ran from the root project. *)
       let rule = Bsb_rule.define ~command:("cd ../../.. && " ^ envvars ^ build_script) "build_script" in
       Bsb_ninja_util.output_build oc
