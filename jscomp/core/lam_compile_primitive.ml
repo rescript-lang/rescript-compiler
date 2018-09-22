@@ -675,20 +675,30 @@ let translate  loc
       | _ ->   assert false
     end
   | Pctconst ct -> 
-    begin
-      match ct with 
-      | Big_endian -> E.bool Sys.big_endian
-      | Word_size -> 
-        E.small_int  Sys.word_size
-      | Ostype_unix -> E.bool Sys.unix
-      | Ostype_win32 -> E.bool Sys.win32      
-      | Ostype_cygwin -> E.bool Sys.cygwin
-    end
+    (match ct with 
+     | Big_endian -> E.bool Sys.big_endian
+     | Word_size -> 
+       E.small_int  Sys.word_size
+     | Ostype_unix -> E.bool Sys.unix
+     | Ostype_win32 -> E.bool Sys.win32      
+     | Ostype_cygwin -> E.bool Sys.cygwin
+#if OCAML_VERSION =~ ">4.03.0" then
+     | Int_size
+     | Max_wosize
+     | Backend_type  -> assert false (* FIXME*)
+#end
+     )
+    
   | Pduprecord ((Record_regular 
                 | Record_float ),_) -> 
     (* _size is the length of all_lables*)
     (* TODO: In debug mode, need switch to  *)
-    Lam_dispatch_primitive.translate loc "caml_array_dup" args 
+    Lam_dispatch_primitive.translate loc "caml_array_dup" args
+#if OCAML_VERSION =~ ">4.03.0" then
+  | Pduprecord ((Record_extension|Record_unboxed _|Record_inlined _), _)
+    -> 
+    assert false (* FIXME *)
+#end
   | Pbigarrayref (unsafe, dimension, kind, layout)
     -> 
     (* can be refined to 

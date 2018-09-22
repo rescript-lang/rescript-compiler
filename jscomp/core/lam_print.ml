@@ -95,6 +95,11 @@ let record_rep ppf r =
   match r with
   | Record_regular -> fprintf ppf "regular"
   | Record_float -> fprintf ppf "float"
+#if OCAML_VERSION =~ ">4.03.0" then
+  | Record_inlined i -> fprintf ppf "inlined %d" i 
+  | Record_unboxed b -> fprintf ppf "unboxed %b" b
+  | Record_extension -> fprintf ppf "ext"
+#end
 ;;
 
 let string_of_loc_kind (loc : Lambda.loc_kind) =
@@ -225,7 +230,13 @@ let primitive ppf (prim : Lam_primitive.t) = match prim with
       | Word_size -> "word_size"
       | Ostype_unix -> "ostype_unix"
       | Ostype_win32 -> "ostype_win32"
-      | Ostype_cygwin -> "ostype_cygwin" in
+      | Ostype_cygwin -> "ostype_cygwin" 
+#if OCAML_VERSION =~ ">4.03.0" then     
+      | Int_size -> "int_size"
+      | Max_wosize -> "max_wosize"
+      | Backend_type -> "backend_type"
+#end
+    in
     fprintf ppf "sys.constant_%s" const_name
   | Pisint -> fprintf ppf "isint"
   | Pisout -> fprintf ppf "isout"

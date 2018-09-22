@@ -53,12 +53,24 @@ type bigarray_layout = Lambda.bigarray_layout =
 
 
 type compile_time_constant = Lambda.compile_time_constant = 
+#if OCAML_VERSION =~ ">4.03.0" then 
+
+  | Big_endian
+  | Word_size
+  | Int_size
+  | Max_wosize
+  | Ostype_unix
+  | Ostype_win32
+  | Ostype_cygwin
+  | Backend_type
+
+#else
   | Big_endian
   | Word_size
   | Ostype_unix
   | Ostype_win32
   | Ostype_cygwin
-
+#end
 type let_kind = Lambda.let_kind
 = Strict
 | Alias
@@ -75,10 +87,18 @@ type field_dbg_info = Lambda.field_dbg_info =
   | Fld_na
   | Fld_record of string
   | Fld_module of string 
-
+#if OCAML_VERSION =~ ">4.03.0"  then 
+  | Fld_record_inline of string 
+  | Fld_record_extension of string 
+#end  
+  
 type set_field_dbg_info = Lambda.set_field_dbg_info = 
   | Fld_set_na
   | Fld_record_set of string 
+#if OCAML_VERSION =~ ">4.03.0"  then     
+  | Fld_record_inline_set of string  
+  | Fld_record_extension_set of string
+#end  
 
 val cmp_int32 : comparison -> int32 -> int32 -> bool 
 val cmp_int64 : comparison -> int64 -> int64 -> bool 

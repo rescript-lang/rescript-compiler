@@ -48,22 +48,30 @@ let make_block mutable_flag (tag_info : Lam_tag_info.t) tag args  =
   (*       (E.int  ?comment:(Lam_compile_util.comment_of_tag_info tag_info) tag   *)
   (*        :: args) *)
 
-let field field_info e i =
+let field (field_info : Lam_compat.field_dbg_info) e i =
   match field_info with 
-  | Lam_compat.Fld_na -> 
+  | Fld_na -> 
     E.index e i 
-  | Lam_compat.Fld_record s 
-  | Lam_compat.Fld_module s 
+  | Fld_record s 
+  | Fld_module s 
     -> E.index ~comment:s e i
+#if OCAML_VERSION =~ ">4.03.0" then 
+  | Fld_record_inline _
+  | Fld_record_extension _ -> assert false (* FIXME *)
+#end
 
 
 
-let set_field field_info e i e0 =
+let set_field (field_info : Lam_compat.set_field_dbg_info) e i e0 =
   let comment = 
     match field_info with 
-    | Lam_compat.Fld_set_na 
+    | Fld_set_na 
       -> None
     | Fld_record_set s -> Some (s)
+#if OCAML_VERSION =~ ">4.03.0" then
+    | Fld_record_inline_set _
+    | Fld_record_extension_set _ -> assert false (* FIXME*)
+#end    
   in (* see GPR#631*)
   E.assign_addr 
     ?comment e i 

@@ -26,7 +26,8 @@
                 "endColumn": 4
             },
             {
-                "regexp": "^(?:(?:Parse\\s+)?(Warning|[Ee]rror)(?:\\s+\\d+)?:)?\\s+(.*)$",
+                // "regexp": "^(?:(?:Parse\\s+)?(Warning|[Ee]rror)(?:\\s+\\d+)?:)?\\s+(.*)$",
+                "regexp": "^(?:(?:Parse\\s+)?(Warning|[Ee]rror)(?:\\s+\\(warning \\d+\\))?(?:\\s+\\d+)?:)?\\s+(.*)$",
                 "severity": 1,
                 "message": 2,
                 "loop": true

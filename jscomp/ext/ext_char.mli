@@ -37,3 +37,5 @@ val valid_hex : char -> bool
 val is_lower_case : char -> bool
 
 val uppercase_ascii : char -> char
+
+val lowercase_ascii : char -> char

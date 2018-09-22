@@ -50,7 +50,12 @@ let after_parsing_sig ppf sourcefile outputprefix ast  =
       Lam_compile_env.reset () ;
       let initial_env = Compmisc.initial_env () in
       Env.set_unit_name modulename;
-      let tsg = Typemod.type_interface initial_env ast in
+
+      let tsg = Typemod.type_interface 
+#if OCAML_VERSION =~ ">4.03.0" then
+          sourcefile
+#end
+          initial_env ast in
       if !Clflags.dump_typedtree then fprintf ppf "%a@." Printtyped.interface tsg;
       let sg = tsg.sig_type in
       if !Clflags.print_types then
@@ -61,7 +66,14 @@ let after_parsing_sig ppf sourcefile outputprefix ast  =
       Typecore.force_delayed_checks ();
       Warnings.check_fatal ();
       if not !Clflags.print_types then begin
+#if OCAML_VERSION =~ ">4.03.0" then
+        let deprecated = Builtin_attributes.deprecated_of_sig ast in
+        let sg =
+          Env.save_signature ~deprecated sg modulename (outputprefix ^ ".cmi")
+        in
+#else
         let sg = Env.save_signature sg modulename (outputprefix ^ ".cmi") in
+#end        
         Typemod.save_signature modulename tsg outputprefix sourcefile
           initial_env sg ;
       end
@@ -108,8 +120,15 @@ let after_parsing_impl ppf sourcefile outputprefix ast =
         end else begin
           (typedtree, coercion)
           |> Translmod.transl_implementation modulename
-          |> print_if ppf Clflags.dump_rawlambda Printlambda.lambda
-          |> (fun lambda -> 
+
+          |> (fun 
+#if OCAML_VERSION =~ ">4.03.0" then
+              {code = lambda}
+#else
+              lambda
+#end              
+               -> 
+              ignore (print_if ppf Clflags.dump_rawlambda Printlambda.lambda lambda);
               try
                 Lam_compile_main.lambda_as_module
                   finalenv current_signature 

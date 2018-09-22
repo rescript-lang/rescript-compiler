@@ -19,7 +19,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 *)
 (* Authors: Jérôme Vouillon, Hongbo Zhang  *)
-
+#if OCAML_VERSION =~ ">4.03.0" then
+[@@@ocaml.warning "-57"] (* turn off such warning temporarily*)
+#end
 (*
   http://stackoverflow.com/questions/2846283/what-are-the-rules-for-javascripts-automatic-semicolon-insertion-asi
   ASI catch up
