@@ -161,7 +161,7 @@ let apply_labels
     pexp_desc = 
       Pexp_apply(
         fn, 
-        Ext_list.map (fun (l,a) -> Asttypes.Labelled l, a)  args ) }
+        Ext_list.map args (fun (l,a) -> Asttypes.Labelled l, a)   ) }
 
 let object_ 
   ?(loc= default_loc)
@@ -172,8 +172,8 @@ let object_
   {
     ptyp_desc = 
       Ptyp_object(
-        Ext_list.map (fun (a,b,c) -> 
-          Parsetree.Otag ({txt = a; loc = c.ptyp_loc},b,c)) fields,flg);
+        Ext_list.map fields (fun (a,b,c) -> 
+          Parsetree.Otag ({txt = a; loc = c.ptyp_loc},b,c)),flg);
     ptyp_loc = loc;
     ptyp_attributes = attrs
   }

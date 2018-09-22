@@ -29,22 +29,30 @@
 
 module E = Js_exp_make 
 
-let get_double_feild field_info e i = 
+let get_double_feild (field_info : Lam_compat.field_dbg_info) e i = 
   match field_info with 
-  | Lam_compat.Fld_na -> 
+  | Fld_na -> 
     E.index e i 
-  | Lam_compat.Fld_record s 
-  | Lam_compat.Fld_module s 
+  | Fld_record s 
+  | Fld_module s 
     -> E.index ~comment:s e i
+#if OCAML_VERSION =~ ">4.03.0" then 
+  | Fld_record_inline _
+  | Fld_record_extension _ -> assert false (*FIXME*)
+#end
 
-
-let set_double_field field_info e  i e0 = 
+let set_double_field (field_info : Lam_compat.set_field_dbg_info) e  i e0 = 
   let v = 
     match field_info with 
-    | Lam_compat.Fld_set_na 
+    | Fld_set_na 
       -> 
       E.index e i 
     | Fld_record_set s -> 
-      E.index ~comment:s e i in 
+      E.index ~comment:s e i 
+#if OCAML_VERSION =~ ">4.03.0" then 
+  | Fld_record_inline_set _
+  | Fld_record_extension_set _ -> assert false (*FIXME*)
+#end      
+  in 
   E.assign v  e0
 

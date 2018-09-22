@@ -28,7 +28,12 @@ type ident = Ident.t
   
 type record_representation = Types.record_representation =  
     | Record_regular
-    | Record_float 
+    | Record_float
+#if OCAML_VERSION =~ ">4.03.0" then
+    | Record_unboxed of bool    (* Unboxed single-field record, inlined or not *)
+    | Record_inlined of int               (* Inlined record *)
+    | Record_extension                    (* Inlined record under extension *)
+#end  
 
 type t =
   | Pbytes_to_string
@@ -175,7 +180,16 @@ let eq_record_representation ( p : record_representation) ( p1 : record_represen
   match p with 
   | Record_float -> p1 = Record_float
   | Record_regular -> p1 = Record_regular
-
+#if OCAML_VERSION =~ ">4.03.0" then 
+  | Record_unboxed b0 -> 
+    (match p1 with 
+    |Record_unboxed b1 -> b0 = b1 | _ -> false)
+  | Record_inlined b0 -> 
+    (match p1 with 
+    |Record_inlined b1 -> b0 = b1 | _ -> false)
+  | Record_extension -> 
+    p1 = Record_extension   
+#end
 let eq_primitive_approx ( lhs : t) (rhs : t) = 
   match lhs with 
   | Pcreate_extension a -> begin match rhs with Pcreate_extension b -> a = (b : string) | _ -> false end

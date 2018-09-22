@@ -166,3 +166,4 @@ val capitalize_ascii : string -> string
 
 val uncapitalize_ascii : string -> string
 
+val lowercase_ascii : string -> string 

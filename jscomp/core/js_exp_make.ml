@@ -584,12 +584,13 @@ let rec and_ ?comment (e1 : t) (e2 : t) : t =
   | Var i, Var j when Js_op_util.same_vident  i j 
     -> 
     e1
-  | Var i, 
-    (Bin (And,   {expression_desc = Var j ; _}, _) 
-    | Bin (And ,  _, {expression_desc = Var j ; _}))
+  | Var i, Bin (And,   {expression_desc = Var j ; _}, _)     
     when Js_op_util.same_vident  i j 
     ->
     e2          
+  | Var i,  Bin (And , l, ({expression_desc = Var j ; _} as r))
+    when Js_op_util.same_vident  i j -> 
+    { e2 with expression_desc = Bin(And, r,l)}
   | _, _ ->     
     { expression_desc = Bin(And, e1,e2) ; comment }
 
@@ -600,10 +601,14 @@ let rec or_ ?comment (e1 : t) (e2 : t) =
     -> 
     e1
   | Var i, 
-    (Bin (Or,   {expression_desc = Var j ; _}, _) 
-    | Bin (Or ,  _, {expression_desc = Var j ; _}))
+    Bin (Or,   {expression_desc = Var j ; _}, _)    
     when Js_op_util.same_vident  i j 
     -> e2          
+  | Var i, 
+    Bin (Or ,  l, ({expression_desc = Var j ; _} as r))
+    when Js_op_util.same_vident  i j
+     ->
+    { e2 with expression_desc = Bin(Or,r,l)}
   | _, _ ->     
     {expression_desc = Bin(Or, e1,e2); comment }
 
@@ -1170,9 +1175,11 @@ let int32_mul ?comment
     (e2 : J.expression) : J.expression = 
   match e1, e2 with 
   | {expression_desc = Number (Int {i = 0l}|  Uint 0l | Nint 0n); _}, x
+    when Js_analyzer.no_side_effect_expression x -> 
+    zero_int_literal
   | x, {expression_desc = Number (Int {i = 0l}|  Uint 0l | Nint 0n); _} 
-    when Js_analyzer.no_side_effect_expression x 
-    -> zero_int_literal
+    when Js_analyzer.no_side_effect_expression x -> 
+    zero_int_literal
   | {expression_desc = Number (Int{i = i0}); _}, {expression_desc = Number (Int {i = i1}); _}
     -> int (Int32.mul i0 i1)
   | e , {expression_desc = Number (Int {i = i0} | Uint i0 ); _}

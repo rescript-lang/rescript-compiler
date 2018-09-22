@@ -80,3 +80,10 @@ let uppercase_ascii =
 #else
     Char.uppercase
 #end      
+
+let lowercase_ascii = 
+#if OCAML_VERSION =~ ">4.3.0" then
+    Char.lowercase_ascii
+#else
+    Char.lowercase
+#end      

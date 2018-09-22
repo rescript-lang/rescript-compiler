@@ -48,7 +48,7 @@ let make exception_str  : J.expression =
 
 
 let get_builtin_by_name name = 
-  E.runtime_ref Js_runtime_modules.builtin_exceptions (String.lowercase name)
+  E.runtime_ref Js_runtime_modules.builtin_exceptions (Ext_string.lowercase_ascii name)
 
 
 (* let match_exception_def (args : J.expression list) =  *)

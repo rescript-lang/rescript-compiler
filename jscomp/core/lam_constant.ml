@@ -81,18 +81,15 @@ let rec convert_constant ( const : Lambda.structured_constant) : t =
       begin match t with 
       | Blk_some_not_nested 
         -> 
-        begin match xs with 
+        (match xs with 
         | [x] -> 
           Const_some (convert_constant x)
-        | _ -> assert false
-        end 
-
+        | _ -> assert false)        
       | Blk_some -> 
-        begin match xs with 
+        (match xs with 
         | [x] -> 
           Const_some (convert_constant x)
-        | _ -> assert false
-        end 
+        | _ -> assert false)        
       | Blk_constructor(a,b) ->   
         let t : Lam_tag_info.t = Blk_constructor(a,b) in 
         Const_block (i,t, Ext_list.map xs convert_constant )
@@ -117,6 +114,11 @@ let rec convert_constant ( const : Lambda.structured_constant) : t =
       | Blk_na -> 
         let t : Lam_tag_info.t = Blk_na in 
         Const_block (i,t, Ext_list.map xs convert_constant )      
+#if OCAML_VERSION =~ ">4.03.0" then
+      | Blk_record_inlined _ 
+      | Blk_record_ext _ ->   
+        assert false (* FIXME *)
+#end        
       end
       
 

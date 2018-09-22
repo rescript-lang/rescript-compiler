@@ -462,7 +462,15 @@ let uncapitalize_ascii =
 #end      
 
 
+#if OCAML_VERSION =~ ">4.03.0" then 
+let lowercase_ascii = String.lowercase_ascii
+#else
 
+
+let lowercase_ascii (s : string) = 
+    Bytes.unsafe_to_string 
+      (Bytes.map Ext_char.lowercase_ascii (Bytes.unsafe_of_string s))
+#end
 
 
 

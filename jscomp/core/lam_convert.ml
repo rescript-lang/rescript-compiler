@@ -197,7 +197,11 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : t =
       | _ -> assert false
     end
   (* prim ~primitive:(Psetglobal id) ~args loc *)
-  | Pmakeblock (tag,info, mutable_flag)
+  | Pmakeblock (tag,info, mutable_flag
+#if OCAML_VERSION =~ ">4.03.0"  then 
+    , _block_shape
+#end
+  )
     -> 
     begin match info with 
     | Blk_some_not_nested 
@@ -234,16 +238,28 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : t =
     | Blk_na -> 
       let info : Lam_tag_info.t = Blk_na in
       prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
+#if OCAML_VERSION =~ ">4.03.0"  then
+    | Blk_record_inlined _ 
+    | Blk_record_ext _ -> assert false (*FIXME*)
+#end
     end  
   | Pfield (id,info)
     -> prim ~primitive:(Pfield (id,info)) ~args loc
 
-  | Psetfield (id,b,info)
+  | Psetfield (id,b,
+#if OCAML_VERSION =~ ">4.03.0"  then 
+    _initialization_or_assignment,
+#end
+      info)
     -> prim ~primitive:(Psetfield (id,info)) ~args loc
 
   | Pfloatfield (id,info)
     -> prim ~primitive:(Pfloatfield (id,info)) ~args loc
-  | Psetfloatfield (id,info)
+  | Psetfloatfield (id,
+#if OCAML_VERSION =~ ">4.03.0"  then 
+    _initialization_or_assignment,
+#end  
+      info)
     -> prim ~primitive:(Psetfloatfield (id,info)) ~args loc
   | Pduprecord (repr,i)
     -> prim ~primitive:(Pduprecord(repr,i)) ~args loc
@@ -259,8 +275,16 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : t =
   | Paddint -> prim ~primitive:Paddint ~args loc
   | Psubint -> prim ~primitive:Psubint ~args loc
   | Pmulint -> prim ~primitive:Pmulint ~args loc
-  | Pdivint -> prim ~primitive:Pdivint ~args loc
-  | Pmodint -> prim ~primitive:Pmodint ~args loc
+  | Pdivint 
+#if OCAML_VERSION =~ ">4.03.0" then
+    _is_safe (*FIXME*)
+#end    
+    -> prim ~primitive:Pdivint ~args loc
+  | Pmodint 
+#if OCAML_VERSION =~ ">4.03.0" then
+    _is_safe (*FIXME*)
+#end  
+    -> prim ~primitive:Pmodint ~args loc
   | Pandint -> prim ~primitive:Pandint ~args loc
   | Porint -> prim ~primitive:Porint ~args loc
   | Pxorint -> prim ~primitive:Pxorint ~args loc
@@ -269,8 +293,11 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : t =
   | Pasrint -> prim ~primitive:Pasrint ~args loc
   | Pstringlength -> prim ~primitive:Pstringlength ~args loc
   | Pstringrefu -> prim ~primitive:Pstringrefu ~args loc
+#if OCAML_VERSION =~ ">4.03.0" then
+#else
   | Pstringsetu
   | Pstringsets -> assert false
+#end
   | Pstringrefs -> prim ~primitive:Pstringrefs ~args loc
 
   | Pbyteslength -> prim ~primitive:Pbyteslength ~args loc
@@ -295,7 +322,13 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : t =
   | Poffsetint x -> prim ~primitive:(Poffsetint x) ~args loc
   | Poffsetref x -> prim ~primitive:(Poffsetref x) ~args  loc
   | Pfloatcomp x -> prim ~primitive:(Pfloatcomp x) ~args loc
-  | Pmakearray x -> prim ~primitive:(Pmakearray x) ~args  loc
+  | Pmakearray 
+#if OCAML_VERSION =~ ">4.03.0"  then
+    (x, _mutable_flag) (*FIXME*)
+#else
+    x 
+#end    
+    -> prim ~primitive:(Pmakearray x) ~args  loc
   | Parraylength _ -> prim ~primitive:Parraylength ~args loc
   | Parrayrefu _ -> prim ~primitive:(Parrayrefu ) ~args loc
   | Parraysetu _ -> prim ~primitive:(Parraysetu ) ~args loc
@@ -307,8 +340,21 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : t =
   | Paddbint x -> prim ~primitive:(Paddbint x) ~args loc
   | Psubbint x -> prim ~primitive:(Psubbint x) ~args loc
   | Pmulbint x -> prim ~primitive:(Pmulbint x) ~args loc
-  | Pdivbint x -> prim ~primitive:(Pdivbint x) ~args loc
-  | Pmodbint x -> prim ~primitive:(Pmodbint x) ~args loc
+  | Pdivbint 
+#if OCAML_VERSION =~ ">4.03.0" then
+    {size = x; is_safe } (*FIXME*)
+#else
+    x 
+#end    
+    ->
+     prim ~primitive:(Pdivbint x) ~args loc
+  | Pmodbint 
+#if OCAML_VERSION =~ ">4.03.0" then
+    {size = x; is_safe } (*FIXME*)
+#else
+    x 
+#end  
+    -> prim ~primitive:(Pmodbint x) ~args loc
   | Pandbint x -> prim ~primitive:(Pandbint x) ~args loc
   | Porbint x -> prim ~primitive:(Porbint x) ~args loc
   | Pxorbint x -> prim ~primitive:(Pxorbint x) ~args loc
@@ -340,7 +386,12 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : t =
   | Pbintcomp (a,b) -> prim ~primitive:(Pbintcomp (a,b)) ~args loc
   | Pbigarrayref (a,b,c,d) -> prim ~primitive:(Pbigarrayref (a,b,c,d)) ~args loc
   | Pbigarrayset (a,b,c,d) -> prim ~primitive:(Pbigarrayset (a,b,c,d)) ~args loc
-
+#if OCAML_VERSION =~ ">4.03.0" then 
+  | Pfield_computed
+  | Popaque
+  | Psetfield_computed _ 
+  | Pduparray _ ->  assert false (* FIXME *)
+#end
 
 
 
@@ -366,7 +417,11 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : t * Lam_module_ident
         *)
         begin match prim_name  ,  args with
           | "caml_set_oo_id" ,
-            [ Lprim (Pmakeblock(tag,Blk_extension_slot, _),
+            [ Lprim (Pmakeblock(tag,Blk_extension_slot, _
+#if OCAML_VERSION =~ ">4.03.0" then 
+                      ,_ (*FIXME caml_set_oo_id is no longer needed?*)
+#end                      
+                      ),
                      Lconst (Const_base(Const_string(name,_))) :: _,
                      loc
                     )]
@@ -497,7 +552,12 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : t * Lam_module_ident
         Lam.var var
     | Lconst x ->
       Lam.const (Lam_constant.convert_constant x )
-    | Lapply (fn,args,loc)
+    | Lapply 
+#if OCAML_VERSION =~ ">4.03.0" then
+        {ap_func = fn; ap_args = args; ap_loc = loc; }
+#else
+    (fn,args,loc)
+#end    
       ->
       begin match fn with
         (*
@@ -571,12 +631,29 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : t * Lam_module_ident
           Lam.apply (convert_aux fn) (Ext_list.map args convert_aux )
             loc App_na
       end
-    | Lfunction (Tupled,_,_) -> assert false
-    | Lfunction (Curried,  params,body)
+    | Lfunction 
+#if OCAML_VERSION =~ ">4.03.0" then
+      { kind = Tupled }
+#else
+      (Tupled,_,_) 
+#end      
+      ->
+       assert false
+    | Lfunction 
+#if OCAML_VERSION =~ ">4.03.0" then 
+    {kind = Curried ; params; body }
+#else
+    (Curried,  params,body)
+#end    
       ->  Lam.function_
             ~arity:(List.length params)  ~params
             ~body:(convert_aux body)
-    | Llet (kind,id,e,body)
+    | Llet 
+#if OCAML_VERSION =~ ">4.03.0" then
+      (kind,_value_kind, id,e,body) (*FIXME*)
+#else
+      (kind,id,e,body)
+#end      
       ->
 
       begin match kind, e with
@@ -611,14 +688,21 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : t * Lam_module_ident
            TODO: [airty = 0] when arity =0, it can not be escaped user can only
            write  [f x ] instead of [x |> f ]
         *)
-        | Lfunction(kind, [param],Lprim(external_fn,[Lvar inner_arg],inner_loc))
+#if OCAML_VERSION  =~ ">4.03.0" then
+        | Lfunction {params = [param]; body = Lprim (external_fn, [Lvar inner_arg], inner_loc) }
+#else        
+        | Lfunction(_kind, [param],Lprim(external_fn,[Lvar inner_arg],inner_loc))
+#end        
           when Ident.same param inner_arg
           ->
           convert_aux  (Lprim(external_fn,  [x], outer_loc))
-
+#if OCAML_VERSION =~ ">4.03.0" then 
+        | Lapply {ap_func = Lfunction{ params; body = Lprim(external_fn,inner_args,inner_loc)}; ap_args = args; ap_loc = outer_loc}
+#else
         |  Lapply(Lfunction(kind, params,Lprim(external_fn,inner_args,inner_loc)), args, outer_loc ) (* x |> f a *)
+#end        
 
-          when Ext_list.for_all2_no_exn params inner_args (fun x y -> match y with Lambda.Lvar y when Ident.same x y  -> true | _ -> false ) 
+          when Ext_list.for_all2_no_exn params inner_args (fun x y -> match y with Lvar y when Ident.same x y  -> true | _ -> false ) 
                &&
                Ext_list.length_larger_than_n inner_args args 1 
           ->
@@ -652,7 +736,13 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : t * Lam_module_ident
       ->
       let args = Ext_list.map args convert_aux in
       lam_prim ~primitive ~args loc
-    | Lswitch (e,s) ->
+    | Lswitch 
+#if OCAML_VERSION =~ ">4.03.0" then
+      (e,s, _loc)
+#else
+      (e,s) 
+#end      
+      ->
       let  e = convert_aux e in
       begin match s with
         | {

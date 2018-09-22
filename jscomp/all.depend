@@ -20,7 +20,7 @@ ext/map_gen.cmx :
 ext/ext_file_pp.cmx : ext/string_vec.cmx ext/ext_file_pp.cmi
 ext/ext_format.cmx : ext/ext_format.cmi
 ext/hashtbl_gen.cmx : ext/ext_util.cmx
-ext/ext_string.cmx : ext/ext_bytes.cmx ext/ext_string.cmi
+ext/ext_string.cmx : ext/ext_char.cmx ext/ext_bytes.cmx ext/ext_string.cmi
 ext/ext_utf8.cmx : ext/ext_utf8.cmi
 ext/ext_js_regex.cmx : ext/ext_utf8.cmx ext/ext_js_regex.cmi
 ext/string_hashtbl.cmx : ext/hashtbl_gen.cmx ext/ext_string.cmx \
@@ -570,7 +570,8 @@ core/js_long.cmx : core/lam_tag_info.cmx core/lam_compat.cmx \
     core/js_runtime_modules.cmx core/js_exp_make.cmx core/js_analyzer.cmx \
     core/j.cmx core/js_long.cmi
 core/js_of_lam_exception.cmx : ext/literals.cmx core/js_runtime_modules.cmx \
-    core/js_exp_make.cmx core/j.cmx core/js_of_lam_exception.cmi
+    core/js_exp_make.cmx core/j.cmx ext/ext_string.cmx \
+    core/js_of_lam_exception.cmi
 core/js_of_lam_module.cmx : core/js_exp_make.cmx core/j.cmx \
     core/js_of_lam_module.cmi
 core/js_of_lam_array.cmx : core/js_exp_make.cmx core/js_of_lam_array.cmi

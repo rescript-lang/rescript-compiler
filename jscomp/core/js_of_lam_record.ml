@@ -41,12 +41,17 @@ let empty_record_info = Lam_tag_info.Blk_record [||] (* careful to share*)
 
 
 
-let field field_info  e i =
+let field (field_info : Lam_compat.field_dbg_info) e i =
   match field_info with 
-  | Lam_compat.Fld_na -> 
+  | Fld_na -> 
     E.index e i 
-  | Lam_compat.Fld_record s 
-  | Lam_compat.Fld_module s 
+  | Fld_record s 
+  | Fld_module s 
     -> E.index ~comment:s e i
+#if OCAML_VERSION =~ ">4.03.0" then
+  | Fld_record_inline _
+  | Fld_record_extension _ -> 
+    assert false (* FIXME *)
+#end
 
 
