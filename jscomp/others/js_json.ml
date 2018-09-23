@@ -175,8 +175,12 @@ let _toJson: preJson -> t = fun%raw data -> {|
   }
 |}
 
+(** This dance is required to appease the type checker -- doing 
+ * `toJson: 'a -> t = fun%raw` gives the error "contains type variables
+ * that cannot be generalized". *)
 external toT : 'a -> preJson = "%identity"
 let serializeAnyToJson data = _toJson (toT data)
+
 let unserializeAnyFromJsonUnsafe: t -> 'a = fun%raw data -> {|
   if (!data) {
     return data
