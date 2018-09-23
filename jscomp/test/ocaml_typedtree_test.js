@@ -224,9 +224,9 @@ function find_in_path_uncap(path, name) {
       var dir = param[0];
       var fullname = Filename.concat(dir, name);
       var ufullname = Filename.concat(dir, uname);
-      if (Caml_sys.caml_sys_file_exists(ufullname)) {
+      if (Caml_missing_polyfill.not_implemented("caml_sys_file_exists")) {
         return ufullname;
-      } else if (Caml_sys.caml_sys_file_exists(fullname)) {
+      } else if (Caml_missing_polyfill.not_implemented("caml_sys_file_exists")) {
         return fullname;
       } else {
         _param = param[1];
@@ -76346,7 +76346,7 @@ function type_implementation_more(sourcefile, outputprefix, modulename, initial_
     } else {
       var sourceintf = chop_extension_if_any(sourcefile) + interface_suffix[0];
       var mli_status = assume_no_mli[0];
-      if (mli_status === /* Mli_na */0 && Caml_sys.caml_sys_file_exists(sourceintf) || mli_status === /* Mli_exists */1) {
+      if (mli_status === /* Mli_na */0 && Caml_missing_polyfill.not_implemented("caml_sys_file_exists") || mli_status === /* Mli_exists */1) {
         var intf_file;
         try {
           intf_file = find_in_path_uncap(load_path[0], modulename + ".cmi");
