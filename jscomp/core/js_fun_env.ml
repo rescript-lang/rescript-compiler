@@ -57,7 +57,7 @@ type t = {
 }
 (** Invariant: unused param has to be immutable *)
 
-let empty ?immutable_mask n = { 
+let make ?immutable_mask n = { 
   unbounded =  Ident_set.empty ;
   used_mask = Array.make n false;
   immutable_mask = 
@@ -68,7 +68,8 @@ let empty ?immutable_mask n = {
   bound_loop_mutable_values =Ident_set.empty;
 }
 
-let is_tailcalled x = x.immutable_mask <> All_immutable_and_no_tail_call
+let is_tailcalled x = 
+  x.immutable_mask <> All_immutable_and_no_tail_call
 
 let mark_unused  t i = 
   t.used_mask.(i) <- true
