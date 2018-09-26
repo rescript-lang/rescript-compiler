@@ -375,7 +375,7 @@ if (watch_mode) {
             }
             reasons_to_rebuild = [];
             var p = child_process
-                .spawn(bsb_exe, [], { stdio: ['inherit', 'inherit', 'pipe'] });
+                .spawn(bsb_exe, delegate_args.filter(arg => arg !== "-make-world" && arg !== "-w"), { stdio: ['inherit', 'inherit', 'pipe'] });
             p.on('exit', build_finished_callback)
             p.stderr
                 .setEncoding('utf8')
