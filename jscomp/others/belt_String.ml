@@ -1,4 +1,4 @@
-include String
+open String
 
 let split_on_char sep s =
   let r = ref [] in
