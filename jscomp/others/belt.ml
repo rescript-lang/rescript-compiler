@@ -255,3 +255,10 @@ module Result = Belt_Result
     Utilities for set up debugging
 *)
 module Debug = Belt_Debug
+
+(** {!Belt.String}
+
+    String utilities
+*)
+module String = Belt_String
+
