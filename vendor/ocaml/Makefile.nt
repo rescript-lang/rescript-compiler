@@ -67,7 +67,10 @@ COMP=bytecomp/lambda.cmo bytecomp/printlambda.cmo \
   driver/pparse.cmo driver/main_args.cmo \
   driver/compenv.cmo driver/compmisc.cmo
 
-COMMON=$(UTILS) $(PARSING) $(TYPING) $(COMP)
+super_packed.cmo: $(UTILS) $(PARSING) $(TYPING)
+	$(CAMLC) $(COMPFLAGS) -c super_packed.ml
+
+COMMON=$(UTILS) $(PARSING) $(TYPING) super_packed.cmo $(COMP)
 
 BYTECOMP=bytecomp/meta.cmo bytecomp/instruct.cmo bytecomp/bytegen.cmo \
   bytecomp/printinstr.cmo bytecomp/opcodes.cmo bytecomp/emitcode.cmo \
@@ -282,6 +285,8 @@ installopt:
 	done
 	if test -f ocamlopt.opt ; then $(MAKEREC) installoptopt; fi
 	cd tools; $(MAKE) installopt
+	cp ocamlc.opt ocamlc.opt.exe
+	cp ocamlopt.opt ocamlopt.opt.exe
 
 installoptopt:
 	cp ocamlc.opt $(INSTALL_BINDIR)/ocamlc.opt$(EXE)
