@@ -37,12 +37,12 @@ let newTdcls
     [{ x with Parsetree.ptype_attributes = newAttrs}]
   | _ ->
     Ext_list.map_last
+    tdcls
       (fun last x ->
          if last then
            { x with
              Parsetree.ptype_attributes = newAttrs}
          else x )
-      tdcls
 
 (* @perf this could be faster, by not being done alongside the rest.
   Right now we process the types a billion times for different things (also because I'm trying to 

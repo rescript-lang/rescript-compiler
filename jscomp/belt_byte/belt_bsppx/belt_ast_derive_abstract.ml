@@ -101,6 +101,12 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
     } in
     let setter_accessor, makeType, labels =
       Ext_list.fold_right
+        label_declarations
+        ([],
+         (if has_optional_field then
+            Typ.arrow ~loc "" (Ast_literal.type_unit ()) core_type
+          else  core_type),
+         [])
         (fun
           ({pld_name =
               {txt = label_name; loc = label_loc} as pld_name;
@@ -136,7 +142,7 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
                 ptyp_loc = pld_loc;
                 ptyp_attributes = [];
               } in
-              Ast_core_type.opt_arrow pld_loc label_name maker_optional_type maker,
+              Typ.arrow ~loc:pld_loc label_name maker_optional_type maker,
               Typ.arrow ~loc "" core_type getter_optional_type
             else
               Typ.arrow ~loc:pld_loc label_name pld_type maker,
@@ -180,21 +186,16 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
           acc,
           maker,
           newLabel::labels
-        ) label_declarations
-        ([],
-         (if has_optional_field then
-            Typ.arrow ~loc "" (Ast_literal.type_unit ()) core_type
-          else  core_type),
-         [])
+        ) 
     in
     newTdcl,
     (if is_private then
        setter_accessor
      else
-       let maker_body = Exp.record (Ext_list.fold_right (fun ({ Asttypes.txt }) rest ->
+       let maker_body = Exp.record (Ext_list.fold_right labels [] (fun ({ Asttypes.txt }) rest ->
           let field_name = {Asttypes.txt = Longident.Lident (strip_option txt); loc = !default_loc} in
           (field_name, Exp.ident field_name) :: rest
-        ) labels []) None in
+        )) None in
        (* This is to support bs.optional, which makes certain args of the function optional so we
           add a unit at the end to prevent auto-currying issues. *)
        let body_with_extra_unit_fun = (if has_optional_field then 
@@ -207,11 +208,12 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
             (Pat.var {loc; txt = type_name}) 
             (Exp.constraint_ (
               Ext_list.fold_right
+                labels
+                body_with_extra_unit_fun
                 (fun arg_name rest ->
                   (Exp.fun_ arg_name.Asttypes.txt None 
                     (Pat.var ({arg_name with txt = strip_option arg_name.Asttypes.txt})) rest))
-                labels
-                body_with_extra_unit_fun) makeType)
+                ) makeType)
         ]
         in
        (myMaker :: setter_accessor))
@@ -242,6 +244,12 @@ let handleTdclSig (tdcl : Parsetree.type_declaration) =
         ) label_declarations in
     let setter_accessor, makeType, labels =
       Ext_list.fold_right
+        label_declarations
+        ([],
+         (if has_optional_field then
+            Typ.arrow ~loc "" (Ast_literal.type_unit ()) core_type
+          else  core_type),
+         [])
         (fun
           ({pld_name =
               {txt = label_name; loc = label_loc} as pld_name;
@@ -273,7 +281,7 @@ let handleTdclSig (tdcl : Parsetree.type_declaration) =
                     ptyp_loc = pld_loc;
                   ptyp_attributes = []
                 } in
-              Ast_core_type.opt_arrow pld_loc label_name maker_optional_type maker,
+              Typ.arrow ~loc:pld_loc label_name maker_optional_type maker,
               Typ.arrow ~loc "" core_type getter_optional_type
             else
               Typ.arrow ~loc:pld_loc label_name pld_type maker,
@@ -304,12 +312,7 @@ let handleTdclSig (tdcl : Parsetree.type_declaration) =
           acc,
           maker,
           (is_option, newLabel)::labels
-        ) label_declarations
-        ([],
-         (if has_optional_field then
-            Typ.arrow ~loc "" (Ast_literal.type_unit ()) core_type
-          else  core_type),
-         [])
+        ) 
     in
     newTdcl,
     (if is_private then
@@ -337,8 +340,8 @@ let handleTdclsInStr tdcls =
           (
             ntdcl::tdcls,
             {ntdcl with ptype_kind = Ptype_abstract }::tdcls_sig,
-            Ext_list.map_append (fun x -> x) value_descriptions sts,
-            Ext_list.map_append (function
+            Ext_list.map_append value_descriptions sts (fun x -> x),
+            Ext_list.map_append value_descriptions code_sig (function
               | {pstr_loc; pstr_desc = 
                   Pstr_value (_, (({
                     pvb_pat = {ppat_desc = Ppat_var name}; 
@@ -347,7 +350,7 @@ let handleTdclsInStr tdcls =
                 } -> 
                 Sig.value (Val.mk ~loc:pstr_loc name typ)
               | _ -> Sig.type_ []
-              ) value_descriptions code_sig
+              )
           )
       ) tdcls ([],[], [], [])  in
   
@@ -360,7 +363,7 @@ let handleTdclsInSig tdcls =
         match handleTdclSig tdcl with
           ntdcl, value_descriptions ->
           ntdcl::tdcls,
-          Ext_list.map_append (fun x -> Sig.value x) value_descriptions sts
+          Ext_list.map_append value_descriptions sts (fun x -> Sig.value x)
 
       ) tdcls ([],[])  in
   Sig.type_ tdcls :: code

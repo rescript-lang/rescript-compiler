@@ -45,67 +45,61 @@ let handle_exp_apply
     (e  : exp)
     (self : Bs_ast_mapper.mapper)
     (fn : exp)
-    (args : (Asttypes.label * Parsetree.expression) list)
+    (args : (Ast_compatible.arg_label * Parsetree.expression) list)
   =
   let loc = e.pexp_loc in
   begin match fn.pexp_desc with
-    (* 
-    | Pexp_apply (
-        {pexp_desc =
-           Pexp_ident  {txt = Lident "##"  ; loc} ; _},
-        [("", obj) ;
-         ("", {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _} )
-        ])
-      ->  (* f##paint 1 2 *)
-      {e with pexp_desc = Belt_ast_util.method_apply loc self obj name args }
-    | Pexp_apply (
-        {pexp_desc =
-           Pexp_ident  {txt = Lident "#@"  ; loc} ; _},
-        [("", obj) ;
-         ("", {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _} )
-        ])
-      ->  (* f##paint 1 2 *)
-      {e with pexp_desc = Belt_ast_util.property_apply loc self obj name args  } *)
     | Pexp_ident {txt = Lident "|."} ->
       (*
         a |. f
         a |. f b c [@bs]  --> f a b c [@bs]
       *)
       begin match args with
-        | [ "", obj_arg ;
-            "", fn
+        | [ 
+#if OCAML_VERSION =~ ">4.03.0" then 
+          Nolabel, obj_arg ;
+          Nolabel, fn
+#else
+          "", obj_arg ;
+          "", fn
+#end            
           ] ->
           let new_obj_arg = self.expr self obj_arg in
           begin match fn with
             | {pexp_desc = Pexp_apply (fn, args); pexp_loc; pexp_attributes} ->
               let fn = self.expr self fn in
-              let args = Ext_list.map (fun (lab,exp) -> lab, self.expr self exp ) args in
+              let args = Ext_list.map  args (fun (lab,exp) -> lab, self.expr self exp ) in
               Bs_ast_invariant.warn_unused_attributes pexp_attributes;
-              { Parsetree.pexp_desc = Pexp_apply(fn, ("", new_obj_arg) :: args);
+              { Parsetree.pexp_desc = Pexp_apply(fn, (Ast_compatible.no_label, new_obj_arg) :: args);
                 pexp_attributes = [];
                 pexp_loc = pexp_loc}
+            | {pexp_desc = Pexp_construct(ctor,None); pexp_loc; pexp_attributes} -> 
+              {fn with pexp_desc = Pexp_construct(ctor, Some new_obj_arg)}
             | _ ->
               let try_dispatch_by_tuple =
                 Ast_tuple_pattern_flatten.map_open_tuple fn (fun xs tuple_attrs ->
                     bound new_obj_arg @@  fun bounded_obj_arg ->
                     {
-                      pexp_desc =
+                      Parsetree.pexp_desc =
                         Pexp_tuple (
-                          Ext_list.map (fun (fn : Parsetree.expression) ->
+                          Ext_list.map xs (fun (fn : Parsetree.expression) ->
                               match fn with
                               | {pexp_desc = Pexp_apply (fn,args); pexp_loc; pexp_attributes }
                                 ->
                                 let fn = self.expr self fn in
-                                let args = Ext_list.map (fun (lab,exp) -> lab, self.expr self exp ) args in
+                                let args = Ext_list.map  args (fun (lab,exp) -> lab, self.expr self exp ) in
                                 Bs_ast_invariant.warn_unused_attributes pexp_attributes;
-                                { Parsetree.pexp_desc = Pexp_apply(fn, ("", bounded_obj_arg) :: args);
+                                { Parsetree.pexp_desc = Pexp_apply(fn, (Ast_compatible.no_label, bounded_obj_arg) :: args);
                                   pexp_attributes = [];
                                   pexp_loc = pexp_loc}
+                              | {pexp_desc = Pexp_construct(ctor,None); pexp_loc; pexp_attributes}    
+                                -> 
+                                {fn with pexp_desc = Pexp_construct(ctor, Some bounded_obj_arg)}
                               | _ ->
-                                Exp.apply ~loc:fn.pexp_loc
+                                Ast_compatible.app1 ~loc:fn.pexp_loc
                                   (self.expr self fn )
-                                  ["", bounded_obj_arg]
-                            ) xs );
+                                   bounded_obj_arg
+                            ));
                       pexp_attributes = tuple_attrs;
                       pexp_loc = fn.pexp_loc;
                     }
@@ -113,88 +107,20 @@ let handle_exp_apply
               begin match try_dispatch_by_tuple  with
                 | Some x -> x
                 | None ->
-                  Exp.apply ~loc (self.expr self fn) ["", new_obj_arg]
+                  Ast_compatible.app1 ~loc (self.expr self fn) new_obj_arg
               end
           end
         | _ ->
           Location.raise_errorf ~loc
             "invalid |. syntax "
       end
-
-    (*
-    | Pexp_ident  {txt = Lident "##" ; loc}
-      ->
-      begin match args with
-        | [("", obj) ;
-           ("", {pexp_desc = Pexp_apply(
-                {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _},
-                args
-              ); pexp_attributes = attrs }
-           (* we should warn when we discard attributes *)
-           )
-          ] -> (* f##(paint 1 2 ) *)
-          (* gpr#1063 foo##(bar##baz) we should rewrite (bar##baz)
-             first  before pattern match.
-             currently the pattern match is written in a top down style.
-             Another corner case: f##(g a b [@bs])
-          *)
-          Bs_ast_invariant.warn_unused_attributes attrs ;
-          {e with pexp_desc = Belt_ast_util.method_apply loc self obj name args}
-        | [("", obj) ;
-           ("",
-            {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _}
-           )  (* f##paint  *)
-          ] ->
-          { e with pexp_desc =
-                     Belt_ast_util.js_property loc (self.expr self obj) name
-          }
-
-        | _ ->
-          Location.raise_errorf ~loc
-            "Js object ## expect syntax like obj##(paint (a,b)) "
-      end
-    *)
-    (* we can not use [:=] for precedece cases
-       like {[i @@ x##length := 3 ]}
-       is parsed as {[ (i @@ x##length) := 3]}
-       since we allow user to create Js objects in OCaml, it can be of
-       ref type
-       {[
-         let u = object (self)
-           val x = ref 3
-           method setX x = self##x := 32
-           method getX () = !self##x
-         end
-       ]}
-    *)
-    (* | Pexp_ident {txt = Lident "#=" } ->
-      begin match args with
-        | ["",
-           {pexp_desc =
-              Pexp_apply ({pexp_desc = Pexp_ident {txt = Lident "##"}},
-                          ["", obj;
-                           "", {pexp_desc = Pexp_ident {txt = Lident name}}
-                          ]
-                         )};
-           "", arg
-          ] ->
-          Exp.constraint_ ~loc
-            { e with
-              pexp_desc =
-                Belt_ast_util.method_apply loc self obj
-                  (name ^ Literals.setter_suffix) ["", arg ]  }
-            (Ast_literal.type_unit ~loc ())
-        | _ -> Bs_ast_mapper.default_mapper.expr self e
-      end *)
     | _ ->
       begin match
           Ext_list.exclude_with_val
-            Belt_ast_attributes.is_bs e.pexp_attributes with
-      | false, _ -> 
-        Bs_ast_mapper.default_mapper.expr self e
+            e.pexp_attributes 
+            Belt_ast_attributes.is_bs with
+      | false, _ -> Bs_ast_mapper.default_mapper.expr self e
       | true, pexp_attributes ->
-        {e with 
-        (* pexp_desc = Belt_ast_util.uncurry_fn_apply loc self fn args ; *)
-                pexp_attributes }
+        {e with pexp_attributes }
       end
   end
