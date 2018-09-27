@@ -130,7 +130,7 @@ val isOk : ('a, 'b) t -> bool
 
 val isError : ('a, 'b) t -> bool
 (**
-  [isOk res]
+  [isError res]
   
   Returns [true] if [res] is of the form [Error e], [false] if it is the [OK n] variant.
 *)
