@@ -50,7 +50,7 @@ val getExn : ('a, 'b) t -> 'a
 (**
   [getExn res]
   
-  when [res] is [OK n], returns [n]
+  when [res] is [Ok n], returns [n]
   when [res] is [Error m], {b raise} an exception
   
   @example {[
@@ -64,7 +64,7 @@ val mapWithDefault : ('a, 'c) t -> 'b -> ('a -> 'b) -> 'b
 (**
   [mapWithDefault res default f]
   
-  When [res] is [OK n], returns [f n], otherwise [default].
+  When [res] is [Ok n], returns [f n], otherwise [default].
   
   @example{[
     mapWithDefault good 0 (function x -> x / 2) = 21
@@ -77,7 +77,7 @@ val map : ('a, 'c) t -> ('a -> 'b) -> ('b, 'c) t
 (**
   [map res f]
   
-  When [res] is [OK n], returns [OK (f n)]. Otherwise returns [res] unchanged.
+  When [res] is [Ok n], returns [Ok (f n)]. Otherwise returns [res] unchanged.
   Function [f] takes a value of the same type as [n] and returns an ordinary value.
   
   @example{[
@@ -92,7 +92,7 @@ val flatMap : ('a, 'c) t -> ('a -> ('b, 'c) t) -> ('b, 'c) t
 (**
   [flatMap res f]
   
-  When [res] is [OK n], returns [f n]. Otherwise, returns [res] unchanged.
+  When [res] is [Ok n], returns [f n]. Otherwise, returns [res] unchanged.
   Function [f] takes a value of the same type as [n] and returns a [Belt.Result].
   
   @example {[
@@ -116,7 +116,7 @@ val getWithDefault : ('a, 'b) t -> 'a -> 'a
   if [res] is [Ok n], returns [n], otherwise [default]
   
   @example {[
-    getWithDefault (OK 42) 0 = 42
+    getWithDefault (Ok 42) 0 = 42
     getWithDefault (Error "Invalid Data") = 0
   ]}
 *)
@@ -132,7 +132,7 @@ val isError : ('a, 'b) t -> bool
 (**
   [isError res]
   
-  Returns [true] if [res] is of the form [Error e], [false] if it is the [OK n] variant.
+  Returns [true] if [res] is of the form [Error e], [false] if it is the [Ok n] variant.
 *)
 
 val eqU : ('a, 'c) t -> ('b, 'd) t -> ('a -> 'b -> bool [@bs]) -> bool
@@ -141,7 +141,7 @@ val eq : ('a, 'c) t -> ('b, 'd) t -> ('a -> 'b -> bool) -> bool
   [eq res1 res2 f]
   
   Determine if two [Belt.Result] variables are equal with respect to an equality function.
-  If [res1] and [res2] are of the form [Ok n] and [OK m], return the result of [f n m].
+  If [res1] and [res2] are of the form [Ok n] and [Ok m], return the result of [f n m].
   If one of [res1] and [res2] are of the form [Error e], return false
   If both [res1] and [res2] are of the form [Error e], return true
   
@@ -164,15 +164,14 @@ val eq : ('a, 'c) t -> ('b, 'd) t -> ('a -> 'b -> bool) -> bool
 val cmpU : ('a, 'c) t -> ('b, 'd) t -> ('a -> 'b -> int [@bs]) -> int
 val cmp : ('a, 'c) t -> ('b, 'd) t -> ('a -> 'b -> int) -> int
 (**
-(**
   [cmp res1 res2 f]
   
   Compare two [Belt.Result] variables with respect to a comparison function.
   The comparison function returns -1 if the first variable is "less than" the second,
   0 if the two variables are equal, and 1 if the first is "greater than" the second.
   
-  If [res1] and [res2] are of the form [Ok n] and [OK m], return the result of [f n m].
-  If [res1] is of the form [Error e] and [res2] of the form [OK n], return -1 (nothing is less than something)
+  If [res1] and [res2] are of the form [Ok n] and [Ok m], return the result of [f n m].
+  If [res1] is of the form [Error e] and [res2] of the form [Ok n], return -1 (nothing is less than something)
   If [res1] is of the form [Ok n] and [res2] of the form [Error e], return 1 (something is greater than nothing)
   If both [res1] and [res2] are of the form [Error e], return 0 (equal)
   
