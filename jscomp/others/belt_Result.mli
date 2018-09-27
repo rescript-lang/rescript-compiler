@@ -27,21 +27,168 @@
     Utilities for result data type.
 *)
 
+
+(**
+  [Belt.Result] is a data type with two variants: [Ok] and [Error]. Each of these variants can
+  contain data, and those two pieces of data need not have the same data type. [Belt.Result] is
+  useful when you need to not only determine whether some data is valid or not (use [Belt.Option]
+  for that), but also keep information about the invalid data.
+  
+  In the examples, we presume the existence of two variables:
+  
+  @example {[
+  let good = Ok 42
+  let bad = Error "Invalid data"
+  ]}
+*)
+
 type ('a, 'b) t =
   | Ok of 'a
   | Error of 'b
 
 val getExn : ('a, 'b) t -> 'a
+(**
+  [getExn res]
+  
+  when [res] is [OK n], returns [n]
+  when [res] is [Error m], {b raise} an exception
+  
+  @example {[
+    getExn good = 42
+    getExn bad (* raises exception *)
+  ]}
+*)
+
 val mapWithDefaultU : ('a, 'c) t -> 'b -> ('a -> 'b [@bs]) -> 'b
 val mapWithDefault : ('a, 'c) t -> 'b -> ('a -> 'b) -> 'b
+(**
+  [mapWithDefault res default f]
+  
+  When [res] is [OK n], returns [f n], otherwise [default].
+  
+  @example{[
+    mapWithDefault good 0 (function x -> x / 2) = 21
+    mapWithDefault bad 0 (function x -> x / 2) = 0
+  ]}
+*)
+
 val mapU : ('a, 'c) t -> ('a -> 'b [@bs]) -> ('b, 'c) t
 val map : ('a, 'c) t -> ('a -> 'b) -> ('b, 'c) t
+(**
+  [map result f]
+  
+  When [result] is [OK n], returns [OK (f n)]. Otherwise returns [result] unchanged.
+  Function [f] takes a value of the same type as [n] and returns an ordinary value.
+  
+  @example{[
+    let f x = sqrt (float_of_int x)
+    map good f = Ok 8.0
+    map bad f = bad (* Error "Invalid data" *)
+  ]}
+*)
+
 val flatMapU : ('a, 'c) t -> ('a -> ('b, 'c) t [@bs]) -> ('b, 'c) t
 val flatMap : ('a, 'c) t -> ('a -> ('b, 'c) t) -> ('b, 'c) t
+(**
+  [flatMap res f]
+  
+  When [res] is [OK n], returns [f n]. Otherwise, returns [result] unchanged.
+  Function [f] takes a value of the same type as [n] and returns a [Belt.Result].
+  
+  @example {[
+let recip x = 
+  if x != 0.0
+  then
+    Ok (1.0 /. x)
+  else
+    Error "Divide by zero"
+
+    flatMap (Ok 2.0) recip = Ok 0.5
+    flatMap (Ok 0.0) recip = Error "Divide by zero"
+    flatMap (Error "Already bad") recip = Error "Already bad"
+  ]}
+*)
+  
 val getWithDefault : ('a, 'b) t -> 'a -> 'a
+(**
+  [getWithDefault res defaultValue]
+  
+  if [res] is [Ok n], returns [n], otherwise [default]
+  
+  @example {[
+    getWithDefault (OK 42) 0 = 42
+    getWithDefault (Error "Invalid Data") = 0
+  ]}
+*)
+
 val isOk : ('a, 'b) t -> bool
+(**
+  [isOk res]
+  
+  Returns [true] if [res] is of the form [Ok n], [false] if it is the [Error e] variant.
+*)
+
 val isError : ('a, 'b) t -> bool
+(**
+  [isOk res]
+  
+  Returns [true] if [res] is of the form [Error e], [false] if it is the [OK n] variant.
+*)
+
 val eqU : ('a, 'c) t -> ('b, 'd) t -> ('a -> 'b -> bool [@bs]) -> bool
 val eq : ('a, 'c) t -> ('b, 'd) t -> ('a -> 'b -> bool) -> bool
+(**
+  [eq res1 res2 f]
+  
+  Determine if two [Belt.Result] variables are equal with respect to an equality function.
+  If [res1] and [res2] are of the form [Ok n] and [OK m], return the result of [f n m].
+  If one of [res1] and [res2] are of the form [Error e], return false
+  If both [res1] and [res2] are of the form [Error e], return true
+  
+  @example {[
+    let good1 = Ok 42
+    let good2 = Ok 32
+    let bad1 = Error "invalid"
+    let bad2 = Error "really invalid"
+    
+    let mod10equal a b =
+      a mod 10 == b mod 10
+      
+    eq good1 good2 mod10equal = true
+    eq good1 bad1 mod10equal = false
+    eq bad2 good2 mod10equal = false
+    eq bad1 bad2 mod10equal = true
+  ]}
+*)
+
 val cmpU : ('a, 'c) t -> ('b, 'd) t -> ('a -> 'b -> int [@bs]) -> int
 val cmp : ('a, 'c) t -> ('b, 'd) t -> ('a -> 'b -> int) -> int
+(**
+(**
+  [cmp res1 res2 f]
+  
+  Compare two [Belt.Result] variables are equal with respect to a comparison function.
+  The comparison function returns -1 if the first variable is "less than" the second,
+  0 if the two variables are equal, and 1 if the first is "greater than" the second.
+  
+  If [res1] and [res2] are of the form [Ok n] and [OK m], return the result of [f n m].
+  If [res1] is of the form [Error e] and [res2] of the form [OK n], return -1 (nothing is less than something)
+  If [res1] is of the form [Ok n] and [res2] of the form [Error e], return 1 (something is greater than nothing)
+  If both [res1] and [res2] are of the form [Error e], return 0 (equal)
+  
+  @example {[
+    let good1 = Ok 59
+    let good2 = Ok 37
+    let bad1 = Error "invalid"
+    let bad2 = Error "really invalid"
+    
+    let mod10cmp a b =
+      (a mod 10) cmp (b mod 10)
+      
+    cmp (Ok 39) (Ok 57) mod10cmp = 1
+    cmp (Ok 57) (Ok 39) mod10cmp = -1
+    cmp (Ok 39) (Error "y") mod10cmp = 1
+    cmp (Error "x") (Ok 57) mod10cmp = -1
+    cmp (Error "x") (Error "y") mod10cmp = 0
+  ]}
+*)
