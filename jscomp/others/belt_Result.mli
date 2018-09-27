@@ -183,7 +183,7 @@ val cmp : ('a, 'c) t -> ('b, 'd) t -> ('a -> 'b -> int) -> int
     let bad2 = Error "really invalid"
     
     let mod10cmp a b =
-      (a mod 10) cmp (b mod 10)
+      Pervasives.compare (a mod 10) (b mod 10)
       
     cmp (Ok 39) (Ok 57) mod10cmp = 1
     cmp (Ok 57) (Ok 39) mod10cmp = -1
