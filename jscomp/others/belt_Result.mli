@@ -167,7 +167,7 @@ val cmp : ('a, 'c) t -> ('b, 'd) t -> ('a -> 'b -> int) -> int
 (**
   [cmp res1 res2 f]
   
-  Compare two [Belt.Result] variables are equal with respect to a comparison function.
+  Compare two [Belt.Result] variables with respect to a comparison function.
   The comparison function returns -1 if the first variable is "less than" the second,
   0 if the two variables are equal, and 1 if the first is "greater than" the second.
   
