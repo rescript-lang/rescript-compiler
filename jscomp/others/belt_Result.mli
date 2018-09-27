@@ -75,15 +75,15 @@ val mapWithDefault : ('a, 'c) t -> 'b -> ('a -> 'b) -> 'b
 val mapU : ('a, 'c) t -> ('a -> 'b [@bs]) -> ('b, 'c) t
 val map : ('a, 'c) t -> ('a -> 'b) -> ('b, 'c) t
 (**
-  [map result f]
+  [map res f]
   
-  When [result] is [OK n], returns [OK (f n)]. Otherwise returns [result] unchanged.
+  When [res] is [OK n], returns [OK (f n)]. Otherwise returns [res] unchanged.
   Function [f] takes a value of the same type as [n] and returns an ordinary value.
   
   @example{[
     let f x = sqrt (float_of_int x)
-    map good f = Ok 8.0
-    map bad f = bad (* Error "Invalid data" *)
+    map (Ok 64) f = Ok 8.0
+    map (Error "Invalid data") f = Error "Invalid data"
   ]}
 *)
 
@@ -92,7 +92,7 @@ val flatMap : ('a, 'c) t -> ('a -> ('b, 'c) t) -> ('b, 'c) t
 (**
   [flatMap res f]
   
-  When [res] is [OK n], returns [f n]. Otherwise, returns [result] unchanged.
+  When [res] is [OK n], returns [f n]. Otherwise, returns [res] unchanged.
   Function [f] takes a value of the same type as [n] and returns a [Belt.Result].
   
   @example {[
