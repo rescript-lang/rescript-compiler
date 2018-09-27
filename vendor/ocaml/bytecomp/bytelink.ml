@@ -303,19 +303,26 @@ let link_bytecode ppf tolink exec_name standalone =
     open_out_gen [Open_wronly; Open_trunc; Open_creat; Open_binary]
                  0o777 exec_name in
   try
+    let ( // ) = Filename.concat in
     if standalone then begin
       (* Copy the header *)
       try
-        let header =
-          if String.length !Clflags.use_runtime > 0
-          then "camlheader_ur" else "camlheader" ^ !Clflags.runtime_variant in
-        let inchan = open_in_bin (find_in_path !load_path header) in
-        copy_file inchan outchan;
-        close_in inchan
+        begin match Sys.os_type with
+            "Win32" | "Cygwin" ->
+              let header = if String.length !Clflags.use_runtime > 0
+                           then "camlheader_ur" else "camlheader" ^ !Clflags.runtime_variant in
+              let inchan = open_in_bin (find_in_path !load_path header) in
+              copy_file inchan outchan;
+              close_in inchan
+          | _ -> 
+            let header = if String.length !Clflags.use_runtime > 0 then "" else 
+              make_absolute ((Filename.dirname Sys.executable_name) // "bin" // "ocamlrun")
+            in
+            output_string outchan ("#!" ^ header ^ "\n")
+        end
       with Not_found | Sys_error _ -> ()
     end;
     Bytesections.init_record outchan;
-    let ( // ) = Filename.concat in
     (* The path to the bytecode interpreter (in use_runtime mode) *)
     if String.length !Clflags.use_runtime > 0 then begin
       output_string outchan ((make_absolute !Clflags.use_runtime));
