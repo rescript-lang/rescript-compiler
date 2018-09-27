@@ -33,8 +33,8 @@ libs:
 
 world-native:
 	@echo "Making compiler"
-	BS_NATIVE=true $(MAKE) -B -C lib -j $(NPROCS) all
-	BS_NATIVE=true $(MAKE) libs
+	$(MAKE) BS_NATIVE=true -B -C lib -j $(NPROCS) all
+	$(MAKE) libs-native
 
 libs-native:
 	@echo "Making compiler finished"
@@ -43,10 +43,10 @@ libs-native:
 	$(MAKE) -C jscomp/others -j $(NPROCS) all
 	$(MAKE) -C jscomp/stdlib -j $(NPROCS) all
 	
-	BS_NATIVE=true $(MAKE) -C jscomp/belt_bytecode -j $(NPROCS) files
-	BS_NATIVE=true $(MAKE) -C jscomp/belt_bytecode -j $(NPROCS)
-	BS_NATIVE=true $(MAKE) -C jscomp/belt_native -j $(NPROCS) files
-	BS_NATIVE=true $(MAKE) -C jscomp/belt_native -j $(NPROCS)
+	$(MAKE) BS_NATIVE=true  -C jscomp/belt_byte -j $(NPROCS) files
+	$(MAKE) BS_NATIVE=true  -C jscomp/belt_byte -j $(NPROCS)
+	$(MAKE) BS_NATIVE=true  -C jscomp/belt_native -j $(NPROCS) files
+	$(MAKE) BS_NATIVE=true  -C jscomp/belt_native -j $(NPROCS)
 
 
 # TODO: sync up with
