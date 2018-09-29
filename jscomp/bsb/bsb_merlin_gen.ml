@@ -30,7 +30,11 @@ let merlin_trailer_length = String.length merlin_trailer
 let (//) = Ext_path.combine
 
 (** [new_content] should start end finish with newline *)
+#if BS_NATIVE then
+let revise_merlin nested merlin new_content =
+#else
 let revise_merlin merlin new_content =
+#end
   if Sys.file_exists merlin then
     let merlin_chan = open_in_bin merlin in
     let size = in_channel_length merlin_chan in
@@ -44,6 +48,10 @@ let revise_merlin merlin new_content =
       output_string ochan s ;
       output_string ochan "\n";
       output_string ochan merlin_header;
+#if BS_NATIVE then
+      output_string ochan "\n# -backend ";
+      output_string ochan nested;
+#end
       Buffer.output_buffer ochan new_content;
       output_string ochan merlin_trailer ;
       output_string ochan "\n";
@@ -55,6 +63,10 @@ let revise_merlin merlin new_content =
       let ochan = open_out_bin merlin in
       output_string ochan (String.sub s 0 header) ;
       output_string ochan merlin_header;
+#if BS_NATIVE then
+      output_string ochan "\n# -backend ";
+      output_string ochan nested;
+#end
       Buffer.output_buffer ochan new_content;
       output_string ochan merlin_trailer ;
       output_string ochan (Ext_string.tail_from s (tail +  merlin_trailer_length));
@@ -233,7 +245,11 @@ let merlin_file_gen ~cwd
     end;
 #end
     Buffer.add_string buffer "\n";
+#if BS_NATIVE then
+    revise_merlin nested (cwd // merlin) buffer 
+#else
     revise_merlin (cwd // merlin) buffer 
+#end
   end
 
 
