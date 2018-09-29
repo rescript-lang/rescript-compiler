@@ -580,12 +580,13 @@ let output_ninja_and_namespace_map
         op = Bsb_ninja_util.Overwrite impl 
       }]
       ~rule;
+    let build_artifacts_dir = Ext_bytes.ninja_escaped build_artifacts_dir in
     let command = Printf.sprintf "%s %s %s %s %s %s %s" output
       (Ext_bytes.ninja_escaped (Filename.dirname ocaml_dir))
       (Ext_bytes.ninja_escaped ocaml_lib)
       (Ext_bytes.ninja_escaped cwd)
       (Ext_bytes.ninja_escaped root_project_dir)
-      (Ext_bytes.ninja_escaped build_artifacts_dir) 
+      build_artifacts_dir 
       (if !Bsb_log.log_level = Bsb_log.Debug then " -verbose" else "") in
     let rule = Bsb_rule.define ~command "run_build_script" ~description:"\027[32mRunning\027[39m \027[2mbuild_script\027[22m" (* blue, dim *) in
     Bsb_ninja_util.output_build oc
