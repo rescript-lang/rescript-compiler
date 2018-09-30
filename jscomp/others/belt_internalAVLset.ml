@@ -36,10 +36,19 @@ and 'value t =  'value node Js.null
 module A = Belt_Array
 module S = Belt_SortArray
 
+#if BS_NATIVE then
+let toOpt : 'a Js.null -> 'a option = Js.toOpt
+let return a =
+  Js.Null.return a
+  
+let empty : 'a Js.null = Js.empty
+let unsafeCoerce a = Js.Null.getUnsafe a
+#else
 external toOpt : 'a Js.null -> 'a option = "#null_to_opt"
 external return : 'a -> 'a Js.null = "%identity"
 external empty : 'a Js.null = "#null"
 external unsafeCoerce : 'a Js.null -> 'a = "%identity"
+#end
 
 type ('a, 'b) cmp = ('a, 'b) Belt_Id.cmp
 
