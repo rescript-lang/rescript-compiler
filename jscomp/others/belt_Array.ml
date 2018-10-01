@@ -364,7 +364,7 @@ let reduceReverse2 a b x f =
 
 let rec reduceWithIndexAuxU a acc f i =
   match a with
-  | [] -> acc
+  | [||] -> acc
   | x::xs -> reduceWithIndexAuxU xs ((f acc x i)[@bs]) f (i + 1)
 
 let reduceWithIndexU a acc f = reduceWithIndexAuxU a acc f 0
