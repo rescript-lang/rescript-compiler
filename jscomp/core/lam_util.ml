@@ -255,7 +255,13 @@ let is_function (lam : Lam.t) =
 let not_function (lam : Lam.t) = 
   match lam with 
   | Lfunction _ -> false | _ -> true 
+(* 
+let is_var (lam : Lam.t) id =   
+  match lam with 
+  | Lvar id0 -> Ident.same id0 id 
+  | _ -> false *)
 
+  
 (* TODO: we need create 
    1. a smart [let] combinator, reusable beta-reduction 
    2. [lapply fn args info] 

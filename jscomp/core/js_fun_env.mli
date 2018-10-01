@@ -29,12 +29,13 @@
 
 
 
-(** Define type t used in JS IR to collect some meta data for a function, like its closures, etc 
-  *)
+(** Define type t used in JS IR to collect some meta data 
+    for a function,like its closures, etc 
+*)
 
 type t 
 
-val empty :  ?immutable_mask:bool array  -> int -> t
+val make :  ?immutable_mask:bool array  -> int -> t
 
 val is_tailcalled : t -> bool
 

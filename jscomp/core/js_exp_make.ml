@@ -244,7 +244,7 @@ let ocaml_fun
   let len = List.length params in
   {
     expression_desc = 
-      Fun (false, params,block, Js_fun_env.empty ?immutable_mask len ); 
+      Fun (false, params,block, Js_fun_env.make ?immutable_mask len ); 
     comment
   }
 
@@ -255,7 +255,7 @@ let method_
   let len = List.length params in
   {
     expression_desc = 
-      Fun (true, params,block, Js_fun_env.empty ?immutable_mask len ); 
+      Fun (true, params,block, Js_fun_env.make ?immutable_mask len ); 
     comment
   }
 
@@ -1249,7 +1249,7 @@ let of_block ?comment ?e block : t =
                    [{J.statement_desc = Return {return_value = e } ;
                      comment}]
              end
-            , Js_fun_env.empty 0)
+            , Js_fun_env.make 0)
     } []
 
 let is_null ?comment (x : t) =   
