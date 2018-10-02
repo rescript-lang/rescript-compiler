@@ -56,6 +56,7 @@ module E = Js_exp_make
 module S = Js_stmt_make
 
 module L = Js_dump_lit
+
 let return_indent = (String.length L.return / Ext_pp.indent_length)
 
 let throw_indent = (String.length L.throw / Ext_pp.indent_length)
@@ -64,8 +65,6 @@ type cxt = Ext_pp_scope.t
 
 let semi f = P.string f L.semi
 
-let op_prec, op_str  =
-  Js_op_util.(op_prec, op_str)
 
 let rec iter_lst ls cxt f inter = 
   match ls with 
@@ -90,7 +89,7 @@ let rec iter_lst ls cxt f inter =
 
 (* e = function(x){...}(x);  is good
 *)        
-let rec exp_need_paren  (e : J.expression) =
+let exp_need_paren  (e : J.expression) =
   match e.expression_desc with
   | Call ({expression_desc = Fun _; },_,_) -> true
   (* | Caml_uninitialized_obj _  *)
@@ -131,29 +130,34 @@ let rec exp_need_paren  (e : J.expression) =
   | New _
     -> false
 
-let rec comma_strings  f (ls : string list)  =
-  match ls with
-  | [] -> ()
-  | [x] -> P.string  f x
-  | y :: ys ->
-    P.string f y;
-    P.string f L.comma;
-    comma_strings  f ys
+let comma_strings f ls =     
+  iter_lst ls 
+  () 
+  (fun a _ -> P.string f a )
+  (fun _ -> P.string f L.comma)
 
-let rec comma_idents  cxt f (ls : Ident.t list)  =
-  match ls with
-  | [] -> cxt
-  | [x] -> Ext_pp_scope.ident cxt f x
-  | y :: ys ->
-    let cxt = Ext_pp_scope.ident cxt f y in
-    P.string f L.comma;
-    comma_idents cxt f ys
 
-let ipp_ident cxt f id un_used =
-  if un_used then
-    Ext_pp_scope.ident cxt f (Ext_ident.make_unused ())
-  else
-    Ext_pp_scope.ident cxt f id
+let comma_idents cxt f ls =     
+  iter_lst ls 
+  cxt 
+  (fun a cxt -> Ext_pp_scope.ident cxt f a)
+  (fun _ -> P.string f L.comma) 
+
+let pp_paren_params 
+  (inner_cxt : cxt) (f : Ext_pp.t) 
+  (lexical : Ident.t list) : unit =   
+  P.string f L.lparen;
+  ignore @@ comma_idents inner_cxt f lexical;
+  P.string f L.rparen
+
+(** Print as underscore for unused vars, may not be 
+    needed in the future *)  
+let ipp_ident cxt f id (un_used : bool) =
+  Ext_pp_scope.ident cxt f (
+    if un_used then
+      Ext_ident.make_unused () 
+    else
+      id)
 
 
 let rec formal_parameter_list cxt (f : P.t) (is_method : bool) (l : Ident.t list) (env : Js_fun_env.t) =
@@ -389,9 +393,7 @@ and  pp_function is_method
           ;
           P.string f L.lparen;
           P.string f L.function_;
-          P.string f L.lparen;
-          ignore @@ comma_idents inner_cxt f lexical;
-          P.string f L.rparen;
+          pp_paren_params inner_cxt f lexical; 
           P.brace_vgroup f 0  (fun _ ->
               begin
                 P.string f L.return ;
@@ -403,9 +405,7 @@ and  pp_function is_method
                  | Name_non_top x | Name_top x -> ignore (Ext_pp_scope.ident inner_cxt f x));
                 param_body ()
               end);
-          P.string f L.lparen;
-          ignore @@ comma_idents inner_cxt f lexical;
-          P.string f L.rparen;
+          pp_paren_params inner_cxt f lexical;     
           P.string f L.rparen;
           begin match name with
             | No_name -> () (* expression *)
@@ -779,7 +779,7 @@ and expression_desc cxt (level:int) f x : cxt  =
       expression 13 cxt f e
     )
   | Bin (op, e1, e2) ->
-    let (out, lft, rght) = op_prec op in
+    let (out, lft, rght) = Js_op_util.op_prec op in
     let need_paren =
       level > out || (match op with Lsl | Lsr | Asr -> true | _ -> false) in
     (* We are more conservative here, to make the generated code more readable
@@ -787,12 +787,12 @@ and expression_desc cxt (level:int) f x : cxt  =
     P.cond_paren_group f need_paren 1  (fun _ -> 
       let cxt = expression lft cxt  f e1 in
       P.space f;
-      P.string f (op_str op);
+      P.string f (Js_op_util.op_str op);
       P.space f;
       expression rght cxt   f e2)
   | String_append (e1, e2) ->
     let op : Js_op.binop = Plus in
-    let (out, lft, rght) = op_prec op in
+    let (out, lft, rght) = Js_op_util.op_prec op in
     let need_paren =
       level > out || (match op with Lsl | Lsr | Asr -> true | _ -> false) in
     P.cond_paren_group f need_paren 1 (fun _ -> 
@@ -1209,11 +1209,11 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
 
           match direction with
           | Upto ->
-            let (_,_,right) = op_prec Le  in
+            let (_,_,right) = Js_op_util.op_prec Le  in
             P.string f L.le;
             right
           | Downto ->
-            let (_,_,right) = op_prec Ge in
+            let (_,_,right) = Js_op_util.op_prec Ge in
             P.string f L.ge ;
             right
         in
