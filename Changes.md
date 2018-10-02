@@ -1,3 +1,23 @@
+# 4.0.6
+
+## ReasonML synced 76b27
+
+Fixes
+- #3064 upgrade `webpack-cli` to fix broken `npm run webpack`
+- #3054, #3502 fix some potential bugs in codegen
+- #3047 handle null values correctly in the devtools custom formatter
+- #3036 fix #3018 about dom in playground
+- #3017 *important* fix #3010 nodejs browser loader evaluated code twice
+
+Features
+- #3051,#3039 add List.keepWithIndex, reduceWithIndex
+- #3046 add Js.Global.setTimeOutFloat and setIntervalFloat
+
+Docs
+- #3603 add documentation to Belt.Result
+- #3031 fix typo in Belt.Option.flatMap example
+
+
 # 4.0.4
 Fixes
 - #3001 fix regressios in refmt
