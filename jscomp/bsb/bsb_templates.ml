@@ -619,7 +619,7 @@ let root = OCamlRes.Res.([
       \  \"devDependencies\": {\n\
       \    \"bs-platform\": \"^${bsb:bs-version}\",\n\
       \    \"webpack\": \"^4.0.1\",\n\
-      \    \"webpack-cli\": \"^2.0.10\"\n\
+      \    \"webpack-cli\": \"^3.1.1\"\n\
       \  }\n\
        }\n\
        ") ;
