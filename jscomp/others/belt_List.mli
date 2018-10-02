@@ -564,6 +564,13 @@ val getBy: 'a t -> ('a -> bool) -> 'a option
     ]}
 *)
 
+val intersect: 'a t -> 'a t -> 'a t
+(** [intersect xs ys] returns a list of all elements in [xs] which coincide with the given elements in [ys] using the default equality comparer; returns [] if no elements intersect between the two lists.
+   @example {[
+    intersect [1;4;3;2] [3;4] = [4;3]
+  ]}
+*)
+
 val intersectBy: ('a -> 'a -> bool) -> 'a t -> 'a t -> 'a t
 (** [intersectBy eq xs ys] returns a list of all elements in [xs] which coincide with the given elements in [ys] per the equality predicate [eq]; returns [] if no elements intersect between the two lists.
 

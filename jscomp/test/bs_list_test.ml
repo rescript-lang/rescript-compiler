@@ -102,6 +102,12 @@ let () =
   N.unzip [1,2;3,4] =~ ([1;3], [2;4])
 
 let () =   
+  let (=~) = eq "INTERSECT" in 
+  N.intersect [] [1] =~ []; 
+  N.intersect [2] [] =~ []; 
+  N.intersect [1;4;3;2] [3;4] =~ [4;3]
+
+let () =   
   let (=~) = eq "INTERSECTBY" in 
   (N.intersectBy (=) [] [1]) =~ []; 
   (N.intersectBy (=) [2] []) =~ []; 
