@@ -120,17 +120,188 @@
 </div>
 
 
-<pre><span id="VALgetExn"><span class="keyword">val</span> getExn</span> : <code class="type">('a, 'b) <a href="Belt_Result.html#TYPEt">t</a> -> 'a</code></pre>
+<pre><span id="VALgetExn"><span class="keyword">val</span> getExn</span> : <code class="type">('a, 'b) <a href="Belt_Result.html#TYPEt">t</a> -> 'a</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">getExn res</code>
+<p>
+
+  when <code class="code">res</code> is <code class="code">Ok n</code>, returns <code class="code">n</code>
+  when <code class="code">res</code> is <code class="code">Error m</code>, <b>raise</b> an exception<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">    getExn good = 42
+    getExn bad (* raises exception *)
+  </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
 <pre><span id="VALmapWithDefaultU"><span class="keyword">val</span> mapWithDefaultU</span> : <code class="type">('a, 'c) <a href="Belt_Result.html#TYPEt">t</a> -> 'b -> ('a -> 'b [@bs]) -> 'b</code></pre>
-<pre><span id="VALmapWithDefault"><span class="keyword">val</span> mapWithDefault</span> : <code class="type">('a, 'c) <a href="Belt_Result.html#TYPEt">t</a> -> 'b -> ('a -> 'b) -> 'b</code></pre>
+<pre><span id="VALmapWithDefault"><span class="keyword">val</span> mapWithDefault</span> : <code class="type">('a, 'c) <a href="Belt_Result.html#TYPEt">t</a> -> 'b -> ('a -> 'b) -> 'b</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">mapWithDefault res default f</code>
+<p>
+
+  When <code class="code">res</code> is <code class="code">Ok n</code>, returns <code class="code">f n</code>, otherwise <code class="code">default</code>.<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">    mapWithDefault good 0 (function x -&gt; x / 2) = 21
+    mapWithDefault bad 0 (function x -&gt; x / 2) = 0
+  </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
 <pre><span id="VALmapU"><span class="keyword">val</span> mapU</span> : <code class="type">('a, 'c) <a href="Belt_Result.html#TYPEt">t</a> -> ('a -> 'b [@bs]) -> ('b, 'c) <a href="Belt_Result.html#TYPEt">t</a></code></pre>
-<pre><span id="VALmap"><span class="keyword">val</span> map</span> : <code class="type">('a, 'c) <a href="Belt_Result.html#TYPEt">t</a> -> ('a -> 'b) -> ('b, 'c) <a href="Belt_Result.html#TYPEt">t</a></code></pre>
+<pre><span id="VALmap"><span class="keyword">val</span> map</span> : <code class="type">('a, 'c) <a href="Belt_Result.html#TYPEt">t</a> -> ('a -> 'b) -> ('b, 'c) <a href="Belt_Result.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">map res f</code>
+<p>
+
+  When <code class="code">res</code> is <code class="code">Ok n</code>, returns <code class="code">Ok (f n)</code>. Otherwise returns <code class="code">res</code> unchanged.
+  Function <code class="code">f</code> takes a value of the same type as <code class="code">n</code> and returns an ordinary value.<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">    let f x = sqrt (float_of_int x)
+    map (Ok 64) f = Ok 8.0
+    map (Error "Invalid data") f = Error "Invalid data"
+  </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
 <pre><span id="VALflatMapU"><span class="keyword">val</span> flatMapU</span> : <code class="type">('a, 'c) <a href="Belt_Result.html#TYPEt">t</a> -><br>       ('a -> ('b, 'c) <a href="Belt_Result.html#TYPEt">t</a> [@bs]) -> ('b, 'c) <a href="Belt_Result.html#TYPEt">t</a></code></pre>
-<pre><span id="VALflatMap"><span class="keyword">val</span> flatMap</span> : <code class="type">('a, 'c) <a href="Belt_Result.html#TYPEt">t</a> -><br>       ('a -> ('b, 'c) <a href="Belt_Result.html#TYPEt">t</a>) -> ('b, 'c) <a href="Belt_Result.html#TYPEt">t</a></code></pre>
-<pre><span id="VALgetWithDefault"><span class="keyword">val</span> getWithDefault</span> : <code class="type">('a, 'b) <a href="Belt_Result.html#TYPEt">t</a> -> 'a -> 'a</code></pre>
-<pre><span id="VALisOk"><span class="keyword">val</span> isOk</span> : <code class="type">('a, 'b) <a href="Belt_Result.html#TYPEt">t</a> -> bool</code></pre>
-<pre><span id="VALisError"><span class="keyword">val</span> isError</span> : <code class="type">('a, 'b) <a href="Belt_Result.html#TYPEt">t</a> -> bool</code></pre>
+<pre><span id="VALflatMap"><span class="keyword">val</span> flatMap</span> : <code class="type">('a, 'c) <a href="Belt_Result.html#TYPEt">t</a> -><br>       ('a -> ('b, 'c) <a href="Belt_Result.html#TYPEt">t</a>) -> ('b, 'c) <a href="Belt_Result.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">flatMap res f</code>
+<p>
+
+  When <code class="code">res</code> is <code class="code">Ok n</code>, returns <code class="code">f n</code>. Otherwise, returns <code class="code">res</code> unchanged.
+  Function <code class="code">f</code> takes a value of the same type as <code class="code">n</code> and returns a <code class="code">Belt.Result</code>.<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">let recip x = 
+  if x != 0.0
+  then
+    Ok (1.0 /. x)
+  else
+    Error "Divide by zero"
+
+    flatMap (Ok 2.0) recip = Ok 0.5
+    flatMap (Ok 0.0) recip = Error "Divide by zero"
+    flatMap (Error "Already bad") recip = Error "Already bad"
+  </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALgetWithDefault"><span class="keyword">val</span> getWithDefault</span> : <code class="type">('a, 'b) <a href="Belt_Result.html#TYPEt">t</a> -> 'a -> 'a</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">getWithDefault res defaultValue</code>
+<p>
+
+  if <code class="code">res</code> is <code class="code">Ok n</code>, returns <code class="code">n</code>, otherwise <code class="code">default</code><br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">    getWithDefault (Ok 42) 0 = 42
+    getWithDefault (Error "Invalid Data") = 0
+  </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALisOk"><span class="keyword">val</span> isOk</span> : <code class="type">('a, 'b) <a href="Belt_Result.html#TYPEt">t</a> -> bool</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">isOk res</code>
+<p>
+
+  Returns <code class="code">true</code> if <code class="code">res</code> is of the form <code class="code">Ok n</code>, <code class="code">false</code> if it is the <code class="code">Error e</code> variant.<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALisError"><span class="keyword">val</span> isError</span> : <code class="type">('a, 'b) <a href="Belt_Result.html#TYPEt">t</a> -> bool</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">isError res</code>
+<p>
+
+  Returns <code class="code">true</code> if <code class="code">res</code> is of the form <code class="code">Error e</code>, <code class="code">false</code> if it is the <code class="code">Ok n</code> variant.<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
 <pre><span id="VALeqU"><span class="keyword">val</span> eqU</span> : <code class="type">('a, 'c) <a href="Belt_Result.html#TYPEt">t</a> -><br>       ('b, 'd) <a href="Belt_Result.html#TYPEt">t</a> -> ('a -> 'b -> bool [@bs]) -> bool</code></pre>
-<pre><span id="VALeq"><span class="keyword">val</span> eq</span> : <code class="type">('a, 'c) <a href="Belt_Result.html#TYPEt">t</a> -><br>       ('b, 'd) <a href="Belt_Result.html#TYPEt">t</a> -> ('a -> 'b -> bool) -> bool</code></pre>
+<pre><span id="VALeq"><span class="keyword">val</span> eq</span> : <code class="type">('a, 'c) <a href="Belt_Result.html#TYPEt">t</a> -><br>       ('b, 'd) <a href="Belt_Result.html#TYPEt">t</a> -> ('a -> 'b -> bool) -> bool</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">eq res1 res2 f</code>
+<p>
+
+  Determine if two <code class="code">Belt.Result</code> variables are equal with respect to an equality function.
+  If <code class="code">res1</code> and <code class="code">res2</code> are of the form <code class="code">Ok n</code> and <code class="code">Ok m</code>, return the result of <code class="code">f n m</code>.
+  If one of <code class="code">res1</code> and <code class="code">res2</code> are of the form <code class="code">Error e</code>, return false
+  If both <code class="code">res1</code> and <code class="code">res2</code> are of the form <code class="code">Error e</code>, return true<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">    let good1 = Ok 42
+    let good2 = Ok 32
+    let bad1 = Error "invalid"
+    let bad2 = Error "really invalid"
+    
+    let mod10equal a b =
+      a mod 10 == b mod 10
+      
+    eq good1 good2 mod10equal = true
+    eq good1 bad1 mod10equal = false
+    eq bad2 good2 mod10equal = false
+    eq bad1 bad2 mod10equal = true
+  </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
 <pre><span id="VALcmpU"><span class="keyword">val</span> cmpU</span> : <code class="type">('a, 'c) <a href="Belt_Result.html#TYPEt">t</a> -><br>       ('b, 'd) <a href="Belt_Result.html#TYPEt">t</a> -> ('a -> 'b -> int [@bs]) -> int</code></pre>
-<pre><span id="VALcmp"><span class="keyword">val</span> cmp</span> : <code class="type">('a, 'c) <a href="Belt_Result.html#TYPEt">t</a> -> ('b, 'd) <a href="Belt_Result.html#TYPEt">t</a> -> ('a -> 'b -> int) -> int</code></pre></body></html>
+<pre><span id="VALcmp"><span class="keyword">val</span> cmp</span> : <code class="type">('a, 'c) <a href="Belt_Result.html#TYPEt">t</a> -> ('b, 'd) <a href="Belt_Result.html#TYPEt">t</a> -> ('a -> 'b -> int) -> int</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">cmp res1 res2 f</code>
+<p>
+
+  Compare two <code class="code">Belt.Result</code> variables with respect to a comparison function.
+  The comparison function returns -1 if the first variable is "less than" the second,
+  0 if the two variables are equal, and 1 if the first is "greater than" the second.
+<p>
+
+  If <code class="code">res1</code> and <code class="code">res2</code> are of the form <code class="code">Ok n</code> and <code class="code">Ok m</code>, return the result of <code class="code">f n m</code>.
+  If <code class="code">res1</code> is of the form <code class="code">Error e</code> and <code class="code">res2</code> of the form <code class="code">Ok n</code>, return -1 (nothing is less than something)
+  If <code class="code">res1</code> is of the form <code class="code">Ok n</code> and <code class="code">res2</code> of the form <code class="code">Error e</code>, return 1 (something is greater than nothing)
+  If both <code class="code">res1</code> and <code class="code">res2</code> are of the form <code class="code">Error e</code>, return 0 (equal)<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">    let good1 = Ok 59
+    let good2 = Ok 37
+    let bad1 = Error "invalid"
+    let bad2 = Error "really invalid"
+    
+    let mod10cmp a b =
+      Pervasives.compare (a mod 10) (b mod 10)
+      
+    cmp (Ok 39) (Ok 57) mod10cmp = 1
+    cmp (Ok 57) (Ok 39) mod10cmp = -1
+    cmp (Ok 39) (Error "y") mod10cmp = 1
+    cmp (Error "x") (Ok 57) mod10cmp = -1
+    cmp (Error "x") (Error "y") mod10cmp = 0
+  </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  </body></html>

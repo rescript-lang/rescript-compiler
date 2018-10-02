@@ -196,9 +196,33 @@ let count = ref 0
 
 let tick () =
   count := !count + 1; Js.log (string_of_int !count)
-    
+
 let _ =
   Js.Global.setInterval tick 1000
+</code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALsetIntervalFloat"><span class="keyword">val</span> setIntervalFloat</span> : <code class="type">(unit -> unit) -> float -> <a href="Js_global.html#TYPEintervalId">intervalId</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <i>Repeatedly</i> executes a callback with a specified interval (in milliseconds) between calls
+<p>
+
+<b>Return</b> an <a href="Js_global.html#TYPEintervalId"><code class="code">Js_global.intervalId</code></a> that can be passed to <a href="Js_global.html#VALclearInterval"><code class="code">Js_global.clearInterval</code></a> to cancel the timeout<br>
+<div class="tag"> <b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setInterval">MDN</a><br>
+ </div> 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">(* Will count up and print the count to the console every second *)
+
+let count = ref 0
+
+let tick () =
+  count := !count + 1; Js.log (string_of_int !count)
+
+let _ =
+  Js.Global.setIntervalFloat tick 1000.0
 </code></pre>  </pre>
                     </div>
                     </div>
@@ -220,6 +244,27 @@ let message = "Timed out!"
 
 let _ =
   Js.Global.setTimeout (fun () -&gt; Js.log message) 1000
+</code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALsetTimeoutFloat"><span class="keyword">val</span> setTimeoutFloat</span> : <code class="type">(unit -> unit) -> float -> <a href="Js_global.html#TYPEtimeoutId">timeoutId</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    Execute a callback after a specified delay (in milliseconds)
+<p>
+
+<b>returns</b> a <a href="Js_global.html#TYPEtimeoutId"><code class="code">Js_global.timeoutId</code></a> that can be passed to <a href="Js_global.html#VALclearTimeout"><code class="code">Js_global.clearTimeout</code></a> to cancel the timeout<br>
+<div class="tag"> <b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setTimeout">MDN</a><br>
+ </div> 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">(* Prints "Timed out!" in the console after one second *)
+
+let message = "Timed out!"
+
+let _ =
+  Js.Global.setTimeoutFloat (fun () -&gt; Js.log message) 1000.0
 </code></pre>  </pre>
                     </div>
                     </div>

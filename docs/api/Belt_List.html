@@ -584,6 +584,24 @@
                     </div>
 
                   
+<pre><span id="VALreduceWithIndexU"><span class="keyword">val</span> reduceWithIndexU</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> 'b -> ('b -> 'a -> int -> 'b [@bs]) -> 'b</code></pre>
+<pre><span id="VALreduceWithIndex"><span class="keyword">val</span> reduceWithIndex</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> 'b -> ('b -> 'a -> int -> 'b) -> 'b</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">reduceWithIndex xs f</code>
+<p>
+
+    Applies <code class="code">f</code> to each element of <code class="code">xs</code> from beginning to end. Function <code class="code">f</code> has three parameters: the item
+    from the list and an “accumulator”, which starts with a value of <code class="code">init</code> and the index of each element. <code class="code">reduceWithIndex</code>
+    returns the final value of the accumulator.<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">      reduceWithIndex [1;2;3;4] 0 (fun acc x i -&gt; acc + x + i) = 16;;
+    </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
 <pre><span id="VALreduceReverseU"><span class="keyword">val</span> reduceReverseU</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> 'b -> ('b -> 'a -> 'b [@bs]) -> 'b</code></pre>
 <pre><span id="VALreduceReverse"><span class="keyword">val</span> reduceReverse</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> 'b -> ('b -> 'a -> 'b) -> 'b</code></pre><div class="info ">
                     <div class="not-examples">
@@ -839,6 +857,21 @@
                      <div class="examples">
                     <pre class="example"> <pre class="codepre"><code class="code">      keep [1;2;3;4] (fun x -&gt; x mod 2 = 0) =
       [2;4]
+    </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALkeepWithIndexU"><span class="keyword">val</span> keepWithIndexU</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> ('a -> int -> bool [@bs]) -> 'a <a href="Belt_List.html#TYPEt">t</a></code></pre>
+<pre><span id="VALkeepWithIndex"><span class="keyword">val</span> keepWithIndex</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> ('a -> int -> bool) -> 'a <a href="Belt_List.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">keepWithIndex xs p</code> returns a list of all elements in <code class="code">xs</code> which satisfy the predicate function <code class="code">p</code><br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">      keepWithIndex [1;2;3;4] (fun _x i -&gt; i mod 2 = 0)
+      =
+      [1;3]
     </code></pre>  </pre>
                     </div>
                     </div>

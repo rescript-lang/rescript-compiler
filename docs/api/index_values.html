@@ -1060,7 +1060,19 @@ The return type is <code class="code">float</code> because this function returns
 <tr><td><a href="Belt_Result.html#VALcmp">cmp</a> [<a href="Belt_Result.html">Belt_Result</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">cmp res1 res2 f</code>
+<p>
+
+  Compare two <code class="code">Belt.Result</code> variables with respect to a comparison function.
+  The comparison function returns -1 if the first variable is "less than" the second,
+  0 if the two variables are equal, and 1 if the first is "greater than" the second.
+<p>
+
+  If <code class="code">res1</code> and <code class="code">res2</code> are of the form <code class="code">Ok n</code> and <code class="code">Ok m</code>, return the result of <code class="code">f n m</code>.
+  If <code class="code">res1</code> is of the form <code class="code">Error e</code> and <code class="code">res2</code> of the form <code class="code">Ok n</code>, return -1 (nothing is less than something)
+  If <code class="code">res1</code> is of the form <code class="code">Ok n</code> and <code class="code">res2</code> of the form <code class="code">Error e</code>, return 1 (something is greater than nothing)
+  If both <code class="code">res1</code> and <code class="code">res2</code> are of the form <code class="code">Error e</code>, return 0 (equal)<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_Option.html#VALcmp">cmp</a> [<a href="Belt_Option.html">Belt_Option</a>]</td>
@@ -2020,7 +2032,14 @@ The return type is <code class="code">float</code> because this function returns
 <tr><td><a href="Belt_Result.html#VALeq">eq</a> [<a href="Belt_Result.html">Belt_Result</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">eq res1 res2 f</code>
+<p>
+
+  Determine if two <code class="code">Belt.Result</code> variables are equal with respect to an equality function.
+  If <code class="code">res1</code> and <code class="code">res2</code> are of the form <code class="code">Ok n</code> and <code class="code">Ok m</code>, return the result of <code class="code">f n m</code>.
+  If one of <code class="code">res1</code> and <code class="code">res2</code> are of the form <code class="code">Error e</code>, return false
+  If both <code class="code">res1</code> and <code class="code">res2</code> are of the form <code class="code">Error e</code>, return true<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_Option.html#VALeq">eq</a> [<a href="Belt_Option.html">Belt_Option</a>]</td>
@@ -3000,7 +3019,12 @@ The return type is <code class="code">float</code> because this function returns
 <tr><td><a href="Belt_Result.html#VALflatMap">flatMap</a> [<a href="Belt_Result.html">Belt_Result</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">flatMap res f</code>
+<p>
+
+  When <code class="code">res</code> is <code class="code">Ok n</code>, returns <code class="code">f n</code>. Otherwise, returns <code class="code">res</code> unchanged.
+  Function <code class="code">f</code> takes a value of the same type as <code class="code">n</code> and returns a <code class="code">Belt.Result</code>.<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_Option.html#VALflatMap">flatMap</a> [<a href="Belt_Option.html">Belt_Option</a>]</td>
@@ -4898,7 +4922,12 @@ Valid flags:
 <tr><td><a href="Belt_Result.html#VALgetExn">getExn</a> [<a href="Belt_Result.html">Belt_Result</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">getExn res</code>
+<p>
+
+  when <code class="code">res</code> is <code class="code">Ok n</code>, returns <code class="code">n</code>
+  when <code class="code">res</code> is <code class="code">Error m</code>, <b>raise</b> an exception<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_Option.html#VALgetExn">getExn</a> [<a href="Belt_Option.html">Belt_Option</a>]</td>
@@ -5426,7 +5455,11 @@ Valid flags:
 <tr><td><a href="Belt_Result.html#VALgetWithDefault">getWithDefault</a> [<a href="Belt_Result.html">Belt_Result</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">getWithDefault res defaultValue</code>
+<p>
+
+  if <code class="code">res</code> is <code class="code">Ok n</code>, returns <code class="code">n</code>, otherwise <code class="code">default</code><br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_Option.html#VALgetWithDefault">getWithDefault</a> [<a href="Belt_Option.html">Belt_Option</a>]</td>
@@ -6118,7 +6151,11 @@ Valid flags:
 <tr><td><a href="Belt_Result.html#VALisError">isError</a> [<a href="Belt_Result.html">Belt_Result</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">isError res</code>
+<p>
+
+  Returns <code class="code">true</code> if <code class="code">res</code> is of the form <code class="code">Error e</code>, <code class="code">false</code> if it is the <code class="code">Ok n</code> variant.<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_float.html#VALisFinite">isFinite</a> [<a href="Js_float.html">Js_float</a>]</td>
@@ -6174,7 +6211,11 @@ therefore necessary to test for <code class="code">_NaN</code>.
 <tr><td><a href="Belt_Result.html#VALisOk">isOk</a> [<a href="Belt_Result.html">Belt_Result</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">isOk res</code>
+<p>
+
+  Returns <code class="code">true</code> if <code class="code">res</code> is of the form <code class="code">Ok n</code>, <code class="code">false</code> if it is the <code class="code">Error e</code> variant.<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_option.html#VALisSome">isSome</a> [<a href="Js_option.html">Js_option</a>]</td>
@@ -6632,11 +6673,24 @@ the given function.<br>
                      
                 </div>
                 </div> </td></tr>
+<tr><td><a href="Belt_List.html#VALkeepWithIndex">keepWithIndex</a> [<a href="Belt_List.html">Belt_List</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                    <code class="code">keepWithIndex xs p</code> returns a list of all elements in <code class="code">xs</code> which satisfy the predicate function <code class="code">p</code><br>
+ 
+                </div>
+                </div> </td></tr>
 <tr><td><a href="Belt_Array.html#VALkeepWithIndex">keepWithIndex</a> [<a href="Belt_Array.html">Belt_Array</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
                     <code class="code">keepWithIndex xs p </code><br>
  
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Belt_List.html#VALkeepWithIndexU">keepWithIndexU</a> [<a href="Belt_List.html">Belt_List</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_Array.html#VALkeepWithIndexU">keepWithIndexU</a> [<a href="Belt_Array.html">Belt_Array</a>]</td>
@@ -7401,7 +7455,12 @@ using <code class="code">f</code> to map each value<br>
 <tr><td><a href="Belt_Result.html#VALmap">map</a> [<a href="Belt_Result.html">Belt_Result</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">map res f</code>
+<p>
+
+  When <code class="code">res</code> is <code class="code">Ok n</code>, returns <code class="code">Ok (f n)</code>. Otherwise returns <code class="code">res</code> unchanged.
+  Function <code class="code">f</code> takes a value of the same type as <code class="code">n</code> and returns an ordinary value.<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_Option.html#VALmap">map</a> [<a href="Belt_Option.html">Belt_Option</a>]</td>
@@ -7634,7 +7693,11 @@ using <code class="code">f</code> to map each value<br>
 <tr><td><a href="Belt_Result.html#VALmapWithDefault">mapWithDefault</a> [<a href="Belt_Result.html">Belt_Result</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">mapWithDefault res default f</code>
+<p>
+
+  When <code class="code">res</code> is <code class="code">Ok n</code>, returns <code class="code">f n</code>, otherwise <code class="code">default</code>.<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_Option.html#VALmapWithDefault">mapWithDefault</a> [<a href="Belt_Option.html">Belt_Option</a>]</td>
@@ -9994,6 +10057,24 @@ Consider the character <code class="code">ã</code>, which can be represented as
                      
                 </div>
                 </div> </td></tr>
+<tr><td><a href="Belt_List.html#VALreduceWithIndex">reduceWithIndex</a> [<a href="Belt_List.html">Belt_List</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                    <code class="code">reduceWithIndex xs f</code>
+<p>
+
+    Applies <code class="code">f</code> to each element of <code class="code">xs</code> from beginning to end. Function <code class="code">f</code> has three parameters: the item
+    from the list and an “accumulator”, which starts with a value of <code class="code">init</code> and the index of each element. <code class="code">reduceWithIndex</code>
+    returns the final value of the accumulator.<br>
+ 
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Belt_List.html#VALreduceWithIndexU">reduceWithIndexU</a> [<a href="Belt_List.html">Belt_List</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                     
+                </div>
+                </div> </td></tr>
 <tr><td><a href="Js_typed_array.S.html#VALreducei">reducei</a> [<a href="Js_typed_array.S.html">Js_typed_array.S</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
@@ -10782,6 +10863,16 @@ have been replaced by <code class="code">replacement</code>.<br>
  
                 </div>
                 </div> </td></tr>
+<tr><td><a href="Js_global.html#VALsetIntervalFloat">setIntervalFloat</a> [<a href="Js_global.html">Js_global</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                    <i>Repeatedly</i> executes a callback with a specified interval (in milliseconds) between calls
+<p>
+
+<b>Return</b> an <a href="Js_global.html#TYPEintervalId"><code class="code">Js_global.intervalId</code></a> that can be passed to <a href="Js_global.html#VALclearInterval"><code class="code">Js_global.clearInterval</code></a> to cancel the timeout<br>
+ 
+                </div>
+                </div> </td></tr>
 <tr><td><a href="Dom_storage.html#VALsetItem">setItem</a> [<a href="Dom_storage.html">Dom_storage</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
@@ -10850,6 +10941,16 @@ have been replaced by <code class="code">replacement</code>.<br>
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_global.html#VALsetTimeout">setTimeout</a> [<a href="Js_global.html">Js_global</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                    Execute a callback after a specified delay (in milliseconds)
+<p>
+
+<b>returns</b> a <a href="Js_global.html#TYPEtimeoutId"><code class="code">Js_global.timeoutId</code></a> that can be passed to <a href="Js_global.html#VALclearTimeout"><code class="code">Js_global.clearTimeout</code></a> to cancel the timeout<br>
+ 
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Js_global.html#VALsetTimeoutFloat">setTimeoutFloat</a> [<a href="Js_global.html">Js_global</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
                     Execute a callback after a specified delay (in milliseconds)
