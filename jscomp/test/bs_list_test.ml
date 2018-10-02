@@ -106,13 +106,20 @@ let () =
   N.keep [1;2;3;4] mod2 =~ [2;4];
   N.keep [1;3;41] mod2 =~ [];
   N.keep [] mod2 =~ [];
-  N.keep  [2;2;2;4;6] mod2 =~ [2;2;2;4;6]
+  N.keep  [2;2;2;4;6] mod2 =~ [2;2;2;4;6];
+  N.filter [1;2;3;4] mod2 =~ [2;4];
+  N.filter [1;3;41] mod2 =~ [];
+  N.filter [] mod2 =~ [];
+  N.filter  [2;2;2;4;6] mod2 =~ [2;2;2;4;6]
 
 let () =
   let (=~) = eq "FILTER2" in
   N.keepWithIndex [] evenIndex =~ [];
   N.keepWithIndex [1;2;3;4] evenIndex =~ [1;3];
-  N.keepWithIndex [0;1;2;3;4;5;6;7] evenIndex =~ [0;2;4;6]
+  N.keepWithIndex [0;1;2;3;4;5;6;7] evenIndex =~ [0;2;4;6];
+  N.filterWithIndex [] evenIndex =~ [];
+  N.filterWithIndex [1;2;3;4] evenIndex =~ [1;3];
+  N.filterWithIndex [0;1;2;3;4;5;6;7] evenIndex =~ [0;2;4;6]
 
 let id : int -> int = fun  x -> x 
 
