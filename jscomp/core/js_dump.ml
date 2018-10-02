@@ -187,7 +187,7 @@ let rec formal_parameter_list cxt (f : P.t) (is_method : bool) (l : Ident.t list
     | [id]    -> ipp_ident cxt f id (Js_fun_env.get_unused env i)
     | id :: r ->
       let cxt = ipp_ident cxt f id (Js_fun_env.get_unused env i) in
-      P.string f L.comma; 
+      comma f; 
       P.space f;
       aux (i + 1) cxt  r in
   match l with
@@ -493,7 +493,7 @@ and expression_desc cxt (level:int) f x : cxt  =
   | Seq (e1, e2) ->
     P.cond_paren_group f (level > 0) 1 (fun () ->
       let cxt = expression 0 cxt f e1 in
-      P.string f L.comma ;
+      comma f;
       P.space f ;
       expression 0 cxt f e2 )
   | Fun (method_, l, b, env) ->  (* TODO: dump for comments *)
@@ -540,7 +540,7 @@ and expression_desc cxt (level:int) f x : cxt  =
         P.string f L.apply;
         P.paren_group f 1 (fun _ ->
             P.string f L.null;
-            P.string f L.comma;
+            comma f ; 
             P.space f ;
             expression 1 cxt f el
           )
@@ -998,7 +998,7 @@ and property_name_and_value_list cxt f l : cxt =
     P.string f L.colon;
     P.space f;
     let cxt = expression 1 cxt f e in
-    P.string f L.comma;
+    comma f;
     P.newline f;
     property_name_and_value_list cxt f r
 
@@ -1157,7 +1157,7 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
             let cxt = pp_var_assign cxt f id in 
             let cxt = expression 1 cxt f ident_expression in
             P.space f ;
-            P.string f L.comma;
+            comma f;  
             let id = Ext_ident.create (Ident.name id ^ "_finish") in
             let cxt = Ext_pp_scope.ident cxt f id in
             P.space f ;
