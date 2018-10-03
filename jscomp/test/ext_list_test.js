@@ -645,7 +645,7 @@ function for_all_opt(p, _param) {
 }
 
 function fold(f, l, init) {
-  return List.fold_left((function (_, i) {
+  return List.fold_left((function (acc, i) {
                 return Curry._2(f, i, init);
               }), init, l);
 }

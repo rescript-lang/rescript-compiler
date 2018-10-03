@@ -1215,7 +1215,7 @@ b("File \"bs_array_test.ml\", line 274, characters 4-11", (Belt_Array.forEachWit
               return /* () */0;
             })), c$1[0] === 6));
 
-function id$1(_, x) {
+function id$1(loc, x) {
   var u = x.slice(0);
   return eq("File \"bs_array_test.ml\", line 284, characters 5-12", Belt_Array.reverse(x), (Belt_Array.reverseInPlace(u), u));
 }

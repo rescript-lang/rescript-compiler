@@ -56,7 +56,7 @@ function point_init($$class) {
             return /* () */0;
           })
       ]);
-  return (function (_, self, x_init$1) {
+  return (function (env, self, x_init$1) {
       var self$1 = CamlinternalOO.create_object_opt(self, $$class);
       self$1[x_init] = x_init$1;
       self$1[x] = x_init$1;
@@ -80,7 +80,7 @@ function colored_point_init($$class) {
   CamlinternalOO.set_method($$class, color, (function (self$2) {
           return self$2[c$1];
         }));
-  return (function (_, self, x$1, c$2) {
+  return (function (env, self, x$1, c$2) {
       var self$1 = CamlinternalOO.create_object_opt(self, $$class);
       self$1[c] = c$2;
       self$1[x] = x$1;
@@ -126,7 +126,7 @@ function c_init($$class) {
   CamlinternalOO.set_method($$class, m, (function () {
           return 1;
         }));
-  return (function (_, self) {
+  return (function (env, self) {
       return CamlinternalOO.create_object_opt(self, $$class);
     });
 }
@@ -152,7 +152,7 @@ function d_init($$class) {
             return self$4;
           })
       ]);
-  return (function (_, self) {
+  return (function (env, self) {
       var self$1 = CamlinternalOO.create_object_opt(self, $$class);
       Curry._1(obj_init, self$1);
       return CamlinternalOO.run_initializers_opt(self, self$1, $$class);
@@ -180,7 +180,7 @@ var d = [
 
 function c2$prime_001($$class) {
   CamlinternalOO.get_method_label($$class, "m");
-  return (function (_, self) {
+  return (function (env, self) {
       return CamlinternalOO.create_object_opt(self, $$class);
     });
 }
@@ -210,7 +210,7 @@ function functional_point_init($$class) {
             return copy;
           })
       ]);
-  return (function (_, self, y$1) {
+  return (function (env, self, y$1) {
       var self$1 = CamlinternalOO.create_object_opt(self, $$class);
       self$1[y] = y$1;
       self$1[x] = y$1;
@@ -250,7 +250,7 @@ function bad_functional_point_init($$class) {
             return Curry._2(bad_functional_point[0], 0, self$7[x] + d | 0);
           })
       ]);
-  return (function (_, self, y$1) {
+  return (function (env, self, y$1) {
       var self$1 = CamlinternalOO.create_object_opt(self, $$class);
       self$1[y] = y$1;
       self$1[x] = y$1;

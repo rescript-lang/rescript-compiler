@@ -2598,27 +2598,27 @@ function meth_app_meth(n, m) {
     });
 }
 
-function send_const(m, x, _) {
+function send_const(m, x, c) {
   return (function () {
       return Curry._1(Curry._3(Caml_oo.caml_get_public_method, x, m, 1), x);
     });
 }
 
-function send_var(m, n, _) {
+function send_var(m, n, c) {
   return (function (obj) {
       var tmp = obj[n];
       return Curry._1(Curry._3(Caml_oo.caml_get_public_method, tmp, m, 2), tmp);
     });
 }
 
-function send_env(m, e, n, _) {
+function send_env(m, e, n, c) {
   return (function (obj) {
       var tmp = obj[e][n];
       return Curry._1(Curry._3(Caml_oo.caml_get_public_method, tmp, m, 3), tmp);
     });
 }
 
-function send_meth(m, n, _) {
+function send_meth(m, n, c) {
   return (function (obj) {
       var tmp = Curry._1(obj[0][n], obj);
       return Curry._1(Curry._3(Caml_oo.caml_get_public_method, tmp, m, 4), tmp);

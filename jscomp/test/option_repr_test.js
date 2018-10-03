@@ -34,7 +34,7 @@ function f1(u) {
   }
 }
 
-function f2(x, y, $staropt$star, _) {
+function f2(x, y, $staropt$star, param) {
   var z = $staropt$star !== undefined ? $staropt$star : 3;
   console.log(x);
   if (y !== undefined) {
@@ -74,7 +74,7 @@ var f11 = Js_primitive.some(f10);
 
 var randomized = /* record */[/* contents */false];
 
-function create($staropt$star, _) {
+function create($staropt$star, param) {
   var random = $staropt$star !== undefined ? $staropt$star : randomized[0];
   if (random) {
     return 2;
@@ -85,7 +85,7 @@ function create($staropt$star, _) {
 
 var ff = create(false, /* () */0);
 
-function f13($staropt$star, $staropt$star$1, _) {
+function f13($staropt$star, $staropt$star$1, param) {
   var x = $staropt$star !== undefined ? $staropt$star : 3;
   var y = $staropt$star$1 !== undefined ? $staropt$star$1 : 4;
   return x + y | 0;

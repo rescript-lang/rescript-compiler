@@ -42,7 +42,7 @@ function f2(x) {
   }
 }
 
-function f5(h, _) {
+function f5(h, x) {
   var u = Curry._1(h, 32);
   if (u !== null) {
     return u + 1 | 0;
@@ -127,7 +127,7 @@ function f2$1(x) {
   }
 }
 
-function f5$1(h, _) {
+function f5$1(h, x) {
   var u = Curry._1(h, 32);
   if (u !== undefined) {
     return u + 1 | 0;
@@ -212,7 +212,7 @@ function f2$2(x) {
   }
 }
 
-function f5$2(h, _) {
+function f5$2(h, x) {
   var u = Curry._1(h, 32);
   if (u == null) {
     return 3;

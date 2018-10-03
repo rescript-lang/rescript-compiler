@@ -12,7 +12,7 @@ function test(x, y) {
         ];
 }
 
-function f(x, _) {
+function f(x, y) {
   return /* tuple */[
           String.fromCharCode.apply(null, x),
           0

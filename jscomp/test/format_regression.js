@@ -36,7 +36,7 @@ function take_queue() {
       ];
 }
 
-function format_pp_token(_, _$1) {
+function format_pp_token(param, param$1) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[

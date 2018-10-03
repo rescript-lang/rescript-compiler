@@ -29,7 +29,7 @@ function point_init($$class) {
             return /* () */0;
           })
       ]);
-  return (function (_, self) {
+  return (function (env, self) {
       var self$1 = CamlinternalOO.create_object_opt(self, $$class);
       self$1[x] = 0;
       return self$1;
@@ -64,7 +64,7 @@ function point2_init($$class) {
             return /* () */0;
           })
       ]);
-  return (function (_, self) {
+  return (function (env, self) {
       var self$1 = CamlinternalOO.create_object_opt(self, $$class);
       x0[0] = x0[0] + 1 | 0;
       self$1[x] = x0[0];

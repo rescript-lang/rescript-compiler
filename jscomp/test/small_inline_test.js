@@ -44,7 +44,7 @@ function ff(_x, _y) {
   };
 }
 
-function fff(_, _$1) {
+function fff(x, y) {
   while(true) {
     continue ;
   };

@@ -313,13 +313,13 @@ function rel_normalized_absolute_path(from, to_) {
             _xss = xs;
             continue ;
           } else {
-            var start = List.fold_left((function (acc, _) {
+            var start = List.fold_left((function (acc, param) {
                     return Filename.concat(acc, Ext_string_test.parent_dir_lit);
                   }), Ext_string_test.parent_dir_lit, xs);
             return List.fold_left(Filename.concat, start, yss);
           }
         } else {
-          return List.fold_left((function (acc, _) {
+          return List.fold_left((function (acc, param) {
                         return Filename.concat(acc, Ext_string_test.parent_dir_lit);
                       }), Ext_string_test.parent_dir_lit, xs);
         }

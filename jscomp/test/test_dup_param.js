@@ -1,8 +1,8 @@
 'use strict';
 
 
-function f(_, x) {
-  return x;
+function f(x, x$1) {
+  return x$1;
 }
 
 exports.f = f;

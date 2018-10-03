@@ -216,30 +216,15 @@ let continue f s =
   P.space f ;
   P.string f s;
   semi f
-let rec formal_parameter_list cxt (f : P.t) (is_method : bool) (l : Ident.t list) (env : Js_fun_env.t) =
-  let offset = if is_method then 1 else 0 in
-  let rec aux i cxt l =
-    match l with
-    | []     -> cxt
-    | [id]    -> ipp_ident cxt f id (Js_fun_env.get_unused env i)
-    | id :: r ->
-      let cxt = ipp_ident cxt f id (Js_fun_env.get_unused env i) in
-      comma_sp f;       
-      aux (i + 1) cxt  r in
-  match l with
-  | [] -> cxt
-  | [i] ->
-    (** necessary, since some js libraries like [mocha]...*)
-    if Js_fun_env.get_unused env offset then cxt
-    (* FIXME: maye we dont need such ad-hoc optmization
-      it was bought to address arity zero issue which is no longer
-       needed *)
-    else
-      Ext_pp_scope.ident cxt f i
-  | _ ->
-    aux offset cxt l
 
 
+let formal_parameter_list cxt f is_method l env  = 
+  match l with 
+  | [x] when 
+    Js_fun_env.get_unused env (if is_method then 1 else 0) -> 
+    cxt 
+  | _ -> 
+    iter_lst cxt f l Ext_pp_scope.ident comma_sp 
 (* IdentMap *)
 (*
 f/122 -->

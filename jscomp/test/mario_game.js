@@ -793,7 +793,7 @@ var Particle = /* module */[
 
 var id_counter = /* record */[/* contents */Pervasives.min_int];
 
-function setup_obj($staropt$star, $staropt$star$1, _) {
+function setup_obj($staropt$star, $staropt$star$1, param) {
   var has_gravity = $staropt$star !== undefined ? $staropt$star : true;
   var speed = $staropt$star$1 !== undefined ? $staropt$star$1 : 1;
   return /* record */[
@@ -3203,7 +3203,7 @@ function convert_to_coin_obj(lst, context) {
   }
 }
 
-function generate_helper(blockw, blockh, _, _$1, context) {
+function generate_helper(blockw, blockh, cx, cy, context) {
   var block_locs = generate_block_locs(blockw, blockh, 0, 0, /* [] */0);
   var converted_block_locs = trim_edges(convert_list(block_locs), blockw, blockh);
   var obj_converted_block_locs = convert_to_block_obj(converted_block_locs, context);

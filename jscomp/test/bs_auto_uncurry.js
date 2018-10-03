@@ -51,7 +51,7 @@ function f_02(xs) {
               }));
 }
 
-function f_03(_, u) {
+function f_03(xs, u) {
   return hi((function () {
                 return Curry._1(u, /* () */0);
               }));

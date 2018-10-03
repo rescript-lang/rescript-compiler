@@ -53,7 +53,7 @@ function u(b) {
   }
 }
 
-function f2(h, b, _) {
+function f2(h, b, param) {
   return Curry._1(h, b ? 32 : 7);
 }
 

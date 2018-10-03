@@ -112,17 +112,17 @@ function test5(f, x) {
   return tmp;
 }
 
-function test6(f, _) {
+function test6(f, x) {
   console.log("no inline");
-  var x = /* record */[/* contents */3];
+  var x$1 = /* record */[/* contents */3];
   var tmp = {
     hi: 2
   };
-  var tmp$1 = (x[0] = x[0] + 1 | 0, x[0]);
+  var tmp$1 = (x$1[0] = x$1[0] + 1 | 0, x$1[0]);
   if (tmp$1 !== undefined) {
     tmp.open = Js_primitive.valFromOption(tmp$1);
   }
-  var tmp$2 = f(x);
+  var tmp$2 = f(x$1);
   if (tmp$2 !== undefined) {
     tmp.xx = Js_primitive.valFromOption(tmp$2);
   }

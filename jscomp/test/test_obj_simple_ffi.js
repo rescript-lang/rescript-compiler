@@ -2,7 +2,7 @@
 
 var Js_primitive = require("../../lib/js/js_primitive.js");
 
-function v(displayName, _) {
+function v(displayName, param) {
   var tmp = {
     test: 3,
     config: 3,

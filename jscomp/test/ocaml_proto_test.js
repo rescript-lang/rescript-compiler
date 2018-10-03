@@ -89,7 +89,7 @@ function extend(extend_name, extend_body) {
         ];
 }
 
-function proto(syntax, file_option, $$package, $$import, message, $$enum, proto$1, extend, _) {
+function proto(syntax, file_option, $$package, $$import, message, $$enum, proto$1, extend, param) {
   var proto$2 = proto$1 !== undefined ? proto$1 : /* record */[
       /* syntax */syntax,
       /* imports : [] */0,
@@ -698,7 +698,7 @@ Printexc.register_printer((function (exn) {
         
       }));
 
-function invalid_default_value(field_name, info, _) {
+function invalid_default_value(field_name, info, param) {
   throw [
         Compilation_error,
         /* Invalid_default_value */Block.__(2, [/* record */[
@@ -708,7 +708,7 @@ function invalid_default_value(field_name, info, _) {
       ];
 }
 
-function unsupported_field_type(field_name, field_type, backend_name, _) {
+function unsupported_field_type(field_name, field_type, backend_name, param) {
   throw [
         Compilation_error,
         /* Unsupported_field_type */Block.__(3, [/* record */[
@@ -2891,7 +2891,7 @@ function gen_struct(and_, t, sc) {
   return tmp[1];
 }
 
-function gen_sig(_, t, sc) {
+function gen_sig(and_, t, sc) {
   var f = function (type_name) {
     line$1(sc, Curry._2(Printf.sprintf(/* Format */[
                   /* String_literal */Block.__(11, [
@@ -3410,7 +3410,7 @@ function gen_struct$1(and_, t, sc) {
   return true;
 }
 
-function gen_sig$1(_, t, sc) {
+function gen_sig$1(and_, t, sc) {
   var f = function (type_name) {
     line$1(sc, Curry._2(Printf.sprintf(/* Format */[
                   /* String_literal */Block.__(11, [
@@ -3892,10 +3892,10 @@ function strong_connect(g, sccs, stack, index, v) {
 
 function tarjan(g) {
   var g$1 = reset(g);
-  return fold((function (_, n, param) {
-                  var index = param[2];
-                  var stack = param[1];
-                  var sccs = param[0];
+  return fold((function (param, n, param$1) {
+                  var index = param$1[2];
+                  var stack = param$1[1];
+                  var sccs = param$1[0];
                   var match = n[/* index */1];
                   if (match !== undefined) {
                     return /* tuple */[
@@ -4161,7 +4161,7 @@ function compile_default_p2(all_types, field) {
   
 }
 
-function get_default(_, field_options, _$1) {
+function get_default(field_name, field_options, field_type) {
   var exit = 0;
   var constant;
   try {
@@ -5547,7 +5547,7 @@ function gen_struct$3(and_, t, sc) {
   return tmp[1];
 }
 
-function gen_sig$3(_, t, sc) {
+function gen_sig$3(and_, t, sc) {
   var f = function (type_name) {
     line$1(sc, Curry._2(Printf.sprintf(/* Format */[
                   /* String_literal */Block.__(11, [
@@ -6181,7 +6181,7 @@ function gen_sig_record(sc, param) {
   return /* () */0;
 }
 
-function gen_sig$4(_, t, sc) {
+function gen_sig$4(and_, t, sc) {
   var f = function (type_name) {
     line$1(sc, Curry._2(Printf.sprintf(/* Format */[
                   /* String_literal */Block.__(11, [

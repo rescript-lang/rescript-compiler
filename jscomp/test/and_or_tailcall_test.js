@@ -3,7 +3,7 @@
 var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 
-function f(b, _, _n) {
+function f(b, x, _n) {
   while(true) {
     var n = _n;
     if (n > 100000 || !b) {
@@ -15,7 +15,7 @@ function f(b, _, _n) {
   };
 }
 
-function or_f(b, _, _n) {
+function or_f(b, x, _n) {
   while(true) {
     var n = _n;
     if (n > 100000) {

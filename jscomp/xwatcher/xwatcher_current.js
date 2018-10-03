@@ -35,7 +35,7 @@ function exec() {
 }
 
 function watch(dir) {
-  return Xwatcher_util.makeWatcher(dir, (function (_, fileName) {
+  return Xwatcher_util.makeWatcher(dir, (function (_event, fileName) {
                 if (fileName.endsWith(".ml") || fileName.endsWith(".mli") || fileName.endsWith(".cppo") || fileName.endsWith(".js") || fileName === "Makefile" || fileName === "Makefile.shared") {
                   return exec(/* () */0);
                 } else {

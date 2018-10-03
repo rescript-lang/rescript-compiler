@@ -9424,7 +9424,7 @@ function defined(str) {
   
 }
 
-function query(_, str) {
+function query(loc, str) {
   var exit = 0;
   var v;
   try {

@@ -1592,7 +1592,7 @@ function elfgen(outf) {
   var va = function (x) {
     return (x + off | 0) + 4194304 | 0;
   };
-  var patchloc = function (i, _) {
+  var patchloc = function (i, param) {
     var g = Caml_array.caml_array_get(globs, i);
     if (g[/* va */1] >= 0 && g[/* va */1] < 4194304) {
       return patch(false, g[/* loc */0], va(g[/* va */1]));
@@ -1607,7 +1607,7 @@ function elfgen(outf) {
   opos[0] = opos[0] + 1 | 0;
   $$String.blit("/lib64/ld-linux-x86-64.so.2\0libc.so.6", 0, obuf, opos[0], 37);
   opos[0] = (opos[0] + 37 | 0) + 1 | 0;
-  itr((function (s, sl, _) {
+  itr((function (s, sl, param) {
           $$String.blit(s, 0, obuf, opos[0], sl);
           opos[0] = (opos[0] + sl | 0) + 1 | 0;
           return /* () */0;
@@ -1616,7 +1616,7 @@ function elfgen(outf) {
   var symtab = opos[0];
   var n = /* record */[/* contents */39];
   opos[0] = opos[0] + 24 | 0;
-  itr((function (_, sl, _$1) {
+  itr((function (param, sl, param$1) {
           le(32, n[0]);
           le(32, 16);
           le(64, 0);
@@ -1626,7 +1626,7 @@ function elfgen(outf) {
         }));
   var rel = opos[0];
   var n$1 = /* record */[/* contents */1];
-  itr((function (_, _$1, l) {
+  itr((function (param, param$1, l) {
           var genrel = function (_l) {
             while(true) {
               var l = _l;

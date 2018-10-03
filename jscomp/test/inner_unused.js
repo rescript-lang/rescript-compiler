@@ -12,6 +12,11 @@ function M() {
   return /* module */[/* f */f];
 }
 
+function fff(param, param$1) {
+  return 3;
+}
+
 exports.f = f;
 exports.M = M;
+exports.fff = fff;
 /* No side effect */

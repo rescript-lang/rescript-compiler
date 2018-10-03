@@ -191,12 +191,10 @@ let subst_map name = object (self)
       (** If we do this, we should prevent incorrect inlning to inline it into an array :) 
           do it only when block size is larger than one
       *)
-
       let (_, e, bindings) = 
-        List.fold_left 
-          (fun  (i,e,  acc) (x : J.expression) -> 
+        Ext_list.fold_left ls (0, [], []) (fun x (i,e,  acc)  -> 
              match x.expression_desc with 
-             | J.Var _ | Number _ | Str _ | J.Bool _ | Undefined
+             | Var _ | Number _ | Str _ | J.Bool _ | Undefined
                ->  (* TODO: check the optimization *)
                (i + 1, x :: e, acc)
              | _ ->                
@@ -211,8 +209,7 @@ let subst_map name = object (self)
                  Ext_ident.create
                    (Printf.sprintf "%s_%03d"
                       ident.name i) in
-               (i + 1, E.var match_id :: e, (match_id, v') :: acc)               
-          ) (0, [], []) ls  in
+               (i + 1, E.var match_id :: e, (match_id, v') :: acc))  in
       let e = 
         {block with 
          expression_desc = 
