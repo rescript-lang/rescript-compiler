@@ -57,9 +57,9 @@ module S = Js_stmt_make
 
 module L = Js_dump_lit
 
-let return_indent = (String.length L.return / Ext_pp.indent_length)
+let return_indent = String.length L.return / Ext_pp.indent_length
 
-let throw_indent = (String.length L.throw / Ext_pp.indent_length)
+let throw_indent = String.length L.throw / Ext_pp.indent_length
 
 type cxt = Ext_pp_scope.t
 
@@ -167,6 +167,15 @@ let pp_var_assign cxt f id  =
   P.string f L.eq ; 
   P.space f ;
   acxt 
+
+let pp_var_assign_this cxt f id =   
+  let cxt = pp_var_assign cxt f id in 
+  P.string f L.this;
+  P.space f ;
+  semi f ;
+  P.newline f ;
+  cxt 
+
 let pp_var_declare cxt f id = 
   P.string f L.var ; 
   P.space f ; 
@@ -178,6 +187,9 @@ let pp_direction f (direction : J.for_direction) =
   match direction with
   | Upto -> P.string f L.plus_plus
   | Downto -> P.string f L.minus_minus 
+
+let return_sp f = 
+    P.string f L.return ; P.space f   
 
 let rec formal_parameter_list cxt (f : P.t) (is_method : bool) (l : Ident.t list) (env : Js_fun_env.t) =
   let offset = if is_method then 1 else 0 in
@@ -284,10 +296,8 @@ and  pp_function is_method
        semi f ;
        cxt
      | No_name ->
-       if return then (
-         P.string f L.return ;
-         P.space f
-       );
+       if return then 
+         return_sp f ;
        optimize len (arity = NA && len <=8) cxt f v)
 
   | _, _  ->
@@ -295,8 +305,8 @@ and  pp_function is_method
       match name with
       | No_name ->
         Js_fun_env.get_unbounded env
-      | Name_top id | Name_non_top id -> Ident_set.add id (Js_fun_env.get_unbounded env )
-    in
+      | Name_top id | Name_non_top id -> 
+        Ident_set.add id (Js_fun_env.get_unbounded env ) in
     (* the context will be continued after this function *)
     let outer_cxt = Ext_pp_scope.merge set_env cxt in
 
@@ -312,81 +322,65 @@ and  pp_function is_method
     (* (if not @@ Js_fun_env.is_empty env then *)
     (* pp_comment  f (Some (Js_fun_env.to_string env))) ; *)
     let param_body () =
-      if is_method then begin
-        let cxt = P.paren_group f 1 (fun _ ->
-            formal_parameter_list inner_cxt  f is_method (List.tl l) env )
-        in
-        P.space f ;
-        ignore @@ P.brace_vgroup f 1 (fun _ ->
-            let cxt =
-              if not (Js_fun_env.get_unused env 0) then(
-                let cxt = pp_var_assign cxt f (List.hd l) in 
-                P.string f L.this;
-                P.space f ;
-                semi f ;
-                P.newline f ;
-                cxt 
-              )
-              else
-                cxt
-            in
-            function_body cxt f b
-          );
-
-      end
-      else begin
+      if is_method then
+        match l with 
+        | [] -> assert false 
+        | this::arguments -> 
+          let cxt = P.paren_group f 1 (fun _ ->
+              formal_parameter_list inner_cxt  f is_method arguments env )
+          in
+          P.space f ;
+          ignore @@ P.brace_vgroup f 1 (fun _ ->
+              let cxt =
+                if not (Js_fun_env.get_unused env 0) then
+                  pp_var_assign_this cxt f this               
+                else
+                  cxt in
+              function_body cxt f b
+            );
+      else 
         let cxt = 
           P.paren_group f 1 (fun _ ->
-            formal_parameter_list inner_cxt  f is_method l env ) in
+              formal_parameter_list inner_cxt  f is_method l env ) in
         P.space f ;
-        ignore @@ P.brace_vgroup f 1 (fun _ -> function_body cxt f b );
-      end in
+        ignore @@ P.brace_vgroup f 1 (fun _ -> function_body cxt f b ) in
     let lexical : Ident_set.t = Js_fun_env.get_lexical_scope env in
     let enclose  lexical  return =
       let handle lexical =
         if  Ident_set.is_empty lexical
         then
-          begin
-            if return then
-              begin
-                P.string f L.return ;
-                P.space f
-              end ;
-
-            begin match name with
-              | No_name ->
-                (* see # 1692, add a paren for annoymous function for safety  *)
-                P.paren_group f 1  (fun _ ->
-                    P.string f L.function_;
-                    P.space f ;
-                    param_body ())                
-              | Name_non_top x  ->
-                ignore @@ pp_var_assign inner_cxt f x ; 
-                P.string f L.function_;
-                P.space f ;
-                param_body ();
-                semi f ;
-              | Name_top x  ->
-                P.string f L.function_;
-                P.space f ;
-                ignore (Ext_pp_scope.ident inner_cxt f x);
-                param_body ();
-            end;
-          end
+          (if return then
+             return_sp f ;
+           match name with
+           | No_name ->
+             (* see # 1692, add a paren for annoymous function for safety  *)
+             P.paren_group f 1  (fun _ ->
+                 P.string f L.function_;
+                 P.space f ;
+                 param_body ())                
+           | Name_non_top x  ->
+             ignore @@ pp_var_assign inner_cxt f x ; 
+             P.string f L.function_;
+             P.space f ;
+             param_body ();
+             semi f 
+           | Name_top x  ->
+             P.string f L.function_;
+             P.space f ;
+             ignore (Ext_pp_scope.ident inner_cxt f x);
+             param_body ())
         else
           (* print as
              {[(function(x,y){...} (x,y))]}
           *)
           let lexical = Ident_set.elements lexical in
-          (if return then (
-              P.string f L.return ;
-              P.space f             
-            ) else
-             (match name with
-              | No_name -> ()
-              | Name_non_top name | Name_top name->
-                ignore @@ pp_var_assign inner_cxt f name 
-            )             
+          (if return then 
+             return_sp f             
+           else
+             match name with
+             | No_name -> ()
+             | Name_non_top name | Name_top name->
+               ignore @@ pp_var_assign inner_cxt f name              
           )
           ;
           P.string f L.lparen;
@@ -394,8 +388,7 @@ and  pp_function is_method
           pp_paren_params inner_cxt f lexical; 
           P.brace_vgroup f 0  (fun _ ->
               begin
-                P.string f L.return ;
-                P.space f;
+                return_sp f;
                 P.string f L.function_;
                 P.space f ;
                 (match name with
@@ -1247,9 +1240,7 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
           pp_function method_ cxt f true l b env in
         semi f ; cxt
       | e ->
-        P.string f L.return ;
-        P.space f ;
-
+        return_sp f ;
         (* P.string f "return ";(\* ASI -- when there is a comment*\) *)
         P.group f return_indent (fun _ ->
             let cxt =  expression 0 cxt f e in
