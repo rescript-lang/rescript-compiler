@@ -218,10 +218,10 @@ let continue f s =
   semi f
 
 
-let formal_parameter_list cxt f is_method l env  = 
+let formal_parameter_list cxt f offset l env  = 
   match l with 
   | [x] when 
-    Js_fun_env.get_unused env (if is_method then 1 else 0) -> 
+    Js_fun_env.get_unused env offset -> 
     cxt 
   | _ -> 
     iter_lst cxt f l Ext_pp_scope.ident comma_sp 
@@ -336,7 +336,7 @@ and  pp_function is_method
         | [] -> assert false 
         | this::arguments -> 
           let cxt = P.paren_group f 1 (fun _ ->
-              formal_parameter_list inner_cxt  f is_method arguments env )
+              formal_parameter_list inner_cxt  f 1 arguments env )
           in
           P.space f ;
           ignore @@ P.brace_vgroup f 1 (fun _ ->
@@ -347,8 +347,7 @@ and  pp_function is_method
             );
       else 
         let cxt = 
-          P.paren_group f 1 (fun _ ->
-              formal_parameter_list inner_cxt  f is_method l env ) in
+          P.paren_group f 1 (fun _ -> formal_parameter_list inner_cxt  f 0 l env ) in
         P.space f ;
         ignore @@ P.brace_vgroup f 1 (fun _ -> function_body cxt f b ) in
     let lexical : Ident_set.t = Js_fun_env.get_lexical_scope env in
