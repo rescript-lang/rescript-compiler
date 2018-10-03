@@ -782,7 +782,7 @@ let intersectBy eq xs ys =
   | (_,[]) -> []
   | (xs,ys) -> keep xs (fun x -> some ys (eq x))
 
-let intersect = intersectBy (=)
+let intersect xs ys = intersectBy (=) xs ys
 
 let partitionU l p  =
   match l with 
