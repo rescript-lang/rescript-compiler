@@ -51,7 +51,7 @@ catch (exn){
   bs_vscode = false;
 }
 
-var color = /* record */[/* contents : Auto */0];
+var color = /* record */[/* contents */undefined];
 
 var Fatal_error = Caml_exceptions.create("Ocaml_parsetree_test.Misc.Fatal_error");
 
@@ -93,10 +93,14 @@ function ansi_of_color(param) {
 
 function code_of_style(param) {
   if (typeof param === "number") {
-    if (param === 0) {
-      return "1";
-    } else {
-      return "0";
+    switch (param) {
+      case 0 : 
+          return "1";
+      case 1 : 
+          return "0";
+      case 2 : 
+          return "2";
+      
     }
   } else if (param.tag) {
     return "4" + ansi_of_color(param[0]);
@@ -146,8 +150,26 @@ function set_styles(s) {
 
 function style_of_tag(s) {
   switch (s) {
+    case "dim" : 
+        return /* :: */[
+                /* Dim */2,
+                /* [] */0
+              ];
     case "error" : 
         return cur_styles[0][/* error */0];
+    case "filename" : 
+        return /* :: */[
+                /* FG */Block.__(0, [/* Cyan */6]),
+                /* [] */0
+              ];
+    case "info" : 
+        return /* :: */[
+                /* Bold */0,
+                /* :: */[
+                  /* FG */Block.__(0, [/* Yellow */3]),
+                  /* [] */0
+                ]
+              ];
     case "loc" : 
         return cur_styles[0][/* loc */2];
     case "warning" : 
@@ -237,15 +259,19 @@ function setup(o) {
     Format.set_mark_tags(true);
     List.iter(set_color_tag_handling, formatter_l);
     var tmp;
-    switch (o) {
-      case 1 : 
-          tmp = true;
-          break;
-      case 0 : 
-      case 2 : 
-          tmp = false;
-          break;
-      
+    if (o !== undefined) {
+      switch (o) {
+        case 1 : 
+            tmp = true;
+            break;
+        case 0 : 
+        case 2 : 
+            tmp = false;
+            break;
+        
+      }
+    } else {
+      tmp = false;
     }
     color_enabled[0] = tmp;
   }
@@ -296,6 +322,8 @@ function number(param) {
           return 29;
       case 15 : 
           return 39;
+      case 16 : 
+          return 102;
       
     }
   } else {
@@ -368,10 +396,29 @@ function number(param) {
           return 49;
       case 33 : 
           return 50;
+      case 34 : 
+          return 101;
+      case 35 : 
+          return 103;
+      case 36 : 
+          return 104;
       
     }
   }
 }
+
+function loop(i) {
+  if (i === 0) {
+    return /* [] */0;
+  } else {
+    return /* :: */[
+            i,
+            loop(i - 1 | 0)
+          ];
+  }
+}
+
+var letter_all = loop(104);
 
 function letter(param) {
   var switcher = param - 97 | 0;
@@ -380,24 +427,14 @@ function letter(param) {
           Caml_builtin_exceptions.assert_failure,
           /* tuple */[
             "warnings.ml",
-            164,
+            176,
             9
           ]
         ];
   } else {
     switch (switcher) {
       case 0 : 
-          var loop = function (i) {
-            if (i === 0) {
-              return /* [] */0;
-            } else {
-              return /* :: */[
-                      i,
-                      loop(i - 1 | 0)
-                    ];
-            }
-          };
-          return loop(50);
+          return letter_all;
       case 2 : 
           return /* :: */[
                   1,
@@ -553,8 +590,8 @@ function letter(param) {
 }
 
 var current = /* record */[/* contents : record */[
-    /* active */Caml_array.caml_make_vect(51, true),
-    /* error */Caml_array.caml_make_vect(51, false)
+    /* active */Caml_array.caml_make_vect(105, true),
+    /* error */Caml_array.caml_make_vect(105, false)
   ]];
 
 function is_active(x) {
@@ -717,7 +754,7 @@ function parse_opt(error, active, flags, s) {
             ];
       } else {
         var match$1 = get_range(i);
-        for(var n = match$1[1] ,n_finish = Caml_primitive.caml_int_min(match$1[2], 50); n <= n_finish; ++n){
+        for(var n = match$1[1] ,n_finish = Caml_primitive.caml_int_min(match$1[2], 104); n <= n_finish; ++n){
           Curry._1(myset, n);
         }
         return loop(match$1[0]);
@@ -738,7 +775,7 @@ function parse_options(errflag, s) {
   return /* () */0;
 }
 
-parse_options(false, "+a-4-6-7-9-27-29-32..39-41..42-44-45-48-50");
+parse_options(false, "+a-4-6-7-9-27-29-32..39-41..42-44-45-48-50-102");
 
 parse_options(true, "-a");
 
@@ -777,6 +814,8 @@ function message(param) {
           return "unescaped end-of-line in a string constant (non-portable code)";
       case 15 : 
           return "unused rec flag.";
+      case 16 : 
+          return "polymorphic comparison introduced (maybe unsafe)";
       
     }
   } else {
@@ -814,7 +853,7 @@ function message(param) {
                   Caml_builtin_exceptions.assert_failure,
                   /* tuple */[
                     "warnings.ml",
-                    271,
+                    283,
                     26
                   ]
                 ];
@@ -852,7 +891,7 @@ function message(param) {
                   Caml_builtin_exceptions.assert_failure,
                   /* tuple */[
                     "warnings.ml",
-                    291,
+                    303,
                     37
                   ]
                 ];
@@ -972,7 +1011,7 @@ function message(param) {
                     Caml_builtin_exceptions.assert_failure,
                     /* tuple */[
                       "warnings.ml",
-                      353,
+                      365,
                       39
                     ]
                   ];
@@ -995,7 +1034,7 @@ function message(param) {
                     Caml_builtin_exceptions.assert_failure,
                     /* tuple */[
                       "warnings.ml",
-                      362,
+                      374,
                       36
                     ]
                   ];
@@ -1106,6 +1145,12 @@ function message(param) {
           } else {
             return "ambiguous documentation comment";
           }
+      case 34 : 
+          return "Unused BuckleScript attribute: " + param[0];
+      case 35 : 
+          return "BuckleScript FFI warning: " + param[0];
+      case 36 : 
+          return "BuckleScript bs.deriving warning: " + param[0];
       
     }
   }
@@ -1845,26 +1890,26 @@ function from_pair_suites(name, suites) {
               return List.iter((function (param) {
                             var code = param[1];
                             it(param[0], (function () {
-                                    var match = Curry._1(code, /* () */0);
-                                    switch (match.tag | 0) {
+                                    var spec = Curry._1(code, /* () */0);
+                                    switch (spec.tag | 0) {
                                       case 0 : 
-                                          Assert.deepEqual(match[0], match[1]);
+                                          Assert.deepEqual(spec[0], spec[1]);
                                           return /* () */0;
                                       case 1 : 
-                                          Assert.notDeepEqual(match[0], match[1]);
+                                          Assert.notDeepEqual(spec[0], spec[1]);
                                           return /* () */0;
                                       case 2 : 
-                                          Assert.strictEqual(match[0], match[1]);
+                                          Assert.strictEqual(spec[0], spec[1]);
                                           return /* () */0;
                                       case 3 : 
-                                          Assert.notStrictEqual(match[0], match[1]);
+                                          Assert.notStrictEqual(spec[0], spec[1]);
                                           return /* () */0;
                                       case 4 : 
-                                          Assert.ok(match[0]);
+                                          Assert.ok(spec[0]);
                                           return /* () */0;
                                       case 5 : 
-                                          var b = match[1];
-                                          var a = match[0];
+                                          var b = spec[1];
+                                          var a = spec[0];
                                           if (close_enough(undefined, a, b)) {
                                             return 0;
                                           } else {
@@ -1872,21 +1917,21 @@ function from_pair_suites(name, suites) {
                                             return /* () */0;
                                           }
                                       case 6 : 
-                                          var b$1 = match[2];
-                                          var a$1 = match[1];
-                                          if (close_enough(match[0], a$1, b$1)) {
+                                          var b$1 = spec[2];
+                                          var a$1 = spec[1];
+                                          if (close_enough(spec[0], a$1, b$1)) {
                                             return 0;
                                           } else {
                                             Assert.deepEqual(a$1, b$1);
                                             return /* () */0;
                                           }
                                       case 7 : 
-                                          Assert.throws(match[0]);
+                                          Assert.throws(spec[0]);
                                           return /* () */0;
                                       case 8 : 
                                           return assert_fail("failed");
                                       case 9 : 
-                                          return assert_fail(match[0]);
+                                          return assert_fail(spec[0]);
                                       
                                     }
                                   }));
@@ -1979,6 +2024,8 @@ function from_pair_suites(name, suites) {
     return /* () */0;
   }
 }
+
+Promise.resolve(/* () */0);
 
 var docstrings = /* record */[/* contents : [] */0];
 
@@ -9792,46 +9839,6 @@ function directive_parse(token_with_comments, lexbuf) {
     }
     
   };
-  var parse_or_aux = function (calc, v) {
-    var e = token(/* () */0);
-    if (typeof e === "number") {
-      if (e !== 8) {
-        push(e);
-        return v;
-      } else {
-        var calc$1 = calc && !v;
-        var b = parse_or_aux(calc$1, parse_and_aux(calc$1, parse_relation(calc$1)));
-        if (v) {
-          return true;
-        } else {
-          return b;
-        }
-      }
-    } else {
-      push(e);
-      return v;
-    }
-  };
-  var parse_and_aux = function (calc, v) {
-    var e = token(/* () */0);
-    if (typeof e === "number") {
-      if (e !== 0) {
-        push(e);
-        return v;
-      } else {
-        var calc$1 = calc && v;
-        var b = parse_and_aux(calc$1, parse_relation(calc$1));
-        if (v) {
-          return b;
-        } else {
-          return false;
-        }
-      }
-    } else {
-      push(e);
-      return v;
-    }
-  };
   var parse_relation = function (calc) {
     var curr_token = token(/* () */0);
     var curr_loc = curr(lexbuf);
@@ -9977,6 +9984,46 @@ function directive_parse(token_with_comments, lexbuf) {
                 curr_loc
               ];
       }
+    }
+  };
+  var parse_or_aux = function (calc, v) {
+    var e = token(/* () */0);
+    if (typeof e === "number") {
+      if (e !== 8) {
+        push(e);
+        return v;
+      } else {
+        var calc$1 = calc && !v;
+        var b = parse_or_aux(calc$1, parse_and_aux(calc$1, parse_relation(calc$1)));
+        if (v) {
+          return true;
+        } else {
+          return b;
+        }
+      }
+    } else {
+      push(e);
+      return v;
+    }
+  };
+  var parse_and_aux = function (calc, v) {
+    var e = token(/* () */0);
+    if (typeof e === "number") {
+      if (e !== 0) {
+        push(e);
+        return v;
+      } else {
+        var calc$1 = calc && v;
+        var b = parse_and_aux(calc$1, parse_relation(calc$1));
+        if (v) {
+          return b;
+        } else {
+          return false;
+        }
+      }
+    } else {
+      push(e);
+      return v;
     }
   };
   var v = parse_or_aux(true, parse_and_aux(true, parse_relation(true)));
@@ -10615,10 +10662,10 @@ function report_error(ppf, param) {
       case 5 : 
           return Format.fprintf(ppf, /* Format */[
                       /* String_literal */Block.__(11, [
-                          "Expect `then` after conditioal predicate",
+                          "Expect `then` after conditional predicate",
                           /* End_of_format */0
                         ]),
-                      "Expect `then` after conditioal predicate"
+                      "Expect `then` after conditional predicate"
                     ]);
       case 6 : 
           return Format.fprintf(ppf, /* Format */[
@@ -11175,10 +11222,6 @@ function __ocaml_lex_quoted_string_rec(delim, lexbuf, ___ocaml_lex_state) {
   };
 }
 
-function comment(lexbuf) {
-  return __ocaml_lex_comment_rec(lexbuf, 132);
-}
-
 function string(lexbuf) {
   lexbuf[/* lex_mem */9] = Caml_array.caml_make_vect(2, -1);
   var lexbuf$1 = lexbuf;
@@ -11238,6 +11281,10 @@ function string(lexbuf) {
       }
     }
   };
+}
+
+function comment(lexbuf) {
+  return __ocaml_lex_comment_rec(lexbuf, 132);
 }
 
 function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
