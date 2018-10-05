@@ -157,7 +157,7 @@ end = struct
 (* The main OCaml version string has moved to ../VERSION *)
 let version = Sys.ocaml_version
 
-let standard_library_default = "/Users/hzhang295/git/bucklescript/ocaml/lib/ocaml"
+let standard_library_default = "/Users/hongbozhang/git/bucklescript/vendor/ocaml/lib/ocaml"
 
 let standard_library =
  
@@ -167,7 +167,7 @@ let standard_library =
 
     standard_library_default
 
-let standard_runtime = "/Users/hzhang295/git/bucklescript/ocaml/bin/ocamlrun"
+let standard_runtime = "/Users/hongbozhang/git/bucklescript/vendor/ocaml/bin/ocamlrun"
 let ccomp_type = "cc"
 let bytecomp_c_compiler = "gcc -O  -Wall -D_FILE_OFFSET_BITS=64 -D_REENTRANT -O "
 let bytecomp_c_libraries = "-lcurses -lpthread"
@@ -218,8 +218,8 @@ let ext_asm = ".s"
 let ext_lib = ".a"
 let ext_dll = ".so"
 
-let host = "x86_64-apple-darwin15.6.0"
-let target = "x86_64-apple-darwin15.6.0"
+let host = "x86_64-apple-darwin17.7.0"
+let target = "x86_64-apple-darwin17.7.0"
 
 let default_executable_name =
   match Sys.os_type with
@@ -385,11 +385,14 @@ val no_implicit_current_dir : bool ref
 val assume_no_mli : mli_status ref 
 val record_event_when_debug : bool ref 
 val bs_vscode : bool
+val dont_record_crc_unit : string option ref
+val bs_only : bool ref (* set true on bs top*)
+val no_assert_false : bool ref
 
 
 type color_setting = Auto | Always | Never
 val parse_color_setting : string -> color_setting option
-val color : color_setting ref
+val color : color_setting option ref
 
 
 end = struct
@@ -521,6 +524,9 @@ let bs_vscode =
     (* We get it from environment variable mostly due to 
        we don't want to rebuild when flip on or off
     *)
+let dont_record_crc_unit : string option ref = ref None
+let bs_only = ref false
+let no_assert_false = ref false
 
 
 type color_setting = Auto | Always | Never
@@ -529,7 +535,7 @@ let parse_color_setting = function
   | "always" -> Some Always
   | "never" -> Some Never
   | _ -> None
-let color = ref Auto ;; (* -color *)
+let color = ref None ;; (* -color *)
 
 
 end
@@ -726,6 +732,9 @@ module Color : sig
     | Bold
     | Reset
 
+    | Dim
+
+
   val ansi_of_style_l : style list -> string
   (* ANSI escape sequence for the given style *)
 
@@ -739,7 +748,7 @@ module Color : sig
   val get_styles: unit -> styles
   val set_styles: styles -> unit
 
-  val setup : Clflags.color_setting -> unit
+  val setup : Clflags.color_setting option -> unit
   (* [setup opt] will enable or disable color handling on standard formatters
      according to the value of color setting [opt].
      Only the first call to this function has an effect. *)
@@ -1130,6 +1139,9 @@ module Color = struct
     | Bold
     | Reset
 
+    | Dim
+
+
   let ansi_of_color = function
     | Black -> "0"
     | Red -> "1"
@@ -1145,6 +1157,9 @@ module Color = struct
     | BG c -> "4" ^ ansi_of_color c
     | Bold -> "1"
     | Reset -> "0"
+
+    | Dim -> "2"
+
 
   let ansi_of_style_l l =
     let s = match l with
@@ -1176,6 +1191,11 @@ module Color = struct
     | "error" -> (!cur_styles).error
     | "warning" -> (!cur_styles).warning
     | "loc" -> (!cur_styles).loc
+
+    | "info" -> [Bold; FG Yellow]
+    | "dim" -> [Dim]
+    | "filename" -> [FG Cyan]
+
     | _ -> raise Not_found
 
   let color_enabled = ref true
@@ -1222,9 +1242,10 @@ module Color = struct
         Format.set_mark_tags true;
         List.iter set_color_tag_handling formatter_l;
         color_enabled := (match o with
-          | Clflags.Always -> true
-          | Clflags.Auto -> should_enable_color ()
-          | Clflags.Never -> false
+          | Some Clflags.Always -> true
+          | Some Clflags.Auto -> should_enable_color ()
+          | Some Clflags.Never -> false
+          | None -> should_enable_color ()
         )
       );
       ()
@@ -1352,6 +1373,11 @@ type t =
   | Eliminated_optional_arguments of string list (* 48 *)
   | No_cmi_file of string                   (* 49 *)
   | Bad_docstring of bool                   (* 50 *)
+
+  | Bs_unused_attribute of string           (* 101 *)
+  | Bs_polymorphic_comparison               (* 102 *)
+  | Bs_ffi_warning of string                (* 103 *)
+  | Bs_derive_warning of string             (* 104 *)
 ;;
 
 val parse_options : bool -> string -> unit;;
@@ -1373,6 +1399,12 @@ val help_warnings: unit -> unit
 type state
 val backup: unit -> state
 val restore: state -> unit
+
+
+val message : t -> string 
+val number: t -> int
+val super_print : (t -> string) -> formatter -> t -> unit;;
+
 
 end = struct
 #1 "warnings.ml"
@@ -1446,6 +1478,11 @@ type t =
   | Eliminated_optional_arguments of string list (* 48 *)
   | No_cmi_file of string                   (* 49 *)
   | Bad_docstring of bool                   (* 50 *)
+
+  | Bs_unused_attribute of string           (* 101 *)
+  | Bs_polymorphic_comparison               (* 102 *)
+  | Bs_ffi_warning of string                (* 103 *)
+  | Bs_derive_warning of string             (* 104 *)
 ;;
 
 (* If you remove a warning, leave a hole in the numbering.  NEVER change
@@ -1505,15 +1542,22 @@ let number = function
   | Eliminated_optional_arguments _ -> 48
   | No_cmi_file _ -> 49
   | Bad_docstring _ -> 50
+
+  | Bs_unused_attribute _ -> 101
+  | Bs_polymorphic_comparison -> 102
+  | Bs_ffi_warning _ -> 103
+  | Bs_derive_warning _ -> 104
 ;;
 
-let last_warning_number = 50
+let last_warning_number = 104
 (* Must be the max number returned by the [number] function. *)
+let letter_all = 
+  let rec loop i = if i = 0 then [] else i :: loop (i - 1) in
+  loop last_warning_number
 
 let letter = function
   | 'a' ->
-     let rec loop i = if i = 0 then [] else i :: loop (i - 1) in
-     loop last_warning_number
+    letter_all
   | 'b' -> []
   | 'c' -> [1; 2]
   | 'd' -> [3]
@@ -1620,7 +1664,7 @@ let parse_options errflag s =
   current := {error; active}
 
 (* If you change these, don't forget to change them in man/ocamlc.m *)
-let defaults_w = "+a-4-6-7-9-27-29-32..39-41..42-44-45-48-50";;
+let defaults_w = "+a-4-6-7-9-27-29-32..39-41..42-44-45-48-50-102";;
 let defaults_warn_error = "-a";;
 
 let () = parse_options false defaults_w;;
@@ -1767,6 +1811,14 @@ let message = function
   | Bad_docstring unattached ->
       if unattached then "unattached documentation comment (ignored)"
       else "ambiguous documentation comment"
+  | Bs_unused_attribute s ->
+      "Unused BuckleScript attribute: " ^ s
+  | Bs_polymorphic_comparison ->
+      "polymorphic comparison introduced (maybe unsafe)"
+  | Bs_ffi_warning s ->
+      "BuckleScript FFI warning: " ^ s
+  | Bs_derive_warning s ->
+      "BuckleScript bs.deriving warning: " ^ s 
 ;;
 
 let nerrors = ref 0;;
@@ -1778,6 +1830,17 @@ let print ppf w =
   Format.pp_print_flush ppf ();
   if (!current).error.(num) then incr nerrors
 ;;
+
+
+(* used by super-errors. Copied from the `print` above *)
+let super_print message ppf w =
+  let msg = message w in
+  let num = number w in
+  Format.fprintf ppf "%s" msg;
+  Format.pp_print_flush ppf ();
+  if (!current).error.(num) then incr nerrors
+;;
+
 
 exception Errors of int;;
 
@@ -1852,6 +1915,7 @@ let descriptions =
    48, "Implicit elimination of optional arguments.";
    49, "Missing cmi file when looking up module alias.";
    50, "Unexpected documentation comment.";
+   101,"Unused bs attributes";
   ]
 ;;
 
@@ -1981,6 +2045,10 @@ val print_error_prefix: formatter -> unit -> unit
   (* print the prefix "Error:" possibly with style *)
 
 val error: ?loc:t -> ?sub:error list -> ?if_highlight:string -> string -> error
+
+ 
+val pp_ksprintf : ?before:(formatter -> unit) -> (string -> 'a) -> ('b, formatter, unit, 'a) format4 -> 'b
+
 
 val errorf: ?loc:t -> ?sub:error list -> ?if_highlight:string
             -> ('a, Format.formatter, unit, error) format4 -> 'a
@@ -2608,52 +2676,73 @@ type  pair_suites = (string * (unit ->  eq)) list
 val from_suites : string -> (string * (unit -> unit)) list -> unit
 val from_pair_suites : string ->  pair_suites -> unit
 
+type promise_suites = (string * eq Js.Promise.t) list 
+
+val from_promise_suites : 
+  string ->
+  promise_suites -> 
+  unit
+
+val eq_suites :   
+  test_id:int ref ->
+  suites:pair_suites ref -> string -> 'b -> 'b -> unit
+  
+val bool_suites :
+  test_id:int ref ->
+  suites: pair_suites ref -> string -> bool -> unit
+
+val throw_suites : 
+  test_id:int ref ->
+  suites: pair_suites ref -> string -> (unit -> unit) -> unit
 end = struct
 #1 "mt.ml"
 
 
 
 external describe : string -> (unit -> unit[@bs]) -> unit = "describe"
-    [@@bs.val]
+[@@bs.val]
 
-external it : string -> (unit -> unit) -> unit = "it"
-    [@@bs.val]
+external it : string -> (unit -> unit[@bs.uncurry]) -> unit = "it"
+[@@bs.val]
+
+external it_promise : string -> (unit -> _ Js.Promise.t [@bs.uncurry]) -> unit = "it"
+[@@bs.val]
 
 external eq : 'a -> 'a -> unit = "deepEqual"
-    [@@bs.val]
-    [@@bs.module "assert"]
+[@@bs.val]
+[@@bs.module "assert"]
 
 external neq : 'a -> 'a -> unit = "notDeepEqual"
-    [@@bs.val]
-    [@@bs.module "assert"]
+[@@bs.val]
+[@@bs.module "assert"]
 
 external strict_eq : 'a -> 'a -> unit = "strictEqual"
-    [@@bs.val]
-    [@@bs.module "assert"]
+[@@bs.val]
+[@@bs.module "assert"]
 
 external strict_neq : 'a -> 'a -> unit = "notStrictEqual"
-    [@@bs.val]
-    [@@bs.module "assert"]
+[@@bs.val]
+[@@bs.module "assert"]
 
 external ok : bool -> unit = "ok"
-    [@@bs.val]
-    [@@bs.module "assert"]
+[@@bs.val]
+[@@bs.module "assert"]
 
 external fail : 'a -> 'a -> string Js.undefined -> string -> unit = "fail"
-    [@@bs.val]
-    [@@bs.module "assert"]
+[@@bs.val]
+[@@bs.module "assert"]
 
 
 external dump : 'a array -> unit = "console.log"
-  [@@bs.val]
-  [@@bs.splice]
+[@@bs.val]
+[@@bs.splice]
 
 external throws : (unit -> unit) -> unit = "throws"
-  [@@bs.val]
-  [@@bs.module "assert"]
+[@@bs.val]
+[@@bs.module "assert"]
 (** There is a problem --
     it does not return [unit]
- *)
+*)
 
 let assert_equal = eq
 let assert_notequal = neq
@@ -2693,25 +2782,41 @@ type eq =
   (* TODO: | Exception : exn -> (unit -> unit) -> _ eq  *)
 
 type  pair_suites = (string * (unit ->  eq)) list
-
+type promise_suites = (string * eq Js.Promise.t) list 
 let close_enough ?(threshold=0.0000001 (* epsilon_float *)) a b =
   abs_float (a -. b) < threshold
 
 let node_from_pair_suites (name : string) (suites :  pair_suites) =
   Js.log (name, "testing");
   List.iter (fun (name, code) ->
-              match code () with
-              | Eq(a,b) -> Js.log (name , a, "eq?", b )
-              | Neq(a,b) -> Js.log (name, a, "neq?",   b )
-              | StrictEq(a,b) -> Js.log (name , a, "strict_eq?", b )
-              | StrictNeq(a,b) -> Js.log (name, a, "strict_neq?",   b )
-              | Approx(a,b) -> Js.log (name, a, "~",  b)
-              | ApproxThreshold(t, a, b) -> Js.log (name, a, "~", b, " (", t, ")")
-              | ThrowAny fn -> ()
-              | Fail _ -> Js.log "failed"
-              | FailWith msg -> Js.log ("failed: " ^ msg)
-              | Ok a -> Js.log (name, a, "ok?")
-              ) suites
+      match code () with
+      | Eq(a,b) -> Js.log (name , a, "eq?", b )
+      | Neq(a,b) -> Js.log (name, a, "neq?",   b )
+      | StrictEq(a,b) -> Js.log (name , a, "strict_eq?", b )
+      | StrictNeq(a,b) -> Js.log (name, a, "strict_neq?",   b )
+      | Approx(a,b) -> Js.log (name, a, "~",  b)
+      | ApproxThreshold(t, a, b) -> Js.log (name, a, "~", b, " (", t, ")")
+      | ThrowAny fn -> ()
+      | Fail _ -> Js.log "failed"
+      | FailWith msg -> Js.log ("failed: " ^ msg)
+      | Ok a -> Js.log (name, a, "ok?")
+    ) suites
+
+let handleCode spec = 
+
+  match spec with
+  | Eq(a,b) -> assert_equal a b
+  | Neq(a,b) -> assert_notequal a b
+  | StrictEq(a,b) -> assert_strict_equal a b
+  | StrictNeq(a,b) -> assert_strict_notequal a b
+  | Ok(a) -> assert_ok a
+  | Approx(a, b) ->
+    if not (close_enough a b) then assert_equal a b (* assert_equal gives better ouput *)
+  | ApproxThreshold(t, a, b) ->
+    if not (close_enough ~threshold:t a b) then assert_equal a b (* assert_equal gives better ouput *)
+  | ThrowAny fn -> throws fn
+  | Fail _ -> assert_fail "failed"
+  | FailWith msg -> assert_fail msg
 
 let from_pair_suites name (suites :  pair_suites) =
   match Array.to_list Node.Process.process##argv with
@@ -2721,23 +2826,27 @@ let from_pair_suites name (suites :  pair_suites) =
           suites |>
           List.iter (fun (name, code) ->
               it name (fun _ ->
-                  match code () with
-                  | Eq(a,b) -> assert_equal a b
-                  | Neq(a,b) -> assert_notequal a b
-                  | StrictEq(a,b) -> assert_strict_equal a b
-                  | StrictNeq(a,b) -> assert_strict_notequal a b
-                  | Ok(a) -> assert_ok a
-                  | Approx(a, b) ->
-                    if not (close_enough a b) then assert_equal a b (* assert_equal gives better ouput *)
-                  | ApproxThreshold(t, a, b) ->
-                    if not (close_enough ~threshold:t a b) then assert_equal a b (* assert_equal gives better ouput *)
-                  | ThrowAny fn -> throws fn
-                  | Fail _ -> assert_fail "failed"
-                  | FailWith msg -> assert_fail msg
+                  handleCode (code ())
                 )
             )
         )
     else node_from_pair_suites name suites
+  | _ -> ()
+let val_unit = Js.Promise.resolve ()
+let from_promise_suites name (suites : (string * _ Js.Promise.t ) list) =
+  match Array.to_list Node.Process.process##argv with
+  | cmd :: _ ->
+    if is_mocha () then
+      describe name (fun [@bs] () ->
+          suites |>
+          List.iter (fun (name, code) ->
+              it_promise name (fun _ ->
+                  code |> Js.Promise.then_ (fun x -> handleCode x; val_unit)
+
+                )
+            )
+        )
+    else Js.log "promise suites" (* TODO*)
   | _ -> ()
 
 (*
@@ -2757,10 +2866,24 @@ if (typeof require === "undefined"){
 |}]
 
 let from_pair_suites_non_top name suites =
-    if not @@ Js.to_bool @@ is_top () then
+    if not @@ is_top () then
       from_pair_suites name suites
 *)
 
+let eq_suites ~test_id ~suites loc x y  = 
+  incr test_id ; 
+  suites := 
+    (loc ^" id " ^ (string_of_int !test_id), (fun _ -> Eq(x,y))) :: !suites
+
+let bool_suites  ~test_id ~suites loc x   = 
+  incr test_id ; 
+  suites := 
+    (loc ^" id " ^ (string_of_int !test_id), (fun _ -> Ok(x))) :: !suites  
+
+let throw_suites ~test_id ~suites loc x =     
+  incr test_id ; 
+  suites := 
+    (loc ^" id " ^ (string_of_int !test_id), (fun _ -> ThrowAny(x))) :: !suites
 end
 (** Interface as module  *)
 module Parsetree
@@ -18186,7 +18309,7 @@ let report_error ppf = function
   | Unterminated_paren_in_conditional ->
     fprintf ppf "Unterminated parens in conditional predicate"
   | Expect_hash_then_in_conditional -> 
-      fprintf ppf "Expect `then` after conditioal predicate"
+      fprintf ppf "Expect `then` after conditional predicate"
   | Conditional_expr_expected_type (a,b) -> 
       fprintf ppf "Conditional expression type mismatch (%s,%s)" 
         (string_of_type_directive a )

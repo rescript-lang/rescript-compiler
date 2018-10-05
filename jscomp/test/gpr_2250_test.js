@@ -49,12 +49,12 @@ function create() {
     var data = ids[2];
     CamlinternalOO.set_methods($$class, /* array */[
           add,
-          (function (self$1, _) {
+          (function (self$1, param) {
               self$1[data] = self$1[data] + 1 | 0;
               return self$1;
             }),
           get,
-          (function (self$1, _) {
+          (function (self$1, param) {
               return self$1[data];
             })
         ]);

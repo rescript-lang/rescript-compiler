@@ -2194,7 +2194,7 @@ function scan_elems$6(ib, scan_elem, accu) {
                 } else {
                   return scan_elems$6(ib, scan_elem, accu$1);
                 }
-              }), (function (_, _$1) {
+              }), (function (ib, exc) {
                 return accu;
               }));
 }
@@ -2344,7 +2344,7 @@ function scan_elems$7(ib, scan_elem, accu) {
                   i,
                   accu
                 ];
-                return Curry._1(Scanf.kscanf(ib, (function (_, _$1) {
+                return Curry._1(Scanf.kscanf(ib, (function (ib, exc) {
                                   return accu$1;
                                 }), /* Format */[
                                 /* Char_literal */Block.__(12, [
@@ -2363,7 +2363,7 @@ function scan_elems$7(ib, scan_elem, accu) {
                                 return scan_elems$7(ib, scan_elem, accu$1);
                               }
                             }));
-              }), (function (_, _$1) {
+              }), (function (ib, exc) {
                 return accu;
               }));
 }
@@ -2502,7 +2502,7 @@ function test32() {
 test("File \"tscanf_test.ml\", line 728, characters 5-12", test32(/* () */0));
 
 function scan_elems$8(ib, scan_elem_fmt, accu) {
-  return Curry._1(Scanf.kscanf(ib, (function (_, _$1) {
+  return Curry._1(Scanf.kscanf(ib, (function (ib, exc) {
                     return accu;
                   }), scan_elem_fmt), (function (i) {
                 var accu$1 = /* :: */[
@@ -2652,7 +2652,7 @@ function test34() {
 test("File \"tscanf_test.ml\", line 787, characters 5-12", test34(/* () */0));
 
 function scan_elems$9(scan_elem, accu, ib) {
-  return Curry._2(Scanf.kscanf(ib, (function (_, _$1) {
+  return Curry._2(Scanf.kscanf(ib, (function (ib, exc) {
                     return accu;
                   }), /* Format */[
                   /* Reader */Block.__(19, [/* End_of_format */0]),
@@ -2886,7 +2886,7 @@ function test35() {
 test("File \"tscanf_test.ml\", line 940, characters 5-12", test340(/* () */0) && test35(/* () */0));
 
 function read_elems(read_elem, accu, ib) {
-  return Curry._2(Scanf.kscanf(ib, (function (_, _$1) {
+  return Curry._2(Scanf.kscanf(ib, (function (ib, exc) {
                     return accu;
                   }), /* Format */[
                   /* Reader */Block.__(19, [/* Char_literal */Block.__(12, [
@@ -3403,7 +3403,7 @@ function test48() {
                           /* End_of_format */0
                         ]),
                       "%(%f%)"
-                    ]), (function (_, i) {
+                    ]), (function (_fmt, i) {
                     return i;
                   }));
     };
@@ -3419,7 +3419,7 @@ function test48() {
                               ])
                           ]),
                         "Read integers with %(%i%)"
-                      ]), (function (_, i) {
+                      ]), (function (_fmt, i) {
                       return i;
                     }));
       };
@@ -3435,7 +3435,7 @@ function test48() {
                                 ])
                             ]),
                           "with %(%i %s%)"
-                        ]), (function (_, amount, currency) {
+                        ]), (function (_fmt, amount, currency) {
                         return /* tuple */[
                                 amount,
                                 currency
@@ -3466,7 +3466,7 @@ function test48() {
                                   ])
                               ]),
                             "with %(%i %_s %s%)"
-                          ]), (function (_, amount, currency) {
+                          ]), (function (_fmt, amount, currency) {
                           return /* tuple */[
                                   amount,
                                   currency
@@ -3667,7 +3667,7 @@ function test49() {
 
 test("File \"tscanf_test.ml\", line 1176, characters 5-12", test49(/* () */0));
 
-function next_char(ob, _) {
+function next_char(ob, param) {
   var s = $$Buffer.contents(ob);
   var len = s.length;
   if (len === 0) {

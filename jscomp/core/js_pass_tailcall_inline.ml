@@ -46,7 +46,7 @@ module E = Js_exp_make
     TODO: Ident Hashtbl could be improved, 
     since in this case it can not be global?  
 
- *)
+*)
 let count_collects () = 
   object (self)
     inherit Js_fold.fold as super
@@ -69,13 +69,12 @@ let count_collects () =
     method! variable_declaration 
         ({ident; value ; property  ; ident_info }  as v)
       =  
-        Ident_hashtbl.add defined_idents ident v; 
-        match value with 
-        | None
-          -> 
-          self
-        | Some x
-          -> self#expression x 
+      Ident_hashtbl.add defined_idents ident v; 
+      match value with 
+      | None -> 
+        self
+      | Some x
+        -> self#expression x 
     method! ident id = self#add_use id; self
     method get_stats = 
       Ident_hashtbl.iter (fun ident (v : J.variable_declaration) -> 
@@ -85,16 +84,15 @@ let count_collects () =
             let pure = 
               match v.value  with 
               | None -> false  (* can not happen *)
-              | Some x -> Js_analyzer.no_side_effect_expression x  
-            in
+              | Some x -> Js_analyzer.no_side_effect_expression x in
             match Ident_hashtbl.find_opt stats ident with 
-              | None -> 
+            | None -> 
+              Js_op_util.update_used_stats v.ident_info 
+                (if pure then Dead_pure else Dead_non_pure)
+            | Some num -> 
+              if !num = 1 then 
                 Js_op_util.update_used_stats v.ident_info 
-                  (if pure then Dead_pure else Dead_non_pure)
-              | Some num -> 
-                if !num = 1 then 
-                  Js_op_util.update_used_stats v.ident_info 
-                    (if pure then Once_pure else Used) 
+                  (if pure then Once_pure else Used) 
         ) defined_idents; defined_idents
   end
 
@@ -113,29 +111,29 @@ let get_stats program
 *)
 
 (** There is a side effect when traversing dead code, since 
-   we assume that substitue a node would mark a node as dead node,
-  
+    we assume that substitue a node would mark a node as dead node,
+
     so if we traverse a dead node, this would get a wrong result.
-   it does happen in such scenario
-   {[
-     let generic_basename is_dir_sep current_dir_name name =
-       let rec find_end n =
-         if n < 0 then String.sub name 0 1
-         else if is_dir_sep name n then find_end (n - 1)
-         else find_beg n (n + 1)
-       and find_beg n p =
-         if n < 0 then String.sub name 0 p
-         else if is_dir_sep name n then String.sub name (n + 1) (p - n - 1)
-         else find_beg (n - 1) p
-       in
-       if name = ""
-       then current_dir_name
-       else find_end (String.length name - 1)
-   ]}
-   [find_beg] can potentially be expanded in [find_end] and in [find_end]'s expansion, 
-   if the order is not correct, or even worse, only the wrong one [find_beg] in [find_end] get expanded 
-   (when we forget to recursive apply), then some code non-dead [find_beg] will be marked as dead, 
-   while it is still called 
+    it does happen in such scenario
+    {[
+      let generic_basename is_dir_sep current_dir_name name =
+        let rec find_end n =
+          if n < 0 then String.sub name 0 1
+          else if is_dir_sep name n then find_end (n - 1)
+          else find_beg n (n + 1)
+        and find_beg n p =
+          if n < 0 then String.sub name 0 p
+          else if is_dir_sep name n then String.sub name (n + 1) (p - n - 1)
+          else find_beg (n - 1) p
+        in
+        if name = ""
+        then current_dir_name
+        else find_end (String.length name - 1)
+    ]}
+    [find_beg] can potentially be expanded in [find_end] and in [find_end]'s expansion, 
+    if the order is not correct, or even worse, only the wrong one [find_beg] in [find_end] get expanded 
+    (when we forget to recursive apply), then some code non-dead [find_beg] will be marked as dead, 
+    while it is still called 
 *)
 let subst name export_set stats  = 
   object (self)
@@ -192,19 +190,19 @@ let subst name export_set stats  =
                      {expression_desc = 
                         Call({expression_desc = Var (Id id)},args,_info)}} }
         as st 
-           :: rest 
+        :: rest 
         -> 
         begin match Ident_hashtbl.find_opt stats id with 
 
           | Some ({ value = 
-                Some {expression_desc = Fun (false, params, block, _env) ; comment = _}; 
-              (*TODO: don't inline method tail call yet, 
-                [this] semantics are weird 
-              *)              
-              property = (Alias | StrictOpt | Strict);
-              ident_info = {used_stats = Once_pure };
-              ident = _
-            } as v)
+                      Some {expression_desc = Fun (false, params, block, _env) ; comment = _}; 
+                    (*TODO: don't inline method tail call yet, 
+                      [this] semantics are weird 
+                    *)              
+                    property = (Alias | StrictOpt | Strict);
+                    ident_info = {used_stats = Once_pure };
+                    ident = _
+                  } as v)
             when Ext_list.same_length params args 
             -> 
             (* Ext_log.dwarn  __LOC__ "%s is dead \n %s " id.name  *)
@@ -212,9 +210,9 @@ let subst name export_set stats  =
             Js_op_util.update_used_stats v.ident_info Dead_pure;
             let block  = 
               Ext_list.fold_right2 
-              params args  ( self#block block) (* see #278 before changes*)
-              (fun param arg acc ->  
-                S.define_variable ~kind:Variable param arg :: acc)                                                
+                params args  ( self#block block) (* see #278 before changes*)
+                (fun param arg acc ->  
+                   S.define_variable ~kind:Variable param arg :: acc)                                                
             in
             (* Mark a function as dead means it will never be scanned, 
                here we inline the function

@@ -24,7 +24,7 @@ function eq(loc, x, y) {
 
 function comparable_001($$class) {
   CamlinternalOO.get_method_label($$class, "leq");
-  return (function (_, self) {
+  return (function (env, self) {
       return CamlinternalOO.create_object_opt(self, $$class);
     });
 }
@@ -57,7 +57,7 @@ function money_init($$class) {
             return self$2[repr] <= Caml_oo_curry.js1(834174833, 1, p);
           })
       ]);
-  return (function (_, self, x$1) {
+  return (function (env, self, x$1) {
       var self$1 = CamlinternalOO.create_object_opt(self, $$class);
       self$1[x] = x$1;
       Curry._1(obj_init, self$1);
@@ -79,7 +79,7 @@ function money2_init($$class) {
           copy[repr] = k * self$3[repr];
           return copy;
         }));
-  return (function (_, self, x$1) {
+  return (function (env, self, x$1) {
       var self$1 = CamlinternalOO.create_object_opt(self, $$class);
       self$1[x] = x$1;
       Curry._2(obj_init, self$1, x$1);

@@ -485,7 +485,7 @@ function expr_starting_with(c, k, t) {
                   ]);
       }
     } else {
-      return skip_comment((function (_, _$1) {
+      return skip_comment((function (param, param$1) {
                     return expr(k, t);
                   }), t);
     }
@@ -582,7 +582,7 @@ function expr_list(acc, k, t) {
                                       ]);
                           }
                         } else {
-                          return expr_list(/* [] */0, (function (_, l) {
+                          return expr_list(/* [] */0, (function (param, l) {
                                         return expr_list(/* :: */[
                                                     l,
                                                     acc
@@ -879,7 +879,7 @@ function expr_or_end(k, t) {
 }
 
 function next(t) {
-  return expr_or_end((function (_, x) {
+  return expr_or_end((function (param, x) {
                 return /* `Ok */[
                         17724,
                         x
@@ -890,7 +890,7 @@ function next(t) {
 function parse_string(s) {
   var n = s.length;
   var stop = /* record */[/* contents */false];
-  var refill = function (bytes, i, _) {
+  var refill = function (bytes, i, _len) {
     if (stop[0]) {
       return 0;
     } else {
@@ -1111,7 +1111,7 @@ function MakeDecode(funarg) {
                     ]);
         }
       } else {
-        return skip_comment((function (_, _$1) {
+        return skip_comment((function (param, param$1) {
                       return expr(k, t);
                     }), t);
       }
@@ -1207,7 +1207,7 @@ function MakeDecode(funarg) {
                                         ]);
                             }
                           } else {
-                            return expr_list(/* [] */0, (function (_, l) {
+                            return expr_list(/* [] */0, (function (param, l) {
                                           return expr_list(/* :: */[
                                                       l,
                                                       acc
@@ -1495,7 +1495,7 @@ function MakeDecode(funarg) {
     };
   };
   var next = function (t) {
-    return expr_or_end((function (_, x) {
+    return expr_or_end((function (param, x) {
                   return Curry._1(funarg[/* return */0], /* `Ok */[
                               17724,
                               x

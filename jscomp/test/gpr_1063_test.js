@@ -5,7 +5,7 @@ function bla(foo, bar, baz) {
   return foo["##"](bar, baz);
 }
 
-function bla2(foo, _, _$1) {
+function bla2(foo, bar, baz) {
   return foo.bar.baz;
 }
 

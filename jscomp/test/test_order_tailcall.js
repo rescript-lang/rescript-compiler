@@ -1,7 +1,7 @@
 'use strict';
 
 
-function f(_, _$1) {
+function f(x, y) {
   while(true) {
     continue ;
   };
@@ -19,7 +19,7 @@ function f1(_x, _y, _z) {
   };
 }
 
-function f2(_, _y) {
+function f2(x, _y) {
   while(true) {
     var y = _y;
     _y = y + 10 | 0;

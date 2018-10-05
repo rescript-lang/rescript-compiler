@@ -7,7 +7,7 @@ var CamlinternalOO = require("../../lib/js/camlinternalOO.js");
 function x_init($$class) {
   var v = CamlinternalOO.new_variable($$class, "");
   var x = CamlinternalOO.new_variable($$class, "x");
-  return (function (_, self, v$1) {
+  return (function (env, self, v$1) {
       var self$1 = CamlinternalOO.create_object_opt(self, $$class);
       self$1[v] = v$1;
       self$1[x] = v$1;

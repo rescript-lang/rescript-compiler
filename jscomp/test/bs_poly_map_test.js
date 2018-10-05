@@ -40,7 +40,7 @@ function emptyMap() {
 }
 
 function mergeInter(s1, s2) {
-  var m = Belt_Map.merge(s1, s2, (function (_, v1, v2) {
+  var m = Belt_Map.merge(s1, s2, (function (k, v1, v2) {
           if (v1 !== undefined && v2 !== undefined) {
             return /* () */0;
           }
@@ -51,7 +51,7 @@ function mergeInter(s1, s2) {
 }
 
 function mergeUnion(s1, s2) {
-  var m = Belt_Map.merge(s1, s2, (function (_, v1, v2) {
+  var m = Belt_Map.merge(s1, s2, (function (k, v1, v2) {
           if (v1 !== undefined || v2 !== undefined) {
             return /* () */0;
           }
@@ -62,7 +62,7 @@ function mergeUnion(s1, s2) {
 }
 
 function mergeDiff(s1, s2) {
-  var m = Belt_Map.merge(s1, s2, (function (_, v1, v2) {
+  var m = Belt_Map.merge(s1, s2, (function (k, v1, v2) {
           if (v1 !== undefined && v2 === undefined) {
             return /* () */0;
           }

@@ -218,7 +218,7 @@ function raceTest() {
 }
 
 function createPromiseRejectTest() {
-  return new Promise((function (_, reject) {
+  return new Promise((function (resolve, reject) {
                   return reject(Caml_builtin_exceptions.not_found);
                 })).catch((function (error) {
                 assert_bool(error === Caml_builtin_exceptions.not_found);
@@ -227,7 +227,7 @@ function createPromiseRejectTest() {
 }
 
 function createPromiseFulfillTest() {
-  return new Promise((function (resolve, _) {
+  return new Promise((function (resolve, param) {
                     return resolve("success");
                   })).then((function (resolved) {
                   assert_bool(resolved === "success");

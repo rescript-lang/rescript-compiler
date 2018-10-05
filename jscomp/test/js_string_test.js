@@ -301,7 +301,7 @@ var suites_001 = /* :: */[
                                                           /* tuple */[
                                                             "unsafeReplaceBy0",
                                                             (function () {
-                                                                var replace = function (whole, _, _$1) {
+                                                                var replace = function (whole, offset, s) {
                                                                   if (whole === "bar") {
                                                                     return "BORK";
                                                                   } else {
@@ -318,7 +318,7 @@ var suites_001 = /* :: */[
                                                             /* tuple */[
                                                               "unsafeReplaceBy1",
                                                               (function () {
-                                                                  var replace = function (whole, _, _$1, _$2) {
+                                                                  var replace = function (whole, p1, offset, s) {
                                                                     if (whole === "bar") {
                                                                       return "BORK";
                                                                     } else {
@@ -335,7 +335,7 @@ var suites_001 = /* :: */[
                                                               /* tuple */[
                                                                 "unsafeReplaceBy2",
                                                                 (function () {
-                                                                    var replace = function (whole, _, _$1, _$2, _$3) {
+                                                                    var replace = function (whole, p1, p2, offset, s) {
                                                                       if (whole === "bar") {
                                                                         return "BORK";
                                                                       } else {
@@ -352,7 +352,7 @@ var suites_001 = /* :: */[
                                                                 /* tuple */[
                                                                   "unsafeReplaceBy3",
                                                                   (function () {
-                                                                      var replace = function (whole, _, _$1, _$2, _$3, _$4) {
+                                                                      var replace = function (whole, p1, p2, p3, offset, s) {
                                                                         if (whole === "bar") {
                                                                           return "BORK";
                                                                         } else {

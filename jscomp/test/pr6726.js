@@ -1,7 +1,7 @@
 'use strict';
 
 
-function get_uint8(_, _$1) {
+function get_uint8(str, off) {
   return 33;
 }
 

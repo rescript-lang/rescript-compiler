@@ -5,7 +5,7 @@ let f : (int * int -> int [@bs]) = fun [@bs] x -> let a,b = x in a + b
 
 
 let obj : < hi : (int * int -> unit [@bs.meth]) > Js.t  = object
-  method hi (x : int * int) =  Js.log x
+  method hi (x : int * int) =  Js.log x 
 end [@bs]
 (** expect *)
 

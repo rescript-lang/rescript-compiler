@@ -181,7 +181,7 @@ var stdout = Caml_io.caml_ml_open_descriptor_out(1);
 
 var stderr = Caml_io.caml_ml_open_descriptor_out(2);
 
-function open_out_gen(_, _$1, _$2) {
+function open_out_gen(mode, perm, name) {
   return Caml_io.caml_ml_open_descriptor_out(Caml_missing_polyfill.not_implemented("caml_sys_open"));
 }
 
@@ -266,7 +266,7 @@ function output_substring(oc, s, ofs, len) {
   }
 }
 
-function output_value(_, _$1) {
+function output_value(chan, v) {
   return Caml_missing_polyfill.not_implemented("caml_output_value");
 }
 
@@ -290,7 +290,7 @@ function close_out_noerr(oc) {
   }
 }
 
-function open_in_gen(_, _$1, _$2) {
+function open_in_gen(mode, perm, name) {
   return Caml_io.caml_ml_open_descriptor_in(Caml_missing_polyfill.not_implemented("caml_sys_open"));
 }
 
@@ -314,7 +314,7 @@ function open_in_bin(name) {
             ], 0, name);
 }
 
-function input(_, s, ofs, len) {
+function input(ic, s, ofs, len) {
   if (ofs < 0 || len < 0 || ofs > (s.length - len | 0)) {
     throw [
           Caml_builtin_exceptions.invalid_argument,
@@ -325,7 +325,7 @@ function input(_, s, ofs, len) {
   }
 }
 
-function unsafe_really_input(_, _$1, _ofs, _len) {
+function unsafe_really_input(ic, s, _ofs, _len) {
   while(true) {
     var len = _len;
     var ofs = _ofs;

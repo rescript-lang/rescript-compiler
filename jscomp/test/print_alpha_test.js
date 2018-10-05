@@ -4,7 +4,7 @@ var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 
-function f(h, _) {
+function f(h, param) {
   console.log(3);
   return Curry.__2(h);
 }

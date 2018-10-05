@@ -7503,7 +7503,7 @@ function left_hand_side(env) {
   var expr;
   var exit = 0;
   if (typeof match === "number" && match === 42) {
-    expr = _new(env, (function (new_expr, _) {
+    expr = _new(env, (function (new_expr, _args) {
             return new_expr;
           }));
   } else {
@@ -8171,7 +8171,7 @@ function assignment_but_not_arrow_function(env) {
   }
 }
 
-function error_callback(_, _$1) {
+function error_callback(param, param$1) {
   throw Parser_env_051[/* Rollback */0];
 }
 
@@ -8894,9 +8894,9 @@ function array_initializer(env) {
         ];
 }
 
-function error_callback$1(_, param) {
-  if (typeof param === "number") {
-    var switcher = param - 28 | 0;
+function error_callback$1(param, param$1) {
+  if (typeof param$1 === "number") {
+    var switcher = param$1 - 28 | 0;
     if (switcher > 16 || switcher < 0) {
       if (switcher !== 19) {
         throw Parser_env_051[/* Rollback */0];
@@ -13712,7 +13712,7 @@ function regexp$1(loc, pattern, flags) {
   }
 }
 
-function parse(content, _) {
+function parse(content, options) {
   try {
     var match = program$1(false, undefined, Js_primitive.some(undefined), content);
     translation_errors[0] = /* [] */0;

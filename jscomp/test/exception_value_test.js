@@ -39,7 +39,7 @@ var u = [
   3
 ];
 
-function test_not_found(f, _) {
+function test_not_found(f, param) {
   try {
     return Curry._1(f, /* () */0);
   }

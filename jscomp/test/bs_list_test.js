@@ -430,7 +430,7 @@ function mod2(x) {
   return x % 2 === 0;
 }
 
-function evenIndex(_, i) {
+function evenIndex(_x, i) {
   return i % 2 === 0;
 }
 

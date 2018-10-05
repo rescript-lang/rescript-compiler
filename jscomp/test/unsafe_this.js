@@ -4,7 +4,7 @@
 var u = {
   x: 3,
   y: 32,
-  bark: (function ($$this, _, _$1) {
+  bark: (function ($$this, x, y) {
       console.log(/* tuple */[
             $$this.length,
             $$this.x,

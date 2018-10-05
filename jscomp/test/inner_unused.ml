@@ -13,3 +13,5 @@ end = struct
     let unused_g x = x + 2
     let unused_h x= unused_g x  
 end    
+
+let fff _ _ = 3 

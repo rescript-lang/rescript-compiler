@@ -85,7 +85,7 @@ var of_string = /* array */[
 ];
 
 function from_float_of_string(xs) {
-  return $$Array.mapi((function (_, _$1) {
+  return $$Array.mapi((function (i, param) {
                 return Pervasives.string_of_float;
               }), xs);
 }

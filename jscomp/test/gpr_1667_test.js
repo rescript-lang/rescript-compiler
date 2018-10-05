@@ -26,7 +26,7 @@ function eq(loc, x, y) {
 
 (function () {
       return 0;
-    })((function (_, _$1) {
+    })((function (q, y) {
         return false;
       })) === 0;
 
