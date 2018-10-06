@@ -121,7 +121,7 @@ let exception_id_destructed (l : Lam.t) (fv : Ident.t): bool  =
 let abs_int x = if x < 0 then - x else x
 let no_over_flow x  = abs_int x < 0x1fff_ffff 
 
-let lam_is_var (x : Lambda.lambda) (y : Ident.t) = 
+let lam_is_var (x : Lam.t) (y : Ident.t) = 
   match x with 
   | Lvar y2 -> Ident.same y2 y 
   | _ -> false
@@ -610,36 +610,7 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
 #else
       (e,s) 
 #end      
-      ->
-      let  e = convert_aux e in
-      begin match s with
-        | {
-          sw_failaction = None ;
-          sw_blocks = [];
-          sw_numblocks = 0;
-          sw_consts ;
-          sw_numconsts ;
-        } ->
-          begin match happens_to_be_diff sw_consts with
-            | Some 0 -> e
-            | Some i ->
-              prim
-              ~primitive:Paddint
-               ~args:[e; Lam.const(Const_int i)]
-               Location.none
-            | None ->
-              Lam.switch e
-                      {sw_failaction = None;
-                       sw_blocks = [];
-                       sw_numblocks = true;
-                       sw_consts =
-                         Ext_list.map_snd  sw_consts convert_aux;
-                       sw_numconsts = 
-                        Ext_list.length_ge sw_consts sw_numconsts
-                      }
-          end
-        | _ -> Lam.switch  e (convert_switch s)
-      end
+      -> convert_switch e s 
     | Lstringswitch (e, cases, default, _ ) ->
       Lam.stringswitch 
       (convert_aux e) 
@@ -697,9 +668,8 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
     | Levent (e, event) ->
       (* disabled by upstream*)
       assert false
-    | Lifused (id, e) ->
+    | Lifused (id, e) -> convert_aux e (* TODO: remove it ASAP *)
 
-      convert_aux e (* TODO: remove it ASAP *)
   and convert_let (kind : Lam_compat.let_kind) id (e : Lambda.lambda) body : Lam.t = 
     match kind, e with
     | Alias , Lvar u  ->
@@ -756,44 +726,56 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
       | _ -> 
         Lam.let_ kind id new_e new_body
   and convert_pipe (f : Lambda.lambda) (x : Lambda.lambda) outer_loc =        
-        match f with
-        (* [x|>f]
-           TODO: [airty = 0] when arity =0, it can not be escaped user can only
-           write  [f x ] instead of [x |> f ]
-        *)
-#if OCAML_VERSION  =~ ">4.03.0" then
-        | Lfunction {params = [param]; body = Lprim (external_fn, [Lvar inner_arg], inner_loc) }
-#else        
-        | Lfunction(_, [param],Lprim(external_fn,[Lvar inner_arg],inner_loc))
-#end        
-          when Ident.same param inner_arg
-          ->
-          convert_aux  (Lprim(external_fn,  [x], outer_loc))
-#if OCAML_VERSION =~ ">4.03.0" then 
-        | Lapply {ap_func = Lfunction{ params; body = Lprim(external_fn,inner_args,inner_loc)}; ap_args = args; ap_loc = outer_loc}
-#else
-        |  Lapply(Lfunction(kind, params,Lprim(external_fn,inner_args,inner_loc)), args, outer_loc ) (* x |> f a *)
-#end        
-
-          when Ext_list.for_all2_no_exn inner_args params  lam_is_var &&
-               Ext_list.length_larger_than_n inner_args args 1 
-          ->
-
-          convert_aux (Lprim(external_fn, Ext_list.append args [x], outer_loc))
-        | _ ->
-          let x  = convert_aux x in
-          let f =  convert_aux f in
-          match  f with
-          | Lapply{fn;args} ->
-            Lam.apply fn (args @[x]) outer_loc App_na
-          | _ ->
-            Lam.apply f [x] outer_loc App_na
-  and convert_switch (s : Lambda.lambda_switch) : Lam.switch =
-    { sw_numconsts =  Ext_list.length_ge s.sw_consts s.sw_numconsts ;
-      sw_consts = Ext_list.map_snd  s.sw_consts convert_aux;
-      sw_numblocks = Ext_list.length_ge s.sw_blocks s.sw_numblocks;
-      sw_blocks = Ext_list.map_snd s.sw_blocks convert_aux;
-      sw_failaction =Ext_option.map s.sw_failaction convert_aux }  in
+      let x  = convert_aux x in
+      let f =  convert_aux f in
+      match  f with
+      | Lfunction {params = [param]; body = Lprim{primitive; args = [Lvar inner_arg]; loc }}
+        when Ident.same param inner_arg -> 
+        Lam.prim ~primitive ~args:[x] outer_loc
+      | Lapply {fn = Lfunction{params; body = Lprim{primitive; args = inner_args}}; args}
+        when Ext_list.for_all2_no_exn inner_args params lam_is_var &&
+             Ext_list.length_larger_than_n inner_args args 1 
+        ->
+        Lam.prim ~primitive ~args:(Ext_list.append_one args x) outer_loc
+      | Lapply{fn;args} ->
+        Lam.apply fn (Ext_list.append_one args x) outer_loc App_na
+      | _ ->
+        Lam.apply f [x] outer_loc App_na
+    and convert_switch (e : Lambda.lambda) (s : Lambda.lambda_switch) = 
+        let  e = convert_aux e in
+        match s with
+        | {
+          sw_failaction = None ;
+          sw_blocks = [];
+          sw_numblocks = 0;
+          sw_consts ;
+          sw_numconsts ;
+        } ->
+          begin match happens_to_be_diff sw_consts with
+            | Some 0 -> e
+            | Some i ->
+              prim
+                ~primitive:Paddint
+                ~args:[e; Lam.const(Const_int i)]
+                Location.none
+            | None ->
+              Lam.switch e
+                {sw_failaction = None;
+                 sw_blocks = [];
+                 sw_numblocks = true;
+                 sw_consts =
+                   Ext_list.map_snd  sw_consts convert_aux;
+                 sw_numconsts = 
+                   Ext_list.length_ge sw_consts sw_numconsts
+                }
+          end
+        | _ -> 
+          Lam.switch  e   
+            { sw_numconsts =  Ext_list.length_ge s.sw_consts s.sw_numconsts ;
+              sw_consts = Ext_list.map_snd  s.sw_consts convert_aux;
+              sw_numblocks = Ext_list.length_ge s.sw_blocks s.sw_numblocks;
+              sw_blocks = Ext_list.map_snd s.sw_blocks convert_aux;
+              sw_failaction =Ext_option.map s.sw_failaction convert_aux } in
   convert_aux lam , may_depends
 
 

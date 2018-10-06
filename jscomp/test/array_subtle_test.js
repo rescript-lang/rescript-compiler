@@ -3,7 +3,6 @@
 var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 var Caml_array = require("../../lib/js/caml_array.js");
-var Js_primitive = require("../../lib/js/js_primitive.js");
 
 var suites = /* record */[/* contents : [] */0];
 
@@ -68,7 +67,7 @@ eq("File \"array_subtle_test.ml\", line 23, characters 5-12", /* tuple */[
     ]);
 
 while(v.length > 0) {
-  Js_primitive.undefined_to_opt(v.pop());
+  v.pop();
 };
 
 eq("File \"array_subtle_test.ml\", line 29, characters 5-12", /* tuple */[
@@ -76,10 +75,22 @@ eq("File \"array_subtle_test.ml\", line 29, characters 5-12", /* tuple */[
       v.length
     ]);
 
+function f(v) {
+  var match = v.pop();
+  if (match !== undefined) {
+    console.log("hi");
+  } else {
+    console.log("hi2");
+  }
+  console.log((v.pop(), /* () */0));
+  return /* () */0;
+}
+
 Mt.from_pair_suites("array_subtle_test.ml", suites[0]);
 
 exports.suites = suites;
 exports.test_id = test_id;
 exports.eq = eq;
 exports.v = v;
+exports.f = f;
 /*  Not a pure module */
