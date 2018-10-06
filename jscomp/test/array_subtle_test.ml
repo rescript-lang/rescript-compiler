@@ -27,4 +27,11 @@ let () =
     ignore @@ Js.Array.pop v
   done;
   eq __LOC__ (0, Js.Array.length v )
+
+
+let f v =   
+  (match Js.Array.pop v with 
+  | Some x -> Js.log "hi"
+  | None -> Js.log "hi2");
+  Js.log (ignore @@ Js.Array.pop v)
 let () = Mt.from_pair_suites __FILE__ !suites

@@ -23,10 +23,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-type t = Lam.t 
-
-
-
 (** A conservative approach to avoid packing exceptions
     for lambda expression like {[
       try { ... }catch(id){body}
@@ -56,76 +52,79 @@ type t = Lam.t
     It is hard to judge an exception is destructed or escaped, any potential
     alias(or if it is passed as an argument) would cause it to be leaked
 *)
-let exception_id_destructed (fv : Ident.t) (l : t) : bool  =
+let exception_id_destructed (l : Lam.t) (fv : Ident.t): bool  =
   let rec 
-    hit_opt (x : t option) = 
+    hit_opt (x : _ option) = 
   match x with 
   | None -> false
   | Some a -> hit a   
-  and hit_list_snd : 'a. ('a * t ) list -> bool = fun x ->    
+  and hit_list_snd : 'a. ('a * _ ) list -> bool = fun x ->    
     Ext_list.exists_snd  x  hit
   and hit_list xs = List.exists hit xs 
-  and hit (l : t) =
-    begin
-      match (l : t) with
-      | Lprim {primitive = Pintcomp _ ;
-               args = ([x;y ])  } ->
-        begin match x,y with
-          | Lvar _, Lvar _ -> false
-          | Lvar _, _ -> hit y
-          | _, Lvar _ -> hit x
-          | _, _  -> hit x || hit y
-        end
-      | Lprim {primitive = Praise ; args = [Lvar _]} -> false
-      | Lprim {primitive ; args; _} ->
-        hit_list args
-      | Lvar id ->    
-        Ident.same id fv
-      | Lassign(id, e) ->
-        Ident.same id fv || hit e
-      | Lstaticcatch(e1, (_,vars), e2) ->
-        hit e1 || hit e2
-      | Ltrywith(e1, exn, e2) ->
-        hit e1 || hit e2
-      | Lfunction{body;params} ->
-        hit body;
-      | Llet(str, id, arg, body) ->
-        hit arg || hit body
-      | Lletrec(decl, body) ->
-        hit body ||
-        hit_list_snd decl
-      | Lfor(v, e1, e2, dir, e3) ->
-        hit e1 || hit e2 || hit e3
-      | Lconst _ -> false
-      | Lapply{fn; args; _} ->
-        hit fn || hit_list args
-      | Lglobal_module _  (* global persistent module, play safe *)
-        -> false
-      | Lswitch(arg, sw) ->
-        hit arg ||
-        hit_list_snd sw.sw_consts ||
-        hit_list_snd sw.sw_blocks ||
-        hit_opt sw.sw_failaction 
-      | Lstringswitch (arg,cases,default) ->
-        hit arg ||
-        hit_list_snd cases ||
-        hit_opt default 
-      | Lstaticraise (_,args) ->
-        hit_list args
-      | Lifthenelse(e1, e2, e3) ->
-        hit e1 || hit e2 || hit e3
-      | Lsequence(e1, e2) ->
-        hit e1 || hit e2
-      | Lwhile(e1, e2) ->
-        hit e1 || hit e2
-      | Lsend (k, met, obj, args, _) ->
-        hit met || hit obj || hit_list args
-    end
+  and hit (l : Lam.t) =
+    match l  with
+    | Lprim {primitive = Pintcomp _ ;
+             args = ([x;y ])  } ->
+      begin match x,y with
+        | Lvar _, Lvar _ -> false
+        | Lvar _, _ -> hit y
+        | _, Lvar _ -> hit x
+        | _, _  -> hit x || hit y
+      end
+    | Lprim {primitive = Praise ; args = [Lvar _]} -> false
+    | Lprim {primitive ; args; _} ->
+      hit_list args
+    | Lvar id ->    
+      Ident.same id fv
+    | Lassign(id, e) ->
+      Ident.same id fv || hit e
+    | Lstaticcatch(e1, (_,vars), e2) ->
+      hit e1 || hit e2
+    | Ltrywith(e1, exn, e2) ->
+      hit e1 || hit e2
+    | Lfunction{body;params} ->
+      hit body;
+    | Llet(str, id, arg, body) ->
+      hit arg || hit body
+    | Lletrec(decl, body) ->
+      hit body ||
+      hit_list_snd decl
+    | Lfor(v, e1, e2, dir, e3) ->
+      hit e1 || hit e2 || hit e3
+    | Lconst _ -> false
+    | Lapply{fn; args; _} ->
+      hit fn || hit_list args
+    | Lglobal_module _  (* global persistent module, play safe *)
+      -> false
+    | Lswitch(arg, sw) ->
+      hit arg ||
+      hit_list_snd sw.sw_consts ||
+      hit_list_snd sw.sw_blocks ||
+      hit_opt sw.sw_failaction 
+    | Lstringswitch (arg,cases,default) ->
+      hit arg ||
+      hit_list_snd cases ||
+      hit_opt default 
+    | Lstaticraise (_,args) ->
+      hit_list args
+    | Lifthenelse(e1, e2, e3) ->
+      hit e1 || hit e2 || hit e3
+    | Lsequence(e1, e2) ->
+      hit e1 || hit e2
+    | Lwhile(e1, e2) ->
+      hit e1 || hit e2
+    | Lsend (k, met, obj, args, _) ->
+      hit met || hit obj || hit_list args
   in hit l
 
 
 let abs_int x = if x < 0 then - x else x
 let no_over_flow x  = abs_int x < 0x1fff_ffff 
+
+let lam_is_var (x : Lam.t) (y : Ident.t) = 
+  match x with 
+  | Lvar y2 -> Ident.same y2 y 
+  | _ -> false
 
 (** Make sure no int range overflow happens
     also we only check [int]
@@ -163,7 +162,7 @@ type required_modules = Lam_module_ident.Hash_set.t
 
 
 (** drop Lseq (List! ) etc *)
-let rec drop_global_marker (lam : t) =
+let rec drop_global_marker (lam : Lam.t) =
   match lam with
   | Lsequence (Lglobal_module id, rest) ->
     drop_global_marker rest
@@ -172,7 +171,7 @@ let rec drop_global_marker (lam : t) =
 let seq = Lam.seq 
 let unit = Lam.unit 
 
-let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : t =
+let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
   match p with
   | Pint_as_pointer
   | Pidentity ->
@@ -206,10 +205,6 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : t =
     begin match info with 
     | Blk_some_not_nested 
       -> 
-      (* begin match args with 
-      | [arg] ->  arg 
-      | _ -> assert false
-      end  *)
       prim ~primitive:Psome_not_nest ~args loc 
     | Blk_some 
       ->    
@@ -397,13 +392,15 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : t =
 
 
 let may_depend = Lam_module_ident.Hash_set.add
-let convert (exports : Ident_set.t) (lam : Lambda.lambda) : t * Lam_module_ident.Hash_set.t  =
+
+
+let convert (exports : Ident_set.t) (lam : Lambda.lambda) : Lam.t * Lam_module_ident.Hash_set.t  =
   let alias_tbl = Ident_hashtbl.create 64 in
   let exit_map = Int_hashtbl.create 0 in
   let may_depends = Lam_module_ident.Hash_set.create 0 in
 
   let rec
-    convert_ccall (a : Primitive_compat.t)  (args : Lambda.lambda list) loc : t=
+    convert_ccall (a : Primitive_compat.t)  (args : Lambda.lambda list) loc : Lam.t =
     let prim_name = a.prim_name in
     let prim_name_len  = String.length prim_name in
     match External_ffi_types.from_string a.prim_native_name with
@@ -415,7 +412,7 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : t * Lam_module_ident
         (* Here the invariant we should keep is that all exception
            created should be captured
         *)
-        begin match prim_name  ,  args with
+          (match prim_name  ,  args with
           | "caml_set_oo_id" ,
             [ Lprim (Pmakeblock(tag,Blk_extension_slot, _
 #if OCAML_VERSION =~ ">4.03.0" then 
@@ -428,8 +425,7 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : t * Lam_module_ident
             -> prim ~primitive:(Pcreate_extension name) ~args:[] loc
           | _ , _->
             let args = Ext_list.map args convert_aux in
-            prim ~primitive:(Pccall a) ~args loc
-        end
+            prim ~primitive:(Pccall a) ~args loc)
     | Ffi_obj_create labels ->
       let args = Ext_list.map args  convert_aux in
       prim ~primitive:(Pjs_object_create labels) ~args loc
@@ -542,7 +538,7 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : t * Lam_module_ident
       in
       let args = Ext_list.map args convert_aux in
       prim ~primitive ~args loc
-  and convert_aux (lam : Lambda.lambda) : t =
+  and convert_aux (lam : Lambda.lambda) : Lam.t =
     match lam with
     | Lvar x ->
       let var = Ident_hashtbl.find_default alias_tbl x x in
@@ -559,8 +555,250 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : t * Lam_module_ident
     (fn,args,loc)
 #end    
       ->
-      begin match fn with
-        (*
+          (** we need do this eargly in case [aux fn] add some wrapper *)
+          Lam.apply (convert_aux fn) (Ext_list.map args convert_aux ) loc App_na  
+    | Lfunction 
+#if OCAML_VERSION =~ ">4.03.0" then 
+    {kind; params; body }
+#else
+    (kind,  params,body)
+#end    
+      ->  
+      assert (kind = Curried);
+      Lam.function_
+            ~arity:(List.length params)  ~params
+            ~body:(convert_aux body)
+    | Llet 
+#if OCAML_VERSION =~ ">4.03.0" then
+      (kind,_value_kind, id,e,body) (*FIXME*)
+#else
+      (kind,id,e,body)
+#end      
+      -> convert_let kind id e body
+
+    | Lletrec (bindings,body)
+      ->
+      let bindings = Ext_list.map_snd  bindings convert_aux in
+      let body = convert_aux body in
+      let lam = Lam.letrec bindings body in
+      Lam_scc.scc bindings lam body
+    (* inlining will affect how mututal recursive behave *)
+    | Lprim(Prevapply, [x ; f ],  outer_loc)
+    | Lprim(Pdirapply, [f ; x],  outer_loc) ->
+      convert_pipe f x outer_loc
+    | Lprim (Prevapply, _, _ ) -> assert false
+    | Lprim(Pdirapply, _, _) -> assert false
+    | Lprim(Pccall a, args, loc)  ->
+      convert_ccall (Primitive_compat.of_primitive_description a) args loc
+    | Lprim (Pgetglobal id, args, loc) ->
+      let args = Ext_list.map args convert_aux in
+      if Ident.is_predef_exn id then
+        Lam.prim ~primitive:(Pglobal_exception id) ~args loc 
+      else
+        begin
+          may_depend may_depends (Lam_module_ident.of_ml id);
+          assert (args = []);
+          Lam.global_module id
+        end
+    | Lprim (primitive,args, loc)
+      ->
+      let args = Ext_list.map args convert_aux in
+      lam_prim ~primitive ~args loc
+    | Lswitch 
+#if OCAML_VERSION =~ ">4.03.0" then
+      (e,s, _loc)
+#else
+      (e,s) 
+#end      
+      -> convert_switch e s 
+    | Lstringswitch (e, cases, default, _ ) ->
+      Lam.stringswitch 
+      (convert_aux e) 
+      (Ext_list.map_snd cases convert_aux)
+      (Ext_option.map default convert_aux)
+    | Lstaticraise (id,[]) ->
+        (match Int_hashtbl.find_opt exit_map id  with
+        | None -> Lam.staticraise id []
+        | Some new_id -> Lam.staticraise new_id [])      
+    | Lstaticraise (id, args) ->
+      Lam.staticraise id (Ext_list.map args convert_aux )
+    | Lstaticcatch (b, (i,[]), Lstaticraise (j,[]) )
+      -> (* peep-hole [i] aliased to [j] *)
+      let new_i = Int_hashtbl.find_default exit_map j j in
+      Int_hashtbl.add exit_map i new_i ;
+      convert_aux b
+    | Lstaticcatch (b, (i, ids), handler) ->
+      Lam.staticcatch (convert_aux b) (i,ids) (convert_aux handler)
+    | Ltrywith (b, id, handler) ->
+      let body = convert_aux b in
+      let handler = convert_aux handler in
+      if exception_id_destructed handler id then
+        let newId = Ident.create ("raw_" ^ id.name) in
+        Lam.try_ body newId
+                  (Lam.let_ StrictOpt id
+                    (prim ~primitive:Pwrap_exn ~args:[Lam.var newId] Location.none)
+                    handler
+                 )
+      else
+        Lam.try_  body id handler
+    | Lifthenelse (b,then_,else_) ->
+      Lam.if_ (convert_aux b) (convert_aux then_) (convert_aux else_)
+    | Lsequence (a,b)
+      -> Lam.seq (convert_aux a) (convert_aux b)
+    | Lwhile (b,body) ->
+      Lam.while_ (convert_aux b) (convert_aux body)
+    | Lfor (id, from_, to_, dir, loop) ->
+      Lam.for_ id (convert_aux from_) (convert_aux to_) dir (convert_aux loop)
+    | Lassign (id, body) ->
+      Lam.assign id (convert_aux body)
+    | Lsend (kind, a,b,ls, loc) ->
+      (* Format.fprintf Format.err_formatter "%a@." Printlambda.lambda b ; *)
+        (match convert_aux b with
+        | Lprim {primitive =  Pjs_unsafe_downgrade(_,loc);  args}
+          ->
+          begin match kind, ls with
+            | Public (Some name), [] ->
+              prim ~primitive:(Pjs_unsafe_downgrade (name,loc))
+                ~args loc
+            | _ -> assert false
+          end
+        | b ->
+          Lam.send kind (convert_aux a)  b (Ext_list.map ls convert_aux) loc)
+      
+    | Levent (e, event) ->
+      (* disabled by upstream*)
+      assert false
+    | Lifused (id, e) -> convert_aux e (* TODO: remove it ASAP *)
+
+  and convert_let (kind : Lam_compat.let_kind) id (e : Lambda.lambda) body : Lam.t = 
+    match kind, e with
+    | Alias , Lvar u  ->
+      let new_u = Ident_hashtbl.find_default alias_tbl u u in
+      Ident_hashtbl.add alias_tbl id new_u ;
+      if Ident_set.mem id exports then
+        Lam.let_ kind id (Lam.var new_u) (convert_aux body)
+      else convert_aux body
+    | Alias ,  Lprim (Pgetglobal u,[], _) when not (Ident.is_predef_exn u)
+      ->
+      Ident_hashtbl.add alias_tbl id u;
+      may_depend may_depends (Lam_module_ident.of_ml u);
+      if Ident_set.mem id exports then
+        Lam.let_ kind id (Lam.var u) (convert_aux body)
+      else convert_aux body
+
+    | _, _ -> 
+      let new_e = convert_aux e in 
+      let new_body = convert_aux body in 
+          (*
+            reverse engineering cases as {[           
+           (let (switcher/1013 =a (-1+ match/1012))
+               (if (isout 2 switcher/1013) (exit 1)
+                   (switch* switcher/1013
+                      case int 0: 'a'
+                        case int 1: 'b'
+                        case int 2: 'c')))            
+         ]}
+         To elemininate the id [switcher], we need ensure it appears only 
+         in two places.
+
+         To advance this case, when [sw_failaction] is None
+      *)
+      match kind, new_e, new_body with 
+      | Alias, Lprim {primitive = Poffsetint offset; args =  [Lvar _ as matcher ]},
+        Lswitch (Lvar switcher3 ,
+                 ({
+                   sw_numconsts = false ; 
+                   sw_consts ;
+                   sw_blocks = []; sw_numblocks = true;
+                   sw_failaction = Some ifso
+                 } as px)
+                ) 
+        when Ident.same switcher3 id    &&
+             not (Lam_hit.hit_variable id ifso ) && 
+             not (Ext_list.exists_snd sw_consts (Lam_hit.hit_variable id))
+        -> 
+        Lam.switch matcher 
+          {px with 
+           sw_consts = 
+             Ext_list.map sw_consts 
+               (fun (i,act) -> i - offset, act)
+          }
+      | _ -> 
+        Lam.let_ kind id new_e new_body
+  and convert_pipe (f : Lambda.lambda) (x : Lambda.lambda) outer_loc =        
+      let x  = convert_aux x in
+      let f =  convert_aux f in
+      match  f with
+      | Lfunction {params = [param]; body = Lprim{primitive; args = [Lvar inner_arg]; loc }}
+        when Ident.same param inner_arg -> 
+        Lam.prim ~primitive ~args:[x] outer_loc
+      | Lapply {fn = Lfunction{params; body = Lprim{primitive; args = inner_args}}; args}
+        when Ext_list.for_all2_no_exn inner_args params lam_is_var &&
+             Ext_list.length_larger_than_n inner_args args 1 
+        ->
+        Lam.prim ~primitive ~args:(Ext_list.append_one args x) outer_loc
+      | Lapply{fn;args} ->
+        Lam.apply fn (Ext_list.append_one args x) outer_loc App_na
+      | _ ->
+        Lam.apply f [x] outer_loc App_na
+    and convert_switch (e : Lambda.lambda) (s : Lambda.lambda_switch) = 
+        let  e = convert_aux e in
+        match s with
+        | {
+          sw_failaction = None ;
+          sw_blocks = [];
+          sw_numblocks = 0;
+          sw_consts ;
+          sw_numconsts ;
+        } ->
+          begin match happens_to_be_diff sw_consts with
+            | Some 0 -> e
+            | Some i ->
+              prim
+                ~primitive:Paddint
+                ~args:[e; Lam.const(Const_int i)]
+                Location.none
+            | None ->
+              Lam.switch e
+                {sw_failaction = None;
+                 sw_blocks = [];
+                 sw_numblocks = true;
+                 sw_consts =
+                   Ext_list.map_snd  sw_consts convert_aux;
+                 sw_numconsts = 
+                   Ext_list.length_ge sw_consts sw_numconsts
+                }
+          end
+        | _ -> 
+          Lam.switch  e   
+            { sw_numconsts =  Ext_list.length_ge s.sw_consts s.sw_numconsts ;
+              sw_consts = Ext_list.map_snd  s.sw_consts convert_aux;
+              sw_numblocks = Ext_list.length_ge s.sw_blocks s.sw_numblocks;
+              sw_blocks = Ext_list.map_snd s.sw_blocks convert_aux;
+              sw_failaction =Ext_option.map s.sw_failaction convert_aux } in
+  convert_aux lam , may_depends
+
+
+(** FIXME: more precise analysis of [id], if it is not 
+    used, we can remove it
+        only two places emit [Lifused],
+        {[
+          lsequence (Lifused(id, set_inst_var obj id expr)) rem
+          Lifused (env2, Lprim(Parrayset Paddrarray, [Lvar self; Lvar env2; Lvar env1']))
+        ]}
+
+        Note the variable, [id], or [env2] is already defined, it can be removed if it is not
+        used. This optimization seems useful, but doesnt really matter since it only hit translclass
+
+        more details, see [translclass] and [if_used_test]
+        seems to be an optimization trick for [translclass]
+        
+        | Lifused(v, l) ->
+          if count_var v > 0 then simplif l else lambda_unit
+      *)  
+
+
+      (*
         | Lfunction(kind,params,Lprim(prim,inner_args,inner_loc))
           when List.for_all2_no_exn (fun x y ->
           match y with
@@ -624,282 +862,4 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : t * Lam_module_ident
 
                   when [u] is global, it can not be bound again,
                   it should always be the leaf
-        *)
-        | _ ->
-
-          (** we need do this eargly in case [aux fn] add some wrapper *)
-          Lam.apply (convert_aux fn) (Ext_list.map args convert_aux )
-            loc App_na
-      end
-    | Lfunction 
-#if OCAML_VERSION =~ ">4.03.0" then
-      { kind = Tupled }
-#else
-      (Tupled,_,_) 
-#end      
-      ->
-       assert false
-    | Lfunction 
-#if OCAML_VERSION =~ ">4.03.0" then 
-    {kind = Curried ; params; body }
-#else
-    (Curried,  params,body)
-#end    
-      ->  Lam.function_
-            ~arity:(List.length params)  ~params
-            ~body:(convert_aux body)
-    | Llet 
-#if OCAML_VERSION =~ ">4.03.0" then
-      (kind,_value_kind, id,e,body) (*FIXME*)
-#else
-      (kind,id,e,body)
-#end      
-      ->
-
-      begin match kind, e with
-        | Alias , (Lvar u ) ->
-          let new_u = (Ident_hashtbl.find_default alias_tbl u u) in
-          Ident_hashtbl.add alias_tbl id new_u ;
-          if Ident_set.mem id exports then
-            Lam.let_ kind id (Lam.var new_u) (convert_aux body)
-          else convert_aux body
-        | Alias ,  Lprim (Pgetglobal u,[], _) when not (Ident.is_predef_exn u)
-          ->
-          Ident_hashtbl.add alias_tbl id u;
-          may_depend may_depends (Lam_module_ident.of_ml u);
-
-          if Ident_set.mem id exports then
-            Lam.let_ kind id (Lam.var u) (convert_aux body)
-          else convert_aux body
-
-        | _, _ -> 
-          let new_e = convert_aux e in 
-          let new_body = convert_aux body in 
-          (*
-            reverse engineering cases as {[           
-             (let (switcher/1013 =a (-1+ match/1012))
-               (if (isout 2 switcher/1013) (exit 1)
-                 (switch* switcher/1013
-                  case int 0: 'a'
-                  case int 1: 'b'
-                  case int 2: 'c')))            
-            ]}
-            To elemininate the id [switcher], we need ensure it appears only 
-            in two places.
-
-            To advance this case, when [sw_failaction] is None
-          *)
-          match kind, new_e, new_body with 
-          | Alias, Lprim {primitive = Poffsetint offset; args =  [Lvar _ as matcher ]},
-            Lswitch (Lvar switcher3 ,
-                       ({
-                         sw_numconsts = false ; 
-                         sw_consts ;
-                         sw_blocks = []; sw_numblocks = true;
-                         sw_failaction = Some ifso
-                       } as px)
-                      ) 
-            when Ident.same switcher3 id    &&
-            not (Lam_hit.hit_variable id ifso ) && 
-            not (Ext_list.exists_snd sw_consts (Lam_hit.hit_variable id))
-            -> 
-            Lam.switch matcher 
-              {px with 
-               sw_consts = 
-                 Ext_list.map sw_consts 
-                   (fun (i,act) -> i - offset, act)
-              }
-          | _ -> 
-            Lam.let_ kind id new_e new_body
-      end
-    | Lletrec (bindings,body)
-      ->
-      let bindings = Ext_list.map_snd  bindings convert_aux in
-      let body = convert_aux body in
-      let lam = Lam.letrec bindings body in
-      Lam_scc.scc bindings lam body
-    (* inlining will affect how mututal recursive behave *)
-    | Lprim(Prevapply, [x ; f ],  outer_loc)
-    | Lprim(Pdirapply, [f ; x],  outer_loc) ->
-      begin match f with
-        (* [x|>f]
-           TODO: [airty = 0] when arity =0, it can not be escaped user can only
-           write  [f x ] instead of [x |> f ]
-        *)
-#if OCAML_VERSION  =~ ">4.03.0" then
-        | Lfunction {params = [param]; body = Lprim (external_fn, [Lvar inner_arg], inner_loc) }
-#else        
-        | Lfunction(_kind, [param],Lprim(external_fn,[Lvar inner_arg],inner_loc))
-#end        
-          when Ident.same param inner_arg
-          ->
-          convert_aux  (Lprim(external_fn,  [x], outer_loc))
-#if OCAML_VERSION =~ ">4.03.0" then 
-        | Lapply {ap_func = Lfunction{ params; body = Lprim(external_fn,inner_args,inner_loc)}; ap_args = args; ap_loc = outer_loc}
-#else
-        |  Lapply(Lfunction(kind, params,Lprim(external_fn,inner_args,inner_loc)), args, outer_loc ) (* x |> f a *)
-#end        
-
-          when Ext_list.for_all2_no_exn params inner_args (fun x y -> match y with Lvar y when Ident.same x y  -> true | _ -> false ) 
-               &&
-               Ext_list.length_larger_than_n inner_args args 1 
-          ->
-
-          convert_aux (Lprim(external_fn, Ext_list.append args [x], outer_loc))
-        | _ ->
-          let x  = convert_aux x in
-          let f =  convert_aux f in
-          begin match  f with
-            | Lapply{fn;args} ->
-              Lam.apply fn (args @[x]) outer_loc App_na
-            | _ ->
-              Lam.apply f [x] outer_loc App_na
-          end
-      end
-    | Lprim (Prevapply, _, _ ) -> assert false
-    | Lprim(Pdirapply, _, _) -> assert false
-    | Lprim(Pccall a, args, loc)  ->
-      convert_ccall (Primitive_compat.of_primitive_description a) args loc
-    | Lprim (Pgetglobal id, args, loc) ->
-      let args = Ext_list.map args convert_aux in
-      if Ident.is_predef_exn id then
-        Lam.prim ~primitive:(Pglobal_exception id) ~args loc 
-      else
-        begin
-          may_depend may_depends (Lam_module_ident.of_ml id);
-          assert (args = []);
-          Lam.global_module id
-        end
-    | Lprim (primitive,args, loc)
-      ->
-      let args = Ext_list.map args convert_aux in
-      lam_prim ~primitive ~args loc
-    | Lswitch 
-#if OCAML_VERSION =~ ">4.03.0" then
-      (e,s, _loc)
-#else
-      (e,s) 
-#end      
-      ->
-      let  e = convert_aux e in
-      begin match s with
-        | {
-          sw_failaction = None ;
-          sw_blocks = [];
-          sw_numblocks = 0;
-          sw_consts ;
-          sw_numconsts ;
-        } ->
-          begin match happens_to_be_diff sw_consts with
-            | Some 0 -> e
-            | Some i ->
-              prim
-              ~primitive:Paddint
-               ~args:[e; Lam.const(Const_int i)]
-               Location.none
-            | None ->
-              Lam.switch e
-                      {sw_failaction = None;
-                       sw_blocks = [];
-                       sw_numblocks = true;
-                       sw_consts =
-                         Ext_list.map_snd  sw_consts convert_aux;
-                       sw_numconsts = 
-                        Ext_list.length_ge sw_consts sw_numconsts
-                      }
-          end
-        | _ -> Lam.switch  e (aux_switch s)
-      end
-    | Lstringswitch (e, cases, default,_) ->
-      Lam.stringswitch (convert_aux e) (Ext_list.map_snd cases convert_aux)
-                     (match default with
-                     | None -> None
-                     | Some x -> Some (convert_aux x)
-                    )
-    | Lstaticraise (id,[]) ->
-      begin match Int_hashtbl.find_opt exit_map id  with
-        | None -> Lam.staticraise id []
-        | Some new_id -> Lam.staticraise new_id []
-      end
-    | Lstaticraise (id, args) ->
-      Lam.staticraise id (Ext_list.map args convert_aux )
-    | Lstaticcatch (b, (i,[]), Lstaticraise (j,[]) )
-      -> (* peep-hole [i] aliased to [j] *)
-
-      let new_i = Int_hashtbl.find_default exit_map j j in
-      Int_hashtbl.add exit_map i new_i ;
-      convert_aux b
-    | Lstaticcatch (b, (i, ids), handler) ->
-      Lam.staticcatch (convert_aux b) (i,ids) (convert_aux handler)
-    | Ltrywith (b, id, handler) ->
-      let body = convert_aux b in
-      let handler = convert_aux handler in
-      if exception_id_destructed id handler then
-        let newId = Ident.create ("raw_" ^ id.name) in
-        Lam.try_ body newId
-                  (Lam.let_ StrictOpt id
-                    (prim ~primitive:Pwrap_exn ~args:[Lam.var newId] Location.none)
-                    handler
-                 )
-      else
-        Lam.try_  body id handler
-    | Lifthenelse (b,then_,else_) ->
-      Lam.if_ (convert_aux b) (convert_aux then_) (convert_aux else_)
-    | Lsequence (a,b)
-      -> Lam.seq (convert_aux a) (convert_aux b)
-    | Lwhile (b,body) ->
-      Lam.while_ (convert_aux b) (convert_aux body)
-    | Lfor (id, from_, to_, dir, loop) ->
-      Lam.for_ id (convert_aux from_) (convert_aux to_) dir (convert_aux loop)
-    | Lassign (id, body) ->
-      Lam.assign id (convert_aux body)
-    | Lsend (kind, a,b,ls, loc) ->
-      (* Format.fprintf Format.err_formatter "%a@." Printlambda.lambda b ; *)
-      begin match convert_aux b with
-        | Lprim {primitive =  Pjs_unsafe_downgrade(_,loc);  args}
-          ->
-          begin match kind, ls with
-            | Public (Some name), [] ->
-              prim ~primitive:(Pjs_unsafe_downgrade (name,loc))
-                ~args loc
-            | _ -> assert false
-          end
-        | b ->
-          Lam.send kind (convert_aux a)  b (Ext_list.map ls convert_aux) loc 
-      end
-    | Levent (e, event) ->
-      (* disabled by upstream*)
-      assert false
-    | Lifused (id, e) ->
-
-      convert_aux e (* TODO: remove it ASAP *)
-  and aux_switch (s : Lambda.lambda_switch) : Lam.switch =
-    { sw_numconsts =  Ext_list.length_ge s.sw_consts s.sw_numconsts ;
-      sw_consts = Ext_list.map_snd  s.sw_consts convert_aux;
-      sw_numblocks = Ext_list.length_ge s.sw_blocks s.sw_numblocks;
-      sw_blocks = Ext_list.map_snd s.sw_blocks convert_aux;
-      sw_failaction =
-        match s.sw_failaction with
-        | None -> None
-        | Some a -> Some (convert_aux a)
-    }  in
-  convert_aux lam , may_depends
-
-
-(** FIXME: more precise analysis of [id], if it is not 
-    used, we can remove it
-        only two places emit [Lifused],
-        {[
-          lsequence (Lifused(id, set_inst_var obj id expr)) rem
-          Lifused (env2, Lprim(Parrayset Paddrarray, [Lvar self; Lvar env2; Lvar env1']))
-        ]}
-
-        Note the variable, [id], or [env2] is already defined, it can be removed if it is not
-        used. This optimization seems useful, but doesnt really matter since it only hit translclass
-
-        more details, see [translclass] and [if_used_test]
-        seems to be an optimization trick for [translclass]
-        
-        | Lifused(v, l) ->
-          if count_var v > 0 then simplif l else lambda_unit
-      *)  
+        *)      
