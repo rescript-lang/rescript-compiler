@@ -511,10 +511,10 @@ core/lam_check.cmx : core/lam.cmx ext/ident_hash_set.cmx ext/ext_option.cmx \
     ext/ext_list.cmx core/lam_check.cmi
 core/lam_convert.cmx : core/primitive_compat.cmx core/lam_tag_info.cmx \
     core/lam_scc.cmx core/lam_primitive.cmx core/lam_module_ident.cmx \
-    core/lam_hit.cmx core/lam_constant.cmx core/lam.cmx ext/int_hashtbl.cmx \
-    ext/ident_set.cmx ext/ident_hashtbl.cmx syntax/external_ffi_types.cmx \
-    ext/ext_string.cmx ext/ext_list.cmx syntax/ast_exp_extension.cmx \
-    core/lam_convert.cmi
+    core/lam_hit.cmx core/lam_constant.cmx core/lam_compat.cmx core/lam.cmx \
+    ext/int_hashtbl.cmx ext/ident_set.cmx ext/ident_hashtbl.cmx \
+    syntax/external_ffi_types.cmx ext/ext_string.cmx ext/ext_option.cmx \
+    ext/ext_list.cmx syntax/ast_exp_extension.cmx core/lam_convert.cmi
 core/lam_print.cmx : core/lam_primitive.cmx core/lam_constant.cmx \
     core/lam_compat.cmx core/lam.cmx ext/ext_list.cmx core/lam_print.cmi
 core/lam_beta_reduce_util.cmx : core/lam.cmx ext/ident_hashtbl.cmx \
