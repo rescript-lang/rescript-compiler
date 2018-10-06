@@ -1,12 +1,12 @@
 # Contributing
 
-Thanks for your help! Due to BuckleScript's nature, the contribution setup isn't all straightforward (though well documentated). If something isn't working, please file an issue or ping us in [Discord](https://discord.gg/reasonml)!
+Thanks for your help! Due to BuckleScript's nature, the contribution setup isn't all straightforward (though well documented). If something isn't working, please file an issue or ping us in [Discord](https://discord.gg/reasonml)!
 
 ## Setup
 
 Prerequisites:
 
-- [OPAM](https://opam.ocaml.org/), the OCaml package manager
+- [OPAM](https://opam.ocaml.org/), the OCaml package manager (v2)
 - [NodeJS](https://nodejs.org/)
 - Make
 - [Go](https://golang.org) to run tests
@@ -15,10 +15,11 @@ Prerequisites:
 ```
 # Use the correct opam switch for working on BuckleScript
 opam update
-opam switch 4.02.3+buckle-master
-opam switch reinstall 4.02.3+buckle-master # do this if you get errors even from a clean compilation
-opam install camlp4 cppo
+opam switch create 4.02.3+buckle-master
 eval `opam config env`
+opam switch reinstall 4.02.3+buckle-master # do this if you get errors even from a clean compilation
+ocaml -version # confirm you're using 4.02.3
+opam install camlp4 cppo
 
 # Install dev-time npm dependencies
 npm install
@@ -62,7 +63,7 @@ This will substitute the global `bsc.exe` & `bsb.exe` you just installed with th
 Did any of the above step not work?
 
 - If you get compilation errors even from a supposedly clean compilation, you might have skipped the opam reinstall step above: `opam switch reinstall 4.02.3+buckle-master`
-- Make sure you did ``eval `opam config env` `` In your CLI/bashrc/zshrc
+- Make sure you did ``eval `opam config env` `` in your CLI/bashrc/zshrc
 - **If the vendored ocaml changed between when you last iterated on the repo and now**, you probably skipped the `opam switch reinstall 4.02.3+buckle-master` part. You'll have to do `git clean -xdf` and then restart with the build instructions. Careful, as `git clean` removes your uncommitted changes.
 - **If these fail too**, make sure you do have the correct `ocamlopt` in your environment: `which ocamlopt` should show an `opam` path, not `reason-cli` path. If you see the latter, this means it overrode the global `ocamlopt` BuckleScript needed. In this case, either temporarily uninstall reason-cli or make sure your opam PATH overrides the reason-cli PATH (and not the other way around) in your bashrc/zshrc.
 
