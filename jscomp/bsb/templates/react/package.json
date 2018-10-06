@@ -7,7 +7,8 @@
     "clean": "bsb -clean-world",
     "test": "echo \"Error: no test specified\" && exit 1",
     "webpack": "webpack -w",
-    "webpack:production": "NODE_ENV=production webpack"
+    "webpack:production": "NODE_ENV=production webpack",
+    "server": "webpack-dev-server"
   },
   "keywords": [
     "BuckleScript"
@@ -21,7 +22,9 @@
   },
   "devDependencies": {
     "bs-platform": "^${bsb:bs-version}",
+    "html-webpack-plugin": "^3.2.0",
     "webpack": "^4.0.1",
-    "webpack-cli": "^3.1.1"
+    "webpack-cli": "^3.1.1",
+    "webpack-dev-server": "^3.1.8"
   }
 }
