@@ -369,6 +369,8 @@ int_hashtbl_test.cmj : mt.cmj ../stdlib/list.cmj ../stdlib/hashtbl.cmj \
 int_map.cmj : ../stdlib/map.cmj
 int_overflow_test.cmj : ../stdlib/string.cmj mt.cmj ../runtime/js.cmj \
     ../stdlib/int32.cmj ../stdlib/char.cmj
+int_switch_test.cmj : mt.cmj
+int_swtich_test.cmj :
 io_test.cmj : ../runtime/js.cmj
 js_array_test.cmj : mt.cmj ../runtime/js.cmj ../stdlib/array.cmj
 js_bool_test.cmj : mt.cmj

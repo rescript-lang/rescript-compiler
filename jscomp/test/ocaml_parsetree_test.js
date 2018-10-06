@@ -421,147 +421,135 @@ function loop(i) {
 var letter_all = loop(104);
 
 function letter(param) {
-  var switcher = param - 97 | 0;
-  if (switcher > 25 || switcher < 0) {
-    throw [
-          Caml_builtin_exceptions.assert_failure,
-          /* tuple */[
-            "warnings.ml",
-            176,
-            9
-          ]
-        ];
-  } else {
-    switch (switcher) {
-      case 0 : 
-          return letter_all;
-      case 2 : 
-          return /* :: */[
-                  1,
+  switch (param) {
+    case 97 : 
+        return letter_all;
+    case 99 : 
+        return /* :: */[
+                1,
+                /* :: */[
+                  2,
+                  /* [] */0
+                ]
+              ];
+    case 100 : 
+        return /* :: */[
+                3,
+                /* [] */0
+              ];
+    case 101 : 
+        return /* :: */[
+                4,
+                /* [] */0
+              ];
+    case 102 : 
+        return /* :: */[
+                5,
+                /* [] */0
+              ];
+    case 107 : 
+        return /* :: */[
+                32,
+                /* :: */[
+                  33,
                   /* :: */[
-                    2,
-                    /* [] */0
-                  ]
-                ];
-      case 3 : 
-          return /* :: */[
-                  3,
-                  /* [] */0
-                ];
-      case 4 : 
-          return /* :: */[
-                  4,
-                  /* [] */0
-                ];
-      case 5 : 
-          return /* :: */[
-                  5,
-                  /* [] */0
-                ];
-      case 10 : 
-          return /* :: */[
-                  32,
-                  /* :: */[
-                    33,
+                    34,
                     /* :: */[
-                      34,
+                      35,
                       /* :: */[
-                        35,
+                        36,
                         /* :: */[
-                          36,
+                          37,
                           /* :: */[
-                            37,
+                            38,
                             /* :: */[
-                              38,
-                              /* :: */[
-                                39,
-                                /* [] */0
-                              ]
+                              39,
+                              /* [] */0
                             ]
                           ]
                         ]
                       ]
                     ]
                   ]
-                ];
-      case 11 : 
-          return /* :: */[
-                  6,
+                ]
+              ];
+    case 108 : 
+        return /* :: */[
+                6,
+                /* [] */0
+              ];
+    case 109 : 
+        return /* :: */[
+                7,
+                /* [] */0
+              ];
+    case 112 : 
+        return /* :: */[
+                8,
+                /* [] */0
+              ];
+    case 114 : 
+        return /* :: */[
+                9,
+                /* [] */0
+              ];
+    case 115 : 
+        return /* :: */[
+                10,
+                /* [] */0
+              ];
+    case 117 : 
+        return /* :: */[
+                11,
+                /* :: */[
+                  12,
                   /* [] */0
-                ];
-      case 12 : 
-          return /* :: */[
-                  7,
-                  /* [] */0
-                ];
-      case 15 : 
-          return /* :: */[
-                  8,
-                  /* [] */0
-                ];
-      case 17 : 
-          return /* :: */[
-                  9,
-                  /* [] */0
-                ];
-      case 18 : 
-          return /* :: */[
-                  10,
-                  /* [] */0
-                ];
-      case 20 : 
-          return /* :: */[
-                  11,
+                ]
+              ];
+    case 118 : 
+        return /* :: */[
+                13,
+                /* [] */0
+              ];
+    case 98 : 
+    case 103 : 
+    case 104 : 
+    case 105 : 
+    case 106 : 
+    case 110 : 
+    case 111 : 
+    case 113 : 
+    case 116 : 
+    case 119 : 
+        return /* [] */0;
+    case 120 : 
+        return /* :: */[
+                14,
+                /* :: */[
+                  15,
                   /* :: */[
-                    12,
-                    /* [] */0
-                  ]
-                ];
-      case 21 : 
-          return /* :: */[
-                  13,
-                  /* [] */0
-                ];
-      case 1 : 
-      case 6 : 
-      case 7 : 
-      case 8 : 
-      case 9 : 
-      case 13 : 
-      case 14 : 
-      case 16 : 
-      case 19 : 
-      case 22 : 
-          return /* [] */0;
-      case 23 : 
-          return /* :: */[
-                  14,
-                  /* :: */[
-                    15,
+                    16,
                     /* :: */[
-                      16,
+                      17,
                       /* :: */[
-                        17,
+                        18,
                         /* :: */[
-                          18,
+                          19,
                           /* :: */[
-                            19,
+                            20,
                             /* :: */[
-                              20,
+                              21,
                               /* :: */[
-                                21,
+                                22,
                                 /* :: */[
-                                  22,
+                                  23,
                                   /* :: */[
-                                    23,
+                                    24,
                                     /* :: */[
-                                      24,
+                                      25,
                                       /* :: */[
-                                        25,
-                                        /* :: */[
-                                          30,
-                                          /* [] */0
-                                        ]
+                                        30,
+                                        /* [] */0
                                       ]
                                     ]
                                   ]
@@ -573,19 +561,27 @@ function letter(param) {
                       ]
                     ]
                   ]
-                ];
-      case 24 : 
-          return /* :: */[
-                  26,
-                  /* [] */0
-                ];
-      case 25 : 
-          return /* :: */[
-                  27,
-                  /* [] */0
-                ];
-      
-    }
+                ]
+              ];
+    case 121 : 
+        return /* :: */[
+                26,
+                /* [] */0
+              ];
+    case 122 : 
+        return /* :: */[
+                27,
+                /* [] */0
+              ];
+    default:
+      throw [
+            Caml_builtin_exceptions.assert_failure,
+            /* tuple */[
+              "warnings.ml",
+              176,
+              9
+            ]
+          ];
   }
 }
 
@@ -10818,364 +10814,361 @@ function token(lexbuf) {
   while(true) {
     var __ocaml_lex_state = ___ocaml_lex_state;
     var __ocaml_lex_state$1 = Lexing.new_engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf$1);
-    if (__ocaml_lex_state$1 > 91 || __ocaml_lex_state$1 < 0) {
-      Curry._1(lexbuf$1[/* refill_buff */0], lexbuf$1);
-      ___ocaml_lex_state = __ocaml_lex_state$1;
-      continue ;
-    } else {
-      switch (__ocaml_lex_state$1) {
-        case 0 : 
-            if (!escaped_newlines[0]) {
-              throw [
-                    $$Error$2,
-                    /* Illegal_character */Block.__(0, [Lexing.lexeme_char(lexbuf$1, 0)]),
-                    curr(lexbuf$1)
-                  ];
-            }
-            update_loc(lexbuf$1, undefined, 1, false, 0);
-            return token(lexbuf$1);
-        case 1 : 
-            update_loc(lexbuf$1, undefined, 1, false, 0);
-            return /* EOL */100;
-        case 2 : 
-            return token(lexbuf$1);
-        case 3 : 
-            return /* UNDERSCORE */94;
-        case 4 : 
-            return /* TILDE */89;
-        case 5 : 
-            return /* LABEL */Block.__(10, [get_label_name(lexbuf$1)]);
-        case 6 : 
-            warn_latin1(lexbuf$1);
-            return /* LABEL */Block.__(10, [get_label_name(lexbuf$1)]);
-        case 7 : 
-            return /* QUESTION */76;
-        case 8 : 
-            return /* OPTLABEL */Block.__(13, [get_label_name(lexbuf$1)]);
-        case 9 : 
-            warn_latin1(lexbuf$1);
-            return /* OPTLABEL */Block.__(13, [get_label_name(lexbuf$1)]);
-        case 10 : 
-            var s = Lexing.lexeme(lexbuf$1);
-            try {
-              return Hashtbl.find(keyword_table, s);
-            }
-            catch (exn){
-              if (exn === Caml_builtin_exceptions.not_found) {
-                return /* LIDENT */Block.__(11, [s]);
-              } else {
-                throw exn;
-              }
-            }
-        case 11 : 
-            warn_latin1(lexbuf$1);
-            return /* LIDENT */Block.__(11, [Lexing.lexeme(lexbuf$1)]);
-        case 12 : 
-            return /* UIDENT */Block.__(17, [Lexing.lexeme(lexbuf$1)]);
-        case 13 : 
-            warn_latin1(lexbuf$1);
-            return /* UIDENT */Block.__(17, [Lexing.lexeme(lexbuf$1)]);
-        case 14 : 
-            try {
-              return /* INT */Block.__(7, [cvt_int_literal(Lexing.lexeme(lexbuf$1))]);
-            }
-            catch (raw_exn){
-              var exn$1 = Js_exn.internalToOCamlException(raw_exn);
-              if (exn$1[0] === Caml_builtin_exceptions.failure) {
-                throw [
-                      $$Error$2,
-                      /* Literal_overflow */Block.__(5, ["int"]),
-                      curr(lexbuf$1)
-                    ];
-              } else {
-                throw exn$1;
-              }
-            }
-        case 15 : 
-            return /* FLOAT */Block.__(1, [remove_underscores(Lexing.lexeme(lexbuf$1))]);
-        case 16 : 
-            try {
-              return /* INT32 */Block.__(8, [cvt_int32_literal(Lexing.lexeme(lexbuf$1))]);
-            }
-            catch (raw_exn$1){
-              var exn$2 = Js_exn.internalToOCamlException(raw_exn$1);
-              if (exn$2[0] === Caml_builtin_exceptions.failure) {
-                throw [
-                      $$Error$2,
-                      /* Literal_overflow */Block.__(5, ["int32"]),
-                      curr(lexbuf$1)
-                    ];
-              } else {
-                throw exn$2;
-              }
-            }
-        case 17 : 
-            try {
-              return /* INT64 */Block.__(9, [cvt_int64_literal(Lexing.lexeme(lexbuf$1))]);
-            }
-            catch (raw_exn$2){
-              var exn$3 = Js_exn.internalToOCamlException(raw_exn$2);
-              if (exn$3[0] === Caml_builtin_exceptions.failure) {
-                throw [
-                      $$Error$2,
-                      /* Literal_overflow */Block.__(5, ["int64"]),
-                      curr(lexbuf$1)
-                    ];
-              } else {
-                throw exn$3;
-              }
-            }
-        case 18 : 
-            try {
-              return /* NATIVEINT */Block.__(12, [cvt_nativeint_literal(Lexing.lexeme(lexbuf$1))]);
-            }
-            catch (raw_exn$3){
-              var exn$4 = Js_exn.internalToOCamlException(raw_exn$3);
-              if (exn$4[0] === Caml_builtin_exceptions.failure) {
-                throw [
-                      $$Error$2,
-                      /* Literal_overflow */Block.__(5, ["nativeint"]),
-                      curr(lexbuf$1)
-                    ];
-              } else {
-                throw exn$4;
-              }
-            }
-        case 19 : 
-            reset_string_buffer(/* () */0);
-            is_in_string[0] = true;
-            var string_start = lexbuf$1[/* lex_start_p */10];
-            string_start_loc[0] = curr(lexbuf$1);
-            string(lexbuf$1);
-            is_in_string[0] = false;
-            lexbuf$1[/* lex_start_p */10] = string_start;
-            return /* STRING */Block.__(16, [/* tuple */[
-                        get_stored_string(/* () */0),
-                        undefined
-                      ]]);
-        case 20 : 
-            reset_string_buffer(/* () */0);
-            var delim = Lexing.lexeme(lexbuf$1);
-            var delim$1 = $$String.sub(delim, 1, delim.length - 2 | 0);
-            is_in_string[0] = true;
-            var string_start$1 = lexbuf$1[/* lex_start_p */10];
-            string_start_loc[0] = curr(lexbuf$1);
-            __ocaml_lex_quoted_string_rec(delim$1, lexbuf$1, 183);
-            is_in_string[0] = false;
-            lexbuf$1[/* lex_start_p */10] = string_start$1;
-            return /* STRING */Block.__(16, [/* tuple */[
-                        get_stored_string(/* () */0),
-                        delim$1
-                      ]]);
-        case 21 : 
-            update_loc(lexbuf$1, undefined, 1, false, 1);
-            return /* CHAR */Block.__(0, [Lexing.lexeme_char(lexbuf$1, 1)]);
-        case 22 : 
-            return /* CHAR */Block.__(0, [Lexing.lexeme_char(lexbuf$1, 1)]);
-        case 23 : 
-            return /* CHAR */Block.__(0, [char_for_backslash(Lexing.lexeme_char(lexbuf$1, 2))]);
-        case 24 : 
-            return /* CHAR */Block.__(0, [char_for_decimal_code(lexbuf$1, 2)]);
-        case 25 : 
-            return /* CHAR */Block.__(0, [char_for_hexadecimal_code(lexbuf$1, 3)]);
-        case 26 : 
-            var l = Lexing.lexeme(lexbuf$1);
-            var esc = $$String.sub(l, 1, l.length - 1 | 0);
-            throw [
-                  $$Error$2,
-                  /* Illegal_escape */Block.__(1, [esc]),
-                  curr(lexbuf$1)
-                ];
-        case 27 : 
-            var match = with_comment_buffer(comment, lexbuf$1);
-            return /* COMMENT */Block.__(18, [/* tuple */[
-                        match[0],
-                        match[1]
-                      ]]);
-        case 28 : 
-            var match$1 = with_comment_buffer(comment, lexbuf$1);
-            return /* DOCSTRING */Block.__(19, [docstring(match$1[0], match$1[1])]);
-        case 29 : 
-            var stars = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_start_pos */4], lexbuf$1[/* lex_curr_pos */5]);
-            var match$2 = with_comment_buffer((function(stars){
-                return function (lexbuf) {
-                  store_string("*" + stars);
-                  return __ocaml_lex_comment_rec(lexbuf, 132);
-                }
-                }(stars)), lexbuf$1);
-            return /* COMMENT */Block.__(18, [/* tuple */[
-                        match$2[0],
-                        match$2[1]
-                      ]]);
-        case 30 : 
-            if (print_warnings[0]) {
-              prerr_warning(curr(lexbuf$1), /* Comment_start */0);
-            }
-            var match$3 = with_comment_buffer(comment, lexbuf$1);
-            return /* COMMENT */Block.__(18, [/* tuple */[
-                        match$3[0],
-                        match$3[1]
-                      ]]);
-        case 31 : 
-            var stars$1 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_start_pos */4], lexbuf$1[/* lex_curr_pos */5] - 2 | 0);
-            return /* COMMENT */Block.__(18, [/* tuple */[
-                        stars$1,
-                        curr(lexbuf$1)
-                      ]]);
-        case 32 : 
-            var loc = curr(lexbuf$1);
-            prerr_warning(loc, /* Comment_not_end */1);
-            lexbuf$1[/* lex_curr_pos */5] = lexbuf$1[/* lex_curr_pos */5] - 1 | 0;
-            var curpos = lexbuf$1[/* lex_curr_p */11];
-            lexbuf$1[/* lex_curr_p */11] = /* record */[
-              /* pos_fname */curpos[/* pos_fname */0],
-              /* pos_lnum */curpos[/* pos_lnum */1],
-              /* pos_bol */curpos[/* pos_bol */2],
-              /* pos_cnum */curpos[/* pos_cnum */3] - 1 | 0
-            ];
-            return /* STAR */86;
-        case 33 : 
-            var num = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 0), Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 1));
-            var name = Lexing.sub_lexeme_opt(lexbuf$1, Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 3), Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 2));
-            update_loc(lexbuf$1, name, Caml_format.caml_int_of_string(num), true, 0);
-            return token(lexbuf$1);
-        case 34 : 
-            return /* SHARP */84;
-        case 35 : 
-            return /* AMPERSAND */1;
-        case 36 : 
-            return /* AMPERAMPER */0;
-        case 37 : 
-            return /* BACKQUOTE */5;
-        case 38 : 
-            return /* QUOTE */77;
-        case 39 : 
-            return /* LPAREN */54;
-        case 40 : 
-            return /* RPAREN */81;
-        case 41 : 
-            return /* STAR */86;
-        case 42 : 
-            return /* COMMA */16;
-        case 43 : 
-            return /* MINUSGREATER */62;
-        case 44 : 
-            return /* DOT */20;
-        case 45 : 
-            return /* DOTDOT */21;
-        case 46 : 
-            return /* COLON */12;
-        case 47 : 
-            return /* COLONCOLON */13;
-        case 48 : 
-            return /* COLONEQUAL */14;
-        case 49 : 
-            return /* COLONGREATER */15;
-        case 50 : 
-            return /* SEMI */82;
-        case 51 : 
-            return /* SEMISEMI */83;
-        case 52 : 
-            return /* LESS */51;
-        case 53 : 
-            return /* LESSMINUS */52;
-        case 54 : 
-            return /* EQUAL */26;
-        case 55 : 
-            return /* LBRACKET */45;
-        case 56 : 
-            return /* LBRACKETBAR */46;
-        case 57 : 
-            return /* LBRACKETLESS */47;
-        case 58 : 
-            return /* LBRACKETGREATER */48;
-        case 59 : 
-            return /* RBRACKET */79;
-        case 60 : 
-            return /* LBRACE */43;
-        case 61 : 
-            return /* LBRACELESS */44;
-        case 62 : 
-            return /* BAR */7;
-        case 63 : 
-            return /* BARBAR */8;
-        case 64 : 
-            return /* BARRBRACKET */9;
-        case 65 : 
-            return /* GREATER */34;
-        case 66 : 
-            return /* GREATERRBRACKET */36;
-        case 67 : 
-            return /* RBRACE */78;
-        case 68 : 
-            return /* GREATERRBRACE */35;
-        case 69 : 
-            return /* LBRACKETAT */55;
-        case 70 : 
-            return /* LBRACKETPERCENT */49;
-        case 71 : 
-            return /* LBRACKETPERCENTPERCENT */50;
-        case 72 : 
-            return /* LBRACKETATAT */56;
-        case 73 : 
-            return /* LBRACKETATATAT */57;
-        case 74 : 
-            return /* BANG */6;
-        case 75 : 
-            return /* INFIXOP0 */Block.__(2, ["!="]);
-        case 76 : 
-            return /* PLUS */72;
-        case 77 : 
-            return /* PLUSDOT */73;
-        case 78 : 
-            return /* PLUSEQ */74;
-        case 79 : 
-            return /* MINUS */60;
-        case 80 : 
-            return /* MINUSDOT */61;
-        case 81 : 
-        case 82 : 
-            return /* PREFIXOP */Block.__(14, [Lexing.lexeme(lexbuf$1)]);
-        case 83 : 
-            return /* INFIXOP0 */Block.__(2, [Lexing.lexeme(lexbuf$1)]);
-        case 84 : 
-            return /* INFIXOP1 */Block.__(3, [Lexing.lexeme(lexbuf$1)]);
-        case 85 : 
-            return /* INFIXOP2 */Block.__(4, [Lexing.lexeme(lexbuf$1)]);
-        case 86 : 
-            return /* INFIXOP4 */Block.__(6, [Lexing.lexeme(lexbuf$1)]);
-        case 87 : 
-            return /* PERCENT */71;
-        case 88 : 
-            return /* INFIXOP3 */Block.__(5, [Lexing.lexeme(lexbuf$1)]);
-        case 89 : 
-            return /* SHARPOP */Block.__(15, [Lexing.lexeme(lexbuf$1)]);
-        case 90 : 
-            if (if_then_else[0] !== /* Dir_out */2) {
-              if (if_then_else[0] === /* Dir_if_true */0) {
-                throw [
-                      $$Error$2,
-                      /* Unterminated_if */2,
-                      curr(lexbuf$1)
-                    ];
-              } else {
-                throw [
-                      $$Error$2,
-                      /* Unterminated_else */3,
-                      curr(lexbuf$1)
-                    ];
-              }
-            } else {
-              return /* EOF */25;
-            }
-        case 91 : 
+    switch (__ocaml_lex_state$1) {
+      case 0 : 
+          if (!escaped_newlines[0]) {
             throw [
                   $$Error$2,
                   /* Illegal_character */Block.__(0, [Lexing.lexeme_char(lexbuf$1, 0)]),
                   curr(lexbuf$1)
                 ];
-        
-      }
+          }
+          update_loc(lexbuf$1, undefined, 1, false, 0);
+          return token(lexbuf$1);
+      case 1 : 
+          update_loc(lexbuf$1, undefined, 1, false, 0);
+          return /* EOL */100;
+      case 2 : 
+          return token(lexbuf$1);
+      case 3 : 
+          return /* UNDERSCORE */94;
+      case 4 : 
+          return /* TILDE */89;
+      case 5 : 
+          return /* LABEL */Block.__(10, [get_label_name(lexbuf$1)]);
+      case 6 : 
+          warn_latin1(lexbuf$1);
+          return /* LABEL */Block.__(10, [get_label_name(lexbuf$1)]);
+      case 7 : 
+          return /* QUESTION */76;
+      case 8 : 
+          return /* OPTLABEL */Block.__(13, [get_label_name(lexbuf$1)]);
+      case 9 : 
+          warn_latin1(lexbuf$1);
+          return /* OPTLABEL */Block.__(13, [get_label_name(lexbuf$1)]);
+      case 10 : 
+          var s = Lexing.lexeme(lexbuf$1);
+          try {
+            return Hashtbl.find(keyword_table, s);
+          }
+          catch (exn){
+            if (exn === Caml_builtin_exceptions.not_found) {
+              return /* LIDENT */Block.__(11, [s]);
+            } else {
+              throw exn;
+            }
+          }
+      case 11 : 
+          warn_latin1(lexbuf$1);
+          return /* LIDENT */Block.__(11, [Lexing.lexeme(lexbuf$1)]);
+      case 12 : 
+          return /* UIDENT */Block.__(17, [Lexing.lexeme(lexbuf$1)]);
+      case 13 : 
+          warn_latin1(lexbuf$1);
+          return /* UIDENT */Block.__(17, [Lexing.lexeme(lexbuf$1)]);
+      case 14 : 
+          try {
+            return /* INT */Block.__(7, [cvt_int_literal(Lexing.lexeme(lexbuf$1))]);
+          }
+          catch (raw_exn){
+            var exn$1 = Js_exn.internalToOCamlException(raw_exn);
+            if (exn$1[0] === Caml_builtin_exceptions.failure) {
+              throw [
+                    $$Error$2,
+                    /* Literal_overflow */Block.__(5, ["int"]),
+                    curr(lexbuf$1)
+                  ];
+            } else {
+              throw exn$1;
+            }
+          }
+      case 15 : 
+          return /* FLOAT */Block.__(1, [remove_underscores(Lexing.lexeme(lexbuf$1))]);
+      case 16 : 
+          try {
+            return /* INT32 */Block.__(8, [cvt_int32_literal(Lexing.lexeme(lexbuf$1))]);
+          }
+          catch (raw_exn$1){
+            var exn$2 = Js_exn.internalToOCamlException(raw_exn$1);
+            if (exn$2[0] === Caml_builtin_exceptions.failure) {
+              throw [
+                    $$Error$2,
+                    /* Literal_overflow */Block.__(5, ["int32"]),
+                    curr(lexbuf$1)
+                  ];
+            } else {
+              throw exn$2;
+            }
+          }
+      case 17 : 
+          try {
+            return /* INT64 */Block.__(9, [cvt_int64_literal(Lexing.lexeme(lexbuf$1))]);
+          }
+          catch (raw_exn$2){
+            var exn$3 = Js_exn.internalToOCamlException(raw_exn$2);
+            if (exn$3[0] === Caml_builtin_exceptions.failure) {
+              throw [
+                    $$Error$2,
+                    /* Literal_overflow */Block.__(5, ["int64"]),
+                    curr(lexbuf$1)
+                  ];
+            } else {
+              throw exn$3;
+            }
+          }
+      case 18 : 
+          try {
+            return /* NATIVEINT */Block.__(12, [cvt_nativeint_literal(Lexing.lexeme(lexbuf$1))]);
+          }
+          catch (raw_exn$3){
+            var exn$4 = Js_exn.internalToOCamlException(raw_exn$3);
+            if (exn$4[0] === Caml_builtin_exceptions.failure) {
+              throw [
+                    $$Error$2,
+                    /* Literal_overflow */Block.__(5, ["nativeint"]),
+                    curr(lexbuf$1)
+                  ];
+            } else {
+              throw exn$4;
+            }
+          }
+      case 19 : 
+          reset_string_buffer(/* () */0);
+          is_in_string[0] = true;
+          var string_start = lexbuf$1[/* lex_start_p */10];
+          string_start_loc[0] = curr(lexbuf$1);
+          string(lexbuf$1);
+          is_in_string[0] = false;
+          lexbuf$1[/* lex_start_p */10] = string_start;
+          return /* STRING */Block.__(16, [/* tuple */[
+                      get_stored_string(/* () */0),
+                      undefined
+                    ]]);
+      case 20 : 
+          reset_string_buffer(/* () */0);
+          var delim = Lexing.lexeme(lexbuf$1);
+          var delim$1 = $$String.sub(delim, 1, delim.length - 2 | 0);
+          is_in_string[0] = true;
+          var string_start$1 = lexbuf$1[/* lex_start_p */10];
+          string_start_loc[0] = curr(lexbuf$1);
+          __ocaml_lex_quoted_string_rec(delim$1, lexbuf$1, 183);
+          is_in_string[0] = false;
+          lexbuf$1[/* lex_start_p */10] = string_start$1;
+          return /* STRING */Block.__(16, [/* tuple */[
+                      get_stored_string(/* () */0),
+                      delim$1
+                    ]]);
+      case 21 : 
+          update_loc(lexbuf$1, undefined, 1, false, 1);
+          return /* CHAR */Block.__(0, [Lexing.lexeme_char(lexbuf$1, 1)]);
+      case 22 : 
+          return /* CHAR */Block.__(0, [Lexing.lexeme_char(lexbuf$1, 1)]);
+      case 23 : 
+          return /* CHAR */Block.__(0, [char_for_backslash(Lexing.lexeme_char(lexbuf$1, 2))]);
+      case 24 : 
+          return /* CHAR */Block.__(0, [char_for_decimal_code(lexbuf$1, 2)]);
+      case 25 : 
+          return /* CHAR */Block.__(0, [char_for_hexadecimal_code(lexbuf$1, 3)]);
+      case 26 : 
+          var l = Lexing.lexeme(lexbuf$1);
+          var esc = $$String.sub(l, 1, l.length - 1 | 0);
+          throw [
+                $$Error$2,
+                /* Illegal_escape */Block.__(1, [esc]),
+                curr(lexbuf$1)
+              ];
+      case 27 : 
+          var match = with_comment_buffer(comment, lexbuf$1);
+          return /* COMMENT */Block.__(18, [/* tuple */[
+                      match[0],
+                      match[1]
+                    ]]);
+      case 28 : 
+          var match$1 = with_comment_buffer(comment, lexbuf$1);
+          return /* DOCSTRING */Block.__(19, [docstring(match$1[0], match$1[1])]);
+      case 29 : 
+          var stars = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_start_pos */4], lexbuf$1[/* lex_curr_pos */5]);
+          var match$2 = with_comment_buffer((function(stars){
+              return function (lexbuf) {
+                store_string("*" + stars);
+                return __ocaml_lex_comment_rec(lexbuf, 132);
+              }
+              }(stars)), lexbuf$1);
+          return /* COMMENT */Block.__(18, [/* tuple */[
+                      match$2[0],
+                      match$2[1]
+                    ]]);
+      case 30 : 
+          if (print_warnings[0]) {
+            prerr_warning(curr(lexbuf$1), /* Comment_start */0);
+          }
+          var match$3 = with_comment_buffer(comment, lexbuf$1);
+          return /* COMMENT */Block.__(18, [/* tuple */[
+                      match$3[0],
+                      match$3[1]
+                    ]]);
+      case 31 : 
+          var stars$1 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_start_pos */4], lexbuf$1[/* lex_curr_pos */5] - 2 | 0);
+          return /* COMMENT */Block.__(18, [/* tuple */[
+                      stars$1,
+                      curr(lexbuf$1)
+                    ]]);
+      case 32 : 
+          var loc = curr(lexbuf$1);
+          prerr_warning(loc, /* Comment_not_end */1);
+          lexbuf$1[/* lex_curr_pos */5] = lexbuf$1[/* lex_curr_pos */5] - 1 | 0;
+          var curpos = lexbuf$1[/* lex_curr_p */11];
+          lexbuf$1[/* lex_curr_p */11] = /* record */[
+            /* pos_fname */curpos[/* pos_fname */0],
+            /* pos_lnum */curpos[/* pos_lnum */1],
+            /* pos_bol */curpos[/* pos_bol */2],
+            /* pos_cnum */curpos[/* pos_cnum */3] - 1 | 0
+          ];
+          return /* STAR */86;
+      case 33 : 
+          var num = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 0), Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 1));
+          var name = Lexing.sub_lexeme_opt(lexbuf$1, Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 3), Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 2));
+          update_loc(lexbuf$1, name, Caml_format.caml_int_of_string(num), true, 0);
+          return token(lexbuf$1);
+      case 34 : 
+          return /* SHARP */84;
+      case 35 : 
+          return /* AMPERSAND */1;
+      case 36 : 
+          return /* AMPERAMPER */0;
+      case 37 : 
+          return /* BACKQUOTE */5;
+      case 38 : 
+          return /* QUOTE */77;
+      case 39 : 
+          return /* LPAREN */54;
+      case 40 : 
+          return /* RPAREN */81;
+      case 41 : 
+          return /* STAR */86;
+      case 42 : 
+          return /* COMMA */16;
+      case 43 : 
+          return /* MINUSGREATER */62;
+      case 44 : 
+          return /* DOT */20;
+      case 45 : 
+          return /* DOTDOT */21;
+      case 46 : 
+          return /* COLON */12;
+      case 47 : 
+          return /* COLONCOLON */13;
+      case 48 : 
+          return /* COLONEQUAL */14;
+      case 49 : 
+          return /* COLONGREATER */15;
+      case 50 : 
+          return /* SEMI */82;
+      case 51 : 
+          return /* SEMISEMI */83;
+      case 52 : 
+          return /* LESS */51;
+      case 53 : 
+          return /* LESSMINUS */52;
+      case 54 : 
+          return /* EQUAL */26;
+      case 55 : 
+          return /* LBRACKET */45;
+      case 56 : 
+          return /* LBRACKETBAR */46;
+      case 57 : 
+          return /* LBRACKETLESS */47;
+      case 58 : 
+          return /* LBRACKETGREATER */48;
+      case 59 : 
+          return /* RBRACKET */79;
+      case 60 : 
+          return /* LBRACE */43;
+      case 61 : 
+          return /* LBRACELESS */44;
+      case 62 : 
+          return /* BAR */7;
+      case 63 : 
+          return /* BARBAR */8;
+      case 64 : 
+          return /* BARRBRACKET */9;
+      case 65 : 
+          return /* GREATER */34;
+      case 66 : 
+          return /* GREATERRBRACKET */36;
+      case 67 : 
+          return /* RBRACE */78;
+      case 68 : 
+          return /* GREATERRBRACE */35;
+      case 69 : 
+          return /* LBRACKETAT */55;
+      case 70 : 
+          return /* LBRACKETPERCENT */49;
+      case 71 : 
+          return /* LBRACKETPERCENTPERCENT */50;
+      case 72 : 
+          return /* LBRACKETATAT */56;
+      case 73 : 
+          return /* LBRACKETATATAT */57;
+      case 74 : 
+          return /* BANG */6;
+      case 75 : 
+          return /* INFIXOP0 */Block.__(2, ["!="]);
+      case 76 : 
+          return /* PLUS */72;
+      case 77 : 
+          return /* PLUSDOT */73;
+      case 78 : 
+          return /* PLUSEQ */74;
+      case 79 : 
+          return /* MINUS */60;
+      case 80 : 
+          return /* MINUSDOT */61;
+      case 81 : 
+      case 82 : 
+          return /* PREFIXOP */Block.__(14, [Lexing.lexeme(lexbuf$1)]);
+      case 83 : 
+          return /* INFIXOP0 */Block.__(2, [Lexing.lexeme(lexbuf$1)]);
+      case 84 : 
+          return /* INFIXOP1 */Block.__(3, [Lexing.lexeme(lexbuf$1)]);
+      case 85 : 
+          return /* INFIXOP2 */Block.__(4, [Lexing.lexeme(lexbuf$1)]);
+      case 86 : 
+          return /* INFIXOP4 */Block.__(6, [Lexing.lexeme(lexbuf$1)]);
+      case 87 : 
+          return /* PERCENT */71;
+      case 88 : 
+          return /* INFIXOP3 */Block.__(5, [Lexing.lexeme(lexbuf$1)]);
+      case 89 : 
+          return /* SHARPOP */Block.__(15, [Lexing.lexeme(lexbuf$1)]);
+      case 90 : 
+          if (if_then_else[0] !== /* Dir_out */2) {
+            if (if_then_else[0] === /* Dir_if_true */0) {
+              throw [
+                    $$Error$2,
+                    /* Unterminated_if */2,
+                    curr(lexbuf$1)
+                  ];
+            } else {
+              throw [
+                    $$Error$2,
+                    /* Unterminated_else */3,
+                    curr(lexbuf$1)
+                  ];
+            }
+          } else {
+            return /* EOF */25;
+          }
+      case 91 : 
+          throw [
+                $$Error$2,
+                /* Illegal_character */Block.__(0, [Lexing.lexeme_char(lexbuf$1, 0)]),
+                curr(lexbuf$1)
+              ];
+      default:
+        Curry._1(lexbuf$1[/* refill_buff */0], lexbuf$1);
+        ___ocaml_lex_state = __ocaml_lex_state$1;
+        continue ;
     }
   };
 }
@@ -11184,40 +11177,37 @@ function __ocaml_lex_quoted_string_rec(delim, lexbuf, ___ocaml_lex_state) {
   while(true) {
     var __ocaml_lex_state = ___ocaml_lex_state;
     var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf);
-    if (__ocaml_lex_state$1 > 3 || __ocaml_lex_state$1 < 0) {
-      Curry._1(lexbuf[/* refill_buff */0], lexbuf);
-      ___ocaml_lex_state = __ocaml_lex_state$1;
-      continue ;
-    } else {
-      switch (__ocaml_lex_state$1) {
-        case 0 : 
-            update_loc(lexbuf, undefined, 1, false, 0);
+    switch (__ocaml_lex_state$1) {
+      case 0 : 
+          update_loc(lexbuf, undefined, 1, false, 0);
+          store_string(Lexing.lexeme(lexbuf));
+          ___ocaml_lex_state = 183;
+          continue ;
+      case 1 : 
+          is_in_string[0] = false;
+          throw [
+                $$Error$2,
+                /* Unterminated_string */0,
+                string_start_loc[0]
+              ];
+      case 2 : 
+          var edelim = Lexing.lexeme(lexbuf);
+          var edelim$1 = $$String.sub(edelim, 1, edelim.length - 2 | 0);
+          if (delim === edelim$1) {
+            return /* () */0;
+          } else {
             store_string(Lexing.lexeme(lexbuf));
             ___ocaml_lex_state = 183;
             continue ;
-        case 1 : 
-            is_in_string[0] = false;
-            throw [
-                  $$Error$2,
-                  /* Unterminated_string */0,
-                  string_start_loc[0]
-                ];
-        case 2 : 
-            var edelim = Lexing.lexeme(lexbuf);
-            var edelim$1 = $$String.sub(edelim, 1, edelim.length - 2 | 0);
-            if (delim === edelim$1) {
-              return /* () */0;
-            } else {
-              store_string(Lexing.lexeme(lexbuf));
-              ___ocaml_lex_state = 183;
-              continue ;
-            }
-        case 3 : 
-            store_string_char(Lexing.lexeme_char(lexbuf, 0));
-            ___ocaml_lex_state = 183;
-            continue ;
-        
-      }
+          }
+      case 3 : 
+          store_string_char(Lexing.lexeme_char(lexbuf, 0));
+          ___ocaml_lex_state = 183;
+          continue ;
+      default:
+        Curry._1(lexbuf[/* refill_buff */0], lexbuf);
+        ___ocaml_lex_state = __ocaml_lex_state$1;
+        continue ;
     }
   };
 }
@@ -11229,56 +11219,53 @@ function string(lexbuf) {
   while(true) {
     var __ocaml_lex_state = ___ocaml_lex_state;
     var __ocaml_lex_state$1 = Lexing.new_engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf$1);
-    if (__ocaml_lex_state$1 > 8 || __ocaml_lex_state$1 < 0) {
-      Curry._1(lexbuf$1[/* refill_buff */0], lexbuf$1);
-      ___ocaml_lex_state = __ocaml_lex_state$1;
-      continue ;
-    } else {
-      switch (__ocaml_lex_state$1) {
-        case 0 : 
-            return /* () */0;
-        case 1 : 
-            var space = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 0), lexbuf$1[/* lex_curr_pos */5]);
-            update_loc(lexbuf$1, undefined, 1, false, space.length);
+    switch (__ocaml_lex_state$1) {
+      case 0 : 
+          return /* () */0;
+      case 1 : 
+          var space = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 0), lexbuf$1[/* lex_curr_pos */5]);
+          update_loc(lexbuf$1, undefined, 1, false, space.length);
+          return string(lexbuf$1);
+      case 2 : 
+          store_string_char(char_for_backslash(Lexing.lexeme_char(lexbuf$1, 1)));
+          return string(lexbuf$1);
+      case 3 : 
+          store_string_char(char_for_decimal_code(lexbuf$1, 1));
+          return string(lexbuf$1);
+      case 4 : 
+          store_string_char(char_for_hexadecimal_code(lexbuf$1, 2));
+          return string(lexbuf$1);
+      case 5 : 
+          if (comment_start_loc[0] !== /* [] */0) {
             return string(lexbuf$1);
-        case 2 : 
-            store_string_char(char_for_backslash(Lexing.lexeme_char(lexbuf$1, 1)));
-            return string(lexbuf$1);
-        case 3 : 
-            store_string_char(char_for_decimal_code(lexbuf$1, 1));
-            return string(lexbuf$1);
-        case 4 : 
-            store_string_char(char_for_hexadecimal_code(lexbuf$1, 2));
-            return string(lexbuf$1);
-        case 5 : 
-            if (comment_start_loc[0] !== /* [] */0) {
-              return string(lexbuf$1);
-            } else {
-              var loc = curr(lexbuf$1);
-              prerr_warning(loc, /* Illegal_backslash */7);
-              store_string_char(Lexing.lexeme_char(lexbuf$1, 0));
-              store_string_char(Lexing.lexeme_char(lexbuf$1, 1));
-              return string(lexbuf$1);
-            }
-        case 6 : 
-            if (comment_start_loc[0] === /* [] */0) {
-              prerr_warning(curr(lexbuf$1), /* Eol_in_string */14);
-            }
-            update_loc(lexbuf$1, undefined, 1, false, 0);
-            store_string(Lexing.lexeme(lexbuf$1));
-            return string(lexbuf$1);
-        case 7 : 
-            is_in_string[0] = false;
-            throw [
-                  $$Error$2,
-                  /* Unterminated_string */0,
-                  string_start_loc[0]
-                ];
-        case 8 : 
+          } else {
+            var loc = curr(lexbuf$1);
+            prerr_warning(loc, /* Illegal_backslash */7);
             store_string_char(Lexing.lexeme_char(lexbuf$1, 0));
+            store_string_char(Lexing.lexeme_char(lexbuf$1, 1));
             return string(lexbuf$1);
-        
-      }
+          }
+      case 6 : 
+          if (comment_start_loc[0] === /* [] */0) {
+            prerr_warning(curr(lexbuf$1), /* Eol_in_string */14);
+          }
+          update_loc(lexbuf$1, undefined, 1, false, 0);
+          store_string(Lexing.lexeme(lexbuf$1));
+          return string(lexbuf$1);
+      case 7 : 
+          is_in_string[0] = false;
+          throw [
+                $$Error$2,
+                /* Unterminated_string */0,
+                string_start_loc[0]
+              ];
+      case 8 : 
+          store_string_char(Lexing.lexeme_char(lexbuf$1, 0));
+          return string(lexbuf$1);
+      default:
+        Curry._1(lexbuf$1[/* refill_buff */0], lexbuf$1);
+        ___ocaml_lex_state = __ocaml_lex_state$1;
+        continue ;
     }
   };
 }
@@ -11291,186 +11278,183 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
   while(true) {
     var __ocaml_lex_state = ___ocaml_lex_state;
     var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf);
-    if (__ocaml_lex_state$1 > 12 || __ocaml_lex_state$1 < 0) {
-      Curry._1(lexbuf[/* refill_buff */0], lexbuf);
-      ___ocaml_lex_state = __ocaml_lex_state$1;
-      continue ;
-    } else {
-      switch (__ocaml_lex_state$1) {
-        case 0 : 
-            comment_start_loc[0] = /* :: */[
-              curr(lexbuf),
-              comment_start_loc[0]
-            ];
-            store_string(Lexing.lexeme(lexbuf));
-            ___ocaml_lex_state = 132;
-            continue ;
-        case 1 : 
-            var match = comment_start_loc[0];
-            if (match) {
-              var l = match[1];
-              if (l) {
-                comment_start_loc[0] = l;
-                store_string(Lexing.lexeme(lexbuf));
-                ___ocaml_lex_state = 132;
-                continue ;
-              } else {
-                comment_start_loc[0] = /* [] */0;
-                return curr(lexbuf);
-              }
+    switch (__ocaml_lex_state$1) {
+      case 0 : 
+          comment_start_loc[0] = /* :: */[
+            curr(lexbuf),
+            comment_start_loc[0]
+          ];
+          store_string(Lexing.lexeme(lexbuf));
+          ___ocaml_lex_state = 132;
+          continue ;
+      case 1 : 
+          var match = comment_start_loc[0];
+          if (match) {
+            var l = match[1];
+            if (l) {
+              comment_start_loc[0] = l;
+              store_string(Lexing.lexeme(lexbuf));
+              ___ocaml_lex_state = 132;
+              continue ;
             } else {
-              throw [
-                    Caml_builtin_exceptions.assert_failure,
-                    /* tuple */[
-                      "parsing/lexer.mll",
-                      989,
-                      16
-                    ]
-                  ];
+              comment_start_loc[0] = /* [] */0;
+              return curr(lexbuf);
             }
-        case 2 : 
-            string_start_loc[0] = curr(lexbuf);
-            store_string_char(/* "\"" */34);
-            is_in_string[0] = true;
-            try {
-              string(lexbuf);
-            }
-            catch (raw_exn){
-              var exn = Js_exn.internalToOCamlException(raw_exn);
-              if (exn[0] === $$Error$2) {
-                var match$1 = exn[1];
-                if (typeof match$1 === "number") {
-                  if (match$1 !== 0) {
-                    throw exn;
-                  } else {
-                    var match$2 = comment_start_loc[0];
-                    if (match$2) {
-                      var start = List.hd(List.rev(comment_start_loc[0]));
-                      comment_start_loc[0] = /* [] */0;
-                      throw [
-                            $$Error$2,
-                            /* Unterminated_string_in_comment */Block.__(3, [
-                                start,
-                                exn[2]
-                              ]),
-                            match$2[0]
-                          ];
-                    } else {
-                      throw [
-                            Caml_builtin_exceptions.assert_failure,
-                            /* tuple */[
-                              "parsing/lexer.mll",
-                              1003,
-                              18
-                            ]
-                          ];
-                    }
-                  }
-                } else {
+          } else {
+            throw [
+                  Caml_builtin_exceptions.assert_failure,
+                  /* tuple */[
+                    "parsing/lexer.mll",
+                    989,
+                    16
+                  ]
+                ];
+          }
+      case 2 : 
+          string_start_loc[0] = curr(lexbuf);
+          store_string_char(/* "\"" */34);
+          is_in_string[0] = true;
+          try {
+            string(lexbuf);
+          }
+          catch (raw_exn){
+            var exn = Js_exn.internalToOCamlException(raw_exn);
+            if (exn[0] === $$Error$2) {
+              var match$1 = exn[1];
+              if (typeof match$1 === "number") {
+                if (match$1 !== 0) {
                   throw exn;
+                } else {
+                  var match$2 = comment_start_loc[0];
+                  if (match$2) {
+                    var start = List.hd(List.rev(comment_start_loc[0]));
+                    comment_start_loc[0] = /* [] */0;
+                    throw [
+                          $$Error$2,
+                          /* Unterminated_string_in_comment */Block.__(3, [
+                              start,
+                              exn[2]
+                            ]),
+                          match$2[0]
+                        ];
+                  } else {
+                    throw [
+                          Caml_builtin_exceptions.assert_failure,
+                          /* tuple */[
+                            "parsing/lexer.mll",
+                            1003,
+                            18
+                          ]
+                        ];
+                  }
                 }
               } else {
                 throw exn;
               }
+            } else {
+              throw exn;
             }
-            is_in_string[0] = false;
-            store_string_char(/* "\"" */34);
-            ___ocaml_lex_state = 132;
-            continue ;
-        case 3 : 
-            var delim = Lexing.lexeme(lexbuf);
-            var delim$1 = $$String.sub(delim, 1, delim.length - 2 | 0);
-            string_start_loc[0] = curr(lexbuf);
-            store_string(Lexing.lexeme(lexbuf));
-            is_in_string[0] = true;
-            try {
-              __ocaml_lex_quoted_string_rec(delim$1, lexbuf, 183);
-            }
-            catch (raw_exn$1){
-              var exn$1 = Js_exn.internalToOCamlException(raw_exn$1);
-              if (exn$1[0] === $$Error$2) {
-                var match$3 = exn$1[1];
-                if (typeof match$3 === "number") {
-                  if (match$3 !== 0) {
-                    throw exn$1;
-                  } else {
-                    var match$4 = comment_start_loc[0];
-                    if (match$4) {
-                      var start$1 = List.hd(List.rev(comment_start_loc[0]));
-                      comment_start_loc[0] = /* [] */0;
-                      throw [
-                            $$Error$2,
-                            /* Unterminated_string_in_comment */Block.__(3, [
-                                start$1,
-                                exn$1[2]
-                              ]),
-                            match$4[0]
-                          ];
-                    } else {
-                      throw [
-                            Caml_builtin_exceptions.assert_failure,
-                            /* tuple */[
-                              "parsing/lexer.mll",
-                              1023,
-                              18
-                            ]
-                          ];
-                    }
-                  }
-                } else {
+          }
+          is_in_string[0] = false;
+          store_string_char(/* "\"" */34);
+          ___ocaml_lex_state = 132;
+          continue ;
+      case 3 : 
+          var delim = Lexing.lexeme(lexbuf);
+          var delim$1 = $$String.sub(delim, 1, delim.length - 2 | 0);
+          string_start_loc[0] = curr(lexbuf);
+          store_string(Lexing.lexeme(lexbuf));
+          is_in_string[0] = true;
+          try {
+            __ocaml_lex_quoted_string_rec(delim$1, lexbuf, 183);
+          }
+          catch (raw_exn$1){
+            var exn$1 = Js_exn.internalToOCamlException(raw_exn$1);
+            if (exn$1[0] === $$Error$2) {
+              var match$3 = exn$1[1];
+              if (typeof match$3 === "number") {
+                if (match$3 !== 0) {
                   throw exn$1;
+                } else {
+                  var match$4 = comment_start_loc[0];
+                  if (match$4) {
+                    var start$1 = List.hd(List.rev(comment_start_loc[0]));
+                    comment_start_loc[0] = /* [] */0;
+                    throw [
+                          $$Error$2,
+                          /* Unterminated_string_in_comment */Block.__(3, [
+                              start$1,
+                              exn$1[2]
+                            ]),
+                          match$4[0]
+                        ];
+                  } else {
+                    throw [
+                          Caml_builtin_exceptions.assert_failure,
+                          /* tuple */[
+                            "parsing/lexer.mll",
+                            1023,
+                            18
+                          ]
+                        ];
+                  }
                 }
               } else {
                 throw exn$1;
               }
-            }
-            is_in_string[0] = false;
-            store_string_char(/* "|" */124);
-            store_string(delim$1);
-            store_string_char(/* "}" */125);
-            ___ocaml_lex_state = 132;
-            continue ;
-        case 5 : 
-            update_loc(lexbuf, undefined, 1, false, 1);
-            store_string(Lexing.lexeme(lexbuf));
-            ___ocaml_lex_state = 132;
-            continue ;
-        case 10 : 
-            var match$5 = comment_start_loc[0];
-            if (match$5) {
-              var start$2 = List.hd(List.rev(comment_start_loc[0]));
-              comment_start_loc[0] = /* [] */0;
-              throw [
-                    $$Error$2,
-                    /* Unterminated_comment */Block.__(2, [start$2]),
-                    match$5[0]
-                  ];
             } else {
-              throw [
-                    Caml_builtin_exceptions.assert_failure,
-                    /* tuple */[
-                      "parsing/lexer.mll",
-                      1053,
-                      16
-                    ]
-                  ];
+              throw exn$1;
             }
-        case 11 : 
-            update_loc(lexbuf, undefined, 1, false, 0);
-            store_string(Lexing.lexeme(lexbuf));
-            ___ocaml_lex_state = 132;
-            continue ;
-        case 4 : 
-        case 6 : 
-        case 7 : 
-        case 8 : 
-        case 9 : 
-        case 12 : 
-            store_string(Lexing.lexeme(lexbuf));
-            ___ocaml_lex_state = 132;
-            continue ;
-        
-      }
+          }
+          is_in_string[0] = false;
+          store_string_char(/* "|" */124);
+          store_string(delim$1);
+          store_string_char(/* "}" */125);
+          ___ocaml_lex_state = 132;
+          continue ;
+      case 5 : 
+          update_loc(lexbuf, undefined, 1, false, 1);
+          store_string(Lexing.lexeme(lexbuf));
+          ___ocaml_lex_state = 132;
+          continue ;
+      case 10 : 
+          var match$5 = comment_start_loc[0];
+          if (match$5) {
+            var start$2 = List.hd(List.rev(comment_start_loc[0]));
+            comment_start_loc[0] = /* [] */0;
+            throw [
+                  $$Error$2,
+                  /* Unterminated_comment */Block.__(2, [start$2]),
+                  match$5[0]
+                ];
+          } else {
+            throw [
+                  Caml_builtin_exceptions.assert_failure,
+                  /* tuple */[
+                    "parsing/lexer.mll",
+                    1053,
+                    16
+                  ]
+                ];
+          }
+      case 11 : 
+          update_loc(lexbuf, undefined, 1, false, 0);
+          store_string(Lexing.lexeme(lexbuf));
+          ___ocaml_lex_state = 132;
+          continue ;
+      case 4 : 
+      case 6 : 
+      case 7 : 
+      case 8 : 
+      case 9 : 
+      case 12 : 
+          store_string(Lexing.lexeme(lexbuf));
+          ___ocaml_lex_state = 132;
+          continue ;
+      default:
+        Curry._1(lexbuf[/* refill_buff */0], lexbuf);
+        ___ocaml_lex_state = __ocaml_lex_state$1;
+        continue ;
     }
   };
 }

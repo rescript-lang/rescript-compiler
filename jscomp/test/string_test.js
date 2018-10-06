@@ -34,31 +34,28 @@ function ff(x) {
 
 function gg(x) {
   var a;
-  if (x > 8 || x < 0) {
-    a = 8;
-  } else {
-    switch (x) {
-      case 0 : 
-      case 1 : 
-      case 2 : 
-          a = 3;
-          break;
-      case 3 : 
-          a = 4;
-          break;
-      case 4 : 
-          a = 6;
-          break;
-      case 5 : 
-      case 6 : 
-      case 7 : 
-          a = 8;
-          break;
-      case 8 : 
-          a = 7;
-          break;
-      
-    }
+  switch (x) {
+    case 0 : 
+    case 1 : 
+    case 2 : 
+        a = 3;
+        break;
+    case 3 : 
+        a = 4;
+        break;
+    case 4 : 
+        a = 6;
+        break;
+    case 5 : 
+    case 6 : 
+    case 7 : 
+        a = 8;
+        break;
+    case 8 : 
+        a = 7;
+        break;
+    default:
+      a = 8;
   }
   return a + 3 | 0;
 }

@@ -22,32 +22,29 @@ function f1(x) {
 
 function f3(x) {
   var tmp;
-  if (x > 3 || x < 0) {
-    throw Caml_builtin_exceptions.not_found;
-  } else {
-    switch (x) {
-      case 0 : 
-          tmp = (function (x) {
-              return x + 1 | 0;
-            });
-          break;
-      case 1 : 
-          tmp = (function (x) {
-              return x + 2 | 0;
-            });
-          break;
-      case 2 : 
-          tmp = (function (x) {
-              return x + 3 | 0;
-            });
-          break;
-      case 3 : 
-          tmp = (function (x) {
-              return x + 4 | 0;
-            });
-          break;
-      
-    }
+  switch (x) {
+    case 0 : 
+        tmp = (function (x) {
+            return x + 1 | 0;
+          });
+        break;
+    case 1 : 
+        tmp = (function (x) {
+            return x + 2 | 0;
+          });
+        break;
+    case 2 : 
+        tmp = (function (x) {
+            return x + 3 | 0;
+          });
+        break;
+    case 3 : 
+        tmp = (function (x) {
+            return x + 4 | 0;
+          });
+        break;
+    default:
+      throw Caml_builtin_exceptions.not_found;
   }
   return tmp(3);
 }
