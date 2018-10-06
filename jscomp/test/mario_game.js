@@ -2279,47 +2279,44 @@ function update_loop(canvas, param, map_dim) {
 function keydown(evt) {
   var match = evt.keyCode;
   if (match >= 41) {
-    var switcher = match - 65 | 0;
-    if (!(switcher > 22 || switcher < 0)) {
-      switch (switcher) {
-        case 0 : 
-            pressed_keys[/* left */0] = true;
-            break;
-        case 1 : 
-            pressed_keys[/* bbox */4] = (pressed_keys[/* bbox */4] + 1 | 0) % 2;
-            break;
-        case 3 : 
-            pressed_keys[/* right */1] = true;
-            break;
-        case 18 : 
-            pressed_keys[/* down */3] = true;
-            break;
-        case 2 : 
-        case 4 : 
-        case 5 : 
-        case 6 : 
-        case 7 : 
-        case 8 : 
-        case 9 : 
-        case 10 : 
-        case 11 : 
-        case 12 : 
-        case 13 : 
-        case 14 : 
-        case 15 : 
-        case 16 : 
-        case 17 : 
-        case 19 : 
-        case 20 : 
-        case 21 : 
-            break;
-        case 22 : 
-            pressed_keys[/* up */2] = true;
-            break;
+    switch (match) {
+      case 65 : 
+          pressed_keys[/* left */0] = true;
+          break;
+      case 66 : 
+          pressed_keys[/* bbox */4] = (pressed_keys[/* bbox */4] + 1 | 0) % 2;
+          break;
+      case 68 : 
+          pressed_keys[/* right */1] = true;
+          break;
+      case 83 : 
+          pressed_keys[/* down */3] = true;
+          break;
+      case 67 : 
+      case 69 : 
+      case 70 : 
+      case 71 : 
+      case 72 : 
+      case 73 : 
+      case 74 : 
+      case 75 : 
+      case 76 : 
+      case 77 : 
+      case 78 : 
+      case 79 : 
+      case 80 : 
+      case 81 : 
+      case 82 : 
+      case 84 : 
+      case 85 : 
+      case 86 : 
+          break;
+      case 87 : 
+          pressed_keys[/* up */2] = true;
+          break;
+      default:
         
-      }
     }
-    
   } else if (match >= 32) {
     switch (match - 32 | 0) {
       case 1 : 
@@ -2434,44 +2431,38 @@ function convert_list(lst) {
 }
 
 function choose_enemy_typ(typ) {
-  if (typ > 2 || typ < 0) {
-    throw [
-          Caml_builtin_exceptions.failure,
-          "Shouldn't reach here"
-        ];
-  } else {
-    switch (typ) {
-      case 0 : 
-          return /* RKoopa */2;
-      case 1 : 
-          return /* GKoopa */1;
-      case 2 : 
-          return /* Goomba */0;
-      
-    }
+  switch (typ) {
+    case 0 : 
+        return /* RKoopa */2;
+    case 1 : 
+        return /* GKoopa */1;
+    case 2 : 
+        return /* Goomba */0;
+    default:
+      throw [
+            Caml_builtin_exceptions.failure,
+            "Shouldn't reach here"
+          ];
   }
 }
 
 function choose_sblock_typ(typ) {
-  if (typ > 4 || typ < 0) {
-    throw [
-          Caml_builtin_exceptions.failure,
-          "Shouldn't reach here"
-        ];
-  } else {
-    switch (typ) {
-      case 0 : 
-          return /* Brick */1;
-      case 1 : 
-          return /* UnBBlock */2;
-      case 2 : 
-          return /* Cloud */3;
-      case 3 : 
-          return /* QBlock */[/* Mushroom */0];
-      case 4 : 
-          return /* Ground */5;
-      
-    }
+  switch (typ) {
+    case 0 : 
+        return /* Brick */1;
+    case 1 : 
+        return /* UnBBlock */2;
+    case 2 : 
+        return /* Cloud */3;
+    case 3 : 
+        return /* QBlock */[/* Mushroom */0];
+    case 4 : 
+        return /* Ground */5;
+    default:
+      throw [
+            Caml_builtin_exceptions.failure,
+            "Shouldn't reach here"
+          ];
   }
 }
 
@@ -2576,425 +2567,61 @@ function choose_block_pattern(blockw, blockh, cbx, cby, prob) {
     var stair_typ = Random.$$int(2);
     var life_block_chance = Random.$$int(5);
     var middle_block = life_block_chance === 0 ? 3 : stair_typ;
-    if (prob > 5 || prob < 0) {
-      throw [
-            Caml_builtin_exceptions.failure,
-            "Shouldn't reach here"
-          ];
-    } else {
-      switch (prob) {
-        case 0 : 
-            if (blockw - cbx > 2) {
-              return /* :: */[
-                      /* tuple */[
-                        stair_typ,
-                        /* tuple */[
-                          cbx,
-                          cby
-                        ]
-                      ],
-                      /* :: */[
-                        /* tuple */[
-                          middle_block,
-                          /* tuple */[
-                            cbx + 1,
-                            cby
-                          ]
-                        ],
-                        /* :: */[
-                          /* tuple */[
-                            stair_typ,
-                            /* tuple */[
-                              cbx + 2,
-                              cby
-                            ]
-                          ],
-                          /* [] */0
-                        ]
-                      ]
-                    ];
-            } else if (blockw - cbx > 1) {
-              return /* :: */[
-                      /* tuple */[
-                        block_typ,
-                        /* tuple */[
-                          cbx,
-                          cby
-                        ]
-                      ],
-                      /* :: */[
-                        /* tuple */[
-                          block_typ,
-                          /* tuple */[
-                            cbx + 1,
-                            cby
-                          ]
-                        ],
-                        /* [] */0
-                      ]
-                    ];
-            } else {
-              return /* :: */[
-                      /* tuple */[
-                        block_typ,
-                        /* tuple */[
-                          cbx,
-                          cby
-                        ]
-                      ],
-                      /* [] */0
-                    ];
-            }
-        case 1 : 
-            var num_clouds = Random.$$int(5) + 5 | 0;
-            if (cby < 5) {
-              return generate_clouds(cbx, cby, 2, num_clouds);
-            } else {
-              return /* [] */0;
-            }
-        case 2 : 
-            if (blockh - cby === 1) {
-              var cbx$1 = cbx;
-              var cby$1 = cby;
-              var typ = stair_typ;
-              var four_000 = /* tuple */[
-                typ,
-                /* tuple */[
-                  cbx$1,
-                  cby$1
-                ]
-              ];
-              var four_001 = /* :: */[
-                /* tuple */[
-                  typ,
-                  /* tuple */[
-                    cbx$1 + 1,
-                    cby$1
-                  ]
-                ],
-                /* :: */[
-                  /* tuple */[
-                    typ,
-                    /* tuple */[
-                      cbx$1 + 2,
-                      cby$1
-                    ]
-                  ],
-                  /* :: */[
-                    /* tuple */[
-                      typ,
-                      /* tuple */[
-                        cbx$1 + 3,
-                        cby$1
-                      ]
-                    ],
-                    /* [] */0
-                  ]
-                ]
-              ];
-              var four = /* :: */[
-                four_000,
-                four_001
-              ];
-              var three_000 = /* tuple */[
-                typ,
-                /* tuple */[
-                  cbx$1 + 1,
-                  cby$1 - 1
-                ]
-              ];
-              var three_001 = /* :: */[
-                /* tuple */[
-                  typ,
-                  /* tuple */[
-                    cbx$1 + 2,
-                    cby$1 - 1
-                  ]
-                ],
-                /* :: */[
-                  /* tuple */[
-                    typ,
-                    /* tuple */[
-                      cbx$1 + 3,
-                      cby$1 - 1
-                    ]
-                  ],
-                  /* [] */0
-                ]
-              ];
-              var three = /* :: */[
-                three_000,
-                three_001
-              ];
-              var two_000 = /* tuple */[
-                typ,
-                /* tuple */[
-                  cbx$1 + 2,
-                  cby$1 - 2
-                ]
-              ];
-              var two_001 = /* :: */[
-                /* tuple */[
-                  typ,
-                  /* tuple */[
-                    cbx$1 + 3,
-                    cby$1 - 2
-                  ]
-                ],
-                /* [] */0
-              ];
-              var two = /* :: */[
-                two_000,
-                two_001
-              ];
-              var one_000 = /* tuple */[
-                typ,
-                /* tuple */[
-                  cbx$1 + 3,
-                  cby$1 - 3
-                ]
-              ];
-              var one = /* :: */[
-                one_000,
-                /* [] */0
-              ];
-              return Pervasives.$at(four, Pervasives.$at(three, Pervasives.$at(two, one)));
-            } else {
-              return /* [] */0;
-            }
-        case 3 : 
-            if (stair_typ === 0 && blockh - cby > 3) {
-              var cbx$2 = cbx;
-              var cby$2 = cby;
-              var typ$1 = stair_typ;
-              var three_000$1 = /* tuple */[
-                typ$1,
-                /* tuple */[
-                  cbx$2,
-                  cby$2
-                ]
-              ];
-              var three_001$1 = /* :: */[
-                /* tuple */[
-                  typ$1,
-                  /* tuple */[
-                    cbx$2 + 1,
-                    cby$2
-                  ]
-                ],
-                /* :: */[
-                  /* tuple */[
-                    typ$1,
-                    /* tuple */[
-                      cbx$2 + 2,
-                      cby$2
-                    ]
-                  ],
-                  /* [] */0
-                ]
-              ];
-              var three$1 = /* :: */[
-                three_000$1,
-                three_001$1
-              ];
-              var two_000$1 = /* tuple */[
-                typ$1,
-                /* tuple */[
-                  cbx$2 + 2,
-                  cby$2 + 1
-                ]
-              ];
-              var two_001$1 = /* :: */[
-                /* tuple */[
-                  typ$1,
-                  /* tuple */[
-                    cbx$2 + 3,
-                    cby$2 + 1
-                  ]
-                ],
-                /* [] */0
-              ];
-              var two$1 = /* :: */[
-                two_000$1,
-                two_001$1
-              ];
-              var one_000$1 = /* tuple */[
-                typ$1,
-                /* tuple */[
-                  cbx$2 + 5,
-                  cby$2 + 2
-                ]
-              ];
-              var one_001 = /* :: */[
-                /* tuple */[
-                  typ$1,
-                  /* tuple */[
-                    cbx$2 + 6,
-                    cby$2 + 2
-                  ]
-                ],
-                /* [] */0
-              ];
-              var one$1 = /* :: */[
-                one_000$1,
-                one_001
-              ];
-              return Pervasives.$at(three$1, Pervasives.$at(two$1, one$1));
-            } else if (blockh - cby > 2) {
-              var cbx$3 = cbx;
-              var cby$3 = cby;
-              var typ$2 = stair_typ;
-              var one_000$2 = /* tuple */[
-                typ$2,
-                /* tuple */[
-                  cbx$3,
-                  cby$3
-                ]
-              ];
-              var one_001$1 = /* :: */[
-                /* tuple */[
-                  typ$2,
-                  /* tuple */[
-                    cbx$3 + 1,
-                    cby$3
-                  ]
-                ],
-                /* [] */0
-              ];
-              var one$2 = /* :: */[
-                one_000$2,
-                one_001$1
-              ];
-              var two_000$2 = /* tuple */[
-                typ$2,
-                /* tuple */[
-                  cbx$3 + 3,
-                  cby$3 - 1
-                ]
-              ];
-              var two_001$2 = /* :: */[
-                /* tuple */[
-                  typ$2,
-                  /* tuple */[
-                    cbx$3 + 4,
-                    cby$3 - 1
-                  ]
-                ],
-                /* [] */0
-              ];
-              var two$2 = /* :: */[
-                two_000$2,
-                two_001$2
-              ];
-              var three_000$2 = /* tuple */[
-                typ$2,
-                /* tuple */[
-                  cbx$3 + 4,
-                  cby$3 - 2
-                ]
-              ];
-              var three_001$2 = /* :: */[
-                /* tuple */[
-                  typ$2,
-                  /* tuple */[
-                    cbx$3 + 5,
-                    cby$3 - 2
-                  ]
-                ],
-                /* :: */[
-                  /* tuple */[
-                    typ$2,
-                    /* tuple */[
-                      cbx$3 + 6,
-                      cby$3 - 2
-                    ]
-                  ],
-                  /* [] */0
-                ]
-              ];
-              var three$2 = /* :: */[
-                three_000$2,
-                three_001$2
-              ];
-              return Pervasives.$at(one$2, Pervasives.$at(two$2, three$2));
-            } else {
-              return /* :: */[
-                      /* tuple */[
-                        stair_typ,
-                        /* tuple */[
-                          cbx,
-                          cby
-                        ]
-                      ],
-                      /* [] */0
-                    ];
-            }
-        case 4 : 
-            if (cby + 3 - blockh === 2) {
-              return /* :: */[
-                      /* tuple */[
-                        stair_typ,
-                        /* tuple */[
-                          cbx,
-                          cby
-                        ]
-                      ],
-                      /* [] */0
-                    ];
-            } else if (cby + 3 - blockh === 1) {
-              return /* :: */[
-                      /* tuple */[
-                        stair_typ,
-                        /* tuple */[
-                          cbx,
-                          cby
-                        ]
-                      ],
-                      /* :: */[
-                        /* tuple */[
-                          stair_typ,
-                          /* tuple */[
-                            cbx,
-                            cby + 1
-                          ]
-                        ],
-                        /* [] */0
-                      ]
-                    ];
-            } else {
-              return /* :: */[
-                      /* tuple */[
-                        stair_typ,
-                        /* tuple */[
-                          cbx,
-                          cby
-                        ]
-                      ],
-                      /* :: */[
-                        /* tuple */[
-                          stair_typ,
-                          /* tuple */[
-                            cbx,
-                            cby + 1
-                          ]
-                        ],
-                        /* :: */[
-                          /* tuple */[
-                            stair_typ,
-                            /* tuple */[
-                              cbx,
-                              cby + 2
-                            ]
-                          ],
-                          /* [] */0
-                        ]
-                      ]
-                    ];
-            }
-        case 5 : 
+    switch (prob) {
+      case 0 : 
+          if (blockw - cbx > 2) {
             return /* :: */[
                     /* tuple */[
-                      3,
+                      stair_typ,
+                      /* tuple */[
+                        cbx,
+                        cby
+                      ]
+                    ],
+                    /* :: */[
+                      /* tuple */[
+                        middle_block,
+                        /* tuple */[
+                          cbx + 1,
+                          cby
+                        ]
+                      ],
+                      /* :: */[
+                        /* tuple */[
+                          stair_typ,
+                          /* tuple */[
+                            cbx + 2,
+                            cby
+                          ]
+                        ],
+                        /* [] */0
+                      ]
+                    ]
+                  ];
+          } else if (blockw - cbx > 1) {
+            return /* :: */[
+                    /* tuple */[
+                      block_typ,
+                      /* tuple */[
+                        cbx,
+                        cby
+                      ]
+                    ],
+                    /* :: */[
+                      /* tuple */[
+                        block_typ,
+                        /* tuple */[
+                          cbx + 1,
+                          cby
+                        ]
+                      ],
+                      /* [] */0
+                    ]
+                  ];
+          } else {
+            return /* :: */[
+                    /* tuple */[
+                      block_typ,
                       /* tuple */[
                         cbx,
                         cby
@@ -3002,8 +2629,369 @@ function choose_block_pattern(blockw, blockh, cbx, cby, prob) {
                     ],
                     /* [] */0
                   ];
-        
-      }
+          }
+      case 1 : 
+          var num_clouds = Random.$$int(5) + 5 | 0;
+          if (cby < 5) {
+            return generate_clouds(cbx, cby, 2, num_clouds);
+          } else {
+            return /* [] */0;
+          }
+      case 2 : 
+          if (blockh - cby === 1) {
+            var cbx$1 = cbx;
+            var cby$1 = cby;
+            var typ = stair_typ;
+            var four_000 = /* tuple */[
+              typ,
+              /* tuple */[
+                cbx$1,
+                cby$1
+              ]
+            ];
+            var four_001 = /* :: */[
+              /* tuple */[
+                typ,
+                /* tuple */[
+                  cbx$1 + 1,
+                  cby$1
+                ]
+              ],
+              /* :: */[
+                /* tuple */[
+                  typ,
+                  /* tuple */[
+                    cbx$1 + 2,
+                    cby$1
+                  ]
+                ],
+                /* :: */[
+                  /* tuple */[
+                    typ,
+                    /* tuple */[
+                      cbx$1 + 3,
+                      cby$1
+                    ]
+                  ],
+                  /* [] */0
+                ]
+              ]
+            ];
+            var four = /* :: */[
+              four_000,
+              four_001
+            ];
+            var three_000 = /* tuple */[
+              typ,
+              /* tuple */[
+                cbx$1 + 1,
+                cby$1 - 1
+              ]
+            ];
+            var three_001 = /* :: */[
+              /* tuple */[
+                typ,
+                /* tuple */[
+                  cbx$1 + 2,
+                  cby$1 - 1
+                ]
+              ],
+              /* :: */[
+                /* tuple */[
+                  typ,
+                  /* tuple */[
+                    cbx$1 + 3,
+                    cby$1 - 1
+                  ]
+                ],
+                /* [] */0
+              ]
+            ];
+            var three = /* :: */[
+              three_000,
+              three_001
+            ];
+            var two_000 = /* tuple */[
+              typ,
+              /* tuple */[
+                cbx$1 + 2,
+                cby$1 - 2
+              ]
+            ];
+            var two_001 = /* :: */[
+              /* tuple */[
+                typ,
+                /* tuple */[
+                  cbx$1 + 3,
+                  cby$1 - 2
+                ]
+              ],
+              /* [] */0
+            ];
+            var two = /* :: */[
+              two_000,
+              two_001
+            ];
+            var one_000 = /* tuple */[
+              typ,
+              /* tuple */[
+                cbx$1 + 3,
+                cby$1 - 3
+              ]
+            ];
+            var one = /* :: */[
+              one_000,
+              /* [] */0
+            ];
+            return Pervasives.$at(four, Pervasives.$at(three, Pervasives.$at(two, one)));
+          } else {
+            return /* [] */0;
+          }
+      case 3 : 
+          if (stair_typ === 0 && blockh - cby > 3) {
+            var cbx$2 = cbx;
+            var cby$2 = cby;
+            var typ$1 = stair_typ;
+            var three_000$1 = /* tuple */[
+              typ$1,
+              /* tuple */[
+                cbx$2,
+                cby$2
+              ]
+            ];
+            var three_001$1 = /* :: */[
+              /* tuple */[
+                typ$1,
+                /* tuple */[
+                  cbx$2 + 1,
+                  cby$2
+                ]
+              ],
+              /* :: */[
+                /* tuple */[
+                  typ$1,
+                  /* tuple */[
+                    cbx$2 + 2,
+                    cby$2
+                  ]
+                ],
+                /* [] */0
+              ]
+            ];
+            var three$1 = /* :: */[
+              three_000$1,
+              three_001$1
+            ];
+            var two_000$1 = /* tuple */[
+              typ$1,
+              /* tuple */[
+                cbx$2 + 2,
+                cby$2 + 1
+              ]
+            ];
+            var two_001$1 = /* :: */[
+              /* tuple */[
+                typ$1,
+                /* tuple */[
+                  cbx$2 + 3,
+                  cby$2 + 1
+                ]
+              ],
+              /* [] */0
+            ];
+            var two$1 = /* :: */[
+              two_000$1,
+              two_001$1
+            ];
+            var one_000$1 = /* tuple */[
+              typ$1,
+              /* tuple */[
+                cbx$2 + 5,
+                cby$2 + 2
+              ]
+            ];
+            var one_001 = /* :: */[
+              /* tuple */[
+                typ$1,
+                /* tuple */[
+                  cbx$2 + 6,
+                  cby$2 + 2
+                ]
+              ],
+              /* [] */0
+            ];
+            var one$1 = /* :: */[
+              one_000$1,
+              one_001
+            ];
+            return Pervasives.$at(three$1, Pervasives.$at(two$1, one$1));
+          } else if (blockh - cby > 2) {
+            var cbx$3 = cbx;
+            var cby$3 = cby;
+            var typ$2 = stair_typ;
+            var one_000$2 = /* tuple */[
+              typ$2,
+              /* tuple */[
+                cbx$3,
+                cby$3
+              ]
+            ];
+            var one_001$1 = /* :: */[
+              /* tuple */[
+                typ$2,
+                /* tuple */[
+                  cbx$3 + 1,
+                  cby$3
+                ]
+              ],
+              /* [] */0
+            ];
+            var one$2 = /* :: */[
+              one_000$2,
+              one_001$1
+            ];
+            var two_000$2 = /* tuple */[
+              typ$2,
+              /* tuple */[
+                cbx$3 + 3,
+                cby$3 - 1
+              ]
+            ];
+            var two_001$2 = /* :: */[
+              /* tuple */[
+                typ$2,
+                /* tuple */[
+                  cbx$3 + 4,
+                  cby$3 - 1
+                ]
+              ],
+              /* [] */0
+            ];
+            var two$2 = /* :: */[
+              two_000$2,
+              two_001$2
+            ];
+            var three_000$2 = /* tuple */[
+              typ$2,
+              /* tuple */[
+                cbx$3 + 4,
+                cby$3 - 2
+              ]
+            ];
+            var three_001$2 = /* :: */[
+              /* tuple */[
+                typ$2,
+                /* tuple */[
+                  cbx$3 + 5,
+                  cby$3 - 2
+                ]
+              ],
+              /* :: */[
+                /* tuple */[
+                  typ$2,
+                  /* tuple */[
+                    cbx$3 + 6,
+                    cby$3 - 2
+                  ]
+                ],
+                /* [] */0
+              ]
+            ];
+            var three$2 = /* :: */[
+              three_000$2,
+              three_001$2
+            ];
+            return Pervasives.$at(one$2, Pervasives.$at(two$2, three$2));
+          } else {
+            return /* :: */[
+                    /* tuple */[
+                      stair_typ,
+                      /* tuple */[
+                        cbx,
+                        cby
+                      ]
+                    ],
+                    /* [] */0
+                  ];
+          }
+      case 4 : 
+          if (cby + 3 - blockh === 2) {
+            return /* :: */[
+                    /* tuple */[
+                      stair_typ,
+                      /* tuple */[
+                        cbx,
+                        cby
+                      ]
+                    ],
+                    /* [] */0
+                  ];
+          } else if (cby + 3 - blockh === 1) {
+            return /* :: */[
+                    /* tuple */[
+                      stair_typ,
+                      /* tuple */[
+                        cbx,
+                        cby
+                      ]
+                    ],
+                    /* :: */[
+                      /* tuple */[
+                        stair_typ,
+                        /* tuple */[
+                          cbx,
+                          cby + 1
+                        ]
+                      ],
+                      /* [] */0
+                    ]
+                  ];
+          } else {
+            return /* :: */[
+                    /* tuple */[
+                      stair_typ,
+                      /* tuple */[
+                        cbx,
+                        cby
+                      ]
+                    ],
+                    /* :: */[
+                      /* tuple */[
+                        stair_typ,
+                        /* tuple */[
+                          cbx,
+                          cby + 1
+                        ]
+                      ],
+                      /* :: */[
+                        /* tuple */[
+                          stair_typ,
+                          /* tuple */[
+                            cbx,
+                            cby + 2
+                          ]
+                        ],
+                        /* [] */0
+                      ]
+                    ]
+                  ];
+          }
+      case 5 : 
+          return /* :: */[
+                  /* tuple */[
+                    3,
+                    /* tuple */[
+                      cbx,
+                      cby
+                    ]
+                  ],
+                  /* [] */0
+                ];
+      default:
+        throw [
+              Caml_builtin_exceptions.failure,
+              "Shouldn't reach here"
+            ];
     }
   }
 }

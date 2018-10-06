@@ -69,24 +69,21 @@ var v = /* record */[/* contents */(function () {
     })];
 
 function fib(n) {
-  if (n > 3 || n < 0) {
-    return fib(n - 1 | 0) + fib(n - 2 | 0) | 0;
-  } else {
-    switch (n) {
-      case 0 : 
-          return four[0];
-      case 1 : 
-          return 1;
-      case 2 : 
-          return three[0];
-      case 3 : 
-          var tag = h.tag | 0;
-          v[0] = tag === 250 ? fib : (
-              tag === 246 ? CamlinternalLazy.force_lazy_block(h) : h
-            );
-          return 1;
-      
-    }
+  switch (n) {
+    case 0 : 
+        return four[0];
+    case 1 : 
+        return 1;
+    case 2 : 
+        return three[0];
+    case 3 : 
+        var tag = h.tag | 0;
+        v[0] = tag === 250 ? fib : (
+            tag === 246 ? CamlinternalLazy.force_lazy_block(h) : h
+          );
+        return 1;
+    default:
+      return fib(n - 1 | 0) + fib(n - 2 | 0) | 0;
   }
 }
 

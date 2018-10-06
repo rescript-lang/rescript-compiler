@@ -613,6 +613,19 @@ let has_boolean_type (x : t) =
    -> Some loc
   | _ -> None
 
+(** [complete_range sw_consts 0 7]
+    is complete with [0,1,.. 7]
+*)  
+let rec complete_range  (sw_consts : (int * _) list) ~(start : int) ~finish=   
+  match sw_consts with 
+  | [] -> finish < start
+  | (i,_)::rest 
+    -> 
+      start <= finish &&
+      i = start &&
+      complete_range  rest ~start:(start + 1) ~finish
+
+
 let if_ (a : t) (b : t) c =
   match a with
   | Lconst v ->
@@ -640,22 +653,36 @@ let if_ (a : t) (b : t) c =
       | Const_float_array _
       | Const_immstring _ -> b
     end
+  
   | _ -> 
-    
     begin match  b, c with 
-    | Lconst(Const_js_true), Lconst(Const_js_false)
-      -> 
-       if has_boolean_type a != None then a 
-       else Lifthenelse (a,b,c)
-    | Lconst(Const_js_false), Lconst(Const_js_true)
-      ->  
-      (match  has_boolean_type a with
-      | Some loc ->  not_ loc a 
-      | None -> Lifthenelse (a,b,c))     
-    | _ -> 
-      Lifthenelse (a,b,c)
-     
-  end 
+      | Lconst(Const_js_true), Lconst(Const_js_false)
+        -> 
+        if has_boolean_type a != None then a 
+        else Lifthenelse (a,b,c)
+      | Lconst(Const_js_false), Lconst(Const_js_true)
+        ->  
+        (match  has_boolean_type a with
+         | Some loc ->  not_ loc a 
+         | None -> Lifthenelse (a,b,c))     
+      | _ -> 
+        (match a with 
+         | Lprim {primitive = Pisout; args = [Lconst(Const_int range); Lvar xx] } 
+           -> 
+           begin match c with 
+             | Lswitch ( Lvar yy as switch_arg, 
+                         ({sw_blocks = []; sw_numblocks = true; sw_consts ;
+                           sw_numconsts; sw_failaction = None} as body)
+                       )
+               when Ident.same xx yy 
+                 && complete_range sw_consts ~start:0 ~finish:range
+               ->  
+               Lswitch(switch_arg, 
+                       { body with sw_failaction = Some b; sw_numconsts = false })
+             |  _ -> Lifthenelse(a,b,c)      
+           end
+         | _ ->  Lifthenelse (a,b,c))
+    end 
 
 
 (** TODO: the smart constructor is not exploited yet*)

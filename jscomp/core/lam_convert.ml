@@ -672,7 +672,45 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : t * Lam_module_ident
             Lam.let_ kind id (Lam.var u) (convert_aux body)
           else convert_aux body
 
-        | _, _ -> Lam.let_ kind id (convert_aux e) (convert_aux body)
+        | _, _ -> 
+          let new_e = convert_aux e in 
+          let new_body = convert_aux body in 
+          (*
+            reverse engineering cases as {[           
+             (let (switcher/1013 =a (-1+ match/1012))
+               (if (isout 2 switcher/1013) (exit 1)
+                 (switch* switcher/1013
+                  case int 0: 'a'
+                  case int 1: 'b'
+                  case int 2: 'c')))            
+            ]}
+            To elemininate the id [switcher], we need ensure it appears only 
+            in two places.
+
+            To advance this case, when [sw_failaction] is None
+          *)
+          match kind, new_e, new_body with 
+          | Alias, Lprim {primitive = Poffsetint offset; args =  [Lvar _ as matcher ]},
+            Lswitch (Lvar switcher3 ,
+                       ({
+                         sw_numconsts = false ; 
+                         sw_consts ;
+                         sw_blocks = []; sw_numblocks = true;
+                         sw_failaction = Some ifso
+                       } as px)
+                      ) 
+            when Ident.same switcher3 id    &&
+            not (Lam_hit.hit_variable id ifso ) && 
+            not (Ext_list.exists_snd sw_consts (Lam_hit.hit_variable id))
+            -> 
+            Lam.switch matcher 
+              {px with 
+               sw_consts = 
+                 Ext_list.map sw_consts 
+                   (fun (i,act) -> i - offset, act)
+              }
+          | _ -> 
+            Lam.let_ kind id new_e new_body
       end
     | Lletrec (bindings,body)
       ->
