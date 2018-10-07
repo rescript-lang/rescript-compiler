@@ -155,7 +155,7 @@ var $star$tilde = Caml_int32.imul;
 Mt.from_pair_suites("int32_test.ml", Pervasives.$at(/* :: */[
           /* tuple */[
             "File \"int32_test.ml\", line 32, characters 2-9",
-            (function () {
+            (function (param) {
                 return /* Eq */Block.__(0, [
                           1,
                           1
@@ -165,7 +165,7 @@ Mt.from_pair_suites("int32_test.ml", Pervasives.$at(/* :: */[
           /* :: */[
             /* tuple */[
               "File \"int32_test.ml\", line 33, characters 2-9",
-              (function () {
+              (function (param) {
                   return /* Eq */Block.__(0, [
                             -2147483647,
                             -2147483647
@@ -188,7 +188,7 @@ Mt.from_pair_suites("int32_test.ml", Pervasives.$at(/* :: */[
                                             ]),
                                           "shift_right_logical_cases %d"
                                         ]), i),
-                                (function () {
+                                (function (param) {
                                     return /* Eq */Block.__(0, [
                                               a,
                                               b
@@ -209,7 +209,7 @@ Mt.from_pair_suites("int32_test.ml", Pervasives.$at(/* :: */[
                                                 ]),
                                               "shift_right_cases %d"
                                             ]), i),
-                                    (function () {
+                                    (function (param) {
                                         return /* Eq */Block.__(0, [
                                                   a,
                                                   b
@@ -230,7 +230,7 @@ Mt.from_pair_suites("int32_test.ml", Pervasives.$at(/* :: */[
                                                 ]),
                                               "shift_left_cases %d"
                                             ]), i),
-                                    (function () {
+                                    (function (param) {
                                         return /* Eq */Block.__(0, [
                                                   a,
                                                   b

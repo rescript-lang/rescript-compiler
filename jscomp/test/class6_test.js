@@ -27,7 +27,7 @@ function eq(loc, x, y) {
   suites[0] = /* :: */[
     /* tuple */[
       loc + (" id " + String(test_id[0])),
-      (function () {
+      (function (param) {
           return /* Eq */Block.__(0, [
                     x,
                     y
@@ -123,7 +123,7 @@ function lookup_obj(obj, _param) {
 
 function c_init($$class) {
   var m = CamlinternalOO.get_method_label($$class, "m");
-  CamlinternalOO.set_method($$class, m, (function () {
+  CamlinternalOO.set_method($$class, m, (function (self$3) {
           return 1;
         }));
   return (function (env, self) {
@@ -144,7 +144,7 @@ function d_init($$class) {
   var obj_init = inh[0];
   CamlinternalOO.set_methods($$class, /* array */[
         n,
-        (function () {
+        (function (self$4) {
             return 2;
           }),
         as_c,

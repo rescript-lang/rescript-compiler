@@ -1,7 +1,7 @@
 'use strict';
 
 
-function f() {
+function f(param) {
   var n = 0;
   while((function () {
           var fib = function (n) {
@@ -19,7 +19,7 @@ function f() {
   return /* () */0;
 }
 
-function ff() {
+function ff(param) {
   while((function () {
           var b = 9;
           return (3 + b | 0) > 10;

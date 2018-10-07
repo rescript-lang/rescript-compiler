@@ -15,7 +15,7 @@ function eq(loc, x, y) {
   suites[0] = /* :: */[
     /* tuple */[
       loc + (" id " + String(test_id[0])),
-      (function () {
+      (function (param) {
           return /* Eq */Block.__(0, [
                     x,
                     y
@@ -39,17 +39,17 @@ var class_tables$1 = [
   0
 ];
 
-function step1() {
+function step1(param) {
   if (!class_tables[0]) {
     var $$class = CamlinternalOO.create_table(["step2"]);
     var env = CamlinternalOO.new_variable($$class, "");
     var step2 = CamlinternalOO.get_method_label($$class, "step2");
-    CamlinternalOO.set_method($$class, step2, (function () {
+    CamlinternalOO.set_method($$class, step2, (function (self$1) {
             if (!class_tables$1[0]) {
               var $$class = CamlinternalOO.create_table(["step3"]);
               var env = CamlinternalOO.new_variable($$class, "");
               var step3 = CamlinternalOO.get_method_label($$class, "step3");
-              CamlinternalOO.set_method($$class, step3, (function () {
+              CamlinternalOO.set_method($$class, step3, (function (self$2) {
                       return 33;
                     }));
               var env_init = function (env$1) {

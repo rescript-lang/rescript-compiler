@@ -7,7 +7,7 @@ var Ext_string_test = require("./ext_string_test.js");
 
 var suites_000 = /* tuple */[
   "split",
-  (function () {
+  (function (param) {
       return /* Eq */Block.__(0, [
                 Ext_string_test.split(true, "hihi", /* "i" */105),
                 /* :: */[
@@ -27,7 +27,7 @@ var suites_000 = /* tuple */[
 var suites_001 = /* :: */[
   /* tuple */[
     "split_non_empty",
-    (function () {
+    (function (param) {
         return /* Eq */Block.__(0, [
                   Ext_string_test.split(undefined, "hihi", /* "i" */105),
                   /* :: */[
@@ -43,7 +43,7 @@ var suites_001 = /* :: */[
   /* :: */[
     /* tuple */[
       "split_empty",
-      (function () {
+      (function (param) {
           return /* Eq */Block.__(0, [
                     Ext_string_test.split(true, "", /* "i" */105),
                     /* [] */0
@@ -53,7 +53,7 @@ var suites_001 = /* :: */[
     /* :: */[
       /* tuple */[
         "split_normal",
-        (function () {
+        (function (param) {
             return /* Eq */Block.__(0, [
                       Ext_string_test.split(true, "h i i", /* " " */32),
                       /* :: */[
@@ -72,7 +72,7 @@ var suites_001 = /* :: */[
       /* :: */[
         /* tuple */[
           "split_by",
-          (function () {
+          (function (param) {
               return /* Eq */Block.__(0, [
                         List.filter((function (s) {
                                   return s !== "";

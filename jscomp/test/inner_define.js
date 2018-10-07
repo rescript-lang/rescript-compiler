@@ -7,7 +7,7 @@ function add(x, y) {
 
 var N = /* module */[/* add */add];
 
-function f1() {
+function f1(param) {
   return /* () */0;
 }
 

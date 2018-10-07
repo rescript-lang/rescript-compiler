@@ -163,7 +163,7 @@ var m = List.fold_left((function (acc, param) {
 Mt.from_pair_suites("inline_map_test.ml", /* :: */[
       /* tuple */[
         "find",
-        (function () {
+        (function (param) {
             return /* Eq */Block.__(0, [
                       find(10, m),
                       /* "a" */97

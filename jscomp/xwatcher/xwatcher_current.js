@@ -28,7 +28,7 @@ var events = Xwatcher_util.makeEventObj(/* () */0);
 
 var command = "./watch-build.sh";
 
-function exec() {
+function exec(param) {
   return Xwatcher_util.buildWithShell(command, events, lock, (function () {
                 return /* () */0;
               }));

@@ -34,7 +34,7 @@ function to_int(x) {
 
 var suites_000 = /* tuple */[
   "test_int",
-  (function () {
+  (function (param) {
       return /* Eq */Block.__(0, [
                 3,
                 to_int([
@@ -49,7 +49,7 @@ var suites_000 = /* tuple */[
 var suites_001 = /* :: */[
   /* tuple */[
     "test_int2",
-    (function () {
+    (function (param) {
         return /* Eq */Block.__(0, [
                   0,
                   to_int([
@@ -63,7 +63,7 @@ var suites_001 = /* :: */[
   /* :: */[
     /* tuple */[
       "test_string",
-      (function () {
+      (function (param) {
           return /* Eq */Block.__(0, [
                     -1,
                     to_int([

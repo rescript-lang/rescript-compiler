@@ -654,7 +654,7 @@ var IntMap = [
   mapi
 ];
 
-function assertion_test() {
+function assertion_test(param) {
   var m = /* Empty */0;
   for(var i = 0; i <= 1000000; ++i){
     m = add(i, i, m);

@@ -15,7 +15,7 @@ process.on("exit", (function (exit_code) {
         return String(exit_code);
       }));
 
-process.on(1, (function () {
+process.on(1, (function (param) {
         return /* () */0;
       }));
 

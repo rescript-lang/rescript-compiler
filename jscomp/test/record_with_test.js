@@ -39,7 +39,7 @@ function f(g, h) {
 
 var suites_000 = /* tuple */[
   "eq_with",
-  (function () {
+  (function (param) {
       return /* Eq */Block.__(0, [
                 v,
                 u_v

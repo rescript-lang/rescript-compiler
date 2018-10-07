@@ -26,7 +26,7 @@ function is_sorted(x) {
 
 var array_suites_000 = /* tuple */[
   "init",
-  (function () {
+  (function (param) {
       return /* Eq */Block.__(0, [
                 $$Array.init(5, (function (x) {
                         return x;
@@ -45,7 +45,7 @@ var array_suites_000 = /* tuple */[
 var array_suites_001 = /* :: */[
   /* tuple */[
     "toList",
-    (function () {
+    (function (param) {
         var aux = function (xs) {
           return List.fold_left((function (acc, param) {
                         return /* :: */[
@@ -73,7 +73,7 @@ var array_suites_001 = /* :: */[
   /* :: */[
     /* tuple */[
       "concat",
-      (function () {
+      (function (param) {
           return /* Eq */Block.__(0, [
                     /* array */[
                       0,
@@ -109,10 +109,10 @@ var array_suites_001 = /* :: */[
     /* :: */[
       /* tuple */[
         "make",
-        (function () {
+        (function (param) {
             return /* Eq */Block.__(0, [
                       Caml_array.caml_make_vect(100, /* "a" */97),
-                      $$Array.init(100, (function () {
+                      $$Array.init(100, (function (param) {
                               return /* "a" */97;
                             }))
                     ]);
@@ -121,7 +121,7 @@ var array_suites_001 = /* :: */[
       /* :: */[
         /* tuple */[
           "sub",
-          (function () {
+          (function (param) {
               return /* Eq */Block.__(0, [
                         $$Array.sub(/* array */[
                               0,
@@ -140,7 +140,7 @@ var array_suites_001 = /* :: */[
         /* :: */[
           /* tuple */[
             "blit",
-            (function () {
+            (function (param) {
                 var u = /* array */[
                   100,
                   0,
@@ -173,7 +173,7 @@ var array_suites_001 = /* :: */[
           /* :: */[
             /* tuple */[
               "make",
-              (function () {
+              (function (param) {
                   return /* Eq */Block.__(0, [
                             Caml_array.caml_make_vect(2, 1),
                             /* array */[
@@ -186,7 +186,7 @@ var array_suites_001 = /* :: */[
             /* :: */[
               /* tuple */[
                 "sort",
-                (function () {
+                (function (param) {
                     var u = /* array */[
                       3,
                       0,
@@ -206,7 +206,7 @@ var array_suites_001 = /* :: */[
               /* :: */[
                 /* tuple */[
                   "sort_large",
-                  (function () {
+                  (function (param) {
                       var v = $$Array.init(4, (function (i) {
                               return i % 17;
                             }));

@@ -3,7 +3,7 @@
 var Js_exn = require("../../lib/js/js_exn.js");
 var Js_primitive = require("../../lib/js/js_primitive.js");
 
-function test_js_error() {
+function test_js_error(param) {
   var exit = 0;
   var e;
   try {
@@ -25,7 +25,7 @@ function test_js_error() {
   
 }
 
-function test_js_error2() {
+function test_js_error2(param) {
   try {
     return JSON.parse(" {\"x\" : }");
   }
@@ -40,7 +40,7 @@ function test_js_error2() {
   }
 }
 
-function example1() {
+function example1(param) {
   var exit = 0;
   var v;
   try {
@@ -62,7 +62,7 @@ function example1() {
   
 }
 
-function example2() {
+function example2(param) {
   try {
     return Js_primitive.some(JSON.parse(" {\"x\"}"));
   }

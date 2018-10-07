@@ -11,7 +11,7 @@ function f(_n, _acc) {
       return Curry._1(acc, /* () */0);
     } else {
       _acc = (function(n,acc){
-      return function () {
+      return function (param) {
         console.log(String(n));
         return Curry._1(acc, /* () */0);
       }
@@ -22,13 +22,13 @@ function f(_n, _acc) {
   };
 }
 
-function test_closure() {
+function test_closure(param) {
   var arr = Caml_array.caml_make_vect(6, (function (x) {
           return x;
         }));
   for(var i = 0; i <= 6; ++i){
     Caml_array.caml_array_set(arr, i, (function(i){
-        return function () {
+        return function (param) {
           return i;
         }
         }(i)));
@@ -36,7 +36,7 @@ function test_closure() {
   return arr;
 }
 
-f(10, (function () {
+f(10, (function (param) {
         return /* () */0;
       }));
 

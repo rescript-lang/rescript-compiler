@@ -62,7 +62,7 @@ var Int_hash = Hashtbl.Make(/* module */[
 
 var suites_000 = /* tuple */[
   "simple",
-  (function () {
+  (function (param) {
       return /* Eq */Block.__(0, [
                 /* :: */[
                   /* tuple */[
@@ -85,7 +85,7 @@ var suites_000 = /* tuple */[
 var suites_001 = /* :: */[
   /* tuple */[
     "more_iterations",
-    (function () {
+    (function (param) {
         return /* Eq */Block.__(0, [
                   $$Array.init(1001, (function (i) {
                           return /* tuple */[

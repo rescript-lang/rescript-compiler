@@ -2,7 +2,7 @@
 
 var Block = require("../../lib/js/block.js");
 
-function f() {
+function f(param) {
   return /* Format */[
           /* Int */Block.__(4, [
               /* Int_d */0,

@@ -101,7 +101,7 @@ function insert(idl, idh, v, ind, bucket, newNode) {
   }
 }
 
-function resetUnique() {
+function resetUnique(param) {
   sz_1[0] = 8191;
   htab[0] = Caml_array.caml_make_vect(sz_1[0] + 1 | 0, /* [] */0);
   n_items[0] = 0;
@@ -327,7 +327,7 @@ function hwb(n) {
 
 var seed = /* record */[/* contents */0];
 
-function random() {
+function random(param) {
   seed[0] = Caml_int32.imul(seed[0], 25173) + 17431 | 0;
   return (seed[0] & 1) > 0;
 }
@@ -365,7 +365,7 @@ function test_hwb(bdd, vars) {
   return bool_equal($$eval(bdd, vars), ntrue > 0 ? Caml_array.caml_array_get(vars, ntrue - 1 | 0) : false);
 }
 
-function main() {
+function main(param) {
   var bdd = hwb(22);
   var succeeded = true;
   for(var i = 1; i <= 100; ++i){

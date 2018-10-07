@@ -7,11 +7,11 @@ var v = "ghos";
 
 var u_a = /* "g" */103;
 
-function u_b() {
+function u_b(param) {
   return Caml_string.get(v, -1);
 }
 
-function u_d() {
+function u_d(param) {
   return Caml_string.get("ghos", -1);
 }
 
@@ -19,7 +19,7 @@ var u_e = Caml_string.caml_create_string(32);
 
 var u_f = Caml_bytes.get(u_e, 0);
 
-function u_g() {
+function u_g(param) {
   return Caml_bytes.get(u_e, -1);
 }
 

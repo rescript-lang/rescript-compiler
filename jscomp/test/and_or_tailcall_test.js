@@ -31,7 +31,7 @@ function or_f(b, x, _n) {
 
 var suites_000 = /* tuple */[
   "and_tail",
-  (function () {
+  (function (param) {
       return /* Eq */Block.__(0, [
                 false,
                 f(true, 1, 0)
@@ -42,7 +42,7 @@ var suites_000 = /* tuple */[
 var suites_001 = /* :: */[
   /* tuple */[
     "or_tail",
-    (function () {
+    (function (param) {
         return /* Eq */Block.__(0, [
                   false,
                   or_f(false, 1, 0)

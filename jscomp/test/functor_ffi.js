@@ -2,7 +2,7 @@
 
 var Js_primitive = require("../../lib/js/js_primitive.js");
 
-function Make() {
+function Make(S) {
   var opt_get = function (f, i) {
     return Js_primitive.undefined_to_opt(f[i]);
   };

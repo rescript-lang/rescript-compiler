@@ -4,14 +4,14 @@ var Mt = require("./mt.js");
 var List = require("../../lib/js/list.js");
 var Block = require("../../lib/js/block.js");
 
-function length() {
+function length(param) {
   return 3;
 }
 
 Mt.from_pair_suites("es6_module_test.ml", /* :: */[
       /* tuple */[
         "list_length",
-        (function () {
+        (function (param) {
             return /* Eq */Block.__(0, [
                       List.length(/* :: */[
                             1,
@@ -27,7 +27,7 @@ Mt.from_pair_suites("es6_module_test.ml", /* :: */[
       /* :: */[
         /* tuple */[
           "length",
-          (function () {
+          (function (param) {
               return /* Eq */Block.__(0, [
                         3,
                         3

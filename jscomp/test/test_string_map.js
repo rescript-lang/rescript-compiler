@@ -137,15 +137,15 @@ function timing(label, f) {
   return /* () */0;
 }
 
-function assertion_test() {
+function assertion_test(param) {
   var m = /* record */[/* contents : Empty */0];
-  timing("building", (function () {
+  timing("building", (function (param) {
           for(var i = 0; i <= 1000000; ++i){
             m[0] = add(String(i), String(i), m[0]);
           }
           return /* () */0;
         }));
-  return timing("querying", (function () {
+  return timing("querying", (function (param) {
                 for(var i = 0; i <= 1000000; ++i){
                   find(String(i), m[0]);
                 }

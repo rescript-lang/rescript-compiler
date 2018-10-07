@@ -3,7 +3,7 @@
 var Curry = require("../../lib/js/curry.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
-function peek_queue() {
+function peek_queue(param) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
@@ -14,7 +14,7 @@ function peek_queue() {
       ];
 }
 
-function int_of_size() {
+function int_of_size(param) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
@@ -25,7 +25,7 @@ function int_of_size() {
       ];
 }
 
-function take_queue() {
+function take_queue(param) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[

@@ -21,7 +21,7 @@ function add_test(loc, test) {
 }
 
 function eq(loc, x, y) {
-  return add_test(loc, (function () {
+  return add_test(loc, (function (param) {
                 return /* Eq */Block.__(0, [
                           x,
                           y

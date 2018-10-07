@@ -797,7 +797,7 @@ function reduce_from_left(fn, lst) {
   }
 }
 
-function create_ref_empty() {
+function create_ref_empty(param) {
   return /* record */[/* contents : [] */0];
 }
 

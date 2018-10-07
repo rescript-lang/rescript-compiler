@@ -14,7 +14,7 @@ function eq(loc, x, y) {
   suites[0] = /* :: */[
     /* tuple */[
       loc + (" id " + String(test_id[0])),
-      (function () {
+      (function (param) {
           return /* Eq */Block.__(0, [
                     x,
                     y
@@ -28,7 +28,7 @@ function eq(loc, x, y) {
 
 var called = /* record */[/* contents */0];
 
-function g() {
+function g(param) {
   var v = [];
   var next = function (i, b) {
     called[0] = called[0] + 1 | 0;

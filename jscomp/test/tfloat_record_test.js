@@ -24,7 +24,7 @@ function print_float(f) {
                 ]), Pervasives.string_of_float(f));
 }
 
-function print_newline() {
+function print_newline(param) {
   return Format.fprintf(fmt, /* Format */[
               /* Char_literal */Block.__(12, [
                   /* "\n" */10,

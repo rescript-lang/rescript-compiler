@@ -9,12 +9,12 @@ var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js")
 
 var u = /* record */[/* contents */3];
 
-var v = Block.__(246, [(function () {
+var v = Block.__(246, [(function (param) {
         u[0] = 32;
         return /* () */0;
       })]);
 
-function lazy_test() {
+function lazy_test(param) {
   var h = u[0];
   var tag = v.tag | 0;
   if (tag !== 250) {
@@ -69,12 +69,12 @@ function f(param) {
 
 var s = /* record */[/* contents */undefined];
 
-var set_true = Block.__(246, [(function () {
+var set_true = Block.__(246, [(function (param) {
         s[0] = 1;
         return /* () */0;
       })]);
 
-var set_false = Block.__(246, [(function () {
+var set_false = Block.__(246, [(function (param) {
         s[0] = undefined;
         return /* () */0;
       })]);
@@ -99,7 +99,7 @@ catch (raw_exn){
 
 var u_v = /* record */[/* contents */0];
 
-var u$1 = Block.__(246, [(function () {
+var u$1 = Block.__(246, [(function (param) {
         u_v[0] = 2;
         return /* () */0;
       })]);
@@ -124,11 +124,11 @@ function exotic(param) {
   }
 }
 
-var l_from_fun = Lazy.from_fun((function () {
+var l_from_fun = Lazy.from_fun((function (param) {
         return 3;
       }));
 
-var forward_test = Block.__(246, [(function () {
+var forward_test = Block.__(246, [(function (param) {
         var u = 3;
         u = u + 1 | 0;
         return u;
@@ -137,7 +137,7 @@ var forward_test = Block.__(246, [(function () {
 Mt.from_pair_suites("lazy_test.ml", /* :: */[
       /* tuple */[
         "simple",
-        (function () {
+        (function (param) {
             return /* Eq */Block.__(0, [
                       lazy_test(/* () */0),
                       /* tuple */[
@@ -150,7 +150,7 @@ Mt.from_pair_suites("lazy_test.ml", /* :: */[
       /* :: */[
         /* tuple */[
           "lazy_match",
-          (function () {
+          (function (param) {
               return /* Eq */Block.__(0, [
                         h,
                         2
@@ -160,7 +160,7 @@ Mt.from_pair_suites("lazy_test.ml", /* :: */[
         /* :: */[
           /* tuple */[
             "lazy_force",
-            (function () {
+            (function (param) {
                 return /* Eq */Block.__(0, [
                           u_v[0],
                           2
@@ -170,7 +170,7 @@ Mt.from_pair_suites("lazy_test.ml", /* :: */[
           /* :: */[
             /* tuple */[
               "lazy_from_fun",
-              (function () {
+              (function (param) {
                   var tag = l_from_fun.tag | 0;
                   return /* Eq */Block.__(0, [
                             tag === 250 ? l_from_fun[0] : (
@@ -183,7 +183,7 @@ Mt.from_pair_suites("lazy_test.ml", /* :: */[
             /* :: */[
               /* tuple */[
                 "lazy_from_val",
-                (function () {
+                (function (param) {
                     var lzarg = Lazy.from_val(3);
                     var tag = lzarg.tag | 0;
                     return /* Eq */Block.__(0, [
@@ -197,7 +197,7 @@ Mt.from_pair_suites("lazy_test.ml", /* :: */[
               /* :: */[
                 /* tuple */[
                   "lazy_from_val2",
-                  (function () {
+                  (function (param) {
                       var lzarg = Lazy.from_val(3);
                       var tag = lzarg.tag | 0;
                       var prim = tag === 250 ? lzarg[0] : (
@@ -215,7 +215,7 @@ Mt.from_pair_suites("lazy_test.ml", /* :: */[
                 /* :: */[
                   /* tuple */[
                     "lazy_from_val3",
-                    (function () {
+                    (function (param) {
                         debugger;
                         var lzarg = Lazy.from_val(forward_test);
                         var tag = lzarg.tag | 0;

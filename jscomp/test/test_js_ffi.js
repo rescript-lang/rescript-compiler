@@ -2,7 +2,7 @@
 
 var $$String = require("../../lib/js/string.js");
 
-function v() {
+function v(u) {
   t([$$String.compare]);
   return /* () */0;
 }

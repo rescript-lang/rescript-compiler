@@ -46,7 +46,7 @@ function basename(param) {
 
 var suites_000 = /* tuple */[
   "basename",
-  (function () {
+  (function (param) {
       return /* Eq */Block.__(0, [
                 basename("b/c/a.b"),
                 "a.b"

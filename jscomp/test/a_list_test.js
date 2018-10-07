@@ -6,7 +6,7 @@ var Ext_list_test = require("./ext_list_test.js");
 
 var suites_000 = /* tuple */[
   "drop",
-  (function () {
+  (function (param) {
       return /* Eq */Block.__(0, [
                 Ext_list_test.drop(3, /* :: */[
                       0,
@@ -26,7 +26,7 @@ var suites_000 = /* tuple */[
 var suites_001 = /* :: */[
   /* tuple */[
     "drop1",
-    (function () {
+    (function (param) {
         return /* Eq */Block.__(0, [
                   Ext_list_test.drop(2, /* :: */[
                         0,
@@ -48,7 +48,7 @@ var suites_001 = /* :: */[
   /* :: */[
     /* tuple */[
       "flat_map",
-      (function () {
+      (function (param) {
           return /* Eq */Block.__(0, [
                     /* :: */[
                       0,

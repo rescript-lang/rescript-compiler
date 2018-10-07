@@ -13,7 +13,7 @@ function eq(loc, x, y) {
   suites[0] = /* :: */[
     /* tuple */[
       loc + (" id " + String(test_id[0])),
-      (function () {
+      (function (param) {
           return /* Eq */Block.__(0, [
                     x,
                     y
@@ -30,7 +30,7 @@ function ok(loc, x) {
   suites[0] = /* :: */[
     /* tuple */[
       loc + (" id " + String(test_id[0])),
-      (function () {
+      (function (param) {
           return /* Ok */Block.__(4, [x]);
         })
     ],
@@ -43,7 +43,7 @@ var match = typeof (___undefined_value) === "undefined" ? undefined : (___undefi
 
 var a = match !== undefined ? 2 : 1;
 
-function test() {
+function test(param) {
   var match = typeof (__DEV__) === "undefined" ? undefined : (__DEV__);
   if (match !== undefined) {
     console.log("dev mode");
@@ -54,7 +54,7 @@ function test() {
   }
 }
 
-function test2() {
+function test2(param) {
   var match = typeof (__filename) === "undefined" ? undefined : (__filename);
   if (match !== undefined) {
     console.log(match);
@@ -65,7 +65,7 @@ function test2() {
   }
 }
 
-function test3() {
+function test3(param) {
   if (Js_primitive.undefined_to_opt(typeof (__DEV__) === "undefined" ? undefined : (__DEV__)) === undefined) {
     console.log("production mode");
     return /* () */0;

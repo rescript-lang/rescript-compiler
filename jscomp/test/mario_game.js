@@ -838,7 +838,7 @@ function make_type$2(param) {
   }
 }
 
-function new_id() {
+function new_id(param) {
   id_counter[0] = id_counter[0] + 1 | 0;
   return id_counter[0];
 }
@@ -2016,7 +2016,7 @@ function process_collision(dir, c1, c2, state) {
 
 function broad_phase(collid, all_collids, state) {
   var obj = collid[2];
-  return List.filter((function () {
+  return List.filter((function (c) {
                   if (in_viewport(state[/* vpt */2], obj[/* pos */1]) || is_player(collid)) {
                     return true;
                   } else {
@@ -2117,7 +2117,7 @@ function update_collidable(state, collid, all_collids) {
   }
 }
 
-function translate_keys() {
+function translate_keys(param) {
   var ctrls_000 = /* tuple */[
     pressed_keys[/* left */0],
     /* CLeft */0
@@ -3232,7 +3232,7 @@ function generate(w, h, context) {
         ];
 }
 
-function init() {
+function init(param) {
   return Random.self_init(/* () */0);
 }
 
@@ -3243,7 +3243,7 @@ var Procedural_generator = /* module */[
 
 var loadCount = /* record */[/* contents */0];
 
-function load() {
+function load(param) {
   Random.self_init(/* () */0);
   var canvas_id = "canvas";
   var match = document.getElementById(canvas_id);
@@ -3281,7 +3281,7 @@ function load() {
   return /* () */0;
 }
 
-function inc_counter() {
+function inc_counter(param) {
   loadCount[0] = loadCount[0] + 1 | 0;
   if (loadCount[0] === 4) {
     return load(/* () */0);
@@ -3290,12 +3290,12 @@ function inc_counter() {
   }
 }
 
-function preload() {
+function preload(param) {
   return List.map((function (img_src) {
                 var img_src$1 = "sprites/" + img_src;
                 var img = document.createElement("img");
                 img.src = img_src$1;
-                img.addEventListener("load", (function () {
+                img.addEventListener("load", (function (ev) {
                         inc_counter(/* () */0);
                         return true;
                       }), true);
@@ -3315,7 +3315,7 @@ function preload() {
             ]);
 }
 
-window.onload = (function () {
+window.onload = (function (param) {
     preload(/* () */0);
     return true;
   });

@@ -40,7 +40,7 @@ function f(param) {
 }
 
 ReactDom.render(React.createClass({
-          render: (function () {
+          render: (function (param) {
               return React.DOM.div({
                           alt: "pic"
                         }, React.DOM.h1(undefined, "hello react"), React.DOM.h2(undefined, "type safe!"));

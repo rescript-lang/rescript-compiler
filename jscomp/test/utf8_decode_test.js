@@ -44,7 +44,7 @@ function classify(chr) {
 }
 
 function utf8_decode(strm) {
-  return Stream.slazy((function () {
+  return Stream.slazy((function (param) {
                 var match = Stream.peek(strm);
                 if (match !== undefined) {
                   Stream.junk(strm);
@@ -193,7 +193,7 @@ function eq(loc, param) {
   suites[0] = /* :: */[
     /* tuple */[
       loc + (" id " + String(test_id[0])),
-      (function () {
+      (function (param) {
           return /* Eq */Block.__(0, [
                     x,
                     y

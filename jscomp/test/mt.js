@@ -13,7 +13,7 @@ function assert_fail(msg) {
   return /* () */0;
 }
 
-function is_mocha() {
+function is_mocha(param) {
   var match = $$Array.to_list(Process.argv);
   if (match) {
     var match$1 = match[1];
@@ -234,7 +234,7 @@ function eq_suites(test_id, suites, loc, x, y) {
   suites[0] = /* :: */[
     /* tuple */[
       loc + (" id " + String(test_id[0])),
-      (function () {
+      (function (param) {
           return /* Eq */Block.__(0, [
                     x,
                     y
@@ -251,7 +251,7 @@ function bool_suites(test_id, suites, loc, x) {
   suites[0] = /* :: */[
     /* tuple */[
       loc + (" id " + String(test_id[0])),
-      (function () {
+      (function (param) {
           return /* Ok */Block.__(4, [x]);
         })
     ],
@@ -265,7 +265,7 @@ function throw_suites(test_id, suites, loc, x) {
   suites[0] = /* :: */[
     /* tuple */[
       loc + (" id " + String(test_id[0])),
-      (function () {
+      (function (param) {
           return /* ThrowAny */Block.__(7, [x]);
         })
     ],

@@ -5,7 +5,7 @@ var $$Array = require("../../lib/js/array.js");
 var Block = require("../../lib/js/block.js");
 var Caml_array = require("../../lib/js/caml_array.js");
 
-function f() {
+function f(param) {
   var f$1 = function (_acc, _n) {
     while(true) {
       var n = _n;
@@ -28,7 +28,7 @@ function f() {
 
 var suites_000 = /* tuple */[
   "acc",
-  (function () {
+  (function (param) {
       return /* Eq */Block.__(0, [
                 f(/* () */0),
                 /* array */[
@@ -50,7 +50,7 @@ var suites_000 = /* tuple */[
 var suites_001 = /* :: */[
   /* tuple */[
     "array_to_list",
-    (function () {
+    (function (param) {
         return /* Eq */Block.__(0, [
                   /* :: */[
                     1,

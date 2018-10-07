@@ -35,7 +35,7 @@ function h(x) {
   }
 }
 
-function hh() {
+function hh(param) {
   return 3;
 }
 

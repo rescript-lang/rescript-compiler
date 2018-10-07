@@ -1,7 +1,7 @@
 'use strict';
 
 
-function v() {
+function v(prim) {
   return { };
 }
 

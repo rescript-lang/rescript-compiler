@@ -10,7 +10,7 @@ function should(b) {
   }
 }
 
-function test() {
+function test(param) {
   var m = Belt_MapInt.empty;
   for(var i = 0; i <= 999999; ++i){
     m = Belt_MapInt.set(m, i, i);

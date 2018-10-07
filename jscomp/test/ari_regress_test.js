@@ -30,7 +30,7 @@ function v(param) {
 
 var suites_000 = /* tuple */[
   "curry",
-  (function () {
+  (function (param) {
       return /* Eq */Block.__(0, [
                 g,
                 7
@@ -41,7 +41,7 @@ var suites_000 = /* tuple */[
 var suites_001 = /* :: */[
   /* tuple */[
     "curry2",
-    (function () {
+    (function (param) {
         return /* Eq */Block.__(0, [
                   14,
                   (Curry._1(v, 1), Curry._1(v, 1))
@@ -51,7 +51,7 @@ var suites_001 = /* :: */[
   /* :: */[
     /* tuple */[
       "curry3",
-      (function () {
+      (function (param) {
           return /* Eq */Block.__(0, [
                     x,
                     14
@@ -61,7 +61,7 @@ var suites_001 = /* :: */[
     /* :: */[
       /* tuple */[
         "File \"ari_regress_test.ml\", line 20, characters 4-11",
-        (function () {
+        (function (param) {
             return /* Eq */Block.__(0, [
                       h[0],
                       1

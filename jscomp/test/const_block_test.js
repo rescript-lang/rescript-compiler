@@ -25,16 +25,16 @@ var c = /* array */[
   5
 ];
 
-function f() {
+function f(param) {
   Caml_array.caml_array_set(a, 0, 3.0);
   return Caml_array.caml_array_set(b, 0, 3);
 }
 
-function h() {
+function h(param) {
   return c;
 }
 
-function g() {
+function g(param) {
   f(/* () */0);
   return /* Eq */Block.__(0, [
             /* tuple */[
@@ -56,7 +56,7 @@ var suites_000 = /* tuple */[
 var suites_001 = /* :: */[
   /* tuple */[
     "avoid_mutable_inline_test",
-    (function () {
+    (function (param) {
         Caml_array.caml_array_set(c, 0, 3);
         Caml_array.caml_array_set(c, 1, 4);
         return /* Eq */Block.__(0, [

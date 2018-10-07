@@ -5,7 +5,7 @@ function f(x) {
   return x + 3 | 0;
 }
 
-function M() {
+function M(S) {
   var f = function (x) {
     return x;
   };

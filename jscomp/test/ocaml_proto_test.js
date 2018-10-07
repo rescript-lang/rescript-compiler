@@ -770,7 +770,7 @@ var yytransl_block = /* array */[
 ];
 
 var yyact = /* array */[
-  (function () {
+  (function (param) {
       throw [
             Caml_builtin_exceptions.failure,
             "parser"
@@ -950,7 +950,7 @@ var yyact = /* array */[
   (function (__caml_parser_env) {
       return /* Message_extension */Block.__(5, [Parsing.peek_val(__caml_parser_env, 0)]);
     }),
-  (function () {
+  (function (__caml_parser_env) {
       throw [
             Compilation_error,
             /* Syntax_error */0
@@ -1036,7 +1036,7 @@ var yyact = /* array */[
             /* Missing_one_of_name */Block.__(12, [_1])
           ];
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* [] */0;
     }),
   (function (__caml_parser_env) {
@@ -1120,63 +1120,63 @@ var yyact = /* array */[
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0)[1];
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "required";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "optional";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "repeated";
     }),
   (function (__caml_parser_env) {
       Parsing.peek_val(__caml_parser_env, 0);
       return "oneof";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "enum";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "package";
     }),
   (function (__caml_parser_env) {
       Parsing.peek_val(__caml_parser_env, 0);
       return "import";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "public";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "option";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "extensions";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "extend";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "syntax";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "message";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "to";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "max";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "map";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* Required */202657151;
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* Repeated */-368609126;
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* Optional */-132092992;
     }),
   (function (__caml_parser_env) {
@@ -1189,7 +1189,7 @@ var yyact = /* array */[
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 1);
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* [] */0;
     }),
   (function (__caml_parser_env) {
@@ -1284,7 +1284,7 @@ var yyact = /* array */[
               /* enum_values */enum_values
             ];
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* [] */0;
     }),
   (function (__caml_parser_env) {
@@ -1334,14 +1334,14 @@ var yyact = /* array */[
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
       return invalid_enum_specification(_1[1], _1[0]);
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* () */0;
     }),
   (function (__caml_parser_env) {
       Parsing.peek_val(__caml_parser_env, 1);
       return /* () */0;
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* () */0;
     }),
   (function (__caml_parser_env) {
@@ -4328,10 +4328,10 @@ function compile_message_p1(file_name, file_options, message_scope, param) {
   var validate_duplicate = function (number_index, field) {
     var number = field_number(field);
     var name = field_name(field);
-    if (not_found((function () {
+    if (not_found((function (param) {
               List.assoc(number, number_index);
               return /* () */0;
-            })) && not_found((function () {
+            })) && not_found((function (param) {
               list_assoc2(name, number_index);
               return /* () */0;
             }))) {
@@ -7044,7 +7044,7 @@ function eq(loc, x, y) {
   suites[0] = /* :: */[
     /* tuple */[
       loc + (" id " + String(test_id[0])),
-      (function () {
+      (function (param) {
           return /* Eq */Block.__(0, [
                     x,
                     y

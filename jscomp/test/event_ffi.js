@@ -47,7 +47,7 @@ function a0() {
   return /* () */0;
 }
 
-function a1() {
+function a1(param) {
   return (function (x) {
       return x;
     });
@@ -73,7 +73,7 @@ function a44(x, y, z, d) {
   return u + d | 0;
 }
 
-function b44() {
+function b44(param) {
   return (function (x, y, z, d) {
       return /* tuple */[
               x,
@@ -84,8 +84,8 @@ function b44() {
     });
 }
 
-function xx() {
-  return (function () {
+function xx(param) {
+  return (function (param) {
       console.log(3);
       return /* () */0;
     });

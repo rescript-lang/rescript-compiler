@@ -135,7 +135,7 @@ function from_pairs(ps) {
                                         ]),
                                       "pair %d"
                                     ]), i),
-                            (function () {
+                            (function (param) {
                                 return /* Approx */Block.__(5, [
                                           a,
                                           b
@@ -240,7 +240,7 @@ var a = match$4[0];
 Mt.from_pair_suites("float_test.ml", Pervasives.$at(/* :: */[
           /* tuple */[
             "mod_float",
-            (function () {
+            (function (param) {
                 return /* Approx */Block.__(5, [
                           3.2 % 0.5,
                           0.200000000000000178
@@ -250,7 +250,7 @@ Mt.from_pair_suites("float_test.ml", Pervasives.$at(/* :: */[
           /* :: */[
             /* tuple */[
               "modf_float1",
-              (function () {
+              (function (param) {
                   return /* Approx */Block.__(5, [
                             a,
                             0.299999999999997158
@@ -260,7 +260,7 @@ Mt.from_pair_suites("float_test.ml", Pervasives.$at(/* :: */[
             /* :: */[
               /* tuple */[
                 "modf_float2",
-                (function () {
+                (function (param) {
                     return /* Approx */Block.__(5, [
                               b,
                               32
@@ -270,7 +270,7 @@ Mt.from_pair_suites("float_test.ml", Pervasives.$at(/* :: */[
               /* :: */[
                 /* tuple */[
                   "int_of_float",
-                  (function () {
+                  (function (param) {
                       return /* Eq */Block.__(0, [
                                 3,
                                 3

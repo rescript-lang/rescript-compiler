@@ -30,7 +30,7 @@ function eq(loc, x, y) {
   suites[0] = /* :: */[
     /* tuple */[
       loc + (" id " + String(test_id[0])),
-      (function () {
+      (function (param) {
           return /* Eq */Block.__(0, [
                     x,
                     y
@@ -3039,7 +3039,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
       }
     }
   };
-  var get = function () {
+  var get = function (param) {
     var r = Caml_string.get(s, i[0]);
     i[0] = i[0] + 1 | 0;
     return r;
@@ -3158,7 +3158,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
       }
     };
   };
-  var piece = function () {
+  var piece = function (param) {
     var r = atom(/* () */0);
     if (accept(/* "*" */42)) {
       return greedy_mod(repn(r, 0, undefined));
@@ -3189,7 +3189,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
       return r;
     }
   };
-  var $$char = function () {
+  var $$char = function (param) {
     if (i[0] === l) {
       throw Parse_error;
     }
@@ -3451,7 +3451,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
             ];
     }
   };
-  var integer = function () {
+  var integer = function (param) {
     if (i[0] === l) {
       return undefined;
     } else {
@@ -3483,7 +3483,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
       }
     }
   };
-  var atom = function () {
+  var atom = function (param) {
     if (accept(/* "." */46)) {
       if (dotall) {
         return any;

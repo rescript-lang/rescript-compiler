@@ -3,7 +3,7 @@
 var Belt_SetInt = require("../../lib/js/belt_SetInt.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
-function bench() {
+function bench(param) {
   var data = Belt_SetInt.empty;
   console.time("bs_set_bench.ml 7");
   for(var i = 0; i <= 1000000; ++i){

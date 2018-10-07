@@ -7,7 +7,7 @@ v = v + 1 | 0;
 
 console.log(String(v));
 
-function unuse_v() {
+function unuse_v(param) {
   return 35;
 }
 

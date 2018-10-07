@@ -13409,7 +13409,7 @@ function module_body_with_directives(env, term_fn) {
 }
 
 function program(env) {
-  var stmts = module_body_with_directives(env, (function () {
+  var stmts = module_body_with_directives(env, (function (param) {
           return false;
         }));
   var end_loc = Curry._2(Parser_env_048[/* loc */2], undefined, env);
@@ -16060,7 +16060,7 @@ function eq(loc, x, y) {
   suites[0] = /* :: */[
     /* tuple */[
       loc + (" id " + String(test_id[0])),
-      (function () {
+      (function (param) {
           return /* Eq */Block.__(0, [
                     x,
                     y

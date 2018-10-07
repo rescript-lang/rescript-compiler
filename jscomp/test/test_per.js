@@ -217,18 +217,18 @@ function open_out_bin(name) {
             ], 438, name);
 }
 
-function flush_all() {
+function flush_all(param) {
   var _param = Caml_io.caml_ml_out_channels_list(/* () */0);
   while(true) {
-    var param = _param;
-    if (param) {
+    var param$1 = _param;
+    if (param$1) {
       try {
-        Caml_io.caml_ml_flush(param[0]);
+        Caml_io.caml_ml_flush(param$1[0]);
       }
       catch (exn){
         
       }
-      _param = param[1];
+      _param = param$1[1];
       continue ;
     } else {
       return /* () */0;
@@ -416,7 +416,7 @@ function input_line(chan) {
   };
 }
 
-function close_in_noerr() {
+function close_in_noerr(ic) {
   try {
     return Caml_missing_polyfill.not_implemented("caml_ml_close_channel");
   }
@@ -451,7 +451,7 @@ function print_endline(s) {
   return Caml_io.caml_ml_flush(stdout);
 }
 
-function print_newline() {
+function print_newline(param) {
   Caml_io.caml_ml_output_char(stdout, /* "\n" */10);
   return Caml_io.caml_ml_flush(stdout);
 }
@@ -482,21 +482,21 @@ function prerr_endline(s) {
   return Caml_io.caml_ml_flush(stderr);
 }
 
-function prerr_newline() {
+function prerr_newline(param) {
   Caml_io.caml_ml_output_char(stderr, /* "\n" */10);
   return Caml_io.caml_ml_flush(stderr);
 }
 
-function read_line() {
+function read_line(param) {
   Caml_io.caml_ml_flush(stdout);
   return input_line(stdin);
 }
 
-function read_int() {
+function read_int(param) {
   return Caml_format.caml_int_of_string((Caml_io.caml_ml_flush(stdout), input_line(stdin)));
 }
 
-function read_float() {
+function read_float(param) {
   return Caml_format.caml_float_of_string((Caml_io.caml_ml_flush(stdout), input_line(stdin)));
 }
 
@@ -517,14 +517,14 @@ var exit_function = /* record */[/* contents */flush_all];
 
 function at_exit(f) {
   var g = exit_function[0];
-  exit_function[0] = (function () {
+  exit_function[0] = (function (param) {
       Curry._1(f, /* () */0);
       return Curry._1(g, /* () */0);
     });
   return /* () */0;
 }
 
-function do_at_exit() {
+function do_at_exit(param) {
   return Curry._1(exit_function[0], /* () */0);
 }
 

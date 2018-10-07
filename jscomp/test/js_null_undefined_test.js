@@ -7,7 +7,7 @@ var Js_null_undefined = require("../../lib/js/js_null_undefined.js");
 
 var suites_000 = /* tuple */[
   "toOption - null",
-  (function () {
+  (function (param) {
       return /* Eq */Block.__(0, [
                 undefined,
                 undefined
@@ -18,7 +18,7 @@ var suites_000 = /* tuple */[
 var suites_001 = /* :: */[
   /* tuple */[
     "toOption - undefined",
-    (function () {
+    (function (param) {
         return /* Eq */Block.__(0, [
                   undefined,
                   undefined
@@ -28,7 +28,7 @@ var suites_001 = /* :: */[
   /* :: */[
     /* tuple */[
       "toOption - empty",
-      (function () {
+      (function (param) {
           return /* Eq */Block.__(0, [
                     undefined,
                     undefined
@@ -38,7 +38,7 @@ var suites_001 = /* :: */[
     /* :: */[
       /* tuple */[
         "toOption - 'a",
-        (function () {
+        (function (param) {
             return /* Eq */Block.__(0, [
                       "foo",
                       Js_primitive.nullable_to_opt("foo")
@@ -48,7 +48,7 @@ var suites_001 = /* :: */[
       /* :: */[
         /* tuple */[
           "return",
-          (function () {
+          (function (param) {
               return /* Eq */Block.__(0, [
                         "something",
                         Js_primitive.nullable_to_opt("something")
@@ -58,7 +58,7 @@ var suites_001 = /* :: */[
         /* :: */[
           /* tuple */[
             "test - null",
-            (function () {
+            (function (param) {
                 return /* Eq */Block.__(0, [
                           true,
                           true
@@ -68,7 +68,7 @@ var suites_001 = /* :: */[
           /* :: */[
             /* tuple */[
               "test - undefined",
-              (function () {
+              (function (param) {
                   return /* Eq */Block.__(0, [
                             true,
                             true
@@ -78,7 +78,7 @@ var suites_001 = /* :: */[
             /* :: */[
               /* tuple */[
                 "test - empty",
-                (function () {
+                (function (param) {
                     return /* Eq */Block.__(0, [
                               true,
                               true
@@ -88,7 +88,7 @@ var suites_001 = /* :: */[
               /* :: */[
                 /* tuple */[
                   "test - 'a",
-                  (function () {
+                  (function (param) {
                       return /* Eq */Block.__(0, [
                                 false,
                                 false
@@ -98,7 +98,7 @@ var suites_001 = /* :: */[
                 /* :: */[
                   /* tuple */[
                     "bind - null",
-                    (function () {
+                    (function (param) {
                         return /* StrictEq */Block.__(2, [
                                   null,
                                   Js_null_undefined.bind(null, (function (v) {
@@ -110,7 +110,7 @@ var suites_001 = /* :: */[
                   /* :: */[
                     /* tuple */[
                       "bind - undefined",
-                      (function () {
+                      (function (param) {
                           return /* StrictEq */Block.__(2, [
                                     undefined,
                                     Js_null_undefined.bind(undefined, (function (v) {
@@ -122,7 +122,7 @@ var suites_001 = /* :: */[
                     /* :: */[
                       /* tuple */[
                         "bind - empty",
-                        (function () {
+                        (function (param) {
                             return /* StrictEq */Block.__(2, [
                                       undefined,
                                       Js_null_undefined.bind(undefined, (function (v) {
@@ -134,7 +134,7 @@ var suites_001 = /* :: */[
                       /* :: */[
                         /* tuple */[
                           "bind - 'a",
-                          (function () {
+                          (function (param) {
                               return /* Eq */Block.__(0, [
                                         4,
                                         Js_null_undefined.bind(2, (function (n) {
@@ -146,9 +146,9 @@ var suites_001 = /* :: */[
                         /* :: */[
                           /* tuple */[
                             "iter - null",
-                            (function () {
+                            (function (param) {
                                 var hit = /* record */[/* contents */false];
-                                Js_null_undefined.iter(null, (function () {
+                                Js_null_undefined.iter(null, (function (param) {
                                         hit[0] = true;
                                         return /* () */0;
                                       }));
@@ -161,9 +161,9 @@ var suites_001 = /* :: */[
                           /* :: */[
                             /* tuple */[
                               "iter - undefined",
-                              (function () {
+                              (function (param) {
                                   var hit = /* record */[/* contents */false];
-                                  Js_null_undefined.iter(undefined, (function () {
+                                  Js_null_undefined.iter(undefined, (function (param) {
                                           hit[0] = true;
                                           return /* () */0;
                                         }));
@@ -176,9 +176,9 @@ var suites_001 = /* :: */[
                             /* :: */[
                               /* tuple */[
                                 "iter - empty",
-                                (function () {
+                                (function (param) {
                                     var hit = /* record */[/* contents */false];
-                                    Js_null_undefined.iter(undefined, (function () {
+                                    Js_null_undefined.iter(undefined, (function (param) {
                                             hit[0] = true;
                                             return /* () */0;
                                           }));
@@ -191,7 +191,7 @@ var suites_001 = /* :: */[
                               /* :: */[
                                 /* tuple */[
                                   "iter - 'a",
-                                  (function () {
+                                  (function (param) {
                                       var hit = /* record */[/* contents */0];
                                       Js_null_undefined.iter(2, (function (v) {
                                               hit[0] = v;
@@ -206,7 +206,7 @@ var suites_001 = /* :: */[
                                 /* :: */[
                                   /* tuple */[
                                     "fromOption - None",
-                                    (function () {
+                                    (function (param) {
                                         return /* Eq */Block.__(0, [
                                                   undefined,
                                                   Js_null_undefined.fromOption(undefined)
@@ -216,7 +216,7 @@ var suites_001 = /* :: */[
                                   /* :: */[
                                     /* tuple */[
                                       "fromOption - Some",
-                                      (function () {
+                                      (function (param) {
                                           return /* Eq */Block.__(0, [
                                                     2,
                                                     Js_null_undefined.fromOption(2)
@@ -226,28 +226,28 @@ var suites_001 = /* :: */[
                                     /* :: */[
                                       /* tuple */[
                                         "null <> undefined",
-                                        (function () {
+                                        (function (param) {
                                             return /* Ok */Block.__(4, [true]);
                                           })
                                       ],
                                       /* :: */[
                                         /* tuple */[
                                           "null <> empty",
-                                          (function () {
+                                          (function (param) {
                                               return /* Ok */Block.__(4, [true]);
                                             })
                                         ],
                                         /* :: */[
                                           /* tuple */[
                                             "undefined = empty",
-                                            (function () {
+                                            (function (param) {
                                                 return /* Ok */Block.__(4, [true]);
                                               })
                                           ],
                                           /* :: */[
                                             /* tuple */[
                                               "File \"js_null_undefined_test.ml\", line 42, characters 2-9",
-                                              (function () {
+                                              (function (param) {
                                                   return /* Ok */Block.__(4, [true]);
                                                 })
                                             ],

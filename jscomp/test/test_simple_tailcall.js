@@ -1,7 +1,7 @@
 'use strict';
 
 
-function tailcall() {
+function tailcall(x) {
   while(true) {
     continue ;
   };
