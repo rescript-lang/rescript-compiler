@@ -574,6 +574,7 @@ val keep: 'a t ->  ('a -> bool) -> 'a t
     ]}
 *)
 
+[@@deprecated "This function will soon be deprecated. Please, use `List.keep` instead."]
 val filter: 'a t ->  ('a -> bool) -> 'a t
 (** [filter  xs p] returns a list of all elements in [xs] which satisfy the predicate function [p]
 
@@ -594,6 +595,7 @@ val keepWithIndex: 'a t ->  ('a -> int -> bool) -> 'a t
     ]}
 *)
 
+[@@deprecated "This function will soon be deprecated. Please, use `List.keepWithIndex` instead."]
 val filterWithIndex: 'a t ->  ('a -> int -> bool) -> 'a t
 (** [filterWithIndex xs p] returns a list of all elements in [xs] which satisfy the predicate function [p]
 
