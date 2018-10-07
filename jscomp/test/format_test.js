@@ -15,7 +15,7 @@ function eq(loc, x, y) {
   suites[0] = /* :: */[
     /* tuple */[
       loc + (" id " + String(test_id[0])),
-      (function () {
+      (function (param) {
           return /* Eq */Block.__(0, [
                     x,
                     y
@@ -27,7 +27,7 @@ function eq(loc, x, y) {
   return /* () */0;
 }
 
-function u() {
+function u(param) {
   return Pervasives.$caret$caret(/* Format */[
               /* String_literal */Block.__(11, [
                   "xx ",

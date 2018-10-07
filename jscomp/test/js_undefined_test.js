@@ -7,7 +7,7 @@ var Js_undefined = require("../../lib/js/js_undefined.js");
 
 var suites_000 = /* tuple */[
   "toOption - empty",
-  (function () {
+  (function (param) {
       return /* Eq */Block.__(0, [
                 undefined,
                 undefined
@@ -18,7 +18,7 @@ var suites_000 = /* tuple */[
 var suites_001 = /* :: */[
   /* tuple */[
     "toOption - 'a",
-    (function () {
+    (function (param) {
         return /* Eq */Block.__(0, [
                   /* () */0,
                   Js_primitive.undefined_to_opt(/* () */0)
@@ -28,7 +28,7 @@ var suites_001 = /* :: */[
   /* :: */[
     /* tuple */[
       "return",
-      (function () {
+      (function (param) {
           return /* Eq */Block.__(0, [
                     "something",
                     Js_primitive.undefined_to_opt("something")
@@ -38,7 +38,7 @@ var suites_001 = /* :: */[
     /* :: */[
       /* tuple */[
         "test - empty",
-        (function () {
+        (function (param) {
             return /* Eq */Block.__(0, [
                       true,
                       true
@@ -48,7 +48,7 @@ var suites_001 = /* :: */[
       /* :: */[
         /* tuple */[
           "test - 'a",
-          (function () {
+          (function (param) {
               return /* Eq */Block.__(0, [
                         false,
                         false
@@ -58,7 +58,7 @@ var suites_001 = /* :: */[
         /* :: */[
           /* tuple */[
             "bind - empty",
-            (function () {
+            (function (param) {
                 return /* Eq */Block.__(0, [
                           undefined,
                           Js_undefined.bind(undefined, (function (v) {
@@ -70,7 +70,7 @@ var suites_001 = /* :: */[
           /* :: */[
             /* tuple */[
               "bind - 'a",
-              (function () {
+              (function (param) {
                   return /* Eq */Block.__(0, [
                             4,
                             Js_undefined.bind(2, (function (n) {
@@ -82,9 +82,9 @@ var suites_001 = /* :: */[
             /* :: */[
               /* tuple */[
                 "iter - empty",
-                (function () {
+                (function (param) {
                     var hit = /* record */[/* contents */false];
-                    Js_undefined.iter(undefined, (function () {
+                    Js_undefined.iter(undefined, (function (param) {
                             hit[0] = true;
                             return /* () */0;
                           }));
@@ -97,7 +97,7 @@ var suites_001 = /* :: */[
               /* :: */[
                 /* tuple */[
                   "iter - 'a",
-                  (function () {
+                  (function (param) {
                       var hit = /* record */[/* contents */0];
                       Js_undefined.iter(2, (function (v) {
                               hit[0] = v;
@@ -112,7 +112,7 @@ var suites_001 = /* :: */[
                 /* :: */[
                   /* tuple */[
                     "fromOption - None",
-                    (function () {
+                    (function (param) {
                         return /* Eq */Block.__(0, [
                                   undefined,
                                   Js_undefined.fromOption(undefined)
@@ -122,7 +122,7 @@ var suites_001 = /* :: */[
                   /* :: */[
                     /* tuple */[
                       "fromOption - Some",
-                      (function () {
+                      (function (param) {
                           return /* Eq */Block.__(0, [
                                     2,
                                     Js_undefined.fromOption(2)

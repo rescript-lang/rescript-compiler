@@ -13,7 +13,7 @@ function $$throw(loc, x) {
   suites[0] = /* :: */[
     /* tuple */[
       loc + (" id " + String(test_id[0])),
-      (function () {
+      (function (param) {
           return /* ThrowAny */Block.__(7, [x]);
         })
     ],
@@ -70,17 +70,17 @@ function cFromJs(param) {
   return Js_mapperRt.revSearchAssert(3, jsMapperConstantArray$1, param);
 }
 
-$$throw("File \"ast_mapper_defensive_test.ml\", line 28, characters 16-23", (function () {
+$$throw("File \"ast_mapper_defensive_test.ml\", line 28, characters 16-23", (function (param) {
         aFromJs(3);
         return /* () */0;
       }));
 
-$$throw("File \"ast_mapper_defensive_test.ml\", line 29, characters 15-22", (function () {
+$$throw("File \"ast_mapper_defensive_test.ml\", line 29, characters 15-22", (function (param) {
         bFromJs(2);
         return /* () */0;
       }));
 
-$$throw("File \"ast_mapper_defensive_test.ml\", line 30, characters 15-22", (function () {
+$$throw("File \"ast_mapper_defensive_test.ml\", line 30, characters 15-22", (function (param) {
         cFromJs(33);
         return /* () */0;
       }));

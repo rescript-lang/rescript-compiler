@@ -52,7 +52,7 @@ function fold_left(f, x, a) {
   return r;
 }
 
-function f2() {
+function f2(param) {
   var arr = init(30000000, (function (i) {
           return i;
         }));
@@ -77,7 +77,7 @@ function eq(loc, x, y) {
   suites[0] = /* :: */[
     /* tuple */[
       loc + (" id " + String(test_id[0])),
-      (function () {
+      (function (param) {
           return /* Eq */Block.__(0, [
                     x,
                     y

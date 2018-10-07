@@ -8,7 +8,7 @@ var Caml_primitive = require("../../lib/js/caml_primitive.js");
 
 var list_suites_000 = /* tuple */[
   "length",
-  (function () {
+  (function (param) {
       return /* Eq */Block.__(0, [
                 1,
                 List.length(/* :: */[
@@ -28,7 +28,7 @@ var list_suites_000 = /* tuple */[
 var list_suites_001 = /* :: */[
   /* tuple */[
     "length2",
-    (function () {
+    (function (param) {
         return /* Eq */Block.__(0, [
                   5,
                   List.length(/* :: */[
@@ -53,10 +53,10 @@ var list_suites_001 = /* :: */[
   /* :: */[
     /* tuple */[
       "long_length",
-      (function () {
+      (function (param) {
           return /* Eq */Block.__(0, [
                     30000,
-                    List.length($$Array.to_list($$Array.init(30000, (function () {
+                    List.length($$Array.to_list($$Array.init(30000, (function (param) {
                                     return 0;
                                   }))))
                   ]);
@@ -65,7 +65,7 @@ var list_suites_001 = /* :: */[
     /* :: */[
       /* tuple */[
         "sort",
-        (function () {
+        (function (param) {
             return /* Eq */Block.__(0, [
                       List.sort(Caml_primitive.caml_int_compare, /* :: */[
                             4,

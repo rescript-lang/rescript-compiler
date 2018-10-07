@@ -5,8 +5,8 @@ var Block = require("../../lib/js/block.js");
 
 var suites_000 = /* tuple */[
   "setTimeout/clearTimeout sanity check",
-  (function () {
-      var handle = setTimeout((function () {
+  (function (param) {
+      var handle = setTimeout((function (param) {
               return /* () */0;
             }), 0);
       clearTimeout(handle);
@@ -17,8 +17,8 @@ var suites_000 = /* tuple */[
 var suites_001 = /* :: */[
   /* tuple */[
     "setInerval/clearInterval sanity check",
-    (function () {
-        var handle = setInterval((function () {
+    (function (param) {
+        var handle = setInterval((function (param) {
                 return /* () */0;
               }), 0);
         clearInterval(handle);
@@ -28,7 +28,7 @@ var suites_001 = /* :: */[
   /* :: */[
     /* tuple */[
       "encodeURI",
-      (function () {
+      (function (param) {
           return /* Eq */Block.__(0, [
                     encodeURI("[-=-]"),
                     "%5B-=-%5D"
@@ -38,7 +38,7 @@ var suites_001 = /* :: */[
     /* :: */[
       /* tuple */[
         "decodeURI",
-        (function () {
+        (function (param) {
             return /* Eq */Block.__(0, [
                       decodeURI("%5B-=-%5D"),
                       "[-=-]"
@@ -48,7 +48,7 @@ var suites_001 = /* :: */[
       /* :: */[
         /* tuple */[
           "encodeURIComponent",
-          (function () {
+          (function (param) {
               return /* Eq */Block.__(0, [
                         encodeURIComponent("[-=-]"),
                         "%5B-%3D-%5D"
@@ -58,7 +58,7 @@ var suites_001 = /* :: */[
         /* :: */[
           /* tuple */[
             "decodeURIComponent",
-            (function () {
+            (function (param) {
                 return /* Eq */Block.__(0, [
                           decodeURIComponent("%5B-%3D-%5D"),
                           "[-=-]"

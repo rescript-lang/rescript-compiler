@@ -1,5 +1,5 @@
 let prelude ={|
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+(* Copyright (C) 2015 -  Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -28,9 +28,9 @@ external function_length : 'a -> int = "#function_length"
 external apply_args : ('a -> 'b) -> _ array -> 'b = "#apply"
 external sub : 'a array -> int -> int -> 'a array = "caml_array_sub"
 
+(** Public *)
 let rec app f args = 
   let arity = function_length f in
-  let arity = if arity = 0 then 1 else arity in (* TOOD: optimize later *) 
   let len = Array.length args in
   let d = arity - len in 
   if d = 0 then 
@@ -59,15 +59,6 @@ let generate_case
          Printf.sprintf "apply%d (Obj.magic o) %s"
            arity (String.concat " " args)
        else
-       if arity = 0 then
-         match args with
-         | first_arg :: [] ->
-           Printf.sprintf "apply1 (Obj.magic o) %s" first_arg
-         | first_arg :: rest ->
-           Printf.sprintf "app (apply1 (Obj.magic o) %s) [|%s|] "
-             first_arg (String.concat ";" rest)
-         | _ -> assert false            
-       else
          Printf.sprintf
            "app (apply%d (Obj.magic o) %s) [|%s|]"
            arity
@@ -92,7 +83,8 @@ let generate_apply arity =
         (fun acc x -> acc ^ " -> " ^ x )
         x xs in         
   Printf.sprintf
-    "external apply%d : (%s) -> %s = \"#apply%d\""
+    "(* Internal use *)\n\
+    external apply%d : (%s) -> %s = \"#apply%d\""
     arity ty ty arity
     
 
@@ -104,15 +96,17 @@ let generate_fun args_number =
   let args_string =  (String.concat " " args) in
 
   Printf.sprintf {|
+(* Intenral use *)  
 let curry_%d o %s arity =
   match arity with
   |%s    
 
+(** Public *)  
 let _%d o %s =
   let arity = function_length o in
   if arity = %d then apply%d o %s
   else curry_%d o %s arity     
-
+(** Public *)
 let __%d o =
   let arity = function_length o in
   if arity = %d then o
@@ -122,7 +116,8 @@ let __%d o =
     args_string
     (String.concat "\n  |"
 
-       (list_init number (fun arity -> generate_case ~arity ~args_number args_array args)
+       (list_init (number - 1) 
+          (fun arity -> generate_case ~arity:(arity + 1) ~args_number args_array args)
         @ [ generate_case ~args_number args_array args]          
        )
     )

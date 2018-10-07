@@ -12,7 +12,7 @@ function f(h, param) {
 Mt.from_pair_suites("print_alpha_test.ml", /* :: */[
       /* tuple */[
         "File \"print_alpha_test.ml\", line 15, characters 4-11",
-        (function () {
+        (function (param) {
             return /* Eq */Block.__(0, [
                       f((function (prim, prim$1) {
                                 return prim + prim$1 | 0;

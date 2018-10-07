@@ -12,7 +12,7 @@ function eq(loc, x, y) {
   suites[0] = /* :: */[
     /* tuple */[
       loc + (" id " + String(test_id[0])),
-      (function () {
+      (function (param) {
           return /* Eq */Block.__(0, [
                     x,
                     y
@@ -26,7 +26,7 @@ function eq(loc, x, y) {
 
 var v = /* record */[/* contents */3];
 
-function update() {
+function update(param) {
   v[0] = v[0] + 1 | 0;
   return true;
 }

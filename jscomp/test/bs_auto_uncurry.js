@@ -32,13 +32,13 @@ var xs = Array.prototype.map.call(/* array */[
           });
       }));
 
-function f_0() {
+function f_0(param) {
   return hi((function () {
                 return /* () */0;
               }));
 }
 
-function f_01() {
+function f_01(param) {
   return hi((function () {
                 console.log("x");
                 return /* () */0;
@@ -112,7 +112,7 @@ function h6(x) {
   return ff2(x, "3", add);
 }
 
-function unit_magic() {
+function unit_magic(param) {
   console.log("noinline");
   console.log("noinline");
   return 3;

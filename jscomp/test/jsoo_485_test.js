@@ -1,7 +1,7 @@
 'use strict';
 
 
-function f() {
+function f(param) {
   3;
   return /* () */0;
 }

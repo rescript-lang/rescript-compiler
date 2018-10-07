@@ -16,7 +16,7 @@ function eq(loc, x, y) {
   suites[0] = /* :: */[
     /* tuple */[
       loc + (" id " + String(test_id[0])),
-      (function () {
+      (function (param) {
           return /* Eq */Block.__(0, [
                     x,
                     y
@@ -45,7 +45,7 @@ function make(foo) {
   var partial_arg = map((function (prim) {
           return String(prim);
         }), foo);
-  return (function () {
+  return (function (param) {
       var tmp = { };
       if (partial_arg !== undefined) {
         tmp.foo = Js_primitive.valFromOption(partial_arg);

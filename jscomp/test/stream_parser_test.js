@@ -16,7 +16,7 @@ function parse(token) {
     /* length */0,
     /* tail */undefined
   ];
-  var token$1 = function () {
+  var token$1 = function (param) {
     if (look_ahead[/* length */0] === 0) {
       try {
         return Curry._1(token, /* () */0);
@@ -28,7 +28,7 @@ function parse(token) {
       return Queue.pop(look_ahead);
     }
   };
-  var parse_atom = function () {
+  var parse_atom = function (param) {
     var e = token$1(/* () */0);
     switch (e.tag | 0) {
       case 0 : 
@@ -133,7 +133,7 @@ var lexer = Genlex.make_lexer(/* :: */[
 
 function token(chars) {
   var strm = lexer(chars);
-  return (function () {
+  return (function (param) {
       return Stream.next(strm);
     });
 }
@@ -143,7 +143,7 @@ function l_parse(token) {
     /* length */0,
     /* tail */undefined
   ];
-  var token$1 = function () {
+  var token$1 = function (param) {
     if (look_ahead[/* length */0] === 0) {
       try {
         return Curry._1(token, /* () */0);
@@ -155,7 +155,7 @@ function l_parse(token) {
       return Queue.pop(look_ahead);
     }
   };
-  var parse_f = function () {
+  var parse_f = function (param) {
     var t = token$1(/* () */0);
     switch (t.tag | 0) {
       case 0 : 
@@ -255,7 +255,7 @@ function eq(loc, x, y) {
   suites[0] = /* :: */[
     /* tuple */[
       loc + (" id " + String(test_id[0])),
-      (function () {
+      (function (param) {
           return /* Eq */Block.__(0, [
                     x,
                     y

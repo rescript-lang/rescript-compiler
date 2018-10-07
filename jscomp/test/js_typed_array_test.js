@@ -27,7 +27,7 @@ var x = new Int8Array(/* array */[
 
 var suites_000 = /* tuple */[
   "array_buffer - make",
-  (function () {
+  (function (param) {
       return /* Eq */Block.__(0, [
                 5,
                 new ArrayBuffer(5).byteLength
@@ -38,7 +38,7 @@ var suites_000 = /* tuple */[
 var suites_001 = /* :: */[
   /* tuple */[
     "array_buffer - byteLength",
-    (function () {
+    (function (param) {
         return /* Eq */Block.__(0, [
                   5,
                   new ArrayBuffer(5).byteLength
@@ -48,7 +48,7 @@ var suites_001 = /* :: */[
   /* :: */[
     /* tuple */[
       "array_buffer - slice",
-      (function () {
+      (function (param) {
           return /* Eq */Block.__(0, [
                     2,
                     new ArrayBuffer(5).slice(2, 4).byteLength
@@ -58,7 +58,7 @@ var suites_001 = /* :: */[
     /* :: */[
       /* tuple */[
         "array_buffer - sliceFrom",
-        (function () {
+        (function (param) {
             return /* Eq */Block.__(0, [
                       3,
                       new ArrayBuffer(5).slice(2).byteLength
@@ -68,7 +68,7 @@ var suites_001 = /* :: */[
       /* :: */[
         /* tuple */[
           "typed_array - unsafe_get",
-          (function () {
+          (function (param) {
               return /* Eq */Block.__(0, [
                         4,
                         new Int8Array(/* array */[
@@ -84,7 +84,7 @@ var suites_001 = /* :: */[
         /* :: */[
           /* tuple */[
             "typed_array - unsafe_set",
-            (function () {
+            (function (param) {
                 var a = new Int8Array(/* array */[
                       1,
                       2,
@@ -102,7 +102,7 @@ var suites_001 = /* :: */[
           /* :: */[
             /* tuple */[
               "typed_array - buffer",
-              (function () {
+              (function (param) {
                   return /* Eq */Block.__(0, [
                             new Int8Array(/* array */[
                                   3,
@@ -122,7 +122,7 @@ var suites_001 = /* :: */[
             /* :: */[
               /* tuple */[
                 "typed_array - byteLength",
-                (function () {
+                (function (param) {
                     return /* Eq */Block.__(0, [
                               10,
                               new Int16Array(/* array */[
@@ -138,7 +138,7 @@ var suites_001 = /* :: */[
               /* :: */[
                 /* tuple */[
                   "typed_array - byteOffset",
-                  (function () {
+                  (function (param) {
                       return /* Eq */Block.__(0, [
                                 0,
                                 new Int8Array(/* array */[
@@ -154,7 +154,7 @@ var suites_001 = /* :: */[
                 /* :: */[
                   /* tuple */[
                     "typed_array - setArray",
-                    (function () {
+                    (function (param) {
                         var f = function (a) {
                           a.set(/* array */[
                                 9,
@@ -184,7 +184,7 @@ var suites_001 = /* :: */[
                   /* :: */[
                     /* tuple */[
                       "typed_array - setArrayOffset",
-                      (function () {
+                      (function (param) {
                           var f = function (a) {
                             a.set(/* array */[
                                   9,
@@ -214,7 +214,7 @@ var suites_001 = /* :: */[
                     /* :: */[
                       /* tuple */[
                         "typed_array - length",
-                        (function () {
+                        (function (param) {
                             return /* Eq */Block.__(0, [
                                       5,
                                       new Int8Array(/* array */[
@@ -230,7 +230,7 @@ var suites_001 = /* :: */[
                       /* :: */[
                         /* tuple */[
                           "typed_array - copyWithin",
-                          (function () {
+                          (function (param) {
                               return /* Eq */Block.__(0, [
                                         new Int8Array(/* array */[
                                               1,
@@ -252,7 +252,7 @@ var suites_001 = /* :: */[
                         /* :: */[
                           /* tuple */[
                             "typed_array - copyWithinFrom",
-                            (function () {
+                            (function (param) {
                                 return /* Eq */Block.__(0, [
                                           new Int8Array(/* array */[
                                                 4,
@@ -274,7 +274,7 @@ var suites_001 = /* :: */[
                           /* :: */[
                             /* tuple */[
                               "typed_array - copyWithinFromRange",
-                              (function () {
+                              (function (param) {
                                   return /* Eq */Block.__(0, [
                                             new Int8Array(/* array */[
                                                   4,
@@ -296,7 +296,7 @@ var suites_001 = /* :: */[
                             /* :: */[
                               /* tuple */[
                                 "typed_array - fillInPlace",
-                                (function () {
+                                (function (param) {
                                     return /* Eq */Block.__(0, [
                                               new Int8Array(/* array */[
                                                     4,
@@ -314,7 +314,7 @@ var suites_001 = /* :: */[
                               /* :: */[
                                 /* tuple */[
                                   "typed_array - fillFromInPlace",
-                                  (function () {
+                                  (function (param) {
                                       return /* Eq */Block.__(0, [
                                                 new Int8Array(/* array */[
                                                       1,
@@ -332,7 +332,7 @@ var suites_001 = /* :: */[
                                 /* :: */[
                                   /* tuple */[
                                     "typed_array - fillRangeInPlace",
-                                    (function () {
+                                    (function (param) {
                                         return /* Eq */Block.__(0, [
                                                   new Int8Array(/* array */[
                                                         1,
@@ -350,7 +350,7 @@ var suites_001 = /* :: */[
                                   /* :: */[
                                     /* tuple */[
                                       "typed_array - reverseInPlace",
-                                      (function () {
+                                      (function (param) {
                                           return /* Eq */Block.__(0, [
                                                     new Int8Array(/* array */[
                                                           3,
@@ -368,7 +368,7 @@ var suites_001 = /* :: */[
                                     /* :: */[
                                       /* tuple */[
                                         "typed_array - sortInPlace",
-                                        (function () {
+                                        (function (param) {
                                             return /* Eq */Block.__(0, [
                                                       new Int8Array(/* array */[
                                                             1,
@@ -386,7 +386,7 @@ var suites_001 = /* :: */[
                                       /* :: */[
                                         /* tuple */[
                                           "typed_array - sortInPlaceWith",
-                                          (function () {
+                                          (function (param) {
                                               return /* Eq */Block.__(0, [
                                                         new Int8Array(/* array */[
                                                               3,
@@ -406,7 +406,7 @@ var suites_001 = /* :: */[
                                         /* :: */[
                                           /* tuple */[
                                             "typed_array - includes",
-                                            (function () {
+                                            (function (param) {
                                                 return /* Eq */Block.__(0, [
                                                           true,
                                                           new Int8Array(/* array */[
@@ -420,7 +420,7 @@ var suites_001 = /* :: */[
                                           /* :: */[
                                             /* tuple */[
                                               "typed_array - indexOf",
-                                              (function () {
+                                              (function (param) {
                                                   return /* Eq */Block.__(0, [
                                                             1,
                                                             new Int8Array(/* array */[
@@ -434,7 +434,7 @@ var suites_001 = /* :: */[
                                             /* :: */[
                                               /* tuple */[
                                                 "typed_array - indexOfFrom",
-                                                (function () {
+                                                (function (param) {
                                                     return /* Eq */Block.__(0, [
                                                               3,
                                                               new Int8Array(/* array */[
@@ -449,7 +449,7 @@ var suites_001 = /* :: */[
                                               /* :: */[
                                                 /* tuple */[
                                                   "typed_array - join",
-                                                  (function () {
+                                                  (function (param) {
                                                       return /* Eq */Block.__(0, [
                                                                 "1,2,3",
                                                                 new Int8Array(/* array */[
@@ -463,7 +463,7 @@ var suites_001 = /* :: */[
                                                 /* :: */[
                                                   /* tuple */[
                                                     "typed_array - joinWith",
-                                                    (function () {
+                                                    (function (param) {
                                                         return /* Eq */Block.__(0, [
                                                                   "1;2;3",
                                                                   new Int8Array(/* array */[
@@ -477,7 +477,7 @@ var suites_001 = /* :: */[
                                                   /* :: */[
                                                     /* tuple */[
                                                       "typed_array - lastIndexOf",
-                                                      (function () {
+                                                      (function (param) {
                                                           return /* Eq */Block.__(0, [
                                                                     1,
                                                                     new Int8Array(/* array */[
@@ -491,7 +491,7 @@ var suites_001 = /* :: */[
                                                     /* :: */[
                                                       /* tuple */[
                                                         "typed_array - lastIndexOfFrom",
-                                                        (function () {
+                                                        (function (param) {
                                                             return /* Eq */Block.__(0, [
                                                                       1,
                                                                       new Int8Array(/* array */[
@@ -506,7 +506,7 @@ var suites_001 = /* :: */[
                                                       /* :: */[
                                                         /* tuple */[
                                                           "typed_array - slice",
-                                                          (function () {
+                                                          (function (param) {
                                                               return /* Eq */Block.__(0, [
                                                                         new Int8Array(/* array */[
                                                                               2,
@@ -525,7 +525,7 @@ var suites_001 = /* :: */[
                                                         /* :: */[
                                                           /* tuple */[
                                                             "typed_array - copy",
-                                                            (function () {
+                                                            (function (param) {
                                                                 return /* Eq */Block.__(0, [
                                                                           new Int8Array(/* array */[
                                                                                 1,
@@ -547,7 +547,7 @@ var suites_001 = /* :: */[
                                                           /* :: */[
                                                             /* tuple */[
                                                               "typed_array - sliceFrom",
-                                                              (function () {
+                                                              (function (param) {
                                                                   return /* Eq */Block.__(0, [
                                                                             new Int8Array(/* array */[
                                                                                   3,
@@ -567,7 +567,7 @@ var suites_001 = /* :: */[
                                                             /* :: */[
                                                               /* tuple */[
                                                                 "typed_array - subarray",
-                                                                (function () {
+                                                                (function (param) {
                                                                     return /* Eq */Block.__(0, [
                                                                               new Int8Array(/* array */[
                                                                                     2,
@@ -586,7 +586,7 @@ var suites_001 = /* :: */[
                                                               /* :: */[
                                                                 /* tuple */[
                                                                   "typed_array - subarrayFrom",
-                                                                  (function () {
+                                                                  (function (param) {
                                                                       return /* Eq */Block.__(0, [
                                                                                 new Int8Array(/* array */[
                                                                                       3,
@@ -606,7 +606,7 @@ var suites_001 = /* :: */[
                                                                 /* :: */[
                                                                   /* tuple */[
                                                                     "typed_array - toString",
-                                                                    (function () {
+                                                                    (function (param) {
                                                                         return /* Eq */Block.__(0, [
                                                                                   "1,2,3",
                                                                                   new Int8Array(/* array */[
@@ -620,7 +620,7 @@ var suites_001 = /* :: */[
                                                                   /* :: */[
                                                                     /* tuple */[
                                                                       "typed_array - toLocaleString",
-                                                                      (function () {
+                                                                      (function (param) {
                                                                           return /* Eq */Block.__(0, [
                                                                                     "1,2,3",
                                                                                     new Int8Array(/* array */[
@@ -634,7 +634,7 @@ var suites_001 = /* :: */[
                                                                     /* :: */[
                                                                       /* tuple */[
                                                                         "typed_array - every",
-                                                                        (function () {
+                                                                        (function (param) {
                                                                             return /* Eq */Block.__(0, [
                                                                                       true,
                                                                                       new Int8Array(/* array */[
@@ -650,7 +650,7 @@ var suites_001 = /* :: */[
                                                                       /* :: */[
                                                                         /* tuple */[
                                                                           "typed_array - everyi",
-                                                                          (function () {
+                                                                          (function (param) {
                                                                               return /* Eq */Block.__(0, [
                                                                                         false,
                                                                                         new Int8Array(/* array */[
@@ -666,7 +666,7 @@ var suites_001 = /* :: */[
                                                                         /* :: */[
                                                                           /* tuple */[
                                                                             "typed_array - filter",
-                                                                            (function () {
+                                                                            (function (param) {
                                                                                 return /* Eq */Block.__(0, [
                                                                                           new Int8Array(/* array */[
                                                                                                 2,
@@ -686,7 +686,7 @@ var suites_001 = /* :: */[
                                                                           /* :: */[
                                                                             /* tuple */[
                                                                               "typed_array - filteri",
-                                                                              (function () {
+                                                                              (function (param) {
                                                                                   return /* Eq */Block.__(0, [
                                                                                             new Int8Array(/* array */[
                                                                                                   1,
@@ -706,7 +706,7 @@ var suites_001 = /* :: */[
                                                                             /* :: */[
                                                                               /* tuple */[
                                                                                 "typed_array - find",
-                                                                                (function () {
+                                                                                (function (param) {
                                                                                     return /* Eq */Block.__(0, [
                                                                                               2,
                                                                                               new Int8Array(/* array */[
@@ -723,7 +723,7 @@ var suites_001 = /* :: */[
                                                                               /* :: */[
                                                                                 /* tuple */[
                                                                                   "typed_array - findi",
-                                                                                  (function () {
+                                                                                  (function (param) {
                                                                                       return /* Eq */Block.__(0, [
                                                                                                 1,
                                                                                                 new Int8Array(/* array */[
@@ -740,7 +740,7 @@ var suites_001 = /* :: */[
                                                                                 /* :: */[
                                                                                   /* tuple */[
                                                                                     "typed_array - findIndex",
-                                                                                    (function () {
+                                                                                    (function (param) {
                                                                                         return /* Eq */Block.__(0, [
                                                                                                   1,
                                                                                                   new Int8Array(/* array */[
@@ -757,7 +757,7 @@ var suites_001 = /* :: */[
                                                                                   /* :: */[
                                                                                     /* tuple */[
                                                                                       "typed_array - findIndexi",
-                                                                                      (function () {
+                                                                                      (function (param) {
                                                                                           return /* Eq */Block.__(0, [
                                                                                                     0,
                                                                                                     new Int8Array(/* array */[
@@ -774,7 +774,7 @@ var suites_001 = /* :: */[
                                                                                     /* :: */[
                                                                                       /* tuple */[
                                                                                         "typed_array - forEach",
-                                                                                        (function () {
+                                                                                        (function (param) {
                                                                                             var sum = /* record */[/* contents */0];
                                                                                             new Int8Array(/* array */[
                                                                                                     1,
@@ -793,7 +793,7 @@ var suites_001 = /* :: */[
                                                                                       /* :: */[
                                                                                         /* tuple */[
                                                                                           "typed_array - forEachi",
-                                                                                          (function () {
+                                                                                          (function (param) {
                                                                                               var sum = /* record */[/* contents */0];
                                                                                               new Int8Array(/* array */[
                                                                                                       1,
@@ -812,7 +812,7 @@ var suites_001 = /* :: */[
                                                                                         /* :: */[
                                                                                           /* tuple */[
                                                                                             "typed_array - map",
-                                                                                            (function () {
+                                                                                            (function (param) {
                                                                                                 return /* Eq */Block.__(0, [
                                                                                                           new Int8Array(/* array */[
                                                                                                                 2,
@@ -834,7 +834,7 @@ var suites_001 = /* :: */[
                                                                                           /* :: */[
                                                                                             /* tuple */[
                                                                                               "typed_array - map",
-                                                                                              (function () {
+                                                                                              (function (param) {
                                                                                                   return /* Eq */Block.__(0, [
                                                                                                             new Int8Array(/* array */[
                                                                                                                   0,
@@ -856,7 +856,7 @@ var suites_001 = /* :: */[
                                                                                             /* :: */[
                                                                                               /* tuple */[
                                                                                                 "typed_array - reduce",
-                                                                                                (function () {
+                                                                                                (function (param) {
                                                                                                     return /* Eq */Block.__(0, [
                                                                                                               -10,
                                                                                                               new Int8Array(/* array */[
@@ -873,7 +873,7 @@ var suites_001 = /* :: */[
                                                                                               /* :: */[
                                                                                                 /* tuple */[
                                                                                                   "typed_array - reducei",
-                                                                                                  (function () {
+                                                                                                  (function (param) {
                                                                                                       return /* Eq */Block.__(0, [
                                                                                                                 -6,
                                                                                                                 new Int8Array(/* array */[
@@ -890,7 +890,7 @@ var suites_001 = /* :: */[
                                                                                                 /* :: */[
                                                                                                   /* tuple */[
                                                                                                     "typed_array - reduceRight",
-                                                                                                    (function () {
+                                                                                                    (function (param) {
                                                                                                         return /* Eq */Block.__(0, [
                                                                                                                   -10,
                                                                                                                   new Int8Array(/* array */[
@@ -907,7 +907,7 @@ var suites_001 = /* :: */[
                                                                                                   /* :: */[
                                                                                                     /* tuple */[
                                                                                                       "typed_array - reduceRighti",
-                                                                                                      (function () {
+                                                                                                      (function (param) {
                                                                                                           return /* Eq */Block.__(0, [
                                                                                                                     -6,
                                                                                                                     new Int8Array(/* array */[
@@ -924,7 +924,7 @@ var suites_001 = /* :: */[
                                                                                                     /* :: */[
                                                                                                       /* tuple */[
                                                                                                         "typed_array - some",
-                                                                                                        (function () {
+                                                                                                        (function (param) {
                                                                                                             return /* Eq */Block.__(0, [
                                                                                                                       false,
                                                                                                                       new Int8Array(/* array */[
@@ -941,7 +941,7 @@ var suites_001 = /* :: */[
                                                                                                       /* :: */[
                                                                                                         /* tuple */[
                                                                                                           "typed_array - somei",
-                                                                                                          (function () {
+                                                                                                          (function (param) {
                                                                                                               return /* Eq */Block.__(0, [
                                                                                                                         true,
                                                                                                                         new Int8Array(/* array */[
@@ -958,7 +958,7 @@ var suites_001 = /* :: */[
                                                                                                         /* :: */[
                                                                                                           /* tuple */[
                                                                                                             "int8_array - _BYTES_PER_ELEMENT",
-                                                                                                            (function () {
+                                                                                                            (function (param) {
                                                                                                                 return /* Eq */Block.__(0, [
                                                                                                                           1,
                                                                                                                           Int8Array.BYTES_PER_ELEMENT
@@ -968,7 +968,7 @@ var suites_001 = /* :: */[
                                                                                                           /* :: */[
                                                                                                             /* tuple */[
                                                                                                               "int8_array - make",
-                                                                                                              (function () {
+                                                                                                              (function (param) {
                                                                                                                   return /* Eq */Block.__(0, [
                                                                                                                             3,
                                                                                                                             new Int8Array(/* array */[
@@ -982,7 +982,7 @@ var suites_001 = /* :: */[
                                                                                                             /* :: */[
                                                                                                               /* tuple */[
                                                                                                                 "int8_array - fromBuffer",
-                                                                                                                (function () {
+                                                                                                                (function (param) {
                                                                                                                     return /* Eq */Block.__(0, [
                                                                                                                               32,
                                                                                                                               new Int8Array(new ArrayBuffer(32)).byteLength
@@ -992,7 +992,7 @@ var suites_001 = /* :: */[
                                                                                                               /* :: */[
                                                                                                                 /* tuple */[
                                                                                                                   "int8_array - fromBufferOffset",
-                                                                                                                  (function () {
+                                                                                                                  (function (param) {
                                                                                                                       var buffer = new ArrayBuffer(32);
                                                                                                                       return /* Eq */Block.__(0, [
                                                                                                                                 24,
@@ -1003,7 +1003,7 @@ var suites_001 = /* :: */[
                                                                                                                 /* :: */[
                                                                                                                   /* tuple */[
                                                                                                                     "int8_array - fromBufferRange",
-                                                                                                                    (function () {
+                                                                                                                    (function (param) {
                                                                                                                         var buffer = new ArrayBuffer(32);
                                                                                                                         return /* Eq */Block.__(0, [
                                                                                                                                   2,
@@ -1014,7 +1014,7 @@ var suites_001 = /* :: */[
                                                                                                                   /* :: */[
                                                                                                                     /* tuple */[
                                                                                                                       "int8_array - fromLength",
-                                                                                                                      (function () {
+                                                                                                                      (function (param) {
                                                                                                                           return /* Eq */Block.__(0, [
                                                                                                                                     3,
                                                                                                                                     new Int8Array(3).byteLength
@@ -1024,7 +1024,7 @@ var suites_001 = /* :: */[
                                                                                                                     /* :: */[
                                                                                                                       /* tuple */[
                                                                                                                         "int8_array - unsafe_set - typed_array sanity check",
-                                                                                                                        (function () {
+                                                                                                                        (function (param) {
                                                                                                                             var a = new Int8Array(/* array */[
                                                                                                                                   1,
                                                                                                                                   2,
@@ -1042,7 +1042,7 @@ var suites_001 = /* :: */[
                                                                                                                       /* :: */[
                                                                                                                         /* tuple */[
                                                                                                                           "uint8_array - _BYTES_PER_ELEMENT",
-                                                                                                                          (function () {
+                                                                                                                          (function (param) {
                                                                                                                               return /* Eq */Block.__(0, [
                                                                                                                                         1,
                                                                                                                                         Uint8Array.BYTES_PER_ELEMENT
@@ -1052,7 +1052,7 @@ var suites_001 = /* :: */[
                                                                                                                         /* :: */[
                                                                                                                           /* tuple */[
                                                                                                                             "uint8_array - make",
-                                                                                                                            (function () {
+                                                                                                                            (function (param) {
                                                                                                                                 return /* Eq */Block.__(0, [
                                                                                                                                           3,
                                                                                                                                           new Uint8Array(/* array */[
@@ -1066,7 +1066,7 @@ var suites_001 = /* :: */[
                                                                                                                           /* :: */[
                                                                                                                             /* tuple */[
                                                                                                                               "uint8_array - fromBuffer",
-                                                                                                                              (function () {
+                                                                                                                              (function (param) {
                                                                                                                                   return /* Eq */Block.__(0, [
                                                                                                                                             32,
                                                                                                                                             new Uint8Array(new ArrayBuffer(32)).byteLength
@@ -1076,7 +1076,7 @@ var suites_001 = /* :: */[
                                                                                                                             /* :: */[
                                                                                                                               /* tuple */[
                                                                                                                                 "uint8_array - fromBufferOffset",
-                                                                                                                                (function () {
+                                                                                                                                (function (param) {
                                                                                                                                     var buffer = new ArrayBuffer(32);
                                                                                                                                     return /* Eq */Block.__(0, [
                                                                                                                                               24,
@@ -1087,7 +1087,7 @@ var suites_001 = /* :: */[
                                                                                                                               /* :: */[
                                                                                                                                 /* tuple */[
                                                                                                                                   "uint8_array - fromBufferRange",
-                                                                                                                                  (function () {
+                                                                                                                                  (function (param) {
                                                                                                                                       var buffer = new ArrayBuffer(32);
                                                                                                                                       return /* Eq */Block.__(0, [
                                                                                                                                                 2,
@@ -1098,7 +1098,7 @@ var suites_001 = /* :: */[
                                                                                                                                 /* :: */[
                                                                                                                                   /* tuple */[
                                                                                                                                     "uint8_array - fromLength",
-                                                                                                                                    (function () {
+                                                                                                                                    (function (param) {
                                                                                                                                         return /* Eq */Block.__(0, [
                                                                                                                                                   3,
                                                                                                                                                   new Uint8Array(3).byteLength
@@ -1108,7 +1108,7 @@ var suites_001 = /* :: */[
                                                                                                                                   /* :: */[
                                                                                                                                     /* tuple */[
                                                                                                                                       "uint8_array - unsafe_set - typed_array sanity check",
-                                                                                                                                      (function () {
+                                                                                                                                      (function (param) {
                                                                                                                                           var a = new Uint8Array(/* array */[
                                                                                                                                                 1,
                                                                                                                                                 2,
@@ -1126,7 +1126,7 @@ var suites_001 = /* :: */[
                                                                                                                                     /* :: */[
                                                                                                                                       /* tuple */[
                                                                                                                                         "uint8clamped_array - _BYTES_PER_ELEMENT",
-                                                                                                                                        (function () {
+                                                                                                                                        (function (param) {
                                                                                                                                             return /* Eq */Block.__(0, [
                                                                                                                                                       1,
                                                                                                                                                       Uint8ClampedArray.BYTES_PER_ELEMENT
@@ -1136,7 +1136,7 @@ var suites_001 = /* :: */[
                                                                                                                                       /* :: */[
                                                                                                                                         /* tuple */[
                                                                                                                                           "uint8clamped_array - make",
-                                                                                                                                          (function () {
+                                                                                                                                          (function (param) {
                                                                                                                                               return /* Eq */Block.__(0, [
                                                                                                                                                         3,
                                                                                                                                                         new Uint8ClampedArray(/* array */[
@@ -1150,7 +1150,7 @@ var suites_001 = /* :: */[
                                                                                                                                         /* :: */[
                                                                                                                                           /* tuple */[
                                                                                                                                             "uint8clamped_array - fromBuffer",
-                                                                                                                                            (function () {
+                                                                                                                                            (function (param) {
                                                                                                                                                 return /* Eq */Block.__(0, [
                                                                                                                                                           32,
                                                                                                                                                           new Uint8ClampedArray(new ArrayBuffer(32)).byteLength
@@ -1160,7 +1160,7 @@ var suites_001 = /* :: */[
                                                                                                                                           /* :: */[
                                                                                                                                             /* tuple */[
                                                                                                                                               "uint8clamped_array - fromBufferOffset",
-                                                                                                                                              (function () {
+                                                                                                                                              (function (param) {
                                                                                                                                                   var buffer = new ArrayBuffer(32);
                                                                                                                                                   return /* Eq */Block.__(0, [
                                                                                                                                                             24,
@@ -1171,7 +1171,7 @@ var suites_001 = /* :: */[
                                                                                                                                             /* :: */[
                                                                                                                                               /* tuple */[
                                                                                                                                                 "uint8clamped_array - fromBufferRange",
-                                                                                                                                                (function () {
+                                                                                                                                                (function (param) {
                                                                                                                                                     var buffer = new ArrayBuffer(32);
                                                                                                                                                     return /* Eq */Block.__(0, [
                                                                                                                                                               2,
@@ -1182,7 +1182,7 @@ var suites_001 = /* :: */[
                                                                                                                                               /* :: */[
                                                                                                                                                 /* tuple */[
                                                                                                                                                   "uint8clamped_array - fromLength",
-                                                                                                                                                  (function () {
+                                                                                                                                                  (function (param) {
                                                                                                                                                       return /* Eq */Block.__(0, [
                                                                                                                                                                 3,
                                                                                                                                                                 new Uint8ClampedArray(3).byteLength
@@ -1192,7 +1192,7 @@ var suites_001 = /* :: */[
                                                                                                                                                 /* :: */[
                                                                                                                                                   /* tuple */[
                                                                                                                                                     "uint8clamped_array - unsafe_set - typed_array sanity check",
-                                                                                                                                                    (function () {
+                                                                                                                                                    (function (param) {
                                                                                                                                                         var a = new Uint8ClampedArray(/* array */[
                                                                                                                                                               1,
                                                                                                                                                               2,
@@ -1210,7 +1210,7 @@ var suites_001 = /* :: */[
                                                                                                                                                   /* :: */[
                                                                                                                                                     /* tuple */[
                                                                                                                                                       "int16_array - _BYTES_PER_ELEMENT",
-                                                                                                                                                      (function () {
+                                                                                                                                                      (function (param) {
                                                                                                                                                           return /* Eq */Block.__(0, [
                                                                                                                                                                     2,
                                                                                                                                                                     Int16Array.BYTES_PER_ELEMENT
@@ -1220,7 +1220,7 @@ var suites_001 = /* :: */[
                                                                                                                                                     /* :: */[
                                                                                                                                                       /* tuple */[
                                                                                                                                                         "int16_array - make",
-                                                                                                                                                        (function () {
+                                                                                                                                                        (function (param) {
                                                                                                                                                             return /* Eq */Block.__(0, [
                                                                                                                                                                       6,
                                                                                                                                                                       new Int16Array(/* array */[
@@ -1234,7 +1234,7 @@ var suites_001 = /* :: */[
                                                                                                                                                       /* :: */[
                                                                                                                                                         /* tuple */[
                                                                                                                                                           "int16_array - fromBuffer",
-                                                                                                                                                          (function () {
+                                                                                                                                                          (function (param) {
                                                                                                                                                               return /* Eq */Block.__(0, [
                                                                                                                                                                         32,
                                                                                                                                                                         new Int16Array(new ArrayBuffer(32)).byteLength
@@ -1244,7 +1244,7 @@ var suites_001 = /* :: */[
                                                                                                                                                         /* :: */[
                                                                                                                                                           /* tuple */[
                                                                                                                                                             "int16_array - fromBufferOffset",
-                                                                                                                                                            (function () {
+                                                                                                                                                            (function (param) {
                                                                                                                                                                 var buffer = new ArrayBuffer(32);
                                                                                                                                                                 return /* Eq */Block.__(0, [
                                                                                                                                                                           24,
@@ -1255,7 +1255,7 @@ var suites_001 = /* :: */[
                                                                                                                                                           /* :: */[
                                                                                                                                                             /* tuple */[
                                                                                                                                                               "int16_array - fromBufferRange",
-                                                                                                                                                              (function () {
+                                                                                                                                                              (function (param) {
                                                                                                                                                                   var buffer = new ArrayBuffer(32);
                                                                                                                                                                   return /* Eq */Block.__(0, [
                                                                                                                                                                             4,
@@ -1266,7 +1266,7 @@ var suites_001 = /* :: */[
                                                                                                                                                             /* :: */[
                                                                                                                                                               /* tuple */[
                                                                                                                                                                 "int16_array - fromLength",
-                                                                                                                                                                (function () {
+                                                                                                                                                                (function (param) {
                                                                                                                                                                     return /* Eq */Block.__(0, [
                                                                                                                                                                               6,
                                                                                                                                                                               new Int16Array(3).byteLength
@@ -1276,7 +1276,7 @@ var suites_001 = /* :: */[
                                                                                                                                                               /* :: */[
                                                                                                                                                                 /* tuple */[
                                                                                                                                                                   "int16_array - unsafe_set - typed_array sanity check",
-                                                                                                                                                                  (function () {
+                                                                                                                                                                  (function (param) {
                                                                                                                                                                       var a = new Int16Array(/* array */[
                                                                                                                                                                             1,
                                                                                                                                                                             2,
@@ -1294,7 +1294,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                 /* :: */[
                                                                                                                                                                   /* tuple */[
                                                                                                                                                                     "uint16_array - _BYTES_PER_ELEMENT",
-                                                                                                                                                                    (function () {
+                                                                                                                                                                    (function (param) {
                                                                                                                                                                         return /* Eq */Block.__(0, [
                                                                                                                                                                                   2,
                                                                                                                                                                                   Uint16Array.BYTES_PER_ELEMENT
@@ -1304,7 +1304,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                   /* :: */[
                                                                                                                                                                     /* tuple */[
                                                                                                                                                                       "uint16_array - make",
-                                                                                                                                                                      (function () {
+                                                                                                                                                                      (function (param) {
                                                                                                                                                                           return /* Eq */Block.__(0, [
                                                                                                                                                                                     6,
                                                                                                                                                                                     new Uint16Array(/* array */[
@@ -1318,7 +1318,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                     /* :: */[
                                                                                                                                                                       /* tuple */[
                                                                                                                                                                         "uint16_array - fromBuffer",
-                                                                                                                                                                        (function () {
+                                                                                                                                                                        (function (param) {
                                                                                                                                                                             return /* Eq */Block.__(0, [
                                                                                                                                                                                       32,
                                                                                                                                                                                       new Uint16Array(new ArrayBuffer(32)).byteLength
@@ -1328,7 +1328,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                       /* :: */[
                                                                                                                                                                         /* tuple */[
                                                                                                                                                                           "uint16_array - fromBufferOffset",
-                                                                                                                                                                          (function () {
+                                                                                                                                                                          (function (param) {
                                                                                                                                                                               var buffer = new ArrayBuffer(32);
                                                                                                                                                                               return /* Eq */Block.__(0, [
                                                                                                                                                                                         24,
@@ -1339,7 +1339,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                         /* :: */[
                                                                                                                                                                           /* tuple */[
                                                                                                                                                                             "uint16_array - fromBufferRange",
-                                                                                                                                                                            (function () {
+                                                                                                                                                                            (function (param) {
                                                                                                                                                                                 var buffer = new ArrayBuffer(32);
                                                                                                                                                                                 return /* Eq */Block.__(0, [
                                                                                                                                                                                           4,
@@ -1350,7 +1350,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                           /* :: */[
                                                                                                                                                                             /* tuple */[
                                                                                                                                                                               "uint16_array - fromLength",
-                                                                                                                                                                              (function () {
+                                                                                                                                                                              (function (param) {
                                                                                                                                                                                   return /* Eq */Block.__(0, [
                                                                                                                                                                                             6,
                                                                                                                                                                                             new Uint16Array(3).byteLength
@@ -1360,7 +1360,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                             /* :: */[
                                                                                                                                                                               /* tuple */[
                                                                                                                                                                                 "uint16_array - unsafe_set - typed_array sanity check",
-                                                                                                                                                                                (function () {
+                                                                                                                                                                                (function (param) {
                                                                                                                                                                                     var a = new Uint16Array(/* array */[
                                                                                                                                                                                           1,
                                                                                                                                                                                           2,
@@ -1378,7 +1378,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                               /* :: */[
                                                                                                                                                                                 /* tuple */[
                                                                                                                                                                                   "int32_array - _BYTES_PER_ELEMENT",
-                                                                                                                                                                                  (function () {
+                                                                                                                                                                                  (function (param) {
                                                                                                                                                                                       return /* Eq */Block.__(0, [
                                                                                                                                                                                                 4,
                                                                                                                                                                                                 Int32Array.BYTES_PER_ELEMENT
@@ -1388,7 +1388,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                                 /* :: */[
                                                                                                                                                                                   /* tuple */[
                                                                                                                                                                                     "int32_array - make",
-                                                                                                                                                                                    (function () {
+                                                                                                                                                                                    (function (param) {
                                                                                                                                                                                         return /* Eq */Block.__(0, [
                                                                                                                                                                                                   12,
                                                                                                                                                                                                   new Int32Array($$Array.map((function (prim) {
@@ -1404,7 +1404,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                                   /* :: */[
                                                                                                                                                                                     /* tuple */[
                                                                                                                                                                                       "int32_array - fromBuffer",
-                                                                                                                                                                                      (function () {
+                                                                                                                                                                                      (function (param) {
                                                                                                                                                                                           return /* Eq */Block.__(0, [
                                                                                                                                                                                                     32,
                                                                                                                                                                                                     new Int32Array(new ArrayBuffer(32)).byteLength
@@ -1414,7 +1414,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                                     /* :: */[
                                                                                                                                                                                       /* tuple */[
                                                                                                                                                                                         "int32_array - fromBufferOffset",
-                                                                                                                                                                                        (function () {
+                                                                                                                                                                                        (function (param) {
                                                                                                                                                                                             var buffer = new ArrayBuffer(32);
                                                                                                                                                                                             return /* Eq */Block.__(0, [
                                                                                                                                                                                                       24,
@@ -1425,7 +1425,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                                       /* :: */[
                                                                                                                                                                                         /* tuple */[
                                                                                                                                                                                           "int32_array - fromBufferRange",
-                                                                                                                                                                                          (function () {
+                                                                                                                                                                                          (function (param) {
                                                                                                                                                                                               var buffer = new ArrayBuffer(32);
                                                                                                                                                                                               return /* Eq */Block.__(0, [
                                                                                                                                                                                                         8,
@@ -1436,7 +1436,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                                         /* :: */[
                                                                                                                                                                                           /* tuple */[
                                                                                                                                                                                             "int32_array - fromLength",
-                                                                                                                                                                                            (function () {
+                                                                                                                                                                                            (function (param) {
                                                                                                                                                                                                 return /* Eq */Block.__(0, [
                                                                                                                                                                                                           12,
                                                                                                                                                                                                           new Int32Array(3).byteLength
@@ -1446,7 +1446,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                                           /* :: */[
                                                                                                                                                                                             /* tuple */[
                                                                                                                                                                                               "int32_array - unsafe_set - typed_array sanity check",
-                                                                                                                                                                                              (function () {
+                                                                                                                                                                                              (function (param) {
                                                                                                                                                                                                   var a = new Int32Array($$Array.map((function (prim) {
                                                                                                                                                                                                               return prim;
                                                                                                                                                                                                             }), /* array */[
@@ -1466,7 +1466,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                                             /* :: */[
                                                                                                                                                                                               /* tuple */[
                                                                                                                                                                                                 "uint32_array - _BYTES_PER_ELEMENT",
-                                                                                                                                                                                                (function () {
+                                                                                                                                                                                                (function (param) {
                                                                                                                                                                                                     return /* Eq */Block.__(0, [
                                                                                                                                                                                                               4,
                                                                                                                                                                                                               Uint32Array.BYTES_PER_ELEMENT
@@ -1476,7 +1476,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                                               /* :: */[
                                                                                                                                                                                                 /* tuple */[
                                                                                                                                                                                                   "uint32_array - make",
-                                                                                                                                                                                                  (function () {
+                                                                                                                                                                                                  (function (param) {
                                                                                                                                                                                                       return /* Eq */Block.__(0, [
                                                                                                                                                                                                                 12,
                                                                                                                                                                                                                 new Uint32Array(/* array */[
@@ -1490,7 +1490,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                                                 /* :: */[
                                                                                                                                                                                                   /* tuple */[
                                                                                                                                                                                                     "uint32_array - fromBuffer",
-                                                                                                                                                                                                    (function () {
+                                                                                                                                                                                                    (function (param) {
                                                                                                                                                                                                         return /* Eq */Block.__(0, [
                                                                                                                                                                                                                   32,
                                                                                                                                                                                                                   new Uint32Array(new ArrayBuffer(32)).byteLength
@@ -1500,7 +1500,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                                                   /* :: */[
                                                                                                                                                                                                     /* tuple */[
                                                                                                                                                                                                       "uint32_array - fromBufferOffset",
-                                                                                                                                                                                                      (function () {
+                                                                                                                                                                                                      (function (param) {
                                                                                                                                                                                                           var buffer = new ArrayBuffer(32);
                                                                                                                                                                                                           return /* Eq */Block.__(0, [
                                                                                                                                                                                                                     24,
@@ -1511,7 +1511,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                                                     /* :: */[
                                                                                                                                                                                                       /* tuple */[
                                                                                                                                                                                                         "uint32_array - fromBufferRange",
-                                                                                                                                                                                                        (function () {
+                                                                                                                                                                                                        (function (param) {
                                                                                                                                                                                                             var buffer = new ArrayBuffer(32);
                                                                                                                                                                                                             return /* Eq */Block.__(0, [
                                                                                                                                                                                                                       8,
@@ -1522,7 +1522,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                                                       /* :: */[
                                                                                                                                                                                                         /* tuple */[
                                                                                                                                                                                                           "uint32_array - fromLength",
-                                                                                                                                                                                                          (function () {
+                                                                                                                                                                                                          (function (param) {
                                                                                                                                                                                                               return /* Eq */Block.__(0, [
                                                                                                                                                                                                                         12,
                                                                                                                                                                                                                         new Uint32Array(3).byteLength
@@ -1532,7 +1532,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                                                         /* :: */[
                                                                                                                                                                                                           /* tuple */[
                                                                                                                                                                                                             "uint32_array - unsafe_set - typed_array sanity check",
-                                                                                                                                                                                                            (function () {
+                                                                                                                                                                                                            (function (param) {
                                                                                                                                                                                                                 var a = new Uint32Array(/* array */[
                                                                                                                                                                                                                       1,
                                                                                                                                                                                                                       2,
@@ -1550,7 +1550,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                                                           /* :: */[
                                                                                                                                                                                                             /* tuple */[
                                                                                                                                                                                                               "float32_array - _BYTES_PER_ELEMENT",
-                                                                                                                                                                                                              (function () {
+                                                                                                                                                                                                              (function (param) {
                                                                                                                                                                                                                   return /* Eq */Block.__(0, [
                                                                                                                                                                                                                             4,
                                                                                                                                                                                                                             Float32Array.BYTES_PER_ELEMENT
@@ -1560,7 +1560,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                                                             /* :: */[
                                                                                                                                                                                                               /* tuple */[
                                                                                                                                                                                                                 "float32_array - make",
-                                                                                                                                                                                                                (function () {
+                                                                                                                                                                                                                (function (param) {
                                                                                                                                                                                                                     return /* Eq */Block.__(0, [
                                                                                                                                                                                                                               12,
                                                                                                                                                                                                                               new Float32Array(/* array */[
@@ -1574,7 +1574,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                                                               /* :: */[
                                                                                                                                                                                                                 /* tuple */[
                                                                                                                                                                                                                   "float32_array - fromBuffer",
-                                                                                                                                                                                                                  (function () {
+                                                                                                                                                                                                                  (function (param) {
                                                                                                                                                                                                                       return /* Eq */Block.__(0, [
                                                                                                                                                                                                                                 32,
                                                                                                                                                                                                                                 new Float32Array(new ArrayBuffer(32)).byteLength
@@ -1584,7 +1584,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                                                                 /* :: */[
                                                                                                                                                                                                                   /* tuple */[
                                                                                                                                                                                                                     "float32_array - fromBufferOffset",
-                                                                                                                                                                                                                    (function () {
+                                                                                                                                                                                                                    (function (param) {
                                                                                                                                                                                                                         var buffer = new ArrayBuffer(32);
                                                                                                                                                                                                                         return /* Eq */Block.__(0, [
                                                                                                                                                                                                                                   24,
@@ -1595,7 +1595,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                                                                   /* :: */[
                                                                                                                                                                                                                     /* tuple */[
                                                                                                                                                                                                                       "float32_array - fromBufferRange",
-                                                                                                                                                                                                                      (function () {
+                                                                                                                                                                                                                      (function (param) {
                                                                                                                                                                                                                           var buffer = new ArrayBuffer(32);
                                                                                                                                                                                                                           return /* Eq */Block.__(0, [
                                                                                                                                                                                                                                     8,
@@ -1606,7 +1606,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                                                                     /* :: */[
                                                                                                                                                                                                                       /* tuple */[
                                                                                                                                                                                                                         "float32_array - fromLength",
-                                                                                                                                                                                                                        (function () {
+                                                                                                                                                                                                                        (function (param) {
                                                                                                                                                                                                                             return /* Eq */Block.__(0, [
                                                                                                                                                                                                                                       12,
                                                                                                                                                                                                                                       new Float32Array(3).byteLength
@@ -1616,7 +1616,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                                                                       /* :: */[
                                                                                                                                                                                                                         /* tuple */[
                                                                                                                                                                                                                           "float32_array - unsafe_set - typed_array sanity check",
-                                                                                                                                                                                                                          (function () {
+                                                                                                                                                                                                                          (function (param) {
                                                                                                                                                                                                                               var a = new Float32Array(/* array */[
                                                                                                                                                                                                                                     1,
                                                                                                                                                                                                                                     2,
@@ -1634,7 +1634,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                                                                         /* :: */[
                                                                                                                                                                                                                           /* tuple */[
                                                                                                                                                                                                                             "float64_array - _BYTES_PER_ELEMENT",
-                                                                                                                                                                                                                            (function () {
+                                                                                                                                                                                                                            (function (param) {
                                                                                                                                                                                                                                 return /* Eq */Block.__(0, [
                                                                                                                                                                                                                                           8,
                                                                                                                                                                                                                                           Float64Array.BYTES_PER_ELEMENT
@@ -1644,7 +1644,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                                                                           /* :: */[
                                                                                                                                                                                                                             /* tuple */[
                                                                                                                                                                                                                               "float64_array - make",
-                                                                                                                                                                                                                              (function () {
+                                                                                                                                                                                                                              (function (param) {
                                                                                                                                                                                                                                   return /* Eq */Block.__(0, [
                                                                                                                                                                                                                                             24,
                                                                                                                                                                                                                                             new Float64Array(/* array */[
@@ -1658,7 +1658,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                                                                             /* :: */[
                                                                                                                                                                                                                               /* tuple */[
                                                                                                                                                                                                                                 "float64_array - fromBuffer",
-                                                                                                                                                                                                                                (function () {
+                                                                                                                                                                                                                                (function (param) {
                                                                                                                                                                                                                                     return /* Eq */Block.__(0, [
                                                                                                                                                                                                                                               32,
                                                                                                                                                                                                                                               new Float64Array(new ArrayBuffer(32)).byteLength
@@ -1668,7 +1668,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                                                                               /* :: */[
                                                                                                                                                                                                                                 /* tuple */[
                                                                                                                                                                                                                                   "float64_array - fromBufferOffset",
-                                                                                                                                                                                                                                  (function () {
+                                                                                                                                                                                                                                  (function (param) {
                                                                                                                                                                                                                                       var buffer = new ArrayBuffer(32);
                                                                                                                                                                                                                                       return /* Eq */Block.__(0, [
                                                                                                                                                                                                                                                 24,
@@ -1679,7 +1679,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                                                                                 /* :: */[
                                                                                                                                                                                                                                   /* tuple */[
                                                                                                                                                                                                                                     "float64_array - fromBufferRange",
-                                                                                                                                                                                                                                    (function () {
+                                                                                                                                                                                                                                    (function (param) {
                                                                                                                                                                                                                                         var buffer = new ArrayBuffer(32);
                                                                                                                                                                                                                                         return /* Eq */Block.__(0, [
                                                                                                                                                                                                                                                   16,
@@ -1690,7 +1690,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                                                                                   /* :: */[
                                                                                                                                                                                                                                     /* tuple */[
                                                                                                                                                                                                                                       "float64_array - fromLength",
-                                                                                                                                                                                                                                      (function () {
+                                                                                                                                                                                                                                      (function (param) {
                                                                                                                                                                                                                                           return /* Eq */Block.__(0, [
                                                                                                                                                                                                                                                     24,
                                                                                                                                                                                                                                                     new Float64Array(3).byteLength
@@ -1700,7 +1700,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                                                                                     /* :: */[
                                                                                                                                                                                                                                       /* tuple */[
                                                                                                                                                                                                                                         "float64_array - unsafe_set - typed_array sanity check",
-                                                                                                                                                                                                                                        (function () {
+                                                                                                                                                                                                                                        (function (param) {
                                                                                                                                                                                                                                             var a = new Float64Array(/* array */[
                                                                                                                                                                                                                                                   1,
                                                                                                                                                                                                                                                   2,
@@ -1718,7 +1718,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                                                                                       /* :: */[
                                                                                                                                                                                                                                         /* tuple */[
                                                                                                                                                                                                                                           "DataView - make, byteLength",
-                                                                                                                                                                                                                                          (function () {
+                                                                                                                                                                                                                                          (function (param) {
                                                                                                                                                                                                                                               return /* Eq */Block.__(0, [
                                                                                                                                                                                                                                                         32,
                                                                                                                                                                                                                                                         new DataView(new ArrayBuffer(32)).byteLength
@@ -1728,7 +1728,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                                                                                         /* :: */[
                                                                                                                                                                                                                                           /* tuple */[
                                                                                                                                                                                                                                             "DataView - fromBuffer",
-                                                                                                                                                                                                                                            (function () {
+                                                                                                                                                                                                                                            (function (param) {
                                                                                                                                                                                                                                                 return /* Eq */Block.__(0, [
                                                                                                                                                                                                                                                           32,
                                                                                                                                                                                                                                                           new DataView(new ArrayBuffer(32)).byteLength
@@ -1738,7 +1738,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                                                                                           /* :: */[
                                                                                                                                                                                                                                             /* tuple */[
                                                                                                                                                                                                                                               "DataView - fromBufferOffset",
-                                                                                                                                                                                                                                              (function () {
+                                                                                                                                                                                                                                              (function (param) {
                                                                                                                                                                                                                                                   var buffer = new ArrayBuffer(32);
                                                                                                                                                                                                                                                   return /* Eq */Block.__(0, [
                                                                                                                                                                                                                                                             24,
@@ -1749,7 +1749,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                                                                                             /* :: */[
                                                                                                                                                                                                                                               /* tuple */[
                                                                                                                                                                                                                                                 "DataView - fromBufferRange",
-                                                                                                                                                                                                                                                (function () {
+                                                                                                                                                                                                                                                (function (param) {
                                                                                                                                                                                                                                                     var buffer = new ArrayBuffer(32);
                                                                                                                                                                                                                                                     return /* Eq */Block.__(0, [
                                                                                                                                                                                                                                                               4,
@@ -1760,7 +1760,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                                                                                               /* :: */[
                                                                                                                                                                                                                                                 /* tuple */[
                                                                                                                                                                                                                                                   "DataView - buffer",
-                                                                                                                                                                                                                                                  (function () {
+                                                                                                                                                                                                                                                  (function (param) {
                                                                                                                                                                                                                                                       var buffer = new ArrayBuffer(32);
                                                                                                                                                                                                                                                       return /* Eq */Block.__(0, [
                                                                                                                                                                                                                                                                 buffer,
@@ -1771,7 +1771,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                                                                                                 /* :: */[
                                                                                                                                                                                                                                                   /* tuple */[
                                                                                                                                                                                                                                                     "DataView - byteOffset",
-                                                                                                                                                                                                                                                    (function () {
+                                                                                                                                                                                                                                                    (function (param) {
                                                                                                                                                                                                                                                         var buffer = new ArrayBuffer(32);
                                                                                                                                                                                                                                                         return /* Eq */Block.__(0, [
                                                                                                                                                                                                                                                                   8,
@@ -1782,7 +1782,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                                                                                                   /* :: */[
                                                                                                                                                                                                                                                     /* tuple */[
                                                                                                                                                                                                                                                       "DataView - setInt8, getInt8",
-                                                                                                                                                                                                                                                      (function () {
+                                                                                                                                                                                                                                                      (function (param) {
                                                                                                                                                                                                                                                           var buffer = new ArrayBuffer(8);
                                                                                                                                                                                                                                                           var view = new DataView(buffer);
                                                                                                                                                                                                                                                           view.setInt8(0, 1);
@@ -1795,7 +1795,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                                                                                                     /* :: */[
                                                                                                                                                                                                                                                       /* tuple */[
                                                                                                                                                                                                                                                         "DataView - setUint8, getUint8",
-                                                                                                                                                                                                                                                        (function () {
+                                                                                                                                                                                                                                                        (function (param) {
                                                                                                                                                                                                                                                             var buffer = new ArrayBuffer(8);
                                                                                                                                                                                                                                                             var view = new DataView(buffer);
                                                                                                                                                                                                                                                             view.setUint8(0, 128);
@@ -1808,7 +1808,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                                                                                                       /* :: */[
                                                                                                                                                                                                                                                         /* tuple */[
                                                                                                                                                                                                                                                           "DataView - setInt16, getInt16",
-                                                                                                                                                                                                                                                          (function () {
+                                                                                                                                                                                                                                                          (function (param) {
                                                                                                                                                                                                                                                               var buffer = new ArrayBuffer(8);
                                                                                                                                                                                                                                                               var view = new DataView(buffer);
                                                                                                                                                                                                                                                               view.setInt16(0, 257);
@@ -1821,7 +1821,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                                                                                                         /* :: */[
                                                                                                                                                                                                                                                           /* tuple */[
                                                                                                                                                                                                                                                             "DataView - getInt16LittleEndian",
-                                                                                                                                                                                                                                                            (function () {
+                                                                                                                                                                                                                                                            (function (param) {
                                                                                                                                                                                                                                                                 var buffer = new ArrayBuffer(8);
                                                                                                                                                                                                                                                                 var view = new DataView(buffer);
                                                                                                                                                                                                                                                                 view.setInt16(0, 25000, 1);
@@ -1834,7 +1834,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                                                                                                           /* :: */[
                                                                                                                                                                                                                                                             /* tuple */[
                                                                                                                                                                                                                                                               "DataView - setInt16LittleEndian",
-                                                                                                                                                                                                                                                              (function () {
+                                                                                                                                                                                                                                                              (function (param) {
                                                                                                                                                                                                                                                                   var buffer = new ArrayBuffer(8);
                                                                                                                                                                                                                                                                   var view = new DataView(buffer);
                                                                                                                                                                                                                                                                   view.setInt16(0, 25000, 1);
@@ -1847,7 +1847,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                                                                                                             /* :: */[
                                                                                                                                                                                                                                                               /* tuple */[
                                                                                                                                                                                                                                                                 "DataView - setUint16, getUint16",
-                                                                                                                                                                                                                                                                (function () {
+                                                                                                                                                                                                                                                                (function (param) {
                                                                                                                                                                                                                                                                     var buffer = new ArrayBuffer(8);
                                                                                                                                                                                                                                                                     var view = new DataView(buffer);
                                                                                                                                                                                                                                                                     view.setUint16(0, 32768);
@@ -1860,7 +1860,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                                                                                                               /* :: */[
                                                                                                                                                                                                                                                                 /* tuple */[
                                                                                                                                                                                                                                                                   "DataView - getUint16LittleEndian",
-                                                                                                                                                                                                                                                                  (function () {
+                                                                                                                                                                                                                                                                  (function (param) {
                                                                                                                                                                                                                                                                       var buffer = new ArrayBuffer(8);
                                                                                                                                                                                                                                                                       var view = new DataView(buffer);
                                                                                                                                                                                                                                                                       view.setUint16(0, 32768, 1);
@@ -1873,7 +1873,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                                                                                                                 /* :: */[
                                                                                                                                                                                                                                                                   /* tuple */[
                                                                                                                                                                                                                                                                     "DataView - setUint16LittleEndian",
-                                                                                                                                                                                                                                                                    (function () {
+                                                                                                                                                                                                                                                                    (function (param) {
                                                                                                                                                                                                                                                                         var buffer = new ArrayBuffer(8);
                                                                                                                                                                                                                                                                         var view = new DataView(buffer);
                                                                                                                                                                                                                                                                         view.setUint16(0, 32768, 1);
@@ -1886,7 +1886,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                                                                                                                   /* :: */[
                                                                                                                                                                                                                                                                     /* tuple */[
                                                                                                                                                                                                                                                                       "DataView - setInt32, getInt32",
-                                                                                                                                                                                                                                                                      (function () {
+                                                                                                                                                                                                                                                                      (function (param) {
                                                                                                                                                                                                                                                                           var buffer = new ArrayBuffer(8);
                                                                                                                                                                                                                                                                           var view = new DataView(buffer);
                                                                                                                                                                                                                                                                           view.setInt32(0, 65537);
@@ -1899,7 +1899,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                                                                                                                     /* :: */[
                                                                                                                                                                                                                                                                       /* tuple */[
                                                                                                                                                                                                                                                                         "DataView - getInt32LittleEndian",
-                                                                                                                                                                                                                                                                        (function () {
+                                                                                                                                                                                                                                                                        (function (param) {
                                                                                                                                                                                                                                                                             var buffer = new ArrayBuffer(8);
                                                                                                                                                                                                                                                                             var view = new DataView(buffer);
                                                                                                                                                                                                                                                                             view.setInt32(0, 65537, 1);
@@ -1912,7 +1912,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                                                                                                                       /* :: */[
                                                                                                                                                                                                                                                                         /* tuple */[
                                                                                                                                                                                                                                                                           "DataView - setInt32LittleEndian",
-                                                                                                                                                                                                                                                                          (function () {
+                                                                                                                                                                                                                                                                          (function (param) {
                                                                                                                                                                                                                                                                               var buffer = new ArrayBuffer(8);
                                                                                                                                                                                                                                                                               var view = new DataView(buffer);
                                                                                                                                                                                                                                                                               view.setInt32(0, 65537, 1);
@@ -1925,7 +1925,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                                                                                                                         /* :: */[
                                                                                                                                                                                                                                                                           /* tuple */[
                                                                                                                                                                                                                                                                             "DataView - setUint32, getUint32",
-                                                                                                                                                                                                                                                                            (function () {
+                                                                                                                                                                                                                                                                            (function (param) {
                                                                                                                                                                                                                                                                                 var buffer = new ArrayBuffer(8);
                                                                                                                                                                                                                                                                                 var view = new DataView(buffer);
                                                                                                                                                                                                                                                                                 view.setUint32(0, 65537);
@@ -1938,7 +1938,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                                                                                                                           /* :: */[
                                                                                                                                                                                                                                                                             /* tuple */[
                                                                                                                                                                                                                                                                               "DataView - getUint32LittleEndian",
-                                                                                                                                                                                                                                                                              (function () {
+                                                                                                                                                                                                                                                                              (function (param) {
                                                                                                                                                                                                                                                                                   var buffer = new ArrayBuffer(8);
                                                                                                                                                                                                                                                                                   var view = new DataView(buffer);
                                                                                                                                                                                                                                                                                   view.setUint32(0, 65537, 1);
@@ -1951,7 +1951,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                                                                                                                             /* :: */[
                                                                                                                                                                                                                                                                               /* tuple */[
                                                                                                                                                                                                                                                                                 "DataView - setUint32LittleEndian",
-                                                                                                                                                                                                                                                                                (function () {
+                                                                                                                                                                                                                                                                                (function (param) {
                                                                                                                                                                                                                                                                                     var buffer = new ArrayBuffer(8);
                                                                                                                                                                                                                                                                                     var view = new DataView(buffer);
                                                                                                                                                                                                                                                                                     view.setUint32(0, 65537, 1);
@@ -1964,7 +1964,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                                                                                                                               /* :: */[
                                                                                                                                                                                                                                                                                 /* tuple */[
                                                                                                                                                                                                                                                                                   "DataView - setFloat32, getFloat32",
-                                                                                                                                                                                                                                                                                  (function () {
+                                                                                                                                                                                                                                                                                  (function (param) {
                                                                                                                                                                                                                                                                                       var buffer = new ArrayBuffer(8);
                                                                                                                                                                                                                                                                                       var view = new DataView(buffer);
                                                                                                                                                                                                                                                                                       view.setFloat32(0, 65537.0);
@@ -1977,7 +1977,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                                                                                                                                 /* :: */[
                                                                                                                                                                                                                                                                                   /* tuple */[
                                                                                                                                                                                                                                                                                     "DataView - getFloat32LittleEndian",
-                                                                                                                                                                                                                                                                                    (function () {
+                                                                                                                                                                                                                                                                                    (function (param) {
                                                                                                                                                                                                                                                                                         var buffer = new ArrayBuffer(8);
                                                                                                                                                                                                                                                                                         var view = new DataView(buffer);
                                                                                                                                                                                                                                                                                         view.setFloat32(0, 65537.0, 1);
@@ -1990,7 +1990,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                                                                                                                                   /* :: */[
                                                                                                                                                                                                                                                                                     /* tuple */[
                                                                                                                                                                                                                                                                                       "DataView - setFloat32LittleEndian",
-                                                                                                                                                                                                                                                                                      (function () {
+                                                                                                                                                                                                                                                                                      (function (param) {
                                                                                                                                                                                                                                                                                           var buffer = new ArrayBuffer(8);
                                                                                                                                                                                                                                                                                           var view = new DataView(buffer);
                                                                                                                                                                                                                                                                                           view.setFloat32(0, 1.0, 1);
@@ -2003,7 +2003,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                                                                                                                                     /* :: */[
                                                                                                                                                                                                                                                                                       /* tuple */[
                                                                                                                                                                                                                                                                                         "DataView - setFloat64, getFloat64",
-                                                                                                                                                                                                                                                                                        (function () {
+                                                                                                                                                                                                                                                                                        (function (param) {
                                                                                                                                                                                                                                                                                             var buffer = new ArrayBuffer(8);
                                                                                                                                                                                                                                                                                             var view = new DataView(buffer);
                                                                                                                                                                                                                                                                                             view.setFloat64(0, 1e200);
@@ -2016,7 +2016,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                                                                                                                                       /* :: */[
                                                                                                                                                                                                                                                                                         /* tuple */[
                                                                                                                                                                                                                                                                                           "DataView - getFloat64LittleEndian",
-                                                                                                                                                                                                                                                                                          (function () {
+                                                                                                                                                                                                                                                                                          (function (param) {
                                                                                                                                                                                                                                                                                               var buffer = new ArrayBuffer(8);
                                                                                                                                                                                                                                                                                               var view = new DataView(buffer);
                                                                                                                                                                                                                                                                                               view.setFloat64(0, 1e200, 1);
@@ -2029,7 +2029,7 @@ var suites_001 = /* :: */[
                                                                                                                                                                                                                                                                                         /* :: */[
                                                                                                                                                                                                                                                                                           /* tuple */[
                                                                                                                                                                                                                                                                                             "DataView - setFloat64LittleEndian",
-                                                                                                                                                                                                                                                                                            (function () {
+                                                                                                                                                                                                                                                                                            (function (param) {
                                                                                                                                                                                                                                                                                                 var buffer = new ArrayBuffer(8);
                                                                                                                                                                                                                                                                                                 var view = new DataView(buffer);
                                                                                                                                                                                                                                                                                                 view.setFloat64(0, 1.0, 1);

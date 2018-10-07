@@ -15,7 +15,7 @@ function eq(loc, x, y) {
   suites[0] = /* :: */[
     /* tuple */[
       loc + (" id " + String(test_id[0])),
-      (function () {
+      (function (param) {
           return /* Eq */Block.__(0, [
                     x,
                     y
@@ -32,7 +32,7 @@ function b(loc, v) {
   suites[0] = /* :: */[
     /* tuple */[
       loc + (" id " + String(test_id[0])),
-      (function () {
+      (function (param) {
           return /* Ok */Block.__(4, [v]);
         })
     ],
@@ -45,7 +45,7 @@ var mapOfArray = Belt_MapInt.fromArray;
 
 var setOfArray = Belt_SetInt.fromArray;
 
-function emptyMap() {
+function emptyMap(param) {
   return Belt_MapInt.empty;
 }
 

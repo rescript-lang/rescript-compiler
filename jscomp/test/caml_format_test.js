@@ -90,7 +90,7 @@ function from_float_of_string(xs) {
               }), xs);
 }
 
-function from_of_string() {
+function from_of_string(xs) {
   return $$Array.to_list($$Array.mapi((function (i, param) {
                     var b = param[1];
                     var a = param[0];
@@ -105,7 +105,7 @@ function from_of_string() {
                                         ]),
                                       "of_string %L"
                                     ]), i),
-                            (function () {
+                            (function (param) {
                                 return /* Eq */Block.__(0, [
                                           Caml_format.caml_int_of_string(b),
                                           a
@@ -186,7 +186,7 @@ var pairs$1 = /* array */[
 var suites = Pervasives.$at(from_of_string(of_string), Pervasives.$at(/* :: */[
           /* tuple */[
             "isnan_of_string",
-            (function () {
+            (function (param) {
                 return /* Eq */Block.__(0, [
                           true,
                           Caml_float.caml_classify_float(Caml_format.caml_float_of_string("nan")) === /* FP_nan */4
@@ -210,7 +210,7 @@ var suites = Pervasives.$at(from_of_string(of_string), Pervasives.$at(/* :: */[
                                             ]),
                                           "infinity_of_string %d"
                                         ]), i),
-                                (function () {
+                                (function (param) {
                                     return /* Eq */Block.__(0, [
                                               a,
                                               Caml_float.caml_classify_float(Caml_format.caml_float_of_string(b))
@@ -220,8 +220,8 @@ var suites = Pervasives.$at(from_of_string(of_string), Pervasives.$at(/* :: */[
                       }), pairs)), Pervasives.$at(/* :: */[
                   /* tuple */[
                     "throw",
-                    (function () {
-                        return /* ThrowAny */Block.__(7, [(function () {
+                    (function (param) {
+                        return /* ThrowAny */Block.__(7, [(function (param) {
                                       Caml_format.caml_float_of_string("");
                                       return /* () */0;
                                     })]);
@@ -230,7 +230,7 @@ var suites = Pervasives.$at(from_of_string(of_string), Pervasives.$at(/* :: */[
                   /* :: */[
                     /* tuple */[
                       "format_int",
-                      (function () {
+                      (function (param) {
                           return /* Eq */Block.__(0, [
                                     "                              33",
                                     Caml_format.caml_format_int("%32d", 33)
@@ -255,7 +255,7 @@ var suites = Pervasives.$at(from_of_string(of_string), Pervasives.$at(/* :: */[
                                                 ]),
                                               "normal_float_of_string %d"
                                             ]), i),
-                                    (function () {
+                                    (function (param) {
                                         return /* Eq */Block.__(0, [
                                                   a,
                                                   Caml_format.caml_float_of_string(b)
@@ -270,7 +270,7 @@ function ff(param) {
 
 var formatter_suites_000 = /* tuple */[
   "fmt_concat",
-  (function () {
+  (function (param) {
       return /* Eq */Block.__(0, [
                 Curry._6(Format.asprintf(Pervasives.$caret$caret(/* Format */[
                               /* String */Block.__(2, [
@@ -327,7 +327,7 @@ var formatter_suites_000 = /* tuple */[
 var formatter_suites_001 = /* :: */[
   /* tuple */[
     "fmt_gen",
-    (function () {
+    (function (param) {
         return /* Eq */Block.__(0, [
                   Curry._8(Format.asprintf(Pervasives.$caret$caret(/* Format */[
                                 /* String */Block.__(2, [
@@ -397,7 +397,7 @@ var formatter_suites_001 = /* :: */[
   /* :: */[
     /* tuple */[
       "long_fmt",
-      (function () {
+      (function (param) {
           return /* Eq */Block.__(0, [
                     Curry.app(Format.asprintf(/* Format */[
                               /* Int */Block.__(4, [
@@ -685,7 +685,7 @@ var formatter_suites_001 = /* :: */[
     /* :: */[
       /* tuple */[
         "long_fmt_2",
-        (function () {
+        (function (param) {
             return /* Eq */Block.__(0, [
                       Curry.app(Format.asprintf(/* Format */[
                                 /* Formatting_gen */Block.__(18, [
@@ -1013,7 +1013,7 @@ var formatter_suites_001 = /* :: */[
       /* :: */[
         /* tuple */[
           "width_1",
-          (function () {
+          (function (param) {
               return /* Eq */Block.__(0, [
                         Curry._1(Format.asprintf(/* Format */[
                                   /* Int */Block.__(4, [
@@ -1034,7 +1034,7 @@ var formatter_suites_001 = /* :: */[
         /* :: */[
           /* tuple */[
             "width_2",
-            (function () {
+            (function (param) {
                 return /* Eq */Block.__(0, [
                           Curry._1(Format.asprintf(/* Format */[
                                     /* Float */Block.__(8, [
@@ -1055,7 +1055,7 @@ var formatter_suites_001 = /* :: */[
           /* :: */[
             /* tuple */[
               "alternate_1",
-              (function () {
+              (function (param) {
                   return /* Eq */Block.__(0, [
                             Curry._1(Format.asprintf(/* Format */[
                                       /* Int */Block.__(4, [
@@ -1076,7 +1076,7 @@ var formatter_suites_001 = /* :: */[
             /* :: */[
               /* tuple */[
                 "alternate_2",
-                (function () {
+                (function (param) {
                     return /* Eq */Block.__(0, [
                               Curry._1(Format.asprintf(/* Format */[
                                         /* Int */Block.__(4, [
@@ -1097,7 +1097,7 @@ var formatter_suites_001 = /* :: */[
               /* :: */[
                 /* tuple */[
                   "alternate_3",
-                  (function () {
+                  (function (param) {
                       return /* Eq */Block.__(0, [
                                 /* tuple */[
                                   Curry._1(Format.asprintf(/* Format */[
@@ -1129,7 +1129,7 @@ var formatter_suites_001 = /* :: */[
                 /* :: */[
                   /* tuple */[
                     "justify_0",
-                    (function () {
+                    (function (param) {
                         return /* Eq */Block.__(0, [
                                   Caml_format.caml_format_int("%-8d", 32),
                                   "32      "
@@ -1139,7 +1139,7 @@ var formatter_suites_001 = /* :: */[
                   /* :: */[
                     /* tuple */[
                       "sign_p",
-                      (function () {
+                      (function (param) {
                           return /* Eq */Block.__(0, [
                                     Curry._1(Format.asprintf(/* Format */[
                                               /* Int */Block.__(4, [
@@ -1160,7 +1160,7 @@ var formatter_suites_001 = /* :: */[
                     /* :: */[
                       /* tuple */[
                         "sign_2p",
-                        (function () {
+                        (function (param) {
                             return /* Eq */Block.__(0, [
                                       Curry._1(Format.asprintf(/* Format */[
                                                 /* Int */Block.__(4, [
@@ -1181,7 +1181,7 @@ var formatter_suites_001 = /* :: */[
                       /* :: */[
                         /* tuple */[
                           "sign_3p",
-                          (function () {
+                          (function (param) {
                               return /* Eq */Block.__(0, [
                                         Curry._1(Format.asprintf(/* Format */[
                                                   /* Int32 */Block.__(5, [
@@ -1199,7 +1199,7 @@ var formatter_suites_001 = /* :: */[
                         /* :: */[
                           /* tuple */[
                             "sign_4p",
-                            (function () {
+                            (function (param) {
                                 return /* Eq */Block.__(0, [
                                           Curry._1(Format.asprintf(/* Format */[
                                                     /* Int32 */Block.__(5, [
@@ -1217,7 +1217,7 @@ var formatter_suites_001 = /* :: */[
                           /* :: */[
                             /* tuple */[
                               "width_3",
-                              (function () {
+                              (function (param) {
                                   return /* Eq */Block.__(0, [
                                             Caml_format.caml_format_int("%032d", 32),
                                             "00000000000000000000000000000032"
@@ -1227,7 +1227,7 @@ var formatter_suites_001 = /* :: */[
                             /* :: */[
                               /* tuple */[
                                 "prec_1",
-                                (function () {
+                                (function (param) {
                                     return /* Eq */Block.__(0, [
                                               Curry._1(Format.asprintf(/* Format */[
                                                         /* Int */Block.__(4, [
@@ -1245,7 +1245,7 @@ var formatter_suites_001 = /* :: */[
                               /* :: */[
                                 /* tuple */[
                                   "prec_2",
-                                  (function () {
+                                  (function (param) {
                                       return /* Eq */Block.__(0, [
                                                 Caml_format.caml_format_int("%.10d", 32),
                                                 "0000000032"
@@ -1255,7 +1255,7 @@ var formatter_suites_001 = /* :: */[
                                 /* :: */[
                                   /* tuple */[
                                     "prec_3",
-                                    (function () {
+                                    (function (param) {
                                         return /* Eq */Block.__(0, [
                                                   Caml_format.caml_format_int("%.d", 32),
                                                   "32"
@@ -1265,7 +1265,7 @@ var formatter_suites_001 = /* :: */[
                                   /* :: */[
                                     /* tuple */[
                                       "prec_4",
-                                      (function () {
+                                      (function (param) {
                                           return /* Eq */Block.__(0, [
                                                     Caml_format.caml_format_int("%.d", 32),
                                                     "32"
@@ -1591,7 +1591,7 @@ var lambda_suites = /* array */[
   ]
 ];
 
-function from_lambda_pairs() {
+function from_lambda_pairs(p) {
   return $$Array.to_list($$Array.mapi((function (i, param) {
                     var b = param[1];
                     var a = param[0];
@@ -1608,7 +1608,7 @@ function from_lambda_pairs() {
                                         ]),
                                       "lambda_print %d"
                                     ]), i),
-                            (function () {
+                            (function (param) {
                                 return /* Eq */Block.__(0, [
                                           Curry._1(string_of_lambda, a),
                                           b
@@ -1620,7 +1620,7 @@ function from_lambda_pairs() {
 
 var ksprintf_suites_000 = /* tuple */[
   "ksprintf",
-  (function () {
+  (function (param) {
       var f = function (fmt) {
         return Format.ksprintf((function (x) {
                       return x + x;
@@ -1651,7 +1651,7 @@ var ksprintf_suites_000 = /* tuple */[
 var ksprintf_suites_001 = /* :: */[
   /* tuple */[
     "sprintf",
-    (function () {
+    (function (param) {
         return /* Eq */Block.__(0, [
                   Curry._2(Format.sprintf(/* Format */[
                             /* String */Block.__(2, [
@@ -1680,7 +1680,7 @@ var ksprintf_suites = /* :: */[
 
 var int64_suites_000 = /* tuple */[
   "i32_simple",
-  (function () {
+  (function (param) {
       return /* Eq */Block.__(0, [
                 Curry._1(Format.asprintf(/* Format */[
                           /* Nativeint */Block.__(6, [
@@ -1699,7 +1699,7 @@ var int64_suites_000 = /* tuple */[
 var int64_suites_001 = /* :: */[
   /* tuple */[
     "i32_simple1",
-    (function () {
+    (function (param) {
         return /* Eq */Block.__(0, [
                   Curry._1(Format.asprintf(/* Format */[
                             /* Nativeint */Block.__(6, [
@@ -1717,7 +1717,7 @@ var int64_suites_001 = /* :: */[
   /* :: */[
     /* tuple */[
       "i64_simple",
-      (function () {
+      (function (param) {
           return /* Eq */Block.__(0, [
                     Curry._1(Format.asprintf(/* Format */[
                               /* Int64 */Block.__(7, [
@@ -1738,7 +1738,7 @@ var int64_suites_001 = /* :: */[
     /* :: */[
       /* tuple */[
         "i64_simple2",
-        (function () {
+        (function (param) {
             return /* Eq */Block.__(0, [
                       Curry._1(Format.asprintf(/* Format */[
                                 /* Int64 */Block.__(7, [
@@ -1759,7 +1759,7 @@ var int64_suites_001 = /* :: */[
       /* :: */[
         /* tuple */[
           "i64_simple3",
-          (function () {
+          (function (param) {
               return /* Eq */Block.__(0, [
                         Curry._1(Format.asprintf(/* Format */[
                                   /* Int64 */Block.__(7, [
@@ -1780,7 +1780,7 @@ var int64_suites_001 = /* :: */[
         /* :: */[
           /* tuple */[
             "i64_simple4",
-            (function () {
+            (function (param) {
                 return /* Eq */Block.__(0, [
                           Curry._1(Format.asprintf(/* Format */[
                                     /* Int64 */Block.__(7, [
@@ -1801,7 +1801,7 @@ var int64_suites_001 = /* :: */[
           /* :: */[
             /* tuple */[
               "i64_simple5",
-              (function () {
+              (function (param) {
                   return /* Eq */Block.__(0, [
                             Curry._1(Format.asprintf(/* Format */[
                                       /* Int64 */Block.__(7, [
@@ -1822,7 +1822,7 @@ var int64_suites_001 = /* :: */[
             /* :: */[
               /* tuple */[
                 "i64_simple6",
-                (function () {
+                (function (param) {
                     return /* Eq */Block.__(0, [
                               Curry._2(Format.asprintf(/* Format */[
                                         /* Int64 */Block.__(7, [
@@ -1843,7 +1843,7 @@ var int64_suites_001 = /* :: */[
               /* :: */[
                 /* tuple */[
                   "i64_simple7",
-                  (function () {
+                  (function (param) {
                       return /* Eq */Block.__(0, [
                                 Caml_format.caml_int64_format("%d", /* int64 */[
                                       /* hi */0,
@@ -1856,7 +1856,7 @@ var int64_suites_001 = /* :: */[
                 /* :: */[
                   /* tuple */[
                     "i64_simple8",
-                    (function () {
+                    (function (param) {
                         return /* Eq */Block.__(0, [
                                   Curry._2(Format.asprintf(/* Format */[
                                             /* Int64 */Block.__(7, [
@@ -1888,7 +1888,7 @@ var int64_suites_001 = /* :: */[
                   /* :: */[
                     /* tuple */[
                       "i64_simple9",
-                      (function () {
+                      (function (param) {
                           return /* Eq */Block.__(0, [
                                     Curry._2(Format.asprintf(/* Format */[
                                               /* Int64 */Block.__(7, [
@@ -1920,7 +1920,7 @@ var int64_suites_001 = /* :: */[
                     /* :: */[
                       /* tuple */[
                         "i64_simple10",
-                        (function () {
+                        (function (param) {
                             return /* Eq */Block.__(0, [
                                       Curry._1(Format.asprintf(/* Format */[
                                                 /* Int64 */Block.__(7, [
@@ -1938,7 +1938,7 @@ var int64_suites_001 = /* :: */[
                       /* :: */[
                         /* tuple */[
                           "i64_simple15",
-                          (function () {
+                          (function (param) {
                               return /* Eq */Block.__(0, [
                                         Curry._1(Format.asprintf(/* Format */[
                                                   /* Int64 */Block.__(7, [
@@ -1959,7 +1959,7 @@ var int64_suites_001 = /* :: */[
                         /* :: */[
                           /* tuple */[
                             "i64_simple16",
-                            (function () {
+                            (function (param) {
                                 return /* Eq */Block.__(0, [
                                           Curry._1(Format.asprintf(/* Format */[
                                                     /* Int64 */Block.__(7, [
@@ -1980,7 +1980,7 @@ var int64_suites_001 = /* :: */[
                           /* :: */[
                             /* tuple */[
                               "i64_simple14",
-                              (function () {
+                              (function (param) {
                                   return /* Eq */Block.__(0, [
                                             Curry._1(Format.asprintf(/* Format */[
                                                       /* Int64 */Block.__(7, [
@@ -2001,7 +2001,7 @@ var int64_suites_001 = /* :: */[
                             /* :: */[
                               /* tuple */[
                                 "i64_simple17",
-                                (function () {
+                                (function (param) {
                                     return /* Eq */Block.__(0, [
                                               Curry._1(Format.asprintf(/* Format */[
                                                         /* Int64 */Block.__(7, [
@@ -2022,7 +2022,7 @@ var int64_suites_001 = /* :: */[
                               /* :: */[
                                 /* tuple */[
                                   "i64_simple11",
-                                  (function () {
+                                  (function (param) {
                                       return /* Eq */Block.__(0, [
                                                 Curry._1(Format.asprintf(/* Format */[
                                                           /* Int64 */Block.__(7, [
@@ -2040,7 +2040,7 @@ var int64_suites_001 = /* :: */[
                                 /* :: */[
                                   /* tuple */[
                                     "i64_simple12",
-                                    (function () {
+                                    (function (param) {
                                         return /* Eq */Block.__(0, [
                                                   Curry._1(Format.asprintf(/* Format */[
                                                             /* Int64 */Block.__(7, [
@@ -2058,7 +2058,7 @@ var int64_suites_001 = /* :: */[
                                   /* :: */[
                                     /* tuple */[
                                       "i64_simple17",
-                                      (function () {
+                                      (function (param) {
                                           return /* Eq */Block.__(0, [
                                                     Curry._1(Format.asprintf(/* Format */[
                                                               /* Int64 */Block.__(7, [
@@ -2079,7 +2079,7 @@ var int64_suites_001 = /* :: */[
                                     /* :: */[
                                       /* tuple */[
                                         "i64_simple21",
-                                        (function () {
+                                        (function (param) {
                                             return /* Eq */Block.__(0, [
                                                       Curry._1(Format.asprintf(/* Format */[
                                                                 /* Int64 */Block.__(7, [
@@ -2100,7 +2100,7 @@ var int64_suites_001 = /* :: */[
                                       /* :: */[
                                         /* tuple */[
                                           "i64_simple19",
-                                          (function () {
+                                          (function (param) {
                                               return /* Eq */Block.__(0, [
                                                         Curry._1(Format.asprintf(/* Format */[
                                                                   /* Int64 */Block.__(7, [
@@ -2118,7 +2118,7 @@ var int64_suites_001 = /* :: */[
                                         /* :: */[
                                           /* tuple */[
                                             "i64_simple13",
-                                            (function () {
+                                            (function (param) {
                                                 return /* Eq */Block.__(0, [
                                                           Curry._1(Format.asprintf(/* Format */[
                                                                     /* Int64 */Block.__(7, [
@@ -2139,7 +2139,7 @@ var int64_suites_001 = /* :: */[
                                           /* :: */[
                                             /* tuple */[
                                               "i64_simple20",
-                                              (function () {
+                                              (function (param) {
                                                   return /* Eq */Block.__(0, [
                                                             Curry._1(Format.asprintf(/* Format */[
                                                                       /* Int64 */Block.__(7, [
@@ -2163,7 +2163,7 @@ var int64_suites_001 = /* :: */[
                                             /* :: */[
                                               /* tuple */[
                                                 "i64_simple21",
-                                                (function () {
+                                                (function (param) {
                                                     return /* Eq */Block.__(0, [
                                                               Curry._1(Format.asprintf(/* Format */[
                                                                         /* Int64 */Block.__(7, [
@@ -2184,7 +2184,7 @@ var int64_suites_001 = /* :: */[
                                               /* :: */[
                                                 /* tuple */[
                                                   "missing_neline",
-                                                  (function () {
+                                                  (function (param) {
                                                       return /* Eq */Block.__(0, [
                                                                 Curry._1(Format.asprintf(/* Format */[
                                                                           /* Int64 */Block.__(7, [
@@ -2208,7 +2208,7 @@ var int64_suites_001 = /* :: */[
                                                 /* :: */[
                                                   /* tuple */[
                                                     "missing_newline2",
-                                                    (function () {
+                                                    (function (param) {
                                                         var buf = $$Buffer.create(30);
                                                         return /* Eq */Block.__(0, [
                                                                   (Curry._1(Printf.bprintf(buf, /* Format */[
@@ -2345,7 +2345,7 @@ Mt.from_pair_suites("caml_format_test.ml", Pervasives.$at(suites, Pervasives.$at
                                                         ]),
                                                       "float_format %d"
                                                     ]), i),
-                                            (function () {
+                                            (function (param) {
                                                 return /* Eq */Block.__(0, [
                                                           Caml_format.caml_format_float(fmt, f),
                                                           str_result
@@ -2371,7 +2371,7 @@ Mt.from_pair_suites("caml_format_test.ml", Pervasives.$at(suites, Pervasives.$at
                                                             ]),
                                                           "int64_of_string %d "
                                                         ]), i),
-                                                (function () {
+                                                (function (param) {
                                                     return /* Eq */Block.__(0, [
                                                               Caml_format.caml_int64_of_string(b),
                                                               a

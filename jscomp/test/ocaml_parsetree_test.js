@@ -139,7 +139,7 @@ var default_styles = /* record */[
 
 var cur_styles = /* record */[/* contents */default_styles];
 
-function get_styles() {
+function get_styles(param) {
   return cur_styles[0];
 }
 
@@ -1209,7 +1209,7 @@ function curr(lexbuf) {
         ];
 }
 
-function symbol_rloc() {
+function symbol_rloc(param) {
   return /* record */[
           /* loc_start */Parsing.symbol_start_pos(/* () */0),
           /* loc_end */Parsing.symbol_end_pos(/* () */0),
@@ -1217,7 +1217,7 @@ function symbol_rloc() {
         ];
 }
 
-function symbol_gloc() {
+function symbol_gloc(param) {
   return /* record */[
           /* loc_start */Parsing.symbol_start_pos(/* () */0),
           /* loc_end */Parsing.symbol_end_pos(/* () */0),
@@ -1508,7 +1508,7 @@ function get_pos_info(pos) {
         ];
 }
 
-function setup_colors() {
+function setup_colors(param) {
   return Curry._1(Misc_043[/* setup */4], color[0]);
 }
 
@@ -1769,7 +1769,7 @@ function errorf($staropt$star, $staropt$star$1, $staropt$star$2, fmt) {
   if (before !== undefined) {
     Curry._1(before, ppf);
   }
-  return Format.kfprintf((function () {
+  return Format.kfprintf((function (param) {
                 Format.pp_print_flush(ppf, /* () */0);
                 return Curry._1(k, $$Buffer.contents(buf));
               }), ppf, fmt$1);
@@ -1854,7 +1854,7 @@ function assert_fail(msg) {
   return /* () */0;
 }
 
-function is_mocha() {
+function is_mocha(param) {
   var match = $$Array.to_list(Process.argv);
   if (match) {
     var match$1 = match[1];
@@ -2025,7 +2025,7 @@ Promise.resolve(/* () */0);
 
 var docstrings = /* record */[/* contents : [] */0];
 
-function warn_bad_docstrings() {
+function warn_bad_docstrings(param) {
   if (is_active(/* Bad_docstring */Block.__(33, [true]))) {
     return List.iter((function (ds) {
                   var match = ds[/* ds_attached */2];
@@ -2387,17 +2387,17 @@ function get_post_extra_text(pos) {
   }
 }
 
-function symbol_docs() {
+function symbol_docs(param) {
   return /* record */[
           /* docs_pre */get_pre_docs(Parsing.symbol_start_pos(/* () */0)),
           /* docs_post */get_post_docs(Parsing.symbol_end_pos(/* () */0))
         ];
 }
 
-function symbol_docs_lazy() {
+function symbol_docs_lazy(param) {
   var p1 = Parsing.symbol_start_pos(/* () */0);
   var p2 = Parsing.symbol_end_pos(/* () */0);
-  return Block.__(246, [(function () {
+  return Block.__(246, [(function (param) {
                 return /* record */[
                         /* docs_pre */get_pre_docs(p1),
                         /* docs_post */get_post_docs(p2)
@@ -2405,7 +2405,7 @@ function symbol_docs_lazy() {
               })]);
 }
 
-function mark_symbol_docs() {
+function mark_symbol_docs(param) {
   mark_pre_docs(Parsing.symbol_start_pos(/* () */0));
   return mark_post_docs(Parsing.symbol_end_pos(/* () */0));
 }
@@ -2415,14 +2415,14 @@ function mark_rhs_docs(pos1, pos2) {
   return mark_post_docs(Parsing.rhs_end_pos(pos2));
 }
 
-function symbol_text_lazy() {
+function symbol_text_lazy(param) {
   var pos = Parsing.symbol_start_pos(/* () */0);
-  return Block.__(246, [(function () {
+  return Block.__(246, [(function (param) {
                 return get_text(pos);
               })]);
 }
 
-function init() {
+function init(param) {
   docstrings[0] = /* [] */0;
   Hashtbl.reset(pre_table);
   Hashtbl.reset(post_table);
@@ -4163,7 +4163,7 @@ var yytransl_block = /* array */[
 ];
 
 var yyact = /* array */[
-  (function () {
+  (function (param) {
       throw [
             Caml_builtin_exceptions.failure,
             "parser"
@@ -4184,7 +4184,7 @@ var yyact = /* array */[
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 1);
     }),
-  (function () {
+  (function (__caml_parser_env) {
       throw Caml_builtin_exceptions.end_of_file;
     }),
   (function (__caml_parser_env) {
@@ -4198,7 +4198,7 @@ var yyact = /* array */[
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* [] */0;
     }),
   (function (__caml_parser_env) {
@@ -4235,10 +4235,10 @@ var yyact = /* array */[
                   _3
                 ]);
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* [] */0;
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return text_def(1);
     }),
   (function (__caml_parser_env) {
@@ -4303,7 +4303,7 @@ var yyact = /* array */[
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 1);
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* tuple */[
               mkrhs("*", 2),
               undefined
@@ -4320,7 +4320,7 @@ var yyact = /* array */[
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "_";
     }),
   (function (__caml_parser_env) {
@@ -4466,7 +4466,7 @@ var yyact = /* array */[
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* [] */0;
     }),
   (function (__caml_parser_env) {
@@ -4712,7 +4712,7 @@ var yyact = /* array */[
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
       return attr$3(_1, _2);
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* [] */0;
     }),
   (function (__caml_parser_env) {
@@ -4863,7 +4863,7 @@ var yyact = /* array */[
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
       return mk$12(symbol_rloc(/* () */0), _5, symbol_docs(/* () */0), get_text(Parsing.symbol_start_pos(/* () */0)), mkrhs(_2, 2), _4);
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return undefined;
     }),
   (function (__caml_parser_env) {
@@ -4927,7 +4927,7 @@ var yyact = /* array */[
                     _2
                   ]));
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* [] */0;
     }),
   (function (__caml_parser_env) {
@@ -5082,10 +5082,10 @@ var yyact = /* array */[
                     _4
                   ]));
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return ghpat(/* Ppat_any */0);
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* [] */0;
     }),
   (function (__caml_parser_env) {
@@ -5140,7 +5140,7 @@ var yyact = /* array */[
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return undefined;
     }),
   (function (__caml_parser_env) {
@@ -5384,10 +5384,10 @@ var yyact = /* array */[
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 1);
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return mktyp(/* Ptyp_any */0);
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* [] */0;
     }),
   (function (__caml_parser_env) {
@@ -5633,10 +5633,10 @@ var yyact = /* array */[
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
       return mkpat(/* Ppat_var */Block.__(0, [mkrhs(_1, 1)]));
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return mkpat(/* Ppat_any */0);
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return undefined;
     }),
   (function (__caml_parser_env) {
@@ -6618,7 +6618,7 @@ var yyact = /* array */[
       Parsing.peek_val(__caml_parser_env, 1);
       return unclosed("[|", 1, "|]", 4);
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return mkexp(/* Pexp_array */Block.__(14, [/* [] */0]));
     }),
   (function (__caml_parser_env) {
@@ -6707,7 +6707,7 @@ var yyact = /* array */[
       Parsing.peek_val(__caml_parser_env, 1);
       return unclosed("{<", 1, ">}", 4);
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return mkexp(/* Pexp_override */Block.__(24, [/* [] */0]));
     }),
   (function (__caml_parser_env) {
@@ -7159,10 +7159,10 @@ var yyact = /* array */[
               _2
             ];
     }),
-  (function () {
+  (function (__caml_parser_env) {
       throw Escape_error;
     }),
-  (function () {
+  (function (__caml_parser_env) {
       throw Escape_error;
     }),
   (function (__caml_parser_env) {
@@ -7263,7 +7263,7 @@ var yyact = /* array */[
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return mkpat(/* Ppat_any */0);
     }),
   (function (__caml_parser_env) {
@@ -7322,7 +7322,7 @@ var yyact = /* array */[
       Parsing.peek_val(__caml_parser_env, 1);
       return mkpat(/* Ppat_array */Block.__(8, [List.rev(_2)]));
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return mkpat(/* Ppat_array */Block.__(8, [/* [] */0]));
     }),
   (function (__caml_parser_env) {
@@ -7538,10 +7538,10 @@ var yyact = /* array */[
               _1
             ];
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* [] */0;
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* tuple */[
               /* Ptype_abstract */0,
               /* Public */1,
@@ -7580,7 +7580,7 @@ var yyact = /* array */[
               undefined
             ];
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* tuple */[
               /* Ptype_open */1,
               /* Public */1,
@@ -7624,7 +7624,7 @@ var yyact = /* array */[
               _2
             ];
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* [] */0;
     }),
   (function (__caml_parser_env) {
@@ -7664,10 +7664,10 @@ var yyact = /* array */[
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
       return mktyp(/* Ptyp_var */Block.__(0, [_2]));
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return mktyp(/* Ptyp_any */0);
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* [] */0;
     }),
   (function (__caml_parser_env) {
@@ -7688,13 +7688,13 @@ var yyact = /* array */[
               _1
             ];
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* Invariant */2;
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* Covariant */0;
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* Contravariant */1;
     }),
   (function (__caml_parser_env) {
@@ -7767,7 +7767,7 @@ var yyact = /* array */[
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
       return decl(symbol_rloc(/* () */0), Pervasives.$at(_4, _5), symbol_docs(/* () */0), undefined, _3[0], _3[1], mkrhs(_2, 2));
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* tuple */[
               /* [] */0,
               undefined
@@ -7996,10 +7996,10 @@ var yyact = /* array */[
                 mkrhs(_4, 4)
               ]);
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* Public */1;
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* Private */0;
     }),
   (function (__caml_parser_env) {
@@ -8134,7 +8134,7 @@ var yyact = /* array */[
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
       return mktyp(/* Ptyp_var */Block.__(0, [_2]));
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return mktyp(/* Ptyp_any */0);
     }),
   (function (__caml_parser_env) {
@@ -8170,7 +8170,7 @@ var yyact = /* array */[
                     _2[1]
                   ]));
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return mktyp(/* Ptyp_object */Block.__(4, [
                     /* [] */0,
                     /* Closed */0
@@ -8242,7 +8242,7 @@ var yyact = /* array */[
                     undefined
                   ]));
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return mktyp(/* Ptyp_variant */Block.__(7, [
                     /* [] */0,
                     /* Open */1,
@@ -8358,10 +8358,10 @@ var yyact = /* array */[
                 /* [] */0
               ]);
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return true;
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return false;
     }),
   (function (__caml_parser_env) {
@@ -8483,7 +8483,7 @@ var yyact = /* array */[
               /* Closed */0
             ];
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* tuple */[
               /* [] */0,
               /* Open */1
@@ -8592,10 +8592,10 @@ var yyact = /* array */[
       Parsing.peek_val(__caml_parser_env, 1);
       return unclosed("(", 1, ")", 3);
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return expecting(2, "operator");
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return expecting(3, "module-expr");
     }),
   (function (__caml_parser_env) {
@@ -8619,67 +8619,67 @@ var yyact = /* array */[
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "!";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "+";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "+.";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "-";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "-.";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "*";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "=";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "<";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return ">";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "or";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "||";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "&";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "&&";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return ":=";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "+=";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "%";
     }),
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "()";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "::";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "false";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "true";
     }),
   (function (__caml_parser_env) {
@@ -8697,16 +8697,16 @@ var yyact = /* array */[
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* Lident */Block.__(0, ["[]"]);
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* Lident */Block.__(0, ["()"]);
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* Lident */Block.__(0, ["false"]);
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* Lident */Block.__(0, ["true"]);
     }),
   (function (__caml_parser_env) {
@@ -8866,100 +8866,100 @@ var yyact = /* array */[
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* Nonrecursive */0;
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* Recursive */1;
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* Recursive */1;
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* Nonrecursive */0;
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* Upto */0;
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* Downto */1;
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* Public */1;
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* Private */0;
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* Immutable */0;
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* Mutable */1;
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* Concrete */1;
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* Virtual */0;
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* tuple */[
               /* Public */1,
               /* Concrete */1
             ];
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* tuple */[
               /* Private */0,
               /* Concrete */1
             ];
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* tuple */[
               /* Public */1,
               /* Virtual */0
             ];
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* tuple */[
               /* Private */0,
               /* Virtual */0
             ];
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* tuple */[
               /* Private */0,
               /* Virtual */0
             ];
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* Fresh */1;
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* Override */0;
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* () */0;
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* () */0;
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* () */0;
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* () */0;
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "-";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "-.";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "+";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "+.";
     }),
   (function (__caml_parser_env) {
@@ -8968,148 +8968,148 @@ var yyact = /* array */[
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "and";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "as";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "assert";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "begin";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "class";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "constraint";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "do";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "done";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "downto";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "else";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "end";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "exception";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "external";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "false";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "for";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "fun";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "function";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "functor";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "if";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "in";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "include";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "inherit";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "initializer";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "lazy";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "let";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "match";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "method";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "module";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "mutable";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "new";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "object";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "of";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "open";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "or";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "private";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "rec";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "sig";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "struct";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "then";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "to";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "true";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "try";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "type";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "val";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "virtual";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "when";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "while";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "with";
     }),
   (function (__caml_parser_env) {
@@ -9151,7 +9151,7 @@ var yyact = /* array */[
               _3
             ];
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* [] */0;
     }),
   (function (__caml_parser_env) {
@@ -9162,7 +9162,7 @@ var yyact = /* array */[
               _2
             ];
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* [] */0;
     }),
   (function (__caml_parser_env) {
@@ -9173,7 +9173,7 @@ var yyact = /* array */[
               _2
             ];
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* tuple */[
               undefined,
               /* [] */0
@@ -9558,7 +9558,7 @@ function value_of_token(loc, t) {
 
 function directive_parse(token_with_comments, lexbuf) {
   var look_ahead = /* record */[/* contents */undefined];
-  var token = function () {
+  var token = function (param) {
     var v = look_ahead[0];
     if (v !== undefined) {
       look_ahead[0] = undefined;
@@ -9874,7 +9874,7 @@ function directive_parse(token_with_comments, lexbuf) {
     } else {
       switch (curr_token.tag | 0) {
         case 1 : 
-            return token_op(calc, (function () {
+            return token_op(calc, (function (e) {
                           throw [
                                 $$Error$2,
                                 /* Conditional_expr_expected_type */Block.__(7, [
@@ -9885,7 +9885,7 @@ function directive_parse(token_with_comments, lexbuf) {
                               ];
                         }), /* Dir_float */Block.__(1, [Caml_format.caml_float_of_string(curr_token[0])]));
         case 7 : 
-            return token_op(calc, (function () {
+            return token_op(calc, (function (e) {
                           throw [
                                 $$Error$2,
                                 /* Conditional_expr_expected_type */Block.__(7, [
@@ -9940,7 +9940,7 @@ function directive_parse(token_with_comments, lexbuf) {
             }
             break;
         case 16 : 
-            return token_op(calc, (function () {
+            return token_op(calc, (function (e) {
                           throw [
                                 $$Error$2,
                                 /* Conditional_expr_expected_type */Block.__(7, [
@@ -10395,7 +10395,7 @@ var string_buff = /* record */[/* contents */initial_string_buffer];
 
 var string_index = /* record */[/* contents */0];
 
-function reset_string_buffer() {
+function reset_string_buffer(param) {
   string_buff[0] = initial_string_buffer;
   string_index[0] = 0;
   return /* () */0;
@@ -10419,7 +10419,7 @@ function store_string(s) {
   return /* () */0;
 }
 
-function get_stored_string() {
+function get_stored_string(param) {
   var s = Bytes.sub_string(string_buff[0], 0, string_index[0]);
   string_buff[0] = initial_string_buffer;
   return s;
@@ -11789,7 +11789,7 @@ function token$1(lexbuf) {
   }
 }
 
-function init$1() {
+function init$1(param) {
   sharp_look_ahead[0] = undefined;
   if_then_else[0] = /* Dir_out */2;
   is_in_string[0] = false;
@@ -11911,7 +11911,7 @@ function eq(loc, x, y) {
   suites[0] = /* :: */[
     /* tuple */[
       loc + (" id " + String(test_id[0])),
-      (function () {
+      (function (param) {
           return /* Eq */Block.__(0, [
                     x,
                     y

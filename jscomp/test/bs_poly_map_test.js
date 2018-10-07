@@ -32,7 +32,7 @@ function setOfArray(x) {
   return Belt_Set.fromArray(x, Icmp);
 }
 
-function emptyMap() {
+function emptyMap(param) {
   return {
           cmp: Icmp[/* cmp */0],
           data: Belt_MapDict.empty

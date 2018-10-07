@@ -9,7 +9,7 @@ var a = f(1);
 
 var b = f(2);
 
-function g() {
+function g(param) {
   return (1);
 }
 

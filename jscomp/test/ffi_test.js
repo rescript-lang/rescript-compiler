@@ -1,7 +1,7 @@
 'use strict';
 
 
-function u() {
+function u(param) {
   return xx(3);
 }
 
@@ -9,13 +9,13 @@ var Textarea = /* module */[];
 
 var Int32Array = /* module */[];
 
-function v() {
+function v(param) {
   var u = new TextArea();
   u.minHeight = 3;
   return u.minHeight;
 }
 
-function f() {
+function f(param) {
   var v = new Int32Array(32);
   v[0] = 3;
   return v[0];

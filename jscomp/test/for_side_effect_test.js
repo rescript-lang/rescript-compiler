@@ -3,14 +3,14 @@
 var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 
-function tst() {
+function tst(param) {
   for(var i = (console.log("hi"), 0) ,i_finish = (console.log("hello"), 3); i <= i_finish; ++i){
     
   }
   return /* () */0;
 }
 
-function test2() {
+function test2(param) {
   var v = 0;
   v = 3;
   v = 10;
@@ -22,7 +22,7 @@ function test2() {
 
 var suites_000 = /* tuple */[
   "for_order",
-  (function () {
+  (function (param) {
       return /* Eq */Block.__(0, [
                 10,
                 test2(/* () */0)

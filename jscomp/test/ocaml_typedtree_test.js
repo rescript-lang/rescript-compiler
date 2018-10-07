@@ -242,7 +242,7 @@ function find_in_path_uncap(path, name) {
   };
 }
 
-function remove_file() {
+function remove_file(filename) {
   try {
     return Caml_missing_polyfill.not_implemented("caml_sys_remove");
   }
@@ -386,7 +386,7 @@ var default_styles = /* record */[
 
 var cur_styles = /* record */[/* contents */default_styles];
 
-function get_styles() {
+function get_styles(param) {
   return cur_styles[0];
 }
 
@@ -1456,7 +1456,7 @@ function curr(lexbuf) {
         ];
 }
 
-function symbol_rloc() {
+function symbol_rloc(param) {
   return /* record */[
           /* loc_start */Parsing.symbol_start_pos(/* () */0),
           /* loc_end */Parsing.symbol_end_pos(/* () */0),
@@ -1464,7 +1464,7 @@ function symbol_rloc() {
         ];
 }
 
-function symbol_gloc() {
+function symbol_gloc(param) {
   return /* record */[
           /* loc_start */Parsing.symbol_start_pos(/* () */0),
           /* loc_end */Parsing.symbol_end_pos(/* () */0),
@@ -1755,7 +1755,7 @@ function get_pos_info(pos) {
         ];
 }
 
-function setup_colors() {
+function setup_colors(param) {
   return Curry._1(Misc_043[/* setup */4], color[0]);
 }
 
@@ -2016,7 +2016,7 @@ function errorf($staropt$star, $staropt$star$1, $staropt$star$2, fmt) {
   if (before !== undefined) {
     Curry._1(before, ppf);
   }
-  return Format.kfprintf((function () {
+  return Format.kfprintf((function (param) {
                 Format.pp_print_flush(ppf, /* () */0);
                 return Curry._1(k, $$Buffer.contents(buf));
               }), ppf, fmt$1);
@@ -2516,7 +2516,7 @@ function binding_time(_param) {
   };
 }
 
-function kfalse() {
+function kfalse(x) {
   return false;
 }
 
@@ -3997,7 +3997,7 @@ var TypeHash = Hashtbl.Make([
       $$let$2[2]
     ]);
 
-function print_raw() {
+function print_raw(param) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
@@ -4657,7 +4657,7 @@ function it_do_type_expr(it, ty) {
   }
 }
 
-function it_path() {
+function it_path(p) {
   return /* () */0;
 }
 
@@ -4928,7 +4928,7 @@ function dup_kind(r) {
   }
 }
 
-function cleanup_types() {
+function cleanup_types(param) {
   List.iter((function (param) {
           param[0][/* desc */0] = param[1];
           return /* () */0;
@@ -5038,7 +5038,7 @@ function find_expans(priv, p1, _param) {
 
 var memo = /* record */[/* contents : [] */0];
 
-function cleanup_abbrev() {
+function cleanup_abbrev(param) {
   List.iter((function (abbr) {
           abbr[0] = /* Mnil */0;
           return /* () */0;
@@ -5287,7 +5287,7 @@ function set_typeset(rs, s) {
   return /* () */0;
 }
 
-function snapshot() {
+function snapshot(param) {
   var old = last_snapshot[0];
   last_snapshot[0] = new_id[0];
   var match = Caml_weak.caml_weak_get(trail, 0);
@@ -5363,7 +5363,7 @@ function backtrack(param) {
 
 var $$Error$1 = Caml_exceptions.create("Ocaml_typedtree_test.Cmi_format.Error");
 
-function input_cmi() {
+function input_cmi(ic) {
   var match = Caml_missing_polyfill.not_implemented("caml_input_value");
   var crcs = Caml_missing_polyfill.not_implemented("caml_input_value");
   var flags = Caml_missing_polyfill.not_implemented("caml_input_value");
@@ -6179,7 +6179,7 @@ List.rev(builtin_idents[0]);
 
 var docstrings = /* record */[/* contents : [] */0];
 
-function warn_bad_docstrings() {
+function warn_bad_docstrings(param) {
   if (is_active(/* Bad_docstring */Block.__(33, [true]))) {
     return List.iter((function (ds) {
                   var match = ds[/* ds_attached */2];
@@ -6541,17 +6541,17 @@ function get_post_extra_text(pos) {
   }
 }
 
-function symbol_docs() {
+function symbol_docs(param) {
   return /* record */[
           /* docs_pre */get_pre_docs(Parsing.symbol_start_pos(/* () */0)),
           /* docs_post */get_post_docs(Parsing.symbol_end_pos(/* () */0))
         ];
 }
 
-function symbol_docs_lazy() {
+function symbol_docs_lazy(param) {
   var p1 = Parsing.symbol_start_pos(/* () */0);
   var p2 = Parsing.symbol_end_pos(/* () */0);
-  return Block.__(246, [(function () {
+  return Block.__(246, [(function (param) {
                 return /* record */[
                         /* docs_pre */get_pre_docs(p1),
                         /* docs_post */get_post_docs(p2)
@@ -6559,7 +6559,7 @@ function symbol_docs_lazy() {
               })]);
 }
 
-function mark_symbol_docs() {
+function mark_symbol_docs(param) {
   mark_pre_docs(Parsing.symbol_start_pos(/* () */0));
   return mark_post_docs(Parsing.symbol_end_pos(/* () */0));
 }
@@ -6569,14 +6569,14 @@ function mark_rhs_docs(pos1, pos2) {
   return mark_post_docs(Parsing.rhs_end_pos(pos2));
 }
 
-function symbol_text_lazy() {
+function symbol_text_lazy(param) {
   var pos = Parsing.symbol_start_pos(/* () */0);
-  return Block.__(246, [(function () {
+  return Block.__(246, [(function (param) {
                 return get_text(pos);
               })]);
 }
 
-function init() {
+function init(param) {
   docstrings[0] = /* [] */0;
   Hashtbl.reset(pre_table);
   Hashtbl.reset(post_table);
@@ -9440,7 +9440,7 @@ function modtype_declaration(s, decl) {
         ];
 }
 
-var add_delayed_check_forward = /* record */[/* contents */(function () {
+var add_delayed_check_forward = /* record */[/* contents */(function (param) {
       throw [
             Caml_builtin_exceptions.assert_failure,
             /* tuple */[
@@ -9510,7 +9510,7 @@ function get_arg(x) {
   }
 }
 
-function nothing() {
+function nothing(param) {
   return /* () */0;
 }
 
@@ -9532,7 +9532,7 @@ function add$6(kind, slot, id, x, tbl, ref_tbl) {
   var slot$1;
   if (slot !== undefined) {
     var f = slot;
-    slot$1 = (function () {
+    slot$1 = (function (param) {
         var s = id[/* name */1];
         return Curry._3(f, kind, s, already_defined(s, ref_tbl));
       });
@@ -9671,7 +9671,7 @@ var components_of_module$prime = /* record */[/* contents */(function (env, sub,
           ];
     })];
 
-var components_of_module_maker$prime = /* record */[/* contents */(function () {
+var components_of_module_maker$prime = /* record */[/* contents */(function (param) {
       throw [
             Caml_builtin_exceptions.assert_failure,
             /* tuple */[
@@ -9964,7 +9964,7 @@ function read_pers_struct(modname, filename) {
         ];
   }
   add_import(name);
-  List.iter((function () {
+  List.iter((function (param) {
           if (recursive_types[0]) {
             return 0;
           } else {
@@ -10617,7 +10617,7 @@ function lookup_all_simple(proj1, proj2, shadow, lid, env) {
           return List.map((function (param) {
                         return /* tuple */[
                                 param[0],
-                                (function () {
+                                (function (param) {
                                     return /* () */0;
                                   })
                               ];
@@ -10819,7 +10819,7 @@ function set_type_used_callback(name, td, callback) {
         throw exn;
       }
     }
-    return Hashtbl.replace(type_declarations, key, (function () {
+    return Hashtbl.replace(type_declarations, key, (function (param) {
                   return Curry._1(callback, old);
                 }));
   }
@@ -11102,7 +11102,7 @@ function iter_types(f) {
               return Curry._2(f$1, /* Pident */Block.__(0, [id]), param[0]);
             }), Curry._1(proj1, env));
       var iter_components = function (path, path$prime, mcomps) {
-        var cont = function () {
+        var cont = function (param) {
           var match = get_arg(mcomps);
           var safe;
           if (match !== undefined) {
@@ -11194,7 +11194,7 @@ function same_types(env1, env2) {
   }
 }
 
-function used_persistent() {
+function used_persistent(param) {
   var r = /* record */[/* contents : Empty */0];
   Hashtbl.iter((function (s, pso) {
           if (pso !== undefined) {
@@ -11841,7 +11841,7 @@ function prefix_idents_and_subst(root, sub, sg) {
   return /* tuple */[
           match[0],
           sub$1,
-          Block.__(246, [(function () {
+          Block.__(246, [(function (param) {
                   var sub$2 = sub$1;
                   var sg$1 = sg;
                   return List.map((function (item) {
@@ -11969,14 +11969,14 @@ function check_usage(loc, id, warn, tbl) {
       return /* () */0;
     } else {
       var used = /* record */[/* contents */false];
-      Hashtbl.add(tbl, key, (function () {
+      Hashtbl.add(tbl, key, (function (param) {
               used[0] = true;
               return /* () */0;
             }));
       if (name === "" || Caml_string.get(name, 0) === /* "_" */95 || Caml_string.get(name, 0) === /* "#" */35) {
         return 0;
       } else {
-        return Curry._1(add_delayed_check_forward[0], (function () {
+        return Curry._1(add_delayed_check_forward[0], (function (param) {
                       if (used[0]) {
                         return 0;
                       } else {
@@ -12348,7 +12348,7 @@ function store_type(check, slot, id, path, info, env, renv) {
               if (ty === "" || Caml_string.get(ty, 0) === /* "_" */95) {
                 return 0;
               } else {
-                return Curry._1(add_delayed_check_forward[0], (function () {
+                return Curry._1(add_delayed_check_forward[0], (function (param) {
                               if (!is_in_signature(env) && !used[/* cu_positive */0]) {
                                 return prerr_warning(loc, /* Unused_constructor */Block.__(21, [
                                               c,
@@ -12418,7 +12418,7 @@ function store_extension(check, slot, id, path, ext, env, renv) {
       Hashtbl.add(used_constructors, k, (function (param) {
               return add_constructor_usage(used, param);
             }));
-      Curry._1(add_delayed_check_forward[0], (function () {
+      Curry._1(add_delayed_check_forward[0], (function (param) {
               if (!is_in_signature(env) && !used[/* cu_positive */0]) {
                 return prerr_warning(loc, /* Unused_extension */Block.__(22, [
                               n,
@@ -12770,7 +12770,7 @@ function open_signature$1($staropt$star, $staropt$star$1, ovf, root, sg, env) {
               ""
             ])))) {
     var used = /* record */[/* contents */false];
-    Curry._1(add_delayed_check_forward[0], (function () {
+    Curry._1(add_delayed_check_forward[0], (function (param) {
             if (used[0]) {
               return 0;
             } else {
@@ -12822,7 +12822,7 @@ function read_signature(modname, filename) {
   return ps[/* ps_sig */1];
 }
 
-function imports() {
+function imports(param) {
   var dont_record_crc_unit$1 = dont_record_crc_unit[0];
   if (dont_record_crc_unit$1 !== undefined) {
     var x = dont_record_crc_unit$1;
@@ -13418,7 +13418,7 @@ function assert_fail(msg) {
   return /* () */0;
 }
 
-function is_mocha() {
+function is_mocha(param) {
   var match = $$Array.to_list(Process.argv);
   if (match) {
     var match$1 = match[1];
@@ -14509,7 +14509,7 @@ var yytransl_block = /* array */[
 ];
 
 var yyact = /* array */[
-  (function () {
+  (function (param) {
       throw [
             Caml_builtin_exceptions.failure,
             "parser"
@@ -14530,7 +14530,7 @@ var yyact = /* array */[
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 1);
     }),
-  (function () {
+  (function (__caml_parser_env) {
       throw Caml_builtin_exceptions.end_of_file;
     }),
   (function (__caml_parser_env) {
@@ -14544,7 +14544,7 @@ var yyact = /* array */[
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* [] */0;
     }),
   (function (__caml_parser_env) {
@@ -14581,10 +14581,10 @@ var yyact = /* array */[
                   _3
                 ]);
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* [] */0;
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return text_def(1);
     }),
   (function (__caml_parser_env) {
@@ -14649,7 +14649,7 @@ var yyact = /* array */[
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 1);
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* tuple */[
               mkrhs("*", 2),
               undefined
@@ -14666,7 +14666,7 @@ var yyact = /* array */[
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "_";
     }),
   (function (__caml_parser_env) {
@@ -14812,7 +14812,7 @@ var yyact = /* array */[
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* [] */0;
     }),
   (function (__caml_parser_env) {
@@ -15058,7 +15058,7 @@ var yyact = /* array */[
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
       return attr$3(_1, _2);
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* [] */0;
     }),
   (function (__caml_parser_env) {
@@ -15209,7 +15209,7 @@ var yyact = /* array */[
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
       return mk$12(symbol_rloc(/* () */0), _5, symbol_docs(/* () */0), get_text(Parsing.symbol_start_pos(/* () */0)), mkrhs(_2, 2), _4);
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return undefined;
     }),
   (function (__caml_parser_env) {
@@ -15273,7 +15273,7 @@ var yyact = /* array */[
                     _2
                   ]));
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* [] */0;
     }),
   (function (__caml_parser_env) {
@@ -15428,10 +15428,10 @@ var yyact = /* array */[
                     _4
                   ]));
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return ghpat(/* Ppat_any */0);
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* [] */0;
     }),
   (function (__caml_parser_env) {
@@ -15486,7 +15486,7 @@ var yyact = /* array */[
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return undefined;
     }),
   (function (__caml_parser_env) {
@@ -15730,10 +15730,10 @@ var yyact = /* array */[
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 1);
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return mktyp(/* Ptyp_any */0);
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* [] */0;
     }),
   (function (__caml_parser_env) {
@@ -15979,10 +15979,10 @@ var yyact = /* array */[
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
       return mkpat(/* Ppat_var */Block.__(0, [mkrhs(_1, 1)]));
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return mkpat(/* Ppat_any */0);
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return undefined;
     }),
   (function (__caml_parser_env) {
@@ -16964,7 +16964,7 @@ var yyact = /* array */[
       Parsing.peek_val(__caml_parser_env, 1);
       return unclosed("[|", 1, "|]", 4);
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return mkexp(/* Pexp_array */Block.__(14, [/* [] */0]));
     }),
   (function (__caml_parser_env) {
@@ -17053,7 +17053,7 @@ var yyact = /* array */[
       Parsing.peek_val(__caml_parser_env, 1);
       return unclosed("{<", 1, ">}", 4);
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return mkexp(/* Pexp_override */Block.__(24, [/* [] */0]));
     }),
   (function (__caml_parser_env) {
@@ -17505,10 +17505,10 @@ var yyact = /* array */[
               _2
             ];
     }),
-  (function () {
+  (function (__caml_parser_env) {
       throw Escape_error;
     }),
-  (function () {
+  (function (__caml_parser_env) {
       throw Escape_error;
     }),
   (function (__caml_parser_env) {
@@ -17609,7 +17609,7 @@ var yyact = /* array */[
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return mkpat(/* Ppat_any */0);
     }),
   (function (__caml_parser_env) {
@@ -17668,7 +17668,7 @@ var yyact = /* array */[
       Parsing.peek_val(__caml_parser_env, 1);
       return mkpat(/* Ppat_array */Block.__(8, [List.rev(_2)]));
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return mkpat(/* Ppat_array */Block.__(8, [/* [] */0]));
     }),
   (function (__caml_parser_env) {
@@ -17884,10 +17884,10 @@ var yyact = /* array */[
               _1
             ];
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* [] */0;
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* tuple */[
               /* Ptype_abstract */0,
               /* Public */1,
@@ -17926,7 +17926,7 @@ var yyact = /* array */[
               undefined
             ];
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* tuple */[
               /* Ptype_open */1,
               /* Public */1,
@@ -17970,7 +17970,7 @@ var yyact = /* array */[
               _2
             ];
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* [] */0;
     }),
   (function (__caml_parser_env) {
@@ -18010,10 +18010,10 @@ var yyact = /* array */[
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
       return mktyp(/* Ptyp_var */Block.__(0, [_2]));
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return mktyp(/* Ptyp_any */0);
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* [] */0;
     }),
   (function (__caml_parser_env) {
@@ -18034,13 +18034,13 @@ var yyact = /* array */[
               _1
             ];
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* Invariant */2;
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* Covariant */0;
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* Contravariant */1;
     }),
   (function (__caml_parser_env) {
@@ -18113,7 +18113,7 @@ var yyact = /* array */[
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
       return decl(symbol_rloc(/* () */0), Pervasives.$at(_4, _5), symbol_docs(/* () */0), undefined, _3[0], _3[1], mkrhs(_2, 2));
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* tuple */[
               /* [] */0,
               undefined
@@ -18342,10 +18342,10 @@ var yyact = /* array */[
                 mkrhs(_4, 4)
               ]);
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* Public */1;
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* Private */0;
     }),
   (function (__caml_parser_env) {
@@ -18480,7 +18480,7 @@ var yyact = /* array */[
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
       return mktyp(/* Ptyp_var */Block.__(0, [_2]));
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return mktyp(/* Ptyp_any */0);
     }),
   (function (__caml_parser_env) {
@@ -18516,7 +18516,7 @@ var yyact = /* array */[
                     _2[1]
                   ]));
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return mktyp(/* Ptyp_object */Block.__(4, [
                     /* [] */0,
                     /* Closed */0
@@ -18588,7 +18588,7 @@ var yyact = /* array */[
                     undefined
                   ]));
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return mktyp(/* Ptyp_variant */Block.__(7, [
                     /* [] */0,
                     /* Open */1,
@@ -18704,10 +18704,10 @@ var yyact = /* array */[
                 /* [] */0
               ]);
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return true;
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return false;
     }),
   (function (__caml_parser_env) {
@@ -18829,7 +18829,7 @@ var yyact = /* array */[
               /* Closed */0
             ];
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* tuple */[
               /* [] */0,
               /* Open */1
@@ -18938,10 +18938,10 @@ var yyact = /* array */[
       Parsing.peek_val(__caml_parser_env, 1);
       return unclosed("(", 1, ")", 3);
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return expecting(2, "operator");
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return expecting(3, "module-expr");
     }),
   (function (__caml_parser_env) {
@@ -18965,67 +18965,67 @@ var yyact = /* array */[
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "!";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "+";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "+.";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "-";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "-.";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "*";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "=";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "<";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return ">";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "or";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "||";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "&";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "&&";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return ":=";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "+=";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "%";
     }),
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "()";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "::";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "false";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "true";
     }),
   (function (__caml_parser_env) {
@@ -19043,16 +19043,16 @@ var yyact = /* array */[
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* Lident */Block.__(0, ["[]"]);
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* Lident */Block.__(0, ["()"]);
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* Lident */Block.__(0, ["false"]);
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* Lident */Block.__(0, ["true"]);
     }),
   (function (__caml_parser_env) {
@@ -19212,100 +19212,100 @@ var yyact = /* array */[
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* Nonrecursive */0;
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* Recursive */1;
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* Recursive */1;
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* Nonrecursive */0;
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* Upto */0;
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* Downto */1;
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* Public */1;
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* Private */0;
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* Immutable */0;
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* Mutable */1;
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* Concrete */1;
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* Virtual */0;
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* tuple */[
               /* Public */1,
               /* Concrete */1
             ];
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* tuple */[
               /* Private */0,
               /* Concrete */1
             ];
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* tuple */[
               /* Public */1,
               /* Virtual */0
             ];
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* tuple */[
               /* Private */0,
               /* Virtual */0
             ];
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* tuple */[
               /* Private */0,
               /* Virtual */0
             ];
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* Fresh */1;
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* Override */0;
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* () */0;
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* () */0;
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* () */0;
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* () */0;
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "-";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "-.";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "+";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "+.";
     }),
   (function (__caml_parser_env) {
@@ -19314,148 +19314,148 @@ var yyact = /* array */[
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "and";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "as";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "assert";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "begin";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "class";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "constraint";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "do";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "done";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "downto";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "else";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "end";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "exception";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "external";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "false";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "for";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "fun";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "function";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "functor";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "if";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "in";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "include";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "inherit";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "initializer";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "lazy";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "let";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "match";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "method";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "module";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "mutable";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "new";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "object";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "of";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "open";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "or";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "private";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "rec";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "sig";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "struct";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "then";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "to";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "true";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "try";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "type";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "val";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "virtual";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "when";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "while";
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return "with";
     }),
   (function (__caml_parser_env) {
@@ -19497,7 +19497,7 @@ var yyact = /* array */[
               _3
             ];
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* [] */0;
     }),
   (function (__caml_parser_env) {
@@ -19508,7 +19508,7 @@ var yyact = /* array */[
               _2
             ];
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* [] */0;
     }),
   (function (__caml_parser_env) {
@@ -19519,7 +19519,7 @@ var yyact = /* array */[
               _2
             ];
     }),
-  (function () {
+  (function (__caml_parser_env) {
       return /* tuple */[
               undefined,
               /* [] */0
@@ -19904,7 +19904,7 @@ function value_of_token(loc, t) {
 
 function directive_parse(token_with_comments, lexbuf) {
   var look_ahead = /* record */[/* contents */undefined];
-  var token = function () {
+  var token = function (param) {
     var v = look_ahead[0];
     if (v !== undefined) {
       look_ahead[0] = undefined;
@@ -20240,7 +20240,7 @@ function directive_parse(token_with_comments, lexbuf) {
     } else {
       switch (curr_token.tag | 0) {
         case 1 : 
-            return token_op(calc, (function () {
+            return token_op(calc, (function (e) {
                           throw [
                                 $$Error$4,
                                 /* Conditional_expr_expected_type */Block.__(7, [
@@ -20251,7 +20251,7 @@ function directive_parse(token_with_comments, lexbuf) {
                               ];
                         }), /* Dir_float */Block.__(1, [Caml_format.caml_float_of_string(curr_token[0])]));
         case 7 : 
-            return token_op(calc, (function () {
+            return token_op(calc, (function (e) {
                           throw [
                                 $$Error$4,
                                 /* Conditional_expr_expected_type */Block.__(7, [
@@ -20306,7 +20306,7 @@ function directive_parse(token_with_comments, lexbuf) {
             }
             break;
         case 16 : 
-            return token_op(calc, (function () {
+            return token_op(calc, (function (e) {
                           throw [
                                 $$Error$4,
                                 /* Conditional_expr_expected_type */Block.__(7, [
@@ -20741,7 +20741,7 @@ var string_buff = /* record */[/* contents */initial_string_buffer];
 
 var string_index = /* record */[/* contents */0];
 
-function reset_string_buffer() {
+function reset_string_buffer(param) {
   string_buff[0] = initial_string_buffer;
   string_index[0] = 0;
   return /* () */0;
@@ -20765,7 +20765,7 @@ function store_string(s) {
   return /* () */0;
 }
 
-function get_stored_string() {
+function get_stored_string(param) {
   var s = Bytes.sub_string(string_buff[0], 0, string_index[0]);
   string_buff[0] = initial_string_buffer;
   return s;
@@ -22135,7 +22135,7 @@ function token$1(lexbuf) {
   }
 }
 
-function init$1() {
+function init$1(param) {
   sharp_look_ahead[0] = undefined;
   if_then_else[0] = /* Dir_out */2;
   is_in_string[0] = false;
@@ -24061,7 +24061,7 @@ var saved_types = /* record */[/* contents : [] */0];
 
 var value_deps = /* record */[/* contents : [] */0];
 
-function clear() {
+function clear(param) {
   saved_types[0] = /* [] */0;
   value_deps[0] = /* [] */0;
   return /* () */0;
@@ -24243,7 +24243,7 @@ function init_def(level) {
   return /* () */0;
 }
 
-function begin_def() {
+function begin_def(param) {
   saved_level[0] = /* :: */[
     /* tuple */[
       current_level[0],
@@ -24256,7 +24256,7 @@ function begin_def() {
   return /* () */0;
 }
 
-function begin_class_def() {
+function begin_class_def(param) {
   saved_level[0] = /* :: */[
     /* tuple */[
       current_level[0],
@@ -24268,7 +24268,7 @@ function begin_class_def() {
   return /* () */0;
 }
 
-function raise_nongen_level() {
+function raise_nongen_level(param) {
   saved_level[0] = /* :: */[
     /* tuple */[
       current_level[0],
@@ -24280,7 +24280,7 @@ function raise_nongen_level() {
   return /* () */0;
 }
 
-function end_def() {
+function end_def(param) {
   var match = List.hd(saved_level[0]);
   saved_level[0] = List.tl(saved_level[0]);
   current_level[0] = match[0];
@@ -24288,12 +24288,12 @@ function end_def() {
   return /* () */0;
 }
 
-function reset_global_level() {
+function reset_global_level(param) {
   global_level[0] = current_level[0] + 1 | 0;
   return /* () */0;
 }
 
-function increase_global_level() {
+function increase_global_level(param) {
   var gl = global_level[0];
   global_level[0] = current_level[0];
   return gl;
@@ -25684,7 +25684,7 @@ function generalize_expansive(env, var_level, _ty) {
               }
               catch (exn){
                 if (exn === Caml_builtin_exceptions.not_found) {
-                  variance = List.map((function () {
+                  variance = List.map((function (param) {
                           return Types_003[/* may_inv */3];
                         }), tyl);
                 } else {
@@ -26479,7 +26479,7 @@ function copy_sep(fixed, free, bound, visited, ty) {
     } else {
       var t = newvar(undefined, /* () */0);
       delayed_copy[0] = /* :: */[
-        Block.__(246, [(function () {
+        Block.__(246, [(function (param) {
                 t[/* desc */0] = /* Tlink */Block.__(6, [copy(undefined, undefined, undefined, ty$1)]);
                 return /* () */0;
               })]),
@@ -27763,7 +27763,7 @@ function deep_occur(t0, ty) {
 
 var newtype_level = /* record */[/* contents */undefined];
 
-function get_newtype_level() {
+function get_newtype_level(param) {
   var match = newtype_level[0];
   if (match !== undefined) {
     return match;
@@ -28120,7 +28120,7 @@ function mcomp(type_pairs, env, _t1, _t2) {
                               }
                               catch (exn$1){
                                 if (exn$1 === Caml_builtin_exceptions.not_found) {
-                                  inj = List.map((function () {
+                                  inj = List.map((function (param) {
                                           return false;
                                         }), tl1);
                                 } else {
@@ -29357,7 +29357,7 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
                   if (umode[0] === /* Expression */0 || !generate_equations[0]) {
                     unify_list(env, tl1, tl2);
                   } else if (assume_injective[0]) {
-                    set_mode_pattern(true, false, (function () {
+                    set_mode_pattern(true, false, (function (param) {
                             return unify_list(env, tl1, tl2);
                           }));
                   } else {
@@ -29386,7 +29386,7 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
                       }
                       catch (exn){
                         if (exn === Caml_builtin_exceptions.not_found) {
-                          inj = List.map((function () {
+                          inj = List.map((function (param) {
                                   return false;
                                 }), tl1);
                         } else {
@@ -29399,7 +29399,7 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
                               if (i) {
                                 return unify(env, t1, t2);
                               } else {
-                                return set_mode_pattern(false, false, (function () {
+                                return set_mode_pattern(false, false, (function (param) {
                                               var snap = snapshot(/* () */0);
                                               try {
                                                 return unify(env, t1, t2);
@@ -34458,7 +34458,7 @@ function subtype(env, ty1, ty2) {
         /* [] */0
       ], ty1, ty2, /* [] */0);
   Curry._1(TypePairs[/* clear */1], subtypes);
-  return (function () {
+  return (function (param) {
       return List.iter((function (param) {
                     try {
                       return unify_pairs(/* record */[/* contents */env], param[1], param[2], param[3]);
@@ -34737,7 +34737,7 @@ var nondep_hash = Curry._1(TypeHash[/* create */0], 47);
 
 var nondep_variants = Curry._1(TypeHash[/* create */0], 17);
 
-function clear_hash() {
+function clear_hash(param) {
   Curry._1(TypeHash[/* clear */1], nondep_hash);
   return Curry._1(TypeHash[/* clear */1], nondep_variants);
 }
@@ -36687,28 +36687,28 @@ function print_out_class_sig_item(ppf, param) {
 
 var out_class_type = /* record */[/* contents */print_out_class_type];
 
-var out_module_type = /* record */[/* contents */(function () {
+var out_module_type = /* record */[/* contents */(function (param) {
       throw [
             Caml_builtin_exceptions.failure,
             "Oprint.out_module_type"
           ];
     })];
 
-var out_sig_item = /* record */[/* contents */(function () {
+var out_sig_item = /* record */[/* contents */(function (param) {
       throw [
             Caml_builtin_exceptions.failure,
             "Oprint.out_sig_item"
           ];
     })];
 
-var out_signature = /* record */[/* contents */(function () {
+var out_signature = /* record */[/* contents */(function (param) {
       throw [
             Caml_builtin_exceptions.failure,
             "Oprint.out_signature"
           ];
     })];
 
-var out_type_extension = /* record */[/* contents */(function () {
+var out_type_extension = /* record */[/* contents */(function (param) {
       throw [
             Caml_builtin_exceptions.failure,
             "Oprint.out_type_extension"
@@ -39791,7 +39791,7 @@ function set_printing_env(env) {
 
 function wrap_printing_env(env, f) {
   set_printing_env(env);
-  return try_finally(f, (function () {
+  return try_finally(f, (function (param) {
                 return set_printing_env(empty);
               }));
 }
@@ -39835,7 +39835,7 @@ function best_type_path(p) {
   } else {
     var match = normalize_type_path(undefined, printing_env[0], p);
     var p$prime = match[0];
-    var get_path = function () {
+    var get_path = function (param) {
       var r = find$4(p$prime, printing_map[0]);
       while(true) {
         var match = r[0];
@@ -39918,7 +39918,7 @@ var name_counter = /* record */[/* contents */0];
 
 var named_vars = /* record */[/* contents : [] */0];
 
-function reset_names() {
+function reset_names(param) {
   names[0] = /* [] */0;
   name_counter[0] = 0;
   named_vars[0] = /* [] */0;
@@ -40272,7 +40272,7 @@ function mark_loops(ty) {
   return mark_loops_rec(/* [] */0, ty);
 }
 
-function reset() {
+function reset(param) {
   unique_names[0] = /* Empty */0;
   reset_names(/* () */0);
   visited_objects[0] = /* [] */0;
@@ -40298,7 +40298,7 @@ function tree_of_typexp(sch, ty) {
               name_of_type(px)
             ]);
   } else {
-    var pr_typ = function () {
+    var pr_typ = function (param) {
       var match = ty$1[/* desc */0];
       if (typeof match === "number") {
         return tree_of_typobject(sch, ty$1, undefined);
@@ -42953,7 +42953,7 @@ function trace_same_names(_param) {
 
 function report_unification_error(ppf, env, $staropt$star, tr, txt1, txt2) {
   var unif = $staropt$star !== undefined ? $staropt$star : true;
-  return wrap_printing_env(env, (function () {
+  return wrap_printing_env(env, (function (param) {
                 var unif$1 = unif;
                 var tr$1 = tr;
                 var txt1$1 = txt1;
@@ -43172,7 +43172,7 @@ function include_err(ppf, param) {
       case 2 : 
           var cty2 = param[2];
           var cty1 = param[1];
-          return wrap_printing_env(param[0], (function () {
+          return wrap_printing_env(param[0], (function (param) {
                         return Curry._5(Format.fprintf(ppf, /* Format */[
                                         /* Formatting_gen */Block.__(18, [
                                             /* Open_box */Block.__(1, [/* Format */[
@@ -47646,7 +47646,7 @@ function context$1(ppf, cxt) {
 function include_err$2(ppf, param) {
   var err = param[2];
   var cxt = param[0];
-  return wrap_printing_env(param[1], (function () {
+  return wrap_printing_env(param[1], (function (param) {
                 return Curry._4(Format.fprintf(ppf, /* Format */[
                                 /* Formatting_gen */Block.__(18, [
                                     /* Open_box */Block.__(1, [/* Format */[
@@ -49187,11 +49187,11 @@ function simple_match_args(p1, _p2) {
       } else {
         switch (match$2.tag | 0) {
           case 3 : 
-              return List.map((function () {
+              return List.map((function (param) {
                             return omega;
                           }), match$2[0]);
           case 4 : 
-              return List.map((function () {
+              return List.map((function (param) {
                             return omega;
                           }), match$2[2]);
           case 5 : 
@@ -49204,11 +49204,11 @@ function simple_match_args(p1, _p2) {
                 return /* [] */0;
               }
           case 6 : 
-              return List.map((function () {
+              return List.map((function (param) {
                             return omega;
                           }), match$2[0]);
           case 7 : 
-              return List.map((function () {
+              return List.map((function (param) {
                             return omega;
                           }), match$2[0]);
           case 9 : 
@@ -49241,21 +49241,21 @@ function normalize_pat(_q) {
         case 2 : 
             return q;
         case 3 : 
-            return make_pat(/* Tpat_tuple */Block.__(3, [List.map((function () {
+            return make_pat(/* Tpat_tuple */Block.__(3, [List.map((function (param) {
                                   return omega;
                                 }), match[0])]), q[/* pat_type */3], q[/* pat_env */4]);
         case 4 : 
             return make_pat(/* Tpat_construct */Block.__(4, [
                           match[0],
                           match[1],
-                          List.map((function () {
+                          List.map((function (param) {
                                   return omega;
                                 }), match[2])
                         ]), q[/* pat_type */3], q[/* pat_env */4]);
         case 5 : 
             return make_pat(/* Tpat_variant */Block.__(5, [
                           match[0],
-                          may_map((function () {
+                          may_map((function (param) {
                                   return omega;
                                 }), match[1]),
                           match[2]
@@ -49272,7 +49272,7 @@ function normalize_pat(_q) {
                           match[1]
                         ]), q[/* pat_type */3], q[/* pat_env */4]);
         case 7 : 
-            return make_pat(/* Tpat_array */Block.__(7, [List.map((function () {
+            return make_pat(/* Tpat_array */Block.__(7, [List.map((function (param) {
                                   return omega;
                                 }), match[0])]), q[/* pat_type */3], q[/* pat_env */4]);
         case 8 : 
@@ -51598,7 +51598,7 @@ function extract_columns(pss, qs) {
           ];
     }
   } else {
-    return List.map((function () {
+    return List.map((function (param) {
                   return /* [] */0;
                 }), qs[/* ors */1]);
   }
@@ -52909,7 +52909,7 @@ newrecord$1[/* attribute */0] = (function (param, a) {
 
 var warning_scope = /* record */[/* contents : [] */0];
 
-function warning_enter_scope() {
+function warning_enter_scope(param) {
   warning_scope[0] = /* :: */[
     current[0],
     warning_scope[0]
@@ -52917,7 +52917,7 @@ function warning_enter_scope() {
   return /* () */0;
 }
 
-function warning_leave_scope() {
+function warning_leave_scope(param) {
   var match = warning_scope[0];
   if (match) {
     current[0] = match[0];
@@ -53177,7 +53177,7 @@ function unbound_label_error(env, lid) {
               }));
 }
 
-var transl_modtype_longident = /* record */[/* contents */(function () {
+var transl_modtype_longident = /* record */[/* contents */(function (param) {
       throw [
             Caml_builtin_exceptions.assert_failure,
             /* tuple */[
@@ -53188,7 +53188,7 @@ var transl_modtype_longident = /* record */[/* contents */(function () {
           ];
     })];
 
-var transl_modtype = /* record */[/* contents */(function () {
+var transl_modtype = /* record */[/* contents */(function (param) {
       throw [
             Caml_builtin_exceptions.assert_failure,
             /* tuple */[
@@ -53257,13 +53257,13 @@ var pre_univars = /* record */[/* contents : [] */0];
 
 var used_variables = /* record */[/* contents : Empty */0];
 
-function reset_type_variables() {
+function reset_type_variables(param) {
   reset_global_level(/* () */0);
   type_variables[0] = /* Empty */0;
   return /* () */0;
 }
 
-function narrow() {
+function narrow(param) {
   return /* tuple */[
           increase_global_level(/* () */0),
           type_variables[0]
@@ -53492,7 +53492,7 @@ function transl_type(env, policy, styp) {
           var stl$2;
           if (stl$1) {
             var t = stl$1[0];
-            stl$2 = typeof t[/* ptyp_desc */0] === "number" && !(stl$1[1] || decl[/* type_arity */1] <= 1) ? List.map((function () {
+            stl$2 = typeof t[/* ptyp_desc */0] === "number" && !(stl$1[1] || decl[/* type_arity */1] <= 1) ? List.map((function (param) {
                       return t;
                     }), decl[/* type_params */0]) : stl$1;
           } else {
@@ -54457,7 +54457,7 @@ function globalize_used_variables(env, fixed) {
           }
         }), used_variables[0]);
   used_variables[0] = /* Empty */0;
-  return (function () {
+  return (function (param) {
       return List.iter((function (param) {
                     try {
                       return unify$2(env, param[1], param[2]);
@@ -54880,7 +54880,7 @@ register_error_of_exn((function (param) {
                             case 10 : 
                                 var ty$prime = param$2[1];
                                 var ty = param$2[0];
-                                return wrap_printing_env(env$1, (function () {
+                                return wrap_printing_env(env$1, (function (param) {
                                               reset_and_mark_loops_list(/* :: */[
                                                     ty,
                                                     /* :: */[
@@ -55220,7 +55220,7 @@ var type_module = /* record */[/* contents */(function (env, md) {
           ];
     })];
 
-var type_open = /* record */[/* contents */(function () {
+var type_open = /* record */[/* contents */(function (param) {
       throw [
             Caml_builtin_exceptions.assert_failure,
             /* tuple */[
@@ -55231,7 +55231,7 @@ var type_open = /* record */[/* contents */(function () {
           ];
     })];
 
-var type_package = /* record */[/* contents */(function () {
+var type_package = /* record */[/* contents */(function (param) {
       throw [
             Caml_builtin_exceptions.assert_failure,
             /* tuple */[
@@ -55742,7 +55742,7 @@ function unify_exp_types(loc, env, ty, expected_ty) {
 
 var newtype_level$1 = /* record */[/* contents */undefined];
 
-function get_newtype_level$1() {
+function get_newtype_level$1(param) {
   var match = newtype_level$1[0];
   if (match !== undefined) {
     return match;
@@ -55781,7 +55781,7 @@ function unify_pat_types_gadt(loc, env, ty, ty$prime) {
     try {
       univar_pairs[0] = /* [] */0;
       newtype_level[0] = lev;
-      set_mode_pattern(true, true, (function () {
+      set_mode_pattern(true, true, (function (param) {
               return unify$1(env$1, ty1, ty2);
             }));
       newtype_level[0] = undefined;
@@ -56266,7 +56266,7 @@ function build_as_type(env, _p) {
 function build_or_pat(env, loc, lid) {
   var match = find_type(env, loc, lid);
   var path = match[0];
-  var tyl = List.map((function () {
+  var tyl = List.map((function (param) {
           return newvar(undefined, /* () */0);
         }), match[1][/* type_params */0]);
   var ty = expand_head(env, newty2(current_level[0], /* Tconstr */Block.__(3, [
@@ -56651,7 +56651,7 @@ function disambiguate($staropt$star, $staropt$star$1, scope, lid, env, opath, lb
     var match = opath;
     var pr = match[2];
     var tpath = match[1];
-    var warn_pr = function () {
+    var warn_pr = function (param) {
       var kind = type_kind === "record" ? "field" : "constructor";
       return Curry._2(warn, lid[/* loc */1], /* Not_principal */Block.__(8, ["this type-based " + (kind + " disambiguation")]));
     };
@@ -57209,7 +57209,7 @@ function disambiguate$1($staropt$star, $staropt$star$1, scope, lid, env, opath, 
     var match = opath;
     var pr = match[2];
     var tpath = match[1];
-    var warn_pr = function () {
+    var warn_pr = function (param) {
       var kind = type_kind$1 === "record" ? "field" : "constructor";
       return Curry._2(warn, lid[/* loc */1], /* Not_principal */Block.__(8, ["this type-based " + (kind + " disambiguation")]));
     };
@@ -57350,7 +57350,7 @@ function unify_head_only(loc, env, ty, constr) {
   } else if (match$1.tag === 3) {
     ty_res[/* desc */0] = /* Tconstr */Block.__(3, [
         match$1[0],
-        List.map((function () {
+        List.map((function (param) {
                 return newvar(undefined, /* () */0);
               }), match$1[1]),
         match$1[2]
@@ -57539,7 +57539,7 @@ function type_pat(constrs, labels, no_existentials, mode, env, sp, expected_ty) 
                     constrs$1 = /* :: */[
                       /* tuple */[
                         Hashtbl.find(constrs$2, s),
-                        (function () {
+                        (function (param) {
                             return /* () */0;
                           })
                       ],
@@ -58314,7 +58314,7 @@ function add_delayed_check(f) {
   return /* () */0;
 }
 
-function force_delayed_checks() {
+function force_delayed_checks(param) {
   var snap = snapshot(/* () */0);
   var w_old = current[0];
   List.iter((function (param) {
@@ -59588,7 +59588,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
         if (List.length(sexpl) < 2) {
           ill_formed_ast(loc, "Tuples must have at least 2 components.");
         }
-        var subtypes = List.map((function () {
+        var subtypes = List.map((function (param) {
                 return newty2(100000000, /* Tvar */Block.__(0, [undefined]));
               }), sexpl);
         var to_unify = newty2(100000000, /* Ttuple */Block.__(2, [subtypes]));
@@ -62667,7 +62667,7 @@ function type_application(env, funct, sargs) {
                     /* [] */0,
                     more_sargs[1],
                     (function(ty,ty0,sarg0){
-                    return function () {
+                    return function (param) {
                       return type_argument(env, sarg0, ty, ty0);
                     }
                     }(ty,ty0,sarg0))
@@ -62727,11 +62727,11 @@ function type_application(env, funct, sargs) {
                   match$7[2],
                   match$7[3],
                   optional === /* Required */0 || is_optional(l$prime$1) ? (function(ty,ty0,sarg0$3){
-                    return function () {
+                    return function (param) {
                       return type_argument(env, sarg0$3, ty, ty0);
                     }
                     }(ty,ty0,sarg0$3)) : (may_warn(sarg0$3[/* pexp_loc */1], /* Not_principal */Block.__(8, ["using an optional argument here"])), (function(ty,ty0,sarg0$3){
-                      return function () {
+                      return function (param) {
                         return option_some(type_argument(env, sarg0$3, extract_option_type(env, ty), extract_option_type(env, ty0)));
                       }
                       }(ty,ty0,sarg0$3)))
@@ -62750,7 +62750,7 @@ function type_application(env, funct, sargs) {
                           ],
                           ignored[0]
                         ], (function(ty){
-                        return function () {
+                        return function (param) {
                           return option_none(instance(undefined, env, ty), none);
                         }
                         }(ty))) : (may_warn(funct[/* exp_loc */1], /* Without_principality */Block.__(9, ["commuted an argument"])), undefined)
@@ -62911,7 +62911,7 @@ function type_application(env, funct, sargs) {
               var ty1 = match$12[0];
               var optional$1 = is_optional(l1) ? /* Optional */1 : /* Required */0;
               var arg1 = (function(sarg1,ty1,optional$1){
-              return function arg1() {
+              return function arg1(param) {
                 var arg1$1 = type_expect(undefined, env, sarg1, ty1);
                 if (optional$1 === /* Optional */1) {
                   unify_exp(env, arg1$1, type_option$1(newvar(undefined, /* () */0)));
@@ -62976,7 +62976,7 @@ function type_application(env, funct, sargs) {
         if (typeof match$5 !== "number") {
           switch (match$5.tag | 0) {
             case 0 : 
-                add_delayed_check((function () {
+                add_delayed_check((function (param) {
                         return check_application_result(env, false, exp);
                       }));
                 break;
@@ -63035,7 +63035,7 @@ function type_statement(env, sexp) {
             if (ty[/* level */1] > tv[/* level */1]) {
               prerr_warning(loc, /* Nonreturning_statement */10);
             } else {
-              add_delayed_check((function () {
+              add_delayed_check((function (param) {
                       return check_application_result(env, true, exp);
                     }));
             }
@@ -63205,7 +63205,7 @@ function type_cases(in_function, env, ty_arg, ty_res, partial_flag, loc, caselis
           }), cases);
   }
   var partial = partial_flag ? check_partial$1(lev$1, env$2, ty_arg$1)(loc, cases) : /* Partial */0;
-  add_delayed_check((function () {
+  add_delayed_check((function (param) {
           List.iter((function (param) {
                   return check_absent_variant(param[1][0])(param[0]);
                 }), pat_env_list);
@@ -63214,11 +63214,11 @@ function type_cases(in_function, env, ty_arg, ty_res, partial_flag, loc, caselis
             var _pref = /* [] */0;
             var _param = casel;
             while(true) {
-              var param = _param;
+              var param$1 = _param;
               var pref = _pref;
-              if (param) {
-                var rem = param[1];
-                var match = param[0];
+              if (param$1) {
+                var rem = param$1[1];
+                var match = param$1[0];
                 var q = match[/* c_lhs */0];
                 var qs = /* :: */[
                   q,
@@ -63370,7 +63370,7 @@ function type_let($staropt$star, $staropt$star$1, env, rec_flag, spat_sexp_list,
           }
           
         }), spat_sexp_list);
-  var nvs = List.map((function () {
+  var nvs = List.map((function (param) {
           return newvar(undefined, /* () */0);
         }), spatl);
   var match$3 = type_pattern_list(env, spatl, scope, nvs, allow);
@@ -63434,7 +63434,7 @@ function type_let($staropt$star, $staropt$star$1, env, rec_flag, spat_sexp_list,
                     var name = id[/* name */1];
                     var used = /* record */[/* contents */false];
                     if (!(name === "" || Caml_string.get(name, 0) === /* "_" */95 || Caml_string.get(name, 0) === /* "#" */35)) {
-                      add_delayed_check((function () {
+                      add_delayed_check((function (param) {
                               if (used[0]) {
                                 return 0;
                               } else {
@@ -63444,7 +63444,7 @@ function type_let($staropt$star, $staropt$star$1, env, rec_flag, spat_sexp_list,
                     }
                     var name$1 = name;
                     var vd$1 = vd;
-                    var callback = function () {
+                    var callback = function (param) {
                       var match = current_slot[0];
                       if (match !== undefined) {
                         var slot$1 = match;
@@ -63473,7 +63473,7 @@ function type_let($staropt$star, $staropt$star$1, env, rec_flag, spat_sexp_list,
                     ];
                     try {
                       var old = Hashtbl.find(value_declarations, key);
-                      return Hashtbl.replace(value_declarations, key, (function () {
+                      return Hashtbl.replace(value_declarations, key, (function (param) {
                                     Curry._1(old, /* () */0);
                                     return Curry._1(callback, /* () */0);
                                   }));
@@ -63631,12 +63631,12 @@ register_error_of_exn((function (param) {
                         var env$1 = env;
                         var ppf = param;
                         var err = param$1;
-                        return wrap_printing_env(env$1, (function () {
+                        return wrap_printing_env(env$1, (function (param) {
                                       var env$2 = env$1;
                                       var ppf$1 = ppf;
-                                      var param = err;
-                                      if (typeof param === "number") {
-                                        switch (param) {
+                                      var param$1 = err;
+                                      if (typeof param$1 === "number") {
+                                        switch (param$1) {
                                           case 0 : 
                                               return Format.fprintf(ppf$1, /* Format */[
                                                           /* String_literal */Block.__(11, [
@@ -63767,7 +63767,7 @@ register_error_of_exn((function (param) {
                                           
                                         }
                                       } else {
-                                        switch (param.tag | 0) {
+                                        switch (param$1.tag | 0) {
                                           case 0 : 
                                               return Curry._3(Format.fprintf(ppf$1, /* Format */[
                                                               /* Formatting_gen */Block.__(18, [
@@ -63797,7 +63797,7 @@ register_error_of_exn((function (param) {
                                                                     ])
                                                                 ]),
                                                               "@[The record field %a is polymorphic.@ %s@]"
-                                                            ]), longident, param[0], "You cannot instantiate it in a pattern.");
+                                                            ]), longident, param$1[0], "You cannot instantiate it in a pattern.");
                                           case 1 : 
                                               return Curry._4(Format.fprintf(ppf$1, /* Format */[
                                                               /* Formatting_gen */Block.__(18, [
@@ -63850,10 +63850,10 @@ register_error_of_exn((function (param) {
                                                                     ])
                                                                 ]),
                                                               "@[The constructor %a@ expects %i argument(s),@ but is applied here to %i argument(s)@]"
-                                                            ]), longident, param[0], param[1], param[2]);
+                                                            ]), longident, param$1[0], param$1[1], param$1[2]);
                                           case 2 : 
-                                              var lid = param[0];
-                                              return report_unification_error(ppf$1, env$2, undefined, param[1], (function (ppf) {
+                                              var lid = param$1[0];
+                                              return report_unification_error(ppf$1, env$2, undefined, param$1[1], (function (ppf) {
                                                             return Curry._2(Format.fprintf(ppf, /* Format */[
                                                                             /* String_literal */Block.__(11, [
                                                                                 "The record field ",
@@ -63881,7 +63881,7 @@ register_error_of_exn((function (param) {
                                                                       ]);
                                                           }));
                                           case 3 : 
-                                              return report_unification_error(ppf$1, env$2, undefined, param[0], (function (ppf) {
+                                              return report_unification_error(ppf$1, env$2, undefined, param$1[0], (function (ppf) {
                                                             return Format.fprintf(ppf, /* Format */[
                                                                         /* String_literal */Block.__(11, [
                                                                             "This pattern matches values of type",
@@ -63899,8 +63899,8 @@ register_error_of_exn((function (param) {
                                                                       ]);
                                                           }));
                                           case 4 : 
-                                              var id = param[0];
-                                              return report_unification_error(ppf$1, env$2, undefined, param[1], (function (ppf) {
+                                              var id = param$1[0];
+                                              return report_unification_error(ppf$1, env$2, undefined, param$1[1], (function (ppf) {
                                                             return Curry._1(Format.fprintf(ppf, /* Format */[
                                                                             /* String_literal */Block.__(11, [
                                                                                 "The variable ",
@@ -63936,7 +63936,7 @@ register_error_of_exn((function (param) {
                                                                     ])
                                                                 ]),
                                                               "Variable %s is bound several times in this matching"
-                                                            ]), param[0]);
+                                                            ]), param$1[0]);
                                           case 6 : 
                                               return Curry._1(Format.fprintf(ppf$1, /* Format */[
                                                               /* String_literal */Block.__(11, [
@@ -63950,9 +63950,9 @@ register_error_of_exn((function (param) {
                                                                     ])
                                                                 ]),
                                                               "Variable %s must occur on both sides of this | pattern"
-                                                            ]), param[0][/* name */1]);
+                                                            ]), param$1[0][/* name */1]);
                                           case 7 : 
-                                              return report_unification_error(ppf$1, env$2, undefined, param[0], (function (ppf) {
+                                              return report_unification_error(ppf$1, env$2, undefined, param$1[0], (function (ppf) {
                                                             return Format.fprintf(ppf, /* Format */[
                                                                         /* String_literal */Block.__(11, [
                                                                             "This expression has type",
@@ -63970,7 +63970,7 @@ register_error_of_exn((function (param) {
                                                                       ]);
                                                           }));
                                           case 8 : 
-                                              var typ = param[0];
+                                              var typ = param$1[0];
                                               reset(/* () */0);
                                               mark_loops(typ);
                                               var match = repr(typ)[/* desc */0];
@@ -64102,7 +64102,7 @@ register_error_of_exn((function (param) {
                                               }
                                               break;
                                           case 9 : 
-                                              var ty = param[1];
+                                              var ty = param$1[1];
                                               var print_label = function (ppf, l) {
                                                 if (l === "") {
                                                   return Format.fprintf(ppf, /* Format */[
@@ -64170,7 +64170,7 @@ register_error_of_exn((function (param) {
                                                                     ])
                                                                 ]),
                                                               "@[<v>@[<2>The function applied to this argument has type@ %a@]@.This argument cannot be applied %a@]"
-                                                            ]), type_expr$1, ty, print_label, param[0]);
+                                                            ]), type_expr$1, ty, print_label, param$1[0]);
                                           case 10 : 
                                               return Curry._1(Format.fprintf(ppf$1, /* Format */[
                                                               /* String_literal */Block.__(11, [
@@ -64184,7 +64184,7 @@ register_error_of_exn((function (param) {
                                                                     ])
                                                                 ]),
                                                               "The record field label %s is defined several times"
-                                                            ]), param[0]);
+                                                            ]), param$1[0]);
                                           case 11 : 
                                               var print_labels = function (ppf) {
                                                 return (function (param) {
@@ -64224,7 +64224,7 @@ register_error_of_exn((function (param) {
                                                                     ])
                                                                 ]),
                                                               "@[<hov>Some record fields are undefined:%a@]"
-                                                            ]), print_labels, param[0]);
+                                                            ]), print_labels, param$1[0]);
                                           case 12 : 
                                               return Curry._2(Format.fprintf(ppf$1, /* Format */[
                                                               /* String_literal */Block.__(11, [
@@ -64235,12 +64235,12 @@ register_error_of_exn((function (param) {
                                                                         ])])
                                                                 ]),
                                                               "The record field %a is not mutable"
-                                                            ]), longident, param[0]);
+                                                            ]), longident, param$1[0]);
                                           case 13 : 
-                                              var lid$1 = param[4];
-                                              var p = param[3];
-                                              var kind = param[2];
-                                              var ty$1 = param[1];
+                                              var lid$1 = param$1[4];
+                                              var p = param$1[3];
+                                              var kind = param$1[2];
+                                              var ty$1 = param$1[1];
                                               reset(/* () */0);
                                               mark_loops(ty$1);
                                               Curry._3(Format.fprintf(ppf$1, /* Format */[
@@ -64284,7 +64284,7 @@ register_error_of_exn((function (param) {
                                                               ])
                                                           ]),
                                                         "@[@[<2>%s type@ %a@]@ "
-                                                      ]), param[0], type_expr$1, ty$1);
+                                                      ]), param$1[0], type_expr$1, ty$1);
                                               Curry._5(Format.fprintf(ppf$1, /* Format */[
                                                         /* String_literal */Block.__(11, [
                                                             "The ",
@@ -64330,13 +64330,13 @@ register_error_of_exn((function (param) {
                                                               }))(env$4, lid$3);
                                               }
                                           case 14 : 
-                                              var lid$4 = param[1];
-                                              var kind$1 = param[0];
+                                              var lid$4 = param$1[1];
+                                              var kind$1 = param$1[0];
                                               var name = kind$1 === "record" ? "field" : "constructor";
                                               var ppf$4 = ppf$1;
                                               var env$5 = env$2;
-                                              var param$1 = param[2];
-                                              var tpl = param[3];
+                                              var param$2 = param$1[2];
+                                              var tpl = param$1[3];
                                               var txt1 = function (ppf) {
                                                 return Curry._4(Format.fprintf(ppf, /* Format */[
                                                                 /* String_literal */Block.__(11, [
@@ -64420,9 +64420,9 @@ register_error_of_exn((function (param) {
                                                                 "but a %s was expected belonging to the %s type"
                                                               ]), name, kind$1);
                                               };
-                                              var tp0$prime = param$1[1];
-                                              var tp0 = param$1[0];
-                                              return wrap_printing_env(env$5, (function () {
+                                              var tp0$prime = param$2[1];
+                                              var tp0 = param$2[0];
+                                              return wrap_printing_env(env$5, (function (param) {
                                                             reset(/* () */0);
                                                             List.iter((function (param) {
                                                                     path_same_name(tp0, param[0]);
@@ -64538,9 +64538,9 @@ register_error_of_exn((function (param) {
                                                                   /* End_of_format */0
                                                                 ]),
                                                               "%s"
-                                                            ]), param[0]);
+                                                            ]), param$1[0]);
                                           case 16 : 
-                                              var ty$2 = param[0];
+                                              var ty$2 = param$1[0];
                                               reset(/* () */0);
                                               mark_loops(ty$2);
                                               return Curry._3(Format.fprintf(ppf$1, /* Format */[
@@ -64590,7 +64590,7 @@ register_error_of_exn((function (param) {
                                                                     ])
                                                                 ]),
                                                               "@[<v>@[This expression has type@;<1 2>%a@]@,It has no method %s@]"
-                                                            ]), type_expr$1, ty$2, param[1]);
+                                                            ]), type_expr$1, ty$2, param$1[1]);
                                           case 17 : 
                                               return Curry._1(Format.fprintf(ppf$1, /* Format */[
                                                               /* String_literal */Block.__(11, [
@@ -64601,7 +64601,7 @@ register_error_of_exn((function (param) {
                                                                     ])
                                                                 ]),
                                                               "This expression has no method %s"
-                                                            ]), param[0]);
+                                                            ]), param$1[0]);
                                           case 18 : 
                                               return Curry._2(Format.fprintf(ppf$1, /* Format */[
                                                               /* String_literal */Block.__(11, [
@@ -64609,7 +64609,7 @@ register_error_of_exn((function (param) {
                                                                   /* Alpha */Block.__(15, [/* End_of_format */0])
                                                                 ]),
                                                               "Cannot instantiate the virtual class %a"
-                                                            ]), longident, param[0]);
+                                                            ]), longident, param$1[0]);
                                           case 19 : 
                                               return Curry._2(Format.fprintf(ppf$1, /* Format */[
                                                               /* String_literal */Block.__(11, [
@@ -64617,7 +64617,7 @@ register_error_of_exn((function (param) {
                                                                   /* Alpha */Block.__(15, [/* End_of_format */0])
                                                                 ]),
                                                               "Cannot create values of the private type %a"
-                                                            ]), type_expr$1, param[0]);
+                                                            ]), type_expr$1, param$1[0]);
                                           case 20 : 
                                               return Curry._4(Format.fprintf(ppf$1, /* Format */[
                                                               /* String_literal */Block.__(11, [
@@ -64628,7 +64628,7 @@ register_error_of_exn((function (param) {
                                                                         ])])
                                                                 ]),
                                                               "Cannot assign field %a of the private type %a"
-                                                            ]), longident, param[0], type_expr$1, param[1]);
+                                                            ]), longident, param$1[0], type_expr$1, param$1[1]);
                                           case 21 : 
                                               return Curry._1(Format.fprintf(ppf$1, /* Format */[
                                                               /* String_literal */Block.__(11, [
@@ -64639,10 +64639,10 @@ register_error_of_exn((function (param) {
                                                                     ])
                                                                 ]),
                                                               "Unbound instance variable %s"
-                                                            ]), param[0]);
+                                                            ]), param$1[0]);
                                           case 22 : 
-                                              var v = param[1];
-                                              if (param[0]) {
+                                              var v = param$1[1];
+                                              if (param$1[0]) {
                                                 return Curry._1(Format.fprintf(ppf$1, /* Format */[
                                                                 /* String_literal */Block.__(11, [
                                                                     "The instance variable ",
@@ -64674,10 +64674,10 @@ register_error_of_exn((function (param) {
                                           case 23 : 
                                               var ppf$5 = ppf$1;
                                               var env$6 = env$2;
-                                              var tr1 = param[0];
+                                              var tr1 = param$1[0];
                                               var txt1$1 = "is not a subtype of";
-                                              var tr2 = param[1];
-                                              return wrap_printing_env(env$6, (function () {
+                                              var tr2 = param$1[1];
+                                              return wrap_printing_env(env$6, (function (param) {
                                                             reset(/* () */0);
                                                             var tr1$1 = List.map(prepare_expansion, tr1);
                                                             var tr2$1 = List.map(prepare_expansion, tr2);
@@ -64734,11 +64734,11 @@ register_error_of_exn((function (param) {
                                                                     ])
                                                                 ]),
                                                               "The instance variable %s is overridden several times"
-                                                            ]), param[0]);
+                                                            ]), param$1[0]);
                                           case 25 : 
-                                              var ty$prime = param[1];
-                                              var ty$3 = param[0];
-                                              report_unification_error(ppf$1, env$2, undefined, param[2], (function (ppf) {
+                                              var ty$prime = param$1[1];
+                                              var ty$3 = param$1[0];
+                                              report_unification_error(ppf$1, env$2, undefined, param$1[2], (function (ppf) {
                                                       var match = prepare_expansion(/* tuple */[
                                                             ty$3,
                                                             ty$prime
@@ -64782,7 +64782,7 @@ register_error_of_exn((function (param) {
                                                                   "but is here used with type"
                                                                 ]);
                                                     }));
-                                              if (param[3]) {
+                                              if (param$1[3]) {
                                                 return Curry._2(Format.fprintf(ppf$1, /* Format */[
                                                                 /* Char_literal */Block.__(12, [
                                                                     /* "." */46,
@@ -64822,10 +64822,10 @@ register_error_of_exn((function (param) {
                                                 return 0;
                                               }
                                           case 26 : 
-                                              var ty$4 = param[1];
+                                              var ty$4 = param$1[1];
                                               reset(/* () */0);
                                               mark_loops(ty$4);
-                                              if (param[0]) {
+                                              if (param$1[0]) {
                                                 Format.fprintf(ppf$1, /* Format */[
                                                       /* String_literal */Block.__(11, [
                                                           "This function expects too many arguments,",
@@ -64885,7 +64885,7 @@ register_error_of_exn((function (param) {
                                                               ]), type_expr$1, ty$4);
                                               }
                                           case 27 : 
-                                              var ty$5 = param[1];
+                                              var ty$5 = param$1[1];
                                               var label_mark = function (l) {
                                                 if (l === "") {
                                                   return "but its first argument is not labelled";
@@ -64951,9 +64951,9 @@ register_error_of_exn((function (param) {
                                                                     ])
                                                                 ]),
                                                               "@[<v>@[<2>This function should have type@ %a@]@,%s@]"
-                                                            ]), type_expr$1, ty$5, label_mark(param[0]));
+                                                            ]), type_expr$1, ty$5, label_mark(param$1[0]));
                                           case 28 : 
-                                              var ty$6 = param[1];
+                                              var ty$6 = param$1[1];
                                               reset(/* () */0);
                                               mark_loops(ty$6);
                                               Curry._2(Format.fprintf(ppf$1, /* Format */[
@@ -64989,7 +64989,7 @@ register_error_of_exn((function (param) {
                                                                     ])
                                                                 ]),
                                                               "In this type, the locally bound module name %s escapes its scope"
-                                                            ]), param[0]);
+                                                            ]), param$1[0]);
                                           case 29 : 
                                               return Curry._2(Format.fprintf(ppf$1, /* Format */[
                                                               /* String_literal */Block.__(11, [
@@ -65007,7 +65007,7 @@ register_error_of_exn((function (param) {
                                                                         ])])
                                                                 ]),
                                                               "The instance variable %a@ cannot be accessed from the definition of another instance variable"
-                                                            ]), longident, param[0]);
+                                                            ]), longident, param$1[0]);
                                           case 30 : 
                                               return Curry._2(Format.fprintf(ppf$1, /* Format */[
                                                               /* String_literal */Block.__(11, [
@@ -65025,10 +65025,10 @@ register_error_of_exn((function (param) {
                                                                         ])])
                                                                 ]),
                                                               "The type %a@ is not a variant type"
-                                                            ]), longident, param[0]);
+                                                            ]), longident, param$1[0]);
                                           case 31 : 
-                                              var kind$2 = param[0];
-                                              return report_unification_error(ppf$1, env$2, undefined, param[1], (function (ppf) {
+                                              var kind$2 = param$1[0];
+                                              return report_unification_error(ppf$1, env$2, undefined, param$1[1], (function (ppf) {
                                                             return Curry._1(Format.fprintf(ppf, /* Format */[
                                                                             /* String_literal */Block.__(11, [
                                                                                 "This ",
@@ -65065,9 +65065,9 @@ register_error_of_exn((function (param) {
                                                                     ])
                                                                 ]),
                                                               "This expression is packed module, but the expected type is@ %a"
-                                                            ]), type_expr$1, param[0]);
+                                                            ]), type_expr$1, param$1[0]);
                                           case 33 : 
-                                              return report_unification_error(ppf$1, env$2, undefined, param[0], (function (ppf) {
+                                              return report_unification_error(ppf$1, env$2, undefined, param$1[0], (function (ppf) {
                                                             return Format.fprintf(ppf, /* Format */[
                                                                         /* String_literal */Block.__(11, [
                                                                             "Recursive local constraint when unifying",
@@ -65119,7 +65119,7 @@ register_error_of_exn((function (param) {
                                                                     ])
                                                                 ]),
                                                               "@[The GADT constructor %s of type %a@ %s.@]"
-                                                            ]), param[1], path, param[0], "must be qualified in this pattern");
+                                                            ]), param$1[1], path, param$1[0], "must be qualified in this pattern");
                                           
                                         }
                                       }
@@ -65138,13 +65138,13 @@ var $$Error$8 = Caml_exceptions.create("Ocaml_typedtree_test.Typedecl.Error");
 
 function enter_type$1(env, sdecl, id) {
   var match = sdecl[/* ptype_manifest */5];
-  var decl_000 = /* type_params */List.map((function () {
+  var decl_000 = /* type_params */List.map((function (param) {
           return newty2(100000000, /* Tvar */Block.__(0, [undefined]));
         }), sdecl[/* ptype_params */1]);
   var decl_001 = /* type_arity */List.length(sdecl[/* ptype_params */1]);
   var decl_003 = /* type_private */sdecl[/* ptype_private */4];
   var decl_004 = /* type_manifest */match !== undefined ? newvar(undefined, /* () */0) : undefined;
-  var decl_005 = /* type_variance */List.map((function () {
+  var decl_005 = /* type_variance */List.map((function (param) {
           return Types_003[/* full */1];
         }), sdecl[/* ptype_params */1]);
   var decl_007 = /* type_loc */sdecl[/* ptype_loc */7];
@@ -65495,7 +65495,7 @@ function check_constraints_rec(env, loc, visited, _ty) {
           case 3 : 
               var args = match[1];
               var path = match[0];
-              var args$prime = List.map((function () {
+              var args$prime = List.map((function (param) {
                       return newvar(undefined, /* () */0);
                     }), args);
               var ty$prime = newconstr(path, args$prime);
@@ -65868,7 +65868,7 @@ function check_well_founded(env, loc, path, to_check, ty) {
 }
 
 function check_well_founded_decl(env, loc, path, decl, to_check) {
-  var it_013 = function () {
+  var it_013 = function (param) {
     return (function (param) {
         return check_well_founded(env, loc, path, to_check, param);
       });
@@ -66598,7 +66598,7 @@ function compute_variance_fixpoint(env, decls, required, _variances) {
 }
 
 function init_variance(param) {
-  return List.map((function () {
+  return List.map((function (param) {
                 return Types_003[/* null */0];
               }), param[1][/* type_params */0]);
 }
@@ -67024,7 +67024,7 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
     var decl_001 = /* type_arity */List.length(params);
     var decl_002 = /* type_kind */match$1[1];
     var decl_003 = /* type_private */sdecl[/* ptype_private */4];
-    var decl_005 = /* type_variance */List.map((function () {
+    var decl_005 = /* type_variance */List.map((function (param) {
             return Types_003[/* full */1];
           }), params);
     var decl_007 = /* type_loc */sdecl[/* ptype_loc */7];
@@ -67129,7 +67129,7 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
             var decl = find_type_full(path, temp_env$1)[0];
             var match = decl[/* type_manifest */4];
             if (match !== undefined) {
-              var params = List.map((function () {
+              var params = List.map((function (param) {
                       return newvar(undefined, /* () */0);
                     }), decl[/* type_params */0]);
               try {
@@ -67174,7 +67174,7 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
           if (decl[/* type_manifest */4] === undefined) {
             return /* () */0;
           } else {
-            var args = List.map((function () {
+            var args = List.map((function (param) {
                     return newvar(undefined, /* () */0);
                   }), decl[/* type_params */0]);
             return check_well_founded(env, loc, path, (function (param) {
@@ -68575,7 +68575,7 @@ function report_error$5(ppf, param) {
                             /* [] */0
                           ], (function (t) {
                               return t;
-                            }), "type", (function () {
+                            }), "type", (function (param) {
                               return "";
                             }));
               };
@@ -69153,7 +69153,7 @@ function report_error$5(ppf, param) {
               ]);
           return explain_unbound(ppf, param[0], param[1][/* ext_args */2], (function (c) {
                         return c;
-                      }), "type", (function () {
+                      }), "type", (function (param) {
                         return "";
                       }));
       
@@ -69698,7 +69698,7 @@ function declare_method(val_env, meths, self_type, lab, priv, sty, loc) {
     var sty$prime = match$1[1];
     var returned_cty = ctyp(/* Ttyp_any */0, newty2(current_level[0], /* Tnil */0), val_env, loc);
     delayed_meth_specs[0] = /* :: */[
-      Block.__(246, [(function () {
+      Block.__(246, [(function (param) {
               var cty = transl_simple_type_univars(val_env, sty$prime);
               var ty = cty[/* ctyp_type */1];
               unif(ty);
@@ -70270,7 +70270,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                         match$4[1],
                         match$4[2],
                         /* :: */[
-                          Block.__(246, [(function () {
+                          Block.__(246, [(function (param) {
                                   return mkcf(/* Tcf_inherit */Block.__(0, [
                                                 ovf,
                                                 parent,
@@ -70365,7 +70365,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                           met_env$prime,
                           match$9[3],
                           /* :: */[
-                            Block.__(246, [(function () {
+                            Block.__(246, [(function (param) {
                                     return mkcf(/* Tcf_val */Block.__(1, [
                                                   lab,
                                                   mut,
@@ -70403,7 +70403,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                           met_env$prime$1,
                           match$10[3],
                           /* :: */[
-                            Block.__(246, [(function () {
+                            Block.__(246, [(function (param) {
                                     return mkcf(/* Tcf_val */Block.__(1, [
                                                   lab,
                                                   mut,
@@ -70541,7 +70541,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                   }
                   var meth_expr = make_method(self_loc$1, cl_num$1, expr$1);
                   var vars_local = vars$1[0];
-                  var field = Block.__(246, [(function () {
+                  var field = Block.__(246, [(function (param) {
                           var meth_type = newty2(100000000, /* Tarrow */Block.__(1, [
                                   "",
                                   self_type$1,
@@ -70582,7 +70582,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                           met_env,
                           par_env,
                           /* :: */[
-                            Block.__(246, [(function () {
+                            Block.__(246, [(function (param) {
                                     return mkcf(/* Tcf_method */Block.__(2, [
                                                   lab$1,
                                                   priv,
@@ -70608,7 +70608,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                         met_env,
                         par_env,
                         /* :: */[
-                          Block.__(246, [(function () {
+                          Block.__(246, [(function (param) {
                                   return mkcf(/* Tcf_constraint */Block.__(3, [
                                                 cty$2,
                                                 cty$prime$1
@@ -70625,7 +70625,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
             case 4 : 
                 var expr$2 = make_method(self_loc$1, cl_num$1, match[0]);
                 var vars_local$1 = vars$1[0];
-                var field$1 = Block.__(246, [(function () {
+                var field$1 = Block.__(246, [(function (param) {
                         raise_nongen_level(/* () */0);
                         var desc_002 = instance_def(type_unit);
                         var desc = /* Tarrow */Block.__(1, [
@@ -70665,7 +70665,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                         met_env,
                         par_env,
                         /* :: */[
-                          Block.__(246, [(function () {
+                          Block.__(246, [(function (param) {
                                   return mkcf(/* Tcf_attribute */Block.__(5, [x]));
                                 })]),
                           fields
@@ -71840,7 +71840,7 @@ function type_classes(define_class, approx, kind, env, cls) {
               throw exn$5;
             }
           }
-          var cty_variance = List.map((function () {
+          var cty_variance = List.map((function (param) {
                   return Types_003[/* full */1];
                 }), params);
           var cltydef_001 = /* clty_type */class_body(typ);
@@ -71927,7 +71927,7 @@ function type_classes(define_class, approx, kind, env, cls) {
           ];
           var obj_abbr_001 = /* type_arity */List.length(obj_params);
           var obj_abbr_004 = /* type_manifest */obj_ty;
-          var obj_abbr_005 = /* type_variance */List.map((function () {
+          var obj_abbr_005 = /* type_variance */List.map((function (param) {
                   return Types_003[/* full */1];
                 }), obj_params);
           var obj_abbr_007 = /* type_loc */cl[/* pci_loc */4];
@@ -71949,7 +71949,7 @@ function type_classes(define_class, approx, kind, env, cls) {
           set_object_name(obj_id, row_variable(cl_ty$1), cl_params$1, cl_ty$1);
           var cl_abbr_001 = /* type_arity */List.length(cl_params$1);
           var cl_abbr_004 = /* type_manifest */cl_ty$1;
-          var cl_abbr_005 = /* type_variance */List.map((function () {
+          var cl_abbr_005 = /* type_variance */List.map((function (param) {
                   return Types_003[/* full */1];
                 }), cl_params$1);
           var cl_abbr_007 = /* type_loc */cl[/* pci_loc */4];
@@ -72338,11 +72338,11 @@ register_error_of_exn((function (param) {
                         var env$1 = env;
                         var ppf = param;
                         var err = param$1;
-                        return wrap_printing_env(env$1, (function () {
+                        return wrap_printing_env(env$1, (function (param) {
                                       var env$2 = env$1;
                                       var ppf$1 = ppf;
-                                      var param = err;
-                                      if (typeof param === "number") {
+                                      var param$1 = err;
+                                      if (typeof param$1 === "number") {
                                         return Format.fprintf(ppf$1, /* Format */[
                                                     /* String_literal */Block.__(11, [
                                                         "A type parameter occurs several times",
@@ -72351,7 +72351,7 @@ register_error_of_exn((function (param) {
                                                     "A type parameter occurs several times"
                                                   ]);
                                       } else {
-                                        switch (param.tag | 0) {
+                                        switch (param$1.tag | 0) {
                                           case 0 : 
                                               Format.fprintf(ppf$1, /* Format */[
                                                     /* String_literal */Block.__(11, [
@@ -72363,7 +72363,7 @@ register_error_of_exn((function (param) {
                                                       ]),
                                                     "The class constraints are not consistent.@."
                                                   ]);
-                                              return report_unification_error(ppf$1, env$2, undefined, param[0], (function (ppf) {
+                                              return report_unification_error(ppf$1, env$2, undefined, param$1[0], (function (ppf) {
                                                             return Format.fprintf(ppf, /* Format */[
                                                                         /* String_literal */Block.__(11, [
                                                                             "Type",
@@ -72381,9 +72381,9 @@ register_error_of_exn((function (param) {
                                                                       ]);
                                                           }));
                                           case 1 : 
-                                              var m = param[1];
-                                              var k = param[0];
-                                              return report_unification_error(ppf$1, env$2, undefined, param[2], (function (ppf) {
+                                              var m = param$1[1];
+                                              var k = param$1[0];
+                                              return report_unification_error(ppf$1, env$2, undefined, param$1[2], (function (ppf) {
                                                             return Curry._2(Format.fprintf(ppf, /* Format */[
                                                                             /* String_literal */Block.__(11, [
                                                                                 "The ",
@@ -72442,7 +72442,7 @@ register_error_of_exn((function (param) {
                                                                     ])
                                                                 ]),
                                                               "@[This class expression is not a class structure; it has type@ %a@]"
-                                                            ]), class_type$1, param[0]);
+                                                            ]), class_type$1, param$1[0]);
                                           case 3 : 
                                               return Format.fprintf(ppf$1, /* Format */[
                                                           /* String_literal */Block.__(11, [
@@ -72477,9 +72477,9 @@ register_error_of_exn((function (param) {
                                                                     ])
                                                                 ]),
                                                               "This argument cannot be applied with%s"
-                                                            ]), mark_label(param[0]));
+                                                            ]), mark_label(param$1[0]));
                                           case 5 : 
-                                              var ty = param[0];
+                                              var ty = param$1[0];
                                               reset(/* () */0);
                                               mark_loops(ty);
                                               return Curry._3(Format.fprintf(ppf$1, /* Format */[
@@ -72538,7 +72538,7 @@ register_error_of_exn((function (param) {
                                                                     ])
                                                                 ]),
                                                               "@[The class@ %a@ is not yet completely defined@]"
-                                                            ]), longident, param[0]);
+                                                            ]), longident, param$1[0]);
                                           case 7 : 
                                               return Curry._2(Format.fprintf(ppf$1, /* Format */[
                                                               /* Formatting_gen */Block.__(18, [
@@ -72572,11 +72572,11 @@ register_error_of_exn((function (param) {
                                                                     ])
                                                                 ]),
                                                               "@[The class type@ %a@ is not yet completely defined@]"
-                                                            ]), longident, param[0]);
+                                                            ]), longident, param$1[0]);
                                           case 8 : 
-                                              var expected = param[2];
-                                              var actual = param[1];
-                                              var abbrev = param[0];
+                                              var expected = param$1[2];
+                                              var actual = param$1[1];
+                                              var abbrev = param$1[0];
                                               reset_and_mark_loops_list(/* :: */[
                                                     abbrev,
                                                     /* :: */[
@@ -72645,8 +72645,8 @@ register_error_of_exn((function (param) {
                                                               "@[The abbreviation@ %a@ expands to type@ %a@ but is used with type@ %a@]"
                                                             ]), type_expr$1, abbrev, type_expr$1, actual, type_expr$1, expected);
                                           case 9 : 
-                                              var c = param[0];
-                                              return report_unification_error(ppf$1, env$2, undefined, param[1], (function (ppf) {
+                                              var c = param$1[0];
+                                              return report_unification_error(ppf$1, env$2, undefined, param$1[1], (function (ppf) {
                                                             return Curry._1(Format.fprintf(ppf, /* Format */[
                                                                             /* String_literal */Block.__(11, [
                                                                                 "The expression \"new ",
@@ -72670,10 +72670,10 @@ register_error_of_exn((function (param) {
                                                                       ]);
                                                           }));
                                           case 10 : 
-                                              var vals = param[3];
-                                              var mets = param[2];
-                                              var imm = param[1];
-                                              var cl = param[0];
+                                              var vals = param$1[3];
+                                              var mets = param$1[2];
+                                              var imm = param$1[1];
+                                              var cl = param$1[0];
                                               var print_mets = function (ppf, mets) {
                                                 return List.iter((function (met) {
                                                               return Curry._1(Format.fprintf(ppf, /* Format */[
@@ -72821,9 +72821,9 @@ register_error_of_exn((function (param) {
                                                                     ])
                                                                 ]),
                                                               "@[The class constructor %a@ expects %i type argument(s),@ but is here applied to %i type argument(s)@]"
-                                                            ]), longident, param[0], param[1], param[2]);
+                                                            ]), longident, param$1[0], param$1[1], param$1[2]);
                                           case 12 : 
-                                              return report_unification_error(ppf$1, env$2, undefined, param[0], (function (ppf) {
+                                              return report_unification_error(ppf$1, env$2, undefined, param$1[0], (function (ppf) {
                                                             return Format.fprintf(ppf, /* Format */[
                                                                         /* String_literal */Block.__(11, [
                                                                             "The type parameter",
@@ -72841,8 +72841,8 @@ register_error_of_exn((function (param) {
                                                                       ]);
                                                           }));
                                           case 13 : 
-                                              var cstrs = param[2];
-                                              var params = param[1];
+                                              var cstrs = param$1[2];
+                                              var params = param$1[1];
                                               reset_and_mark_loops_list(/* :: */[
                                                     params,
                                                     /* :: */[
@@ -72899,9 +72899,9 @@ register_error_of_exn((function (param) {
                                                                     ])
                                                                 ]),
                                                               "@[The abbreviation %a@ is used with parameters@ %a@ wich are incompatible with constraints@ %a@]"
-                                                            ]), ident$3, param[0], type_expr$1, params, type_expr$1, cstrs);
+                                                            ]), ident$3, param$1[0], type_expr$1, params, type_expr$1, cstrs);
                                           case 14 : 
-                                              return report_error$3(ppf$1, param[0]);
+                                              return report_error$3(ppf$1, param$1[0]);
                                           case 15 : 
                                               return Curry._1(Format.fprintf(ppf$1, /* Format */[
                                                               /* String_literal */Block.__(11, [
@@ -72912,7 +72912,7 @@ register_error_of_exn((function (param) {
                                                                     ])
                                                                 ]),
                                                               "Unbound instance variable %s"
-                                                            ]), param[0]);
+                                                            ]), param$1[0]);
                                           case 16 : 
                                               var print_common = function (ppf, kind, ty0, real, lab, ty) {
                                                 var ty1 = real ? ty0 : newty2(100000000, /* Tobject */Block.__(4, [
@@ -73039,7 +73039,7 @@ register_error_of_exn((function (param) {
                                                                     ])
                                                                 ]),
                                                               "@[<v>@[Some type variables are unbound in this type:@;<1 2>%t@]@ @[%a@]@]"
-                                                            ]), param[0], print_reason, param[1]);
+                                                            ]), param$1[0], print_reason, param$1[1]);
                                           case 17 : 
                                               return Curry._2(Format.fprintf(ppf$1, /* Format */[
                                                               /* Formatting_gen */Block.__(18, [
@@ -73085,9 +73085,9 @@ register_error_of_exn((function (param) {
                                                                     ])
                                                                 ]),
                                                               "@[<v>@[Self type should not occur in the non-generic type@;<1 2>%a@]@,It would escape the scope of its class@]"
-                                                            ]), type_scheme, param[0]);
+                                                            ]), type_scheme, param$1[0]);
                                           case 18 : 
-                                              var id = param[0];
+                                              var id = param$1[0];
                                               return Curry._2(Format.fprintf(ppf$1, /* Format */[
                                                               /* Formatting_gen */Block.__(18, [
                                                                   /* Open_box */Block.__(1, [/* Format */[
@@ -73125,7 +73125,7 @@ register_error_of_exn((function (param) {
                                                               "@[The type of this class,@ %a,@ contains type variables that cannot be generalized@]"
                                                             ]), (function (param, param$1) {
                                                             return class_declaration$1(id, param, param$1);
-                                                          }), param[1]);
+                                                          }), param$1[1]);
                                           case 19 : 
                                               return Curry._2(Format.fprintf(ppf$1, /* Format */[
                                                               /* Formatting_gen */Block.__(18, [
@@ -73168,9 +73168,9 @@ register_error_of_exn((function (param) {
                                                                     ])
                                                                 ]),
                                                               "@[The type of self cannot be coerced to@ the type of the current class:@ %a.@.Some occurrences are contravariant@]"
-                                                            ]), type_scheme, param[0]);
+                                                            ]), type_scheme, param$1[0]);
                                           case 20 : 
-                                              var id$1 = param[0];
+                                              var id$1 = param$1[0];
                                               Curry._2(Format.fprintf(ppf$1, /* Format */[
                                                         /* Formatting_gen */Block.__(18, [
                                                             /* Open_box */Block.__(1, [/* Format */[
@@ -73208,8 +73208,8 @@ register_error_of_exn((function (param) {
                                                         "@[The type of this class,@ %a,@ contains non-collapsible conjunctive types in constraints@]"
                                                       ]), (function (param, param$1) {
                                                       return class_declaration$1(id$1, param, param$1);
-                                                    }), param[1]);
-                                              return report_unification_error(ppf$1, env$2, undefined, param[2], (function (ppf) {
+                                                    }), param$1[1]);
+                                              return report_unification_error(ppf$1, env$2, undefined, param$1[2], (function (ppf) {
                                                             return Format.fprintf(ppf, /* Format */[
                                                                         /* String_literal */Block.__(11, [
                                                                             "Type",
@@ -73227,7 +73227,7 @@ register_error_of_exn((function (param) {
                                                                       ]);
                                                           }));
                                           case 21 : 
-                                              return report_unification_error(ppf$1, env$2, undefined, param[0], (function (ppf) {
+                                              return report_unification_error(ppf$1, env$2, undefined, param$1[0], (function (ppf) {
                                                             return Format.fprintf(ppf, /* Format */[
                                                                         /* String_literal */Block.__(11, [
                                                                             "This object is expected to have type",
@@ -73245,7 +73245,7 @@ register_error_of_exn((function (param) {
                                                                       ]);
                                                           }));
                                           case 22 : 
-                                              var match = param[1] === /* Immutable */0 ? /* tuple */[
+                                              var match = param$1[1] === /* Immutable */0 ? /* tuple */[
                                                   "mutable",
                                                   "immutable"
                                                 ] : /* tuple */[
@@ -73288,7 +73288,7 @@ register_error_of_exn((function (param) {
                                                               "@[The instance variable is %s;@ it cannot be redefined as %s@]"
                                                             ]), match[0], match[1]);
                                           case 23 : 
-                                              var name = param[1];
+                                              var name = param$1[1];
                                               if (name === "") {
                                                 return Curry._1(Format.fprintf(ppf$1, /* Format */[
                                                                 /* Formatting_gen */Block.__(18, [
@@ -73354,7 +73354,7 @@ register_error_of_exn((function (param) {
                                                                       ])
                                                                   ]),
                                                                 "@[The %s `%s'@ has no previous definition@]"
-                                                              ]), param[0], name);
+                                                              ]), param$1[0], name);
                                               }
                                           case 24 : 
                                               return Curry._2(Format.fprintf(ppf$1, /* Format */[
@@ -73394,7 +73394,7 @@ register_error_of_exn((function (param) {
                                                                     ])
                                                                 ]),
                                                               "@[The %s `%s'@ has multiple definitions in this object@]"
-                                                            ]), param[0], param[1]);
+                                                            ]), param$1[0], param$1[1]);
                                           
                                         }
                                       }
@@ -73628,7 +73628,7 @@ function merge_constraint(initial_env, loc, sg, constr) {
                       var match = sdecl[/* ptype_kind */3];
                       var exit$2 = 0;
                       if (typeof match === "number" && !(match !== 0 || !(id[/* name */1] === s && is_fixed_type(sdecl)))) {
-                        var decl_row_000 = /* type_params */List.map((function () {
+                        var decl_row_000 = /* type_params */List.map((function (param) {
                                 return newty2(100000000, /* Tvar */Block.__(0, [undefined]));
                               }), sdecl[/* ptype_params */1]);
                         var decl_row_001 = /* type_arity */List.length(sdecl[/* ptype_params */1]);
@@ -76616,7 +76616,7 @@ function type_implementation_more(sourcefile, outputprefix, modulename, initial_
     var str = match[0];
     var simple_sg = simplify_signature(sg);
     if (print_types[0]) {
-      wrap_printing_env(initial_env, (function () {
+      wrap_printing_env(initial_env, (function (param) {
               return Curry._2(Format.fprintf(Format.std_formatter, /* Format */[
                               /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
                                       /* Flush_newline */4,
@@ -76736,11 +76736,11 @@ register_error_of_exn((function (param) {
                         var env$1 = env;
                         var ppf = param;
                         var err = param$1;
-                        return wrap_printing_env(env$1, (function () {
+                        return wrap_printing_env(env$1, (function (param) {
                                       var ppf$1 = ppf;
-                                      var param = err;
-                                      if (typeof param === "number") {
-                                        switch (param) {
+                                      var param$1 = err;
+                                      if (typeof param$1 === "number") {
+                                        switch (param$1) {
                                           case 0 : 
                                               return Format.fprintf(ppf$1, /* Format */[
                                                           /* String_literal */Block.__(11, [
@@ -76803,7 +76803,7 @@ register_error_of_exn((function (param) {
                                           
                                         }
                                       } else {
-                                        switch (param.tag | 0) {
+                                        switch (param$1.tag | 0) {
                                           case 0 : 
                                               return Curry._2(Format.fprintf(ppf$1, /* Format */[
                                                               /* Formatting_gen */Block.__(18, [
@@ -76827,7 +76827,7 @@ register_error_of_exn((function (param) {
                                                                     ])
                                                                 ]),
                                                               "@[This module is not a functor; it has type@ %a@]"
-                                                            ]), modtype$1, param[0]);
+                                                            ]), modtype$1, param$1[0]);
                                           case 1 : 
                                               return Curry._2(Format.fprintf(ppf$1, /* Format */[
                                                               /* Formatting_gen */Block.__(18, [
@@ -76854,7 +76854,7 @@ register_error_of_exn((function (param) {
                                                                     ])
                                                                 ]),
                                                               "@[<v>Signature mismatch:@ %a@]"
-                                                            ]), report_error$4, param[0]);
+                                                            ]), report_error$4, param$1[0]);
                                           case 2 : 
                                               return Curry._2(Format.fprintf(ppf$1, /* Format */[
                                                               /* Formatting_gen */Block.__(18, [
@@ -76898,7 +76898,7 @@ register_error_of_exn((function (param) {
                                                                     ])
                                                                 ]),
                                                               "@[This functor has type@ %a@ The parameter cannot be eliminated in the result type.@  Please bind the argument to a module identifier.@]"
-                                                            ]), modtype$1, param[0]);
+                                                            ]), modtype$1, param$1[0]);
                                           case 3 : 
                                               return Curry._2(Format.fprintf(ppf$1, /* Format */[
                                                               /* Formatting_gen */Block.__(18, [
@@ -76919,7 +76919,7 @@ register_error_of_exn((function (param) {
                                                                     ])
                                                                 ]),
                                                               "@[This module is not a structure; it has type@ %a"
-                                                            ]), modtype$1, param[0]);
+                                                            ]), modtype$1, param$1[0]);
                                           case 4 : 
                                               return Curry._2(Format.fprintf(ppf$1, /* Format */[
                                                               /* Formatting_gen */Block.__(18, [
@@ -76936,7 +76936,7 @@ register_error_of_exn((function (param) {
                                                                     ])
                                                                 ]),
                                                               "@[The signature constrained by `with' has no component named %a@]"
-                                                            ]), longident, param[0]);
+                                                            ]), longident, param$1[0]);
                                           case 5 : 
                                               return Curry._4(Format.fprintf(ppf$1, /* Format */[
                                                               /* Formatting_gen */Block.__(18, [
@@ -76992,7 +76992,7 @@ register_error_of_exn((function (param) {
                                                                     ])
                                                                 ]),
                                                               "@[<v>@[In this `with' constraint, the new definition of %a@ does not match its original definition@ in the constrained signature:@]@ %a@]"
-                                                            ]), longident, param[0], report_error$4, param[1]);
+                                                            ]), longident, param$1[0], report_error$4, param$1[1]);
                                           case 6 : 
                                               return Curry._2(Format.fprintf(ppf$1, /* Format */[
                                                               /* Formatting_gen */Block.__(18, [
@@ -77031,7 +77031,7 @@ register_error_of_exn((function (param) {
                                                                     ])
                                                                 ]),
                                                               "@[Multiple definition of the %s name %s.@ Names must be unique in a given structure or signature.@]"
-                                                            ]), param[0], param[1]);
+                                                            ]), param$1[0], param$1[1]);
                                           case 7 : 
                                               return Curry._2(Format.fprintf(ppf$1, /* Format */[
                                                               /* Formatting_gen */Block.__(18, [
@@ -77068,9 +77068,9 @@ register_error_of_exn((function (param) {
                                                                     ])
                                                                 ]),
                                                               "@[The type of this expression,@ %a,@ contains type variables that cannot be generalized@]"
-                                                            ]), type_scheme, param[0]);
+                                                            ]), type_scheme, param$1[0]);
                                           case 8 : 
-                                              var id = param[0];
+                                              var id = param$1[0];
                                               return Curry._2(Format.fprintf(ppf$1, /* Format */[
                                                               /* Formatting_gen */Block.__(18, [
                                                                   /* Open_box */Block.__(1, [/* Format */[
@@ -77108,7 +77108,7 @@ register_error_of_exn((function (param) {
                                                               "@[The type of this class,@ %a,@ contains type variables that cannot be generalized@]"
                                                             ]), (function (param, param$1) {
                                                             return class_declaration$1(id, param, param$1);
-                                                          }), param[1]);
+                                                          }), param$1[1]);
                                           case 9 : 
                                               return Curry._2(Format.fprintf(ppf$1, /* Format */[
                                                               /* Formatting_gen */Block.__(18, [
@@ -77145,7 +77145,7 @@ register_error_of_exn((function (param) {
                                                                     ])
                                                                 ]),
                                                               "@[The type of this module,@ %a,@ contains type variables that cannot be generalized@]"
-                                                            ]), modtype$1, param[0]);
+                                                            ]), modtype$1, param$1[0]);
                                           case 10 : 
                                               return Curry._2(Format.fprintf(ppf$1, /* Format */[
                                                               /* Formatting_gen */Block.__(18, [
@@ -77182,7 +77182,7 @@ register_error_of_exn((function (param) {
                                                                     ])
                                                                 ]),
                                                               "@[The interface %a@ declares values, not just types.@ An implementation must be provided.@]"
-                                                            ]), print_filename, param[0]);
+                                                            ]), print_filename, param$1[0]);
                                           case 11 : 
                                               return Curry._2(Format.fprintf(ppf$1, /* Format */[
                                                               /* Formatting_gen */Block.__(18, [
@@ -77209,7 +77209,7 @@ register_error_of_exn((function (param) {
                                                                     ])
                                                                 ]),
                                                               "@[Could not find the .cmi file for interface@ %a.@]"
-                                                            ]), print_filename, param[0]);
+                                                            ]), print_filename, param$1[0]);
                                           case 12 : 
                                               return Curry._2(Format.fprintf(ppf$1, /* Format */[
                                                               /* String_literal */Block.__(11, [
@@ -77224,7 +77224,7 @@ register_error_of_exn((function (param) {
                                                                     ])
                                                                 ]),
                                                               "This expression is not a packed module. It has type@ %a"
-                                                            ]), type_expr$1, param[0]);
+                                                            ]), type_expr$1, param$1[0]);
                                           case 13 : 
                                               return Curry._2(Format.fprintf(ppf$1, /* Format */[
                                                               /* String_literal */Block.__(11, [
@@ -77239,7 +77239,7 @@ register_error_of_exn((function (param) {
                                                                     ])
                                                                 ]),
                                                               "The type of this packed module contains variables:@ %a"
-                                                            ]), type_expr$1, param[0]);
+                                                            ]), type_expr$1, param$1[0]);
                                           case 14 : 
                                               Curry._2(Format.fprintf(ppf$1, /* Format */[
                                                         /* String_literal */Block.__(11, [
@@ -77257,7 +77257,7 @@ register_error_of_exn((function (param) {
                                                                   ])])
                                                           ]),
                                                         "The type %a in this module cannot be exported.@ "
-                                                      ]), longident, param[0]);
+                                                      ]), longident, param$1[0]);
                                               return Curry._2(Format.fprintf(ppf$1, /* Format */[
                                                               /* String_literal */Block.__(11, [
                                                                   "Its type contains local dependencies:",
@@ -77271,7 +77271,7 @@ register_error_of_exn((function (param) {
                                                                     ])
                                                                 ]),
                                                               "Its type contains local dependencies:@ %a"
-                                                            ]), type_expr$1, param[1]);
+                                                            ]), type_expr$1, param$1[1]);
                                           
                                         }
                                       }
@@ -77293,7 +77293,7 @@ function eq(loc, x, y) {
   suites[0] = /* :: */[
     /* tuple */[
       loc + (" id " + String(test_id[0])),
-      (function () {
+      (function (param) {
           return /* Eq */Block.__(0, [
                     x,
                     y

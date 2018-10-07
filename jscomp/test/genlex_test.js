@@ -62,7 +62,7 @@ function to_list(s) {
 
 var suites_000 = /* tuple */[
   "lexer_stream_genlex",
-  (function () {
+  (function (param) {
       return /* Eq */Block.__(0, [
                 /* :: */[
                   /* Int */Block.__(2, [3]),

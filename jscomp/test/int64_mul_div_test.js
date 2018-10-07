@@ -327,7 +327,7 @@ function from_pairs(prefix, pairs) {
                                         ]),
                                       "%s_%d"
                                     ]), prefix, i),
-                            (function () {
+                            (function (param) {
                                 return commutative_mul(result, a, b);
                               })
                           ];
@@ -1600,7 +1600,7 @@ function from(xs) {
                                     ]),
                                   "small_divs %L"
                                 ]), i),
-                        (function () {
+                        (function (param) {
                             return /* Eq */Block.__(0, [
                                       /* tuple */[
                                         c,
@@ -1676,7 +1676,7 @@ function from_compare(xs) {
                                     ]),
                                   "int64_compare %L"
                                 ]), i),
-                        (function () {
+                        (function (param) {
                             return /* Eq */Block.__(0, [
                                       c,
                                       Caml_int64.compare(a, b)
@@ -1701,7 +1701,7 @@ function from_to_string(xs) {
                                     ]),
                                   "to_string %L"
                                 ]), i),
-                        (function () {
+                        (function (param) {
                             return /* Eq */Block.__(0, [
                                       str_a,
                                       Caml_format.caml_int64_format("%d", a)
@@ -1727,7 +1727,7 @@ Mt.from_pair_suites("int64_mul_div_test.ml", Pervasives.$at(from_pairs("random",
                                             ]),
                                           "to_float_%d"
                                         ]), i),
-                                (function () {
+                                (function (param) {
                                     return /* Eq */Block.__(0, [
                                               Caml_int64.to_float(i64),
                                               f
@@ -1750,7 +1750,7 @@ Mt.from_pair_suites("int64_mul_div_test.ml", Pervasives.$at(from_pairs("random",
                                                 ]),
                                               "of_float_%d"
                                             ]), i),
-                                    (function () {
+                                    (function (param) {
                                         return /* Eq */Block.__(0, [
                                                   Caml_int64.of_float(f),
                                                   i64
@@ -1760,9 +1760,9 @@ Mt.from_pair_suites("int64_mul_div_test.ml", Pervasives.$at(from_pairs("random",
                           }), $$Array.to_list(of_float_pairs)), Pervasives.$at(/* :: */[
                           /* tuple */[
                             "compare_check_complete",
-                            (function () {
+                            (function (param) {
                                 return /* Eq */Block.__(0, [
-                                          $$Array.map((function () {
+                                          $$Array.map((function (param) {
                                                   return true;
                                                 }), check_complete_compare),
                                           check_complete_compare
@@ -1773,7 +1773,7 @@ Mt.from_pair_suites("int64_mul_div_test.ml", Pervasives.$at(from_pairs("random",
                         ], Pervasives.$at(from(simple_divs), Pervasives.$at(from_compare(int64_compare_tests), /* :: */[
                                   /* tuple */[
                                     "div_rem_0",
-                                    (function () {
+                                    (function (param) {
                                         return /* Eq */Block.__(0, [
                                                   /* int64 */[
                                                     /* hi */0,
@@ -1789,7 +1789,7 @@ Mt.from_pair_suites("int64_mul_div_test.ml", Pervasives.$at(from_pairs("random",
                                   /* :: */[
                                     /* tuple */[
                                       "div_rem_1",
-                                      (function () {
+                                      (function (param) {
                                           return /* Eq */Block.__(0, [
                                                     /* int64 */[
                                                       /* hi */-1,

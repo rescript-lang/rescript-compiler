@@ -858,7 +858,7 @@ function expr_or_end(k, t) {
     if (t[/* i */3] === t[/* len */4]) {
       return _refill(t, (function (param) {
                     return expr_or_end(k, param);
-                  }), (function () {
+                  }), (function (param) {
                     return /* End */3455931;
                   }));
     } else {
@@ -930,7 +930,7 @@ function parse_chan_gen(bufsize, ic) {
   var d = make(bufsize, (function (param, param$1, param$2) {
           return Pervasives.input(ic, param, param$1, param$2);
         }));
-  return (function () {
+  return (function (param) {
       var e = next(d);
       if (typeof e === "number") {
         return undefined;
@@ -1475,7 +1475,7 @@ function MakeDecode(funarg) {
       if (t[/* i */3] === t[/* len */4]) {
         return _refill(t, (function (param) {
                       return expr_or_end(k, param);
-                    }), (function () {
+                    }), (function (param) {
                       return Curry._1(funarg[/* return */0], /* End */3455931);
                     }));
       } else {

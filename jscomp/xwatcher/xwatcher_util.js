@@ -31,7 +31,7 @@ function findFile(_prev, _cwd, f) {
   };
 }
 
-function makeEventObj() {
+function makeEventObj(param) {
   return {
           events: /* array */[],
           empty: (function () {
@@ -57,7 +57,7 @@ function makeEventObj() {
         };
 }
 
-function makeLock() {
+function makeLock(param) {
   return {
           isBuilding: false,
           acquire: (function () {

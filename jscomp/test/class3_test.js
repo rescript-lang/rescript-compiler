@@ -70,7 +70,7 @@ function eq(loc, x, y) {
   suites[0] = /* :: */[
     /* tuple */[
       loc + (" id " + String(test_id[0])),
-      (function () {
+      (function (param) {
           return /* Eq */Block.__(0, [
                     x,
                     y
@@ -237,7 +237,7 @@ var len = ids[2];
 
 CamlinternalOO.set_methods($$class, /* array */[
       n,
-      (function () {
+      (function (self$5) {
           return 1;
         }),
       register,
@@ -249,7 +249,7 @@ CamlinternalOO.set_methods($$class, /* array */[
           return /* () */0;
         }),
       len,
-      (function () {
+      (function (self$5) {
           return List.length(ints[0]);
         })
     ]);

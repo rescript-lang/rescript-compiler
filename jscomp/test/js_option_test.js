@@ -10,7 +10,7 @@ function simpleEq(a, b) {
 
 var option_suites_000 = /* tuple */[
   "option_isSome_Some",
-  (function () {
+  (function (param) {
       return /* Eq */Block.__(0, [
                 true,
                 true
@@ -21,7 +21,7 @@ var option_suites_000 = /* tuple */[
 var option_suites_001 = /* :: */[
   /* tuple */[
     "option_isSome_None",
-    (function () {
+    (function (param) {
         return /* Eq */Block.__(0, [
                   false,
                   false
@@ -31,7 +31,7 @@ var option_suites_001 = /* :: */[
   /* :: */[
     /* tuple */[
       "option_isNone_Some",
-      (function () {
+      (function (param) {
           return /* Eq */Block.__(0, [
                     false,
                     false
@@ -41,7 +41,7 @@ var option_suites_001 = /* :: */[
     /* :: */[
       /* tuple */[
         "option_isNone_None",
-        (function () {
+        (function (param) {
             return /* Eq */Block.__(0, [
                       true,
                       true
@@ -51,7 +51,7 @@ var option_suites_001 = /* :: */[
       /* :: */[
         /* tuple */[
           "option_isSomeValue_Eq",
-          (function () {
+          (function (param) {
               return /* Eq */Block.__(0, [
                         true,
                         Js_option.isSomeValue(simpleEq, 2, 2)
@@ -61,7 +61,7 @@ var option_suites_001 = /* :: */[
         /* :: */[
           /* tuple */[
             "option_isSomeValue_Diff",
-            (function () {
+            (function (param) {
                 return /* Eq */Block.__(0, [
                           false,
                           Js_option.isSomeValue(simpleEq, 1, 2)
@@ -71,7 +71,7 @@ var option_suites_001 = /* :: */[
           /* :: */[
             /* tuple */[
               "option_isSomeValue_DiffNone",
-              (function () {
+              (function (param) {
                   return /* Eq */Block.__(0, [
                             false,
                             Js_option.isSomeValue(simpleEq, 1, undefined)
@@ -81,7 +81,7 @@ var option_suites_001 = /* :: */[
             /* :: */[
               /* tuple */[
                 "option_getExn_Some",
-                (function () {
+                (function (param) {
                     return /* Eq */Block.__(0, [
                               2,
                               Js_option.getExn(2)
@@ -91,7 +91,7 @@ var option_suites_001 = /* :: */[
               /* :: */[
                 /* tuple */[
                   "option_equal_Eq",
-                  (function () {
+                  (function (param) {
                       return /* Eq */Block.__(0, [
                                 true,
                                 Js_option.equal(simpleEq, 2, 2)
@@ -101,7 +101,7 @@ var option_suites_001 = /* :: */[
                 /* :: */[
                   /* tuple */[
                     "option_equal_Diff",
-                    (function () {
+                    (function (param) {
                         return /* Eq */Block.__(0, [
                                   false,
                                   Js_option.equal(simpleEq, 1, 2)
@@ -111,7 +111,7 @@ var option_suites_001 = /* :: */[
                   /* :: */[
                     /* tuple */[
                       "option_equal_DiffNone",
-                      (function () {
+                      (function (param) {
                           return /* Eq */Block.__(0, [
                                     false,
                                     Js_option.equal(simpleEq, 1, undefined)
@@ -121,7 +121,7 @@ var option_suites_001 = /* :: */[
                     /* :: */[
                       /* tuple */[
                         "option_andThen_SomeSome",
-                        (function () {
+                        (function (param) {
                             return /* Eq */Block.__(0, [
                                       true,
                                       Js_option.isSomeValue(simpleEq, 3, Js_option.andThen((function (a) {
@@ -133,10 +133,10 @@ var option_suites_001 = /* :: */[
                       /* :: */[
                         /* tuple */[
                           "option_andThen_SomeNone",
-                          (function () {
+                          (function (param) {
                               return /* Eq */Block.__(0, [
                                         false,
-                                        Js_option.isSomeValue(simpleEq, 3, Js_option.andThen((function () {
+                                        Js_option.isSomeValue(simpleEq, 3, Js_option.andThen((function (param) {
                                                     return undefined;
                                                   }), 2))
                                       ]);
@@ -145,7 +145,7 @@ var option_suites_001 = /* :: */[
                         /* :: */[
                           /* tuple */[
                             "option_map_Some",
-                            (function () {
+                            (function (param) {
                                 return /* Eq */Block.__(0, [
                                           true,
                                           Js_option.isSomeValue(simpleEq, 3, Js_option.map((function (a) {
@@ -157,7 +157,7 @@ var option_suites_001 = /* :: */[
                           /* :: */[
                             /* tuple */[
                               "option_map_None",
-                              (function () {
+                              (function (param) {
                                   return /* Eq */Block.__(0, [
                                             undefined,
                                             Js_option.map((function (a) {
@@ -169,7 +169,7 @@ var option_suites_001 = /* :: */[
                             /* :: */[
                               /* tuple */[
                                 "option_default_Some",
-                                (function () {
+                                (function (param) {
                                     return /* Eq */Block.__(0, [
                                               2,
                                               Js_option.getWithDefault(3, 2)
@@ -179,7 +179,7 @@ var option_suites_001 = /* :: */[
                               /* :: */[
                                 /* tuple */[
                                   "option_default_None",
-                                  (function () {
+                                  (function (param) {
                                       return /* Eq */Block.__(0, [
                                                 3,
                                                 Js_option.getWithDefault(3, undefined)
@@ -189,7 +189,7 @@ var option_suites_001 = /* :: */[
                                 /* :: */[
                                   /* tuple */[
                                     "option_filter_Pass",
-                                    (function () {
+                                    (function (param) {
                                         return /* Eq */Block.__(0, [
                                                   true,
                                                   Js_option.isSomeValue(simpleEq, 2, Js_option.filter((function (a) {
@@ -201,7 +201,7 @@ var option_suites_001 = /* :: */[
                                   /* :: */[
                                     /* tuple */[
                                       "option_filter_Reject",
-                                      (function () {
+                                      (function (param) {
                                           return /* Eq */Block.__(0, [
                                                     undefined,
                                                     Js_option.filter((function (a) {
@@ -213,7 +213,7 @@ var option_suites_001 = /* :: */[
                                     /* :: */[
                                       /* tuple */[
                                         "option_filter_None",
-                                        (function () {
+                                        (function (param) {
                                             return /* Eq */Block.__(0, [
                                                       undefined,
                                                       Js_option.filter((function (a) {
@@ -225,7 +225,7 @@ var option_suites_001 = /* :: */[
                                       /* :: */[
                                         /* tuple */[
                                           "option_firstSome_First",
-                                          (function () {
+                                          (function (param) {
                                               return /* Eq */Block.__(0, [
                                                         true,
                                                         Js_option.isSomeValue(simpleEq, 3, Js_option.firstSome(3, 2))
@@ -235,7 +235,7 @@ var option_suites_001 = /* :: */[
                                         /* :: */[
                                           /* tuple */[
                                             "option_firstSome_First",
-                                            (function () {
+                                            (function (param) {
                                                 return /* Eq */Block.__(0, [
                                                           true,
                                                           Js_option.isSomeValue(simpleEq, 2, Js_option.firstSome(undefined, 2))
@@ -245,7 +245,7 @@ var option_suites_001 = /* :: */[
                                           /* :: */[
                                             /* tuple */[
                                               "option_firstSome_None",
-                                              (function () {
+                                              (function (param) {
                                                   return /* Eq */Block.__(0, [
                                                             undefined,
                                                             Js_option.firstSome(undefined, undefined)

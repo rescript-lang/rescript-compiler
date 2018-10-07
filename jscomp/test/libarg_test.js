@@ -22,7 +22,7 @@ function record(fmt) {
               }), fmt);
 }
 
-function f_unit() {
+function f_unit(param) {
   return record(/* Format */[
               /* String_literal */Block.__(11, [
                   "unit()",
@@ -454,8 +454,8 @@ test(args1);
 
 var suites_000 = /* tuple */[
   "should raise",
-  (function () {
-      return /* ThrowAny */Block.__(7, [(function () {
+  (function (param) {
+      return /* ThrowAny */Block.__(7, [(function (param) {
                     return test(args2);
                   })]);
     })

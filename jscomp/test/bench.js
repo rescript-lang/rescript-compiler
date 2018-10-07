@@ -50,7 +50,7 @@ function fold_left(f, x, a) {
   return r;
 }
 
-function f2() {
+function f2(param) {
   var arr = init(3000000, (function (i) {
           return i;
         }));

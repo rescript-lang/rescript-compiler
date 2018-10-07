@@ -26,7 +26,7 @@ var inch = /* record */[/* contents */Pervasives.stdin];
 function bufferize(f) {
   var buf = /* record */[/* contents */undefined];
   return /* tuple */[
-          (function () {
+          (function (param) {
               var match = buf[0];
               if (match !== undefined) {
                 buf[0] = undefined;
@@ -52,7 +52,7 @@ function bufferize(f) {
         ];
 }
 
-var match = bufferize((function () {
+var match = bufferize((function (param) {
         return Caml_io.caml_ml_input_char(inch[0]);
       }));
 
@@ -60,7 +60,7 @@ var ungetch = match[1];
 
 var getch = match[0];
 
-function peekch() {
+function peekch(param) {
   var ch = Curry._1(getch, /* () */0);
   Curry._1(ungetch, ch);
   return ch;
@@ -118,7 +118,7 @@ var gpos = /* record */[/* contents */0];
 
 var s = Caml_string.caml_create_string(100);
 
-function getq() {
+function getq(param) {
   var c = Curry._1(getch, /* () */0);
   if (c !== 92 || peekch(/* () */0) !== /* "n" */110) {
     return c;
@@ -179,7 +179,7 @@ function skip(_param) {
   };
 }
 
-function next() {
+function next(param) {
   var match;
   try {
     match = skip(/* () */0);
@@ -295,14 +295,14 @@ function next() {
           ]
         ];
         while(true) {
-          var param = _param;
-          if (param) {
-            var lop = param[0];
+          var param$1 = _param;
+          if (param$1) {
+            var lop = param$1[0];
             if (Caml_string.get(lop, 0) === ch$2 && Caml_string.get(lop, 1) === peekch(/* () */0)) {
               Curry._1(getch, /* () */0);
               return /* Op */Block.__(0, [lop]);
             } else {
-              _param = param[1];
+              _param = param$1[1];
               continue ;
             }
           } else {
@@ -458,7 +458,7 @@ var lval = /* record */[/* contents : tuple */[
     /* Int */0
   ]];
 
-function patchlval() {
+function patchlval(param) {
   var match = lval[0][0];
   if (match.tag) {
     opos[0] = opos[0] - match[0] | 0;
@@ -1737,7 +1737,7 @@ function elfgen(outf) {
   return Pervasives.output_bytes(outf, Bytes.sub(obuf, 0, tend + off | 0));
 }
 
-function main() {
+function main(param) {
   var ppsym = function (param) {
     switch (param.tag | 0) {
       case 0 : 

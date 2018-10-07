@@ -60,11 +60,11 @@ function f4(x) {
   }
 }
 
-function f5() {
+function f5(a) {
   return false;
 }
 
-function f6() {
+function f6(a) {
   return true;
 }
 
@@ -105,7 +105,7 @@ var length_10_id = Belt_List.makeBy(10, (function (x) {
         return x;
       }));
 
-function f13$1() {
+function f13$1(param) {
   return Caml_obj.caml_equal(Belt_List.take(length_10_id, 8), /* :: */[
               1,
               /* :: */[

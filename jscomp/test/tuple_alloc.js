@@ -4,24 +4,24 @@ var Curry = require("../../lib/js/curry.js");
 
 var v = /* record */[/* contents */0];
 
-function reset() {
+function reset(param) {
   v[0] = 0;
   return /* () */0;
 }
 
-function incr() {
+function incr(param) {
   v[0] = v[0] + 1 | 0;
   return /* () */0;
 }
 
 var vv = /* record */[/* contents */0];
 
-function reset2() {
+function reset2(param) {
   vv[0] = 0;
   return /* () */0;
 }
 
-function incr2() {
+function incr2(param) {
   v[0] = v[0] + 1 | 0;
   return /* () */0;
 }
@@ -39,7 +39,7 @@ function kf(cb, v) {
 }
 
 function ikf(v) {
-  return kf((function () {
+  return kf((function (prim) {
                 return /* () */0;
               }), v);
 }

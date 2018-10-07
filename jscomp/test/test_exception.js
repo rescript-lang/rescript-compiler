@@ -6,29 +6,29 @@ var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js")
 
 var Local = Caml_exceptions.create("Test_exception.Local");
 
-function f() {
+function f(param) {
   throw [
         Local,
         3
       ];
 }
 
-function g() {
+function g(param) {
   throw Caml_builtin_exceptions.not_found;
 }
 
-function h() {
+function h(param) {
   throw [
         Test_common.U,
         3
       ];
 }
 
-function x() {
+function x(param) {
   throw Test_common.H;
 }
 
-function xx() {
+function xx(param) {
   throw [
         Caml_builtin_exceptions.invalid_argument,
         "x"

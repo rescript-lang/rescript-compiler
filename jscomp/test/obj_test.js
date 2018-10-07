@@ -55,11 +55,11 @@ var x = ids$1[1];
 
 CamlinternalOO.set_methods($$class$1, /* array */[
       x,
-      (function () {
+      (function (self$2) {
           return 3;
         }),
       y,
-      (function () {
+      (function (self$2) {
           return 32;
         })
     ]);
@@ -96,11 +96,11 @@ CamlinternalOO.set_methods($$class$2, /* array */[
           return v + z | 0;
         }),
       id1,
-      (function () {
+      (function (self$3) {
           return 3;
         }),
       id2,
-      (function () {
+      (function (self$3) {
           return 4;
         }),
       hello$1,
@@ -117,7 +117,7 @@ var $$class$3 = CamlinternalOO.create_table(["id"]);
 
 var id = CamlinternalOO.get_method_label($$class$3, "id");
 
-CamlinternalOO.set_method($$class$3, id, (function () {
+CamlinternalOO.set_method($$class$3, id, (function (self$4) {
         return "uu";
       }));
 
@@ -162,7 +162,7 @@ var vvvv = CamlinternalOO.create_object_opt(0, $$class$5);
 
 var suites_000 = /* tuple */[
   "single_obj",
-  (function () {
+  (function (param) {
       return /* Eq */Block.__(0, [
                 /* array */[
                   3,
@@ -179,7 +179,7 @@ var suites_000 = /* tuple */[
 var suites_001 = /* :: */[
   /* tuple */[
     "single_obj_cache",
-    (function () {
+    (function (param) {
         return /* Eq */Block.__(0, [
                   /* array */[
                     3,
@@ -195,7 +195,7 @@ var suites_001 = /* :: */[
   /* :: */[
     /* tuple */[
       "self_obj",
-      (function () {
+      (function (param) {
           return /* Eq */Block.__(0, [
                     13,
                     Caml_oo_curry.js2(616641298, 5, vv, 3)
@@ -205,7 +205,7 @@ var suites_001 = /* :: */[
     /* :: */[
       /* tuple */[
         "uu_id",
-        (function () {
+        (function (param) {
             return /* Eq */Block.__(0, [
                       "uu",
                       Caml_oo_curry.js1(23515, 6, uu)
@@ -215,7 +215,7 @@ var suites_001 = /* :: */[
       /* :: */[
         /* tuple */[
           "uu_add",
-          (function () {
+          (function (param) {
               return /* Eq */Block.__(0, [
                         Caml_oo_curry.js3(4846113, 7, uuu, 1, 20),
                         21
@@ -225,7 +225,7 @@ var suites_001 = /* :: */[
         /* :: */[
           /* tuple */[
             "v_add",
-            (function () {
+            (function (param) {
                 return /* Eq */Block.__(0, [
                           Caml_oo_curry.js3(4846113, 8, vvvv, 3, 7),
                           10
@@ -235,7 +235,7 @@ var suites_001 = /* :: */[
           /* :: */[
             /* tuple */[
               "u_id1",
-              (function () {
+              (function (param) {
                   return /* Eq */Block.__(0, [
                             Caml_oo_curry.js1(5243894, 9, u),
                             3
@@ -245,7 +245,7 @@ var suites_001 = /* :: */[
             /* :: */[
               /* tuple */[
                 "u_id2",
-                (function () {
+                (function (param) {
                     return /* Eq */Block.__(0, [
                               Caml_oo_curry.js1(5243895, 10, u),
                               4
@@ -255,7 +255,7 @@ var suites_001 = /* :: */[
               /* :: */[
                 /* tuple */[
                   "u hi",
-                  (function () {
+                  (function (param) {
                       return /* Eq */Block.__(0, [
                                 Caml_oo_curry.js3(23297, 11, u, 1, 2),
                                 3
@@ -265,7 +265,7 @@ var suites_001 = /* :: */[
                 /* :: */[
                   /* tuple */[
                     "u hello",
-                    (function () {
+                    (function (param) {
                         return /* Eq */Block.__(0, [
                                   Caml_oo_curry.js2(616641298, 12, u, 32),
                                   32
@@ -275,7 +275,7 @@ var suites_001 = /* :: */[
                   /* :: */[
                     /* tuple */[
                       "v hi",
-                      (function () {
+                      (function (param) {
                           return /* Eq */Block.__(0, [
                                     Caml_oo_curry.js2(23297, 13, vvvv, 31),
                                     63
@@ -285,7 +285,7 @@ var suites_001 = /* :: */[
                     /* :: */[
                       /* tuple */[
                         "uuu add",
-                        (function () {
+                        (function (param) {
                             return /* Eq */Block.__(0, [
                                       Caml_oo_curry.js3(4846113, 14, uuu, 3, 4),
                                       7
@@ -295,7 +295,7 @@ var suites_001 = /* :: */[
                       /* :: */[
                         /* tuple */[
                           "v x",
-                          (function () {
+                          (function (param) {
                               return /* Eq */Block.__(0, [
                                         Caml_oo_curry.js1(120, 15, v),
                                         3

@@ -34,11 +34,11 @@ CamlinternalOO.set_methods($$class, /* array */[
           return v + z | 0;
         }),
       id1,
-      (function () {
+      (function (self$1) {
           return 3;
         }),
       id2,
-      (function () {
+      (function (self$1) {
           return 4;
         }),
       hello,
@@ -55,7 +55,7 @@ var $$class$1 = CamlinternalOO.create_table(["id"]);
 
 var id = CamlinternalOO.get_method_label($$class$1, "id");
 
-CamlinternalOO.set_method($$class$1, id, (function () {
+CamlinternalOO.set_method($$class$1, id, (function (self$2) {
         return "uu";
       }));
 
@@ -87,7 +87,7 @@ CamlinternalOO.init_class($$class$3);
 
 var v = CamlinternalOO.create_object_opt(0, $$class$3);
 
-function test() {
+function test(param) {
   if (Caml_oo_curry.js1(23515, 1, uu) !== "uu") {
     throw [
           Caml_builtin_exceptions.assert_failure,

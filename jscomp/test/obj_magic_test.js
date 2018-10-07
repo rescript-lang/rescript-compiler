@@ -12,7 +12,7 @@ function is_block(x) {
 
 var suites_000 = /* tuple */[
   "is_block_test1",
-  (function () {
+  (function (param) {
       return /* Eq */Block.__(0, [
                 false,
                 (3).length !== undefined
@@ -23,7 +23,7 @@ var suites_000 = /* tuple */[
 var suites_001 = /* :: */[
   /* tuple */[
     "is_block_test2",
-    (function () {
+    (function (param) {
         return /* Eq */Block.__(0, [
                   true,
                   /* :: */[
@@ -36,7 +36,7 @@ var suites_001 = /* :: */[
   /* :: */[
     /* tuple */[
       "is_block_test3",
-      (function () {
+      (function (param) {
           return /* Eq */Block.__(0, [
                     true,
                     "x".length !== undefined
@@ -46,7 +46,7 @@ var suites_001 = /* :: */[
     /* :: */[
       /* tuple */[
         "is_block_test4",
-        (function () {
+        (function (param) {
             return /* Eq */Block.__(0, [
                       false,
                       (3.0).length !== undefined

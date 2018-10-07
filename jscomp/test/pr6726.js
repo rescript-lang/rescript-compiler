@@ -11,7 +11,7 @@ var ExtUnixAll = /* module */[/* BigEndian */BigEndian];
 
 var ExtUnix = /* module */[/* All */0];
 
-function test_endian_string() {
+function test_endian_string(x) {
   return 33;
 }
 

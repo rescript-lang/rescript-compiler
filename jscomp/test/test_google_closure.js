@@ -8,7 +8,7 @@ function f(a, b, param) {
 }
 
 function f2(a) {
-  return (function () {
+  return (function (param) {
       return a + 1 | 0;
     });
 }
@@ -17,7 +17,7 @@ var a = String(3);
 
 var b = 101;
 
-var arr = $$Array.init(2, (function () {
+var arr = $$Array.init(2, (function (param) {
         return 0;
       }));
 

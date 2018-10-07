@@ -11,11 +11,11 @@ var WebpackConfig = /* module */[/* ../../../webpack.config.js */WebpackConfigJs
 
 var WebpackDevMiddlewareConfig = /* module */[/* ../../../webpack.middleware.config.js */WebpackMiddlewareConfigJs];
 
-function configX() {
+function configX(prim) {
   return WebpackMiddlewareConfigJs.configX();
 }
 
-var U = /* module */[(function () {
+var U = /* module */[(function (prim) {
       return WebpackConfigJs.configX();
     })];
 
@@ -23,21 +23,21 @@ var A = /* module */[];
 
 var B = /* module */[];
 
-function f() {
+function f(param) {
   return /* tuple */[
-          (function () {
+          (function (prim) {
               List$3.ff();
               return /* () */0;
             }),
-          (function () {
+          (function (prim) {
               List$3.ff2();
               return /* () */0;
             }),
-          (function () {
+          (function (prim) {
               List$2.ff();
               return /* () */0;
             }),
-          (function () {
+          (function (prim) {
               List$2.ff2();
               return /* () */0;
             })

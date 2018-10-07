@@ -32,7 +32,7 @@ function onChange(eventType, fileName) {
               }));
 }
 
-function idle() {
+function idle(param) {
   var watchFiles = Xwatcher_util.getWatchFiles(sourceDirs);
   Js_vector.filterInPlace((function (param) {
           var dir = param[/* dir */0];

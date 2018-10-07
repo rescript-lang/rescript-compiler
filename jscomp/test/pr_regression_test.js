@@ -83,7 +83,7 @@ var d = v$3[0];
 Mt.from_pair_suites("pr_regression_test.ml", /* :: */[
       /* tuple */[
         "partial",
-        (function () {
+        (function (param) {
             return /* Eq */Block.__(0, [
                       /* tuple */[
                         5,

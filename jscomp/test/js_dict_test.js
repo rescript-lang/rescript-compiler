@@ -5,7 +5,7 @@ var Block = require("../../lib/js/block.js");
 var Js_dict = require("../../lib/js/js_dict.js");
 var Js_primitive = require("../../lib/js/js_primitive.js");
 
-function obj() {
+function obj(param) {
   return {
           foo: 43,
           bar: 86
@@ -14,7 +14,7 @@ function obj() {
 
 var suites_000 = /* tuple */[
   "empty",
-  (function () {
+  (function (param) {
       return /* Eq */Block.__(0, [
                 /* array */[],
                 Object.keys({ })
@@ -25,7 +25,7 @@ var suites_000 = /* tuple */[
 var suites_001 = /* :: */[
   /* tuple */[
     "get",
-    (function () {
+    (function (param) {
         return /* Eq */Block.__(0, [
                   43,
                   Js_primitive.undefined_to_opt(({
@@ -38,7 +38,7 @@ var suites_001 = /* :: */[
   /* :: */[
     /* tuple */[
       "get - property not in object",
-      (function () {
+      (function (param) {
           return /* Eq */Block.__(0, [
                     undefined,
                     Js_primitive.undefined_to_opt(({
@@ -51,7 +51,7 @@ var suites_001 = /* :: */[
     /* :: */[
       /* tuple */[
         "unsafe_get",
-        (function () {
+        (function (param) {
             return /* Eq */Block.__(0, [
                       43,
                       ({
@@ -64,7 +64,7 @@ var suites_001 = /* :: */[
       /* :: */[
         /* tuple */[
           "set",
-          (function () {
+          (function (param) {
               var o = {
                 foo: 43,
                 bar: 86
@@ -79,7 +79,7 @@ var suites_001 = /* :: */[
         /* :: */[
           /* tuple */[
             "keys",
-            (function () {
+            (function (param) {
                 return /* Eq */Block.__(0, [
                           /* array */[
                             "foo",
@@ -95,7 +95,7 @@ var suites_001 = /* :: */[
           /* :: */[
             /* tuple */[
               "entries",
-              (function () {
+              (function (param) {
                   return /* Eq */Block.__(0, [
                             /* array */[
                               /* tuple */[
@@ -117,7 +117,7 @@ var suites_001 = /* :: */[
             /* :: */[
               /* tuple */[
                 "values",
-                (function () {
+                (function (param) {
                     return /* Eq */Block.__(0, [
                               /* array */[
                                 43,
@@ -133,7 +133,7 @@ var suites_001 = /* :: */[
               /* :: */[
                 /* tuple */[
                   "fromList - []",
-                  (function () {
+                  (function (param) {
                       return /* Eq */Block.__(0, [
                                 { },
                                 Js_dict.fromList(/* [] */0)
@@ -143,7 +143,7 @@ var suites_001 = /* :: */[
                 /* :: */[
                   /* tuple */[
                     "fromList",
-                    (function () {
+                    (function (param) {
                         return /* Eq */Block.__(0, [
                                   /* array */[
                                     /* tuple */[
@@ -174,7 +174,7 @@ var suites_001 = /* :: */[
                   /* :: */[
                     /* tuple */[
                       "fromArray - []",
-                      (function () {
+                      (function (param) {
                           return /* Eq */Block.__(0, [
                                     { },
                                     Js_dict.fromArray(/* array */[])
@@ -184,7 +184,7 @@ var suites_001 = /* :: */[
                     /* :: */[
                       /* tuple */[
                         "fromArray",
-                        (function () {
+                        (function (param) {
                             return /* Eq */Block.__(0, [
                                       /* array */[
                                         /* tuple */[
@@ -212,7 +212,7 @@ var suites_001 = /* :: */[
                       /* :: */[
                         /* tuple */[
                           "map",
-                          (function () {
+                          (function (param) {
                               return /* Eq */Block.__(0, [
                                         {
                                           foo: "43",

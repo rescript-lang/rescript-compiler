@@ -33,7 +33,7 @@ function neq(loc, x, y) {
   suites[0] = /* :: */[
     /* tuple */[
       loc + (" id " + String(test_id[0])),
-      (function () {
+      (function (param) {
           return /* Neq */Block.__(1, [
                     x,
                     y
@@ -77,7 +77,7 @@ eq("File \"bs_array_test.ml\", line 25, characters 5-12", /* tuple */[
       undefined
     ]);
 
-$$throw("File \"bs_array_test.ml\", line 28, characters 8-15", (function () {
+$$throw("File \"bs_array_test.ml\", line 28, characters 8-15", (function (param) {
         Belt_Array.getExn(/* array */[
               0,
               1
@@ -85,7 +85,7 @@ $$throw("File \"bs_array_test.ml\", line 28, characters 8-15", (function () {
         return /* () */0;
       }));
 
-$$throw("File \"bs_array_test.ml\", line 29, characters 8-15", (function () {
+$$throw("File \"bs_array_test.ml\", line 29, characters 8-15", (function (param) {
         Belt_Array.getExn(/* array */[
               0,
               1
@@ -110,14 +110,14 @@ b("File \"bs_array_test.ml\", line 30, characters 4-11", Caml_obj.caml_equal(/* 
           1
         ]));
 
-$$throw("File \"bs_array_test.ml\", line 31, characters 8-15", (function () {
+$$throw("File \"bs_array_test.ml\", line 31, characters 8-15", (function (param) {
         return Belt_Array.setExn(/* array */[
                     0,
                     1
                   ], -1, 0);
       }));
 
-$$throw("File \"bs_array_test.ml\", line 32, characters 8-15", (function () {
+$$throw("File \"bs_array_test.ml\", line 32, characters 8-15", (function (param) {
         return Belt_Array.setExn(/* array */[
                     0,
                     1
@@ -398,7 +398,7 @@ function makeMatrixExn(sx, sy, init) {
   return res;
 }
 
-eq("File \"bs_array_test.ml\", line 121, characters 5-12", Belt_Array.makeBy(0, (function () {
+eq("File \"bs_array_test.ml\", line 121, characters 5-12", Belt_Array.makeBy(0, (function (param) {
             return 1;
           })), /* array */[]);
 
@@ -604,7 +604,7 @@ eq("File \"bs_array_test.ml\", line 158, characters 5-12", match$1[1], /* array 
       5
     ]);
 
-var match$2 = Belt_Array.partition(/* array */[], (function () {
+var match$2 = Belt_Array.partition(/* array */[], (function (x) {
         return false;
       }));
 

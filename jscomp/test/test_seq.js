@@ -30,7 +30,7 @@ function assoc3(x, _l) {
   };
 }
 
-function help_action() {
+function help_action(param) {
   throw [
         Stop,
         /* Unknown */Block.__(0, ["-help"])

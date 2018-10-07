@@ -45,7 +45,7 @@ var yynames_const = "PLUS\0MINUS\0TIMES\0DIVIDE\0UMINUS\0LPAREN\0RPAREN\0EOF\0";
 var yynames_block = "NUMERAL\0IDENT\0";
 
 var yyact = /* array */[
-  (function () {
+  (function (param) {
       throw [
             Caml_builtin_exceptions.failure,
             "parser"

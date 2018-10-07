@@ -237,13 +237,7 @@ let continue f s =
   P.string f s;
   semi f
 
-
 let formal_parameter_list cxt f offset l env  = 
-  match l with 
-  | [x] when 
-    Js_fun_env.get_unused env offset -> 
-    cxt 
-  | _ -> 
     iter_lst cxt f l Ext_pp_scope.ident comma_sp 
 (* IdentMap *)
 (*

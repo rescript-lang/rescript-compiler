@@ -12,7 +12,7 @@ function eq(loc, x, y) {
 }
 
 function make(s, b, i) {
-  return (function () {
+  return (function (param) {
       var tmp = { };
       if (s !== undefined) {
         tmp.s = Js_primitive.valFromOption(s);

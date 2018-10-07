@@ -28,7 +28,7 @@ function fromArray(param) {
   return Belt_MutableSet.fromArray(param, IntCmp);
 }
 
-function empty() {
+function empty(param) {
   return {
           cmp: IntCmp[/* cmp */0],
           data: Belt_internalAVLset.empty

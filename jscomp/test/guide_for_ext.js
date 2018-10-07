@@ -1,7 +1,7 @@
 'use strict';
 
 
-function mk() {
+function mk(param) {
   return {
           text: 32,
           label: "hel"

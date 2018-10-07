@@ -6,7 +6,7 @@ var Js_primitive = require("../../lib/js/js_primitive.js");
 
 var suites_000 = /* tuple */[
   "make",
-  (function () {
+  (function (param) {
       return /* Eq */Block.__(0, [
                 "null",
                 String(null).concat("")
@@ -17,7 +17,7 @@ var suites_000 = /* tuple */[
 var suites_001 = /* :: */[
   /* tuple */[
     "fromCharCode",
-    (function () {
+    (function (param) {
         return /* Eq */Block.__(0, [
                   "a",
                   String.fromCharCode(97)
@@ -27,7 +27,7 @@ var suites_001 = /* :: */[
   /* :: */[
     /* tuple */[
       "fromCharCodeMany",
-      (function () {
+      (function (param) {
           return /* Eq */Block.__(0, [
                     "az",
                     String.fromCharCode(97, 122)
@@ -37,7 +37,7 @@ var suites_001 = /* :: */[
     /* :: */[
       /* tuple */[
         "fromCodePoint",
-        (function () {
+        (function (param) {
             return /* Eq */Block.__(0, [
                       "a",
                       String.fromCodePoint(97)
@@ -47,7 +47,7 @@ var suites_001 = /* :: */[
       /* :: */[
         /* tuple */[
           "fromCodePointMany",
-          (function () {
+          (function (param) {
               return /* Eq */Block.__(0, [
                         "az",
                         String.fromCodePoint(97, 122)
@@ -57,7 +57,7 @@ var suites_001 = /* :: */[
         /* :: */[
           /* tuple */[
             "length",
-            (function () {
+            (function (param) {
                 return /* Eq */Block.__(0, [
                           3,
                           "foo".length
@@ -67,7 +67,7 @@ var suites_001 = /* :: */[
           /* :: */[
             /* tuple */[
               "get",
-              (function () {
+              (function (param) {
                   return /* Eq */Block.__(0, [
                             "a",
                             "foobar"[4]
@@ -77,7 +77,7 @@ var suites_001 = /* :: */[
             /* :: */[
               /* tuple */[
                 "charAt",
-                (function () {
+                (function (param) {
                     return /* Eq */Block.__(0, [
                               "a",
                               "foobar".charAt(4)
@@ -87,7 +87,7 @@ var suites_001 = /* :: */[
               /* :: */[
                 /* tuple */[
                   "charCodeAt",
-                  (function () {
+                  (function (param) {
                       return /* Eq */Block.__(0, [
                                 97,
                                 "foobar".charCodeAt(4)
@@ -97,7 +97,7 @@ var suites_001 = /* :: */[
                 /* :: */[
                   /* tuple */[
                     "codePointAt",
-                    (function () {
+                    (function (param) {
                         return /* Eq */Block.__(0, [
                                   97,
                                   Js_primitive.undefined_to_opt("foobar".codePointAt(4))
@@ -107,7 +107,7 @@ var suites_001 = /* :: */[
                   /* :: */[
                     /* tuple */[
                       "codePointAt - out of bounds",
-                      (function () {
+                      (function (param) {
                           return /* Eq */Block.__(0, [
                                     undefined,
                                     Js_primitive.undefined_to_opt("foobar".codePointAt(98))
@@ -117,7 +117,7 @@ var suites_001 = /* :: */[
                     /* :: */[
                       /* tuple */[
                         "concat",
-                        (function () {
+                        (function (param) {
                             return /* Eq */Block.__(0, [
                                       "foobar",
                                       "foo".concat("bar")
@@ -127,7 +127,7 @@ var suites_001 = /* :: */[
                       /* :: */[
                         /* tuple */[
                           "concatMany",
-                          (function () {
+                          (function (param) {
                               return /* Eq */Block.__(0, [
                                         "foobarbaz",
                                         "foo".concat("bar", "baz")
@@ -137,7 +137,7 @@ var suites_001 = /* :: */[
                         /* :: */[
                           /* tuple */[
                             "endsWith",
-                            (function () {
+                            (function (param) {
                                 return /* Eq */Block.__(0, [
                                           true,
                                           "foobar".endsWith("bar")
@@ -147,7 +147,7 @@ var suites_001 = /* :: */[
                           /* :: */[
                             /* tuple */[
                               "endsWithFrom",
-                              (function () {
+                              (function (param) {
                                   return /* Eq */Block.__(0, [
                                             false,
                                             "foobar".endsWith("bar", 1)
@@ -157,7 +157,7 @@ var suites_001 = /* :: */[
                             /* :: */[
                               /* tuple */[
                                 "includes",
-                                (function () {
+                                (function (param) {
                                     return /* Eq */Block.__(0, [
                                               true,
                                               "foobarbaz".includes("bar")
@@ -167,7 +167,7 @@ var suites_001 = /* :: */[
                               /* :: */[
                                 /* tuple */[
                                   "includesFrom",
-                                  (function () {
+                                  (function (param) {
                                       return /* Eq */Block.__(0, [
                                                 false,
                                                 "foobarbaz".includes("bar", 4)
@@ -177,7 +177,7 @@ var suites_001 = /* :: */[
                                 /* :: */[
                                   /* tuple */[
                                     "indexOf",
-                                    (function () {
+                                    (function (param) {
                                         return /* Eq */Block.__(0, [
                                                   3,
                                                   "foobarbaz".indexOf("bar")
@@ -187,7 +187,7 @@ var suites_001 = /* :: */[
                                   /* :: */[
                                     /* tuple */[
                                       "indexOfFrom",
-                                      (function () {
+                                      (function (param) {
                                           return /* Eq */Block.__(0, [
                                                     -1,
                                                     "foobarbaz".indexOf("bar", 4)
@@ -197,7 +197,7 @@ var suites_001 = /* :: */[
                                     /* :: */[
                                       /* tuple */[
                                         "lastIndexOf",
-                                        (function () {
+                                        (function (param) {
                                             return /* Eq */Block.__(0, [
                                                       3,
                                                       "foobarbaz".lastIndexOf("bar")
@@ -207,7 +207,7 @@ var suites_001 = /* :: */[
                                       /* :: */[
                                         /* tuple */[
                                           "lastIndexOfFrom",
-                                          (function () {
+                                          (function (param) {
                                               return /* Eq */Block.__(0, [
                                                         3,
                                                         "foobarbaz".lastIndexOf("bar", 4)
@@ -217,7 +217,7 @@ var suites_001 = /* :: */[
                                         /* :: */[
                                           /* tuple */[
                                             "localeCompare",
-                                            (function () {
+                                            (function (param) {
                                                 return /* Eq */Block.__(0, [
                                                           0,
                                                           "foo".localeCompare("foo")
@@ -227,7 +227,7 @@ var suites_001 = /* :: */[
                                           /* :: */[
                                             /* tuple */[
                                               "match",
-                                              (function () {
+                                              (function (param) {
                                                   return /* Eq */Block.__(0, [
                                                             /* array */[
                                                               "na",
@@ -240,7 +240,7 @@ var suites_001 = /* :: */[
                                             /* :: */[
                                               /* tuple */[
                                                 "match - no match",
-                                                (function () {
+                                                (function (param) {
                                                     return /* Eq */Block.__(0, [
                                                               undefined,
                                                               Js_primitive.null_to_opt("banana".match((/nanana+/g)))
@@ -250,7 +250,7 @@ var suites_001 = /* :: */[
                                               /* :: */[
                                                 /* tuple */[
                                                   "normalize",
-                                                  (function () {
+                                                  (function (param) {
                                                       return /* Eq */Block.__(0, [
                                                                 "foo",
                                                                 "foo".normalize()
@@ -260,7 +260,7 @@ var suites_001 = /* :: */[
                                                 /* :: */[
                                                   /* tuple */[
                                                     "normalizeByForm",
-                                                    (function () {
+                                                    (function (param) {
                                                         return /* Eq */Block.__(0, [
                                                                   "foo",
                                                                   "foo".normalize("NFKD")
@@ -270,7 +270,7 @@ var suites_001 = /* :: */[
                                                   /* :: */[
                                                     /* tuple */[
                                                       "repeat",
-                                                      (function () {
+                                                      (function (param) {
                                                           return /* Eq */Block.__(0, [
                                                                     "foofoofoo",
                                                                     "foo".repeat(3)
@@ -280,7 +280,7 @@ var suites_001 = /* :: */[
                                                     /* :: */[
                                                       /* tuple */[
                                                         "replace",
-                                                        (function () {
+                                                        (function (param) {
                                                             return /* Eq */Block.__(0, [
                                                                       "fooBORKbaz",
                                                                       "foobarbaz".replace("bar", "BORK")
@@ -290,7 +290,7 @@ var suites_001 = /* :: */[
                                                       /* :: */[
                                                         /* tuple */[
                                                           "replaceByRe",
-                                                          (function () {
+                                                          (function (param) {
                                                               return /* Eq */Block.__(0, [
                                                                         "fooBORKBORK",
                                                                         "foobarbaz".replace((/ba./g), "BORK")
@@ -300,7 +300,7 @@ var suites_001 = /* :: */[
                                                         /* :: */[
                                                           /* tuple */[
                                                             "unsafeReplaceBy0",
-                                                            (function () {
+                                                            (function (param) {
                                                                 var replace = function (whole, offset, s) {
                                                                   if (whole === "bar") {
                                                                     return "BORK";
@@ -317,7 +317,7 @@ var suites_001 = /* :: */[
                                                           /* :: */[
                                                             /* tuple */[
                                                               "unsafeReplaceBy1",
-                                                              (function () {
+                                                              (function (param) {
                                                                   var replace = function (whole, p1, offset, s) {
                                                                     if (whole === "bar") {
                                                                       return "BORK";
@@ -334,7 +334,7 @@ var suites_001 = /* :: */[
                                                             /* :: */[
                                                               /* tuple */[
                                                                 "unsafeReplaceBy2",
-                                                                (function () {
+                                                                (function (param) {
                                                                     var replace = function (whole, p1, p2, offset, s) {
                                                                       if (whole === "bar") {
                                                                         return "BORK";
@@ -351,7 +351,7 @@ var suites_001 = /* :: */[
                                                               /* :: */[
                                                                 /* tuple */[
                                                                   "unsafeReplaceBy3",
-                                                                  (function () {
+                                                                  (function (param) {
                                                                       var replace = function (whole, p1, p2, p3, offset, s) {
                                                                         if (whole === "bar") {
                                                                           return "BORK";
@@ -368,7 +368,7 @@ var suites_001 = /* :: */[
                                                                 /* :: */[
                                                                   /* tuple */[
                                                                     "search",
-                                                                    (function () {
+                                                                    (function (param) {
                                                                         return /* Eq */Block.__(0, [
                                                                                   3,
                                                                                   "foobarbaz".search((/ba./g))
@@ -378,7 +378,7 @@ var suites_001 = /* :: */[
                                                                   /* :: */[
                                                                     /* tuple */[
                                                                       "slice",
-                                                                      (function () {
+                                                                      (function (param) {
                                                                           return /* Eq */Block.__(0, [
                                                                                     "bar",
                                                                                     "foobarbaz".slice(3, 6)
@@ -388,7 +388,7 @@ var suites_001 = /* :: */[
                                                                     /* :: */[
                                                                       /* tuple */[
                                                                         "sliceToEnd",
-                                                                        (function () {
+                                                                        (function (param) {
                                                                             return /* Eq */Block.__(0, [
                                                                                       "barbaz",
                                                                                       "foobarbaz".slice(3)
@@ -398,7 +398,7 @@ var suites_001 = /* :: */[
                                                                       /* :: */[
                                                                         /* tuple */[
                                                                           "split",
-                                                                          (function () {
+                                                                          (function (param) {
                                                                               return /* Eq */Block.__(0, [
                                                                                         /* array */[
                                                                                           "foo",
@@ -412,7 +412,7 @@ var suites_001 = /* :: */[
                                                                         /* :: */[
                                                                           /* tuple */[
                                                                             "splitAtMost",
-                                                                            (function () {
+                                                                            (function (param) {
                                                                                 return /* Eq */Block.__(0, [
                                                                                           /* array */[
                                                                                             "foo",
@@ -425,7 +425,7 @@ var suites_001 = /* :: */[
                                                                           /* :: */[
                                                                             /* tuple */[
                                                                               "splitByRe",
-                                                                              (function () {
+                                                                              (function (param) {
                                                                                   return /* Eq */Block.__(0, [
                                                                                             /* array */[
                                                                                               "foo",
@@ -439,7 +439,7 @@ var suites_001 = /* :: */[
                                                                             /* :: */[
                                                                               /* tuple */[
                                                                                 "splitByReAtMost",
-                                                                                (function () {
+                                                                                (function (param) {
                                                                                     return /* Eq */Block.__(0, [
                                                                                               /* array */[
                                                                                                 "foo",
@@ -452,7 +452,7 @@ var suites_001 = /* :: */[
                                                                               /* :: */[
                                                                                 /* tuple */[
                                                                                   "startsWith",
-                                                                                  (function () {
+                                                                                  (function (param) {
                                                                                       return /* Eq */Block.__(0, [
                                                                                                 true,
                                                                                                 "foobarbaz".startsWith("foo")
@@ -462,7 +462,7 @@ var suites_001 = /* :: */[
                                                                                 /* :: */[
                                                                                   /* tuple */[
                                                                                     "startsWithFrom",
-                                                                                    (function () {
+                                                                                    (function (param) {
                                                                                         return /* Eq */Block.__(0, [
                                                                                                   false,
                                                                                                   "foobarbaz".startsWith("foo", 1)
@@ -472,7 +472,7 @@ var suites_001 = /* :: */[
                                                                                   /* :: */[
                                                                                     /* tuple */[
                                                                                       "substr",
-                                                                                      (function () {
+                                                                                      (function (param) {
                                                                                           return /* Eq */Block.__(0, [
                                                                                                     "barbaz",
                                                                                                     "foobarbaz".substr(3)
@@ -482,7 +482,7 @@ var suites_001 = /* :: */[
                                                                                     /* :: */[
                                                                                       /* tuple */[
                                                                                         "substrAtMost",
-                                                                                        (function () {
+                                                                                        (function (param) {
                                                                                             return /* Eq */Block.__(0, [
                                                                                                       "bar",
                                                                                                       "foobarbaz".substr(3, 3)
@@ -492,7 +492,7 @@ var suites_001 = /* :: */[
                                                                                       /* :: */[
                                                                                         /* tuple */[
                                                                                           "substring",
-                                                                                          (function () {
+                                                                                          (function (param) {
                                                                                               return /* Eq */Block.__(0, [
                                                                                                         "bar",
                                                                                                         "foobarbaz".substring(3, 6)
@@ -502,7 +502,7 @@ var suites_001 = /* :: */[
                                                                                         /* :: */[
                                                                                           /* tuple */[
                                                                                             "substringToEnd",
-                                                                                            (function () {
+                                                                                            (function (param) {
                                                                                                 return /* Eq */Block.__(0, [
                                                                                                           "barbaz",
                                                                                                           "foobarbaz".substring(3)
@@ -512,7 +512,7 @@ var suites_001 = /* :: */[
                                                                                           /* :: */[
                                                                                             /* tuple */[
                                                                                               "toLowerCase",
-                                                                                              (function () {
+                                                                                              (function (param) {
                                                                                                   return /* Eq */Block.__(0, [
                                                                                                             "bork",
                                                                                                             "BORK".toLowerCase()
@@ -522,7 +522,7 @@ var suites_001 = /* :: */[
                                                                                             /* :: */[
                                                                                               /* tuple */[
                                                                                                 "toLocaleLowerCase",
-                                                                                                (function () {
+                                                                                                (function (param) {
                                                                                                     return /* Eq */Block.__(0, [
                                                                                                               "bork",
                                                                                                               "BORK".toLocaleLowerCase()
@@ -532,7 +532,7 @@ var suites_001 = /* :: */[
                                                                                               /* :: */[
                                                                                                 /* tuple */[
                                                                                                   "toUpperCase",
-                                                                                                  (function () {
+                                                                                                  (function (param) {
                                                                                                       return /* Eq */Block.__(0, [
                                                                                                                 "FUBAR",
                                                                                                                 "fubar".toUpperCase()
@@ -542,7 +542,7 @@ var suites_001 = /* :: */[
                                                                                                 /* :: */[
                                                                                                   /* tuple */[
                                                                                                     "toLocaleUpperCase",
-                                                                                                    (function () {
+                                                                                                    (function (param) {
                                                                                                         return /* Eq */Block.__(0, [
                                                                                                                   "FUBAR",
                                                                                                                   "fubar".toLocaleUpperCase()
@@ -552,7 +552,7 @@ var suites_001 = /* :: */[
                                                                                                   /* :: */[
                                                                                                     /* tuple */[
                                                                                                       "trim",
-                                                                                                      (function () {
+                                                                                                      (function (param) {
                                                                                                           return /* Eq */Block.__(0, [
                                                                                                                     "foo",
                                                                                                                     "  foo  ".trim()
@@ -562,7 +562,7 @@ var suites_001 = /* :: */[
                                                                                                     /* :: */[
                                                                                                       /* tuple */[
                                                                                                         "anchor",
-                                                                                                        (function () {
+                                                                                                        (function (param) {
                                                                                                             return /* Eq */Block.__(0, [
                                                                                                                       "<a name=\"bar\">foo</a>",
                                                                                                                       "foo".anchor("bar")
@@ -572,7 +572,7 @@ var suites_001 = /* :: */[
                                                                                                       /* :: */[
                                                                                                         /* tuple */[
                                                                                                           "link",
-                                                                                                          (function () {
+                                                                                                          (function (param) {
                                                                                                               return /* Eq */Block.__(0, [
                                                                                                                         "<a href=\"https://reason.ml\">foo</a>",
                                                                                                                         "foo".link("https://reason.ml")
@@ -582,7 +582,7 @@ var suites_001 = /* :: */[
                                                                                                         /* :: */[
                                                                                                           /* tuple */[
                                                                                                             "File \"js_string_test.ml\", line 211, characters 4-11",
-                                                                                                            (function () {
+                                                                                                            (function (param) {
                                                                                                                 return /* Ok */Block.__(4, ["ab".includes("a")]);
                                                                                                               })
                                                                                                           ],

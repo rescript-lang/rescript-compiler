@@ -183,11 +183,11 @@ function digest_file(fname) {
   return $$Buffer.contents(ob);
 }
 
-function test54() {
+function test54(param) {
   return Caml_obj.caml_equal(get_lines(tscanf_data_file), tscanf_data_file_lines);
 }
 
-function test55() {
+function test55(param) {
   var ob = $$Buffer.create(42);
   create_tscanf_data(ob, tscanf_data_file_lines);
   var s = $$Buffer.contents(ob);
