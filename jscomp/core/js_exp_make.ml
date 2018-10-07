@@ -811,28 +811,7 @@ let public_method_call meth_name obj label cache args =
    for object part, also need encode arity..
    how about x#|getElementById|2|
 *)
-(* ( *)
-(*   let fn = bind (dot obj meth_name) obj in *)
-(*   if len = 0 then  *)
-(*     dot obj meth_name *)
-(*     (\* Note that when no args supplied,  *)
-(*        it is not necessarily a function, [bind] *)
-(*        is dangerous *)
-(*        so if user write such code *)
-(*        {[ *)
-(*          let  u = x # say in *)
-(*          u 3               *)
-(*        ]}     *)
-(*        It's reasonable to drop [this] support        *)
-(*     *\) *)
-(*   else if len <=8 then  *)
-(*     let len_str = string_of_int len in *)
-(*     runtime_call Js_config.curry (Literals.app ^len_str)  *)
-(*       (fn ::  args) *)
-(*   else  *)
-(*     runtime_call Js_config.curry Literals.app_array            *)
-(*       [fn  ; arr NA args ]             *)
-(* ) *)
+
 
 let block_set_tag ?comment e tag : t = 
   seq {expression_desc = Caml_block_set_tag (e,tag); comment } unit 

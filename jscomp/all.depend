@@ -657,7 +657,7 @@ core/lam_pass_collect.cmx : core/lam_util.cmx core/lam_stats.cmx \
     core/lam_compat.cmx core/lam_arity_analysis.cmx core/lam_arity.cmx \
     core/lam.cmx ext/ident_set.cmx ext/ident_hashtbl.cmx ext/ext_option.cmx \
     ext/ext_list.cmx core/lam_pass_collect.cmi
-core/js_dump_lit.cmx : ext/literals.cmx ext/ext_string.cmx
+core/js_dump_lit.cmx : ext/ext_string.cmx
 core/js_dump_string.cmx : ext/ext_pp.cmx core/js_dump_string.cmi
 core/js_dump_property.cmx : core/js_dump_string.cmx core/js_dump_lit.cmx \
     ext/ext_string.cmx ext/ext_pp.cmx core/js_dump_property.cmi
