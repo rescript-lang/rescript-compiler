@@ -57,6 +57,26 @@ module S = Js_stmt_make
 
 module L = Js_dump_lit
 
+module Curry_gen = struct 
+  
+  let pp_optimize_curry (f : P.t) (len : int) = 
+    P.string f Js_runtime_modules.curry;
+    P.string f L.dot ; 
+    P.string f "__";
+    P.string f (Printf.sprintf "%d" len)
+
+  let pp_app_any (f : P.t) =    
+    P.string f Js_runtime_modules.curry;
+    P.string f L.dot ; 
+    P.string f "app"
+
+  let pp_app (f : P.t) (len : int) =    
+    P.string f Js_runtime_modules.curry; 
+    P.string f L.dot; 
+    P.string f "_"; 
+    P.string f (Printf.sprintf "%d" len)
+end 
+
 let return_indent = String.length L.return / Ext_pp.indent_length
 
 let throw_indent = String.length L.throw / Ext_pp.indent_length
@@ -265,10 +285,7 @@ let is_var (b : J.expression)  a =
 *)
 let rec
   try_optimize_curry cxt f len function_id =
-  P.string f Js_runtime_modules.curry;
-  P.string f L.dot;
-  P.string f "__";
-  P.string f (Printf.sprintf "%d" len);
+  Curry_gen.pp_optimize_curry f len ; 
   P.paren_group f 1 (fun _ -> expression 1 cxt f function_id  )
 
 
@@ -511,18 +528,15 @@ and expression_desc cxt (level:int) f x : cxt  =
             P.paren_group f 1 (fun _ -> arguments cxt  f el )
 
           | _ , _ ->
-            P.string f  Js_runtime_modules.curry;
-            P.string f L.dot;
             let len = List.length el in
             if 1 <= len && len <= 8 then
               begin
-                P.string f L.app;
-                P.string f (Printf.sprintf "%d" len);
+                Curry_gen.pp_app f len ; 
                 P.paren_group f 1 (fun _ -> arguments cxt f (e::el))
               end
             else
               begin
-                P.string f  L.app_array;
+                Curry_gen.pp_app_any f ;
                 P.paren_group f 1
                   (fun _ -> arguments cxt f [ e ; E.array Mutable el])
               end))

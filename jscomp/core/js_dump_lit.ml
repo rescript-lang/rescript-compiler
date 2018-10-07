@@ -69,8 +69,7 @@ let switch = "switch"
 let strict_directive = "'use strict';"
 let true_ = "true"
 let false_ = "false"
-let app = Literals.app (* curry arbitrary args *)
-let app_array = Literals.app_array
+
 let debugger = "debugger"
 let tag = "tag"
 let bind = "bind"

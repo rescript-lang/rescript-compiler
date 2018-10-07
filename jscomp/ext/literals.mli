@@ -43,10 +43,6 @@ val prim : string
 val tmp : string 
 
 val create : string 
-
-val app : string
-val app_array : string
-
 val runtime : string
 val stdlib : string
 val imul : string

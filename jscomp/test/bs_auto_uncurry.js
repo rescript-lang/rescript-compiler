@@ -2,6 +2,8 @@
 
 var Curry = require("../../lib/js/curry.js");
 
+var Curry$1 = /* module */[];
+
 var xbs = Array.prototype.map.call(/* array */[
       1,
       2,
@@ -118,6 +120,7 @@ function unit_magic() {
 
 var f_unit_magic = unit_magic(/* () */0);
 
+exports.Curry = Curry$1;
 exports.xbs = xbs;
 exports.f = f;
 exports.xs = xs;

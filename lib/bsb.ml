@@ -3810,10 +3810,6 @@ val prim : string
 val tmp : string 
 
 val create : string 
-
-val app : string
-val app_array : string
-
 val runtime : string
 val stdlib : string
 val imul : string
@@ -3947,9 +3943,6 @@ let partial_arg = "partial_arg"
 let tmp = "tmp"
 
 let create = "create" (* {!Caml_exceptions.create}*)
-
-let app = "_"
-let app_array = "app" (* arguments are an array*)
 
 let runtime = "runtime" (* runtime directory *)
 
