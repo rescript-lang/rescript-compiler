@@ -88,90 +88,6 @@ let rec
    ]}
 *)
 
-(** Don't modify it .. *)
-let default_zero = ref 0
-
-(* Count occurrences of (exit n ...) statements *)
-let count_exit exits i =
-  !(Int_hashtbl.find_default exits i default_zero)
-
-let incr_exit exits i =
-  Int_hashtbl.modify_or_init exits i incr (fun _ -> ref 1)
-
-
-(** 
-  This funcition counts how each [exit] is used, it will affect how the following optimizations performed.
-  
-  Some smart cases (this requires the following optimizations follow it): 
-  
-  {[
-    Lstaticcatch(l1, (i,_), l2) 
-  ]}
-  If [l1] does not contain [(exit i)],
-  [l2] will be removed, so don't count it.
-  
-  About Switch default branch handling, it maybe backend-specific
-  See https://github.com/ocaml/ocaml/commit/fcf3571123e2c914768e34f1bd17e4cbaaa7d212#diff-704f66c0fa0fc9339230b39ce7d90919 
-  For Lstringswitch ^
-  
-  For Lswitch, if it is not exhuastive pattern match, default will be counted twice.
-  Since for pattern match,  we will  test whether it is  an integer or block, both have default cases predicate: [sw_numconsts] vs nconsts
-*)
-let count_helper  (lam : Lam.t) : int ref Int_hashtbl.t  = 
-  let exits  = Int_hashtbl.create 17 in
-  let rec count (lam : Lam.t) = 
-    match lam with 
-    | Lstaticraise (i,ls) -> incr_exit exits i ; List.iter count ls
-    | Lstaticcatch(l1, (i,_), l2) ->
-      count l1;
-      if count_exit exits i > 0 
-      then
-        count l2
-    | Lstringswitch(l, sw, d) ->
-      count l;
-      Ext_list.iter_snd sw count;
-      Ext_option.iter d count
-    | Lvar _| Lconst _ -> ()
-    | Lapply{fn = l1; args =  ll; _} -> count l1; List.iter count ll
-    | Lfunction {body = l} -> count l
-    | Llet(_, _, l1, l2) ->
-      count l2; count l1
-    | Lletrec(bindings, body) ->
-      Ext_list.iter_snd bindings count;
-      count body
-    | Lglobal_module _ -> ()
-    | Lprim {args;  _} -> List.iter count args
-    | Lswitch(l, sw) ->
-      count_default sw ;
-      count l;
-      Ext_list.iter_snd sw.sw_consts count;
-      Ext_list.iter_snd sw.sw_blocks count
-    | Ltrywith(l1, v, l2) -> count l1; count l2
-    | Lifthenelse(l1, l2, l3) -> count l1; count l2; count l3
-    | Lsequence(l1, l2) -> count l1; count l2
-    | Lwhile(l1, l2) -> count l1; count l2
-    | Lfor(_, l1, l2, dir, l3) -> count l1; count l2; count l3
-    | Lassign(_, l) -> count l
-    | Lsend(_, m, o, ll, _) -> count m; count o; List.iter count ll
-
-
-  and count_default sw =
-    match sw.sw_failaction with
-    | None -> ()
-    | Some al ->
-      if not sw.sw_numconsts && not sw.sw_numblocks
-      then begin 
-          count al ; count al
-      end 
-      else 
-        begin (* default action will occur once *)
-          assert (not sw.sw_numconsts || not sw.sw_numblocks) ;
-          count al
-        end in 
-  count lam ; 
-  exits
-;;
-
 (** The third argument is its occurrence,
   when do the substitution, if its occurence is > 1,
   we should refresh
@@ -231,35 +147,29 @@ let to_lam x =
            if it is guaranteed to be non throw, then we can inline
         *)
 
-let subst_helper (subst : subst_tbl) (query : int -> int) lam = 
+(** TODO: better heuristics, also if we can group same exit code [j] 
+       in a very early stage -- maybe we can define our enhanced [Lambda] 
+       representation and counter can be more precise, for example [apply] 
+       does not need patch from the compiler
+
+       FIXME:   when inlining, need refresh local bound identifiers
+       #1438 when the action containes bounded variable 
+         to keep the invariant, everytime, we do an inlining,
+         we need refresh, just refreshing once is not enough
+    We need to decide whether inline or not based on post-simplification
+       code, since when we do the substitution 
+       we use the post-simplified expression, it is more consistent
+       TODO: when we do the case merging on the js side, 
+       the j is not very indicative                
+*)             
+
+let subst_helper (subst : subst_tbl) (query : int -> int) (lam : Lam.t) : Lam.t = 
   let rec simplif (lam : Lam.t) = 
     match lam with 
-    | Lstaticraise (i,[])  ->
-      begin match Int_hashtbl.find_opt subst i with
-        | Some (_,handler) -> to_lam handler
-        | None -> lam
-      end
-    | Lstaticraise (i,ls) ->
-      let ls = Ext_list.map  ls simplif in
-      begin 
-        match Int_hashtbl.find_opt subst i with
-        | Some (xs, handler) -> 
-          let handler = to_lam handler in 
-          let ys = Ext_list.map xs Ident.rename in
-          let env =
-            Ext_list.fold_right2 xs ys Ident_map.empty 
-              (fun x y t -> Ident_map.add x (Lam.var y) t)
-              in
-          Ext_list.fold_right2 ys ls (Lam_subst.subst  env  handler)
-            (fun y l r -> Lam.let_ Strict y l r)
-        | None -> Lam.staticraise i ls
-      end
-    | Lstaticcatch (l1,(i,xs),l2) ->
-      begin 
+    | Lstaticcatch (l1,(i,xs),l2) ->      
         let i_occur = query i in 
-        match i_occur , l2 with
+        (match i_occur , l2 with
         | 0,_ -> simplif l1
-
         | ( _ , Lvar _
           | _, Lconst _) (* when i >= 0  # 2316 *) ->  
           Int_hashtbl.add subst i (xs, Id (simplif l2)) ;
@@ -268,50 +178,47 @@ let subst_helper (subst : subst_tbl) (query : int -> int) lam =
           Int_hashtbl.add subst i (xs, Id (simplif l2)) ;
           simplif l1 (** l1 will inline *)
         |  _ ->
-
-          (** TODO: better heuristics, also if we can group same exit code [j] 
-              in a very early stage -- maybe we can define our enhanced [Lambda] 
-              representation and counter can be more precise, for example [apply] 
-              does not need patch from the compiler
-
-              FIXME:   when inlining, need refresh local bound identifiers
-              #1438 when the action containes bounded variable 
-                to keep the invariant, everytime, we do an inlining,
-                we need refresh, just refreshing once is not enough
-            *)
           let l2 = simplif l2 in 
-          (** We need to decide whether inline or not based on post-simplification
-            code, since when we do the substitution 
-            we use the post-simplified expression, it is more consistent
+          (* we only inline when [l2] does not contain bound variables
+             no need to refresh
           *)
           let ok_to_inline = 
             i >=0 && 
             (no_bounded_variables l2) &&
             (let lam_size = Lam_analysis.size l2 in
              (i_occur <= 2 && lam_size < Lam_analysis.exit_inline_size   )
-             || lam_size < 5)
-            (*TODO: when we do the case merging on the js side, 
-              the j is not very indicative                
-            *)             
+             || (lam_size < 5 ))
           in 
-          if ok_to_inline (* && false *)
-
+          if ok_to_inline 
           then 
-            begin  
-              (* we only inline when [l2] does not contain bound variables
-                no need to refresh
-               *)
+            begin            
               Int_hashtbl.add subst i (xs,  Id l2) ;
               simplif l1 
             end
-          else Lam.staticcatch (simplif l1) (i,xs) l2
-      end
-
+          else Lam.staticcatch (simplif l1) (i,xs) l2)
+    | Lstaticraise (i,[])  ->
+      (match Int_hashtbl.find_opt subst i with
+       | Some (_,handler) -> to_lam handler
+       | None -> lam)      
+    | Lstaticraise (i,ls) ->
+      let ls = Ext_list.map  ls simplif in
+      (match Int_hashtbl.find_opt subst i with
+       | Some (xs, handler) -> 
+         let handler = to_lam handler in 
+         let ys = Ext_list.map xs Ident.rename in
+         let env =
+           Ext_list.fold_right2 xs ys Ident_map.empty 
+             (fun x y t -> Ident_map.add x (Lam.var y) t) in
+         Ext_list.fold_right2 ys ls 
+           (Lam_subst.subst  env  handler)
+           (fun y l r -> Lam.let_ Strict y l r)
+       | None -> Lam.staticraise i ls
+      )
     | Lvar _|Lconst _  -> lam
-    | Lapply {fn = l1; args =  ll;  loc; status } -> 
-      Lam.apply (simplif l1) (Ext_list.map ll simplif) loc status
-    | Lfunction {arity; params; body =  l} -> 
-      Lam.function_ ~arity  ~params ~body:(simplif l)
+    | Lapply {fn; args;  loc; status } -> 
+      Lam.apply (simplif fn) (Ext_list.map args simplif) loc status
+    | Lfunction {arity; params; body} -> 
+      Lam.function_ ~arity  ~params ~body:(simplif body)
     | Llet (kind, v, l1, l2) -> 
       Lam.let_ kind v (simplif l1) (simplif l2)
     | Lletrec (bindings, body) ->
@@ -323,10 +230,10 @@ let subst_helper (subst : subst_tbl) (query : int -> int) lam =
       let args = Ext_list.map args simplif in
       Lam.prim ~primitive ~args loc
     | Lswitch(l, sw) ->
-      let new_l = simplif l
-      and new_consts =  Ext_list.map_snd  sw.sw_consts simplif
-      and new_blocks =  Ext_list.map_snd  sw.sw_blocks simplif
-      and new_fail = Ext_option.map sw.sw_failaction simplif in       
+      let new_l = simplif l in 
+      let new_consts =  Ext_list.map_snd  sw.sw_consts simplif in 
+      let new_blocks =  Ext_list.map_snd  sw.sw_blocks simplif in 
+      let new_fail = Ext_option.map sw.sw_failaction simplif in       
       Lam.switch
         new_l
         { 
@@ -354,8 +261,8 @@ let subst_helper (subst : subst_tbl) (query : int -> int) lam =
   simplif lam 
 
 let simplify_exits (lam : Lam.t) =
-  let exits = count_helper lam in
-  subst_helper (Int_hashtbl.create 17 ) (count_exit exits) lam
+  let exits = Lam_exit_count.count_helper lam in
+  subst_helper (Int_hashtbl.create 17 ) (Lam_exit_count.count_exit exits) lam
 
 (* Compile-time beta-reduction of functions immediately applied:
       Lapply(Lfunction(Curried, params, body), args, loc) ->
