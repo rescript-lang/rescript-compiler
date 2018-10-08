@@ -316,8 +316,7 @@ let rec size (lam : Lam.t) =
 and size_constant x = 
   match x with 
   | Const_int _ | Const_char _ 
-  | Const_string _  
-  | Const_unicode _
+
   | Const_float _  | Const_int32 _ | Const_int64 _ 
   | Const_nativeint _ 
   | Const_immstring _
@@ -325,6 +324,8 @@ and size_constant x =
   | Const_js_null | Const_js_undefined
   | Const_js_true | Const_js_false
     -> 1 
+  | Const_unicode _  (* TODO: this seems to be not good heurisitives*)
+  | Const_string _ ->  1
   | Const_some s -> size_constant s   
   | Const_block (_, _, str) 
     ->  List.fold_left (fun acc x -> acc + size_constant x ) 0 str

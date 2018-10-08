@@ -261,6 +261,8 @@ OTHERS := test_literals a test_ari test_export2 test_internalOO test_obj_simple_
 	optional_regression_test\
 	if_used_test\
 	int_switch_test\
+	parser_api\
+	parser_api_test\
 # bs_uncurry_test
 # needs Lam to get rid of Uncurry arity first
 # simple_derive_test
@@ -316,6 +318,9 @@ ocaml_parsetree_test.ml: ocaml_parsetree_main.ml
 
 ocaml_typedtree_test.ml: ocaml_typed_tree_main.ml
 	$(BSPACK) -bs-main Ocaml_typed_tree_main -bs-MD -I $(OCAML_SRC_PARSING) -I $(OCAML_SRC_UTILS) -I $(OCAML_SRC_TYPING) -o $@
+
+parser_api.ml: parser_api_main.ml
+	$(BSPACK) -main-export Parser_api_main -bs-MD  -I $(OCAML_SRC_PARSING) -I $(OCAML_SRC_UTILS) -o $@
 
 -include .depend
 

@@ -498,6 +498,15 @@ oo_js_test_date.cmj : mt.cmj ../runtime/js.cmj
 option_repr_test.cmj : mt.cmj ../runtime/js.cmj ../others/belt.cmj
 optional_ffi_test.cmj : mt.cmj
 optional_regression_test.cmj : mt.cmj ../runtime/js.cmj
+parser_api.cmj : ../stdlib/sys.cmj ../stdlib/string.cmj ../stdlib/printf.cmj \
+    ../stdlib/parsing.cmj ../stdlib/obj.cmj ../stdlib/nativeint.cmj \
+    ../stdlib/list.cmj ../stdlib/lexing.cmj ../stdlib/lazy.cmj \
+    ../stdlib/int64.cmj ../stdlib/int32.cmj ../stdlib/hashtbl.cmj \
+    ../stdlib/format.cmj ../stdlib/filename.cmj ../stdlib/char.cmj \
+    ../stdlib/bytes.cmj ../stdlib/buffer.cmj ../stdlib/array.cmj \
+    ../stdlib/arg.cmj
+parser_api_main.cmj : ../stdlib/lexing.cmj
+parser_api_test.cmj : parser_api.cmj mt.cmj ../stdlib/lexing.cmj
 pipe_send_readline.cmj : ../runtime/js.cmj
 pipe_syntax.cmj :
 poly_type.cmj : ../runtime/js.cmj

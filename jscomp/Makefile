@@ -328,7 +328,9 @@ CORE_SRCS= js_runtime_modules \
 	lam_beta_reduce\
 	lam_compile_external_call \
 	lam_compile_external_obj\
-	lam_compile_primitive lam_compile lam_pass_exits\
+	lam_compile_primitive lam_compile \
+	lam_exit_count\
+	lam_pass_exits\
 	lam_pass_count\
 	lam_pass_eliminate_ref\
 	lam_pass_lets_dce \

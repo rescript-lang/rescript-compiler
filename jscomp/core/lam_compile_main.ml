@@ -295,29 +295,26 @@ let lambda_as_module
     (filename : string) 
     (output_prefix : string)
     (lam : Lambda.lambda) = 
-  begin 
-    Js_config.set_current_file filename ;  
- 
-    let lambda_output = 
-        compile ~filename output_prefix finalenv current_signature lam in
-    let basename =  
-       Ext_namespace.js_name_of_basename !Js_config.bs_suffix 
-        (Filename.basename
+  Js_config.set_current_file filename ;   
+  let lambda_output = 
+    compile ~filename output_prefix finalenv current_signature lam in
+  let basename =  
+    Ext_namespace.js_name_of_basename !Js_config.bs_suffix 
+      (Filename.basename
          output_prefix) in
-    let package_info = Js_packages_state.get_packages_info () in 
-    if Js_packages_info.is_empty package_info  then 
+  let package_info = Js_packages_state.get_packages_info () in 
+  if Js_packages_info.is_empty package_info  then 
     begin 
       let output_chan chan =         
         Js_dump_program.dump_deps_program ~output_prefix NodeJS lambda_output chan in
       (if !Js_config.dump_js then output_chan stdout);
-      if not @@ !Clflags.dont_write_files then 
+      if not !Clflags.dont_write_files then 
         Ext_pervasives.with_file_as_chan 
           (Filename.dirname filename //  basename)
-           output_chan
+          output_chan
     end
-    else  begin 
-      package_info.module_systems 
-      |> List.iter begin fun (module_system, _path) -> 
+  else
+    Ext_list.iter package_info.module_systems (fun (module_system, _path) -> 
         let output_chan chan  = 
           Js_dump_program.dump_deps_program ~output_prefix
             module_system 
@@ -329,13 +326,10 @@ let lambda_as_module
           Ext_pervasives.with_file_as_chan
             (Lazy.force Ext_filename.package_dir //
              _path //
-              basename
+             basename
              (* #913 only generate little-case js file *)
-            ) output_chan
-
-      end
-    end 
-  end
+            ) output_chan )
+  
 (* We can use {!Env.current_unit = "Pervasives"} to tell if it is some specific module, 
     We need handle some definitions in standard libraries in a special way, most are io specific, 
     includes {!Pervasives.stdin, Pervasives.stdout, Pervasives.stderr}
