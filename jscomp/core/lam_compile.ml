@@ -57,7 +57,7 @@ let group_apply cases callback =
     (
     Ext_list.stable_group cases
     (fun (_,lam) (_,lam1) -> 
-      Lam_analysis.eq_lambda_approx lam lam1))
+      Lam.eq_approx lam lam1))
     (fun group -> Ext_list.map_last group callback ) 
 (* TODO:
     for expression generation,
