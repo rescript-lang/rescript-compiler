@@ -2499,6 +2499,11 @@ module Ext_list : sig
 
 val map : 'a list -> ('a -> 'b) ->  'b list 
 
+val mapi :
+  'a list -> 
+  (int -> 'a -> 'b) -> 
+  'b list 
+  
 val map_snd : ('a * 'b) list -> ('b -> 'c) -> ('a * 'c) list 
 
 (** [map_last f xs ]
@@ -2918,6 +2923,14 @@ let rec map_last l f=
     let y3 = f false x3 in
     let y4 = f false x4 in
     y1::y2::y3::y4::(map_last tail f)
+
+let rec mapi_aux lst i f = 
+  match lst with
+    [] -> []
+  | a::l -> 
+    let r = f i a in r :: mapi_aux l (i + 1) f 
+
+let mapi lst f = mapi_aux lst 0 f
 
 let rec last xs =
   match xs with 
@@ -14047,7 +14060,7 @@ let root = OCamlRes.Res.([
         \  Component 2:\n\
         \  <div id=\"index2\"></div>\n\
          \n\
-        \  <script src=\"../build/Index.js\"></script>\n\
+        \  <script src=\"Index.js\"></script>\n\
          </body>\n\
          </html>\n\
          ")]) ;
@@ -14087,7 +14100,8 @@ let root = OCamlRes.Res.([
       \    \"clean\": \"bsb -clean-world\",\n\
       \    \"test\": \"echo \\\"Error: no test specified\\\" && exit 1\",\n\
       \    \"webpack\": \"webpack -w\",\n\
-      \    \"webpack:production\": \"NODE_ENV=production webpack\"\n\
+      \    \"webpack:production\": \"NODE_ENV=production webpack\",\n\
+      \    \"server\": \"webpack-dev-server\"\n\
       \  },\n\
       \  \"keywords\": [\n\
       \    \"BuckleScript\"\n\
@@ -14101,8 +14115,10 @@ let root = OCamlRes.Res.([
       \  },\n\
       \  \"devDependencies\": {\n\
       \    \"bs-platform\": \"^${bsb:bs-version}\",\n\
+      \    \"html-webpack-plugin\": \"^3.2.0\",\n\
       \    \"webpack\": \"^4.0.1\",\n\
-      \    \"webpack-cli\": \"^3.1.1\"\n\
+      \    \"webpack-cli\": \"^3.1.1\",\n\
+      \    \"webpack-dev-server\": \"^3.1.8\"\n\
       \  }\n\
        }\n\
        ") ;
@@ -14125,9 +14141,17 @@ let root = OCamlRes.Res.([
        npm run webpack\n\
        ```\n\
        \n\
-       After you see the webpack compilation succeed (the `npm run webpack` step), open up `src/index.html` (**no server needed!**). Then modify whichever `.re` file in `src` and refresh the page to see the changes.\n\
+       After you see the webpack compilation succeed (the `npm run webpack` step), open up `build/index.html` (**no server needed!**). Then modify whichever `.re` file in `src` and refresh the page to see the changes.\n\
        \n\
        **For more elaborate ReasonReact examples**, please see https://github.com/reasonml-community/reason-react-example\n\
+       \n\
+       ## Run Project with Server\n\
+       \n\
+       To run with the webpack development server run `npm run server` and view in the browser at http://localhost:8000. Running in this environment provides hot reloading and support for routing; just edit and save the file and the browser will automatically refresh.\n\
+       \n\
+       Note that any hot reload on a route will fall back to the root (`/`), so `ReasonReact.Router.dangerouslyGetInitialUrl` will likely be needed alongside the `ReasonReact.Router.watchUrl` logic to handle routing correctly on hot reload refreshes or simply opening the app at a URL that is not the root.\n\
+       \n\
+       To use a port other than 8000 set the `PORT` environment variable (`PORT=8080 npm run server`).\n\
        \n\
        ## Build for Production\n\
        \n\
@@ -14136,13 +14160,16 @@ let root = OCamlRes.Res.([
        npm run webpack:production\n\
        ```\n\
        \n\
-       This will replace the development artifact `build/Index.js` for an optimized version.\n\
+       This will replace the development artifact `build/Index.js` for an optimized version as well as copy `src/index.html` into `build/`. You can then deploy the contents of the `build` directory (`index.html` and `Index.js`).\n\
+       \n\
+       If you make use of routing (via `ReasonReact.Router` or similar logic) ensure that server-side routing handles your routes or that 404's are directed back to `index.html` (which is how the dev server is set up).\n\
        \n\
        **To enable dead code elimination**, change `bsconfig.json`'s `package-specs` `module` from `\"commonjs\"` to `\"es6\"`. Then re-run the above 2 commands. This will allow Webpack to remove unused code.\n\
        ") ;
     File  ("webpack.config.js",
       "const path = require('path');\n\
-       const outputDir = path.join(__dirname, \"build/\");\n\
+       const HtmlWebpackPlugin = require('html-webpack-plugin')\n\
+       const outputDir = path.join(__dirname, 'build/');\n\
        \n\
        const isProd = process.env.NODE_ENV === 'production';\n\
        \n\
@@ -14154,6 +14181,18 @@ let root = OCamlRes.Res.([
       \    publicPath: outputDir,\n\
       \    filename: 'Index.js',\n\
       \  },\n\
+      \  plugins: [\n\
+      \    new HtmlWebpackPlugin({\n\
+      \      template: 'src/index.html',\n\
+      \      inject: false\n\
+      \    })\n\
+      \  ],\n\
+      \  devServer: {\n\
+      \    compress: true,\n\
+      \    contentBase: outputDir,\n\
+      \    port: process.env.PORT || 8000,\n\
+      \    historyApiFallback: true\n\
+      \  }\n\
        };\n\
        ")]) ;
   Dir  ("react-lite", [

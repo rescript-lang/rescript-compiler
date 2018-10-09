@@ -292,23 +292,9 @@ let rec eq_expression
       ->  false 
   end
 and eq_expression_list xs ys =
-  let rec aux xs ys =
-    match xs,ys with
-    | [], [] -> true
-    | [], _  -> false 
-    | _ , [] -> false
-    | x::xs, y::ys -> eq_expression x y && aux xs ys 
-  in
-  aux xs ys
+  Ext_list.for_all2_no_exn xs ys eq_expression
 and eq_statement_list xs ys =
-  let rec aux xs ys =
-    match xs,ys with
-    | [], [] -> true
-    | [], _  -> false 
-    | _ , [] -> false
-    | x::xs, y::ys -> eq_statement x y && aux xs ys 
-  in
-  aux xs ys
+  Ext_list.for_all2_no_exn xs ys eq_statement
 and eq_statement 
     ({statement_desc = x0} : J.statement)
     ({statement_desc = y0} : J.statement) = 

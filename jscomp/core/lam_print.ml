@@ -378,14 +378,15 @@ let get_string ((id : Ident.t), (pos : int)) (env : Env.t) : string =
           | Sig_value _ -> true
           | _ -> false
         ) signature  in
-    (begin match List.nth  serializable_sigs  pos  with 
-       | Sig_value (i,_) 
-       | Sig_module (i,_,_) -> i 
-       | Sig_typext (i,_,_) -> i 
-       | Sig_modtype(i,_) -> i 
-       | Sig_class (i,_,_) -> i 
-       | Sig_class_type(i,_,_) -> i 
-       | Sig_type(i,_,_) -> i 
+    (begin match Ext_list.nth_opt  serializable_sigs  pos  with 
+       | Some (Sig_value (i,_) 
+       | Sig_module (i,_,_) 
+       | Sig_typext (i,_,_) 
+       | Sig_modtype(i,_) 
+       | Sig_class (i,_,_) 
+       | Sig_class_type(i,_,_) 
+       | Sig_type(i,_,_)) -> i 
+       | None -> assert false
      end).name
   | _ -> assert false
 

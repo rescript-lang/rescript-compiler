@@ -57,7 +57,7 @@ let group_apply cases callback =
     (
     Ext_list.stable_group cases
     (fun (_,lam) (_,lam1) -> 
-      Lam_analysis.eq_lambda_approx lam lam1))
+      Lam.eq_approx lam lam1))
     (fun group -> Ext_list.map_last group callback ) 
 (* TODO:
     for expression generation,
@@ -301,13 +301,12 @@ and compile_recursive_let ~all_bindings
     *)
     Js_output.make (
       S.define_variable ~kind:Variable id (E.array Mutable []) ::
-      (List.mapi (fun i (x : Lam.t) ->
+      (Ext_list.mapi ls (fun i x ->
            match x with
            | Lvar lid
              -> S.exp
                   (Js_arr.set_array (E.var id) (E.int (Int32.of_int i)) (E.var lid))
-           | _ -> assert false
-         ) ls)
+           | _ -> assert false))
     ), []
 
   | Lprim{primitive = Pmakeblock _ ; _}   ->

@@ -36,10 +36,7 @@ val size : Lam.t -> int
 
 val ok_to_inline_fun_when_app : body:Lam.t -> Lam.ident list -> Lam.t list -> bool
   
-val eq_lambda_approx : Lam.t -> Lam.t -> bool 
-(** a conservative version of comparing two lambdas, mostly 
-    for looking for similar cases in switch
- *)
+
 
 val small_inline_size : int  
 val exit_inline_size : int  

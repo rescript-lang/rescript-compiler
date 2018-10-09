@@ -163,6 +163,42 @@ let mark_dead_code js =
    ]}   
    Since user may use `bsc.exe -c xx.ml xy.ml xz.ml` and we need clean up state
  *)
+
+(** we can do here, however, we should 
+    be careful that it can only be done 
+    when it's accessed once and the array is not escaped,
+    otherwise, we redo the computation,
+    or even better, we re-order
+
+    {[
+      var match = [/* tuple */0,Pervasives.string_of_int(f(1,2,3)),f3(2),arr];
+
+          var a = match[1];
+
+            var b = match[2];
+
+    ]}
+
+    --->
+
+    {[
+      var match$1 = Pervasives.string_of_int(f(1,2,3));
+          var match$2 = f3(2);
+              var match = [/* tuple */0,match$1,match$2,arr];
+                  var a = match$1;
+                    var b = match$2;
+                      var arr = arr; 
+    ]}
+
+    --> 
+    since match$1 (after match is eliminated) is only called once 
+    {[
+      var a = Pervasives.string_of_int(f(1,2,3));
+      var b = f3(2);
+      var arr = arr; 
+    ]}
+
+*) 
 let subst_map name = object (self)
   inherit Js_map.map as super
 
@@ -237,62 +273,19 @@ let subst_map name = object (self)
     match x.expression_desc with 
     | Access ({expression_desc = Var (Id (id))}, 
               {expression_desc = Number (Int {i; _})}) -> 
-      begin match Ident_hashtbl.find_opt self#get_substitution id with 
-        | Some {expression_desc = Caml_block (ls, Immutable, _, _) } 
-          -> 
-          (* user program can be wrong, we should not 
-             turn a runtime crash into compile time crash : )
-          *)          
-          begin match List.nth ls (Int32.to_int i) with 
-            | {expression_desc = J.Var _ | Number _ | Str _ | Undefined} as x 
-              -> x 
-            | exception _ ->
-              begin
-                Ext_log.err __LOC__ "suspcious code %s when compiling %s@."
-                  (Printf.sprintf "%s/%d" id.name id.stamp)
-                  name  ;
-                super#expression x ;
-              end
-            | _ -> 
-              (** we can do here, however, we should 
-                  be careful that it can only be done 
-                  when it's accessed once and the array is not escaped,
-                  otherwise, we redo the computation,
-                  or even better, we re-order
-
-                  {[
-                    var match = [/* tuple */0,Pervasives.string_of_int(f(1,2,3)),f3(2),arr];
-
-                        var a = match[1];
-
-                          var b = match[2];
-
-                  ]}
-
-                  --->
-
-                  {[
-                    var match$1 = Pervasives.string_of_int(f(1,2,3));
-                        var match$2 = f3(2);
-                            var match = [/* tuple */0,match$1,match$2,arr];
-                                var a = match$1;
-                                  var b = match$2;
-                                    var arr = arr; 
-                  ]}
-
-                  --> 
-                  since match$1 (after match is eliminated) is only called once 
-                  {[
-                    var a = Pervasives.string_of_int(f(1,2,3));
-                    var b = f3(2);
-                    var arr = arr; 
-                  ]}
-
-              *)
-              super#expression x 
-          end
-        | (Some _ | None) -> super#expression x 
-      end
+      (match Ident_hashtbl.find_opt self#get_substitution id with 
+       | Some {expression_desc = Caml_block (ls, Immutable, _, _) } 
+         -> 
+         (* user program can be wrong, we should not 
+            turn a runtime crash into compile time crash : )
+         *)          
+         (match Ext_list.nth_opt ls (Int32.to_int i) with 
+          | Some ({expression_desc = J.Var _ | Number _ | Str _ | Undefined} as x)
+            -> x 
+          | None | Some _ -> 
+            super#expression x )          
+       | Some _ | None -> super#expression x )
+      
     | _ -> super#expression x
 end 
 
