@@ -743,6 +743,8 @@ let rec keepU xs p  =
 
 let keep xs p = keepU xs (fun[@bs] x -> p x)
 
+let filter = keep
+
 let keepWithIndexU xs p =
   let rec auxKeepWithIndex xs p i =
     match xs with
@@ -759,6 +761,8 @@ let keepWithIndexU xs p =
   in auxKeepWithIndex xs p 0
 
 let keepWithIndex xs p = keepWithIndexU xs (fun [@bs] x i -> p x i)
+
+let filterWithIndex = keepWithIndex
 
 let rec keepMapU xs p  =
   match xs with

@@ -574,12 +574,33 @@ val keep: 'a t ->  ('a -> bool) -> 'a t
     ]}
 *)
 
+[@@deprecated "This function will soon be deprecated. Please, use `List.keep` instead."]
+val filter: 'a t ->  ('a -> bool) -> 'a t
+(** [filter  xs p] returns a list of all elements in [xs] which satisfy the predicate function [p]
+
+    @example {[
+      filter [1;2;3;4] (fun x -> x mod 2 = 0) =
+      [2;4]
+    ]}
+*)
+
 val keepWithIndexU: 'a t ->  ('a -> int -> bool [@bs]) -> 'a t
 val keepWithIndex: 'a t ->  ('a -> int -> bool) -> 'a t
 (** [keepWithIndex xs p] returns a list of all elements in [xs] which satisfy the predicate function [p]
 
     @example {[
       keepWithIndex [1;2;3;4] (fun _x i -> i mod 2 = 0)
+      =
+      [1;3]
+    ]}
+*)
+
+[@@deprecated "This function will soon be deprecated. Please, use `List.keepWithIndex` instead."]
+val filterWithIndex: 'a t ->  ('a -> int -> bool) -> 'a t
+(** [filterWithIndex xs p] returns a list of all elements in [xs] which satisfy the predicate function [p]
+
+    @example {[
+      filterWithIndex [1;2;3;4] (fun _x i -> i mod 2 = 0)
       =
       [1;3]
     ]}
