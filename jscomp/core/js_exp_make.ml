@@ -155,7 +155,8 @@ let optional_not_nest_block e : J.expression =
     comment = None
   } 
 
-let make_block ?comment tag tag_info es mutable_flag : t = 
+let make_block ?comment 
+  (tag : t) (tag_info : J.tag_info) (es : t list) (mutable_flag : J.mutable_flag) : t = 
   let comment = 
     match comment with 
     | None -> Lam_compile_util.comment_of_tag_info tag_info 
@@ -178,8 +179,8 @@ let make_block ?comment tag tag_info es mutable_flag : t =
 
 
 module L = Literals
-(* Invariant: this is relevant to how we encode string
-*)           
+
+(* ATTENTION: this is relevant to how we encode string, boolean *)           
 let typeof ?comment (e : t) : t = 
   match e.expression_desc with 
   | Number _ 
@@ -245,12 +246,10 @@ let method_
     comment
   }
 
-(** This is coupuled with {!Caml_obj.caml_update_dummy} *)
+(** ATTENTION: This is coupuled with {!Caml_obj.caml_update_dummy} *)
 let dummy_obj ?comment ()  : t = 
   {comment  ; expression_desc = Array ([],Mutable)}
 
-(* let is_instance_array ?comment e : t = 
-  {comment; expression_desc = Bin(InstanceOf, e , str L.js_array_ctor) } *)
 
 (* TODO: complete 
     pure ...
@@ -302,9 +301,6 @@ let nine_int_literal : t =
 let obj_int_tag_literal : t =
   {expression_desc = Number (Int {i = 248l; c = None}) ; comment = None}
 
-(* let small_int_array = Array.create 100  None *)
-
-
 let int ?comment ?c  i : t = 
   {expression_desc = Number (Int {i; c}) ; comment}
 
@@ -326,9 +322,11 @@ let small_int i : t =
 
 let access ?comment (e0 : t)  (e1 : t) : t =
   match e0.expression_desc, e1.expression_desc with
-  | Array (l,_mutable_flag) , Number (Int {i; _}) 
+  | Array (l,_) , Number (Int {i; _}) (* Float i -- should not appear here *)
     when no_side_effect e0-> 
-    List.nth l  (Int32.to_int i)  (* Float i -- should not appear here *)
+    (match Ext_list.nth_opt l  (Int32.to_int i) with 
+    | None -> { expression_desc = Access (e0,e1); comment} 
+    | Some x -> x ) (* FIX #3084*)
   | _ ->
     { expression_desc = Access (e0,e1); comment} 
 
@@ -348,10 +346,14 @@ let string_access ?comment (e0 : t)  (e1 : t) : t =
 
 let index ?comment (e0 : t)  e1 : t = 
   match e0.expression_desc with
-  | Array (l,_mutable_flag)  when no_side_effect e0 -> 
-    List.nth l  (Int32.to_int e1)  (* Float i -- should not appear here *)
-  | Caml_block (l,_mutable_flag, _, _)  when no_side_effect e0 -> 
-    List.nth l  (Int32.to_int e1)  (* Float i -- should not appear here *)
+  | Array (l,_) (* Float i -- should not appear here *)
+  | Caml_block (l,_, _, _) when no_side_effect e0
+     -> 
+    (match Ext_list.nth_opt l  (Int32.to_int e1)  with
+    | Some x-> x 
+    | None -> 
+      { expression_desc = Access (e0, int ?comment e1); comment = None}     
+    )
   | _ -> { expression_desc = Access (e0, int ?comment e1); comment = None} 
 
 let assign ?comment e0 e1 : t = 
