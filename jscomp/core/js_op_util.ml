@@ -40,7 +40,7 @@ let op_prec (op : Js_op.binop ) =
   | Or -> 3, 3, 3
   | And -> 4, 4, 4
   | EqEqEq | NotEqEq -> 8, 8, 9
-  | Gt | Ge | Lt | Le | InstanceOf -> 9, 9, 10
+  | Gt | Ge | Lt | Le (* | InstanceOf *) -> 9, 9, 10
   | Bor -> 5, 5, 5
   | Bxor -> 6, 6, 6
   | Band -> 7, 7, 7
@@ -81,7 +81,7 @@ let op_str (op : Js_op.binop) =
   | Le      -> "<="
   | Gt      -> ">"
   | Ge      -> ">="
-  | InstanceOf -> "instanceof"
+  (* | InstanceOf -> "instanceof" *)
 
 let op_int_str (op : Js_op.int_op) = 
   match op with
