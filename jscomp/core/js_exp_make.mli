@@ -270,9 +270,9 @@ val obj :
   J.property_map -> 
   t 
 
-val caml_true : t 
+val true_ : t 
 
-val caml_false : t
+val false_ : t
 
 val bool : bool -> t
 

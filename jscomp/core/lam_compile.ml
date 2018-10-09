@@ -270,7 +270,7 @@ and compile_recursive_let ~all_bindings
               )
           [
             S.while_ (* ~label:continue_label *)
-              E.caml_true
+              E.true_
               (
                 Ident_map.fold
                   (fun old new_param  acc ->
@@ -750,7 +750,7 @@ and compile_sequand
               (
                 l_block @
                 [S.if_ l_expr (r_block @ [ S.assign v r_expr])
-                   ~else_:[S.assign v E.caml_false]
+                   ~else_:[S.assign v E.false_]
                 ]
               )
           | Declare (_kind,v) ->
@@ -758,14 +758,14 @@ and compile_sequand
             Js_output.make
               (
                 l_block @
-                [ S.define_variable ~kind:Variable v E.caml_false ;
+                [ S.define_variable ~kind:Variable v E.false_ ;
                   S.if_ l_expr
                     (r_block @ [S.assign v r_expr])])
           | EffectCall _
           | NeedValue _ ->
             let v = Ext_ident.create_tmp () in
             Js_output.make
-              (S.define_variable ~kind:Variable v E.caml_false ::
+              (S.define_variable ~kind:Variable v E.false_ ::
                l_block @
                [S.if_ l_expr
                   (r_block @ [
@@ -800,12 +800,12 @@ and compile_sequor
                      (r_block @ [
                          S.assign v r_expr
                        ])
-                     ~else_:[S.assign v E.caml_true] ])
+                     ~else_:[S.assign v E.true_] ])
             | Declare(_kind,v) ->
               Js_output.make
                 (
                   l_block @
-                  [ S.define_variable ~kind:Variable v E.caml_true;
+                  [ S.define_variable ~kind:Variable v E.true_;
                     S.if_ (E.not l_expr)
                       (r_block @ [S.assign v r_expr])
                   ]
@@ -815,7 +815,7 @@ and compile_sequor
               let v = Ext_ident.create_tmp () in
               Js_output.make
                 ( l_block @
-                  [S.define_variable ~kind:Variable v E.caml_true;
+                  [S.define_variable ~kind:Variable v E.true_;
                    S.if_ (E.not l_expr)
                      (r_block @ [
                          S.assign v r_expr

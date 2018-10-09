@@ -125,7 +125,7 @@ function f7(x) {
 }
 
 function f8(x) {
-  return 2;
+  return 1;
 }
 
 exports.bool_equal = bool_equal;
