@@ -86,6 +86,46 @@ function f(v) {
   return /* () */0;
 }
 
+function fff(x) {
+  return x.length >= 0;
+}
+
+function fff2(x) {
+  if (x.length >= 10) {
+    console.log("hi");
+    return /* () */0;
+  } else {
+    return 0;
+  }
+}
+
+function fff3(x) {
+  return 1;
+}
+
+function fff4(x) {
+  if (x.length !== 0) {
+    return 1;
+  } else {
+    return 2;
+  }
+}
+
+eq("File \"array_subtle_test.ml\", line 51, characters 6-13", /* tuple */[
+      fff3(/* array */[]),
+      1
+    ]);
+
+eq("File \"array_subtle_test.ml\", line 52, characters 6-13", /* tuple */[
+      fff4(/* array */[]),
+      2
+    ]);
+
+eq("File \"array_subtle_test.ml\", line 53, characters 6-13", /* tuple */[
+      fff4(/* array */[1]),
+      1
+    ]);
+
 Mt.from_pair_suites("array_subtle_test.ml", suites[0]);
 
 exports.suites = suites;
@@ -93,4 +133,8 @@ exports.test_id = test_id;
 exports.eq = eq;
 exports.v = v;
 exports.f = f;
+exports.fff = fff;
+exports.fff2 = fff2;
+exports.fff3 = fff3;
+exports.fff4 = fff4;
 /*  Not a pure module */

@@ -34,4 +34,21 @@ let f v =
   | Some x -> Js.log "hi"
   | None -> Js.log "hi2");
   Js.log (ignore @@ Js.Array.pop v)
+
+
+let fff x =   
+  Array.length x >= 0
+
+let fff2 x =   
+  if Array.length x >=  10 then Js.log "hi"
+
+let fff3 x =   
+  if Array.length x >=  0 then 1 else 2 
+
+let fff4 x =   
+  if Array.length x >  0 then 1 else 2 
+
+;; eq __LOC__ (fff3 [||], 1 )
+;; eq __LOC__ (fff4 [||], 2)
+;; eq __LOC__ (fff4 [|1|], 1)
 let () = Mt.from_pair_suites __FILE__ !suites

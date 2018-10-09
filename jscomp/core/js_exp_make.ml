@@ -622,7 +622,7 @@ let rec econd ?comment (pred : t) (ifso : t) (ifnot : t) : t =
   | (Bin (Ge, 
           ({expression_desc = Length _ ;
             _}), {expression_desc = Number (Int { i = 0l ; _})})), _, _ 
-    -> ifnot
+    -> ifso
   | (Bin (Gt, 
           ({expression_desc = Length _;
             _} as pred ), 
@@ -646,30 +646,18 @@ let rec econd ?comment (pred : t) (ifso : t) (ifnot : t) : t =
        ]}         
     *)      
     econd (and_ pred pred1) ifso1 ifnot
-  | _, (Cond (p1, branch_code0, branch_code1)), _
-    when Js_analyzer.eq_expression branch_code0 ifnot
+  | _, (Cond (pred1, ifso1, ifnot1)), _
+    when Js_analyzer.eq_expression ifso1 ifnot
     ->
-    (* the same as above except we revert the [cond] expression *)      
-    econd (and_ pred (not p1)) branch_code1 ifnot
-
-  | _, _, (Cond (p1', branch_code0, branch_code1))
-    when Js_analyzer.eq_expression ifso branch_code0 
-    (*
-       {[
-         if b then branch_code0 else (if p1' then branch_code0 else branch_code1)           
-       ]}         
-       is equivalent to         
-       {[
-         if b or p1' then branch_code0 else branch_code1           
-       ]}         
-    *)
+    econd (and_ pred (not pred1)) ifnot1 ifnot
+  | _, _, (Cond (pred1, ifso1, ifnot1))
+    when Js_analyzer.eq_expression ifso ifso1 
     ->
-    econd (or_ pred p1') ifso branch_code1
-  | _, _, (Cond (p1', branch_code0, branch_code1))
-    when Js_analyzer.eq_expression ifso branch_code1
+    econd (or_ pred pred1) ifso ifnot1
+  | _, _, (Cond (pred1, ifso1, ifnot1))
+    when Js_analyzer.eq_expression ifso ifnot1
     ->
-    (* the same as above except we revert the [cond] expression *)      
-    econd (or_ pred (not p1')) ifso branch_code0
+    econd (or_ pred (not pred1)) ifso ifso1
 
   | Js_not e, _, _ 
     ->
