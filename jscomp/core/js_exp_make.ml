@@ -31,17 +31,6 @@ let no_side_effect = Js_analyzer.no_side_effect_expression
 
 type t = J.expression 
 
-type binary_op =
-  ?comment:string ->
-  t ->
-  t ->
-  t
-type unary_op =
-  ?comment:string ->
-  t ->
-  t
-
-
 (*
   [remove_pure_sub_exp x]
   Remove pure part of the expression (minor optimization)
@@ -55,25 +44,21 @@ let rec remove_pure_sub_exp (x : t)  : t option =
   | Str _
   | Number _ -> None (* Can be refined later *)
   | Access (a,b) -> 
-    begin match remove_pure_sub_exp a , remove_pure_sub_exp b with 
-      | None, None -> None
-      | _, _ -> Some x 
-    end
+      if is_pure_sub_exp a && is_pure_sub_exp b then None 
+      else Some x           
   | Array (xs,_mutable_flag)  ->
-    if Ext_list.for_all xs (fun x -> remove_pure_sub_exp x = None) then
-      None 
+    if Ext_list.for_all xs is_pure_sub_exp then None 
     else Some x 
   | Seq (a,b) -> 
-    begin match remove_pure_sub_exp a , remove_pure_sub_exp b with 
+      (match remove_pure_sub_exp a , remove_pure_sub_exp b with 
       | None, None  ->  None
       | Some u, Some v ->  
         Some { x with expression_desc =  Seq(u,v)}
       (* may still have some simplification*)
       | None, (Some _ as v) ->  v
-      | (Some _ as u), None -> u 
-    end
+      | (Some _ as u), None -> u)
   | _ -> Some x 
-
+and is_pure_sub_exp (x : t ) = remove_pure_sub_exp x = None
 
 (* let mk ?comment exp : t = 
   {expression_desc = exp ; comment  } *)
@@ -92,13 +77,14 @@ let undefined  : t =
 
 let nil : t = 
     {expression_desc = Null ; comment = None}
+
 let call ?comment ~info e0 args : t = 
   {expression_desc = Call(e0,args,info); comment }
 
+(* TODO: optimization when es is known at compile time
+    to be an array
+*)  
 let flat_call ?comment e0 es : t = 
-  (* TODO: optimization when es is known at compile time
-      to be an array
-  *)
   {expression_desc = FlatCall (e0,es); comment }
 
 let runtime_var_dot ?comment (x : string)  (e1 : string) : J.expression = 
@@ -179,7 +165,7 @@ let make_block ?comment tag tag_info es mutable_flag : t =
     | Blk_record des 
       when Array.length des <> 0 
       -> 
-      List.mapi (fun i (e : t) -> merge_outer_comment des.(i) e) es
+      Ext_list.mapi es (fun i e  -> merge_outer_comment des.(i) e) 
     (* TODO: may overriden its previous comments *)
     | Blk_module (Some des) 
       ->  Ext_list.map2 des es merge_outer_comment             

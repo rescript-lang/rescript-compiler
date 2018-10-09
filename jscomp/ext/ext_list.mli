@@ -25,6 +25,11 @@
 
 val map : 'a list -> ('a -> 'b) ->  'b list 
 
+val mapi :
+  'a list -> 
+  (int -> 'a -> 'b) -> 
+  'b list 
+  
 val map_snd : ('a * 'b) list -> ('b -> 'c) -> ('a * 'c) list 
 
 (** [map_last f xs ]

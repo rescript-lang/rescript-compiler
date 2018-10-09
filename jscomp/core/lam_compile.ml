@@ -301,13 +301,12 @@ and compile_recursive_let ~all_bindings
     *)
     Js_output.make (
       S.define_variable ~kind:Variable id (E.array Mutable []) ::
-      (List.mapi (fun i (x : Lam.t) ->
+      (Ext_list.mapi ls (fun i x ->
            match x with
            | Lvar lid
              -> S.exp
                   (Js_arr.set_array (E.var id) (E.int (Int32.of_int i)) (E.var lid))
-           | _ -> assert false
-         ) ls)
+           | _ -> assert false))
     ), []
 
   | Lprim{primitive = Pmakeblock _ ; _}   ->

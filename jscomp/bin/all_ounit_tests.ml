@@ -6279,6 +6279,11 @@ module Ext_list : sig
 
 val map : 'a list -> ('a -> 'b) ->  'b list 
 
+val mapi :
+  'a list -> 
+  (int -> 'a -> 'b) -> 
+  'b list 
+  
 val map_snd : ('a * 'b) list -> ('b -> 'c) -> ('a * 'c) list 
 
 (** [map_last f xs ]
@@ -6698,6 +6703,14 @@ let rec map_last l f=
     let y3 = f false x3 in
     let y4 = f false x4 in
     y1::y2::y3::y4::(map_last tail f)
+
+let rec mapi_aux lst i f = 
+  match lst with
+    [] -> []
+  | a::l -> 
+    let r = f i a in r :: mapi_aux l (i + 1) f 
+
+let mapi lst f = mapi_aux lst 0 f
 
 let rec last xs =
   match xs with 
