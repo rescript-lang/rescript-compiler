@@ -228,10 +228,8 @@ let rec if_ ?comment  ?declaration ?else_ (e : J.expression) (then_ : J.block)  
       (** here we do agressive optimization, because it can help optimization later,
           move code outside of branch is generally helpful later
       *)
-      aux ?comment e ys xs (y::acc)
-        
-
-    |  (Number ( Int { i = 0l; _}) | Bool false) , _,  _
+      aux ?comment e ys xs (y::acc)        
+    | Bool false , _,  _
       ->  
         (match ifnot with 
         | [] -> acc 
@@ -239,27 +237,7 @@ let rec if_ ?comment  ?declaration ?else_ (e : J.expression) (then_ : J.block)  
     | Bool true, _, _ ->
        (match ifso with 
        |  []  -> acc 
-       | _ -> block ifso :: acc)
-      
-    |  (Number _ , _, _)
-    | ((Bin (Ge, 
-             ({expression_desc = Length _;
-               _}), {expression_desc = Number (Int { i = 0l; _})})), _ , _)
-      (* TODO: always 
-          turn [Le] -> into [Ge]
-      *)
-      -> block ifso :: acc 
- 
-
-    | ((Bin (Gt, 
-             ({expression_desc = 
-                 Length _;
-               _} as e ), {expression_desc = Number (Int { i = 0l; _})}))
-      ), _ , _
-      ->
-      (** Add comment when simplified *)
-      aux ?comment e ifso ifnot acc 
-
+       | _ -> block ifso :: acc)          
     (*
        {[ if a then { if b then d else e} else e ]}
        => if a && b then d else e 
