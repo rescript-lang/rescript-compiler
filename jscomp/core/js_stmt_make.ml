@@ -182,7 +182,24 @@ let string_switch ?comment ?declaration  ?default
    To hit this branch, we also need [declaration] passed down 
            TODO: check how we compile [Lifthenelse]
     The declaration argument is introduced to merge assignment in both branches           
-  *)
+
+  Note we can transfer code as below:
+  {[
+    if (x){
+      return /throw e;
+    } else {
+      blabla
+    }
+  ]}
+  into 
+  {[
+    if (x){
+      return /throw e;
+    } 
+    blabla    
+  ]}
+  Not clear the benefit
+*)
 let rec if_ ?comment  ?declaration ?else_ (e : J.expression) (then_ : J.block)   : t = 
   let declared = ref false in
   let common_prefix_blocks = ref [] in 
@@ -200,11 +217,10 @@ let rec if_ ?comment  ?declaration ?else_ (e : J.expression) (then_ : J.block)  
         {
           statement_desc = If ( E.not e, ifnot, None); comment
         }
-      | [ {statement_desc = Return {return_value = b; _}; _}], 
-        [ {statement_desc = Return {return_value = a; _}; _} as _ifnot_stmt]
+      | [ {statement_desc = Return {return_value = ret_ifso; _}; _}], 
+        [ {statement_desc = Return {return_value = ret_ifnot; _}; _} as _ifnot_stmt]
         ->      
-        (* ifnot_stmt :: { statement_desc = If(e, ifso,None); comment = None} ::  acc  *)
-        return_stmt (E.econd e b a ) 
+        return_stmt (E.econd e ret_ifso ret_ifnot ) 
       | [ {statement_desc = 
              Exp
                {expression_desc = Bin(Eq, ({expression_desc = Var (Id var_ifso); _} as lhs_ifso), rhs_ifso); _};
