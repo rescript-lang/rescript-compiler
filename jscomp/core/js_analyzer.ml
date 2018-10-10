@@ -293,7 +293,7 @@ let rec eq_expression
   end
 and eq_expression_list xs ys =
   Ext_list.for_all2_no_exn xs ys eq_expression
-and eq_statement_list xs ys =
+and eq_block (xs : J.block) (ys : J.block) =
   Ext_list.for_all2_no_exn xs ys eq_statement
 and eq_statement 
     ({statement_desc = x0} : J.statement)
@@ -315,7 +315,7 @@ and eq_statement
   | Block xs0 -> 
     begin match y0 with 
     | Block ys0 -> 
-      eq_statement_list xs0 ys0
+      eq_block xs0 ys0
     | _ -> false 
   end
   | Variable _ 

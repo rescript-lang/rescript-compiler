@@ -42,7 +42,7 @@ let empty_stmt  : t =
   { statement_desc = Block []; comment = None}
 (* let empty_block : J.block = [] *)
 let throw_stmt ?comment v : t = 
-  { statement_desc = J.Throw v; comment}
+  { statement_desc = Throw v; comment}
 
 (* avoid nested block *)
 let  rec block ?comment  (b : J.block)   : t =  
@@ -94,8 +94,12 @@ let alias_variable ?comment  ~exp (v:Ident.t)  : t=
    comment}   
 
 
-let int_switch ?comment   ?declaration ?default 
-  (e : J.expression)  (clauses : int J.case_clause list): t = 
+let int_switch 
+    ?(comment : string option)  
+    ?(declaration : (J.property * Ident.t) option )
+    ?(default : J.block option)
+    (e : J.expression)  
+    (clauses : int J.case_clause list): t = 
   match e.expression_desc with 
   | Number (Int {i; _}) -> 
     let continuation =  
@@ -129,8 +133,12 @@ let int_switch ?comment   ?declaration ?default
              { statement_desc = J.Int_switch (e,clauses, default); comment}]
     | None ->  { statement_desc = J.Int_switch (e,clauses, default); comment}    
 
-let string_switch ?comment ?declaration  ?default 
-  (e : J.expression)  (clauses : string J.case_clause list): t= 
+let string_switch 
+  ?(comment:string option) 
+  ?(declaration : (J.property * Ident.t) option) 
+  ?(default : J.block option)
+  (e : J.expression)  
+  (clauses : string J.case_clause list): t= 
   match e.expression_desc with 
   | Str (_,s) -> 
     let continuation = 
@@ -182,105 +190,110 @@ let string_switch ?comment ?declaration  ?default
    To hit this branch, we also need [declaration] passed down 
            TODO: check how we compile [Lifthenelse]
     The declaration argument is introduced to merge assignment in both branches           
-  *)
+
+  Note we can transfer code as below:
+  {[
+    if (x){
+      return /throw e;
+    } else {
+      blabla
+    }
+  ]}
+  into 
+  {[
+    if (x){
+      return /throw e;
+    } 
+    blabla    
+  ]}
+  Not clear the benefit
+*)
 let rec if_ ?comment  ?declaration ?else_ (e : J.expression) (then_ : J.block)   : t = 
   let declared = ref false in
-  let rec aux ?comment (e : J.expression) (ifso : J.block) (ifnot : J.block ) acc : J.block  =
-    match e.expression_desc, ifso, ifnot with 
-    | _,
-      [ {statement_desc = Return {return_value = b; _}; _}], 
-      [ {statement_desc = Return {return_value = a; _}; _} as _ifnot_stmt]
-      ->      
-      (* ifnot_stmt :: { statement_desc = If(e, ifso,None); comment = None} ::  acc  *)
-      return_stmt (E.econd e b a ) :: acc 
-    | _,
-      [ {statement_desc = 
-           Exp
-             {expression_desc = Bin(Eq, ({expression_desc = Var (Id var_ifso); _} as lhs_ifso), rhs_ifso); _};
-         _}], 
-      [ {statement_desc = 
-           Exp (
-             { expression_desc =
-                 Bin(Eq, 
-                     {expression_desc = Var (Id var_ifnot); _}, lhs_ifnot); _}); _}]
-      when Ident.same var_ifso var_ifnot -> 
-        (match declaration with 
-        | Some (kind,id)  when Ident.same id var_ifso -> 
-          declared := true;
-          define_variable ~kind var_ifso (E.econd e rhs_ifso lhs_ifnot)      
-        | _ -> 
-          exp (E.assign lhs_ifso (E.econd e rhs_ifso lhs_ifnot))) :: acc 
-      
-    | _,  [ {statement_desc = Exp b; _}],  [ {statement_desc = Exp a; _}]
-      ->
-      exp (E.econd e b a) :: acc 
-    | _, [], []                                   
-      -> exp e :: acc 
-    | Js_not e, _ , _ :: _
-      -> aux ?comment e ifnot ifso acc
-    | _, [], _
-      ->
-      aux ?comment (E.not e) ifnot [] acc
-    (* Be careful that this re-write may result in non-terminating effect *)
-    | _, (y::ys),  (x::xs)
-      when Js_analyzer.eq_statement x y && Js_analyzer.no_side_effect_expression e
-      ->
-      (** here we do agressive optimization, because it can help optimization later,
-          move code outside of branch is generally helpful later
-      *)
-      aux ?comment e ys xs (y::acc)        
-    | Bool false , _,  _
-      ->  
-        (match ifnot with 
-        | [] -> acc 
-        | _ -> block ifnot ::acc)      
-    | Bool true, _, _ ->
-       (match ifso with 
-       |  []  -> acc 
-       | _ -> block ifso :: acc)          
-    (*
-       {[ if a then { if b then d else e} else e ]}
-       => if a && b then d else e 
-    *)
-    | _,
-      [ {statement_desc = If (pred, then_, Some ([else_] as cont)) }],
-      [ another_else] when Js_analyzer.eq_statement else_ another_else
-      ->
-      aux ?comment (E.and_ e pred) then_ cont acc 
-    | _,
-      [ {statement_desc = If (pred, ([ then_ ] as cont), Some ( else_ )) }],
-      [ another_else] when Js_analyzer.eq_statement then_ another_else
-      ->
-      aux ?comment (E.and_ e (E.not pred)) else_ cont acc   
-    | _,      
-      ([ another_then] as cont), 
-      [ {statement_desc = If (pred, [then_], Some (else_ )) }]
-      when Js_analyzer.eq_statement then_ another_then
-      ->
-      aux ?comment (E.or_ e pred) cont else_ acc       
-
-    | _,      
-      ([ another_then] as cont), 
-      [ {statement_desc = If (pred_ifnot, then_, Some [else_] ) }]
-      when Js_analyzer.eq_statement else_ another_then
-      ->
-      aux ?comment (E.or_ e (E.not pred_ifnot)) cont then_ acc       
-
+  let common_prefix_blocks = ref [] in 
+  let add_prefix b = common_prefix_blocks := b :: !common_prefix_blocks in 
+  let rec aux ?comment (e : J.expression) (ifso : J.block) (ifnot : J.block ): t  =
+    match e.expression_desc with 
+    | Bool boolean -> 
+      block (if boolean then ifso else ifnot) 
+    | Js_not pred_not
+      -> aux ?comment pred_not ifnot ifso
     | _ -> 
-      { statement_desc =
-          If (e, 
-              ifso,
-              (match ifnot with 
-               | [] -> None
-               |  v -> Some  v)); 
-        comment } :: acc in
+      match ifso, ifnot with 
+      |  [], [] -> exp e 
+      |  [], _ ->
+        {
+          statement_desc = If ( E.not e, ifnot, None); comment
+        }
+      | [ {statement_desc = Return {return_value = ret_ifso; _}; _}], 
+        [ {statement_desc = Return {return_value = ret_ifnot; _}; _} as _ifnot_stmt]
+        ->      
+        return_stmt (E.econd e ret_ifso ret_ifnot ) 
+      | [ {statement_desc = 
+             Exp
+               {expression_desc = Bin(Eq, ({expression_desc = Var (Id var_ifso); _} as lhs_ifso), rhs_ifso); _};
+           _}], 
+        [ {statement_desc = 
+             Exp (
+               { expression_desc =
+                   Bin(Eq, 
+                       {expression_desc = Var (Id var_ifnot); _}, lhs_ifnot); _}); _}]
+        when Ident.same var_ifso var_ifnot -> 
+        (match declaration with 
+         | Some (kind,id)  when Ident.same id var_ifso -> 
+           declared := true;
+           define_variable ~kind var_ifso (E.econd e rhs_ifso lhs_ifnot)      
+         | _ -> 
+           exp (E.assign lhs_ifso (E.econd e rhs_ifso lhs_ifnot)))
+      | [ {statement_desc = Exp exp_ifso; _}],  
+        [ {statement_desc = Exp exp_ifnot; _}]
+        ->
+        exp (E.econd e exp_ifso exp_ifnot)
+              
+      | [ {statement_desc = If (pred1, ifso1, Some ifnot1) }],
+        _ when Js_analyzer.eq_block ifnot1 ifnot
+        ->
+        aux ?comment (E.and_ e pred1) ifso1 ifnot1 
+      | [ {statement_desc = If (pred1, ifso1, Some ifnot1) }],
+        _  when Js_analyzer.eq_block ifso1 ifnot
+        ->
+        aux ?comment (E.and_ e (E.not pred1)) ifnot1 ifso1 
+      | _ , 
+        [ {statement_desc = If (pred1,  ifso1, Some (else_ )) }]
+        when Js_analyzer.eq_block ifso ifso1 
+        ->
+        aux ?comment (E.or_ e pred1) ifso else_
+      | _  , 
+        [ {statement_desc = If (pred1, ifso1, Some ifnot1 ) }]
+        when Js_analyzer.eq_block ifso ifnot1
+        ->
+        aux ?comment (E.or_ e (E.not pred1)) ifso ifso1 
+      | ifso1::ifso_rest,  ifnot1::ifnot_rest
+        when Js_analyzer.eq_statement ifnot1 ifso1 && Js_analyzer.no_side_effect_expression e
+        ->
+        (** here we do agressive optimization, because it can help optimization later,
+            move code outside of branch is generally helpful later
+        *)
+        add_prefix ifso1 ; 
+        aux ?comment e ifso_rest ifnot_rest 
+      | _ -> 
+        { statement_desc =
+            If (e, 
+                ifso,
+                if ifnot = [] then None 
+                else Some  ifnot); 
+          comment } in
   let if_block = 
-    aux ?comment e then_ (match else_ with None -> [] | Some v -> v) [] in
-
+    aux ?comment e then_ (match else_ with None -> [] | Some v -> v)  in
+  let prefix = !common_prefix_blocks in 
   match !declared, declaration with 
   | true , _ 
-  | _    , None  ->  block (List.rev if_block)
-  | false, Some (kind, did) -> block (declare_variable ~kind did :: List.rev if_block )
+  | _    , None  ->  
+    if prefix = [] then if_block
+    else 
+      block (List.rev_append prefix [if_block])
+  | false, Some (kind, id) -> 
+    block (declare_variable ~kind id :: List.rev_append prefix [if_block] )
 
 
 
@@ -308,18 +321,14 @@ let declare_unit ?comment  id :  t =
   }
 
 let rec while_  ?comment  ?label ?env (e : E.t) (st : J.block) : t = 
-  match e with 
-  (* | {expression_desc = Int_of_boolean e; _} ->  *)
-  (*   while_ ?comment  ?label  e st *)
-  | _ -> 
-    let env = 
-      match env with 
-      | None -> Js_closure.empty ()
-      | Some x -> x in
-    {
-      statement_desc = While (label, e, st, env);
-      comment
-    }
+  let env = 
+    match env with 
+    | None -> Js_closure.empty ()
+    | Some x -> x in
+  {
+    statement_desc = While (label, e, st, env);
+    comment
+  }
 
 let for_ ?comment   ?env 
     for_ident_expression
@@ -356,6 +365,6 @@ let continue_ : t = {
 }
 
 let debugger_block : t list = 
-  [{ statement_desc = J.Debugger ; 
+  [{ statement_desc = Debugger ; 
     comment = None 
   }]

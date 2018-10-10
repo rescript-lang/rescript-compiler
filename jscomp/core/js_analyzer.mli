@@ -69,6 +69,9 @@ val eq_expression :
 val eq_statement : 
   J.statement -> J.statement -> bool
 
+val eq_block :  
+  J.block -> J.block -> bool 
+  
 val rev_flatten_seq : J.expression -> J.block 
 
 val rev_toplevel_flatten : J.block -> J.block
