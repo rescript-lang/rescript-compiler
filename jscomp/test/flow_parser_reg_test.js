@@ -9647,7 +9647,7 @@ function init$1(env, start_loc, decorators, key, async, generator, $$static) {
     switch (key.tag | 0) {
       case 0 : 
           var match$4 = key[0][1][/* value */0];
-          kind = typeof match$4 === "number" || !(!match$4.tag && match$4[0] === "constructor") ? /* Method */1 : /* Constructor */0;
+          kind = typeof match$4 === "number" || match$4.tag || match$4[0] !== "constructor" ? /* Method */1 : /* Constructor */0;
           break;
       case 1 : 
           kind = key[0][1][/* name */0] === "constructor" ? /* Constructor */0 : /* Method */1;

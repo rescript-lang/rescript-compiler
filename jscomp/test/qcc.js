@@ -787,17 +787,14 @@ function binary(stk, lvl) {
       while(true) {
         var loc = _loc;
         var t = Curry._1(next$1, /* () */0);
-        if (t.tag) {
+        if (t.tag || lvlof(t[0]) !== lvl) {
           Curry._1(unnext, t);
           return loc;
-        } else if (lvlof(t[0]) === lvl) {
+        } else {
           var loc$prime = test(lvl - 8 | 0, loc);
           binary(stk, lvl - 1 | 0);
           _loc = loc$prime;
           continue ;
-        } else {
-          Curry._1(unnext, t);
-          return loc;
         }
       };
     };

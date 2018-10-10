@@ -20183,18 +20183,13 @@ function directive_parse(token_with_comments, lexbuf) {
   };
   var parse_and_aux = function (calc, v) {
     var e = token(/* () */0);
-    if (typeof e === "number") {
-      if (e !== 0) {
-        push(e);
-        return v;
+    if (typeof e === "number" && e === 0) {
+      var calc$1 = calc && v;
+      var b = parse_and_aux(calc$1, parse_relation(calc$1));
+      if (v) {
+        return b;
       } else {
-        var calc$1 = calc && v;
-        var b = parse_and_aux(calc$1, parse_relation(calc$1));
-        if (v) {
-          return b;
-        } else {
-          return false;
-        }
+        return false;
       }
     } else {
       push(e);
@@ -20350,18 +20345,13 @@ function directive_parse(token_with_comments, lexbuf) {
   };
   var parse_or_aux = function (calc, v) {
     var e = token(/* () */0);
-    if (typeof e === "number") {
-      if (e !== 8) {
-        push(e);
-        return v;
+    if (typeof e === "number" && e === 8) {
+      var calc$1 = calc && !v;
+      var b = parse_or_aux(calc$1, parse_and_aux(calc$1, parse_relation(calc$1)));
+      if (v) {
+        return true;
       } else {
-        var calc$1 = calc && !v;
-        var b = parse_or_aux(calc$1, parse_and_aux(calc$1, parse_relation(calc$1)));
-        if (v) {
-          return true;
-        } else {
-          return b;
-        }
+        return b;
       }
     } else {
       push(e);
@@ -24985,14 +24975,14 @@ function filter_row_fields(erase, param) {
     var match = row_field_repr_aux(/* [] */0, p[1]);
     if (typeof match === "number") {
       return fi;
-    } else if (!match.tag || match[2] || !erase) {
+    } else if (match.tag && !(match[2] || !erase)) {
+      set_row_field(match[3], /* Rabsent */0);
+      return fi;
+    } else {
       return /* :: */[
               p,
               fi
             ];
-    } else {
-      set_row_field(match[3], /* Rabsent */0);
-      return fi;
     }
   } else {
     return /* [] */0;
@@ -26887,10 +26877,7 @@ function safe_abbrev(env, ty) {
   }
   catch (raw_exn){
     var exn = Js_exn.internalToOCamlException(raw_exn);
-    if (exn === Cannot_expand) {
-      backtrack(snap);
-      return false;
-    } else if (exn[0] === Unify) {
+    if (exn === Cannot_expand || exn[0] === Unify) {
       backtrack(snap);
       return false;
     } else {
@@ -27053,10 +27040,7 @@ function expand_head_opt(env, ty) {
   }
   catch (raw_exn){
     var exn = Js_exn.internalToOCamlException(raw_exn);
-    if (exn === Cannot_expand) {
-      backtrack(snap);
-      return repr(ty);
-    } else if (exn[0] === Unify) {
+    if (exn === Cannot_expand || exn[0] === Unify) {
       backtrack(snap);
       return repr(ty);
     } else {
@@ -28100,10 +28084,10 @@ function mcomp(type_pairs, env, _t1, _t2) {
                         break;
                     case 3 : 
                         var p1 = match$2[0];
-                        if (typeof match$3 === "number") {
+                        if (typeof match$3 === "number" || match$3.tag !== 3) {
                           p = p1;
                           exit$2 = 2;
-                        } else if (match$3.tag === 3) {
+                        } else {
                           var type_pairs$1 = type_pairs;
                           var env$1 = env;
                           var p1$1 = p1;
@@ -28286,9 +28270,6 @@ function mcomp(type_pairs, env, _t1, _t2) {
                               throw exn$2;
                             }
                           }
-                        } else {
-                          p = p1;
-                          exit$2 = 2;
                         }
                         break;
                     case 4 : 
@@ -29808,7 +29789,7 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
 function make_rowvar(level, use1, rest1, use2, rest2) {
   var set_name = function (ty, name) {
     var match = ty[/* desc */0];
-    if (typeof match === "number" || !(!match.tag && match[0] === undefined)) {
+    if (typeof match === "number" || match.tag || match[0] !== undefined) {
       return /* () */0;
     } else {
       log_type(ty);
@@ -49925,7 +49906,7 @@ function close_variant(env, row) {
   var row$1 = row_repr_aux(/* [] */0, row);
   var nm = List.fold_left((function (nm, param) {
           var match = row_field_repr_aux(/* [] */0, param[1]);
-          if (typeof match === "number" || !match.tag || match[2]) {
+          if (typeof match === "number" || !(match.tag && !match[2])) {
             return nm;
           } else {
             set_row_field(match[3], /* Rabsent */0);
@@ -50075,7 +50056,7 @@ function full_match(ignore_generalized, closing, env) {
               return List.for_all((function (param) {
                             var tag = param[0];
                             var match = row_field_repr_aux(/* [] */0, param[1]);
-                            if (typeof match === "number" || !(!match.tag || match[2])) {
+                            if (typeof match === "number" || match.tag && !match[2]) {
                               return true;
                             } else {
                               return List.mem(tag, fields);
@@ -54510,7 +54491,7 @@ function transl_simple_type_univars(env, styp) {
   var univs = List.fold_left((function (acc, v) {
           var v$1 = repr(v);
           var match = v$1[/* desc */0];
-          if (typeof match === "number" || !(!match.tag && v$1[/* level */1] === 100000000)) {
+          if (typeof match === "number" || match.tag || v$1[/* level */1] !== 100000000) {
             return acc;
           } else {
             v$1[/* desc */0] = /* Tunivar */Block.__(9, [match[0]]);
@@ -58765,7 +58746,7 @@ function check_univars(env, expans, kind, exp, ty_expected, vars) {
             var t$1 = repr(t);
             iter_generalize$1(/* record */[/* contents : [] */0], t$1);
             var match = t$1[/* desc */0];
-            if (typeof match === "number" || !(!match.tag && t$1[/* level */1] === 100000000)) {
+            if (typeof match === "number" || match.tag || t$1[/* level */1] !== 100000000) {
               return false;
             } else {
               log_type(t$1);
@@ -62836,7 +62817,7 @@ function type_application(env, funct, sargs) {
                           return true;
                         } else {
                           var match = param[2][/* val_kind */1];
-                          if (typeof match === "number" || !(!match.tag && match[0][/* prim_name */0] === "%identity")) {
+                          if (typeof match === "number" || match.tag || match[0][/* prim_name */0] !== "%identity") {
                             return true;
                           } else {
                             return false;

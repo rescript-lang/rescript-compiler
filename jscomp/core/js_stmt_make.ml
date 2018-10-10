@@ -186,91 +186,83 @@ let string_switch ?comment ?declaration  ?default
 let rec if_ ?comment  ?declaration ?else_ (e : J.expression) (then_ : J.block)   : t = 
   let declared = ref false in
   let rec aux ?comment (e : J.expression) (ifso : J.block) (ifnot : J.block ) acc : J.block  =
-    match e.expression_desc, ifso, ifnot with 
-    | _,
-      [ {statement_desc = Return {return_value = b; _}; _}], 
-      [ {statement_desc = Return {return_value = a; _}; _} as _ifnot_stmt]
-      ->      
-      (* ifnot_stmt :: { statement_desc = If(e, ifso,None); comment = None} ::  acc  *)
-      return_stmt (E.econd e b a ) :: acc 
-    | _,
-      [ {statement_desc = 
-           Exp
-             {expression_desc = Bin(Eq, ({expression_desc = Var (Id var_ifso); _} as lhs_ifso), rhs_ifso); _};
-         _}], 
-      [ {statement_desc = 
-           Exp (
-             { expression_desc =
-                 Bin(Eq, 
-                     {expression_desc = Var (Id var_ifnot); _}, lhs_ifnot); _}); _}]
-      when Ident.same var_ifso var_ifnot -> 
-        (match declaration with 
-        | Some (kind,id)  when Ident.same id var_ifso -> 
-          declared := true;
-          define_variable ~kind var_ifso (E.econd e rhs_ifso lhs_ifnot)      
-        | _ -> 
-          exp (E.assign lhs_ifso (E.econd e rhs_ifso lhs_ifnot))) :: acc 
-      
-    | _,  
-      [ {statement_desc = Exp exp_ifso; _}],  
-      [ {statement_desc = Exp exp_ifnot; _}]
-      ->
-      exp (E.econd e exp_ifso exp_ifnot) :: acc 
-    | _, [], []                                   
-      -> exp e :: acc 
-    | Js_not pred_not, _ , _ :: _
-      -> aux ?comment pred_not ifnot ifso acc
-    | _, [], _
-      ->
-      aux ?comment (E.not e) ifnot [] acc
-    (* Be careful that this re-write may result in non-terminating effect *)
-    | _, (y::ys),  (x::xs)
-      when Js_analyzer.eq_statement x y && Js_analyzer.no_side_effect_expression e
-      ->
-      (** here we do agressive optimization, because it can help optimization later,
-          move code outside of branch is generally helpful later
-      *)
-      aux ?comment e ys xs (y::acc)            
-    | Bool boolean, _, _ ->
-      if boolean then 
-         (match ifso with 
-         |  []  -> acc 
-         | _ -> block ifso :: acc)         
-      else  
-        (match ifnot with 
-         | [] -> acc 
-         | _ -> block ifnot ::acc)              
-    | _,
-      [ {statement_desc = If (pred1, ifso1, Some ([_] as ifnot1)) }],
-      [_] when Js_analyzer.eq_block ifnot1 ifnot
-      ->
-      aux ?comment (E.and_ e pred1) ifso1 ifnot1 acc 
-    | _,
-      [ {statement_desc = If (pred1, ([ _ ] as ifso1), Some ifnot1) }],
-      [ _ ] when Js_analyzer.eq_block ifso1 ifnot
-      ->
-      aux ?comment (E.and_ e (E.not pred1)) ifnot1 ifso1 acc   
-    | _,      
-      [ _] , 
-      [ {statement_desc = If (pred1, ([_] as ifso1), Some (else_ )) }]
-      when Js_analyzer.eq_block ifso ifso1 
-      ->
-      aux ?comment (E.or_ e pred1) ifso else_ acc       
-
-    | _, [ _ ] , 
-      [ {statement_desc = If (pred1, ifso1, Some ([ _ ] as ifnot1) ) }]
-      when Js_analyzer.eq_block ifso ifnot1
-      ->
-      aux ?comment (E.or_ e (E.not pred1)) ifso ifso1 acc       
-
+    match e.expression_desc with 
+    | Bool boolean -> 
+      block (if boolean then ifso else ifnot) :: acc         
+    | Js_not pred_not
+      -> aux ?comment pred_not ifnot ifso acc                  
     | _ -> 
-      { statement_desc =
-          If (e, 
-              ifso,
-              (match ifnot with 
-               | [] -> None
-               |  v -> Some  v)); 
-        comment } :: acc in
+      match ifso, ifnot with 
+      | [ {statement_desc = Return {return_value = b; _}; _}], 
+        [ {statement_desc = Return {return_value = a; _}; _} as _ifnot_stmt]
+        ->      
+        (* ifnot_stmt :: { statement_desc = If(e, ifso,None); comment = None} ::  acc  *)
+        return_stmt (E.econd e b a ) :: acc 
+      |
+        [ {statement_desc = 
+             Exp
+               {expression_desc = Bin(Eq, ({expression_desc = Var (Id var_ifso); _} as lhs_ifso), rhs_ifso); _};
+           _}], 
+        [ {statement_desc = 
+             Exp (
+               { expression_desc =
+                   Bin(Eq, 
+                       {expression_desc = Var (Id var_ifnot); _}, lhs_ifnot); _}); _}]
+        when Ident.same var_ifso var_ifnot -> 
+        (match declaration with 
+         | Some (kind,id)  when Ident.same id var_ifso -> 
+           declared := true;
+           define_variable ~kind var_ifso (E.econd e rhs_ifso lhs_ifnot)      
+         | _ -> 
+           exp (E.assign lhs_ifso (E.econd e rhs_ifso lhs_ifnot))) :: acc 
+
+      | 
+        [ {statement_desc = Exp exp_ifso; _}],  
+        [ {statement_desc = Exp exp_ifnot; _}]
+        ->
+        exp (E.econd e exp_ifso exp_ifnot) :: acc 
+      |  [], []                                   
+        -> exp e :: acc 
+
+      |  [], _ ->
+        {
+          statement_desc = If ( E.not e, ifnot, None); comment
+        } :: acc   
+
+      (* aux ?comment (E.not e) ifnot [] acc *)
+      (* Be careful that this re-write may result in non-terminating effect *)
+      |  (y::ys),  (x::xs)
+        when Js_analyzer.eq_statement x y && Js_analyzer.no_side_effect_expression e
+        ->
+        (** here we do agressive optimization, because it can help optimization later,
+            move code outside of branch is generally helpful later
+        *)
+        aux ?comment e ys xs (y::acc)            
+      | [ {statement_desc = If (pred1, ifso1, Some ifnot1) }],
+        _ when Js_analyzer.eq_block ifnot1 ifnot
+        ->
+        aux ?comment (E.and_ e pred1) ifso1 ifnot1 acc 
+      | [ {statement_desc = If (pred1, ifso1, Some ifnot1) }],
+        _  when Js_analyzer.eq_block ifso1 ifnot
+        ->
+        aux ?comment (E.and_ e (E.not pred1)) ifnot1 ifso1 acc   
+      | _ , 
+        [ {statement_desc = If (pred1,  ifso1, Some (else_ )) }]
+        when Js_analyzer.eq_block ifso ifso1 
+        ->
+        aux ?comment (E.or_ e pred1) ifso else_ acc       
+      | _  , 
+        [ {statement_desc = If (pred1, ifso1, Some ifnot1 ) }]
+        when Js_analyzer.eq_block ifso ifnot1
+        ->
+        aux ?comment (E.or_ e (E.not pred1)) ifso ifso1 acc       
+      | _ -> 
+        { statement_desc =
+            If (e, 
+                ifso,
+                if ifnot = [] then None 
+                else Some  ifnot); 
+          comment } :: acc in
   let if_block = 
     aux ?comment e then_ (match else_ with None -> [] | Some v -> v) [] in
 
