@@ -185,25 +185,26 @@ let string_switch ?comment ?declaration  ?default
   *)
 let rec if_ ?comment  ?declaration ?else_ (e : J.expression) (then_ : J.block)   : t = 
   let declared = ref false in
-  let _common_prefix_blocks = ref [] in 
-  let rec aux ?comment (e : J.expression) (ifso : J.block) (ifnot : J.block ) acc : J.block  =
+  let common_prefix_blocks = ref [] in 
+  let add_prefix b = common_prefix_blocks := b :: !common_prefix_blocks in 
+  let rec aux ?comment (e : J.expression) (ifso : J.block) (ifnot : J.block ): t  =
     match e.expression_desc with 
     | Bool boolean -> 
-      block (if boolean then ifso else ifnot) :: acc         
+      block (if boolean then ifso else ifnot) 
     | Js_not pred_not
-      -> aux ?comment pred_not ifnot ifso acc                  
+      -> aux ?comment pred_not ifnot ifso
     | _ -> 
       match ifso, ifnot with 
-      |  [], [] -> exp e :: acc 
+      |  [], [] -> exp e 
       |  [], _ ->
         {
           statement_desc = If ( E.not e, ifnot, None); comment
-        } :: acc   
+        }
       | [ {statement_desc = Return {return_value = b; _}; _}], 
         [ {statement_desc = Return {return_value = a; _}; _} as _ifnot_stmt]
         ->      
         (* ifnot_stmt :: { statement_desc = If(e, ifso,None); comment = None} ::  acc  *)
-        return_stmt (E.econd e b a ) :: acc 
+        return_stmt (E.econd e b a ) 
       | [ {statement_desc = 
              Exp
                {expression_desc = Bin(Eq, ({expression_desc = Var (Id var_ifso); _} as lhs_ifso), rhs_ifso); _};
@@ -219,51 +220,61 @@ let rec if_ ?comment  ?declaration ?else_ (e : J.expression) (then_ : J.block)  
            declared := true;
            define_variable ~kind var_ifso (E.econd e rhs_ifso lhs_ifnot)      
          | _ -> 
-           exp (E.assign lhs_ifso (E.econd e rhs_ifso lhs_ifnot))) :: acc 
+           exp (E.assign lhs_ifso (E.econd e rhs_ifso lhs_ifnot)))
       | [ {statement_desc = Exp exp_ifso; _}],  
         [ {statement_desc = Exp exp_ifnot; _}]
         ->
-        exp (E.econd e exp_ifso exp_ifnot) :: acc 
+        exp (E.econd e exp_ifso exp_ifnot)
               
       | [ {statement_desc = If (pred1, ifso1, Some ifnot1) }],
         _ when Js_analyzer.eq_block ifnot1 ifnot
         ->
-        aux ?comment (E.and_ e pred1) ifso1 ifnot1 acc 
+        aux ?comment (E.and_ e pred1) ifso1 ifnot1 
       | [ {statement_desc = If (pred1, ifso1, Some ifnot1) }],
         _  when Js_analyzer.eq_block ifso1 ifnot
         ->
-        aux ?comment (E.and_ e (E.not pred1)) ifnot1 ifso1 acc   
+        aux ?comment (E.and_ e (E.not pred1)) ifnot1 ifso1 
       | _ , 
         [ {statement_desc = If (pred1,  ifso1, Some (else_ )) }]
         when Js_analyzer.eq_block ifso ifso1 
         ->
-        aux ?comment (E.or_ e pred1) ifso else_ acc       
+        aux ?comment (E.or_ e pred1) ifso else_
       | _  , 
         [ {statement_desc = If (pred1, ifso1, Some ifnot1 ) }]
         when Js_analyzer.eq_block ifso ifnot1
         ->
-        aux ?comment (E.or_ e (E.not pred1)) ifso ifso1 acc               
-      | y::ys,  x::xs
-        when Js_analyzer.eq_statement x y && Js_analyzer.no_side_effect_expression e
+        aux ?comment (E.or_ e (E.not pred1)) ifso ifso1 
+      | ifso1::ifso_rest,  ifnot1::ifnot_rest
+        when Js_analyzer.eq_statement ifnot1 ifso1 && Js_analyzer.no_side_effect_expression e
         ->
         (** here we do agressive optimization, because it can help optimization later,
             move code outside of branch is generally helpful later
         *)
-        aux ?comment e ys xs (y::acc)         
+        add_prefix ifso1 ; 
+        aux ?comment e ifso_rest ifnot_rest 
       | _ -> 
         { statement_desc =
             If (e, 
                 ifso,
                 if ifnot = [] then None 
                 else Some  ifnot); 
-          comment } :: acc in
+          comment } in
   let if_block = 
-    aux ?comment e then_ (match else_ with None -> [] | Some v -> v) [] in
-
+    aux ?comment e then_ (match else_ with None -> [] | Some v -> v)  in
+  let prefix = !common_prefix_blocks in 
   match !declared, declaration with 
   | true , _ 
-  | _    , None  ->  block (List.rev if_block)
-  | false, Some (kind, did) -> block (declare_variable ~kind did :: List.rev if_block )
+  | _    , None  ->  
+    if prefix = [] then if_block
+    else 
+      block (
+        
+      
+      
+      
+      List.rev_append prefix [if_block])
+  | false, Some (kind, did) -> 
+    block (declare_variable ~kind did :: List.rev_append prefix [if_block] )
 
 
 
