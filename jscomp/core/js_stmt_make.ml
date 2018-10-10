@@ -211,13 +211,15 @@ let rec if_ ?comment  ?declaration ?else_ (e : J.expression) (then_ : J.block)  
         | _ -> 
           exp (E.assign lhs_ifso (E.econd e rhs_ifso lhs_ifnot))) :: acc 
       
-    | _,  [ {statement_desc = Exp b; _}],  [ {statement_desc = Exp a; _}]
+    | _,  
+      [ {statement_desc = Exp exp_ifso; _}],  
+      [ {statement_desc = Exp exp_ifnot; _}]
       ->
-      exp (E.econd e b a) :: acc 
+      exp (E.econd e exp_ifso exp_ifnot) :: acc 
     | _, [], []                                   
       -> exp e :: acc 
-    | Js_not e, _ , _ :: _
-      -> aux ?comment e ifnot ifso acc
+    | Js_not pred_not, _ , _ :: _
+      -> aux ?comment pred_not ifnot ifso acc
     | _, [], _
       ->
       aux ?comment (E.not e) ifnot [] acc
@@ -228,43 +230,38 @@ let rec if_ ?comment  ?declaration ?else_ (e : J.expression) (then_ : J.block)  
       (** here we do agressive optimization, because it can help optimization later,
           move code outside of branch is generally helpful later
       *)
-      aux ?comment e ys xs (y::acc)        
-    | Bool false , _,  _
-      ->  
+      aux ?comment e ys xs (y::acc)            
+    | Bool boolean, _, _ ->
+      if boolean then 
+         (match ifso with 
+         |  []  -> acc 
+         | _ -> block ifso :: acc)         
+      else  
         (match ifnot with 
-        | [] -> acc 
-        | _ -> block ifnot ::acc)      
-    | Bool true, _, _ ->
-       (match ifso with 
-       |  []  -> acc 
-       | _ -> block ifso :: acc)          
-    (*
-       {[ if a then { if b then d else e} else e ]}
-       => if a && b then d else e 
-    *)
+         | [] -> acc 
+         | _ -> block ifnot ::acc)              
     | _,
-      [ {statement_desc = If (pred, then_, Some ([else_] as cont)) }],
-      [ another_else] when Js_analyzer.eq_statement else_ another_else
+      [ {statement_desc = If (pred1, ifso1, Some ([_] as ifnot1)) }],
+      [_] when Js_analyzer.eq_block ifnot1 ifnot
       ->
-      aux ?comment (E.and_ e pred) then_ cont acc 
+      aux ?comment (E.and_ e pred1) ifso1 ifnot1 acc 
     | _,
-      [ {statement_desc = If (pred, ([ then_ ] as cont), Some ( else_ )) }],
-      [ another_else] when Js_analyzer.eq_statement then_ another_else
+      [ {statement_desc = If (pred1, ([ _ ] as ifso1), Some ifnot1) }],
+      [ _ ] when Js_analyzer.eq_block ifso1 ifnot
       ->
-      aux ?comment (E.and_ e (E.not pred)) else_ cont acc   
+      aux ?comment (E.and_ e (E.not pred1)) ifnot1 ifso1 acc   
     | _,      
-      ([ another_then] as cont), 
-      [ {statement_desc = If (pred, [then_], Some (else_ )) }]
-      when Js_analyzer.eq_statement then_ another_then
+      [ _] , 
+      [ {statement_desc = If (pred1, ([_] as ifso1), Some (else_ )) }]
+      when Js_analyzer.eq_block ifso ifso1 
       ->
-      aux ?comment (E.or_ e pred) cont else_ acc       
+      aux ?comment (E.or_ e pred1) ifso else_ acc       
 
-    | _,      
-      ([ another_then] as cont), 
-      [ {statement_desc = If (pred_ifnot, then_, Some [else_] ) }]
-      when Js_analyzer.eq_statement else_ another_then
+    | _, [ _ ] , 
+      [ {statement_desc = If (pred1, ifso1, Some ([ _ ] as ifnot1) ) }]
+      when Js_analyzer.eq_block ifso ifnot1
       ->
-      aux ?comment (E.or_ e (E.not pred_ifnot)) cont then_ acc       
+      aux ?comment (E.or_ e (E.not pred1)) ifso ifso1 acc       
 
     | _ -> 
       { statement_desc =
