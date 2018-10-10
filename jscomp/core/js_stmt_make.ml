@@ -185,6 +185,7 @@ let string_switch ?comment ?declaration  ?default
   *)
 let rec if_ ?comment  ?declaration ?else_ (e : J.expression) (then_ : J.block)   : t = 
   let declared = ref false in
+  let _common_prefix_blocks = ref [] in 
   let rec aux ?comment (e : J.expression) (ifso : J.block) (ifnot : J.block ) acc : J.block  =
     match e.expression_desc with 
     | Bool boolean -> 
@@ -193,13 +194,17 @@ let rec if_ ?comment  ?declaration ?else_ (e : J.expression) (then_ : J.block)  
       -> aux ?comment pred_not ifnot ifso acc                  
     | _ -> 
       match ifso, ifnot with 
+      |  [], [] -> exp e :: acc 
+      |  [], _ ->
+        {
+          statement_desc = If ( E.not e, ifnot, None); comment
+        } :: acc   
       | [ {statement_desc = Return {return_value = b; _}; _}], 
         [ {statement_desc = Return {return_value = a; _}; _} as _ifnot_stmt]
         ->      
         (* ifnot_stmt :: { statement_desc = If(e, ifso,None); comment = None} ::  acc  *)
         return_stmt (E.econd e b a ) :: acc 
-      |
-        [ {statement_desc = 
+      | [ {statement_desc = 
              Exp
                {expression_desc = Bin(Eq, ({expression_desc = Var (Id var_ifso); _} as lhs_ifso), rhs_ifso); _};
            _}], 
@@ -215,29 +220,11 @@ let rec if_ ?comment  ?declaration ?else_ (e : J.expression) (then_ : J.block)  
            define_variable ~kind var_ifso (E.econd e rhs_ifso lhs_ifnot)      
          | _ -> 
            exp (E.assign lhs_ifso (E.econd e rhs_ifso lhs_ifnot))) :: acc 
-
-      | 
-        [ {statement_desc = Exp exp_ifso; _}],  
+      | [ {statement_desc = Exp exp_ifso; _}],  
         [ {statement_desc = Exp exp_ifnot; _}]
         ->
         exp (E.econd e exp_ifso exp_ifnot) :: acc 
-      |  [], []                                   
-        -> exp e :: acc 
-
-      |  [], _ ->
-        {
-          statement_desc = If ( E.not e, ifnot, None); comment
-        } :: acc   
-
-      (* aux ?comment (E.not e) ifnot [] acc *)
-      (* Be careful that this re-write may result in non-terminating effect *)
-      |  (y::ys),  (x::xs)
-        when Js_analyzer.eq_statement x y && Js_analyzer.no_side_effect_expression e
-        ->
-        (** here we do agressive optimization, because it can help optimization later,
-            move code outside of branch is generally helpful later
-        *)
-        aux ?comment e ys xs (y::acc)            
+              
       | [ {statement_desc = If (pred1, ifso1, Some ifnot1) }],
         _ when Js_analyzer.eq_block ifnot1 ifnot
         ->
@@ -255,7 +242,14 @@ let rec if_ ?comment  ?declaration ?else_ (e : J.expression) (then_ : J.block)  
         [ {statement_desc = If (pred1, ifso1, Some ifnot1 ) }]
         when Js_analyzer.eq_block ifso ifnot1
         ->
-        aux ?comment (E.or_ e (E.not pred1)) ifso ifso1 acc       
+        aux ?comment (E.or_ e (E.not pred1)) ifso ifso1 acc               
+      | y::ys,  x::xs
+        when Js_analyzer.eq_statement x y && Js_analyzer.no_side_effect_expression e
+        ->
+        (** here we do agressive optimization, because it can help optimization later,
+            move code outside of branch is generally helpful later
+        *)
+        aux ?comment e ys xs (y::acc)         
       | _ -> 
         { statement_desc =
             If (e, 
