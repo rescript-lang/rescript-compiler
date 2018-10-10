@@ -42,7 +42,7 @@ let empty_stmt  : t =
   { statement_desc = Block []; comment = None}
 (* let empty_block : J.block = [] *)
 let throw_stmt ?comment v : t = 
-  { statement_desc = J.Throw v; comment}
+  { statement_desc = Throw v; comment}
 
 (* avoid nested block *)
 let  rec block ?comment  (b : J.block)   : t =  
@@ -94,8 +94,12 @@ let alias_variable ?comment  ~exp (v:Ident.t)  : t=
    comment}   
 
 
-let int_switch ?comment   ?declaration ?default 
-  (e : J.expression)  (clauses : int J.case_clause list): t = 
+let int_switch 
+    ?(comment : string option)  
+    ?(declaration : (J.property * Ident.t) option )
+    ?(default : J.block option)
+    (e : J.expression)  
+    (clauses : int J.case_clause list): t = 
   match e.expression_desc with 
   | Number (Int {i; _}) -> 
     let continuation =  
@@ -129,8 +133,12 @@ let int_switch ?comment   ?declaration ?default
              { statement_desc = J.Int_switch (e,clauses, default); comment}]
     | None ->  { statement_desc = J.Int_switch (e,clauses, default); comment}    
 
-let string_switch ?comment ?declaration  ?default 
-  (e : J.expression)  (clauses : string J.case_clause list): t= 
+let string_switch 
+  ?(comment:string option) 
+  ?(declaration : (J.property * Ident.t) option) 
+  ?(default : J.block option)
+  (e : J.expression)  
+  (clauses : string J.case_clause list): t= 
   match e.expression_desc with 
   | Str (_,s) -> 
     let continuation = 
@@ -283,14 +291,9 @@ let rec if_ ?comment  ?declaration ?else_ (e : J.expression) (then_ : J.block)  
   | _    , None  ->  
     if prefix = [] then if_block
     else 
-      block (
-        
-      
-      
-      
-      List.rev_append prefix [if_block])
-  | false, Some (kind, did) -> 
-    block (declare_variable ~kind did :: List.rev_append prefix [if_block] )
+      block (List.rev_append prefix [if_block])
+  | false, Some (kind, id) -> 
+    block (declare_variable ~kind id :: List.rev_append prefix [if_block] )
 
 
 
@@ -318,18 +321,14 @@ let declare_unit ?comment  id :  t =
   }
 
 let rec while_  ?comment  ?label ?env (e : E.t) (st : J.block) : t = 
-  match e with 
-  (* | {expression_desc = Int_of_boolean e; _} ->  *)
-  (*   while_ ?comment  ?label  e st *)
-  | _ -> 
-    let env = 
-      match env with 
-      | None -> Js_closure.empty ()
-      | Some x -> x in
-    {
-      statement_desc = While (label, e, st, env);
-      comment
-    }
+  let env = 
+    match env with 
+    | None -> Js_closure.empty ()
+    | Some x -> x in
+  {
+    statement_desc = While (label, e, st, env);
+    comment
+  }
 
 let for_ ?comment   ?env 
     for_ident_expression
@@ -366,6 +365,6 @@ let continue_ : t = {
 }
 
 let debugger_block : t list = 
-  [{ statement_desc = J.Debugger ; 
+  [{ statement_desc = Debugger ; 
     comment = None 
   }]
