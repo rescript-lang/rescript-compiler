@@ -120,7 +120,6 @@ let exp_need_paren  (e : J.expression) =
   | Raw_js_code (_,Stmt)
   | Caml_block_set_tag _
   | Length _
-  | Caml_block_set_length _
   | Call _
   | Caml_block_tag _
   | Seq _
@@ -653,12 +652,6 @@ and expression_desc cxt (level:int) f x : cxt  =
     expression_desc cxt level f
       (Bin(Eq,
            {expression_desc = Caml_block_tag a; comment = None},
-           b
-          ))
-  | Caml_block_set_length(a,b) ->
-    expression_desc cxt level f
-      (Bin(Eq,
-           {expression_desc = Length (a,Caml_block); comment = None},
            b
           ))
   | Bin (Eq, {expression_desc = Var i },

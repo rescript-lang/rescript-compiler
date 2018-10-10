@@ -302,7 +302,7 @@ val block_set_tag : ?comment:string -> J.expression -> J.expression -> t
     this should be a nop 
 *)
 
-val set_length : ?comment:string -> J.expression -> J.expression -> t
+
 val obj_length : ?comment:string -> J.expression -> t
 
 
