@@ -11999,7 +11999,7 @@ function check_value_name(name, loc) {
               name
             ])
         ];
-  } else if (name.length > 0 && Caml_string.get(name, 0) === /* "#" */35) {
+  } else if (name.length !== 0 && Caml_string.get(name, 0) === /* "#" */35) {
     for(var i = 1 ,i_finish = name.length - 1 | 0; i <= i_finish; ++i){
       if (Caml_string.get(name, i) === /* "#" */35) {
         throw [
@@ -13881,7 +13881,7 @@ function mkinfix(arg1, name, arg2) {
 }
 
 function neg_float_string(f) {
-  if (f.length > 0 && Caml_string.get(f, 0) === /* "-" */45) {
+  if (f.length !== 0 && Caml_string.get(f, 0) === /* "-" */45) {
     return $$String.sub(f, 1, f.length - 1 | 0);
   } else {
     return "-" + f;

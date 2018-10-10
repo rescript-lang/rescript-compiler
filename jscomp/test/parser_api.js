@@ -814,7 +814,7 @@ function remove_file(filename) {
 }
 
 function expand_directory(alt, s) {
-  if (s.length > 0 && Caml_string.get(s, 0) === /* "+" */43) {
+  if (s.length !== 0 && Caml_string.get(s, 0) === /* "+" */43) {
     return Filename.concat(alt, $$String.sub(s, 1, s.length - 1 | 0));
   } else {
     return s;
@@ -6157,7 +6157,7 @@ function mkinfix(arg1, name, arg2) {
 }
 
 function neg_float_string(f) {
-  if (f.length > 0 && Caml_string.get(f, 0) === /* "-" */45) {
+  if (f.length !== 0 && Caml_string.get(f, 0) === /* "-" */45) {
     return $$String.sub(f, 1, f.length - 1 | 0);
   } else {
     return "-" + f;
@@ -12360,7 +12360,7 @@ function query(loc, str) {
 }
 
 function define_key_value(key, v) {
-  if (key.length > 0 && Char.uppercase(Caml_string.get(key, 0)) === Caml_string.get(key, 0)) {
+  if (key.length !== 0 && Char.uppercase(Caml_string.get(key, 0)) === Caml_string.get(key, 0)) {
     var v$1;
     try {
       v$1 = /* Dir_bool */Block.__(0, [Pervasives.bool_of_string(v)]);

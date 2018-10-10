@@ -87,7 +87,7 @@ function f(v) {
 }
 
 function fff(x) {
-  return x.length >= 0;
+  return true;
 }
 
 function fff2(x) {

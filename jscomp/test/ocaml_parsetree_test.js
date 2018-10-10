@@ -3535,7 +3535,7 @@ function mkinfix(arg1, name, arg2) {
 }
 
 function neg_float_string(f) {
-  if (f.length > 0 && Caml_string.get(f, 0) === /* "-" */45) {
+  if (f.length !== 0 && Caml_string.get(f, 0) === /* "-" */45) {
     return $$String.sub(f, 1, f.length - 1 | 0);
   } else {
     return "-" + f;

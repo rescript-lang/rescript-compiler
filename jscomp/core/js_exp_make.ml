@@ -526,9 +526,14 @@ let rec triple_equal ?comment (e0 : t) (e1 : t ) : t =
   | _ -> 
      {expression_desc = Bin(EqEqEq, e0,e1); comment}
 
-let bin ?comment (op : J.binop) e0 e1 : t =
-  match op with
-  | EqEqEq -> triple_equal ?comment e0 e1
+let bin ?comment (op : J.binop) (e0 : t) (e1 : t) : t =
+  match op, e0.expression_desc, e1.expression_desc with
+  | EqEqEq,_,_ -> triple_equal ?comment e0 e1
+  | Ge, Length (e,_), Number (Int {i = 0l}) when no_side_effect e -> 
+    true_ (** x.length >=0 | [x] is pure  -> true*)
+  | Gt, Length (e,_), Number (Int {i = 0l}) -> 
+    (* [e] is kept so no side effect check needed *)
+    {expression_desc = Bin(NotEqEq,e0, e1); comment }
   | _ -> {expression_desc = Bin(op,e0,e1); comment}
 
 
@@ -619,20 +624,6 @@ let rec econd ?comment (pred : t) (ifso : t) (ifnot : t) : t =
     when no_side_effect pred 
     -> ifso  (* a block can not be false in OCAML, CF - relies on flow inference*)
   | Bool true, _, _ -> ifso   
-  | (Bin (Ge, 
-          ({expression_desc = Length _ ;
-            _}), {expression_desc = Number (Int { i = 0l ; _})})), _, _ 
-    -> ifso
-  | (Bin (Gt, 
-          ({expression_desc = Length _;
-            _} as pred ), 
-          ({expression_desc = Number (Int {i = 0l; }) }  as zero) )), _, _
-    ->
-    (** Add comment when simplified *)
-    econd ?comment 
-      {pred with 
-       expression_desc = 
-         Bin (NotEqEq, pred, zero)} ifso ifnot 
   | _, (Cond (pred1, ifso1, ifnot1)), _
     when Js_analyzer.eq_expression ifnot1 ifnot
     ->
