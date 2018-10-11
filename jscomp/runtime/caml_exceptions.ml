@@ -59,12 +59,12 @@ let object_tag = 248
 
 let create (str : string) : Caml_builtin_exceptions.exception_block = 
   let v = ( str, get_id ()) in 
-  Obj.set_tag (Obj.repr v) object_tag;
+  Bs_obj.set_tag (Obj.repr v) object_tag;
   v 
 
 (* let makeExtension (str : string) : Caml_builtin_exceptions.exception_block =  *)
 (*   let v = ( str, get_id ()) in  *)
-(*   Obj.set_tag (Obj.repr v) object_tag; *)
+(*   Bs_obj.set_tag (Obj.repr v) object_tag; *)
 (*   v  *)
 
 

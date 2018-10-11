@@ -751,9 +751,8 @@ let translate loc (prim_name : string)
       Location.prerr_warning loc Warnings.Bs_polymorphic_comparison ; 
       call Js_runtime_modules.obj_runtime
     | "caml_obj_set_tag" 
-      -> begin match args with 
-          | [a;b]  -> E.block_set_tag a b 
-          | _ -> assert false end
+      -> 
+      call Js_runtime_modules.obj_runtime
     | "caml_obj_tag" -> 
       (* Note that in ocaml, [int] has tag [1000] and [string] has tag [252]
          also now we need do nullary check 
