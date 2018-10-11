@@ -189,7 +189,7 @@ and expression_desc =
      you have to use [E.tag] in a safe way     
   *)
   | Caml_block_tag of expression
-  | Caml_block_set_tag of expression * expression
+  (* | Caml_block_set_tag of expression * expression *)
   (* | Caml_block_set_length of expression * expression *)
   (* It will just fetch tag, to make it safe, when creating it, 
      we need apply "|0", we don't do it in the 

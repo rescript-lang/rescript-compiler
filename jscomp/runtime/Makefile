@@ -12,9 +12,9 @@ OTHERS= caml_array caml_string caml_bytes\
 	caml_backtrace caml_int32 caml_gc js_typed_array \
 	js_primitive caml_basic caml_oo curry caml_oo_curry caml_module \
 	caml_missing_polyfill\
-	bs_string  js_float js_exn bs_obj js_nativeint js_int js_null js_undefined
+	bs_string  js_float js_exn js_nativeint js_int js_null js_undefined
 
-SOURCE_LIST= $(OTHERS) caml_builtin_exceptions  block  js js_unsafe js_internal caml_primitive
+SOURCE_LIST= $(OTHERS) bs_obj caml_builtin_exceptions  block  js js_unsafe js_internal caml_primitive
 
 caml_sys.cmj: js_undefined.cmj
 caml_oo.cmj : caml_array.cmj
@@ -27,6 +27,7 @@ caml_builtin_exceptions.cmj: caml_builtin_exceptions.cmi js_unsafe.cmi
 block.cmj: block.cmi js.cmi js_unsafe.cmi
 caml_primitive.cmj: caml_primitive.cmi
 caml_int64.cmj : caml_obj.cmj
+bs_obj.cmj: js.cmi
 # or we can do a post-processing to add missing cmj dependency manually
 js_exn.cmj : caml_exceptions.cmj
 $(addsuffix .cmj, $(OTHERS)): caml_builtin_exceptions.cmj  block.cmj js.cmj js_unsafe.cmj caml_primitive.cmj
@@ -65,8 +66,8 @@ clean::
 -include .extradepend
 -include .depend
 
-ML_SOURCES=$(addsuffix .ml, $(OTHERS))
-MLI_SOURCES=$(addsuffix .mli, $(OTHERS))
+ML_SOURCES=$(addsuffix .ml, $(OTHERS)) block.ml caml_builtin_exceptions.ml
+MLI_SOURCES=$(addsuffix .mli, $(OTHERS)) block.mli caml_builtin_exceptions.mli
 
 depend:
 	$(CAMLDEP) -native $(INCLUDES) $(ML_SOURCES) $(MLI_SOURCES) | sed -e 's/\.cmx/.cmj/g' >.depend

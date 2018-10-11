@@ -118,7 +118,6 @@ let exp_need_paren  (e : J.expression) =
   | Raw_js_function _ 
   | Object _ -> true
   | Raw_js_code (_,Stmt)
-  | Caml_block_set_tag _
   | Length _
   | Call _
   | Caml_block_tag _
@@ -648,12 +647,6 @@ and expression_desc cxt (level:int) f x : cxt  =
     P.string f "typeof";
     P.space f;
     expression 13 cxt f e
-  | Caml_block_set_tag(a,b) ->
-    expression_desc cxt level f
-      (Bin(Eq,
-           {expression_desc = Caml_block_tag a; comment = None},
-           b
-          ))
   | Bin (Eq, {expression_desc = Var i },
          {expression_desc =
             (

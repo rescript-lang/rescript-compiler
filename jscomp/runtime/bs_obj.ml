@@ -25,17 +25,20 @@
 (** *)
 
 type any = Obj.t
-external set_tag : any -> int -> unit = "caml_obj_set_tag"
+
 external set_length : any -> int -> unit = "length" [@@bs.set]
 external length : any -> int = "#obj_length"
-external tag : any -> int = "caml_obj_tag"
-external set_tag : any -> int -> unit = "caml_obj_set_tag"
 
-(* external is_instance_array : any -> bool = 
-  "#is_instance_array" *)
-(* use Array.isArray instead*)
+(** The same as {!Obj.tag} *)
+external tag : any -> int = "caml_obj_tag"
+
+(** The same as {!Obj.set_tag} *)
+external set_tag : any -> int -> unit = "tag" [@@bs.set]
+
 external size_of_any : any -> 'a Js.undefined =
   "length" [@@bs.get]
+
 external tag_of_any : any -> 'a Js.undefined =
   "tag" [@@bs.get]
+
 external magic : 'a -> 'b = "%identity"

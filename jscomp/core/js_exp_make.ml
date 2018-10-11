@@ -766,10 +766,6 @@ let public_method_call meth_name obj label cache args =
 *)
 
 
-let block_set_tag ?comment e tag : t = 
-  seq {expression_desc = Caml_block_set_tag (e,tag); comment } unit 
-
-
 (* Note that [lsr] or [bor] are js semantics *)
 let rec int32_bor ?comment (e1 : J.expression) (e2 : J.expression) : J.expression = 
   match e1.expression_desc, e2.expression_desc with 

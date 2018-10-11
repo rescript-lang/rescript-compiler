@@ -126,7 +126,7 @@ let rec no_side_effect_expression_desc (x : J.expression_desc)  =
   | New _ 
   | String_access _
   | Raw_js_code _ 
-  | Caml_block_set_tag _ 
+  (* | Caml_block_set_tag _  *)
   (* actually true? *)
     -> false 
 and no_side_effect (x : J.expression)  = 
@@ -281,7 +281,7 @@ let rec eq_expression
     | Raw_js_function _
     | Array _ 
     | Caml_block_tag _ 
-    | Caml_block_set_tag _ 
+    
     | Object _ 
     | Number (Uint _ | Nint _)
 
