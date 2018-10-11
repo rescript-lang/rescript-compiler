@@ -823,8 +823,6 @@ let uint32 ?comment n : J.expression =
 let string_comp cmp ?comment  e0 e1 = 
   bin ?comment cmp e0 e1
 
-let set_length ?comment e tag : t = 
-  seq {expression_desc = Caml_block_set_length (e,tag); comment } unit 
 let obj_length ?comment e : t = 
   to_int32 {expression_desc = Length (e, Caml_block); comment }
 

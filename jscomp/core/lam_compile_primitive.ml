@@ -116,11 +116,6 @@ let translate  loc
       | [e] -> E.obj_length e 
       | _ -> assert false 
     end
-  | Pcaml_obj_set_length -> 
-    begin match args with 
-      | [a;b] -> E.set_length a b 
-      | _ -> assert false 
-    end
   | Pis_null -> 
     begin match args with 
       | [e] -> E.is_null e 

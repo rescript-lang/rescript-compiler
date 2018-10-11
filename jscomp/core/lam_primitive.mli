@@ -159,7 +159,6 @@ type t =
   | Pjs_typeof
   | Pjs_function_length 
   | Pcaml_obj_length
-  | Pcaml_obj_set_length
   | Pwrap_exn (* convert either JS exception or OCaml exception into OCaml format *)  
 
   (* | Pcreate_exception of string  *)

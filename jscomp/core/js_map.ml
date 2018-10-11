@@ -197,6 +197,7 @@ class virtual map =
      [Caml_block_tag] can return [undefined], 
      you have to use [E.tag] in a safe way     
   *)
+                 (* | Caml_block_set_length of expression * expression *)
                  (* It will just fetch tag, to make it safe, when creating it, 
      we need apply "|0", we don't do it in the 
      last step since "|0" can potentially be optimized
@@ -416,9 +417,6 @@ class virtual map =
       | Caml_block_set_tag (_x, _x_i1) ->
           let _x = o#expression _x in
           let _x_i1 = o#expression _x_i1 in Caml_block_set_tag (_x, _x_i1)
-      | Caml_block_set_length (_x, _x_i1) ->
-          let _x = o#expression _x in
-          let _x_i1 = o#expression _x_i1 in Caml_block_set_length (_x, _x_i1)
       | Number _x -> let _x = o#number _x in Number _x
       | Object _x -> let _x = o#property_map _x in Object _x
       | Undefined -> Undefined

@@ -517,7 +517,6 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
         | "#null_to_opt" -> Pnull_to_opt
         | "#is_nullable" -> Pis_null_undefined
         | "#string_append" -> Pstringadd
-        | "#obj_set_length" -> Pcaml_obj_set_length
         | "#obj_length" -> Pcaml_obj_length
         | "#function_length" -> Pjs_function_length
 

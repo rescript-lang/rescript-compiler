@@ -115,7 +115,6 @@ let primitive ppf (prim : Lam_primitive.t) = match prim with
   | Pcreate_extension s -> fprintf ppf "[ext-create]%S" s 
   | Pwrap_exn -> fprintf ppf "#exn"
   | Pcaml_obj_length -> fprintf ppf "#obj_length"
-  | Pcaml_obj_set_length -> fprintf ppf "#obj_set_length"
   | Pinit_mod -> fprintf ppf "init_mod!"
   | Pupdate_mod -> fprintf ppf "update_mod!"
   | Pbytes_to_string -> fprintf ppf "bytes_to_string"

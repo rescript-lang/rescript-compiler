@@ -163,7 +163,6 @@ type t =
   | Pjs_typeof
   | Pjs_function_length
   | Pcaml_obj_length
-  | Pcaml_obj_set_length
   | Pwrap_exn (* convert either JS exception or OCaml exception into OCaml format *)
 
   (* | Pcreate_exception of string  *)
@@ -255,7 +254,7 @@ let eq_primitive_approx ( lhs : t) (rhs : t) =
   (* | Pjs_string_of_small_array -> rhs = Pjs_string_of_small_array *)
   (* | Pjs_is_instance_array -> rhs = Pjs_is_instance_array *)
   | Pcaml_obj_length -> rhs = Pcaml_obj_length
-  | Pcaml_obj_set_length -> rhs = Pcaml_obj_set_length
+  (* | Pcaml_obj_set_length -> rhs = Pcaml_obj_set_length *)
   | Pccall {prim_name = n0 ;  prim_native_name = nn0} ->  (match rhs with Pccall {prim_name = n1; prim_native_name = nn1} ->    n0 = n1 && nn0 = nn1 | _ -> false )    
   | Pfield (n0, _dbg_info0) ->  (match rhs with Pfield (n1, _dbg_info1) ->  n0 = n1  | _ -> false )    
   | Psetfield(i0, _dbg_info0) -> (match rhs with Psetfield(i1, _dbg_info1) ->  i0 = i1  | _ -> false)

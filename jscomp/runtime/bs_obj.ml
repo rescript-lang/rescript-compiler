@@ -26,7 +26,7 @@
 
 type any = Obj.t
 external set_tag : any -> int -> unit = "caml_obj_set_tag"
-external set_length : any -> int -> unit = "#obj_set_length"
+external set_length : any -> int -> unit = "length" [@@bs.set]
 external length : any -> int = "#obj_length"
 external tag : any -> int = "caml_obj_tag"
 external set_tag : any -> int -> unit = "caml_obj_set_tag"

@@ -184,6 +184,7 @@ class virtual fold =
      [Caml_block_tag] can return [undefined], 
      you have to use [E.tag] in a safe way     
   *)
+                 (* | Caml_block_set_length of expression * expression *)
                  (* It will just fetch tag, to make it safe, when creating it, 
      we need apply "|0", we don't do it in the 
      last step since "|0" can potentially be optimized
@@ -372,8 +373,6 @@ class virtual fold =
           let o = o#expression _x_i2 in let o = o#tag_info _x_i3 in o
       | Caml_block_tag _x -> let o = o#expression _x in o
       | Caml_block_set_tag (_x, _x_i1) ->
-          let o = o#expression _x in let o = o#expression _x_i1 in o
-      | Caml_block_set_length (_x, _x_i1) ->
           let o = o#expression _x in let o = o#expression _x_i1 in o
       | Number _x -> let o = o#number _x in o
       | Object _x -> let o = o#property_map _x in o

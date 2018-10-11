@@ -164,7 +164,6 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pwrap_exn
       | Praw_js_function _
         -> true
-      | Pcaml_obj_set_length        
       | Pjs_apply
       | Pjs_runtime_apply
       | Pjs_call _ 

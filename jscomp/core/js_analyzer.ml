@@ -124,11 +124,10 @@ let rec no_side_effect_expression_desc (x : J.expression_desc)  =
   | Call _ 
   | Dot _ 
   | New _ 
-  (* | Caml_uninitialized_obj _ *)
   | String_access _
   | Raw_js_code _ 
   | Caml_block_set_tag _ 
-  | Caml_block_set_length _ (* actually true? *)
+  (* actually true? *)
     -> false 
 and no_side_effect (x : J.expression)  = 
   no_side_effect_expression_desc x.expression_desc
@@ -281,11 +280,8 @@ let rec eq_expression
     | Raw_js_code _
     | Raw_js_function _
     | Array _ 
-    
-    (* | Caml_uninitialized_obj _  *)
     | Caml_block_tag _ 
     | Caml_block_set_tag _ 
-    | Caml_block_set_length _ 
     | Object _ 
     | Number (Uint _ | Nint _)
 
