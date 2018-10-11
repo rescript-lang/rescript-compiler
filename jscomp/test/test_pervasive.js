@@ -129,6 +129,10 @@ function a0(prim) {
   return Math.abs(prim);
 }
 
+function a1(prim) {
+  return Math.acos(prim);
+}
+
 function a2(prim) {
   return Math.tan(prim);
 }
@@ -193,7 +197,7 @@ function a17(prim) {
   return Math.log1p(prim);
 }
 
-function a1(prim, prim$1) {
+function a18(prim, prim$1) {
   return Math.pow(prim, prim$1);
 }
 
@@ -202,6 +206,7 @@ var f = Pervasives.$at;
 exports.Pervasives = Pervasives$1;
 exports.f = f;
 exports.a0 = a0;
+exports.a1 = a1;
 exports.a2 = a2;
 exports.a3 = a3;
 exports.a4 = a4;
@@ -218,5 +223,5 @@ exports.a14 = a14;
 exports.a15 = a15;
 exports.a16 = a16;
 exports.a17 = a17;
-exports.a1 = a1;
+exports.a18 = a18;
 /* No side effect */
