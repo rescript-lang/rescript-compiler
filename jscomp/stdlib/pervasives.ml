@@ -113,15 +113,42 @@ external ( +. ) : float -> float -> float = "%addfloat"
 external ( -. ) : float -> float -> float = "%subfloat"
 external ( *. ) : float -> float -> float = "%mulfloat"
 external ( /. ) : float -> float -> float = "%divfloat"
+#if BS then
+external ( ** ) : float -> float -> float = "pow" [@@bs.val] [@@bs.scope "Math"]
+external exp : float -> float = "exp" [@@bs.val][@@bs.scope "Math"]
+#else
 external ( ** ) : float -> float -> float = "caml_power_float" "pow" "float"
 external exp : float -> float = "caml_exp_float" "exp" "float"
+#end
 external expm1 : float -> float = "caml_expm1_float" "caml_expm1" "float"
+#if BS then
+external acos : float -> float =  "acos" [@@bs.val] [@@bs.scope "Math"]
+external asin : float -> float = "asin" [@@bs.val] [@@bs.scope "Math"]
+external atan : float -> float = "atan" [@@bs.val] [@@bs.scope "Math"]
+external atan2 : float -> float -> float = "atan2" [@@bs.val] [@@bs.scope "Math"]
+#else
 external acos : float -> float = "caml_acos_float" "acos" "float"
 external asin : float -> float = "caml_asin_float" "asin" "float"
 external atan : float -> float = "caml_atan_float" "atan" "float"
 external atan2 : float -> float -> float = "caml_atan2_float" "atan2" "float"
+#end
 external hypot : float -> float -> float
                = "caml_hypot_float" "caml_hypot" "float"
+#if BS then                
+external cos : float -> float = "cos" [@@bs.val] [@@bs.scope "Math"]
+external cosh : float -> float = "cosh" [@@bs.val] [@@bs.scope "Math"]
+external log : float -> float =  "log" [@@bs.val] [@@bs.scope "Math"]
+external log10 : float -> float = "log10"[@@bs.val] [@@bs.scope "Math"]
+external log1p : float -> float = "log1p" [@@bs.val] [@@bs.scope "Math"]
+external sin : float -> float =  "sin" [@@bs.val] [@@bs.scope "Math"]
+external sinh : float -> float = "sinh" [@@bs.val] [@@bs.scope "Math"]
+external sqrt : float -> float =  "sqrt" [@@bs.val] [@@bs.scope "Math"]
+external tan : float -> float =  "tan" [@@bs.val] [@@bs.scope "Math"]
+external tanh : float -> float =  "tanh" [@@bs.val] [@@bs.scope "Math"]
+external ceil : float -> float =  "ceil" [@@bs.val] [@@bs.scope "Math"]
+external floor : float -> float =  "floor" [@@bs.val] [@@bs.scope "Math"]
+external abs_float : float -> float = "abs"[@@bs.val] [@@bs.scope "Math"]
+#else
 external cos : float -> float = "caml_cos_float" "cos" "float"
 external cosh : float -> float = "caml_cosh_float" "cosh" "float"
 external log : float -> float = "caml_log_float" "log" "float"
@@ -135,6 +162,7 @@ external tanh : float -> float = "caml_tanh_float" "tanh" "float"
 external ceil : float -> float = "caml_ceil_float" "ceil" "float"
 external floor : float -> float = "caml_floor_float" "floor" "float"
 external abs_float : float -> float = "%absfloat"
+#end
 external copysign : float -> float -> float
                   = "caml_copysign_float" "caml_copysign" "float"
 external mod_float : float -> float -> float = "caml_fmod_float" "fmod" "float"

@@ -127,4 +127,4 @@ exports.gg = gg;
 exports.f = f;
 exports.is_lazy_force = is_lazy_force;
 exports.fib = fib;
-/*  Not a pure module */
+/* test_abs Not a pure module */
