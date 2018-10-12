@@ -116,7 +116,8 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pintcomp _ 
       (* Float operations *)
       | Pintoffloat | Pfloatofint
-      | Pnegfloat | Pabsfloat
+      | Pnegfloat 
+      (* | Pabsfloat *)
       | Paddfloat | Psubfloat | Pmulfloat 
       | Pdivfloat
       | Pfloatcomp _ 

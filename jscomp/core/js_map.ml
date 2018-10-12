@@ -137,6 +137,7 @@ class virtual map =
          Qualified (_, Runtime, Some "caml_int_compare")         
        ]}       
      *)
+                 (* | Math of string * expression list *)
                  (** where we use a trick [== null ] *) (* js true/false*)
                  (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_Precedence 
      [typeof] is an operator     
@@ -336,10 +337,6 @@ class virtual map =
       finish_ident_expression -> finish_ident_expression = o#expression
     method expression_desc : expression_desc -> expression_desc =
       function
-      | Math (_x, _x_i1) ->
-          let _x = o#string _x in
-          let _x_i1 = o#list (fun o -> o#expression) _x_i1
-          in Math (_x, _x_i1)
       | Length (_x, _x_i1) ->
           let _x = o#expression _x in
           let _x_i1 = o#length_object _x_i1 in Length (_x, _x_i1)

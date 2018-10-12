@@ -131,7 +131,7 @@ let exp_need_paren  (e : J.expression) =
   | String_append _
   | Char_of_int _
   | Char_to_int _
-  | Math _
+  (* | Math _ *)
   | Var _
   | Undefined
   | Null
@@ -565,14 +565,7 @@ and expression_desc cxt (level:int) f x : cxt  =
         P.string f L.dot;
         P.string f L.fromCharcode;
         P.paren_group f 1 (fun _ -> arguments cxt f [e])
-      )
-  | Math (name, el) ->
-    P.group f 1 (fun _ ->
-        P.string f L.math;
-        P.string f L.dot;
-        P.string f name;
-        P.paren_group f 1 (fun _ -> arguments cxt f el)
-      )
+      )  
   | Unicode s ->
     P.string f "\"";
     P.string f s ;

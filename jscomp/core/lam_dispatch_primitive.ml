@@ -62,10 +62,10 @@ let translate loc (prim_name : string)
     | "caml_final_register"
     | "caml_final_release"
       ->  call Js_runtime_modules.gc
-    | "caml_abs_float" -> 
-      E.math "abs" args 
-    | "caml_acos_float" -> 
-      E.math "acos" args 
+    (* | "caml_abs_float" -> 
+      E.math "abs" args  *)
+    (* | "caml_acos_float" -> 
+      E.math "acos" args  *)
     |  "caml_add_float" -> 
       begin match args with 
         | [e0;e1] -> E.float_add e0 e1 (** TODO float plus*)
@@ -96,7 +96,7 @@ let translate loc (prim_name : string)
         | [e0;e1] -> E.float_comp Cgt  e0 e1
         | _ -> assert false 
       end
-    | "caml_tan_float"  ->
+    (* | "caml_tan_float"  ->
       E.math "tan" args 
     | "caml_tanh_float"  ->
       E.math "tanh" args 
@@ -121,13 +121,13 @@ let translate loc (prim_name : string)
     | "caml_sqrt_float" -> 
       E.math "sqrt" args
 
-
+ *)
     | "caml_float_of_int" -> 
       begin match args with 
         | [e] -> e 
         | _ -> assert false 
       end
-    | "caml_floor_float" ->
+    (* | "caml_floor_float" ->
       E.math "floor" args 
     | "caml_log_float" -> 
       E.math "log" args 
@@ -136,7 +136,7 @@ let translate loc (prim_name : string)
     | "caml_log1p_float" -> 
       E.math "log1p" args 
     | "caml_power_float"  -> 
-      E.math "pow" args
+      E.math "pow" args *)
 
     | "caml_array_get" -> 
       call Js_runtime_modules.array

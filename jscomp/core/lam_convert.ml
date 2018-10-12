@@ -293,8 +293,8 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
   | Pstringsetu
   | Pstringsets -> assert false
 #end
+  | Pabsfloat -> assert false
   | Pstringrefs -> prim ~primitive:Pstringrefs ~args loc
-
   | Pbyteslength -> prim ~primitive:Pbyteslength ~args loc
   | Pbytesrefu -> prim ~primitive:Pbytesrefu ~args loc
   | Pbytessetu -> prim ~primitive:Pbytessetu ~args  loc
@@ -306,7 +306,7 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
   | Pintoffloat -> prim ~primitive:Pintoffloat ~args loc
   | Pfloatofint -> prim ~primitive:Pfloatofint ~args loc
   | Pnegfloat -> prim ~primitive:Pnegfloat ~args loc
-  | Pabsfloat -> prim ~primitive:Pabsfloat ~args loc
+  
   | Paddfloat -> prim ~primitive:Paddfloat ~args loc
   | Psubfloat -> prim ~primitive:Psubfloat ~args loc
   | Pmulfloat -> prim ~primitive:Pmulfloat ~args loc

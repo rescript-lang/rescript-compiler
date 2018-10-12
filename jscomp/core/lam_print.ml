@@ -190,7 +190,7 @@ let primitive ppf (prim : Lam_primitive.t) = match prim with
   | Pintoffloat -> fprintf ppf "int_of_float"
   | Pfloatofint -> fprintf ppf "float_of_int"
   | Pnegfloat -> fprintf ppf "~."
-  | Pabsfloat -> fprintf ppf "abs."
+  (* | Pabsfloat -> fprintf ppf "abs." *)
   | Paddfloat -> fprintf ppf "+."
   | Psubfloat -> fprintf ppf "-."
   | Pmulfloat -> fprintf ppf "*."

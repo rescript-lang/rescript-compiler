@@ -205,8 +205,8 @@ let unit : t =
 
 
 
-let math ?comment v args  : t = 
-  {comment ; expression_desc = Math(v,args)}
+(* let math ?comment v args  : t = 
+  {comment ; expression_desc = Math(v,args)} *)
 
 (* we can do constant folding here, but need to make sure the result is consistent
    {[

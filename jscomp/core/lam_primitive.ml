@@ -69,7 +69,8 @@ type t =
   | Poffsetref of int
   (* Float operations *)
   | Pintoffloat | Pfloatofint
-  | Pnegfloat | Pabsfloat
+  | Pnegfloat 
+  (* | Pabsfloat *) (* is {!Pervasives.abs_float} %abs_float*)
   | Paddfloat | Psubfloat | Pmulfloat | Pdivfloat
   | Pfloatcomp of Lam_compat.comparison
   | Pjscomp of Lam_compat.comparison
@@ -217,7 +218,7 @@ let eq_primitive_approx ( lhs : t) (rhs : t) =
   | Pintoffloat -> rhs = Pintoffloat
   | Pfloatofint -> rhs = Pfloatofint
   | Pnegfloat -> rhs =  Pnegfloat
-  | Pabsfloat -> rhs = Pabsfloat
+  (* | Pabsfloat -> rhs = Pabsfloat *)
   | Paddfloat -> rhs = Paddfloat
   | Psubfloat -> rhs = Psubfloat
   | Pmulfloat -> rhs = Pmulfloat
