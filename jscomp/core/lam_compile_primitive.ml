@@ -486,13 +486,13 @@ let translate  loc
     end
   | Pintofbint Pint64
     -> Js_long.to_int32 args
-  | Pabsfloat -> 
+  (* | Pabsfloat -> 
     begin match args with 
       | [e] ->
         E.math "abs" [e]
       (* GCC treat built-ins like Math in a dirfferent way*)
       | _ -> assert false
-    end
+    end *)
   | Pnot ->
     begin match args with
       | [e] ->  E.not  e 

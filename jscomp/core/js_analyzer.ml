@@ -116,7 +116,7 @@ let rec no_side_effect_expression_desc (x : J.expression_desc)  =
     -> no_side_effect e 
   | Bin (op, a, b) -> 
     op <> Eq && no_side_effect a && no_side_effect b     
-  | Math _ 
+  (* | Math _  *)
   | Js_not _
   | Cond _ 
 
@@ -190,12 +190,12 @@ let rec eq_expression
           false (* conservative *)
         | _ -> false 
       end
-    | Math  (name00,args00) -> 
+    (* | Math  (name00,args00) -> 
       begin match y0 with 
         |Math(name10,args10) -> 
           name00 = name10 && eq_expression_list args00 args10 
         | _ -> false 
-      end
+      end *)
     | Access (a0,a1) -> 
       begin match y0 with 
         | Access(b0,b1) -> 

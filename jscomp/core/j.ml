@@ -100,7 +100,7 @@ and property_map =
     (property_name * expression) list
 and length_object = Js_op.length_object
 and expression_desc =
-  | Math of string * expression list
+  (* | Math of string * expression list *)
   | Length of expression * length_object
   | Char_of_int of expression
   | Char_to_int of expression 

@@ -124,6 +124,7 @@ class virtual fold =
          Qualified (_, Runtime, Some "caml_int_compare")         
        ]}       
      *)
+                 (* | Math of string * expression list *)
                  (** where we use a trick [== null ] *) (* js true/false*)
                  (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_Precedence 
      [typeof] is an operator     
@@ -313,9 +314,6 @@ class virtual fold =
       o#expression
     method expression_desc : expression_desc -> 'self_type =
       function
-      | Math (_x, _x_i1) ->
-          let o = o#string _x in
-          let o = o#list (fun o -> o#expression) _x_i1 in o
       | Length (_x, _x_i1) ->
           let o = o#expression _x in let o = o#length_object _x_i1 in o
       | Char_of_int _x -> let o = o#expression _x in o

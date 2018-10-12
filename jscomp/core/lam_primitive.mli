@@ -64,7 +64,8 @@ type t =
   | Poffsetint of int
   | Poffsetref of int
   | Pintoffloat | Pfloatofint
-  | Pnegfloat | Pabsfloat
+  | Pnegfloat 
+  (* | Pabsfloat *)
   | Paddfloat | Psubfloat | Pmulfloat | Pdivfloat
   | Pfloatcomp of Lam_compat.comparison
   | Pjscomp of Lam_compat.comparison

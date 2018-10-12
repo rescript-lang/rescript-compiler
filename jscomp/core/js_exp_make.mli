@@ -282,11 +282,11 @@ val unit :   t
 (** [unit] in ocaml will be compiled into [0]  in js *)
 
 (** [math "abs"] --> Math["abs"] *)    
-val math : 
+(* val math : 
   ?comment:string -> 
   string -> 
   t list -> 
-  t
+  t *)
 
 
 
