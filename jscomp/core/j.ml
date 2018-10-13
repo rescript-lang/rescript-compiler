@@ -140,7 +140,7 @@ and expression_desc =
        This can be constructed either in a static way [E.index] or a dynamic way 
        [E.access]
      *)
-  | Dot of expression * string * bool
+  | Static_index of expression * string 
     (* The third argument bool indicates whether we should 
        print it as 
        a["idd"] -- false

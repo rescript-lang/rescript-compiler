@@ -157,7 +157,7 @@ val js_global_dot : ?comment:string -> string -> string -> t
 
 
 
-val string_access : ?comment:string -> t -> t -> t 
+val string_index : ?comment:string -> t -> t -> t 
 
 val access : 
   ?comment:string -> 

@@ -122,7 +122,7 @@ let exp_need_paren  (e : J.expression) =
   | Call _
   | Caml_block_tag _
   | Seq _
-  | Dot _
+  | Static_index _
   | Cond _
   | Bin _
   | Is_null_or_undefined _
@@ -881,14 +881,23 @@ and expression_desc cxt (level:int) f x : cxt  =
         P.string f L.tag ;
         cxt)
   | Array_index (e, p)
-
   | String_index (e,p)
     ->
     P.cond_paren_group f (level > 15) 1 (fun _ -> 
-      P.group f 1 @@ fun _ ->
-      let cxt = expression 15 cxt f e in
-      P.bracket_group f 1 @@ fun _ ->
-      expression 0 cxt f p )
+        P.group f 1 @@ fun _ ->
+        let cxt = expression 15 cxt f e in
+        P.bracket_group f 1 @@ fun _ ->
+        expression 0 cxt f p )
+  | Static_index (e, s) ->
+    P.cond_paren_group f (level > 15) 1 (fun _ -> 
+        let cxt = expression 15 cxt f e in
+        Js_dump_property.property_access f s ;
+        (* See [ .obj_of_exports]
+           maybe in the ast level we should have
+           refer and export
+        *)
+        cxt) 
+
   | Length (e, _) ->
     (** Todo: check parens *)
     P.cond_paren_group f (level > 15) 1 (fun _ -> 
@@ -896,15 +905,6 @@ and expression_desc cxt (level:int) f x : cxt  =
       P.string f L.dot;
       P.string f L.length;
       cxt)
-  | Dot (e, s,normal) ->
-    P.cond_paren_group f (level > 15) 1 (fun _ -> 
-      let cxt = expression 15 cxt f e in
-      Js_dump_property.property_access f s ;
-      (* See [ .obj_of_exports]
-         maybe in the ast level we should have
-         refer and export
-      *)
-      cxt) 
   | New (e,  el) ->
     P.cond_paren_group f (level > 15) 1 (fun _ ->
       P.group f 1 @@ fun _ ->

@@ -109,7 +109,7 @@ let external_var_dot ?comment  ~external_name:name ?dot (id : Ident.t) : t =
 (* let ml_var ?comment (id : Ident.t) : t  = 
   {expression_desc = Var (Qualified (id, Ml, None)); comment} *)
 
-(* Dot .....................**)        
+(* Static_index .....................**)        
 let runtime_call ?comment module_name fn_name args = 
   call ?comment 
     ~info:Js_call_info.builtin_runtime_call
@@ -330,7 +330,7 @@ let access ?comment (e0 : t)  (e1 : t) : t =
   | _ ->
     { expression_desc = Array_index (e0,e1); comment} 
 
-let string_access ?comment (e0 : t)  (e1 : t) : t = 
+let string_index ?comment (e0 : t)  (e1 : t) : t = 
   match e0.expression_desc, e1.expression_desc with
   | Str (_,s) , Number (Int {i; _}) 
     ->  (* Don't optimize {j||j} *)
@@ -376,7 +376,7 @@ let assign_addr
     like [e.length], no dependency introduced
 *)
 let dot ?comment (e0 : t)  (e1 : string) : t = 
-  { expression_desc = Dot (e0,  e1, true); comment} 
+  { expression_desc = Static_index (e0,  e1); comment} 
 
 
 
@@ -420,7 +420,7 @@ let function_length ?comment (e : t) : t =
 
 (** no dependency introduced *)
 let js_global_dot ?comment (x : string)  (e1 : string) : t = 
-  { expression_desc = Dot (js_global x,  e1, true); comment} 
+  { expression_desc = Static_index (js_global x,  e1); comment} 
 
 let char_of_int ?comment (v : t) : t = 
   match v.expression_desc with
@@ -460,7 +460,7 @@ let obj ?comment properties : t =
 *)
 
 
-(* Dot .....................**)        
+(* Static_index .....................**)        
 
 
 
@@ -473,7 +473,7 @@ let false_ : t = {comment = None; expression_desc = Bool false }
 let bool v = if  v then true_ else false_
 
 (** Arith operators *)
-(* Dot .....................**)        
+(* Static_index .....................**)        
 
 let float ?comment f : t = 
   {expression_desc = Number (Float {f}); comment}

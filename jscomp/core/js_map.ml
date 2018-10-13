@@ -375,10 +375,9 @@ class virtual map =
       | Array_index (_x, _x_i1) ->
           let _x = o#expression _x in
           let _x_i1 = o#expression _x_i1 in Array_index (_x, _x_i1)
-      | Dot (_x, _x_i1, _x_i2) ->
+      | Static_index (_x, _x_i1) ->
           let _x = o#expression _x in
-          let _x_i1 = o#string _x_i1 in
-          let _x_i2 = o#bool _x_i2 in Dot (_x, _x_i1, _x_i2)
+          let _x_i1 = o#string _x_i1 in Static_index (_x, _x_i1)
       | New (_x, _x_i1) ->
           let _x = o#expression _x in
           let _x_i1 =

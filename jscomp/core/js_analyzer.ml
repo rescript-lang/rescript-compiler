@@ -121,7 +121,7 @@ let rec no_side_effect_expression_desc (x : J.expression_desc)  =
   | Cond _ 
   | FlatCall _ 
   | Call _ 
-  | Dot _ 
+  | Static_index _ 
   | New _ 
   | Raw_js_code _ 
   (* | Caml_block_set_tag _  *)
@@ -188,6 +188,12 @@ let rec eq_expression
           false (* conservative *)
         | _ -> false 
       end    
+    | String_index (a0,a1) -> 
+      begin match y0 with 
+        | String_index(b0,b1) -> 
+          eq_expression a0 b0 && eq_expression a1 b1
+        | _ -> false 
+      end
     | Array_index (a0,a1) -> 
       begin match y0 with 
         | Array_index(b0,b1) -> 
@@ -225,10 +231,10 @@ let rec eq_expression
           opts0 = opts1
         | _ -> false
       end
-    | Dot (e0,p0,b0) -> 
+    | Static_index (e0,p0) -> 
       begin match y0 with 
-        | Dot(e1,p1,b1) -> 
-          p0 = p1 && b0 =  b1 && eq_expression e0 e1
+        | Static_index(e1,p1) -> 
+          p0 = p1 && eq_expression e0 e1
         |  _ -> false 
       end
     | Seq (a0,b0) -> 
@@ -264,8 +270,7 @@ let rec eq_expression
     | Js_not _ 
     | Cond _ 
     | FlatCall  _
-    | String_index _ 
-
+  
     | New _ 
     | Fun _ 
     | Unicode _ 
@@ -363,5 +368,5 @@ let rec is_okay_to_duplicate (e : J.expression) =
   | Bool _ 
   | Str _ 
   | Number _ -> true
-  | Dot (e, (_ : string), _) -> is_okay_to_duplicate e 
+  | Static_index (e, _) -> is_okay_to_duplicate e (* FIXME -- property okay too?*)
   | _ -> false 

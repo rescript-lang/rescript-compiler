@@ -49,7 +49,7 @@ let caml_char_to_int ?comment v =  v
 
 (* string [s[i]] expects to return a [ocaml_char] *)
 let ref_string e e1 = 
-  E.char_to_int (E.string_access e e1)
+  E.char_to_int (E.string_index e e1)
 
 (* [s[i]] excepts to return a [ocaml_char]
    We use normal array for [bytes]
