@@ -124,7 +124,6 @@ class virtual fold =
          Qualified (_, Runtime, Some "caml_int_compare")         
        ]}       
      *)
-                 (* | Math of string * expression list *)
                  (** where we use a trick [== null ] *) (* js true/false*)
                  (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_Precedence 
      [typeof] is an operator     
@@ -143,7 +142,9 @@ class virtual fold =
         some primitive  call is translated 
         into a plain call, it's better to keep them
     *)
-                 (* Invariant: 
+                 (* str.[i])*)
+                 (* arr.(i)
+       Invariant: 
        The second argument has to be type of [int],
        This can be constructed either in a static way [E.index] or a dynamic way 
        [E.access]
@@ -338,9 +339,9 @@ class virtual fold =
           let o = o#expression _x in
           let o = o#list (fun o -> o#expression) _x_i1 in
           let o = o#unknown _x_i2 in o
-      | String_access (_x, _x_i1) ->
+      | String_index (_x, _x_i1) ->
           let o = o#expression _x in let o = o#expression _x_i1 in o
-      | Access (_x, _x_i1) ->
+      | Array_index (_x, _x_i1) ->
           let o = o#expression _x in let o = o#expression _x_i1 in o
       | Dot (_x, _x_i1, _x_i2) ->
           let o = o#expression _x in

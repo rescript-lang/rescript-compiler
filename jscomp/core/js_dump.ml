@@ -126,12 +126,11 @@ let exp_need_paren  (e : J.expression) =
   | Cond _
   | Bin _
   | Is_null_or_undefined _
-  | String_access _
-  | Access _
+  | String_index _
+  | Array_index _
   | String_append _
   | Char_of_int _
   | Char_to_int _
-  (* | Math _ *)
   | Var _
   | Undefined
   | Null
@@ -545,7 +544,7 @@ and expression_desc cxt (level:int) f x : cxt  =
       )
   | Char_to_int e ->
     (match e.expression_desc with
-     | String_access (a,b) ->
+     | String_index (a,b) ->
        P.group f 1 (fun _ ->
            let cxt = expression 15 cxt f a in
            P.string f L.dot;
@@ -678,22 +677,22 @@ and expression_desc cxt (level:int) f x : cxt  =
         P.space f ;
         expression 13 cxt  f delta
     end
-  | Bin (Eq, {expression_desc = Access({expression_desc = Var i; _},
+  | Bin (Eq, {expression_desc = Array_index({expression_desc = Var i; _},
                                        {expression_desc = Number (Int {i = k0 })}
                                       ) },
          {expression_desc =
             (Bin((Plus as op),
-                 {expression_desc = Access(
+                 {expression_desc = Array_index(
                       {expression_desc = Var j; _},
                       {expression_desc = Number (Int {i = k1; })}
                     ); _}, delta)
             | Bin((Plus as op), delta,
-                  {expression_desc = Access(
+                  {expression_desc = Array_index(
                        {expression_desc = Var j; _},
                        {expression_desc = Number (Int {i = k1; })}
                      ); _})
             | Bin((Minus as op),
-                  {expression_desc = Access(
+                  {expression_desc = Array_index(
                        {expression_desc = Var j; _},
                        {expression_desc = Number (Int {i = k1; })}
                      ); _}, delta)
@@ -881,9 +880,9 @@ and expression_desc cxt (level:int) f x : cxt  =
         P.string f L.dot ;
         P.string f L.tag ;
         cxt)
-  | Access (e, p)
+  | Array_index (e, p)
 
-  | String_access (e,p)
+  | String_index (e,p)
     ->
     P.cond_paren_group f (level > 15) 1 (fun _ -> 
       P.group f 1 @@ fun _ ->

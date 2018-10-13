@@ -43,7 +43,7 @@ let rec remove_pure_sub_exp (x : t)  : t option =
   | Var _
   | Str _
   | Number _ -> None (* Can be refined later *)
-  | Access (a,b) -> 
+  | Array_index (a,b) -> 
       if is_pure_sub_exp a && is_pure_sub_exp b then None 
       else Some x           
   | Array (xs,_mutable_flag)  ->
@@ -325,10 +325,10 @@ let access ?comment (e0 : t)  (e1 : t) : t =
   | Array (l,_) , Number (Int {i; _}) (* Float i -- should not appear here *)
     when no_side_effect e0-> 
     (match Ext_list.nth_opt l  (Int32.to_int i) with 
-    | None -> { expression_desc = Access (e0,e1); comment} 
+    | None -> { expression_desc = Array_index (e0,e1); comment} 
     | Some x -> x ) (* FIX #3084*)
   | _ ->
-    { expression_desc = Access (e0,e1); comment} 
+    { expression_desc = Array_index (e0,e1); comment} 
 
 let string_access ?comment (e0 : t)  (e1 : t) : t = 
   match e0.expression_desc, e1.expression_desc with
@@ -340,9 +340,9 @@ let string_access ?comment (e0 : t)  (e1 : t) : t =
          RangeError?
       *)
       str (String.make 1 s.[i])
-    else     { expression_desc = String_access (e0,e1); comment} 
+    else     { expression_desc = String_index (e0,e1); comment} 
   | _ ->
-    { expression_desc = String_access (e0,e1); comment} 
+    { expression_desc = String_index (e0,e1); comment} 
 
 let index ?comment (e0 : t)  e1 : t = 
   match e0.expression_desc with
@@ -352,22 +352,24 @@ let index ?comment (e0 : t)  e1 : t =
     (match Ext_list.nth_opt l  (Int32.to_int e1)  with
     | Some x-> x 
     | None -> 
-      { expression_desc = Access (e0, int ?comment e1); comment = None}     
+      { expression_desc = Array_index (e0, int ?comment e1); comment = None}     
     )
-  | _ -> { expression_desc = Access (e0, int ?comment e1); comment = None} 
+  | _ -> { expression_desc = Array_index (e0, int ?comment e1); comment = None} 
 
 let assign ?comment e0 e1 : t = 
     {expression_desc = Bin(Eq, e0,e1); comment}
 
 
-let assign_addr ?comment (e0 : t)  e1 ~assigned_value : t = 
+let assign_addr 
+  ?comment (e0 : t)  (e1 : Int32.t) 
+  ~assigned_value : t = 
   match e0.expression_desc with
   | Array _  (* Temporary block -- address not held *)
   | Caml_block _ when no_side_effect e0 -> 
     assigned_value
   | _ ->  
     assign { expression_desc = 
-        Access (e0, int ?comment e1); comment = None} assigned_value
+        Array_index (e0, int ?comment e1); comment = None} assigned_value
 
 
 (** used in normal property
