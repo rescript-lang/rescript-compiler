@@ -244,24 +244,22 @@ let clean_staled_bs_js_files
                match Sys.getenv "BS_CMT_POST_PROCESS_CMD" with 
                | exception _ -> ()
                | cmd -> 
-                 try 
+                 Ext_pervasives.try_it (fun _ -> 
                    Sys.command (
                      cmd ^ 
                      " -cmt-rm " ^
-                     Filename.concat lib_parent (basename ^ Literals.suffix_cmt))
-                   |> ignore
-                 with 
-                   _  -> ()
+                     Filename.concat lib_parent (basename ^ Literals.suffix_cmt))                   
+                 )
              );
-             List.iter (fun suffix -> 
-              try_unlink (Filename.concat lib_parent (basename ^ suffix))
-             ) [
+             Ext_list.iter [
                 Literals.suffix_cmi; Literals.suffix_cmj ; 
                 Literals.suffix_cmt; Literals.suffix_cmti ; 
                 Literals.suffix_mlast; Literals.suffix_mlastd;
                 Literals.suffix_mliast; Literals.suffix_mliastd
                 (*TODO: GenType*)
-             ];
+             ] (fun suffix -> 
+              try_unlink (Filename.concat lib_parent (basename ^ suffix))
+             )
            end           
   )
 
@@ -487,8 +485,7 @@ and walk_single_source cxt (x : Ext_json_types.t) =
 and walk_source_dir_map (cxt : walk_cxt) (input : Ext_json_types.t String_map.t) =   
     let working_dir = Filename.concat cxt.root cxt.cwd in 
     let file_array = Sys.readdir working_dir in 
-    (* Format.fprintf Format.err_formatter 
-      "@[Walking %s@]@." working_dir; *)
+    (* Remove .re.js when clean up *)
     Ext_array.iter file_array begin fun file -> 
         if Ext_string.ends_with file Literals.suffix_re_js then 
           Sys.remove (Filename.concat working_dir file)
