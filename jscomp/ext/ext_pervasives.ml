@@ -37,7 +37,7 @@ let finally v action f   =
   | e ->  action v ; e 
 
 let try_it f  =   
-  try f () with _ -> ()
+  try ignore (f ()) with _ -> ()
 
 let with_file_as_chan filename f = 
   finally (open_out_bin filename) close_out f 

@@ -3780,6 +3780,7 @@ val suffix_d : string
 val suffix_js : string
 val suffix_bs_js : string 
 val suffix_re_js : string
+val suffix_tsx : string
 val suffix_mlastd : string
 val suffix_mliastd : string
 
@@ -3919,6 +3920,7 @@ let suffix_mliastd = ".mliast.d"
 let suffix_js = ".js"
 let suffix_bs_js = ".bs.js"
 let suffix_re_js = ".re.js"
+let suffix_tsx = ".tsx"
 
 let commonjs = "commonjs" 
 let amdjs = "amdjs"
@@ -10812,7 +10814,7 @@ external reraise: exn -> 'a = "%reraise"
 
 val finally : 'a -> ('a -> 'c) -> ('a -> 'b) -> 'b
 
-val try_it : (unit -> unit) ->  unit 
+val try_it : (unit -> 'a) ->  unit 
 
 val with_file_as_chan : string -> (out_channel -> 'a) -> 'a
 
@@ -10878,7 +10880,7 @@ let finally v action f   =
   | e ->  action v ; e 
 
 let try_it f  =   
-  try f () with _ -> ()
+  try ignore (f ()) with _ -> ()
 
 let with_file_as_chan filename f = 
   finally (open_out_bin filename) close_out f 

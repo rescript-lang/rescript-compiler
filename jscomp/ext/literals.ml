@@ -105,6 +105,7 @@ let suffix_mliastd = ".mliast.d"
 let suffix_js = ".js"
 let suffix_bs_js = ".bs.js"
 let suffix_re_js = ".re.js"
+let suffix_tsx = ".tsx"
 
 let commonjs = "commonjs" 
 let amdjs = "amdjs"

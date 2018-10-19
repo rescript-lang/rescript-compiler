@@ -3889,6 +3889,7 @@ val suffix_d : string
 val suffix_js : string
 val suffix_bs_js : string 
 val suffix_re_js : string
+val suffix_tsx : string
 val suffix_mlastd : string
 val suffix_mliastd : string
 
@@ -4028,6 +4029,7 @@ let suffix_mliastd = ".mliast.d"
 let suffix_js = ".js"
 let suffix_bs_js = ".bs.js"
 let suffix_re_js = ".re.js"
+let suffix_tsx = ".tsx"
 
 let commonjs = "commonjs" 
 let amdjs = "amdjs"
@@ -5477,7 +5479,7 @@ external reraise: exn -> 'a = "%reraise"
 
 val finally : 'a -> ('a -> 'c) -> ('a -> 'b) -> 'b
 
-val try_it : (unit -> unit) ->  unit 
+val try_it : (unit -> 'a) ->  unit 
 
 val with_file_as_chan : string -> (out_channel -> 'a) -> 'a
 
@@ -5543,7 +5545,7 @@ let finally v action f   =
   | e ->  action v ; e 
 
 let try_it f  =   
-  try f () with _ -> ()
+  try ignore (f ()) with _ -> ()
 
 let with_file_as_chan filename f = 
   finally (open_out_bin filename) close_out f 
@@ -9404,24 +9406,22 @@ let clean_staled_bs_js_files
                match Sys.getenv "BS_CMT_POST_PROCESS_CMD" with 
                | exception _ -> ()
                | cmd -> 
-                 try 
+                 Ext_pervasives.try_it (fun _ -> 
                    Sys.command (
                      cmd ^ 
                      " -cmt-rm " ^
-                     Filename.concat lib_parent (basename ^ Literals.suffix_cmt))
-                   |> ignore
-                 with 
-                   _  -> ()
+                     Filename.concat lib_parent (basename ^ Literals.suffix_cmt))                   
+                 )
              );
-             List.iter (fun suffix -> 
-              try_unlink (Filename.concat lib_parent (basename ^ suffix))
-             ) [
+             Ext_list.iter [
                 Literals.suffix_cmi; Literals.suffix_cmj ; 
                 Literals.suffix_cmt; Literals.suffix_cmti ; 
                 Literals.suffix_mlast; Literals.suffix_mlastd;
                 Literals.suffix_mliast; Literals.suffix_mliastd
                 (*TODO: GenType*)
-             ];
+             ] (fun suffix -> 
+              try_unlink (Filename.concat lib_parent (basename ^ suffix))
+             )
            end           
   )
 
@@ -9647,8 +9647,7 @@ and walk_single_source cxt (x : Ext_json_types.t) =
 and walk_source_dir_map (cxt : walk_cxt) (input : Ext_json_types.t String_map.t) =   
     let working_dir = Filename.concat cxt.root cxt.cwd in 
     let file_array = Sys.readdir working_dir in 
-    (* Format.fprintf Format.err_formatter 
-      "@[Walking %s@]@." working_dir; *)
+    (* Remove .re.js when clean up *)
     Ext_array.iter file_array begin fun file -> 
         if Ext_string.ends_with file Literals.suffix_re_js then 
           Sys.remove (Filename.concat working_dir file)
@@ -10042,7 +10041,6 @@ let rec from_array (arr : Ext_json_types.t array) : Spec_set.t =
   let spec = ref Spec_set.empty in
   let has_in_source = ref false in
   Ext_array.iter arr (fun x ->
-
       let result = from_json_single x  in
       if result.in_source then 
         (
