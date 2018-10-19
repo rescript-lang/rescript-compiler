@@ -137,7 +137,6 @@ class virtual map =
          Qualified (_, Runtime, Some "caml_int_compare")         
        ]}       
      *)
-                 (* | Math of string * expression list *)
                  (** where we use a trick [== null ] *) (* js true/false*)
                  (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_Precedence 
      [typeof] is an operator     
@@ -156,7 +155,9 @@ class virtual map =
         some primitive  call is translated 
         into a plain call, it's better to keep them
     *)
-                 (* Invariant: 
+                 (* str.[i])*)
+                 (* arr.(i)
+       Invariant: 
        The second argument has to be type of [int],
        This can be constructed either in a static way [E.index] or a dynamic way 
        [E.access]
@@ -368,16 +369,15 @@ class virtual map =
           let _x = o#expression _x in
           let _x_i1 = o#list (fun o -> o#expression) _x_i1 in
           let _x_i2 = o#unknown _x_i2 in Call (_x, _x_i1, _x_i2)
-      | String_access (_x, _x_i1) ->
+      | String_index (_x, _x_i1) ->
           let _x = o#expression _x in
-          let _x_i1 = o#expression _x_i1 in String_access (_x, _x_i1)
-      | Access (_x, _x_i1) ->
+          let _x_i1 = o#expression _x_i1 in String_index (_x, _x_i1)
+      | Array_index (_x, _x_i1) ->
           let _x = o#expression _x in
-          let _x_i1 = o#expression _x_i1 in Access (_x, _x_i1)
-      | Dot (_x, _x_i1, _x_i2) ->
+          let _x_i1 = o#expression _x_i1 in Array_index (_x, _x_i1)
+      | Static_index (_x, _x_i1) ->
           let _x = o#expression _x in
-          let _x_i1 = o#string _x_i1 in
-          let _x_i2 = o#bool _x_i2 in Dot (_x, _x_i1, _x_i2)
+          let _x_i1 = o#string _x_i1 in Static_index (_x, _x_i1)
       | New (_x, _x_i1) ->
           let _x = o#expression _x in
           let _x_i1 =

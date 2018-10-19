@@ -91,7 +91,8 @@ let rec no_side_effect_expression_desc (x : J.expression_desc)  =
   | Unicode _ -> true 
   | Fun _ -> true
   | Number _ -> true (* Can be refined later *)
-  | Access (a,b) -> no_side_effect a && no_side_effect b 
+  | String_index (a,b)
+  | Array_index (a,b) -> no_side_effect a && no_side_effect b 
   | Is_null_or_undefined b -> no_side_effect b 
   | Str (b,_) -> b    
   | Array (xs,_mutable_flag)  
@@ -116,15 +117,12 @@ let rec no_side_effect_expression_desc (x : J.expression_desc)  =
     -> no_side_effect e 
   | Bin (op, a, b) -> 
     op <> Eq && no_side_effect a && no_side_effect b     
-  (* | Math _  *)
   | Js_not _
   | Cond _ 
-
   | FlatCall _ 
   | Call _ 
-  | Dot _ 
+  | Static_index _ 
   | New _ 
-  | String_access _
   | Raw_js_code _ 
   (* | Caml_block_set_tag _  *)
   (* actually true? *)
@@ -189,16 +187,16 @@ let rec eq_expression
         | Number (Float j) ->
           false (* conservative *)
         | _ -> false 
-      end
-    (* | Math  (name00,args00) -> 
+      end    
+    | String_index (a0,a1) -> 
       begin match y0 with 
-        |Math(name10,args10) -> 
-          name00 = name10 && eq_expression_list args00 args10 
+        | String_index(b0,b1) -> 
+          eq_expression a0 b0 && eq_expression a1 b1
         | _ -> false 
-      end *)
-    | Access (a0,a1) -> 
+      end
+    | Array_index (a0,a1) -> 
       begin match y0 with 
-        | Access(b0,b1) -> 
+        | Array_index(b0,b1) -> 
           eq_expression a0 b0 && eq_expression a1 b1
         | _ -> false 
       end
@@ -233,10 +231,10 @@ let rec eq_expression
           opts0 = opts1
         | _ -> false
       end
-    | Dot (e0,p0,b0) -> 
+    | Static_index (e0,p0) -> 
       begin match y0 with 
-        | Dot(e1,p1,b1) -> 
-          p0 = p1 && b0 =  b1 && eq_expression e0 e1
+        | Static_index(e1,p1) -> 
+          p0 = p1 && eq_expression e0 e1
         |  _ -> false 
       end
     | Seq (a0,b0) -> 
@@ -272,8 +270,7 @@ let rec eq_expression
     | Js_not _ 
     | Cond _ 
     | FlatCall  _
-    | String_access _ 
-
+  
     | New _ 
     | Fun _ 
     | Unicode _ 
@@ -354,7 +351,7 @@ let rev_toplevel_flatten block =
 
 let rec is_constant (x : J.expression)  = 
   match x.expression_desc with 
-  | Access (a,b) -> is_constant a && is_constant b 
+  | Array_index (a,b) -> is_constant a && is_constant b 
   | Str (b,_) -> b
   | Number _ -> true (* Can be refined later *)
   | Array (xs,_mutable_flag)  -> Ext_list.for_all xs  is_constant 
@@ -371,5 +368,5 @@ let rec is_okay_to_duplicate (e : J.expression) =
   | Bool _ 
   | Str _ 
   | Number _ -> true
-  | Dot (e, (_ : string), _) -> is_okay_to_duplicate e 
+  | Static_index (e, _) -> is_okay_to_duplicate e (* FIXME -- property okay too?*)
   | _ -> false 

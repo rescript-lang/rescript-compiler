@@ -271,7 +271,7 @@ let subst_map name = object (self)
 
   method! expression x =
     match x.expression_desc with 
-    | Access ({expression_desc = Var (Id (id))}, 
+    | Array_index ({expression_desc = Var (Id (id))}, 
               {expression_desc = Number (Int {i; _})}) -> 
       (match Ident_hashtbl.find_opt self#get_substitution id with 
        | Some {expression_desc = Caml_block (ls, Immutable, _, _) } 
