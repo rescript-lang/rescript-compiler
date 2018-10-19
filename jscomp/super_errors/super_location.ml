@@ -137,6 +137,9 @@ let rec super_error_reporter ppf ({Location.loc; msg; sub; if_highlight} as err)
 (* extracted from https://github.com/BuckleScript/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/parsing/location.ml#L299 *)
 (* This is the warning report entry point. We'll replace the default printer with this one *)
 let super_warning_printer loc ppf w =
+#if OCAML_VERSION =~ ">4.03.0"  then
+  () (*TODO*)
+#else
   if Warnings.is_active w then begin
     setup_colors ();
     (* open a vertical box. Everything in our message is indented 2 spaces *)
@@ -146,6 +149,7 @@ let super_warning_printer loc ppf w =
       (Warnings.super_print Super_warnings.message)
       w
   end
+#end
 ;;
 
 (* taken from https://github.com/BuckleScript/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/parsing/location.ml#L354 *)

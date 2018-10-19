@@ -55,6 +55,10 @@ let spellcheck ppf fold env lid =
 let spellcheck ppf fold =
   spellcheck ppf (fun f -> fold (fun s _ _ x -> f s x))
 
+let fold_descr fold get_name f = fold (fun descr acc -> f (get_name descr) acc)
+let fold_constructors x  = fold_descr Env.fold_constructors (fun d -> d.cstr_name) x
+let fold_labels x = fold_descr Env.fold_labels (fun d -> d.lbl_name) x
+
 (* taken from https://github.com/BuckleScript/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/typing/typetexp.ml#L918 *)
 (* modified branches are commented *)
 let report_error env ppf = function
@@ -123,9 +127,14 @@ let report_error env ppf = function
          else "it is not a variable")
   | Multiple_constraints_on_type s ->
       fprintf ppf "Multiple constraints for type %a" longident s
+#if OCAML_VERSION =~ ">4.03.0" then
+  | Method_mismatch _ -> 
+    fprintf ppf "Method mismatch" (*TODO*)
+#else
   | Repeated_method_label s ->
       fprintf ppf "@[This is the second method `%s' of this object type.@ %s@]"
         s "Multiple occurences are not allowed."
+#end        
   | Unbound_value lid ->
       (* modified *)
       begin
@@ -175,8 +184,12 @@ let report_error env ppf = function
       - @[Constructors and modules are both capitalized.@ Did you want the latter?@ Then instead of @{<dim>let foo = Bar@}, try @{<info>module Foo = Bar@}.@]\
       @]"
       longident lid;
+#if OCAML_VERSION =~ ">4.03.0" then
+      Typetexp.spellcheck ppf fold_constructors env lid
+#else
       Typetexp.spellcheck_simple ppf Env.fold_constructors (fun d -> d.cstr_name)
         env lid;
+#end        
   | Unbound_label lid ->
       (* modified *)
       fprintf ppf "@[<v>\
@@ -186,7 +199,11 @@ let report_error env ppf = function
       @[- Or specifying its type:@ @{<info>let baby: MyModule.person = {age: 3}@}@]\
       @]"
       longident lid;
+#if OCAML_VERSION =~ ">4.03.0" then
+      Typetexp.spellcheck ppf fold_labels env lid
+#else
       Typetexp.spellcheck_simple ppf Env.fold_labels (fun d -> d.lbl_name) env lid;
+#end      
   | Unbound_class lid ->
       fprintf ppf "Unbound class %a" longident lid;
       spellcheck ppf Env.fold_classs env lid;
@@ -202,6 +219,11 @@ let report_error env ppf = function
       fprintf ppf "Illegal recursive module reference"
   | Access_functor_as_structure lid ->
       fprintf ppf "The module %a is a functor, not a structure" longident lid
+#if OCAML_VERSION =~ ">4.03.0" then 
+  | (Apply_structure_as_functor _|Cannot_scrape_alias (_, _)|Opened_object _|
+Not_an_object _) -> 
+    fprintf ppf "TODO" (*TODO*)
+#end
 
 (* This will be called in super_main. This is how you'd override the default error printer from the compiler & register new error_of_exn handlers *)
 let setup () =

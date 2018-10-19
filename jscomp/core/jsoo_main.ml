@@ -72,7 +72,7 @@ let error_of_exn e =
   | Some `Already_displayed
   | None -> None
 #else  
-  Location.error_of_exn
+  Location.error_of_exn e
 #end  
 
 let implementation ~use_super_errors prefix impl str  : Js.Unsafe.obj =
