@@ -197,11 +197,11 @@ let stats h =
   let mbl =
     Array.fold_left (fun m (b : _ bucket) -> max m (bucket_length 0 b)) 0 h.data in
   let histo = Array.make (mbl + 1) 0 in
-  Array.iter
+  Ext_array.iter h.data
     (fun b ->
        let l = bucket_length 0 b in
        histo.(l) <- histo.(l) + 1)
-    h.data;
+    ;
   { Hashtbl.num_bindings = h.size;
     num_buckets = h.data_mask + 1 ;
     max_bucket_length = mbl;

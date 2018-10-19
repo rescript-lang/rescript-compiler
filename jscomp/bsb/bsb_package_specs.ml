@@ -63,9 +63,7 @@ let bad_module_format_message_exn ~loc format =
 let rec from_array (arr : Ext_json_types.t array) : Spec_set.t =
   let spec = ref Spec_set.empty in
   let has_in_source = ref false in
-  arr
-  |> Array.iter (fun (x : Ext_json_types.t) ->
-
+  Ext_array.iter arr (fun x ->
       let result = from_json_single x  in
       if result.in_source then 
         (

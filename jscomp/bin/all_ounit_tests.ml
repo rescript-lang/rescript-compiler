@@ -1335,6 +1335,11 @@ val map :
   'a array -> 
   ('a -> 'b) -> 
   'b array
+
+val iter :
+  'a array -> 
+  ('a -> unit) -> 
+  unit
 end = struct
 #1 "ext_array.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -1590,6 +1595,10 @@ let map a f =
     done;
     r
   end
+
+let iter a f =
+  let open Array in 
+  for i = 0 to length a - 1 do f(unsafe_get a i) done
 
 end
 module Ext_bytes : sig 
@@ -4619,11 +4628,11 @@ let stats h =
   let mbl =
     Array.fold_left (fun m b -> max m (List.length b)) 0 h.data in
   let histo = Array.make (mbl + 1) 0 in
-  Array.iter
+  Ext_array.iter h.data
     (fun b ->
        let l = List.length b in
        histo.(l) <- histo.(l) + 1)
-    h.data;
+    ;
   {Hashtbl.num_bindings = h.size;
    num_buckets = Array.length h.data;
    max_bucket_length = mbl;
@@ -5193,11 +5202,11 @@ let stats h =
   let mbl =
     Array.fold_left (fun m (b : _ bucket) -> max m (bucket_length 0 b)) 0 h.data in
   let histo = Array.make (mbl + 1) 0 in
-  Array.iter
+  Ext_array.iter h.data
     (fun b ->
        let l = bucket_length 0 b in
        histo.(l) <- histo.(l) + 1)
-    h.data;
+    ;
   { Hashtbl.num_bindings = h.size;
     num_buckets = h.data_mask + 1 ;
     max_bucket_length = mbl;
@@ -5598,7 +5607,7 @@ let suites =
       let of_array lst =
         let len = Array.length lst in 
         let tbl = String_hash_set.create len in 
-        Array.iter (String_hash_set.add tbl ) lst; tbl  in 
+        Ext_array.iter lst (String_hash_set.add tbl) ; tbl  in 
       let hash = of_array const_tbl  in 
       let len = String_hash_set.length hash in 
       String_hash_set.remove hash "x";
@@ -5954,11 +5963,11 @@ let stats h =
   let mbl =
     Array.fold_left (fun m b -> max m (bucket_length 0 b)) 0 h.data in
   let histo = Array.make (mbl + 1) 0 in
-  Array.iter
+  Ext_array.iter h.data
     (fun b ->
        let l = bucket_length 0 b in
        histo.(l) <- histo.(l) + 1)
-    h.data;
+    ;
   {Hashtbl.
     num_bindings = h.size;
     num_buckets = Array.length h.data;
@@ -10803,6 +10812,8 @@ external reraise: exn -> 'a = "%reraise"
 
 val finally : 'a -> ('a -> 'c) -> ('a -> 'b) -> 'b
 
+val try_it : (unit -> unit) ->  unit 
+
 val with_file_as_chan : string -> (out_channel -> 'a) -> 'a
 
 val with_file_as_pp : string -> (Format.formatter -> 'a) -> 'a
@@ -10865,6 +10876,9 @@ let finally v action f   =
       action v ;
       reraise e 
   | e ->  action v ; e 
+
+let try_it f  =   
+  try f () with _ -> ()
 
 let with_file_as_chan filename f = 
   finally (open_out_bin filename) close_out f 
