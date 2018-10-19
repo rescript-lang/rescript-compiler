@@ -199,9 +199,8 @@ let rec walk_all_deps_aux visited paths top dir cb =
         map
         |?
         (Bsb_build_schemas.bs_dependencies,
-         `Arr (fun (new_packages : Ext_json_types.t array) ->
-             new_packages
-             |> Array.iter (fun (js : Ext_json_types.t) ->
+         `Arr (fun (new_packages : Ext_json_types.t array) ->             
+             Ext_array.iter new_packages(fun js ->
                  begin match js with
                    | Str {str = new_package} ->
                      let package_dir = 
@@ -218,9 +217,8 @@ let rec walk_all_deps_aux visited paths top dir cb =
           map
           |?
           (Bsb_build_schemas.bs_dev_dependencies,
-           `Arr (fun (new_packages : Ext_json_types.t array) ->
-               new_packages
-               |> Array.iter (fun (js : Ext_json_types.t) ->
+           `Arr (fun (new_packages : Ext_json_types.t array) ->               
+               Ext_array.iter new_packages (fun (js : Ext_json_types.t) ->
                    match js with
                    | Str {str = new_package} ->
                      let package_dir = 

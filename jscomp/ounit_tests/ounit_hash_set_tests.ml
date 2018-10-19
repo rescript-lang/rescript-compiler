@@ -121,7 +121,7 @@ let suites =
       let of_array lst =
         let len = Array.length lst in 
         let tbl = String_hash_set.create len in 
-        Array.iter (String_hash_set.add tbl ) lst; tbl  in 
+        Ext_array.iter lst (String_hash_set.add tbl) ; tbl  in 
       let hash = of_array const_tbl  in 
       let len = String_hash_set.length hash in 
       String_hash_set.remove hash "x";

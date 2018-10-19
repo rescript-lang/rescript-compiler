@@ -251,3 +251,7 @@ let map a f =
     done;
     r
   end
+
+let iter a f =
+  let open Array in 
+  for i = 0 to length a - 1 do f(unsafe_get a i) done

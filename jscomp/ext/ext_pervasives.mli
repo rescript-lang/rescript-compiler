@@ -36,6 +36,8 @@ external reraise: exn -> 'a = "%reraise"
 
 val finally : 'a -> ('a -> 'c) -> ('a -> 'b) -> 'b
 
+val try_it : (unit -> unit) ->  unit 
+
 val with_file_as_chan : string -> (out_channel -> 'a) -> 'a
 
 val with_file_as_pp : string -> (Format.formatter -> 'a) -> 'a

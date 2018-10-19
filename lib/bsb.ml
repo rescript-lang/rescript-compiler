@@ -234,6 +234,11 @@ val map :
   'a array -> 
   ('a -> 'b) -> 
   'b array
+
+val iter :
+  'a array -> 
+  ('a -> unit) -> 
+  unit
 end = struct
 #1 "ext_array.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -489,6 +494,10 @@ let map a f =
     done;
     r
   end
+
+let iter a f =
+  let open Array in 
+  for i = 0 to length a - 1 do f(unsafe_get a i) done
 
 end
 module Ext_bytes : sig 
@@ -4291,11 +4300,11 @@ let stats h =
   let mbl =
     Array.fold_left (fun m b -> max m (bucket_length 0 b)) 0 h.data in
   let histo = Array.make (mbl + 1) 0 in
-  Array.iter
+  Ext_array.iter h.data
     (fun b ->
        let l = bucket_length 0 b in
        histo.(l) <- histo.(l) + 1)
-    h.data;
+    ;
   {Hashtbl.
     num_bindings = h.size;
     num_buckets = Array.length h.data;
@@ -5468,6 +5477,8 @@ external reraise: exn -> 'a = "%reraise"
 
 val finally : 'a -> ('a -> 'c) -> ('a -> 'b) -> 'b
 
+val try_it : (unit -> unit) ->  unit 
+
 val with_file_as_chan : string -> (out_channel -> 'a) -> 'a
 
 val with_file_as_pp : string -> (Format.formatter -> 'a) -> 'a
@@ -5530,6 +5541,9 @@ let finally v action f   =
       action v ;
       reraise e 
   | e ->  action v ; e 
+
+let try_it f  =   
+  try f () with _ -> ()
 
 let with_file_as_chan filename f = 
   finally (open_out_bin filename) close_out f 
@@ -6431,9 +6445,8 @@ let rec walk_all_deps_aux visited paths top dir cb =
         map
         |?
         (Bsb_build_schemas.bs_dependencies,
-         `Arr (fun (new_packages : Ext_json_types.t array) ->
-             new_packages
-             |> Array.iter (fun (js : Ext_json_types.t) ->
+         `Arr (fun (new_packages : Ext_json_types.t array) ->             
+             Ext_array.iter new_packages(fun js ->
                  begin match js with
                    | Str {str = new_package} ->
                      let package_dir = 
@@ -6450,9 +6463,8 @@ let rec walk_all_deps_aux visited paths top dir cb =
           map
           |?
           (Bsb_build_schemas.bs_dev_dependencies,
-           `Arr (fun (new_packages : Ext_json_types.t array) ->
-               new_packages
-               |> Array.iter (fun (js : Ext_json_types.t) ->
+           `Arr (fun (new_packages : Ext_json_types.t array) ->               
+               Ext_array.iter new_packages (fun (js : Ext_json_types.t) ->
                    match js with
                    | Str {str = new_package} ->
                      let package_dir = 
@@ -9322,7 +9334,7 @@ let extract_generators
   begin match String_map.find_opt Bsb_build_schemas.generators input with
     | Some (Arr { content ; loc_start}) ->
       (* Need check is dev build or not *)
-      Array.iter begin fun (x : Ext_json_types.t) ->
+      Ext_array.iter content (fun x ->
         match x with
         | Obj { map = generator; loc} ->
           begin match String_map.find_opt Bsb_build_schemas.name generator,
@@ -9349,7 +9361,7 @@ let extract_generators
               Bsb_exception.errorf ~loc "Invalid generator format"
           end
         | _ -> Bsb_exception.errorf ~loc:(Ext_json.loc_of x) "Invalid generator format"
-      end  content 
+      )  
     | Some x  -> Bsb_exception.errorf ~loc:(Ext_json.loc_of x ) "Invalid generator format"
     | None -> ()
   end ;
@@ -9373,7 +9385,7 @@ let clean_staled_bs_js_files
     (context : cxt) 
     (cur_sources : _ String_map.t ) 
     (files : string array)  =     
-  Array.iter begin fun current_file -> 
+  Ext_array.iter files (fun current_file -> 
     match Ext_namespace.ends_with_bs_suffix_then_chop current_file  with
     | None -> ()
     | Some basename -> (* Found [.bs.js] files *)
@@ -9408,9 +9420,10 @@ let clean_staled_bs_js_files
                 Literals.suffix_cmt; Literals.suffix_cmti ; 
                 Literals.suffix_mlast; Literals.suffix_mlastd;
                 Literals.suffix_mliast; Literals.suffix_mliastd
+                (*TODO: GenType*)
              ];
            end           
-  end files
+  )
 
 let rec 
   parsing_source_dir_map 
@@ -9609,7 +9622,7 @@ type walk_cxt = {
 let rec walk_sources (cxt : walk_cxt) (sources : Ext_json_types.t) = 
   match sources with 
   | Arr {content =  file_groups} -> 
-    Array.iter (fun x -> walk_single_source cxt x) file_groups
+    Ext_array.iter file_groups (fun x -> walk_single_source cxt x) 
   | x -> walk_single_source  cxt x    
 and walk_single_source cxt (x : Ext_json_types.t) =      
   match x with 
@@ -9636,7 +9649,7 @@ and walk_source_dir_map (cxt : walk_cxt) (input : Ext_json_types.t String_map.t)
     let file_array = Sys.readdir working_dir in 
     (* Format.fprintf Format.err_formatter 
       "@[Walking %s@]@." working_dir; *)
-    file_array |> Array.iter begin fun file -> 
+    Ext_array.iter file_array begin fun file -> 
         if Ext_string.ends_with file Literals.suffix_re_js then 
           Sys.remove (Filename.concat working_dir file)
     end; 
@@ -9646,7 +9659,7 @@ and walk_source_dir_map (cxt : walk_cxt) (input : Ext_json_types.t String_map.t)
     match sub_dirs_field, cxt_traverse with     
     | None, true 
     | Some(True _), _ -> 
-      file_array |> Array.iter begin fun f -> 
+      Ext_array.iter file_array begin fun f -> 
       if Sys.is_directory (Filename.concat working_dir f ) then 
         walk_source_dir_map 
         {cxt with 
@@ -9660,18 +9673,19 @@ and walk_source_dir_map (cxt : walk_cxt) (input : Ext_json_types.t String_map.t)
     | Some (False _), _ -> ()      
     | Some s, _ -> walk_sources cxt s 
 
+(* It makes use of the side effect when [walk_sources], removing suffix_re_js,
+   TODO: make it configurable
+ *)
 let clean_re_js root =     
   match Ext_json_parse.parse_json_from_file 
       (Filename.concat root Literals.bsconfig_json) with 
   | Obj {map ; loc} -> 
-    begin match String_map.find_opt Bsb_build_schemas.sources map with 
+    (match String_map.find_opt Bsb_build_schemas.sources map with 
     | Some config -> 
-      (try 
-        walk_sources 
-        { root ; traverse = true; cwd = Filename.current_dir_name} config
-      with _ -> ())
-    | None  -> ()
-    end  
+      Ext_pervasives.try_it (fun () -> 
+           walk_sources { root ; traverse = true; cwd = Filename.current_dir_name} config
+        )      
+    | None  -> ())
   | _  -> () 
   | exception _ -> ()    
   
@@ -10027,8 +10041,7 @@ let bad_module_format_message_exn ~loc format =
 let rec from_array (arr : Ext_json_types.t array) : Spec_set.t =
   let spec = ref Spec_set.empty in
   let has_in_source = ref false in
-  arr
-  |> Array.iter (fun (x : Ext_json_types.t) ->
+  Ext_array.iter arr (fun x ->
 
       let result = from_json_single x  in
       if result.in_source then 
@@ -10437,11 +10450,11 @@ let stats h =
   let mbl =
     Array.fold_left (fun m b -> max m (List.length b)) 0 h.data in
   let histo = Array.make (mbl + 1) 0 in
-  Array.iter
+  Ext_array.iter h.data
     (fun b ->
        let l = List.length b in
        histo.(l) <- histo.(l) + 1)
-    h.data;
+    ;
   {Hashtbl.num_bindings = h.size;
    num_buckets = Array.length h.data;
    max_bucket_length = mbl;
@@ -12527,7 +12540,7 @@ let output_kv key value oc  =
   output_string oc "\n"
 
 let output_kvs kvs oc =
-  Array.iter (fun (k,v) -> output_kv k v oc) kvs
+  Ext_array.iter kvs (fun (k,v) -> output_kv k v oc) 
 
 
 

@@ -271,6 +271,11 @@ val map :
   'a array -> 
   ('a -> 'b) -> 
   'b array
+
+val iter :
+  'a array -> 
+  ('a -> unit) -> 
+  unit
 end = struct
 #1 "ext_array.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -526,6 +531,10 @@ let map a f =
     done;
     r
   end
+
+let iter a f =
+  let open Array in 
+  for i = 0 to length a - 1 do f(unsafe_get a i) done
 
 end
 module Ext_bytes : sig 
@@ -3550,6 +3559,8 @@ external reraise: exn -> 'a = "%reraise"
 
 val finally : 'a -> ('a -> 'c) -> ('a -> 'b) -> 'b
 
+val try_it : (unit -> unit) ->  unit 
+
 val with_file_as_chan : string -> (out_channel -> 'a) -> 'a
 
 val with_file_as_pp : string -> (Format.formatter -> 'a) -> 'a
@@ -3612,6 +3623,9 @@ let finally v action f   =
       action v ;
       reraise e 
   | e ->  action v ; e 
+
+let try_it f  =   
+  try f () with _ -> ()
 
 let with_file_as_chan filename f = 
   finally (open_out_bin filename) close_out f 

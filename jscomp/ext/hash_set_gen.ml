@@ -109,11 +109,11 @@ let stats h =
   let mbl =
     Array.fold_left (fun m b -> max m (List.length b)) 0 h.data in
   let histo = Array.make (mbl + 1) 0 in
-  Array.iter
+  Ext_array.iter h.data
     (fun b ->
        let l = List.length b in
        histo.(l) <- histo.(l) + 1)
-    h.data;
+    ;
   {Hashtbl.num_bindings = h.size;
    num_buckets = Array.length h.data;
    max_bucket_length = mbl;
