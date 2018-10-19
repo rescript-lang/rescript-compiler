@@ -121,9 +121,13 @@ let report_error ppf = Typemod.(function
       fprintf ppf
         "@[This expression creates fresh types.@ %s@]"
         "It is not allowed inside applicative functors."
+#if OCAML_VERSION =~ ">4.03.0" then
+  (* restriction lifted *)
+#else
   | With_need_typeconstr ->
       fprintf ppf
         "Only type constructors with identical parameters can be substituted."
+#end        
   | Not_a_packed_module ty ->
       fprintf ppf
         "This expression is not a packed module. It has type@ %a"
@@ -141,6 +145,13 @@ let report_error ppf = Typemod.(function
       fprintf ppf "Recursive modules require an explicit module type."
   | Apply_generative ->
       fprintf ppf "This is a generative functor. It can only be applied to ()"
+#if OCAML_VERSION =~ ">4.03.0" then
+  | (With_cannot_remove_constrained_type|
+    With_makes_applicative_functor_ill_typed (_, _, _)|
+    With_changes_module_alias (_, _, _)|Cannot_scrape_alias _)      
+    -> 
+      fprintf ppf "TODO" (*TODO*)
+#end    
 )
 
 let report_error env ppf err =

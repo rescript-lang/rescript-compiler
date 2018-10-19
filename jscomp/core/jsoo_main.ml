@@ -65,6 +65,16 @@ let () =
   Clflags.unsafe_string := false;
   Clflags.record_event_when_debug := false
 
+let error_of_exn e =   
+#if OCAML_VERSION =~ ">4.03.0" then
+  match Location.error_of_exn e with 
+  | Some (`Ok e) -> Some e 
+  | Some `Already_displayed
+  | None -> None
+#else  
+  Location.error_of_exn e
+#end  
+
 let implementation ~use_super_errors prefix impl str  : Js.Unsafe.obj =
   let modulename = "Test" in
   (* let env = !Toploop.toplevel_env in *)
@@ -76,7 +86,7 @@ let implementation ~use_super_errors prefix impl str  : Js.Unsafe.obj =
   let finalenv = ref Env.empty in
   let types_signature = ref [] in
   if use_super_errors then begin
-    Misc.Color.setup (Some Clflags.Always);
+    Misc.Color.setup (Some Always);
     Super_main.setup ();
   end;
 
@@ -94,7 +104,13 @@ let implementation ~use_super_errors prefix impl str  : Js.Unsafe.obj =
       (a,b)
      )
   |>  Translmod.transl_implementation modulename
-  |> (* Printlambda.lambda ppf *) (fun lam ->
+  |> (* Printlambda.lambda ppf *) (fun 
+#if OCAML_VERSION =~ ">4.03.0" then
+    {Lambda.code = lam}
+#else    
+    lam 
+#end    
+    ->
       let buffer = Buffer.create 1000 in
       let () = Js_dump_program.pp_deps_program
                           ~output_prefix:"" (* does not matter here *)
@@ -107,7 +123,7 @@ let implementation ~use_super_errors prefix impl str  : Js.Unsafe.obj =
       (* Format.fprintf output_ppf {| { "js_code" : %S }|} v ) *)
   with
   | e ->
-      begin match Location.error_of_exn  e with
+      begin match error_of_exn  e with
       | Some error ->
           Location.report_error Format.err_formatter  error;
           let (file,line,startchar) = Location.get_pos_info error.loc.loc_start in
