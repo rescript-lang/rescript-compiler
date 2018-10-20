@@ -102,6 +102,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pglobal_exception _
       | Pmakeblock _  (* whether it's mutable or not *)
       | Pfield _
+      | Pfield_computed
       | Pval_from_option
       | Pval_from_option_not_nest
       | Pfloatfield _ 
@@ -209,6 +210,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Praise
       | Plazyforce 
       | Psetfield _ 
+      | Psetfield_computed
       | Psetfloatfield _
       (* | Psetglobal _  *)
         -> false 

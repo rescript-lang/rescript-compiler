@@ -60,6 +60,8 @@ let field (field_info : Lam_compat.field_dbg_info) e i =
   | Fld_record_extension _ -> assert false (* FIXME *)
 #end
 
+let field_by_exp e i = 
+  E.access e i 
 
 
 let set_field (field_info : Lam_compat.set_field_dbg_info) e i e0 =
@@ -77,6 +79,8 @@ let set_field (field_info : Lam_compat.set_field_dbg_info) e i e0 =
     ?comment e i 
    ~assigned_value:e0 
 
+let set_field_by_exp self index value = 
+  E.assign_by_exp self index value
 
 
 

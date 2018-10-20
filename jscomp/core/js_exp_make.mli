@@ -185,6 +185,10 @@ val assign_addr :
 
 val assign :  ?comment:string -> t -> t -> t 
 
+val assign_by_exp : 
+  t -> t -> t -> t 
+
+  
 val triple_equal : ?comment:string -> t -> t -> t 
 (* TODO: reduce [triple_equal] use *)    
 

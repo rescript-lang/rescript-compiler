@@ -198,12 +198,18 @@ let translate  loc
       | _ -> assert false
     end
   | Pfield (i, fld_info) -> 
-    begin match args with 
-      | [ e ]  -> 
-        Js_of_lam_block.field fld_info e (Int32.of_int i)
-      (* Invariant depends on runtime *)
-      | _ -> assert false
-    end
+    (match args with 
+     | [ e ]  -> 
+       Js_of_lam_block.field fld_info e (Int32.of_int i)
+     (* Invariant depends on runtime *)
+     | _ -> assert false)
+   | Pfield_computed ->  
+    (match args with 
+    | [self; index] -> 
+      Js_of_lam_block.field_by_exp self  index 
+    | _ -> assert false
+    )
+
 
   (** Negate boxed int *)
   | Pnegbint Pint32
@@ -623,6 +629,13 @@ let translate  loc
          (Js_of_lam_block.set_field field_info e0 (Int32.of_int i) e1)
      (*TODO: get rid of [E.unit ()]*)
      | _ -> assert false)    
+  | Psetfield_computed ->      
+    (match args with 
+    | [self; index; value] ->
+      ensure_value_unit cxt.continuation
+        (Js_of_lam_block.set_field_by_exp self index value)
+    | _ -> assert false
+    )
   | Psetfloatfield (i,field_info)
     -> (** RUNTIME --  RETURN VALUE SHOULD BE UNIT *)
     (match args with 

@@ -359,7 +359,12 @@ let index ?comment (e0 : t)  e1 : t =
 let assign ?comment e0 e1 : t = 
     {expression_desc = Bin(Eq, e0,e1); comment}
 
-
+let assign_by_exp e0 index value = 
+  assign
+    { expression_desc = 
+        Array_index (e0, index); comment = None}
+    value
+    
 let assign_addr 
   ?comment (e0 : t)  (e1 : Int32.t) 
   ~assigned_value : t = 
