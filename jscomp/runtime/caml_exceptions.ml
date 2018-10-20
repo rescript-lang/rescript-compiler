@@ -52,13 +52,14 @@ let caml_set_oo_id (b : Caml_builtin_exceptions.exception_block)  =
   id := Nativeint.add !id  1n; 
   b
 
-let get_id () = 
+
+let caml_fresh_oo_id () = 
   id := Nativeint.add !id 1n; !id
 
 let object_tag = 248
 
 let create (str : string) : Caml_builtin_exceptions.exception_block = 
-  let v = ( str, get_id ()) in 
+  let v = ( str, caml_fresh_oo_id ()) in 
   Bs_obj.set_tag (Obj.repr v) object_tag;
   v 
 
