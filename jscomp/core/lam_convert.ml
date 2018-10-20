@@ -229,7 +229,18 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
       prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
     | Blk_extension_slot -> 
       let info : Lam_tag_info.t = Blk_extension_slot in
+      ( 
+#if OCAML_VERSION =~ ">4.03.0" then
+      match args with 
+      | [ Lconst (Const_string name);
+          Lprim {primitive = Pccall {prim_name = "caml_fresh_oo_id"} ; }
+        ] -> 
+        prim ~primitive:(Pcreate_extension name) ~args:[] loc
+      | _ ->
+#end       
       prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
+      )
+
     | Blk_na -> 
       let info : Lam_tag_info.t = Blk_na in
       prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
@@ -400,32 +411,33 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
   let may_depends = Lam_module_ident.Hash_set.create 0 in
 
   let rec
-    convert_ccall (a : Primitive_compat.t)  (args : Lambda.lambda list) loc : Lam.t =
-    let prim_name = a.prim_name in
+    convert_ccall (a_prim : Primitive_compat.t)  (args : Lambda.lambda list) loc : Lam.t =
+    let prim_name = a_prim.prim_name in
     let prim_name_len  = String.length prim_name in
-    match External_ffi_types.from_string a.prim_native_name with
+    match External_ffi_types.from_string a_prim.prim_native_name with
     | Ffi_normal ->
       if prim_name_len > 0 && String.unsafe_get prim_name 0 = '#' then
-        convert_js_primitive a args loc
+        convert_js_primitive a_prim args loc
       else
         (* COMPILER CHECK *)
         (* Here the invariant we should keep is that all exception
            created should be captured
         *)
-          (match prim_name  ,  args with
+          (
+#if OCAML_VERSION =~ ">4.03.0" then
+#else
+          match prim_name  ,  args with
           | "caml_set_oo_id" ,
-            [ Lprim (Pmakeblock(tag,Blk_extension_slot, _
-#if OCAML_VERSION =~ ">4.03.0" then 
-                      ,_ (*FIXME caml_set_oo_id is no longer needed?*)
-#end                      
-                      ),
+            [ Lprim (Pmakeblock(tag,Blk_extension_slot, _),
                      Lconst (Const_base(Const_string(name,_))) :: _,
                      loc
                     )]
             -> prim ~primitive:(Pcreate_extension name) ~args:[] loc
           | _ , _->
+#end          
             let args = Ext_list.map args convert_aux in
-            prim ~primitive:(Pccall a) ~args loc)
+            prim ~primitive:(Pccall a_prim) ~args loc
+          )
     | Ffi_obj_create labels ->
       let args = Ext_list.map args  convert_aux in
       prim ~primitive:(Pjs_object_create labels) ~args loc

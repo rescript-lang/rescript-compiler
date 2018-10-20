@@ -581,10 +581,15 @@ let translate loc (prim_name : string)
     (** Note we captured [exception/extension] creation in the early pass, this primitive is 
         like normal one to set the identifier *)
 
+#if OCAML_VERSION =~ ">4.03.0" then
+    | "caml_fresh_oo_id" 
+      ->
+      Js_of_lam_exception.caml_fresh_oo_id args   
+#else
     | "caml_set_oo_id" 
       ->
       Js_of_lam_exception.caml_set_oo_id args 
-
+#end      
     | "caml_sys_const_big_endian" -> 
       (** return false *)
       E.bool Sys.big_endian
