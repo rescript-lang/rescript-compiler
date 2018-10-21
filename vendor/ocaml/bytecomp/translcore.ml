@@ -1007,9 +1007,13 @@ and transl_exp0 e =
   | Texp_array expr_list ->
       let kind = array_kind e in
       let ll = transl_list expr_list in
+#if true then      
+      if !Clflags.bs_only then Lprim(Pmakearray kind, ll, e.exp_loc)
+      else 
+#end      
       begin try
         (* Deactivate constant optimization if array is small enough *)
-        if List.length ll <= 4 then raise Not_constant;
+        if List.length ll <= 4 then raise_notrace Not_constant;
         let cl = List.map extract_constant ll in
         let master =
           match kind with
@@ -1018,7 +1022,7 @@ and transl_exp0 e =
           | Pfloatarray ->
               Lconst(Const_float_array(List.map extract_float cl))
           | Pgenarray ->
-              raise Not_constant in             (* can this really happen? *)
+              raise_notrace Not_constant in             (* can this really happen? *)
         Lprim(Pccall (Lazy.force prim_obj_dup), [master], e.exp_loc)
       with Not_constant ->
         Lprim(Pmakearray kind, ll, e.exp_loc)
