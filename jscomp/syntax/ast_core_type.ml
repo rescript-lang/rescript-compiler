@@ -41,13 +41,6 @@ let extract_option_type_exn (ty : t) =
     | _ -> assert false
   end
 
-let extract_option_type (ty : t) =
-  match ty.ptyp_desc with
-  | Ptyp_constr(
-    {txt = (Ldot (Lident "*predef*", "option")
-      | Lident "option")},
-     [ty]) -> Some ty
-  | _ -> None
 
 let predef_option : Longident.t =
   Longident.Ldot (Lident "*predef*", "option")
