@@ -174,6 +174,10 @@ type t =
   | Psome
   | Psome_not_nest  
 
+  | Pfield_computed (* Mostly used in object compilation *)
+  | Psetfield_computed
+
+
 
 
 let eq_record_representation ( p : record_representation) ( p1 : record_representation) = 
@@ -320,3 +324,5 @@ let eq_primitive_approx ( lhs : t) (rhs : t) =
   | Praw_js_code_exp _ 
   | Praw_js_code_stmt _ -> false (* TOO lazy, here comparison is only approximation*)
   
+  | Pfield_computed -> rhs = Pfield_computed
+  | Psetfield_computed -> rhs = Psetfield_computed
