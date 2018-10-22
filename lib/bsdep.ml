@@ -26957,8 +26957,7 @@ module Ast_core_type : sig
 type t = Parsetree.core_type
 
 
-val extract_option_type_exn : t -> t
-val extract_option_type : t -> t option
+
 
 val lift_option_type : t -> t
 val is_any : t -> bool
@@ -27035,33 +27034,12 @@ type t = Parsetree.core_type
 
 
 
-let extract_option_type_exn (ty : t) =
-  begin match ty with
-    | {ptyp_desc =
-         Ptyp_constr
-           ({txt =
-               Ldot (Lident "*predef*", "option")
-               | Lident "option"
-            },
-            [ty])}
-      ->
-      ty
-    | _ -> assert false
-  end
 
-let extract_option_type (ty : t) =
-  match ty.ptyp_desc with
-  | Ptyp_constr(
-    {txt = (Ldot (Lident "*predef*", "option")
-      | Lident "option")},
-     [ty]) -> Some ty
-  | _ -> None
+
 
 let predef_option : Longident.t =
-  Longident.Ldot (Lident "*predef*", "option")
+  Ldot (Lident "*predef*", "option")
 
-let predef_int : Longident.t =
-  Ldot (Lident "*predef*", "int")
 
 
 let lift_option_type ({ptyp_loc} as ty:t) : t =
@@ -33513,15 +33491,21 @@ let variant_can_bs_unwrap_fields (row_fields : Parsetree.row_field list) : bool 
     The result type would be [ hi:string ]
 *)
 let get_arg_type
-    ~nolabel optional
+    ~nolabel 
+    (is_optional : bool)
     (ptyp : Ast_core_type.t) :
   External_arg_spec.attr * Ast_core_type.t  =
   let ptyp =
-    if optional then
-      Ast_core_type.extract_option_type_exn ptyp
-    else ptyp in
+
+    if is_optional then    
+      match ptyp.ptyp_desc with 
+      | Ptyp_constr (_, [ty]) -> ty  (*optional*)
+      | _ -> assert false
+    else 
+    
+      ptyp in
   if Ast_core_type.is_any ptyp then (* (_[@bs.as ])*)
-    if optional then
+    if is_optional then
       Bs_syntaxerr.err ptyp.ptyp_loc Invalid_underscore_type_in_external
     else begin
       let ptyp_attrs = ptyp.ptyp_attributes in
@@ -33929,7 +33913,11 @@ let handle_attributes
                    end
                  | Optional name ->
                    let arg_type, new_ty_extract = get_arg_type ~nolabel:false true ty in
-                   let new_ty = Ast_core_type.lift_option_type new_ty_extract in
+                   let new_ty = 
+
+                      Ast_core_type.lift_option_type new_ty_extract 
+
+                   in
                    begin match arg_type with
                      | Ignore ->
                        External_arg_spec.empty_kind arg_type,
@@ -34024,7 +34012,12 @@ let handle_attributes
                      "[@@bs.string] does not work with optional when it has arities in label %s" s
                  | _ ->
                    External_arg_spec.optional s, arg_type,
-                   ((label, Ast_core_type.lift_option_type new_ty , attr,loc) :: arg_types) end
+                   let new_ty = 
+
+                      Ast_core_type.lift_option_type new_ty 
+                      
+                    in
+                   ((label, new_ty, attr,loc) :: arg_types) end
              | Labelled s  ->
                begin match get_arg_type ~nolabel:false false  ty with
                  | (Arg_cst ( i) as arg_type), new_ty ->
@@ -37859,7 +37852,12 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
           let maker, acc =
             if is_optional then
               let optional_type = Ast_core_type.lift_option_type pld_type in
-              (Ast_compatible.opt_arrow ~loc:pld_loc label_name optional_type maker,
+              (Ast_compatible.opt_arrow ~loc:pld_loc label_name 
+
+                  optional_type
+              
+
+                maker,
               let aux b pld_name = 
                 (Val.mk ~loc:pld_loc
                  (if b then pld_name else 

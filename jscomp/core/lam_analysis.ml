@@ -51,7 +51,6 @@ let rec no_side_effects (lam : Lam.t) : bool =
           match prim_name,args with 
           | ("caml_register_named_value"
             (* register to c runtime does not make sense  in ocaml *)
-            (* | "caml_set_oo_id"  *) (* it does have side effect, just in creation path it happens not to have *)
             | "caml_int64_float_of_bits"
              (* more safe to check if arguments are constant *)
             (* non-observable side effect *)    

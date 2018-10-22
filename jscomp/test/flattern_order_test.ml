@@ -1,12 +1,12 @@
 
-
+#if OCAML_VERSION =~ "<4.03.0" then
 let rec xs = 
   let rec ys = 1 :: ys 
   and _zs () = (List.hd ys, List.hd (fst xs))  in
   (* and us = 3 in  *)
   (* Js.log us; *)
   (2 :: List.hd ys :: [], _zs)
-
+#end
 (*
 let second xs =
     let rec ys = 1 :: ys 
