@@ -26957,8 +26957,7 @@ module Ast_core_type : sig
 type t = Parsetree.core_type
 
 
-val extract_option_type_exn : t -> t
-val extract_option_type : t -> t option
+
 
 val lift_option_type : t -> t
 val is_any : t -> bool
@@ -27035,33 +27034,12 @@ type t = Parsetree.core_type
 
 
 
-let extract_option_type_exn (ty : t) =
-  begin match ty with
-    | {ptyp_desc =
-         Ptyp_constr
-           ({txt =
-               Ldot (Lident "*predef*", "option")
-               | Lident "option"
-            },
-            [ty])}
-      ->
-      ty
-    | _ -> assert false
-  end
 
-let extract_option_type (ty : t) =
-  match ty.ptyp_desc with
-  | Ptyp_constr(
-    {txt = (Ldot (Lident "*predef*", "option")
-      | Lident "option")},
-     [ty]) -> Some ty
-  | _ -> None
+
 
 let predef_option : Longident.t =
-  Longident.Ldot (Lident "*predef*", "option")
+  Ldot (Lident "*predef*", "option")
 
-let predef_int : Longident.t =
-  Ldot (Lident "*predef*", "int")
 
 
 let lift_option_type ({ptyp_loc} as ty:t) : t =
@@ -33503,6 +33481,20 @@ let variant_can_bs_unwrap_fields (row_fields : Parsetree.row_field list) : bool 
   | `Invalid_field -> false
 
 
+(* let extract_option_type_exn (ty : t) =
+  begin match ty with
+    | {ptyp_desc =
+         Ptyp_constr
+           ({txt =
+               Ldot (Lident "*predef*", "option")
+               | Lident "option"
+            },
+            [ty])}
+      ->
+      ty
+    | _ -> assert false
+  end   *)
+
 (** Given the type of argument, process its [bs.] attribute and new type,
     The new type is currently used to reconstruct the external type
     and result type in [@@bs.obj]
@@ -33513,15 +33505,21 @@ let variant_can_bs_unwrap_fields (row_fields : Parsetree.row_field list) : bool 
     The result type would be [ hi:string ]
 *)
 let get_arg_type
-    ~nolabel optional
+    ~nolabel 
+    (is_optional : bool)
     (ptyp : Ast_core_type.t) :
   External_arg_spec.attr * Ast_core_type.t  =
   let ptyp =
-    if optional then
-      Ast_core_type.extract_option_type_exn ptyp
-    else ptyp in
+
+    if is_optional then    
+      match ptyp.ptyp_desc with 
+      | Ptyp_constr (_, [ty]) -> ty  (*optional*)
+      | _ -> assert false
+    else 
+    
+      ptyp in
   if Ast_core_type.is_any ptyp then (* (_[@bs.as ])*)
-    if optional then
+    if is_optional then
       Bs_syntaxerr.err ptyp.ptyp_loc Invalid_underscore_type_in_external
     else begin
       let ptyp_attrs = ptyp.ptyp_attributes in

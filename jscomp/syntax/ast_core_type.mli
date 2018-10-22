@@ -25,7 +25,6 @@
 type t = Parsetree.core_type
 
 
-val extract_option_type_exn : t -> t
 
 
 val lift_option_type : t -> t

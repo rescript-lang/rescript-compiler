@@ -61,15 +61,21 @@ let variant_can_bs_unwrap_fields (row_fields : Parsetree.row_field list) : bool 
     The result type would be [ hi:string ]
 *)
 let get_arg_type
-    ~nolabel optional
+    ~nolabel 
+    (is_optional : bool)
     (ptyp : Ast_core_type.t) :
   External_arg_spec.attr * Ast_core_type.t  =
   let ptyp =
-    if optional then
-      Ast_core_type.extract_option_type_exn ptyp
-    else ptyp in
+#if OCAML_VERSION =~ "<4.03.0" then
+    if is_optional then    
+      match ptyp.ptyp_desc with 
+      | Ptyp_constr (_, [ty]) -> ty  (*optional*)
+      | _ -> assert false
+    else 
+#end    
+      ptyp in
   if Ast_core_type.is_any ptyp then (* (_[@bs.as ])*)
-    if optional then
+    if is_optional then
       Bs_syntaxerr.err ptyp.ptyp_loc Invalid_underscore_type_in_external
     else begin
       let ptyp_attrs = ptyp.ptyp_attributes in
