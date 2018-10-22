@@ -27,33 +27,12 @@ type t = Parsetree.core_type
 
 
 
-let extract_option_type_exn (ty : t) =
-  begin match ty with
-    | {ptyp_desc =
-         Ptyp_constr
-           ({txt =
-               Ldot (Lident "*predef*", "option")
-               | Lident "option"
-            },
-            [ty])}
-      ->
-      ty
-    | _ -> assert false
-  end
 
-let extract_option_type (ty : t) =
-  match ty.ptyp_desc with
-  | Ptyp_constr(
-    {txt = (Ldot (Lident "*predef*", "option")
-      | Lident "option")},
-     [ty]) -> Some ty
-  | _ -> None
+
 
 let predef_option : Longident.t =
-  Longident.Ldot (Lident "*predef*", "option")
+  Ldot (Lident "*predef*", "option")
 
-let predef_int : Longident.t =
-  Ldot (Lident "*predef*", "int")
 
 
 let lift_option_type ({ptyp_loc} as ty:t) : t =
