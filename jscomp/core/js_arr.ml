@@ -30,7 +30,7 @@
 module E = Js_exp_make
  
 let set_array  e e0 e1 = 
-  E.assign (E.access e e0)  e1
+  E.assign (E.array_index e e0)  e1
 
 let ref_array  e e0 = 
-  E.access  e  e0
+  E.array_index  e  e0

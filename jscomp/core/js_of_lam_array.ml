@@ -34,7 +34,7 @@
    set array,
    ref array,
 
-   Also make sure, don't call any primitive array method, i.e [E.index] 
+   Also make sure, don't call any primitive array method, i.e [E.array_index_by_int] 
 
    We also need check primitive [caml_make_vect], i.e, 
    [Caml_primitive['caml_make_vect']] see if it's correct 
@@ -59,7 +59,7 @@ let make_array mt  args =
   E.array ~comment:"array" mt args 
  
 let set_array  e e0 e1 = 
-  E.assign (E.access e e0)  e1
+  E.assign (E.array_index e e0)  e1
 
 let ref_array  e e0 = 
-  E.access  e  e0
+  E.array_index  e  e0

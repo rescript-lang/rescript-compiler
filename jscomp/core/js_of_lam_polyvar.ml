@@ -26,7 +26,7 @@ module E = Js_exp_make
 
 
  let get_tag (arg : J.expression) = 
-  E.index arg 0l
+  E.array_index_by_int arg 0l
 
 let get_field (arg : J.expression) =   
-  E.index arg 1l
+  E.array_index_by_int arg 1l

@@ -55,11 +55,11 @@ let ref_string e e1 =
    We use normal array for [bytes]
    TODO: we can use [Buffer] in the future 
 *)
-let ref_byte e e0  = E.access  e  e0
+let ref_byte e e0  = E.array_index  e  e0
 
 (* {Bytes.set : bytes -> int -> char -> unit }*)
 let set_byte  e e0 e1 = 
-  E.assign (E.access e e0)  e1
+  E.assign (E.array_index e e0)  e1
 
 (**
    Note that [String.fromCharCode] also works, but it only 

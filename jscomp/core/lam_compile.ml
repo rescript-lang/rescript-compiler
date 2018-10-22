@@ -139,7 +139,7 @@ let rec
 (** This can not happen since this id should be already consulted by type checker
           Worst case
     {[
-      E.index m pos
+      E.array_index_by_int m pos
     ]}
 *)
 (* when module is passed as an argument - unpack to an array

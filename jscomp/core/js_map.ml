@@ -159,8 +159,8 @@ class virtual map =
                  (* arr.(i)
        Invariant: 
        The second argument has to be type of [int],
-       This can be constructed either in a static way [E.index] or a dynamic way 
-       [E.access]
+       This can be constructed either in a static way [E.array_index_by_int] or a dynamic way 
+       [E.array_index]
      *)
                  (* The third argument bool indicates whether we should 
        print it as 

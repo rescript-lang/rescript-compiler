@@ -664,3 +664,5 @@ let rec fold_left2 l1 l2 accu f =
     ([], []) -> accu
   | (a1::l1, a2::l2) -> fold_left2  l1 l2 (f a1 a2 accu) f 
   | (_, _) -> invalid_arg "List.fold_left2"
+
+let singleton_exn xs = match xs with [x] -> x | _ -> assert false

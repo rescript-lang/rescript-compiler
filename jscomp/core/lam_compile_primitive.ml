@@ -107,36 +107,18 @@ let translate  loc
       | _ -> assert false  
     end   
   | Pjs_function_length -> 
-    begin match args with 
-      | [f] -> E.function_length f
-      | _ -> assert false 
-    end
+    E.function_length (Ext_list.singleton_exn args)    
   | Pcaml_obj_length -> 
-    begin match args with 
-      | [e] -> E.obj_length e 
-      | _ -> assert false 
-    end
+    E.obj_length (Ext_list.singleton_exn args)
   | Pis_null -> 
-    begin match args with 
-      | [e] -> E.is_null e 
-      | _ -> assert false 
-    end   
+    E.is_null (Ext_list.singleton_exn args)    
   | Pis_undefined -> 
-    begin match args with 
-      | [e] -> E.is_undef e 
-      | _ -> assert false 
-    end
-  | Pis_null_undefined -> 
-    begin match args with 
-      | [ arg] -> 
-        E.is_null_undefined arg
-      | _ -> assert false 
-    end
+    E.is_undef (Ext_list.singleton_exn args) 
+  | Pis_null_undefined ->     
+    E.is_null_undefined (Ext_list.singleton_exn args)
   | Pjs_typeof -> 
-    begin match args with 
-      | [e] -> E.typeof e 
-      | _ -> assert false 
-    end
+    E.typeof (Ext_list.singleton_exn args)
+    
   | Pjs_unsafe_downgrade _
   | Pdebugger 
   | Pjs_fn_run _ 
@@ -178,33 +160,24 @@ let translate  loc
       | _ -> assert false
     end     
   | Psome_not_nest ->   
-    begin match args with 
-      | [arg] -> E.optional_not_nest_block arg 
-      | _ -> assert false
-    end 
+    E.optional_not_nest_block (Ext_list.singleton_exn args)
   | Pmakeblock(tag, tag_info, mutable_flag ) ->  (* RUNTIME *)
     Js_of_lam_block.make_block 
       (Js_op_util.of_lam_mutable_flag mutable_flag) 
       tag_info (E.small_int tag) args 
   | Pval_from_option -> 
-    begin match args with 
-      | [ e ] -> 
-        Js_of_lam_option.val_from_option e 
-      | _ -> assert false
-    end
+    Js_of_lam_option.val_from_option (Ext_list.singleton_exn args)
   | Pval_from_option_not_nest -> 
-    begin match args with 
-      | [ e ] -> e
-      | _ -> assert false
-    end
+    Ext_list.singleton_exn args 
   | Pfield (i, fld_info) -> 
-    begin match args with 
-      | [ e ]  -> 
-        Js_of_lam_block.field fld_info e (Int32.of_int i)
-      (* Invariant depends on runtime *)
-      | _ -> assert false
-    end
-
+    Js_of_lam_block.field fld_info (Ext_list.singleton_exn args) (Int32.of_int i)
+    (* Invariant depends on runtime *)
+   | Pfield_computed ->  
+    (match args with 
+    | [self; index] -> 
+      Js_of_lam_block.field_by_exp self  index 
+    | _ -> assert false
+    )
   (** Negate boxed int *)
   | Pnegbint Pint32
     ->
@@ -623,6 +596,13 @@ let translate  loc
          (Js_of_lam_block.set_field field_info e0 (Int32.of_int i) e1)
      (*TODO: get rid of [E.unit ()]*)
      | _ -> assert false)    
+  | Psetfield_computed ->      
+    (match args with 
+    | [self; index; value] ->
+      ensure_value_unit cxt.continuation
+        (Js_of_lam_block.set_field_by_exp self index value)
+    | _ -> assert false
+    )
   | Psetfloatfield (i,field_info)
     -> (** RUNTIME --  RETURN VALUE SHOULD BE UNIT *)
     (match args with 
