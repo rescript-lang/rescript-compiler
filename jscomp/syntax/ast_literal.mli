@@ -24,6 +24,11 @@
 
 
 type 'a  lit = ?loc: Location.t -> unit -> 'a
+
+val predef_option : Longident.t 
+val predef_some : Longident.t 
+val predef_none : Longident.t 
+
 module Lid : sig
   type t = Longident.t 
   val val_unit : t 

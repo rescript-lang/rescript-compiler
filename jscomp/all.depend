@@ -203,7 +203,8 @@ syntax/ast_derive.cmx : ext/string_map.cmx ext/literals.cmx \
 syntax/ast_comb.cmx : ext/ext_list.cmx syntax/ast_literal.cmx \
     syntax/ast_compatible.cmx syntax/ast_comb.cmi
 syntax/ast_core_type.cmx : ext/ext_list.cmx syntax/bs_syntaxerr.cmx \
-    syntax/ast_compatible.cmx syntax/ast_comb.cmx syntax/ast_core_type.cmi
+    syntax/ast_literal.cmx syntax/ast_compatible.cmx syntax/ast_comb.cmx \
+    syntax/ast_core_type.cmi
 syntax/bs_ast_invariant.cmx : ext/literals.cmx ext/hash_set_poly.cmx \
     ext/ext_string.cmx common/bs_warnings.cmx syntax/bs_ast_iterator.cmx \
     syntax/ast_core_type.cmx syntax/bs_ast_invariant.cmi

@@ -30,15 +30,12 @@ type t = Parsetree.core_type
 
 
 
-let predef_option : Longident.t =
-  Ldot (Lident "*predef*", "option")
-
 
 
 let lift_option_type ({ptyp_loc} as ty:t) : t =
   {ptyp_desc =
      Ptyp_constr(
-       {txt = predef_option;
+       {txt = Ast_literal.predef_option;
         loc = ptyp_loc}
         , [ty]);
         ptyp_loc = ptyp_loc;
