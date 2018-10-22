@@ -25,6 +25,18 @@
 open Ast_helper
 
 
+let predef_prefix_ident : Longident.t = Lident "*predef*"
+
+let predef_option : Longident.t =
+  Ldot (predef_prefix_ident, "option")
+
+let predef_some : Longident.t =   
+  Ldot (predef_prefix_ident, "Some")
+
+let predef_none : Longident.t = 
+  Ldot (predef_prefix_ident, "None")
+
+
 module Lid = struct 
   type t = Longident.t 
   let val_unit : t = Lident "()"

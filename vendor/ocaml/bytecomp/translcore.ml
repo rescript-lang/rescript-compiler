@@ -942,7 +942,9 @@ and transl_exp0 e =
           Lconst(Const_pointer (n,
             match lid.txt with
             | Lident ("false"|"true") -> Pt_builtin_boolean
-            | Lident "None" when Datarepr.constructor_has_optional_shape cstr
+            | Lident "None"
+            | Ldot (Lident "*predef*", "None")
+               when Datarepr.constructor_has_optional_shape cstr
               -> Pt_shape_none
             | _ -> (Lambda.Pt_constructor cstr.cstr_name)
             ))
