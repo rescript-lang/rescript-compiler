@@ -66,10 +66,8 @@ let of_const (v : Int64.t) =
     ~hi:(Int64.to_int32 (Int64.shift_right v 32))
 
 let to_int32 args = 
-  begin match args with
-    | [v] ->  E.to_int32 @@ get_lo v
-    | _ -> assert false
-  end
+  E.to_int32 @@ get_lo (Ext_list.singleton_exn args)
+  
 
 let of_int32 (args : J.expression list) = 
   match args with 

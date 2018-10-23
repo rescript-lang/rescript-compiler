@@ -62,7 +62,7 @@ let rec get_arity (meta : Lam_stats.t) (lam : Lam.t) :  Lam_arity.t =
      get more arity information
   *)
   | Lprim {primitive = Praise ;  _} -> Lam_arity.raise_arity_info
-  | Lglobal_module _ (* TODO: fix me never going to happen assert false  *)
+  | Lglobal_module _ (* TODO: fix me never going to happen *)
   | Lprim _  -> Lam_arity.na (* CHECK*)
   (* shall we handle primitive in a direct way, 
       since we know all the information

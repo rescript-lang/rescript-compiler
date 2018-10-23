@@ -368,5 +368,5 @@ let rec is_okay_to_duplicate (e : J.expression) =
   | Bool _ 
   | Str _ 
   | Number _ -> true
-  | Static_index (e, _) -> is_okay_to_duplicate e (* FIXME -- property okay too?*)
+  | Static_index (e, _s) -> is_okay_to_duplicate e 
   | _ -> false 

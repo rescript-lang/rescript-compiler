@@ -60,3 +60,5 @@ external id : 'a -> 'a = "%identity"
     need sync up and add test case
  *)
 val hash_variant : string -> int
+
+val todo : string -> 'a

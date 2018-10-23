@@ -174,8 +174,7 @@ let unit = Lam.unit
 let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
   match p with
   | Pint_as_pointer
-  | Pidentity ->
-    begin match args with [x] -> x | _ -> assert false end
+  | Pidentity -> Ext_list.singleton_exn args 
   | Pccall _ -> assert false
   | Prevapply -> assert false
   | Pdirapply -> assert false
@@ -185,16 +184,12 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
     -> prim ~primitive:Pbytes_to_string ~args loc
   | Pbytes_of_string -> prim ~primitive:Pbytes_of_string ~args loc
   | Pignore -> (* Pignore means return unit, it is not an nop *)
-    begin match args with [x] -> seq x unit | _ -> assert false end
+    seq (Ext_list.singleton_exn args) unit 
   | Pgetglobal id ->
     assert false
   | Psetglobal id ->
     (* we discard [Psetglobal] in the beginning*)
-    begin match args with
-      | [biglambda] ->
-        drop_global_marker biglambda
-      | _ -> assert false
-    end
+    drop_global_marker (Ext_list.singleton_exn args)
   (* prim ~primitive:(Psetglobal id) ~args loc *)
   | Pmakeblock (tag,info, mutable_flag
 #if OCAML_VERSION =~ ">4.03.0"  then 
@@ -246,7 +241,7 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
       prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
 #if OCAML_VERSION =~ ">4.03.0"  then
     | Blk_record_inlined _ 
-    | Blk_record_ext _ -> assert false (*FIXME*)
+    | Blk_record_ext _ -> Ext_pervasives.todo __LOC__ 
 #end
     end  
   | Pfield (id,info)
@@ -395,10 +390,7 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
 #if OCAML_VERSION =~ ">4.03.0" then 
   | Pfield_computed -> 
     prim ~primitive:Pfield_computed ~args loc 
-  | Popaque ->  
-    (match args with 
-    | [e] -> e 
-    | _ -> assert false)
+  | Popaque -> Ext_list.singleton_exn args      
   | Psetfield_computed _ ->  
     prim ~primitive:Psetfield_computed ~args loc 
   | Pduparray _ ->  assert false 
@@ -459,32 +451,27 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
       prim ~primitive:Pis_not_none ~args:(Ext_list.map args convert_aux ) loc 
     | _ when s = "#val_from_unnest_option" 
       -> 
-      begin match args with 
-      | [arg] -> 
-        prim ~primitive:Pval_from_option_not_nest
-        ~args:[convert_aux arg] loc
-        (* convert_aux arg  *)
-      | _ -> assert false 
-      end      
+      prim ~primitive:Pval_from_option_not_nest
+        ~args:[convert_aux (Ext_list.singleton_exn args)] loc
     | _ when s = "#val_from_option" 
       -> 
       prim ~primitive:Pval_from_option
         ~args:(Ext_list.map args convert_aux ) loc
     | _ when s = "#raw_expr" ->
-      begin match args with
-        | [Lconst( Const_base (Const_string(s,_)))] ->
-          prim ~primitive:(Praw_js_code_exp s)
-            ~args:[] loc
-        | _ -> assert false
-      end
+      (match args with
+       | [Lconst( Const_base (Const_string(s,_)))] ->
+         prim ~primitive:(Praw_js_code_exp s)
+           ~args:[] loc
+       | _ -> assert false)
+      
     | _ when s = "#raw_function" ->   
-      begin match args with
-        | [Lconst( Const_base (Const_string(s,_)))] ->
-          let v = Ast_exp_extension.fromString s in 
-          prim ~primitive:(Praw_js_function (v.block, v.args))
-            ~args:[] loc
-        | _ -> assert false
-      end
+      (match args with
+       | [Lconst( Const_base (Const_string(s,_)))] ->
+         let v = Ast_exp_extension.fromString s in 
+         prim ~primitive:(Praw_js_function (v.block, v.args))
+           ~args:[] loc
+       | _ -> assert false)
+      
     | _ when s = "#raw_stmt" ->
       begin match args with
         | [Lconst( Const_base (Const_string(s,_)))] ->

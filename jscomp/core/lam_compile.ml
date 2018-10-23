@@ -162,8 +162,8 @@ and compile_external_field_apply
         let arg_cxt = {lambda_cxt with continuation = NeedValue ReturnFalse} in 
         Ext_list.fold_right args_lambda dummy (fun arg_lambda  (args_code, args)  ->
            match compile_lambda arg_cxt arg_lambda with
-           | {block = a; value = Some b} ->
-             (Ext_list.append a args_code), (b :: args )
+           | {block; value = Some b} ->
+             (Ext_list.append block args_code), (b :: args )
            | _ -> assert false
         )  in
   match ident_info.closed_lambda with

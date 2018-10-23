@@ -38,7 +38,7 @@ let get_double_feild (field_info : Lam_compat.field_dbg_info) e i =
     -> E.array_index_by_int ~comment:s e i
 #if OCAML_VERSION =~ ">4.03.0" then 
   | Fld_record_inline _
-  | Fld_record_extension _ -> assert false (*FIXME*)
+  | Fld_record_extension _ -> Ext_pervasives.todo __LOC__
 #end
 
 let set_double_field (field_info : Lam_compat.set_field_dbg_info) e  i e0 = 
@@ -51,7 +51,7 @@ let set_double_field (field_info : Lam_compat.set_field_dbg_info) e  i e0 =
       E.array_index_by_int ~comment:s e i 
 #if OCAML_VERSION =~ ">4.03.0" then 
   | Fld_record_inline_set _
-  | Fld_record_extension_set _ -> assert false (*FIXME*)
+  | Fld_record_extension_set _ -> Ext_pervasives.todo __LOC__
 #end      
   in 
   E.assign v  e0
