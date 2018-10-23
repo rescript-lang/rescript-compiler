@@ -25,7 +25,12 @@
 
 let setup_env () =
 #if BS_DEBUG then
-    Js_config.set_debug_file "caml_obj.ml";
+    (match Ext_sys.getenv_opt "BS_DEBUG_FILE" with 
+    | None -> 
+      Js_config.set_debug_file "caml_obj.ml"
+    | Some s -> 
+      Js_config.set_debug_file s 
+    );
 #end
   Lexer.replace_directive_bool "BS" true;
   Lexer.replace_directive_string "BS_VERSION"  Bs_version.version

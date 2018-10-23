@@ -28,3 +28,10 @@ let is_directory_no_exn f =
 
 
 let is_windows_or_cygwin = Sys.win32 || Sys.cygwin
+
+#if OCAML_VERSION =~ ">4.03.0" then
+let getenv_opt = Sys.getenv_opt
+#else
+let getenv_opt s = 
+  try Some (Sys.getenv s) with Not_found -> None
+#end

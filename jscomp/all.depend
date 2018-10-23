@@ -474,8 +474,8 @@ core/js_packages_state.cmx : core/js_packages_info.cmx \
     ext/ext_pervasives.cmx ext/ext_namespace.cmx core/js_packages_state.cmi
 core/ocaml_types.cmx : common/ext_log.cmx ext/ext_list.cmx \
     core/ocaml_types.cmi
-core/bs_conditional_initial.cmx : common/js_config.cmx common/bs_version.cmx \
-    core/bs_conditional_initial.cmi
+core/bs_conditional_initial.cmx : common/js_config.cmx ext/ext_sys.cmx \
+    common/bs_version.cmx core/bs_conditional_initial.cmi
 core/ocaml_options.cmx : common/bs_version.cmx \
     core/bs_conditional_initial.cmx core/ocaml_options.cmi
 core/ocaml_parse.cmx : syntax/ppx_entry.cmx common/js_config.cmx \
