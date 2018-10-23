@@ -280,19 +280,20 @@ let parse_format fmt =
 
 
 
-let finish_formatting ({
-  justify; 
-  signstyle;
-  filter ;
-  alternate;
-  base;
-  signedconv;
-  width;
-  uppercase;
-  sign;
-  prec;
-  conv
-}) rawbuffer =  
+let finish_formatting (config : fmt) rawbuffer =  
+  let {
+    justify; 
+    signstyle;
+    filter ;
+    alternate;
+    base;
+    signedconv;
+    width;
+    uppercase;
+    sign;
+    prec;
+    conv
+  } = config in  
   let len = ref (String.length rawbuffer) in 
   if signedconv && (sign < 0 || signstyle <> "-") then 
     incr len;
@@ -312,7 +313,7 @@ let finish_formatting ({
   (* let (+:) s = buffer := !buffer ^ s in *)
   if justify = "+" && filter = " " then
     for i = !len to width - 1 do 
-       buffer := !buffer ^ filter
+      buffer := !buffer ^ filter
     done;
   if signedconv then 
     if sign < 0 then 
@@ -324,7 +325,7 @@ let finish_formatting ({
     buffer := !buffer ^ "0";
   if alternate && base == Hex then
     buffer := !buffer ^ "0x";
-    
+
   if justify = "+" && filter = "0" then 
     for i = !len to width - 1 do 
       buffer := !buffer ^ filter;
