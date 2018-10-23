@@ -170,4 +170,8 @@ type t =
   | Psome
   | Psome_not_nest
 
+
+  | Pfield_computed (* Mostly used in object compilation *)
+  | Psetfield_computed
+
 val eq_primitive_approx : t -> t -> bool  

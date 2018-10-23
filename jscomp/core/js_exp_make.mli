@@ -159,29 +159,37 @@ val js_global_dot : ?comment:string -> string -> string -> t
 
 val string_index : ?comment:string -> t -> t -> t 
 
-val access : 
+val array_index : 
   ?comment:string -> 
   t -> 
   t ->
   t
-val index : 
+  
+val array_index_by_int : 
   ?comment:string -> 
   t -> 
   Int32.t ->
    t
 
 (** 
-    [assign_addr  e i v]
+    [assign_by_int  e i v]
     if the expression [e] is a temporay block 
     which has no side effect,
     write to it does not really make sense, 
     optimize it away *)
-val assign_addr : 
+val assign_by_int : 
   ?comment:string -> 
   t -> 
   Js_op.jsint -> 
-  assigned_value:t -> 
+  t -> 
   t
+
+val assign_by_exp : 
+  ?comment:string -> 
+  t -> 
+  t -> 
+  t -> 
+  t 
 
 val assign :  ?comment:string -> t -> t -> t 
 

@@ -393,10 +393,16 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
   | Pbigarrayref (a,b,c,d) -> prim ~primitive:(Pbigarrayref (a,b,c,d)) ~args loc
   | Pbigarrayset (a,b,c,d) -> prim ~primitive:(Pbigarrayset (a,b,c,d)) ~args loc
 #if OCAML_VERSION =~ ">4.03.0" then 
-  | Pfield_computed
-  | Popaque
-  | Psetfield_computed _ 
-  | Pduparray _ ->  assert false (* FIXME *)
+  | Pfield_computed -> 
+    prim ~primitive:Pfield_computed ~args loc 
+  | Popaque ->  
+    (match args with 
+    | [e] -> e 
+    | _ -> assert false)
+  | Psetfield_computed _ ->  
+    prim ~primitive:Psetfield_computed ~args loc 
+  | Pduparray _ ->  assert false 
+    (* Does not exist since we compile array in js backend unlike native backend *)
 #end
 
 

@@ -320,7 +320,7 @@ let small_int i : t =
   | i -> int (Int32.of_int i) 
 
 
-let access ?comment (e0 : t)  (e1 : t) : t =
+let array_index ?comment (e0 : t)  (e1 : t) : t =
   match e0.expression_desc, e1.expression_desc with
   | Array (l,_) , Number (Int {i; _}) (* Float i -- should not appear here *)
     when no_side_effect e0-> 
@@ -329,6 +329,18 @@ let access ?comment (e0 : t)  (e1 : t) : t =
     | Some x -> x ) (* FIX #3084*)
   | _ ->
     { expression_desc = Array_index (e0,e1); comment} 
+
+let array_index_by_int ?comment (e0 : t)  (e1 : int32) : t = 
+  match e0.expression_desc with
+  | Array (l,_) (* Float i -- should not appear here *)
+  | Caml_block (l,_, _, _) when no_side_effect e0
+     -> 
+    (match Ext_list.nth_opt l  (Int32.to_int e1)  with
+    | Some x-> x 
+    | None -> 
+      { expression_desc = Array_index (e0, int ?comment e1); comment = None}     
+    )
+  | _ -> { expression_desc = Array_index (e0, int ?comment e1); comment = None} 
 
 let string_index ?comment (e0 : t)  (e1 : t) : t = 
   match e0.expression_desc, e1.expression_desc with
@@ -344,32 +356,28 @@ let string_index ?comment (e0 : t)  (e1 : t) : t =
   | _ ->
     { expression_desc = String_index (e0,e1); comment} 
 
-let index ?comment (e0 : t)  e1 : t = 
-  match e0.expression_desc with
-  | Array (l,_) (* Float i -- should not appear here *)
-  | Caml_block (l,_, _, _) when no_side_effect e0
-     -> 
-    (match Ext_list.nth_opt l  (Int32.to_int e1)  with
-    | Some x-> x 
-    | None -> 
-      { expression_desc = Array_index (e0, int ?comment e1); comment = None}     
-    )
-  | _ -> { expression_desc = Array_index (e0, int ?comment e1); comment = None} 
+
 
 let assign ?comment e0 e1 : t = 
     {expression_desc = Bin(Eq, e0,e1); comment}
 
+    
 
-let assign_addr 
-  ?comment (e0 : t)  (e1 : Int32.t) 
-  ~assigned_value : t = 
+let assign_by_exp
+  ?comment (e0 : t)  index
+  assigned_value : t = 
   match e0.expression_desc with
   | Array _  (* Temporary block -- address not held *)
-  | Caml_block _ when no_side_effect e0 -> 
+  | Caml_block _ when no_side_effect e0 && no_side_effect index -> 
     assigned_value
   | _ ->  
     assign { expression_desc = 
-        Array_index (e0, int ?comment e1); comment = None} assigned_value
+        Array_index (e0, index); comment = None} assigned_value
+
+let assign_by_int
+  ?comment
+  e0 (index : int32) value = 
+  assign_by_exp ?comment e0 (int ?comment index) value
 
 
 (** used in normal property

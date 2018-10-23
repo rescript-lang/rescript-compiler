@@ -328,3 +328,6 @@ val fold_left:
     'b -> 
     ('a -> 'b -> 'b) -> 
     'b
+
+val singleton_exn:     
+    'a list -> 'a

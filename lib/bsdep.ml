@@ -24140,6 +24140,8 @@ val fold_left:
     ('a -> 'b -> 'b) -> 
     'b
 
+val singleton_exn:     
+    'a list -> 'a
 end = struct
 #1 "ext_list.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -24809,6 +24811,7 @@ let rec fold_left2 l1 l2 accu f =
   | (a1::l1, a2::l2) -> fold_left2  l1 l2 (f a1 a2 accu) f 
   | (_, _) -> invalid_arg "List.fold_left2"
 
+let singleton_exn xs = match xs with [x] -> x | _ -> assert false
 end
 module Ast_compatible : sig 
 #1 "ast_compatible.mli"
