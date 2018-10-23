@@ -162,15 +162,10 @@ function dump(r) {
         return "<closure>";
       } else if (t === Obj.object_tag) {
         var fields$1 = get_fields(/* [] */0, s);
-        var match;
         if (fields$1) {
-          var match$1 = fields$1[1];
-          if (match$1) {
-            match = /* tuple */[
-              fields$1[0],
-              match$1[0],
-              match$1[1]
-            ];
+          var match = fields$1[1];
+          if (match) {
+            return "Object #" + (dump(match[0]) + (" (" + ($$String.concat(", ", List.map(dump, match[1])) + ")")));
           } else {
             throw [
                   Caml_builtin_exceptions.assert_failure,
@@ -191,7 +186,6 @@ function dump(r) {
                 ]
               ];
         }
-        return "Object #" + (dump(match[1]) + (" (" + ($$String.concat(", ", List.map(dump, match[2])) + ")")));
       } else if (t === Obj.infix_tag) {
         return "<infix>";
       } else if (t === Obj.forward_tag) {

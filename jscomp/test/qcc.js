@@ -85,10 +85,11 @@ function find(s, _n) {
   };
 }
 
-function addsym(s) {
-  var sid = find(s, 0);
-  Caml_array.caml_array_set(symtab, sid, s);
-  return sid;
+function symitr(f) {
+  for(var i = 0 ,i_finish = syms[0] - 1 | 0; i <= i_finish; ++i){
+    Curry._2(f, i, Caml_array.caml_array_get(symtab, i));
+  }
+  return /* () */0;
 }
 
 function symstr(n) {
@@ -105,11 +106,10 @@ function symstr(n) {
   return Caml_array.caml_array_get(symtab, n);
 }
 
-function symitr(f) {
-  for(var i = 0 ,i_finish = syms[0] - 1 | 0; i <= i_finish; ++i){
-    Curry._2(f, i, Caml_array.caml_array_get(symtab, i));
-  }
-  return /* () */0;
+function addsym(s) {
+  var sid = find(s, 0);
+  Caml_array.caml_array_set(symtab, sid, s);
+  return sid;
 }
 
 var glo = Bytes.make(4096, /* "\000" */0);
@@ -846,33 +846,39 @@ function unary(stk) {
               Curry._1(next$1, /* () */0);
               return postfix(stk);
           case "*" : 
+              var exit = 0;
+              var i;
+              var ty;
               Curry._1(next$1, /* () */0);
               var t = Curry._1(next$1, /* () */0);
-              var match$1;
               if (Caml_obj.caml_equal(t, tokint)) {
-                match$1 = Caml_obj.caml_equal(Curry._1(next$1, /* () */0), /* Op */Block.__(0, ["*"])) ? /* tuple */[
-                    /* Int */0,
-                    1
-                  ] : /* tuple */[
-                    /* Int */0,
-                    5
-                  ];
+                if (Caml_obj.caml_equal(Curry._1(next$1, /* () */0), /* Op */Block.__(0, ["*"]))) {
+                  i = 1;
+                  ty = /* Int */0;
+                  exit = 1;
+                } else {
+                  i = 5;
+                  ty = /* Int */0;
+                  exit = 1;
+                }
               } else if (Caml_obj.caml_equal(t, tokchar)) {
-                match$1 = /* tuple */[
-                  /* Chr */1,
-                  2
-                ];
+                i = 2;
+                ty = /* Chr */1;
+                exit = 1;
               } else {
                 throw [
                       Caml_builtin_exceptions.failure,
                       "[cast] expected"
                     ];
               }
-              for(var k = 1 ,k_finish = match$1[1]; k <= k_finish; ++k){
-                Curry._1(next$1, /* () */0);
+              if (exit === 1) {
+                for(var k = 1; k <= i; ++k){
+                  Curry._1(next$1, /* () */0);
+                }
+                unary(stk);
+                return read(ty);
               }
-              unary(stk);
-              return read(match$1[0]);
+              break;
           default:
             var unops = /* :: */[
               /* tuple */[
@@ -923,15 +929,16 @@ function unary(stk) {
               return 0;
             }
         }
+        break;
     case 1 : 
         return load(0, match[0]);
     case 2 : 
         out(18616);
         return le(64, match[0]);
     case 3 : 
-        var i = match[0];
-        if (List.mem_assoc(i, stk)) {
-          var l = List.assoc(i, stk);
+        var i$1 = match[0];
+        if (List.mem_assoc(i$1, stk)) {
+          var l = List.assoc(i$1, stk);
           if (l <= -256) {
             throw [
                   Caml_builtin_exceptions.assert_failure,
@@ -950,10 +957,10 @@ function unary(stk) {
           ];
         } else {
           out(18616);
-          var g = Caml_array.caml_array_get(globs, i);
+          var g = Caml_array.caml_array_get(globs, i$1);
           var loc = opos[0];
           le(64, g[/* loc */0]);
-          Caml_array.caml_array_set(globs, i, /* record */[
+          Caml_array.caml_array_set(globs, i$1, /* record */[
                 /* loc */loc,
                 /* va */g[/* va */1]
               ]);
@@ -1258,15 +1265,16 @@ function stmt(brk, stk) {
   } else if (Caml_obj.caml_equal(t, tokwhile) || Caml_obj.caml_equal(t, tokfor)) {
     var bl = /* record */[/* contents */0];
     var ba = align[0];
-    var match;
+    var exit$1 = 0;
+    var itr;
+    var bdy;
     if (Caml_obj.caml_equal(t, tokwhile)) {
       var loc$2 = opos[0];
       pexpr(stk);
       bl[0] = test(0, 0);
-      match = /* tuple */[
-        0,
-        loc$2
-      ];
+      itr = loc$2;
+      bdy = 0;
+      exit$1 = 2;
     } else {
       Curry._1(next$1, /* () */0);
       if (!nextis(/* Op */Block.__(0, [";"]))) {
@@ -1282,26 +1290,28 @@ function stmt(brk, stk) {
       }
       Curry._1(next$1, /* () */0);
       out(233);
-      var bdy = opos[0];
+      var bdy$1 = opos[0];
       le(32, 0);
-      var itr = opos[0];
+      var itr$1 = opos[0];
       expr(stk);
       Curry._1(next$1, /* () */0);
       out(233);
       le(32, (top - opos[0] | 0) - 4 | 0);
-      match = /* tuple */[
-        bdy,
-        itr
-      ];
+      itr = itr$1;
+      bdy = bdy$1;
+      exit$1 = 2;
     }
-    patch(true, match[0], opos[0]);
-    stmt(/* tuple */[
-          bl,
-          ba
-        ], stk);
-    out(233);
-    le(32, (match[1] - opos[0] | 0) - 4 | 0);
-    return patch(true, bl[0], opos[0]);
+    if (exit$1 === 2) {
+      patch(true, bdy, opos[0]);
+      stmt(/* tuple */[
+            bl,
+            ba
+          ], stk);
+      out(233);
+      le(32, (itr - opos[0] | 0) - 4 | 0);
+      return patch(true, bl[0], opos[0]);
+    }
+    
   } else if (Caml_obj.caml_equal(t, tokret)) {
     if (!nextis(/* Op */Block.__(0, [";"]))) {
       expr(stk);

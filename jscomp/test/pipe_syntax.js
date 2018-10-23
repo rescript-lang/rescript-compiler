@@ -36,8 +36,8 @@ function f1(a, b, c, d) {
 
 function f2(a, b, c, d) {
   var __ocaml_internal_obj = Curry._1(a, b);
-  var u = Curry._1(c, __ocaml_internal_obj);
   var v = Curry._1(d, __ocaml_internal_obj);
+  var u = Curry._1(c, __ocaml_internal_obj);
   return u + v | 0;
 }
 

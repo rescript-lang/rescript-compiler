@@ -828,22 +828,24 @@ function compute_update_sequences(all_tickers) {
           }
         }), /* Empty */0, List.rev(all_tickers));
   return fold((function (k, l, map) {
-                var l$1 = List.sort_uniq((function (param, param$1) {
+                var l$1 = List.sort_uniq((function (param) {
                         var lhs = param[/* rank */1];
-                        var rhs = param$1[/* rank */1];
-                        if (typeof lhs === "number") {
-                          throw [
-                                Caml_builtin_exceptions.failure,
-                                "All nodes should be ranked"
-                              ];
-                        } else if (typeof rhs === "number") {
-                          throw [
-                                Caml_builtin_exceptions.failure,
-                                "All nodes should be ranked"
-                              ];
-                        } else {
-                          return Caml_primitive.caml_int_compare(lhs[0], rhs[0]);
-                        }
+                        return (function (param) {
+                            var rhs = param[/* rank */1];
+                            if (typeof lhs === "number") {
+                              throw [
+                                    Caml_builtin_exceptions.failure,
+                                    "All nodes should be ranked"
+                                  ];
+                            } else if (typeof rhs === "number") {
+                              throw [
+                                    Caml_builtin_exceptions.failure,
+                                    "All nodes should be ranked"
+                                  ];
+                            } else {
+                              return Caml_primitive.caml_int_compare(lhs[0], rhs[0]);
+                            }
+                          });
                       }), l);
                 return add(k, l$1, map);
               }), map, map);

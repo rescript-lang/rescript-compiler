@@ -1,14 +1,9 @@
 'use strict';
 
 
-var match = /* tuple */[
-  1,
-  2
-];
+var a = /* a */1;
 
-var a = match[0];
-
-var b = match[1];
+var b = /* b */2;
 
 exports.a = a;
 exports.b = b;

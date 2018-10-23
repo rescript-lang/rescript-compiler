@@ -155,6 +155,28 @@ function l_parse(token) {
       return Queue.pop(look_ahead);
     }
   };
+  var parse_f_aux = function (_a) {
+    while(true) {
+      var a = _a;
+      var t = token$1(/* () */0);
+      if (t.tag) {
+        Queue.push(t, look_ahead);
+        return a;
+      } else {
+        switch (t[0]) {
+          case "*" : 
+              _a = Caml_int32.imul(a, parse_f(/* () */0));
+              continue ;
+          case "/" : 
+              _a = Caml_int32.div(a, parse_f(/* () */0));
+              continue ;
+          default:
+            Queue.push(t, look_ahead);
+            return a;
+        }
+      }
+    };
+  };
   var parse_f = function (param) {
     var t = token$1(/* () */0);
     switch (t.tag | 0) {
@@ -189,28 +211,6 @@ function l_parse(token) {
               "Unexpected token"
             ];
     }
-  };
-  var parse_f_aux = function (_a) {
-    while(true) {
-      var a = _a;
-      var t = token$1(/* () */0);
-      if (t.tag) {
-        Queue.push(t, look_ahead);
-        return a;
-      } else {
-        switch (t[0]) {
-          case "*" : 
-              _a = Caml_int32.imul(a, parse_f(/* () */0));
-              continue ;
-          case "/" : 
-              _a = Caml_int32.div(a, parse_f(/* () */0));
-              continue ;
-          default:
-            Queue.push(t, look_ahead);
-            return a;
-        }
-      }
-    };
   };
   var parse_t_aux = function (_a) {
     while(true) {

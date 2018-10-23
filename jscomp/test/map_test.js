@@ -4,7 +4,6 @@ var Mt = require("./mt.js");
 var List = require("../../lib/js/list.js");
 var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
-var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
@@ -402,7 +401,7 @@ var int_map_suites_001 = /* :: */[
               ]
             ]);
         return /* Eq */Block.__(0, [
-                  compare(Caml_obj.caml_compare, u, v),
+                  compare(Caml_primitive.caml_int_compare, u, v),
                   0
                 ]);
       })

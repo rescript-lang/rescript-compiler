@@ -161,7 +161,7 @@ var suites_001 = /* :: */[
                         "t_lastIndex",
                         (function (param) {
                             var re = (/na/g);
-                            re.exec("banana");
+                            Js_primitive.null_to_opt(re.exec("banana"));
                             return /* Eq */Block.__(0, [
                                       4,
                                       re.lastIndex

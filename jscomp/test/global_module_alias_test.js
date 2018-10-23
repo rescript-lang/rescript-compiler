@@ -286,13 +286,9 @@ function xx(param) {
 
 eq("File \"global_module_alias_test.ml\", line 86, characters 5-12", g(/* () */0), 4);
 
-v[0] = v[0] + 1 | 0;
+var V = xx(/* () */0);
 
-v[0] = v[0] + 1 | 0;
-
-v[0] = v[0] + 1 | 0;
-
-eq("File \"global_module_alias_test.ml\", line 92, characters 5-12", List.length(/* :: */[
+eq("File \"global_module_alias_test.ml\", line 92, characters 5-12", Curry._1(V[/* length */0], /* :: */[
           1,
           /* :: */[
             2,

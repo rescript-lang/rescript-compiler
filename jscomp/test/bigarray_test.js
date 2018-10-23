@@ -1,6 +1,5 @@
 'use strict';
 
-var Caml_int32 = require("../../lib/js/caml_int32.js");
 var Caml_missing_polyfill = require("../../lib/js/caml_missing_polyfill.js");
 
 function sum(v) {
@@ -13,17 +12,14 @@ function sum(v) {
 
 function init(v) {
   for(var i = 0 ,i_finish = Caml_missing_polyfill.not_implemented("caml_ba_dim_1") - 1 | 0; i <= i_finish; ++i){
-    v[i] = /* record */[
-      /* re */Caml_int32.imul(i, i),
-      /* im */Caml_int32.imul(Caml_int32.imul(i, i), i)
-    ];
+    Caml_missing_polyfill.not_implemented("caml_ba_set_1");
   }
   return /* () */0;
 }
 
 function init2(v) {
   for(var i = 0 ,i_finish = Caml_missing_polyfill.not_implemented("caml_ba_dim_1") - 1 | 0; i <= i_finish; ++i){
-    v[i] = i;
+    Caml_missing_polyfill.not_implemented("caml_ba_set_1");
   }
   return /* () */0;
 }

@@ -16,20 +16,20 @@ function incr(param) {
 
 var vv = /* record */[/* contents */0];
 
-function reset2(param) {
-  vv[0] = 0;
-  return /* () */0;
-}
-
 function incr2(param) {
   v[0] = v[0] + 1 | 0;
   return /* () */0;
 }
 
+function reset2(param) {
+  vv[0] = 0;
+  return /* () */0;
+}
+
 function f(a, b, d, e) {
   var h = Curry._1(a, b);
-  var u = Curry._1(d, h);
   var v = Curry._1(e, h);
+  var u = Curry._1(d, h);
   return u + v | 0;
 }
 
