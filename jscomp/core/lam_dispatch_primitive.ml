@@ -492,6 +492,7 @@ let translate loc (prim_name : string)
     | "caml_int32_compare"
     | "caml_nativeint_compare"
     | "caml_float_compare"
+    | "caml_bytes_compare"
     | "caml_string_compare" 
     -> 
       call Js_runtime_modules.caml_primitive

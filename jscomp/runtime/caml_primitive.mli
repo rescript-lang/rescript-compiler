@@ -31,7 +31,7 @@
 type 'a selector = 'a -> 'a -> 'a 
 
 
-
+val caml_bytes_compare: bytes -> bytes -> int
 val caml_int_compare : int -> int -> int
 val caml_bool_compare : bool -> bool -> int
 val caml_float_compare : float -> float -> int 
