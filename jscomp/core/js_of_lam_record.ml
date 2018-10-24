@@ -51,7 +51,7 @@ let field (field_info : Lam_compat.field_dbg_info) e i =
 #if OCAML_VERSION =~ ">4.03.0" then
   | Fld_record_inline _
   | Fld_record_extension _ -> 
-    assert false (* FIXME *)
+    Ext_pervasives.todo __LOC__
 #end
 
 

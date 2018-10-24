@@ -57,7 +57,7 @@ let field (field_info : Lam_compat.field_dbg_info) e i =
     -> E.array_index_by_int ~comment:s e i
 #if OCAML_VERSION =~ ">4.03.0" then 
   | Fld_record_inline _
-  | Fld_record_extension _ -> assert false (* FIXME *)
+  | Fld_record_extension _ -> Ext_pervasives.todo __LOC__
 #end
 
 let field_by_exp e i = 
@@ -72,7 +72,7 @@ let set_field (field_info : Lam_compat.set_field_dbg_info) e i e0 =
     | Fld_record_set s -> Some (s)
 #if OCAML_VERSION =~ ">4.03.0" then
     | Fld_record_inline_set _
-    | Fld_record_extension_set _ -> assert false (* FIXME*)
+    | Fld_record_extension_set _ -> Ext_pervasives.todo __LOC__
 #end    
   in (* see GPR#631*)
   E.assign_by_int ?comment e i e0 
