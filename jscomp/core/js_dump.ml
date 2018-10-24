@@ -804,7 +804,7 @@ and expression_desc cxt (level:int) f x : cxt  =
             [E.array Immutable
              (Ext_array.to_list_f E.str labels);
               E.array mutable_flag 
-              (List.map (fun (x : J.expression)   -> {x with comment = None}) el) ]
+              (Ext_list.map el (fun x -> {x with comment = None})) ]
           )
         | Blk_module (Some labels) ->         
           P.string f L.caml_block;
@@ -815,7 +815,7 @@ and expression_desc cxt (level:int) f x : cxt  =
             [E.array Immutable
              (Ext_list.map labels E.str);
               E.array mutable_flag
-              (List.map (fun (x :J.expression) -> {x with comment = None}) el)
+              (Ext_list.map el (fun x -> {x with comment = None}))
             ]
           )
          | Blk_variant name ->  

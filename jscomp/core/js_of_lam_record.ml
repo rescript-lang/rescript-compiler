@@ -31,7 +31,7 @@
 
 module E = Js_exp_make 
 
-let empty_record_info = Lam_tag_info.Blk_record [||] (* careful to share*)
+
 
 
 (* TODO: add label to the comment *)

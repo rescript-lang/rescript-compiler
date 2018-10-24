@@ -31,7 +31,7 @@ type record_representation = Types.record_representation =
     | Record_float
 #if OCAML_VERSION =~ ">4.03.0" then
     | Record_unboxed of bool    (* Unboxed single-field record, inlined or not *)
-    | Record_inlined of int               (* Inlined record *)
+    | Record_inlined of { tag : int; name : string; num_nonconsts : int}               (* Inlined record *)
     | Record_extension                    (* Inlined record under extension *)
 #end  
 

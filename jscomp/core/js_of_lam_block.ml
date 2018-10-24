@@ -52,13 +52,13 @@ let field (field_info : Lam_compat.field_dbg_info) e i =
   match field_info with 
   | Fld_na -> 
     E.array_index_by_int e i 
-  | Fld_record s 
-  | Fld_module s 
-    -> E.array_index_by_int ~comment:s e i
 #if OCAML_VERSION =~ ">4.03.0" then 
-  | Fld_record_inline _
-  | Fld_record_extension _ -> Ext_pervasives.todo __LOC__
+  | Fld_record_inline comment
+  | Fld_record_extension comment
 #end
+  | Fld_record comment
+  | Fld_module comment
+    -> E.array_index_by_int ~comment e i
 
 let field_by_exp e i = 
   E.array_index e i 

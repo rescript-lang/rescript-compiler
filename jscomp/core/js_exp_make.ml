@@ -156,7 +156,10 @@ let optional_not_nest_block e : J.expression =
   } 
 
 let make_block ?comment 
-  (tag : t) (tag_info : J.tag_info) (es : t list) (mutable_flag : J.mutable_flag) : t = 
+  (tag : t) 
+  (tag_info : J.tag_info) 
+  (es : t list) 
+  (mutable_flag : J.mutable_flag) : t = 
   let comment = 
     match comment with 
     | None -> Lam_compile_util.comment_of_tag_info tag_info 
