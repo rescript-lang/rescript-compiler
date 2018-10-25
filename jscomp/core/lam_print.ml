@@ -96,7 +96,7 @@ let record_rep ppf r =
   | Record_regular -> fprintf ppf "regular"
   | Record_float -> fprintf ppf "float"
 #if OCAML_VERSION =~ ">4.03.0" then
-  | Record_inlined i -> fprintf ppf "inlined %d" i 
+  | Record_inlined {tag = i} -> fprintf ppf "inlined %d" i 
   | Record_unboxed b -> fprintf ppf "unboxed %b" b
   | Record_extension -> fprintf ppf "ext"
 #end
