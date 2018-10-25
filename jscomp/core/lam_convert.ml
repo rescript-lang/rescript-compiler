@@ -219,6 +219,14 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
     | Blk_record s -> 
       let info : Lam_tag_info.t = Blk_record s in
       prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
+#if OCAML_VERSION =~ ">4.03.0"  then
+    | Blk_record_inlined (s,ctor,i) ->
+      let info : Lam_tag_info.t = Blk_record_inlined (s, ctor,i) in
+      prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
+    | Blk_record_ext s ->
+      let info : Lam_tag_info.t = Blk_record_ext s in
+      prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
+#end            
     | Blk_module s -> 
       let info : Lam_tag_info.t = Blk_module s in
       prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
@@ -239,10 +247,6 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
     | Blk_na -> 
       let info : Lam_tag_info.t = Blk_na in
       prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
-#if OCAML_VERSION =~ ">4.03.0"  then
-    | Blk_record_inlined _ 
-    | Blk_record_ext _ -> Ext_pervasives.todo __LOC__ 
-#end
     end  
   | Pfield (id,info)
     -> prim ~primitive:(Pfield (id,info)) ~args loc
