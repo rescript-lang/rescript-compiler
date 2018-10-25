@@ -55,6 +55,7 @@ let needBlockRuntimeInReleaseMode (tag : J.expression) (tag_info : J.tag_info) =
     (* converted to [Pcreate_extension] in the beginning*)
  
 
+(* Used to decide whether we should add [require('block')]*)
 let needBlockRuntime tag info = 
   if !Js_config.debug then 
     needBlockRuntimeInDebugMode tag info
