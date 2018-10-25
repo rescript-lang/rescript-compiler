@@ -69,11 +69,11 @@ let set_field (field_info : Lam_compat.set_field_dbg_info) e i e0 =
     match field_info with 
     | Fld_set_na 
       -> None
-    | Fld_record_set s -> Some (s)
 #if OCAML_VERSION =~ ">4.03.0" then
-    | Fld_record_inline_set _
-    | Fld_record_extension_set _ -> Ext_pervasives.todo __LOC__
+    | Fld_record_inline_set s
+    | Fld_record_extension_set s
 #end    
+    | Fld_record_set s -> Some (s)
   in (* see GPR#631*)
   E.assign_by_int ?comment e i e0 
 

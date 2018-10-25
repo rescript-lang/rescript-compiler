@@ -36,8 +36,15 @@ let tag_is_zero (tag : J.expression) =
   | Blk_module _    
   | Blk_record _   
   | Blk_constructor _   -> true
+#if OCAML_VERSION =~ ">4.03.0" then
+  | Blk_record_inlined _ -> true  
+#end  
+
   | Blk_tuple 
   | Blk_array   
+#if OCAML_VERSION =~ ">4.03.0" then
+  | Blk_record_ext _ -> false
+#end  
   | Blk_extension_slot -> false 
   | Blk_na  ->  not (tag_is_zero tag )
 
@@ -48,9 +55,18 @@ let needBlockRuntimeInReleaseMode (tag : J.expression) (tag_info : J.tag_info) =
   | Blk_record _  
   | Blk_tuple 
   | Blk_array -> false   
+#if OCAML_VERSION =~ ">4.03.0" then
+  | Blk_record_inlined (_,_,1)  
+#end  
   | Blk_constructor (_, 1)      
   | Blk_na -> not (tag_is_zero tag)
+#if OCAML_VERSION =~ ">4.03.0" then
+  | Blk_record_inlined _ 
+#end  
   | Blk_constructor _   -> true  
+#if OCAML_VERSION =~ ">4.03.0" then
+  | Blk_record_ext _ 
+#end  
   | Blk_extension_slot -> false 
     (* converted to [Pcreate_extension] in the beginning*)
  

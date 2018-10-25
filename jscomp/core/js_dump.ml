@@ -862,9 +862,15 @@ and expression_desc cxt (level:int) f x : cxt  =
         pp_block_variant f ; 
         P.paren_group f 1 (fun _ -> arguments cxt f 
                               [ E.str name; tag ; E.array mutable_flag el])
+#if OCAML_VERSION =~ ">4.03.0" then                               
+      | Blk_record_inlined _ (* TODO: No support for debug mode yet *)
+#end
       | Blk_constructor _                        
       | Blk_tuple
       | Blk_array
+#if OCAML_VERSION =~ ">4.03.0" then     
+      | Blk_record_ext _
+#end      
       | Blk_extension_slot
       | Blk_na
       | Blk_module None ->           

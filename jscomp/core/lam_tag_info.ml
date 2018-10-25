@@ -22,12 +22,21 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+(* Similiar to {!Lambda.tag_info}
+  In particular, 
+  it reduces some branches e.g, 
+  [Blk_some], [Blk_some_not_nested]
+*)
 type t = 
   | Blk_constructor of string * int
   | Blk_tuple
   | Blk_array
   | Blk_variant of string 
-  | Blk_record of string array
+  | Blk_record of string array 
   | Blk_module of string list option
   | Blk_extension_slot
   | Blk_na
+#if OCAML_VERSION =~ ">4.03.0" then
+  | Blk_record_inlined of string array * string * int
+  | Blk_record_ext of string array
+#end

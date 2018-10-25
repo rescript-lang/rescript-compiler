@@ -166,10 +166,20 @@ let make_block ?comment
     | _ -> comment in
   let es = 
     match tag_info with 
-    | Blk_record des 
+    | Blk_record des
+#if OCAML_VERSION =~ ">4.03.0" then   
+    | Blk_record_inlined (des, _,_)
+#end    
       when Array.length des <> 0 
       -> 
       Ext_list.mapi es (fun i e  -> merge_outer_comment des.(i) e) 
+#if OCAML_VERSION =~ ">4.03.0" then         
+    | Blk_record_ext des
+      when Array.length des <> 0 
+      -> 
+      Ext_list.mapi es (fun i e  -> 
+        if i <> 0 then merge_outer_comment des.(i-1) e else e) 
+#end         
     (* TODO: may overriden its previous comments *)
     | Blk_module (Some des) 
       ->  Ext_list.map2 des es merge_outer_comment             
@@ -501,8 +511,23 @@ let float_mod ?comment e1 e2 : J.expression =
 
 (** Here we have to use JS [===], and therefore, we are introducing 
     Js boolean, so be sure to convert it back to OCaml bool
+    TODO:
+    {[
+      if (A0 === A0) {
+        tmp = 3;
+      } else {
+        throw [
+        Caml_builtin_exceptions.assert_failure,
+        /* tuple */[
+          "inline_record_test.ml",
+          51,
+          52
+        ]
+        ];
+      }
+    ]}
 *)
-let rec triple_equal ?comment (e0 : t) (e1 : t ) : t = 
+let rec triple_equal ?comment (e0 : t) (e1 : t ) : t =
   match e0.expression_desc, e1.expression_desc with
   | (Null| Undefined), 
     (Char_of_int _ | Char_to_int _ 
