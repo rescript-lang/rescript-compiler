@@ -205,6 +205,34 @@ let pp_direction f (direction : J.for_direction) =
   | Upto -> P.string f L.plus_plus
   | Downto -> P.string f L.minus_minus 
 
+let pp_block_dot f = 
+  P.string f L.caml_block;
+  P.string f L.dot 
+
+let pp_block_create f =   
+  pp_block_dot f ;
+  P.string f L.caml_block_create
+
+let pp_block_record f =   
+  pp_block_dot f ;
+  P.string f L.block_record
+
+let pp_block_local_module f =   
+  pp_block_dot f;
+  P.string f L.block_local_module
+
+let pp_block_poly_var f =   
+  pp_block_dot f;
+  P.string f L.block_poly_var
+
+let pp_block_simple_variant f =   
+  pp_block_dot f ;
+  P.string f L.block_simple_variant
+
+let pp_block_variant f =   
+  pp_block_dot f ; 
+  P.string f L.block_variant
+
 let return_sp f = 
     P.string f L.return ; P.space f   
 
@@ -216,6 +244,9 @@ let comma_sp f =
 let comma_nl f = 
   comma f ; P.newline f 
 
+let drop_comment (x : J.expression) = 
+  if x.comment = None then x 
+  else {x with comment = None}  
 let debugger_nl f =   
   P.newline f ; 
   P.string f L.debugger;
@@ -787,92 +818,60 @@ and expression_desc cxt (level:int) f x : cxt  =
   | Caml_block( el, mutable_flag, tag, tag_info)
     ->
     (* Note that, if we ignore more than tag [0] we loose some information
-       with regard tag  *)
+       with regard tag  
 
-      (* TODO: for numbers like 248, 255 we can reverse engineer to make it
+       TODO: for numbers like 248, 255 we can reverse engineer to make it
          [Obj.xx_flag], but we can not do this in runtime libraries
-      *)
 
-      if Js_fold_basic.needBlockRuntime tag tag_info then begin 
-        match tag_info with 
-        | Blk_record labels ->
-          P.string f L.caml_block;
-          P.string f L.dot ;
-          P.string f L.block_record;
-          P.paren_group f 1 
-          (fun _ -> arguments cxt f 
-            [E.array Immutable
-             (Ext_array.to_list_f E.str labels);
-              E.array mutable_flag 
-              (Ext_list.map el (fun x -> {x with comment = None})) ]
+       When it does not need block runtime, it means it will be compiled 
+       as an array, note exception or open variant it is outer-most is 
+       simply an array
+    *)
+    let needBlockRuntime = Js_fold_basic.needBlockRuntime tag tag_info in 
+    let is_debug = !Js_config.debug in 
+    if not needBlockRuntime then 
+      expression_desc cxt level f  (Array (el, mutable_flag))
+    else (  
+      match tag_info with 
+      | Blk_record labels ->
+        pp_block_record f ;
+        P.paren_group f 1 (fun _ -> arguments cxt f 
+              [E.array Immutable
+                 (Ext_array.to_list_f E.str labels);
+               E.array mutable_flag 
+                 (Ext_list.map el drop_comment) ]
           )
-        | Blk_module (Some labels) ->         
-          P.string f L.caml_block;
-          P.string f L.dot ;
-          P.string f L.block_local_module;
-          P.paren_group f 1 
-          (fun _ -> arguments cxt f 
-            [E.array Immutable
-             (Ext_list.map labels E.str);
-              E.array mutable_flag
-              (Ext_list.map el (fun x -> {x with comment = None}))
-            ]
-          )
-         | Blk_variant name ->  
-          P.string f L.caml_block;
-          P.string f L.dot ;
-          P.string f L.block_poly_var;
-          P.paren_group f 1 
-          (fun _ -> arguments cxt f 
-            [ 
-              E.str name;
-              E.array mutable_flag el]
-          )        
-         | Blk_constructor(name,number) ->
-           let no_tag_attached = 
-             number = 1 && Js_fold_basic.tag_is_zero tag in 
-           if !Js_config.debug then 
-             (
-               P.string f L.caml_block;
-               P.string f L.dot ;
-               if no_tag_attached then 
-                 begin 
-                   P.string f L.block_simple_variant;
-                   P.paren_group f 1 
-                     (fun _ -> arguments cxt f 
-                         [E.str name; E.array mutable_flag el]) 
-                 end
-               else 
-                 begin 
-                   P.string f L.block_variant;
-                   P.paren_group f 1 (fun _ -> arguments cxt f 
-                                         [ E.str name; tag ; E.array mutable_flag el]
-                                     )
-                 end
-             )
-           else 
-             (if no_tag_attached then 
-                expression_desc cxt level f (Array (el, mutable_flag))
-              else  
-                begin 
-                  P.string f L.caml_block;
-                  P.string f L.dot ;
-                  P.string f L.caml_block_create;
-                  P.paren_group f 1
-                    (fun _ -> arguments cxt f [tag; E.array mutable_flag el])
-                end
-             )
-         |  _  ->
-           begin 
-             P.string f L.caml_block;
-             P.string f L.dot ;
-             P.string f L.caml_block_create;
-             P.paren_group f 1
-               (fun _ -> arguments cxt f [tag; E.array mutable_flag el])
-           end 
-      end 
-      else     
-        expression_desc cxt level f  (Array (el, mutable_flag))
+      | Blk_module (Some labels) ->         
+        pp_block_local_module f;
+        P.paren_group f 1 (fun _ -> arguments cxt f 
+              [E.array Immutable
+                 (Ext_list.map labels E.str);
+               E.array mutable_flag
+                 (Ext_list.map el drop_comment)])
+      | Blk_variant name ->  
+        pp_block_poly_var f;
+        P.paren_group f 1 (fun _ -> arguments cxt f [ 
+            E.str name;
+            E.array mutable_flag el])        
+      | Blk_constructor(name,number) when number = 1 && Js_fold_basic.tag_is_zero tag 
+        -> (* has to be debug mode *)          
+        pp_block_simple_variant f ;
+        P.paren_group f 1 (fun _ -> arguments cxt f 
+              [E.str name; E.array mutable_flag el])             
+      | Blk_constructor(name,number) when is_debug ->
+        pp_block_variant f ; 
+        P.paren_group f 1 (fun _ -> arguments cxt f 
+                              [ E.str name; tag ; E.array mutable_flag el])
+      | Blk_constructor _                        
+      | Blk_tuple
+      | Blk_array
+      | Blk_extension_slot
+      | Blk_na
+      | Blk_module None ->           
+        pp_block_create f;
+        P.paren_group f 1 (fun _ -> arguments cxt f [tag; E.array mutable_flag el])
+
+    )
 
   | Caml_block_tag e ->
     P.group f 1 (fun _ ->

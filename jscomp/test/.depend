@@ -349,6 +349,7 @@ infer_type_test.cmj : ../runtime/js.cmj infer_type_test.cmi
 inline_edge_cases.cmj : inline_edge_cases.cmi
 inline_map2_test.cmj : mt.cmj ../stdlib/list.cmj
 inline_map_test.cmj : mt.cmj ../stdlib/list.cmj inline_map_test.cmi
+inline_record_test.cmj :
 inline_regression_test.cmj : ../stdlib/string.cmj mt.cmj \
     ../stdlib/filename.cmj
 inline_string_test.cmj : ../runtime/js.cmj

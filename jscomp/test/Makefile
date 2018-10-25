@@ -263,6 +263,7 @@ OTHERS := test_literals a test_ari test_export2 test_internalOO test_obj_simple_
 	int_switch_test\
 	parser_api\
 	parser_api_test\
+	inline_record_test\
 # bs_uncurry_test
 # needs Lam to get rid of Uncurry arity first
 # simple_derive_test
