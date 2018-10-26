@@ -601,9 +601,17 @@ let translate  loc
      | Ostype_win32 -> E.bool Sys.win32      
      | Ostype_cygwin -> E.bool Sys.cygwin
 #if OCAML_VERSION =~ ">4.03.0" then
-     | Int_size
-     | Max_wosize
-     | Backend_type  -> Ext_pervasives.todo __LOC__
+     | Int_size -> E.int 32l
+     | Max_wosize ->
+      (* max_array_length*)
+       E.int 2147483647l (* 2 ^ 31 - 1 *) 
+        (* 4_294_967_295l  not representable*)
+        (* 2 ^ 32 - 1*)
+     | Backend_type  -> 
+      E.make_block
+        E.zero_int_literal 
+        (Blk_constructor ("Other",1))
+        [E.str "BS"] Immutable
 #end
      )
     
