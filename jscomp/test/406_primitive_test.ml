@@ -28,7 +28,14 @@ let backend_type = get_backend_type ()
 let max_array_length = max_wosize ()
 ;; eq __LOC__ backend_type (Other "BS")
 
-
+let  f () = 
+  let exception A of int in 
+  try 
+    for i = 0 to 200 do 
+      if i = 10 then
+        raise (A 0)
+    done 
+  with A _ -> ()
 
 #end
 
