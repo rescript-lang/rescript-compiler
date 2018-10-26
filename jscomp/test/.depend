@@ -407,6 +407,7 @@ key_word_property.cmj :
 key_word_property2.cmj : export_keyword.cmj
 key_word_property_plus_test.cmj : mt.cmj ../runtime/js.cmj \
     global_mangles.cmj
+large_record_duplication_test.cmj : mt.cmj
 largest_int_flow.cmj :
 lazy_test.cmj : mt.cmj ../stdlib/lazy.cmj
 lexer_test.cmj : number_lexer.cmj mt.cmj ../stdlib/list.cmj \
@@ -722,6 +723,7 @@ tscanf_test.cmj : testing.cmj ../stdlib/string.cmj ../stdlib/scanf.cmj \
     ../stdlib/buffer.cmj
 tuple_alloc.cmj :
 typeof_test.cmj : mt.cmj ../runtime/js.cmj
+unboxed_attribute_test.cmj :
 uncurry_glob_test.cmj : ../runtime/caml_utils.cmj
 undef_regression2_test.cmj : mt.cmj ../runtime/js.cmj
 undef_regression_test.cmj : ../runtime/js.cmj ../runtime/bs_obj.cmj

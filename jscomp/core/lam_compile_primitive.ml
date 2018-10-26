@@ -609,8 +609,10 @@ let translate  loc
     
   | Pduprecord ((Record_regular 
                 | Record_float 
+#if OCAML_VERSION =~ ">4.03.0" then   
                 | Record_inlined {tag = 0; num_nonconsts = 1}
                 | Record_extension
+#end                
                 ),_) -> 
     (* _size is the length of all_lables*)
     (* TODO: In debug mode, need switch to  *)
