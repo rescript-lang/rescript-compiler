@@ -608,14 +608,21 @@ let translate  loc
      )
     
   | Pduprecord ((Record_regular 
-                | Record_float ),_) -> 
+                | Record_float 
+                | Record_inlined {tag = 0; num_nonconsts = 1}
+                | Record_extension
+                ),_) -> 
     (* _size is the length of all_lables*)
     (* TODO: In debug mode, need switch to  *)
     Lam_dispatch_primitive.translate loc "caml_array_dup" args
 #if OCAML_VERSION =~ ">4.03.0" then
-  | Pduprecord ((Record_extension|Record_unboxed _|Record_inlined _), _)
+  | Pduprecord (Record_unboxed _inlined,_) 
+    -> assert false
+  | Pduprecord (Record_inlined _, _)
     -> 
-    Ext_pervasives.todo __LOC__
+    Lam_dispatch_primitive.translate loc "caml_obj_dup" args
+    (* check dubug mode *)
+  
 #end
   | Pbigarrayref (unsafe, dimension, kind, layout)
     -> 
