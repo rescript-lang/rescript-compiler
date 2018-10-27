@@ -273,7 +273,7 @@ and aux_obj_compare (a: Obj.t) (b: Obj.t) =
     | None, None -> 0
     | (Some _), None -> -1
     | None, (Some _) -> 1
-    | (Some x), (Some y) -> compare x y in
+    | (Some x), (Some y) -> Pervasives.compare x y in
   res
 
 type eq = Obj.t -> Obj.t -> bool
