@@ -42,6 +42,7 @@ test_unsafe_obj_ffi_ppx.cmi : ../runtime/js.cmi
 testing.cmi :
 ui_defs.cmi :
 unsafe_this.cmi : ../runtime/js.cmi
+406_primitive_test.cmj : mt.cmj
 a.cmj : test_order.cmj ../stdlib/string.cmj ../stdlib/set.cmj \
     ../stdlib/list.cmj
 a_filename_test.cmj : mt.cmj ext_filename_test.cmj ../stdlib/array.cmj
