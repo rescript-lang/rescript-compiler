@@ -290,7 +290,7 @@ let intersect dataa datab  =
       )
        then make ()
     else 
-    let tmp2 = A.makeUninitializedUnsafe (min sizea sizeb) in 
+    let tmp2 = A.makeUninitializedUnsafe (Pervasives.min sizea sizeb) in 
     let k = S.intersect tmp 0 sizea tmp sizea sizeb tmp2 0  in 
     t ~data:(N.fromSortedArrayAux tmp2 0 k)
   

@@ -60,7 +60,7 @@ OTHERS=array.cmo list.cmo char.cmo bytes.cmo string.cmo sys.cmo \
   unix.cmo unixLabels.cmo \
   bigarray.cmo
 
-allcmis:$(OBJS:.cmo=.cmi) std_exit.cmi $(COMPILER)
+# allcmis:$(OBJS:.cmo=.cmi) std_exit.cmi $(COMPILER)
 
 all: $(OBJS:.cmo=.cmj) std_exit.cmj $(COMPILER)
 # all: stdlib.cma std_exit.cmo 
