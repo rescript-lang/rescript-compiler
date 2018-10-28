@@ -476,8 +476,9 @@ external splitLimited : t -> int -> t array = "split" [@@bs.send.pipe: t]
   array of the resulting substrings.
 
 @example {[
-  splitByRe [%re "/\\s*[,;]\\s*/"] "art; bed , cog ;dad" = [|"art"; "bed"; "cog"; "dad"|];;
-  splitByRe [%re "/[,;]/"] "has:no:match" = [|"has:no:match"|];;
+  splitByRe [%re "/\\s*[,;]\\s*/"] "art; bed , cog ;dad" = [|Some "art"; Some "bed"; Some "cog"; Some "dad"|];;
+  splitByRe [%re "/[,;]/"] "has:no:match" = [|Some "has:no:match"|];;
+  splitByRe [%re "/(#)(:)?/"] "a#b#:c" = [|Some "a"; Some "#"; None; Some "b"; Some "#"; Some ":"; Some "c"|];;
 ]};
 *)
 external splitByRe : Js_re.t ->  t option array = "split" [@@bs.send.pipe: t]
@@ -487,12 +488,13 @@ external splitByRe : Js_re.t ->  t option array = "split" [@@bs.send.pipe: t]
   array of the first [n] resulting substrings. If [n] is negative or greater than the number of substrings, the array will contain all the substrings.
 
 @example {[
-  splitByReAtMost [%re "/\\s*:\\s*/"] ~limit: 3 "one: two: three: four" = [|"one"; "two"; "three"|];;
+  splitByReAtMost [%re "/\\s*:\\s*/"] ~limit: 3 "one: two: three: four" = [|Some "one"; Some "two"; Some "three"|];;
   splitByReAtMost [%re "/\\s*:\\s*/"] ~limit: 0 "one: two: three: four" = [| |];;
-  splitByReAtMost [%re "/\\s*:\\s*/"] ~limit: 8 "one: two: three: four" = [|"one"; "two"; "three"; "four"|];;
+  splitByReAtMost [%re "/\\s*:\\s*/"] ~limit: 8 "one: two: three: four" = [|Some "one"; Some "two"; Some "three"; Some "four"|];;
+  splitByReAtMost [%re "/(#)(:)?/"] "a#b#:c" = [|Some "a"; Some "#"; None|];;
 ]};
 *)
-external splitByReAtMost : Js_re.t -> limit:int ->  t array = "split" [@@bs.send.pipe: t]
+external splitByReAtMost : Js_re.t -> limit:int ->  t option array = "split" [@@bs.send.pipe: t]
 
 (**
   Deprecated - Please use [splitByReAtMost]
