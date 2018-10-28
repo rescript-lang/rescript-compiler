@@ -491,7 +491,7 @@ external splitByRe : Js_re.t ->  t option array = "split" [@@bs.send.pipe: t]
   splitByReAtMost [%re "/\\s*:\\s*/"] ~limit: 3 "one: two: three: four" = [|Some "one"; Some "two"; Some "three"|];;
   splitByReAtMost [%re "/\\s*:\\s*/"] ~limit: 0 "one: two: three: four" = [| |];;
   splitByReAtMost [%re "/\\s*:\\s*/"] ~limit: 8 "one: two: three: four" = [|Some "one"; Some "two"; Some "three"; Some "four"|];;
-  splitByReAtMost [%re "/(#)(:)?/"] "a#b#:c" = [|Some "a"; Some "#"; None|];;
+  splitByReAtMost [%re "/(#)(:)?/"] ~limit:3 "a#b#:c" = [|Some "a"; Some "#"; None|];;
 ]};
 *)
 external splitByReAtMost : Js_re.t -> limit:int ->  t option array = "split" [@@bs.send.pipe: t]
