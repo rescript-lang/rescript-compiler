@@ -480,7 +480,7 @@ external splitLimited : t -> int -> t array = "split" [@@bs.send.pipe: t]
   splitByRe [%re "/[,;]/"] "has:no:match" = [|"has:no:match"|];;
 ]};
 *)
-external splitByRe : Js_re.t ->  t array = "split" [@@bs.send.pipe: t]
+external splitByRe : Js_re.t ->  t option array = "split" [@@bs.send.pipe: t]
 
 (**
   [splitByReAtMost regex ~limit: n str] splits the given [str] at every occurrence of [regex] and returns an
