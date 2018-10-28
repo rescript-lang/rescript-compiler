@@ -7,7 +7,8 @@ var path = require('path')
 var runtimeDir = path.join(__dirname, '..', 'jscomp', 'runtime')
 var jsDir = path.join(__dirname, '..', 'lib', 'js')
 var files = fs.readdirSync(runtimeDir, 'utf8')
-var possibleJsFiles = [... new Set(files.filter(x => x.endsWith('.ml') || x.endsWith('.mli')).map(x => x.substr(0, x.indexOf('.'))))]
+
+var possibleJsFiles = [... new Set(files.filter(x => !x.startsWith("bs_stdlib_mini") && (x.endsWith('.ml') || x.endsWith('.mli'))).map(x => x.substr(0, x.indexOf('.'))))]
 
 // possibleJsFiles.map(x=>path.join(jsDir,x + ".js")).every(x=>fs.existsSync(x))
 
@@ -27,8 +28,10 @@ function readDeps(name) {
 }
 
 function create() {
-    var deps = possibleJsFiles.filter(x => readDeps(x).length !== 0).map(x => `${x}.cmj: ${(readDeps(x).map(x => x + '.cmj')).join(' ')}`).reduce((x, y) => x + '\n' + y)
-    fs.writeFileSync(path.join(__dirname, '..', 'jscomp', 'runtime', '.extradepend'), deps+'\n', 'utf8')
+    var deps = possibleJsFiles.filter((x) => {
+        return readDeps(x).length !== 0
+    }).map(x => `${x}.cmj: ${(readDeps(x).map(x => x + '.cmj')).join(' ')}`).reduce((x, y) => x + '\n' + y)
+    fs.writeFileSync(path.join(__dirname, '..', 'jscomp', 'runtime', '.extradepend'), deps + '\n', 'utf8')
 }
 
 
