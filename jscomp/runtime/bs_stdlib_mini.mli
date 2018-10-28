@@ -1,4 +1,21 @@
+(**
+  Since [others] depend on this file, its public mli files should not
+  export types introduced here, otherwise it would cause 
+  conflicts here.
 
+  Types defined here but should not export:
+
+  - ref (make sure not exported in public others/*.mli)
+  - in_channel (runtime only)
+  - fpclass (runtime only)
+  - Obj.t (runtime only)
+  - Lexing.lex_tables, Lexing.lexbuf (runtime only)
+  - Parsing.parse_tables, Parsing.parser_env (runtime only)
+  - Printexc.raw_backtrace_slot,  Printexc.backtrace_slot (runtiem only)
+  - Gc.stat, Gc.control (runtime only) 
+  - CamlinternalOO.obj CamlinternalOO.closure (runtime only)
+  - CamlinternalMod.shape (runtime only)
+*)
 
 external (^) : string -> string -> string = "#string_append"
 external ( = ) : 'a -> 'a -> bool = "%equal"

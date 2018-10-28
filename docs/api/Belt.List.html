@@ -856,6 +856,19 @@
                     </div>
 
                   
+<pre><span id="VALfilter"><span class="keyword">val</span> filter</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> ('a -> bool) -> 'a <a href="Belt_List.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">filter  xs p</code> returns a list of all elements in <code class="code">xs</code> which satisfy the predicate function <code class="code">p</code><br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">      filter [1;2;3;4] (fun x -&gt; x mod 2 = 0) =
+      [2;4]
+    </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
 <pre><span id="VALkeepWithIndexU"><span class="keyword">val</span> keepWithIndexU</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> ('a -> int -> bool [@bs]) -> 'a <a href="Belt_List.html#TYPEt">t</a></code></pre>
 <pre><span id="VALkeepWithIndex"><span class="keyword">val</span> keepWithIndex</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> ('a -> int -> bool) -> 'a <a href="Belt_List.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
@@ -864,6 +877,20 @@
                     </div>
                      <div class="examples">
                     <pre class="example"> <pre class="codepre"><code class="code">      keepWithIndex [1;2;3;4] (fun _x i -&gt; i mod 2 = 0)
+      =
+      [1;3]
+    </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALfilterWithIndex"><span class="keyword">val</span> filterWithIndex</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> ('a -> int -> bool) -> 'a <a href="Belt_List.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">filterWithIndex xs p</code> returns a list of all elements in <code class="code">xs</code> which satisfy the predicate function <code class="code">p</code><br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">      filterWithIndex [1;2;3;4] (fun _x i -&gt; i mod 2 = 0)
       =
       [1;3]
     </code></pre>  </pre>
