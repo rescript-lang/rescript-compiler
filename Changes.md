@@ -1,3 +1,21 @@
+
+* potential break changes
+
+# 4.0.7
+
+Features
+- #3072 Add List.filter/WithIndex and List.keep/WithIndex
+
+Fix
+- #3084,#3083 optimization triggers exception 
+- #3085 Wrong optimizer
+- #3105 A corner case of optional encoding
+
+Code gen
+- * #3073, #3079, #3080 no arity tweaking. Function with unit as argument will have arity one
+- #3078 better codegen for switch
+- #3088 better codegen for if statement
+
 # 4.0.6
 
 ## ReasonML synced 76b27
