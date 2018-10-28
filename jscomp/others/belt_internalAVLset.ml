@@ -613,7 +613,7 @@ let balMutate nt  =
     )
   else
     begin
-      heightSet nt (max hl hr + 1);
+      heightSet nt (Pervasives.max hl hr + 1);
       nt
     end
 

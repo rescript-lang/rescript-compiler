@@ -58,9 +58,6 @@ SOURCE_LIST= node_path node_fs node_process dict node_module js_array js_string 
 	belt_HashMapString\
 	belt_Debug\
 
-# belt_Bag\
-# belt_BagM\
-# belt_dyn belt_dyn_lib\
 
 $(addsuffix .cmj, $(SOURCE_LIST)): $(addsuffix .cmj, $(MAP_FILES))
 
@@ -71,7 +68,7 @@ BS_COMMON_FLAGS= -no-alias-deps -bs-no-version-header -absname -bs-diagnose -bs-
 
 BS_FLAGS=  $(BS_COMMON_FLAGS) $(BS_PKG_FLAGS)
 
-COMPFLAGS += $(BS_FLAGS)  -I ../runtime -I ../stdlib -w +3-40-49 -warn-error A -bin-annot
+COMPFLAGS +=  -I ../runtime -nostdlib -nopervasives -open Bs_stdlib_mini $(BS_FLAGS)  -w +3-40-49 -warn-error A -bin-annot
 
 
 node.cmi : $(COMPILER)

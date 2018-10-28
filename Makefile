@@ -19,7 +19,6 @@ world:
 
 libs:
 	@echo "Making compiler finished"
-	$(MAKE) -C jscomp/stdlib -j $(NPROCS) allcmis
 	$(MAKE) -C jscomp/runtime -j $(NPROCS) all
 	$(MAKE) -C jscomp/others -j $(NPROCS) all
 	$(MAKE) -C jscomp/stdlib -j $(NPROCS) all

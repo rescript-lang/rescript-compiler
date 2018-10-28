@@ -183,10 +183,10 @@ let slice a ~offset ~len =
     let lena = length a in
     let ofs =
       if offset < 0 then
-        max (lena + offset) 0
+        Pervasives.max (lena + offset) 0
       else offset in
     let hasLen = lena - ofs in
-    let copyLength = min hasLen len in
+    let copyLength = Pervasives.min hasLen len in
     if copyLength <= 0 then [||]
     else
       let result = makeUninitializedUnsafe copyLength  in
@@ -197,7 +197,7 @@ let slice a ~offset ~len =
 
 let sliceToEnd a offset =
   let lena = length a in
-  let ofs = if offset < 0 then max (lena + offset) 0 else offset in
+  let ofs = if offset < 0 then Pervasives.max (lena + offset) 0 else offset in
   let len = lena - ofs in
   let result = makeUninitializedUnsafe len in
   for i = 0 to len - 1 do
@@ -210,10 +210,10 @@ let fill a ~offset ~len v =
     let lena = length a in
     let ofs =
       if offset < 0 then
-        max (lena + offset ) 0
+        Pervasives.max (lena + offset ) 0
       else offset in
     let hasLen = lena - ofs in
-    let fillLength = min hasLen len in
+    let fillLength = Pervasives.min hasLen len in
     if fillLength > 0 then
       for i = ofs to  ofs + fillLength - 1 do
         setUnsafe a i v
@@ -236,10 +236,10 @@ let blitUnsafe ~src:a1  ~srcOffset:srcofs1 ~dst:a2 ~dstOffset:srcofs2 ~len:blitL
 let blit ~src:a1 ~srcOffset:ofs1 ~dst:a2 ~dstOffset:ofs2 ~len =
     let lena1 = length a1 in
     let lena2 = length a2 in
-    let srcofs1 = if ofs1 < 0 then max (lena1 + ofs1) 0 else ofs1 in
-    let srcofs2 = if ofs2 < 0 then max (lena2 + ofs2) 0 else ofs2 in
+    let srcofs1 = if ofs1 < 0 then Pervasives.max (lena1 + ofs1) 0 else ofs1 in
+    let srcofs2 = if ofs2 < 0 then Pervasives.max (lena2 + ofs2) 0 else ofs2 in
     let blitLength =
-      min len (min (lena1 - srcofs1) (lena2 - srcofs2)) in
+      Pervasives.min len (Pervasives.min (lena1 - srcofs1) (lena2 - srcofs2)) in
     (* blitUnsafe a1 srcofs1 a2 srcofs2 blitLength *)
     (if srcofs2 <= srcofs1 then
       for j = 0 to blitLength - 1 do
@@ -353,7 +353,7 @@ let reduceReverse a x f = reduceReverseU a x (fun[@bs] a b -> f a b)
 
 let reduceReverse2U a b x f =
   let r = ref x in
-  let len = min (length a) (length b) in
+  let len = Pervasives.min (length a) (length b) in
   for i = len - 1 downto  0 do
     r := f !r (getUnsafe a i) (getUnsafe b i) [@bs]
   done;
@@ -409,12 +409,12 @@ let rec someAux2 arr1 arr2 i b len =
 
 
 let every2U  a b p =
-  everyAux2  a b 0 p (min (length a) (length b))
+  everyAux2  a b 0 p (Pervasives.min (length a) (length b))
 
 let every2 a b p = every2U  a b (fun[@bs] a b -> p a b)
 
 let some2U a b p =
-  someAux2 a b 0 p (min (length a) (length b))
+  someAux2 a b 0 p (Pervasives.min (length a) (length b))
 
 let some2 a b p = some2U a b (fun [@bs] a b -> p a b)
 

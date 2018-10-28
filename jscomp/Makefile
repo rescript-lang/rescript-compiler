@@ -623,10 +623,6 @@ bootbspack:
 	@echo "Rebuilding bspack.exe finsihed"
 
 libs:
-	@echo "Making stdlib cmis"
-	cd stdlib && $(MAKE) allcmis
-	@echo "Making stdlib finished"
-
 	@echo "Making runtime"
 	cd runtime && $(MAKE) all
 	@echo "Making runtime finished"
