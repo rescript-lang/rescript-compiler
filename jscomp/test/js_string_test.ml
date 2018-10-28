@@ -156,10 +156,10 @@ let suites = Mt.[
       Eq([| "foo"; "bar" |], "foo bar baz" |> Js.String.splitAtMost " " ~limit:2)
     );
     "splitByRe", (fun _ ->
-      Eq([| "foo"; "bar"; "baz" |], "foo bar baz" |> Js.String.splitByRe [%re "/\\s/"])
+      Eq([| Some "a"; Some "#"; None; Some "b"; Some "#"; Some ":"; Some "c" |], "a#b#:c" |> Js.String.splitByRe [%re "/(#)(:)?/"])
     );
     "splitByReAtMost", (fun _ ->
-      Eq([| "foo"; "bar" |], "foo bar baz" |> Js.String.splitByReAtMost [%re "/\\s/"] ~limit:2)
+      Eq([| Some "a"; Some "#"; None |], "a#b#:c" |> Js.String.splitByReAtMost [%re "/(#)(:)?/"] ~limit:3)
     );
 
     (* es2015 *)
