@@ -2,7 +2,8 @@ include ../Makefile.shared
 
 CAMLC=../../lib/bsc.exe
 BSPACK=../bin/bspack.exe
-INCLUDES= -I ../stdlib  -I ../runtime -I ../others/
+
+INCLUDES= -I ../$(STDLIB)  -I ../runtime -I ../others/
 
 OTHERS := xwatcher xwatcher_current xwatcher_util
 
@@ -45,5 +46,7 @@ clean::
 
 -include .depend
 
+# not checking in deps on stdlib files
+# make it easier to switch stdlib
 depend:
-	$(CAMLDEP) -native $(INCLUDES) *.mli *.ml | sed -e 's/\.cmx/.cmj/g' > .depend
+	$(CAMLDEP) -native -I ../runtime -I ../others *.mli *.ml | sed -e 's/\.cmx/.cmj/g' > .depend

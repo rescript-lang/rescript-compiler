@@ -1,3 +1,4 @@
+include ./Makefile.shared
 
 .SECONDARY:
 NATIVE=ocamlopt.opt$(EXE)
@@ -633,7 +634,7 @@ libs:
 
 
 	@echo "Making stdlib"
-	cd stdlib && $(MAKE) all
+	cd $(STDLIB) && $(MAKE) all
 	@echo "Making stdlib finished"
 
 

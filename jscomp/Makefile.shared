@@ -2,7 +2,7 @@
 CAMLDEP=ocamldep.opt
 CAMLLEX=ocamllex.opt
 CAMLOPT=ocamlopt.opt
-
+STDLIB=stdlib-402
 
 
 

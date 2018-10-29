@@ -2,7 +2,7 @@ include ../Makefile.shared
 
 CAMLC=../../lib/bsc.exe
 BSPACK=../bin/bspack.exe
-INCLUDES= -I ../stdlib  -I ../runtime -I ../others/
+INCLUDES= -I ../$(STDLIB)  -I ../runtime -I ../others/
 
 OTHERS := test_literals a test_ari test_export2 test_internalOO test_obj_simple_ffi test_scope \
 	test_switch arith_lexer test_array test_external test_is_js test_order \
@@ -329,4 +329,4 @@ parser_api.ml: parser_api_main.ml
 -include .depend
 
 depend:
-	$(CAMLDEP) -native $(INCLUDES) *.mli *.ml | sed -e 's/\.cmx/.cmj/g' > .depend
+	$(CAMLDEP) -native -I ../runtime -I ../others *.mli *.ml | sed -e 's/\.cmx/.cmj/g' > .depend
