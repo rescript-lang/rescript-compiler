@@ -17,7 +17,7 @@ site/
 odoc_gen
 coverage
 jscomp/*
-!jscomp/stdlib
+!jscomp/stdlib-402
 !jscomp/runtime
 !jscomp/others
 !jscomp/stubs

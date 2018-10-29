@@ -16,5 +16,5 @@ let ff =
 let () = Js.log (f `A,ff, f1 `A)
 
 (* local variables: *)
-(* compile-command: "bsc.exe -I ../runtime -I ../stdlib -bs-main polyvar_test.ml" *)
+(* compile-command: "bsc.exe -I ../runtime -I ../stdlib-402 -bs-main polyvar_test.ml" *)
 (* end: *)

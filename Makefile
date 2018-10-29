@@ -12,6 +12,11 @@ ifeq ($(KERNEL),Linux)
   NPROCS := $(shell grep -c '^processor' /proc/cpuinfo)
 endif
 
+DEST=lib/ocaml
+RUNTIME=jscomp/runtime
+STDLIB=jscomp/stdlib-402
+OTHERS=jscomp/others
+
 world:
 	@echo "Making compiler"
 	$(MAKE) -B -C lib -j $(NPROCS) all
@@ -21,13 +26,9 @@ libs:
 	@echo "Making compiler finished"
 	$(MAKE) -C jscomp/runtime -j $(NPROCS) all
 	$(MAKE) -C jscomp/others -j $(NPROCS) all
-	$(MAKE) -C jscomp/stdlib -j $(NPROCS) all
+	$(MAKE) -C $(STDLIB) -j $(NPROCS) all
 
 
-DEST=lib/ocaml
-RUNTIME=jscomp/runtime
-STDLIB=jscomp/stdlib
-OTHERS=jscomp/others
 # TODO: sync up with
 # scripts/build_uitil.js
 # function install
