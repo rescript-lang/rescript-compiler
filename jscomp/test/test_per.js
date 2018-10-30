@@ -91,7 +91,7 @@ var epsilon_float = Caml_int64.float_of_bits(/* int64 */[
 function $caret(s1, s2) {
   var l1 = s1.length;
   var l2 = s2.length;
-  var s = Caml_string.caml_create_string(l1 + l2 | 0);
+  var s = Caml_string.caml_create_bytes(l1 + l2 | 0);
   Caml_string.caml_blit_string(s1, 0, s, 0, l1);
   Caml_string.caml_blit_string(s2, 0, s, l1, l2);
   return s;
@@ -356,7 +356,7 @@ function really_input(ic, s, ofs, len) {
 }
 
 function really_input_string(ic, len) {
-  var s = Caml_string.caml_create_string(len);
+  var s = Caml_string.caml_create_bytes(len);
   really_input(ic, s, 0, len);
   return s;
 }
@@ -386,17 +386,17 @@ function input_line(chan) {
     var n = Caml_missing_polyfill.not_implemented("caml_ml_input_scan_line");
     if (n === 0) {
       if (accu) {
-        return build_result(Caml_string.caml_create_string(len), len, accu);
+        return build_result(Caml_string.caml_create_bytes(len), len, accu);
       } else {
         throw Caml_builtin_exceptions.end_of_file;
       }
     } else if (n > 0) {
-      var res = Caml_string.caml_create_string(n - 1 | 0);
+      var res = Caml_string.caml_create_bytes(n - 1 | 0);
       Caml_missing_polyfill.not_implemented("caml_ml_input");
       Caml_io.caml_ml_input_char(chan);
       if (accu) {
         var len$1 = (len + n | 0) - 1 | 0;
-        return build_result(Caml_string.caml_create_string(len$1), len$1, /* :: */[
+        return build_result(Caml_string.caml_create_bytes(len$1), len$1, /* :: */[
                     res,
                     accu
                   ]);
@@ -404,7 +404,7 @@ function input_line(chan) {
         return res;
       }
     } else {
-      var beg = Caml_string.caml_create_string(-n | 0);
+      var beg = Caml_string.caml_create_bytes(-n | 0);
       Caml_missing_polyfill.not_implemented("caml_ml_input");
       _len = len - n | 0;
       _accu = /* :: */[

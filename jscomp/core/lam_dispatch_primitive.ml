@@ -280,8 +280,10 @@ let translate loc (prim_name : string)
         | [e0; e1] -> E.float_mul e0 e1 
         | _ -> assert false  
       end
-        
-
+#if OCAML_VERSION =~ ">4.03.0" then
+    | "caml_bytes_equal" ->   
+      call Js_runtime_modules.caml_primitive
+#end      
     | "caml_int64_equal_null"
       -> Js_long.equal_null args 
     | "caml_int64_equal_undefined"
@@ -331,7 +333,7 @@ let translate loc (prim_name : string)
         | [e0;e1] -> E.float_mod e0 e1
         | _ -> assert false 
       end
-
+   
     | "caml_string_equal" 
       -> 
       begin match args with 
@@ -347,8 +349,7 @@ let translate loc (prim_name : string)
       end
     | "caml_string_lessequal"
       -> 
-      begin 
-        match args with 
+      begin match args with 
         | [e0; e1] 
           -> 
           E.string_comp Le e0 e1
@@ -466,6 +467,9 @@ let translate loc (prim_name : string)
       end 
 
 
+#if OCAML_VERSION =~ ">4.03.0" then
+    | "caml_create_bytes"  
+#end
     | "caml_create_string" -> 
       (* Bytes.create *)
       (* Note that for invalid range, JS raise an Exception RangeError, 
@@ -477,7 +481,8 @@ let translate loc (prim_name : string)
           ->
           E.array NA []
         | _ -> 
-          call Js_runtime_modules.string 
+          E.runtime_call Js_runtime_modules.string 
+            "caml_create_bytes" args
       end
     | "caml_bool_compare" ->   
       begin match args with 
@@ -528,14 +533,16 @@ let translate loc (prim_name : string)
             call Js_runtime_modules.caml_primitive
         | _ -> assert false 
       end
-      
+    | "caml_fill_string"
+    | "caml_fill_bytes"
+      -> 
+        E.runtime_call 
+          Js_runtime_modules.string "caml_fill_bytes" args
     | "caml_string_get"    
     | "string_of_bytes"
     | "bytes_of_string"
-
     | "caml_is_printable"
-    | "caml_string_of_char_array"
-    | "caml_fill_string"
+    | "caml_string_of_char_array"    
     | "caml_blit_string" 
     | "caml_blit_bytes"
       -> 

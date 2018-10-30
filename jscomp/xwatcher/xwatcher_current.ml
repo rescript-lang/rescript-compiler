@@ -56,7 +56,8 @@ let () =
            "bsb";
            "common";
            "super_errors";
-           "."
+           ".";
+           "stdlib-406" ; (* evolve *)
         |];
 
       exec ()

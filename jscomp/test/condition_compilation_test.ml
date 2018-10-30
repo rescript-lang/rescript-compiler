@@ -33,7 +33,9 @@ type open_flag = Unix.open_flag =
 #if OCAML_VERSION =~ ">=4.01" then
   | O_CLOEXEC
 #end
-
+#if OCAML_VERSION =~ ">=4.03" then
+  | O_KEEPEXEC
+#end
 
 let vv =
 #if OCAML_PATCH = "BS" then

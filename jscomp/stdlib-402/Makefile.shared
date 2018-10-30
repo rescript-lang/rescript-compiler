@@ -33,7 +33,7 @@ include ../Makefile.shared
 
 BS_FLAGS= $(BS_COMMON_FLAGS) $(BS_PKG_FLAGS) 
 COMPFLAGS= $(BS_FLAGS) -strict-sequence -w +33..39-102 -g  -nostdlib \
-          -safe-string -I ../runtime -I ../others $(PROD_BS_FLAGS)
+          -safe-string -I ../runtime -I ../others 
 
 
 # OPTCOMPILER=ocamlopt.opt

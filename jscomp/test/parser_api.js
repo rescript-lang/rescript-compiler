@@ -830,7 +830,7 @@ function create_hashtable(size, init) {
 }
 
 function copy_file(ic, oc) {
-  var buff = Caml_string.caml_create_string(4096);
+  var buff = Caml_string.caml_create_bytes(4096);
   var _param = /* () */0;
   while(true) {
     var n = Pervasives.input(ic, buff, 0, 4096);
@@ -845,7 +845,7 @@ function copy_file(ic, oc) {
 }
 
 function copy_file_chunk(ic, oc, len) {
-  var buff = Caml_string.caml_create_string(4096);
+  var buff = Caml_string.caml_create_bytes(4096);
   var _n = len;
   while(true) {
     var n = _n;
@@ -866,7 +866,7 @@ function copy_file_chunk(ic, oc, len) {
 
 function string_of_file(ic) {
   var b = $$Buffer.create(65536);
-  var buff = Caml_string.caml_create_string(4096);
+  var buff = Caml_string.caml_create_bytes(4096);
   var _param = /* () */0;
   while(true) {
     var n = Pervasives.input(ic, buff, 0, 4096);
@@ -1106,9 +1106,9 @@ function create(str_size) {
   var tbl_size = Caml_int32.div(str_size, Sys.max_string_length) + 1 | 0;
   var tbl = Caml_array.caml_make_vect(tbl_size, Bytes.empty);
   for(var i = 0 ,i_finish = tbl_size - 2 | 0; i <= i_finish; ++i){
-    Caml_array.caml_array_set(tbl, i, Caml_string.caml_create_string(Sys.max_string_length));
+    Caml_array.caml_array_set(tbl, i, Caml_string.caml_create_bytes(Sys.max_string_length));
   }
-  Caml_array.caml_array_set(tbl, tbl_size - 1 | 0, Caml_string.caml_create_string(Caml_int32.mod_(str_size, Sys.max_string_length)));
+  Caml_array.caml_array_set(tbl, tbl_size - 1 | 0, Caml_string.caml_create_bytes(Caml_int32.mod_(str_size, Sys.max_string_length)));
   return tbl;
 }
 
@@ -13133,7 +13133,7 @@ var keyword_table = create_hashtable(149, /* :: */[
       ]
     ]);
 
-var initial_string_buffer = Caml_string.caml_create_string(256);
+var initial_string_buffer = Caml_string.caml_create_bytes(256);
 
 var string_buff = /* record */[/* contents */initial_string_buffer];
 
@@ -13147,7 +13147,7 @@ function reset_string_buffer(param) {
 
 function store_string_char(c) {
   if (string_index[0] >= string_buff[0].length) {
-    var new_buff = Caml_string.caml_create_string((string_buff[0].length << 1));
+    var new_buff = Caml_string.caml_create_bytes((string_buff[0].length << 1));
     Bytes.blit(string_buff[0], 0, new_buff, 0, string_buff[0].length);
     string_buff[0] = new_buff;
   }
@@ -13287,7 +13287,7 @@ function cvt_nativeint_literal(s) {
 
 function remove_underscores(s) {
   var l = s.length;
-  var b = Caml_string.caml_create_string(l);
+  var b = Caml_string.caml_create_bytes(l);
   var _src = 0;
   var _dst = 0;
   while(true) {

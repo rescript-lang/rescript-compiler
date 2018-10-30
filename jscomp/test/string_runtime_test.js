@@ -36,8 +36,8 @@ var suites_001 = /* :: */[
       (function (param) {
           var match = List.split(List.map((function (x) {
                       var len = x;
-                      var b = Caml_string.caml_create_string(1000);
-                      Caml_string.caml_fill_string(b, 0, len, /* "c" */99);
+                      var b = Caml_string.caml_create_bytes(1000);
+                      Caml_string.caml_fill_bytes(b, 0, len, /* "c" */99);
                       return /* tuple */[
                               Caml_string.bytes_to_string(b),
                               Caml_string.bytes_to_string(Bytes.init(len, (function (param) {

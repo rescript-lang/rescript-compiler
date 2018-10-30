@@ -79,7 +79,8 @@ if (exit === 1) {
         "bsb",
         "common",
         "super_errors",
-        "."
+        ".",
+        "stdlib-406"
       ]);
   exec(/* () */0);
 }
