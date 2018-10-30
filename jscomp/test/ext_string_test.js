@@ -245,7 +245,7 @@ function is_empty(s) {
 
 function repeat(n, s) {
   var len = s.length;
-  var res = Caml_string.caml_create_string(Caml_int32.imul(n, len));
+  var res = Caml_string.caml_create_bytes(Caml_int32.imul(n, len));
   for(var i = 0 ,i_finish = n - 1 | 0; i <= i_finish; ++i){
     $$String.blit(s, 0, res, Caml_int32.imul(i, len), len);
   }
@@ -403,7 +403,7 @@ function equal(x, y) {
 function unsafe_concat_with_length(len, sep, l) {
   if (l) {
     var hd = l[0];
-    var r = Caml_string.caml_create_string(len);
+    var r = Caml_string.caml_create_bytes(len);
     var hd_len = hd.length;
     var sep_len = sep.length;
     Caml_string.caml_blit_string(hd, 0, r, 0, hd_len);
@@ -647,7 +647,7 @@ function concat_array(sep, s) {
       for(var i = 0 ,i_finish = s_len - 1 | 0; i <= i_finish; ++i){
         len = len + s[i].length | 0;
       }
-      var target = Caml_string.caml_create_string(len + Caml_int32.imul(s_len - 1 | 0, sep_len) | 0);
+      var target = Caml_string.caml_create_bytes(len + Caml_int32.imul(s_len - 1 | 0, sep_len) | 0);
       var hd = s[0];
       var hd_len = hd.length;
       Caml_string.caml_blit_string(hd, 0, target, 0, hd_len);
@@ -674,7 +674,7 @@ function concat3(a, b, c) {
   var b_len = b.length;
   var c_len = c.length;
   var len = (a_len + b_len | 0) + c_len | 0;
-  var target = Caml_string.caml_create_string(len);
+  var target = Caml_string.caml_create_bytes(len);
   Caml_string.caml_blit_string(a, 0, target, 0, a_len);
   Caml_string.caml_blit_string(b, 0, target, a_len, b_len);
   Caml_string.caml_blit_string(c, 0, target, a_len + b_len | 0, c_len);
@@ -687,7 +687,7 @@ function concat4(a, b, c, d) {
   var c_len = c.length;
   var d_len = d.length;
   var len = ((a_len + b_len | 0) + c_len | 0) + d_len | 0;
-  var target = Caml_string.caml_create_string(len);
+  var target = Caml_string.caml_create_bytes(len);
   Caml_string.caml_blit_string(a, 0, target, 0, a_len);
   Caml_string.caml_blit_string(b, 0, target, a_len, b_len);
   Caml_string.caml_blit_string(c, 0, target, a_len + b_len | 0, c_len);
@@ -702,7 +702,7 @@ function concat5(a, b, c, d, e) {
   var d_len = d.length;
   var e_len = e.length;
   var len = (((a_len + b_len | 0) + c_len | 0) + d_len | 0) + e_len | 0;
-  var target = Caml_string.caml_create_string(len);
+  var target = Caml_string.caml_create_bytes(len);
   Caml_string.caml_blit_string(a, 0, target, 0, a_len);
   Caml_string.caml_blit_string(b, 0, target, a_len, b_len);
   Caml_string.caml_blit_string(c, 0, target, a_len + b_len | 0, c_len);
