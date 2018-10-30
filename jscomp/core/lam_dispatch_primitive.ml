@@ -280,8 +280,10 @@ let translate loc (prim_name : string)
         | [e0; e1] -> E.float_mul e0 e1 
         | _ -> assert false  
       end
-        
-
+#if OCAML_VERSION =~ ">4.03.0" then
+    | "caml_bytes_equal" ->   
+      call Js_runtime_modules.caml_primitive
+#end      
     | "caml_int64_equal_null"
       -> Js_long.equal_null args 
     | "caml_int64_equal_undefined"
@@ -331,7 +333,7 @@ let translate loc (prim_name : string)
         | [e0;e1] -> E.float_mod e0 e1
         | _ -> assert false 
       end
-
+   
     | "caml_string_equal" 
       -> 
       begin match args with 
@@ -347,8 +349,7 @@ let translate loc (prim_name : string)
       end
     | "caml_string_lessequal"
       -> 
-      begin 
-        match args with 
+      begin match args with 
         | [e0; e1] 
           -> 
           E.string_comp Le e0 e1
