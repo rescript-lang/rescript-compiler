@@ -134,7 +134,6 @@ OTHERS := test_literals a test_ari test_export2 test_internalOO test_obj_simple_
 	switch_case_test\
 	bb\
 	ocaml_parsetree_test\
-	ocaml_typedtree_test\
 	gpr_1484\
 	gpr_1481\
 	custom_error_test\
@@ -267,6 +266,8 @@ OTHERS := test_literals a test_ari test_export2 test_internalOO test_obj_simple_
 	large_record_duplication_test\
 	unboxed_attribute_test\
 	406_primitive_test\
+	ocaml_typedtree_test
+# ocaml_typedtree_test is not cross version due to camlinternalFormat
 # bs_uncurry_test
 # needs Lam to get rid of Uncurry arity first
 # simple_derive_test

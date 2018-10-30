@@ -3,7 +3,7 @@ CAMLDEP=ocamldep.opt
 CAMLLEX=ocamllex.opt
 CAMLOPT=ocamlopt.opt
 STDLIB=stdlib-402
-
+# STDLIB=stdlib-406
 
 
 .SUFFIXES: .mli .ml .cmi .cmo .cmx .p.cmx .cmj .js
