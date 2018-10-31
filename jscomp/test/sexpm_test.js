@@ -31,7 +31,7 @@ function eq(loc, param) {
 
 function print_or_error(fmt, x) {
   if (x[0] >= 106380200) {
-    return Curry._1(Format.fprintf(fmt, /* Format */[
+    return Curry._1(Format.fprintf(fmt)(/* Format */[
                     /* Formatting_gen */Block.__(18, [
                         /* Open_box */Block.__(1, [/* Format */[
                               /* End_of_format */0,
@@ -54,7 +54,7 @@ function print_or_error(fmt, x) {
                     "@[Error:%s@]@."
                   ]), x[1]);
   } else {
-    return Curry._2(Format.fprintf(fmt, /* Format */[
+    return Curry._2(Format.fprintf(fmt)(/* Format */[
                     /* Formatting_gen */Block.__(18, [
                         /* Open_box */Block.__(1, [/* Format */[
                               /* End_of_format */0,

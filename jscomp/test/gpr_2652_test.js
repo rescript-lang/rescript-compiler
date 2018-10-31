@@ -10,4 +10,4 @@ function bar(str) {
 
 exports.foo = foo;
 exports.bar = bar;
-/* No side effect */
+/* Buffer Not a pure module */

@@ -33,4 +33,4 @@ exports.u_d = u_d;
 exports.u_e = u_e;
 exports.u_f = u_f;
 exports.u_g = u_g;
-/* No side effect */
+/* u_e Not a pure module */

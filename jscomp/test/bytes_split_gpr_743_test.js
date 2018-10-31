@@ -71,4 +71,4 @@ Mt.from_pair_suites("bytes_split_gpr_743_test.ml", suites[0]);
 exports.suites = suites;
 exports.test_id = test_id;
 exports.eq = eq;
-/*  Not a pure module */
+/* b Not a pure module */

@@ -243,7 +243,7 @@ let narrow table vars virt_meths concr_meths =
         if List.mem lab vars then Vars.set tvars lab info  else tvars);      
 #else    
     Vars.fold
-      (fun[@bs] lab info tvars ->
+      (fun lab info tvars ->
         if List.mem lab vars then Vars.add lab info tvars else tvars)
       table.vars Vars.empty;
 #end      

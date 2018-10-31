@@ -15,7 +15,7 @@ var buf = $$Buffer.create(50);
 var fmt = Format.formatter_of_buffer(buf);
 
 function print_float(f) {
-  return Curry._1(Format.fprintf(fmt, /* Format */[
+  return Curry._1(Format.fprintf(fmt)(/* Format */[
                   /* String */Block.__(2, [
                       /* No_padding */0,
                       /* End_of_format */0
@@ -25,7 +25,7 @@ function print_float(f) {
 }
 
 function print_newline(param) {
-  return Format.fprintf(fmt, /* Format */[
+  return Format.fprintf(fmt)(/* Format */[
               /* Char_literal */Block.__(12, [
                   /* "\n" */10,
                   /* End_of_format */0

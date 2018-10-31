@@ -151,4 +151,4 @@ exports.yynames_block = yynames_block;
 exports.yyact = yyact;
 exports.yytables = yytables;
 exports.toplevel = toplevel;
-/* No side effect */
+/* Parsing Not a pure module */

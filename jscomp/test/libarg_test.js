@@ -36,10 +36,13 @@ function f_bool(b) {
   return Curry._1(record(/* Format */[
                   /* String_literal */Block.__(11, [
                       "bool(",
-                      /* Bool */Block.__(9, [/* Char_literal */Block.__(12, [
+                      /* Bool */Block.__(9, [
+                          /* No_padding */0,
+                          /* Char_literal */Block.__(12, [
                               /* ")" */41,
                               /* End_of_format */0
-                            ])])
+                            ])
+                        ])
                     ]),
                   "bool(%b)"
                 ]), b);

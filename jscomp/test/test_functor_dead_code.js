@@ -1,7 +1,8 @@
 'use strict';
 
+var $$String = require("../../lib/js/string.js");
 
 var v = true;
 
 exports.v = v;
-/* No side effect */
+/* String Not a pure module */

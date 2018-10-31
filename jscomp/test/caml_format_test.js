@@ -500,9 +500,13 @@ var formatter_suites_001 = /* :: */[
                                                                                                                                                                                           /* No_precision */0,
                                                                                                                                                                                           /* Char_literal */Block.__(12, [
                                                                                                                                                                                               /* " " */32,
-                                                                                                                                                                                              /* Bool */Block.__(9, [/* Char_literal */Block.__(12, [
+                                                                                                                                                                                              /* Bool */Block.__(9, [
+                                                                                                                                                                                                  /* No_padding */0,
+                                                                                                                                                                                                  /* Char_literal */Block.__(12, [
                                                                                                                                                                                                       /* " " */32,
-                                                                                                                                                                                                      /* Bool */Block.__(9, [/* Char_literal */Block.__(12, [
+                                                                                                                                                                                                      /* Bool */Block.__(9, [
+                                                                                                                                                                                                          /* No_padding */0,
+                                                                                                                                                                                                          /* Char_literal */Block.__(12, [
                                                                                                                                                                                                               /* " " */32,
                                                                                                                                                                                                               /* Int32 */Block.__(5, [
                                                                                                                                                                                                                   /* Int_d */0,
@@ -601,8 +605,10 @@ var formatter_suites_001 = /* :: */[
                                                                                                                                                                                                                         ])
                                                                                                                                                                                                                     ])
                                                                                                                                                                                                                 ])
-                                                                                                                                                                                                            ])])
-                                                                                                                                                                                                    ])])
+                                                                                                                                                                                                            ])
+                                                                                                                                                                                                        ])
+                                                                                                                                                                                                    ])
+                                                                                                                                                                                                ])
                                                                                                                                                                                             ])
                                                                                                                                                                                         ])
                                                                                                                                                                                     ])
@@ -824,9 +830,13 @@ var formatter_suites_001 = /* :: */[
                                                                                                                                                                                                 /* No_precision */0,
                                                                                                                                                                                                 /* Char_literal */Block.__(12, [
                                                                                                                                                                                                     /* " " */32,
-                                                                                                                                                                                                    /* Bool */Block.__(9, [/* Char_literal */Block.__(12, [
+                                                                                                                                                                                                    /* Bool */Block.__(9, [
+                                                                                                                                                                                                        /* No_padding */0,
+                                                                                                                                                                                                        /* Char_literal */Block.__(12, [
                                                                                                                                                                                                             /* " " */32,
-                                                                                                                                                                                                            /* Bool */Block.__(9, [/* Char_literal */Block.__(12, [
+                                                                                                                                                                                                            /* Bool */Block.__(9, [
+                                                                                                                                                                                                                /* No_padding */0,
+                                                                                                                                                                                                                /* Char_literal */Block.__(12, [
                                                                                                                                                                                                                     /* " " */32,
                                                                                                                                                                                                                     /* Int32 */Block.__(5, [
                                                                                                                                                                                                                         /* Int_d */0,
@@ -928,8 +938,10 @@ var formatter_suites_001 = /* :: */[
                                                                                                                                                                                                                               ])
                                                                                                                                                                                                                           ])
                                                                                                                                                                                                                       ])
-                                                                                                                                                                                                                  ])])
-                                                                                                                                                                                                          ])])
+                                                                                                                                                                                                                  ])
+                                                                                                                                                                                                              ])
+                                                                                                                                                                                                          ])
+                                                                                                                                                                                                      ])
                                                                                                                                                                                                   ])
                                                                                                                                                                                               ])
                                                                                                                                                                                           ])
@@ -1406,7 +1418,7 @@ var float_data = /* array */[
 ];
 
 function ident(ppf, s) {
-  return Curry._1(Format.fprintf(ppf, /* Format */[
+  return Curry._1(Format.fprintf(ppf)(/* Format */[
                   /* String */Block.__(2, [
                       /* No_padding */0,
                       /* End_of_format */0
@@ -1416,7 +1428,7 @@ function ident(ppf, s) {
 }
 
 function kwd(ppf, s) {
-  return Curry._1(Format.fprintf(ppf, /* Format */[
+  return Curry._1(Format.fprintf(ppf)(/* Format */[
                   /* String */Block.__(2, [
                       /* No_padding */0,
                       /* End_of_format */0
@@ -1429,7 +1441,7 @@ function pr_exp0(ppf, lam) {
   var exit = 0;
   switch (lam.tag | 0) {
     case 1 : 
-        return Curry._2(Format.fprintf(ppf, /* Format */[
+        return Curry._2(Format.fprintf(ppf)(/* Format */[
                         /* Alpha */Block.__(15, [/* End_of_format */0]),
                         "%a"
                       ]), ident, lam[0]);
@@ -1440,7 +1452,7 @@ function pr_exp0(ppf, lam) {
     
   }
   if (exit === 1) {
-    return Curry._2(Format.fprintf(ppf, /* Format */[
+    return Curry._2(Format.fprintf(ppf)(/* Format */[
                     /* Formatting_gen */Block.__(18, [
                         /* Open_box */Block.__(1, [/* Format */[
                               /* String_literal */Block.__(11, [
@@ -1467,7 +1479,7 @@ function pr_exp0(ppf, lam) {
 }
 
 function pr_app(ppf, e) {
-  return Curry._2(Format.fprintf(ppf, /* Format */[
+  return Curry._2(Format.fprintf(ppf)(/* Format */[
                   /* Formatting_gen */Block.__(18, [
                       /* Open_box */Block.__(1, [/* Format */[
                             /* String_literal */Block.__(11, [
@@ -1491,7 +1503,7 @@ function pr_other_applications(ppf, f) {
     case 1 : 
         return pr_exp0(ppf, f);
     case 2 : 
-        return Curry._4(Format.fprintf(ppf, /* Format */[
+        return Curry._4(Format.fprintf(ppf)(/* Format */[
                         /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
                                 /* Break */Block.__(0, [
                                     "@ ",
@@ -1509,7 +1521,7 @@ function pr_other_applications(ppf, f) {
 function pr_lambda(ppf, e) {
   switch (e.tag | 0) {
     case 0 : 
-        return Curry._8(Format.fprintf(ppf, /* Format */[
+        return Curry._8(Format.fprintf(ppf)(/* Format */[
                         /* Formatting_gen */Block.__(18, [
                             /* Open_box */Block.__(1, [/* Format */[
                                   /* String_literal */Block.__(11, [

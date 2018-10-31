@@ -4,6 +4,7 @@ var List = require("../../lib/js/list.js");
 var $$Array = require("../../lib/js/array.js");
 var Curry = require("../../lib/js/curry.js");
 var Js_primitive = require("../../lib/js/js_primitive.js");
+var Ext_string_test = require("./ext_string_test.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function filter_map(f, _xs) {
@@ -1000,4 +1001,4 @@ exports.sort_via_array = sort_via_array;
 exports.last = last;
 exports.assoc_by_string = assoc_by_string;
 exports.assoc_by_int = assoc_by_int;
-/* No side effect */
+/* Ext_string_test Not a pure module */

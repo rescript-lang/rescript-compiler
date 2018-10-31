@@ -7,6 +7,7 @@ var Bytes = require("../../lib/js/bytes.js");
 var Curry = require("../../lib/js/curry.js");
 var Digest = require("../../lib/js/digest.js");
 var Printf = require("../../lib/js/printf.js");
+var $$String = require("../../lib/js/string.js");
 var Caml_array = require("../../lib/js/caml_array.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_string = require("../../lib/js/caml_string.js");

@@ -244,7 +244,7 @@ function dump(r) {
 var dump$1 = dump;
 
 function pp_any(fmt, v) {
-  return Curry._1(Format.fprintf(fmt, /* Format */[
+  return Curry._1(Format.fprintf(fmt)(/* Format */[
                   /* Formatting_gen */Block.__(18, [
                       /* Open_box */Block.__(1, [/* Format */[
                             /* End_of_format */0,
@@ -285,4 +285,4 @@ exports.bad_argf = bad_argf;
 exports.dump = dump$1;
 exports.pp_any = pp_any;
 exports.hash_variant = hash_variant;
-/* Format Not a pure module */
+/* Arg Not a pure module */

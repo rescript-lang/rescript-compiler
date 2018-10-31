@@ -4,6 +4,7 @@ var Mt = require("./mt.js");
 var Char = require("../../lib/js/char.js");
 var $$Array = require("../../lib/js/array.js");
 var Bytes = require("../../lib/js/bytes.js");
+var $$String = require("../../lib/js/string.js");
 var Hashtbl = require("../../lib/js/hashtbl.js");
 var Mt_global = require("./mt_global.js");
 var Caml_string = require("../../lib/js/caml_string.js");

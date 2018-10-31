@@ -118,9 +118,9 @@ function f13$1(param) {
             ]);
 }
 
-b("File \"option_repr_test.ml\", line 94, characters 4-11", Caml_obj.caml_lessthan(undefined, null));
+b("File \"option_repr_test.ml\", line 94, characters 4-11", undefined < null);
 
-b("File \"option_repr_test.ml\", line 95, characters 4-11", Caml_obj.caml_lessthan(undefined, Js_primitive.some(undefined)));
+b("File \"option_repr_test.ml\", line 95, characters 4-11", undefined < Js_primitive.some(undefined));
 
 console.log(6, undefined);
 

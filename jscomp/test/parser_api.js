@@ -138,10 +138,13 @@ function print_config(oc) {
                         /* No_padding */0,
                         /* String_literal */Block.__(11, [
                             ": ",
-                            /* Bool */Block.__(9, [/* Char_literal */Block.__(12, [
+                            /* Bool */Block.__(9, [
+                                /* No_padding */0,
+                                /* Char_literal */Block.__(12, [
                                     /* "\n" */10,
                                     /* End_of_format */0
-                                  ])])
+                                  ])
+                              ])
                           ])
                       ]),
                     "%s: %B\n"
@@ -930,7 +933,7 @@ function chop_extensions(file) {
   var dirname = Curry._1(Filename.dirname, file);
   var basename = Curry._1(Filename.basename, file);
   try {
-    var pos = Bytes.index(Caml_string.bytes_of_string(basename), /* "." */46);
+    var pos = $$String.index(basename, /* "." */46);
     var basename$1 = $$String.sub(basename, 0, pos);
     if (Curry._1(Filename.is_implicit, file) && dirname === Filename.current_dir_name) {
       return basename$1;
@@ -1250,7 +1253,7 @@ function split(s, c) {
 }
 
 function cut_at(s, c) {
-  var pos = Bytes.index(Caml_string.bytes_of_string(s), c);
+  var pos = $$String.index(s, c);
   return /* tuple */[
           $$String.sub(s, 0, pos),
           $$String.sub(s, pos + 1 | 0, (s.length - pos | 0) - 1 | 0)
@@ -1422,7 +1425,7 @@ function set_color_tag_handling(ppf) {
     functions$prime_002,
     functions$prime_003
   ];
-  ppf[/* pp_mark_tags */21] = true;
+  ppf[/* pp_mark_tags */22] = true;
   return Format.pp_set_formatter_tag_functions(ppf, functions$prime);
 }
 
@@ -2411,7 +2414,7 @@ var nerrors = /* record */[/* contents */0];
 function print(ppf, w) {
   var msg = message(w);
   var num = number(w);
-  Curry._2(Format.fprintf(ppf, /* Format */[
+  Curry._2(Format.fprintf(ppf)(/* Format */[
             /* Int */Block.__(4, [
                 /* Int_d */0,
                 /* No_padding */0,
@@ -2438,7 +2441,7 @@ function print(ppf, w) {
 function super_print(message, ppf, w) {
   var msg = Curry._1(message, w);
   var num = number(w);
-  Curry._1(Format.fprintf(ppf, /* Format */[
+  Curry._1(Format.fprintf(ppf)(/* Format */[
             /* String */Block.__(2, [
                 /* No_padding */0,
                 /* End_of_format */0
@@ -2961,7 +2964,8 @@ function print_updating_num_loc_lines(ppf, f, arg) {
         /* out_string */out_string,
         /* out_flush */out_functions[/* out_flush */1],
         /* out_newline */out_functions[/* out_newline */2],
-        /* out_spaces */out_functions[/* out_spaces */3]
+        /* out_spaces */out_functions[/* out_spaces */3],
+        /* out_indent */out_functions[/* out_indent */4]
       ]);
   Curry._2(f, ppf, arg);
   Format.pp_print_flush(ppf, /* () */0);
@@ -3036,7 +3040,7 @@ function highlight_dumb(ppf, lb, loc) {
     }
     
   }
-  Curry._2(Format.fprintf(ppf, /* Format */[
+  Curry._2(Format.fprintf(ppf)(/* Format */[
             /* String_literal */Block.__(11, [
                 "Characters ",
                 /* Int */Block.__(4, [
@@ -3091,7 +3095,7 @@ function highlight_dumb(ppf, lb, loc) {
       
     } else {
       if (line === line_start && line === line_end) {
-        Format.fprintf(ppf, /* Format */[
+        Format.fprintf(ppf)(/* Format */[
               /* Formatting_lit */Block.__(17, [
                   /* Flush_newline */4,
                   /* String_literal */Block.__(11, [
@@ -3109,7 +3113,7 @@ function highlight_dumb(ppf, lb, loc) {
         }
       }
       if (line >= line_start && line <= line_end) {
-        Format.fprintf(ppf, /* Format */[
+        Format.fprintf(ppf)(/* Format */[
               /* Formatting_lit */Block.__(17, [
                   /* Flush_newline */4,
                   /* End_of_format */0
@@ -3221,7 +3225,7 @@ function show_filename(file) {
 }
 
 function print_filename(ppf, file) {
-  return Curry._1(Format.fprintf(ppf, /* Format */[
+  return Curry._1(Format.fprintf(ppf)(/* Format */[
                   /* String */Block.__(2, [
                       /* No_padding */0,
                       /* End_of_format */0
@@ -3261,7 +3265,7 @@ function print_loc(ppf, loc) {
           ])) {
       return /* () */0;
     } else {
-      return Curry._2(Format.fprintf(ppf, /* Format */[
+      return Curry._2(Format.fprintf(ppf)(/* Format */[
                       /* String_literal */Block.__(11, [
                           "Characters ",
                           /* Int */Block.__(4, [
@@ -3283,7 +3287,7 @@ function print_loc(ppf, loc) {
                     ]), loc[/* loc_start */0][/* pos_cnum */3], loc[/* loc_end */1][/* pos_cnum */3]);
     }
   } else {
-    Curry._5(Format.fprintf(ppf, /* Format */[
+    Curry._5(Format.fprintf(ppf)(/* Format */[
               /* String */Block.__(2, [
                   /* No_padding */0,
                   /* Formatting_gen */Block.__(18, [
@@ -3308,7 +3312,7 @@ function print_loc(ppf, loc) {
               "%s@{<loc>%a%s%i"
             ]), "File \"", print_filename, file, "\", line ", match[1]);
     if (startchar$1 >= 0) {
-      Curry._4(Format.fprintf(ppf, /* Format */[
+      Curry._4(Format.fprintf(ppf)(/* Format */[
                 /* String */Block.__(2, [
                     /* No_padding */0,
                     /* Int */Block.__(4, [
@@ -3329,7 +3333,7 @@ function print_loc(ppf, loc) {
                 "%s%i%s%i"
               ]), ", characters ", startchar$1, "-", endchar);
     }
-    return Format.fprintf(ppf, /* Format */[
+    return Format.fprintf(ppf)(/* Format */[
                 /* Formatting_lit */Block.__(17, [
                     /* Close_tag */1,
                     /* End_of_format */0
@@ -3347,7 +3351,7 @@ function print$1(ppf, loc) {
         ])) {
     return /* () */0;
   } else {
-    return Curry._3(Format.fprintf(ppf, /* Format */[
+    return Curry._3(Format.fprintf(ppf)(/* Format */[
                     /* Formatting_gen */Block.__(18, [
                         /* Open_tag */Block.__(0, [/* Format */[
                               /* String_literal */Block.__(11, [
@@ -3376,7 +3380,7 @@ var error_prefix = "Error";
 
 function print_error_prefix(ppf, param) {
   setup_colors(/* () */0);
-  Curry._1(Format.fprintf(ppf, /* Format */[
+  Curry._1(Format.fprintf(ppf)(/* Format */[
             /* Formatting_gen */Block.__(18, [
                 /* Open_tag */Block.__(0, [/* Format */[
                       /* String_literal */Block.__(11, [
@@ -3414,7 +3418,7 @@ function default_warning_printer(loc, ppf, w) {
   if (is_active(w)) {
     setup_colors(/* () */0);
     print$1(ppf, loc);
-    return Curry._3(Format.fprintf(ppf, /* Format */[
+    return Curry._3(Format.fprintf(ppf)(/* Format */[
                     /* Formatting_gen */Block.__(18, [
                         /* Open_tag */Block.__(0, [/* Format */[
                               /* String_literal */Block.__(11, [
@@ -3565,7 +3569,7 @@ function default_error_reporter(ppf, err) {
   if (highlighted) {
     return Format.pp_print_string(ppf, if_highlight);
   } else {
-    Curry._5(Format.fprintf(ppf, /* Format */[
+    Curry._5(Format.fprintf(ppf)(/* Format */[
               /* Alpha */Block.__(15, [/* Alpha */Block.__(15, [/* Char_literal */Block.__(12, [
                           /* " " */32,
                           /* String */Block.__(2, [
@@ -3575,7 +3579,7 @@ function default_error_reporter(ppf, err) {
                         ])])]),
               "%a%a %s"
             ]), print$1, err[/* loc */0], print_error_prefix, /* () */0, err[/* msg */1]);
-    return List.iter(Curry._1(Format.fprintf(ppf, /* Format */[
+    return List.iter(Curry._1(Format.fprintf(ppf)(/* Format */[
                         /* Formatting_lit */Block.__(17, [
                             /* Force_newline */3,
                             /* Formatting_gen */Block.__(18, [
@@ -3660,7 +3664,7 @@ function report_exception(ppf, exn) {
     try {
       var match = error_of_exn$1(exn$1);
       if (match !== undefined) {
-        return Curry._2(Format.fprintf(ppf$1, /* Format */[
+        return Curry._2(Format.fprintf(ppf$1)(/* Format */[
                         /* Formatting_gen */Block.__(18, [
                             /* Open_box */Block.__(1, [/* Format */[
                                   /* End_of_format */0,
@@ -12040,7 +12044,7 @@ var exit = 0;
 var i;
 
 try {
-  i = Bytes.rindex(Caml_string.bytes_of_string(Sys.ocaml_version), /* "+" */43);
+  i = $$String.rindex(Sys.ocaml_version, /* "+" */43);
   exit = 1;
 }
 catch (exn$2){
@@ -12235,7 +12239,7 @@ function pp_directive_value(fmt, x) {
       case 2 : 
           return Format.pp_print_int(fmt, x[0]);
       case 3 : 
-          return Curry._1(Format.fprintf(fmt, /* Format */[
+          return Curry._1(Format.fprintf(fmt)(/* Format */[
                           /* Caml_string */Block.__(3, [
                               /* No_padding */0,
                               /* End_of_format */0
@@ -12249,7 +12253,7 @@ function pp_directive_value(fmt, x) {
 
 function list_variables(fmt) {
   return Hashtbl.iter((function (s, dir_value) {
-                return Curry._3(Format.fprintf(fmt, /* Format */[
+                return Curry._3(Format.fprintf(fmt)(/* Format */[
                                 /* Formatting_gen */Block.__(18, [
                                     /* Open_box */Block.__(1, [/* Format */[
                                           /* End_of_format */0,
@@ -12589,6 +12593,21 @@ function directive_parse(token_with_comments, lexbuf) {
     }
     
   };
+  var parse_and_aux = function (calc, v) {
+    var e = token(/* () */0);
+    if (typeof e === "number" && e === 0) {
+      var calc$1 = calc && v;
+      var b = parse_and_aux(calc$1, parse_relation(calc$1));
+      if (v) {
+        return b;
+      } else {
+        return false;
+      }
+    } else {
+      push(e);
+      return v;
+    }
+  };
   var parse_relation = function (calc) {
     var curr_token = token(/* () */0);
     var curr_loc = curr(lexbuf);
@@ -12734,21 +12753,6 @@ function directive_parse(token_with_comments, lexbuf) {
                 curr_loc
               ];
       }
-    }
-  };
-  var parse_and_aux = function (calc, v) {
-    var e = token(/* () */0);
-    if (typeof e === "number" && e === 0) {
-      var calc$1 = calc && v;
-      var b = parse_and_aux(calc$1, parse_relation(calc$1));
-      if (v) {
-        return b;
-      } else {
-        return false;
-      }
-    } else {
-      push(e);
-      return v;
     }
   };
   var parse_or_aux = function (calc, v) {
@@ -13372,7 +13376,7 @@ function report_error$2(ppf, param) {
   if (typeof param === "number") {
     switch (param) {
       case 0 : 
-          return Format.fprintf(ppf, /* Format */[
+          return Format.fprintf(ppf)(/* Format */[
                       /* String_literal */Block.__(11, [
                           "String literal not terminated",
                           /* End_of_format */0
@@ -13380,7 +13384,7 @@ function report_error$2(ppf, param) {
                       "String literal not terminated"
                     ]);
       case 1 : 
-          return Format.fprintf(ppf, /* Format */[
+          return Format.fprintf(ppf)(/* Format */[
                       /* String_literal */Block.__(11, [
                           "Unterminated parens in conditional predicate",
                           /* End_of_format */0
@@ -13388,7 +13392,7 @@ function report_error$2(ppf, param) {
                       "Unterminated parens in conditional predicate"
                     ]);
       case 2 : 
-          return Format.fprintf(ppf, /* Format */[
+          return Format.fprintf(ppf)(/* Format */[
                       /* String_literal */Block.__(11, [
                           "#if not terminated",
                           /* End_of_format */0
@@ -13396,7 +13400,7 @@ function report_error$2(ppf, param) {
                       "#if not terminated"
                     ]);
       case 3 : 
-          return Format.fprintf(ppf, /* Format */[
+          return Format.fprintf(ppf)(/* Format */[
                       /* String_literal */Block.__(11, [
                           "#else not terminated",
                           /* End_of_format */0
@@ -13404,7 +13408,7 @@ function report_error$2(ppf, param) {
                       "#else not terminated"
                     ]);
       case 4 : 
-          return Format.fprintf(ppf, /* Format */[
+          return Format.fprintf(ppf)(/* Format */[
                       /* String_literal */Block.__(11, [
                           "Unexpected token in conditional predicate",
                           /* End_of_format */0
@@ -13412,7 +13416,7 @@ function report_error$2(ppf, param) {
                       "Unexpected token in conditional predicate"
                     ]);
       case 5 : 
-          return Format.fprintf(ppf, /* Format */[
+          return Format.fprintf(ppf)(/* Format */[
                       /* String_literal */Block.__(11, [
                           "Expect `then` after conditional predicate",
                           /* End_of_format */0
@@ -13420,7 +13424,7 @@ function report_error$2(ppf, param) {
                       "Expect `then` after conditional predicate"
                     ]);
       case 6 : 
-          return Format.fprintf(ppf, /* Format */[
+          return Format.fprintf(ppf)(/* Format */[
                       /* String_literal */Block.__(11, [
                           "Unexpected directive",
                           /* End_of_format */0
@@ -13432,7 +13436,7 @@ function report_error$2(ppf, param) {
   } else {
     switch (param.tag | 0) {
       case 0 : 
-          return Curry._1(Format.fprintf(ppf, /* Format */[
+          return Curry._1(Format.fprintf(ppf)(/* Format */[
                           /* String_literal */Block.__(11, [
                               "Illegal character (",
                               /* String */Block.__(2, [
@@ -13446,7 +13450,7 @@ function report_error$2(ppf, param) {
                           "Illegal character (%s)"
                         ]), Char.escaped(param[0]));
       case 1 : 
-          return Curry._1(Format.fprintf(ppf, /* Format */[
+          return Curry._1(Format.fprintf(ppf)(/* Format */[
                           /* String_literal */Block.__(11, [
                               "Illegal backslash escape in string or character (",
                               /* String */Block.__(2, [
@@ -13460,7 +13464,7 @@ function report_error$2(ppf, param) {
                           "Illegal backslash escape in string or character (%s)"
                         ]), param[0]);
       case 2 : 
-          return Format.fprintf(ppf, /* Format */[
+          return Format.fprintf(ppf)(/* Format */[
                       /* String_literal */Block.__(11, [
                           "Comment not terminated",
                           /* End_of_format */0
@@ -13468,7 +13472,7 @@ function report_error$2(ppf, param) {
                       "Comment not terminated"
                     ]);
       case 3 : 
-          return Curry._2(Format.fprintf(ppf, /* Format */[
+          return Curry._2(Format.fprintf(ppf)(/* Format */[
                           /* String_literal */Block.__(11, [
                               "This comment contains an unterminated string literal",
                               /* Formatting_lit */Block.__(17, [
@@ -13482,7 +13486,7 @@ function report_error$2(ppf, param) {
                           "This comment contains an unterminated string literal@.%aString literal begins here"
                         ]), print_error, param[1]);
       case 4 : 
-          return Curry._1(Format.fprintf(ppf, /* Format */[
+          return Curry._1(Format.fprintf(ppf)(/* Format */[
                           /* Char_literal */Block.__(12, [
                               /* "`" */96,
                               /* String */Block.__(2, [
@@ -13496,7 +13500,7 @@ function report_error$2(ppf, param) {
                           "`%s' is a keyword, it cannot be used as label name"
                         ]), param[0]);
       case 5 : 
-          return Curry._1(Format.fprintf(ppf, /* Format */[
+          return Curry._1(Format.fprintf(ppf)(/* Format */[
                           /* String_literal */Block.__(11, [
                               "Integer literal exceeds the range of representable integers of type ",
                               /* String */Block.__(2, [
@@ -13507,7 +13511,7 @@ function report_error$2(ppf, param) {
                           "Integer literal exceeds the range of representable integers of type %s"
                         ]), param[0]);
       case 6 : 
-          return Curry._1(Format.fprintf(ppf, /* Format */[
+          return Curry._1(Format.fprintf(ppf)(/* Format */[
                           /* String_literal */Block.__(11, [
                               "Illegal semantic version string ",
                               /* String */Block.__(2, [
@@ -13518,7 +13522,7 @@ function report_error$2(ppf, param) {
                           "Illegal semantic version string %s"
                         ]), param[0]);
       case 7 : 
-          return Curry._2(Format.fprintf(ppf, /* Format */[
+          return Curry._2(Format.fprintf(ppf)(/* Format */[
                           /* String_literal */Block.__(11, [
                               "Conditional expression type mismatch (",
                               /* String */Block.__(2, [
@@ -13929,6 +13933,68 @@ function token(lexbuf) {
   };
 }
 
+function comment(lexbuf) {
+  return __ocaml_lex_comment_rec(lexbuf, 132);
+}
+
+function string(lexbuf) {
+  lexbuf[/* lex_mem */9] = Caml_array.caml_make_vect(2, -1);
+  var lexbuf$1 = lexbuf;
+  var ___ocaml_lex_state = 164;
+  while(true) {
+    var __ocaml_lex_state = ___ocaml_lex_state;
+    var __ocaml_lex_state$1 = Lexing.new_engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf$1);
+    switch (__ocaml_lex_state$1) {
+      case 0 : 
+          return /* () */0;
+      case 1 : 
+          var space = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 0), lexbuf$1[/* lex_curr_pos */5]);
+          update_loc(lexbuf$1, undefined, 1, false, space.length);
+          return string(lexbuf$1);
+      case 2 : 
+          store_string_char(char_for_backslash(Lexing.lexeme_char(lexbuf$1, 1)));
+          return string(lexbuf$1);
+      case 3 : 
+          store_string_char(char_for_decimal_code(lexbuf$1, 1));
+          return string(lexbuf$1);
+      case 4 : 
+          store_string_char(char_for_hexadecimal_code(lexbuf$1, 2));
+          return string(lexbuf$1);
+      case 5 : 
+          if (comment_start_loc[0] !== /* [] */0) {
+            return string(lexbuf$1);
+          } else {
+            var loc = curr(lexbuf$1);
+            prerr_warning(loc, /* Illegal_backslash */7);
+            store_string_char(Lexing.lexeme_char(lexbuf$1, 0));
+            store_string_char(Lexing.lexeme_char(lexbuf$1, 1));
+            return string(lexbuf$1);
+          }
+      case 6 : 
+          if (comment_start_loc[0] === /* [] */0) {
+            prerr_warning(curr(lexbuf$1), /* Eol_in_string */14);
+          }
+          update_loc(lexbuf$1, undefined, 1, false, 0);
+          store_string(Lexing.lexeme(lexbuf$1));
+          return string(lexbuf$1);
+      case 7 : 
+          is_in_string[0] = false;
+          throw [
+                $$Error$2,
+                /* Unterminated_string */0,
+                string_start_loc[0]
+              ];
+      case 8 : 
+          store_string_char(Lexing.lexeme_char(lexbuf$1, 0));
+          return string(lexbuf$1);
+      default:
+        Curry._1(lexbuf$1[/* refill_buff */0], lexbuf$1);
+        ___ocaml_lex_state = __ocaml_lex_state$1;
+        continue ;
+    }
+  };
+}
+
 function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
   while(true) {
     var __ocaml_lex_state = ___ocaml_lex_state;
@@ -14108,68 +14174,6 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
           continue ;
       default:
         Curry._1(lexbuf[/* refill_buff */0], lexbuf);
-        ___ocaml_lex_state = __ocaml_lex_state$1;
-        continue ;
-    }
-  };
-}
-
-function comment(lexbuf) {
-  return __ocaml_lex_comment_rec(lexbuf, 132);
-}
-
-function string(lexbuf) {
-  lexbuf[/* lex_mem */9] = Caml_array.caml_make_vect(2, -1);
-  var lexbuf$1 = lexbuf;
-  var ___ocaml_lex_state = 164;
-  while(true) {
-    var __ocaml_lex_state = ___ocaml_lex_state;
-    var __ocaml_lex_state$1 = Lexing.new_engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf$1);
-    switch (__ocaml_lex_state$1) {
-      case 0 : 
-          return /* () */0;
-      case 1 : 
-          var space = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 0), lexbuf$1[/* lex_curr_pos */5]);
-          update_loc(lexbuf$1, undefined, 1, false, space.length);
-          return string(lexbuf$1);
-      case 2 : 
-          store_string_char(char_for_backslash(Lexing.lexeme_char(lexbuf$1, 1)));
-          return string(lexbuf$1);
-      case 3 : 
-          store_string_char(char_for_decimal_code(lexbuf$1, 1));
-          return string(lexbuf$1);
-      case 4 : 
-          store_string_char(char_for_hexadecimal_code(lexbuf$1, 2));
-          return string(lexbuf$1);
-      case 5 : 
-          if (comment_start_loc[0] !== /* [] */0) {
-            return string(lexbuf$1);
-          } else {
-            var loc = curr(lexbuf$1);
-            prerr_warning(loc, /* Illegal_backslash */7);
-            store_string_char(Lexing.lexeme_char(lexbuf$1, 0));
-            store_string_char(Lexing.lexeme_char(lexbuf$1, 1));
-            return string(lexbuf$1);
-          }
-      case 6 : 
-          if (comment_start_loc[0] === /* [] */0) {
-            prerr_warning(curr(lexbuf$1), /* Eol_in_string */14);
-          }
-          update_loc(lexbuf$1, undefined, 1, false, 0);
-          store_string(Lexing.lexeme(lexbuf$1));
-          return string(lexbuf$1);
-      case 7 : 
-          is_in_string[0] = false;
-          throw [
-                $$Error$2,
-                /* Unterminated_string */0,
-                string_start_loc[0]
-              ];
-      case 8 : 
-          store_string_char(Lexing.lexeme_char(lexbuf$1, 0));
-          return string(lexbuf$1);
-      default:
-        Curry._1(lexbuf$1[/* refill_buff */0], lexbuf$1);
         ___ocaml_lex_state = __ocaml_lex_state$1;
         continue ;
     }
@@ -14713,33 +14717,29 @@ function wrap(parsing_fun, lexbuf) {
   catch (raw_err){
     var err = Js_exn.internalToOCamlException(raw_err);
     var exit = 0;
-    var exit$1 = 0;
-    var exit$2 = 0;
     if (err[0] === $$Error$2) {
       var tmp = err[1];
-      if (typeof tmp === "number" || tmp.tag || input_name[0] !== "//toplevel//") {
-        exit$2 = 3;
-      } else {
+      if (typeof tmp === "number") {
+        throw err;
+      } else if (tmp.tag) {
+        throw err;
+      } else if (input_name[0] === "//toplevel//") {
         skip_phrase(lexbuf);
         throw err;
+      } else {
+        throw err;
       }
-    } else {
-      exit$2 = 3;
-    }
-    if (exit$2 === 3) {
-      if (err[0] === $$Error$1 && input_name[0] === "//toplevel//") {
+    } else if (err[0] === $$Error$1) {
+      if (input_name[0] === "//toplevel//") {
         maybe_skip_phrase(lexbuf);
         throw err;
       } else {
-        exit$1 = 2;
-      }
-    }
-    if (exit$1 === 2) {
-      if (err === Parsing.Parse_error || err === Escape_error) {
-        exit = 1;
-      } else {
         throw err;
       }
+    } else if (err === Parsing.Parse_error || err === Escape_error) {
+      exit = 1;
+    } else {
+      throw err;
     }
     if (exit === 1) {
       var loc = curr(lexbuf);

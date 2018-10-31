@@ -82,4 +82,4 @@ exports.__ocaml_lex_tables = __ocaml_lex_tables;
 exports.lexeme = lexeme;
 exports.__ocaml_lex_lexeme_rec = __ocaml_lex_lexeme_rec;
 exports.str = str;
-/* No side effect */
+/* Lexing Not a pure module */

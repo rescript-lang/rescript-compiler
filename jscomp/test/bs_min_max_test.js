@@ -80,7 +80,7 @@ eq("File \"bs_min_max_test.ml\", line 33, characters 5-12", Caml_obj.caml_max(3,
 
 eq("File \"bs_min_max_test.ml\", line 34, characters 5-12", Caml_obj.caml_max(undefined, 3), 3);
 
-b("File \"bs_min_max_test.ml\", line 35, characters 4-11", Caml_obj.caml_greaterequal(5, undefined));
+b("File \"bs_min_max_test.ml\", line 35, characters 4-11", 5 >= undefined);
 
 Mt.from_pair_suites("bs_min_max_test.ml", suites[0]);
 

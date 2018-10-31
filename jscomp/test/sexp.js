@@ -557,4 +557,4 @@ exports.of_variant = of_variant;
 exports.of_field = of_field;
 exports.of_record = of_record;
 exports.Traverse = Traverse;
-/* No side effect */
+/* Hashtbl Not a pure module */

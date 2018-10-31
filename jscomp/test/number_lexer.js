@@ -83,4 +83,4 @@ exports.l = l;
 exports.__ocaml_lex_tables = __ocaml_lex_tables;
 exports.token = token;
 exports.__ocaml_lex_token_rec = __ocaml_lex_token_rec;
-/* No side effect */
+/* Lexing Not a pure module */

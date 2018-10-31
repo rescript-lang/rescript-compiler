@@ -1,61 +1,21 @@
-a_recursive_type.cmi :
-abstract_type.cmi : mt.cmi
-alias_test.cmi :
-ari_regress_test.cmi :
-array_test.cmi :
-ast_js_mapper_test.cmi :
-basic_module_test.cmi :
-bs_abstract_test.cmi : ../runtime/js.cmi
-class_setter_getter.cmi : ../runtime/js.cmi
-config2_test.cmi : ../runtime/js.cmi
-const_block_test.cmi :
-demo_int_map.cmi :
-derive_projector_test.cmi :
-ext_pervasives_test.cmi :
-ext_sys_test.cmi :
-float_record.cmi :
-flow_parser_reg_test.cmi :
-gpr_405_test.cmi :
-infer_type_test.cmi : ../runtime/js.cmi
-inline_edge_cases.cmi :
-inline_map_test.cmi :
-inner_define.cmi :
-map_test.cmi :
-mt.cmi : ../runtime/js.cmi
-mt_global.cmi : mt.cmi
-ocaml_parsetree_test.cmi :
-ocaml_proto_test.cmi :
-ocaml_typedtree_test.cmi :
-poly_variant_test.cmi :
-polymorphism_test.cmi :
-scanf_reference_error_regression_test.cmi :
-sexp.cmi :
-sexpm.cmi :
-simple_derive_test.cmi :
-simple_derive_use.cmi :
-test_for_map2.cmi :
-test_http_server.cmi :
-test_is_js.cmi :
-test_literals.cmi :
-test_unsafe_obj_ffi.cmi : ../runtime/js.cmi
-test_unsafe_obj_ffi_ppx.cmi : ../runtime/js.cmi
-testing.cmi :
-ui_defs.cmi :
-unsafe_this.cmi : ../runtime/js.cmi
 406_primitive_test.cmj : mt.cmj
 a.cmj : test_order.cmj
 a_filename_test.cmj : mt.cmj ext_filename_test.cmj
 a_list_test.cmj : mt.cmj ext_list_test.cmj
 a_recursive_type.cmj : a_recursive_type.cmi
+a_recursive_type.cmi :
 a_scope_bug.cmj :
 a_string_test.cmj : mt.cmj ext_string_test.cmj
 abstract_type.cmj : abstract_type.cmi
+abstract_type.cmi : mt.cmi
 adt_optimize_test.cmj :
 alias_test.cmj : alias_test.cmi
+alias_test.cmi :
 and_or_tailcall_test.cmj : mt.cmj
 app_root_finder.cmj : ../others/node.cmj ../runtime/js.cmj
 argv_test.cmj :
 ari_regress_test.cmj : mt.cmj ari_regress_test.cmi
+ari_regress_test.cmi :
 arith_lexer.cmj : arith_syntax.cmj arith_parser.cmj
 arith_parser.cmj : arith_syntax.cmj
 arith_syntax.cmj :
@@ -65,9 +25,11 @@ array_data_util.cmj : ../others/belt.cmj
 array_safe_get.cmj :
 array_subtle_test.cmj : mt.cmj ../runtime/js.cmj
 array_test.cmj : mt.cmj array_test.cmi
+array_test.cmi :
 ast_abstract_test.cmj : mt.cmj
 ast_js_mapper_poly_test.cmj : mt.cmj
 ast_js_mapper_test.cmj : ast_js_mapper_test.cmi
+ast_js_mapper_test.cmi :
 ast_mapper_defensive_test.cmj : mt.cmj
 ast_mapper_unused_warning_test.cmj :
 async_ideas.cmj :
@@ -77,6 +39,7 @@ bal_set_mini.cmj :
 bang_primitive.cmj :
 basic_module_test.cmj : pr6726.cmj offset.cmj mt_global.cmj mt.cmj \
     basic_module_test.cmi
+basic_module_test.cmi :
 bb.cmj :
 bdd.cmj :
 bench.cmj :
@@ -87,6 +50,7 @@ block_alias_test.cmj : mt.cmj
 boolean_test.cmj : test_bool_equal.cmj mt.cmj
 bs_MapInt_test.cmj : ../runtime/js.cmj ../others/belt.cmj
 bs_abstract_test.cmj : ../runtime/js.cmj bs_abstract_test.cmi
+bs_abstract_test.cmi : ../runtime/js.cmi
 bs_array_test.cmj : mt.cmj ../runtime/js.cmj ../others/belt.cmj
 bs_auto_uncurry.cmj : ../runtime/js.cmj
 bs_auto_uncurry_test.cmj : mt.cmj ../others/js_array.cmj ../runtime/js.cmj
@@ -139,6 +103,7 @@ class8_test.cmj : mt.cmj
 class_fib_open_recursion_test.cmj : mt.cmj
 class_repr.cmj :
 class_setter_getter.cmj : ../runtime/js.cmj class_setter_getter.cmi
+class_setter_getter.cmi : ../runtime/js.cmi
 class_test.cmj : mt.cmj
 class_type_ffi_test.cmj : ../runtime/js.cmj
 compare_test.cmj :
@@ -148,8 +113,10 @@ complex_while_loop.cmj :
 condition_compilation_test.cmj : mt.cmj
 config1_test.cmj :
 config2_test.cmj : ../runtime/js.cmj config2_test.cmi
+config2_test.cmi : ../runtime/js.cmi
 console_log_test.cmj :
 const_block_test.cmj : mt.cmj const_block_test.cmi
+const_block_test.cmi :
 const_defs.cmj :
 const_defs_test.cmj : const_defs.cmj
 const_test.cmj :
@@ -164,10 +131,12 @@ defunctor_make_test.cmj : ../runtime/js.cmj
 demo.cmj : ../runtime/js.cmj demo_binding.cmj
 demo_binding.cmj : ../runtime/js.cmj
 demo_int_map.cmj : demo_int_map.cmi
+demo_int_map.cmi :
 demo_page.cmj :
 demo_pipe.cmj : ../runtime/js.cmj
 derive_dyntype.cmj :
 derive_projector_test.cmj : ../runtime/js.cmj derive_projector_test.cmi
+derive_projector_test.cmi :
 derive_type_test.cmj :
 digest_test.cmj : mt.cmj ext_array_test.cmj
 div_by_zero_test.cmj : mt.cmj
@@ -198,8 +167,10 @@ ext_filename_test.cmj : test_literals.cmj ext_string_test.cmj \
 ext_list_test.cmj : ext_string_test.cmj
 ext_log_test.cmj :
 ext_pervasives_test.cmj : ext_pervasives_test.cmi
+ext_pervasives_test.cmi :
 ext_string_test.cmj : ext_bytes_test.cmj
 ext_sys_test.cmj : ext_sys_test.cmi
+ext_sys_test.cmi :
 extensible_variant_test.cmj : mt.cmj
 external_ppx.cmj :
 fail_comp.cmj :
@@ -214,10 +185,12 @@ flexible_array_test.cmj :
 float_array.cmj :
 float_of_bits_test.cmj : mt.cmj
 float_record.cmj : float_record.cmi
+float_record.cmi :
 float_test.cmj : mt_global.cmj mt.cmj ../runtime/js_float.cmj \
     ../runtime/js.cmj
 flow_parser_reg_test.cmj : ../others/node.cmj mt.cmj ../runtime/js.cmj \
     flow_parser_reg_test.cmi
+flow_parser_reg_test.cmi :
 for_loop_test.cmj : mt.cmj
 for_side_effect_test.cmj : mt.cmj
 format_regression.cmj :
@@ -290,6 +263,7 @@ gpr_2789_test.cmj : mt.cmj
 gpr_2863_test.cmj : ../others/belt.cmj
 gpr_2931_test.cmj : mt.cmj
 gpr_405_test.cmj : gpr_405_test.cmi
+gpr_405_test.cmi :
 gpr_441.cmj :
 gpr_459_test.cmj : mt.cmj
 gpr_627_test.cmj : mt.cmj
@@ -313,14 +287,18 @@ imm_map_bench.cmj : ../runtime/js.cmj ../others/belt.cmj
 include_side_effect.cmj : side_effect.cmj
 include_side_effect_free.cmj : side_effect_free.cmj
 infer_type_test.cmj : ../runtime/js.cmj infer_type_test.cmi
+infer_type_test.cmi : ../runtime/js.cmi
 inline_edge_cases.cmj : inline_edge_cases.cmi
+inline_edge_cases.cmi :
 inline_map2_test.cmj : mt.cmj
 inline_map_test.cmj : mt.cmj inline_map_test.cmi
-inline_record_test.cmj :
+inline_map_test.cmi :
+inline_record_test.cmj : mt.cmj ../runtime/js.cmj
 inline_regression_test.cmj : mt.cmj
 inline_string_test.cmj : ../runtime/js.cmj
 inner_call.cmj : ../runtime/js.cmj inner_define.cmj
 inner_define.cmj : inner_define.cmi
+inner_define.cmi :
 inner_unused.cmj : ../runtime/js.cmj
 installation_test.cmj : ../others/node.cmj mt.cmj ../runtime/js.cmj \
     app_root_finder.cmj
@@ -383,6 +361,7 @@ loop_regression_test.cmj : mt.cmj
 loop_suites_test.cmj : mt.cmj for_loop_test.cmj
 map_find_test.cmj : mt.cmj
 map_test.cmj : mt.cmj map_test.cmi
+map_test.cmi :
 mario_game.cmj : ../runtime/js.cmj ../others/dom.cmi
 method_chain.cmj :
 method_name_test.cmj : mt.cmj
@@ -398,7 +377,9 @@ module_splice_test.cmj : mt.cmj ../runtime/js.cmj
 more_uncurry.cmj :
 mpr_6033_test.cmj : mt.cmj
 mt.cmj : ../others/node.cmj ../runtime/js.cmj mt.cmi
+mt.cmi : ../runtime/js.cmi
 mt_global.cmj : mt.cmj mt_global.cmi
+mt_global.cmi : mt.cmi
 mutable_obj_test.cmj : ../runtime/js.cmj
 mutual_non_recursive_type.cmj :
 name_mangle_test.cmj : mt.cmj ../runtime/js.cmj
@@ -420,11 +401,14 @@ obj_type_test.cmj : ../runtime/js.cmj
 ocaml_parsetree_main.cmj : mt.cmj
 ocaml_parsetree_test.cmj : ../others/node.cmj ../runtime/js.cmj \
     ocaml_parsetree_test.cmi
+ocaml_parsetree_test.cmi :
 ocaml_proto_test.cmj : mt.cmj ocaml_proto_test.cmi
+ocaml_proto_test.cmi :
 ocaml_re_test.cmj : mt.cmj
 ocaml_typed_tree_main.cmj : mt.cmj
 ocaml_typedtree_test.cmj : ../others/node.cmj ../runtime/js.cmj \
     ocaml_typedtree_test.cmi
+ocaml_typedtree_test.cmi :
 of_string_test.cmj : mt.cmj
 offset.cmj :
 oo_js_test_date.cmj : mt.cmj ../runtime/js.cmj
@@ -438,7 +422,9 @@ pipe_send_readline.cmj : ../runtime/js.cmj
 pipe_syntax.cmj :
 poly_type.cmj : ../runtime/js.cmj
 poly_variant_test.cmj : mt.cmj ../runtime/js.cmj poly_variant_test.cmi
+poly_variant_test.cmi :
 polymorphism_test.cmj : polymorphism_test.cmi
+polymorphism_test.cmi :
 polyvar_test.cmj : ../runtime/js.cmj
 ppx_apply_test.cmj : mt.cmj
 ppx_this_obj_field.cmj : mt.cmj ../runtime/js.cmj
@@ -473,17 +459,22 @@ runtime_encoding_test.cmj :
 scanf_io.cmj : testing.cmj
 scanf_reference_error_regression_test.cmj : mt_global.cmj mt.cmj \
     scanf_reference_error_regression_test.cmi
+scanf_reference_error_regression_test.cmi :
 scanf_test.cmj : mt_global.cmj mt.cmj
 set_gen.cmj :
 sexp.cmj : sexp.cmi
+sexp.cmi :
 sexpm.cmj : sexpm.cmi
+sexpm.cmi :
 sexpm_test.cmj : sexpm.cmj mt.cmj ../runtime/js.cmj
 shift_test.cmj :
 side_effect.cmj : ../runtime/js.cmj
 side_effect_free.cmj :
 simple_derive_test.cmj : ../runtime/js.cmj ../others/belt.cmj \
     simple_derive_test.cmi
+simple_derive_test.cmi :
 simple_derive_use.cmj : simple_derive_test.cmj simple_derive_use.cmi
+simple_derive_use.cmi :
 simple_lexer_test.cmj : mt.cmj
 simplify_lambda_632o.cmj :
 single_module_alias.cmj :
@@ -539,6 +530,7 @@ test_filename.cmj :
 test_for_loop.cmj :
 test_for_map.cmj :
 test_for_map2.cmj : int_map.cmj test_for_map2.cmi
+test_for_map2.cmi :
 test_format.cmj :
 test_formatter.cmj :
 test_functor_dead_code.cmj :
@@ -546,6 +538,7 @@ test_generative_module.cmj :
 test_global_print.cmj :
 test_google_closure.cmj : ../runtime/js.cmj
 test_http_server.cmj : ../runtime/js.cmj http_types.cmj test_http_server.cmi
+test_http_server.cmi :
 test_include.cmj : test_order.cmj
 test_incomplete.cmj :
 test_incr_ref.cmj :
@@ -553,11 +546,13 @@ test_index.cmj : ../runtime/js.cmj
 test_int_map_find.cmj :
 test_internalOO.cmj :
 test_is_js.cmj : test_is_js.cmi
+test_is_js.cmi :
 test_js_ffi.cmj :
 test_let.cmj :
 test_list.cmj :
 test_literal.cmj :
 test_literals.cmj : test_literals.cmi
+test_literals.cmi :
 test_match_exception.cmj :
 test_mutliple.cmj :
 test_nat64.cmj :
@@ -608,12 +603,15 @@ test_type_based_arity.cmj : abstract_type.cmj
 test_u.cmj :
 test_unsafe_cmp.cmj : ../runtime/js.cmj
 test_unsafe_obj_ffi.cmj : ../runtime/js_unsafe.cmj test_unsafe_obj_ffi.cmi
+test_unsafe_obj_ffi.cmi : ../runtime/js.cmi
 test_unsafe_obj_ffi_ppx.cmj : ../runtime/js.cmj test_unsafe_obj_ffi_ppx.cmi
+test_unsafe_obj_ffi_ppx.cmi : ../runtime/js.cmi
 test_unsupported_primitive.cmj :
 test_while_closure.cmj :
 test_while_side_effect.cmj :
 test_zero_nullable.cmj : mt.cmj ../runtime/js.cmj
 testing.cmj : testing.cmi
+testing.cmi :
 tfloat_record_test.cmj : mt_global.cmj mt.cmj float_record.cmj \
     float_array.cmj
 ticker.cmj :
@@ -622,6 +620,7 @@ topsort_test.cmj :
 tscanf_test.cmj : testing.cmj mt_global.cmj mt.cmj
 tuple_alloc.cmj :
 typeof_test.cmj : mt.cmj ../runtime/js.cmj
+ui_defs.cmi :
 unboxed_attribute_test.cmj :
 uncurry_glob_test.cmj : ../runtime/caml_utils.cmj
 undef_regression2_test.cmj : mt.cmj ../runtime/js.cmj
@@ -631,6 +630,7 @@ unitest_string.cmj :
 unsafe_obj_external.cmj : ../runtime/js.cmj
 unsafe_ppx_test.cmj : mt.cmj ffi_js_test.cmj
 unsafe_this.cmj : ../runtime/js.cmj unsafe_this.cmi
+unsafe_this.cmi : ../runtime/js.cmi
 update_record_test.cmj : mt.cmj ../runtime/js.cmj
 utf8_decode_test.cmj : mt.cmj ../runtime/js.cmj
 watch_test.cmj : ../others/node.cmj ../runtime/js.cmj

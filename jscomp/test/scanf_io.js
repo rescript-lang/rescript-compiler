@@ -9,6 +9,7 @@ var $$Buffer = require("../../lib/js/buffer.js");
 var Digest = require("../../lib/js/digest.js");
 var Js_exn = require("../../lib/js/js_exn.js");
 var Printf = require("../../lib/js/printf.js");
+var $$String = require("../../lib/js/string.js");
 var Caml_io = require("../../lib/js/caml_io.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Pervasives = require("../../lib/js/pervasives.js");
@@ -207,4 +208,4 @@ exports.add_digest_ib = add_digest_ib;
 exports.digest_file = digest_file;
 exports.test54 = test54;
 exports.test55 = test55;
-/* Scanf Not a pure module */
+/* Bytes Not a pure module */

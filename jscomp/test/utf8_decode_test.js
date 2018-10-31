@@ -94,9 +94,8 @@ function utf8_decode(strm) {
                       
                     }
                   }
-                } else {
-                  return Stream.sempty;
                 }
+                
               }));
 }
 

@@ -357,4 +357,4 @@ exports.find = find;
 exports.of_list = of_list;
 exports.of_array = of_array;
 exports.invariant = invariant;
-/* No side effect */
+/* String Not a pure module */

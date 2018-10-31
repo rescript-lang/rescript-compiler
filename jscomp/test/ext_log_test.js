@@ -6,7 +6,7 @@ var Format = require("../../lib/js/format.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 
 function err(str, f) {
-  return Curry._1(Format.fprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */[
+  return Curry._1(Format.fprintf(Format.err_formatter)(Pervasives.$caret$caret(/* Format */[
                       /* String */Block.__(2, [
                           /* No_padding */0,
                           /* Char_literal */Block.__(12, [
@@ -26,7 +26,7 @@ function err(str, f) {
 
 function ierr(b, str, f) {
   if (b) {
-    return Curry._1(Format.fprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */[
+    return Curry._1(Format.fprintf(Format.err_formatter)(Pervasives.$caret$caret(/* Format */[
                         /* String */Block.__(2, [
                             /* No_padding */0,
                             /* Char_literal */Block.__(12, [
@@ -37,7 +37,7 @@ function ierr(b, str, f) {
                         "%s "
                       ], f)), str);
   } else {
-    return Curry._1(Format.ifprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */[
+    return Curry._1(Format.ifprintf(Format.err_formatter)(Pervasives.$caret$caret(/* Format */[
                         /* String */Block.__(2, [
                             /* No_padding */0,
                             /* Char_literal */Block.__(12, [
@@ -51,7 +51,7 @@ function ierr(b, str, f) {
 }
 
 function warn(str, f) {
-  return Curry._1(Format.fprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */[
+  return Curry._1(Format.fprintf(Format.err_formatter)(Pervasives.$caret$caret(/* Format */[
                       /* String_literal */Block.__(11, [
                           "WARN: ",
                           /* String */Block.__(2, [
@@ -74,7 +74,7 @@ function warn(str, f) {
 
 function iwarn(b, str, f) {
   if (b) {
-    return Curry._1(Format.fprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */[
+    return Curry._1(Format.fprintf(Format.err_formatter)(Pervasives.$caret$caret(/* Format */[
                         /* String_literal */Block.__(11, [
                             "WARN: ",
                             /* String */Block.__(2, [
@@ -88,7 +88,7 @@ function iwarn(b, str, f) {
                         "WARN: %s "
                       ], f)), str);
   } else {
-    return Curry._1(Format.ifprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */[
+    return Curry._1(Format.ifprintf(Format.err_formatter)(Pervasives.$caret$caret(/* Format */[
                         /* String_literal */Block.__(11, [
                             "WARN: ",
                             /* String */Block.__(2, [
@@ -105,7 +105,7 @@ function iwarn(b, str, f) {
 }
 
 function info(str, f) {
-  return Curry._1(Format.fprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */[
+  return Curry._1(Format.fprintf(Format.err_formatter)(Pervasives.$caret$caret(/* Format */[
                       /* String_literal */Block.__(11, [
                           "INFO: ",
                           /* String */Block.__(2, [
@@ -121,7 +121,7 @@ function info(str, f) {
 }
 
 function iinfo(b, str, f) {
-  return Curry._1(Format.fprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */[
+  return Curry._1(Format.fprintf(Format.err_formatter)(Pervasives.$caret$caret(/* Format */[
                       /* String_literal */Block.__(11, [
                           "INFO: ",
                           /* String */Block.__(2, [

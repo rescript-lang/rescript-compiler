@@ -111,4 +111,4 @@ function escaped(s) {
 }
 
 exports.escaped = escaped;
-/* No side effect */
+/* Bytes Not a pure module */

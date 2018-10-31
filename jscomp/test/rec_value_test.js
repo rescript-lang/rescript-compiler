@@ -55,8 +55,6 @@ var four = /* record */[/* contents */2];
 
 var three = /* record */[/* contents */3];
 
-var h = Block.__(250, [fib]);
-
 var v = /* record */[/* contents */(function (param) {
       throw [
             Caml_builtin_exceptions.assert_failure,
@@ -77,9 +75,9 @@ function fib(n) {
     case 2 : 
         return three[0];
     case 3 : 
-        var tag = h.tag | 0;
-        v[0] = tag === 250 ? fib : (
-            tag === 246 ? CamlinternalLazy.force_lazy_block(h) : h
+        var tag = fib.tag | 0;
+        v[0] = tag === 250 ? fib[0] : (
+            tag === 246 ? CamlinternalLazy.force_lazy_block(fib) : fib
           );
         return 1;
     default:
@@ -87,32 +85,17 @@ function fib(n) {
   }
 }
 
-var ys = [];
-
-Caml_obj.caml_update_dummy(ys, /* :: */[
-      1,
-      ys
-    ]);
-
-var xs_000 = /* :: */[
-  2,
-  /* :: */[
-    List.hd(ys),
-    /* [] */0
-  ]
-];
-
 function zs(param) {
   return List.hd(xs[0]);
 }
 
-var xs_000$1 = /* :: */[
+var xs_000 = /* :: */[
   2,
   /* [] */0
 ];
 
 var xs = /* tuple */[
-  xs_000$1,
+  xs_000,
   zs
 ];
 
@@ -504,4 +487,4 @@ exports.fake_minus = fake_minus;
 exports.fake_inline = fake_inline;
 exports.fake_inline_minus = fake_inline_minus;
 exports.fake_inline_inlie2 = fake_inline_inlie2;
-/* xs Not a pure module */
+/* fake_z2 Not a pure module */

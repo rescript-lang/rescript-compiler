@@ -159,7 +159,7 @@ function print(fmt, t) {
     var l = t[1];
     if (l) {
       if (l[1]) {
-        Format.fprintf(fmt, /* Format */[
+        Format.fprintf(fmt)(/* Format */[
               /* Formatting_gen */Block.__(18, [
                   /* Open_box */Block.__(1, [/* Format */[
                         /* String_literal */Block.__(11, [
@@ -177,7 +177,7 @@ function print(fmt, t) {
             ]);
         List.iteri((function (i, t$prime) {
                 if (i > 0) {
-                  Format.fprintf(fmt, /* Format */[
+                  Format.fprintf(fmt)(/* Format */[
                         /* Formatting_lit */Block.__(17, [
                             /* Break */Block.__(0, [
                                 "@ ",
@@ -191,7 +191,7 @@ function print(fmt, t) {
                 }
                 return print(fmt, t$prime);
               }), l);
-        return Format.fprintf(fmt, /* Format */[
+        return Format.fprintf(fmt)(/* Format */[
                     /* Char_literal */Block.__(12, [
                         /* ")" */41,
                         /* Formatting_lit */Block.__(17, [
@@ -202,7 +202,7 @@ function print(fmt, t) {
                     ")@]"
                   ]);
       } else {
-        return Curry._2(Format.fprintf(fmt, /* Format */[
+        return Curry._2(Format.fprintf(fmt)(/* Format */[
                         /* Formatting_gen */Block.__(18, [
                             /* Open_box */Block.__(1, [/* Format */[
                                   /* String_literal */Block.__(11, [
@@ -231,7 +231,7 @@ function print(fmt, t) {
   } else {
     var s = t[1];
     if (_must_escape(s)) {
-      return Curry._1(Format.fprintf(fmt, /* Format */[
+      return Curry._1(Format.fprintf(fmt)(/* Format */[
                       /* Char_literal */Block.__(12, [
                           /* "\"" */34,
                           /* String */Block.__(2, [
@@ -264,7 +264,7 @@ function print_noindent(fmt, t) {
               }), l);
         return Format.pp_print_char(fmt, /* ")" */41);
       } else {
-        return Curry._2(Format.fprintf(fmt, /* Format */[
+        return Curry._2(Format.fprintf(fmt)(/* Format */[
                         /* Char_literal */Block.__(12, [
                             /* "(" */40,
                             /* Alpha */Block.__(15, [/* Char_literal */Block.__(12, [
@@ -281,7 +281,7 @@ function print_noindent(fmt, t) {
   } else {
     var s = t[1];
     if (_must_escape(s)) {
-      return Curry._1(Format.fprintf(fmt, /* Format */[
+      return Curry._1(Format.fprintf(fmt)(/* Format */[
                       /* Char_literal */Block.__(12, [
                           /* "\"" */34,
                           /* String */Block.__(2, [
@@ -1529,4 +1529,4 @@ exports.parse_chan_gen = parse_chan_gen;
 exports.parse_chan_list = parse_chan_list;
 exports.parse_file = parse_file;
 exports.parse_file_list = parse_file_list;
-/* Format Not a pure module */
+/* Bytes Not a pure module */

@@ -7,7 +7,7 @@ var Format = require("../../lib/js/format.js");
 var Printf = require("../../lib/js/printf.js");
 
 function print_pair(fmt, param) {
-  return Curry._2(Format.fprintf(fmt, /* Format */[
+  return Curry._2(Format.fprintf(fmt)(/* Format */[
                   /* Char_literal */Block.__(12, [
                       /* "(" */40,
                       /* Int */Block.__(4, [

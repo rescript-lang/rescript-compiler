@@ -793,4 +793,4 @@ exports.inter3 = inter3;
 exports.inter4 = inter4;
 exports.parent_dir_lit = parent_dir_lit;
 exports.current_dir_lit = current_dir_lit;
-/* No side effect */
+/* Bytes Not a pure module */

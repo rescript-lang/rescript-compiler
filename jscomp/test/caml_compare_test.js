@@ -25,7 +25,7 @@ var suites_000 = /* tuple */[
   (function (param) {
       return /* Eq */Block.__(0, [
                 true,
-                Caml_obj.caml_lessthan(undefined, 1)
+                undefined < 1
               ]);
     })
 ];
@@ -46,10 +46,10 @@ var suites_001 = /* :: */[
       (function (param) {
           return /* Eq */Block.__(0, [
                     true,
-                    Caml_obj.caml_greaterthan(/* :: */[
-                          1,
-                          /* [] */0
-                        ], /* [] */0)
+                    /* :: */[
+                      1,
+                      /* [] */0
+                    ] > /* [] */0
                   ]);
         })
     ],
@@ -173,7 +173,7 @@ var suites_001 = /* :: */[
                   (function (param) {
                       return /* Eq */Block.__(0, [
                                 true,
-                                Caml_obj.caml_lessthan(undefined, 1)
+                                undefined < 1
                               ]);
                     })
                 ],
@@ -183,10 +183,10 @@ var suites_001 = /* :: */[
                     (function (param) {
                         return /* Eq */Block.__(0, [
                                   true,
-                                  Caml_obj.caml_lessthan(undefined, /* array */[
-                                        1,
-                                        30
-                                      ])
+                                  undefined < /* array */[
+                                    1,
+                                    30
+                                  ]
                                 ]);
                       })
                   ],
@@ -196,10 +196,10 @@ var suites_001 = /* :: */[
                       (function (param) {
                           return /* Eq */Block.__(0, [
                                     true,
-                                    Caml_obj.caml_greaterthan(/* array */[
-                                          1,
-                                          30
-                                        ], undefined)
+                                    /* array */[
+                                      1,
+                                      30
+                                    ] > undefined
                                   ]);
                         })
                     ],
@@ -295,10 +295,10 @@ var suites_001 = /* :: */[
                             (function (param) {
                                 return /* Eq */Block.__(0, [
                                           true,
-                                          Caml_obj.caml_lessthan(/* [] */0, /* :: */[
-                                                409,
-                                                /* [] */0
-                                              ])
+                                          /* [] */0 < /* :: */[
+                                            409,
+                                            /* [] */0
+                                          ]
                                         ]);
                               })
                           ],

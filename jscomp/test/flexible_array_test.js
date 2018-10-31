@@ -223,7 +223,7 @@ function pp(fmt, s) {
     v = v + (", " + String(get(s, i)));
   }
   v = v + "]";
-  return Curry._1(Format.fprintf(fmt, /* Format */[
+  return Curry._1(Format.fprintf(fmt)(/* Format */[
                   /* String */Block.__(2, [
                       /* No_padding */0,
                       /* End_of_format */0
