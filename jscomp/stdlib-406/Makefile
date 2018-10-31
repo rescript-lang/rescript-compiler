@@ -13,24 +13,32 @@
 #*                                                                        *
 #**************************************************************************
 
-include ../config/Makefile
-CAMLRUN ?= ../boot/ocamlrun
-CAMLYACC ?= ../boot/ocamlyacc
-TARGET_BINDIR ?= $(BINDIR)
+# include ../config/Makefile
+# CAMLRUN ?= ../boot/ocamlrun
+# CAMLYACC ?= ../boot/ocamlyacc
+# TARGET_BINDIR ?= $(BINDIR)
 
-COMPILER=../ocamlc
+COMPILER=../../lib/bsc.exe
 CAMLC=$(CAMLRUN) $(COMPILER)
-COMPFLAGS=-strict-sequence -absname -w +a-4-9-41-42-44-45-48 \
-          -g -warn-error A -bin-annot -nostdlib \
-          -safe-string -strict-formats
-ifeq "$(FLAMBDA)" "true"
-OPTCOMPFLAGS=-O3
-else
-OPTCOMPFLAGS=
-endif
-OPTCOMPILER=../ocamlopt
-CAMLOPT=$(CAMLRUN) $(OPTCOMPILER)
-CAMLDEP=$(CAMLRUN) ../tools/ocamldep
+# COMPFLAGS=-strict-sequence -absname -w +a-4-9-41-42-44-45-48 \
+#           -g -warn-error A -bin-annot -nostdlib \
+#           -safe-string -strict-formats
+
+BS_COMMON_FLAGS= -bs-no-version-header  -bs-diagnose -bs-no-check-div-by-zero -bs-cross-module-opt -bs-package-name bs-platform -bs-no-warn-unimplemented-external
+include ../Makefile.shared
+
+BS_FLAGS= $(BS_COMMON_FLAGS) $(BS_PKG_FLAGS)
+COMPFLAGS= $(BS_FLAGS) -strict-sequence -w +a-4-9-41-42-44-45-48-102 -g -nostdlib \
+	-safe-string -I ../runtime -I ../others 
+
+# ifeq "$(FLAMBDA)" "true"
+# OPTCOMPFLAGS=-O3
+# else
+# OPTCOMPFLAGS=
+# endif
+# OPTCOMPILER=../ocamlopt
+# CAMLOPT=$(CAMLRUN) $(OPTCOMPILER)
+# CAMLDEP=$(CAMLRUN) ../tools/ocamldep
 
 OBJS=camlinternalFormatBasics.cmo pervasives.cmo $(OTHERS)
 OTHERS=list.cmo char.cmo uchar.cmo bytes.cmo string.cmo sys.cmo \
@@ -48,10 +56,13 @@ OTHERS=list.cmo char.cmo uchar.cmo bytes.cmo string.cmo sys.cmo \
   filename.cmo complex.cmo \
   arrayLabels.cmo listLabels.cmo bytesLabels.cmo \
   stringLabels.cmo moreLabels.cmo stdLabels.cmo \
-  spacetime.cmo camlinternalBigarray.cmo
+  spacetime.cmo camlinternalBigarray.cmo \
+  unix.cmo unixLabels.cmo \
+  bigarray.cmo 
 
 .PHONY: all
-all: stdlib.cma std_exit.cmo camlheader target_camlheader camlheader_ur
+# all: stdlib.cma std_exit.cmo camlheader target_camlheader camlheader_ur
+all: $(OBJS:.cmo=.cmj) std_exit.cmi $(COMPILER)
 
 ifeq "$(RUNTIMED)" "true"
 all: camlheaderd
@@ -194,50 +205,52 @@ stdlib.cmxa: $(OBJS:.cmo=.cmx)
 stdlib.p.cmxa: $(OBJS:.cmo=.p.cmx)
 	$(CAMLOPT) -a -o $@ $^
 
-sys.ml: sys.mlp ../VERSION
-	sed -e "s|%%VERSION%%|`sed -e 1q ../VERSION | tr -d '\r'`|" sys.mlp > $@
+# sys.ml: sys.mlp ../VERSION
+# 	sed -e "s|%%VERSION%%|`sed -e 1q ../VERSION | tr -d '\r'`|" sys.mlp > $@
 
 .PHONY: clean
-clean::
-	rm -f sys.ml
+# clean::
+# 	rm -f sys.ml
 
 clean::
 	rm -f $(CAMLHEADERS)
 
-.SUFFIXES: .mli .ml .cmi .cmo .cmx .p.cmx
+.SUFFIXES: .mli .ml .cmi .cmo .cmx .p.cmx .cmj
 
 .mli.cmi:
 	$(CAMLC) $(COMPFLAGS) `sh ./Compflags $@` -c $<
 
-.ml.cmo:
+.ml.cmj:
 	$(CAMLC) $(COMPFLAGS) `sh ./Compflags $@` -c $<
 
-.ml.cmx:
-	$(CAMLOPT) $(COMPFLAGS) $(OPTCOMPFLAGS) `sh ./Compflags $@` -c $<
+# .ml.cmx:
+# 	$(CAMLOPT) $(COMPFLAGS) $(OPTCOMPFLAGS) `sh ./Compflags $@` -c $<
 
-.ml.p.cmx:
-	$(CAMLOPT) $(COMPFLAGS) $(OPTCOMPFLAGS) `sh ./Compflags $@` \
-	           -p -c -o $*.p.cmx $<
+# .ml.p.cmx:
+# 	$(CAMLOPT) $(COMPFLAGS) $(OPTCOMPFLAGS) `sh ./Compflags $@` \
+# 	           -p -c -o $*.p.cmx $<
 
 # Dependencies on the compiler
 COMPILER_DEPS=$(filter-out -use-prims, $(COMPILER))
 $(OBJS) std_exit.cmo: $(COMPILER_DEPS)
 $(OBJS:.cmo=.cmi) std_exit.cmi: $(COMPILER_DEPS)
-$(OBJS:.cmo=.cmx) std_exit.cmx: $(OPTCOMPILER)
-$(OBJS:.cmo=.p.cmx) std_exit.p.cmx: $(OPTCOMPILER)
+$(OBJS:.cmo=.cmj) std_exit.cmj: $(OPTCOMPILER)
+# $(OBJS:.cmo=.p.cmx) std_exit.p.cmx: $(OPTCOMPILER)
 
 # Dependencies on Pervasives (not tracked by ocamldep)
 $(OTHERS) std_exit.cmo: pervasives.cmi
 $(OTHERS:.cmo=.cmi) std_exit.cmi: pervasives.cmi
-$(OBJS:.cmo=.cmx) std_exit.cmx: pervasives.cmi
-$(OBJS:.cmo=.p.cmx) std_exit.p.cmx: pervasives.cmi
-$(OTHERS:.cmo=.cmx) std_exit.cmx: pervasives.cmx
-$(OTHERS:.cmo=.p.cmx) std_exit.p.cmx: pervasives.cmx
+$(OBJS:.cmo=.cmj) std_exit.cmj: pervasives.cmi
+# $(OBJS:.cmo=.p.cmx) std_exit.p.cmx: pervasives.cmi
+$(OTHERS:.cmo=.cmj) std_exit.cmj: pervasives.cmx
+# $(OTHERS:.cmo=.p.cmx) std_exit.p.cmx: pervasives.cmx
 
 clean::
 	rm -f *.cm* *.$(O) *.$(A)
 	rm -f *~
 	rm -f camlheader*
+	rm -rf *.annot
+	rm -f *.rawlambda *.lam 
 
 include .depend
 
@@ -246,5 +259,5 @@ include .depend
 # it looks for the .cmx file (not .p.cmx).
 .PHONY: depend
 depend:
-	$(CAMLDEP) -slash *.mli *.ml > .depend
-	$(CAMLDEP) -slash *.ml | sed -e 's/\.cmx : /.p.cmx : /g' >>.depend
+	$(CAMLDEP) -slash *.mli *.ml | sed -e 's/\.cmo/.cmj/g' > .depend
+	$(CAMLDEP) -slash *.ml | sed -e 's/\.cmx/.cmj/g' >>.depend

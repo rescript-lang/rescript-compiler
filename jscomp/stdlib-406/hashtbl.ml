@@ -72,7 +72,11 @@ let prng = lazy (Random.State.make_self_init())
 
 let rec power_2_above x n =
   if x >= n then x
+#if BS then  
+  else if x * 2 < x then x (* overflow *)
+#else  
   else if x * 2 > Sys.max_array_length then x
+#end  
   else power_2_above (x * 2) n
 
 let create ?(random = !randomized) initial_size =
@@ -122,7 +126,11 @@ let resize indexfun h =
   let odata = h.data in
   let osize = Array.length odata in
   let nsize = osize * 2 in
+#if BS then   
+  if  nsize >= osize then begin 
+#else    
   if nsize < Sys.max_array_length then begin
+#end    
     let ndata = Array.make nsize Empty in
     let ndata_tail = Array.make nsize Empty in
     let inplace = not (ongoing_traversal h) in

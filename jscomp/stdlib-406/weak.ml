@@ -18,12 +18,15 @@
 type 'a t
 
 external create : int -> 'a t = "caml_weak_create"
-
+#if BS then
+let additional_values = 0 (* TODO: might be wrong, check! *)
+external length : 'a t -> int = "%array_length"
+#else
 (** number of additional values in a weak pointer *)
 let additional_values = 2
 
 let length x = Obj.size(Obj.repr x) - additional_values
-
+#end
 external set : 'a t -> int -> 'a option -> unit = "caml_weak_set"
 external get : 'a t -> int -> 'a option = "caml_weak_get"
 external get_copy : 'a t -> int -> 'a option = "caml_weak_get_copy"

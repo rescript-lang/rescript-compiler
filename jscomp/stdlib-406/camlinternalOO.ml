@@ -44,7 +44,12 @@ let params = {
 }
 
 (**** Parameters ****)
-
+#if BS then(* {!Translobj.oo_prim : string -> lambda} not by slot *)
+module Sys = struct 
+  external word_size : unit -> int = "%word_size"
+  let word_size = word_size ()
+end
+#end
 let initial_object_size = 2
 
 (**** Items ****)
@@ -82,14 +87,26 @@ let public_method_label s : tag =
 (**** Sparse array ****)
 
 module Vars =
+#if BS then
+  Belt.Map.String  
+#else
   Map.Make(struct type t = string let compare (x:t) y = compare x y end)
+#end  
 type vars = int Vars.t
 
 module Meths =
+#if BS then
+  Belt.Map.String  
+#else
   Map.Make(struct type t = string let compare (x:t) y = compare x y end)
+#end  
 type meths = label Meths.t
 module Labs =
+#if BS then 
+  Belt.Map.Int
+#else  
   Map.Make(struct type t = label let compare (x:t) y = compare x y end)
+#end   
 type labs = bool Labs.t
 
 (* The compiler assumes that the first field of this structure is [size]. *)
@@ -168,6 +185,16 @@ let new_method table =
   index
 
 let get_method_label table name =
+#if BS then
+    match Js.undefinedToOption (Meths.getUndefined table.methods_by_name name)
+    with
+    | Some x -> x
+    | None ->
+      let label = new_method table in
+      table.methods_by_name <- Meths.set  table.methods_by_name name label;
+      table.methods_by_label <- Labs.set  table.methods_by_label label true;
+      label
+#else     
   try
     Meths.find name table.methods_by_name
   with Not_found ->
@@ -175,16 +202,22 @@ let get_method_label table name =
     table.methods_by_name <- Meths.add name label table.methods_by_name;
     table.methods_by_label <- Labs.add label true table.methods_by_label;
     label
-
+#end
 let get_method_labels table names =
   Array.map (get_method_label table) names
 
 let set_method table label element =
   incr method_count;
-  if Labs.find label table.methods_by_label then
+  if
+#if BS then     
+    Labs.getExn table.methods_by_label label
+#else
+    Labs.find label table.methods_by_label
+#end
+  then
     put table label element
   else
-    table.hidden_meths <- (label, element) :: table.hidden_meths
+    table.hidden_meths <- (label, element) :: table.hidden_meths  
 
 let get_method table label =
   try List.assoc label table.hidden_meths
@@ -204,13 +237,32 @@ let narrow table vars virt_meths concr_meths =
       table.vars, virt_meth_labs, vars)
      :: table.previous_states;
   table.vars <-
+#if BS then
+     Vars.reduceU table.vars Vars.empty
+      (fun[@bs] tvars lab info  ->
+        if List.mem lab vars then Vars.set tvars lab info  else tvars);      
+#else    
     Vars.fold
       (fun lab info tvars ->
         if List.mem lab vars then Vars.add lab info tvars else tvars)
       table.vars Vars.empty;
+#end   
   let by_name = ref Meths.empty in
   let by_label = ref Labs.empty in
-  List.iter2
+#if BS then   
+  List.iter2 (fun met label -> 
+     by_name := Meths.set !by_name met label;
+     by_label :=
+          Labs.set !by_label label
+            (Labs.getWithDefault table.methods_by_label label true)            
+  ) concr_meths concr_meth_labs;
+  List.iter2 
+    (fun met label -> 
+      by_name := Meths.set !by_name met label;
+      by_label := Labs.set !by_label label false;
+    ) virt_meths virt_meth_labs;
+#else     
+ List.iter2
     (fun met label ->
        by_name := Meths.add met label !by_name;
        by_label :=
@@ -223,6 +275,7 @@ let narrow table vars virt_meths concr_meths =
        by_name := Meths.add met label !by_name;
        by_label := Labs.add label false !by_label)
     virt_meths virt_meth_labs;
+#end  
   table.methods_by_name <- !by_name;
   table.methods_by_label <- !by_label;
   table.hidden_meths <-
@@ -239,7 +292,11 @@ let widen table =
   table.previous_states <- List.tl table.previous_states;
   table.vars <-
      List.fold_left
+#if BS then
+       (fun s v -> Vars.set s v (Vars.getExn table.vars v))
+#else    
        (fun s v -> Vars.add v (Vars.find v table.vars) s)
+#end       
        saved_vars vars;
   table.methods_by_name <- by_name;
   table.methods_by_label <- by_label;
@@ -256,11 +313,20 @@ let new_slot table =
   index
 
 let new_variable table name =
+#if BS then
+    match Js.undefinedToOption (Vars.getUndefined table.vars name : int Js.undefined)  with
+    | Some x -> x
+    | None ->
+      let index = new_slot table in
+      if name <> "" then table.vars <- Vars.set table.vars name index ;
+      index
+#else     
   try Vars.find name table.vars
   with Not_found ->
     let index = new_slot table in
     if name <> "" then table.vars <- Vars.add name index table.vars;
     index
+#end
 
 let to_array arr =
   if arr = Obj.magic 0 then [||] else arr
@@ -278,8 +344,11 @@ let new_methods_variables table meths vals =
   res
 
 let get_variable table name =
+#if BS then
+    Vars.getExn table.vars name
+#else    
   try Vars.find name table.vars with Not_found -> assert false
-
+#end
 let get_variables table names =
   Array.map (get_variable table) names
 
@@ -305,8 +374,14 @@ let create_table public_methods =
   Array.iteri
     (fun i met ->
       let lab = i*2+2 in
+#if BS then       
+      table.methods_by_name  <- Meths.set table.methods_by_name met lab ;
+      table.methods_by_label <- Labs.set table.methods_by_label lab true 
+#else         
       table.methods_by_name  <- Meths.add met lab table.methods_by_name;
-      table.methods_by_label <- Labs.add lab true table.methods_by_label)
+      table.methods_by_label <- Labs.add lab true table.methods_by_label
+#end      
+      )
     public_methods;
   table
 
@@ -341,11 +416,12 @@ let make_class_store pub_meths class_init init_table =
   init_class table;
   init_table.class_init <- class_init;
   init_table.env_init <- env_init
-
+#if BS then
+#else
 let dummy_class loc =
   let undef = fun _ -> raise (Undefined_recursive_module loc) in
   (Obj.magic undef, undef, undef, Obj.repr 0)
-
+#end
 (**** Objects ****)
 
 let create_object table =

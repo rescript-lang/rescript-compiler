@@ -12,7 +12,12 @@
 (*   special exception on linking described in the file LICENSE.          *)
 (*                                                                        *)
 (**************************************************************************)
-
+#if BS then
+module Sys = struct
+  external word_size : unit -> int = "%word_size"
+  let word_size = word_size ()
+end
+#end
 type stat = {
   minor_words : float;
   promoted_words : float;

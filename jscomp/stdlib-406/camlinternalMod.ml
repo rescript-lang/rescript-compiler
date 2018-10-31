@@ -19,7 +19,8 @@ type shape =
   | Class
   | Module of shape array
   | Value of Obj.t
-
+#if BS then
+#else
 let overwrite o n =
   assert (Obj.size o >= Obj.size n);
   for i = 0 to Obj.size n - 1 do
@@ -72,3 +73,4 @@ let rec update_mod shape o n =
         update_mod comps.(i) (Obj.field o i) (Obj.field n i)
       done
   | Value _ -> () (* the value is already there *)
+#end

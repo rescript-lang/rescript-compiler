@@ -15,16 +15,16 @@
 #**************************************************************************
 
 case $1 in
-  pervasives.cm[iox]|pervasives.p.cmx) echo ' -nopervasives';;
+  pervasives.cm[ioxj]|pervasives.p.cmx) echo ' -nopervasives';;
   camlinternalOO.cmi) echo ' -nopervasives';;
-  camlinternalOO.cmx|camlinternalOO.p.cmx) echo ' -inline 0';;
-  buffer.cmx|buffer.p.cmx) echo ' -inline 3';;
+  # camlinternalOO.cmx|camlinternalOO.p.cmx) echo ' -inline 0';;
+  # buffer.cmx|buffer.p.cmx) echo ' -inline 3';;
                            # make sure add_char is inlined (PR#5872)
-  buffer.cm[io]) echo ' -w A';;
-  camlinternalFormat.cm[io]) echo ' -w Ae';;
-  camlinternalFormatBasics*.cm[iox]) echo ' -nopervasives';;
-  printf.cm[io]|format.cm[io]|scanf.cm[io]) echo ' -w Ae';;
-  scanf.cmx|scanf.p.cmx) echo ' -inline 9';;
-  *Labels.cm[ox]|*Labels.p.cmx) echo ' -nolabels -no-alias-deps';;
+  buffer.cm[ioj]) echo ' -w A';;
+  camlinternalFormat.cm[ioj]) echo ' -w Ae';;
+  camlinternalFormatBasics*.cm[ioxj]) echo ' -nopervasives';;
+  printf.cm[ioj]|format.cm[ioj]|scanf.cm[ioj]) echo ' -w Ae';;
+  # scanf.cmx|scanf.p.cmx) echo ' -inline 9';;
+  *Labels.cm[oxj]|*Labels.p.cmx) echo ' -nolabels -no-alias-deps';;
   *) echo ' ';;
 esac
