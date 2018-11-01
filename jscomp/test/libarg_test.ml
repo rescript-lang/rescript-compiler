@@ -120,8 +120,13 @@ let test argv =
 ;;
 
 test args1;;
+#if OCAML_VERSION =~ ">4.03.0" then
+test args2;; 
+let suites = [];;
+#else
+  (* Arg accept -key=value since 4.04 *)
 let suites = 
   Mt.[ "should raise", fun _ -> ThrowAny (fun _ -> test args2)]
-
+#end
 ;; Mt.from_pair_suites __FILE__ suites
 

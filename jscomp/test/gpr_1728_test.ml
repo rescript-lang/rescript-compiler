@@ -16,5 +16,7 @@ let badInlining obj =
 
 ;; eq __LOC__ (badInlining [%obj{field = "3" }]) ()
 
-
+;; eq __LOC__ (int_of_string "-13") (-13)
+;; eq __LOC__ (int_of_string "+13") 13
+;; eq __LOC__ (int_of_string "13") 13
 ;; Mt.from_pair_suites __FILE__ !suites

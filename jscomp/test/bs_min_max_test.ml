@@ -32,6 +32,6 @@ let () =
   eq __LOC__ (f5_min (Some 3) None) None;
   eq __LOC__ (f5_max (Some 3) None) (Some 3);
   eq __LOC__ (f5_max None (Some 3) ) (Some 3);
-  b __LOC__ (Some 5 >= None) 
+  b __LOC__ (Some 5 >= None) (*-FIXME 5 >= undefined*)
   
 ;; Mt.from_pair_suites __FILE__ !suites  
