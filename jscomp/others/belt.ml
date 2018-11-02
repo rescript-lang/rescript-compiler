@@ -93,7 +93,7 @@
 
     {[
       val mySet1 : ((int * int), Comparable1.identity) t
-        val mySet2 : ((int * int), Comparable2.identity) t
+      val mySet2 : ((int * int), Comparable2.identity) t
     ]}
 
     [Comparable1.identity] and [Comparable2.identity] are not the same using our encoding scheme.
