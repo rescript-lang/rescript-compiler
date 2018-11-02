@@ -21,7 +21,7 @@ catch (raw_exn){
 }
 
 var suites_000 = /* tuple */[
-  "option",
+  "File \"caml_compare_test.ml\", line 9, characters 4-11",
   (function (param) {
       return /* Eq */Block.__(0, [
                 true,
@@ -42,7 +42,7 @@ var suites_001 = /* :: */[
   ],
   /* :: */[
     /* tuple */[
-      "list0",
+      "File \"caml_compare_test.ml\", line 11, characters 4-11",
       (function (param) {
           return /* Eq */Block.__(0, [
                     true,

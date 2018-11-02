@@ -67,24 +67,26 @@ let parse_sign_and_base (s : string) =
   let sign = ref 1n in
   let base = ref Dec in
   let i  = ref 0 in
-  begin 
-    (
-      if s.[!i] = '-' then
-        begin 
-          sign :=  -1n;
-          incr i
-        end
-    );
-    (match s.[!i], s.[!i + 1] with 
-     | '0', ('x' | 'X')
+  (match s.[!i] with 
+   | '-' -> 
+     sign :=  -1n;
+     incr i
+   | '+' -> 
+     incr i 
+   | _ -> ());
+  if s.[!i] = '0' then 
+    (match  s.[!i + 1] with 
+     |  ('x' | 'X')
        -> base := Hex; i:=!i + 2 
-     | '0', ( 'o' | 'O')
+     |  ( 'o' | 'O')
        -> base := Oct; i := !i + 2
-     | '0', ('b' | 'B' )
+     |  ('b' | 'B' )
        -> base := Bin; i := !i + 2 
-     | _, _ -> ()); 
-    (!i, !sign, !base)
-  end
+     |  ('u' | 'U')  
+       -> i := !i + 2 
+     |  _ -> ()); 
+  (!i, !sign, !base)
+
 
 let caml_int_of_string s = 
   let i, sign, hbase = parse_sign_and_base s in
