@@ -711,6 +711,11 @@ let rec name_pattern default = function
       | _ -> name_pattern default rem
 
 (* Push the default values under the functional abstractions *)
+(* Also push bindings of module patterns, since this sound *)
+
+type binding =
+  | Bind_value of value_binding list
+  | Bind_module of Ident.t * string loc * module_expr 
 
 let rec push_defaults loc bindings cases partial =
   match cases with
@@ -723,13 +728,25 @@ let rec push_defaults loc bindings cases partial =
       c_rhs={exp_attributes=[{txt="#default"},_];
              exp_desc = Texp_let
                (Nonrecursive, binds, ({exp_desc = Texp_function _} as e2))}}] ->
-      push_defaults loc (binds :: bindings) [{c_lhs=pat;c_guard=None;c_rhs=e2}]
-                    partial
+      push_defaults loc (Bind_value binds :: bindings)
+                   [{c_lhs=pat;c_guard=None;c_rhs=e2}]
+                   partial
+  | [{c_lhs=pat; c_guard=None;
+      c_rhs={exp_attributes=[{txt="#modulepat"},_];
+             exp_desc = Texp_letmodule
+               (id, name, mexpr, ({exp_desc = Texp_function _} as e2))}}] ->
+      push_defaults loc (Bind_module (id, name, mexpr) :: bindings)
+                   [{c_lhs=pat;c_guard=None;c_rhs=e2}]
+                   partial
   | [case] ->
       let exp =
         List.fold_left
           (fun exp binds ->
-            {exp with exp_desc = Texp_let(Nonrecursive, binds, exp)})
+            {exp with exp_desc =
+             match binds with
+             | Bind_value binds -> Texp_let(Nonrecursive, binds, exp)
+             | Bind_module (id, name, mexpr) ->
+                 Texp_letmodule (id, name, mexpr, exp)})
           case.c_rhs bindings
       in
       [{case with c_rhs=exp}]
