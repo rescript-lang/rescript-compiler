@@ -15,7 +15,7 @@ function b(loc, b$1) {
   return Mt.bool_suites(test_id, suites, loc, b$1);
 }
 
-function makeWrapper(foo, _) {
+function makeWrapper(foo, param) {
   var tmp = { };
   if (foo !== undefined) {
     tmp.foo = (function () {
@@ -32,7 +32,7 @@ function makeWrapper(foo, _) {
   return /* () */0;
 }
 
-function makeWrapper2(foo, _) {
+function makeWrapper2(foo, param) {
   console.log({
         foo: (function () {
               switch (foo) {
@@ -49,7 +49,7 @@ function makeWrapper2(foo, _) {
 
 makeWrapper2(/* a */97, /* () */0);
 
-function makeWrapper3(foo, _) {
+function makeWrapper3(foo, param) {
   console.log(2);
   var tmp = { };
   if (foo !== undefined) {
@@ -66,7 +66,7 @@ function makeWrapper3(foo, _) {
   return tmp;
 }
 
-function makeWrapper4(foo, _) {
+function makeWrapper4(foo, param) {
   console.log(2);
   var tmp = { };
   var tmp$1 = foo > 100 ? undefined : (

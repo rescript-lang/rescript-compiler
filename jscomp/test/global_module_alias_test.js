@@ -14,7 +14,7 @@ function eq(loc, x, y) {
   suites[0] = /* :: */[
     /* tuple */[
       loc + (" id " + String(test_id[0])),
-      (function () {
+      (function (param) {
           return /* Eq */Block.__(0, [
                     x,
                     y
@@ -80,7 +80,7 @@ function Make(U) {
         ];
 }
 
-function f() {
+function f(param) {
   v[0] = v[0] + 1 | 0;
   v[0] = v[0] + 1 | 0;
   v[0] = v[0] + 1 | 0;
@@ -216,7 +216,7 @@ var H = /* module */[
 
 eq("File \"global_module_alias_test.ml\", line 57, characters 5-12", v[0], 12);
 
-function g() {
+function g(param) {
   return List.length(/* :: */[
               1,
               /* :: */[
@@ -232,7 +232,7 @@ function g() {
             ]);
 }
 
-function xx() {
+function xx(param) {
   v[0] = v[0] + 1 | 0;
   v[0] = v[0] + 1 | 0;
   v[0] = v[0] + 1 | 0;

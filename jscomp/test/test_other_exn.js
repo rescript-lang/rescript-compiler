@@ -1,7 +1,7 @@
 'use strict';
 
 
-function Make() {
+function Make($star) {
   return /* module */[];
 }
 

@@ -430,7 +430,7 @@ function mod2(x) {
   return x % 2 === 0;
 }
 
-function evenIndex(_, i) {
+function evenIndex(_x, i) {
   return i % 2 === 0;
 }
 
@@ -1515,16 +1515,16 @@ eq("File \"bs_list_test.ml\", line 216, characters 5-12", /* tuple */[
 
 eq("File \"bs_list_test.ml\", line 219, characters 5-12", Belt_List.head(/* [] */0), undefined);
 
-$$throw("File \"bs_list_test.ml\", line 220, characters 8-15", (function () {
+$$throw("File \"bs_list_test.ml\", line 220, characters 8-15", (function (param) {
         return Belt_List.headExn(/* [] */0);
       }));
 
-$$throw("File \"bs_list_test.ml\", line 221, characters 8-15", (function () {
+$$throw("File \"bs_list_test.ml\", line 221, characters 8-15", (function (param) {
         Belt_List.tailExn(/* [] */0);
         return /* () */0;
       }));
 
-$$throw("File \"bs_list_test.ml\", line 222, characters 8-15", (function () {
+$$throw("File \"bs_list_test.ml\", line 222, characters 8-15", (function (param) {
         Belt_List.getExn(/* :: */[
               0,
               /* :: */[
@@ -1535,7 +1535,7 @@ $$throw("File \"bs_list_test.ml\", line 222, characters 8-15", (function () {
         return /* () */0;
       }));
 
-$$throw("File \"bs_list_test.ml\", line 223, characters 8-15", (function () {
+$$throw("File \"bs_list_test.ml\", line 223, characters 8-15", (function (param) {
         Belt_List.getExn(/* :: */[
               0,
               /* :: */[
@@ -2057,7 +2057,7 @@ eq("File \"bs_list_test.ml\", line 298, characters 5-12", Belt_List.some2(/* :: 
           })), false);
 
 function makeTest(n) {
-  return eq("File \"bs_list_test.ml\", line 301, characters 5-12", Belt_List.make(n, 3), Belt_List.makeBy(n, (function () {
+  return eq("File \"bs_list_test.ml\", line 301, characters 5-12", Belt_List.make(n, 3), Belt_List.makeBy(n, (function (param) {
                     return 3;
                   })));
 }

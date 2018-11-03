@@ -142,10 +142,12 @@ class virtual fold =
         some primitive  call is translated 
         into a plain call, it's better to keep them
     *)
-                 (* Invariant: 
+                 (* str.[i])*)
+                 (* arr.(i)
+       Invariant: 
        The second argument has to be type of [int],
-       This can be constructed either in a static way [E.index] or a dynamic way 
-       [E.access]
+       This can be constructed either in a static way [E.array_index_by_int] or a dynamic way 
+       [E.array_index]
      *)
                  (* The third argument bool indicates whether we should 
        print it as 
@@ -184,6 +186,8 @@ class virtual fold =
      [Caml_block_tag] can return [undefined], 
      you have to use [E.tag] in a safe way     
   *)
+                 (* | Caml_block_set_tag of expression * expression *)
+                 (* | Caml_block_set_length of expression * expression *)
                  (* It will just fetch tag, to make it safe, when creating it, 
      we need apply "|0", we don't do it in the 
      last step since "|0" can potentially be optimized
@@ -311,9 +315,6 @@ class virtual fold =
       o#expression
     method expression_desc : expression_desc -> 'self_type =
       function
-      | Math (_x, _x_i1) ->
-          let o = o#string _x in
-          let o = o#list (fun o -> o#expression) _x_i1 in o
       | Length (_x, _x_i1) ->
           let o = o#expression _x in let o = o#length_object _x_i1 in o
       | Char_of_int _x -> let o = o#expression _x in o
@@ -338,13 +339,12 @@ class virtual fold =
           let o = o#expression _x in
           let o = o#list (fun o -> o#expression) _x_i1 in
           let o = o#unknown _x_i2 in o
-      | String_access (_x, _x_i1) ->
+      | String_index (_x, _x_i1) ->
           let o = o#expression _x in let o = o#expression _x_i1 in o
-      | Access (_x, _x_i1) ->
+      | Array_index (_x, _x_i1) ->
           let o = o#expression _x in let o = o#expression _x_i1 in o
-      | Dot (_x, _x_i1, _x_i2) ->
-          let o = o#expression _x in
-          let o = o#string _x_i1 in let o = o#bool _x_i2 in o
+      | Static_index (_x, _x_i1) ->
+          let o = o#expression _x in let o = o#string _x_i1 in o
       | New (_x, _x_i1) ->
           let o = o#expression _x in
           let o = o#option (fun o -> o#list (fun o -> o#expression)) _x_i1
@@ -371,10 +371,6 @@ class virtual fold =
           let o = o#mutable_flag _x_i1 in
           let o = o#expression _x_i2 in let o = o#tag_info _x_i3 in o
       | Caml_block_tag _x -> let o = o#expression _x in o
-      | Caml_block_set_tag (_x, _x_i1) ->
-          let o = o#expression _x in let o = o#expression _x_i1 in o
-      | Caml_block_set_length (_x, _x_i1) ->
-          let o = o#expression _x in let o = o#expression _x_i1 in o
       | Number _x -> let o = o#number _x in o
       | Object _x -> let o = o#property_map _x in o
       | Undefined -> o

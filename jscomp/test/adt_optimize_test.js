@@ -22,7 +22,7 @@ function f3(param) {
   return param;
 }
 
-function f4() {
+function f4(param) {
   return 3;
 }
 

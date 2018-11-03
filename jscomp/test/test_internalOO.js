@@ -2351,7 +2351,7 @@ function make_class_store(pub_meths, class_init, init_table) {
 }
 
 function dummy_class(loc) {
-  var undef = function () {
+  var undef = function (param) {
     throw [
           Caml_builtin_exceptions.undefined_recursive_module,
           loc
@@ -2478,7 +2478,7 @@ function lookup_tables(root, keys) {
 }
 
 function get_const(x) {
-  return (function () {
+  return (function (obj) {
       return x;
     });
 }
@@ -2509,7 +2509,7 @@ function set_var(n) {
 }
 
 function app_const(f, x) {
-  return (function () {
+  return (function (obj) {
       return Curry._1(f, x);
     });
 }
@@ -2533,7 +2533,7 @@ function app_meth(f, n) {
 }
 
 function app_const_const(f, x, y) {
-  return (function () {
+  return (function (obj) {
       return Curry._2(f, x, y);
     });
 }
@@ -2598,27 +2598,27 @@ function meth_app_meth(n, m) {
     });
 }
 
-function send_const(m, x, _) {
-  return (function () {
+function send_const(m, x, c) {
+  return (function (obj) {
       return Curry._1(Curry._3(Caml_oo.caml_get_public_method, x, m, 1), x);
     });
 }
 
-function send_var(m, n, _) {
+function send_var(m, n, c) {
   return (function (obj) {
       var tmp = obj[n];
       return Curry._1(Curry._3(Caml_oo.caml_get_public_method, tmp, m, 2), tmp);
     });
 }
 
-function send_env(m, e, n, _) {
+function send_env(m, e, n, c) {
   return (function (obj) {
       var tmp = obj[e][n];
       return Curry._1(Curry._3(Caml_oo.caml_get_public_method, tmp, m, 3), tmp);
     });
 }
 
-function send_meth(m, n, _) {
+function send_meth(m, n, c) {
   return (function (obj) {
       var tmp = Curry._1(obj[0][n], obj);
       return Curry._1(Curry._3(Caml_oo.caml_get_public_method, tmp, m, 4), tmp);
@@ -2633,7 +2633,7 @@ function new_cache(table) {
 }
 
 function method_impl(table, i, arr) {
-  var next = function () {
+  var next = function (param) {
     i[0] = i[0] + 1 | 0;
     return Caml_array.caml_array_get(arr, i[0]);
   };
@@ -2642,7 +2642,7 @@ function method_impl(table, i, arr) {
     switch (clo) {
       case 0 : 
           var x = next(/* () */0);
-          return (function () {
+          return (function (obj) {
               return x;
             });
       case 1 : 
@@ -2665,7 +2665,7 @@ function method_impl(table, i, arr) {
       case 5 : 
           var f = next(/* () */0);
           var x$1 = next(/* () */0);
-          return (function () {
+          return (function (obj) {
               return Curry._1(f, x$1);
             });
       case 6 : 
@@ -2687,7 +2687,7 @@ function method_impl(table, i, arr) {
           var f$4 = next(/* () */0);
           var x$2 = next(/* () */0);
           var y = next(/* () */0);
-          return (function () {
+          return (function (obj) {
               return Curry._2(f$4, x$2, y);
             });
       case 10 : 
@@ -2775,7 +2775,7 @@ function set_methods(table, methods) {
   return /* () */0;
 }
 
-function stats() {
+function stats(param) {
   return /* record */[
           /* classes */table_count[0],
           /* methods */method_count[0],

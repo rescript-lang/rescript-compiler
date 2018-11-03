@@ -21,8 +21,8 @@ catch (raw_exn){
 }
 
 var suites_000 = /* tuple */[
-  "option",
-  (function () {
+  "File \"caml_compare_test.ml\", line 9, characters 4-11",
+  (function (param) {
       return /* Eq */Block.__(0, [
                 true,
                 Caml_obj.caml_lessthan(undefined, 1)
@@ -33,7 +33,7 @@ var suites_000 = /* tuple */[
 var suites_001 = /* :: */[
   /* tuple */[
     "option2",
-    (function () {
+    (function (param) {
         return /* Eq */Block.__(0, [
                   true,
                   Caml_obj.caml_lessthan(1, 2)
@@ -42,8 +42,8 @@ var suites_001 = /* :: */[
   ],
   /* :: */[
     /* tuple */[
-      "list0",
-      (function () {
+      "File \"caml_compare_test.ml\", line 11, characters 4-11",
+      (function (param) {
           return /* Eq */Block.__(0, [
                     true,
                     Caml_obj.caml_greaterthan(/* :: */[
@@ -56,7 +56,7 @@ var suites_001 = /* :: */[
     /* :: */[
       /* tuple */[
         "listeq",
-        (function () {
+        (function (param) {
             return /* Eq */Block.__(0, [
                       true,
                       Caml_obj.caml_equal(/* :: */[
@@ -84,7 +84,7 @@ var suites_001 = /* :: */[
       /* :: */[
         /* tuple */[
           "listneq",
-          (function () {
+          (function (param) {
               return /* Eq */Block.__(0, [
                         true,
                         Caml_obj.caml_greaterthan(/* :: */[
@@ -112,7 +112,7 @@ var suites_001 = /* :: */[
         /* :: */[
           /* tuple */[
             "custom_u",
-            (function () {
+            (function (param) {
                 return /* Eq */Block.__(0, [
                           true,
                           Caml_obj.caml_greaterthan(/* tuple */[
@@ -136,7 +136,7 @@ var suites_001 = /* :: */[
           /* :: */[
             /* tuple */[
               "custom_u2",
-              (function () {
+              (function (param) {
                   return /* Eq */Block.__(0, [
                             true,
                             Caml_obj.caml_equal(/* tuple */[
@@ -160,7 +160,7 @@ var suites_001 = /* :: */[
             /* :: */[
               /* tuple */[
                 "function",
-                (function () {
+                (function (param) {
                     return /* Eq */Block.__(0, [
                               true,
                               function_equal_test
@@ -170,7 +170,7 @@ var suites_001 = /* :: */[
               /* :: */[
                 /* tuple */[
                   "File \"caml_compare_test.ml\", line 17, characters 4-11",
-                  (function () {
+                  (function (param) {
                       return /* Eq */Block.__(0, [
                                 true,
                                 Caml_obj.caml_lessthan(undefined, 1)
@@ -180,7 +180,7 @@ var suites_001 = /* :: */[
                 /* :: */[
                   /* tuple */[
                     "File \"caml_compare_test.ml\", line 28, characters 4-11",
-                    (function () {
+                    (function (param) {
                         return /* Eq */Block.__(0, [
                                   true,
                                   Caml_obj.caml_lessthan(undefined, /* array */[
@@ -193,7 +193,7 @@ var suites_001 = /* :: */[
                   /* :: */[
                     /* tuple */[
                       "File \"caml_compare_test.ml\", line 31, characters 4-11",
-                      (function () {
+                      (function (param) {
                           return /* Eq */Block.__(0, [
                                     true,
                                     Caml_obj.caml_greaterthan(/* array */[
@@ -206,7 +206,7 @@ var suites_001 = /* :: */[
                     /* :: */[
                       /* tuple */[
                         "File \"caml_compare_test.ml\", line 34, characters 4-11",
-                        (function () {
+                        (function (param) {
                             return /* Eq */Block.__(0, [
                                       true,
                                       Caml_obj.caml_lessthan(/* :: */[
@@ -273,7 +273,7 @@ var suites_001 = /* :: */[
                       /* :: */[
                         /* tuple */[
                           "File \"caml_compare_test.ml\", line 37, characters 4-11",
-                          (function () {
+                          (function (param) {
                               return /* Eq */Block.__(0, [
                                         true,
                                         Caml_obj.caml_lessthan(/* :: */[
@@ -292,7 +292,7 @@ var suites_001 = /* :: */[
                         /* :: */[
                           /* tuple */[
                             "File \"caml_compare_test.ml\", line 40, characters 4-11",
-                            (function () {
+                            (function (param) {
                                 return /* Eq */Block.__(0, [
                                           true,
                                           Caml_obj.caml_lessthan(/* [] */0, /* :: */[
@@ -305,7 +305,7 @@ var suites_001 = /* :: */[
                           /* :: */[
                             /* tuple */[
                               "File \"caml_compare_test.ml\", line 43, characters 4-11",
-                              (function () {
+                              (function (param) {
                                   return /* Eq */Block.__(0, [
                                             true,
                                             Caml_obj.caml_greaterthan(/* :: */[
@@ -372,7 +372,7 @@ var suites_001 = /* :: */[
                             /* :: */[
                               /* tuple */[
                                 "File \"caml_compare_test.ml\", line 47, characters 4-11",
-                                (function () {
+                                (function (param) {
                                     return /* Eq */Block.__(0, [
                                               false,
                                               false
@@ -382,7 +382,7 @@ var suites_001 = /* :: */[
                               /* :: */[
                                 /* tuple */[
                                   "File \"caml_compare_test.ml\", line 50, characters 4-11",
-                                  (function () {
+                                  (function (param) {
                                       return /* Eq */Block.__(0, [
                                                 false,
                                                 false
@@ -392,7 +392,7 @@ var suites_001 = /* :: */[
                                 /* :: */[
                                   /* tuple */[
                                     "File \"caml_compare_test.ml\", line 53, characters 4-11",
-                                    (function () {
+                                    (function (param) {
                                         return /* Eq */Block.__(0, [
                                                   false,
                                                   Caml_obj.caml_equal(/* :: */[
@@ -459,7 +459,7 @@ var suites_001 = /* :: */[
                                   /* :: */[
                                     /* tuple */[
                                       "File \"caml_compare_test.ml\", line 56, characters 4-11",
-                                      (function () {
+                                      (function (param) {
                                           return /* Eq */Block.__(0, [
                                                     false,
                                                     Caml_obj.caml_equal(/* :: */[
@@ -526,7 +526,7 @@ var suites_001 = /* :: */[
                                     /* :: */[
                                       /* tuple */[
                                         "cmp_id",
-                                        (function () {
+                                        (function (param) {
                                             return /* Eq */Block.__(0, [
                                                       Caml_obj.caml_compare({
                                                             x: 1,
@@ -542,7 +542,7 @@ var suites_001 = /* :: */[
                                       /* :: */[
                                         /* tuple */[
                                           "cmp_val",
-                                          (function () {
+                                          (function (param) {
                                               return /* Eq */Block.__(0, [
                                                         Caml_obj.caml_compare({
                                                               x: 1
@@ -556,7 +556,7 @@ var suites_001 = /* :: */[
                                         /* :: */[
                                           /* tuple */[
                                             "cmp_val2",
-                                            (function () {
+                                            (function (param) {
                                                 return /* Eq */Block.__(0, [
                                                           Caml_obj.caml_compare({
                                                                 x: 2
@@ -570,7 +570,7 @@ var suites_001 = /* :: */[
                                           /* :: */[
                                             /* tuple */[
                                               "cmp_empty",
-                                              (function () {
+                                              (function (param) {
                                                   return /* Eq */Block.__(0, [
                                                             Caml_obj.caml_compare(({}), ({})),
                                                             0
@@ -580,7 +580,7 @@ var suites_001 = /* :: */[
                                             /* :: */[
                                               /* tuple */[
                                                 "cmp_empty2",
-                                                (function () {
+                                                (function (param) {
                                                     return /* Eq */Block.__(0, [
                                                               Caml_obj.caml_compare(({}), ({x:1})),
                                                               -1
@@ -590,7 +590,7 @@ var suites_001 = /* :: */[
                                               /* :: */[
                                                 /* tuple */[
                                                   "cmp_swap",
-                                                  (function () {
+                                                  (function (param) {
                                                       return /* Eq */Block.__(0, [
                                                                 Caml_obj.caml_compare({
                                                                       x: 1,
@@ -606,7 +606,7 @@ var suites_001 = /* :: */[
                                                 /* :: */[
                                                   /* tuple */[
                                                     "cmp_size",
-                                                    (function () {
+                                                    (function (param) {
                                                         return /* Eq */Block.__(0, [
                                                                   Caml_obj.caml_compare(({x:1}), ({x:1, y:2})),
                                                                   -1
@@ -616,7 +616,7 @@ var suites_001 = /* :: */[
                                                   /* :: */[
                                                     /* tuple */[
                                                       "cmp_size2",
-                                                      (function () {
+                                                      (function (param) {
                                                           return /* Eq */Block.__(0, [
                                                                     Caml_obj.caml_compare(({x:1, y:2}), ({x:1})),
                                                                     1
@@ -626,7 +626,7 @@ var suites_001 = /* :: */[
                                                     /* :: */[
                                                       /* tuple */[
                                                         "cmp_order",
-                                                        (function () {
+                                                        (function (param) {
                                                             return /* Eq */Block.__(0, [
                                                                       Caml_obj.caml_compare({
                                                                             x: 0,
@@ -642,7 +642,7 @@ var suites_001 = /* :: */[
                                                       /* :: */[
                                                         /* tuple */[
                                                           "cmp_order2",
-                                                          (function () {
+                                                          (function (param) {
                                                               return /* Eq */Block.__(0, [
                                                                         Caml_obj.caml_compare({
                                                                               x: 1,
@@ -658,7 +658,7 @@ var suites_001 = /* :: */[
                                                         /* :: */[
                                                           /* tuple */[
                                                             "cmp_in_list",
-                                                            (function () {
+                                                            (function (param) {
                                                                 return /* Eq */Block.__(0, [
                                                                           Caml_obj.caml_compare(/* :: */[
                                                                                 {
@@ -678,7 +678,7 @@ var suites_001 = /* :: */[
                                                           /* :: */[
                                                             /* tuple */[
                                                               "cmp_in_list2",
-                                                              (function () {
+                                                              (function (param) {
                                                                   return /* Eq */Block.__(0, [
                                                                             Caml_obj.caml_compare(/* :: */[
                                                                                   {
@@ -698,7 +698,7 @@ var suites_001 = /* :: */[
                                                             /* :: */[
                                                               /* tuple */[
                                                                 "cmp_with_list",
-                                                                (function () {
+                                                                (function (param) {
                                                                     return /* Eq */Block.__(0, [
                                                                               Caml_obj.caml_compare({
                                                                                     x: /* :: */[
@@ -718,7 +718,7 @@ var suites_001 = /* :: */[
                                                               /* :: */[
                                                                 /* tuple */[
                                                                   "cmp_with_list2",
-                                                                  (function () {
+                                                                  (function (param) {
                                                                       return /* Eq */Block.__(0, [
                                                                                 Caml_obj.caml_compare({
                                                                                       x: /* :: */[
@@ -738,7 +738,7 @@ var suites_001 = /* :: */[
                                                                 /* :: */[
                                                                   /* tuple */[
                                                                     "eq_id",
-                                                                    (function () {
+                                                                    (function (param) {
                                                                         return /* Ok */Block.__(4, [Caml_obj.caml_equal({
                                                                                         x: 1,
                                                                                         y: 2
@@ -751,7 +751,7 @@ var suites_001 = /* :: */[
                                                                   /* :: */[
                                                                     /* tuple */[
                                                                       "eq_val",
-                                                                      (function () {
+                                                                      (function (param) {
                                                                           return /* Eq */Block.__(0, [
                                                                                     Caml_obj.caml_equal({
                                                                                           x: 1
@@ -765,7 +765,7 @@ var suites_001 = /* :: */[
                                                                     /* :: */[
                                                                       /* tuple */[
                                                                         "eq_val2",
-                                                                        (function () {
+                                                                        (function (param) {
                                                                             return /* Eq */Block.__(0, [
                                                                                       Caml_obj.caml_equal({
                                                                                             x: 2
@@ -779,7 +779,7 @@ var suites_001 = /* :: */[
                                                                       /* :: */[
                                                                         /* tuple */[
                                                                           "eq_empty",
-                                                                          (function () {
+                                                                          (function (param) {
                                                                               return /* Eq */Block.__(0, [
                                                                                         Caml_obj.caml_equal(({}), ({})),
                                                                                         true
@@ -789,7 +789,7 @@ var suites_001 = /* :: */[
                                                                         /* :: */[
                                                                           /* tuple */[
                                                                             "eq_empty2",
-                                                                            (function () {
+                                                                            (function (param) {
                                                                                 return /* Eq */Block.__(0, [
                                                                                           Caml_obj.caml_equal(({}), ({x:1})),
                                                                                           false
@@ -799,7 +799,7 @@ var suites_001 = /* :: */[
                                                                           /* :: */[
                                                                             /* tuple */[
                                                                               "eq_swap",
-                                                                              (function () {
+                                                                              (function (param) {
                                                                                   return /* Ok */Block.__(4, [Caml_obj.caml_equal({
                                                                                                   x: 1,
                                                                                                   y: 2
@@ -812,7 +812,7 @@ var suites_001 = /* :: */[
                                                                             /* :: */[
                                                                               /* tuple */[
                                                                                 "eq_size",
-                                                                                (function () {
+                                                                                (function (param) {
                                                                                     return /* Eq */Block.__(0, [
                                                                                               Caml_obj.caml_equal(({x:1}), ({x:1, y:2})),
                                                                                               false
@@ -822,7 +822,7 @@ var suites_001 = /* :: */[
                                                                               /* :: */[
                                                                                 /* tuple */[
                                                                                   "eq_size2",
-                                                                                  (function () {
+                                                                                  (function (param) {
                                                                                       return /* Eq */Block.__(0, [
                                                                                                 Caml_obj.caml_equal(({x:1, y:2}), ({x:1})),
                                                                                                 false
@@ -832,7 +832,7 @@ var suites_001 = /* :: */[
                                                                                 /* :: */[
                                                                                   /* tuple */[
                                                                                     "eq_in_list",
-                                                                                    (function () {
+                                                                                    (function (param) {
                                                                                         return /* Eq */Block.__(0, [
                                                                                                   Caml_obj.caml_equal(/* :: */[
                                                                                                         {
@@ -852,7 +852,7 @@ var suites_001 = /* :: */[
                                                                                   /* :: */[
                                                                                     /* tuple */[
                                                                                       "eq_in_list2",
-                                                                                      (function () {
+                                                                                      (function (param) {
                                                                                           return /* Eq */Block.__(0, [
                                                                                                     Caml_obj.caml_equal(/* :: */[
                                                                                                           {
@@ -872,7 +872,7 @@ var suites_001 = /* :: */[
                                                                                     /* :: */[
                                                                                       /* tuple */[
                                                                                         "eq_with_list",
-                                                                                        (function () {
+                                                                                        (function (param) {
                                                                                             return /* Eq */Block.__(0, [
                                                                                                       Caml_obj.caml_equal({
                                                                                                             x: /* :: */[
@@ -892,7 +892,7 @@ var suites_001 = /* :: */[
                                                                                       /* :: */[
                                                                                         /* tuple */[
                                                                                           "eq_with_list2",
-                                                                                          (function () {
+                                                                                          (function (param) {
                                                                                               return /* Eq */Block.__(0, [
                                                                                                         Caml_obj.caml_equal({
                                                                                                               x: /* :: */[
@@ -912,7 +912,7 @@ var suites_001 = /* :: */[
                                                                                         /* :: */[
                                                                                           /* tuple */[
                                                                                             "File \"caml_compare_test.ml\", line 87, characters 4-11",
-                                                                                            (function () {
+                                                                                            (function (param) {
                                                                                                 return /* Eq */Block.__(0, [
                                                                                                           Caml_obj.caml_compare(null, /* :: */[
                                                                                                                 3,
@@ -925,7 +925,7 @@ var suites_001 = /* :: */[
                                                                                           /* :: */[
                                                                                             /* tuple */[
                                                                                               "File \"caml_compare_test.ml\", line 90, characters 4-11",
-                                                                                              (function () {
+                                                                                              (function (param) {
                                                                                                   return /* Eq */Block.__(0, [
                                                                                                             Caml_obj.caml_compare(/* :: */[
                                                                                                                   3,
@@ -938,7 +938,7 @@ var suites_001 = /* :: */[
                                                                                             /* :: */[
                                                                                               /* tuple */[
                                                                                                 "File \"caml_compare_test.ml\", line 93, characters 4-11",
-                                                                                                (function () {
+                                                                                                (function (param) {
                                                                                                     return /* Eq */Block.__(0, [
                                                                                                               Caml_obj.caml_compare(null, 0),
                                                                                                               -1
@@ -948,7 +948,7 @@ var suites_001 = /* :: */[
                                                                                               /* :: */[
                                                                                                 /* tuple */[
                                                                                                   "File \"caml_compare_test.ml\", line 96, characters 4-11",
-                                                                                                  (function () {
+                                                                                                  (function (param) {
                                                                                                       return /* Eq */Block.__(0, [
                                                                                                                 Caml_obj.caml_compare(0, null),
                                                                                                                 1
@@ -958,7 +958,7 @@ var suites_001 = /* :: */[
                                                                                                 /* :: */[
                                                                                                   /* tuple */[
                                                                                                     "File \"caml_compare_test.ml\", line 99, characters 4-11",
-                                                                                                    (function () {
+                                                                                                    (function (param) {
                                                                                                         return /* Eq */Block.__(0, [
                                                                                                                   Caml_obj.caml_compare(undefined, 0),
                                                                                                                   -1
@@ -968,7 +968,7 @@ var suites_001 = /* :: */[
                                                                                                   /* :: */[
                                                                                                     /* tuple */[
                                                                                                       "File \"caml_compare_test.ml\", line 102, characters 4-11",
-                                                                                                      (function () {
+                                                                                                      (function (param) {
                                                                                                           return /* Eq */Block.__(0, [
                                                                                                                     Caml_obj.caml_compare(0, undefined),
                                                                                                                     1

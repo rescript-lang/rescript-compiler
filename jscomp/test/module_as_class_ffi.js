@@ -2,11 +2,11 @@
 
 var Foo_class = require("xx/foo_class");
 
-function f() {
+function f(param) {
   return new Foo_class(3);
 }
 
-function v() {
+function v(param) {
   return Foo_class.ff(3);
 }
 

@@ -87,7 +87,7 @@ function ui_layout(compile, lookup, appContext) {
   inputCode.minHeight = 100;
   button.text = "update formula";
   button.minHeight = 20;
-  button.on("click", (function () {
+  button.on("click", (function (_event) {
           try {
             var hot_function = Curry._1(compile, inputCode.text);
             computeFunction[0] = (function (env) {

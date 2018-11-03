@@ -16,7 +16,7 @@ function to_list(v) {
   return List.rev(acc);
 }
 
-function v() {
+function v(param) {
   var v$1 = /* record */[/* c : [] */0];
   Stack.push(3, v$1);
   Stack.push(4, v$1);
@@ -26,7 +26,7 @@ function v() {
 
 var suites_000 = /* tuple */[
   "push_test",
-  (function () {
+  (function (param) {
       return /* Eq */Block.__(0, [
                 /* :: */[
                   1,

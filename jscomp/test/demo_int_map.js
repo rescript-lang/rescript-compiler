@@ -128,7 +128,7 @@ function find(x, _param) {
   };
 }
 
-function test() {
+function test(param) {
   var m = /* Empty */0;
   for(var i = 0; i <= 1000000; ++i){
     m = add(i, i, m);

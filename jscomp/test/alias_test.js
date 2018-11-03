@@ -7,7 +7,7 @@ var v = 1;
 
 var a21 = "hello worldnothello worldnot";
 
-function ff() {
+function ff(param) {
   return "cool test hello worldnothello worldnothello";
 }
 

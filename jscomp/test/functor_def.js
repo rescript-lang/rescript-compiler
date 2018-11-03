@@ -4,19 +4,19 @@ var Curry = require("../../lib/js/curry.js");
 
 var v = /* record */[/* contents */0];
 
-function f(_, x) {
+function f(x, x$1) {
   v[0] = v[0] + 1 | 0;
-  return x + x | 0;
+  return x$1 + x$1 | 0;
 }
 
-function $$return() {
+function $$return(param) {
   return v[0];
 }
 
 function Make(U) {
-  var h = function (_, x) {
-    console.log(f(x, x));
-    return Curry._2(U[/* say */0], x, x);
+  var h = function (x, x$1) {
+    console.log(f(x$1, x$1));
+    return Curry._2(U[/* say */0], x$1, x$1);
   };
   return /* module */[/* h */h];
 }

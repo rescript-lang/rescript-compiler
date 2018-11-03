@@ -53,7 +53,7 @@ function u(b) {
   }
 }
 
-function f2(h, b, _) {
+function f2(h, b, param) {
   return Curry._1(h, b ? 32 : 7);
 }
 
@@ -127,4 +127,4 @@ exports.gg = gg;
 exports.f = f;
 exports.is_lazy_force = is_lazy_force;
 exports.fib = fib;
-/*  Not a pure module */
+/* test_abs Not a pure module */

@@ -32,108 +32,57 @@
 
 module E = Js_exp_make
 
-module A = struct 
 
-  let const_char (i : char) = 
-    E.str (String.make 1 i)
-
-  let caml_char_of_int ?comment (v : J.expression)  =  
-    E.char_of_int ?comment v
-
-  let caml_char_to_int ?comment v =  
-    E.char_to_int ?comment v
-
-  (* string [s[i]] expects to return a [ocaml_char] *)
-  let ref_string e e1 = 
-    E.string_access e e1
-
-  (* [s[i]] excepts to return a [ocaml_char]
-     We use normal array for [bytes]
-     TODO: we can use [Buffer] in the future 
-   *)
-  let ref_byte e e0  =
-    E.char_of_int (E.access  e  e0)
-
-  (* {Bytes.set : bytes -> int -> char -> unit }*)
-  let set_byte  e e0 e1 = 
-    E.assign (E.access e e0)  (E.char_to_int e1)
-
-(*
-   Note that [String.fromCharCode] also works, but it only 
-   work for small arrays, however, for {bytes_to_string} it is likely the bytes 
-   will become big
-   {[
-   String.fromCharCode.apply(null,[87,97])
-   "Wa"
-   String.fromCharCode(87,97)
-   "Wa" 
-   ]}
-   This does not work for large arrays
-   {[
-   String.fromCharCode.apply(null, prim = Array[1048576]) 
-   Maxiume call stack size exceeded
-   ]}
- *)
-
-  let bytes_to_string e = 
-    E.runtime_call Js_runtime_modules.string "bytes_to_string" [e]
-
-  let bytes_of_string s =
-    E.runtime_call Js_runtime_modules.string "bytes_of_string" [s]
-end
 
 (* We use module B for string compilation, once the upstream can make changes to the 
     patten match of range patterns, we can use module [A] which means [char] is [string] in js, 
     currently, it follows the same patten of ocaml, [char] is [int]
- *)
+*)
 
-module B = struct 
+let const_char (i : char) = 
+  E.int  ~comment:("\"" ^ Ext_string.escaped (String.make 1 i) ^ "\"") 
+    ~c:i (Int32.of_int @@ Char.code i)
 
-  let const_char (i : char) = 
-    E.int  ~comment:("\"" ^ Ext_string.escaped (String.make 1 i) ^ "\"") 
-      ~c:i (Int32.of_int @@ Char.code i)
+let caml_char_of_int ?comment (v : J.expression)  =  v
 
-  let caml_char_of_int ?comment (v : J.expression)  =  v
+let caml_char_to_int ?comment v =  v
 
-  let caml_char_to_int ?comment v =  v
+(* string [s[i]] expects to return a [ocaml_char] *)
+let ref_string e e1 = 
+  E.char_to_int (E.string_index e e1)
 
-  (* string [s[i]] expects to return a [ocaml_char] *)
-  let ref_string e e1 = 
-    E.char_to_int (E.string_access e e1)
+(* [s[i]] excepts to return a [ocaml_char]
+   We use normal array for [bytes]
+   TODO: we can use [Buffer] in the future 
+*)
+let ref_byte e e0  = E.array_index  e  e0
 
-  (* [s[i]] excepts to return a [ocaml_char]
-     We use normal array for [bytes]
-     TODO: we can use [Buffer] in the future 
-   *)
-  let ref_byte e e0  = E.access  e  e0
-
-  (* {Bytes.set : bytes -> int -> char -> unit }*)
-  let set_byte  e e0 e1 = 
-    E.assign (E.access e e0)  e1
+(* {Bytes.set : bytes -> int -> char -> unit }*)
+let set_byte  e e0 e1 = 
+  E.assign (E.array_index e e0)  e1
 
 (**
    Note that [String.fromCharCode] also works, but it only 
    work for small arrays, however, for {bytes_to_string} it is likely the bytes 
    will become big
    {[
-   String.fromCharCode.apply(null,[87,97])
-   "Wa"
-   String.fromCharCode(87,97)
-   "Wa" 
+     String.fromCharCode.apply(null,[87,97])
+       "Wa"
+       String.fromCharCode(87,97)
+       "Wa" 
    ]}
    This does not work for large arrays
    {[
-   String.fromCharCode.apply(null, prim = Array[1048576]) 
-   Maxiume call stack size exceeded
+     String.fromCharCode.apply(null, prim = Array[1048576]) 
+       Maxiume call stack size exceeded
    ]}
- *)
+*)
 
-  let bytes_to_string e = 
-    E.runtime_call Js_runtime_modules.string "bytes_to_string" [e]
+let bytes_to_string e = 
+  E.runtime_call Js_runtime_modules.string "bytes_to_string" [e]
 
-  let bytes_of_string s =
-    E.runtime_call Js_runtime_modules.string "bytes_of_string" [s]
-end
+let bytes_of_string s =
+  E.runtime_call Js_runtime_modules.string "bytes_of_string" [s]
 
-(* include A *)
-include B
+
+

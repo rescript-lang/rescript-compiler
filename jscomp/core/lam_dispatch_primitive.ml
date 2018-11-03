@@ -62,10 +62,10 @@ let translate loc (prim_name : string)
     | "caml_final_register"
     | "caml_final_release"
       ->  call Js_runtime_modules.gc
-    | "caml_abs_float" -> 
-      E.math "abs" args 
-    | "caml_acos_float" -> 
-      E.math "acos" args 
+    (* | "caml_abs_float" -> 
+      E.math "abs" args  *)
+    (* | "caml_acos_float" -> 
+      E.math "acos" args  *)
     |  "caml_add_float" -> 
       begin match args with 
         | [e0;e1] -> E.float_add e0 e1 (** TODO float plus*)
@@ -96,7 +96,7 @@ let translate loc (prim_name : string)
         | [e0;e1] -> E.float_comp Cgt  e0 e1
         | _ -> assert false 
       end
-    | "caml_tan_float"  ->
+    (* | "caml_tan_float"  ->
       E.math "tan" args 
     | "caml_tanh_float"  ->
       E.math "tanh" args 
@@ -121,13 +121,13 @@ let translate loc (prim_name : string)
     | "caml_sqrt_float" -> 
       E.math "sqrt" args
 
-
+ *)
     | "caml_float_of_int" -> 
       begin match args with 
         | [e] -> e 
         | _ -> assert false 
       end
-    | "caml_floor_float" ->
+    (* | "caml_floor_float" ->
       E.math "floor" args 
     | "caml_log_float" -> 
       E.math "log" args 
@@ -136,7 +136,7 @@ let translate loc (prim_name : string)
     | "caml_log1p_float" -> 
       E.math "log1p" args 
     | "caml_power_float"  -> 
-      E.math "pow" args
+      E.math "pow" args *)
 
     | "caml_array_get" -> 
       call Js_runtime_modules.array
@@ -280,8 +280,10 @@ let translate loc (prim_name : string)
         | [e0; e1] -> E.float_mul e0 e1 
         | _ -> assert false  
       end
-        
-
+#if OCAML_VERSION =~ ">4.03.0" then
+    | "caml_bytes_equal" ->   
+      call Js_runtime_modules.caml_primitive
+#end      
     | "caml_int64_equal_null"
       -> Js_long.equal_null args 
     | "caml_int64_equal_undefined"
@@ -331,7 +333,7 @@ let translate loc (prim_name : string)
         | [e0;e1] -> E.float_mod e0 e1
         | _ -> assert false 
       end
-
+   
     | "caml_string_equal" 
       -> 
       begin match args with 
@@ -347,8 +349,7 @@ let translate loc (prim_name : string)
       end
     | "caml_string_lessequal"
       -> 
-      begin 
-        match args with 
+      begin match args with 
         | [e0; e1] 
           -> 
           E.string_comp Le e0 e1
@@ -466,6 +467,9 @@ let translate loc (prim_name : string)
       end 
 
 
+#if OCAML_VERSION =~ ">4.03.0" then
+    | "caml_create_bytes"  
+#end
     | "caml_create_string" -> 
       (* Bytes.create *)
       (* Note that for invalid range, JS raise an Exception RangeError, 
@@ -477,7 +481,8 @@ let translate loc (prim_name : string)
           ->
           E.array NA []
         | _ -> 
-          call Js_runtime_modules.string 
+          E.runtime_call Js_runtime_modules.string 
+            "caml_create_bytes" args
       end
     | "caml_bool_compare" ->   
       begin match args with 
@@ -492,6 +497,7 @@ let translate loc (prim_name : string)
     | "caml_int32_compare"
     | "caml_nativeint_compare"
     | "caml_float_compare"
+    | "caml_bytes_compare"
     | "caml_string_compare" 
     -> 
       call Js_runtime_modules.caml_primitive
@@ -527,14 +533,16 @@ let translate loc (prim_name : string)
             call Js_runtime_modules.caml_primitive
         | _ -> assert false 
       end
-      
+    | "caml_fill_string"
+    | "caml_fill_bytes"
+      -> 
+        E.runtime_call 
+          Js_runtime_modules.string "caml_fill_bytes" args
     | "caml_string_get"    
     | "string_of_bytes"
     | "bytes_of_string"
-
     | "caml_is_printable"
-    | "caml_string_of_char_array"
-    | "caml_fill_string"
+    | "caml_string_of_char_array"    
     | "caml_blit_string" 
     | "caml_blit_bytes"
       -> 
@@ -581,19 +589,23 @@ let translate loc (prim_name : string)
     (** Note we captured [exception/extension] creation in the early pass, this primitive is 
         like normal one to set the identifier *)
 
-    | "caml_set_oo_id" 
+#if OCAML_VERSION =~ ">4.03.0" then
+    | "caml_fresh_oo_id" 
+      ->
+      Js_of_lam_exception.caml_fresh_oo_id args   
+#end
+    | "caml_set_oo_id" (* needed in {!camlinternalOO.set_id} *)
       ->
       Js_of_lam_exception.caml_set_oo_id args 
-
     | "caml_sys_const_big_endian" -> 
       (** return false *)
       E.bool Sys.big_endian
     | "caml_sys_const_word_size" -> 
       E.small_int  Sys.word_size
     (** TODO: How it will affect program behavior *)
-    | "caml_sys_const_ostype_cygwin" -> E.caml_false 
-    | "caml_sys_const_ostype_win32" -> E.caml_false 
-    | "caml_sys_const_ostype_unix" -> E.caml_true
+    | "caml_sys_const_ostype_cygwin" -> E.false_
+    | "caml_sys_const_ostype_win32" -> E.false_
+    | "caml_sys_const_ostype_unix" -> E.true_
     | "caml_sys_get_config" ->
       (** No cross compilation *)
       Js_of_lam_tuple.make [E.str Sys.os_type; E.small_int  Sys.word_size; 
@@ -751,9 +763,8 @@ let translate loc (prim_name : string)
       Location.prerr_warning loc Warnings.Bs_polymorphic_comparison ; 
       call Js_runtime_modules.obj_runtime
     | "caml_obj_set_tag" 
-      -> begin match args with 
-          | [a;b]  -> E.block_set_tag a b 
-          | _ -> assert false end
+      -> 
+      call Js_runtime_modules.obj_runtime
     | "caml_obj_tag" -> 
       (* Note that in ocaml, [int] has tag [1000] and [string] has tag [252]
          also now we need do nullary check 

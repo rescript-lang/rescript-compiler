@@ -51,7 +51,6 @@ let check file lam =
     and iter_list_snd : 'a. ('a * Lam.t) list -> unit = fun xs ->     
       Ext_list.iter_snd  xs iter
     and iter (l : Lam.t) =
-    begin
       match l with
       | Lvar id -> use id
       | Lglobal_module _ -> ()
@@ -76,7 +75,8 @@ let check file lam =
         iter arg;
         iter_list_snd sw.sw_consts;
         iter_list_snd sw.sw_blocks;
-        Ext_option.iter sw.sw_failaction iter; 
+        Ext_option.iter sw.sw_failaction iter;         
+        assert (not (sw.sw_failaction <> None && sw.sw_numconsts && sw.sw_numblocks))
       | Lstringswitch (arg,cases,default) ->
         iter arg ;
         iter_list_snd cases ;
@@ -107,7 +107,7 @@ let check file lam =
       | Lsend (k, met, obj, args, _) ->
         iter met; iter obj;
         iter_list args
-    end;
+
   in
   begin
     iter lam;

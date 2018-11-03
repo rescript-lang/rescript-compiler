@@ -184,13 +184,6 @@ val return_stmt :
   J.expression ->
   t
 
-(** TODO: this should 
-    be marked as failrue
-*)  
-val unknown_lambda :
-  ?comment:string  ->
-  Lam.t ->
-  t
 
 val return_unit : t list
 (** for ocaml function which returns unit 

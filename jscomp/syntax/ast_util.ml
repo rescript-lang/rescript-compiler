@@ -662,9 +662,7 @@ and check_pat (pat : Parsetree.pattern) =
 let convertBsErrorFunction loc  (self : Bs_ast_mapper.mapper) attrs (cases : Parsetree.case list ) =
   let txt  = "match" in 
   let txt_expr = Exp.ident ~loc {txt = Lident txt; loc} in 
-  let none = Exp.constraint_ ~loc 
-      (Exp.construct ~loc {txt = Lident "None" ; loc} None) 
-      (Ast_core_type.lift_option_type (Typ.any ~loc ())) in
+  let none = Exp.construct ~loc {txt = Ast_literal.predef_none ; loc} None in
   let () = checkCases cases in  
   let cases = self.cases self cases in 
   Ast_compatible.fun_ ~attrs ~loc ( Pat.var ~loc  {txt; loc })
@@ -682,14 +680,9 @@ let convertBsErrorFunction loc  (self : Bs_ast_mapper.mapper) attrs (cases : Par
            let pc_rhs = x.pc_rhs in 
            let  loc  = pc_rhs.pexp_loc in
            {
-             x with pc_rhs = 
-                      Exp.constraint_ ~loc 
-                        (Exp.construct ~loc {txt = Lident "Some";loc} (Some pc_rhs))
-                        (Ast_core_type.lift_option_type (Typ.any ~loc ())  )
-           }
-
-         ) )
-    )
+             x with pc_rhs = Exp.construct ~loc {txt = Ast_literal.predef_some;loc} (Some pc_rhs)
+                        
+           })))
     (Some none))
     
                        

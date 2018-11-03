@@ -155,10 +155,12 @@ class virtual map =
         some primitive  call is translated 
         into a plain call, it's better to keep them
     *)
-                 (* Invariant: 
+                 (* str.[i])*)
+                 (* arr.(i)
+       Invariant: 
        The second argument has to be type of [int],
-       This can be constructed either in a static way [E.index] or a dynamic way 
-       [E.access]
+       This can be constructed either in a static way [E.array_index_by_int] or a dynamic way 
+       [E.array_index]
      *)
                  (* The third argument bool indicates whether we should 
        print it as 
@@ -197,6 +199,8 @@ class virtual map =
      [Caml_block_tag] can return [undefined], 
      you have to use [E.tag] in a safe way     
   *)
+                 (* | Caml_block_set_tag of expression * expression *)
+                 (* | Caml_block_set_length of expression * expression *)
                  (* It will just fetch tag, to make it safe, when creating it, 
      we need apply "|0", we don't do it in the 
      last step since "|0" can potentially be optimized
@@ -334,10 +338,6 @@ class virtual map =
       finish_ident_expression -> finish_ident_expression = o#expression
     method expression_desc : expression_desc -> expression_desc =
       function
-      | Math (_x, _x_i1) ->
-          let _x = o#string _x in
-          let _x_i1 = o#list (fun o -> o#expression) _x_i1
-          in Math (_x, _x_i1)
       | Length (_x, _x_i1) ->
           let _x = o#expression _x in
           let _x_i1 = o#length_object _x_i1 in Length (_x, _x_i1)
@@ -369,16 +369,15 @@ class virtual map =
           let _x = o#expression _x in
           let _x_i1 = o#list (fun o -> o#expression) _x_i1 in
           let _x_i2 = o#unknown _x_i2 in Call (_x, _x_i1, _x_i2)
-      | String_access (_x, _x_i1) ->
+      | String_index (_x, _x_i1) ->
           let _x = o#expression _x in
-          let _x_i1 = o#expression _x_i1 in String_access (_x, _x_i1)
-      | Access (_x, _x_i1) ->
+          let _x_i1 = o#expression _x_i1 in String_index (_x, _x_i1)
+      | Array_index (_x, _x_i1) ->
           let _x = o#expression _x in
-          let _x_i1 = o#expression _x_i1 in Access (_x, _x_i1)
-      | Dot (_x, _x_i1, _x_i2) ->
+          let _x_i1 = o#expression _x_i1 in Array_index (_x, _x_i1)
+      | Static_index (_x, _x_i1) ->
           let _x = o#expression _x in
-          let _x_i1 = o#string _x_i1 in
-          let _x_i2 = o#bool _x_i2 in Dot (_x, _x_i1, _x_i2)
+          let _x_i1 = o#string _x_i1 in Static_index (_x, _x_i1)
       | New (_x, _x_i1) ->
           let _x = o#expression _x in
           let _x_i1 =
@@ -413,12 +412,6 @@ class virtual map =
           let _x_i3 = o#tag_info _x_i3
           in Caml_block (_x, _x_i1, _x_i2, _x_i3)
       | Caml_block_tag _x -> let _x = o#expression _x in Caml_block_tag _x
-      | Caml_block_set_tag (_x, _x_i1) ->
-          let _x = o#expression _x in
-          let _x_i1 = o#expression _x_i1 in Caml_block_set_tag (_x, _x_i1)
-      | Caml_block_set_length (_x, _x_i1) ->
-          let _x = o#expression _x in
-          let _x_i1 = o#expression _x_i1 in Caml_block_set_length (_x, _x_i1)
       | Number _x -> let _x = o#number _x in Number _x
       | Object _x -> let _x = o#property_map _x in Object _x
       | Undefined -> Undefined

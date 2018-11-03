@@ -33,7 +33,7 @@ function string_or_number(x) {
 
 var suites_000 = /* tuple */[
   "int_type",
-  (function () {
+  (function (param) {
       return /* Eq */Block.__(0, [
                 "number",
                 "number"
@@ -44,7 +44,7 @@ var suites_000 = /* tuple */[
 var suites_001 = /* :: */[
   /* tuple */[
     "string_type",
-    (function () {
+    (function (param) {
         return /* Eq */Block.__(0, [
                   "string",
                   "string"
@@ -54,7 +54,7 @@ var suites_001 = /* :: */[
   /* :: */[
     /* tuple */[
       "number_gadt_test",
-      (function () {
+      (function (param) {
           return /* Eq */Block.__(0, [
                     Js_types.test(3, /* Number */3),
                     true
@@ -64,7 +64,7 @@ var suites_001 = /* :: */[
     /* :: */[
       /* tuple */[
         "boolean_gadt_test",
-        (function () {
+        (function (param) {
             return /* Eq */Block.__(0, [
                       Js_types.test(true, /* Boolean */2),
                       true
@@ -74,7 +74,7 @@ var suites_001 = /* :: */[
       /* :: */[
         /* tuple */[
           "undefined_gadt_test",
-          (function () {
+          (function (param) {
               return /* Eq */Block.__(0, [
                         Js_types.test(undefined, /* Undefined */0),
                         true
@@ -84,7 +84,7 @@ var suites_001 = /* :: */[
         /* :: */[
           /* tuple */[
             "string_on_number1",
-            (function () {
+            (function (param) {
                 return /* Eq */Block.__(0, [
                           string_or_number("xx"),
                           true
@@ -94,7 +94,7 @@ var suites_001 = /* :: */[
           /* :: */[
             /* tuple */[
               "string_on_number2",
-              (function () {
+              (function (param) {
                   return /* Eq */Block.__(0, [
                             string_or_number(3.02),
                             true
@@ -104,7 +104,7 @@ var suites_001 = /* :: */[
             /* :: */[
               /* tuple */[
                 "string_on_number3",
-                (function () {
+                (function (param) {
                     return /* Eq */Block.__(0, [
                               string_or_number((function (x) {
                                       return x;
@@ -116,7 +116,7 @@ var suites_001 = /* :: */[
               /* :: */[
                 /* tuple */[
                   "string_gadt_test",
-                  (function () {
+                  (function (param) {
                       return /* Eq */Block.__(0, [
                                 Js_types.test("3", /* String */4),
                                 true
@@ -126,7 +126,7 @@ var suites_001 = /* :: */[
                 /* :: */[
                   /* tuple */[
                     "string_gadt_test_neg",
-                    (function () {
+                    (function (param) {
                         return /* Eq */Block.__(0, [
                                   Js_types.test(3, /* String */4),
                                   false
@@ -136,7 +136,7 @@ var suites_001 = /* :: */[
                   /* :: */[
                     /* tuple */[
                       "function_gadt_test",
-                      (function () {
+                      (function (param) {
                           return /* Eq */Block.__(0, [
                                     Js_types.test((function (x) {
                                             return x;
@@ -148,7 +148,7 @@ var suites_001 = /* :: */[
                     /* :: */[
                       /* tuple */[
                         "object_gadt_test",
-                        (function () {
+                        (function (param) {
                             return /* Eq */Block.__(0, [
                                       Js_types.test({
                                             x: 3

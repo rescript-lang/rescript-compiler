@@ -42,7 +42,7 @@ function eq(loc, x, y) {
   suites[0] = /* :: */[
     /* tuple */[
       loc + (" id " + String(test_id[0])),
-      (function () {
+      (function (param) {
           return /* Eq */Block.__(0, [
                     x,
                     y
@@ -71,7 +71,7 @@ function point_init($$class) {
             return /* () */0;
           })
       ]);
-  return (function (_, self, x_init$1) {
+  return (function (env, self, x_init$1) {
       var self$1 = CamlinternalOO.create_object_opt(self, $$class);
       self$1[x_init] = x_init$1;
       self$1[x] = x_init$1;
@@ -115,7 +115,7 @@ function ref_init($$class) {
             return /* () */0;
           })
       ]);
-  return (function (_, self, x_init$1) {
+  return (function (env, self, x_init$1) {
       var self$1 = CamlinternalOO.create_object_opt(self, $$class);
       self$1[x_init] = x_init$1;
       self$1[x] = x_init$1;
@@ -147,7 +147,7 @@ function backup_init($$class) {
             }
           })
       ]);
-  return (function (_, self) {
+  return (function (env, self) {
       var self$1 = CamlinternalOO.create_object_opt(self, $$class);
       self$1[copy] = undefined;
       return self$1;
@@ -165,7 +165,7 @@ function backup_ref_init($$class) {
         "save"
       ], backup, 1);
   var obj_init$1 = inh$1[0];
-  return (function (_, self, x$1) {
+  return (function (env, self, x$1) {
       var self$1 = CamlinternalOO.create_object_opt(self, $$class);
       self$1[x] = x$1;
       Curry._2(obj_init, self$1, x$1);
@@ -250,7 +250,7 @@ function backup2_init($$class) {
             return /* () */0;
           })
       ]);
-  return (function (_, self) {
+  return (function (env, self) {
       var self$1 = CamlinternalOO.create_object_opt(self, $$class);
       self$1[copy] = undefined;
       return self$1;
@@ -273,7 +273,7 @@ function backup_ref2_init($$class) {
         "save"
       ], backup2, 1);
   var obj_init$1 = inh$1[0];
-  return (function (_, self, x$1) {
+  return (function (env, self, x$1) {
       var self$1 = CamlinternalOO.create_object_opt(self, $$class);
       self$1[x] = x$1;
       Curry._2(obj_init, self$1, x$1);
@@ -321,7 +321,7 @@ function window_init($$class) {
   CamlinternalOO.set_method($$class, top_widget, (function (self$7) {
           return self$7[top_widget$1];
         }));
-  return (function (_, self) {
+  return (function (env, self) {
       var self$1 = CamlinternalOO.create_object_opt(self, $$class);
       self$1[top_widget$1] = undefined;
       return self$1;
@@ -338,7 +338,7 @@ function widget_init($$class) {
   CamlinternalOO.set_method($$class, $$window, (function (self$8) {
           return self$8[$$window$1];
         }));
-  return (function (_, self, w$1) {
+  return (function (env, self, w$1) {
       var self$1 = CamlinternalOO.create_object_opt(self, $$class);
       self$1[w] = w$1;
       self$1[$$window$1] = w$1;

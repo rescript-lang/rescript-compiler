@@ -36,6 +36,9 @@ let finally v action f   =
       reraise e 
   | e ->  action v ; e 
 
+let try_it f  =   
+  try ignore (f ()) with _ -> ()
+
 let with_file_as_chan filename f = 
   finally (open_out_bin filename) close_out f 
 
@@ -164,3 +167,5 @@ let hash_variant s =
   (* make it signed for 64 bits architectures *)
   if !accu > 0x3FFFFFFF then !accu - (1 lsl 31) else !accu
 
+let todo loc = 
+  failwith (loc ^ " Not supported yet")

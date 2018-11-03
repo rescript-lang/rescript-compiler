@@ -19,7 +19,7 @@ var oppHeroes = /* :: */[
 var huntGrootCondition = false;
 
 if (List.length(/* [] */0) > 0) {
-  var x = List.filter((function () {
+  var x = List.filter((function (h) {
             return List.hd(/* [] */0) <= 1000;
           }))(oppHeroes);
   huntGrootCondition = List.length(x) === 0;
@@ -28,7 +28,7 @@ if (List.length(/* [] */0) > 0) {
 var huntGrootCondition2 = true;
 
 if (List.length(/* [] */0) < 0) {
-  var x$1 = List.filter((function () {
+  var x$1 = List.filter((function (h) {
             return List.hd(/* [] */0) <= 1000;
           }))(oppHeroes);
   huntGrootCondition2 = List.length(x$1) === 0;

@@ -1,3 +1,4 @@
+include ./Makefile.shared
 
 .SECONDARY:
 NATIVE=ocamlopt.opt$(EXE)
@@ -290,7 +291,8 @@ CORE_SRCS= js_runtime_modules \
 	lam_scc\
 	lam_check\
 	lam_convert\
-	lam_print lam_beta_reduce_util lam_inline_util lam_analysis\
+	lam_print lam_beta_reduce_util lam_inline_util \
+	lam_analysis\
 	lam_var_stats\
 	lam_closure\
 	js_cmj_format \
@@ -328,7 +330,9 @@ CORE_SRCS= js_runtime_modules \
 	lam_beta_reduce\
 	lam_compile_external_call \
 	lam_compile_external_obj\
-	lam_compile_primitive lam_compile lam_pass_exits\
+	lam_compile_primitive lam_compile \
+	lam_exit_count\
+	lam_pass_exits\
 	lam_pass_count\
 	lam_pass_eliminate_ref\
 	lam_pass_lets_dce \
@@ -620,10 +624,6 @@ bootbspack:
 	@echo "Rebuilding bspack.exe finsihed"
 
 libs:
-	@echo "Making stdlib cmis"
-	cd stdlib && $(MAKE) allcmis
-	@echo "Making stdlib finished"
-
 	@echo "Making runtime"
 	cd runtime && $(MAKE) all
 	@echo "Making runtime finished"
@@ -634,7 +634,7 @@ libs:
 
 
 	@echo "Making stdlib"
-	cd stdlib && $(MAKE) all
+	cd $(STDLIB) && $(MAKE) all
 	@echo "Making stdlib finished"
 
 

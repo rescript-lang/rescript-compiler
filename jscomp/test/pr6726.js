@@ -1,7 +1,7 @@
 'use strict';
 
 
-function get_uint8(_, _$1) {
+function get_uint8(str, off) {
   return 33;
 }
 
@@ -11,7 +11,7 @@ var ExtUnixAll = /* module */[/* BigEndian */BigEndian];
 
 var ExtUnix = /* module */[/* All */0];
 
-function test_endian_string() {
+function test_endian_string(x) {
   return 33;
 }
 

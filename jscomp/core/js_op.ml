@@ -44,7 +44,7 @@ type binop =
   | And
   | EqEqEq
   | NotEqEq
-  | InstanceOf
+  (* | InstanceOf *)
 
   | Lt
   | Le

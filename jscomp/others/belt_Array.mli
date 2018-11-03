@@ -488,6 +488,19 @@ val reduceReverse2:
    ]}
 *)
 
+val reduceWithIndexU:  'a array -> 'b -> ('b -> 'a -> int -> 'b [@bs]) -> 'b
+val reduceWithIndex:  'a array -> 'b -> ('b -> 'a -> int -> 'b) -> 'b
+(** [reduceWithIndex xs f]
+
+    Applies [f] to each element of [xs] from beginning to end. Function [f] has three parameters: the item
+    from the array and an “accumulator”, which starts with a value of [init] and the index of each element. [reduceWithIndex]
+    returns the final value of the accumulator.
+    
+    @example {[
+      reduceWithIndex [|1;2;3;4|] 0 (fun acc x i -> acc + x + i) = 16;
+    ]}
+*)
+
 val someU: 'a array -> ('a -> bool [@bs]) -> bool
 val some: 'a array -> ('a -> bool) -> bool
 (** [some xs p]

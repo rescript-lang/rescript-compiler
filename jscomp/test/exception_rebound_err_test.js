@@ -16,7 +16,7 @@ function eq(loc, x, y) {
   suites[0] = /* :: */[
     /* tuple */[
       loc + (" id " + String(test_id[0])),
-      (function () {
+      (function (param) {
           return /* Eq */Block.__(0, [
                     x,
                     y
@@ -34,7 +34,7 @@ var B = Caml_exceptions.create("Exception_rebound_err_test.B");
 
 var C = Caml_exceptions.create("Exception_rebound_err_test.C");
 
-function test_js_error4() {
+function test_js_error4(param) {
   try {
     JSON.parse(" {\"x\"}");
     return 1;

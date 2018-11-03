@@ -53,8 +53,8 @@ let make ~lo ~hi =
     ~comment:"int64" (E.zero_int_literal) 
     record_info [   hi; E.to_uint32 lo ]
     Immutable
-let get_lo x = E.index x 1l
-let get_hi x = E.index x 0l
+let get_lo x = E.array_index_by_int x 1l
+let get_hi x = E.array_index_by_int x 0l
 
 
 (* below should  not depend on layout *)
@@ -66,10 +66,8 @@ let of_const (v : Int64.t) =
     ~hi:(Int64.to_int32 (Int64.shift_right v 32))
 
 let to_int32 args = 
-  begin match args with
-    | [v] ->  E.to_int32 @@ get_lo v
-    | _ -> assert false
-  end
+  E.to_int32 @@ get_lo (Ext_list.singleton_exn args)
+  
 
 let of_int32 (args : J.expression list) = 
   match args with 

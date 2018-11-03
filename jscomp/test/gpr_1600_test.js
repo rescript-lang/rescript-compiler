@@ -28,7 +28,7 @@ var eventObj = {
     })
 };
 
-function f() {
+function f(param) {
   return eventObj;
 }
 

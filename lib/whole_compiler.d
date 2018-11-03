@@ -282,6 +282,8 @@
 ../lib/whole_compiler.ml : ./core/lam_eta_conversion.mli
 ../lib/whole_compiler.ml : ./core/lam_exit_code.ml
 ../lib/whole_compiler.ml : ./core/lam_exit_code.mli
+../lib/whole_compiler.ml : ./core/lam_exit_count.ml
+../lib/whole_compiler.ml : ./core/lam_exit_count.mli
 ../lib/whole_compiler.ml : ./core/lam_free_variables.ml
 ../lib/whole_compiler.ml : ./core/lam_free_variables.mli
 ../lib/whole_compiler.ml : ./core/lam_group.ml

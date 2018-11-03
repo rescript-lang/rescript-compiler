@@ -35,7 +35,7 @@ function f(param) {
 
 function from_tokens(lst) {
   var l = /* record */[/* contents */lst];
-  return (function () {
+  return (function (param) {
       var match = l[0];
       if (match) {
         l[0] = match[1];
@@ -48,7 +48,7 @@ function from_tokens(lst) {
 
 var lexer_suites_000 = /* tuple */[
   "arith_token",
-  (function () {
+  (function (param) {
       return /* Eq */Block.__(0, [
                 f("x + 3 + 4 + y"),
                 /* :: */[
@@ -80,7 +80,7 @@ var lexer_suites_000 = /* tuple */[
 var lexer_suites_001 = /* :: */[
   /* tuple */[
     "simple token",
-    (function () {
+    (function (param) {
         return /* Eq */Block.__(0, [
                   Arith_lexer.lexeme(Lexing.from_string("10")),
                   /* NUMERAL */Block.__(0, [10])
@@ -90,7 +90,7 @@ var lexer_suites_001 = /* :: */[
   /* :: */[
     /* tuple */[
       "number_lexer",
-      (function () {
+      (function (param) {
           var v = /* record */[/* contents : [] */0];
           var add = function (t) {
             v[0] = /* :: */[
@@ -160,7 +160,7 @@ var lexer_suites_001 = /* :: */[
     /* :: */[
       /* tuple */[
         "simple number",
-        (function () {
+        (function (param) {
             return /* Eq */Block.__(0, [
                       Arith_syntax.str(Arith_parser.toplevel(Arith_lexer.lexeme, Lexing.from_string("10"))),
                       "10."
@@ -170,7 +170,7 @@ var lexer_suites_001 = /* :: */[
       /* :: */[
         /* tuple */[
           "arith",
-          (function () {
+          (function (param) {
               return /* Eq */Block.__(0, [
                         Arith_syntax.str(Arith_parser.toplevel(Arith_lexer.lexeme, Lexing.from_string("x + 3 + 4 + y"))),
                         "x+3.+4.+y"

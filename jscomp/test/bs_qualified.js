@@ -10,7 +10,7 @@ function f(a, b, c) {
   return process.env;
 }
 
-function f2() {
+function f2(param) {
   return /* tuple */[
           Z.a0.a1.a2.hi,
           a0.a1.a2.ho,

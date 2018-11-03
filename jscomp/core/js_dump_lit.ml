@@ -50,6 +50,10 @@ let minusminus = "--"
 let semi = ";"
 let else_ = "else"
 let if_ = "if"
+let for_ = "for"
+let try_ = "try"
+let finally = "finally"
+
 let this = "this"
 let while_ = "while"
 let empty_block = "empty_block"
@@ -65,8 +69,7 @@ let switch = "switch"
 let strict_directive = "'use strict';"
 let true_ = "true"
 let false_ = "false"
-let app = Literals.app (* curry arbitrary args *)
-let app_array = Literals.app_array
+
 let debugger = "debugger"
 let tag = "tag"
 let bind = "bind"

@@ -30,7 +30,7 @@ function eq(loc, x, y) {
   suites[0] = /* :: */[
     /* tuple */[
       loc + (" id " + String(test_id[0])),
-      (function () {
+      (function (param) {
           return /* Eq */Block.__(0, [
                     x,
                     y
@@ -1873,8 +1873,8 @@ function colorize(c, regexp) {
 }
 
 function flatten_cmap(cm) {
-  var c = Caml_string.caml_create_string(256);
-  var col_repr = Caml_string.caml_create_string(256);
+  var c = Caml_string.caml_create_bytes(256);
+  var col_repr = Caml_string.caml_create_bytes(256);
   var v = 0;
   c[0] = /* "\000" */0;
   col_repr[0] = /* "\000" */0;
@@ -3039,7 +3039,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
       }
     }
   };
-  var get = function () {
+  var get = function (param) {
     var r = Caml_string.get(s, i[0]);
     i[0] = i[0] + 1 | 0;
     return r;
@@ -3158,7 +3158,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
       }
     };
   };
-  var piece = function () {
+  var piece = function (param) {
     var r = atom(/* () */0);
     if (accept(/* "*" */42)) {
       return greedy_mod(repn(r, 0, undefined));
@@ -3189,7 +3189,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
       return r;
     }
   };
-  var $$char = function () {
+  var $$char = function (param) {
     if (i[0] === l) {
       throw Parse_error;
     }
@@ -3451,7 +3451,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
             ];
     }
   };
-  var integer = function () {
+  var integer = function (param) {
     if (i[0] === l) {
       return undefined;
     } else {
@@ -3483,7 +3483,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
       }
     }
   };
-  var atom = function () {
+  var atom = function (param) {
     if (accept(/* "." */46)) {
       if (dotall) {
         return any;
@@ -3544,139 +3544,135 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
         throw Parse_error;
       }
       var c = get(/* () */0);
-      var switcher = c - 48 | 0;
-      if (switcher > 74 || switcher < 0) {
-        return /* Set */Block.__(0, [single(c)]);
-      } else {
-        switch (switcher) {
-          case 0 : 
-          case 1 : 
-          case 2 : 
-          case 3 : 
-          case 4 : 
-          case 5 : 
-          case 6 : 
-          case 7 : 
-          case 8 : 
-          case 9 : 
-              throw Not_supported;
-          case 17 : 
-              return /* Beg_of_str */5;
-          case 18 : 
-              return /* Not_bound */4;
-          case 20 : 
-              return compl(/* :: */[
-                          digit,
+      switch (c) {
+        case 48 : 
+        case 49 : 
+        case 50 : 
+        case 51 : 
+        case 52 : 
+        case 53 : 
+        case 54 : 
+        case 55 : 
+        case 56 : 
+        case 57 : 
+            throw Not_supported;
+        case 65 : 
+            return /* Beg_of_str */5;
+        case 66 : 
+            return /* Not_bound */4;
+        case 68 : 
+            return compl(/* :: */[
+                        digit,
+                        /* [] */0
+                      ]);
+        case 71 : 
+            return /* Start */8;
+        case 83 : 
+            return compl(/* :: */[
+                        space,
+                        /* [] */0
+                      ]);
+        case 87 : 
+            return compl(/* :: */[
+                        alnum,
+                        /* :: */[
+                          /* Set */Block.__(0, [/* :: */[
+                                /* tuple */[
+                                  /* "_" */95,
+                                  /* "_" */95
+                                ],
+                                /* [] */0
+                              ]]),
                           /* [] */0
-                        ]);
-          case 23 : 
-              return /* Start */8;
-          case 35 : 
-              return compl(/* :: */[
-                          space,
+                        ]
+                      ]);
+        case 90 : 
+            return /* Last_end_of_line */7;
+        case 58 : 
+        case 59 : 
+        case 60 : 
+        case 61 : 
+        case 62 : 
+        case 63 : 
+        case 64 : 
+        case 91 : 
+        case 92 : 
+        case 93 : 
+        case 94 : 
+        case 95 : 
+        case 96 : 
+            return /* Set */Block.__(0, [single(c)]);
+        case 98 : 
+            return alt$1(/* :: */[
+                        /* Beg_of_word */2,
+                        /* :: */[
+                          /* End_of_word */3,
                           /* [] */0
-                        ]);
-          case 39 : 
-              return compl(/* :: */[
-                          alnum,
-                          /* :: */[
-                            /* Set */Block.__(0, [/* :: */[
-                                  /* tuple */[
-                                    /* "_" */95,
-                                    /* "_" */95
-                                  ],
-                                  /* [] */0
-                                ]]),
-                            /* [] */0
-                          ]
-                        ]);
-          case 42 : 
-              return /* Last_end_of_line */7;
-          case 10 : 
-          case 11 : 
-          case 12 : 
-          case 13 : 
-          case 14 : 
-          case 15 : 
-          case 16 : 
-          case 43 : 
-          case 44 : 
-          case 45 : 
-          case 46 : 
-          case 47 : 
-          case 48 : 
-              return /* Set */Block.__(0, [single(c)]);
-          case 50 : 
-              return alt$1(/* :: */[
-                          /* Beg_of_word */2,
-                          /* :: */[
-                            /* End_of_word */3,
-                            /* [] */0
-                          ]
-                        ]);
-          case 52 : 
-              return digit;
-          case 67 : 
-              return space;
-          case 71 : 
-              return alt$1(/* :: */[
-                          alnum,
-                          /* :: */[
-                            /* Set */Block.__(0, [/* :: */[
-                                  /* tuple */[
-                                    /* "_" */95,
-                                    /* "_" */95
-                                  ],
-                                  /* [] */0
-                                ]]),
-                            /* [] */0
-                          ]
-                        ]);
-          case 19 : 
-          case 21 : 
-          case 22 : 
-          case 24 : 
-          case 25 : 
-          case 26 : 
-          case 27 : 
-          case 28 : 
-          case 29 : 
-          case 30 : 
-          case 31 : 
-          case 32 : 
-          case 33 : 
-          case 34 : 
-          case 36 : 
-          case 37 : 
-          case 38 : 
-          case 40 : 
-          case 41 : 
-          case 49 : 
-          case 51 : 
-          case 53 : 
-          case 54 : 
-          case 55 : 
-          case 56 : 
-          case 57 : 
-          case 58 : 
-          case 59 : 
-          case 60 : 
-          case 61 : 
-          case 62 : 
-          case 63 : 
-          case 64 : 
-          case 65 : 
-          case 66 : 
-          case 68 : 
-          case 69 : 
-          case 70 : 
-          case 72 : 
-          case 73 : 
-              throw Parse_error;
-          case 74 : 
-              return /* End_of_str */6;
-          
-        }
+                        ]
+                      ]);
+        case 100 : 
+            return digit;
+        case 115 : 
+            return space;
+        case 119 : 
+            return alt$1(/* :: */[
+                        alnum,
+                        /* :: */[
+                          /* Set */Block.__(0, [/* :: */[
+                                /* tuple */[
+                                  /* "_" */95,
+                                  /* "_" */95
+                                ],
+                                /* [] */0
+                              ]]),
+                          /* [] */0
+                        ]
+                      ]);
+        case 67 : 
+        case 69 : 
+        case 70 : 
+        case 72 : 
+        case 73 : 
+        case 74 : 
+        case 75 : 
+        case 76 : 
+        case 77 : 
+        case 78 : 
+        case 79 : 
+        case 80 : 
+        case 81 : 
+        case 82 : 
+        case 84 : 
+        case 85 : 
+        case 86 : 
+        case 88 : 
+        case 89 : 
+        case 97 : 
+        case 99 : 
+        case 101 : 
+        case 102 : 
+        case 103 : 
+        case 104 : 
+        case 105 : 
+        case 106 : 
+        case 107 : 
+        case 108 : 
+        case 109 : 
+        case 110 : 
+        case 111 : 
+        case 112 : 
+        case 113 : 
+        case 114 : 
+        case 116 : 
+        case 117 : 
+        case 118 : 
+        case 120 : 
+        case 121 : 
+            throw Parse_error;
+        case 122 : 
+            return /* End_of_str */6;
+        default:
+          return /* Set */Block.__(0, [single(c)]);
       }
     } else {
       if (i[0] === l) {

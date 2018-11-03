@@ -7,15 +7,15 @@ function add(x, y) {
 
 var N = /* module */[/* add */add];
 
-function f1() {
+function f1(param) {
   return /* () */0;
 }
 
-function f2(_, _$1) {
+function f2(param, param$1) {
   return /* () */0;
 }
 
-function f3(_, _$1, _$2) {
+function f3(param, param$1, param$2) {
   return /* () */0;
 }
 
@@ -25,11 +25,11 @@ var N0 = /* module */[
   /* f3 */f3
 ];
 
-function f2$1(_, _$1) {
+function f2$1(param, param$1) {
   return /* () */0;
 }
 
-function f3$1(_, _$1, _$2) {
+function f3$1(param, param$1, param$2) {
   return /* () */0;
 }
 

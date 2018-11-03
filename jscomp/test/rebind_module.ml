@@ -9,4 +9,6 @@ type a += A
    work with extensible type
 *)
 
-type b += A 
+type b += AA (*name must be unique since 4.06 *)
+
+(*TODO: more tests for Local module A *)

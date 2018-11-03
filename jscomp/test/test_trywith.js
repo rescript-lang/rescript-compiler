@@ -103,7 +103,7 @@ function ff(g, x) {
   }
 }
 
-function u() {
+function u(param) {
   throw Caml_builtin_exceptions.not_found;
 }
 

@@ -6,7 +6,7 @@ var Js_primitive = require("../../lib/js/js_primitive.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
-function f() {
+function f(param) {
   throw Caml_builtin_exceptions.not_found;
 }
 
@@ -24,7 +24,7 @@ function assert_f(x) {
   return 3;
 }
 
-function hh() {
+function hh(param) {
   throw Caml_builtin_exceptions.not_found;
 }
 
@@ -39,7 +39,7 @@ var u = [
   3
 ];
 
-function test_not_found(f, _) {
+function test_not_found(f, param) {
   try {
     return Curry._1(f, /* () */0);
   }
@@ -52,7 +52,7 @@ function test_not_found(f, _) {
   }
 }
 
-function test_js_error2() {
+function test_js_error2(param) {
   try {
     return JSON.parse(" {\"x\" : }");
   }
@@ -67,7 +67,7 @@ function test_js_error2() {
   }
 }
 
-function test_js_error3() {
+function test_js_error3(param) {
   try {
     JSON.parse(" {\"x\"}");
     return 1;

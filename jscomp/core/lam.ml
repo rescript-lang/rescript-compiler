@@ -328,6 +328,56 @@ let apply fn args loc status : t =
     Lapply { fn; args;  loc  ; status }
 
 
+let rec 
+  eq_approx (l1 : t) (l2 : t) =
+  match l1 with 
+  | Lglobal_module i1 -> 
+    (match l2 with  Lglobal_module i2 -> Ident.same i1  i2  | _ -> false)
+  | Lvar i1 -> 
+    (match l2 with  Lvar i2 ->  Ident.same i1 i2 | _ -> false)
+  | Lconst c1 -> 
+    (match l2 with  Lconst c2 -> Lam_constant.eq_approx c1 c2  | _ -> false)
+  | Lapply app1 -> 
+    (match l2 with Lapply app2 ->
+    eq_approx app1.fn app2.fn  && eq_approx_list app1.args app2.args
+    |_ -> false)
+  | Lifthenelse (a,b,c) -> 
+    (match l2 with  
+     |Lifthenelse (a0,b0,c0) ->
+       eq_approx a a0 && eq_approx b b0 && eq_approx c c0
+     | _ -> false)
+  | Lsequence (a,b) -> 
+    (match l2 with Lsequence (a0,b0) ->
+    eq_approx a a0 && eq_approx b b0
+    | _ -> false)
+  | Lwhile (p,b) -> 
+    (match l2 with  Lwhile (p0,b0) -> eq_approx p p0 && eq_approx b b0
+    | _ -> false)
+  | Lassign(v0,l0) -> 
+    (match l2 with  Lassign(v1,l1) -> Ident.same v0 v1 && eq_approx l0 l1
+    | _ -> false)  
+  | Lstaticraise(id,ls) -> 
+    (match l2 with  Lstaticraise(id1,ls1) -> 
+      id  = id1 && eq_approx_list ls ls1
+    | _ -> false)
+  | Lprim info1 -> 
+    (match l2 with 
+    Lprim info2 ->
+    Lam_primitive.eq_primitive_approx info1.primitive info2.primitive &&
+    eq_approx_list info1.args info2.args
+    | _ -> false)
+  | Lstringswitch _ -> false  
+  | Lfunction _  
+  | Llet (_,_,_,_)
+  | Lletrec _
+  | Lswitch _   
+  | Lstaticcatch _ 
+  | Ltrywith _ 
+  | Lfor (_,_,_,_,_) 
+  | Lsend _
+    -> false    
+
+and eq_approx_list ls ls1 =  Ext_list.for_all2_no_exn ls ls1 eq_approx
 
 
 
@@ -613,7 +663,20 @@ let has_boolean_type (x : t) =
    -> Some loc
   | _ -> None
 
-let if_ (a : t) (b : t) c =
+(** [complete_range sw_consts 0 7]
+    is complete with [0,1,.. 7]
+*)  
+let rec complete_range  (sw_consts : (int * _) list) ~(start : int) ~finish=   
+  match sw_consts with 
+  | [] -> finish < start
+  | (i,_)::rest 
+    -> 
+      start <= finish &&
+      i = start &&
+      complete_range  rest ~start:(start + 1) ~finish
+
+
+let if_ (a : t) (b : t) (c : t) : t =
   match a with
   | Lconst v ->
     begin match v with
@@ -640,22 +703,36 @@ let if_ (a : t) (b : t) c =
       | Const_float_array _
       | Const_immstring _ -> b
     end
+  
   | _ -> 
-    
-    begin match  b, c with 
+    match  b, c with 
     | Lconst(Const_js_true), Lconst(Const_js_false)
       -> 
-       if has_boolean_type a != None then a 
-       else Lifthenelse (a,b,c)
+      if has_boolean_type a != None then a 
+      else Lifthenelse (a,b,c)
     | Lconst(Const_js_false), Lconst(Const_js_true)
       ->  
       (match  has_boolean_type a with
-      | Some loc ->  not_ loc a 
-      | None -> Lifthenelse (a,b,c))     
+       | Some loc ->  not_ loc a 
+       | None -> Lifthenelse (a,b,c))     
     | _ -> 
-      Lifthenelse (a,b,c)
-     
-  end 
+      (match a with 
+       | Lprim {primitive = Pisout; args = [Lconst(Const_int range); Lvar xx] } 
+         -> 
+         begin match c with 
+           | Lswitch ( Lvar yy as switch_arg, 
+                       ({sw_blocks = []; sw_numblocks = true; sw_consts ;
+                         sw_numconsts; sw_failaction = None} as body)
+                     )
+             when Ident.same xx yy 
+               && complete_range sw_consts ~start:0 ~finish:range
+             ->  
+             Lswitch(switch_arg, 
+                     { body with sw_failaction = Some b; sw_numconsts = false })
+           |  _ -> Lifthenelse(a,b,c)      
+         end
+       | _ ->  Lifthenelse (a,b,c))
+
 
 
 (** TODO: the smart constructor is not exploited yet*)

@@ -22,11 +22,11 @@ function b(loc, x) {
   return Mt.bool_suites(test_id, suites, loc, x);
 }
 
-function f() {
+function f(param) {
   return undefined;
 }
 
-function shouldBeNull() {
+function shouldBeNull(param) {
   return null;
 }
 

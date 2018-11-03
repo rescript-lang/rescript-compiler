@@ -31,7 +31,7 @@
 
 module E = Js_exp_make 
 
-let empty_record_info = Lam_tag_info.Blk_record [||] (* careful to share*)
+
 
 
 (* TODO: add label to the comment *)
@@ -44,14 +44,13 @@ let empty_record_info = Lam_tag_info.Blk_record [||] (* careful to share*)
 let field (field_info : Lam_compat.field_dbg_info) e i =
   match field_info with 
   | Fld_na -> 
-    E.index e i 
+    E.array_index_by_int e i 
+#if OCAML_VERSION =~ ">4.03.0" then
+  | Fld_record_inline s
+  | Fld_record_extension s 
+#end
   | Fld_record s 
   | Fld_module s 
-    -> E.index ~comment:s e i
-#if OCAML_VERSION =~ ">4.03.0" then
-  | Fld_record_inline _
-  | Fld_record_extension _ -> 
-    assert false (* FIXME *)
-#end
+    -> E.array_index_by_int ~comment:s e i
 
 

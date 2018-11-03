@@ -1,7 +1,7 @@
 'use strict';
 
 
-function M() {
+function M($star) {
   return /* module */[/* v */3];
 }
 

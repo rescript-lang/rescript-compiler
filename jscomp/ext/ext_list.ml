@@ -117,6 +117,14 @@ let rec map_last l f=
     let y4 = f false x4 in
     y1::y2::y3::y4::(map_last tail f)
 
+let rec mapi_aux lst i f = 
+  match lst with
+    [] -> []
+  | a::l -> 
+    let r = f i a in r :: mapi_aux l (i + 1) f 
+
+let mapi lst f = mapi_aux lst 0 f
+
 let rec last xs =
   match xs with 
   | [x] -> x 
@@ -656,3 +664,5 @@ let rec fold_left2 l1 l2 accu f =
     ([], []) -> accu
   | (a1::l1, a2::l2) -> fold_left2  l1 l2 (f a1 a2 accu) f 
   | (_, _) -> invalid_arg "List.fold_left2"
+
+let singleton_exn xs = match xs with [x] -> x | _ -> assert false

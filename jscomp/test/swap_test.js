@@ -868,7 +868,7 @@ var suites_16 = List.map((function (param) {
                             ]),
                           "swap16 %d"
                         ]), a),
-                (function () {
+                (function (param) {
                     return /* Eq */Block.__(0, [
                               Caml_int32.caml_bswap16(a),
                               b
@@ -893,7 +893,7 @@ var suites_32 = List.map((function (param) {
                             ]),
                           "swap32 %d"
                         ]), a),
-                (function () {
+                (function (param) {
                     return /* Eq */Block.__(0, [
                               Caml_int32.caml_int32_bswap(a),
                               b
@@ -918,7 +918,7 @@ var suites_64 = List.map((function (param) {
                             ]),
                           "swap64 %d"
                         ]), a[1] | 0),
-                (function () {
+                (function (param) {
                     return /* Eq */Block.__(0, [
                               Caml_int64.swap(a),
                               b
@@ -1007,7 +1007,7 @@ function f(s, param) {
                                         ]),
                                       "%s %i"
                                     ]), s, i),
-                            (function () {
+                            (function (param) {
                                 return /* Eq */Block.__(0, [
                                           Curry._1(Format.asprintf(x), Curry._1(swap, a)),
                                           b

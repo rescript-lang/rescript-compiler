@@ -29,7 +29,7 @@ function point_init($$class) {
             return /* () */0;
           })
       ]);
-  return (function (_, self) {
+  return (function (env, self) {
       var self$1 = CamlinternalOO.create_object_opt(self, $$class);
       self$1[x] = 0;
       return self$1;
@@ -64,7 +64,7 @@ function point2_init($$class) {
             return /* () */0;
           })
       ]);
-  return (function (_, self) {
+  return (function (env, self) {
       var self$1 = CamlinternalOO.create_object_opt(self, $$class);
       x0[0] = x0[0] + 1 | 0;
       self$1[x] = x0[0];
@@ -85,7 +85,7 @@ var two = Caml_oo_curry.js1(291546447, 5, tmp$1);
 Mt.from_pair_suites("class_test.ml", /* :: */[
       /* tuple */[
         "File \"class_test.ml\", line 33, characters 4-11",
-        (function () {
+        (function (param) {
             return /* Eq */Block.__(0, [
                       zero,
                       0
@@ -95,7 +95,7 @@ Mt.from_pair_suites("class_test.ml", /* :: */[
       /* :: */[
         /* tuple */[
           "File \"class_test.ml\", line 34, characters 4-11",
-          (function () {
+          (function (param) {
               return /* Eq */Block.__(0, [
                         three,
                         3
@@ -105,7 +105,7 @@ Mt.from_pair_suites("class_test.ml", /* :: */[
         /* :: */[
           /* tuple */[
             "File \"class_test.ml\", line 35, characters 4-11",
-            (function () {
+            (function (param) {
                 return /* Eq */Block.__(0, [
                           one,
                           1
@@ -115,7 +115,7 @@ Mt.from_pair_suites("class_test.ml", /* :: */[
           /* :: */[
             /* tuple */[
               "File \"class_test.ml\", line 36, characters 4-11",
-              (function () {
+              (function (param) {
                   return /* Eq */Block.__(0, [
                             two,
                             2

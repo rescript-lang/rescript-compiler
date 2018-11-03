@@ -15,12 +15,24 @@ var jscomp = path.join(__dirname,'..','jscomp')
 var runtime_prefix = path.relative(jscomp,runtime_dir)
 var others_prefix = path.relative(jscomp, others_dir)
 
+const capitalize = (s) => {
+        if (typeof s !== 'string') return ''
+        return s.charAt(0).toUpperCase() + s.slice(1)
+}
+const strip = filename => filename.split('.').slice(0, -1).join('.')
+
+var hidden_list = []
 var runtime_files = 
     fs.readdirSync(runtime_dir)
         .filter(file => 
         file.startsWith("js") && (file.endsWith(".ml") || file.endsWith(".mli")) && (!file.endsWith(".cppo.ml")) && (!file.endsWith(".cppo.mli"))
         )
-        .map (x => path.join(runtime_prefix,x))
+        .map (x => {
+                if (x.includes("internal")){
+                        hidden_list.push(capitalize(strip(x)))
+                }
+                return path.join(runtime_prefix,x)
+        })
         .join(' ')
 
 var others_files = 
@@ -28,7 +40,12 @@ var others_files =
         .filter(file => 
         (file.endsWith(".ml") || file.endsWith(".mli")) && (!file.endsWith(".cppo.ml")) && (!file.endsWith(".cppo.mli"))
         )
-        .map(x=>path.join(others_prefix,x))
+        .map(x=> {
+                if (x.includes("internal")){
+                        hidden_list.push(capitalize(strip(x)))
+                }
+                return path.join(others_prefix,x)
+        })
         .join(' ')
 
 
@@ -40,8 +57,11 @@ var intro = path.join(__dirname,'..','jscomp','others','intro.txt')
 var generator = `-g ${odoc_gendir}/generator.cmxs`
 // var generator = `-html`
 var ocamldoc = `ocamldoc.opt`
+
+var hidden_modules = ``
+// hidden_modules =  `-hide ${hidden_list.join(',')}`
 // var ocamldoc = path.join(__dirname,'..','vendor','ocaml','ocamldoc','ocamldoc.opt')
-var prefix_flags = `${ocamldoc}  ${generator}  -w -40 -nostdlib -I ${stdlib_dir} -I ${others_dir} -I ${runtime_dir} -charset utf-8  -intro ${intro} -sort -ppx ${bsppx}  -d ${api_doc_dir}`
+var prefix_flags = `${ocamldoc}  ${generator} ${hidden_modules} -w -40 -nostdlib -nopervasives  -I ${others_dir} -I ${runtime_dir} -open Bs_stdlib_mini -charset utf-8  -intro ${intro} -sort -ppx ${bsppx}  -d ${api_doc_dir}`
 
 // -html it is weird
 // It is weird, -html will unload the plugin

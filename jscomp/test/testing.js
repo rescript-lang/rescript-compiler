@@ -12,7 +12,7 @@ var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js")
 
 var all_tests_ok = /* record */[/* contents */true];
 
-function finish() {
+function finish(param) {
   var match = all_tests_ok[0];
   if (match) {
     console.log("\nAll tests succeeded.");
@@ -27,13 +27,13 @@ Pervasives.at_exit(finish);
 
 var test_num = /* record */[/* contents */-1];
 
-function print_test_number() {
+function print_test_number(param) {
   Pervasives.print_string(" ");
   Pervasives.print_int(test_num[0]);
   return Caml_io.caml_ml_flush(Pervasives.stdout);
 }
 
-function print_failure_test_fail() {
+function print_failure_test_fail(param) {
   all_tests_ok[0] = false;
   return Pervasives.print_string(Curry._1(Printf.sprintf(/* Format */[
                       /* String_literal */Block.__(11, [
@@ -52,7 +52,7 @@ function print_failure_test_fail() {
                     ]), test_num[0]));
 }
 
-function print_failure_test_succeed() {
+function print_failure_test_succeed(param) {
   all_tests_ok[0] = false;
   return Pervasives.print_string(Curry._1(Printf.sprintf(/* Format */[
                       /* String_literal */Block.__(11, [
@@ -117,7 +117,7 @@ function test_raises_exc_p(pred, f, x) {
 
 function test_raises_some_exc(f) {
   return (function (param) {
-      return test_raises_exc_p((function () {
+      return test_raises_exc_p((function (param) {
                     return true;
                   }), f, param);
     });

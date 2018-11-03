@@ -84,3 +84,8 @@ val map :
   'a array -> 
   ('a -> 'b) -> 
   'b array
+
+val iter :
+  'a array -> 
+  ('a -> unit) -> 
+  unit

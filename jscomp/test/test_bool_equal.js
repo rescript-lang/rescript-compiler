@@ -16,7 +16,7 @@ function bool_equal(x, y) {
   }
 }
 
-function assertions() {
+function assertions(param) {
   if (!bool_equal(true, true)) {
     throw [
           Caml_builtin_exceptions.assert_failure,
@@ -124,8 +124,8 @@ function f7(x) {
   }
 }
 
-function f8() {
-  return 2;
+function f8(x) {
+  return 1;
 }
 
 exports.bool_equal = bool_equal;

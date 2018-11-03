@@ -67,24 +67,26 @@ let parse_sign_and_base (s : string) =
   let sign = ref 1n in
   let base = ref Dec in
   let i  = ref 0 in
-  begin 
-    (
-      if s.[!i] = '-' then
-        begin 
-          sign :=  -1n;
-          incr i
-        end
-    );
-    (match s.[!i], s.[!i + 1] with 
-     | '0', ('x' | 'X')
+  (match s.[!i] with 
+   | '-' -> 
+     sign :=  -1n;
+     incr i
+   | '+' -> 
+     incr i 
+   | _ -> ());
+  if s.[!i] = '0' then 
+    (match  s.[!i + 1] with 
+     |  ('x' | 'X')
        -> base := Hex; i:=!i + 2 
-     | '0', ( 'o' | 'O')
+     |  ( 'o' | 'O')
        -> base := Oct; i := !i + 2
-     | '0', ('b' | 'B' )
+     |  ('b' | 'B' )
        -> base := Bin; i := !i + 2 
-     | _, _ -> ()); 
-    (!i, !sign, !base)
-  end
+     |  ('u' | 'U')  
+       -> i := !i + 2 
+     |  _ -> ()); 
+  (!i, !sign, !base)
+
 
 let caml_int_of_string s = 
   let i, sign, hbase = parse_sign_and_base s in
@@ -280,19 +282,20 @@ let parse_format fmt =
 
 
 
-let finish_formatting ({
-  justify; 
-  signstyle;
-  filter ;
-  alternate;
-  base;
-  signedconv;
-  width;
-  uppercase;
-  sign;
-  prec;
-  conv
-}) rawbuffer =  
+let finish_formatting (config : fmt) rawbuffer =  
+  let {
+    justify; 
+    signstyle;
+    filter ;
+    alternate;
+    base;
+    signedconv;
+    width;
+    uppercase;
+    sign;
+    prec;
+    conv
+  } = config in  
   let len = ref (String.length rawbuffer) in 
   if signedconv && (sign < 0 || signstyle <> "-") then 
     incr len;
@@ -312,7 +315,7 @@ let finish_formatting ({
   (* let (+:) s = buffer := !buffer ^ s in *)
   if justify = "+" && filter = " " then
     for i = !len to width - 1 do 
-       buffer := !buffer ^ filter
+      buffer := !buffer ^ filter
     done;
   if signedconv then 
     if sign < 0 then 
@@ -324,7 +327,7 @@ let finish_formatting ({
     buffer := !buffer ^ "0";
   if alternate && base == Hex then
     buffer := !buffer ^ "0x";
-    
+
   if justify = "+" && filter = "0" then 
     for i = !len to width - 1 do 
       buffer := !buffer ^ filter;

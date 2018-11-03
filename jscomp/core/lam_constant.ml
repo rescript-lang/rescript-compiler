@@ -45,6 +45,43 @@
     *) 
 
 
+let rec eq_approx (x : t) (y : t) = 
+  match x with 
+  | Const_js_null -> y = Const_js_null
+  | Const_js_undefined -> y =  Const_js_undefined
+  | Const_js_true -> y = Const_js_true
+  | Const_js_false -> y =  Const_js_false
+  | Const_int ix -> 
+    (match y with Const_int iy -> ix = iy | _ -> false)
+  | Const_char ix ->   
+    (match y with Const_char iy -> ix = iy | _ -> false)
+  | Const_string ix -> 
+    (match y with Const_string iy -> ix = iy | _ -> false)
+  | Const_unicode ix ->   
+    (match y with Const_unicode iy -> ix = iy | _ -> false)
+  | Const_float  ix -> 
+    (match y with Const_float iy -> ix = iy | _ -> false)
+  | Const_int32 ix ->   
+    (match y with Const_int32 iy -> ix = iy | _ -> false)
+  | Const_int64 ix ->   
+    (match y with Const_int64 iy -> ix = iy | _ -> false)
+  | Const_nativeint ix ->   
+    (match y with Const_nativeint iy -> ix = iy | _ -> false)
+  | Const_pointer (ix,_) ->   
+    (match y with Const_pointer (iy,_) -> ix = iy | _ -> false)
+  | Const_block(ix,_,ixs) -> 
+    (match y with Const_block(iy,_,iys) -> ix = iy && Ext_list.for_all2_no_exn ixs iys eq_approx
+    | _ -> false)
+  | Const_float_array ixs ->   
+    (match y with Const_float_array iys -> 
+      Ext_list.for_all2_no_exn ixs iys Ext_string.equal
+    | _ -> false
+    )
+  | Const_immstring ix ->   
+   (match y with Const_immstring iy -> ix = iy | _ -> false)
+  | Const_some ix ->  
+    (match y with Const_some iy -> eq_approx ix iy | _ -> false)
+
 
 let lam_none : t = 
    Const_js_undefined 
@@ -79,17 +116,10 @@ let rec convert_constant ( const : Lambda.structured_constant) : t =
     | Const_immstring s -> Const_immstring s
     | Const_block (i,t,xs) ->
       begin match t with 
-      | Blk_some_not_nested 
-        -> 
-        (match xs with 
-        | [x] -> 
-          Const_some (convert_constant x)
-        | _ -> assert false)        
+      | Blk_some_not_nested -> 
+        Const_some (convert_constant (Ext_list.singleton_exn xs))
       | Blk_some -> 
-        (match xs with 
-        | [x] -> 
-          Const_some (convert_constant x)
-        | _ -> assert false)        
+        Const_some (convert_constant (Ext_list.singleton_exn xs))        
       | Blk_constructor(a,b) ->   
         let t : Lam_tag_info.t = Blk_constructor(a,b) in 
         Const_block (i,t, Ext_list.map xs convert_constant )
@@ -115,9 +145,12 @@ let rec convert_constant ( const : Lambda.structured_constant) : t =
         let t : Lam_tag_info.t = Blk_na in 
         Const_block (i,t, Ext_list.map xs convert_constant )      
 #if OCAML_VERSION =~ ">4.03.0" then
-      | Blk_record_inlined _ 
-      | Blk_record_ext _ ->   
-        assert false (* FIXME *)
+      | Blk_record_inlined (s,ctor,ix)  -> 
+        let t : Lam_tag_info.t = Blk_record_inlined (s, ctor,ix) in 
+        Const_block (i,t, Ext_list.map xs convert_constant )      
+      | Blk_record_ext s -> 
+        let t : Lam_tag_info.t = Blk_record_ext s in 
+        Const_block(i,t, Ext_list.map xs convert_constant)
 #end        
       end
       

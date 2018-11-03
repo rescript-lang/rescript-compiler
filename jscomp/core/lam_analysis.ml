@@ -51,7 +51,6 @@ let rec no_side_effects (lam : Lam.t) : bool =
           match prim_name,args with 
           | ("caml_register_named_value"
             (* register to c runtime does not make sense  in ocaml *)
-            (* | "caml_set_oo_id"  *) (* it does have side effect, just in creation path it happens not to have *)
             | "caml_int64_float_of_bits"
              (* more safe to check if arguments are constant *)
             (* non-observable side effect *)    
@@ -102,6 +101,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pglobal_exception _
       | Pmakeblock _  (* whether it's mutable or not *)
       | Pfield _
+      | Pfield_computed
       | Pval_from_option
       | Pval_from_option_not_nest
       | Pfloatfield _ 
@@ -116,7 +116,8 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pintcomp _ 
       (* Float operations *)
       | Pintoffloat | Pfloatofint
-      | Pnegfloat | Pabsfloat
+      | Pnegfloat 
+      (* | Pabsfloat *)
       | Paddfloat | Psubfloat | Pmulfloat 
       | Pdivfloat
       | Pfloatcomp _ 
@@ -164,7 +165,6 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pwrap_exn
       | Praw_js_function _
         -> true
-      | Pcaml_obj_set_length        
       | Pjs_apply
       | Pjs_runtime_apply
       | Pjs_call _ 
@@ -209,6 +209,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Praise
       | Plazyforce 
       | Psetfield _ 
+      | Psetfield_computed
       | Psetfloatfield _
       (* | Psetglobal _  *)
         -> false 
@@ -316,8 +317,7 @@ let rec size (lam : Lam.t) =
 and size_constant x = 
   match x with 
   | Const_int _ | Const_char _ 
-  | Const_string _  
-  | Const_unicode _
+
   | Const_float _  | Const_int32 _ | Const_int64 _ 
   | Const_nativeint _ 
   | Const_immstring _
@@ -325,6 +325,8 @@ and size_constant x =
   | Const_js_null | Const_js_undefined
   | Const_js_true | Const_js_false
     -> 1 
+  | Const_unicode _  (* TODO: this seems to be not good heurisitives*)
+  | Const_string _ ->  1
   | Const_some s -> size_constant s   
   | Const_block (_, _, str) 
     ->  List.fold_left (fun acc x -> acc + size_constant x ) 0 str
@@ -385,56 +387,6 @@ let ok_to_inline_fun_when_app ~body params args =
 
 
 
-(* compared two lambdas in case analysis, note that we only compare some small lambdas
-    Actually this patten is quite common in GADT, people have to write duplicated code 
-    due to the type system restriction
-*)
-let rec 
-  eq_lambda_approx (l1 : Lam.t) (l2 : Lam.t) =
-  match l1 with 
-  | Lglobal_module i1 -> 
-    begin match l2 with  Lglobal_module i2 -> Ident.same i1  i2  | _ -> false end
-  | Lvar i1 -> 
-    begin match l2 with  Lvar i2 ->  Ident.same i1 i2 | _ -> false end 
-  | Lconst c1 -> 
-    begin match l2 with  Lconst c2 -> c1 = c2 (* FIXME *) | _ -> false end 
-  | Lapply {fn = l1; args = args1; _} -> 
-    begin match l2 with Lapply {fn = l2; args = args2; _} ->
-    eq_lambda_approx l1 l2  && Ext_list.for_all2_no_exn args1 args2 eq_lambda_approx 
-    |_ -> false end 
-  | Lifthenelse (a,b,c) -> 
-    begin match l2 with  Lifthenelse (a0,b0,c0) ->
-    eq_lambda_approx a a0 && eq_lambda_approx b b0 && eq_lambda_approx c c0
-    | _ -> false end 
-  | Lsequence (a,b) -> 
-    begin match l2 with Lsequence (a0,b0) ->
-    eq_lambda_approx a a0 && eq_lambda_approx b b0
-    | _ -> false end 
-  | Lwhile (p,b) -> 
-    begin match l2 with  Lwhile (p0,b0) -> eq_lambda_approx p p0 && eq_lambda_approx b b0
-    | _ -> false end   
-  | Lassign(v0,l0) -> 
-    begin match l2 with  Lassign(v1,l1) -> Ident.same v0 v1 && eq_lambda_approx l0 l1
-    | _ -> false end 
-  | Lstaticraise(id,ls) -> 
-    begin match l2 with  Lstaticraise(id1,ls1) -> 
-    (id : int) = id1 && Ext_list.for_all2_no_exn ls ls1 eq_lambda_approx
-    | _ -> false end 
-  | Lprim {primitive = p; args = ls; } -> 
-    begin match l2 with 
-    Lprim {primitive = p1; args = ls1} ->
-    Lam_primitive.eq_primitive_approx p p1 && Ext_list.for_all2_no_exn ls ls1 eq_lambda_approx
-    | _ -> false end 
-  | Lfunction _  
-  | Llet (_,_,_,_)
-  | Lletrec _
-  | Lswitch _ 
-  | Lstringswitch _ 
-  | Lstaticcatch _ 
-  | Ltrywith _ 
-  | Lfor (_,_,_,_,_) 
-  | Lsend _
-    -> false    
 
 
 (* TODO:  We can relax this a bit later,

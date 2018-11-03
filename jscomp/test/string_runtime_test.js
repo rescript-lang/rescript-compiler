@@ -8,7 +8,7 @@ var Caml_string = require("../../lib/js/caml_string.js");
 
 var suites_000 = /* tuple */[
   "string_of_char_array",
-  (function () {
+  (function (param) {
       return /* Eq */Block.__(0, [
                 Caml_string.caml_string_of_char_array(/* array */[
                       /* "a" */97,
@@ -23,7 +23,7 @@ var suites_000 = /* tuple */[
 var suites_001 = /* :: */[
   /* tuple */[
     "caml_is_printable",
-    (function () {
+    (function (param) {
         return /* Eq */Block.__(0, [
                   Caml_string.caml_is_printable(/* "a" */97),
                   true
@@ -33,14 +33,14 @@ var suites_001 = /* :: */[
   /* :: */[
     /* tuple */[
       "caml_string_of_bytes",
-      (function () {
+      (function (param) {
           var match = List.split(List.map((function (x) {
                       var len = x;
-                      var b = Caml_string.caml_create_string(1000);
-                      Caml_string.caml_fill_string(b, 0, len, /* "c" */99);
+                      var b = Caml_string.caml_create_bytes(1000);
+                      Caml_string.caml_fill_bytes(b, 0, len, /* "c" */99);
                       return /* tuple */[
                               Caml_string.bytes_to_string(b),
-                              Caml_string.bytes_to_string(Bytes.init(len, (function () {
+                              Caml_string.bytes_to_string(Bytes.init(len, (function (param) {
                                           return /* "c" */99;
                                         })))
                             ];

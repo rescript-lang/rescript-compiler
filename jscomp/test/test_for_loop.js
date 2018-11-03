@@ -21,13 +21,13 @@ function for_2(x) {
 
 function for_3(x) {
   var v = /* record */[/* contents */0];
-  var arr = $$Array.map((function (_, _$1) {
+  var arr = $$Array.map((function (param, param$1) {
           return /* () */0;
         }), x);
   for(var i = 0 ,i_finish = x.length; i <= i_finish; ++i){
     var j = (i << 1);
     Caml_array.caml_array_set(arr, i, (function(j){
-        return function () {
+        return function (param) {
           v[0] = v[0] + j | 0;
           return /* () */0;
         }
@@ -41,14 +41,14 @@ function for_3(x) {
 
 function for_4(x) {
   var v = /* record */[/* contents */0];
-  var arr = $$Array.map((function (_, _$1) {
+  var arr = $$Array.map((function (param, param$1) {
           return /* () */0;
         }), x);
   for(var i = 0 ,i_finish = x.length; i <= i_finish; ++i){
     var j = (i << 1);
     var k = (j << 1);
     Caml_array.caml_array_set(arr, i, (function(k){
-        return function () {
+        return function (param) {
           v[0] = v[0] + k | 0;
           return /* () */0;
         }
@@ -62,13 +62,13 @@ function for_4(x) {
 
 function for_5(x, u) {
   var v = /* record */[/* contents */0];
-  var arr = $$Array.map((function (_, _$1) {
+  var arr = $$Array.map((function (param, param$1) {
           return /* () */0;
         }), x);
   for(var i = 0 ,i_finish = x.length; i <= i_finish; ++i){
     var k = Caml_int32.imul((u << 1), u);
     Caml_array.caml_array_set(arr, i, (function(k){
-        return function () {
+        return function (param) {
           v[0] = v[0] + k | 0;
           return /* () */0;
         }
@@ -82,7 +82,7 @@ function for_5(x, u) {
 
 function for_6(x, u) {
   var v = /* record */[/* contents */0];
-  var arr = $$Array.map((function (_, _$1) {
+  var arr = $$Array.map((function (param, param$1) {
           return /* () */0;
         }), x);
   var v4 = /* record */[/* contents */0];
@@ -97,7 +97,7 @@ function for_6(x, u) {
       var h = (v5[0] << 1);
       v2[0] = v2[0] + 1 | 0;
       Caml_array.caml_array_set(arr, i, (function(k,h){
-          return function () {
+          return function (param) {
             v[0] = (((((v[0] + k | 0) + v2[0] | 0) + u | 0) + v4[0] | 0) + v5[0] | 0) + h | 0;
             return /* () */0;
           }

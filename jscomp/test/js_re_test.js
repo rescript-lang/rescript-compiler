@@ -7,7 +7,7 @@ var Js_primitive = require("../../lib/js/js_primitive.js");
 
 var suites_000 = /* tuple */[
   "captures",
-  (function () {
+  (function (param) {
       var re = (/(\d+)-(?:(\d+))?/g);
       var match = re.exec("3-");
       if (match !== null) {
@@ -32,7 +32,7 @@ var suites_000 = /* tuple */[
 var suites_001 = /* :: */[
   /* tuple */[
     "fromString",
-    (function () {
+    (function (param) {
         var contentOf = function (tag, xmlString) {
           var param = new RegExp("<" + (tag + (">(.*?)<\\/" + (tag + ">")))).exec(xmlString);
           if (param !== null) {
@@ -49,7 +49,7 @@ var suites_001 = /* :: */[
   /* :: */[
     /* tuple */[
       "exec_literal",
-      (function () {
+      (function (param) {
           var match = (/[^.]+/).exec("http://xxx.domain.com");
           if (match !== null) {
             return /* Eq */Block.__(0, [
@@ -64,7 +64,7 @@ var suites_001 = /* :: */[
     /* :: */[
       /* tuple */[
         "exec_no_match",
-        (function () {
+        (function (param) {
             var match = (/https:\/\/(.*)/).exec("http://xxx.domain.com");
             if (match !== null) {
               return /* FailWith */Block.__(9, ["regex should not match"]);
@@ -76,7 +76,7 @@ var suites_001 = /* :: */[
       /* :: */[
         /* tuple */[
           "test_str",
-          (function () {
+          (function (param) {
               var res = new RegExp("foo").test("#foo#");
               return /* Eq */Block.__(0, [
                         true,
@@ -87,7 +87,7 @@ var suites_001 = /* :: */[
         /* :: */[
           /* tuple */[
             "fromStringWithFlags",
-            (function () {
+            (function (param) {
                 var res = new RegExp("foo", "g");
                 return /* Eq */Block.__(0, [
                           true,
@@ -98,7 +98,7 @@ var suites_001 = /* :: */[
           /* :: */[
             /* tuple */[
               "result_index",
-              (function () {
+              (function (param) {
                   var match = new RegExp("zbar").exec("foobarbazbar");
                   if (match !== null) {
                     return /* Eq */Block.__(0, [
@@ -113,7 +113,7 @@ var suites_001 = /* :: */[
             /* :: */[
               /* tuple */[
                 "result_input",
-                (function () {
+                (function (param) {
                     var input = "foobar";
                     var match = (/foo/g).exec(input);
                     if (match !== null) {
@@ -129,7 +129,7 @@ var suites_001 = /* :: */[
               /* :: */[
                 /* tuple */[
                   "t_flags",
-                  (function () {
+                  (function (param) {
                       return /* Eq */Block.__(0, [
                                 "gi",
                                 (/./ig).flags
@@ -139,7 +139,7 @@ var suites_001 = /* :: */[
                 /* :: */[
                   /* tuple */[
                     "t_global",
-                    (function () {
+                    (function (param) {
                         return /* Eq */Block.__(0, [
                                   true,
                                   (/./ig).global
@@ -149,7 +149,7 @@ var suites_001 = /* :: */[
                   /* :: */[
                     /* tuple */[
                       "t_ignoreCase",
-                      (function () {
+                      (function (param) {
                           return /* Eq */Block.__(0, [
                                     true,
                                     (/./ig).ignoreCase
@@ -159,7 +159,7 @@ var suites_001 = /* :: */[
                     /* :: */[
                       /* tuple */[
                         "t_lastIndex",
-                        (function () {
+                        (function (param) {
                             var re = (/na/g);
                             re.exec("banana");
                             return /* Eq */Block.__(0, [
@@ -171,7 +171,7 @@ var suites_001 = /* :: */[
                       /* :: */[
                         /* tuple */[
                           "t_setLastIndex",
-                          (function () {
+                          (function (param) {
                               var re = (/na/g);
                               var before = re.lastIndex;
                               re.lastIndex = 42;
@@ -191,7 +191,7 @@ var suites_001 = /* :: */[
                         /* :: */[
                           /* tuple */[
                             "t_multiline",
-                            (function () {
+                            (function (param) {
                                 return /* Eq */Block.__(0, [
                                           false,
                                           (/./ig).multiline
@@ -201,7 +201,7 @@ var suites_001 = /* :: */[
                           /* :: */[
                             /* tuple */[
                               "t_source",
-                              (function () {
+                              (function (param) {
                                   return /* Eq */Block.__(0, [
                                             "f.+o",
                                             (/f.+o/ig).source
@@ -211,7 +211,7 @@ var suites_001 = /* :: */[
                             /* :: */[
                               /* tuple */[
                                 "t_sticky",
-                                (function () {
+                                (function (param) {
                                     return /* Eq */Block.__(0, [
                                               true,
                                               (/./yg).sticky
@@ -221,7 +221,7 @@ var suites_001 = /* :: */[
                               /* :: */[
                                 /* tuple */[
                                   "t_unicode",
-                                  (function () {
+                                  (function (param) {
                                       return /* Eq */Block.__(0, [
                                                 false,
                                                 (/./yg).unicode

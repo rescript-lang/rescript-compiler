@@ -857,11 +857,11 @@ let assert_command
            (* Dump process output to stderr *)
            begin
              let chn = open_in fn_out in
-             let buff = String.make 4096 'X' in
+             let buff = Bytes.make 4096 'X' in
              let len = ref (-1) in
                while !len <> 0 do 
-                 len := input chn buff 0 (String.length buff);
-                 OUnitLogger.printf !global_logger "%s" (String.sub buff 0 !len);
+                 len := input chn buff 0 (Bytes.length buff);
+                 OUnitLogger.printf !global_logger "%s" (Bytes.to_string @@ Bytes.sub buff 0 !len);
                done;
                close_in chn
            end;
@@ -1335,6 +1335,11 @@ val map :
   'a array -> 
   ('a -> 'b) -> 
   'b array
+
+val iter :
+  'a array -> 
+  ('a -> unit) -> 
+  unit
 end = struct
 #1 "ext_array.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -1590,6 +1595,10 @@ let map a f =
     done;
     r
   end
+
+let iter a f =
+  let open Array in 
+  for i = 0 to length a - 1 do f(unsafe_get a i) done
 
 end
 module Ext_bytes : sig 
@@ -3714,10 +3723,6 @@ val prim : string
 val tmp : string 
 
 val create : string 
-
-val app : string
-val app_array : string
-
 val runtime : string
 val stdlib : string
 val imul : string
@@ -3775,6 +3780,7 @@ val suffix_d : string
 val suffix_js : string
 val suffix_bs_js : string 
 val suffix_re_js : string
+val suffix_tsx : string
 val suffix_mlastd : string
 val suffix_mliastd : string
 
@@ -3852,9 +3858,6 @@ let tmp = "tmp"
 
 let create = "create" (* {!Caml_exceptions.create}*)
 
-let app = "_"
-let app_array = "app" (* arguments are an array*)
-
 let runtime = "runtime" (* runtime directory *)
 
 let stdlib = "stdlib"
@@ -3917,6 +3920,7 @@ let suffix_mliastd = ".mliast.d"
 let suffix_js = ".js"
 let suffix_bs_js = ".bs.js"
 let suffix_re_js = ".re.js"
+let suffix_tsx = ".tsx"
 
 let commonjs = "commonjs" 
 let amdjs = "amdjs"
@@ -4626,11 +4630,11 @@ let stats h =
   let mbl =
     Array.fold_left (fun m b -> max m (List.length b)) 0 h.data in
   let histo = Array.make (mbl + 1) 0 in
-  Array.iter
+  Ext_array.iter h.data
     (fun b ->
        let l = List.length b in
        histo.(l) <- histo.(l) + 1)
-    h.data;
+    ;
   {Hashtbl.num_bindings = h.size;
    num_buckets = Array.length h.data;
    max_bucket_length = mbl;
@@ -5200,11 +5204,11 @@ let stats h =
   let mbl =
     Array.fold_left (fun m (b : _ bucket) -> max m (bucket_length 0 b)) 0 h.data in
   let histo = Array.make (mbl + 1) 0 in
-  Array.iter
+  Ext_array.iter h.data
     (fun b ->
        let l = bucket_length 0 b in
        histo.(l) <- histo.(l) + 1)
-    h.data;
+    ;
   { Hashtbl.num_bindings = h.size;
     num_buckets = h.data_mask + 1 ;
     max_bucket_length = mbl;
@@ -5605,7 +5609,7 @@ let suites =
       let of_array lst =
         let len = Array.length lst in 
         let tbl = String_hash_set.create len in 
-        Array.iter (String_hash_set.add tbl ) lst; tbl  in 
+        Ext_array.iter lst (String_hash_set.add tbl) ; tbl  in 
       let hash = of_array const_tbl  in 
       let len = String_hash_set.length hash in 
       String_hash_set.remove hash "x";
@@ -5961,11 +5965,11 @@ let stats h =
   let mbl =
     Array.fold_left (fun m b -> max m (bucket_length 0 b)) 0 h.data in
   let histo = Array.make (mbl + 1) 0 in
-  Array.iter
+  Ext_array.iter h.data
     (fun b ->
        let l = bucket_length 0 b in
        histo.(l) <- histo.(l) + 1)
-    h.data;
+    ;
   {Hashtbl.
     num_bindings = h.size;
     num_buckets = Array.length h.data;
@@ -6286,6 +6290,11 @@ module Ext_list : sig
 
 val map : 'a list -> ('a -> 'b) ->  'b list 
 
+val mapi :
+  'a list -> 
+  (int -> 'a -> 'b) -> 
+  'b list 
+  
 val map_snd : ('a * 'b) list -> ('b -> 'c) -> ('a * 'c) list 
 
 (** [map_last f xs ]
@@ -6585,6 +6594,8 @@ val fold_left:
     ('a -> 'b -> 'b) -> 
     'b
 
+val singleton_exn:     
+    'a list -> 'a
 end = struct
 #1 "ext_list.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -6705,6 +6716,14 @@ let rec map_last l f=
     let y3 = f false x3 in
     let y4 = f false x4 in
     y1::y2::y3::y4::(map_last tail f)
+
+let rec mapi_aux lst i f = 
+  match lst with
+    [] -> []
+  | a::l -> 
+    let r = f i a in r :: mapi_aux l (i + 1) f 
+
+let mapi lst f = mapi_aux lst 0 f
 
 let rec last xs =
   match xs with 
@@ -7246,6 +7265,7 @@ let rec fold_left2 l1 l2 accu f =
   | (a1::l1, a2::l2) -> fold_left2  l1 l2 (f a1 a2 accu) f 
   | (_, _) -> invalid_arg "List.fold_left2"
 
+let singleton_exn xs = match xs with [x] -> x | _ -> assert false
 end
 module Ext_ident : sig 
 #1 "ext_ident.mli"
@@ -10797,6 +10817,8 @@ external reraise: exn -> 'a = "%reraise"
 
 val finally : 'a -> ('a -> 'c) -> ('a -> 'b) -> 'b
 
+val try_it : (unit -> 'a) ->  unit 
+
 val with_file_as_chan : string -> (out_channel -> 'a) -> 'a
 
 val with_file_as_pp : string -> (Format.formatter -> 'a) -> 'a
@@ -10820,6 +10842,7 @@ external id : 'a -> 'a = "%identity"
  *)
 val hash_variant : string -> int
 
+val todo : string -> 'a
 end = struct
 #1 "ext_pervasives.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -10859,6 +10882,9 @@ let finally v action f   =
       action v ;
       reraise e 
   | e ->  action v ; e 
+
+let try_it f  =   
+  try ignore (f ()) with _ -> ()
 
 let with_file_as_chan filename f = 
   finally (open_out_bin filename) close_out f 
@@ -10988,7 +11014,8 @@ let hash_variant s =
   (* make it signed for 64 bits architectures *)
   if !accu > 0x3FFFFFFF then !accu - (1 lsl 31) else !accu
 
-
+let todo loc = 
+  failwith (loc ^ " Not supported yet")
 end
 module Ounit_json_tests
 = struct

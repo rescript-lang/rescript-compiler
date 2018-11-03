@@ -26,7 +26,7 @@ var inch = /* record */[/* contents */Pervasives.stdin];
 function bufferize(f) {
   var buf = /* record */[/* contents */undefined];
   return /* tuple */[
-          (function () {
+          (function (param) {
               var match = buf[0];
               if (match !== undefined) {
                 buf[0] = undefined;
@@ -52,7 +52,7 @@ function bufferize(f) {
         ];
 }
 
-var match = bufferize((function () {
+var match = bufferize((function (param) {
         return Caml_io.caml_ml_input_char(inch[0]);
       }));
 
@@ -60,7 +60,7 @@ var ungetch = match[1];
 
 var getch = match[0];
 
-function peekch() {
+function peekch(param) {
   var ch = Curry._1(getch, /* () */0);
   Curry._1(ungetch, ch);
   return ch;
@@ -116,9 +116,9 @@ var glo = Bytes.make(4096, /* "\000" */0);
 
 var gpos = /* record */[/* contents */0];
 
-var s = Caml_string.caml_create_string(100);
+var s = Caml_string.caml_create_bytes(100);
 
-function getq() {
+function getq(param) {
   var c = Curry._1(getch, /* () */0);
   if (c !== 92 || peekch(/* () */0) !== /* "n" */110) {
     return c;
@@ -179,7 +179,7 @@ function skip(_param) {
   };
 }
 
-function next() {
+function next(param) {
   var match;
   try {
     match = skip(/* () */0);
@@ -295,14 +295,14 @@ function next() {
           ]
         ];
         while(true) {
-          var param = _param;
-          if (param) {
-            var lop = param[0];
+          var param$1 = _param;
+          if (param$1) {
+            var lop = param$1[0];
             if (Caml_string.get(lop, 0) === ch$2 && Caml_string.get(lop, 1) === peekch(/* () */0)) {
               Curry._1(getch, /* () */0);
               return /* Op */Block.__(0, [lop]);
             } else {
-              _param = param[1];
+              _param = param$1[1];
               continue ;
             }
           } else {
@@ -458,7 +458,7 @@ var lval = /* record */[/* contents : tuple */[
     /* Int */0
   ]];
 
-function patchlval() {
+function patchlval(param) {
   var match = lval[0][0];
   if (match.tag) {
     opos[0] = opos[0] - match[0] | 0;
@@ -787,17 +787,14 @@ function binary(stk, lvl) {
       while(true) {
         var loc = _loc;
         var t = Curry._1(next$1, /* () */0);
-        if (t.tag) {
+        if (t.tag || lvlof(t[0]) !== lvl) {
           Curry._1(unnext, t);
           return loc;
-        } else if (lvlof(t[0]) === lvl) {
+        } else {
           var loc$prime = test(lvl - 8 | 0, loc);
           binary(stk, lvl - 1 | 0);
           _loc = loc$prime;
           continue ;
-        } else {
-          Curry._1(unnext, t);
-          return loc;
         }
       };
     };
@@ -1592,7 +1589,7 @@ function elfgen(outf) {
   var va = function (x) {
     return (x + off | 0) + 4194304 | 0;
   };
-  var patchloc = function (i, _) {
+  var patchloc = function (i, param) {
     var g = Caml_array.caml_array_get(globs, i);
     if (g[/* va */1] >= 0 && g[/* va */1] < 4194304) {
       return patch(false, g[/* loc */0], va(g[/* va */1]));
@@ -1607,7 +1604,7 @@ function elfgen(outf) {
   opos[0] = opos[0] + 1 | 0;
   $$String.blit("/lib64/ld-linux-x86-64.so.2\0libc.so.6", 0, obuf, opos[0], 37);
   opos[0] = (opos[0] + 37 | 0) + 1 | 0;
-  itr((function (s, sl, _) {
+  itr((function (s, sl, param) {
           $$String.blit(s, 0, obuf, opos[0], sl);
           opos[0] = (opos[0] + sl | 0) + 1 | 0;
           return /* () */0;
@@ -1616,7 +1613,7 @@ function elfgen(outf) {
   var symtab = opos[0];
   var n = /* record */[/* contents */39];
   opos[0] = opos[0] + 24 | 0;
-  itr((function (_, sl, _$1) {
+  itr((function (param, sl, param$1) {
           le(32, n[0]);
           le(32, 16);
           le(64, 0);
@@ -1626,7 +1623,7 @@ function elfgen(outf) {
         }));
   var rel = opos[0];
   var n$1 = /* record */[/* contents */1];
-  itr((function (_, _$1, l) {
+  itr((function (param, param$1, l) {
           var genrel = function (_l) {
             while(true) {
               var l = _l;
@@ -1737,7 +1734,7 @@ function elfgen(outf) {
   return Pervasives.output_bytes(outf, Bytes.sub(obuf, 0, tend + off | 0));
 }
 
-function main() {
+function main(param) {
   var ppsym = function (param) {
     switch (param.tag | 0) {
       case 0 : 

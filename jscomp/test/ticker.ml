@@ -141,9 +141,9 @@ let compute_update_sequences all_tickers  =
   (* order dependencies based on rank *)
 
   Ticker_map.fold (fun k l map -> 
-    let l = List.sort_uniq (fun {rank = lhs; _ } {rank = rhs; _ } -> 
+    let l = List.sort_uniq (fun lhs rhs -> 
       match lhs, rhs with
-      | Ranked x     , Ranked y   -> Pervasives.compare x y
+      | {rank = Ranked x}     , {rank = Ranked y}   -> Pervasives.compare x y
       | _            , _          -> failwith "All nodes should be ranked" 
     ) l in 
     Ticker_map.add k l map 

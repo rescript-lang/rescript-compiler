@@ -206,7 +206,7 @@ let destruct_constructor_declaration
 
 let case_of_ctdcl (ctdcls : Parsetree.constructor_declaration list) = 
     Exp.function_ 
-      (List.mapi (fun i ctdcl -> 
+      (Ext_list.mapi ctdcls (fun i ctdcl -> 
            let pat, core_type_exprs = destruct_constructor_declaration ctdcl in 
            Exp.case pat 
              (Ast_compatible.app3
@@ -215,7 +215,7 @@ let case_of_ctdcl (ctdcls : Parsetree.constructor_declaration list) =
                 ( Ast_compatible.const_exp_int i)
                 ( exp_of_core_type_exprs core_type_exprs)
                 
-             )) ctdcls
+             )) 
       )
 let record args = 
   Ast_compatible.app2 

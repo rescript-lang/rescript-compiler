@@ -1,7 +1,7 @@
 'use strict';
 
 
-function f() {
+function f(param) {
   console.error("x");
   console.log(/* () */0);
   console.log("hi");

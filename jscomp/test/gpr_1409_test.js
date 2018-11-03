@@ -16,7 +16,7 @@ function eq(loc, x, y) {
   suites[0] = /* :: */[
     /* tuple */[
       loc + (" id " + String(test_id[0])),
-      (function () {
+      (function (param) {
           return /* Eq */Block.__(0, [
                     x,
                     y
@@ -45,7 +45,7 @@ function make(foo) {
   var partial_arg = map((function (prim) {
           return String(prim);
         }), foo);
-  return (function () {
+  return (function (param) {
       var tmp = { };
       if (partial_arg !== undefined) {
         tmp.foo = Js_primitive.valFromOption(partial_arg);
@@ -112,17 +112,17 @@ function test5(f, x) {
   return tmp;
 }
 
-function test6(f, _) {
+function test6(f, x) {
   console.log("no inline");
-  var x = /* record */[/* contents */3];
+  var x$1 = /* record */[/* contents */3];
   var tmp = {
     hi: 2
   };
-  var tmp$1 = (x[0] = x[0] + 1 | 0, x[0]);
+  var tmp$1 = (x$1[0] = x$1[0] + 1 | 0, x$1[0]);
   if (tmp$1 !== undefined) {
     tmp.open = Js_primitive.valFromOption(tmp$1);
   }
-  var tmp$2 = f(x);
+  var tmp$2 = f(x$1);
   if (tmp$2 !== undefined) {
     tmp.xx = Js_primitive.valFromOption(tmp$2);
   }

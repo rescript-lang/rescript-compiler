@@ -46,7 +46,7 @@
 *)
 let caml_obj_block tag size = 
   let v = Obj.repr (Caml_array.new_uninitialized size) in 
-  Obj.set_tag  v tag ; 
+  Bs_obj.set_tag  v tag ; 
   v
 
 (**
@@ -81,7 +81,7 @@ let caml_obj_dup (x : Obj.t) =
   for i = 0 to len - 1 do
     Array.unsafe_set v i (Obj.field x i)
   done;
-  Obj.set_tag (Obj.repr v) (Bs_obj.tag x );
+  Bs_obj.set_tag (Obj.repr v) (Bs_obj.tag x );
   Obj.repr v
 
 
@@ -116,7 +116,7 @@ let caml_update_dummy x y =
      for i = 0 to len - 1 do 
      Array.unsafe_set x i (Obj.field y i)
      done;
-     Obj.set_tag (Obj.magic x) (Obj.tag y)
+     Bs_obj.set_tag (Obj.magic x) (Obj.tag y)
   *)
   let len = Bs_obj.length y in
   for i = 0 to len - 1 do
@@ -124,7 +124,7 @@ let caml_update_dummy x y =
   done ; 
   let y_tag = Obj.tag y in 
   if y_tag <> 0 then
-    Obj.set_tag x y_tag
+    Bs_obj.set_tag x y_tag
 (* Bs_obj.set_length x   (Bs_obj.length y) *)
 (* [set_length] seems redundant here given that it is initialized as an array 
 *)
@@ -273,7 +273,7 @@ and aux_obj_compare (a: Obj.t) (b: Obj.t) =
     | None, None -> 0
     | (Some _), None -> -1
     | None, (Some _) -> 1
-    | (Some x), (Some y) -> compare x y in
+    | (Some x), (Some y) -> Pervasives.compare x y in
   res
 
 type eq = Obj.t -> Obj.t -> bool
@@ -376,3 +376,5 @@ let caml_min (x : Obj.t) y =
 
 let caml_max (x : Obj.t) y =    
   if caml_compare x y >= 0 then x else y 
+
+let caml_obj_set_tag = Bs_obj.set_tag  

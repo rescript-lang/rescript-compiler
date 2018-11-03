@@ -6,7 +6,7 @@ var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Caml_array = require("../../lib/js/caml_array.js");
 
-function test() {
+function test(param) {
   var v = /* record */[/* contents */0];
   var f = function (_n, _acc) {
     while(true) {
@@ -16,7 +16,7 @@ function test() {
         return Curry._1(acc, /* () */0);
       } else {
         _acc = (function(n,acc){
-        return function () {
+        return function (param) {
           v[0] = v[0] + n | 0;
           return Curry._1(acc, /* () */0);
         }
@@ -26,20 +26,20 @@ function test() {
       }
     };
   };
-  f(10, (function () {
+  f(10, (function (param) {
           return /* () */0;
         }));
   return v[0];
 }
 
-function test_closure() {
+function test_closure(param) {
   var v = /* record */[/* contents */0];
   var arr = Caml_array.caml_make_vect(6, (function (x) {
           return x;
         }));
   for(var i = 0; i <= 5; ++i){
     Caml_array.caml_array_set(arr, i, (function(i){
-        return function () {
+        return function (param) {
           return i;
         }
         }(i)));
@@ -51,7 +51,7 @@ function test_closure() {
   return v[0];
 }
 
-function test_closure2() {
+function test_closure2(param) {
   var v = /* record */[/* contents */0];
   var arr = Caml_array.caml_make_vect(6, (function (x) {
           return x;
@@ -59,7 +59,7 @@ function test_closure2() {
   for(var i = 0; i <= 5; ++i){
     var j = i + i | 0;
     Caml_array.caml_array_set(arr, i, (function(j){
-        return function () {
+        return function (param) {
           return j;
         }
         }(j)));
@@ -74,7 +74,7 @@ function test_closure2() {
 Mt.from_pair_suites("cps_test.ml", /* :: */[
       /* tuple */[
         "cps_test_sum",
-        (function () {
+        (function (param) {
             return /* Eq */Block.__(0, [
                       55,
                       test(/* () */0)
@@ -84,7 +84,7 @@ Mt.from_pair_suites("cps_test.ml", /* :: */[
       /* :: */[
         /* tuple */[
           "cps_test_closure",
-          (function () {
+          (function (param) {
               return /* Eq */Block.__(0, [
                         15,
                         test_closure(/* () */0)
@@ -94,7 +94,7 @@ Mt.from_pair_suites("cps_test.ml", /* :: */[
         /* :: */[
           /* tuple */[
             "cps_test_closure2",
-            (function () {
+            (function (param) {
                 return /* Eq */Block.__(0, [
                           30,
                           test_closure2(/* () */0)

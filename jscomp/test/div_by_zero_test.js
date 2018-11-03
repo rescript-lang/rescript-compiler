@@ -14,7 +14,7 @@ function eq(loc, x, y) {
   suites[0] = /* :: */[
     /* tuple */[
       loc + (" id " + String(test_id[0])),
-      (function () {
+      (function (param) {
           return /* Eq */Block.__(0, [
                     x,
                     y
@@ -36,8 +36,8 @@ function add(suite) {
 
 add(/* tuple */[
       "File \"div_by_zero_test.ml\", line 14, characters 7-14",
-      (function () {
-          return /* ThrowAny */Block.__(7, [(function () {
+      (function (param) {
+          return /* ThrowAny */Block.__(7, [(function (param) {
                         Caml_int32.div(3, 0);
                         return /* () */0;
                       })]);
@@ -46,8 +46,8 @@ add(/* tuple */[
 
 add(/* tuple */[
       "File \"div_by_zero_test.ml\", line 15, characters 7-14",
-      (function () {
-          return /* ThrowAny */Block.__(7, [(function () {
+      (function (param) {
+          return /* ThrowAny */Block.__(7, [(function (param) {
                         Caml_int32.mod_(3, 0);
                         return /* () */0;
                       })]);
@@ -56,8 +56,8 @@ add(/* tuple */[
 
 add(/* tuple */[
       "File \"div_by_zero_test.ml\", line 16, characters 7-14",
-      (function () {
-          return /* ThrowAny */Block.__(7, [(function () {
+      (function (param) {
+          return /* ThrowAny */Block.__(7, [(function (param) {
                         Caml_int32.div(3, 0);
                         return /* () */0;
                       })]);
@@ -66,8 +66,8 @@ add(/* tuple */[
 
 add(/* tuple */[
       "File \"div_by_zero_test.ml\", line 17, characters 7-14",
-      (function () {
-          return /* ThrowAny */Block.__(7, [(function () {
+      (function (param) {
+          return /* ThrowAny */Block.__(7, [(function (param) {
                         Caml_int32.mod_(3, 0);
                         return /* () */0;
                       })]);
@@ -76,8 +76,8 @@ add(/* tuple */[
 
 add(/* tuple */[
       "File \"div_by_zero_test.ml\", line 18, characters 7-14",
-      (function () {
-          return /* ThrowAny */Block.__(7, [(function () {
+      (function (param) {
+          return /* ThrowAny */Block.__(7, [(function (param) {
                         Caml_int64.div(/* int64 */[
                               /* hi */0,
                               /* lo */3
@@ -92,8 +92,8 @@ add(/* tuple */[
 
 add(/* tuple */[
       "File \"div_by_zero_test.ml\", line 19, characters 7-14",
-      (function () {
-          return /* ThrowAny */Block.__(7, [(function () {
+      (function (param) {
+          return /* ThrowAny */Block.__(7, [(function (param) {
                         Caml_int64.mod_(/* int64 */[
                               /* hi */0,
                               /* lo */3

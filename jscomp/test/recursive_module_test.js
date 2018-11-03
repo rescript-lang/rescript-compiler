@@ -15,7 +15,7 @@ function eq(loc, x, y) {
   suites[0] = /* :: */[
     /* tuple */[
       loc + (" id " + String(test_id[0])),
-      (function () {
+      (function (param) {
           return /* Eq */Block.__(0, [
                     x,
                     y
@@ -70,8 +70,8 @@ eq("File \"recursive_module_test.ml\", line 30, characters 5-12", 120, Curry._1(
 
 add(/* tuple */[
       "File \"recursive_module_test.ml\", line 34, characters 7-14",
-      (function () {
-          return /* ThrowAny */Block.__(7, [(function () {
+      (function (param) {
+          return /* ThrowAny */Block.__(7, [(function (param) {
                         Curry._1(Int3[/* u */0], 3);
                         return /* () */0;
                       })]);

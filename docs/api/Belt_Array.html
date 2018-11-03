@@ -765,6 +765,24 @@
                     </div>
 
                   
+<pre><span id="VALreduceWithIndexU"><span class="keyword">val</span> reduceWithIndexU</span> : <code class="type">'a array -> 'b -> ('b -> 'a -> int -> 'b [@bs]) -> 'b</code></pre>
+<pre><span id="VALreduceWithIndex"><span class="keyword">val</span> reduceWithIndex</span> : <code class="type">'a array -> 'b -> ('b -> 'a -> int -> 'b) -> 'b</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">reduceWithIndex xs f</code>
+<p>
+
+    Applies <code class="code">f</code> to each element of <code class="code">xs</code> from beginning to end. Function <code class="code">f</code> has three parameters: the item
+    from the array and an “accumulator”, which starts with a value of <code class="code">init</code> and the index of each element. <code class="code">reduceWithIndex</code>
+    returns the final value of the accumulator.<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">      reduceWithIndex [|1;2;3;4|] 0 (fun acc x i -&gt; acc + x + i) = 16;
+    </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
 <pre><span id="VALsomeU"><span class="keyword">val</span> someU</span> : <code class="type">'a array -> ('a -> bool [@bs]) -> bool</code></pre>
 <pre><span id="VALsome"><span class="keyword">val</span> some</span> : <code class="type">'a array -> ('a -> bool) -> bool</code></pre><div class="info ">
                     <div class="not-examples">

@@ -57,7 +57,7 @@ let group_apply cases callback =
     (
     Ext_list.stable_group cases
     (fun (_,lam) (_,lam1) -> 
-      Lam_analysis.eq_lambda_approx lam lam1))
+      Lam.eq_approx lam lam1))
     (fun group -> Ext_list.map_last group callback ) 
 (* TODO:
     for expression generation,
@@ -139,7 +139,7 @@ let rec
 (** This can not happen since this id should be already consulted by type checker
           Worst case
     {[
-      E.index m pos
+      E.array_index_by_int m pos
     ]}
 *)
 (* when module is passed as an argument - unpack to an array
@@ -162,8 +162,8 @@ and compile_external_field_apply
         let arg_cxt = {lambda_cxt with continuation = NeedValue ReturnFalse} in 
         Ext_list.fold_right args_lambda dummy (fun arg_lambda  (args_code, args)  ->
            match compile_lambda arg_cxt arg_lambda with
-           | {block = a; value = Some b} ->
-             (Ext_list.append a args_code), (b :: args )
+           | {block; value = Some b} ->
+             (Ext_list.append block args_code), (b :: args )
            | _ -> assert false
         )  in
   match ident_info.closed_lambda with
@@ -270,7 +270,7 @@ and compile_recursive_let ~all_bindings
               )
           [
             S.while_ (* ~label:continue_label *)
-              E.caml_true
+              E.true_
               (
                 Ident_map.fold
                   (fun old new_param  acc ->
@@ -301,13 +301,12 @@ and compile_recursive_let ~all_bindings
     *)
     Js_output.make (
       S.define_variable ~kind:Variable id (E.array Mutable []) ::
-      (List.mapi (fun i (x : Lam.t) ->
+      (Ext_list.mapi ls (fun i x ->
            match x with
            | Lvar lid
              -> S.exp
                   (Js_arr.set_array (E.var id) (E.int (Int32.of_int i)) (E.var lid))
-           | _ -> assert false
-         ) ls)
+           | _ -> assert false))
     ), []
 
   | Lprim{primitive = Pmakeblock _ ; _}   ->
@@ -751,7 +750,7 @@ and compile_sequand
               (
                 l_block @
                 [S.if_ l_expr (r_block @ [ S.assign v r_expr])
-                   ~else_:[S.assign v E.caml_false]
+                   ~else_:[S.assign v E.false_]
                 ]
               )
           | Declare (_kind,v) ->
@@ -759,14 +758,14 @@ and compile_sequand
             Js_output.make
               (
                 l_block @
-                [ S.define_variable ~kind:Variable v E.caml_false ;
+                [ S.define_variable ~kind:Variable v E.false_ ;
                   S.if_ l_expr
                     (r_block @ [S.assign v r_expr])])
           | EffectCall _
           | NeedValue _ ->
             let v = Ext_ident.create_tmp () in
             Js_output.make
-              (S.define_variable ~kind:Variable v E.caml_false ::
+              (S.define_variable ~kind:Variable v E.false_ ::
                l_block @
                [S.if_ l_expr
                   (r_block @ [
@@ -801,12 +800,12 @@ and compile_sequor
                      (r_block @ [
                          S.assign v r_expr
                        ])
-                     ~else_:[S.assign v E.caml_true] ])
+                     ~else_:[S.assign v E.true_] ])
             | Declare(_kind,v) ->
               Js_output.make
                 (
                   l_block @
-                  [ S.define_variable ~kind:Variable v E.caml_true;
+                  [ S.define_variable ~kind:Variable v E.true_;
                     S.if_ (E.not l_expr)
                       (r_block @ [S.assign v r_expr])
                   ]
@@ -816,7 +815,7 @@ and compile_sequor
               let v = Ext_ident.create_tmp () in
               Js_output.make
                 ( l_block @
-                  [S.define_variable ~kind:Variable v E.caml_true;
+                  [S.define_variable ~kind:Variable v E.true_;
                    S.if_ (E.not l_expr)
                      (r_block @ [
                          S.assign v r_expr

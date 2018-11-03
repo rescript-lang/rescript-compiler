@@ -645,7 +645,7 @@ function for_all_opt(p, _param) {
 }
 
 function fold(f, l, init) {
-  return List.fold_left((function (_, i) {
+  return List.fold_left((function (acc, i) {
                 return Curry._2(f, i, init);
               }), init, l);
 }
@@ -797,7 +797,7 @@ function reduce_from_left(fn, lst) {
   }
 }
 
-function create_ref_empty() {
+function create_ref_empty(param) {
   return /* record */[/* contents : [] */0];
 }
 

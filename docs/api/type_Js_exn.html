@@ -15,7 +15,7 @@
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;message&nbsp;:&nbsp;<span class="constructor">Js_exn</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string&nbsp;option&nbsp;=&nbsp;<span class="string">""</span>&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;name&nbsp;:&nbsp;<span class="constructor">Js_exn</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string&nbsp;option&nbsp;=&nbsp;<span class="string">""</span>&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;fileName&nbsp;:&nbsp;<span class="constructor">Js_exn</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string&nbsp;option&nbsp;=&nbsp;<span class="string">""</span>&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
-&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;internalToOCamlException&nbsp;:&nbsp;<span class="constructor">Obj</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;exn<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;internalToOCamlException&nbsp;:&nbsp;<span class="constructor">Bs_stdlib_mini</span>.<span class="constructor">Obj</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;exn<br>
 &nbsp;&nbsp;<span class="keyword">val</span>&nbsp;raiseError&nbsp;:&nbsp;string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>a<br>
 &nbsp;&nbsp;<span class="keyword">val</span>&nbsp;raiseEvalError&nbsp;:&nbsp;string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>a<br>
 &nbsp;&nbsp;<span class="keyword">val</span>&nbsp;raiseRangeError&nbsp;:&nbsp;string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>a<br>

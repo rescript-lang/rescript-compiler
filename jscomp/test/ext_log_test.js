@@ -120,7 +120,7 @@ function info(str, f) {
                     ], f)), str);
 }
 
-function iinfo(_, str, f) {
+function iinfo(b, str, f) {
   return Curry._1(Format.fprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */[
                       /* String_literal */Block.__(11, [
                           "INFO: ",

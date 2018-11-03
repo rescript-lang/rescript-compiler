@@ -3,7 +3,6 @@
 var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 var Caml_array = require("../../lib/js/caml_array.js");
-var Js_primitive = require("../../lib/js/js_primitive.js");
 
 var suites = /* record */[/* contents : [] */0];
 
@@ -16,7 +15,7 @@ function eq(loc, param) {
   suites[0] = /* :: */[
     /* tuple */[
       loc + (" id " + String(test_id[0])),
-      (function () {
+      (function (param) {
           return /* Eq */Block.__(0, [
                     x,
                     y
@@ -68,12 +67,63 @@ eq("File \"array_subtle_test.ml\", line 23, characters 5-12", /* tuple */[
     ]);
 
 while(v.length > 0) {
-  Js_primitive.undefined_to_opt(v.pop());
+  v.pop();
 };
 
 eq("File \"array_subtle_test.ml\", line 29, characters 5-12", /* tuple */[
       0,
       v.length
+    ]);
+
+function f(v) {
+  var match = v.pop();
+  if (match !== undefined) {
+    console.log("hi");
+  } else {
+    console.log("hi2");
+  }
+  console.log((v.pop(), /* () */0));
+  return /* () */0;
+}
+
+function fff(x) {
+  return true;
+}
+
+function fff2(x) {
+  if (x.length >= 10) {
+    console.log("hi");
+    return /* () */0;
+  } else {
+    return 0;
+  }
+}
+
+function fff3(x) {
+  return 1;
+}
+
+function fff4(x) {
+  if (x.length !== 0) {
+    return 1;
+  } else {
+    return 2;
+  }
+}
+
+eq("File \"array_subtle_test.ml\", line 51, characters 6-13", /* tuple */[
+      fff3(/* array */[]),
+      1
+    ]);
+
+eq("File \"array_subtle_test.ml\", line 52, characters 6-13", /* tuple */[
+      fff4(/* array */[]),
+      2
+    ]);
+
+eq("File \"array_subtle_test.ml\", line 53, characters 6-13", /* tuple */[
+      fff4(/* array */[1]),
+      1
     ]);
 
 Mt.from_pair_suites("array_subtle_test.ml", suites[0]);
@@ -82,4 +132,9 @@ exports.suites = suites;
 exports.test_id = test_id;
 exports.eq = eq;
 exports.v = v;
+exports.f = f;
+exports.fff = fff;
+exports.fff2 = fff2;
+exports.fff3 = fff3;
+exports.fff4 = fff4;
 /*  Not a pure module */

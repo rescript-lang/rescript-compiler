@@ -49,9 +49,9 @@ let is_none_static (arg : J.expression_desc ) = arg = Undefined
 
 let is_not_none  (e : J.expression) : J.expression = 
   let desc = e.expression_desc in 
-  if is_none_static desc then E.caml_false 
+  if is_none_static desc then E.false_
   else match desc with 
-  | Optional_block _ -> E.caml_true
+  | Optional_block _ -> E.true_
   | _ -> 
     E.not (E.triple_equal e none)
   

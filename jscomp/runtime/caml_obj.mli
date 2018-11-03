@@ -59,3 +59,5 @@ type 'a selector = 'a -> 'a -> 'a
 
 val caml_min : Obj.t selector
 val caml_max : Obj.t selector
+
+val caml_obj_set_tag : Obj.t -> int -> unit 

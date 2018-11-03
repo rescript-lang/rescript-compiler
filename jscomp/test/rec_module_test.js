@@ -72,7 +72,7 @@ function even$1(n) {
   }
 }
 
-function x() {
+function x(param) {
   return Curry._1(BB[/* y */1], /* () */0) + 3 | 0;
 }
 
@@ -94,7 +94,7 @@ function odd$1(n) {
   }
 }
 
-function y() {
+function y(param) {
   return 32;
 }
 
@@ -742,34 +742,58 @@ function of_list(l) {
               var l$1 = List.sort_uniq(AAA[/* compare */0], l);
               var sub = function (n, l) {
                 var exit = 0;
-                if (n > 3 || n < 0) {
-                  exit = 1;
-                } else {
-                  switch (n) {
-                    case 0 : 
+                switch (n) {
+                  case 0 : 
+                      return /* tuple */[
+                              /* Empty */0,
+                              l
+                            ];
+                  case 1 : 
+                      if (l) {
                         return /* tuple */[
-                                /* Empty */0,
-                                l
+                                /* Node */[
+                                  /* Empty */0,
+                                  l[0],
+                                  /* Empty */0,
+                                  1
+                                ],
+                                l[1]
                               ];
-                    case 1 : 
-                        if (l) {
+                      } else {
+                        exit = 1;
+                      }
+                      break;
+                  case 2 : 
+                      if (l) {
+                        var match = l[1];
+                        if (match) {
                           return /* tuple */[
                                   /* Node */[
+                                    /* Node */[
+                                      /* Empty */0,
+                                      l[0],
+                                      /* Empty */0,
+                                      1
+                                    ],
+                                    match[0],
                                     /* Empty */0,
-                                    l[0],
-                                    /* Empty */0,
-                                    1
+                                    2
                                   ],
-                                  l[1]
+                                  match[1]
                                 ];
                         } else {
                           exit = 1;
                         }
-                        break;
-                    case 2 : 
-                        if (l) {
-                          var match = l[1];
-                          if (match) {
+                      } else {
+                        exit = 1;
+                      }
+                      break;
+                  case 3 : 
+                      if (l) {
+                        var match$1 = l[1];
+                        if (match$1) {
+                          var match$2 = match$1[1];
+                          if (match$2) {
                             return /* tuple */[
                                     /* Node */[
                                       /* Node */[
@@ -778,11 +802,16 @@ function of_list(l) {
                                         /* Empty */0,
                                         1
                                       ],
-                                      match[0],
-                                      /* Empty */0,
+                                      match$1[0],
+                                      /* Node */[
+                                        /* Empty */0,
+                                        match$2[0],
+                                        /* Empty */0,
+                                        1
+                                      ],
                                       2
                                     ],
-                                    match[1]
+                                    match$2[1]
                                   ];
                           } else {
                             exit = 1;
@@ -790,44 +819,12 @@ function of_list(l) {
                         } else {
                           exit = 1;
                         }
-                        break;
-                    case 3 : 
-                        if (l) {
-                          var match$1 = l[1];
-                          if (match$1) {
-                            var match$2 = match$1[1];
-                            if (match$2) {
-                              return /* tuple */[
-                                      /* Node */[
-                                        /* Node */[
-                                          /* Empty */0,
-                                          l[0],
-                                          /* Empty */0,
-                                          1
-                                        ],
-                                        match$1[0],
-                                        /* Node */[
-                                          /* Empty */0,
-                                          match$2[0],
-                                          /* Empty */0,
-                                          1
-                                        ],
-                                        2
-                                      ],
-                                      match$2[1]
-                                    ];
-                            } else {
-                              exit = 1;
-                            }
-                          } else {
-                            exit = 1;
-                          }
-                        } else {
-                          exit = 1;
-                        }
-                        break;
-                    
-                  }
+                      } else {
+                        exit = 1;
+                      }
+                      break;
+                  default:
+                    exit = 1;
                 }
                 if (exit === 1) {
                   var nl = n / 2 | 0;
@@ -920,7 +917,7 @@ Caml_module.update_mod([[0]], AAA, /* module */[/* compare */compare$1]);
 
 var suites_000 = /* tuple */[
   "test1",
-  (function () {
+  (function (param) {
       return /* Eq */Block.__(0, [
                 /* tuple */[
                   true,
@@ -941,7 +938,7 @@ var suites_000 = /* tuple */[
 var suites_001 = /* :: */[
   /* tuple */[
     "test2",
-    (function () {
+    (function (param) {
         return /* Eq */Block.__(0, [
                   Curry._1(BB[/* y */1], /* () */0),
                   32
@@ -951,7 +948,7 @@ var suites_001 = /* :: */[
   /* :: */[
     /* tuple */[
       "test3",
-      (function () {
+      (function (param) {
           return /* Eq */Block.__(0, [
                     Curry._1(AA[/* x */1], /* () */0),
                     35
@@ -961,7 +958,7 @@ var suites_001 = /* :: */[
     /* :: */[
       /* tuple */[
         "test4",
-        (function () {
+        (function (param) {
             return /* Eq */Block.__(0, [
                       true,
                       Curry._1(A[/* even */0], 2)
@@ -971,7 +968,7 @@ var suites_001 = /* :: */[
       /* :: */[
         /* tuple */[
           "test4",
-          (function () {
+          (function (param) {
               return /* Eq */Block.__(0, [
                         true,
                         Curry._1(AA[/* even */0], 4)
@@ -981,7 +978,7 @@ var suites_001 = /* :: */[
         /* :: */[
           /* tuple */[
             "test5",
-            (function () {
+            (function (param) {
                 return /* Eq */Block.__(0, [
                           false,
                           Curry._1(B[/* odd */0], 2)
@@ -991,7 +988,7 @@ var suites_001 = /* :: */[
           /* :: */[
             /* tuple */[
               "test6",
-              (function () {
+              (function (param) {
                   return /* Eq */Block.__(0, [
                             2,
                             cardinal(of_list(/* :: */[

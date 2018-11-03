@@ -47,9 +47,7 @@ let translate  loc
     (args : J.expression list) : J.expression = 
   match prim with
   | Pis_not_none -> 
-      (match args with 
-      | [arg] -> Js_of_lam_option.is_not_none arg 
-      | _ -> assert false)    
+      Js_of_lam_option.is_not_none (Ext_list.singleton_exn args)      
   | Pcreate_extension s 
     -> 
     Js_of_lam_exception.make (E.str s)
@@ -107,41 +105,18 @@ let translate  loc
       | _ -> assert false  
     end   
   | Pjs_function_length -> 
-    begin match args with 
-      | [f] -> E.function_length f
-      | _ -> assert false 
-    end
+    E.function_length (Ext_list.singleton_exn args)    
   | Pcaml_obj_length -> 
-    begin match args with 
-      | [e] -> E.obj_length e 
-      | _ -> assert false 
-    end
-  | Pcaml_obj_set_length -> 
-    begin match args with 
-      | [a;b] -> E.set_length a b 
-      | _ -> assert false 
-    end
+    E.obj_length (Ext_list.singleton_exn args)
   | Pis_null -> 
-    begin match args with 
-      | [e] -> E.is_null e 
-      | _ -> assert false 
-    end   
+    E.is_null (Ext_list.singleton_exn args)    
   | Pis_undefined -> 
-    begin match args with 
-      | [e] -> E.is_undef e 
-      | _ -> assert false 
-    end
-  | Pis_null_undefined -> 
-    begin match args with 
-      | [ arg] -> 
-        E.is_null_undefined arg
-      | _ -> assert false 
-    end
+    E.is_undef (Ext_list.singleton_exn args) 
+  | Pis_null_undefined ->     
+    E.is_null_undefined (Ext_list.singleton_exn args)
   | Pjs_typeof -> 
-    begin match args with 
-      | [e] -> E.typeof e 
-      | _ -> assert false 
-    end
+    E.typeof (Ext_list.singleton_exn args)
+    
   | Pjs_unsafe_downgrade _
   | Pdebugger 
   | Pjs_fn_run _ 
@@ -163,73 +138,52 @@ let translate  loc
   | Pupdate_mod ->
     E.runtime_call Js_runtime_modules.module_ "update_mod" args
   | Psome ->     
-    begin match args with 
-      | [arg ] -> 
-        begin match arg.J.expression_desc with 
-          | Null 
-          | Object _ 
-          | Number _
-          | Caml_block _      
-          | Array _
-          | Str _
-            -> 
-            (* This makes sense when type info 
-               is not available at the definition
-               site, and inline recovered it
-            *)
-            E.optional_not_nest_block arg 
-          | _ -> E.optional_block arg
-        end
-      | _ -> assert false
-    end     
+    let arg = Ext_list.singleton_exn args in 
+    (match arg.expression_desc with 
+     | Null 
+     | Object _ 
+     | Number _
+     | Caml_block _      
+     | Array _
+     | Str _
+       -> 
+       (* This makes sense when type info 
+          is not available at the definition
+          site, and inline recovered it
+       *)
+       E.optional_not_nest_block arg 
+     | _ -> E.optional_block arg)
   | Psome_not_nest ->   
-    begin match args with 
-      | [arg] -> E.optional_not_nest_block arg 
-      | _ -> assert false
-    end 
+    E.optional_not_nest_block (Ext_list.singleton_exn args)
   | Pmakeblock(tag, tag_info, mutable_flag ) ->  (* RUNTIME *)
     Js_of_lam_block.make_block 
       (Js_op_util.of_lam_mutable_flag mutable_flag) 
       tag_info (E.small_int tag) args 
   | Pval_from_option -> 
-    begin match args with 
-      | [ e ] -> 
-        Js_of_lam_option.val_from_option e 
-      | _ -> assert false
-    end
+    Js_of_lam_option.val_from_option (Ext_list.singleton_exn args)
   | Pval_from_option_not_nest -> 
-    begin match args with 
-      | [ e ] -> e
-      | _ -> assert false
-    end
+    Ext_list.singleton_exn args 
   | Pfield (i, fld_info) -> 
-    begin match args with 
-      | [ e ]  -> 
-        Js_of_lam_block.field fld_info e (Int32.of_int i)
-      (* Invariant depends on runtime *)
-      | _ -> assert false
-    end
-
+    Js_of_lam_block.field fld_info (Ext_list.singleton_exn args) (Int32.of_int i)
+    (* Invariant depends on runtime *)
+   | Pfield_computed ->  
+    (match args with 
+    | [self; index] -> 
+      Js_of_lam_block.field_by_exp self  index 
+    | _ -> assert false
+    )
   (** Negate boxed int *)
   | Pnegbint Pint32
     ->
-    begin match args with
-      | [ e ] -> E.int32_minus (E.zero_int_literal)  e 
-      | _ -> assert false
-    end
+      E.int32_minus (E.zero_int_literal)  (Ext_list.singleton_exn args) 
+      
   | Pnegint
     -> 
-    begin match args with (* #977 *)
-      | [ e ] -> E.int32_minus (E.zero_int_literal)  e 
-      | _ -> assert false
-    end
-
+      (* #977 *)
+      E.int32_minus (E.zero_int_literal)  (Ext_list.singleton_exn args)
   | Pnegbint Pnativeint
     -> 
-    begin match args with
-      | [ e ] -> E.unchecked_int32_minus (E.zero_int_literal)  e 
-      | _ -> assert false
-    end
+      E.unchecked_int32_minus (E.zero_int_literal)  (Ext_list.singleton_exn args) 
   | Pnegbint Pint64
     -> 
     Js_long.neg args 
@@ -237,10 +191,7 @@ let translate  loc
 
   | Pnegfloat 
     -> 
-    begin match args with 
-      | [ e ] -> E.float_minus (E.zero_float_lit) e 
-      | _ -> assert false
-    end
+      E.float_minus (E.zero_float_lit) (Ext_list.singleton_exn args) 
   (** Negate boxed int end*)
   (* Int addition and subtraction *)
   | Paddint 
@@ -311,7 +262,7 @@ let translate  loc
     end
 
   | Pmulint 
-  | Pmulbint Lambda.Pint32
+  | Pmulbint Pint32
     ->
     begin match args with
       | [e1; e2]  ->
@@ -360,20 +311,20 @@ let translate  loc
         E.int32_mod   ~checked:(!Js_config.check_div_by_zero) e1  e2
       | _ -> assert false 
     end
-  | Pmodbint Lambda.Pint64 
+  | Pmodbint Pint64 
     -> Js_long.mod_ args  
   | Plslint 
-  | Plslbint Lambda.Pnativeint
-  | Plslbint Lambda.Pint32
+  | Plslbint Pnativeint
+  | Plslbint Pint32
     ->
     begin match args with
       | [e1;e2] ->
         E.int32_lsl e1  e2
       | _ -> assert false 
     end
-  | Plslbint Lambda.Pint64 
+  | Plslbint Pint64 
     -> Js_long.lsl_ args
-  | Plsrbint Lambda.Pnativeint
+  | Plsrbint Pnativeint
     -> 
     begin match args with
       | [e1; e2] ->
@@ -381,7 +332,7 @@ let translate  loc
       | _ -> assert false
     end
   | Plsrint 
-  | Plsrbint Lambda.Pint32
+  | Plsrbint Pint32
     ->
     begin match args with
       | [e1; {J.expression_desc = Number (Int {i=0l; _}|Uint 0l | Nint 0n); _}]
@@ -391,44 +342,44 @@ let translate  loc
         E.to_int32 @@ E.int32_lsr   e1  e2
       | _ -> assert false
     end
-  | Plsrbint Lambda.Pint64
+  | Plsrbint Pint64
     -> Js_long.lsr_ args
   | Pasrint 
-  | Pasrbint Lambda.Pnativeint
-  | Pasrbint Lambda.Pint32
+  | Pasrbint Pnativeint
+  | Pasrbint Pint32
     ->
     begin match args with
       | [e1;e2] ->
         E.int32_asr  e1  e2
       | _ -> assert false
     end
-  | Pasrbint Lambda.Pint64 
+  | Pasrbint Pint64 
     -> Js_long.asr_ args      
   | Pandint 
-  | Pandbint Lambda.Pnativeint
-  | Pandbint Lambda.Pint32
+  | Pandbint Pnativeint
+  | Pandbint Pint32
     ->
     begin match args with
       | [e1;e2] ->
         E.int32_band  e1  e2
       | _ -> assert false
     end
-  | Pandbint Lambda.Pint64
+  | Pandbint Pint64
     -> Js_long.and_ args
   | Porint 
-  | Porbint Lambda.Pnativeint
-  | Porbint Lambda.Pint32
+  | Porbint Pnativeint
+  | Porbint Pint32
     ->
     begin match args with
       | [e1;e2] ->
         E.int32_bor  e1  e2
       | _ -> assert false
     end
-  | Porbint Lambda.Pint64 
+  | Porbint Pint64 
     -> Js_long.or_ args
   | Pxorint 
-  | Pxorbint Lambda.Pnativeint
-  | Pxorbint Lambda.Pint32 
+  | Pxorbint Pnativeint
+  | Pxorbint Pint32 
     -> 
     begin match args with
       | [e1;e2] ->
@@ -484,38 +435,23 @@ let translate  loc
   | Pintofbint Pnativeint
   | Pintofbint Pint32
   | Pfloatofint 
-    -> 
-    begin match args with 
-      | [e] -> e 
-      | _ -> assert false 
-    end
+    -> Ext_list.singleton_exn args     
   | Pintofbint Pint64
     -> Js_long.to_int32 args
-  | Pabsfloat -> 
+  (* | Pabsfloat -> 
     begin match args with 
       | [e] ->
         E.math "abs" [e]
       (* GCC treat built-ins like Math in a dirfferent way*)
       | _ -> assert false
-    end
+    end *)
   | Pnot ->
-    begin match args with
-      | [e] ->  E.not  e 
-      | _ -> assert false
-    end
+    E.not  (Ext_list.singleton_exn args)       
   | Poffsetint n ->
-    begin match args with
-      | [e] ->  E.int32_add  e (E.small_int  n)
-      | _ -> assert false
-    end
+    E.int32_add (Ext_list.singleton_exn args) (E.small_int  n)      
   | Poffsetref n ->
-    begin match args with
-      | [e] -> 
-        let v = (Js_of_lam_block.field Fld_na e 0l) in
-        E.seq (E.assign  v (E.int32_add v (E.small_int  n))) E.unit
-      | _ -> assert false
-    end
-
+    let v = (Js_of_lam_block.field Fld_na (Ext_list.singleton_exn args) 0l) in
+    E.seq (E.assign  v (E.int32_add v (E.small_int  n))) E.unit
   | Psequand -> (* TODO: rhs is possibly a tail call *)
     begin match args with
       | [e1;e2] ->
@@ -544,31 +480,17 @@ let translate  loc
       | _ -> assert false
     end
   | Pbytes_of_string -> 
-    begin 
       (* TODO: write a js primitive  - or is it necessary ?
          if we have byte_get/string_get
          still necessary, since you can set it now.
       *)
-      match args with 
-      |[e] -> Js_of_lam_string.bytes_of_string e
-      | _ -> assert false
-    end
+    Js_of_lam_string.bytes_of_string (Ext_list.singleton_exn args)      
   | Pbytes_to_string  -> 
-    begin 
-      match args with 
-      |[e] -> Js_of_lam_string.bytes_to_string e 
-      | _ -> assert false
-    end
+    Js_of_lam_string.bytes_to_string (Ext_list.singleton_exn args)      
   | Pstringlength ->
-    begin match args with
-      | [e] -> E.string_length e 
-      | _ -> assert false 
-    end
+    E.string_length (Ext_list.singleton_exn args)      
   | Pbyteslength  -> 
-    begin match args with
-      | [e] -> E.bytes_length e 
-      | _ -> assert false 
-    end
+    E.bytes_length (Ext_list.singleton_exn args)      
   (* This should only be Pbyteset(u|s), which in js, is an int array 
      Bytes is an int array in javascript
   *)
@@ -617,10 +539,7 @@ let translate  loc
 
   (* Runtime encoding relevant *)
   | Parraylength -> 
-    begin match args with 
-      | [e] -> E.array_length e 
-      | _ -> assert false
-    end
+    E.array_length (Ext_list.singleton_exn args)      
   | Psetfield (i, field_info) -> 
     (match args with 
      | [e0;e1] ->  (** RUNTIME *)
@@ -628,6 +547,13 @@ let translate  loc
          (Js_of_lam_block.set_field field_info e0 (Int32.of_int i) e1)
      (*TODO: get rid of [E.unit ()]*)
      | _ -> assert false)    
+  | Psetfield_computed ->      
+    (match args with 
+    | [self; index; value] ->
+      ensure_value_unit cxt.continuation
+        (Js_of_lam_block.set_field_by_exp self index value)
+    | _ -> assert false
+    )
   | Psetfloatfield (i,field_info)
     -> (** RUNTIME --  RETURN VALUE SHOULD BE UNIT *)
     (match args with 
@@ -636,11 +562,8 @@ let translate  loc
          (Js_of_lam_float_record.set_double_field field_info e (Int32.of_int i) e0 ) 
      | _ -> assert false)
   | Pfloatfield (i, field_info) -> (** RUNTIME *)    
-    (match args with 
-     | [e] ->
-       Js_of_lam_float_record.get_double_feild field_info e
+      Js_of_lam_float_record.get_double_feild field_info (Ext_list.singleton_exn args)
          (Int32.of_int i) 
-     | _ -> assert false )    
   | Parrayrefu ->  
     (match args with
      | [e;e1] -> Js_of_lam_array.ref_array e e1 (* Todo: Constant Folding *)
@@ -668,12 +591,7 @@ let translate  loc
       loc cxt arg_types ffi args 
   (** FIXME, this can be removed later *)
   | Pisint -> 
-    begin 
-      match args with 
-      | [e] ->  E.is_type_number e 
-
-      | _ ->   assert false
-    end
+    E.is_type_number (Ext_list.singleton_exn args)
   | Pctconst ct -> 
     (match ct with 
      | Big_endian -> E.bool Sys.big_endian
@@ -683,21 +601,38 @@ let translate  loc
      | Ostype_win32 -> E.bool Sys.win32      
      | Ostype_cygwin -> E.bool Sys.cygwin
 #if OCAML_VERSION =~ ">4.03.0" then
-     | Int_size
-     | Max_wosize
-     | Backend_type  -> assert false (* FIXME*)
+     | Int_size -> E.int 32l
+     | Max_wosize ->
+      (* max_array_length*)
+       E.int 2147483647l (* 2 ^ 31 - 1 *) 
+        (* 4_294_967_295l  not representable*)
+        (* 2 ^ 32 - 1*)
+     | Backend_type  -> 
+      E.make_block
+        E.zero_int_literal 
+        (Blk_constructor ("Other",1))
+        [E.str "BS"] Immutable
 #end
      )
     
   | Pduprecord ((Record_regular 
-                | Record_float ),_) -> 
+                | Record_float 
+#if OCAML_VERSION =~ ">4.03.0" then   
+                | Record_inlined {tag = 0; num_nonconsts = 1}
+                | Record_extension
+#end                
+                ),_) -> 
     (* _size is the length of all_lables*)
     (* TODO: In debug mode, need switch to  *)
     Lam_dispatch_primitive.translate loc "caml_array_dup" args
 #if OCAML_VERSION =~ ">4.03.0" then
-  | Pduprecord ((Record_extension|Record_unboxed _|Record_inlined _), _)
+  | Pduprecord (Record_unboxed _inlined,_) 
+    -> assert false
+  | Pduprecord (Record_inlined _, _)
     -> 
-    assert false (* FIXME *)
+    Lam_dispatch_primitive.translate loc "caml_obj_dup" args
+    (* check dubug mode *)
+  
 #end
   | Pbigarrayref (unsafe, dimension, kind, layout)
     -> 

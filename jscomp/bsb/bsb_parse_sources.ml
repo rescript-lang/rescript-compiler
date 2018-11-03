@@ -174,7 +174,7 @@ let extract_generators
   begin match String_map.find_opt Bsb_build_schemas.generators input with
     | Some (Arr { content ; loc_start}) ->
       (* Need check is dev build or not *)
-      Array.iter begin fun (x : Ext_json_types.t) ->
+      Ext_array.iter content (fun x ->
         match x with
         | Obj { map = generator; loc} ->
           begin match String_map.find_opt Bsb_build_schemas.name generator,
@@ -201,7 +201,7 @@ let extract_generators
               Bsb_exception.errorf ~loc "Invalid generator format"
           end
         | _ -> Bsb_exception.errorf ~loc:(Ext_json.loc_of x) "Invalid generator format"
-      end  content 
+      )  
     | Some x  -> Bsb_exception.errorf ~loc:(Ext_json.loc_of x ) "Invalid generator format"
     | None -> ()
   end ;
@@ -225,7 +225,7 @@ let clean_staled_bs_js_files
     (context : cxt) 
     (cur_sources : _ String_map.t ) 
     (files : string array)  =     
-  Array.iter begin fun current_file -> 
+  Ext_array.iter files (fun current_file -> 
     match Ext_namespace.ends_with_bs_suffix_then_chop current_file  with
     | None -> ()
     | Some basename -> (* Found [.bs.js] files *)
@@ -244,25 +244,24 @@ let clean_staled_bs_js_files
                match Sys.getenv "BS_CMT_POST_PROCESS_CMD" with 
                | exception _ -> ()
                | cmd -> 
-                 try 
+                 Ext_pervasives.try_it (fun _ -> 
                    Sys.command (
                      cmd ^ 
                      " -cmt-rm " ^
-                     Filename.concat lib_parent (basename ^ Literals.suffix_cmt))
-                   |> ignore
-                 with 
-                   _  -> ()
+                     Filename.concat lib_parent (basename ^ Literals.suffix_cmt))                   
+                 )
              );
-             List.iter (fun suffix -> 
-              try_unlink (Filename.concat lib_parent (basename ^ suffix))
-             ) [
+             Ext_list.iter [
                 Literals.suffix_cmi; Literals.suffix_cmj ; 
                 Literals.suffix_cmt; Literals.suffix_cmti ; 
                 Literals.suffix_mlast; Literals.suffix_mlastd;
                 Literals.suffix_mliast; Literals.suffix_mliastd
-             ];
+                (*TODO: GenType*)
+             ] (fun suffix -> 
+              try_unlink (Filename.concat lib_parent (basename ^ suffix))
+             )
            end           
-  end files
+  )
 
 let rec 
   parsing_source_dir_map 
@@ -461,7 +460,7 @@ type walk_cxt = {
 let rec walk_sources (cxt : walk_cxt) (sources : Ext_json_types.t) = 
   match sources with 
   | Arr {content =  file_groups} -> 
-    Array.iter (fun x -> walk_single_source cxt x) file_groups
+    Ext_array.iter file_groups (fun x -> walk_single_source cxt x) 
   | x -> walk_single_source  cxt x    
 and walk_single_source cxt (x : Ext_json_types.t) =      
   match x with 
@@ -486,9 +485,8 @@ and walk_single_source cxt (x : Ext_json_types.t) =
 and walk_source_dir_map (cxt : walk_cxt) (input : Ext_json_types.t String_map.t) =   
     let working_dir = Filename.concat cxt.root cxt.cwd in 
     let file_array = Sys.readdir working_dir in 
-    (* Format.fprintf Format.err_formatter 
-      "@[Walking %s@]@." working_dir; *)
-    file_array |> Array.iter begin fun file -> 
+    (* Remove .re.js when clean up *)
+    Ext_array.iter file_array begin fun file -> 
         if Ext_string.ends_with file Literals.suffix_re_js then 
           Sys.remove (Filename.concat working_dir file)
     end; 
@@ -498,7 +496,7 @@ and walk_source_dir_map (cxt : walk_cxt) (input : Ext_json_types.t String_map.t)
     match sub_dirs_field, cxt_traverse with     
     | None, true 
     | Some(True _), _ -> 
-      file_array |> Array.iter begin fun f -> 
+      Ext_array.iter file_array begin fun f -> 
       if Sys.is_directory (Filename.concat working_dir f ) then 
         walk_source_dir_map 
         {cxt with 
@@ -512,18 +510,19 @@ and walk_source_dir_map (cxt : walk_cxt) (input : Ext_json_types.t String_map.t)
     | Some (False _), _ -> ()      
     | Some s, _ -> walk_sources cxt s 
 
+(* It makes use of the side effect when [walk_sources], removing suffix_re_js,
+   TODO: make it configurable
+ *)
 let clean_re_js root =     
   match Ext_json_parse.parse_json_from_file 
       (Filename.concat root Literals.bsconfig_json) with 
   | Obj {map ; loc} -> 
-    begin match String_map.find_opt Bsb_build_schemas.sources map with 
+    (match String_map.find_opt Bsb_build_schemas.sources map with 
     | Some config -> 
-      (try 
-        walk_sources 
-        { root ; traverse = true; cwd = Filename.current_dir_name} config
-      with _ -> ())
-    | None  -> ()
-    end  
+      Ext_pervasives.try_it (fun () -> 
+           walk_sources { root ; traverse = true; cwd = Filename.current_dir_name} config
+        )      
+    | None  -> ())
   | _  -> () 
   | exception _ -> ()    
   

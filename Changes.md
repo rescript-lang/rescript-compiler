@@ -1,3 +1,41 @@
+
+* potential break changes
+
+# 4.0.7
+
+Features
+- #3072 Add List.filter/WithIndex and List.keep/WithIndex
+
+Fix
+- #3084,#3083 optimization triggers exception 
+- #3085 Wrong optimizer
+- #3105 A corner case of optional encoding
+
+Code gen
+- * #3073, #3079, #3080 no arity tweaking. Function with unit as argument will have arity one
+- #3078 better codegen for switch
+- #3088 better codegen for if statement
+
+# 4.0.6
+
+## ReasonML synced 76b27
+
+Fixes
+- #3064 upgrade `webpack-cli` to fix broken `npm run webpack`
+- #3054, #3502 fix some potential bugs in codegen
+- #3047 handle null values correctly in the devtools custom formatter
+- #3036 fix #3018 about dom in playground
+- #3017 *important* fix #3010 nodejs browser loader evaluated code twice
+
+Features
+- #3051,#3039 add List.keepWithIndex, reduceWithIndex
+- #3046 add Js.Global.setTimeOutFloat and setIntervalFloat
+
+Docs
+- #3603 add documentation to Belt.Result
+- #3031 fix typo in Belt.Option.flatMap example
+
+
 # 4.0.4
 Fixes
 - #3001 fix regressios in refmt

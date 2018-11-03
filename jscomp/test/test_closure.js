@@ -7,13 +7,13 @@ var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js")
 
 var v = /* record */[/* contents */0];
 
-function f() {
-  var arr = Caml_array.caml_make_vect(10, (function () {
+function f(param) {
+  var arr = Caml_array.caml_make_vect(10, (function (param) {
           return /* () */0;
         }));
   for(var i = 0; i <= 9; ++i){
     Caml_array.caml_array_set(arr, i, (function(i){
-        return function () {
+        return function (param) {
           v[0] = v[0] + i | 0;
           return /* () */0;
         }

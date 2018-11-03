@@ -14,7 +14,7 @@ var b = v.l;
 
 var c = v.open;
 
-function ff() {
+function ff(param) {
   v["Content-Type"] = 3;
   v.l = 2;
   return /* () */0;
@@ -22,7 +22,7 @@ function ff() {
 
 var partial_arg = "x";
 
-function h0() {
+function h0(param) {
   var tmp = {
     hi: 2
   };

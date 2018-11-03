@@ -136,7 +136,7 @@ catch (raw_e$1){
 Mt.from_pair_suites("exception_raise_test.ml", /* :: */[
       /* tuple */[
         "File \"exception_raise_test.ml\", line 113, characters 4-11",
-        (function () {
+        (function (param) {
             return /* Eq */Block.__(0, [
                       /* tuple */[
                         f,
@@ -156,7 +156,7 @@ Mt.from_pair_suites("exception_raise_test.ml", /* :: */[
       /* :: */[
         /* tuple */[
           "File \"exception_raise_test.ml\", line 115, characters 4-11",
-          (function () {
+          (function (param) {
               if (a1[0] === Js_exn.$$Error) {
                 return /* Eq */Block.__(0, [
                           a1[1],

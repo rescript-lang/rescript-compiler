@@ -10,7 +10,7 @@ Caml_obj.caml_update_dummy(ys, /* :: */[
       ys
     ]);
 
-function _zs() {
+function _zs(param) {
   return /* tuple */[
           List.hd(ys),
           List.hd(xs[0])
@@ -57,7 +57,7 @@ function even2(n) {
 
 var v = /* record */[/* contents */0];
 
-function obj_000() {
+function obj_000(param) {
   return v[0];
 }
 

@@ -15,7 +15,7 @@ function eq(loc, x, y) {
   suites[0] = /* :: */[
     /* tuple */[
       loc + (" id " + String(test_id[0])),
-      (function () {
+      (function (param) {
           return /* Eq */Block.__(0, [
                     x,
                     y
@@ -33,7 +33,7 @@ var class_tables = [
   0
 ];
 
-function create() {
+function create(param) {
   if (!class_tables[0]) {
     var $$class = CamlinternalOO.create_table([
           "add",
@@ -49,12 +49,12 @@ function create() {
     var data = ids[2];
     CamlinternalOO.set_methods($$class, /* array */[
           add,
-          (function (self$1, _) {
+          (function (self$1, param) {
               self$1[data] = self$1[data] + 1 | 0;
               return self$1;
             }),
           get,
-          (function (self$1, _) {
+          (function (self$1, param) {
               return self$1[data];
             })
         ]);

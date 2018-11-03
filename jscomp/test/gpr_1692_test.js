@@ -1,8 +1,8 @@
 'use strict';
 
 
-(function () {
-        return (function () {
+(function (x) {
+        return (function (f) {
             return 0;
           });
       })("")("");

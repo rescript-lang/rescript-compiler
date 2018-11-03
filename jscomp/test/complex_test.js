@@ -6,7 +6,7 @@ var Complex = require("../../lib/js/complex.js");
 
 var suites_000 = /* tuple */[
   "basic_add",
-  (function () {
+  (function (param) {
       return /* Eq */Block.__(0, [
                 /* record */[
                   /* re */2,

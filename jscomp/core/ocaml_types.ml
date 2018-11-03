@@ -78,7 +78,10 @@ let rec dump_summary fmt (x : Env.summary) =
 
 (** Used in [ Lglobal_module] *)
 let get_name  (serializable_sigs : t) (pos : int) = 
-  Ident.name (name_of_signature_item (List.nth  serializable_sigs  pos))
+  Ident.name 
+    (name_of_signature_item 
+      (match Ext_list.nth_opt  serializable_sigs  pos with Some x -> x 
+      | None -> assert false))
 
 let map (f : string -> 'a ) (xs : t) = 
   Ext_list.map xs 

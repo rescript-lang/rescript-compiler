@@ -64,8 +64,8 @@ let pp_cmj fmt
                 k 
                 (not non_saved)
                 (fun fmt xs ->
-                   Array.iter (fun arity -> p fmt "@[%a@]@ ;" Lam_arity.print arity ) 
-                     xs) xs 
+                   Ext_array.iter xs (fun arity -> p fmt "@[%a@]@ ;" Lam_arity.print arity ) 
+                     ) xs 
 
          )) values
 

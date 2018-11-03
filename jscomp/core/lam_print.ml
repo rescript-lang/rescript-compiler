@@ -96,7 +96,7 @@ let record_rep ppf r =
   | Record_regular -> fprintf ppf "regular"
   | Record_float -> fprintf ppf "float"
 #if OCAML_VERSION =~ ">4.03.0" then
-  | Record_inlined i -> fprintf ppf "inlined %d" i 
+  | Record_inlined {tag = i} -> fprintf ppf "inlined %d" i 
   | Record_unboxed b -> fprintf ppf "unboxed %b" b
   | Record_extension -> fprintf ppf "ext"
 #end
@@ -115,7 +115,6 @@ let primitive ppf (prim : Lam_primitive.t) = match prim with
   | Pcreate_extension s -> fprintf ppf "[ext-create]%S" s 
   | Pwrap_exn -> fprintf ppf "#exn"
   | Pcaml_obj_length -> fprintf ppf "#obj_length"
-  | Pcaml_obj_set_length -> fprintf ppf "#obj_set_length"
   | Pinit_mod -> fprintf ppf "init_mod!"
   | Pupdate_mod -> fprintf ppf "update_mod!"
   | Pbytes_to_string -> fprintf ppf "bytes_to_string"
@@ -151,6 +150,10 @@ let primitive ppf (prim : Lam_primitive.t) = match prim with
   | Pmakeblock(tag, _, Immutable) -> fprintf ppf "makeblock %i" tag
   | Pmakeblock(tag, _, Mutable) -> fprintf ppf "makemutable %i" tag
   | Pfield (n,_) -> fprintf ppf "field %i" n
+  | Pfield_computed -> 
+    fprintf ppf "field_computed"
+  | Psetfield_computed -> 
+    fprintf ppf "setfield_computed"
   | Psetfield(n,  _) ->
     let instr = "setfield " in
     fprintf ppf "%s%i" instr n
@@ -191,7 +194,7 @@ let primitive ppf (prim : Lam_primitive.t) = match prim with
   | Pintoffloat -> fprintf ppf "int_of_float"
   | Pfloatofint -> fprintf ppf "float_of_int"
   | Pnegfloat -> fprintf ppf "~."
-  | Pabsfloat -> fprintf ppf "abs."
+  (* | Pabsfloat -> fprintf ppf "abs." *)
   | Paddfloat -> fprintf ppf "+."
   | Psubfloat -> fprintf ppf "-."
   | Pmulfloat -> fprintf ppf "*."
@@ -378,14 +381,15 @@ let get_string ((id : Ident.t), (pos : int)) (env : Env.t) : string =
           | Sig_value _ -> true
           | _ -> false
         ) signature  in
-    (begin match List.nth  serializable_sigs  pos  with 
-       | Sig_value (i,_) 
-       | Sig_module (i,_,_) -> i 
-       | Sig_typext (i,_,_) -> i 
-       | Sig_modtype(i,_) -> i 
-       | Sig_class (i,_,_) -> i 
-       | Sig_class_type(i,_,_) -> i 
-       | Sig_type(i,_,_) -> i 
+    (begin match Ext_list.nth_opt  serializable_sigs  pos  with 
+       | Some (Sig_value (i,_) 
+       | Sig_module (i,_,_) 
+       | Sig_typext (i,_,_) 
+       | Sig_modtype(i,_) 
+       | Sig_class (i,_,_) 
+       | Sig_class_type(i,_,_) 
+       | Sig_type(i,_,_)) -> i 
+       | None -> assert false
      end).name
   | _ -> assert false
 

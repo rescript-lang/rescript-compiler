@@ -351,7 +351,7 @@ function make($staropt$star, refill) {
   var bufsize = $staropt$star !== undefined ? $staropt$star : 1024;
   var bufsize$1 = Caml_primitive.caml_int_min(bufsize > 16 ? bufsize : 16, Sys.max_string_length);
   return /* record */[
-          /* buf */Caml_string.caml_create_string(bufsize$1),
+          /* buf */Caml_string.caml_create_bytes(bufsize$1),
           /* refill */refill,
           /* atom */$$Buffer.create(32),
           /* i */0,
@@ -485,7 +485,7 @@ function expr_starting_with(c, k, t) {
                   ]);
       }
     } else {
-      return skip_comment((function (_, _$1) {
+      return skip_comment((function (param, param$1) {
                     return expr(k, t);
                   }), t);
     }
@@ -582,7 +582,7 @@ function expr_list(acc, k, t) {
                                       ]);
                           }
                         } else {
-                          return expr_list(/* [] */0, (function (_, l) {
+                          return expr_list(/* [] */0, (function (param, l) {
                                         return expr_list(/* :: */[
                                                     l,
                                                     acc
@@ -858,7 +858,7 @@ function expr_or_end(k, t) {
     if (t[/* i */3] === t[/* len */4]) {
       return _refill(t, (function (param) {
                     return expr_or_end(k, param);
-                  }), (function () {
+                  }), (function (param) {
                     return /* End */3455931;
                   }));
     } else {
@@ -879,7 +879,7 @@ function expr_or_end(k, t) {
 }
 
 function next(t) {
-  return expr_or_end((function (_, x) {
+  return expr_or_end((function (param, x) {
                 return /* `Ok */[
                         17724,
                         x
@@ -890,7 +890,7 @@ function next(t) {
 function parse_string(s) {
   var n = s.length;
   var stop = /* record */[/* contents */false];
-  var refill = function (bytes, i, _) {
+  var refill = function (bytes, i, _len) {
     if (stop[0]) {
       return 0;
     } else {
@@ -930,7 +930,7 @@ function parse_chan_gen(bufsize, ic) {
   var d = make(bufsize, (function (param, param$1, param$2) {
           return Pervasives.input(ic, param, param$1, param$2);
         }));
-  return (function () {
+  return (function (param) {
       var e = next(d);
       if (typeof e === "number") {
         return undefined;
@@ -983,7 +983,7 @@ function MakeDecode(funarg) {
     var bufsize = $staropt$star !== undefined ? $staropt$star : 1024;
     var bufsize$1 = Caml_primitive.caml_int_min(bufsize > 16 ? bufsize : 16, Sys.max_string_length);
     return /* record */[
-            /* buf */Caml_string.caml_create_string(bufsize$1),
+            /* buf */Caml_string.caml_create_bytes(bufsize$1),
             /* refill */refill,
             /* atom */$$Buffer.create(32),
             /* i */0,
@@ -1111,7 +1111,7 @@ function MakeDecode(funarg) {
                     ]);
         }
       } else {
-        return skip_comment((function (_, _$1) {
+        return skip_comment((function (param, param$1) {
                       return expr(k, t);
                     }), t);
       }
@@ -1207,7 +1207,7 @@ function MakeDecode(funarg) {
                                         ]);
                             }
                           } else {
-                            return expr_list(/* [] */0, (function (_, l) {
+                            return expr_list(/* [] */0, (function (param, l) {
                                           return expr_list(/* :: */[
                                                       l,
                                                       acc
@@ -1475,7 +1475,7 @@ function MakeDecode(funarg) {
       if (t[/* i */3] === t[/* len */4]) {
         return _refill(t, (function (param) {
                       return expr_or_end(k, param);
-                    }), (function () {
+                    }), (function (param) {
                       return Curry._1(funarg[/* return */0], /* End */3455931);
                     }));
       } else {
@@ -1495,7 +1495,7 @@ function MakeDecode(funarg) {
     };
   };
   var next = function (t) {
-    return expr_or_end((function (_, x) {
+    return expr_or_end((function (param, x) {
                   return Curry._1(funarg[/* return */0], /* `Ok */[
                               17724,
                               x

@@ -2,7 +2,7 @@
 
 var Moduleid = require("#moduleid");
 
-function f() {
+function f(param) {
   return Moduleid.name;
 }
 

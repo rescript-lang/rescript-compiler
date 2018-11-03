@@ -47,7 +47,7 @@ function u() {
 
 var vvv = /* record */[/* contents */0];
 
-function fff() {
+function fff(param) {
   console.log("x");
   console.log("x");
   vvv[0] = vvv[0] + 1 | 0;
@@ -71,7 +71,7 @@ g();
 Mt.from_pair_suites("ffi_arity_test.ml", /* :: */[
       /* tuple */[
         "File \"ffi_arity_test.ml\", line 45, characters 4-11",
-        (function () {
+        (function (param) {
             return /* Eq */Block.__(0, [
                       v,
                       /* array */[
@@ -85,7 +85,7 @@ Mt.from_pair_suites("ffi_arity_test.ml", /* :: */[
       /* :: */[
         /* tuple */[
           "File \"ffi_arity_test.ml\", line 46, characters 4-11",
-          (function () {
+          (function (param) {
               return /* Eq */Block.__(0, [
                         vv,
                         /* array */[
@@ -99,7 +99,7 @@ Mt.from_pair_suites("ffi_arity_test.ml", /* :: */[
         /* :: */[
           /* tuple */[
             "File \"ffi_arity_test.ml\", line 47, characters 4-11",
-            (function () {
+            (function (param) {
                 return /* Eq */Block.__(0, [
                           hh,
                           /* array */[
@@ -113,7 +113,7 @@ Mt.from_pair_suites("ffi_arity_test.ml", /* :: */[
           /* :: */[
             /* tuple */[
               "File \"ffi_arity_test.ml\", line 48, characters 4-11",
-              (function () {
+              (function (param) {
                   return /* Eq */Block.__(0, [
                             /* array */[
                                   1,
@@ -137,7 +137,7 @@ Mt.from_pair_suites("ffi_arity_test.ml", /* :: */[
             /* :: */[
               /* tuple */[
                 "File \"ffi_arity_test.ml\", line 53, characters 4-11",
-                (function () {
+                (function (param) {
                     return /* Eq */Block.__(0, [
                               /* array */[
                                   1,

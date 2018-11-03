@@ -100,7 +100,6 @@ and property_map =
     (property_name * expression) list
 and length_object = Js_op.length_object
 and expression_desc =
-  | Math of string * expression list
   | Length of expression * length_object
   | Char_of_int of expression
   | Char_to_int of expression 
@@ -132,14 +131,16 @@ and expression_desc =
         some primitive  call is translated 
         into a plain call, it's better to keep them
     *) 
-  | String_access of expression * expression 
-  | Access of expression * expression 
-    (* Invariant: 
+  | String_index of expression * expression 
+    (* str.[i])*)
+  | Array_index of expression * expression 
+    (* arr.(i)
+       Invariant: 
        The second argument has to be type of [int],
-       This can be constructed either in a static way [E.index] or a dynamic way 
-       [E.access]
+       This can be constructed either in a static way [E.array_index_by_int] or a dynamic way 
+       [E.array_index]
      *)
-  | Dot of expression * string * bool
+  | Static_index of expression * string 
     (* The third argument bool indicates whether we should 
        print it as 
        a["idd"] -- false
@@ -189,8 +190,8 @@ and expression_desc =
      you have to use [E.tag] in a safe way     
   *)
   | Caml_block_tag of expression
-  | Caml_block_set_tag of expression * expression
-  | Caml_block_set_length of expression * expression
+  (* | Caml_block_set_tag of expression * expression *)
+  (* | Caml_block_set_length of expression * expression *)
   (* It will just fetch tag, to make it safe, when creating it, 
      we need apply "|0", we don't do it in the 
      last step since "|0" can potentially be optimized

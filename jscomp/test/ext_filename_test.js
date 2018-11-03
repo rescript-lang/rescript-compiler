@@ -25,7 +25,7 @@ var node_parent = "..";
 
 var node_current = ".";
 
-var cwd = Block.__(246, [(function () {
+var cwd = Block.__(246, [(function (param) {
         return Caml_sys.caml_sys_getcwd(/* () */0);
       })]);
 
@@ -135,7 +135,7 @@ function relative_path(file_or_dir_1, file_or_dir_2) {
         exit = 1;
       }
       if (exit === 1) {
-        return Pervasives.$at(List.map((function () {
+        return Pervasives.$at(List.map((function (param) {
                           return node_parent;
                         }), dir2), dir1);
       }
@@ -234,7 +234,7 @@ function find_package_json_dir(cwd) {
   return find_root_filename(cwd, Test_literals.bsconfig_json);
 }
 
-var package_dir = Block.__(246, [(function () {
+var package_dir = Block.__(246, [(function (param) {
         var tag = cwd.tag | 0;
         var cwd$1 = tag === 250 ? cwd[0] : (
             tag === 246 ? CamlinternalLazy.force_lazy_block(cwd) : cwd
@@ -313,13 +313,13 @@ function rel_normalized_absolute_path(from, to_) {
             _xss = xs;
             continue ;
           } else {
-            var start = List.fold_left((function (acc, _) {
+            var start = List.fold_left((function (acc, param) {
                     return Filename.concat(acc, Ext_string_test.parent_dir_lit);
                   }), Ext_string_test.parent_dir_lit, xs);
             return List.fold_left(Filename.concat, start, yss);
           }
         } else {
-          return List.fold_left((function (acc, _) {
+          return List.fold_left((function (acc, param) {
                         return Filename.concat(acc, Ext_string_test.parent_dir_lit);
                       }), Ext_string_test.parent_dir_lit, xs);
         }

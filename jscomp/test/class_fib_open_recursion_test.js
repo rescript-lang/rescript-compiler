@@ -19,7 +19,7 @@ function eq(loc, x, y) {
   suites[0] = /* :: */[
     /* tuple */[
       loc + (" id " + String(test_id[0])),
-      (function () {
+      (function (param) {
           return /* Eq */Block.__(0, [
                     x,
                     y
@@ -40,7 +40,7 @@ function fib_init($$class) {
             return Curry._2(self$1[0][calc], self$1, x - 1 | 0) + Curry._2(self$1[0][calc], self$1, x - 2 | 0) | 0;
           }
         }));
-  return (function (_, self) {
+  return (function (env, self) {
       return CamlinternalOO.create_object_opt(self, $$class);
     });
 }
@@ -68,7 +68,7 @@ function memo_fib_init($$class) {
             }
           }
         }));
-  return (function (_, self) {
+  return (function (env, self) {
       var self$1 = CamlinternalOO.create_object_opt(self, $$class);
       self$1[cache] = Hashtbl.create(undefined, 31);
       Curry._1(obj_init, self$1);

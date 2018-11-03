@@ -36,6 +36,8 @@ external reraise: exn -> 'a = "%reraise"
 
 val finally : 'a -> ('a -> 'c) -> ('a -> 'b) -> 'b
 
+val try_it : (unit -> 'a) ->  unit 
+
 val with_file_as_chan : string -> (out_channel -> 'a) -> 'a
 
 val with_file_as_pp : string -> (Format.formatter -> 'a) -> 'a
@@ -58,3 +60,5 @@ external id : 'a -> 'a = "%identity"
     need sync up and add test case
  *)
 val hash_variant : string -> int
+
+val todo : string -> 'a

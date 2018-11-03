@@ -22,7 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
+[@@@ocaml.warning "+9"]
 
 type ident = Ident.t
   
@@ -31,7 +31,7 @@ type record_representation = Types.record_representation =
     | Record_float
 #if OCAML_VERSION =~ ">4.03.0" then
     | Record_unboxed of bool    (* Unboxed single-field record, inlined or not *)
-    | Record_inlined of int               (* Inlined record *)
+    | Record_inlined of {tag : int; name : string; num_nonconsts : int}               (* Inlined record *)
     | Record_extension                    (* Inlined record under extension *)
 #end  
 
@@ -69,7 +69,8 @@ type t =
   | Poffsetref of int
   (* Float operations *)
   | Pintoffloat | Pfloatofint
-  | Pnegfloat | Pabsfloat
+  | Pnegfloat 
+  (* | Pabsfloat *) (* is {!Pervasives.abs_float} %abs_float*)
   | Paddfloat | Psubfloat | Pmulfloat | Pdivfloat
   | Pfloatcomp of Lam_compat.comparison
   | Pjscomp of Lam_compat.comparison
@@ -163,7 +164,6 @@ type t =
   | Pjs_typeof
   | Pjs_function_length
   | Pcaml_obj_length
-  | Pcaml_obj_set_length
   | Pwrap_exn (* convert either JS exception or OCaml exception into OCaml format *)
 
   (* | Pcreate_exception of string  *)
@@ -173,6 +173,10 @@ type t =
   | Pval_from_option_not_nest
   | Psome
   | Psome_not_nest  
+
+  | Pfield_computed (* Mostly used in object compilation *)
+  | Psetfield_computed
+
 
 
 
@@ -184,9 +188,11 @@ let eq_record_representation ( p : record_representation) ( p1 : record_represen
   | Record_unboxed b0 -> 
     (match p1 with 
     |Record_unboxed b1 -> b0 = b1 | _ -> false)
-  | Record_inlined b0 -> 
+  | Record_inlined {tag = a0; name = a1; num_nonconsts = a2 } -> 
     (match p1 with 
-    |Record_inlined b1 -> b0 = b1 | _ -> false)
+    |Record_inlined {tag = b0; name = b1; num_nonconsts = b2} ->
+       a0 = b0 && a1 = b1 && a2 = b2
+    | _ -> false)
   | Record_extension -> 
     p1 = Record_extension   
 #end
@@ -218,7 +224,7 @@ let eq_primitive_approx ( lhs : t) (rhs : t) =
   | Pintoffloat -> rhs = Pintoffloat
   | Pfloatofint -> rhs = Pfloatofint
   | Pnegfloat -> rhs =  Pnegfloat
-  | Pabsfloat -> rhs = Pabsfloat
+  (* | Pabsfloat -> rhs = Pabsfloat *)
   | Paddfloat -> rhs = Paddfloat
   | Psubfloat -> rhs = Psubfloat
   | Pmulfloat -> rhs = Pmulfloat
@@ -255,8 +261,12 @@ let eq_primitive_approx ( lhs : t) (rhs : t) =
   (* | Pjs_string_of_small_array -> rhs = Pjs_string_of_small_array *)
   (* | Pjs_is_instance_array -> rhs = Pjs_is_instance_array *)
   | Pcaml_obj_length -> rhs = Pcaml_obj_length
-  | Pcaml_obj_set_length -> rhs = Pcaml_obj_set_length
-  | Pccall {prim_name = n0 ;  prim_native_name = nn0} ->  (match rhs with Pccall {prim_name = n1; prim_native_name = nn1} ->    n0 = n1 && nn0 = nn1 | _ -> false )    
+  (* | Pcaml_obj_set_length -> rhs = Pcaml_obj_set_length *)
+  | Pccall {prim_name = n0 ;  prim_native_name = nn0; _} -> 
+   (match rhs with 
+   | Pccall {prim_name = n1; prim_native_name = nn1; _} 
+    -> n0 = n1 && nn0 = nn1 
+   | _ -> false )    
   | Pfield (n0, _dbg_info0) ->  (match rhs with Pfield (n1, _dbg_info1) ->  n0 = n1  | _ -> false )    
   | Psetfield(i0, _dbg_info0) -> (match rhs with Psetfield(i1, _dbg_info1) ->  i0 = i1  | _ -> false)
   | Pglobal_exception ident -> (match rhs with Pglobal_exception ident2 ->  Ident.same ident ident2 | _ -> false )
@@ -320,3 +330,5 @@ let eq_primitive_approx ( lhs : t) (rhs : t) =
   | Praw_js_code_exp _ 
   | Praw_js_code_stmt _ -> false (* TOO lazy, here comparison is only approximation*)
   
+  | Pfield_computed -> rhs = Pfield_computed
+  | Psetfield_computed -> rhs = Psetfield_computed

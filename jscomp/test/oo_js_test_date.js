@@ -18,7 +18,7 @@ var d3 = d2(2016)(1, /* () */0);
 
 var suites_000 = /* tuple */[
   "getMonth",
-  (function () {
+  (function (param) {
       return /* Eq */Block.__(0, [
                 2,
                 d.getMonth()
@@ -29,7 +29,7 @@ var suites_000 = /* tuple */[
 var suites_001 = /* :: */[
   /* tuple */[
     "getYear",
-    (function () {
+    (function (param) {
         return /* Eq */Block.__(0, [
                   /* tuple */[
                     2016,

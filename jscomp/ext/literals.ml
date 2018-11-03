@@ -43,9 +43,6 @@ let tmp = "tmp"
 
 let create = "create" (* {!Caml_exceptions.create}*)
 
-let app = "_"
-let app_array = "app" (* arguments are an array*)
-
 let runtime = "runtime" (* runtime directory *)
 
 let stdlib = "stdlib"
@@ -108,6 +105,7 @@ let suffix_mliastd = ".mliast.d"
 let suffix_js = ".js"
 let suffix_bs_js = ".bs.js"
 let suffix_re_js = ".re.js"
+let suffix_tsx = ".tsx"
 
 let commonjs = "commonjs" 
 let amdjs = "amdjs"

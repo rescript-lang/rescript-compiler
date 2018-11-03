@@ -14,7 +14,7 @@ function f(param) {
   return /* () */0;
 }
 
-function g() {
+function g(param) {
   return 3;
 }
 

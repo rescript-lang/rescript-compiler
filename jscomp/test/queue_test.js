@@ -28,7 +28,7 @@ function queue_1(x) {
 
 var suites_000 = /* tuple */[
   "simple push",
-  (function () {
+  (function (param) {
       var x = /* array */[
         3,
         4,

@@ -50,7 +50,7 @@ console.log(6, undefined);
 
 console.log(7, Js_primitive.option_get_unwrap((console.log("trace"), undefined)));
 
-function dyn_log3(prim, prim$1, _) {
+function dyn_log3(prim, prim$1, prim$2) {
   console.log(prim[1], prim$1 !== undefined ? Js_primitive.valFromOption(prim$1)[1] : undefined);
   return /* () */0;
 }

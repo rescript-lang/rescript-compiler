@@ -91,7 +91,7 @@ var epsilon_float = Caml_int64.float_of_bits(/* int64 */[
 function $caret(s1, s2) {
   var l1 = s1.length;
   var l2 = s2.length;
-  var s = Caml_string.caml_create_string(l1 + l2 | 0);
+  var s = Caml_string.caml_create_bytes(l1 + l2 | 0);
   Caml_string.caml_blit_string(s1, 0, s, 0, l1);
   Caml_string.caml_blit_string(s2, 0, s, l1, l2);
   return s;
@@ -181,7 +181,7 @@ var stdout = Caml_io.caml_ml_open_descriptor_out(1);
 
 var stderr = Caml_io.caml_ml_open_descriptor_out(2);
 
-function open_out_gen(_, _$1, _$2) {
+function open_out_gen(mode, perm, name) {
   return Caml_io.caml_ml_open_descriptor_out(Caml_missing_polyfill.not_implemented("caml_sys_open"));
 }
 
@@ -217,18 +217,18 @@ function open_out_bin(name) {
             ], 438, name);
 }
 
-function flush_all() {
+function flush_all(param) {
   var _param = Caml_io.caml_ml_out_channels_list(/* () */0);
   while(true) {
-    var param = _param;
-    if (param) {
+    var param$1 = _param;
+    if (param$1) {
       try {
-        Caml_io.caml_ml_flush(param[0]);
+        Caml_io.caml_ml_flush(param$1[0]);
       }
       catch (exn){
         
       }
-      _param = param[1];
+      _param = param$1[1];
       continue ;
     } else {
       return /* () */0;
@@ -266,7 +266,7 @@ function output_substring(oc, s, ofs, len) {
   }
 }
 
-function output_value(_, _$1) {
+function output_value(chan, v) {
   return Caml_missing_polyfill.not_implemented("caml_output_value");
 }
 
@@ -290,7 +290,7 @@ function close_out_noerr(oc) {
   }
 }
 
-function open_in_gen(_, _$1, _$2) {
+function open_in_gen(mode, perm, name) {
   return Caml_io.caml_ml_open_descriptor_in(Caml_missing_polyfill.not_implemented("caml_sys_open"));
 }
 
@@ -314,7 +314,7 @@ function open_in_bin(name) {
             ], 0, name);
 }
 
-function input(_, s, ofs, len) {
+function input(ic, s, ofs, len) {
   if (ofs < 0 || len < 0 || ofs > (s.length - len | 0)) {
     throw [
           Caml_builtin_exceptions.invalid_argument,
@@ -325,7 +325,7 @@ function input(_, s, ofs, len) {
   }
 }
 
-function unsafe_really_input(_, _$1, _ofs, _len) {
+function unsafe_really_input(ic, s, _ofs, _len) {
   while(true) {
     var len = _len;
     var ofs = _ofs;
@@ -356,7 +356,7 @@ function really_input(ic, s, ofs, len) {
 }
 
 function really_input_string(ic, len) {
-  var s = Caml_string.caml_create_string(len);
+  var s = Caml_string.caml_create_bytes(len);
   really_input(ic, s, 0, len);
   return s;
 }
@@ -386,17 +386,17 @@ function input_line(chan) {
     var n = Caml_missing_polyfill.not_implemented("caml_ml_input_scan_line");
     if (n === 0) {
       if (accu) {
-        return build_result(Caml_string.caml_create_string(len), len, accu);
+        return build_result(Caml_string.caml_create_bytes(len), len, accu);
       } else {
         throw Caml_builtin_exceptions.end_of_file;
       }
     } else if (n > 0) {
-      var res = Caml_string.caml_create_string(n - 1 | 0);
+      var res = Caml_string.caml_create_bytes(n - 1 | 0);
       Caml_missing_polyfill.not_implemented("caml_ml_input");
       Caml_io.caml_ml_input_char(chan);
       if (accu) {
         var len$1 = (len + n | 0) - 1 | 0;
-        return build_result(Caml_string.caml_create_string(len$1), len$1, /* :: */[
+        return build_result(Caml_string.caml_create_bytes(len$1), len$1, /* :: */[
                     res,
                     accu
                   ]);
@@ -404,7 +404,7 @@ function input_line(chan) {
         return res;
       }
     } else {
-      var beg = Caml_string.caml_create_string(-n | 0);
+      var beg = Caml_string.caml_create_bytes(-n | 0);
       Caml_missing_polyfill.not_implemented("caml_ml_input");
       _len = len - n | 0;
       _accu = /* :: */[
@@ -416,7 +416,7 @@ function input_line(chan) {
   };
 }
 
-function close_in_noerr() {
+function close_in_noerr(ic) {
   try {
     return Caml_missing_polyfill.not_implemented("caml_ml_close_channel");
   }
@@ -451,7 +451,7 @@ function print_endline(s) {
   return Caml_io.caml_ml_flush(stdout);
 }
 
-function print_newline() {
+function print_newline(param) {
   Caml_io.caml_ml_output_char(stdout, /* "\n" */10);
   return Caml_io.caml_ml_flush(stdout);
 }
@@ -482,21 +482,21 @@ function prerr_endline(s) {
   return Caml_io.caml_ml_flush(stderr);
 }
 
-function prerr_newline() {
+function prerr_newline(param) {
   Caml_io.caml_ml_output_char(stderr, /* "\n" */10);
   return Caml_io.caml_ml_flush(stderr);
 }
 
-function read_line() {
+function read_line(param) {
   Caml_io.caml_ml_flush(stdout);
   return input_line(stdin);
 }
 
-function read_int() {
+function read_int(param) {
   return Caml_format.caml_int_of_string((Caml_io.caml_ml_flush(stdout), input_line(stdin)));
 }
 
-function read_float() {
+function read_float(param) {
   return Caml_format.caml_float_of_string((Caml_io.caml_ml_flush(stdout), input_line(stdin)));
 }
 
@@ -517,14 +517,14 @@ var exit_function = /* record */[/* contents */flush_all];
 
 function at_exit(f) {
   var g = exit_function[0];
-  exit_function[0] = (function () {
+  exit_function[0] = (function (param) {
       Curry._1(f, /* () */0);
       return Curry._1(g, /* () */0);
     });
   return /* () */0;
 }
 
-function do_at_exit() {
+function do_at_exit(param) {
   return Curry._1(exit_function[0], /* () */0);
 }
 

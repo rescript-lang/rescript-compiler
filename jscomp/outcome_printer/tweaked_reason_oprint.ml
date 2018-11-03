@@ -149,9 +149,14 @@ let print_out_value ppf tree =
     | Oval_nativeint i -> fprintf ppf "%nin" i
     | Oval_float f -> pp_print_string ppf (float_repres f)
     | Oval_char c -> fprintf ppf "%C" c
-    | Oval_string s ->
+    | Oval_string 
+#if OCAML_VERSION =~ ">4.03.0" then (s,_,_)
+#else
+      s 
+#end      
+      -> (** FIXME cc @chenglou *)
         begin try fprintf ppf "\"%s\"" (Reason_syntax_util.escape_string s) with
-          Invalid_argument "String.create" -> fprintf ppf "<huge string>"
+          Invalid_argument s when s =  "String.create"  -> fprintf ppf "<huge string>"
         end
     | Oval_list tl ->
         fprintf ppf "@[<1>[%a]@]" (print_tree_list print_tree_1 ",") tl
@@ -400,8 +405,12 @@ and print_simple_out_type ppf =
           Ovar_fields fields ->
             print_list print_row_field (fun ppf -> fprintf ppf "@;<1 -2>| ")
               ppf fields
+#if OCAML_VERSION =~ ">4.03.0" then 
+        | Ovar_typ typ -> print_simple_out_type ppf typ 
+#else
         | Ovar_name (id, tyl) ->
             fprintf ppf "@[%a%a@]" print_typargs tyl print_ident id
+#end            
       in
       fprintf ppf "%s[%s@[<hv>@[<hv>%a@]%a ]@]" (if non_gen then "_" else "")
         (if closed then if tags = None then " " else "< "
@@ -425,7 +434,7 @@ and print_simple_out_type ppf =
         )
         n tyl;
       fprintf ppf ")@]"
-#if defined BS_NO_COMPILER_PATCH then
+#if OCAML_VERSION =~ ">4.03.0" then
   | Otyp_attribute (t, attr) ->
         fprintf ppf "@[<1>(%a [@@%s])@]" print_out_type t attr.oattr_name
 #end
@@ -446,7 +455,9 @@ and print_row_field ppf (l, opt_amp, tyl) =
     else fprintf ppf "" in
   let parens = match tyl with
     | [ (Otyp_tuple _) ] -> false (* tuples already have parentheses *)
-    | [ _ ] -> true
+    (* [< `Ok(string & int) ] ----> string & int
+     * [< `Ok(string) ] -----> string *)
+    | _::_ -> true
     | _ -> false in
   fprintf ppf "@[<hv 2>`%s%t%s%a%s@]"
     l
@@ -649,7 +660,7 @@ and print_out_sig_item ppf =
           | Orec_first -> "type"
           | Orec_next  -> "and")
         ppf td
-#if defined BS_NO_COMPILER_PATCH then
+#if OCAML_VERSION =~ ">4.03.0" then
   | Osig_ellipsis ->
     fprintf ppf "..."
   | Osig_value {oval_name; oval_type; oval_prims; oval_attributes} ->

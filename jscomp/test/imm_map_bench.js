@@ -30,7 +30,7 @@ var shuffledDataAdd = Belt_Array.makeByAndShuffle(1000001, (function (i) {
               ];
       }));
 
-function test() {
+function test(param) {
   var v = fromArray(shuffledDataAdd);
   for(var j = 0; j <= 1000000; ++j){
     should(v.has(j));
@@ -38,7 +38,7 @@ function test() {
   return /* () */0;
 }
 
-function test2() {
+function test2(param) {
   var v = Belt_MapInt.fromArray(shuffledDataAdd);
   for(var j = 0; j <= 1000000; ++j){
     should(Belt_MapInt.has(v, j));

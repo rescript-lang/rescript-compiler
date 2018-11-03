@@ -43,7 +43,7 @@ type t =
     (* eventually we can remove it, since we know
       [constant] is [undefined] or not 
     *) 
-
+val eq_approx : t -> t -> bool
 val convert_constant : 
   Lambda.structured_constant -> 
   t    

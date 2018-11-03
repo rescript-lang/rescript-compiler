@@ -51,7 +51,7 @@ let caml_string_get s i=
   else Bs_string.unsafe_get s i
 
 
-let caml_create_string len : bytes = 
+let caml_create_bytes len : bytes = 
   (* Node raise [RangeError] exception *)
   if len < 0 then raise (Invalid_argument "String.create")
   else 
@@ -65,7 +65,7 @@ let caml_create_string len : bytes =
 
 
 
-let caml_fill_string (s : bytes) i l (c : char) = 
+let caml_fill_bytes (s : bytes) i l (c : char) = 
   if l > 0 then
     for k = i to l + i - 1 do 
       unsafe_set s k c 

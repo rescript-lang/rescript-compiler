@@ -31,7 +31,7 @@ type record_representation = Types.record_representation =
     | Record_float
 #if OCAML_VERSION =~ ">4.03.0" then
     | Record_unboxed of bool    (* Unboxed single-field record, inlined or not *)
-    | Record_inlined of int               (* Inlined record *)
+    | Record_inlined of { tag : int; name : string; num_nonconsts : int}               (* Inlined record *)
     | Record_extension                    (* Inlined record under extension *)
 #end  
 
@@ -64,7 +64,8 @@ type t =
   | Poffsetint of int
   | Poffsetref of int
   | Pintoffloat | Pfloatofint
-  | Pnegfloat | Pabsfloat
+  | Pnegfloat 
+  (* | Pabsfloat *)
   | Paddfloat | Psubfloat | Pmulfloat | Pdivfloat
   | Pfloatcomp of Lam_compat.comparison
   | Pjscomp of Lam_compat.comparison
@@ -159,7 +160,6 @@ type t =
   | Pjs_typeof
   | Pjs_function_length 
   | Pcaml_obj_length
-  | Pcaml_obj_set_length
   | Pwrap_exn (* convert either JS exception or OCaml exception into OCaml format *)  
 
   (* | Pcreate_exception of string  *)
@@ -169,5 +169,9 @@ type t =
   | Pval_from_option_not_nest
   | Psome
   | Psome_not_nest
+
+
+  | Pfield_computed (* Mostly used in object compilation *)
+  | Psetfield_computed
 
 val eq_primitive_approx : t -> t -> bool  

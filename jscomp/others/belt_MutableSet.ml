@@ -311,7 +311,7 @@ let intersect a b  : _ t =
        )
     then S.t ~cmp ~data:N.empty
     else 
-      let tmp2 = A.makeUninitializedUnsafe (min sizea sizeb) in 
+      let tmp2 = A.makeUninitializedUnsafe (Pervasives.min sizea sizeb) in 
       let k = Sort.intersectU tmp 0 sizea tmp sizea sizeb tmp2 0 p in 
       S.t ~data:(N.fromSortedArrayAux tmp2 0 k)
         ~cmp

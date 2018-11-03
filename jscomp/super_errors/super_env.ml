@@ -36,7 +36,10 @@ let report_error ppf = function
   | Illegal_value_name(_loc, name) ->
       fprintf ppf "'%s' is not a valid value identifier."
         name
-
+#if OCAML_VERSION =~ ">4.03.0"  then 
+  | Depend_on_unsafe_string_unit (_,_) -> 
+      fprintf ppf "Depend_on_unsafe_string_unit" (*TODO*)
+#end
 (* This will be called in super_main. This is how you'd override the default error printer from the compiler & register new error_of_exn handlers *)
 let setup () =
   Location.register_error_of_exn

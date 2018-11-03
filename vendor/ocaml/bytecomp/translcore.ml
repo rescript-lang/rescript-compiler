@@ -711,6 +711,11 @@ let rec name_pattern default = function
       | _ -> name_pattern default rem
 
 (* Push the default values under the functional abstractions *)
+(* Also push bindings of module patterns, since this sound *)
+
+type binding =
+  | Bind_value of value_binding list
+  | Bind_module of Ident.t * string loc * module_expr 
 
 let rec push_defaults loc bindings cases partial =
   match cases with
@@ -723,13 +728,25 @@ let rec push_defaults loc bindings cases partial =
       c_rhs={exp_attributes=[{txt="#default"},_];
              exp_desc = Texp_let
                (Nonrecursive, binds, ({exp_desc = Texp_function _} as e2))}}] ->
-      push_defaults loc (binds :: bindings) [{c_lhs=pat;c_guard=None;c_rhs=e2}]
-                    partial
+      push_defaults loc (Bind_value binds :: bindings)
+                   [{c_lhs=pat;c_guard=None;c_rhs=e2}]
+                   partial
+  | [{c_lhs=pat; c_guard=None;
+      c_rhs={exp_attributes=[{txt="#modulepat"},_];
+             exp_desc = Texp_letmodule
+               (id, name, mexpr, ({exp_desc = Texp_function _} as e2))}}] ->
+      push_defaults loc (Bind_module (id, name, mexpr) :: bindings)
+                   [{c_lhs=pat;c_guard=None;c_rhs=e2}]
+                   partial
   | [case] ->
       let exp =
         List.fold_left
           (fun exp binds ->
-            {exp with exp_desc = Texp_let(Nonrecursive, binds, exp)})
+            {exp with exp_desc =
+             match binds with
+             | Bind_value binds -> Texp_let(Nonrecursive, binds, exp)
+             | Bind_module (id, name, mexpr) ->
+                 Texp_letmodule (id, name, mexpr, exp)})
           case.c_rhs bindings
       in
       [{case with c_rhs=exp}]
@@ -942,7 +959,9 @@ and transl_exp0 e =
           Lconst(Const_pointer (n,
             match lid.txt with
             | Lident ("false"|"true") -> Pt_builtin_boolean
-            | Lident "None" when Datarepr.constructor_has_optional_shape cstr
+            | Lident "None"
+            | Ldot (Lident "*predef*", "None")
+               when Datarepr.constructor_has_optional_shape cstr
               -> Pt_shape_none
             | _ -> (Lambda.Pt_constructor cstr.cstr_name)
             ))
@@ -1007,9 +1026,13 @@ and transl_exp0 e =
   | Texp_array expr_list ->
       let kind = array_kind e in
       let ll = transl_list expr_list in
+#if true then      
+      if !Clflags.bs_only then Lprim(Pmakearray kind, ll, e.exp_loc)
+      else 
+#end      
       begin try
         (* Deactivate constant optimization if array is small enough *)
-        if List.length ll <= 4 then raise Not_constant;
+        if List.length ll <= 4 then raise_notrace Not_constant;
         let cl = List.map extract_constant ll in
         let master =
           match kind with
@@ -1018,7 +1041,7 @@ and transl_exp0 e =
           | Pfloatarray ->
               Lconst(Const_float_array(List.map extract_float cl))
           | Pgenarray ->
-              raise Not_constant in             (* can this really happen? *)
+              raise_notrace Not_constant in             (* can this really happen? *)
         Lprim(Pccall (Lazy.force prim_obj_dup), [master], e.exp_loc)
       with Not_constant ->
         Lprim(Pmakearray kind, ll, e.exp_loc)

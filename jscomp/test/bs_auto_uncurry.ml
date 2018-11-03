@@ -1,5 +1,8 @@
 
 
+module Curry = struct 
+end 
+
 external map : 'a array -> ('a -> 'b [@bs.uncurry  ]) -> 'b array = 
     "Array.prototype.map.call"
     [@@bs.val]

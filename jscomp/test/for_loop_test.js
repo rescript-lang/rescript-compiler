@@ -9,13 +9,13 @@ var Caml_int32 = require("../../lib/js/caml_int32.js");
 
 function for_3(x) {
   var v = /* record */[/* contents */0];
-  var arr = $$Array.map((function (_, _$1) {
+  var arr = $$Array.map((function (param, param$1) {
           return /* () */0;
         }), x);
   for(var i = 0 ,i_finish = x.length - 1 | 0; i <= i_finish; ++i){
     var j = (i << 1);
     Caml_array.caml_array_set(arr, i, (function(j){
-        return function () {
+        return function (param) {
           v[0] = v[0] + j | 0;
           return /* () */0;
         }
@@ -29,14 +29,14 @@ function for_3(x) {
 
 function for_4(x) {
   var v = /* record */[/* contents */0];
-  var arr = $$Array.map((function (_, _$1) {
+  var arr = $$Array.map((function (param, param$1) {
           return /* () */0;
         }), x);
   for(var i = 0 ,i_finish = x.length - 1 | 0; i <= i_finish; ++i){
     var j = (i << 1);
     var k = (j << 1);
     Caml_array.caml_array_set(arr, i, (function(k){
-        return function () {
+        return function (param) {
           v[0] = v[0] + k | 0;
           return /* () */0;
         }
@@ -50,13 +50,13 @@ function for_4(x) {
 
 function for_5(x, u) {
   var v = /* record */[/* contents */0];
-  var arr = $$Array.map((function (_, _$1) {
+  var arr = $$Array.map((function (param, param$1) {
           return /* () */0;
         }), x);
   for(var i = 0 ,i_finish = x.length - 1 | 0; i <= i_finish; ++i){
     var k = Caml_int32.imul((u << 1), u);
     Caml_array.caml_array_set(arr, i, (function(k){
-        return function () {
+        return function (param) {
           v[0] = v[0] + k | 0;
           return /* () */0;
         }
@@ -70,7 +70,7 @@ function for_5(x, u) {
 
 function for_6(x, u) {
   var v = /* record */[/* contents */0];
-  var arr = $$Array.map((function (_, _$1) {
+  var arr = $$Array.map((function (param, param$1) {
           return /* () */0;
         }), x);
   var v4 = /* record */[/* contents */0];
@@ -86,7 +86,7 @@ function for_6(x, u) {
       var h = (v5[0] << 1);
       v2[0] = v2[0] + 1 | 0;
       Caml_array.caml_array_set(arr, i, (function(k,h){
-          return function () {
+          return function (param) {
             v[0] = (((((v[0] + k | 0) + v2[0] | 0) + v4[0] | 0) + v5[0] | 0) + h | 0) + u | 0;
             return /* () */0;
           }
@@ -106,16 +106,16 @@ function for_6(x, u) {
         ];
 }
 
-function for_7() {
+function for_7(param) {
   var v = /* record */[/* contents */0];
-  var arr = Caml_array.caml_make_vect(21, (function () {
+  var arr = Caml_array.caml_make_vect(21, (function (param) {
           return /* () */0;
         }));
   for(var i = 0; i <= 6; ++i){
     (function(i){
     for(var j = 0; j <= 2; ++j){
       Caml_array.caml_array_set(arr, Caml_int32.imul(i, 3) + j | 0, (function(j){
-          return function () {
+          return function (param) {
             v[0] = (v[0] + i | 0) + j | 0;
             return /* () */0;
           }
@@ -129,9 +129,9 @@ function for_7() {
   return v[0];
 }
 
-function for_8() {
+function for_8(param) {
   var v = /* record */[/* contents */0];
-  var arr = Caml_array.caml_make_vect(21, (function () {
+  var arr = Caml_array.caml_make_vect(21, (function (param) {
           return /* () */0;
         }));
   for(var i = 0; i <= 6; ++i){
@@ -140,7 +140,7 @@ function for_8() {
     for(var j = 0; j <= 2; ++j){
       var h = i + j | 0;
       Caml_array.caml_array_set(arr, Caml_int32.imul(i, 3) + j | 0, (function(j,h){
-          return function () {
+          return function (param) {
             v[0] = (((v[0] + i | 0) + j | 0) + h | 0) + k | 0;
             return /* () */0;
           }
@@ -154,7 +154,7 @@ function for_8() {
   return v[0];
 }
 
-function for_9() {
+function for_9(param) {
   var v = /* record */[/* contents : [] */0];
   var collect = function (x) {
     v[0] = /* :: */[
@@ -165,10 +165,10 @@ function for_9() {
   };
   var vv = /* record */[/* contents */0];
   var vv2 = /* record */[/* contents */0];
-  var arr = Caml_array.caml_make_vect(4, (function () {
+  var arr = Caml_array.caml_make_vect(4, (function (param) {
           return /* () */0;
         }));
-  var arr2 = Caml_array.caml_make_vect(2, (function () {
+  var arr2 = Caml_array.caml_make_vect(2, (function (param) {
           return /* () */0;
         }));
   for(var i = 0; i <= 1; ++i){
@@ -178,14 +178,14 @@ function for_9() {
     for(var j = 0; j <= 1; ++j){
       v$1[0] = v$1[0] + 1 | 0;
       collect(v$1[0]);
-      Caml_array.caml_array_set(arr, (i << 1) + j | 0, (function () {
+      Caml_array.caml_array_set(arr, (i << 1) + j | 0, (function (param) {
               vv[0] = vv[0] + v$1[0] | 0;
               return /* () */0;
             }));
     }
     }(v$1));
     Caml_array.caml_array_set(arr2, i, (function(v$1){
-        return function () {
+        return function (param) {
           vv2[0] = vv2[0] + v$1[0] | 0;
           return /* () */0;
         }
@@ -206,7 +206,7 @@ function for_9() {
 
 var suites_000 = /* tuple */[
   "for_loop_test_3",
-  (function () {
+  (function (param) {
       return /* Eq */Block.__(0, [
                 90,
                 for_3(Caml_array.caml_make_vect(10, 2))
@@ -217,7 +217,7 @@ var suites_000 = /* tuple */[
 var suites_001 = /* :: */[
   /* tuple */[
     "for_loop_test_4",
-    (function () {
+    (function (param) {
         return /* Eq */Block.__(0, [
                   180,
                   for_4(Caml_array.caml_make_vect(10, 2))
@@ -227,7 +227,7 @@ var suites_001 = /* :: */[
   /* :: */[
     /* tuple */[
       "for_loop_test_5",
-      (function () {
+      (function (param) {
           return /* Eq */Block.__(0, [
                     2420,
                     for_5(Caml_array.caml_make_vect(10, 2), 11)
@@ -237,7 +237,7 @@ var suites_001 = /* :: */[
     /* :: */[
       /* tuple */[
         "for_loop_test_6",
-        (function () {
+        (function (param) {
             return /* Eq */Block.__(0, [
                       /* array */[
                         30,
@@ -252,7 +252,7 @@ var suites_001 = /* :: */[
       /* :: */[
         /* tuple */[
           "for_loop_test_7",
-          (function () {
+          (function (param) {
               return /* Eq */Block.__(0, [
                         84,
                         for_7(/* () */0)
@@ -262,7 +262,7 @@ var suites_001 = /* :: */[
         /* :: */[
           /* tuple */[
             "for_loop_test_8",
-            (function () {
+            (function (param) {
                 return /* Eq */Block.__(0, [
                           294,
                           for_8(/* () */0)
@@ -272,7 +272,7 @@ var suites_001 = /* :: */[
           /* :: */[
             /* tuple */[
               "for_loop_test_9",
-              (function () {
+              (function (param) {
                   return /* Eq */Block.__(0, [
                             /* array */[/* tuple */[
                                 10,

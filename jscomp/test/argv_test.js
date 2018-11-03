@@ -3,7 +3,7 @@
 var Arg = require("../../lib/js/arg.js");
 var Block = require("../../lib/js/block.js");
 
-function anno_fun() {
+function anno_fun(arg) {
   return /* () */0;
 }
 

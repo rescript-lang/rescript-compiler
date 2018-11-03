@@ -43,10 +43,6 @@ val prim : string
 val tmp : string 
 
 val create : string 
-
-val app : string
-val app_array : string
-
 val runtime : string
 val stdlib : string
 val imul : string
@@ -104,6 +100,7 @@ val suffix_d : string
 val suffix_js : string
 val suffix_bs_js : string 
 val suffix_re_js : string
+val suffix_tsx : string
 val suffix_mlastd : string
 val suffix_mliastd : string
 
