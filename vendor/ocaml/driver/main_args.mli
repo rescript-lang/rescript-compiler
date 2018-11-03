@@ -173,6 +173,9 @@ module type Ocamldoc_options =  sig
   val _v : unit -> unit
   val _verbose : unit -> unit
   val _vmthread : unit -> unit
+#if true then  
+  val _nopervasives : unit -> unit
+#end  
 end
 
 module type Arg_list = sig

@@ -39,17 +39,33 @@ let init_path () =
 #end
   Env.reset_cache ()
 
+#if true then
+let open_implicit_module m env =
+  let open Asttypes in
+  let lid = {loc = Location.in_file "command line";
+             txt = Longident.Lident m } in
+  snd (Typemod.type_open_ Override env lid.loc lid)
+#end
+
 (** Return the initial environment in which compilation proceeds. *)
 let initial_env () =
   let initial =
     if !Clflags.unsafe_string then Env.initial_unsafe_string
     else Env.initial_safe_string
   in
+#if true then  
+  let env = 
+#end    
   try
     if !Clflags.nopervasives then initial else
     Env.open_pers_signature "Pervasives" initial
   with Not_found ->
     fatal_error "cannot open pervasives.cmi"
+#if true then    
+  in 
+  List.fold_left (fun env m -> open_implicit_module m env)  
+  env (List.rev !Clflags.open_modules)
+#end
 
 (** Optionally preprocess a source file *)
 let preprocess sourcefile =
