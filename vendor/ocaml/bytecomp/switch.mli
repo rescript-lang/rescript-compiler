@@ -25,7 +25,12 @@
   act_get   : retrieve table
   act_get_shared : retrieve table, with sharing explicit
 *)
-
+#if true then
+val cut : int ref
+val more_cut : int ref 
+val theta : float ref
+val switch_min : int ref
+#end
 type 'a shared = Shared of 'a | Single of 'a
 
 type 'a t_store =
