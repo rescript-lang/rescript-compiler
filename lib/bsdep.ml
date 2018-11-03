@@ -20536,6 +20536,7 @@ let setup_env () =
 
   Lexer.replace_directive_bool "BS" true;
   Lexer.replace_directive_string "BS_VERSION"  Bs_version.version
+  
 
 let standard_library =
 
