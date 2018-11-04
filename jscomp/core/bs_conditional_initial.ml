@@ -36,6 +36,9 @@ let setup_env () =
 #end
   Lexer.replace_directive_bool "BS" true;
   Lexer.replace_directive_string "BS_VERSION"  Bs_version.version
+#if false then
+  ; Switch.cut := 100 (* tweakable but not very useful *)
+#end  
 
 let standard_library =
 #if BS_DEBUG then

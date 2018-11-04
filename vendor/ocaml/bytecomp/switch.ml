@@ -111,6 +111,15 @@ module type S =
    val make_exit : int -> act
  end
 
+
+let cut = ref 8
+and more_cut = ref 16
+(* Minimal density of switches *)
+let theta = ref 0.33333
+
+(* Minmal number of tests to make a switch *)
+let switch_min = ref 3
+
 (* The module will ``produce good code for the case statement'' *)
 (*
   Adaptation of
@@ -140,8 +149,6 @@ module Make (Arg : S) =
 
 type 'a t_ctx =  {off : int ; arg : 'a}
 
-let cut = ref 8
-and more_cut = ref 16
 
 let pint chan i =
   if i = min_int then Printf.fprintf chan "-oo"
@@ -680,11 +687,6 @@ and enum top cases =
   end
 
 
-(* Minimal density of switches *)
-let theta = ref 0.33333
-
-(* Minmal number of tests to make a switch *)
-let switch_min = ref 3
 
 (* Particular case 0, 1, 2 *)
 let particular_case cases i j =
