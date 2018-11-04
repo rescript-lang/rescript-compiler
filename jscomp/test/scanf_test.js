@@ -37,6 +37,24 @@ eq("File \"scanf_test.ml\", line 6, characters 5-12", /* tuple */[
       63
     ]);
 
+eq("File \"scanf_test.ml\", line 7, characters 5-12", /* tuple */[
+      Curry._1(Scanf.sscanf("12306459064359371967", /* Format */[
+                /* Int64 */Block.__(7, [
+                    /* Int_u */12,
+                    /* No_padding */0,
+                    /* No_precision */0,
+                    /* End_of_format */0
+                  ]),
+                "%Lu"
+              ]), (function (i) {
+              return i;
+            })),
+      /* int64 */[
+        /* hi */-1429646511,
+        /* lo */235324607
+      ]
+    ]);
+
 Mt.from_pair_suites("scanf_test.ml", suites[0]);
 
 exports.suites = suites;
