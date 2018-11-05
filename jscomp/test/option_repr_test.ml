@@ -91,9 +91,12 @@ let f13 () =
 
 
 let () =   
-  b __LOC__ (None < Some Js.null); (*-FIXME*)
-  b __LOC__ (None < Some Js.undefined)
-  (*-FIXME always do commute tests to have a higher coverage *)
+  b __LOC__ (None < Some Js.null); 
+  b __LOC__ (not (None > Some Js.null)); 
+  b __LOC__ ( ( Some Js.null > None)); 
+  b __LOC__ (None < Some Js.undefined);
+  b __LOC__ ( Some Js.undefined > None);
+  
 external log3 :
   req:([ `String of string
        | `Int of int

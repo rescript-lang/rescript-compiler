@@ -5,17 +5,17 @@ let function_equal_test = try ((fun x -> x + 1) = (fun x -> x + 2)) with
                          | Invalid_argument "equal: functional value" -> true
                          | _ -> false
 
-let suites = Mt.[
-    __LOC__ , (fun _ -> Eq(true, None < Some 1)); (*-FIXME undefined < 1*)
+let suites = ref Mt.[
+    __LOC__ , (fun _ -> Eq(true, None < Some 1)); 
     "option2", (fun _ -> Eq(true, Some 1 < Some 2));
-    __LOC__, (fun _ -> Eq(true, [1] > [])); (*-FIXME Wrong specialization to [1] > 0 *)
+    __LOC__, (fun _ -> Eq(true, [1] > [])); 
     "listeq", (fun _ -> Eq(true, [1;2;3] = [1;2;3]));
     "listneq", (fun _ -> Eq(true, [1;2;3] > [1;2;2]));
     "custom_u", (fun _ -> Eq(true, ( A 3  ,  B (2,false) , C 1)  > ( A 3, B (2,false) , C 0 )));
     "custom_u2", (fun _ -> Eq(true, ( A 3  ,  B (2,false) , C 1)  = ( A 3, B (2,false) , C 1 )));
     "function", (fun _ -> Eq(true, function_equal_test));
     __LOC__ , begin fun _ -> 
-        Eq(true, None < Some 1) (*-FIXME*)
+        Eq(true, None < Some 1) 
     end;
     (*JS WAT 
         {[
@@ -26,10 +26,10 @@ let suites = Mt.[
         ]}
     *)
     __LOC__, begin fun _ -> 
-        Eq(true, None < Some [|1;30|] ) (*-FIXME *)
+        Eq(true, None < Some [|1;30|] )
     end; 
     __LOC__, begin fun _ -> 
-        Eq(true,  Some [|1;30|] > None  ) (*-FIXME*)
+        Eq(true,  Some [|1;30|] > None  ) 
     end; 
     __LOC__ , begin fun _ -> 
         Eq(true, [2;6;1;1;2;1;4;2;1] < [2;6;1;1;2;1;4;2;1;409])
@@ -38,7 +38,7 @@ let suites = Mt.[
         Eq(true, [1] < [1;409])
     end;
     __LOC__ , begin fun _ -> 
-        Eq(true, [] < [409]) (*-FIXME*)
+        Eq(true, [] < [409]) 
     end;
     __LOC__ , begin fun _ -> 
         Eq(true,  [2;6;1;1;2;1;4;2;1;409] > [2;6;1;1;2;1;4;2;1])
@@ -106,5 +106,12 @@ let suites = Mt.[
 ;;
 
 
+let test_id = ref 0
+let eq loc x y = Mt.eq_suites ~test_id ~suites loc x y 
 
-Mt.from_pair_suites __FILE__ suites
+;; eq __LOC__ true (Some 1 > None)
+;; eq __LOC__ true ([] < [1])
+;; eq __LOC__ false (None > Some 1)
+;; eq __LOC__ false (None > Some [|1;30|])
+;; eq __LOC__ false (Some [|1;30|] < None)
+let () = Mt.from_pair_suites __FILE__ !suites
