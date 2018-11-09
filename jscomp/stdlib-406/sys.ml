@@ -60,10 +60,18 @@ external remove: string -> unit = "caml_sys_remove"
 external rename : string -> string -> unit = "caml_sys_rename"
 external getenv: string -> string = "caml_sys_getenv"
 
+#if BS then
+external getEnv : 'a -> string -> string option = "" [@@bs.get_index] 
+let getenv_opt s =
+    match [%external process ] with 
+    | None -> None
+    | Some x -> getEnv x##env s
+#else
 let getenv_opt s =
   (* TODO: expose a non-raising primitive directly. *)
   try Some (getenv s)
   with Not_found -> None
+#end
 
 external command: string -> int = "caml_sys_system_command"
 external time: unit -> (float [@unboxed]) =
