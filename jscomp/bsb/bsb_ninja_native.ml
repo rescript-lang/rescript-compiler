@@ -142,7 +142,7 @@ let emit_impl_build
   let shadows = if is_ppx then 
     {
       Bsb_ninja_util.key = "ppx_flags"; 
-      op = AppendList ["-ppx"; Ext_bytes.ninja_escaped root_project_dir // Literals.node_modules // Bs_version.package_name // "lib" // "bs_ppx_tools.exe"];
+      op = AppendList ["-ppx"; Ext_bytes.ninja_escaped (Bsb_build_util.get_bs_ppx_tools root_project_dir)];
     } :: shadows
   else shadows in
   output_build oc

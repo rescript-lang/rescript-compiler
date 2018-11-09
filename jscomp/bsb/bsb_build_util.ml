@@ -274,4 +274,18 @@ let get_build_artifacts_location cwd =
       let project_name = Filename.basename cwd in
       dir // Bsb_config.lib_lit // Bsb_config.node_modules // project_name
   end
+
+let get_bs_ppx_tools root_project_dir = 
+  let bs_ppx_tools = root_project_dir // Literals.node_modules // Bs_version.package_name // "lib" // "bs_ppx_tools.exe" in
+  if Sys.file_exists bs_ppx_tools then 
+    bs_ppx_tools
+  else begin
+    let bs_ppx_tools = (Filename.dirname root_project_dir) // Bs_version.package_name // "lib" // "bs_ppx_tools.exe" in
+    if (Filename.basename (Filename.dirname root_project_dir)) = "node_modules" 
+        && Sys.file_exists bs_ppx_tools then 
+      bs_ppx_tools
+    else
+      Bsb_exception.bs_ppx_tools_not_found ()
+  end
+
 #end

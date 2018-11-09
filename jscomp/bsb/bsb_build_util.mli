@@ -111,4 +111,6 @@ val get_ocaml_lib_dir : is_js:bool -> string -> string
 val build_artifacts_dir : (string option) ref
 
 val get_build_artifacts_location : string -> string
+
+val get_bs_ppx_tools : string -> string
 #end

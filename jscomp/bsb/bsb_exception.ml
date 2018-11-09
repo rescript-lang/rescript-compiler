@@ -39,6 +39,7 @@ type error =
   | Missing_static_libraries_file of string
   | No_package_found_for_ppx of string * string
   | Ppx_not_found_for_package of string * string
+  | Bs_ppx_tools_not_found
 #end
 
 
@@ -116,6 +117,8 @@ let print (fmt : Format.formatter) (x : error) =
   | Ppx_not_found_for_package (package_name, ppx_name) ->
     Format.fprintf fmt
     "@{<error>Error:@} Couldn't find ppx called '%s' under dep '%s'.\n" package_name ppx_name
+  | Bs_ppx_tools_not_found ->
+    Format.fprintf fmt "@{<error>Error:@} Bs_ppx_tools not found.\n"
 #end
 
 let conflict_module modname dir1 dir2 =
@@ -132,6 +135,7 @@ let no_files_to_pack suffix = error (No_files_to_pack suffix)
 let missing_static_libraries_file name = error (Missing_static_libraries_file name)
 let no_package_found_for_ppx package_name ppx_name = error (No_package_found_for_ppx (package_name, ppx_name))
 let ppx_not_found_for_package package_name ppx_name = error (Ppx_not_found_for_package (package_name, ppx_name))
+let bs_ppx_tools_not_found () = error Bs_ppx_tools_not_found
 #end
 
 let config_error config fmt =
