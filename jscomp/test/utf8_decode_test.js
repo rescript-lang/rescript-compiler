@@ -5,6 +5,7 @@ var List = require("../../lib/js/list.js");
 var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Stream = require("../../lib/js/stream.js");
+var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_bytes = require("../../lib/js/caml_bytes.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
@@ -98,6 +99,22 @@ function utf8_decode(strm) {
                   return Stream.sempty;
                 }
               }));
+}
+
+function to_list(xs) {
+  var v = /* record */[/* contents : [] */0];
+  Stream.iter((function (x) {
+          v[0] = /* :: */[
+            x,
+            v[0]
+          ];
+          return /* () */0;
+        }), xs);
+  return List.rev(v[0]);
+}
+
+function utf8_list(s) {
+  return to_list(utf8_decode(Stream.of_string(s)));
 }
 
 function decode(bytes, offset) {
@@ -205,70 +222,59 @@ function eq(loc, param) {
   return /* () */0;
 }
 
-var v = /* record */[/* contents : [] */0];
-
-function add(u) {
-  v[0] = /* :: */[
-    u,
-    v[0]
-  ];
-  return /* () */0;
-}
-
-Stream.iter(add, utf8_decode(Stream.of_string("\xe4\xbd\xa0\xe5\xa5\xbdBuckleScript,\xe6\x9c\x80\xe5\xa5\xbd\xe7\x9a\x84JS\xe8\xaf\xad\xe8\xa8\x80")));
-
-var codes = List.rev(v[0]);
-
-eq("File \"utf8_decode_test.ml\", line 125, characters 5-12", /* tuple */[
-      true,
-      eq_list((function (x, y) {
-              return x === y;
-            }), codes, /* :: */[
-            20320,
+List.iter((function (param) {
+        return eq("File \"utf8_decode_test.ml\", line 107, characters 7-14", /* tuple */[
+                    true,
+                    eq_list(Caml_obj.caml_equal, to_list(utf8_decode(Stream.of_string(param[0]))), param[1])
+                  ]);
+      }), /* :: */[
+      /* tuple */[
+        "\xe4\xbd\xa0\xe5\xa5\xbdBuckleScript,\xe6\x9c\x80\xe5\xa5\xbd\xe7\x9a\x84JS\xe8\xaf\xad\xe8\xa8\x80",
+        /* :: */[
+          20320,
+          /* :: */[
+            22909,
             /* :: */[
-              22909,
+              66,
               /* :: */[
-                66,
+                117,
                 /* :: */[
-                  117,
+                  99,
                   /* :: */[
-                    99,
+                    107,
                     /* :: */[
-                      107,
+                      108,
                       /* :: */[
-                        108,
+                        101,
                         /* :: */[
-                          101,
+                          83,
                           /* :: */[
-                            83,
+                            99,
                             /* :: */[
-                              99,
+                              114,
                               /* :: */[
-                                114,
+                                105,
                                 /* :: */[
-                                  105,
+                                  112,
                                   /* :: */[
-                                    112,
+                                    116,
                                     /* :: */[
-                                      116,
+                                      44,
                                       /* :: */[
-                                        44,
+                                        26368,
                                         /* :: */[
-                                          26368,
+                                          22909,
                                           /* :: */[
-                                            22909,
+                                            30340,
                                             /* :: */[
-                                              30340,
+                                              74,
                                               /* :: */[
-                                                74,
+                                                83,
                                                 /* :: */[
-                                                  83,
+                                                  35821,
                                                   /* :: */[
-                                                    35821,
-                                                    /* :: */[
-                                                      35328,
-                                                      /* [] */0
-                                                    ]
+                                                    35328,
+                                                    /* [] */0
                                                   ]
                                                 ]
                                               ]
@@ -289,13 +295,75 @@ eq("File \"utf8_decode_test.ml\", line 125, characters 5-12", /* tuple */[
                 ]
               ]
             ]
-          ])
+          ]
+        ]
+      ],
+      /* :: */[
+        /* tuple */[
+          "hello \xe4\xbd\xa0\xe5\xa5\xbd\xef\xbc\x8c\xe4\xb8\xad\xe5\x8d\x8e\xe6\xb0\x91\xe6\x97\x8f hei",
+          /* :: */[
+            104,
+            /* :: */[
+              101,
+              /* :: */[
+                108,
+                /* :: */[
+                  108,
+                  /* :: */[
+                    111,
+                    /* :: */[
+                      32,
+                      /* :: */[
+                        20320,
+                        /* :: */[
+                          22909,
+                          /* :: */[
+                            65292,
+                            /* :: */[
+                              20013,
+                              /* :: */[
+                                21326,
+                                /* :: */[
+                                  27665,
+                                  /* :: */[
+                                    26063,
+                                    /* :: */[
+                                      32,
+                                      /* :: */[
+                                        104,
+                                        /* :: */[
+                                          101,
+                                          /* :: */[
+                                            105,
+                                            /* [] */0
+                                          ]
+                                        ]
+                                      ]
+                                    ]
+                                  ]
+                                ]
+                              ]
+                            ]
+                          ]
+                        ]
+                      ]
+                    ]
+                  ]
+                ]
+              ]
+            ]
+          ]
+        ],
+        /* [] */0
+      ]
     ]);
 
 Mt.from_pair_suites("utf8_decode_test.ml", suites[0]);
 
 exports.classify = classify;
 exports.utf8_decode = utf8_decode;
+exports.to_list = to_list;
+exports.utf8_list = utf8_list;
 exports.decode = decode;
 exports.eq_list = eq_list;
 exports.suites = suites;

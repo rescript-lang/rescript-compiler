@@ -50,6 +50,14 @@ let rec utf8_decode strm =
               Stream.icons (follow strm n c)  (utf8_decode strm)
             | Invalid -> raise (Stream.Error "Invalid byte"))
         | None -> Stream.sempty)
+let to_list xs =
+  let v = ref [] in 
+  Stream.iter  (fun x -> v := x :: !v) xs ;
+  List.rev !v 
+
+let utf8_list (s : string) : int list =   
+  to_list (utf8_decode (Stream.of_string s ))
+
 
 let  decode bytes offset  =
   let rec  init offset = 
@@ -69,33 +77,6 @@ let  decode bytes offset  =
 
 
 
-(* let rec decode bytes offset = *)
-(*   let c = int_of_char (Bytes.get bytes offset) in  *)
-(*   let new_offset = offset + 1  *)
-(*   if c land 0b1000_0000 = 0 then  c, new_offset  else  *)
-(*     (\* c 0b0____*\) *)
-(*   if c land 0b0100_0000 = 0 then cont bytes new_offset (c land 0b0011_1111) else *)
-(*     (\* c 0b10___*\) *)
-(*   if c land 0b0010_0000 = 0 then leading bytes new_offset (1, c land 0b0001_1111) else *)
-(*     (\* c 0b110__*\) *)
-(*   if c land 0b0001_0000 = 0 then leading bytes new_offset (2, c land 0b0000_1111) else *)
-(*     (\* c 0b1110_ *\) *)
-(*   if c land 0b0000_1000 = 0 then leading bytes new_offset (3, c land 0b0000_0111) else *)
-(*     (\* c 0b1111_0___*\) *)
-(*   if c land 0b0000_0100 = 0 then leading bytes new_offset (4, c land 0b0000_0011) else *)
-(*     (\* c 0b1111_10__*\) *)
-(*   if c land 0b0000_0010 = 0 then leading bytes new_offset (5, c land 0b0000_0001) *)
-(*   (\* c 0b1111_110__ *\) *)
-(*   else invalid_arg "decode" (\* c 0b1111_111_*\) *)
-
-(* and leading bytes offset (k, c) =  *)
-(*   if k = 0 then  *)
-(*   else leading bytes  *)
-
-
-
-
-
 let rec  eq_list cmp xs ys =
   match xs,ys with 
   | [], [] ->  true 
@@ -112,18 +93,21 @@ let eq loc (x, y) =
     (loc ^" id " ^ (string_of_int !test_id), (fun _ -> Mt.Eq(x,y))) :: !suites
 
 let () = 
-  let  v = ref [] in 
-  let add u = v := u :: !v in 
-  begin 
-  utf8_decode (Stream.of_string "你好BuckleScript,最好的JS语言")
-  |> Stream.iter add ;
-  let codes = (List.rev !v) in 
-  let ref_codes = 
-    [20320; 22909; 66; 117; 99; 107; 108; 101; 83; 99; 114; 105; 112; 116; 44;
-     26368; 22909; 30340; 74; 83; 35821; 35328] in 
-  (* List.iter Js.log  codes *)
-  eq __LOC__ (true, eq_list (fun (x : int) y -> x = y) codes ref_codes)
-  end
+  let tbl = 
+    [
+      "你好BuckleScript,最好的JS语言",
+      [20320; 22909; 66; 117; 99; 107; 108; 101; 83; 99; 114; 105; 112; 116; 44;
+       26368; 22909; 30340; 74; 83; 35821; 35328] ; 
+
+      "hello 你好，中华民族 hei" ,
+      [104; 101; 108; 108; 111; 32; 20320; 22909; 65292; 20013; 21326; 27665; 26063; 32; 104; 101; 105]
+
+    ] in 
+  List.iter (fun (s, code) -> 
+    eq __LOC__ (true, eq_list ((=) : int -> _ -> _ ) (utf8_list s) code )
+  )
+  tbl
+  
 
 let () = 
   Mt.from_pair_suites __FILE__ !suites
