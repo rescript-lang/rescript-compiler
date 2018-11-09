@@ -21,7 +21,7 @@ type t
 external repr : 'a -> t = "%identity"
 external obj : t -> 'a = "%identity"
 external magic : 'a -> 'b = "%identity"
-external is_block : t -> bool = "caml_obj_is_block"
+val is_block : t -> bool 
 external is_int : t -> bool = "%obj_is_int"
 external tag : t -> int = "caml_obj_tag"
 external set_tag : t -> int -> unit = "caml_obj_set_tag"
