@@ -289,18 +289,7 @@ val bool : bool -> t
 val unit :   t
 (** [unit] in ocaml will be compiled into [0]  in js *)
 
-(** [math "abs"] --> Math["abs"] *)    
-(* val math : 
-  ?comment:string -> 
-  string -> 
-  t list -> 
-  t *)
-
-
-
 val undefined : t
-val is_caml_block : ?comment:string -> t -> t
-
 
 val tag : ?comment:string -> J.expression -> t
 

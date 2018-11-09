@@ -402,11 +402,6 @@ let dot ?comment (e0 : t)  (e1 : string) : t =
 
 
 
-(** coupled with the runtime *)
-let is_caml_block ?comment (e : t) : t = 
-  {expression_desc = Bin ( NotEqEq, dot e L.js_prop_length , undefined); 
-   comment}
-
 (* This is a property access not external module *)
 
 let array_length ?comment (e : t) : t = 

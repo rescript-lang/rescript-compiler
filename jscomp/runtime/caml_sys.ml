@@ -26,7 +26,7 @@
 
 
 
-external getEnv : 'a -> string -> string option = "" [@@bs.get_index] [@@bs.return undefined_to_opt]
+external getEnv : 'a -> string -> string option = "" [@@bs.get_index] 
 let caml_sys_getenv s =
     match [%external process ] with 
     | None -> raise Not_found

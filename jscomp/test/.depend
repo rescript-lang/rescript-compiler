@@ -223,6 +223,7 @@ for_side_effect_test.cmj : mt.cmj
 format_regression.cmj :
 format_test.cmj : mt.cmj
 fs_test.cmj : ../others/node.cmj mt.cmj ../runtime/js.cmj
+fun_pattern_match.cmj : ../runtime/js.cmj
 functor_app_test.cmj : mt.cmj functor_inst.cmj functor_def.cmj
 functor_def.cmj : ../runtime/js.cmj
 functor_ffi.cmj : ../runtime/js.cmj

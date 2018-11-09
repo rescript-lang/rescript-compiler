@@ -708,14 +708,6 @@ let translate loc (prim_name : string)
       call Js_runtime_modules.format 
     (*   "caml_alloc_dummy"; *)
     (* TODO:   "caml_alloc_dummy_float"; *)
-    | "caml_obj_is_block"
-      -> 
-      begin match args with 
-        | [e] -> E.is_caml_block e 
-        | _ -> assert false
-      end
-
-
     | "caml_obj_dup" 
     | "caml_update_dummy"
     | "caml_obj_truncate"

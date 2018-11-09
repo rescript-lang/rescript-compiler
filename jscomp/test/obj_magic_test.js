@@ -7,7 +7,7 @@ var Block = require("../../lib/js/block.js");
 var empty_backtrace = Block.__(Obj.abstract_tag, []);
 
 function is_block(x) {
-  return x.length !== undefined;
+  return typeof x !== "number";
 }
 
 var suites_000 = /* tuple */[
@@ -15,7 +15,7 @@ var suites_000 = /* tuple */[
   (function (param) {
       return /* Eq */Block.__(0, [
                 false,
-                (3).length !== undefined
+                false
               ]);
     })
 ];
@@ -26,10 +26,10 @@ var suites_001 = /* :: */[
     (function (param) {
         return /* Eq */Block.__(0, [
                   true,
-                  /* :: */[
+                  typeof /* :: */[
                     3,
                     /* [] */0
-                  ].length !== undefined
+                  ] !== "number"
                 ]);
       })
   ],
@@ -39,7 +39,7 @@ var suites_001 = /* :: */[
       (function (param) {
           return /* Eq */Block.__(0, [
                     true,
-                    "x".length !== undefined
+                    true
                   ]);
         })
     ],
@@ -49,7 +49,7 @@ var suites_001 = /* :: */[
         (function (param) {
             return /* Eq */Block.__(0, [
                       false,
-                      (3.0).length !== undefined
+                      false
                     ]);
           })
       ],

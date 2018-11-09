@@ -476,13 +476,13 @@ let root = OCamlRes.Res.([
   Dir  ("react", [
     Dir  ("src", [
       File  ("Index.re",
-        "ReactDOMRe.renderToElementWithId(<Component1 message=\"Hello!\" />, \"index1\");\n\
+        "ReactDOMRe.renderToElementWithId(<Component1 message=\"Hello! Click this text.\" />, \"index1\");\n\
          \n\
          ReactDOMRe.renderToElementWithId(<Component2 greeting=\"Hello!\" />, \"index2\");\n\
          ") ;
       File  ("Component1.re",
         "/* This is the basic component. */\n\
-         let component = ReasonReact.statelessComponent(\"Page\");\n\
+         let component = ReasonReact.statelessComponent(\"Component1\");\n\
          \n\
          /* Your familiar handleClick from ReactJS. This mandatorily takes the payload,\n\
         \   then the `self` record, which contains state (none here), `handle`, `reduce`\n\
@@ -492,16 +492,16 @@ let root = OCamlRes.Res.([
          /* `make` is the function that mandatorily takes `children` (if you want to use\n\
         \   `JSX). `message` is a named argument, which simulates ReactJS props. Usage:\n\
          \n\
-        \   `<Page message=\"hello\" />`\n\
+        \   `<Component1 message=\"hello\" />`\n\
          \n\
         \   Which desugars to\n\
          \n\
-        \   `ReasonReact.element(Page.make(~message=\"hello\", [||]))` */\n\
+        \   `ReasonReact.element(Component1.make(~message=\"hello\", [||]))` */\n\
          let make = (~message, _children) => {\n\
         \  ...component,\n\
         \  render: self =>\n\
-        \    <div onClick=(self.handle(handleClick))>\n\
-        \      (ReasonReact.string(message))\n\
+        \    <div onClick={self.handle(handleClick)}>\n\
+        \      {ReasonReact.string(message)}\n\
         \    </div>,\n\
          };\n\
          ") ;
@@ -540,13 +540,13 @@ let root = OCamlRes.Res.([
         \    let message =\n\
         \      \"You've clicked this \" ++ string_of_int(self.state.count) ++ \" times(s)\";\n\
         \    <div>\n\
-        \      <button onClick=(_event => self.send(Click))>\n\
-        \        (ReasonReact.string(message))\n\
+        \      <button onClick={_event => self.send(Click)}>\n\
+        \        {ReasonReact.string(message)}\n\
         \      </button>\n\
-        \      <button onClick=(_event => self.send(Toggle))>\n\
-        \        (ReasonReact.string(\"Toggle greeting\"))\n\
+        \      <button onClick={_event => self.send(Toggle)}>\n\
+        \        {ReasonReact.string(\"Toggle greeting\")}\n\
         \      </button>\n\
-        \      (self.state.show ? ReasonReact.string(greeting) : ReasonReact.null)\n\
+        \      {self.state.show ? ReasonReact.string(greeting) : ReasonReact.null}\n\
         \    </div>;\n\
         \  },\n\
          };\n\
@@ -561,6 +561,7 @@ let root = OCamlRes.Res.([
          <body>\n\
         \  Component 1:\n\
         \  <div id=\"index1\"></div>\n\
+         \n\
         \  Component 2:\n\
         \  <div id=\"index2\"></div>\n\
          \n\
@@ -702,13 +703,13 @@ let root = OCamlRes.Res.([
   Dir  ("react-lite", [
     Dir  ("src", [
       File  ("Index.re",
-        "ReactDOMRe.renderToElementWithId(<Component1 message=\"Hello!\" />, \"index1\");\n\
+        "ReactDOMRe.renderToElementWithId(<Component1 message=\"Hello! Click this text.\" />, \"index1\");\n\
          \n\
          ReactDOMRe.renderToElementWithId(<Component2 greeting=\"Hello!\" />, \"index2\");\n\
          ") ;
       File  ("Component1.re",
         "/* This is the basic component. */\n\
-         let component = ReasonReact.statelessComponent(\"Page\");\n\
+         let component = ReasonReact.statelessComponent(\"Component1\");\n\
          \n\
          /* Your familiar handleClick from ReactJS. This mandatorily takes the payload,\n\
         \   then the `self` record, which contains state (none here), `handle`, `reduce`\n\
@@ -718,16 +719,16 @@ let root = OCamlRes.Res.([
          /* `make` is the function that mandatorily takes `children` (if you want to use\n\
         \   `JSX). `message` is a named argument, which simulates ReactJS props. Usage:\n\
          \n\
-        \   `<Page message=\"hello\" />`\n\
+        \   `<Component1 message=\"hello\" />`\n\
          \n\
         \   Which desugars to\n\
          \n\
-        \   `ReasonReact.element(Page.make(~message=\"hello\", [||]))` */\n\
+        \   `ReasonReact.element(Component1.make(~message=\"hello\", [||]))` */\n\
          let make = (~message, _children) => {\n\
         \  ...component,\n\
         \  render: self =>\n\
         \    <div onClick=(self.handle(handleClick))>\n\
-        \      (ReasonReact.string(message))\n\
+        \      {ReasonReact.string(message)}\n\
         \    </div>,\n\
          };\n\
          ") ;
@@ -766,13 +767,13 @@ let root = OCamlRes.Res.([
         \    let message =\n\
         \      \"You've clicked this \" ++ string_of_int(self.state.count) ++ \" times(s)\";\n\
         \    <div>\n\
-        \      <button onClick=(_event => self.send(Click))>\n\
-        \        (ReasonReact.string(message))\n\
+        \      <button onClick={_event => self.send(Click)}>\n\
+        \        {ReasonReact.string(message)}\n\
         \      </button>\n\
-        \      <button onClick=(_event => self.send(Toggle))>\n\
-        \        (ReasonReact.string(\"Toggle greeting\"))\n\
+        \      <button onClick={_event => self.send(Toggle)}>\n\
+        \        {ReasonReact.string(\"Toggle greeting\")}\n\
         \      </button>\n\
-        \      (self.state.show ? ReasonReact.string(greeting) : ReasonReact.null)\n\
+        \      {self.state.show ? ReasonReact.string(greeting) : ReasonReact.null}\n\
         \    </div>;\n\
         \  },\n\
          };\n\
