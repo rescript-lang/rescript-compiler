@@ -267,6 +267,7 @@ OTHERS := test_literals a test_ari test_export2 test_internalOO test_obj_simple_
 	unboxed_attribute_test\
 	406_primitive_test\
 	ocaml_typedtree_test
+	fun_pattern_match\
 # ocaml_typedtree_test is not cross version due to camlinternalFormat
 # bs_uncurry_test
 # needs Lam to get rid of Uncurry arity first
