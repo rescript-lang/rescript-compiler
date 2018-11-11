@@ -97,7 +97,7 @@ let map_row_fields_into_strings ptyp_loc
     Ext_list.fold_right row_fields (`Nothing, []) (fun tag (nullary, acc) -> 
          match nullary, tag with 
          | (`Nothing | `Null), 
-           Parsetree.Rtag (label, attrs, true,  [])
+           Rtag (label, attrs, true,  [])
            -> 
            begin match Ast_attributes.iter_process_bs_string_as attrs with 
              | Some name -> 
@@ -106,7 +106,7 @@ let map_row_fields_into_strings ptyp_loc
              | None -> 
                `Null, ((hash_label label, label_of_name label) :: acc )
            end
-         | (`Nothing | `NonNull), Parsetree.Rtag(label, attrs, false, ([ _ ])) 
+         | (`Nothing | `NonNull), Rtag(label, attrs, false, ([ _ ])) 
            -> 
            begin match Ast_attributes.iter_process_bs_string_as attrs with 
              | Some name -> 

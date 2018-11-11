@@ -86,7 +86,7 @@ let values_of_export
                    Ident_map.is_empty free_variables
                then 
                  begin
-                   Ext_log.dwarn __LOC__ "%s recorded for inlining @." x.name ;
+                   Ext_log.dwarn ~__POS__ "%s recorded for inlining @." x.name ;
                    Some lambda
                  end
                else None

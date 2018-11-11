@@ -135,7 +135,7 @@ let compile  ~filename (output_prefix : string) env _sigs
   let () = 
 #if BS_DEBUG then     
     export_idents |> List.iter 
-      (fun (id : Ident.t) -> Ext_log.dwarn __LOC__ "export: %s/%d"  id.name id.stamp) ;
+      (fun (id : Ident.t) -> Ext_log.dwarn ~__POS__ "export: %s/%d"  id.name id.stamp) ;
 #end      
     Lam_compile_env.reset () ;
   in 
@@ -143,9 +143,9 @@ let compile  ~filename (output_prefix : string) env _sigs
   let _d  = fun s lam -> 
     let result = Lam_util.dump env s lam  in
 #if BS_DEBUG then 
-    Ext_log.dwarn __LOC__ "START CHECKING PASS %s@." s;
+    Ext_log.dwarn ~__POS__ "START CHECKING PASS %s@." s;
     ignore @@ Lam_check.check (Js_config.get_current_file ()) lam;
-    Ext_log.dwarn __LOC__ "FINISH CHECKING PASS %s@." s;
+    Ext_log.dwarn ~__POS__ "FINISH CHECKING PASS %s@." s;
 #end
     result 
   in
@@ -200,7 +200,7 @@ let compile  ~filename (output_prefix : string) env _sigs
 #if BS_DEBUG then    
     |> (fun lam -> 
        let () = 
-        Ext_log.dwarn __LOC__ "Before coercion: %a@." Lam_stats.print meta in 
+        Ext_log.dwarn ~__POS__ "Before coercion: %a@." Lam_stats.print meta in 
       Lam_check.check (Js_config.get_current_file ()) lam
     ) 
 #end    
@@ -212,7 +212,7 @@ let compile  ~filename (output_prefix : string) env _sigs
 
 #if BS_DEBUG then   
   let () =
-    Ext_log.dwarn __LOC__ "After coercion: %a@." Lam_stats.print meta ;
+    Ext_log.dwarn ~__POS__ "After coercion: %a@." Lam_stats.print meta ;
     if Js_config.is_same_file () then
       let f =
         Ext_path.chop_extension ~loc:__LOC__ filename ^ ".lambda" in
@@ -224,7 +224,7 @@ let compile  ~filename (output_prefix : string) env _sigs
 #end  
   let maybe_pure = no_side_effects groups in
 #if BS_DEBUG then 
-  let () = Ext_log.dwarn __LOC__ "\n@[[TIME:]Pre-compile: %f@]@."  (Sys.time () *. 1000.) in      
+  let () = Ext_log.dwarn ~__POS__ "\n@[[TIME:]Pre-compile: %f@]@."  (Sys.time () *. 1000.) in      
 #end  
   let body  =     
     Ext_list.map groups (fun group -> compile_group meta group)
@@ -232,7 +232,7 @@ let compile  ~filename (output_prefix : string) env _sigs
     |> Js_output.output_as_block
   in
 #if BS_DEBUG then 
-  let () = Ext_log.dwarn __LOC__ "\n@[[TIME:]Post-compile: %f@]@."  (Sys.time () *. 1000.) in      
+  let () = Ext_log.dwarn ~__POS__ "\n@[[TIME:]Post-compile: %f@]@."  (Sys.time () *. 1000.) in      
 #end    
   (* The file is not big at all compared with [cmo] *)
   (* Ext_marshal.to_file (Ext_path.chop_extension filename ^ ".mj")  js; *)
@@ -295,7 +295,6 @@ let lambda_as_module
     (filename : string) 
     (output_prefix : string)
     (lam : Lambda.lambda) = 
-  Js_config.set_current_file filename ;   
   let lambda_output = 
     compile ~filename output_prefix finalenv current_signature lam in
   let basename =  

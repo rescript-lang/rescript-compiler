@@ -206,24 +206,22 @@ let init () =
                           (PStr
                              [Str.eval  
                                 (Exp.record
-                                   (List.map 
-                                      (fun ({pld_name = {loc; txt } } : Parsetree.label_declaration) -> 
+                                   (Ext_list.map label_declarations
+                                      (fun {pld_name = {loc; txt } }  -> 
                                          let label = 
                                            {Asttypes.loc; txt = Longident.Lident txt } in 
-                                         label,Exp.field exp_param label
-                                      ) label_declarations) None)]))) in 
+                                         label,Exp.field exp_param label) ) None)]))) in 
                  let toJs = 
                    toJsBody exp
                  in 
                  let obj_exp = 
                    Exp.record
-                     (List.map 
-                        (fun ({pld_name = {loc; txt } } : Parsetree.label_declaration) -> 
+                     (Ext_list.map label_declarations
+                        (fun {pld_name = {loc; txt } } -> 
                            let label = 
                              {Asttypes.loc; txt = Longident.Lident txt } in 
                            label,
-                           js_field exp_param  label
-                        ) label_declarations) None in 
+                           js_field exp_param  label) ) None in 
                  let fromJs = 
                    Ast_comb.single_non_rec_value patFromJs
                      (Ast_compatible.fun_ (Pat.var pat_param)
@@ -259,13 +257,14 @@ let init () =
                           Ast_comb.single_non_rec_value 
                             {loc; txt = constantArray}
                             (Exp.array
-                               (List.map (fun (i,str) -> 
-                                    Exp.tuple 
-                                      [
-                                        Ast_compatible.const_exp_int i;
-                                        Ast_compatible.const_exp_string str
-                                      ]
-                                  ) (List.sort (fun (a,_) (b,_) -> compare (a:int) b) result)));
+                               (Ext_list.map (List.sort (fun (a,_) (b,_) -> compare (a:int) b) result)
+                                  (fun (i,str) -> 
+                                     Exp.tuple 
+                                       [
+                                         Ast_compatible.const_exp_int i;
+                                         Ast_compatible.const_exp_string str
+                                       ]
+                                  ) ));
                           (
                             toJsBody
                               (coerceResultToNewType 
@@ -320,7 +319,6 @@ let init () =
                        Ast_comb.single_non_rec_value 
                          {loc; txt = constantArray}
                          (Ast_compatible.const_exp_int_list_as_array xs)
-                         (* (Exp.array (List.map (fun i -> Ast_compatible.const_exp_int i) xs )) *)
                        ;
                        toJsBody                        
                          (
@@ -433,10 +431,9 @@ let init () =
                   let objType flag =                     
                     Ast_comb.to_js_type loc @@  
                     Ast_compatible.object_
-                      (List.map 
-                         (fun ({pld_name = {loc; txt }; pld_type } : Parsetree.label_declaration) -> 
-                            txt, [], pld_type
-                         ) label_declarations) 
+                      (Ext_list.map label_declarations
+                         (fun {pld_name = {loc; txt }; pld_type } -> 
+                            txt, [], pld_type)) 
                       flag in                   
                   newTypeStr +? 
                   [
@@ -476,7 +473,7 @@ let init () =
                       else Ast_literal.type_int() in 
                     let ty2 = 
                       if createType then core_type
-                      else Ast_core_type.lift_option_type core_type in 
+                      else Ast_core_type.lift_option_type core_type (*-FIXME**) in 
                     newTypeStr +? 
                     [
                       toJsType ty1;
