@@ -8,6 +8,8 @@
 ../lib/bsppx.ml : ../vendor/ocaml/parsing/longident.ml
 ../lib/bsppx.ml : ../vendor/ocaml/parsing/longident.mli
 ../lib/bsppx.ml : ../vendor/ocaml/parsing/parsetree.mli
+../lib/bsppx.ml : ../vendor/ocaml/parsing/printast.ml
+../lib/bsppx.ml : ../vendor/ocaml/parsing/printast.mli
 ../lib/bsppx.ml : ../vendor/ocaml/utils/clflags.ml
 ../lib/bsppx.ml : ../vendor/ocaml/utils/clflags.mli
 ../lib/bsppx.ml : ../vendor/ocaml/utils/misc.ml

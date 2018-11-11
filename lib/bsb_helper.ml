@@ -3885,7 +3885,7 @@ val dash_nostdlib : string
 val reactjs_jsx_ppx_2_exe : string 
 val reactjs_jsx_ppx_3_exe : string 
 val unescaped_j_delimiter : string 
-val escaped_j_delimiter : string 
+
 
 val unescaped_js_delimiter : string 
 
@@ -4020,7 +4020,6 @@ let reactjs_jsx_ppx_2_exe = "reactjs_jsx_ppx_2.exe"
 let reactjs_jsx_ppx_3_exe  = "reactjs_jsx_ppx_3.exe"
 let unescaped_j_delimiter = "j"
 let unescaped_js_delimiter = "js"
-let escaped_j_delimiter =  "*j" (* not user level syntax allowed *)
 
 let native = "native"
 let bytecode = "bytecode"
