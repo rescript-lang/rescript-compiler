@@ -295,7 +295,6 @@ let lambda_as_module
     (filename : string) 
     (output_prefix : string)
     (lam : Lambda.lambda) = 
-  Js_config.set_current_file filename ;   
   let lambda_output = 
     compile ~filename output_prefix finalenv current_signature lam in
   let basename =  

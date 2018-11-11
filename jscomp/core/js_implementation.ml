@@ -79,6 +79,7 @@ let after_parsing_sig ppf sourcefile outputprefix ast  =
       end
     end
 let interface ppf sourcefile outputprefix =
+  Js_config.set_current_file sourcefile ; 
   Compmisc.init_path false;
   Ocaml_parse.parse_interface ppf sourcefile
   |> print_if ppf Clflags.dump_parsetree Printast.interface
@@ -86,6 +87,7 @@ let interface ppf sourcefile outputprefix =
   |> after_parsing_sig ppf sourcefile outputprefix 
 
 let interface_mliast ppf sourcefile outputprefix  = 
+  Js_config.set_current_file sourcefile ; 
   Compmisc.init_path false;
   Binary_ast.read_ast Mli sourcefile 
   |> print_if ppf Clflags.dump_parsetree Printast.interface
@@ -93,6 +95,7 @@ let interface_mliast ppf sourcefile outputprefix  =
   |> after_parsing_sig ppf sourcefile outputprefix 
 
 let after_parsing_impl ppf sourcefile outputprefix ast =
+  
   if !Js_config.binary_ast then
     Binary_ast.write_ast ~fname:sourcefile 
       Ml ~output:(outputprefix ^ Literals.suffix_mlast)
@@ -156,6 +159,7 @@ let after_parsing_impl ppf sourcefile outputprefix ast =
     end
 let implementation ppf sourcefile outputprefix =
   Compmisc.init_path false;
+  Js_config.set_current_file sourcefile ; 
   Ocaml_parse.parse_implementation ppf sourcefile
   |> print_if ppf Clflags.dump_parsetree Printast.implementation
   |> print_if ppf Clflags.dump_source Pprintast.structure
@@ -163,6 +167,7 @@ let implementation ppf sourcefile outputprefix =
 
 let implementation_mlast ppf sourcefile outputprefix = 
   Compmisc.init_path false;
+  Js_config.set_current_file sourcefile ; 
   Binary_ast.read_ast Ml sourcefile
   |> print_if ppf Clflags.dump_parsetree Printast.implementation
   |> print_if ppf Clflags.dump_source Pprintast.structure
