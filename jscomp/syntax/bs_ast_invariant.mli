@@ -36,4 +36,9 @@ val mark_used_bs_attribute :
 val warn_unused_attributes :   
   Parsetree.attributes -> unit 
 (** Ast invariant checking for detecting errors *)
-val emit_external_warnings : iterator
+
+val emit_external_warnings_on_structure:
+  Parsetree.structure -> unit 
+
+val emit_external_warnings_on_signature:  
+  Parsetree.signature -> unit

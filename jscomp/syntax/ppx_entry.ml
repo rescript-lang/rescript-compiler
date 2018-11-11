@@ -285,7 +285,6 @@ let signature_config_table :
   (Parsetree.expression option -> unit) String_map.t=
   String_map.of_list common_actions_table
 
-let dummy_unused_attribute : Warnings.t = (Bs_unused_attribute "")
 
 let rewrite_signature :
   (Parsetree.signature  -> Parsetree.signature) ref =
@@ -303,8 +302,7 @@ let rewrite_signature :
           unsafe_mapper.signature  unsafe_mapper x in
       reset ();
       (* Keep this check, since the check is not inexpensive*)
-      if Warnings.is_active dummy_unused_attribute then
-        Bs_ast_invariant.emit_external_warnings.signature Bs_ast_invariant.emit_external_warnings result ;
+      Bs_ast_invariant.emit_external_warnings_on_signature result;
       result
     )
 
@@ -331,8 +329,7 @@ let rewrite_implementation : (Parsetree.structure -> Parsetree.structure) ref =
           unsafe_mapper.structure  unsafe_mapper x  in
       reset ();
       (* Keep this check since it is not inexpensive*)
-      (if Warnings.is_active dummy_unused_attribute then
-         Bs_ast_invariant.emit_external_warnings.structure Bs_ast_invariant.emit_external_warnings result);
+      Bs_ast_invariant.emit_external_warnings_on_structure result;
       result
     )
 

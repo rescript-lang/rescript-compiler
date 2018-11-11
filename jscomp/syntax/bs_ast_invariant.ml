@@ -35,16 +35,39 @@ let is_bs_attribute txt =
 
 let used_attributes : Parsetree.attribute Hash_set_poly.t = Hash_set_poly.create 16 
 
+let dump_attribute fmt = (fun ( (sloc : string Asttypes.loc),payload) -> 
+    Format.fprintf fmt "@[%s %a@]" sloc.txt (Printast.payload 0 ) payload
+    )
+
+let dump_used_attributes fmt = 
+  Format.fprintf fmt "Used attributes Listing Start:@.";
+  Hash_set_poly.iter  (fun attr -> dump_attribute fmt attr) used_attributes;
+  Format.fprintf fmt "Used attributes Listing End:@."
+
+
 let mark_used_bs_attribute (x : Parsetree.attribute) = 
   Hash_set_poly.add used_attributes x
 
-let warn_unused_attributes attrs = 
+let dummy_unused_attribute : Warnings.t = (Bs_unused_attribute "")
+
+
+
+let warn_unused_attribute 
+  (({txt; loc}, _) as attr : Parsetree.attribute) = 
+  if is_bs_attribute txt && 
+     not (Hash_set_poly.mem used_attributes attr) then 
+    begin    
+#if BS_DEBUG then (*COMMENT*)
+      dump_used_attributes Format.err_formatter; 
+      dump_attribute Format.err_formatter attr ;
+#end
+      Location.prerr_warning loc (Bs_unused_attribute txt)
+    end
+
+let warn_unused_attributes (attrs : Parsetree.attributes) = 
   if attrs <> [] then 
-    List.iter (fun (({txt; loc}, _) as a : Parsetree.attribute) -> 
-        if is_bs_attribute txt && 
-           not (Hash_set_poly.mem used_attributes a) then 
-          Location.prerr_warning loc (Warnings.Bs_unused_attribute txt)
-      ) attrs
+    Ext_list.iter attrs warn_unused_attribute
+    
 #if OCAML_VERSION =~ ">4.03.0" then 
 type iterator = Ast_iterator.iterator
 let default_iterator = Ast_iterator.default_iterator
@@ -57,13 +80,7 @@ let default_iterator = Bs_ast_iterator.default_iterator
 let emit_external_warnings : iterator=
   {
     default_iterator with
-    attribute = (fun _ a ->
-        match a with
-        | {txt ; loc}, _ ->
-          if is_bs_attribute txt && 
-             not (Hash_set_poly.mem used_attributes a)  then
-            Location.prerr_warning loc (Bs_unused_attribute txt)
-      );
+    attribute = (fun _ attr -> warn_unused_attribute attr);
     expr = (fun self a -> 
         match a.Parsetree.pexp_desc with 
         | Pexp_constant (
@@ -97,3 +114,11 @@ let emit_external_warnings : iterator=
            default_iterator.value_description self v 
       )
   }
+
+let emit_external_warnings_on_structure  (stru : Parsetree.structure) = 
+  if Warnings.is_active dummy_unused_attribute then 
+    emit_external_warnings.structure emit_external_warnings stru
+
+let emit_external_warnings_on_signature  (sigi : Parsetree.signature) = 
+  if Warnings.is_active dummy_unused_attribute then 
+    emit_external_warnings.signature emit_external_warnings sigi
