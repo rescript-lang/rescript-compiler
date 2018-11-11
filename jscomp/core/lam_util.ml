@@ -233,7 +233,7 @@ let dump env ext  lam =
       (* ATTENTION: easy to introduce a bug during refactoring when forgeting `begin` `end`*)
       begin 
         incr log_counter;
-        Ext_log.dwarn __LOC__ "\n@[[TIME:]%s: %f@]@." ext (Sys.time () *. 1000.);
+        Ext_log.dwarn ~__POS__ "\n@[[TIME:]%s: %f@]@." ext (Sys.time () *. 1000.);
         Lam_print.seriaize env 
           (Ext_path.chop_extension 
              ~loc:__LOC__ 

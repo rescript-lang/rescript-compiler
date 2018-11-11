@@ -54,11 +54,14 @@ let iwarn b str f  =
     Format.ifprintf Format.err_formatter ("WARN: %s " ^^ f) str 
 
 (* TODO: add {[@.]} later for all *)
-let dwarn str f  = 
+let dwarn ?(__POS__: (string * int * int * int) option) f  = 
   if Js_config.is_same_file () then   
-    Format.fprintf Format.err_formatter ("WARN: %s " ^^ f ^^ "@.") str  
+    match __POS__ with 
+    | None -> Format.fprintf Format.err_formatter ("WARN: " ^^ f ^^ "@.")
+    | Some (file,line,_,_) -> 
+      Format.fprintf Format.err_formatter ("WARN: %s,%d " ^^ f ^^ "@.") file line  
   else 
-    Format.ifprintf Format.err_formatter ("WARN: %s " ^^ f ^^ "@.") str  
+    Format.ifprintf Format.err_formatter ("WARN: " ^^ f ^^ "@.") 
 
 let info str f  =
   Format.fprintf Format.err_formatter ("INFO: %s " ^^ f) str  

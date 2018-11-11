@@ -46,6 +46,10 @@ val err : string -> 'a logging
 val ierr : bool -> string -> 'a logging 
 val warn : string -> 'a logging
 val iwarn : bool -> string -> 'a logging 
-val dwarn : string -> 'a logging 
+
+val dwarn : 
+  ?__POS__:(string * int * int *int) ->
+  'a logging 
+  
 val info : string -> 'a logging
 val iinfo : bool -> string -> 'a logging
