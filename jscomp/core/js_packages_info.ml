@@ -227,7 +227,14 @@ let string_of_module_id
         | Package_found(dep_package_name, dep_path), 
           Package_script 
           ->    
+#if BS_NATIVE then
+          if Filename.is_relative dep_path then 
+            dep_package_name // dep_path // js_file
+          else 
+            dep_path // js_file
+#else
           dep_package_name // dep_path // js_file
+#end
 
         | Package_found(dep_package_name, dep_path),
           Package_found(cur_package_name, cur_path) -> 
@@ -242,7 +249,14 @@ let string_of_module_id
           else  
             begin match module_system with 
               | AmdJS | NodeJS | Es6 -> 
+#if BS_NATIVE then
+          if Filename.is_relative dep_path then 
+            dep_package_name // dep_path // js_file
+          else 
+            dep_path // js_file
+#else
                 dep_package_name // dep_path // js_file
+#end
               (** Note we did a post-processing when working on Windows *)
               | Es6_global 
               | AmdJS_global -> 
