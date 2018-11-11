@@ -226,40 +226,12 @@ let iter_process_bs_string_int_unwrap_uncurry attrs =
     ) attrs;
     !st 
 
-(* let process_bs_string_int_unwrap_uncurry attrs =
-  List.fold_left
-    (fun (st,attrs)
-      (({txt ; loc}, (payload : _ ) ) as attr : attr)  ->
-      match  txt, st  with
-      | "bs.string", (`Nothing | `String)
-        -> `String, attrs
-      | "bs.int", (`Nothing | `Int)
-        ->  `Int, attrs
-      | "bs.ignore", (`Nothing | `Ignore)
-        -> `Ignore, attrs
-      | "bs.unwrap", (`Nothing | `Unwrap)
-        -> `Unwrap, attrs
-      | "bs.uncurry", `Nothing
-        ->
-        `Uncurry (Ast_payload.is_single_int payload), attrs
-      (* Don't allow duplicated [bs.uncurry] since
-         it may introduce inconsistency in arity
-      *)
-      | "bs.int", _
-      | "bs.string", _
-      | "bs.ignore", _
-      | "bs.unwrap", _
-        ->
-        Bs_syntaxerr.err loc Conflict_attributes
-      | _ , _ -> st, (attr :: attrs )
-    ) (`Nothing, []) attrs *)
-
 
 let iter_process_bs_string_as  (attrs : t) : string option =
   let st = ref None in
-  List.iter
+  Ext_list.iter attrs
     (fun
-      (({txt ; loc}, payload ) as attr : attr)  ->
+      (({txt ; loc}, payload ) as attr )  ->
       match  txt with
       | "bs.as"
         ->
@@ -267,13 +239,13 @@ let iter_process_bs_string_as  (attrs : t) : string option =
           match Ast_payload.is_single_string payload with
           | None ->
             Bs_syntaxerr.err loc Expect_string_literal
-          | Some  (v,_dec) ->
+          | Some  (v,_dec) ->            
             Bs_ast_invariant.mark_used_bs_attribute attr ;
             st:= Some v
         else
           Bs_syntaxerr.err loc Duplicated_bs_as
       | _  -> ()
-    ) attrs;
+    ) ;
   !st
 
 let has_bs_optional  (attrs : t) : bool =
