@@ -33,7 +33,7 @@ let js_field (o : Parsetree.expression) m =
     (Exp.ident m)
 
 
- 
+
 
 let handle_config (config : Parsetree.expression option) = 
   match config with 
@@ -152,7 +152,7 @@ let assertExp e =
 let derivingName = "jsConverter"
 
 (* let notApplicable loc = 
-  Location.prerr_warning 
+   Location.prerr_warning 
     loc
     (Warnings.Bs_derive_warning ( derivingName ^ " not applicable to this type")) *)
 
@@ -194,8 +194,7 @@ let init () =
                let coerceResultToNewType e =
                  if createType then 
                    e +> newType
-                 else e    
-               in                  
+                 else e  in                  
                match tdcl.ptype_kind with  
                | Ptype_record label_declarations -> 
                  let exp = 
@@ -254,7 +253,7 @@ let init () =
                              | Some name -> 
                                name
                              | None -> 
-                                Ast_compatible.const_exp_string(Ast_compatible.label_of_name label)
+                               Ast_compatible.const_exp_string(Ast_compatible.label_of_name label)
                             )
                           | _ -> assert false (* checked by [is_enum_polyvar] *)
                         ) in 
@@ -270,7 +269,7 @@ let init () =
                                  Exp.tuple 
                                    [
                                      Ast_compatible.const_exp_int i;
-                                      str
+                                     str
                                    ]
                               ) ));
                       (
@@ -390,11 +389,11 @@ let init () =
                                   +>
                                   core_type
                                 else
-                                  (Exp.ifthenelse
-                                     ( (exp_param <=~ range_upper) &&~ (range_low <=~ exp_param))
-                                     (Exp.construct {loc; txt = Lident "Some"} 
-                                        ( Some (exp_param -~ Ast_compatible.const_exp_int offset)))
-                                     (Some (Exp.construct {loc; txt = Lident "None"} None)))
+                                  Exp.ifthenelse
+                                    ( (exp_param <=~ range_upper) &&~ (range_low <=~ exp_param))
+                                    (Exp.construct {loc; txt = Ast_literal.predef_some} 
+                                       ( Some (exp_param -~ Ast_compatible.const_exp_int offset)))
+                                    (Some (Exp.construct {loc; txt = Ast_literal.predef_none} None))
                                   +>
                                   Ast_core_type.lift_option_type core_type
                                )
@@ -404,13 +403,13 @@ let init () =
                  else 
                    begin 
                      U.notApplicable 
-                     tdcl.Parsetree.ptype_loc 
-                     derivingName;
+                       tdcl.Parsetree.ptype_loc 
+                       derivingName;
                      []  
                    end
                | Ptype_open -> 
                  U.notApplicable tdcl.Parsetree.ptype_loc 
-                 derivingName;
+                   derivingName;
                  [] in 
              Ext_list.flat_map tdcls handle_tdcl
            );
@@ -467,19 +466,18 @@ let init () =
 
                    | None -> 
                      U.notApplicable tdcl.Parsetree.ptype_loc 
-                     derivingName;
+                       derivingName;
                      [])
 
                 | Ptype_variant ctors 
                   -> 
-
                   if Ast_polyvar.is_enum_constructors ctors then 
                     let ty1 = 
                       if createType then newType 
                       else Ast_literal.type_int() in 
                     let ty2 = 
                       if createType then core_type
-                      else Ast_core_type.lift_option_type core_type (*-FIXME**) in 
+                      else Ast_core_type.lift_option_type core_type in 
                     newTypeStr +? 
                     [
                       toJsType ty1;
@@ -489,14 +487,14 @@ let init () =
                     ] 
 
                   else 
-                  begin
-                    U.notApplicable tdcl.Parsetree.ptype_loc 
-                    derivingName;
-                    []
-                  end
+                    begin
+                      U.notApplicable tdcl.Parsetree.ptype_loc 
+                        derivingName;
+                      []
+                    end
                 | Ptype_open -> 
                   U.notApplicable tdcl.Parsetree.ptype_loc 
-                  derivingName;
+                    derivingName;
                   [] in 
               Ext_list.flat_map tdcls handle_tdcl
 
@@ -504,4 +502,4 @@ let init () =
          expression_gen = None 
        } 
     )
-;
+  ;
