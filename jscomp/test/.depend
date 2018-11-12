@@ -554,7 +554,7 @@ test_incr_ref.cmj :
 test_index.cmj : ../runtime/js.cmj
 test_int_map_find.cmj :
 test_internalOO.cmj :
-test_is_js.cmj : test_is_js.cmi
+test_is_js.cmj : mt.cmj test_is_js.cmi
 test_js_ffi.cmj :
 test_let.cmj :
 test_list.cmj :

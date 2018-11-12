@@ -15,7 +15,7 @@ let v,u = tToJs, tFromJs
 
 
 (* not applicable to thiis type, and unused warning*)
-#if false then
+#if 0 then
 type t0 =  
   [ `a of int [@bs.as "hi"] ]
   [@@bs.deriving jsConverter]
