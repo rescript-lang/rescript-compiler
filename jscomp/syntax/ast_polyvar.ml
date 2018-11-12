@@ -95,32 +95,32 @@ let map_row_fields_into_strings ptyp_loc
     (row_fields : Parsetree.row_field list) : External_arg_spec.attr = 
   let case, result = 
     Ext_list.fold_right row_fields (`Nothing, []) (fun tag (nullary, acc) -> 
-         match nullary, tag with 
-         | (`Nothing | `Null), 
-           Rtag (label, attrs, true,  [])
-           -> 
-           begin match Ast_attributes.iter_process_bs_string_as attrs with 
-             | Some name -> 
-               `Null, ((hash_label label, name) :: acc )
+        match nullary, tag with 
+        | (`Nothing | `Null), 
+          Rtag (label, attrs, true,  [])
+          -> 
+          begin match Ast_attributes.iter_process_bs_string_as attrs with 
+            | Some name -> 
+              `Null, ((hash_label label, name) :: acc )
 
-             | None -> 
-               `Null, ((hash_label label, label_of_name label) :: acc )
-           end
-         | (`Nothing | `NonNull), Rtag(label, attrs, false, ([ _ ])) 
-           -> 
-           begin match Ast_attributes.iter_process_bs_string_as attrs with 
-             | Some name -> 
-               `NonNull, ((hash_label label, name) :: acc)
-             | None -> 
-               `NonNull, ((hash_label label, label_of_name label) :: acc)
-           end
-         | _ -> Bs_syntaxerr.err ptyp_loc Invalid_bs_string_type
+            | None -> 
+              `Null, ((hash_label label, label_of_name label) :: acc )
+          end
+        | (`Nothing | `NonNull), Rtag(label, attrs, false, ([ _ ])) 
+          -> 
+          begin match Ast_attributes.iter_process_bs_string_as attrs with 
+            | Some name -> 
+              `NonNull, ((hash_label label, name) :: acc)
+            | None -> 
+              `NonNull, ((hash_label label, label_of_name label) :: acc)
+          end
+        | _ -> Bs_syntaxerr.err ptyp_loc Invalid_bs_string_type
 
-       )  in 
-  (match case with 
-   | `Nothing -> Bs_syntaxerr.err ptyp_loc Invalid_bs_string_type
-   | `Null -> External_arg_spec.NullString result 
-   | `NonNull -> NonNullString result)
+      )  in 
+  match case with 
+  | `Nothing -> Bs_syntaxerr.err ptyp_loc Invalid_bs_string_type
+  | `Null -> External_arg_spec.NullString result 
+  | `NonNull -> NonNullString result
 
 
 let is_enum row_fields = 

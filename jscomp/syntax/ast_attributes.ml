@@ -282,11 +282,11 @@ let iter_process_bs_int_as  attrs =
     ) attrs; !st
 
 
-let iter_process_bs_string_or_int_as attrs =
+let iter_process_bs_string_or_int_as (attrs : Parsetree.attributes) =
   let st = ref None in
-  List.iter
+  Ext_list.iter attrs
     (fun
-      (({txt ; loc}, payload ) as attr : attr)  ->
+      (({txt ; loc}, payload ) as attr)  ->
       match  txt with
       | "bs.as"
         ->
@@ -310,7 +310,7 @@ let iter_process_bs_string_or_int_as attrs =
           Bs_syntaxerr.err loc Duplicated_bs_as
       | _ -> ()
 
-    ) attrs;
+    ) ;
   !st
 
 let locg = Location.none

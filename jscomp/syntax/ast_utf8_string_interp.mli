@@ -77,3 +77,7 @@ val transform :
 val is_unicode_string :   
   string -> 
   bool
+
+val is_unescaped :   
+  string -> 
+  bool

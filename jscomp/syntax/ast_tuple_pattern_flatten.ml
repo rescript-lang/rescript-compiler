@@ -99,7 +99,7 @@ let flattern_tuple_pattern_vb
           List.for_all is_simple_pattern xs &&
           Ext_list.same_length es xs
         ->
-        Bs_ast_invariant.warn_unused_attributes tuple_attributes ; (* will be dropped*)
+        Bs_ast_invariant.warn_discarded_unused_attributes tuple_attributes ; (* will be dropped*)
         Ext_list.fold_right2 xs es acc (fun pat exp acc->
              {Parsetree.
                pvb_pat =

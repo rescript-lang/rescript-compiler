@@ -385,6 +385,8 @@ let to_string_ident : Longident.t =
 
 
 let escaped_j_delimiter =  "*j" (* not user level syntax allowed *)
+let unescaped_j_delimiter = "j"
+let unescaped_js_delimiter = "js"
 
 let escaped = Some escaped_j_delimiter 
 
@@ -457,7 +459,7 @@ let transform_interp loc s =
 
 
 let transform (e : Parsetree.expression) s delim : Parsetree.expression = 
-    if Ext_string.equal delim Literals.unescaped_js_delimiter then
+    if Ext_string.equal delim unescaped_js_delimiter then
         let js_str = Ast_utf8_string.transform e.pexp_loc s in
         { e with pexp_desc =
                        Pexp_constant (
@@ -467,8 +469,12 @@ let transform (e : Parsetree.expression) s delim : Parsetree.expression =
             Const_string 
 #end                                     
                          (js_str, escaped))}
-    else if Ext_string.equal delim Literals.unescaped_j_delimiter then
+    else if Ext_string.equal delim unescaped_j_delimiter then
             transform_interp e.pexp_loc s
     else e
 
 let is_unicode_string opt = Ext_string.equal opt escaped_j_delimiter    
+
+let is_unescaped s = 
+  Ext_string.equal s unescaped_j_delimiter
+  || Ext_string.equal s unescaped_js_delimiter
