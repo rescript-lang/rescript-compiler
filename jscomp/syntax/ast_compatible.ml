@@ -28,6 +28,8 @@ open Parsetree
 let default_loc = Location.none
 
 #if OCAML_VERSION =~ ">4.03.0" then 
+type poly_var_label = Asttypes.label Asttypes.loc
+
 type arg_label = Asttypes.arg_label = 
   | Nolabel
   | Labelled of string
@@ -37,6 +39,7 @@ let is_arg_label_simple (s : arg_label) = s = (Nolabel : arg_label)
 type label = arg_label 
 external convert : arg_label -> label = "%identity"
 #else 
+type poly_var_label = string 
 type arg_label = string
 type label = 
   | Nolabel
@@ -324,3 +327,12 @@ let object_field   l attrs ty =
 #if OCAML_VERSION =~ ">4.03.0" then
   Parsetree.Otag 
 #end (l,attrs,ty)  
+
+
+#if OCAML_VERSION =~ ">4.03.0" then 
+let hash_label (x : poly_var_label) : int = Ext_pervasives.hash_variant x.txt
+let label_of_name (x : poly_var_label) : string = x.txt
+#else
+let hash_label : poly_var_label -> int = Ext_pervasives.hash_variant 
+external label_of_name : poly_var_label -> string = "%identity"
+#end

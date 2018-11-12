@@ -199,7 +199,7 @@ let iter_process_derive_type attrs =
   it is worse in bs.uncurry since it will introduce
   inconsistency in arity
  *)  
-let iter_process_bs_string_int_unwrap_uncurry attrs =
+let iter_process_bs_string_int_unwrap_uncurry (attrs : Parsetree.attributes) =
   let st = ref `Nothing in 
   let assign v (({loc;_}, _ ) as attr : attr) = 
     if !st = `Nothing then 
@@ -208,8 +208,7 @@ let iter_process_bs_string_int_unwrap_uncurry attrs =
       st := v ;
     end  
     else Bs_syntaxerr.err loc Conflict_attributes  in 
-  List.iter
-    (fun (({txt ; loc}, (payload : _ ) ) as attr : attr)  ->
+  Ext_list.iter attrs (fun (({txt ; loc}, (payload : _ ) ) as attr)  ->
       match  txt with
       | "bs.string"
         -> assign `String attr
@@ -223,8 +222,8 @@ let iter_process_bs_string_int_unwrap_uncurry attrs =
         ->
         assign (`Uncurry (Ast_payload.is_single_int payload)) attr
       | _ -> ()
-    ) attrs;
-    !st 
+    ) ;
+  !st 
 
 
 let iter_process_bs_string_as  (attrs : t) : string option =
@@ -247,6 +246,27 @@ let iter_process_bs_string_as  (attrs : t) : string option =
       | _  -> ()
     ) ;
   !st
+
+let iter_process_bs_string_as_ast  (attrs : t) : Parsetree.expression option =
+  let st = ref None in
+  Ext_list.iter attrs
+    (fun
+      (({txt ; loc}, payload ) as attr )  ->
+      match  txt with
+      | "bs.as"
+        ->
+        if !st = None then
+          match Ast_payload.is_single_string_as_ast payload with
+          | None ->
+            Bs_syntaxerr.err loc Expect_string_literal
+          | Some _ as v ->            
+            Bs_ast_invariant.mark_used_bs_attribute attr ;
+            st:=  v
+        else
+          Bs_syntaxerr.err loc Duplicated_bs_as
+      | _  -> ()
+    ) ;
+  !st  
 
 let has_bs_optional  (attrs : t) : bool =
   Ext_list.exists attrs (fun

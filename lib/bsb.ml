@@ -3910,10 +3910,6 @@ val dash_nostdlib : string
 
 val reactjs_jsx_ppx_2_exe : string 
 val reactjs_jsx_ppx_3_exe : string 
-val unescaped_j_delimiter : string 
-
-
-val unescaped_js_delimiter : string 
 
 val native : string
 val bytecode : string
@@ -4044,8 +4040,6 @@ let dash_nostdlib = "-nostdlib"
 
 let reactjs_jsx_ppx_2_exe = "reactjs_jsx_ppx_2.exe"
 let reactjs_jsx_ppx_3_exe  = "reactjs_jsx_ppx_3.exe"
-let unescaped_j_delimiter = "j"
-let unescaped_js_delimiter = "js"
 
 let native = "native"
 let bytecode = "bytecode"

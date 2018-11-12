@@ -22,8 +22,6 @@
 ../lib/bsdep.ml : ../vendor/ocaml/parsing/parser.ml
 ../lib/bsdep.ml : ../vendor/ocaml/parsing/parser.mli
 ../lib/bsdep.ml : ../vendor/ocaml/parsing/parsetree.mli
-../lib/bsdep.ml : ../vendor/ocaml/parsing/printast.ml
-../lib/bsdep.ml : ../vendor/ocaml/parsing/printast.mli
 ../lib/bsdep.ml : ../vendor/ocaml/parsing/syntaxerr.ml
 ../lib/bsdep.ml : ../vendor/ocaml/parsing/syntaxerr.mli
 ../lib/bsdep.ml : ../vendor/ocaml/tools/ocamldep.ml

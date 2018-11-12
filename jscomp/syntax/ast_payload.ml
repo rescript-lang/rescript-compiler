@@ -41,6 +41,25 @@ let is_single_string (x : t ) =
       _}] -> Some (name,dec)
   | _  -> None
 
+let is_single_string_as_ast (x : t ) 
+  : Parsetree.expression option = 
+  match x with  (** TODO also need detect empty phrase case *)
+  | PStr [ {
+      pstr_desc =  
+        Pstr_eval (
+          {pexp_desc = 
+             Pexp_constant 
+#if OCAML_VERSION =~ ">4.3.0" then
+                (Pconst_string(name,dec))
+#else
+               (Const_string (name,dec))
+#end               
+              ;
+           _} as e ,_);
+      _}] -> Some e
+  | _  -> None
+
+  
 (** TODO also need detect empty phrase case *)  
 #if OCAML_VERSION =~ ">4.3.0"  then
 let is_single_int (x : t ) : int option = 

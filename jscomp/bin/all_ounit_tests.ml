@@ -3798,10 +3798,6 @@ val dash_nostdlib : string
 
 val reactjs_jsx_ppx_2_exe : string 
 val reactjs_jsx_ppx_3_exe : string 
-val unescaped_j_delimiter : string 
-
-
-val unescaped_js_delimiter : string 
 
 val native : string
 val bytecode : string
@@ -3932,8 +3928,6 @@ let dash_nostdlib = "-nostdlib"
 
 let reactjs_jsx_ppx_2_exe = "reactjs_jsx_ppx_2.exe"
 let reactjs_jsx_ppx_3_exe  = "reactjs_jsx_ppx_3.exe"
-let unescaped_j_delimiter = "j"
-let unescaped_js_delimiter = "js"
 
 let native = "native"
 let bytecode = "bytecode"
@@ -14609,6 +14603,7 @@ module Ast_compatible : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
+type poly_var_label = string 
 type arg_label = string 
 type label = 
   | Nolabel
@@ -14769,7 +14764,8 @@ type object_field =
 val object_field : string ->  attributes -> core_type -> object_field  
   
 
-  
+val hash_label : poly_var_label -> int 
+val label_of_name : poly_var_label -> string 
 end = struct
 #1 "ast_compatible.ml"
 (* Copyright (C) 2018 Authors of BuckleScript
@@ -14802,6 +14798,7 @@ open Parsetree
 let default_loc = Location.none
 
  
+type poly_var_label = string 
 type arg_label = string
 type label = 
   | Nolabel
@@ -15022,6 +15019,12 @@ type object_field =
 
 let object_field   l attrs ty = 
  (l,attrs,ty)  
+
+
+
+let hash_label : poly_var_label -> int = Ext_pervasives.hash_variant 
+external label_of_name : poly_var_label -> string = "%identity"
+
 end
 module Bs_loc : sig 
 #1 "bs_loc.mli"
@@ -15185,6 +15188,10 @@ val transform :
   Parsetree.expression
 
 val is_unicode_string :   
+  string -> 
+  bool
+
+val is_unescaped :   
   string -> 
   bool
 end = struct
@@ -15576,6 +15583,8 @@ let to_string_ident : Longident.t =
 
 
 let escaped_j_delimiter =  "*j" (* not user level syntax allowed *)
+let unescaped_j_delimiter = "j"
+let unescaped_js_delimiter = "js"
 
 let escaped = Some escaped_j_delimiter 
 
@@ -15648,7 +15657,7 @@ let transform_interp loc s =
 
 
 let transform (e : Parsetree.expression) s delim : Parsetree.expression = 
-    if Ext_string.equal delim Literals.unescaped_js_delimiter then
+    if Ext_string.equal delim unescaped_js_delimiter then
         let js_str = Ast_utf8_string.transform e.pexp_loc s in
         { e with pexp_desc =
                        Pexp_constant (
@@ -15656,11 +15665,15 @@ let transform (e : Parsetree.expression) s delim : Parsetree.expression =
             Const_string 
                                      
                          (js_str, escaped))}
-    else if Ext_string.equal delim Literals.unescaped_j_delimiter then
+    else if Ext_string.equal delim unescaped_j_delimiter then
             transform_interp e.pexp_loc s
     else e
 
 let is_unicode_string opt = Ext_string.equal opt escaped_j_delimiter    
+
+let is_unescaped s = 
+  Ext_string.equal s unescaped_j_delimiter
+  || Ext_string.equal s unescaped_js_delimiter
 end
 module Ounit_unicode_tests
 = struct
