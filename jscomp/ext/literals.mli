@@ -118,10 +118,6 @@ val dash_nostdlib : string
 
 val reactjs_jsx_ppx_2_exe : string 
 val reactjs_jsx_ppx_3_exe : string 
-val unescaped_j_delimiter : string 
-val escaped_j_delimiter : string 
-
-val unescaped_js_delimiter : string 
 
 val native : string
 val bytecode : string

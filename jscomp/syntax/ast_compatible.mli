@@ -23,10 +23,12 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 #if OCAML_VERSION =~ ">4.3.0" then 
+type poly_var_label = Asttypes.label Asttypes.loc
 type arg_label = Asttypes.arg_label
 type label = arg_label
 external convert: arg_label -> label = "%identity"
 #else
+type poly_var_label = string 
 type arg_label = string 
 type label = 
   | Nolabel
@@ -190,4 +192,5 @@ val object_field : Asttypes.label Asttypes.loc ->  attributes -> core_type -> ob
 val object_field : string ->  attributes -> core_type -> object_field  
 #end  
 
-  
+val hash_label : poly_var_label -> int 
+val label_of_name : poly_var_label -> string 

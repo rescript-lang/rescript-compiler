@@ -34,6 +34,10 @@ type action =
    lid * Parsetree.expression option
 
 val is_single_string : t -> (string * string option) option
+val is_single_string_as_ast : 
+  t -> 
+  Parsetree.expression option 
+
 val is_single_int : t -> int option 
 
 type rtn = Not_String_Lteral | JS_Regex_Check_Failed | Correct of Parsetree.expression

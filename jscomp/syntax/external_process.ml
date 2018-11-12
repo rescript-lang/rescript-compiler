@@ -84,7 +84,7 @@ let get_arg_type
         we should warn, there is a trade off whether
         we should warn dropped non bs attribute or not
       *)
-      Bs_ast_invariant.warn_unused_attributes ptyp_attrs;
+      Bs_ast_invariant.warn_discarded_unused_attributes ptyp_attrs;
       match result with
       |  None ->
         Bs_syntaxerr.err ptyp.ptyp_loc Invalid_underscore_type_in_external

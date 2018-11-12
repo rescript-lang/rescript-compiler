@@ -290,6 +290,7 @@ gpr_2731_test.cmj :
 gpr_2789_test.cmj : mt.cmj
 gpr_2863_test.cmj : ../others/belt.cmj
 gpr_2931_test.cmj : mt.cmj
+gpr_3142_test.cmj : mt.cmj
 gpr_405_test.cmj : gpr_405_test.cmi
 gpr_441.cmj :
 gpr_459_test.cmj : mt.cmj

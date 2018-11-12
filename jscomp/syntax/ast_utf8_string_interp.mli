@@ -65,4 +65,19 @@ type exn += Error of pos *  pos * error
 val empty_segment : segment -> bool
 
 val transform_test : string -> segment list
-val transform_interp : Location.t -> string -> Parsetree.expression
+
+
+
+val transform : 
+  Parsetree.expression -> 
+  string -> 
+  string -> 
+  Parsetree.expression
+
+val is_unicode_string :   
+  string -> 
+  bool
+
+val is_unescaped :   
+  string -> 
+  bool

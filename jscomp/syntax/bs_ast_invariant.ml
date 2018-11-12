@@ -33,8 +33,9 @@ let is_bs_attribute txt =
    String.unsafe_get txt 2 = '.'
   )
 
-let used_attributes : Parsetree.attribute Hash_set_poly.t = Hash_set_poly.create 16 
+let used_attributes : _ Hash_set_poly.t = Hash_set_poly.create 16 
 
+#if false then
 let dump_attribute fmt = (fun ( (sloc : string Asttypes.loc),payload) -> 
     Format.fprintf fmt "@[%s %a@]" sloc.txt (Printast.payload 0 ) payload
     )
@@ -43,28 +44,31 @@ let dump_used_attributes fmt =
   Format.fprintf fmt "Used attributes Listing Start:@.";
   Hash_set_poly.iter  (fun attr -> dump_attribute fmt attr) used_attributes;
   Format.fprintf fmt "Used attributes Listing End:@."
+#end
 
-
-let mark_used_bs_attribute (x : Parsetree.attribute) = 
-  Hash_set_poly.add used_attributes x
+(* only mark non-ghost used bs attribute *)
+let mark_used_bs_attribute ((x,_) : Parsetree.attribute) = 
+  if not x.loc.loc_ghost then
+    Hash_set_poly.add used_attributes x
 
 let dummy_unused_attribute : Warnings.t = (Bs_unused_attribute "")
 
 
 
 let warn_unused_attribute 
-  (({txt; loc}, _) as attr : Parsetree.attribute) = 
+  (({txt; loc} as sloc, _) : Parsetree.attribute) = 
   if is_bs_attribute txt && 
-     not (Hash_set_poly.mem used_attributes attr) then 
+     not loc.loc_ghost &&
+     not (Hash_set_poly.mem used_attributes sloc) then 
     begin    
-#if BS_DEBUG then (*COMMENT*)
+#if false then (*COMMENT*)
       dump_used_attributes Format.err_formatter; 
       dump_attribute Format.err_formatter attr ;
 #end
       Location.prerr_warning loc (Bs_unused_attribute txt)
     end
 
-let warn_unused_attributes (attrs : Parsetree.attributes) = 
+let warn_discarded_unused_attributes (attrs : Parsetree.attributes) = 
   if attrs <> [] then 
     Ext_list.iter attrs warn_unused_attribute
     
@@ -90,8 +94,7 @@ let emit_external_warnings : iterator=
           Const_string 
 #end
           (_, Some s)) 
-          when Ext_string.equal s Literals.unescaped_j_delimiter 
-            || Ext_string.equal s Literals.unescaped_js_delimiter -> 
+          when Ast_utf8_string_interp.is_unescaped s -> 
           Bs_warnings.error_unescaped_delimiter a.pexp_loc s 
         | _ -> default_iterator.expr self a 
       );

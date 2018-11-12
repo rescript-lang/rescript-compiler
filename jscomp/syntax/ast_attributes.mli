@@ -62,6 +62,10 @@ val iter_process_bs_string_int_unwrap_uncurry :
 val iter_process_bs_string_as :
   t -> string option
 
+val iter_process_bs_string_as_ast :   
+  t -> 
+  Parsetree.expression option
+  
 val has_bs_optional :
   t -> bool 
 

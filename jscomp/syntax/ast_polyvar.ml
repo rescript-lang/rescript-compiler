@@ -22,13 +22,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-#if OCAML_VERSION =~ ">4.03.0" then 
-let hash_label (x : Asttypes.label Asttypes.loc) = Ext_pervasives.hash_variant x.txt
-let label_of_name (x : Asttypes.label Asttypes.loc) = x.txt
-#else
-let hash_label = Ext_pervasives.hash_variant 
-external label_of_name : string -> string = "%identity"
-#end
 
 let map_row_fields_into_ints ptyp_loc
     (row_fields : Parsetree.row_field list) 
@@ -43,10 +36,10 @@ let map_row_fields_into_ints ptyp_loc
             begin match Ast_attributes.iter_process_bs_int_as attrs with 
               | Some i -> 
                 i + 1, 
-                ((hash_label label , i):: acc ) 
+                ((Ast_compatible.hash_label label , i):: acc ) 
               | None -> 
                 i + 1 , 
-                ((hash_label label , i):: acc )
+                ((Ast_compatible.hash_label label , i):: acc )
             end
           | _ -> 
             Bs_syntaxerr.err ptyp_loc Invalid_bs_int_type
@@ -88,6 +81,8 @@ let map_constructor_declarations_into_ints
   | `offset j -> `Offset j 
   | `complex -> `New (List.rev acc)
 
+
+
 (** It also check in-consistency of cases like 
     {[ [`a  | `c of int ] ]}       
 *)  
@@ -95,32 +90,32 @@ let map_row_fields_into_strings ptyp_loc
     (row_fields : Parsetree.row_field list) : External_arg_spec.attr = 
   let case, result = 
     Ext_list.fold_right row_fields (`Nothing, []) (fun tag (nullary, acc) -> 
-         match nullary, tag with 
-         | (`Nothing | `Null), 
-           Rtag (label, attrs, true,  [])
-           -> 
-           begin match Ast_attributes.iter_process_bs_string_as attrs with 
-             | Some name -> 
-               `Null, ((hash_label label, name) :: acc )
+        match nullary, tag with 
+        | (`Nothing | `Null), 
+          Rtag (label, attrs, true,  [])
+          -> 
+          begin match Ast_attributes.iter_process_bs_string_as attrs with 
+            | Some name -> 
+              `Null, ((Ast_compatible.hash_label label, name) :: acc )
 
-             | None -> 
-               `Null, ((hash_label label, label_of_name label) :: acc )
-           end
-         | (`Nothing | `NonNull), Rtag(label, attrs, false, ([ _ ])) 
-           -> 
-           begin match Ast_attributes.iter_process_bs_string_as attrs with 
-             | Some name -> 
-               `NonNull, ((hash_label label, name) :: acc)
-             | None -> 
-               `NonNull, ((hash_label label, label_of_name label) :: acc)
-           end
-         | _ -> Bs_syntaxerr.err ptyp_loc Invalid_bs_string_type
+            | None -> 
+              `Null, ((Ast_compatible.hash_label label, Ast_compatible.label_of_name label) :: acc )
+          end
+        | (`Nothing | `NonNull), Rtag(label, attrs, false, ([ _ ])) 
+          -> 
+          begin match Ast_attributes.iter_process_bs_string_as attrs with 
+            | Some name -> 
+              `NonNull, ((Ast_compatible.hash_label label, name) :: acc)
+            | None -> 
+              `NonNull, ((Ast_compatible.hash_label label, Ast_compatible.label_of_name label) :: acc)
+          end
+        | _ -> Bs_syntaxerr.err ptyp_loc Invalid_bs_string_type
 
-       )  in 
-  (match case with 
-   | `Nothing -> Bs_syntaxerr.err ptyp_loc Invalid_bs_string_type
-   | `Null -> External_arg_spec.NullString result 
-   | `NonNull -> NonNullString result)
+      )  in 
+  match case with 
+  | `Nothing -> Bs_syntaxerr.err ptyp_loc Invalid_bs_string_type
+  | `Null -> External_arg_spec.NullString result 
+  | `NonNull -> NonNullString result
 
 
 let is_enum row_fields = 

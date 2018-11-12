@@ -91,13 +91,13 @@ let rec convert_constant ( const : Lambda.structured_constant) : t =
     | Const_base (Const_int i) -> (Const_int i)
     | Const_base (Const_char i) -> (Const_char i)
     | Const_base (Const_string(i,opt)) ->
-      begin match opt with
+        (match opt with
         | Some opt when
-            Ext_string.equal opt Literals.escaped_j_delimiter ->
+            Ast_utf8_string_interp.is_unicode_string opt  ->
           Const_unicode i
         | _ ->
-          Const_string i
-      end
+          Const_string i)
+      
     | Const_base (Const_float i) -> (Const_float i)
     | Const_base (Const_int32 i) -> (Const_int32 i)
     | Const_base (Const_int64 i) -> (Const_int64 i)
