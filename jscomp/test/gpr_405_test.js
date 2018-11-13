@@ -113,4 +113,4 @@ function Make(funarg) {
 }
 
 exports.Make = Make;
-/* No side effect */
+/* Hashtbl Not a pure module */
