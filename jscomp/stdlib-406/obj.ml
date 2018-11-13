@@ -28,9 +28,15 @@ external size : t -> int = "%obj_size"
 external reachable_words : t -> int = "caml_obj_reachable_words"
 external field : t -> int -> t = "%obj_field"
 external set_field : t -> int -> t -> unit = "%obj_set_field"
+#if BS then
+external floatarray_get : floatarray -> int -> float = "%array_safe_get"
+external floatarray_set :
+    floatarray -> int -> float -> unit = "%array_safe_set"
+#else
 external floatarray_get : floatarray -> int -> float = "caml_floatarray_get"
 external floatarray_set :
     floatarray -> int -> float -> unit = "caml_floatarray_set"
+#end    
 let [@inline always] double_field x i = floatarray_get (obj x : floatarray) i
 let [@inline always] set_double_field x i v =
   floatarray_set (obj x : floatarray) i v
@@ -93,7 +99,7 @@ module Ephemeron = struct
 
   external create: int -> t = "caml_ephe_create"
 
-  let length x = size(repr x) - 2
+  let length x = size(repr x) - 2 (*-FIXME*)
 
   external get_key: t -> int -> obj_t option = "caml_ephe_get_key"
   external get_key_copy: t -> int -> obj_t option = "caml_ephe_get_key_copy"

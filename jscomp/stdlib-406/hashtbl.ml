@@ -56,10 +56,13 @@ let flip_ongoing_traversal h =
 (* To pick random seeds if requested *)
 
 let randomized_default =
-  let params =
+#if BS then false  
+#else
+  let params =    
     try Sys.getenv "OCAMLRUNPARAM" with Not_found ->
     try Sys.getenv "CAMLRUNPARAM" with Not_found -> "" in
   String.contains params 'R'
+#end
 
 let randomized = ref randomized_default
 

@@ -129,12 +129,15 @@ let catch_break on =
   else
     set_signal sigint Signal_default
 
-
+#if BS then
+let enable_runtime_warnings : bool -> unit = fun _ -> () 
+let runtime_warnings_enabled : unit -> bool = fun _ -> false
+#else
 external enable_runtime_warnings: bool -> unit =
   "caml_ml_enable_runtime_warnings"
 external runtime_warnings_enabled: unit -> bool =
   "caml_ml_runtime_warnings_enabled"
-
+#end
 (* The version string is found in file ../VERSION *)
 
 let ocaml_version = "4.06.2+BS"

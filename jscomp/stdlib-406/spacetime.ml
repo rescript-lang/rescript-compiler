@@ -11,12 +11,15 @@
 (*   special exception on linking described in the file LICENSE.          *)
 (*                                                                        *)
 (**************************************************************************)
-
+#if BS then
+let spacetime_enabled : unit -> bool = fun _ -> false
+let enabled = false
+#else
 external spacetime_enabled : unit -> bool
   = "caml_spacetime_enabled" [@@noalloc]
 
 let enabled = spacetime_enabled ()
-
+#end
 let if_spacetime_enabled f =
   if enabled then f () else ()
 
