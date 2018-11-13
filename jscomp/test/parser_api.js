@@ -14717,33 +14717,29 @@ function wrap(parsing_fun, lexbuf) {
   catch (raw_err){
     var err = Js_exn.internalToOCamlException(raw_err);
     var exit = 0;
-    var exit$1 = 0;
-    var exit$2 = 0;
     if (err[0] === $$Error$2) {
       var tmp = err[1];
-      if (typeof tmp === "number" || tmp.tag || input_name[0] !== "//toplevel//") {
-        exit$2 = 3;
-      } else {
+      if (typeof tmp === "number") {
+        throw err;
+      } else if (tmp.tag) {
+        throw err;
+      } else if (input_name[0] === "//toplevel//") {
         skip_phrase(lexbuf);
         throw err;
+      } else {
+        throw err;
       }
-    } else {
-      exit$2 = 3;
-    }
-    if (exit$2 === 3) {
-      if (err[0] === $$Error$1 && input_name[0] === "//toplevel//") {
+    } else if (err[0] === $$Error$1) {
+      if (input_name[0] === "//toplevel//") {
         maybe_skip_phrase(lexbuf);
         throw err;
       } else {
-        exit$1 = 2;
-      }
-    }
-    if (exit$1 === 2) {
-      if (err === Parsing.Parse_error || err === Escape_error) {
-        exit = 1;
-      } else {
         throw err;
       }
+    } else if (err === Parsing.Parse_error || err === Escape_error) {
+      exit = 1;
+    } else {
+      throw err;
     }
     if (exit === 1) {
       var loc = curr(lexbuf);
