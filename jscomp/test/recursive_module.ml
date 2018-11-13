@@ -1,3 +1,8 @@
+let suites :  Mt.pair_suites ref  = ref []
+let test_id = ref 0
+let eq loc x y = Mt.eq_suites ~test_id ~suites loc x y 
+
+
 module  rec Int32 : sig
   type t
   type buffer
@@ -14,3 +19,12 @@ module  rec Int3 : sig
 end = Int3
 
 
+
+(* expect raise Undefined_recursive_module *)
+;; eq __LOC__ 4
+ (try ignore (Int3.u 3); 3
+  with Undefined_recursive_module _ -> 4)
+
+
+let () = 
+  Mt.from_pair_suites __FILE__ !suites

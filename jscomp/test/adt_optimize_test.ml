@@ -105,7 +105,43 @@ let f8 = function
   | T65 _ -> 2
   | _ -> 3 
 
+(*
+ocaml402
+{[
+  (function param/1098
+          (catch
+            (catch
+              (catch
+                (switch param/1098
+                 case int 0: (exit 11)
+                 case int 1: (exit 11)
+                 case int 2: (exit 11)
+                 case tag 0: (exit 12)
+                 case tag 1: (exit 12)
+                 default: (exit 13))
+               with (13) 3)
+             with (11) 1)
+           with (12) 2))
+]}
 
+ocaml406
+{[
+   (function param/1069
+         (catch
+           (catch
+             (switch param/1069
+              case int 3: (exit 10)
+              case tag 0: (exit 9)
+              case tag 1: (exit 9)
+              case tag 2: (exit 10)
+              case tag 3: (exit 10)
+              default: 1)
+            with (10) 3)
+          with (9) 2))
+]}
+
+
+*)
 let f9 = function 
   | T60
   | T61

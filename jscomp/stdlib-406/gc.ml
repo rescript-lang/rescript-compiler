@@ -97,8 +97,12 @@ let allocated_bytes () =
 
 
 external finalise : ('a -> unit) -> 'a -> unit = "caml_final_register"
+#if BS then 
+let finalise_last = fun _ _ : unit -> ()
+#else
 external finalise_last : (unit -> unit) -> 'a -> unit =
   "caml_final_register_called_without_value"
+#end  
 external finalise_release : unit -> unit = "caml_final_release"
 
 
