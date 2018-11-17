@@ -19,20 +19,12 @@ var d = [
   3
 ];
 
-var A$1 = Caml_exceptions.create("Local_exception_test.A");
-
-var x = [
-  A$1,
-  3
-];
-
 var u = B;
 
+exports.A = A;
 exports.v = v;
 exports.B = B;
 exports.u = u;
 exports.D = D;
 exports.d = d;
-exports.A = A$1;
-exports.x = x;
 /* No side effect */

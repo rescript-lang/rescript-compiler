@@ -32,10 +32,10 @@ type 'a t
 type key = string
 (** Key type *)
 
-external get : 
+val get : 
   'a t -> 
   key -> 
-  'a option = "" [@@bs.get_index] [@@bs.return {undefined_to_opt}]
+  'a option 
 (** [get dict key] returns [None] if the [key] is not found in the 
     dictionary, [Some value] otherwise *)
 

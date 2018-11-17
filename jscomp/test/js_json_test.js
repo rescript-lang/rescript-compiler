@@ -3,6 +3,7 @@
 var Mt = require("./mt.js");
 var $$Array = require("../../lib/js/array.js");
 var Block = require("../../lib/js/block.js");
+var Js_dict = require("../../lib/js/js_dict.js");
 var Js_json = require("../../lib/js/js_json.js");
 var Caml_array = require("../../lib/js/caml_array.js");
 var Js_primitive = require("../../lib/js/js_primitive.js");
@@ -53,9 +54,9 @@ add_test("File \"js_json_test.ml\", line 23, characters 11-18", (function (param
         if (typeof ty === "number" || ty.tag !== 2) {
           return /* Ok */Block.__(4, [false]);
         } else {
-          var match = ty[0]["x"];
+          var match = Js_dict.get(ty[0], "x");
           if (match !== undefined) {
-            var ty2 = Js_json.classify(match);
+            var ty2 = Js_json.classify(Js_primitive.valFromOption(match));
             if (typeof ty2 === "number" || ty2.tag !== 3) {
               return /* Ok */Block.__(4, [false]);
             } else {
@@ -224,7 +225,7 @@ if (typeof ty$4 === "number") {
         }));
 } else if (ty$4.tag === 2) {
   var x = ty$4[0];
-  var ta = Js_json.classify(option_get(Js_primitive.undefined_to_opt(x["a"])));
+  var ta = Js_json.classify(option_get(Js_dict.get(x, "a")));
   if (typeof ta === "number") {
     add_test("File \"js_json_test.ml\", line 132, characters 18-25", (function (param) {
             return /* Ok */Block.__(4, [false]);
@@ -238,7 +239,7 @@ if (typeof ty$4 === "number") {
             return /* Ok */Block.__(4, [false]);
           }));
   } else {
-    var ty$5 = Js_json.classify(option_get(Js_primitive.undefined_to_opt(x["b"])));
+    var ty$5 = Js_json.classify(option_get(Js_dict.get(x, "b")));
     if (typeof ty$5 === "number") {
       add_test("File \"js_json_test.ml\", line 130, characters 22-29", (function (param) {
               return /* Ok */Block.__(4, [false]);
@@ -460,7 +461,7 @@ if (typeof ty$6 === "number") {
             return /* Ok */Block.__(4, [false]);
           }));
   } else if (ty$7.tag === 2) {
-    var ty$8 = Js_json.classify(option_get(Js_primitive.undefined_to_opt(ty$7[0]["a"])));
+    var ty$8 = Js_json.classify(option_get(Js_dict.get(ty$7[0], "a")));
     if (typeof ty$8 === "number") {
       add_test("File \"js_json_test.ml\", line 278, characters 20-27", (function (param) {
               return /* Ok */Block.__(4, [false]);

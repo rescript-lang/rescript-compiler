@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 var cp = require('child_process')
 var fs = require('fs')
-exports.run = function () {
+function run() {
     cp.execSync(`make clean`)
     if (fs.existsSync(`stdlib-406`)) {
         cp.execSync(`git clean -dfx stdlib-406`)
@@ -13,3 +13,5 @@ exports.run = function () {
 if(require.main === module){
     run()
 }
+
+exports.run = run

@@ -268,6 +268,7 @@ OTHERS := test_literals a test_ari test_export2 test_internalOO test_obj_simple_
 	406_primitive_test\
 	fun_pattern_match\
 	gpr_3142_test\
+	gpr_3154_test\
 	ocaml_typedtree_test
 # ocaml_typedtree_test is not cross version due to camlinternalFormat
 # bs_uncurry_test
