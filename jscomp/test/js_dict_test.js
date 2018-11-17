@@ -3,7 +3,6 @@
 var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 var Js_dict = require("../../lib/js/js_dict.js");
-var Js_primitive = require("../../lib/js/js_primitive.js");
 
 function obj(param) {
   return {
@@ -28,10 +27,10 @@ var suites_001 = /* :: */[
     (function (param) {
         return /* Eq */Block.__(0, [
                   43,
-                  Js_primitive.undefined_to_opt(({
-                            foo: 43,
-                            bar: 86
-                          })["foo"])
+                  Js_dict.get({
+                        foo: 43,
+                        bar: 86
+                      }, "foo")
                 ]);
       })
   ],
@@ -41,10 +40,10 @@ var suites_001 = /* :: */[
       (function (param) {
           return /* Eq */Block.__(0, [
                     undefined,
-                    Js_primitive.undefined_to_opt(({
-                              foo: 43,
-                              bar: 86
-                            })["baz"])
+                    Js_dict.get({
+                          foo: 43,
+                          bar: 86
+                        }, "baz")
                   ]);
         })
     ],
@@ -72,7 +71,7 @@ var suites_001 = /* :: */[
               o["foo"] = 36;
               return /* Eq */Block.__(0, [
                         36,
-                        Js_primitive.undefined_to_opt(o["foo"])
+                        Js_dict.get(o, "foo")
                       ]);
             })
         ],

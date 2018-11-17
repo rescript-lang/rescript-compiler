@@ -291,6 +291,7 @@ gpr_2789_test.cmj : mt.cmj
 gpr_2863_test.cmj : ../others/belt.cmj
 gpr_2931_test.cmj : mt.cmj
 gpr_3142_test.cmj : mt.cmj
+gpr_3154_test.cmj : mt.cmj ../runtime/js.cmj
 gpr_405_test.cmj : gpr_405_test.cmi
 gpr_441.cmj :
 gpr_459_test.cmj : mt.cmj
@@ -467,7 +468,7 @@ rec_module_test.cmj : mt.cmj
 rec_value_test.cmj : mt.cmj ../runtime/js.cmj
 record_debug_test.cmj : ../runtime/js.cmj ../others/belt.cmj
 record_with_test.cmj : mt.cmj
-recursive_module.cmj :
+recursive_module.cmj : mt.cmj
 recursive_module_test.cmj : mt.cmj
 regression_print.cmj :
 return_check.cmj : ../runtime/js.cmj
