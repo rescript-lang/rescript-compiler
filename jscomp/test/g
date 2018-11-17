@@ -1,0 +1,2 @@
+#!/bin/sh
+BS_DEBUG_FILE=$1 ../../lib/bsc.exe -I ../others/ -I ../stdlib-402 -I ../runtime/ -c $1
