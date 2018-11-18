@@ -583,7 +583,9 @@ let caml_format_float fmt x =
  FIXME: arity of float_of_string is not inferred correctly
 *)
 
-let float_of_string : string -> exn ->  float  = fun%raw s exn -> {| 
+let float_of_string : string -> exn ->  float  = 
+#if OCAML_VERSION =~ ">4.3.0" then
+    fun%raw s exn -> {| 
    {
     var res = +s;
     if ((s.length > 0) && (res === res))
@@ -592,14 +594,15 @@ let float_of_string : string -> exn ->  float  = fun%raw s exn -> {|
     res = +s;
     if (((s.length > 0) && (res === res)) || /^[+-]?nan$/i.test(s)) {
         return res;
-    }
-    ;
-    if (/^ *0x[0-9a-f_]+p[+-]?[0-9_]+/i.test(s)) {
-        var pidx = s.indexOf('p');
-        pidx = (pidx == -1) ? s.indexOf('P') : pidx;
-        var exp = +s.substring(pidx + 1);
-        res = +s.substring(0, pidx);
-        return res * Math.pow(2, exp);
+    };
+    var m = /^ *([+-]?)0x([0-9a-f]+)\.?([0-9a-f]*)p([+-]?[0-9]+)/i.exec(s);
+    //            1        2             3           4
+    if(m){
+        var m3 = m[3].replace(/0+$/,'');
+        var mantissa = parseInt(m[1] + m[2] + m3, 16);
+        var exponent = (m[4]|0) - 4*m3.length;
+        res = mantissa * Math.pow(2, exponent);
+        return res;
     }
     if (/^\+?inf(inity)?$/i.test(s))
         return Infinity;
@@ -607,14 +610,26 @@ let float_of_string : string -> exn ->  float  = fun%raw s exn -> {|
         return -Infinity;
     throw exn;
 }
-
 |}
-
-
-(* let float_of_string (s : string) : float = 
-  let res : float = [%raw{|+s|}] in 
-  if String.length s > 0 && res = res then res 
-  else  *)
+#else
+    fun%raw s exn -> {| 
+   {
+    var res = +s;
+    if ((s.length > 0) && (res === res))
+        return res;
+    s = s.replace(/_/g, "");
+    res = +s;
+    if (((s.length > 0) && (res === res)) || /^[+-]?nan$/i.test(s)) {
+        return res;
+    };
+    if (/^\+?inf(inity)?$/i.test(s))
+        return Infinity;
+    if (/^-inf(inity)?$/i.test(s))
+        return -Infinity;
+    throw exn;
+}
+|}
+#end
 
 let caml_float_of_string s = float_of_string s (Failure "float_of_string") 
 

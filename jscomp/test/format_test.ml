@@ -68,13 +68,27 @@ let () =
   ;;
 #end  
 (*TODO: add scanf example *)
+
+let f loc ls  = 
+  List.iter  (fun (a,b) -> 
+  eq loc (float_of_string a) b ) ls
+
+let () = 
+    f __LOC__ [
+      "0x3.fp+1",  0x3.fp+1 ;
+      " 0x3.fp2", 0x3.fp2;
+      " 0x4.fp2", 0x4.fp2
+      ];
+    
+     
+;;
+
 #if 
   (* OCAML_VERSION =~ ">4.03.0" *) 0
 then
 
 
-let () = 
-     eq __LOC__ (float_of_string "0x3.fp+1")  0x3.fp+1;;
+
 
 let () = eq __LOC__ (Printf.sprintf "%h" 0x3.fp+1) "0x1.f8p+2"
 let () = eq __LOC__ (Printf.sprintf "%H" 0x3.fp+1) "0x1.F8P+2"

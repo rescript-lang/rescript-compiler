@@ -86,10 +86,11 @@ let is_hex_format (v : string) =
 
 let caml_float_literal_to_js_string (v : string) : string = 
   let len = String.length v in
+#if OCAML_VERSION =~ ">4.03.0"  then
   if len >= 2 && is_hex_format v then  
     to_string (float_of_string v)
   else    
-
+#end
     let rec aux buf i = 
       if i >= len then buf
       else 
