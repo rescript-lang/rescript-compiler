@@ -694,7 +694,9 @@ let translate loc (prim_name : string)
 
       end
     | "caml_format_float"
-
+#if OCAML_VERSION =~ ">4.03.0" then
+    | "caml_hexstring_of_float"  
+#end    
     | "caml_nativeint_format"
     | "caml_int32_format"
     | "caml_float_of_string"

@@ -31,7 +31,9 @@
 (** *)
 
 val caml_format_float : string -> float -> string
-
+#if OCAML_VERSION =~ ">4.03.0" then
+val caml_hexstring_of_float : float -> int -> char -> string
+#end
 val caml_format_int : string -> nativeint -> string
 val caml_nativeint_format : string -> nativeint -> string     
 val caml_int32_format : string -> nativeint -> string
