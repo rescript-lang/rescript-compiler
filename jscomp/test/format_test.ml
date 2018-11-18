@@ -73,6 +73,7 @@ let f loc ls  =
   List.iter  (fun (a,b) -> 
   eq loc (float_of_string a) b ) ls
 
+#if OCAML_VERSION=~ ">4.03.0" then
 let () = 
     f __LOC__ [
       "0x3.fp+1",  0x3.fp+1 ;
@@ -80,7 +81,7 @@ let () =
       " 0x4.fp2", 0x4.fp2
       ];
     
-     
+#end     
 ;;
 
 #if 
