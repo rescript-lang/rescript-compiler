@@ -92,8 +92,9 @@ let aux_list loc ls =
     eq loc (sl a ) b 
   ) ls 
 #if OCAML_VERSION =~ ">4.03.0" then 
-let () =   
-  aux_list __LOC__ [
+
+let literals = 
+  [
     0x3.fp+1, "0x1.f8p+2" (* (1. +. 0xf8p0 /. 0x1_00p0) *. 4.*);
     0.3, "0x1.3333333333333p-2";
     infinity, "infinity";
@@ -105,9 +106,22 @@ let () =
     0.9, "0x1.ccccccccccccdp-1";
   ]
 
+let () =   
+  aux_list __LOC__ literals
+
 let () = 
   eq __LOC__ (Printf.sprintf "%H" 0x3.fp+1) "0X1.F8P+2"  
+let scan_float loc s expect = 
+    Scanf.sscanf s "%h" (fun result -> eq loc result expect)
+
+let () =     
+  scan_float __LOC__ "0x3f.p1" 0x3f.p1;
+  scan_float __LOC__ "0x1.3333333333333p-2" 0.3;
+  List.iter (fun (a,b) -> 
+  scan_float __LOC__ b a 
+  ) literals
 #end
+
 
 #if 
   (* OCAML_VERSION =~ ">4.03.0" *) 0
