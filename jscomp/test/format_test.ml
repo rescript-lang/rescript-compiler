@@ -84,6 +84,8 @@ let () =
 #end     
 ;;
 
+
+#if OCAML_VERSION =~ ">4.03.0" then 
 let sl f = 
   Printf.sprintf "%h" f 
 
@@ -91,8 +93,6 @@ let aux_list loc ls =
   List.iter (fun (a,b) -> 
     eq loc (sl a ) b 
   ) ls 
-#if OCAML_VERSION =~ ">4.03.0" then 
-
 let literals = 
   [
     0x3.fp+1, "0x1.f8p+2" (* (1. +. 0xf8p0 /. 0x1_00p0) *. 4.*);
