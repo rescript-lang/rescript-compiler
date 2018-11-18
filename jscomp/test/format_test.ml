@@ -84,17 +84,51 @@ let () =
 #end     
 ;;
 
+
+#if OCAML_VERSION =~ ">4.03.0" then 
+let sl f = 
+  Printf.sprintf "%h" f 
+
+let aux_list loc ls =   
+  List.iter (fun (a,b) -> 
+    eq loc (sl a ) b 
+  ) ls 
+let literals = 
+  [
+    0x3.fp+1, "0x1.f8p+2" (* (1. +. 0xf8p0 /. 0x1_00p0) *. 4.*);
+    0.3, "0x1.3333333333333p-2";
+    infinity, "infinity";
+    0.4, "0x1.999999999999ap-2";
+    0.5, "0x1p-1";
+    0.6, "0x1.3333333333333p-1";
+    0.7, "0x1.6666666666666p-1";
+    0.8, "0x1.999999999999ap-1";
+    0.9, "0x1.ccccccccccccdp-1";
+  ]
+
+let () =   
+  aux_list __LOC__ literals
+
+let () = 
+  eq __LOC__ (Printf.sprintf "%H" 0x3.fp+1) "0X1.F8P+2"  
+let scan_float loc s expect = 
+    Scanf.sscanf s "%h" (fun result -> eq loc result expect)
+
+let () =     
+  scan_float __LOC__ "0x3f.p1" 0x3f.p1;
+  scan_float __LOC__ "0x1.3333333333333p-2" 0.3;
+  List.iter (fun (a,b) -> 
+  scan_float __LOC__ b a 
+  ) literals
+#end
+
+
 #if 
   (* OCAML_VERSION =~ ">4.03.0" *) 0
 then
 
 
 
-
-let () = eq __LOC__ (Printf.sprintf "%h" 0x3.fp+1) "0x1.f8p+2"
-let () = eq __LOC__ (Printf.sprintf "%H" 0x3.fp+1) "0x1.F8P+2"
-
-let () = eq __LOC__ (Printf.sprintf "%h" 0.3) "0x1.3333333333333p-2"
 
 #end
 let () = Mt.from_pair_suites __FILE__ !suites

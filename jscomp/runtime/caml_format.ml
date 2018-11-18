@@ -570,6 +570,52 @@ let caml_format_float fmt x =
     end;
   finish_formatting f !s
 
+let caml_hexstring_of_float : float -> int -> char -> string =    
+  fun%raw x prec style -> {| 
+  if (!isFinite(x)) {
+    if (isNaN(x)) return "nan";
+    return x > 0 ? "infinity":"-infinity";
+  }
+  var sign = (x==0 && 1/x == -Infinity)?1:(x>=0)?0:1;
+  if(sign) x = -x;
+  var exp = 0;
+  if (x == 0) { }
+  else if (x < 1) {
+    while (x < 1 && exp > -1022)  { x *= 2; exp-- }
+  } else {
+    while (x >= 2) { x /= 2; exp++ }
+  }
+  var exp_sign = exp < 0 ? '' : '+';
+  var sign_str = '';
+  if (sign) sign_str = '-'
+  else {
+    switch(style){
+    case 43 /* '+' */: sign_str = '+'; break;
+    case 32 /* ' ' */: sign_str = ' '; break;
+    default: break;
+    }
+  }
+  if (prec >= 0 && prec < 13) {
+    /* If a precision is given, and is small, round mantissa accordingly */
+      var cst = Math.pow(2,prec * 4);
+      x = Math.round(x * cst) / cst;
+  }
+  var x_str = x.toString(16);
+  if(prec >= 0){
+      var idx = x_str.indexOf('.');
+    if(idx<0) {
+      x_str += '.' +  '0'.repeat(prec);
+    }
+    else {
+      var size = idx+1+prec;
+      if(x_str.length < size)
+        x_str += '0'.repeat(size - x_str.length);
+      else
+        x_str = x_str.substr(0,size);
+    }
+  }
+  return  (sign_str + '0x' + x_str + 'p' + exp_sign + exp.toString(10));
+|}  
 (**
  external float_of_string : string -> float = "caml_float_of_string"
  pervasives.ml
@@ -586,7 +632,7 @@ let caml_format_float fmt x =
 let float_of_string : string -> exn ->  float  = 
 #if OCAML_VERSION =~ ">4.3.0" then
     fun%raw s exn -> {| 
-   {
+
     var res = +s;
     if ((s.length > 0) && (res === res))
         return res;
@@ -609,11 +655,11 @@ let float_of_string : string -> exn ->  float  =
     if (/^-inf(inity)?$/i.test(s))
         return -Infinity;
     throw exn;
-}
+
 |}
 #else
     fun%raw s exn -> {| 
-   {
+
     var res = +s;
     if ((s.length > 0) && (res === res))
         return res;
@@ -627,7 +673,7 @@ let float_of_string : string -> exn ->  float  =
     if (/^-inf(inity)?$/i.test(s))
         return -Infinity;
     throw exn;
-}
+
 |}
 #end
 
