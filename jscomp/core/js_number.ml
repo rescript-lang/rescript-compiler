@@ -72,19 +72,25 @@ let to_string v =
         else  Printf.sprintf "%.18g" v
 
 
+let rec is_hex_format_aux (v : string) cur = 
+    if v.[cur] = '-' || v.[cur]= '+' then 
+      is_hex_format_ox v (cur + 1)
+    else is_hex_format_ox v cur 
+and is_hex_format_ox v cur = 
+  v.[cur] = '0' && 
+  (v.[cur + 1] = 'x' || v.[cur + 1] = 'X')
 
-let caml_float_literal_to_js_string v = 
+let is_hex_format (v : string) =   
+  try is_hex_format_aux v 0 with _ -> false
+
+
+let caml_float_literal_to_js_string (v : string) : string = 
   let len = String.length v in
-  if len >= 2 && 
-    v.[0] = '0' &&
-    (v.[1] = 'x' || v.[1] = 'X') then  
-    assert false 
-   (* TODO: catchup when upgraded to 4.3 
-      it does not make sense too much since js dos not 
-      support it natively
-    *)    
+#if OCAML_VERSION =~ ">4.03.0"  then
+  if len >= 2 && is_hex_format v then  
+    to_string (float_of_string v)
   else    
-
+#end
     let rec aux buf i = 
       if i >= len then buf
       else 

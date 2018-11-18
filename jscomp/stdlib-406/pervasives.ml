@@ -201,19 +201,13 @@ external float_of_bits : int64 -> float
   [@@unboxed] [@@noalloc]
 #end
 #if BS then 
-external infinity : float = "POSITIVE_INFINITY" 
-[@@bs.val]  [@@bs.scope "Number"]
-external neg_infinity : float = "NEGATIVE_INFINITY"
-[@@bs.val]  [@@bs.scope "Number"]
+let infinity = 0x1p2047
+let neg_infinity = -0x1p2047
 external nan : float = "NaN"
 [@@bs.val]  [@@bs.scope "Number"]
-external max_float : float = "MAX_VALUE"
-[@@bs.val]  [@@bs.scope "Number"]
-external min_float : float = "MIN_VALUE"
-[@@bs.val]  [@@bs.scope "Number"]
-(* external epsilon_float : float = "EPSILON" (* ES 2015 *)
-[@@bs.val]  [@@bs.scope "Number"]   *)
-let epsilon_float = 2.220446049250313e-16
+let max_float = 0x1.ffff_ffff_ffff_fp+1023
+let min_float = 0x1p-1022
+let epsilon_float = 0x1p-52
 #else  
 let infinity =
   float_of_bits 0x7F_F0_00_00_00_00_00_00L

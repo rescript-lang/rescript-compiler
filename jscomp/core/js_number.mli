@@ -31,7 +31,7 @@
 type t  = float 
 
 
-val to_string : t -> string
+(* val to_string : t -> string *)
 
 
 val caml_float_literal_to_js_string : string -> string

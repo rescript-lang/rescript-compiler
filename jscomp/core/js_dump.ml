@@ -631,11 +631,11 @@ and expression_desc cxt (level:int) f x : cxt  =
   | Number v ->
     let s =
       match v with
-      | Float {f = v} ->
-        Js_number.caml_float_literal_to_js_string v
+      | Float {f} ->
+        Js_number.caml_float_literal_to_js_string f
       (* attach string here for float constant folding?*)
-      | Int { i = v; _}
-        -> Int32.to_string v (* check , js convention with ocaml lexical convention *)
+      | Int { i; _}
+        -> Int32.to_string i (* check , js convention with ocaml lexical convention *)
       | Uint i
         -> Format.asprintf "%lu" i
       | Nint i -> Nativeint.to_string i in
@@ -645,7 +645,8 @@ and expression_desc cxt (level:int) f x : cxt  =
       else level = 15  (* Parenthesize as well when followed by a dot. *)
            && s.[0] <> 'I' (* Infinity *)
            && s.[0] <> 'N' (* NaN *) in
-    let action = fun _ -> P.string f s  in
+    let action = 
+      fun _ -> P.string f s  in
     (
       if need_paren
       then P.paren f  action
