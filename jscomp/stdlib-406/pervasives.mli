@@ -614,29 +614,18 @@ external int_of_float : float -> int = "%intoffloat"
    The result is unspecified if the argument is [nan] or falls outside the
    range of representable integers. *)
 
-#if BS then 
-external infinity : float = "POSITIVE_INFINITY" 
-[@@bs.val]  [@@bs.scope "Number"]
-external neg_infinity : float = "NEGATIVE_INFINITY"
-[@@bs.val]  [@@bs.scope "Number"]
-external nan : float = "NaN"
-[@@bs.val]  [@@bs.scope "Number"]
-external max_float : float = "MAX_VALUE"
-[@@bs.val]  [@@bs.scope "Number"]
-external min_float : float = "MIN_VALUE"
-[@@bs.val]  [@@bs.scope "Number"]
-(* external epsilon_float : float = "EPSILON" (* ES 2015 *)
-[@@bs.val]  [@@bs.scope "Number"]   *)
-val epsilon_float : float
-#else
-
 val infinity : float
 (** Positive infinity. *)
 
 val neg_infinity : float
 (** Negative infinity. *)
 
+#if BS then
+external nan : float = "NaN" [@@bs.val]  [@@bs.scope "Number"]
+(* we could also use [0.  /. 0.] *)
+#else
 val nan : float
+#end
 (** A special floating-point value denoting the result of an
    undefined operation such as [0.0 /. 0.0].  Stands for
    'not a number'.  Any floating-point operation with [nan] as
@@ -653,7 +642,7 @@ val min_float : float
 val epsilon_float : float
 (** The difference between [1.0] and the smallest exactly representable
     floating-point number greater than [1.0]. *)
-#end
+
 
 type fpclass =
     FP_normal           (** Normal number, none of the below *)
