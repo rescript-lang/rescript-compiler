@@ -570,7 +570,6 @@ let caml_format_float fmt x =
     end;
   finish_formatting f !s
 
-
 (**
  external float_of_string : string -> float = "caml_float_of_string"
  pervasives.ml
@@ -584,8 +583,8 @@ let caml_format_float fmt x =
  FIXME: arity of float_of_string is not inferred correctly
 *)
 
-let float_of_string : string -> (string -> 'a) ->  float = [%bs.raw {|
-  function (s, caml_failwith) {
+let float_of_string : string -> exn ->  float  = fun%raw s exn -> {| 
+   {
     var res = +s;
     if ((s.length > 0) && (res === res))
         return res;
@@ -606,13 +605,18 @@ let float_of_string : string -> (string -> 'a) ->  float = [%bs.raw {|
         return Infinity;
     if (/^-inf(inity)?$/i.test(s))
         return -Infinity;
-    caml_failwith("float_of_string");
+    throw exn;
 }
 
 |}
-]
 
-let caml_float_of_string s = float_of_string s caml_failwith
+
+(* let float_of_string (s : string) : float = 
+  let res : float = [%raw{|+s|}] in 
+  if String.length s > 0 && res = res then res 
+  else  *)
+
+let caml_float_of_string s = float_of_string s (Failure "float_of_string") 
 
 let caml_nativeint_format = caml_format_int
 let caml_int32_format = caml_format_int
