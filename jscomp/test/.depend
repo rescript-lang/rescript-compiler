@@ -216,6 +216,7 @@ float_of_bits_test.cmj : mt.cmj
 float_record.cmj : float_record.cmi
 float_test.cmj : mt_global.cmj mt.cmj ../runtime/js_float.cmj \
     ../runtime/js.cmj
+floatarray_test.cmj :
 flow_parser_reg_test.cmj : ../others/node.cmj mt.cmj ../runtime/js.cmj \
     flow_parser_reg_test.cmi
 for_loop_test.cmj : mt.cmj
@@ -292,6 +293,7 @@ gpr_2863_test.cmj : ../others/belt.cmj
 gpr_2931_test.cmj : mt.cmj
 gpr_3142_test.cmj : mt.cmj
 gpr_3154_test.cmj : mt.cmj ../runtime/js.cmj
+gpr_373_test.cmj :
 gpr_405_test.cmj : gpr_405_test.cmi
 gpr_441.cmj :
 gpr_459_test.cmj : mt.cmj
