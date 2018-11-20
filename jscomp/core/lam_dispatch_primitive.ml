@@ -636,14 +636,18 @@ let translate loc (prim_name : string)
     | "caml_set_parser_trace" 
       -> 
       call Js_runtime_modules.parser 
-
+    | "caml_make_float_vect"
+#if OCAML_VERSION =~ ">4.03.0" then    
+    | "caml_floatarray_create"
+#end    
+      ->
+      E.runtime_call Js_runtime_modules.array 
+        "caml_make_float_vect" args 
     | "caml_array_sub"
     | "caml_array_concat"
     (*external concat: 'a array list -> 'a array 
        Not good for inline *)
-
-    | "caml_array_blit"
-    | "caml_make_float_vect"
+    | "caml_array_blit"    
     | "caml_make_vect" -> 
       call Js_runtime_modules.array
     | "caml_ml_flush"
