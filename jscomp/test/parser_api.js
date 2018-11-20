@@ -930,7 +930,7 @@ function chop_extensions(file) {
   var dirname = Curry._1(Filename.dirname, file);
   var basename = Curry._1(Filename.basename, file);
   try {
-    var pos = Bytes.index(Caml_string.bytes_of_string(basename), /* "." */46);
+    var pos = $$String.index(basename, /* "." */46);
     var basename$1 = $$String.sub(basename, 0, pos);
     if (Curry._1(Filename.is_implicit, file) && dirname === Filename.current_dir_name) {
       return basename$1;
@@ -1250,7 +1250,7 @@ function split(s, c) {
 }
 
 function cut_at(s, c) {
-  var pos = Bytes.index(Caml_string.bytes_of_string(s), c);
+  var pos = $$String.index(s, c);
   return /* tuple */[
           $$String.sub(s, 0, pos),
           $$String.sub(s, pos + 1 | 0, (s.length - pos | 0) - 1 | 0)
@@ -12040,7 +12040,7 @@ var exit = 0;
 var i;
 
 try {
-  i = Bytes.rindex(Caml_string.bytes_of_string(Sys.ocaml_version), /* "+" */43);
+  i = $$String.rindex(Sys.ocaml_version, /* "+" */43);
   exit = 1;
 }
 catch (exn$2){
