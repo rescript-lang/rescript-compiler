@@ -37,6 +37,7 @@ val pack : pack_t ->
   warn_error: string ->
   verbose: bool ->
   build_library:string option ->
+  build_artifacts_dir: string ->
   string ->
   unit
 #end

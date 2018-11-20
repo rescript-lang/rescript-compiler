@@ -288,4 +288,33 @@ let get_bs_ppx_tools root_project_dir =
       Bsb_exception.bs_ppx_tools_not_found ()
   end
 
+let get_static_libraries ~build_artifacts_dir ?clibs:(clibs=[]) ?package_name ~nested () =
+  let artifacts_installed = ref [] in
+  let filename = build_artifacts_dir // Bsb_config.lib_bs // nested // Literals.dot_static_libraries in
+  if not (Sys.file_exists filename) then []
+  else begin
+    let ic = open_in_bin filename in
+    (try
+       while true do
+         artifacts_installed := (String.trim (input_line ic)) :: !artifacts_installed
+       done
+     with End_of_file -> ());
+     close_in ic;
+
+    let package_name = match package_name with
+      | None -> "Your package's"
+      | Some package_name -> "package: " ^ package_name
+    in
+    (* This is just for the 3.0 release, so it goes a bit smoother. Once all of our packages 
+       are fixed we don't need to dedupe. 
+                April 17th 2018
+     *)
+    (List.filter (fun i -> 
+      let is_already_linked = List.mem i clibs in
+        if is_already_linked then 
+          Bsb_log.warn "@{<warn>Warning@} %s `static-libraries` doesn't need to have '%s' \
+                        as it's automatically linked by the build-script, you can safely remove it from that list.@." package_name i;
+      not is_already_linked) !artifacts_installed)
+    end
+
 #end

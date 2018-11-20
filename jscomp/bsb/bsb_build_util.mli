@@ -113,4 +113,6 @@ val build_artifacts_dir : (string option) ref
 val get_build_artifacts_location : string -> string
 
 val get_bs_ppx_tools : string -> string
+
+val get_static_libraries : build_artifacts_dir:string -> ?clibs:string list -> ?package_name: string -> nested:string -> unit -> string list
 #end

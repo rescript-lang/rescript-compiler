@@ -38,6 +38,7 @@ val link : link_t ->
   warnings: string ->
   warn_error: string ->
   verbose: bool ->
+  build_artifacts_dir: string ->
   string ->
   unit
 #end

@@ -48,10 +48,11 @@ let pack pack_byte_or_native
   ~warn_error
   ~verbose
   ~build_library
+  ~build_artifacts_dir
   cwd =
-  let suffix_object_files, suffix_library_files, compiler, custom_flag = begin match pack_byte_or_native with
-  | PackBytecode -> Literals.suffix_cmo, Literals.suffix_cma , "ocamlc", true
-  | PackNative   -> Literals.suffix_cmx, Literals.suffix_cmxa, "ocamlopt", false
+  let suffix_object_files, suffix_library_files, compiler, nested, custom_flag = begin match pack_byte_or_native with
+  | PackBytecode -> Literals.suffix_cmo, Literals.suffix_cma , "ocamlc", "bytecode", true
+  | PackNative   -> Literals.suffix_cmx, Literals.suffix_cmxa, "ocamlopt", "native", false
   end in
   let module_to_filepath = List.fold_left
     (fun m v ->
@@ -141,7 +142,7 @@ let pack pack_byte_or_native
         :: (if bs_super_errors then ["-bs-super-errors"] else []) )
         @ warning_command
         @ flags
-        @ "-o" :: (Literals.library_file ^ suffix_library_files) :: includes 
+        @ "-o" :: (build_artifacts_dir // Bsb_config.lib_bs // nested // Literals.library_file ^ suffix_library_files) :: includes 
         @ all_object_files in
       
       if verbose then
@@ -157,7 +158,7 @@ let pack pack_byte_or_native
       @ ((if bs_super_errors then ["-passopt"; "-bs-super-errors"] else []))
       @ warning_command
       @ flags
-      @  ("-o" :: (Literals.library_file ^ suffix_library_files) :: includes @ all_object_files) in
+      @  ("-o" :: (build_artifacts_dir // Bsb_config.lib_bs // nested // Literals.library_file ^ suffix_library_files) :: includes @ all_object_files) in
       
       if verbose then
         print_endline("Bsb_helper pack command:\n" ^ (String.concat "  " list_of_args) ^ "\n");

@@ -40,6 +40,7 @@ let link link_byte_or_native
   ~warnings 
   ~warn_error
   ~verbose
+  ~build_artifacts_dir
   cwd =
   let ocaml_dir = Bsb_build_util.get_ocaml_dir cwd in
   let suffix_object_files, suffix_library_files, compiler, add_custom, output_file, nested = begin match link_byte_or_native with
@@ -82,7 +83,7 @@ let link link_byte_or_native
       [] includes in
       (* We pass is_js:true here because that'll lead us to `bs-platform/lib/ocaml` which contains the JS artifacts, 
          and for belt the artifacts are under `native` or `byte` there.  *)
-    let artifacts_dir = Bsb_build_util.get_ocaml_lib_dir ~is_js:true cwd // nested in
+    let artifacts_dir = (Bsb_build_util.get_ocaml_lib_dir ~is_js:true cwd) // nested in
     let library_files = (artifacts_dir // (Literals.library_file ^ suffix_library_files)) :: library_files in
     let clibs = artifacts_dir // "stubs.o" :: clibs in
     (* This list will be reversed so we append the otherlibs object files at the end, and they'll end at the beginning. *)
@@ -125,7 +126,14 @@ let link link_byte_or_native
     let warning_command = if String.length warn_error > 0 then
       "-warn-error" :: warn_error :: warning_command
     else warning_command in 
-    
+
+    let static_libraries = Bsb_build_util.get_static_libraries 
+      ~build_artifacts_dir
+      ~clibs
+      ~nested
+      () in
+    let clibs = static_libraries @ clibs in
+
     let all_object_files = ocaml_dependencies @ library_files @ List.rev (list_of_object_files) @ clibs in
     (* If there are no ocamlfind packages then let's not use ocamlfind, let's use the opt compiler instead.
        This is for mainly because we'd like to offer a "sandboxed" experience for those who want it.

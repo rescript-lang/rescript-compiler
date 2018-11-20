@@ -212,29 +212,13 @@ let build_bs_deps cwd deps =
               Bsb_unix.command_fatal_error command eid;
           
             if Bsb_config_types.(config.build_script) <> None then begin
-              let filename = build_artifacts_dir // Literals.dot_static_libraries in
-              if not (Sys.file_exists filename) then  ()
-                (* Bsb_exception.missing_static_libraries_file (Bsb_config_types.(config.package_name))  *)
-              else begin
-                let artifacts_installed = ref [] in
-                let ic = open_in_bin filename in
-                (try
-                  while true do
-                    artifacts_installed := (String.trim (input_line ic)) :: !artifacts_installed
-                  done
-                with End_of_file -> ());
-                close_in ic;
-                (* @Todo This is just for the 3.0 release, so it goes a bit smoother. Once all of our packages 
-                   are fixed we don't need to dedupe. 
-                            April 17th 2018
-                 *)
-                dependency_info.all_clibs <- (List.filter (fun i -> 
-                  let is_already_linked = List.mem i dependency_info.all_clibs in
-                  if is_already_linked then 
-                    Bsb_log.warn "@{<warn>Warning@} package %s: `static-libraries` doesn't need to have '%s' \
-                      as it's automatically linked by the build-script, you can safely remove it from that list.@." config.package_name i;
-                  not is_already_linked) !artifacts_installed) @ dependency_info.all_clibs;
-              end
+              let static_libraries = Bsb_build_util.get_static_libraries 
+                ~build_artifacts_dir 
+                ~clibs:dependency_info.all_clibs
+                ~nested
+                ~package_name:config.package_name 
+                () in
+              dependency_info.all_clibs <- static_libraries @ dependency_info.all_clibs;
            end;
            
            (* When ninja is not regenerated, ninja will still do the build, 

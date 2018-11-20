@@ -66,6 +66,8 @@ let ocamlfind_packages = ref []
 let bs_super_errors = ref false
 
 let build_library = ref None
+
+let build_artifacts_dir = ref ""
 #end
 
 let anonymous filename =
@@ -92,6 +94,7 @@ let link link_byte_or_native =
       ~warnings:!warnings
       ~warn_error:!warn_error
       ~verbose:!verbose
+      ~build_artifacts_dir:!build_artifacts_dir
       (Sys.getcwd ())
   end
 let pack link_byte_or_native =
@@ -108,6 +111,7 @@ let pack link_byte_or_native =
     ~warn_error:!warn_error
     ~verbose:!verbose
     ~build_library:!build_library
+    ~build_artifacts_dir:!build_artifacts_dir
     (Sys.getcwd ())
 #end
 
@@ -216,6 +220,9 @@ let () =
     " Turn on verbose Maude.";
     
     "-build-library", (Arg.String (fun v -> build_library := Some v)),
-    " Create a library file with all the object files from the given entry point."
+    " Create a library file with all the object files from the given entry point.";
+    
+    "-build-artifacts-dir", Arg.String (fun s -> build_artifacts_dir := s),
+    " Sets the directory in which all the project's build artifacts will go.";
 #end
   ] anonymous usage
