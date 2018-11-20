@@ -37,3 +37,6 @@ external fromStringWithEncoding : string -> ([ `ascii  | `utf8  | `utf16le  | `u
 
 external toString : t -> string = ""
 [@@bs.send]
+
+external concat : t array -> t = "Buffer.concat"
+[@@bs.val]
