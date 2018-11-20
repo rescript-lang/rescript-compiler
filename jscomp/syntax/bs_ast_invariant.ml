@@ -86,7 +86,7 @@ let emit_external_warnings : iterator=
     default_iterator with
     attribute = (fun _ attr -> warn_unused_attribute attr);
     expr = (fun self a -> 
-        match a.Parsetree.pexp_desc with 
+        match a.pexp_desc with 
         | Pexp_constant (
 #if OCAML_VERSION =~ ">4.03.0"  then
           Pconst_string
@@ -96,6 +96,23 @@ let emit_external_warnings : iterator=
           (_, Some s)) 
           when Ast_utf8_string_interp.is_unescaped s -> 
           Bs_warnings.error_unescaped_delimiter a.pexp_loc s 
+#if OCAML_VERSION =~ ">4.03.0" then
+        | Pexp_constant(Pconst_integer(s,None)) -> 
+          (* range check using int32 
+            It is better to give a warning instead of error to avoid make people unhappy.
+            It also has restrictions in which platform bsc is running on since it will 
+            affect int ranges
+          *)
+          (
+            try 
+              ignore (
+                if String.length s = 0 || s.[0] = '-' then 
+                  Int32.of_string s 
+                else Int32.of_string ("-" ^ s))
+            with _ ->              
+              Bs_warnings.warn_literal_overflow a.pexp_loc
+          )
+#end
         | _ -> default_iterator.expr self a 
       );
     value_description =

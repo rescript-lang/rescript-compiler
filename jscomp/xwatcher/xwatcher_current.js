@@ -80,6 +80,7 @@ if (exit === 1) {
         "common",
         "super_errors",
         ".",
+        "stubs",
         "stdlib-406"
       ]);
   exec(/* () */0);
