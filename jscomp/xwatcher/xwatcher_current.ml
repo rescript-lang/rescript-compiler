@@ -57,6 +57,8 @@ let () =
            "common";
            "super_errors";
            ".";
+           "stubs";
+           
            "stdlib-406" ; (* evolve *)
         |];
 

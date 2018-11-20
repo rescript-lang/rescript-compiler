@@ -87,7 +87,12 @@ let warn_missing_primitive loc txt =
       Format.pp_print_flush warning_formatter ()
     end
 
-
+let warn_literal_overflow loc = 
+  begin 
+    print_string_warning loc 
+      "Integer literal exceeds the range of representable integers of type int";
+    Format.pp_print_flush warning_formatter ()  
+  end 
 
 let error_unescaped_delimiter loc txt = 
   raise (Error(loc, Uninterpreted_delimiters txt))
