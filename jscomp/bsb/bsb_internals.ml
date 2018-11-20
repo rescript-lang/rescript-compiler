@@ -1,5 +1,5 @@
 #if BS_NATIVE then
-(* build_script.exe vendor_dir ocaml_lib cwd root_project_dir build_artifacts_dir -verbose *)
+(* build_script.exe vendor_dir ocaml_lib cwd root_project_dir destdir -verbose *)
 
 let _ = if Array.length Sys.argv != 6 && Array.length Sys.argv != 7 then begin
   print_endline "This binary is only for bsb's internal use";
@@ -10,7 +10,7 @@ let vendor_dir = Sys.argv.(1)
 let ocaml_lib = Sys.argv.(2)
 let cwd = Sys.argv.(3)
 let root_project_dir = Sys.argv.(4)
-let build_artifacts_dir = Sys.argv.(5)
+let destdir = Sys.argv.(5)
 let verbose = (7 = Array.length Sys.argv)
 
 let ( // ) = Filename.concat
@@ -40,7 +40,7 @@ let checkInputTimestamps outfile_mtime includes srcs =
   should_build srcs || should_build includes
 
 (* @Hack We open a file here and let the OS clean it up when this program exists. *)
-let oc = open_out (build_artifacts_dir // ".static_libraries")
+let oc = open_out (destdir // ".static_libraries")
 
 let gcc ?c:(c=true) ?include_ocaml:(include_ocaml=true) ?flags:(flags=[]) ?includes:(includes=[]) ?should_link:(should_link=true) outfile srcs = 
   let output = if Filename.is_relative outfile then cwd // outfile else outfile in
