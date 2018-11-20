@@ -29300,6 +29300,8 @@ val prerr_bs_ffi_warning : Location.t -> t -> unit
 
 val warn_missing_primitive : Location.t -> string -> unit 
 
+val warn_literal_overflow : Location.t -> unit 
+
 val error_unescaped_delimiter : 
   Location.t -> string  -> unit 
 end = struct
@@ -29393,7 +29395,12 @@ let warn_missing_primitive loc txt =
       Format.pp_print_flush warning_formatter ()
     end
 
-
+let warn_literal_overflow loc = 
+  begin 
+    print_string_warning loc 
+      "Integer literal exceeds the range of representable integers of type int";
+    Format.pp_print_flush warning_formatter ()  
+  end 
 
 let error_unescaped_delimiter loc txt = 
   raise (Error(loc, Uninterpreted_delimiters txt))
@@ -30299,7 +30306,7 @@ let emit_external_warnings : iterator=
     default_iterator with
     attribute = (fun _ attr -> warn_unused_attribute attr);
     expr = (fun self a -> 
-        match a.Parsetree.pexp_desc with 
+        match a.pexp_desc with 
         | Pexp_constant (
           
           Const_string 
@@ -30307,6 +30314,7 @@ let emit_external_warnings : iterator=
           (_, Some s)) 
           when Ast_utf8_string_interp.is_unescaped s -> 
           Bs_warnings.error_unescaped_delimiter a.pexp_loc s 
+
         | _ -> default_iterator.expr self a 
       );
     value_description =
