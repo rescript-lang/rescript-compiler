@@ -6362,7 +6362,7 @@ function module_of_file_name(file_name) {
   var exit = 0;
   var dot_index;
   try {
-    dot_index = Bytes.rindex(Caml_string.bytes_of_string(file_name$1), /* "." */46);
+    dot_index = $$String.rindex(file_name$1, /* "." */46);
     exit = 1;
   }
   catch (exn){

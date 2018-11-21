@@ -19714,7 +19714,7 @@ var exit = 0;
 var i;
 
 try {
-  i = Bytes.rindex(Caml_string.bytes_of_string(Sys.ocaml_version), /* "+" */43);
+  i = $$String.rindex(Sys.ocaml_version, /* "+" */43);
   exit = 1;
 }
 catch (exn$1){
