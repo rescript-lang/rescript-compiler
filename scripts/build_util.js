@@ -92,7 +92,6 @@ function install() {
 			'js_null',
 			'js_undefined',
 			'js_exn',
-			'js_int',
 			'js_float'
 		]
 		var installed_fmt = ['.cmt', '.cmti', '.cmj']

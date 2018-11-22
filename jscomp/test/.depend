@@ -346,7 +346,7 @@ js_dict_test.cmj : mt.cmj ../others/js_dict.cmj
 js_exception_catch_test.cmj : mt.cmj ../runtime/js.cmj
 js_float_test.cmj : mt.cmj ../runtime/js_float.cmj
 js_global_test.cmj : mt.cmj ../others/js_global.cmj
-js_int_test.cmj : mt.cmj ../runtime/js_int.cmj
+js_int_test.cmj : mt.cmj ../others/js_int.cmj
 js_json_test.cmj : mt.cmj ../others/js_json.cmj ../others/js_dict.cmj \
     ../runtime/js.cmj
 js_list_test.cmj : mt.cmj ../runtime/js.cmj
