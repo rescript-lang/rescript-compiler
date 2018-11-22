@@ -155,12 +155,12 @@ type control =
     OCAMLRUNPARAM environment variable.  See the documentation of
     [ocamlrun]. *)
 
-external stat : unit -> stat = "caml_gc_stat"
+val stat : unit -> stat 
 (** Return the current values of the memory management counters in a
    [stat] record.  This function examines every heap block to get the
    statistics. *)
 
-external quick_stat : unit -> stat = "caml_gc_quick_stat"
+val quick_stat : unit -> stat 
 (** Same as [stat] except that [live_words], [live_blocks], [free_words],
     [free_blocks], [largest_free], and [fragments] are set to 0.  This
     function is much faster than [stat] because it does not need to go
@@ -180,7 +180,7 @@ external minor_words : unit -> (float [@unboxed])
 
     @since 4.04 *)
 
-external get : unit -> control = "caml_gc_get"
+val get : unit -> control
 (** Return the current values of the GC parameters in a [control] record. *)
 
 external set : control -> unit = "caml_gc_set"

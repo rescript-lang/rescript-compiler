@@ -26,42 +26,9 @@
 
 
 
-(** *)
-
-let dummy_stat : Gc.stat = 
-  { minor_words = 0.; 
-    promoted_words =0. ;
-    major_words = 0. ;
-    minor_collections = 0;
-    major_collections  = 0;
-    heap_words = 0; 
-    heap_chunks = 0;
-    live_words = 0;
-    live_blocks = 0;
-    free_words = 0;
-    free_blocks = 0;
-    largest_free = 0;
-    fragments = 0;
-    compactions = 0;
-    top_heap_words = 0;
-    stack_size = 0  }
-
-let caml_gc_stat  () =  
-  dummy_stat
-let caml_gc_quick_stat () = 
-  dummy_stat
 
 let caml_gc_counters : unit -> (float * float * float) = fun () -> (0.,0.,0.)
 
-let caml_gc_get : unit -> Gc.control = fun () -> 
-  Gc.{
-   minor_heap_size = 0; 
-   major_heap_increment = 0;
-   space_overhead = 0;
-   verbose = 0;
-   max_overhead = 0;
-   stack_limit = 0;
-   allocation_policy = 0;}
  
 let caml_gc_set : Gc.control -> unit = fun _ -> ();;
 
