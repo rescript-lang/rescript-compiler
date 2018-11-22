@@ -93,8 +93,7 @@ function install() {
 			'js_undefined',
 			'js_exn',
 			'js_int',
-			'js_float',
-			'js_typed_array'
+			'js_float'
 		]
 		var installed_fmt = ['.cmt', '.cmti', '.cmj']
 		if (

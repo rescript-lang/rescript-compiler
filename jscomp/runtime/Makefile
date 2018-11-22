@@ -9,7 +9,7 @@ OTHERS= caml_array caml_string caml_bytes\
 	caml_format caml_md5 caml_queue \
 	caml_hash_primitive\
 	caml_hash caml_weak\
-	caml_int32 caml_gc js_typed_array \
+	caml_int32 caml_gc \
 	js_primitive caml_basic caml_oo curry caml_oo_curry caml_module \
 	caml_missing_polyfill\
 	bs_string  js_float js_exn js_nativeint js_int js_int64 js_null js_undefined\
