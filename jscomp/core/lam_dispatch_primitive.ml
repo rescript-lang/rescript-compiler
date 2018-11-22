@@ -781,9 +781,6 @@ let translate loc (prim_name : string)
       end
     (* call  Js_config.bigarray *)
     (* End of bigarray support *)
-    | "caml_convert_raw_backtrace_slot"
-      -> call  Js_runtime_modules.backtrace
-
     | "caml_bswap16"
     | "caml_int32_bswap"
     | "caml_nativeint_bswap" 

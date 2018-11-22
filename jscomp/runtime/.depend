@@ -20,7 +20,6 @@ caml_hash_primitive.cmj : bs_string.cmj caml_hash_primitive.cmi
 caml_hash.cmj : js.cmj caml_queue.cmj caml_hash_primitive.cmj bs_obj.cmj \
     caml_hash.cmi
 caml_weak.cmj : js_undefined.cmj js.cmj caml_array.cmj caml_weak.cmi
-caml_backtrace.cmj : caml_backtrace.cmi
 caml_int32.cmj : caml_int32.cmi
 caml_gc.cmj : caml_gc.cmi
 js_typed_array.cmj : js.cmj
@@ -58,7 +57,6 @@ caml_queue.cmi :
 caml_hash_primitive.cmi :
 caml_hash.cmi :
 caml_weak.cmi :
-caml_backtrace.cmi :
 caml_int32.cmi :
 caml_gc.cmi :
 js_primitive.cmi : js_undefined.cmi js.cmi
