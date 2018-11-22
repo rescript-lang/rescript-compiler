@@ -1,8 +1,12 @@
 (**
-  Since [others] depend on this file, its public mli files should not
-  export types introduced here, otherwise it would cause 
+  Since [others] depend on this file, its public mli files **should not
+  export types** introduced here, otherwise it would cause 
   conflicts here.
 
+  If the type exported here is also exported in modules from others,
+  you will get a type not equivalent.
+
+  
   Types defined here but should not export:
 
   - ref (make sure not exported in public others/*.mli)
@@ -221,3 +225,4 @@ module Js_float : sig
   external toFixedWithPrecision : float -> digits:int -> string = "toFixed" [@@bs.send]
   external fromString : string -> float = "Number" [@@bs.val]
 end 
+

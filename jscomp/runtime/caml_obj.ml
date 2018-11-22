@@ -291,7 +291,7 @@ let rec caml_equal (a : Obj.t) (b : Obj.t) : bool =
     ||  a_type = "number"
     ||  a_type = "boolean"
     ||  a_type = "undefined"
-    ||  a == (Obj.magic Js_null.empty)
+    ||  a == [%raw {|null|}]
     then false
     else 
       let b_type = Js.typeof b in 
@@ -299,7 +299,7 @@ let rec caml_equal (a : Obj.t) (b : Obj.t) : bool =
       then raise (Invalid_argument "equal: functional value")
       (* first, check using reference equality *)
       else (* a_type = "object" || "symbol" *)
-      if b_type = "number" || b_type = "undefined" || b == Obj.magic Js_null.empty then false 
+      if b_type = "number" || b_type = "undefined" || b == [%raw{|null|}] then false 
       else 
         (* [a] [b] could not be null, so it can not raise *)
         let tag_a = Bs_obj.tag a in

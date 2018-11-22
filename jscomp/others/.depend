@@ -6,10 +6,11 @@ js_array.cmj :
 js_string.cmj : js_re.cmi js_array.cmj
 js_int.cmj :
 js_float.cmj :
+js_null.cmj : js_null.cmi
 js_null_undefined.cmj : js_null_undefined.cmi
 js_typed_array.cmj :
 node_buffer.cmj : node.cmj
-js_types.cmj : js_types.cmi
+js_types.cmj : js_null.cmj js_types.cmi
 js_json.cmj : js_types.cmj js_string.cmj js_dict.cmj js_array.cmj \
     js_json.cmi
 js_obj.cmj :
@@ -102,9 +103,10 @@ belt_HashMapString.cmj : belt_internalBucketsType.cmj \
 belt_Debug.cmj :
 node_process.cmi : js_dict.cmi
 js_re.cmi :
+js_null.cmi :
 js_null_undefined.cmi :
 js_types.cmi :
-js_json.cmi : js_types.cmi js_string.cmj js_dict.cmi
+js_json.cmi : js_types.cmi js_string.cmj js_null.cmi js_dict.cmi
 js_vector.cmi :
 js_list.cmi : js_vector.cmi
 js_option.cmi :

@@ -351,7 +351,7 @@ js_json_test.cmj : mt.cmj ../others/js_json.cmj ../others/js_dict.cmj \
     ../runtime/js.cmj
 js_list_test.cmj : mt.cmj ../runtime/js.cmj
 js_math_test.cmj : mt.cmj ../runtime/js.cmj
-js_null_test.cmj : mt.cmj ../runtime/js_null.cmj ../runtime/js.cmj
+js_null_test.cmj : mt.cmj ../others/js_null.cmj ../runtime/js.cmj
 js_null_undefined_test.cmj : mt.cmj ../others/js_null_undefined.cmj \
     ../runtime/js.cmj
 js_nullable_test.cmj : mt.cmj ../runtime/js.cmj

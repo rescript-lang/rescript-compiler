@@ -73,11 +73,7 @@ external readAs : spawnResult ->
   > Js.t = 
   "%identity"
 
-(** This will pull in 'child_process', we should investigate more*)
-(* let caml_sys_system_command cmd = *)
-(*   match Js_null.to_opt (readAs (spawnSync cmd)) ##status with  *)
-(*   | None -> 127 (\* command not found *\) *)
-(*   | Some i -> i  *)
+
 
 let caml_sys_system_command _cmd = 127
 
