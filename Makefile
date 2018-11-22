@@ -43,7 +43,6 @@ install:
 	$(RUNTIME)/js_null.ml $(RUNTIME)/js_null.cmi \
 	$(RUNTIME)/js_undefined.ml $(RUNTIME)/js_undefined.cmi \
 	$(RUNTIME)/js_exn.ml $(RUNTIME)/js_exn.mli $(RUNTIME)/js_exn.cmi \
-	$(RUNTIME)/js_float.ml $(RUNTIME)/js_float.cmi \
 	$(STDLIB)/*.cm* $(STDLIB)/*.ml $(STDLIB)/*.mli \
 	$(OTHERS)/*.ml $(OTHERS)/*.mli  $(OTHERS)/*.cm* $(DEST)
 

@@ -214,7 +214,7 @@ flexible_array_test.cmj :
 float_array.cmj :
 float_of_bits_test.cmj : mt.cmj
 float_record.cmj : float_record.cmi
-float_test.cmj : mt_global.cmj mt.cmj ../runtime/js_float.cmj \
+float_test.cmj : mt_global.cmj mt.cmj ../others/js_float.cmj \
     ../runtime/js.cmj
 floatarray_test.cmj :
 flow_parser_reg_test.cmj : ../others/node.cmj mt.cmj ../runtime/js.cmj \
@@ -341,10 +341,10 @@ io_test.cmj : ../runtime/js.cmj
 js_array_test.cmj : mt.cmj ../runtime/js.cmj
 js_bool_test.cmj : mt.cmj
 js_cast_test.cmj : mt.cmj ../others/js_cast.cmj
-js_date_test.cmj : mt.cmj ../runtime/js_float.cmj ../runtime/js.cmj
+js_date_test.cmj : mt.cmj ../others/js_float.cmj ../runtime/js.cmj
 js_dict_test.cmj : mt.cmj ../others/js_dict.cmj
 js_exception_catch_test.cmj : mt.cmj ../runtime/js.cmj
-js_float_test.cmj : mt.cmj ../runtime/js_float.cmj
+js_float_test.cmj : mt.cmj ../others/js_float.cmj
 js_global_test.cmj : mt.cmj ../others/js_global.cmj
 js_int_test.cmj : mt.cmj ../others/js_int.cmj
 js_json_test.cmj : mt.cmj ../others/js_json.cmj ../others/js_dict.cmj \
