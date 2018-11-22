@@ -27,8 +27,7 @@ let shift_left_tests =
 let test_div = 61 / 2 
 
 let ( *~ ) = Int32.mul 
-
-;; Mt.from_pair_suites __FILE__ @@ Mt.[
+let suites = ref (Mt.[
   __LOC__, (fun _ -> Eq (0xffff_ffffl *~ 0xffff_ffffl, 1l));
   __LOC__, (fun _ -> Eq (0xffff_ffffl *~ 0x7fff_ffffl, -2147483647l))
 ] @ ((let (a,b) = shift_right_logical_tests in    
@@ -39,4 +38,12 @@ let ( *~ ) = Int32.mul
                                    |>  Array.to_list))
   @ ((let (a,b) = shift_left_tests in    
                                    Ext_array_test.map2i (fun i a b -> Format.asprintf "shift_left_cases %d" i, (fun _ -> Mt.Eq(a,b)) ) a b
-                                   |>  Array.to_list))
+                                   |>  Array.to_list)))
+
+let test_id = ref 0
+let eq loc x y = Mt.eq_suites ~test_id ~suites loc x y 
+
+let ()  = 
+  eq __LOC__ (Int32.bits_of_float 0.3 ) 1050253722l;
+  eq __LOC__ (Int32.float_of_bits 1050253722l) 0.300000011920928955
+;; Mt.from_pair_suites __FILE__ !suites

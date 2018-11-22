@@ -6,6 +6,7 @@ var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Int32 = require("../../lib/js/int32.js");
 var Format = require("../../lib/js/format.js");
+var Caml_float = require("../../lib/js/caml_float.js");
 var Caml_int32 = require("../../lib/js/caml_int32.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 var Ext_array_test = require("./ext_array_test.js");
@@ -152,92 +153,104 @@ var shift_left_tests = /* tuple */[
 
 var $star$tilde = Caml_int32.imul;
 
-Mt.from_pair_suites("int32_test.ml", Pervasives.$at(/* :: */[
+var suites = /* record */[/* contents */Pervasives.$at(/* :: */[
+        /* tuple */[
+          "File \"int32_test.ml\", line 31, characters 2-9",
+          (function (param) {
+              return /* Eq */Block.__(0, [
+                        1,
+                        1
+                      ]);
+            })
+        ],
+        /* :: */[
           /* tuple */[
             "File \"int32_test.ml\", line 32, characters 2-9",
             (function (param) {
                 return /* Eq */Block.__(0, [
-                          1,
-                          1
+                          -2147483647,
+                          -2147483647
                         ]);
               })
           ],
-          /* :: */[
-            /* tuple */[
-              "File \"int32_test.ml\", line 33, characters 2-9",
-              (function (param) {
-                  return /* Eq */Block.__(0, [
-                            -2147483647,
-                            -2147483647
-                          ]);
-                })
-            ],
-            /* [] */0
-          ]
-        ], Pervasives.$at($$Array.to_list(Ext_array_test.map2i((function (i, a, b) {
-                        return /* tuple */[
-                                Curry._1(Format.asprintf(/* Format */[
-                                          /* String_literal */Block.__(11, [
-                                              "shift_right_logical_cases ",
-                                              /* Int */Block.__(4, [
-                                                  /* Int_d */0,
-                                                  /* No_padding */0,
-                                                  /* No_precision */0,
-                                                  /* End_of_format */0
-                                                ])
-                                            ]),
-                                          "shift_right_logical_cases %d"
-                                        ]), i),
-                                (function (param) {
-                                    return /* Eq */Block.__(0, [
-                                              a,
-                                              b
-                                            ]);
-                                  })
-                              ];
-                      }), shift_right_logical_tests_000, shift_right_logical_tests_001)), Pervasives.$at($$Array.to_list(Ext_array_test.map2i((function (i, a, b) {
-                            return /* tuple */[
-                                    Curry._1(Format.asprintf(/* Format */[
-                                              /* String_literal */Block.__(11, [
-                                                  "shift_right_cases ",
-                                                  /* Int */Block.__(4, [
-                                                      /* Int_d */0,
-                                                      /* No_padding */0,
-                                                      /* No_precision */0,
-                                                      /* End_of_format */0
-                                                    ])
-                                                ]),
-                                              "shift_right_cases %d"
-                                            ]), i),
-                                    (function (param) {
-                                        return /* Eq */Block.__(0, [
-                                                  a,
-                                                  b
-                                                ]);
-                                      })
-                                  ];
-                          }), shift_right_tests_000, shift_right_tests_001)), $$Array.to_list(Ext_array_test.map2i((function (i, a, b) {
-                            return /* tuple */[
-                                    Curry._1(Format.asprintf(/* Format */[
-                                              /* String_literal */Block.__(11, [
-                                                  "shift_left_cases ",
-                                                  /* Int */Block.__(4, [
-                                                      /* Int_d */0,
-                                                      /* No_padding */0,
-                                                      /* No_precision */0,
-                                                      /* End_of_format */0
-                                                    ])
-                                                ]),
-                                              "shift_left_cases %d"
-                                            ]), i),
-                                    (function (param) {
-                                        return /* Eq */Block.__(0, [
-                                                  a,
-                                                  b
-                                                ]);
-                                      })
-                                  ];
-                          }), shift_left_tests_000, shift_left_tests_001))))));
+          /* [] */0
+        ]
+      ], Pervasives.$at($$Array.to_list(Ext_array_test.map2i((function (i, a, b) {
+                      return /* tuple */[
+                              Curry._1(Format.asprintf(/* Format */[
+                                        /* String_literal */Block.__(11, [
+                                            "shift_right_logical_cases ",
+                                            /* Int */Block.__(4, [
+                                                /* Int_d */0,
+                                                /* No_padding */0,
+                                                /* No_precision */0,
+                                                /* End_of_format */0
+                                              ])
+                                          ]),
+                                        "shift_right_logical_cases %d"
+                                      ]), i),
+                              (function (param) {
+                                  return /* Eq */Block.__(0, [
+                                            a,
+                                            b
+                                          ]);
+                                })
+                            ];
+                    }), shift_right_logical_tests_000, shift_right_logical_tests_001)), Pervasives.$at($$Array.to_list(Ext_array_test.map2i((function (i, a, b) {
+                          return /* tuple */[
+                                  Curry._1(Format.asprintf(/* Format */[
+                                            /* String_literal */Block.__(11, [
+                                                "shift_right_cases ",
+                                                /* Int */Block.__(4, [
+                                                    /* Int_d */0,
+                                                    /* No_padding */0,
+                                                    /* No_precision */0,
+                                                    /* End_of_format */0
+                                                  ])
+                                              ]),
+                                            "shift_right_cases %d"
+                                          ]), i),
+                                  (function (param) {
+                                      return /* Eq */Block.__(0, [
+                                                a,
+                                                b
+                                              ]);
+                                    })
+                                ];
+                        }), shift_right_tests_000, shift_right_tests_001)), $$Array.to_list(Ext_array_test.map2i((function (i, a, b) {
+                          return /* tuple */[
+                                  Curry._1(Format.asprintf(/* Format */[
+                                            /* String_literal */Block.__(11, [
+                                                "shift_left_cases ",
+                                                /* Int */Block.__(4, [
+                                                    /* Int_d */0,
+                                                    /* No_padding */0,
+                                                    /* No_precision */0,
+                                                    /* End_of_format */0
+                                                  ])
+                                              ]),
+                                            "shift_left_cases %d"
+                                          ]), i),
+                                  (function (param) {
+                                      return /* Eq */Block.__(0, [
+                                                a,
+                                                b
+                                              ]);
+                                    })
+                                ];
+                        }), shift_left_tests_000, shift_left_tests_001)))))];
+
+var test_id = /* record */[/* contents */0];
+
+function eq(loc, x, y) {
+  return Mt.eq_suites(test_id, suites, loc, x, y);
+}
+
+eq("File \"int32_test.ml\", line 47, characters 5-12", Caml_float.caml_int32_bits_of_float(0.3), 1050253722);
+
+eq("File \"int32_test.ml\", line 48, characters 5-12", Caml_float.caml_int32_float_of_bits(1050253722), 0.300000011920928955);
+
+Mt.from_pair_suites("int32_test.ml", suites[0]);
 
 var test_div = 30;
 
@@ -247,4 +260,7 @@ exports.shift_right_tests = shift_right_tests;
 exports.shift_left_tests = shift_left_tests;
 exports.test_div = test_div;
 exports.$star$tilde = $star$tilde;
+exports.suites = suites;
+exports.test_id = test_id;
+exports.eq = eq;
 /* shift_right_logical_tests Not a pure module */

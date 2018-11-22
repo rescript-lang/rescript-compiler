@@ -5,6 +5,7 @@ node_module.cmj : node.cmj js_dict.cmj
 js_array.cmj :
 js_string.cmj : js_re.cmi js_array.cmj
 js_null_undefined.cmj : js_null_undefined.cmi
+js_typed_array.cmj :
 node_buffer.cmj : node.cmj
 js_types.cmj : js_types.cmi
 js_json.cmj : js_types.cmj js_string.cmj js_dict.cmj js_array.cmj \

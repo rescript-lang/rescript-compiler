@@ -2345,7 +2345,49 @@ var suites = Pervasives.$at(/* :: */[
                               ];
                       }), shift_right_logical_suites_000, shift_right_logical_suites_001)))));
 
-Mt.from_pair_suites("int64_test.ml", suites);
+var suites$1 = /* record */[/* contents */suites];
+
+var test_id = /* record */[/* contents */0];
+
+function eq(loc, x, y) {
+  return Mt.eq_suites(test_id, suites$1, loc, x, y);
+}
+
+function id(loc, x) {
+  return eq(loc, Caml_int64.bits_of_float(Caml_int64.float_of_bits(x)), x);
+}
+
+eq("File \"int64_test.ml\", line 176, characters 5-12", Caml_int64.bits_of_float(0.3), /* int64 */[
+      /* hi */1070805811,
+      /* lo */858993459
+    ]);
+
+eq("File \"int64_test.ml\", line 177, characters 5-12", Caml_int64.float_of_bits(/* int64 */[
+          /* hi */1070805811,
+          /* lo */858993459
+        ]), 0.3);
+
+id("File \"int64_test.ml\", line 178, characters 5-12", /* int64 */[
+      /* hi */-1,
+      /* lo */4294967295
+    ]);
+
+id("File \"int64_test.ml\", line 179, characters 5-12", /* int64 */[
+      /* hi */-1,
+      /* lo */4294967196
+    ]);
+
+id("File \"int64_test.ml\", line 180, characters 5-12", /* int64 */[
+      /* hi */0,
+      /* lo */4294967295
+    ]);
+
+id("File \"int64_test.ml\", line 181, characters 5-12", /* int64 */[
+      /* hi */0,
+      /* lo */536870911
+    ]);
+
+Mt.from_pair_suites("int64_test.ml", suites$1[0]);
 
 exports.f = f;
 exports.v = v;
@@ -2358,5 +2400,8 @@ exports.shift_right_tests = shift_right_tests;
 exports.shift_right_logical_suites = shift_right_logical_suites;
 exports.fib = fib;
 exports.fac = fac;
-exports.suites = suites;
+exports.suites = suites$1;
+exports.test_id = test_id;
+exports.eq = eq;
+exports.id = id;
 /* shift_left_tests Not a pure module */

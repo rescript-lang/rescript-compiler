@@ -43,7 +43,7 @@ let caml_primitive = "Caml_primitive"
 let int64 = "Caml_int64"
 let md5 = "Caml_md5"
 let weak = "Caml_weak"
-let backtrace = "Caml_backtrace"
+
 let gc = "Caml_gc"
 let int32 = "Caml_int32"
 let block = "Block"

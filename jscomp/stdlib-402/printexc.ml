@@ -99,9 +99,14 @@ type backtrace_slot =
 (* to avoid warning *)
 let _ = [Known_location (false, "", 0, 0, 0); Unknown_location false]
 
+#if BS then
+let convert_raw_backtrace_slot:
+  raw_backtrace_slot -> backtrace_slot = 
+    fun _ -> failwith "convert_raw_backtrace_slot not implemented"
+#else
 external convert_raw_backtrace_slot:
   raw_backtrace_slot -> backtrace_slot = "caml_convert_raw_backtrace_slot"
-
+#end
 let convert_raw_backtrace rbckt =
   try Some (Array.map convert_raw_backtrace_slot rbckt)
   with Failure _ -> None

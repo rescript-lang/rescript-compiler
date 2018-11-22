@@ -45,7 +45,6 @@ install:
 	$(RUNTIME)/js_exn.ml $(RUNTIME)/js_exn.mli $(RUNTIME)/js_exn.cmi \
 	$(RUNTIME)/js_int.ml $(RUNTIME)/js_int.cmi \
 	$(RUNTIME)/js_float.ml $(RUNTIME)/js_float.cmi \
-	$(RUNTIME)/js_typed_array.ml $(RUNTIME)/js_typed_array.cmi  \
 	$(STDLIB)/*.cm* $(STDLIB)/*.ml $(STDLIB)/*.mli \
 	$(OTHERS)/*.ml $(OTHERS)/*.mli  $(OTHERS)/*.cm* $(DEST)
 

@@ -422,10 +422,22 @@ let to_hex x =
 
 let discard_sign x = {x with hi = Nativeint.logand 0x7fff_ffffn x.hi }
 
+(* >>> 0 does not change its bit representation
+      it simply makes sure it is an unsigned integer
+      -1 >>> 0 -> 4294967295
+      Which is still (-1) if you interpret it as a signed integer
+      When we do the call (new Int32Array(x[1], x[0]), it will
+      convert x[0] from an unsigned integer to signed integer
+      {[
+        new Int32Array([-1 >>> 0])
+        Int32Array(1)[-1]
+      ]}
+*)
 
-open Js_typed_array
-let float_of_bits x  =
-  let to_int32 (x : nativeint) = x |> Nativeint.to_int32
+let float_of_bits : t -> float = fun%raw x  -> {| 
+  return new Float64Array(new Int32Array([x[1],x[0]]).buffer)[0]
+|}
+  (* let to_int32 (x : nativeint) = x |> Nativeint.to_int32
   in
   (*TODO:
     This should get inlined, we should apply a simple inliner in the js layer,
@@ -433,16 +445,17 @@ let float_of_bits x  =
     it's qutie simple
   *)
   let int32 = Int32_array.make  [| to_int32 x.lo; to_int32 x.hi |] in
-   Float64_array.unsafe_get (Float64_array.fromBuffer (Int32_array.buffer int32)) 0
+   Float64_array.unsafe_get (Float64_array.fromBuffer (Int32_array.buffer int32)) 0 *)
 
-let  bits_of_float (x : float) =
-
-  let to_nat (x : int32) = x |> Int32.to_int |>  Nativeint.of_int in
+let  bits_of_float : float -> t  = fun x -> 
+    let buf = [%raw{|new Int32Array(new Float64Array([x]).buffer)|}] in 
+    mk ~lo:(fst buf) ~hi:(snd buf)
+  (* let to_nat (x : int32) = x |> Int32.to_int |>  Nativeint.of_int in
 
   let u = Float64_array.make [| x |] in
   let int32 = Int32_array.fromBuffer (Float64_array.buffer u) in
   mk ~lo:(to_nat (Int32_array.unsafe_get int32 0))
-    ~hi:( to_nat (Int32_array.unsafe_get int32 1))
+    ~hi:( to_nat (Int32_array.unsafe_get int32 1)) *)
 
 (** used by "%caml_string_get64" *)
 let get64 (s : string) (i:int) : t =

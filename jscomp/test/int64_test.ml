@@ -166,6 +166,18 @@ let suites :  Mt.pair_suites = Mt.[
 
 
 
+let suites = ref suites
+let test_id = ref 0
+let eq loc x y = Mt.eq_suites ~test_id ~suites loc x y 
 
+let id loc (x : int64) =  
+  eq loc (Int64.bits_of_float (Int64.float_of_bits x)) x 
+let () = 
+  eq __LOC__ (Int64.bits_of_float 0.3) 4599075939470750515L;
+  eq __LOC__ (Int64.float_of_bits 4599075939470750515L) 0.3;
+  id __LOC__ (-1L);
+  id __LOC__ (-100L);
+  id __LOC__ 0xff_ff_ff_ffL;
+  id __LOC__ 0x1f_ff_ff_ffL
 
-;; Mt.from_pair_suites __FILE__ suites
+;; Mt.from_pair_suites __FILE__ !suites
