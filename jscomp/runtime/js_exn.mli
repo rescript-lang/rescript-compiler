@@ -26,16 +26,17 @@ type t
 
 type exn += private Error of t 
 
-
+external asJsExn : exn -> t option = 
+  "caml_as_js_exn"
 
 external stack : t -> string option = ""
-  [@@bs.get] [@@bs.return undefined_to_opt]
+  [@@bs.get] 
 external message : t -> string option = ""
-  [@@bs.get] [@@bs.return undefined_to_opt] 
+  [@@bs.get] 
 external name : t -> string option = ""
-  [@@bs.get] [@@bs.return undefined_to_opt] 
+  [@@bs.get] 
 external fileName : t -> string option = ""
-  [@@bs.get] [@@bs.return undefined_to_opt] 
+  [@@bs.get] 
 
 
 external isCamlExceptionOrOpenVariant:

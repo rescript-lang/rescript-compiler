@@ -14,7 +14,7 @@ function test_js_error(param) {
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn[0] === Js_exn.$$Error) {
-      console.log(Js_primitive.undefined_to_opt(exn[1].stack));
+      console.log(exn[1].stack);
       return undefined;
     } else {
       throw exn;
@@ -33,7 +33,7 @@ function test_js_error2(param) {
   catch (raw_e){
     var e = Caml_js_exceptions.internalToOCamlException(raw_e);
     if (e[0] === Js_exn.$$Error) {
-      console.log(Js_primitive.undefined_to_opt(e[1].stack));
+      console.log(e[1].stack);
       throw e;
     } else {
       throw e;
@@ -51,7 +51,7 @@ function example1(param) {
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn[0] === Js_exn.$$Error) {
-      console.log(Js_primitive.undefined_to_opt(exn[1].stack));
+      console.log(exn[1].stack);
       return undefined;
     } else {
       throw exn;
