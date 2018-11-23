@@ -38,6 +38,11 @@ external fileName : t -> string option = ""
   [@@bs.get] [@@bs.return undefined_to_opt] 
 
 
+external isCamlExceptionOrOpenVariant:
+  'a -> bool = "caml_is_extension"
+(** internal use only *)
+
+
 (** Raise Js exception Error object with stacktrace *)
 val raiseError : string -> 'a
 val raiseEvalError : string -> 'a

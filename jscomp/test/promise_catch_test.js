@@ -49,7 +49,7 @@ function handler(e) {
 }
 
 function myHandler(match) {
-  if (Caml_exceptions.isCamlExceptionOrOpenVariant(match)) {
+  if (Caml_exceptions.caml_is_extension(match)) {
     if (match === Caml_builtin_exceptions.not_found) {
       return 1;
     } else if (match[0] === Js_exn.$$Error) {

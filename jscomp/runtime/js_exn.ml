@@ -37,7 +37,9 @@ external fileName : t -> string option = ""
 
 type error
 external makeError : string -> error = "Error" [@@bs.new]
-
+external isCamlExceptionOrOpenVariant : 
+  'a -> bool = "caml_is_extension"
+  
 let raiseError str = 
   raise (Obj.magic (makeError str : error) : exn)
 

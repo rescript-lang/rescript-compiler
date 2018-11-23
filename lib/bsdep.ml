@@ -36098,7 +36098,8 @@ let record_as_js_object
 
 
 let isCamlExceptionOrOpenVariant : Longident.t = 
-  Ldot (Lident "Caml_exceptions","isCamlExceptionOrOpenVariant")
+  Ldot (Ldot (Lident "Js","Exn"), "isCamlExceptionOrOpenVariant")
+
   
 let obj_magic : Longident.t = 
   Ldot (Lident "Obj", "magic")

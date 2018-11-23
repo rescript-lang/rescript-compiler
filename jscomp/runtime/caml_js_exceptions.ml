@@ -14,6 +14,6 @@ exception Error of t
    ]}
 *)
 let internalToOCamlException (e : Obj.t) =
-  if Caml_exceptions.isCamlExceptionOrOpenVariant e  then
+  if Caml_exceptions.caml_is_extension e  then
     (Obj.magic e  : exn)
   else Error (Obj.magic (e : Obj.t) : t) 
