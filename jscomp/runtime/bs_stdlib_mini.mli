@@ -216,7 +216,8 @@ module CamlinternalMod : sig
     | Value of Obj.t
 end 
 
-module Js_float : sig 
+(* We should give it a name like FloatRT to avoid occasional shadowing *)
+module FloatRT : sig 
   external _NaN : float = "NaN" [@@bs.val] 
   external isNaN : float -> bool = "" [@@bs.val]
   external isFinite : float -> bool = "" [@@bs.val]
@@ -226,3 +227,9 @@ module Js_float : sig
   external fromString : string -> float = "Number" [@@bs.val]
 end 
 
+module UndefinedRT : sig 
+  type + 'a t 
+  external empty : 'a t = "#undefined" 
+  external return : 'a -> 'a t = "%identity"
+  external toOption : 'a t -> 'a option = "#undefined_to_opt"
+end 

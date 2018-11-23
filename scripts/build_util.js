@@ -89,8 +89,6 @@ function install() {
 			'js_unsafe',
 			'js_internal',
 			'caml_exceptions',
-			'js_null',
-			'js_undefined',
 			'js_exn'
 		]
 		var installed_fmt = ['.cmt', '.cmti', '.cmj']

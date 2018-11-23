@@ -40,7 +40,6 @@ install:
 	cp $(RUNTIME)/*.cmt* $(RUNTIME)/*.cmj* $(RUNTIME)/js.ml  $(RUNTIME)/js.cmi \
 	$(RUNTIME)/js_unsafe.cmi $(RUNTIME)/js_internal.cmi \
 	$(RUNTIME)/caml_exceptions.mli $(RUNTIME)/caml_exceptions.ml $(RUNTIME)/caml_exceptions.cmi \
-	$(RUNTIME)/js_undefined.ml $(RUNTIME)/js_undefined.cmi \
 	$(RUNTIME)/js_exn.ml $(RUNTIME)/js_exn.mli $(RUNTIME)/js_exn.cmi \
 	$(STDLIB)/*.cm* $(STDLIB)/*.ml $(STDLIB)/*.mli \
 	$(OTHERS)/*.ml $(OTHERS)/*.mli  $(OTHERS)/*.cm* $(DEST)

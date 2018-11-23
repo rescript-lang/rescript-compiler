@@ -33,6 +33,6 @@ val valFromOption : Obj.t -> Obj.t
 
 val some : Obj.t -> Obj.t 
 
-val option_get : Obj.t option -> Obj.t Js_undefined.t 
+val option_get : Obj.t option -> Obj.t UndefinedRT.t 
 
-val option_get_unwrap : 'a option -> Obj.t Js_undefined.t
+val option_get_unwrap : 'a option -> Obj.t UndefinedRT.t

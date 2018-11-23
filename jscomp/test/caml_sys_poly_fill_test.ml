@@ -26,6 +26,7 @@ let () =
     v
   )
 
+;; Js.log (Sys.getcwd(), Sys.time(),Sys.argv,Sys.executable_name)  
 
 
 let () = Mt.from_pair_suites __FILE__ !suites
