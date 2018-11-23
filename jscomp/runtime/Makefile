@@ -4,7 +4,7 @@ COMPILER=../../lib/bsc.exe
 
 OTHERS= caml_array caml_string caml_bytes\
 	caml_obj caml_int64 \
-	caml_exceptions	caml_utils caml_sys caml_io\
+	caml_exceptions	caml_js_exceptions caml_utils caml_sys caml_io\
 	caml_float caml_lexer caml_parser \
 	caml_format caml_md5 caml_queue \
 	caml_hash_primitive\
@@ -29,7 +29,7 @@ caml_primitive.cmj: caml_primitive.cmi
 caml_int64.cmj : caml_obj.cmj
 bs_obj.cmj: js.cmi
 # or we can do a post-processing to add missing cmj dependency manually
-js_exn.cmj : caml_exceptions.cmj
+js_exn.cmj caml_js_exceptions.cmj : caml_exceptions.cmj
 $(addsuffix .cmj, $(OTHERS)): caml_builtin_exceptions.cmj  block.cmj js.cmj js_unsafe.cmj caml_primitive.cmj
 $(addsuffix .cmj, $(OTHERS)) caml_builtin_exceptions.cmj  block.cmj js.cmj js_unsafe.cmj : js_internal.cmi 
 ## since we use ppx

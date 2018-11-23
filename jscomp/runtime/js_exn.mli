@@ -37,8 +37,6 @@ external name : t -> string option = ""
 external fileName : t -> string option = ""
   [@@bs.get] [@@bs.return undefined_to_opt] 
 
-(** Used by the compiler internally *)
-val internalToOCamlException : Obj.t -> exn
 
 (** Raise Js exception Error object with stacktrace *)
 val raiseError : string -> 'a

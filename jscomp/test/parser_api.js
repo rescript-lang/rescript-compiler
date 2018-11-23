@@ -10,7 +10,6 @@ var Bytes = require("../../lib/js/bytes.js");
 var Curry = require("../../lib/js/curry.js");
 var $$Buffer = require("../../lib/js/buffer.js");
 var Format = require("../../lib/js/format.js");
-var Js_exn = require("../../lib/js/js_exn.js");
 var Lexing = require("../../lib/js/lexing.js");
 var Printf = require("../../lib/js/printf.js");
 var $$String = require("../../lib/js/string.js");
@@ -31,6 +30,7 @@ var Js_primitive = require("../../lib/js/js_primitive.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
+var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 var Caml_missing_polyfill = require("../../lib/js/caml_missing_polyfill.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
@@ -804,7 +804,7 @@ function remove_file(filename) {
     return Caml_missing_polyfill.not_implemented("caml_sys_remove");
   }
   catch (raw_exn){
-    var exn = Js_exn.internalToOCamlException(raw_exn);
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn[0] === Caml_builtin_exceptions.sys_error) {
       return /* () */0;
     } else {
@@ -917,7 +917,7 @@ function chop_extension_if_any(fname) {
     return Filename.chop_extension(fname);
   }
   catch (raw_exn){
-    var exn = Js_exn.internalToOCamlException(raw_exn);
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn[0] === Caml_builtin_exceptions.invalid_argument) {
       return fname;
     } else {
@@ -3681,7 +3681,7 @@ function report_exception(ppf, exn) {
       }
     }
     catch (raw_exn){
-      var exn$2 = Js_exn.internalToOCamlException(raw_exn);
+      var exn$2 = Caml_js_exceptions.internalToOCamlException(raw_exn);
       if (n > 0) {
         _exn = exn$2;
         _n = n - 1 | 0;
@@ -13627,7 +13627,7 @@ function token(lexbuf) {
             return /* INT */Block.__(7, [cvt_int_literal(Lexing.lexeme(lexbuf$1))]);
           }
           catch (raw_exn){
-            var exn$1 = Js_exn.internalToOCamlException(raw_exn);
+            var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn);
             if (exn$1[0] === Caml_builtin_exceptions.failure) {
               throw [
                     $$Error$2,
@@ -13645,7 +13645,7 @@ function token(lexbuf) {
             return /* INT32 */Block.__(8, [cvt_int32_literal(Lexing.lexeme(lexbuf$1))]);
           }
           catch (raw_exn$1){
-            var exn$2 = Js_exn.internalToOCamlException(raw_exn$1);
+            var exn$2 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
             if (exn$2[0] === Caml_builtin_exceptions.failure) {
               throw [
                     $$Error$2,
@@ -13661,7 +13661,7 @@ function token(lexbuf) {
             return /* INT64 */Block.__(9, [cvt_int64_literal(Lexing.lexeme(lexbuf$1))]);
           }
           catch (raw_exn$2){
-            var exn$3 = Js_exn.internalToOCamlException(raw_exn$2);
+            var exn$3 = Caml_js_exceptions.internalToOCamlException(raw_exn$2);
             if (exn$3[0] === Caml_builtin_exceptions.failure) {
               throw [
                     $$Error$2,
@@ -13677,7 +13677,7 @@ function token(lexbuf) {
             return /* NATIVEINT */Block.__(12, [cvt_nativeint_literal(Lexing.lexeme(lexbuf$1))]);
           }
           catch (raw_exn$3){
-            var exn$4 = Js_exn.internalToOCamlException(raw_exn$3);
+            var exn$4 = Caml_js_exceptions.internalToOCamlException(raw_exn$3);
             if (exn$4[0] === Caml_builtin_exceptions.failure) {
               throw [
                     $$Error$2,
@@ -13973,7 +13973,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
             string(lexbuf);
           }
           catch (raw_exn){
-            var exn = Js_exn.internalToOCamlException(raw_exn);
+            var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
             if (exn[0] === $$Error$2) {
               var match$1 = exn[1];
               if (typeof match$1 === "number") {
@@ -14024,7 +14024,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
             __ocaml_lex_quoted_string_rec(delim$1, lexbuf, 183);
           }
           catch (raw_exn$1){
-            var exn$1 = Js_exn.internalToOCamlException(raw_exn$1);
+            var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
             if (exn$1[0] === $$Error$2) {
               var match$3 = exn$1[1];
               if (typeof match$3 === "number") {
@@ -14667,7 +14667,7 @@ function skip_phrase(lexbuf) {
       }
     }
     catch (raw_exn){
-      var exn = Js_exn.internalToOCamlException(raw_exn);
+      var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
       if (exn[0] === $$Error$2) {
         var tmp = exn[1];
         if (typeof tmp === "number") {
@@ -14711,7 +14711,7 @@ function wrap(parsing_fun, lexbuf) {
     return ast;
   }
   catch (raw_err){
-    var err = Js_exn.internalToOCamlException(raw_err);
+    var err = Caml_js_exceptions.internalToOCamlException(raw_err);
     var exit = 0;
     var exit$1 = 0;
     var exit$2 = 0;

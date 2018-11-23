@@ -6,7 +6,6 @@ var Block = require("../../lib/js/block.js");
 var Bytes = require("../../lib/js/bytes.js");
 var Curry = require("../../lib/js/curry.js");
 var Format = require("../../lib/js/format.js");
-var Js_exn = require("../../lib/js/js_exn.js");
 var $$String = require("../../lib/js/string.js");
 var Caml_sys = require("../../lib/js/caml_sys.js");
 var Filename = require("../../lib/js/filename.js");
@@ -15,6 +14,7 @@ var Caml_string = require("../../lib/js/caml_string.js");
 var Test_literals = require("./test_literals.js");
 var Ext_string_test = require("./ext_string_test.js");
 var CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
+var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 var Ext_pervasives_test = require("./ext_pervasives_test.js");
 var Caml_missing_polyfill = require("../../lib/js/caml_missing_polyfill.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
@@ -74,7 +74,7 @@ function chop_extension($staropt$star, name) {
     return Filename.chop_extension(name);
   }
   catch (raw_exn){
-    var exn = Js_exn.internalToOCamlException(raw_exn);
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn[0] === Caml_builtin_exceptions.invalid_argument) {
       return Curry._2(Format.ksprintf(Pervasives.invalid_arg, /* Format */[
                       /* String_literal */Block.__(11, [
@@ -106,7 +106,7 @@ function chop_extension_if_any(fname) {
     return Filename.chop_extension(fname);
   }
   catch (raw_exn){
-    var exn = Js_exn.internalToOCamlException(raw_exn);
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn[0] === Caml_builtin_exceptions.invalid_argument) {
       return fname;
     } else {

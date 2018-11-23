@@ -23,10 +23,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-type t 
+type t = Caml_js_exceptions.t 
 
-type exn +=  Error of t 
-
+exception Error = Caml_js_exceptions.Error
 external stack : t -> string option = ""
   [@@bs.get] [@@bs.return undefined_to_opt]
 external message : t -> string option = ""
@@ -35,19 +34,6 @@ external name : t -> string option = ""
   [@@bs.get] [@@bs.return undefined_to_opt] 
 external fileName : t -> string option = ""
   [@@bs.get] [@@bs.return undefined_to_opt] 
-
-(**
-   {[
-     exception A of int;;
-     let v = A  3 ;;
-     Obj.tag (Obj.field (Obj.repr v) 0);;
-     - : int = 248
-   ]}
-*)
-let internalToOCamlException (e : Obj.t) =
-  if Caml_exceptions.isCamlExceptionOrOpenVariant e  then
-    (Obj.magic e  : exn)
-  else Error (Obj.magic (e : Obj.t) : t) 
 
 type error
 external makeError : string -> error = "Error" [@@bs.new]

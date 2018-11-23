@@ -5,6 +5,7 @@ var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Js_exn = require("../../lib/js/js_exn.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
+var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var suites = /* record */[/* contents : [] */0];
@@ -54,7 +55,7 @@ try {
   exit = 1;
 }
 catch (raw_exn){
-  var exn = Js_exn.internalToOCamlException(raw_exn);
+  var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
   if (exn[0] === Js_exn.$$Error) {
     add_test("File \"js_exception_catch_test.ml\", line 21, characters 10-17", (function (param) {
             return /* Ok */Block.__(4, [true]);
@@ -82,7 +83,7 @@ function test(f) {
     return /* No_error */-465676758;
   }
   catch (raw_e){
-    var e = Js_exn.internalToOCamlException(raw_e);
+    var e = Caml_js_exceptions.internalToOCamlException(raw_e);
     if (e === Caml_builtin_exceptions.not_found) {
       return /* Not_found */-358247754;
     } else if (e[0] === Caml_builtin_exceptions.invalid_argument) {

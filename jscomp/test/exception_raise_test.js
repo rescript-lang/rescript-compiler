@@ -5,6 +5,7 @@ var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Js_exn = require("../../lib/js/js_exn.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
+var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var Local = Caml_exceptions.create("Exception_raise_test.Local");
@@ -21,7 +22,7 @@ function appf(g, x) {
     return Curry._1(g, x);
   }
   catch (raw_exn){
-    var exn = Js_exn.internalToOCamlException(raw_exn);
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     var exit = 0;
     if (exn === Local) {
       return 3;
@@ -70,7 +71,7 @@ try {
   f = ( function () {throw (new Error ("x"))} ());
 }
 catch (raw_exn){
-  var exn = Js_exn.internalToOCamlException(raw_exn);
+  var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
   f = exn[0] === A ? exn[1] : 2;
 }
 
@@ -80,7 +81,7 @@ try {
   ff = ( function () {throw 3} ());
 }
 catch (raw_exn$1){
-  var exn$1 = Js_exn.internalToOCamlException(raw_exn$1);
+  var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
   ff = exn$1[0] === A ? exn$1[1] : 2;
 }
 
@@ -90,7 +91,7 @@ try {
   fff = ( function () {throw 2} ());
 }
 catch (raw_exn$2){
-  var exn$2 = Js_exn.internalToOCamlException(raw_exn$2);
+  var exn$2 = Caml_js_exceptions.internalToOCamlException(raw_exn$2);
   fff = exn$2[0] === A ? exn$2[1] : 2;
 }
 
@@ -100,7 +101,7 @@ try {
   a0 = ( function (){throw 2} () );
 }
 catch (raw_exn$3){
-  var exn$3 = Js_exn.internalToOCamlException(raw_exn$3);
+  var exn$3 = Caml_js_exceptions.internalToOCamlException(raw_exn$3);
   if (exn$3[0] === A || exn$3[0] === Js_exn.$$Error) {
     a0 = exn$3[1];
   } else {
@@ -121,7 +122,7 @@ try {
   a1 = ( function (){throw 2} () );
 }
 catch (raw_e){
-  a1 = Js_exn.internalToOCamlException(raw_e);
+  a1 = Caml_js_exceptions.internalToOCamlException(raw_e);
 }
 
 var a2;
@@ -130,7 +131,7 @@ try {
   a2 = ( function (){throw (new Error("x"))} () );
 }
 catch (raw_e$1){
-  a2 = Js_exn.internalToOCamlException(raw_e$1);
+  a2 = Caml_js_exceptions.internalToOCamlException(raw_e$1);
 }
 
 Mt.from_pair_suites("exception_raise_test.ml", /* :: */[

@@ -3,11 +3,11 @@
 var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Scanf = require("../../lib/js/scanf.js");
-var Js_exn = require("../../lib/js/js_exn.js");
 var Printf = require("../../lib/js/printf.js");
 var Caml_io = require("../../lib/js/caml_io.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Pervasives = require("../../lib/js/pervasives.js");
+var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var all_tests_ok = /* record */[/* contents */true];
@@ -105,7 +105,7 @@ function test_raises_exc_p(pred, f, x) {
     return false;
   }
   catch (raw_x){
-    var x$1 = Js_exn.internalToOCamlException(raw_x);
+    var x$1 = Caml_js_exceptions.internalToOCamlException(raw_x);
     if (Curry._1(pred, x$1)) {
       return true;
     } else {

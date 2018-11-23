@@ -3,8 +3,8 @@
 var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
-var Js_exn = require("../../lib/js/js_exn.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
+var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var suites = /* record */[/* contents : [] */0];
@@ -40,7 +40,7 @@ function test_js_error4(param) {
     return 1;
   }
   catch (raw_e){
-    var e = Js_exn.internalToOCamlException(raw_e);
+    var e = Caml_js_exceptions.internalToOCamlException(raw_e);
     var exit = 0;
     var exit$1 = 0;
     if (e === Caml_builtin_exceptions.not_found) {

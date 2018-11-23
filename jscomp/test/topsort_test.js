@@ -2,12 +2,12 @@
 
 var List = require("../../lib/js/list.js");
 var Curry = require("../../lib/js/curry.js");
-var Js_exn = require("../../lib/js/js_exn.js");
 var $$String = require("../../lib/js/string.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
+var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var graph = /* :: */[
@@ -1332,7 +1332,7 @@ try {
       ];
 }
 catch (raw_exn){
-  var exn = Js_exn.internalToOCamlException(raw_exn);
+  var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
   var exit = 0;
   if (exn[0] === Cycle) {
     var match = exn[1];

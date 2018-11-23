@@ -6,7 +6,6 @@ var List = require("../../lib/js/list.js");
 var Block = require("../../lib/js/block.js");
 var Bytes = require("../../lib/js/bytes.js");
 var Curry = require("../../lib/js/curry.js");
-var Js_exn = require("../../lib/js/js_exn.js");
 var Lexing = require("../../lib/js/lexing.js");
 var Printf = require("../../lib/js/printf.js");
 var $$String = require("../../lib/js/string.js");
@@ -19,6 +18,7 @@ var Caml_format = require("../../lib/js/caml_format.js");
 var Caml_string = require("../../lib/js/caml_string.js");
 var Js_primitive = require("../../lib/js/js_primitive.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
+var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function field($staropt$star, label, number, type_, name) {
@@ -6667,7 +6667,7 @@ function compile(proto_definition) {
     proto = proto_(lexer, lexbuf);
   }
   catch (raw_exn){
-    var exn = Js_exn.internalToOCamlException(raw_exn);
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     throw add_loc(from_lexbuf(lexbuf), exn);
   }
   var all_pbtt_msgs = compile_proto_p1("tmp.proto", proto);

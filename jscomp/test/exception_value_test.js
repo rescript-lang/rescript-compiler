@@ -4,6 +4,7 @@ var Curry = require("../../lib/js/curry.js");
 var Js_exn = require("../../lib/js/js_exn.js");
 var Js_primitive = require("../../lib/js/js_primitive.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
+var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function f(param) {
@@ -57,7 +58,7 @@ function test_js_error2(param) {
     return JSON.parse(" {\"x\" : }");
   }
   catch (raw_e){
-    var e = Js_exn.internalToOCamlException(raw_e);
+    var e = Caml_js_exceptions.internalToOCamlException(raw_e);
     if (e[0] === Js_exn.$$Error) {
       console.log(Js_primitive.undefined_to_opt(e[1].stack));
       throw e;
