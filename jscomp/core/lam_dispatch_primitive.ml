@@ -49,10 +49,10 @@ let translate loc (prim_name : string)
   let call m = 
     E.runtime_call m prim_name args in 
   begin match prim_name with 
-    | "caml_gc_stat" 
+    (* | "caml_gc_stat" 
     | "caml_gc_quick_stat"  
+    | "caml_gc_get" *)
     | "caml_gc_counters"
-    | "caml_gc_get"
     | "caml_gc_set"
     | "caml_gc_minor"
     | "caml_gc_major_slice"

@@ -30,9 +30,9 @@
 (** *)
 
 let (^) = Bs_string.append
-let stdin = Js_undefined.empty
+let stdin = UndefinedRT.empty
 
-let stderr = Js_undefined.empty
+let stderr = UndefinedRT.empty
 
 type out_channel  = {
   mutable buffer :  string;

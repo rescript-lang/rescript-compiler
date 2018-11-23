@@ -28,13 +28,14 @@
 
 external getEnv : 'a -> string -> string option = "" [@@bs.get_index] 
 let caml_sys_getenv s =
-    match [%external process ] with 
+  if Js.typeof [%raw{|process|}] = "undefined"
+     || [%raw{|process.env|}] = UndefinedRT.empty 
+  then raise Not_found
+  else  
+    match getEnv [%raw{|process.env|}] s with 
     | None -> raise Not_found
-    | Some x ->  
-      begin match getEnv x##env s with 
-      | None -> raise Not_found
-      | Some x -> x 
-      end
+    | Some x -> x 
+
 
 
 (* TODO: improve [js_pass_scope] to avoid remove unused n here *)
@@ -49,11 +50,11 @@ external uptime : process -> unit -> float = "" [@@bs.send]
 external exit : process -> int -> 'a =  ""  [@@bs.send]
 
 let caml_sys_time () =
-  match [%external process] with 
-  | None -> -1.
-  | Some x -> uptime x ()
-
-  (* (now () *. 0.001) -. caml_initial_time *)
+  if Js.typeof [%raw{|process|}] = "undefined" 
+    || [%raw{|process.uptime|}] = UndefinedRT.empty
+  then -1.
+  else uptime [%raw{|process|}] ()
+  
 
 external random : unit -> float = "Math.random" [@@bs.val]
 
@@ -73,33 +74,29 @@ external readAs : spawnResult ->
   > Js.t = 
   "%identity"
 
-(** This will pull in 'child_process', we should investigate more*)
-(* let caml_sys_system_command cmd = *)
-(*   match Js_null.to_opt (readAs (spawnSync cmd)) ##status with  *)
-(*   | None -> 127 (\* command not found *\) *)
-(*   | Some i -> i  *)
+
 
 let caml_sys_system_command _cmd = 127
 
 let caml_sys_getcwd () = 
-  match [%external process] with 
-  | None ->  "/"
-  | Some x -> x##cwd ()
+  if Js.typeof [%raw{|process|}] = "undefined" then "/"
+  else [%raw{|process|}]##cwd ()  
+
 
 (* Called by {!Sys} in the toplevel, should never fail*)
 let caml_sys_get_argv () : string * string array = 
-  match [%external process] with 
-  | None -> ("",[|""|])
-  | Some process 
-    -> 
-    if Js.testAny process##argv then ("",[|""|])
-    else Array.unsafe_get process##argv 0, process##argv
+  if Js.typeof [%raw{|process|}] = "undefined" then "",[|""|] 
+  else 
+    let argv = [%raw{|process.argv|}] in 
+    if Js.testAny argv then ("",[|""|])
+    else Array.unsafe_get argv 0, argv
 
 (** {!Pervasives.sys_exit} *)
-let caml_sys_exit exit_code = 
-  match [%external process] with 
-  | None -> ()
-  | Some x -> exit x exit_code
+let caml_sys_exit :int -> 'a = fun exit_code -> 
+  if Js.typeof [%raw{|process|}] <> "undefined"  then 
+    exit [%raw{|process|}] exit_code 
+
+
 
 let caml_sys_is_directory _s = 
   raise @@ Failure "caml_sys_is_directory not implemented"

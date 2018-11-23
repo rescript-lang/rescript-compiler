@@ -68,18 +68,13 @@ let valFromOption (x : Obj.t) : Obj.t =
   else Obj.magic x   
 
 
-let option_get (x : 'a option) : 'a Js.undefined = 
-  if x = None then Js.undefined
+let option_get (x : 'a option) = 
+  if x = None then UndefinedRT.empty
   else Obj.magic (valFromOption (Obj.repr x))
-  (* match x with 
-  | None -> Js_undefined.empty
-  | Some x -> Js_undefined.return x  *)
+
 
 (** [input] is optional polymorphic variant *)  
-let option_get_unwrap (x : 'a option) : _ Js.undefined =
-  if x = None then Js.undefined
+let option_get_unwrap (x : 'a option)  =
+  if x = None then UndefinedRT.empty
   else Obj.magic (Obj.field (Obj.repr (valFromOption (Obj.repr x))) 1 )
-  (* match x with
-  | None -> Js.undefined
-  | Some x -> Js_undefined.return (Obj.field (Obj.repr x) 1) *)
 

@@ -307,8 +307,8 @@ let neg_two_ptr_63 = -. (2. ** 63.)
    ]}
 *)
 let rec of_float (x : float) : t =
-  if Js_float.isNaN x
-  ||  Pervasives.not  (Js_float.isFinite x ) then zero
+  if FloatRT.isNaN x
+  ||  Pervasives.not  (FloatRT.isFinite x ) then zero
   else if x <= neg_two_ptr_63 then
     min_int
   else if x  +. 1. >= two_ptr_63_dbl then

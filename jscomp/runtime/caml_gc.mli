@@ -25,12 +25,8 @@
 
 
 
-(** *)
-
-val caml_gc_stat : unit -> Gc.stat
-val caml_gc_quick_stat : unit -> Gc.stat
 val caml_gc_counters : unit -> float * float * float
-val caml_gc_get : unit -> Gc.control
+
 val caml_gc_set : Gc.control -> unit
 val caml_gc_minor : unit -> unit
 val caml_gc_major_slice : int -> int

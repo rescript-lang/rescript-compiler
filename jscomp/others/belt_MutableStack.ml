@@ -38,7 +38,7 @@ let clear s = rootSet s Js.null
 let copy (s : _ t) : _ t = t ~root:(rootGet s)
 
 let push s x = 
-  rootSet s (Js.Null.return @@ cell ~head:x ~tail:(rootGet s))
+  rootSet s (Js_null.return @@ cell ~head:x ~tail:(rootGet s))
 
 let topUndefined (s : 'a t) = 
    match Js.nullToOption (rootGet s) with  
@@ -93,7 +93,7 @@ let forEach s f = forEachU s (fun [@bs] x -> f x)
 let dynamicPopIterU s f =    
   let cursor = ref (rootGet s) in 
   while !cursor != Js.null do 
-    let v = Js.Null.getUnsafe !cursor in 
+    let v = Js_null.getUnsafe !cursor in 
     rootSet s (tailGet v);
     f (headGet v) [@bs];
     cursor := rootGet s (* using root, [f] may change it*)

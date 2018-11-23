@@ -97,7 +97,7 @@ let decodeBoolean (json : t) =
   then Some (Obj.magic (json:t) : bool)
   else None 
 
-let decodeNull json = 
+let decodeNull json : _ Js.null option = 
   if (Obj.magic json : 'a Js.null) == Js.null
   then Some Js.null
   else None 

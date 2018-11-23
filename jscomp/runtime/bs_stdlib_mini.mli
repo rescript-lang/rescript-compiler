@@ -1,8 +1,12 @@
 (**
-  Since [others] depend on this file, its public mli files should not
-  export types introduced here, otherwise it would cause 
+  Since [others] depend on this file, its public mli files **should not
+  export types** introduced here, otherwise it would cause 
   conflicts here.
 
+  If the type exported here is also exported in modules from others,
+  you will get a type not equivalent.
+
+  
   Types defined here but should not export:
 
   - ref (make sure not exported in public others/*.mli)
@@ -194,126 +198,8 @@ module Printexc : sig
 end 
 
 module Gc : sig 
-  type stat =
-    { minor_words : float;
-      (** Number of words allocated in the minor heap since
-          the program was started.  This number is accurate in
-          byte-code programs, but only an approximation in programs
-          compiled to native code. *)
-
-      promoted_words : float;
-      (** Number of words allocated in the minor heap that
-          survived a minor collection and were moved to the major heap
-          since the program was started. *)
-
-      major_words : float;
-      (** Number of words allocated in the major heap, including
-          the promoted words, since the program was started. *)
-
-      minor_collections : int;
-      (** Number of minor collections since the program was started. *)
-
-      major_collections : int;
-      (** Number of major collection cycles completed since the program
-          was started. *)
-
-      heap_words : int;
-      (** Total size of the major heap, in words. *)
-
-      heap_chunks : int;
-      (** Number of contiguous pieces of memory that make up the major heap. *)
-
-      live_words : int;
-      (** Number of words of live data in the major heap, including the header
-          words. *)
-
-      live_blocks : int;
-      (** Number of live blocks in the major heap. *)
-
-      free_words : int;
-      (** Number of words in the free list. *)
-
-      free_blocks : int;
-      (** Number of blocks in the free list. *)
-
-      largest_free : int;
-      (** Size (in words) of the largest block in the free list. *)
-
-      fragments : int;
-      (** Number of wasted words due to fragmentation.  These are
-          1-words free blocks placed between two live blocks.  They
-          are not available for allocation. *)
-
-      compactions : int;
-      (** Number of heap compactions since the program was started. *)
-
-      top_heap_words : int;
-      (** Maximum size reached by the major heap, in words. *)
-
-      stack_size: int;
-      (** Current size of the stack, in words. @since 3.12.0 *)
-    }
-  type control =
-    { mutable minor_heap_size : int;
-      (** The size (in words) of the minor heap.  Changing
-          this parameter will trigger a minor collection.  Default: 256k. *)
-
-      mutable major_heap_increment : int;
-      (** How much to add to the major heap when increasing it. If this
-          number is less than or equal to 1000, it is a percentage of
-          the current heap size (i.e. setting it to 100 will double the heap
-          size at each increase). If it is more than 1000, it is a fixed
-          number of words that will be added to the heap. Default: 15. *)
-
-      mutable space_overhead : int;
-      (** The major GC speed is computed from this parameter.
-          This is the memory that will be "wasted" because the GC does not
-          immediatly collect unreachable blocks.  It is expressed as a
-          percentage of the memory used for live data.
-          The GC will work more (use more CPU time and collect
-          blocks more eagerly) if [space_overhead] is smaller.
-          Default: 80. *)
-
-      mutable verbose : int;
-      (** This value controls the GC messages on standard error output.
-          It is a sum of some of the following flags, to print messages
-          on the corresponding events:
-          - [0x001] Start of major GC cycle.
-          - [0x002] Minor collection and major GC slice.
-          - [0x004] Growing and shrinking of the heap.
-          - [0x008] Resizing of stacks and memory manager tables.
-          - [0x010] Heap compaction.
-          - [0x020] Change of GC parameters.
-          - [0x040] Computation of major GC slice size.
-          - [0x080] Calling of finalisation functions.
-          - [0x100] Bytecode executable and shared library search at start-up.
-          - [0x200] Computation of compaction-triggering condition.
-          Default: 0. *)
-
-      mutable max_overhead : int;
-      (** Heap compaction is triggered when the estimated amount
-          of "wasted" memory is more than [max_overhead] percent of the
-          amount of live data.  If [max_overhead] is set to 0, heap
-          compaction is triggered at the end of each major GC cycle
-          (this setting is intended for testing purposes only).
-          If [max_overhead >= 1000000], compaction is never triggered.
-          If compaction is permanently disabled, it is strongly suggested
-          to set [allocation_policy] to 1.
-          Default: 500. *)
-
-      mutable stack_limit : int;
-      (** The maximum size of the stack (in words).  This is only
-          relevant to the byte-code runtime, as the native code runtime
-          uses the operating system's stack.  Default: 1024k. *)
-
-      mutable allocation_policy : int;
-      (** The policy used for allocating in the heap.  Possible
-          values are 0 and 1.  0 is the next-fit policy, which is
-          quite fast but can result in fragmentation.  1 is the
-          first-fit policy, which can be slower in some cases but
-          can be better for programs with fragmentation problems.
-          Default: 0. @since 3.11.0 *)
-    }
+ type stat
+ type control
 end 
 
 module CamlinternalOO : sig 
@@ -330,3 +216,20 @@ module CamlinternalMod : sig
     | Value of Obj.t
 end 
 
+(* We should give it a name like FloatRT to avoid occasional shadowing *)
+module FloatRT : sig 
+  external _NaN : float = "NaN" [@@bs.val] 
+  external isNaN : float -> bool = "" [@@bs.val]
+  external isFinite : float -> bool = "" [@@bs.val]
+  external toExponentialWithPrecision : float -> digits:int -> string = "toExponential" [@@bs.send]
+  external toFixed : float -> string = "" [@@bs.send]
+  external toFixedWithPrecision : float -> digits:int -> string = "toFixed" [@@bs.send]
+  external fromString : string -> float = "Number" [@@bs.val]
+end 
+
+module UndefinedRT : sig 
+  type + 'a t 
+  external empty : 'a t = "#undefined" 
+  external return : 'a -> 'a t = "%identity"
+  external toOption : 'a t -> 'a option = "#undefined_to_opt"
+end 

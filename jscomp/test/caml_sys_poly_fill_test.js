@@ -1,6 +1,7 @@
 'use strict';
 
 var Mt = require("./mt.js");
+var Sys = require("../../lib/js/sys.js");
 var Block = require("../../lib/js/block.js");
 var Caml_sys = require("../../lib/js/caml_sys.js");
 var Node_process = require("../../lib/js/node_process.js");
@@ -55,6 +56,13 @@ catch (exn){
 }
 
 eq("File \"caml_sys_poly_fill_test.ml\", line 23, characters 5-12", "Z", tmp);
+
+console.log(/* tuple */[
+      Caml_sys.caml_sys_getcwd(/* () */0),
+      Caml_sys.caml_sys_time(/* () */0),
+      Sys.argv,
+      Sys.executable_name
+    ]);
 
 Mt.from_pair_suites("caml_sys_poly_fill_test.ml", suites[0]);
 

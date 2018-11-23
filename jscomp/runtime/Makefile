@@ -12,11 +12,11 @@ OTHERS= caml_array caml_string caml_bytes\
 	caml_int32 caml_gc \
 	js_primitive caml_basic caml_oo curry caml_oo_curry caml_module \
 	caml_missing_polyfill\
-	bs_string  js_float js_exn js_nativeint js_int js_int64 js_null js_undefined\
+	bs_string js_exn js_nativeint js_int64 \
 
 SOURCE_LIST= $(OTHERS) bs_obj caml_builtin_exceptions  block  js js_unsafe js_internal caml_primitive
 
-caml_sys.cmj: js_undefined.cmj
+
 caml_oo.cmj : caml_array.cmj
 js_unsafe.cmj:js_unsafe.cmi js.cmj js.cmi
 js_unsafe.cmi js.cmj: js.cmi

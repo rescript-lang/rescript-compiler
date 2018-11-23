@@ -496,12 +496,12 @@ let caml_format_float fmt x =
   let prec = if f.prec < 0 then 6 else f.prec in 
   let x = if x < 0. then (f.sign <- (-1); -. x) else x in 
   let s = ref "" in 
-  if Js_float.isNaN x then 
+  if FloatRT.isNaN x then 
     begin 
       s := "nan";
       f.filter <- " "
     end
-  else if not @@ Js_float.isFinite x then
+  else if not @@ FloatRT.isFinite x then
     begin 
       s := "inf";
       f.filter <- " " 
@@ -511,7 +511,7 @@ let caml_format_float fmt x =
       match f.conv with 
       | "e"
         -> 
-        s := Js_float.toExponentialWithPrecision x ~digits:prec;
+        s := FloatRT.toExponentialWithPrecision x ~digits:prec;
         (* exponent should be at least two digits
            {[
              (3.3).toExponential()
@@ -528,13 +528,13 @@ let caml_format_float fmt x =
         -> 
         (*  this will not work large numbers *)
         (* ("%3.10f", 3e+56, "300000000000000005792779041490073052596128503513888063488.0000000000") *)
-        s := Js_float.toFixedWithPrecision x ~digits:prec 
+        s := FloatRT.toFixedWithPrecision x ~digits:prec 
       | "g" -> 
         let prec = if prec <> 0 then prec else 1 in
-        s := Js_float.toExponentialWithPrecision x ~digits:(prec - 1);
+        s := FloatRT.toExponentialWithPrecision x ~digits:(prec - 1);
         let j = Bs_string.index_of !s "e" in 
-        let  exp = int_of_float @@ Js_float.fromString @@ Bs_string.slice_rest !s (j + 1)  in 
-        if exp < -4 || x >= 1e21 ||Bs_string.length (Js_float.toFixed x) > prec then 
+        let  exp = int_of_float @@ FloatRT.fromString @@ Bs_string.slice_rest !s (j + 1)  in 
+        if exp < -4 || x >= 1e21 ||Bs_string.length (FloatRT.toFixed x) > prec then 
           let i = ref (j - 1)  in
           while !s.[!i] = '0' do 
             decr i 
@@ -551,10 +551,10 @@ let caml_format_float fmt x =
           if exp < 0 then 
             begin 
               p := !p - (exp + 1);
-              s := Js_float.toFixedWithPrecision x ~digits:!p 
+              s := FloatRT.toFixedWithPrecision x ~digits:!p 
             end
           else 
-            while (s := Js_float.toFixedWithPrecision x ~digits:!p;Bs_string.length !s > prec + 1) do 
+            while (s := FloatRT.toFixedWithPrecision x ~digits:!p;Bs_string.length !s > prec + 1) do 
               decr p
             done ;
           if !p <> 0 then 

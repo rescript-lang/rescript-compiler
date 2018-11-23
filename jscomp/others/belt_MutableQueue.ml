@@ -28,7 +28,7 @@ and 'a t = {
 } [@@bs.deriving abstract]
 
 let null  = Js.null 
-let return = Js.Null.return 
+let return = Js_null.return 
 
 let make () = 
   t 
