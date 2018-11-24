@@ -87,8 +87,7 @@ function install() {
 		var special_files = [
 			'js',
 			'js_unsafe',
-			'js_internal',
-			'js_exn'
+			'js_internal'
 		]
 		var installed_fmt = ['.cmt', '.cmti', '.cmj']
 		if (
