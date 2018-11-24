@@ -38,7 +38,7 @@ libs:
 install:
 	@echo "Installation"
 	cp $(RUNTIME)/*.cmt* $(RUNTIME)/*.cmj* $(RUNTIME)/js.ml  $(RUNTIME)/js.cmi \
-	$(RUNTIME)/js_unsafe.cmi $(RUNTIME)/js_internal.cmi \
+	$(RUNTIME)/js_unsafe.cmi  \
 	$(STDLIB)/*.cm* $(STDLIB)/*.ml $(STDLIB)/*.mli \
 	$(OTHERS)/*.ml $(OTHERS)/*.mli  $(OTHERS)/*.cm* $(DEST)
 

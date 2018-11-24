@@ -78,7 +78,7 @@ var includes = [`stdlib`, `runtime`, `others`].map(x => path.join(__dirname, x))
 var cmi_files =
     [
         // `lazy`,
-        `js`, `js_unsafe`, `js_re`, `js_array`, `js_null`, `js_undefined`, `js_internal`,
+        `js`, `js_unsafe`, `js_re`, `js_array`, `js_null`, `js_undefined`,
         `js_types`, `js_null_undefined`, `js_dict`, `js_exn`, `js_string`, `js_vector`,
         `js_date`,
         `js_console`,
