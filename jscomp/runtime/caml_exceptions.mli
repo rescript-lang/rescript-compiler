@@ -36,4 +36,4 @@ val caml_fresh_oo_id :
 
 val create : string -> Caml_builtin_exceptions.exception_block
 (* val makeExtension : string -> Caml_builtin_exceptions.exception_block *)
-val isCamlExceptionOrOpenVariant : 'a -> bool
+val caml_is_extension : 'a -> bool

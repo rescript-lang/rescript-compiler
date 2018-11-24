@@ -2,7 +2,7 @@
 
 var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
-var Js_exn = require("../../lib/js/js_exn.js");
+var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var suites = /* record */[/* contents : [] */0];
@@ -35,7 +35,7 @@ try {
       ];
 }
 catch (raw_exn){
-  var exn = Js_exn.internalToOCamlException(raw_exn);
+  var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
   if (exn[0] === Caml_builtin_exceptions.failure) {
     y = exn[1];
   } else {
@@ -54,7 +54,7 @@ try {
       ];
 }
 catch (raw_exn$1){
-  var exn$1 = Js_exn.internalToOCamlException(raw_exn$1);
+  var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
   if (exn$1[0] === Caml_builtin_exceptions.failure) {
     x = exn$1[1];
   } else {

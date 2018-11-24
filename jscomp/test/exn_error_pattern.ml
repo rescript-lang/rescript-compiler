@@ -26,7 +26,19 @@ let g = function [@bs.open]
   | Sys_error _ -> 2
   | (A i | B i) -> i 
 
+let suites :  Mt.pair_suites ref  = ref []
+let test_id = ref 0
+let eq loc x y = Mt.eq_suites ~test_id ~suites loc x y 
 
+let () = 
+  eq __LOC__ (f Not_found) (Some 0);
+  eq __LOC__ (f (Invalid_argument "")) (Some 1);
+  eq __LOC__ (f Stack_overflow) (Some 1);
+  eq __LOC__ (f (Sys_error "")) (Some 2);
+  eq __LOC__ (f (try Js.Exn.raiseError "x" with e -> e)) None
+
+let () = 
+  Mt.from_pair_suites __FILE__ !suites
 (* type v = A  *)
 (* let f = function [@bs.open] *)
 (*   | A -> 1  *)

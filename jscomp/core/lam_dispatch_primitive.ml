@@ -594,6 +594,10 @@ let translate loc (prim_name : string)
       ->
       Js_of_lam_exception.caml_fresh_oo_id args   
 #end
+    | "caml_is_extension" ->
+      call Js_runtime_modules.exceptions
+    | "caml_as_js_exn" ->
+      call Js_runtime_modules.caml_js_exceptions  
     | "caml_set_oo_id" (* needed in {!camlinternalOO.set_id} *)
       ->
       Js_of_lam_exception.caml_set_oo_id args 

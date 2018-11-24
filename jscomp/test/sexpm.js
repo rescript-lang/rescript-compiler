@@ -8,7 +8,6 @@ var Bytes = require("../../lib/js/bytes.js");
 var Curry = require("../../lib/js/curry.js");
 var $$Buffer = require("../../lib/js/buffer.js");
 var Format = require("../../lib/js/format.js");
-var Js_exn = require("../../lib/js/js_exn.js");
 var Printf = require("../../lib/js/printf.js");
 var $$String = require("../../lib/js/string.js");
 var Caml_io = require("../../lib/js/caml_io.js");
@@ -18,6 +17,7 @@ var Caml_int32 = require("../../lib/js/caml_int32.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_string = require("../../lib/js/caml_string.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
+var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 var Caml_missing_polyfill = require("../../lib/js/caml_missing_polyfill.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
@@ -29,7 +29,7 @@ function _with_in(filename, f) {
     return x;
   }
   catch (raw_e){
-    var e = Js_exn.internalToOCamlException(raw_e);
+    var e = Caml_js_exceptions.internalToOCamlException(raw_e);
     Caml_missing_polyfill.not_implemented("caml_ml_close_channel");
     return /* `Error */[
             106380200,

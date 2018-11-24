@@ -12,7 +12,6 @@ var Bytes = require("../../lib/js/bytes.js");
 var Curry = require("../../lib/js/curry.js");
 var Queue = require("../../lib/js/queue.js");
 var $$Buffer = require("../../lib/js/buffer.js");
-var Js_exn = require("../../lib/js/js_exn.js");
 var Lexing = require("../../lib/js/lexing.js");
 var Printf = require("../../lib/js/printf.js");
 var $$String = require("../../lib/js/string.js");
@@ -28,6 +27,7 @@ var Caml_string = require("../../lib/js/caml_string.js");
 var Js_primitive = require("../../lib/js/js_primitive.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
+var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var none = /* record */[
@@ -1083,7 +1083,7 @@ function parse_exponent(f) {
     exponent = Caml_format.caml_int_of_string(todo_str);
   }
   catch (raw_exn){
-    var exn = Js_exn.internalToOCamlException(raw_exn);
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn[0] === Caml_builtin_exceptions.failure) {
       throw No_good;
     } else {
@@ -16039,7 +16039,7 @@ function parse(content, options) {
     return ret;
   }
   catch (raw_exn){
-    var exn = Js_exn.internalToOCamlException(raw_exn);
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn[0] === $$Error) {
       var e = new Error(String(List.length(exn[1])) + " errors");
       e["name"] = "Parse Error";

@@ -5,6 +5,7 @@ var Block = require("../../lib/js/block.js");
 var Js_exn = require("../../lib/js/js_exn.js");
 var Js_option = require("../../lib/js/js_option.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
+var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var suites = /* record */[/* contents : [] */0];
@@ -48,7 +49,7 @@ function handler(e) {
 }
 
 function myHandler(match) {
-  if (Caml_exceptions.isCamlExceptionOrOpenVariant(match)) {
+  if (Caml_exceptions.caml_is_extension(match)) {
     if (match === Caml_builtin_exceptions.not_found) {
       return 1;
     } else if (match[0] === Js_exn.$$Error) {
@@ -73,7 +74,7 @@ try {
   exit = 1;
 }
 catch (raw_e){
-  var e = Js_exn.internalToOCamlException(raw_e);
+  var e = Caml_js_exceptions.internalToOCamlException(raw_e);
   eq("File \"promise_catch_test.ml\", line 36, characters 7-14", true, Js_option.isSomeValue((function (xxx, y) {
               return xxx === y;
             }), 2, myHandler(e)));

@@ -190,7 +190,7 @@ exception_rebind_test.cmj : exception_def.cmj
 exception_rebound_err_test.cmj : mt.cmj ../runtime/js.cmj
 exception_repr_test.cmj : mt.cmj exception_def.cmj
 exception_value_test.cmj : ../runtime/js.cmj
-exn_error_pattern.cmj :
+exn_error_pattern.cmj : mt.cmj ../runtime/js.cmj
 export_keyword.cmj :
 ext_array_test.cmj :
 ext_bytes_test.cmj :

@@ -634,7 +634,7 @@ let record_as_js_object
   let labels,args, arity =
     Ext_list.fold_right label_exprs ([],[],0) (fun ({txt ; loc}, e) (labels,args,i) -> 
         match txt with
-        | Longident.Lident x ->
+        | Lident x ->
           ({Asttypes.loc = loc ; txt = x} :: labels, (x, self.expr self e) :: args, i + 1)
         | Ldot _ | Lapply _ ->  
           Location.raise_errorf ~loc "invalid js label ")  in
@@ -645,8 +645,13 @@ let record_as_js_object
 
 
 
-let isCamlExceptionOrOpenVariant = Longident.parse "Caml_exceptions.isCamlExceptionOrOpenVariant"
-let obj_magic = Longident.parse "Obj.magic"
+let isCamlExceptionOrOpenVariant : Longident.t = 
+  Ldot (Ldot (Lident "Js","Exn"), "isCamlExceptionOrOpenVariant")
+
+  
+let obj_magic : Longident.t = 
+  Ldot (Lident "Obj", "magic")
+
 
 let rec checkCases (cases : Parsetree.case list) = 
   List.iter check_case cases 

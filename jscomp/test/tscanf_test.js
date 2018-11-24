@@ -7,7 +7,6 @@ var Bytes = require("../../lib/js/bytes.js");
 var Curry = require("../../lib/js/curry.js");
 var Scanf = require("../../lib/js/scanf.js");
 var $$Buffer = require("../../lib/js/buffer.js");
-var Js_exn = require("../../lib/js/js_exn.js");
 var Printf = require("../../lib/js/printf.js");
 var $$String = require("../../lib/js/string.js");
 var Testing = require("./testing.js");
@@ -17,6 +16,7 @@ var Caml_int64 = require("../../lib/js/caml_int64.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_format = require("../../lib/js/caml_format.js");
 var Caml_string = require("../../lib/js/caml_string.js");
+var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var suites = /* record */[/* contents : [] */0];
@@ -1491,7 +1491,7 @@ function scan_elems$2(ib, accu) {
                 }));
   }
   catch (raw_exn){
-    var exn = Js_exn.internalToOCamlException(raw_exn);
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn[0] === Scanf.Scan_failure) {
       Curry._1(Scanf.bscanf(ib, /* Format */[
                 /* Char_literal */Block.__(12, [
@@ -1963,7 +1963,7 @@ function scan_elems$5(ib, scan_elem, accu) {
                 }));
   }
   catch (raw_exn){
-    var exn = Js_exn.internalToOCamlException(raw_exn);
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn[0] === Scanf.Scan_failure) {
       return accu;
     } else {

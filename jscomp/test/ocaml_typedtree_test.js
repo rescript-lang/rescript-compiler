@@ -14,7 +14,6 @@ var Int64 = require("../../lib/js/int64.js");
 var $$Buffer = require("../../lib/js/buffer.js");
 var Digest = require("../../lib/js/digest.js");
 var Format = require("../../lib/js/format.js");
-var Js_exn = require("../../lib/js/js_exn.js");
 var Lexing = require("../../lib/js/lexing.js");
 var Printf = require("../../lib/js/printf.js");
 var $$String = require("../../lib/js/string.js");
@@ -40,6 +39,7 @@ var Js_primitive = require("../../lib/js/js_primitive.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
+var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 var CamlinternalFormat = require("../../lib/js/camlinternalFormat.js");
 var Caml_missing_polyfill = require("../../lib/js/caml_missing_polyfill.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
@@ -247,7 +247,7 @@ function remove_file(filename) {
     return Caml_missing_polyfill.not_implemented("caml_sys_remove");
   }
   catch (raw_exn){
-    var exn = Js_exn.internalToOCamlException(raw_exn);
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn[0] === Caml_builtin_exceptions.sys_error) {
       return /* () */0;
     } else {
@@ -269,7 +269,7 @@ function chop_extension_if_any(fname) {
     return Filename.chop_extension(fname);
   }
   catch (raw_exn){
-    var exn = Js_exn.internalToOCamlException(raw_exn);
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn[0] === Caml_builtin_exceptions.invalid_argument) {
       return fname;
     } else {
@@ -5403,7 +5403,7 @@ function read_cmi(filename) {
     return cmi;
   }
   catch (raw_exn){
-    var exn = Js_exn.internalToOCamlException(raw_exn);
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn === Caml_builtin_exceptions.end_of_file) {
       Caml_missing_polyfill.not_implemented("caml_ml_close_channel");
       throw [
@@ -9490,7 +9490,7 @@ function force(f, x) {
           return y;
         }
         catch (raw_e){
-          var e = Js_exn.internalToOCamlException(raw_e);
+          var e = Caml_js_exceptions.internalToOCamlException(raw_e);
           x[0] = /* Raise */Block.__(1, [e]);
           throw e;
         }
@@ -9909,7 +9909,7 @@ function check_consistency(ps) {
       return /* () */0;
     }
     catch (raw_exn){
-      var exn = Js_exn.internalToOCamlException(raw_exn);
+      var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
       if (exn[0] === Inconsistency) {
         throw [
               $$Error$2,
@@ -21207,7 +21207,7 @@ function token(lexbuf) {
             return /* INT */Block.__(7, [cvt_int_literal(Lexing.lexeme(lexbuf$1))]);
           }
           catch (raw_exn){
-            var exn$1 = Js_exn.internalToOCamlException(raw_exn);
+            var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn);
             if (exn$1[0] === Caml_builtin_exceptions.failure) {
               throw [
                     $$Error$4,
@@ -21225,7 +21225,7 @@ function token(lexbuf) {
             return /* INT32 */Block.__(8, [cvt_int32_literal(Lexing.lexeme(lexbuf$1))]);
           }
           catch (raw_exn$1){
-            var exn$2 = Js_exn.internalToOCamlException(raw_exn$1);
+            var exn$2 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
             if (exn$2[0] === Caml_builtin_exceptions.failure) {
               throw [
                     $$Error$4,
@@ -21241,7 +21241,7 @@ function token(lexbuf) {
             return /* INT64 */Block.__(9, [cvt_int64_literal(Lexing.lexeme(lexbuf$1))]);
           }
           catch (raw_exn$2){
-            var exn$3 = Js_exn.internalToOCamlException(raw_exn$2);
+            var exn$3 = Caml_js_exceptions.internalToOCamlException(raw_exn$2);
             if (exn$3[0] === Caml_builtin_exceptions.failure) {
               throw [
                     $$Error$4,
@@ -21257,7 +21257,7 @@ function token(lexbuf) {
             return /* NATIVEINT */Block.__(12, [cvt_nativeint_literal(Lexing.lexeme(lexbuf$1))]);
           }
           catch (raw_exn$3){
-            var exn$4 = Js_exn.internalToOCamlException(raw_exn$3);
+            var exn$4 = Caml_js_exceptions.internalToOCamlException(raw_exn$3);
             if (exn$4[0] === Caml_builtin_exceptions.failure) {
               throw [
                     $$Error$4,
@@ -21654,7 +21654,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
             string(lexbuf);
           }
           catch (raw_exn){
-            var exn = Js_exn.internalToOCamlException(raw_exn);
+            var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
             if (exn[0] === $$Error$4) {
               var match$1 = exn[1];
               if (typeof match$1 === "number") {
@@ -21705,7 +21705,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
             __ocaml_lex_quoted_string_rec(delim$1, lexbuf, 183);
           }
           catch (raw_exn$1){
-            var exn$1 = Js_exn.internalToOCamlException(raw_exn$1);
+            var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
             if (exn$1[0] === $$Error$4) {
               var match$3 = exn$1[1];
               if (typeof match$3 === "number") {
@@ -22150,7 +22150,7 @@ function skip_phrase(lexbuf) {
       }
     }
     catch (raw_exn){
-      var exn = Js_exn.internalToOCamlException(raw_exn);
+      var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
       if (exn[0] === $$Error$4) {
         var tmp = exn[1];
         if (typeof tmp === "number") {
@@ -22194,7 +22194,7 @@ function wrap$1(parsing_fun, lexbuf) {
     return ast;
   }
   catch (raw_err){
-    var err = Js_exn.internalToOCamlException(raw_err);
+    var err = Caml_js_exceptions.internalToOCamlException(raw_err);
     var exit = 0;
     var exit$1 = 0;
     var exit$2 = 0;
@@ -25184,7 +25184,7 @@ function closed_parameterized_type(params, ty) {
     ok = true;
   }
   catch (raw_exn){
-    var exn = Js_exn.internalToOCamlException(raw_exn);
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn[0] === Non_closed) {
       ok = false;
     } else {
@@ -25223,7 +25223,7 @@ function closed_type_decl(decl) {
     return undefined;
   }
   catch (raw_exn){
-    var exn = Js_exn.internalToOCamlException(raw_exn);
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn[0] === Non_closed) {
       it_type_declaration(unmark_iterators, decl);
       return exn[1];
@@ -25244,7 +25244,7 @@ function closed_extension_constructor(ext) {
     return undefined;
   }
   catch (raw_exn){
-    var exn = Js_exn.internalToOCamlException(raw_exn);
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn[0] === Non_closed) {
       unmark_extension_constructor(ext);
       return exn[1];
@@ -25278,7 +25278,7 @@ function closed_class(params, sign) {
                 return closed_type(ty);
               }
               catch (raw_exn){
-                var exn = Js_exn.internalToOCamlException(raw_exn);
+                var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
                 if (exn[0] === Non_closed) {
                   throw [
                         CCFailure,
@@ -25303,7 +25303,7 @@ function closed_class(params, sign) {
     return undefined;
   }
   catch (raw_exn){
-    var exn = Js_exn.internalToOCamlException(raw_exn);
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn[0] === CCFailure) {
       iter_type_expr(mark_type, repr(sign[/* csig_self */0]));
       List.iter(unmark_type, params);
@@ -25714,7 +25714,7 @@ function generalize_expansive$1(env, ty) {
     return generalize_expansive(env, nongen_level[0], ty);
   }
   catch (raw_exn){
-    var exn = Js_exn.internalToOCamlException(raw_exn);
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn[0] === Unify) {
       var tr = exn[1];
       if (tr) {
@@ -26712,7 +26712,7 @@ function subst(env, level, priv, abbrev, ty, params, args, body) {
     return body$prime;
   }
   catch (raw_exn){
-    var exn = Js_exn.internalToOCamlException(raw_exn);
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn[0] === Unify) {
       current_level[0] = old_level;
       throw exn;
@@ -26760,7 +26760,7 @@ function expand_abbrev_gen(kind, find_type_expansion, env, ty) {
           update_level(env, level, ty$1);
         }
         catch (raw_exn){
-          var exn = Js_exn.internalToOCamlException(raw_exn);
+          var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
           if (exn[0] !== Unify) {
             throw exn;
           }
@@ -26876,7 +26876,7 @@ function safe_abbrev(env, ty) {
     return true;
   }
   catch (raw_exn){
-    var exn = Js_exn.internalToOCamlException(raw_exn);
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn === Cannot_expand || exn[0] === Unify) {
       backtrack(snap);
       return false;
@@ -26904,7 +26904,7 @@ function try_expand_safe(env, ty) {
     return try_expand_once(env, ty);
   }
   catch (raw_exn){
-    var exn = Js_exn.internalToOCamlException(raw_exn);
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn[0] === Unify) {
       backtrack(snap);
       throw Cannot_expand;
@@ -27039,7 +27039,7 @@ function expand_head_opt(env, ty) {
     return try_expand_head_opt(env, ty);
   }
   catch (raw_exn){
-    var exn = Js_exn.internalToOCamlException(raw_exn);
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn === Cannot_expand || exn[0] === Unify) {
       backtrack(snap);
       return repr(ty);
@@ -27286,7 +27286,7 @@ function occur(env, ty0, ty) {
     return merge(type_changed, old);
   }
   catch (raw_exn){
-    var exn = Js_exn.internalToOCamlException(raw_exn);
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     merge(type_changed, old);
     throw exn === Occur ? [
             Unify,
@@ -27301,7 +27301,7 @@ function occur_in(env, ty0, t) {
     return false;
   }
   catch (raw_exn){
-    var exn = Js_exn.internalToOCamlException(raw_exn);
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn[0] === Unify) {
       return true;
     } else {
@@ -29145,7 +29145,7 @@ function unify(env, t1, t2) {
         return reset_trace_gadt_instances(reset_tracing);
       }
       catch (raw_exn){
-        var exn$1 = Js_exn.internalToOCamlException(raw_exn);
+        var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn);
         if (exn$1[0] === Unify) {
           reset_trace_gadt_instances(reset_tracing);
           throw [
@@ -29386,7 +29386,7 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
                                                 return unify(env, t1, t2);
                                               }
                                               catch (raw_exn){
-                                                var exn = Js_exn.internalToOCamlException(raw_exn);
+                                                var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
                                                 if (exn[0] === Unify) {
                                                   backtrack(snap);
                                                   reify(env, t1);
@@ -29552,7 +29552,7 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
                           unify_row(env, row1, row2);
                         }
                         catch (raw_exn){
-                          var exn$1 = Js_exn.internalToOCamlException(raw_exn);
+                          var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn);
                           if (exn$1[0] === Unify) {
                             backtrack(snap);
                             reify(env, t1$prime);
@@ -29771,7 +29771,7 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
       }
     }
     catch (raw_exn$1){
-      var exn$3 = Js_exn.internalToOCamlException(raw_exn$1);
+      var exn$3 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
       if (exn$3[0] === Unify) {
         t1$prime[/* desc */0] = d1;
         throw [
@@ -29923,7 +29923,7 @@ function unify_fields(env, ty1, ty2) {
                     return unify(env, t1, t2);
                   }
                   catch (raw_exn){
-                    var exn = Js_exn.internalToOCamlException(raw_exn);
+                    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
                     if (exn[0] === Unify) {
                       var desc_003 = newty2(current_level[0], /* Tnil */0);
                       var desc = /* Tfield */Block.__(5, [
@@ -30401,7 +30401,7 @@ function unify_row(env, row1, row2) {
                       };
                     }
                     catch (raw_exn){
-                      var exn$2 = Js_exn.internalToOCamlException(raw_exn);
+                      var exn$2 = Caml_js_exceptions.internalToOCamlException(raw_exn);
                       if (exn$2[0] === Unify) {
                         throw [
                               Unify,
@@ -30516,7 +30516,7 @@ function unify2(env, t1, t2) {
         return unify3(env, t2$2, t2$prime, t1$2, t1$prime);
       }
       catch (raw_exn){
-        var exn = Js_exn.internalToOCamlException(raw_exn);
+        var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
         if (exn[0] === Unify) {
           throw [
                 Unify,
@@ -30540,7 +30540,7 @@ function unify$1(env, ty1, ty2) {
     return unify(env, ty1, ty2);
   }
   catch (raw_exn){
-    var exn = Js_exn.internalToOCamlException(raw_exn);
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn[0] === Unify) {
       throw [
             Unify,
@@ -30581,7 +30581,7 @@ function unify_var(env, t1, t2) {
         return reset_trace_gadt_instances(reset_tracing);
       }
       catch (raw_exn){
-        var exn = Js_exn.internalToOCamlException(raw_exn);
+        var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
         if (exn[0] === Unify) {
           reset_trace_gadt_instances(reset_tracing);
           var expanded_trace = expand_trace(env, /* :: */[
@@ -31350,7 +31350,7 @@ function moregen(inst_nongen, type_pairs, env, t1, t2) {
         
       }
       catch (raw_exn){
-        var exn$2 = Js_exn.internalToOCamlException(raw_exn);
+        var exn$2 = Caml_js_exceptions.internalToOCamlException(raw_exn);
         if (exn$2[0] === Unify) {
           throw [
                 Unify,
@@ -31405,7 +31405,7 @@ function moregen_fields(inst_nongen, type_pairs, env, ty1, ty2) {
                   return moregen(inst_nongen, type_pairs, env, t1, t2);
                 }
                 catch (raw_exn){
-                  var exn = Js_exn.internalToOCamlException(raw_exn);
+                  var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
                   if (exn[0] === Unify) {
                     throw [
                           Unify,
@@ -31490,7 +31490,7 @@ function moregeneral(env, inst_nongen, pat_sch, subj_sch) {
     res = true;
   }
   catch (raw_exn){
-    var exn = Js_exn.internalToOCamlException(raw_exn);
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn[0] === Unify) {
       res = false;
     } else {
@@ -31596,7 +31596,7 @@ function matches(env, ty, ty$prime) {
     ok = all_distinct_vars(env, vars);
   }
   catch (raw_exn){
-    var exn = Js_exn.internalToOCamlException(raw_exn);
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn[0] === Unify) {
       ok = false;
     } else {
@@ -32173,7 +32173,7 @@ function eqtype(rename, type_pairs, subst, env, t1, t2) {
         
       }
       catch (raw_exn){
-        var exn$4 = Js_exn.internalToOCamlException(raw_exn);
+        var exn$4 = Caml_js_exceptions.internalToOCamlException(raw_exn);
         if (exn$4[0] === Unify) {
           throw [
                 Unify,
@@ -32252,7 +32252,7 @@ function eqtype_fields(rename, type_pairs, subst, env, ty1, _ty2) {
                       return eqtype(rename, type_pairs, subst, env, t1, t2);
                     }
                     catch (raw_exn){
-                      var exn = Js_exn.internalToOCamlException(raw_exn);
+                      var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
                       if (exn[0] === Unify) {
                         throw [
                               Unify,
@@ -32327,7 +32327,7 @@ function equal$4(env, rename, tyl1, tyl2) {
     return true;
   }
   catch (raw_exn){
-    var exn = Js_exn.internalToOCamlException(raw_exn);
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn[0] === Unify) {
       return false;
     } else {
@@ -32367,7 +32367,7 @@ function moregen_clty(trace, type_pairs, env, cty1, cty2) {
                           return moregen$1(true, type_pairs, env, param[2], param[4]);
                         }
                         catch (raw_exn){
-                          var exn = Js_exn.internalToOCamlException(raw_exn);
+                          var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
                           if (exn[0] === Unify) {
                             throw [
                                   Failure,
@@ -32391,7 +32391,7 @@ function moregen_clty(trace, type_pairs, env, cty1, cty2) {
                                 return moregen$1(true, type_pairs, env, match[2], param[2]);
                               }
                               catch (raw_exn){
-                                var exn = Js_exn.internalToOCamlException(raw_exn);
+                                var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
                                 if (exn[0] === Unify) {
                                   throw [
                                         Failure,
@@ -32433,7 +32433,7 @@ function moregen_clty(trace, type_pairs, env, cty1, cty2) {
                     moregen$1(true, type_pairs, env, cty1[1], cty2[1]);
                   }
                   catch (raw_exn){
-                    var exn = Js_exn.internalToOCamlException(raw_exn);
+                    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
                     if (exn[0] === Unify) {
                       throw [
                             Failure,
@@ -32467,7 +32467,7 @@ function moregen_clty(trace, type_pairs, env, cty1, cty2) {
     
   }
   catch (raw_exn$1){
-    var exn$1 = Js_exn.internalToOCamlException(raw_exn$1);
+    var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
     if (exn$1[0] === Failure) {
       var error = exn$1[1];
       if (trace || error === /* [] */0) {
@@ -32544,7 +32544,7 @@ function match_class_types($staropt$star, env, pat_sch, subj_sch) {
             return err;
           }
           catch (raw_exn){
-            var exn = Js_exn.internalToOCamlException(raw_exn);
+            var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
             if (exn[0] === Unify) {
               return /* :: */[
                       /* CM_Public_method */Block.__(12, [param[0]]),
@@ -32622,7 +32622,7 @@ function match_class_types($staropt$star, env, pat_sch, subj_sch) {
       res = /* [] */0;
     }
     catch (raw_exn){
-      var exn = Js_exn.internalToOCamlException(raw_exn);
+      var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
       if (exn[0] === Failure) {
         res = exn[1];
       } else {
@@ -32672,7 +32672,7 @@ function equal_clty(trace, type_pairs, subst, env, cty1, cty2) {
                           return eqtype$1(true, type_pairs, subst, env, param[2], param[4]);
                         }
                         catch (raw_exn){
-                          var exn = Js_exn.internalToOCamlException(raw_exn);
+                          var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
                           if (exn[0] === Unify) {
                             throw [
                                   Failure,
@@ -32696,7 +32696,7 @@ function equal_clty(trace, type_pairs, subst, env, cty1, cty2) {
                                 return eqtype$1(true, type_pairs, subst, env, match[2], param[2]);
                               }
                               catch (raw_exn){
-                                var exn = Js_exn.internalToOCamlException(raw_exn);
+                                var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
                                 if (exn[0] === Unify) {
                                   throw [
                                         Failure,
@@ -32734,7 +32734,7 @@ function equal_clty(trace, type_pairs, subst, env, cty1, cty2) {
                     eqtype$1(true, type_pairs, subst, env, cty1[1], cty2[1]);
                   }
                   catch (raw_exn){
-                    var exn = Js_exn.internalToOCamlException(raw_exn);
+                    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
                     if (exn[0] === Unify) {
                       throw [
                             Failure,
@@ -32779,7 +32779,7 @@ function equal_clty(trace, type_pairs, subst, env, cty1, cty2) {
     }
   }
   catch (raw_exn$1){
-    var exn$1 = Js_exn.internalToOCamlException(raw_exn$1);
+    var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
     if (exn$1[0] === Failure) {
       if (trace) {
         throw [
@@ -32960,7 +32960,7 @@ function match_class_declarations(env, patt_params, patt_type, subj_params, subj
                 return eqtype$1(true, type_pairs, subst, env, p, s);
               }
               catch (raw_exn){
-                var exn = Js_exn.internalToOCamlException(raw_exn);
+                var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
                 if (exn[0] === Unify) {
                   throw [
                         Failure,
@@ -32990,7 +32990,7 @@ function match_class_declarations(env, patt_params, patt_type, subj_params, subj
       return match_class_types(false, env, clty_params(patt_params, patt_type), clty_params(subj_params, subj_type));
     }
     catch (raw_exn){
-      var exn = Js_exn.internalToOCamlException(raw_exn);
+      var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
       if (exn[0] === Failure) {
         return exn[1];
       } else {
@@ -33304,7 +33304,7 @@ function build_subtype(env, visited, loops, posi, level, t) {
                     unify_var(env, ty$1, t$1);
                   }
                   catch (raw_exn){
-                    var exn$1 = Js_exn.internalToOCamlException(raw_exn);
+                    var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn);
                     if (exn$1[0] === Unify) {
                       throw [
                             Caml_builtin_exceptions.assert_failure,
@@ -34185,7 +34185,7 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                                           }(trace,cstrs)));
                               }
                               catch (raw_exn){
-                                var exn$2 = Js_exn.internalToOCamlException(raw_exn);
+                                var exn$2 = Caml_js_exceptions.internalToOCamlException(raw_exn);
                                 if (exn$2[0] === Unify) {
                                   return /* :: */[
                                           /* tuple */[
@@ -34262,7 +34262,7 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                                 }
                               }
                               catch (raw_exn$1){
-                                var exn$3 = Js_exn.internalToOCamlException(raw_exn$1);
+                                var exn$3 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
                                 if (exn$3[0] === Unify) {
                                   backtrack(snap);
                                   throw Caml_builtin_exceptions.not_found;
@@ -34445,7 +34445,7 @@ function subtype(env, ty1, ty2) {
                       return unify_pairs(/* record */[/* contents */env], param[1], param[2], param[3]);
                     }
                     catch (raw_exn){
-                      var exn = Js_exn.internalToOCamlException(raw_exn);
+                      var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
                       if (exn[0] === Unify) {
                         throw [
                               Subtype,
@@ -34551,7 +34551,7 @@ function cyclic_abbrev(env, id, ty) {
                   ], expand_abbrev_opt(env, ty$1));
       }
       catch (raw_exn){
-        var exn = Js_exn.internalToOCamlException(raw_exn);
+        var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
         if (exn === Cannot_expand) {
           return false;
         } else if (exn[0] === Unify) {
@@ -34764,7 +34764,7 @@ function nondep_type_rec(env, id, _ty) {
                       tmp = /* Tlink */Block.__(6, [nondep_type_rec(env, id, expand_abbrev(env)(newty2(ty[/* level */1], ty[/* desc */0])))]);
                     }
                     catch (raw_exn){
-                      var exn$1 = Js_exn.internalToOCamlException(raw_exn);
+                      var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn);
                       if (exn$1 === Cannot_expand) {
                         throw Caml_builtin_exceptions.not_found;
                       } else if (exn$1[0] === Unify) {
@@ -46048,7 +46048,7 @@ function modtypes(env, cxt, subst, mty1, mty2) {
     return try_modtypes(env, cxt, subst, mty1, mty2);
   }
   catch (raw_err){
-    var err = Js_exn.internalToOCamlException(raw_err);
+    var err = Caml_js_exceptions.internalToOCamlException(raw_err);
     if (err === Dont_match$1) {
       throw [
             $$Error$5,
@@ -46217,7 +46217,7 @@ function try_modtypes(env, cxt, subst, _mty1, mty2) {
               p1$3 = normalize_path$1(none, env, p1$1);
             }
             catch (raw_exn){
-              var exn = Js_exn.internalToOCamlException(raw_exn);
+              var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
               if (exn[0] === $$Error$2) {
                 var match$2 = exn[1];
                 if (match$2.tag === 3) {
@@ -46628,7 +46628,7 @@ function modtype_infos(env, cxt, subst, id, info1, info2) {
     }
   }
   catch (raw_exn){
-    var exn = Js_exn.internalToOCamlException(raw_exn);
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn[0] === $$Error$5) {
       throw [
             $$Error$5,
@@ -46682,7 +46682,7 @@ function check_modtype_inclusion$1(env, mty1, path1, mty2) {
     return /* () */0;
   }
   catch (raw_exn){
-    var exn = Js_exn.internalToOCamlException(raw_exn);
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn[0] === $$Error$5) {
       throw Caml_builtin_exceptions.not_found;
     } else {
@@ -46698,7 +46698,7 @@ function compunit(env, impl_name, impl_sig, intf_name, intf_sig) {
     return signatures(env, /* [] */0, identity, impl_sig, intf_sig);
   }
   catch (raw_exn){
-    var exn = Js_exn.internalToOCamlException(raw_exn);
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn[0] === $$Error$5) {
       throw [
             $$Error$5,
@@ -52924,7 +52924,7 @@ function warning_attribute(attrs) {
         return parse_options(errflag, match);
       }
       catch (raw_exn){
-        var exn = Js_exn.internalToOCamlException(raw_exn);
+        var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
         if (exn[0] === Arg.Bad) {
           return prerr_warning(loc, /* Attribute_payload */Block.__(30, [
                         txt,
@@ -53502,7 +53502,7 @@ function transl_type(env, policy, styp) {
                     return Curry._3(unify_param, env, ty$prime, param[1][/* ctyp_type */1]);
                   }
                   catch (raw_exn){
-                    var exn = Js_exn.internalToOCamlException(raw_exn);
+                    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
                     if (exn[0] === Unify) {
                       throw [
                             $$Error$6,
@@ -53522,7 +53522,7 @@ function transl_type(env, policy, styp) {
             enforce_constraints(env, constr);
           }
           catch (raw_exn){
-            var exn$2 = Js_exn.internalToOCamlException(raw_exn);
+            var exn$2 = Caml_js_exceptions.internalToOCamlException(raw_exn);
             if (exn$2[0] === Unify) {
               throw [
                     $$Error$6,
@@ -53665,7 +53665,7 @@ function transl_type(env, policy, styp) {
                     return unify_var(env, ty$prime, param[1][/* ctyp_type */1]);
                   }
                   catch (raw_exn){
-                    var exn = Js_exn.internalToOCamlException(raw_exn);
+                    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
                     if (exn[0] === Unify) {
                       throw [
                             $$Error$6,
@@ -53686,7 +53686,7 @@ function transl_type(env, policy, styp) {
             ty$5 = expand_head(env, newconstr(path$1, ty_args));
           }
           catch (raw_exn$1){
-            var exn$5 = Js_exn.internalToOCamlException(raw_exn$1);
+            var exn$5 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
             if (exn$5[0] === Unify) {
               throw [
                     $$Error$6,
@@ -53821,7 +53821,7 @@ function transl_type(env, policy, styp) {
               unify_var(env, t$1, ty$7[/* ctyp_type */1]);
             }
             catch (raw_exn$2){
-              var exn$7 = Js_exn.internalToOCamlException(raw_exn$2);
+              var exn$7 = Caml_js_exceptions.internalToOCamlException(raw_exn$2);
               if (exn$7[0] === Unify) {
                 var trace = swap_list(exn$7[1]);
                 throw [
@@ -53851,7 +53851,7 @@ function transl_type(env, policy, styp) {
                 unify_var(env, t$2, ty$8[/* ctyp_type */1]);
               }
               catch (raw_exn$3){
-                var exn$9 = Js_exn.internalToOCamlException(raw_exn$3);
+                var exn$9 = Caml_js_exceptions.internalToOCamlException(raw_exn$3);
                 if (exn$9[0] === Unify) {
                   var trace$1 = swap_list(exn$9[1]);
                   throw [
@@ -53957,7 +53957,7 @@ function transl_type(env, policy, styp) {
                   return unify$2(env, ty, ty$prime);
                 }
                 catch (raw_exn){
-                  var exn = Js_exn.internalToOCamlException(raw_exn);
+                  var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
                   if (exn[0] === Unify) {
                     throw [
                           $$Error$6,
@@ -54444,7 +54444,7 @@ function globalize_used_variables(env, fixed) {
                       return unify$2(env, param[1], param[2]);
                     }
                     catch (raw_exn){
-                      var exn = Js_exn.internalToOCamlException(raw_exn);
+                      var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
                       if (exn[0] === Unify) {
                         throw [
                               $$Error$6,
@@ -55668,7 +55668,7 @@ function unify_pat_types(loc, env, ty, ty$prime) {
     return unify$2(env, ty, ty$prime);
   }
   catch (raw_exn){
-    var exn = Js_exn.internalToOCamlException(raw_exn);
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn[0] === Unify) {
       throw [
             $$Error$7,
@@ -55697,7 +55697,7 @@ function unify_exp_types(loc, env, ty, expected_ty) {
     return unify$2(env, ty, expected_ty);
   }
   catch (raw_exn){
-    var exn = Js_exn.internalToOCamlException(raw_exn);
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn[0] === Unify) {
       throw [
             $$Error$7,
@@ -55769,7 +55769,7 @@ function unify_pat_types_gadt(loc, env, ty, ty$prime) {
       return Curry._1(TypePairs[/* clear */1], unify_eq_set);
     }
     catch (raw_e){
-      var e = Js_exn.internalToOCamlException(raw_e);
+      var e = Caml_js_exceptions.internalToOCamlException(raw_e);
       Curry._1(TypePairs[/* clear */1], unify_eq_set);
       if (e[0] === Unify) {
         throw [
@@ -55783,7 +55783,7 @@ function unify_pat_types_gadt(loc, env, ty, ty$prime) {
     }
   }
   catch (raw_exn){
-    var exn = Js_exn.internalToOCamlException(raw_exn);
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn[0] === Unify) {
       throw [
             $$Error$7,
@@ -56037,7 +56037,7 @@ function enter_orpat_variables(loc, env, p1_vs, p2_vs) {
                 unify$2(env, match[1], match$1[1]);
               }
               catch (raw_exn){
-                var exn = Js_exn.internalToOCamlException(raw_exn);
+                var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
                 if (exn[0] === Unify) {
                   throw [
                         $$Error$7,
@@ -56484,7 +56484,7 @@ function wrap_disambiguate(kind, ty, f, x) {
     return Curry._1(f, x);
   }
   catch (raw_exn){
-    var exn = Js_exn.internalToOCamlException(raw_exn);
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn[0] === $$Error$7) {
       var match = exn[3];
       if (typeof match === "number") {
@@ -57730,7 +57730,7 @@ function type_pat(constrs, labels, no_existentials, mode, env, sp, expected_ty) 
               unify_pat_types(loc, env[0], match[2], record_ty);
             }
             catch (raw_exn){
-              var exn = Js_exn.internalToOCamlException(raw_exn);
+              var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
               if (exn[0] === Unify) {
                 throw [
                       $$Error$7,
@@ -58645,7 +58645,7 @@ function type_approx(env, _sexp) {
             unify$2(env, ty, ty1);
           }
           catch (raw_exn){
-            var exn = Js_exn.internalToOCamlException(raw_exn);
+            var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
             if (exn[0] === Unify) {
               throw [
                     $$Error$7,
@@ -58673,7 +58673,7 @@ function type_approx(env, _sexp) {
             unify$2(env, ty$1, ty1$1);
           }
           catch (raw_exn$1){
-            var exn$1 = Js_exn.internalToOCamlException(raw_exn$1);
+            var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
             if (exn$1[0] === Unify) {
               throw [
                     $$Error$7,
@@ -59436,7 +59436,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
                         unify_var(env, newvar(undefined, /* () */0), match[1]);
                       }
                       catch (raw_exn){
-                        var exn = Js_exn.internalToOCamlException(raw_exn);
+                        var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
                         if (exn[0] === Unify) {
                           throw [
                                 Caml_builtin_exceptions.assert_failure,
@@ -60266,7 +60266,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
             Curry._1(force$prime$prime, /* () */0);
           }
           catch (raw_exn){
-            var exn$2 = Js_exn.internalToOCamlException(raw_exn);
+            var exn$2 = Caml_js_exceptions.internalToOCamlException(raw_exn);
             if (exn$2[0] === Subtype) {
               throw [
                     $$Error$7,
@@ -60339,7 +60339,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
                   tmp$4 = true;
                 }
                 catch (raw_exn$1){
-                  var exn$3 = Js_exn.internalToOCamlException(raw_exn$1);
+                  var exn$3 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
                   if (exn$3[0] === Unify) {
                     backtrack(snap);
                     tmp$4 = false;
@@ -60360,7 +60360,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
                   
                 }
                 catch (raw_exn$2){
-                  var exn$4 = Js_exn.internalToOCamlException(raw_exn$2);
+                  var exn$4 = Caml_js_exceptions.internalToOCamlException(raw_exn$2);
                   if (exn$4[0] === Subtype) {
                     throw [
                           $$Error$7,
@@ -60384,7 +60384,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
                 unify$2(env, arg$4[/* exp_type */3], match$46[0]);
               }
               catch (raw_exn$3){
-                var exn$5 = Js_exn.internalToOCamlException(raw_exn$3);
+                var exn$5 = Caml_js_exceptions.internalToOCamlException(raw_exn$3);
                 if (exn$5[0] === Unify) {
                   throw [
                         $$Error$7,
@@ -60639,7 +60639,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
                     ]);
         }
         catch (raw_exn$4){
-          var exn$7 = Js_exn.internalToOCamlException(raw_exn$4);
+          var exn$7 = Caml_js_exceptions.internalToOCamlException(raw_exn$4);
           if (exn$7[0] === Unify) {
             throw [
                   $$Error$7,
@@ -60856,7 +60856,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
           unify_var(new_env, ty$7, body$4[/* exp_type */3]);
         }
         catch (raw_exn$5){
-          var exn$10 = Js_exn.internalToOCamlException(raw_exn$5);
+          var exn$10 = Caml_js_exceptions.internalToOCamlException(raw_exn$5);
           if (exn$10[0] === Unify) {
             throw [
                   $$Error$7,
@@ -61223,7 +61223,7 @@ function type_function(in_function, loc, attrs, env, ty_expected, l, caselist) {
     match$1 = filter_arrow(env, instance(undefined, env, ty_expected), l);
   }
   catch (raw_exn){
-    var exn = Js_exn.internalToOCamlException(raw_exn);
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn[0] === Unify) {
       var ty = expand_head(env, ty_expected);
       var match$2 = ty[/* desc */0];
@@ -61266,7 +61266,7 @@ function type_function(in_function, loc, attrs, env, ty_expected, l, caselist) {
       unify$2(env, ty_arg, type_option$1(tv));
     }
     catch (raw_exn$1){
-      var exn$1 = Js_exn.internalToOCamlException(raw_exn$1);
+      var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
       if (exn$1[0] === Unify) {
         throw [
               Caml_builtin_exceptions.assert_failure,
@@ -62131,7 +62131,7 @@ function type_format(loc, str, env) {
               ]);
   }
   catch (raw_exn){
-    var exn = Js_exn.internalToOCamlException(raw_exn);
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn[0] === Caml_builtin_exceptions.failure) {
       throw [
             $$Error$7,
@@ -62168,7 +62168,7 @@ function type_label_exp(create, env, loc, ty_expected, param) {
     unify$2(env, instance_def(ty_res), instance(undefined, env, ty_expected));
   }
   catch (raw_exn){
-    var exn = Js_exn.internalToOCamlException(raw_exn);
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn[0] === Unify) {
       throw [
             $$Error$7,
@@ -62231,7 +62231,7 @@ function type_label_exp(create, env, loc, ty_expected, param) {
         arg$1 = arg$2;
       }
       catch (raw_e){
-        var e = Js_exn.internalToOCamlException(raw_e);
+        var e = Caml_js_exceptions.internalToOCamlException(raw_e);
         if (e[0] === $$Error$7) {
           var tmp = e[3];
           if (typeof tmp === "number") {
@@ -65484,7 +65484,7 @@ function check_constraints_rec(env, loc, visited, _ty) {
                 enforce_constraints(env, ty$prime);
               }
               catch (raw_exn){
-                var exn = Js_exn.internalToOCamlException(raw_exn);
+                var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
                 if (exn[0] === Unify) {
                   throw [
                         Caml_builtin_exceptions.assert_failure,
@@ -65811,7 +65811,7 @@ function check_well_founded(env, loc, path, to_check, ty) {
         }
       }
       catch (raw_exn){
-        var exn$1 = Js_exn.internalToOCamlException(raw_exn);
+        var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn);
         if (exn$1 === Cannot_expand) {
           var tmp$1 = true;
           if (!(recursive_types[0] && is_contractive(env, ty$1))) {
@@ -65923,7 +65923,7 @@ function check_recursion(env, loc, path, decl, to_check) {
                               }), match$2[0], args$prime);
                       }
                       catch (raw_exn){
-                        var exn = Js_exn.internalToOCamlException(raw_exn);
+                        var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
                         if (exn[0] === Unify) {
                           throw [
                                 $$Error$8,
@@ -67028,7 +67028,7 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
               return unify$2(env, ty, ty$prime);
             }
             catch (raw_exn){
-              var exn = Js_exn.internalToOCamlException(raw_exn);
+              var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
               if (exn[0] === Unify) {
                 throw [
                       $$Error$8,
@@ -67117,7 +67117,7 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
                 return unify$2(env, newconstr(path, params), match);
               }
               catch (raw_exn){
-                var exn = Js_exn.internalToOCamlException(raw_exn);
+                var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
                 if (exn[0] === Unify) {
                   throw [
                         $$Error$8,
@@ -67417,7 +67417,7 @@ function transl_extension_constructor(env, check_open, type_path, type_params, t
       unify$2(env, match$2[1], match$3[0]);
     }
     catch (raw_exn){
-      var exn = Js_exn.internalToOCamlException(raw_exn);
+      var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
       if (exn[0] === Unify) {
         throw [
               $$Error$8,
@@ -67886,7 +67886,7 @@ function transl_with_constraint(env, id, row_path, orig_decl, sdecl) {
                   ];
           }
           catch (raw_exn){
-            var exn = Js_exn.internalToOCamlException(raw_exn);
+            var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
             if (exn[0] === Unify) {
               throw [
                     $$Error$8,
@@ -69434,7 +69434,7 @@ function enter_val(cl_num, vars, inh, lab, mut, virt, ty, val_env, met_env, par_
     ];
   }
   catch (raw_exn){
-    var exn = Js_exn.internalToOCamlException(raw_exn);
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn[0] === Unify) {
       throw [
             $$Error$9,
@@ -69493,7 +69493,7 @@ function inheritance(self_type, env, ovf, concr_meths, warn_vals, loc, parent) {
           unify$2(env, self_type, cl_sig[/* csig_self */0]);
         }
         catch (raw_exn){
-          var exn = Js_exn.internalToOCamlException(raw_exn);
+          var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
           if (exn[0] === Unify) {
             var trace = exn[1];
             var exit = 0;
@@ -69624,7 +69624,7 @@ function virtual_method(val_env, meths, self_type, lab, priv, sty, loc) {
     unify$2(val_env, ty, match[1]);
   }
   catch (raw_exn){
-    var exn = Js_exn.internalToOCamlException(raw_exn);
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn[0] === Unify) {
       throw [
             $$Error$9,
@@ -69653,7 +69653,7 @@ function declare_method(val_env, meths, self_type, lab, priv, sty, loc) {
       return unify$2(val_env, ty, ty$prime);
     }
     catch (raw_exn){
-      var exn = Js_exn.internalToOCamlException(raw_exn);
+      var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
       if (exn[0] === Unify) {
         throw [
               $$Error$9,
@@ -69712,7 +69712,7 @@ function type_constraint(val_env, sty, sty$prime, loc) {
     unify$2(val_env, ty, ty$prime);
   }
   catch (raw_exn){
-    var exn = Js_exn.internalToOCamlException(raw_exn);
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn[0] === Unify) {
       throw [
             $$Error$9,
@@ -69780,7 +69780,7 @@ function class_signature$1(env, param) {
     unify$2(env, self_type, dummy_obj);
   }
   catch (raw_exn){
-    var exn = Js_exn.internalToOCamlException(raw_exn);
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn[0] === Unify) {
       throw [
             $$Error$9,
@@ -70001,7 +70001,7 @@ function class_type$2(env, scty) {
                   unify$2(env, ty$prime, ty);
                 }
                 catch (raw_exn){
-                  var exn = Js_exn.internalToOCamlException(raw_exn);
+                  var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
                   if (exn[0] === Unify) {
                     throw [
                           $$Error$9,
@@ -70107,7 +70107,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
     unify$2(val_env$1, public_self, ty);
   }
   catch (raw_exn){
-    var exn = Js_exn.internalToOCamlException(raw_exn);
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn[0] === Unify) {
       throw [
             $$Error$9,
@@ -70313,7 +70313,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                     exp = type_exp(val_env, match$7[1]);
                   }
                   catch (raw_exn){
-                    var exn = Js_exn.internalToOCamlException(raw_exn);
+                    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
                     if (exn[0] === Unify) {
                       var match$8 = exn[1];
                       if (match$8) {
@@ -70504,7 +70504,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                     }
                   }
                   catch (raw_exn$1){
-                    var exn$1 = Js_exn.internalToOCamlException(raw_exn$1);
+                    var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
                     if (exn$1[0] === Unify) {
                       throw [
                             $$Error$9,
@@ -70758,7 +70758,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
       unify$2(val_env$1, public_self, self_type);
     }
     catch (raw_exn$1){
-      var exn$1 = Js_exn.internalToOCamlException(raw_exn$1);
+      var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
       if (exn$1[0] === Unify) {
         throw [
               $$Error$9,
@@ -70870,7 +70870,7 @@ function class_expr(cl_num, val_env, met_env, _scl) {
                     return unify$2(val_env, ty$prime, ty);
                   }
                   catch (raw_exn){
-                    var exn = Js_exn.internalToOCamlException(raw_exn);
+                    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
                     if (exn[0] === Unify) {
                       throw [
                             $$Error$9,
@@ -71309,7 +71309,7 @@ function class_expr(cl_num, val_env, met_env, _scl) {
             match$9 = type_let$1(val_env, rec_flag, match[1], undefined);
           }
           catch (raw_exn){
-            var exn = Js_exn.internalToOCamlException(raw_exn);
+            var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
             if (exn[0] === Unify) {
               var match$10 = exn[1];
               if (match$10) {
@@ -71718,7 +71718,7 @@ function type_classes(define_class, approx, kind, env, cls) {
                   }), obj_params, obj_params$prime);
           }
           catch (raw_exn){
-            var exn$1 = Js_exn.internalToOCamlException(raw_exn);
+            var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn);
             if (exn$1[0] === Unify) {
               throw [
                     $$Error$9,
@@ -71738,7 +71738,7 @@ function type_classes(define_class, approx, kind, env, cls) {
             unify$2(env, ty, constr);
           }
           catch (raw_exn$1){
-            var exn$2 = Js_exn.internalToOCamlException(raw_exn$1);
+            var exn$2 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
             if (exn$2[0] === Unify) {
               throw [
                     $$Error$9,
@@ -71765,7 +71765,7 @@ function type_classes(define_class, approx, kind, env, cls) {
                   }), cl_params, cl_params$prime);
           }
           catch (raw_exn$2){
-            var exn$3 = Js_exn.internalToOCamlException(raw_exn$2);
+            var exn$3 = Caml_js_exceptions.internalToOCamlException(raw_exn$2);
             if (exn$3[0] === Unify) {
               throw [
                     $$Error$9,
@@ -71785,7 +71785,7 @@ function type_classes(define_class, approx, kind, env, cls) {
             unify$2(env, ty$1, cl_ty);
           }
           catch (raw_exn$3){
-            var exn$4 = Js_exn.internalToOCamlException(raw_exn$3);
+            var exn$4 = Caml_js_exceptions.internalToOCamlException(raw_exn$3);
             if (exn$4[0] === Unify) {
               var constr$1 = newconstr(/* Pident */Block.__(0, [cl_id]), params);
               throw [
@@ -71806,7 +71806,7 @@ function type_classes(define_class, approx, kind, env, cls) {
             unify$2(env, constructor_type(constr, obj_type), instance(undefined, env, constr_type));
           }
           catch (raw_exn$4){
-            var exn$5 = Js_exn.internalToOCamlException(raw_exn$4);
+            var exn$5 = Caml_js_exceptions.internalToOCamlException(raw_exn$4);
             if (exn$5[0] === Unify) {
               throw [
                     $$Error$9,
@@ -71991,7 +71991,7 @@ function type_classes(define_class, approx, kind, env, cls) {
             collapse_conj_params(env$2, clty[/* cty_params */0]);
           }
           catch (raw_exn){
-            var exn = Js_exn.internalToOCamlException(raw_exn);
+            var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
             if (exn[0] === Unify) {
               throw [
                     $$Error$9,
@@ -72129,7 +72129,7 @@ function type_classes(define_class, approx, kind, env, cls) {
               subtype(env$3, cl_ty, obj_ty)(/* () */0);
             }
             catch (raw_exn){
-              var exn = Js_exn.internalToOCamlException(raw_exn);
+              var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
               if (exn[0] === Subtype) {
                 throw [
                       $$Error$7,
@@ -74032,7 +74032,7 @@ function merge_constraint(initial_env, loc, sg, constr) {
           ];
   }
   catch (raw_exn){
-    var exn$2 = Js_exn.internalToOCamlException(raw_exn);
+    var exn$2 = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn$2[0] === $$Error$5) {
       throw [
             $$Error$10,
@@ -75383,7 +75383,7 @@ function check_recmodule_inclusion(env, bindings) {
           coercion = modtypes$1(env$1, mty_actual$prime, mty_decl$prime);
         }
         catch (raw_exn){
-          var exn = Js_exn.internalToOCamlException(raw_exn);
+          var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
           if (exn[0] === $$Error$5) {
             throw [
                   $$Error$10,
@@ -75574,7 +75574,7 @@ function package_subtype$1(env, p1, nl1, tl1, p2, nl2, tl2) {
     return modtypes$1(env, mty1, mty2) === /* Tcoerce_none */0;
   }
   catch (raw_exn){
-    var exn = Js_exn.internalToOCamlException(raw_exn);
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn[0] === $$Error$5) {
       return false;
     } else {
@@ -75591,7 +75591,7 @@ function wrap_constraint(env, arg, mty, explicit) {
     coercion = modtypes$1(env, arg[/* mod_type */2], mty);
   }
   catch (raw_exn){
-    var exn = Js_exn.internalToOCamlException(raw_exn);
+    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn[0] === $$Error$5) {
       throw [
             $$Error$10,
@@ -75769,7 +75769,7 @@ function type_module$1($staropt$star, sttn, funct_body, anchor, env, smod) {
             coercion = modtypes$1(env, arg[/* mod_type */2], mty_param$1);
           }
           catch (raw_exn){
-            var exn = Js_exn.internalToOCamlException(raw_exn);
+            var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
             if (exn[0] === $$Error$5) {
               throw [
                     $$Error$10,
@@ -76548,7 +76548,7 @@ function type_package$1(env, m, p, nl, tl) {
               return unify$2(env$1, ty, newvar(undefined, /* () */0));
             }
             catch (raw_exn){
-              var exn = Js_exn.internalToOCamlException(raw_exn);
+              var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
               if (exn[0] === Unify) {
                 throw [
                       $$Error$10,

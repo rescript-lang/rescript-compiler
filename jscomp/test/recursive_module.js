@@ -2,8 +2,8 @@
 
 var Mt = require("./mt.js");
 var Curry = require("../../lib/js/curry.js");
-var Js_exn = require("../../lib/js/js_exn.js");
 var Caml_module = require("../../lib/js/caml_module.js");
+var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var suites = /* record */[/* contents : [] */0];
@@ -49,7 +49,7 @@ try {
   tmp = 3;
 }
 catch (raw_exn){
-  var exn = Js_exn.internalToOCamlException(raw_exn);
+  var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
   if (exn[0] === Caml_builtin_exceptions.undefined_recursive_module) {
     tmp = 4;
   } else {

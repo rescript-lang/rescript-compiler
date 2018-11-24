@@ -101,7 +101,7 @@ let create (str : string) : Caml_builtin_exceptions.exception_block =
 
    This is not a problem in `try .. with` since the logic above is not expressible, see more design in [destruct_exn.md]
 *)
-let isCamlExceptionOrOpenVariant e = 
+let caml_is_extension e = 
   if  Obj.magic e = Js.undefined then false 
   else 
     Obj.tag (Obj.repr e) = object_tag  (* nullary exception *)
