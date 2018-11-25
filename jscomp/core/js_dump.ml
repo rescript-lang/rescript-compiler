@@ -111,7 +111,7 @@ let rec iter_lst cxt (f : P.t) ls element inter =
 *)        
 let exp_need_paren  (e : J.expression) =
   match e.expression_desc with
-  | Call ({expression_desc = Fun _; },_,_) -> true
+  | Call ({expression_desc = Fun _ | Raw_js_function _; },_,_) -> true
   (* | Caml_uninitialized_obj _  *)
   | Raw_js_code (_, Exp)
   | Fun _ 
