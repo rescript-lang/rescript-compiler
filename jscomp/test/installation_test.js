@@ -29,7 +29,7 @@ function eq(loc, x, y) {
   return /* () */0;
 }
 
-var match = typeof (__dirname) === "undefined" ? undefined : (__dirname);
+var match = typeof __dirname === "undefined" ? undefined : __dirname;
 
 if (match !== undefined) {
   var root = App_root_finder.find_package_json(match);

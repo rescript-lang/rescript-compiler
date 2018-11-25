@@ -83,7 +83,10 @@ val for_all_from:
   (char -> bool) -> 
   bool 
 
-val for_all : (char -> bool) -> string -> bool
+val for_all : 
+  string -> 
+  (char -> bool) -> 
+  bool
 
 val is_empty : string -> bool
 

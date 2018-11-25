@@ -43,7 +43,7 @@ eq("File \"js_nullable_test.ml\", line 26, characters 7-14", false, false);
 
 eq("File \"js_nullable_test.ml\", line 28, characters 7-14", (f(1, 2) == null), false);
 
-eq("File \"js_nullable_test.ml\", line 30, characters 6-13", ((null) == null), true);
+eq("File \"js_nullable_test.ml\", line 30, characters 6-13", (null == null), true);
 
 eq("File \"js_nullable_test.ml\", line 34, characters 3-10", false, false);
 

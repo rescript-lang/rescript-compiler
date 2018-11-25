@@ -57,7 +57,7 @@ var suites_001 = /* :: */[
       (function (param) {
           return /* Eq */Block.__(0, [
                     true,
-                    true === (true)
+                    true === true
                   ]);
         })
     ],

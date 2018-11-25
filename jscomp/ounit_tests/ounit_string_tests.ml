@@ -115,12 +115,12 @@ let suites =
        Ext_string.(starts_with_and_number "js_fn_run_04" ~offset:6 "run_" = 3) =~ false 
        end; *)
     __LOC__ >:: begin fun _ -> 
-      Ext_string.for_all (function '_' -> true | _ -> false)
-        "____" =~ true;
-      Ext_string.for_all (function '_' -> true | _ -> false)
-        "___-" =~ false;
-      Ext_string.for_all (function '_' -> true | _ -> false)        
-        "" =~ true
+      Ext_string.for_all "____" (function '_' -> true | _ -> false)
+        =~ true;
+      Ext_string.for_all "___-" (function '_' -> true | _ -> false)
+        =~ false;
+      Ext_string.for_all ""  (function '_' -> true | _ -> false)        
+        =~ true
     end;
     __LOC__ >:: begin fun _ -> 
       Ext_string.tail_from "ghsogh" 1 =~ "hsogh";
