@@ -190,6 +190,12 @@ let pp_var_assign cxt f id  =
   P.space f ;
   acxt 
 
+let pp_js_function_params_body f s params =   
+  P.paren_group f 1 (fun _ ->
+      comma_strings f params
+    );
+  P.brace f (fun _ -> P.string f s)
+
 let pp_var_assign_this cxt f id =   
   let cxt = pp_var_assign cxt f id in 
   P.string f L.this;
@@ -615,10 +621,7 @@ and expression_desc cxt (level:int) f x : cxt  =
   | Raw_js_function (s,params) ->   
     P.string f L.function_; 
     P.space f ; 
-    P.paren_group f 1 (fun _ ->
-        comma_strings f params
-      );
-    P.brace f (fun _ -> P.string f s);
+    pp_js_function_params_body f s params;
     cxt 
   | Raw_js_code (s,info) ->
     (match info with
