@@ -23,6 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 open Ast_helper
 
+
 let rec unroll_function_aux 
   (acc : string list)
   (body : Parsetree.expression) : string list * string =
@@ -34,9 +35,20 @@ let rec unroll_function_aux
     Const_string
 #end    
     (block,_)) -> acc, block
-  | Pexp_fun(arg_label,_,{ppat_desc = Ppat_var s},cont)
+  | Pexp_fun(arg_label,_,pat,cont)
     when Ast_compatible.is_arg_label_simple arg_label -> 
-    unroll_function_aux (s.txt::acc) cont
+    (match pat.ppat_desc with 
+    | Ppat_var s -> 
+      unroll_function_aux (s.txt::acc) cont
+    | Ppat_any -> 
+      unroll_function_aux ("_"::acc) cont
+    | Ppat_constraint _ -> 
+      Location.raise_errorf ~loc:body.pexp_loc  
+      "type annotation around bs.raw arguments is invalid, please put in this form: let f : t1 -> t2 = fun%%raw param1 param2 -> .."
+    | _ -> 
+      Location.raise_errorf ~loc:body.pexp_loc  
+      "bs.raw can only be applied to a string or a special function form "
+    )
   | _ -> 
     Location.raise_errorf ~loc:body.pexp_loc  
     "bs.raw can only be applied to a string or a special function form "
@@ -76,15 +88,18 @@ let handle_extension record_as_js_object e (self : Bs_ast_mapper.mapper)
             Ast_compatible.app1 ~loc 
             (Exp.ident ~loc {txt = Ldot (Ast_literal.Lid.js_unsafe, Literals.raw_function);loc})            
             (Ast_compatible.const_exp_string ~loc ( toString {args = [] ; block } ) )
-            
-            
-         | Ppat_var ({txt;}), _ -> 
+         | ppat_desc, _ -> 
+            let txt = 
+              match ppat_desc with 
+              | Ppat_var {txt} -> txt 
+              | Ppat_any -> "_"
+              | _ -> 
+                Location.raise_errorf ~loc "bs.raw can only be applied to a string or a special function form "
+            in 
             let acc, block = unroll_function_aux [txt] body in 
             Ast_compatible.app1 ~loc 
               (Exp.ident ~loc {txt = Ldot (Ast_literal.Lid.js_unsafe, Literals.raw_function);loc})
               (Ast_compatible.const_exp_string ~loc (toString {args = List.rev acc ; block }))
-            
-         | _ -> Location.raise_errorf ~loc "bs.raw can only be applied to a string or a special function form "
          end 
       | _ ->   Ast_util.handle_raw ~check_js_regex:false loc payload
       end
