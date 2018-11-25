@@ -162,7 +162,7 @@ let for_all_from s start  p =
   else unsafe_for_all_range s ~start ~finish:(len - 1) p 
 
 
-let for_all (p : char -> bool) s =   
+let for_all s (p : char -> bool)  =   
   unsafe_for_all_range s ~start:0  ~finish:(String.length s - 1) p 
 
 let is_empty s = String.length s = 0

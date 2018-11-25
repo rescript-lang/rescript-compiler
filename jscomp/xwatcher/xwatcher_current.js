@@ -10,7 +10,7 @@ import * as Node_process from "../../lib/es6/node_process.js";
 import * as Xwatcher_util from "./xwatcher_util.js";
 import * as Child_process from "child_process";
 
-Js_option.getExn(Js_primitive.undefined_to_opt(typeof (__dirname) === "undefined" ? undefined : (__dirname)));
+Js_option.getExn(Js_primitive.undefined_to_opt(typeof __dirname === "undefined" ? undefined : __dirname));
 
 var cwd = Process.cwd();
 

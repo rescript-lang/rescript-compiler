@@ -13628,7 +13628,7 @@ var array = (function (x) {return x;});
 
 var number$1 = (function (x) {return x;});
 
-var $$null = (null);
+var $$null = null;
 
 function regexp$1(loc, pattern, flags) {
   try {
@@ -16072,7 +16072,7 @@ function eq(loc, x, y) {
   return /* () */0;
 }
 
-var match = typeof (__dirname) === "undefined" ? undefined : (__dirname);
+var match = typeof __dirname === "undefined" ? undefined : __dirname;
 
 if (match !== undefined) {
   var f = Path.join(match, "flow_parser_sample.js");

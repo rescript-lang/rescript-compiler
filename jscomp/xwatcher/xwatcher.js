@@ -15,7 +15,7 @@ var events = Xwatcher_util.makeEventObj(/* () */0);
 
 var watchers = /* array */[];
 
-var source_dirname = Js_option.getExn(Js_primitive.undefined_to_opt(typeof (__dirname) === "undefined" ? undefined : (__dirname)));
+var source_dirname = Js_option.getExn(Js_primitive.undefined_to_opt(typeof __dirname === "undefined" ? undefined : __dirname));
 
 var bsb = Path.join(source_dirname, "bsb.exe");
 

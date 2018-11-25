@@ -95,7 +95,12 @@ let rec iter_lst cxt (f : P.t) ls element inter =
     inter f; 
     iter_lst acxt f r element inter
 
-
+let raw_snippet_exp_simple_enough (s : string) =
+  Ext_string.for_all s (fun c -> 
+  match c with 
+  | 'a' .. 'z' | 'A' .. 'Z' | '_' -> true 
+  | _ -> false
+  )
 (* Parentheses are required when the expression
    starts syntactically with "{" or "function"
    TODO:  be more conservative, since Google Closure will handle
@@ -618,9 +623,13 @@ and expression_desc cxt (level:int) f x : cxt  =
   | Raw_js_code (s,info) ->
     (match info with
      | Exp ->
-       P.string f L.lparen;
-       P.string f s ;
-       P.string f L.rparen;
+       if raw_snippet_exp_simple_enough s then 
+         P.string f s        
+       else begin 
+         P.string f L.lparen;
+         P.string f s ;
+         P.string f L.rparen;
+       end;
        cxt
      | Stmt ->
        P.newline f  ;

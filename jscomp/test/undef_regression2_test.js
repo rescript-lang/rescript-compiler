@@ -39,12 +39,12 @@ function ok(loc, x) {
   return /* () */0;
 }
 
-var match = typeof (___undefined_value) === "undefined" ? undefined : (___undefined_value);
+var match = typeof ___undefined_value === "undefined" ? undefined : ___undefined_value;
 
 var a = match !== undefined ? 2 : 1;
 
 function test(param) {
-  var match = typeof (__DEV__) === "undefined" ? undefined : (__DEV__);
+  var match = typeof __DEV__ === "undefined" ? undefined : __DEV__;
   if (match !== undefined) {
     console.log("dev mode");
     return /* () */0;
@@ -55,7 +55,7 @@ function test(param) {
 }
 
 function test2(param) {
-  var match = typeof (__filename) === "undefined" ? undefined : (__filename);
+  var match = typeof __filename === "undefined" ? undefined : __filename;
   if (match !== undefined) {
     console.log(match);
     return /* () */0;
@@ -66,7 +66,7 @@ function test2(param) {
 }
 
 function test3(param) {
-  if (Js_primitive.undefined_to_opt(typeof (__DEV__) === "undefined" ? undefined : (__DEV__)) === undefined) {
+  if (Js_primitive.undefined_to_opt(typeof __DEV__ === "undefined" ? undefined : __DEV__) === undefined) {
     console.log("production mode");
     return /* () */0;
   } else {
