@@ -186,11 +186,11 @@ function eq(loc, x, y) {
 }
 
 try {
-  Curry._1(function (a){throw 2}, /* () */0);
+  (function (_){throw 2}(/* () */0));
 }
 catch (raw_e$2){
   var e = Caml_js_exceptions.internalToOCamlException(raw_e$2);
-  eq("File \"exception_raise_test.ml\", line 135, characters 7-14", Caml_js_exceptions.caml_as_js_exn(e) !== undefined, true);
+  eq("File \"exception_raise_test.ml\", line 131, characters 7-14", Caml_js_exceptions.caml_as_js_exn(e) !== undefined, true);
 }
 
 try {
@@ -198,8 +198,10 @@ try {
 }
 catch (raw_e$3){
   var e$1 = Caml_js_exceptions.internalToOCamlException(raw_e$3);
-  eq("File \"exception_raise_test.ml\", line 142, characters 7-14", Caml_js_exceptions.caml_as_js_exn(e$1) !== undefined, false);
+  eq("File \"exception_raise_test.ml\", line 138, characters 7-14", Caml_js_exceptions.caml_as_js_exn(e$1) !== undefined, false);
 }
+
+eq("File \"exception_raise_test.ml\", line 141, characters 5-12", function (a,b,c,_){return a + b + c }(1, 2, 3, 4), 6);
 
 Mt.from_pair_suites("exception_raise_test.ml", suites[0]);
 

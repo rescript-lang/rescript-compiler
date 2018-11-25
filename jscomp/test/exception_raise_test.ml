@@ -124,22 +124,19 @@ let suites = ref Mt.[
 let test_id = ref 0
 let eq loc x y = Mt.eq_suites ~test_id ~suites loc x y 
 
-(*-FIXME
-  - {[fun%raw _ -> {|...|}]}
-  - The curry runtime should not be here..
-*)
 let () = 
-  try (fun%raw a -> {|throw 2|} : unit -> unit ) ()
+  try (fun%raw _ -> {|throw 2|} : unit -> unit ) ()
   with 
   e -> 
     eq __LOC__ (Js.Exn.asJsExn e <> None) true
 
 
-    let () = 
+let () = 
   try raise Not_found
   with 
   e -> 
     eq __LOC__ (Js.Exn.asJsExn e <> None) false
 
-
+let () = 
+  eq __LOC__ ((fun%raw  a b c _ -> {|return a + b + c |} : _ -> _ -> _ -> _ -> _ ) 1 2 3 4) 6
 ;; Mt.from_pair_suites __FILE__ !suites
