@@ -124,9 +124,6 @@ let suites = ref Mt.[
 let test_id = ref 0
 let eq loc x y = Mt.eq_suites ~test_id ~suites loc x y 
 
-(*-FIXME
-  - The curry runtime should not be here..
-*)
 let () = 
   try (fun%raw _ -> {|throw 2|} : unit -> unit ) ()
   with 
@@ -134,7 +131,7 @@ let () =
     eq __LOC__ (Js.Exn.asJsExn e <> None) true
 
 
-    let () = 
+let () = 
   try raise Not_found
   with 
   e -> 
