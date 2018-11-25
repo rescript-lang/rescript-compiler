@@ -1,7 +1,7 @@
 'use strict';
 
 
-var sum = function (a,b){ 
+function sum (a,b){ 
   return a + b
 };
 
@@ -15,7 +15,7 @@ var b = f(1);
 
 var c = f(2);
 
-var forIn = function (o,foo){
+function forIn (o,foo){
   for (var i in o){
     foo(o)
   }
@@ -43,7 +43,7 @@ forIn({
         return /* () */0;
       }));
 
-var f3 = function (){return true};
+function f3 (){return true};
 
 var bbbb = f3();
 

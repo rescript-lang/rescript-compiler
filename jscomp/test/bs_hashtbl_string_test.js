@@ -16,7 +16,7 @@ function hash_string(s) {
   return Caml_hash_primitive.caml_hash_final_mix(Caml_hash_primitive.caml_hash_mix_string(0, s));
 }
 
-var hashString = function (str){ {
+function hashString (str){ 
                                               var hash = 5381,
                                               i    = str.length | 0;
 
@@ -24,7 +24,7 @@ var hashString = function (str){ {
                                               hash = (hash * 33) ^ str.charCodeAt(--i);
                                               }
                                               return hash
-                                              }
+                                              
                                             };
 
 var $$String = Belt_Id.hashable(Hashtbl.hash, (function (x, y) {
