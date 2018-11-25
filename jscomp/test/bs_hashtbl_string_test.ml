@@ -6,7 +6,7 @@ external final_mix : seed -> seed = "caml_hash_final_mix"
 let hash_string  s =
   final_mix (caml_hash_mix_string 0 s)
 
-let hashString : string -> int  = fun%raw (str) -> {| {
+let hashString : string -> int  = fun%raw (str) -> {| 
                                               var hash = 5381,
                                               i    = str.length | 0;
 
@@ -14,7 +14,7 @@ let hashString : string -> int  = fun%raw (str) -> {| {
                                               hash = (hash * 33) ^ str.charCodeAt(--i);
                                               }
                                               return hash
-                                              }
+                                              
                                             |}
 
 module String =

@@ -190,6 +190,12 @@ let pp_var_assign cxt f id  =
   P.space f ;
   acxt 
 
+let pp_js_function_params_body f s params =   
+  P.paren_group f 1 (fun _ ->
+      comma_strings f params
+    );
+  P.brace f (fun _ -> P.string f s)
+
 let pp_var_assign_this cxt f id =   
   let cxt = pp_var_assign cxt f id in 
   P.string f L.this;
@@ -615,10 +621,7 @@ and expression_desc cxt (level:int) f x : cxt  =
   | Raw_js_function (s,params) ->   
     P.string f L.function_; 
     P.space f ; 
-    P.paren_group f 1 (fun _ ->
-        comma_strings f params
-      );
-    P.brace f (fun _ -> P.string f s);
+    pp_js_function_params_body f s params;
     cxt 
   | Raw_js_code (s,info) ->
     (match info with
@@ -999,11 +1002,19 @@ and variable_declaration top cxt f
       (* Make sure parens are added correctly *)
       statement_desc top cxt f (J.Exp e)
     | _ ->
-      match e, top  with
-      | {expression_desc = Fun (method_, params, b, env ); comment = _}, _ ->
+      match e.expression_desc, top  with
+      | Fun (method_, params, b, env ), _ ->
         pp_function method_ cxt f
           ~name:(if top then Name_top name else Name_non_top name)
-          false params b env
+          false params b env      
+      | Raw_js_function(s,params), true ->     
+        P.string f L.function_;             
+        P.space f ; 
+        let acxt = Ext_pp_scope.ident cxt f name in 
+        P.space f ; 
+        pp_js_function_params_body f s params;
+        semi f;
+        acxt 
       | _, _ ->
         let cxt = pp_var_assign cxt f name in 
         let cxt = expression 1 cxt f e in
