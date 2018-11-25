@@ -22,9 +22,20 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** This module replaced camlinternalMod completely *)
+(** This module replaced camlinternalMod completely. 
+  Note we can replace {!CamlinternalMod} completely, but it is not replaced 
+  due to we believe this is an even low level dependency
+*)
 
-type shape = CamlinternalMod.shape
+
+type shape = 
+   | Function
+   | Lazy
+   | Class
+   | Module of shape array
+   | Value of Obj.t
+(* ATTENTION: check across versions *)
+
 (** Note that we have to provide a drop in replacement, since compiler internally will
     spit out ("CamlinternalMod".[init_mod|update_mod] unless we intercept it 
     in the lambda layer

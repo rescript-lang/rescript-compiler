@@ -26,13 +26,16 @@
 
 
 
-(** *)
+
+(* the same as Lexing *)
+type lex_tables 
+type lexbuf
 
 val fail : unit -> 'a 
 (* export to avoid it getting shaked *)
 val caml_lex_engine : 
-  Lexing.lex_tables -> int -> Lexing.lexbuf -> int
+  lex_tables -> int -> lexbuf -> int
 
 
 val caml_new_lex_engine : 
-  Lexing.lex_tables -> int -> Lexing.lexbuf -> int
+  lex_tables -> int -> lexbuf -> int

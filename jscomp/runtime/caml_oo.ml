@@ -30,6 +30,8 @@
 
 
 
+type obj
+type closure 
 
 (** *)
 
@@ -43,13 +45,13 @@
 let caml_methods_cache = 
     Array.make 1000 0 
 
-external get_methods : CamlinternalOO.obj -> CamlinternalOO.closure array =
+external get_methods : obj -> closure array =
   "%field0"
 
 
 let caml_get_public_method 
-    (obj : CamlinternalOO.obj) 
-    (tag : int) (cacheid  : int) : CamlinternalOO.closure =
+    (obj : obj) 
+    (tag : int) (cacheid  : int) : closure =
   let meths = get_methods obj in
   let offs =  caml_methods_cache.(cacheid) in
   if (Bs_obj.magic meths.(offs) : int) = tag then meths.(offs - 1)

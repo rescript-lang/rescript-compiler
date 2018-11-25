@@ -165,17 +165,6 @@ end
 
 
 
-
-module Lexing : sig 
-  type lex_tables
-  type lexbuf
-end 
-
-module Parsing : sig 
-  type parse_tables 
-  type parser_env
-end 
-
 module Int64 : sig 
   external of_int : int -> int64 = "%int64_of_int"
   external of_nativeint : nativeint -> int64 = "%int64_of_nativeint"
@@ -192,29 +181,8 @@ module Oo : sig
   external id : < .. > -> int = "%field1"
 end 
 
-module Printexc : sig 
-  type raw_backtrace_slot
-  type backtrace_slot
-end 
 
-module Gc : sig 
- type stat
- type control
-end 
 
-module CamlinternalOO : sig 
-  type obj
-  type closure
-end 
-
-module CamlinternalMod : sig 
-  type shape =
-    | Function
-    | Lazy
-    | Class
-    | Module of shape array
-    | Value of Obj.t
-end 
 
 (* We should give it a name like FloatRT to avoid occasional shadowing *)
 module FloatRT : sig 

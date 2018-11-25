@@ -25,12 +25,12 @@
 
 
 
-
+type (*Gc.*)control
 
 let caml_gc_counters : unit -> (float * float * float) = fun () -> (0.,0.,0.)
 
  
-let caml_gc_set : Gc.control -> unit = fun _ -> ();;
+let caml_gc_set : control -> unit = fun _ -> ();;
 
 let caml_gc_minor : unit -> unit = fun _ -> ();;
 

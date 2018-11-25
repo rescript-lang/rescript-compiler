@@ -25,7 +25,8 @@
 
 
 
-
+type lex_tables 
+type lexbuf
 
 (** *)
 
@@ -348,12 +349,12 @@ function $$caml_new_lex_engine(tbl, start_state, lexbuf) {
 }
 |}]
 
-external caml_lex_engine : Lexing.lex_tables -> int -> Lexing.lexbuf -> int =
+external caml_lex_engine : lex_tables -> int -> lexbuf -> int =
   "$$caml_lex_engine"
 [@@bs.val ] 
 (* [@@bs.local] *)
 
-external caml_new_lex_engine : Lexing.lex_tables -> int -> Lexing.lexbuf -> int
+external caml_new_lex_engine : lex_tables -> int -> lexbuf -> int
   = "$$caml_new_lex_engine"
 [@@bs.val ]
  (* [@@bs.local] *)
