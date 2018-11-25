@@ -29,5 +29,7 @@
 
 
 (** *)
+type obj
+type closure 
 
-val caml_get_public_method : CamlinternalOO.obj -> int -> int -> CamlinternalOO.closure
+val caml_get_public_method : obj -> int -> int -> closure

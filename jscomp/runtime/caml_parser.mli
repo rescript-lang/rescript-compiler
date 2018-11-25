@@ -26,9 +26,11 @@
 
 
 (** *)
+type parse_tables 
+type parser_env
 
 val  caml_parse_engine :     
-  Parsing.parse_tables -> Parsing.parser_env -> 
+  parse_tables -> parser_env -> 
   Obj.t (* Parsing.parser_input *) -> Obj.t -> 
   (* parser_output *)  Obj.t
 

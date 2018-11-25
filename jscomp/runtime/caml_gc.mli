@@ -24,10 +24,11 @@
 
 
 
+type control
 
 val caml_gc_counters : unit -> float * float * float
 
-val caml_gc_set : Gc.control -> unit
+val caml_gc_set : control -> unit
 val caml_gc_minor : unit -> unit
 val caml_gc_major_slice : int -> int
 val caml_gc_major : unit -> unit
