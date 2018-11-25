@@ -22,6 +22,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-let not_implemented  s = 
-  Js_exn.raiseError (s ^ " not implemented by BuckleScript yet\n") 
+let not_implemented  = fun%raw s -> {|
+  throw new Error(s + " not implemented by BuckleScript yet\n")
+|}
+  
 

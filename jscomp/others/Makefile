@@ -5,7 +5,7 @@ COMPILER=../../lib/bsc.exe
 MAP_FILES= node belt
 
 SOURCE_LIST= node_path node_fs node_process dict node_module js_array js_string \
-	js_int js_float\
+	js_int js_float js_exn\
 	js_re js_null js_undefined js_null_undefined \
 	js_typed_array\
 	node_buffer js_types js_json js_obj \

@@ -39,7 +39,13 @@
 these types are not used by normal users
 *)
 module MapperRt = Js_mapperRt
-module Internal = Js_internal
+
+module Internal = struct 
+  type (-'obj, +'a) meth_callback
+  type (-'arg, + 'result) meth
+  type (-'arg, + 'result) fn 
+  (** Js uncurried function *)
+end
 
 (* {2 Types for JS objects} *)
 

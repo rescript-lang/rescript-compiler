@@ -1,13 +1,13 @@
 caml_array.cmj: caml_builtin_exceptions.cmj
-caml_backtrace.cmj: caml_builtin_exceptions.cmj
 caml_basic.cmj: js_primitive.cmj
 caml_bytes.cmj: caml_builtin_exceptions.cmj
-caml_format.cmj: curry.cmj caml_int32.cmj caml_int64.cmj caml_utils.cmj caml_builtin_exceptions.cmj
+caml_format.cmj: caml_int32.cmj caml_int64.cmj caml_utils.cmj caml_builtin_exceptions.cmj
 caml_hash.cmj: caml_queue.cmj caml_hash_primitive.cmj caml_builtin_exceptions.cmj
 caml_hash_primitive.cmj: caml_int32.cmj
 caml_int32.cmj: caml_builtin_exceptions.cmj
 caml_int64.cmj: caml_int32.cmj caml_utils.cmj caml_primitive.cmj caml_builtin_exceptions.cmj
 caml_io.cmj: curry.cmj caml_builtin_exceptions.cmj
+caml_js_exceptions.cmj: js_primitive.cmj caml_exceptions.cmj
 caml_lexer.cmj: caml_builtin_exceptions.cmj
 caml_module.cmj: caml_obj.cmj caml_builtin_exceptions.cmj
 caml_obj.cmj: block.cmj caml_primitive.cmj caml_builtin_exceptions.cmj
@@ -17,6 +17,3 @@ caml_string.cmj: caml_builtin_exceptions.cmj
 caml_sys.cmj: caml_builtin_exceptions.cmj
 caml_weak.cmj: caml_obj.cmj caml_array.cmj js_primitive.cmj
 curry.cmj: caml_array.cmj
-js_exn.cmj: caml_exceptions.cmj
-js_null.cmj: js_primitive.cmj
-js_undefined.cmj: js_primitive.cmj

@@ -6,8 +6,9 @@ js_array.cmj :
 js_string.cmj : js_re.cmi js_array.cmj
 js_int.cmj :
 js_float.cmj :
-js_null.cmj : js_null.cmi
-js_undefined.cmj : js_undefined.cmi
+js_exn.cmj : js_exn.cmi
+js_null.cmj : js_exn.cmj js_null.cmi
+js_undefined.cmj : js_exn.cmj js_undefined.cmi
 js_null_undefined.cmj : js_null_undefined.cmi
 js_typed_array.cmj :
 node_buffer.cmj : node.cmj
@@ -17,7 +18,7 @@ js_json.cmj : js_types.cmj js_string.cmj js_dict.cmj js_array.cmj \
 js_obj.cmj :
 js_vector.cmj : js_array.cmj js_vector.cmi
 js_list.cmj : js_vector.cmj js_list.cmi
-js_option.cmj : js_option.cmi
+js_option.cmj : js_exn.cmj js_option.cmi
 js_console.cmj :
 js_result.cmj : js_result.cmi
 js_mapperRt.cmj : js_mapperRt.cmi
@@ -103,6 +104,7 @@ belt_HashMapString.cmj : belt_internalBucketsType.cmj \
     belt_internalBuckets.cmj belt_Array.cmj belt_HashMapString.cmi
 belt_Debug.cmj :
 node_process.cmi : js_dict.cmi
+js_exn.cmi :
 js_re.cmi :
 js_null.cmi :
 js_undefined.cmi :

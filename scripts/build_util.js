@@ -86,9 +86,7 @@ function install() {
 		var format_file = path.parse(file)
 		var special_files = [
 			'js',
-			'js_unsafe',
-			'js_internal',
-			'js_exn'
+			'js_unsafe'
 		]
 		var installed_fmt = ['.cmt', '.cmti', '.cmj']
 		if (

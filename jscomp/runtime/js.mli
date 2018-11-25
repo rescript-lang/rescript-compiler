@@ -45,7 +45,11 @@
 
 (**/**)
 module MapperRt = Js_mapperRt
-module Internal = Js_internal
+module Internal : sig 
+  type (-'obj, +'a) meth_callback
+  type (-'arg, + 'result) meth
+  type (-'arg, + 'result) fn 
+end
 (**/**)
 
 (** Types for JS objects *)

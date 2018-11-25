@@ -12,9 +12,9 @@ OTHERS= caml_array caml_string caml_bytes\
 	caml_int32 caml_gc \
 	js_primitive caml_basic caml_oo curry caml_oo_curry caml_module \
 	caml_missing_polyfill\
-	bs_string js_exn js_nativeint js_int64 \
+	bs_string  js_nativeint js_int64 \
 
-SOURCE_LIST= $(OTHERS) bs_obj caml_builtin_exceptions  block  js js_unsafe js_internal caml_primitive
+SOURCE_LIST= $(OTHERS) bs_obj caml_builtin_exceptions  block  js js_unsafe  caml_primitive
 
 
 caml_oo.cmj : caml_array.cmj
@@ -31,10 +31,10 @@ bs_obj.cmj: js.cmi
 # or we can do a post-processing to add missing cmj dependency manually
 js_exn.cmj caml_js_exceptions.cmj : caml_exceptions.cmj
 $(addsuffix .cmj, $(OTHERS)): caml_builtin_exceptions.cmj  block.cmj js.cmj js_unsafe.cmj caml_primitive.cmj
-$(addsuffix .cmj, $(OTHERS)) caml_builtin_exceptions.cmj  block.cmj js.cmj js_unsafe.cmj : js_internal.cmi 
+
 ## since we use ppx
 $(addsuffix .cmi, $(OTHERS)): js.cmi js_unsafe.cmj js_unsafe.cmi js.cmj
-$(addsuffix .cmi, $(OTHERS)) js.cmi js_unsafe.cmj js_unsafe.cmi js.cmj js_internal.cmj : js_internal.cmi
+
 
 
 RUNTIME := $(addsuffix .cmj, $(SOURCE_LIST)) $(addsuffix .cmi, $(SOURCE_LIST))
