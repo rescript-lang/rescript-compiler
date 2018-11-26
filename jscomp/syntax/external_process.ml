@@ -295,7 +295,7 @@ let process_external_attributes
                 *)
                 | scopes ->  { st with scopes = scopes }
               end
-            | "bs.splice" -> {st with splice = true}
+            | "bs.splice" | "bs.variadic" -> {st with splice = true}
             | "bs.send" ->
               { st with val_send = name_from_payload_or_prim ~loc payload}
             | "bs.send.pipe"

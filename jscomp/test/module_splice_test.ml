@@ -8,7 +8,7 @@ let eq loc (x, y) =
 
 
 external joinClasses : int array  -> int = "./joinClasses"
-  [@@bs.module] [@@bs.splice]
+  [@@bs.module] [@@bs.variadic]
 
 
 let a =
