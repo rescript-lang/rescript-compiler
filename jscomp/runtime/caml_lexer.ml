@@ -187,9 +187,11 @@ let caml_lex_engine_aux : lex_tables -> int -> lexbuf -> exn -> int = fun%raw tb
     }
 |}
 
+let empty_token_lit = "lexing: empty token"
+
 let caml_lex_engine : lex_tables -> int -> lexbuf -> int =
     fun tbls i buf -> 
-    caml_lex_engine_aux tbls i buf (Failure "lexing: empty token")
+    caml_lex_engine_aux tbls i buf (Failure empty_token_lit)
 
 [%%bs.raw{|
 
@@ -238,14 +240,18 @@ function caml_lex_run_tag(s, i, mem) {
             mem[dst] = mem[src];
     }
 }
-/**
+|}]
+
+(**
  * external c_new_engine : lex_tables -> int -> lexbuf -> int = "caml_new_lex_engine"
  * @param tbl
  * @param start_state
  * @param lexbuf
  * @returns {any}
- */
-function $$caml_new_lex_engine(tbl, start_state, lexbuf, exn) {
+ *)
+
+
+let caml_new_lex_engine_aux : lex_tables -> int -> lexbuf -> exn -> int= fun%raw tbl start_state lexbuf exn -> {|
     // Lexing.lexbuf
     var lex_buffer = 1;
     var lex_buffer_len = 2;
@@ -355,11 +361,11 @@ function $$caml_new_lex_engine(tbl, start_state, lexbuf, exn) {
                 lexbuf[lex_eof_reached] = 0;
         }
     }
-}
-|}]
+|}
 
 
-external caml_new_lex_engine : lex_tables -> int -> lexbuf -> int
-  = "$$caml_new_lex_engine"
-[@@bs.val ]
- (* [@@bs.local] *)
+
+let caml_new_lex_engine : lex_tables -> int -> lexbuf -> int
+  = fun tbl i buf -> 
+caml_new_lex_engine_aux tbl i buf (Failure empty_token_lit)
+
