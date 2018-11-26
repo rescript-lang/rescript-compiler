@@ -37,8 +37,7 @@ libs:
 # ATTENTION: syncup build_util.install for windows
 install:
 	@echo "Installation"
-	cp $(RUNTIME)/*.cmt* $(RUNTIME)/*.cmj* $(RUNTIME)/js.ml  $(RUNTIME)/js.cmi \
-	$(RUNTIME)/js_unsafe.cmi  \
+	cp  $(RUNTIME)/js.ml  $(RUNTIME)/js.cm* $(RUNTIME)/js_unsafe.cmi \
 	$(STDLIB)/*.cm* $(STDLIB)/*.ml $(STDLIB)/*.mli \
 	$(OTHERS)/*.ml $(OTHERS)/*.mli  $(OTHERS)/*.cm* $(DEST)
 
