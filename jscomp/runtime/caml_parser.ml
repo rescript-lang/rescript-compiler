@@ -94,7 +94,9 @@ var Result = {
     CALL_ERROR_FUNCTION: 5
 };
 var PARSER_TRACE = false;
-/**
+|}]
+
+(**
  * external parse_engine : parse_tables -> parser_env -> parser_input -> Obj.t -> parser_output
  * parsing.ml
  *
@@ -148,8 +150,13 @@ var PARSER_TRACE = false;
  * @param cmd
  * @param arg
  * @returns {number}
- */
-function $$caml_parse_engine(tables /* parser_table */, env /* parser_env */, cmd /* parser_input*/, arg /* Obj.t*/) {
+ *)
+
+type parse_tables 
+type parser_env 
+
+
+let caml_parse_engine : parse_tables -> parser_env -> (*Parsing.parser_input *)Obj.t -> Obj.t -> Obj.t = fun%raw tables (* parser_table *) env (* parser_env *) cmd (* parser_input*) arg (* Obj.t*) -> {|
     var ERRCODE = 256;
     //var START = 0;
     //var TOKEN_READ = 1;
@@ -371,36 +378,17 @@ function $$caml_parse_engine(tables /* parser_table */, env /* parser_env */, cm
     env[env_state] = state;
     env[env_errflag] = errflag;
     return res;
-}
+|} 
 
-/**
+
+(**
  * external set_trace: bool -> bool = "caml_set_parser_trace"
  * parsing.ml
  * @param {boolean}
  * @returns {boolean}
- */
-function $$caml_set_parser_trace(v) {
+ *)
+let caml_set_parser_trace : bool -> bool = fun%raw v ->  {|
     var old = PARSER_TRACE;
     PARSER_TRACE = v;
     return old;
-}
-
-|}]
-type parse_tables 
-type parser_env 
-
-external caml_parse_engine :     
-  parse_tables -> 
-  parser_env -> 
-  (* Parsing.parser_input *) Obj.t ->
-   Obj.t -> 
-   (* parser_output *) Obj.t = "$$caml_parse_engine"
-[@@bs.val ]
-(* [@@bs.local] *)
-
-
-
-external caml_set_parser_trace: bool -> bool
-    = "$$caml_set_parser_trace"
-[@@bs.val ]
-(* [@@bs.local] *)
+|}
