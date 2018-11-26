@@ -35,7 +35,7 @@ type lexbuf
 (* @param s *)
 (* @returns {any[]} *)
 
-let fail () = raise (Failure "lexing: empty token")
+
 [%%bs.raw{| 
 
 /***********************************************************************/
@@ -66,7 +66,9 @@ function caml_lex_array(s) {
         a[i] = (s.charCodeAt(2 * i) | (s.charCodeAt(2 * i + 1) << 8)) << 16 >> 16;
     return a;
 }
-/**
+|}]
+
+(**
  * external c_engine  : lex_tables -> int -> lexbuf -> int
  * lexing.ml
  * type lex_tables = {
@@ -101,8 +103,8 @@ function caml_lex_array(s) {
  * @param start_state
  * @param lexbuf
  * @returns {any}
- */
-function $$caml_lex_engine(tbl, start_state, lexbuf) {
+ *)
+let caml_lex_engine_aux : lex_tables -> int -> lexbuf -> exn -> int = fun%raw tbl start_state lexbuf exn -> {|
     // Lexing.lexbuf
     var lex_buffer = 1;
     var lex_buffer_len = 2;
@@ -171,7 +173,7 @@ function $$caml_lex_engine(tbl, start_state, lexbuf) {
         if (state < 0) {
             lexbuf[lex_curr_pos] = lexbuf[lex_last_pos];
             if (lexbuf[lex_last_action] == -1)
-                fail();
+                throw exn
             else
                 return lexbuf[lex_last_action];
         }
@@ -183,7 +185,14 @@ function $$caml_lex_engine(tbl, start_state, lexbuf) {
                 lexbuf[lex_eof_reached] = 0;
         }
     }
-}
+|}
+
+let caml_lex_engine : lex_tables -> int -> lexbuf -> int =
+    fun tbls i buf -> 
+    caml_lex_engine_aux tbls i buf (Failure "lexing: empty token")
+
+[%%bs.raw{|
+
 
 /***********************************************/
 /* New lexer engine, with memory of positions  */
@@ -236,7 +245,7 @@ function caml_lex_run_tag(s, i, mem) {
  * @param lexbuf
  * @returns {any}
  */
-function $$caml_new_lex_engine(tbl, start_state, lexbuf) {
+function $$caml_new_lex_engine(tbl, start_state, lexbuf, exn) {
     // Lexing.lexbuf
     var lex_buffer = 1;
     var lex_buffer_len = 2;
@@ -326,7 +335,7 @@ function $$caml_new_lex_engine(tbl, start_state, lexbuf) {
         if (state < 0) {
             lexbuf[lex_curr_pos] = lexbuf[lex_last_pos];
             if (lexbuf[lex_last_action] == -1)
-                fail();
+                throw exn;
             else
                 return lexbuf[lex_last_action];
         }
@@ -349,10 +358,6 @@ function $$caml_new_lex_engine(tbl, start_state, lexbuf) {
 }
 |}]
 
-external caml_lex_engine : lex_tables -> int -> lexbuf -> int =
-  "$$caml_lex_engine"
-[@@bs.val ] 
-(* [@@bs.local] *)
 
 external caml_new_lex_engine : lex_tables -> int -> lexbuf -> int
   = "$$caml_new_lex_engine"
