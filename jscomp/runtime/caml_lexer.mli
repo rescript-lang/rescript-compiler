@@ -31,8 +31,6 @@
 type lex_tables 
 type lexbuf
 
-val fail : unit -> 'a 
-(* export to avoid it getting shaked *)
 val caml_lex_engine : 
   lex_tables -> int -> lexbuf -> int
 
