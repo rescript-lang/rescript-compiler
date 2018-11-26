@@ -1,50 +1,113 @@
-#!/usr/bin/env ocaml
+(* syntax rewrite rules
+  explained 
+  [@bs] --> 
+  (unit -> 'a0 [@bs]) --> ([`Arity_0], 'a0) fn 
+  ('a0 -> 'a1 [@bs])  --> ([`Arity_1 of 'a0], 'a1) fn 
+  ('a0 -> 'a1 -> 'a2 [@bs]) --> ([`Arity_2 of ('a0 * 'a1), 'a2 ]) fn
+  ...
+
+
+  [@bs.this]
+  ('a0 -> 'a1 [@bs.this]) --> ([`Arity_1 of 'a0], 'a1) meth_callback
+  ('a0 -> 'a1 -> 'a2 [@bs.this]) --> ([`Arity_2 of ('a0 *'a1)], 'a2) meth_callback
+  ('a0 -> 'a1 -> 'a2 -> 'a3 [@bs.this]) --> ([`Arity_3 of ('a0 * 'a1 * 'a2 ), 'a3 ]) meth_callback
+  ...
+
+  [@bs.meth]
+  (unit -> 'a0 [@bs.meth]) --> ([`Arity_0], 'a0) meth
+  ('a0 -> 'a1 [@bs.meth]) --> ([`Arity_1 of 'a0], 'a1) meth
+  ('a0 -> 'a1 -> 'a2 [@bs.meth]) --> ([`Arity_2 of ('a0 * 'a1)], 'a2) meth
+  ...
+
+*)
+let gen_normal arity = 
+  if arity = 0 then  
+    "unit -> 'a0"
+  else  
+    let args = Array.to_list (Array.init (arity + 1) (fun i -> "'a" ^ string_of_int i)) in 
+    String.concat " -> " args  
+
+let gen_bs arity = 
+  if arity = 0 then "([`Arity_0], 'a0) fn"
+  else 
+    Printf.sprintf 
+    "([`Arity_%d of ( %s )], 'a%d) fn"
+    arity
+    (String.concat " * " (Array.to_list (Array.init (arity) (fun i -> "'a" ^ string_of_int i))))
+    arity 
+
+(* no arity = 0 *)
+let gen_bs_this arity =     
+  assert (arity <> 0);  
+  Printf.sprintf 
+    "([`Arity_%d of ( %s )], 'a%d ) meth_callback"
+    arity
+    (String.concat " * " (Array.to_list (Array.init arity (fun i -> "'a" ^ string_of_int i) )))
+    arity 
+
+let gen_bs_meth arity =     
+  if arity = 0 then "([`Arity_0], 'a0) meth"
+  else 
+    Printf.sprintf 
+    "([`Arity_%d of ( %s )], 'a%d) meth"
+    arity 
+    (String.concat " * " (Array.to_list (Array.init arity (fun i -> "'a" ^ string_of_int i))))
+    arity 
 
 let generate_mk arity = 
   let arity_s = string_of_int arity in
-  let fmt = format_of_string {|external fn_mk%s : (%s) -> (%s [@bs]) = "#fn_mk" "%s" |} in
-  if arity = 0 then 
+  let fmt = format_of_string {|external fn_mk%s : (%s) -> (%s) = "#fn_mk" "%s" |} in
+  Printf.sprintf fmt arity_s (gen_normal arity) (gen_bs arity) arity_s
+
+  (* if arity = 0 then 
     let ty = "unit -> 'a0" in
     Printf.sprintf fmt arity_s ty ty  arity_s
   else 
     let args = Array.to_list (Array.init (arity + 1) (fun i -> "'a" ^ string_of_int i)) in 
     let ty = String.concat " -> " args  in 
-    Printf.sprintf fmt arity_s ty ty arity_s 
+    Printf.sprintf fmt arity_s ty ty arity_s  *)
 
 let generate_call_back_mk arity = 
-  let arity_s = string_of_int (arity + 1) in
-  let fmt = format_of_string {|external fn_method%s : (%s) -> (%s [@bs.this]) = "#fn_method" "%s" |} in
-  let args = Array.to_list (Array.init (arity + 1) (fun i -> "'a" ^ string_of_int i)) in 
+  let arity = arity + 1 in 
+  let arity_s = string_of_int arity in
+  let fmt = format_of_string {|external fn_method%s : (%s) -> (%s) = "#fn_method" "%s" |} in
+  Printf.sprintf fmt arity_s (gen_normal arity) (gen_bs_this arity) arity_s
+
+  (* let args = Array.to_list (Array.init (arity + 1) (fun i -> "'a" ^ string_of_int i)) in 
   let ty = String.concat " -> " ("'obj":: args)  in 
-  Printf.sprintf fmt arity_s ty ty arity_s 
+  Printf.sprintf fmt arity_s ty ty arity_s  *)
 
 let generate_run arity = 
-  let arity_s = string_of_int arity in
-  let fmt = format_of_string {|external fn_run%s : (%s [@bs]) -> (%s ) = "#fn_run" "%s" |} in
   if arity = 0 then 
-    let tya = "unit -> 'a0" in
-    let tyb = "'a0" in
-    Printf.sprintf fmt arity_s tya tyb  arity_s
+    {|external fn_run0 : (([`Arity_0], 'a0) fn) ->  'a0  = "#fn_run" "0" |}
+  else  
+    let arity_s = string_of_int arity in
+    let fmt = format_of_string {|external fn_run%s : (%s) -> (%s ) = "#fn_run" "%s" |} in
+    Printf.sprintf fmt arity_s (gen_bs arity) (gen_normal arity) arity_s
+
+  (* 
   else 
     let args = Array.to_list (Array.init (arity + 1) (fun i -> "'a" ^ string_of_int i)) in 
     let ty = String.concat " -> " args  in 
-    Printf.sprintf fmt arity_s ty ty arity_s 
+    Printf.sprintf fmt arity_s ty ty arity_s  *)
 
 let generate_method_run arity = 
-  let arity_s = string_of_int arity in
-  let fmt = format_of_string {|external method_run%s : (%s [@bs.meth]) -> (%s ) = "#method_run" "%s" |} in
   if arity = 0 then 
-    let tya = "unit -> 'a0" in
-    let tyb = "'a0" in
-    Printf.sprintf fmt arity_s tya tyb  arity_s
+    {|external method_run0 : (([`Arity_0], 'a0) meth) -> 'a0 = "#method_run" "0" |}
+  else  
+    let arity_s = string_of_int arity in
+    let fmt = format_of_string {|external method_run%s : (%s) -> (%s ) = "#method_run" "%s" |} in
+    Printf.sprintf 
+      fmt arity_s (gen_bs_meth arity) (gen_normal arity) arity_s
+  (* 
   else 
     let args = Array.to_list (Array.init (arity + 1) (fun i -> "'a" ^ string_of_int i)) in 
     let ty = String.concat " -> " args  in 
-    Printf.sprintf fmt arity_s ty ty arity_s 
+    Printf.sprintf fmt arity_s ty ty arity_s  *)
 
 
 let prelude = {|
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+(* Copyright (C) 2018- Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -70,13 +133,16 @@ let prelude = {|
 
 
 (* Generated by scripts/js_unsafe_gen.ml *)  
-external (!)  : 'a Js.t -> 'a = "#unsafe_downgrade"
 
+
+external (!)  : 'a Js.t -> 'a = "#unsafe_downgrade"
 external debugger : unit -> unit = "#debugger"
 
 external raw_expr : string -> 'a = "#raw_expr"
 external raw_stmt : string -> 'a = "#raw_stmt"
+external raw_function: string ->  'a = "#raw_function"
 external unsafe_downgrade : 'a Js.t -> 'a = "#unsafe_downgrade"
+open Js.Internal
 |}
 
 let () = 
