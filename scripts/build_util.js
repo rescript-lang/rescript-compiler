@@ -85,8 +85,7 @@ function install() {
 	files.forEach(function (file) {
 		var format_file = path.parse(file)
 		var special_files = [
-			'js',
-			'js_unsafe'
+			'js'
 		]
 		var installed_fmt = ['.cmt', '.cmti', '.cmj']
 		if (

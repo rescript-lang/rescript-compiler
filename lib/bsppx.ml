@@ -8715,19 +8715,20 @@ module Lid = struct
   let type_exn : t = Lident "exn" (* use *predef* *)
   (* TODO should be renamed in to {!Js.fn} *)
   (* TODO should be moved into {!Js.t} Later *)
+  let js_internal : t = Ldot (Lident "Js", "Internal")
   let js_fn : t = 
-      Ldot (Ldot (Lident "Js", "Internal"),  "fn")
+      Ldot (js_internal,  "fn")
   let js_meth : t = 
-      Ldot (Ldot (Lident "Js", "Internal") , "meth")
+      Ldot (js_internal , "meth")
   let js_meth_callback : t = 
-      Ldot (Ldot (Lident "Js", "Internal"), "meth_callback")
+      Ldot (js_internal, "meth_callback")
   let js_obj : t = Ldot (Lident "Js", "t") 
   let ignore_id : t = Ldot (Lident "Pervasives", "ignore")
   let js_null  : t = Ldot (Lident "Js", "null")
   let js_undefined : t = Ldot (Lident "Js", "undefined")
   let js_null_undefined : t = Ldot (Lident "Js", "null_undefined")
   let js_re_id : t = Ldot (Ldot (Lident "Js", "Re"), "t")
-  let js_unsafe : t = Lident "Js_unsafe"
+  let js_unsafe : t = js_internal
 end
 
 module No_loc = struct 
