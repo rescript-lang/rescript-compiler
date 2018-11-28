@@ -50,7 +50,7 @@ let caml_string_compare (s1 : string) (s2 : string) : int =
 
 let rec caml_bytes_compare_aux (s1 : bytes) (s2 : bytes) off len def =   
   if off < len then 
-    let a, b = Bytes.unsafe_get s1 off, Bytes.unsafe_get s2 off in  
+    let a, b = Caml_bytes.unsafe_get s1 off, Caml_bytes.unsafe_get s2 off in  
     if a > b then 1
     else if a < b then -1 
     else caml_bytes_compare_aux s1 s2 (off + 1) len def 
@@ -65,7 +65,7 @@ let rec caml_bytes_compare_aux (s1 : bytes) (s2 : bytes) off len def =
   
 *)
 let caml_bytes_compare (s1 : bytes) (s2 : bytes) : int =  
-  let len1, len2 = Bytes.length s1, Bytes.length s2 in 
+  let len1, len2 = Caml_bytes.length s1, Caml_bytes.length s2 in 
   if len1 = len2 then 
     caml_bytes_compare_aux s1 s2 0 len1 0 
   else if len1 < len2 then   
@@ -76,12 +76,12 @@ let caml_bytes_compare (s1 : bytes) (s2 : bytes) : int =
 let rec caml_bytes_equal_aux (s1 : bytes) s2 (off : int) len =      
   if off = len then true 
   else 
-    let a, b = Bytes.unsafe_get s1 off, Bytes.unsafe_get s2 off in  
+    let a, b = Caml_bytes.unsafe_get s1 off, Caml_bytes.unsafe_get s2 off in  
     a = b
     && caml_bytes_equal_aux s1 s2 (off + 1) len 
 
 let caml_bytes_equal (s1 : bytes) (s2 : bytes) : bool = 
-  let len1, len2 = Bytes.length s1, Bytes.length s2 in 
+  let len1, len2 = Caml_bytes.length s1, Caml_bytes.length s2 in 
   len1 = len2 &&
   caml_bytes_equal_aux s1 s2 0 len1 
 

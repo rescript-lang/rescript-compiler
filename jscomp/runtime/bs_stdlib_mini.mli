@@ -67,14 +67,6 @@ external ( /. ) : float -> float -> float = "%divfloat"
 
 
 
-
-
-module Bytes : sig
-  external unsafe_get : bytes -> int -> char = "%bytes_unsafe_get"
-  external unsafe_set : bytes -> int -> char -> unit = "%bytes_unsafe_set"
-  external length : bytes -> int = "%bytes_length"
-end
-
 module Array : sig 
   external unsafe_get : 'a array -> int -> 'a = "%array_unsafe_get"
   external unsafe_set : 'a array -> int -> 'a -> unit = "%array_unsafe_set"
