@@ -77,14 +77,6 @@ external floor : float -> float =  "floor" [@@bs.val] [@@bs.scope "Math"]
 external exp : float -> float =  "exp" [@@bs.val] [@@bs.scope "Math"]
 external sqrt : float -> float =  "sqrt" [@@bs.val] [@@bs.scope "Math"]
 
-type in_channel
-
-type fpclass =
-    FP_normal           (** Normal number, none of the below *)
-  | FP_subnormal        (** Number very close to 0.0, has reduced precision *)
-  | FP_zero             (** Number is 0.0 or -0.0 *)
-  | FP_infinite         (** Number is positive or negative infinity *)
-  | FP_nan              (** Not a number: result of an undefined operation *)
 
 external float : int -> float = "%floatofint"
 

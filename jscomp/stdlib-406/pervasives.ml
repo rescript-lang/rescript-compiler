@@ -229,9 +229,21 @@ type fpclass =
   | FP_zero
   | FP_infinite
   | FP_nan
+#if BS then  
+let classify_float (x : float) : fpclass =   
+  if [%raw{|isFinite|}] x [@bs] then
+    if abs_float x >= 0x1p-1022(* 2.2250738585072014e-308*)  then
+      FP_normal
+    else if x <> 0. then FP_subnormal
+    else FP_zero
+  else
+  if [%raw{|isNaN|}] x [@bs] then
+    FP_nan
+  else FP_infinite  
+#else  
 external classify_float : (float [@unboxed]) -> fpclass =
   "caml_classify_float" "caml_classify_float_unboxed" [@@noalloc]
-
+#end
 (* String and byte sequence operations -- more in modules String and Bytes *)
 
 external string_length : string -> int = "%string_length"

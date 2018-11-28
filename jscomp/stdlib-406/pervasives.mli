@@ -652,9 +652,12 @@ type fpclass =
   | FP_nan              (** Not a number: result of an undefined operation *)
 (** The five classes of floating-point numbers, as determined by
    the {!Pervasives.classify_float} function. *)
-
+#if BS then
+val classify_float : float -> fpclass
+#else
 external classify_float : (float [@unboxed]) -> fpclass =
   "caml_classify_float" "caml_classify_float_unboxed" [@@noalloc]
+#end  
 (** Return the class of the given floating-point number:
    normal, subnormal, zero, infinite, or not a number. *)
 

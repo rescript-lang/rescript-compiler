@@ -24,7 +24,7 @@
 
 
 
-
+type in_channel
 
 
 (** *)

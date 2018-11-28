@@ -28,7 +28,7 @@ caml_primitive.cmj: caml_primitive.cmi
 caml_int64.cmj : caml_obj.cmj
 bs_obj.cmj: js.cmi
 # or we can do a post-processing to add missing cmj dependency manually
-js_exn.cmj caml_js_exceptions.cmj : caml_exceptions.cmj
+caml_js_exceptions.cmj : caml_exceptions.cmj
 $(addsuffix .cmj, $(OTHERS)): caml_builtin_exceptions.cmj  block.cmj js.cmj  caml_primitive.cmj
 
 ## since we use ppx

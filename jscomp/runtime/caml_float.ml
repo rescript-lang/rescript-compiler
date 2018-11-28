@@ -39,7 +39,7 @@ external pow_float : base:float -> exp:float -> float = "Math.pow" [@@bs.val]
 
 let caml_int32_float_of_bits : int32 -> float = fun%raw x -> {|
     return new Float32Array(new Int32Array([x]).buffer)[0] 
-    |}
+|}
   (* let int32 = Int32_array.make [| x |] in
   let float32 = Float32_array.fromBuffer ( Int32_array.buffer int32) in
   Float32_array.unsafe_get float32 0 *)
@@ -49,17 +49,6 @@ let caml_int32_bits_of_float : float -> int32 = fun%raw x -> {|
 |}
   (* let float32 = Float32_array.make [|x|] in
   Int32_array.unsafe_get (Int32_array.fromBuffer (Float32_array.buffer float32)) 0 *)
-
-let caml_classify_float x : fpclass  =
-  if FloatRT.isFinite x then
-    if abs_float x >= 2.2250738585072014e-308  then
-      FP_normal
-    else if x <> 0. then FP_subnormal
-    else FP_zero
-  else
-  if FloatRT.isNaN x then
-    FP_nan
-  else FP_infinite
 
 
 let caml_modf_float (x : float) : float * float =
