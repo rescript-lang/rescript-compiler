@@ -59,7 +59,6 @@ module Lid = struct
   let js_undefined : t = Ldot (Lident "Js", "undefined")
   let js_null_undefined : t = Ldot (Lident "Js", "null_undefined")
   let js_re_id : t = Ldot (Ldot (Lident "Js", "Re"), "t")
-  let js_unsafe : t = js_internal
 end
 
 module No_loc = struct 

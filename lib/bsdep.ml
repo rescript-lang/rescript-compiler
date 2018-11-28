@@ -26710,7 +26710,7 @@ module Lid : sig
   val js_undefined : t
   val js_null_undefined : t 
   val js_re_id : t 
-  val js_unsafe : t 
+  val js_internal : t 
 end
 
 type expression_lit = Parsetree.expression lit 
@@ -26790,7 +26790,6 @@ module Lid = struct
   let js_undefined : t = Ldot (Lident "Js", "undefined")
   let js_null_undefined : t = Ldot (Lident "Js", "null_undefined")
   let js_re_id : t = Ldot (Ldot (Lident "Js", "Re"), "t")
-  let js_unsafe : t = js_internal
 end
 
 module No_loc = struct 
@@ -35559,7 +35558,7 @@ let js_property loc obj (name : string) =
     ((Ast_compatible.app1 ~loc
         (Exp.ident ~loc
            {loc;
-            txt = Ldot (Ast_literal.Lid.js_unsafe, Literals.unsafe_downgrade)})
+            txt = Ldot (Ast_literal.Lid.js_internal, Literals.unsafe_downgrade)})
         obj), 
          
         name
@@ -35596,10 +35595,10 @@ let generic_apply  kind loc
     let txt = 
       match kind with 
       | `Fn | `PropertyFn ->  
-        Longident.Ldot (Ast_literal.Lid.js_unsafe, 
+        Longident.Ldot (Ast_literal.Lid.js_internal, 
                         Literals.fn_run ^ string_of_int arity)
       | `Method -> 
-        Longident.Ldot(Ast_literal.Lid.js_unsafe,
+        Longident.Ldot(Ast_literal.Lid.js_internal,
                        Literals.method_run ^ string_of_int arity
                       ) in 
     Parsetree.Pexp_apply (Exp.ident {txt ; loc}, (Ast_compatible.no_label,fn) :: Ext_list.map args (fun x -> Ast_compatible.no_label,x))
@@ -35727,9 +35726,9 @@ let generic_to_uncurry_exp kind loc (self : Bs_ast_mapper.mapper)  pat body
     let txt = 
       match kind with 
       | `Fn -> 
-        Longident.Ldot ( Ast_literal.Lid.js_unsafe, Literals.fn_mk ^ string_of_int arity)
+        Longident.Ldot ( Ast_literal.Lid.js_internal, Literals.fn_mk ^ string_of_int arity)
       | `Method_callback -> 
-        Longident.Ldot (Ast_literal.Lid.js_unsafe,  Literals.fn_method ^ string_of_int arity) in
+        Longident.Ldot (Ast_literal.Lid.js_internal,  Literals.fn_method ^ string_of_int arity) in
     Parsetree.Pexp_apply (Exp.ident {txt;loc} , [ Ast_compatible.no_label, body])
 
   else 
@@ -35759,7 +35758,7 @@ let handle_debugger loc (payload : Ast_payload.t) =
   match payload with 
   | PStr [] -> 
     Parsetree.Pexp_apply
-      (Exp.ident {txt = Ldot(Ast_literal.Lid.js_unsafe, Literals.debugger ); loc}, 
+      (Exp.ident {txt = Ldot(Ast_literal.Lid.js_internal, Literals.debugger ); loc}, 
        [ Ast_compatible.no_label, Ast_literal.val_unit ~loc ()])
   | _ ->  
     Location.raise_errorf ~loc "bs.debugger does not accept payload"
@@ -35777,7 +35776,7 @@ let handle_raw ~check_js_regex loc payload =
         Parsetree.Pexp_apply (
           Exp.ident {loc; 
                      txt = 
-                       Ldot (Ast_literal.Lid.js_unsafe, 
+                       Ldot (Ast_literal.Lid.js_internal, 
                              Literals.raw_expr)},
           [Ast_compatible.no_label,exp]
         )
@@ -35789,7 +35788,7 @@ let handle_external loc x =
   let raw_exp : Ast_exp.t = 
     Ast_compatible.app1
     (Exp.ident ~loc 
-         {loc; txt = Ldot (Ast_literal.Lid.js_unsafe, 
+         {loc; txt = Ldot (Ast_literal.Lid.js_internal, 
                            Literals.raw_expr)})
       ~loc 
       (Ast_compatible.const_exp_string ~loc x  ~delimiter:Ext_string.empty) in 
@@ -35820,7 +35819,7 @@ let handle_raw_structure loc payload =
       -> 
       let pexp_desc = 
         Parsetree.Pexp_apply(
-          Exp.ident {txt = Ldot (Ast_literal.Lid.js_unsafe,  Literals.raw_stmt); loc},
+          Exp.ident {txt = Ldot (Ast_literal.Lid.js_internal,  Literals.raw_stmt); loc},
           [ Ast_compatible.no_label,exp]) in 
       Ast_helper.Str.eval 
         { exp with pexp_desc }
@@ -38285,7 +38284,7 @@ let handle_extension record_as_js_object e (self : Bs_ast_mapper.mapper)
            (block,_))
            -> 
             Ast_compatible.app1 ~loc 
-            (Exp.ident ~loc {txt = Ldot (Ast_literal.Lid.js_unsafe, Literals.raw_function);loc})            
+            (Exp.ident ~loc {txt = Ldot (Ast_literal.Lid.js_internal, Literals.raw_function);loc})            
             (Ast_compatible.const_exp_string ~loc ( toString {args = [] ; block } ) )
          | ppat_desc, _ -> 
             let txt = 
@@ -38297,7 +38296,7 @@ let handle_extension record_as_js_object e (self : Bs_ast_mapper.mapper)
             in 
             let acc, block = unroll_function_aux [txt] body in 
             Ast_compatible.app1 ~loc 
-              (Exp.ident ~loc {txt = Ldot (Ast_literal.Lid.js_unsafe, Literals.raw_function);loc})
+              (Exp.ident ~loc {txt = Ldot (Ast_literal.Lid.js_internal, Literals.raw_function);loc})
               (Ast_compatible.const_exp_string ~loc (toString {args = List.rev acc ; block }))
          end 
       | _ ->   Ast_util.handle_raw ~check_js_regex:false loc payload
