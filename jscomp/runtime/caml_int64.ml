@@ -285,7 +285,7 @@ let two_ptr_32_dbl = 2. ** 32.
 let two_ptr_63_dbl = 2. ** 63.
 let neg_two_ptr_63 = -. (2. ** 63.)
 
-
+external mod_float : float -> float -> float = "caml_fmod_float"
 (* note that we make sure the const number can acutally be represented
    {[
      (2. ** 63. -. 1. = 2. ** 63.) ;;

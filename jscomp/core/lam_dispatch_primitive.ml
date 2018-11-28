@@ -315,7 +315,7 @@ let translate loc (prim_name : string)
       ->  Js_long.max args      
     | "caml_int32_float_of_bits"
     | "caml_int32_bits_of_float"
-    | "caml_classify_float"
+
     | "caml_modf_float"
     | "caml_ldexp_float"
     | "caml_frexp_float"

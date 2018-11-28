@@ -64,12 +64,7 @@ external ( +. ) : float -> float -> float = "%addfloat"
 external ( -. ) : float -> float -> float = "%subfloat"
 external ( *. ) : float -> float -> float = "%mulfloat"
 external ( /. ) : float -> float -> float = "%divfloat"
-#if OCAML_VERSION =~ "<4.03.0" then
-external mod_float : float -> float -> float = "caml_fmod_float" "fmod" "float"
-#else
-external mod_float : float -> float -> float = "caml_fmod_float" "fmod"
-  [@@unboxed] [@@noalloc]
-#end  
+
 
 external log : float -> float =  "log" [@@bs.val] [@@bs.scope "Math"]
 external ceil : float -> float =  "ceil" [@@bs.val] [@@bs.scope "Math"]
