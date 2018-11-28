@@ -13,8 +13,8 @@ caml_io.cmj : js.cmj bs_string.cmj
 caml_float.cmj : caml_float.cmi
 caml_lexer.cmj : caml_lexer.cmi
 caml_parser.cmj : caml_parser.cmi
-caml_format.cmj : js_nativeint.cmj js_int64.cmj caml_utils.cmj bs_string.cmj \
-    caml_format.cmi
+caml_format.cmj : js_nativeint.cmj js_int64.cmj caml_utils.cmj \
+    caml_float.cmj bs_string.cmj caml_format.cmi
 caml_md5.cmj : bs_string.cmj caml_md5.cmi
 caml_queue.cmj : caml_queue.cmi
 caml_hash_primitive.cmj : bs_string.cmj caml_hash_primitive.cmi

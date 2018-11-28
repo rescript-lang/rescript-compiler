@@ -219,7 +219,7 @@ let rec caml_compare (a : Obj.t) (b : Obj.t) : int =
              (* Some None < Some ..*) 
              -1 
         else if tag_a = 248 (* object/exception *)  then
-          Pervasives.compare (Obj.magic @@ Obj.field a 1 : int) (Obj.magic @@ Obj.field b 1 )
+          Pervasives.compare (Obj.magic (Obj.field a 1) : int) (Obj.magic (Obj.field b 1 ))
         else if tag_a = 251 (* abstract_tag *) then
           raise (Invalid_argument "equal: abstract value")
         else if tag_a <> tag_b then
@@ -312,7 +312,7 @@ let rec caml_equal (a : Obj.t) (b : Obj.t) : bool =
         else if tag_b = 250 then
           caml_equal a (Obj.field b 0)
         else if tag_a = 248 (* object/exception *)  then
-          (Obj.magic @@ Obj.field a 1) ==  (Obj.magic @@ Obj.field b 1 )
+          (Obj.magic  (Obj.field a 1)) ==  (Obj.magic (Obj.field b 1 ))
         else if tag_a = 251 (* abstract_tag *) then
           raise (Invalid_argument "equal: abstract value")
         else if tag_a <> tag_b then

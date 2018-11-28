@@ -71,7 +71,7 @@ let rec mapRevAux f acc ls =
 
 let mapRev f ls = mapRevAux f [] ls 
 
-let rec map f ls = rev @@ mapRevAux f [] ls 
+let rec map f ls = rev (mapRevAux f [] ls )
 
 let rec iter f = function
     [] -> ()
@@ -125,7 +125,7 @@ let rec filterRevAux f acc xs =
       | true -> filterRevAux f  (y::acc) ys
     end 
 
-let filter f xs  =  rev @@ filterRevAux f [] xs 
+let filter f xs  =  rev (filterRevAux f [] xs )
 
 let rec filterMapRevAux (f:  'a -> 'b option [@bs]) acc xs =   
   match xs with 
@@ -137,7 +137,7 @@ let rec filterMapRevAux (f:  'a -> 'b option [@bs]) acc xs =
     end 
 
 let rec filterMap f xs = 
-  rev @@ filterMapRevAux f [] xs
+  rev (filterMapRevAux f [] xs)
 
 
 let rec countByAux f acc xs = 
@@ -149,7 +149,7 @@ let rec countByAux f acc xs =
 let rec countBy f xs = countByAux f 0 xs    
 
 let init n f = 
-  Js_vector.toList @@ Js_vector.init n f 
+  Js_vector.toList (Js_vector.init n f )
 
 external createUnsafe : int -> 'a Js_vector.t =
   "Array" [@@bs.new]

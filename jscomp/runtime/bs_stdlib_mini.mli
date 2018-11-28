@@ -65,9 +65,9 @@ external ( -. ) : float -> float -> float = "%subfloat"
 external ( *. ) : float -> float -> float = "%mulfloat"
 external ( /. ) : float -> float -> float = "%divfloat"
 
-external float : int -> float = "%floatofint"
 
-external int_of_float : float -> int = "%intoffloat"
+
+
 
 module Bytes : sig
   external unsafe_get : bytes -> int -> char = "%bytes_unsafe_get"
@@ -156,9 +156,6 @@ module Int64 : sig
   external to_int : int64 -> int = "%int64_to_int"
 end 
 
-module Oo : sig 
-  external id : < .. > -> int = "%field1"
-end 
 
 
 

@@ -82,9 +82,9 @@ external unsafe_ceil_int : float -> int = "ceil" [@@bs.val] [@@bs.scope "Math"]
 let unsafe_ceil = unsafe_ceil_int
 [@@ocaml.deprecated "Please use `unsafe_ceil_int` instead"]
 (** smallest int greater than or equal to the argument *)
-let ceil_int f =
-  if f > float Js_int.max then Js_int.max
-  else if f < float Js_int.min then Js_int.min
+let ceil_int (f : float) : int =
+  if f > Js_int.toFloat Js_int.max then Js_int.max
+  else if f < Js_int.toFloat Js_int.min then Js_int.min
   else unsafe_ceil_int f
 let ceil = ceil_int
 [@@ocaml.deprecated "Please use `ceil_int` instead"]
@@ -113,8 +113,8 @@ let unsafe_floor = unsafe_floor_int
 [@@ocaml.deprecated "Please use `unsafe_floor_int` instead"]
 (** largest int greater than or equal to the arugment *)
 let floor_int f =
-  if f > float Js_int.max then Js_int.max
-  else if f < float Js_int.min then Js_int.min
+  if f > Js_int.toFloat Js_int.max then Js_int.max
+  else if f < Js_int.toFloat Js_int.min then Js_int.min
   else unsafe_floor f
 let floor = floor_int
 [@@ocaml.deprecated "Please use `floor_int` instead"]
@@ -171,7 +171,7 @@ external pow_float : base:float -> exp:float -> float = "pow" [@@bs.val] [@@bs.s
 external random : unit -> float = "random" [@@bs.val] [@@bs.scope "Math"]
 (** random number in \[min,max) *)
 let random_int min max =
-  floor ((random ()) *. (float (max - min))) + min
+  floor ((random ()) *. (Js_int.toFloat (max - min))) + min
 
 (** rounds to nearest integer, returns a value not representable as [int] if NaN *)
 external unsafe_round : float -> int = "round" [@@bs.val] [@@bs.scope "Math"]

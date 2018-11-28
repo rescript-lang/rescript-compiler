@@ -36,8 +36,8 @@ external sqrt : float -> float =  "sqrt" [@@bs.val] [@@bs.scope "Math"]
 external max_float : float -> float -> float = "Math.max" [@@bs.val]
 external min_float : float -> float -> float = "Math.min" [@@bs.val]
 external pow_float : base:float -> exp:float -> float = "Math.pow" [@@bs.val]
-
-
+external int_of_float : float -> int = "%intoffloat"
+external float_of_int : int -> float = "%floatofint"
 
 let caml_int32_float_of_bits : int32 -> float = fun%raw x -> {|
     return new Float32Array(new Int32Array([x]).buffer)[0] 
@@ -66,7 +66,7 @@ let caml_modf_float (x : float) : float * float =
   else (1. /. x , x)
 
 let caml_ldexp_float (x: float) (exp: int) : float =
-  let x', exp' = ref x, ref (float exp) in
+  let x', exp' = ref x, ref (float_of_int exp) in
   if !exp' > 1023. then begin
     exp' := !exp' -. 1023.;
     x' := !x' *. pow_float ~base:2. ~exp:1023.;

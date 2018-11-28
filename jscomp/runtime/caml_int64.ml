@@ -408,7 +408,7 @@ let to_int32 x = Nativeint.logor x.lo  0n (* signed integer *)
 
 let to_hex x =
   let aux v =
-    Bs_string.of_int (Nativeint.to_int @@ Nativeint.shift_right_logical v 0) ~base:16
+    Bs_string.of_int (Nativeint.to_int (Nativeint.shift_right_logical v 0)) ~base:16
   in
   match x.hi, x.lo with
   | 0n, 0n -> "0"

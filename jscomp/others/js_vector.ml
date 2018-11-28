@@ -46,13 +46,13 @@ let filterInPlace p a =
       end;
     incr i 
   done;
-  ignore @@ Js_array.removeFromInPlace ~pos:!j a 
+  Js_array.removeFromInPlace ~pos:!j a |. ignore
 
 let empty a  = 
-  ignore @@ Js.Array.removeFromInPlace ~pos:0 a
+  Js.Array.removeFromInPlace ~pos:0 a |. ignore
 
 let pushBack x xs = 
-  ignore @@ Js.Array.push x xs 
+  Js.Array.push x xs |. ignore
 
 (** Find by JS (===)  equality *)
 let memByRef x xs = 

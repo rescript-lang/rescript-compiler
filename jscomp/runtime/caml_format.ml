@@ -90,11 +90,11 @@ let parse_sign_and_base (s : string) =
 
 let caml_int_of_string s = 
   let i, sign, hbase = parse_sign_and_base s in
-  let base  = Nativeint.of_int @@ int_of_string_base hbase in
+  let base  = Nativeint.of_int (int_of_string_base hbase) in
   let threshold = (-1n >>> 0) in 
   let len =Bs_string.length s in  
   let c = if i < len then s.[i] else '\000' in
-  let d = to_nat @@ parse_digit c in
+  let d = to_nat (parse_digit c) in
   let () =
     if d < 0n || d >=  base then
       caml_failwith "int_of_string" in
@@ -105,7 +105,7 @@ let caml_int_of_string s =
       let a = s.[k] in
       if a  = '_' then aux acc ( k +  1) 
       else 
-        let v = to_nat @@ parse_digit a in  
+        let v = to_nat  (parse_digit a) in  
         if v < 0n || v >=  base then 
           caml_failwith "int_of_string"
         else 
@@ -123,7 +123,7 @@ let caml_int_of_string s =
 
 let caml_int64_of_string s = 
   let i, sign, hbase = parse_sign_and_base s in
-  let base  = Int64.of_int @@ int_of_string_base hbase in
+  let base  = Int64.of_int (int_of_string_base hbase) in
   let sign = Int64.of_nativeint sign in
   let threshold =
     match hbase with
@@ -138,7 +138,7 @@ let caml_int64_of_string s =
   in 
   let len =Bs_string.length s in  
   let c = if i < len then s.[i] else '\000' in
-  let d = Int64.of_int @@ parse_digit c in
+  let d = Int64.of_int (parse_digit c) in
   let () =
     if d < 0L || d >=  base then
       caml_failwith "int64_of_string" in
@@ -151,7 +151,7 @@ let caml_int64_of_string s =
       let a = s.[k] in
       if a  = '_' then aux acc ( k +  1) 
       else     
-        let v = Int64.of_int @@ parse_digit a in  
+        let v = Int64.of_int (parse_digit a) in  
         if v < 0L || v >=  base || acc > threshold then 
           caml_failwith "int64_of_string"
         else 
@@ -195,7 +195,7 @@ let lowercase c =
 let parse_format fmt = 
   let len =Bs_string.length fmt in 
   if len > 31 then 
-    raise @@ Invalid_argument "format_int: format too long" ;
+    raise  (Invalid_argument "format_int: format too long") ;
   let rec aux (f : fmt) i : fmt = 
     if i >= len then  f
     else
@@ -357,7 +357,7 @@ let aux f (i : nativeint)  =
       else 
         Nativeint.shift_right_logical i 0 
     else  i  in
-  let s = ref @@ Bs_string.of_nativeint i ~base:(int_of_base f.base) in 
+  let s = ref (Bs_string.of_nativeint i ~base:(int_of_base f.base)) in 
   if f.prec >= 0 then 
     begin 
       f.filter <- " ";
@@ -501,7 +501,7 @@ let caml_format_float fmt x =
       s := "nan";
       f.filter <- " "
     end
-  else if not @@ FloatRT.isFinite x then
+  else if not (FloatRT.isFinite x) then
     begin 
       s := "inf";
       f.filter <- " " 
@@ -533,7 +533,7 @@ let caml_format_float fmt x =
         let prec = if prec <> 0 then prec else 1 in
         s := FloatRT.toExponentialWithPrecision x ~digits:(prec - 1);
         let j = Bs_string.index_of !s "e" in 
-        let  exp = int_of_float @@ FloatRT.fromString @@ Bs_string.slice_rest !s (j + 1)  in 
+        let  exp = Caml_float.int_of_float (FloatRT.fromString (Bs_string.slice_rest !s (j + 1)))  in 
         if exp < -4 || x >= 1e21 ||Bs_string.length (FloatRT.toFixed x) > prec then 
           let i = ref (j - 1)  in
           while !s.[!i] = '0' do 
@@ -558,7 +558,7 @@ let caml_format_float fmt x =
               decr p
             done ;
           if !p <> 0 then 
-            let k = ref @@Bs_string.length !s - 1 in 
+            let k = ref (Bs_string.length !s - 1) in 
             while !s.[!k] = '0' do 
               decr k
             done ;
