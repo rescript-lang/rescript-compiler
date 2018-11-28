@@ -297,7 +297,7 @@ and print_simple_out_type ppf =
     [@bs] is processed into a type that looks like `Js.Internal.fn ...`. This
     leaks during error reporting, where the type is printed. Here, we print it
     back from `Js.Internal.fn([ `Arity_2 ('c, 'd) ], 'e)` into `('a => 'b => int) [@bs]` *)
-  (* same for `Js_internal.fn(...)`. Either might shown *)
+  (* same for `Js.Internal.fn(...)`. Either might shown *)
   | Otyp_constr (
       (Oide_dot (
         (Oide_dot ((Oide_ident "Js"), "Internal") | Oide_ident "Js_internal"),

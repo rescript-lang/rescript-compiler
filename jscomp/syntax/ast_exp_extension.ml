@@ -86,7 +86,7 @@ let handle_extension record_as_js_object e (self : Bs_ast_mapper.mapper)
            (block,_))
            -> 
             Ast_compatible.app1 ~loc 
-            (Exp.ident ~loc {txt = Ldot (Ast_literal.Lid.js_unsafe, Literals.raw_function);loc})            
+            (Exp.ident ~loc {txt = Ldot (Ast_literal.Lid.js_internal, Literals.raw_function);loc})            
             (Ast_compatible.const_exp_string ~loc ( toString {args = [] ; block } ) )
          | ppat_desc, _ -> 
             let txt = 
@@ -98,7 +98,7 @@ let handle_extension record_as_js_object e (self : Bs_ast_mapper.mapper)
             in 
             let acc, block = unroll_function_aux [txt] body in 
             Ast_compatible.app1 ~loc 
-              (Exp.ident ~loc {txt = Ldot (Ast_literal.Lid.js_unsafe, Literals.raw_function);loc})
+              (Exp.ident ~loc {txt = Ldot (Ast_literal.Lid.js_internal, Literals.raw_function);loc})
               (Ast_compatible.const_exp_string ~loc (toString {args = List.rev acc ; block }))
          end 
       | _ ->   Ast_util.handle_raw ~check_js_regex:false loc payload

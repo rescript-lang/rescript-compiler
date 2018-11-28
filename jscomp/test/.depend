@@ -128,7 +128,7 @@ caml_compare_test.cmj : mt.cmj ../runtime/js.cmj
 caml_format_test.cmj : mt.cmj
 caml_sys_poly_fill_test.cmj : ../others/node_process.cmj mt.cmj \
     ../runtime/js.cmj
-chain_code_test.cmj : mt.cmj ../runtime/js_unsafe.cmj
+chain_code_test.cmj : mt.cmj ../runtime/js.cmj
 chn_test.cmj : mt.cmj ../others/js_string.cmj ../others/js_array.cmj \
     ../runtime/js.cmj
 class3_test.cmj : mt.cmj ../runtime/js.cmj
@@ -182,7 +182,7 @@ equal_test.cmj :
 es6_module_test.cmj : mt.cmj
 escape_esmodule.cmj :
 esmodule_ref.cmj : ../runtime/js.cmj escape_esmodule.cmj
-event_ffi.cmj : ../runtime/js_unsafe.cmj ../runtime/js.cmj
+event_ffi.cmj : ../runtime/js.cmj
 exception_alias.cmj :
 exception_def.cmj : test_other_exn.cmj
 exception_raise_test.cmj : mt.cmj ../runtime/js.cmj
@@ -204,7 +204,7 @@ ext_sys_test.cmj : ext_sys_test.cmi
 extensible_variant_test.cmj : mt.cmj
 external_ppx.cmj :
 fail_comp.cmj :
-ffi_arity_test.cmj : mt.cmj ../runtime/js_unsafe.cmj ../runtime/js.cmj
+ffi_arity_test.cmj : mt.cmj ../runtime/js.cmj
 ffi_array_test.cmj : mt.cmj ../others/js_array.cmj
 ffi_js_test.cmj : mt.cmj ../others/js_obj.cmj ../runtime/js.cmj
 ffi_splice_test.cmj : mt.cmj
@@ -613,7 +613,7 @@ test_tuple_destructring.cmj :
 test_type_based_arity.cmj : abstract_type.cmj
 test_u.cmj :
 test_unsafe_cmp.cmj : ../runtime/js.cmj
-test_unsafe_obj_ffi.cmj : ../runtime/js_unsafe.cmj test_unsafe_obj_ffi.cmi
+test_unsafe_obj_ffi.cmj : ../runtime/js.cmj test_unsafe_obj_ffi.cmi
 test_unsafe_obj_ffi_ppx.cmj : ../runtime/js.cmj test_unsafe_obj_ffi_ppx.cmi
 test_unsupported_primitive.cmj :
 test_while_closure.cmj :

@@ -26,9 +26,7 @@ let ps = Format.pp_print_string
 
 let out_ident ppf s =
   ps ppf (
-    match s with 
-    | "Js_internal" 
-      ->  "Js.Internal"
+    match s with     
     | "Js_null" 
       ->   "Js.Null"
     | "Js_undefined" 
