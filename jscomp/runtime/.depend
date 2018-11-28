@@ -2,8 +2,8 @@ caml_array.cmj : caml_array.cmi
 caml_string.cmj : bs_string.cmj caml_string.cmi
 caml_bytes.cmj : caml_bytes.cmi
 caml_obj.cmj : js.cmj caml_array.cmj bs_obj.cmj caml_obj.cmi
-caml_int64.cmj : js.cmj caml_utils.cmj caml_int32.cmj bs_string.cmj \
-    caml_int64.cmi
+caml_int64.cmj : js.cmj caml_utils.cmj caml_int32.cmj caml_float.cmj \
+    bs_string.cmj caml_int64.cmi
 caml_exceptions.cmj : js.cmj caml_builtin_exceptions.cmj bs_obj.cmj \
     caml_exceptions.cmi
 caml_js_exceptions.cmj : caml_exceptions.cmj

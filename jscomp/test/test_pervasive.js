@@ -56,6 +56,7 @@ var Pervasives$1 = /* module */[
   /* min_int */Pervasives.min_int,
   /* lnot */Pervasives.lnot,
   /* epsilon_float */Pervasives.epsilon_float,
+  /* classify_float */Pervasives.classify_float,
   /* char_of_int */Pervasives.char_of_int,
   /* string_of_bool */Pervasives.string_of_bool,
   /* bool_of_string */Pervasives.bool_of_string,

@@ -319,7 +319,9 @@ let rec of_float (x : float) : t =
          ~hi:(Nativeint.of_float (x /. two_ptr_32_dbl))
 
 
-external log2 : float = "Math.LN2" [@@bs.val]  
+external log2 : float = "LN2" [@@bs.val]  [@@bs.scope "Math"]
+external log : float -> float =  "log" [@@bs.val] [@@bs.scope "Math"]
+external ceil : float -> float =  "ceil" [@@bs.val] [@@bs.scope "Math"]
 (* external maxFloat : float -> float -> float = "Math.max" [@@bs.val] *)
 
 let rec div self other =
@@ -363,7 +365,7 @@ let rec div self other =
       (* assert false *)
       while ge !rem other  do
         let approx = ref ( Pervasives.max 1.
-             (floor (to_float !rem /. to_float other) )) in
+             (Caml_float.floor (to_float !rem /. to_float other) )) in
         let log2 = ceil (log !approx /. log2) in
         let delta =
           if log2 <= 48. then 1.

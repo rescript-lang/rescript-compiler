@@ -65,14 +65,6 @@ external ( -. ) : float -> float -> float = "%subfloat"
 external ( *. ) : float -> float -> float = "%mulfloat"
 external ( /. ) : float -> float -> float = "%divfloat"
 
-
-external log : float -> float =  "log" [@@bs.val] [@@bs.scope "Math"]
-external ceil : float -> float =  "ceil" [@@bs.val] [@@bs.scope "Math"]
-external floor : float -> float =  "floor" [@@bs.val] [@@bs.scope "Math"]
-external exp : float -> float =  "exp" [@@bs.val] [@@bs.scope "Math"]
-external sqrt : float -> float =  "sqrt" [@@bs.val] [@@bs.scope "Math"]
-
-
 external float : int -> float = "%floatofint"
 
 external int_of_float : float -> int = "%intoffloat"

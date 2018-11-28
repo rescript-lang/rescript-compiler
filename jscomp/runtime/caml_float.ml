@@ -29,8 +29,10 @@
 external _LOG2E : float = "Math.LOG2E" [@@bs.val]
 external _LOG10E : float = "Math.LOG10E" [@@bs.val]
 external abs_float : float -> float = "Math.abs" [@@bs.val]
-external floor_float : float -> float = "Math.floor" [@@bs.val]
+external floor : float -> float = "Math.floor" [@@bs.val]
+external exp : float -> float =  "exp" [@@bs.val] [@@bs.scope "Math"]
 external log : float -> float = "Math.log" [@@bs.val]
+external sqrt : float -> float =  "sqrt" [@@bs.val] [@@bs.scope "Math"] 
 external max_float : float -> float -> float = "Math.max" [@@bs.val]
 external min_float : float -> float -> float = "Math.min" [@@bs.val]
 external pow_float : base:float -> exp:float -> float = "Math.pow" [@@bs.val]
@@ -86,7 +88,7 @@ let caml_frexp_float (x: float): float * int =
   else begin
     let neg = x < 0. in
     let x' = ref (abs_float x) in
-    let exp = ref (floor_float (_LOG2E *. log !x') +. 1.) in
+    let exp = ref (floor (_LOG2E *. log !x') +. 1.) in
     begin
       x' := !x' *. pow_float ~base:2. ~exp:(-.(!exp));
       if !x' < 0.5 then begin
