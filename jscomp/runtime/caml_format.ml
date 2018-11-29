@@ -44,11 +44,11 @@ let ( *~ ) = Nativeint.mul
 let parse_digit c = 
   match c with 
   | '0' .. '9' 
-    -> Char.code c - Char.code '0'
+    -> Caml_char.code c - Caml_char.code '0'
   | 'A' .. 'Z'
-    -> Char.code c - (Char.code 'A' - 10)
+    -> Caml_char.code c - (Caml_char.code 'A' - 10)
   | 'a' .. 'z'
-    -> Char.code c - (Char.code 'a' - 10 )
+    -> Caml_char.code c - (Caml_char.code 'a' - 10 )
   | _ -> -1
 
 type of_string_base =
@@ -189,7 +189,7 @@ let lowercase c =
   if (c >= 'A' && c <= 'Z')
   || (c >= '\192' && c <= '\214')
   || (c >= '\216' && c <= '\222')
-  then Char.unsafe_chr(Char.code c + 32)
+  then Caml_char.unsafe_chr(Caml_char.code c + 32)
   else c
 
 let parse_format fmt = 
@@ -220,8 +220,8 @@ let parse_format fmt =
           f.width <- 0;
           let j = ref i in 
 
-          while (let w = Char.code fmt.[!j] - Char.code '0' in w >=0 && w <= 9  ) do 
-            f.width <- f.width * 10 + Char.code fmt.[!j] - Char.code '0';
+          while (let w = Caml_char.code fmt.[!j] - Caml_char.code '0' in w >=0 && w <= 9  ) do 
+            f.width <- f.width * 10 + Caml_char.code fmt.[!j] - Caml_char.code '0';
             incr j
           done;
           aux f !j
@@ -230,8 +230,8 @@ let parse_format fmt =
         -> 
         f.prec <- 0;
         let j = ref (i + 1 ) in 
-        while (let w = Char.code fmt.[!j] - Char.code '0' in w >=0 && w <= 9  ) do 
-          f.prec <- f.prec * 10 + Char.code fmt.[!j] - Char.code '0';
+        while (let w = Caml_char.code fmt.[!j] - Caml_char.code '0' in w >=0 && w <= 9  ) do 
+          f.prec <- f.prec * 10 + Caml_char.code fmt.[!j] - Caml_char.code '0';
           incr j;
         done;
         aux f !j 

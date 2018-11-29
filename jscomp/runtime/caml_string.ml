@@ -185,18 +185,18 @@ let caml_string_of_char_array chars =
 
 
 let caml_is_printable c = 
-  let code = Char.code c in
+  let code = Caml_char.code c in
   code > 31 && code < 127
 
 
 let caml_string_get16 s i = 
-  Char.code (Bs_string.unsafe_get s i) + Char.code (Bs_string.unsafe_get s (i+1)) lsl 8  
+  Caml_char.code (Bs_string.unsafe_get s i) + Caml_char.code (Bs_string.unsafe_get s (i+1)) lsl 8  
 
 let caml_string_get32 s i = 
-  Char.code (Bs_string.unsafe_get s i) + 
-  Char.code (Bs_string.unsafe_get s (i+1)) lsl 8  + 
-  Char.code (Bs_string.unsafe_get s (i+2)) lsl 16 + 
-  Char.code (Bs_string.unsafe_get s (i+3)) lsl 24
+  Caml_char.code (Bs_string.unsafe_get s i) + 
+  Caml_char.code (Bs_string.unsafe_get s (i+1)) lsl 8  + 
+  Caml_char.code (Bs_string.unsafe_get s (i+2)) lsl 16 + 
+  Caml_char.code (Bs_string.unsafe_get s (i+3)) lsl 24
 
 let get s i =
   if i < 0 || i >= Bs_string.length s then

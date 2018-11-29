@@ -60,10 +60,15 @@ function getDeps(text) {
 function baseName(x){
     return x.substr(0,x.indexOf('.'))
 }
+
 function readDeps(name) {
     var jsFile = path.join(jsDir, name + ".js")
-    var fileContent = fs.readFileSync(jsFile, 'utf8')
-    return getDeps(fileContent).map(x => path.parse(x).name)
+    try{
+        var fileContent = fs.readFileSync(jsFile, 'utf8')
+        return getDeps(fileContent).map(x => path.parse(x).name)
+    }catch(e){
+        return [] // forgiving fallback
+    }
 }
 
 function runJSCheck() {

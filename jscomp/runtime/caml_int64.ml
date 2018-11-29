@@ -464,16 +464,16 @@ let get64 (s : string) (i:int) : t =
   mk ~lo:
     (Nativeint.logor
        (Nativeint.logor
-          (Nativeint.of_int (Char.code s.[i]))
-          (Nativeint.of_int (Char.code s.[i+1]) << 8))
+          (Nativeint.of_int (Caml_char.code s.[i]))
+          (Nativeint.of_int (Caml_char.code s.[i+1]) << 8))
        (Nativeint.logor
-          (Nativeint.of_int (Char.code s.[i+2]) << 16 )
-          (Nativeint.of_int (Char.code s.[i+3]) << 24 )))
+          (Nativeint.of_int (Caml_char.code s.[i+2]) << 16 )
+          (Nativeint.of_int (Caml_char.code s.[i+3]) << 24 )))
     ~hi:
       (Nativeint.logor
          (Nativeint.logor
-            (Nativeint.of_int (Char.code s.[i+4]) << 32)
-            (Nativeint.of_int (Char.code s.[i+5]) << 40))
+            (Nativeint.of_int (Caml_char.code s.[i+4]) << 32)
+            (Nativeint.of_int (Caml_char.code s.[i+5]) << 40))
          (Nativeint.logor
-            (Nativeint.of_int (Char.code s.[i+6]) << 48 )
-            (Nativeint.of_int (Char.code s.[i+7]) << 56 )))
+            (Nativeint.of_int (Caml_char.code s.[i+6]) << 48 )
+            (Nativeint.of_int (Caml_char.code s.[i+7]) << 56 )))
