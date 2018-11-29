@@ -21,20 +21,12 @@ OTHERS= caml_array caml_string caml_bytes\
 	bs_string  js_nativeint js_int64 bs_obj caml_builtin_exceptions  block caml_primitive\
 
 SOURCE_LIST= $(OTHERS) js 
-## since we use ppx
-$(addsuffix .cmi, $(OTHERS)): js.cmi js.cmj
 
 RUNTIME := $(addsuffix .cmj, $(SOURCE_LIST)) $(addsuffix .cmi, $(SOURCE_LIST))
 
-
-$(RUNTIME): $(COMPILER) bs_stdlib_mini.cmi
-
-ML_SOURCES=$(addsuffix .ml, $(OTHERS)) 
-MLI_SOURCES=$(addsuffix .mli, $(OTHERS)) 
-js.cmj: js.cmi
+$(RUNTIME): $(COMPILER)
 
 all: $(RUNTIME)
-
 clean::
 	rm -f *.cm*
 	rm -f *~
@@ -48,17 +40,12 @@ clean::
 bs_stdlib_mini.cmi:	bs_stdlib_mini.mli
 	$(COMPILER) $(COMPFLAGS) -c $<
 
--include .extradepend
+
 -include .depend
 
 
 depend:
-	$(CAMLDEP) -native $(INCLUDES) $(ML_SOURCES) $(MLI_SOURCES) | sed -e 's/\.cmx/.cmj/g' >.depend
+	node ../../scripts/runtimeDeps.js
+	
 
 
-# js.cmj: js.cmi
-# block.cmj: block.cmi 
-# caml_builtin_exceptions.cmj: caml_builtin_exceptions.cmi
-# caml_primitive.cmj: caml_primitive.cmi
-# or we can do a post-processing to add missing cmj dependency manually
-# $(addsuffix .cmj, $(OTHERS)): caml_builtin_exceptions.cmj  block.cmj js.cmj
