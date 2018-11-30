@@ -538,10 +538,13 @@ let translate loc (prim_name : string)
       -> 
         E.runtime_call 
           Js_runtime_modules.string "caml_fill_bytes" args
+    | "caml_is_printable" 
+      -> 
+      call Js_runtime_modules.char
     | "caml_string_get"    
     | "string_of_bytes"
     | "bytes_of_string"
-    | "caml_is_printable"
+    
     | "caml_string_of_char_array"    
     | "caml_blit_string" 
     | "caml_blit_bytes"

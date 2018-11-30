@@ -4,6 +4,7 @@ var Mt = require("./mt.js");
 var List = require("../../lib/js/list.js");
 var Block = require("../../lib/js/block.js");
 var Bytes = require("../../lib/js/bytes.js");
+var Caml_char = require("../../lib/js/caml_char.js");
 var Caml_string = require("../../lib/js/caml_string.js");
 
 var suites_000 = /* tuple */[
@@ -25,7 +26,7 @@ var suites_001 = /* :: */[
     "caml_is_printable",
     (function (param) {
         return /* Eq */Block.__(0, [
-                  Caml_string.caml_is_printable(/* "a" */97),
+                  Caml_char.caml_is_printable(/* "a" */97),
                   true
                 ]);
       })

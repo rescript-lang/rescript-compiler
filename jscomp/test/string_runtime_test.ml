@@ -6,7 +6,7 @@ let suites = Mt.[
     Eq(S.caml_string_of_char_array [|'a';'b';'c'|], "abc")
                           );
   "caml_is_printable", (fun _ ->
-    Eq(S.caml_is_printable 'a', true)
+    Eq(Caml_char.caml_is_printable 'a', true)
                        );
   "caml_string_of_bytes", (fun  _ ->
 

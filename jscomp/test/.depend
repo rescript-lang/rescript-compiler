@@ -502,7 +502,8 @@ string_bound_get_test.cmj :
 string_get_set_test.cmj : mt.cmj
 string_interp_test.cmj : ../runtime/js.cmj
 string_literal_print_test.cmj : mt.cmj
-string_runtime_test.cmj : mt.cmj ../runtime/caml_string.cmj
+string_runtime_test.cmj : mt.cmj ../runtime/caml_string.cmj \
+    ../runtime/caml_char.cmj
 string_set.cmj : set_gen.cmj
 string_set_test.cmj : string_set.cmj mt.cmj
 string_test.cmj : mt.cmj ext_string_test.cmj

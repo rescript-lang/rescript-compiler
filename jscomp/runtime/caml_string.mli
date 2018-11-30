@@ -33,7 +33,7 @@
 val bytes_of_string : string -> bytes
 val bytes_to_string : bytes -> string
 
-val caml_is_printable : char -> bool
+
 val caml_string_of_char_array : char array -> string
 val caml_string_get : string -> int -> char 
 
