@@ -37,11 +37,11 @@ external unsafe_set : 'a t -> int -> 'a -> unit = "%array_unsafe_set"
 let filterInPlace p a = 
   let  i = ref 0 in 
   let j = ref 0 in 
-  while !i < Array.length a do 
-    let v = Array.unsafe_get a !i in 
+  while !i < Js.Array.length a do 
+    let v = Js.Array.unsafe_get a !i in 
     if p v   [@bs] then 
       begin 
-        Array.unsafe_set a !j v ;
+        Js.Array.unsafe_set a !j v ;
         incr j
       end;
     incr i 
@@ -59,8 +59,8 @@ let memByRef x xs =
   Js.Array.indexOf x xs >= 0 
 
 let iter f  xs = 
-  for i = 0 to Array.length xs - 1 do 
-    f (Array.unsafe_get xs i) [@bs]
+  for i = 0 to Js.Array.length xs - 1 do 
+    f (Js.Array.unsafe_get xs i) [@bs]
   done 
 
 let iteri f a =
@@ -102,10 +102,10 @@ let copy x =
   b 
 
 let map f a =
-  let l = Array.length a in
+  let l = Js.Array.length a in
   let r = createUnsafe l in
   for i = 0 to l - 1 do
-      Array.unsafe_set r i (f(Array.unsafe_get a i) [@bs])
+      unsafe_set r i (f(unsafe_get a i) [@bs])
   done;
   r
   

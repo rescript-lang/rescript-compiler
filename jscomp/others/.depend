@@ -21,7 +21,7 @@ js_list.cmj : js_vector.cmj js_list.cmi
 js_option.cmj : js_exn.cmj js_option.cmi
 js_console.cmj :
 js_result.cmj : js_result.cmi
-js_mapperRt.cmj : js_mapperRt.cmi
+js_mapperRt.cmj : js_array.cmj js_mapperRt.cmi
 belt_Array.cmj : js_math.cmj belt_Array.cmi
 belt_internalAVLset.cmj : belt_SortArray.cmj belt_Id.cmj belt_Array.cmj \
     belt_internalAVLset.cmi

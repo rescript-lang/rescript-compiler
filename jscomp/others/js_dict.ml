@@ -53,12 +53,12 @@ external keys : 'a t -> key array = "Object.keys" [@@bs.val]
 external empty : unit -> 'a t = "" [@@bs.obj]
 
 
-let unsafeDeleteKey : string t -> string -> unit [@bs] = [%raw{|
-  function(dict,key){
+let unsafeDeleteKey : string t -> string -> unit [@bs] = 
+  fun%raw dict key -> {|
      delete dict[key];
      return 0
-   }
-|}]
+  |}
+
 
 external unsafeCreate : int -> 'a array = "Array" [@@bs.new]
 (* external entries : 'a t -> (key * 'a) array = "Object.entries" [@@bs.val] (* ES2017 *) *)
@@ -67,8 +67,8 @@ let entries dict =
   let l = Js.Array.length keys in
   let values = unsafeCreate l in
   for i = 0 to l - 1 do
-    let key = Array.unsafe_get keys i in
-    Array.unsafe_set values i (key, unsafeGet dict key)
+    let key = Js.Array.unsafe_get keys i in
+    Js.Array.unsafe_set values i (key, unsafeGet dict key)
   done;
   values
 
@@ -78,7 +78,7 @@ let values dict =
   let l = Js.Array.length keys in
   let values = unsafeCreate l in
   for i = 0 to l - 1 do
-    Array.unsafe_set values i (unsafeGet dict (Array.unsafe_get keys i))
+    Js.Array.unsafe_set values i (unsafeGet dict (Js.Array.unsafe_get keys i))
   done;
   values
 
@@ -96,7 +96,7 @@ let fromArray entries =
   let dict = empty () in
   let l = Js_array.length entries in
   for i = 0 to l - 1 do
-    let (key, value) = Array.unsafe_get entries i in
+    let (key, value) = Js.Array.unsafe_get entries i in
     set dict key value
   done;
   dict
@@ -106,7 +106,7 @@ let map f source =
   let keys = keys source in
   let l = Js.Array.length keys in
   for i = 0 to l - 1 do
-    let key = Array.unsafe_get keys i in
+    let key = Js.Array.unsafe_get keys i in
     set target key (f (unsafeGet source key) [@bs])
   done;
   target

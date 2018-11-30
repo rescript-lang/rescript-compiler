@@ -161,7 +161,7 @@ let toVector xs =
     let a = createUnsafe (length l) in 
     let rec fill i = function
       | [] -> a
-      | hd::tl -> Array.unsafe_set a i hd; fill (i+1) tl in
+      | hd::tl -> Js.Array.unsafe_set a i hd; fill (i+1) tl in
     fill 0 l  
 
 let rec equal cmp xs ys = 
