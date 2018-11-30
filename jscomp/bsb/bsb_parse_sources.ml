@@ -487,7 +487,10 @@ and walk_source_dir_map (cxt : walk_cxt) (input : Ext_json_types.t String_map.t)
     let file_array = Sys.readdir working_dir in 
     (* Remove .re.js when clean up *)
     Ext_array.iter file_array begin fun file -> 
-        if Ext_string.ends_with file Literals.suffix_re_js then 
+        if Ext_string.ends_with file Literals.suffix_gen_js 
+        || Ext_string.ends_with file Literals.suffix_gen_tsx 
+        then 
+
           Sys.remove (Filename.concat working_dir file)
     end; 
     let sub_dirs_field = 
