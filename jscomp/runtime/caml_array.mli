@@ -28,12 +28,17 @@
 external new_uninitialized : int -> 'a array = "Array" [@@bs.new]
 external append : 'a array -> 'a array -> 'a array = "concat" [@@bs.send]
 
+external unsafe_get : 'a array -> int -> 'a = "%array_unsafe_get"
+external unsafe_set : 'a array -> int -> 'a -> unit = "%array_unsafe_set"
+external length : 'a array -> int = "%array_length"
+
 val caml_array_dup : 'a array -> 'a array
 
 val caml_array_sub : 'a array -> int -> int -> 'a array
 
 val caml_array_concat : 'a array list -> 'a array
 
+external make : int -> 'a -> 'a array = "caml_make_vect"  
 val caml_make_vect : int -> 'a -> 'a array
 
 val caml_make_float_vect : int -> float array

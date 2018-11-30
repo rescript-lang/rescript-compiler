@@ -31,7 +31,7 @@ external sub : 'a array -> int -> int -> 'a array = "caml_array_sub"
 (** Public *)
 let rec app f args = 
   let arity = function_length f in
-  let len = Array.length args in
+  let len = Caml_array.length args in
   let d = arity - len in 
   if d = 0 then 
     apply_args f  args (**f.apply (null,args) *)

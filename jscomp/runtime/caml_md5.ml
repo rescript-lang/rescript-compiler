@@ -56,7 +56,10 @@ let h a b c d x s t =
 let i a b c d x s t = 
   cmn (c ^ (Int32.logor b  (lognot d))) a b x s t
 
+
 let cycle (x : int32 array)  (k : int32 array) = 
+    let module Array = Caml_array (* reuse the sugar .. *)
+    in 
     let a = ref x.(0) in 
     let b = ref x.(1) in 
     let c = ref x.(2) in 
@@ -153,6 +156,9 @@ let md5blk = [|
   |] 
 
 let caml_md5_string s start len = 
+  let module Array = Caml_array (* reuse the sugar .. *)
+  in 
+
   let s = Bs_string.slice   s start len in
   let n =Bs_string.length s in
   let () = 

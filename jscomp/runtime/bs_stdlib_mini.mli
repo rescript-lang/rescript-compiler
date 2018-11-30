@@ -67,13 +67,6 @@ external ( /. ) : float -> float -> float = "%divfloat"
 
 
 
-module Array : sig 
-  external unsafe_get : 'a array -> int -> 'a = "%array_unsafe_get"
-  external unsafe_set : 'a array -> int -> 'a -> unit = "%array_unsafe_set"
-  external length : 'a array -> int = "%array_length"
-  external make : int -> 'a -> 'a array = "caml_make_vect"
-end 
-
 module String : sig 
   external unsafe_get : string -> int -> char = "%string_unsafe_get"
   external length : string -> int = "%string_length"

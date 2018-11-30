@@ -79,7 +79,7 @@ let caml_obj_dup (x : Obj.t) =
   let len = Bs_obj.length x in
   let v = Caml_array.new_uninitialized  len in
   for i = 0 to len - 1 do
-    Array.unsafe_set v i (Obj.field x i)
+    Caml_array.unsafe_set v i (Obj.field x i)
   done;
   Bs_obj.set_tag (Obj.repr v) (Bs_obj.tag x );
   Obj.repr v

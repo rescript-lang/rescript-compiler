@@ -35,18 +35,20 @@ let caml_weak_create n =
 
 let caml_weak_set xs i v = 
   match v with 
-  | Some x -> xs.(i) <- UndefinedRT.return x 
+  | Some x -> 
+    Caml_array.unsafe_set xs i (UndefinedRT.return x)
   | None -> ()
 
 let caml_weak_get  xs i = 
-  UndefinedRT.toOption xs.(i) 
+  UndefinedRT.toOption 
+    (Caml_array.unsafe_get xs i) 
 
 let caml_weak_get_copy  xs i = 
-  match UndefinedRT.toOption xs.(i) with 
+  match UndefinedRT.toOption (Caml_array.unsafe_get xs i) with 
   | None -> None 
   | Some x -> Some (Obj.magic (Obj.dup (Obj.repr x) ))
 
 let caml_weak_check xs i = 
-  xs.(i) <> UndefinedRT.empty
+  Caml_array.unsafe_get xs i <> UndefinedRT.empty
 
 let caml_weak_blit = Caml_array.caml_array_blit

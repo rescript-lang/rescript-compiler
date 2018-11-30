@@ -43,7 +43,7 @@ type closure
     side effect analysis
 *)
 let caml_methods_cache = 
-    Array.make 1000 0 
+    Caml_array.make 1000 0 
 
 external get_methods : obj -> closure array =
   "%field0"
@@ -52,6 +52,7 @@ external get_methods : obj -> closure array =
 let caml_get_public_method 
     (obj : obj) 
     (tag : int) (cacheid  : int) : closure =
+  let module Array = Caml_array in 
   let meths = get_methods obj in
   let offs =  caml_methods_cache.(cacheid) in
   if (Bs_obj.magic meths.(offs) : int) = tag then meths.(offs - 1)

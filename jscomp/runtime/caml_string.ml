@@ -176,6 +176,7 @@ let bytes_to_string a  =
     this function is not in critical Path
  *)
 let caml_string_of_char_array chars =
+    let module Array = Caml_array in 
     let len = Array.length chars  in
     let bytes = new_uninitialized len in
     for i = 0 to len - 1 do 
