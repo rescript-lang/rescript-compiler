@@ -24,9 +24,6 @@
 
 
 
-
-(** *)
-
 val div : nativeint -> nativeint -> nativeint
 
 val mod_ : nativeint -> nativeint -> nativeint

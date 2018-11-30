@@ -27,8 +27,6 @@
 
 
 
-(** *)
-
 let div (x:nativeint) (y:nativeint) = 
   if y = 0n  then
     raise Division_by_zero
