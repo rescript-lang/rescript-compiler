@@ -37,7 +37,7 @@ function replaceCmj(x){
     return x.trim().replace('cmx','cmj')
 }
 
-function runOCamlDep() {
+function runOCamlDep() {    
     var pairs = cp.execSync(`ocamldep.opt -one-line -native ${mlFiles.join(' ')} ${mliFiles.join(' ')}`, { cwd: runtimeDir, encoding: 'utf8' }).split('\n').map(x => x.split(':'))
 
     pairs.forEach(x => {
@@ -123,10 +123,14 @@ function create(){
     })
     updateMapSingle("js.cmj", "js.cmi")
     updateMapSingle("js.cmi","bs_stdlib_mini.cmi")
-    runJSCheck()    
-    runOCamlDep()    
-    var output = toDeps()
-    fs.writeFileSync(path.join(runtimeDir,'.depend'),output,'utf8')
+    try {
+        runJSCheck()
+        runOCamlDep()
+        var output = toDeps()
+        fs.writeFileSync(path.join(runtimeDir, '.depend'), output, 'utf8')
+    } catch (e) {
+        console.log(e)
+    }
 }
 
 if (require.main === module){
