@@ -62,10 +62,10 @@ let caml_hash_mix_string h  s =
   for i = 0 to block  do 
     let j = 4 * i in 
     let w = 
-      Char.code s.[j] lor 
-      (Char.code s.[j+1] lsl 8) lor 
-      (Char.code s.[j+2] lsl 16) lor 
-      (Char.code s.[j+3] lsl 24)
+      Caml_char.code s.[j] lor 
+      (Caml_char.code s.[j+1] lsl 8) lor 
+      (Caml_char.code s.[j+2] lsl 16) lor 
+      (Caml_char.code s.[j+3] lsl 24)
     in
     hash := caml_hash_mix_int !hash (Nativeint.of_int w)
   done ;
@@ -74,13 +74,13 @@ let caml_hash_mix_string h  s =
     begin 
       let w =
         if modulo = 3 then 
-          (Char.code s.[len - 1] lsl 16) lor 
-          (Char.code s.[len - 2] lsl 8) lor
-          (Char.code s.[len - 3])
+          (Caml_char.code s.[len - 1] lsl 16) lor 
+          (Caml_char.code s.[len - 2] lsl 8) lor
+          (Caml_char.code s.[len - 3])
         else if modulo = 2 then 
-          (Char.code s.[len -1] lsl 8) lor 
-          Char.code s.[len -2]
-        else Char.code s.[len - 1] 
+          (Caml_char.code s.[len -1] lsl 8) lor 
+          Caml_char.code s.[len -2]
+        else Caml_char.code s.[len - 1] 
       in 
       hash := caml_hash_mix_int !hash (Nativeint.of_int w)
     end;

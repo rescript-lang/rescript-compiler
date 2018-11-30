@@ -24,7 +24,7 @@
 
 
 
-
+type in_channel
 
 
 (** *)
@@ -106,10 +106,10 @@ let caml_ml_output_char (oc : out_channel)  (char : char) : unit =
   caml_ml_output oc (Bs_string.of_char char) 0 1 
 
 let caml_ml_input (ic : in_channel) (bytes : bytes) offset len : int = 
-  raise @@ Failure  "caml_ml_input ic not implemented"
+  raise (Failure  "caml_ml_input ic not implemented")
 
 let caml_ml_input_char (ic : in_channel) : char = 
-  raise @@ Failure "caml_ml_input_char not implemnted"
+  raise  (Failure "caml_ml_input_char not implemnted")
 
 let caml_ml_out_channels_list () : out_channel list  =
   [stdout; stderr]  

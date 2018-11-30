@@ -170,10 +170,10 @@ let caml_md5_string s start len =
   for  i = 1 to  i_end do 
     for j = 0 to 16 - 1 do 
       let k = i * 64 - 64 + j * 4 in 
-      md5blk.(j) <- (Int32.of_int (Char.code s.[k])) +~
-                    (Int32.of_int (Char.code s.[k+1]) << 8 ) +~        
-                    (Int32.of_int (Char.code s.[k+2]) << 16 ) +~        
-                    (Int32.of_int (Char.code s.[k+3]) << 24 )
+      md5blk.(j) <- (Int32.of_int (Caml_char.code s.[k])) +~
+                    (Int32.of_int (Caml_char.code s.[k+1]) << 8 ) +~        
+                    (Int32.of_int (Caml_char.code s.[k+2]) << 16 ) +~        
+                    (Int32.of_int (Caml_char.code s.[k+3]) << 24 )
     done ;
     cycle state md5blk
   done ;
@@ -185,7 +185,7 @@ let caml_md5_string s start len =
   let i_end =Bs_string.length s_tail - 1 in
   for i = 0 to  i_end do 
     md5blk.(i / 4 ) <- 
-      Int32.logor md5blk.(i / 4)  (Int32.of_int (Char.code s_tail.[i]) << ((i mod 4) lsl 3))
+      Int32.logor md5blk.(i / 4)  (Int32.of_int (Caml_char.code s_tail.[i]) << ((i mod 4) lsl 3))
   done ;
   let i = i_end + 1 in
   md5blk.(i / 4 ) <-  Int32.logor md5blk.(i / 4 )  (0x80l << ((i mod 4) lsl 3)) ;

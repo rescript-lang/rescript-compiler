@@ -156,6 +156,8 @@ let _ = Js.log \@\@ Js.Int.toStringWithRadix 123456 ~radix:36
 *)
 external toStringWithRadix : int -> radix:int -> string = "toString" [@@bs.send]
 
+external toFloat : int -> float = "%floatofint"
+
 let equal (x: int) y = x = y
 
 let max : int = 2147483647

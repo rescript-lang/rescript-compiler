@@ -29,17 +29,19 @@
 external _LOG2E : float = "Math.LOG2E" [@@bs.val]
 external _LOG10E : float = "Math.LOG10E" [@@bs.val]
 external abs_float : float -> float = "Math.abs" [@@bs.val]
-external floor_float : float -> float = "Math.floor" [@@bs.val]
+external floor : float -> float = "Math.floor" [@@bs.val]
+external exp : float -> float =  "exp" [@@bs.val] [@@bs.scope "Math"]
 external log : float -> float = "Math.log" [@@bs.val]
+external sqrt : float -> float =  "sqrt" [@@bs.val] [@@bs.scope "Math"] 
 external max_float : float -> float -> float = "Math.max" [@@bs.val]
 external min_float : float -> float -> float = "Math.min" [@@bs.val]
 external pow_float : base:float -> exp:float -> float = "Math.pow" [@@bs.val]
-
-
+external int_of_float : float -> int = "%intoffloat"
+external float_of_int : int -> float = "%floatofint"
 
 let caml_int32_float_of_bits : int32 -> float = fun%raw x -> {|
     return new Float32Array(new Int32Array([x]).buffer)[0] 
-    |}
+|}
   (* let int32 = Int32_array.make [| x |] in
   let float32 = Float32_array.fromBuffer ( Int32_array.buffer int32) in
   Float32_array.unsafe_get float32 0 *)
@@ -49,17 +51,6 @@ let caml_int32_bits_of_float : float -> int32 = fun%raw x -> {|
 |}
   (* let float32 = Float32_array.make [|x|] in
   Int32_array.unsafe_get (Int32_array.fromBuffer (Float32_array.buffer float32)) 0 *)
-
-let caml_classify_float x : fpclass  =
-  if FloatRT.isFinite x then
-    if abs_float x >= 2.2250738585072014e-308  then
-      FP_normal
-    else if x <> 0. then FP_subnormal
-    else FP_zero
-  else
-  if FloatRT.isNaN x then
-    FP_nan
-  else FP_infinite
 
 
 let caml_modf_float (x : float) : float * float =
@@ -75,7 +66,7 @@ let caml_modf_float (x : float) : float * float =
   else (1. /. x , x)
 
 let caml_ldexp_float (x: float) (exp: int) : float =
-  let x', exp' = ref x, ref (float exp) in
+  let x', exp' = ref x, ref (float_of_int exp) in
   if !exp' > 1023. then begin
     exp' := !exp' -. 1023.;
     x' := !x' *. pow_float ~base:2. ~exp:1023.;
@@ -97,7 +88,7 @@ let caml_frexp_float (x: float): float * int =
   else begin
     let neg = x < 0. in
     let x' = ref (abs_float x) in
-    let exp = ref (floor_float (_LOG2E *. log !x') +. 1.) in
+    let exp = ref (floor (_LOG2E *. log !x') +. 1.) in
     begin
       x' := !x' *. pow_float ~base:2. ~exp:(-.(!exp));
       if !x' < 0.5 then begin

@@ -27,6 +27,9 @@
 external ( +~ ) : nativeint -> nativeint -> nativeint =
    "caml_int32_add"
 
+(*ATTENTION: refer {!Oo.id} *)
+external oo_id : Obj.t -> int  = "%field1"
+
 open Caml_hash_primitive
 
 let caml_hash count _limit seed obj = 
@@ -51,7 +54,7 @@ let caml_hash count _limit seed obj =
       Caml_queue.push obj queue; 
       decr num 
     in 
-    while not @@ Caml_queue.is_empty queue && !num > 0 do
+    while not (Caml_queue.is_empty queue) && !num > 0 do
       let obj = Caml_queue.unsafe_pop queue in 
       if Js.typeof obj = "number" then
         begin 
@@ -80,7 +83,7 @@ let caml_hash count _limit seed obj =
           let obj_tag = Obj.tag obj in
           let tag = (size lsl 10) lor obj_tag in 
           if tag = 248 (* Obj.object_tag*) then 
-            hash := caml_hash_mix_int !hash (Nativeint.of_int (Oo.id (Obj.magic obj)))
+            hash := caml_hash_mix_int !hash (Nativeint.of_int (oo_id  obj))
           else 
             begin 
               hash := caml_hash_mix_int !hash (Nativeint.of_int tag) ;

@@ -99,10 +99,10 @@ let caml_sys_exit :int -> 'a = fun exit_code ->
 
 
 let caml_sys_is_directory _s = 
-  raise @@ Failure "caml_sys_is_directory not implemented"
+  raise (Failure "caml_sys_is_directory not implemented")
 
 (** Need polyfill to make cmdliner work 
     {!Sys.is_directory} or {!Sys.file_exists} {!Sys.command} 
 *)
 let caml_sys_file_exists _s = 
-  raise @@ Failure "caml_sys_file_exists not implemented"
+  raise ( Failure "caml_sys_file_exists not implemented")

@@ -285,7 +285,7 @@ let two_ptr_32_dbl = 2. ** 32.
 let two_ptr_63_dbl = 2. ** 63.
 let neg_two_ptr_63 = -. (2. ** 63.)
 
-
+external mod_float : float -> float -> float = "caml_fmod_float"
 (* note that we make sure the const number can acutally be represented
    {[
      (2. ** 63. -. 1. = 2. ** 63.) ;;
@@ -319,7 +319,9 @@ let rec of_float (x : float) : t =
          ~hi:(Nativeint.of_float (x /. two_ptr_32_dbl))
 
 
-external log2 : float = "Math.LN2" [@@bs.val]  
+external log2 : float = "LN2" [@@bs.val]  [@@bs.scope "Math"]
+external log : float -> float =  "log" [@@bs.val] [@@bs.scope "Math"]
+external ceil : float -> float =  "ceil" [@@bs.val] [@@bs.scope "Math"]
 (* external maxFloat : float -> float -> float = "Math.max" [@@bs.val] *)
 
 let rec div self other =
@@ -363,7 +365,7 @@ let rec div self other =
       (* assert false *)
       while ge !rem other  do
         let approx = ref ( Pervasives.max 1.
-             (floor (to_float !rem /. to_float other) )) in
+             (Caml_float.floor (to_float !rem /. to_float other) )) in
         let log2 = ceil (log !approx /. log2) in
         let delta =
           if log2 <= 48. then 1.
@@ -406,7 +408,7 @@ let to_int32 x = Nativeint.logor x.lo  0n (* signed integer *)
 
 let to_hex x =
   let aux v =
-    Bs_string.of_int (Nativeint.to_int @@ Nativeint.shift_right_logical v 0) ~base:16
+    Bs_string.of_int (Nativeint.to_int (Nativeint.shift_right_logical v 0)) ~base:16
   in
   match x.hi, x.lo with
   | 0n, 0n -> "0"
@@ -462,16 +464,16 @@ let get64 (s : string) (i:int) : t =
   mk ~lo:
     (Nativeint.logor
        (Nativeint.logor
-          (Nativeint.of_int (Char.code s.[i]))
-          (Nativeint.of_int (Char.code s.[i+1]) << 8))
+          (Nativeint.of_int (Caml_char.code s.[i]))
+          (Nativeint.of_int (Caml_char.code s.[i+1]) << 8))
        (Nativeint.logor
-          (Nativeint.of_int (Char.code s.[i+2]) << 16 )
-          (Nativeint.of_int (Char.code s.[i+3]) << 24 )))
+          (Nativeint.of_int (Caml_char.code s.[i+2]) << 16 )
+          (Nativeint.of_int (Caml_char.code s.[i+3]) << 24 )))
     ~hi:
       (Nativeint.logor
          (Nativeint.logor
-            (Nativeint.of_int (Char.code s.[i+4]) << 32)
-            (Nativeint.of_int (Char.code s.[i+5]) << 40))
+            (Nativeint.of_int (Caml_char.code s.[i+4]) << 32)
+            (Nativeint.of_int (Caml_char.code s.[i+5]) << 40))
          (Nativeint.logor
-            (Nativeint.of_int (Char.code s.[i+6]) << 48 )
-            (Nativeint.of_int (Char.code s.[i+7]) << 56 )))
+            (Nativeint.of_int (Caml_char.code s.[i+6]) << 48 )
+            (Nativeint.of_int (Caml_char.code s.[i+7]) << 56 )))

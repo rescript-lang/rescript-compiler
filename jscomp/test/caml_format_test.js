@@ -8,7 +8,6 @@ var Int64 = require("../../lib/js/int64.js");
 var $$Buffer = require("../../lib/js/buffer.js");
 var Format = require("../../lib/js/format.js");
 var Printf = require("../../lib/js/printf.js");
-var Caml_float = require("../../lib/js/caml_float.js");
 var Caml_int64 = require("../../lib/js/caml_int64.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_format = require("../../lib/js/caml_format.js");
@@ -189,7 +188,7 @@ var suites = Pervasives.$at(from_of_string(of_string), Pervasives.$at(/* :: */[
             (function (param) {
                 return /* Eq */Block.__(0, [
                           true,
-                          Caml_float.caml_classify_float(Caml_format.caml_float_of_string("nan")) === /* FP_nan */4
+                          Pervasives.classify_float(Caml_format.caml_float_of_string("nan")) === /* FP_nan */4
                         ]);
               })
           ],
@@ -213,7 +212,7 @@ var suites = Pervasives.$at(from_of_string(of_string), Pervasives.$at(/* :: */[
                                 (function (param) {
                                     return /* Eq */Block.__(0, [
                                               a,
-                                              Caml_float.caml_classify_float(Caml_format.caml_float_of_string(b))
+                                              Pervasives.classify_float(Caml_format.caml_float_of_string(b))
                                             ]);
                                   })
                               ];

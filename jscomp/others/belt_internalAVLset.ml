@@ -57,9 +57,10 @@ let rec copy n =
   | None -> n
   | Some n ->
     let l,r = n |. (leftGet , rightGet) in
-    return @@ node
+    node
       ~left:(copy l) ~right:(copy r)
       ~value:(valueGet n) ~height:(heightGet n)
+    |. return  
 (* Creates a new node with leftGet son l, value v and right son r.
    We must have all elements of l < v < all elements of r.
    l and r must be balanced and | treeHeight l - treeHeight r | <= 2.
@@ -68,9 +69,10 @@ let rec copy n =
 let create (l : _ t) v (r : _ t) =
   let hl = match toOpt l with None -> 0 | Some n -> heightGet n in
   let hr = match toOpt r with None -> 0 | Some n -> heightGet n in
-  return @@ node ~left:l ~value:v ~right:r ~height:(if hl >= hr then hl + 1 else hr + 1)
+  node ~left:l ~value:v ~right:r ~height:(if hl >= hr then hl + 1 else hr + 1)
+  |. return
 
-let singleton x = return @@ node ~left:empty ~value:x ~right:empty ~height:1
+let singleton x = node ~left:empty ~value:x ~right:empty ~height:1 |. return
 
 let heightGe l r =
   match toOpt l, toOpt r with
@@ -106,7 +108,7 @@ let bal l v r =
       create (create l v rll) rlv (create rlr rv rr)
     end
   end else
-    return @@ node ~left:l ~value:v ~right:r ~height:(if hl >= hr then hl + 1 else hr + 1)
+    return (node ~left:l ~value:v ~right:r ~height:(if hl >= hr then hl + 1 else hr + 1))
 
 
 

@@ -64,37 +64,8 @@ external ( +. ) : float -> float -> float = "%addfloat"
 external ( -. ) : float -> float -> float = "%subfloat"
 external ( *. ) : float -> float -> float = "%mulfloat"
 external ( /. ) : float -> float -> float = "%divfloat"
-#if OCAML_VERSION =~ "<4.03.0" then
-external mod_float : float -> float -> float = "caml_fmod_float" "fmod" "float"
-#else
-external mod_float : float -> float -> float = "caml_fmod_float" "fmod"
-  [@@unboxed] [@@noalloc]
-#end  
 
-external log : float -> float =  "log" [@@bs.val] [@@bs.scope "Math"]
-external ceil : float -> float =  "ceil" [@@bs.val] [@@bs.scope "Math"]
-external floor : float -> float =  "floor" [@@bs.val] [@@bs.scope "Math"]
-external exp : float -> float =  "exp" [@@bs.val] [@@bs.scope "Math"]
-external sqrt : float -> float =  "sqrt" [@@bs.val] [@@bs.scope "Math"]
 
-type in_channel
-
-type fpclass =
-    FP_normal           (** Normal number, none of the below *)
-  | FP_subnormal        (** Number very close to 0.0, has reduced precision *)
-  | FP_zero             (** Number is 0.0 or -0.0 *)
-  | FP_infinite         (** Number is positive or negative infinity *)
-  | FP_nan              (** Not a number: result of an undefined operation *)
-
-external float : int -> float = "%floatofint"
-
-external int_of_float : float -> int = "%intoffloat"
-
-module Bytes : sig
-  external unsafe_get : bytes -> int -> char = "%bytes_unsafe_get"
-  external unsafe_set : bytes -> int -> char -> unit = "%bytes_unsafe_set"
-  external length : bytes -> int = "%bytes_length"
-end
 
 module Array : sig 
   external unsafe_get : 'a array -> int -> 'a = "%array_unsafe_get"
@@ -177,9 +148,6 @@ module Int64 : sig
   external to_int : int64 -> int = "%int64_to_int"
 end 
 
-module Oo : sig 
-  external id : < .. > -> int = "%field1"
-end 
 
 
 
