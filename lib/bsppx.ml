@@ -17158,7 +17158,10 @@ val suffix_rei : string
 val suffix_d : string
 val suffix_js : string
 val suffix_bs_js : string 
-val suffix_re_js : string
+(* val suffix_re_js : string *)
+val suffix_gen_js : string 
+val suffix_gen_tsx: string
+
 val suffix_tsx : string
 val suffix_mlastd : string
 val suffix_mliastd : string
@@ -17294,7 +17297,9 @@ let suffix_mlastd = ".mlast.d"
 let suffix_mliastd = ".mliast.d"
 let suffix_js = ".js"
 let suffix_bs_js = ".bs.js"
-let suffix_re_js = ".re.js"
+(* let suffix_re_js = ".re.js" *)
+let suffix_gen_js = ".gen.js"
+let suffix_gen_tsx = ".gen.tsx"
 let suffix_tsx = ".tsx"
 
 let commonjs = "commonjs" 
