@@ -32,21 +32,21 @@
 let div (x:nativeint) (y:nativeint) = 
   if y = 0n  then
     raise Division_by_zero
-  else Nativeint.div x y
+  else Caml_nativeint.div x y
 
 let mod_ (x : nativeint) (y:nativeint) = 
   if y = 0n then
     raise Division_by_zero
-  else Nativeint.rem x  y
+  else Caml_nativeint.rem x  y
 
 
 let caml_bswap16 (x : nativeint) = 
- let open Nativeint in 
+ let open Caml_nativeint in 
  logor (shift_left (logand x 0x00ffn) 8)
     (shift_right_logical (logand x 0xff00n) 8)
 
 let caml_int32_bswap (x : nativeint) = 
-  let open Nativeint in 
+  let open Caml_nativeint in 
   logor (shift_left (logand x  0x000000FFn) 24)
      (logor (shift_left (logand x  0x0000FF00n)  8)
         (logor (shift_right_logical (logand x  0x00FF0000n)  8) 

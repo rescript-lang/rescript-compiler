@@ -79,11 +79,6 @@ module String : sig
   external length : string -> int = "%string_length"
 end 
 
-module Char : sig 
-  external code : char -> int = "%identity"
-  external unsafe_chr : int -> char = "%identity"
-end 
-
 module Obj : sig 
   type t 
   external magic : 'a -> 'b = "%identity"
@@ -94,24 +89,7 @@ module Obj : sig
   external dup : t -> t = "caml_obj_dup"
 end 
 
-module Nativeint : sig 
-  external add : nativeint -> nativeint -> nativeint = "%nativeint_add"
-  external div : nativeint -> nativeint -> nativeint = "%nativeint_div"
-  external rem : nativeint -> nativeint -> nativeint = "%nativeint_mod"
-  external logor : nativeint -> nativeint -> nativeint = "%nativeint_or"
-  external shift_left : nativeint -> int -> nativeint = "%nativeint_lsl"
-  external logand : nativeint -> nativeint -> nativeint = "%nativeint_and"
-  external shift_right_logical : nativeint -> int -> nativeint = "%nativeint_lsr"
-  external shift_right : nativeint -> int -> nativeint = "%nativeint_asr"
-  external mul : nativeint -> nativeint -> nativeint = "%nativeint_mul"
-  external logxor : nativeint -> nativeint -> nativeint = "%nativeint_xor"
-  external to_float : nativeint -> float = "caml_nativeint_to_float"
-  external of_float : float -> nativeint = "caml_nativeint_of_float"
-  external to_int : nativeint -> int = "%nativeint_to_int"
-  external to_int32 : nativeint -> int32 = "%nativeint_to_int32"
-  external of_int : int -> nativeint = "%nativeint_of_int"
-  external neg : nativeint -> nativeint = "%nativeint_neg"
-end
+
 
 module Pervasives : sig 
   external compare : 'a -> 'a -> int = "%compare"

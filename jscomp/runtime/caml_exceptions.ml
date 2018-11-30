@@ -49,12 +49,12 @@ let id = ref 0n
    ]}*)
 let caml_set_oo_id (b : Caml_builtin_exceptions.exception_block)  = 
   Obj.set_field (Obj.repr b) 1 (Obj.repr !id);
-  id := Nativeint.add !id  1n; 
+  id := Caml_nativeint.add !id  1n; 
   b
 
 
 let caml_fresh_oo_id () = 
-  id := Nativeint.add !id 1n; !id
+  id := Caml_nativeint.add !id 1n; !id
 
 let object_tag = 248
 

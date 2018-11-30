@@ -19,6 +19,7 @@ OTHERS= caml_array caml_string caml_bytes\
 	js_primitive caml_basic caml_oo curry caml_oo_curry caml_module \
 	caml_missing_polyfill\
 	bs_string  js_nativeint js_int64 bs_obj caml_builtin_exceptions  block caml_primitive\
+	caml_char caml_nativeint\
 
 SOURCE_LIST= $(OTHERS) js 
 

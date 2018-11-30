@@ -35,17 +35,17 @@
 
 (* TODO: see GPR#333
    the encoding of nativeint is platform dependent *)
-open Nativeint
+open Caml_nativeint
 
 let (^) = Bs_string.append
 
-let (>>>) = Nativeint.shift_right_logical
-let (>>) = Nativeint.shift_right
-let ( +~ ) = Nativeint.add
-let ( *~ ) = Nativeint.mul
-let ( & ) = Nativeint.logand
-let ( << ) = Nativeint.shift_left
-let lognot x = Nativeint.logxor x (-1n)
+let (>>>) = Caml_nativeint.shift_right_logical
+let (>>) = Caml_nativeint.shift_right
+let ( +~ ) = Caml_nativeint.add
+let ( *~ ) = Caml_nativeint.mul
+let ( & ) = Caml_nativeint.logand
+let ( << ) = Caml_nativeint.shift_left
+let lognot x = Caml_nativeint.logxor x (-1n)
 
 type t = {  hi : nativeint; lo : nativeint ;  }
 
@@ -110,13 +110,13 @@ let lsl_ ({lo; hi} as x) numBits =
   if numBits = 0 then
     x
   else if numBits >= 32 then
-    {lo =0n; hi = Nativeint.shift_left lo (numBits - 32) }
+    {lo =0n; hi = Caml_nativeint.shift_left lo (numBits - 32) }
   else
-    mk ~lo:(Nativeint.shift_left lo numBits)
+    mk ~lo:(Caml_nativeint.shift_left lo numBits)
      ~hi:
-       (Nativeint.logor
+       (Caml_nativeint.logor
          ( lo >>>  (32 - numBits))
-         (Nativeint.shift_left hi numBits))
+         (Caml_nativeint.shift_left hi numBits))
 
 
 let lsr_ ({lo; hi} as x) numBits =
@@ -131,8 +131,8 @@ let lsr_ ({lo; hi} as x) numBits =
       mk
       ~hi: ( hi >>> numBits)
         ~lo:(
-          Nativeint.logor
-            (Nativeint.shift_left hi (-offset))
+          Caml_nativeint.logor
+            (Caml_nativeint.shift_left hi (-offset))
             ( lo >>> numBits))
 
 
@@ -143,7 +143,7 @@ let asr_ ({lo; hi } as x) numBits =
   if numBits < 32  then
     mk ~hi:(  hi >> numBits)
       ~lo:(
-       Nativeint.logor
+       Caml_nativeint.logor
          ( hi << (32 - numBits)) (* zero filled *)
          ( lo >>> numBits))
 
@@ -209,10 +209,10 @@ let rec mul this
         c32 :=  !c32 & 0xffffn;
         c48 :=  (!c48  +~ (a48 *~ b00 +~ a32 *~ b16 +~ a16 *~ b32 +~ a00 *~ b48)) & 0xffffn;
         mk ~lo:
-           (Nativeint.logor
+           (Caml_nativeint.logor
              (c00 & 0xffffn)
              ( (!c16 & 0xffffn) << 16))
-         ~hi:( Nativeint.logor
+         ~hi:( Caml_nativeint.logor
              !c32
              ( !c48 << 16))
 
@@ -229,19 +229,19 @@ let swap {lo ; hi } =
 *)
  let xor {lo = this_lo; hi= this_hi} {lo = other_lo; hi = other_hi} =
    mk
-     ~lo:(Nativeint.logxor this_lo other_lo)
-    ~hi:(Nativeint.logxor this_hi other_hi)
+     ~lo:(Caml_nativeint.logxor this_lo other_lo)
+    ~hi:(Caml_nativeint.logxor this_hi other_hi)
 
 
 let or_  {lo = this_lo; hi= this_hi} {lo = other_lo; hi = other_hi} =
   mk
-    ~lo:(Nativeint.logor this_lo other_lo)
-    ~hi:(Nativeint.logor this_hi other_hi)
+    ~lo:(Caml_nativeint.logor this_lo other_lo)
+    ~hi:(Caml_nativeint.logor this_hi other_hi)
 
 let and_ {lo = this_lo; hi= this_hi} {lo = other_lo; hi = other_hi} =
   mk
-    ~lo:(Nativeint.logand this_lo other_lo)
-    ~hi:(Nativeint.logand this_hi other_hi)
+    ~lo:(Caml_nativeint.logand this_lo other_lo)
+    ~hi:(Caml_nativeint.logand this_hi other_hi)
 
 
 
@@ -275,7 +275,7 @@ let min x y = if lt x  y then x else y
 let max x y = if gt x y then x else y 
 
 let to_float ({hi; lo} : t) = 
-  Nativeint.to_float ( hi *~ [%raw{|0x100000000|}] +~ lo)
+  Caml_nativeint.to_float ( hi *~ [%raw{|0x100000000|}] +~ lo)
 
 
 
@@ -315,8 +315,8 @@ let rec of_float (x : float) : t =
     max_int
   else if x < 0. then
     neg (of_float (-. x))
-  else mk  ~lo:(Nativeint.of_float (mod_float  x two_ptr_32_dbl))
-         ~hi:(Nativeint.of_float (x /. two_ptr_32_dbl))
+  else mk  ~lo:(Caml_nativeint.of_float (mod_float  x two_ptr_32_dbl))
+         ~hi:(Caml_nativeint.of_float (x /. two_ptr_32_dbl))
 
 
 external log2 : float = "LN2" [@@bs.val]  [@@bs.scope "Math"]
@@ -401,14 +401,14 @@ let compare self other =
 let of_int32 (lo : nativeint) =
   mk ~lo ~hi:(if lo < 0n then -1n else 0n)
 
-let to_int32 x = Nativeint.logor x.lo  0n (* signed integer *)
+let to_int32 x = Caml_nativeint.logor x.lo  0n (* signed integer *)
 
 
 (* width does matter, will it be relevant to endian order? *)
 
 let to_hex x =
   let aux v =
-    Bs_string.of_int (Nativeint.to_int (Nativeint.shift_right_logical v 0)) ~base:16
+    Bs_string.of_int (Caml_nativeint.to_int (Caml_nativeint.shift_right_logical v 0)) ~base:16
   in
   match x.hi, x.lo with
   | 0n, 0n -> "0"
@@ -422,7 +422,7 @@ let to_hex x =
     else
       aux x.hi ^ Caml_utils.repeat pad "0" [@bs] ^ lo
 
-let discard_sign x = {x with hi = Nativeint.logand 0x7fff_ffffn x.hi }
+let discard_sign x = {x with hi = Caml_nativeint.logand 0x7fff_ffffn x.hi }
 
 (* >>> 0 does not change its bit representation
       it simply makes sure it is an unsigned integer
@@ -439,7 +439,7 @@ let discard_sign x = {x with hi = Nativeint.logand 0x7fff_ffffn x.hi }
 let float_of_bits : t -> float = fun%raw x  -> {| 
   return new Float64Array(new Int32Array([x[1],x[0]]).buffer)[0]
 |}
-  (* let to_int32 (x : nativeint) = x |> Nativeint.to_int32
+  (* let to_int32 (x : nativeint) = x |> Caml_nativeint.to_int32
   in
   (*TODO:
     This should get inlined, we should apply a simple inliner in the js layer,
@@ -452,7 +452,7 @@ let float_of_bits : t -> float = fun%raw x  -> {|
 let  bits_of_float : float -> t  = fun x -> 
     let buf = [%raw{|new Int32Array(new Float64Array([x]).buffer)|}] in 
     mk ~lo:(fst buf) ~hi:(snd buf)
-  (* let to_nat (x : int32) = x |> Int32.to_int |>  Nativeint.of_int in
+  (* let to_nat (x : int32) = x |> Int32.to_int |>  Caml_nativeint.of_int in
 
   let u = Float64_array.make [| x |] in
   let int32 = Int32_array.fromBuffer (Float64_array.buffer u) in
@@ -462,18 +462,18 @@ let  bits_of_float : float -> t  = fun x ->
 (** used by "%caml_string_get64" *)
 let get64 (s : string) (i:int) : t =
   mk ~lo:
-    (Nativeint.logor
-       (Nativeint.logor
-          (Nativeint.of_int (Caml_char.code s.[i]))
-          (Nativeint.of_int (Caml_char.code s.[i+1]) << 8))
-       (Nativeint.logor
-          (Nativeint.of_int (Caml_char.code s.[i+2]) << 16 )
-          (Nativeint.of_int (Caml_char.code s.[i+3]) << 24 )))
+    (Caml_nativeint.logor
+       (Caml_nativeint.logor
+          (Caml_nativeint.of_int (Caml_char.code s.[i]))
+          (Caml_nativeint.of_int (Caml_char.code s.[i+1]) << 8))
+       (Caml_nativeint.logor
+          (Caml_nativeint.of_int (Caml_char.code s.[i+2]) << 16 )
+          (Caml_nativeint.of_int (Caml_char.code s.[i+3]) << 24 )))
     ~hi:
-      (Nativeint.logor
-         (Nativeint.logor
-            (Nativeint.of_int (Caml_char.code s.[i+4]) << 32)
-            (Nativeint.of_int (Caml_char.code s.[i+5]) << 40))
-         (Nativeint.logor
-            (Nativeint.of_int (Caml_char.code s.[i+6]) << 48 )
-            (Nativeint.of_int (Caml_char.code s.[i+7]) << 56 )))
+      (Caml_nativeint.logor
+         (Caml_nativeint.logor
+            (Caml_nativeint.of_int (Caml_char.code s.[i+4]) << 32)
+            (Caml_nativeint.of_int (Caml_char.code s.[i+5]) << 40))
+         (Caml_nativeint.logor
+            (Caml_nativeint.of_int (Caml_char.code s.[i+6]) << 48 )
+            (Caml_nativeint.of_int (Caml_char.code s.[i+7]) << 56 )))

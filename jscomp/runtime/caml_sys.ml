@@ -60,8 +60,8 @@ external random : unit -> float = "Math.random" [@@bs.val]
 
 let caml_sys_random_seed () : nativeint array = 
    [|
-     Nativeint.of_float 
-     ((Nativeint.to_float (Nativeint.logxor (Nativeint.of_float (now ()))
+     Caml_nativeint.of_float 
+     ((Caml_nativeint.to_float (Caml_nativeint.logxor (Caml_nativeint.of_float (now ()))
                              0xffffffffn)) *. random ()) |]
 
 type spawnResult

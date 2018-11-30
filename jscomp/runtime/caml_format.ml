@@ -34,12 +34,12 @@ let repeat = Caml_utils.repeat
 let caml_failwith s = raise (Failure  s)
 let caml_invalid_argument s= raise (Invalid_argument s )
 let (^) = Bs_string.append
-let (>>>) = Nativeint.shift_right_logical
+let (>>>) = Caml_nativeint.shift_right_logical
 
-let to_nat x = Nativeint.of_int x 
-let of_nat x = Nativeint.to_int x 
-let (+~) = Nativeint.add 
-let ( *~ ) = Nativeint.mul  
+let to_nat x = Caml_nativeint.of_int x 
+let of_nat x = Caml_nativeint.to_int x 
+let (+~) = Caml_nativeint.add 
+let ( *~ ) = Caml_nativeint.mul  
 
 let parse_digit c = 
   match c with 
@@ -90,7 +90,7 @@ let parse_sign_and_base (s : string) =
 
 let caml_int_of_string s = 
   let i, sign, hbase = parse_sign_and_base s in
-  let base  = Nativeint.of_int (int_of_string_base hbase) in
+  let base  = Caml_nativeint.of_int (int_of_string_base hbase) in
   let threshold = (-1n >>> 0) in 
   let len =Bs_string.length s in  
   let c = if i < len then s.[i] else '\000' in
@@ -115,7 +115,7 @@ let caml_int_of_string s =
           else aux acc  ( k +   1)
   in 
   let res = sign *~ aux d (i + 1) in 
-  let or_res = Nativeint.logor res 0n in 
+  let or_res = Caml_nativeint.logor res 0n in 
   (if base = 10n && res <> or_res then 
     caml_failwith "int_of_string");
   or_res
@@ -352,10 +352,10 @@ let aux f (i : nativeint)  =
       if f.signedconv then 
         begin 
           f.sign <- -1;
-          Nativeint.neg i
+          Caml_nativeint.neg i
         end
       else 
-        Nativeint.shift_right_logical i 0 
+        Caml_nativeint.shift_right_logical i 0 
     else  i  in
   let s = ref (Bs_string.of_nativeint i ~base:(int_of_base f.base)) in 
   if f.prec >= 0 then 
