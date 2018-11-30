@@ -26,9 +26,6 @@
 
 
 
-
-(** *)
-
 (* This module would  only work with js backend, since it requires
    [nativeint] behaves as js  numbers
  *)
@@ -291,28 +288,15 @@ external mod_float : float -> float -> float = "caml_fmod_float"
      (2. ** 63. -. 1. = 2. ** 63.) ;;
    ]}
 *)
-(* let max_int_as_dbl = Int64.to_float 0x7fff_ffff_ffff_ffffL *)
-(* let min_int_as_dbl = Int64.to_float 0x8000_0000_0000_0000L
-   TODO: (E.math   ) constant folding
-*)
 
-(* Note in ocaml [Int64.of_float] is weird
-   {[
-     Int64.of_float 2.e65;;
-     - : int64 = -9223372036854775808L
-   ]}
-   {[
-     Int64.of_float (Int64.to_float (Int64.sub Int64.max_int 1L));;
-     - : int64 = -9223372036854775808L
-   ]}
-*)
+
 let rec of_float (x : float) : t =
   if FloatRT.isNaN x
   ||  Pervasives.not  (FloatRT.isFinite x ) then zero
   else if x <= neg_two_ptr_63 then
     min_int
   else if x  +. 1. >= two_ptr_63_dbl then
-    max_int
+    max_int (* Undefined behavior *)
   else if x < 0. then
     neg (of_float (-. x))
   else mk  ~lo:(Caml_nativeint.of_float (mod_float  x two_ptr_32_dbl))
