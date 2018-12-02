@@ -47,7 +47,7 @@ type t = Caml_obj_extern.t
 
 *)
 let caml_obj_block tag size = 
-  let v = Caml_obj_extern.repr (Caml_array.new_uninitialized size) in 
+  let v = Caml_obj_extern.repr (Caml_array_extern.new_uninitialized size) in 
   Caml_obj_extern.set_tag  v tag ; 
   v
 
@@ -79,9 +79,9 @@ let caml_obj_block tag size =
 
 let caml_obj_dup (x : Caml_obj_extern.t) =
   let len = Caml_obj_extern.length x in
-  let v = Caml_array.new_uninitialized  len in
+  let v = Caml_array_extern.new_uninitialized  len in
   for i = 0 to len - 1 do
-    Caml_array.unsafe_set v i (Caml_obj_extern.field x i)
+    Caml_array_extern.unsafe_set v i (Caml_obj_extern.field x i)
   done;
   Caml_obj_extern.set_tag (Caml_obj_extern.repr v) (Caml_obj_extern.tag x );
   Caml_obj_extern.repr v

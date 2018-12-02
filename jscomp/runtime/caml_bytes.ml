@@ -21,11 +21,8 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-external new_uninitialized : int -> bytes = "Array"  [@@bs.new]
-
-external unsafe_get : bytes -> int -> char = "%bytes_unsafe_get"
-external unsafe_set : bytes -> int -> char -> unit = "%bytes_unsafe_set"
-external length : bytes -> int = "%bytes_length" 
+ 
+open Caml_bytes_extern
 
 let get s i =
   if i < 0 || i >= length s then

@@ -89,7 +89,7 @@ let caml_sys_get_argv () : string * string array =
   else 
     let argv = [%raw{|process.argv|}] in 
     if Js.testAny argv then ("",[|""|])
-    else Caml_array.unsafe_get argv 0, argv
+    else Caml_array_extern.unsafe_get argv 0, argv
 
 (** {!Pervasives.sys_exit} *)
 let caml_sys_exit :int -> 'a = fun exit_code -> 

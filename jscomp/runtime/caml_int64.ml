@@ -398,7 +398,7 @@ let to_int32 x = Caml_nativeint_extern.logor x.lo  0n (* signed integer *)
 
 let to_hex (x : int64) =
   let {hi = x_hi; lo = x_lo} = unsafe_of_int64 x in 
-  let aux v =
+  let aux v : string =
     Caml_string_extern.of_int (Caml_nativeint_extern.to_int (Caml_nativeint_extern.shift_right_logical v 0)) ~base:16
   in
   match x_hi, x_lo with

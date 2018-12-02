@@ -41,7 +41,7 @@ type shape =
     in the lambda layer
  *)
 let init_mod (loc : string * int * int) (shape : shape) =  
-  let module Array = Caml_array in 
+  let module Array = Caml_array_extern in 
   let undef_module _ = raise (Undefined_recursive_module loc) in
   let rec loop (shape : shape) (struct_ : Caml_obj_extern.t array) idx = 
     match shape with 
@@ -72,7 +72,7 @@ external caml_update_dummy : Caml_obj_extern.t -> Caml_obj_extern.t -> unit = "c
    and we assume [module] is encoded as an array
  *)
 let update_mod (shape : shape)  (o : Caml_obj_extern.t)  (n : Caml_obj_extern.t) :  unit = 
-  let module Array = Caml_array in 
+  let module Array = Caml_array_extern in 
   let rec aux (shape : shape) o n parent i  =
     match shape with
     | Function 

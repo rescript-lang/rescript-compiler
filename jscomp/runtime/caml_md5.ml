@@ -58,7 +58,7 @@ let i a b c d x s t =
 
 
 let cycle (x : int32 array)  (k : int32 array) = 
-    let module Array = Caml_array (* reuse the sugar .. *)
+    let module Array = Caml_array_extern (* reuse the sugar .. *)
     in 
     let a = ref x.(0) in 
     let b = ref x.(1) in 
@@ -157,7 +157,7 @@ let md5blk = [|
 
 let caml_md5_string s start len = 
   let module String = Caml_string_extern in 
-  let module Array = Caml_array (* reuse the sugar .. *)
+  let module Array = Caml_array_extern (* reuse the sugar .. *)
   in 
 
   let s = Caml_string_extern.slice   s start len in
