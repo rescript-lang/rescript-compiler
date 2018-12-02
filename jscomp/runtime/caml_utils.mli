@@ -25,6 +25,4 @@
 
 
 
-(** *)
-
-val repeat : int -> string -> string [@bs]
+val repeat : int -> string -> string 

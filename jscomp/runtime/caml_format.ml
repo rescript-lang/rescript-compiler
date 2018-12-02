@@ -34,12 +34,12 @@ let repeat = Caml_utils.repeat
 let caml_failwith s = raise (Failure  s)
 let caml_invalid_argument s= raise (Invalid_argument s )
 
-let (>>>) = Caml_nativeint.shift_right_logical
+let (>>>) = Caml_nativeint_extern.shift_right_logical
 
-let to_nat x = Caml_nativeint.of_int x 
-let of_nat x = Caml_nativeint.to_int x 
-let (+~) = Caml_nativeint.add 
-let ( *~ ) = Caml_nativeint.mul  
+let to_nat x = Caml_nativeint_extern.of_int x 
+let of_nat x = Caml_nativeint_extern.to_int x 
+let (+~) = Caml_nativeint_extern.add 
+let ( *~ ) = Caml_nativeint_extern.mul  
 
 let parse_digit c = 
   match c with 
@@ -92,7 +92,7 @@ let parse_sign_and_base (s : string) =
 let caml_int_of_string s = 
   let module String = Caml_string_extern in 
   let i, sign, hbase = parse_sign_and_base s in
-  let base  = Caml_nativeint.of_int (int_of_string_base hbase) in
+  let base  = Caml_nativeint_extern.of_int (int_of_string_base hbase) in
   let threshold = (-1n >>> 0) in 
   let len =Caml_string_extern.length s in  
   let c = if i < len then s.[i] else '\000' in
@@ -117,7 +117,7 @@ let caml_int_of_string s =
           else aux acc  ( k +   1)
   in 
   let res = sign *~ aux d (i + 1) in 
-  let or_res = Caml_nativeint.logor res 0n in 
+  let or_res = Caml_nativeint_extern.logor res 0n in 
   (if base = 10n && res <> or_res then 
     caml_failwith "int_of_string");
   or_res
@@ -356,10 +356,10 @@ let aux f (i : nativeint)  =
       if f.signedconv then 
         begin 
           f.sign <- -1;
-          Caml_nativeint.neg i
+          Caml_nativeint_extern.neg i
         end
       else 
-        Caml_nativeint.shift_right_logical i 0 
+        Caml_nativeint_extern.shift_right_logical i 0 
     else  i  in
   let s = ref (Caml_string_extern.of_nativeint i ~base:(int_of_base f.base)) in 
   if f.prec >= 0 then 
@@ -367,12 +367,12 @@ let aux f (i : nativeint)  =
       f.filter <- " ";
       let n = f.prec -Caml_string_extern.length !s in 
       if n > 0 then
-        s :=  repeat n "0" [@bs]  ^ !s
+        s :=  repeat n "0"  ^ !s
     end ;
   finish_formatting f !s
 
 let caml_format_int fmt i = 
-  if fmt = "%d" then Js_nativeint.to_string i 
+  if fmt = "%d" then Caml_nativeint_extern.to_string i 
   else 
     let f = parse_format fmt in 
     aux f i 
@@ -496,7 +496,7 @@ let caml_int64_format fmt x =
       f.filter <- " ";
       let n = f.prec -Caml_string_extern.length !s in
       if n > 0 then
-        s := repeat n "0" [@bs] ^ !s
+        s := repeat n "0" ^ !s
     end;
 
   finish_formatting f !s
