@@ -116,7 +116,7 @@ var glo = Bytes.make(4096, /* "\000" */0);
 
 var gpos = /* record */[/* contents */0];
 
-var s = Caml_string.caml_create_bytes(100);
+var s = Caml_bytes.caml_create_bytes(100);
 
 function getq(param) {
   var c = Curry._1(getch, /* () */0);

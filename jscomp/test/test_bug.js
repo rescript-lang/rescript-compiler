@@ -2,7 +2,7 @@
 
 var Bytes = require("../../lib/js/bytes.js");
 var Caml_char = require("../../lib/js/caml_char.js");
-var Caml_string = require("../../lib/js/caml_string.js");
+var Caml_bytes = require("../../lib/js/caml_bytes.js");
 
 function escaped(s) {
   var n = 0;
@@ -35,7 +35,7 @@ function escaped(s) {
   if (n === s.length) {
     return Bytes.copy(s);
   } else {
-    var s$prime = Caml_string.caml_create_bytes(n);
+    var s$prime = Caml_bytes.caml_create_bytes(n);
     n = 0;
     for(var i$1 = 0 ,i_finish$1 = s.length - 1 | 0; i$1 <= i_finish$1; ++i$1){
       var c$1 = s[i$1];

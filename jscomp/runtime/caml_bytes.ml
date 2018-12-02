@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
+external new_uninitialized : int -> bytes = "Array"  [@@bs.new]
 
 external unsafe_get : bytes -> int -> char = "%bytes_unsafe_get"
 external unsafe_set : bytes -> int -> char -> unit = "%bytes_unsafe_set"
@@ -31,3 +31,19 @@ let get s i =
   if i < 0 || i >= length s then
     raise (Invalid_argument "index out of bounds")
   else unsafe_get s i      
+
+let caml_fill_bytes (s : bytes) i l (c : char) = 
+  if l > 0 then
+    for k = i to l + i - 1 do 
+      unsafe_set s k c 
+    done
+  
+let caml_create_bytes len : bytes = 
+  (* Node raise [RangeError] exception *)
+  if len < 0 then raise (Invalid_argument "String.create")
+  else 
+    let result = new_uninitialized len in 
+    for i = 0 to  len - 1 do 
+      unsafe_set result i '\000'
+    done ;
+    result 

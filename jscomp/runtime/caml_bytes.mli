@@ -27,5 +27,6 @@ external unsafe_set : bytes -> int -> char -> unit = "%bytes_unsafe_set"
 external length : bytes -> int = "%bytes_length" 
 
 
-
+val caml_create_bytes : int -> bytes
+val caml_fill_bytes :  bytes -> int -> int -> char -> unit
 val get : bytes -> int -> char

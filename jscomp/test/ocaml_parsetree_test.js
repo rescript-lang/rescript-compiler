@@ -10379,7 +10379,7 @@ var keyword_table = create_hashtable(149, /* :: */[
       ]
     ]);
 
-var initial_string_buffer = Caml_string.caml_create_bytes(256);
+var initial_string_buffer = Caml_bytes.caml_create_bytes(256);
 
 var string_buff = /* record */[/* contents */initial_string_buffer];
 
@@ -10393,7 +10393,7 @@ function reset_string_buffer(param) {
 
 function store_string_char(c) {
   if (string_index[0] >= string_buff[0].length) {
-    var new_buff = Caml_string.caml_create_bytes((string_buff[0].length << 1));
+    var new_buff = Caml_bytes.caml_create_bytes((string_buff[0].length << 1));
     Bytes.blit(string_buff[0], 0, new_buff, 0, string_buff[0].length);
     string_buff[0] = new_buff;
   }
@@ -10525,7 +10525,7 @@ function cvt_nativeint_literal(s) {
 
 function remove_underscores(s) {
   var l = s.length;
-  var b = Caml_string.caml_create_bytes(l);
+  var b = Caml_bytes.caml_create_bytes(l);
   var _src = 0;
   var _dst = 0;
   while(true) {

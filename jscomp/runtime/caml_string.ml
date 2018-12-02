@@ -51,25 +51,6 @@ let caml_string_get s i=
   else Bs_string.unsafe_get s i
 
 
-let caml_create_bytes len : bytes = 
-  (* Node raise [RangeError] exception *)
-  if len < 0 then raise (Invalid_argument "String.create")
-  else 
-    let result = new_uninitialized len in 
-    for i = 0 to  len - 1 do 
-      unsafe_set result i '\000'
-    done ;
-    result 
-
-
-
-
-
-let caml_fill_bytes (s : bytes) i l (c : char) = 
-  if l > 0 then
-    for k = i to l + i - 1 do 
-      unsafe_set s k c 
-    done
 
 (**
    TODO: [min] is not type specialized in OCaml

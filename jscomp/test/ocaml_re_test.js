@@ -1873,8 +1873,8 @@ function colorize(c, regexp) {
 }
 
 function flatten_cmap(cm) {
-  var c = Caml_string.caml_create_bytes(256);
-  var col_repr = Caml_string.caml_create_bytes(256);
+  var c = Caml_bytes.caml_create_bytes(256);
+  var col_repr = Caml_bytes.caml_create_bytes(256);
   var v = 0;
   c[0] = /* "\000" */0;
   col_repr[0] = /* "\000" */0;

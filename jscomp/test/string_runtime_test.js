@@ -5,6 +5,7 @@ var List = require("../../lib/js/list.js");
 var Block = require("../../lib/js/block.js");
 var Bytes = require("../../lib/js/bytes.js");
 var Caml_char = require("../../lib/js/caml_char.js");
+var Caml_bytes = require("../../lib/js/caml_bytes.js");
 var Caml_string = require("../../lib/js/caml_string.js");
 
 var suites_000 = /* tuple */[
@@ -37,8 +38,8 @@ var suites_001 = /* :: */[
       (function (param) {
           var match = List.split(List.map((function (x) {
                       var len = x;
-                      var b = Caml_string.caml_create_bytes(1000);
-                      Caml_string.caml_fill_bytes(b, 0, len, /* "c" */99);
+                      var b = Caml_bytes.caml_create_bytes(1000);
+                      Caml_bytes.caml_fill_bytes(b, 0, len, /* "c" */99);
                       return /* tuple */[
                               Caml_string.bytes_to_string(b),
                               Caml_string.bytes_to_string(Bytes.init(len, (function (param) {

@@ -477,11 +477,19 @@ let translate loc (prim_name : string)
           Also, it's creating a [bytes] which is a js array actually.
       *)
       begin match args with
-        | [{expression_desc = Number (Int {i = 0l; _}); _}] 
+        | [{expression_desc = Number (Int {i; _}); _}] 
+          when i < 8l
           ->
-          E.array NA []
+          (*Invariants: assuming bytes are [int array]*)
+          E.array NA 
+            (if i = 0l then []
+            else 
+            Ext_list.init 
+              (Int32.to_int i)
+              (fun i -> E.zero_int_literal)
+            )
         | _ -> 
-          E.runtime_call Js_runtime_modules.string 
+          E.runtime_call Js_runtime_modules.bytes
             "caml_create_bytes" args
       end
     | "caml_bool_compare" ->   
@@ -537,7 +545,7 @@ let translate loc (prim_name : string)
     | "caml_fill_bytes"
       -> 
         E.runtime_call 
-          Js_runtime_modules.string "caml_fill_bytes" args
+          Js_runtime_modules.bytes "caml_fill_bytes" args
     | "caml_is_printable" 
       -> 
       call Js_runtime_modules.char
