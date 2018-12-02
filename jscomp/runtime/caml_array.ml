@@ -23,6 +23,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
+external caml_array_dup : 'a array -> (_ [@bs.as 0]) -> 'a array = 
+  "slice"  [@@bs.send]
 
 let caml_array_sub (x : 'a array) (offset : int) (len : int) = 
   let result = Caml_array_extern.new_uninitialized len  in
