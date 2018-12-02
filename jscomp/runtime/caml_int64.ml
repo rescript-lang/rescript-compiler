@@ -291,8 +291,8 @@ external mod_float : float -> float -> float = "caml_fmod_float"
 
 
 let rec of_float (x : float) : t =
-  if FloatRT.isNaN x
-  ||  Pervasives.not  (FloatRT.isFinite x ) then zero
+  if Caml_float_extern.isNaN x
+  ||  Pervasives.not  (Caml_float_extern.isFinite x ) then zero
   else if x <= neg_two_ptr_63 then
     min_int
   else if x  +. 1. >= two_ptr_63_dbl then
@@ -436,7 +436,7 @@ let float_of_bits : t -> float = fun%raw x  -> {|
 let  bits_of_float : float -> t  = fun x -> 
     let buf = [%raw{|new Int32Array(new Float64Array([x]).buffer)|}] in 
     mk ~lo:(fst buf) ~hi:(snd buf)
-  (* let to_nat (x : int32) = x |> Int32.to_int |>  Caml_nativeint.of_int in
+  (* let to_nat (x : int32) = x |> Caml_int32_extern.to_int |>  Caml_nativeint.of_int in
 
   let u = Float64_array.make [| x |] in
   let int32 = Int32_array.fromBuffer (Float64_array.buffer u) in

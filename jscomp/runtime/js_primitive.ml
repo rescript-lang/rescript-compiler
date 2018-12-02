@@ -69,12 +69,12 @@ let valFromOption (x : Bs_obj.t) : Bs_obj.t =
 
 
 let option_get (x : 'a option) = 
-  if x = None then UndefinedRT.empty
+  if x = None then Caml_undefined_extern.empty
   else Obj.magic (valFromOption (Bs_obj.repr x))
 
 
 (** [input] is optional polymorphic variant *)  
 let option_get_unwrap (x : 'a option)  =
-  if x = None then UndefinedRT.empty
+  if x = None then Caml_undefined_extern.empty
   else Obj.magic (Bs_obj.field (Bs_obj.repr (valFromOption (Bs_obj.repr x))) 1 )
 

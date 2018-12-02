@@ -29,7 +29,7 @@
 external getEnv : 'a -> string -> string option = "" [@@bs.get_index] 
 let caml_sys_getenv s =
   if Js.typeof [%raw{|process|}] = "undefined"
-     || [%raw{|process.env|}] = UndefinedRT.empty 
+     || [%raw{|process.env|}] = Caml_undefined_extern.empty 
   then raise Not_found
   else  
     match getEnv [%raw{|process.env|}] s with 
@@ -51,7 +51,7 @@ external exit : process -> int -> 'a =  ""  [@@bs.send]
 
 let caml_sys_time () =
   if Js.typeof [%raw{|process|}] = "undefined" 
-    || [%raw{|process.uptime|}] = UndefinedRT.empty
+    || [%raw{|process.uptime|}] = Caml_undefined_extern.empty
   then -1.
   else uptime [%raw{|process|}] ()
   

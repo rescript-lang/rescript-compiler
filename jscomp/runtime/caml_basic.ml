@@ -33,10 +33,10 @@ let some x = Some x
 let is_none x : bool =
   x = None
 
-let to_def x : _ UndefinedRT.t = 
+let to_def x : _ Caml_undefined_extern.t = 
   match  x with 
-  | None -> UndefinedRT.empty
-  | Some x -> UndefinedRT.return x 
+  | None -> Caml_undefined_extern.empty
+  | Some x -> Caml_undefined_extern.return x 
 
 (* In the next version of std, we already provide 
    [List.cons]

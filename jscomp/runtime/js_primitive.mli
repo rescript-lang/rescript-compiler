@@ -33,6 +33,6 @@ val valFromOption : Bs_obj.t -> Bs_obj.t
 
 val some : Bs_obj.t -> Bs_obj.t 
 
-val option_get : Bs_obj.t option -> Bs_obj.t UndefinedRT.t 
+val option_get : Bs_obj.t option -> Bs_obj.t Caml_undefined_extern.t 
 
-val option_get_unwrap : 'a option -> Bs_obj.t UndefinedRT.t
+val option_get_unwrap : 'a option -> Bs_obj.t Caml_undefined_extern.t

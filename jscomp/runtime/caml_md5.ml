@@ -28,25 +28,25 @@
 
 (** *)
 
-let (+~) = Int32.add 
-let add32 = Int32.add
-let (<<) = Int32.shift_left 
-let (>>>) = Int32.shift_right_logical
-let (>>) = Int32.shift_right
-let (&) = Int32.logand  
-let (^) = Int32.logxor 
-let lognot n = Int32.logxor n (-1l)
+let (+~) = Caml_int32_extern.add 
+let add32 = Caml_int32_extern.add
+let (<<) = Caml_int32_extern.shift_left 
+let (>>>) = Caml_int32_extern.shift_right_logical
+let (>>) = Caml_int32_extern.shift_right
+let (&) = Caml_int32_extern.logand  
+let (^) = Caml_int32_extern.logxor 
+let lognot n = Caml_int32_extern.logxor n (-1l)
 let cmn q a b x s t = 
     let a = a +~ q +~ x +~ t in
-    Int32.logor (a << s)  (a >>> (32 - s)) +~  b
+    Caml_int32_extern.logor (a << s)  (a >>> (32 - s)) +~  b
 
 
 let  f a b c d x s t = 
-  cmn (Int32.logor (b & c)  (lognot b & d)) a b x s t
+  cmn (Caml_int32_extern.logor (b & c)  (lognot b & d)) a b x s t
 
 
 let g a b c d x s t =
-  cmn (Int32.logor (b & d)  (c & (lognot d))) a b x s t
+  cmn (Caml_int32_extern.logor (b & d)  (c & (lognot d))) a b x s t
 
 ;;
 let h a b c d x s t = 
@@ -54,7 +54,7 @@ let h a b c d x s t =
 ;;
 
 let i a b c d x s t = 
-  cmn (c ^ (Int32.logor b  (lognot d))) a b x s t
+  cmn (c ^ (Caml_int32_extern.logor b  (lognot d))) a b x s t
 
 
 let cycle (x : int32 array)  (k : int32 array) = 
@@ -177,10 +177,10 @@ let caml_md5_string s start len =
   for  i = 1 to  i_end do 
     for j = 0 to 16 - 1 do 
       let k = i * 64 - 64 + j * 4 in 
-      md5blk.(j) <- (Int32.of_int (Caml_char.code s.[k])) +~
-                    (Int32.of_int (Caml_char.code s.[k+1]) << 8 ) +~        
-                    (Int32.of_int (Caml_char.code s.[k+2]) << 16 ) +~        
-                    (Int32.of_int (Caml_char.code s.[k+3]) << 24 )
+      md5blk.(j) <- (Caml_int32_extern.of_int (Caml_char.code s.[k])) +~
+                    (Caml_int32_extern.of_int (Caml_char.code s.[k+1]) << 8 ) +~        
+                    (Caml_int32_extern.of_int (Caml_char.code s.[k+2]) << 16 ) +~        
+                    (Caml_int32_extern.of_int (Caml_char.code s.[k+3]) << 24 )
     done ;
     cycle state md5blk
   done ;
@@ -192,10 +192,10 @@ let caml_md5_string s start len =
   let i_end =Bs_string.length s_tail - 1 in
   for i = 0 to  i_end do 
     md5blk.(i / 4 ) <- 
-      Int32.logor md5blk.(i / 4)  (Int32.of_int (Caml_char.code s_tail.[i]) << ((i mod 4) lsl 3))
+      Caml_int32_extern.logor md5blk.(i / 4)  (Caml_int32_extern.of_int (Caml_char.code s_tail.[i]) << ((i mod 4) lsl 3))
   done ;
   let i = i_end + 1 in
-  md5blk.(i / 4 ) <-  Int32.logor md5blk.(i / 4 )  (0x80l << ((i mod 4) lsl 3)) ;
+  md5blk.(i / 4 ) <-  Caml_int32_extern.logor md5blk.(i / 4 )  (0x80l << ((i mod 4) lsl 3)) ;
   if i > 55 then
     begin 
       cycle state md5blk;
@@ -203,7 +203,7 @@ let caml_md5_string s start len =
         md5blk.(i) <- 0l
       done 
     end;
-  md5blk.(14) <-  Int32.mul (Int32.of_int n)  8l;
+  md5blk.(14) <-  Caml_int32_extern.mul (Caml_int32_extern.of_int n)  8l;
   cycle state md5blk;
   Bs_string.of_small_int32_array [|
         state.(0) & 0xffl;

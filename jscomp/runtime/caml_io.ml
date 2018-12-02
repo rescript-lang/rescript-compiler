@@ -27,7 +27,7 @@
 type in_channel
 
 
-let stderr = UndefinedRT.empty
+let stderr = Caml_undefined_extern.empty
 
 type out_channel  = {
   mutable buffer :  string;

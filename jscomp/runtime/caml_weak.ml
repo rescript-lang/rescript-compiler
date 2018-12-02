@@ -28,7 +28,7 @@
 
 (** *)
 
-type 'a t = 'a UndefinedRT.t array
+type 'a t = 'a Caml_undefined_extern.t array
 
 let caml_weak_create n =
   Caml_array.new_uninitialized n 
@@ -36,19 +36,19 @@ let caml_weak_create n =
 let caml_weak_set xs i v = 
   match v with 
   | Some x -> 
-    Caml_array.unsafe_set xs i (UndefinedRT.return x)
+    Caml_array.unsafe_set xs i (Caml_undefined_extern.return x)
   | None -> ()
 
 let caml_weak_get  xs i = 
-  UndefinedRT.toOption 
+  Caml_undefined_extern.toOption 
     (Caml_array.unsafe_get xs i) 
 
 let caml_weak_get_copy  xs i = 
-  match UndefinedRT.toOption (Caml_array.unsafe_get xs i) with 
+  match Caml_undefined_extern.toOption (Caml_array.unsafe_get xs i) with 
   | None -> None 
   | Some x -> Some (Obj.magic (Caml_obj.caml_obj_dup (Bs_obj.repr x) ))
 
 let caml_weak_check xs i = 
-  Caml_array.unsafe_get xs i <> UndefinedRT.empty
+  Caml_array.unsafe_get xs i <> Caml_undefined_extern.empty
 
 let caml_weak_blit = Caml_array.caml_array_blit
