@@ -102,7 +102,8 @@ let reason_to_ml_swap = function
   | x when (
     potentially_conflicts_with ~keyword:"match" x
     || potentially_conflicts_with ~keyword:"method" x
-    || potentially_conflicts_with ~keyword:"private" x) -> string_add_suffix x
+    || potentially_conflicts_with ~keyword:"private" x
+    || potentially_conflicts_with ~keyword:"not" x) -> string_add_suffix x
   | x when (
     potentially_conflicts_with ~keyword:"switch_" x
     || potentially_conflicts_with ~keyword:"pub_" x
@@ -125,7 +126,8 @@ let ml_to_reason_swap = function
   | x when (
     potentially_conflicts_with ~keyword:"match_" x
     || potentially_conflicts_with ~keyword:"method_" x
-    || potentially_conflicts_with ~keyword:"private_" x) -> string_drop_suffix x
+    || potentially_conflicts_with ~keyword:"private_" x
+    || potentially_conflicts_with ~keyword:"not_" x) -> string_drop_suffix x
   | x when (
     potentially_conflicts_with ~keyword:"switch" x
     || potentially_conflicts_with ~keyword:"pub" x
@@ -151,6 +153,17 @@ let escape_string str =
 
 #if defined BS_NO_COMPILER_PATCH then
 
+(*
+    UTF-8 characters are encoded like this (most editors are UTF-8)
+    0xxxxxxx (length 1)
+    110xxxxx 10xxxxxx (length 2)
+    1110xxxx 10xxxxxx 10xxxxxx (length 3)
+    11110xxx 10xxxxxx 10xxxxxx 10xxxxxx (length 4)
+   Numbers over 127 cannot be encoded in UTF in a single byte, so they use two
+  bytes. That means we can use any characters between 128-255 to encode special
+  characters that would never be written by the user and thus never be confused
+  for our special formatting characters.
+*)
 (* Logic for handling special behavior that only happens if things break. We
   use characters that will never appear in the printed output if actually
   written in source code. The OCaml formatter will replace them with the escaped
@@ -166,29 +179,16 @@ module TrailingCommaMarker = struct
   let char = Char.chr 249 (* ˘ *)
   let string = String.make 1 char
 end
-module OpenBraceMarker = struct
-  (* An open brace marker will only be rendered if it is immediately
-   * followed by a newline. This should NOT BE USED WITH
-   * anything but inline:(true, false) because the following will cause
-   * OpenBraceMarker to be replaced but not ClosedBraceMarker.
-   *    let x = () => {
-   *      whoops };
-   *)
-  let char = Char.chr 174 (* « *)
-  let string = String.make 1 char
-end
-module ClosedBraceMarker = struct
-  (* An open brace marker will only be rendered if it is immediately
-   * preceeded by white space and a newline. This should NOT BE USED WITH
-   * anything but inline:(true, false) because the following will cause
-   * OpenBraceMarker to be replaced but not ClosedBraceMarker.
-   *    let x = () => {
-   *      whoops };
-   *)
-  let char = Char.chr 175 (* » *)
-  let string = String.make 1 char
-end
 
+(* Special character marking the end of a line. Nothing should be printed
+ * after this marker. Example usage: // comments shouldn't have content printed
+ * at the end of the comment. By attaching an EOLMarker.string at the end of the
+ * comment our postprocessing step will ensure a linebreak at the position
+ * of the marker. *)
+module EOLMarker = struct
+  let char = Char.chr 248
+  let string = String.make 1 char
+end
 
 (** [is_prefixed prefix i str] checks if prefix is the prefix of str
   * starting from position i
@@ -312,17 +312,27 @@ let processLine line =
       String.get rightTrimmed (trimmedLen - 1) = TrailingCommaMarker.char
     in
     let almostEverything = String.concat "" segments in
-    if hadTrailingCommaMarkerBeforeNewline then
+    let lineBuilder = if hadTrailingCommaMarkerBeforeNewline then
       almostEverything ^ ","
     else
       almostEverything
-
+    in
+    (* Ensure EOLMarker.char is replaced by a newline *)
+    split_by ~keep_empty:false (fun c -> c = EOLMarker.char) lineBuilder
+    |> List.map trim_right
+    |> String.concat "\n"
 
 let processLineEndingsAndStarts str =
   split_by ~keep_empty:true (fun x -> x = '\n') str
   |> List.map processLine
   |> String.concat "\n"
   |> String.trim
+
+let isLineComment str =
+  (* true iff the first \n is the last character *)
+  match String.index str '\n' with
+  | exception Not_found -> false
+  | n -> n = String.length str - 1
 
 (** Generate a suitable extension node for Merlin's consumption,
     for the purposes of reporting a syntax error - only used
@@ -354,9 +364,7 @@ let identifier_mapper f super =
   expr = begin fun mapper expr ->
     let expr =
       match expr with
-        | {pexp_desc=Pexp_ident ({txt} as id);
-           pexp_loc;
-           pexp_attributes} ->
+        | {pexp_desc=Pexp_ident ({txt} as id)} ->
              let swapped = match txt with
                | Lident s -> Lident (f s)
                | Ldot(longPrefix, s) -> Ldot(longPrefix, f s)
@@ -370,9 +378,7 @@ let identifier_mapper f super =
   pat = begin fun mapper pat ->
     let pat =
       match pat with
-        | {ppat_desc=Ppat_var ({txt} as id);
-           ppat_loc;
-           ppat_attributes} ->
+        | {ppat_desc=Ppat_var ({txt} as id)} ->
              {pat with ppat_desc=Ppat_var ({id with txt=(f txt)})}
         | _ -> pat
     in
@@ -381,8 +387,7 @@ let identifier_mapper f super =
   signature_item = begin fun mapper signatureItem ->
     let signatureItem =
       match signatureItem with
-        | {psig_desc=Psig_value ({pval_name} as name);
-           psig_loc} ->
+        | {psig_desc=Psig_value ({pval_name} as name)} ->
             {signatureItem with psig_desc=Psig_value ({name with pval_name=({pval_name with txt=(f name.pval_name.txt)})})}
         | _ -> signatureItem
     in
@@ -390,7 +395,36 @@ let identifier_mapper f super =
   end;
 }
 
-(** escape_stars_slashes_mapper escapes all stars and slases in an AST *)
+let remove_literal_attrs_mapper_maker super =
+  let open Ast_404 in
+  let open Ast_mapper in
+{ super with
+  expr = begin fun mapper expr ->
+    let {Reason_attributes.literalAttrs; arityAttrs; docAttrs; stdAttrs; jsxAttrs} =
+      Reason_attributes.partitionAttributes ~allowUncurry:false expr.pexp_attributes
+    in
+    let expr = if literalAttrs != [] then
+      { expr with pexp_attributes = arityAttrs @ docAttrs @ stdAttrs @ jsxAttrs }
+    else expr
+    in
+    super.expr mapper expr
+  end;
+  pat = begin fun mapper pat ->
+    let {Reason_attributes.literalAttrs; arityAttrs; docAttrs; stdAttrs; jsxAttrs} =
+      Reason_attributes.partitionAttributes ~allowUncurry:false pat.ppat_attributes
+    in
+    let pat = if literalAttrs != [] then
+      { pat with ppat_attributes = arityAttrs @ docAttrs @ stdAttrs @ jsxAttrs }
+    else pat
+    in
+    super.pat mapper pat
+  end;
+}
+
+let remove_literal_attrs_mapper =
+  remove_literal_attrs_mapper_maker Ast_mapper.default_mapper
+
+(** escape_stars_slashes_mapper escapes all stars and slashes in an AST *)
 let escape_stars_slashes_mapper =
   let escape_stars_slashes str =
     if String.contains str '/' then
@@ -414,7 +448,7 @@ let ml_to_reason_swap_operator_mapper = identifier_mapper ml_to_reason_swap
 (* attribute_equals tests an attribute is txt
  *)
 let attribute_equals to_compare = function
-  | ({txt; _}, _) -> txt = to_compare
+  | ({txt}, _) -> txt = to_compare
 
 (* attribute_exists tests if an attribute exists in a list
  *)
@@ -490,15 +524,17 @@ let menhirMessagesError = ref [NoMenhirMessagesError]
 let findMenhirErrorMessage loc =
     let rec find messages =
       match messages with
-      | MenhirMessagesError err :: tail when err.loc = loc -> MenhirMessagesError err
+      | MenhirMessagesError err :: _ when err.loc = loc -> MenhirMessagesError err
       | _ :: tail -> find tail
       | [] -> NoMenhirMessagesError
     in find !menhirMessagesError
 
+let default_error_message = "<syntax error>"
+
 let add_error_message err =
   let msg = try
-    ignore (find_substring "UNKNOWN SYNTAX ERROR" err.msg 0);
-    [MenhirMessagesError {err with msg = "A syntax error occurred. Help to improve this message: https://github.com/facebook/reason/blob/master/src/README.md#add-a-menhir-error-message"}]
+    ignore (find_substring default_error_message err.msg 0);
+    [MenhirMessagesError {err with msg = "A syntax error occurred. Help us improve this message: https://github.com/facebook/reason/blob/master/src/README.md#add-a-menhir-error-message"}]
   with
   | Not_found -> [MenhirMessagesError err]
   in
@@ -513,4 +549,9 @@ let location_contains loc1 loc2 =
   loc1.loc_start.Lexing.pos_cnum <= loc2.loc_start.Lexing.pos_cnum &&
   loc1.loc_end.Lexing.pos_cnum >= loc2.loc_end.Lexing.pos_cnum
 
+let explode_str str =
+  let rec loop acc i =
+    if i < 0 then acc else loop (str.[i] :: acc) (i - 1)
+  in
+    loop [] (String.length str - 1)
 #end

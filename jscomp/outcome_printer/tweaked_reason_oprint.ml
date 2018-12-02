@@ -156,7 +156,7 @@ let print_out_value ppf tree =
 #end      
       -> (** FIXME cc @chenglou *)
         begin try fprintf ppf "\"%s\"" (Reason_syntax_util.escape_string s) with
-          Invalid_argument s when s =  "String.create"  -> fprintf ppf "<huge string>"
+          Invalid_argument "String.create" -> fprintf ppf "<huge string>"
         end
     | Oval_list tl ->
         fprintf ppf "@[<1>[%a]@]" (print_tree_list print_tree_1 ",") tl
@@ -768,7 +768,7 @@ and print_out_constr ppf (name, tyl,ret_type_opt) =
       | [] ->
           fprintf ppf "@[<2>%s:@ %a@]" name print_simple_out_type ret_type
       | _ ->
-          fprintf ppf "@[<2>%s(%a) :%a@]" name
+          fprintf ppf "@[<2>%s(%a): %a@]" name
             (print_typlist print_simple_out_type ",") tyl
             print_simple_out_type ret_type
       end
