@@ -34,7 +34,7 @@
    the encoding of nativeint is platform dependent *)
 open Caml_nativeint
 
-let (^) = Bs_string.append
+
 
 let (>>>) = Caml_nativeint.shift_right_logical
 let (>>) = Caml_nativeint.shift_right

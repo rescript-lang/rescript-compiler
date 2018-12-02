@@ -27,11 +27,6 @@
 type in_channel
 
 
-(** *)
-
-let (^) = Bs_string.append
-let stdin = UndefinedRT.empty
-
 let stderr = UndefinedRT.empty
 
 type out_channel  = {

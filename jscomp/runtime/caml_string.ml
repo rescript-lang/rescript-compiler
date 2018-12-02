@@ -43,7 +43,7 @@ external length : bytes -> int = "%bytes_length"
 
 
 let string_of_char = Bs_string.of_char
-let add = Bs_string.append 
+
 
 let caml_string_get s i= 
   if i >=Bs_string.length s || i < 0  then
@@ -55,7 +55,7 @@ let caml_string_get s i=
 (**
    TODO: [min] is not type specialized in OCaml
  *)
-let caml_blit_string s1 i1 s2 i2 (len : int ) = 
+let caml_blit_string (s1 : string) i1 (s2 : bytes) i2 (len : int ) = 
   if len > 0 then
     let off1 = Bs_string.length s1 - i1 in
     if len <= off1 then 
@@ -142,7 +142,7 @@ let string_of_large_bytes bytes i len =
         let next = if !s_len < 1024 then !s_len else seg in
         let tmp_bytes = new_uninitialized next in
         let () = caml_blit_bytes bytes !offset tmp_bytes 0 next in 
-        s := Bs_string.append !s (Bs_string.of_small_int_array (to_int_array tmp_bytes));
+        s := !s ^ (Bs_string.of_small_int_array (to_int_array tmp_bytes));
         s_len := !s_len - next ; 
         offset := !offset + next;
       done;

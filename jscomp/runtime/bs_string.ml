@@ -44,7 +44,7 @@ external slice_rest : string -> int -> string = "slice"
     [@@bs.send]
 external index_of : string -> string -> int = "indexOf"
     [@@bs.send]
-external append : string -> string -> string = "#string_append"
+
 external of_small_int_array :  
     (_ [@bs.as {json|null|json}] ) -> 
     int array -> string = 
