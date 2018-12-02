@@ -277,10 +277,12 @@ let to_float ({hi; lo} : t) =
 
 
 
-(** sign: Positive  *)
-let two_ptr_32_dbl = 2. ** 32.
-let two_ptr_63_dbl = 2. ** 63.
-let neg_two_ptr_63 = -. (2. ** 63.)
+(** sign: Positive  
+  -FIXME: hex notation
+*)
+let two_ptr_32_dbl = 4294967296. (* 2. ** 32*)
+let two_ptr_63_dbl = 9.22337203685477581e+18 (* 2. ** 63.*)
+let neg_two_ptr_63 = -9.22337203685477581e+18 (*-. (2. ** 63.)*)
 
 external mod_float : float -> float -> float = "caml_fmod_float"
 (* note that we make sure the const number can acutally be represented
@@ -462,3 +464,6 @@ let get64 (s : string) (i:int) : t =
          (Caml_nativeint.logor
             (Caml_nativeint.of_int (Caml_char.code s.[i+6]) << 48 )
             (Caml_nativeint.of_int (Caml_char.code s.[i+7]) << 56 )))
+
+external unsafe_to_int64 : t -> int64 = "%identity"           
+external unsafe_of_int64 : int64 -> t = "%identity"

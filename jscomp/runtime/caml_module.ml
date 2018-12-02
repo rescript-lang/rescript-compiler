@@ -33,7 +33,7 @@ type shape =
    | Lazy
    | Class
    | Module of shape array
-   | Value of Bs_obj.t
+   | Value of Caml_obj_extern.t
 (* ATTENTION: check across versions *)
 
 (** Note that we have to provide a drop in replacement, since compiler internally will
@@ -43,7 +43,7 @@ type shape =
 let init_mod (loc : string * int * int) (shape : shape) =  
   let module Array = Caml_array in 
   let undef_module _ = raise (Undefined_recursive_module loc) in
-  let rec loop (shape : shape) (struct_ : Bs_obj.t array) idx = 
+  let rec loop (shape : shape) (struct_ : Caml_obj_extern.t array) idx = 
     match shape with 
     | Function -> struct_.(idx)<-(Obj.magic undef_module)
     | Lazy -> struct_.(idx)<- (Obj.magic (lazy undef_module))
@@ -63,20 +63,20 @@ let init_mod (loc : string * int * int) (shape : shape) =
       done
     | Value v ->
        struct_.(idx) <- v in
-  let res = (Obj.magic [||] : Bs_obj.t array) in
+  let res = (Obj.magic [||] : Caml_obj_extern.t array) in
   loop shape res 0 ;
   res.(0)      
 
-external caml_update_dummy : Bs_obj.t -> Bs_obj.t -> unit = "caml_update_dummy" 
+external caml_update_dummy : Caml_obj_extern.t -> Caml_obj_extern.t -> unit = "caml_update_dummy" 
 (* Note the [shape] passed between [init_mod] and [update_mod] is always the same 
    and we assume [module] is encoded as an array
  *)
-let update_mod (shape : shape)  (o : Bs_obj.t)  (n : Bs_obj.t) :  unit = 
+let update_mod (shape : shape)  (o : Caml_obj_extern.t)  (n : Caml_obj_extern.t) :  unit = 
   let module Array = Caml_array in 
   let rec aux (shape : shape) o n parent i  =
     match shape with
     | Function 
-      -> Bs_obj.set_field parent i n 
+      -> Caml_obj_extern.set_field parent i n 
 
     | Lazy 
     | Class -> 
@@ -84,12 +84,12 @@ let update_mod (shape : shape)  (o : Bs_obj.t)  (n : Bs_obj.t) :  unit =
     | Module comps 
       -> 
       for i = 0 to Array.length comps - 1 do 
-        aux comps.(i) (Bs_obj.field o i) (Bs_obj.field n i) o i       
+        aux comps.(i) (Caml_obj_extern.field o i) (Caml_obj_extern.field n i) o i       
       done
     | Value _ -> () in 
   match shape with 
   | Module comps -> 
     for i = 0 to Array.length comps - 1 do  
-      aux comps.(i) (Bs_obj.field o i) (Bs_obj.field n i) o  i
+      aux comps.(i) (Caml_obj_extern.field o i) (Caml_obj_extern.field n i) o  i
     done
   |  _ -> assert false 

@@ -46,7 +46,7 @@ let caml_weak_get  xs i =
 let caml_weak_get_copy  xs i = 
   match Caml_undefined_extern.toOption (Caml_array.unsafe_get xs i) with 
   | None -> None 
-  | Some x -> Some (Obj.magic (Caml_obj.caml_obj_dup (Bs_obj.repr x) ))
+  | Some x -> Some (Obj.magic (Caml_obj.caml_obj_dup (Caml_obj_extern.repr x) ))
 
 let caml_weak_check xs i = 
   Caml_array.unsafe_get xs i <> Caml_undefined_extern.empty

@@ -28,14 +28,14 @@
 
 (** *)
 
-val __ : int -> Bs_obj.t -> Bs_obj.t
+val __ : int -> Caml_obj_extern.t -> Caml_obj_extern.t
 
-val record : 'a -> Bs_obj.t -> Bs_obj.t
+val record : 'a -> Caml_obj_extern.t -> Caml_obj_extern.t
 
-val variant : 'a -> int ->  Bs_obj.t -> Bs_obj.t
+val variant : 'a -> int ->  Caml_obj_extern.t -> Caml_obj_extern.t
 
-val simpleVariant : 'a -> Bs_obj.t -> Bs_obj.t
+val simpleVariant : 'a -> Caml_obj_extern.t -> Caml_obj_extern.t
 
-val localModule : 'a -> Bs_obj.t -> Bs_obj.t 
+val localModule : 'a -> Caml_obj_extern.t -> Caml_obj_extern.t 
 
-val polyVar : 'a -> Bs_obj.t -> Bs_obj.t
+val polyVar : 'a -> Caml_obj_extern.t -> Caml_obj_extern.t

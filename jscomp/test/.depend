@@ -332,7 +332,7 @@ installation_test.cmj : ../others/node.cmj mt.cmj ../runtime/js.cmj \
     app_root_finder.cmj
 int32_test.cmj : mt.cmj ext_array_test.cmj
 int64_mul_div_test.cmj : mt.cmj
-int64_test.cmj : mt.cmj ../runtime/js_int64.cmj ext_array_test.cmj
+int64_test.cmj : mt.cmj ext_array_test.cmj ../runtime/caml_int64.cmj
 int_hashtbl_test.cmj : mt.cmj
 int_map.cmj :
 int_overflow_test.cmj : mt.cmj ../runtime/js.cmj
@@ -632,7 +632,7 @@ typeof_test.cmj : mt.cmj ../runtime/js.cmj
 unboxed_attribute_test.cmj :
 uncurry_glob_test.cmj : ../runtime/caml_utils.cmj
 undef_regression2_test.cmj : mt.cmj ../runtime/js.cmj
-undef_regression_test.cmj : ../runtime/js.cmj ../runtime/bs_obj.cmj
+undef_regression_test.cmj : ../runtime/js.cmj ../runtime/caml_obj_extern.cmj
 unicode_type_error.cmj :
 unitest_string.cmj :
 unsafe_obj_external.cmj : ../runtime/js.cmj

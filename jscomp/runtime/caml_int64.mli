@@ -79,3 +79,7 @@ val discard_sign : t -> t
 val float_of_bits : t -> float 
 val bits_of_float : float -> t 
 val get64 : string -> int -> t
+
+
+external unsafe_to_int64 : t -> int64 = "%identity"           
+external unsafe_of_int64 : int64 -> t = "%identity"

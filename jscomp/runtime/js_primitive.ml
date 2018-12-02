@@ -24,17 +24,17 @@
 
  let undefinedHeader = [| |]
 
-let some ( x : Bs_obj.t) : Bs_obj.t = 
+let some ( x : Caml_obj_extern.t) : Caml_obj_extern.t = 
   if Obj.magic x =  None then 
-    (let block = Bs_obj.repr (undefinedHeader, 0) in
-    Bs_obj.set_tag block 256;
+    (let block = Caml_obj_extern.repr (undefinedHeader, 0) in
+    Caml_obj_extern.set_tag block 256;
     block)
   else 
-    if x != Bs_obj.repr Js.null && fst (Obj.magic x ) == Bs_obj.repr undefinedHeader then   
+    if x != Caml_obj_extern.repr Js.null && fst (Obj.magic x ) == Caml_obj_extern.repr undefinedHeader then   
       (
       let nid =   snd (Obj.magic x) + 1 in 
-      let block = Bs_obj.repr (undefinedHeader, nid) in 
-       Bs_obj.set_tag block 256;        
+      let block = Caml_obj_extern.repr (undefinedHeader, nid) in 
+       Caml_obj_extern.set_tag block 256;        
        block
       )
     else  x 
@@ -59,8 +59,8 @@ let null_to_opt (type t ) ( x : t Js.null) : t option =
 
 (** The input is already of [Some] form, [x] is not None, 
     make sure [x[0]] will not throw *)
-let valFromOption (x : Bs_obj.t) : Bs_obj.t =   
-  if  x != Bs_obj.repr Js.null && fst (Obj.magic x)  == Bs_obj.repr undefinedHeader 
+let valFromOption (x : Caml_obj_extern.t) : Caml_obj_extern.t =   
+  if  x != Caml_obj_extern.repr Js.null && fst (Obj.magic x)  == Caml_obj_extern.repr undefinedHeader 
   then 
     let depth : int = snd  (Obj.magic x)  in 
     if depth = 0 then Obj.magic None
@@ -70,11 +70,11 @@ let valFromOption (x : Bs_obj.t) : Bs_obj.t =
 
 let option_get (x : 'a option) = 
   if x = None then Caml_undefined_extern.empty
-  else Obj.magic (valFromOption (Bs_obj.repr x))
+  else Obj.magic (valFromOption (Caml_obj_extern.repr x))
 
 
 (** [input] is optional polymorphic variant *)  
 let option_get_unwrap (x : 'a option)  =
   if x = None then Caml_undefined_extern.empty
-  else Obj.magic (Bs_obj.field (Bs_obj.repr (valFromOption (Bs_obj.repr x))) 1 )
+  else Obj.magic (Caml_obj_extern.field (Caml_obj_extern.repr (valFromOption (Caml_obj_extern.repr x))) 1 )
 

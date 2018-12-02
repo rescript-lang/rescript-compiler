@@ -26,4 +26,4 @@
 
 
 (** *)
-val caml_hash : int -> 'a -> nativeint -> Bs_obj.t -> nativeint
+val caml_hash : int -> 'a -> nativeint -> Caml_obj_extern.t -> nativeint
