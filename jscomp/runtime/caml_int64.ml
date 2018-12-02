@@ -445,6 +445,7 @@ let  bits_of_float : float -> t  = fun x ->
 
 (** used by "%caml_string_get64" *)
 let get64 (s : string) (i:int) : t =
+  let module String = Bs_string in 
   mk ~lo:
     (Caml_nativeint.logor
        (Caml_nativeint.logor

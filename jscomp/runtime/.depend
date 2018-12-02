@@ -1,4 +1,4 @@
-block.cmi : js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe
+block.cmi : js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe bs_obj.cmj
 caml_array.cmi : js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe
 caml_basic.cmi : js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe
 caml_builtin_exceptions.cmi : js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe
@@ -7,23 +7,23 @@ caml_exceptions.cmi : js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe caml_builtin_e
 caml_float.cmi : js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe
 caml_format.cmi : js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe
 caml_gc.cmi : js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe
-caml_hash.cmi : js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe
+caml_hash.cmi : js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe bs_obj.cmj
 caml_hash_primitive.cmi : js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe
 caml_int32.cmi : js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe
 caml_int64.cmi : js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe
 caml_lexer.cmi : js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe
 caml_md5.cmi : js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe
 caml_missing_polyfill.cmi : js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe
-caml_obj.cmi : js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe
+caml_obj.cmi : js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe bs_obj.cmj
 caml_oo.cmi : js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe
-caml_parser.cmi : js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe
+caml_parser.cmi : js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe bs_obj.cmj
 caml_primitive.cmi : js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe
 caml_queue.cmi : js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe
 caml_string.cmi : js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe
 caml_sys.cmi : js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe
 caml_utils.cmi : js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe
 caml_weak.cmi : js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe
-js_primitive.cmi : js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe
+js_primitive.cmi : js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe bs_obj.cmj
 block.cmj : js.cmj js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe bs_obj.cmj block.cmi
 bs_obj.cmj : js.cmj js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe
 bs_string.cmj : js.cmj js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe
@@ -41,22 +41,22 @@ caml_hash_primitive.cmj : js.cmj js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe cam
 caml_int32.cmj : js.cmj js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe caml_builtin_exceptions.cmj caml_int32.cmi caml_nativeint.cmj
 caml_int64.cmj : js.cmj js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe caml_int32.cmj caml_utils.cmj caml_primitive.cmj caml_builtin_exceptions.cmj caml_int64.cmi caml_nativeint.cmj caml_float.cmj caml_char.cmj bs_string.cmj
 caml_io.cmj : js.cmj js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe curry.cmj caml_builtin_exceptions.cmj bs_string.cmj
-caml_js_exceptions.cmj : js.cmj js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe js_primitive.cmj caml_exceptions.cmj
+caml_js_exceptions.cmj : js.cmj js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe js_primitive.cmj caml_exceptions.cmj bs_obj.cmj
 caml_lexer.cmj : js.cmj js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe caml_builtin_exceptions.cmj caml_lexer.cmi
 caml_md5.cmj : js.cmj js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe caml_char.cmj caml_array.cmj bs_string.cmj caml_md5.cmi
 caml_missing_polyfill.cmj : js.cmj js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe caml_missing_polyfill.cmi
-caml_module.cmj : js.cmj js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe caml_obj.cmj caml_builtin_exceptions.cmj caml_array.cmj
+caml_module.cmj : js.cmj js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe caml_obj.cmj caml_builtin_exceptions.cmj caml_array.cmj bs_obj.cmj
 caml_nativeint.cmj : js.cmj js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe
 caml_obj.cmj : js.cmj js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe block.cmj caml_primitive.cmj caml_builtin_exceptions.cmj caml_obj.cmi caml_array.cmj bs_obj.cmj
 caml_oo.cmj : js.cmj js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe caml_array.cmj caml_builtin_exceptions.cmj caml_oo.cmi bs_obj.cmj
 caml_oo_curry.cmj : js.cmj js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe curry.cmj caml_oo.cmj
-caml_parser.cmj : js.cmj js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe caml_parser.cmi
+caml_parser.cmj : js.cmj js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe bs_obj.cmj caml_parser.cmi
 caml_primitive.cmj : js.cmj js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe caml_bytes.cmj caml_primitive.cmi
 caml_queue.cmj : js.cmj js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe caml_queue.cmi
 caml_string.cmj : js.cmj js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe caml_builtin_exceptions.cmj caml_string.cmi caml_char.cmj bs_string.cmj
 caml_sys.cmj : js.cmj js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe caml_builtin_exceptions.cmj caml_sys.cmi caml_nativeint.cmj caml_array.cmj
 caml_utils.cmj : js.cmj js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe caml_utils.cmi
-caml_weak.cmj : js.cmj js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe caml_obj.cmj caml_array.cmj js_primitive.cmj caml_weak.cmi
+caml_weak.cmj : js.cmj js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe caml_obj.cmj caml_array.cmj js_primitive.cmj caml_weak.cmi bs_obj.cmj
 curry.cmj : js.cmj js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe caml_array.cmj
 js_int64.cmj : js.cmj js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe
 js_nativeint.cmj : js.cmj js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe

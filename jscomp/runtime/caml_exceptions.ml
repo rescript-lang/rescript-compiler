@@ -48,7 +48,7 @@ let id = ref 0n
 
    ]}*)
 let caml_set_oo_id (b : Caml_builtin_exceptions.exception_block)  = 
-  Obj.set_field (Obj.repr b) 1 (Obj.repr !id);
+  Bs_obj.set_field (Bs_obj.repr b) 1 (Bs_obj.repr !id);
   id := Caml_nativeint.add !id  1n; 
   b
 
@@ -60,12 +60,12 @@ let object_tag = 248
 
 let create (str : string) : Caml_builtin_exceptions.exception_block = 
   let v = ( str, caml_fresh_oo_id ()) in 
-  Bs_obj.set_tag (Obj.repr v) object_tag;
+  Bs_obj.set_tag (Bs_obj.repr v) object_tag;
   v 
 
 (* let makeExtension (str : string) : Caml_builtin_exceptions.exception_block =  *)
 (*   let v = ( str, get_id ()) in  *)
-(*   Bs_obj.set_tag (Obj.repr v) object_tag; *)
+(*   Bs_obj.set_tag (Bs_obj.repr v) object_tag; *)
 (*   v  *)
 
 
@@ -104,10 +104,10 @@ let create (str : string) : Caml_builtin_exceptions.exception_block =
 let caml_is_extension e = 
   if  Obj.magic e = Js.undefined then false 
   else 
-    Obj.tag (Obj.repr e) = object_tag  (* nullary exception *)
+    Bs_obj.tag (Bs_obj.repr e) = object_tag  (* nullary exception *)
     ||
-    let slot = Obj.field (Obj.repr e) 0 in 
+    let slot = Bs_obj.field (Bs_obj.repr e) 0 in 
     not (Obj.magic slot = Js.undefined) &&
-    (Obj.tag slot = object_tag)
+    (Bs_obj.tag slot = object_tag)
 
 

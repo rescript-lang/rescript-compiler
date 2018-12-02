@@ -37,6 +37,7 @@ type out_channel  = {
 let stdout = {
   buffer = "";
   output = (fun _ s ->
+    let module String = Bs_string in
     let v =Bs_string.length s - 1 in
     if [%bs.raw{| (typeof process !== "undefined") && process.stdout && process.stdout.write|}] then
       ([%bs.raw{| process.stdout.write |} ] : string -> unit [@bs]) s [@bs]
@@ -49,6 +50,7 @@ let stdout = {
 let stderr = {
   buffer = "";
   output = fun _ s ->
+    let module String = Bs_string in
     let v =Bs_string.length s - 1 in     
     if s.[v] = '\n' then
       Js.log (Bs_string.slice s 0 v) (* TODO: change to Js.error*)

@@ -64,6 +64,7 @@ let int_of_string_base = function
   | Bin -> 2
     
 let parse_sign_and_base (s : string) = 
+  let module String = Bs_string in 
   let sign = ref 1n in
   let base = ref Dec in
   let i  = ref 0 in
@@ -89,6 +90,7 @@ let parse_sign_and_base (s : string) =
 
 
 let caml_int_of_string s = 
+  let module String = Bs_string in 
   let i, sign, hbase = parse_sign_and_base s in
   let base  = Caml_nativeint.of_int (int_of_string_base hbase) in
   let threshold = (-1n >>> 0) in 
@@ -122,6 +124,7 @@ let caml_int_of_string s =
 
 
 let caml_int64_of_string s = 
+  let module String = Bs_string in 
   let i, sign, hbase = parse_sign_and_base s in
   let base  = Int64.of_int (int_of_string_base hbase) in
   let sign = Int64.of_nativeint sign in
@@ -193,6 +196,7 @@ let lowercase c =
   else c
 
 let parse_format fmt = 
+  let module String = Bs_string in 
   let len =Bs_string.length fmt in 
   if len > 31 then 
     raise  (Invalid_argument "format_int: format too long") ;
@@ -296,7 +300,7 @@ let finish_formatting (config : fmt) rawbuffer =
     prec;
     conv
   } = config in  
-  let len = ref (String.length rawbuffer) in 
+  let len = ref (Bs_string.length rawbuffer) in 
   if signedconv && (sign < 0 || signstyle <> "-") then 
     incr len;
   if alternate then 
@@ -374,6 +378,7 @@ let caml_format_int fmt i =
     aux f i 
 
 let caml_int64_format fmt x =
+  let module String = Bs_string in 
   let f = parse_format fmt in
   let x =
     if f.signedconv &&  x < 0L then
@@ -492,6 +497,7 @@ let caml_int64_format fmt x =
   finish_formatting f !s
 
 let caml_format_float fmt x = 
+  let module String = Bs_string in 
   let f = parse_format fmt in 
   let prec = if f.prec < 0 then 6 else f.prec in 
   let x = if x < 0. then (f.sign <- (-1); -. x) else x in 

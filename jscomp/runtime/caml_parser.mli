@@ -31,8 +31,8 @@ type parser_env
 
 val  caml_parse_engine :     
   parse_tables -> parser_env -> 
-  Obj.t (* Parsing.parser_input *) -> Obj.t -> 
-  (* parser_output *)  Obj.t
+  Bs_obj.t (* Parsing.parser_input *) -> Bs_obj.t -> 
+  (* parser_output *)  Bs_obj.t
 
 
 

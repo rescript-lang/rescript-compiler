@@ -156,6 +156,7 @@ let md5blk = [|
   |] 
 
 let caml_md5_string s start len = 
+  let module String = Bs_string in 
   let module Array = Caml_array (* reuse the sugar .. *)
   in 
 

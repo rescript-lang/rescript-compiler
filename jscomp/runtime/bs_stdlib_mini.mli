@@ -8,17 +8,7 @@
 
   
   Types defined here but should not export:
-
   - ref (make sure not exported in public others/*.mli)
-  - in_channel (runtime only)
-  - fpclass (runtime only)
-  - Obj.t (runtime only)
-  - Lexing.lex_tables, Lexing.lexbuf (runtime only)
-  - Parsing.parse_tables, Parsing.parser_env (runtime only)
-  - Printexc.raw_backtrace_slot,  Printexc.backtrace_slot (runtiem only)
-  - Gc.stat, Gc.control (runtime only) 
-  - CamlinternalOO.obj CamlinternalOO.closure (runtime only)
-  - CamlinternalMod.shape (runtime only)
 *)
 
 external (^) : string -> string -> string = "#string_append"
@@ -65,21 +55,8 @@ external ( -. ) : float -> float -> float = "%subfloat"
 external ( *. ) : float -> float -> float = "%mulfloat"
 external ( /. ) : float -> float -> float = "%divfloat"
 
-
-
-module String : sig 
-  external unsafe_get : string -> int -> char = "%string_unsafe_get"
-  external length : string -> int = "%string_length"
-end 
-
-module Obj : sig 
-  type t 
-  external magic : 'a -> 'b = "%identity"
-  external repr : 'a -> t = "%identity"
-  external field : t -> int -> t = "%obj_field"
-  external set_field : t -> int -> t -> unit = "%obj_set_field"
-  external tag : t -> int = "caml_obj_tag"
-  external dup : t -> t = "caml_obj_dup"
+module Obj : sig   
+  external magic : 'a -> 'b = "%identity"  
 end 
 
 

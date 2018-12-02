@@ -24,16 +24,16 @@
 
  let undefinedHeader = [| |]
 
-let some ( x : Obj.t) : Obj.t = 
+let some ( x : Bs_obj.t) : Bs_obj.t = 
   if Obj.magic x =  None then 
-    (let block = Obj.repr (undefinedHeader, 0) in
+    (let block = Bs_obj.repr (undefinedHeader, 0) in
     Bs_obj.set_tag block 256;
     block)
   else 
-    if x != Obj.repr Js.null && fst (Obj.magic x ) == Obj.repr undefinedHeader then   
+    if x != Bs_obj.repr Js.null && fst (Obj.magic x ) == Bs_obj.repr undefinedHeader then   
       (
       let nid =   snd (Obj.magic x) + 1 in 
-      let block = Obj.repr (undefinedHeader, nid) in 
+      let block = Bs_obj.repr (undefinedHeader, nid) in 
        Bs_obj.set_tag block 256;        
        block
       )
@@ -59,8 +59,8 @@ let null_to_opt (type t ) ( x : t Js.null) : t option =
 
 (** The input is already of [Some] form, [x] is not None, 
     make sure [x[0]] will not throw *)
-let valFromOption (x : Obj.t) : Obj.t =   
-  if  x != Obj.repr Js.null && fst (Obj.magic x)  == Obj.repr undefinedHeader 
+let valFromOption (x : Bs_obj.t) : Bs_obj.t =   
+  if  x != Bs_obj.repr Js.null && fst (Obj.magic x)  == Bs_obj.repr undefinedHeader 
   then 
     let depth : int = snd  (Obj.magic x)  in 
     if depth = 0 then Obj.magic None
@@ -70,11 +70,11 @@ let valFromOption (x : Obj.t) : Obj.t =
 
 let option_get (x : 'a option) = 
   if x = None then UndefinedRT.empty
-  else Obj.magic (valFromOption (Obj.repr x))
+  else Obj.magic (valFromOption (Bs_obj.repr x))
 
 
 (** [input] is optional polymorphic variant *)  
 let option_get_unwrap (x : 'a option)  =
   if x = None then UndefinedRT.empty
-  else Obj.magic (Obj.field (Obj.repr (valFromOption (Obj.repr x))) 1 )
+  else Obj.magic (Bs_obj.field (Bs_obj.repr (valFromOption (Bs_obj.repr x))) 1 )
 

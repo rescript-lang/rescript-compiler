@@ -28,14 +28,14 @@
 
 (** *)
 
-val __ : int -> Obj.t -> Obj.t
+val __ : int -> Bs_obj.t -> Bs_obj.t
 
-val record : 'a -> Obj.t -> Obj.t
+val record : 'a -> Bs_obj.t -> Bs_obj.t
 
-val variant : 'a -> int ->  Obj.t -> Obj.t
+val variant : 'a -> int ->  Bs_obj.t -> Bs_obj.t
 
-val simpleVariant : 'a -> Obj.t -> Obj.t
+val simpleVariant : 'a -> Bs_obj.t -> Bs_obj.t
 
-val localModule : 'a -> Obj.t -> Obj.t 
+val localModule : 'a -> Bs_obj.t -> Bs_obj.t 
 
-val polyVar : 'a -> Obj.t -> Obj.t
+val polyVar : 'a -> Bs_obj.t -> Bs_obj.t

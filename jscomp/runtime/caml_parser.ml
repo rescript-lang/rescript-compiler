@@ -97,11 +97,11 @@ var PARSER_TRACE = false;
 |}]
 
 (**
- * external parse_engine : parse_tables -> parser_env -> parser_input -> Obj.t -> parser_output
+ * external parse_engine : parse_tables -> parser_env -> parser_input -> Bs_obj.t -> parser_output
  * parsing.ml
  *
  * type parse_tables = {
- *   actions : (parser_env -> Obj.t) array
+ *   actions : (parser_env -> Bs_obj.t) array
  *   transl_const : int array;
  *   transl_block : int array;
  *   lhs : string;
@@ -121,13 +121,13 @@ var PARSER_TRACE = false;
  *
  * type parser_env =
  * { mutable s_stack : int array;        (* States *)
- *  mutable v_stack : Obj.t array;      (* Semantic attributes *)
+ *  mutable v_stack : Bs_obj.t array;      (* Semantic attributes *)
  *  mutable symb_start_stack : position array; (* Start positions *)
  *  mutable symb_end_stack : position array;   (* End positions *)
  *  mutable stacksize : int;            (* Size of the stacks *)
  *  mutable stackbase : int;            (* Base sp for current parse *)
  *  mutable curr_char : int;            (* Last token read *)
- *  mutable lval : Obj.t;               (* Its semantic attribute *)
+ *  mutable lval : Bs_obj.t;               (* Its semantic attribute *)
  *  mutable symb_start : position;      (* Start pos. of the current symbol*)
  *  mutable symb_end : position;        (* End pos. of the current symbol *)
  *  mutable asp : int;                  (* The stack pointer for attributes *)
@@ -156,7 +156,7 @@ type parse_tables
 type parser_env 
 
 
-let caml_parse_engine : parse_tables -> parser_env -> (*Parsing.parser_input *)Obj.t -> Obj.t -> Obj.t = fun%raw tables (* parser_table *) env (* parser_env *) cmd (* parser_input*) arg (* Obj.t*) -> {|
+let caml_parse_engine : parse_tables -> parser_env -> (*Parsing.parser_input *)Bs_obj.t -> Bs_obj.t -> Bs_obj.t = fun%raw tables (* parser_table *) env (* parser_env *) cmd (* parser_input*) arg (* Bs_obj.t*) -> {|
     var ERRCODE = 256;
     //var START = 0;
     //var TOKEN_READ = 1;
@@ -177,7 +177,7 @@ let caml_parse_engine : parse_tables -> parser_env -> (*Parsing.parser_input *)O
     var env_stacksize = 4;
     var env_stackbase = 5;
     var env_curr_char = 6;
-    var env_lval = 7; // Obj.t
+    var env_lval = 7; // Bs_obj.t
     var env_symb_start = 8; // position
     var env_symb_end = 9; // position
     var env_asp = 10;

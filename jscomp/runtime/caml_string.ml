@@ -22,15 +22,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-(** *)
-
-external new_uninitialized : int -> bytes = "Array"  [@@bs.new]
-external to_int_array : bytes -> int array = "%identity"
-external of_int_array : int array -> bytes = "%identity"
-
-
 (***********************)
 (* replaced primitives *)
 (* Note that we explicitly define [unsafe_set] instead of 
@@ -44,10 +35,6 @@ let caml_string_get s i=
   if i >=Bs_string.length s || i < 0  then
     raise (Invalid_argument "index out of bounds") 
   else Bs_string.unsafe_get s i
-
-
-
-
 
 let caml_string_get16 s i = 
   Caml_char.code (Bs_string.unsafe_get s i) + Caml_char.code (Bs_string.unsafe_get s (i+1)) lsl 8  

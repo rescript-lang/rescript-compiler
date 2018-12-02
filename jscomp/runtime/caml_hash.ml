@@ -28,7 +28,7 @@ external ( +~ ) : nativeint -> nativeint -> nativeint =
    "caml_int32_add"
 
 (*ATTENTION: refer {!Oo.id} *)
-external oo_id : Obj.t -> int  = "%field1"
+external oo_id : Bs_obj.t -> int  = "%field1"
 
 open Caml_hash_primitive
 
@@ -76,11 +76,11 @@ let caml_hash count _limit seed obj =
       else if Js.typeof obj = "function" then
         () 
       else 
-        let size = Bs_obj.size_of_any obj in 
+        let size = Bs_obj.size_of_t obj in 
         match Js.undefinedToOption size with
         | None -> ()
         | Some size -> 
-          let obj_tag = Obj.tag obj in
+          let obj_tag = Bs_obj.tag obj in
           let tag = (size lsl 10) lor obj_tag in 
           if tag = 248 (* Obj.object_tag*) then 
             hash := caml_hash_mix_int !hash (Caml_nativeint.of_int (oo_id  obj))
@@ -90,7 +90,7 @@ let caml_hash count _limit seed obj =
               let block = 
                 let v = size - 1 in if v <  !num then v else !num in 
               for i = 0 to block do
-                Caml_queue.push (Obj.field obj i ) queue
+                Caml_queue.push (Bs_obj.field obj i ) queue
               done 
             end
     done;
