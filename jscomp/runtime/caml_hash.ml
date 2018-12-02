@@ -22,6 +22,58 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type 'a cell = {
+  content : 'a ; 
+  mutable next : 'a cell_opt
+}  
+and 'a cell_opt = 'a cell Caml_undefined_extern.t 
+and 'a t = {
+  mutable length : int ;
+  mutable first : 'a cell_opt;
+  mutable last : 'a cell_opt
+}
+[@@bs.deriving abstract]
+
+let create_queue () = 
+  t
+  ~length:0 
+  ~first:Caml_undefined_extern.empty 
+  ~last:Caml_undefined_extern.empty
+
+(* Added to tail *)
+let push_back (q :'a t) (v : 'a) = 
+   let cell = 
+      Caml_undefined_extern.return @@ 
+      cell  
+        ~content:v ~next:Caml_undefined_extern.empty 
+   in 
+   match q |. lastGet |. Caml_undefined_extern.toOption with 
+   | None ->
+     q |. lengthSet 1 ;
+     q |. firstSet cell;
+     q |. lastSet cell
+   | Some last -> 
+     q |. lengthSet ((q |. lengthGet) + 1);
+     last |. nextSet cell;
+     q |. lastSet cell
+
+let is_empty_queue q = q |. lengthGet  = 0     
+
+(* pop from front *)
+let unsafe_pop (q : 'a t) =        
+  let cell = (Obj.magic (q |. firstGet) : 'a cell) in 
+  let content, next_cell = cell |. (contentGet, nextGet) in 
+  match Caml_undefined_extern.toOption next_cell with 
+  | None -> 
+    q |. lengthSet 0 ; 
+    q |. firstSet Caml_undefined_extern.empty;
+    q |. lastSet Caml_undefined_extern.empty;
+    content
+  | Some next -> 
+    q |. lengthSet ((q |. lengthGet) - 1);
+    q |. firstSet next_cell ;
+    content
+
 
 
 external ( +~ ) : nativeint -> nativeint -> nativeint =
@@ -32,7 +84,8 @@ external oo_id : Caml_obj_extern.t -> int  = "%field1"
 
 open Caml_hash_primitive
 
-let caml_hash count _limit seed obj = 
+let caml_hash (count : int) _limit (seed : nativeint) 
+  (obj : Caml_obj_extern.t) : nativeint = 
   let hash = ref seed in 
   if Js.typeof obj = "number" then
     begin 
@@ -48,14 +101,14 @@ let caml_hash count _limit seed obj =
     (* TODO: hash [null] [undefined] as well *)
   else 
 
-    let queue = Caml_queue.create () in 
+    let queue =  create_queue () in 
     let num = ref count in 
     let () = 
-      Caml_queue.push obj queue; 
+       push_back  queue obj; 
       decr num 
     in 
-    while not (Caml_queue.is_empty queue) && !num > 0 do
-      let obj = Caml_queue.unsafe_pop queue in 
+    while not ( is_empty_queue queue) && !num > 0 do
+      let obj =  unsafe_pop queue in 
       if Js.typeof obj = "number" then
         begin 
           let u = Caml_nativeint_extern.of_float (Obj.magic obj) in
@@ -90,7 +143,7 @@ let caml_hash count _limit seed obj =
               let block = 
                 let v = size - 1 in if v <  !num then v else !num in 
               for i = 0 to block do
-                Caml_queue.push (Caml_obj_extern.field obj i ) queue
+                 push_back queue (Caml_obj_extern.field obj i ) 
               done 
             end
     done;
