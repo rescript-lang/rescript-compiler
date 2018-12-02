@@ -34,7 +34,7 @@
 
 (*ATT: this relies on we encode `char' as int *)
 external of_char : char -> string = "String.fromCharCode" 
-[@@bs.val] 
+[@@bs.val]  
 external toUpperCase : string -> string = "toUpperCase" [@@bs.send] 
 external of_int : int -> base:int -> string = "toString" [@@bs.send]
 external of_nativeint : nativeint -> base:int -> string = "toString" [@@bs.send]
@@ -57,21 +57,20 @@ external of_small_int32_array :
 [@@bs.val] [@@bs.splice]   
 
 external lastIndexOf : string -> string -> int = "lastIndexOf"
-[@@bs.send]    
-external of_any : 'a -> string = "String"
-[@@bs.val]
+[@@bs.send] (* used in {!Caml_io} *)
+ 
 
 
 (***********************)
 (* replaced primitives *)
 external length : string -> int = "%string_length"
-external get : string -> int -> char = "%string_safe_get"
-external create : int -> bytes = "caml_create_string"
+(* external get : string -> int -> char = "%string_safe_get" *)
+(* external create : int -> bytes = "caml_create_string" *)
 external unsafe_get : string -> int -> char = "%string_unsafe_get"
 external unsafe_set : bytes -> int -> char -> unit = "%bytes_unsafe_set"
-external unsafe_blit : string -> int ->  bytes -> int -> int -> unit
-  = "caml_blit_string" 
+(* external unsafe_blit : string -> int ->  bytes -> int -> int -> unit
+  = "caml_blit_string"  *)
 
-external unsafe_fill : bytes -> int -> int -> char -> unit
-  = "caml_fill_string" 
+(* external unsafe_fill : bytes -> int -> int -> char -> unit
+  = "caml_fill_string"  *)
 

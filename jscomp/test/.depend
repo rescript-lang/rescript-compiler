@@ -378,7 +378,7 @@ largest_int_flow.cmj :
 lazy_test.cmj : mt.cmj
 lexer_test.cmj : number_lexer.cmj mt.cmj arith_syntax.cmj arith_parser.cmj \
     arith_lexer.cmj
-lib_js_test.cmj : mt.cmj ../runtime/js.cmj ../runtime/bs_string.cmj
+lib_js_test.cmj : mt.cmj ../runtime/js.cmj
 libarg_test.cmj : mt.cmj
 libqueue_test.cmj :
 limits_test.cmj : mt.cmj

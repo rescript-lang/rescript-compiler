@@ -25,6 +25,6 @@
 val caml_string_get : string -> int -> char 
 val caml_string_get16 : string -> int -> int
 val caml_string_get32 : string -> int -> int
-val string_of_char : char -> string 
+
 
 val get : string -> int -> char 

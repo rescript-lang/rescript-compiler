@@ -37,12 +37,7 @@ external of_int_array : int array -> bytes = "%identity"
    using {!Bytes.unsafe_set} since for some standard libraries, 
    it might point to ["%string_unsafe_set"]
 *)
-external unsafe_set : bytes -> int -> char -> unit = "%bytes_unsafe_set"
-external unsafe_get : bytes -> int -> char = "%bytes_unsafe_get"
-external length : bytes -> int = "%bytes_length"
 
-
-let string_of_char = Bs_string.of_char
 
 
 let caml_string_get s i= 
