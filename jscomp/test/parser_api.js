@@ -777,7 +777,7 @@ function find_in_path_rel(path, name) {
 }
 
 function find_in_path_uncap(path, name) {
-  var uname = Caml_string.bytes_to_string(Bytes.uncapitalize(Caml_string.bytes_of_string(name)));
+  var uname = Caml_bytes.bytes_to_string(Bytes.uncapitalize(Caml_bytes.bytes_of_string(name)));
   var _param = path;
   while(true) {
     var param = _param;

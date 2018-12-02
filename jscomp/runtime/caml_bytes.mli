@@ -30,3 +30,14 @@ external length : bytes -> int = "%bytes_length"
 val caml_create_bytes : int -> bytes
 val caml_fill_bytes :  bytes -> int -> int -> char -> unit
 val get : bytes -> int -> char
+val bytes_to_string : bytes -> string 
+val caml_blit_bytes : bytes -> int -> bytes -> int -> int -> unit
+
+val caml_blit_string : 
+  string -> 
+  int -> 
+  bytes -> 
+  int -> 
+  int -> 
+  unit
+val bytes_of_string : string -> bytes

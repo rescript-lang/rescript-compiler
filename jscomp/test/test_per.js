@@ -93,8 +93,8 @@ function $caret(s1, s2) {
   var l1 = s1.length;
   var l2 = s2.length;
   var s = Caml_bytes.caml_create_bytes(l1 + l2 | 0);
-  Caml_string.caml_blit_string(s1, 0, s, 0, l1);
-  Caml_string.caml_blit_string(s2, 0, s, l1, l2);
+  Caml_bytes.caml_blit_string(s1, 0, s, 0, l1);
+  Caml_bytes.caml_blit_string(s2, 0, s, l1, l2);
   return s;
 }
 
@@ -370,7 +370,7 @@ function input_line(chan) {
       if (param) {
         var hd = param[0];
         var len = hd.length;
-        Caml_string.caml_blit_string(hd, 0, buf, pos - len | 0, len);
+        Caml_bytes.caml_blit_string(hd, 0, buf, pos - len | 0, len);
         _param = param[1];
         _pos = pos - len | 0;
         continue ;

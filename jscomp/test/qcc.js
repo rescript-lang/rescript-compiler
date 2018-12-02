@@ -306,7 +306,7 @@ function next(param) {
               continue ;
             }
           } else {
-            return /* Op */Block.__(0, [Caml_string.bytes_to_string(Bytes.make(1, ch$2))]);
+            return /* Op */Block.__(0, [Caml_bytes.bytes_to_string(Bytes.make(1, ch$2))]);
           }
         };
       }

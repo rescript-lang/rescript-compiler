@@ -12,6 +12,7 @@ var $$String = require("../../lib/js/string.js");
 var Testing = require("./testing.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Mt_global = require("./mt_global.js");
+var Caml_bytes = require("../../lib/js/caml_bytes.js");
 var Caml_int64 = require("../../lib/js/caml_int64.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_format = require("../../lib/js/caml_format.js");
@@ -1481,7 +1482,7 @@ function scan_elems$2(ib, accu) {
                               ]);
                   }
                   if (exit === 1) {
-                    console.log(Caml_string.bytes_to_string(Bytes.make(1, c)));
+                    console.log(Caml_bytes.bytes_to_string(Bytes.make(1, c)));
                     throw [
                           Caml_builtin_exceptions.failure,
                           "scan_elems"

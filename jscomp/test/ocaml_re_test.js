@@ -3796,7 +3796,7 @@ function exec(rex, pos, s) {
   }
 }
 
-var s = Caml_string.bytes_to_string(Bytes.make(1048575, /* "a" */97)) + "b";
+var s = Caml_bytes.bytes_to_string(Bytes.make(1048575, /* "a" */97)) + "b";
 
 eq("File \"xx.ml\", line 7, characters 3-10", get(exec(regexp(undefined, "aa?b"), undefined, s), 0), "aab");
 

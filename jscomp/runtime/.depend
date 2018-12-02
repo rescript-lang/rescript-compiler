@@ -30,7 +30,7 @@ bs_string.cmj : js.cmj js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe
 caml_array.cmj : js.cmj js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe caml_builtin_exceptions.cmj caml_array.cmi
 caml_basic.cmj : js.cmj js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe js_primitive.cmj caml_basic.cmi
 caml_builtin_exceptions.cmj : js.cmj js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe bs_obj.cmj caml_builtin_exceptions.cmi
-caml_bytes.cmj : js.cmj js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe caml_builtin_exceptions.cmj caml_bytes.cmi
+caml_bytes.cmj : js.cmj js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe caml_builtin_exceptions.cmj caml_bytes.cmi bs_string.cmj
 caml_char.cmj : js.cmj js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe
 caml_exceptions.cmj : js.cmj js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe caml_nativeint.cmj caml_builtin_exceptions.cmj bs_obj.cmj caml_exceptions.cmi
 caml_float.cmj : js.cmj js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe caml_float.cmi
@@ -53,7 +53,7 @@ caml_oo_curry.cmj : js.cmj js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe curry.cmj
 caml_parser.cmj : js.cmj js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe caml_parser.cmi
 caml_primitive.cmj : js.cmj js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe caml_bytes.cmj caml_primitive.cmi
 caml_queue.cmj : js.cmj js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe caml_queue.cmi
-caml_string.cmj : js.cmj js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe caml_builtin_exceptions.cmj caml_string.cmi caml_char.cmj caml_array.cmj bs_string.cmj
+caml_string.cmj : js.cmj js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe caml_builtin_exceptions.cmj caml_string.cmi caml_char.cmj bs_string.cmj
 caml_sys.cmj : js.cmj js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe caml_builtin_exceptions.cmj caml_sys.cmi caml_nativeint.cmj caml_array.cmj
 caml_utils.cmj : js.cmj js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe caml_utils.cmi
 caml_weak.cmj : js.cmj js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe caml_obj.cmj caml_array.cmj js_primitive.cmj caml_weak.cmi

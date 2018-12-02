@@ -3,7 +3,7 @@
 var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 var Bytes = require("../../lib/js/bytes.js");
-var Caml_string = require("../../lib/js/caml_string.js");
+var Caml_bytes = require("../../lib/js/caml_bytes.js");
 
 var suites = /* record */[/* contents : [] */0];
 
@@ -42,7 +42,7 @@ b[2] = /* "c" */99;
 
 Bytes.blit(b, 0, b, 1, 2);
 
-var res = Caml_string.bytes_to_string(b);
+var res = Caml_bytes.bytes_to_string(b);
 
 console.log(res);
 
@@ -65,7 +65,7 @@ b$1[2] = /* "c" */99;
 
 Bytes.blit(b$1, 1, b$1, 0, 2);
 
-var res2 = Caml_string.bytes_to_string(b$1);
+var res2 = Caml_bytes.bytes_to_string(b$1);
 
 console.log(res2);
 

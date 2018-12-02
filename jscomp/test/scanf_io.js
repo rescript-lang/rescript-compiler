@@ -10,8 +10,8 @@ var Digest = require("../../lib/js/digest.js");
 var Printf = require("../../lib/js/printf.js");
 var Caml_io = require("../../lib/js/caml_io.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
+var Caml_bytes = require("../../lib/js/caml_bytes.js");
 var Pervasives = require("../../lib/js/pervasives.js");
-var Caml_string = require("../../lib/js/caml_string.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 var Caml_missing_polyfill = require("../../lib/js/caml_missing_polyfill.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
@@ -158,7 +158,7 @@ function add_digest_ib(ob, ib) {
     $$Buffer.add_string(ob, s);
     $$Buffer.add_char(ob, /* "#" */35);
     var s$1 = Digest.to_hex(Digest.string(s));
-    $$Buffer.add_string(ob, Caml_string.bytes_to_string(Bytes.uppercase(Caml_string.bytes_of_string(s$1))));
+    $$Buffer.add_string(ob, Caml_bytes.bytes_to_string(Bytes.uppercase(Caml_bytes.bytes_of_string(s$1))));
     return $$Buffer.add_char(ob, /* "\n" */10);
   };
   try {

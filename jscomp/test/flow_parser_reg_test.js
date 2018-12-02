@@ -23,7 +23,6 @@ var Caml_bytes = require("../../lib/js/caml_bytes.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_format = require("../../lib/js/caml_format.js");
 var Caml_module = require("../../lib/js/caml_module.js");
-var Caml_string = require("../../lib/js/caml_string.js");
 var Js_primitive = require("../../lib/js/js_primitive.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
@@ -1018,7 +1017,7 @@ function start(str) {
             todo[0]
           ];
           return /* () */0;
-        }), Caml_string.bytes_of_string(str));
+        }), Caml_bytes.bytes_of_string(str));
   return /* record */[
           /* negative */false,
           /* mantissa */0,
@@ -7865,7 +7864,7 @@ function primary$1(env) {
               return /* () */0;
             }
           };
-          Bytes.iter(f, Caml_string.bytes_of_string(raw_flags));
+          Bytes.iter(f, Caml_bytes.bytes_of_string(raw_flags));
           var flags = $$Buffer.contents(filtered_flags);
           if (flags !== raw_flags) {
             error$1(env$3, /* InvalidRegExpFlags */Block.__(3, [raw_flags]));

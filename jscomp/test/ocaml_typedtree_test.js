@@ -220,7 +220,7 @@ function may_map(f, param) {
 }
 
 function find_in_path_uncap(path, name) {
-  var uname = Caml_string.bytes_to_string(Bytes.uncapitalize(Caml_string.bytes_of_string(name)));
+  var uname = Caml_bytes.bytes_to_string(Bytes.uncapitalize(Caml_bytes.bytes_of_string(name)));
   var _param = path;
   while(true) {
     var param = _param;
@@ -39946,10 +39946,10 @@ function new_name(_param) {
     var name;
     if (name_counter[0] < 26) {
       var c = Char.chr(97 + name_counter[0] | 0);
-      name = Caml_string.bytes_to_string(Bytes.make(1, c));
+      name = Caml_bytes.bytes_to_string(Bytes.make(1, c));
     } else {
       var c$1 = Char.chr(97 + name_counter[0] % 26 | 0);
-      name = Caml_string.bytes_to_string(Bytes.make(1, c$1)) + String(name_counter[0] / 26 | 0);
+      name = Caml_bytes.bytes_to_string(Bytes.make(1, c$1)) + String(name_counter[0] / 26 | 0);
     }
     name_counter[0] = name_counter[0] + 1 | 0;
     if (List.mem(name, named_vars[0]) || List.exists((function(name){
@@ -50457,7 +50457,7 @@ function build_other(ext, env) {
                                 
                               }), (function (i) {
                                 return /* Tpat_constant */Block.__(2, [/* Const_string */Block.__(2, [
-                                              Caml_string.bytes_to_string(Bytes.make(i, /* "*" */42)),
+                                              Caml_bytes.bytes_to_string(Bytes.make(i, /* "*" */42)),
                                               undefined
                                             ])]);
                               }), 0, (function (prim) {
