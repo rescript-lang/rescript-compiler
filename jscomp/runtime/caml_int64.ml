@@ -46,6 +46,10 @@ let lognot x = Caml_nativeint.logxor x (-1n)
 
 type t = {  hi : nativeint; lo : nativeint ;  }
 
+external unsafe_to_int64 : t -> int64 = "%identity"           
+external unsafe_of_int64 : int64 -> t = "%identity"
+
+
 let to_unsigned (x : nativeint) =
    x >>> 0
 
@@ -374,9 +378,9 @@ let mod_ self other =
   sub self (mul (div self other) other)
 
 
-let div_mod self other =
-  let quotient = div self other in
-  quotient, sub self (mul quotient other)
+let div_mod (self : int64) (other : int64) : int64 * int64 =
+  let quotient = div (unsafe_of_int64 self) (unsafe_of_int64 other) in
+  unsafe_to_int64 quotient, unsafe_to_int64 (sub (unsafe_of_int64 self) (mul quotient (unsafe_of_int64 other)))
 
 let compare self other =
   let v = Pervasives.compare self.hi other.hi in
@@ -392,23 +396,25 @@ let to_int32 x = Caml_nativeint.logor x.lo  0n (* signed integer *)
 
 (* width does matter, will it be relevant to endian order? *)
 
-let to_hex x =
+let to_hex (x : int64) =
+  let {hi = x_hi; lo = x_lo} = unsafe_of_int64 x in 
   let aux v =
     Bs_string.of_int (Caml_nativeint.to_int (Caml_nativeint.shift_right_logical v 0)) ~base:16
   in
-  match x.hi, x.lo with
+  match x_hi, x_lo with
   | 0n, 0n -> "0"
-  | _, 0n -> aux x.hi ^ "00000000"
-  | 0n, _ -> aux x.lo
+  | _, 0n -> aux x_hi ^ "00000000"
+  | 0n, _ -> aux x_lo
   | _, _ ->
-    let lo =  aux x.lo in
+    let lo =  aux x_lo in
     let pad = 8 -Bs_string.length lo in
     if pad <= 0 then
-      aux x.hi ^ lo
+      aux x_hi ^ lo
     else
-      aux x.hi ^ Caml_utils.repeat pad "0" [@bs] ^ lo
+      aux x_hi ^ Caml_utils.repeat pad "0" [@bs] ^ lo
 
-let discard_sign x = {x with hi = Caml_nativeint.logand 0x7fff_ffffn x.hi }
+let discard_sign (x : int64) : int64 = 
+  unsafe_to_int64 { (unsafe_of_int64 x) with hi = Caml_nativeint.logand 0x7fff_ffffn (unsafe_of_int64 x).hi }
 
 (* >>> 0 does not change its bit representation
       it simply makes sure it is an unsigned integer
@@ -465,5 +471,3 @@ let get64 (s : string) (i:int) : t =
             (Caml_nativeint.of_int (Caml_char.code s.[i+6]) << 48 )
             (Caml_nativeint.of_int (Caml_char.code s.[i+7]) << 56 )))
 
-external unsafe_to_int64 : t -> int64 = "%identity"           
-external unsafe_of_int64 : int64 -> t = "%identity"

@@ -296,13 +296,7 @@ let translate loc (prim_name : string)
     | "caml_int64_of_float"
       -> Js_long.of_float args
     | "caml_int64_compare"
-      -> Js_long.compare args 
-    | "js_int64_discard_sign"
-      -> Js_long.discard_sign args
-    | "js_int64_div_mod"
-      -> Js_long.div_mod args
-    | "js_int64_to_hex"
-      -> Js_long.to_hex args    
+      -> Js_long.compare args     
     | "caml_int64_bits_of_float"
       -> Js_long.bits_of_float args     
     | "caml_int64_float_of_bits"

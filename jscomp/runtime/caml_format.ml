@@ -377,6 +377,11 @@ let caml_format_int fmt i =
     let f = parse_format fmt in 
     aux f i 
 
+(* FIXME: improve codegen for such cases
+let div_mod (x : int64) (y : int64) : int64 * int64 =  
+  let a, b = Caml_int64.(div_mod (unsafe_of_int64 x) (unsafe_of_int64 y)) in   
+  Caml_int64.unsafe_to_int64 a , Caml_int64.unsafe_to_int64 b 
+*)
 let caml_int64_format fmt x =
   let module String = Bs_string in 
   let f = parse_format fmt in
@@ -391,14 +396,14 @@ let caml_int64_format fmt x =
 
   begin match f.base with
     | Hex ->
-      s := Caml_int64_extern.to_hex x ^ !s       
+      s := Caml_int64.to_hex x ^ !s       
     | Oct ->
       let wbase  = 8L  in
       let  cvtbl = "01234567" in
 
       if  x < 0L then
         begin         
-          let y = Caml_int64.(unsafe_to_int64 (discard_sign (unsafe_of_int64 x)))  in
+          let y = Caml_int64.discard_sign  x in
           (* 2 ^  63 + y `div_mod` 8 *)        
           let quotient_l  = 1152921504606846976L (**)
             (* {lo =   0n; hi =  268435456n } *) (* 2 ^ 31 / 8 *)
@@ -407,7 +412,7 @@ let caml_int64_format fmt x =
           (* let c, d = Caml_int64.div_mod (Caml_int64.add y modulus_l) wbase in
              we can not do the code above, it can overflow when y is really large           
           *)
-          let c, d = Caml_int64_extern.div_mod  y  wbase in
+          let c, d = Caml_int64.div_mod  y  wbase in
 
           let quotient =
             ref (Caml_int64_extern.add quotient_l c )  in
@@ -417,14 +422,14 @@ let caml_int64_format fmt x =
               cvtbl.[ Caml_int64_extern.to_int !modulus] ^ !s ;
 
           while  !quotient <> 0L do
-            let a, b = Caml_int64_extern.div_mod (!quotient) wbase in
+            let a, b = Caml_int64.div_mod (!quotient) wbase in
             quotient := a;
             modulus := b;
             s := Bs_string.of_char cvtbl.[Caml_int64_extern.to_int !modulus] ^ !s ;
           done;
         end
       else
-        let a, b =  Caml_int64_extern.div_mod x wbase  in
+        let a, b =  Caml_int64.div_mod x wbase  in
         let quotient = ref a  in
         let modulus = ref b in
         s :=
@@ -432,7 +437,7 @@ let caml_int64_format fmt x =
             cvtbl.[ Caml_int64_extern.to_int !modulus] ^ !s ;
 
         while  !quotient <> 0L do
-          let a, b = Caml_int64_extern.div_mod (!quotient) wbase in
+          let a, b = Caml_int64.div_mod (!quotient) wbase in
           quotient := a;
           modulus := b;
           s := Bs_string.of_char cvtbl.[Caml_int64_extern.to_int !modulus] ^ !s ;
@@ -443,7 +448,7 @@ let caml_int64_format fmt x =
       let  cvtbl = "0123456789" in
 
       if  x < 0L then
-        let y  = Caml_int64.(unsafe_to_int64 (discard_sign (unsafe_of_int64 x)))  in
+        let y  = Caml_int64.discard_sign x in
         (* 2 ^  63 + y `div_mod` 10 *)        
 
         let quotient_l  = 922337203685477580L (* 2 ^ 63 / 10 *)
@@ -454,8 +459,8 @@ let caml_int64_format fmt x =
         (* let c, d = Caml_int64.div_mod (Caml_int64.add y modulus_l) wbase in
            we can not do the code above, it can overflow when y is really large           
         *)
-        let c, d = Caml_int64_extern.div_mod  y  wbase in
-        let e ,f = Caml_int64_extern.div_mod (Caml_int64_extern.add modulus_l d) wbase in        
+        let c, d = Caml_int64.div_mod  y  wbase in
+        let e ,f = Caml_int64.div_mod (Caml_int64_extern.add modulus_l d) wbase in        
         let quotient =
           ref (Caml_int64_extern.add (Caml_int64_extern.add quotient_l c )
                  e)  in
@@ -465,14 +470,14 @@ let caml_int64_format fmt x =
             cvtbl.[Caml_int64_extern.to_int !modulus] ^ !s ;
 
         while !quotient <> 0L do
-          let a, b = Caml_int64_extern.div_mod (!quotient) wbase in
+          let a, b = Caml_int64.div_mod (!quotient) wbase in
           quotient := a;
           modulus := b;
           s := Bs_string.of_char cvtbl.[Caml_int64_extern.to_int !modulus] ^ !s ;
         done;
 
       else
-        let a, b =  Caml_int64_extern.div_mod x wbase  in
+        let a, b =  Caml_int64.div_mod x wbase  in
         let quotient = ref a  in
         let modulus = ref b in
         s :=
@@ -480,7 +485,7 @@ let caml_int64_format fmt x =
             cvtbl.[ Caml_int64_extern.to_int !modulus] ^ !s ;
 
         while  !quotient <> 0L do
-          let a, b = Caml_int64_extern.div_mod (!quotient) wbase in
+          let a, b = Caml_int64.div_mod (!quotient) wbase in
           quotient := a;
           modulus := b;
           s := Bs_string.of_char cvtbl.[Caml_int64_extern.to_int !modulus] ^ !s ;
