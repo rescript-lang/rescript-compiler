@@ -156,12 +156,12 @@ let md5blk = [|
   |] 
 
 let caml_md5_string s start len = 
-  let module String = Bs_string in 
+  let module String = Caml_string_extern in 
   let module Array = Caml_array (* reuse the sugar .. *)
   in 
 
-  let s = Bs_string.slice   s start len in
-  let n =Bs_string.length s in
+  let s = Caml_string_extern.slice   s start len in
+  let n =Caml_string_extern.length s in
   let () = 
     state.(0) <- seed_a; 
     state.(1) <- seed_b; 
@@ -185,11 +185,11 @@ let caml_md5_string s start len =
     cycle state md5blk
   done ;
 
-  let s_tail  = Bs_string.slice_rest s (i_end  * 64) in 
+  let s_tail  = Caml_string_extern.slice_rest s (i_end  * 64) in 
   for kk = 0 to 15 do 
     md5blk.(kk) <- 0l 
   done ;
-  let i_end =Bs_string.length s_tail - 1 in
+  let i_end =Caml_string_extern.length s_tail - 1 in
   for i = 0 to  i_end do 
     md5blk.(i / 4 ) <- 
       Caml_int32_extern.logor md5blk.(i / 4)  (Caml_int32_extern.of_int (Caml_char.code s_tail.[i]) << ((i mod 4) lsl 3))
@@ -205,7 +205,7 @@ let caml_md5_string s start len =
     end;
   md5blk.(14) <-  Caml_int32_extern.mul (Caml_int32_extern.of_int n)  8l;
   cycle state md5blk;
-  Bs_string.of_small_int32_array [|
+  Caml_string_extern.of_small_int32_array [|
         state.(0) & 0xffl;
         (state.(0) >> 8) & 0xffl;
         (state.(0) >> 16) & 0xffl;

@@ -399,7 +399,7 @@ let to_int32 x = Caml_nativeint.logor x.lo  0n (* signed integer *)
 let to_hex (x : int64) =
   let {hi = x_hi; lo = x_lo} = unsafe_of_int64 x in 
   let aux v =
-    Bs_string.of_int (Caml_nativeint.to_int (Caml_nativeint.shift_right_logical v 0)) ~base:16
+    Caml_string_extern.of_int (Caml_nativeint.to_int (Caml_nativeint.shift_right_logical v 0)) ~base:16
   in
   match x_hi, x_lo with
   | 0n, 0n -> "0"
@@ -407,7 +407,7 @@ let to_hex (x : int64) =
   | 0n, _ -> aux x_lo
   | _, _ ->
     let lo =  aux x_lo in
-    let pad = 8 -Bs_string.length lo in
+    let pad = 8 -Caml_string_extern.length lo in
     if pad <= 0 then
       aux x_hi ^ lo
     else
@@ -453,7 +453,7 @@ let  bits_of_float : float -> t  = fun x ->
 
 (** used by "%caml_string_get64" *)
 let get64 (s : string) (i:int) : t =
-  let module String = Bs_string in 
+  let module String = Caml_string_extern in 
   mk ~lo:
     (Caml_nativeint.logor
        (Caml_nativeint.logor

@@ -54,6 +54,7 @@ let caml_int32_bswap (x : nativeint) =
 
 let caml_nativeint_bswap = caml_int32_bswap
 
+(* -FIXME not polyfill any more in next release *)
 let imul : int32 -> int32 -> int32 = [%bs.raw{| Math.imul || function (x,y) {
   y |= 0; return ((((x >> 16) * y) << 16) + (x & 0xffff) * y)|0; 
 }

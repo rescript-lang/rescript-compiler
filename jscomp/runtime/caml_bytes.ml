@@ -95,7 +95,7 @@ let string_of_large_bytes bytes i len =
   let s_len = ref len in
   let seg = 1024 in
   if i = 0 && len <= 4 * seg && len = length bytes then 
-    Bs_string.of_small_int_array  (to_int_array bytes)
+    Caml_string_extern.of_small_int_array  (to_int_array bytes)
   else 
     begin
       let offset = ref 0 in
@@ -103,7 +103,7 @@ let string_of_large_bytes bytes i len =
         let next = if !s_len < 1024 then !s_len else seg in
         let tmp_bytes = new_uninitialized next in
         let () = caml_blit_bytes bytes !offset tmp_bytes 0 next in 
-        s := !s ^ (Bs_string.of_small_int_array (to_int_array tmp_bytes));
+        s := !s ^ (Caml_string_extern.of_small_int_array (to_int_array tmp_bytes));
         s_len := !s_len - next ; 
         offset := !offset + next;
       done;
@@ -118,27 +118,27 @@ let bytes_to_string a  =
  *)
 let caml_blit_string (s1 : string) i1 (s2 : bytes) i2 (len : int ) = 
   if len > 0 then
-    let off1 = Bs_string.length s1 - i1 in
+    let off1 = Caml_string_extern.length s1 - i1 in
     if len <= off1 then 
       for i = 0 to len - 1 do 
-        unsafe_set s2 (i2 + i) (Bs_string.unsafe_get s1 (i1 + i))
+        unsafe_set s2 (i2 + i) (Caml_string_extern.unsafe_get s1 (i1 + i))
       done
     else 
       begin
         for i = 0 to off1 - 1 do 
-          unsafe_set s2 (i2 + i) (Bs_string.unsafe_get s1 (i1 + i))
+          unsafe_set s2 (i2 + i) (Caml_string_extern.unsafe_get s1 (i1 + i))
         done;
         for i = off1 to len - 1 do 
           unsafe_set s2 (i2 + i) '\000'
         done
       end
-      
+
 (** checkout [Bytes.empty] -- to be inlined? *)
 let bytes_of_string  s = 
-  let len = Bs_string.length s in
+  let len = Caml_string_extern.length s in
   let res = new_uninitialized len  in
   for i = 0 to len - 1 do 
-    unsafe_set res i (Bs_string.unsafe_get s i)
+    unsafe_set res i (Caml_string_extern.unsafe_get s i)
       (* Note that when get a char and convert it to int immedately, should be optimized
          should be [s.charCodeAt[i]]
        *)

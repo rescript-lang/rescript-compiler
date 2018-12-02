@@ -37,23 +37,23 @@ type out_channel  = {
 let stdout = {
   buffer = "";
   output = (fun _ s ->
-    let module String = Bs_string in
-    let v =Bs_string.length s - 1 in
+    let module String = Caml_string_extern in
+    let v =Caml_string_extern.length s - 1 in
     if [%bs.raw{| (typeof process !== "undefined") && process.stdout && process.stdout.write|}] then
       ([%bs.raw{| process.stdout.write |} ] : string -> unit [@bs]) s [@bs]
     else
     if s.[v] = '\n' then
-      Js.log (Bs_string.slice s 0 v)
+      Js.log (Caml_string_extern.slice s 0 v)
     else Js.log s)
 }
 
 let stderr = {
   buffer = "";
   output = fun _ s ->
-    let module String = Bs_string in
-    let v =Bs_string.length s - 1 in     
+    let module String = Caml_string_extern in
+    let v =Caml_string_extern.length s - 1 in     
     if s.[v] = '\n' then
-      Js.log (Bs_string.slice s 0 v) (* TODO: change to Js.error*)
+      Js.log (Caml_string_extern.slice s 0 v) (* TODO: change to Js.error*)
     else Js.log s        
 }
 
@@ -79,8 +79,8 @@ let node_std_output  : string -> bool = [%bs.raw{|function (s){
 *)
 let caml_ml_output (oc : out_channel) (str : string) offset len  =
   let str =
-    if offset = 0 && len =Bs_string.length str then str    
-    else Bs_string.slice str offset len in
+    if offset = 0 && len =Caml_string_extern.length str then str    
+    else Caml_string_extern.slice str offset len in
   if [%bs.raw{| (typeof process !== "undefined") && process.stdout && process.stdout.write |}] &&
      oc == stdout then
     ([%bs.raw{| process.stdout.write |}] : string -> unit [@bs] ) str [@bs]
@@ -88,19 +88,19 @@ let caml_ml_output (oc : out_channel) (str : string) offset len  =
   else
     begin     
 
-      let id = Bs_string.lastIndexOf str "\n" in
+      let id = Caml_string_extern.lastIndexOf str "\n" in
       if id < 0 then
         oc.buffer <- oc.buffer ^ str
       else
         begin 
-          oc.buffer <- oc.buffer ^ Bs_string.slice str 0 (id +1);
+          oc.buffer <- oc.buffer ^ Caml_string_extern.slice str 0 (id +1);
           caml_ml_flush oc;
-          oc.buffer <- oc.buffer ^ Bs_string.slice_rest str (id + 1)
+          oc.buffer <- oc.buffer ^ Caml_string_extern.slice_rest str (id + 1)
         end
     end      
 
 let caml_ml_output_char (oc : out_channel)  (char : char) : unit =
-  caml_ml_output oc (Bs_string.of_char char) 0 1 
+  caml_ml_output oc (Caml_string_extern.of_char char) 0 1 
 
 let caml_ml_input (ic : in_channel) (bytes : bytes) offset len : int = 
   raise (Failure  "caml_ml_input ic not implemented")

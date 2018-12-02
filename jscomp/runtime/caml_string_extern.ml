@@ -26,7 +26,7 @@
 
 (** TODO: check with {!String.of_char} 
     it's quite common that we have
-    {[ Bs_string.of_char x.[0] ]}
+    {[ Caml_string_extern.of_char x.[0] ]}
     It would be nice to generate code as below    
     {[ x[0]
     ]}
