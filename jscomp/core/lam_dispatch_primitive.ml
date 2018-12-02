@@ -553,7 +553,7 @@ let translate loc (prim_name : string)
     | "string_of_bytes"
     | "bytes_of_string"
     
-    | "caml_string_of_char_array"    
+    (* | "caml_string_of_char_array"     *)
     | "caml_blit_string" 
     | "caml_blit_bytes"
       -> 
