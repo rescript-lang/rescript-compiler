@@ -16,8 +16,8 @@ var Printexc = require("../../lib/js/printexc.js");
 var Caml_bytes = require("../../lib/js/caml_bytes.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_format = require("../../lib/js/caml_format.js");
+var Caml_option = require("../../lib/js/caml_option.js");
 var Caml_string = require("../../lib/js/caml_string.js");
-var Js_primitive = require("../../lib/js/js_primitive.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
@@ -299,7 +299,7 @@ function string_fold_lefti(f, e0, s) {
 
 function option_default(x, param) {
   if (param !== undefined) {
-    return Js_primitive.valFromOption(param);
+    return Caml_option.valFromOption(param);
   } else {
     return x;
   }
@@ -2942,7 +2942,7 @@ var __log__ = /* record */[/* contents */undefined];
 function log(x) {
   var match = __log__[0];
   if (match !== undefined) {
-    return Printf.fprintf(Js_primitive.valFromOption(match), x);
+    return Printf.fprintf(Caml_option.valFromOption(match), x);
   } else {
     return Printf.ifprintf(Pervasives.stdout, x);
   }
@@ -3611,7 +3611,7 @@ function min_value(param) {
   if (match !== undefined) {
     var match$1 = param[1];
     if (match$1 !== undefined) {
-      return Js_primitive.some(Caml_obj.caml_min(Js_primitive.valFromOption(match), Js_primitive.valFromOption(match$1)));
+      return Caml_option.some(Caml_obj.caml_min(Caml_option.valFromOption(match), Caml_option.valFromOption(match$1)));
     } else {
       throw [
             Caml_builtin_exceptions.failure,
@@ -3631,7 +3631,7 @@ function eq_value(param) {
   if (match !== undefined) {
     var match$1 = param[1];
     if (match$1 !== undefined) {
-      return Caml_obj.caml_equal(Js_primitive.valFromOption(match), Js_primitive.valFromOption(match$1));
+      return Caml_obj.caml_equal(Caml_option.valFromOption(match), Caml_option.valFromOption(match$1));
     } else {
       throw [
             Caml_builtin_exceptions.failure,
@@ -3660,7 +3660,7 @@ function string_of_option(f, param) {
                           ])
                       ]),
                     "Some(%s)"
-                  ]), Curry._1(f, Js_primitive.valFromOption(param)));
+                  ]), Curry._1(f, Caml_option.valFromOption(param)));
   } else {
     return "None";
   }
@@ -3938,7 +3938,7 @@ function find_field_option(field_options, option_name) {
     }
   }
   if (exit === 1) {
-    return Js_primitive.some(x);
+    return Caml_option.some(x);
   }
   
 }
@@ -4162,7 +4162,7 @@ function get_default(field_name, field_options, field_type) {
     }
   }
   if (exit === 1) {
-    return Js_primitive.some(constant);
+    return Caml_option.some(constant);
   }
   
 }

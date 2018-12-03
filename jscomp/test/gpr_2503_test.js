@@ -1,7 +1,7 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Js_primitive = require("../../lib/js/js_primitive.js");
+var Caml_option = require("../../lib/js/caml_option.js");
 
 var suites = /* record */[/* contents : [] */0];
 
@@ -19,7 +19,7 @@ function makeWrapper(foo, param) {
   var tmp = { };
   if (foo !== undefined) {
     tmp.foo = (function () {
-          switch (Js_primitive.valFromOption(foo)) {
+          switch (Caml_option.valFromOption(foo)) {
             case 97 : 
                 return "a";
             case 98 : 
@@ -54,7 +54,7 @@ function makeWrapper3(foo, param) {
   var tmp = { };
   if (foo !== undefined) {
     tmp.foo = (function () {
-          switch (Js_primitive.valFromOption(foo)) {
+          switch (Caml_option.valFromOption(foo)) {
             case 97 : 
                 return "a";
             case 98 : 
@@ -74,7 +74,7 @@ function makeWrapper4(foo, param) {
     );
   if (tmp$1 !== undefined) {
     tmp.foo = (function () {
-          switch (Js_primitive.valFromOption(tmp$1)) {
+          switch (Caml_option.valFromOption(tmp$1)) {
             case 97 : 
                 return "a";
             case 98 : 

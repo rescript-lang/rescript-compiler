@@ -3,7 +3,7 @@
 var Mt = require("./mt.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Belt_List = require("../../lib/js/belt_List.js");
-var Js_primitive = require("../../lib/js/js_primitive.js");
+var Caml_option = require("../../lib/js/caml_option.js");
 
 var suites = /* record */[/* contents : [] */0];
 
@@ -68,9 +68,9 @@ function f6(a) {
   return true;
 }
 
-var f10 = Js_primitive.some(Js_primitive.some(Js_primitive.some(Js_primitive.some(undefined))));
+var f10 = Caml_option.some(Caml_option.some(Caml_option.some(Caml_option.some(undefined))));
 
-var f11 = Js_primitive.some(f10);
+var f11 = Caml_option.some(f10);
 
 var randomized = /* record */[/* contents */false];
 
@@ -124,9 +124,9 @@ b("File \"option_repr_test.ml\", line 95, characters 4-11", !Caml_obj.caml_great
 
 b("File \"option_repr_test.ml\", line 96, characters 4-11", Caml_obj.caml_greaterthan(null, undefined));
 
-b("File \"option_repr_test.ml\", line 97, characters 4-11", Caml_obj.caml_lessthan(undefined, Js_primitive.some(undefined)));
+b("File \"option_repr_test.ml\", line 97, characters 4-11", Caml_obj.caml_lessthan(undefined, Caml_option.some(undefined)));
 
-b("File \"option_repr_test.ml\", line 98, characters 4-11", Caml_obj.caml_greaterthan(Js_primitive.some(undefined), undefined));
+b("File \"option_repr_test.ml\", line 98, characters 4-11", Caml_obj.caml_greaterthan(Caml_option.some(undefined), undefined));
 
 console.log(6, undefined);
 
@@ -168,7 +168,7 @@ function all_true(xs) {
               }));
 }
 
-var xs_000 = gtx(Js_primitive.some(null), Js_primitive.some(undefined));
+var xs_000 = gtx(Caml_option.some(null), Caml_option.some(undefined));
 
 var xs = /* :: */[
   xs_000,
@@ -179,22 +179,22 @@ b("File \"option_repr_test.ml\", line 121, characters 5-12", Belt_List.every(xs,
             return x;
           })));
 
-var xs_000$1 = ltx(Js_primitive.some(undefined), 3);
+var xs_000$1 = ltx(Caml_option.some(undefined), 3);
 
 var xs_001 = /* :: */[
-  ltx(Js_primitive.some(undefined), Js_primitive.some(Js_primitive.some(undefined))),
+  ltx(Caml_option.some(undefined), Caml_option.some(Caml_option.some(undefined))),
   /* :: */[
-    ltx(Js_primitive.some(undefined), "3"),
+    ltx(Caml_option.some(undefined), "3"),
     /* :: */[
-      ltx(Js_primitive.some(undefined), true),
+      ltx(Caml_option.some(undefined), true),
       /* :: */[
-        ltx(Js_primitive.some(undefined), false),
+        ltx(Caml_option.some(undefined), false),
         /* :: */[
           ltx(false, true),
           /* :: */[
             ltx(false, true),
             /* :: */[
-              ltx(undefined, Js_primitive.some(undefined)),
+              ltx(undefined, Caml_option.some(undefined)),
               /* :: */[
                 ltx(undefined, null),
                 /* :: */[
@@ -229,11 +229,11 @@ var xs_000$2 = eqx(undefined, undefined);
 var xs_001$1 = /* :: */[
   neqx(undefined, null),
   /* :: */[
-    eqx(Js_primitive.some(undefined), Js_primitive.some(undefined)),
+    eqx(Caml_option.some(undefined), Caml_option.some(undefined)),
     /* :: */[
-      eqx(Js_primitive.some(Js_primitive.some(undefined)), Js_primitive.some(Js_primitive.some(undefined))),
+      eqx(Caml_option.some(Caml_option.some(undefined)), Caml_option.some(Caml_option.some(undefined))),
       /* :: */[
-        neqx(Js_primitive.some(Js_primitive.some(Js_primitive.some(undefined))), Js_primitive.some(Js_primitive.some(undefined))),
+        neqx(Caml_option.some(Caml_option.some(Caml_option.some(undefined))), Caml_option.some(Caml_option.some(undefined))),
         /* [] */0
       ]
     ]
@@ -253,9 +253,9 @@ Mt.from_pair_suites("option_repr_test.ml", suites[0]);
 
 var f7 = undefined;
 
-var f8 = Js_primitive.some(undefined);
+var f8 = Caml_option.some(undefined);
 
-var f9 = Js_primitive.some(Js_primitive.some(undefined));
+var f9 = Caml_option.some(Caml_option.some(undefined));
 
 var N = 0;
 

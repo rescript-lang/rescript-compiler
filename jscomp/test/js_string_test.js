@@ -2,7 +2,7 @@
 
 var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
-var Js_primitive = require("../../lib/js/js_primitive.js");
+var Caml_option = require("../../lib/js/caml_option.js");
 
 var suites_000 = /* tuple */[
   "make",
@@ -100,7 +100,7 @@ var suites_001 = /* :: */[
                     (function (param) {
                         return /* Eq */Block.__(0, [
                                   97,
-                                  Js_primitive.undefined_to_opt("foobar".codePointAt(4))
+                                  Caml_option.undefined_to_opt("foobar".codePointAt(4))
                                 ]);
                       })
                   ],
@@ -110,7 +110,7 @@ var suites_001 = /* :: */[
                       (function (param) {
                           return /* Eq */Block.__(0, [
                                     undefined,
-                                    Js_primitive.undefined_to_opt("foobar".codePointAt(98))
+                                    Caml_option.undefined_to_opt("foobar".codePointAt(98))
                                   ]);
                         })
                     ],
@@ -233,7 +233,7 @@ var suites_001 = /* :: */[
                                                               "na",
                                                               "na"
                                                             ],
-                                                            Js_primitive.null_to_opt("banana".match((/na+/g)))
+                                                            Caml_option.null_to_opt("banana".match((/na+/g)))
                                                           ]);
                                                 })
                                             ],
@@ -243,7 +243,7 @@ var suites_001 = /* :: */[
                                                 (function (param) {
                                                     return /* Eq */Block.__(0, [
                                                               undefined,
-                                                              Js_primitive.null_to_opt("banana".match((/nanana+/g)))
+                                                              Caml_option.null_to_opt("banana".match((/nanana+/g)))
                                                             ]);
                                                   })
                                               ],

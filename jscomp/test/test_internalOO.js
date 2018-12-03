@@ -9,8 +9,8 @@ var Caml_oo = require("../../lib/js/caml_oo.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_array = require("../../lib/js/caml_array.js");
 var Caml_int32 = require("../../lib/js/caml_int32.js");
+var Caml_option = require("../../lib/js/caml_option.js");
 var Caml_string = require("../../lib/js/caml_string.js");
-var Js_primitive = require("../../lib/js/js_primitive.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
@@ -435,7 +435,7 @@ function concat(t1, t2) {
 
 function concat_or_join(t1, v, d, t2) {
   if (d !== undefined) {
-    return join(t1, v, Js_primitive.valFromOption(d), t2);
+    return join(t1, v, Caml_option.valFromOption(d), t2);
   } else {
     return concat(t1, t2);
   }
@@ -451,7 +451,7 @@ function split(x, param) {
     if (c === 0) {
       return /* tuple */[
               l,
-              Js_primitive.some(d),
+              Caml_option.some(d),
               r
             ];
     } else if (c < 0) {
@@ -484,7 +484,7 @@ function merge(f, s1, s2) {
     var v1 = s1[1];
     if (s1[4] >= height(s2)) {
       var match = split(v1, s2);
-      return concat_or_join(merge(f, s1[0], match[0]), v1, Curry._3(f, v1, Js_primitive.some(s1[2]), match[1]), merge(f, s1[3], match[2]));
+      return concat_or_join(merge(f, s1[0], match[0]), v1, Curry._3(f, v1, Caml_option.some(s1[2]), match[1]), merge(f, s1[3], match[2]));
     } else {
       exit = 1;
     }
@@ -497,7 +497,7 @@ function merge(f, s1, s2) {
     if (s2) {
       var v2 = s2[1];
       var match$1 = split(v2, s1);
-      return concat_or_join(merge(f, match$1[0], s2[0]), v2, Curry._3(f, v2, match$1[1], Js_primitive.some(s2[2])), merge(f, match$1[2], s2[3]));
+      return concat_or_join(merge(f, match$1[0], s2[0]), v2, Curry._3(f, v2, match$1[1], Caml_option.some(s2[2])), merge(f, match$1[2], s2[3]));
     } else {
       throw [
             Caml_builtin_exceptions.assert_failure,
@@ -1084,7 +1084,7 @@ function concat$1(t1, t2) {
 
 function concat_or_join$1(t1, v, d, t2) {
   if (d !== undefined) {
-    return join$1(t1, v, Js_primitive.valFromOption(d), t2);
+    return join$1(t1, v, Caml_option.valFromOption(d), t2);
   } else {
     return concat$1(t1, t2);
   }
@@ -1100,7 +1100,7 @@ function split$1(x, param) {
     if (c === 0) {
       return /* tuple */[
               l,
-              Js_primitive.some(d),
+              Caml_option.some(d),
               r
             ];
     } else if (c < 0) {
@@ -1133,7 +1133,7 @@ function merge$1(f, s1, s2) {
     var v1 = s1[1];
     if (s1[4] >= height$1(s2)) {
       var match = split$1(v1, s2);
-      return concat_or_join$1(merge$1(f, s1[0], match[0]), v1, Curry._3(f, v1, Js_primitive.some(s1[2]), match[1]), merge$1(f, s1[3], match[2]));
+      return concat_or_join$1(merge$1(f, s1[0], match[0]), v1, Curry._3(f, v1, Caml_option.some(s1[2]), match[1]), merge$1(f, s1[3], match[2]));
     } else {
       exit = 1;
     }
@@ -1146,7 +1146,7 @@ function merge$1(f, s1, s2) {
     if (s2) {
       var v2 = s2[1];
       var match$1 = split$1(v2, s1);
-      return concat_or_join$1(merge$1(f, match$1[0], s2[0]), v2, Curry._3(f, v2, match$1[1], Js_primitive.some(s2[2])), merge$1(f, match$1[2], s2[3]));
+      return concat_or_join$1(merge$1(f, match$1[0], s2[0]), v2, Curry._3(f, v2, match$1[1], Caml_option.some(s2[2])), merge$1(f, match$1[2], s2[3]));
     } else {
       throw [
             Caml_builtin_exceptions.assert_failure,
@@ -1733,7 +1733,7 @@ function concat$2(t1, t2) {
 
 function concat_or_join$2(t1, v, d, t2) {
   if (d !== undefined) {
-    return join$2(t1, v, Js_primitive.valFromOption(d), t2);
+    return join$2(t1, v, Caml_option.valFromOption(d), t2);
   } else {
     return concat$2(t1, t2);
   }
@@ -1749,7 +1749,7 @@ function split$2(x, param) {
     if (c === 0) {
       return /* tuple */[
               l,
-              Js_primitive.some(d),
+              Caml_option.some(d),
               r
             ];
     } else if (c < 0) {
@@ -1782,7 +1782,7 @@ function merge$2(f, s1, s2) {
     var v1 = s1[1];
     if (s1[4] >= height$2(s2)) {
       var match = split$2(v1, s2);
-      return concat_or_join$2(merge$2(f, s1[0], match[0]), v1, Curry._3(f, v1, Js_primitive.some(s1[2]), match[1]), merge$2(f, s1[3], match[2]));
+      return concat_or_join$2(merge$2(f, s1[0], match[0]), v1, Curry._3(f, v1, Caml_option.some(s1[2]), match[1]), merge$2(f, s1[3], match[2]));
     } else {
       exit = 1;
     }
@@ -1795,7 +1795,7 @@ function merge$2(f, s1, s2) {
     if (s2) {
       var v2 = s2[1];
       var match$1 = split$2(v2, s1);
-      return concat_or_join$2(merge$2(f, match$1[0], s2[0]), v2, Curry._3(f, v2, match$1[1], Js_primitive.some(s2[2])), merge$2(f, match$1[2], s2[3]));
+      return concat_or_join$2(merge$2(f, match$1[0], s2[0]), v2, Curry._3(f, v2, match$1[1], Caml_option.some(s2[2])), merge$2(f, match$1[2], s2[3]));
     } else {
       throw [
             Caml_builtin_exceptions.assert_failure,

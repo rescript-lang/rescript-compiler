@@ -827,7 +827,7 @@ and expression_desc cxt (level:int) f x : cxt  =
     expression level cxt f  
       (if identity then e 
        else       
-         E.runtime_call Js_runtime_modules.js_primitive "some" [e])
+         E.runtime_call Js_runtime_modules.option "some" [e])
   | Caml_block( el, mutable_flag, tag, tag_info)
     ->
     (* Note that, if we ignore more than tag [0] we loose some information

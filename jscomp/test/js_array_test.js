@@ -3,7 +3,7 @@
 var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 var Js_vector = require("../../lib/js/js_vector.js");
-var Js_primitive = require("../../lib/js/js_primitive.js");
+var Caml_option = require("../../lib/js/caml_option.js");
 
 var suites_000 = /* tuple */[
   "File \"js_array_test.ml\", line 3, characters 4-11",
@@ -206,7 +206,7 @@ var suites_001 = /* :: */[
                         (function (param) {
                             return /* Eq */Block.__(0, [
                                       3,
-                                      Js_primitive.undefined_to_opt(/* array */[
+                                      Caml_option.undefined_to_opt(/* array */[
                                               1,
                                               2,
                                               3
@@ -220,7 +220,7 @@ var suites_001 = /* :: */[
                           (function (param) {
                               return /* Eq */Block.__(0, [
                                         undefined,
-                                        Js_primitive.undefined_to_opt(/* array */[].pop())
+                                        Caml_option.undefined_to_opt(/* array */[].pop())
                                       ]);
                             })
                         ],
@@ -276,7 +276,7 @@ var suites_001 = /* :: */[
                                   (function (param) {
                                       return /* Eq */Block.__(0, [
                                                 1,
-                                                Js_primitive.undefined_to_opt(/* array */[
+                                                Caml_option.undefined_to_opt(/* array */[
                                                         1,
                                                         2,
                                                         3
@@ -290,7 +290,7 @@ var suites_001 = /* :: */[
                                     (function (param) {
                                         return /* Eq */Block.__(0, [
                                                   undefined,
-                                                  Js_primitive.undefined_to_opt(/* array */[].shift())
+                                                  Caml_option.undefined_to_opt(/* array */[].shift())
                                                 ]);
                                       })
                                   ],
@@ -782,7 +782,7 @@ var suites_001 = /* :: */[
                                                                                           (function (param) {
                                                                                               return /* Eq */Block.__(0, [
                                                                                                         2,
-                                                                                                        Js_primitive.undefined_to_opt(/* array */[
+                                                                                                        Caml_option.undefined_to_opt(/* array */[
                                                                                                                 1,
                                                                                                                 2,
                                                                                                                 3,
@@ -799,7 +799,7 @@ var suites_001 = /* :: */[
                                                                                             (function (param) {
                                                                                                 return /* Eq */Block.__(0, [
                                                                                                           undefined,
-                                                                                                          Js_primitive.undefined_to_opt(/* array */[
+                                                                                                          Caml_option.undefined_to_opt(/* array */[
                                                                                                                   1,
                                                                                                                   2,
                                                                                                                   3,
@@ -816,7 +816,7 @@ var suites_001 = /* :: */[
                                                                                               (function (param) {
                                                                                                   return /* Eq */Block.__(0, [
                                                                                                             1,
-                                                                                                            Js_primitive.undefined_to_opt(/* array */[
+                                                                                                            Caml_option.undefined_to_opt(/* array */[
                                                                                                                     1,
                                                                                                                     2,
                                                                                                                     3,
@@ -833,7 +833,7 @@ var suites_001 = /* :: */[
                                                                                                 (function (param) {
                                                                                                     return /* Eq */Block.__(0, [
                                                                                                               undefined,
-                                                                                                              Js_primitive.undefined_to_opt(/* array */[
+                                                                                                              Caml_option.undefined_to_opt(/* array */[
                                                                                                                       1,
                                                                                                                       2,
                                                                                                                       3,

@@ -5,7 +5,7 @@ var $$Array = require("../../lib/js/array.js");
 var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var String_set = require("./string_set.js");
-var Js_primitive = require("../../lib/js/js_primitive.js");
+var Caml_option = require("../../lib/js/caml_option.js");
 
 var suites = /* record */[/* contents : [] */0];
 
@@ -36,7 +36,7 @@ var b = {
 
 function map(f, x) {
   if (x !== undefined) {
-    return Js_primitive.some(Curry._1(f, Js_primitive.valFromOption(x)));
+    return Caml_option.some(Curry._1(f, Caml_option.valFromOption(x)));
   }
   
 }
@@ -48,7 +48,7 @@ function make(foo) {
   return (function (param) {
       var tmp = { };
       if (partial_arg !== undefined) {
-        tmp.foo = Js_primitive.valFromOption(partial_arg);
+        tmp.foo = Caml_option.valFromOption(partial_arg);
       }
       return tmp;
     });
@@ -76,10 +76,10 @@ function test3(_open, xx__hi) {
     hi: 2
   };
   if (_open !== undefined) {
-    tmp.open = Js_primitive.valFromOption(_open);
+    tmp.open = Caml_option.valFromOption(_open);
   }
   if (xx__hi !== undefined) {
-    tmp.xx = Js_primitive.valFromOption(xx__hi);
+    tmp.xx = Caml_option.valFromOption(xx__hi);
   }
   return tmp;
 }
@@ -91,7 +91,7 @@ function test4(_open, xx__hi) {
     hi: 2
   };
   if (xx__hi !== undefined) {
-    tmp.xx = Js_primitive.valFromOption(xx__hi);
+    tmp.xx = Caml_option.valFromOption(xx__hi);
   }
   return tmp;
 }
@@ -103,11 +103,11 @@ function test5(f, x) {
   };
   var tmp$1 = Curry._1(f, x);
   if (tmp$1 !== undefined) {
-    tmp.open = Js_primitive.valFromOption(tmp$1);
+    tmp.open = Caml_option.valFromOption(tmp$1);
   }
   var tmp$2 = Curry._1(f, x);
   if (tmp$2 !== undefined) {
-    tmp.xx = Js_primitive.valFromOption(tmp$2);
+    tmp.xx = Caml_option.valFromOption(tmp$2);
   }
   return tmp;
 }
@@ -120,11 +120,11 @@ function test6(f, x) {
   };
   var tmp$1 = (x$1[0] = x$1[0] + 1 | 0, x$1[0]);
   if (tmp$1 !== undefined) {
-    tmp.open = Js_primitive.valFromOption(tmp$1);
+    tmp.open = Caml_option.valFromOption(tmp$1);
   }
   var tmp$2 = f(x$1);
   if (tmp$2 !== undefined) {
-    tmp.xx = Js_primitive.valFromOption(tmp$2);
+    tmp.xx = Caml_option.valFromOption(tmp$2);
   }
   return tmp;
 }

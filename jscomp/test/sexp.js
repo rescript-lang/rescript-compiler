@@ -6,7 +6,7 @@ var Hashtbl = require("../../lib/js/hashtbl.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_format = require("../../lib/js/caml_format.js");
-var Js_primitive = require("../../lib/js/js_primitive.js");
+var Caml_option = require("../../lib/js/caml_option.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var equal = Caml_obj.caml_equal;
@@ -144,19 +144,19 @@ function of_record(l) {
 }
 
 function $$return(x) {
-  return Js_primitive.some(x);
+  return Caml_option.some(x);
 }
 
 function $great$pipe$eq(e, f) {
   if (e !== undefined) {
-    return Js_primitive.some(Curry._1(f, Js_primitive.valFromOption(e)));
+    return Caml_option.some(Curry._1(f, Caml_option.valFromOption(e)));
   }
   
 }
 
 function $great$great$eq(e, f) {
   if (e !== undefined) {
-    return Curry._1(f, Js_primitive.valFromOption(e));
+    return Curry._1(f, Caml_option.valFromOption(e));
   }
   
 }
@@ -172,7 +172,7 @@ function map_opt(f, l) {
       if (match !== undefined) {
         _l = l$1[1];
         _acc = /* :: */[
-          Js_primitive.valFromOption(match),
+          Caml_option.valFromOption(match),
           acc
         ];
         continue ;
@@ -221,7 +221,7 @@ function list_all(f, e) {
         _l = tl;
         if (match !== undefined) {
           _acc = /* :: */[
-            Js_primitive.valFromOption(match),
+            Caml_option.valFromOption(match),
             acc
           ];
           continue ;
@@ -242,7 +242,7 @@ function _try_atom(e, f) {
     return undefined;
   } else {
     try {
-      return Js_primitive.some(Curry._1(f, e[1]));
+      return Caml_option.some(Curry._1(f, e[1]));
     }
     catch (exn){
       return undefined;
@@ -350,7 +350,7 @@ function to_triple_with(f1, f2, f3, e) {
 
 function to_list(e) {
   if (e[0] >= 848054398) {
-    return Js_primitive.some(e[1]);
+    return Caml_option.some(e[1]);
   }
   
 }
@@ -502,7 +502,7 @@ function get_variant(l, e) {
 
 function get_exn(e) {
   if (e !== undefined) {
-    return Js_primitive.valFromOption(e);
+    return Caml_option.valFromOption(e);
   } else {
     throw [
           Caml_builtin_exceptions.failure,

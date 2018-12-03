@@ -23,7 +23,7 @@ var Caml_bytes = require("../../lib/js/caml_bytes.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_format = require("../../lib/js/caml_format.js");
 var Caml_module = require("../../lib/js/caml_module.js");
-var Js_primitive = require("../../lib/js/js_primitive.js");
+var Caml_option = require("../../lib/js/caml_option.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
@@ -4544,8 +4544,8 @@ var default_parse_options = /* record */[
 ];
 
 function init_env($staropt$star, $staropt$star$1, source, content) {
-  var token_sink = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : undefined;
-  var parse_options = $staropt$star$1 !== undefined ? Js_primitive.valFromOption($staropt$star$1) : undefined;
+  var token_sink = $staropt$star !== undefined ? Caml_option.valFromOption($staropt$star) : undefined;
+  var parse_options = $staropt$star$1 !== undefined ? Caml_option.valFromOption($staropt$star$1) : undefined;
   var lb = Lexing.from_string(content);
   if (source !== undefined) {
     var match = source;
@@ -13588,16 +13588,16 @@ Caml_module.update_mod([[
 
 function program$1($staropt$star, $staropt$star$1, $staropt$star$2, content) {
   var fail = $staropt$star !== undefined ? $staropt$star : true;
-  var token_sink = $staropt$star$1 !== undefined ? Js_primitive.valFromOption($staropt$star$1) : undefined;
-  var parse_options = $staropt$star$2 !== undefined ? Js_primitive.valFromOption($staropt$star$2) : undefined;
+  var token_sink = $staropt$star$1 !== undefined ? Caml_option.valFromOption($staropt$star$1) : undefined;
+  var parse_options = $staropt$star$2 !== undefined ? Caml_option.valFromOption($staropt$star$2) : undefined;
   var fail$1 = fail;
-  var $staropt$star$3 = Js_primitive.some(token_sink);
-  var $staropt$star$4 = Js_primitive.some(parse_options);
+  var $staropt$star$3 = Caml_option.some(token_sink);
+  var $staropt$star$4 = Caml_option.some(parse_options);
   var filename = undefined;
   var content$1 = content;
-  var token_sink$1 = $staropt$star$3 !== undefined ? Js_primitive.valFromOption($staropt$star$3) : undefined;
-  var parse_options$1 = $staropt$star$4 !== undefined ? Js_primitive.valFromOption($staropt$star$4) : undefined;
-  var env = init_env(Js_primitive.some(token_sink$1), Js_primitive.some(parse_options$1), filename, content$1);
+  var token_sink$1 = $staropt$star$3 !== undefined ? Caml_option.valFromOption($staropt$star$3) : undefined;
+  var parse_options$1 = $staropt$star$4 !== undefined ? Caml_option.valFromOption($staropt$star$4) : undefined;
+  var env = init_env(Caml_option.some(token_sink$1), Caml_option.some(parse_options$1), filename, content$1);
   var env$1 = env;
   var parser = Parse[/* program */0];
   var fail$2 = fail$1;
@@ -13647,14 +13647,14 @@ function regexp$1(loc, pattern, flags) {
 
 function parse(content, options) {
   try {
-    var match = program$1(false, undefined, Js_primitive.some(undefined), content);
+    var match = program$1(false, undefined, Caml_option.some(undefined), content);
     translation_errors[0] = /* [] */0;
     var array_of_list = function (fn, list) {
       return Curry._1(array, $$Array.of_list(List.map(fn, list)));
     };
     var option = function (f, param) {
       if (param !== undefined) {
-        return Curry._1(f, Js_primitive.valFromOption(param));
+        return Curry._1(f, Caml_option.valFromOption(param));
       } else {
         return $$null;
       }

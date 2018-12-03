@@ -1,7 +1,7 @@
 'use strict';
 
 var Curry = require("../../lib/js/curry.js");
-var Js_primitive = require("../../lib/js/js_primitive.js");
+var Caml_option = require("../../lib/js/caml_option.js");
 
 function t0(x, f) {
   return Curry._1(f, Curry._1(f, Curry._1(f, x)));
@@ -64,19 +64,19 @@ function f5(a, b, c, d) {
 }
 
 function f6(a) {
-  return Js_primitive.some(a);
+  return Caml_option.some(a);
 }
 
 function f7(a) {
   return /* tuple */[
-          Js_primitive.some(a),
-          Js_primitive.some(a),
-          Js_primitive.some(a)
+          Caml_option.some(a),
+          Caml_option.some(a),
+          Caml_option.some(a)
         ];
 }
 
 function f8(a) {
-  return Js_primitive.some(Js_primitive.some(a));
+  return Caml_option.some(Caml_option.some(a));
 }
 
 exports.t0 = t0;

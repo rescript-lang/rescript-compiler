@@ -3,7 +3,7 @@
 var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 var Caml_array = require("../../lib/js/caml_array.js");
-var Js_primitive = require("../../lib/js/js_primitive.js");
+var Caml_option = require("../../lib/js/caml_option.js");
 
 var suites_000 = /* tuple */[
   "captures",
@@ -36,7 +36,7 @@ var suites_001 = /* :: */[
         var contentOf = function (tag, xmlString) {
           var param = new RegExp("<" + (tag + (">(.*?)<\\/" + (tag + ">")))).exec(xmlString);
           if (param !== null) {
-            return Js_primitive.nullable_to_opt(Caml_array.caml_array_get(param, 1));
+            return Caml_option.nullable_to_opt(Caml_array.caml_array_get(param, 1));
           }
           
         };

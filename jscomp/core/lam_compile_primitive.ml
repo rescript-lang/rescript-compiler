@@ -76,7 +76,7 @@ let translate  loc
         | Var _ | Undefined | Null -> 
           Js_of_lam_option.null_to_opt e 
         | _ ->
-          E.runtime_call Js_runtime_modules.js_primitive
+          E.runtime_call Js_runtime_modules.option
             "null_to_opt" args)         
      | _ -> assert false )
     
@@ -87,7 +87,7 @@ let translate  loc
         | Var _ | Undefined | Null -> 
           Js_of_lam_option.undef_to_opt e 
         | _ -> 
-          E.runtime_call Js_runtime_modules.js_primitive  
+          E.runtime_call Js_runtime_modules.option  
             "undefined_to_opt" args )
      | _ -> assert false )
     
@@ -99,7 +99,7 @@ let translate  loc
             Js_of_lam_option.null_undef_to_opt e             
           | _ ->
             E.runtime_call 
-              Js_runtime_modules.js_primitive        
+              Js_runtime_modules.option        
               "nullable_to_opt" args 
         end
       | _ -> assert false  

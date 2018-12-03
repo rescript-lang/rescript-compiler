@@ -2,7 +2,7 @@
 
 var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
-var Js_primitive = require("../../lib/js/js_primitive.js");
+var Caml_option = require("../../lib/js/caml_option.js");
 
 var suites = /* record */[/* contents : [] */0];
 
@@ -62,7 +62,7 @@ function bug_to_fix(f, x) {
 }
 
 function bug_to_fix2(f, x) {
-  return hey(Js_primitive.option_get(f(x)), 3);
+  return hey(Caml_option.option_get(f(x)), 3);
 }
 
 var counter2 = /* record */[/* contents */0];

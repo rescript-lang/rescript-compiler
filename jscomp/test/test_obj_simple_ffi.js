@@ -1,6 +1,6 @@
 'use strict';
 
-var Js_primitive = require("../../lib/js/js_primitive.js");
+var Caml_option = require("../../lib/js/caml_option.js");
 
 function v(displayName, param) {
   var tmp = {
@@ -9,7 +9,7 @@ function v(displayName, param) {
     hi: "ghos"
   };
   if (displayName !== undefined) {
-    tmp.displayName = Js_primitive.valFromOption(displayName);
+    tmp.displayName = Caml_option.valFromOption(displayName);
   }
   return tmp;
 }

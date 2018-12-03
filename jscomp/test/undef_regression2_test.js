@@ -2,7 +2,7 @@
 
 var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
-var Js_primitive = require("../../lib/js/js_primitive.js");
+var Caml_option = require("../../lib/js/caml_option.js");
 
 var suites = /* record */[/* contents : [] */0];
 
@@ -66,7 +66,7 @@ function test2(param) {
 }
 
 function test3(param) {
-  if (Js_primitive.undefined_to_opt(typeof __DEV__ === "undefined" ? undefined : __DEV__) === undefined) {
+  if (Caml_option.undefined_to_opt(typeof __DEV__ === "undefined" ? undefined : __DEV__) === undefined) {
     console.log("production mode");
     return /* () */0;
   } else {

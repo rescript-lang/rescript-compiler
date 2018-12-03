@@ -15,8 +15,8 @@ var Caml_array = require("../../lib/js/caml_array.js");
 var Caml_bytes = require("../../lib/js/caml_bytes.js");
 var Caml_int32 = require("../../lib/js/caml_int32.js");
 var Pervasives = require("../../lib/js/pervasives.js");
+var Caml_option = require("../../lib/js/caml_option.js");
 var Caml_string = require("../../lib/js/caml_string.js");
-var Js_primitive = require("../../lib/js/js_primitive.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
@@ -276,7 +276,7 @@ function one_char(param) {
     var match = param[0];
     var i = match[0];
     if (Caml_obj.caml_equal(i, match[1])) {
-      return Js_primitive.some(i);
+      return Caml_option.some(i);
     } else {
       return undefined;
     }
