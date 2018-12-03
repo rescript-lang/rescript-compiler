@@ -673,7 +673,7 @@ let root = OCamlRes.Res.([
        ") ;
     File  ("webpack.config.js",
       "const path = require('path');\n\
-       const HtmlWebpackPlugin = require('html-webpack-plugin')\n\
+       const HtmlWebpackPlugin = require('html-webpack-plugin');\n\
        const outputDir = path.join(__dirname, 'build/');\n\
        \n\
        const isProd = process.env.NODE_ENV === 'production';\n\
@@ -683,8 +683,7 @@ let root = OCamlRes.Res.([
       \  mode: isProd ? 'production' : 'development',\n\
       \  output: {\n\
       \    path: outputDir,\n\
-      \    publicPath: outputDir,\n\
-      \    filename: 'Index.js',\n\
+      \    filename: 'Index.js'\n\
       \  },\n\
       \  plugins: [\n\
       \    new HtmlWebpackPlugin({\n\
