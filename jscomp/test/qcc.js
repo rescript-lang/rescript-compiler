@@ -53,7 +53,7 @@ function bufferize(f) {
 }
 
 var match = bufferize((function (param) {
-        return Caml_io.caml_ml_input_char(inch[0]);
+        return Caml_missing_polyfill.not_implemented("caml_ml_input_char");
       }));
 
 var ungetch = match[1];

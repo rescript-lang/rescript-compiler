@@ -661,11 +661,8 @@ let translate loc (prim_name : string)
       call Js_runtime_modules.array
     | "caml_ml_flush"
     | "caml_ml_out_channels_list"
-    | "caml_ml_open_descriptor_in" 
-    | "caml_ml_open_descriptor_out"
     | "caml_ml_output_char"
     | "caml_ml_output" 
-    | "caml_ml_input_char"
       -> 
       call Js_runtime_modules.io
 

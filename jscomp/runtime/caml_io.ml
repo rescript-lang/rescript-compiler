@@ -24,7 +24,6 @@
 
 
 
-type in_channel
 
 
 let stderr = Caml_undefined_extern.empty
@@ -56,11 +55,19 @@ let stderr = {
       Js.log (Caml_string_extern.slice s 0 v) (* TODO: change to Js.error*)
     else Js.log s        
 }
+#if 0 then
+type in_channel
 
 let caml_ml_open_descriptor_in (i : int) : in_channel = 
   raise (Failure "caml_ml_open_descriptor_in not implemented")  
 let caml_ml_open_descriptor_out (i : int)  : out_channel = 
   raise (Failure "caml_ml_open_descriptor_out not implemented")
+let caml_ml_input (ic : in_channel) (bytes : bytes) offset len : int = 
+  raise (Failure  "caml_ml_input ic not implemented")
+let caml_ml_input_char (ic : in_channel) : char = 
+  raise  (Failure "caml_ml_input_char not implemnted")   
+  
+#end
 
 (*TODO: we need flush all buffers in the end *)
 let caml_ml_flush (oc : out_channel)  : unit = 
@@ -102,11 +109,6 @@ let caml_ml_output (oc : out_channel) (str : string) offset len  =
 let caml_ml_output_char (oc : out_channel)  (char : char) : unit =
   caml_ml_output oc (Caml_string_extern.of_char char) 0 1 
 
-let caml_ml_input (ic : in_channel) (bytes : bytes) offset len : int = 
-  raise (Failure  "caml_ml_input ic not implemented")
-
-let caml_ml_input_char (ic : in_channel) : char = 
-  raise  (Failure "caml_ml_input_char not implemnted")
 
 let caml_ml_out_channels_list () : out_channel list  =
   [stdout; stderr]  
