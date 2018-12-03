@@ -193,7 +193,7 @@ exception_value_test.cmj : ../runtime/js.cmj
 exn_error_pattern.cmj : mt.cmj ../runtime/js.cmj
 export_keyword.cmj :
 ext_array_test.cmj :
-ext_bytes_test.cmj :
+ext_bytes_test.cmj : mt.cmj
 ext_filename_test.cmj : test_literals.cmj ext_string_test.cmj \
     ext_pervasives_test.cmj
 ext_list_test.cmj : ext_string_test.cmj

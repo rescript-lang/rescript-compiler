@@ -25,6 +25,9 @@
 
 
 
+let suites :  Mt.pair_suites ref  = ref []
+let test_id = ref 0
+let eq loc x y = Mt.eq_suites ~test_id ~suites loc x y 
 
 
 
@@ -71,3 +74,39 @@ let escaped s =
     done;
     s'
   end
+
+let starts_with (xs : bytes) prefix p =   
+  let module X = struct exception H end in
+  let module Array = Bytes in 
+  let len1, len2 = Array.(length xs, length prefix) in 
+  if len2 > len1 then false 
+  else 
+  try
+    for i = 0 to len2 - 1 do 
+      if not @@ p xs.(i) prefix.(i) then
+        raise X.H
+    done ;
+    true
+  with X.H -> false
+
+
+let ()= 
+    let a = Bytes.init 100 (fun i -> Char.chr i ) in 
+    Bytes.blit a 5 a 10 10 ;
+    eq __LOC__ a
+    (Bytes.of_string "\000\001\002\003\004\005\006\007\b\t\005\006\007\b\t\n\011\012\r\014\020\021\022\023\024\025\026\027\028\029\030\031 !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abc")
+
+let () =     
+    let a = Bytes.init 100 (fun i -> Char.chr i ) in 
+    Bytes.blit a 10 a 5 10 ;
+    eq __LOC__ a 
+    (Bytes.of_string "\000\001\002\003\004\n\011\012\r\014\015\016\017\018\019\015\016\017\018\019\020\021\022\023\024\025\026\027\028\029\030\031 !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abc")
+
+let () =     
+    let a = String.init 100 (fun i -> Char.chr i) in 
+    let b = Bytes.init 100 (fun i -> '\000') in 
+    Bytes.blit_string a 10 b 5 10;
+    eq __LOC__ b (Bytes.of_string "\000\000\000\000\000\n\011\012\r\014\015\016\017\018\019\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000")
+
+let () =    
+    Mt.from_pair_suites __FILE__ !suites
