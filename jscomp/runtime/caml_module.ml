@@ -67,7 +67,7 @@ let init_mod (loc : string * int * int) (shape : shape) =
   loop shape res 0 ;
   res.(0)      
 
-external caml_update_dummy : Caml_obj_extern.t -> Caml_obj_extern.t -> unit = "caml_update_dummy" 
+
 (* Note the [shape] passed between [init_mod] and [update_mod] is always the same 
    and we assume [module] is encoded as an array
  *)
@@ -80,7 +80,7 @@ let update_mod (shape : shape)  (o : Caml_obj_extern.t)  (n : Caml_obj_extern.t)
 
     | Lazy 
     | Class -> 
-      caml_update_dummy o n 
+      Caml_obj.caml_update_dummy o n 
     | Module comps 
       -> 
       for i = 0 to Array.length comps - 1 do 

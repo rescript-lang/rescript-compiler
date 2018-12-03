@@ -113,7 +113,7 @@ let caml_lazy_make_forward x = lazy x
    In most cases, rec value comes from record/modules, 
    whose tag is 0, we optimize that case
 *)
-let caml_update_dummy x y =
+let caml_update_dummy (x : Caml_obj_extern.t) (y : Caml_obj_extern.t) : unit =
   (* let len = Caml_obj_extern.length y in   
      for i = 0 to len - 1 do 
      Array.unsafe_set x i (Caml_obj_extern.field y i)

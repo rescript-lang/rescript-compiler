@@ -40,12 +40,12 @@ caml_int32.cmj : js.cmj js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe caml_builtin
 caml_int32_extern.cmj : js.cmj js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe
 caml_int64.cmj : js.cmj js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe caml_int32.cmj caml_utils.cmj caml_primitive.cmj caml_builtin_exceptions.cmj caml_int64.cmi caml_string_extern.cmj caml_nativeint_extern.cmj caml_float_extern.cmj caml_float.cmj caml_char.cmj
 caml_int64_extern.cmj : js.cmj js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe
-caml_io.cmj : js.cmj js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe curry.cmj caml_builtin_exceptions.cmj caml_undefined_extern.cmj caml_string_extern.cmj
+caml_io.cmj : js.cmj js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe curry.cmj caml_builtin_exceptions.cmj caml_undefined_extern.cmj caml_string_extern.cmj caml_io.cmi
 caml_js_exceptions.cmj : js.cmj js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe js_primitive.cmj caml_exceptions.cmj caml_obj_extern.cmj
 caml_lexer.cmj : js.cmj js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe caml_builtin_exceptions.cmj caml_lexer.cmi
 caml_md5.cmj : js.cmj js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe caml_string_extern.cmj caml_int32_extern.cmj caml_char.cmj caml_array_extern.cmj caml_md5.cmi
 caml_missing_polyfill.cmj : js.cmj js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe caml_missing_polyfill.cmi
-caml_module.cmj : js.cmj js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe caml_obj.cmj caml_builtin_exceptions.cmj caml_obj_extern.cmj caml_array_extern.cmj
+caml_module.cmj : js.cmj js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe caml_obj.cmj caml_builtin_exceptions.cmj caml_obj_extern.cmj caml_array_extern.cmj caml_module.cmi
 caml_nativeint_extern.cmj : js.cmj js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe
 caml_obj.cmj : js.cmj js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe block.cmj caml_primitive.cmj caml_builtin_exceptions.cmj caml_obj.cmi caml_obj_extern.cmj caml_array_extern.cmj
 caml_obj_extern.cmj : js.cmj js.cmi bs_stdlib_mini.cmi ../../lib/bsc.exe

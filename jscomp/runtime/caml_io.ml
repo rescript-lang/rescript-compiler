@@ -77,10 +77,10 @@ let caml_ml_flush (oc : out_channel)  : unit =
       oc.buffer <- ""      
     end      
 
-let node_std_output  : string -> bool = [%bs.raw{|function (s){
+let node_std_output  : string -> bool = fun%raw s -> {|
    return (typeof process !== "undefined") && process.stdout && (process.stdout.write(s), true);
-   }
-|}]
+|}
+
 
 (** note we need provide both [bytes] and [string] version 
 *)
