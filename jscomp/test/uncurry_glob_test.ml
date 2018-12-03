@@ -1,6 +1,6 @@
 
 
-let v = Caml_utils.repeat 100 "x" [@bs]
+let v = Caml_utils.repeat 100 "x" 
 
 module M ( U : sig val f : int -> string -> string [@bs] end ) = 
 struct

@@ -57,9 +57,6 @@ val equal_null : int64_call
 val equal_undefined : int64_call
 val equal_nullable : int64_call
 
-val discard_sign : int64_call
-val div_mod : int64_call
-val to_hex : int64_call  
 val to_float : int64_call
 val of_float : int64_call
 val compare : int64_call

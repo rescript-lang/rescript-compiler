@@ -31,7 +31,7 @@
 (* Note that when we introduce it in {!Js_dump} 
    we need introduce dependency properly *)
 let __ tag block = 
-  Bs_obj.set_tag block tag; block
+  Caml_obj_extern.set_tag block tag; block
 
 
 type symbol
@@ -48,7 +48,7 @@ let record  meta xs =
   xs |.addProp (cacheSymbol "BsRecord") [%obj {value = meta}]
 
 let variant meta tag xs =     
-  xs |. Bs_obj.set_tag tag;
+  xs |. Caml_obj_extern.set_tag tag;
   xs |. addProp (cacheSymbol "BsVariant") [%obj {value = meta }] 
 
 let simpleVariant meta xs =       

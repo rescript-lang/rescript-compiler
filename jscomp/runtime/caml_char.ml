@@ -27,3 +27,7 @@
 external code : char -> int = "%identity"
   
 external unsafe_chr : int -> char = "%identity"
+
+let caml_is_printable c = 
+  let code = code c in
+  code > 31 && code < 127

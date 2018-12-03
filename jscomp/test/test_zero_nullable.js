@@ -3,7 +3,7 @@
 var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
-var Js_primitive = require("../../lib/js/js_primitive.js");
+var Caml_option = require("../../lib/js/caml_option.js");
 
 var suites = /* record */[/* contents : [] */0];
 
@@ -87,7 +87,7 @@ function f9(x) {
   if (x === null) {
     return undefined;
   } else {
-    return Js_primitive.some(x);
+    return Caml_option.some(x);
   }
 }
 
@@ -172,7 +172,7 @@ function f9$1(x) {
   if (x === undefined) {
     return undefined;
   } else {
-    return Js_primitive.some(x);
+    return Caml_option.some(x);
   }
 }
 
@@ -255,7 +255,7 @@ function f9$2(x) {
   if (x == null) {
     return undefined;
   } else {
-    return Js_primitive.some(x);
+    return Caml_option.some(x);
   }
 }
 

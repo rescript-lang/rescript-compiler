@@ -13,10 +13,11 @@ var Parsing = require("../../lib/js/parsing.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Filename = require("../../lib/js/filename.js");
 var Printexc = require("../../lib/js/printexc.js");
+var Caml_bytes = require("../../lib/js/caml_bytes.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_format = require("../../lib/js/caml_format.js");
+var Caml_option = require("../../lib/js/caml_option.js");
 var Caml_string = require("../../lib/js/caml_string.js");
-var Js_primitive = require("../../lib/js/js_primitive.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
@@ -298,7 +299,7 @@ function string_fold_lefti(f, e0, s) {
 
 function option_default(x, param) {
   if (param !== undefined) {
-    return Js_primitive.valFromOption(param);
+    return Caml_option.valFromOption(param);
   } else {
     return x;
   }
@@ -1859,7 +1860,7 @@ function string_of_payload_kind(capitalize, payload_kind, packed) {
     s = packed ? "bytes" : "varint";
   }
   if (capitalize !== undefined) {
-    return Caml_string.bytes_to_string(Bytes.capitalize(Caml_string.bytes_of_string(s)));
+    return Caml_bytes.bytes_to_string(Bytes.capitalize(Caml_bytes.bytes_of_string(s)));
   } else {
     return s;
   }
@@ -1904,7 +1905,7 @@ function indentation_prefix(n) {
     case 8 : 
         return "                ";
     default:
-      return Caml_string.bytes_to_string(Bytes.make(n, /* " " */32));
+      return Caml_bytes.bytes_to_string(Bytes.make(n, /* " " */32));
   }
 }
 
@@ -2941,7 +2942,7 @@ var __log__ = /* record */[/* contents */undefined];
 function log(x) {
   var match = __log__[0];
   if (match !== undefined) {
-    return Printf.fprintf(Js_primitive.valFromOption(match), x);
+    return Printf.fprintf(Caml_option.valFromOption(match), x);
   } else {
     return Printf.ifprintf(Pervasives.stdout, x);
   }
@@ -3610,7 +3611,7 @@ function min_value(param) {
   if (match !== undefined) {
     var match$1 = param[1];
     if (match$1 !== undefined) {
-      return Js_primitive.some(Caml_obj.caml_min(Js_primitive.valFromOption(match), Js_primitive.valFromOption(match$1)));
+      return Caml_option.some(Caml_obj.caml_min(Caml_option.valFromOption(match), Caml_option.valFromOption(match$1)));
     } else {
       throw [
             Caml_builtin_exceptions.failure,
@@ -3630,7 +3631,7 @@ function eq_value(param) {
   if (match !== undefined) {
     var match$1 = param[1];
     if (match$1 !== undefined) {
-      return Caml_obj.caml_equal(Js_primitive.valFromOption(match), Js_primitive.valFromOption(match$1));
+      return Caml_obj.caml_equal(Caml_option.valFromOption(match), Caml_option.valFromOption(match$1));
     } else {
       throw [
             Caml_builtin_exceptions.failure,
@@ -3659,7 +3660,7 @@ function string_of_option(f, param) {
                           ])
                       ]),
                     "Some(%s)"
-                  ]), Curry._1(f, Js_primitive.valFromOption(param)));
+                  ]), Curry._1(f, Caml_option.valFromOption(param)));
   } else {
     return "None";
   }
@@ -3937,7 +3938,7 @@ function find_field_option(field_options, option_name) {
     }
   }
   if (exit === 1) {
-    return Js_primitive.some(x);
+    return Caml_option.some(x);
   }
   
 }
@@ -4161,7 +4162,7 @@ function get_default(field_name, field_options, field_type) {
     }
   }
   if (exit === 1) {
-    return Js_primitive.some(constant);
+    return Caml_option.some(constant);
   }
   
 }
@@ -4929,7 +4930,7 @@ var Codegen_type = /* module */[
 
 function gen_encode_field_key(sc, number, pk, is_packed) {
   var s = string_of_payload_kind(undefined, pk, is_packed);
-  var s$1 = Caml_string.bytes_to_string(Bytes.lowercase(Caml_string.bytes_of_string(s)));
+  var s$1 = Caml_bytes.bytes_to_string(Bytes.lowercase(Caml_bytes.bytes_of_string(s)));
   return line$1(sc, Curry._2(Printf.sprintf(/* Format */[
                       /* String_literal */Block.__(11, [
                           "Pbrt.Encoder.key (",
@@ -4950,7 +4951,7 @@ function gen_encode_field_key(sc, number, pk, is_packed) {
                             ])
                         ]),
                       "Pbrt.Encoder.key (%i, Pbrt.%s) encoder; "
-                    ]), number, Caml_string.bytes_to_string(Bytes.capitalize(Caml_string.bytes_of_string(s$1)))));
+                    ]), number, Caml_bytes.bytes_to_string(Bytes.capitalize(Caml_bytes.bytes_of_string(s$1)))));
 }
 
 function encode_basic_type(bt, pk) {
@@ -6348,13 +6349,13 @@ function fix_ocaml_keyword_conflict(s) {
 
 function constructor_name(s) {
   var s$1 = $$String.concat("_", List.rev(rev_split_by_naming_convention(s)));
-  var s$2 = Caml_string.bytes_to_string(Bytes.lowercase(Caml_string.bytes_of_string(s$1)));
-  return Caml_string.bytes_to_string(Bytes.capitalize(Caml_string.bytes_of_string(s$2)));
+  var s$2 = Caml_bytes.bytes_to_string(Bytes.lowercase(Caml_bytes.bytes_of_string(s$1)));
+  return Caml_bytes.bytes_to_string(Bytes.capitalize(Caml_bytes.bytes_of_string(s$2)));
 }
 
 function label_name_of_field_name(s) {
   var s$1 = $$String.concat("_", List.rev(rev_split_by_naming_convention(s)));
-  return fix_ocaml_keyword_conflict(Caml_string.bytes_to_string(Bytes.lowercase(Caml_string.bytes_of_string(s$1))));
+  return fix_ocaml_keyword_conflict(Caml_bytes.bytes_to_string(Bytes.lowercase(Caml_bytes.bytes_of_string(s$1))));
 }
 
 function module_of_file_name(file_name) {

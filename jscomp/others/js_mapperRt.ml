@@ -23,7 +23,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-
 (*
    [lower, upper) 
    when [lower] = [upper], impossible
@@ -34,7 +33,7 @@
 let rec binarySearchAux lower upper xs (k : int) = 
   [%assert lower < upper];
   let mid = (lower + upper) / 2 in 
-  let i,v = Array.unsafe_get xs mid in   
+  let i,v = Js.Array.unsafe_get xs mid in   
   if i = k then v
   else if i < k then 
     binarySearchAux (mid + 1) upper xs k
@@ -50,7 +49,7 @@ let rec revSearchAux
     i len (xs : (int * string) array) (k : string) = 
   if i = len then None 
   else 
-    let (idx,s) = Array.unsafe_get xs i  in 
+    let (idx,s) = Js.Array.unsafe_get xs i  in 
     if s = k then 
       Some idx 
     else 
@@ -62,7 +61,7 @@ let revSearch len array (x : string)  : int option =
 let rec revSearchAssertAux len
     i  (xs : (int * string) array) (k : string) = 
   [%assert i < len];  
-  let (idx,s) = Array.unsafe_get xs i  in 
+  let (idx,s) = Js_array.unsafe_get xs i  in 
   if s = k then 
     idx 
   else 
@@ -72,12 +71,12 @@ let revSearchAssert len  array (x : string) : int =
   revSearchAssertAux len 0 array x
 
 let toInt (i : int) (xs : int array) =   
-  Array.unsafe_get xs i
+  Js_array.unsafe_get xs i
 
 let rec fromIntAux (enum : int) i len xs = 
   if i = len then None
   else 
-    let k = Array.unsafe_get xs i in 
+    let k = Js_array.unsafe_get xs i in 
     if k = enum then Some i 
     else fromIntAux enum (i + 1) len xs 
 
@@ -87,7 +86,7 @@ let fromInt len (xs : int array) (enum : int )  : 'variant option =
 let rec fromIntAssertAux len (enum : int) i  xs = 
   [%assert i < len];
   (*TODO: replaced by [%assert i < len ]*)
-  let k = Array.unsafe_get xs i in 
+  let k = Js_array.unsafe_get xs i in 
   if k = enum then  i 
   else fromIntAssertAux len enum (i + 1)  xs 
 

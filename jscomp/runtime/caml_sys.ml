@@ -29,7 +29,7 @@
 external getEnv : 'a -> string -> string option = "" [@@bs.get_index] 
 let caml_sys_getenv s =
   if Js.typeof [%raw{|process|}] = "undefined"
-     || [%raw{|process.env|}] = UndefinedRT.empty 
+     || [%raw{|process.env|}] = Caml_undefined_extern.empty 
   then raise Not_found
   else  
     match getEnv [%raw{|process.env|}] s with 
@@ -51,7 +51,7 @@ external exit : process -> int -> 'a =  ""  [@@bs.send]
 
 let caml_sys_time () =
   if Js.typeof [%raw{|process|}] = "undefined" 
-    || [%raw{|process.uptime|}] = UndefinedRT.empty
+    || [%raw{|process.uptime|}] = Caml_undefined_extern.empty
   then -1.
   else uptime [%raw{|process|}] ()
   
@@ -60,8 +60,8 @@ external random : unit -> float = "Math.random" [@@bs.val]
 
 let caml_sys_random_seed () : nativeint array = 
    [|
-     Nativeint.of_float 
-     ((Nativeint.to_float (Nativeint.logxor (Nativeint.of_float (now ()))
+     Caml_nativeint_extern.of_float 
+     ((Caml_nativeint_extern.to_float (Caml_nativeint_extern.logxor (Caml_nativeint_extern.of_float (now ()))
                              0xffffffffn)) *. random ()) |]
 
 type spawnResult
@@ -89,7 +89,7 @@ let caml_sys_get_argv () : string * string array =
   else 
     let argv = [%raw{|process.argv|}] in 
     if Js.testAny argv then ("",[|""|])
-    else Array.unsafe_get argv 0, argv
+    else Caml_array_extern.unsafe_get argv 0, argv
 
 (** {!Pervasives.sys_exit} *)
 let caml_sys_exit :int -> 'a = fun exit_code -> 

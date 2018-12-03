@@ -43,7 +43,7 @@ type closure
     side effect analysis
 *)
 let caml_methods_cache = 
-    Array.make 1000 0 
+    Caml_array_extern.make 1000 0 
 
 external get_methods : obj -> closure array =
   "%field0"
@@ -52,14 +52,15 @@ external get_methods : obj -> closure array =
 let caml_get_public_method 
     (obj : obj) 
     (tag : int) (cacheid  : int) : closure =
+  let module Array = Caml_array_extern in 
   let meths = get_methods obj in
   let offs =  caml_methods_cache.(cacheid) in
-  if (Bs_obj.magic meths.(offs) : int) = tag then meths.(offs - 1)
+  if (Caml_obj_extern.magic meths.(offs) : int) = tag then meths.(offs - 1)
   else
     (** TODO: binary search *)    
     let rec aux (i : int) : int =     
       if i < 3 then assert false       
-      else if (Bs_obj.magic meths.(i) : int) = tag then
+      else if (Caml_obj_extern.magic meths.(i) : int) = tag then
         begin        
           caml_methods_cache.(cacheid) <- i;         
           i
@@ -67,5 +68,5 @@ let caml_get_public_method
       else         
         aux (i - 2)
     in
-    meths.(aux (Bs_obj.magic ((Bs_obj.magic meths.(0) : int) * 2 + 1) : int) - 1)     
+    meths.(aux (Caml_obj_extern.magic ((Caml_obj_extern.magic meths.(0) : int) * 2 + 1) : int) - 1)     
 

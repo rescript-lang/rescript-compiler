@@ -3,7 +3,7 @@
 import * as Path from "path";
 import * as Js_option from "../../lib/es6/js_option.js";
 import * as Js_vector from "../../lib/es6/js_vector.js";
-import * as Js_primitive from "../../lib/es6/js_primitive.js";
+import * as Caml_option from "../../lib/es6/caml_option.js";
 import * as Node_process from "../../lib/es6/node_process.js";
 import * as Xwatcher_util from "./xwatcher_util.js";
 
@@ -15,7 +15,7 @@ var events = Xwatcher_util.makeEventObj(/* () */0);
 
 var watchers = /* array */[];
 
-var source_dirname = Js_option.getExn(Js_primitive.undefined_to_opt(typeof __dirname === "undefined" ? undefined : __dirname));
+var source_dirname = Js_option.getExn(Caml_option.undefined_to_opt(typeof __dirname === "undefined" ? undefined : __dirname));
 
 var bsb = Path.join(source_dirname, "bsb.exe");
 

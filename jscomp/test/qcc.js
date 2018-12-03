@@ -14,8 +14,8 @@ var Caml_array = require("../../lib/js/caml_array.js");
 var Caml_bytes = require("../../lib/js/caml_bytes.js");
 var Caml_int32 = require("../../lib/js/caml_int32.js");
 var Pervasives = require("../../lib/js/pervasives.js");
+var Caml_option = require("../../lib/js/caml_option.js");
 var Caml_string = require("../../lib/js/caml_string.js");
-var Js_primitive = require("../../lib/js/js_primitive.js");
 var Caml_missing_polyfill = require("../../lib/js/caml_missing_polyfill.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
@@ -30,7 +30,7 @@ function bufferize(f) {
               var match = buf[0];
               if (match !== undefined) {
                 buf[0] = undefined;
-                return Js_primitive.valFromOption(match);
+                return Caml_option.valFromOption(match);
               } else {
                 return Curry._1(f, /* () */0);
               }
@@ -46,14 +46,14 @@ function bufferize(f) {
                       ]
                     ];
               }
-              buf[0] = Js_primitive.some(x);
+              buf[0] = Caml_option.some(x);
               return /* () */0;
             })
         ];
 }
 
 var match = bufferize((function (param) {
-        return Caml_io.caml_ml_input_char(inch[0]);
+        return Caml_missing_polyfill.not_implemented("caml_ml_input_char");
       }));
 
 var ungetch = match[1];
@@ -116,7 +116,7 @@ var glo = Bytes.make(4096, /* "\000" */0);
 
 var gpos = /* record */[/* contents */0];
 
-var s = Caml_string.caml_create_bytes(100);
+var s = Caml_bytes.caml_create_bytes(100);
 
 function getq(param) {
   var c = Curry._1(getch, /* () */0);
@@ -306,7 +306,7 @@ function next(param) {
               continue ;
             }
           } else {
-            return /* Op */Block.__(0, [Caml_string.bytes_to_string(Bytes.make(1, ch$2))]);
+            return /* Op */Block.__(0, [Caml_bytes.bytes_to_string(Bytes.make(1, ch$2))]);
           }
         };
       }

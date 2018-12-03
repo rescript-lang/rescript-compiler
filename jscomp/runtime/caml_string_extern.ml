@@ -26,7 +26,7 @@
 
 (** TODO: check with {!String.of_char} 
     it's quite common that we have
-    {[ Bs_string.of_char x.[0] ]}
+    {[ Caml_string_extern.of_char x.[0] ]}
     It would be nice to generate code as below    
     {[ x[0]
     ]}
@@ -34,7 +34,7 @@
 
 (*ATT: this relies on we encode `char' as int *)
 external of_char : char -> string = "String.fromCharCode" 
-[@@bs.val] 
+[@@bs.val]  
 external toUpperCase : string -> string = "toUpperCase" [@@bs.send] 
 external of_int : int -> base:int -> string = "toString" [@@bs.send]
 external of_nativeint : nativeint -> base:int -> string = "toString" [@@bs.send]
@@ -44,7 +44,7 @@ external slice_rest : string -> int -> string = "slice"
     [@@bs.send]
 external index_of : string -> string -> int = "indexOf"
     [@@bs.send]
-external append : string -> string -> string = "#string_append"
+
 external of_small_int_array :  
     (_ [@bs.as {json|null|json}] ) -> 
     int array -> string = 
@@ -57,21 +57,11 @@ external of_small_int32_array :
 [@@bs.val] [@@bs.splice]   
 
 external lastIndexOf : string -> string -> int = "lastIndexOf"
-[@@bs.send]    
-external of_any : 'a -> string = "String"
-[@@bs.val]
+[@@bs.send] (* used in {!Caml_io} *)
+ 
 
 
-(***********************)
-(* replaced primitives *)
 external length : string -> int = "%string_length"
-external get : string -> int -> char = "%string_safe_get"
-external create : int -> bytes = "caml_create_string"
 external unsafe_get : string -> int -> char = "%string_unsafe_get"
 external unsafe_set : bytes -> int -> char -> unit = "%bytes_unsafe_set"
-external unsafe_blit : string -> int ->  bytes -> int -> int -> unit
-  = "caml_blit_string" 
-
-external unsafe_fill : bytes -> int -> int -> char -> unit
-  = "caml_fill_string" 
 

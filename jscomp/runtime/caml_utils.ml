@@ -31,20 +31,21 @@
 
 (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/imul *)
 
-
-let repeat : int -> string -> string [@bs] = [%bs.raw{| (String.prototype.repeat && function (count,self){return self.repeat(count)}) ||
-                                                  function(count , self) {
-        if (self.length == 0 || count == 0) {
+let repeat : int -> string -> string = fun%raw count self -> {|
+    if (self.repeat){
+        return self.repeat(count)
+    }
+    if (self.length == 0 || count == 0) {
             return '';
         }
-        // Ensuring count is a 31-bit integer allows us to heavily optimize the
-        // main part. But anyway, most current (August 2014) browsers can't handle
-        // strings 1 << 28 chars or longer, so:
-        if (self.length * count >= 1 << 28) {
+    // Ensuring count is a 31-bit integer allows us to heavily optimize the
+    // main part. But anyway, most current (August 2014) browsers can't handle
+    // strings 1 << 28 chars or longer, so:
+    if (self.length * count >= 1 << 28) {
             throw new RangeError('repeat count must not overflow maximum string size');
-        }
-        var rpt = '';
-        for (;;) {
+    }
+    var rpt = '';
+    for (;;) {
             if ((count & 1) == 1) {
                 rpt += self;
             }
@@ -53,11 +54,7 @@ let repeat : int -> string -> string [@bs] = [%bs.raw{| (String.prototype.repeat
                 break;
             }
             self += self;
-        }
-        return rpt;
     }
-|} ]
+    return rpt;
 
-
-
-(*we need an attribute like this to prevent it get inlined *)
+|}

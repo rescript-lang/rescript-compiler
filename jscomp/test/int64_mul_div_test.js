@@ -5,6 +5,7 @@ var List = require("../../lib/js/list.js");
 var $$Array = require("../../lib/js/array.js");
 var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
+var Int64 = require("../../lib/js/int64.js");
 var Printf = require("../../lib/js/printf.js");
 var Caml_int64 = require("../../lib/js/caml_int64.js");
 var Pervasives = require("../../lib/js/pervasives.js");
@@ -1802,7 +1803,18 @@ Mt.from_pair_suites("int64_mul_div_test.ml", Pervasives.$at(from_pairs("random",
                                                   ]);
                                         })
                                     ],
-                                    /* [] */0
+                                    /* :: */[
+                                      /* tuple */[
+                                        "File \"int64_mul_div_test.ml\", line 214, characters 5-12",
+                                        (function (param) {
+                                            return /* Eq */Block.__(0, [
+                                                      Caml_int64.to_float(Int64.max_int),
+                                                      9.22337203685477581e+18
+                                                    ]);
+                                          })
+                                      ],
+                                      /* [] */0
+                                    ]
                                   ]
                                 ]))))))));
 

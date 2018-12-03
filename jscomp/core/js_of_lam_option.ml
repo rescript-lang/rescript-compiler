@@ -59,7 +59,7 @@ let val_from_option (arg : J.expression) =
   match arg.expression_desc with 
   | Optional_block (x,_) -> x 
   | _ -> 
-    E.runtime_call Js_runtime_modules.js_primitive
+    E.runtime_call Js_runtime_modules.option
       "valFromOption" [arg]
 (**
   Invrariant: 
@@ -91,7 +91,7 @@ let get_default_undefined_from_optional
       E.econd (is_not_none arg )
         (val_from_option arg) E.undefined
     else
-      (E.runtime_call Js_runtime_modules.js_primitive "option_get" [arg])
+      (E.runtime_call Js_runtime_modules.option "option_get" [arg])
 
 let get_default_undefined (arg : J.expression) : J.expression =
   let desc = arg.expression_desc in
@@ -107,7 +107,7 @@ let get_default_undefined (arg : J.expression) : J.expression =
       E.econd (is_not_none arg) 
         (Js_of_lam_polyvar.get_field (val_from_option arg)) E.undefined
     else
-      E.runtime_call Js_runtime_modules.js_primitive "option_get_unwrap" [arg]
+      E.runtime_call Js_runtime_modules.option "option_get_unwrap" [arg]
 
 let destruct_optional
   ~for_sure_none

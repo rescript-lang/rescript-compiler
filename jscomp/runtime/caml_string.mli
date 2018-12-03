@@ -22,27 +22,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-
-(** *)
-
-val bytes_of_string : string -> bytes
-val bytes_to_string : bytes -> string
-
-val caml_is_printable : char -> bool
-val caml_string_of_char_array : char array -> string
 val caml_string_get : string -> int -> char 
-
-val caml_create_bytes : int -> bytes
-val caml_fill_bytes :  bytes -> int -> int -> char -> unit
-val caml_blit_string : string -> int -> bytes -> int -> int -> unit
-val caml_blit_bytes : bytes -> int -> bytes -> int -> int -> unit
 val caml_string_get16 : string -> int -> int
 val caml_string_get32 : string -> int -> int
-val string_of_char : char -> string 
+
 
 val get : string -> int -> char 

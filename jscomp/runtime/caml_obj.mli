@@ -25,28 +25,34 @@
 
 
 
-(** *)
-val caml_obj_block : int -> int -> Obj.t
-val caml_obj_dup : Obj.t -> Obj.t
 
-val caml_obj_truncate : Obj.t -> int -> unit
+type t = Caml_obj_extern.t 
+
+(* external tag : t -> int = "caml_obj_tag" 
+external repr : 'a -> t = "%identity"
+external field : t -> int -> t = "%obj_field"
+external set_field : t -> int -> t -> unit = "%obj_set_field" *)
+val caml_obj_block : int -> int -> Caml_obj_extern.t
+val caml_obj_dup : Caml_obj_extern.t -> Caml_obj_extern.t
+
+val caml_obj_truncate : Caml_obj_extern.t -> int -> unit
 
 
 
 val caml_lazy_make_forward : 'a -> 'a lazy_t
 
-val caml_update_dummy : Obj.t -> Obj.t -> unit
+val caml_update_dummy : Caml_obj_extern.t -> Caml_obj_extern.t -> unit
 
 
-val caml_compare : Obj.t -> Obj.t  -> int
+val caml_compare : Caml_obj_extern.t -> Caml_obj_extern.t  -> int
 
-type eq = Obj.t -> Obj.t -> bool
+type eq = Caml_obj_extern.t -> Caml_obj_extern.t -> bool
 
 val caml_equal : eq
 
-val caml_equal_null : Obj.t -> Obj.t Js.null -> bool 
-val caml_equal_undefined : Obj.t -> Obj.t Js.undefined -> bool 
-val caml_equal_nullable : Obj.t -> Obj.t Js.nullable -> bool 
+val caml_equal_null : Caml_obj_extern.t -> Caml_obj_extern.t Js.null -> bool 
+val caml_equal_undefined : Caml_obj_extern.t -> Caml_obj_extern.t Js.undefined -> bool 
+val caml_equal_nullable : Caml_obj_extern.t -> Caml_obj_extern.t Js.nullable -> bool 
 
 val caml_notequal : eq
 val caml_greaterequal : eq
@@ -57,7 +63,7 @@ val caml_lessequal : eq
 type 'a selector = 'a -> 'a -> 'a 
 
 
-val caml_min : Obj.t selector
-val caml_max : Obj.t selector
+val caml_min : Caml_obj_extern.t selector
+val caml_max : Caml_obj_extern.t selector
 
-val caml_obj_set_tag : Obj.t -> int -> unit 
+val caml_obj_set_tag : Caml_obj_extern.t -> int -> unit 

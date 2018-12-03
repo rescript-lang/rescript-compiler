@@ -8,7 +8,7 @@ var Random = require("../../lib/js/random.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_int32 = require("../../lib/js/caml_int32.js");
 var Pervasives = require("../../lib/js/pervasives.js");
-var Js_primitive = require("../../lib/js/js_primitive.js");
+var Caml_option = require("../../lib/js/caml_option.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
@@ -844,7 +844,7 @@ function new_id(param) {
 }
 
 function make$2($staropt$star, $staropt$star$1, spawnable, context, param) {
-  var id = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : undefined;
+  var id = $staropt$star !== undefined ? Caml_option.valFromOption($staropt$star) : undefined;
   var dir = $staropt$star$1 !== undefined ? $staropt$star$1 : /* Left */0;
   var spr = make(spawnable, dir, context);
   var params = make_type$2(spawnable);

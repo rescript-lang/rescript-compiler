@@ -29,7 +29,9 @@
 
 
 
-(** *)
+
+type t = Caml_obj_extern.t 
+
 
 (** Mainly used in camlinternalOO
     {[
@@ -45,8 +47,8 @@
 
 *)
 let caml_obj_block tag size = 
-  let v = Obj.repr (Caml_array.new_uninitialized size) in 
-  Bs_obj.set_tag  v tag ; 
+  let v = Caml_obj_extern.repr (Caml_array_extern.new_uninitialized size) in 
+  Caml_obj_extern.set_tag  v tag ; 
   v
 
 (**
@@ -75,28 +77,28 @@ let caml_obj_block tag size =
    ]}
 *)
 
-let caml_obj_dup (x : Obj.t) =
-  let len = Bs_obj.length x in
-  let v = Caml_array.new_uninitialized  len in
+let caml_obj_dup (x : Caml_obj_extern.t) =
+  let len = Caml_obj_extern.length x in
+  let v = Caml_array_extern.new_uninitialized  len in
   for i = 0 to len - 1 do
-    Array.unsafe_set v i (Obj.field x i)
+    Caml_array_extern.unsafe_set v i (Caml_obj_extern.field x i)
   done;
-  Bs_obj.set_tag (Obj.repr v) (Bs_obj.tag x );
-  Obj.repr v
+  Caml_obj_extern.set_tag (Caml_obj_extern.repr v) (Caml_obj_extern.tag x );
+  Caml_obj_extern.repr v
 
 
 
-let caml_obj_truncate (x : Obj.t) (new_size : int) =
-  let len = Bs_obj.length x in
+let caml_obj_truncate (x : Caml_obj_extern.t) (new_size : int) =
+  let len = Caml_obj_extern.length x in
   if new_size <= 0 || new_size > len then
     raise (Invalid_argument "Obj.truncate")
   else
   if len <> new_size  then
     begin
       for i = new_size  to len - 1  do
-        Obj.set_field x  i (Obj.magic 0)
+        Caml_obj_extern.set_field x  i (Obj.magic 0)
       done;
-      Bs_obj.set_length x new_size
+      Caml_obj_extern.set_length x new_size
     end
 
 
@@ -111,21 +113,21 @@ let caml_lazy_make_forward x = lazy x
    In most cases, rec value comes from record/modules, 
    whose tag is 0, we optimize that case
 *)
-let caml_update_dummy x y =
-  (* let len = Bs_obj.length y in   
+let caml_update_dummy (x : Caml_obj_extern.t) (y : Caml_obj_extern.t) : unit =
+  (* let len = Caml_obj_extern.length y in   
      for i = 0 to len - 1 do 
-     Array.unsafe_set x i (Obj.field y i)
+     Array.unsafe_set x i (Caml_obj_extern.field y i)
      done;
-     Bs_obj.set_tag (Obj.magic x) (Obj.tag y)
+     Caml_obj_extern.set_tag (Obj.magic x) (Caml_obj_extern.tag y)
   *)
-  let len = Bs_obj.length y in
+  let len = Caml_obj_extern.length y in
   for i = 0 to len - 1 do
-    Obj.set_field x i (Obj.field y i)
+    Caml_obj_extern.set_field x i (Caml_obj_extern.field y i)
   done ; 
-  let y_tag = Obj.tag y in 
+  let y_tag = Caml_obj_extern.tag y in 
   if y_tag <> 0 then
-    Bs_obj.set_tag x y_tag
-(* Bs_obj.set_length x   (Bs_obj.length y) *)
+    Caml_obj_extern.set_tag x y_tag
+(* Caml_obj_extern.set_length x   (Caml_obj_extern.length y) *)
 (* [set_length] seems redundant here given that it is initialized as an array 
 *)
 
@@ -134,13 +136,13 @@ type 'a selector = 'a -> 'a -> 'a
 module O = struct
   external isArray : 'a -> bool = "Array.isArray" [@@bs.val]
   type key = string
-  let for_in : (Obj.t -> (key -> unit) -> unit)  = 
+  let for_in : (Caml_obj_extern.t -> (key -> unit) -> unit)  = 
     fun%raw o foo ->  {|
         for (var x in o) { foo(x) }
       |}
     
-  let hasOwnProperty (o: Obj.t) (key: key) : bool = (Obj.magic o)##hasOwnProperty(key)
-  external get_value : Obj.t -> key -> Obj.t = ""[@@bs.get_index]
+  let hasOwnProperty (o: Caml_obj_extern.t) (key: key) : bool = (Obj.magic o)##hasOwnProperty(key)
+  external get_value : Caml_obj_extern.t -> key -> Caml_obj_extern.t = ""[@@bs.get_index]
 end
 
 (** TODO: investigate total
@@ -160,7 +162,7 @@ end
     The compare function can be used as the comparison function required by the [Set.Make] and [Map.Make] functors,
     as well as the [List.sort] and [Array.sort] functions.
 *)
-let rec caml_compare (a : Obj.t) (b : Obj.t) : int =
+let rec caml_compare (a : Caml_obj_extern.t) (b : Caml_obj_extern.t) : int =
   if a == b then 0 else
   (*front and formoest, we do not compare function values*)
   let a_type = Js.typeof a in 
@@ -188,45 +190,45 @@ let rec caml_compare (a : Obj.t) (b : Obj.t) : int =
   | "number", "number" -> 
       Pervasives.compare (Obj.magic a : int) (Obj.magic b : int)
   | "number", _ ->        
-      if b == Obj.repr Js.null || Bs_obj.tag b = 256 then 1 (* Some (Some ..) < x *)
+      if b == Caml_obj_extern.repr Js.null || Caml_obj_extern.tag b = 256 then 1 (* Some (Some ..) < x *)
       else 
         -1 (* Integer < Block in OCaml runtime GPR #1195, except Some.. *)
   | _, "number" -> 
-      if a == Obj.repr Js.null || Bs_obj.tag a = 256 then -1
+      if a == Caml_obj_extern.repr Js.null || Caml_obj_extern.tag a = 256 then -1
       else 1
   | _ ->        
-      if a == Obj.repr Js.null then 
+      if a == Caml_obj_extern.repr Js.null then 
         (** [b] could not be null otherwise would equal *)
-        if Bs_obj.tag b = 256 then 1 else -1
-     else if b == Obj.repr Js.null then 
-        if Bs_obj.tag a = 256 then -1 else 1    
+        if Caml_obj_extern.tag b = 256 then 1 else -1
+     else if b == Caml_obj_extern.repr Js.null then 
+        if Caml_obj_extern.tag a = 256 then -1 else 1    
      else    
-        let tag_a = Bs_obj.tag a in
-        let tag_b = Bs_obj.tag b in
+        let tag_a = Caml_obj_extern.tag a in
+        let tag_b = Caml_obj_extern.tag b in
         (* double_array_tag: 254
            forward_tag:250
         *)
         if tag_a = 250 then
-          caml_compare (Obj.field a 0) b
+          caml_compare (Caml_obj_extern.field a 0) b
         else if tag_b = 250 then
-          caml_compare a (Obj.field b 0)
+          caml_compare a (Caml_obj_extern.field b 0)
         else if tag_a = 256 then   
           if tag_b = 256 then 
-            Pervasives.compare (Obj.magic (Obj.field a 1) : int)
-             (Obj.magic (Obj.field b 1) : int)
+            Pervasives.compare (Obj.magic (Caml_obj_extern.field a 1) : int)
+             (Obj.magic (Caml_obj_extern.field b 1) : int)
             (* Some None < Some (Some None)) *)
           else  (* b could not be undefined/None *)
              (* Some None < Some ..*) 
              -1 
         else if tag_a = 248 (* object/exception *)  then
-          Pervasives.compare (Obj.magic (Obj.field a 1) : int) (Obj.magic (Obj.field b 1 ))
+          Pervasives.compare (Obj.magic (Caml_obj_extern.field a 1) : int) (Obj.magic (Caml_obj_extern.field b 1 ))
         else if tag_a = 251 (* abstract_tag *) then
           raise (Invalid_argument "equal: abstract value")
         else if tag_a <> tag_b then
           if tag_a < tag_b then (-1) else  1
         else
-          let len_a = Bs_obj.length a in
-          let len_b = Bs_obj.length b in
+          let len_a = Caml_obj_extern.length a in
+          let len_b = Caml_obj_extern.length b in
           if len_a = len_b then
             if O.isArray(a)
             then aux_same_length a b 0 len_a
@@ -235,26 +237,26 @@ let rec caml_compare (a : Obj.t) (b : Obj.t) : int =
             aux_length_a_short a b 0 len_a
           else
             aux_length_b_short a b 0 len_b
-and aux_same_length  (a : Obj.t) (b : Obj.t) i same_length =
+and aux_same_length  (a : Caml_obj_extern.t) (b : Caml_obj_extern.t) i same_length =
   if i = same_length then
     0
   else
-    let res = caml_compare (Obj.field a i) (Obj.field b i) in
+    let res = caml_compare (Caml_obj_extern.field a i) (Caml_obj_extern.field b i) in
     if res <> 0 then res
     else aux_same_length  a b (i + 1) same_length
-and aux_length_a_short (a : Obj.t)  (b : Obj.t)  i short_length    =
+and aux_length_a_short (a : Caml_obj_extern.t)  (b : Caml_obj_extern.t)  i short_length    =
   if i = short_length then -1
   else
-    let res = caml_compare (Obj.field a i) (Obj.field b i) in
+    let res = caml_compare (Caml_obj_extern.field a i) (Caml_obj_extern.field b i) in
     if res <> 0 then res
     else aux_length_a_short a b (i+1) short_length
-and aux_length_b_short (a : Obj.t) (b : Obj.t) i short_length =
+and aux_length_b_short (a : Caml_obj_extern.t) (b : Caml_obj_extern.t) i short_length =
   if i = short_length then 1
   else
-    let res = caml_compare (Obj.field a i) (Obj.field b i) in
+    let res = caml_compare (Caml_obj_extern.field a i) (Caml_obj_extern.field b i) in
     if res <> 0 then res
     else aux_length_b_short a b (i+1) short_length
-and aux_obj_compare (a: Obj.t) (b: Obj.t) =
+and aux_obj_compare (a: Caml_obj_extern.t) (b: Caml_obj_extern.t) =
   let min_key_lhs = ref None in
   let min_key_rhs = ref None in
   let do_key (a, b, min_key) key =
@@ -276,13 +278,13 @@ and aux_obj_compare (a: Obj.t) (b: Obj.t) =
     | (Some x), (Some y) -> Pervasives.compare x y in
   res
 
-type eq = Obj.t -> Obj.t -> bool
+type eq = Caml_obj_extern.t -> Caml_obj_extern.t -> bool
 
 
 (** It is easier to do equality check than comparision, since as long as its
   basic type is not the same, it will not equal 
 *)
-let rec caml_equal (a : Obj.t) (b : Obj.t) : bool =
+let rec caml_equal (a : Caml_obj_extern.t) (b : Caml_obj_extern.t) : bool =
   (*front and formoest, we do not compare function values*)
   if a == b then true
   else 
@@ -302,38 +304,38 @@ let rec caml_equal (a : Obj.t) (b : Obj.t) : bool =
       if b_type = "number" || b_type = "undefined" || b == [%raw{|null|}] then false 
       else 
         (* [a] [b] could not be null, so it can not raise *)
-        let tag_a = Bs_obj.tag a in
-        let tag_b = Bs_obj.tag b in
+        let tag_a = Caml_obj_extern.tag a in
+        let tag_b = Caml_obj_extern.tag b in
         (* double_array_tag: 254
            forward_tag:250
         *)
         if tag_a = 250 then
-          caml_equal (Obj.field a 0) b
+          caml_equal (Caml_obj_extern.field a 0) b
         else if tag_b = 250 then
-          caml_equal a (Obj.field b 0)
+          caml_equal a (Caml_obj_extern.field b 0)
         else if tag_a = 248 (* object/exception *)  then
-          (Obj.magic  (Obj.field a 1)) ==  (Obj.magic (Obj.field b 1 ))
+          (Obj.magic  (Caml_obj_extern.field a 1)) ==  (Obj.magic (Caml_obj_extern.field b 1 ))
         else if tag_a = 251 (* abstract_tag *) then
           raise (Invalid_argument "equal: abstract value")
         else if tag_a <> tag_b then
           false
         else if tag_a = 256 then 
-          (Obj.magic (Obj.field a 1) : int) = Obj.magic (Obj.field b 1)
+          (Obj.magic (Caml_obj_extern.field a 1) : int) = Obj.magic (Caml_obj_extern.field b 1)
         else 
-          let len_a = Bs_obj.length a in
-          let len_b = Bs_obj.length b in
+          let len_a = Caml_obj_extern.length a in
+          let len_b = Caml_obj_extern.length b in
           if len_a = len_b then
             if O.isArray(a)
             then aux_equal_length a b 0 len_a
             else aux_obj_equal a b
           else false
-and aux_equal_length  (a : Obj.t) (b : Obj.t) i same_length =
+and aux_equal_length  (a : Caml_obj_extern.t) (b : Caml_obj_extern.t) i same_length =
   if i = same_length then
     true
   else
-    caml_equal (Obj.field a i) (Obj.field b i)
+    caml_equal (Caml_obj_extern.field a i) (Caml_obj_extern.field b i)
     && aux_equal_length  a b (i + 1) same_length
-and aux_obj_equal (a: Obj.t) (b: Obj.t) =
+and aux_obj_equal (a: Caml_obj_extern.t) (b: Caml_obj_extern.t) =
   let result = ref true in
   let do_key_a key =
     if not (O.hasOwnProperty b key)
@@ -346,17 +348,17 @@ and aux_obj_equal (a: Obj.t) (b: Obj.t) =
   if !result then O.for_in b do_key_b;
   !result
 
-let caml_equal_null (x : Obj.t) (y : Obj.t Js.null) = 
+let caml_equal_null (x : Caml_obj_extern.t) (y : Caml_obj_extern.t Js.null) = 
   match Js.nullToOption y with    
   | None -> x == (Obj.magic y)
   | Some y -> caml_equal x y 
 
-let caml_equal_undefined (x : Obj.t) (y : Obj.t Js.undefined) =    
+let caml_equal_undefined (x : Caml_obj_extern.t) (y : Caml_obj_extern.t Js.undefined) =    
   match Js.undefinedToOption y with 
   | None -> x == (Obj.magic y)
   | Some y -> caml_equal x y 
 
-let caml_equal_nullable ( x: Obj.t) (y : Obj.t Js.nullable) =    
+let caml_equal_nullable ( x: Caml_obj_extern.t) (y : Caml_obj_extern.t Js.nullable) =    
   match Js.toOption  y with 
   | None -> x == (Obj.magic y)
   | Some y -> caml_equal x y
@@ -371,10 +373,10 @@ let caml_lessequal a b = caml_compare a b <= 0
 
 let caml_lessthan a b = caml_compare a b < 0
 
-let caml_min (x : Obj.t) y =   
+let caml_min (x : Caml_obj_extern.t) y =   
   if caml_compare  x y <= 0 then x else y 
 
-let caml_max (x : Obj.t) y =    
+let caml_max (x : Caml_obj_extern.t) y =    
   if caml_compare x y >= 0 then x else y 
 
-let caml_obj_set_tag = Bs_obj.set_tag  
+let caml_obj_set_tag = Caml_obj_extern.set_tag  

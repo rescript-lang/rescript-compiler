@@ -1,7 +1,19 @@
 'use strict';
 
+var Mt = require("./mt.js");
+var Char = require("../../lib/js/char.js");
 var Bytes = require("../../lib/js/bytes.js");
-var Caml_string = require("../../lib/js/caml_string.js");
+var Curry = require("../../lib/js/curry.js");
+var Caml_bytes = require("../../lib/js/caml_bytes.js");
+var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
+
+var suites = /* record */[/* contents : [] */0];
+
+var test_id = /* record */[/* contents */0];
+
+function eq(loc, x, y) {
+  return Mt.eq_suites(test_id, suites, loc, x, y);
+}
 
 function escaped(s) {
   var n = 0;
@@ -27,7 +39,7 @@ function escaped(s) {
   if (n === s.length) {
     return Bytes.copy(s);
   } else {
-    var s$prime = Caml_string.caml_create_bytes(n);
+    var s$prime = Caml_bytes.caml_create_bytes(n);
     n = 0;
     for(var i$1 = 0 ,i_finish$1 = s.length - 1 | 0; i$1 <= i_finish$1; ++i$1){
       var c = s[i$1];
@@ -110,5 +122,61 @@ function escaped(s) {
   }
 }
 
+function starts_with(xs, prefix, p) {
+  var H = Caml_exceptions.create("H");
+  var len1 = xs.length;
+  var len2 = prefix.length;
+  if (len2 > len1) {
+    return false;
+  } else {
+    try {
+      for(var i = 0 ,i_finish = len2 - 1 | 0; i <= i_finish; ++i){
+        if (!Curry._2(p, Caml_bytes.get(xs, i), Caml_bytes.get(prefix, i))) {
+          throw H;
+        }
+        
+      }
+      return true;
+    }
+    catch (exn){
+      if (exn === H) {
+        return false;
+      } else {
+        throw exn;
+      }
+    }
+  }
+}
+
+var a = Bytes.init(100, Char.chr);
+
+Bytes.blit(a, 5, a, 10, 10);
+
+eq("File \"ext_bytes_test.ml\", line 96, characters 7-14", a, Bytes.of_string("\0\x01\x02\x03\x04\x05\x06\x07\b\t\x05\x06\x07\b\t\n\x0b\f\r\x0e\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abc"));
+
+var a$1 = Bytes.init(100, Char.chr);
+
+Bytes.blit(a$1, 10, a$1, 5, 10);
+
+eq("File \"ext_bytes_test.ml\", line 102, characters 7-14", a$1, Bytes.of_string("\0\x01\x02\x03\x04\n\x0b\f\r\x0e\x0f\x10\x11\x12\x13\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abc"));
+
+var f = Char.chr;
+
+var a$2 = Caml_bytes.bytes_to_string(Bytes.init(100, f));
+
+var b = Bytes.init(100, (function (i) {
+        return /* "\000" */0;
+      }));
+
+Bytes.blit_string(a$2, 10, b, 5, 10);
+
+eq("File \"ext_bytes_test.ml\", line 109, characters 7-14", b, Bytes.of_string("\0\0\0\0\0\n\x0b\f\r\x0e\x0f\x10\x11\x12\x13\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"));
+
+Mt.from_pair_suites("ext_bytes_test.ml", suites[0]);
+
+exports.suites = suites;
+exports.test_id = test_id;
+exports.eq = eq;
 exports.escaped = escaped;
-/* No side effect */
+exports.starts_with = starts_with;
+/* a Not a pure module */

@@ -159,12 +159,6 @@ let compare (args : J.expression list) =
 
 let of_string (args : J.expression list) = 
   int64_call "of_string" args 
-let discard_sign (args : J.expression list) =
-  int64_call "discard_sign" args
-let div_mod (args : J.expression list) =
-  int64_call "div_mod" args
-let to_hex (args : J.expression list) =
-  int64_call "to_hex"  args
 let get64 = int64_call "get64"
 let float_of_bits  =  int64_call "float_of_bits" 
 let bits_of_float = int64_call "bits_of_float"

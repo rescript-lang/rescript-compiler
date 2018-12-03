@@ -9,8 +9,8 @@ var Format = require("../../lib/js/format.js");
 var $$String = require("../../lib/js/string.js");
 var Caml_sys = require("../../lib/js/caml_sys.js");
 var Filename = require("../../lib/js/filename.js");
+var Caml_bytes = require("../../lib/js/caml_bytes.js");
 var Pervasives = require("../../lib/js/pervasives.js");
-var Caml_string = require("../../lib/js/caml_string.js");
 var Test_literals = require("./test_literals.js");
 var Ext_string_test = require("./ext_string_test.js");
 var CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
@@ -244,12 +244,12 @@ var package_dir = Block.__(246, [(function (param) {
 
 function module_name_of_file(file) {
   var s = Filename.chop_extension(Curry._1(Filename.basename, file));
-  return Caml_string.bytes_to_string(Bytes.capitalize(Caml_string.bytes_of_string(s)));
+  return Caml_bytes.bytes_to_string(Bytes.capitalize(Caml_bytes.bytes_of_string(s)));
 }
 
 function module_name_of_file_if_any(file) {
   var s = chop_extension_if_any(Curry._1(Filename.basename, file));
-  return Caml_string.bytes_to_string(Bytes.capitalize(Caml_string.bytes_of_string(s)));
+  return Caml_bytes.bytes_to_string(Bytes.capitalize(Caml_bytes.bytes_of_string(s)));
 }
 
 function combine(p1, p2) {

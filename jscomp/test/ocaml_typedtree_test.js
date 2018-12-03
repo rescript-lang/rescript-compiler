@@ -34,8 +34,8 @@ var Caml_int32 = require("../../lib/js/caml_int32.js");
 var Caml_int64 = require("../../lib/js/caml_int64.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_format = require("../../lib/js/caml_format.js");
+var Caml_option = require("../../lib/js/caml_option.js");
 var Caml_string = require("../../lib/js/caml_string.js");
-var Js_primitive = require("../../lib/js/js_primitive.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
@@ -206,7 +206,7 @@ function split_last(param) {
 
 function may(f, param) {
   if (param !== undefined) {
-    return Curry._1(f, Js_primitive.valFromOption(param));
+    return Curry._1(f, Caml_option.valFromOption(param));
   } else {
     return /* () */0;
   }
@@ -214,13 +214,13 @@ function may(f, param) {
 
 function may_map(f, param) {
   if (param !== undefined) {
-    return Js_primitive.some(Curry._1(f, Js_primitive.valFromOption(param)));
+    return Caml_option.some(Curry._1(f, Caml_option.valFromOption(param)));
   }
   
 }
 
 function find_in_path_uncap(path, name) {
-  var uname = Caml_string.bytes_to_string(Bytes.uncapitalize(Caml_string.bytes_of_string(name)));
+  var uname = Caml_bytes.bytes_to_string(Bytes.uncapitalize(Caml_bytes.bytes_of_string(name)));
   var _param = path;
   while(true) {
     var param = _param;
@@ -5525,7 +5525,7 @@ function extract(l, tbl) {
                   return /* :: */[
                           /* tuple */[
                             name,
-                            Js_primitive.some(match[0])
+                            Caml_option.some(match[0])
                           ],
                           assc
                         ];
@@ -7607,7 +7607,7 @@ function mk$19($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3,
 function constructor($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, res, name) {
   var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
   var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
-  var info = $staropt$star$2 !== undefined ? Js_primitive.valFromOption($staropt$star$2) : undefined;
+  var info = $staropt$star$2 !== undefined ? Caml_option.valFromOption($staropt$star$2) : undefined;
   var args = $staropt$star$3 !== undefined ? $staropt$star$3 : /* [] */0;
   return /* record */[
           /* pcd_name */name,
@@ -7621,7 +7621,7 @@ function constructor($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$s
 function field$1($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, name, typ) {
   var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
   var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
-  var info = $staropt$star$2 !== undefined ? Js_primitive.valFromOption($staropt$star$2) : undefined;
+  var info = $staropt$star$2 !== undefined ? Caml_option.valFromOption($staropt$star$2) : undefined;
   var mut = $staropt$star$3 !== undefined ? $staropt$star$3 : /* Immutable */0;
   return /* record */[
           /* pld_name */name,
@@ -7650,7 +7650,7 @@ function constructor$1($staropt$star, $staropt$star$1, $staropt$star$2, $staropt
   var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
   var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
   var docs = $staropt$star$2 !== undefined ? $staropt$star$2 : empty_docs;
-  var info = $staropt$star$3 !== undefined ? Js_primitive.valFromOption($staropt$star$3) : undefined;
+  var info = $staropt$star$3 !== undefined ? Caml_option.valFromOption($staropt$star$3) : undefined;
   return /* record */[
           /* pext_name */name,
           /* pext_kind */kind,
@@ -7663,7 +7663,7 @@ function decl($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, 
   var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
   var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
   var docs = $staropt$star$2 !== undefined ? $staropt$star$2 : empty_docs;
-  var info = $staropt$star$3 !== undefined ? Js_primitive.valFromOption($staropt$star$3) : undefined;
+  var info = $staropt$star$3 !== undefined ? Caml_option.valFromOption($staropt$star$3) : undefined;
   var args = $staropt$star$4 !== undefined ? $staropt$star$4 : /* [] */0;
   return /* record */[
           /* pext_name */name,
@@ -7680,7 +7680,7 @@ function rebind($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3
   var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
   var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
   var docs = $staropt$star$2 !== undefined ? $staropt$star$2 : empty_docs;
-  var info = $staropt$star$3 !== undefined ? Js_primitive.valFromOption($staropt$star$3) : undefined;
+  var info = $staropt$star$3 !== undefined ? Caml_option.valFromOption($staropt$star$3) : undefined;
   return /* record */[
           /* pext_name */name,
           /* pext_kind : Pext_rebind */Block.__(1, [lid]),
@@ -7779,7 +7779,7 @@ function map_tuple(f1, f2, param) {
 
 function map_opt(f, param) {
   if (param !== undefined) {
-    return Js_primitive.some(Curry._1(f, Js_primitive.valFromOption(param)));
+    return Caml_option.some(Curry._1(f, Caml_option.valFromOption(param)));
   }
   
 }
@@ -9505,7 +9505,7 @@ function get_arg(x) {
     case 1 : 
         return undefined;
     case 2 : 
-        return Js_primitive.some(match[0]);
+        return Caml_option.some(match[0]);
     
   }
 }
@@ -9988,7 +9988,7 @@ function find_pers_struct($staropt$star, name) {
   }
   var r;
   try {
-    r = Js_primitive.some(Hashtbl.find(persistent_structures, name));
+    r = Caml_option.some(Hashtbl.find(persistent_structures, name));
   }
   catch (exn){
     if (exn === Caml_builtin_exceptions.not_found) {
@@ -9999,7 +9999,7 @@ function find_pers_struct($staropt$star, name) {
   }
   var ps;
   if (r !== undefined) {
-    var match = Js_primitive.valFromOption(r);
+    var match = Caml_option.valFromOption(r);
     if (match !== undefined) {
       ps = match;
     } else {
@@ -11335,7 +11335,7 @@ function gadt_instance_level(env, t) {
               }), r[0], /* Empty */0);
       }
       if (mem$3(t, r[0])) {
-        return Js_primitive.some(match[0]);
+        return Caml_option.some(match[0]);
       } else {
         _param = param[1];
         continue ;
@@ -18088,13 +18088,13 @@ var yyact = /* array */[
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return constructor(symbol_rloc(/* () */0), _3, Js_primitive.some(get_info(Parsing.symbol_end_pos(/* () */0))), _2[0], _2[1], mkrhs(_1, 1));
+      return constructor(symbol_rloc(/* () */0), _3, Caml_option.some(get_info(Parsing.symbol_end_pos(/* () */0))), _2[0], _2[1], mkrhs(_1, 1));
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 1);
       var _4 = Parsing.peek_val(__caml_parser_env, 0);
-      return constructor(symbol_rloc(/* () */0), _4, Js_primitive.some(get_info(Parsing.symbol_end_pos(/* () */0))), _3[0], _3[1], mkrhs(_2, 2));
+      return constructor(symbol_rloc(/* () */0), _4, Caml_option.some(get_info(Parsing.symbol_end_pos(/* () */0))), _3[0], _3[1], mkrhs(_2, 2));
     }),
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);
@@ -18168,7 +18168,7 @@ var yyact = /* array */[
       var _2 = Parsing.peek_val(__caml_parser_env, 3);
       var _4 = Parsing.peek_val(__caml_parser_env, 1);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return field$1(symbol_rloc(/* () */0), _5, Js_primitive.some(get_info(Parsing.symbol_end_pos(/* () */0))), _1, mkrhs(_2, 2), _4);
+      return field$1(symbol_rloc(/* () */0), _5, Caml_option.some(get_info(Parsing.symbol_end_pos(/* () */0))), _1, mkrhs(_2, 2), _4);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 6);
@@ -18178,7 +18178,7 @@ var yyact = /* array */[
       var _7 = Parsing.peek_val(__caml_parser_env, 0);
       var info_before_semi = get_info(Parsing.rhs_end_pos(5));
       var info = info_before_semi !== undefined ? info_before_semi : get_info(Parsing.symbol_end_pos(/* () */0));
-      return field$1(symbol_rloc(/* () */0), Pervasives.$at(_5, _7), Js_primitive.some(info), _1, mkrhs(_2, 2), _4);
+      return field$1(symbol_rloc(/* () */0), Pervasives.$at(_5, _7), Caml_option.some(info), _1, mkrhs(_2, 2), _4);
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 6);
@@ -18274,25 +18274,25 @@ var yyact = /* array */[
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return decl(symbol_rloc(/* () */0), _3, undefined, Js_primitive.some(get_info(Parsing.symbol_end_pos(/* () */0))), _2[0], _2[1], mkrhs(_1, 1));
+      return decl(symbol_rloc(/* () */0), _3, undefined, Caml_option.some(get_info(Parsing.symbol_end_pos(/* () */0))), _2[0], _2[1], mkrhs(_1, 1));
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 1);
       var _4 = Parsing.peek_val(__caml_parser_env, 0);
-      return decl(symbol_rloc(/* () */0), _4, undefined, Js_primitive.some(get_info(Parsing.symbol_end_pos(/* () */0))), _3[0], _3[1], mkrhs(_2, 2));
+      return decl(symbol_rloc(/* () */0), _4, undefined, Caml_option.some(get_info(Parsing.symbol_end_pos(/* () */0))), _3[0], _3[1], mkrhs(_2, 2));
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 3);
       var _3 = Parsing.peek_val(__caml_parser_env, 1);
       var _4 = Parsing.peek_val(__caml_parser_env, 0);
-      return rebind(symbol_rloc(/* () */0), _4, undefined, Js_primitive.some(get_info(Parsing.symbol_end_pos(/* () */0))), mkrhs(_1, 1), mkrhs(_3, 3));
+      return rebind(symbol_rloc(/* () */0), _4, undefined, Caml_option.some(get_info(Parsing.symbol_end_pos(/* () */0))), mkrhs(_1, 1), mkrhs(_3, 3));
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 3);
       var _4 = Parsing.peek_val(__caml_parser_env, 1);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return rebind(symbol_rloc(/* () */0), _5, undefined, Js_primitive.some(get_info(Parsing.symbol_end_pos(/* () */0))), mkrhs(_2, 2), mkrhs(_4, 4));
+      return rebind(symbol_rloc(/* () */0), _5, undefined, Caml_option.some(get_info(Parsing.symbol_end_pos(/* () */0))), mkrhs(_2, 2), mkrhs(_4, 4));
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
@@ -20725,7 +20725,7 @@ var keyword_table = create_hashtable(149, /* :: */[
       ]
     ]);
 
-var initial_string_buffer = Caml_string.caml_create_bytes(256);
+var initial_string_buffer = Caml_bytes.caml_create_bytes(256);
 
 var string_buff = /* record */[/* contents */initial_string_buffer];
 
@@ -20739,7 +20739,7 @@ function reset_string_buffer(param) {
 
 function store_string_char(c) {
   if (string_index[0] >= string_buff[0].length) {
-    var new_buff = Caml_string.caml_create_bytes((string_buff[0].length << 1));
+    var new_buff = Caml_bytes.caml_create_bytes((string_buff[0].length << 1));
     Bytes.blit(string_buff[0], 0, new_buff, 0, string_buff[0].length);
     string_buff[0] = new_buff;
   }
@@ -20871,7 +20871,7 @@ function cvt_nativeint_literal(s) {
 
 function remove_underscores(s) {
   var l = s.length;
-  var b = Caml_string.caml_create_bytes(l);
+  var b = Caml_bytes.caml_create_bytes(l);
   var _src = 0;
   var _dst = 0;
   while(true) {
@@ -25082,7 +25082,7 @@ function free_vars_rec(_real, _ty) {
           case 3 : 
               if (match$1 !== undefined) {
                 try {
-                  var match$2 = find_type_expansion(match[0], Js_primitive.valFromOption(match$1));
+                  var match$2 = find_type_expansion(match[0], Caml_option.valFromOption(match$1));
                   if (repr(match$2[1])[/* level */1] !== 100000000) {
                     free_variables[0] = /* :: */[
                       /* tuple */[
@@ -25973,7 +25973,7 @@ function copy(env, partial, keep_names, ty) {
         save_desc(ty$1, desc);
         var t = newvar(undefined, /* () */0);
         if (env !== undefined) {
-          var env$1 = Js_primitive.valFromOption(env);
+          var env$1 = Caml_option.valFromOption(env);
           if (env$1[/* local_constraints */11]) {
             var match$2 = gadt_instance_level(env$1, ty$1);
             if (match$2 !== undefined) {
@@ -26200,7 +26200,7 @@ function simple_copy(t) {
 
 function gadt_env(env) {
   if (env[/* local_constraints */11]) {
-    return Js_primitive.some(env);
+    return Caml_option.some(env);
   }
   
 }
@@ -27320,7 +27320,7 @@ function unify_univar(t1, t2, _param) {
           var match = List.find((function (param) {
                   return t === repr(param[0]);
                 }), cl);
-          return Js_primitive.some(match[1]);
+          return Caml_option.some(match[1]);
         }
         catch (exn){
           if (exn === Caml_builtin_exceptions.not_found) {
@@ -39946,10 +39946,10 @@ function new_name(_param) {
     var name;
     if (name_counter[0] < 26) {
       var c = Char.chr(97 + name_counter[0] | 0);
-      name = Caml_string.bytes_to_string(Bytes.make(1, c));
+      name = Caml_bytes.bytes_to_string(Bytes.make(1, c));
     } else {
       var c$1 = Char.chr(97 + name_counter[0] % 26 | 0);
-      name = Caml_string.bytes_to_string(Bytes.make(1, c$1)) + String(name_counter[0] / 26 | 0);
+      name = Caml_bytes.bytes_to_string(Bytes.make(1, c$1)) + String(name_counter[0] / 26 | 0);
     }
     name_counter[0] = name_counter[0] + 1 | 0;
     if (List.mem(name, named_vars[0]) || List.exists((function(name){
@@ -45789,7 +45789,7 @@ function value_descriptions(env, cxt, subst, id, vd1, vd2) {
 }
 
 function type_declarations$2(env, $staropt$star, cxt, subst, id, decl1, decl2) {
-  var old_env = $staropt$star !== undefined ? Js_primitive.valFromOption($staropt$star) : env;
+  var old_env = $staropt$star !== undefined ? Caml_option.valFromOption($staropt$star) : env;
   mark_type_used(env, id[/* name */1], decl1);
   var decl2$1 = type_declaration(subst, decl2);
   var err = type_declarations$1(undefined, env, id[/* name */1], decl1, id, decl2$1);
@@ -46514,7 +46514,7 @@ function signature_components(old_env, env, cxt, subst, paired) {
       case 1 : 
           var match$4 = match[1];
           if (match$4.tag === 1) {
-            type_declarations$2(env, Js_primitive.some(old_env), cxt, subst, match$1[0], match$1[1], match$4[1]);
+            type_declarations$2(env, Caml_option.some(old_env), cxt, subst, match$1[0], match$1[1], match$4[1]);
             return comps_rec(paired[1]);
           } else {
             exit = 1;
@@ -47653,7 +47653,7 @@ function is_big(obj) {
   var size = error_size[0];
   if (size > 0) {
     if (buffer[0].length < size) {
-      buffer[0] = Caml_string.caml_create_bytes(size);
+      buffer[0] = Caml_bytes.caml_create_bytes(size);
     }
     try {
       Marshal.to_buffer(buffer[0], 0, size, obj, /* [] */0);
@@ -50253,7 +50253,7 @@ function map_filter(f, _param) {
       var match = Curry._1(f, param[0]);
       if (match !== undefined) {
         return /* :: */[
-                Js_primitive.valFromOption(match),
+                Caml_option.valFromOption(match),
                 map_filter(f, xs)
               ];
       } else {
@@ -50457,7 +50457,7 @@ function build_other(ext, env) {
                                 
                               }), (function (i) {
                                 return /* Tpat_constant */Block.__(2, [/* Const_string */Block.__(2, [
-                                              Caml_string.bytes_to_string(Bytes.make(i, /* "*" */42)),
+                                              Caml_bytes.bytes_to_string(Bytes.make(i, /* "*" */42)),
                                               undefined
                                             ])]);
                               }), 0, (function (prim) {
@@ -51250,7 +51250,7 @@ function pressure_variants(_tdefs, _pss) {
                   if (tdefs !== undefined) {
                     var row = row_of_pat(p);
                     if (!(row_fixed(row) || pressure_variants(undefined, filter_extra(pss)))) {
-                      close_variant(Js_primitive.valFromOption(tdefs), row);
+                      close_variant(Caml_option.valFromOption(tdefs), row);
                     }
                     
                   }
@@ -52040,7 +52040,7 @@ function pressure_variants$1(tdefs, patl) {
                   ]
                 ];
         }), patl);
-  pressure_variants(Js_primitive.some(tdefs), pss);
+  pressure_variants(Caml_option.some(tdefs), pss);
   return /* () */0;
 }
 
@@ -52228,7 +52228,7 @@ function do_match(_pss, _qs) {
       if (match$1[0]) {
         return undefined;
       } else {
-        return Js_primitive.some(match$1[1]);
+        return Caml_option.some(match$1[1]);
       }
     } else {
       return undefined;
@@ -56948,7 +56948,7 @@ function type_label_a_list(labels, loc, closed, env, type_lbl_a, opath, lid_a_li
     switch (match.tag | 0) {
       case 0 : 
           if (labels !== undefined) {
-            var labels$1 = Js_primitive.valFromOption(labels);
+            var labels$1 = Caml_option.valFromOption(labels);
             if (Hashtbl.mem(labels$1, match[0])) {
               lbl_a_list = List.map((function (param) {
                       var lid = param[0];
@@ -57514,7 +57514,7 @@ function type_pat(constrs, labels, no_existentials, mode, env, sp, expected_ty) 
           switch (match$4.tag | 0) {
             case 0 : 
                 if (constrs !== undefined) {
-                  var constrs$2 = Js_primitive.valFromOption(constrs);
+                  var constrs$2 = Caml_option.valFromOption(constrs);
                   var s = match$4[0];
                   if (Hashtbl.mem(constrs$2, s)) {
                     constrs$1 = /* :: */[
@@ -58064,7 +58064,7 @@ function partial_pred(lev, env, expected_ty, constrs, labels, p) {
   var snap = snapshot(/* () */0);
   try {
     reset_pattern(undefined, true);
-    var typed_p = type_pat$1(true, Js_primitive.some(constrs), Js_primitive.some(labels), lev, /* record */[/* contents */env], p, expected_ty);
+    var typed_p = type_pat$1(true, Caml_option.some(constrs), Caml_option.some(labels), lev, /* record */[/* contents */env], p, expected_ty);
     backtrack(snap);
     return typed_p;
   }
@@ -60327,7 +60327,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
             }
           }
           if (exit$2 === 1) {
-            if (free_variables$1(Js_primitive.some(env), arg$4[/* exp_type */3]) === /* [] */0 && free_variables$1(Js_primitive.some(env), ty$prime$1) === /* [] */0) {
+            if (free_variables$1(Caml_option.some(env), arg$4[/* exp_type */3]) === /* [] */0 && free_variables$1(Caml_option.some(env), ty$prime$1) === /* [] */0) {
               var tmp$3 = false;
               if (!gen$1) {
                 var snap = snapshot(/* () */0);
@@ -62208,7 +62208,7 @@ function type_label_exp(create, env, loc, ty_expected, param) {
           ];
     }
   }
-  var snap = vars === /* [] */0 ? undefined : Js_primitive.some(snapshot(/* () */0));
+  var snap = vars === /* [] */0 ? undefined : Caml_option.some(snapshot(/* () */0));
   var arg = type_argument(env, sarg, ty_arg$1, instance(undefined, env, ty_arg$1));
   end_def(/* () */0);
   var arg$1;

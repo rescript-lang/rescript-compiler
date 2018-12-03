@@ -193,7 +193,7 @@ exception_value_test.cmj : ../runtime/js.cmj
 exn_error_pattern.cmj : mt.cmj ../runtime/js.cmj
 export_keyword.cmj :
 ext_array_test.cmj :
-ext_bytes_test.cmj :
+ext_bytes_test.cmj : mt.cmj
 ext_filename_test.cmj : test_literals.cmj ext_string_test.cmj \
     ext_pervasives_test.cmj
 ext_list_test.cmj : ext_string_test.cmj
@@ -332,7 +332,7 @@ installation_test.cmj : ../others/node.cmj mt.cmj ../runtime/js.cmj \
     app_root_finder.cmj
 int32_test.cmj : mt.cmj ext_array_test.cmj
 int64_mul_div_test.cmj : mt.cmj
-int64_test.cmj : mt.cmj ../runtime/js_int64.cmj ext_array_test.cmj
+int64_test.cmj : mt.cmj ext_array_test.cmj ../runtime/caml_int64.cmj
 int_hashtbl_test.cmj : mt.cmj
 int_map.cmj :
 int_overflow_test.cmj : mt.cmj ../runtime/js.cmj
@@ -378,7 +378,7 @@ largest_int_flow.cmj :
 lazy_test.cmj : mt.cmj
 lexer_test.cmj : number_lexer.cmj mt.cmj arith_syntax.cmj arith_parser.cmj \
     arith_lexer.cmj
-lib_js_test.cmj : mt.cmj ../runtime/js.cmj ../runtime/bs_string.cmj
+lib_js_test.cmj : mt.cmj ../runtime/js.cmj
 libarg_test.cmj : mt.cmj
 libqueue_test.cmj :
 limits_test.cmj : mt.cmj
@@ -502,7 +502,8 @@ string_bound_get_test.cmj :
 string_get_set_test.cmj : mt.cmj
 string_interp_test.cmj : ../runtime/js.cmj
 string_literal_print_test.cmj : mt.cmj
-string_runtime_test.cmj : mt.cmj ../runtime/caml_string.cmj
+string_runtime_test.cmj : mt.cmj ../runtime/caml_string.cmj \
+    ../runtime/caml_char.cmj ../runtime/caml_bytes.cmj
 string_set.cmj : set_gen.cmj
 string_set_test.cmj : string_set.cmj mt.cmj
 string_test.cmj : mt.cmj ext_string_test.cmj
@@ -631,7 +632,7 @@ typeof_test.cmj : mt.cmj ../runtime/js.cmj
 unboxed_attribute_test.cmj :
 uncurry_glob_test.cmj : ../runtime/caml_utils.cmj
 undef_regression2_test.cmj : mt.cmj ../runtime/js.cmj
-undef_regression_test.cmj : ../runtime/js.cmj ../runtime/bs_obj.cmj
+undef_regression_test.cmj : ../runtime/js.cmj ../runtime/caml_obj_extern.cmj
 unicode_type_error.cmj :
 unitest_string.cmj :
 unsafe_obj_external.cmj : ../runtime/js.cmj

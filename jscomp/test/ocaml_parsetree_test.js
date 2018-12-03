@@ -28,8 +28,8 @@ var Caml_int32 = require("../../lib/js/caml_int32.js");
 var Caml_int64 = require("../../lib/js/caml_int64.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_format = require("../../lib/js/caml_format.js");
+var Caml_option = require("../../lib/js/caml_option.js");
 var Caml_string = require("../../lib/js/caml_string.js");
-var Js_primitive = require("../../lib/js/js_primitive.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
@@ -3115,7 +3115,7 @@ function mk$19($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3,
 function constructor($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, res, name) {
   var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
   var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
-  var info = $staropt$star$2 !== undefined ? Js_primitive.valFromOption($staropt$star$2) : undefined;
+  var info = $staropt$star$2 !== undefined ? Caml_option.valFromOption($staropt$star$2) : undefined;
   var args = $staropt$star$3 !== undefined ? $staropt$star$3 : /* [] */0;
   return /* record */[
           /* pcd_name */name,
@@ -3129,7 +3129,7 @@ function constructor($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$s
 function field$1($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, name, typ) {
   var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
   var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
-  var info = $staropt$star$2 !== undefined ? Js_primitive.valFromOption($staropt$star$2) : undefined;
+  var info = $staropt$star$2 !== undefined ? Caml_option.valFromOption($staropt$star$2) : undefined;
   var mut = $staropt$star$3 !== undefined ? $staropt$star$3 : /* Immutable */0;
   return /* record */[
           /* pld_name */name,
@@ -3158,7 +3158,7 @@ function decl($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3, 
   var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
   var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
   var docs = $staropt$star$2 !== undefined ? $staropt$star$2 : empty_docs;
-  var info = $staropt$star$3 !== undefined ? Js_primitive.valFromOption($staropt$star$3) : undefined;
+  var info = $staropt$star$3 !== undefined ? Caml_option.valFromOption($staropt$star$3) : undefined;
   var args = $staropt$star$4 !== undefined ? $staropt$star$4 : /* [] */0;
   return /* record */[
           /* pext_name */name,
@@ -3175,7 +3175,7 @@ function rebind($staropt$star, $staropt$star$1, $staropt$star$2, $staropt$star$3
   var loc = $staropt$star !== undefined ? $staropt$star : default_loc[0];
   var attrs = $staropt$star$1 !== undefined ? $staropt$star$1 : /* [] */0;
   var docs = $staropt$star$2 !== undefined ? $staropt$star$2 : empty_docs;
-  var info = $staropt$star$3 !== undefined ? Js_primitive.valFromOption($staropt$star$3) : undefined;
+  var info = $staropt$star$3 !== undefined ? Caml_option.valFromOption($staropt$star$3) : undefined;
   return /* record */[
           /* pext_name */name,
           /* pext_kind : Pext_rebind */Block.__(1, [lid]),
@@ -7742,13 +7742,13 @@ var yyact = /* array */[
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return constructor(symbol_rloc(/* () */0), _3, Js_primitive.some(get_info(Parsing.symbol_end_pos(/* () */0))), _2[0], _2[1], mkrhs(_1, 1));
+      return constructor(symbol_rloc(/* () */0), _3, Caml_option.some(get_info(Parsing.symbol_end_pos(/* () */0))), _2[0], _2[1], mkrhs(_1, 1));
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 1);
       var _4 = Parsing.peek_val(__caml_parser_env, 0);
-      return constructor(symbol_rloc(/* () */0), _4, Js_primitive.some(get_info(Parsing.symbol_end_pos(/* () */0))), _3[0], _3[1], mkrhs(_2, 2));
+      return constructor(symbol_rloc(/* () */0), _4, Caml_option.some(get_info(Parsing.symbol_end_pos(/* () */0))), _3[0], _3[1], mkrhs(_2, 2));
     }),
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);
@@ -7822,7 +7822,7 @@ var yyact = /* array */[
       var _2 = Parsing.peek_val(__caml_parser_env, 3);
       var _4 = Parsing.peek_val(__caml_parser_env, 1);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return field$1(symbol_rloc(/* () */0), _5, Js_primitive.some(get_info(Parsing.symbol_end_pos(/* () */0))), _1, mkrhs(_2, 2), _4);
+      return field$1(symbol_rloc(/* () */0), _5, Caml_option.some(get_info(Parsing.symbol_end_pos(/* () */0))), _1, mkrhs(_2, 2), _4);
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 6);
@@ -7832,7 +7832,7 @@ var yyact = /* array */[
       var _7 = Parsing.peek_val(__caml_parser_env, 0);
       var info_before_semi = get_info(Parsing.rhs_end_pos(5));
       var info = info_before_semi !== undefined ? info_before_semi : get_info(Parsing.symbol_end_pos(/* () */0));
-      return field$1(symbol_rloc(/* () */0), Pervasives.$at(_5, _7), Js_primitive.some(info), _1, mkrhs(_2, 2), _4);
+      return field$1(symbol_rloc(/* () */0), Pervasives.$at(_5, _7), Caml_option.some(info), _1, mkrhs(_2, 2), _4);
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 6);
@@ -7928,25 +7928,25 @@ var yyact = /* array */[
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
-      return decl(symbol_rloc(/* () */0), _3, undefined, Js_primitive.some(get_info(Parsing.symbol_end_pos(/* () */0))), _2[0], _2[1], mkrhs(_1, 1));
+      return decl(symbol_rloc(/* () */0), _3, undefined, Caml_option.some(get_info(Parsing.symbol_end_pos(/* () */0))), _2[0], _2[1], mkrhs(_1, 1));
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 1);
       var _4 = Parsing.peek_val(__caml_parser_env, 0);
-      return decl(symbol_rloc(/* () */0), _4, undefined, Js_primitive.some(get_info(Parsing.symbol_end_pos(/* () */0))), _3[0], _3[1], mkrhs(_2, 2));
+      return decl(symbol_rloc(/* () */0), _4, undefined, Caml_option.some(get_info(Parsing.symbol_end_pos(/* () */0))), _3[0], _3[1], mkrhs(_2, 2));
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 3);
       var _3 = Parsing.peek_val(__caml_parser_env, 1);
       var _4 = Parsing.peek_val(__caml_parser_env, 0);
-      return rebind(symbol_rloc(/* () */0), _4, undefined, Js_primitive.some(get_info(Parsing.symbol_end_pos(/* () */0))), mkrhs(_1, 1), mkrhs(_3, 3));
+      return rebind(symbol_rloc(/* () */0), _4, undefined, Caml_option.some(get_info(Parsing.symbol_end_pos(/* () */0))), mkrhs(_1, 1), mkrhs(_3, 3));
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 3);
       var _4 = Parsing.peek_val(__caml_parser_env, 1);
       var _5 = Parsing.peek_val(__caml_parser_env, 0);
-      return rebind(symbol_rloc(/* () */0), _5, undefined, Js_primitive.some(get_info(Parsing.symbol_end_pos(/* () */0))), mkrhs(_2, 2), mkrhs(_4, 4));
+      return rebind(symbol_rloc(/* () */0), _5, undefined, Caml_option.some(get_info(Parsing.symbol_end_pos(/* () */0))), mkrhs(_2, 2), mkrhs(_4, 4));
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
@@ -10379,7 +10379,7 @@ var keyword_table = create_hashtable(149, /* :: */[
       ]
     ]);
 
-var initial_string_buffer = Caml_string.caml_create_bytes(256);
+var initial_string_buffer = Caml_bytes.caml_create_bytes(256);
 
 var string_buff = /* record */[/* contents */initial_string_buffer];
 
@@ -10393,7 +10393,7 @@ function reset_string_buffer(param) {
 
 function store_string_char(c) {
   if (string_index[0] >= string_buff[0].length) {
-    var new_buff = Caml_string.caml_create_bytes((string_buff[0].length << 1));
+    var new_buff = Caml_bytes.caml_create_bytes((string_buff[0].length << 1));
     Bytes.blit(string_buff[0], 0, new_buff, 0, string_buff[0].length);
     string_buff[0] = new_buff;
   }
@@ -10525,7 +10525,7 @@ function cvt_nativeint_literal(s) {
 
 function remove_underscores(s) {
   var l = s.length;
-  var b = Caml_string.caml_create_bytes(l);
+  var b = Caml_bytes.caml_create_bytes(l);
   var _src = 0;
   var _dst = 0;
   while(true) {

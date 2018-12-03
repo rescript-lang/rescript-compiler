@@ -41,8 +41,7 @@ external of_small_int_array :
     "String.fromCharCode.apply" 
 [@@bs.val]
 
-(* external string_of_char : char -> string = "#string_of_char" *)
-(* string_of_char y  *)
+
 
 let f x y = 
   of_small_int_array x, 0

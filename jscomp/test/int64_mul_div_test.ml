@@ -210,4 +210,23 @@ let from_to_string xs =
    @ [
      "div_rem_0", (fun _ -> Eq(Int64.div (-1L) 16L,0L));     
      "div_rem_1", (fun _ -> Eq(Int64.rem (-1L) 16L,-1L));     
+     (* __LOC__, (fun _ -> Eq(Int64.of_float 2e65, -9223372036854775808L)) *)
+     __LOC__, (fun _ -> Eq(Int64.to_float Int64.max_int, 9.22337203685477581e+18))
    ]     
+(*   
+  Undefined behaviorJ
+
+  (* Note in ocaml [Int64.of_float] is weird
+   {[
+     Int64.of_float 2.e65;;
+     - : int64 = -9223372036854775808L
+   ]}
+
+
+   {[
+     Int64.of_float (Int64.to_float (Int64.sub Int64.max_int 1L));;
+     - : int64 = -9223372036854775808L
+   ]}
+   both overflow
+*)
+*)

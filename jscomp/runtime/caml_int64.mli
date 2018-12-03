@@ -71,11 +71,18 @@ val of_float : float -> t
 val div : t -> t -> t
 val mod_ : t -> t -> t
 
-val div_mod :  t -> t -> t * t 
-val compare : t -> t -> int
-val to_hex : t -> string
 
-val discard_sign : t -> t 
+val compare : t -> t -> int
+
+
+
 val float_of_bits : t -> float 
 val bits_of_float : float -> t 
 val get64 : string -> int -> t
+
+
+external unsafe_to_int64 : t -> int64 = "%identity"           
+external unsafe_of_int64 : int64 -> t = "%identity"
+val div_mod :  int64 -> int64 -> int64 * int64
+val to_hex : int64 -> string
+val discard_sign : int64 -> int64 

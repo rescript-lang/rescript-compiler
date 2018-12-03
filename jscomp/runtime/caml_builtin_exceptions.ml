@@ -46,18 +46,18 @@ let assert_failure =  "Assert_failure", -10n
 let undefined_recursive_module =  "Undefined_recursive_module", -11n
 
 let () =
-    Bs_obj.set_tag (Obj.repr out_of_memory ) object_tag;
-    Bs_obj.set_tag (Obj.repr sys_error) object_tag;
-    Bs_obj.set_tag (Obj.repr failure) object_tag;
-    Bs_obj.set_tag (Obj.repr invalid_argument) object_tag;
-    Bs_obj.set_tag (Obj.repr end_of_file) object_tag;
-    Bs_obj.set_tag (Obj.repr division_by_zero) object_tag;
-    Bs_obj.set_tag (Obj.repr not_found) object_tag ; 
-    Bs_obj.set_tag (Obj.repr match_failure) object_tag;
-    Bs_obj.set_tag (Obj.repr stack_overflow) object_tag;
-    Bs_obj.set_tag (Obj.repr sys_blocked_io) object_tag;
-    Bs_obj.set_tag (Obj.repr assert_failure) object_tag;
-    Bs_obj.set_tag (Obj.repr undefined_recursive_module) object_tag
+    Caml_obj_extern.set_tag (Caml_obj_extern.repr out_of_memory ) object_tag;
+    Caml_obj_extern.set_tag (Caml_obj_extern.repr sys_error) object_tag;
+    Caml_obj_extern.set_tag (Caml_obj_extern.repr failure) object_tag;
+    Caml_obj_extern.set_tag (Caml_obj_extern.repr invalid_argument) object_tag;
+    Caml_obj_extern.set_tag (Caml_obj_extern.repr end_of_file) object_tag;
+    Caml_obj_extern.set_tag (Caml_obj_extern.repr division_by_zero) object_tag;
+    Caml_obj_extern.set_tag (Caml_obj_extern.repr not_found) object_tag ; 
+    Caml_obj_extern.set_tag (Caml_obj_extern.repr match_failure) object_tag;
+    Caml_obj_extern.set_tag (Caml_obj_extern.repr stack_overflow) object_tag;
+    Caml_obj_extern.set_tag (Caml_obj_extern.repr sys_blocked_io) object_tag;
+    Caml_obj_extern.set_tag (Caml_obj_extern.repr assert_failure) object_tag;
+    Caml_obj_extern.set_tag (Caml_obj_extern.repr undefined_recursive_module) object_tag
 
 (**: 
    1. Is it necessary to tag [248] here

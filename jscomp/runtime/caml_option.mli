@@ -23,6 +23,16 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-(** *)
+val nullable_to_opt : 'a Js.null_undefined -> 'a option
 
-external to_string : nativeint -> string = "String" [@@bs.val]
+val undefined_to_opt : 'a Js.undefined -> 'a option 
+
+val null_to_opt : 'a Js.null -> 'a option
+
+val valFromOption : Caml_obj_extern.t -> Caml_obj_extern.t 
+
+val some : Caml_obj_extern.t -> Caml_obj_extern.t 
+
+val option_get : Caml_obj_extern.t option -> Caml_obj_extern.t Caml_undefined_extern.t 
+
+val option_get_unwrap : 'a option -> Caml_obj_extern.t Caml_undefined_extern.t

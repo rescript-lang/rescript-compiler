@@ -144,3 +144,6 @@ external somei : ('a  -> int -> bool [@bs.uncurry]) -> bool = "some" [@@bs.send.
 (* commented out until bs has a plan for iterators
 external values : 'a array_iter = "" [@@bs.send.pipe: 'a t as 'this] (** ES2015 *)
 *)
+external unsafe_get : 'a array -> int -> 'a = "%array_unsafe_get"
+external unsafe_set : 'a array -> int -> 'a -> unit = "%array_unsafe_set"
+

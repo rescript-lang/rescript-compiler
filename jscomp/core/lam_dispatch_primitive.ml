@@ -296,13 +296,7 @@ let translate loc (prim_name : string)
     | "caml_int64_of_float"
       -> Js_long.of_float args
     | "caml_int64_compare"
-      -> Js_long.compare args 
-    | "js_int64_discard_sign"
-      -> Js_long.discard_sign args
-    | "js_int64_div_mod"
-      -> Js_long.div_mod args
-    | "js_int64_to_hex"
-      -> Js_long.to_hex args    
+      -> Js_long.compare args     
     | "caml_int64_bits_of_float"
       -> Js_long.bits_of_float args     
     | "caml_int64_float_of_bits"
@@ -477,11 +471,19 @@ let translate loc (prim_name : string)
           Also, it's creating a [bytes] which is a js array actually.
       *)
       begin match args with
-        | [{expression_desc = Number (Int {i = 0l; _}); _}] 
+        | [{expression_desc = Number (Int {i; _}); _}] 
+          when i < 8l
           ->
-          E.array NA []
+          (*Invariants: assuming bytes are [int array]*)
+          E.array NA 
+            (if i = 0l then []
+            else 
+            Ext_list.init 
+              (Int32.to_int i)
+              (fun i -> E.zero_int_literal)
+            )
         | _ -> 
-          E.runtime_call Js_runtime_modules.string 
+          E.runtime_call Js_runtime_modules.bytes
             "caml_create_bytes" args
       end
     | "caml_bool_compare" ->   
@@ -537,16 +539,19 @@ let translate loc (prim_name : string)
     | "caml_fill_bytes"
       -> 
         E.runtime_call 
-          Js_runtime_modules.string "caml_fill_bytes" args
+          Js_runtime_modules.bytes "caml_fill_bytes" args
+    | "caml_is_printable" 
+      -> 
+      call Js_runtime_modules.char
     | "caml_string_get"    
-    | "string_of_bytes"
+      -> 
+        call Js_runtime_modules.string
+    | "bytes_to_string"
     | "bytes_of_string"
-    | "caml_is_printable"
-    | "caml_string_of_char_array"    
     | "caml_blit_string" 
     | "caml_blit_bytes"
       -> 
-      call Js_runtime_modules.string
+      call Js_runtime_modules.bytes
 
     | "caml_register_named_value" -> 
       (**
@@ -656,11 +661,8 @@ let translate loc (prim_name : string)
       call Js_runtime_modules.array
     | "caml_ml_flush"
     | "caml_ml_out_channels_list"
-    | "caml_ml_open_descriptor_in" 
-    | "caml_ml_open_descriptor_out"
     | "caml_ml_output_char"
     | "caml_ml_output" 
-    | "caml_ml_input_char"
       -> 
       call Js_runtime_modules.io
 

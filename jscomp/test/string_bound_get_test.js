@@ -15,7 +15,7 @@ function u_d(param) {
   return Caml_string.get("ghos", -1);
 }
 
-var u_e = Caml_string.caml_create_bytes(32);
+var u_e = Caml_bytes.caml_create_bytes(32);
 
 var u_f = Caml_bytes.get(u_e, 0);
 

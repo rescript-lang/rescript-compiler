@@ -1,7 +1,7 @@
 'use strict';
 
 var Js_exn = require("../../lib/js/js_exn.js");
-var Js_primitive = require("../../lib/js/js_primitive.js");
+var Caml_option = require("../../lib/js/caml_option.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 function test_js_error(param) {
@@ -21,7 +21,7 @@ function test_js_error(param) {
     }
   }
   if (exit === 1) {
-    return Js_primitive.some(e);
+    return Caml_option.some(e);
   }
   
 }
@@ -58,14 +58,14 @@ function example1(param) {
     }
   }
   if (exit === 1) {
-    return Js_primitive.some(v);
+    return Caml_option.some(v);
   }
   
 }
 
 function example2(param) {
   try {
-    return Js_primitive.some(JSON.parse(" {\"x\"}"));
+    return Caml_option.some(JSON.parse(" {\"x\"}"));
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);

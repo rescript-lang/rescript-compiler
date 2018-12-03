@@ -3,7 +3,8 @@
 var List = require("../../lib/js/list.js");
 var $$Array = require("../../lib/js/array.js");
 var Curry = require("../../lib/js/curry.js");
-var Js_primitive = require("../../lib/js/js_primitive.js");
+var Caml_option = require("../../lib/js/caml_option.js");
+var Ext_string_test = require("./ext_string_test.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function filter_map(f, _xs) {
@@ -14,7 +15,7 @@ function filter_map(f, _xs) {
       var match = Curry._1(f, xs[0]);
       if (match !== undefined) {
         return /* :: */[
-                Js_primitive.valFromOption(match),
+                Caml_option.valFromOption(match),
                 filter_map(f, ys)
               ];
       } else {
@@ -77,7 +78,7 @@ function exclude_with_fact(p, l) {
         var l = param[1];
         var x = param[0];
         if (Curry._1(p, x)) {
-          excluded[0] = Js_primitive.some(x);
+          excluded[0] = Caml_option.some(x);
           _param = l;
           continue ;
         } else {
@@ -111,11 +112,11 @@ function exclude_with_fact2(p1, p2, l) {
         var l = param[1];
         var x = param[0];
         if (Curry._1(p1, x)) {
-          excluded1[0] = Js_primitive.some(x);
+          excluded1[0] = Caml_option.some(x);
           _param = l;
           continue ;
         } else if (Curry._1(p2, x)) {
-          excluded2[0] = Js_primitive.some(x);
+          excluded2[0] = Caml_option.some(x);
           _param = l;
           continue ;
         } else {
@@ -169,7 +170,7 @@ function filter_mapi(f, xs) {
         var match = Curry._2(f, i, xs[0]);
         if (match !== undefined) {
           return /* :: */[
-                  Js_primitive.valFromOption(match),
+                  Caml_option.valFromOption(match),
                   aux(i + 1 | 0, ys)
                 ];
         } else {
@@ -196,7 +197,7 @@ function filter_map2(f, _xs, _ys) {
         var match = Curry._2(f, xs[0], ys[0]);
         if (match !== undefined) {
           return /* :: */[
-                  Js_primitive.valFromOption(match),
+                  Caml_option.valFromOption(match),
                   filter_map2(f, us, vs)
                 ];
         } else {
@@ -234,7 +235,7 @@ function filter_map2i(f, xs, ys) {
           var match = Curry._3(f, i, xs[0], ys[0]);
           if (match !== undefined) {
             return /* :: */[
-                    Js_primitive.valFromOption(match),
+                    Caml_option.valFromOption(match),
                     aux(i + 1 | 0, us, vs)
                   ];
           } else {
@@ -619,7 +620,7 @@ function find_first_not(p, _param) {
         _param = param[1];
         continue ;
       } else {
-        return Js_primitive.some(a);
+        return Caml_option.some(a);
       }
     } else {
       return undefined;
@@ -715,7 +716,7 @@ function find_no_exn(p, _param) {
     if (param) {
       var x = param[0];
       if (Curry._1(p, x)) {
-        return Js_primitive.some(x);
+        return Caml_option.some(x);
       } else {
         _param = param[1];
         continue ;
@@ -912,7 +913,7 @@ function assoc_by_string(def, k, _lst) {
         continue ;
       }
     } else if (def !== undefined) {
-      return Js_primitive.valFromOption(def);
+      return Caml_option.valFromOption(def);
     } else {
       throw [
             Caml_builtin_exceptions.assert_failure,
@@ -938,7 +939,7 @@ function assoc_by_int(def, k, _lst) {
         continue ;
       }
     } else if (def !== undefined) {
-      return Js_primitive.valFromOption(def);
+      return Caml_option.valFromOption(def);
     } else {
       throw [
             Caml_builtin_exceptions.assert_failure,
@@ -1000,4 +1001,4 @@ exports.sort_via_array = sort_via_array;
 exports.last = last;
 exports.assoc_by_string = assoc_by_string;
 exports.assoc_by_int = assoc_by_int;
-/* No side effect */
+/* Ext_string_test Not a pure module */

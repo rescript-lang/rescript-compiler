@@ -4,6 +4,7 @@ var List = require("../../lib/js/list.js");
 var Bytes = require("../../lib/js/bytes.js");
 var Curry = require("../../lib/js/curry.js");
 var $$String = require("../../lib/js/string.js");
+var Caml_bytes = require("../../lib/js/caml_bytes.js");
 var Caml_int32 = require("../../lib/js/caml_int32.js");
 var Caml_string = require("../../lib/js/caml_string.js");
 var Ext_bytes_test = require("./ext_bytes_test.js");
@@ -203,7 +204,7 @@ function escaped(s) {
     };
   };
   if (needs_escape(0)) {
-    return Caml_string.bytes_to_string(Ext_bytes_test.escaped(Caml_string.bytes_of_string(s)));
+    return Caml_bytes.bytes_to_string(Ext_bytes_test.escaped(Caml_bytes.bytes_of_string(s)));
   } else {
     return s;
   }
@@ -245,7 +246,7 @@ function is_empty(s) {
 
 function repeat(n, s) {
   var len = s.length;
-  var res = Caml_string.caml_create_bytes(Caml_int32.imul(n, len));
+  var res = Caml_bytes.caml_create_bytes(Caml_int32.imul(n, len));
   for(var i = 0 ,i_finish = n - 1 | 0; i <= i_finish; ++i){
     $$String.blit(s, 0, res, Caml_int32.imul(i, len), len);
   }
@@ -403,20 +404,20 @@ function equal(x, y) {
 function unsafe_concat_with_length(len, sep, l) {
   if (l) {
     var hd = l[0];
-    var r = Caml_string.caml_create_bytes(len);
+    var r = Caml_bytes.caml_create_bytes(len);
     var hd_len = hd.length;
     var sep_len = sep.length;
-    Caml_string.caml_blit_string(hd, 0, r, 0, hd_len);
+    Caml_bytes.caml_blit_string(hd, 0, r, 0, hd_len);
     var pos = /* record */[/* contents */hd_len];
     List.iter((function (s) {
             var s_len = s.length;
-            Caml_string.caml_blit_string(sep, 0, r, pos[0], sep_len);
+            Caml_bytes.caml_blit_string(sep, 0, r, pos[0], sep_len);
             pos[0] = pos[0] + sep_len | 0;
-            Caml_string.caml_blit_string(s, 0, r, pos[0], s_len);
+            Caml_bytes.caml_blit_string(s, 0, r, pos[0], s_len);
             pos[0] = pos[0] + s_len | 0;
             return /* () */0;
           }), l[1]);
-    return Caml_string.bytes_to_string(r);
+    return Caml_bytes.bytes_to_string(r);
   } else {
     return "";
   }
@@ -647,20 +648,20 @@ function concat_array(sep, s) {
       for(var i = 0 ,i_finish = s_len - 1 | 0; i <= i_finish; ++i){
         len = len + s[i].length | 0;
       }
-      var target = Caml_string.caml_create_bytes(len + Caml_int32.imul(s_len - 1 | 0, sep_len) | 0);
+      var target = Caml_bytes.caml_create_bytes(len + Caml_int32.imul(s_len - 1 | 0, sep_len) | 0);
       var hd = s[0];
       var hd_len = hd.length;
-      Caml_string.caml_blit_string(hd, 0, target, 0, hd_len);
+      Caml_bytes.caml_blit_string(hd, 0, target, 0, hd_len);
       var current_offset = hd_len;
       for(var i$1 = 1 ,i_finish$1 = s_len - 1 | 0; i$1 <= i_finish$1; ++i$1){
-        Caml_string.caml_blit_string(sep, 0, target, current_offset, sep_len);
+        Caml_bytes.caml_blit_string(sep, 0, target, current_offset, sep_len);
         var cur = s[i$1];
         var cur_len = cur.length;
         var new_off_set = current_offset + sep_len | 0;
-        Caml_string.caml_blit_string(cur, 0, target, new_off_set, cur_len);
+        Caml_bytes.caml_blit_string(cur, 0, target, new_off_set, cur_len);
         current_offset = new_off_set + cur_len | 0;
       }
-      return Caml_string.bytes_to_string(target);
+      return Caml_bytes.bytes_to_string(target);
     } else {
       return s[0];
     }
@@ -674,11 +675,11 @@ function concat3(a, b, c) {
   var b_len = b.length;
   var c_len = c.length;
   var len = (a_len + b_len | 0) + c_len | 0;
-  var target = Caml_string.caml_create_bytes(len);
-  Caml_string.caml_blit_string(a, 0, target, 0, a_len);
-  Caml_string.caml_blit_string(b, 0, target, a_len, b_len);
-  Caml_string.caml_blit_string(c, 0, target, a_len + b_len | 0, c_len);
-  return Caml_string.bytes_to_string(target);
+  var target = Caml_bytes.caml_create_bytes(len);
+  Caml_bytes.caml_blit_string(a, 0, target, 0, a_len);
+  Caml_bytes.caml_blit_string(b, 0, target, a_len, b_len);
+  Caml_bytes.caml_blit_string(c, 0, target, a_len + b_len | 0, c_len);
+  return Caml_bytes.bytes_to_string(target);
 }
 
 function concat4(a, b, c, d) {
@@ -687,12 +688,12 @@ function concat4(a, b, c, d) {
   var c_len = c.length;
   var d_len = d.length;
   var len = ((a_len + b_len | 0) + c_len | 0) + d_len | 0;
-  var target = Caml_string.caml_create_bytes(len);
-  Caml_string.caml_blit_string(a, 0, target, 0, a_len);
-  Caml_string.caml_blit_string(b, 0, target, a_len, b_len);
-  Caml_string.caml_blit_string(c, 0, target, a_len + b_len | 0, c_len);
-  Caml_string.caml_blit_string(d, 0, target, (a_len + b_len | 0) + c_len | 0, d_len);
-  return Caml_string.bytes_to_string(target);
+  var target = Caml_bytes.caml_create_bytes(len);
+  Caml_bytes.caml_blit_string(a, 0, target, 0, a_len);
+  Caml_bytes.caml_blit_string(b, 0, target, a_len, b_len);
+  Caml_bytes.caml_blit_string(c, 0, target, a_len + b_len | 0, c_len);
+  Caml_bytes.caml_blit_string(d, 0, target, (a_len + b_len | 0) + c_len | 0, d_len);
+  return Caml_bytes.bytes_to_string(target);
 }
 
 function concat5(a, b, c, d, e) {
@@ -702,13 +703,13 @@ function concat5(a, b, c, d, e) {
   var d_len = d.length;
   var e_len = e.length;
   var len = (((a_len + b_len | 0) + c_len | 0) + d_len | 0) + e_len | 0;
-  var target = Caml_string.caml_create_bytes(len);
-  Caml_string.caml_blit_string(a, 0, target, 0, a_len);
-  Caml_string.caml_blit_string(b, 0, target, a_len, b_len);
-  Caml_string.caml_blit_string(c, 0, target, a_len + b_len | 0, c_len);
-  Caml_string.caml_blit_string(d, 0, target, (a_len + b_len | 0) + c_len | 0, d_len);
-  Caml_string.caml_blit_string(e, 0, target, ((a_len + b_len | 0) + c_len | 0) + d_len | 0, e_len);
-  return Caml_string.bytes_to_string(target);
+  var target = Caml_bytes.caml_create_bytes(len);
+  Caml_bytes.caml_blit_string(a, 0, target, 0, a_len);
+  Caml_bytes.caml_blit_string(b, 0, target, a_len, b_len);
+  Caml_bytes.caml_blit_string(c, 0, target, a_len + b_len | 0, c_len);
+  Caml_bytes.caml_blit_string(d, 0, target, (a_len + b_len | 0) + c_len | 0, d_len);
+  Caml_bytes.caml_blit_string(e, 0, target, ((a_len + b_len | 0) + c_len | 0) + d_len | 0, e_len);
+  return Caml_bytes.bytes_to_string(target);
 }
 
 function inter2(a, b) {
@@ -793,4 +794,4 @@ exports.inter3 = inter3;
 exports.inter4 = inter4;
 exports.parent_dir_lit = parent_dir_lit;
 exports.current_dir_lit = current_dir_lit;
-/* No side effect */
+/* Ext_bytes_test Not a pure module */

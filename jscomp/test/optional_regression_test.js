@@ -1,7 +1,7 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Js_primitive = require("../../lib/js/js_primitive.js");
+var Caml_option = require("../../lib/js/caml_option.js");
 
 var suites = /* record */[/* contents : [] */0];
 
@@ -15,13 +15,13 @@ function make(s, b, i) {
   return (function (param) {
       var tmp = { };
       if (s !== undefined) {
-        tmp.s = Js_primitive.valFromOption(s);
+        tmp.s = Caml_option.valFromOption(s);
       }
       if (b !== undefined) {
-        tmp.b = Js_primitive.valFromOption(b);
+        tmp.b = Caml_option.valFromOption(b);
       }
       if (i !== undefined) {
-        tmp.i = Js_primitive.valFromOption(i);
+        tmp.i = Caml_option.valFromOption(i);
       }
       return tmp;
     });
@@ -29,11 +29,11 @@ function make(s, b, i) {
 
 var hh = make("", false, 0)(/* () */0);
 
-eq("File \"optional_regression_test.ml\", line 21, characters 6-13", Js_primitive.undefined_to_opt(hh.s), "");
+eq("File \"optional_regression_test.ml\", line 21, characters 6-13", Caml_option.undefined_to_opt(hh.s), "");
 
-eq("File \"optional_regression_test.ml\", line 22, characters 6-13", Js_primitive.undefined_to_opt(hh.b), false);
+eq("File \"optional_regression_test.ml\", line 22, characters 6-13", Caml_option.undefined_to_opt(hh.b), false);
 
-eq("File \"optional_regression_test.ml\", line 23, characters 6-13", Js_primitive.undefined_to_opt(hh.i), 0);
+eq("File \"optional_regression_test.ml\", line 23, characters 6-13", Caml_option.undefined_to_opt(hh.i), 0);
 
 console.log(hh);
 

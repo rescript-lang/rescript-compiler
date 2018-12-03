@@ -33,8 +33,6 @@ external floor : float -> float = "Math.floor" [@@bs.val]
 external exp : float -> float =  "exp" [@@bs.val] [@@bs.scope "Math"]
 external log : float -> float = "Math.log" [@@bs.val]
 external sqrt : float -> float =  "sqrt" [@@bs.val] [@@bs.scope "Math"] 
-external max_float : float -> float -> float = "Math.max" [@@bs.val]
-external min_float : float -> float -> float = "Math.min" [@@bs.val]
 external pow_float : base:float -> exp:float -> float = "Math.pow" [@@bs.val]
 external int_of_float : float -> int = "%intoffloat"
 external float_of_int : int -> float = "%floatofint"
@@ -54,7 +52,7 @@ let caml_int32_bits_of_float : float -> int32 = fun%raw x -> {|
 
 
 let caml_modf_float (x : float) : float * float =
-  if FloatRT.isFinite x then
+  if Caml_float_extern.isFinite x then
     let neg = 1. /. x < 0. in
     let x = abs_float x  in
     let i = floor x in
@@ -62,7 +60,7 @@ let caml_modf_float (x : float) : float * float =
     if neg then
       -. f, -. i
     else f, i
-  else if FloatRT.isNaN x then FloatRT._NaN, FloatRT._NaN
+  else if Caml_float_extern.isNaN x then Caml_float_extern._NaN, Caml_float_extern._NaN
   else (1. /. x , x)
 
 let caml_ldexp_float (x: float) (exp: int) : float =
@@ -83,7 +81,7 @@ let caml_ldexp_float (x: float) (exp: int) : float =
 
 
 let caml_frexp_float (x: float): float * int =
-  if x = 0. || not  (FloatRT.isFinite x) then
+  if x = 0. || not  (Caml_float_extern.isFinite x) then
     (x, 0)
   else begin
     let neg = x < 0. in
@@ -124,8 +122,8 @@ let caml_log1p_float : float -> float = function x ->
 
 let caml_hypot_float (x: float) (y: float): float =
   let x0, y0 = abs_float x, abs_float y in
-  let a = max_float x0 y0 in
-  let b = min_float x0 y0 /. if a <> 0. then a else 1. in
+  let a = Pervasives.max x0 y0 in
+  let b = Pervasives.min x0 y0 /. if a <> 0. then a else 1. in
   a *. sqrt (1. +. b *. b)
 
 

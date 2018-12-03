@@ -15,8 +15,8 @@ var Caml_array = require("../../lib/js/caml_array.js");
 var Caml_bytes = require("../../lib/js/caml_bytes.js");
 var Caml_int32 = require("../../lib/js/caml_int32.js");
 var Pervasives = require("../../lib/js/pervasives.js");
+var Caml_option = require("../../lib/js/caml_option.js");
 var Caml_string = require("../../lib/js/caml_string.js");
-var Js_primitive = require("../../lib/js/js_primitive.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
@@ -276,7 +276,7 @@ function one_char(param) {
     var match = param[0];
     var i = match[0];
     if (Caml_obj.caml_equal(i, match[1])) {
-      return Js_primitive.some(i);
+      return Caml_option.some(i);
     } else {
       return undefined;
     }
@@ -1873,8 +1873,8 @@ function colorize(c, regexp) {
 }
 
 function flatten_cmap(cm) {
-  var c = Caml_string.caml_create_bytes(256);
-  var col_repr = Caml_string.caml_create_bytes(256);
+  var c = Caml_bytes.caml_create_bytes(256);
+  var col_repr = Caml_bytes.caml_create_bytes(256);
   var v = 0;
   c[0] = /* "\000" */0;
   col_repr[0] = /* "\000" */0;
@@ -3796,7 +3796,7 @@ function exec(rex, pos, s) {
   }
 }
 
-var s = Caml_string.bytes_to_string(Bytes.make(1048575, /* "a" */97)) + "b";
+var s = Caml_bytes.bytes_to_string(Bytes.make(1048575, /* "a" */97)) + "b";
 
 eq("File \"xx.ml\", line 7, characters 3-10", get(exec(regexp(undefined, "aa?b"), undefined, s), 0), "aab");
 

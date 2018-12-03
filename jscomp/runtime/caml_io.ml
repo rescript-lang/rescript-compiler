@@ -24,15 +24,9 @@
 
 
 
-type in_channel
 
 
-(** *)
-
-let (^) = Bs_string.append
-let stdin = UndefinedRT.empty
-
-let stderr = UndefinedRT.empty
+let stderr = Caml_undefined_extern.empty
 
 type out_channel  = {
   mutable buffer :  string;
@@ -42,28 +36,38 @@ type out_channel  = {
 let stdout = {
   buffer = "";
   output = (fun _ s ->
-    let v =Bs_string.length s - 1 in
+    let module String = Caml_string_extern in
+    let v =Caml_string_extern.length s - 1 in
     if [%bs.raw{| (typeof process !== "undefined") && process.stdout && process.stdout.write|}] then
       ([%bs.raw{| process.stdout.write |} ] : string -> unit [@bs]) s [@bs]
     else
     if s.[v] = '\n' then
-      Js.log (Bs_string.slice s 0 v)
+      Js.log (Caml_string_extern.slice s 0 v)
     else Js.log s)
 }
 
 let stderr = {
   buffer = "";
   output = fun _ s ->
-    let v =Bs_string.length s - 1 in     
+    let module String = Caml_string_extern in
+    let v =Caml_string_extern.length s - 1 in     
     if s.[v] = '\n' then
-      Js.log (Bs_string.slice s 0 v) (* TODO: change to Js.error*)
+      Js.log (Caml_string_extern.slice s 0 v) (* TODO: change to Js.error*)
     else Js.log s        
 }
+#if 0 then
+type in_channel
 
 let caml_ml_open_descriptor_in (i : int) : in_channel = 
   raise (Failure "caml_ml_open_descriptor_in not implemented")  
 let caml_ml_open_descriptor_out (i : int)  : out_channel = 
   raise (Failure "caml_ml_open_descriptor_out not implemented")
+let caml_ml_input (ic : in_channel) (bytes : bytes) offset len : int = 
+  raise (Failure  "caml_ml_input ic not implemented")
+let caml_ml_input_char (ic : in_channel) : char = 
+  raise  (Failure "caml_ml_input_char not implemnted")   
+  
+#end
 
 (*TODO: we need flush all buffers in the end *)
 let caml_ml_flush (oc : out_channel)  : unit = 
@@ -73,17 +77,17 @@ let caml_ml_flush (oc : out_channel)  : unit =
       oc.buffer <- ""      
     end      
 
-let node_std_output  : string -> bool = [%bs.raw{|function (s){
+let node_std_output  : string -> bool = fun%raw s -> {|
    return (typeof process !== "undefined") && process.stdout && (process.stdout.write(s), true);
-   }
-|}]
+|}
+
 
 (** note we need provide both [bytes] and [string] version 
 *)
 let caml_ml_output (oc : out_channel) (str : string) offset len  =
   let str =
-    if offset = 0 && len =Bs_string.length str then str    
-    else Bs_string.slice str offset len in
+    if offset = 0 && len =Caml_string_extern.length str then str    
+    else Caml_string_extern.slice str offset len in
   if [%bs.raw{| (typeof process !== "undefined") && process.stdout && process.stdout.write |}] &&
      oc == stdout then
     ([%bs.raw{| process.stdout.write |}] : string -> unit [@bs] ) str [@bs]
@@ -91,25 +95,20 @@ let caml_ml_output (oc : out_channel) (str : string) offset len  =
   else
     begin     
 
-      let id = Bs_string.lastIndexOf str "\n" in
+      let id = Caml_string_extern.lastIndexOf str "\n" in
       if id < 0 then
         oc.buffer <- oc.buffer ^ str
       else
         begin 
-          oc.buffer <- oc.buffer ^ Bs_string.slice str 0 (id +1);
+          oc.buffer <- oc.buffer ^ Caml_string_extern.slice str 0 (id +1);
           caml_ml_flush oc;
-          oc.buffer <- oc.buffer ^ Bs_string.slice_rest str (id + 1)
+          oc.buffer <- oc.buffer ^ Caml_string_extern.slice_rest str (id + 1)
         end
     end      
 
 let caml_ml_output_char (oc : out_channel)  (char : char) : unit =
-  caml_ml_output oc (Bs_string.of_char char) 0 1 
+  caml_ml_output oc (Caml_string_extern.of_char char) 0 1 
 
-let caml_ml_input (ic : in_channel) (bytes : bytes) offset len : int = 
-  raise (Failure  "caml_ml_input ic not implemented")
-
-let caml_ml_input_char (ic : in_channel) : char = 
-  raise  (Failure "caml_ml_input_char not implemnted")
 
 let caml_ml_out_channels_list () : out_channel list  =
   [stdout; stderr]  

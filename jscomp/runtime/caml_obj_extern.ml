@@ -24,21 +24,20 @@
 
 (** *)
 
-type any = Obj.t
+type t 
+external tag : t -> int = "caml_obj_tag" 
+external repr : 'a -> t = "%identity"
+external field : t -> int -> t = "%obj_field"
+external set_field : t -> int -> t -> unit = "%obj_set_field"
 
-external set_length : any -> int -> unit = "length" [@@bs.set]
-external length : any -> int = "#obj_length"
-
-(** The same as {!Obj.tag} *)
-external tag : any -> int = "caml_obj_tag"
+external set_length : t -> int -> unit = "length" [@@bs.set]
+external length : t -> int = "#obj_length"
 
 (** The same as {!Obj.set_tag} *)
-external set_tag : any -> int -> unit = "tag" [@@bs.set]
+external set_tag : t -> int -> unit = "tag" [@@bs.set]
 
-external size_of_any : any -> 'a Js.undefined =
+external size_of_t : t -> 'a Js.undefined =
   "length" [@@bs.get]
 
-external tag_of_any : any -> 'a Js.undefined =
-  "tag" [@@bs.get]
 
 external magic : 'a -> 'b = "%identity"

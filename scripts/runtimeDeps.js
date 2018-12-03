@@ -37,7 +37,7 @@ function replaceCmj(x){
     return x.trim().replace('cmx','cmj')
 }
 
-function runOCamlDep() {
+function runOCamlDep() {    
     var pairs = cp.execSync(`ocamldep.opt -one-line -native ${mlFiles.join(' ')} ${mliFiles.join(' ')}`, { cwd: runtimeDir, encoding: 'utf8' }).split('\n').map(x => x.split(':'))
 
     pairs.forEach(x => {
@@ -101,20 +101,36 @@ function toDeps(){
     }
     return output.join('\n')
 }
+var compiler = "../../lib/bsc.exe"
 
 function create(){    
+    var allTargets = new Set()
     mliFiles.forEach(x=>{
-        updateMapMany(baseName(x)+".cmi",["js.cmi","bs_stdlib_mini.cmi"])
+        var base = baseName(x)
+        updateMapMany( base +".cmi",["js.cmi","bs_stdlib_mini.cmi"])
+        allTargets.add(base + ".cmi")
     })
     mlFiles.forEach(x=>{
-        updateMapMany(baseName(x)+".cmj",["js.cmj","js.cmi","bs_stdlib_mini.cmi"])
+        var base = baseName(x)
+        updateMapMany( base +".cmj",["js.cmj","js.cmi","bs_stdlib_mini.cmi"])
+        allTargets.add(base + ".cmj")
+    })
+    allTargets.add("js.cmj")
+    allTargets.add("js.cmi")
+    updateMapMany("all", [...allTargets])
+    allTargets.forEach(x=>{
+        updateMapSingle(x,compiler)
     })
     updateMapSingle("js.cmj", "js.cmi")
     updateMapSingle("js.cmi","bs_stdlib_mini.cmi")
-    runJSCheck()    
-    runOCamlDep()    
-    var output = toDeps()
-    fs.writeFileSync(path.join(runtimeDir,'.depend'),output,'utf8')
+    try {
+        runJSCheck()
+        runOCamlDep()
+        var output = toDeps()
+        fs.writeFileSync(path.join(runtimeDir, '.depend'), output, 'utf8')
+    } catch (e) {
+        console.log(e)
+    }
 }
 
 if (require.main === module){

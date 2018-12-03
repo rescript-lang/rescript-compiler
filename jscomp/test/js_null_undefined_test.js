@@ -2,7 +2,7 @@
 
 var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
-var Js_primitive = require("../../lib/js/js_primitive.js");
+var Caml_option = require("../../lib/js/caml_option.js");
 var Js_null_undefined = require("../../lib/js/js_null_undefined.js");
 
 var suites_000 = /* tuple */[
@@ -41,7 +41,7 @@ var suites_001 = /* :: */[
         (function (param) {
             return /* Eq */Block.__(0, [
                       "foo",
-                      Js_primitive.nullable_to_opt("foo")
+                      Caml_option.nullable_to_opt("foo")
                     ]);
           })
       ],
@@ -51,7 +51,7 @@ var suites_001 = /* :: */[
           (function (param) {
               return /* Eq */Block.__(0, [
                         "something",
-                        Js_primitive.nullable_to_opt("something")
+                        Caml_option.nullable_to_opt("something")
                       ]);
             })
         ],

@@ -6,7 +6,7 @@ var Block = require("../../lib/js/block.js");
 var Js_dict = require("../../lib/js/js_dict.js");
 var Js_json = require("../../lib/js/js_json.js");
 var Caml_array = require("../../lib/js/caml_array.js");
-var Js_primitive = require("../../lib/js/js_primitive.js");
+var Caml_option = require("../../lib/js/caml_option.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var suites = /* record */[/* contents : [] */0];
@@ -56,7 +56,7 @@ add_test("File \"js_json_test.ml\", line 23, characters 11-18", (function (param
         } else {
           var match = Js_dict.get(ty[0], "x");
           if (match !== undefined) {
-            var ty2 = Js_json.classify(Js_primitive.valFromOption(match));
+            var ty2 = Js_json.classify(Caml_option.valFromOption(match));
             if (typeof ty2 === "number" || ty2.tag !== 3) {
               return /* Ok */Block.__(4, [false]);
             } else {
@@ -196,7 +196,7 @@ test(false);
 
 function option_get(param) {
   if (param !== undefined) {
-    return Js_primitive.valFromOption(param);
+    return Caml_option.valFromOption(param);
   } else {
     throw [
           Caml_builtin_exceptions.assert_failure,
@@ -496,13 +496,13 @@ catch (exn){
         }));
 }
 
-eq("File \"js_json_test.ml\", line 295, characters 12-19", Js_primitive.undefined_to_opt(JSON.stringify(/* array */[
+eq("File \"js_json_test.ml\", line 295, characters 12-19", Caml_option.undefined_to_opt(JSON.stringify(/* array */[
               1,
               2,
               3
             ])), "[1,2,3]");
 
-eq("File \"js_json_test.ml\", line 299, characters 2-9", Js_primitive.undefined_to_opt(JSON.stringify({
+eq("File \"js_json_test.ml\", line 299, characters 2-9", Caml_option.undefined_to_opt(JSON.stringify({
               foo: 1,
               bar: "hello",
               baz: {
@@ -510,9 +510,9 @@ eq("File \"js_json_test.ml\", line 299, characters 2-9", Js_primitive.undefined_
               }
             })), "{\"foo\":1,\"bar\":\"hello\",\"baz\":{\"baaz\":10}}");
 
-eq("File \"js_json_test.ml\", line 303, characters 12-19", Js_primitive.undefined_to_opt(JSON.stringify(null)), "null");
+eq("File \"js_json_test.ml\", line 303, characters 12-19", Caml_option.undefined_to_opt(JSON.stringify(null)), "null");
 
-eq("File \"js_json_test.ml\", line 305, characters 12-19", Js_primitive.undefined_to_opt(JSON.stringify(undefined)), undefined);
+eq("File \"js_json_test.ml\", line 305, characters 12-19", Caml_option.undefined_to_opt(JSON.stringify(undefined)), undefined);
 
 eq("File \"js_json_test.ml\", line 308, characters 5-12", Js_json.decodeString("test"), "test");
 

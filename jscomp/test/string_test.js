@@ -5,7 +5,7 @@ var List = require("../../lib/js/list.js");
 var Block = require("../../lib/js/block.js");
 var Bytes = require("../../lib/js/bytes.js");
 var $$String = require("../../lib/js/string.js");
-var Caml_string = require("../../lib/js/caml_string.js");
+var Caml_bytes = require("../../lib/js/caml_bytes.js");
 var Ext_string_test = require("./ext_string_test.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
@@ -329,7 +329,7 @@ Mt.from_pair_suites("string_test.ml", /* :: */[
                                         (function (param) {
                                             return /* Eq */Block.__(0, [
                                                       String.fromCharCode(/* "0" */48),
-                                                      Caml_string.bytes_to_string(Bytes.make(1, /* "0" */48))
+                                                      Caml_bytes.bytes_to_string(Bytes.make(1, /* "0" */48))
                                                     ]);
                                           })
                                       ],
