@@ -112,16 +112,16 @@ function create(){
     })
     mlFiles.forEach(x=>{
         var base = baseName(x)
-        updateMapMany( base +".cmj",["js.cmj","js.cmi","bs_stdlib_mini.cmi"])
+        updateMapMany( base +".cmj",["js.cmi","bs_stdlib_mini.cmi"])
         allTargets.add(base + ".cmj")
     })
-    allTargets.add("js.cmj")
+    
     allTargets.add("js.cmi")
     updateMapMany("all", [...allTargets])
     allTargets.forEach(x=>{
         updateMapSingle(x,compiler)
     })
-    updateMapSingle("js.cmj", "js.cmi")
+    
     updateMapSingle("js.cmi","bs_stdlib_mini.cmi")
     try {
         runJSCheck()
