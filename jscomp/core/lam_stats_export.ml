@@ -96,18 +96,26 @@ let values_of_export
        String_map.add x.name  Js_cmj_format.({arity ; closed_lambda }) acc          
     )
 
-
-let get_effect (meta : Lam_stats.t) maybe_pure external_ids = 
-  match maybe_pure with
-  | None ->  
-    Ext_option.map ( Ext_list.find_first_not external_ids
-                       (fun id -> 
-                          Lam_compile_env.query_and_add_if_not_exist id 
-                            (Has_env meta.env )
-                            ~not_found:(fun _ -> false ) ~found:(fun i -> 
-                                i.pure)
-                       )) (fun x -> Lam_module_ident.name x)
-  | Some _ -> maybe_pure
+(* ATTENTION: all runtime modules, if it is not hard required, 
+  it should be okay to not reference it 
+*)
+let get_dependent_module_effect 
+  (meta : Lam_stats.t) 
+  (maybe_pure : string option) 
+  (external_ids : Lam_module_ident.t list) = 
+  if maybe_pure = None then
+    let non_pure_module =  
+      Ext_list.find_first_not external_ids
+        (fun id -> 
+          (* id.kind = Runtime || *)
+           Lam_compile_env.query_and_add_if_not_exist id 
+             (Has_env meta.env )
+             ~not_found:(fun _ -> false ) 
+             ~found:(fun {pure} -> pure)
+        ) in 
+    Ext_option.map  non_pure_module (fun x -> Lam_module_ident.name x)
+  else 
+    maybe_pure
 
 
 
@@ -130,7 +138,7 @@ let export_to_cmj
     cmj_case
   : Js_cmj_format.t = 
   let values =  values_of_export meta export_map in
-  let effect = get_effect meta maybe_pure external_ids in
+  let effect = get_dependent_module_effect meta maybe_pure external_ids in
   {values; 
    effect ; 
    npm_package_path = Js_packages_state.get_packages_info ();
