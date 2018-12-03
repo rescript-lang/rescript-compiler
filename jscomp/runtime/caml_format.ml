@@ -627,18 +627,7 @@ let caml_hexstring_of_float : float -> int -> char -> string =
   }
   return  (sign_str + '0x' + x_str + 'p' + exp_sign + exp.toString(10));
 |}  
-(**
- external float_of_string : string -> float = "caml_float_of_string"
- pervasives.ml
- Semantics is slightly different from javascript :
- console.assert(caml_float_of_string('infinity')===Infinity)
- console.assert(caml_float_of_string('Infinity')===Infinity
 
- parseFloat('Infinity') === Infinity
- parseFloat('infinity') === Nan
-
- FIXME: arity of float_of_string is not inferred correctly
-*)
 
 let float_of_string : string -> exn ->  float  = 
 #if OCAML_VERSION =~ ">4.3.0" then
@@ -688,7 +677,17 @@ let float_of_string : string -> exn ->  float  =
 |}
 #end
 
-let caml_float_of_string s = float_of_string s (Failure "float_of_string") 
+
+(**
+ Pervasives.float_of_string : string -> float = "caml_float_of_string"
+ Semantics is slightly different from javascript :
+ console.assert(caml_float_of_string('infinity')===Infinity)
+ console.assert(caml_float_of_string('Infinity')===Infinity
+ parseFloat('Infinity') === Infinity
+ parseFloat('infinity') === Nan
+*)
+let caml_float_of_string (s : string) : float  = 
+    float_of_string s (Failure "float_of_string") 
 
 let caml_nativeint_format = caml_format_int
 let caml_int32_format = caml_format_int

@@ -33,8 +33,6 @@ external floor : float -> float = "Math.floor" [@@bs.val]
 external exp : float -> float =  "exp" [@@bs.val] [@@bs.scope "Math"]
 external log : float -> float = "Math.log" [@@bs.val]
 external sqrt : float -> float =  "sqrt" [@@bs.val] [@@bs.scope "Math"] 
-external max_float : float -> float -> float = "Math.max" [@@bs.val]
-external min_float : float -> float -> float = "Math.min" [@@bs.val]
 external pow_float : base:float -> exp:float -> float = "Math.pow" [@@bs.val]
 external int_of_float : float -> int = "%intoffloat"
 external float_of_int : int -> float = "%floatofint"
@@ -124,8 +122,8 @@ let caml_log1p_float : float -> float = function x ->
 
 let caml_hypot_float (x: float) (y: float): float =
   let x0, y0 = abs_float x, abs_float y in
-  let a = max_float x0 y0 in
-  let b = min_float x0 y0 /. if a <> 0. then a else 1. in
+  let a = Pervasives.max x0 y0 in
+  let b = Pervasives.min x0 y0 /. if a <> 0. then a else 1. in
   a *. sqrt (1. +. b *. b)
 
 

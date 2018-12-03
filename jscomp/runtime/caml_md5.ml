@@ -22,39 +22,28 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+open Caml_int32_extern.Ops
 
-
-
-
-(** *)
-
-let (+~) = Caml_int32_extern.add 
-let add32 = Caml_int32_extern.add
-let (<<) = Caml_int32_extern.shift_left 
-let (>>>) = Caml_int32_extern.shift_right_logical
-let (>>) = Caml_int32_extern.shift_right
-let (&) = Caml_int32_extern.logand  
-let (^) = Caml_int32_extern.logxor 
-let lognot n = Caml_int32_extern.logxor n (-1l)
+let lognot n = n ^~ (-1l)
 let cmn q a b x s t = 
     let a = a +~ q +~ x +~ t in
-    Caml_int32_extern.logor (a << s)  (a >>> (32 - s)) +~  b
+    ((a <<~ s) |~ (a >>>~ (32 - s))) +~  b
 
 
 let  f a b c d x s t = 
-  cmn (Caml_int32_extern.logor (b & c)  (lognot b & d)) a b x s t
+  cmn ((b &~ c) |~ (lognot b &~ d)) a b x s t
 
 
 let g a b c d x s t =
-  cmn (Caml_int32_extern.logor (b & d)  (c & (lognot d))) a b x s t
+  cmn ((b &~ d) |~ (c &~ (lognot d))) a b x s t
 
 ;;
 let h a b c d x s t = 
-  cmn (b ^ c ^ d) a b x s t
+  cmn (b ^~ c ^~ d) a b x s t
 ;;
 
 let i a b c d x s t = 
-  cmn (c ^ (Caml_int32_extern.logor b  (lognot d))) a b x s t
+  cmn (c ^~ (b |~ (lognot d))) a b x s t
 
 
 let cycle (x : int32 array)  (k : int32 array) = 
@@ -178,9 +167,9 @@ let caml_md5_string s start len =
     for j = 0 to 16 - 1 do 
       let k = i * 64 - 64 + j * 4 in 
       md5blk.(j) <- (Caml_int32_extern.of_int (Caml_char.code s.[k])) +~
-                    (Caml_int32_extern.of_int (Caml_char.code s.[k+1]) << 8 ) +~        
-                    (Caml_int32_extern.of_int (Caml_char.code s.[k+2]) << 16 ) +~        
-                    (Caml_int32_extern.of_int (Caml_char.code s.[k+3]) << 24 )
+                    (Caml_int32_extern.of_int (Caml_char.code s.[k+1]) <<~ 8 ) +~        
+                    (Caml_int32_extern.of_int (Caml_char.code s.[k+2]) <<~ 16 ) +~        
+                    (Caml_int32_extern.of_int (Caml_char.code s.[k+3]) <<~ 24 )
     done ;
     cycle state md5blk
   done ;
@@ -192,10 +181,10 @@ let caml_md5_string s start len =
   let i_end =Caml_string_extern.length s_tail - 1 in
   for i = 0 to  i_end do 
     md5blk.(i / 4 ) <- 
-      Caml_int32_extern.logor md5blk.(i / 4)  (Caml_int32_extern.of_int (Caml_char.code s_tail.[i]) << ((i mod 4) lsl 3))
+      md5blk.(i / 4) |~ (Caml_int32_extern.of_int (Caml_char.code s_tail.[i]) <<~ ((i mod 4) lsl 3))
   done ;
   let i = i_end + 1 in
-  md5blk.(i / 4 ) <-  Caml_int32_extern.logor md5blk.(i / 4 )  (0x80l << ((i mod 4) lsl 3)) ;
+  md5blk.(i / 4 ) <-  md5blk.(i / 4 ) |~ (0x80l <<~ ((i mod 4) lsl 3)) ;
   if i > 55 then
     begin 
       cycle state md5blk;
@@ -203,28 +192,28 @@ let caml_md5_string s start len =
         md5blk.(i) <- 0l
       done 
     end;
-  md5blk.(14) <-  Caml_int32_extern.mul (Caml_int32_extern.of_int n)  8l;
+  md5blk.(14) <-  Caml_int32_extern.of_int n *~ 8l;
   cycle state md5blk;
   Caml_string_extern.of_small_int32_array [|
-        state.(0) & 0xffl;
-        (state.(0) >> 8) & 0xffl;
-        (state.(0) >> 16) & 0xffl;
-        (state.(0) >> 24) & 0xffl;
+        state.(0) &~ 0xffl;
+        (state.(0) >>~ 8) &~ 0xffl;
+        (state.(0) >>~ 16) &~ 0xffl;
+        (state.(0) >>~ 24) &~ 0xffl;
 
-        state.(1) & 0xffl;
-        (state.(1) >> 8) & 0xffl;
-        (state.(1) >> 16) & 0xffl;
-        (state.(1) >> 24) & 0xffl;
+        state.(1) &~ 0xffl;
+        (state.(1) >>~ 8) &~ 0xffl;
+        (state.(1) >>~ 16) &~ 0xffl;
+        (state.(1) >>~ 24) &~ 0xffl;
 
-        state.(2) & 0xffl;
-        (state.(2) >> 8) & 0xffl;
-        (state.(2) >> 16) & 0xffl;
-        (state.(2) >> 24) & 0xffl;
+        state.(2) &~ 0xffl;
+        (state.(2) >>~ 8) &~ 0xffl;
+        (state.(2) >>~ 16) &~ 0xffl;
+        (state.(2) >>~ 24) &~ 0xffl;
 
-        state.(3) & 0xffl;
-        (state.(3) >> 8) & 0xffl;
-        (state.(3) >> 16) & 0xffl;
-        (state.(3) >> 24) & 0xffl;
+        state.(3) &~ 0xffl;
+        (state.(3) >>~ 8) &~ 0xffl;
+        (state.(3) >>~ 16) &~ 0xffl;
+        (state.(3) >>~ 24) &~ 0xffl;
 
   |]
 
