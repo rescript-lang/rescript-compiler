@@ -259,11 +259,6 @@ let query_and_add_if_not_exist
         found (Ext_string.empty, Js_cmj_format.no_pure_dummy) (* External is okay *)
     end
 
-(* Conservative interface *)
-let is_pure_module id  = 
-  query_and_add_if_not_exist id No_env
-    ~not_found:(fun _ -> false) 
-    ~found:(fun (_,x) -> x.effect = None)
 
 
 
@@ -289,6 +284,12 @@ let add = Lam_module_ident.Hash_set.add
 
 
 
+(* Conservative interface *)
+let is_pure_module (id : Lam_module_ident.t)  = 
+  id.kind = Runtime ||
+  query_and_add_if_not_exist id No_env
+    ~not_found:(fun _ -> false) 
+    ~found:(fun (_,x) -> x.effect = None)
 
 let get_required_modules 
     extras 
