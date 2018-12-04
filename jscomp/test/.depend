@@ -5,9 +5,9 @@ ari_regress_test.cmi :
 array_test.cmi :
 ast_js_mapper_test.cmi :
 basic_module_test.cmi :
-bs_abstract_test.cmi : ../runtime/js.cmi
-class_setter_getter.cmi : ../runtime/js.cmi
-config2_test.cmi : ../runtime/js.cmi
+bs_abstract_test.cmi : ../runtime/js.cmj
+class_setter_getter.cmi : ../runtime/js.cmj
+config2_test.cmi : ../runtime/js.cmj
 const_block_test.cmi :
 demo_int_map.cmi :
 derive_projector_test.cmi :
@@ -16,12 +16,12 @@ ext_sys_test.cmi :
 float_record.cmi :
 flow_parser_reg_test.cmi :
 gpr_405_test.cmi :
-infer_type_test.cmi : ../runtime/js.cmi
+infer_type_test.cmi : ../runtime/js.cmj
 inline_edge_cases.cmi :
 inline_map_test.cmi :
 inner_define.cmi :
 map_test.cmi :
-mt.cmi : ../runtime/js.cmi
+mt.cmi : ../runtime/js.cmj
 mt_global.cmi : mt.cmi
 ocaml_parsetree_test.cmi :
 ocaml_proto_test.cmi :
@@ -37,11 +37,11 @@ test_for_map2.cmi :
 test_http_server.cmi :
 test_is_js.cmi :
 test_literals.cmi :
-test_unsafe_obj_ffi.cmi : ../runtime/js.cmi
-test_unsafe_obj_ffi_ppx.cmi : ../runtime/js.cmi
+test_unsafe_obj_ffi.cmi : ../runtime/js.cmj
+test_unsafe_obj_ffi_ppx.cmi : ../runtime/js.cmj
 testing.cmi :
 ui_defs.cmi :
-unsafe_this.cmi : ../runtime/js.cmi
+unsafe_this.cmi : ../runtime/js.cmj
 406_primitive_test.cmj : mt.cmj
 a.cmj : test_order.cmj
 a_filename_test.cmj : mt.cmj ext_filename_test.cmj

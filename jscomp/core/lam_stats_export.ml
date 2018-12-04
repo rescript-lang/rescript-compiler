@@ -107,7 +107,7 @@ let get_dependent_module_effect
     let non_pure_module =  
       Ext_list.find_first_not external_ids
         (fun id -> 
-          (* id.kind = Runtime || *)
+           id.kind = Runtime ||
            Lam_compile_env.query_and_add_if_not_exist id 
              (Has_env meta.env )
              ~not_found:(fun _ -> false ) 
