@@ -119,14 +119,14 @@ let add_js_module
 
 let (+>) = Lam_module_ident.Hash.add cached_tbl
 
-let cached_find_ml_id_pos id pos env : ident_info =
-  let oid  = Lam_module_ident.of_ml id in
+let cached_find_ml_id_pos (module_id : Ident.t) (pos : int) env : ident_info =
+  let oid  = Lam_module_ident.of_ml module_id in
   match Lam_module_ident.Hash.find_opt cached_tbl oid with 
   | None -> 
     let cmj_path, cmj_table = 
-      Js_cmj_load.find_cmj (id.name ^ Literals.suffix_cmj) in
+      Js_cmj_load.find_cmj (module_id.name ^ Literals.suffix_cmj) in
     begin match
-        Ocaml_types.find_serializable_signatures_by_path id env with 
+        Ocaml_types.find_serializable_signatures_by_path module_id env with 
     | None -> 
       assert false (*TODO: more informative error message *)
     | Some signature -> 
@@ -187,9 +187,12 @@ type _ t =
   | Has_env : Env.t  -> module_info t 
 
 
-let query_and_add_if_not_exist (type u)
+(* -FIXME: 
+  Here [not_found] only means cmi not found, not cmj not found *)
+let query_and_add_if_not_exist 
+    (type u)
     (oid : Lam_module_ident.t) 
-    (env : u t) ~not_found ~found:(found : u -> _) =
+    (env : u t) ~not_found ~(found: u -> _) =
   match Lam_module_ident.Hash.find_opt cached_tbl oid with 
   | None -> 
     begin match oid.kind with
@@ -197,17 +200,16 @@ let query_and_add_if_not_exist (type u)
         let (cmj_path, cmj_table) as cmj_info = 
           Js_cmj_load.find_cmj (Lam_module_ident.name oid ^ Literals.suffix_cmj) in           
         oid +> Runtime (true,cmj_path,cmj_table) ; 
-        begin match env with 
+         (match env with 
           | Has_env _ -> 
             found {signature = Ocaml_types.empty; pure = true}
           | No_env -> 
-            found cmj_info
-        end
+            found cmj_info)        
       | Ml 
         -> 
         let (cmj_path, cmj_table) as cmj_info = 
           Js_cmj_load.find_cmj (Lam_module_ident.name oid ^ Literals.suffix_cmj) in           
-        begin match env with 
+        ( match env with 
           | Has_env env -> 
             begin match 
                 Ocaml_types.find_serializable_signatures_by_path  oid.id env with 
@@ -217,8 +219,8 @@ let query_and_add_if_not_exist (type u)
               found  { signature ; pure = (cmj_table.effect = None)} 
             end
           | No_env -> 
-            found cmj_info
-        end
+            found cmj_info)
+        
 
       | External _  -> 
         oid +> External;
