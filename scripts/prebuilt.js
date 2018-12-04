@@ -88,7 +88,10 @@ function buildCompiler() {
 		}
 	})
 }
+if(os.platform()=== 'darwin'){
+	// only run it in my dev machine
+	require('./runtimeDeps.js').create()
+}
 
-require('./runtimeDeps.js').create()
 buildCompiler()
 
