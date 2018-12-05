@@ -65,18 +65,14 @@
 <li><a href="Js_float.html">Js_float</a></li>
 <li><a href="Js_global.html">Js_global</a></li>
 <li><a href="Js_int.html">Js_int</a></li>
-<li><a href="Js_int64.html">Js_int64</a></li>
-<li><a href="Js_internal.html">Js_internal</a></li>
 <li><a href="Js_json.html">Js_json</a></li>
 <li><a href="Js_list.html">Js_list</a></li>
 <li><a href="Js_mapperRt.html">Js_mapperRt</a></li>
 <li><a href="Js_math.html">Js_math</a></li>
-<li><a href="Js_nativeint.html">Js_nativeint</a></li>
 <li><a href="Js_null.html">Js_null</a></li>
 <li><a href="Js_null_undefined.html">Js_null_undefined</a></li>
 <li><a href="Js_obj.html">Js_obj</a></li>
 <li><a href="Js_option.html">Js_option</a></li>
-<li><a href="Js_primitive.html">Js_primitive</a></li>
 <li><a href="Js_promise.html">Js_promise</a></li>
 <li><a href="Js_re.html">Js_re</a></li>
 <li><a href="Js_result.html">Js_result</a></li>
@@ -84,7 +80,6 @@
 <li><a href="Js_typed_array.html">Js_typed_array</a></li>
 <li><a href="Js_types.html">Js_types</a></li>
 <li><a href="Js_undefined.html">Js_undefined</a></li>
-<li><a href="Js_unsafe.html">Js_unsafe</a></li>
 <li><a href="Js_vector.html">Js_vector</a></li>
 <li><a href="Node.html">Node</a></li>
 <li><a href="Node_buffer.html">Node_buffer</a></li>
@@ -173,16 +168,7 @@
 <div class="type-declaration">
 <pre><span id="TYPEnull_undefined"><span class="keyword">type</span> <code class="type">'a</code> null_undefined</span> = <code class="type">'a <a href="Js.html#TYPEnullable">nullable</a></code> </pre>
 </div>
-<div class="info ">
-                    <div class="not-examples">
-                    value of this type can be <code class="code">undefined</code>, <code class="code">null</code> or <code class="code">'a</code>
-    this type is the same as <code class="code">Js.Null_undefined.t</code><br>
- 
-                    </div>
-                    
-                    </div>
 
-                  
 
 <pre><span id="VALtoOption"><span class="keyword">val</span> toOption</span> : <code class="type">'a <a href="Js.html#TYPEnullable">nullable</a> -> 'a option</code></pre>
 <pre><span id="VALundefinedToOption"><span class="keyword">val</span> undefinedToOption</span> : <code class="type">'a <a href="Js.html#TYPEundefined">undefined</a> -> 'a option</code></pre>
@@ -214,46 +200,21 @@
 
                   
 
-<pre><span id="VALnull"><span class="keyword">val</span> null</span> : <code class="type">'a <a href="Js.html#TYPEnull">null</a></code></pre><div class="info ">
-                    <div class="not-examples">
-                    The same as <code class="code">empty</code> in <a href="Js.Null.html"><code class="code">Js.Null</code></a> will be compiled as <code class="code">null</code><br>
- 
-                    </div>
-                    
-                    </div>
+<pre><span id="VALnull"><span class="keyword">val</span> null</span> : <code class="type">'a <a href="Js.html#TYPEnull">null</a></code></pre><br>
+The same as <code class="code">empty</code> in <a href="Js.Null.html"><code class="code">Js.Null</code></a> will be compiled as <code class="code">null</code><br>
 
-                  
-<pre><span id="VALundefined"><span class="keyword">val</span> undefined</span> : <code class="type">'a <a href="Js.html#TYPEundefined">undefined</a></code></pre><div class="info ">
-                    <div class="not-examples">
-                    The same as  <code class="code">empty</code> <a href="Js.Undefined.html"><code class="code">Js.Undefined</code></a> will be compiled as <code class="code">undefined</code><br>
- 
-                    </div>
-                    
-                    </div>
+<pre><span id="VALundefined"><span class="keyword">val</span> undefined</span> : <code class="type">'a <a href="Js.html#TYPEundefined">undefined</a></code></pre><br>
+The same as  <code class="code">empty</code> <a href="Js.Undefined.html"><code class="code">Js.Undefined</code></a> will be compiled as <code class="code">undefined</code><br>
 
-                  
-<pre><span id="VALtypeof"><span class="keyword">val</span> typeof</span> : <code class="type">'a -> string</code></pre><div class="info ">
-                    <div class="not-examples">
-                    <code class="code">typeof x</code> will be compiled as <code class="code">typeof x</code> in JS
+<pre><span id="VALtypeof"><span class="keyword">val</span> typeof</span> : <code class="type">'a -> string</code></pre><br>
+<code class="code">typeof x</code> will be compiled as <code class="code">typeof x</code> in JS
     Please consider functions in <a href="Js.Types.html"><code class="code">Js.Types</code></a> for a type safe way of reflection<br>
- 
-                    </div>
-                    
-                    </div>
 
-                  
-<pre><span id="VALlog"><span class="keyword">val</span> log</span> : <code class="type">'a -> unit</code></pre><div class="info ">
-                    <div class="not-examples">
-                    <code class="code">typeof x</code> will be compiled as <code class="code">typeof x</code> in JS<br>
- 
-                    </div>
-                    
-                    </div>
-
-                  
+<pre><span id="VALlog"><span class="keyword">val</span> log</span> : <code class="type">'a -> unit</code></pre>
 <pre><span id="VALlog2"><span class="keyword">val</span> log2</span> : <code class="type">'a -> 'b -> unit</code></pre>
 <pre><span id="VALlog3"><span class="keyword">val</span> log3</span> : <code class="type">'a -> 'b -> 'c -> unit</code></pre>
-<pre><span id="VALlog4"><span class="keyword">val</span> log4</span> : <code class="type">'a -> 'b -> 'c -> 'd -> unit</code></pre><div class="info ">
+<pre><span id="VALlog4"><span class="keyword">val</span> log4</span> : <code class="type">'a -> 'b -> 'c -> 'd -> unit</code></pre>
+<pre><span id="VALlogMany"><span class="keyword">val</span> logMany</span> : <code class="type">'a array -> unit</code></pre><div class="info ">
                     <div class="not-examples">
                     A convenience function to log everything<br>
  
@@ -261,20 +222,14 @@
                     
                     </div>
 
-                  
-<pre><span id="VALlogMany"><span class="keyword">val</span> logMany</span> : <code class="type">'a array -> unit</code></pre><div class="info ">
-                    <div class="not-examples">
-                    A convenience function to log more than 4 arguments<br>
- 
-                    </div>
-                    
-                    </div>
+                  <br>
+A convenience function to log more than 4 arguments<br>
 
-                  
 <pre><span id="VALeqNull"><span class="keyword">val</span> eqNull</span> : <code class="type">'a -> 'a <a href="Js.html#TYPEnull">null</a> -> bool</code></pre>
 <pre><span id="VALeqUndefined"><span class="keyword">val</span> eqUndefined</span> : <code class="type">'a -> 'a <a href="Js.html#TYPEundefined">undefined</a> -> bool</code></pre>
 <pre><span id="VALeqNullable"><span class="keyword">val</span> eqNullable</span> : <code class="type">'a -> 'a <a href="Js.html#TYPEnullable">nullable</a> -> bool</code></pre>
-<pre><span id="VALunsafe_lt"><span class="keyword">val</span> unsafe_lt</span> : <code class="type">'a -> 'a -> bool</code></pre><div class="info ">
+<pre><span id="VALunsafe_lt"><span class="keyword">val</span> unsafe_lt</span> : <code class="type">'a -> 'a -> bool</code></pre>
+<pre><span id="VALunsafe_le"><span class="keyword">val</span> unsafe_le</span> : <code class="type">'a -> 'a -> bool</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">unsafe_lt a b</code> will be compiled as <code class="code">a &lt; b</code>.
     It is marked as unsafe, since it is impossible
@@ -285,7 +240,7 @@
                     </div>
 
                   
-<pre><span id="VALunsafe_le"><span class="keyword">val</span> unsafe_le</span> : <code class="type">'a -> 'a -> bool</code></pre><div class="info ">
+<pre><span id="VALunsafe_gt"><span class="keyword">val</span> unsafe_gt</span> : <code class="type">'a -> 'a -> bool</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">unsafe_le a b</code> will be compiled as <code class="code">a &lt;= b</code>.
     See also <a href="Js.html#VALunsafe_lt"><code class="code">Js.unsafe_lt</code></a><br>
@@ -295,7 +250,7 @@
                     </div>
 
                   
-<pre><span id="VALunsafe_gt"><span class="keyword">val</span> unsafe_gt</span> : <code class="type">'a -> 'a -> bool</code></pre><div class="info ">
+<pre><span id="VALunsafe_ge"><span class="keyword">val</span> unsafe_ge</span> : <code class="type">'a -> 'a -> bool</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">unsafe_gt a b</code> will be compiled as <code class="code">a &gt; b</code>.
      See also <a href="Js.html#VALunsafe_lt"><code class="code">Js.unsafe_lt</code></a><br>
@@ -304,148 +259,157 @@
                     
                     </div>
 
-                  
-<pre><span id="VALunsafe_ge"><span class="keyword">val</span> unsafe_ge</span> : <code class="type">'a -> 'a -> bool</code></pre><div class="info ">
-                    <div class="not-examples">
-                    <code class="code">unsafe_ge a b</code> will be compiled as <code class="code">a &gt;= b</code>.
+                  <br>
+<code class="code">unsafe_ge a b</code> will be compiled as <code class="code">a &gt;= b</code>.
     See also <a href="Js.html#VALunsafe_lt"><code class="code">Js.unsafe_lt</code></a><br>
- 
-                    </div>
-                    
-                    </div>
 
-                  
 <pre><span class="keyword">module</span> <a href="Js.Null.html">Null</a>: <code class="type"><a href="Js_null.html">Js_null</a></code></pre> <div class="info">                     
                 <div class="not-examples">
-                    Provide utilities around <code class="code">'a null</code><br>
- 
+                     
+                </div>
+                </div> <br>
+Provide utilities around <code class="code">'a null</code><br>
+
+<pre><span class="keyword">module</span> <a href="Js.Undefined.html">Undefined</a>: <code class="type"><a href="Js_undefined.html">Js_undefined</a></code></pre> <div class="info">                     
+                <div class="not-examples">
+                     
                 </div>
                 </div> 
-<pre><span class="keyword">module</span> <a href="Js.Undefined.html">Undefined</a>: <code class="type"><a href="Js_undefined.html">Js_undefined</a></code></pre> <div class="info">                     
+<pre><span class="keyword">module</span> <a href="Js.Nullable.html">Nullable</a>: <code class="type"><a href="Js_null_undefined.html">Js_null_undefined</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                     Provide utilities around <a href="Js.html#VALundefined"><code class="code">Js.undefined</code></a><br>
  
                 </div>
                 </div> 
-<pre><span class="keyword">module</span> <a href="Js.Nullable.html">Nullable</a>: <code class="type"><a href="Js_null_undefined.html">Js_null_undefined</a></code></pre> <div class="info">                     
+<pre><span class="keyword">module</span> <a href="Js.Null_undefined.html">Null_undefined</a>: <code class="type"><a href="Js_null_undefined.html">Js_null_undefined</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                     Provide utilities around <a href="Js.html#TYPEnull_undefined"><code class="code">Js.null_undefined</code></a><br>
  
                 </div>
                 </div> 
-<pre><span class="keyword">module</span> <a href="Js.Null_undefined.html">Null_undefined</a>: <code class="type"><a href="Js_null_undefined.html">Js_null_undefined</a></code></pre> <div class="info">                     
+<pre><span class="keyword">module</span> <a href="Js.Exn.html">Exn</a>: <code class="type"><a href="Js_exn.html">Js_exn</a></code></pre> <div class="info">                     
+                <div class="not-examples">
+                     
+                </div>
+                </div> <br>
+Provide utilities for dealing with Js exceptions<br>
+
+<pre><span class="keyword">module</span> <a href="Js.Array.html">Array</a>: <code class="type"><a href="Js_array.html">Js_array</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                      
                 </div>
                 </div> 
-<pre><span class="keyword">module</span> <a href="Js.Exn.html">Exn</a>: <code class="type"><a href="Js_exn.html">Js_exn</a></code></pre> <div class="info">                     
-                <div class="not-examples">
-                    Provide utilities for dealing with Js exceptions<br>
- 
-                </div>
-                </div> 
-<pre><span class="keyword">module</span> <a href="Js.Array.html">Array</a>: <code class="type"><a href="Js_array.html">Js_array</a></code></pre> <div class="info">                     
+<pre><span class="keyword">module</span> <a href="Js.String.html">String</a>: <code class="type"><a href="Js_string.html">Js_string</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                     Provide bindings to Js array<br>
  
                 </div>
-                </div> 
-<pre><span class="keyword">module</span> <a href="Js.String.html">String</a>: <code class="type"><a href="Js_string.html">Js_string</a></code></pre> <div class="info">                     
-                <div class="not-examples">
-                    Provide bindings to JS string<br>
- 
-                </div>
-                </div> 
+                </div> <br>
+Provide bindings to JS string<br>
+
 <pre><span class="keyword">module</span> <a href="Js.Re.html">Re</a>: <code class="type"><a href="Js_re.html">Js_re</a></code></pre> <div class="info">                     
                 <div class="not-examples">
-                    Provide bindings to Js regex expression<br>
- 
+                     
                 </div>
-                </div> 
+                </div> <br>
+Provide bindings to Js regex expression<br>
+
 <pre><span class="keyword">module</span> <a href="Js.Promise.html">Promise</a>: <code class="type"><a href="Js_promise.html">Js_promise</a></code></pre> <div class="info">                     
                 <div class="not-examples">
-                    Provide bindings to JS promise<br>
- 
+                     
                 </div>
-                </div> 
+                </div> <br>
+Provide bindings to JS promise<br>
+
 <pre><span class="keyword">module</span> <a href="Js.Date.html">Date</a>: <code class="type"><a href="Js_date.html">Js_date</a></code></pre> <div class="info">                     
                 <div class="not-examples">
-                    Provide bindings for JS Date<br>
- 
+                     
                 </div>
-                </div> 
+                </div> <br>
+Provide bindings for JS Date<br>
+
 <pre><span class="keyword">module</span> <a href="Js.Dict.html">Dict</a>: <code class="type"><a href="Js_dict.html">Js_dict</a></code></pre> <div class="info">                     
                 <div class="not-examples">
-                    Provide utilities for JS dictionary object<br>
- 
+                     
                 </div>
-                </div> 
+                </div> <br>
+Provide utilities for JS dictionary object<br>
+
 <pre><span class="keyword">module</span> <a href="Js.Global.html">Global</a>: <code class="type"><a href="Js_global.html">Js_global</a></code></pre> <div class="info">                     
                 <div class="not-examples">
-                    Provide bindings to JS global functions in global namespace<br>
- 
+                     
                 </div>
-                </div> 
+                </div> <br>
+Provide bindings to JS global functions in global namespace<br>
+
 <pre><span class="keyword">module</span> <a href="Js.Json.html">Json</a>: <code class="type"><a href="Js_json.html">Js_json</a></code></pre> <div class="info">                     
                 <div class="not-examples">
-                    Provide utilities for json<br>
- 
+                     
                 </div>
-                </div> 
+                </div> <br>
+Provide utilities for json<br>
+
 <pre><span class="keyword">module</span> <a href="Js.Math.html">Math</a>: <code class="type"><a href="Js_math.html">Js_math</a></code></pre> <div class="info">                     
                 <div class="not-examples">
-                    Provide bindings for JS <code class="code">Math</code> object<br>
- 
+                     
                 </div>
-                </div> 
+                </div> <br>
+Provide bindings for JS <code class="code">Math</code> object<br>
+
 <pre><span class="keyword">module</span> <a href="Js.Obj.html">Obj</a>: <code class="type"><a href="Js_obj.html">Js_obj</a></code></pre> <div class="info">                     
                 <div class="not-examples">
-                    Provide utilities for <a href="Js.html#TYPEt"><code class="code">Js.t</code></a><br>
- 
+                     
                 </div>
-                </div> 
+                </div> <br>
+Provide utilities for <a href="Js.html#TYPEt"><code class="code">Js.t</code></a><br>
+
 <pre><span class="keyword">module</span> <a href="Js.Typed_array.html">Typed_array</a>: <code class="type"><a href="Js_typed_array.html">Js_typed_array</a></code></pre> <div class="info">                     
                 <div class="not-examples">
-                    Provide bindings for JS typed array<br>
- 
+                     
+                </div>
+                </div> <br>
+Provide bindings for JS typed array<br>
+
+<pre><span class="keyword">module</span> <a href="Js.Types.html">Types</a>: <code class="type"><a href="Js_types.html">Js_types</a></code></pre> <div class="info">                     
+                <div class="not-examples">
+                     
                 </div>
                 </div> 
-<pre><span class="keyword">module</span> <a href="Js.Types.html">Types</a>: <code class="type"><a href="Js_types.html">Js_types</a></code></pre> <div class="info">                     
+<pre><span class="keyword">module</span> <a href="Js.Float.html">Float</a>: <code class="type"><a href="Js_float.html">Js_float</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                     Provide utilities for manipulating JS types<br>
  
                 </div>
                 </div> 
-<pre><span class="keyword">module</span> <a href="Js.Float.html">Float</a>: <code class="type"><a href="Js_float.html">Js_float</a></code></pre> <div class="info">                     
+<pre><span class="keyword">module</span> <a href="Js.Int.html">Int</a>: <code class="type"><a href="Js_int.html">Js_int</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                     Provide utilities for JS float<br>
  
                 </div>
-                </div> 
-<pre><span class="keyword">module</span> <a href="Js.Int.html">Int</a>: <code class="type"><a href="Js_int.html">Js_int</a></code></pre> <div class="info">                     
-                <div class="not-examples">
-                    Provide utilities for int<br>
- 
-                </div>
-                </div> 
+                </div> <br>
+Provide utilities for int<br>
+
 <pre><span class="keyword">module</span> <a href="Js.Option.html">Option</a>: <code class="type"><a href="Js_option.html">Js_option</a></code></pre> <div class="info">                     
                 <div class="not-examples">
-                    Provide utilities for option<br>
- 
+                     
                 </div>
-                </div> 
+                </div> <br>
+Provide utilities for option<br>
+
 <pre><span class="keyword">module</span> <a href="Js.Result.html">Result</a>: <code class="type"><a href="Js_result.html">Js_result</a></code></pre> <div class="info">                     
                 <div class="not-examples">
-                    Define the interface for result<br>
- 
+                     
                 </div>
-                </div> 
+                </div> <br>
+Define the interface for result<br>
+
 <pre><span class="keyword">module</span> <a href="Js.List.html">List</a>: <code class="type"><a href="Js_list.html">Js_list</a></code></pre> <div class="info">                     
                 <div class="not-examples">
-                    Provide utilities for list<br>
- 
+                     
                 </div>
-                </div> 
+                </div> <br>
+Provide utilities for list<br>
+
 <pre><span class="keyword">module</span> <a href="Js.Vector.html">Vector</a>: <code class="type"><a href="Js_vector.html">Js_vector</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                      

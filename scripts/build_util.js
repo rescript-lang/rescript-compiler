@@ -101,7 +101,8 @@ function install() {
 		}
 	})
 
-	install_directory(path.join(jscomp, 'stdlib'), dest_lib)
+	// FIXME changing when upgrade	
+	install_directory(path.join(jscomp, 'stdlib-402'), dest_lib)
 	install_directory(path.join(jscomp, 'others'), dest_lib)
 }
 
