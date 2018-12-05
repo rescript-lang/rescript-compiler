@@ -36,7 +36,7 @@ function getLibCommands() {
 			} else if (line.indexOf('bsc.exe') !== -1) {
 				var current_job = acc[acc.length - 1]
 				var new_line = line
-				if (current_job.base === 'stdlib') {
+				if (current_job.base.includes('stdlib')) {
 					var shell_commands = line.split('`')
 					if (shell_commands.length === 3) {
 						var command = shell_commands[1]
@@ -88,7 +88,10 @@ function buildCompiler() {
 		}
 	})
 }
+if(os.platform()=== 'darwin'){
+	// only run it in my dev machine
+	require('./runtimeDeps.js').create()
+}
 
-require('./runtimeDeps.js').create()
 buildCompiler()
 

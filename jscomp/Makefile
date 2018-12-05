@@ -623,19 +623,11 @@ bootbspack:
 	make -C bin -B bspack.exe
 	@echo "Rebuilding bspack.exe finsihed"
 
-libs:
-	@echo "Making runtime"
-	cd runtime && $(MAKE) all
-	@echo "Making runtime finished"
-
-	@echo "Making others"
-	cd others && $(MAKE) all
-	@echo "Making others finished"
-
-
-	@echo "Making stdlib"
-	cd $(STDLIB) && $(MAKE) all
-	@echo "Making stdlib finished"
+libs:	
+	$(MAKE) -w -C runtime all
+	$(MAKE) -w -C others all
+	$(MAKE) -w -C $(STDLIB)  all
+	
 
 
 

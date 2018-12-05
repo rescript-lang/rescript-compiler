@@ -10,7 +10,7 @@ var child_process = require('child_process')
 
 var runtime_dir = path.join(__dirname,'..','jscomp','runtime')
 var others_dir = path.join(__dirname,'..','jscomp','others')
-var stdlib_dir = path.join(__dirname,'..','jscomp','stdlib')
+var stdlib_dir = path.join(__dirname,'..','jscomp','stdlib-402')
 var jscomp = path.join(__dirname,'..','jscomp')
 var runtime_prefix = path.relative(jscomp,runtime_dir)
 var others_prefix = path.relative(jscomp, others_dir)
