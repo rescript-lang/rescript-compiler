@@ -1,5 +1,31 @@
 
 * potential break changes
+# 4.0.8
+
+
+Features
+* Support OCaml 4.06 under a config
+- #3146 support `#if 1` and `#if 0` in the built-in conditional compilation language
+- #3159 Add Node.Buffer.concat
+- #3181 sync in refmt 9fcbbca
+- #3185 better performance in compilation, not reading runtime cmj files when not needed
+
+Code gen
+- #3134 Better arity infer when using first class module as function 
+- #3169 allow _ in bs.raw so that `fun%raw a _ -> ` works
+- #3170, #3171 better code gen for bs.raw
+- #2967 bs.variadic attribute (bs.splice still works)
+Fixes
+- #3154 Fix binding `Js.Dict.get`
+- #3132 Fix `int_of_string` semantics in an edge case
+- #3142 Fix the combination of bs.as and unicode
+- #3177 Webpack dev server mode
+- #3180 clean up .gen.js/.gen.tsx for gentype
+
+Docs
+- #3133 Tweak Belt docs
+- #3136 Fix typo in react and react-lite tempaltes
+- #3161 improve perf of some functions in String module 
 
 # 4.0.7
 
