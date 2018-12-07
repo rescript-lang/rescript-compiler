@@ -25,7 +25,7 @@
 
 
 
-
+let stdin = Caml_undefined_extern.empty
 let stderr = Caml_undefined_extern.empty
 
 type out_channel  = {

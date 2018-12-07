@@ -1,5 +1,7 @@
 
 
+(* not complaining for JS tools *)
+val stdin : 'a Caml_undefined_extern.t
 type out_channel
 
 val stdout : out_channel

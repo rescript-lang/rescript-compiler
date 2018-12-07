@@ -10,7 +10,7 @@ caml_hash.cmi : bs_stdlib_mini.cmi ../../lib/bsc.exe caml_obj_extern.cmj
 caml_hash_primitive.cmi : bs_stdlib_mini.cmi ../../lib/bsc.exe
 caml_int32.cmi : bs_stdlib_mini.cmi ../../lib/bsc.exe
 caml_int64.cmi : bs_stdlib_mini.cmi ../../lib/bsc.exe js.cmj
-caml_io.cmi : bs_stdlib_mini.cmi ../../lib/bsc.exe
+caml_io.cmi : bs_stdlib_mini.cmi ../../lib/bsc.exe caml_undefined_extern.cmj
 caml_lexer.cmi : bs_stdlib_mini.cmi ../../lib/bsc.exe
 caml_md5.cmi : bs_stdlib_mini.cmi ../../lib/bsc.exe
 caml_missing_polyfill.cmi : bs_stdlib_mini.cmi ../../lib/bsc.exe
