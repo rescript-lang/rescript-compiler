@@ -13,6 +13,7 @@ BELT_BSPPX=..$(PATHSEP)..$(PATHSEP)lib$(PATHSEP)belt_bsppx.exe
 
 LOCAL_SOURCE_LIST= \
 	caml_hash \
+	js_null \
 	js
 
 GENERATED_SOURCE_LIST= \

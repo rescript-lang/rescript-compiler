@@ -22,10 +22,11 @@ let log a =
 
 module Undefined = struct
   type 'a t = 'a undefined
-  external return : 'a -> 'a t = "%identity"
   let empty = None
   external toOption : 'a t -> 'a option = "%identity"
   external fromOpt : 'a option -> 'a t = "%identity"
+  
+  let return a = fromOpt (Some a)
 end
 
 module Null = struct

@@ -15,8 +15,9 @@ belt_HashSetString.cmx : caml_hash.cmx belt_internalSetBuckets.cmx \
     belt_internalBucketsType.cmx belt_Array.cmx belt_HashSetString.cmi
 belt_HashSetInt.cmx : caml_hash.cmx belt_internalSetBuckets.cmx \
     belt_internalBucketsType.cmx belt_Array.cmx belt_HashSetInt.cmi
-belt_MutableStack.cmx : js.cmx belt_MutableStack.cmi
-belt_MutableQueue.cmx : js.cmx belt_Array.cmx belt_MutableQueue.cmi
+belt_MutableStack.cmx : js_null.cmx js.cmx belt_MutableStack.cmi
+belt_MutableQueue.cmx : js_null.cmx js.cmx belt_Array.cmx \
+    belt_MutableQueue.cmi
 belt_HashMapInt.cmx : caml_hash.cmx belt_internalBucketsType.cmx \
     belt_internalBuckets.cmx belt_Array.cmx belt_HashMapInt.cmi
 belt_HashMapString.cmx : caml_hash.cmx belt_internalBucketsType.cmx \
@@ -78,6 +79,7 @@ belt.cmx : belt_SortArray.cmx belt_Set.cmx belt_Result.cmx belt_Range.cmx \
     belt_MutableQueue.cmx belt_MutableMap.cmx belt_Map.cmx belt_List.cmx \
     belt_Id.cmx belt_HashSet.cmx belt_HashMap.cmx belt_Array.cmx
 caml_hash.cmx :
+js_null.cmx : js.cmx
 js.cmx : js.cmi
 belt_Option.cmi :
 belt_Range.cmi :
