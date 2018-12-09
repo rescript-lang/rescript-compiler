@@ -19,9 +19,9 @@ For example
 
 {!Belt}
 
-This BuckleScript standard library ({b beta}).
+The BuckleScript standard library ({b beta}).
 
-BuckleScript also shipped the vanilla OCaml standard library.
+BuckleScript also ships the vanilla OCaml standard library.
 @see <https://caml.inria.fr/pub/docs/manual-ocaml-4.02/stdlib.html> OCaml standard library
 
 {!Node}
