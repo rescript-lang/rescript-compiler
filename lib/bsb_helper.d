@@ -33,6 +33,8 @@
 ../lib/bsb_helper.ml : ./ext/ext_position.mli
 ../lib/bsb_helper.ml : ./ext/ext_string.ml
 ../lib/bsb_helper.ml : ./ext/ext_string.mli
+../lib/bsb_helper.ml : ./ext/ext_sys.ml
+../lib/bsb_helper.ml : ./ext/ext_sys.mli
 ../lib/bsb_helper.ml : ./ext/literals.ml
 ../lib/bsb_helper.ml : ./ext/literals.mli
 ../lib/bsb_helper.ml : ./ext/map_gen.ml

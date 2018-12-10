@@ -37,6 +37,8 @@ bin/all_ounit_tests.ml : ./ext/ext_scc.ml
 bin/all_ounit_tests.ml : ./ext/ext_scc.mli
 bin/all_ounit_tests.ml : ./ext/ext_string.ml
 bin/all_ounit_tests.ml : ./ext/ext_string.mli
+bin/all_ounit_tests.ml : ./ext/ext_sys.ml
+bin/all_ounit_tests.ml : ./ext/ext_sys.mli
 bin/all_ounit_tests.ml : ./ext/ext_topsort.ml
 bin/all_ounit_tests.ml : ./ext/ext_topsort.mli
 bin/all_ounit_tests.ml : ./ext/ext_utf8.ml
