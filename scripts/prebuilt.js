@@ -22,6 +22,6 @@ function buildCompiler() {
 	})
 }
 
-
+require('./runtimeDeps.js').updateAllLibsNinja()
 buildCompiler()
 

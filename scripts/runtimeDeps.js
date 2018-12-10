@@ -472,56 +472,8 @@ if (require.main === module) {
     }
     // create()
 }
-// exports.create = create
-
-
-// create .depend which is not needed 
-// function create() {
-//     /**
-//      * @type{DepsMap}
-//      */
-//     var depsMap = new Map()
-//     var allTargets = new Set()
-//     mliFiles.forEach(x=>{
-//         var base = baseName(x) + ".cmi"
-//         updateMapMany(base, ["bs_stdlib_mini.cmi"], depsMap)
-//         allTargets.add(base)
-//     }
-//     )
-//     mlFiles.forEach(x=>{
-//         var base = baseName(x) + ".cmj"
-//         updateMapMany(base, ["js.cmj", "bs_stdlib_mini.cmi"],depsMap)
-//         allTargets.add(base)
-//     }
-//     )
-//     allTargets.add("js.cmj")
-//     updateMapMany("all", [...allTargets],depsMap)
-//     allTargets.forEach(x=>{
-//         updateMapSingle(x, compiler,depsMap)
-//     }
-//     )
-
-//     try {
-//         runJSCheck(depsMap)
-//         ocamlDep(sourceFiles, runtimeDir, depsMap)
-//         var output = toDeps(depsMap)
-//         fs.writeFileSync(path.join(runtimeDir, '.depend'), output, 'utf8')
-//     } catch (e) {
-//         console.log(e)
-//     }
-// }
-// /**
-//  * 
-//  * @param {DepsMap} depsMap 
-//  */
-// function toDeps(depsMap) {
-//     var output = []
-//     for (var [key,set] of depsMap) {
-//         var deps = [...set]
-//         if (deps.length) {
-//             output.push(`${key} : ${deps.join(' ')}`)
-//         }
-//     }
-//     return output.join('\n')
-// }
-
+exports.updateAllLibsNinja= function(){
+    runtimeNinja()
+    stdlibNinja()
+    othersNinja()
+}
