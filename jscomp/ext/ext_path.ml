@@ -30,8 +30,15 @@ type t =
 
 
 
-let sep_char = String.unsafe_get Filename.dir_sep 0 
 
+let split_by_sep_per_os : string -> string list = 
+  if Ext_sys.is_windows_or_cygwin then 
+  fun x -> 
+    (* on Windows, we can still accept -bs-package-output lib/js *)
+    Ext_string.split_by 
+      (fun x -> match x with |'/' |'\\' -> true | _ -> false) x
+  else 
+  fun x -> Ext_string.split x '/'
 
 (** example
     {[
@@ -65,8 +72,8 @@ let node_relative_path
     match file_or_dir_2 with 
     | Dir x -> x 
     | File file2 -> Filename.dirname file2  in
-  let dir1 = Ext_string.split relevant_dir1 sep_char   in
-  let dir2 = Ext_string.split relevant_dir2 sep_char  in
+  let dir1 = split_by_sep_per_os relevant_dir1 in
+  let dir2 = split_by_sep_per_os relevant_dir2 in
   let rec go (dir1 : string list) (dir2 : string list) = 
     match dir1, dir2 with 
     | "." :: xs, ys -> go xs ys 

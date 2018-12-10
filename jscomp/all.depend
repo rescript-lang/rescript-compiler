@@ -87,7 +87,7 @@ ext/ident_hashtbl.cmx : ext/hashtbl_gen.cmx ext/ext_ident.cmx \
     stubs/bs_hash_stubs.cmx ext/ident_hashtbl.cmi
 ext/int_hashtbl.cmx : ext/hashtbl_gen.cmx ext/ext_int.cmx \
     stubs/bs_hash_stubs.cmx ext/int_hashtbl.cmi
-ext/ext_path.cmx : ext/literals.cmx ext/ext_string.cmx \
+ext/ext_path.cmx : ext/literals.cmx ext/ext_sys.cmx ext/ext_string.cmx \
     ext/ext_pervasives.cmx ext/ext_list.cmx ext/ext_path.cmi
 ext/ext_filename.cmx : ext/literals.cmx ext/ext_string.cmx \
     ext/ext_pervasives.cmx ext/ext_path.cmx ext/ext_filename.cmi

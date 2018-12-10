@@ -1,7 +1,7 @@
 //@ts-check
 var os = require('os')
 var os_type = os.type()
-var os_arch = os.arch()
+
 var is_windows = !(os_type.indexOf('Windows') < 0)
 var is_bsd = !(os_type.indexOf('BSD') < 0)
 

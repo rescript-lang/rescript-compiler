@@ -170,7 +170,6 @@ function buildWithShell(cmd, $$event, lock, idle) {
     Child_process.spawn(cmd, ( [ ]), ( { "stdio" : "inherit", "shell" : true })).on("exit", (function () {
             console.log(">>>> Finish compiling");
             lock.release();
-            require('./runtimeDeps.js').create();
             if ($$event.needRebuild()) {
               return build(cmd, $$event, lock, idle);
             } else {

@@ -34,12 +34,11 @@ process.env.PATH =
     path.delimiter +
     process.env.PATH
 
-function setUpNinja() {
-    var vendor_ninja_version = '1.8.2'
-    var ninja_bin_output = path.join(root_dir, 'lib', 'ninja.exe')
+var ninja_bin_output = path.join(root_dir, 'lib', 'ninja.exe')
+// Make sure `ninja_bin_output` exists    
+function provideNinja() {
+    var vendor_ninja_version = '1.8.2'    
     var ninja_source_dir = path.join(root_dir, 'vendor', 'ninja')
-    
-
     function build_ninja() {
         console.log('No prebuilt Ninja, building Ninja now')
         var build_ninja_command = "./configure.py --bootstrap"
@@ -115,8 +114,12 @@ function tryToProvideOCamlCompiler() {
         console.log("config finished")
     }
 }
+var build_util = require('./build_util.js')
 
 // copy all [*.sys_extension] files into [*.exe]
+/**
+ * @returns {boolean}
+ */
 function copyBinToExe() {
     var indeed_windows_release = 0
     fs.readdirSync(lib_dir).forEach(function (f) {
@@ -132,59 +135,62 @@ function copyBinToExe() {
     return indeed_windows_release > 1
 }
 
+/**
+ * @returns {boolean}
+ */
 function checkPrebuilt() {
     try {
         var version = child_process.execFileSync(path.join(lib_dir, 'bsc' + sys_extension), ['-v'])
         console.log("checkoutput:", String(version))
         return copyBinToExe()
     } catch (e) {
-        console.log("No working prebuilt compiler")
+        console.log("No working prebuilt buckleScript compiler")
         return false
     }
 }
 
+function buildLibsAndInstall(){
+    child_process.execFileSync(ninja_bin_output, ["-t", "clean"], { cwd: path.join(root_dir, 'jscomp', 'runtime'), stdio: [0, 1, 2] , shell: false})
+    child_process.execFileSync(ninja_bin_output, { cwd: path.join(root_dir, 'jscomp', 'runtime'), stdio: [0, 1, 2] , shell: false})
+    child_process.execFileSync(ninja_bin_output, ["-t", "clean"], { cwd: path.join(root_dir, 'jscomp', 'others'), stdio: [0, 1, 2], shell: false})
+    child_process.execFileSync(ninja_bin_output, { cwd: path.join(root_dir, 'jscomp', 'others'), stdio: [0, 1, 2], shell: false })
+    child_process.execFileSync(ninja_bin_output, ["-t", "clean"], { cwd: path.join(root_dir, 'jscomp', 'stdlib-402'), stdio: [0, 1, 2], shell: false })
+    child_process.execFileSync(ninja_bin_output, { cwd: path.join(root_dir, 'jscomp', 'stdlib-402'), stdio: [0, 1, 2], shell : false })
+    console.log('Build finsihed')
+    if(is_windows){
+        build_util.install()
+    } else {
+        child_process.execSync(make + " install", root_dir_config)
+    }    
+}
 
-
-function non_windows_npm_release() {
+function provideCompiler() {
     if (fs.existsSync(path.join(lib_dir,'ocaml','pervasives.cmi'))) {
         console.log('Found pervasives.cmi, assume it was already built')
         return true // already built before
     }
-    if (checkPrebuilt()) {
-        // release mode, already has bsc.exe
-        child_process.execSync(make + " libs && " + make + " install", root_dir_config)
-    } else {
+    if (!checkPrebuilt()) {
+        // when not having bsc.exe
         tryToProvideOCamlCompiler()
-        if(process.env.BS_TRAVIS_CI === "1"){
+        if (process.env.BS_TRAVIS_CI === "1") {
             console.log('Enforcing snapshot in CI mode')
-            if(fs.existsSync(path.join(root_dir,'jscomp','Makefile'))){
+            if (fs.existsSync(path.join(root_dir, 'jscomp', 'Makefile'))) {
                 child_process.execSync("make -C jscomp force-snapshotml", root_dir_config)
             } else {
                 console.log("jscomp/Makefile is missing")
-            }            
+            }
         }
-        child_process.execSync(make + " world && " + make + " install", root_dir_config)
+        child_process.execFileSync(ninja_bin_output, { cwd: lib_dir, stdio: [0, 1, 2] })
+
+    }    
+}
+
+provideNinja()
+if (!is_windows || !(copyBinToExe())) {
+    if (is_windows) {
+        console.warn('seems to be on Cygwin')
     }
+    provideCompiler()
 }
+buildLibsAndInstall()
 
-var build_util = require('./build_util.js')
-
-
-if (is_windows) {
-    if (copyBinToExe()) {
-        child_process.execFileSync(
-            path.join(__dirname, 'win_build.bat'),
-            { cwd: path.join(root_dir, 'jscomp'), stdio: [0, 1, 2] }
-        )
-        console.log("Installing")
-        build_util.install()
-    } else {
-        // Cygwin
-        console.log("It is on windows, but seems to be that you are building against master branch, so we are going to depend on cygwin on master")
-        non_windows_npm_release()
-    }
-}
-else {
-    non_windows_npm_release()
-}
-setUpNinja()
