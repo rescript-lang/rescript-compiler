@@ -31,7 +31,7 @@
    [uper -lower > 1], [mid <> lower]
  *)  
 let rec binarySearchAux lower upper xs (k : int) = 
-  [%assert lower < upper];
+  if not (lower < upper) then Js_exn.raiseError "binarySearchAux"; 
   let mid = (lower + upper) / 2 in 
   let i,v = Js.Array.unsafe_get xs mid in   
   if i = k then v
