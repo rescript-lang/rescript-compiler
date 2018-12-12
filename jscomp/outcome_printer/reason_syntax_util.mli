@@ -22,7 +22,10 @@ val escape_string : string -> string
 
 #if defined BS_NO_COMPILER_PATCH then
 
+val reason_to_ml_swap : string -> string
+
 module TrailingCommaMarker : sig val char : char val string : string end
+module EOLMarker : sig val char : char val string : string end
 
 val pick_while : ('a -> bool) -> 'a list -> 'a list * 'a list
 
@@ -30,9 +33,13 @@ val split_by : ?keep_empty:bool -> (char -> bool) -> string -> string list
 
 val processLineEndingsAndStarts : string -> string
 
+val isLineComment : string -> bool
+
 val syntax_error_extension_node :
   Ast_404.Location.t ->
   string -> string Ast_404.Location.loc * Ast_404.Parsetree.payload
+
+val remove_stylistic_attrs_mapper : Ast_404.Ast_mapper.mapper
 
 val escape_stars_slashes_mapper :
   Ast_404.Ast_mapper.mapper -> Ast_404.Ast_mapper.mapper
@@ -96,10 +103,13 @@ type menhirError =
 
 val findMenhirErrorMessage : Ast_404.Location.t -> menhirError
 
+val default_error_message : string
+
 val add_error_message : menhirMessagesError -> unit
 
 val location_is_before : Ast_404.Location.t -> Ast_404.Location.t -> bool
 
 val location_contains : Ast_404.Location.t -> Ast_404.Location.t -> bool
 
+val explode_str : string -> char list
 #end
