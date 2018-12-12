@@ -2,7 +2,7 @@
 var child_process = require('child_process')
 var fs = require('fs')
 var path = require('path')
-var {sys_extension} = require('./config.js')
+var {sys_extension, is_windows} = require('./config.js')
 
 var root = path.join(__dirname, '..')
 var root_config = { cwd: root, stdio: [0, 1, 2] }
@@ -21,7 +21,9 @@ function buildCompiler() {
 		}
 	})
 }
+if(!is_windows){
+  require('./runtimeDeps.js').updateAllLibsNinja()
+}
 
-require('./runtimeDeps.js').updateAllLibsNinja()
 buildCompiler()
 

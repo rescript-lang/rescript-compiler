@@ -21,7 +21,7 @@ build js_json.cmj : cc js_json.ml | js_types.cmj js_string.cmj js_dict.cmj js_ar
 build js_json.cmi : cc js_json.mli | js_types.cmi js_string.cmj js_null.cmi js_dict.cmi
 build js_list.cmj : cc js_list.ml | js_vector.cmj js_list.cmi
 build js_list.cmi : cc js_list.mli | js_vector.cmi
-build js_mapperRt.cmj : cc js_mapperRt.ml | js_array.cmj js_mapperRt.cmi
+build js_mapperRt.cmj : cc js_mapperRt.ml | js_exn.cmj js_array.cmj js_mapperRt.cmi
 build js_mapperRt.cmi : cc js_mapperRt.mli
 build js_math.cmi js_math.cmj : cc js_math.ml | js_int.cmj
 build js_null.cmj : cc js_null.ml | js_exn.cmj js_null.cmi
