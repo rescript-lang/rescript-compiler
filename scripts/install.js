@@ -19,8 +19,16 @@ var path = require('path')
 // var os_type = os.type()
 var root_dir = path.join(__dirname, '..')
 var lib_dir = path.join(root_dir, 'lib')
+var jscomp_dir = path.join(root_dir, 'jscomp')
+var runtime_dir = path.join(jscomp_dir,'runtime')
+var others_dir = path.join(jscomp_dir,'others')
+var stdlib_dir = path.join(jscomp_dir, 'stdlib-402')
 var root_dir_config = { cwd: root_dir, stdio: [0, 1, 2] }
 
+// var dest_bin = path.join(root_dir, 'lib')
+// var dest_lib = path.join(root_dir, 'lib', 'ocaml')
+
+var ocaml_dir = path.join(lib_dir,'ocaml')
 var config = require('./config.js')
 var make = config.make
 var is_windows = config.is_windows
@@ -68,7 +76,13 @@ function provideNinja() {
         console.log("ninja binary is already cached: ", ninja_bin_output)
     }
     else if (fs.existsSync(ninja_os_path)) {
-        fs.renameSync(ninja_os_path, ninja_bin_output)
+        if(fs.copyFileSync){
+            // ninja binary size is small    
+            fs.copyFileSync(ninja_os_path,ninja_bin_output)
+        }
+        else {
+            fs.renameSync(ninja_os_path, ninja_bin_output)
+        }
         if (test_ninja_compatible(ninja_bin_output)) {
             console.log("ninja binary is copied from pre-distribution")
         } else {
@@ -79,7 +93,69 @@ function provideNinja() {
     }
 }
 
+function throwWhenError(err){
+    if(err!==null){
+        throw err
+    }
+}
 
+function copyFile(file, target) {
+	var stat = fs.statSync(file)
+	fs.createReadStream(file).pipe(
+		fs.createWriteStream(target,
+			{ mode: stat.mode }))
+
+}
+/**
+ * 
+ * @param {string} src 
+ * @param {(file:string)=>boolean} filter 
+ * @param {string} dest 
+ */
+function installDirBy(src,dest,filter){
+    fs.readdir(src,function(err,files){
+        if( err === null) {
+            files.forEach(function(file){
+                if(filter(file)){
+                    var x = path.join(src,file)
+                    var y = path.join(dest,file)
+                    // console.log(x, '----->', y )
+                    if(fs.copyFile !== undefined){
+                        fs.copyFile(x, y,throwWhenError)
+                    } else if(is_windows) {
+                        fs.rename(x,y,throwWhenError)    
+                    } else {
+                        copyFile(x,y)
+                    }
+                    
+                }
+            })
+        } else {
+            throw err
+        }
+    })
+}
+
+function install(){
+    if (!fs.existsSync(lib_dir)) {
+        fs.mkdirSync(lib_dir)
+    }
+    if (!fs.existsSync(ocaml_dir)) {
+        fs.mkdirSync(ocaml_dir)
+    }
+    installDirBy(runtime_dir,ocaml_dir,function(file){        
+        var y = path.parse(file)
+        return y.name === 'js' || y.ext.includes('cm')        
+    })
+    installDirBy(others_dir,ocaml_dir,function(file){
+        var y = path.parse(file)
+        return y.ext === '.ml' || y.ext === '.mli' || y.ext.includes('cm')
+    })
+    installDirBy(stdlib_dir,ocaml_dir,function(file){
+        var y = path.parse(file)
+        return y.ext === '.ml' || y.ext === '.mli' || y.ext.includes('cm')
+    })
+}
 /**
  * raise an exception if not matched
  */
@@ -114,25 +190,16 @@ function tryToProvideOCamlCompiler() {
         console.log("config finished")
     }
 }
-var build_util = require('./build_util.js')
 
-// copy all [*.sys_extension] files into [*.exe]
-/**
- * @returns {boolean}
- */
-function copyBinToExe() {
-    var indeed_windows_release = 0
+function renamePrebuiltCompilers() {
     fs.readdirSync(lib_dir).forEach(function (f) {
         var last_index = f.lastIndexOf(sys_extension)
         if (last_index !== -1) {
             var new_file = f.slice(0, - sys_extension.length) + ".exe"
-            build_util.poor_copy_sync(path.join(lib_dir, f), path.join(lib_dir, new_file));
+            fs.renameSync(path.join(lib_dir, f), path.join(lib_dir, new_file));
             // we do have .win file which means windows npm release
-            ++indeed_windows_release
         }
-
     })
-    return indeed_windows_release > 1
 }
 
 /**
@@ -142,26 +209,23 @@ function checkPrebuilt() {
     try {
         var version = cp.execFileSync(path.join(lib_dir, 'bsc' + sys_extension), ['-v'])
         console.log("checkoutput:", String(version))
-        return copyBinToExe()
+        console.log("Prebuilt compiler works good")
+        renamePrebuiltCompilers()
+        return true
     } catch (e) {
         console.log("No working prebuilt buckleScript compiler")
         return false
     }
 }
 
-function buildLibsAndInstall(){
-    cp.execFileSync(ninja_bin_output, ["-t", "clean"], { cwd: path.join(root_dir, 'jscomp', 'runtime'), stdio: [0, 1, 2] , shell: false})
-    cp.execFileSync(ninja_bin_output, { cwd: path.join(root_dir, 'jscomp', 'runtime'), stdio: [0, 1, 2] , shell: false})
-    cp.execFileSync(ninja_bin_output, ["-t", "clean"], { cwd: path.join(root_dir, 'jscomp', 'others'), stdio: [0, 1, 2], shell: false})
-    cp.execFileSync(ninja_bin_output, { cwd: path.join(root_dir, 'jscomp', 'others'), stdio: [0, 1, 2], shell: false })
-    cp.execFileSync(ninja_bin_output, ["-t", "clean"], { cwd: path.join(root_dir, 'jscomp', 'stdlib-402'), stdio: [0, 1, 2], shell: false })
-    cp.execFileSync(ninja_bin_output, { cwd: path.join(root_dir, 'jscomp', 'stdlib-402'), stdio: [0, 1, 2], shell : false })
+function buildLibs(){
+    cp.execFileSync(ninja_bin_output, ["-t", "clean"], { cwd: runtime_dir, stdio: [0, 1, 2] , shell: false})
+    cp.execFileSync(ninja_bin_output, { cwd: runtime_dir, stdio: [0, 1, 2] , shell: false})
+    cp.execFileSync(ninja_bin_output, ["-t", "clean"], { cwd: others_dir, stdio: [0, 1, 2], shell: false})
+    cp.execFileSync(ninja_bin_output, { cwd: others_dir, stdio: [0, 1, 2], shell: false })
+    cp.execFileSync(ninja_bin_output, ["-t", "clean"], { cwd: stdlib_dir, stdio: [0, 1, 2], shell: false })
+    cp.execFileSync(ninja_bin_output, { cwd: stdlib_dir, stdio: [0, 1, 2], shell : false })
     console.log('Build finsihed')
-    if(is_windows){
-        build_util.install()
-    } else {
-        cp.execSync(make + " install", root_dir_config)
-    }    
 }
 
 function provideCompiler() {
@@ -188,11 +252,14 @@ function provideCompiler() {
 }
 
 provideNinja()
-if (!is_windows || !(copyBinToExe())) {
-    if (is_windows) {
-        console.warn('seems to be on Cygwin')
-    }
+
+if(is_windows){
+    renamePrebuiltCompilers()
+} else{
     provideCompiler()
 }
-buildLibsAndInstall()
+
+buildLibs()
+
+install()
 
