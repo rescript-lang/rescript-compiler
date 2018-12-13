@@ -17,16 +17,16 @@ RUNTIME=jscomp/runtime
 STDLIB=jscomp/stdlib-402
 OTHERS=jscomp/others
 
-world:
-	@echo "Making compiler"
-	$(MAKE) -B -C lib -j $(NPROCS) all
-	$(MAKE) libs
+# world:
+# 	@echo "Making compiler"
+# 	$(MAKE) -B -C lib -j $(NPROCS) all
+# 	$(MAKE) libs
 
-libs:
-	@echo "Making compiler finished"
-	$(MAKE) -C jscomp/runtime -j $(NPROCS) all
-	$(MAKE) -C jscomp/others -j $(NPROCS) all
-	$(MAKE) -C $(STDLIB) -j $(NPROCS) all
+# libs:
+# 	@echo "Making compiler finished"
+# 	$(MAKE) -C jscomp/runtime -j $(NPROCS) all
+# 	$(MAKE) -C jscomp/others -j $(NPROCS) all
+# 	$(MAKE) -C $(STDLIB) -j $(NPROCS) all
 
 
 # TODO: sync up with

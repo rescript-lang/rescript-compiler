@@ -1,12 +1,14 @@
 #!/usr/bin/env node 
 //@ts-check
 
+// used as a unit of releasing
 var path = require('path')
 var fs = require('fs')
 var cp = require('child_process')
-var root = path.join(__dirname,'..')
-var libJsDir = path.join(root,'lib','js')
-var jscompDir = path.join(root,'jscomp')
+var rootDir = path.join(__dirname,'..')
+var libJsDir = path.join(rootDir,'lib','js')
+var jscompDir = path.join(rootDir,'jscomp')
+
 function run() {
 
 
@@ -25,8 +27,11 @@ function run() {
         { cwd: jscompDir, encoding: 'utf8', stdio: [0, 1, 2] })
     cp.execSync(`BS_DEBUG=false make -j9 force-snapshotml`,
         { cwd: jscompDir, encoding: 'utf8', stdio: [0, 1, 2] })
-    cp.execSync(`make  -j9 world`,
-        { cwd: root, stdio: [0, 1, 2] })
+    cp.execSync('ninja', {cwd : path.join(rootDir,'lib'), stdio:[0,1,2]})
+    cp.execSync('ninja -t clean && ninja', { cwd: path.join(rootDir, 'jscomp', 'runtime'), stdio: [0, 1, 2]})
+    cp.execSync('ninja -t clean && ninja', { cwd: path.join(rootDir, 'jscomp', 'others'), stdio: [0, 1, 2]})
+    cp.execSync('ninja -t clean && ninja', { cwd: path.join(rootDir, 'jscomp', 'stdlib-402'), stdio: [0, 1, 2]})
+    
 
 }
 if(require.main === module){
