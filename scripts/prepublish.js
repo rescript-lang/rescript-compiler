@@ -24,7 +24,7 @@ function verifyIsCleanWorkTree() {
     }
 }
 clean()
-p.execSync(`./release.sh`, { cwd: path.join(root, 'jscomp'), stdio: 'inherit' })
+require('./release').run()
 verifyIsCleanWorkTree()
 
 clean()
