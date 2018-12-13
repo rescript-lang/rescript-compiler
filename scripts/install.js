@@ -99,13 +99,27 @@ function throwWhenError(err){
     }
 }
 
-function copyFile(file, target) {
+function poorCopyFile(file, target) {
 	var stat = fs.statSync(file)
 	fs.createReadStream(file).pipe(
 		fs.createWriteStream(target,
-			{ mode: stat.mode }))
-
+			{ mode: stat.mode }))            
 }
+var installTrytoCopy;
+if(fs.copyFile !== undefined){
+    installTrytoCopy = function(x,y){
+        fs.copyFile(x,y,throwWhenError)
+    }
+} else if(is_windows){
+    installTrytoCopy = function(x,y){
+        fs.rename(x,y,throwWhenError)
+    }
+} else {
+    installTrytoCopy = function(x,y){
+        poorCopyFile(x,y)
+    }
+}
+
 /**
  * 
  * @param {string} src 
@@ -120,14 +134,7 @@ function installDirBy(src,dest,filter){
                     var x = path.join(src,file)
                     var y = path.join(dest,file)
                     // console.log(x, '----->', y )
-                    if(fs.copyFile !== undefined){
-                        fs.copyFile(x, y,throwWhenError)
-                    } else if(is_windows) {
-                        fs.rename(x,y,throwWhenError)    
-                    } else {
-                        copyFile(x,y)
-                    }
-                    
+                    installTrytoCopy(x,y)                    
                 }
             })
         } else {
