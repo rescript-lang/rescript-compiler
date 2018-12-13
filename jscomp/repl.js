@@ -33,7 +33,7 @@ function prepare() {
 
     e(`hash camlp4 2>/dev/null || { echo >&2 "camlp4 not installed. Please install: opam install camlp4"; exit 1; }`)
 
-    e(`./release.sh`)
+    require('../scripts/release').run()
 
     try {
       fs.unlinkSync(path.join(__dirname, 'bin', 'js_compiler.ml'))
@@ -124,6 +124,6 @@ e(`js_of_ocaml --disable share --toplevel +weak.js ./polyfill.js jsc.byte ${incl
 
 
 
-//  note it is preferred to run ./release.sh && ./js.sh otherwise  amdjs is not really latest
+
 
 
