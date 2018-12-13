@@ -23,7 +23,7 @@ You need to have [bucklescript-playground](https://github.com/BuckleScript/buckl
 opam switch 4.02.3+buckle-master
 eval `opam config env`
 opam install camlp4 ocp-ocamlres
-(cd vendor/ocaml && ./configure -prefix `pwd` && make world)
+(cd vendor/ocaml && ./configure -prefix `pwd` && make world.opt)
 (cd jscomp && BS_RELEASE_BUILD=true BS_PLAYGROUND=../../bucklescript-playground node repl.js)
 ```
 

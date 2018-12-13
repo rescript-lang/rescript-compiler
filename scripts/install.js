@@ -11,12 +11,12 @@
 // old compiler.ml
 // This will be run in npm postinstall, don't use too fancy features here
 
-var child_process = require('child_process')
+var cp = require('child_process')
 var fs = require('fs')
 var path = require('path')
-var os = require('os')
+// var os = require('os')
 
-var os_type = os.type()
+// var os_type = os.type()
 var root_dir = path.join(__dirname, '..')
 var lib_dir = path.join(root_dir, 'lib')
 var root_dir_config = { cwd: root_dir, stdio: [0, 1, 2] }
@@ -42,7 +42,7 @@ function provideNinja() {
     function build_ninja() {
         console.log('No prebuilt Ninja, building Ninja now')
         var build_ninja_command = "./configure.py --bootstrap"
-        child_process.execSync(build_ninja_command, { cwd: ninja_source_dir, stdio: [0, 1, 2] })
+        cp.execSync(build_ninja_command, { cwd: ninja_source_dir, stdio: [0, 1, 2] })
         fs.renameSync(path.join(ninja_source_dir, 'ninja'), ninja_bin_output)
         console.log('ninja binary is ready: ', ninja_bin_output)
     }
@@ -51,7 +51,7 @@ function provideNinja() {
     function test_ninja_compatible(binary_path) {
         var version;
         try {
-            version = child_process.execSync(JSON.stringify(binary_path) + ' --version', {
+            version = cp.execSync(JSON.stringify(binary_path) + ' --version', {
                 encoding: 'utf8',
                 stdio: ['pipe', 'pipe', 'ignore'] // execSync outputs to stdout even if we catch the error. Silent it here
             }).trim();
@@ -84,7 +84,7 @@ function provideNinja() {
  * raise an exception if not matched
  */
 function matchedCompilerExn() {
-    var output = child_process.execSync('ocamlc.opt -v', { encoding: 'ascii' })
+    var output = cp.execSync('ocamlc.opt -v', { encoding: 'ascii' })
     if (output.indexOf("4.02.3") >= 0) {
         console.log(output)
         console.log("Use the compiler above")
@@ -102,7 +102,7 @@ function tryToProvideOCamlCompiler() {
     } catch (e) {
         console.log('Build a local version of OCaml compiler, it may take a couple of minutes')
         try {
-            child_process.execFileSync(path.join(__dirname, 'buildocaml.sh'))
+            cp.execFileSync(path.join(__dirname, 'buildocaml.sh'))
         } catch (e) {
             console.log(e.stdout.toString());
             console.log(e.stderr.toString());
@@ -140,7 +140,7 @@ function copyBinToExe() {
  */
 function checkPrebuilt() {
     try {
-        var version = child_process.execFileSync(path.join(lib_dir, 'bsc' + sys_extension), ['-v'])
+        var version = cp.execFileSync(path.join(lib_dir, 'bsc' + sys_extension), ['-v'])
         console.log("checkoutput:", String(version))
         return copyBinToExe()
     } catch (e) {
@@ -150,17 +150,17 @@ function checkPrebuilt() {
 }
 
 function buildLibsAndInstall(){
-    child_process.execFileSync(ninja_bin_output, ["-t", "clean"], { cwd: path.join(root_dir, 'jscomp', 'runtime'), stdio: [0, 1, 2] , shell: false})
-    child_process.execFileSync(ninja_bin_output, { cwd: path.join(root_dir, 'jscomp', 'runtime'), stdio: [0, 1, 2] , shell: false})
-    child_process.execFileSync(ninja_bin_output, ["-t", "clean"], { cwd: path.join(root_dir, 'jscomp', 'others'), stdio: [0, 1, 2], shell: false})
-    child_process.execFileSync(ninja_bin_output, { cwd: path.join(root_dir, 'jscomp', 'others'), stdio: [0, 1, 2], shell: false })
-    child_process.execFileSync(ninja_bin_output, ["-t", "clean"], { cwd: path.join(root_dir, 'jscomp', 'stdlib-402'), stdio: [0, 1, 2], shell: false })
-    child_process.execFileSync(ninja_bin_output, { cwd: path.join(root_dir, 'jscomp', 'stdlib-402'), stdio: [0, 1, 2], shell : false })
+    cp.execFileSync(ninja_bin_output, ["-t", "clean"], { cwd: path.join(root_dir, 'jscomp', 'runtime'), stdio: [0, 1, 2] , shell: false})
+    cp.execFileSync(ninja_bin_output, { cwd: path.join(root_dir, 'jscomp', 'runtime'), stdio: [0, 1, 2] , shell: false})
+    cp.execFileSync(ninja_bin_output, ["-t", "clean"], { cwd: path.join(root_dir, 'jscomp', 'others'), stdio: [0, 1, 2], shell: false})
+    cp.execFileSync(ninja_bin_output, { cwd: path.join(root_dir, 'jscomp', 'others'), stdio: [0, 1, 2], shell: false })
+    cp.execFileSync(ninja_bin_output, ["-t", "clean"], { cwd: path.join(root_dir, 'jscomp', 'stdlib-402'), stdio: [0, 1, 2], shell: false })
+    cp.execFileSync(ninja_bin_output, { cwd: path.join(root_dir, 'jscomp', 'stdlib-402'), stdio: [0, 1, 2], shell : false })
     console.log('Build finsihed')
     if(is_windows){
         build_util.install()
     } else {
-        child_process.execSync(make + " install", root_dir_config)
+        cp.execSync(make + " install", root_dir_config)
     }    
 }
 
@@ -175,12 +175,14 @@ function provideCompiler() {
         if (process.env.BS_TRAVIS_CI === "1") {
             console.log('Enforcing snapshot in CI mode')
             if (fs.existsSync(path.join(root_dir, 'jscomp', 'Makefile'))) {
-                child_process.execSync("make -C jscomp force-snapshotml", root_dir_config)
+                cp.execSync("make -C jscomp force-snapshotml", root_dir_config)
             } else {
                 console.log("jscomp/Makefile is missing")
             }
         }
-        child_process.execFileSync(ninja_bin_output, { cwd: lib_dir, stdio: [0, 1, 2] })
+        // Note this ninja file only works under *nix due to the suffix
+        // under windows require '.exe'
+        cp.execFileSync(ninja_bin_output, { cwd: lib_dir, stdio: [0, 1, 2] })
 
     }    
 }
