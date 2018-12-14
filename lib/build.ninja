@@ -11,9 +11,9 @@ rule cc
 
 
 
-build bsdep.exe: cc bsdep.mli bsdep.ml
+# build bsdep.exe: cc bsdep.mli bsdep.ml
 build bsppx.exe: cc bsppx.mli bsppx.ml
-build bspp.exe:  cc bspp.mli bspp.ml
+# build bspp.exe:  cc bspp.mli bspp.ml
 build bsb.exe:  cc bsb.mli bsb.ml
     flags = $flags unix.cmxa str.cmxa
 build bsb_helper.exe:  cc bsb_helper.mli bsb_helper.ml

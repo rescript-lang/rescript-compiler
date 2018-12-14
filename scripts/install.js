@@ -11,16 +11,24 @@
 // old compiler.ml
 // This will be run in npm postinstall, don't use too fancy features here
 
-var child_process = require('child_process')
+var cp = require('child_process')
 var fs = require('fs')
 var path = require('path')
-var os = require('os')
+// var os = require('os')
 
-var os_type = os.type()
+// var os_type = os.type()
 var root_dir = path.join(__dirname, '..')
 var lib_dir = path.join(root_dir, 'lib')
+var jscomp_dir = path.join(root_dir, 'jscomp')
+var runtime_dir = path.join(jscomp_dir,'runtime')
+var others_dir = path.join(jscomp_dir,'others')
+var stdlib_dir = path.join(jscomp_dir, 'stdlib-402')
 var root_dir_config = { cwd: root_dir, stdio: [0, 1, 2] }
 
+// var dest_bin = path.join(root_dir, 'lib')
+// var dest_lib = path.join(root_dir, 'lib', 'ocaml')
+
+var ocaml_dir = path.join(lib_dir,'ocaml')
 var config = require('./config.js')
 var make = config.make
 var is_windows = config.is_windows
@@ -42,7 +50,7 @@ function provideNinja() {
     function build_ninja() {
         console.log('No prebuilt Ninja, building Ninja now')
         var build_ninja_command = "./configure.py --bootstrap"
-        child_process.execSync(build_ninja_command, { cwd: ninja_source_dir, stdio: [0, 1, 2] })
+        cp.execSync(build_ninja_command, { cwd: ninja_source_dir, stdio: [0, 1, 2] })
         fs.renameSync(path.join(ninja_source_dir, 'ninja'), ninja_bin_output)
         console.log('ninja binary is ready: ', ninja_bin_output)
     }
@@ -51,7 +59,7 @@ function provideNinja() {
     function test_ninja_compatible(binary_path) {
         var version;
         try {
-            version = child_process.execSync(JSON.stringify(binary_path) + ' --version', {
+            version = cp.execSync(JSON.stringify(binary_path) + ' --version', {
                 encoding: 'utf8',
                 stdio: ['pipe', 'pipe', 'ignore'] // execSync outputs to stdout even if we catch the error. Silent it here
             }).trim();
@@ -68,7 +76,13 @@ function provideNinja() {
         console.log("ninja binary is already cached: ", ninja_bin_output)
     }
     else if (fs.existsSync(ninja_os_path)) {
-        fs.renameSync(ninja_os_path, ninja_bin_output)
+        if(fs.copyFileSync){
+            // ninja binary size is small    
+            fs.copyFileSync(ninja_os_path,ninja_bin_output)
+        }
+        else {
+            fs.renameSync(ninja_os_path, ninja_bin_output)
+        }
         if (test_ninja_compatible(ninja_bin_output)) {
             console.log("ninja binary is copied from pre-distribution")
         } else {
@@ -79,12 +93,81 @@ function provideNinja() {
     }
 }
 
+function throwWhenError(err){
+    if(err!==null){
+        throw err
+    }
+}
 
+function poorCopyFile(file, target) {
+	var stat = fs.statSync(file)
+	fs.createReadStream(file).pipe(
+		fs.createWriteStream(target,
+			{ mode: stat.mode }))            
+}
+var installTrytoCopy;
+if(fs.copyFile !== undefined){
+    installTrytoCopy = function(x,y){
+        fs.copyFile(x,y,throwWhenError)
+    }
+} else if(is_windows){
+    installTrytoCopy = function(x,y){
+        fs.rename(x,y,throwWhenError)
+    }
+} else {
+    installTrytoCopy = function(x,y){
+        poorCopyFile(x,y)
+    }
+}
+
+/**
+ * 
+ * @param {string} src 
+ * @param {(file:string)=>boolean} filter 
+ * @param {string} dest 
+ */
+function installDirBy(src,dest,filter){
+    fs.readdir(src,function(err,files){
+        if( err === null) {
+            files.forEach(function(file){
+                if(filter(file)){
+                    var x = path.join(src,file)
+                    var y = path.join(dest,file)
+                    // console.log(x, '----->', y )
+                    installTrytoCopy(x,y)                    
+                }
+            })
+        } else {
+            throw err
+        }
+    })
+}
+
+function install(){
+    if (!fs.existsSync(lib_dir)) {
+        fs.mkdirSync(lib_dir)
+    }
+    if (!fs.existsSync(ocaml_dir)) {
+        fs.mkdirSync(ocaml_dir)
+    }
+    installDirBy(runtime_dir,ocaml_dir,function(file){        
+        var y = path.parse(file)
+        return y.name === 'js' || y.ext.includes('cm')        
+    })
+    installDirBy(others_dir,ocaml_dir,function(file){
+        var y = path.parse(file)
+        return y.ext === '.ml' || y.ext === '.mli' || y.ext.includes('cm')
+    })
+    installDirBy(stdlib_dir,ocaml_dir,function(file){
+        var y = path.parse(file)
+        return y.ext === '.ml' || y.ext === '.mli' || y.ext.includes('cm')
+    })
+}
 /**
  * raise an exception if not matched
  */
 function matchedCompilerExn() {
-    var output = child_process.execSync('ocamlc.opt -v', { encoding: 'ascii' })
+    var output = cp.execSync('ocamlc.opt -v', { encoding: 'ascii' })
     if (output.indexOf("4.02.3") >= 0) {
         console.log(output)
         console.log("Use the compiler above")
@@ -102,7 +185,7 @@ function tryToProvideOCamlCompiler() {
     } catch (e) {
         console.log('Build a local version of OCaml compiler, it may take a couple of minutes')
         try {
-            child_process.execFileSync(path.join(__dirname, 'buildocaml.sh'))
+            cp.execFileSync(path.join(__dirname, 'buildocaml.sh'))
         } catch (e) {
             console.log(e.stdout.toString());
             console.log(e.stderr.toString());
@@ -114,25 +197,19 @@ function tryToProvideOCamlCompiler() {
         console.log("config finished")
     }
 }
-var build_util = require('./build_util.js')
 
-// copy all [*.sys_extension] files into [*.exe]
-/**
- * @returns {boolean}
- */
-function copyBinToExe() {
-    var indeed_windows_release = 0
+function renamePrebuiltCompilers() {
     fs.readdirSync(lib_dir).forEach(function (f) {
         var last_index = f.lastIndexOf(sys_extension)
         if (last_index !== -1) {
             var new_file = f.slice(0, - sys_extension.length) + ".exe"
-            build_util.poor_copy_sync(path.join(lib_dir, f), path.join(lib_dir, new_file));
+            var x = path.join(lib_dir, f)
+            var y = path.join(lib_dir,new_file)
+            console.log(x,'-->',y)
+            fs.renameSync(x, y);
             // we do have .win file which means windows npm release
-            ++indeed_windows_release
         }
-
     })
-    return indeed_windows_release > 1
 }
 
 /**
@@ -140,28 +217,25 @@ function copyBinToExe() {
  */
 function checkPrebuilt() {
     try {
-        var version = child_process.execFileSync(path.join(lib_dir, 'bsc' + sys_extension), ['-v'])
+        var version = cp.execFileSync(path.join(lib_dir, 'bsc' + sys_extension), ['-v'])
         console.log("checkoutput:", String(version))
-        return copyBinToExe()
+        console.log("Prebuilt compiler works good")
+        renamePrebuiltCompilers()
+        return true
     } catch (e) {
         console.log("No working prebuilt buckleScript compiler")
         return false
     }
 }
 
-function buildLibsAndInstall(){
-    child_process.execFileSync(ninja_bin_output, ["-t", "clean"], { cwd: path.join(root_dir, 'jscomp', 'runtime'), stdio: [0, 1, 2] , shell: false})
-    child_process.execFileSync(ninja_bin_output, { cwd: path.join(root_dir, 'jscomp', 'runtime'), stdio: [0, 1, 2] , shell: false})
-    child_process.execFileSync(ninja_bin_output, ["-t", "clean"], { cwd: path.join(root_dir, 'jscomp', 'others'), stdio: [0, 1, 2], shell: false})
-    child_process.execFileSync(ninja_bin_output, { cwd: path.join(root_dir, 'jscomp', 'others'), stdio: [0, 1, 2], shell: false })
-    child_process.execFileSync(ninja_bin_output, ["-t", "clean"], { cwd: path.join(root_dir, 'jscomp', 'stdlib-402'), stdio: [0, 1, 2], shell: false })
-    child_process.execFileSync(ninja_bin_output, { cwd: path.join(root_dir, 'jscomp', 'stdlib-402'), stdio: [0, 1, 2], shell : false })
+function buildLibs(){
+    cp.execFileSync(ninja_bin_output, ["-t", "clean"], { cwd: runtime_dir, stdio: [0, 1, 2] , shell: false})
+    cp.execFileSync(ninja_bin_output, { cwd: runtime_dir, stdio: [0, 1, 2] , shell: false})
+    cp.execFileSync(ninja_bin_output, ["-t", "clean"], { cwd: others_dir, stdio: [0, 1, 2], shell: false})
+    cp.execFileSync(ninja_bin_output, { cwd: others_dir, stdio: [0, 1, 2], shell: false })
+    cp.execFileSync(ninja_bin_output, ["-t", "clean"], { cwd: stdlib_dir, stdio: [0, 1, 2], shell: false })
+    cp.execFileSync(ninja_bin_output, { cwd: stdlib_dir, stdio: [0, 1, 2], shell : false })
     console.log('Build finsihed')
-    if(is_windows){
-        build_util.install()
-    } else {
-        child_process.execSync(make + " install", root_dir_config)
-    }    
 }
 
 function provideCompiler() {
@@ -175,22 +249,27 @@ function provideCompiler() {
         if (process.env.BS_TRAVIS_CI === "1") {
             console.log('Enforcing snapshot in CI mode')
             if (fs.existsSync(path.join(root_dir, 'jscomp', 'Makefile'))) {
-                child_process.execSync("make -C jscomp force-snapshotml", root_dir_config)
+                cp.execSync("make -C jscomp force-snapshotml", root_dir_config)
             } else {
                 console.log("jscomp/Makefile is missing")
             }
         }
-        child_process.execFileSync(ninja_bin_output, { cwd: lib_dir, stdio: [0, 1, 2] })
+        // Note this ninja file only works under *nix due to the suffix
+        // under windows require '.exe'
+        cp.execFileSync(ninja_bin_output, { cwd: lib_dir, stdio: [0, 1, 2] })
 
     }    
 }
 
 provideNinja()
-if (!is_windows || !(copyBinToExe())) {
-    if (is_windows) {
-        console.warn('seems to be on Cygwin')
-    }
+
+if(is_windows){
+    renamePrebuiltCompilers()
+} else{
     provideCompiler()
 }
-buildLibsAndInstall()
+
+buildLibs()
+
+install()
 
