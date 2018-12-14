@@ -203,7 +203,10 @@ function renamePrebuiltCompilers() {
         var last_index = f.lastIndexOf(sys_extension)
         if (last_index !== -1) {
             var new_file = f.slice(0, - sys_extension.length) + ".exe"
-            fs.renameSync(path.join(lib_dir, f), path.join(lib_dir, new_file));
+            var x = path.join(lib_dir, f)
+            var y = path.join(lib_dir,new_file)
+            console.log(x,'-->',y)
+            fs.renameSync(x, y);
             // we do have .win file which means windows npm release
         }
     })

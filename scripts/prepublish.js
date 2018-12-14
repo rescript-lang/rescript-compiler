@@ -2,6 +2,7 @@
 var p = require('child_process')
 var path = require('path')
 var fs = require('fs')
+var assert = require('assert')
 var root = path.join(__dirname, '..')
 var root_config = { cwd: root, encoding: 'utf8' }
 var json = require(path.join(root, 'package.json'))
@@ -23,7 +24,13 @@ function verifyIsCleanWorkTree() {
         process.exit(2)
     }
 }
+
+function checkWinBinary(){
+    return fs.existsSync(path.join(root,'lib','bsc.win32'))
+}
+
 clean()
+
 require('./release').run()
 verifyIsCleanWorkTree()
 
@@ -49,3 +56,6 @@ console.log(`finish installing`)
 clean()
 verifyIsCleanWorkTree()
 console.log(`okay to publish`)
+
+console.log(`checking windows`)
+assert(checkWinBinary)
