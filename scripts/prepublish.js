@@ -26,7 +26,30 @@ function verifyIsCleanWorkTree() {
 }
 
 function checkWinBinary(){
-    return fs.existsSync(path.join(root,'lib','bsc.win32'))
+    var assocs = ['bsppx', 'bsb', 'bsb_helper', 'refmt', 'reactjs_jsx_ppx_2','bsc'].map(x=>{
+        return [x, { win32 : false, darwin : false}]
+    })
+    // @ts-ignore
+    var files = new Map( assocs )
+
+    // check sound
+    var libDir = path.join(root,'lib')
+    fs.readdirSync(libDir).forEach(x=>{
+        var y = path.parse(x)
+        if(y.ext === '.win32'){
+            assert (files.has(y.name), `unknown ${x}`)
+            files.get(y.name).win32 = true
+        } else  if(y.ext === '.darwin'){
+            assert  (files.has(y.name), `unknown ${x}`)
+            files.get(y.name).darwin = true
+        }    
+    })
+
+    // check complete 
+    files.forEach(x => {
+        assert(x.win32, `${x}.win32 not available`)
+        assert(x.darwin, `${x}.darwin not available`)
+    } )    
 }
 
 clean()
@@ -51,6 +74,7 @@ var tmpdir_config = {
     encoding: 'utf8', stdio: 'inherit'
 }
 console.log(`start installing`)
+// @ts-ignore
 p.execSync(`npm install`, tmpdir_config)
 console.log(`finish installing`)
 clean()
@@ -58,4 +82,4 @@ verifyIsCleanWorkTree()
 console.log(`okay to publish`)
 
 console.log(`checking windows`)
-assert(checkWinBinary)
+checkWinBinary()
