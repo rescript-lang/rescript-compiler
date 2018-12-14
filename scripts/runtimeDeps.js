@@ -196,9 +196,19 @@ function othersNinja() {
     jsOutput.push(phony_stmt)
 
     var beltTargets = collectTarget(othersFiles)
-    var beltDepsMap = ocamlDep(othersFiles, othersDir, new Map())
-    beltDepsMap.forEach((s)=>s.add(js_package))
-    var beltOutput = generateNinja(beltDepsMap, beltTargets)    
+    var depsMap = ocamlDep(othersFiles, othersDir, new Map())
+    depsMap.forEach((s,k)=>{
+        if(k.startsWith('belt')){
+            s.add('belt.cmi')
+            // Note compiling belt.ml still try to read
+            // belt_xx.cmi we need enforce the order to 
+            // avoid data race issues
+        } else if(k.startsWith('node')){
+            s.add('node.cmi')
+        }
+        s.add(js_package)
+    })
+    var beltOutput = generateNinja(depsMap, beltTargets)    
     
     fs.writeFileSync(path.join(othersDir, 'build.ninja'),
         templateOthersRules + jsOutput.join('\n') + '\n' + beltOutput.join('\n') + '\n',
