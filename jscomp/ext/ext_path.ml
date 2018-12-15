@@ -311,3 +311,7 @@ let concat dirname filename =
 
 let check_suffix_case =
   Ext_string.ends_with
+
+#if BS_NATIVE then
+let sep_char = String.get Filename.dir_sep 0
+#end

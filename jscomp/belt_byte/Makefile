@@ -119,6 +119,9 @@ OCAML_SRC_TOOLS=../../vendor/ocaml/tools
 ../../lib/belt_bsppx.exe:
 	make -C ../../lib belt_bsppx.exe
 
+../../lib/bspp.exe:
+	make -C ../../lib bspp.exe
+
 test: all
 	$(COMPILER) $(INCLUDES) -ppx $(BELT_BSPPX) -custom stubs.o -g -w +3-40-49 -warn-error A -bin-annot lib.cma -o test.byte test.ml
 	./test.byte

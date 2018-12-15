@@ -55,7 +55,7 @@ let stderr = {
       Js.log (Caml_string_extern.slice s 0 v) (* TODO: change to Js.error*)
     else Js.log s        
 }
-#if 0 then
+#if false then
 type in_channel
 
 let caml_ml_open_descriptor_in (i : int) : in_channel = 
