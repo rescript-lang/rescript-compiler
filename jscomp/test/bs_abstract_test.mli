@@ -25,3 +25,6 @@ type u1
   val uff2 : u1 -> int 
 
   val uff3 : u1 -> int 
+
+type u3   
+val fx : u3 -> int

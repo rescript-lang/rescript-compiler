@@ -26375,11 +26375,6 @@ val raw_string_payload : Location.t -> string -> t
 val assert_strings :
   Location.t -> t -> string list  
 
-(** if only [abstract] happens  [true]
-    if [abstract] does not appear [false]
-    if [abstract] happens with other, raise exception
-*)  
-val isAbstract : action list -> bool   
 (** as a record or empty 
     it will accept 
 
@@ -26535,22 +26530,6 @@ type action =
     {[ { x = exp }]}
 *)
 
-let  isAbstract (xs : action list) = 
-  match xs with 
-  | [{loc; txt = "abstract"}, None]  -> 
-    true 
-  | [{loc; txt = "abstract"}, Some _ ]
-    -> 
-      Location.raise_errorf ~loc "invalid config for abstract"
-  | xs -> 
-    List.iter (function (({loc; txt} : lid),_) ->  
-      match txt with 
-      | "abstract" -> 
-        Location.raise_errorf ~loc 
-          "bs.deriving abstract does not work with any other deriving"
-      | _ -> ()
-    ) xs ;
-    false
 
 
 let ident_or_record_as_config     
@@ -38652,10 +38631,25 @@ module Ast_derive_abstract : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type abstractKind = 
+  | Not_abstract
+  | Light_abstract
+  | Complex_abstract 
+
+val isAbstract : 
+  Ast_payload.action list -> abstractKind
+(** if only [abstract] happens  [true]
+    if [abstract] does not appear [false]
+    if [abstract] happens with other, raise exception
+*)  
+
+
 val handleTdclsInStr : 
+  light:bool -> 
   Parsetree.type_declaration list -> Parsetree.structure
 
 val handleTdclsInSig:  
+  light:bool ->
   Parsetree.type_declaration list -> Parsetree.signature
 end = struct
 #1 "ast_derive_abstract.ml"
@@ -38684,16 +38678,42 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-let derivingName = "abstract"
+(* let derivingName = "abstract" *)
 module U = Ast_derive_util
 open Ast_helper
 type tdcls = Parsetree.type_declaration list
 
-let handle_config (config : Parsetree.expression option) =
+type abstractKind = 
+  | Not_abstract
+  | Light_abstract
+  | Complex_abstract 
+
+let  isAbstract (xs :Ast_payload.action list) = 
+  match xs with 
+  | [{loc; txt = "abstract"}, 
+    (None 
+    )]  -> 
+    Complex_abstract
+  | [{loc; txt = "abstract"}, 
+    Some {pexp_desc = Pexp_ident {txt = Lident "light"}}  
+    ] -> Light_abstract
+  | [{loc; txt = "abstract"}, Some _ ]
+    -> 
+      Location.raise_errorf ~loc "invalid config for abstract"
+  | xs -> 
+    Ext_list.iter xs (function (({loc; txt}),_) ->  
+      match txt with 
+      | "abstract" -> 
+        Location.raise_errorf ~loc 
+          "bs.deriving abstract does not work with any other deriving"
+      | _ -> ()
+    ) ;
+    Not_abstract
+(* let handle_config (config : Parsetree.expression option) =
   match config with
   | Some config ->
     U.invalid_config config
-  | None -> ()
+  | None -> () *)
 
 
 
@@ -38714,7 +38734,11 @@ let deprecated name =
     ("use " ^ name ^ "Get instead")
 
 
-let handleTdcl (tdcl : Parsetree.type_declaration) =
+let handleTdcl 
+  light
+  (tdcl : Parsetree.type_declaration) 
+  : Parsetree.type_declaration * Parsetree.value_description list 
+  =
   let core_type = U.core_type_of_type_declaration tdcl in
   let loc = tdcl.ptype_loc in
   let type_name = tdcl.ptype_name.txt in
@@ -38728,9 +38752,9 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
   | Ptype_record label_declarations ->
     let is_private = tdcl.ptype_private = Private in
     let has_optional_field =
-      List.exists (fun ({pld_type; pld_attributes} : Parsetree.label_declaration) ->
+      Ext_list.exists label_declarations (fun {pld_type; pld_attributes} ->
           Ast_attributes.has_bs_optional pld_attributes
-        ) label_declarations in
+        )  in
     let setter_accessor, makeType, labels =
       Ext_list.fold_right
         label_declarations
@@ -38767,24 +38791,27 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
               
 
                 maker,
-              let aux b pld_name = 
+              let aux light deprec pld_name : Parsetree.value_description = 
                 (Val.mk ~loc:pld_loc
-                 (if b then pld_name else 
+                 (if light then pld_name else 
                   {pld_name with txt = pld_name.txt ^ "Get"})
-                ~attrs:(if b then deprecated (pld_name.Asttypes.txt) :: get_optional_attrs  
+                ~attrs:(if deprec then deprecated (pld_name.Asttypes.txt) :: get_optional_attrs  
                         else get_optional_attrs) ~prim
                 (Ast_compatible.arrow ~loc  core_type optional_type)
                 ) in 
-               aux true pld_name :: aux false pld_name  :: acc )
+                if not light then 
+                  aux true true pld_name :: aux false false pld_name  :: acc
+                else  aux true false pld_name :: acc                   
+              )
             else
               Ast_compatible.label_arrow ~loc:pld_loc label_name pld_type maker,
               (
-                let aux b pld_name = 
-                Val.mk ~loc:pld_loc 
-                  (if b then pld_name else 
-                    {pld_name with txt = pld_name.txt ^ "Get"}
-                  ) ~attrs:(if b then deprecated pld_name.Asttypes.txt :: get_attrs else get_attrs)
-              ~prim:(
+                let aux light deprec pld_name = 
+                  Val.mk ~loc:pld_loc 
+                    (if light then pld_name else 
+                       {pld_name with txt = pld_name.txt ^ "Get"}
+                    ) ~attrs:(if deprec then deprecated pld_name.Asttypes.txt :: get_attrs else get_attrs)
+                    ~prim:(
                 ["" ; (* Not needed actually*)
                 External_ffi_types.to_string 
                 (Ffi_bs (
@@ -38794,7 +38821,10 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
                   ))] )
                (Ast_compatible.arrow ~loc  core_type pld_type)
                in 
-               aux true pld_name ::aux false pld_name :: acc )
+               if not light then 
+                aux true true pld_name ::aux false false pld_name :: acc 
+               else aux true false pld_name :: acc 
+              )
           in
           let is_current_field_mutable = pld_mutable = Mutable in
           let acc =
@@ -38838,10 +38868,10 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
     (* U.notApplicable tdcl.ptype_loc derivingName;  *)
     tdcl, []
 
-let handleTdclsInStr tdcls =
+let handleTdclsInStr ~light tdcls =
   let tdcls, code =
     Ext_list.fold_right tdcls ([],[]) (fun tdcl (tdcls, sts)  ->
-        match handleTdcl tdcl with
+        match handleTdcl light tdcl with
           ntdcl, value_descriptions ->
           ntdcl::tdcls,
           Ext_list.map_append value_descriptions sts (fun x -> Str.primitive x) 
@@ -38849,10 +38879,10 @@ let handleTdclsInStr tdcls =
 Ast_compatible.rec_type_str tdcls :: code
 (* still need perform transformation for non-abstract type*)
 
-let handleTdclsInSig tdcls =
+let handleTdclsInSig ~light tdcls =
   let tdcls, code =
     Ext_list.fold_right tdcls ([],[]) (fun tdcl (tdcls, sts)  ->
-        match handleTdcl tdcl with
+        match handleTdcl light tdcl with
           ntdcl, value_descriptions ->
           ntdcl::tdcls,
           Ext_list.map_append value_descriptions sts (fun x -> Sig.value x) 
@@ -38959,8 +38989,9 @@ let handleTdclsInSigi
     let loc = sigi.psig_loc in
     let originalTdclsNewAttrs = newTdcls tdcls newAttrs in (* remove the processed attr*)
     let newTdclsNewAttrs = self.type_declaration_list self originalTdclsNewAttrs in
-    if Ast_payload.isAbstract actions then
-      let  codes = Ast_derive_abstract.handleTdclsInSig originalTdclsNewAttrs in
+    let kind = Ast_derive_abstract.isAbstract actions in
+    if kind <> Not_abstract then
+      let  codes = Ast_derive_abstract.handleTdclsInSig ~light:(kind = Light_abstract) originalTdclsNewAttrs in
       Ast_signature.fuseAll ~loc
         (
           Sig.include_ ~loc
@@ -39004,8 +39035,10 @@ let handleTdclsInStru
     let newStr : Parsetree.structure_item =
       Ast_compatible.rec_type_str ~loc (self.type_declaration_list self originalTdclsNewAttrs)
     in
-    if Ast_payload.isAbstract actions then
-      let codes = Ast_derive_abstract.handleTdclsInStr originalTdclsNewAttrs in
+    let kind = Ast_derive_abstract.isAbstract actions in 
+    if kind <> Not_abstract then
+      let codes = 
+          Ast_derive_abstract.handleTdclsInStr ~light:(kind = Light_abstract) originalTdclsNewAttrs in
       (* use [tdcls2] avoid nonterminating *)
       Ast_structure.fuseAll ~loc
         (

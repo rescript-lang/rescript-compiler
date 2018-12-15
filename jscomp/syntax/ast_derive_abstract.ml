@@ -28,10 +28,20 @@ module U = Ast_derive_util
 open Ast_helper
 type tdcls = Parsetree.type_declaration list
 
+type abstractKind = 
+  | Not_abstract
+  | Light_abstract
+  | Complex_abstract 
+
 let  isAbstract (xs :Ast_payload.action list) = 
   match xs with 
-  | [{loc; txt = "abstract"}, None]  -> 
-    true 
+  | [{loc; txt = "abstract"}, 
+    (None 
+    )]  -> 
+    Complex_abstract
+  | [{loc; txt = "abstract"}, 
+    Some {pexp_desc = Pexp_ident {txt = Lident "light"}}  
+    ] -> Light_abstract
   | [{loc; txt = "abstract"}, Some _ ]
     -> 
       Location.raise_errorf ~loc "invalid config for abstract"
@@ -43,7 +53,7 @@ let  isAbstract (xs :Ast_payload.action list) =
           "bs.deriving abstract does not work with any other deriving"
       | _ -> ()
     ) ;
-    false
+    Not_abstract
 (* let handle_config (config : Parsetree.expression option) =
   match config with
   | Some config ->
@@ -69,7 +79,11 @@ let deprecated name =
     ("use " ^ name ^ "Get instead")
 
 
-let handleTdcl (tdcl : Parsetree.type_declaration) =
+let handleTdcl 
+  light
+  (tdcl : Parsetree.type_declaration) 
+  : Parsetree.type_declaration * Parsetree.value_description list 
+  =
   let core_type = U.core_type_of_type_declaration tdcl in
   let loc = tdcl.ptype_loc in
   let type_name = tdcl.ptype_name.txt in
@@ -123,24 +137,27 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
 #end              
 
                 maker,
-              let aux b pld_name = 
+              let aux light deprec pld_name : Parsetree.value_description = 
                 (Val.mk ~loc:pld_loc
-                 (if b then pld_name else 
+                 (if light then pld_name else 
                   {pld_name with txt = pld_name.txt ^ "Get"})
-                ~attrs:(if b then deprecated (pld_name.Asttypes.txt) :: get_optional_attrs  
+                ~attrs:(if deprec then deprecated (pld_name.Asttypes.txt) :: get_optional_attrs  
                         else get_optional_attrs) ~prim
                 (Ast_compatible.arrow ~loc  core_type optional_type)
                 ) in 
-               aux true pld_name :: aux false pld_name  :: acc )
+                if not light then 
+                  aux true true pld_name :: aux false false pld_name  :: acc
+                else  aux true false pld_name :: acc                   
+              )
             else
               Ast_compatible.label_arrow ~loc:pld_loc label_name pld_type maker,
               (
-                let aux b pld_name = 
-                Val.mk ~loc:pld_loc 
-                  (if b then pld_name else 
-                    {pld_name with txt = pld_name.txt ^ "Get"}
-                  ) ~attrs:(if b then deprecated pld_name.Asttypes.txt :: get_attrs else get_attrs)
-              ~prim:(
+                let aux light deprec pld_name = 
+                  Val.mk ~loc:pld_loc 
+                    (if light then pld_name else 
+                       {pld_name with txt = pld_name.txt ^ "Get"}
+                    ) ~attrs:(if deprec then deprecated pld_name.Asttypes.txt :: get_attrs else get_attrs)
+                    ~prim:(
                 ["" ; (* Not needed actually*)
                 External_ffi_types.to_string 
                 (Ffi_bs (
@@ -150,7 +167,10 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
                   ))] )
                (Ast_compatible.arrow ~loc  core_type pld_type)
                in 
-               aux true pld_name ::aux false pld_name :: acc )
+               if not light then 
+                aux true true pld_name ::aux false false pld_name :: acc 
+               else aux true false pld_name :: acc 
+              )
           in
           let is_current_field_mutable = pld_mutable = Mutable in
           let acc =
@@ -194,10 +214,10 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
     (* U.notApplicable tdcl.ptype_loc derivingName;  *)
     tdcl, []
 
-let handleTdclsInStr tdcls =
+let handleTdclsInStr ~light tdcls =
   let tdcls, code =
     Ext_list.fold_right tdcls ([],[]) (fun tdcl (tdcls, sts)  ->
-        match handleTdcl tdcl with
+        match handleTdcl light tdcl with
           ntdcl, value_descriptions ->
           ntdcl::tdcls,
           Ext_list.map_append value_descriptions sts (fun x -> Str.primitive x) 
@@ -205,10 +225,10 @@ let handleTdclsInStr tdcls =
 Ast_compatible.rec_type_str tdcls :: code
 (* still need perform transformation for non-abstract type*)
 
-let handleTdclsInSig tdcls =
+let handleTdclsInSig ~light tdcls =
   let tdcls, code =
     Ext_list.fold_right tdcls ([],[]) (fun tdcl (tdcls, sts)  ->
-        match handleTdcl tdcl with
+        match handleTdcl light tdcl with
           ntdcl, value_descriptions ->
           ntdcl::tdcls,
           Ext_list.map_append value_descriptions sts (fun x -> Sig.value x) 

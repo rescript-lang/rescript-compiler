@@ -45,6 +45,10 @@ function uff3(f) {
   }
 }
 
+function fx(v) {
+  return v.x;
+}
+
 exports.f = f;
 exports.uf = uf;
 exports.uf1 = uf1;
@@ -52,4 +56,5 @@ exports.uf2 = uf2;
 exports.uff = uff;
 exports.uff2 = uff2;
 exports.uff3 = uff3;
+exports.fx = fx;
 /*  Not a pure module */
