@@ -23,16 +23,32 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-let derivingName = "abstract"
+(* let derivingName = "abstract" *)
 module U = Ast_derive_util
 open Ast_helper
 type tdcls = Parsetree.type_declaration list
 
-let handle_config (config : Parsetree.expression option) =
+let  isAbstract (xs :Ast_payload.action list) = 
+  match xs with 
+  | [{loc; txt = "abstract"}, None]  -> 
+    true 
+  | [{loc; txt = "abstract"}, Some _ ]
+    -> 
+      Location.raise_errorf ~loc "invalid config for abstract"
+  | xs -> 
+    Ext_list.iter xs (function (({loc; txt}),_) ->  
+      match txt with 
+      | "abstract" -> 
+        Location.raise_errorf ~loc 
+          "bs.deriving abstract does not work with any other deriving"
+      | _ -> ()
+    ) ;
+    false
+(* let handle_config (config : Parsetree.expression option) =
   match config with
   | Some config ->
     U.invalid_config config
-  | None -> ()
+  | None -> () *)
 
 
 
@@ -67,9 +83,9 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
   | Ptype_record label_declarations ->
     let is_private = tdcl.ptype_private = Private in
     let has_optional_field =
-      List.exists (fun ({pld_type; pld_attributes} : Parsetree.label_declaration) ->
+      Ext_list.exists label_declarations (fun {pld_type; pld_attributes} ->
           Ast_attributes.has_bs_optional pld_attributes
-        ) label_declarations in
+        )  in
     let setter_accessor, makeType, labels =
       Ext_list.fold_right
         label_declarations

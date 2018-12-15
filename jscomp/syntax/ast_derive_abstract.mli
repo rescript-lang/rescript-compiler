@@ -22,6 +22,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+ 
+val isAbstract : 
+  Ast_payload.action list -> bool
+(** if only [abstract] happens  [true]
+    if [abstract] does not appear [false]
+    if [abstract] happens with other, raise exception
+*)  
+
+
 val handleTdclsInStr : 
   Parsetree.type_declaration list -> Parsetree.structure
 

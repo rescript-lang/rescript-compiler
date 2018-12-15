@@ -57,7 +57,7 @@ let handleTdclsInSigi
     let loc = sigi.psig_loc in
     let originalTdclsNewAttrs = newTdcls tdcls newAttrs in (* remove the processed attr*)
     let newTdclsNewAttrs = self.type_declaration_list self originalTdclsNewAttrs in
-    if Ast_payload.isAbstract actions then
+    if Ast_derive_abstract.isAbstract actions then
       let  codes = Ast_derive_abstract.handleTdclsInSig originalTdclsNewAttrs in
       Ast_signature.fuseAll ~loc
         (
@@ -102,7 +102,7 @@ let handleTdclsInStru
     let newStr : Parsetree.structure_item =
       Ast_compatible.rec_type_str ~loc (self.type_declaration_list self originalTdclsNewAttrs)
     in
-    if Ast_payload.isAbstract actions then
+    if Ast_derive_abstract.isAbstract actions then
       let codes = Ast_derive_abstract.handleTdclsInStr originalTdclsNewAttrs in
       (* use [tdcls2] avoid nonterminating *)
       Ast_structure.fuseAll ~loc
