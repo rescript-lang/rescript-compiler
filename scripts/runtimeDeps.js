@@ -32,7 +32,7 @@ var mliFiles = files.filter(x=>!x.startsWith("bs_stdlib_mini") && x.endsWith('.m
 var sourceFiles = mlFiles.concat(mliFiles)
 var possibleJsFiles = [...new Set(sourceFiles.map(baseName))]
 
-var compiler = "../../lib/bsc.exe"
+// var compiler = "../../lib/bsc.exe"
 
 var templateRuntimeRules = `
 bsc = ../../lib/bsc.exe
@@ -115,28 +115,40 @@ function replaceCmj(x) {
 
 
 // bsdep.exe does not need post processing and -one-line flag
+
 /**
  * 
  * @param {string[]} files 
  * @param {string} dir
  * @param {DepsMap} depsMap
+ * @return {Promise<DepsMap>}
  */
-function ocamlDep(files,dir, depsMap) {
-    var pairs = cp.execSync(`ocamldep.opt -one-line -native ${files.join(' ')}`, {
-        cwd: dir,
-        encoding: 'ascii'
-    }).split('\n').map(x=>x.split(':'))
-
-    pairs.forEach(x=>{
-        var deps;
-        if (x[1] !== undefined && (deps = x[1].trim())) {
-            deps = deps.split(' ');
-            updateDepsKVs(replaceCmj(x[0]), deps.map(x=>replaceCmj(x)),depsMap)
-        }
+function ocamlDepAsync(files,dir, depsMap) {
+    return new Promise((resolve,reject) =>{
+        cp.exec(`ocamldep.opt -one-line -native ${files.join(' ')}`, {
+            cwd: dir,
+            encoding: 'ascii'
+        },function(error,stdout,stderr){
+            if(error !== null){
+                return reject(error)
+            } else {
+                var pairs = stdout.split('\n').map(x => x.split(':'))
+                pairs.forEach(x => {
+                    var deps;
+                    if (x[1] !== undefined && (deps = x[1].trim())) {
+                        deps = deps.split(' ');
+                        updateDepsKVs(replaceCmj(x[0]), deps.map(x => replaceCmj(x)), depsMap)
+                    }
+                }
+                )
+                return resolve(depsMap)
+            }
+        })        
     }
     )
-    return depsMap
+    
 }
+
 
 /**
  * 
@@ -163,7 +175,7 @@ function collectTarget(jsFiles){
     return allTargets 
 }
 
-function othersNinja() {
+async function othersNinja() {
     
     var othersDirFiles = fs.readdirSync(othersDir, 'ascii')    
 
@@ -188,15 +200,15 @@ function othersNinja() {
         }
      })
      // FIXME: we run `ocamldep` twice, could be saved in one process
-    var jsDepsMap = ocamlDep(jsFiles,
+    var [jsDepsMap, depsMap] = await Promise.all([ocamlDepAsync(jsFiles,
         othersDir,
         new Map()
-    )
+    ),
+        ocamlDepAsync(othersFiles, othersDir, new Map())])
     var jsOutput = generateNinja(jsDepsMap, jsTargets)
     jsOutput.push(phony_stmt)
 
     var beltTargets = collectTarget(othersFiles)
-    var depsMap = ocamlDep(othersFiles, othersDir, new Map())
     depsMap.forEach((s,k)=>{
         if(k.startsWith('belt')){
             s.add('belt.cmi')
@@ -210,20 +222,26 @@ function othersNinja() {
     })
     var beltOutput = generateNinja(depsMap, beltTargets)    
     
-    fs.writeFileSync(path.join(othersDir, 'build.ninja'),
+    fs.writeFile(path.join(othersDir, 'build.ninja'),
         templateOthersRules + jsOutput.join('\n') + '\n' + beltOutput.join('\n') + '\n',
-        'utf8'
+        'utf8',
+        function(err){
+            if(err!==null){
+                throw err
+            }
+        }
     )
 }
 
-function stdlibNinja(){
+async function stdlibNinja(){
     var stdlibDirFiles = fs.readdirSync(stdlibDir,'ascii')
     var sources = stdlibDirFiles.filter(x=>{
         return !(x.startsWith('camlinternalFormatBasics')) &&
             !(x.startsWith('pervasives')) &&
             (x.endsWith('.ml') || x.endsWith('.mli'))
     })
-    var depsMap  = ocamlDep(sources, stdlibDir, new Map)
+    // var depsMap  = ocamlDep(sources, stdlibDir, new Map)
+    var depsMap  = await ocamlDepAsync(sources, stdlibDir, new Map)
     var targets = collectTarget(sources)
     targets.forEach((ext,mod)=>{
         switch(ext){
@@ -238,9 +256,15 @@ function stdlibNinja(){
     })
     
     var output = generateNinja(depsMap,targets)
-    fs.writeFileSync(path.join(stdlibDir,'build.ninja'),
+    fs.writeFile(
+        path.join(stdlibDir,'build.ninja'),
         templateStdlibRules + output.join('\n') + '\n',
-        'utf8'
+        'utf8',
+        function(err){
+            if(err !== null){
+                throw err
+            }
+        }
     )    
 }
 
@@ -366,7 +390,7 @@ function generateNinja(depsMap,allTargets){
 }
 
 
-function runtimeNinja(){
+async function runtimeNinja(){
     /**
      * @type {DepsMap}
      */
@@ -402,12 +426,18 @@ function runtimeNinja(){
     }) 
     try{
         runJSCheck(depsMap)
-        ocamlDep(sourceFiles,runtimeDir, depsMap)
+        await ocamlDepAsync(sourceFiles,runtimeDir, depsMap)
         
         var stmts = generateNinja(depsMap,allTargets)
-        fs.writeFileSync(
+        fs.writeFile(
                 path.join(runtimeDir,'build.ninja'), 
-             templateRuntimeRules + stmts.join('\n') + '\n', 'utf8')
+             templateRuntimeRules + stmts.join('\n') + '\n', 'utf8',
+             function(err){
+                 if(err!==null){
+                     throw err
+                 }
+             }
+             )
     }catch(e){
         console.log(e)
     }
