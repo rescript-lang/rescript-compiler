@@ -309,7 +309,41 @@ function runJSCheck(depsMap) {
     }
     )
 }
-
+/**
+ * 
+ * @param {DepsMap} depsMap 
+ */
+function runJSCheckAsync(depsMap){
+    return new Promise((resolve) => {
+        var count = 0
+        var tasks = possibleJsFiles.length
+        var updateTick = () =>{
+            count ++
+            if(count === tasks){
+                resolve(count)
+            } 
+        }        
+        possibleJsFiles.forEach((name) => {
+            var jsFile = path.join(jsDir, name + ".js")
+            fs.readFile(jsFile, 'utf8', function (err, fileContent) {
+                if (err === null) {
+                    var deps = getDeps(fileContent).map(x => path.parse(x).name + ".cmj")
+                    fs.exists(path.join(runtimeDir, name + ".mli"), exist => {
+                        if (exist) {
+                            deps.push(name + ".cmi")
+                        }
+                        updateDepsKVs(`${name}.cmj`, deps, depsMap)
+                        updateTick()
+                    })
+                } else {
+                    // file non exist or reading error ignore
+                    updateTick()
+                }
+            })
+        }
+        )
+    })
+}
 
 /**
  * 
@@ -425,7 +459,7 @@ async function runtimeNinja(){
         }
     }) 
     try{
-        runJSCheck(depsMap)
+        await runJSCheckAsync(depsMap)
         await ocamlDepAsync(sourceFiles,runtimeDir, depsMap)
         
         var stmts = generateNinja(depsMap,allTargets)

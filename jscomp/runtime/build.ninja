@@ -8,17 +8,17 @@ build bs_stdlib_mini.cmi : cc bs_stdlib_mini.mli
     bsc_flags = -nostdlib -nopervasives
 build js.cmj js.cmi: cc js.ml    
     bsc_flags = $bsc_no_open_flags
-build block.cmj : cc block.ml | js.cmj caml_obj_extern.cmj block.cmi
+build block.cmj : cc block.ml | block.cmi js.cmj caml_obj_extern.cmj
 build block.cmi : cc block.mli | bs_stdlib_mini.cmi js.cmj caml_obj_extern.cmj
 build caml_array.cmj : cc caml_array.ml | caml_builtin_exceptions.cmj caml_array.cmi caml_array_extern.cmj
 build caml_array.cmi : cc caml_array.mli | bs_stdlib_mini.cmi js.cmj
-build caml_builtin_exceptions.cmj : cc caml_builtin_exceptions.ml | caml_obj_extern.cmj caml_builtin_exceptions.cmi
+build caml_builtin_exceptions.cmj : cc caml_builtin_exceptions.ml | caml_builtin_exceptions.cmi caml_obj_extern.cmj
 build caml_builtin_exceptions.cmi : cc caml_builtin_exceptions.mli | bs_stdlib_mini.cmi js.cmj
 build caml_bytes.cmj : cc caml_bytes.ml | caml_builtin_exceptions.cmj caml_bytes.cmi caml_string_extern.cmj caml_bytes_extern.cmj
 build caml_bytes.cmi : cc caml_bytes.mli | bs_stdlib_mini.cmi js.cmj
-build caml_exceptions.cmj : cc caml_exceptions.ml | js.cmj caml_obj_extern.cmj caml_nativeint_extern.cmj caml_builtin_exceptions.cmj caml_exceptions.cmi
+build caml_exceptions.cmj : cc caml_exceptions.ml | caml_exceptions.cmi js.cmj caml_obj_extern.cmj caml_nativeint_extern.cmj caml_builtin_exceptions.cmj
 build caml_exceptions.cmi : cc caml_exceptions.mli | bs_stdlib_mini.cmi js.cmj caml_builtin_exceptions.cmi
-build caml_float.cmj : cc caml_float.ml | caml_float_extern.cmj caml_float.cmi
+build caml_float.cmj : cc caml_float.ml | caml_float.cmi caml_float_extern.cmj
 build caml_float.cmi : cc caml_float.mli | bs_stdlib_mini.cmi js.cmj
 build caml_format.cmj : cc caml_format.ml | caml_int32.cmj caml_int64.cmj caml_utils.cmj caml_builtin_exceptions.cmj caml_format.cmi caml_string_extern.cmj caml_nativeint_extern.cmj caml_int64_extern.cmj caml_float_extern.cmj caml_float.cmj caml_char.cmj
 build caml_format.cmi : cc caml_format.mli | bs_stdlib_mini.cmi js.cmj
@@ -36,7 +36,7 @@ build caml_io.cmj : cc caml_io.ml | curry.cmj caml_io.cmi js.cmj caml_undefined_
 build caml_io.cmi : cc caml_io.mli | bs_stdlib_mini.cmi js.cmj caml_undefined_extern.cmj
 build caml_lexer.cmj : cc caml_lexer.ml | caml_builtin_exceptions.cmj caml_lexer.cmi
 build caml_lexer.cmi : cc caml_lexer.mli | bs_stdlib_mini.cmi js.cmj
-build caml_md5.cmj : cc caml_md5.ml | caml_string_extern.cmj caml_int32_extern.cmj caml_char.cmj caml_array_extern.cmj caml_md5.cmi
+build caml_md5.cmj : cc caml_md5.ml | caml_md5.cmi caml_string_extern.cmj caml_int32_extern.cmj caml_char.cmj caml_array_extern.cmj
 build caml_md5.cmi : cc caml_md5.mli | bs_stdlib_mini.cmi js.cmj
 build caml_missing_polyfill.cmj : cc caml_missing_polyfill.ml | caml_missing_polyfill.cmi
 build caml_missing_polyfill.cmi : cc caml_missing_polyfill.mli | bs_stdlib_mini.cmi js.cmj
@@ -46,11 +46,11 @@ build caml_obj.cmj : cc caml_obj.ml | block.cmj caml_primitive.cmj caml_builtin_
 build caml_obj.cmi : cc caml_obj.mli | bs_stdlib_mini.cmi js.cmj caml_obj_extern.cmj
 build caml_oo.cmj : cc caml_oo.ml | caml_array.cmj caml_builtin_exceptions.cmj caml_oo.cmi caml_obj_extern.cmj caml_array_extern.cmj
 build caml_oo.cmi : cc caml_oo.mli | bs_stdlib_mini.cmi js.cmj
-build caml_option.cmj : cc caml_option.ml | js.cmj caml_undefined_extern.cmj caml_obj_extern.cmj caml_option.cmi
+build caml_option.cmj : cc caml_option.ml | caml_option.cmi js.cmj caml_undefined_extern.cmj caml_obj_extern.cmj
 build caml_option.cmi : cc caml_option.mli | bs_stdlib_mini.cmi js.cmj caml_undefined_extern.cmj caml_obj_extern.cmj
-build caml_parser.cmj : cc caml_parser.ml | caml_obj_extern.cmj caml_parser.cmi
+build caml_parser.cmj : cc caml_parser.ml | caml_parser.cmi caml_obj_extern.cmj
 build caml_parser.cmi : cc caml_parser.mli | bs_stdlib_mini.cmi js.cmj caml_obj_extern.cmj
-build caml_primitive.cmj : cc caml_primitive.ml | caml_bytes_extern.cmj caml_primitive.cmi
+build caml_primitive.cmj : cc caml_primitive.ml | caml_primitive.cmi caml_bytes_extern.cmj
 build caml_primitive.cmi : cc caml_primitive.mli | bs_stdlib_mini.cmi js.cmj
 build caml_string.cmj : cc caml_string.ml | caml_builtin_exceptions.cmj caml_string.cmi caml_string_extern.cmj caml_char.cmj
 build caml_string.cmi : cc caml_string.mli | bs_stdlib_mini.cmi js.cmj
