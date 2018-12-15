@@ -296,23 +296,6 @@ function readDeps(name) {
  * 
  * @param {DepsMap} depsMap 
  */
-function runJSCheck(depsMap) {
-    possibleJsFiles.filter((x)=>{
-        return readDeps(x).length !== 0
-    }
-    ).forEach(x=>{
-        var deps = readDeps(x).map(x=>x + '.cmj')
-        if (fs.existsSync(path.join(runtimeDir, x + ".mli"))) {
-            deps.push(x + ".cmi")
-        }
-        updateDepsKVs(`${x}.cmj`, deps,depsMap)
-    }
-    )
-}
-/**
- * 
- * @param {DepsMap} depsMap 
- */
 function runJSCheckAsync(depsMap){
     return new Promise((resolve) => {
         var count = 0
@@ -459,9 +442,8 @@ async function runtimeNinja(){
         }
     }) 
     try{
-        await runJSCheckAsync(depsMap)
-        await ocamlDepAsync(sourceFiles,runtimeDir, depsMap)
-        
+        await Promise.all([runJSCheckAsync(depsMap),
+                          ocamlDepAsync(sourceFiles,runtimeDir, depsMap)])        
         var stmts = generateNinja(depsMap,allTargets)
         fs.writeFile(
                 path.join(runtimeDir,'build.ninja'), 
