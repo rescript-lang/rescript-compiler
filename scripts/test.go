@@ -126,12 +126,12 @@ func testTheme(theme string) {
 	os.RemoveAll(theme)
 	fmt.Println("Finish building", theme)
 }
-
+var ninja  = filepath.Join("lib","ninja.exe")
 func runMoCha(wg *sync.WaitGroup) {
 	defer wg.Done()
 
-	fmt.Println("make -C jscomp/test/all")
-	make := exec.Command("make", "-C", filepath.Join("jscomp", "test"))
+	fmt.Println("make -C jscomp/test/")
+	make := exec.Command(ninja, "-C", filepath.Join("jscomp", "test"))
 	makeOut, err := make.CombinedOutput()
 	fmt.Println(string(makeOut))
 	checkError(err)
