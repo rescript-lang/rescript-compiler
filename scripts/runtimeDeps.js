@@ -40,6 +40,7 @@ bsc_no_open_flags = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -
 bsc_flags = $bsc_no_open_flags -open Bs_stdlib_mini
 rule cc
     command = $bsc $bsc_flags -c $in
+    description = $in -> $out
 build bs_stdlib_mini.cmi : cc bs_stdlib_mini.mli
     bsc_flags = -nostdlib -nopervasives
 build js.cmj js.cmi: cc js.ml    
@@ -51,6 +52,7 @@ bsc = ../../lib/bsc.exe
 bsc_flags = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-no-check-div-by-zero -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js -bs-package-output amdjs:lib/amdjs -bs-package-output es6:lib/es6  -nostdlib -nopervasives  -unsafe -warn-error A -w -40-49-103 -bin-annot -bs-noassertfalse -open Bs_stdlib_mini -I ../runtime
 rule cc
     command = $bsc $bsc_flags -c $in
+    description = $in -> $out    
 build belt.cmj belt.cmi: cc belt.ml 
 build node.cmj node.cmi : cc node.ml        
 `
@@ -58,6 +60,7 @@ var templateStdlibRules = `
 bsc = ../../lib/bsc.exe
 rule cc
     command = $bsc $bsc_flags -c $in
+    description = $in -> $out    
 bsc_flags = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-no-check-div-by-zero -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js -bs-package-output amdjs:lib/amdjs -bs-package-output es6:lib/es6  -nostdlib -warn-error A -w -40-49-103 -bin-annot  -bs-no-warn-unimplemented-external  -I ../runtime  -I ../others
 build camlinternalFormatBasics.cmi : cc camlinternalFormatBasics.mli
     bsc_flags = $bsc_flags -nopervasives
@@ -68,7 +71,13 @@ build pervasives.cmj : cc pervasives.ml | pervasives.cmi
 build pervasives.cmi : cc pervasives.mli | camlinternalFormatBasics.cmj
     bsc_flags = $bsc_flags -nopervasives
 `
-
+var templateTestRules = `
+bsc = ../../lib/bsc.exe
+bsc_flags = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:jscomp/test  -w -40-52 -warn-error A+8-3-30-26+101-102-103-104-52 -bin-annot -I ../runtime -I ../stdlib-402 -I ../others
+rule cc
+    command = $bsc $bsc_flags -c $in
+    description = $in -> $out
+`
 /**
  * @typedef {Map<string,Set<string>>} DepsMap 
  */
@@ -281,15 +290,33 @@ function baseName(x) {
     return x.substr(0, x.indexOf('.'))
 }
 
-function readDeps(name) {
-    var jsFile = path.join(jsDir, name + ".js")
-    try {
-        var fileContent = fs.readFileSync(jsFile, 'utf8')
-        return getDeps(fileContent).map(x=>path.parse(x).name)
-    } catch (e) {
-        return []
-        // forgiving fallback
-    }
+var testDir = path.join(jscompDir,'test')
+
+async function testNinja(){
+    var testDirFiles = fs.readdirSync(testDir,'ascii')
+    var bsPacked = new Set([
+        'ocaml_parsetree_main.ml',
+        'ocaml_typed_tree_main.ml',
+        'parser_api_main.ml'
+    ])
+    var sources = testDirFiles.filter(x=>{
+        return (x.endsWith('.ml') || x.endsWith('.mli')) &&
+            (!bsPacked.has(x))
+    })
+
+    var depsMap = await ocamlDepAsync(sources, testDir, new Map)
+    var targets = collectTarget(sources)
+    var output = generateNinja(depsMap, targets)
+    fs.writeFile(
+        path.join(testDir,'build.ninja'),
+        templateTestRules + output.join('\n') + '\n',
+        'utf8',
+        function(err){
+            if(err !== null){
+                throw err
+            }
+        }
+    )
 }
 
 /**
@@ -523,6 +550,7 @@ if (require.main === module) {
                 runtimeNinja()
                 stdlibNinja()
                 othersNinja()
+                testNinja()
                 break   
         }
     }

@@ -1,5 +1,5 @@
 
-
+#if 0 then
 type t = 
   | Monday
   | Tuesday
@@ -61,3 +61,4 @@ include (struct
 end : sig 
   val u_to_value : u Bs_dyn.to_value 
 end)
+#end
