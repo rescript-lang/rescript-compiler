@@ -9,91 +9,13 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"strings"
 	"sync"
 	"time"
+	"runtime"
 )
 
-type command struct {
-	name string
-	task (func() (string, error))
-}
-type commands []command
 
-func andThen(a, b command) command {
-	var result command
-	result.name = a.name + " && " + b.name
-	result.task = (func() (string, error) {
-		output, err := a.task()
-		if err != nil {
-			return output, err
-		}
-		output2, err := b.task()
-		return output + output2, err
-	})
-	return result
-}
 
-// Output ...
-type Output struct {
-	name string
-	// log  string
-	err error
-}
-
-func runCommands(commands commands) {
-	size := len(commands)
-	output := make(chan Output, size)
-	var v sync.WaitGroup
-	for _, com := range commands {
-		v.Add(1)
-		go func(f command) {
-			defer v.Done()
-			fmt.Println("Running", f.name)
-			out, err := f.task()
-			fmt.Println(out)
-			if err != nil {
-				output <- Output{name: f.name, err: err}
-			}
-
-			fmt.Println("Finished", f.name)
-		}(com)
-	}
-
-	v.Wait()
-	close(output)
-
-	fmt.Println("All commands finished")
-	failed := 0
-	for x := range output {
-		failed++
-		fmt.Println("Failed command", x.name, x.err)
-
-	}
-	if failed == 0 {
-		fmt.Println("All commands successufl")
-	}
-
-}
-
-func makeCommand(label string, name string, args ...string) command {
-	cmd := exec.Command(name, args...)
-	return command{
-		name: label,
-		task: (func() (string, error) {
-			output, err := cmd.CombinedOutput()
-			return string(output), err
-		}),
-	}
-}
-func commandString(name string) command {
-	xs := strings.Fields(name)
-	if len(xs) == 0 {
-		panic("invalid command" + name)
-	}
-	return makeCommand(name, xs[0], xs[1:]...)
-
-}
 func checkError(err error, theme ...string) {
 	if err != nil {
 		log.Fatalf("Error in theme:%v\n====\n%s\n====\n", theme, err.Error())
@@ -128,37 +50,48 @@ func testTheme(theme string) {
 }
 
 
-var ninja  = filepath.Join("lib","ninja.exe")
+var ninja  string
 
-
-func installGlobal(wg *sync.WaitGroup) {
-	defer wg.Done()
-
-	cmd := exec.Command("npm", "install", "-g", ".")
-
-	output, err := cmd.CombinedOutput()
-	fmt.Printf(string(output))
-	checkError(err)
-}
 
 var cmd = exec.Command
 
+func checkFileExist(f string) bool{
+	if _, err := os.Stat(f); os.IsNotExist(err){
+		return false
+	}
+	return true
+}
 // Avoid rebuilding OCaml again
 func init() {
 	vendorOCamlPath, _ := filepath.Abs(filepath.Join(".", "vendor", "ocaml", "bin"))
 	os.Setenv("PATH",
 		vendorOCamlPath+string(os.PathListSeparator)+os.Getenv("PATH"))
-}
-func fatalError(err error) {
-	if err != nil {
-		panic(err)
+	var extension string 	
+
+	if runtime.GOOS == "linux" {
+		extension = "linux"
+	} else if runtime.GOOS == "darwin" {
+		extension = "darwin"
+	} else {
+		log.Fatalf("not supported platform for testing")
+	}
+	vendored :=filepath.Join("vendor","ninja", "snapshot", "ninja."+extension)
+	if checkFileExist(vendored){
+		ninja = vendored
+	} else if  new:= filepath.Join("lib","ninja.exe"); checkFileExist(new) {
+		ninja = new
+	} else {
+		fmt.Println("ninja could not be configured")
+		os.Exit(2)
+
 	}
 }
+
 func bsbInDir(builddir, dir string) {
 	script:= "input.js"
 	destDir := filepath.Join(builddir, dir)
 
-	if _, err := os.Stat(path.Join(destDir,script)); os.IsNotExist(err){
+	if !checkFileExist(path.Join(destDir,script)){
 		fmt.Println("Warn:", dir, "does not have input.js")
 		return
 	}
@@ -179,17 +112,24 @@ func bsbInDir(builddir, dir string) {
 }
 
 func main() {
-	noInstallGlobal := flag.Bool("no-install-global", false, "don't install global")
-	noOunitTest := flag.Bool("no-ounit", false, "don't do ounit test")
-	noMochaTest := flag.Bool("no-mocha", false, "don't run mocha")
-	noThemeTest := flag.Bool("no-theme", false, "no bsb theme test")
-	noBsbTest := flag.Bool("no-bsb", false, "no bsb test")
+	installGlobal := flag.Bool("install-global", false, "don't install global")
+	ounitTest := flag.Bool("ounit", false, "don't do ounit test")
+	mochaTest := flag.Bool("mocha", false, "don't run mocha")
+	themeTest := flag.Bool("theme", false, "no bsb theme test")
+	bsbTest := flag.Bool("bsb", false, "no bsb test")
+	all := flag.Bool("all",false,"test all")
 	// disableAll := flag.Bool("disable-all", false, "disable all tets")
 	flag.Parse()
-
+	if *all {
+		*installGlobal = true
+		*ounitTest = true
+		*mochaTest = true
+		*themeTest = true
+		*bsbTest = true
+	}
 	output, _ := cmd("which", "ocaml").CombinedOutput()
 	fmt.Println("OCaml:", string(output))
-	if !*noOunitTest {
+	if *ounitTest {
 		btest := cmd("make", "-C", "jscomp/bin", "test")
 		btest.Stdout = os.Stdout
 		btest.Stderr = os.Stderr 
@@ -198,17 +138,26 @@ func main() {
 			os.Exit(2)
 		}
 	}
-	if !*noMochaTest {
+	if *mochaTest {
 		make := cmd(ninja, "-C", "jscomp/test")
 		make.Stdout = os.Stdout
 		make.Stderr = os.Stderr
 		error := make.Run()
 		if error != nil {
+			fmt.Println(error)
+			os.Exit(2)
+		}
+		make = cmd("sh", "-c", "mocha jscomp/test/**/*test.js") 
+		make.Stdout = os.Stdout
+		make.Stderr = os.Stderr
+		error = make.Run()
+		if error != nil {
+			fmt.Println(error)
 			os.Exit(2)
 		}
 	}
 
-	if !*noInstallGlobal {
+	if *installGlobal {
 		ginstall := cmd("npm", "i", "-g", ".")
 		fmt.Println("install bucklescript globally")
 		start := time.Now()
@@ -225,7 +174,7 @@ func main() {
 		fmt.Println("BSBDIR:", string(bsbDir))
 	}
 	
-	if !*noThemeTest {
+	if *themeTest {
 		var wg sync.WaitGroup
 		for _, theme := range []string{
 			"basic",
@@ -244,7 +193,7 @@ func main() {
 		}
 		wg.Wait()
 	}
-	if !*noBsbTest {
+	if *bsbTest {
 		var wg sync.WaitGroup		
 		buildTestDir := filepath.Join("jscomp", "build_tests")
 		files, err := ioutil.ReadDir(buildTestDir)
