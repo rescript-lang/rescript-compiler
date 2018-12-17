@@ -5,7 +5,7 @@ set -e
 export OCAMLPARAM='_,bin-annot=1,annot=1' 
 export OCAMLRUNPARAM=b
 export BS_DEBUG=true
-export npm_package_name=bs-platform
+
 
 echo "Checking"
 
