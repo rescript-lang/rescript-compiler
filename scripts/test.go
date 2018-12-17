@@ -126,23 +126,10 @@ func testTheme(theme string) {
 	os.RemoveAll(theme)
 	fmt.Println("Finish building", theme)
 }
+
+
 var ninja  = filepath.Join("lib","ninja.exe")
-func runMoCha(wg *sync.WaitGroup) {
-	defer wg.Done()
 
-	fmt.Println("make -C jscomp/test/")
-	make := exec.Command(ninja, "-C", filepath.Join("jscomp", "test"))
-	makeOut, err := make.CombinedOutput()
-	fmt.Println(string(makeOut))
-	checkError(err)
-	fmt.Println("Running Mocha tests")
-	cmd := exec.Command("mocha", "./jscomp/test/**/*test.js")
-	output, err := cmd.CombinedOutput()
-	fmt.Println(string(output))
-	checkError(err)
-	fmt.Println("Running mocha finished")
-
-}
 
 func installGlobal(wg *sync.WaitGroup) {
 	defer wg.Done()
@@ -212,7 +199,7 @@ func main() {
 		}
 	}
 	if !*noMochaTest {
-		make := cmd("make", "-C", "jscomp", "travis-world-test")
+		make := cmd(ninja, "-C", "jscomp/test")
 		make.Stdout = os.Stdout
 		make.Stderr = os.Stderr
 		error := make.Run()
