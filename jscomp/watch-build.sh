@@ -17,7 +17,8 @@ make -r -j3 ../lib/bsc.exe ../lib/bsb.exe bin/cmjdump.exe ../lib/bsb_helper.exe
 echo "Making libs"
 make libs 
 echo "Making test"
-make -C test -j30 all
+# make -C test -j30 all
+ninja -C test
 echo "Making xwatcher"
 make -C xwatcher all
 

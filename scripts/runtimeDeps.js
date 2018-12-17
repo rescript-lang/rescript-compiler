@@ -77,6 +77,12 @@ bsc_flags = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-cross
 rule cc
     command = $bsc $bsc_flags -c $in
     description = $in -> $out
+rule mll    
+    command = ocamllex.opt $in
+    generator = true
+build arith_lexer.ml: mll arith_lexer.mll    
+build number_lexer.ml: mll number_lexer.mll
+build simple_lexer_test.ml: mll simple_lexer_test.mll    
 `
 /**
  * @typedef {Map<string,Set<string>>} DepsMap 
@@ -293,15 +299,10 @@ function baseName(x) {
 var testDir = path.join(jscompDir,'test')
 
 async function testNinja(){
-    var testDirFiles = fs.readdirSync(testDir,'ascii')
-    var bsPacked = new Set([
-        'ocaml_parsetree_main.ml',
-        'ocaml_typed_tree_main.ml',
-        'parser_api_main.ml'
-    ])
+    var testDirFiles = fs.readdirSync(testDir,'ascii')    
     var sources = testDirFiles.filter(x=>{
         return (x.endsWith('.ml') || x.endsWith('.mli')) &&
-            (!bsPacked.has(x))
+            (!x.endsWith('bspack.ml'))
     })
 
     var depsMap = await ocamlDepAsync(sources, testDir, new Map)
@@ -560,4 +561,5 @@ exports.updateAllLibsNinja= function(){
     runtimeNinja()
     stdlibNinja()
     othersNinja()
+    testNinja()
 }

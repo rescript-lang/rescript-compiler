@@ -4,6 +4,12 @@ bsc_flags = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-cross
 rule cc
     command = $bsc $bsc_flags -c $in
     description = $in -> $out
+rule mll    
+    command = ocamllex.opt $in
+    generator = true
+build arith_lexer.ml: mll arith_lexer.mll    
+build number_lexer.ml: mll number_lexer.mll
+build simple_lexer_test.ml: mll simple_lexer_test.mll    
 build 406_primitive_test.cmi 406_primitive_test.cmj : cc 406_primitive_test.ml | mt.cmj
 build a.cmi a.cmj : cc a.ml | test_order.cmj
 build a_filename_test.cmi a_filename_test.cmj : cc a_filename_test.ml | mt.cmj ext_filename_test.cmj

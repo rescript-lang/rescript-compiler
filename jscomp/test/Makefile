@@ -317,22 +317,16 @@ OCAML_SRC_UTILS=../../vendor/ocaml/utils/
 OCAML_SRC_PARSING=../../vendor/ocaml/parsing/
 OCAML_SRC_TYPING=../../vendor/ocaml/typing/
 
-arith_lexer.ml: arith_lexer.mll
-	$(CAMLLEX) $<
-number_lexer.ml: number_lexer.mll
-	$(CAMLLEX) $<
-simple_lexer_test.ml: simple_lexer_test.mll
-	$(CAMLLEX) $<
-ocaml_parsetree_test.ml: ocaml_parsetree_main.ml
-	$(BSPACK) -bs-main Ocaml_parsetree_main -bs-MD  -I $(OCAML_SRC_PARSING) -I $(OCAML_SRC_UTILS) -o $@
+ocaml_parsetree_test.ml: ocaml_parsetree_main_bspack.ml
+	$(BSPACK) -bs-main Ocaml_parsetree_main_bspack -bs-MD  -I $(OCAML_SRC_PARSING) -I $(OCAML_SRC_UTILS) -o $@
 
-ocaml_typedtree_test.ml: ocaml_typed_tree_main.ml
-	$(BSPACK) -bs-main Ocaml_typed_tree_main -bs-MD -I $(OCAML_SRC_PARSING) -I $(OCAML_SRC_UTILS) -I $(OCAML_SRC_TYPING) -o $@
+ocaml_typedtree_test.ml: ocaml_typed_tree_main_bspack.ml
+	$(BSPACK) -bs-main Ocaml_typed_tree_main_bspack -bs-MD -I $(OCAML_SRC_PARSING) -I $(OCAML_SRC_UTILS) -I $(OCAML_SRC_TYPING) -o $@
 
-parser_api.ml: parser_api_main.ml
-	$(BSPACK) -main-export Parser_api_main -bs-MD  -I $(OCAML_SRC_PARSING) -I $(OCAML_SRC_UTILS) -o $@
+parser_api.ml: parser_api_main_bspack.ml
+	$(BSPACK) -main-export Parser_api_main_bspack -bs-MD  -I $(OCAML_SRC_PARSING) -I $(OCAML_SRC_UTILS) -o $@
 
--include .depend
+include .depend
 
 depend:
 	$(CAMLDEP) -native -I ../runtime -I ../others *.mli *.ml | sed -e 's/\.cmx/.cmj/g' > .depend
