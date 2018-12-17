@@ -4,6 +4,7 @@ bsc_no_open_flags = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -
 bsc_flags = $bsc_no_open_flags -open Bs_stdlib_mini
 rule cc
     command = $bsc $bsc_flags -c $in
+    description = $in -> $out
 build bs_stdlib_mini.cmi : cc bs_stdlib_mini.mli
     bsc_flags = -nostdlib -nopervasives
 build js.cmj js.cmi: cc js.ml    

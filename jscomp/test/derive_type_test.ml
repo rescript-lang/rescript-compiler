@@ -1,3 +1,4 @@
+#if 0 then
 type t = 
   | Monday
   | Tuesday
@@ -41,3 +42,4 @@ type nonrec x =
 
 type nonrec vv = { x : int ; y : string }
     [@@bs.deriving {dynval}]
+#end

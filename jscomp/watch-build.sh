@@ -5,7 +5,7 @@ set -e
 export OCAMLPARAM='_,bin-annot=1,annot=1' 
 export OCAMLRUNPARAM=b
 export BS_DEBUG=true
-export npm_package_name=bs-platform
+
 
 echo "Checking"
 
@@ -17,7 +17,8 @@ make -r -j3 ../lib/bsc.exe ../lib/bsb.exe bin/cmjdump.exe ../lib/bsb_helper.exe
 echo "Making libs"
 make libs 
 echo "Making test"
-make -C test -j30 all
+# make -C test -j30 all
+ninja -C test
 echo "Making xwatcher"
 make -C xwatcher all
 

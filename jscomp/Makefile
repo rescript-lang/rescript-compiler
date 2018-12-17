@@ -643,11 +643,6 @@ release:bin/bspack.exe bin/jscmj.exe bin/jsgen.exe snapshotml
 
 
 
-travis-world-test:
-	@echo "Making test"
-	$(MAKE) -C test all
-	mocha test/**/*test.js
-	@echo "Making test finsihed"
 
 
 

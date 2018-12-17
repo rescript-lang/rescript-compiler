@@ -1,3 +1,4 @@
+#if 0 then
 let hh = 3
 let aa = Simple_derive_test.uu_to_value
 
@@ -7,3 +8,4 @@ let aa = Simple_derive_test.uu_to_value
 *)
 let bb = 
   Simple_derive_test.vv_to_value
+#end

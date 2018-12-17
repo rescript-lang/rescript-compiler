@@ -1,4 +1,4 @@
-
+#if 0 then
 type nonrec vv = 
   { x : int ;
     y : string ; 
@@ -52,3 +52,4 @@ or
 
 in production mode, we remove `bs.log` and it will remove unused code automatically
 *)
+#end

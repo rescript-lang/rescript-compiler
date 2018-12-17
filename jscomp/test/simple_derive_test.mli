@@ -1,4 +1,4 @@
-
+#if 0 then
 
 
 type nonrec vv = 
@@ -34,3 +34,4 @@ let f v = [%bs.deriving.dynval: vv] v [@bs]
 [%bs.deriving.dynval int list]
 ]}
 *)
+#end

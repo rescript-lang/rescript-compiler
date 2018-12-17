@@ -1,4 +1,4 @@
-
+#if 0 then
 type error 
 
 external readFile : string -> (error -> string -> unit) -> unit = "read"
@@ -17,10 +17,11 @@ let f x =
     match readFile content with 
     | [%bs ERROR, content] -> 
         ()
-    | [%bs? _, content] -> ()
+    | [%bs? _, content] -> () 
 (** advantages of attribute 
 - could have payload, more customizations
 
 Questions:
 - How to handle and ?
 *)
+#end
