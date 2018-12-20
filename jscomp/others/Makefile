@@ -168,7 +168,7 @@ belt_SortArrayString.ml : sort.cppo.ml
 	cppo -D TYPE_STRING $^ >$@
 belt_SortArrayInt.mli : sort.cppo.mli
 	cppo -D TYPE_INT $^ > $@
-belt_gSortArrayString.mli : sort.cppo.mli
+belt_SortArrayString.mli : sort.cppo.mli
 	cppo -D TYPE_STRING $^ > $@
 endif	
 
