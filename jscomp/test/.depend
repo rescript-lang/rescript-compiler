@@ -337,7 +337,6 @@ int_hashtbl_test.cmj : mt.cmj
 int_map.cmj :
 int_overflow_test.cmj : mt.cmj ../runtime/js.cmj
 int_switch_test.cmj : mt.cmj
-int_swtich_test.cmj :
 io_test.cmj : ../runtime/js.cmj
 js_array_test.cmj : mt.cmj ../runtime/js.cmj
 js_bool_test.cmj : mt.cmj
@@ -367,7 +366,6 @@ js_typed_array_test.cmj : mt.cmj ../others/js_typed_array.cmj \
 js_undefined_test.cmj : mt.cmj ../others/js_undefined.cmj ../runtime/js.cmj
 js_val.cmj :
 jsoo_400_test.cmj : mt.cmj
-jsoo_485.cmj :
 jsoo_485_test.cmj :
 key_word_property.cmj :
 key_word_property2.cmj : export_keyword.cmj
@@ -423,12 +421,12 @@ obj_literal_ppx_test.cmj : ../runtime/js.cmj
 obj_magic_test.cmj : mt.cmj
 obj_test.cmj : mt.cmj
 obj_type_test.cmj : ../runtime/js.cmj
-ocaml_parsetree_main.cmj : mt.cmj
+ocaml_parsetree_main_bspack.cmj : mt.cmj
 ocaml_parsetree_test.cmj : ../others/node.cmj ../runtime/js.cmj \
     ocaml_parsetree_test.cmi
 ocaml_proto_test.cmj : mt.cmj ocaml_proto_test.cmi
 ocaml_re_test.cmj : mt.cmj
-ocaml_typed_tree_main.cmj : mt.cmj
+ocaml_typed_tree_main_bspack.cmj : mt.cmj
 ocaml_typedtree_test.cmj : ../others/node.cmj ../runtime/js.cmj \
     ocaml_typedtree_test.cmi
 of_string_test.cmj : mt.cmj
@@ -438,7 +436,7 @@ option_repr_test.cmj : mt.cmj ../runtime/js.cmj ../others/belt.cmj
 optional_ffi_test.cmj : mt.cmj
 optional_regression_test.cmj : mt.cmj ../runtime/js.cmj
 parser_api.cmj :
-parser_api_main.cmj :
+parser_api_main_bspack.cmj :
 parser_api_test.cmj : parser_api.cmj mt.cmj
 pipe_send_readline.cmj : ../runtime/js.cmj
 pipe_syntax.cmj :
@@ -487,9 +485,8 @@ sexpm_test.cmj : sexpm.cmj mt.cmj ../runtime/js.cmj
 shift_test.cmj :
 side_effect.cmj : ../runtime/js.cmj
 side_effect_free.cmj :
-simple_derive_test.cmj : ../runtime/js.cmj ../others/belt.cmj \
-    simple_derive_test.cmi
-simple_derive_use.cmj : simple_derive_test.cmj simple_derive_use.cmi
+simple_derive_test.cmj : simple_derive_test.cmi
+simple_derive_use.cmj : simple_derive_use.cmi
 simple_lexer_test.cmj : mt.cmj
 simplify_lambda_632o.cmj :
 single_module_alias.cmj :
