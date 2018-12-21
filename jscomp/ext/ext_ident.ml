@@ -160,7 +160,7 @@ let reserved_words =
     "Buffer"; (* Node *)
     "Map"; (* es6*)
     "Set";
-
+    "Promise";
     "Infinity";
     "isFinite";
 

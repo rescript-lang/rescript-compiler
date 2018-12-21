@@ -561,6 +561,7 @@ build test_pervasive.cmi test_pervasive.cmj : cc test_pervasive.ml
 build test_pervasives2.cmi test_pervasives2.cmj : cc test_pervasives2.ml
 build test_pervasives3.cmi test_pervasives3.cmj : cc test_pervasives3.ml
 build test_primitive.cmi test_primitive.cmj : cc test_primitive.ml
+build test_promise_bind.cmi test_promise_bind.cmj : cc test_promise_bind.ml | promise.cmj
 build test_ramification.cmi test_ramification.cmj : cc test_ramification.ml
 build test_react.cmi test_react.cmj : cc test_react.ml
 build test_react_case.cmi test_react_case.cmj : cc test_react_case.ml
