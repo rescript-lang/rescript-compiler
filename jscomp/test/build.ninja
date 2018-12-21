@@ -431,6 +431,7 @@ build printf_sim.cmi printf_sim.cmj : cc printf_sim.ml
 build printf_test.cmi printf_test.cmj : cc printf_test.ml | mt.cmj
 build promise.cmi promise.cmj : cc promise.ml
 build promise_catch_test.cmi promise_catch_test.cmj : cc promise_catch_test.ml | mt.cmj
+build promise_test.cmi promise_test.cmj : cc promise_test.ml | promise.cmj
 build qcc.cmi qcc.cmj : cc qcc.ml
 build queue_test.cmi queue_test.cmj : cc queue_test.ml | mt.cmj
 build random_test.cmi random_test.cmj : cc random_test.ml | mt_global.cmj mt.cmj

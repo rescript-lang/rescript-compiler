@@ -457,6 +457,7 @@ printf_sim.cmj :
 printf_test.cmj : mt.cmj
 promise.cmj : ../runtime/js.cmj
 promise_catch_test.cmj : mt.cmj ../runtime/js.cmj
+promise_test.cmj : promise.cmj
 qcc.cmj :
 queue_test.cmj : mt.cmj
 random_test.cmj : mt_global.cmj mt.cmj
