@@ -16,9 +16,15 @@ var bsb_exe = __filename + ".exe"
 var LAST_SUCCESS_BUILD_STAMP = 0
 
 // All clients of type MiniWebSocket
+/**
+ * @type {any[]}
+ */
 var wsClients = []
 var watch_mode = false
 var verbose = false
+/**
+ * @type {string | undefined}
+ */
 var postBuild = undefined
 var useWebSocket = false
 var webSocketPort = 9999

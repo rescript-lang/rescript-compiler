@@ -1,8 +1,8 @@
 'use strict';
 
-var Promise = require("./promise.js");
+var $$Promise = require("./promise.js");
 
-var v = Promise.f;
+var v = $$Promise.f;
 
 exports.v = v;
 /* Promise Not a pure module */

@@ -1,0 +1,12 @@
+{
+    "compilerOptions": {
+        "alwaysStrict": true
+        , "noImplicitAny": true
+        // , "strictNullChecks": true
+        , "target": "es2018"
+        // target need be set up
+        // otherwise some method is missing
+        , "module": "commonjs"
+        // setup to understand commonjs module
+    }   
+}
