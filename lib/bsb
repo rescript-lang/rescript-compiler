@@ -23,6 +23,10 @@ var postBuild = undefined
 var useWebSocket = false
 var webSocketPort = 9999
 
+/**
+ * 
+ * @param {*} str 
+ */
 function dlog(str){
     if(verbose){
         console.log(str)
@@ -305,7 +309,7 @@ if (watch_mode) {
             notifyClients()
             if(postBuild){
                 dlog(`running postbuild command: ${postBuild}`)
-                child_process.exec(postBuild, { shell: true })
+                child_process.exec(postBuild)
             }
         }
         logFinish(code)
@@ -317,7 +321,7 @@ if (watch_mode) {
             watch_build(files)
         }
     }
-    var sub_config = { stdio: ['inherit', 'inherit', 'pipe'] }
+
 
 
     /**
@@ -346,7 +350,7 @@ if (watch_mode) {
             }
             reasons_to_rebuild = [];
             var p = child_process
-                .spawn(bsb_exe, [], sub_config);
+                .spawn(bsb_exe, [], { stdio: ['inherit', 'inherit', 'pipe'] });
             p.on('exit', build_finished_callback)
             p.stderr
                 .setEncoding('utf8')
