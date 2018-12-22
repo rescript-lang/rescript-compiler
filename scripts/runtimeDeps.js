@@ -282,16 +282,27 @@ async function stdlibNinja(){
         }
     )    
 }
-
+/**
+ * 
+ * @param {string} text 
+ */
 function getDeps(text) {
+    /**
+     * @type {string[]}
+     */
     var deps = []
     text.replace(/(\/\*[\w\W]*?\*\/|\/\/[^\n]*|[.$]r)|\brequire\s*\(\s*["']([^"']*)["']\s*\)/g, function(_, ignore, id) {
         if (!ignore)
             deps.push(id);
+        return "" // TODO: examine the regex
     });
     return deps;
 }
 
+/**
+ * 
+ * @param {string} x 
+ */
 function baseName(x) {
     return x.substr(0, x.indexOf('.'))
 }
@@ -361,7 +372,7 @@ function runJSCheckAsync(depsMap){
  * @param {string[]} output 
  * @param {string[]} inputs 
  * @param {DepsMap} depsMap 
- * @param {any[]} overrides
+ * @param {Override[]} overrides
  */
 function build_stmt(output, inputs,depsMap, overrides = [] ){
     var stmt =  `build ${output.join(' ')} : cc ${inputs.join(' ')}` 
@@ -386,7 +397,11 @@ function build_stmt(output, inputs,depsMap, overrides = [] ){
     return stmt
 }
 
-
+/**
+ * 
+ * @typedef {{key : string, value : string}} Override
+ * 
+ */
 
 
 /**
@@ -406,6 +421,9 @@ function generateNinja(depsMap,allTargets){
         var output_cmi = mod + ".cmi"
         var input_ml = mod + ".ml"
         var input_mli = mod + ".mli"
+        /**
+         * @type {Override[]}
+         */
         var overrides = []
         if(mod.endsWith('Labels')){
             overrides.push({key:'bsc_flags',value : '$bsc_flags -nolabels'})
