@@ -5,21 +5,6 @@ var fs = require('fs')
 var path = require('path')
 var cp = require('child_process')
 
-
-/**
- * cases:
- *  ml
- *  mli
- *  ml, mli
- * 
- */
-var target = {
-    HAS_ML : 'HAS_ML',
-    HAS_MLI : 'HAS_MLI',
-    HAS_BOTH : "HAS_BOTH"
-}
-
-
 var jscompDir = path.join(__dirname,'..','jscomp')
 var runtimeDir = path.join(jscompDir, 'runtime')
 var othersDir = path.join(jscompDir,'others')
@@ -27,11 +12,16 @@ var jsDir = path.join(__dirname, '..', 'lib', 'js')
 var stdlibVersion = 'stdlib-402'
 var stdlibDir = path.join(jscompDir,stdlibVersion)
 
-var files = fs.readdirSync(runtimeDir, 'utf8')
-var mlFiles = files.filter(x=>!x.startsWith("bs_stdlib_mini") && x.endsWith('.ml') && x !== "js.ml")
-var mliFiles = files.filter(x=>!x.startsWith("bs_stdlib_mini") && x.endsWith('.mli') && x !== "js.mli")
-var sourceFiles = mlFiles.concat(mliFiles)
-var possibleJsFiles = [...new Set(sourceFiles.map(baseName))]
+var runtimeFiles = fs.readdirSync(runtimeDir, 'utf8')
+var runtimeMlFiles = runtimeFiles.filter(x=>!x.startsWith("bs_stdlib_mini") && x.endsWith('.ml') && x !== "js.ml")
+var runtimeMliFiles = runtimeFiles.filter(x=>!x.startsWith("bs_stdlib_mini") && x.endsWith('.mli') && x !== "js.mli")
+var runtimeSourceFiles = runtimeMlFiles.concat(runtimeMliFiles)
+var runtimeJsFiles = [...new Set(runtimeSourceFiles.map(baseName))]
+
+var js_package = pseudoTarget('js_pkg')
+var runtimeTarget = pseudoTarget('runtime')
+var othersTarget = pseudoTarget('others')
+var stdlibTarget = pseudoTarget(stdlibVersion)
 
 /**
  * 
@@ -93,62 +83,35 @@ class TargetSet {
     }
 }
 
-var js_package = pseudoTarget('js_pkg')
-var runtimeTarget = pseudoTarget('runtime')
-var othersTarget = pseudoTarget('others')
-var stdlibTarget = pseudoTarget(stdlibVersion)
-var templateTestRules = `
-bsc = ../../lib/bsc.exe
-bsc_flags = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:jscomp/test  -w -40-52 -warn-error A+8-3-30-26+101-102-103-104-52 -bin-annot -I ../runtime -I ../stdlib-402 -I ../others
-rule cc
-    command = $bsc $bsc_flags -c $in
-    description = $in -> $out
-rule mll    
-    command = ocamllex.opt $in
-    generator = true
-${ninjaQuickBuidList([
-    ['arith_lexer.ml','arith_lexer.mll','mll','.',[],[], []],
-    ['number_lexer.ml','number_lexer.mll','mll','.',[],[],[]],
-    ['simple_lexer_test.ml','simple_lexer_test.mll','mll','.',[],[],[]],
-])}
-`
-
-
-
 /**
  * 
- * @param {string} key 
- * @param {string} value 
+ * @param {string} target 
+ * @param {string} dependency 
  * @param {DepsMap} depsMap
  */
-function updateDepsKVByFile(key, value, depsMap) {
-    /**
-     * @type {Target}
-     */
-    var singleTon = {kind:'file',name:value}
-    if (depsMap.has(key)) {
-        depsMap.get(key).add(singleTon)
-    } else {
-        
-        depsMap.set(key, new TargetSet([ singleTon]))
+function updateDepsKVByFile(target, dependency, depsMap) {    
+    var singleTon = fileTarget(dependency) 
+    if (depsMap.has(target)) {
+        depsMap.get(target).add(singleTon)
+    } else {        
+        depsMap.set(target, new TargetSet([ singleTon]))
     }
 }
 /**
  * 
- * @param {string} key 
- * @param {string[]} arr 
+ * @param {string} target 
+ * @param {string[]} dependencies 
  * @param {DepsMap} depsMap
  */
-function updateDepsKVsByFile(key, arr, depsMap) {
-    var targets = fileTargets(arr)
-    if (depsMap.has(key)) {
-        var s = depsMap.get(key)
+function updateDepsKVsByFile(target, dependencies, depsMap) {
+    var targets = fileTargets(dependencies)
+    if (depsMap.has(target)) {
+        var s = depsMap.get(target)
         for (var i = 0; i < targets.length; ++i) {
             s.add(targets[i])
         }
-
     } else {
-        depsMap.set(key, new TargetSet(targets))
+        depsMap.set(target, new TargetSet(targets))
     }
 }
 
@@ -160,15 +123,13 @@ function replaceCmj(x) {
     return x.trim().replace('cmx', 'cmj')
 }
 
-
-// bsdep.exe does not need post processing and -one-line flag
-
 /**
  * 
  * @param {string[]} files 
  * @param {string} dir
  * @param {DepsMap} depsMap
  * @return {Promise<DepsMap>}
+ * Note `bsdep.exe` does not need post processing and -one-line flag
  */
 function ocamlDepAsync(files,dir, depsMap) {
     return new Promise((resolve,reject) =>{
@@ -198,28 +159,96 @@ function ocamlDepAsync(files,dir, depsMap) {
 
 
 /**
- * 
- * @param {string[]} jsFiles 
- * @returns {Map<string,string>}
- * Assuming that [jsFiles] are not duplicated
+ * @typedef {('HAS_ML' | 'HAS_MLI' | 'HAS_BOTH')} FileInfo
+ * @param {string[]} sourceFiles 
+ * @returns {Map<string, FileInfo>}
+ * We make a set to ensure that `sourceFiles` are not duplicated
  */
-function collectTarget(jsFiles){
+function collectTarget(sourceFiles){
     /**
-     * @type {Map<string,string>}
+     * @type {Map<string,FileInfo>}
      */
     var allTargets = new Map()
-    jsFiles.forEach(x => {
+    sourceFiles.forEach(x => {
         var { ext, name } = path.parse(x)
-        if (allTargets.has(name)) {
-            allTargets.set(name, target.HAS_BOTH)
-        } else
-            if (ext === ".ml") {
-                allTargets.set(name, target.HAS_ML)
+        var existExt = allTargets.get(name)
+        if (existExt === undefined) {
+            if(ext === '.ml') {
+                allTargets.set(name,'HAS_ML')
             } else {
-                allTargets.set(name, target.HAS_MLI)
+                allTargets.set(name,'HAS_MLI')
             }
+        } else {
+            switch (existExt) {
+                case 'HAS_ML':
+                    if (ext === '.mli') {
+                        allTargets.set(name, 'HAS_BOTH')
+                    }
+                    break
+                case 'HAS_MLI':
+                    if (ext === '.ml') {
+                        allTargets.set(name, 'HAS_BOTH')
+                    }
+                case 'HAS_BOTH': break
+            }
+        }
     })
     return allTargets 
+}
+var BSC_COMPILER = 'bsc = ../lib/bsc.exe'
+async function runtimeNinja(){
+    var ninjaCwd = "runtime"
+    var templateRuntimeRules = `
+${BSC_COMPILER}
+bsc_no_open_flags = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-no-check-div-by-zero -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js -bs-package-output amdjs:lib/amdjs -bs-package-output es6:lib/es6  -nostdlib -nopervasives  -unsafe -warn-error A -w -40-49-103 -bin-annot 
+bsc_flags = $bsc_no_open_flags -open Bs_stdlib_mini
+rule cc
+    command = $bsc $bsc_flags -bs-no-implicit-include  -I ${ninjaCwd} -c $in
+    description = $in -> $out
+${ninjaQuickBuidList([
+    ['bs_stdlib_mini.cmi', 'bs_stdlib_mini.mli', 
+        'cc', ninjaCwd, [["bsc_flags", "-nostdlib -nopervasives"]], [],[]],
+    [['js.cmj', 'js.cmi'], 'js.ml', 
+        'cc', ninjaCwd,[["bsc_flags", "$bsc_no_open_flags"]], [],[]]
+])}    
+`
+    /**
+     * @type {DepsMap}
+     */
+    var depsMap = new Map
+    var allTargets = collectTarget([...runtimeMliFiles, ...runtimeMlFiles])
+
+    var allFileTargetsInRuntime = [`js.cmi`,`js.cmj`,`bs_stdlib_mini.cmi`]
+    allTargets.forEach((ext,mod)=>{
+        switch(ext){
+            case 'HAS_MLI':    
+                updateDepsKVsByFile(mod+".cmi",['bs_stdlib_mini.cmi','js.cmj'],depsMap)
+                allFileTargetsInRuntime.push(`${mod}.cmi`)
+                break
+            case 'HAS_BOTH':
+                allFileTargetsInRuntime.push(`${mod}.cmi`,`${mod}.cmj`)
+                updateDepsKVsByFile(mod+".cmi",['bs_stdlib_mini.cmi','js.cmj'],depsMap)
+                break;
+            case 'HAS_ML':    
+                allFileTargetsInRuntime.push(`${mod}.cmi`,`${mod}.cmj`)
+                updateDepsKVsByFile(mod+".cmj",['bs_stdlib_mini.cmi','js.cmj'],depsMap)
+                break;
+        }
+    }) 
+
+    try{
+        await Promise.all([runJSCheckAsync(depsMap),
+                          ocamlDepAsync(runtimeSourceFiles,runtimeDir, depsMap)])        
+        var stmts = generateNinja(depsMap,allTargets,ninjaCwd)
+        stmts.push(phony(runtimeTarget,fileTargets([...allFileTargetsInRuntime,'js.cmj','js.cmi','bs_stdlib_mini.cmi']),ninjaCwd))
+        fs.writeFile(
+                path.join(runtimeDir,'build.ninja'), 
+             templateRuntimeRules + stmts.join('\n') + '\n', 'utf8',
+             throwIfError
+             )
+    }catch(e){
+        console.log(e)
+    }
 }
 
 async function othersNinja() {
@@ -242,7 +271,7 @@ ${ninjaQuickBuidList([
 ])}    
 `    
     var othersDirFiles = fs.readdirSync(othersDir, 'ascii')
-    var jsFiles = othersDirFiles.filter(
+    var jsPrefixSourceFiles = othersDirFiles.filter(
         x => x.startsWith('js') && (x.endsWith('.ml') || x.endsWith(".mli")) && !(x.includes('.cppo'))
         )
      var othersFiles = othersDirFiles.filter(
@@ -253,20 +282,20 @@ ${ninjaQuickBuidList([
      * @type {string[]}
      */
     var allJsTargets = []
-     var jsTargets = collectTarget(jsFiles)
+     var jsTargets = collectTarget(jsPrefixSourceFiles)
      jsTargets.forEach((ext,mod)=>{
         switch(ext){
-            case target.HAS_BOTH:
-            case target.HAS_ML:
+            case 'HAS_BOTH':
+            case 'HAS_ML':
                 allJsTargets.push(`${mod}.cmj`, `${mod}.cmi`)
                 break
-            case target.HAS_MLI:    
+            case 'HAS_MLI':    
                 allJsTargets.push(`${mod}.cmi`)
                 break
         }
      })
      // FIXME: we run `ocamldep` twice, could be saved in one process
-    var [jsDepsMap, depsMap] = await Promise.all([ocamlDepAsync(jsFiles,
+    var [jsDepsMap, depsMap] = await Promise.all([ocamlDepAsync(jsPrefixSourceFiles,
         othersDir,
         new Map()
     ),
@@ -299,11 +328,11 @@ ${ninjaQuickBuidList([
     var allOthersTarget = []
     beltTargets.forEach((ext,mod)=>{
         switch(ext){
-            case target.HAS_BOTH:
-            case target.HAS_ML:
+            case 'HAS_BOTH':
+            case 'HAS_ML':
                 allOthersTarget.push(`${mod}.cmj`, `${mod}.cmi`)
                 break
-            case target.HAS_MLI:
+            case 'HAS_MLI':
                 allOthersTarget.push(`${mod}.cmi`)    
                 break
         }
@@ -360,15 +389,15 @@ ${ninjaQuickBuidList([
     var allTargets = []
     targets.forEach((ext,mod)=>{
         switch(ext){
-            case target.HAS_MLI:
+            case 'HAS_MLI':
                 allTargets.push(`${mod}.cmi`)
                 updateDepsKVByFile(mod+".cmi", 'pervasives.cmj',depsMap)
                 break;
-            case target.HAS_BOTH:
+            case 'HAS_BOTH':
                 allTargets.push(`${mod}.cmi`, `${mod}.cmj`)
                 updateDepsKVByFile(mod+".cmi", 'pervasives.cmj',depsMap)
                 break
-            case target.HAS_ML:                
+            case 'HAS_ML':                
                 allTargets.push(`${mod}.cmi`, `${mod}.cmj`)
                 updateDepsKVByFile(mod+".cmj", 'pervasives.cmj', depsMap)
                 break
@@ -412,6 +441,21 @@ function baseName(x) {
 var testDir = path.join(jscompDir,'test')
 
 async function testNinja(){
+    var templateTestRules = `
+bsc = ../../lib/bsc.exe
+bsc_flags = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:jscomp/test  -w -40-52 -warn-error A+8-3-30-26+101-102-103-104-52 -bin-annot -I ../runtime -I ../stdlib-402 -I ../others
+rule cc
+    command = $bsc $bsc_flags -c $in
+    description = $in -> $out
+rule mll    
+    command = ocamllex.opt $in
+    generator = true
+${ninjaQuickBuidList([
+    ['arith_lexer.ml','arith_lexer.mll','mll','.',[],[], []],
+    ['number_lexer.ml','number_lexer.mll','mll','.',[],[],[]],
+    ['simple_lexer_test.ml','simple_lexer_test.mll','mll','.',[],[],[]],
+])}
+`
     var testDirFiles = fs.readdirSync(testDir,'ascii')    
     var sources = testDirFiles.filter(x=>{
         return (x.endsWith('.ml') || x.endsWith('.mli')) &&
@@ -438,16 +482,18 @@ async function testNinja(){
  * @param {DepsMap} depsMap 
  */
 function runJSCheckAsync(depsMap){
+
+    
     return new Promise((resolve) => {
         var count = 0
-        var tasks = possibleJsFiles.length
+        var tasks = runtimeJsFiles.length
         var updateTick = () =>{
             count ++
             if(count === tasks){
                 resolve(count)
             } 
         }        
-        possibleJsFiles.forEach((name) => {
+        runtimeJsFiles.forEach((name) => {
             var jsFile = path.join(jsDir, name + ".js")
             fs.readFile(jsFile, 'utf8', function (err, fileContent) {
                 if (err === null) {
@@ -665,14 +711,14 @@ function generateNinja(depsMap,allTargets, cwd,extraDeps=[]){
             return build_stmts.push(buildStmt(outputs,inputs,'cc',depsMap,cwd,overrides,extraDeps))
         }
         switch (x) {
-            case target.HAS_BOTH:
+            case 'HAS_BOTH':
                 mk([ouptput_cmj],[input_ml])
                 mk([output_cmi], [input_mli])                
                 break;
-            case target.HAS_ML:
+            case 'HAS_ML':
                 mk([output_cmi, ouptput_cmj], [input_ml])
                 break;
-            case target.HAS_MLI:
+            case 'HAS_MLI':
                 mk([output_cmi], [input_mli])
                 break;
 
@@ -682,84 +728,11 @@ function generateNinja(depsMap,allTargets, cwd,extraDeps=[]){
 }
 
 
-async function runtimeNinja(){
-    var ninjaCwd = "runtime"
-    var templateRuntimeRules = `
-bsc = ../lib/bsc.exe
-bsc_no_open_flags = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-no-check-div-by-zero -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js -bs-package-output amdjs:lib/amdjs -bs-package-output es6:lib/es6  -nostdlib -nopervasives  -unsafe -warn-error A -w -40-49-103 -bin-annot 
-bsc_flags = $bsc_no_open_flags -open Bs_stdlib_mini
-rule cc
-    command = $bsc $bsc_flags -bs-no-implicit-include  -I ${ninjaCwd} -c $in
-    description = $in -> $out
-${ninjaQuickBuidList([
-    ['bs_stdlib_mini.cmi', 'bs_stdlib_mini.mli', 
-        'cc', ninjaCwd, [["bsc_flags", "-nostdlib -nopervasives"]], [],[]],
-    [['js.cmj', 'js.cmi'], 'js.ml', 
-        'cc', ninjaCwd,[["bsc_flags", "$bsc_no_open_flags"]], [],[]]
-])}    
-`
-    /**
-     * @type {DepsMap}
-     */
-    var depsMap = new Map
-    /**
-     * @type {Map<string, string>}
-     */
-    var allTargets = new Map()
-    mliFiles.forEach(x=>{
-        var base = baseName(x)
-        allTargets.set(base, target.HAS_MLI)
-    }
-    )
-    mlFiles.forEach(x=>{
-        var base = baseName(x) 
-        if(allTargets.has(base)){
-            allTargets.set(base, target.HAS_BOTH)
-        } else {
-            allTargets.set(base, target.HAS_ML)
-        }
-    }
-    )
-    /**
-     * @type {string[]}
-     */
-    var allFileTargets = []
-    allTargets.forEach((ext,mod)=>{
-        switch(ext){
-            case target.HAS_MLI:    
-                updateDepsKVsByFile(mod+".cmi",['bs_stdlib_mini.cmi','js.cmj'],depsMap)
-                allFileTargets.push(`${mod}.cmi`)
-                break
-            case target.HAS_BOTH:
-                allFileTargets.push(`${mod}.cmi`,`${mod}.cmj`)
-                updateDepsKVsByFile(mod+".cmi",['bs_stdlib_mini.cmi','js.cmj'],depsMap)
-                break;
-            case target.HAS_ML:    
-                allFileTargets.push(`${mod}.cmi`,`${mod}.cmj`)
-                updateDepsKVsByFile(mod+".cmj",['bs_stdlib_mini.cmi','js.cmj'],depsMap)
-                break;
-        }
-    }) 
-    allFileTargets.push(`js.cmi`,`js.cmj`,`bs_stdlib_mini.cmi`)
-    try{
-        await Promise.all([runJSCheckAsync(depsMap),
-                          ocamlDepAsync(sourceFiles,runtimeDir, depsMap)])        
-        var stmts = generateNinja(depsMap,allTargets,ninjaCwd)
-        stmts.push(phony(runtimeTarget,fileTargets([...allFileTargets,'js.cmj','js.cmi','bs_stdlib_mini.cmi']),ninjaCwd))
-        fs.writeFile(
-                path.join(runtimeDir,'build.ninja'), 
-             templateRuntimeRules + stmts.join('\n') + '\n', 'utf8',
-             throwIfError
-             )
-    }catch(e){
-        console.log(e)
-    }
-}
 
 
 function checkEffect() {
 
-    var jsPaths = possibleJsFiles.map(x => path.join(jsDir, x + ".js"))
+    var jsPaths = runtimeJsFiles.map(x => path.join(jsDir, x + ".js"))
     var effect = jsPaths.map(x => {
         return {
             file: x,
