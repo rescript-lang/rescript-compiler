@@ -1,127 +1,128 @@
 
-bsc = ../../lib/bsc.exe
+bsc = ../lib/bsc.exe
+bsc_flags = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-no-check-div-by-zero -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js -bs-package-output amdjs:lib/amdjs -bs-package-output es6:lib/es6  -nostdlib -warn-error A -w -40-49-103 -bin-annot  -bs-no-warn-unimplemented-external  -I ./runtime  -I ./others
 rule cc
-    command = $bsc $bsc_flags -c $in
+    command = $bsc $bsc_flags -bs-no-implicit-include  -I stdlib-402 -c $in
     description = $in -> $out    
-bsc_flags = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-no-check-div-by-zero -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js -bs-package-output amdjs:lib/amdjs -bs-package-output es6:lib/es6  -nostdlib -warn-error A -w -40-49-103 -bin-annot  -bs-no-warn-unimplemented-external  -I ../runtime  -I ../others
-build camlinternalFormatBasics.cmi : cc camlinternalFormatBasics.mli
+build stdlib-402/camlinternalFormatBasics.cmi : cc stdlib-402/camlinternalFormatBasics.mli
     bsc_flags = $bsc_flags -nopervasives
-build camlinternalFormatBasics.cmj : cc camlinternalFormatBasics.ml | camlinternalFormatBasics.cmi
+build stdlib-402/camlinternalFormatBasics.cmj : cc stdlib-402/camlinternalFormatBasics.ml | stdlib-402/camlinternalFormatBasics.cmi
     bsc_flags = $bsc_flags -nopervasives
-build pervasives.cmj : cc pervasives.ml | pervasives.cmi
+build stdlib-402/pervasives.cmj : cc stdlib-402/pervasives.ml | stdlib-402/pervasives.cmi
     bsc_flags = $bsc_flags -nopervasives
-build pervasives.cmi : cc pervasives.mli | camlinternalFormatBasics.cmj
-    bsc_flags = $bsc_flags -nopervasives
-build arg.cmj : cc arg.ml | sys.cmj string.cmj printf.cmj list.cmj buffer.cmj array.cmj arg.cmi
-build arg.cmi : cc arg.mli | pervasives.cmj
-build array.cmj : cc array.ml | array.cmi
-build array.cmi : cc array.mli | pervasives.cmj
-build arrayLabels.cmj : cc arrayLabels.ml | array.cmj arrayLabels.cmi
+build stdlib-402/pervasives.cmi : cc stdlib-402/pervasives.mli | stdlib-402/camlinternalFormatBasics.cmj
+    bsc_flags = $bsc_flags -nopervasives    
+build stdlib-402/arg.cmj : cc stdlib-402/arg.ml | stdlib-402/sys.cmj stdlib-402/string.cmj stdlib-402/printf.cmj stdlib-402/list.cmj stdlib-402/buffer.cmj stdlib-402/array.cmj stdlib-402/arg.cmi others
+build stdlib-402/arg.cmi : cc stdlib-402/arg.mli | stdlib-402/pervasives.cmj others
+build stdlib-402/array.cmj : cc stdlib-402/array.ml | stdlib-402/array.cmi others
+build stdlib-402/array.cmi : cc stdlib-402/array.mli | stdlib-402/pervasives.cmj others
+build stdlib-402/arrayLabels.cmj : cc stdlib-402/arrayLabels.ml | stdlib-402/array.cmj stdlib-402/arrayLabels.cmi others
     bsc_flags = $bsc_flags -nolabels
-build arrayLabels.cmi : cc arrayLabels.mli | pervasives.cmj
+build stdlib-402/arrayLabels.cmi : cc stdlib-402/arrayLabels.mli | stdlib-402/pervasives.cmj others
     bsc_flags = $bsc_flags -nolabels
-build bigarray.cmj : cc bigarray.ml | unix.cmj complex.cmj array.cmj bigarray.cmi
-build bigarray.cmi : cc bigarray.mli | unix.cmi complex.cmi pervasives.cmj
-build buffer.cmj : cc buffer.ml | sys.cmj string.cmj bytes.cmj buffer.cmi
-build buffer.cmi : cc buffer.mli | pervasives.cmj
-build bytes.cmj : cc bytes.ml | pervasives.cmj list.cmj char.cmj bytes.cmi
-build bytes.cmi : cc bytes.mli | pervasives.cmj
-build bytesLabels.cmj : cc bytesLabels.ml | bytes.cmj bytesLabels.cmi
+build stdlib-402/bigarray.cmj : cc stdlib-402/bigarray.ml | stdlib-402/unix.cmj stdlib-402/complex.cmj stdlib-402/array.cmj stdlib-402/bigarray.cmi others
+build stdlib-402/bigarray.cmi : cc stdlib-402/bigarray.mli | stdlib-402/unix.cmi stdlib-402/complex.cmi stdlib-402/pervasives.cmj others
+build stdlib-402/buffer.cmj : cc stdlib-402/buffer.ml | stdlib-402/sys.cmj stdlib-402/string.cmj stdlib-402/bytes.cmj stdlib-402/buffer.cmi others
+build stdlib-402/buffer.cmi : cc stdlib-402/buffer.mli | stdlib-402/pervasives.cmj others
+build stdlib-402/bytes.cmj : cc stdlib-402/bytes.ml | stdlib-402/pervasives.cmj stdlib-402/list.cmj stdlib-402/char.cmj stdlib-402/bytes.cmi others
+build stdlib-402/bytes.cmi : cc stdlib-402/bytes.mli | stdlib-402/pervasives.cmj others
+build stdlib-402/bytesLabels.cmj : cc stdlib-402/bytesLabels.ml | stdlib-402/bytes.cmj stdlib-402/bytesLabels.cmi others
     bsc_flags = $bsc_flags -nolabels
-build bytesLabels.cmi : cc bytesLabels.mli | pervasives.cmj
+build stdlib-402/bytesLabels.cmi : cc stdlib-402/bytesLabels.mli | stdlib-402/pervasives.cmj others
     bsc_flags = $bsc_flags -nolabels
-build callback.cmj : cc callback.ml | obj.cmj callback.cmi
-build callback.cmi : cc callback.mli | pervasives.cmj
-build camlinternalFormat.cmj : cc camlinternalFormat.ml | sys.cmj string.cmj char.cmj camlinternalFormatBasics.cmj bytes.cmj buffer.cmj camlinternalFormat.cmi
-build camlinternalFormat.cmi : cc camlinternalFormat.mli | camlinternalFormatBasics.cmi buffer.cmi pervasives.cmj
-build camlinternalLazy.cmj : cc camlinternalLazy.ml | obj.cmj camlinternalLazy.cmi
-build camlinternalLazy.cmi : cc camlinternalLazy.mli | pervasives.cmj
-build camlinternalMod.cmj : cc camlinternalMod.ml | obj.cmj camlinternalOO.cmj array.cmj camlinternalMod.cmi
-build camlinternalMod.cmi : cc camlinternalMod.mli | obj.cmi pervasives.cmj
-build camlinternalOO.cmj : cc camlinternalOO.ml | sys.cmj string.cmj obj.cmj map.cmj list.cmj char.cmj array.cmj camlinternalOO.cmi
-build camlinternalOO.cmi : cc camlinternalOO.mli | obj.cmi pervasives.cmj
-build char.cmj : cc char.ml | char.cmi
-build char.cmi : cc char.mli | pervasives.cmj
-build complex.cmj : cc complex.ml | complex.cmi
-build complex.cmi : cc complex.mli | pervasives.cmj
-build digest.cmj : cc digest.ml | string.cmj char.cmj bytes.cmj digest.cmi
-build digest.cmi : cc digest.mli | pervasives.cmj
-build filename.cmj : cc filename.ml | sys.cmj string.cmj random.cmj printf.cmj lazy.cmj buffer.cmj filename.cmi
-build filename.cmi : cc filename.mli | pervasives.cmj
-build format.cmj : cc format.ml | string.cmj pervasives.cmj camlinternalFormatBasics.cmj camlinternalFormat.cmj buffer.cmj format.cmi
-build format.cmi : cc format.mli | pervasives.cmi buffer.cmi pervasives.cmj
-build gc.cmj : cc gc.ml | sys.cmj printf.cmj gc.cmi
-build gc.cmi : cc gc.mli | pervasives.cmj
-build genlex.cmj : cc genlex.ml | string.cmj stream.cmj list.cmj hashtbl.cmj char.cmj bytes.cmj genlex.cmi
-build genlex.cmi : cc genlex.mli | stream.cmi pervasives.cmj
-build hashtbl.cmj : cc hashtbl.ml | sys.cmj string.cmj random.cmj obj.cmj lazy.cmj array.cmj hashtbl.cmi
-build hashtbl.cmi : cc hashtbl.mli | pervasives.cmj
-build int32.cmj : cc int32.ml | pervasives.cmj int32.cmi
-build int32.cmi : cc int32.mli | pervasives.cmj
-build int64.cmj : cc int64.ml | pervasives.cmj int64.cmi
-build int64.cmi : cc int64.mli | pervasives.cmj
-build lazy.cmj : cc lazy.ml | obj.cmj camlinternalLazy.cmj lazy.cmi
-build lazy.cmi : cc lazy.mli | pervasives.cmj
-build lexing.cmj : cc lexing.ml | sys.cmj string.cmj bytes.cmj array.cmj lexing.cmi
-build lexing.cmi : cc lexing.mli | pervasives.cmj
-build list.cmj : cc list.ml | list.cmi
-build list.cmi : cc list.mli | pervasives.cmj
-build listLabels.cmj : cc listLabels.ml | list.cmj listLabels.cmi
+build stdlib-402/callback.cmj : cc stdlib-402/callback.ml | stdlib-402/obj.cmj stdlib-402/callback.cmi others
+build stdlib-402/callback.cmi : cc stdlib-402/callback.mli | stdlib-402/pervasives.cmj others
+build stdlib-402/camlinternalFormat.cmj : cc stdlib-402/camlinternalFormat.ml | stdlib-402/sys.cmj stdlib-402/string.cmj stdlib-402/char.cmj stdlib-402/camlinternalFormatBasics.cmj stdlib-402/bytes.cmj stdlib-402/buffer.cmj stdlib-402/camlinternalFormat.cmi others
+build stdlib-402/camlinternalFormat.cmi : cc stdlib-402/camlinternalFormat.mli | stdlib-402/camlinternalFormatBasics.cmi stdlib-402/buffer.cmi stdlib-402/pervasives.cmj others
+build stdlib-402/camlinternalLazy.cmj : cc stdlib-402/camlinternalLazy.ml | stdlib-402/obj.cmj stdlib-402/camlinternalLazy.cmi others
+build stdlib-402/camlinternalLazy.cmi : cc stdlib-402/camlinternalLazy.mli | stdlib-402/pervasives.cmj others
+build stdlib-402/camlinternalMod.cmj : cc stdlib-402/camlinternalMod.ml | stdlib-402/obj.cmj stdlib-402/camlinternalOO.cmj stdlib-402/array.cmj stdlib-402/camlinternalMod.cmi others
+build stdlib-402/camlinternalMod.cmi : cc stdlib-402/camlinternalMod.mli | stdlib-402/obj.cmi stdlib-402/pervasives.cmj others
+build stdlib-402/camlinternalOO.cmj : cc stdlib-402/camlinternalOO.ml | stdlib-402/sys.cmj stdlib-402/string.cmj stdlib-402/obj.cmj stdlib-402/map.cmj stdlib-402/list.cmj stdlib-402/char.cmj stdlib-402/array.cmj stdlib-402/camlinternalOO.cmi others
+build stdlib-402/camlinternalOO.cmi : cc stdlib-402/camlinternalOO.mli | stdlib-402/obj.cmi stdlib-402/pervasives.cmj others
+build stdlib-402/char.cmj : cc stdlib-402/char.ml | stdlib-402/char.cmi others
+build stdlib-402/char.cmi : cc stdlib-402/char.mli | stdlib-402/pervasives.cmj others
+build stdlib-402/complex.cmj : cc stdlib-402/complex.ml | stdlib-402/complex.cmi others
+build stdlib-402/complex.cmi : cc stdlib-402/complex.mli | stdlib-402/pervasives.cmj others
+build stdlib-402/digest.cmj : cc stdlib-402/digest.ml | stdlib-402/string.cmj stdlib-402/char.cmj stdlib-402/bytes.cmj stdlib-402/digest.cmi others
+build stdlib-402/digest.cmi : cc stdlib-402/digest.mli | stdlib-402/pervasives.cmj others
+build stdlib-402/filename.cmj : cc stdlib-402/filename.ml | stdlib-402/sys.cmj stdlib-402/string.cmj stdlib-402/random.cmj stdlib-402/printf.cmj stdlib-402/lazy.cmj stdlib-402/buffer.cmj stdlib-402/filename.cmi others
+build stdlib-402/filename.cmi : cc stdlib-402/filename.mli | stdlib-402/pervasives.cmj others
+build stdlib-402/format.cmj : cc stdlib-402/format.ml | stdlib-402/string.cmj stdlib-402/pervasives.cmj stdlib-402/camlinternalFormatBasics.cmj stdlib-402/camlinternalFormat.cmj stdlib-402/buffer.cmj stdlib-402/format.cmi others
+build stdlib-402/format.cmi : cc stdlib-402/format.mli | stdlib-402/pervasives.cmi stdlib-402/buffer.cmi stdlib-402/pervasives.cmj others
+build stdlib-402/gc.cmj : cc stdlib-402/gc.ml | stdlib-402/sys.cmj stdlib-402/printf.cmj stdlib-402/gc.cmi others
+build stdlib-402/gc.cmi : cc stdlib-402/gc.mli | stdlib-402/pervasives.cmj others
+build stdlib-402/genlex.cmj : cc stdlib-402/genlex.ml | stdlib-402/string.cmj stdlib-402/stream.cmj stdlib-402/list.cmj stdlib-402/hashtbl.cmj stdlib-402/char.cmj stdlib-402/bytes.cmj stdlib-402/genlex.cmi others
+build stdlib-402/genlex.cmi : cc stdlib-402/genlex.mli | stdlib-402/stream.cmi stdlib-402/pervasives.cmj others
+build stdlib-402/hashtbl.cmj : cc stdlib-402/hashtbl.ml | stdlib-402/sys.cmj stdlib-402/string.cmj stdlib-402/random.cmj stdlib-402/obj.cmj stdlib-402/lazy.cmj stdlib-402/array.cmj stdlib-402/hashtbl.cmi others
+build stdlib-402/hashtbl.cmi : cc stdlib-402/hashtbl.mli | stdlib-402/pervasives.cmj others
+build stdlib-402/int32.cmj : cc stdlib-402/int32.ml | stdlib-402/pervasives.cmj stdlib-402/int32.cmi others
+build stdlib-402/int32.cmi : cc stdlib-402/int32.mli | stdlib-402/pervasives.cmj others
+build stdlib-402/int64.cmj : cc stdlib-402/int64.ml | stdlib-402/pervasives.cmj stdlib-402/int64.cmi others
+build stdlib-402/int64.cmi : cc stdlib-402/int64.mli | stdlib-402/pervasives.cmj others
+build stdlib-402/lazy.cmj : cc stdlib-402/lazy.ml | stdlib-402/obj.cmj stdlib-402/camlinternalLazy.cmj stdlib-402/lazy.cmi others
+build stdlib-402/lazy.cmi : cc stdlib-402/lazy.mli | stdlib-402/pervasives.cmj others
+build stdlib-402/lexing.cmj : cc stdlib-402/lexing.ml | stdlib-402/sys.cmj stdlib-402/string.cmj stdlib-402/bytes.cmj stdlib-402/array.cmj stdlib-402/lexing.cmi others
+build stdlib-402/lexing.cmi : cc stdlib-402/lexing.mli | stdlib-402/pervasives.cmj others
+build stdlib-402/list.cmj : cc stdlib-402/list.ml | stdlib-402/list.cmi others
+build stdlib-402/list.cmi : cc stdlib-402/list.mli | stdlib-402/pervasives.cmj others
+build stdlib-402/listLabels.cmj : cc stdlib-402/listLabels.ml | stdlib-402/list.cmj stdlib-402/listLabels.cmi others
     bsc_flags = $bsc_flags -nolabels
-build listLabels.cmi : cc listLabels.mli | pervasives.cmj
+build stdlib-402/listLabels.cmi : cc stdlib-402/listLabels.mli | stdlib-402/pervasives.cmj others
     bsc_flags = $bsc_flags -nolabels
-build map.cmj : cc map.ml | map.cmi
-build map.cmi : cc map.mli | pervasives.cmj
-build marshal.cmj : cc marshal.ml | bytes.cmj marshal.cmi
-build marshal.cmi : cc marshal.mli | pervasives.cmj
-build moreLabels.cmj : cc moreLabels.ml | set.cmj map.cmj hashtbl.cmj moreLabels.cmi
+build stdlib-402/map.cmj : cc stdlib-402/map.ml | stdlib-402/map.cmi others
+build stdlib-402/map.cmi : cc stdlib-402/map.mli | stdlib-402/pervasives.cmj others
+build stdlib-402/marshal.cmj : cc stdlib-402/marshal.ml | stdlib-402/bytes.cmj stdlib-402/marshal.cmi others
+build stdlib-402/marshal.cmi : cc stdlib-402/marshal.mli | stdlib-402/pervasives.cmj others
+build stdlib-402/moreLabels.cmj : cc stdlib-402/moreLabels.ml | stdlib-402/set.cmj stdlib-402/map.cmj stdlib-402/hashtbl.cmj stdlib-402/moreLabels.cmi others
     bsc_flags = $bsc_flags -nolabels
-build moreLabels.cmi : cc moreLabels.mli | set.cmi map.cmi hashtbl.cmi pervasives.cmj
+build stdlib-402/moreLabels.cmi : cc stdlib-402/moreLabels.mli | stdlib-402/set.cmi stdlib-402/map.cmi stdlib-402/hashtbl.cmi stdlib-402/pervasives.cmj others
     bsc_flags = $bsc_flags -nolabels
-build nativeint.cmj : cc nativeint.ml | sys.cmj pervasives.cmj nativeint.cmi
-build nativeint.cmi : cc nativeint.mli | pervasives.cmj
-build obj.cmj : cc obj.ml | marshal.cmj int32.cmj array.cmj obj.cmi
-build obj.cmi : cc obj.mli | int32.cmi pervasives.cmj
-build oo.cmj : cc oo.ml | camlinternalOO.cmj oo.cmi
-build oo.cmi : cc oo.mli | camlinternalOO.cmi pervasives.cmj
-build parsing.cmj : cc parsing.ml | obj.cmj lexing.cmj array.cmj parsing.cmi
-build parsing.cmi : cc parsing.mli | obj.cmi lexing.cmi pervasives.cmj
-build printexc.cmj : cc printexc.ml | printf.cmj pervasives.cmj obj.cmj buffer.cmj array.cmj printexc.cmi
-build printexc.cmi : cc printexc.mli | pervasives.cmj
-build printf.cmj : cc printf.ml | camlinternalFormatBasics.cmj camlinternalFormat.cmj buffer.cmj printf.cmi
-build printf.cmi : cc printf.mli | buffer.cmi pervasives.cmj
-build queue.cmj : cc queue.ml | obj.cmj queue.cmi
-build queue.cmi : cc queue.mli | pervasives.cmj
-build random.cmj : cc random.ml | string.cmj pervasives.cmj nativeint.cmj int64.cmj int32.cmj digest.cmj char.cmj array.cmj random.cmi
-build random.cmi : cc random.mli | nativeint.cmi int64.cmi int32.cmi pervasives.cmj
-build scanf.cmj : cc scanf.ml | string.cmj printf.cmj pervasives.cmj list.cmj camlinternalFormatBasics.cmj camlinternalFormat.cmj bytes.cmj buffer.cmj scanf.cmi
-build scanf.cmi : cc scanf.mli | pervasives.cmi pervasives.cmj
-build set.cmj : cc set.ml | list.cmj set.cmi
-build set.cmi : cc set.mli | pervasives.cmj
-build sort.cmj : cc sort.ml | array.cmj sort.cmi
-build sort.cmi : cc sort.mli | pervasives.cmj
-build stack.cmj : cc stack.ml | list.cmj stack.cmi
-build stack.cmi : cc stack.mli | pervasives.cmj
-build stdLabels.cmj : cc stdLabels.ml | stringLabels.cmj listLabels.cmj bytesLabels.cmj arrayLabels.cmj stdLabels.cmi
+build stdlib-402/nativeint.cmj : cc stdlib-402/nativeint.ml | stdlib-402/sys.cmj stdlib-402/pervasives.cmj stdlib-402/nativeint.cmi others
+build stdlib-402/nativeint.cmi : cc stdlib-402/nativeint.mli | stdlib-402/pervasives.cmj others
+build stdlib-402/obj.cmj : cc stdlib-402/obj.ml | stdlib-402/marshal.cmj stdlib-402/int32.cmj stdlib-402/array.cmj stdlib-402/obj.cmi others
+build stdlib-402/obj.cmi : cc stdlib-402/obj.mli | stdlib-402/int32.cmi stdlib-402/pervasives.cmj others
+build stdlib-402/oo.cmj : cc stdlib-402/oo.ml | stdlib-402/camlinternalOO.cmj stdlib-402/oo.cmi others
+build stdlib-402/oo.cmi : cc stdlib-402/oo.mli | stdlib-402/camlinternalOO.cmi stdlib-402/pervasives.cmj others
+build stdlib-402/parsing.cmj : cc stdlib-402/parsing.ml | stdlib-402/obj.cmj stdlib-402/lexing.cmj stdlib-402/array.cmj stdlib-402/parsing.cmi others
+build stdlib-402/parsing.cmi : cc stdlib-402/parsing.mli | stdlib-402/obj.cmi stdlib-402/lexing.cmi stdlib-402/pervasives.cmj others
+build stdlib-402/printexc.cmj : cc stdlib-402/printexc.ml | stdlib-402/printf.cmj stdlib-402/pervasives.cmj stdlib-402/obj.cmj stdlib-402/buffer.cmj stdlib-402/array.cmj stdlib-402/printexc.cmi others
+build stdlib-402/printexc.cmi : cc stdlib-402/printexc.mli | stdlib-402/pervasives.cmj others
+build stdlib-402/printf.cmj : cc stdlib-402/printf.ml | stdlib-402/camlinternalFormatBasics.cmj stdlib-402/camlinternalFormat.cmj stdlib-402/buffer.cmj stdlib-402/printf.cmi others
+build stdlib-402/printf.cmi : cc stdlib-402/printf.mli | stdlib-402/buffer.cmi stdlib-402/pervasives.cmj others
+build stdlib-402/queue.cmj : cc stdlib-402/queue.ml | stdlib-402/obj.cmj stdlib-402/queue.cmi others
+build stdlib-402/queue.cmi : cc stdlib-402/queue.mli | stdlib-402/pervasives.cmj others
+build stdlib-402/random.cmj : cc stdlib-402/random.ml | stdlib-402/string.cmj stdlib-402/pervasives.cmj stdlib-402/nativeint.cmj stdlib-402/int64.cmj stdlib-402/int32.cmj stdlib-402/digest.cmj stdlib-402/char.cmj stdlib-402/array.cmj stdlib-402/random.cmi others
+build stdlib-402/random.cmi : cc stdlib-402/random.mli | stdlib-402/nativeint.cmi stdlib-402/int64.cmi stdlib-402/int32.cmi stdlib-402/pervasives.cmj others
+build stdlib-402/scanf.cmj : cc stdlib-402/scanf.ml | stdlib-402/string.cmj stdlib-402/printf.cmj stdlib-402/pervasives.cmj stdlib-402/list.cmj stdlib-402/camlinternalFormatBasics.cmj stdlib-402/camlinternalFormat.cmj stdlib-402/bytes.cmj stdlib-402/buffer.cmj stdlib-402/scanf.cmi others
+build stdlib-402/scanf.cmi : cc stdlib-402/scanf.mli | stdlib-402/pervasives.cmi stdlib-402/pervasives.cmj others
+build stdlib-402/set.cmj : cc stdlib-402/set.ml | stdlib-402/list.cmj stdlib-402/set.cmi others
+build stdlib-402/set.cmi : cc stdlib-402/set.mli | stdlib-402/pervasives.cmj others
+build stdlib-402/sort.cmj : cc stdlib-402/sort.ml | stdlib-402/array.cmj stdlib-402/sort.cmi others
+build stdlib-402/sort.cmi : cc stdlib-402/sort.mli | stdlib-402/pervasives.cmj others
+build stdlib-402/stack.cmj : cc stdlib-402/stack.ml | stdlib-402/list.cmj stdlib-402/stack.cmi others
+build stdlib-402/stack.cmi : cc stdlib-402/stack.mli | stdlib-402/pervasives.cmj others
+build stdlib-402/stdLabels.cmj : cc stdlib-402/stdLabels.ml | stdlib-402/stringLabels.cmj stdlib-402/listLabels.cmj stdlib-402/bytesLabels.cmj stdlib-402/arrayLabels.cmj stdlib-402/stdLabels.cmi others
     bsc_flags = $bsc_flags -nolabels
-build stdLabels.cmi : cc stdLabels.mli | stringLabels.cmi listLabels.cmi bytesLabels.cmi arrayLabels.cmi pervasives.cmj
+build stdlib-402/stdLabels.cmi : cc stdlib-402/stdLabels.mli | stdlib-402/stringLabels.cmi stdlib-402/listLabels.cmi stdlib-402/bytesLabels.cmi stdlib-402/arrayLabels.cmi stdlib-402/pervasives.cmj others
     bsc_flags = $bsc_flags -nolabels
-build std_exit.cmi std_exit.cmj : cc std_exit.ml | pervasives.cmj
-build stream.cmj : cc stream.ml | string.cmj obj.cmj list.cmj lazy.cmj bytes.cmj stream.cmi
-build stream.cmi : cc stream.mli | pervasives.cmj
-build string.cmj : cc string.ml | pervasives.cmj list.cmj bytes.cmj string.cmi
-build string.cmi : cc string.mli | pervasives.cmj
-build stringLabels.cmj : cc stringLabels.ml | string.cmj stringLabels.cmi
+build stdlib-402/std_exit.cmi stdlib-402/std_exit.cmj : cc stdlib-402/std_exit.ml | stdlib-402/pervasives.cmj others
+build stdlib-402/stream.cmj : cc stdlib-402/stream.ml | stdlib-402/string.cmj stdlib-402/obj.cmj stdlib-402/list.cmj stdlib-402/lazy.cmj stdlib-402/bytes.cmj stdlib-402/stream.cmi others
+build stdlib-402/stream.cmi : cc stdlib-402/stream.mli | stdlib-402/pervasives.cmj others
+build stdlib-402/string.cmj : cc stdlib-402/string.ml | stdlib-402/pervasives.cmj stdlib-402/list.cmj stdlib-402/bytes.cmj stdlib-402/string.cmi others
+build stdlib-402/string.cmi : cc stdlib-402/string.mli | stdlib-402/pervasives.cmj others
+build stdlib-402/stringLabels.cmj : cc stdlib-402/stringLabels.ml | stdlib-402/string.cmj stdlib-402/stringLabels.cmi others
     bsc_flags = $bsc_flags -nolabels
-build stringLabels.cmi : cc stringLabels.mli | pervasives.cmj
+build stdlib-402/stringLabels.cmi : cc stdlib-402/stringLabels.mli | stdlib-402/pervasives.cmj others
     bsc_flags = $bsc_flags -nolabels
-build sys.cmj : cc sys.ml | sys.cmi
-build sys.cmi : cc sys.mli | pervasives.cmj
-build unix.cmj : cc unix.ml | sys.cmj string.cmj printf.cmj printexc.cmj list.cmj hashtbl.cmj callback.cmj bytes.cmj array.cmj unix.cmi
-build unix.cmi : cc unix.mli | pervasives.cmj
-build unixLabels.cmj : cc unixLabels.ml | unix.cmj unixLabels.cmi
+build stdlib-402/sys.cmj : cc stdlib-402/sys.ml | stdlib-402/sys.cmi others
+build stdlib-402/sys.cmi : cc stdlib-402/sys.mli | stdlib-402/pervasives.cmj others
+build stdlib-402/unix.cmj : cc stdlib-402/unix.ml | stdlib-402/sys.cmj stdlib-402/string.cmj stdlib-402/printf.cmj stdlib-402/printexc.cmj stdlib-402/list.cmj stdlib-402/hashtbl.cmj stdlib-402/callback.cmj stdlib-402/bytes.cmj stdlib-402/array.cmj stdlib-402/unix.cmi others
+build stdlib-402/unix.cmi : cc stdlib-402/unix.mli | stdlib-402/pervasives.cmj others
+build stdlib-402/unixLabels.cmj : cc stdlib-402/unixLabels.ml | stdlib-402/unix.cmj stdlib-402/unixLabels.cmi others
     bsc_flags = $bsc_flags -nolabels
-build unixLabels.cmi : cc unixLabels.mli | unix.cmi pervasives.cmj
+build stdlib-402/unixLabels.cmi : cc stdlib-402/unixLabels.mli | stdlib-402/unix.cmi stdlib-402/pervasives.cmj others
     bsc_flags = $bsc_flags -nolabels
-build weak.cmj : cc weak.ml | sys.cmj obj.cmj hashtbl.cmj array.cmj weak.cmi
-build weak.cmi : cc weak.mli | hashtbl.cmi pervasives.cmj
+build stdlib-402/weak.cmj : cc stdlib-402/weak.ml | stdlib-402/sys.cmj stdlib-402/obj.cmj stdlib-402/hashtbl.cmj stdlib-402/array.cmj stdlib-402/weak.cmi others
+build stdlib-402/weak.cmi : cc stdlib-402/weak.mli | stdlib-402/hashtbl.cmi stdlib-402/pervasives.cmj others
+build stdlib-402 : phony stdlib-402/arg.cmi stdlib-402/arg.cmj stdlib-402/array.cmi stdlib-402/array.cmj stdlib-402/arrayLabels.cmi stdlib-402/arrayLabels.cmj stdlib-402/bigarray.cmi stdlib-402/bigarray.cmj stdlib-402/buffer.cmi stdlib-402/buffer.cmj stdlib-402/bytes.cmi stdlib-402/bytes.cmj stdlib-402/bytesLabels.cmi stdlib-402/bytesLabels.cmj stdlib-402/callback.cmi stdlib-402/callback.cmj stdlib-402/camlinternalFormat.cmi stdlib-402/camlinternalFormat.cmj stdlib-402/camlinternalLazy.cmi stdlib-402/camlinternalLazy.cmj stdlib-402/camlinternalMod.cmi stdlib-402/camlinternalMod.cmj stdlib-402/camlinternalOO.cmi stdlib-402/camlinternalOO.cmj stdlib-402/char.cmi stdlib-402/char.cmj stdlib-402/complex.cmi stdlib-402/complex.cmj stdlib-402/digest.cmi stdlib-402/digest.cmj stdlib-402/filename.cmi stdlib-402/filename.cmj stdlib-402/format.cmi stdlib-402/format.cmj stdlib-402/gc.cmi stdlib-402/gc.cmj stdlib-402/genlex.cmi stdlib-402/genlex.cmj stdlib-402/hashtbl.cmi stdlib-402/hashtbl.cmj stdlib-402/int32.cmi stdlib-402/int32.cmj stdlib-402/int64.cmi stdlib-402/int64.cmj stdlib-402/lazy.cmi stdlib-402/lazy.cmj stdlib-402/lexing.cmi stdlib-402/lexing.cmj stdlib-402/list.cmi stdlib-402/list.cmj stdlib-402/listLabels.cmi stdlib-402/listLabels.cmj stdlib-402/map.cmi stdlib-402/map.cmj stdlib-402/marshal.cmi stdlib-402/marshal.cmj stdlib-402/moreLabels.cmi stdlib-402/moreLabels.cmj stdlib-402/nativeint.cmi stdlib-402/nativeint.cmj stdlib-402/obj.cmi stdlib-402/obj.cmj stdlib-402/oo.cmi stdlib-402/oo.cmj stdlib-402/parsing.cmi stdlib-402/parsing.cmj stdlib-402/printexc.cmi stdlib-402/printexc.cmj stdlib-402/printf.cmi stdlib-402/printf.cmj stdlib-402/queue.cmi stdlib-402/queue.cmj stdlib-402/random.cmi stdlib-402/random.cmj stdlib-402/scanf.cmi stdlib-402/scanf.cmj stdlib-402/set.cmi stdlib-402/set.cmj stdlib-402/sort.cmi stdlib-402/sort.cmj stdlib-402/stack.cmi stdlib-402/stack.cmj stdlib-402/stdLabels.cmi stdlib-402/stdLabels.cmj stdlib-402/std_exit.cmi stdlib-402/std_exit.cmj stdlib-402/stream.cmi stdlib-402/stream.cmj stdlib-402/string.cmi stdlib-402/string.cmj stdlib-402/stringLabels.cmi stdlib-402/stringLabels.cmj stdlib-402/sys.cmi stdlib-402/sys.cmj stdlib-402/unix.cmi stdlib-402/unix.cmj stdlib-402/unixLabels.cmi stdlib-402/unixLabels.cmj stdlib-402/weak.cmi stdlib-402/weak.cmj
