@@ -102,7 +102,7 @@ var v = Format.asprintf(/* Format */[
       "xx"
     ]);
 
-Mt.from_pair_suites("printf_test.ml", suites);
+Mt.from_pair_suites("test/printf_test.ml", suites);
 
 exports.print_pair = print_pair;
 exports.suites = suites;

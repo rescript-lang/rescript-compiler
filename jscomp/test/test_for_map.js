@@ -465,7 +465,7 @@ function merge(f, s1, s2) {
       throw [
             Caml_builtin_exceptions.assert_failure,
             /* tuple */[
-              "map.ml",
+              "stdlib-402/map.ml",
               270,
               10
             ]

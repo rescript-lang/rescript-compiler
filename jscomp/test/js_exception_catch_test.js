@@ -57,7 +57,7 @@ try {
 catch (raw_exn){
   var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
   if (exn[0] === Js_exn.$$Error) {
-    add_test("File \"js_exception_catch_test.ml\", line 21, characters 10-17", (function (param) {
+    add_test("File \"test/js_exception_catch_test.ml\", line 21, characters 10-17", (function (param) {
             return /* Ok */Block.__(4, [true]);
           }));
   } else {
@@ -66,7 +66,7 @@ catch (raw_exn){
 }
 
 if (exit === 1) {
-  add_test("File \"js_exception_catch_test.ml\", line 22, characters 16-23", (function (param) {
+  add_test("File \"test/js_exception_catch_test.ml\", line 22, characters 16-23", (function (param) {
           return /* Ok */Block.__(4, [false]);
         }));
 }
@@ -114,47 +114,47 @@ function test(f) {
   }
 }
 
-eq("File \"js_exception_catch_test.ml\", line 43, characters 5-12", test((function (param) {
+eq("File \"test/js_exception_catch_test.ml\", line 43, characters 5-12", test((function (param) {
             return /* () */0;
           })), /* No_error */-465676758);
 
-eq("File \"js_exception_catch_test.ml\", line 44, characters 5-12", test((function (param) {
+eq("File \"test/js_exception_catch_test.ml\", line 44, characters 5-12", test((function (param) {
             throw Caml_builtin_exceptions.not_found;
           })), /* Not_found */-358247754);
 
-eq("File \"js_exception_catch_test.ml\", line 45, characters 5-12", test((function (param) {
+eq("File \"test/js_exception_catch_test.ml\", line 45, characters 5-12", test((function (param) {
             throw [
                   Caml_builtin_exceptions.invalid_argument,
                   "x"
                 ];
           })), /* Invalid_argument */-50278363);
 
-eq("File \"js_exception_catch_test.ml\", line 46, characters 5-12", test((function (param) {
+eq("File \"test/js_exception_catch_test.ml\", line 46, characters 5-12", test((function (param) {
             throw [
                   Caml_builtin_exceptions.invalid_argument,
                   ""
                 ];
           })), /* Invalid_any */545126980);
 
-eq("File \"js_exception_catch_test.ml\", line 47, characters 5-12", test((function (param) {
+eq("File \"test/js_exception_catch_test.ml\", line 47, characters 5-12", test((function (param) {
             throw [
                   A,
                   2
                 ];
           })), /* A2 */14545);
 
-eq("File \"js_exception_catch_test.ml\", line 48, characters 5-12", test((function (param) {
+eq("File \"test/js_exception_catch_test.ml\", line 48, characters 5-12", test((function (param) {
             throw [
                   A,
                   3
                 ];
           })), /* A_any */740357294);
 
-eq("File \"js_exception_catch_test.ml\", line 49, characters 5-12", test((function (param) {
+eq("File \"test/js_exception_catch_test.ml\", line 49, characters 5-12", test((function (param) {
             throw B;
           })), /* B */66);
 
-eq("File \"js_exception_catch_test.ml\", line 50, characters 5-12", test((function (param) {
+eq("File \"test/js_exception_catch_test.ml\", line 50, characters 5-12", test((function (param) {
             throw [
                   C,
                   1,
@@ -162,7 +162,7 @@ eq("File \"js_exception_catch_test.ml\", line 50, characters 5-12", test((functi
                 ];
           })), /* C */67);
 
-eq("File \"js_exception_catch_test.ml\", line 51, characters 5-12", test((function (param) {
+eq("File \"test/js_exception_catch_test.ml\", line 51, characters 5-12", test((function (param) {
             throw [
                   C,
                   0,
@@ -170,18 +170,18 @@ eq("File \"js_exception_catch_test.ml\", line 51, characters 5-12", test((functi
                 ];
           })), /* C_any */-756146768);
 
-eq("File \"js_exception_catch_test.ml\", line 52, characters 5-12", test((function (param) {
+eq("File \"test/js_exception_catch_test.ml\", line 52, characters 5-12", test((function (param) {
             throw new Error("x");
           })), /* Js_error */634022066);
 
-eq("File \"js_exception_catch_test.ml\", line 53, characters 5-12", test((function (param) {
+eq("File \"test/js_exception_catch_test.ml\", line 53, characters 5-12", test((function (param) {
             throw [
                   Caml_builtin_exceptions.failure,
                   "x"
                 ];
           })), /* Any */3257036);
 
-Mt.from_pair_suites("js_exception_catch_test.ml", suites[0]);
+Mt.from_pair_suites("test/js_exception_catch_test.ml", suites[0]);
 
 exports.suites = suites;
 exports.add_test = add_test;

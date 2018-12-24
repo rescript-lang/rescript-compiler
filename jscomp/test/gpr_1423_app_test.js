@@ -41,13 +41,13 @@ function foo2(f) {
   return Curry._2(f, "a1", /* () */0);
 }
 
-eq("File \"gpr_1423_app_test.ml\", line 18, characters 7-14", Curry._1((function (param) {
+eq("File \"test/gpr_1423_app_test.ml\", line 18, characters 7-14", Curry._1((function (param) {
               return (function (param$1) {
                   return Gpr_1423_nav.busted(param, "a2", param$1);
                 });
             })("a1"), /* () */0), "a1a2");
 
-Mt.from_pair_suites("gpr_1423_app_test.ml", suites[0]);
+Mt.from_pair_suites("test/gpr_1423_app_test.ml", suites[0]);
 
 exports.suites = suites;
 exports.test_id = test_id;

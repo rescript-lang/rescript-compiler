@@ -59,21 +59,21 @@ Printexc.register_printer((function (param) {
         }
       }));
 
-eq("File \"exception_repr_test.ml\", line 24, characters 7-14", "hey", Printexc.to_string(Hi));
+eq("File \"test/exception_repr_test.ml\", line 24, characters 7-14", "hey", Printexc.to_string(Hi));
 
-eq("File \"exception_repr_test.ml\", line 25, characters 7-14", "A(1)", Printexc.to_string([
+eq("File \"test/exception_repr_test.ml\", line 25, characters 7-14", "A(1)", Printexc.to_string([
           A,
           1
         ]));
 
-eq("File \"exception_repr_test.ml\", line 26, characters 7-14", "Exception_repr_test.Hello", Printexc.to_string(Hello));
+eq("File \"test/exception_repr_test.ml\", line 26, characters 7-14", "Exception_repr_test.Hello", Printexc.to_string(Hello));
 
-eq("File \"exception_repr_test.ml\", line 27, characters 7-14", "A", Printexc.to_string([
+eq("File \"test/exception_repr_test.ml\", line 27, characters 7-14", "A", Printexc.to_string([
           Exception_def.A,
           3
         ]));
 
-Mt.from_pair_suites("exception_repr_test.ml", suites[0]);
+Mt.from_pair_suites("test/exception_repr_test.ml", suites[0]);
 
 var AAA = Exception_def.A;
 

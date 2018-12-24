@@ -98,7 +98,7 @@ catch (exn$5){
   a7 = 1;
 }
 
-eq("File \"gpr_1760_test.ml\", line 30, characters 5-12", /* tuple */[
+eq("File \"test/gpr_1760_test.ml\", line 30, characters 5-12", /* tuple */[
       a0,
       a1,
       a4,
@@ -114,7 +114,7 @@ eq("File \"gpr_1760_test.ml\", line 30, characters 5-12", /* tuple */[
       1
     ]);
 
-Mt.from_pair_suites("gpr_1760_test.ml", suites[0]);
+Mt.from_pair_suites("test/gpr_1760_test.ml", suites[0]);
 
 exports.suites = suites;
 exports.test_id = test_id;

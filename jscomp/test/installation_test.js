@@ -46,7 +46,7 @@ if (match !== undefined) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           /* tuple */[
-            "installation_test.ml",
+            "test/installation_test.ml",
             33,
             8
           ]
@@ -65,14 +65,14 @@ if (match !== undefined) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
-          "installation_test.ml",
+          "test/installation_test.ml",
           35,
           18
         ]
       ];
 }
 
-Mt.from_pair_suites("installation_test.ml", suites[0]);
+Mt.from_pair_suites("test/installation_test.ml", suites[0]);
 
 exports.suites = suites;
 exports.test_id = test_id;

@@ -33,9 +33,9 @@ function ff(x) {
   return /* () */0;
 }
 
-eq("File \"ignore_test.ml\", line 16, characters 5-12", /* () */0, /* () */0);
+eq("File \"test/ignore_test.ml\", line 16, characters 5-12", /* () */0, /* () */0);
 
-Mt.from_pair_suites("ignore_test.ml", suites[0]);
+Mt.from_pair_suites("test/ignore_test.ml", suites[0]);
 
 exports.suites = suites;
 exports.test_id = test_id;

@@ -314,7 +314,7 @@ var s = List.fold_left((function (acc, param) {
       ]
     ]);
 
-Mt.from_pair_suites("map_find_test.ml", /* :: */[
+Mt.from_pair_suites("test/map_find_test.ml", /* :: */[
       /* tuple */[
         "int",
         (function (param) {

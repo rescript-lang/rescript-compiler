@@ -105,7 +105,7 @@ var u0 = f(Belt_Array.map(Array_data_util.randomRange(0, 39), (function (x) {
 
 var u1 = Belt_Map.set(u0, 39, 120);
 
-b("File \"bs_map_set_dict_test.ml\", line 77, characters 4-11", Belt_Array.every2(Belt_MapDict.toArray(u0.data), Belt_Array.map(Array_data_util.range(0, 39), (function (x) {
+b("File \"test/bs_map_set_dict_test.ml\", line 77, characters 4-11", Belt_Array.every2(Belt_MapDict.toArray(u0.data), Belt_Array.map(Array_data_util.range(0, 39), (function (x) {
                 return /* tuple */[
                         x,
                         x
@@ -118,7 +118,7 @@ b("File \"bs_map_set_dict_test.ml\", line 77, characters 4-11", Belt_Array.every
             }
           })));
 
-b("File \"bs_map_set_dict_test.ml\", line 82, characters 4-11", Belt_List.every2(Belt_MapDict.toList(u0.data), Belt_List.fromArray(Belt_Array.map(Array_data_util.range(0, 39), (function (x) {
+b("File \"test/bs_map_set_dict_test.ml\", line 82, characters 4-11", Belt_List.every2(Belt_MapDict.toList(u0.data), Belt_List.fromArray(Belt_Array.map(Array_data_util.range(0, 39), (function (x) {
                     return /* tuple */[
                             x,
                             x
@@ -131,9 +131,9 @@ b("File \"bs_map_set_dict_test.ml\", line 82, characters 4-11", Belt_List.every2
             }
           })));
 
-eq("File \"bs_map_set_dict_test.ml\", line 87, characters 5-12", Belt_Map.get(u0, 39), 39);
+eq("File \"test/bs_map_set_dict_test.ml\", line 87, characters 5-12", Belt_Map.get(u0, 39), 39);
 
-eq("File \"bs_map_set_dict_test.ml\", line 88, characters 5-12", Belt_Map.get(u1, 39), 120);
+eq("File \"test/bs_map_set_dict_test.ml\", line 88, characters 5-12", Belt_Map.get(u1, 39), 120);
 
 var u = f(Belt_Array.makeByAndShuffle(10000, (function (x) {
             return /* tuple */[
@@ -142,14 +142,14 @@ var u = f(Belt_Array.makeByAndShuffle(10000, (function (x) {
                   ];
           })));
 
-eq("File \"bs_map_set_dict_test.ml\", line 94, characters 4-11", Belt_Array.makeBy(10000, (function (x) {
+eq("File \"test/bs_map_set_dict_test.ml\", line 94, characters 4-11", Belt_Array.makeBy(10000, (function (x) {
             return /* tuple */[
                     x,
                     x
                   ];
           })), Belt_MapDict.toArray(u.data));
 
-Mt.from_pair_suites("bs_map_set_dict_test.ml", suites[0]);
+Mt.from_pair_suites("test/bs_map_set_dict_test.ml", suites[0]);
 
 var M = 0;
 

@@ -728,7 +728,7 @@ function chop(_k, _l) {
       throw [
             Caml_builtin_exceptions.assert_failure,
             /* tuple */[
-              "test_list.ml",
+              "test/test_list.ml",
               224,
               11
             ]

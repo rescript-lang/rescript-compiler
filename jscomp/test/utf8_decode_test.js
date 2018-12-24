@@ -223,7 +223,7 @@ function eq(loc, param) {
 }
 
 List.iter((function (param) {
-        return eq("File \"utf8_decode_test.ml\", line 107, characters 7-14", /* tuple */[
+        return eq("File \"test/utf8_decode_test.ml\", line 107, characters 7-14", /* tuple */[
                     true,
                     eq_list(Caml_obj.caml_equal, to_list(utf8_decode(Stream.of_string(param[0]))), param[1])
                   ]);
@@ -358,7 +358,7 @@ List.iter((function (param) {
       ]
     ]);
 
-Mt.from_pair_suites("utf8_decode_test.ml", suites[0]);
+Mt.from_pair_suites("test/utf8_decode_test.ml", suites[0]);
 
 exports.classify = classify;
 exports.utf8_decode = utf8_decode;

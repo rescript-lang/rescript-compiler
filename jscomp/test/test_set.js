@@ -687,7 +687,7 @@ function Make(Ord) {
           throw [
                 Caml_builtin_exceptions.assert_failure,
                 /* tuple */[
-                  "test_set.ml",
+                  "test/test_set.ml",
                   372,
                   18
                 ]

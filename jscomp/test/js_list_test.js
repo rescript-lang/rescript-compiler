@@ -27,7 +27,7 @@ function eq(loc, x, y) {
   return /* () */0;
 }
 
-eq("File \"js_list_test.ml\", line 11, characters 7-14", Js_list.flatten(/* :: */[
+eq("File \"test/js_list_test.ml\", line 11, characters 7-14", Js_list.flatten(/* :: */[
           /* :: */[
             1,
             /* :: */[
@@ -77,7 +77,7 @@ eq("File \"js_list_test.ml\", line 11, characters 7-14", Js_list.flatten(/* :: *
       ]
     ]);
 
-eq("File \"js_list_test.ml\", line 14, characters 7-14", Js_list.filterMap((function (x) {
+eq("File \"test/js_list_test.ml\", line 14, characters 7-14", Js_list.filterMap((function (x) {
             if (x % 2 === 0) {
               return x;
             }
@@ -114,7 +114,7 @@ eq("File \"js_list_test.ml\", line 14, characters 7-14", Js_list.filterMap((func
       ]
     ]);
 
-eq("File \"js_list_test.ml\", line 17, characters 7-14", Js_list.filterMap((function (x) {
+eq("File \"test/js_list_test.ml\", line 17, characters 7-14", Js_list.filterMap((function (x) {
             if (x % 2 === 0) {
               return x;
             }
@@ -148,7 +148,7 @@ eq("File \"js_list_test.ml\", line 17, characters 7-14", Js_list.filterMap((func
       ]
     ]);
 
-eq("File \"js_list_test.ml\", line 20, characters 7-14", Js_list.countBy((function (x) {
+eq("File \"test/js_list_test.ml\", line 20, characters 7-14", Js_list.countBy((function (x) {
             return x % 2 === 0;
           }), /* :: */[
           1,
@@ -176,7 +176,7 @@ function f(i) {
 
 var v = Js_vector.toList(Js_vector.init(100000, f));
 
-eq("File \"js_list_test.ml\", line 23, characters 7-14", Js_list.countBy((function (x) {
+eq("File \"test/js_list_test.ml\", line 23, characters 7-14", Js_list.countBy((function (x) {
             return x % 2 === 0;
           }), v), 50000);
 
@@ -187,7 +187,7 @@ var vv = Js_list.foldRight((function (x, y) {
               ];
       }), v, /* [] */0);
 
-eq("File \"js_list_test.ml\", line 27, characters 7-14", true, Js_list.equal((function (x, y) {
+eq("File \"test/js_list_test.ml\", line 27, characters 7-14", true, Js_list.equal((function (x, y) {
             return x === y;
           }), v, vv));
 
@@ -195,17 +195,17 @@ var vvv = Js_list.filter((function (x) {
         return x % 10 === 0;
       }), vv);
 
-eq("File \"js_list_test.ml\", line 31, characters 7-14", Js_list.length(vvv), 10000);
+eq("File \"test/js_list_test.ml\", line 31, characters 7-14", Js_list.length(vvv), 10000);
 
 function f$1(x) {
   return Caml_int32.imul(x, 10);
 }
 
-eq("File \"js_list_test.ml\", line 32, characters 7-14", true, Js_list.equal((function (x, y) {
+eq("File \"test/js_list_test.ml\", line 32, characters 7-14", true, Js_list.equal((function (x, y) {
             return x === y;
           }), vvv, Js_vector.toList(Js_vector.init(10000, f$1))));
 
-Mt.from_pair_suites("js_list_test.ml", suites[0]);
+Mt.from_pair_suites("test/js_list_test.ml", suites[0]);
 
 exports.suites = suites;
 exports.test_id = test_id;

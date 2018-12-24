@@ -149,9 +149,9 @@ var ref = /* array */[
   "b325dc1c6f5e7a2b7cf465b9feab7948"
 ];
 
-Mt.from_pair_suites("digest_test.ml", Pervasives.$at(/* :: */[
+Mt.from_pair_suites("test/digest_test.ml", Pervasives.$at(/* :: */[
           /* tuple */[
-            "File \"digest_test.ml\", line 6, characters 4-11",
+            "File \"test/digest_test.ml\", line 6, characters 4-11",
             (function (param) {
                 return /* Eq */Block.__(0, [
                           Digest.to_hex(Digest.string("value")),
@@ -161,7 +161,7 @@ Mt.from_pair_suites("digest_test.ml", Pervasives.$at(/* :: */[
           ],
           /* :: */[
             /* tuple */[
-              "File \"digest_test.ml\", line 7, characters 4-11",
+              "File \"test/digest_test.ml\", line 7, characters 4-11",
               (function (param) {
                   return /* Eq */Block.__(0, [
                             Digest.to_hex(Digest.string("The quick brown fox jumps over the lazy dog")),
@@ -171,7 +171,7 @@ Mt.from_pair_suites("digest_test.ml", Pervasives.$at(/* :: */[
             ],
             /* :: */[
               /* tuple */[
-                "File \"digest_test.ml\", line 9, characters 4-11",
+                "File \"test/digest_test.ml\", line 9, characters 4-11",
                 (function (param) {
                     return /* Eq */Block.__(0, [
                               Digest.to_hex(Digest.string("The quick brown fox jumps over the lazy dog.")),
@@ -181,7 +181,7 @@ Mt.from_pair_suites("digest_test.ml", Pervasives.$at(/* :: */[
               ],
               /* :: */[
                 /* tuple */[
-                  "File \"digest_test.ml\", line 11, characters 4-11",
+                  "File \"test/digest_test.ml\", line 11, characters 4-11",
                   (function (param) {
                       return /* Eq */Block.__(0, [
                                 Digest.to_hex(Digest.string("")),
@@ -191,7 +191,7 @@ Mt.from_pair_suites("digest_test.ml", Pervasives.$at(/* :: */[
                 ],
                 /* :: */[
                   /* tuple */[
-                    "File \"digest_test.ml\", line 12, characters 4-11",
+                    "File \"test/digest_test.ml\", line 12, characters 4-11",
                     (function (param) {
                         return /* Eq */Block.__(0, [
                                   Digest.to_hex(Digest.string("The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.")),
@@ -201,7 +201,7 @@ Mt.from_pair_suites("digest_test.ml", Pervasives.$at(/* :: */[
                   ],
                   /* :: */[
                     /* tuple */[
-                      "File \"digest_test.ml\", line 13, characters 4-11",
+                      "File \"test/digest_test.ml\", line 13, characters 4-11",
                       (function (param) {
                           return /* Eq */Block.__(0, [
                                     Digest.to_hex(Digest.string("The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.")),

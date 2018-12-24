@@ -124,7 +124,7 @@ function lorem(tr) {
       throw [
             Caml_builtin_exceptions.assert_failure,
             /* tuple */[
-              "flexible_array_test.ml",
+              "test/flexible_array_test.ml",
               66,
               9
             ]
@@ -320,7 +320,7 @@ if (!$eq$tilde(sort(u), /* array */[
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
-          "flexible_array_test.ml",
+          "test/flexible_array_test.ml",
           166,
           4
         ]

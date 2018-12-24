@@ -106,7 +106,7 @@ var list_suites = /* :: */[
   list_suites_001
 ];
 
-Mt.from_pair_suites("list_test.ml", list_suites);
+Mt.from_pair_suites("test/list_test.ml", list_suites);
 
 exports.list_suites = list_suites;
 /*  Not a pure module */

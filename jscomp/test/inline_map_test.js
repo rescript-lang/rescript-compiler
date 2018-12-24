@@ -160,7 +160,7 @@ var m = List.fold_left((function (acc, param) {
       ]
     ]);
 
-Mt.from_pair_suites("inline_map_test.ml", /* :: */[
+Mt.from_pair_suites("test/inline_map_test.ml", /* :: */[
       /* tuple */[
         "find",
         (function (param) {

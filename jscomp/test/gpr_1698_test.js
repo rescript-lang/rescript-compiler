@@ -53,7 +53,7 @@ function compare(context, state, _a, _b) {
                 throw [
                       Caml_builtin_exceptions.assert_failure,
                       /* tuple */[
-                        "gpr_1698_test.ml",
+                        "test/gpr_1698_test.ml",
                         45,
                         10
                       ]
@@ -78,7 +78,7 @@ function compare(context, state, _a, _b) {
                 throw [
                       Caml_builtin_exceptions.assert_failure,
                       /* tuple */[
-                        "gpr_1698_test.ml",
+                        "test/gpr_1698_test.ml",
                         45,
                         10
                       ]

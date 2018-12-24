@@ -54,9 +54,9 @@ var v = new Make(1, 2, 3, 4);
 
 var u = v.sum();
 
-eq("File \"ffi_splice_test.ml\", line 57, characters 12-19", u, 10);
+eq("File \"test/ffi_splice_test.ml\", line 57, characters 12-19", u, 10);
 
-Mt.from_pair_suites("ffi_splice_test.ml", suites[0]);
+Mt.from_pair_suites("test/ffi_splice_test.ml", suites[0]);
 
 exports.suites = suites;
 exports.test_id = test_id;

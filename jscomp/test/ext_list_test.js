@@ -918,7 +918,7 @@ function assoc_by_string(def, k, _lst) {
       throw [
             Caml_builtin_exceptions.assert_failure,
             /* tuple */[
-              "ext_list_test.ml",
+              "test/ext_list_test.ml",
               399,
               14
             ]
@@ -944,7 +944,7 @@ function assoc_by_int(def, k, _lst) {
       throw [
             Caml_builtin_exceptions.assert_failure,
             /* tuple */[
-              "ext_list_test.ml",
+              "test/ext_list_test.ml",
               409,
               14
             ]

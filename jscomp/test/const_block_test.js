@@ -80,7 +80,7 @@ var suites = /* :: */[
   suites_001
 ];
 
-Mt.from_pair_suites("const_block_test.ml", suites);
+Mt.from_pair_suites("test/const_block_test.ml", suites);
 
 var v = /* tuple */[
   0,

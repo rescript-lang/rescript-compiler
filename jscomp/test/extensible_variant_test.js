@@ -24,7 +24,7 @@ function to_int(x) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           /* tuple */[
-            "extensible_variant_test.ml",
+            "test/extensible_variant_test.ml",
             16,
             9
           ]
@@ -82,7 +82,7 @@ var suites = /* :: */[
   suites_001
 ];
 
-Mt.from_pair_suites("extensible_variant_test.ml", suites);
+Mt.from_pair_suites("test/extensible_variant_test.ml", suites);
 
 exports.Str = Str;
 exports.N = N;

@@ -12,7 +12,7 @@ function f(param) {
       throw [
             Caml_builtin_exceptions.assert_failure,
             /* tuple */[
-              "test_string_case.ml",
+              "test/test_string_case.ml",
               4,
               9
             ]

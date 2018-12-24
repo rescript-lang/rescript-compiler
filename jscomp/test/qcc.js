@@ -40,7 +40,7 @@ function bufferize(f) {
                 throw [
                       Caml_builtin_exceptions.assert_failure,
                       /* tuple */[
-                        "qcc.ml",
+                        "test/qcc.ml",
                         17,
                         4
                       ]
@@ -96,7 +96,7 @@ function symstr(n) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           /* tuple */[
-            "qcc.ml",
+            "test/qcc.ml",
             40,
             4
           ]
@@ -362,7 +362,7 @@ function patch(rel, loc, n) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           /* tuple */[
-            "qcc.ml",
+            "test/qcc.ml",
             157,
             2
           ]
@@ -936,7 +936,7 @@ function unary(stk) {
             throw [
                   Caml_builtin_exceptions.assert_failure,
                   /* tuple */[
-                    "qcc.ml",
+                    "test/qcc.ml",
                     295,
                     6
                   ]
@@ -1206,7 +1206,7 @@ function decl(g, _n, _stk) {
           throw [
                 Caml_builtin_exceptions.assert_failure,
                 /* tuple */[
-                  "qcc.ml",
+                  "test/qcc.ml",
                   436,
                   6
                 ]
@@ -1320,7 +1320,7 @@ function stmt(brk, stk) {
       throw [
             Caml_builtin_exceptions.assert_failure,
             /* tuple */[
-              "qcc.ml",
+              "test/qcc.ml",
               515,
               4
             ]
@@ -1724,7 +1724,7 @@ function elfgen(outf) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           /* tuple */[
-            "qcc.ml",
+            "test/qcc.ml",
             698,
             2
           ]

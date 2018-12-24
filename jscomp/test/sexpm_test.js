@@ -78,7 +78,7 @@ function print_or_error(fmt, x) {
 
 var a = Sexpm.parse_string("(x x gh 3 3)");
 
-eq("File \"sexpm_test.ml\", line 17, characters 7-14", /* tuple */[
+eq("File \"test/sexpm_test.ml\", line 17, characters 7-14", /* tuple */[
       /* `Ok */[
         17724,
         /* `List */[
@@ -119,7 +119,7 @@ eq("File \"sexpm_test.ml\", line 17, characters 7-14", /* tuple */[
       a
     ]);
 
-eq("File \"sexpm_test.ml\", line 21, characters 7-14", /* tuple */[
+eq("File \"test/sexpm_test.ml\", line 21, characters 7-14", /* tuple */[
       Curry._2(Format.asprintf(/* Format */[
                   /* Alpha */Block.__(15, [/* End_of_format */0]),
                   "%a"
@@ -127,7 +127,7 @@ eq("File \"sexpm_test.ml\", line 21, characters 7-14", /* tuple */[
       "Ok:(x x gh 3 3)\n".trim()
     ]);
 
-Mt.from_pair_suites("sexpm_test.ml", suites[0]);
+Mt.from_pair_suites("test/sexpm_test.ml", suites[0]);
 
 exports.suites = suites;
 exports.test_id = test_id;

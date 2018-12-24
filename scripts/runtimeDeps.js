@@ -421,19 +421,23 @@ function baseName(x) {
 var testDir = path.join(jscompDir,'test')
 
 async function testNinja(){
+    var ninjaCwd = `test`
     var templateTestRules = `
 ${BSC_COMPILER}
-bsc_flags = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:jscomp/test  -w -40-52 -warn-error A+8-3-30-26+101-102-103-104-52 -bin-annot -I ../runtime -I ../stdlib-402 -I ../others
+bsc_flags = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:jscomp/test  -w -40-52 -warn-error A+8-3-30-26+101-102-103-104-52 -bin-annot -I ./runtime -I ./stdlib-402 -I ./others
 rule cc
-    command = $bsc $bsc_flags -c $in
+    command = $bsc $bsc_flags -bs-no-implicit-include -I ${ninjaCwd} -c $in
     description = $in -> $out
 rule mll    
     command = ocamllex.opt $in
     generator = true
 ${ninjaQuickBuidList([
-    ['arith_lexer.ml','arith_lexer.mll','mll','.',[],[], []],
-    ['number_lexer.ml','number_lexer.mll','mll','.',[],[],[]],
-    ['simple_lexer_test.ml','simple_lexer_test.mll','mll','.',[],[],[]],
+    ['arith_lexer.ml','arith_lexer.mll', 
+        'mll',ninjaCwd,[],[], []],
+    ['number_lexer.ml','number_lexer.mll',
+        'mll',ninjaCwd,[],[],[]],
+    ['simple_lexer_test.ml','simple_lexer_test.mll',
+        'mll',ninjaCwd,[],[],[]],
 ])}
 `
     var testDirFiles = fs.readdirSync(testDir,'ascii')    
@@ -444,7 +448,7 @@ ${ninjaQuickBuidList([
 
     var depsMap = await ocamlDepAsync(sources, testDir, new Map)
     var targets = collectTarget(sources)
-    var output = generateNinja(depsMap, targets,'.')
+    var output = generateNinja(depsMap, targets,ninjaCwd,[stdlibTarget])
     writeFileA(
         path.join(testDir,'build.ninja'),
         templateTestRules + output.join('\n') + '\n'    

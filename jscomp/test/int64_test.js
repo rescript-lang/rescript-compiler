@@ -2357,37 +2357,37 @@ function id(loc, x) {
   return eq(loc, Caml_int64.bits_of_float(Caml_int64.float_of_bits(x)), x);
 }
 
-eq("File \"int64_test.ml\", line 176, characters 5-12", Caml_int64.bits_of_float(0.3), /* int64 */[
+eq("File \"test/int64_test.ml\", line 176, characters 5-12", Caml_int64.bits_of_float(0.3), /* int64 */[
       /* hi */1070805811,
       /* lo */858993459
     ]);
 
-eq("File \"int64_test.ml\", line 177, characters 5-12", Caml_int64.float_of_bits(/* int64 */[
+eq("File \"test/int64_test.ml\", line 177, characters 5-12", Caml_int64.float_of_bits(/* int64 */[
           /* hi */1070805811,
           /* lo */858993459
         ]), 0.3);
 
-id("File \"int64_test.ml\", line 178, characters 5-12", /* int64 */[
+id("File \"test/int64_test.ml\", line 178, characters 5-12", /* int64 */[
       /* hi */-1,
       /* lo */4294967295
     ]);
 
-id("File \"int64_test.ml\", line 179, characters 5-12", /* int64 */[
+id("File \"test/int64_test.ml\", line 179, characters 5-12", /* int64 */[
       /* hi */-1,
       /* lo */4294967196
     ]);
 
-id("File \"int64_test.ml\", line 180, characters 5-12", /* int64 */[
+id("File \"test/int64_test.ml\", line 180, characters 5-12", /* int64 */[
       /* hi */0,
       /* lo */4294967295
     ]);
 
-id("File \"int64_test.ml\", line 181, characters 5-12", /* int64 */[
+id("File \"test/int64_test.ml\", line 181, characters 5-12", /* int64 */[
       /* hi */0,
       /* lo */536870911
     ]);
 
-Mt.from_pair_suites("int64_test.ml", suites$1[0]);
+Mt.from_pair_suites("test/int64_test.ml", suites$1[0]);
 
 exports.f = f;
 exports.v = v;

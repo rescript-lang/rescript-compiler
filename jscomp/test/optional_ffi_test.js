@@ -39,7 +39,7 @@ var u = hey(undefined, 3);
 
 var z = hey(5, 3);
 
-eq("File \"optional_ffi_test.ml\", line 23, characters 5-12", /* tuple */[
+eq("File \"test/optional_ffi_test.ml\", line 23, characters 5-12", /* tuple */[
       /* tuple */[
         u,
         z
@@ -106,9 +106,9 @@ var pair2 = /* tuple */[
   pair2_001
 ];
 
-eq("File \"optional_ffi_test.ml\", line 43, characters 5-12", pair);
+eq("File \"test/optional_ffi_test.ml\", line 43, characters 5-12", pair);
 
-eq("File \"optional_ffi_test.ml\", line 44, characters 5-12", pair2);
+eq("File \"test/optional_ffi_test.ml\", line 44, characters 5-12", pair2);
 
 
 function heystr(x, y) {
@@ -125,9 +125,9 @@ var pair$1 = /* tuple */[
   pair_001$1
 ];
 
-eq("File \"optional_ffi_test.ml\", line 58, characters 5-12", pair$1);
+eq("File \"test/optional_ffi_test.ml\", line 58, characters 5-12", pair$1);
 
-Mt.from_pair_suites("optional_ffi_test.ml", suites[0]);
+Mt.from_pair_suites("test/optional_ffi_test.ml", suites[0]);
 
 exports.suites = suites;
 exports.test_id = test_id;

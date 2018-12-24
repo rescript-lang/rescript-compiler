@@ -65,7 +65,7 @@ var suites = /* :: */[
   suites_001
 ];
 
-Mt.from_pair_suites("buffer_test.ml", suites);
+Mt.from_pair_suites("test/buffer_test.ml", suites);
 
 exports.v = v;
 exports.suites = suites;

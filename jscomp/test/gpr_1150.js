@@ -53,7 +53,7 @@ function f(children) {
                                     throw [
                                           Caml_builtin_exceptions.assert_failure,
                                           /* tuple */[
-                                            "gpr_1150.ml",
+                                            "test/gpr_1150.ml",
                                             56,
                                             34
                                           ]

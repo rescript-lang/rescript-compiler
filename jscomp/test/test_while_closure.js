@@ -38,7 +38,7 @@ if (v[0] !== 45) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
-          "test_while_closure.ml",
+          "test/test_while_closure.ml",
           63,
           4
         ]

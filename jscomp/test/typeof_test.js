@@ -175,7 +175,7 @@ var suites = /* :: */[
   suites_001
 ];
 
-Mt.from_pair_suites("typeof_test.ml", suites);
+Mt.from_pair_suites("test/typeof_test.ml", suites);
 
 exports.string_or_number = string_or_number;
 exports.suites = suites;

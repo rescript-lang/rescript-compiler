@@ -58,27 +58,27 @@ function f33(x) {
   }
 }
 
-eq("File \"int_switch_test.ml\", line 35, characters 6-13", f((function (param) {
+eq("File \"test/int_switch_test.ml\", line 35, characters 6-13", f((function (param) {
             return 1;
           })), /* "a" */97);
 
-eq("File \"int_switch_test.ml\", line 36, characters 6-13", f((function (param) {
+eq("File \"test/int_switch_test.ml\", line 36, characters 6-13", f((function (param) {
             return 2;
           })), /* "b" */98);
 
-eq("File \"int_switch_test.ml\", line 37, characters 6-13", f((function (param) {
+eq("File \"test/int_switch_test.ml\", line 37, characters 6-13", f((function (param) {
             return 3;
           })), /* "c" */99);
 
-eq("File \"int_switch_test.ml\", line 38, characters 6-13", f((function (param) {
+eq("File \"test/int_switch_test.ml\", line 38, characters 6-13", f((function (param) {
             return 0;
           })), /* "x" */120);
 
-eq("File \"int_switch_test.ml\", line 39, characters 6-13", f((function (param) {
+eq("File \"test/int_switch_test.ml\", line 39, characters 6-13", f((function (param) {
             return -1;
           })), /* "x" */120);
 
-Mt.from_pair_suites("int_switch_test.ml", suites[0]);
+Mt.from_pair_suites("test/int_switch_test.ml", suites[0]);
 
 exports.suites = suites;
 exports.test_id = test_id;

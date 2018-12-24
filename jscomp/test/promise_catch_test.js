@@ -40,7 +40,7 @@ function handler(e) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           /* tuple */[
-            "promise_catch_test.ml",
+            "test/promise_catch_test.ml",
             22,
             9
           ]
@@ -75,7 +75,7 @@ try {
 }
 catch (raw_e){
   var e = Caml_js_exceptions.internalToOCamlException(raw_e);
-  eq("File \"promise_catch_test.ml\", line 36, characters 7-14", true, Js_option.isSomeValue((function (xxx, y) {
+  eq("File \"test/promise_catch_test.ml\", line 36, characters 7-14", true, Js_option.isSomeValue((function (xxx, y) {
               return xxx === y;
             }), 2, myHandler(e)));
 }
@@ -84,14 +84,14 @@ if (exit === 1) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
-          "promise_catch_test.ml",
+          "test/promise_catch_test.ml",
           39,
           9
         ]
       ];
 }
 
-Mt.from_pair_suites("promise_catch_test.ml", suites[0]);
+Mt.from_pair_suites("test/promise_catch_test.ml", suites[0]);
 
 exports.suites = suites;
 exports.test_id = test_id;

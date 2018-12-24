@@ -80,7 +80,7 @@ f$3((function (prim, prim$1) {
 
 var d = v$3[0];
 
-Mt.from_pair_suites("pr_regression_test.ml", /* :: */[
+Mt.from_pair_suites("test/pr_regression_test.ml", /* :: */[
       /* tuple */[
         "partial",
         (function (param) {

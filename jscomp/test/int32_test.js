@@ -155,7 +155,7 @@ var $star$tilde = Caml_int32.imul;
 
 var suites = /* record */[/* contents */Pervasives.$at(/* :: */[
         /* tuple */[
-          "File \"int32_test.ml\", line 31, characters 2-9",
+          "File \"test/int32_test.ml\", line 31, characters 2-9",
           (function (param) {
               return /* Eq */Block.__(0, [
                         1,
@@ -165,7 +165,7 @@ var suites = /* record */[/* contents */Pervasives.$at(/* :: */[
         ],
         /* :: */[
           /* tuple */[
-            "File \"int32_test.ml\", line 32, characters 2-9",
+            "File \"test/int32_test.ml\", line 32, characters 2-9",
             (function (param) {
                 return /* Eq */Block.__(0, [
                           -2147483647,
@@ -246,11 +246,11 @@ function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
-eq("File \"int32_test.ml\", line 47, characters 5-12", Caml_float.caml_int32_bits_of_float(0.3), 1050253722);
+eq("File \"test/int32_test.ml\", line 47, characters 5-12", Caml_float.caml_int32_bits_of_float(0.3), 1050253722);
 
-eq("File \"int32_test.ml\", line 48, characters 5-12", Caml_float.caml_int32_float_of_bits(1050253722), 0.300000011920928955);
+eq("File \"test/int32_test.ml\", line 48, characters 5-12", Caml_float.caml_int32_float_of_bits(1050253722), 0.300000011920928955);
 
-Mt.from_pair_suites("int32_test.ml", suites[0]);
+Mt.from_pair_suites("test/int32_test.ml", suites[0]);
 
 var test_div = 30;
 

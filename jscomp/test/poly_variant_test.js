@@ -59,13 +59,13 @@ var vv = /* array */[
   hey_int(4)
 ];
 
-eq("File \"poly_variant_test.ml\", line 58, characters 5-12", vv, /* array */[
+eq("File \"test/poly_variant_test.ml\", line 58, characters 5-12", vv, /* array */[
       3,
       0,
       4
     ]);
 
-eq("File \"poly_variant_test.ml\", line 59, characters 5-12", /* tuple */[
+eq("File \"test/poly_variant_test.ml\", line 59, characters 5-12", /* tuple */[
       hey_int(5),
       hey_int(6)
     ], /* tuple */[
@@ -73,7 +73,7 @@ eq("File \"poly_variant_test.ml\", line 59, characters 5-12", /* tuple */[
       6
     ]);
 
-eq("File \"poly_variant_test.ml\", line 60, characters 5-12", uu, /* array */[
+eq("File \"test/poly_variant_test.ml\", line 60, characters 5-12", uu, /* array */[
       "on_open",
       "on_closed",
       "in"
@@ -116,7 +116,7 @@ function test(readline, x) {
   return /* () */0;
 }
 
-Mt.from_pair_suites("poly_variant_test.ml", suites[0]);
+Mt.from_pair_suites("test/poly_variant_test.ml", suites[0]);
 
 function on2(prim, prim$1) {
   prim.on2((function () {

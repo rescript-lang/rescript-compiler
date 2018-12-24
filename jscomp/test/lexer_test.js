@@ -188,7 +188,7 @@ var lexer_suites = /* :: */[
   lexer_suites_001
 ];
 
-Mt.from_pair_suites("lexer_test.ml", lexer_suites);
+Mt.from_pair_suites("test/lexer_test.ml", lexer_suites);
 
 exports.get_tokens = get_tokens;
 exports.f = f;

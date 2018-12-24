@@ -36,7 +36,7 @@ function add(suite) {
 }
 
 var Int3 = Caml_module.init_mod([
-      "recursive_module_test.ml",
+      "test/recursive_module_test.ml",
       13,
       6
     ], [[0]]);
@@ -44,7 +44,7 @@ var Int3 = Caml_module.init_mod([
 Caml_module.update_mod([[0]], Int3, Int3);
 
 var M = Caml_module.init_mod([
-      "recursive_module_test.ml",
+      "test/recursive_module_test.ml",
       20,
       20
     ], [[0]]);
@@ -66,10 +66,10 @@ var Fact = /* module */[
   /* fact */fact$1
 ];
 
-eq("File \"recursive_module_test.ml\", line 30, characters 5-12", 120, Curry._1(fact$1, 5));
+eq("File \"test/recursive_module_test.ml\", line 30, characters 5-12", 120, Curry._1(fact$1, 5));
 
 add(/* tuple */[
-      "File \"recursive_module_test.ml\", line 34, characters 7-14",
+      "File \"test/recursive_module_test.ml\", line 34, characters 7-14",
       (function (param) {
           return /* ThrowAny */Block.__(7, [(function (param) {
                         Curry._1(Int3[/* u */0], 3);
@@ -78,7 +78,7 @@ add(/* tuple */[
         })
     ]);
 
-Mt.from_pair_suites("recursive_module_test.ml", suites[0]);
+Mt.from_pair_suites("test/recursive_module_test.ml", suites[0]);
 
 exports.suites = suites;
 exports.test_id = test_id;

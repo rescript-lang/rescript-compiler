@@ -1,0 +1,7 @@
+
+subninja runtime/build.ninja
+subninja others/build.ninja
+subninja stdlib-402/build.ninja
+
+build all: phony runtime others stdlib-402
+

@@ -47,7 +47,7 @@ var suites = /* :: */[
   /* [] */0
 ];
 
-Mt.from_pair_suites("queue_test.ml", suites);
+Mt.from_pair_suites("test/queue_test.ml", suites);
 
 exports.to_array = to_array;
 exports.queue_1 = queue_1;

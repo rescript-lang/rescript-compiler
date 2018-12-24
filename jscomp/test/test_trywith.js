@@ -114,7 +114,7 @@ function f(x) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           /* tuple */[
-            "test_trywith.ml",
+            "test/test_trywith.ml",
             51,
             9
           ]

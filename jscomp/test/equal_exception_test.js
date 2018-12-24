@@ -14,7 +14,7 @@ function is_equal(param) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           /* tuple */[
-            "equal_exception_test.ml",
+            "test/equal_exception_test.ml",
             9,
             4
           ]
@@ -24,7 +24,7 @@ function is_equal(param) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           /* tuple */[
-            "equal_exception_test.ml",
+            "test/equal_exception_test.ml",
             10,
             4
           ]
@@ -36,7 +36,7 @@ function is_equal(param) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           /* tuple */[
-            "equal_exception_test.ml",
+            "test/equal_exception_test.ml",
             13,
             4
           ]

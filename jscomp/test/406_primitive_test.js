@@ -10,7 +10,7 @@ function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
-Mt.from_pair_suites("406_primitive_test.ml", suites[0]);
+Mt.from_pair_suites("test/406_primitive_test.ml", suites[0]);
 
 exports.suites = suites;
 exports.test_id = test_id;

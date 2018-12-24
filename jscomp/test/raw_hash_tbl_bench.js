@@ -13,7 +13,7 @@ function bench(param) {
       throw [
             Caml_builtin_exceptions.assert_failure,
             /* tuple */[
-              "raw_hash_tbl_bench.ml",
+              "test/raw_hash_tbl_bench.ml",
               9,
               4
             ]

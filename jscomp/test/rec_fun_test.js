@@ -58,9 +58,9 @@ Caml_obj.caml_update_dummy(y, /* :: */[
       x
     ]);
 
-eq("File \"rec_fun_test.ml\", line 27, characters 6-13", called[0], 2);
+eq("File \"test/rec_fun_test.ml\", line 27, characters 6-13", called[0], 2);
 
-Mt.from_pair_suites("rec_fun_test.ml", suites[0]);
+Mt.from_pair_suites("test/rec_fun_test.ml", suites[0]);
 
 exports.suites = suites;
 exports.test_id = test_id;

@@ -102,7 +102,7 @@ var suites = /* :: */[
   suites_001
 ];
 
-Mt.from_pair_suites("hashtbl_test.ml", suites);
+Mt.from_pair_suites("test/hashtbl_test.ml", suites);
 
 exports.to_list = to_list;
 exports.f = f;

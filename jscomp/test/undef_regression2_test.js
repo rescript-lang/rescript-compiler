@@ -78,11 +78,11 @@ function f(x) {
   return x === undefined;
 }
 
-ok("File \"undef_regression2_test.ml\", line 44, characters 5-12", a > 0);
+ok("File \"test/undef_regression2_test.ml\", line 44, characters 5-12", a > 0);
 
-eq("File \"undef_regression2_test.ml\", line 45, characters 5-12", a, 1);
+eq("File \"test/undef_regression2_test.ml\", line 45, characters 5-12", a, 1);
 
-Mt.from_pair_suites("undef_regression2_test.ml", suites[0]);
+Mt.from_pair_suites("test/undef_regression2_test.ml", suites[0]);
 
 exports.suites = suites;
 exports.test_id = test_id;

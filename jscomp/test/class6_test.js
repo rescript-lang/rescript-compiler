@@ -224,7 +224,7 @@ var p$1 = Curry._2(functional_point[0], 0, 7);
 
 var tmp = Caml_oo_curry.js2(-933174511, 2, p$1, 3);
 
-eq("File \"class6_test.ml\", line 60, characters 5-12", /* tuple */[
+eq("File \"test/class6_test.ml\", line 60, characters 5-12", /* tuple */[
       7,
       10,
       7
@@ -277,7 +277,7 @@ var p$2 = Curry._2(bad_functional_point_000, 0, 7);
 
 var tmp$1 = Caml_oo_curry.js2(-933174511, 6, p$2, 3);
 
-eq("File \"class6_test.ml\", line 74, characters 5-12", /* tuple */[
+eq("File \"test/class6_test.ml\", line 74, characters 5-12", /* tuple */[
       7,
       10,
       7
@@ -287,7 +287,7 @@ eq("File \"class6_test.ml\", line 74, characters 5-12", /* tuple */[
       Caml_oo_curry.js1(291546447, 8, p$2)
     ]);
 
-Mt.from_pair_suites("class6_test.ml", suites[0]);
+Mt.from_pair_suites("test/class6_test.ml", suites[0]);
 
 exports.suites = suites;
 exports.test_id = test_id;

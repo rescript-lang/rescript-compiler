@@ -21,7 +21,7 @@ function assertions(param) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           /* tuple */[
-            "test_bool_equal.ml",
+            "test/test_bool_equal.ml",
             21,
             2
           ]
@@ -31,7 +31,7 @@ function assertions(param) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           /* tuple */[
-            "test_bool_equal.ml",
+            "test/test_bool_equal.ml",
             22,
             2
           ]
@@ -41,7 +41,7 @@ function assertions(param) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           /* tuple */[
-            "test_bool_equal.ml",
+            "test/test_bool_equal.ml",
             23,
             2
           ]
@@ -51,7 +51,7 @@ function assertions(param) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           /* tuple */[
-            "test_bool_equal.ml",
+            "test/test_bool_equal.ml",
             24,
             2
           ]

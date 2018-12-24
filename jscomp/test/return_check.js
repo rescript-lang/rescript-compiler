@@ -21,7 +21,7 @@ function f_undefined(xs, i) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           /* tuple */[
-            "return_check.ml",
+            "test/return_check.ml",
             31,
             14
           ]
@@ -63,7 +63,7 @@ function f_null(xs, i) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           /* tuple */[
-            "return_check.ml",
+            "test/return_check.ml",
             59,
             14
           ]
@@ -77,7 +77,7 @@ function f_null_undefined(xs, i) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           /* tuple */[
-            "return_check.ml",
+            "test/return_check.ml",
             68,
             14
           ]

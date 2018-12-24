@@ -279,21 +279,21 @@ var Test_null_def = /* module */[
   /* f11 */f11$2
 ];
 
-eq("File \"test_zero_nullable.ml\", line 227, characters 7-14", f1$2(0), 1);
+eq("File \"test/test_zero_nullable.ml\", line 227, characters 7-14", f1$2(0), 1);
 
-eq("File \"test_zero_nullable.ml\", line 228, characters 7-14", f1$2(null), 3);
+eq("File \"test/test_zero_nullable.ml\", line 228, characters 7-14", f1$2(null), 3);
 
-eq("File \"test_zero_nullable.ml\", line 229, characters 7-14", f1$2(undefined), 3);
+eq("File \"test/test_zero_nullable.ml\", line 229, characters 7-14", f1$2(undefined), 3);
 
-eq("File \"test_zero_nullable.ml\", line 231, characters 7-14", f1(0), 1);
+eq("File \"test/test_zero_nullable.ml\", line 231, characters 7-14", f1(0), 1);
 
-eq("File \"test_zero_nullable.ml\", line 232, characters 7-14", f1(null), 3);
+eq("File \"test/test_zero_nullable.ml\", line 232, characters 7-14", f1(null), 3);
 
-eq("File \"test_zero_nullable.ml\", line 234, characters 7-14", f1$1(0), 1);
+eq("File \"test/test_zero_nullable.ml\", line 234, characters 7-14", f1$1(0), 1);
 
-eq("File \"test_zero_nullable.ml\", line 235, characters 7-14", f1$1(undefined), 3);
+eq("File \"test/test_zero_nullable.ml\", line 235, characters 7-14", f1$1(undefined), 3);
 
-Mt.from_pair_suites("test_zero_nullable.ml", suites[0]);
+Mt.from_pair_suites("test/test_zero_nullable.ml", suites[0]);
 
 exports.suites = suites;
 exports.test_id = test_id;

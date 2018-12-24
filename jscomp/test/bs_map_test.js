@@ -70,7 +70,7 @@ Belt_MapInt.checkInvariantInternal(u);
 
 Belt_MapInt.checkInvariantInternal(xx);
 
-Mt.from_pair_suites("bs_map_test.ml", suites[0]);
+Mt.from_pair_suites("test/bs_map_test.ml", suites[0]);
 
 var M = 0;
 

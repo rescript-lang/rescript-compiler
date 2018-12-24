@@ -9,13 +9,13 @@ var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var A = Caml_module.init_mod([
-      "rec_module_test.ml",
+      "test/rec_module_test.ml",
       3,
       6
     ], [[0]]);
 
 var B = Caml_module.init_mod([
-      "rec_module_test.ml",
+      "test/rec_module_test.ml",
       11,
       6
     ], [[0]]);
@@ -45,7 +45,7 @@ function odd(n) {
 Caml_module.update_mod([[0]], B, /* module */[/* odd */odd]);
 
 var AA = Caml_module.init_mod([
-      "rec_module_test.ml",
+      "test/rec_module_test.ml",
       21,
       6
     ], [[
@@ -54,7 +54,7 @@ var AA = Caml_module.init_mod([
       ]]);
 
 var BB = Caml_module.init_mod([
-      "rec_module_test.ml",
+      "test/rec_module_test.ml",
       31,
       6
     ], [[
@@ -107,7 +107,7 @@ Caml_module.update_mod([[
     ]);
 
 var AAA = Caml_module.init_mod([
-      "rec_module_test.ml",
+      "test/rec_module_test.ml",
       55,
       2
     ], [[0]]);
@@ -840,7 +840,7 @@ function of_list(l) {
                     throw [
                           Caml_builtin_exceptions.assert_failure,
                           /* tuple */[
-                            "set.ml",
+                            "stdlib-402/set.ml",
                             372,
                             18
                           ]
@@ -1017,7 +1017,7 @@ var suites = /* :: */[
   suites_001
 ];
 
-Mt.from_pair_suites("rec_module_test.ml", suites);
+Mt.from_pair_suites("test/rec_module_test.ml", suites);
 
 var Even = /* () */0;
 

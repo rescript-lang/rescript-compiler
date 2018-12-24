@@ -56,14 +56,14 @@ var p = /* tuple */[
   p_001
 ];
 
-eq("File \"gpr_627_test.ml\", line 26, characters 5-12", p);
+eq("File \"test/gpr_627_test.ml\", line 26, characters 5-12", p);
 
-eq("File \"gpr_627_test.ml\", line 27, characters 5-12", /* tuple */[
+eq("File \"test/gpr_627_test.ml\", line 27, characters 5-12", /* tuple */[
       v.hi(1, 2),
       6
     ]);
 
-Mt.from_pair_suites("gpr_627_test.ml", suites[0]);
+Mt.from_pair_suites("test/gpr_627_test.ml", suites[0]);
 
 exports.suites = suites;
 exports.test_id = test_id;

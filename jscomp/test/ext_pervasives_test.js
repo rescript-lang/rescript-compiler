@@ -175,7 +175,7 @@ function dump(r) {
             throw [
                   Caml_builtin_exceptions.assert_failure,
                   /* tuple */[
-                    "ext_pervasives_test.ml",
+                    "test/ext_pervasives_test.ml",
                     118,
                     15
                   ]
@@ -185,7 +185,7 @@ function dump(r) {
           throw [
                 Caml_builtin_exceptions.assert_failure,
                 /* tuple */[
-                  "ext_pervasives_test.ml",
+                  "test/ext_pervasives_test.ml",
                   118,
                   15
                 ]

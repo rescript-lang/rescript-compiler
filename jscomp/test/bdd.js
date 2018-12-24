@@ -56,7 +56,7 @@ function resize(newSize) {
           throw [
                 Caml_builtin_exceptions.assert_failure,
                 /* tuple */[
-                  "bdd.ml",
+                  "test/bdd.ml",
                   54,
                   27
                 ]
@@ -126,7 +126,7 @@ function mkNode(low, v, high) {
           throw [
                 Caml_builtin_exceptions.assert_failure,
                 /* tuple */[
-                  "bdd.ml",
+                  "test/bdd.ml",
                   99,
                   31
                 ]
@@ -377,7 +377,7 @@ function main(param) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           /* tuple */[
-            "bdd.ml",
+            "test/bdd.ml",
             233,
             2
           ]

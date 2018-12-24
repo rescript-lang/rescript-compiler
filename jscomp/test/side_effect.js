@@ -1,6 +1,6 @@
 'use strict';
 
 
-console.log("side_effect.ml");
+console.log("test/side_effect.ml");
 
 /*  Not a pure module */

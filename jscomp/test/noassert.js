@@ -6,7 +6,7 @@ function f(param) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
-          "noassert.ml",
+          "test/noassert.ml",
           5,
           11
         ]

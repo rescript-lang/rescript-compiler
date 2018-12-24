@@ -32,7 +32,7 @@ if (v[0] !== 45) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
-          "test_closure.ml",
+          "test/test_closure.ml",
           53,
           2
         ]

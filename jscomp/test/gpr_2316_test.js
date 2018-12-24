@@ -67,11 +67,11 @@ if (exit === 1) {
   x = undefined;
 }
 
-eq("File \"gpr_2316_test.ml\", line 20, characters 5-12", y, "boo");
+eq("File \"test/gpr_2316_test.ml\", line 20, characters 5-12", y, "boo");
 
-eq("File \"gpr_2316_test.ml\", line 21, characters 5-12", x, "boo");
+eq("File \"test/gpr_2316_test.ml\", line 21, characters 5-12", x, "boo");
 
-Mt.from_pair_suites("gpr_2316_test.ml", suites[0]);
+Mt.from_pair_suites("test/gpr_2316_test.ml", suites[0]);
 
 exports.suites = suites;
 exports.test_id = test_id;

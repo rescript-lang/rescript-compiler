@@ -67,7 +67,7 @@ var suites = /* :: */[
   suites_001
 ];
 
-Mt.from_pair_suites("string_runtime_test.ml", suites);
+Mt.from_pair_suites("test/string_runtime_test.ml", suites);
 
 var S = 0;
 

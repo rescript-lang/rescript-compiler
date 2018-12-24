@@ -26,7 +26,7 @@ function ff(x) {
       throw [
             Caml_builtin_exceptions.assert_failure,
             /* tuple */[
-              "bb.ml",
+              "test/bb.ml",
               17,
               9
             ]
@@ -50,7 +50,7 @@ function test(x) {
       throw [
             Caml_builtin_exceptions.assert_failure,
             /* tuple */[
-              "bb.ml",
+              "test/bb.ml",
               26,
               13
             ]

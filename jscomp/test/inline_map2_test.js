@@ -445,7 +445,7 @@ function Make(Ord) {
         throw [
               Caml_builtin_exceptions.assert_failure,
               /* tuple */[
-                "inline_map2_test.ml",
+                "test/inline_map2_test.ml",
                 270,
                 10
               ]
@@ -1112,7 +1112,7 @@ function merge(f, s1, s2) {
       throw [
             Caml_builtin_exceptions.assert_failure,
             /* tuple */[
-              "inline_map2_test.ml",
+              "test/inline_map2_test.ml",
               270,
               10
             ]
@@ -1815,7 +1815,7 @@ function merge$1(f, s1, s2) {
       throw [
             Caml_builtin_exceptions.assert_failure,
             /* tuple */[
-              "inline_map2_test.ml",
+              "test/inline_map2_test.ml",
               270,
               10
             ]
@@ -2043,7 +2043,7 @@ var s = List.fold_left((function (acc, param) {
       ]
     ]);
 
-Mt.from_pair_suites("inline_map2_test.ml", /* :: */[
+Mt.from_pair_suites("test/inline_map2_test.ml", /* :: */[
       /* tuple */[
         "assertion1",
         (function (param) {

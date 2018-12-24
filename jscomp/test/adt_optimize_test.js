@@ -159,7 +159,7 @@ function f11(x) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           /* tuple */[
-            "adt_optimize_test.ml",
+            "test/adt_optimize_test.ml",
             191,
             9
           ]

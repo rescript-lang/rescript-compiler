@@ -502,7 +502,7 @@ function merge(f, s1, s2) {
       throw [
             Caml_builtin_exceptions.assert_failure,
             /* tuple */[
-              "map.ml",
+              "stdlib-402/map.ml",
               270,
               10
             ]
@@ -1151,7 +1151,7 @@ function merge$1(f, s1, s2) {
       throw [
             Caml_builtin_exceptions.assert_failure,
             /* tuple */[
-              "map.ml",
+              "stdlib-402/map.ml",
               270,
               10
             ]
@@ -1800,7 +1800,7 @@ function merge$2(f, s1, s2) {
       throw [
             Caml_builtin_exceptions.assert_failure,
             /* tuple */[
-              "map.ml",
+              "stdlib-402/map.ml",
               270,
               10
             ]
@@ -2261,7 +2261,7 @@ function get_variable(table, name) {
       throw [
             Caml_builtin_exceptions.assert_failure,
             /* tuple */[
-              "test_internalOO.ml",
+              "test/test_internalOO.ml",
               280,
               50
             ]

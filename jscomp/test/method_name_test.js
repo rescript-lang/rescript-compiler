@@ -54,9 +54,9 @@ function hg(x) {
   return x.open + x.end | 0;
 }
 
-eq("File \"method_name_test.ml\", line 39, characters 12-19", 35, hg(h));
+eq("File \"test/method_name_test.ml\", line 39, characters 12-19", 35, hg(h));
 
-Mt.from_pair_suites("method_name_test.ml", suites[0]);
+Mt.from_pair_suites("test/method_name_test.ml", suites[0]);
 
 exports.suites = suites;
 exports.test_id = test_id;

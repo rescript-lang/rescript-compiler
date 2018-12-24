@@ -139,7 +139,7 @@ var suites = /* :: */[
   /* [] */0
 ];
 
-Mt.from_pair_suites("complex_if_test.ml", suites);
+Mt.from_pair_suites("test/complex_if_test.ml", suites);
 
 exports.fib = fib;
 exports.escaped = escaped;

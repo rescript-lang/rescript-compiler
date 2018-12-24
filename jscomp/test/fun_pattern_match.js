@@ -19,7 +19,7 @@ function f3(param, param$1) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           /* tuple */[
-            "fun_pattern_match.ml",
+            "test/fun_pattern_match.ml",
             43,
             9
           ]
@@ -28,7 +28,7 @@ function f3(param, param$1) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           /* tuple */[
-            "fun_pattern_match.ml",
+            "test/fun_pattern_match.ml",
             43,
             9
           ]
@@ -45,7 +45,7 @@ function f4(param, param$1) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           /* tuple */[
-            "fun_pattern_match.ml",
+            "test/fun_pattern_match.ml",
             51,
             9
           ]
@@ -54,7 +54,7 @@ function f4(param, param$1) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           /* tuple */[
-            "fun_pattern_match.ml",
+            "test/fun_pattern_match.ml",
             51,
             9
           ]

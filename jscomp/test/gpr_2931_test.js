@@ -39,9 +39,9 @@ function fake_c2(a_type, b_type) {
   
 }
 
-eq("File \"gpr_2931_test.ml\", line 19, characters 6-13", 3, fake_c2("number", "xx"));
+eq("File \"test/gpr_2931_test.ml\", line 19, characters 6-13", 3, fake_c2("number", "xx"));
 
-Mt.from_pair_suites("gpr_2931_test.ml", suites[0]);
+Mt.from_pair_suites("test/gpr_2931_test.ml", suites[0]);
 
 exports.suites = suites;
 exports.test_id = test_id;

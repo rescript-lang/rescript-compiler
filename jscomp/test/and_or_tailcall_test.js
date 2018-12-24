@@ -57,7 +57,7 @@ var suites = /* :: */[
   suites_001
 ];
 
-Mt.from_pair_suites("and_or_tailcall_test.ml", suites);
+Mt.from_pair_suites("test/and_or_tailcall_test.ml", suites);
 
 exports.f = f;
 exports.or_f = or_f;

@@ -125,7 +125,7 @@ var suites_001 = /* :: */[
                       ],
                       /* :: */[
                         /* tuple */[
-                          "File \"js_float_test.ml\", line 31, characters 3-10",
+                          "File \"test/js_float_test.ml\", line 31, characters 3-10",
                           (function (param) {
                               return /* ThrowAny */Block.__(7, [(function (param) {
                                             (0).toExponential(101);
@@ -265,7 +265,7 @@ var suites_001 = /* :: */[
                                                   ],
                                                   /* :: */[
                                                     /* tuple */[
-                                                      "File \"js_float_test.ml\", line 61, characters 3-10",
+                                                      "File \"test/js_float_test.ml\", line 61, characters 3-10",
                                                       (function (param) {
                                                           return /* ThrowAny */Block.__(7, [(function (param) {
                                                                         (0).toPrecision(101);
@@ -482,7 +482,7 @@ var suites = /* :: */[
   suites_001
 ];
 
-Mt.from_pair_suites("js_float_test.ml", suites);
+Mt.from_pair_suites("test/js_float_test.ml", suites);
 
 exports.suites = suites;
 /*  Not a pure module */

@@ -31,7 +31,7 @@ var suites = /* :: */[
   /* [] */0
 ];
 
-Mt.from_pair_suites("lib_js_test.ml", suites);
+Mt.from_pair_suites("test/lib_js_test.ml", suites);
 
 exports.suites = suites;
 /*  Not a pure module */

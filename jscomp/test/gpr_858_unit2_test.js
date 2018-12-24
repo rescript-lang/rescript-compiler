@@ -23,7 +23,7 @@ for(var i = 1; i <= 2; ++i){
       throw [
             Caml_builtin_exceptions.assert_failure,
             /* tuple */[
-              "gpr_858_unit2_test.ml",
+              "test/gpr_858_unit2_test.ml",
               6,
               13
             ]

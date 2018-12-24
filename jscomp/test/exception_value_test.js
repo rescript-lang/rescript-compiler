@@ -15,7 +15,7 @@ function assert_f(x) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           /* tuple */[
-            "exception_value_test.ml",
+            "test/exception_value_test.ml",
             9,
             12
           ]

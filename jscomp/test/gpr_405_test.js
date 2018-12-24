@@ -35,7 +35,7 @@ function Make(funarg) {
         throw [
               Caml_builtin_exceptions.assert_failure,
               /* tuple */[
-                "gpr_405_test.ml",
+                "test/gpr_405_test.ml",
                 43,
                 6
               ]
@@ -45,7 +45,7 @@ function Make(funarg) {
         throw [
               Caml_builtin_exceptions.assert_failure,
               /* tuple */[
-                "gpr_405_test.ml",
+                "test/gpr_405_test.ml",
                 44,
                 6
               ]

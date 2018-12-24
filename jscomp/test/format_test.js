@@ -56,7 +56,7 @@ function u(param) {
 
 var M = /* module */[];
 
-eq("File \"format_test.ml\", line 26, characters 5-12", Curry._1(Format.asprintf(u(/* () */0)), "x"), "xx xyy");
+eq("File \"test/format_test.ml\", line 26, characters 5-12", Curry._1(Format.asprintf(u(/* () */0)), "x"), "xx xyy");
 
 function f(loc, ls) {
   return List.iter((function (param) {
@@ -64,7 +64,7 @@ function f(loc, ls) {
               }), ls);
 }
 
-Mt.from_pair_suites("format_test.ml", suites[0]);
+Mt.from_pair_suites("test/format_test.ml", suites[0]);
 
 exports.suites = suites;
 exports.test_id = test_id;

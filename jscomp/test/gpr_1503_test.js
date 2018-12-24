@@ -39,13 +39,13 @@ var s = Caml_format.caml_int64_format("%d", i);
 
 var i$prime = Caml_format.caml_int64_of_string(s);
 
-eq("File \"gpr_1503_test.ml\", line 18, characters 5-12", i, i$prime);
+eq("File \"test/gpr_1503_test.ml\", line 18, characters 5-12", i, i$prime);
 
-eq("File \"gpr_1503_test.ml\", line 21, characters 7-14", Int64.max_int, Caml_format.caml_int64_of_string(Caml_format.caml_int64_format("%d", Int64.max_int)));
+eq("File \"test/gpr_1503_test.ml\", line 21, characters 7-14", Int64.max_int, Caml_format.caml_int64_of_string(Caml_format.caml_int64_format("%d", Int64.max_int)));
 
-eq("File \"gpr_1503_test.ml\", line 22, characters 7-14", Int64.min_int, Caml_format.caml_int64_of_string(Caml_format.caml_int64_format("%d", Int64.min_int)));
+eq("File \"test/gpr_1503_test.ml\", line 22, characters 7-14", Int64.min_int, Caml_format.caml_int64_of_string(Caml_format.caml_int64_format("%d", Int64.min_int)));
 
-Mt.from_pair_suites("gpr_1503_test.ml", suites[0]);
+Mt.from_pair_suites("test/gpr_1503_test.ml", suites[0]);
 
 exports.suites = suites;
 exports.test_id = test_id;

@@ -44,7 +44,7 @@ function fail(param) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
-          "js_promise_basic_test.ml",
+          "test/js_promise_basic_test.ml",
           19,
           2
         ]
@@ -77,7 +77,7 @@ function assertIsNotFound(x) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           /* tuple */[
-            "js_promise_basic_test.ml",
+            "test/js_promise_basic_test.ml",
             36,
             9
           ]
@@ -138,7 +138,7 @@ function orElseRejectedRejectTest(param) {
                   throw [
                         Caml_builtin_exceptions.assert_failure,
                         /* tuple */[
-                          "js_promise_basic_test.ml",
+                          "test/js_promise_basic_test.ml",
                           77,
                           18
                         ]
@@ -269,7 +269,7 @@ Promise.all(/* tuple */[
         Promise.resolve(2),
         Promise.resolve(3)
       ]).then((function (param) {
-        eq("File \"js_promise_basic_test.ml\", line 169, characters 7-14", /* tuple */[
+        eq("File \"test/js_promise_basic_test.ml\", line 169, characters 7-14", /* tuple */[
               param[0],
               param[1]
             ], /* tuple */[
@@ -283,7 +283,7 @@ console.log(List.length(suites[0]));
 
 console.log("hey");
 
-Mt.from_pair_suites("js_promise_basic_test.ml", suites[0]);
+Mt.from_pair_suites("test/js_promise_basic_test.ml", suites[0]);
 
 var twop = Promise.resolve(2);
 
@@ -295,9 +295,9 @@ function re(prim) {
   return Promise.resolve(prim);
 }
 
-Mt.from_promise_suites("js_promise_basic_test.ml", /* :: */[
+Mt.from_promise_suites("test/js_promise_basic_test.ml", /* :: */[
       /* tuple */[
-        "File \"js_promise_basic_test.ml\", line 187, characters 4-11",
+        "File \"test/js_promise_basic_test.ml\", line 187, characters 4-11",
         twop.then((function (x) {
                 return Promise.resolve(/* Eq */Block.__(0, [
                               x,
@@ -307,7 +307,7 @@ Mt.from_promise_suites("js_promise_basic_test.ml", /* :: */[
       ],
       /* :: */[
         /* tuple */[
-          "File \"js_promise_basic_test.ml\", line 190, characters 4-11",
+          "File \"test/js_promise_basic_test.ml\", line 190, characters 4-11",
           twop.then((function (x) {
                   return Promise.resolve(/* Neq */Block.__(1, [
                                 x,

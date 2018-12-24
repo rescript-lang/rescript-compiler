@@ -251,7 +251,7 @@ function internal_bal(l, v, r) {
         throw [
               Caml_builtin_exceptions.assert_failure,
               /* tuple */[
-                "set_gen.ml",
+                "test/set_gen.ml",
                 235,
                 19
               ]
@@ -261,7 +261,7 @@ function internal_bal(l, v, r) {
       throw [
             Caml_builtin_exceptions.assert_failure,
             /* tuple */[
-              "set_gen.ml",
+              "test/set_gen.ml",
               225,
               15
             ]
@@ -280,7 +280,7 @@ function internal_bal(l, v, r) {
         throw [
               Caml_builtin_exceptions.assert_failure,
               /* tuple */[
-                "set_gen.ml",
+                "test/set_gen.ml",
                 251,
                 19
               ]
@@ -290,7 +290,7 @@ function internal_bal(l, v, r) {
       throw [
             Caml_builtin_exceptions.assert_failure,
             /* tuple */[
-              "set_gen.ml",
+              "test/set_gen.ml",
               245,
               15
             ]
@@ -537,7 +537,7 @@ function of_sorted_list(l) {
         throw [
               Caml_builtin_exceptions.assert_failure,
               /* tuple */[
-                "set_gen.ml",
+                "test/set_gen.ml",
                 361,
                 14
               ]

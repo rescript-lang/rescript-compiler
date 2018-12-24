@@ -39,7 +39,7 @@ Random.self_init(/* () */0);
 
 var param$1 = Random.$$int(10000);
 
-Mt_global.collect_neq(id, suites, "File \"random_test.ml\", line 12, characters 6-13", param$1, param);
+Mt_global.collect_neq(id, suites, "File \"test/random_test.ml\", line 12, characters 6-13", param$1, param);
 
 Random.init(0);
 
@@ -62,7 +62,7 @@ var param$2 = /* array */[
   false
 ];
 
-Mt_global.collect_eq(id, suites, "File \"random_test.ml\", line 26, characters 5-12", v, param$2);
+Mt_global.collect_eq(id, suites, "File \"test/random_test.ml\", line 26, characters 5-12", v, param$2);
 
 var f = Random.int64(Int64.max_int);
 
@@ -122,7 +122,7 @@ Curry._5(Printf.printf(/* Format */[
           "%Ld %Ld %d %f %ld \n"
         ]), f, h, vv, xx, xxx);
 
-Mt.from_pair_suites("random_test.ml", suites[0]);
+Mt.from_pair_suites("test/random_test.ml", suites[0]);
 
 exports.id = id;
 exports.suites = suites;

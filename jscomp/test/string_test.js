@@ -139,7 +139,7 @@ function string_of_chars(x) {
                   }), x));
 }
 
-Mt.from_pair_suites("string_test.ml", /* :: */[
+Mt.from_pair_suites("test/string_test.ml", /* :: */[
       /* tuple */[
         "mutliple switch",
         (function (param) {
@@ -210,7 +210,7 @@ Mt.from_pair_suites("string_test.ml", /* :: */[
                 ],
                 /* :: */[
                   /* tuple */[
-                    "File \"string_test.ml\", line 74, characters 2-9",
+                    "File \"test/string_test.ml\", line 74, characters 2-9",
                     (function (param) {
                         return /* Eq */Block.__(0, [
                                   /* :: */[

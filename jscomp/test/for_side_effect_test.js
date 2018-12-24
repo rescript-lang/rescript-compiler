@@ -35,7 +35,7 @@ var suites = /* :: */[
   /* [] */0
 ];
 
-Mt.from_pair_suites("for_side_effect_test.ml", suites);
+Mt.from_pair_suites("test/for_side_effect_test.ml", suites);
 
 exports.tst = tst;
 exports.test2 = test2;

@@ -126,7 +126,7 @@ if (!Caml_obj.caml_equal(dfs1(/* :: */[
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
-          "topsort_test.ml",
+          "test/topsort_test.ml",
           29,
           2
         ]
@@ -163,7 +163,7 @@ if (!Caml_obj.caml_equal(dfs1(/* :: */[
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
-          "topsort_test.ml",
+          "test/topsort_test.ml",
           32,
           2
         ]
@@ -225,7 +225,7 @@ if (!Caml_obj.caml_equal(dfs2(/* :: */[
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
-          "topsort_test.ml",
+          "test/topsort_test.ml",
           47,
           2
         ]
@@ -260,7 +260,7 @@ if (!Caml_obj.caml_equal(dfs2(/* :: */[
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
-          "topsort_test.ml",
+          "test/topsort_test.ml",
           48,
           2
         ]
@@ -316,7 +316,7 @@ if (!Caml_obj.caml_equal(dfs3(/* :: */[
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
-          "topsort_test.ml",
+          "test/topsort_test.ml",
           65,
           2
         ]
@@ -351,7 +351,7 @@ if (!Caml_obj.caml_equal(dfs3(/* :: */[
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
-          "topsort_test.ml",
+          "test/topsort_test.ml",
           66,
           2
         ]
@@ -439,7 +439,7 @@ if (!Caml_obj.caml_equal(unsafe_topsort(grwork), /* :: */[
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
-          "topsort_test.ml",
+          "test/topsort_test.ml",
           110,
           2
         ]
@@ -1174,7 +1174,7 @@ function of_list(l) {
                     throw [
                           Caml_builtin_exceptions.assert_failure,
                           /* tuple */[
-                            "set.ml",
+                            "stdlib-402/set.ml",
                             372,
                             18
                           ]
@@ -1307,7 +1307,7 @@ if (!Caml_obj.caml_equal(pathsort(grwork), /* :: */[
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
-          "topsort_test.ml",
+          "test/topsort_test.ml",
           150,
           4
         ]
@@ -1325,7 +1325,7 @@ try {
   throw [
         Caml_builtin_exceptions.assert_failure,
         /* tuple */[
-          "topsort_test.ml",
+          "test/topsort_test.ml",
           156,
           8
         ]
@@ -1366,7 +1366,7 @@ catch (raw_exn){
     throw [
           Caml_builtin_exceptions.assert_failure,
           /* tuple */[
-            "topsort_test.ml",
+            "test/topsort_test.ml",
             159,
             11
           ]

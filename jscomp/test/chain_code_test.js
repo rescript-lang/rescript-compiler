@@ -48,7 +48,7 @@ function f4(h, x, y) {
   return /* () */0;
 }
 
-eq("File \"chain_code_test.ml\", line 28, characters 5-12", 32, ({
+eq("File \"test/chain_code_test.ml\", line 28, characters 5-12", 32, ({
         x: {
           y: {
             z: 32
@@ -56,7 +56,7 @@ eq("File \"chain_code_test.ml\", line 28, characters 5-12", 32, ({
         }
       }).x.y.z);
 
-Mt.from_pair_suites("chain_code_test.ml", suites[0]);
+Mt.from_pair_suites("test/chain_code_test.ml", suites[0]);
 
 exports.suites = suites;
 exports.test_id = test_id;

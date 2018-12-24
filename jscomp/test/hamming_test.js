@@ -261,7 +261,7 @@ iter_interval(pr, hamming, /* tuple */[
       88100
     ]);
 
-Mt.from_pair_suites("hamming_test.ml", /* :: */[
+Mt.from_pair_suites("test/hamming_test.ml", /* :: */[
       /* tuple */[
         "output",
         (function (param) {

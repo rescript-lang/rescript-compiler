@@ -34,34 +34,34 @@ var v = /* array */[
   3
 ];
 
-eq("File \"array_subtle_test.ml\", line 12, characters 5-12", /* tuple */[
+eq("File \"test/array_subtle_test.ml\", line 12, characters 5-12", /* tuple */[
       4,
       v.length
     ]);
 
-eq("File \"array_subtle_test.ml\", line 15, characters 5-12", /* tuple */[
+eq("File \"test/array_subtle_test.ml\", line 15, characters 5-12", /* tuple */[
       5,
       v.push(3)
     ]);
 
-eq("File \"array_subtle_test.ml\", line 16, characters 5-12", /* tuple */[
+eq("File \"test/array_subtle_test.ml\", line 16, characters 5-12", /* tuple */[
       5,
       v.length
     ]);
 
-eq("File \"array_subtle_test.ml\", line 17, characters 5-12", /* tuple */[
+eq("File \"test/array_subtle_test.ml\", line 17, characters 5-12", /* tuple */[
       5,
       v.length
     ]);
 
-eq("File \"array_subtle_test.ml\", line 21, characters 5-12", /* tuple */[
+eq("File \"test/array_subtle_test.ml\", line 21, characters 5-12", /* tuple */[
       3,
       Caml_array.caml_array_get(v, 2)
     ]);
 
 Caml_array.caml_array_set(v, 2, 4);
 
-eq("File \"array_subtle_test.ml\", line 23, characters 5-12", /* tuple */[
+eq("File \"test/array_subtle_test.ml\", line 23, characters 5-12", /* tuple */[
       4,
       Caml_array.caml_array_get(v, 2)
     ]);
@@ -70,7 +70,7 @@ while(v.length > 0) {
   v.pop();
 };
 
-eq("File \"array_subtle_test.ml\", line 29, characters 5-12", /* tuple */[
+eq("File \"test/array_subtle_test.ml\", line 29, characters 5-12", /* tuple */[
       0,
       v.length
     ]);
@@ -111,22 +111,22 @@ function fff4(x) {
   }
 }
 
-eq("File \"array_subtle_test.ml\", line 51, characters 6-13", /* tuple */[
+eq("File \"test/array_subtle_test.ml\", line 51, characters 6-13", /* tuple */[
       fff3(/* array */[]),
       1
     ]);
 
-eq("File \"array_subtle_test.ml\", line 52, characters 6-13", /* tuple */[
+eq("File \"test/array_subtle_test.ml\", line 52, characters 6-13", /* tuple */[
       fff4(/* array */[]),
       2
     ]);
 
-eq("File \"array_subtle_test.ml\", line 53, characters 6-13", /* tuple */[
+eq("File \"test/array_subtle_test.ml\", line 53, characters 6-13", /* tuple */[
       fff4(/* array */[1]),
       1
     ]);
 
-Mt.from_pair_suites("array_subtle_test.ml", suites[0]);
+Mt.from_pair_suites("test/array_subtle_test.ml", suites[0]);
 
 exports.suites = suites;
 exports.test_id = test_id;

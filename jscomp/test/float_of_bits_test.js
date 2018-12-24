@@ -102,7 +102,7 @@ var suites = Pervasives.$at(/* :: */[
       ]
     ], from_pairs(int32_pairs));
 
-Mt.from_pair_suites("float_of_bits_test.ml", suites);
+Mt.from_pair_suites("test/float_of_bits_test.ml", suites);
 
 exports.one_float = one_float;
 exports.int32_pairs = int32_pairs;

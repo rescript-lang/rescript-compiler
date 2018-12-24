@@ -77,7 +77,7 @@ function xFromJs(param) {
 }
 
 function idx(v) {
-  return eq("File \"ast_abstract_test.ml\", line 32, characters 17-24", xFromJs(xToJs(v)), v);
+  return eq("File \"test/ast_abstract_test.ml\", line 32, characters 17-24", xFromJs(xToJs(v)), v);
 }
 
 var x0 = xToJs(/* a */97);
@@ -105,7 +105,7 @@ function aFromJs(param) {
 }
 
 function id(x) {
-  return eq("File \"ast_abstract_test.ml\", line 49, characters 8-15", aFromJs(aToJs(x)), x);
+  return eq("File \"test/ast_abstract_test.ml\", line 49, characters 8-15", aFromJs(aToJs(x)), x);
 }
 
 var a0 = aToJs(/* A */0);
@@ -134,7 +134,7 @@ var b0 = 0;
 var b1 = 1;
 
 function idb(v) {
-  return eq("File \"ast_abstract_test.ml\", line 71, characters 5-12", bFromJs(v + 0 | 0), v);
+  return eq("File \"test/ast_abstract_test.ml\", line 71, characters 5-12", bFromJs(v + 0 | 0), v);
 }
 
 idb(/* D0 */0);
@@ -159,7 +159,7 @@ function cFromJs(param) {
 var c0 = 3;
 
 function idc(v) {
-  return eq("File \"ast_abstract_test.ml\", line 83, characters 15-22", cFromJs(v + 3 | 0), v);
+  return eq("File \"test/ast_abstract_test.ml\", line 83, characters 15-22", cFromJs(v + 3 | 0), v);
 }
 
 idc(/* D0 */0);
@@ -192,7 +192,7 @@ function zFromJs(param) {
   
 }
 
-Mt.from_pair_suites("ast_abstract_test.ml", suites[0]);
+Mt.from_pair_suites("test/ast_abstract_test.ml", suites[0]);
 
 var jsMapperEraseType = /* JsMapperEraseType */0;
 

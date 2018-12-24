@@ -245,7 +245,7 @@ var suites = /* :: */[
   suites_001
 ];
 
-Mt.from_pair_suites("js_dict_test.ml", suites);
+Mt.from_pair_suites("test/js_dict_test.ml", suites);
 
 exports.obj = obj;
 exports.suites = suites;
