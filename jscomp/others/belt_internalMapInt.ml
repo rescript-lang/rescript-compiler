@@ -1,7 +1,7 @@
-# 4 "internal_map.cppo.ml"
+# 4 "others/internal_map.cppo.ml"
 type key = int
 
-# 9 "internal_map.cppo.ml"
+# 9 "others/internal_map.cppo.ml"
 module N = Belt_internalAVLtree
 module A = Belt_Array 
 module S = Belt_SortArray

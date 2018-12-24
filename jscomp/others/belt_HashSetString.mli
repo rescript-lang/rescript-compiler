@@ -1,5 +1,5 @@
 
-# 2 "hashset.cppo.mli"
+# 2 "others/hashset.cppo.mli"
 (* Copyright (C) 2017 Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -33,11 +33,11 @@
 *)
 
 
-# 36 "hashset.cppo.mli"
+# 36 "others/hashset.cppo.mli"
 type key = string
 
 
-# 44 "hashset.cppo.mli"
+# 44 "others/hashset.cppo.mli"
 type t
 
 val make: hintSize:int -> t 

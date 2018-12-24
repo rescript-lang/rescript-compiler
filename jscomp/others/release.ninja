@@ -4,73 +4,7 @@ bsc_flags = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-no-ch
 rule cc
     command = $bsc $bsc_flags -bs-no-implicit-include  -I others -c $in
     description = $in -> $out    
-rule cppo
-    command = cppo -D $type $in -o $out
-    generator = true
-build others/belt_HashSetString.ml : cppo others/hashset.cppo.ml
-    type = TYPE_STRING
-build others/belt_HashSetString.mli : cppo others/hashset.cppo.mli
-    type = TYPE_STRING
-build others/belt_HashSetInt.ml : cppo others/hashset.cppo.ml
-    type = TYPE_INT
-build others/belt_HashSetInt.mli : cppo others/hashset.cppo.mli
-    type = TYPE_INT
-build others/belt_HashMapString.ml : cppo others/hashmap.cppo.ml
-    type = TYPE_STRING
-build others/belt_HashMapString.mli : cppo others/hashmap.cppo.mli
-    type = TYPE_STRING
-build others/belt_HashMapInt.ml : cppo others/hashmap.cppo.ml
-    type = TYPE_INT
-build others/belt_HashMapInt.mli : cppo others/hashmap.cppo.mli
-    type = TYPE_INT
-build others/belt_MapString.ml : cppo others/map.cppo.ml
-    type = TYPE_STRING
-build others/belt_MapString.mli : cppo others/map.cppo.mli
-    type = TYPE_STRING
-build others/belt_MapInt.ml : cppo others/map.cppo.ml
-    type = TYPE_INT
-build others/belt_MapInt.mli : cppo others/map.cppo.mli
-    type = TYPE_INT
-build others/belt_SetString.ml : cppo others/set.cppo.ml
-    type = TYPE_STRING
-build others/belt_SetString.mli : cppo others/set.cppo.mli
-    type = TYPE_STRING
-build others/belt_SetInt.ml : cppo others/set.cppo.ml
-    type = TYPE_INT
-build others/belt_SetInt.mli : cppo others/set.cppo.mli
-    type = TYPE_INT
-build others/belt_MutableMapString.ml : cppo others/mapm.cppo.ml
-    type = TYPE_STRING
-build others/belt_MutableMapString.mli : cppo others/mapm.cppo.mli
-    type = TYPE_STRING
-build others/belt_MutableMapInt.ml : cppo others/mapm.cppo.ml
-    type = TYPE_INT
-build others/belt_MutableMapInt.mli : cppo others/mapm.cppo.mli
-    type = TYPE_INT
-build others/belt_MutableSetString.ml : cppo others/setm.cppo.ml
-    type = TYPE_STRING
-build others/belt_MutableSetString.mli : cppo others/setm.cppo.mli
-    type = TYPE_STRING
-build others/belt_MutableSetInt.ml : cppo others/setm.cppo.ml
-    type = TYPE_INT
-build others/belt_MutableSetInt.mli : cppo others/setm.cppo.mli
-    type = TYPE_INT
-build others/belt_SortArrayString.ml : cppo others/sort.cppo.ml
-    type = TYPE_STRING
-build others/belt_SortArrayString.mli : cppo others/sort.cppo.mli
-    type = TYPE_STRING
-build others/belt_SortArrayInt.ml : cppo others/sort.cppo.ml
-    type = TYPE_INT
-build others/belt_SortArrayInt.mli : cppo others/sort.cppo.mli
-    type = TYPE_INT
-build others/belt_internalMapString.ml : cppo others/internal_map.cppo.ml
-    type = TYPE_STRING
-build others/belt_internalMapInt.ml : cppo others/internal_map.cppo.ml
-    type = TYPE_INT
-build others/belt_internalSetString.ml : cppo others/internal_set.cppo.ml
-    type = TYPE_STRING
-build others/belt_internalSetInt.ml : cppo others/internal_set.cppo.ml
-    type = TYPE_INT    
+
 
 build others/belt.cmj others/belt.cmi : cc others/belt.ml | runtime
 build others/node.cmj others/node.cmi : cc others/node.ml | runtime    

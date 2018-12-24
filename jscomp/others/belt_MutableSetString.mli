@@ -1,4 +1,4 @@
-# 1 "setm.cppo.mli"
+# 1 "others/setm.cppo.mli"
 (* Copyright (C) 2017 Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -32,9 +32,9 @@
 *)
 
 
-# 35 "setm.cppo.mli"
+# 35 "others/setm.cppo.mli"
 type value = string
-# 41 "setm.cppo.mli"
+# 41 "others/setm.cppo.mli"
 (** The type of the set elements. *)
 
 

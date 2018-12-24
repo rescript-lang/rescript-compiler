@@ -1,5 +1,5 @@
 
-subninja runtime/build.ninja
+subninja runtime/release.ninja
 subninja others/build.ninja
 subninja stdlib-402/build.ninja
 

@@ -1,8 +1,8 @@
-# 2 "hashmap.cppo.mli"
+# 2 "others/hashmap.cppo.mli"
 type key = string
 
 
-# 10 "hashmap.cppo.mli"
+# 10 "others/hashmap.cppo.mli"
 type 'b t 
 
 
