@@ -60,7 +60,7 @@ var suites = /* :: */[
   /* [] */0
 ];
 
-Mt.from_pair_suites("simple_lexer_test.mll", suites);
+Mt.from_pair_suites("test/simple_lexer_test.mll", suites);
 
 exports.__ocaml_lex_tables = __ocaml_lex_tables;
 exports.translate = translate;

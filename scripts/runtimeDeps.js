@@ -8,11 +8,13 @@ var cp = require('child_process')
 var jscompDir = path.join(__dirname,'..','jscomp')
 var runtimeDir = path.join(jscompDir, 'runtime')
 var othersDir = path.join(jscompDir,'others')
+var testDir = path.join(jscompDir,'test')
+
 var jsDir = path.join(__dirname, '..', 'lib', 'js')
 var stdlibVersion = 'stdlib-402'
 var stdlibDir = path.join(jscompDir,stdlibVersion)
 
-var runtimeFiles = fs.readdirSync(runtimeDir, 'utf8')
+var runtimeFiles = fs.readdirSync(runtimeDir, 'ascii')
 var runtimeMlFiles = runtimeFiles.filter(x=>!x.startsWith("bs_stdlib_mini") && x.endsWith('.ml') && x !== "js.ml")
 var runtimeMliFiles = runtimeFiles.filter(x=>!x.startsWith("bs_stdlib_mini") && x.endsWith('.mli') && x !== "js.mli")
 var runtimeSourceFiles = runtimeMlFiles.concat(runtimeMliFiles)
@@ -161,9 +163,7 @@ function ocamlDepAsync(files,dir, depsMap) {
                 return resolve(depsMap)
             }
         })        
-    }
-    )
-    
+    })    
 }
 
 
@@ -418,7 +418,6 @@ function baseName(x) {
     return x.substr(0, x.indexOf('.'))
 }
 
-var testDir = path.join(jscompDir,'test')
 
 async function testNinja(){
     var ninjaCwd = `test`

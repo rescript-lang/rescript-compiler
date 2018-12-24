@@ -1,4 +1,4 @@
-# 1 "number_lexer.mll"
+# 1 "test/number_lexer.mll"
  
 external log : string -> unit = "caml_alloc_dummy" [@@bs.val "console.log"]
 let l = 
@@ -8,7 +8,7 @@ let l =
 #end
 
 
-# 12 "number_lexer.ml"
+# 12 "test/number_lexer.ml"
 let __ocaml_lex_tables = {
   Lexing.lex_base = 
    "\000\000\246\255\247\255\248\255\249\255\250\255\251\255\252\255\
@@ -138,63 +138,63 @@ let rec token l lexbuf =
 and __ocaml_lex_token_rec l lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 12 "number_lexer.mll"
+# 12 "test/number_lexer.mll"
                           ( l "new line" ; token l lexbuf)
-# 144 "number_lexer.ml"
+# 144 "test/number_lexer.ml"
 
   | 1 ->
-# 13 "number_lexer.mll"
+# 13 "test/number_lexer.mll"
                 ( l "number"; l (Lexing.lexeme lexbuf); token l lexbuf )
-# 149 "number_lexer.ml"
+# 149 "test/number_lexer.ml"
 
   | 2 ->
-# 14 "number_lexer.mll"
+# 14 "test/number_lexer.mll"
                       (l "ident"; l (Lexing.lexeme lexbuf); token l lexbuf)
-# 154 "number_lexer.ml"
+# 154 "test/number_lexer.ml"
 
   | 3 ->
-# 15 "number_lexer.mll"
+# 15 "test/number_lexer.mll"
                 ( l "+" ; token l lexbuf )
-# 159 "number_lexer.ml"
+# 159 "test/number_lexer.ml"
 
   | 4 ->
-# 16 "number_lexer.mll"
+# 16 "test/number_lexer.mll"
                 ( l "-" ; token l lexbuf)
-# 164 "number_lexer.ml"
+# 164 "test/number_lexer.ml"
 
   | 5 ->
-# 17 "number_lexer.mll"
+# 17 "test/number_lexer.mll"
                 ( l "*" ; token l lexbuf)
-# 169 "number_lexer.ml"
+# 169 "test/number_lexer.ml"
 
   | 6 ->
-# 18 "number_lexer.mll"
+# 18 "test/number_lexer.mll"
                 ( l "/" ; token l lexbuf)
-# 174 "number_lexer.ml"
+# 174 "test/number_lexer.ml"
 
   | 7 ->
-# 19 "number_lexer.mll"
+# 19 "test/number_lexer.mll"
                 ( l "(" ; token l lexbuf )
-# 179 "number_lexer.ml"
+# 179 "test/number_lexer.ml"
 
   | 8 ->
-# 20 "number_lexer.mll"
+# 20 "test/number_lexer.mll"
                 ( l ")"; token l lexbuf )
-# 184 "number_lexer.ml"
+# 184 "test/number_lexer.ml"
 
   | 9 ->
-# 21 "number_lexer.mll"
+# 21 "test/number_lexer.mll"
                 ( l "eof" )
-# 189 "number_lexer.ml"
+# 189 "test/number_lexer.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
       __ocaml_lex_token_rec l lexbuf __ocaml_lex_state
 
 ;;
 
-# 23 "number_lexer.mll"
+# 23 "test/number_lexer.mll"
  
 (* token l (Lexing.from_string "32 + 32 ( ) * / ") *)
 (* token (Lexing.from_string "32") *)
 
-# 201 "number_lexer.ml"
+# 201 "test/number_lexer.ml"
