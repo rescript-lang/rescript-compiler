@@ -25,6 +25,14 @@ var stdlibTarget = pseudoTarget(stdlibVersion)
 
 /**
  * 
+ * @param {string} name 
+ * @param {string} content 
+ */
+function writeFileA(name,content){
+    fs.writeFile(name,content,'ascii',throwIfError)
+}
+/**
+ * 
  * @param {NodeJS.ErrnoException} err 
  */
 function throwIfError(err){
@@ -130,6 +138,7 @@ function replaceCmj(x) {
  * @param {DepsMap} depsMap
  * @return {Promise<DepsMap>}
  * Note `bsdep.exe` does not need post processing and -one-line flag
+ * By default `ocamldep.opt` only list dependencies in its args
  */
 function ocamlDepAsync(files,dir, depsMap) {
     return new Promise((resolve,reject) =>{
@@ -195,6 +204,31 @@ function collectTarget(sourceFiles){
     })
     return allTargets 
 }
+
+/**
+ * 
+ * @param {Map<string, FileInfo>} allTargets 
+ * @param {string[]} collIn
+ * @returns {string[]} A new copy which is 
+ * 
+ */
+function scanFileTargets(allTargets,collIn){
+    var coll = collIn.concat()
+    allTargets.forEach((ext,mod)=>{
+        switch(ext){
+            case 'HAS_MLI':    
+                coll.push(`${mod}.cmi`)
+                break
+            case 'HAS_BOTH':
+                coll.push(`${mod}.cmi`,`${mod}.cmj`)
+                break;
+            case 'HAS_ML':    
+                coll.push(`${mod}.cmi`,`${mod}.cmj`)
+                break;
+        }
+    })
+   return coll  
+}
 var BSC_COMPILER = 'bsc = ../lib/bsc.exe'
 async function runtimeNinja(){
     var ninjaCwd = "runtime"
@@ -217,34 +251,27 @@ ${ninjaQuickBuidList([
      */
     var depsMap = new Map
     var allTargets = collectTarget([...runtimeMliFiles, ...runtimeMlFiles])
-
-    var allFileTargetsInRuntime = [`js.cmi`,`js.cmj`,`bs_stdlib_mini.cmi`]
+    var manualDeps = ['bs_stdlib_mini.cmi','js.cmj','js.cmi']  
+    var allFileTargetsInRuntime = scanFileTargets(allTargets,manualDeps)
     allTargets.forEach((ext,mod)=>{
         switch(ext){
             case 'HAS_MLI':    
-                updateDepsKVsByFile(mod+".cmi",['bs_stdlib_mini.cmi','js.cmj'],depsMap)
-                allFileTargetsInRuntime.push(`${mod}.cmi`)
-                break
             case 'HAS_BOTH':
-                allFileTargetsInRuntime.push(`${mod}.cmi`,`${mod}.cmj`)
-                updateDepsKVsByFile(mod+".cmi",['bs_stdlib_mini.cmi','js.cmj'],depsMap)
+                updateDepsKVsByFile(mod+".cmi", manualDeps,depsMap)
                 break;
             case 'HAS_ML':    
-                allFileTargetsInRuntime.push(`${mod}.cmi`,`${mod}.cmj`)
-                updateDepsKVsByFile(mod+".cmj",['bs_stdlib_mini.cmi','js.cmj'],depsMap)
+                updateDepsKVsByFile(mod+".cmj",manualDeps,depsMap)
                 break;
         }
     }) 
-
     try{
         await Promise.all([runJSCheckAsync(depsMap),
                           ocamlDepAsync(runtimeSourceFiles,runtimeDir, depsMap)])        
         var stmts = generateNinja(depsMap,allTargets,ninjaCwd)
-        stmts.push(phony(runtimeTarget,fileTargets([...allFileTargetsInRuntime,'js.cmj','js.cmi','bs_stdlib_mini.cmi']),ninjaCwd))
-        fs.writeFile(
+        stmts.push(phony(runtimeTarget,fileTargets(allFileTargetsInRuntime),ninjaCwd))
+        writeFileA(
                 path.join(runtimeDir,'build.ninja'), 
-             templateRuntimeRules + stmts.join('\n') + '\n', 'utf8',
-             throwIfError
+                templateRuntimeRules + stmts.join('\n') + '\n'
              )
     }catch(e){
         console.log(e)
@@ -255,7 +282,7 @@ async function othersNinja() {
     var externalDeps = [runtimeTarget]
     var ninjaCwd = 'others'
     var templateOthersRules = `
-bsc = ../lib/bsc.exe
+${BSC_COMPILER}
 bsc_flags = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-no-check-div-by-zero -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js -bs-package-output amdjs:lib/amdjs -bs-package-output es6:lib/es6  -nostdlib -nopervasives  -unsafe -warn-error A -w -40-49-103 -bin-annot -bs-noassertfalse -open Bs_stdlib_mini -I ./runtime
 rule cc
     command = $bsc $bsc_flags -bs-no-implicit-include  -I ${ninjaCwd} -c $in
@@ -277,76 +304,36 @@ ${ninjaQuickBuidList([
      var othersFiles = othersDirFiles.filter(
          x => !x.startsWith('js') && (x !== 'belt.ml') && (x!=='node.ml')  && (x.endsWith('.ml') || x.endsWith('.mli')) && !(x.includes('.cppo')) // we have node ..
      )
-   
-    /**
-     * @type {string[]}
-     */
-    var allJsTargets = []
-     var jsTargets = collectTarget(jsPrefixSourceFiles)
-     jsTargets.forEach((ext,mod)=>{
-        switch(ext){
-            case 'HAS_BOTH':
-            case 'HAS_ML':
-                allJsTargets.push(`${mod}.cmj`, `${mod}.cmi`)
-                break
-            case 'HAS_MLI':    
-                allJsTargets.push(`${mod}.cmi`)
-                break
-        }
-     })
-     // FIXME: we run `ocamldep` twice, could be saved in one process
+    var jsTargets = collectTarget(jsPrefixSourceFiles)
+    var allJsTargets = scanFileTargets(jsTargets,[])
     var [jsDepsMap, depsMap] = await Promise.all([ocamlDepAsync(jsPrefixSourceFiles,
         othersDir,
-        new Map()
+        new Map
     ),
         ocamlDepAsync(othersFiles, othersDir, new Map())])
-
-    // All js modules in others directory depend on runtime    
-    // jsDepsMap.forEach((v)=>v.add(runtimeTarget))    
-
     var jsOutput = generateNinja(jsDepsMap, jsTargets,ninjaCwd,externalDeps)
     jsOutput.push(phony(js_package,fileTargets(allJsTargets),ninjaCwd))
 
-
-    
+    // Note compiling belt.ml still try to read
+    // belt_xx.cmi we need enforce the order to 
+    // avoid data race issues
+    var beltPackage = fileTarget('belt.cmi')
+    var nodePackage = fileTarget('node.cmi')
     var beltTargets = collectTarget(othersFiles)
     depsMap.forEach((s,k)=>{
         if(k.startsWith('belt')){
-            s.add(fileTarget('belt.cmi'))
-            // Note compiling belt.ml still try to read
-            // belt_xx.cmi we need enforce the order to 
-            // avoid data race issues
+            s.add(beltPackage)
         } else if(k.startsWith('node')){
-            s.add(fileTarget('node.cmi'))
+            s.add(nodePackage)
         }
         s.add(js_package)
     })
-
-    /**
-     * @type {string[]}
-     */
-    var allOthersTarget = []
-    beltTargets.forEach((ext,mod)=>{
-        switch(ext){
-            case 'HAS_BOTH':
-            case 'HAS_ML':
-                allOthersTarget.push(`${mod}.cmj`, `${mod}.cmi`)
-                break
-            case 'HAS_MLI':
-                allOthersTarget.push(`${mod}.cmi`)    
-                break
-        }
-    })
+    var allOthersTarget = scanFileTargets(beltTargets,[]) 
     var beltOutput = generateNinja(depsMap, beltTargets,ninjaCwd,externalDeps)    
     beltOutput.push(phony(othersTarget,fileTargets(allOthersTarget),ninjaCwd))
-    fs.writeFile(path.join(othersDir, 'build.ninja'),
-        templateOthersRules + jsOutput.join('\n') + '\n' + beltOutput.join('\n') + '\n',
-        'utf8',
-        function(err){
-            if(err!==null){
-                throw err
-            }
-        }
+    writeFileA(
+        path.join(othersDir, 'build.ninja'),
+        templateOthersRules + jsOutput.join('\n') + '\n' + beltOutput.join('\n') + '\n'
     )
 }
 
@@ -358,7 +345,7 @@ async function stdlibNinja(){
      */
     var bsc_builtin_overrides = [[bsc_flags,`$${bsc_flags} -nopervasives`]]
     var templateStdlibRules = `
-bsc = ../lib/bsc.exe
+${BSC_COMPILER}
 ${bsc_flags} = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-no-check-div-by-zero -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js -bs-package-output amdjs:lib/amdjs -bs-package-output es6:lib/es6  -nostdlib -warn-error A -w -40-49-103 -bin-annot  -bs-no-warn-unimplemented-external  -I ./runtime  -I ./others
 rule cc
     command = $bsc $${bsc_flags} -bs-no-implicit-include  -I ${ninjaCwd} -c $in
@@ -380,25 +367,20 @@ ${ninjaQuickBuidList([
             !(x.startsWith('pervasives')) &&
             (x.endsWith('.ml') || x.endsWith('.mli'))
     })
- 
+
     var depsMap  = await ocamlDepAsync(sources, stdlibDir, new Map)
     var targets = collectTarget(sources)
-    /**
-     * @type {string[]}
-     */
-    var allTargets = []
+    var allTargets = scanFileTargets(targets,
+            ['camlinternalFormatBasics.cmi','camlinternalFormatBasics.cmj',
+            'pervasives.cmi', 'pervasives.cmj'
+        ])
     targets.forEach((ext,mod)=>{
         switch(ext){
             case 'HAS_MLI':
-                allTargets.push(`${mod}.cmi`)
-                updateDepsKVByFile(mod+".cmi", 'pervasives.cmj',depsMap)
-                break;
             case 'HAS_BOTH':
-                allTargets.push(`${mod}.cmi`, `${mod}.cmj`)
                 updateDepsKVByFile(mod+".cmi", 'pervasives.cmj',depsMap)
                 break
             case 'HAS_ML':                
-                allTargets.push(`${mod}.cmi`, `${mod}.cmj`)
                 updateDepsKVByFile(mod+".cmj", 'pervasives.cmj', depsMap)
                 break
         }
@@ -406,11 +388,9 @@ ${ninjaQuickBuidList([
     var output = generateNinja(depsMap,targets,ninjaCwd, [othersTarget])
     output.push(phony(stdlibTarget,fileTargets(allTargets),stdlibVersion))
 
-    fs.writeFile(
+    writeFileA(
         path.join(stdlibDir,'build.ninja'),
-        templateStdlibRules  + output.join('\n') + '\n'
-        ,'utf8'
-        , throwIfError
+        templateStdlibRules  + output.join('\n') + '\n'    
     )    
 }
 /**
@@ -442,7 +422,7 @@ var testDir = path.join(jscompDir,'test')
 
 async function testNinja(){
     var templateTestRules = `
-bsc = ../../lib/bsc.exe
+${BSC_COMPILER}
 bsc_flags = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:jscomp/test  -w -40-52 -warn-error A+8-3-30-26+101-102-103-104-52 -bin-annot -I ../runtime -I ../stdlib-402 -I ../others
 rule cc
     command = $bsc $bsc_flags -c $in
@@ -465,15 +445,9 @@ ${ninjaQuickBuidList([
     var depsMap = await ocamlDepAsync(sources, testDir, new Map)
     var targets = collectTarget(sources)
     var output = generateNinja(depsMap, targets,'.')
-    fs.writeFile(
+    writeFileA(
         path.join(testDir,'build.ninja'),
-        templateTestRules + output.join('\n') + '\n',
-        'utf8',
-        function(err){
-            if(err !== null){
-                throw err
-            }
-        }
+        templateTestRules + output.join('\n') + '\n'    
     )
 }
 
@@ -555,7 +529,7 @@ function ninjaBuild(outputs, inputs, rule, deps, cwd, overrides){
     var fileOutputs = targetsToString(outputs,cwd)
     var fileInputs = targetsToString(inputs,cwd)
     var stmt =  `build ${fileOutputs} : ${rule} ${fileInputs}` 
-    
+    // deps.push(pseudoTarget('../lib/bsc.exe'))
     if (deps.length > 0) {
         var fileDeps = targetsToString(deps,cwd)
         stmt += ` | ${fileDeps}`
