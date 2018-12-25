@@ -301,7 +301,7 @@ function replaceCmj(x) {
  * Note `bsdep.exe` does not need post processing and -one-line flag
  * By default `ocamldep.opt` only list dependencies in its args
  */
-function ocamlDepAsync(files,dir, depsMap) {
+function ocamlDepForBscAsync(files,dir, depsMap) {
     return new Promise((resolve,reject) =>{
         cp.exec(`ocamldep.opt -one-line -native ${files.join(' ')}`, {
             cwd: dir,
@@ -324,6 +324,41 @@ function ocamlDepAsync(files,dir, depsMap) {
         })        
     })    
 }
+
+/**
+ * 
+ * @param {string[]} files 
+ * @param {string} dir
+ * @param {DepsMap} depsMap
+ * @return {Promise<DepsMap>}
+ * Note `bsdep.exe` does not need post processing and -one-line flag
+ * By default `ocamldep.opt` only list dependencies in its args
+ */
+function ocamlDepForNativeAsync(files,dir, depsMap) {
+    return new Promise((resolve,reject) =>{
+        cp.exec(`ocamldep.opt -one-line -native ${files.join(' ')}`, {
+            cwd: dir,
+            encoding: 'ascii'
+        },function(error,stdout,stderr){
+            if(error !== null){
+                return reject(error)
+            } else {
+                var pairs = stdout.split('\n').map(x => x.split(':'))
+                pairs.forEach(x => {
+                    var deps;
+                    if (x[1] !== undefined && (deps = x[1].trim())) {
+                        deps = deps.split(' ');
+                        updateDepsKVsByFile(replaceCmj(x[0]), deps.map(x => replaceCmj(x)), depsMap)
+                    }
+                }
+                )
+                return resolve(depsMap)
+            }
+        })        
+    })    
+}
+
+
 
 
 /**
@@ -487,7 +522,7 @@ ${ninjaQuickBuidList([
     // since it may cause a bootstrapping issues
     try{
         await Promise.all([ runJSCheckAsync(depsMap),
-                            ocamlDepAsync(runtimeSourceFiles,runtimeDir, depsMap)])        
+                            ocamlDepForBscAsync(runtimeSourceFiles,runtimeDir, depsMap)])        
         var stmts = generateNinja(depsMap,allTargets,ninjaCwd,externalDeps)
         stmts.push(phony(runtimeTarget,fileTargets(allFileTargetsInRuntime),ninjaCwd))
         writeFile(
@@ -620,11 +655,11 @@ ${ninjaQuickBuidList([
      )
     var jsTargets = collectTarget(jsPrefixSourceFiles)
     var allJsTargets = scanFileTargets(jsTargets,[])
-    var [jsDepsMap, depsMap] = await Promise.all([ocamlDepAsync(jsPrefixSourceFiles,
+    var [jsDepsMap, depsMap] = await Promise.all([ocamlDepForBscAsync(jsPrefixSourceFiles,
         othersDir,
         new Map
     ),
-        ocamlDepAsync(othersFiles, othersDir, new Map())])
+        ocamlDepForBscAsync(othersFiles, othersDir, new Map())])
     var jsOutput = generateNinja(jsDepsMap, jsTargets,ninjaCwd,externalDeps)
     jsOutput.push(phony(js_package,fileTargets(allJsTargets),ninjaCwd))
 
@@ -683,7 +718,7 @@ ${ninjaQuickBuidList([
             (x.endsWith('.ml') || x.endsWith('.mli'))
     })
 
-    var depsMap  = await ocamlDepAsync(sources, stdlibDir, new Map)
+    var depsMap  = await ocamlDepForBscAsync(sources, stdlibDir, new Map)
     var targets = collectTarget(sources)
     var allTargets = scanFileTargets(targets,
             ['camlinternalFormatBasics.cmi','camlinternalFormatBasics.cmj',
@@ -760,7 +795,7 @@ ${ninjaQuickBuidList([
             (!x.endsWith('bspack.ml'))
     })
 
-    var depsMap = await ocamlDepAsync(sources, testDir, new Map)
+    var depsMap = await ocamlDepForBscAsync(sources, testDir, new Map)
     var targets = collectTarget(sources)
     var output = generateNinja(depsMap, targets,ninjaCwd,[stdlibTarget])
     writeFile(
@@ -878,3 +913,84 @@ if (require.main === module) {
 }
 exports.updateAllLibsNinja = updateAllLibsNinja
 
+/**
+ * 
+ * @param {string} dir 
+ */
+function readdirSync(dir){
+    return fs.readdirSync(dir,'ascii')
+}
+/**
+ * 
+ * @param {string} dir 
+ */
+function test(dir){    
+    return readdirSync(path.join(jscompDir,dir)).filter(x=> {
+        return (x.endsWith('.ml') || x.endsWith('.mli')) && 
+                !(x.endsWith('.cppo.ml') || x.endsWith('.cppo.mli'))
+    }).map(x=>path.join(dir,x))
+}
+
+var sourceDirs = ['ext', 'common','syntax','depends','core','super_errors','outcome_printer','bsb']
+
+/**
+ * @type{string[]}
+ */
+var files = []
+for(let dir of sourceDirs){
+    files = files.concat(test(dir))
+}
+var out = cp.execSync(`ocamldep.opt -one-line -native ${sourceDirs.map(x=>`-I ${x}`).join(' ')} ${files.join(' ')}`,{cwd:jscompDir,encoding:'ascii'})
+
+/**
+ * @type {Map<string,Set<string>>}
+ */
+var map = new Map 
+
+var pairs = out.split('\n').map(x=>x.split(':').map(x=>x.trim()))
+pairs.forEach(x=>{
+    var deps 
+    if(x[1] !== undefined && (deps = x[1].trim())){
+        deps = deps.split(' ')
+        map.set(x[0], new Set(deps))
+    }
+})
+// debugger
+var templateNative = `
+rule optc
+    command = ocamlopt.opt -I +compiler-libs -I stubs -I ext -I common -I syntax -I depends -I core -I bsb -I super_errors -I outcome_printer -g -w +6-40-30-23 -warn-error +a-40-30-23 -absname -c $in
+`
+// var mk = (base)=>{
+//     var target = `${base}.cmx`
+//     return `build ${target} : optc ${base}.ml | ${map.get(base)}`
+// }
+
+// not ocamldep output
+// when no mli exists no deps for cmi otherwise add cmi
+var stmts = pairs.map( (pair) =>{
+    if(pair[0]){
+        var target = pair[0]
+        var y = path.parse(target)
+        /**
+         * @type {Set<string>}
+        */
+        var deps = map.get(target) || new Set()
+        if(y.ext === '.cmx'){
+            var intf = path.join(y.dir,y.name + ".cmi")
+            var ml = path.join(y.dir,y.name + '.ml')
+            return `build ${deps.has(intf) ? target : [target,intf].join(' ') } : optc ${ml} | ${[...deps].join(' ')}`
+        } else {
+            // === 'cmi'
+            var mli = path.join(y.dir, y.name + '.mli')
+            return `build ${target} : optc ${mli} | ${[...deps].join(' ')}`
+        }
+    }
+})
+
+writeFile(path.join(jscompDir,'compiler.ninja'),
+    templateNative + 
+    stmts.join('\n') + 
+    '\n'
+)
+
+debugger
