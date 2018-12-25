@@ -53,12 +53,7 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.t)
         3. [E.mldot]
      *)
   (* ATTENTION: check {!Lam_compile_global} for consistency  *)      
-  (** Special handling for values in [Pervasives] *)
-  | Single(_, ({name="stdout"|"stderr"|"stdin";_} as id),_ ),
-    "pervasives.ml" -> 
-    Js_output.make 
-      [ S.alias_variable id
-        ~exp:(E.runtime_ref  Js_runtime_modules.io id.name)]
+  (** Special handling for values in [Pervasives] *)  
   (* 
          we delegate [stdout, stderr, and stdin] into [caml_io] module, 
          the motivation is to help dead code eliminatiion, it's helpful 

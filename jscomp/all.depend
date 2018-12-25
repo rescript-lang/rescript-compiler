@@ -775,15 +775,15 @@ core/lam_compile_main.cmx : ext/literals.cmx core/lam_util.cmx \
     core/lam_compile_env.cmx core/lam_compile_context.cmx \
     core/lam_compile.cmx core/lam_coercion.cmx core/lam_check.cmx \
     core/lam_analysis.cmx core/js_stmt_make.cmx core/js_shake.cmx \
-    core/js_runtime_modules.cmx core/js_pass_tailcall_inline.cmx \
-    core/js_pass_scope.cmx core/js_pass_flatten_and_mark_dead.cmx \
-    core/js_pass_flatten.cmx core/js_pass_debug.cmx \
-    core/js_packages_state.cmx core/js_packages_info.cmx core/js_output.cmx \
-    core/js_fold_basic.cmx core/js_exp_make.cmx core/js_dump_program.cmx \
-    common/js_config.cmx core/js_cmj_format.cmx core/j.cmx ext/ident_set.cmx \
-    ext/ext_string.cmx ext/ext_pervasives.cmx ext/ext_path.cmx \
-    ext/ext_namespace.cmx common/ext_log.cmx ext/ext_list.cmx \
-    ext/ext_filename.cmx ext/ext_char.cmx core/lam_compile_main.cmi
+    core/js_pass_tailcall_inline.cmx core/js_pass_scope.cmx \
+    core/js_pass_flatten_and_mark_dead.cmx core/js_pass_flatten.cmx \
+    core/js_pass_debug.cmx core/js_packages_state.cmx \
+    core/js_packages_info.cmx core/js_output.cmx core/js_fold_basic.cmx \
+    core/js_exp_make.cmx core/js_dump_program.cmx common/js_config.cmx \
+    core/js_cmj_format.cmx core/j.cmx ext/ident_set.cmx ext/ext_string.cmx \
+    ext/ext_pervasives.cmx ext/ext_path.cmx ext/ext_namespace.cmx \
+    common/ext_log.cmx ext/ext_list.cmx ext/ext_filename.cmx ext/ext_char.cmx \
+    core/lam_compile_main.cmi
 core/js_implementation.cmx : core/ocaml_parse.cmx ext/literals.cmx \
     core/lam_compile_main.cmx core/lam_compile_env.cmx common/js_config.cmx \
     ext/ext_string.cmx ext/ext_pervasives.cmx ext/ext_namespace.cmx \
