@@ -17,6 +17,8 @@ site/
 odoc_gen
 coverage
 jscomp/*
+!jscomp/release.ninja
+!jscomp/Makefile
 !jscomp/stdlib-402
 !jscomp/stdlib-406
 !jscomp/runtime
