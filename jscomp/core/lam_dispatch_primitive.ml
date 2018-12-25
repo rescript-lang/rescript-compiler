@@ -33,6 +33,19 @@
 module E = Js_exp_make  
 module S = Js_stmt_make
 
+(** not exhaustive *)
+let args_const_unbox_approx_int_zero (args : J.expression list) = 
+  match args with 
+  | [ {expression_desc = Number (Int { i = 0l ; }) }] -> true 
+  | _ -> false
+let args_const_unbox_approx_int_one (args : J.expression list) = 
+  match args with 
+  | [ {expression_desc = Number (Int { i = 1l ; }) }] -> true 
+  | _ -> false
+let args_const_unbox_approx_int_two (args : J.expression list) = 
+  match args with 
+  | [ {expression_desc = Number (Int { i = 2l ; }) }] -> true 
+  | _ -> false
 
 (** 
    There are two things we need consider:
@@ -818,6 +831,15 @@ let translate loc (prim_name : string)
     | "caml_weak_get_copy"
       -> call Js_runtime_modules.weak
 
+    | "caml_ml_open_descriptor_in" when   
+      args_const_unbox_approx_int_zero args -> 
+      E.runtime_ref Js_runtime_modules.io "stdin"
+    | "caml_ml_open_descriptor_out" when 
+      args_const_unbox_approx_int_one args -> 
+      E.runtime_ref Js_runtime_modules.io "stdout"
+    | "caml_ml_open_descriptor_out" when 
+      args_const_unbox_approx_int_two args -> 
+      E.runtime_ref Js_runtime_modules.io "stderr"
 
     | "caml_ba_create"
     | "caml_ba_get_generic"
