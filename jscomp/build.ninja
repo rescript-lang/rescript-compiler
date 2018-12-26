@@ -1,4 +1,6 @@
-
+subninja compiler.ninja
+subninja stubs/build.ninja
+subninja ext/build.ninja
 subninja runtime/build.ninja
 subninja others/build.ninja
 subninja stdlib-402/build.ninja

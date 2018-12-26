@@ -896,6 +896,66 @@ function updateAllLibsNinja(){
     stdlibNinja()
     othersNinja(false)
 }
+
+/**
+ * 
+ * @param {string[]} domain 
+ * @param {Map<string,Set<string>>} dependency_graph 
+ * @returns {string[]}
+ */
+function sortFilesByDeps(domain, dependency_graph){
+
+    /**
+     * @type{string[]}
+     */
+    var result = []
+    var workList = new Set(domain)
+    /**
+     * 
+     * @param {Set<string>} visiting 
+     * @param {string[]} path 
+     * @param {string} current 
+     */
+    var visit = function(visiting,path,current){
+        if(visiting.has(current)){
+            throw new Error(`cycle: ${path.concat(current).join(' ')}`)
+        }
+        if(workList.has(current)){
+            visiting.add(current)
+            var next = dependency_graph.get(current)            
+            if(next !== undefined && next.size > 0){                
+                next.forEach(x=>{
+                    visit(visiting, path.concat(current),x)
+                })
+            }
+            visiting.delete(current)
+            workList.delete(current)
+            result.push(current)
+        }
+    }
+    while(workList.size > 0){
+        visit(new Set(), [], workList.values().next().value )
+    }
+    return result
+}
+
+// var x = new Map( [ [ 'x', new Set(['y','z'])] ] )
+/**
+ * 
+ * @param {[string, string[]] []} xs 
+ * @returns {Map<string,Set<string>>}
+ */
+function buildDeps(xs){
+    var ys = xs.map(([key,vals])=>{
+        /**
+         * @type {[string, Set<string>]}
+         */
+        var ret = [key, new Set(vals)]
+        return ret
+    })
+    return new Map(ys)
+}
+
 if (require.main === module) {
     if(process.argv.includes('-check')){
         checkEffect()
@@ -920,6 +980,8 @@ exports.updateAllLibsNinja = updateAllLibsNinja
 function readdirSync(dir){
     return fs.readdirSync(dir,'ascii')
 }
+
+
 /**
  * 
  * @param {string} dir 
@@ -931,66 +993,96 @@ function test(dir){
     }).map(x=>path.join(dir,x))
 }
 
-var sourceDirs = ['ext', 'common','syntax','depends','core','super_errors','outcome_printer','bsb']
 
-/**
- * @type{string[]}
- */
-var files = []
-for(let dir of sourceDirs){
-    files = files.concat(test(dir))
-}
-var out = cp.execSync(`ocamldep.opt -one-line -native ${sourceDirs.map(x=>`-I ${x}`).join(' ')} ${files.join(' ')}`,{cwd:jscompDir,encoding:'ascii'})
-
-/**
- * @type {Map<string,Set<string>>}
- */
-var map = new Map 
-
-var pairs = out.split('\n').map(x=>x.split(':').map(x=>x.trim()))
-pairs.forEach(x=>{
-    var deps 
-    if(x[1] !== undefined && (deps = x[1].trim())){
-        deps = deps.split(' ')
-        map.set(x[0], new Set(deps))
-    }
-})
-// debugger
-var templateNative = `
+function nativeNinja() {
+        var templateNative = `
 rule optc
     command = ocamlopt.opt -I +compiler-libs -I stubs -I ext -I common -I syntax -I depends -I core -I bsb -I super_errors -I outcome_printer -g -w +6-40-30-23 -warn-error +a-40-30-23 -absname -c $in
+rule archive
+    command = ocamlopt.opt -a $in -o $out    
+rule link
+    command =  ocamlopt.opt -g -linkall -I +compiler-libs $libs $in -o $out
+build ../lib/bsc.exe: link stubs/bs_hash.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa super_errors/super_errors.cmxa outcome_printer/outcome_printer.cmxa core/core.cmxa core/js_main.cmx
+    libs = ocamlcommon.cmxa
 `
-// var mk = (base)=>{
-//     var target = `${base}.cmx`
-//     return `build ${target} : optc ${base}.ml | ${map.get(base)}`
-// }
-
-// not ocamldep output
-// when no mli exists no deps for cmi otherwise add cmi
-var stmts = pairs.map( (pair) =>{
-    if(pair[0]){
-        var target = pair[0]
-        var y = path.parse(target)
-        /**
-         * @type {Set<string>}
-        */
-        var deps = map.get(target) || new Set()
-        if(y.ext === '.cmx'){
-            var intf = path.join(y.dir,y.name + ".cmi")
-            var ml = path.join(y.dir,y.name + '.ml')
-            return `build ${deps.has(intf) ? target : [target,intf].join(' ') } : optc ${ml} | ${[...deps].join(' ')}`
-        } else {
-            // === 'cmi'
-            var mli = path.join(y.dir, y.name + '.mli')
-            return `build ${target} : optc ${mli} | ${[...deps].join(' ')}`
-        }
+    var sourceDirs = ['ext', 'common', 'syntax', 'depends', 'core', 'super_errors', 'outcome_printer', 'bsb']
+    /**
+     * @type { {name : string, libs: string[]}[]}
+     */
+    var libs = sourceDirs.map(name=>{return {name, libs : []}})
+    /**
+     * @type{string[]}
+     */
+    var files = []
+    for (let dir of sourceDirs) {
+        files = files.concat(test(dir))
     }
-})
+    // FIXME: BS_DEBUG = true
+    var out = cp.execSync(`ocamldep.opt -one-line -native ${sourceDirs.map(x => `-I ${x}`).join(' ')} ${files.join(' ')}`, { cwd: jscompDir, encoding: 'ascii' })
 
-writeFile(path.join(jscompDir,'compiler.ninja'),
-    templateNative + 
-    stmts.join('\n') + 
-    '\n'
-)
+    /**
+     * @type {Map<string,Set<string>>}
+     */
+    var map = new Map()
 
-debugger
+    var pairs = out.split('\n').map(x => x.split(':').map(x => x.trim()))
+    pairs.forEach(pair => {
+        var deps
+        var key = pair[0]
+        if (pair[1] !== undefined && (deps = pair[1].trim())) {
+            deps = deps.split(' ')
+            map.set(key, new Set(deps))
+        }
+        if (key.endsWith('cmx')) {
+            libs.forEach(x=>{
+                if(key.startsWith(x.name) && !key.endsWith('main.cmx')){
+                    x.libs.push(key)}
+            })            
+        }
+    })
+    // debugger
+
+   
+    // not ocamldep output
+    // when no mli exists no deps for cmi otherwise add cmi
+    var stmts = pairs.map((pair) => {
+        if (pair[0]) {
+            var target = pair[0]
+            var y = path.parse(target)
+            /**
+             * @type {Set<string>}
+            */
+            var deps = map.get(target) || new Set()
+            if (y.ext === '.cmx') {
+                var intf = path.join(y.dir, y.name + ".cmi")
+                var ml = path.join(y.dir, y.name + '.ml')
+                return `build ${deps.has(intf) ? target : [target, intf].join(' ')} : optc ${ml} | ${[...deps].join(' ')}`
+            } else {
+                // === 'cmi'
+                var mli = path.join(y.dir, y.name + '.mli')
+                return `build ${target} : optc ${mli} | ${[...deps].join(' ')}`
+            }
+        }
+    })
+    libs.forEach(x=>{
+        var output = sortFilesByDeps(x.libs, map)
+        var name = x.name
+        stmts.push(`build ${name}/${name}.cmxa : archive ${output.join(' ')}`)
+    })
+    
+    writeFile(path.join(jscompDir, 'compiler.ninja'),
+        templateNative +
+        stmts.join('\n') +
+        '\n'
+    )
+}
+
+nativeNinja()
+
+// var output = sortFilesByDeps(['a','b','c','d'], buildDeps([
+//     ['a', ['c']],
+//     ['c',['b']],
+//     ['d',['a']]
+//     // ['b', ['c']]
+// ]))
+
