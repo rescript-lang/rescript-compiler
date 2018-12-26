@@ -4,13 +4,13 @@ bsc_flags = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-no-ch
 rule cc
     command = $bsc $bsc_flags -bs-no-implicit-include  -I stdlib-402 -c $in
     description = $in -> $out    
-build stdlib-402/camlinternalFormatBasics.cmi : cc stdlib-402/camlinternalFormatBasics.mli
+build stdlib-402/camlinternalFormatBasics.cmi : cc stdlib-402/camlinternalFormatBasics.mli | others
     bsc_flags = $bsc_flags -nopervasives
-build stdlib-402/camlinternalFormatBasics.cmj : cc stdlib-402/camlinternalFormatBasics.ml | stdlib-402/camlinternalFormatBasics.cmi
+build stdlib-402/camlinternalFormatBasics.cmj : cc stdlib-402/camlinternalFormatBasics.ml | stdlib-402/camlinternalFormatBasics.cmi others
     bsc_flags = $bsc_flags -nopervasives
-build stdlib-402/pervasives.cmj : cc stdlib-402/pervasives.ml | stdlib-402/pervasives.cmi
+build stdlib-402/pervasives.cmj : cc stdlib-402/pervasives.ml | stdlib-402/pervasives.cmi others
     bsc_flags = $bsc_flags -nopervasives
-build stdlib-402/pervasives.cmi : cc stdlib-402/pervasives.mli | stdlib-402/camlinternalFormatBasics.cmj
+build stdlib-402/pervasives.cmi : cc stdlib-402/pervasives.mli | stdlib-402/camlinternalFormatBasics.cmj others
     bsc_flags = $bsc_flags -nopervasives    
 build stdlib-402/arg.cmj : cc stdlib-402/arg.ml | stdlib-402/sys.cmj stdlib-402/string.cmj stdlib-402/printf.cmj stdlib-402/list.cmj stdlib-402/buffer.cmj stdlib-402/array.cmj stdlib-402/arg.cmi others
 build stdlib-402/arg.cmi : cc stdlib-402/arg.mli | stdlib-402/pervasives.cmj others

@@ -689,6 +689,7 @@ ${ninjaQuickBuidList([
 
 async function stdlibNinja(){
     var ninjaCwd = stdlibVersion
+    var externalDeps = [othersTarget]
     var bsc_flags = 'bsc_flags'
     /**
      * @type [string,string][]
@@ -702,13 +703,16 @@ rule cc
     description = $in -> $out    
 ${ninjaQuickBuidList([
     ['camlinternalFormatBasics.cmi', 'camlinternalFormatBasics.mli', 
-        'cc', ninjaCwd, bsc_builtin_overrides, [], []],
+        'cc', ninjaCwd, bsc_builtin_overrides, [], externalDeps],
+        // we make it still depends on external 
+        // to enjoy free ride on dev config for compiler-deps
+        // May add stdlib-402/build.ninja release.ninja later
     ['camlinternalFormatBasics.cmj', 'camlinternalFormatBasics.ml',
-        'cc', ninjaCwd, bsc_builtin_overrides, 'camlinternalFormatBasics.cmi',[]],
+        'cc', ninjaCwd, bsc_builtin_overrides, 'camlinternalFormatBasics.cmi',externalDeps],
     ['pervasives.cmj', 'pervasives.ml',
-        'cc',ninjaCwd, bsc_builtin_overrides,'pervasives.cmi', []],    
+        'cc',ninjaCwd, bsc_builtin_overrides,'pervasives.cmi', externalDeps],    
     [ 'pervasives.cmi', 'pervasives.mli',
-      'cc', ninjaCwd, bsc_builtin_overrides, 'camlinternalFormatBasics.cmj', []]    
+      'cc', ninjaCwd, bsc_builtin_overrides, 'camlinternalFormatBasics.cmj', externalDeps]    
 ])}    
 `      
     var stdlibDirFiles = fs.readdirSync(stdlibDir,'ascii')
@@ -735,7 +739,7 @@ ${ninjaQuickBuidList([
                 break
         }
     })
-    var output = generateNinja(depsMap,targets,ninjaCwd, [othersTarget])
+    var output = generateNinja(depsMap,targets,ninjaCwd, externalDeps)
     output.push(phony(stdlibTarget,fileTargets(allTargets),stdlibVersion))
 
     writeFile(
@@ -994,6 +998,7 @@ function test(dir){
 }
 
 
+
 function nativeNinja() {
         var templateNative = `
 rule optc
@@ -1002,14 +1007,19 @@ rule archive
     command = ocamlopt.opt -a $in -o $out    
 rule link
     command =  ocamlopt.opt -g -linkall -I +compiler-libs $libs $in -o $out
-build ../lib/bsc.exe: link stubs/bs_hash.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa super_errors/super_errors.cmxa outcome_printer/outcome_printer.cmxa core/core.cmxa core/js_main.cmx
+build ../lib/bsc.exe: link stubs/bs_hash.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa super_errors/super_errors.cmxa outcome_printer/outcome_printer.cmxa core/core.cmxa main/js_main.cmx
     libs = ocamlcommon.cmxa
 `
-    var sourceDirs = ['ext', 'common', 'syntax', 'depends', 'core', 'super_errors', 'outcome_printer', 'bsb']
+    var sourceDirs = ['ext', 'common', 'syntax', 'depends', 'core', 'super_errors', 'outcome_printer', 'bsb','main']
     /**
      * @type { {name : string, libs: string[]}[]}
      */
-    var libs = sourceDirs.map(name=>{return {name, libs : []}})
+    var libs = []
+    sourceDirs.forEach(name=>{
+        if(name !== 'main'){
+            libs.push({name, libs : []})
+        }         
+    })
     /**
      * @type{string[]}
      */
@@ -1035,7 +1045,7 @@ build ../lib/bsc.exe: link stubs/bs_hash.cmxa ext/ext.cmxa common/common.cmxa sy
         }
         if (key.endsWith('cmx')) {
             libs.forEach(x=>{
-                if(key.startsWith(x.name) && !key.endsWith('main.cmx')){
+                if(key.startsWith(x.name)){
                     x.libs.push(key)}
             })            
         }
