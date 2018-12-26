@@ -1006,9 +1006,13 @@ rule optc
 rule archive
     command = ocamlopt.opt -a $in -o $out    
 rule link
-    command =  ocamlopt.opt -g -linkall -I +compiler-libs $libs $in -o $out
+    command =  ocamlopt.opt -g  -I +compiler-libs $libs $in -o $out
 build ../lib/bsc.exe: link stubs/bs_hash.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa super_errors/super_errors.cmxa outcome_printer/outcome_printer.cmxa core/core.cmxa main/js_main.cmx
     libs = ocamlcommon.cmxa
+build ../lib/bsb.exe: link stubs/bs_hash.cmxa ext/ext.cmxa common/common.cmxa bsb/bsb.cmxa main/bsb_main.cmx
+    libs = ocamlcommon.cmxa unix.cmxa str.cmxa
+build ../lib/bsb_helper.exe: link stubs/bs_hash.cmxa ext/ext.cmxa common/common.cmxa  bsb/bsb.cmxa main/bsb_helper_main.cmx
+    libs = ocamlcommon.cmxa unix.cmxa str.cmxa
 `
     var sourceDirs = ['ext', 'common', 'syntax', 'depends', 'core', 'super_errors', 'outcome_printer', 'bsb','main']
     /**
