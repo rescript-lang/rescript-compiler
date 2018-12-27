@@ -1,4 +1,4 @@
-# 1 "setm.cppo.ml"
+# 1 "others/setm.cppo.ml"
 (* Copyright (C) 2017 Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -28,10 +28,10 @@
     and identity is not needed(using the built-in one) 
 *)
 
-# 31 "setm.cppo.ml"
+# 31 "others/setm.cppo.ml"
 module I = Belt_internalSetInt
 module S = Belt_SortArrayInt
-# 39 "setm.cppo.ml"
+# 39 "others/setm.cppo.ml"
 module N = Belt_internalAVLset
 module A = Belt_Array 
 

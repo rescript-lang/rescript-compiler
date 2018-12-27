@@ -1,7 +1,7 @@
-# 2 "sort.cppo.ml"
+# 2 "others/sort.cppo.ml"
 type element = int 
 
-# 9 "sort.cppo.ml"
+# 9 "others/sort.cppo.ml"
 module A = Belt_Array 
 
 let rec sortedLengthAuxMore (xs : element array) prec acc len = 
