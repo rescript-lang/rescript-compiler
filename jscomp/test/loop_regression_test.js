@@ -33,7 +33,7 @@ var suites = /* :: */[
   /* [] */0
 ];
 
-Mt.from_pair_suites("loop_regression_test.ml", suites);
+Mt.from_pair_suites("Loop_regression_test", suites);
 
 exports.f = f;
 exports.suites = suites;

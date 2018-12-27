@@ -72,4 +72,4 @@ let keys xs ys =
 
 ;; eq __LOC__ (keys ["hi"; "open"; "xx"] (Js.Obj.keys (test3 (Some 2) (Some 2) ) )) true
 
-;; Mt.from_pair_suites __FILE__ !suites
+;; Mt.from_pair_suites __MODULE__ !suites

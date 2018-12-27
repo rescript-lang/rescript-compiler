@@ -349,4 +349,4 @@ let () =
   b __LOC__ (
     N.keepMap [1;2;3;4] (fun x -> if x mod 5 = 0 then Some x else None) = []
   ) 
-;; Mt.from_pair_suites __FILE__ !suites
+;; Mt.from_pair_suites __MODULE__ !suites

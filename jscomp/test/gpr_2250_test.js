@@ -76,7 +76,7 @@ var tmp = Caml_oo_curry.js2(4846113, 1, cxt1, /* () */0);
 
 var result = Caml_oo_curry.js2(5144726, 2, tmp, /* () */0);
 
-eq("File \"gpr_2250_test.ml\", line 26, characters 5-12", result, 1);
+eq("File \"test/gpr_2250_test.ml\", line 26, characters 5-12", result, 1);
 
 var cxt2 = create(/* () */0);
 
@@ -86,9 +86,9 @@ var tmp$2 = Caml_oo_curry.js2(4846113, 4, tmp$1, /* () */0);
 
 var result2 = Caml_oo_curry.js2(5144726, 5, tmp$2, /* () */0);
 
-eq("File \"gpr_2250_test.ml\", line 37, characters 5-12", result2, 2);
+eq("File \"test/gpr_2250_test.ml\", line 37, characters 5-12", result2, 2);
 
-Mt.from_pair_suites("gpr_2250_test.ml", suites[0]);
+Mt.from_pair_suites("Gpr_2250_test", suites[0]);
 
 exports.suites = suites;
 exports.test_id = test_id;

@@ -31,11 +31,11 @@ function $$(x, y) {
 
 var $$$plus = Caml_int32.imul;
 
-eq("File \"dollar_escape_test.ml\", line 20, characters 6-13", 3, 3);
+eq("File \"test/dollar_escape_test.ml\", line 20, characters 6-13", 3, 3);
 
-eq("File \"dollar_escape_test.ml\", line 21, characters 6-13", 3, 3);
+eq("File \"test/dollar_escape_test.ml\", line 21, characters 6-13", 3, 3);
 
-Mt.from_pair_suites("dollar_escape_test.ml", suites[0]);
+Mt.from_pair_suites("Dollar_escape_test", suites[0]);
 
 var v = 3;
 

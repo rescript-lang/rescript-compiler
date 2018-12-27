@@ -142,4 +142,4 @@ let () =
   eq __LOC__ (S.strictlySortedLength [|4;3;2;1|] lt) (-4);
   eq __LOC__ (S.strictlySortedLength [|4;3;2;1;0|] lt) (-5);
 
-;; Mt.from_pair_suites __FILE__ !suites  
+;; Mt.from_pair_suites __MODULE__ !suites  

@@ -123,7 +123,7 @@ var printable_colored_point = CamlinternalOO.make_class([
 
 var p = Curry._3(printable_colored_point[0], 0, 17, "red");
 
-eq("File \"class5_test.ml\", line 32, characters 12-19", Caml_oo_curry.js1(-930392019, 1, p), "(17, red)");
+eq("File \"test/class5_test.ml\", line 32, characters 12-19", Caml_oo_curry.js1(-930392019, 1, p), "(17, red)");
 
 function ref_init($$class) {
   var x_init = CamlinternalOO.new_variable($$class, "");
@@ -164,7 +164,7 @@ Caml_oo_curry.js2(5741474, 2, r, 2);
 
 var v = Caml_oo_curry.js1(5144726, 3, r);
 
-eq("File \"class5_test.ml\", line 43, characters 12-19", v, 2);
+eq("File \"test/class5_test.ml\", line 43, characters 12-19", v, 2);
 
 function intlist_init($$class) {
   var l = CamlinternalOO.new_variable($$class, "");
@@ -201,7 +201,7 @@ var l = Curry._2(intlist[0], 0, /* :: */[
       ]
     ]);
 
-eq("File \"class5_test.ml\", line 54, characters 5-12", 6, Caml_oo_curry.js3(-1010803711, 4, l, (function (x, y) {
+eq("File \"test/class5_test.ml\", line 54, characters 5-12", 6, Caml_oo_curry.js3(-1010803711, 4, l, (function (x, y) {
             return x + y | 0;
           }), 0));
 
@@ -240,7 +240,7 @@ var l$1 = Curry._2(intlist2[0], 0, /* :: */[
       ]
     ]);
 
-eq("File \"class5_test.ml\", line 67, characters 5-12", /* tuple */[
+eq("File \"test/class5_test.ml\", line 67, characters 5-12", /* tuple */[
       6,
       "1 2 3 "
     ], /* tuple */[
@@ -311,7 +311,7 @@ var a = Caml_oo_curry.js2(-335965387, 8, p$1, Curry._2(point[0], 0, 8));
 
 var b = Caml_oo_curry.js2(-335965387, 9, p$1, Curry._3(printable_colored_point[0], 0, 1, "blue"));
 
-eq("File \"class5_test.ml\", line 94, characters 5-12", /* tuple */[
+eq("File \"test/class5_test.ml\", line 94, characters 5-12", /* tuple */[
       5,
       2
     ], /* tuple */[
@@ -319,7 +319,7 @@ eq("File \"class5_test.ml\", line 94, characters 5-12", /* tuple */[
       b
     ]);
 
-Mt.from_pair_suites("class5_test.ml", suites[0]);
+Mt.from_pair_suites("Class5_test", suites[0]);
 
 exports.suites = suites;
 exports.test_id = test_id;

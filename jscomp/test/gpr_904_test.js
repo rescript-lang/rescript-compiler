@@ -44,18 +44,18 @@ function f(check) {
   }
 }
 
-eq("File \"gpr_904_test.ml\", line 23, characters 5-12", f({
+eq("File \"test/gpr_904_test.ml\", line 23, characters 5-12", f({
           x: true,
           y: false
         }), false);
 
-eq("File \"gpr_904_test.ml\", line 26, characters 5-12", check_healty({
+eq("File \"test/gpr_904_test.ml\", line 26, characters 5-12", check_healty({
           a: false,
           b: false,
           c: true
         }), false);
 
-Mt.from_pair_suites("gpr_904_test.ml", suites[0]);
+Mt.from_pair_suites("Gpr_904_test", suites[0]);
 
 exports.suites = suites;
 exports.test_id = test_id;

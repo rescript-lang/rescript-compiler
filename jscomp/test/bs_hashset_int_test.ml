@@ -60,4 +60,4 @@ let () =
   let h = N.fromArray (I.randomRange  0 1_000_000) in 
   let histo = N.getBucketHistogram h in 
   b __LOC__ (A.length histo <= 10)
-let () = Mt.from_pair_suites __FILE__ !suites
+let () = Mt.from_pair_suites __MODULE__ !suites

@@ -33,4 +33,4 @@ let h = List.length
 ;; b __LOC__ (f v0 (A(0,1))) 
 ;; eq __LOC__ v0 N.v1
 
-;; Mt.from_pair_suites __FILE__ !suites
+;; Mt.from_pair_suites __MODULE__ !suites

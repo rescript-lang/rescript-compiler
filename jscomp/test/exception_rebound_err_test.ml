@@ -22,4 +22,4 @@ let f g =
   try g () with Not_found -> 1 
 
 ;; eq __LOC__ (test_js_error4 ()  ) 7
-;; Mt.from_pair_suites __FILE__ !suites  
+;; Mt.from_pair_suites __MODULE__ !suites  

@@ -127,7 +127,7 @@ var bool_array = /* array */[
   false
 ];
 
-Mt.from_pair_suites("js_bool_test.ml", suites);
+Mt.from_pair_suites("Js_bool_test", suites);
 
 var f3 = true;
 

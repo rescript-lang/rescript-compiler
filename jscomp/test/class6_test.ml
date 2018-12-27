@@ -75,4 +75,4 @@ let () =
     (7,10,7)
     (p#get_x, (p#move 3)#get_x , p#get_x)
 
-let () =  Mt.from_pair_suites __FILE__ !suites
+let () =  Mt.from_pair_suites __MODULE__ !suites

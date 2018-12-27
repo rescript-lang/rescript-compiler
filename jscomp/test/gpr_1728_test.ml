@@ -25,4 +25,4 @@ let badInlining obj =
 ;; eq __LOC__ (int_of_string "+0x32") 50
 ;; eq __LOC__ (int_of_string "-0x32") (-50)
 ;; eq __LOC__ (int_of_string "0x32") 50
-;; Mt.from_pair_suites __FILE__ !suites
+;; Mt.from_pair_suites __MODULE__ !suites

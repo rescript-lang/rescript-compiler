@@ -32,4 +32,4 @@ let f x y =
 ;; let null2 = Js.Nullable.return 3 in 
 let null = null2 in 
 eq __LOC__ (Js.test null) false
-;; Mt.from_pair_suites __FILE__ !suites
+;; Mt.from_pair_suites __MODULE__ !suites

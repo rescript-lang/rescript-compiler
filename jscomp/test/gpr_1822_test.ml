@@ -20,4 +20,4 @@ let area =
 
 ;; eq __LOC__  area  314.
 
-;; Mt.from_pair_suites __FILE__ !suites
+;; Mt.from_pair_suites __MODULE__ !suites

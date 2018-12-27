@@ -83,9 +83,9 @@ function f(g) {
   }
 }
 
-eq("File \"exception_rebound_err_test.ml\", line 24, characters 6-13", test_js_error4(/* () */0), 7);
+eq("File \"test/exception_rebound_err_test.ml\", line 24, characters 6-13", test_js_error4(/* () */0), 7);
 
-Mt.from_pair_suites("exception_rebound_err_test.ml", suites[0]);
+Mt.from_pair_suites("Exception_rebound_err_test", suites[0]);
 
 exports.suites = suites;
 exports.test_id = test_id;

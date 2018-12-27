@@ -22,7 +22,7 @@ var suites = /* :: */[
   /* [] */0
 ];
 
-Mt.from_pair_suites("complex_test.ml", suites);
+Mt.from_pair_suites("Complex_test", suites);
 
 exports.suites = suites;
 /*  Not a pure module */

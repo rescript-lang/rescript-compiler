@@ -43,4 +43,4 @@ let makeWrapper4 foo () = Js.log 2;
 ;; b __LOC__
 (Js.undefined = (makeWrapper4 111 ())##foo)
 
-;; Mt.from_pair_suites __FILE__ !suites  
+;; Mt.from_pair_suites __MODULE__ !suites  

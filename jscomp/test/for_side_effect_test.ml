@@ -15,7 +15,7 @@ let suites = Mt.
   [ "for_order", (fun _ -> Eq (10, (test2 ())))]
 ;;
 
-Mt.from_pair_suites __FILE__ suites
+Mt.from_pair_suites __MODULE__ suites
 (**
    {[
    var i = console.log("hi"),0;

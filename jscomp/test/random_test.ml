@@ -34,4 +34,4 @@ let () =
   Printf.printf "%Ld %Ld %d %f %ld \n" f h vv xx  xxx
 
 let () =
-  Mt.from_pair_suites __FILE__ !suites
+  Mt.from_pair_suites __MODULE__ !suites

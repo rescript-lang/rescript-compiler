@@ -3,7 +3,7 @@ let u () =
   | n -> 3 / 0
   | exception _ -> 42 (* TODO: could be optimized *)
 
-;; Mt.from_pair_suites __FILE__
+;; Mt.from_pair_suites __MODULE__
   [
    __LOC__, fun _ -> ThrowAny (fun _ -> ignore (u ()))    
   ]  

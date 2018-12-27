@@ -32,4 +32,4 @@ let () =
   eq __LOC__ ("bcc", res2)
 
 
-let () = Mt.from_pair_suites __FILE__ !suites
+let () = Mt.from_pair_suites __MODULE__ !suites

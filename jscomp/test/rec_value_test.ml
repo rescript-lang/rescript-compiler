@@ -152,6 +152,6 @@ and fake_inline_minus n =
 
 
 let fake_inline_inlie2 = fake_inline_minus 3 
- ;; Mt.from_pair_suites __FILE__ suites 
+ ;; Mt.from_pair_suites __MODULE__ suites 
 
 

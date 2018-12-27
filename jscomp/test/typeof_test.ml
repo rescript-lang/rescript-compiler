@@ -32,4 +32,4 @@ let suites = Mt.[
     "object_gadt_test", (fun _ -> Eq (Js.Types.test [%bs.obj{x = 3}] Object, true ))    
 ]
 
-;; Mt.from_pair_suites __FILE__ suites 
+;; Mt.from_pair_suites __MODULE__ suites 

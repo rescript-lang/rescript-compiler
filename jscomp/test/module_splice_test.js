@@ -36,9 +36,9 @@ var pair = /* tuple */[
 
 console.log(pair);
 
-eq("File \"module_splice_test.ml\", line 21, characters 5-12", pair);
+eq("File \"test/module_splice_test.ml\", line 21, characters 5-12", pair);
 
-Mt.from_pair_suites("module_splice_test.ml", suites[0]);
+Mt.from_pair_suites("Module_splice_test", suites[0]);
 
 exports.suites = suites;
 exports.test_id = test_id;

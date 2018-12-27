@@ -61,4 +61,4 @@ let suites = Mt.[
   "trunc", (fun _ -> Eq(4., trunc 4.2156));
 ]
 
-;; Mt.from_pair_suites __FILE__ suites
+;; Mt.from_pair_suites __MODULE__ suites

@@ -95,4 +95,4 @@ let () =
   eq __LOC__ (H.length [1;2]) 2; 
   eq __LOC__ !v 21
 
-;; Mt.from_pair_suites __FILE__ !suites
+;; Mt.from_pair_suites __MODULE__ !suites

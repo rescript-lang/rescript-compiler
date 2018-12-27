@@ -25,4 +25,4 @@ let suites = Mt.[
   "test_string", (fun _ -> Eq(-1, to_int (Str "x")))
 ]
 
-;; Mt.from_pair_suites __FILE__ suites
+;; Mt.from_pair_suites __MODULE__ suites

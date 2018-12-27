@@ -16091,6 +16091,6 @@ if (match !== undefined) {
       ];
 }
 
-Mt.from_pair_suites("runParser.ml", suites[0]);
+Mt.from_pair_suites("Flow_parser_reg_test", suites[0]);
 
 /* Literal Not a pure module */

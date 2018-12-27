@@ -56,7 +56,7 @@ var empty = ( Object.keys)(3);
 
 var v = $$test(1, 2);
 
-Mt.from_pair_suites("unsafe_ppx_test.ml", /* :: */[
+Mt.from_pair_suites("Unsafe_ppx_test", /* :: */[
       /* tuple */[
         "unsafe_max",
         (function (param) {

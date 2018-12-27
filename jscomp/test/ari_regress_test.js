@@ -60,7 +60,7 @@ var suites_001 = /* :: */[
     ],
     /* :: */[
       /* tuple */[
-        "File \"ari_regress_test.ml\", line 20, characters 4-11",
+        "File \"test/ari_regress_test.ml\", line 20, characters 4-11",
         (function (param) {
             return /* Eq */Block.__(0, [
                       h[0],
@@ -78,6 +78,6 @@ var suites = /* :: */[
   suites_001
 ];
 
-Mt.from_pair_suites("ari_regress_test.ml", suites);
+Mt.from_pair_suites("Ari_regress_test", suites);
 
 /* x Not a pure module */

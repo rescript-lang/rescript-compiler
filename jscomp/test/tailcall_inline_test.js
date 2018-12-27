@@ -78,7 +78,7 @@ var suites = /* :: */[
   suites_001
 ];
 
-Mt.from_pair_suites("tailcall_inline_test.ml", suites);
+Mt.from_pair_suites("Tailcall_inline_test", suites);
 
 exports.f = f;
 exports.suites = suites;

@@ -40,4 +40,4 @@ let suites = Mt.[
     "v x"    , (fun _ -> Eq(v#x, 3))
   ]
 
-;; Mt.from_pair_suites __FILE__ suites
+;; Mt.from_pair_suites __MODULE__ suites

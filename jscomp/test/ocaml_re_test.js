@@ -3800,6 +3800,6 @@ var s = Caml_bytes.bytes_to_string(Bytes.make(1048575, /* "a" */97)) + "b";
 
 eq("File \"xx.ml\", line 7, characters 3-10", get(exec(regexp(undefined, "aa?b"), undefined, s), 0), "aab");
 
-Mt.from_pair_suites("xx.ml", suites[0]);
+Mt.from_pair_suites("Ocaml_re_test", suites[0]);
 
 /* Table Not a pure module */

@@ -356,7 +356,7 @@ let s =
 external log : 'a -> unit = "" [@@bs.val "console.log"]
 
 
-;; Mt.from_pair_suites __FILE__ Mt.[
+;; Mt.from_pair_suites __MODULE__ Mt.[
 "assertion1", (fun _ -> Eq (( IntMap.find 10 m),  'a'));
 "assertion2", (fun _ -> Eq ((SMap.find "10"  s),  'a'))
 ]

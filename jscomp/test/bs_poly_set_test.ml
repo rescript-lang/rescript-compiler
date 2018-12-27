@@ -157,4 +157,4 @@ let () =
   b __LOC__ (N.isEmpty aa);
   b __LOC__ (N.isEmpty bb);
   b __LOC__ (not pres)
-;; Mt.from_pair_suites __FILE__ !suites
+;; Mt.from_pair_suites __MODULE__ !suites

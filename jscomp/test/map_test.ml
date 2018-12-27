@@ -42,4 +42,4 @@ let int_map_suites = let open Mt in Int_map.[
     Eq(!v, -1  )
                )
 ]
-;; Mt.from_pair_suites __FILE__ int_map_suites 
+;; Mt.from_pair_suites __MODULE__ int_map_suites 

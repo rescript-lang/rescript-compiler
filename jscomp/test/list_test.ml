@@ -21,5 +21,5 @@ let list_suites = Mt.[
   
 let () = 
   begin
-    Mt.from_pair_suites __FILE__ list_suites
+    Mt.from_pair_suites __MODULE__ list_suites
   end

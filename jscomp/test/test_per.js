@@ -176,11 +176,11 @@ function $at(l1, l2) {
   }
 }
 
-var stdin = Caml_missing_polyfill.not_implemented("caml_ml_open_descriptor_in");
+var stdin = Caml_io.stdin;
 
-var stdout = Caml_missing_polyfill.not_implemented("caml_ml_open_descriptor_out");
+var stdout = Caml_io.stdout;
 
-var stderr = Caml_missing_polyfill.not_implemented("caml_ml_open_descriptor_out");
+var stderr = Caml_io.stderr;
 
 function open_out_gen(mode, perm, name) {
   return Caml_missing_polyfill.not_implemented("caml_ml_open_descriptor_out");

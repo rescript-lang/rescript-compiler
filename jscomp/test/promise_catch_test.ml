@@ -38,4 +38,4 @@ let () =
         (fun[@bs] xxx y -> Js.Int.equal xxx y) 2 (myHandler e))
   | _ -> assert false 
 
-;; Mt.from_pair_suites __FILE__ !suites  
+;; Mt.from_pair_suites __MODULE__ !suites  

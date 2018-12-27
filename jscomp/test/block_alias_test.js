@@ -44,7 +44,7 @@ var V = /* module */[/* List */List$1];
 
 var f = Caml_obj.caml_equal;
 
-eq("File \"block_alias_test.ml\", line 32, characters 6-13", List.length(/* :: */[
+eq("File \"test/block_alias_test.ml\", line 32, characters 6-13", List.length(/* :: */[
           1,
           /* :: */[
             2,
@@ -52,14 +52,14 @@ eq("File \"block_alias_test.ml\", line 32, characters 6-13", List.length(/* :: *
           ]
         ]), 2);
 
-b("File \"block_alias_test.ml\", line 33, characters 5-12", Caml_obj.caml_equal(v0, /* A */Block.__(1, [
+b("File \"test/block_alias_test.ml\", line 33, characters 5-12", Caml_obj.caml_equal(v0, /* A */Block.__(1, [
             0,
             1
           ])));
 
-eq("File \"block_alias_test.ml\", line 34, characters 6-13", v0, v1);
+eq("File \"test/block_alias_test.ml\", line 34, characters 6-13", v0, v1);
 
-Mt.from_pair_suites("block_alias_test.ml", suites[0]);
+Mt.from_pair_suites("Block_alias_test", suites[0]);
 
 var h = List.length;
 

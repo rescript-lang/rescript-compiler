@@ -24,7 +24,7 @@ function eq(loc, x, y) {
   return /* () */0;
 }
 
-eq("File \"ffi_array_test.ml\", line 12, characters 5-12", /* array */[
+eq("File \"test/ffi_array_test.ml\", line 12, characters 5-12", /* array */[
         1,
         2,
         3,
@@ -38,7 +38,7 @@ eq("File \"ffi_array_test.ml\", line 12, characters 5-12", /* array */[
       5
     ]);
 
-Mt.from_pair_suites("ffi_array_test.ml", suites[0]);
+Mt.from_pair_suites("Ffi_array_test", suites[0]);
 
 exports.suites = suites;
 exports.test_id = test_id;

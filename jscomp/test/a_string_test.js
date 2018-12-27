@@ -110,7 +110,7 @@ var suites = /* :: */[
   suites_001
 ];
 
-Mt.from_pair_suites("a_string_test.ml", suites);
+Mt.from_pair_suites("A_string_test", suites);
 
 var split = Ext_string_test.split;
 

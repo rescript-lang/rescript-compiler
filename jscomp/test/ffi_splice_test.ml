@@ -56,4 +56,4 @@ let u = sum v ()
 
 let () = eq __LOC__ u 10
 
-;; Mt.from_pair_suites __FILE__ !suites
+;; Mt.from_pair_suites __MODULE__ !suites

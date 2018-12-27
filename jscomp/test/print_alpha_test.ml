@@ -11,6 +11,6 @@ let f h () =
   Js.log u ; 
   fun  x y -> h  x y
 
-;; Mt.from_pair_suites __FILE__ Mt.[
+;; Mt.from_pair_suites __MODULE__ Mt.[
     __LOC__, (fun _ -> Eq(f (+) () 1 2, 3 ))
 ]

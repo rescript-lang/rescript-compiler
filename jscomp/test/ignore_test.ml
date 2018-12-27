@@ -16,4 +16,4 @@ let () =
   eq __LOC__  (f 3 ) ()
 
 
-let () = Mt.from_pair_suites __FILE__ !suites
+let () = Mt.from_pair_suites __MODULE__ !suites

@@ -49,13 +49,13 @@ if (match$2 !== undefined) {
         match$2.id,
         match$2.paths
       ]);
-  eq("File \"fs_test.ml\", line 45, characters 7-14", /* tuple */[
+  eq("File \"test/fs_test.ml\", line 45, characters 7-14", /* tuple */[
         pathobj.name,
         "test"
       ]);
 }
 
-Mt.from_pair_suites("fs_test.ml", suites[0]);
+Mt.from_pair_suites("Fs_test", suites[0]);
 
 exports.suites = suites;
 exports.test_id = test_id;

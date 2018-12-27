@@ -28,4 +28,4 @@ let v = Functor_def.return ()
 
 ;; eq __LOC__ v 2 
 
-;; Mt.from_pair_suites __FILE__ !suites
+;; Mt.from_pair_suites __MODULE__ !suites

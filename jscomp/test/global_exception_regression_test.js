@@ -38,7 +38,7 @@ var suites = /* :: */[
   suites_001
 ];
 
-Mt.from_pair_suites("global_exception_regression_test.ml", suites);
+Mt.from_pair_suites("Global_exception_regression_test", suites);
 
 exports.v = v;
 exports.u = u;

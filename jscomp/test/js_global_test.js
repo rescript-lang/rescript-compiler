@@ -77,7 +77,7 @@ var suites = /* :: */[
   suites_001
 ];
 
-Mt.from_pair_suites("js_global_test.ml", suites);
+Mt.from_pair_suites("Js_global_test", suites);
 
 exports.suites = suites;
 /*  Not a pure module */

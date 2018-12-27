@@ -38,4 +38,4 @@ let eq f a b = Mt_global.collect_eq test_id suites f a b
 
 let () = eq __LOC__ !count 1 
 
-let () = Mt.from_pair_suites __FILE__ !suites
+let () = Mt.from_pair_suites __MODULE__ !suites

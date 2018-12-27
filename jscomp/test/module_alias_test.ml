@@ -28,4 +28,4 @@ let a =
   L.length [1;2;3]
 
 ;; eq __LOC__ a 3
-;; Mt.from_pair_suites __FILE__ !suites  
+;; Mt.from_pair_suites __MODULE__ !suites  

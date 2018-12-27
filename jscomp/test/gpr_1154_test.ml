@@ -25,4 +25,4 @@ let a = g2 (* 1L *) Int64.one
 
 
 let () = eq __LOC__ !v 1 
-let () = Mt.from_pair_suites __FILE__ !suites
+let () = Mt.from_pair_suites __MODULE__ !suites

@@ -22,4 +22,4 @@ let () =
     eq __LOC__ Int64.min_int (id Int64.min_int)
 
     
-let () = Mt.from_pair_suites __FILE__ !suites;;  
+let () = Mt.from_pair_suites __MODULE__ !suites;;  

@@ -40,7 +40,7 @@ external ( @@ ) : ('a -> 'b) -> 'a -> 'b = "%apply"
 (* Debugging *)
 
 external __LOC__ : string = "%loc_LOC"
-external __FILE__ : string = "%loc_FILE"
+external __MODULE__ : string = "%loc_FILE"
 external __LINE__ : int = "%loc_LINE"
 external __MODULE__ : string = "%loc_MODULE"
 external __POS__ : string * int * int * int = "%loc_POS"

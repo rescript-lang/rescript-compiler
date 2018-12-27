@@ -56,4 +56,4 @@ let () =
   eqx __LOC__ (N.size v) 98_000;
   b __LOC__ (A.every (I.range 2_001 100_000) (fun x -> N.has v x ))
 
-;; Mt.from_pair_suites __FILE__ !suites
+;; Mt.from_pair_suites __MODULE__ !suites

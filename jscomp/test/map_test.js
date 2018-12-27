@@ -488,6 +488,6 @@ var int_map_suites = /* :: */[
   int_map_suites_001
 ];
 
-Mt.from_pair_suites("map_test.ml", int_map_suites);
+Mt.from_pair_suites("Map_test", int_map_suites);
 
 /*  Not a pure module */

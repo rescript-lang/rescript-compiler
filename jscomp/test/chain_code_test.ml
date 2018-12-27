@@ -27,4 +27,4 @@ let f4 h x y =
 let () = 
   eq __LOC__ 32  [%bs.obj f2 { x = {y = {z = 32}}} ]
 
-let () = Mt.from_pair_suites __FILE__ !suites
+let () = Mt.from_pair_suites __MODULE__ !suites

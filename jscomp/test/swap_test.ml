@@ -111,7 +111,7 @@ let f  s (* : 'a . ('a -> 'b, Format.formatter, unit, string) format4 * ('a * 'b
   Array.mapi (fun i (a,  b) -> f "%s %i" s i, fun _ -> Mt.Eq (f x (swap a), b) ) ls
   |> Array.to_list
 
-;; Mt.from_pair_suites __FILE__ 
+;; Mt.from_pair_suites __MODULE__ 
   (suites_16 @ suites_32  @ suites_64 
    @ f "d16" d16 
    @ f "d32" d32 

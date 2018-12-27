@@ -1712,7 +1712,7 @@ function from_to_string(xs) {
               }), $$Array.to_list(xs));
 }
 
-Mt.from_pair_suites("int64_mul_div_test.ml", Pervasives.$at(from_pairs("random", pairs), Pervasives.$at(from_pairs("small", small_pairs), Pervasives.$at(List.mapi((function (i, param) {
+Mt.from_pair_suites("Int64_mul_div_test", Pervasives.$at(from_pairs("random", pairs), Pervasives.$at(from_pairs("small", small_pairs), Pervasives.$at(List.mapi((function (i, param) {
                         var f = param[1];
                         var i64 = param[0];
                         return /* tuple */[
@@ -1805,7 +1805,7 @@ Mt.from_pair_suites("int64_mul_div_test.ml", Pervasives.$at(from_pairs("random",
                                     ],
                                     /* :: */[
                                       /* tuple */[
-                                        "File \"int64_mul_div_test.ml\", line 214, characters 5-12",
+                                        "File \"test/int64_mul_div_test.ml\", line 214, characters 5-12",
                                         (function (param) {
                                             return /* Eq */Block.__(0, [
                                                       Caml_int64.to_float(Int64.max_int),

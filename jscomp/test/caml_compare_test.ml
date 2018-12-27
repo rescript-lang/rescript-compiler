@@ -114,4 +114,4 @@ let eq loc x y = Mt.eq_suites ~test_id ~suites loc x y
 ;; eq __LOC__ false (None > Some 1)
 ;; eq __LOC__ false (None > Some [|1;30|])
 ;; eq __LOC__ false (Some [|1;30|] < None)
-let () = Mt.from_pair_suites __FILE__ !suites
+let () = Mt.from_pair_suites __MODULE__ !suites

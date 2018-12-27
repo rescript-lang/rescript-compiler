@@ -33,4 +33,4 @@ type t0 =
 ;; eq __LOC__ (u {js|我|js}) (Some `c)
 ;; eq __LOC__ (u "xx") None
 
-let () = Mt.from_pair_suites __FILE__ !suites
+let () = Mt.from_pair_suites __MODULE__ !suites

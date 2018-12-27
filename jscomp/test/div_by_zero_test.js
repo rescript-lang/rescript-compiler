@@ -35,7 +35,7 @@ function add(suite) {
 }
 
 add(/* tuple */[
-      "File \"div_by_zero_test.ml\", line 14, characters 7-14",
+      "File \"test/div_by_zero_test.ml\", line 14, characters 7-14",
       (function (param) {
           return /* ThrowAny */Block.__(7, [(function (param) {
                         Caml_int32.div(3, 0);
@@ -45,7 +45,7 @@ add(/* tuple */[
     ]);
 
 add(/* tuple */[
-      "File \"div_by_zero_test.ml\", line 15, characters 7-14",
+      "File \"test/div_by_zero_test.ml\", line 15, characters 7-14",
       (function (param) {
           return /* ThrowAny */Block.__(7, [(function (param) {
                         Caml_int32.mod_(3, 0);
@@ -55,7 +55,7 @@ add(/* tuple */[
     ]);
 
 add(/* tuple */[
-      "File \"div_by_zero_test.ml\", line 16, characters 7-14",
+      "File \"test/div_by_zero_test.ml\", line 16, characters 7-14",
       (function (param) {
           return /* ThrowAny */Block.__(7, [(function (param) {
                         Caml_int32.div(3, 0);
@@ -65,7 +65,7 @@ add(/* tuple */[
     ]);
 
 add(/* tuple */[
-      "File \"div_by_zero_test.ml\", line 17, characters 7-14",
+      "File \"test/div_by_zero_test.ml\", line 17, characters 7-14",
       (function (param) {
           return /* ThrowAny */Block.__(7, [(function (param) {
                         Caml_int32.mod_(3, 0);
@@ -75,7 +75,7 @@ add(/* tuple */[
     ]);
 
 add(/* tuple */[
-      "File \"div_by_zero_test.ml\", line 18, characters 7-14",
+      "File \"test/div_by_zero_test.ml\", line 18, characters 7-14",
       (function (param) {
           return /* ThrowAny */Block.__(7, [(function (param) {
                         Caml_int64.div(/* int64 */[
@@ -91,7 +91,7 @@ add(/* tuple */[
     ]);
 
 add(/* tuple */[
-      "File \"div_by_zero_test.ml\", line 19, characters 7-14",
+      "File \"test/div_by_zero_test.ml\", line 19, characters 7-14",
       (function (param) {
           return /* ThrowAny */Block.__(7, [(function (param) {
                         Caml_int64.mod_(/* int64 */[
@@ -110,7 +110,7 @@ function div(x, y) {
   return Caml_int32.div(x, y) + 3 | 0;
 }
 
-Mt.from_pair_suites("div_by_zero_test.ml", suites[0]);
+Mt.from_pair_suites("Div_by_zero_test", suites[0]);
 
 exports.suites = suites;
 exports.test_id = test_id;

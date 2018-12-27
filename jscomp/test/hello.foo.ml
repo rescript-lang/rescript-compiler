@@ -1,2 +1,2 @@
-Js.log __FILE__
+Js.log __MODULE__
   

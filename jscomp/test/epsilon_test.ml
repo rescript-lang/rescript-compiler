@@ -6,4 +6,4 @@ let suites = Mt.[
     "raw_epsilon", (fun _ -> Eq(2.220446049250313e-16,v ))
   ]
 
-;; Mt.from_pair_suites __FILE__ suites
+;; Mt.from_pair_suites __MODULE__ suites

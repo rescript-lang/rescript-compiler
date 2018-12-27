@@ -18,5 +18,5 @@ let () =
   eq __LOC__ (J.get d0 "foo") (Some None)
 
 let () =   
-  Mt.from_pair_suites __FILE__ !suites
+  Mt.from_pair_suites __MODULE__ !suites
 

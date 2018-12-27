@@ -141,15 +141,15 @@ var c = Curry._2(g(0), 3, 4);
 
 var d = Curry._2(g(0), 3, 5);
 
-eq("File \"earger_curry_test.ml\", line 118, characters 7-14", a, 10);
+eq("File \"test/earger_curry_test.ml\", line 118, characters 7-14", a, 10);
 
-eq("File \"earger_curry_test.ml\", line 119, characters 7-14", b, 11);
+eq("File \"test/earger_curry_test.ml\", line 119, characters 7-14", b, 11);
 
-eq("File \"earger_curry_test.ml\", line 120, characters 7-14", c, 10);
+eq("File \"test/earger_curry_test.ml\", line 120, characters 7-14", c, 10);
 
-eq("File \"earger_curry_test.ml\", line 121, characters 7-14", d, 11);
+eq("File \"test/earger_curry_test.ml\", line 121, characters 7-14", d, 11);
 
-eq("File \"earger_curry_test.ml\", line 122, characters 7-14", all_v[0], /* :: */[
+eq("File \"test/earger_curry_test.ml\", line 122, characters 7-14", all_v[0], /* :: */[
       8,
       /* :: */[
         8,
@@ -169,7 +169,7 @@ eq("File \"earger_curry_test.ml\", line 122, characters 7-14", all_v[0], /* :: *
       ]
     ]);
 
-Mt.from_pair_suites("earger_curry_test.ml", suites[0]);
+Mt.from_pair_suites("Earger_curry_test", suites[0]);
 
 exports.map = map;
 exports.init = init;

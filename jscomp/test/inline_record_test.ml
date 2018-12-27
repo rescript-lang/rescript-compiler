@@ -85,7 +85,7 @@ let ff0 (x : exn) =
 done 
 
 ;; eq __LOC__ (match v6 with A4 u -> u.x  | _ -> assert false) 11 
-;; Mt.from_pair_suites __FILE__ !suites
+;; Mt.from_pair_suites __MODULE__ !suites
 
 let ff1 (x : t1) : t1 =  
   match x with 

@@ -26,4 +26,4 @@ let is_inifite (x : a) =
 ;; eq __LOC__ true (is_inifite a)
 
 
-;; Mt.from_pair_suites __FILE__ !suites
+;; Mt.from_pair_suites __MODULE__ !suites

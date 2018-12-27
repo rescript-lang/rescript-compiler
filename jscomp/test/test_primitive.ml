@@ -24,7 +24,7 @@ var Math=require("Math");
 
 (* raise Not_found;; *) (* Test alone next time*)
 let a0 = __LOC__
-let a1 = __FILE__
+let a1 = __MODULE__
 let a2 = __LINE__
 let a3 = __MODULE__
 let a4 = __LOC_OF__

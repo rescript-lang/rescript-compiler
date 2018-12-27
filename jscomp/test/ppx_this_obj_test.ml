@@ -59,4 +59,4 @@ let () =
   eq __LOC__ (11., v##hi 3. 2.);
   eq __LOC__ (11., v2##hi 3. 2.)  
 
-let () = Mt.from_pair_suites __FILE__ !suites
+let () = Mt.from_pair_suites __MODULE__ !suites

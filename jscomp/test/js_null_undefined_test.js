@@ -246,7 +246,7 @@ var suites_001 = /* :: */[
                                           ],
                                           /* :: */[
                                             /* tuple */[
-                                              "File \"js_null_undefined_test.ml\", line 42, characters 2-9",
+                                              "File \"test/js_null_undefined_test.ml\", line 42, characters 2-9",
                                               (function (param) {
                                                   return /* Ok */Block.__(4, [true]);
                                                 })
@@ -280,7 +280,7 @@ var suites = /* :: */[
   suites_001
 ];
 
-Mt.from_pair_suites("js_null_undefined_test.ml", suites);
+Mt.from_pair_suites("Js_null_undefined_test", suites);
 
 exports.suites = suites;
 /*  Not a pure module */

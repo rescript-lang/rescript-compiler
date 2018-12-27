@@ -155,4 +155,4 @@ let () =
   b __LOC__ (Q.isEmpty (Q.fromArray [||]));
   b __LOC__ ( Q.isEmpty (Q.map ( (Q.fromArray [||])) (fun x -> x + 1)))
 
-;; Mt.from_pair_suites __FILE__ !suites
+;; Mt.from_pair_suites __MODULE__ !suites

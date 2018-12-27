@@ -389,4 +389,4 @@ let () =
   eq __LOC__ 
     (Js.Json.decodeNull (Js.Json.number 1.23)) None
 
-let () = Mt.from_pair_suites __FILE__ !suites
+let () = Mt.from_pair_suites __MODULE__ !suites

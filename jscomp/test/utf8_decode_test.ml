@@ -110,7 +110,7 @@ let () =
   
 
 let () = 
-  Mt.from_pair_suites __FILE__ !suites
+  Mt.from_pair_suites __MODULE__ !suites
 (**
 uutf:
 let test vv = 

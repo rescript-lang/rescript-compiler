@@ -149,4 +149,4 @@ let all_true xs = Belt.List.every xs (fun x -> x)
     neqx (Some (Some (Some None))) (Some (Some None))
   ]
   
-;; Mt.from_pair_suites __FILE__ !suites
+;; Mt.from_pair_suites __MODULE__ !suites

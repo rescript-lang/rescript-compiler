@@ -34,4 +34,4 @@ let () =
   add (__LOC__, (fun _ -> Mt.ThrowAny (fun _ -> ignore (Int3.u 3))))
 
 
-let () = Mt.from_pair_suites __FILE__ !suites
+let () = Mt.from_pair_suites __MODULE__ !suites

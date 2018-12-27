@@ -41,7 +41,7 @@ let abc_u = fun [@bs] x y z -> abc x y z
 {[ var absc_u = abc ]}
 *)
 let () = g () [@bs]
-;; Mt.from_pair_suites __FILE__ Mt.[
+;; Mt.from_pair_suites __MODULE__ Mt.[
     __LOC__, (fun _ -> Eq(v, [|0; 1;  4 |] ));
     __LOC__, (fun _ -> Eq(vv, [|1;3;5|]));
     __LOC__, (fun _ -> Eq(hh, [|1;2;3|]));

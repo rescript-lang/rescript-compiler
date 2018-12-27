@@ -321,7 +321,7 @@ var suites = /* :: */[
   suites_001
 ];
 
-Mt.from_pair_suites("obj_test.ml", suites);
+Mt.from_pair_suites("Obj_test", suites);
 
 exports.vv = vv;
 exports.v = v;

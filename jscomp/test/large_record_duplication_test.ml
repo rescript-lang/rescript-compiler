@@ -262,4 +262,4 @@ let get_x0 (x : exn) =
 ;; eq __LOC__ (get_x0 Not_found) None
 #end
 
-;; Mt.from_pair_suites __FILE__ !suites
+;; Mt.from_pair_suites __MODULE__ !suites

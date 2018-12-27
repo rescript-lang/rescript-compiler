@@ -17,7 +17,7 @@ function f0(x) {
   return newrecord;
 }
 
-Mt.from_pair_suites("large_record_duplication_test.ml", suites[0]);
+Mt.from_pair_suites("Large_record_duplication_test", suites[0]);
 
 var v0 = /* record */[
   /* x0 */9,

@@ -82,7 +82,7 @@ var suites = /* :: */[
   suites_001
 ];
 
-Mt.from_pair_suites("extensible_variant_test.ml", suites);
+Mt.from_pair_suites("Extensible_variant_test", suites);
 
 exports.Str = Str;
 exports.N = N;

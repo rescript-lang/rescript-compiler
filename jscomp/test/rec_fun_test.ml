@@ -26,4 +26,4 @@ and y = 2::x
 
 ;; eq __LOC__ !called 2
 
-;; Mt.from_pair_suites __FILE__ !suites
+;; Mt.from_pair_suites __MODULE__ !suites

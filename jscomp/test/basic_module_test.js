@@ -25,8 +25,8 @@ function eq(f, a, b) {
   return Mt_global.collect_eq(test_id, suites, f, a, b);
 }
 
-eq("File \"basic_module_test.ml\", line 39, characters 12-19", count[0], 1);
+eq("File \"test/basic_module_test.ml\", line 39, characters 12-19", count[0], 1);
 
-Mt.from_pair_suites("basic_module_test.ml", suites[0]);
+Mt.from_pair_suites("Basic_module_test", suites[0]);
 
 /*  Not a pure module */

@@ -43,4 +43,4 @@ let suites = Mt.[
     ThrowAny(fun () -> ignore @@ toStringWithRadix 0 ~radix:(-1))));
 ]
 
-;; Mt.from_pair_suites __FILE__ suites
+;; Mt.from_pair_suites __MODULE__ suites

@@ -162,7 +162,7 @@ function node_relative_path(node_modules_shorten, file1, dep_file) {
       while(true) {
         var i = _i;
         if (i >= len) {
-          return Curry._1(Ext_pervasives_test.failwithf("File \"ext_filename_test.ml\", line 162, characters 43-50", /* Format */[
+          return Curry._1(Ext_pervasives_test.failwithf("File \"test/ext_filename_test.ml\", line 162, characters 43-50", /* Format */[
                           /* String_literal */Block.__(11, [
                               "invalid path: ",
                               /* String */Block.__(2, [
@@ -212,7 +212,7 @@ function find_root_filename(_cwd, filename) {
         _cwd = cwd$prime;
         continue ;
       } else {
-        return Curry._2(Ext_pervasives_test.failwithf("File \"ext_filename_test.ml\", line 205, characters 13-20", /* Format */[
+        return Curry._2(Ext_pervasives_test.failwithf("File \"test/ext_filename_test.ml\", line 205, characters 13-20", /* Format */[
                         /* String */Block.__(2, [
                             /* No_padding */0,
                             /* String_literal */Block.__(11, [

@@ -9,9 +9,9 @@ function f(h, param) {
   return Curry.__2(h);
 }
 
-Mt.from_pair_suites("print_alpha_test.ml", /* :: */[
+Mt.from_pair_suites("Print_alpha_test", /* :: */[
       /* tuple */[
-        "File \"print_alpha_test.ml\", line 15, characters 4-11",
+        "File \"test/print_alpha_test.ml\", line 15, characters 4-11",
         (function (param) {
             return /* Eq */Block.__(0, [
                       f((function (prim, prim$1) {

@@ -294,7 +294,7 @@ let m = List.fold_left (fun acc (k,v) -> add k v  acc ) empty [(10,'a'); (3,'b')
 
 external log : 'a -> unit = "" [@@bs.val "console.log"]
 
-;; Mt.from_pair_suites __FILE__
+;; Mt.from_pair_suites __MODULE__
   [ "find", (fun _ ->
     Mt.Eq  (find 10 m , 'a'))
  ]

@@ -709,4 +709,4 @@ let suites = Mt.[
       Eq(3.03865e-319, DataView.getFloat64 view 0));
 ]
 
-;; Mt.from_pair_suites __FILE__ suites
+;; Mt.from_pair_suites __MODULE__ suites

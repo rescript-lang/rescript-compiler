@@ -26,6 +26,6 @@ let () =
     eq __LOC__ "Exception_repr_test.Hello" (Printexc.to_string Hello);
     eq __LOC__ "A" (Printexc.to_string @@ AAA 3)
 
-;; Mt.from_pair_suites __FILE__ !suites
+;; Mt.from_pair_suites __MODULE__ !suites
 
 

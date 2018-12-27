@@ -38,4 +38,4 @@ let f33 x =
 ;; eq __LOC__ (f (fun _ -> 0)) 'x'
 ;; eq __LOC__ (f (fun _ -> -1)) 'x'
 
-;; Mt.from_pair_suites __FILE__ !suites    
+;; Mt.from_pair_suites __MODULE__ !suites    

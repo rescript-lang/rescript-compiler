@@ -17,4 +17,4 @@ let i =
     (fun q -> fun y -> o)) o) 0 in 0)
 in  eq __LOC__ i 0 
 
-;; Mt.from_pair_suites __FILE__ !suites
+;; Mt.from_pair_suites __MODULE__ !suites

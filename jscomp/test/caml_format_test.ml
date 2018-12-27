@@ -247,7 +247,7 @@ let of_string_data =
 (* module Mt = Mock_mt *)
 
 let () =
-  Mt.from_pair_suites __FILE__ @@
+  Mt.from_pair_suites __MODULE__ @@
   suites @
   formatter_suites @
   from_lambda_pairs lambda_suites @

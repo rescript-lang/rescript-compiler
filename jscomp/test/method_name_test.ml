@@ -38,4 +38,4 @@ let hg x =
 
 let () = eq __LOC__ 35 (hg  h)
 
-let () = Mt.from_pair_suites __FILE__ !suites
+let () = Mt.from_pair_suites __MODULE__ !suites

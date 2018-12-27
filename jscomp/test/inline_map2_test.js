@@ -2043,7 +2043,7 @@ var s = List.fold_left((function (acc, param) {
       ]
     ]);
 
-Mt.from_pair_suites("inline_map2_test.ml", /* :: */[
+Mt.from_pair_suites("Inline_map2_test", /* :: */[
       /* tuple */[
         "assertion1",
         (function (param) {

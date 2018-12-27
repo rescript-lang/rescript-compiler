@@ -2,7 +2,7 @@
 let f x = Digest.to_hex @@ Digest.string x 
 
 
-;; Mt.from_pair_suites __FILE__ @@ Mt.[
+;; Mt.from_pair_suites __MODULE__ @@ Mt.[
     __LOC__, (fun _ -> Eq(f "value", "2063c1608d6e0baf80249c42e2be5804"));
     __LOC__ , (fun _ -> Eq(f  "The quick brown fox jumps over the lazy dog", 
                            "9e107d9d372bb6826bd81d3542a419d6"));

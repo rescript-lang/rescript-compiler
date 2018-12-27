@@ -27,7 +27,7 @@ let rec fib = function
   | 0l | 1l -> 1l
   | n -> Int32.add (fib (Int32.sub n  1l))  (fib  (Int32.sub n  2l))
 
-;; Mt.from_pair_suites __FILE__ [
+;; Mt.from_pair_suites __MODULE__ [
   "plus_overflow", (fun _ -> Eq(true, Int32.(add max_int 1l) = Int32.min_int) ) ;
   "minus_overflow", (fun _ -> Eq(true,  Int32.(sub min_int one ) = Int32.max_int));
   "flow_again", (fun _ ->  Eq ( 2147483646l, Int32.(add (add max_int max_int) min_int) ));

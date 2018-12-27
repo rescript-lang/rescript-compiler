@@ -19,4 +19,4 @@ let suites = Mt.[
     Eq([1;2;3], Array.to_list [|1;2;3|]))
 ]
 
-;; Mt.from_pair_suites __FILE__ suites
+;; Mt.from_pair_suites __MODULE__ suites

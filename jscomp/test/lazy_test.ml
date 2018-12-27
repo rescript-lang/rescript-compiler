@@ -42,7 +42,7 @@ function lazy y -> y
 let l_from_fun = Lazy.from_fun (fun _ -> 3 )
 let forward_test = (lazy  (let u = ref 3 in incr u; !u))
 (* module Mt = Mock_mt         *)
-;; Mt.from_pair_suites __FILE__ Mt.[
+;; Mt.from_pair_suites __MODULE__ Mt.[
 "simple", (fun _ ->
   Eq ((lazy_test ()) ,(3, 32))
           );

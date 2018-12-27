@@ -51,4 +51,4 @@ let fff4 x =
 ;; eq __LOC__ (fff3 [||], 1 )
 ;; eq __LOC__ (fff4 [||], 2)
 ;; eq __LOC__ (fff4 [|1|], 1)
-let () = Mt.from_pair_suites __FILE__ !suites
+let () = Mt.from_pair_suites __MODULE__ !suites

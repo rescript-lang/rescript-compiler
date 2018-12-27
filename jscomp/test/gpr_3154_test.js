@@ -23,18 +23,18 @@ d["foo"] = undefined;
 var match = Js_dict.get(d, "foo");
 
 if (match !== undefined && Caml_option.valFromOption(match) === undefined) {
-  b("File \"gpr_3154_test.ml\", line 12, characters 19-26", true);
+  b("File \"test/gpr_3154_test.ml\", line 12, characters 19-26", true);
 } else {
-  b("File \"gpr_3154_test.ml\", line 13, characters 11-18", false);
+  b("File \"test/gpr_3154_test.ml\", line 13, characters 11-18", false);
 }
 
 var d0 = { };
 
 d0["foo"] = undefined;
 
-eq("File \"gpr_3154_test.ml\", line 18, characters 5-12", Js_dict.get(d0, "foo"), Caml_option.some(undefined));
+eq("File \"test/gpr_3154_test.ml\", line 18, characters 5-12", Js_dict.get(d0, "foo"), Caml_option.some(undefined));
 
-Mt.from_pair_suites("gpr_3154_test.ml", suites[0]);
+Mt.from_pair_suites("Gpr_3154_test", suites[0]);
 
 var J = 0;
 

@@ -27,4 +27,4 @@ let suites =
         v2.(1)<- 4  in
       Eq([|3;4;2;3;4;5|], v))  ]
 
-;; Mt.from_pair_suites __FILE__ suites
+;; Mt.from_pair_suites __MODULE__ suites

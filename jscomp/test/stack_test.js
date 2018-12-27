@@ -48,7 +48,7 @@ var suites = /* :: */[
   /* [] */0
 ];
 
-Mt.from_pair_suites("stack_test.ml", suites);
+Mt.from_pair_suites("Stack_test", suites);
 
 exports.to_list = to_list;
 exports.v = v;

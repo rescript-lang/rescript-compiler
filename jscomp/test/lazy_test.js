@@ -56,7 +56,7 @@ function f(param) {
       throw [
             Caml_builtin_exceptions.match_failure,
             /* tuple */[
-              "lazy_test.ml",
+              "test/lazy_test.ml",
               11,
               8
             ]
@@ -134,7 +134,7 @@ var forward_test = Block.__(246, [(function (param) {
         return u;
       })]);
 
-Mt.from_pair_suites("lazy_test.ml", /* :: */[
+Mt.from_pair_suites("Lazy_test", /* :: */[
       /* tuple */[
         "simple",
         (function (param) {

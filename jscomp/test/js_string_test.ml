@@ -210,4 +210,4 @@ let suites = Mt.[
     );
     __LOC__ , (fun _ -> Ok (Js.String.includes "a" "ab"))
 ]
-;; Mt.from_pair_suites __FILE__ suites
+;; Mt.from_pair_suites __MODULE__ suites

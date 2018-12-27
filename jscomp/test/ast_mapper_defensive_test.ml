@@ -30,4 +30,4 @@ let () = throw __LOC__ (fun _ -> ignore @@ bFromJs (Obj.magic 2))
 let () = throw __LOC__ (fun _ -> ignore @@ cFromJs (Obj.magic 33))
 (* ;; Js.log2    *)
 
-;; Mt.from_pair_suites __FILE__ !suites
+;; Mt.from_pair_suites __MODULE__ !suites

@@ -9,4 +9,4 @@ let suites = Mt.[
   "not_found_not_equal_end_of_file", (fun _ -> Neq(u,s))
 ]
 
-;; Mt.from_pair_suites __FILE__ suites
+;; Mt.from_pair_suites __MODULE__ suites

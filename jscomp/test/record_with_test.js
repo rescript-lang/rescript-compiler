@@ -52,7 +52,7 @@ var suites = /* :: */[
   /* [] */0
 ];
 
-Mt.from_pair_suites("record_with_test.ml", suites);
+Mt.from_pair_suites("Record_with_test", suites);
 
 var uv = /* record */[
   /* syntax */undefined,

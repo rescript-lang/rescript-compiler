@@ -33,4 +33,4 @@ let a7 =  try (let _ = Int64.rem 0L 0L in 0) with _ -> 1
 
 
 
-;; Mt.from_pair_suites __FILE__ !suites
+;; Mt.from_pair_suites __MODULE__ !suites

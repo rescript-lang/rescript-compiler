@@ -194,4 +194,4 @@ let hhhh =
 
 let () = eq __LOC__ hhhh 305
 (* ;; Js.log hhhh (\* 305 *\) *)
-;; Mt.from_pair_suites __FILE__ !suites
+;; Mt.from_pair_suites __MODULE__ !suites

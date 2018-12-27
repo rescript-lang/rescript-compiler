@@ -21,4 +21,4 @@ let () =
   eq __LOC__ x (Some "boo")
 
 
-;; Mt.from_pair_suites __FILE__ !suites  
+;; Mt.from_pair_suites __MODULE__ !suites  

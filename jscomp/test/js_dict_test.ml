@@ -33,4 +33,4 @@ let suites = Mt.[
     Eq( [%obj { foo = "43"; bar = "86" }] |> Obj.magic,
         map (fun [@bs] i -> string_of_int i) (obj ())))
 ]
-;; Mt.from_pair_suites __FILE__ suites
+;; Mt.from_pair_suites __MODULE__ suites

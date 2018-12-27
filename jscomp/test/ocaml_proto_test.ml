@@ -6411,7 +6411,7 @@ let rec pp_t fmt (v:t) =
   in
   Pbrt.Pp.pp_brk pp_i fmt ()
 |};
-Mt.from_pair_suites __FILE__ !suites
+Mt.from_pair_suites __MODULE__ !suites
 
 
 end
