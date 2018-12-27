@@ -1017,9 +1017,22 @@ build ../lib/bsb.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa bsb/
 build ../lib/bsb_helper.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa  bsb/bsb.cmxa main/bsb_helper_main.cmx
     libs = ocamlcommon.cmxa unix.cmxa str.cmxa
 
+OCAML_SRC_UTILS=../vendor/ocaml/utils
+OCAML_SRC_PARSING=../vendor/ocaml/parsing
+OCAML_SRC_TYPING=../vendor/ocaml/typing
+OCAML_SRC_BYTECOMP=../vendor/ocaml/bytecomp
+OCAML_SRC_DRIVER=../vendor/ocaml/driver
+OCAML_SRC_TOOLS=../vendor/ocaml/tools    
 build ./bin/bspack.exe: link ./stubs/ext_basic_hash_stubs.c ./bin/bspack.mli ./bin/bspack.ml
     libs = unix.cmxa
     flags = -I ./bin -w -40-30
+rule bspack    
+    command = ./bin/bspack.exe $flags -bs-main $main -o $out
+
+build ../lib/whole_compiler.ml: bspack 
+    flags = -U BS_DEBUG -bs-MD -module-alias Config=Config_whole_compiler -bs-exclude-I config  -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I $OCAML_SRC_TYPING -I $OCAML_SRC_BYTECOMP -I $OCAML_SRC_DRIVER  -I stubs ${includes}
+    main = Js_main
+    depfile = ../lib/whole_compiler.d
 `
     
     /**
