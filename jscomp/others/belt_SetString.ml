@@ -1,6 +1,6 @@
-# 4 "set.cppo.ml"
+# 4 "others/set.cppo.ml"
 module I = Belt_internalSetString
-# 8 "set.cppo.ml"
+# 8 "others/set.cppo.ml"
 module N = Belt_internalAVLset
 module A = Belt_Array
 

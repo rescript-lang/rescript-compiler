@@ -1,7 +1,7 @@
-# 5 "mapm.cppo.ml"
+# 5 "others/mapm.cppo.ml"
 module I = Belt_internalMapString
 type key = string
-# 10 "mapm.cppo.ml"
+# 10 "others/mapm.cppo.ml"
 module N = Belt_internalAVLtree
 module A = Belt_Array 
 

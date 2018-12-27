@@ -1,4 +1,4 @@
-# 1 "mapm.cppo.mli"
+# 1 "others/mapm.cppo.mli"
 (* Copyright (C) 2017 Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -23,9 +23,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-# 28 "mapm.cppo.mli"
+# 28 "others/mapm.cppo.mli"
 type key = int
-# 32 "mapm.cppo.mli"
+# 32 "others/mapm.cppo.mli"
 type 'a t
 
 

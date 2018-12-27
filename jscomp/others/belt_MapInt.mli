@@ -1,6 +1,6 @@
-# 4 "map.cppo.mli"
+# 4 "others/map.cppo.mli"
 type key = int
-# 8 "map.cppo.mli"
+# 8 "others/map.cppo.mli"
 type 'value t
 (** The type of maps from type [key] to type ['value]. *)
 

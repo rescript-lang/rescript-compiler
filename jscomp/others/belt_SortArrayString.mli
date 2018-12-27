@@ -1,5 +1,5 @@
 
-# 2 "sort.cppo.mli"
+# 2 "others/sort.cppo.mli"
 (* Copyright (C) 2017 Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -29,10 +29,10 @@
     applies here, except the comparator is fixed and inlined
 *)
 
-# 34 "sort.cppo.mli"
+# 34 "others/sort.cppo.mli"
 type element = string
 
-# 39 "sort.cppo.mli"
+# 39 "others/sort.cppo.mli"
 val strictlySortedLength: element array -> int 
 (**
   The same as {!Belt_SortArray.strictlySortedLength } except the comparator is fixed

@@ -1,9 +1,9 @@
-# 5 "internal_set.cppo.ml"
+# 5 "others/internal_set.cppo.ml"
 type value = int
 module S = Belt_SortArrayInt
 
 
-# 12 "internal_set.cppo.ml"
+# 12 "others/internal_set.cppo.ml"
 module N = Belt_internalAVLset
 module A = Belt_Array 
 
