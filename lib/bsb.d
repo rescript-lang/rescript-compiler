@@ -21,8 +21,6 @@
 ../lib/bsb.ml : ./bsb/bsb_file_groups.ml
 ../lib/bsb.ml : ./bsb/bsb_log.ml
 ../lib/bsb.ml : ./bsb/bsb_log.mli
-../lib/bsb.ml : ./bsb/bsb_main.ml
-../lib/bsb.ml : ./bsb/bsb_main.mli
 ../lib/bsb.ml : ./bsb/bsb_merlin_gen.ml
 ../lib/bsb.ml : ./bsb/bsb_merlin_gen.mli
 ../lib/bsb.ml : ./bsb/bsb_namespace_map_gen.ml
@@ -123,4 +121,6 @@
 ../lib/bsb.ml : ./ext/string_vec.ml
 ../lib/bsb.ml : ./ext/string_vec.mli
 ../lib/bsb.ml : ./ext/vec_gen.ml
+../lib/bsb.ml : ./main/bsb_main.ml
+../lib/bsb.ml : ./main/bsb_main.mli
 ../lib/bsb.ml : ./stubs/bs_hash_stubs.ml

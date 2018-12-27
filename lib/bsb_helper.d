@@ -6,8 +6,6 @@
 ../lib/bsb_helper.ml : ./bsb/bsb_exception.mli
 ../lib/bsb_helper.ml : ./bsb/bsb_helper_depfile_gen.ml
 ../lib/bsb_helper.ml : ./bsb/bsb_helper_depfile_gen.mli
-../lib/bsb_helper.ml : ./bsb/bsb_helper_main.ml
-../lib/bsb_helper.ml : ./bsb/bsb_helper_main.mli
 ../lib/bsb_helper.ml : ./common/bs_version.ml
 ../lib/bsb_helper.ml : ./common/bs_version.mli
 ../lib/bsb_helper.ml : ./ext/ext_array.ml
@@ -40,3 +38,5 @@
 ../lib/bsb_helper.ml : ./ext/map_gen.ml
 ../lib/bsb_helper.ml : ./ext/string_map.ml
 ../lib/bsb_helper.ml : ./ext/string_map.mli
+../lib/bsb_helper.ml : ./main/bsb_helper_main.ml
+../lib/bsb_helper.ml : ./main/bsb_helper_main.mli

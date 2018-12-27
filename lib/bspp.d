@@ -11,7 +11,7 @@
 ../lib/bspp.ml : ../vendor/ocaml/utils/warnings.ml
 ../lib/bspp.ml : ../vendor/ocaml/utils/warnings.mli
 ../lib/bspp.ml : ./bspp/parser.ml
-../lib/bspp.ml : ./core/bspp_main.ml
-../lib/bspp.ml : ./core/bspp_main.mli
 ../lib/bspp.ml : ./core/config_whole_compiler.ml
 ../lib/bspp.ml : ./core/config_whole_compiler.mli
+../lib/bspp.ml : ./main/bspp_main.ml
+../lib/bspp.ml : ./main/bspp_main.mli
