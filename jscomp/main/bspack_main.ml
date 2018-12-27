@@ -493,15 +493,15 @@ let () =
                 ) L_string_set.empty  collection_modules in 
              Ext_io.write_file 
                output
-               (
+               (                 
                  L_string_set.fold
                    (fun collection_module acc  -> 
-                      acc ^ file ^ " : " ^ 
+                      acc ^ 
                       collection_module
-                      ^ "\n"
+                      ^ " "
                       (* ^ a ^ " : ; touch " ^ output ^ "\n" *)
                    ) sorted_queue
-                   Ext_string.empty 
+                   (file ^ " : " )
                    (* collection_modules *)
                )
        end
