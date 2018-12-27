@@ -75,7 +75,8 @@ type ('a,'b) t =
 (* only visit nodes that are currently in the domain *)
 (* https://en.wikipedia.org/wiki/Topological_sorting *)
 (* dfs   *)
-let sort_files_by_dependencies ~domain dependency_graph =
+let sort_files_by_dependencies ~(domain : String_set.t) (dependency_graph : String_set.t String_map.t) : 
+  string Queue.t =
   let next current =
     (String_map.find_exn  current dependency_graph) in    
   let worklist = ref domain in
@@ -90,6 +91,7 @@ let sort_files_by_dependencies ~domain dependency_graph =
           (fun node ->
              if  String_map.mem node  dependency_graph then
                visit (String_set.add current visiting) (current::path) node)
+          (*FIXME: those temp constructed variables could be shared *) 
         ;
         worklist := String_set.remove  current !worklist;
         Queue.push current result ;
