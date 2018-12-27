@@ -21,4 +21,4 @@ let suites = Mt.[
    "basename", (fun _ ->  Eq (basename "b/c/a.b", "a.b"))
   ]
 
-;; Mt.from_pair_suites __FILE__ suites
+;; Mt.from_pair_suites __MODULE__ suites

@@ -466,7 +466,7 @@ var suites = /* :: */[
   /* [] */0
 ];
 
-Mt.from_pair_suites("libarg_test.ml", suites);
+Mt.from_pair_suites("Libarg_test", suites);
 
 exports.current = current;
 exports.accum = accum;

@@ -6,7 +6,7 @@ export OCAMLPARAM='_,bin-annot=1,annot=1'
 export OCAMLRUNPARAM=b
 export BS_DEBUG=true
 
-
+# ninja
 echo "Checking"
 
 # make -r -j5 syntax.cmxa depends.cmxa bsb.cmxa

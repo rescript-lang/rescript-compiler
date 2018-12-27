@@ -13425,6 +13425,6 @@ let v =
     eq __LOC__ (0,2842) (v## range)
   | None -> assert false
 
-let () = Mt.from_pair_suites __FILE__ !suites
+let () = Mt.from_pair_suites __MODULE__ !suites
 
 end

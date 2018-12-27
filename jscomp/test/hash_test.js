@@ -68,30 +68,30 @@ function caml_hash(x) {
 
 var param = $$Array.map(caml_hash, test_strings);
 
-Mt_global.collect_eq(test_id, suites, "File \"hash_test.ml\", line 18, characters 5-12", param, test_strings_hash_results);
+Mt_global.collect_eq(test_id, suites, "File \"test/hash_test.ml\", line 18, characters 5-12", param, test_strings_hash_results);
 
 var param$1 = Hashtbl.hash(0) & 1073741823;
 
-Mt_global.collect_eq(test_id, suites, "File \"hash_test.ml\", line 24, characters 5-12", param$1, 129913994);
+Mt_global.collect_eq(test_id, suites, "File \"test/hash_test.ml\", line 24, characters 5-12", param$1, 129913994);
 
 var param$2 = Hashtbl.hash("x") & 1073741823;
 
-Mt_global.collect_eq(test_id, suites, "File \"hash_test.ml\", line 27, characters 5-12", param$2, 780510073);
+Mt_global.collect_eq(test_id, suites, "File \"test/hash_test.ml\", line 27, characters 5-12", param$2, 780510073);
 
 var param$3 = Hashtbl.hash("xy") & 1073741823;
 
-Mt_global.collect_eq(test_id, suites, "File \"hash_test.ml\", line 30, characters 5-12", param$3, 194127723);
+Mt_global.collect_eq(test_id, suites, "File \"test/hash_test.ml\", line 30, characters 5-12", param$3, 194127723);
 
 var param$4 = Hashtbl.hash(/* A */65) & 1073741823;
 
-Mt_global.collect_eq(test_id, suites, "File \"hash_test.ml\", line 33, characters 5-12", param$4, 381663642);
+Mt_global.collect_eq(test_id, suites, "File \"test/hash_test.ml\", line 33, characters 5-12", param$4, 381663642);
 
 var param$5 = Hashtbl.hash(/* `A */[
       65,
       3
     ]) & 1073741823;
 
-Mt_global.collect_eq(test_id, suites, "File \"hash_test.ml\", line 34, characters 5-12", param$5, 294279345);
+Mt_global.collect_eq(test_id, suites, "File \"test/hash_test.ml\", line 34, characters 5-12", param$5, 294279345);
 
 var param$6 = Hashtbl.hash(/* :: */[
       /* `A */[
@@ -113,7 +113,7 @@ var param$6 = Hashtbl.hash(/* :: */[
       ]
     ]) & 1073741823;
 
-Mt_global.collect_eq(test_id, suites, "File \"hash_test.ml\", line 35, characters 5-12", param$6, 1017654909);
+Mt_global.collect_eq(test_id, suites, "File \"test/hash_test.ml\", line 35, characters 5-12", param$6, 1017654909);
 
 var param$7 = Hashtbl.hash(/* :: */[
       /* tuple */[
@@ -141,7 +141,7 @@ var param$7 = Hashtbl.hash(/* :: */[
       ]
     ]) & 1073741823;
 
-Mt_global.collect_eq(test_id, suites, "File \"hash_test.ml\", line 36, characters 5-12", param$7, 81986873);
+Mt_global.collect_eq(test_id, suites, "File \"test/hash_test.ml\", line 36, characters 5-12", param$7, 81986873);
 
 var param$8 = Hashtbl.hash(/* :: */[
       /* tuple */[
@@ -164,9 +164,9 @@ var param$8 = Hashtbl.hash(/* :: */[
       /* [] */0
     ]) & 1073741823;
 
-Mt_global.collect_eq(test_id, suites, "File \"hash_test.ml\", line 39, characters 5-12", param$8, 100650590);
+Mt_global.collect_eq(test_id, suites, "File \"test/hash_test.ml\", line 39, characters 5-12", param$8, 100650590);
 
-Mt.from_pair_suites("hash_test.ml", suites[0]);
+Mt.from_pair_suites("Hash_test", suites[0]);
 
 exports.suites = suites;
 exports.test_id = test_id;

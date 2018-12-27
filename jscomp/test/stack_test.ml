@@ -20,5 +20,5 @@ let suites =
   ["push_test", (fun _ -> Mt.Eq ([1;4;3], v ()))]
 
 
-;; Mt.from_pair_suites __FILE__ suites
+;; Mt.from_pair_suites __MODULE__ suites
   

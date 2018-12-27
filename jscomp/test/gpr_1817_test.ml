@@ -17,4 +17,4 @@ let f () =
 let a0, a1, a2  = f()
 ;; Js.log2 a0 a1
 ;; eq __LOC__ a2  true
- ;; Mt.from_pair_suites __FILE__ !suites   
+ ;; Mt.from_pair_suites __MODULE__ !suites   

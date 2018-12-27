@@ -180,4 +180,4 @@ let () =
   id __LOC__ 0xff_ff_ff_ffL;
   id __LOC__ 0x1f_ff_ff_ffL
 
-;; Mt.from_pair_suites __FILE__ !suites
+;; Mt.from_pair_suites __MODULE__ !suites

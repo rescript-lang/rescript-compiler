@@ -43,7 +43,7 @@ var suites = /* :: */[
   suites_001
 ];
 
-Mt.from_pair_suites("of_string_test.ml", suites);
+Mt.from_pair_suites("Of_string_test", suites);
 
 exports.suites = suites;
 /*  Not a pure module */

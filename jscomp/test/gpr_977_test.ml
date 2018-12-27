@@ -32,4 +32,4 @@ let () =
   eq __LOC__  min_32_int u ;
   eq __LOC__ (Int32.min_int) (int32_f Int32.min_int);
   eq __LOC__ (nint32_f (-2147483648n)) (2147483648n)
-let () = Mt.from_pair_suites __FILE__ !suites
+let () = Mt.from_pair_suites __MODULE__ !suites

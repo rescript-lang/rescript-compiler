@@ -229,12 +229,8 @@ function checkPrebuilt() {
 }
 
 function buildLibs(){
-    cp.execFileSync(ninja_bin_output, ["-t", "clean"], { cwd: runtime_dir, stdio: [0, 1, 2] , shell: false})
-    cp.execFileSync(ninja_bin_output, { cwd: runtime_dir, stdio: [0, 1, 2] , shell: false})
-    cp.execFileSync(ninja_bin_output, ["-t", "clean"], { cwd: others_dir, stdio: [0, 1, 2], shell: false})
-    cp.execFileSync(ninja_bin_output, { cwd: others_dir, stdio: [0, 1, 2], shell: false })
-    cp.execFileSync(ninja_bin_output, ["-t", "clean"], { cwd: stdlib_dir, stdio: [0, 1, 2], shell: false })
-    cp.execFileSync(ninja_bin_output, { cwd: stdlib_dir, stdio: [0, 1, 2], shell : false })
+    cp.execFileSync(ninja_bin_output, [ "-f", "release.ninja", "-t", "clean"], { cwd: jscomp_dir, stdio: [0, 1, 2] , shell: false})
+    cp.execFileSync(ninja_bin_output, [ "-f", "release.ninja"], { cwd: jscomp_dir, stdio: [0, 1, 2] , shell: false})
     console.log('Build finsihed')
 }
 

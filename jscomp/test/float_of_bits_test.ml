@@ -18,4 +18,4 @@ let suites = Mt.[
     "two", (fun _ -> Eq (Int64.float_of_bits one_float, 1.0))
 ] @ from_pairs int32_pairs
 
-;; Mt.from_pair_suites __FILE__ suites
+;; Mt.from_pair_suites __MODULE__ suites

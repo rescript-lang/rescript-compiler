@@ -38,7 +38,7 @@ let () =
   eq __LOC__ (f (try Js.Exn.raiseError "x" with e -> e)) None
 
 let () = 
-  Mt.from_pair_suites __FILE__ !suites
+  Mt.from_pair_suites __MODULE__ !suites
 (* type v = A  *)
 (* let f = function [@bs.open] *)
 (*   | A -> 1  *)

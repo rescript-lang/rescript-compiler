@@ -22,4 +22,4 @@ let hh = (make ~s:"" ~b:false ~i:0 ())
 ;; eq __LOC__ (hh |. bGet) (Some false)
 ;; eq __LOC__ (hh |. iGet) (Some 0)
 ;; Js.log hh
-;; Mt.from_pair_suites __FILE__ !suites
+;; Mt.from_pair_suites __MODULE__ !suites

@@ -1013,7 +1013,7 @@ var suites = /* :: */[
   suites_001
 ];
 
-Mt.from_pair_suites("js_date_test.ml", suites);
+Mt.from_pair_suites("Js_date_test", suites);
 
 exports.date = date;
 exports.suites = suites;

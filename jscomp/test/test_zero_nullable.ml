@@ -235,4 +235,4 @@ let () =
     eq __LOC__ (Test_def.f1 ([%bs.raw "undefined"])) 3 ;
   end
 
-let () = Mt.from_pair_suites __FILE__ !suites
+let () = Mt.from_pair_suites __MODULE__ !suites

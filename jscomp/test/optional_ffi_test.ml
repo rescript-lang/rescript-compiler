@@ -57,4 +57,4 @@ let () =
   (* Js.log pair ; *)
   eq __LOC__ pair
 
-;; Mt.from_pair_suites __FILE__ !suites
+;; Mt.from_pair_suites __MODULE__ !suites

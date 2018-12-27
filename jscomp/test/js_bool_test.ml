@@ -58,4 +58,4 @@ let consts =
   )
 
 let bool_array = [|true; false|] 
-;; Mt.from_pair_suites __FILE__ suites
+;; Mt.from_pair_suites __MODULE__ suites

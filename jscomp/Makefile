@@ -18,7 +18,7 @@ OCAML_SRC_TOOLS=../vendor/ocaml/tools
 
 print-%  : ; @echo $* = $($*)
 
-INCLUDES= -I +compiler-libs -I stubs -I ext -I common -I syntax -I depends -I core -I bsb -I ounit -I ounit_tests -I super_errors -I outcome_printer
+INCLUDES= -I +compiler-libs -I stubs -I ext -I common -I syntax -I depends -I core -I bsb -I ounit -I ounit_tests -I super_errors -I outcome_printer -I main
 
 .mli.cmi:
 	$(NATIVE) $(INCLUDES) $(COMPFLAGS) -c $<
@@ -342,8 +342,8 @@ CORE_SRCS= js_runtime_modules \
 	js_implementation ocaml_batch_compile
 CORE_CMXS=$(addprefix core/, $(addsuffix .cmx, $(CORE_SRCS)))
 
-OTHER_CORE_SRCS= bsppx_main bspack_main jsoo_main  bspp_main js_cmi_datasets \
-		 js_main cmjdump_main astdump_main
+OTHER_CORE_SRCS=   js_cmi_datasets
+		 
 
 OTHER_CORE_CMXS= $(addprefix core/, $(addsuffix .cmx, $(OTHER_CORE_SRCS)))
 BSB_SRCS= bsb_config\
@@ -394,7 +394,7 @@ BSB_CMOS=$(addprefix bsb/, $(addsuffix .cmo, $(BSB_SRCS)))
 SUPER_ERRORS_CMXS=$(addprefix super_errors/, $(addsuffix .cmx, $(SUPER_ERRORS_SRCS)))
 REASON_OUTCOME_PRINTER_CMXS=$(addprefix outcome_printer/, $(addsuffix .cmx, $(REASON_OUTCOME_PRINTER_SRCS)))
 REASON_OUTCOME_PRINTER_CMOS=$(addprefix outcome_printer/, $(addsuffix .cmo, $(REASON_OUTCOME_PRINTER_SRCS)))
-MAIN_SRCS= jsgen_main jscmj_main bsb/bsb_main bsb/bsb_helper_main
+MAIN_SRCS= jsgen_main jscmj_main main/bsb_main main/bsb_helper_main main/bsppx_main main/jsoo_main main/bspack_main main/bspp_main main/js_main main/cmjdump_main main/astdump_main
 MAIN_CMXS=$(addsuffix .cmx, $(MAIN_SRCS))
 
 
@@ -427,7 +427,7 @@ outcome_printer.cma:$(REASON_OUTCOME_PRINTER_CMOS)
 
 check: $(EXT_CMXS) $(COMMON_CMXS) $(SYNTAX_CMXS) $(DEPENDS_CMXS) $(CORE_CMXS) $(BSB_CMXS) $(OTHER_CORE_CMXS) $(MAIN_CMXS) $(SUPER_ERRORS_CMXS) $(REASON_OUTCOME_PRINTER_CMXS) $(OUNIT_CMXS) $(OUNIT_TESTS_CMXS)
 
-../lib/bsb.exe: bs_hash.cmxa ext.cmxa common.cmxa  bsb.cmxa bsb/bsb_main.cmx
+../lib/bsb.exe: bs_hash.cmxa ext.cmxa common.cmxa  bsb.cmxa main/bsb_main.cmx
 	$(NATIVE) -I +compiler-libs -g  ocamlcommon.cmxa unix.cmxa str.cmxa $^ -o $@
 
 ../lib/bsb_helper.exe: bs_hash.cmxa ext.cmxa common.cmxa  bsb.cmxa bsb/bsb_helper_main.cmx
@@ -438,7 +438,7 @@ check: $(EXT_CMXS) $(COMMON_CMXS) $(SYNTAX_CMXS) $(DEPENDS_CMXS) $(CORE_CMXS) $(
 
 
 # $(BIN_PATH)/bsc.exe would not trigger rebuild..
-../lib/bsc.exe: bs_hash.cmxa ext.cmxa common.cmxa syntax.cmxa depends.cmxa core.cmxa super.cmxa outcome_printer.cmxa core/js_main.cmx
+../lib/bsc.exe: bs_hash.cmxa ext.cmxa common.cmxa syntax.cmxa depends.cmxa core.cmxa super.cmxa outcome_printer.cmxa main/js_main.cmx
 	@echo "Linking"
 	$(NATIVE) -g -linkall -I +compiler-libs ocamlcommon.cmxa $^ -o $@
 
@@ -485,7 +485,7 @@ depend:
 	$(addprefix outcome_printer/, $(addsuffix .mli, $(REASON_OUTCOME_PRINTER_SRCS))) \
 	$(addprefix ounit_tests/, $(addsuffix .mli, $(OUNIT_TESTS_SRCS))) \
 	$(addprefix ounit_tests/, $(addsuffix .ml, $(OUNIT_TESTS_SRCS))) \
-	bsb/*.ml bsb/*.mli *.ml *.mli > all.depend
+	bsb/*.ml bsb/*.mli main/*.ml main/*.mli *.ml *.mli > all.depend
 	# $(addprefix bsb/, $(addsuffix .mli, $(BSB_SRCS))) \
 	# $(addprefix bsb/, $(addsuffix .ml, $(BSB_SRCS))) \
 
@@ -551,22 +551,22 @@ SNAPSHOT_SRCS+=$(addprefix bin/, $(addsuffix .ml, all_ounit_tests))
 SNAPSHOT_DEPS=$(SNAPSHOT_SRCS:.ml=.d)
 
 ../lib/bsppx.ml:./bin/bspack.exe
-	$< -U BS_DEBUG -bs-MD  -module-alias Config=Config_whole_compiler  -I $(OCAML_SRC_UTILS) -I $(OCAML_SRC_PARSING)  -I stubs -I common -I ext -I syntax -I core -bs-main Bsppx_main -o $@
+	$< -U BS_DEBUG -bs-MD  -module-alias Config=Config_whole_compiler  -I $(OCAML_SRC_UTILS) -I $(OCAML_SRC_PARSING)  -I stubs -I common -I ext -I syntax -I core -I main -bs-main Bsppx_main -o $@
 
 ../lib/whole_compiler.ml:./bin/bspack.exe
-	$< -U BS_DEBUG -bs-MD -module-alias Config=Config_whole_compiler -bs-exclude-I config -o $@ -bs-main Js_main -I $(OCAML_SRC_UTILS) -I $(OCAML_SRC_PARSING) -I $(OCAML_SRC_TYPING) -I $(OCAML_SRC_BYTECOMP) -I $(OCAML_SRC_DRIVER)/  -I stubs -I ext -I syntax -I depends -I common -I core -I super_errors -I outcome_printer
+	$< -U BS_DEBUG -bs-MD -module-alias Config=Config_whole_compiler -bs-exclude-I config -o $@ -bs-main Js_main -I $(OCAML_SRC_UTILS) -I $(OCAML_SRC_PARSING) -I $(OCAML_SRC_TYPING) -I $(OCAML_SRC_BYTECOMP) -I $(OCAML_SRC_DRIVER)/  -I stubs -I ext -I syntax -I depends -I common -I core -I super_errors -I outcome_printer -I main
 
 ../lib/bsdep.ml:./bin/bspack.exe
-	$< -D BS_OCAMLDEP=true  -U BS_DEBUG -bs-MD  -module-alias Config=Config_whole_compiler   -I $(OCAML_SRC_UTILS) -I $(OCAML_SRC_PARSING) -I $(OCAML_SRC_DRIVER) -I $(OCAML_SRC_TOOLS) -I common -I ext -I syntax -I depends -I core -I stubs -bs-main Ocamldep -o $@
+	$< -D BS_OCAMLDEP=true  -U BS_DEBUG -bs-MD  -module-alias Config=Config_whole_compiler   -I $(OCAML_SRC_UTILS) -I $(OCAML_SRC_PARSING) -I $(OCAML_SRC_DRIVER) -I $(OCAML_SRC_TOOLS) -I common -I ext -I syntax -I depends -I core -I stubs -I main -bs-main Ocamldep -o $@
 
 ../lib/bsb_helper.ml:./bin/bspack.exe
-	 $< -bs-MD -U BS_DEBUG   -I stubs -I common -I ext -I syntax -I depends -I bsb  -bs-main Bsb_helper_main -o $@
+	 $< -bs-MD -U BS_DEBUG   -I stubs -I common -I ext -I syntax -I depends -I bsb  -I main -bs-main Bsb_helper_main -o $@
 
 ../lib/bsb.ml:./bin/bspack.exe
-	 $<  -D BS_MIN_LEX_DEPS=true -bs-MD -U BS_DEBUG -I $(OCAML_SRC_UTILS) -I $(OCAML_SRC_PARSING) -I stubs -I common -I ext -I syntax -I depends -I bsb -I ext  -bs-main Bsb_main -o $@
+	 $<  -D BS_MIN_LEX_DEPS=true -bs-MD -U BS_DEBUG -I $(OCAML_SRC_UTILS) -I $(OCAML_SRC_PARSING) -I stubs -I common -I ext -I syntax -I depends -I bsb -I ext -I main -bs-main Bsb_main -o $@
 
 ../lib/bspp.ml:./bin/bspack.exe
-	  $< -D BS_MIN_LEX_DEPS=true -U BS_DEBUG -bs-MD -module-alias Config=Config_whole_compiler   -I $(OCAML_SRC_UTILS) -I $(OCAML_SRC_PARSING)?parser   -I common -I ext -I syntax -I depends -I bspp -I core -bs-main Bspp_main -o $@
+	  $< -D BS_MIN_LEX_DEPS=true -U BS_DEBUG -bs-MD -module-alias Config=Config_whole_compiler   -I $(OCAML_SRC_UTILS) -I $(OCAML_SRC_PARSING)?parser   -I common -I ext -I syntax -I depends -I bspp -I core -I main -bs-main Bspp_main -o $@
 
 ../lib/bspp.exe:../lib/bspp.mli ../lib/bspp.ml
 	make -C ../lib bspp.exe

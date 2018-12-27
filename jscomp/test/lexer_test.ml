@@ -74,4 +74,4 @@ let lexer_suites =
 
 ]
 
-;; Mt.from_pair_suites __FILE__ lexer_suites
+;; Mt.from_pair_suites __MODULE__ lexer_suites

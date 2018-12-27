@@ -37,4 +37,4 @@ let () =
   eq __LOC__ result2 2
 (* ;; if result2 = 2 then Js.log "success" else Js.log "error" *)
 
-;; Mt.from_pair_suites __FILE__ !suites
+;; Mt.from_pair_suites __MODULE__ !suites

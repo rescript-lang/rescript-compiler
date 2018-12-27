@@ -1414,4 +1414,4 @@ let test60 () =
 test __LOC__ (test60 ());;
 
 let () =
-  Mt.from_pair_suites __FILE__ !suites;;
+  Mt.from_pair_suites __MODULE__ !suites;;

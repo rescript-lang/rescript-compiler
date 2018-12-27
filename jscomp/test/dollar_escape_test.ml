@@ -19,4 +19,4 @@ let u = 1 $$+ 3
 
 ;; eq __LOC__ v  3 
 ;; eq __LOC__ u 3 
-;; Mt.from_pair_suites __FILE__ !suites
+;; Mt.from_pair_suites __MODULE__ !suites

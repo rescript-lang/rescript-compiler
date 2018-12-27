@@ -19,4 +19,4 @@ let () =
     (foo2 (Gpr_1423_nav.busted ~a2:"a2"))
     "a1a2"
 
-let () = Mt.from_pair_suites __FILE__ !suites
+let () = Mt.from_pair_suites __MODULE__ !suites

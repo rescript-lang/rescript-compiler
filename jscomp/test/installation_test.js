@@ -72,7 +72,7 @@ if (match !== undefined) {
       ];
 }
 
-Mt.from_pair_suites("installation_test.ml", suites[0]);
+Mt.from_pair_suites("Installation_test", suites[0]);
 
 exports.suites = suites;
 exports.test_id = test_id;

@@ -27,4 +27,4 @@ let () = eq __LOC__ hh 3
 let () = 
   eq __LOC__ (1,2,3) (uu2##_then, uu2##catch, uu2##_'x)
 
-let () = Mt.from_pair_suites __FILE__ !suites
+let () = Mt.from_pair_suites __MODULE__ !suites

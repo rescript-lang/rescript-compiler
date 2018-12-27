@@ -139,4 +139,4 @@ let () =
 
 let () = 
   eq __LOC__ ((fun%raw  a b c _ -> {|return a + b + c |} : _ -> _ -> _ -> _ -> _ ) 1 2 3 4) 6
-;; Mt.from_pair_suites __FILE__ !suites
+;; Mt.from_pair_suites __MODULE__ !suites

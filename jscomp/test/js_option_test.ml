@@ -82,5 +82,5 @@ let option_suites = Mt.[
 
 let () = 
   begin
-    Mt.from_pair_suites __FILE__ option_suites
+    Mt.from_pair_suites __MODULE__ option_suites
   end

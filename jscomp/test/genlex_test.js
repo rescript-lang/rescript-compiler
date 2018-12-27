@@ -96,7 +96,7 @@ var suites = /* :: */[
   /* [] */0
 ];
 
-Mt.from_pair_suites("genlex_test.ml", suites);
+Mt.from_pair_suites("Genlex_test", suites);
 
 exports.lexer = lexer;
 exports.to_list = to_list;

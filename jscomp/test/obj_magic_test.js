@@ -63,7 +63,7 @@ var suites = /* :: */[
   suites_001
 ];
 
-Mt.from_pair_suites("obj_magic_test.ml", suites);
+Mt.from_pair_suites("Obj_magic_test", suites);
 
 exports.empty_backtrace = empty_backtrace;
 exports.is_block = is_block;

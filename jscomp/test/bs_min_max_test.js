@@ -39,7 +39,7 @@ var f5_min = Caml_obj.caml_min;
 
 var f5_max = Caml_obj.caml_max;
 
-b("File \"bs_min_max_test.ml\", line 28, characters 4-11", Caml_int64.eq(Caml_int64.min(/* int64 */[
+b("File \"test/bs_min_max_test.ml\", line 28, characters 4-11", Caml_int64.eq(Caml_int64.min(/* int64 */[
               /* hi */0,
               /* lo */0
             ], /* int64 */[
@@ -50,7 +50,7 @@ b("File \"bs_min_max_test.ml\", line 28, characters 4-11", Caml_int64.eq(Caml_in
           /* lo */0
         ]));
 
-b("File \"bs_min_max_test.ml\", line 29, characters 4-11", Caml_int64.eq(Caml_int64.max(/* int64 */[
+b("File \"test/bs_min_max_test.ml\", line 29, characters 4-11", Caml_int64.eq(Caml_int64.max(/* int64 */[
               /* hi */0,
               /* lo */22
             ], /* int64 */[
@@ -61,7 +61,7 @@ b("File \"bs_min_max_test.ml\", line 29, characters 4-11", Caml_int64.eq(Caml_in
           /* lo */22
         ]));
 
-b("File \"bs_min_max_test.ml\", line 30, characters 4-11", Caml_int64.eq(Caml_int64.max(/* int64 */[
+b("File \"test/bs_min_max_test.ml\", line 30, characters 4-11", Caml_int64.eq(Caml_int64.max(/* int64 */[
               /* hi */-1,
               /* lo */4294967293
             ], /* int64 */[
@@ -72,23 +72,23 @@ b("File \"bs_min_max_test.ml\", line 30, characters 4-11", Caml_int64.eq(Caml_in
           /* lo */3
         ]));
 
-eq("File \"bs_min_max_test.ml\", line 31, characters 5-12", Caml_obj.caml_min(undefined, 3), undefined);
+eq("File \"test/bs_min_max_test.ml\", line 31, characters 5-12", Caml_obj.caml_min(undefined, 3), undefined);
 
-eq("File \"bs_min_max_test.ml\", line 32, characters 5-12", Caml_obj.caml_min(3, undefined), undefined);
+eq("File \"test/bs_min_max_test.ml\", line 32, characters 5-12", Caml_obj.caml_min(3, undefined), undefined);
 
-eq("File \"bs_min_max_test.ml\", line 33, characters 5-12", Caml_obj.caml_max(3, undefined), 3);
+eq("File \"test/bs_min_max_test.ml\", line 33, characters 5-12", Caml_obj.caml_max(3, undefined), 3);
 
-eq("File \"bs_min_max_test.ml\", line 34, characters 5-12", Caml_obj.caml_max(undefined, 3), 3);
+eq("File \"test/bs_min_max_test.ml\", line 34, characters 5-12", Caml_obj.caml_max(undefined, 3), 3);
 
-b("File \"bs_min_max_test.ml\", line 35, characters 4-11", Caml_obj.caml_greaterequal(5, undefined));
+b("File \"test/bs_min_max_test.ml\", line 35, characters 4-11", Caml_obj.caml_greaterequal(5, undefined));
 
-b("File \"bs_min_max_test.ml\", line 36, characters 4-11", Caml_obj.caml_lessequal(undefined, 5));
+b("File \"test/bs_min_max_test.ml\", line 36, characters 4-11", Caml_obj.caml_lessequal(undefined, 5));
 
-b("File \"bs_min_max_test.ml\", line 37, characters 4-11", true);
+b("File \"test/bs_min_max_test.ml\", line 37, characters 4-11", true);
 
-b("File \"bs_min_max_test.ml\", line 38, characters 4-11", true);
+b("File \"test/bs_min_max_test.ml\", line 38, characters 4-11", true);
 
-Mt.from_pair_suites("bs_min_max_test.ml", suites[0]);
+Mt.from_pair_suites("Bs_min_max_test", suites[0]);
 
 exports.suites = suites;
 exports.test_id = test_id;

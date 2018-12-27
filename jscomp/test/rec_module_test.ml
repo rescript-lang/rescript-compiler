@@ -76,5 +76,5 @@ let suites  = Mt.[
     "test6", (fun _ -> Eq(2 ,ASet.cardinal (ASet.of_list [Leaf "a" ; Leaf "b" ; Leaf "a"])))
 ];;
 
-Mt.from_pair_suites __FILE__ suites
+Mt.from_pair_suites __MODULE__ suites
 

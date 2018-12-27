@@ -18,4 +18,4 @@ let u =
   f x 
 
 ;; eq __LOC__ u "defabc"
-;; Mt.from_pair_suites __FILE__ !suites
+;; Mt.from_pair_suites __MODULE__ !suites

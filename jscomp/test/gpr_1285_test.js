@@ -79,9 +79,9 @@ var tmp$1 = Caml_oo_curry.js1(68057958, 1, tmp);
 
 var x = Caml_oo_curry.js1(68057959, 2, tmp$1);
 
-eq("File \"gpr_1285_test.ml\", line 20, characters 5-12", x, 33);
+eq("File \"test/gpr_1285_test.ml\", line 20, characters 5-12", x, 33);
 
-Mt.from_pair_suites("gpr_1285_test.ml", suites[0]);
+Mt.from_pair_suites("Gpr_1285_test", suites[0]);
 
 exports.suites = suites;
 exports.test_id = test_id;

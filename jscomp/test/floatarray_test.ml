@@ -19,5 +19,5 @@ let  () =
   (len, 0x1.fp3, 0.)
 
 
-;; Mt.from_pair_suites __FILE__ !suites  
+;; Mt.from_pair_suites __MODULE__ !suites  
 #end

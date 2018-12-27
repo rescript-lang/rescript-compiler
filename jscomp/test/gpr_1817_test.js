@@ -45,9 +45,9 @@ var a0 = match[0];
 
 console.log(a0, a1);
 
-eq("File \"gpr_1817_test.ml\", line 19, characters 6-13", a2, true);
+eq("File \"test/gpr_1817_test.ml\", line 19, characters 6-13", a2, true);
 
-Mt.from_pair_suites("gpr_1817_test.ml", suites[0]);
+Mt.from_pair_suites("Gpr_1817_test", suites[0]);
 
 exports.suites = suites;
 exports.test_id = test_id;

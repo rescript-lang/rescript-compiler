@@ -47,4 +47,4 @@ let ff (x: bool) y = min x (y ())
 let () =
   eq __LOC__ (min true false) false
 
-let () = Mt.from_pair_suites __FILE__ !suites
+let () = Mt.from_pair_suites __MODULE__ !suites

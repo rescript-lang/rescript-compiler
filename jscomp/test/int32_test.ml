@@ -46,4 +46,4 @@ let eq loc x y = Mt.eq_suites ~test_id ~suites loc x y
 let ()  = 
   eq __LOC__ (Int32.bits_of_float 0.3 ) 1050253722l;
   eq __LOC__ (Int32.float_of_bits 1050253722l) 0.300000011920928955
-;; Mt.from_pair_suites __FILE__ !suites
+;; Mt.from_pair_suites __MODULE__ !suites

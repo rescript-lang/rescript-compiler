@@ -14,7 +14,7 @@ let js_zero_to_255 : string = [%bs.raw {|"\x00\x01\x02\x03\x04\x05\x06\x07\x08\x
 let wth_quote = "'\"'\""
 
 
-;; Mt.from_pair_suites __FILE__ [
+;; Mt.from_pair_suites __MODULE__ [
   "test_string_print", (fun _ -> Eq (js_zero_to_255, zero_to_255))
 ]
 

@@ -108,7 +108,7 @@ var suites = /* :: */[
   suites_001
 ];
 
-Mt.from_pair_suites("js_obj_test.ml", suites);
+Mt.from_pair_suites("Js_obj_test", suites);
 
 exports.f = f;
 exports.f_js = f_js;

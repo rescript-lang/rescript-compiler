@@ -22,7 +22,7 @@ if (match) {
       var match$4 = match$3[/* pvb_pat */0];
       var match$5 = match$4[/* ppat_desc */0];
       if (typeof match$5 === "number" || match$5.tag) {
-        eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+        eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
       } else {
         var match$6 = match$5[0];
         if (match$6[/* txt */0] === "v") {
@@ -42,7 +42,7 @@ if (match) {
                     var match$15 = match$14[2];
                     var match$16 = match$15[/* ppat_desc */0];
                     if (typeof match$16 === "number" || match$16.tag) {
-                      eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+                      eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
                     } else {
                       var match$17 = match$16[0];
                       if (match$17[/* txt */0] === "str") {
@@ -62,7 +62,7 @@ if (match) {
                                   var match$26 = match$25[0];
                                   var match$27 = match$26[/* pexp_desc */0];
                                   if (match$27.tag) {
-                                    eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+                                    eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
                                   } else {
                                     var match$28 = match$27[0];
                                     var match$29 = match$28[/* txt */0];
@@ -89,7 +89,7 @@ if (match) {
                                                           var match$40 = match$39[0];
                                                           var match$41 = match$40[/* pexp_desc */0];
                                                           if (match$41.tag) {
-                                                            eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+                                                            eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                           } else {
                                                             var match$42 = match$41[0];
                                                             var match$43 = match$42[/* txt */0];
@@ -113,7 +113,7 @@ if (match) {
                                                                                 var match$52 = match$51[1];
                                                                                 var match$53 = match$52[/* pexp_desc */0];
                                                                                 if (match$53.tag) {
-                                                                                  eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+                                                                                  eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                                                 } else {
                                                                                   var match$54 = match$53[0];
                                                                                   var match$55 = match$54[/* txt */0];
@@ -137,7 +137,7 @@ if (match) {
                                                                                                       var match$64 = match$63[1];
                                                                                                       var match$65 = match$64[/* pexp_desc */0];
                                                                                                       if (match$65.tag) {
-                                                                                                        eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+                                                                                                        eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                                                                       } else {
                                                                                                         var match$66 = match$65[0];
                                                                                                         var match$67 = match$66[/* txt */0];
@@ -169,7 +169,7 @@ if (match) {
                                                                                                                                       var match$80 = match$79[1];
                                                                                                                                       var match$81 = match$80[/* pexp_desc */0];
                                                                                                                                       if (match$81.tag) {
-                                                                                                                                        eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+                                                                                                                                        eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                                                                                                       } else {
                                                                                                                                         var match$82 = match$81[0];
                                                                                                                                         var match$83 = match$82[/* txt */0];
@@ -204,236 +204,236 @@ if (match) {
                                                                                                                                                                       if (match$98[/* pos_fname */0] === "" && !(match$98[/* pos_lnum */1] !== 1 || match$98[/* pos_bol */2] !== 0 || match$98[/* pos_cnum */3] !== 0)) {
                                                                                                                                                                         var match$99 = match$97[/* loc_end */1];
                                                                                                                                                                         if (match$99[/* pos_fname */0] === "" && !(match$99[/* pos_lnum */1] !== 4 || match$99[/* pos_bol */2] !== 46 || match$99[/* pos_cnum */3] !== 71 || match$97[/* loc_ghost */2] || match$2[1])) {
-                                                                                                                                                                          eq("File \"parser_api_test.ml\", line 210, characters 10-17", true, true);
+                                                                                                                                                                          eq("File \"test/parser_api_test.ml\", line 210, characters 10-17", true, true);
                                                                                                                                                                         } else {
-                                                                                                                                                                          eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+                                                                                                                                                                          eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                                                                                                                                         }
                                                                                                                                                                       } else {
-                                                                                                                                                                        eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+                                                                                                                                                                        eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                                                                                                                                       }
                                                                                                                                                                     } else {
-                                                                                                                                                                      eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+                                                                                                                                                                      eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                                                                                                                                     }
                                                                                                                                                                   } else {
-                                                                                                                                                                    eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+                                                                                                                                                                    eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                                                                                                                                   }
                                                                                                                                                                 } else {
-                                                                                                                                                                  eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+                                                                                                                                                                  eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                                                                                                                                 }
                                                                                                                                                               } else {
-                                                                                                                                                                eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+                                                                                                                                                                eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                                                                                                                               }
                                                                                                                                                             } else {
-                                                                                                                                                              eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+                                                                                                                                                              eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                                                                                                                             }
                                                                                                                                                           } else {
-                                                                                                                                                            eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+                                                                                                                                                            eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                                                                                                                           }
                                                                                                                                                         } else {
-                                                                                                                                                          eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+                                                                                                                                                          eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                                                                                                                         }
                                                                                                                                                       } else {
-                                                                                                                                                        eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+                                                                                                                                                        eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                                                                                                                       }
                                                                                                                                                     } else {
-                                                                                                                                                      eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+                                                                                                                                                      eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                                                                                                                     }
                                                                                                                                                     break;
                                                                                                                                                 case 1 : 
                                                                                                                                                 case 2 : 
-                                                                                                                                                    eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+                                                                                                                                                    eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                                                                                                                     break;
                                                                                                                                                 
                                                                                                                                               }
                                                                                                                                               break;
                                                                                                                                           case 0 : 
                                                                                                                                           case 2 : 
-                                                                                                                                              eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+                                                                                                                                              eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                                                                                                               break;
                                                                                                                                           
                                                                                                                                         }
                                                                                                                                       }
                                                                                                                                     } else {
-                                                                                                                                      eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+                                                                                                                                      eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                                                                                                     }
                                                                                                                                   } else {
-                                                                                                                                    eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+                                                                                                                                    eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                                                                                                   }
                                                                                                                                 } else {
-                                                                                                                                  eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+                                                                                                                                  eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                                                                                                 }
                                                                                                                               } else {
-                                                                                                                                eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+                                                                                                                                eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                                                                                               }
                                                                                                                             } else {
-                                                                                                                              eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+                                                                                                                              eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                                                                                             }
                                                                                                                           } else {
-                                                                                                                            eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+                                                                                                                            eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                                                                                           }
                                                                                                                         } else {
-                                                                                                                          eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+                                                                                                                          eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                                                                                         }
                                                                                                                       } else {
-                                                                                                                        eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+                                                                                                                        eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                                                                                       }
                                                                                                                     } else {
-                                                                                                                      eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+                                                                                                                      eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                                                                                     }
                                                                                                                     break;
                                                                                                                 case 1 : 
                                                                                                                 case 2 : 
-                                                                                                                    eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+                                                                                                                    eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                                                                                     break;
                                                                                                                 
                                                                                                               }
                                                                                                               break;
                                                                                                           case 0 : 
                                                                                                           case 2 : 
-                                                                                                              eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+                                                                                                              eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                                                                               break;
                                                                                                           
                                                                                                         }
                                                                                                       }
                                                                                                     } else {
-                                                                                                      eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+                                                                                                      eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                                                                     }
                                                                                                   } else {
-                                                                                                    eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+                                                                                                    eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                                                                   }
                                                                                                 } else {
-                                                                                                  eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+                                                                                                  eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                                                                 }
                                                                                               } else {
-                                                                                                eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+                                                                                                eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                                                               }
                                                                                             } else {
-                                                                                              eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+                                                                                              eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                                                             }
                                                                                           } else {
-                                                                                            eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+                                                                                            eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                                                           }
                                                                                         } else {
-                                                                                          eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+                                                                                          eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                                                         }
                                                                                         break;
                                                                                     case 1 : 
                                                                                     case 2 : 
-                                                                                        eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+                                                                                        eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                                                         break;
                                                                                     
                                                                                   }
                                                                                 }
                                                                               } else {
-                                                                                eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+                                                                                eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                                               }
                                                                             } else {
-                                                                              eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+                                                                              eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                                             }
                                                                           } else {
-                                                                            eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+                                                                            eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                                           }
                                                                         } else {
-                                                                          eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+                                                                          eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                                         }
                                                                       } else {
-                                                                        eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+                                                                        eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                                       }
                                                                     } else {
-                                                                      eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+                                                                      eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                                     }
                                                                   } else {
-                                                                    eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+                                                                    eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                                   }
                                                                   break;
                                                               case 1 : 
                                                               case 2 : 
-                                                                  eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+                                                                  eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                                   break;
                                                               
                                                             }
                                                           }
                                                         } else {
-                                                          eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+                                                          eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                         }
                                                       } else {
-                                                        eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+                                                        eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                       }
                                                     } else {
-                                                      eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+                                                      eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                     }
                                                   } else {
-                                                    eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+                                                    eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                   }
                                                 } else {
-                                                  eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+                                                  eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
                                                 }
                                               } else {
-                                                eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+                                                eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
                                               }
                                             } else {
-                                              eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+                                              eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
                                             }
                                           } else {
-                                            eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+                                            eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
                                           }
                                           break;
                                       case 1 : 
                                       case 2 : 
-                                          eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+                                          eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
                                           break;
                                       
                                     }
                                   }
                                 } else {
-                                  eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+                                  eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
                                 }
                               } else {
-                                eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+                                eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
                               }
                             } else {
-                              eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+                              eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
                             }
                           } else {
-                            eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+                            eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
                           }
                         } else {
-                          eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+                          eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
                         }
                       } else {
-                        eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+                        eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
                       }
                     }
                   } else {
-                    eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+                    eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
                   }
                 } else {
-                  eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+                  eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
                 }
               } else {
-                eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+                eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
               }
             } else {
-              eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+              eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
             }
           } else {
-            eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+            eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
           }
         } else {
-          eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+          eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
         }
       }
     } else {
-      eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+      eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
     }
   } else {
-    eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+    eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
   }
 } else {
-  eq("File \"parser_api_test.ml\", line 211, characters 12-19", true, false);
+  eq("File \"test/parser_api_test.ml\", line 211, characters 12-19", true, false);
 }
 
-Mt.from_pair_suites("parser_api_test.ml", suites[0]);
+Mt.from_pair_suites("Parser_api_test", suites[0]);
 
 var lex = Parser_api.from_string;
 

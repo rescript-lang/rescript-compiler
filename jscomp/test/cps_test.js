@@ -71,7 +71,7 @@ function test_closure2(param) {
   return v[0];
 }
 
-Mt.from_pair_suites("cps_test.ml", /* :: */[
+Mt.from_pair_suites("Cps_test", /* :: */[
       /* tuple */[
         "cps_test_sum",
         (function (param) {

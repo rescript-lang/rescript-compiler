@@ -31,7 +31,7 @@ let test_closure2 () =
 
 
 
-;; Mt.from_pair_suites __FILE__  Mt.[
+;; Mt.from_pair_suites __MODULE__  Mt.[
 "cps_test_sum", (fun _ -> 
   Eq (55, (test())));
  "cps_test_closure", (fun _ -> 

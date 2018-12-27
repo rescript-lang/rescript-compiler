@@ -455,4 +455,4 @@ let suites = Mt.[
       Eq("Mon, 08 Mar 1976 11:11:56 GMT", Js.Date.toUTCString (date ())));
 ]
 
-;; Mt.from_pair_suites __FILE__ suites
+;; Mt.from_pair_suites __MODULE__ suites

@@ -37,4 +37,4 @@ let () =
   (* Js.log  *)
     (min (new money2 5.0) (new money2 3.))#value;;
 
-let () = Mt.from_pair_suites __FILE__ !suites
+let () = Mt.from_pair_suites __MODULE__ !suites

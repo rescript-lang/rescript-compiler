@@ -39,15 +39,15 @@ function f(x, y) {
   return x + y | 0;
 }
 
-eq("File \"js_nullable_test.ml\", line 26, characters 7-14", false, false);
+eq("File \"test/js_nullable_test.ml\", line 26, characters 7-14", false, false);
 
-eq("File \"js_nullable_test.ml\", line 28, characters 7-14", (f(1, 2) == null), false);
+eq("File \"test/js_nullable_test.ml\", line 28, characters 7-14", (f(1, 2) == null), false);
 
-eq("File \"js_nullable_test.ml\", line 30, characters 6-13", (null == null), true);
+eq("File \"test/js_nullable_test.ml\", line 30, characters 6-13", (null == null), true);
 
-eq("File \"js_nullable_test.ml\", line 34, characters 3-10", false, false);
+eq("File \"test/js_nullable_test.ml\", line 34, characters 3-10", false, false);
 
-Mt.from_pair_suites("js_nullable_test.ml", suites[0]);
+Mt.from_pair_suites("Js_nullable_test", suites[0]);
 
 exports.suites = suites;
 exports.test_id = test_id;

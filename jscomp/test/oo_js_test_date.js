@@ -52,7 +52,7 @@ var suites = /* :: */[
   suites_001
 ];
 
-Mt.from_pair_suites("oo_js_test_date.ml", suites);
+Mt.from_pair_suites("Oo_js_test_date", suites);
 
 exports.d = d;
 exports.d2 = d2;

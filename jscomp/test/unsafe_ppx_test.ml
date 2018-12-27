@@ -56,7 +56,7 @@ let v = test 1 2
 
 type vv = int -> int [@bs]    
 
-;; Mt.from_pair_suites __FILE__ Mt.[
+;; Mt.from_pair_suites __MODULE__ Mt.[
     "unsafe_max", (fun _ -> Eq(2., max 1. 2. [@bs]));
     "unsafe_test", (fun _ -> Eq(3,v));
     "unsafe_max2", (fun _ -> Eq(2, ([%bs.raw {|Math.max|} ] : int ->  int -> int [@bs]) 1 2 [@bs] ));

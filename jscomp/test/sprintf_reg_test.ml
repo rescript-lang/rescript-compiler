@@ -14,4 +14,4 @@ let () =
   eq __LOC__ (s,  "1 %s")
 
 let () =
-  Mt.from_pair_suites __FILE__ !suites;;
+  Mt.from_pair_suites __MODULE__ !suites;;

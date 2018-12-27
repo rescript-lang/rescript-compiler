@@ -177,8 +177,6 @@
 ../lib/whole_compiler.ml : ./core/js_implementation.mli
 ../lib/whole_compiler.ml : ./core/js_long.ml
 ../lib/whole_compiler.ml : ./core/js_long.mli
-../lib/whole_compiler.ml : ./core/js_main.ml
-../lib/whole_compiler.ml : ./core/js_main.mli
 ../lib/whole_compiler.ml : ./core/js_map.ml
 ../lib/whole_compiler.ml : ./core/js_name_of_module_id.ml
 ../lib/whole_compiler.ml : ./core/js_name_of_module_id.mli
@@ -444,6 +442,8 @@
 ../lib/whole_compiler.ml : ./ext/string_map.ml
 ../lib/whole_compiler.ml : ./ext/string_map.mli
 ../lib/whole_compiler.ml : ./ext/vec_gen.ml
+../lib/whole_compiler.ml : ./main/js_main.ml
+../lib/whole_compiler.ml : ./main/js_main.mli
 ../lib/whole_compiler.ml : ./outcome_printer/outcome_printer_ns.ml
 ../lib/whole_compiler.ml : ./outcome_printer/outcome_printer_ns.mli
 ../lib/whole_compiler.ml : ./outcome_printer/reason_outcome_printer_main.ml

@@ -41,7 +41,7 @@ function f(x) {
         ];
 }
 
-eq("File \"update_record_test.ml\", line 30, characters 5-12", 1, f(/* record */[
+eq("File \"test/update_record_test.ml\", line 30, characters 5-12", 1, f(/* record */[
             /* a0 */0,
             /* a1 */0,
             /* a2 */0,
@@ -50,7 +50,7 @@ eq("File \"update_record_test.ml\", line 30, characters 5-12", 1, f(/* record */
             /* a5 */0
           ])[/* a0 */0]);
 
-Mt.from_pair_suites("update_record_test.ml", suites[0]);
+Mt.from_pair_suites("Update_record_test", suites[0]);
 
 exports.suites = suites;
 exports.test_id = test_id;

@@ -37,4 +37,4 @@ let () =
   b __LOC__ (not (None = Some 5));
   b __LOC__ ( (None <> Some 5))
   
-;; Mt.from_pair_suites __FILE__ !suites  
+;; Mt.from_pair_suites __MODULE__ !suites  

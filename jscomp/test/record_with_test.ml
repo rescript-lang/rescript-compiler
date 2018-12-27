@@ -36,5 +36,5 @@ let suites = Mt.[
     "eq_with", (fun _ -> Eq (v, u_v))    
 ]
 
-;; Mt.from_pair_suites __FILE__ suites 
+;; Mt.from_pair_suites __MODULE__ suites 
 

@@ -75,7 +75,7 @@ try {
 }
 catch (raw_e){
   var e = Caml_js_exceptions.internalToOCamlException(raw_e);
-  eq("File \"promise_catch_test.ml\", line 36, characters 7-14", true, Js_option.isSomeValue((function (xxx, y) {
+  eq("File \"test/promise_catch_test.ml\", line 36, characters 7-14", true, Js_option.isSomeValue((function (xxx, y) {
               return xxx === y;
             }), 2, myHandler(e)));
 }
@@ -91,7 +91,7 @@ if (exit === 1) {
       ];
 }
 
-Mt.from_pair_suites("promise_catch_test.ml", suites[0]);
+Mt.from_pair_suites("Promise_catch_test", suites[0]);
 
 exports.suites = suites;
 exports.test_id = test_id;

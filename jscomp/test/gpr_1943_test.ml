@@ -28,4 +28,4 @@ let v =
 
 
 ;; eq __LOC__ (0,1,2,3,4,5,6) v 
-;; Mt.from_pair_suites __FILE__ !suites
+;; Mt.from_pair_suites __MODULE__ !suites

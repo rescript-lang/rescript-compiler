@@ -34,7 +34,7 @@ var suites = /* :: */[
   suites_001
 ];
 
-Mt.from_pair_suites("epsilon_test.ml", suites);
+Mt.from_pair_suites("Epsilon_test", suites);
 
 exports.v = v;
 exports.suites = suites;

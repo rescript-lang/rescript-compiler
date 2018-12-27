@@ -4,7 +4,7 @@ external caml_string_get_32 : string -> int -> int32 = "%caml_string_get32"
 external caml_string_get_64 : string -> int -> int64 = "%caml_string_get64"
 
 (* TODO: endian-aware ? *)
-;; Mt.from_pair_suites __FILE__ Mt.[
+;; Mt.from_pair_suites __MODULE__ Mt.[
     __LOC__ , (fun _ -> Eq (caml_string_get_16 "2\000" 0, 50));
     __LOC__ , (fun _ -> Eq (caml_string_get_16 "20" 0, 12338));
     __LOC__, (fun _ -> Eq(caml_string_get_32 "0123" 0, 858927408l));

@@ -32,4 +32,4 @@ let () =
     eq __LOC__ true (Js.List.equal (fun [@bs] x y -> x = y) vvv (Js.List. init 10_000 (fun [@bs] x  -> x * 10)  ))
 
 
-;; Mt.from_pair_suites __FILE__ !suites
+;; Mt.from_pair_suites __MODULE__ !suites

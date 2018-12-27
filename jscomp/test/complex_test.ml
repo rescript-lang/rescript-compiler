@@ -7,4 +7,4 @@ let suites = Mt.[
     Eq({re = 2.; im = 2.}, add (add (add one one) i ) i))
 ]
 
-;; Mt.from_pair_suites __FILE__ suites
+;; Mt.from_pair_suites __MODULE__ suites

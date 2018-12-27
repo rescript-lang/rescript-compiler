@@ -581,7 +581,7 @@ var suites_001 = /* :: */[
                                                                                                         ],
                                                                                                         /* :: */[
                                                                                                           /* tuple */[
-                                                                                                            "File \"js_string_test.ml\", line 211, characters 4-11",
+                                                                                                            "File \"test/js_string_test.ml\", line 211, characters 4-11",
                                                                                                             (function (param) {
                                                                                                                 return /* Ok */Block.__(4, ["ab".includes("a")]);
                                                                                                               })
@@ -646,7 +646,7 @@ var suites = /* :: */[
   suites_001
 ];
 
-Mt.from_pair_suites("js_string_test.ml", suites);
+Mt.from_pair_suites("Js_string_test", suites);
 
 exports.suites = suites;
 /*  Not a pure module */

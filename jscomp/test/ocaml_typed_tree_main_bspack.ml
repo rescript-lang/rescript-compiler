@@ -222,7 +222,7 @@ let () =
     (* [%debugger] ; Js.log x *)
 
 let () = 
-  Mt.from_pair_suites __FILE__ !suites
+  Mt.from_pair_suites __MODULE__ !suites
 (* local variables: *)
 (* compile-command: "ocamlc.opt -c -I +compiler-libs ocaml_typed_tree_main.ml" *)
 (* end: *)

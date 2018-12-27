@@ -8,7 +8,7 @@ function length(param) {
   return 3;
 }
 
-Mt.from_pair_suites("es6_module_test.ml", /* :: */[
+Mt.from_pair_suites("Es6_module_test", /* :: */[
       /* tuple */[
         "list_length",
         (function (param) {

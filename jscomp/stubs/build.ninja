@@ -1,0 +1,19 @@
+
+rule gcc 
+    command = ocamlopt.opt -ccopt -O2 -ccopt -o -ccopt $out -c $in
+
+build stubs/ext_basic_hash_stubs.o : gcc  stubs/ext_basic_hash_stubs.c   
+
+rule mklib
+    command = ocamlmklib $in -o $name
+
+build stubs/libbs_hash.a : mklib stubs/ext_basic_hash_stubs.o
+    name = stubs/bs_hash
+
+rule lib
+    command = ocamlopt.opt -a $ml -o $out -cclib $clib
+
+build stubs/stubs.cmxa : lib stubs/bs_hash_stubs.ml stubs/libbs_hash.a    
+    ml = stubs/bs_hash_stubs.ml
+    clib = stubs/libbs_hash.a
+

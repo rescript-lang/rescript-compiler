@@ -97,4 +97,4 @@ let suites = Mt.[
     Eq(true, fromString "foo" |> isNaN)));
 ]
 
-;; Mt.from_pair_suites __FILE__ suites
+;; Mt.from_pair_suites __MODULE__ suites

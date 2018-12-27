@@ -30,7 +30,7 @@ let suites = Mt.[
     *)
 ]
 
-;; Mt.from_pair_suites __FILE__ suites
+;; Mt.from_pair_suites __MODULE__ suites
 
 (* class type say = object  *)
 (*     method say : int -> int *)

@@ -174,4 +174,4 @@ let () =
   b __LOC__ (not (N.subset v1 v0));
   eq __LOC__ (N.get v 30 ) (Some 30);
   eq __LOC__ (N.get v 3_000 ) None
-;; Mt.from_pair_suites __FILE__ !suites    
+;; Mt.from_pair_suites __MODULE__ !suites    

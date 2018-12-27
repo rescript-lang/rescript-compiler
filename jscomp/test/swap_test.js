@@ -1017,7 +1017,7 @@ function f(s, param) {
                   }), param[2]));
 }
 
-Mt.from_pair_suites("swap_test.ml", Pervasives.$at(suites_16, Pervasives.$at(suites_32, Pervasives.$at(suites_64, Pervasives.$at(f("d16", d16), f("d32", d32))))));
+Mt.from_pair_suites("Swap_test", Pervasives.$at(suites_16, Pervasives.$at(suites_32, Pervasives.$at(suites_64, Pervasives.$at(f("d16", d16), f("d32", d32))))));
 
 exports.tests_16 = tests_16;
 exports.tests_32 = tests_32;

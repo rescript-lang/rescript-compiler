@@ -48,13 +48,13 @@ function nint32_f(x) {
 
 var u = f(-2147483648);
 
-eq("File \"gpr_977_test.ml\", line 32, characters 5-12", -2147483648, u);
+eq("File \"test/gpr_977_test.ml\", line 32, characters 5-12", -2147483648, u);
 
-eq("File \"gpr_977_test.ml\", line 33, characters 5-12", Int32.min_int, int32_f(Int32.min_int));
+eq("File \"test/gpr_977_test.ml\", line 33, characters 5-12", Int32.min_int, int32_f(Int32.min_int));
 
-eq("File \"gpr_977_test.ml\", line 34, characters 5-12", nint32_f(-2147483648), 2147483648);
+eq("File \"test/gpr_977_test.ml\", line 34, characters 5-12", nint32_f(-2147483648), 2147483648);
 
-Mt.from_pair_suites("gpr_977_test.ml", suites[0]);
+Mt.from_pair_suites("Gpr_977_test", suites[0]);
 
 var min_32_int = -2147483648;
 

@@ -94,7 +94,7 @@ let array_suites = Mt.[
 ]
 end
 
-;; from_pair_suites __FILE__
+;; from_pair_suites __MODULE__
       (let module Array_test = Make(Array)in 
       Array_test.array_suites)
 

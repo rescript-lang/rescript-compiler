@@ -17,4 +17,4 @@ let () =
     eq __LOC__ "Gpr_1501_test.B(1)" (Printexc.to_string (B 1))
 
 let () =     
-    Mt.from_pair_suites __FILE__ !suites
+    Mt.from_pair_suites __MODULE__ !suites

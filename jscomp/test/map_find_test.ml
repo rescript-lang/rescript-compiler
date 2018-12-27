@@ -16,7 +16,7 @@ let s =
      ("20",'d') ]
 external log : 'a -> unit = "" [@@bs.val "console.log"]
 
-;; Mt.from_pair_suites __FILE__ @@ [
+;; Mt.from_pair_suites __MODULE__ @@ [
                                   "int",  (fun _ -> 
     Eq (( IntMap.find 10 m),  'a'));
                                    "string",(fun _ -> 

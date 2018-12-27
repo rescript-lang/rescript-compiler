@@ -59,7 +59,7 @@ let string_of_chars  x = String.concat "" @@ List.map string_of_char  x
 
 
 
-;; Mt.from_pair_suites __FILE__ [
+;; Mt.from_pair_suites __MODULE__ [
   "mutliple switch", (fun _ -> 
       Eq(9, ff "4"));
   "int switch", (fun _ -> 

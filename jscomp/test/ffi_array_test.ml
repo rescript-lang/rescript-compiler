@@ -13,4 +13,4 @@ let () =
     (map [| 1;2;3;4 |] (fun[@bs] x  -> x +  1))
     [|2;3;4;5|]
 
-;; Mt.from_pair_suites __FILE__ !suites
+;; Mt.from_pair_suites __MODULE__ !suites

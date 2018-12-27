@@ -13,4 +13,4 @@ let () =
   eq __LOC__ Int32.min_int [%bs.raw "-2147483648"  ]
 
 
-let () = Mt.from_pair_suites __FILE__ !suites
+let () = Mt.from_pair_suites __MODULE__ !suites

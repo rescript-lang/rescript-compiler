@@ -75,4 +75,4 @@ let set_x p = p#set_x;;
 let incr p = set_x p (get_succ_x p)
 
 
-let () =  Mt.from_pair_suites __FILE__ !suites
+let () =  Mt.from_pair_suites __MODULE__ !suites

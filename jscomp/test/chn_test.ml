@@ -89,4 +89,4 @@ let () =
    eq __LOC__ (convert {js| \b\t\n\v\f\r"'\\\0a|js})
   [ 32; 8; 9; 10; 11; 12; 13; 34; 39; 92;0 ;97] 
     end
-let () = Mt.from_pair_suites __FILE__ !suites 
+let () = Mt.from_pair_suites __MODULE__ !suites 

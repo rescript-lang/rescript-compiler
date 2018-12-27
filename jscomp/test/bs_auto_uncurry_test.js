@@ -50,7 +50,7 @@ hi((function () {
         return /* () */0;
       }));
 
-eq("File \"bs_auto_uncurry_test.ml\", line 27, characters 7-14", xs[0], /* :: */[
+eq("File \"test/bs_auto_uncurry_test.ml\", line 27, characters 7-14", xs[0], /* :: */[
       /* () */0,
       /* :: */[
         /* () */0,
@@ -58,7 +58,7 @@ eq("File \"bs_auto_uncurry_test.ml\", line 27, characters 7-14", xs[0], /* :: */
       ]
     ]);
 
-eq("File \"bs_auto_uncurry_test.ml\", line 33, characters 7-14", /* array */[
+eq("File \"test/bs_auto_uncurry_test.ml\", line 33, characters 7-14", /* array */[
         1,
         2,
         3
@@ -70,7 +70,7 @@ eq("File \"bs_auto_uncurry_test.ml\", line 33, characters 7-14", /* array */[
       4
     ]);
 
-eq("File \"bs_auto_uncurry_test.ml\", line 36, characters 7-14", /* array */[
+eq("File \"test/bs_auto_uncurry_test.ml\", line 36, characters 7-14", /* array */[
         1,
         2,
         3
@@ -82,7 +82,7 @@ eq("File \"bs_auto_uncurry_test.ml\", line 36, characters 7-14", /* array */[
       4
     ]);
 
-eq("File \"bs_auto_uncurry_test.ml\", line 40, characters 7-14", /* array */[
+eq("File \"test/bs_auto_uncurry_test.ml\", line 40, characters 7-14", /* array */[
         1,
         2,
         3
@@ -90,7 +90,7 @@ eq("File \"bs_auto_uncurry_test.ml\", line 40, characters 7-14", /* array */[
             return prim + prim$1 | 0;
           }), 0), 6);
 
-eq("File \"bs_auto_uncurry_test.ml\", line 44, characters 7-14", /* array */[
+eq("File \"test/bs_auto_uncurry_test.ml\", line 44, characters 7-14", /* array */[
         1,
         2,
         3
@@ -98,7 +98,7 @@ eq("File \"bs_auto_uncurry_test.ml\", line 44, characters 7-14", /* array */[
             return (x + y | 0) + i | 0;
           }), 0), 9);
 
-eq("File \"bs_auto_uncurry_test.ml\", line 48, characters 7-14", /* array */[
+eq("File \"test/bs_auto_uncurry_test.ml\", line 48, characters 7-14", /* array */[
         1,
         2,
         3
@@ -106,7 +106,7 @@ eq("File \"bs_auto_uncurry_test.ml\", line 48, characters 7-14", /* array */[
             return x < 1;
           })), false);
 
-eq("File \"bs_auto_uncurry_test.ml\", line 52, characters 7-14", /* array */[
+eq("File \"test/bs_auto_uncurry_test.ml\", line 52, characters 7-14", /* array */[
         1,
         2,
         3
@@ -114,7 +114,7 @@ eq("File \"bs_auto_uncurry_test.ml\", line 52, characters 7-14", /* array */[
             return x > 0;
           })), true);
 
-Mt.from_pair_suites("bs_auto_uncurry_test.ml", suites[0]);
+Mt.from_pair_suites("Bs_auto_uncurry_test", suites[0]);
 
 exports.suites = suites;
 exports.test_id = test_id;

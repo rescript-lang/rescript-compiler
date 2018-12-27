@@ -70,7 +70,7 @@ var suites = /* :: */[
   suites_001
 ];
 
-Mt.from_pair_suites("module_parameter_test.ml", suites);
+Mt.from_pair_suites("Module_parameter_test", suites);
 
 var v0 = 1;
 

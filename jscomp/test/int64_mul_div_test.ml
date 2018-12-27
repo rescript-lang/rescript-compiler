@@ -188,7 +188,7 @@ let from_to_string xs =
       (fun _ -> Mt.Eq(str_a, Int64.to_string a))
     )
 
-;; Mt.from_pair_suites __FILE__ @@
+;; Mt.from_pair_suites __MODULE__ @@
    from_pairs "random" pairs @
    
    from_pairs "small" small_pairs @

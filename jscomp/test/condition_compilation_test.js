@@ -30,11 +30,11 @@ function eq(loc, x, y) {
   return /* () */0;
 }
 
-eq("File \"condition_compilation_test.ml\", line 98, characters 5-12", 3, 3);
+eq("File \"test/condition_compilation_test.ml\", line 98, characters 5-12", 3, 3);
 
-eq("File \"condition_compilation_test.ml\", line 99, characters 5-12", v[0], 2);
+eq("File \"test/condition_compilation_test.ml\", line 99, characters 5-12", v[0], 2);
 
-Mt.from_pair_suites("condition_compilation_test.ml", suites[0]);
+Mt.from_pair_suites("Condition_compilation_test", suites[0]);
 
 var b = "u";
 

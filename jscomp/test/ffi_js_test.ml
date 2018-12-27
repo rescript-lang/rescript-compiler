@@ -121,4 +121,4 @@ let ffff x =
   (setGADTI2 x Int Str 0 (1,"x")) ;
   setGADTI3 x Int Str (3,"x") 
   end
-let () = Mt.from_pair_suites __FILE__ !suites
+let () = Mt.from_pair_suites __MODULE__ !suites

@@ -1,6 +1,6 @@
 'use strict';
 
 
-console.log("hello.foo.ml");
+console.log("Hello");
 
 /*  Not a pure module */

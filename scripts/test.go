@@ -139,7 +139,7 @@ func main() {
 		}
 	}
 	if *mochaTest {
-		make := cmd(ninja, "-C", "jscomp/test")
+		make := cmd(ninja, "-C", "jscomp", "-f", "test/build.ninja" )
 		make.Stdout = os.Stdout
 		make.Stderr = os.Stderr
 		error := make.Run()

@@ -21,4 +21,4 @@ let suites = Mt.[
   "fromOption - None", (fun _ -> Eq(empty, None |> fromOption));
   "fromOption - Some", (fun _ -> Eq(return 2, Some 2 |> fromOption));
 ]
-;; Mt.from_pair_suites __FILE__ suites
+;; Mt.from_pair_suites __MODULE__ suites

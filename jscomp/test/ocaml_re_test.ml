@@ -3408,4 +3408,4 @@ eq __LOC__
 
 end
 
-;; Mt.from_pair_suites __FILE__ !suites
+;; Mt.from_pair_suites __MODULE__ !suites

@@ -102,7 +102,7 @@ let rec hamming = lazy (Cons (nn1, merge cmp ham2 (merge cmp ham3 ham5)))
 
 iter_interval pr hamming (88000, 88100)
 
-;; Mt.from_pair_suites __FILE__ [
+;; Mt.from_pair_suites __MODULE__ [
   "output", (fun _ -> 
       Eq (Buffer.contents buf, {|6726050156250000000000000000000000000
 6729216728661136606575523242669244416

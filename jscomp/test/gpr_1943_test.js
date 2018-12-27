@@ -46,7 +46,7 @@ var v = f({
       "x'": 6
     });
 
-eq("File \"gpr_1943_test.ml\", line 30, characters 6-13", /* tuple */[
+eq("File \"test/gpr_1943_test.ml\", line 30, characters 6-13", /* tuple */[
       0,
       1,
       2,
@@ -56,7 +56,7 @@ eq("File \"gpr_1943_test.ml\", line 30, characters 6-13", /* tuple */[
       6
     ], v);
 
-Mt.from_pair_suites("gpr_1943_test.ml", suites[0]);
+Mt.from_pair_suites("Gpr_1943_test", suites[0]);
 
 exports.suites = suites;
 exports.test_id = test_id;

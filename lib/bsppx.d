@@ -26,7 +26,6 @@
 ../lib/bsppx.ml : ./common/js_config.mli
 ../lib/bsppx.ml : ./common/lam_methname.ml
 ../lib/bsppx.ml : ./common/lam_methname.mli
-../lib/bsppx.ml : ./core/bsppx_main.ml
 ../lib/bsppx.ml : ./core/config_whole_compiler.ml
 ../lib/bsppx.ml : ./core/config_whole_compiler.mli
 ../lib/bsppx.ml : ./ext/ext_array.ml
@@ -64,6 +63,7 @@
 ../lib/bsppx.ml : ./ext/string_hash_set.mli
 ../lib/bsppx.ml : ./ext/string_map.ml
 ../lib/bsppx.ml : ./ext/string_map.mli
+../lib/bsppx.ml : ./main/bsppx_main.ml
 ../lib/bsppx.ml : ./stubs/bs_hash_stubs.ml
 ../lib/bsppx.ml : ./syntax/ast_attributes.ml
 ../lib/bsppx.ml : ./syntax/ast_attributes.mli

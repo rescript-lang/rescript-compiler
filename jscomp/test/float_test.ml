@@ -65,7 +65,7 @@ let () =
 
 let () = 
   let a,b = modf 32.3 in
-  Mt.from_pair_suites __FILE__ @@ Mt.[
+  Mt.from_pair_suites __MODULE__ @@ Mt.[
       "mod_float" , 
       (fun _ ->  
          Approx( (mod_float 3.2 0.5), 0.200000000000000178 ))

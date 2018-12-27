@@ -133,4 +133,4 @@ let () =
   eq __LOC__ (2, [Genlex.Kwd "=="])  (parse (token (Stream.of_string "3 - 2  - 1")));
   eq __LOC__ (0, [Genlex.Kwd "=="]) (l_parse (token (Stream.of_string "3 - 2  - 1")))
 
-let () = Mt.from_pair_suites __FILE__ !suites
+let () = Mt.from_pair_suites __MODULE__ !suites

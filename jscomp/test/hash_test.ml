@@ -39,4 +39,4 @@ let () =
   eq __LOC__ (caml_hash ([ `A (0,2,1), `B [| "x", "y"|]])) 100650590
 
 let () =
-  Mt.from_pair_suites __FILE__ !suites
+  Mt.from_pair_suites __MODULE__ !suites

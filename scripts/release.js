@@ -28,11 +28,8 @@ function run() {
     cp.execSync(`BS_DEBUG=false make -j9 force-snapshotml`,
         { cwd: jscompDir, encoding: 'utf8', stdio: [0, 1, 2] })
     cp.execSync('ninja', {cwd : path.join(rootDir,'lib'), stdio:[0,1,2]})
-    cp.execSync('ninja -t clean && ninja', { cwd: path.join(rootDir, 'jscomp', 'runtime'), stdio: [0, 1, 2]})
-    cp.execSync('ninja -t clean && ninja', { cwd: path.join(rootDir, 'jscomp', 'others'), stdio: [0, 1, 2]})
-    cp.execSync('ninja -t clean && ninja', { cwd: path.join(rootDir, 'jscomp', 'stdlib-402'), stdio: [0, 1, 2]})
+    cp.execSync('ninja -f release.ninja -t clean && ninja -f release.ninja', { cwd: path.join(rootDir, 'jscomp'), stdio: [0, 1, 2]})
     
-
 }
 if(require.main === module){
     run()

@@ -281,7 +281,7 @@ var option_suites = /* :: */[
   option_suites_001
 ];
 
-Mt.from_pair_suites("js_option_test.ml", option_suites);
+Mt.from_pair_suites("Js_option_test", option_suites);
 
 exports.simpleEq = simpleEq;
 exports.option_suites = option_suites;

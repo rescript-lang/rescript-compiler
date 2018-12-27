@@ -176,13 +176,13 @@ let () =
 ;; Js.log (List.length !suites)     
      
 ;; Js.log "hey"
-;; Mt.from_pair_suites __FILE__ !suites
+;; Mt.from_pair_suites __MODULE__ !suites
 
 let twop = Js.Promise.resolve 2 
 let then_ = Js.Promise.then_
 let re = Js.Promise.resolve
 
-;; Mt.from_promise_suites __FILE__
+;; Mt.from_promise_suites __MODULE__
   [
     __LOC__, 
     twop

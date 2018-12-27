@@ -36,4 +36,4 @@ let _ =
   eq __LOC__ (scan_int_list (Scanning.from_string "[]"), [])
 
 let () = 
-  Mt.from_pair_suites __FILE__ !suites
+  Mt.from_pair_suites __MODULE__ !suites

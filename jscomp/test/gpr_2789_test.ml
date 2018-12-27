@@ -8,4 +8,4 @@ let () =
   eq __LOC__ 0 (Weak.length (Weak.create 0));
   eq __LOC__ 1 (Weak.length (Weak.create 1))
 
-;; Mt.from_pair_suites __FILE__ !suites
+;; Mt.from_pair_suites __MODULE__ !suites

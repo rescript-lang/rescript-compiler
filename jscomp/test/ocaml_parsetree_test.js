@@ -3684,7 +3684,7 @@ function mkexp_constraint(e, param) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           /* tuple */[
-            "parsing/parser.mly",
+            "parser.mly",
             153,
             18
           ]
@@ -9599,7 +9599,7 @@ function directive_parse(token_with_comments, lexbuf) {
       throw [
             Caml_builtin_exceptions.assert_failure,
             /* tuple */[
-              "parsing/lexer.mll",
+              "lexer.mll",
               312,
               4
             ]
@@ -9819,7 +9819,7 @@ function directive_parse(token_with_comments, lexbuf) {
         throw [
               Caml_builtin_exceptions.assert_failure,
               /* tuple */[
-                "parsing/lexer.mll",
+                "lexer.mll",
                 331,
                 17
               ]
@@ -11290,7 +11290,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
             throw [
                   Caml_builtin_exceptions.assert_failure,
                   /* tuple */[
-                    "parsing/lexer.mll",
+                    "lexer.mll",
                     989,
                     16
                   ]
@@ -11327,7 +11327,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
                     throw [
                           Caml_builtin_exceptions.assert_failure,
                           /* tuple */[
-                            "parsing/lexer.mll",
+                            "lexer.mll",
                             1003,
                             18
                           ]
@@ -11378,7 +11378,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
                     throw [
                           Caml_builtin_exceptions.assert_failure,
                           /* tuple */[
-                            "parsing/lexer.mll",
+                            "lexer.mll",
                             1023,
                             18
                           ]
@@ -11417,7 +11417,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
             throw [
                   Caml_builtin_exceptions.assert_failure,
                   /* tuple */[
-                    "parsing/lexer.mll",
+                    "lexer.mll",
                     1053,
                     16
                   ]
@@ -12335,6 +12335,6 @@ if (match) {
   eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
 }
 
-from_pair_suites("ocaml_parsetree_main.ml", suites[0]);
+from_pair_suites("Ocaml_parsetree_test", suites[0]);
 
 /*  Not a pure module */

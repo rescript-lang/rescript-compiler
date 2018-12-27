@@ -17,4 +17,4 @@ let fake_c2 a_type b_type  =
         0
 
 ;; eq __LOC__ 3 (fake_c2 "number" "xx")
-;; Mt.from_pair_suites __FILE__ !suites        
+;; Mt.from_pair_suites __MODULE__ !suites        
