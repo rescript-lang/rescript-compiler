@@ -971,6 +971,7 @@ if (require.main === module) {
         stdlibNinja()
         othersNinja()
         testNinja()
+        nativeNinja()
     } else if (release) {
         updateAllLibsNinja()
     }
@@ -1000,21 +1001,27 @@ function test(dir){
 
 
 function nativeNinja() {
+        var sourceDirs = ['ext', 'common', 'syntax', 'depends', 'core', 'super_errors', 'outcome_printer', 'bsb','main']
+        var includes = sourceDirs.map(x=>`-I ${x}`).join(' ')
         var templateNative = `
 rule optc
-    command = ocamlopt.opt -I +compiler-libs -I stubs -I ext -I common -I syntax -I depends -I core -I bsb -I super_errors -I outcome_printer -I main -g -w +6-40-30-23 -warn-error +a-40-30-23 -absname -c $in
+    command = ocamlopt.opt -I +compiler-libs -I stubs ${includes} -g -w +6-40-30-23 -warn-error +a-40-30-23 -absname -c $in
 rule archive
     command = ocamlopt.opt -a $in -o $out    
 rule link
-    command =  ocamlopt.opt -g  -I +compiler-libs $libs $in -o $out
+    command =  ocamlopt.opt -g  -I +compiler-libs $flags $libs $in -o $out
 build ../lib/bsc.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa super_errors/super_errors.cmxa outcome_printer/outcome_printer.cmxa core/core.cmxa main/js_main.cmx
     libs = ocamlcommon.cmxa
 build ../lib/bsb.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa bsb/bsb.cmxa main/bsb_main.cmx
     libs = ocamlcommon.cmxa unix.cmxa str.cmxa
 build ../lib/bsb_helper.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa  bsb/bsb.cmxa main/bsb_helper_main.cmx
     libs = ocamlcommon.cmxa unix.cmxa str.cmxa
+
+build ./bin/bspack.exe: link ./stubs/ext_basic_hash_stubs.c ./bin/bspack.mli ./bin/bspack.ml
+    libs = unix.cmxa
+    flags = -I ./bin -w -40-30
 `
-    var sourceDirs = ['ext', 'common', 'syntax', 'depends', 'core', 'super_errors', 'outcome_printer', 'bsb','main']
+    
     /**
      * @type { {name : string, libs: string[]}[]}
      */
@@ -1030,9 +1037,8 @@ build ../lib/bsb_helper.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cm
     var files = []
     for (let dir of sourceDirs) {
         files = files.concat(test(dir))
-    }
-    // FIXME: BS_DEBUG = true
-    var out = cp.execSync(`ocamldep.opt -one-line -native ${sourceDirs.map(x => `-I ${x}`).join(' ')} ${files.join(' ')}`, { cwd: jscompDir, encoding: 'ascii' })
+    }    
+    var out = cp.execSync(`ocamldep.opt -one-line -native ${includes} ${files.join(' ')}`, { cwd: jscompDir, encoding: 'ascii' })
 
     /**
      * @type {Map<string,Set<string>>}
@@ -1054,7 +1060,6 @@ build ../lib/bsb_helper.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cm
             })            
         }
     })
-    // debugger
 
    
     // not ocamldep output
@@ -1090,13 +1095,4 @@ build ../lib/bsb_helper.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cm
         '\n'
     )
 }
-
-nativeNinja()
-
-// var output = sortFilesByDeps(['a','b','c','d'], buildDeps([
-//     ['a', ['c']],
-//     ['c',['b']],
-//     ['d',['a']]
-//     // ['b', ['c']]
-// ]))
 
