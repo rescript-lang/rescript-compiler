@@ -817,7 +817,7 @@ let assert_failed exp =
     Location.get_pos_info exp.exp_loc.Location.loc_start in
 #if undefined BS_NO_COMPILER_PATCH then     
   let fname = 
-    if  not !Location.absname then Filename.basename fname else fname 
+    Filename.basename fname
   in   
 #end  
   Lprim(Praise Raise_regular, [event_after exp
