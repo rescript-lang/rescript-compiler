@@ -27062,7 +27062,7 @@ let () =
            match !output_file with
            | None -> ()
            | Some file ->
-             let output = (Ext_path.chop_extension_if_any file ^ ".d") in
+             let output = file ^ ".d" in
              let sorted_queue = 
                Queue.fold 
                (fun acc collection_module -> 
