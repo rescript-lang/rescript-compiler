@@ -225,7 +225,7 @@ let log_counter = ref 0
 
 
 let dump env ext  lam = 
-#if BS_COMPILER_IN_BROWSER || (undefined BS_DEBUG) then
+#if BS_COMPILER_IN_BROWSER || BS_RELEASE_BUILD then
       lam
 #else
    if Js_config.is_same_file ()

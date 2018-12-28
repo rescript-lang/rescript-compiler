@@ -649,7 +649,7 @@ and compile_staticraise i (largs : Lam.t list) lambda_cxt  =
                     {lambda_cxt with continuation = Assign bind } larg
             in Js_output.append_output new_output acc
            )
-#if BS_DEBUG then            
+#if undefined BS_RELEASE_BUILD then            
     | exception Not_found ->
           assert false          
     (* Invariant: staticraise is always enclosed by catch  *)

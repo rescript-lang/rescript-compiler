@@ -4,7 +4,7 @@ set -e
 
 export OCAMLPARAM='_,bin-annot=1,annot=1' 
 export OCAMLRUNPARAM=b
-export BS_DEBUG=true
+
 
 # ninja
 echo "Checking"
@@ -18,7 +18,7 @@ echo "Making libs"
 make libs 
 echo "Making test"
 # make -C test -j30 all
-ninja -C test
+ninja -f test/build.ninja
 echo "Making xwatcher"
 make -C xwatcher all
 
