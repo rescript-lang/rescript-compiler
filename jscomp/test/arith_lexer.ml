@@ -1,8 +1,8 @@
-# 1 "arith_lexer.mll"
+# 1 "test/arith_lexer.mll"
  
   open Arith_parser
 
-# 6 "arith_lexer.ml"
+# 6 "test/arith_lexer.ml"
 let __ocaml_lex_tables = {
   Lexing.lex_base = 
    "\000\000\246\255\247\255\248\255\249\255\250\255\251\255\252\255\
@@ -132,61 +132,61 @@ let rec lexeme lexbuf =
 and __ocaml_lex_lexeme_rec lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 6 "arith_lexer.mll"
+# 6 "test/arith_lexer.mll"
                           ( lexeme lexbuf )
-# 138 "arith_lexer.ml"
+# 138 "test/arith_lexer.ml"
 
   | 1 ->
-# 7 "arith_lexer.mll"
+# 7 "test/arith_lexer.mll"
                 ( NUMERAL (float (int_of_string (Lexing.lexeme lexbuf))) )
-# 143 "arith_lexer.ml"
+# 143 "test/arith_lexer.ml"
 
   | 2 ->
-# 8 "arith_lexer.mll"
+# 8 "test/arith_lexer.mll"
                       (IDENT (Lexing.lexeme lexbuf))
-# 148 "arith_lexer.ml"
+# 148 "test/arith_lexer.ml"
 
   | 3 ->
-# 9 "arith_lexer.mll"
+# 9 "test/arith_lexer.mll"
                 ( PLUS )
-# 153 "arith_lexer.ml"
+# 153 "test/arith_lexer.ml"
 
   | 4 ->
-# 10 "arith_lexer.mll"
+# 10 "test/arith_lexer.mll"
                 ( MINUS )
-# 158 "arith_lexer.ml"
+# 158 "test/arith_lexer.ml"
 
   | 5 ->
-# 11 "arith_lexer.mll"
+# 11 "test/arith_lexer.mll"
                 ( TIMES )
-# 163 "arith_lexer.ml"
+# 163 "test/arith_lexer.ml"
 
   | 6 ->
-# 12 "arith_lexer.mll"
+# 12 "test/arith_lexer.mll"
                 ( DIVIDE )
-# 168 "arith_lexer.ml"
+# 168 "test/arith_lexer.ml"
 
   | 7 ->
-# 13 "arith_lexer.mll"
+# 13 "test/arith_lexer.mll"
                 ( LPAREN )
-# 173 "arith_lexer.ml"
+# 173 "test/arith_lexer.ml"
 
   | 8 ->
-# 14 "arith_lexer.mll"
+# 14 "test/arith_lexer.mll"
                 ( RPAREN )
-# 178 "arith_lexer.ml"
+# 178 "test/arith_lexer.ml"
 
   | 9 ->
-# 15 "arith_lexer.mll"
+# 15 "test/arith_lexer.mll"
                 ( EOF )
-# 183 "arith_lexer.ml"
+# 183 "test/arith_lexer.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
       __ocaml_lex_lexeme_rec lexbuf __ocaml_lex_state
 
 ;;
 
-# 17 "arith_lexer.mll"
+# 17 "test/arith_lexer.mll"
  
 open Arith_syntax
 let rec str e = 
@@ -201,4 +201,4 @@ let rec str e =
 
 (* let _ = Parsing.set_trace true;; *)
 
-# 205 "arith_lexer.ml"
+# 205 "test/arith_lexer.ml"

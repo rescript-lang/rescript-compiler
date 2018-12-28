@@ -19,7 +19,7 @@ var runtimeMlFiles = runtimeFiles.filter(x=>!x.startsWith("bs_stdlib_mini") && x
 var runtimeMliFiles = runtimeFiles.filter(x=>!x.startsWith("bs_stdlib_mini") && x.endsWith('.mli') && x !== "js.mli")
 var runtimeSourceFiles = runtimeMlFiles.concat(runtimeMliFiles)
 var runtimeJsFiles = [...new Set(runtimeSourceFiles.map(baseName))]
-process.env['BS_DEBUG'] = 'true'
+
 var js_package = pseudoTarget('js_pkg')
 var runtimeTarget = pseudoTarget('runtime')
 var othersTarget = pseudoTarget('others')
@@ -895,11 +895,6 @@ function checkEffect() {
     console.log(effect)
 }
 
-function updateAllLibsNinja(){
-    runtimeNinja(false)
-    stdlibNinja()
-    othersNinja(false)
-}
 
 /**
  * 
@@ -967,14 +962,25 @@ if (require.main === module) {
     var dev = process.argv.includes('-dev')
     var release = process.argv.includes('-release')
     if (dev) {
-        runtimeNinja()
-        stdlibNinja()
-        othersNinja()
-        testNinja()
+        udpateLibsDevNinja()
     } else if (release) {
         updateAllLibsNinja()
     }
 }
+function updateAllLibsNinja(){
+    runtimeNinja(false)
+    stdlibNinja()
+    othersNinja(false)
+}
+
+function udpateLibsDevNinja(){
+    runtimeNinja()
+    stdlibNinja()
+    othersNinja()
+    testNinja()
+    nativeNinja()
+}
+exports.updateLibsDevNinja = udpateLibsDevNinja
 exports.updateAllLibsNinja = updateAllLibsNinja
 
 /**
@@ -998,29 +1004,107 @@ function test(dir){
 }
 
 
-
+/**
+ * Note don't run `ninja -t clean -g`
+ * Since it will remove generated ml file which has 
+ * an effect on depfile
+ */
 function nativeNinja() {
+        var sourceDirs = ['stubs','ext', 'common', 'syntax', 'depends', 'core', 'super_errors', 'outcome_printer', 'bsb','main']
+        var includes = sourceDirs.map(x=>`-I ${x}`).join(' ')
+        var releaseMode = `-D BS_RELEASE_BUILD=true`
         var templateNative = `
 rule optc
-    command = ocamlopt.opt -I +compiler-libs -I stubs -I ext -I common -I syntax -I depends -I core -I bsb -I super_errors -I outcome_printer -I main -g -w +6-40-30-23 -warn-error +a-40-30-23 -absname -c $in
+    command = ocamlopt.opt -I +compiler-libs  ${includes} -g -w +6-40-30-23 -warn-error +a-40-30-23 -absname -c $in
 rule archive
     command = ocamlopt.opt -a $in -o $out    
 rule link
-    command =  ocamlopt.opt -g  -I +compiler-libs $libs $in -o $out
+    command =  ocamlopt.opt -g  -I +compiler-libs $flags $libs $in -o $out
+rule mk_bsversion
+    command = node $in
+    generator = true
+rule gcc 
+    command = ocamlopt.opt -ccopt -O2 -ccopt -o -ccopt $out -c $in
+build stubs/ext_basic_hash_stubs.o : gcc  stubs/ext_basic_hash_stubs.c   
+rule ocamlmklib
+    command = ocamlmklib $in -o $name
+build stubs/libbs_hash.a stubs/dllbs_hash.so: ocamlmklib stubs/ext_basic_hash_stubs.o
+    name = stubs/bs_hash
+rule stubslib
+    command = ocamlopt.opt -a $ml -o $out -cclib $clib
+build stubs/stubs.cmxa : stubslib stubs/bs_hash_stubs.cmx stubs/libbs_hash.a    
+    ml = stubs/bs_hash_stubs.cmx
+    clib = stubs/libbs_hash.a
+
+rule p4of
+    command = camlp4of $flags -impl $in -printer o -o $out    
+    generator = true
+build core/js_fold.ml: p4of core/js_fold.mlp | core/j.ml  
+    flags = -I core -filter map -filter trash
+build core/js_map.ml: p4of core/js_map.mlp | core/j.ml
+    flags = -I core -filter Camlp4FoldGenerator -filter trash
+
+build common/bs_version.ml : mk_bsversion build_version.js ../package.json
+
 build ../lib/bsc.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa super_errors/super_errors.cmxa outcome_printer/outcome_printer.cmxa core/core.cmxa main/js_main.cmx
     libs = ocamlcommon.cmxa
 build ../lib/bsb.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa bsb/bsb.cmxa main/bsb_main.cmx
     libs = ocamlcommon.cmxa unix.cmxa str.cmxa
 build ../lib/bsb_helper.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa  bsb/bsb.cmxa main/bsb_helper_main.cmx
     libs = ocamlcommon.cmxa unix.cmxa str.cmxa
+
+OCAML_SRC_UTILS=../vendor/ocaml/utils
+OCAML_SRC_PARSING=../vendor/ocaml/parsing
+OCAML_SRC_TYPING=../vendor/ocaml/typing
+OCAML_SRC_BYTECOMP=../vendor/ocaml/bytecomp
+OCAML_SRC_DRIVER=../vendor/ocaml/driver
+OCAML_SRC_TOOLS=../vendor/ocaml/tools    
+build ./bin/bspack.exe: link ./stubs/ext_basic_hash_stubs.c ./bin/bspack.mli ./bin/bspack.ml
+    libs = unix.cmxa
+    flags = -I ./bin -w -40-30
+rule bspack    
+    command = ./bin/bspack.exe $flags -bs-main $main -o $out
+    depfile = $out.d
+
+build snapshot: phony  ../lib/whole_compiler.ml ../lib/bsppx.ml ../lib/bsdep.ml ../lib/bsb_helper.ml ../lib/bsb.ml ../lib/bspp.ml bin/all_ounit_tests.ml
+
+build ../lib/whole_compiler.ml: bspack | ./bin/bspack.exe
+    flags = ${releaseMode} -bs-MD -module-alias Config=Config_whole_compiler -bs-exclude-I config  -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I $OCAML_SRC_TYPING -I $OCAML_SRC_BYTECOMP -I $OCAML_SRC_DRIVER   ${includes}
+    main = Js_main
+
+
+build ../lib/bsppx.ml: bspack | ./bin/bspack.exe
+    flags =  ${releaseMode} -bs-MD  -module-alias Config=Config_whole_compiler  -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING  -I stubs -I common -I ext -I syntax -I core -I main 
+    main = Bsppx_main
+
+
+build ../lib/bsdep.ml: bspack | ./bin/bspack.exe
+    flags = -D BS_OCAMLDEP=true  ${releaseMode} -bs-MD  -module-alias Config=Config_whole_compiler   -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I $OCAML_SRC_DRIVER -I $OCAML_SRC_TOOLS -I common -I ext -I syntax -I depends -I core -I stubs -I main 
+    main = Ocamldep
+
+build ../lib/bsb_helper.ml: bspack | ./bin/bspack.exe
+     flags = -bs-MD ${releaseMode}   -I stubs -I common -I ext -I syntax -I depends -I bsb  -I main 
+     main = Bsb_helper_main 
+
+build ../lib/bsb.ml: bspack | ./bin/bspack.exe
+     flags =   -D BS_MIN_LEX_DEPS=true -bs-MD ${releaseMode} -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I stubs -I common -I ext -I syntax -I depends -I bsb -I ext -I main 
+     main = Bsb_main 
+
+build ../lib/bspp.ml: bspack | ./bin/bspack.exe
+     flags = -D BS_MIN_LEX_DEPS=true ${releaseMode} -bs-MD -module-alias Config=Config_whole_compiler   -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING?parser   -I common -I ext -I syntax -I depends -I bspp -I core -I main 
+     main = Bspp_main 
+
+build bin/all_ounit_tests.ml: bspack | ./bin/bspack.exe
+     flags =  -bs-MD    -I ounit -I ounit_tests  -I stubs -I bsb -I common -I ext -I syntax -I depends -I bspp -I core 
+     main = Ounit_tests_main     
 `
-    var sourceDirs = ['ext', 'common', 'syntax', 'depends', 'core', 'super_errors', 'outcome_printer', 'bsb','main']
+    
     /**
      * @type { {name : string, libs: string[]}[]}
      */
     var libs = []
     sourceDirs.forEach(name=>{
-        if(name !== 'main'){
+        if(name !== 'main' && name !== 'stubs'){
             libs.push({name, libs : []})
         }         
     })
@@ -1030,9 +1114,8 @@ build ../lib/bsb_helper.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cm
     var files = []
     for (let dir of sourceDirs) {
         files = files.concat(test(dir))
-    }
-    // FIXME: BS_DEBUG = true
-    var out = cp.execSync(`ocamldep.opt -one-line -native ${sourceDirs.map(x => `-I ${x}`).join(' ')} ${files.join(' ')}`, { cwd: jscompDir, encoding: 'ascii' })
+    }    
+    var out = cp.execSync(`ocamldep.opt -one-line -native ${includes} ${files.join(' ')}`, { cwd: jscompDir, encoding: 'ascii' })
 
     /**
      * @type {Map<string,Set<string>>}
@@ -1054,7 +1137,6 @@ build ../lib/bsb_helper.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cm
             })            
         }
     })
-    // debugger
 
    
     // not ocamldep output
@@ -1090,13 +1172,4 @@ build ../lib/bsb_helper.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cm
         '\n'
     )
 }
-
-nativeNinja()
-
-// var output = sortFilesByDeps(['a','b','c','d'], buildDeps([
-//     ['a', ['c']],
-//     ['c',['b']],
-//     ['d',['a']]
-//     // ['b', ['c']]
-// ]))
 
