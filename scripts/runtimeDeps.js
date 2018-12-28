@@ -19,7 +19,7 @@ var runtimeMlFiles = runtimeFiles.filter(x=>!x.startsWith("bs_stdlib_mini") && x
 var runtimeMliFiles = runtimeFiles.filter(x=>!x.startsWith("bs_stdlib_mini") && x.endsWith('.mli') && x !== "js.mli")
 var runtimeSourceFiles = runtimeMlFiles.concat(runtimeMliFiles)
 var runtimeJsFiles = [...new Set(runtimeSourceFiles.map(baseName))]
-process.env['BS_DEBUG'] = 'true'
+
 var js_package = pseudoTarget('js_pkg')
 var runtimeTarget = pseudoTarget('runtime')
 var othersTarget = pseudoTarget('others')
@@ -895,11 +895,6 @@ function checkEffect() {
     console.log(effect)
 }
 
-function updateAllLibsNinja(){
-    runtimeNinja(false)
-    stdlibNinja()
-    othersNinja(false)
-}
 
 /**
  * 
@@ -967,15 +962,25 @@ if (require.main === module) {
     var dev = process.argv.includes('-dev')
     var release = process.argv.includes('-release')
     if (dev) {
-        runtimeNinja()
-        stdlibNinja()
-        othersNinja()
-        testNinja()
-        nativeNinja()
+        udpateLibsDevNinja()
     } else if (release) {
         updateAllLibsNinja()
     }
 }
+function updateAllLibsNinja(){
+    runtimeNinja(false)
+    stdlibNinja()
+    othersNinja(false)
+}
+
+function udpateLibsDevNinja(){
+    runtimeNinja()
+    stdlibNinja()
+    othersNinja()
+    testNinja()
+    nativeNinja()
+}
+exports.updateLibsDevNinja = udpateLibsDevNinja
 exports.updateAllLibsNinja = updateAllLibsNinja
 
 /**
@@ -1003,6 +1008,7 @@ function test(dir){
 function nativeNinja() {
         var sourceDirs = ['ext', 'common', 'syntax', 'depends', 'core', 'super_errors', 'outcome_printer', 'bsb','main']
         var includes = sourceDirs.map(x=>`-I ${x}`).join(' ')
+        var releaseMode = `-D BS_RELEASE_BUILD=true`
         var templateNative = `
 rule optc
     command = ocamlopt.opt -I +compiler-libs -I stubs ${includes} -g -w +6-40-30-23 -warn-error +a-40-30-23 -absname -c $in
@@ -1030,30 +1036,32 @@ rule bspack
     command = ./bin/bspack.exe $flags -bs-main $main -o $out
     depfile = $out.d
 
+build snapshot: phony  ../lib/whole_compiler.ml ../lib/bsppx.ml ../lib/bsdep.ml ../lib/bsb_helper.ml ../lib/bsb.ml ../lib/bspp.ml bin/all_ounit_tests.ml
+
 build ../lib/whole_compiler.ml: bspack | ./bin/bspack.exe
-    flags = -U BS_DEBUG -bs-MD -module-alias Config=Config_whole_compiler -bs-exclude-I config  -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I $OCAML_SRC_TYPING -I $OCAML_SRC_BYTECOMP -I $OCAML_SRC_DRIVER  -I stubs ${includes}
+    flags = ${releaseMode} -bs-MD -module-alias Config=Config_whole_compiler -bs-exclude-I config  -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I $OCAML_SRC_TYPING -I $OCAML_SRC_BYTECOMP -I $OCAML_SRC_DRIVER  -I stubs ${includes}
     main = Js_main
 
 
 build ../lib/bsppx.ml: bspack | ./bin/bspack.exe
-    flags =  -U BS_DEBUG -bs-MD  -module-alias Config=Config_whole_compiler  -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING  -I stubs -I common -I ext -I syntax -I core -I main 
+    flags =  ${releaseMode} -bs-MD  -module-alias Config=Config_whole_compiler  -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING  -I stubs -I common -I ext -I syntax -I core -I main 
     main = Bsppx_main
 
 
 build ../lib/bsdep.ml: bspack | ./bin/bspack.exe
-    flags = -D BS_OCAMLDEP=true  -U BS_DEBUG -bs-MD  -module-alias Config=Config_whole_compiler   -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I $OCAML_SRC_DRIVER -I $OCAML_SRC_TOOLS -I common -I ext -I syntax -I depends -I core -I stubs -I main 
+    flags = -D BS_OCAMLDEP=true  ${releaseMode} -bs-MD  -module-alias Config=Config_whole_compiler   -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I $OCAML_SRC_DRIVER -I $OCAML_SRC_TOOLS -I common -I ext -I syntax -I depends -I core -I stubs -I main 
     main = Ocamldep
 
 build ../lib/bsb_helper.ml: bspack | ./bin/bspack.exe
-     flags = -bs-MD -U BS_DEBUG   -I stubs -I common -I ext -I syntax -I depends -I bsb  -I main 
+     flags = -bs-MD ${releaseMode}   -I stubs -I common -I ext -I syntax -I depends -I bsb  -I main 
      main = Bsb_helper_main 
 
 build ../lib/bsb.ml: bspack | ./bin/bspack.exe
-     flags =   -D BS_MIN_LEX_DEPS=true -bs-MD -U BS_DEBUG -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I stubs -I common -I ext -I syntax -I depends -I bsb -I ext -I main 
+     flags =   -D BS_MIN_LEX_DEPS=true -bs-MD ${releaseMode} -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I stubs -I common -I ext -I syntax -I depends -I bsb -I ext -I main 
      main = Bsb_main 
 
 build ../lib/bspp.ml: bspack | ./bin/bspack.exe
-     flags = -D BS_MIN_LEX_DEPS=true -U BS_DEBUG -bs-MD -module-alias Config=Config_whole_compiler   -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING?parser   -I common -I ext -I syntax -I depends -I bspp -I core -I main 
+     flags = -D BS_MIN_LEX_DEPS=true ${releaseMode} -bs-MD -module-alias Config=Config_whole_compiler   -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING?parser   -I common -I ext -I syntax -I depends -I bspp -I core -I main 
      main = Bspp_main 
 
 build bin/all_ounit_tests.ml: bspack | ./bin/bspack.exe

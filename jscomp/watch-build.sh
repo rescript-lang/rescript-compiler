@@ -6,26 +6,26 @@ export OCAMLPARAM='_,bin-annot=1,annot=1'
 export OCAMLRUNPARAM=b
 
 
-# ninja
-echo "Checking"
+ninja
+# echo "Checking"
 
-# make -r -j5 syntax.cmxa depends.cmxa bsb.cmxa
+# # make -r -j5 syntax.cmxa depends.cmxa bsb.cmxa
 
-make -r -j5  check 
-echo "Linking"
-make -r -j3 ../lib/bsc.exe ../lib/bsb.exe bin/cmjdump.exe ../lib/bsb_helper.exe
-echo "Making libs"
-make libs 
-echo "Making test"
-# make -C test -j30 all
-ninja -f test/build.ninja
-echo "Making xwatcher"
-make -C xwatcher all
+# make -r -j5  check 
+# echo "Linking"
+# make -r -j3 ../lib/bsc.exe ../lib/bsb.exe bin/cmjdump.exe ../lib/bsb_helper.exe
+# echo "Making libs"
+# make libs 
+# echo "Making test"
+# # make -C test -j30 all
+# ninja -C test
+# echo "Making xwatcher"
+# make -C xwatcher all
 
-echo "Update depend, snapshot"
-make -j7 depend snapshotml
-make -C test depend 
-make -C runtime depend
-make -C others depend
-make -C xwatcher depend
-echo "Done"
+# echo "Update depend, snapshot"
+# make -j7 depend snapshotml
+# make -C test depend 
+# make -C runtime depend
+# make -C others depend
+# make -C xwatcher depend
+# echo "Done"

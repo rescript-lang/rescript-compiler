@@ -6,7 +6,7 @@
     },
     "isShellCommand": true,
     "args": [
-        "../scripts/watcher.js"
+        "../scripts/tasks.js"
     ],    
     "isBackground": true,
     "problemMatcher": {

@@ -26,29 +26,29 @@ rule bspack
     depfile = $out.d
 
 build ../lib/whole_compiler.ml: bspack | ./bin/bspack.exe
-    flags = -U BS_DEBUG -bs-MD -module-alias Config=Config_whole_compiler -bs-exclude-I config  -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I $OCAML_SRC_TYPING -I $OCAML_SRC_BYTECOMP -I $OCAML_SRC_DRIVER  -I stubs -I ext -I common -I syntax -I depends -I core -I super_errors -I outcome_printer -I bsb -I main
+    flags = -D BS_RELEASE_BUILD=true -bs-MD -module-alias Config=Config_whole_compiler -bs-exclude-I config  -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I $OCAML_SRC_TYPING -I $OCAML_SRC_BYTECOMP -I $OCAML_SRC_DRIVER  -I stubs -I ext -I common -I syntax -I depends -I core -I super_errors -I outcome_printer -I bsb -I main
     main = Js_main
 
 
 build ../lib/bsppx.ml: bspack | ./bin/bspack.exe
-    flags =  -U BS_DEBUG -bs-MD  -module-alias Config=Config_whole_compiler  -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING  -I stubs -I common -I ext -I syntax -I core -I main 
+    flags =  -D BS_RELEASE_BUILD=true -bs-MD  -module-alias Config=Config_whole_compiler  -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING  -I stubs -I common -I ext -I syntax -I core -I main 
     main = Bsppx_main
 
 
 build ../lib/bsdep.ml: bspack | ./bin/bspack.exe
-    flags = -D BS_OCAMLDEP=true  -U BS_DEBUG -bs-MD  -module-alias Config=Config_whole_compiler   -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I $OCAML_SRC_DRIVER -I $OCAML_SRC_TOOLS -I common -I ext -I syntax -I depends -I core -I stubs -I main 
+    flags = -D BS_OCAMLDEP=true  -D BS_RELEASE_BUILD=true -bs-MD  -module-alias Config=Config_whole_compiler   -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I $OCAML_SRC_DRIVER -I $OCAML_SRC_TOOLS -I common -I ext -I syntax -I depends -I core -I stubs -I main 
     main = Ocamldep
 
 build ../lib/bsb_helper.ml: bspack | ./bin/bspack.exe
-     flags = -bs-MD -U BS_DEBUG   -I stubs -I common -I ext -I syntax -I depends -I bsb  -I main 
+     flags = -bs-MD -D BS_RELEASE_BUILD=true   -I stubs -I common -I ext -I syntax -I depends -I bsb  -I main 
      main = Bsb_helper_main 
 
 build ../lib/bsb.ml: bspack | ./bin/bspack.exe
-     flags =   -D BS_MIN_LEX_DEPS=true -bs-MD -U BS_DEBUG -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I stubs -I common -I ext -I syntax -I depends -I bsb -I ext -I main 
+     flags =   -D BS_MIN_LEX_DEPS=true -bs-MD -D BS_RELEASE_BUILD=true -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I stubs -I common -I ext -I syntax -I depends -I bsb -I ext -I main 
      main = Bsb_main 
 
 build ../lib/bspp.ml: bspack | ./bin/bspack.exe
-     flags = -D BS_MIN_LEX_DEPS=true -U BS_DEBUG -bs-MD -module-alias Config=Config_whole_compiler   -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING?parser   -I common -I ext -I syntax -I depends -I bspp -I core -I main 
+     flags = -D BS_MIN_LEX_DEPS=true -D BS_RELEASE_BUILD=true -bs-MD -module-alias Config=Config_whole_compiler   -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING?parser   -I common -I ext -I syntax -I depends -I bspp -I core -I main 
      main = Bspp_main 
 
 build bin/all_ounit_tests.ml: bspack | ./bin/bspack.exe
