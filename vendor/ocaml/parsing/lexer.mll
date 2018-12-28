@@ -315,7 +315,7 @@ let directive_parse token_with_comments lexbuf =
     look_ahead := Some e 
   in
   let rec
-    token_op calc   ~no  lhs  : bool =
+    token_op calc   ~no  lhs   =
     match token () with 
     | (LESS 
     | GREATER 
@@ -399,7 +399,9 @@ let directive_parse token_with_comments lexbuf =
         token_op calc
           ~no:(fun e -> 
                 push e ; 
-                v <> 0              
+                v <> 0                              
+
+
               )
           (Dir_int v)
     | FLOAT v -> 
