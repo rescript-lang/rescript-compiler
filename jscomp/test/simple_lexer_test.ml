@@ -1,8 +1,8 @@
-# 1 "simple_lexer_test.mll"
+# 1 "test/simple_lexer_test.mll"
   
  
 
-# 6 "simple_lexer_test.ml"
+# 6 "test/simple_lexer_test.ml"
 let __ocaml_lex_tables = {
   Lexing.lex_base = 
    "\000\000\253\255\254\255\000\000\000\000\001\000\000\000\000\000\
@@ -103,31 +103,31 @@ let rec translate lexbuf =
 and __ocaml_lex_translate_rec lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 5 "simple_lexer_test.mll"
+# 5 "test/simple_lexer_test.mll"
                      ( "." ^ translate lexbuf )
-# 109 "simple_lexer_test.ml"
+# 109 "test/simple_lexer_test.ml"
 
   | 1 ->
 let
-# 6 "simple_lexer_test.mll"
+# 6 "test/simple_lexer_test.mll"
        c
-# 115 "simple_lexer_test.ml"
+# 115 "test/simple_lexer_test.ml"
 = Lexing.sub_lexeme_char lexbuf lexbuf.Lexing.lex_start_pos in
-# 6 "simple_lexer_test.mll"
+# 6 "test/simple_lexer_test.mll"
         (  String.make 1 c ^ translate lexbuf )
-# 119 "simple_lexer_test.ml"
+# 119 "test/simple_lexer_test.ml"
 
   | 2 ->
-# 7 "simple_lexer_test.mll"
+# 7 "test/simple_lexer_test.mll"
      ( "" )
-# 124 "simple_lexer_test.ml"
+# 124 "test/simple_lexer_test.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
       __ocaml_lex_translate_rec lexbuf __ocaml_lex_state
 
 ;;
 
-# 10 "simple_lexer_test.mll"
+# 10 "test/simple_lexer_test.mll"
  
 
 let suites = Mt.[
@@ -145,4 +145,4 @@ let suites = Mt.[
        Lexing.from_string "-- current_directory --"  *)
 
 
-# 149 "simple_lexer_test.ml"
+# 149 "test/simple_lexer_test.ml"

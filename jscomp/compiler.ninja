@@ -1,16 +1,88 @@
 
 rule optc
-    command = ocamlopt.opt -I +compiler-libs -I stubs -I ext -I common -I syntax -I depends -I core -I bsb -I super_errors -I outcome_printer -I main -g -w +6-40-30-23 -warn-error +a-40-30-23 -absname -c $in
+    command = ocamlopt.opt -I +compiler-libs  -I stubs -I ext -I common -I syntax -I depends -I core -I super_errors -I outcome_printer -I bsb -I main -g -w +6-40-30-23 -warn-error +a-40-30-23 -absname -c $in
 rule archive
     command = ocamlopt.opt -a $in -o $out    
 rule link
-    command =  ocamlopt.opt -g  -I +compiler-libs $libs $in -o $out
+    command =  ocamlopt.opt -g  -I +compiler-libs $flags $libs $in -o $out
+rule mk_bsversion
+    command = node $in
+    generator = true
+rule gcc 
+    command = ocamlopt.opt -ccopt -O2 -ccopt -o -ccopt $out -c $in
+build stubs/ext_basic_hash_stubs.o : gcc  stubs/ext_basic_hash_stubs.c   
+rule ocamlmklib
+    command = ocamlmklib $in -o $name
+build stubs/libbs_hash.a stubs/dllbs_hash.so: ocamlmklib stubs/ext_basic_hash_stubs.o
+    name = stubs/bs_hash
+rule stubslib
+    command = ocamlopt.opt -a $ml -o $out -cclib $clib
+build stubs/stubs.cmxa : stubslib stubs/bs_hash_stubs.cmx stubs/libbs_hash.a    
+    ml = stubs/bs_hash_stubs.cmx
+    clib = stubs/libbs_hash.a
+
+rule p4of
+    command = camlp4of $flags -impl $in -printer o -o $out    
+    generator = true
+build core/js_fold.ml: p4of core/js_fold.mlp | core/j.ml  
+    flags = -I core -filter map -filter trash
+build core/js_map.ml: p4of core/js_map.mlp | core/j.ml
+    flags = -I core -filter Camlp4FoldGenerator -filter trash
+
+build common/bs_version.ml : mk_bsversion build_version.js ../package.json
+
 build ../lib/bsc.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa super_errors/super_errors.cmxa outcome_printer/outcome_printer.cmxa core/core.cmxa main/js_main.cmx
     libs = ocamlcommon.cmxa
 build ../lib/bsb.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa bsb/bsb.cmxa main/bsb_main.cmx
     libs = ocamlcommon.cmxa unix.cmxa str.cmxa
 build ../lib/bsb_helper.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa  bsb/bsb.cmxa main/bsb_helper_main.cmx
     libs = ocamlcommon.cmxa unix.cmxa str.cmxa
+
+OCAML_SRC_UTILS=../vendor/ocaml/utils
+OCAML_SRC_PARSING=../vendor/ocaml/parsing
+OCAML_SRC_TYPING=../vendor/ocaml/typing
+OCAML_SRC_BYTECOMP=../vendor/ocaml/bytecomp
+OCAML_SRC_DRIVER=../vendor/ocaml/driver
+OCAML_SRC_TOOLS=../vendor/ocaml/tools    
+build ./bin/bspack.exe: link ./stubs/ext_basic_hash_stubs.c ./bin/bspack.mli ./bin/bspack.ml
+    libs = unix.cmxa
+    flags = -I ./bin -w -40-30
+rule bspack    
+    command = ./bin/bspack.exe $flags -bs-main $main -o $out
+    depfile = $out.d
+
+build snapshot: phony  ../lib/whole_compiler.ml ../lib/bsppx.ml ../lib/bsdep.ml ../lib/bsb_helper.ml ../lib/bsb.ml ../lib/bspp.ml bin/all_ounit_tests.ml
+
+build ../lib/whole_compiler.ml: bspack | ./bin/bspack.exe
+    flags = -D BS_RELEASE_BUILD=true -bs-MD -module-alias Config=Config_whole_compiler -bs-exclude-I config  -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I $OCAML_SRC_TYPING -I $OCAML_SRC_BYTECOMP -I $OCAML_SRC_DRIVER   -I stubs -I ext -I common -I syntax -I depends -I core -I super_errors -I outcome_printer -I bsb -I main
+    main = Js_main
+
+
+build ../lib/bsppx.ml: bspack | ./bin/bspack.exe
+    flags =  -D BS_RELEASE_BUILD=true -bs-MD  -module-alias Config=Config_whole_compiler  -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING  -I stubs -I common -I ext -I syntax -I core -I main 
+    main = Bsppx_main
+
+
+build ../lib/bsdep.ml: bspack | ./bin/bspack.exe
+    flags = -D BS_OCAMLDEP=true  -D BS_RELEASE_BUILD=true -bs-MD  -module-alias Config=Config_whole_compiler   -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I $OCAML_SRC_DRIVER -I $OCAML_SRC_TOOLS -I common -I ext -I syntax -I depends -I core -I stubs -I main 
+    main = Ocamldep
+
+build ../lib/bsb_helper.ml: bspack | ./bin/bspack.exe
+     flags = -bs-MD -D BS_RELEASE_BUILD=true   -I stubs -I common -I ext -I syntax -I depends -I bsb  -I main 
+     main = Bsb_helper_main 
+
+build ../lib/bsb.ml: bspack | ./bin/bspack.exe
+     flags =   -D BS_MIN_LEX_DEPS=true -bs-MD -D BS_RELEASE_BUILD=true -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I stubs -I common -I ext -I syntax -I depends -I bsb -I ext -I main 
+     main = Bsb_main 
+
+build ../lib/bspp.ml: bspack | ./bin/bspack.exe
+     flags = -D BS_MIN_LEX_DEPS=true -D BS_RELEASE_BUILD=true -bs-MD -module-alias Config=Config_whole_compiler   -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING?parser   -I common -I ext -I syntax -I depends -I bspp -I core -I main 
+     main = Bspp_main 
+
+build bin/all_ounit_tests.ml: bspack | ./bin/bspack.exe
+     flags =  -bs-MD    -I ounit -I ounit_tests  -I stubs -I bsb -I common -I ext -I syntax -I depends -I bspp -I core 
+     main = Ounit_tests_main     
+build stubs/bs_hash_stubs.cmx stubs/bs_hash_stubs.cmi : optc stubs/bs_hash_stubs.ml | 
 build ext/ext_array.cmx : optc ext/ext_array.ml | ext/ext_array.cmi
 build ext/ext_array.cmi : optc ext/ext_array.mli | 
 build ext/ext_bytes.cmx : optc ext/ext_bytes.ml | ext/ext_bytes.cmi
@@ -83,28 +155,28 @@ build ext/ext_util.cmi : optc ext/ext_util.mli |
 build ext/hash_set.cmx : optc ext/hash_set.ml | ext/hash_set_gen.cmx ext/hash_set.cmi
 build ext/hash_set.cmi : optc ext/hash_set.mli | ext/hash_set_gen.cmx
 build ext/hash_set_gen.cmx ext/hash_set_gen.cmi : optc ext/hash_set_gen.ml | ext/ext_util.cmx ext/ext_array.cmx
-build ext/hash_set_ident_mask.cmx : optc ext/hash_set_ident_mask.ml | ext/ext_util.cmx ext/ext_ident.cmx ext/hash_set_ident_mask.cmi
+build ext/hash_set_ident_mask.cmx : optc ext/hash_set_ident_mask.ml | ext/ext_util.cmx ext/ext_ident.cmx stubs/bs_hash_stubs.cmx ext/hash_set_ident_mask.cmi
 build ext/hash_set_ident_mask.cmi : optc ext/hash_set_ident_mask.mli | 
 build ext/hash_set_poly.cmx : optc ext/hash_set_poly.ml | ext/hash_set_gen.cmx ext/hash_set_poly.cmi
 build ext/hash_set_poly.cmi : optc ext/hash_set_poly.mli | 
 build ext/hashtbl_gen.cmx ext/hashtbl_gen.cmi : optc ext/hashtbl_gen.ml | ext/ext_util.cmx ext/ext_array.cmx
 build ext/hashtbl_make.cmx : optc ext/hashtbl_make.ml | ext/hashtbl_gen.cmx ext/hashtbl_make.cmi
 build ext/hashtbl_make.cmi : optc ext/hashtbl_make.mli | ext/hashtbl_gen.cmx
-build ext/ident_hash_set.cmx : optc ext/ident_hash_set.ml | ext/hash_set_gen.cmx ext/ext_ident.cmx ext/ident_hash_set.cmi
+build ext/ident_hash_set.cmx : optc ext/ident_hash_set.ml | ext/hash_set_gen.cmx ext/ext_ident.cmx stubs/bs_hash_stubs.cmx ext/ident_hash_set.cmi
 build ext/ident_hash_set.cmi : optc ext/ident_hash_set.mli | ext/hash_set_gen.cmx
-build ext/ident_hashtbl.cmx : optc ext/ident_hashtbl.ml | ext/hashtbl_gen.cmx ext/ext_ident.cmx ext/ident_hashtbl.cmi
+build ext/ident_hashtbl.cmx : optc ext/ident_hashtbl.ml | ext/hashtbl_gen.cmx ext/ext_ident.cmx stubs/bs_hash_stubs.cmx ext/ident_hashtbl.cmi
 build ext/ident_hashtbl.cmi : optc ext/ident_hashtbl.mli | ext/hashtbl_gen.cmx
 build ext/ident_map.cmx : optc ext/ident_map.ml | ext/map_gen.cmx ext/ext_ident.cmx ext/ident_map.cmi
 build ext/ident_map.cmi : optc ext/ident_map.mli | ext/map_gen.cmx
 build ext/ident_set.cmx : optc ext/ident_set.ml | ext/set_gen.cmx ext/ident_set.cmi
 build ext/ident_set.cmi : optc ext/ident_set.mli | ext/set_gen.cmx
-build ext/int_hash_set.cmx : optc ext/int_hash_set.ml | ext/hash_set_gen.cmx ext/ext_int.cmx ext/int_hash_set.cmi
+build ext/int_hash_set.cmx : optc ext/int_hash_set.ml | ext/hash_set_gen.cmx ext/ext_int.cmx stubs/bs_hash_stubs.cmx ext/int_hash_set.cmi
 build ext/int_hash_set.cmi : optc ext/int_hash_set.mli | ext/hash_set_gen.cmx
-build ext/int_hashtbl.cmx : optc ext/int_hashtbl.ml | ext/hashtbl_gen.cmx ext/ext_int.cmx ext/int_hashtbl.cmi
+build ext/int_hashtbl.cmx : optc ext/int_hashtbl.ml | ext/hashtbl_gen.cmx ext/ext_int.cmx stubs/bs_hash_stubs.cmx ext/int_hashtbl.cmi
 build ext/int_hashtbl.cmi : optc ext/int_hashtbl.mli | ext/hashtbl_gen.cmx
 build ext/int_map.cmx : optc ext/int_map.ml | ext/map_gen.cmx ext/ext_int.cmx ext/int_map.cmi
 build ext/int_map.cmi : optc ext/int_map.mli | ext/map_gen.cmx
-build ext/int_vec.cmx : optc ext/int_vec.ml | ext/ext_array.cmx ext/int_vec.cmi
+build ext/int_vec.cmx : optc ext/int_vec.ml | ext/ext_array.cmx stubs/bs_hash_stubs.cmx ext/int_vec.cmi
 build ext/int_vec.cmi : optc ext/int_vec.mli | ext/vec_gen.cmx
 build ext/int_vec_util.cmx : optc ext/int_vec_util.ml | ext/int_vec.cmx ext/int_vec_util.cmi
 build ext/int_vec_util.cmi : optc ext/int_vec_util.mli | ext/int_vec.cmi
@@ -114,22 +186,22 @@ build ext/literals.cmx : optc ext/literals.ml | ext/literals.cmi
 build ext/literals.cmi : optc ext/literals.mli | 
 build ext/map_gen.cmx ext/map_gen.cmi : optc ext/map_gen.ml | 
 build ext/ordered_hash_map_gen.cmx ext/ordered_hash_map_gen.cmi : optc ext/ordered_hash_map_gen.ml | ext/ext_util.cmx ext/ext_array.cmx
-build ext/ordered_hash_map_local_ident.cmx : optc ext/ordered_hash_map_local_ident.ml | ext/ordered_hash_map_gen.cmx ext/ext_ident.cmx ext/ordered_hash_map_local_ident.cmi
+build ext/ordered_hash_map_local_ident.cmx : optc ext/ordered_hash_map_local_ident.ml | ext/ordered_hash_map_gen.cmx ext/ext_ident.cmx stubs/bs_hash_stubs.cmx ext/ordered_hash_map_local_ident.cmi
 build ext/ordered_hash_map_local_ident.cmi : optc ext/ordered_hash_map_local_ident.mli | ext/ordered_hash_map_gen.cmx
 build ext/ordered_hash_set_gen.cmx ext/ordered_hash_set_gen.cmi : optc ext/ordered_hash_set_gen.ml | ext/ext_util.cmx ext/ext_array.cmx
-build ext/ordered_hash_set_ident.cmx : optc ext/ordered_hash_set_ident.ml | ext/ordered_hash_set_gen.cmx ext/ext_util.cmx ext/ext_ident.cmx ext/ordered_hash_set_ident.cmi
+build ext/ordered_hash_set_ident.cmx : optc ext/ordered_hash_set_ident.ml | ext/ordered_hash_set_gen.cmx ext/ext_util.cmx ext/ext_ident.cmx stubs/bs_hash_stubs.cmx ext/ordered_hash_set_ident.cmi
 build ext/ordered_hash_set_ident.cmi : optc ext/ordered_hash_set_ident.mli | ext/ordered_hash_set_gen.cmx
 build ext/ordered_hash_set_make.cmx ext/ordered_hash_set_make.cmi : optc ext/ordered_hash_set_make.ml | ext/ordered_hash_set_gen.cmx ext/ext_util.cmx
-build ext/ordered_hash_set_string.cmx : optc ext/ordered_hash_set_string.ml | ext/ordered_hash_set_gen.cmx ext/ext_util.cmx ext/ext_string.cmx ext/ordered_hash_set_string.cmi
+build ext/ordered_hash_set_string.cmx : optc ext/ordered_hash_set_string.ml | ext/ordered_hash_set_gen.cmx ext/ext_util.cmx ext/ext_string.cmx stubs/bs_hash_stubs.cmx ext/ordered_hash_set_string.cmi
 build ext/ordered_hash_set_string.cmi : optc ext/ordered_hash_set_string.mli | ext/ordered_hash_set_gen.cmx
 build ext/resize_array.cmx : optc ext/resize_array.ml | ext/vec_gen.cmx ext/ext_array.cmx ext/resize_array.cmi
 build ext/resize_array.cmi : optc ext/resize_array.mli | ext/vec_gen.cmx
 build ext/set_gen.cmx ext/set_gen.cmi : optc ext/set_gen.ml | 
 build ext/set_int.cmx : optc ext/set_int.ml | ext/set_gen.cmx ext/ext_int.cmx ext/set_int.cmi
 build ext/set_int.cmi : optc ext/set_int.mli | ext/set_gen.cmx
-build ext/string_hash_set.cmx : optc ext/string_hash_set.ml | ext/hash_set_gen.cmx ext/ext_string.cmx ext/string_hash_set.cmi
+build ext/string_hash_set.cmx : optc ext/string_hash_set.ml | ext/hash_set_gen.cmx ext/ext_string.cmx stubs/bs_hash_stubs.cmx ext/string_hash_set.cmi
 build ext/string_hash_set.cmi : optc ext/string_hash_set.mli | ext/hash_set_gen.cmx
-build ext/string_hashtbl.cmx : optc ext/string_hashtbl.ml | ext/hashtbl_gen.cmx ext/ext_string.cmx ext/string_hashtbl.cmi
+build ext/string_hashtbl.cmx : optc ext/string_hashtbl.ml | ext/hashtbl_gen.cmx ext/ext_string.cmx stubs/bs_hash_stubs.cmx ext/string_hashtbl.cmi
 build ext/string_hashtbl.cmi : optc ext/string_hashtbl.mli | ext/hashtbl_gen.cmx
 build ext/string_map.cmx : optc ext/string_map.ml | ext/map_gen.cmx ext/ext_string.cmx ext/string_map.cmi
 build ext/string_map.cmi : optc ext/string_map.mli | ext/map_gen.cmx
@@ -400,7 +472,7 @@ build core/lam_inline_util.cmx : optc core/lam_inline_util.ml | core/lam.cmx cor
 build core/lam_inline_util.cmi : optc core/lam_inline_util.mli | core/lam.cmi
 build core/lam_iter.cmx : optc core/lam_iter.ml | core/lam_constant.cmx core/lam.cmx ext/ext_option.cmx ext/ext_list.cmx core/lam_iter.cmi
 build core/lam_iter.cmi : optc core/lam_iter.mli | core/lam.cmi
-build core/lam_module_ident.cmx : optc core/lam_module_ident.ml | core/js_op.cmx core/j.cmx ext/hashtbl_make.cmx ext/hash_set.cmx ext/ext_ident.cmx core/lam_module_ident.cmi
+build core/lam_module_ident.cmx : optc core/lam_module_ident.ml | core/js_op.cmx core/j.cmx ext/hashtbl_make.cmx ext/hash_set.cmx ext/ext_ident.cmx stubs/bs_hash_stubs.cmx core/lam_module_ident.cmi
 build core/lam_module_ident.cmi : optc core/lam_module_ident.mli | core/js_op.cmx core/j.cmx ext/hashtbl_gen.cmx ext/hash_set_gen.cmx
 build core/lam_pass_alpha_conversion.cmx : optc core/lam_pass_alpha_conversion.ml | core/lam_stats.cmx core/lam_eta_conversion.cmx core/lam_arity_analysis.cmx core/lam_arity.cmx core/lam.cmx ext/ext_option.cmx ext/ext_list.cmx core/lam_pass_alpha_conversion.cmi
 build core/lam_pass_alpha_conversion.cmi : optc core/lam_pass_alpha_conversion.mli | core/lam_stats.cmi core/lam.cmi
