@@ -47,7 +47,7 @@ var string_config = {
   low: "32"
 };
 
-eq("File \"test/ffi_js_test.ml\", line 32, characters 5-12", /* tuple */[
+eq("File \"ffi_js_test.ml\", line 32, characters 5-12", /* tuple */[
       6,
       $$higher_order(1)(2, 3)
     ]);
@@ -86,22 +86,22 @@ var v_obj = {
     })
 };
 
-eq("File \"test/ffi_js_test.ml\", line 44, characters 5-12", /* tuple */[
+eq("File \"ffi_js_test.ml\", line 44, characters 5-12", /* tuple */[
       Object.keys(int_config).length,
       2
     ]);
 
-eq("File \"test/ffi_js_test.ml\", line 45, characters 5-12", /* tuple */[
+eq("File \"ffi_js_test.ml\", line 45, characters 5-12", /* tuple */[
       Object.keys(string_config).length,
       2
     ]);
 
-eq("File \"test/ffi_js_test.ml\", line 46, characters 5-12", /* tuple */[
+eq("File \"ffi_js_test.ml\", line 46, characters 5-12", /* tuple */[
       Object.keys(v_obj).indexOf("hi_x"),
       -1
     ]);
 
-eq("File \"test/ffi_js_test.ml\", line 47, characters 5-12", /* tuple */[
+eq("File \"ffi_js_test.ml\", line 47, characters 5-12", /* tuple */[
       Object.keys(v_obj).indexOf("hi"),
       0
     ]);
@@ -113,7 +113,7 @@ var side_effect_config = (u[0] = u[0] + 1 | 0, {
     low: 32
   });
 
-eq("File \"test/ffi_js_test.ml\", line 54, characters 5-12", /* tuple */[
+eq("File \"ffi_js_test.ml\", line 54, characters 5-12", /* tuple */[
       u[0],
       4
     ]);

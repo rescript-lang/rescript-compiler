@@ -101,7 +101,7 @@ Mt.from_pair_suites("Int_overflow_test", /* :: */[
                 ],
                 /* :: */[
                   /* tuple */[
-                    "File \"test/int_overflow_test.ml\", line 37, characters 2-9",
+                    "File \"int_overflow_test.ml\", line 37, characters 2-9",
                     (function (param) {
                         return /* Eq */Block.__(0, [
                                   hash_variant2("xxyyzzuuxxzzyy00112233"),
@@ -111,7 +111,7 @@ Mt.from_pair_suites("Int_overflow_test", /* :: */[
                   ],
                   /* :: */[
                     /* tuple */[
-                      "File \"test/int_overflow_test.ml\", line 38, characters 2-9",
+                      "File \"int_overflow_test.ml\", line 38, characters 2-9",
                       (function (param) {
                           return /* Eq */Block.__(0, [
                                     hash_variant2("xxyyzxzzyy"),
@@ -161,7 +161,7 @@ Mt.from_pair_suites("Int_overflow_test", /* :: */[
                             ],
                             /* :: */[
                               /* tuple */[
-                                "File \"test/int_overflow_test.ml\", line 44, characters 3-10",
+                                "File \"int_overflow_test.ml\", line 44, characters 3-10",
                                 (function (param) {
                                     return /* Eq */Block.__(0, [
                                               Number("3") | 0,
@@ -171,7 +171,7 @@ Mt.from_pair_suites("Int_overflow_test", /* :: */[
                               ],
                               /* :: */[
                                 /* tuple */[
-                                  "File \"test/int_overflow_test.ml\", line 46, characters 3-10",
+                                  "File \"int_overflow_test.ml\", line 46, characters 3-10",
                                   (function (param) {
                                       return /* Eq */Block.__(0, [
                                                 Number("3.2") | 0,

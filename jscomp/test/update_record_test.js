@@ -41,7 +41,7 @@ function f(x) {
         ];
 }
 
-eq("File \"test/update_record_test.ml\", line 30, characters 5-12", 1, f(/* record */[
+eq("File \"update_record_test.ml\", line 30, characters 5-12", 1, f(/* record */[
             /* a0 */0,
             /* a1 */0,
             /* a2 */0,

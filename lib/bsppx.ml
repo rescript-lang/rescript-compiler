@@ -20374,6 +20374,7 @@ let handle_extension record_as_js_object e (self : Bs_ast_mapper.mapper)
             else 
               let loc_start = loc.loc_start in 
               let (file, lnum, cnum) = Location.get_pos_info loc_start in
+              let file = Filename.basename file in 
               let enum = 
                 loc.Location.loc_end.Lexing.pos_cnum -
                 loc_start.Lexing.pos_cnum + cnum in

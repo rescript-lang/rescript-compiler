@@ -47,16 +47,16 @@ function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
-eq("File \"test/exn_error_pattern.ml\", line 34, characters 5-12", f(Caml_builtin_exceptions.not_found), 0);
+eq("File \"exn_error_pattern.ml\", line 34, characters 5-12", f(Caml_builtin_exceptions.not_found), 0);
 
-eq("File \"test/exn_error_pattern.ml\", line 35, characters 5-12", f([
+eq("File \"exn_error_pattern.ml\", line 35, characters 5-12", f([
           Caml_builtin_exceptions.invalid_argument,
           ""
         ]), 1);
 
-eq("File \"test/exn_error_pattern.ml\", line 36, characters 5-12", f(Caml_builtin_exceptions.stack_overflow), 1);
+eq("File \"exn_error_pattern.ml\", line 36, characters 5-12", f(Caml_builtin_exceptions.stack_overflow), 1);
 
-eq("File \"test/exn_error_pattern.ml\", line 37, characters 5-12", f([
+eq("File \"exn_error_pattern.ml\", line 37, characters 5-12", f([
           Caml_builtin_exceptions.sys_error,
           ""
         ]), 2);
@@ -70,7 +70,7 @@ catch (raw_e){
   tmp = Caml_js_exceptions.internalToOCamlException(raw_e);
 }
 
-eq("File \"test/exn_error_pattern.ml\", line 38, characters 5-12", f(tmp), undefined);
+eq("File \"exn_error_pattern.ml\", line 38, characters 5-12", f(tmp), undefined);
 
 Mt.from_pair_suites("Exn_error_pattern", suites[0]);
 

@@ -3041,7 +3041,7 @@ let partial_function loc () =
   let (fname, line, char) = Location.get_pos_info loc.Location.loc_start in
 #if undefined BS_NO_COMPILER_PATCH then     
   let fname = 
-    if  not !Location.absname then Filename.basename fname else fname 
+    Filename.basename fname
   in   
 #end  
   Lprim(Praise Raise_regular, [Lprim(Pmakeblock(0, Lambda.default_tag_info, Immutable),

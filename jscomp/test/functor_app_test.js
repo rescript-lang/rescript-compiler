@@ -31,13 +31,13 @@ var Y0 = Functor_def.Make(/* Functor_inst */[Functor_inst.say]);
 
 var Y1 = Functor_def.Make(/* Functor_inst */[Functor_inst.say]);
 
-eq("File \"test/functor_app_test.ml\", line 23, characters 6-13", Curry._2(Y0[/* h */0], 1, 2), 4);
+eq("File \"functor_app_test.ml\", line 23, characters 6-13", Curry._2(Y0[/* h */0], 1, 2), 4);
 
-eq("File \"test/functor_app_test.ml\", line 24, characters 6-13", Curry._2(Y1[/* h */0], 2, 3), 6);
+eq("File \"functor_app_test.ml\", line 24, characters 6-13", Curry._2(Y1[/* h */0], 2, 3), 6);
 
 var v = Functor_def.$$return(/* () */0);
 
-eq("File \"test/functor_app_test.ml\", line 29, characters 6-13", v, 2);
+eq("File \"functor_app_test.ml\", line 29, characters 6-13", v, 2);
 
 Mt.from_pair_suites("Functor_app_test", suites[0]);
 

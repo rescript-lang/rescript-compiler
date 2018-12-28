@@ -26,7 +26,7 @@ function eq(loc, x, y) {
 
 var a = 0;
 
-eq("File \"test/gpr_1749_test.ml\", line 18, characters 6-13", 0, a);
+eq("File \"gpr_1749_test.ml\", line 18, characters 6-13", 0, a);
 
 Mt.from_pair_suites("Gpr_1749_test", suites[0]);
 

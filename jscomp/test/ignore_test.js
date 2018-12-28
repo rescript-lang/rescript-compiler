@@ -33,7 +33,7 @@ function ff(x) {
   return /* () */0;
 }
 
-eq("File \"test/ignore_test.ml\", line 16, characters 5-12", /* () */0, /* () */0);
+eq("File \"ignore_test.ml\", line 16, characters 5-12", /* () */0, /* () */0);
 
 Mt.from_pair_suites("Ignore_test", suites[0]);
 

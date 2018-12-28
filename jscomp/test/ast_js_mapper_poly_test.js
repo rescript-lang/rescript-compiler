@@ -65,15 +65,15 @@ function eqUOpt(x, y) {
   }
 }
 
-eq("File \"test/ast_js_mapper_poly_test.ml\", line 25, characters 5-12", eqUOpt(uFromJs("x"), /* f */102), true);
+eq("File \"ast_js_mapper_poly_test.ml\", line 25, characters 5-12", eqUOpt(uFromJs("x"), /* f */102), true);
 
-eq("File \"test/ast_js_mapper_poly_test.ml\", line 26, characters 5-12", eqUOpt(uFromJs("D"), /* D */68), true);
+eq("File \"ast_js_mapper_poly_test.ml\", line 26, characters 5-12", eqUOpt(uFromJs("D"), /* D */68), true);
 
-eq("File \"test/ast_js_mapper_poly_test.ml\", line 27, characters 5-12", eqUOpt(uFromJs("C"), /* C */67), true);
+eq("File \"ast_js_mapper_poly_test.ml\", line 27, characters 5-12", eqUOpt(uFromJs("C"), /* C */67), true);
 
-eq("File \"test/ast_js_mapper_poly_test.ml\", line 28, characters 5-12", eqUOpt(uFromJs("f"), undefined), true);
+eq("File \"ast_js_mapper_poly_test.ml\", line 28, characters 5-12", eqUOpt(uFromJs("f"), undefined), true);
 
-eq("File \"test/ast_js_mapper_poly_test.ml\", line 29, characters 5-12", $$Array.map(uToJs, /* array */[
+eq("File \"ast_js_mapper_poly_test.ml\", line 29, characters 5-12", $$Array.map(uToJs, /* array */[
           /* D */68,
           /* C */67,
           /* f */102
@@ -128,7 +128,7 @@ function s(param) {
   }
 }
 
-eq("File \"test/ast_js_mapper_poly_test.ml\", line 54, characters 5-12", $$Array.map(vToJs, /* array */[
+eq("File \"ast_js_mapper_poly_test.ml\", line 54, characters 5-12", $$Array.map(vToJs, /* array */[
           /* A0 */0,
           /* A1 */1,
           /* A2 */2,
@@ -140,7 +140,7 @@ eq("File \"test/ast_js_mapper_poly_test.ml\", line 54, characters 5-12", $$Array
       5
     ]);
 
-eq("File \"test/ast_js_mapper_poly_test.ml\", line 55, characters 5-12", $$Array.map(vFromJs, /* array */[
+eq("File \"ast_js_mapper_poly_test.ml\", line 55, characters 5-12", $$Array.map(vFromJs, /* array */[
           0,
           1,
           2,
@@ -169,7 +169,7 @@ function v1FromJs(param) {
   
 }
 
-eq("File \"test/ast_js_mapper_poly_test.ml\", line 68, characters 5-12", $$Array.map(v1ToJs, /* array */[
+eq("File \"ast_js_mapper_poly_test.ml\", line 68, characters 5-12", $$Array.map(v1ToJs, /* array */[
           /* B0 */0,
           /* B1 */1,
           /* B2 */2,
@@ -185,7 +185,7 @@ eq("File \"test/ast_js_mapper_poly_test.ml\", line 68, characters 5-12", $$Array
       5
     ]);
 
-eq("File \"test/ast_js_mapper_poly_test.ml\", line 69, characters 5-12", $$Array.map(v1FromJs, /* array */[
+eq("File \"ast_js_mapper_poly_test.ml\", line 69, characters 5-12", $$Array.map(v1FromJs, /* array */[
           -1,
           0,
           1,
@@ -216,7 +216,7 @@ function v2FromJs(param) {
   
 }
 
-eq("File \"test/ast_js_mapper_poly_test.ml\", line 86, characters 5-12", $$Array.map(v2ToJs, /* array */[
+eq("File \"ast_js_mapper_poly_test.ml\", line 86, characters 5-12", $$Array.map(v2ToJs, /* array */[
           /* C0 */0,
           /* C1 */1,
           /* C2 */2,
@@ -232,7 +232,7 @@ eq("File \"test/ast_js_mapper_poly_test.ml\", line 86, characters 5-12", $$Array
       7
     ]);
 
-eq("File \"test/ast_js_mapper_poly_test.ml\", line 89, characters 5-12", $$Array.map(v2FromJs, /* array */[
+eq("File \"ast_js_mapper_poly_test.ml\", line 89, characters 5-12", $$Array.map(v2FromJs, /* array */[
           0,
           1,
           2,

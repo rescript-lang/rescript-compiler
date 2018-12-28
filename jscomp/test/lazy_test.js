@@ -56,7 +56,7 @@ function f(param) {
       throw [
             Caml_builtin_exceptions.match_failure,
             /* tuple */[
-              "test/lazy_test.ml",
+              "lazy_test.ml",
               11,
               8
             ]

@@ -1014,24 +1014,25 @@ function nativeNinja() {
         var includes = sourceDirs.map(x=>`-I ${x}`).join(' ')
         var releaseMode = `-D BS_RELEASE_BUILD=true`
         var templateNative = `
+ocamlopt = ../vendor/ocaml/bin/ocamlopt.opt      
 rule optc
-    command = ocamlopt.opt -I +compiler-libs  ${includes} -g -w +6-40-30-23 -warn-error +a-40-30-23 -absname -c $in
+    command = $ocamlopt -I +compiler-libs  ${includes} -g -w +6-40-30-23 -warn-error +a-40-30-23 -absname -c $in
 rule archive
-    command = ocamlopt.opt -a $in -o $out    
+    command = $ocamlopt -a $in -o $out    
 rule link
-    command =  ocamlopt.opt -g  -I +compiler-libs $flags $libs $in -o $out
+    command =  $ocamlopt -g  -I +compiler-libs $flags $libs $in -o $out
 rule mk_bsversion
     command = node $in
     generator = true
 rule gcc 
-    command = ocamlopt.opt -ccopt -O2 -ccopt -o -ccopt $out -c $in
+    command = $ocamlopt -ccopt -O2 -ccopt -o -ccopt $out -c $in
 build stubs/ext_basic_hash_stubs.o : gcc  stubs/ext_basic_hash_stubs.c   
 rule ocamlmklib
     command = ocamlmklib $in -o $name
 build stubs/libbs_hash.a stubs/dllbs_hash.so: ocamlmklib stubs/ext_basic_hash_stubs.o
     name = stubs/bs_hash
 rule stubslib
-    command = ocamlopt.opt -a $ml -o $out -cclib $clib
+    command = $ocamlopt -a $ml -o $out -cclib $clib
 build stubs/stubs.cmxa : stubslib stubs/bs_hash_stubs.cmx stubs/libbs_hash.a    
     ml = stubs/bs_hash_stubs.cmx
     clib = stubs/libbs_hash.a
@@ -1065,6 +1066,7 @@ build ./bin/bspack.exe: link ./stubs/ext_basic_hash_stubs.c ./bin/bspack.mli ./b
 rule bspack    
     command = ./bin/bspack.exe $flags -bs-main $main -o $out
     depfile = $out.d
+    generator = true
 
 build snapshot: phony  ../lib/whole_compiler.ml ../lib/bsppx.ml ../lib/bsdep.ml ../lib/bsb_helper.ml ../lib/bsb.ml ../lib/bspp.ml bin/all_ounit_tests.ml
 

@@ -87,7 +87,7 @@ var q = Oo.copy(p);
 
 Caml_oo_curry.js2(-933174511, 1, q, 7);
 
-eq("File \"test/class7_test.ml\", line 22, characters 5-12", /* tuple */[
+eq("File \"class7_test.ml\", line 22, characters 5-12", /* tuple */[
       55,
       62
     ], /* tuple */[
@@ -205,7 +205,7 @@ Caml_oo_curry.js1(-867333315, 10, p$1);
 
 Caml_oo_curry.js2(5741474, 11, p$1, 2);
 
-eq("File \"test/class7_test.ml\", line 47, characters 5-12", /* array */[
+eq("File \"class7_test.ml\", line 47, characters 5-12", /* array */[
       2,
       1,
       1,
@@ -300,7 +300,7 @@ Caml_oo_curry.js1(-867333315, 14, p$2);
 
 Caml_oo_curry.js2(5741474, 15, p$2, 2);
 
-eq("File \"test/class7_test.ml\", line 63, characters 5-12", /* array */[
+eq("File \"class7_test.ml\", line 63, characters 5-12", /* array */[
       2,
       1,
       0,

@@ -58,13 +58,13 @@ var a_ = make(undefined)(/* () */0);
 
 var b_ = make(42)(/* () */0);
 
-eq("File \"test/gpr_1409_test.ml\", line 30, characters 6-13", b_.foo, "42");
+eq("File \"gpr_1409_test.ml\", line 30, characters 6-13", b_.foo, "42");
 
 console.log(Object.keys(a_));
 
 console.log(a, b, a_, b_);
 
-eq("File \"test/gpr_1409_test.ml\", line 36, characters 6-13", Object.keys(a_).length, 0);
+eq("File \"gpr_1409_test.ml\", line 36, characters 6-13", Object.keys(a_).length, 0);
 
 var test2 = {
   hi: 2
@@ -133,12 +133,12 @@ function keys(xs, ys) {
   return String_set.equal(String_set.of_list(xs), String_set.of_list($$Array.to_list(ys)));
 }
 
-eq("File \"test/gpr_1409_test.ml\", line 69, characters 6-13", keys(/* :: */[
+eq("File \"gpr_1409_test.ml\", line 69, characters 6-13", keys(/* :: */[
           "hi",
           /* [] */0
         ], Object.keys(test3(undefined, undefined))), true);
 
-eq("File \"test/gpr_1409_test.ml\", line 71, characters 6-13", keys(/* :: */[
+eq("File \"gpr_1409_test.ml\", line 71, characters 6-13", keys(/* :: */[
           "hi",
           /* :: */[
             "open",
@@ -146,7 +146,7 @@ eq("File \"test/gpr_1409_test.ml\", line 71, characters 6-13", keys(/* :: */[
           ]
         ], Object.keys(test3(2, undefined))), true);
 
-eq("File \"test/gpr_1409_test.ml\", line 73, characters 6-13", keys(/* :: */[
+eq("File \"gpr_1409_test.ml\", line 73, characters 6-13", keys(/* :: */[
           "hi",
           /* :: */[
             "open",

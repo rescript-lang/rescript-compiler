@@ -22,7 +22,7 @@ catch (raw_exn){
 
 var suites = /* record */[/* contents : :: */[
     /* tuple */[
-      "File \"test/caml_compare_test.ml\", line 9, characters 4-11",
+      "File \"caml_compare_test.ml\", line 9, characters 4-11",
       (function (param) {
           return /* Eq */Block.__(0, [
                     true,
@@ -42,7 +42,7 @@ var suites = /* record */[/* contents : :: */[
       ],
       /* :: */[
         /* tuple */[
-          "File \"test/caml_compare_test.ml\", line 11, characters 4-11",
+          "File \"caml_compare_test.ml\", line 11, characters 4-11",
           (function (param) {
               return /* Eq */Block.__(0, [
                         true,
@@ -169,7 +169,7 @@ var suites = /* record */[/* contents : :: */[
                   ],
                   /* :: */[
                     /* tuple */[
-                      "File \"test/caml_compare_test.ml\", line 17, characters 4-11",
+                      "File \"caml_compare_test.ml\", line 17, characters 4-11",
                       (function (param) {
                           return /* Eq */Block.__(0, [
                                     true,
@@ -179,7 +179,7 @@ var suites = /* record */[/* contents : :: */[
                     ],
                     /* :: */[
                       /* tuple */[
-                        "File \"test/caml_compare_test.ml\", line 28, characters 4-11",
+                        "File \"caml_compare_test.ml\", line 28, characters 4-11",
                         (function (param) {
                             return /* Eq */Block.__(0, [
                                       true,
@@ -192,7 +192,7 @@ var suites = /* record */[/* contents : :: */[
                       ],
                       /* :: */[
                         /* tuple */[
-                          "File \"test/caml_compare_test.ml\", line 31, characters 4-11",
+                          "File \"caml_compare_test.ml\", line 31, characters 4-11",
                           (function (param) {
                               return /* Eq */Block.__(0, [
                                         true,
@@ -205,7 +205,7 @@ var suites = /* record */[/* contents : :: */[
                         ],
                         /* :: */[
                           /* tuple */[
-                            "File \"test/caml_compare_test.ml\", line 34, characters 4-11",
+                            "File \"caml_compare_test.ml\", line 34, characters 4-11",
                             (function (param) {
                                 return /* Eq */Block.__(0, [
                                           true,
@@ -272,7 +272,7 @@ var suites = /* record */[/* contents : :: */[
                           ],
                           /* :: */[
                             /* tuple */[
-                              "File \"test/caml_compare_test.ml\", line 37, characters 4-11",
+                              "File \"caml_compare_test.ml\", line 37, characters 4-11",
                               (function (param) {
                                   return /* Eq */Block.__(0, [
                                             true,
@@ -291,7 +291,7 @@ var suites = /* record */[/* contents : :: */[
                             ],
                             /* :: */[
                               /* tuple */[
-                                "File \"test/caml_compare_test.ml\", line 40, characters 4-11",
+                                "File \"caml_compare_test.ml\", line 40, characters 4-11",
                                 (function (param) {
                                     return /* Eq */Block.__(0, [
                                               true,
@@ -304,7 +304,7 @@ var suites = /* record */[/* contents : :: */[
                               ],
                               /* :: */[
                                 /* tuple */[
-                                  "File \"test/caml_compare_test.ml\", line 43, characters 4-11",
+                                  "File \"caml_compare_test.ml\", line 43, characters 4-11",
                                   (function (param) {
                                       return /* Eq */Block.__(0, [
                                                 true,
@@ -371,7 +371,7 @@ var suites = /* record */[/* contents : :: */[
                                 ],
                                 /* :: */[
                                   /* tuple */[
-                                    "File \"test/caml_compare_test.ml\", line 47, characters 4-11",
+                                    "File \"caml_compare_test.ml\", line 47, characters 4-11",
                                     (function (param) {
                                         return /* Eq */Block.__(0, [
                                                   false,
@@ -381,7 +381,7 @@ var suites = /* record */[/* contents : :: */[
                                   ],
                                   /* :: */[
                                     /* tuple */[
-                                      "File \"test/caml_compare_test.ml\", line 50, characters 4-11",
+                                      "File \"caml_compare_test.ml\", line 50, characters 4-11",
                                       (function (param) {
                                           return /* Eq */Block.__(0, [
                                                     false,
@@ -391,7 +391,7 @@ var suites = /* record */[/* contents : :: */[
                                     ],
                                     /* :: */[
                                       /* tuple */[
-                                        "File \"test/caml_compare_test.ml\", line 53, characters 4-11",
+                                        "File \"caml_compare_test.ml\", line 53, characters 4-11",
                                         (function (param) {
                                             return /* Eq */Block.__(0, [
                                                       false,
@@ -458,7 +458,7 @@ var suites = /* record */[/* contents : :: */[
                                       ],
                                       /* :: */[
                                         /* tuple */[
-                                          "File \"test/caml_compare_test.ml\", line 56, characters 4-11",
+                                          "File \"caml_compare_test.ml\", line 56, characters 4-11",
                                           (function (param) {
                                               return /* Eq */Block.__(0, [
                                                         false,
@@ -911,7 +911,7 @@ var suites = /* record */[/* contents : :: */[
                                                                                             ],
                                                                                             /* :: */[
                                                                                               /* tuple */[
-                                                                                                "File \"test/caml_compare_test.ml\", line 87, characters 4-11",
+                                                                                                "File \"caml_compare_test.ml\", line 87, characters 4-11",
                                                                                                 (function (param) {
                                                                                                     return /* Eq */Block.__(0, [
                                                                                                               Caml_obj.caml_compare(null, /* :: */[
@@ -924,7 +924,7 @@ var suites = /* record */[/* contents : :: */[
                                                                                               ],
                                                                                               /* :: */[
                                                                                                 /* tuple */[
-                                                                                                  "File \"test/caml_compare_test.ml\", line 90, characters 4-11",
+                                                                                                  "File \"caml_compare_test.ml\", line 90, characters 4-11",
                                                                                                   (function (param) {
                                                                                                       return /* Eq */Block.__(0, [
                                                                                                                 Caml_obj.caml_compare(/* :: */[
@@ -937,7 +937,7 @@ var suites = /* record */[/* contents : :: */[
                                                                                                 ],
                                                                                                 /* :: */[
                                                                                                   /* tuple */[
-                                                                                                    "File \"test/caml_compare_test.ml\", line 93, characters 4-11",
+                                                                                                    "File \"caml_compare_test.ml\", line 93, characters 4-11",
                                                                                                     (function (param) {
                                                                                                         return /* Eq */Block.__(0, [
                                                                                                                   Caml_obj.caml_compare(null, 0),
@@ -947,7 +947,7 @@ var suites = /* record */[/* contents : :: */[
                                                                                                   ],
                                                                                                   /* :: */[
                                                                                                     /* tuple */[
-                                                                                                      "File \"test/caml_compare_test.ml\", line 96, characters 4-11",
+                                                                                                      "File \"caml_compare_test.ml\", line 96, characters 4-11",
                                                                                                       (function (param) {
                                                                                                           return /* Eq */Block.__(0, [
                                                                                                                     Caml_obj.caml_compare(0, null),
@@ -957,7 +957,7 @@ var suites = /* record */[/* contents : :: */[
                                                                                                     ],
                                                                                                     /* :: */[
                                                                                                       /* tuple */[
-                                                                                                        "File \"test/caml_compare_test.ml\", line 99, characters 4-11",
+                                                                                                        "File \"caml_compare_test.ml\", line 99, characters 4-11",
                                                                                                         (function (param) {
                                                                                                             return /* Eq */Block.__(0, [
                                                                                                                       Caml_obj.caml_compare(undefined, 0),
@@ -967,7 +967,7 @@ var suites = /* record */[/* contents : :: */[
                                                                                                       ],
                                                                                                       /* :: */[
                                                                                                         /* tuple */[
-                                                                                                          "File \"test/caml_compare_test.ml\", line 102, characters 4-11",
+                                                                                                          "File \"caml_compare_test.ml\", line 102, characters 4-11",
                                                                                                           (function (param) {
                                                                                                               return /* Eq */Block.__(0, [
                                                                                                                         Caml_obj.caml_compare(0, undefined),
@@ -1034,21 +1034,21 @@ function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
-eq("File \"test/caml_compare_test.ml\", line 112, characters 6-13", true, Caml_obj.caml_greaterthan(1, undefined));
+eq("File \"caml_compare_test.ml\", line 112, characters 6-13", true, Caml_obj.caml_greaterthan(1, undefined));
 
-eq("File \"test/caml_compare_test.ml\", line 113, characters 6-13", true, Caml_obj.caml_lessthan(/* [] */0, /* :: */[
+eq("File \"caml_compare_test.ml\", line 113, characters 6-13", true, Caml_obj.caml_lessthan(/* [] */0, /* :: */[
           1,
           /* [] */0
         ]));
 
-eq("File \"test/caml_compare_test.ml\", line 114, characters 6-13", false, Caml_obj.caml_greaterthan(undefined, 1));
+eq("File \"caml_compare_test.ml\", line 114, characters 6-13", false, Caml_obj.caml_greaterthan(undefined, 1));
 
-eq("File \"test/caml_compare_test.ml\", line 115, characters 6-13", false, Caml_obj.caml_greaterthan(undefined, /* array */[
+eq("File \"caml_compare_test.ml\", line 115, characters 6-13", false, Caml_obj.caml_greaterthan(undefined, /* array */[
           1,
           30
         ]));
 
-eq("File \"test/caml_compare_test.ml\", line 116, characters 6-13", false, Caml_obj.caml_lessthan(/* array */[
+eq("File \"caml_compare_test.ml\", line 116, characters 6-13", false, Caml_obj.caml_lessthan(/* array */[
           1,
           30
         ], undefined));

@@ -31,7 +31,7 @@ var area;
 
 area = myShape.tag ? Caml_int32.imul(10, myShape[1]) : 100 * 3.14;
 
-eq("File \"test/gpr_1822_test.ml\", line 21, characters 6-13", area, 314);
+eq("File \"gpr_1822_test.ml\", line 21, characters 6-13", area, 314);
 
 Mt.from_pair_suites("Gpr_1822_test", suites[0]);
 

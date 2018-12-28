@@ -39,7 +39,7 @@ function fake_c2(a_type, b_type) {
   
 }
 
-eq("File \"test/gpr_2931_test.ml\", line 19, characters 6-13", 3, fake_c2("number", "xx"));
+eq("File \"gpr_2931_test.ml\", line 19, characters 6-13", 3, fake_c2("number", "xx"));
 
 Mt.from_pair_suites("Gpr_2931_test", suites[0]);
 

@@ -1805,7 +1805,7 @@ Mt.from_pair_suites("Int64_mul_div_test", Pervasives.$at(from_pairs("random", pa
                                     ],
                                     /* :: */[
                                       /* tuple */[
-                                        "File \"test/int64_mul_div_test.ml\", line 214, characters 5-12",
+                                        "File \"int64_mul_div_test.ml\", line 214, characters 5-12",
                                         (function (param) {
                                             return /* Eq */Block.__(0, [
                                                       Caml_int64.to_float(Int64.max_int),

@@ -210,7 +210,7 @@ Mt.from_pair_suites("String_test", /* :: */[
                 ],
                 /* :: */[
                   /* tuple */[
-                    "File \"test/string_test.ml\", line 74, characters 2-9",
+                    "File \"string_test.ml\", line 74, characters 2-9",
                     (function (param) {
                         return /* Eq */Block.__(0, [
                                   /* :: */[

@@ -32,13 +32,13 @@ Node_process.putEnvVar("Caml_sys_poly_fill_test", "X");
 
 var v = Caml_sys.caml_sys_getenv("Caml_sys_poly_fill_test");
 
-eq("File \"test/caml_sys_poly_fill_test.ml\", line 11, characters 5-12", "X", (Node_process.deleteEnvVar("Caml_sys_poly_fill_test"), v));
+eq("File \"caml_sys_poly_fill_test.ml\", line 11, characters 5-12", "X", (Node_process.deleteEnvVar("Caml_sys_poly_fill_test"), v));
 
 Node_process.putEnvVar("Caml_sys_poly_fill_test", "Y");
 
 var v$1 = Caml_sys.caml_sys_getenv("Caml_sys_poly_fill_test");
 
-eq("File \"test/caml_sys_poly_fill_test.ml\", line 17, characters 5-12", "Y", (Node_process.deleteEnvVar("Caml_sys_poly_fill_test"), v$1));
+eq("File \"caml_sys_poly_fill_test.ml\", line 17, characters 5-12", "Y", (Node_process.deleteEnvVar("Caml_sys_poly_fill_test"), v$1));
 
 Node_process.deleteEnvVar("Caml_sys_poly_fill_test");
 
@@ -55,7 +55,7 @@ catch (exn){
   }
 }
 
-eq("File \"test/caml_sys_poly_fill_test.ml\", line 23, characters 5-12", "Z", tmp);
+eq("File \"caml_sys_poly_fill_test.ml\", line 23, characters 5-12", "Z", tmp);
 
 console.log(/* tuple */[
       Caml_sys.caml_sys_getcwd(/* () */0),

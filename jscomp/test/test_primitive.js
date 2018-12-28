@@ -7,7 +7,7 @@ var CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
 
 function a4(prim) {
   return /* tuple */[
-          "File \"test/test_primitive.ml\", line 30, characters 9-19",
+          "File \"test_primitive.ml\", line 30, characters 9-19",
           prim
         ];
 }
@@ -22,7 +22,7 @@ function a5(prim) {
 function a6(prim) {
   return /* tuple */[
           /* tuple */[
-            "test/test_primitive.ml",
+            "test_primitive.ml",
             32,
             9,
             19
@@ -94,7 +94,7 @@ function fib(n) {
   }
 }
 
-var a0 = "File \"test/test_primitive.ml\", line 26, characters 9-16";
+var a0 = "File \"test_primitive.ml\", line 26, characters 9-16";
 
 var a1 = "Test_primitive";
 

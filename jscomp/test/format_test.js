@@ -56,7 +56,7 @@ function u(param) {
 
 var M = /* module */[];
 
-eq("File \"test/format_test.ml\", line 26, characters 5-12", Curry._1(Format.asprintf(u(/* () */0)), "x"), "xx xyy");
+eq("File \"format_test.ml\", line 26, characters 5-12", Curry._1(Format.asprintf(u(/* () */0)), "x"), "xx xyy");
 
 function f(loc, ls) {
   return List.iter((function (param) {
