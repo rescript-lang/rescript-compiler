@@ -2782,3 +2782,5 @@
 /yacc/ocamlyacc.exe
 /yacc/version.h
 /yacc/.gdb_history
+/bin
+/lib
