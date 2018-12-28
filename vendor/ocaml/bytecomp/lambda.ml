@@ -577,6 +577,9 @@ let raise_kind = function
 let lam_of_loc kind loc =
   let loc_start = loc.Location.loc_start in
   let (file, lnum, cnum) = Location.get_pos_info loc_start in
+#if true then   
+  let file = Filename.basename file in   
+#end
   let enum = loc.Location.loc_end.Lexing.pos_cnum -
       loc_start.Lexing.pos_cnum + cnum in
   match kind with
