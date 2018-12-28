@@ -1840,11 +1840,11 @@ end = struct
 
 
   
-# 10
+# 10 "ext/map.cppo.ml"
   type key = string 
   let compare_key = Ext_string.compare
 
-# 22
+# 22 "ext/map.cppo.ml"
 type 'a t = (key,'a) Map_gen.t
 exception Duplicate_key of key 
 

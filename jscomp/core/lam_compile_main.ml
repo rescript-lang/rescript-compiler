@@ -128,7 +128,7 @@ let compile  ~filename (output_prefix : string) env _sigs
   let export_ident_sets = Ident_set.of_list export_idents in 
   (* To make toplevel happy - reentrant for js-demo *)
   let () = 
-#if BS_DEBUG then     
+#if undefined BS_RELEASE_BUILD then     
     export_idents |> List.iter 
       (fun (id : Ident.t) -> Ext_log.dwarn ~__POS__ "export: %s/%d"  id.name id.stamp) ;
 #end      
@@ -137,7 +137,7 @@ let compile  ~filename (output_prefix : string) env _sigs
   let lam, may_required_modules = Lam_convert.convert export_ident_sets lam in 
   let _d  = fun s lam -> 
     let result = Lam_util.dump env s lam  in
-#if BS_DEBUG then 
+#if undefined BS_RELEASE_BUILD then 
     Ext_log.dwarn ~__POS__ "START CHECKING PASS %s@." s;
     ignore @@ Lam_check.check (Js_config.get_current_file ()) lam;
     Ext_log.dwarn ~__POS__ "FINISH CHECKING PASS %s@." s;
@@ -192,7 +192,7 @@ let compile  ~filename (output_prefix : string) env _sigs
        |> _d "scc" *)
     |> Lam_pass_exits.simplify_exits
     |> _d "simplify_lets"
-#if BS_DEBUG then    
+#if undefined BS_RELEASE_BUILD then    
     |> (fun lam -> 
        let () = 
         Ext_log.dwarn ~__POS__ "Before coercion: %a@." Lam_stats.print meta in 
@@ -205,7 +205,7 @@ let compile  ~filename (output_prefix : string) env _sigs
     Lam_coercion.coerce_and_group_big_lambda  meta lam
   in 
 
-#if BS_DEBUG then   
+#if undefined BS_RELEASE_BUILD then   
   let () =
     Ext_log.dwarn ~__POS__ "After coercion: %a@." Lam_stats.print meta ;
     if Js_config.is_same_file () then
@@ -218,7 +218,7 @@ let compile  ~filename (output_prefix : string) env _sigs
   in
 #end  
   let maybe_pure = no_side_effects groups in
-#if BS_DEBUG then 
+#if undefined BS_RELEASE_BUILD then 
   let () = Ext_log.dwarn ~__POS__ "\n@[[TIME:]Pre-compile: %f@]@."  (Sys.time () *. 1000.) in      
 #end  
   let body  =     
@@ -226,7 +226,7 @@ let compile  ~filename (output_prefix : string) env _sigs
     |> Js_output.concat
     |> Js_output.output_as_block
   in
-#if BS_DEBUG then 
+#if undefined BS_RELEASE_BUILD then 
   let () = Ext_log.dwarn ~__POS__ "\n@[[TIME:]Post-compile: %f@]@."  (Sys.time () *. 1000.) in      
 #end    
   (* The file is not big at all compared with [cmo] *)

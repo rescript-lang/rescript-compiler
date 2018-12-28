@@ -30,7 +30,7 @@
 let log_counter = ref 0 
 
 let dump name (prog : J.program) =
-#if BS_COMPILER_IN_BROWSER || (undefined BS_DEBUG) then
+#if BS_COMPILER_IN_BROWSER || BS_RELEASE_BUILD then
     prog
 #else 
   begin

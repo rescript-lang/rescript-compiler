@@ -24,7 +24,7 @@
 
 
 let setup_env () =
-#if BS_DEBUG then
+#if undefined BS_RELEASE_BUILD then
     (match Ext_sys.getenv_opt "BS_DEBUG_FILE" with 
      | None -> 
        Js_config.set_debug_file "caml_obj.ml"
@@ -41,7 +41,7 @@ let setup_env () =
 #end  
 
 let standard_library =
-#if BS_DEBUG then
+#if undefined BS_RELEASE_BUILD then
   Filename.concat (Filename.dirname Sys.executable_name)  "ocaml"
 #else
   Config.standard_library
