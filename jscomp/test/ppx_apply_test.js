@@ -36,7 +36,7 @@ function unary(a) {
 
 var xx = unary(3);
 
-eq("File \"test/ppx_apply_test.ml\", line 17, characters 5-12", u, 3);
+eq("File \"ppx_apply_test.ml\", line 17, characters 5-12", u, 3);
 
 Mt.from_pair_suites("Ppx_apply_test", suites[0]);
 

@@ -46,7 +46,7 @@ var v = f({
       "x'": 6
     });
 
-eq("File \"test/gpr_1943_test.ml\", line 30, characters 6-13", /* tuple */[
+eq("File \"gpr_1943_test.ml\", line 30, characters 6-13", /* tuple */[
       0,
       1,
       2,

@@ -33,7 +33,7 @@ function update(param) {
 
 v[0] = v[0] + 1 | 0;
 
-eq("File \"test/gpr_1762_test.ml\", line 22, characters 6-13", v[0], 4);
+eq("File \"gpr_1762_test.ml\", line 22, characters 6-13", v[0], 4);
 
 Mt.from_pair_suites("Gpr_1762_test", suites[0]);
 

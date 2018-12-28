@@ -7,7 +7,7 @@ function f(x) {
     throw [
           Caml_builtin_exceptions.match_failure,
           /* tuple */[
-            "test/test_incomplete.ml",
+            "test_incomplete.ml",
             3,
             2
           ]

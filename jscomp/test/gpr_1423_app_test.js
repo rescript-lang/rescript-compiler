@@ -41,7 +41,7 @@ function foo2(f) {
   return Curry._2(f, "a1", /* () */0);
 }
 
-eq("File \"test/gpr_1423_app_test.ml\", line 18, characters 7-14", Curry._1((function (param) {
+eq("File \"gpr_1423_app_test.ml\", line 18, characters 7-14", Curry._1((function (param) {
               return (function (param$1) {
                   return Gpr_1423_nav.busted(param, "a2", param$1);
                 });

@@ -246,7 +246,7 @@ var suites_001 = /* :: */[
                                           ],
                                           /* :: */[
                                             /* tuple */[
-                                              "File \"test/js_null_undefined_test.ml\", line 42, characters 2-9",
+                                              "File \"js_null_undefined_test.ml\", line 42, characters 2-9",
                                               (function (param) {
                                                   return /* Ok */Block.__(4, [true]);
                                                 })

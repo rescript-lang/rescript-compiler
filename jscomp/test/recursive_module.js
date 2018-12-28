@@ -15,7 +15,7 @@ function eq(loc, x, y) {
 }
 
 var Int32 = Caml_module.init_mod([
-      "test/recursive_module.ml",
+      "recursive_module.ml",
       14,
       6
     ], [[
@@ -35,7 +35,7 @@ Caml_module.update_mod([[
       ]], Int32, Int32);
 
 var Int3 = Caml_module.init_mod([
-      "test/recursive_module.ml",
+      "recursive_module.ml",
       19,
       6
     ], [[0]]);
@@ -57,7 +57,7 @@ catch (raw_exn){
   }
 }
 
-eq("File \"test/recursive_module.ml\", line 24, characters 6-13", 4, tmp);
+eq("File \"recursive_module.ml\", line 24, characters 6-13", 4, tmp);
 
 Mt.from_pair_suites("Recursive_module", suites[0]);
 

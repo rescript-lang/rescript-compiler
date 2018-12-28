@@ -45,7 +45,7 @@ var suites_001 = /* :: */[
       ],
       /* :: */[
         /* tuple */[
-          "File \"test/js_int_test.ml\", line 12, characters 3-10",
+          "File \"js_int_test.ml\", line 12, characters 3-10",
           (function (param) {
               return /* ThrowAny */Block.__(7, [(function (param) {
                             (0).toExponential(101);
@@ -105,7 +105,7 @@ var suites_001 = /* :: */[
                   ],
                   /* :: */[
                     /* tuple */[
-                      "File \"test/js_int_test.ml\", line 25, characters 3-10",
+                      "File \"js_int_test.ml\", line 25, characters 3-10",
                       (function (param) {
                           return /* ThrowAny */Block.__(7, [(function (param) {
                                         (0).toPrecision(101);

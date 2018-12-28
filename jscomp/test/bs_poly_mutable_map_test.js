@@ -46,7 +46,7 @@ var a0 = Belt_MutableMap.fromArray(x, Icmp);
 
 Belt_MutableMap.set(a0, 3, 33);
 
-eq("File \"test/bs_poly_mutable_map_test.ml\", line 27, characters 7-14", Belt_MutableMap.getExn(a0, 3), 33);
+eq("File \"bs_poly_mutable_map_test.ml\", line 27, characters 7-14", Belt_MutableMap.getExn(a0, 3), 33);
 
 Belt_MutableMap.removeMany(a0, /* array */[
       7,
@@ -62,14 +62,14 @@ Belt_MutableMap.removeMany(a0, /* array */[
       6
     ]);
 
-eq("File \"test/bs_poly_mutable_map_test.ml\", line 29, characters 7-14", Belt_internalAVLtree.keysToArray(a0.data), /* array */[
+eq("File \"bs_poly_mutable_map_test.ml\", line 29, characters 7-14", Belt_internalAVLtree.keysToArray(a0.data), /* array */[
       9,
       10
     ]);
 
 Belt_MutableMap.removeMany(a0, Array_data_util.randomRange(0, 100));
 
-b("File \"test/bs_poly_mutable_map_test.ml\", line 31, characters 6-13", Belt_MutableMap.isEmpty(a0));
+b("File \"bs_poly_mutable_map_test.ml\", line 31, characters 6-13", Belt_MutableMap.isEmpty(a0));
 
 Mt.from_pair_suites("Bs_poly_mutable_map_test", suites[0]);
 

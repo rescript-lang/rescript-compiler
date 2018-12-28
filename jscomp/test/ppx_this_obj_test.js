@@ -90,12 +90,12 @@ var collection = /* array */[
   v4
 ];
 
-eq("File \"test/ppx_this_obj_test.ml\", line 59, characters 5-12", /* tuple */[
+eq("File \"ppx_this_obj_test.ml\", line 59, characters 5-12", /* tuple */[
       11,
       v.hi(3, 2)
     ]);
 
-eq("File \"test/ppx_this_obj_test.ml\", line 60, characters 5-12", /* tuple */[
+eq("File \"ppx_this_obj_test.ml\", line 60, characters 5-12", /* tuple */[
       11,
       v2.hi(3, 2)
     ]);

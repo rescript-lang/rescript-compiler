@@ -12,7 +12,7 @@ function f(v) {
 
 Mt.from_pair_suites("To_string_test", /* :: */[
       /* tuple */[
-        "File \"test/to_string_test.ml\", line 7, characters 2-9",
+        "File \"to_string_test.ml\", line 7, characters 2-9",
         (function (param) {
             return /* Eq */Block.__(0, [
                       Pervasives.string_of_float(Number.POSITIVE_INFINITY),
@@ -22,7 +22,7 @@ Mt.from_pair_suites("To_string_test", /* :: */[
       ],
       /* :: */[
         /* tuple */[
-          "File \"test/to_string_test.ml\", line 8, characters 1-8",
+          "File \"to_string_test.ml\", line 8, characters 1-8",
           (function (param) {
               return /* Eq */Block.__(0, [
                         Pervasives.string_of_float(Number.NEGATIVE_INFINITY),

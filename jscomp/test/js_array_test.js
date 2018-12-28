@@ -6,7 +6,7 @@ var Js_vector = require("../../lib/js/js_vector.js");
 var Caml_option = require("../../lib/js/caml_option.js");
 
 var suites_000 = /* tuple */[
-  "File \"test/js_array_test.ml\", line 3, characters 4-11",
+  "File \"js_array_test.ml\", line 3, characters 4-11",
   (function (param) {
       var x = /* array */[
         1,
@@ -29,7 +29,7 @@ var suites_000 = /* tuple */[
 
 var suites_001 = /* :: */[
   /* tuple */[
-    "File \"test/js_array_test.ml\", line 11, characters 4-11",
+    "File \"js_array_test.ml\", line 11, characters 4-11",
     (function (param) {
         var x = /* array */[
           1,

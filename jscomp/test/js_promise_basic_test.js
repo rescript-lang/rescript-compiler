@@ -269,7 +269,7 @@ Promise.all(/* tuple */[
         Promise.resolve(2),
         Promise.resolve(3)
       ]).then((function (param) {
-        eq("File \"test/js_promise_basic_test.ml\", line 169, characters 7-14", /* tuple */[
+        eq("File \"js_promise_basic_test.ml\", line 169, characters 7-14", /* tuple */[
               param[0],
               param[1]
             ], /* tuple */[
@@ -297,7 +297,7 @@ function re(prim) {
 
 Mt.from_promise_suites("Js_promise_basic_test", /* :: */[
       /* tuple */[
-        "File \"test/js_promise_basic_test.ml\", line 187, characters 4-11",
+        "File \"js_promise_basic_test.ml\", line 187, characters 4-11",
         twop.then((function (x) {
                 return Promise.resolve(/* Eq */Block.__(0, [
                               x,
@@ -307,7 +307,7 @@ Mt.from_promise_suites("Js_promise_basic_test", /* :: */[
       ],
       /* :: */[
         /* tuple */[
-          "File \"test/js_promise_basic_test.ml\", line 190, characters 4-11",
+          "File \"js_promise_basic_test.ml\", line 190, characters 4-11",
           twop.then((function (x) {
                   return Promise.resolve(/* Neq */Block.__(1, [
                                 x,

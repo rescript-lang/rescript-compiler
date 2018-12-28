@@ -160,7 +160,7 @@ var test_type2 = /* :: */[
   test_type2_001
 ];
 
-eq("File \"test/ppx_this_obj_field.ml\", line 92, characters 5-12", /* tuple */[
+eq("File \"ppx_this_obj_field.ml\", line 92, characters 5-12", /* tuple */[
       6,
       v5.say()
     ]);
@@ -177,7 +177,7 @@ var c = v.say();
 
 v.incr();
 
-eq("File \"test/ppx_this_obj_field.ml\", line 99, characters 5-12", /* tuple */[
+eq("File \"ppx_this_obj_field.ml\", line 99, characters 5-12", /* tuple */[
       /* tuple */[
         3,
         4,
@@ -196,7 +196,7 @@ z.setX(32);
 
 var bb = z.getX();
 
-eq("File \"test/ppx_this_obj_field.ml\", line 103, characters 5-12", /* tuple */[
+eq("File \"ppx_this_obj_field.ml\", line 103, characters 5-12", /* tuple */[
       /* tuple */[
         3,
         32

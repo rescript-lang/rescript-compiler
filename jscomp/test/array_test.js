@@ -208,7 +208,7 @@ var array_suites_001 = /* :: */[
           ],
           /* :: */[
             /* tuple */[
-              "File \"test/array_test.ml\", line 63, characters 2-9",
+              "File \"array_test.ml\", line 63, characters 2-9",
               (function (param) {
                   var a0 = $$Array.init(100, (function (i) {
                           return (i << 0);
@@ -247,7 +247,7 @@ var array_suites_001 = /* :: */[
             ],
             /* :: */[
               /* tuple */[
-                "File \"test/array_test.ml\", line 72, characters 2-9",
+                "File \"array_test.ml\", line 72, characters 2-9",
                 (function (param) {
                     var a0 = $$Array.init(100, (function (i) {
                             return (i << 0);

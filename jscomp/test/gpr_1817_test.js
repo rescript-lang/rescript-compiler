@@ -45,7 +45,7 @@ var a0 = match[0];
 
 console.log(a0, a1);
 
-eq("File \"test/gpr_1817_test.ml\", line 19, characters 6-13", a2, true);
+eq("File \"gpr_1817_test.ml\", line 19, characters 6-13", a2, true);
 
 Mt.from_pair_suites("Gpr_1817_test", suites[0]);
 

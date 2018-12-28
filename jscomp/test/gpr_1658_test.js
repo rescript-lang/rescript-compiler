@@ -25,19 +25,19 @@ function eq(loc, x, y) {
   return /* () */0;
 }
 
-eq("File \"test/gpr_1658_test.ml\", line 11, characters 7-14", null, null);
+eq("File \"gpr_1658_test.ml\", line 11, characters 7-14", null, null);
 
 var match = Js_types.classify(null);
 
 if (typeof match === "number" && match === 2) {
-  eq("File \"test/gpr_1658_test.ml\", line 14, characters 11-18", true, true);
+  eq("File \"gpr_1658_test.ml\", line 14, characters 11-18", true, true);
 } else {
-  eq("File \"test/gpr_1658_test.ml\", line 16, characters 11-18", true, false);
+  eq("File \"gpr_1658_test.ml\", line 16, characters 11-18", true, false);
 }
 
-eq("File \"test/gpr_1658_test.ml\", line 17, characters 7-14", true, Js_types.test(null, /* Null */1));
+eq("File \"gpr_1658_test.ml\", line 17, characters 7-14", true, Js_types.test(null, /* Null */1));
 
-Mt.from_pair_suites("File \"test/gpr_1658_test.ml\", line 19, characters 22-29", suites[0]);
+Mt.from_pair_suites("File \"gpr_1658_test.ml\", line 19, characters 22-29", suites[0]);
 
 exports.suites = suites;
 exports.test_id = test_id;
