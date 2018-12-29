@@ -33,6 +33,7 @@ type t = private
    *)
   | Arity_na 
 
+val equal : t -> t -> bool  
 val print : Format.formatter -> t -> unit   
 
 val print_arities_tbl : 
