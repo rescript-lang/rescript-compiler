@@ -76,7 +76,41 @@ let output_cmi filename oc cmi =
   output_value oc crcs;
   output_value oc cmi.cmi_flags;
   crc
+#if true then
+(* This function is also called by [save_cmt] as cmi_format is subset of 
+   cmt_format, so dont close the channel yet
+*)
+let create_cmi ?check_exists filename cmi =
+(* beware: the provided signature must have been substituted for saving *)
+  let content = 
+    Config.cmi_magic_number ^ Marshal.to_string  (cmi.cmi_name, cmi.cmi_sign) []
+    (* checkout [output_value] in {!Pervasives} module *)
+  in 
+  let crc = Digest.string content in   
+  let cmi_infos = 
+    if check_exists <> None && Sys.file_exists filename then 
+      Some (read_cmi filename)
+    else None in   
+  match cmi_infos with 
+  | Some {cmi_name; cmi_sign; cmi_crcs = (old_name, Some old_crc)::rest ; cmi_flags} 
+    (* TODO: design the cmi format so that we don't need read the whole cmi *)
+    when 
+      cmi.cmi_name = old_name &&
+      crc = old_crc &&
+      cmi.cmi_crcs = rest &&
+      cmi_flags = cmi.cmi_flags -> 
+      crc 
+  | _ -> 
+      let crcs = (cmi.cmi_name, Some crc) :: cmi.cmi_crcs in
+      let oc = open_out_bin filename in 
+      output_string oc content;
+      output_value oc crcs;
+      output_value oc cmi.cmi_flags;
+      close_out oc; 
+      crc
 
+      
+#end
 (* Error report *)
 
 open Format

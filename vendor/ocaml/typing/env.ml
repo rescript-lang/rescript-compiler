@@ -1680,13 +1680,15 @@ let imports() =
 
 (* Save a signature to a file *)
 
-let save_signature_with_imports sg modname filename imports =
+let save_signature_with_imports ?check_exists sg modname filename imports =
   (*prerr_endline filename;
   List.iter (fun (name, crc) -> prerr_endline name) imports;*)
   Btype.cleanup_abbrev ();
   Subst.reset_for_saving ();
   let sg = Subst.signature (Subst.for_saving Subst.identity) sg in
-  let oc = open_out_bin filename in
+#if false  then
+  let oc  = open_out_bin filename in
+#end  
   try
     let cmi = {
       cmi_name = modname;
@@ -1694,8 +1696,10 @@ let save_signature_with_imports sg modname filename imports =
       cmi_crcs = imports;
       cmi_flags = if !Clflags.recursive_types then [Rectypes] else [];
     } in
-    let crc = output_cmi filename oc cmi in
-    close_out oc;
+    let crc = create_cmi ?check_exists filename cmi in
+#if false then
+     close_out oc; 
+#end     
     (* Enter signature in persistent table so that imported_unit()
        will also return its crc *)
     let comps =
@@ -1713,12 +1717,15 @@ let save_signature_with_imports sg modname filename imports =
     save_pers_struct crc ps;
     sg
   with exn ->
+#if false then  
     close_out oc;
+#end    
     remove_file filename;
+
     raise exn
 
-let save_signature sg modname filename =
-  save_signature_with_imports sg modname filename (imports())
+let save_signature ?check_exists sg modname filename =
+  save_signature_with_imports ?check_exists sg modname filename (imports())
 
 (* Folding on environments *)
 

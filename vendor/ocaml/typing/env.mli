@@ -153,9 +153,9 @@ val get_unit_name: unit -> string
 
 val read_signature: string -> string -> signature
         (* Arguments: module name, file name. Results: signature. *)
-val save_signature: signature -> string -> string -> signature
+val save_signature: ?check_exists:unit -> signature -> string -> string -> signature
         (* Arguments: signature, module name, file name. *)
-val save_signature_with_imports:
+val save_signature_with_imports: ?check_exists:unit ->
     signature -> string -> string -> (string * Digest.t option) list -> signature
         (* Arguments: signature, module name, file name,
            imported units with their CRCs. *)
