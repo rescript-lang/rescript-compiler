@@ -4,7 +4,7 @@ bsc_flags = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-no-ch
 rule cc
     command = $bsc $bsc_flags -bs-no-implicit-include  -I stdlib-402 -c $in
     description = $in -> $out 
-    restat = 1
+
 
 build stdlib-402/camlinternalFormatBasics.cmi : cc stdlib-402/camlinternalFormatBasics.mli | others
     bsc_flags = $bsc_flags -nopervasives

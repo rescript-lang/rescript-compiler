@@ -48,6 +48,8 @@ OCAML_SRC_TOOLS=../vendor/ocaml/tools
 build ./bin/bspack.exe: link ./stubs/ext_basic_hash_stubs.c ./bin/bspack.mli ./bin/bspack.ml
     libs = unix.cmxa
     flags = -I ./bin -w -40-30
+build ./bin/cmjdump.exe: link ./stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa core/core.cmxa main/cmjdump_main.cmx   
+    libs = ocamlcommon.cmxa
 rule bspack    
     command = ./bin/bspack.exe $flags -bs-main $main -o $out
     depfile = $out.d

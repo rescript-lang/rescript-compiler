@@ -53,7 +53,7 @@ function buildFinished(code,signal){
         // TODO: check ninja exit error code
         if(code===0){
             // This is not always correct
-            require('./runtimeDeps').updateLibsDevNinja()
+            require('./runtimeDeps').updateDev()
         }
         
     }

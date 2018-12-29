@@ -5,6 +5,8 @@ bsc_flags = $bsc_no_open_flags -open Bs_stdlib_mini
 rule cc
     command = $bsc $bsc_flags -bs-no-implicit-include  -I runtime -c $in
     description = $in -> $out
+    restat = 1    
+    
 build runtime/bs_stdlib_mini.cmi : cc runtime/bs_stdlib_mini.mli | ../lib/bsc.exe
     bsc_flags = -nostdlib -nopervasives
 build runtime/js.cmj runtime/js.cmi : cc runtime/js.ml | ../lib/bsc.exe
