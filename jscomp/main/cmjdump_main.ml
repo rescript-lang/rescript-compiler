@@ -60,7 +60,7 @@ let pp_cmj fmt
                  (if non_saved then "" else "saved") 
                 Lam_arity.print arity
             | Submodule xs -> 
-              p fmt "@[<h 1>@[%s:@ %b@ @[<hov 2>%a@]@]@]" 
+              p fmt "@[<h 1>@[%s:@ %b@ @[<hov 2>%a@]@]@]@." 
                 k 
                 (not non_saved)
                 (fun fmt xs ->
