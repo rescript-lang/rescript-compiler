@@ -165,6 +165,7 @@ let emit_impl_build
       ~implicit_outputs:  (output_js @ cm_outputs)
       ~input:output_mlast
       ~implicit_deps:deps
+      ~restat:()
       ~rule;
     [output_mlastd] 
   end 
@@ -216,7 +217,9 @@ let emit_intf_build
     ~shadows:common_shadows
     ~output:output_cmi
     ~input:output_mliast
-    ~rule:Bsb_rule.build_cmi;
+    ~rule:Bsb_rule.build_cmi
+    ~restat:()
+    ;
   [output_mliastd]
 
 

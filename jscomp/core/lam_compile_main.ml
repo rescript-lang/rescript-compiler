@@ -277,7 +277,7 @@ let compile  ~filename (output_prefix : string) env _sigs
       in
       (if not @@ !Clflags.dont_write_files then
          Js_cmj_format.to_file 
-          ~check_exists:false
+          ~check_exists:true
            (output_prefix ^ Literals.suffix_cmj) v);
       {J.program = program ; side_effect = v.effect ; modules = external_module_ids }      
     )
