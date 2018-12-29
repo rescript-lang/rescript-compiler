@@ -33,6 +33,15 @@ type t =
   *)
   | Arity_na
 
+let equal (x : t ) y =     
+  match x with 
+  | Arity_na -> y = Arity_na 
+  | Arity_info (xs,a) -> 
+    begin match y with  
+      | Arity_info (ys,b) -> 
+        a = b && Ext_list.for_all2_no_exn xs ys (fun x y -> x =y)
+      | Arity_na -> false  
+    end
 let pp = Format.fprintf
 
 let print (fmt : Format.formatter) (x : t) = 

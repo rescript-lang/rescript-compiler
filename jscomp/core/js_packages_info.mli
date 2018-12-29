@@ -53,7 +53,10 @@ val dump_packages_info :
 val add_npm_package_path : 
   string -> t -> t  
 
-
+(** Note here we compare the package info by order
+  in theory, we can compare it by set semantics
+*)
+val equal : t -> t -> bool 
 
 (**
    generate the mdoule path so that it can be spliced here:

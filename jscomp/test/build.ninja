@@ -4,6 +4,7 @@ bsc_flags = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-cross
 rule cc
     command = $bsc $bsc_flags -bs-no-implicit-include -I test -c $in
     description = $in -> $out
+    restat = 1
 rule mll    
     command = ocamllex.opt $in
     generator = true

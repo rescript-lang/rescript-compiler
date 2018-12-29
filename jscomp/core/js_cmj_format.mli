@@ -80,5 +80,8 @@ val no_pure_dummy : t
 val from_file : string -> t
 val from_string : string -> t
 
-val to_file : string -> t -> unit
+(* Note writing the file if its content is not chnaged  
+*)
+val to_file : 
+  string -> check_exists:bool -> t -> unit
 

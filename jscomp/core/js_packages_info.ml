@@ -55,6 +55,13 @@ type t =
     name : package_name ;
     module_systems: package_info  list
   }
+[@@@ocaml.warning "+9"]
+let equal (x : t) ({name; module_systems}) = 
+    x.name = name && 
+    Ext_list.for_all2_no_exn
+      x.module_systems module_systems
+      (fun (a0,a1) (b0,b1) -> a0 = b0 && a1 = b1)
+
 (* we don't want force people to use package *) 
 
 (** 
@@ -72,8 +79,8 @@ let from_name name =
     module_systems = [] 
   }
 let is_empty  (x : t) =
-  match x with 
-  | { name = "_" } -> true 
+  match x.name with 
+  | "_"  -> true 
   | _ -> false 
 
 let string_of_module_system (ms : module_system) = 
@@ -143,9 +150,9 @@ let runtime_package_path =
 
 
 let get_js_path module_system 
-    ({module_systems } : t ) = 
+    (x : t ) = 
   match List.find (fun (k,_) -> 
-      compatible k  module_system) module_systems with
+      compatible k  module_system) x.module_systems with
   | (_, path) ->  path
   |  exception _ -> assert false
 

@@ -493,6 +493,11 @@ bsc_flags = $bsc_no_open_flags -open Bs_stdlib_mini
 rule cc
     command = $bsc $bsc_flags -bs-no-implicit-include  -I ${ninjaCwd} -c $in
     description = $in -> $out
+${
+devmode? `    restat = 1` : 
+``
+}    
+    
 ${ninjaQuickBuidList([
     ['bs_stdlib_mini.cmi', 'bs_stdlib_mini.mli', 
         'cc', ninjaCwd, [["bsc_flags", "-nostdlib -nopervasives"]], [],externalDeps],
@@ -550,10 +555,15 @@ async function othersNinja(devmode=true) {
     var cppoRule = `cppo`
     var templateOthersRules = `
 ${BSC_COMPILER}
-bsc_flags =  -no-alias-deps -bs-no-version-header -bs-diagnose -bs-no-check-div-by-zero -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js -bs-package-output amdjs:lib/amdjs -bs-package-output es6:lib/es6  -nostdlib -nopervasives  -unsafe -warn-error A -w -40-49-103 -bin-annot -bs-noassertfalse -open Bs_stdlib_mini -I ./runtime
+bsc_flags = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-no-check-div-by-zero -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js -bs-package-output amdjs:lib/amdjs -bs-package-output es6:lib/es6  -nostdlib -nopervasives  -unsafe -warn-error A -w -40-49-103 -bin-annot -bs-noassertfalse -open Bs_stdlib_mini -I ./runtime
 rule cc
     command = $bsc $bsc_flags -bs-no-implicit-include  -I ${ninjaCwd} -c $in
-    description = $in -> $out    
+    description = $in -> $out
+${
+devmode? `    restat = 1` : 
+``
+}        
+
 ${ devmode ?
 `rule ${cppoRule}
     command = cppo -D $type $in -o $out
@@ -687,9 +697,10 @@ ${ninjaQuickBuidList([
     )
 }
 
-async function stdlibNinja(){
+async function stdlibNinja(devmode=true){
     var ninjaCwd = stdlibVersion
     var externalDeps = [othersTarget]
+    var ninjaOutput = devmode? 'build.ninja' : 'release.ninja'
     var bsc_flags = 'bsc_flags'
     /**
      * @type [string,string][]
@@ -700,7 +711,12 @@ ${BSC_COMPILER}
 ${bsc_flags} = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-no-check-div-by-zero -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js -bs-package-output amdjs:lib/amdjs -bs-package-output es6:lib/es6  -nostdlib -warn-error A -w -40-49-103 -bin-annot  -bs-no-warn-unimplemented-external  -I ./runtime  -I ./others
 rule cc
     command = $bsc $${bsc_flags} -bs-no-implicit-include  -I ${ninjaCwd} -c $in
-    description = $in -> $out    
+    description = $in -> $out 
+${
+devmode? `    restat = 1` : 
+``
+}
+
 ${ninjaQuickBuidList([
     ['camlinternalFormatBasics.cmi', 'camlinternalFormatBasics.mli', 
         'cc', ninjaCwd, bsc_builtin_overrides, [], externalDeps],
@@ -743,7 +759,7 @@ ${ninjaQuickBuidList([
     output.push(phony(stdlibTarget,fileTargets(allTargets),stdlibVersion))
 
     writeFile(
-        path.join(stdlibDir,'build.ninja'),
+        path.join(stdlibDir,ninjaOutput),
         templateStdlibRules  + output.join('\n') + '\n'    
     )    
 }
@@ -781,6 +797,7 @@ bsc_flags = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-cross
 rule cc
     command = $bsc $bsc_flags -bs-no-implicit-include -I ${ninjaCwd} -c $in
     description = $in -> $out
+    restat = 1
 rule mll    
     command = ocamllex.opt $in
     generator = true
@@ -961,27 +978,31 @@ if (require.main === module) {
     }    
     var dev = process.argv.includes('-dev')
     var release = process.argv.includes('-release')
-    if (dev) {
-        udpateLibsDevNinja()
+    var all = process.argv.includes('-all')
+    if(all){
+        updateDev()
+        updateRelease()
+    } else if (dev) {
+        updateDev()
     } else if (release) {
-        updateAllLibsNinja()
+        updateRelease()
     }
 }
-function updateAllLibsNinja(){
+function updateRelease(){
     runtimeNinja(false)
-    stdlibNinja()
+    stdlibNinja(false)
     othersNinja(false)
 }
 
-function udpateLibsDevNinja(){
+function updateDev(){
     runtimeNinja()
     stdlibNinja()
     othersNinja()
     testNinja()
     nativeNinja()
 }
-exports.updateLibsDevNinja = udpateLibsDevNinja
-exports.updateAllLibsNinja = updateAllLibsNinja
+exports.updateDev = updateDev
+exports.updateRelease = updateRelease
 
 /**
  * 
@@ -1063,6 +1084,8 @@ OCAML_SRC_TOOLS=../vendor/ocaml/tools
 build ./bin/bspack.exe: link ./stubs/ext_basic_hash_stubs.c ./bin/bspack.mli ./bin/bspack.ml
     libs = unix.cmxa
     flags = -I ./bin -w -40-30
+build ./bin/cmjdump.exe: link ./stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa core/core.cmxa main/cmjdump_main.cmx   
+    libs = ocamlcommon.cmxa
 rule bspack    
     command = ./bin/bspack.exe $flags -bs-main $main -o $out
     depfile = $out.d

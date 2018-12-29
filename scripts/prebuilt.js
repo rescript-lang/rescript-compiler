@@ -22,7 +22,7 @@ function buildCompiler() {
 	})
 }
 if(!is_windows){
-  require('./runtimeDeps.js').updateAllLibsNinja()
+  require('./runtimeDeps.js').updateRelease()
 }
 
 buildCompiler()
