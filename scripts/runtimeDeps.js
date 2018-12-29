@@ -493,6 +493,7 @@ bsc_flags = $bsc_no_open_flags -open Bs_stdlib_mini
 rule cc
     command = $bsc $bsc_flags -bs-no-implicit-include  -I ${ninjaCwd} -c $in
     description = $in -> $out
+    restat = 1
 ${ninjaQuickBuidList([
     ['bs_stdlib_mini.cmi', 'bs_stdlib_mini.mli', 
         'cc', ninjaCwd, [["bsc_flags", "-nostdlib -nopervasives"]], [],externalDeps],
@@ -554,6 +555,7 @@ bsc_flags =  -no-alias-deps -bs-no-version-header -bs-diagnose -bs-no-check-div-
 rule cc
     command = $bsc $bsc_flags -bs-no-implicit-include  -I ${ninjaCwd} -c $in
     description = $in -> $out    
+    restat = 1
 ${ devmode ?
 `rule ${cppoRule}
     command = cppo -D $type $in -o $out
@@ -701,6 +703,7 @@ ${bsc_flags} = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-no
 rule cc
     command = $bsc $${bsc_flags} -bs-no-implicit-include  -I ${ninjaCwd} -c $in
     description = $in -> $out    
+    restat = 1
 ${ninjaQuickBuidList([
     ['camlinternalFormatBasics.cmi', 'camlinternalFormatBasics.mli', 
         'cc', ninjaCwd, bsc_builtin_overrides, [], externalDeps],
@@ -781,6 +784,7 @@ bsc_flags = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-cross
 rule cc
     command = $bsc $bsc_flags -bs-no-implicit-include -I ${ninjaCwd} -c $in
     description = $in -> $out
+    restat = 1
 rule mll    
     command = ocamllex.opt $in
     generator = true
