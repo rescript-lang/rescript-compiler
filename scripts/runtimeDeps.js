@@ -1031,7 +1031,7 @@ function test(dir){
  * an effect on depfile
  */
 function nativeNinja() {
-        var sourceDirs = ['stubs','ext', 'common', 'syntax', 'depends', 'core', 'super_errors', 'outcome_printer', 'bsb','main']
+        var sourceDirs = ['stubs','ext', 'common', 'syntax', 'depends', 'core', 'super_errors', 'outcome_printer', 'bsb', 'ounit','ounit_tests','main']
         var includes = sourceDirs.map(x=>`-I ${x}`).join(' ')
         var releaseMode = `-D BS_RELEASE_BUILD=true`
         var templateNative = `
@@ -1090,7 +1090,8 @@ rule bspack
     command = ./bin/bspack.exe $flags -bs-main $main -o $out
     depfile = $out.d
     generator = true
-
+build ./bin/tests.exe: link ounit/ounit.cmxa stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa bsb/bsb.cmxa core/core.cmxa ounit_tests/ounit_tests.cmxa main/ounit_tests_main.cmx
+    libs = str.cmxa unix.cmxa ocamlcommon.cmxa
 build snapshot: phony  ../lib/whole_compiler.ml ../lib/bsppx.ml ../lib/bsdep.ml ../lib/bsb_helper.ml ../lib/bsb.ml ../lib/bspp.ml bin/all_ounit_tests.ml
 
 build ../lib/whole_compiler.ml: bspack | ./bin/bspack.exe
@@ -1119,10 +1120,11 @@ build ../lib/bspp.ml: bspack | ./bin/bspack.exe
      flags = -D BS_MIN_LEX_DEPS=true ${releaseMode} -bs-MD -module-alias Config=Config_whole_compiler   -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING?parser   -I common -I ext -I syntax -I depends -I bspp -I core -I main 
      main = Bspp_main 
 
-build bin/all_ounit_tests.ml: bspack | ./bin/bspack.exe
-     flags =  -bs-MD    -I ounit -I ounit_tests  -I stubs -I bsb -I common -I ext -I syntax -I depends -I bspp -I core 
-     main = Ounit_tests_main     
 `
+// build bin/all_ounit_tests.ml: bspack | ./bin/bspack.exe
+//      flags =  -bs-MD    -I ounit -I ounit_tests  -I stubs -I bsb -I common -I ext -I syntax -I depends -I bspp -I core 
+//      main = Ounit_tests_main     
+
     
     /**
      * @type { {name : string, libs: string[]}[]}

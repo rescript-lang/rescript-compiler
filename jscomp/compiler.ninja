@@ -1,7 +1,7 @@
 
 ocamlopt = ../vendor/ocaml/bin/ocamlopt.opt      
 rule optc
-    command = $ocamlopt -I +compiler-libs  -I stubs -I ext -I common -I syntax -I depends -I core -I super_errors -I outcome_printer -I bsb -I main -g -w +6-40-30-23 -warn-error +a-40-30-23 -absname -c $in
+    command = $ocamlopt -I +compiler-libs  -I stubs -I ext -I common -I syntax -I depends -I core -I super_errors -I outcome_printer -I bsb -I ounit -I ounit_tests -I main -g -w +6-40-30-23 -warn-error +a-40-30-23 -absname -c $in
 rule archive
     command = $ocamlopt -a $in -o $out    
 rule link
@@ -54,11 +54,12 @@ rule bspack
     command = ./bin/bspack.exe $flags -bs-main $main -o $out
     depfile = $out.d
     generator = true
-
+build ./bin/tests.exe: link ounit/ounit.cmxa stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa bsb/bsb.cmxa core/core.cmxa ounit_tests/ounit_tests.cmxa main/ounit_tests_main.cmx
+    libs = str.cmxa unix.cmxa ocamlcommon.cmxa
 build snapshot: phony  ../lib/whole_compiler.ml ../lib/bsppx.ml ../lib/bsdep.ml ../lib/bsb_helper.ml ../lib/bsb.ml ../lib/bspp.ml bin/all_ounit_tests.ml
 
 build ../lib/whole_compiler.ml: bspack | ./bin/bspack.exe
-    flags = -D BS_RELEASE_BUILD=true -bs-MD -module-alias Config=Config_whole_compiler -bs-exclude-I config  -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I $OCAML_SRC_TYPING -I $OCAML_SRC_BYTECOMP -I $OCAML_SRC_DRIVER   -I stubs -I ext -I common -I syntax -I depends -I core -I super_errors -I outcome_printer -I bsb -I main
+    flags = -D BS_RELEASE_BUILD=true -bs-MD -module-alias Config=Config_whole_compiler -bs-exclude-I config  -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I $OCAML_SRC_TYPING -I $OCAML_SRC_BYTECOMP -I $OCAML_SRC_DRIVER   -I stubs -I ext -I common -I syntax -I depends -I core -I super_errors -I outcome_printer -I bsb -I ounit -I ounit_tests -I main
     main = Js_main
 
 
@@ -83,9 +84,6 @@ build ../lib/bspp.ml: bspack | ./bin/bspack.exe
      flags = -D BS_MIN_LEX_DEPS=true -D BS_RELEASE_BUILD=true -bs-MD -module-alias Config=Config_whole_compiler   -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING?parser   -I common -I ext -I syntax -I depends -I bspp -I core -I main 
      main = Bspp_main 
 
-build bin/all_ounit_tests.ml: bspack | ./bin/bspack.exe
-     flags =  -bs-MD    -I ounit -I ounit_tests  -I stubs -I bsb -I common -I ext -I syntax -I depends -I bspp -I core 
-     main = Ounit_tests_main     
 build stubs/bs_hash_stubs.cmx stubs/bs_hash_stubs.cmi : optc stubs/bs_hash_stubs.ml | 
 build ext/ext_array.cmx : optc ext/ext_array.ml | ext/ext_array.cmi
 build ext/ext_array.cmi : optc ext/ext_array.mli | 
@@ -616,6 +614,43 @@ build bsb/bsb_watcher_gen.cmi : optc bsb/bsb_watcher_gen.mli | bsb/bsb_file_grou
 build bsb/bsb_world.cmx : optc bsb/bsb_world.ml | ext/string_hash_set.cmx ext/literals.cmx ext/ext_path.cmx ext/ext_namespace.cmx bsb/bsb_unix.cmx bsb/bsb_ninja_regen.cmx bsb/bsb_log.cmx bsb/bsb_file.cmx bsb/bsb_config_types.cmx bsb/bsb_config_parse.cmx bsb/bsb_config.cmx bsb/bsb_build_util.cmx bsb/bsb_world.cmi
 build bsb/bsb_world.cmi : optc bsb/bsb_world.mli | bsb/bsb_config_types.cmx
 build bsb/oCamlRes.cmx bsb/oCamlRes.cmi : optc bsb/oCamlRes.ml | 
+build ounit/oUnit.cmx : optc ounit/oUnit.ml | ounit/oUnitUtils.cmx ounit/oUnitTypes.cmx ounit/oUnitLogger.cmx ounit/oUnitChooser.cmx ounit/oUnit.cmi
+build ounit/oUnit.cmi : optc ounit/oUnit.mli | 
+build ounit/oUnitChooser.cmx ounit/oUnitChooser.cmi : optc ounit/oUnitChooser.ml | ounit/oUnitTypes.cmx
+build ounit/oUnitDiff.cmx : optc ounit/oUnitDiff.ml | ounit/oUnit.cmx ounit/oUnitDiff.cmi
+build ounit/oUnitDiff.cmi : optc ounit/oUnitDiff.mli | 
+build ounit/oUnitLogger.cmx ounit/oUnitLogger.cmi : optc ounit/oUnitLogger.ml | ounit/oUnitUtils.cmx ounit/oUnitTypes.cmx
+build ounit/oUnitTypes.cmx ounit/oUnitTypes.cmi : optc ounit/oUnitTypes.ml | 
+build ounit/oUnitUtils.cmx ounit/oUnitUtils.cmi : optc ounit/oUnitUtils.ml | ounit/oUnitTypes.cmx
+build ounit_tests/ounit_array_tests.cmx ounit_tests/ounit_array_tests.cmi : optc ounit_tests/ounit_array_tests.ml | ounit/oUnit.cmx ext/ext_string.cmx ext/ext_array.cmx
+build ounit_tests/ounit_bal_tree_tests.cmx ounit_tests/ounit_bal_tree_tests.cmi : optc ounit_tests/ounit_bal_tree_tests.ml | ext/set_int.cmx ext/set_gen.cmx ounit_tests/ounit_tests_util.cmx ounit/oUnit.cmx
+build ounit_tests/ounit_bsb_regex_tests.cmx ounit_tests/ounit_bsb_regex_tests.cmi : optc ounit_tests/ounit_bsb_regex_tests.ml | ounit/oUnit.cmx bsb/bsb_regex.cmx
+build ounit_tests/ounit_cmd_tests.cmx ounit_tests/ounit_cmd_tests.cmi : optc ounit_tests/ounit_cmd_tests.ml | ounit_tests/ounit_cmd_util.cmx ounit/oUnit.cmx ext/ext_string.cmx
+build ounit_tests/ounit_cmd_util.cmx : optc ounit_tests/ounit_cmd_util.ml | ext/literals.cmx ounit_tests/ounit_cmd_util.cmi
+build ounit_tests/ounit_cmd_util.cmi : optc ounit_tests/ounit_cmd_util.mli | 
+build ounit_tests/ounit_data_random.cmx ounit_tests/ounit_data_random.cmi : optc ounit_tests/ounit_data_random.ml | 
+build ounit_tests/ounit_depends_format_test.cmx ounit_tests/ounit_depends_format_test.cmi : optc ounit_tests/ounit_depends_format_test.ml | ounit/oUnit.cmx
+build ounit_tests/ounit_ffi_error_debug_test.cmx ounit_tests/ounit_ffi_error_debug_test.cmi : optc ounit_tests/ounit_ffi_error_debug_test.ml | ounit_tests/ounit_cmd_util.cmx ounit/oUnit.cmx ext/ext_string.cmx
+build ounit_tests/ounit_hash_set_tests.cmx ounit_tests/ounit_hash_set_tests.cmi : optc ounit_tests/ounit_hash_set_tests.ml | ext/string_hash_set.cmx ext/ordered_hash_set_string.cmx ounit/oUnit.cmx ext/hash_set_poly.cmx ext/hash_set.cmx ext/ext_array.cmx
+build ounit_tests/ounit_hash_stubs_test.cmx ounit_tests/ounit_hash_stubs_test.cmi : optc ounit_tests/ounit_hash_stubs_test.ml | ounit_tests/ounit_tests_util.cmx ounit/oUnit.cmx ext/int_hash_set.cmx ext/hash_set_poly.cmx stubs/bs_hash_stubs.cmx
+build ounit_tests/ounit_hashtbl_tests.cmx ounit_tests/ounit_hashtbl_tests.cmi : optc ounit_tests/ounit_hashtbl_tests.ml | ext/string_hashtbl.cmx ounit/oUnit.cmx
+build ounit_tests/ounit_ident_mask_tests.cmx ounit_tests/ounit_ident_mask_tests.cmi : optc ounit_tests/ounit_ident_mask_tests.ml | ounit/oUnit.cmx ext/hash_set_ident_mask.cmx
+build ounit_tests/ounit_int_vec_tests.cmx ounit_tests/ounit_int_vec_tests.cmi : optc ounit_tests/ounit_int_vec_tests.ml | ounit/oUnit.cmx ext/int_vec_util.cmx ext/int_vec.cmx
+build ounit_tests/ounit_js_regex_checker_tests.cmx ounit_tests/ounit_js_regex_checker_tests.cmi : optc ounit_tests/ounit_js_regex_checker_tests.ml | ounit/oUnit.cmx ext/ext_js_regex.cmx
+build ounit_tests/ounit_json_tests.cmx ounit_tests/ounit_json_tests.cmi : optc ounit_tests/ounit_json_tests.ml | ext/string_map.cmx ounit/oUnit.cmx ext/ext_pervasives.cmx ext/ext_json_types.cmx ext/ext_json_parse.cmx ext/ext_json_noloc.cmx ext/ext_json.cmx
+build ounit_tests/ounit_list_test.cmx ounit_tests/ounit_list_test.cmi : optc ounit_tests/ounit_list_test.ml | ounit/oUnit.cmx ext/ext_list.cmx
+build ounit_tests/ounit_map_tests.cmx ounit_tests/ounit_map_tests.cmi : optc ounit_tests/ounit_map_tests.ml | ounit/oUnit.cmx ext/int_map.cmx
+build ounit_tests/ounit_ordered_hash_set_tests.cmx ounit_tests/ounit_ordered_hash_set_tests.cmi : optc ounit_tests/ounit_ordered_hash_set_tests.ml | ext/ordered_hash_set_string.cmx ounit/oUnit.cmx ext/ext_util.cmx ext/ext_string.cmx
+build ounit_tests/ounit_path_tests.cmx ounit_tests/ounit_path_tests.cmi : optc ounit_tests/ounit_path_tests.ml | ounit/oUnit.cmx ext/ext_string.cmx ext/ext_path.cmx
+build ounit_tests/ounit_scc_tests.cmx ounit_tests/ounit_scc_tests.cmi : optc ounit_tests/ounit_scc_tests.ml | ext/string_hashtbl.cmx ounit/oUnit.cmx ext/int_vec_vec.cmx ext/int_vec.cmx ext/ext_string.cmx ext/ext_scc.cmx
+build ounit_tests/ounit_sexp_tests.cmx ounit_tests/ounit_sexp_tests.cmi : optc ounit_tests/ounit_sexp_tests.ml | 
+build ounit_tests/ounit_string_tests.cmx ounit_tests/ounit_string_tests.cmi : optc ounit_tests/ounit_string_tests.ml | ounit_tests/ounit_data_random.cmx ounit/oUnit.cmx ext/ext_string.cmx ext/ext_path.cmx ext/ext_namespace.cmx ext/ext_modulename.cmx
+build ounit_tests/ounit_tests_util.cmx ounit_tests/ounit_tests_util.cmi : optc ounit_tests/ounit_tests_util.ml | 
+build ounit_tests/ounit_topsort_tests.cmx ounit_tests/ounit_topsort_tests.cmi : optc ounit_tests/ounit_topsort_tests.ml | ext/set_int.cmx ounit/oUnit.cmx ext/int_vec.cmx ext/ext_topsort.cmx
+build ounit_tests/ounit_unicode_tests.cmx ounit_tests/ounit_unicode_tests.cmi : optc ounit_tests/ounit_unicode_tests.ml | ounit/oUnit.cmx ext/ext_string.cmx ext/ext_list.cmx syntax/ast_utf8_string_interp.cmx syntax/ast_utf8_string.cmx
+build ounit_tests/ounit_union_find_tests.cmx ounit_tests/ounit_union_find_tests.cmi : optc ounit_tests/ounit_union_find_tests.ml | ext/union_find.cmx ounit/oUnit.cmx ext/int_vec_vec.cmx ext/int_vec.cmx ext/ext_string.cmx
+build ounit_tests/ounit_utf8_test.cmx ounit_tests/ounit_utf8_test.cmi : optc ounit_tests/ounit_utf8_test.ml | ounit/oUnit.cmx ext/ext_utf8.cmx
+build ounit_tests/ounit_vec_test.cmx ounit_tests/ounit_vec_test.cmi : optc ounit_tests/ounit_vec_test.ml | ext/set_int.cmx ounit/oUnit.cmx ext/int_vec.cmx ext/ext_list.cmx ext/ext_json.cmx
 build main/astdump_main.cmx main/astdump_main.cmi : optc main/astdump_main.ml | common/ml_binary.cmx ext/ext_path.cmx bsb/bsb_helper_depfile_gen.cmx
 build main/bsb_helper_main.cmx : optc main/bsb_helper_main.ml | ext/ext_path.cmx bsb/bsb_helper_depfile_gen.cmx bsb/bsb_dir_index.cmx main/bsb_helper_main.cmi
 build main/bsb_helper_main.cmi : optc main/bsb_helper_main.mli | 
@@ -631,6 +666,8 @@ build main/js_main.cmx : optc main/js_main.ml | super_errors/super_main.cmx outc
 build main/js_main.cmi : optc main/js_main.mli | 
 build main/jsoo_main.cmx : optc main/jsoo_main.ml | super_errors/super_main.cmx ext/string_map.cmx syntax/ppx_entry.cmx outcome_printer/outcome_printer_ns.cmx core/lam_compile_main.cmx core/lam_compile_env.cmx core/js_dump_program.cmx core/js_cmj_format.cmx core/js_cmj_datasets.cmx ext/ext_pp.cmx bsb/bsb_warning.cmx common/bs_version.cmx core/bs_conditional_initial.cmx main/jsoo_main.cmi
 build main/jsoo_main.cmi : optc main/jsoo_main.mli | 
+build main/ounit_tests_main.cmx : optc main/ounit_tests_main.ml | ext/resize_array.cmx ounit_tests/ounit_vec_test.cmx ounit_tests/ounit_utf8_test.cmx ounit_tests/ounit_union_find_tests.cmx ounit_tests/ounit_unicode_tests.cmx ounit_tests/ounit_topsort_tests.cmx ounit_tests/ounit_string_tests.cmx ounit_tests/ounit_scc_tests.cmx ounit_tests/ounit_path_tests.cmx ounit_tests/ounit_ordered_hash_set_tests.cmx ounit_tests/ounit_map_tests.cmx ounit_tests/ounit_list_test.cmx ounit_tests/ounit_json_tests.cmx ounit_tests/ounit_js_regex_checker_tests.cmx ounit_tests/ounit_int_vec_tests.cmx ounit_tests/ounit_ident_mask_tests.cmx ounit_tests/ounit_hashtbl_tests.cmx ounit_tests/ounit_hash_stubs_test.cmx ounit_tests/ounit_hash_set_tests.cmx ounit_tests/ounit_ffi_error_debug_test.cmx ounit_tests/ounit_cmd_tests.cmx ounit_tests/ounit_bsb_regex_tests.cmx ounit_tests/ounit_bal_tree_tests.cmx ounit_tests/ounit_array_tests.cmx ounit/oUnit.cmx main/ounit_tests_main.cmi
+build main/ounit_tests_main.cmi : optc main/ounit_tests_main.mli | 
 
 build ext/ext.cmxa : archive ext/ext_array.cmx ext/ext_bytes.cmx ext/ext_char.cmx ext/ext_cmp.cmx ext/ext_string.cmx ext/ext_list.cmx ext/ext_color.cmx ext/vec_gen.cmx ext/resize_array.cmx ext/string_vec.cmx ext/ext_file_pp.cmx ext/literals.cmx ext/ext_pervasives.cmx ext/ext_sys.cmx ext/ext_path.cmx ext/ext_filename.cmx ext/ext_format.cmx ext/ext_util.cmx ext/hashtbl_gen.cmx ext/string_hashtbl.cmx ext/hash_set_gen.cmx ext/string_hash_set.cmx ext/ext_ident.cmx ext/ext_int.cmx ext/ext_io.cmx ext/ext_utf8.cmx ext/ext_js_regex.cmx ext/map_gen.cmx ext/string_map.cmx ext/ext_json_types.cmx ext/ext_json.cmx ext/ext_json_noloc.cmx ext/ext_position.cmx ext/ext_json_parse.cmx ext/ext_json_write.cmx ext/ext_marshal.cmx ext/ext_modulename.cmx ext/ext_namespace.cmx ext/ext_option.cmx ext/ext_pp.cmx ext/int_map.cmx ext/set_gen.cmx ext/ident_set.cmx ext/ext_pp_scope.cmx ext/ext_ref.cmx ext/int_vec.cmx ext/int_vec_vec.cmx ext/ext_scc.cmx ext/ext_stack.cmx ext/set_int.cmx ext/ext_topsort.cmx ext/hash_set.cmx ext/hash_set_ident_mask.cmx ext/hash_set_poly.cmx ext/hashtbl_make.cmx ext/ident_hash_set.cmx ext/ident_hashtbl.cmx ext/ident_map.cmx ext/int_hash_set.cmx ext/int_hashtbl.cmx ext/int_vec_util.cmx ext/ordered_hash_map_gen.cmx ext/ordered_hash_map_local_ident.cmx ext/ordered_hash_set_gen.cmx ext/ordered_hash_set_ident.cmx ext/ordered_hash_set_make.cmx ext/ordered_hash_set_string.cmx ext/string_set.cmx ext/union_find.cmx
 build common/common.cmxa : archive common/bs_loc.cmx common/bs_version.cmx common/js_config.cmx common/bs_warnings.cmx common/ext_log.cmx common/lam_methname.cmx common/ml_binary.cmx
@@ -640,3 +677,5 @@ build core/core.cmxa : archive core/bs_conditional_initial.cmx core/config_util.
 build super_errors/super_errors.cmxa : archive super_errors/super_warnings.cmx super_errors/super_misc.cmx super_errors/super_location.cmx super_errors/super_env.cmx super_errors/super_typetexp.cmx super_errors/super_reason_react.cmx super_errors/super_typemod.cmx super_errors/super_typecore.cmx super_errors/super_pparse.cmx super_errors/super_main.cmx
 build outcome_printer/outcome_printer.cmxa : archive outcome_printer/outcome_printer_ns.cmx outcome_printer/reason_syntax_util.cmx outcome_printer/tweaked_reason_oprint.cmx outcome_printer/reason_outcome_printer_main.cmx
 build bsb/bsb.cmxa : archive bsb/bsb_build_schemas.cmx bsb/bsb_log.cmx bsb/bsb_exception.cmx bsb/bsb_pkg.cmx bsb/bsb_build_util.cmx bsb/bsb_unix.cmx bsb/bsb_dir_index.cmx bsb/bsb_db.cmx bsb/bsb_file_groups.cmx bsb/bsb_config.cmx bsb/bsb_parse_sources.cmx bsb/bsb_clean.cmx bsb/bsb_watcher_gen.cmx bsb/bsb_warning.cmx bsb/bsb_package_specs.cmx bsb/bsb_config_types.cmx bsb/bsb_default.cmx bsb/bsb_config_parse.cmx bsb/bsb_file.cmx bsb/bsb_helper_dep_graph.cmx bsb/bsb_helper_depfile_gen.cmx bsb/bsb_helper_extract.cmx bsb/bsb_helper_linker.cmx bsb/bsb_helper_packer.cmx bsb/bsb_merlin_gen.cmx bsb/bsb_namespace_map_gen.cmx bsb/bsb_ninja_check.cmx bsb/bsb_rule.cmx bsb/bsb_ninja_util.cmx bsb/bsb_ninja_global_vars.cmx bsb/bsb_ninja_file_groups.cmx bsb/bsb_ninja_gen.cmx bsb/bsb_ninja_regen.cmx bsb/bsb_query.cmx bsb/bsb_regex.cmx bsb/oCamlRes.cmx bsb/bsb_templates.cmx bsb/bsb_theme_init.cmx bsb/bsb_world.cmx
+build ounit/ounit.cmxa : archive ounit/oUnitTypes.cmx ounit/oUnitUtils.cmx ounit/oUnitLogger.cmx ounit/oUnitChooser.cmx ounit/oUnit.cmx ounit/oUnitDiff.cmx ounit_tests/ounit_array_tests.cmx ounit_tests/ounit_tests_util.cmx ounit_tests/ounit_bal_tree_tests.cmx ounit_tests/ounit_bsb_regex_tests.cmx ounit_tests/ounit_cmd_util.cmx ounit_tests/ounit_cmd_tests.cmx ounit_tests/ounit_data_random.cmx ounit_tests/ounit_depends_format_test.cmx ounit_tests/ounit_ffi_error_debug_test.cmx ounit_tests/ounit_hash_set_tests.cmx ounit_tests/ounit_hash_stubs_test.cmx ounit_tests/ounit_hashtbl_tests.cmx ounit_tests/ounit_ident_mask_tests.cmx ounit_tests/ounit_int_vec_tests.cmx ounit_tests/ounit_js_regex_checker_tests.cmx ounit_tests/ounit_json_tests.cmx ounit_tests/ounit_list_test.cmx ounit_tests/ounit_map_tests.cmx ounit_tests/ounit_ordered_hash_set_tests.cmx ounit_tests/ounit_path_tests.cmx ounit_tests/ounit_scc_tests.cmx ounit_tests/ounit_sexp_tests.cmx ounit_tests/ounit_string_tests.cmx ounit_tests/ounit_topsort_tests.cmx ounit_tests/ounit_unicode_tests.cmx ounit_tests/ounit_union_find_tests.cmx ounit_tests/ounit_utf8_test.cmx ounit_tests/ounit_vec_test.cmx
+build ounit_tests/ounit_tests.cmxa : archive ounit_tests/ounit_array_tests.cmx ounit_tests/ounit_tests_util.cmx ounit_tests/ounit_bal_tree_tests.cmx ounit_tests/ounit_bsb_regex_tests.cmx ounit_tests/ounit_cmd_util.cmx ounit_tests/ounit_cmd_tests.cmx ounit_tests/ounit_data_random.cmx ounit_tests/ounit_depends_format_test.cmx ounit_tests/ounit_ffi_error_debug_test.cmx ounit_tests/ounit_hash_set_tests.cmx ounit_tests/ounit_hash_stubs_test.cmx ounit_tests/ounit_hashtbl_tests.cmx ounit_tests/ounit_ident_mask_tests.cmx ounit_tests/ounit_int_vec_tests.cmx ounit_tests/ounit_js_regex_checker_tests.cmx ounit_tests/ounit_json_tests.cmx ounit_tests/ounit_list_test.cmx ounit_tests/ounit_map_tests.cmx ounit_tests/ounit_ordered_hash_set_tests.cmx ounit_tests/ounit_path_tests.cmx ounit_tests/ounit_scc_tests.cmx ounit_tests/ounit_sexp_tests.cmx ounit_tests/ounit_string_tests.cmx ounit_tests/ounit_topsort_tests.cmx ounit_tests/ounit_unicode_tests.cmx ounit_tests/ounit_union_find_tests.cmx ounit_tests/ounit_utf8_test.cmx ounit_tests/ounit_vec_test.cmx
