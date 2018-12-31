@@ -498,10 +498,10 @@ let () =
                    (fun collection_module acc  -> 
                       acc ^ 
                       collection_module
-                      ^ " "
+                      ^ "\n"
                       (* ^ a ^ " : ; touch " ^ output ^ "\n" *)
                    ) sorted_queue
-                   (file ^ " : " )
+                   (file ^ ":\n" )
                    (* collection_modules *)
                )
        end
