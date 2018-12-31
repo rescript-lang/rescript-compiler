@@ -243,14 +243,6 @@ function provideCompiler() {
     if (!checkPrebuilt()) {
         // when not having bsc.exe
         tryToProvideOCamlCompiler()
-        if (process.env.BS_TRAVIS_CI === "1") {
-            console.log('Enforcing snapshot in CI mode')
-            if (fs.existsSync(path.join(root_dir, 'jscomp', 'Makefile'))) {
-                cp.execSync("make -C jscomp force-snapshotml", root_dir_config)
-            } else {
-                console.log("jscomp/Makefile is missing")
-            }
-        }
         // Note this ninja file only works under *nix due to the suffix
         // under windows require '.exe'
         cp.execFileSync(ninja_bin_output, { cwd: lib_dir, stdio: [0, 1, 2] })
