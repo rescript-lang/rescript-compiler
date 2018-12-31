@@ -56,34 +56,6 @@ rule bspack
     generator = true
 build ./bin/tests.exe: link ounit/ounit.cmxa stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa bsb/bsb.cmxa core/core.cmxa ounit_tests/ounit_tests.cmxa main/ounit_tests_main.cmx
     libs = str.cmxa unix.cmxa ocamlcommon.cmxa
-build snapshot: phony  ../lib/whole_compiler.ml ../lib/bsppx.ml ../lib/bsdep.ml ../lib/bsb_helper.ml ../lib/bsb.ml ../lib/bspp.ml bin/all_ounit_tests.ml
-
-build ../lib/whole_compiler.ml: bspack | ./bin/bspack.exe
-    flags = -D BS_RELEASE_BUILD=true -bs-MD -module-alias Config=Config_whole_compiler -bs-exclude-I config  -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I $OCAML_SRC_TYPING -I $OCAML_SRC_BYTECOMP -I $OCAML_SRC_DRIVER   -I stubs -I ext -I common -I syntax -I depends -I core -I super_errors -I outcome_printer -I bsb -I ounit -I ounit_tests -I main
-    main = Js_main
-
-
-build ../lib/bsppx.ml: bspack | ./bin/bspack.exe
-    flags =  -D BS_RELEASE_BUILD=true -bs-MD  -module-alias Config=Config_whole_compiler  -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING  -I stubs -I common -I ext -I syntax -I core -I main 
-    main = Bsppx_main
-
-
-build ../lib/bsdep.ml: bspack | ./bin/bspack.exe
-    flags = -D BS_OCAMLDEP=true  -D BS_RELEASE_BUILD=true -bs-MD  -module-alias Config=Config_whole_compiler   -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I $OCAML_SRC_DRIVER -I $OCAML_SRC_TOOLS -I common -I ext -I syntax -I depends -I core -I stubs -I main 
-    main = Ocamldep
-
-build ../lib/bsb_helper.ml: bspack | ./bin/bspack.exe
-     flags = -bs-MD -D BS_RELEASE_BUILD=true   -I stubs -I common -I ext -I syntax -I depends -I bsb  -I main 
-     main = Bsb_helper_main 
-
-build ../lib/bsb.ml: bspack | ./bin/bspack.exe
-     flags =   -D BS_MIN_LEX_DEPS=true -bs-MD -D BS_RELEASE_BUILD=true -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I stubs -I common -I ext -I syntax -I depends -I bsb -I ext -I main 
-     main = Bsb_main 
-
-build ../lib/bspp.ml: bspack | ./bin/bspack.exe
-     flags = -D BS_MIN_LEX_DEPS=true -D BS_RELEASE_BUILD=true -bs-MD -module-alias Config=Config_whole_compiler   -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING?parser   -I common -I ext -I syntax -I depends -I bspp -I core -I main 
-     main = Bspp_main 
-
 build stubs/bs_hash_stubs.cmx stubs/bs_hash_stubs.cmi : optc stubs/bs_hash_stubs.ml | 
 build ext/ext_array.cmx : optc ext/ext_array.ml | ext/ext_array.cmi
 build ext/ext_array.cmi : optc ext/ext_array.mli | 

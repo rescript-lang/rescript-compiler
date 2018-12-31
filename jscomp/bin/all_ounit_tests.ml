@@ -1326,9 +1326,9 @@ val exists : ('a -> bool) -> 'a array -> bool
 val is_empty : 'a array -> bool 
 
 val for_all2_no_exn : 
-  ('a -> 'b -> bool) -> 
   'a array ->
   'b array -> 
+  ('a -> 'b -> bool) -> 
   bool
 
 val map :   
@@ -1578,7 +1578,7 @@ let rec unsafe_loop index len p xs ys  =
       (Array.unsafe_get ys index) &&
     unsafe_loop (succ index) len p xs ys 
 
-let for_all2_no_exn p xs ys = 
+let for_all2_no_exn xs ys p = 
   let len_xs = Array.length xs in 
   let len_ys = Array.length ys in 
   len_xs = len_ys &&    
@@ -2552,29 +2552,29 @@ let suites =
 
     __LOC__ >:: begin fun _ -> 
     OUnit.assert_bool __LOC__ 
-        (Ext_array.for_all2_no_exn
+        (Ext_array.for_all2_no_exn        
+        [|1;2;3|]
+        [|1;2;3|]
         (=)
-        [|1;2;3|]
-        [|1;2;3|]
         )
     end;
     __LOC__ >:: begin fun _ -> 
     OUnit.assert_bool __LOC__
     (Ext_array.for_all2_no_exn
-    (=) [||] [||]
+    [||] [||] (=) 
     );
     OUnit.assert_bool __LOC__
     (not @@ Ext_array.for_all2_no_exn
-    (=) [||] [|1|]
+    [||] [|1|] (=) 
     )
     end
     ;
     __LOC__ >:: begin fun _ -> 
     OUnit.assert_bool __LOC__
-    (not (Ext_array.for_all2_no_exn
-        (=)
+    (not (Ext_array.for_all2_no_exn        
         [|1;2;3|]
         [|1;2;33|]
+        (=)
         ))
     end
     ]
@@ -9837,7 +9837,7 @@ let rec equal
     begin match y with 
       | Arr {content = content2}
         ->
-        Ext_array.for_all2_no_exn equal content content2
+        Ext_array.for_all2_no_exn content content2 equal
       | _ -> false 
     end
 
@@ -9978,7 +9978,7 @@ let rec equal
     begin match y with 
       | Arr content2
         ->
-        Ext_array.for_all2_no_exn equal content content2
+        Ext_array.for_all2_no_exn content content2 equal 
       | _ -> false 
     end
 

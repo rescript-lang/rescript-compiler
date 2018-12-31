@@ -1092,38 +1092,7 @@ rule bspack
     generator = true
 build ./bin/tests.exe: link ounit/ounit.cmxa stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa bsb/bsb.cmxa core/core.cmxa ounit_tests/ounit_tests.cmxa main/ounit_tests_main.cmx
     libs = str.cmxa unix.cmxa ocamlcommon.cmxa
-build snapshot: phony  ../lib/whole_compiler.ml ../lib/bsppx.ml ../lib/bsdep.ml ../lib/bsb_helper.ml ../lib/bsb.ml ../lib/bspp.ml bin/all_ounit_tests.ml
-
-build ../lib/whole_compiler.ml: bspack | ./bin/bspack.exe
-    flags = ${releaseMode} -bs-MD -module-alias Config=Config_whole_compiler -bs-exclude-I config  -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I $OCAML_SRC_TYPING -I $OCAML_SRC_BYTECOMP -I $OCAML_SRC_DRIVER   ${includes}
-    main = Js_main
-
-
-build ../lib/bsppx.ml: bspack | ./bin/bspack.exe
-    flags =  ${releaseMode} -bs-MD  -module-alias Config=Config_whole_compiler  -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING  -I stubs -I common -I ext -I syntax -I core -I main 
-    main = Bsppx_main
-
-
-build ../lib/bsdep.ml: bspack | ./bin/bspack.exe
-    flags = -D BS_OCAMLDEP=true  ${releaseMode} -bs-MD  -module-alias Config=Config_whole_compiler   -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I $OCAML_SRC_DRIVER -I $OCAML_SRC_TOOLS -I common -I ext -I syntax -I depends -I core -I stubs -I main 
-    main = Ocamldep
-
-build ../lib/bsb_helper.ml: bspack | ./bin/bspack.exe
-     flags = -bs-MD ${releaseMode}   -I stubs -I common -I ext -I syntax -I depends -I bsb  -I main 
-     main = Bsb_helper_main 
-
-build ../lib/bsb.ml: bspack | ./bin/bspack.exe
-     flags =   -D BS_MIN_LEX_DEPS=true -bs-MD ${releaseMode} -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I stubs -I common -I ext -I syntax -I depends -I bsb -I ext -I main 
-     main = Bsb_main 
-
-build ../lib/bspp.ml: bspack | ./bin/bspack.exe
-     flags = -D BS_MIN_LEX_DEPS=true ${releaseMode} -bs-MD -module-alias Config=Config_whole_compiler   -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING?parser   -I common -I ext -I syntax -I depends -I bspp -I core -I main 
-     main = Bspp_main 
-
 `
-// build bin/all_ounit_tests.ml: bspack | ./bin/bspack.exe
-//      flags =  -bs-MD    -I ounit -I ounit_tests  -I stubs -I bsb -I common -I ext -I syntax -I depends -I bspp -I core 
-//      main = Ounit_tests_main     
 
     
     /**

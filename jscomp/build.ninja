@@ -1,5 +1,5 @@
 subninja compiler.ninja
-
+subninja snapshot.ninja
 subninja runtime/build.ninja
 subninja others/build.ninja
 subninja stdlib-402/build.ninja
