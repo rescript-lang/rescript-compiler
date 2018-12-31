@@ -1,7 +1,9 @@
 
 flags = -g -w -a ../jscomp/stubs/ext_basic_hash_stubs.c
 
-ocamlopt = ../vendor/ocaml/bin/ocamlopt.opt
+# ocamlopt = ../vendor/ocaml/bin/ocamlopt.opt
+ocamlopt = ocamlopt.opt
+# we relies on its dynamic behavior for finding a proper ocamlopt
 rule cc
     command = $ocamlopt $flags -o $out $in
 
