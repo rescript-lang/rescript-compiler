@@ -61,29 +61,29 @@ let suites =
 
     __LOC__ >:: begin fun _ -> 
     OUnit.assert_bool __LOC__ 
-        (Ext_array.for_all2_no_exn
+        (Ext_array.for_all2_no_exn        
+        [|1;2;3|]
+        [|1;2;3|]
         (=)
-        [|1;2;3|]
-        [|1;2;3|]
         )
     end;
     __LOC__ >:: begin fun _ -> 
     OUnit.assert_bool __LOC__
     (Ext_array.for_all2_no_exn
-    (=) [||] [||]
+    [||] [||] (=) 
     );
     OUnit.assert_bool __LOC__
     (not @@ Ext_array.for_all2_no_exn
-    (=) [||] [|1|]
+    [||] [|1|] (=) 
     )
     end
     ;
     __LOC__ >:: begin fun _ -> 
     OUnit.assert_bool __LOC__
-    (not (Ext_array.for_all2_no_exn
-        (=)
+    (not (Ext_array.for_all2_no_exn        
         [|1;2;3|]
         [|1;2;33|]
+        (=)
         ))
     end
     ]

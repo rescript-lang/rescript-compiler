@@ -119,7 +119,7 @@ and for_sure_arity  (x : arity) y =
   match x, y with 
   | Single x0, Single y0 -> Lam_arity.equal x0 y0
   | Submodule xs, Submodule ys -> 
-    Ext_array.for_all2_no_exn Lam_arity.equal xs ys 
+    Ext_array.for_all2_no_exn  xs ys Lam_arity.equal
   | Single _, Submodule _ -> false
   | Submodule _, Single _ -> false
 and for_sure_eq_optional_lambda 

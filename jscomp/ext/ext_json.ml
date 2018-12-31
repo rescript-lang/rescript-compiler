@@ -127,7 +127,7 @@ let rec equal
     begin match y with 
       | Arr {content = content2}
         ->
-        Ext_array.for_all2_no_exn equal content content2
+        Ext_array.for_all2_no_exn content content2 equal
       | _ -> false 
     end
 

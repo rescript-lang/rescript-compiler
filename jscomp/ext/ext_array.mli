@@ -75,9 +75,9 @@ val exists : ('a -> bool) -> 'a array -> bool
 val is_empty : 'a array -> bool 
 
 val for_all2_no_exn : 
-  ('a -> 'b -> bool) -> 
   'a array ->
   'b array -> 
+  ('a -> 'b -> bool) -> 
   bool
 
 val map :   

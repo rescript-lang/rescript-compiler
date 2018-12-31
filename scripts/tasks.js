@@ -20,7 +20,8 @@ var sourceDirs =
         'others',
         'stdlib-406',
         'runtime',
-        'test'
+        'test',
+        'ounit_tests'
     ]
 
 

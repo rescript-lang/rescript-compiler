@@ -225,9 +225,9 @@ val exists : ('a -> bool) -> 'a array -> bool
 val is_empty : 'a array -> bool 
 
 val for_all2_no_exn : 
-  ('a -> 'b -> bool) -> 
   'a array ->
   'b array -> 
+  ('a -> 'b -> bool) -> 
   bool
 
 val map :   
@@ -477,7 +477,7 @@ let rec unsafe_loop index len p xs ys  =
       (Array.unsafe_get ys index) &&
     unsafe_loop (succ index) len p xs ys 
 
-let for_all2_no_exn p xs ys = 
+let for_all2_no_exn xs ys p = 
   let len_xs = Array.length xs in 
   let len_ys = Array.length ys in 
   len_xs = len_ys &&    
@@ -2318,7 +2318,7 @@ let rec equal
     begin match y with 
       | Arr {content = content2}
         ->
-        Ext_array.for_all2_no_exn equal content content2
+        Ext_array.for_all2_no_exn content content2 equal
       | _ -> false 
     end
 
@@ -10939,7 +10939,7 @@ let rec equal
     begin match y with 
       | Arr content2
         ->
-        Ext_array.for_all2_no_exn equal content content2
+        Ext_array.for_all2_no_exn content content2 equal 
       | _ -> false 
     end
 

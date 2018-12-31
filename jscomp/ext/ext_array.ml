@@ -234,7 +234,7 @@ let rec unsafe_loop index len p xs ys  =
       (Array.unsafe_get ys index) &&
     unsafe_loop (succ index) len p xs ys 
 
-let for_all2_no_exn p xs ys = 
+let for_all2_no_exn xs ys p = 
   let len_xs = Array.length xs in 
   let len_ys = Array.length ys in 
   len_xs = len_ys &&    
