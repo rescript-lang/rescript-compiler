@@ -1,2 +1,5 @@
 rule cp
     command = cmd /q /c copy $in $out 1>nul
+
+ext = win32
+include copy.ninja
