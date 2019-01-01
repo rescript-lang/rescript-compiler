@@ -30,7 +30,7 @@ type error
 exception Error of error
 
 val print : Format.formatter -> error -> unit 
-val package_not_found : pkg:string -> json:string option -> 'a
+val package_not_found : pkg:Bsb_pkg_types.t -> json:string option -> 'a
 
 val conflict_module:
     string -> string -> string -> 'a 

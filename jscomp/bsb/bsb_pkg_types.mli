@@ -29,6 +29,7 @@ type t =
 and scope = string  
 
 val to_string : t -> string 
+val print : Format.formatter -> t -> unit 
 val equal : t -> t -> bool 
 
 (* The second element could be empty or dropped 

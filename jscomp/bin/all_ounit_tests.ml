@@ -1983,6 +1983,8 @@ val no_slash : string -> bool
 (** return negative means no slash, otherwise [i] means the place for first slash *)
 val no_slash_idx : string -> int 
 
+val no_slash_idx_from : string -> int -> int 
+
 (** if no conversion happens, reference equality holds *)
 val replace_slash_backward : string -> string 
 
@@ -2335,6 +2337,11 @@ let no_slash x =
 
 let no_slash_idx x = 
   unsafe_no_char_idx x '/' 0 (String.length x - 1)
+
+let no_slash_idx_from x from = 
+  let last_idx = String.length x - 1  in 
+  assert (from >= 0); 
+  unsafe_no_char_idx x '/' from last_idx
 
 let replace_slash_backward (x : string ) = 
   let len = String.length x in 
@@ -3430,6 +3437,219 @@ let bench () =
 
   end ; 
 
+end
+module Bsb_pkg_types : sig 
+#1 "bsb_pkg_types.mli"
+(* Copyright (C) 2019- Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type t = 
+  | Global of string
+  | Scope of string * scope
+and scope = string  
+
+val to_string : t -> string 
+val print : Format.formatter -> t -> unit 
+val equal : t -> t -> bool 
+
+(* The second element could be empty or dropped 
+*)
+val extract_pkg_name_and_file : string -> t * string 
+val string_as_package : string -> t 
+end = struct
+#1 "bsb_pkg_types.ml"
+
+(* Copyright (C) 2018- Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+let (//) = Filename.concat
+
+type t = 
+  | Global of string
+  | Scope of string * scope
+and scope = string  
+
+let to_string (x : t) = 
+  match x with
+  | Global s -> s
+  | Scope (s,scope) -> scope // s 
+
+let print fmt (x : t) = 
+  match x with   
+  | Global s -> Format.pp_print_string fmt s 
+  | Scope(name,scope) -> 
+    Format.fprintf fmt "%s/%s" scope name
+
+let equal (x : t) y = 
+  match x, y with 
+  | Scope(a0,a1), Scope(b0,b1) 
+    -> a0 = b0 && a1 = b1
+  | Global a0, Global b0 -> a0 = b0
+  | Scope _, Global _ 
+  | Global _, Scope _ -> false
+
+(**
+  input: {[
+    @hello/yy/xx
+    hello/yy
+  ]}
+  FIXME: fix invalid input
+  {[
+    hello//xh//helo
+  ]}
+*)
+let extract_pkg_name_and_file (s : string) =   
+  let len = String.length s in 
+  assert (len  > 0 ); 
+  let v = String.unsafe_get s 0 in 
+  if v = '@' then 
+    let scope_id = 
+      Ext_string.no_slash_idx s  in 
+    assert (scope_id > 0);
+    let pkg_id =   
+      Ext_string.no_slash_idx_from
+        s (scope_id + 1)   in 
+     let scope =     
+      String.sub s 0 scope_id in 
+     
+     if pkg_id < 0 then     
+      (Scope(String.sub s (scope_id + 1) (len - scope_id - 1), scope),"")
+     else 
+      (Scope(
+        String.sub s (scope_id + 1) (pkg_id - scope_id - 1), scope), 
+       String.sub s (pkg_id + 1) (len - pkg_id - 1))
+  else     
+      let pkg_id = Ext_string.no_slash_idx s in 
+      if pkg_id < 0 then 
+      Global s , ""
+      else 
+      Global (String.sub s 0 pkg_id), 
+              (String.sub s (pkg_id + 1) (len - pkg_id - 1))
+
+
+let string_as_package (s : string) : t = 
+  let len = String.length s in 
+  assert (len > 0); 
+  let v = String.unsafe_get s 0 in 
+  if v = '@' then 
+    let scope_id = 
+        Ext_string.no_slash_idx s in 
+    assert (scope_id > 0);
+    Scope(
+      String.sub s (scope_id + 1) (len - scope_id - 1),
+      String.sub s 0 scope_id
+      )    
+  else Global s       
+end
+module Ounit_bsb_pkg_tests
+= struct
+#1 "ounit_bsb_pkg_tests.ml"
+
+
+let ((>::),
+     (>:::)) = OUnit.((>::),(>:::))
+
+let printer_string = fun x -> x 
+let (=~) = OUnit.assert_equal  ~printer:printer_string  
+
+
+
+let scope_test s (a,b,c)= 
+  match Bsb_pkg_types.extract_pkg_name_and_file s with 
+  | Scope(a0,b0),c0 -> 
+    a =~ a0 ; b =~ b0 ; c =~ c0
+  | Global _,_ -> OUnit.assert_failure __LOC__
+
+let global_test s (a,b) = 
+  match Bsb_pkg_types.extract_pkg_name_and_file s with 
+  | Scope _, _ -> 
+    OUnit.assert_failure __LOC__
+  | Global a0, b0-> 
+    a=~a0; b=~b0
+
+let s_test0 s (a,b)=     
+  match Bsb_pkg_types.string_as_package s with 
+  | Scope(name,scope) -> 
+      a =~ name ; b =~scope 
+  | _ -> OUnit.assert_failure __LOC__     
+
+let s_test1 s a =     
+  match Bsb_pkg_types.string_as_package s with 
+  | Global x  -> 
+      a =~ x
+  | _ -> OUnit.assert_failure __LOC__       
+  
+let suites = 
+  __FILE__ >::: [
+    __LOC__ >:: begin fun _ -> 
+      scope_test "@hello/hi"
+        ("hi", "@hello","");
+
+      scope_test "@hello/hi/x"
+        ("hi", "@hello","x");
+
+      
+      scope_test "@hello/hi/x/y"
+        ("hi", "@hello","x/y");  
+  end ;
+  __LOC__ >:: begin fun _ -> 
+    global_test "hello"
+      ("hello","");
+    global_test "hello/x"
+      ("hello","x");  
+    global_test "hello/x/y"
+      ("hello","x/y")    
+  end ;
+  __LOC__ >:: begin fun _ -> 
+    s_test0 "@x/y" ("y","@x");
+    s_test0 "@x/y/z" ("y/z","@x");
+    s_test1 "xx" "xx";
+    s_test1 "xx/yy/zz" "xx/yy/zz"
+  end
+  ]
 end
 module Bsb_regex : sig 
 #1 "bsb_regex.mli"
@@ -14106,6 +14326,8 @@ let suites =
     end;
     __LOC__ >:: begin fun _ -> 
       OUnit.assert_bool __LOC__ 
+        (Ext_string.no_slash_idx "" < 0);
+      OUnit.assert_bool __LOC__ 
         (Ext_string.no_slash_idx "xxx" < 0);
       OUnit.assert_bool __LOC__ 
         (Ext_string.no_slash_idx "xxx/" = 3);
@@ -14113,6 +14335,18 @@ let suites =
         (Ext_string.no_slash_idx "xxx/g/" = 3);
       OUnit.assert_bool __LOC__ 
         (Ext_string.no_slash_idx "/xxx/g/" = 0)
+    end;
+    __LOC__ >:: begin fun _ -> 
+      OUnit.assert_bool __LOC__ 
+        (Ext_string.no_slash_idx_from "xxx" 0 < 0);
+      OUnit.assert_bool __LOC__ 
+        (Ext_string.no_slash_idx_from "xxx/" 1 = 3);
+      OUnit.assert_bool __LOC__ 
+        (Ext_string.no_slash_idx_from "xxx/g/" 4 = 5);
+      OUnit.assert_bool __LOC__ 
+        (Ext_string.no_slash_idx_from "xxx/g/" 3 = 3);  
+      OUnit.assert_bool __LOC__ 
+        (Ext_string.no_slash_idx_from "/xxx/g/" 0 = 0)
     end;
     __LOC__ >:: begin fun _ -> 
       OUnit.assert_bool __LOC__
@@ -17412,6 +17646,7 @@ let suites =
     Ounit_utf8_test.suites;
     Ounit_unicode_tests.suites;
     Ounit_bsb_regex_tests.suites;
+    Ounit_bsb_pkg_tests.suites
   ]
 let _ = 
   OUnit.run_test_tt_main suites

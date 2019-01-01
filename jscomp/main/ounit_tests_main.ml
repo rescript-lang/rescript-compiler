@@ -41,6 +41,7 @@ let suites =
     Ounit_utf8_test.suites;
     Ounit_unicode_tests.suites;
     Ounit_bsb_regex_tests.suites;
+    Ounit_bsb_pkg_tests.suites
   ]
 let _ = 
   OUnit.run_test_tt_main suites

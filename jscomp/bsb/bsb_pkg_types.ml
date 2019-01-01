@@ -35,6 +35,11 @@ let to_string (x : t) =
   | Global s -> s
   | Scope (s,scope) -> scope // s 
 
+let print fmt (x : t) = 
+  match x with   
+  | Global s -> Format.pp_print_string fmt s 
+  | Scope(name,scope) -> 
+    Format.fprintf fmt "%s/%s" scope name
 
 let equal (x : t) y = 
   match x, y with 
@@ -69,12 +74,11 @@ let extract_pkg_name_and_file (s : string) =
       String.sub s 0 scope_id in 
      
      if pkg_id < 0 then     
-      (Scope(scope, String.sub s (scope_id + 1) (len - scope_id - 1)),"")
+      (Scope(String.sub s (scope_id + 1) (len - scope_id - 1), scope),"")
      else 
       (Scope(
-        scope,  
-        String.sub s (scope_id + 1) (pkg_id - scope_id - 1)), 
-        String.sub s (pkg_id + 1) (len - pkg_id - 1))
+        String.sub s (scope_id + 1) (pkg_id - scope_id - 1), scope), 
+       String.sub s (pkg_id + 1) (len - pkg_id - 1))
   else     
       let pkg_id = Ext_string.no_slash_idx s in 
       if pkg_id < 0 then 
@@ -83,7 +87,7 @@ let extract_pkg_name_and_file (s : string) =
       Global (String.sub s 0 pkg_id), 
               (String.sub s (pkg_id + 1) (len - pkg_id - 1))
 
-              
+
 let string_as_package (s : string) : t = 
   let len = String.length s in 
   assert (len > 0); 
@@ -92,6 +96,8 @@ let string_as_package (s : string) : t =
     let scope_id = 
         Ext_string.no_slash_idx s in 
     assert (scope_id > 0);
-    Scope(String.sub s 0 scope_id, 
-      String.sub s (scope_id + 1) (len - scope_id - 1))    
+    Scope(
+      String.sub s (scope_id + 1) (len - scope_id - 1),
+      String.sub s 0 scope_id
+      )    
   else Global s       

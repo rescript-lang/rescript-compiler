@@ -7,6 +7,8 @@
 ./bsb/bsb_exception.mli
 ./bsb/bsb_helper_depfile_gen.ml
 ./bsb/bsb_helper_depfile_gen.mli
+./bsb/bsb_pkg_types.ml
+./bsb/bsb_pkg_types.mli
 ./common/bs_version.ml
 ./common/bs_version.mli
 ./ext/ext_array.ml

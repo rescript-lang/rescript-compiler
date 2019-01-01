@@ -25,7 +25,7 @@
 
 type dependency = 
   {
-    package_name : string ; 
+    package_name : Bsb_pkg_types.t ; 
     package_install_path : string ; 
   }
 type dependencies = dependency list 

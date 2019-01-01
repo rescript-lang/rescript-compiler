@@ -242,6 +242,8 @@ let suites =
     end;
     __LOC__ >:: begin fun _ -> 
       OUnit.assert_bool __LOC__ 
+        (Ext_string.no_slash_idx "" < 0);
+      OUnit.assert_bool __LOC__ 
         (Ext_string.no_slash_idx "xxx" < 0);
       OUnit.assert_bool __LOC__ 
         (Ext_string.no_slash_idx "xxx/" = 3);

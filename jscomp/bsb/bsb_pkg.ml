@@ -25,17 +25,21 @@
 
 let (//) = Filename.concat
 
+type t = Bsb_pkg_types.t
 
+let marker = Literals.bsconfig_json 
 
+let make_sub_path (x : t) : string = 
+   Literals.node_modules // Bsb_pkg_types.to_string x // marker 
+  
 
 (** It makes sense to have this function raise, when [bsb] could not resolve a package, it used to mean
     a failure
 *)
-let  resolve_bs_package_aux  ~cwd pkg =
-  let marker = Literals.bsconfig_json in
-  let sub_path = pkg // marker  in
+let  resolve_bs_package_aux  ~cwd (pkg : t) =
+  let sub_path = make_sub_path pkg   in
   let rec aux  cwd  =
-    let abs_marker =  cwd // Literals.node_modules // sub_path in
+    let abs_marker =  cwd //  sub_path in
     if Sys.file_exists abs_marker then Filename.dirname abs_marker
     else
       let another_cwd = Filename.dirname cwd in (* TODO: may non-terminating when see symlinks *)
@@ -43,7 +47,7 @@ let  resolve_bs_package_aux  ~cwd pkg =
         aux    another_cwd
       else (* To the end try other possiblilities *)
         begin match Sys.getenv "npm_config_prefix"
-                    // "lib" // Literals.node_modules // sub_path with
+                    // "lib" // sub_path with
         | abs_marker when Sys.file_exists abs_marker ->
           Filename.dirname abs_marker
         | _ ->
@@ -54,16 +58,20 @@ let  resolve_bs_package_aux  ~cwd pkg =
   in
   aux cwd
 
-
-let cache = String_hashtbl.create 0
+module Coll = Hashtbl_make.Make(struct
+  type nonrec t = t 
+  let equal = Bsb_pkg_types.equal
+  let hash (x : t) = Hashtbl.hash x     
+end)
+let cache : string Coll.t = Coll.create 0
 
 (** TODO: collect all warnings and print later *)
-let resolve_bs_package ~cwd package =
-  match String_hashtbl.find_opt cache package with
+let resolve_bs_package ~cwd (package : t) =
+  match Coll.find_opt cache package with
   | None ->
     let result = resolve_bs_package_aux ~cwd package in
-    Bsb_log.info "@{<info>Package@} %s -> %s@." package result ;
-    String_hashtbl.add cache package result ;
+    Bsb_log.info "@{<info>Package@} %a -> %s@." Bsb_pkg_types.print package result ;
+    Coll.add cache package result ;
     result
   | Some x
     ->
@@ -71,7 +79,8 @@ let resolve_bs_package ~cwd package =
     if result <> x then
       begin
         Bsb_log.warn
-          "@{<warning>Duplicated package:@} %s %s (chosen) vs %s in %s @." package x result cwd;
+          "@{<warning>Duplicated package:@} %a %s (chosen) vs %s in %s @." 
+            Bsb_pkg_types.print package x result cwd;
       end;
     x
 
@@ -87,7 +96,7 @@ let resolve_bs_package ~cwd package =
     It also returns the path name
     Note the input [sub_path] is already converted to physical meaning path according to OS
 *)
-(* let resolve_npm_package_file ~cwd sub_path = *)
+(* let resolve_npm_package_file ~cwd sub_path = *) 
 (*   let rec aux  cwd  =  *)
 (*     let abs_marker =  cwd // Literals.node_modules // sub_path in  *)
 (*     if Sys.file_exists abs_marker then Some abs_marker *)
@@ -108,4 +117,4 @@ let resolve_bs_package ~cwd package =
 (*           Not_found -> None *)
 (*           (\* Bs_exception.error (Bs_package_not_found name)           *\) *)
 (*   in *)
-(*   aux cwd  *)
+(*   aux cwd *)

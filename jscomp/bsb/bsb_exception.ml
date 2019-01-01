@@ -25,7 +25,7 @@
 
 
 type error =
-  | Package_not_found of string * string option (* json file *)
+  | Package_not_found of Bsb_pkg_types.t * string option (* json file *)
   | Json_config of Ext_position.t * string
   | Invalid_json of string
   | Invalid_spec of string
@@ -49,6 +49,7 @@ let print (fmt : Format.formatter) (x : error) =
     let in_json = match json_opt with
     | None -> Ext_string.empty
     | Some x -> " in " ^ x in
+    let name = Bsb_pkg_types.to_string name in 
     if Ext_string.equal name Bs_version.package_name then
       Format.fprintf fmt
       "File \"bsconfig.json\", line 1\n\
