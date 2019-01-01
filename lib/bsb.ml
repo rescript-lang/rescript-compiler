@@ -4734,10 +4734,12 @@ let (//) = Filename.concat
 
 type t = Bsb_pkg_types.t
 
-let marker = Literals.bsconfig_json 
-
+(* TODO: be more restrict 
+  [bsconfig.json] does not always make sense, 
+  when resolving [ppx-flags]
+*)
 let make_sub_path (x : t) : string = 
-   Literals.node_modules // Bsb_pkg_types.to_string x // marker 
+   Literals.node_modules // Bsb_pkg_types.to_string x 
   
 
 (** It makes sense to have this function raise, when [bsb] could not resolve a package, it used to mean
@@ -4747,7 +4749,7 @@ let  resolve_bs_package_aux  ~cwd (pkg : t) =
   let sub_path = make_sub_path pkg   in
   let rec aux  cwd  =
     let abs_marker =  cwd //  sub_path in
-    if Sys.file_exists abs_marker then Filename.dirname abs_marker
+    if Sys.file_exists abs_marker then abs_marker
     else
       let another_cwd = Filename.dirname cwd in (* TODO: may non-terminating when see symlinks *)
       if String.length another_cwd < String.length cwd then
@@ -4756,7 +4758,7 @@ let  resolve_bs_package_aux  ~cwd (pkg : t) =
         begin match Sys.getenv "npm_config_prefix"
                     // "lib" // sub_path with
         | abs_marker when Sys.file_exists abs_marker ->
-          Filename.dirname abs_marker
+          abs_marker
         | _ ->
             Bsb_exception.package_not_found ~pkg ~json:None
         | exception Not_found ->
