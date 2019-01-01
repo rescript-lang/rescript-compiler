@@ -1,0 +1,11 @@
+
+
+
+# ocamlopt = ../vendor/ocaml/bin/ocamlopt.opt
+ocamlopt = ocamlopt.opt
+# we relies on its dynamic behavior for finding a proper ocamlopt
+
+ext = darwin
+include body.ninja
+
+

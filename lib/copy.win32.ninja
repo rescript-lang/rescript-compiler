@@ -1,0 +1,2 @@
+rule cp
+    command = cmd /q /c copy $in $out 1>nul
