@@ -14,23 +14,17 @@
 var cp = require('child_process')
 var fs = require('fs')
 var path = require('path')
-// var os = require('os')
-
-// var os_type = os.type()
 var root_dir = path.join(__dirname, '..')
 var lib_dir = path.join(root_dir, 'lib')
 var jscomp_dir = path.join(root_dir, 'jscomp')
 var runtime_dir = path.join(jscomp_dir,'runtime')
 var others_dir = path.join(jscomp_dir,'others')
 var stdlib_dir = path.join(jscomp_dir, 'stdlib-402')
-var root_dir_config = { cwd: root_dir, stdio: [0, 1, 2] }
 
-// var dest_bin = path.join(root_dir, 'lib')
-// var dest_lib = path.join(root_dir, 'lib', 'ocaml')
 
 var ocaml_dir = path.join(lib_dir,'ocaml')
 var config = require('./config.js')
-var make = config.make
+
 var is_windows = config.is_windows
 var sys_extension = config.sys_extension
 
@@ -43,7 +37,13 @@ process.env.PATH =
     process.env.PATH
 
 var ninja_bin_output = path.join(root_dir, 'lib', 'ninja.exe')
-// Make sure `ninja_bin_output` exists    
+
+
+/**
+ * Make sure `ninja_bin_output` exists    
+ * The installation of `ninja.exe` is re-entrant, since we always pre-check if it is already installed
+ * This is less problematic since `ninja.exe` is very stable
+ */
 function provideNinja() {
     var vendor_ninja_version = '1.8.2'    
     var ninja_source_dir = path.join(root_dir, 'vendor', 'ninja')
@@ -77,7 +77,7 @@ function provideNinja() {
 
     var ninja_os_path = path.join(ninja_source_dir,'snapshot', 'ninja' + sys_extension)
     if (fs.existsSync(ninja_bin_output) && test_ninja_compatible(ninja_bin_output)) {
-        console.log("ninja binary is already cached: ", ninja_bin_output)
+        console.log("ninja binary is already cached and installed: ", ninja_bin_output)
     }
     else if (fs.existsSync(ninja_os_path)) {
         if(fs.copyFileSync){
@@ -213,18 +213,10 @@ function tryToProvideOCamlCompiler() {
     }
 }
 
-function renamePrebuiltCompilers() {
-    fs.readdirSync(lib_dir).forEach(function (f) {
-        var last_index = f.lastIndexOf(sys_extension)
-        if (last_index !== -1) {
-            var new_file = f.slice(0, - sys_extension.length) + ".exe"
-            var x = path.join(lib_dir, f)
-            var y = path.join(lib_dir,new_file)
-            console.log(x,'-->',y)
-            fs.renameSync(x, y);
-            // we do have .win file which means windows npm release
-        }
-    })
+function copyPrebuiltCompilers() {
+    cp.execFileSync(ninja_bin_output,
+        ["-f", "copy" + sys_extension + ".ninja"],
+        { cwd: lib_dir, stdio: [0, 1, 2] })
 }
 
 /**
@@ -235,7 +227,7 @@ function checkPrebuilt() {
         var version = cp.execFileSync(path.join(lib_dir, 'bsc' + sys_extension), ['-v'])
         console.log("checkoutput:", String(version))
         console.log("Prebuilt compiler works good")
-        renamePrebuiltCompilers()
+        
         return true
     } catch (e) {
         console.log("No working prebuilt buckleScript compiler")
@@ -255,7 +247,10 @@ function provideCompiler() {
         console.log('Found pervasives.cmi, assume it was already built')
         return true // already built before
     }
-    if (!checkPrebuilt()) {
+    if (checkPrebuilt()) {
+        copyPrebuiltCompilers()
+    }
+    else {
         // when not having bsc.exe
         tryToProvideOCamlCompiler()
         // Note this ninja file only works under *nix due to the suffix
@@ -268,7 +263,7 @@ function provideCompiler() {
 provideNinja()
 
 if(is_windows){
-    renamePrebuiltCompilers()
+    copyPrebuiltCompilers()
 } else{
     provideCompiler()
 }

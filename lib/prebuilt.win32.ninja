@@ -1,0 +1,7 @@
+
+
+ocamlopt = ocamlopt.opt.exe
+
+ext = win32
+
+include body.ninja
