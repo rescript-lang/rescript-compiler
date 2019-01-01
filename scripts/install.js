@@ -24,7 +24,7 @@ var stdlib_dir = path.join(jscomp_dir, 'stdlib-402')
 
 var ocaml_dir = path.join(lib_dir,'ocaml')
 var config = require('./config.js')
-var make = config.make
+
 var is_windows = config.is_windows
 var sys_extension = config.sys_extension
 
