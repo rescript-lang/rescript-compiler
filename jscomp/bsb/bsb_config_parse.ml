@@ -276,7 +276,7 @@ let interpret_json
     |? (Bsb_build_schemas.bs_external_includes, `Arr (fun s -> bs_external_includes := get_list_string s))
     |? (Bsb_build_schemas.bsc_flags, `Arr (fun s -> bsc_flags := Bsb_build_util.get_list_string_acc s !bsc_flags))
     |? (Bsb_build_schemas.ppx_flags, `Arr (fun s -> 
-        ppx_flags := Ext_list.map (s |> get_list_string) (fun p ->
+        ppx_flags := Ext_list.map (get_list_string s) (fun p ->
             if p = "" then failwith "invalid ppx, empty string found"
             else Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.ppx_flags p
           )
