@@ -1,0 +1,10 @@
+####{BSB GENERATED: NO EDIT
+FLG -ppx /Users/hongbozhang/git/bucklescript/jscomp/build_tests/scoped_ppx/node_modules/@hongbo/ppx1/test.js
+FLG -ppx /Users/hongbozhang/git/bucklescript/lib/bsppx.exe
+S /Users/hongbozhang/git/bucklescript/jscomp/build_tests/scoped_ppx/node_modules/bs-platform/lib/ocaml
+B /Users/hongbozhang/git/bucklescript/jscomp/build_tests/scoped_ppx/node_modules/bs-platform/lib/ocaml
+FLG -nostdlib -color always
+FLG -w -30-40+6+7+27+32..39+44+45+101
+S src
+B lib/bs/src
+####BSB GENERATED: NO EDIT}

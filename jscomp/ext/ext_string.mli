@@ -135,6 +135,8 @@ val no_slash : string -> bool
 (** return negative means no slash, otherwise [i] means the place for first slash *)
 val no_slash_idx : string -> int 
 
+val no_slash_idx_from : string -> int -> int 
+
 (** if no conversion happens, reference equality holds *)
 val replace_slash_backward : string -> string 
 

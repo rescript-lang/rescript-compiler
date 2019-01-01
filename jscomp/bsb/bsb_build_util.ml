@@ -64,20 +64,19 @@ let convert_and_resolve_path : string -> string -> string =
    Input is node path, output is OS dependent (normalized) path
 *)
 let resolve_bsb_magic_file ~cwd ~desc p =
-  let p_len = String.length p in
   let no_slash = Ext_string.no_slash_idx p in
   if no_slash < 0 then
-    p
+    p (*FIXME: better error message for "" input *)
   else 
-  if Filename.is_relative p &&
-     p_len > 0 &&
-     String.unsafe_get p 0 <> '.' then
-    let package_name, relative_path = 
-      String.sub p 0 no_slash , 
-      let p = String.sub p (no_slash + 1) (p_len - no_slash - 1 )in  
-      if Ext_sys.is_windows_or_cygwin then Ext_string.replace_slash_backward p 
-      else p
+  let first_char = String.unsafe_get p 0 in 
+  if Filename.is_relative p &&  
+     first_char  <> '.' then
+    let package_name, rest = 
+      Bsb_pkg_types.extract_pkg_name_and_file p 
     in 
+    let relative_path = 
+        if Ext_sys.is_windows_or_cygwin then Ext_string.replace_slash_backward rest 
+        else rest in       
     (* let p = if Ext_sys.is_windows_or_cygwin then Ext_string.replace_slash_backward p else p in *)
     let package_dir = Bsb_pkg.resolve_bs_package ~cwd package_name in
     let path = package_dir // relative_path in 
@@ -204,7 +203,8 @@ let rec walk_all_deps_aux visited paths top dir cb =
                  begin match js with
                    | Str {str = new_package} ->
                      let package_dir = 
-                       Bsb_pkg.resolve_bs_package ~cwd:dir new_package in 
+                       Bsb_pkg.resolve_bs_package ~cwd:dir 
+                        (Bsb_pkg_types.string_as_package   new_package) in 
                      walk_all_deps_aux visited package_stacks  false package_dir cb  ;
                    | _ -> 
                      Bsb_exception.errorf ~loc 
@@ -222,7 +222,8 @@ let rec walk_all_deps_aux visited paths top dir cb =
                    match js with
                    | Str {str = new_package} ->
                      let package_dir = 
-                       Bsb_pkg.resolve_bs_package ~cwd:dir new_package in 
+                       Bsb_pkg.resolve_bs_package ~cwd:dir 
+                        (Bsb_pkg_types.string_as_package new_package) in 
                      walk_all_deps_aux visited package_stacks  false package_dir cb  ;
                    | _ -> 
                      Bsb_exception.errorf ~loc 

@@ -56,6 +56,10 @@ function provideNinja() {
     }
 
     // sanity check to make sure the binary actually runs. Used for Linux. Too many variants
+    /**
+     * 
+     * @param {string} binary_path 
+     */
     function test_ninja_compatible(binary_path) {
         var version;
         try {
@@ -92,19 +96,30 @@ function provideNinja() {
         build_ninja()
     }
 }
-
+/**
+ * 
+ * @param {NodeJS.ErrnoException} err 
+ */
 function throwWhenError(err){
     if(err!==null){
         throw err
     }
 }
-
+/**
+ * 
+ * @param {string} file 
+ * @param {string} target 
+ */
 function poorCopyFile(file, target) {
 	var stat = fs.statSync(file)
 	fs.createReadStream(file).pipe(
 		fs.createWriteStream(target,
 			{ mode: stat.mode }))            
 }
+/**
+ * @type {(x:string,y:string)=>void} 
+ * 
+ */
 var installTrytoCopy;
 if(fs.copyFile !== undefined){
     installTrytoCopy = function(x,y){

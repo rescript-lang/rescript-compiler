@@ -4595,6 +4595,8 @@ val no_slash : string -> bool
 (** return negative means no slash, otherwise [i] means the place for first slash *)
 val no_slash_idx : string -> int 
 
+val no_slash_idx_from : string -> int -> int 
+
 (** if no conversion happens, reference equality holds *)
 val replace_slash_backward : string -> string 
 
@@ -4947,6 +4949,11 @@ let no_slash x =
 
 let no_slash_idx x = 
   unsafe_no_char_idx x '/' 0 (String.length x - 1)
+
+let no_slash_idx_from x from = 
+  let last_idx = String.length x - 1  in 
+  assert (from >= 0); 
+  unsafe_no_char_idx x '/' from last_idx
 
 let replace_slash_backward (x : string ) = 
   let len = String.length x in 

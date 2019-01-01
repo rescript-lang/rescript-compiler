@@ -1,4 +1,6 @@
 bin/all_ounit_tests.ml:
+./bsb/bsb_pkg_types.ml
+./bsb/bsb_pkg_types.mli
 ./bsb/bsb_regex.ml
 ./bsb/bsb_regex.mli
 ./common/bs_loc.ml
@@ -94,6 +96,7 @@ bin/all_ounit_tests.ml:
 ./ounit/oUnitUtils.ml
 ./ounit_tests/ounit_array_tests.ml
 ./ounit_tests/ounit_bal_tree_tests.ml
+./ounit_tests/ounit_bsb_pkg_tests.ml
 ./ounit_tests/ounit_bsb_regex_tests.ml
 ./ounit_tests/ounit_cmd_tests.ml
 ./ounit_tests/ounit_cmd_util.ml

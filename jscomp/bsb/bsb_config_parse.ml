@@ -25,7 +25,7 @@
 let config_file_bak = "bsconfig.json.bak"
 let get_list_string = Bsb_build_util.get_list_string
 let (//) = Ext_path.combine
-
+let current_package : Bsb_pkg_types.t = Global Bs_version.package_name
 let resolve_package cwd  package_name = 
   let x =  Bsb_pkg.resolve_bs_package ~cwd package_name  in
   {
@@ -198,7 +198,7 @@ let interpret_json
      | Some _ ->
         begin
           let stdlib_path = 
-              Bsb_pkg.resolve_bs_package ~cwd Bs_version.package_name in 
+              Bsb_pkg.resolve_bs_package ~cwd current_package in 
           let json_spec = 
               Ext_json_parse.parse_json_from_file 
               (Filename.concat stdlib_path Literals.package_json) in 
@@ -219,7 +219,7 @@ let interpret_json
                 
             | _ -> assert false);
             built_in_package := Some {
-              Bsb_config_types.package_name = Bs_version.package_name;
+              Bsb_config_types.package_name = current_package;
               package_install_path = stdlib_path // Bsb_config.lib_ocaml;
             }
              
@@ -264,19 +264,19 @@ let interpret_json
         |> ignore
       end)
 
-    |? (Bsb_build_schemas.bs_dependencies, `Arr (fun s -> bs_dependencies :=  Ext_list.map (Bsb_build_util.get_list_string s) (resolve_package cwd)))
+    |? (Bsb_build_schemas.bs_dependencies, `Arr (fun s -> bs_dependencies :=  Ext_list.map (Bsb_build_util.get_list_string s) (fun s -> resolve_package cwd (Bsb_pkg_types.string_as_package s))))
     |? (Bsb_build_schemas.bs_dev_dependencies,
         `Arr (fun s ->
             if not  not_dev then 
               bs_dev_dependencies
-              :=  Ext_list.map (Bsb_build_util.get_list_string s) (resolve_package cwd))
+              :=  Ext_list.map (Bsb_build_util.get_list_string s) (fun s -> resolve_package cwd (Bsb_pkg_types.string_as_package s)))
        )
 
     (* More design *)
     |? (Bsb_build_schemas.bs_external_includes, `Arr (fun s -> bs_external_includes := get_list_string s))
     |? (Bsb_build_schemas.bsc_flags, `Arr (fun s -> bsc_flags := Bsb_build_util.get_list_string_acc s !bsc_flags))
     |? (Bsb_build_schemas.ppx_flags, `Arr (fun s -> 
-        ppx_flags := Ext_list.map (s |> get_list_string) (fun p ->
+        ppx_flags := Ext_list.map (get_list_string s) (fun p ->
             if p = "" then failwith "invalid ppx, empty string found"
             else Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.ppx_flags p
           )

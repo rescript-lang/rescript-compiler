@@ -43,6 +43,8 @@
 ./bsb/bsb_parse_sources.mli
 ./bsb/bsb_pkg.ml
 ./bsb/bsb_pkg.mli
+./bsb/bsb_pkg_types.ml
+./bsb/bsb_pkg_types.mli
 ./bsb/bsb_query.ml
 ./bsb/bsb_query.mli
 ./bsb/bsb_regex.ml
@@ -105,6 +107,8 @@
 ./ext/ext_util.mli
 ./ext/hash_set_gen.ml
 ./ext/hashtbl_gen.ml
+./ext/hashtbl_make.ml
+./ext/hashtbl_make.mli
 ./ext/literals.ml
 ./ext/literals.mli
 ./ext/map_gen.ml
