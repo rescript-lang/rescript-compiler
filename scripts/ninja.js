@@ -1023,6 +1023,15 @@ function test(dir){
     }).map(x=>path.join(dir,x))
 }
 
+/**
+ * 
+ * @param {Set<string>} xs 
+ * @returns {string}
+ */
+function setSortedToString(xs){
+    var arr = Array.from(xs).sort()
+    return arr.join(' ')
+}
 
 /**
  * Note don't run `ninja -t clean -g`
@@ -1032,7 +1041,6 @@ function test(dir){
 function nativeNinja() {
         var sourceDirs = ['stubs','ext', 'common', 'syntax', 'depends', 'core', 'super_errors', 'outcome_printer', 'bsb', 'ounit','ounit_tests','main']
         var includes = sourceDirs.map(x=>`-I ${x}`).join(' ')
-        var releaseMode = `-D BS_RELEASE_BUILD=true`
         var templateNative = `
 ocamlopt = ../vendor/ocaml/bin/ocamlopt.opt      
 rule optc
@@ -1140,11 +1148,11 @@ build ./bin/tests.exe: link ounit/ounit.cmxa stubs/stubs.cmxa ext/ext.cmxa commo
             if (y.ext === '.cmx') {
                 var intf = path.join(y.dir, y.name + ".cmi")
                 var ml = path.join(y.dir, y.name + '.ml')
-                return `build ${deps.has(intf) ? target : [target, intf].join(' ')} : optc ${ml} | ${[...deps].join(' ')}`
+                return `build ${deps.has(intf) ? target : [target, intf].join(' ')} : optc ${ml} | ${setSortedToString(deps)}`
             } else {
                 // === 'cmi'
                 var mli = path.join(y.dir, y.name + '.mli')
-                return `build ${target} : optc ${mli} | ${[...deps].join(' ')}`
+                return `build ${target} : optc ${mli} | ${setSortedToString(deps)}`
             }
         }
     })
