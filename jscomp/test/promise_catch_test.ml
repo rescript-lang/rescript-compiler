@@ -17,13 +17,13 @@ external catch :
 (** rejectXXError for the FFI .. which is similar to [bs.this] *)
 let handler  = fun  e -> 
   match Obj.magic e with 
-  | Js.Exn.Error v -> Js.log "js error"; resolve 0
+  |  v when Js.Exn.asJsExn v <> None  -> Js.log "js error"; resolve 0
   | Not_found -> Js.log "hi"; resolve 0
   | _ -> assert false 
 
 let myHandler : 'a . 'a -> int option = function [@bs.open]
   |  Not_found -> 1 
-  | Js.Exn.Error _ -> 2   
+  | v when Js.Exn.asJsExn v <> None -> 2   
 
 
 let f x = 

@@ -1,0 +1,13 @@
+bsc = ../lib/bsc.exe
+bsc_no_open_flags = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-no-check-div-by-zero -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js -bs-package-output amdjs:lib/amdjs -bs-package-output es6:lib/es6  -nostdlib -nopervasives  -unsafe -warn-error A -w -40-49-103 -bin-annot 
+rule cc
+    command = $bsc $bsc_flags -bs-no-implicit-include  -I runtime -c $in
+    description = $in -> $out
+    
+    
+build runtime/bs_stdlib_mini.cmi : cc runtime/bs_stdlib_mini.mli
+    bsc_flags = -nostdlib -nopervasives
+build runtime/js.cmj runtime/js.cmi : cc runtime/js.ml
+    bsc_flags = $bsc_no_open_flags
+
+build runtime : phony runtime/bs_stdlib_mini.cmi runtime/js.cmj runtime/js.cmi

@@ -22,11 +22,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
+#if 0 then 
+type t 
+#else
 type t = Caml_js_exceptions.t 
 
 exception Error = Caml_js_exceptions.Error
 
+#end
 external asJsExn : exn -> t option = 
   "caml_as_js_exn"
 

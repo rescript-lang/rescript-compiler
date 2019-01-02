@@ -24,7 +24,9 @@
 
 type t 
 
+#if 1 then
 type exn += private Error of t 
+#end
 
 external asJsExn : exn -> t option = 
   "caml_as_js_exn"

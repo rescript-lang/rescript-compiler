@@ -3,7 +3,6 @@
 var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
-var Js_exn = require("../../lib/js/js_exn.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
@@ -48,25 +47,27 @@ function true_(loc) {
 
 var exit = 0;
 
-var e;
+var val;
 
 try {
-  e = JSON.parse(" {\"x\"}");
+  val = JSON.parse(" {\"x\"}");
   exit = 1;
 }
-catch (raw_exn){
-  var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-  if (exn[0] === Js_exn.$$Error) {
-    add_test("File \"js_exception_catch_test.ml\", line 21, characters 10-17", (function (param) {
+catch (raw_e){
+  var e = Caml_js_exceptions.internalToOCamlException(raw_e);
+  if (Caml_js_exceptions.caml_as_js_exn(e) !== undefined) {
+    add_test("File \"js_exception_catch_test.ml\", line 21, characters 43-50", (function (param) {
             return /* Ok */Block.__(4, [true]);
           }));
   } else {
-    throw exn;
+    add_test("File \"js_exception_catch_test.ml\", line 22, characters 16-23", (function (param) {
+            return /* Ok */Block.__(4, [false]);
+          }));
   }
 }
 
 if (exit === 1) {
-  add_test("File \"js_exception_catch_test.ml\", line 22, characters 16-23", (function (param) {
+  add_test("File \"js_exception_catch_test.ml\", line 23, characters 16-23", (function (param) {
           return /* Ok */Block.__(4, [false]);
         }));
 }
@@ -106,7 +107,7 @@ function test(f) {
       } else {
         return /* C */67;
       }
-    } else if (e[0] === Js_exn.$$Error) {
+    } else if (Caml_js_exceptions.caml_as_js_exn(e) !== undefined) {
       return /* Js_error */634022066;
     } else {
       return /* Any */3257036;

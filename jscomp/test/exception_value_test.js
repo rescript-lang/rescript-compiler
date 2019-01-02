@@ -1,7 +1,7 @@
 'use strict';
 
 var Curry = require("../../lib/js/curry.js");
-var Js_exn = require("../../lib/js/js_exn.js");
+var Caml_option = require("../../lib/js/caml_option.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
@@ -58,8 +58,9 @@ function test_js_error2(param) {
   }
   catch (raw_e){
     var e = Caml_js_exceptions.internalToOCamlException(raw_e);
-    if (e[0] === Js_exn.$$Error) {
-      console.log(e[1].stack);
+    var match = Caml_js_exceptions.caml_as_js_exn(e);
+    if (match !== undefined) {
+      console.log(Caml_option.valFromOption(match).stack);
       throw e;
     } else {
       throw e;

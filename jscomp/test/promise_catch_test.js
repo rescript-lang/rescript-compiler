@@ -30,7 +30,7 @@ function eq(loc, x, y) {
 }
 
 function handler(e) {
-  if (e[0] === Js_exn.$$Error) {
+  if (Caml_js_exceptions.caml_as_js_exn(e) !== undefined) {
     console.log("js error");
     return Promise.resolve(0);
   } else if (e === Caml_builtin_exceptions.not_found) {

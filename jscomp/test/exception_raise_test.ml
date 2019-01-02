@@ -98,8 +98,10 @@ let fff  =
 let a0 = 
   try [%bs.raw{| function (){throw 2} () |}] with (* throw is a statement *)
   | A x -> x 
-  | Js.Exn.Error v -> Obj.magic v   
-  | _ -> assert false 
+  | v -> 
+    begin match Js.Exn.asJsExn v with 
+    | Some v -> Obj.magic v   
+    | _ -> assert false  end
 
 
 let a1 : exn  = 
@@ -112,11 +114,11 @@ let a2 : exn  =
 
 let suites = ref Mt.[
     __LOC__, (fun _ -> Eq ((f,ff,fff,a0), (2,2,2,2)));
-    (* __LOC__, (fun _ -> Eq (Js.Exn.Error (Obj.magic 2) , a1)) *)
+
     __LOC__, (fun _ -> 
-        match a1 with 
-        | Js.Exn.Error v -> Eq (Obj.magic  v , 2)
-        | _ -> assert false 
+        match Js.Exn.asJsExn a1 with 
+        | Some v -> Eq (Obj.magic  v , 2)
+        | None -> assert false 
       )
 ]
 

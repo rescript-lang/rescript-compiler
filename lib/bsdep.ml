@@ -30350,7 +30350,19 @@ let emit_external_warnings : iterator=
              "%%identity expect its type to be of form 'a -> 'b (arity 1)"
          | _ ->
            default_iterator.value_description self v 
-      )
+      ); 
+    pat = (fun self v -> 
+      match v.ppat_desc with 
+      | Ppat_construct (
+        {txt = Ldot (Ldot (Lident "Js","Exn"),"Error"); loc},opt_pat)
+        ->
+          Location.prerr_warning loc (Warnings.Deprecated "Js.Exn.Error use Js.Exn.asJsExn instead");
+          begin match opt_pat with 
+          | None -> ()
+          | Some x -> self.pat self x 
+          end 
+      | _ -> default_iterator.pat self v 
+    )  
   }
 
 let emit_external_warnings_on_structure  (stru : Parsetree.structure) = 

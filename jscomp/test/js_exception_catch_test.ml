@@ -16,10 +16,11 @@ let true_ loc =
   add_test loc (fun _ -> Mt.Ok true)
 
 let () =
-  match Js.Json.parseExn {| {"x"}|} with 
-  | exception Js.Exn.Error x -> 
-    true_ __LOC__
-  | e -> false_ __LOC__
+  match Js.Json.parseExn {| {"x"}|} with   
+  | exception e -> 
+    if Js.Exn.asJsExn e <> None then true_ __LOC__
+    else false_ __LOC__
+  | _ -> false_ __LOC__   
 
 
 exception A of int 
@@ -36,8 +37,7 @@ let test f  =
   | B -> `B
   | C (1,2) -> `C
   | C _ -> `C_any
-  | Js.Exn.Error _ -> `Js_error
-  | e -> `Any
+  | e -> if Js.Exn.asJsExn e <> None then `Js_error else  `Any
 
 let () = 
   eq __LOC__ (test (fun _ -> ())) `No_error;

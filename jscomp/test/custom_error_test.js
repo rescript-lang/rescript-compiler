@@ -1,8 +1,9 @@
 'use strict';
 
-var Js_exn = require("../../lib/js/js_exn.js");
 var Caml_option = require("../../lib/js/caml_option.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
+
+var asJsExn = Caml_js_exceptions.caml_as_js_exn;
 
 function test_js_error(param) {
   var exit = 0;
@@ -11,13 +12,14 @@ function test_js_error(param) {
     e = JSON.parse(" {\"x\" : }");
     exit = 1;
   }
-  catch (raw_exn){
-    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn[0] === Js_exn.$$Error) {
-      console.log(exn[1].stack);
+  catch (raw_err){
+    var err = Caml_js_exceptions.internalToOCamlException(raw_err);
+    var match = Caml_js_exceptions.caml_as_js_exn(err);
+    if (match !== undefined) {
+      console.log(Caml_option.valFromOption(match).stack);
       return undefined;
     } else {
-      throw exn;
+      throw err;
     }
   }
   if (exit === 1) {
@@ -32,8 +34,9 @@ function test_js_error2(param) {
   }
   catch (raw_e){
     var e = Caml_js_exceptions.internalToOCamlException(raw_e);
-    if (e[0] === Js_exn.$$Error) {
-      console.log(e[1].stack);
+    var match = Caml_js_exceptions.caml_as_js_exn(e);
+    if (match !== undefined) {
+      console.log(Caml_option.valFromOption(match).stack);
       throw e;
     } else {
       throw e;
@@ -48,13 +51,14 @@ function example1(param) {
     v = JSON.parse(" {\"x\"  }");
     exit = 1;
   }
-  catch (raw_exn){
-    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn[0] === Js_exn.$$Error) {
-      console.log(exn[1].stack);
+  catch (raw_err){
+    var err = Caml_js_exceptions.internalToOCamlException(raw_err);
+    var match = Caml_js_exceptions.caml_as_js_exn(err);
+    if (match !== undefined) {
+      console.log(Caml_option.valFromOption(match).stack);
       return undefined;
     } else {
-      throw exn;
+      throw err;
     }
   }
   if (exit === 1) {
@@ -67,16 +71,17 @@ function example2(param) {
   try {
     return Caml_option.some(JSON.parse(" {\"x\"}"));
   }
-  catch (raw_exn){
-    var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
-    if (exn[0] === Js_exn.$$Error) {
+  catch (raw_e){
+    var e = Caml_js_exceptions.internalToOCamlException(raw_e);
+    if (Caml_js_exceptions.caml_as_js_exn(e) !== undefined) {
       return undefined;
     } else {
-      throw exn;
+      throw e;
     }
   }
 }
 
+exports.asJsExn = asJsExn;
 exports.test_js_error = test_js_error;
 exports.test_js_error2 = test_js_error2;
 exports.example1 = example1;

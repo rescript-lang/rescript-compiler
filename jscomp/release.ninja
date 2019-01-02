@@ -1,5 +1,6 @@
 
-subninja runtime/release.ninja
+# subninja runtime/release.ninja
+subninja runtime/builtin.ninja
 subninja others/release.ninja
 subninja stdlib-402/release.ninja
 
