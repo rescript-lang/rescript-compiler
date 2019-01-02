@@ -29163,6 +29163,9 @@ val binary_ast : bool ref
 
 val bs_suffix : bool ref
 val debug : bool ref
+
+val force_cmi : bool ref 
+val force_cmj : bool ref
 end = struct
 #1 "js_config.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -29274,6 +29277,9 @@ let binary_ast = ref false
 let bs_suffix = ref false 
 
 let debug = ref false
+
+let force_cmi = ref false
+let force_cmj = ref false
 end
 module Bs_warnings : sig 
 #1 "bs_warnings.mli"
