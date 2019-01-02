@@ -19,11 +19,11 @@ function run() {
     }
 
 
-    cp.execSync(`make clean`,
+    cp.execSync(`git clean -dfx stubs ext common syntax depends core bsb main .`,
         { cwd: jscompDir, encoding: 'utf8', stdio: [0, 1, 2] })
-    cp.execSync(`make themes`,
-        { cwd: jscompDir, encoding: 'utf8', stdio: [0, 1, 2] })
-    cp.execSync(`ninja -t clean && ninja`,
+    cp.execSync(`git clean -dfx templates && ocp-ocamlres templates -o bsb_templates.ml`,
+        { cwd: path.join(jscompDir,'bsb'), encoding: 'utf8', stdio: [0, 1, 2] })
+    cp.execSync(`ninja -t clean -g && ninja`,
         { cwd: jscompDir, encoding: 'utf8', stdio: [0, 1, 2] })
     cp.execSync('ninja', {cwd : path.join(rootDir,'lib'), stdio:[0,1,2]})
     cp.execSync('ninja -f release.ninja -t clean && ninja -f release.ninja', { cwd: path.join(rootDir, 'jscomp'), stdio: [0, 1, 2]})

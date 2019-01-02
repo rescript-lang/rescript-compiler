@@ -13,7 +13,7 @@ function buildCompiler() {
 	child_process.execSync(`ninja -C lib -f prebuilt${sys_extension}.ninja -t clean && ninja -C lib -f prebuilt${sys_extension}.ninja`,root_config)
 }
 if(!is_windows){
-  require('./runtimeDeps.js').updateRelease()
+  require('./ninja.js').updateRelease()
 }
 
 buildCompiler()

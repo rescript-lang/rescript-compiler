@@ -81,8 +81,26 @@ class TargetSet {
      * @returns {Targets} a copy 
      *
      */
-    toArray(){
-        return this.data.concat()
+    toSortedArray(){
+        var newData = this.data.concat()
+        newData.sort((x,y)=>{
+            var kindx = x.kind
+            var kindy = y.kind
+            if(kindx > kindy){
+                return 1
+            } else if(kindx < kindy){
+                return -1
+            } else {
+                if(x.name > y.name){
+                    return 1
+                } else if(x.name < y.name) {
+                    return -1    
+                } else {
+                    return 0
+                }
+            }
+        })
+        return newData
     }
     /**
      * 
@@ -279,7 +297,7 @@ function buildStmt(outputs, inputs, rule, depsMap, cwd, overrides,extraDeps){
         }
     }
     extraDeps.forEach(x=>deps.add(x))
-    return ninjaBuild(os,is,rule,deps.toArray(),cwd,overrides)
+    return ninjaBuild(os,is,rule,deps.toSortedArray(),cwd,overrides)
 }
 
 
@@ -866,10 +884,6 @@ function runJSCheckAsync(depsMap){
 
 
 
-
-
-
-
 function checkEffect() {
 
     var jsPaths = runtimeJsFiles.map(x => path.join(jsDir, x + ".js"))
@@ -955,22 +969,7 @@ function sortFilesByDeps(domain, dependency_graph){
     return result
 }
 
-// var x = new Map( [ [ 'x', new Set(['y','z'])] ] )
-/**
- * 
- * @param {[string, string[]] []} xs 
- * @returns {Map<string,Set<string>>}
- */
-function buildDeps(xs){
-    var ys = xs.map(([key,vals])=>{
-        /**
-         * @type {[string, Set<string>]}
-         */
-        var ret = [key, new Set(vals)]
-        return ret
-    })
-    return new Map(ys)
-}
+
 
 if (require.main === module) {
     if(process.argv.includes('-check')){
@@ -1024,6 +1023,15 @@ function test(dir){
     }).map(x=>path.join(dir,x))
 }
 
+/**
+ * 
+ * @param {Set<string>} xs 
+ * @returns {string}
+ */
+function setSortedToString(xs){
+    var arr = Array.from(xs).sort()
+    return arr.join(' ')
+}
 
 /**
  * Note don't run `ninja -t clean -g`
@@ -1033,7 +1041,6 @@ function test(dir){
 function nativeNinja() {
         var sourceDirs = ['stubs','ext', 'common', 'syntax', 'depends', 'core', 'super_errors', 'outcome_printer', 'bsb', 'ounit','ounit_tests','main']
         var includes = sourceDirs.map(x=>`-I ${x}`).join(' ')
-        var releaseMode = `-D BS_RELEASE_BUILD=true`
         var templateNative = `
 ocamlopt = ../vendor/ocaml/bin/ocamlopt.opt      
 rule optc
@@ -1141,11 +1148,11 @@ build ./bin/tests.exe: link ounit/ounit.cmxa stubs/stubs.cmxa ext/ext.cmxa commo
             if (y.ext === '.cmx') {
                 var intf = path.join(y.dir, y.name + ".cmi")
                 var ml = path.join(y.dir, y.name + '.ml')
-                return `build ${deps.has(intf) ? target : [target, intf].join(' ')} : optc ${ml} | ${[...deps].join(' ')}`
+                return `build ${deps.has(intf) ? target : [target, intf].join(' ')} : optc ${ml} | ${setSortedToString(deps)}`
             } else {
                 // === 'cmi'
                 var mli = path.join(y.dir, y.name + '.mli')
-                return `build ${target} : optc ${mli} | ${[...deps].join(' ')}`
+                return `build ${target} : optc ${mli} | ${setSortedToString(deps)}`
             }
         }
     })
