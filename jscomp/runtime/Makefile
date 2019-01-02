@@ -21,12 +21,9 @@ clean::
 bs_stdlib_mini.cmi:	bs_stdlib_mini.mli
 	$(COMPILER) $(COMPFLAGS) -c $<
 
+# This file no longer works
+# include .depend
 
-include .depend
-
-
-depend:
-	node ../../scripts/runtimeDeps.js
 	
 
 

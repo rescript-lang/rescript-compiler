@@ -81,8 +81,26 @@ class TargetSet {
      * @returns {Targets} a copy 
      *
      */
-    toArray(){
-        return this.data.concat()
+    toSortedArray(){
+        var newData = this.data.concat()
+        newData.sort((x,y)=>{
+            var kindx = x.kind
+            var kindy = y.kind
+            if(kindx > kindy){
+                return 1
+            } else if(kindx < kindy){
+                return -1
+            } else {
+                if(x.name > y.name){
+                    return 1
+                } else if(x.name < y.name) {
+                    return -1    
+                } else {
+                    return 0
+                }
+            }
+        })
+        return newData
     }
     /**
      * 
@@ -279,7 +297,7 @@ function buildStmt(outputs, inputs, rule, depsMap, cwd, overrides,extraDeps){
         }
     }
     extraDeps.forEach(x=>deps.add(x))
-    return ninjaBuild(os,is,rule,deps.toArray(),cwd,overrides)
+    return ninjaBuild(os,is,rule,deps.toSortedArray(),cwd,overrides)
 }
 
 
@@ -866,10 +884,6 @@ function runJSCheckAsync(depsMap){
 
 
 
-
-
-
-
 function checkEffect() {
 
     var jsPaths = runtimeJsFiles.map(x => path.join(jsDir, x + ".js"))
@@ -955,22 +969,7 @@ function sortFilesByDeps(domain, dependency_graph){
     return result
 }
 
-// var x = new Map( [ [ 'x', new Set(['y','z'])] ] )
-/**
- * 
- * @param {[string, string[]] []} xs 
- * @returns {Map<string,Set<string>>}
- */
-function buildDeps(xs){
-    var ys = xs.map(([key,vals])=>{
-        /**
-         * @type {[string, Set<string>]}
-         */
-        var ret = [key, new Set(vals)]
-        return ret
-    })
-    return new Map(ys)
-}
+
 
 if (require.main === module) {
     if(process.argv.includes('-check')){
