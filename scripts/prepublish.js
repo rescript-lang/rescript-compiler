@@ -54,7 +54,8 @@ function checkWinBinary(){
 
 clean()
 
-require('./release').run()
+// require('./release').run()
+// Not needed
 verifyIsCleanWorkTree()
 
 clean()
