@@ -72,7 +72,7 @@ let after_parsing_sig ppf sourcefile outputprefix ast  =
           Env.save_signature ~deprecated sg modulename (outputprefix ^ ".cmi")
         in
 #else
-        let sg = Env.save_signature ~check_exists:() sg modulename (outputprefix ^ ".cmi") in
+        let sg = Env.save_signature ?check_exists:(if !Js_config.force_cmi then None else Some ()) sg modulename (outputprefix ^ ".cmi") in
 #end        
         Typemod.save_signature modulename tsg outputprefix sourcefile
           initial_env sg ;
@@ -114,7 +114,7 @@ let after_parsing_impl ppf sourcefile outputprefix ast =
       try
         let (typedtree, coercion, finalenv, current_signature) =
           ast 
-          |> Typemod.type_implementation_more ~check_exists:() sourcefile outputprefix modulename env 
+          |> Typemod.type_implementation_more ?check_exists:(if !Js_config.force_cmi then None else Some ()) sourcefile outputprefix modulename env 
           |> print_if ppf Clflags.dump_typedtree
             (fun fmt (ty,co,_,_) -> Printtyped.implementation_with_coercion fmt  (ty,co))
         in

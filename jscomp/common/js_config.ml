@@ -107,3 +107,6 @@ let binary_ast = ref false
 let bs_suffix = ref false 
 
 let debug = ref false
+
+let force_cmi = ref false
+let force_cmj = ref false

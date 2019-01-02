@@ -163,6 +163,17 @@ let buckle_script_flags : (string * Arg.spec * string) list =
    " (experimental) Set the string to be evaluated, note this flag will be conflicted with -bs-main"
   )
   ::
+  (
+  "-bs-cmi",
+    Arg.Set Js_config.force_cmi,
+    " Not using cached cmi, always generate cmi"
+  )
+  ::
+  ("-bs-cmj", 
+    Arg.Set Js_config.force_cmj,
+    " Not using cached cmj, always generate cmj"
+  )
+  ::
   ("-bs-g",
     Arg.Unit 
     (fun _ -> Js_config.debug := true;
