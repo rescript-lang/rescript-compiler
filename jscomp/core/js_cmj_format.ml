@@ -72,76 +72,53 @@ let no_pure_dummy =
     cmj_case = Little_js; (** TODO: consistent with Js_config.bs_suffix default *)
   }
 
+let digest_length = 16 (*16 chars *)
 
-
-let from_file name : t =
-  let ic = open_in_bin name in 
+let verify_magic_in_beg ic =
   let buffer = really_input_string ic cmj_magic_number_length in 
   if buffer <> cmj_magic_number then
     Ext_pervasives.failwithf ~loc:__LOC__ 
       "cmj files have incompatible versions, please rebuilt using the new compiler : %s" 
         __LOC__
-  else 
-    let v  : t = input_value ic in 
-    close_in ic ;
-    v 
+
+let from_file name : t =
+  let ic = open_in_bin name in 
+  verify_magic_in_beg ic ; 
+  let _digest = Digest.input ic in 
+  let v  : t = input_value ic in 
+  close_in ic ;
+  v 
 
 
 let from_string s : t = 
   let magic_number = String.sub s 0 cmj_magic_number_length in 
   if magic_number = cmj_magic_number then 
-    Marshal.from_string s  cmj_magic_number_length
+    Marshal.from_string s  (digest_length + cmj_magic_number_length)
   else 
     Ext_pervasives.failwithf ~loc:__LOC__ 
       "cmj files have incompatible versions, please rebuilt using the new compiler : %s"
         __LOC__
 
-let rec for_sure_not_changed (name : string) ({npm_package_path ; effect; cmj_case ; values} : t) =   
+let rec for_sure_not_changed (name : string) cur_digest =   
   if Sys.file_exists name then 
-    let data = from_file name in 
-    Js_packages_info.equal data.npm_package_path npm_package_path &&
-    for_sure_effect data.effect  effect &&
-    data.cmj_case = cmj_case &&
-    for_sure_equal data.values values
+    let ic = open_in_bin name in 
+    verify_magic_in_beg ic ; 
+    let digest = Digest.input ic in 
+    close_in ic; 
+    (digest : string) = cur_digest
   else false  
-and for_sure_effect (x : string option) (y : string option) = 
-  match x, y with   
-  | None, None -> true
-  | Some _, Some _ -> true  (* we dont care about what effect it has when making use of cmj*)
-  | None, Some _ -> false
-  | Some _, None -> false
-and for_sure_equal valuesa valuesb = 
-  String_map.equal fore_sure_cmj_value valuesa valuesb 
-and fore_sure_cmj_value (x : cmj_value) {arity; closed_lambda} =   
-  for_sure_arity x.arity arity &&
-  for_sure_eq_optional_lambda x.closed_lambda closed_lambda 
-and for_sure_arity  (x : arity) y = 
-  match x, y with 
-  | Single x0, Single y0 -> Lam_arity.equal x0 y0
-  | Submodule xs, Submodule ys -> 
-    Ext_array.for_all2_no_exn  xs ys Lam_arity.equal
-  | Single _, Submodule _ -> false
-  | Submodule _, Single _ -> false
-and for_sure_eq_optional_lambda 
-  (lama : Lam.t option)  lamb = 
-  match lama,lamb with 
-  | None, None -> true 
-  | None, Some _ 
-  | Some _ , None -> false
-  | Some a, Some b -> for_sure_lam a b 
-and for_sure_lam (a : Lam.t) (b : Lam.t) = 
-  match a, b with     
-  | Lconst a0, Lconst b0 -> 
-    Lam_constant.eq_approx a0 b0
-  | _, _ -> false 
+    
 (* This may cause some build system always rebuild
   maybe should not be turned on by default
 *) 
 let to_file name ~check_exists (v : t) = 
-  if  not (check_exists && for_sure_not_changed name v) then 
+  let s = Marshal.to_string v [] in 
+  let cur_digest = Digest.string s in 
+  if  not (check_exists && for_sure_not_changed name cur_digest) then 
     let oc = open_out_bin name in 
-    output_string oc cmj_magic_number;
-    output_value oc v;
+    output_string oc cmj_magic_number;    
+    Digest.output oc cur_digest;
+    output_string oc s;
     close_out oc 
 
 
