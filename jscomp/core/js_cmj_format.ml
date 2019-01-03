@@ -47,7 +47,6 @@ type cmj_case = Ext_namespace.file_kind
   
 type t = {
   values : cmj_value String_map.t;
-  (* effect : effect; *)
   pure : bool;
   npm_package_path : Js_packages_info.t ;
   cmj_case : cmj_case; 
