@@ -97,7 +97,7 @@ val get_npm_package_path :
 val get_cmj_case :   
   t ->
   cmj_case 
-  
+
 val single_na : arity
 val pure_dummy : t
 val no_pure_dummy : t
@@ -115,3 +115,4 @@ val from_string : string -> t
 val to_file : 
   string -> check_exists:bool -> t -> unit
 
+val pp_cmj: t -> unit 
