@@ -52,6 +52,14 @@ type t = {
   cmj_case : cmj_case; 
 }
 
+let mk ~values ~effect ~npm_package_path ~cmj_case : t = 
+  {
+    values; 
+    effect;
+    npm_package_path;
+    cmj_case
+  }
+
 let cmj_magic_number =  "BUCKLE20171012"
 let cmj_magic_number_length = 
   String.length cmj_magic_number
@@ -81,6 +89,8 @@ let verify_magic_in_beg ic =
       "cmj files have incompatible versions, please rebuilt using the new compiler : %s" 
         __LOC__
 
+
+(* Serialization .. *)
 let from_file name : t =
   let ic = open_in_bin name in 
   verify_magic_in_beg ic ; 

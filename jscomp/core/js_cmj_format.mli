@@ -65,12 +65,19 @@ type cmj_value = {
 type effect = string option
 
 type cmj_case = Ext_namespace.file_kind 
-type t = {
+type t = private {
   values : cmj_value String_map.t;
   effect : effect;
   npm_package_path : Js_packages_info.t;
   cmj_case : cmj_case;
 }
+
+val mk:
+  values: cmj_value String_map.t -> 
+  effect: effect -> 
+  npm_package_path: Js_packages_info.t ->
+  cmj_case:cmj_case -> 
+  t
 
 val single_na : arity
 val pure_dummy : t

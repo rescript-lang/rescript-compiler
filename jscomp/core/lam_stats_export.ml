@@ -141,12 +141,13 @@ let export_to_cmj
   : Js_cmj_format.t = 
   let values =  values_of_export meta export_map in
   let effect = get_dependent_module_effect meta maybe_pure external_ids in
-  {values; 
-   effect ; 
-   npm_package_path = Js_packages_state.get_packages_info ();
-   cmj_case ;
+  Js_cmj_format.mk
+    ~values
+    ~effect 
+    ~npm_package_path: (Js_packages_state.get_packages_info ())
+   ~cmj_case 
     (* FIXME: make sure [-o] would not change its case 
       add test for ns/non-ns
     *)
-  }
+  
 
