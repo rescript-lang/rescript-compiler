@@ -134,10 +134,10 @@ let cached_find_ml_id_pos (module_id : Ident.t) (pos : int) env : ident_info =
       let name =  Ocaml_types.get_name signature pos  in
       let arity, closed_lambda =        
         match String_map.find_opt name cmj_table.values with
-        | Some {arity ; closed_lambda} -> 
+        | Some {arity ; persistent_closed_lambda} -> 
           arity, 
           ( if Js_config.get_cross_module_inline () then
-              closed_lambda
+              persistent_closed_lambda
             else None
           )
         | None -> Js_cmj_format.single_na, None 
@@ -155,10 +155,10 @@ let cached_find_ml_id_pos (module_id : Ident.t) (pos : int) env : ident_info =
     let name = Ocaml_types.get_name signature pos  in
     let arity , closed_lambda =  
       match  String_map.find_opt name values with
-      | Some {arity; closed_lambda;_} -> 
+      | Some {arity; persistent_closed_lambda;_} -> 
         arity, 
         if Js_config.get_cross_module_inline () then
-          closed_lambda 
+          persistent_closed_lambda 
         else None 
       | None -> Js_cmj_format.single_na, None
     in

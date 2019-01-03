@@ -49,16 +49,12 @@ let pp_cmj fmt
        | None -> "pure"
        | Some s -> sprintf "None pure due to %s" s 
     );
-  
-  (* f "@[arities: @[%a@]@]@." *)
-    (* (fun fmt m ->  *)
   values |> String_map.iter 
-    (fun k ({arity; closed_lambda} : Js_cmj_format.cmj_value) -> 
-       (* let non_saved = closed_lambda = None in  *)
+    (fun k ({arity; persistent_closed_lambda} : Js_cmj_format.cmj_value) -> 
        match arity with             
        | Single arity ->
          f "%s: %s\n" k (Format.asprintf "%a" Lam_arity.print arity);
-         (match closed_lambda with 
+         (match persistent_closed_lambda with 
           | None -> 
             f "%s: not saved\n" k 
           | Some lam -> 
@@ -69,7 +65,7 @@ let pp_cmj fmt
             end );
          
        | Submodule xs -> 
-         (match closed_lambda with 
+         (match persistent_closed_lambda with 
           | None -> f "%s: not saved\n" k 
           | Some lam -> 
             begin 

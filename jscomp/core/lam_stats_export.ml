@@ -39,6 +39,7 @@ let single_na = Js_cmj_format.single_na
 let values_of_export 
   (meta : Lam_stats.t) 
   (export_map  : Lam.t Ident_map.t)
+  : Js_cmj_format.cmj_value String_map.t 
   = 
   Ext_list.fold_left meta.exports  String_map.empty    
     (fun (x : Ident.t) acc   ->
@@ -61,8 +62,9 @@ let values_of_export
              | None -> single_na
            end
        in
-       let closed_lambda = 
-         match Ident_map.find_opt x export_map with 
+       let persistent_closed_lambda = 
+         if not !Js_config.cross_module_inline then None
+         else match Ident_map.find_opt x export_map with 
          | Some lambda  -> 
            if Lam_analysis.safe_to_inline lambda
            (* when inlning a non function, we have to be very careful,
@@ -93,7 +95,7 @@ let values_of_export
            else
              None
          | None -> None  in 
-       String_map.add x.name  Js_cmj_format.({arity ; closed_lambda }) acc          
+       String_map.add x.name  Js_cmj_format.({arity ; persistent_closed_lambda }) acc          
     )
 
 (* ATTENTION: all runtime modules, if it is not hard required, 

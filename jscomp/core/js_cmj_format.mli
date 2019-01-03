@@ -58,7 +58,7 @@ type arity =
 
 type cmj_value = {
   arity : arity ; 
-  closed_lambda : Lam.t option ; 
+  persistent_closed_lambda : Lam.t option ; 
   (* Either constant or closed functor *)
 }
 
@@ -81,7 +81,7 @@ val from_file : string -> t
 
 val from_file_with_digest :
    string -> t * Digest.t
-   
+
 val from_string : string -> t
 
 (* Note writing the file if its content is not chnaged  

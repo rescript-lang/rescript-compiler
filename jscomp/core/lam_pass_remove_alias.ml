@@ -160,30 +160,25 @@ let simplify_alias
                       args = [ Lglobal_module ident ];
                       _} as l1;
              args; loc ; status} ->
-      begin
-             match  Lam_compile_env.cached_find_ml_id_pos ident index meta.env with                   
-              | {closed_lambda=Some Lfunction{params; body; _} } 
-                (** be more cautious when do cross module inlining *)
-                when
-                    Ext_list.same_length params args &&
-                    Ext_list.for_all args (fun arg ->
-                        match arg with 
-                        | Lvar p -> 
-                          begin 
-                            match Ident_hashtbl.find_opt meta.ident_tbl p with
-                            | Some v  -> v <> Parameter
-                            | None -> true 
-                          end
-                        |  _ -> true 
-                      ) -> 
-                simpl @@
-                Lam_beta_reduce.propogate_beta_reduce
-                  meta params body args
-              | _ -> 
-                Lam.apply (simpl l1) (Ext_list.map args simpl) loc status
-            
 
-      end
+      (match  Lam_compile_env.cached_find_ml_id_pos ident index meta.env with                   
+       | {closed_lambda=Some Lfunction{params; body; _} } 
+         (** be more cautious when do cross module inlining *)
+         when
+           Ext_list.same_length params args &&
+           Ext_list.for_all args (fun arg ->
+               match arg with 
+               | Lvar p -> 
+                 begin 
+                   match Ident_hashtbl.find_opt meta.ident_tbl p with
+                   | Some v  -> v <> Parameter
+                   | None -> true 
+                 end
+               |  _ -> true 
+             ) -> 
+         simpl (Lam_beta_reduce.propogate_beta_reduce meta params body args)
+       | _ -> 
+         Lam.apply (simpl l1) (Ext_list.map args simpl) loc status)
     (* Function inlining interact with other optimizations...
 
         - parameter attributes

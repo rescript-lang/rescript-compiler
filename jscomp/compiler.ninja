@@ -469,7 +469,7 @@ build core/lam_scc.cmx : optc core/lam_scc.ml | core/lam.cmx core/lam_hit.cmx co
 build core/lam_scc.cmi : optc core/lam_scc.mli | core/lam.cmi
 build core/lam_stats.cmx : optc core/lam_stats.ml | core/lam_id_kind.cmx core/lam_stats.cmi ext/ident_hashtbl.cmx ext/ident_set.cmx
 build core/lam_stats.cmi : optc core/lam_stats.mli | core/lam_id_kind.cmi ext/ident_hashtbl.cmi ext/ident_set.cmi
-build core/lam_stats_export.cmx : optc core/lam_stats_export.ml | common/ext_log.cmx core/js_cmj_format.cmx core/js_packages_state.cmx core/lam.cmx core/lam_analysis.cmx core/lam_arity.cmx core/lam_arity_analysis.cmx core/lam_closure.cmx core/lam_compile_env.cmx core/lam_inline_util.cmx core/lam_module_ident.cmx core/lam_stats.cmx core/lam_stats_export.cmi ext/ext_array.cmx ext/ext_list.cmx ext/ext_option.cmx ext/ident_hashtbl.cmx ext/ident_map.cmx ext/ident_set.cmx ext/string_map.cmx
+build core/lam_stats_export.cmx : optc core/lam_stats_export.ml | common/ext_log.cmx common/js_config.cmx core/js_cmj_format.cmx core/js_packages_state.cmx core/lam.cmx core/lam_analysis.cmx core/lam_arity.cmx core/lam_arity_analysis.cmx core/lam_closure.cmx core/lam_compile_env.cmx core/lam_inline_util.cmx core/lam_module_ident.cmx core/lam_stats.cmx core/lam_stats_export.cmi ext/ext_array.cmx ext/ext_list.cmx ext/ext_option.cmx ext/ident_hashtbl.cmx ext/ident_map.cmx ext/ident_set.cmx ext/string_map.cmx
 build core/lam_stats_export.cmi : optc core/lam_stats_export.mli | core/js_cmj_format.cmi core/lam.cmi core/lam_module_ident.cmi core/lam_stats.cmi ext/ident_map.cmi
 build core/lam_subst.cmx : optc core/lam_subst.ml | core/lam.cmx core/lam_subst.cmi ext/ext_list.cmx ext/ident_map.cmx
 build core/lam_subst.cmi : optc core/lam_subst.mli | core/lam.cmi ext/ident_map.cmi

@@ -34,7 +34,7 @@ type arity =
 (* TODO: add a magic number *)
 type cmj_value = {
   arity : arity ;
-  closed_lambda : Lam.t option ; 
+  persistent_closed_lambda : Lam.t option ; 
   (** Either constant or closed functor *)
 }
 
