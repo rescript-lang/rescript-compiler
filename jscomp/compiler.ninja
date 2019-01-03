@@ -629,7 +629,7 @@ build main/bspack_main.cmi : optc main/bspack_main.mli |
 build main/bspp_main.cmx : optc main/bspp_main.ml | main/bspp_main.cmi
 build main/bspp_main.cmi : optc main/bspp_main.mli | 
 build main/bsppx_main.cmx main/bsppx_main.cmi : optc main/bsppx_main.ml | syntax/ppx_entry.cmx
-build main/cmjdump_main.cmx main/cmjdump_main.cmi : optc main/cmjdump_main.ml | core/js_cmj_format.cmx core/js_packages_info.cmx core/lam_arity.cmx ext/ext_array.cmx ext/string_map.cmx
+build main/cmjdump_main.cmx main/cmjdump_main.cmi : optc main/cmjdump_main.ml | core/js_cmj_format.cmx core/js_packages_info.cmx core/lam_arity.cmx core/lam_print.cmx ext/string_map.cmx
 build main/js_main.cmx : optc main/js_main.ml | common/js_config.cmx core/bs_conditional_initial.cmx core/js_implementation.cmx core/js_packages_state.cmx core/ocaml_batch_compile.cmx core/ocaml_options.cmx core/ocaml_parse.cmx ext/ext_string.cmx main/js_main.cmi outcome_printer/outcome_printer_ns.cmx outcome_printer/reason_outcome_printer_main.cmx super_errors/super_main.cmx
 build main/js_main.cmi : optc main/js_main.mli | 
 build main/jsoo_main.cmx : optc main/jsoo_main.ml | bsb/bsb_warning.cmx common/bs_version.cmx core/bs_conditional_initial.cmx core/js_cmj_datasets.cmx core/js_cmj_format.cmx core/js_dump_program.cmx core/lam_compile_env.cmx core/lam_compile_main.cmx ext/ext_pp.cmx ext/string_map.cmx main/jsoo_main.cmi outcome_printer/outcome_printer_ns.cmx super_errors/super_main.cmx syntax/ppx_entry.cmx

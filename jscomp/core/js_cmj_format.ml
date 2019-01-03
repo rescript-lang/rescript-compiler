@@ -89,6 +89,14 @@ let from_file name : t =
   close_in ic ;
   v 
 
+let from_file_with_digest name : t * Digest.t =
+  let ic = open_in_bin name in 
+  verify_magic_in_beg ic ; 
+  let digest = Digest.input ic in 
+  let v  : t = input_value ic in 
+  close_in ic ;
+  v,digest 
+
 
 let from_string s : t = 
   let magic_number = String.sub s 0 cmj_magic_number_length in 

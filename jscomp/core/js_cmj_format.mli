@@ -78,6 +78,10 @@ val no_pure_dummy : t
 
 
 val from_file : string -> t
+
+val from_file_with_digest :
+   string -> t * Digest.t
+   
 val from_string : string -> t
 
 (* Note writing the file if its content is not chnaged  
