@@ -12847,8 +12847,7 @@ let output_build
   begin match restat with
     | None -> ()
     | Some () ->
-      output_string oc Ext_string.single_space ;
-      output_string oc "restat = 1 \n"
+      output_string oc "  restat = 1 \n"
   end
 
 
