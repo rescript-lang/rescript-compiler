@@ -139,4 +139,23 @@ let to_file name ~check_exists (v : t) =
     output_string oc s;
     close_out oc 
 
+(* FIXME: better error message when ocamldep
+  get self-cycle
+*)    
+let query_by_name (cmj_table : t ) name =   
+  match  String_map.find_opt name cmj_table.values with
+  | Some {arity; persistent_closed_lambda;_} -> 
+    arity, 
+    if Js_config.get_cross_module_inline () then
+      persistent_closed_lambda 
+    else None 
+  | None -> single_na, None  
 
+let is_pure (cmj_table : t ) =   
+  cmj_table.effect = None 
+
+let get_npm_package_path (cmj_table : t) = 
+  cmj_table.npm_package_path
+
+let get_cmj_case (cmj_table : t) =  
+  cmj_table.cmj_case

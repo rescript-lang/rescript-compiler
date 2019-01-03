@@ -65,12 +65,15 @@ type cmj_value = {
 type effect = string option
 
 type cmj_case = Ext_namespace.file_kind 
-type t = private {
+type t 
+#if 0 then
+  = private {
   values : cmj_value String_map.t;
   effect : effect;
   npm_package_path : Js_packages_info.t;
   cmj_case : cmj_case;
-}
+} 
+#end
 
 val mk:
   values: cmj_value String_map.t -> 
@@ -79,6 +82,22 @@ val mk:
   cmj_case:cmj_case -> 
   t
 
+val query_by_name : 
+  t ->
+  string -> 
+  arity * Lam.t option 
+
+val is_pure : 
+  t -> bool 
+
+val get_npm_package_path :  
+  t -> 
+  Js_packages_info.t  
+
+val get_cmj_case :   
+  t ->
+  cmj_case 
+  
 val single_na : arity
 val pure_dummy : t
 val no_pure_dummy : t
