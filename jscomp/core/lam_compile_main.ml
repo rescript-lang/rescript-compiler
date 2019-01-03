@@ -267,11 +267,13 @@ let compile  ~filename (output_prefix : string) env _sigs
         )
       in
       Warnings.check_fatal ();  
+      let effect = 
+        Lam_stats_export.get_dependent_module_effect
+        meta maybe_pure external_module_ids in 
       let v : Js_cmj_format.t = 
         Lam_stats_export.export_to_cmj 
           meta  
-          maybe_pure 
-          external_module_ids
+          effect 
           coerced_input.export_map
           (get_cmj_case output_prefix)
       in
@@ -279,7 +281,7 @@ let compile  ~filename (output_prefix : string) env _sigs
          Js_cmj_format.to_file 
           ~check_exists:(not !Js_config.force_cmj)
            (output_prefix ^ Literals.suffix_cmj) v);
-      {J.program = program ; side_effect = v.effect ; modules = external_module_ids }      
+      {J.program = program ; side_effect = effect ; modules = external_module_ids }      
     )
 ;;
 

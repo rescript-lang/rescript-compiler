@@ -25,12 +25,15 @@
 
 
 
-
+val get_dependent_module_effect:
+  Lam_stats.t -> 
+  string option ->
+  Lam_module_ident.t list ->
+  string option
 
 val export_to_cmj : 
   Lam_stats.t ->
   Js_cmj_format.effect ->
-  Lam_module_ident.t list ->
   Lam.t Ident_map.t ->
   Js_cmj_format.cmj_case ->
   Js_cmj_format.t

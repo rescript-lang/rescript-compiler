@@ -134,13 +134,12 @@ let get_dependent_module_effect
 *)
 let export_to_cmj 
     (meta : Lam_stats.t ) 
-    maybe_pure
-    external_ids 
+    effect 
     export_map
     cmj_case
   : Js_cmj_format.t = 
   let values =  values_of_export meta export_map in
-  let effect = get_dependent_module_effect meta maybe_pure external_ids in
+  
   Js_cmj_format.mk
     ~values
     ~effect 
