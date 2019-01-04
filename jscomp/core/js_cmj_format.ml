@@ -45,8 +45,11 @@ let single_na = Single Lam_arity.na
 (** we don't force people to use package *)
 type cmj_case = Ext_namespace.file_kind
   
+type keyed_cmj_values 
+  =  (string * cmj_value) array
+
 type t = {
-  values : (string * cmj_value) array ;
+  values : keyed_cmj_values ;
   pure : bool;
   npm_package_path : Js_packages_info.t ;
   cmj_case : cmj_case; 
@@ -139,33 +142,55 @@ let to_file name ~check_exists (v : t) =
     output_string oc s;
     close_out oc 
 
+let keyComp (a : string) (b,_) = 
+    String_map.compare_key  a b 
+
+let not_found = single_na, None 
+let get_result  midVal = 
+  let (_,cmj_value) = midVal in 
+  cmj_value.arity,
+  if Js_config.get_cross_module_inline () then cmj_value.persistent_closed_lambda
+  else None 
+
+let rec binarySearchAux arr lo hi (key : string) = 
+  let mid = (lo + hi)/2 in 
+  let midVal = Array.unsafe_get arr mid in 
+  let c = keyComp key midVal in 
+  if c = 0 then 
+    get_result midVal
+  else if c < 0 then  (*  a[lo] =< key < a[mid] <= a[hi] *)
+    if hi = mid then  
+      let loVal = (Array.unsafe_get arr lo) in 
+      if fst loVal = key then get_result loVal
+      else not_found
+    else binarySearchAux arr lo mid key 
+  else  (*  a[lo] =< a[mid] < key <= a[hi] *)
+  if lo = mid then 
+    let hiVal = (Array.unsafe_get arr hi) in 
+    if fst hiVal = key  then get_result hiVal
+    else not_found
+  else binarySearchAux arr mid hi key
+
+let binarySearch (sorted : keyed_cmj_values) (key : string) =  
+  let len = Array.length sorted in 
+  if len = 0 then not_found
+  else 
+    let lo = Array.unsafe_get sorted 0 in 
+    let c = keyComp key lo in 
+    if c < 0 then not_found
+    else
+      let hi = Array.unsafe_get sorted (len - 1) in 
+      let c2 = keyComp key hi in 
+      if c2 > 0 then not_found
+      else binarySearchAux sorted 0 (len - 1) key 
+
+
 (* FIXME: better error message when ocamldep
   get self-cycle
 *)    
 let query_by_name (cmj_table : t ) name =   
-#if 1 then   
-  let rec aux arr offset len =
-    if offset < len then 
-      let kv = Array.unsafe_get arr offset in 
-      if fst kv = name then 
-        let value =  snd kv in 
-        value.arity,
-          if Js_config.get_cross_module_inline () then 
-            value.persistent_closed_lambda
-          else None   
-      else aux arr (offset + 1) len 
-    else single_na,None in 
   let values = cmj_table.values in    
-  aux values 0 (Array.length values)  
-#else
-  match  String_map.find_opt name cmj_table.values with
-  | Some {arity; persistent_closed_lambda;_} -> 
-    arity, 
-    if Js_config.get_cross_module_inline () then
-      persistent_closed_lambda 
-    else None 
-  | None -> single_na, None  
-#end
+  binarySearch values name 
 
 let is_pure (cmj_table : t ) = 
   cmj_table.pure
