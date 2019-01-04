@@ -23,12 +23,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-# 34
+# 34 "ext/vec.cppo.ml"
 type elt = int 
 let null = 0 (* can be optimized *)
 let unsafe_blit = Bs_hash_stubs.int_unsafe_blit
 
-# 41
+# 41 "ext/vec.cppo.ml"
 external unsafe_sub : 'a array -> int -> int -> 'a array = "caml_array_sub"
 
 type  t = {
@@ -345,14 +345,14 @@ let init len f =
     let idx = d_len - 1 in 
     d.len <- idx
     
-# 362
+# 362 "ext/vec.cppo.ml"
 (** pop the last element, a specialized version of [delete] *)
   let pop (d : t) = 
     let idx  = d.len - 1  in
     if idx < 0 then invalid_arg "Resize_array.pop";
     d.len <- idx
   
-# 373
+# 373 "ext/vec.cppo.ml"
 (** pop and return the last element *)  
   let get_last_and_pop (d : t) = 
     let idx  = d.len - 1  in
@@ -360,7 +360,7 @@ let init len f =
     let last = Array.unsafe_get d.arr idx in 
     d.len <- idx 
     
-# 384
+# 384 "ext/vec.cppo.ml"
     ;
     last 
 
@@ -372,7 +372,7 @@ let init len f =
      unsafe_blit arr (idx + len) arr idx (d_len  - idx - len);
     d.len <- d_len - len
 
-# 402
+# 402 "ext/vec.cppo.ml"
 (** delete elements from [idx] with length [len] return the deleted elements as a new vec*)
   let get_and_delete_range (d : t) idx len : t = 
     let d_len = d.len in 
@@ -382,7 +382,7 @@ let init len f =
      unsafe_blit arr (idx + len) arr idx (d_len  - idx - len);
     d.len <- d_len - len; 
     
-# 416
+# 416 "ext/vec.cppo.ml"
     {len = len ; arr = value}
 
 
@@ -390,7 +390,7 @@ let init len f =
 
   let clear (d : t ) =
     
-# 428
+# 428 "ext/vec.cppo.ml"
     d.len <- 0
 
 
@@ -411,12 +411,12 @@ let init len f =
     done ;
     let last = !p  in 
     
-# 448
+# 448 "ext/vec.cppo.ml"
     d.len <-  last 
     (* INT , there is not need to reset it, since it will cause GC behavior *)
 
   
-# 454
+# 454 "ext/vec.cppo.ml"
   let inplace_filter_from start f (d : t) : unit = 
     if start < 0 then invalid_arg "Vec.inplace_filter_from"; 
     let d_arr = d.arr in     
@@ -434,11 +434,11 @@ let init len f =
     done ;
     let last = !p  in 
     
-# 471
+# 471 "ext/vec.cppo.ml"
     d.len <-  last 
 
 
-# 477
+# 477 "ext/vec.cppo.ml"
 (** inplace filter the elements and accumulate the non-filtered elements *)
   let inplace_filter_with  f ~cb_no acc (d : t)  = 
     let d_arr = d.arr in     
@@ -459,11 +459,11 @@ let init len f =
     done ;
     let last = !p  in 
     
-# 497
+# 497 "ext/vec.cppo.ml"
     d.len <-  last 
     (* INT , there is not need to reset it, since it will cause GC behavior *)
     
-# 502
+# 502 "ext/vec.cppo.ml"
     ; !acc 
 
 

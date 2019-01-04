@@ -181,14 +181,19 @@ external unsafe_lt : 'a -> 'a -> bool = "#unsafe_lt"
     It is marked as unsafe, since it is impossible
     to give a proper semantics for comparision which applies to any type
  *)
+
+
 external unsafe_le : 'a -> 'a -> bool = "#unsafe_le"
 (**  [unsafe_le a b] will be compiled as [a <= b].
     See also {!unsafe_lt}
 *)
+
+
 external unsafe_gt : 'a -> 'a -> bool = "#unsafe_gt"
 (**  [unsafe_gt a b] will be compiled as [a > b].
      See also {!unsafe_lt}
 *)
+
 external unsafe_ge : 'a -> 'a -> bool = "#unsafe_ge"
 (**  [unsafe_ge a b] will be compiled as [a >= b].
     See also {!unsafe_lt}
@@ -202,15 +207,19 @@ module Null = Js_null
 
 module Undefined = Js_undefined
 (** Provide utilities around {!undefined} *)
+
 module Nullable = Js_null_undefined
 (** Provide utilities around {!null_undefined} *)
+
 module Null_undefined = Js_null_undefined
+(** @deprecated please use {!Js.Nullable} *)
 
 module Exn = Js_exn
 (** Provide utilities for dealing with Js exceptions *)
 
 module Array = Js_array
 (** Provide bindings to Js array*)
+
 module String = Js_string
 (** Provide bindings to JS string *)
 

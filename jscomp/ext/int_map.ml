@@ -4,11 +4,11 @@
 
 
   
-# 13
+# 13 "ext/map.cppo.ml"
   type key = int
   let compare_key = Ext_int.compare
 
-# 22
+# 22 "ext/map.cppo.ml"
 type 'a t = (key,'a) Map_gen.t
 exception Duplicate_key of key 
 

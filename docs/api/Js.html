@@ -49,7 +49,6 @@
 <li><a href="Belt_internalBucketsType.html">Belt_internalBucketsType</a></li>
 <li><a href="Belt_internalMapInt.html">Belt_internalMapInt</a></li>
 <li><a href="Belt_internalMapString.html">Belt_internalMapString</a></li>
-<li><a href="Belt_internalMutableAVLMap.html">Belt_internalMutableAVLMap</a></li>
 <li><a href="Belt_internalSetBuckets.html">Belt_internalSetBuckets</a></li>
 <li><a href="Belt_internalSetInt.html">Belt_internalSetInt</a></li>
 <li><a href="Belt_internalSetString.html">Belt_internalSetString</a></li>
@@ -228,38 +227,20 @@ A convenience function to log more than 4 arguments<br>
 <pre><span id="VALeqNull"><span class="keyword">val</span> eqNull</span> : <code class="type">'a -> 'a <a href="Js.html#TYPEnull">null</a> -> bool</code></pre>
 <pre><span id="VALeqUndefined"><span class="keyword">val</span> eqUndefined</span> : <code class="type">'a -> 'a <a href="Js.html#TYPEundefined">undefined</a> -> bool</code></pre>
 <pre><span id="VALeqNullable"><span class="keyword">val</span> eqNullable</span> : <code class="type">'a -> 'a <a href="Js.html#TYPEnullable">nullable</a> -> bool</code></pre>
-<pre><span id="VALunsafe_lt"><span class="keyword">val</span> unsafe_lt</span> : <code class="type">'a -> 'a -> bool</code></pre>
-<pre><span id="VALunsafe_le"><span class="keyword">val</span> unsafe_le</span> : <code class="type">'a -> 'a -> bool</code></pre><div class="info ">
-                    <div class="not-examples">
-                    <code class="code">unsafe_lt a b</code> will be compiled as <code class="code">a &lt; b</code>.
+<pre><span id="VALunsafe_lt"><span class="keyword">val</span> unsafe_lt</span> : <code class="type">'a -> 'a -> bool</code></pre><br>
+<code class="code">unsafe_lt a b</code> will be compiled as <code class="code">a &lt; b</code>.
     It is marked as unsafe, since it is impossible
     to give a proper semantics for comparision which applies to any type<br>
- 
-                    </div>
-                    
-                    </div>
 
-                  
-<pre><span id="VALunsafe_gt"><span class="keyword">val</span> unsafe_gt</span> : <code class="type">'a -> 'a -> bool</code></pre><div class="info ">
-                    <div class="not-examples">
-                    <code class="code">unsafe_le a b</code> will be compiled as <code class="code">a &lt;= b</code>.
+<pre><span id="VALunsafe_le"><span class="keyword">val</span> unsafe_le</span> : <code class="type">'a -> 'a -> bool</code></pre><br>
+<code class="code">unsafe_le a b</code> will be compiled as <code class="code">a &lt;= b</code>.
     See also <a href="Js.html#VALunsafe_lt"><code class="code">Js.unsafe_lt</code></a><br>
- 
-                    </div>
-                    
-                    </div>
 
-                  
-<pre><span id="VALunsafe_ge"><span class="keyword">val</span> unsafe_ge</span> : <code class="type">'a -> 'a -> bool</code></pre><div class="info ">
-                    <div class="not-examples">
-                    <code class="code">unsafe_gt a b</code> will be compiled as <code class="code">a &gt; b</code>.
+<pre><span id="VALunsafe_gt"><span class="keyword">val</span> unsafe_gt</span> : <code class="type">'a -> 'a -> bool</code></pre><br>
+<code class="code">unsafe_gt a b</code> will be compiled as <code class="code">a &gt; b</code>.
      See also <a href="Js.html#VALunsafe_lt"><code class="code">Js.unsafe_lt</code></a><br>
- 
-                    </div>
-                    
-                    </div>
 
-                  <br>
+<pre><span id="VALunsafe_ge"><span class="keyword">val</span> unsafe_ge</span> : <code class="type">'a -> 'a -> bool</code></pre><br>
 <code class="code">unsafe_ge a b</code> will be compiled as <code class="code">a &gt;= b</code>.
     See also <a href="Js.html#VALunsafe_lt"><code class="code">Js.unsafe_lt</code></a><br>
 
@@ -274,17 +255,19 @@ Provide utilities around <code class="code">'a null</code><br>
                 <div class="not-examples">
                      
                 </div>
-                </div> 
+                </div> <br>
+Provide utilities around <a href="Js.html#VALundefined"><code class="code">Js.undefined</code></a><br>
+
 <pre><span class="keyword">module</span> <a href="Js.Nullable.html">Nullable</a>: <code class="type"><a href="Js_null_undefined.html">Js_null_undefined</a></code></pre> <div class="info">                     
                 <div class="not-examples">
-                    Provide utilities around <a href="Js.html#VALundefined"><code class="code">Js.undefined</code></a><br>
- 
+                     
                 </div>
-                </div> 
+                </div> <br>
+Provide utilities around <a href="Js.html#TYPEnull_undefined"><code class="code">Js.null_undefined</code></a><br>
+
 <pre><span class="keyword">module</span> <a href="Js.Null_undefined.html">Null_undefined</a>: <code class="type"><a href="Js_null_undefined.html">Js_null_undefined</a></code></pre> <div class="info">                     
                 <div class="not-examples">
-                    Provide utilities around <a href="Js.html#TYPEnull_undefined"><code class="code">Js.null_undefined</code></a><br>
- 
+                     
                 </div>
                 </div> 
 <pre><span class="keyword">module</span> <a href="Js.Exn.html">Exn</a>: <code class="type"><a href="Js_exn.html">Js_exn</a></code></pre> <div class="info">                     
@@ -298,10 +281,12 @@ Provide utilities for dealing with Js exceptions<br>
                 <div class="not-examples">
                      
                 </div>
-                </div> 
+                </div> <br>
+Provide bindings to Js array<br>
+
 <pre><span class="keyword">module</span> <a href="Js.String.html">String</a>: <code class="type"><a href="Js_string.html">Js_string</a></code></pre> <div class="info">                     
                 <div class="not-examples">
- 
+                     
                 </div>
                 </div> <br>
 Provide bindings to JS string<br>

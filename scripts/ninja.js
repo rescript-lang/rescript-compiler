@@ -557,19 +557,41 @@ ${ninjaQuickBuidList([
     }
 }
 
+/**
+ * @type {[string,string][]}
+ */
+var dTypeString = [['type', 'TYPE_STRING']]
+
+/**
+ * @type {[string,string][]}
+ */
+var dTypeInt = [['type', 'TYPE_INT']] 
+
+/**
+ * @type {[string,string][]}
+ */
+var dTypeFunctor = [['type','TYPE_FUNCTOR']]
+
+/**
+ * @type {[string,string][]}
+ */
+var dTypeLocalIdent = [['type','TYPE_LOCAL_IDENT']]
+
+/**
+ * @type {[string,string][]}
+ */
+var dTypeIdent = [['type','TYPE_IDENT']]
+
+/**
+ * @type {[string,string][]}
+ */
+var dTypePoly = [['type', 'TYPE_POLY']]
+
 async function othersNinja(devmode=true) {
     var externalDeps = [runtimeTarget]
     var ninjaOutput = devmode ? 'build.ninja' : 'release.ninja'
     var ninjaCwd = 'others'
 
-    /**
-     * @type {[string,string][]}
-     */
-    var dTypeString = [['type','TYPE_STRING']]
-    /**
-     * @type {[string,string][]}
-     */    
-    var dTypeInt = [['type', 'TYPE_INT']] 
     var cppoRule = `cppo`
     var templateOthersRules = `
 ${BSC_COMPILER}
@@ -1041,10 +1063,12 @@ function setSortedToString(xs){
 function nativeNinja() {
         var sourceDirs = ['stubs','ext', 'common', 'syntax', 'depends', 'core', 'super_errors', 'outcome_printer', 'bsb', 'ounit','ounit_tests','main']
         var includes = sourceDirs.map(x=>`-I ${x}`).join(' ')
+
         var templateNative = `
 ocamlopt = ../vendor/ocaml/bin/ocamlopt.opt      
 rule optc
     command = $ocamlopt -I +compiler-libs  ${includes} -g -w +6-40-30-23 -warn-error +a-40-30-23 -absname -c $in
+    description = $out : $in
 rule archive
     command = $ocamlopt -a $in -o $out    
 rule link
@@ -1092,6 +1116,86 @@ rule bspack
     generator = true
 build ./bin/tests.exe: link ounit/ounit.cmxa stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa bsb/bsb.cmxa core/core.cmxa ounit_tests/ounit_tests.cmxa main/ounit_tests_main.cmx
     libs = str.cmxa unix.cmxa ocamlcommon.cmxa
+rule cppo    
+    command = cppo -D $type $in -o $out
+    generator = true
+${ninjaQuickBuidList([
+    ['string_hash_set.ml', 'hash_set.cppo.ml',
+        'cppo', 'ext', dTypeString, [],[]
+    ],
+    ['int_hash_set.ml', 'hash_set.cppo.ml',
+        'cppo', 'ext', dTypeInt, [], []
+    ],
+    ['ident_hash_set.ml', 'hash_set.cppo.ml',
+        'cppo', 'ext', dTypeIdent, [], []
+    ],
+    ['hash_set.ml', 'hash_set.cppo.ml',
+        'cppo', 'ext', dTypeFunctor, [], []
+    ],
+    ['hash_set_poly.ml', 'hash_set.cppo.ml',
+        'cppo', 'ext', dTypePoly, [], []
+    ],    
+    ['int_vec.ml','vec.cppo.ml', 
+        'cppo','ext',dTypeInt, [],[]
+    ],
+    ['resize_array.ml','vec.cppo.ml', 
+        'cppo','ext',dTypeFunctor, [],[]
+    ],
+    ['string_set.ml', 'set.cppo.ml',
+        'cppo','ext',dTypeString,[],[]
+    ],
+    ['set_int.ml', 'set.cppo.ml',
+        'cppo','ext',dTypeInt,[],[]
+    ],
+    ['ident_set.ml', 'set.cppo.ml',
+        'cppo', 'ext', dTypeIdent, [], []
+    ],
+    ['string_map.ml', 'map.cppo.ml',
+        'cppo','ext',dTypeString,[],[]
+    ],
+    ['int_map.ml', 'map.cppo.ml',
+        'cppo','ext',dTypeInt,[],[]
+    ],
+    ['ident_map.ml', 'map.cppo.ml',
+        'cppo','ext',dTypeIdent,[],[]
+    ],
+
+    // ['ordered_hash_map_make.ml', 'ordered_hash_map.cppo.ml',
+    //     'cppo','ext',dTypeFunctor,[],[]
+    // ],
+
+    ['ordered_hash_map_local_ident.ml', 'ordered_hash_map.cppo.ml',
+        'cppo','ext',dTypeLocalIdent,[],[]
+    ],
+
+    ['ordered_hash_set_make.ml', 'ordered_hash_set.cppo.ml' ,
+        'cppo','ext', dTypeFunctor, [],[]
+    ],
+    // ['orderd_hash_set_string.ml','ordered_hash_set.cppo.ml' ,
+    //     'cppo', 'ext', dTypeString, [],[]
+    // ],
+    // ['orderd_hash_set_ident.ml','ordered_hash_set.cppo.ml' ,
+    //     'cppo', 'ext', dTypeIdent, [],[]
+    // ],
+    ['string_hashtbl.ml', 'hashtbl.cppo.ml',
+        'cppo', 'ext', dTypeString, [],[]
+    ],
+    ['int_hashtbl.ml', 'hashtbl.cppo.ml',
+        'cppo', 'ext', dTypeInt, [],[]
+    ],
+    ['ident_hashtbl.ml', 'hashtbl.cppo.ml',
+        'cppo', 'ext', dTypeIdent, [],[]
+    ],
+    ['hashtbl_make.ml', 'hashtbl.cppo.ml',
+        'cppo', 'ext', dTypeFunctor, [],[]
+    ],
+    
+])}    
+
+rule mk_shared
+    command = $ocamlopt -I +compiler-libs -shared $flags -o $out $in
+build ../odoc_gen/generator.cmxs : mk_shared ../odoc_gen/generator.mli ../odoc_gen/generator.ml
+    flags = -I +ocamldoc -I ../odoc_gen
 `
 
     

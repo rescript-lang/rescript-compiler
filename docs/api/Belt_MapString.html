@@ -49,7 +49,6 @@
 <li><a href="Belt_internalBucketsType.html">Belt_internalBucketsType</a></li>
 <li><a href="Belt_internalMapInt.html">Belt_internalMapInt</a></li>
 <li><a href="Belt_internalMapString.html">Belt_internalMapString</a></li>
-<li><a href="Belt_internalMutableAVLMap.html">Belt_internalMutableAVLMap</a></li>
 <li><a href="Belt_internalSetBuckets.html">Belt_internalSetBuckets</a></li>
 <li><a href="Belt_internalSetInt.html">Belt_internalSetInt</a></li>
 <li><a href="Belt_internalSetString.html">Belt_internalSetString</a></li>
@@ -144,7 +143,11 @@
     to match predicate <code class="code">p</code>.<br>
  
                     </div>
-                    
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">      let s0 = fromArray ~id:(module IntCmp) [|4,"4";1,"1";2,"2,"3""|];;
+      findFirstBy s0 (fun k v -&gt; k = 4 ) = option (4, "4");;
+    </code></pre>  </pre>
+                    </div>
                     </div>
 
                   

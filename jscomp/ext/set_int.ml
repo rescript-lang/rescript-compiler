@@ -24,12 +24,12 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-# 42
+# 42 "ext/set.cppo.ml"
 type elt = int 
 let compare_elt = Ext_int.compare 
 let print_elt = Format.pp_print_int
 
-# 49
+# 49 "ext/set.cppo.ml"
 type ('a, 'id) t0 = ('a, 'id) Set_gen.t0 = 
   | Empty 
   | Node of ('a, 'id) t0 * 'a * ('a, 'id) t0 * int 
