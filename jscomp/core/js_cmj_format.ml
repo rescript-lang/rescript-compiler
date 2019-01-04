@@ -120,13 +120,15 @@ let from_string s : t =
       "cmj files have incompatible versions, please rebuilt using the new compiler : %s"
         __LOC__
 
-let rec for_sure_not_changed (name : string) cur_digest =   
+let fixed_length = cmj_magic_number_length + digest_length
+
+let rec for_sure_not_changed (name : string) (header : string) =   
   if Sys.file_exists name then 
     let ic = open_in_bin name in 
-    verify_magic_in_beg ic ; 
-    let digest = Digest.input ic in 
+    let holder =
+      really_input_string ic fixed_length in 
     close_in ic; 
-    (digest : string) = cur_digest
+    holder = header
   else false  
     
 (* This may cause some build system always rebuild
@@ -135,10 +137,10 @@ let rec for_sure_not_changed (name : string) cur_digest =
 let to_file name ~check_exists (v : t) = 
   let s = Marshal.to_string v [] in 
   let cur_digest = Digest.string s in 
-  if  not (check_exists && for_sure_not_changed name cur_digest) then 
+  let header = cmj_magic_number ^ cur_digest in 
+  if  not (check_exists && for_sure_not_changed name header) then 
     let oc = open_out_bin name in 
-    output_string oc cmj_magic_number;    
-    Digest.output oc cur_digest;
+    output_string oc header;    
     output_string oc s;
     close_out oc 
 
