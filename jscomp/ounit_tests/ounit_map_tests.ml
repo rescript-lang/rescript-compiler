@@ -3,6 +3,12 @@ let ((>::),
 
 let (=~) = OUnit.assert_equal 
 
+let test_sorted_strict arr = 
+  let v = Int_map.of_array arr |> Int_map.to_sorted_array in 
+  let arr_copy = Array.copy arr in 
+  Array.sort (fun ((a:int),_) (b,_) -> compare a b ) arr_copy;
+  v =~ arr_copy 
+
 let suites = 
   __MODULE__ >:::
   [
@@ -16,8 +22,22 @@ let suites =
     __LOC__ >:: begin fun _ -> 
       OUnit.assert_equal (Int_map.cardinal Int_map.empty) 0 ;
       OUnit.assert_equal ([1,"1"; 2,"2"; 12,"12"; 3, "3"]
-      |> Int_map.of_list|>Int_map.cardinal )  4
-      
+      |> Int_map.of_list|>Int_map.cardinal )  4      
+    end;
+    __LOC__ >:: begin fun _ -> 
+      let v = 
+      [1,"1"; 2,"2"; 12,"12"; 3, "3"]
+      |> Int_map.of_list 
+      |> Int_map.to_sorted_array in 
+      Array.length v =~ 4 ; 
+      v =~ [|1,"1"; 2,"2"; 3, "3"; 12,"12"; |]
+    end;
+    __LOC__ >:: begin fun _ -> 
+        test_sorted_strict [||];
+        test_sorted_strict [|1,""|];
+        test_sorted_strict [|2,""; 1,""|];
+        test_sorted_strict [|2,""; 1,""; 3, ""|];
+        test_sorted_strict [|2,""; 1,""; 3, ""; 4,""|]
     end;
     __LOC__ >:: begin fun _ ->
       Int_map.cardinal (Int_map.of_array (Array.init 1000 (fun i -> (i,i))))
