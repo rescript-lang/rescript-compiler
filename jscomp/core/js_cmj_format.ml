@@ -46,15 +46,15 @@ let single_na = Single Lam_arity.na
 type cmj_case = Ext_namespace.file_kind
   
 type t = {
-  values : cmj_value String_map.t;
+  values : (string * cmj_value) array ;
   pure : bool;
   npm_package_path : Js_packages_info.t ;
   cmj_case : cmj_case; 
 }
-
+let empty_values = [||]
 let mk ~values ~effect ~npm_package_path ~cmj_case : t = 
   {
-    values; 
+    values = String_map.to_sorted_array values; 
     pure = effect = None ; 
     npm_package_path;
     cmj_case
@@ -66,7 +66,7 @@ let cmj_magic_number_length =
 
 let pure_dummy = 
   {
-    values = String_map.empty;
+    values = empty_values;
     pure = true;
     npm_package_path = Js_packages_info.empty;
     cmj_case = Little_js;
@@ -74,7 +74,7 @@ let pure_dummy =
 
 let no_pure_dummy = 
   {
-    values = String_map.empty;
+    values = empty_values;
     pure = false;
     npm_package_path = Js_packages_info.empty;  
     cmj_case = Little_js; (** TODO: consistent with Js_config.bs_suffix default *)
@@ -143,6 +143,21 @@ let to_file name ~check_exists (v : t) =
   get self-cycle
 *)    
 let query_by_name (cmj_table : t ) name =   
+#if 1 then   
+  let rec aux arr offset len =
+    if offset < len then 
+      let kv = Array.unsafe_get arr offset in 
+      if fst kv = name then 
+        let value =  snd kv in 
+        value.arity,
+          if Js_config.get_cross_module_inline () then 
+            value.persistent_closed_lambda
+          else None   
+      else aux arr (offset + 1) len 
+    else single_na,None in 
+  let values = cmj_table.values in    
+  aux values 0 (Array.length values)  
+#else
   match  String_map.find_opt name cmj_table.values with
   | Some {arity; persistent_closed_lambda;_} -> 
     arity, 
@@ -150,6 +165,7 @@ let query_by_name (cmj_table : t ) name =
       persistent_closed_lambda 
     else None 
   | None -> single_na, None  
+#end
 
 let is_pure (cmj_table : t ) = 
   cmj_table.pure
@@ -185,8 +201,8 @@ let pp_cmj
 
   f "effect: %s\n"
       (if pure then "pure" else "not pure");
-  values |> String_map.iter 
-    (fun k ({arity; persistent_closed_lambda} : cmj_value) -> 
+   Ext_array.iter values 
+    (fun (k , {arity; persistent_closed_lambda}) -> 
        match arity with             
        | Single arity ->
          f "%s: %s\n" k (Format.asprintf "%a" Lam_arity.print arity);
