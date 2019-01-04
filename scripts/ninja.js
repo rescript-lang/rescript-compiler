@@ -1068,6 +1068,7 @@ function nativeNinja() {
 ocamlopt = ../vendor/ocaml/bin/ocamlopt.opt      
 rule optc
     command = $ocamlopt -I +compiler-libs  ${includes} -g -w +6-40-30-23 -warn-error +a-40-30-23 -absname -c $in
+    description = $out : $in
 rule archive
     command = $ocamlopt -a $in -o $out    
 rule link
@@ -1190,6 +1191,11 @@ ${ninjaQuickBuidList([
     ],
     
 ])}    
+
+rule mk_shared
+    command = $ocamlopt -I +compiler-libs -shared $flags -o $out $in
+build ../odoc_gen/generator.cmxs : mk_shared ../odoc_gen/generator.mli ../odoc_gen/generator.ml
+    flags = -I +ocamldoc -I ../odoc_gen
 `
 
     

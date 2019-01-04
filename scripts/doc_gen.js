@@ -14,65 +14,70 @@ var stdlib_dir = path.join(__dirname,'..','jscomp','stdlib-402')
 var jscomp = path.join(__dirname,'..','jscomp')
 var runtime_prefix = path.relative(jscomp,runtime_dir)
 var others_prefix = path.relative(jscomp, others_dir)
-
+var ocamldoc = 
+        path.join(__dirname,'..','vendor','ocaml','bin','ocamldoc.opt')
 const capitalize = (s) => {
         if (typeof s !== 'string') return ''
         return s.charAt(0).toUpperCase() + s.slice(1)
 }
 const strip = filename => filename.split('.').slice(0, -1).join('.')
+function main() {
+        var hidden_list = []
+        var runtime_files =
+                fs.readdirSync(runtime_dir)
+                        .filter(file =>
+                                file.startsWith("js") && (file.endsWith(".ml") || file.endsWith(".mli")) && (!file.endsWith(".cppo.ml")) && (!file.endsWith(".cppo.mli"))
+                        )
+                        .map(x => {
+                                if (x.includes("internal")) {
+                                        hidden_list.push(capitalize(strip(x)))
+                                }
+                                return path.join(runtime_prefix, x)
+                        })
+                        .join(' ')
 
-var hidden_list = []
-var runtime_files = 
-    fs.readdirSync(runtime_dir)
-        .filter(file => 
-        file.startsWith("js") && (file.endsWith(".ml") || file.endsWith(".mli")) && (!file.endsWith(".cppo.ml")) && (!file.endsWith(".cppo.mli"))
-        )
-        .map (x => {
-                if (x.includes("internal")){
-                        hidden_list.push(capitalize(strip(x)))
-                }
-                return path.join(runtime_prefix,x)
-        })
-        .join(' ')
-
-var others_files = 
-    fs.readdirSync(others_dir)
-        .filter(file => 
-        (file.endsWith(".ml") || file.endsWith(".mli")) && (!file.endsWith(".cppo.ml")) && (!file.endsWith(".cppo.mli"))
-        )
-        .map(x=> {
-                if (x.includes("internal")){
-                        hidden_list.push(capitalize(strip(x)))
-                }
-                return path.join(others_prefix,x)
-        })
-        .join(' ')
+        var others_files =
+                fs.readdirSync(others_dir)
+                        .filter(file =>
+                                (file.endsWith(".ml") || file.endsWith(".mli")) && (!file.endsWith(".cppo.ml")) && (!file.endsWith(".cppo.mli"))
+                        )
+                        .map(x => {
+                                if (x.includes("internal")) {
+                                        hidden_list.push(capitalize(strip(x)))
+                                }
+                                return path.join(others_prefix, x)
+                        })
+                        .join(' ')
 
 
-var odoc_gendir = path.join(__dirname,'..', 'odoc_gen')
-var bsppx = path.join(__dirname,'..','lib','bsppx.exe')
-var api_doc_dir = path.join(__dirname,'..','docs','api') 
-var intro = path.join(__dirname,'..','jscomp','others','intro.txt')
-// 
-var generator = `-g ${odoc_gendir}/generator.cmxs`
-// var generator = `-html`
-var ocamldoc = `ocamldoc.opt`
+        var odoc_gendir = path.join(__dirname, '..', 'odoc_gen')
+        var bsppx = path.join(__dirname, '..', 'lib', 'bsppx.exe')
+        var api_doc_dir = path.join(__dirname, '..', 'docs', 'api')
+        var intro = path.join(__dirname, '..', 'jscomp', 'others', 'intro.txt')
+        // 
+        var generator = `-g ${odoc_gendir}/generator.cmxs`
+        // var generator = `-html`
+        
 
-var hidden_modules = ``
-// hidden_modules =  `-hide ${hidden_list.join(',')}`
-// var ocamldoc = path.join(__dirname,'..','vendor','ocaml','ocamldoc','ocamldoc.opt')
-var prefix_flags = `${ocamldoc}  ${generator} ${hidden_modules} -w -40 -nostdlib -nopervasives  -I ${others_dir} -I ${runtime_dir} -open Bs_stdlib_mini -charset utf-8  -intro ${intro} -sort -ppx ${bsppx}  -d ${api_doc_dir}`
+        var hidden_modules = ``
+        // hidden_modules =  `-hide ${hidden_list.join(',')}`
+        // var ocamldoc = path.join(__dirname,'..','vendor','ocaml','ocamldoc','ocamldoc.opt')
+        var prefix_flags = `${ocamldoc}  ${generator} ${hidden_modules} -w -40 -nostdlib -nopervasives  -I ${others_dir} -I ${runtime_dir} -open Bs_stdlib_mini -charset utf-8  -intro ${intro} -sort -ppx ${bsppx}  -d ${api_doc_dir}`
 
-// -html it is weird
-// It is weird, -html will unload the plugin
+        // -html it is weird
+        // It is weird, -html will unload the plugin
 
-// It seems ocamldoc does need require all files for indexing modules, WTF ocamldoc !!
-var cmd = `${prefix_flags}  ${runtime_files} ${others_files}`
+        // It seems ocamldoc does need require all files for indexing modules, WTF ocamldoc !!
+        var cmd = `${prefix_flags}  ${runtime_files} ${others_files}`
 
-console.log(`Running ${cmd}`)
+        console.log(`Running ${cmd}`)
 
-child_process.execSync(cmd, {cwd : jscomp})
-
+        child_process.execSync(cmd, { cwd: jscomp })
+}
+exports.main = main
+if(require.main === module){
+        main()
+}
 // console.log(`runtime files : ${runtime_files}`) 
 // child_process.execSync(`${prefix_flags} ${runtime_files} `, {cwd : runtime_dir})
 

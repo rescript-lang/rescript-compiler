@@ -27,7 +27,7 @@ function run() {
         { cwd: jscompDir, encoding: 'utf8', stdio: [0, 1, 2] })
     cp.execSync('ninja', {cwd : path.join(rootDir,'lib'), stdio:[0,1,2]})
     cp.execSync('ninja -f release.ninja -t clean && ninja -f release.ninja', { cwd: path.join(rootDir, 'jscomp'), stdio: [0, 1, 2]})
-    
+    require('./doc_gen').main()
 }
 if(require.main === module){
     run()
