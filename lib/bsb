@@ -30,6 +30,13 @@ var useWebSocket = false
 var webSocketPort = 9999
 
 /**
+ * @returns {string}
+ */
+function getDateAsString(){
+    var n = new Date()
+    return n.getHours() + ":" + n.getMinutes() + ":" + n.getSeconds()
+}
+/**
  * 
  * @param {*} str 
  */
@@ -283,7 +290,7 @@ if (watch_mode) {
     function logFinish(code) {
         if (std_is_tty) {
             if (code === 0) {
-                console.log("\x1b[36m>>>> Finish compiling\x1b[0m")
+                console.log("\x1b[36m>>>> Finish compiling\x1b[0m", getDateAsString())
             } else {
                 console.log("\x1b[1;31m>>>> Finish compiling(exit: " + code + ")\x1b[0m")
             }
@@ -298,7 +305,7 @@ if (watch_mode) {
     }
     function logStart() {
         if (std_is_tty) {
-            console.log("\x1b[36m>>>> Start compiling\x1b[0m");
+            console.log("\x1b[36m>>>> Start compiling\x1b[0m",getDateAsString());
         } else {
             console.log(">>>> Start compiling");
         }
