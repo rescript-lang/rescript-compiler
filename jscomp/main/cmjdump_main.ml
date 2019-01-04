@@ -22,57 +22,17 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-let p = Format.fprintf 
+(* open Printf *)
 
-let pp_cmj_case fmt (cmj_case : Js_cmj_format.cmj_case) = 
-  match cmj_case with 
-  | Little_js -> 
-    p fmt "@[case : little, .js @]@."
-  | Little_bs -> 
-    p fmt "@[case : little, .bs.js @]@."    
-  | Upper_js -> 
-    p fmt "@[case: upper, .js  @]@."
-  | Upper_bs -> 
-    p fmt "@[case: upper, .bs.js  @]@."    
 
-let pp_cmj fmt 
-    ({ values ; effect; npm_package_path ; cmj_case} :Js_cmj_format.t) = 
-  p fmt "@[package info: %a@]@."  
-    Js_packages_info.dump_packages_info
-    npm_package_path
-  ;
-  pp_cmj_case fmt cmj_case;
-
-  p fmt "@[effect: %a@]@."
-    (fun fmt o ->
-       match o with None -> ()
-                  | Some s -> p fmt "None pure due to %s" s 
-    ) effect ;
-  p fmt "@[arities: @[%a@]@]@."
-    (fun fmt m -> 
-       m |> String_map.iter 
-         (fun k ({arity; closed_lambda} : Js_cmj_format.cmj_value) -> 
-            let non_saved = closed_lambda = None in 
-            match arity with             
-            | Single arity ->
-              p fmt "@[%s:@ %s@ @[%a@]@]@." 
-                k 
-                 (if non_saved then "" else "saved") 
-                Lam_arity.print arity
-            | Submodule xs -> 
-              p fmt "@[<h 1>@[%s:@ %b@ @[<hov 2>%a@]@]@]@." 
-                k 
-                (not non_saved)
-                (fun fmt xs ->
-                   Ext_array.iter xs (fun arity -> p fmt "@[%a@]@ ;" Lam_arity.print arity ) 
-                     ) xs 
-
-         )) values
 
 
 
 let () = 
   match Sys.argv  with
   | [|_; file |] 
-    -> pp_cmj Format.std_formatter (Js_cmj_format.from_file file)
+    -> 
+      let cmj,digest = (Js_cmj_format.from_file_with_digest file) in 
+      Format.fprintf Format.std_formatter "@[Digest: %s@]@." (Digest.to_hex digest);
+      Js_cmj_format.pp_cmj cmj
   | _ -> failwith "expect one argument"

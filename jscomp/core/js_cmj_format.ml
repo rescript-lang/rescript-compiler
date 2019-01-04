@@ -34,7 +34,7 @@ type arity =
 (* TODO: add a magic number *)
 type cmj_value = {
   arity : arity ;
-  closed_lambda : Lam.t option ; 
+  persistent_closed_lambda : Lam.t option ; 
   (** Either constant or closed functor *)
 }
 
@@ -47,10 +47,18 @@ type cmj_case = Ext_namespace.file_kind
   
 type t = {
   values : cmj_value String_map.t;
-  effect : effect;
+  pure : bool;
   npm_package_path : Js_packages_info.t ;
   cmj_case : cmj_case; 
 }
+
+let mk ~values ~effect ~npm_package_path ~cmj_case : t = 
+  {
+    values; 
+    pure = effect = None ; 
+    npm_package_path;
+    cmj_case
+  }
 
 let cmj_magic_number =  "BUCKLE20171012"
 let cmj_magic_number_length = 
@@ -59,7 +67,7 @@ let cmj_magic_number_length =
 let pure_dummy = 
   {
     values = String_map.empty;
-    effect = None;
+    pure = true;
     npm_package_path = Js_packages_info.empty;
     cmj_case = Little_js;
   }
@@ -67,81 +75,143 @@ let pure_dummy =
 let no_pure_dummy = 
   {
     values = String_map.empty;
-    effect = Some Ext_string.empty;
+    pure = false;
     npm_package_path = Js_packages_info.empty;  
     cmj_case = Little_js; (** TODO: consistent with Js_config.bs_suffix default *)
   }
 
+let digest_length = 16 (*16 chars *)
 
-
-let from_file name : t =
-  let ic = open_in_bin name in 
+let verify_magic_in_beg ic =
   let buffer = really_input_string ic cmj_magic_number_length in 
   if buffer <> cmj_magic_number then
     Ext_pervasives.failwithf ~loc:__LOC__ 
       "cmj files have incompatible versions, please rebuilt using the new compiler : %s" 
         __LOC__
-  else 
-    let v  : t = input_value ic in 
-    close_in ic ;
-    v 
+
+
+(* Serialization .. *)
+let from_file name : t =
+  let ic = open_in_bin name in 
+  verify_magic_in_beg ic ; 
+  let _digest = Digest.input ic in 
+  let v  : t = input_value ic in 
+  close_in ic ;
+  v 
+
+let from_file_with_digest name : t * Digest.t =
+  let ic = open_in_bin name in 
+  verify_magic_in_beg ic ; 
+  let digest = Digest.input ic in 
+  let v  : t = input_value ic in 
+  close_in ic ;
+  v,digest 
 
 
 let from_string s : t = 
   let magic_number = String.sub s 0 cmj_magic_number_length in 
   if magic_number = cmj_magic_number then 
-    Marshal.from_string s  cmj_magic_number_length
+    Marshal.from_string s  (digest_length + cmj_magic_number_length)
   else 
     Ext_pervasives.failwithf ~loc:__LOC__ 
       "cmj files have incompatible versions, please rebuilt using the new compiler : %s"
         __LOC__
 
-let rec for_sure_not_changed (name : string) ({npm_package_path ; effect; cmj_case ; values} : t) =   
+let rec for_sure_not_changed (name : string) cur_digest =   
   if Sys.file_exists name then 
-    let data = from_file name in 
-    Js_packages_info.equal data.npm_package_path npm_package_path &&
-    for_sure_effect data.effect  effect &&
-    data.cmj_case = cmj_case &&
-    for_sure_equal data.values values
+    let ic = open_in_bin name in 
+    verify_magic_in_beg ic ; 
+    let digest = Digest.input ic in 
+    close_in ic; 
+    (digest : string) = cur_digest
   else false  
-and for_sure_effect (x : string option) (y : string option) = 
-  match x, y with   
-  | None, None -> true
-  | Some _, Some _ -> true  (* we dont care about what effect it has when making use of cmj*)
-  | None, Some _ -> false
-  | Some _, None -> false
-and for_sure_equal valuesa valuesb = 
-  String_map.equal fore_sure_cmj_value valuesa valuesb 
-and fore_sure_cmj_value (x : cmj_value) {arity; closed_lambda} =   
-  for_sure_arity x.arity arity &&
-  for_sure_eq_optional_lambda x.closed_lambda closed_lambda 
-and for_sure_arity  (x : arity) y = 
-  match x, y with 
-  | Single x0, Single y0 -> Lam_arity.equal x0 y0
-  | Submodule xs, Submodule ys -> 
-    Ext_array.for_all2_no_exn  xs ys Lam_arity.equal
-  | Single _, Submodule _ -> false
-  | Submodule _, Single _ -> false
-and for_sure_eq_optional_lambda 
-  (lama : Lam.t option)  lamb = 
-  match lama,lamb with 
-  | None, None -> true 
-  | None, Some _ 
-  | Some _ , None -> false
-  | Some a, Some b -> for_sure_lam a b 
-and for_sure_lam (a : Lam.t) (b : Lam.t) = 
-  match a, b with     
-  | Lconst a0, Lconst b0 -> 
-    Lam_constant.eq_approx a0 b0
-  | _, _ -> false 
+    
 (* This may cause some build system always rebuild
   maybe should not be turned on by default
 *) 
 let to_file name ~check_exists (v : t) = 
-  if  not (check_exists && for_sure_not_changed name v) then 
+  let s = Marshal.to_string v [] in 
+  let cur_digest = Digest.string s in 
+  if  not (check_exists && for_sure_not_changed name cur_digest) then 
     let oc = open_out_bin name in 
-    output_string oc cmj_magic_number;
-    output_value oc v;
+    output_string oc cmj_magic_number;    
+    Digest.output oc cur_digest;
+    output_string oc s;
     close_out oc 
 
+(* FIXME: better error message when ocamldep
+  get self-cycle
+*)    
+let query_by_name (cmj_table : t ) name =   
+  match  String_map.find_opt name cmj_table.values with
+  | Some {arity; persistent_closed_lambda;_} -> 
+    arity, 
+    if Js_config.get_cross_module_inline () then
+      persistent_closed_lambda 
+    else None 
+  | None -> single_na, None  
 
+let is_pure (cmj_table : t ) = 
+  cmj_table.pure
+
+let get_npm_package_path (cmj_table : t) = 
+  cmj_table.npm_package_path
+
+let get_cmj_case (cmj_table : t) =  
+  cmj_table.cmj_case
+
+
+(* start dumping *)
+
+let f fmt = Printf.fprintf stdout fmt 
+
+let pp_cmj_case  (cmj_case : cmj_case) : unit = 
+  match cmj_case with 
+  | Little_js -> 
+    f  "case : little, .js \n"
+  | Little_bs -> 
+    f  "case : little, .bs.js \n"    
+  | Upper_js -> 
+    f  "case: upper, .js  \n"
+  | Upper_bs -> 
+    f  "case: upper, .bs.js  \n"    
+
+let pp_cmj 
+    ({ values ; pure; npm_package_path ; cmj_case} : t) = 
+  f  "package info: %s\n"  
+    (Format.asprintf "%a" Js_packages_info.dump_packages_info npm_package_path)        
+  ;
+  pp_cmj_case  cmj_case;
+
+  f "effect: %s\n"
+      (if pure then "pure" else "not pure");
+  values |> String_map.iter 
+    (fun k ({arity; persistent_closed_lambda} : cmj_value) -> 
+       match arity with             
+       | Single arity ->
+         f "%s: %s\n" k (Format.asprintf "%a" Lam_arity.print arity);
+         (match persistent_closed_lambda with 
+          | None -> 
+            f "%s: not saved\n" k 
+          | Some lam -> 
+            begin 
+              f "%s: ======[start]\n" k ;
+              f "%s\n" (Lam_print.lambda_to_string lam);
+              f "%s: ======[finish]\n" k
+            end )         
+       | Submodule xs -> 
+         (match persistent_closed_lambda with 
+          | None -> f "%s: not saved\n" k 
+          | Some lam -> 
+            begin 
+              f "%s: ======[start]\n" k ;
+              f "%s" (Lam_print.lambda_to_string lam);
+              f "%s: ======[finish]\n" k
+            end 
+         );
+         Array.iteri 
+         (fun i arity -> f "%s[%i] : %s \n" 
+          k i 
+          (Format.asprintf "%a" Lam_arity.print arity ))
+         xs
+    )    

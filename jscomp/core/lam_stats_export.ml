@@ -39,6 +39,7 @@ let single_na = Js_cmj_format.single_na
 let values_of_export 
   (meta : Lam_stats.t) 
   (export_map  : Lam.t Ident_map.t)
+  : Js_cmj_format.cmj_value String_map.t 
   = 
   Ext_list.fold_left meta.exports  String_map.empty    
     (fun (x : Ident.t) acc   ->
@@ -61,8 +62,9 @@ let values_of_export
              | None -> single_na
            end
        in
-       let closed_lambda = 
-         match Ident_map.find_opt x export_map with 
+       let persistent_closed_lambda = 
+         if not !Js_config.cross_module_inline then None
+         else match Ident_map.find_opt x export_map with 
          | Some lambda  -> 
            if Lam_analysis.safe_to_inline lambda
            (* when inlning a non function, we have to be very careful,
@@ -93,7 +95,7 @@ let values_of_export
            else
              None
          | None -> None  in 
-       String_map.add x.name  Js_cmj_format.({arity ; closed_lambda }) acc          
+       String_map.add x.name  Js_cmj_format.({arity ; persistent_closed_lambda }) acc          
     )
 
 (* ATTENTION: all runtime modules, if it is not hard required, 
@@ -132,19 +134,19 @@ let get_dependent_module_effect
 *)
 let export_to_cmj 
     (meta : Lam_stats.t ) 
-    maybe_pure
-    external_ids 
+    effect 
     export_map
     cmj_case
   : Js_cmj_format.t = 
   let values =  values_of_export meta export_map in
-  let effect = get_dependent_module_effect meta maybe_pure external_ids in
-  {values; 
-   effect ; 
-   npm_package_path = Js_packages_state.get_packages_info ();
-   cmj_case ;
+  
+  Js_cmj_format.mk
+    ~values
+    ~effect 
+    ~npm_package_path: (Js_packages_state.get_packages_info ())
+   ~cmj_case 
     (* FIXME: make sure [-o] would not change its case 
       add test for ns/non-ns
     *)
-  }
+  
 
