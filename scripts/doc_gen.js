@@ -16,10 +16,19 @@ var runtime_prefix = path.relative(jscomp,runtime_dir)
 var others_prefix = path.relative(jscomp, others_dir)
 var ocamldoc = 
         path.join(__dirname,'..','vendor','ocaml','bin','ocamldoc.opt')
+
+/**
+ * 
+ * @param {string} s 
+ */
 const capitalize = (s) => {
         if (typeof s !== 'string') return ''
         return s.charAt(0).toUpperCase() + s.slice(1)
 }
+/**
+ * 
+ * @param {string} filename 
+ */
 const strip = filename => filename.split('.').slice(0, -1).join('.')
 function main() {
         var hidden_list = []

@@ -9163,6 +9163,25 @@ let rec bindings_aux accu = function
 let bindings s =
   bindings_aux [] s
 
+  
+let rec fill_array_aux (s : _ t) i arr : int =    
+  match s with 
+  | Empty -> i 
+  | Node (l,k,v,r,_) -> 
+    let inext = fill_array_aux l i arr in 
+    Array.unsafe_set arr inext (k,v);
+    fill_array_aux r (inext + 1) arr 
+
+let to_sorted_array (s : ('key,'a) t)  : ('key * 'a ) array =    
+  match s with 
+  | Empty -> [||]
+  | Node(l,k,v,r,_) -> 
+    let len = 
+      cardinal_aux (cardinal_aux 1 r) l in 
+    let arr =
+      Array.make len (k,v) in  
+    ignore (fill_array_aux s 0 arr : int);
+    arr 
 let rec keys_aux accu = function
     Empty -> accu
   | Node(l, v, _, r, _) -> keys_aux (v :: keys_aux accu r) l
@@ -9384,9 +9403,11 @@ module type S =
     type key
     type +'a t
     val empty: 'a t
+    val compare_key: key -> key -> int 
     val is_empty: 'a t -> bool
     val mem: key -> 'a t -> bool
-
+    val to_sorted_array : 
+      'a t -> (key * 'a ) array
     val add: key -> 'a -> 'a t -> 'a t
     (** [add x y m] 
         If [x] was already bound in [m], its previous binding disappears. *)
@@ -9559,6 +9580,7 @@ let exists = Map_gen.exists
 let singleton = Map_gen.singleton 
 let cardinal = Map_gen.cardinal
 let bindings = Map_gen.bindings
+let to_sorted_array = Map_gen.to_sorted_array
 let keys = Map_gen.keys
 let choose = Map_gen.choose 
 let partition = Map_gen.partition 
@@ -11602,6 +11624,7 @@ let exists = Map_gen.exists
 let singleton = Map_gen.singleton 
 let cardinal = Map_gen.cardinal
 let bindings = Map_gen.bindings
+let to_sorted_array = Map_gen.to_sorted_array
 let keys = Map_gen.keys
 let choose = Map_gen.choose 
 let partition = Map_gen.partition 
@@ -11749,6 +11772,12 @@ let ((>::),
 
 let (=~) = OUnit.assert_equal 
 
+let test_sorted_strict arr = 
+  let v = Int_map.of_array arr |> Int_map.to_sorted_array in 
+  let arr_copy = Array.copy arr in 
+  Array.sort (fun ((a:int),_) (b,_) -> compare a b ) arr_copy;
+  v =~ arr_copy 
+
 let suites = 
   __MODULE__ >:::
   [
@@ -11762,8 +11791,22 @@ let suites =
     __LOC__ >:: begin fun _ -> 
       OUnit.assert_equal (Int_map.cardinal Int_map.empty) 0 ;
       OUnit.assert_equal ([1,"1"; 2,"2"; 12,"12"; 3, "3"]
-      |> Int_map.of_list|>Int_map.cardinal )  4
-      
+      |> Int_map.of_list|>Int_map.cardinal )  4      
+    end;
+    __LOC__ >:: begin fun _ -> 
+      let v = 
+      [1,"1"; 2,"2"; 12,"12"; 3, "3"]
+      |> Int_map.of_list 
+      |> Int_map.to_sorted_array in 
+      Array.length v =~ 4 ; 
+      v =~ [|1,"1"; 2,"2"; 3, "3"; 12,"12"; |]
+    end;
+    __LOC__ >:: begin fun _ -> 
+        test_sorted_strict [||];
+        test_sorted_strict [|1,""|];
+        test_sorted_strict [|2,""; 1,""|];
+        test_sorted_strict [|2,""; 1,""; 3, ""|];
+        test_sorted_strict [|2,""; 1,""; 3, ""; 4,""|]
     end;
     __LOC__ >:: begin fun _ ->
       Int_map.cardinal (Int_map.of_array (Array.init 1000 (fun i -> (i,i))))

@@ -340,7 +340,7 @@ build core/js_cmi_datasets.cmx : optc core/js_cmi_datasets.ml | core/js_cmi_data
 build core/js_cmi_datasets.cmi : optc core/js_cmi_datasets.mli | ext/string_map.cmi
 build core/js_cmj_datasets.cmx : optc core/js_cmj_datasets.ml | core/js_cmj_datasets.cmi core/js_cmj_format.cmx ext/string_map.cmx
 build core/js_cmj_datasets.cmi : optc core/js_cmj_datasets.mli | core/js_cmj_format.cmi ext/string_map.cmi
-build core/js_cmj_format.cmx : optc core/js_cmj_format.ml | common/js_config.cmx core/js_cmj_format.cmi core/js_packages_info.cmx core/lam.cmx core/lam_arity.cmx core/lam_print.cmx ext/ext_namespace.cmx ext/ext_pervasives.cmx ext/string_map.cmx
+build core/js_cmj_format.cmx : optc core/js_cmj_format.ml | common/js_config.cmx core/js_cmj_format.cmi core/js_packages_info.cmx core/lam.cmx core/lam_arity.cmx core/lam_print.cmx ext/ext_array.cmx ext/ext_namespace.cmx ext/ext_pervasives.cmx ext/string_map.cmx
 build core/js_cmj_format.cmi : optc core/js_cmj_format.mli | core/js_packages_info.cmi core/lam.cmi core/lam_arity.cmi ext/ext_namespace.cmi ext/string_map.cmi
 build core/js_cmj_load.cmx : optc core/js_cmj_load.ml | core/config_util.cmx core/js_cmj_format.cmx core/js_cmj_load.cmi depends/bs_exception.cmx
 build core/js_cmj_load.cmi : optc core/js_cmj_load.mli | core/js_cmj_format.cmi

@@ -31,6 +31,7 @@ let exists = Map_gen.exists
 let singleton = Map_gen.singleton 
 let cardinal = Map_gen.cardinal
 let bindings = Map_gen.bindings
+let to_sorted_array = Map_gen.to_sorted_array
 let keys = Map_gen.keys
 let choose = Map_gen.choose 
 let partition = Map_gen.partition 
