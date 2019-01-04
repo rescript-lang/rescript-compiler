@@ -94,7 +94,6 @@ build ext/hashtbl_make.ml : cppo ext/hashtbl.cppo.ml
 
 rule mk_shared
     command = $ocamlopt -I +compiler-libs -shared $flags -o $out $in
-
 build ../odoc_gen/generator.cmxs : mk_shared ../odoc_gen/generator.mli ../odoc_gen/generator.ml
     flags = -I +ocamldoc -I ../odoc_gen
 build stubs/bs_hash_stubs.cmx stubs/bs_hash_stubs.cmi : optc stubs/bs_hash_stubs.ml | 
