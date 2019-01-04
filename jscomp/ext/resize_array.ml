@@ -22,7 +22,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-# 25
+# 25 "ext/vec.cppo.ml"
 external unsafe_blit : 
     'a array -> int -> 'a array -> int -> int -> unit = "caml_array_blit"
 module Make ( Resize :  Vec_gen.ResizeType) = struct
@@ -31,7 +31,7 @@ module Make ( Resize :  Vec_gen.ResizeType) = struct
   let null = Resize.null 
   
 
-# 41
+# 41 "ext/vec.cppo.ml"
 external unsafe_sub : 'a array -> int -> int -> 'a array = "caml_array_sub"
 
 type  t = {
@@ -348,22 +348,22 @@ let init len f =
     let idx = d_len - 1 in 
     d.len <- idx
     
-# 358
+# 358 "ext/vec.cppo.ml"
     ;
     Array.unsafe_set arr idx  null
     
-# 362
+# 362 "ext/vec.cppo.ml"
 (** pop the last element, a specialized version of [delete] *)
   let pop (d : t) = 
     let idx  = d.len - 1  in
     if idx < 0 then invalid_arg "Resize_array.pop";
     d.len <- idx
     
-# 369
+# 369 "ext/vec.cppo.ml"
     ;    
     Array.unsafe_set d.arr idx null
   
-# 373
+# 373 "ext/vec.cppo.ml"
 (** pop and return the last element *)  
   let get_last_and_pop (d : t) = 
     let idx  = d.len - 1  in
@@ -371,11 +371,11 @@ let init len f =
     let last = Array.unsafe_get d.arr idx in 
     d.len <- idx 
     
-# 381
+# 381 "ext/vec.cppo.ml"
     ;
     Array.unsafe_set d.arr idx null
     
-# 384
+# 384 "ext/vec.cppo.ml"
     ;
     last 
 
@@ -387,13 +387,13 @@ let init len f =
      unsafe_blit arr (idx + len) arr idx (d_len  - idx - len);
     d.len <- d_len - len
     
-# 396
+# 396 "ext/vec.cppo.ml"
     ;
     for i = d_len - len to d_len - 1 do
       Array.unsafe_set arr i null
     done
 
-# 402
+# 402 "ext/vec.cppo.ml"
 (** delete elements from [idx] with length [len] return the deleted elements as a new vec*)
   let get_and_delete_range (d : t) idx len : t = 
     let d_len = d.len in 
@@ -403,12 +403,12 @@ let init len f =
      unsafe_blit arr (idx + len) arr idx (d_len  - idx - len);
     d.len <- d_len - len; 
     
-# 412
+# 412 "ext/vec.cppo.ml"
     for i = d_len - len to d_len - 1 do
       Array.unsafe_set arr i null
     done;
     
-# 416
+# 416 "ext/vec.cppo.ml"
     {len = len ; arr = value}
 
 
@@ -416,12 +416,12 @@ let init len f =
 
   let clear (d : t ) =
     
-# 424
+# 424 "ext/vec.cppo.ml"
     for i = 0 to d.len - 1 do 
       Array.unsafe_set d.arr i null
     done;
     
-# 428
+# 428 "ext/vec.cppo.ml"
     d.len <- 0
 
 
@@ -442,11 +442,11 @@ let init len f =
     done ;
     let last = !p  in 
     
-# 451
+# 451 "ext/vec.cppo.ml"
     delete_range d last  (d_len - last)
 
   
-# 454
+# 454 "ext/vec.cppo.ml"
   let inplace_filter_from start f (d : t) : unit = 
     if start < 0 then invalid_arg "Vec.inplace_filter_from"; 
     let d_arr = d.arr in     
@@ -464,11 +464,11 @@ let init len f =
     done ;
     let last = !p  in 
     
-# 473
+# 473 "ext/vec.cppo.ml"
     delete_range d last  (d_len - last)
 
 
-# 477
+# 477 "ext/vec.cppo.ml"
 (** inplace filter the elements and accumulate the non-filtered elements *)
   let inplace_filter_with  f ~cb_no acc (d : t)  = 
     let d_arr = d.arr in     
@@ -489,13 +489,13 @@ let init len f =
     done ;
     let last = !p  in 
     
-# 500
+# 500 "ext/vec.cppo.ml"
     delete_range d last  (d_len - last)
     
-# 502
+# 502 "ext/vec.cppo.ml"
     ; !acc 
 
 
 
-# 507
+# 507 "ext/vec.cppo.ml"
 end

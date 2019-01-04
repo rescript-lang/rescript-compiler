@@ -24,7 +24,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-# 31
+# 31 "ext/set.cppo.ml"
 type elt = Ident.t
 let compare_elt (x : elt) (y : elt) = 
   let a =  Pervasives.compare (x.stamp : int) y.stamp in 
@@ -36,7 +36,7 @@ let compare_elt (x : elt) (y : elt) =
 
 let print_elt = Ident.print
 
-# 49
+# 49 "ext/set.cppo.ml"
 type ('a, 'id) t0 = ('a, 'id) Set_gen.t0 = 
   | Empty 
   | Node of ('a, 'id) t0 * 'a * ('a, 'id) t0 * int 

@@ -8,7 +8,7 @@ struct
   let equal_key = H.equal 
 
 
-# 24
+# 24 "ext/ordered_hash_set.cppo.ml"
 open Ordered_hash_set_gen
 exception Replace_failure = Replace_failure
 let create = create
@@ -120,7 +120,7 @@ let mem h key =
 let rank h key = 
   small_bucket_rank key (Array.unsafe_get h.data (hash  key land h.data_mask))  
 
-# 136
+# 136 "ext/ordered_hash_set.cppo.ml"
 end
 
 

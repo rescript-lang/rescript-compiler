@@ -7,7 +7,7 @@ module Make (Key : Hashtbl.HashedType) = struct
   let eq_key = Key.equal   
 
 
-# 33
+# 33 "ext/hashtbl.cppo.ml"
 type ('a, 'b) bucketlist = ('a,'b) Hashtbl_gen.bucketlist
 let create = Hashtbl_gen.create
 let clear = Hashtbl_gen.clear
@@ -135,5 +135,5 @@ let of_list2 ks vs =
   List.iter2 (fun k v -> add map k v) ks vs ; 
   map
 
-# 161
+# 161 "ext/hashtbl.cppo.ml"
 end
