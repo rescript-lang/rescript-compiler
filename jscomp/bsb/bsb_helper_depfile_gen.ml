@@ -56,11 +56,11 @@ let read_deps fn : string array =
 
 type kind = Js | Bytecode | Native
 
-let output_file oc source namespace = 
+let output_file (oc : Buffer.t) source namespace = 
   match namespace with 
-  | None -> output_string oc source 
+  | None -> Buffer.add_string oc source 
   | Some ns ->
-    output_string oc ( Ext_namespace.make ~ns source)
+    Buffer.add_string oc (Ext_namespace.make ~ns source)
 
 (** for bucklescript artifacts 
     [lhs_suffix] is [.cmj]
@@ -77,11 +77,11 @@ let oc_impl
     (index : Bsb_dir_index.t)
     (data : Bsb_db.t array)
     (namespace : string option)
-    (oc : out_channel)
+    (oc : Buffer.t)
   = 
   output_file oc input_file namespace ; 
-  output_string oc lhs_suffix; 
-  output_string oc dep_lit ; 
+  Buffer.add_string oc lhs_suffix; 
+  Buffer.add_string oc dep_lit ; 
   for i = 0 to Array.length set - 1 do
     let k = Array.unsafe_get set i in 
     match String_map.find_opt k data.(0) with
@@ -89,16 +89,16 @@ let oc_impl
       -> 
       if source <> input_file then 
         begin 
-          output_string oc Ext_string.single_space ;  
+          Buffer.add_string oc Ext_string.single_space ;  
           output_file oc source namespace;
-          output_string oc rhs_suffix 
+          Buffer.add_string oc rhs_suffix 
         end
     | Some {mli = Mli_source (source,_,_)  } -> 
       if source <> input_file then 
         begin 
-          output_string oc Ext_string.single_space ;  
+          Buffer.add_string oc Ext_string.single_space ;  
           output_file oc source namespace;
-          output_string oc Literals.suffix_cmi 
+          Buffer.add_string oc Literals.suffix_cmi 
         end
     | Some {mli= Mli_empty; ml = Ml_empty} -> assert false
     | None  -> 
@@ -109,16 +109,16 @@ let oc_impl
             -> 
             if source <> input_file then 
               begin 
-                output_string oc Ext_string.single_space ;  
+                Buffer.add_string oc Ext_string.single_space ;  
                 output_file oc source namespace;
-                output_string oc rhs_suffix
+                Buffer.add_string oc rhs_suffix
               end
           | Some {mli = Mli_source (source,_,_) } -> 
             if source <> input_file then 
               begin 
-                output_string oc Ext_string.single_space ;  
+                Buffer.add_string oc Ext_string.single_space ;  
                 output_file oc source namespace;
-                output_string oc Literals.suffix_cmi 
+                Buffer.add_string oc Literals.suffix_cmi 
               end 
           | Some {mli = Mli_empty; ml = Ml_empty} -> assert false
           | None -> ()
@@ -136,19 +136,19 @@ let oc_intf
     (index : Bsb_dir_index.t)
     (data : Bsb_db.t array)
     (namespace : string option)
-    (oc : out_channel) =   
+    (oc : Buffer.t) =   
   output_file oc input_file namespace ; 
-  output_string oc Literals.suffix_cmi ; 
-  output_string oc dep_lit;
+  Buffer.add_string oc Literals.suffix_cmi ; 
+  Buffer.add_string oc dep_lit;
   for i = 0 to Array.length set - 1 do               
     let k = Array.unsafe_get set i in 
     match String_map.find_opt k data.(0) with 
     | Some ({ ml = Ml_source (source,_,_)  }
            | { mli = Mli_source (source,_,_) }) -> 
       if source <> input_file then begin              
-        output_string oc Ext_string.single_space ; 
+        Buffer.add_string oc Ext_string.single_space ; 
         output_file oc source namespace ; 
-        output_string oc Literals.suffix_cmi 
+        Buffer.add_string oc Literals.suffix_cmi 
       end 
     | Some {ml =  Ml_empty; mli = Mli_empty } -> assert false
     | None -> 
@@ -159,9 +159,9 @@ let oc_intf
                | { mli = Mli_source (source,_,_)  }) -> 
           if source <> input_file then      
             begin 
-              output_string oc Ext_string.single_space ; 
+              Buffer.add_string oc Ext_string.single_space ; 
               output_file oc source namespace;
-              output_string oc Literals.suffix_cmi
+              Buffer.add_string oc Literals.suffix_cmi
             end 
         | Some {ml = Ml_empty; mli = Mli_empty} -> assert false
         | None -> () 
@@ -193,29 +193,33 @@ let emit_dep_file
    let rhs_suffix = Literals.suffix_cmj in 
 #end
     Ext_pervasives.with_file_as_chan (input_file ^ Literals.suffix_mlastd )
-      (fun oc -> 
-         oc_impl 
-           set 
-           input_file 
-           lhs_suffix 
-           rhs_suffix  
-           index 
-           data
-           namespace
-           oc
+      (fun (oc : out_channel) -> 
+        let buf = Buffer.create 64 in 
+        oc_impl 
+          set 
+          input_file 
+          lhs_suffix 
+          rhs_suffix  
+          index 
+          data
+          namespace
+          buf ;
+        Buffer.output_buffer oc buf 
       )
   | None -> 
     begin match Ext_string.ends_with_then_chop fn Literals.suffix_mliast with 
       | Some input_file -> 
         Ext_pervasives.with_file_as_chan (input_file ^ Literals.suffix_mliastd)
           (fun oc -> 
+             let buf = Buffer.create 64 in 
              oc_intf 
                set 
                input_file 
                index 
                data 
                namespace 
-               oc 
+               buf; 
+             Buffer.output_buffer oc buf 
           )
       | None -> 
         raise (Arg.Bad ("don't know what to do with  " ^ fn))
