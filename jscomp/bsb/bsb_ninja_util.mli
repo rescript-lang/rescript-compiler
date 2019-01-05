@@ -54,6 +54,7 @@ val output_build :
 
 val phony  :
   ?order_only_deps:string list ->
+  ?restat:unit ->
   inputs:string list -> output:string -> out_channel -> unit
 
 val output_kv : string ->  string -> out_channel -> unit 

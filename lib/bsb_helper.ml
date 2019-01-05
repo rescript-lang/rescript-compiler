@@ -5400,6 +5400,31 @@ end = struct
 
 let dep_lit = " :"
 
+let write_buf name buf  =     
+  let oc = open_out_bin name in 
+  Buffer.output_buffer oc buf ;
+  close_out oc 
+
+(* should be good for small file *)
+let load_file name (buf : Buffer.t): unit  = 
+  let len = Buffer.length buf in 
+  let ic = open_in_bin name in 
+  let n = in_channel_length ic in   
+  if n <> len then begin close_in ic ; write_buf name buf  end 
+  else
+    let holder = really_input_string ic  n in 
+    close_in ic ; 
+    if holder <> Buffer.contents buf then 
+      write_buf name buf 
+;;
+let write_file name  (buf : Buffer.t) = 
+  
+  if Sys.file_exists name then 
+    load_file name buf 
+  else 
+  
+    write_buf name buf 
+    
 
 let deps_of_channel ic : string array = 
   let size = input_binary_int ic in 
@@ -5559,35 +5584,32 @@ let emit_dep_file
    let lhs_suffix = Literals.suffix_cmj in   
    let rhs_suffix = Literals.suffix_cmj in 
 
-    Ext_pervasives.with_file_as_chan (input_file ^ Literals.suffix_mlastd )
-      (fun (oc : out_channel) -> 
-        let buf = Buffer.create 64 in 
-        oc_impl 
-          set 
-          input_file 
-          lhs_suffix 
-          rhs_suffix  
-          index 
-          data
-          namespace
-          buf ;
-        Buffer.output_buffer oc buf 
-      )
+   let buf = Buffer.create 64 in 
+   oc_impl 
+     set 
+     input_file 
+     lhs_suffix 
+     rhs_suffix  
+     index 
+     data
+     namespace
+     buf ;
+    let filename = (input_file ^ Literals.suffix_mlastd ) in 
+    write_file filename buf 
+    
   | None -> 
     begin match Ext_string.ends_with_then_chop fn Literals.suffix_mliast with 
       | Some input_file -> 
-        Ext_pervasives.with_file_as_chan (input_file ^ Literals.suffix_mliastd)
-          (fun oc -> 
-             let buf = Buffer.create 64 in 
-             oc_intf 
-               set 
-               input_file 
-               index 
-               data 
-               namespace 
-               buf; 
-             Buffer.output_buffer oc buf 
-          )
+        let filename = (input_file ^ Literals.suffix_mliastd) in 
+        let buf = Buffer.create 64 in 
+        oc_intf 
+          set 
+          input_file 
+          index 
+          data 
+          namespace 
+          buf; 
+        write_file filename buf 
       | None -> 
         raise (Arg.Bad ("don't know what to do with  " ^ fn))
     end

@@ -576,7 +576,7 @@ build bsb/bsb_file.cmi : optc bsb/bsb_file.mli |
 build bsb/bsb_file_groups.cmx bsb/bsb_file_groups.cmi : optc bsb/bsb_file_groups.ml | bsb/bsb_db.cmx bsb/bsb_dir_index.cmx ext/ext_file_pp.cmx ext/ext_list.cmx ext/string_map.cmx ext/string_set.cmx
 build bsb/bsb_helper_dep_graph.cmx : optc bsb/bsb_helper_dep_graph.ml | bsb/bsb_helper_dep_graph.cmi bsb/bsb_log.cmx ext/string_hashtbl.cmx ext/string_map.cmx ext/string_set.cmx
 build bsb/bsb_helper_dep_graph.cmi : optc bsb/bsb_helper_dep_graph.mli | ext/string_hashtbl.cmi ext/string_map.cmi ext/string_set.cmi
-build bsb/bsb_helper_depfile_gen.cmx : optc bsb/bsb_helper_depfile_gen.ml | bsb/bsb_db.cmx bsb/bsb_dir_index.cmx bsb/bsb_helper_depfile_gen.cmi ext/ext_namespace.cmx ext/ext_pervasives.cmx ext/ext_string.cmx ext/literals.cmx ext/string_map.cmx
+build bsb/bsb_helper_depfile_gen.cmx : optc bsb/bsb_helper_depfile_gen.ml | bsb/bsb_db.cmx bsb/bsb_dir_index.cmx bsb/bsb_helper_depfile_gen.cmi ext/ext_namespace.cmx ext/ext_string.cmx ext/literals.cmx ext/string_map.cmx
 build bsb/bsb_helper_depfile_gen.cmi : optc bsb/bsb_helper_depfile_gen.mli | bsb/bsb_dir_index.cmi
 build bsb/bsb_helper_extract.cmx : optc bsb/bsb_helper_extract.ml | bsb/bsb_helper_extract.cmi ext/ext_string.cmx ext/string_set.cmx
 build bsb/bsb_helper_extract.cmi : optc bsb/bsb_helper_extract.mli | ext/string_set.cmi

@@ -12724,6 +12724,7 @@ val output_build :
 
 val phony  :
   ?order_only_deps:string list ->
+  ?restat:unit ->
   inputs:string list -> output:string -> out_channel -> unit
 
 val output_kv : string ->  string -> out_channel -> unit 
@@ -12866,14 +12867,12 @@ let output_build
             output_string oc "\n"
         ) xs
   end;
-  begin match restat with
-    | None -> ()
-    | Some () ->
-      output_string oc "  restat = 1 \n"
-  end
+  if restat <> None then 
+    output_string oc "  restat = 1 \n"
 
 
-let phony ?(order_only_deps=[]) ~inputs ~output oc =
+
+let phony ?(order_only_deps=[]) ?(restat : unit option) ~inputs ~output oc =
   output_string oc "build ";
   output_string oc output ;
   output_string oc " : ";
@@ -12890,7 +12889,9 @@ let phony ?(order_only_deps=[]) ~inputs ~output oc =
         List.iter (fun s -> output_string oc Ext_string.single_space ; output_string oc s)
       end
   end;
-  output_string oc "\n"
+  output_string oc "\n";
+  if restat <> None then 
+    output_string oc "  restat = 1 \n"
 
 let output_kv key value oc  =
   output_string oc key ;
@@ -13089,6 +13090,9 @@ let emit_impl_build
                 Bsb_rule.build_ast_and_module_sets);
     Bsb_ninja_util.output_build
       oc
+      
+      ~restat:()
+      
       ~output:output_mlastd
       ~input:output_mlast
       ~rule:Bsb_rule.build_bin_deps
@@ -13155,6 +13159,9 @@ let emit_intf_build
     ~rule:(if is_re then Bsb_rule.build_ast_and_module_sets_from_rei
            else Bsb_rule.build_ast_and_module_sets);
   Bsb_ninja_util.output_build oc
+
+    ~restat:()
+    
     ~output:output_mliastd
     ~input:output_mliast
     ~rule:Bsb_rule.build_bin_deps
