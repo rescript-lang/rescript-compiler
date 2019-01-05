@@ -37,6 +37,18 @@ function getDateAsString(){
     return n.getHours() + ":" + n.getMinutes() + ":" + n.getSeconds()
 }
 /**
+ * @time{[number,number]}
+ */
+var startTime 
+function updateStartTime(){
+    startTime = process.hrtime()
+    return ''
+}
+function updateFinishTime(){
+    var diff = process.hrtime(startTime)
+    return diff[0] * 1e9 + diff[1]
+}
+/**
  * 
  * @param {*} str 
  */
@@ -290,7 +302,7 @@ if (watch_mode) {
     function logFinish(code) {
         if (std_is_tty) {
             if (code === 0) {
-                console.log("\x1b[36m>>>> Finish compiling\x1b[0m", getDateAsString())
+                console.log("\x1b[36m>>>> Finish compiling\x1b[0m", Math.floor(updateFinishTime()/1e6),"mseconds")
             } else {
                 console.log("\x1b[1;31m>>>> Finish compiling(exit: " + code + ")\x1b[0m")
             }
@@ -305,7 +317,7 @@ if (watch_mode) {
     }
     function logStart() {
         if (std_is_tty) {
-            console.log("\x1b[36m>>>> Start compiling\x1b[0m",getDateAsString());
+            console.log("\x1b[36m>>>> Start compiling\x1b[0m",updateStartTime());
         } else {
             console.log(">>>> Start compiling");
         }
