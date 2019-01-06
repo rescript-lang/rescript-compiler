@@ -26659,14 +26659,30 @@ let (@>) (b, v) acc =
   else
     acc
 
-let preprocess_string fn (str : string) oc =
-
+let preprocess_to_buffer fn (str : string) (oc : Buffer.t) : unit =     
   let lexbuf = Lexing.from_string  str in
   Lexer.init () ;
   Location.init lexbuf fn;
-  let segments =
-    lexbuf
-    |> Lexer.filter_directive_from_lexbuf   in
+  let segments =    
+    Lexer.filter_directive_from_lexbuf  lexbuf in
+  Ext_list.iter segments
+    (fun (start, pos) ->
+       Buffer.add_substring  oc str start (pos - start)
+    )
+
+let verify_valid_ml (str : string) = 
+  try 
+    ignore @@ Parse.implementation (Lexing.from_string str);
+    true
+  with _ -> false
+
+(* same as {!preprocess_to_buffer} except writing to channel directly *)
+let preprocess_string fn (str : string) oc =
+  let lexbuf = Lexing.from_string  str in
+  Lexer.init () ;
+  Location.init lexbuf fn;
+  let segments =    
+    Lexer.filter_directive_from_lexbuf  lexbuf in
   Ext_list.iter segments
     (fun (start, pos) ->
        output_substring  oc str start (pos - start)
@@ -26785,6 +26801,7 @@ let decorate_module
     end
 
 let decorate_module_only 
+    ?(check : unit option)
     ?(module_bound=true) 
     out_chan base ml_name ml_content =
   if module_bound then begin 
@@ -26794,7 +26811,16 @@ let decorate_module_only
     output_string out_chan "\n= struct\n"
   end;
   emit out_chan  ml_name;
-  preprocess_string ml_name ml_content out_chan ; 
+  if check <> None then 
+    let buf = Buffer.create 2000 in 
+    preprocess_to_buffer ml_name ml_content buf; 
+    let str = Buffer.contents buf in 
+    if not @@ verify_valid_ml str then 
+      failwith (ml_name ^ " can not be a valid ml module")
+    else 
+      output_string out_chan str 
+  else 
+    preprocess_string ml_name ml_content out_chan ; 
   if module_bound then 
     output_string out_chan "\nend\n"
 
@@ -26803,7 +26829,7 @@ let decorate_module_only
 *)
 let decorate_interface_only out_chan  base  mli_name mli_content =
   output_string out_chan "(** Interface as module  *)\n";
-  decorate_module_only out_chan base mli_name mli_content
+  decorate_module_only out_chan base mli_name mli_content ~check:()
 
 (** set mllib *)
 let mllib = ref None
