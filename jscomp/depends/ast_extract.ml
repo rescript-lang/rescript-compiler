@@ -81,17 +81,18 @@ let sort_files_by_dependencies ~(domain : String_set.t) (dependency_graph : Stri
     (String_map.find_exn  current dependency_graph) in    
   let worklist = ref domain in
   let result = Queue.create () in
-  let rec visit visiting path current =
+  let rec visit (visiting : String_set.t) path (current : string) =
+    let next_path = current :: path in 
     if String_set.mem current visiting then
-      Bs_exception.error (Bs_cyclic_depends (current::path))
+      Bs_exception.error (Bs_cyclic_depends next_path)
     else if String_set.mem current !worklist then
       begin
+        let next_set = String_set.add current visiting in         
         next current |>        
         String_set.iter
           (fun node ->
              if  String_map.mem node  dependency_graph then
-               visit (String_set.add current visiting) (current::path) node)
-          (*FIXME: those temp constructed variables could be shared *) 
+               visit next_set next_path node)
         ;
         worklist := String_set.remove  current !worklist;
         Queue.push current result ;
