@@ -32,16 +32,22 @@ let (@>) (b, v) acc =
   else
     acc
 
-let preprocess_string fn str oc =
+let preprocess_string fn (str : string) oc =
 
+let verify_valid_ml (str : string) = 
+  try 
+    ignore @@ Parse.implementation (Lexing.from_string str);
+    true
+  with _ -> false
+
+(* same as {!preprocess_to_buffer} except writing to channel directly *)
+let preprocess_string fn (str : string) oc =
   let lexbuf = Lexing.from_string  str in
   Lexer.init () ;
   Location.init lexbuf fn;
-  let segments =
-    lexbuf
-    |> Lexer.filter_directive_from_lexbuf   in
-  segments
-  |> List.iter
+  let segments =    
+    Lexer.filter_directive_from_lexbuf  lexbuf in
+  Ext_list.iter segments
     (fun (start, pos) ->
        output_substring  oc str start (pos - start)
     )
@@ -169,7 +175,6 @@ let decorate_module_only
   end;
   emit out_chan  ml_name;
   preprocess_string ml_name ml_content out_chan ; 
-  (* output_string out_chan ml_content; *)
   if module_bound then 
     output_string out_chan "\nend\n"
 

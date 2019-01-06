@@ -9213,17 +9213,18 @@ let sort_files_by_dependencies ~(domain : String_set.t) (dependency_graph : Stri
     (String_map.find_exn  current dependency_graph) in    
   let worklist = ref domain in
   let result = Queue.create () in
-  let rec visit visiting path current =
+  let rec visit (visiting : String_set.t) path (current : string) =
+    let next_path = current :: path in 
     if String_set.mem current visiting then
-      Bs_exception.error (Bs_cyclic_depends (current::path))
+      Bs_exception.error (Bs_cyclic_depends next_path)
     else if String_set.mem current !worklist then
       begin
+        let next_set = String_set.add current visiting in         
         next current |>        
         String_set.iter
           (fun node ->
              if  String_map.mem node  dependency_graph then
-               visit (String_set.add current visiting) (current::path) node)
-          (*FIXME: those temp constructed variables could be shared *) 
+               visit next_set next_path node)
         ;
         worklist := String_set.remove  current !worklist;
         Queue.push current result ;
@@ -26658,7 +26659,7 @@ let (@>) (b, v) acc =
   else
     acc
 
-let preprocess_string fn str oc =
+let preprocess_string fn (str : string) oc =
 
   let lexbuf = Lexing.from_string  str in
   Lexer.init () ;
@@ -26666,8 +26667,7 @@ let preprocess_string fn str oc =
   let segments =
     lexbuf
     |> Lexer.filter_directive_from_lexbuf   in
-  segments
-  |> List.iter
+  Ext_list.iter segments
     (fun (start, pos) ->
        output_substring  oc str start (pos - start)
     )
@@ -26795,7 +26795,6 @@ let decorate_module_only
   end;
   emit out_chan  ml_name;
   preprocess_string ml_name ml_content out_chan ; 
-  (* output_string out_chan ml_content; *)
   if module_bound then 
     output_string out_chan "\nend\n"
 
