@@ -1,6 +1,19 @@
 
 * potential break changes
 
+# 4.0.17
+Features
+
+- #3229 true seperate compilation, incredible perf for incremental build
+
+Fixes 
+- #3226, #3223 absolute path generated in recursive module path and `assert false`
+- #3220 ppx-flags & scoped packages
+- #3214 shadowing of js Promise constructor
+- #3213 Allow build to be re-entrant to deal with yarn issues
+
+
+
 # 4.0.10 
 Fixes
 - upstream a bug fix for refmt
