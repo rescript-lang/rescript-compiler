@@ -11,6 +11,21 @@ rule mll
 build test/arith_lexer.ml : mll test/arith_lexer.mll
 build test/number_lexer.ml : mll test/number_lexer.mll
 build test/simple_lexer_test.ml : mll test/simple_lexer_test.mll
+OCAML_SRC_UTILS=../vendor/ocaml/utils
+OCAML_SRC_PARSING=../vendor/ocaml/parsing
+OCAML_SRC_TYPING=../vendor/ocaml/typing
+rule bspack    
+    command = ./bin/bspack.exe $flags -I test -bs-MD  -o $out
+    depfile = $out.d
+    generator = true
+build test/ocaml_parsetree_test.ml: bspack test/ocaml_parsetree_main_bspack.ml
+    flags = -I $OCAML_SRC_PARSING -I $OCAML_SRC_UTILS -bs-main Ocaml_parsetree_main_bspack 
+
+build test/ocaml_typedtree_test.ml: bspack test/ocaml_typed_tree_main_bspack.ml
+    flags = -I $OCAML_SRC_PARSING -I $OCAML_SRC_UTILS -I $OCAML_SRC_TYPING -bs-main Ocaml_typed_tree_main_bspack 
+
+build test/parser_api.ml: bspack test/parser_api_main_bspack.ml
+    flags = -main-export Parser_api_main_bspack -I $OCAML_SRC_PARSING -I $OCAML_SRC_UTILS
 build test/406_primitive_test.cmi test/406_primitive_test.cmj : cc test/406_primitive_test.ml | test/mt.cmj stdlib-402
 build test/a.cmi test/a.cmj : cc test/a.ml | test/test_order.cmj stdlib-402
 build test/a_filename_test.cmi test/a_filename_test.cmj : cc test/a_filename_test.ml | test/ext_filename_test.cmj test/mt.cmj stdlib-402

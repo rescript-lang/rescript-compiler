@@ -849,6 +849,21 @@ ${ninjaQuickBuidList([
     ['simple_lexer_test.ml','simple_lexer_test.mll',
         'mll',ninjaCwd,[],[],[]],
 ])}
+OCAML_SRC_UTILS=../vendor/ocaml/utils
+OCAML_SRC_PARSING=../vendor/ocaml/parsing
+OCAML_SRC_TYPING=../vendor/ocaml/typing
+rule bspack    
+    command = ./bin/bspack.exe $flags -I test -bs-MD  -o $out
+    depfile = $out.d
+    generator = true
+build test/ocaml_parsetree_test.ml: bspack test/ocaml_parsetree_main_bspack.ml
+    flags = -I $OCAML_SRC_PARSING -I $OCAML_SRC_UTILS -bs-main Ocaml_parsetree_main_bspack 
+
+build test/ocaml_typedtree_test.ml: bspack test/ocaml_typed_tree_main_bspack.ml
+    flags = -I $OCAML_SRC_PARSING -I $OCAML_SRC_UTILS -I $OCAML_SRC_TYPING -bs-main Ocaml_typed_tree_main_bspack 
+
+build test/parser_api.ml: bspack test/parser_api_main_bspack.ml
+    flags = -main-export Parser_api_main_bspack -I $OCAML_SRC_PARSING -I $OCAML_SRC_UTILS
 `
     var testDirFiles = fs.readdirSync(testDir,'ascii')    
     var sources = testDirFiles.filter(x=>{
