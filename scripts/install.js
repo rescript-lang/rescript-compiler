@@ -222,7 +222,7 @@ function copyPrebuiltCompilers() {
 /**
  * @returns {boolean}
  */
-function checkPrebuilt() {
+function checkPrebuiltBscCompiler() {
     try {
         var version = cp.execFileSync(path.join(lib_dir, 'bsc' + sys_extension), ['-v'])
         console.log("checkoutput:", String(version))
@@ -243,11 +243,11 @@ function buildLibs(){
 
 function provideCompiler() {
     // FIXME: weird logic
-    if (fs.existsSync(path.join(lib_dir,'ocaml','pervasives.cmi'))) {
-        console.log('Found pervasives.cmi, assume it was already built')
-        return true // already built before
-    }
-    if (checkPrebuilt()) {
+    // if (fs.existsSync(path.join(lib_dir,'ocaml','pervasives.cmi'))) {
+    //     console.log('Found pervasives.cmi, assume it was already built')
+    //     return true // already built before
+    // }
+    if (checkPrebuiltBscCompiler()) {
         copyPrebuiltCompilers()
     }
     else {
