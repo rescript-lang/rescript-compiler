@@ -9213,17 +9213,18 @@ let sort_files_by_dependencies ~(domain : String_set.t) (dependency_graph : Stri
     (String_map.find_exn  current dependency_graph) in    
   let worklist = ref domain in
   let result = Queue.create () in
-  let rec visit visiting path current =
+  let rec visit (visiting : String_set.t) path (current : string) =
+    let next_path = current :: path in 
     if String_set.mem current visiting then
-      Bs_exception.error (Bs_cyclic_depends (current::path))
+      Bs_exception.error (Bs_cyclic_depends next_path)
     else if String_set.mem current !worklist then
       begin
+        let next_set = String_set.add current visiting in         
         next current |>        
         String_set.iter
           (fun node ->
              if  String_map.mem node  dependency_graph then
-               visit (String_set.add current visiting) (current::path) node)
-          (*FIXME: those temp constructed variables could be shared *) 
+               visit next_set next_path node)
         ;
         worklist := String_set.remove  current !worklist;
         Queue.push current result ;
@@ -26658,16 +26659,31 @@ let (@>) (b, v) acc =
   else
     acc
 
-let preprocess_string fn str oc =
-
+let preprocess_to_buffer fn (str : string) (oc : Buffer.t) : unit =     
   let lexbuf = Lexing.from_string  str in
   Lexer.init () ;
   Location.init lexbuf fn;
-  let segments =
-    lexbuf
-    |> Lexer.filter_directive_from_lexbuf   in
-  segments
-  |> List.iter
+  let segments =    
+    Lexer.filter_directive_from_lexbuf  lexbuf in
+  Ext_list.iter segments
+    (fun (start, pos) ->
+       Buffer.add_substring  oc str start (pos - start)
+    )
+
+let verify_valid_ml (str : string) = 
+  try 
+    ignore @@ Parse.implementation (Lexing.from_string str);
+    true
+  with _ -> false
+
+(* same as {!preprocess_to_buffer} except writing to channel directly *)
+let preprocess_string fn (str : string) oc =
+  let lexbuf = Lexing.from_string  str in
+  Lexer.init () ;
+  Location.init lexbuf fn;
+  let segments =    
+    Lexer.filter_directive_from_lexbuf  lexbuf in
+  Ext_list.iter segments
     (fun (start, pos) ->
        output_substring  oc str start (pos - start)
     )
@@ -26785,6 +26801,7 @@ let decorate_module
     end
 
 let decorate_module_only 
+    ?(check : unit option)
     ?(module_bound=true) 
     out_chan base ml_name ml_content =
   if module_bound then begin 
@@ -26794,8 +26811,16 @@ let decorate_module_only
     output_string out_chan "\n= struct\n"
   end;
   emit out_chan  ml_name;
-  preprocess_string ml_name ml_content out_chan ; 
-  (* output_string out_chan ml_content; *)
+  if check <> None then 
+    let buf = Buffer.create 2000 in 
+    preprocess_to_buffer ml_name ml_content buf; 
+    let str = Buffer.contents buf in 
+    if not @@ verify_valid_ml str then 
+      failwith (ml_name ^ " can not be a valid ml module")
+    else 
+      output_string out_chan str 
+  else 
+    preprocess_string ml_name ml_content out_chan ; 
   if module_bound then 
     output_string out_chan "\nend\n"
 
@@ -26804,7 +26829,7 @@ let decorate_module_only
 *)
 let decorate_interface_only out_chan  base  mli_name mli_content =
   output_string out_chan "(** Interface as module  *)\n";
-  decorate_module_only out_chan base mli_name mli_content
+  decorate_module_only out_chan base mli_name mli_content ~check:()
 
 (** set mllib *)
 let mllib = ref None
