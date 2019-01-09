@@ -35,6 +35,8 @@ let bsc_flags = "bsc_flags"
 
 let ppx_flags = "ppx_flags"
 
+let pp_flags = "pp_flags"
+
 let bs_package_includes = "bs_package_includes"
 
 let bs_package_dev_includes = "bs_package_dev_includes"

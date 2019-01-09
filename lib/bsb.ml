@@ -95,7 +95,7 @@ let name = "name"
 (* let ocaml_config = "ocaml-config" *)
 let bsdep = "bsdep"
 let ppx_flags = "ppx-flags"
-
+let pp_flags = "pp-flags"
 let bsc = "bsc"
 let refmt = "refmt"
 let refmt_flags = "refmt-flags"
@@ -103,7 +103,8 @@ let bs_external_includes = "bs-external-includes"
 let bs_lib_dir = "bs-lib-dir"
 let bs_dependencies = "bs-dependencies"
 let bs_dev_dependencies = "bs-dev-dependencies"
-let bs_copy_or_symlink = "bs-copy-or-symlink"
+
+
 let sources = "sources"
 let dir = "dir"
 let files = "files"
@@ -6541,6 +6542,8 @@ ppx_flags [ppxs]
 *)
 val ppx_flags : string list -> string
 
+val pp_flags : string list -> string
+
 (**
 Build unquoted command line arguments for bsc.exe for the given include dirs
 
@@ -6629,15 +6632,20 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 let flag_concat flag xs =   
-  Ext_list.flat_map xs  (fun x -> [flag ; x])
-  |> String.concat Ext_string.single_space
+  String.concat Ext_string.single_space
+    (Ext_list.flat_map xs  (fun x -> [flag ; x]))
+  
 let (//) = Ext_path.combine
 
 
+(*TODO: optimize *)
 let ppx_flags xs =
-  xs
-  |> List.map Filename.quote
-  |> flag_concat "-ppx"
+  flag_concat "-ppx"
+    (Ext_list.map xs Filename.quote)
+
+let pp_flags xs = 
+  flag_concat "-pp"
+    (Ext_list.map xs Filename.quote)
 
 let include_dirs = flag_concat "-I"
 
@@ -11044,6 +11052,7 @@ type t =
     external_includes : string list ; 
     bsc_flags : string list ;
     ppx_flags : string list ;
+    pp_flags : string list ;
     bs_dependencies : dependencies;
     bs_dev_dependencies : dependencies;
     built_in_dependency : dependency option; 
@@ -11612,8 +11621,8 @@ let interpret_json
       since it is external configuration, no {!Bsb_build_util.convert_and_resolve_path}
   *)
   let bsc_flags = ref Bsb_default.bsc_flags in  
-  let ppx_flags = ref []in 
-
+  let ppx_flags = ref [] in 
+  let pp_flags  = ref [] in  
   let js_post_build_cmd = ref None in 
   let built_in_package = ref None in
   let generate_merlin = ref true in 
@@ -11762,6 +11771,12 @@ let interpret_json
             else Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.ppx_flags p
           )
       ))
+    |? (Bsb_build_schemas.pp_flags, `Arr(fun s ->
+        pp_flags := Ext_list.map (get_list_string s) (fun p ->
+            if p = "" then failwith "invalid pp, empty string found"
+            else Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.pp_flags p
+          )
+      ))  
     |? (Bsb_build_schemas.cut_generators, `Bool (fun b -> cut_generators := b))
     |? (Bsb_build_schemas.generators, `Arr (fun s ->
         generators :=
@@ -11819,6 +11834,7 @@ let interpret_json
           external_includes = !bs_external_includes;
           bsc_flags = !bsc_flags ;
           ppx_flags = !ppx_flags ;
+          pp_flags = !pp_flags ;
           bs_dependencies = !bs_dependencies;
           bs_dev_dependencies = !bs_dev_dependencies;
           refmt;
@@ -11842,6 +11858,94 @@ let interpret_json
     end
   | _ -> failwith "bsconfig.json expect a json object {}"
 
+end
+module Ext_option : sig 
+#1 "ext_option.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** Utilities for [option] type *)
+
+val map : 'a option -> ('a -> 'b) -> 'b option
+
+val iter : 'a option -> ('a -> unit) -> unit
+
+val exists : 'a option -> ('a -> bool) -> bool
+end = struct
+#1 "ext_option.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+let map v f = 
+  match v with 
+  | None -> None
+  | Some x -> Some (f x )
+
+let iter v f =   
+  match v with 
+  | None -> ()
+  | Some x -> f x 
+
+let exists v f =    
+  match v with 
+  | None -> false
+  | Some x -> f x 
 end
 module Bsb_merlin_gen : sig 
 #1 "bsb_merlin_gen.mli"
@@ -11950,6 +12054,7 @@ let revise_merlin merlin new_content =
    merlin generation
 *)
 let merlin_flg_ppx = "\nFLG -ppx " 
+let merlin_flg_pp = "\nFLG -pp "
 let merlin_s = "\nS "
 let merlin_b = "\nB "
 
@@ -11983,6 +12088,7 @@ let merlin_file_gen ~cwd
     ({bs_file_groups = res_files ; 
       generate_merlin;
       ppx_flags;
+      pp_flags ;
       bs_dependencies;
       bs_dev_dependencies;
       bsc_flags; 
@@ -11997,16 +12103,15 @@ let merlin_file_gen ~cwd
   if generate_merlin then begin     
     let buffer = Buffer.create 1024 in
     output_merlin_namespace buffer namespace; 
-    ppx_flags
-    |> List.iter (fun x ->
+    Ext_list.iter ppx_flags (fun x ->
         Buffer.add_string buffer (merlin_flg_ppx ^ x )
       );
-    (match reason_react_jsx with
-     | Some s -> 
-       begin 
-         Buffer.add_string buffer (merlin_flg_ppx ^ s)
-       end
-     | None -> ());
+    Ext_list.iter pp_flags (fun x -> 
+      Buffer.add_string buffer (merlin_flg_pp ^ x)
+    );  
+    Ext_option.iter reason_react_jsx 
+      (fun s -> 
+         Buffer.add_string buffer (merlin_flg_ppx ^ s));
     Buffer.add_string buffer (merlin_flg_ppx  ^ built_in_ppx);
     (*
     (match external_includes with 
@@ -12016,42 +12121,36 @@ let merlin_file_gen ~cwd
       Buffer.add_string buffer (merlin_flg ^ Bsb_build_util.include_dirs external_includes
       ));
     *)
-    external_includes 
-    |> List.iter (fun path -> 
+    Ext_list.iter external_includes (fun path -> 
         Buffer.add_string buffer merlin_s ;
         Buffer.add_string buffer path ;
         Buffer.add_string buffer merlin_b;
         Buffer.add_string buffer path ;
       );      
-    (match built_in_dependency with
-     | None -> ()
-     | Some package -> 
-       let path = package.package_install_path in 
-       Buffer.add_string buffer (merlin_s ^ path );
-       Buffer.add_string buffer (merlin_b ^ path)                      
-    );
-
+    Ext_option.iter built_in_dependency (fun package -> 
+        let path = package.package_install_path in 
+        Buffer.add_string buffer (merlin_s ^ path );
+        Buffer.add_string buffer (merlin_b ^ path)                      
+      );
     let bsc_string_flag = bsc_flg_to_merlin_ocamlc_flg bsc_flags in 
     Buffer.add_string buffer bsc_string_flag ;
     Buffer.add_string buffer (warning_to_merlin_flg  warning); 
-    bs_dependencies 
-    |> List.iter (fun package ->
-        let path = package.Bsb_config_types.package_install_path in
+    Ext_list.iter bs_dependencies (fun package ->
+        let path = package.package_install_path in
         Buffer.add_string buffer merlin_s ;
         Buffer.add_string buffer path ;
         Buffer.add_string buffer merlin_b;
         Buffer.add_string buffer path ;
       );
-    bs_dev_dependencies (**TODO: shall we generate .merlin for dev packages ?*)
-    |> List.iter (fun package ->    
-        let path = package.Bsb_config_types.package_install_path in
+    Ext_list.iter bs_dev_dependencies (**TODO: shall we generate .merlin for dev packages ?*)
+    (fun package ->    
+        let path = package.package_install_path in
         Buffer.add_string buffer merlin_s ;
         Buffer.add_string buffer path ;
         Buffer.add_string buffer merlin_b;
         Buffer.add_string buffer path ;
       );
-
-    res_files |> List.iter (fun (x : Bsb_file_groups.file_group) -> 
+    Ext_list.iter res_files (fun (x : Bsb_file_groups.file_group) -> 
         if not (Bsb_file_groups.is_empty x) then 
           begin
             Buffer.add_string buffer merlin_s;
@@ -12393,6 +12492,8 @@ let bsdep = "bsdep"
 let bsc_flags = "bsc_flags"
 
 let ppx_flags = "ppx_flags"
+
+let pp_flags = "pp_flags"
 
 let bs_package_includes = "bs_package_includes"
 
@@ -13381,6 +13482,7 @@ let output_ninja_and_namespace_map
       external_includes;
       bsc_flags ; 
       ppx_flags;
+      pp_flags ;
       bs_dependencies;
       bs_dev_dependencies;
       refmt;
@@ -13401,6 +13503,7 @@ let output_ninja_and_namespace_map
   let bsdep = bsc_dir // bsb_helper_exe in (* The path to [bsb_heler.exe] *)
   let cwd_lib_bs = cwd // Bsb_config.lib_bs in 
   let ppx_flags = Bsb_build_util.ppx_flags ppx_flags in
+  let pp_flags = Bsb_build_util.pp_flags pp_flags in 
   let bsc_flags =  String.concat Ext_string.single_space bsc_flags in
   let refmt_flags = String.concat Ext_string.single_space refmt_flags in
   let oc = open_out_bin (cwd_lib_bs // Literals.build_ninja) in
@@ -13466,6 +13569,7 @@ let output_ninja_and_namespace_map
         Bsb_ninja_global_vars.warnings, warnings;
         Bsb_ninja_global_vars.bsc_flags, bsc_flags ;
         Bsb_ninja_global_vars.ppx_flags, ppx_flags;
+        Bsb_ninja_global_vars.pp_flags, pp_flags;
         Bsb_ninja_global_vars.bs_package_includes, bs_package_includes;
         Bsb_ninja_global_vars.bs_package_dev_includes, bs_package_dev_includes;  
         Bsb_ninja_global_vars.namespace , namespace_flag ; 

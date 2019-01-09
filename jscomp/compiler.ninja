@@ -586,7 +586,7 @@ build bsb/bsb_helper_packer.cmx : optc bsb/bsb_helper_packer.ml | bsb/bsb_helper
 build bsb/bsb_helper_packer.cmi : optc bsb/bsb_helper_packer.mli | 
 build bsb/bsb_log.cmx : optc bsb/bsb_log.ml | bsb/bsb_log.cmi ext/ext_color.cmx ext/ext_string.cmx
 build bsb/bsb_log.cmi : optc bsb/bsb_log.mli | 
-build bsb/bsb_merlin_gen.cmx : optc bsb/bsb_merlin_gen.ml | bsb/bsb_config.cmx bsb/bsb_config_types.cmx bsb/bsb_file_groups.cmx bsb/bsb_merlin_gen.cmi bsb/bsb_warning.cmx ext/ext_path.cmx ext/ext_string.cmx ext/literals.cmx
+build bsb/bsb_merlin_gen.cmx : optc bsb/bsb_merlin_gen.ml | bsb/bsb_config.cmx bsb/bsb_config_types.cmx bsb/bsb_file_groups.cmx bsb/bsb_merlin_gen.cmi bsb/bsb_warning.cmx ext/ext_list.cmx ext/ext_option.cmx ext/ext_path.cmx ext/ext_string.cmx ext/literals.cmx
 build bsb/bsb_merlin_gen.cmi : optc bsb/bsb_merlin_gen.mli | bsb/bsb_config_types.cmx
 build bsb/bsb_namespace_map_gen.cmx : optc bsb/bsb_namespace_map_gen.ml | bsb/bsb_file_groups.cmx bsb/bsb_namespace_map_gen.cmi ext/ext_path.cmx ext/literals.cmx ext/string_map.cmx
 build bsb/bsb_namespace_map_gen.cmi : optc bsb/bsb_namespace_map_gen.mli | bsb/bsb_file_groups.cmx

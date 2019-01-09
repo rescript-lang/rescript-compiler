@@ -131,8 +131,8 @@ let interpret_json
       since it is external configuration, no {!Bsb_build_util.convert_and_resolve_path}
   *)
   let bsc_flags = ref Bsb_default.bsc_flags in  
-  let ppx_flags = ref []in 
-
+  let ppx_flags = ref [] in 
+  let pp_flags  = ref [] in  
   let js_post_build_cmd = ref None in 
   let built_in_package = ref None in
   let generate_merlin = ref true in 
@@ -281,6 +281,12 @@ let interpret_json
             else Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.ppx_flags p
           )
       ))
+    |? (Bsb_build_schemas.pp_flags, `Arr(fun s ->
+        pp_flags := Ext_list.map (get_list_string s) (fun p ->
+            if p = "" then failwith "invalid pp, empty string found"
+            else Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.pp_flags p
+          )
+      ))  
     |? (Bsb_build_schemas.cut_generators, `Bool (fun b -> cut_generators := b))
     |? (Bsb_build_schemas.generators, `Arr (fun s ->
         generators :=
@@ -338,6 +344,7 @@ let interpret_json
           external_includes = !bs_external_includes;
           bsc_flags = !bsc_flags ;
           ppx_flags = !ppx_flags ;
+          pp_flags = !pp_flags ;
           bs_dependencies = !bs_dependencies;
           bs_dev_dependencies = !bs_dev_dependencies;
           refmt;
