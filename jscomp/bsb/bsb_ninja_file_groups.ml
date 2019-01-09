@@ -138,10 +138,8 @@ let emit_impl_build
                 Bsb_rule.build_ast_and_module_sets);
     Bsb_ninja_util.output_build
       oc
-#if 1 then      
-      ~restat:()
-#end      
       ~output:output_mlastd
+      ~restat:()      
       ~input:output_mlast
       ~rule:Bsb_rule.build_bin_deps
       ?shadows:(if Bsb_dir_index.is_lib_dir group_dir_index then None
@@ -207,10 +205,8 @@ let emit_intf_build
     ~rule:(if is_re then Bsb_rule.build_ast_and_module_sets_from_rei
            else Bsb_rule.build_ast_and_module_sets);
   Bsb_ninja_util.output_build oc
-#if 1 then
-    ~restat:()
-#end    
     ~output:output_mliastd
+    ~restat:()
     ~input:output_mliast
     ~rule:Bsb_rule.build_bin_deps
     ?shadows:(if Bsb_dir_index.is_lib_dir group_dir_index  then None
@@ -220,8 +216,8 @@ let emit_intf_build
                     Overwrite (string_of_int (group_dir_index :> int )) }])
   ;
   Bsb_ninja_util.output_build oc
-    ~shadows:common_shadows
     ~output:output_cmi
+    ~shadows:common_shadows
     ~input:output_mliast
     ~rule:Bsb_rule.build_cmi
     ~restat:()

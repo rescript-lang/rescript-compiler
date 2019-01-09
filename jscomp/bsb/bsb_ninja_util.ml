@@ -61,7 +61,7 @@ let output_build
   let rule = Bsb_rule.get_name rule  oc in (* Trigger building if not used *)
   output_string oc "build ";
   output_string oc output ;
-  outputs |> List.iter (fun s -> output_string oc Ext_string.single_space ; output_string oc s  );
+  Ext_list.iter outputs (fun s -> output_string oc Ext_string.single_space ; output_string oc s  );
   begin match implicit_outputs with
     | [] -> ()
     | _ ->
