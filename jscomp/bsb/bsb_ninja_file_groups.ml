@@ -139,7 +139,6 @@ let emit_impl_build
     Bsb_ninja_util.output_build
       oc
       ~output:output_mlastd
-      ~restat:()      
       ~input:output_mlast
       ~rule:Bsb_rule.build_bin_deps
       ?shadows:(if Bsb_dir_index.is_lib_dir group_dir_index then None
@@ -166,7 +165,6 @@ let emit_impl_build
       ~implicit_outputs:  (output_js @ cm_outputs)
       ~input:output_mlast
       ~implicit_deps:deps
-      ~restat:()
       ~rule;
     [output_mlastd] 
   end 
@@ -206,7 +204,6 @@ let emit_intf_build
            else Bsb_rule.build_ast_and_module_sets);
   Bsb_ninja_util.output_build oc
     ~output:output_mliastd
-    ~restat:()
     ~input:output_mliast
     ~rule:Bsb_rule.build_bin_deps
     ?shadows:(if Bsb_dir_index.is_lib_dir group_dir_index  then None
@@ -220,7 +217,6 @@ let emit_intf_build
     ~shadows:common_shadows
     ~input:output_mliast
     ~rule:Bsb_rule.build_cmi
-    ~restat:()
     ;
   [output_mliastd]
 

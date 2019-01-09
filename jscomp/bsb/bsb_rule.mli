@@ -30,10 +30,18 @@ type t
 val get_name : t  -> out_channel -> string
 
 val build_ast_and_module_sets : t
+(** TODO: Implement it on top of pp_flags *)
 val build_ast_and_module_sets_from_re : t 
 val build_ast_and_module_sets_from_rei : t 
-val build_bin_deps : t 
+(** platform dependent, on Win32,
+  invoking cmd.exe
+ *)
 val copy_resources : t
+
+
+
+(** Rules below all need restat *)
+val build_bin_deps : t 
 val build_cmj_js : t
 val build_cmj_cmi_js : t 
 val build_cmi : t
