@@ -34,6 +34,9 @@ let ppx_flags xs =
   flag_concat "-ppx"
     (Ext_list.map xs Filename.quote)
 
+let pp_flags xs = 
+  flag_concat "-pp"
+    (Ext_list.map xs Filename.quote)
 
 let include_dirs = flag_concat "-I"
 

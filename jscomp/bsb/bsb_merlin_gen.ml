@@ -72,6 +72,7 @@ let revise_merlin merlin new_content =
    merlin generation
 *)
 let merlin_flg_ppx = "\nFLG -ppx " 
+let merlin_flg_pp = "\nFLG -pp "
 let merlin_s = "\nS "
 let merlin_b = "\nB "
 
@@ -105,6 +106,7 @@ let merlin_file_gen ~cwd
     ({bs_file_groups = res_files ; 
       generate_merlin;
       ppx_flags;
+      pp_flags ;
       bs_dependencies;
       bs_dev_dependencies;
       bsc_flags; 
@@ -122,6 +124,9 @@ let merlin_file_gen ~cwd
     Ext_list.iter ppx_flags (fun x ->
         Buffer.add_string buffer (merlin_flg_ppx ^ x )
       );
+    Ext_list.iter pp_flags (fun x -> 
+      Buffer.add_string buffer (merlin_flg_pp ^ x)
+    );  
     Ext_option.iter reason_react_jsx 
       (fun s -> 
          Buffer.add_string buffer (merlin_flg_ppx ^ s));

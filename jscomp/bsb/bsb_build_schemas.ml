@@ -29,7 +29,7 @@ let name = "name"
 (* let ocaml_config = "ocaml-config" *)
 let bsdep = "bsdep"
 let ppx_flags = "ppx-flags"
-
+let pp_flags = "pp-flags"
 let bsc = "bsc"
 let refmt = "refmt"
 let refmt_flags = "refmt-flags"
@@ -37,7 +37,8 @@ let bs_external_includes = "bs-external-includes"
 let bs_lib_dir = "bs-lib-dir"
 let bs_dependencies = "bs-dependencies"
 let bs_dev_dependencies = "bs-dev-dependencies"
-let bs_copy_or_symlink = "bs-copy-or-symlink"
+
+
 let sources = "sources"
 let dir = "dir"
 let files = "files"
