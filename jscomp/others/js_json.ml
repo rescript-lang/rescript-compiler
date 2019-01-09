@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,7 +17,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -26,96 +26,96 @@
 
 type t
 
-type _ kind = 
+type _ kind =
   | String : Js_string.t kind
-  | Number : float kind 
-  | Object : t Js_dict.t kind 
-  | Array : t array kind 
+  | Number : float kind
+  | Object : t Js_dict.t kind
+  | Array : t array kind
   | Boolean : bool kind
   | Null : Js_types.null_val kind
 
 
-type tagged_t = 
+type tagged_t =
   | JSONFalse
   | JSONTrue
   | JSONNull
-  | JSONString of string 
-  | JSONNumber of float 
-  | JSONObject of t Js_dict.t   
-  | JSONArray of t array 
+  | JSONString of string
+  | JSONNumber of float
+  | JSONObject of t Js_dict.t
+  | JSONArray of t array
 
 let classify  (x : t) : tagged_t =
-  let ty = Js.typeof x in  
-  if ty = "string" then 
+  let ty = Js.typeof x in
+  if ty = "string" then
     JSONString (Obj.magic x)
-  else if ty = "number" then 
+  else if ty = "number" then
     JSONNumber (Obj.magic x )
   else if ty = "boolean" then
     if (Obj.magic x) = true then JSONTrue
-    else JSONFalse 
+    else JSONFalse
   else if (Obj.magic x) == Js.null then
-    JSONNull 
-  else if Js_array.isArray x  then 
+    JSONNull
+  else if Js_array2.isArray x  then
     JSONArray (Obj.magic x)
-  else 
+  else
     JSONObject (Obj.magic x)
 
 
 let test (type a) (x : 'a) (v : a kind) : bool =
   match v with
   | Number -> Js.typeof x = "number"
-  | Boolean -> Js.typeof x = "boolean" 
+  | Boolean -> Js.typeof x = "boolean"
   | String -> Js.typeof x = "string"
-  | Null -> (Obj.magic x) == Js.null 
-  | Array -> Js_array.isArray x 
-  | Object -> (Obj.magic x) != Js.null && Js.typeof x = "object" && not (Js_array.isArray x )
+  | Null -> (Obj.magic x) == Js.null
+  | Array -> Js_array2.isArray x
+  | Object -> (Obj.magic x) != Js.null && Js.typeof x = "object" && not (Js_array2.isArray x )
 
-let decodeString json = 
-  if Js.typeof json = "string" 
+let decodeString json =
+  if Js.typeof json = "string"
   then Some (Obj.magic (json:t) : string)
-  else None 
+  else None
 
-let decodeNumber json = 
-  if Js.typeof json = "number" 
+let decodeNumber json =
+  if Js.typeof json = "number"
   then Some (Obj.magic (json:t) : float)
-  else None 
+  else None
 
-let decodeObject json = 
-  if  Js.typeof json = "object" && 
-      not (Js_array.isArray json) && 
+let decodeObject json =
+  if  Js.typeof json = "object" &&
+      not (Js_array2.isArray json) &&
       not ((Obj.magic json : 'a Js.null) == Js.null)
   then Some (Obj.magic (json:t) : t Js_dict.t)
-  else None 
+  else None
 
-let decodeArray json = 
-  if Js_array.isArray json
+let decodeArray json =
+  if Js_array2.isArray json
   then Some (Obj.magic (json:t) : t array)
-  else None 
+  else None
 
-let decodeBoolean (json : t) = 
+let decodeBoolean (json : t) =
   if Js.typeof json = "boolean"
   then Some (Obj.magic (json:t) : bool)
-  else None 
+  else None
 
-let decodeNull json : _ Js.null option = 
+let decodeNull json : _ Js.null option =
   if (Obj.magic json : 'a Js.null) == Js.null
   then Some Js.null
-  else None 
+  else None
 
-external parse : string -> t = "parse" 
+external parse : string -> t = "parse"
   [@@bs.val][@@bs.scope "JSON"]
 
-external parseExn : string -> t = "parse" 
+external parseExn : string -> t = "parse"
   [@@bs.val] [@@bs.scope "JSON"]
 
-external stringifyAny : 'a -> string option = 
+external stringifyAny : 'a -> string option =
 "stringify" [@@bs.val] [@@bs.return undefined_to_opt] [@@bs.scope "JSON"]
 (* TODO: more docs when parse error happens or stringify non-stringfy value *)
 
 external null : t = "" [@@bs.val]
 external string : string -> t = "%identity"
 external number : float -> t = "%identity"
-external boolean : bool -> t = "%identity" 
+external boolean : bool -> t = "%identity"
 external object_ : t Js_dict.t -> t = "%identity"
 
 external array_ : t array -> t = "%identity"
@@ -125,7 +125,7 @@ external stringArray : string array -> t = "%identity"
 external numberArray : float array -> t = "%identity"
 external booleanArray : bool array -> t = "%identity"
 external objectArray : t Js_dict.t array -> t = "%identity"
-external stringify: t -> string = "stringify" 
+external stringify: t -> string = "stringify"
   [@@bs.val] [@@bs.scope "JSON"]
-external stringifyWithSpace: t -> (_ [@bs.as {json|null|json}]) -> int -> string = "stringify" 
+external stringifyWithSpace: t -> (_ [@bs.as {json|null|json}]) -> int -> string = "stringify"
   [@@bs.val] [@@bs.scope "JSON"]

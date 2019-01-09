@@ -4,12 +4,12 @@ bsc_flags = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-no-ch
 rule cc
     command = $bsc $bsc_flags -bs-no-implicit-include  -I others -c $in
     description = $in -> $out
-        
+
 
 
 
 build others/belt.cmj others/belt.cmi : cc others/belt.ml | runtime
-build others/node.cmj others/node.cmi : cc others/node.ml | runtime    
+build others/node.cmj others/node.cmi : cc others/node.ml | runtime
 build others/js_array.cmi others/js_array.cmj : cc others/js_array.ml | runtime
 build others/js_cast.cmj : cc others/js_cast.ml | others/js_cast.cmi runtime
 build others/js_cast.cmi : cc others/js_cast.mli | runtime

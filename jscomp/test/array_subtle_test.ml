@@ -12,9 +12,9 @@ let () =
   eq __LOC__  (4,Array.length v)
 
 let () =
-  eq __LOC__ (5,Js.Array.push 3 v ); (* in Js array length can be changing .. *)
+  eq __LOC__ (5,Js.Array2.push v 3 ); (* in Js array length can be changing .. *)
   eq __LOC__ (5, Array.length v );
-  eq __LOC__ (5,Js.Array.length v )
+  eq __LOC__ (5,Js.Array2.length v )
 
 
 let () =
@@ -23,30 +23,30 @@ let () =
   eq __LOC__ (4,v.(2)) (* should not inline *)
 
 let () =
-  while Js.Array.length v > 0 do
-    ignore @@ Js.Array.pop v
+  while Js.Array2.length v > 0 do
+    ignore @@ Js.Array2.pop v
   done;
-  eq __LOC__ (0, Js.Array.length v )
+  eq __LOC__ (0, Js.Array2.length v )
 
 
-let f v =   
-  (match Js.Array.pop v with 
+let f v =
+  (match Js.Array2.pop v with
   | Some x -> Js.log "hi"
   | None -> Js.log "hi2");
-  Js.log (ignore @@ Js.Array.pop v)
+  Js.log (ignore @@ Js.Array2.pop v)
 
 
-let fff x =   
+let fff x =
   Array.length x >= 0
 
-let fff2 x =   
+let fff2 x =
   if Array.length x >=  10 then Js.log "hi"
 
-let fff3 x =   
-  if Array.length x >=  0 then 1 else 2 
+let fff3 x =
+  if Array.length x >=  0 then 1 else 2
 
-let fff4 x =   
-  if Array.length x >  0 then 1 else 2 
+let fff4 x =
+  if Array.length x >  0 then 1 else 2
 
 ;; eq __LOC__ (fff3 [||], 1 )
 ;; eq __LOC__ (fff4 [||], 2)

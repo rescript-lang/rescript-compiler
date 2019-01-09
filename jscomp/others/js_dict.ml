@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,7 +17,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -35,16 +35,16 @@ type key = string
 This function will return an invalid value ([undefined]) if [key] does not exist in [dict]. It
 will not throw an error.
 *)
-external unsafeGet : 'a t -> key -> 'a = "" [@@bs.get_index] 
+external unsafeGet : 'a t -> key -> 'a = "" [@@bs.get_index]
 
 (** [get dict key] returns the value associated with [key] in [dict] *)
-let get (type u) (dict : u t) (k : key) : u option = 
-  if [%raw {|k in dict|}] then 
+let get (type u) (dict : u t) (k : key) : u option =
+  if [%raw {|k in dict|}] then
     Some (unsafeGet dict k)
-  else None   
+  else None
 
 (** [set dict key value] sets the value of [key] in [dict] to [value] *)
-external set : 'a t -> key -> 'a -> unit = "" [@@bs.set_index]  
+external set : 'a t -> key -> 'a -> unit = "" [@@bs.set_index]
 
 (** [keys dict] returns an array of all the keys in [dict] *)
 external keys : 'a t -> key array = "Object.keys" [@@bs.val]
@@ -53,7 +53,7 @@ external keys : 'a t -> key array = "Object.keys" [@@bs.val]
 external empty : unit -> 'a t = "" [@@bs.obj]
 
 
-let unsafeDeleteKey : string t -> string -> unit [@bs] = 
+let unsafeDeleteKey : string t -> string -> unit [@bs] =
   fun%raw dict key -> {|
      delete dict[key];
      return 0
@@ -64,21 +64,21 @@ external unsafeCreate : int -> 'a array = "Array" [@@bs.new]
 (* external entries : 'a t -> (key * 'a) array = "Object.entries" [@@bs.val] (* ES2017 *) *)
 let entries dict =
   let keys = keys dict in
-  let l = Js.Array.length keys in
+  let l = Js.Array2.length keys in
   let values = unsafeCreate l in
   for i = 0 to l - 1 do
-    let key = Js.Array.unsafe_get keys i in
-    Js.Array.unsafe_set values i (key, unsafeGet dict key)
+    let key = Js.Array2.unsafe_get keys i in
+    Js.Array2.unsafe_set values i (key, unsafeGet dict key)
   done;
   values
 
 (* external values : 'a t -> 'a array = "Object.values" [@@bs.val] (* ES2017 *) *)
 let values dict =
   let keys = keys dict in
-  let l = Js.Array.length keys in
+  let l = Js.Array2.length keys in
   let values = unsafeCreate l in
   for i = 0 to l - 1 do
-    Js.Array.unsafe_set values i (unsafeGet dict (Js.Array.unsafe_get keys i))
+    Js.Array2.unsafe_set values i (unsafeGet dict (Js.Array2.unsafe_get keys i))
   done;
   values
 
@@ -94,9 +94,9 @@ let fromList entries =
 
 let fromArray entries =
   let dict = empty () in
-  let l = Js_array.length entries in
+  let l = Js.Array2.length entries in
   for i = 0 to l - 1 do
-    let (key, value) = Js.Array.unsafe_get entries i in
+    let (key, value) = Js.Array2.unsafe_get entries i in
     set dict key value
   done;
   dict
@@ -104,9 +104,9 @@ let fromArray entries =
 let map f source =
   let target = empty () in
   let keys = keys source in
-  let l = Js.Array.length keys in
+  let l = Js.Array2.length keys in
   for i = 0 to l - 1 do
-    let key = Js.Array.unsafe_get keys i in
+    let key = Js.Array2.unsafe_get keys i in
     set target key (f (unsafeGet source key) [@bs])
   done;
   target
