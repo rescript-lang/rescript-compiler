@@ -5418,15 +5418,13 @@ let load_file name (buf : Buffer.t): unit  =
       write_buf name buf 
 ;;
 let write_file name  (buf : Buffer.t) = 
-  
   if Sys.file_exists name then 
     load_file name buf 
   else 
-  
     write_buf name buf 
     
 
-let deps_of_channel ic : string array = 
+let deps_of_channel (ic : in_channel) : string array = 
   let size = input_binary_int ic in 
   let s = really_input_string ic size in 
   let first_tab  = String.index s '\t' in 
@@ -5446,7 +5444,7 @@ let deps_of_channel ic : string array =
     mostly for cutting the dependency so that [bsb_helper.exe] does
     not depend on compler-libs
 *)
-let read_deps fn : string array = 
+let read_deps (fn : string) : string array = 
   let ic = open_in_bin fn in 
   let v = deps_of_channel ic in 
   close_in ic;
@@ -5469,35 +5467,35 @@ let output_file (oc : Buffer.t) source namespace =
 *)
 
 let oc_impl 
-    (set : string array)
+    (dependent_module_set : string array)
     (input_file : string)
     (lhs_suffix : string)
     (rhs_suffix : string)
     (index : Bsb_dir_index.t)
     (data : Bsb_db.t array)
     (namespace : string option)
-    (oc : Buffer.t)
+    (buf : Buffer.t)
   = 
-  output_file oc input_file namespace ; 
-  Buffer.add_string oc lhs_suffix; 
-  Buffer.add_string oc dep_lit ; 
-  for i = 0 to Array.length set - 1 do
-    let k = Array.unsafe_get set i in 
+  output_file buf input_file namespace ; 
+  Buffer.add_string buf lhs_suffix; 
+  Buffer.add_string buf dep_lit ; 
+  for i = 0 to Array.length dependent_module_set - 1 do
+    let k = Array.unsafe_get dependent_module_set i in 
     match String_map.find_opt k data.(0) with
     | Some {ml = Ml_source (source,_,_) }  
       -> 
       if source <> input_file then 
         begin 
-          Buffer.add_string oc Ext_string.single_space ;  
-          output_file oc source namespace;
-          Buffer.add_string oc rhs_suffix 
+          Buffer.add_string buf Ext_string.single_space ;  
+          output_file buf source namespace;
+          Buffer.add_string buf rhs_suffix 
         end
     | Some {mli = Mli_source (source,_,_)  } -> 
       if source <> input_file then 
         begin 
-          Buffer.add_string oc Ext_string.single_space ;  
-          output_file oc source namespace;
-          Buffer.add_string oc Literals.suffix_cmi 
+          Buffer.add_string buf Ext_string.single_space ;  
+          output_file buf source namespace;
+          Buffer.add_string buf Literals.suffix_cmi 
         end
     | Some {mli= Mli_empty; ml = Ml_empty} -> assert false
     | None  -> 
@@ -5508,16 +5506,16 @@ let oc_impl
             -> 
             if source <> input_file then 
               begin 
-                Buffer.add_string oc Ext_string.single_space ;  
-                output_file oc source namespace;
-                Buffer.add_string oc rhs_suffix
+                Buffer.add_string buf Ext_string.single_space ;  
+                output_file buf source namespace;
+                Buffer.add_string buf rhs_suffix
               end
           | Some {mli = Mli_source (source,_,_) } -> 
             if source <> input_file then 
               begin 
-                Buffer.add_string oc Ext_string.single_space ;  
-                output_file oc source namespace;
-                Buffer.add_string oc Literals.suffix_cmi 
+                Buffer.add_string buf Ext_string.single_space ;  
+                output_file buf source namespace;
+                Buffer.add_string buf Literals.suffix_cmi 
               end 
           | Some {mli = Mli_empty; ml = Ml_empty} -> assert false
           | None -> ()
