@@ -79,7 +79,6 @@ let output_ninja_and_namespace_map
   let bsdep = bsc_dir // bsb_helper_exe in (* The path to [bsb_heler.exe] *)
   let cwd_lib_bs = cwd // Bsb_config.lib_bs in 
   let ppx_flags = Bsb_build_util.ppx_flags ppx_flags in
-  let pp_flags = Bsb_build_util.pp_flags pp_flags in 
   let bsc_flags =  String.concat Ext_string.single_space bsc_flags in
   let refmt_flags = String.concat Ext_string.single_space refmt_flags in
   let oc = open_out_bin (cwd_lib_bs // Literals.build_ninja) in
@@ -136,6 +135,10 @@ let output_ninja_and_namespace_map
         |] oc 
   in   
   let () = 
+    Ext_option.iter pp_flags (fun flag ->
+      Bsb_ninja_util.output_kv Bsb_ninja_global_vars.pp_flags
+      (Bsb_build_util.pp_flag flag) oc 
+    );
     Bsb_ninja_util.output_kvs
       [|
         Bsb_ninja_global_vars.bs_package_flags, bs_package_flags ; 
@@ -145,12 +148,12 @@ let output_ninja_and_namespace_map
         Bsb_ninja_global_vars.warnings, warnings;
         Bsb_ninja_global_vars.bsc_flags, bsc_flags ;
         Bsb_ninja_global_vars.ppx_flags, ppx_flags;
-        Bsb_ninja_global_vars.pp_flags, pp_flags;
         Bsb_ninja_global_vars.bs_package_includes, bs_package_includes;
         Bsb_ninja_global_vars.bs_package_dev_includes, bs_package_dev_includes;  
         Bsb_ninja_global_vars.namespace , namespace_flag ; 
         Bsb_build_schemas.bsb_dir_group, "0"  (*TODO: avoid name conflict in the future *)
-      |] oc in
+      |] oc 
+  in      
   let all_includes acc  = 
     match external_includes with 
     | [] -> acc 

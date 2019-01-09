@@ -48,7 +48,7 @@ type t =
     external_includes : string list ; 
     bsc_flags : string list ;
     ppx_flags : string list ;
-    pp_flags : string list ;
+    pp_flags : string option;
     bs_dependencies : dependencies;
     bs_dev_dependencies : dependencies;
     built_in_dependency : dependency option; 

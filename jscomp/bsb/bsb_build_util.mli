@@ -32,7 +32,7 @@ ppx_flags [ppxs]
 *)
 val ppx_flags : string list -> string
 
-val pp_flags : string list -> string
+val pp_flag : string  -> string
 
 (**
 Build unquoted command line arguments for bsc.exe for the given include dirs
