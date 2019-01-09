@@ -91,6 +91,10 @@ let output_file (oc : Buffer.t) source namespace =
     is [.cmj] if it has [ml] (in this case does not care about mli or not)
     is [.cmi] if it has [mli]
 *)
+let oc_cmi buf namespace source = 
+  Buffer.add_string buf Ext_string.single_space ;  
+  output_file buf source namespace;
+  Buffer.add_string buf Literals.suffix_cmi 
 
 let oc_impl 
     (dependent_module_set : string array)
@@ -114,15 +118,12 @@ let oc_impl
         begin 
           Buffer.add_string buf Ext_string.single_space ;  
           output_file buf source namespace;
-          Buffer.add_string buf rhs_suffix 
+          Buffer.add_string buf rhs_suffix; 
+          (* #3260 cmj changes does not imply cmi change anymore *)
+          oc_cmi buf namespace source
         end
     | Some {mli = Mli_source (source,_,_)  } -> 
-      if source <> input_file then 
-        begin 
-          Buffer.add_string buf Ext_string.single_space ;  
-          output_file buf source namespace;
-          Buffer.add_string buf Literals.suffix_cmi 
-        end
+      if source <> input_file then oc_cmi buf namespace source        
     | Some {mli= Mli_empty; ml = Ml_empty} -> assert false
     | None  -> 
       if not (Bsb_dir_index.is_lib_dir index) then      
@@ -133,15 +134,11 @@ let oc_impl
               begin 
                 Buffer.add_string buf Ext_string.single_space ;  
                 output_file buf source namespace;
-                Buffer.add_string buf rhs_suffix
+                Buffer.add_string buf rhs_suffix;
+                oc_cmi buf namespace source
               end
           | Some {mli = Mli_source (source,_,_) } -> 
-            if source <> input_file then 
-              begin 
-                Buffer.add_string buf Ext_string.single_space ;  
-                output_file buf source namespace;
-                Buffer.add_string buf Literals.suffix_cmi 
-              end 
+            if source <> input_file then oc_cmi buf namespace source              
           | Some {mli = Mli_empty; ml = Ml_empty} -> assert false
           | None -> ()
         end
@@ -166,23 +163,14 @@ let oc_intf
     match String_map.find_opt k data.(0) with 
     | Some ({ ml = Ml_source (source,_,_)  }
            | { mli = Mli_source (source,_,_) }) -> 
-      if source <> input_file then begin              
-        Buffer.add_string buf Ext_string.single_space ; 
-        output_file buf source namespace ; 
-        Buffer.add_string buf Literals.suffix_cmi 
-      end 
+      if source <> input_file then oc_cmi buf namespace source             
     | Some {ml =  Ml_empty; mli = Mli_empty } -> assert false
     | None -> 
       if not (Bsb_dir_index.is_lib_dir index)  then 
         match String_map.find_opt k data.((index :> int)) with 
         | Some ({ ml = Ml_source (source,_,_)  }
                | { mli = Mli_source (source,_,_)  }) -> 
-          if source <> input_file then      
-            begin 
-              Buffer.add_string buf Ext_string.single_space ; 
-              output_file buf source namespace;
-              Buffer.add_string buf Literals.suffix_cmi
-            end 
+          if source <> input_file then  oc_cmi buf namespace source    
         | Some {ml = Ml_empty; mli = Mli_empty} -> assert false
         | None -> () 
   done  
