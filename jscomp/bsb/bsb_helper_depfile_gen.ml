@@ -152,37 +152,36 @@ let oc_impl
     [.cmi] file
 *)
 let oc_intf
-    set
+    (dependent_module_set : string array)
     input_file 
     (index : Bsb_dir_index.t)
     (data : Bsb_db.t array)
     (namespace : string option)
-    (oc : Buffer.t) =   
-  output_file oc input_file namespace ; 
-  Buffer.add_string oc Literals.suffix_cmi ; 
-  Buffer.add_string oc dep_lit;
-  for i = 0 to Array.length set - 1 do               
-    let k = Array.unsafe_get set i in 
+    (buf : Buffer.t) =   
+  output_file buf input_file namespace ; 
+  Buffer.add_string buf Literals.suffix_cmi ; 
+  Buffer.add_string buf dep_lit;
+  for i = 0 to Array.length dependent_module_set - 1 do               
+    let k = Array.unsafe_get dependent_module_set i in 
     match String_map.find_opt k data.(0) with 
     | Some ({ ml = Ml_source (source,_,_)  }
            | { mli = Mli_source (source,_,_) }) -> 
       if source <> input_file then begin              
-        Buffer.add_string oc Ext_string.single_space ; 
-        output_file oc source namespace ; 
-        Buffer.add_string oc Literals.suffix_cmi 
+        Buffer.add_string buf Ext_string.single_space ; 
+        output_file buf source namespace ; 
+        Buffer.add_string buf Literals.suffix_cmi 
       end 
     | Some {ml =  Ml_empty; mli = Mli_empty } -> assert false
     | None -> 
-      if Bsb_dir_index.is_lib_dir index  then () 
-      else 
+      if not (Bsb_dir_index.is_lib_dir index)  then 
         match String_map.find_opt k data.((index :> int)) with 
         | Some ({ ml = Ml_source (source,_,_)  }
                | { mli = Mli_source (source,_,_)  }) -> 
           if source <> input_file then      
             begin 
-              Buffer.add_string oc Ext_string.single_space ; 
-              output_file oc source namespace;
-              Buffer.add_string oc Literals.suffix_cmi
+              Buffer.add_string buf Ext_string.single_space ; 
+              output_file buf source namespace;
+              Buffer.add_string buf Literals.suffix_cmi
             end 
         | Some {ml = Ml_empty; mli = Mli_empty} -> assert false
         | None -> () 
