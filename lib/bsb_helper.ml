@@ -5499,8 +5499,7 @@ let oc_impl
         end
     | Some {mli= Mli_empty; ml = Ml_empty} -> assert false
     | None  -> 
-      if Bsb_dir_index.is_lib_dir index  then () 
-      else 
+      if not (Bsb_dir_index.is_lib_dir index) then      
         begin match String_map.find_opt k data.((index  :> int)) with 
           | Some {ml = Ml_source (source,_,_) }
             -> 
@@ -5520,7 +5519,6 @@ let oc_impl
           | Some {mli = Mli_empty; ml = Ml_empty} -> assert false
           | None -> ()
         end
-
   done    
 
 
