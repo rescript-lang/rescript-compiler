@@ -23,15 +23,17 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 let flag_concat flag xs =   
-  Ext_list.flat_map xs  (fun x -> [flag ; x])
-  |> String.concat Ext_string.single_space
+  String.concat Ext_string.single_space
+    (Ext_list.flat_map xs  (fun x -> [flag ; x]))
+  
 let (//) = Ext_path.combine
 
 
+(*TODO: optimize *)
 let ppx_flags xs =
-  xs
-  |> List.map Filename.quote
-  |> flag_concat "-ppx"
+  flag_concat "-ppx"
+    (Ext_list.map xs Filename.quote)
+
 
 let include_dirs = flag_concat "-I"
 

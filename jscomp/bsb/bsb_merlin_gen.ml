@@ -119,16 +119,12 @@ let merlin_file_gen ~cwd
   if generate_merlin then begin     
     let buffer = Buffer.create 1024 in
     output_merlin_namespace buffer namespace; 
-    ppx_flags
-    |> List.iter (fun x ->
+    Ext_list.iter ppx_flags (fun x ->
         Buffer.add_string buffer (merlin_flg_ppx ^ x )
       );
-    (match reason_react_jsx with
-     | Some s -> 
-       begin 
-         Buffer.add_string buffer (merlin_flg_ppx ^ s)
-       end
-     | None -> ());
+    Ext_option.iter reason_react_jsx 
+      (fun s -> 
+         Buffer.add_string buffer (merlin_flg_ppx ^ s));
     Buffer.add_string buffer (merlin_flg_ppx  ^ built_in_ppx);
     (*
     (match external_includes with 
@@ -138,42 +134,36 @@ let merlin_file_gen ~cwd
       Buffer.add_string buffer (merlin_flg ^ Bsb_build_util.include_dirs external_includes
       ));
     *)
-    external_includes 
-    |> List.iter (fun path -> 
+    Ext_list.iter external_includes (fun path -> 
         Buffer.add_string buffer merlin_s ;
         Buffer.add_string buffer path ;
         Buffer.add_string buffer merlin_b;
         Buffer.add_string buffer path ;
       );      
-    (match built_in_dependency with
-     | None -> ()
-     | Some package -> 
-       let path = package.package_install_path in 
-       Buffer.add_string buffer (merlin_s ^ path );
-       Buffer.add_string buffer (merlin_b ^ path)                      
-    );
-
+    Ext_option.iter built_in_dependency (fun package -> 
+        let path = package.package_install_path in 
+        Buffer.add_string buffer (merlin_s ^ path );
+        Buffer.add_string buffer (merlin_b ^ path)                      
+      );
     let bsc_string_flag = bsc_flg_to_merlin_ocamlc_flg bsc_flags in 
     Buffer.add_string buffer bsc_string_flag ;
     Buffer.add_string buffer (warning_to_merlin_flg  warning); 
-    bs_dependencies 
-    |> List.iter (fun package ->
-        let path = package.Bsb_config_types.package_install_path in
+    Ext_list.iter bs_dependencies (fun package ->
+        let path = package.package_install_path in
         Buffer.add_string buffer merlin_s ;
         Buffer.add_string buffer path ;
         Buffer.add_string buffer merlin_b;
         Buffer.add_string buffer path ;
       );
-    bs_dev_dependencies (**TODO: shall we generate .merlin for dev packages ?*)
-    |> List.iter (fun package ->    
-        let path = package.Bsb_config_types.package_install_path in
+    Ext_list.iter bs_dev_dependencies (**TODO: shall we generate .merlin for dev packages ?*)
+    (fun package ->    
+        let path = package.package_install_path in
         Buffer.add_string buffer merlin_s ;
         Buffer.add_string buffer path ;
         Buffer.add_string buffer merlin_b;
         Buffer.add_string buffer path ;
       );
-
-    res_files |> List.iter (fun (x : Bsb_file_groups.file_group) -> 
+    Ext_list.iter res_files (fun (x : Bsb_file_groups.file_group) -> 
         if not (Bsb_file_groups.is_empty x) then 
           begin
             Buffer.add_string buffer merlin_s;
