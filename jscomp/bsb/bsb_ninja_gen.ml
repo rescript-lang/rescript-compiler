@@ -255,7 +255,6 @@ let output_ninja_and_namespace_map
          ~output:(ns ^ Literals.suffix_cmi)
          ~input:(ns ^ Literals.suffix_mlmap)
          ~rule:Bsb_rule.build_package
-         ~restat:()
          ;
        (ns ^ Literals.suffix_cmi) :: all_info in 
      Bsb_ninja_util.phony 

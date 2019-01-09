@@ -138,9 +138,6 @@ let emit_impl_build
                 Bsb_rule.build_ast_and_module_sets);
     Bsb_ninja_util.output_build
       oc
-#if 1 then      
-      ~restat:()
-#end      
       ~output:output_mlastd
       ~input:output_mlast
       ~rule:Bsb_rule.build_bin_deps
@@ -168,7 +165,6 @@ let emit_impl_build
       ~implicit_outputs:  (output_js @ cm_outputs)
       ~input:output_mlast
       ~implicit_deps:deps
-      ~restat:()
       ~rule;
     [output_mlastd] 
   end 
@@ -207,9 +203,6 @@ let emit_intf_build
     ~rule:(if is_re then Bsb_rule.build_ast_and_module_sets_from_rei
            else Bsb_rule.build_ast_and_module_sets);
   Bsb_ninja_util.output_build oc
-#if 1 then
-    ~restat:()
-#end    
     ~output:output_mliastd
     ~input:output_mliast
     ~rule:Bsb_rule.build_bin_deps
@@ -220,11 +213,10 @@ let emit_intf_build
                     Overwrite (string_of_int (group_dir_index :> int )) }])
   ;
   Bsb_ninja_util.output_build oc
-    ~shadows:common_shadows
     ~output:output_cmi
+    ~shadows:common_shadows
     ~input:output_mliast
     ~rule:Bsb_rule.build_cmi
-    ~restat:()
     ;
   [output_mliastd]
 

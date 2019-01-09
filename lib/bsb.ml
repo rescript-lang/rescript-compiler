@@ -12550,10 +12550,18 @@ type t
 val get_name : t  -> out_channel -> string
 
 val build_ast_and_module_sets : t
+(** TODO: Implement it on top of pp_flags *)
 val build_ast_and_module_sets_from_re : t 
 val build_ast_and_module_sets_from_rei : t 
-val build_bin_deps : t 
+(** platform dependent, on Win32,
+  invoking cmd.exe
+ *)
 val copy_resources : t
+
+
+
+(** Rules below all need restat *)
+val build_bin_deps : t 
 val build_cmj_js : t
 val build_cmj_cmi_js : t 
 val build_cmi : t
@@ -12636,11 +12644,8 @@ let print_rule oc ~description ?restat ?depfile ~command   name  =
     | Some f ->
       output_string oc "  depfile = "; output_string oc f; output_string oc  "\n"
   end;
-  begin match restat with
-    | None -> ()
-    | Some () ->
-      output_string oc "  restat = 1"; output_string oc  "\n"
-  end;
+  (if restat <>  None then   
+      output_string oc "  restat = 1\n");
 
   output_string oc "  description = " ; output_string oc description; output_string oc "\n"
 
@@ -12687,12 +12692,6 @@ let build_ast_and_module_sets_from_rei =
     ~command:"${bsc} -pp \"${refmt} ${refmt_flags}\" ${reason_react_jsx} ${ppx_flags} ${warnings} ${bsc_flags}  -c -o ${out} -bs-syntax-only -bs-binary-ast -intf ${in}"
     "build_ast_and_module_sets_from_rei"
 
-
-let build_bin_deps =
-  define
-    ~command:"${bsdep} ${namespace} -g ${bsb_dir_group} -MD ${in}"
-    "build_deps"
-
 let copy_resources =
   let name = "copy_resource" in
   if Ext_sys.is_windows_or_cygwin then
@@ -12703,6 +12702,11 @@ let copy_resources =
       ~command:"cp ${in} ${out}"
       name
 
+let build_bin_deps =
+  define
+    ~restat:()
+    ~command:"${bsdep} ${namespace} -g ${bsb_dir_group} -MD ${in}"
+    "build_deps"
 
 
 (* only generate mll no mli generated *)
@@ -12722,26 +12726,30 @@ let build_cmj_js =
   define
     ~command:"${bsc} ${bs_package_flags} -bs-assume-has-mli -bs-no-builtin-ppx-ml -bs-no-implicit-include  \
               ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${warnings} ${bsc_flags} -o ${out} -c  ${in} $postbuild"
-
     ~depfile:"${in}.d"
+    ~restat:() (* Always restat when having mli *)
     "build_cmj_only"
+    
 
 let build_cmj_cmi_js =
   define
     ~command:"${bsc} ${bs_package_flags} -bs-assume-no-mli -bs-no-builtin-ppx-ml -bs-no-implicit-include \
               ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${warnings} ${bsc_flags} -o ${out} -c  ${in} $postbuild"
     ~depfile:"${in}.d"
+    ~restat:() (* may not need it in the future *)
     "build_cmj_cmi" (* the compiler should never consult [.cmi] when [.mli] does not exist *)
 let build_cmi =
   define
     ~command:"${bsc} ${bs_package_flags} -bs-no-builtin-ppx-mli -bs-no-implicit-include \
               ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${warnings} ${bsc_flags} -o ${out} -c  ${in}"
     ~depfile:"${in}.d"
+    ~restat:()
     "build_cmi" (* the compiler should always consult [.cmi], current the vanilla ocaml compiler only consult [.cmi] when [.mli] found*)
 
 let build_package = 
   define
     ~command:"${bsc} -w -49 -no-alias-deps -c ${in}"
+    ~restat:()
     "build_package"
 
 (* a snapshot of rule_names environment*)
@@ -12901,7 +12909,7 @@ let output_build
   let rule = Bsb_rule.get_name rule  oc in (* Trigger building if not used *)
   output_string oc "build ";
   output_string oc output ;
-  outputs |> List.iter (fun s -> output_string oc Ext_string.single_space ; output_string oc s  );
+  Ext_list.iter outputs (fun s -> output_string oc Ext_string.single_space ; output_string oc s  );
   begin match implicit_outputs with
     | [] -> ()
     | _ ->
@@ -13195,9 +13203,6 @@ let emit_impl_build
                 Bsb_rule.build_ast_and_module_sets);
     Bsb_ninja_util.output_build
       oc
-      
-      ~restat:()
-      
       ~output:output_mlastd
       ~input:output_mlast
       ~rule:Bsb_rule.build_bin_deps
@@ -13225,7 +13230,6 @@ let emit_impl_build
       ~implicit_outputs:  (output_js @ cm_outputs)
       ~input:output_mlast
       ~implicit_deps:deps
-      ~restat:()
       ~rule;
     [output_mlastd] 
   end 
@@ -13264,9 +13268,6 @@ let emit_intf_build
     ~rule:(if is_re then Bsb_rule.build_ast_and_module_sets_from_rei
            else Bsb_rule.build_ast_and_module_sets);
   Bsb_ninja_util.output_build oc
-
-    ~restat:()
-    
     ~output:output_mliastd
     ~input:output_mliast
     ~rule:Bsb_rule.build_bin_deps
@@ -13277,11 +13278,10 @@ let emit_intf_build
                     Overwrite (string_of_int (group_dir_index :> int )) }])
   ;
   Bsb_ninja_util.output_build oc
-    ~shadows:common_shadows
     ~output:output_cmi
+    ~shadows:common_shadows
     ~input:output_mliast
     ~rule:Bsb_rule.build_cmi
-    ~restat:()
     ;
   [output_mliastd]
 
@@ -13683,7 +13683,6 @@ let output_ninja_and_namespace_map
          ~output:(ns ^ Literals.suffix_cmi)
          ~input:(ns ^ Literals.suffix_mlmap)
          ~rule:Bsb_rule.build_package
-         ~restat:()
          ;
        (ns ^ Literals.suffix_cmi) :: all_info in 
      Bsb_ninja_util.phony 

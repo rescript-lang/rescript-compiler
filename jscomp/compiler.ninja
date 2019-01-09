@@ -599,7 +599,7 @@ build bsb/bsb_ninja_gen.cmi : optc bsb/bsb_ninja_gen.mli | bsb/bsb_config_types.
 build bsb/bsb_ninja_global_vars.cmx bsb/bsb_ninja_global_vars.cmi : optc bsb/bsb_ninja_global_vars.ml | 
 build bsb/bsb_ninja_regen.cmx : optc bsb/bsb_ninja_regen.ml | bsb/bsb_build_util.cmx bsb/bsb_clean.cmx bsb/bsb_config.cmx bsb/bsb_config_parse.cmx bsb/bsb_log.cmx bsb/bsb_merlin_gen.cmx bsb/bsb_ninja_check.cmx bsb/bsb_ninja_gen.cmx bsb/bsb_ninja_regen.cmi ext/ext_path.cmx ext/literals.cmx
 build bsb/bsb_ninja_regen.cmi : optc bsb/bsb_ninja_regen.mli | bsb/bsb_config_types.cmx bsb/bsb_package_specs.cmi
-build bsb/bsb_ninja_util.cmx : optc bsb/bsb_ninja_util.ml | bsb/bsb_ninja_util.cmi bsb/bsb_rule.cmx ext/ext_array.cmx ext/ext_string.cmx
+build bsb/bsb_ninja_util.cmx : optc bsb/bsb_ninja_util.ml | bsb/bsb_ninja_util.cmi bsb/bsb_rule.cmx ext/ext_array.cmx ext/ext_list.cmx ext/ext_string.cmx
 build bsb/bsb_ninja_util.cmi : optc bsb/bsb_ninja_util.mli | bsb/bsb_rule.cmi
 build bsb/bsb_package_specs.cmx : optc bsb/bsb_package_specs.ml | bsb/bsb_build_schemas.cmx bsb/bsb_config.cmx bsb/bsb_exception.cmx bsb/bsb_package_specs.cmi ext/ext_array.cmx ext/ext_json.cmx ext/ext_json_types.cmx ext/ext_namespace.cmx ext/ext_path.cmx ext/ext_string.cmx ext/literals.cmx ext/string_map.cmx
 build bsb/bsb_package_specs.cmi : optc bsb/bsb_package_specs.mli | ext/ext_json_types.cmx
