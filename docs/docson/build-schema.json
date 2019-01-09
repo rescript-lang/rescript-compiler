@@ -61,10 +61,7 @@
             }
         },
         "pp-specs": {
-            "type": "array",
-            "items": {
-                "type": "string"
-            }
+            "type": "string"
         },
         "bs-dependency": {
             "type": "string",
@@ -410,7 +407,7 @@
         },
         "pp-flags": {
             "$ref": "#/definitions/pp-specs",
-            "description": "PP preprocessors to pass to compiler. The syntax is package_name/binary, for example: `reason/pp.native`. Currenly searches in `node_modules`"
+            "description": "preprocessors to pass to compiler. The syntax is package_name/binary, for example: `pp/syntax.exe`. Currenly searches in `node_modules`"
         },
         "js-post-build": {
             "$ref": "#/definitions/js-post-build",

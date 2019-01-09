@@ -124,7 +124,7 @@ let merlin_file_gen ~cwd
     Ext_list.iter ppx_flags (fun x ->
         Buffer.add_string buffer (merlin_flg_ppx ^ x )
       );
-    Ext_list.iter pp_flags (fun x -> 
+    Ext_option.iter pp_flags (fun x -> 
       Buffer.add_string buffer (merlin_flg_pp ^ x)
     );  
     Ext_option.iter reason_react_jsx 

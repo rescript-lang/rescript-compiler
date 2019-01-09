@@ -6542,7 +6542,7 @@ ppx_flags [ppxs]
 *)
 val ppx_flags : string list -> string
 
-val pp_flags : string list -> string
+val pp_flag : string  -> string
 
 (**
 Build unquoted command line arguments for bsc.exe for the given include dirs
@@ -6643,9 +6643,8 @@ let ppx_flags xs =
   flag_concat "-ppx"
     (Ext_list.map xs Filename.quote)
 
-let pp_flags xs = 
-  flag_concat "-pp"
-    (Ext_list.map xs Filename.quote)
+let pp_flag (xs : string) = 
+   "-pp " ^ Filename.quote xs
 
 let include_dirs = flag_concat "-I"
 
@@ -11052,7 +11051,7 @@ type t =
     external_includes : string list ; 
     bsc_flags : string list ;
     ppx_flags : string list ;
-    pp_flags : string list ;
+    pp_flags : string option;
     bs_dependencies : dependencies;
     bs_dev_dependencies : dependencies;
     built_in_dependency : dependency option; 
@@ -11622,7 +11621,6 @@ let interpret_json
   *)
   let bsc_flags = ref Bsb_default.bsc_flags in  
   let ppx_flags = ref [] in 
-  let pp_flags  = ref [] in  
   let js_post_build_cmd = ref None in 
   let built_in_package = ref None in
   let generate_merlin = ref true in 
@@ -11723,6 +11721,17 @@ let interpret_json
         Bsb_package_specs.from_json x 
       | None ->  Bsb_package_specs.default_package_specs 
     in
+    let pp_flags : string option = 
+      match String_map.find_opt Bsb_build_schemas.pp_flags map with 
+      | Some (Str {str = p }) ->
+        if p = "" then failwith "invalid pp, empty string found"
+        else 
+          Some (Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.pp_flags p)
+      | Some x ->    
+        Bsb_exception.errorf ~loc:(Ext_json.loc_of x) "pp-flags expected a string"
+      | None ->  
+        None      
+    in 
     map
     |? (Bsb_build_schemas.reason, `Obj begin fun m -> 
         match String_map.find_opt Bsb_build_schemas.react_jsx m with 
@@ -11771,12 +11780,7 @@ let interpret_json
             else Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.ppx_flags p
           )
       ))
-    |? (Bsb_build_schemas.pp_flags, `Arr(fun s ->
-        pp_flags := Ext_list.map (get_list_string s) (fun p ->
-            if p = "" then failwith "invalid pp, empty string found"
-            else Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.pp_flags p
-          )
-      ))  
+
     |? (Bsb_build_schemas.cut_generators, `Bool (fun b -> cut_generators := b))
     |? (Bsb_build_schemas.generators, `Arr (fun s ->
         generators :=
@@ -11834,7 +11838,7 @@ let interpret_json
           external_includes = !bs_external_includes;
           bsc_flags = !bsc_flags ;
           ppx_flags = !ppx_flags ;
-          pp_flags = !pp_flags ;
+          pp_flags = pp_flags ;          
           bs_dependencies = !bs_dependencies;
           bs_dev_dependencies = !bs_dev_dependencies;
           refmt;
@@ -12106,7 +12110,7 @@ let merlin_file_gen ~cwd
     Ext_list.iter ppx_flags (fun x ->
         Buffer.add_string buffer (merlin_flg_ppx ^ x )
       );
-    Ext_list.iter pp_flags (fun x -> 
+    Ext_option.iter pp_flags (fun x -> 
       Buffer.add_string buffer (merlin_flg_pp ^ x)
     );  
     Ext_option.iter reason_react_jsx 
@@ -13503,7 +13507,6 @@ let output_ninja_and_namespace_map
   let bsdep = bsc_dir // bsb_helper_exe in (* The path to [bsb_heler.exe] *)
   let cwd_lib_bs = cwd // Bsb_config.lib_bs in 
   let ppx_flags = Bsb_build_util.ppx_flags ppx_flags in
-  let pp_flags = Bsb_build_util.pp_flags pp_flags in 
   let bsc_flags =  String.concat Ext_string.single_space bsc_flags in
   let refmt_flags = String.concat Ext_string.single_space refmt_flags in
   let oc = open_out_bin (cwd_lib_bs // Literals.build_ninja) in
@@ -13560,6 +13563,10 @@ let output_ninja_and_namespace_map
         |] oc 
   in   
   let () = 
+    Ext_option.iter pp_flags (fun flag ->
+      Bsb_ninja_util.output_kv Bsb_ninja_global_vars.pp_flags
+      (Bsb_build_util.pp_flag flag) oc 
+    );
     Bsb_ninja_util.output_kvs
       [|
         Bsb_ninja_global_vars.bs_package_flags, bs_package_flags ; 
@@ -13569,12 +13576,12 @@ let output_ninja_and_namespace_map
         Bsb_ninja_global_vars.warnings, warnings;
         Bsb_ninja_global_vars.bsc_flags, bsc_flags ;
         Bsb_ninja_global_vars.ppx_flags, ppx_flags;
-        Bsb_ninja_global_vars.pp_flags, pp_flags;
         Bsb_ninja_global_vars.bs_package_includes, bs_package_includes;
         Bsb_ninja_global_vars.bs_package_dev_includes, bs_package_dev_includes;  
         Bsb_ninja_global_vars.namespace , namespace_flag ; 
         Bsb_build_schemas.bsb_dir_group, "0"  (*TODO: avoid name conflict in the future *)
-      |] oc in
+      |] oc 
+  in      
   let all_includes acc  = 
     match external_includes with 
     | [] -> acc 
