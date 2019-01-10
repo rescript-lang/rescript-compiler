@@ -160,3 +160,4 @@ type eventPointerId
 
 
 module Storage = Dom_storage
+module Storage2 = Dom_storage2
