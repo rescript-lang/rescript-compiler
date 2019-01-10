@@ -76,7 +76,7 @@ build others/belt_internalSetInt.ml : cppo others/internal_set.cppo.ml
 
 build others/belt.cmj others/belt.cmi : cc others/belt.ml | runtime
 build others/node.cmj others/node.cmi : cc others/node.ml | runtime    
-build others/js_array.cmi others/js_array.cmj : cc others/js_array.ml | runtime
+build others/js_array.cmi others/js_array.cmj : cc others/js_array.ml | others/js_array2.cmj runtime
 build others/js_array2.cmi others/js_array2.cmj : cc others/js_array2.ml | runtime
 build others/js_cast.cmj : cc others/js_cast.ml | others/js_cast.cmi runtime
 build others/js_cast.cmi : cc others/js_cast.mli | runtime
