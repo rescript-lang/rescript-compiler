@@ -2615,7 +2615,7 @@ module Lexer_flow
 = struct
 #1 "lexer_flow.ml"
 # 11 "lexer_flow.mll"
- 
+
 module Ast = Spider_monkey_ast
 
 module Token = struct
@@ -3338,7 +3338,7 @@ end
 
 # 724 "lexer_flow.ml"
 let __ocaml_lex_tables = {
-  Lexing.lex_base = 
+  Lexing.lex_base =
    "\000\000\178\255\179\255\185\255\066\000\067\000\084\000\087\000\
     \070\000\073\000\074\000\075\000\077\000\101\000\221\255\222\255\
     \223\255\224\255\227\255\228\255\229\255\230\255\231\255\232\255\
@@ -3393,7 +3393,7 @@ let __ocaml_lex_tables = {
     \114\002\133\002\140\002\201\022\183\002\121\002\252\255\253\255\
     \195\022\249\255\250\255\008\000\252\255\191\002\254\255\255\255\
     \253\255\251\255";
-  Lexing.lex_backtrk = 
+  Lexing.lex_backtrk =
    "\255\255\255\255\255\255\255\255\068\000\065\000\062\000\061\000\
     \060\000\059\000\069\000\071\000\066\000\067\000\255\255\255\255\
     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
@@ -3448,7 +3448,7 @@ let __ocaml_lex_tables = {
     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
     \255\255\255\255\255\255\005\000\255\255\006\000\255\255\255\255\
     \255\255\255\255";
-  Lexing.lex_default = 
+  Lexing.lex_default =
    "\001\000\000\000\000\000\000\000\255\255\255\255\255\255\255\255\
     \255\255\255\255\255\255\255\255\255\255\255\255\000\000\000\000\
     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
@@ -3503,7 +3503,7 @@ let __ocaml_lex_tables = {
     \255\255\255\255\255\255\255\255\255\255\255\255\000\000\000\000\
     \161\001\000\000\000\000\255\255\000\000\255\255\000\000\000\000\
     \000\000\000\000";
-  Lexing.lex_trans = 
+  Lexing.lex_trans =
    "\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
     \000\000\038\000\040\000\255\000\038\000\038\000\061\001\068\001\
     \114\001\119\001\169\001\000\000\000\000\000\000\000\000\000\000\
@@ -4432,7 +4432,7 @@ let __ocaml_lex_tables = {
     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
     \255\255";
-  Lexing.lex_check = 
+  Lexing.lex_check =
    "\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
     \255\255\000\000\000\000\254\000\000\000\000\000\060\001\067\001\
     \113\001\118\001\163\001\255\255\255\255\255\255\255\255\255\255\
@@ -5361,7 +5361,7 @@ let __ocaml_lex_tables = {
     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
     \137\001";
-  Lexing.lex_base_code = 
+  Lexing.lex_base_code =
    "\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
@@ -5416,7 +5416,7 @@ let __ocaml_lex_tables = {
     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
     \000\000\000\000";
-  Lexing.lex_backtrk_code = 
+  Lexing.lex_backtrk_code =
    "\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
@@ -5471,7 +5471,7 @@ let __ocaml_lex_tables = {
     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
     \000\000\000\000";
-  Lexing.lex_default_code = 
+  Lexing.lex_default_code =
    "\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
@@ -5526,7 +5526,7 @@ let __ocaml_lex_tables = {
     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
     \000\000\000\000";
-  Lexing.lex_trans_code = 
+  Lexing.lex_trans_code =
    "\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
     \000\000\009\000\000\000\009\000\009\000\009\000\009\000\009\000\
     \101\000\000\000\101\000\101\000\101\000\101\000\101\000\000\000\
@@ -5628,7 +5628,7 @@ let __ocaml_lex_tables = {
     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
     \000\000\000\000";
-  Lexing.lex_check_code = 
+  Lexing.lex_check_code =
    "\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
     \255\255\053\000\255\255\060\000\053\000\053\000\060\000\060\000\
     \178\000\255\255\185\000\178\000\178\000\185\000\185\000\255\255\
@@ -5730,7 +5730,7 @@ let __ocaml_lex_tables = {
     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
     \255\255\255\255";
-  Lexing.lex_code = 
+  Lexing.lex_code =
    "\255\001\255\255\003\255\001\255\255\002\255\255\000\002\255\000\
     \001\255\006\255\255\007\255\255\001\255\003\255\255\005\255\255\
     \004\255\255\000\004\255\000\005\255\000\003\255\000\006\255\000\
@@ -6281,7 +6281,7 @@ let
                          env, T_ERROR )
 # 3667 "lexer_flow.ml"
 
-  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
+  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf;
       __ocaml_lex_token_rec env lexbuf __ocaml_lex_state
 
 and type_token env lexbuf =
@@ -6799,7 +6799,7 @@ let
                        ( env, T_ERROR )
 # 4185 "lexer_flow.ml"
 
-  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
+  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf;
       __ocaml_lex_type_token_rec env lexbuf __ocaml_lex_state
 
 and string_quote env q buf raw octal lexbuf =
@@ -6863,7 +6863,7 @@ let
                          string_quote env q buf raw octal lexbuf )
 # 4249 "lexer_flow.ml"
 
-  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
+  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf;
       __ocaml_lex_string_quote_rec env q buf raw octal lexbuf __ocaml_lex_state
 
 and string_escape env buf lexbuf =
@@ -7080,7 +7080,7 @@ let
                       ( Buffer.add_char buf c; env, false )
 # 4466 "lexer_flow.ml"
 
-  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
+  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf;
       __ocaml_lex_string_escape_rec env buf lexbuf __ocaml_lex_state
 
 and comment env buf lexbuf =
@@ -7135,7 +7135,7 @@ let
                          comment env buf lexbuf )
 # 4521 "lexer_flow.ml"
 
-  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
+  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf;
       __ocaml_lex_comment_rec env buf lexbuf __ocaml_lex_state
 
 and line_comment env buf lexbuf =
@@ -7173,7 +7173,7 @@ let
                          line_comment env buf lexbuf )
 # 4559 "lexer_flow.ml"
 
-  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
+  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf;
       __ocaml_lex_line_comment_rec env buf lexbuf __ocaml_lex_state
 
 and regexp env lexbuf =
@@ -7231,7 +7231,7 @@ and __ocaml_lex_regexp_rec env lexbuf __ocaml_lex_state =
                         env, T_ERROR )
 # 4617 "lexer_flow.ml"
 
-  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
+  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf;
       __ocaml_lex_regexp_rec env lexbuf __ocaml_lex_state
 
 and regexp_body env buf lexbuf =
@@ -7308,7 +7308,7 @@ let
                         regexp_body env buf lexbuf )
 # 4694 "lexer_flow.ml"
 
-  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
+  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf;
       __ocaml_lex_regexp_body_rec env buf lexbuf __ocaml_lex_state
 
 and regexp_class env buf lexbuf =
@@ -7363,7 +7363,7 @@ let
                         regexp_class env buf lexbuf )
 # 4749 "lexer_flow.ml"
 
-  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
+  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf;
       __ocaml_lex_regexp_class_rec env buf lexbuf __ocaml_lex_state
 
 and jsx_tag env lexbuf =
@@ -7474,7 +7474,7 @@ let
                       ( env, T_ERROR )
 # 4860 "lexer_flow.ml"
 
-  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
+  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf;
       __ocaml_lex_jsx_tag_rec env lexbuf __ocaml_lex_state
 
 and jsx_child env start buf raw lexbuf =
@@ -7531,7 +7531,7 @@ let
                       )
 # 4917 "lexer_flow.ml"
 
-  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
+  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf;
       __ocaml_lex_jsx_child_rec env start buf raw lexbuf __ocaml_lex_state
 
 and jsx_text env mode buf raw lexbuf =
@@ -7908,7 +7908,7 @@ let
                         jsx_text env mode buf raw lexbuf )
 # 5294 "lexer_flow.ml"
 
-  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
+  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf;
       __ocaml_lex_jsx_text_rec env mode buf raw lexbuf __ocaml_lex_state
 
 and template_tail env lexbuf =
@@ -7973,7 +7973,7 @@ and __ocaml_lex_template_tail_rec env lexbuf __ocaml_lex_state =
                       )
 # 5359 "lexer_flow.ml"
 
-  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
+  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf;
       __ocaml_lex_template_tail_rec env lexbuf __ocaml_lex_state
 
 and template_part env start cooked raw literal lexbuf =
@@ -8050,13 +8050,13 @@ let
                         template_part env start cooked raw literal lexbuf )
 # 5436 "lexer_flow.ml"
 
-  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
+  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf;
       __ocaml_lex_template_part_rec env start cooked raw literal lexbuf __ocaml_lex_state
 
 ;;
 
 # 1784 "lexer_flow.mll"
- 
+
   let regexp env =
     get_result_and_clear_state (regexp env env.lex_lb)
 
@@ -8084,7 +8084,7 @@ let
 # 5469 "lexer_flow.ml"
 
 end
-module Parser_env : sig 
+module Parser_env : sig
 #1 "parser_env.mli"
 (*
  * Copyright (c) 2013-present, Facebook, Inc.
@@ -13411,17 +13411,17 @@ module RunParser
 #1 "runParser.ml"
 let suites :  Mt.pair_suites ref  = ref []
 let test_id = ref 0
-let eq loc x y = 
-  incr test_id ; 
-  suites := 
+let eq loc x y =
+  incr test_id ;
+  suites :=
     (loc ^" id " ^ (string_of_int !test_id), (fun _ -> Mt.Eq(x,y))) :: !suites
 
-let v = 
+let v =
   match [%node __dirname] with
-  | Some f -> 
+  | Some f ->
     let f =  Node.Path.join [|f; "flow_parser_sample.js"|] in
-    let v : < range : int * int; ..> Js.t = 
-      (Obj.magic (Flow_parser_js.parse (Node.Fs.readFileSync f `utf8 ) None )) in 
+    let v : < range : int * int; ..> Js.t =
+      (Obj.magic (Flow_parser_js.parse (Node.Fs2.readFileSync f `utf8 ) None )) in
     eq __LOC__ (0,2842) (v## range)
   | None -> assert false
 

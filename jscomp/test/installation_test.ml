@@ -20,7 +20,7 @@ let () =
               (Node.Child_process.option  ~encoding:"utf8" ()) with
       | output ->
         let dir = Js.String2.trim output in
-        let files = Node.Fs.readdirSync dir  in
+        let files = Node.Fs2.readdirSync dir  in
         let exists =
           files
           |. Js.Array2.indexOf "pervasives.cmi" in
