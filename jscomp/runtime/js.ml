@@ -253,6 +253,9 @@ module Obj  = Js_obj
 module Typed_array = Js_typed_array
 (** Provide bindings for JS typed array *)
 
+module Typed_array2 = Js_typed_array2
+(** Provide bindings for JS typed array *)
+
 module Types = Js_types
 (** Provide utilities for manipulating JS types  *)
 module Float = Js_float
