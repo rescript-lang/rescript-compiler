@@ -1,4 +1,4 @@
-type t
+type t = Dom_storage2.t
 
 external getItem : string -> string option = "" [@@bs.send.pipe: t] [@@bs.return null_to_opt]
 external setItem : string -> string -> unit = "" [@@bs.send.pipe: t]
