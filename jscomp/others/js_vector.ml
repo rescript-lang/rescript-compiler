@@ -31,40 +31,40 @@ external make: int -> 'a -> 'a array = "caml_make_vect"
 external unsafe_get : 'a t -> int -> 'a = "%array_unsafe_get"
 external unsafe_set : 'a t -> int -> 'a -> unit = "%array_unsafe_set"
 
-(** @param a array 
-    @param p predicate 
+(** @param a array
+    @param p predicate
 *)
-let filterInPlace p a = 
-  let  i = ref 0 in 
-  let j = ref 0 in 
-  while !i < Js.Array.length a do 
-    let v = Js.Array.unsafe_get a !i in 
-    if p v   [@bs] then 
-      begin 
-        Js.Array.unsafe_set a !j v ;
+let filterInPlace p a =
+  let  i = ref 0 in
+  let j = ref 0 in
+  while !i < Js.Array2.length a do
+    let v = Js.Array2.unsafe_get a !i in
+    if p v   [@bs] then
+      begin
+        Js.Array2.unsafe_set a !j v ;
         incr j
       end;
-    incr i 
+    incr i
   done;
-  Js_array.removeFromInPlace ~pos:!j a |. ignore
+  Js.Array2.removeFromInPlace a ~pos:!j |. ignore
 
-let empty a  = 
-  Js.Array.removeFromInPlace ~pos:0 a |. ignore
+let empty a  =
+  Js.Array2.removeFromInPlace a ~pos:0 |. ignore
 
-let pushBack x xs = 
-  Js.Array.push x xs |. ignore
+let pushBack x xs =
+  Js.Array2.push xs x |. ignore
 
 (** Find by JS (===)  equality *)
-let memByRef x xs = 
-  Js.Array.indexOf x xs >= 0 
+let memByRef x xs =
+  Js.Array2.indexOf xs x >= 0
 
-let iter f  xs = 
-  for i = 0 to Js.Array.length xs - 1 do 
-    f (Js.Array.unsafe_get xs i) [@bs]
-  done 
+let iter f  xs =
+  for i = 0 to Js.Array2.length xs - 1 do
+    f (Js.Array2.unsafe_get xs i) [@bs]
+  done
 
 let iteri f a =
-  for i = 0 to length a - 1 do f i (unsafe_get a i) [@bs] done  
+  for i = 0 to length a - 1 do f i (unsafe_get a i) [@bs] done
 
 
 
@@ -84,31 +84,31 @@ let toList a =
   let rec tolist i res =
     if i < 0 then res else tolist (i - 1) (unsafe_get a i :: res) in
   tolist (length a - 1) []
-    
 
-let init n f  = 
-  let v = createUnsafe n in 
-  for i = 0 to n - 1 do 
+
+let init n f  =
+  let v = createUnsafe n in
+  for i = 0 to n - 1 do
     unsafe_set v i (f i [@bs])
   done ;
-  v 
+  v
 
-let copy x =   
-  let len = length x in 
-  let b = createUnsafe len in 
-  for i = 0 to len - 1 do 
+let copy x =
+  let len = length x in
+  let b = createUnsafe len in
+  for i = 0 to len - 1 do
     unsafe_set b i (unsafe_get x i)
   done  ;
-  b 
+  b
 
 let map f a =
-  let l = Js.Array.length a in
+  let l = Js.Array2.length a in
   let r = createUnsafe l in
   for i = 0 to l - 1 do
       unsafe_set r i (f(unsafe_get a i) [@bs])
   done;
   r
-  
+
 
 let foldLeft f x a =
   let r = ref x in
@@ -129,7 +129,7 @@ let foldRight f a x =
 let mapi f a =
   let l = length a in
   if l = 0 then [||] else begin
-    let r= createUnsafe l in 
+    let r= createUnsafe l in
     for i = 0 to l - 1 do
       unsafe_set r i (f i (unsafe_get a i) [@bs])
     done;
@@ -137,6 +137,6 @@ let mapi f a =
   end
 
 let append x a =
-  Js.Array.concat [|x|] a
+  Js.Array2.concat a [|x|]
 
-(* TODO: add [append] *)  
+(* TODO: add [append] *)

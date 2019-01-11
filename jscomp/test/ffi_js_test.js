@@ -8,7 +8,7 @@ var keys = ( function (x){return Object.keys(x)});
 
   function $$higher_order(x){
    return function(y,z){
-      return x + y + z 
+      return x + y + z
    }
   }
 
