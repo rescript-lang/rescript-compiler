@@ -128,6 +128,8 @@ type + 'a nullable
 
 type + 'a null_undefined = 'a nullable
 
+type 'a array_like 
+
 external toOption : 'a nullable  -> 'a option = "#nullable_to_opt"
 external undefinedToOption : 'a undefined -> 'a option = "#undefined_to_opt"
 external nullToOption : 'a null -> 'a option = "#null_to_opt"

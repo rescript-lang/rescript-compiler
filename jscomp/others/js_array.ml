@@ -25,7 +25,7 @@
 (** JavaScript Array API *)
 
 type 'a t = 'a array
-type 'a array_like = 'a Js_array2.array_like
+type 'a array_like = 'a Js.array_like
 
 (* commented out until bs has a plan for iterators
 type 'a array_iter = 'a array_like

@@ -76,7 +76,7 @@ build others/belt_internalSetInt.ml : cppo others/internal_set.cppo.ml
 
 build others/belt.cmj others/belt.cmi : cc others/belt.ml | runtime
 build others/node.cmj others/node.cmi : cc others/node.ml | runtime    
-build others/js_array.cmi others/js_array.cmj : cc others/js_array.ml | others/js_array2.cmj runtime
+build others/js_array.cmi others/js_array.cmj : cc others/js_array.ml | runtime
 build others/js_array2.cmi others/js_array2.cmj : cc others/js_array2.ml | runtime
 build others/js_cast.cmj : cc others/js_cast.ml | others/js_cast.cmi runtime
 build others/js_cast.cmi : cc others/js_cast.mli | runtime
@@ -107,7 +107,7 @@ build others/js_promise.cmi others/js_promise.cmj : cc others/js_promise.ml | ru
 build others/js_re.cmi : cc others/js_re.mli | runtime
 build others/js_result.cmj : cc others/js_result.ml | others/js_result.cmi runtime
 build others/js_result.cmi : cc others/js_result.mli | runtime
-build others/js_string.cmi others/js_string.cmj : cc others/js_string.ml | others/js_array2.cmj others/js_re.cmi runtime
+build others/js_string.cmi others/js_string.cmj : cc others/js_string.ml | others/js_re.cmi runtime
 build others/js_typed_array.cmi others/js_typed_array.cmj : cc others/js_typed_array.ml | runtime
 build others/js_types.cmj : cc others/js_types.ml | others/js_null.cmj others/js_types.cmi runtime
 build others/js_types.cmi : cc others/js_types.mli | runtime

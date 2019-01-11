@@ -28,7 +28,7 @@
 *)
 
 type array_buffer
-type 'a array_like (* should be shared with js_array *)
+type 'a array_like = 'a Js.array_like (* should be shared with js_array *)
 
 module type Type = sig
   type t
