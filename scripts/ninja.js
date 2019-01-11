@@ -24,7 +24,7 @@ var js_package = pseudoTarget('js_pkg')
 var runtimeTarget = pseudoTarget('runtime')
 var othersTarget = pseudoTarget('others')
 var stdlibTarget = pseudoTarget(stdlibVersion)
-
+var ocamldep = path.join(__dirname,'..','vendor','ocaml','bin','ocamldep.opt')
 /**
  * 
  * @param {string} name 
@@ -321,7 +321,7 @@ function replaceCmj(x) {
  */
 function ocamlDepForBscAsync(files,dir, depsMap) {
     return new Promise((resolve,reject) =>{
-        cp.exec(`ocamldep.opt -one-line -native ${files.join(' ')}`, {
+        cp.exec(`${ocamldep} -one-line -native ${files.join(' ')}`, {
             cwd: dir,
             encoding: 'ascii'
         },function(error,stdout,stderr){
@@ -342,40 +342,6 @@ function ocamlDepForBscAsync(files,dir, depsMap) {
         })        
     })    
 }
-
-/**
- * 
- * @param {string[]} files 
- * @param {string} dir
- * @param {DepsMap} depsMap
- * @return {Promise<DepsMap>}
- * Note `bsdep.exe` does not need post processing and -one-line flag
- * By default `ocamldep.opt` only list dependencies in its args
- */
-function ocamlDepForNativeAsync(files,dir, depsMap) {
-    return new Promise((resolve,reject) =>{
-        cp.exec(`ocamldep.opt -one-line -native ${files.join(' ')}`, {
-            cwd: dir,
-            encoding: 'ascii'
-        },function(error,stdout,stderr){
-            if(error !== null){
-                return reject(error)
-            } else {
-                var pairs = stdout.split('\n').map(x => x.split(':'))
-                pairs.forEach(x => {
-                    var deps;
-                    if (x[1] !== undefined && (deps = x[1].trim())) {
-                        deps = deps.split(' ');
-                        updateDepsKVsByFile(replaceCmj(x[0]), deps.map(x => replaceCmj(x)), depsMap)
-                    }
-                }
-                )
-                return resolve(depsMap)
-            }
-        })        
-    })    
-}
-
 
 
 
@@ -997,16 +963,22 @@ if (require.main === module) {
     if(process.argv.includes('-check')){
         checkEffect()
     }    
-    var dev = process.argv.includes('-dev')
-    var release = process.argv.includes('-release')
-    var all = process.argv.includes('-all')
-    if(all){
+    if (process.argv.length === 2) {
         updateDev()
         updateRelease()
-    } else if (dev) {
-        updateDev()
-    } else if (release) {
-        updateRelease()
+
+    } else {
+        var dev = process.argv.includes('-dev')
+        var release = process.argv.includes('-release')
+        var all = process.argv.includes('-all')
+        if (all) {
+            updateDev()
+            updateRelease()
+        } else if (dev) {
+            updateDev()
+        } else if (release) {
+            updateRelease()
+        }
     }
 }
 function updateRelease(){
@@ -1215,7 +1187,7 @@ build ../odoc_gen/generator.cmxs : mk_shared ../odoc_gen/generator.mli ../odoc_g
     for (let dir of sourceDirs) {
         files = files.concat(test(dir))
     }    
-    var out = cp.execSync(`ocamldep.opt -one-line -native ${includes} ${files.join(' ')}`, { cwd: jscompDir, encoding: 'ascii' })
+    var out = cp.execSync(`${ocamldep} -one-line -native ${includes} ${files.join(' ')}`, { cwd: jscompDir, encoding: 'ascii' })
 
     /**
      * @type {Map<string,Set<string>>}
