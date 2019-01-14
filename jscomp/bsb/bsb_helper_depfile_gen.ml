@@ -49,17 +49,19 @@ let write_file name  (buf : Buffer.t) =
   else 
     write_buf name buf 
     
+(* Make suer it is the same as {!Binary_ast.magic_sep_char}*)
+let magic_sep_char = '\n'
 
 let deps_of_channel (ic : in_channel) : string array = 
   let size = input_binary_int ic in 
   let s = really_input_string ic size in 
-  let first_tab  = String.index s '\t' in 
+  let first_tab  = String.index s magic_sep_char in 
   let return_arr = Array.make (int_of_string (String.sub s 0 first_tab)) "" in 
-  let rec aux s ith offset = 
+  let rec aux s ith (offset : int) : unit = 
     if offset >= size then 
       ()
     else 
-      let next_tab = String.index_from s offset '\t'  in 
+      let next_tab = String.index_from s offset magic_sep_char  in 
       return_arr.(ith) <- String.sub s offset (next_tab - offset) ; 
       aux s (ith + 1) (next_tab + 1) in 
   aux s 0 (first_tab + 1) ; 
@@ -92,7 +94,7 @@ let output_file (oc : Buffer.t) source namespace =
     is [.cmi] if it has [mli]
 *)
 let oc_cmi buf namespace source = 
-  Buffer.add_string buf Ext_string.single_space ;  
+  Buffer.add_char buf '\n';  
   output_file buf source namespace;
   Buffer.add_string buf Literals.suffix_cmi 
 
@@ -116,7 +118,7 @@ let oc_impl
       -> 
       if source <> input_file then 
         begin 
-          Buffer.add_string buf Ext_string.single_space ;  
+          Buffer.add_char buf '\n';  
           output_file buf source namespace;
           Buffer.add_string buf rhs_suffix; 
           (* #3260 cmj changes does not imply cmi change anymore *)
@@ -132,7 +134,7 @@ let oc_impl
             -> 
             if source <> input_file then 
               begin 
-                Buffer.add_string buf Ext_string.single_space ;  
+                Buffer.add_char buf '\n' ;  
                 output_file buf source namespace;
                 Buffer.add_string buf rhs_suffix;
                 oc_cmi buf namespace source

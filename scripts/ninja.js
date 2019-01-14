@@ -475,12 +475,8 @@ ${BSC_COMPILER}
 bsc_no_open_flags = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-no-check-div-by-zero -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js -bs-package-output amdjs:lib/amdjs -bs-package-output es6:lib/es6  -nostdlib -nopervasives  -unsafe -warn-error A -w -40-49-103 -bin-annot 
 bsc_flags = $bsc_no_open_flags -open Bs_stdlib_mini
 rule cc
-    command = $bsc $bsc_flags -bs-no-implicit-include  -I ${ninjaCwd} -c $in
+    command = $bsc -bs-cmi -bs-cmj $bsc_flags -bs-no-implicit-include  -I ${ninjaCwd} -c $in
     description = $in -> $out
-${
-devmode? `    restat = 1` : 
-``
-}    
     
 ${ninjaQuickBuidList([
     ['bs_stdlib_mini.cmi', 'bs_stdlib_mini.mli', 
@@ -563,12 +559,8 @@ async function othersNinja(devmode=true) {
 ${BSC_COMPILER}
 bsc_flags = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-no-check-div-by-zero -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js -bs-package-output amdjs:lib/amdjs -bs-package-output es6:lib/es6  -nostdlib -nopervasives  -unsafe -warn-error A -w -40-49-103 -bin-annot -bs-noassertfalse -open Bs_stdlib_mini -I ./runtime
 rule cc
-    command = $bsc $bsc_flags -bs-no-implicit-include  -I ${ninjaCwd} -c $in
+    command = $bsc -bs-cmi -bs-cmj $bsc_flags -bs-no-implicit-include  -I ${ninjaCwd} -c $in
     description = $in -> $out
-${
-devmode? `    restat = 1` : 
-``
-}        
 
 ${ devmode ?
 `rule ${cppoRule}
@@ -716,12 +708,8 @@ async function stdlibNinja(devmode=true){
 ${BSC_COMPILER}
 ${bsc_flags} = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-no-check-div-by-zero -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js -bs-package-output amdjs:lib/amdjs -bs-package-output es6:lib/es6  -nostdlib -warn-error A -w -40-49-103 -bin-annot  -bs-no-warn-unimplemented-external  -I ./runtime  -I ./others
 rule cc
-    command = $bsc $${bsc_flags} -bs-no-implicit-include  -I ${ninjaCwd} -c $in
+    command = $bsc -bs-cmi -bs-cmj $${bsc_flags} -bs-no-implicit-include  -I ${ninjaCwd} -c $in
     description = $in -> $out 
-${
-devmode? `    restat = 1` : 
-``
-}
 
 ${ninjaQuickBuidList([
     ['camlinternalFormatBasics.cmi', 'camlinternalFormatBasics.mli', 
@@ -801,9 +789,9 @@ async function testNinja(){
 ${BSC_COMPILER}
 bsc_flags = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:jscomp/test  -w -40-52 -warn-error A+8-3-30-26+101-102-103-104-52 -bin-annot -I ./runtime -I ./stdlib-402 -I ./others
 rule cc
-    command = $bsc $bsc_flags -bs-no-implicit-include -I ${ninjaCwd} -c $in
+    command = $bsc -bs-cmi -bs-cmj $bsc_flags -bs-no-implicit-include -I ${ninjaCwd} -c $in
     description = $in -> $out
-    restat = 1
+    
 rule mll    
     command = ocamllex.opt $in
     generator = true
