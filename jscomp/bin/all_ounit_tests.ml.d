@@ -66,6 +66,8 @@ bin/all_ounit_tests.ml:
 ./ext/int_vec_util.mli
 ./ext/int_vec_vec.ml
 ./ext/int_vec_vec.mli
+./ext/js_reserved_map.ml
+./ext/js_reserved_map.mli
 ./ext/literals.ml
 ./ext/literals.mli
 ./ext/map_gen.ml
