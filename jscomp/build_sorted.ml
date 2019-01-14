@@ -106,7 +106,7 @@
     "encodeURIComponent";
     "escape";
     "unescape";
-
+    "fetch";
     "isNaN";
     "parseFloat";
     "parseInt";
@@ -209,20 +209,25 @@ let binarySearch (sorted : element array) (key : element)  : bool =
 
 let is_reserved s = binarySearch sorted_keywords s     
 |}
-let main () =   
-  let ss = get_predefined_words "keywords.list" in 
+let main keyword_file output_file =   
+  let ss = get_predefined_words keyword_file in 
   let ss = fill_extra ss in 
   let keywords_array = 
     (SSet.fold 
       (fun s acc -> acc ^ "\"" ^ s ^ "\";\n  "
       ) ss "let sorted_keywords = [|\n  ") ^ "|]\n" 
   in 
-  let oc = open_out_bin "ext/js_reserved_map.ml" in 
+  let oc = open_out_bin output_file in 
   output_string oc license ; 
   output_string oc  keywords_array;
   output_string oc binary_search;
   close_out oc 
-
-let () = main ()
+(*   
+;;
+for i = 0 to Array.length Sys.argv - 1  do 
+  print_endline ">"; print_string Sys.argv.(i)
+done 
+;; *)
+let () = main Sys.argv.(1) "ext/js_reserved_map.ml"
 
 

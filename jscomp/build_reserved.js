@@ -9,6 +9,6 @@ var puppeteer = require('puppeteer');
      * @type string[]
      */
     const result = await page.evaluate(`Object.getOwnPropertyNames(window)`)
-    fs.writeFileSync('keywords.list',result.join('\n'),'utf8')
+    fs.writeFileSync('keywords.list',result.filter(x=>/^[A-Z]/.test(x)).join('\n'),'utf8')
     await browser.close()
 }())

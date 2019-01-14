@@ -1,9 +1,9 @@
 'use strict';
 
-var Node = require("../../lib/js/node.js");
+var $$Node = require("../../lib/js/node.js");
 
 function f(str) {
-  var match = Node.test(str);
+  var match = $$Node.test(str);
   if (match[0]) {
     console.log(/* tuple */[
           "buffer",

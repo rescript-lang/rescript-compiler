@@ -7,7 +7,7 @@ function u(param) {
 
 var Textarea = /* module */[];
 
-var Int32Array = /* module */[];
+var $$Int32Array = /* module */[];
 
 function v(param) {
   var u = new TextArea();
@@ -35,7 +35,7 @@ exports.b = b;
 exports.c = c;
 exports.d = d;
 exports.Textarea = Textarea;
-exports.Int32Array = Int32Array;
+exports.$$Int32Array = $$Int32Array;
 exports.v = v;
 exports.f = f;
 /* No side effect */
