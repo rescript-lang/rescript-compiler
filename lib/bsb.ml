@@ -12369,7 +12369,7 @@ module Bsb_db_io : sig
 
 
  type t  
-  (* = Bsb_db.t *)
+  
  type ts = t array
 
 val write_build_cache : 
