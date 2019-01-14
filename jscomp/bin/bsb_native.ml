@@ -12368,13 +12368,18 @@ module Bsb_db_io : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
- type t = Bsb_db.t
+ type t  
+  (* = Bsb_db.t *)
  type ts = t array
 
 val write_build_cache : 
   dir:string -> Bsb_db.ts -> unit
 val read_build_cache : dir:string -> ts
 
+val find_opt :
+  string -> 
+  t -> 
+  Bsb_db.module_info option 
 end = struct
 #1 "bsb_db_io.ml"
 (* Copyright (C) 2019 - Present Authors of BuckleScript
@@ -12423,7 +12428,7 @@ let read_build_cache ~dir  : ts =
   close_in ic ;
   data 
 
-
+let find_opt = String_map.find_opt
 end
 module Bsb_namespace_map_gen : sig 
 #1 "bsb_namespace_map_gen.mli"

@@ -23,9 +23,15 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
- type t = Bsb_db.t
+ type t  
+  (* = Bsb_db.t *)
  type ts = t array
 
 val write_build_cache : 
   dir:string -> Bsb_db.ts -> unit
 val read_build_cache : dir:string -> ts
+
+val find_opt :
+  string -> 
+  t -> 
+  Bsb_db.module_info option 

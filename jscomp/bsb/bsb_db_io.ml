@@ -44,3 +44,4 @@ let read_build_cache ~dir  : ts =
   close_in ic ;
   data 
 
+let find_opt = String_map.find_opt

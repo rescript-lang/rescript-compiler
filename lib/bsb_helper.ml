@@ -5108,13 +5108,18 @@ module Bsb_db_io : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
- type t = Bsb_db.t
+ type t  
+  (* = Bsb_db.t *)
  type ts = t array
 
 val write_build_cache : 
   dir:string -> Bsb_db.ts -> unit
 val read_build_cache : dir:string -> ts
 
+val find_opt :
+  string -> 
+  t -> 
+  Bsb_db.module_info option 
 end = struct
 #1 "bsb_db_io.ml"
 (* Copyright (C) 2019 - Present Authors of BuckleScript
@@ -5163,7 +5168,7 @@ let read_build_cache ~dir  : ts =
   close_in ic ;
   data 
 
-
+let find_opt = String_map.find_opt
 end
 module Ext_namespace : sig 
 #1 "ext_namespace.mli"
@@ -5527,7 +5532,7 @@ let oc_impl
     (lhs_suffix : string)
     (rhs_suffix : string)
     (index : Bsb_dir_index.t)
-    (data : Bsb_db.t array)
+    (data : Bsb_db_io.t array)
     (namespace : string option)
     (buf : Buffer.t)
   = 
@@ -5536,7 +5541,7 @@ let oc_impl
   Buffer.add_string buf dep_lit ; 
   for i = 0 to Array.length dependent_module_set - 1 do
     let k = Array.unsafe_get dependent_module_set i in 
-    match String_map.find_opt k data.(0) with
+    match Bsb_db_io.find_opt k data.(0) with
     | Some {ml = Ml_source (source,_,_) }  
       -> 
       if source <> input_file then 
@@ -5552,7 +5557,7 @@ let oc_impl
     | Some {mli= Mli_empty; ml = Ml_empty} -> assert false
     | None  -> 
       if not (Bsb_dir_index.is_lib_dir index) then      
-        begin match String_map.find_opt k data.((index  :> int)) with 
+        begin match Bsb_db_io.find_opt k data.((index  :> int)) with 
           | Some {ml = Ml_source (source,_,_) }
             -> 
             if source <> input_file then 
@@ -5577,7 +5582,7 @@ let oc_intf
     (dependent_module_set : string array)
     input_file 
     (index : Bsb_dir_index.t)
-    (data : Bsb_db.t array)
+    (data : Bsb_db_io.t array)
     (namespace : string option)
     (buf : Buffer.t) =   
   output_file buf input_file namespace ; 
@@ -5585,14 +5590,14 @@ let oc_intf
   Buffer.add_string buf dep_lit;
   for i = 0 to Array.length dependent_module_set - 1 do               
     let k = Array.unsafe_get dependent_module_set i in 
-    match String_map.find_opt k data.(0) with 
+    match Bsb_db_io.find_opt k data.(0) with 
     | Some ({ ml = Ml_source (source,_,_)  }
            | { mli = Mli_source (source,_,_) }) -> 
       if source <> input_file then oc_cmi buf namespace source             
     | Some {ml =  Ml_empty; mli = Mli_empty } -> assert false
     | None -> 
       if not (Bsb_dir_index.is_lib_dir index)  then 
-        match String_map.find_opt k data.((index :> int)) with 
+        match Bsb_db_io.find_opt k data.((index :> int)) with 
         | Some ({ ml = Ml_source (source,_,_)  }
                | { mli = Mli_source (source,_,_)  }) -> 
           if source <> input_file then  oc_cmi buf namespace source    
