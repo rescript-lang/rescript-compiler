@@ -41,56 +41,34 @@ type module_info =
 
 
 type t = module_info String_map.t 
+
 type ts = t array 
 (** indexed by the group *)
 
-let module_info_magic_number = "BSBUILD20170802"
+
 
 let dir_of_module_info (x : module_info)
   = 
-  match x with 
-  | { mli; ml;  } -> 
-    begin match mli with 
-      | Mli_source (s,_,_) -> 
-        Filename.dirname s 
-      | Mli_empty -> 
-        begin match ml with 
-          | Ml_source (s,_,_) -> 
-            Filename.dirname s 
-          | Ml_empty -> Ext_string.empty
-        end
-    end
+  match x.mli with 
+  | Mli_source (s,_,_) -> 
+    Filename.dirname s 
+  | Mli_empty -> 
+    match x.ml with 
+    | Ml_source (s,_,_) -> 
+      Filename.dirname s 
+    | Ml_empty -> Ext_string.empty
+    
+    
 
 let filename_sans_suffix_of_module_info (x : module_info) =
-  match x with 
-  | { mli; ml;  } -> 
-    begin match mli with 
-      | Mli_source (s,_,_) -> 
-        s 
-      | Mli_empty -> 
-        begin match ml with 
-          | Ml_source (s,_,_)  -> 
-            s 
-          | Ml_empty -> assert false
-        end
-    end
-
-let bsbuild_cache = ".bsbuild"    
-
-let write_build_cache ~dir (bs_files : ts)  = 
-  let oc = open_out_bin (Filename.concat dir bsbuild_cache) in 
-  output_string oc module_info_magic_number ;
-  output_value oc bs_files ;
-  close_out oc 
-
-let read_build_cache ~dir  : ts = 
-  let ic = open_in_bin (Filename.concat dir bsbuild_cache) in 
-  let buffer = really_input_string ic (String.length module_info_magic_number) in
-  assert(buffer = module_info_magic_number); 
-  let data : ts = input_value ic in 
-  close_in ic ;
-  data 
-
+  match x.mli with 
+  | Mli_source (s,_,_) -> 
+    s 
+  | Mli_empty -> 
+    match x.ml with 
+    | Ml_source (s,_,_)  -> 
+      s 
+    | Ml_empty -> assert false
 
 
 

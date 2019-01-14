@@ -215,7 +215,7 @@ let output_ninja_and_namespace_map
   in
 
   output_reason_config ();
-  Bsb_db.write_build_cache ~dir:cwd_lib_bs bs_groups ;
+  Bsb_db_io.write_build_cache ~dir:cwd_lib_bs bs_groups ;
   emit_bsc_lib_includes bsc_lib_dirs;
   List.iter 
     (fun output -> 
