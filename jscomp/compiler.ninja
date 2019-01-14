@@ -573,7 +573,7 @@ build bsb/bsb_config_parse.cmi : optc bsb/bsb_config_parse.mli | bsb/bsb_config_
 build bsb/bsb_config_types.cmx bsb/bsb_config_types.cmi : optc bsb/bsb_config_types.ml | bsb/bsb_file_groups.cmx bsb/bsb_package_specs.cmx bsb/bsb_pkg_types.cmx bsb/bsb_warning.cmx ext/string_hash_set.cmx ext/string_map.cmx
 build bsb/bsb_db.cmx : optc bsb/bsb_db.ml | bsb/bsb_db.cmi bsb/bsb_exception.cmx ext/ext_modulename.cmx ext/ext_path.cmx ext/ext_pervasives.cmx ext/ext_string.cmx ext/string_map.cmx
 build bsb/bsb_db.cmi : optc bsb/bsb_db.mli | ext/string_map.cmi
-build bsb/bsb_db_io.cmx : optc bsb/bsb_db_io.ml | bsb/bsb_db.cmx bsb/bsb_db_io.cmi ext/string_map.cmx
+build bsb/bsb_db_io.cmx : optc bsb/bsb_db_io.ml | bsb/bsb_db.cmx bsb/bsb_db_io.cmi ext/ext_array.cmx ext/string_map.cmx
 build bsb/bsb_db_io.cmi : optc bsb/bsb_db_io.mli | bsb/bsb_db.cmi
 build bsb/bsb_default.cmx : optc bsb/bsb_default.ml | bsb/bsb_config_types.cmx bsb/bsb_default.cmi
 build bsb/bsb_default.cmi : optc bsb/bsb_default.mli | bsb/bsb_config_types.cmx

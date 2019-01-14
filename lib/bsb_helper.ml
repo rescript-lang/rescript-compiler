@@ -5117,8 +5117,8 @@ val write_build_cache :
 val read_build_cache : dir:string -> ts
 
 val find_opt :
-  string -> 
   t -> 
+  string -> 
   Bsb_db.module_info option 
 end = struct
 #1 "bsb_db_io.ml"
@@ -5146,18 +5146,22 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
- type t = Bsb_db.t 
+type pair = (string * Bsb_db.module_info)
+ type t = pair array
  type ts = t array 
 
 let bsbuild_cache = ".bsbuild"    
 
 let module_info_magic_number = "BSBUILD20170802"
 
-let write_build_cache ~dir (bs_files : ts)  : unit = 
+(* String_map.compare_key *)
+let linear (x : Bsb_db.ts) : ts = 
+  Ext_array.map  x String_map.to_sorted_array
+
+let write_build_cache ~dir (bs_files : Bsb_db.ts)  : unit = 
   let oc = open_out_bin (Filename.concat dir bsbuild_cache) in 
   output_string oc module_info_magic_number ;
-  output_value oc bs_files ;
+  output_value oc (linear bs_files);
   close_out oc 
 
 let read_build_cache ~dir  : ts = 
@@ -5168,7 +5172,40 @@ let read_build_cache ~dir  : ts =
   close_in ic ;
   data 
 
-let find_opt = String_map.find_opt
+let cmp (a : string) (b,_) = String_map.compare_key a b   
+
+let rec binarySearchAux (arr : t) (lo : int) (hi : int) (key : string)  : _ option = 
+  let mid = (lo + hi)/2 in 
+  let midVal = Array.unsafe_get arr mid in 
+  let c = cmp key midVal [@bs] in 
+  if c = 0 then Some (snd midVal)
+  else if c < 0 then  (*  a[lo] =< key < a[mid] <= a[hi] *)
+    if hi = mid then  
+      let loVal = (Array.unsafe_get arr lo) in 
+      if  fst loVal = key then Some (snd loVal)
+      else None
+    else binarySearchAux arr lo mid key 
+  else  (*  a[lo] =< a[mid] < key <= a[hi] *)
+  if lo = mid then 
+    let hiVal = (Array.unsafe_get arr hi) in 
+    if fst hiVal = key then Some (snd hiVal)
+    else None
+  else binarySearchAux arr mid hi key 
+
+let find_opt sorted key  : _ option =  
+  let len = Array.length sorted in 
+  if len = 0 then None
+  else 
+    let lo = Array.unsafe_get sorted 0 in 
+    let c = cmp key lo [@bs] in 
+    if c < 0 then None
+    else
+      let hi = Array.unsafe_get sorted (len - 1) in 
+      let c2 = cmp key hi [@bs]in 
+      if c2 > 0 then None
+      else binarySearchAux sorted 0 (len - 1) key
+
+
 end
 module Ext_namespace : sig 
 #1 "ext_namespace.mli"
@@ -5541,7 +5578,7 @@ let oc_impl
   Buffer.add_string buf dep_lit ; 
   for i = 0 to Array.length dependent_module_set - 1 do
     let k = Array.unsafe_get dependent_module_set i in 
-    match Bsb_db_io.find_opt k data.(0) with
+    match Bsb_db_io.find_opt  data.(0) k with
     | Some {ml = Ml_source (source,_,_) }  
       -> 
       if source <> input_file then 
@@ -5557,7 +5594,7 @@ let oc_impl
     | Some {mli= Mli_empty; ml = Ml_empty} -> assert false
     | None  -> 
       if not (Bsb_dir_index.is_lib_dir index) then      
-        begin match Bsb_db_io.find_opt k data.((index  :> int)) with 
+        begin match Bsb_db_io.find_opt data.((index  :> int)) k with 
           | Some {ml = Ml_source (source,_,_) }
             -> 
             if source <> input_file then 
@@ -5590,14 +5627,14 @@ let oc_intf
   Buffer.add_string buf dep_lit;
   for i = 0 to Array.length dependent_module_set - 1 do               
     let k = Array.unsafe_get dependent_module_set i in 
-    match Bsb_db_io.find_opt k data.(0) with 
+    match Bsb_db_io.find_opt data.(0) k with 
     | Some ({ ml = Ml_source (source,_,_)  }
            | { mli = Mli_source (source,_,_) }) -> 
       if source <> input_file then oc_cmi buf namespace source             
     | Some {ml =  Ml_empty; mli = Mli_empty } -> assert false
     | None -> 
       if not (Bsb_dir_index.is_lib_dir index)  then 
-        match Bsb_db_io.find_opt k data.((index :> int)) with 
+        match Bsb_db_io.find_opt data.((index :> int)) k with 
         | Some ({ ml = Ml_source (source,_,_)  }
                | { mli = Mli_source (source,_,_)  }) -> 
           if source <> input_file then  oc_cmi buf namespace source    

@@ -112,7 +112,7 @@ let oc_impl
   Buffer.add_string buf dep_lit ; 
   for i = 0 to Array.length dependent_module_set - 1 do
     let k = Array.unsafe_get dependent_module_set i in 
-    match Bsb_db_io.find_opt k data.(0) with
+    match Bsb_db_io.find_opt  data.(0) k with
     | Some {ml = Ml_source (source,_,_) }  
       -> 
       if source <> input_file then 
@@ -128,7 +128,7 @@ let oc_impl
     | Some {mli= Mli_empty; ml = Ml_empty} -> assert false
     | None  -> 
       if not (Bsb_dir_index.is_lib_dir index) then      
-        begin match Bsb_db_io.find_opt k data.((index  :> int)) with 
+        begin match Bsb_db_io.find_opt data.((index  :> int)) k with 
           | Some {ml = Ml_source (source,_,_) }
             -> 
             if source <> input_file then 
@@ -161,14 +161,14 @@ let oc_intf
   Buffer.add_string buf dep_lit;
   for i = 0 to Array.length dependent_module_set - 1 do               
     let k = Array.unsafe_get dependent_module_set i in 
-    match Bsb_db_io.find_opt k data.(0) with 
+    match Bsb_db_io.find_opt data.(0) k with 
     | Some ({ ml = Ml_source (source,_,_)  }
            | { mli = Mli_source (source,_,_) }) -> 
       if source <> input_file then oc_cmi buf namespace source             
     | Some {ml =  Ml_empty; mli = Mli_empty } -> assert false
     | None -> 
       if not (Bsb_dir_index.is_lib_dir index)  then 
-        match Bsb_db_io.find_opt k data.((index :> int)) with 
+        match Bsb_db_io.find_opt data.((index :> int)) k with 
         | Some ({ ml = Ml_source (source,_,_)  }
                | { mli = Mli_source (source,_,_)  }) -> 
           if source <> input_file then  oc_cmi buf namespace source    

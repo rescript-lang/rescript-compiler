@@ -32,6 +32,6 @@ val write_build_cache :
 val read_build_cache : dir:string -> ts
 
 val find_opt :
-  string -> 
   t -> 
+  string -> 
   Bsb_db.module_info option 
