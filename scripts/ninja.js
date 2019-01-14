@@ -1053,6 +1053,12 @@ rule gcc
 build stubs/ext_basic_hash_stubs.o : gcc  stubs/ext_basic_hash_stubs.c   
 rule ocamlmklib
     command = ocamlmklib $in -o $name
+    
+rule mk_keywords    
+    command = ocaml $in 
+    generator = true
+build ext/js_reserved_map.ml: mk_keywords build_sorted.ml keywords.list
+
 build stubs/libbs_hash.a stubs/dllbs_hash.so: ocamlmklib stubs/ext_basic_hash_stubs.o
     name = stubs/bs_hash
 rule stubslib

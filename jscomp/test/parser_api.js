@@ -3722,7 +3722,7 @@ function raise_errorf($staropt$star, $staropt$star$1, $staropt$star$2) {
     });
 }
 
-var Location = /* module */[
+var $$Location = /* module */[
   /* none */none,
   /* in_file */in_file,
   /* init */init,
@@ -14800,7 +14800,7 @@ exports.Clflags = Clflags;
 exports.Misc = Misc;
 exports.Terminfo = Terminfo;
 exports.Warnings = Warnings;
-exports.Location = Location;
+exports.$$Location = $$Location;
 exports.Asttypes = Asttypes;
 exports.Longident = Longident;
 exports.Parsetree = Parsetree;
