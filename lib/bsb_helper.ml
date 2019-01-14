@@ -5466,7 +5466,7 @@ let output_file (oc : Buffer.t) source namespace =
     is [.cmi] if it has [mli]
 *)
 let oc_cmi buf namespace source = 
-  Buffer.add_string buf Ext_string.single_space ;  
+  Buffer.add_char buf '\n';  
   output_file buf source namespace;
   Buffer.add_string buf Literals.suffix_cmi 
 
@@ -5490,7 +5490,7 @@ let oc_impl
       -> 
       if source <> input_file then 
         begin 
-          Buffer.add_string buf Ext_string.single_space ;  
+          Buffer.add_char buf '\n';  
           output_file buf source namespace;
           Buffer.add_string buf rhs_suffix; 
           (* #3260 cmj changes does not imply cmi change anymore *)
@@ -5506,7 +5506,7 @@ let oc_impl
             -> 
             if source <> input_file then 
               begin 
-                Buffer.add_string buf Ext_string.single_space ;  
+                Buffer.add_char buf '\n' ;  
                 output_file buf source namespace;
                 Buffer.add_string buf rhs_suffix;
                 oc_cmi buf namespace source
