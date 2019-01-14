@@ -42,7 +42,7 @@ let read_ast (type t ) (kind : t  Ml_binary.kind) fn : t  =
     close_in ic;
     raise exn
 
-
+let magic_sep_char = '\n'
 (*
    Reasons that we don't [output_value] the set:
    1. for performance , easy skipping and calcuate the length 
@@ -55,8 +55,8 @@ let write_ast (type t) ~(fname : string) ~output (kind : t Ml_binary.kind) ( pt 
   let buf = Buffer.create 64 in
   let number = String_set.cardinal output_set in 
   Buffer.add_string buf (string_of_int number) ;
-  Buffer.add_char buf '\t';
-  String_set.iter (fun s -> Buffer.add_string buf s ; Buffer.add_char buf '\t') output_set ;
+  Buffer.add_char buf magic_sep_char;
+  String_set.iter (fun s -> Buffer.add_string buf s ; Buffer.add_char buf magic_sep_char) output_set ;
   let buf_contents = Buffer.contents buf in 
   output_binary_int oc (String.length buf_contents);
   output_string oc buf_contents; 

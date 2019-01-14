@@ -26,6 +26,7 @@
 val read_ast : 'a Ml_binary.kind -> string -> 'a 
 
 
+val magic_sep_char : char
 
 (**
    Check out {!Bsb_depfile_gen} for set decoding

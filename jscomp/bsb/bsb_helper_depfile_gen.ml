@@ -49,17 +49,19 @@ let write_file name  (buf : Buffer.t) =
   else 
     write_buf name buf 
     
+(* Make suer it is the same as {!Binary_ast.magic_sep_char}*)
+let magic_sep_char = '\n'
 
 let deps_of_channel (ic : in_channel) : string array = 
   let size = input_binary_int ic in 
   let s = really_input_string ic size in 
-  let first_tab  = String.index s '\t' in 
+  let first_tab  = String.index s magic_sep_char in 
   let return_arr = Array.make (int_of_string (String.sub s 0 first_tab)) "" in 
-  let rec aux s ith offset = 
+  let rec aux s ith (offset : int) : unit = 
     if offset >= size then 
       ()
     else 
-      let next_tab = String.index_from s offset '\t'  in 
+      let next_tab = String.index_from s offset magic_sep_char  in 
       return_arr.(ith) <- String.sub s offset (next_tab - offset) ; 
       aux s (ith + 1) (next_tab + 1) in 
   aux s 0 (first_tab + 1) ; 
