@@ -184,7 +184,7 @@ let emit_dep_file
     (index : Bsb_dir_index.t) 
     (namespace : string option) : unit = 
   let data  =
-    Bsb_db.read_build_cache 
+    Bsb_db_io.read_build_cache 
       ~dir:Filename.current_dir_name
   in 
   let set = read_deps fn in 

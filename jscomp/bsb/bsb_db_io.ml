@@ -1,5 +1,4 @@
-
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+(* Copyright (C) 2019 - Present Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -23,62 +22,25 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** Store a file called [.bsbuild] that can be communicated 
-    between [bsb.exe] and [bsb_helper.exe]. 
-    [bsb.exe] stores such data which would be retrieved by 
-    [bsb_helper.exe]. It is currently used to combine with 
-    ocamldep to figure out which module->file it depends on
-*) 
 
-type case = bool 
+ type t = Bsb_db.t 
+ type ts = t array 
 
+let bsbuild_cache = ".bsbuild"    
 
-type ml_kind =
-  | Ml_source of string * bool  * bool
-     (* No extension stored
-      Ml_source(name,is_re)
-      [is_re] default to false
-      *)
-  
-  | Ml_empty
-type mli_kind = 
-  | Mli_source of string  * bool * bool
-  | Mli_empty
+let module_info_magic_number = "BSBUILD20170802"
 
-type module_info = 
-  {
-    mli : mli_kind ; 
-    ml : ml_kind ; 
-  }
+let write_build_cache ~dir (bs_files : ts)  : unit = 
+  let oc = open_out_bin (Filename.concat dir bsbuild_cache) in 
+  output_string oc module_info_magic_number ;
+  output_value oc bs_files ;
+  close_out oc 
 
-type t = module_info String_map.t 
+let read_build_cache ~dir  : ts = 
+  let ic = open_in_bin (Filename.concat dir bsbuild_cache) in 
+  let buffer = really_input_string ic (String.length module_info_magic_number) in
+  assert(buffer = module_info_magic_number); 
+  let data : ts = input_value ic in 
+  close_in ic ;
+  data 
 
-type ts = t array 
-
-(** store  the meta data indexed by {!Bsb_dir_index}
-  {[
-    0 --> lib group
-    1 --> dev 1 group
-    .
-    
-  ]}
-*)
-
-val dir_of_module_info : module_info -> string
-
-
-val filename_sans_suffix_of_module_info : module_info -> string 
-
-
-(** 
-  Currently it is okay to have duplicated module, 
-  In the future, we may emit a warning 
-*)
-val map_update : 
-  dir:string -> t ->  string -> t
-
-(**
-  return [boolean] to indicate whether reason file exists or not
-  will raise if it fails sanity check
-*)
-val sanity_check : t -> bool

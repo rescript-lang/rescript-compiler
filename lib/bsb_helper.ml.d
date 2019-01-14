@@ -1,6 +1,8 @@
 ../lib/bsb_helper.ml:
 ./bsb/bsb_db.ml
 ./bsb/bsb_db.mli
+./bsb/bsb_db_io.ml
+./bsb/bsb_db_io.mli
 ./bsb/bsb_dir_index.ml
 ./bsb/bsb_dir_index.mli
 ./bsb/bsb_exception.ml

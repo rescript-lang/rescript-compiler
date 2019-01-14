@@ -11,6 +11,8 @@ bin/bsb_native.ml:
 ./bsb/bsb_config_types.ml
 ./bsb/bsb_db.ml
 ./bsb/bsb_db.mli
+./bsb/bsb_db_io.ml
+./bsb/bsb_db_io.mli
 ./bsb/bsb_default.ml
 ./bsb/bsb_default.mli
 ./bsb/bsb_dir_index.ml
