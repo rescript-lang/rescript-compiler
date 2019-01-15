@@ -1942,6 +1942,11 @@ val repeat : int -> string -> string
 
 val equal : string -> string -> bool
 
+val extract_until:
+  string -> 
+  int -> 
+  char -> 
+  string
 (**
   [find ~start ~sub s]
   returns [-1] if not found
@@ -2263,6 +2268,17 @@ let tail_from s x =
 
 let equal (x : string) y  = x = y
 
+let rec index_rec s lim i c =
+  if i >= lim then -1 else
+  if String.unsafe_get s i = c then i 
+  else index_rec s lim (i + 1) c
+
+let extract_until s start c =       
+  let len = String.length s in   
+  assert (start >= 0 && start < len);  
+  let i = index_rec s len start c in   
+  String.sub s start ((if i < 0 then len else i) - start)
+  
 let rec rindex_rec s i c =
   if i < 0 then i else
   if String.unsafe_get s i = c then i else rindex_rec s (i - 1) c;;
@@ -14799,7 +14815,12 @@ let suites =
       Ext_string.rindex_neg "hello" 'l' =~ 3 ;
       Ext_string.rindex_neg "hello" 'o' =~ 4 ;
     end;
-
+    __LOC__ >:: begin fun _ -> 
+      let nl s = Ext_string.extract_until s 0 '\n' in 
+      nl "hello\n" =~ "hello";
+      nl "\nhell" =~ "";
+      nl "hello" =~ "hello"
+    end ;
     __LOC__ >:: begin fun _ -> 
       OUnit.assert_bool "empty string" (Ext_string.rindex_neg "" 'x' < 0 )
     end;

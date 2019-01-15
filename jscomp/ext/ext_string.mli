@@ -95,6 +95,20 @@ val repeat : int -> string -> string
 val equal : string -> string -> bool
 
 (**
+  [extract_until s cursor sep]
+   When [sep] not found, the cursor is updated to -1,
+   otherwise cursor is increased to 1 + [sep_position]
+   User can not determine whether it is found or not by
+   telling the return string is empty since 
+   "\n\n" would result in an empty string too.
+*)
+val extract_until:
+  string -> 
+  int ref -> (* cursor to be updated *)
+  char -> 
+  string
+
+(**
   [find ~start ~sub s]
   returns [-1] if not found
 *)
