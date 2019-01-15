@@ -5153,6 +5153,8 @@ module Bsb_db_io : sig
 
 val write_build_cache : 
   dir:string -> Bsb_db.ts -> unit
+
+  
 val read_build_cache : dir:string -> ts
 
 val find_opt :
@@ -5185,8 +5187,8 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type pair = (string * Bsb_db.module_info)
- type t = pair array
+
+ type t = string array * Bsb_db.module_info array
  type ts = t array 
 
 let bsbuild_cache = ".bsbuild"    
@@ -5221,23 +5223,23 @@ and encode_triple name is_re case buf =
   bool buf case
 
 let encode_pair (name : string) (module_info : Bsb_db.module_info) 
-  (buf : Buffer.t) = 
+  (buf : Buffer.t) buf2 = 
   nl buf; 
   Buffer.add_string buf name; 
-  nl buf; 
-  encode_module_info module_info buf 
+  nl buf2; 
+  encode_module_info module_info buf2 
 
-let encode_single (x : Bsb_db.t) (buf : Buffer.t)  =  
+let encode_single (x : Bsb_db.t) (buf : Buffer.t)  (buf2 : Buffer.t)=  
   let len = String_map.cardinal x in 
   nl buf ; 
   Buffer.add_string buf (string_of_int len);
-  String_map.iter (fun name module_info -> encode_pair name module_info buf) x   
+  String_map.iter (fun name module_info -> encode_pair name module_info buf buf2) x   
 
-let encode (x : Bsb_db.ts) (buf : Buffer.t) =     
+let encode (x : Bsb_db.ts) (buf : Buffer.t) (buf2 : Buffer.t) =     
   nl buf; 
   let len = Array.length x in 
   Buffer.add_string buf (string_of_int len); 
-  Ext_array.iter x (fun x -> encode_single x buf)
+  Ext_array.iter x (fun x -> encode_single x buf buf2)
 
 type cursor = int ref 
 
@@ -5249,12 +5251,17 @@ let rec decode (x : string) (offset : cursor) =
   Array.init len (fun _ ->  decode_single x offset)
 and decode_single x (offset : cursor) = 
   let cardinal = int_of_string (extract_line x offset) in 
+  let a = decode_modules x offset cardinal in 
+  let b = decode_module_infos x offset cardinal in 
+  a, b
+and decode_modules x offset cardinal =   
+  Array.init cardinal (fun _ -> extract_line x offset)
+and decode_module_infos x offset cardinal =   
   Array.init cardinal (fun _ -> 
-    let module_name = extract_line x offset in 
-    let mli = decode_triple_intf (extract_line x offset) in 
-    let ml = decode_triple_impl (extract_line x offset) in 
-    module_name, Bsb_db.{mli ; ml}
-  )
+      let mli = decode_triple_intf (extract_line x offset) in 
+      let ml = decode_triple_impl (extract_line x offset) in 
+      Bsb_db.{mli ; ml}
+    )
 and decode_triple_intf (pair : string) : Bsb_db.mli_kind = 
   if pair = "0" then Mli_empty 
   else 
@@ -5277,12 +5284,14 @@ let write_build_cache ~dir (bs_files : Bsb_db.ts)  : unit =
   let oc = open_out_bin (Filename.concat dir bsbuild_cache) in 
   output_string oc module_info_magic_number ;
   let buf = Buffer.create 10_000 in 
-  encode bs_files buf; 
+  let buf2 = Buffer.create 60_000 in 
+  encode bs_files buf buf2; 
   Buffer.output_buffer oc buf ; 
+  Buffer.output_buffer oc buf2 ; 
   close_out oc 
 
  
-let read_build_cache ~dir  = 
+let read_build_cache ~dir  : (string array * _) array = 
   let ic = open_in_bin (Filename.concat dir bsbuild_cache) in 
   let len = in_channel_length ic in 
   let all_content = really_input_string ic len in 
@@ -5291,27 +5300,27 @@ let read_build_cache ~dir  =
   assert (cur_module_info_magic_number = module_info_magic_number); 
   decode all_content offset
 
-let cmp (a : string) (b,_) = String_map.compare_key a b   
+let cmp (a : string) b = String_map.compare_key a b   
 
-let rec binarySearchAux (arr : t) (lo : int) (hi : int) (key : string)  : _ option = 
+let rec binarySearchAux arr (lo : int) (hi : int) (key : string)  : _ option = 
   let mid = (lo + hi)/2 in 
   let midVal = Array.unsafe_get arr mid in 
   let c = cmp key midVal [@bs] in 
-  if c = 0 then Some (snd midVal)
+  if c = 0 then Some (mid)
   else if c < 0 then  (*  a[lo] =< key < a[mid] <= a[hi] *)
     if hi = mid then  
       let loVal = (Array.unsafe_get arr lo) in 
-      if  fst loVal = key then Some (snd loVal)
+      if  loVal = key then Some lo
       else None
     else binarySearchAux arr lo mid key 
   else  (*  a[lo] =< a[mid] < key <= a[hi] *)
   if lo = mid then 
     let hiVal = (Array.unsafe_get arr hi) in 
-    if fst hiVal = key then Some (snd hiVal)
+    if  hiVal = key then Some hi
     else None
   else binarySearchAux arr mid hi key 
 
-let find_opt sorted key  : _ option =  
+let find_opt_aux sorted key  : _ option =  
   let len = Array.length sorted in 
   if len = 0 then None
   else 
@@ -5324,7 +5333,11 @@ let find_opt sorted key  : _ option =
       if c2 > 0 then None
       else binarySearchAux sorted 0 (len - 1) key
 
-
+let find_opt ((sorted,_) as x  : t) key : _ option = 
+  let i = find_opt_aux sorted key in 
+  match i with 
+  | None -> None 
+  | Some index -> Some ((snd x).(index))
 end
 module Ext_namespace : sig 
 #1 "ext_namespace.mli"
