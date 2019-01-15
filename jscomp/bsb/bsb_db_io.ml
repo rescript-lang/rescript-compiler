@@ -64,17 +64,33 @@ let encode_pair (name : string) (module_info : Bsb_db.module_info)
   nl buf2; 
   encode_module_info module_info buf2 
 
-let encode_single (x : Bsb_db.t) (buf : Buffer.t)  (buf2 : Buffer.t)=  
+(* Make sure [tmp_buf1] and [tmp_buf2] is cleared ,
+  they are only used to control the order.
+  Strictly speaking, [tmp_buf1] is not needed
+*)
+let encode_single (x : Bsb_db.t) (buf : Buffer.t)  (buf2 : Buffer.t) =    
   let len = String_map.cardinal x in 
   nl buf ; 
   Buffer.add_string buf (string_of_int len);
-  String_map.iter (fun name module_info -> encode_pair name module_info buf buf2) x   
+  String_map.iter (fun name module_info -> encode_pair name module_info buf buf2) x
 
-let encode (x : Bsb_db.ts) (buf : Buffer.t) (buf2 : Buffer.t) =     
-  nl buf; 
+let encode (x : Bsb_db.ts) (oc : out_channel)=     
+  output_char oc '\n';
   let len = Array.length x in 
-  Buffer.add_string buf (string_of_int len); 
-  Ext_array.iter x (fun x -> encode_single x buf buf2)
+  output_string oc (string_of_int len); 
+  let tmp_buf1 = Buffer.create 10_000 in 
+  let tmp_buf2 = Buffer.create 60_000 in 
+  Ext_array.iter x (fun x -> begin 
+
+        encode_single x  tmp_buf1 tmp_buf2;
+        Buffer.output_buffer oc tmp_buf1;
+        Buffer.output_buffer oc tmp_buf2;
+        Buffer.clear tmp_buf1; 
+        Buffer.clear tmp_buf2
+
+      end
+    )
+
 
 type cursor = int ref 
 
@@ -118,11 +134,7 @@ and decode_triple_impl (pair : string) : Bsb_db.ml_kind =
 let write_build_cache ~dir (bs_files : Bsb_db.ts)  : unit = 
   let oc = open_out_bin (Filename.concat dir bsbuild_cache) in 
   output_string oc module_info_magic_number ;
-  let buf = Buffer.create 10_000 in 
-  let buf2 = Buffer.create 60_000 in 
-  encode bs_files buf buf2; 
-  Buffer.output_buffer oc buf ; 
-  Buffer.output_buffer oc buf2 ; 
+  encode bs_files oc; 
   close_out oc 
 #if 0 then 
 let read_build_cache ~dir  : ts = 
