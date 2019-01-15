@@ -114,16 +114,7 @@ and decode_triple_impl (pair : string) : Bsb_db.ml_kind =
     let case = Ext_string.extract_until pair cur ',' in 
     Ml_source (name, is_re = "1", case = "1")
 
-#if 0 then 
-let linear (x : Bsb_db.ts) : ts = 
-  Ext_array.map  x String_map.to_sorted_array
 
-let write_build_cache ~dir (bs_files : Bsb_db.ts)  : unit = 
-  let oc = open_out_bin (Filename.concat dir bsbuild_cache) in 
-  output_string oc module_info_magic_number ;
-  output_value oc (linear bs_files);
-  close_out oc 
-#else 
 let write_build_cache ~dir (bs_files : Bsb_db.ts)  : unit = 
   let oc = open_out_bin (Filename.concat dir bsbuild_cache) in 
   output_string oc module_info_magic_number ;
@@ -133,7 +124,6 @@ let write_build_cache ~dir (bs_files : Bsb_db.ts)  : unit =
   Buffer.output_buffer oc buf ; 
   Buffer.output_buffer oc buf2 ; 
   close_out oc 
-#end
 #if 0 then 
 let read_build_cache ~dir  : ts = 
   let ic = open_in_bin (Filename.concat dir bsbuild_cache) in 
