@@ -42,7 +42,15 @@ let suites =
       nl cur b =~ "d";
       nl cur b =~ "" ;
       nl cur b =~ "" ;
-
+    end ;
+    __LOC__ >:: begin fun _ -> 
+      let b = "a\nb\nc\nd\n" in
+      let a = Ext_string.index_count in 
+      a b 0 '\n' 1 =~ 1 ;
+      a b 0 '\n' 2 =~ 3;
+      a b 0 '\n' 3 =~ 5;
+      a b 0 '\n' 4 =~ 7; 
+      a b 0 '\n' 5 =~ -1; 
     end ;
     __LOC__ >:: begin fun _ -> 
       OUnit.assert_bool "empty string" (Ext_string.rindex_neg "" 'x' < 0 )

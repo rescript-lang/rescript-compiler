@@ -248,6 +248,19 @@ let rec index_rec s lim i c =
   if String.unsafe_get s i = c then i 
   else index_rec s lim (i + 1) c
 
+let rec index_rec_count s lim i c count =
+  if i >= lim then -1 else
+  if String.unsafe_get s i = c then 
+    if count = 1 then i 
+    else index_rec_count s lim (i + 1) c (count - 1)
+  else index_rec_count s lim (i + 1) c count
+
+let index_count s i c count =     
+  let lim = String.length s in 
+  if i < 0 || i >= lim || count < 1 then 
+    invalid_arg "index_count";
+    
+  index_rec_count s lim i c count 
 let extract_until s cursor c =       
   let len = String.length s in   
   let start = !cursor in 

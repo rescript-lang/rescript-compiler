@@ -108,6 +108,13 @@ val extract_until:
   char -> 
   string
 
+val index_count:  
+  string -> 
+  int ->
+  char -> 
+  int -> 
+  int 
+
 (**
   [find ~start ~sub s]
   returns [-1] if not found
