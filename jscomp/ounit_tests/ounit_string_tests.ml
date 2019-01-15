@@ -20,7 +20,30 @@ let suites =
       Ext_string.rindex_neg "hello" 'l' =~ 3 ;
       Ext_string.rindex_neg "hello" 'o' =~ 4 ;
     end;
+    __LOC__ >:: begin 
+      fun _ -> 
+      let nl cur s = Ext_string.extract_until s cur '\n' in 
+      nl (ref 0) "hello\n" =~ "hello";
+      nl (ref 0) "\nhell" =~ "";
+      nl (ref 0) "hello" =~ "hello";
+      let cur = ref 0 in 
+      let b = "a\nb\nc\nd" in 
+      nl cur b =~ "a";
+      nl cur b =~ "b";
+      nl cur b =~ "c";
+      nl cur b =~ "d";
+      nl cur b =~ "" ;
+      nl cur b =~ "" ;
+      cur := 0 ;
+      let b = "a\nb\nc\nd\n" in 
+      nl cur b =~ "a";
+      nl cur b =~ "b";
+      nl cur b =~ "c";
+      nl cur b =~ "d";
+      nl cur b =~ "" ;
+      nl cur b =~ "" ;
 
+    end ;
     __LOC__ >:: begin fun _ -> 
       OUnit.assert_bool "empty string" (Ext_string.rindex_neg "" 'x' < 0 )
     end;

@@ -4555,6 +4555,20 @@ val repeat : int -> string -> string
 val equal : string -> string -> bool
 
 (**
+  [extract_until s cursor sep]
+   When [sep] not found, the cursor is updated to -1,
+   otherwise cursor is increased to 1 + [sep_position]
+   User can not determine whether it is found or not by
+   telling the return string is empty since 
+   "\n\n" would result in an empty string too.
+*)
+val extract_until:
+  string -> 
+  int ref -> (* cursor to be updated *)
+  char -> 
+  string
+
+(**
   [find ~start ~sub s]
   returns [-1] if not found
 *)
@@ -4875,6 +4889,31 @@ let tail_from s x =
 
 let equal (x : string) y  = x = y
 
+let rec index_rec s lim i c =
+  if i >= lim then -1 else
+  if String.unsafe_get s i = c then i 
+  else index_rec s lim (i + 1) c
+
+let extract_until s cursor c =       
+  let len = String.length s in   
+  let start = !cursor in 
+  if start < 0 || start >= len then (
+    cursor := -1;
+    ""
+    )
+  else 
+    let i = index_rec s len start c in   
+    let finish = 
+      if i < 0 then (      
+        cursor := -1 ;
+        len 
+      )
+      else (
+        cursor := i + 1;
+        i 
+      ) in 
+    String.sub s start (finish - start)
+  
 let rec rindex_rec s i c =
   if i < 0 then i else
   if String.unsafe_get s i = c then i else rindex_rec s (i - 1) c;;

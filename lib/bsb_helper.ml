@@ -525,6 +525,20 @@ val repeat : int -> string -> string
 val equal : string -> string -> bool
 
 (**
+  [extract_until s cursor sep]
+   When [sep] not found, the cursor is updated to -1,
+   otherwise cursor is increased to 1 + [sep_position]
+   User can not determine whether it is found or not by
+   telling the return string is empty since 
+   "\n\n" would result in an empty string too.
+*)
+val extract_until:
+  string -> 
+  int ref -> (* cursor to be updated *)
+  char -> 
+  string
+
+(**
   [find ~start ~sub s]
   returns [-1] if not found
 *)
@@ -845,6 +859,31 @@ let tail_from s x =
 
 let equal (x : string) y  = x = y
 
+let rec index_rec s lim i c =
+  if i >= lim then -1 else
+  if String.unsafe_get s i = c then i 
+  else index_rec s lim (i + 1) c
+
+let extract_until s cursor c =       
+  let len = String.length s in   
+  let start = !cursor in 
+  if start < 0 || start >= len then (
+    cursor := -1;
+    ""
+    )
+  else 
+    let i = index_rec s len start c in   
+    let finish = 
+      if i < 0 then (      
+        cursor := -1 ;
+        len 
+      )
+      else (
+        cursor := i + 1;
+        i 
+      ) in 
+    String.sub s start (finish - start)
+  
 let rec rindex_rec s i c =
   if i < 0 then i else
   if String.unsafe_get s i = c then i else rindex_rec s (i - 1) c;;
@@ -5154,23 +5193,103 @@ let bsbuild_cache = ".bsbuild"
 
 let module_info_magic_number = "BSBUILD20170802"
 
-(* String_map.compare_key *)
-let linear (x : Bsb_db.ts) : ts = 
-  Ext_array.map  x String_map.to_sorted_array
+let nl buf = 
+  Buffer.add_char buf '\n'
+let comma buf = 
+  Buffer.add_char buf ','
+let bool buf b =   
+  Buffer.add_char buf (if b then '1' else '0')
+let rec encode_module_info  (x : Bsb_db.module_info) (buf : Buffer.t) =   
+  encode_mli x.mli buf;
+  nl buf; 
+  encode_ml x.ml buf 
+and encode_ml (ml_kind : Bsb_db.ml_kind ) (buf : Buffer.t) =   
+  match ml_kind with 
+  | Ml_empty -> Buffer.add_char buf '0'
+  | Ml_source (name,is_re,case) -> 
+    encode_triple name is_re case buf
+and encode_mli (mli_kind : Bsb_db.mli_kind) (buf : Buffer.t) =     
+  match mli_kind with 
+  | Mli_empty -> Buffer.add_char buf '0'
+  | Mli_source (name,is_re,case) -> 
+    encode_triple name is_re case buf 
+and encode_triple name is_re case buf =     
+  Buffer.add_string buf name; 
+  comma buf;
+  bool buf is_re ; 
+  comma buf;
+  bool buf case
 
+let encode_pair (name : string) (module_info : Bsb_db.module_info) 
+  (buf : Buffer.t) = 
+  nl buf; 
+  Buffer.add_string buf name; 
+  nl buf; 
+  encode_module_info module_info buf 
+
+let encode_single (x : Bsb_db.t) (buf : Buffer.t)  =  
+  let len = String_map.cardinal x in 
+  nl buf ; 
+  Buffer.add_string buf (string_of_int len);
+  String_map.iter (fun name module_info -> encode_pair name module_info buf) x   
+
+let encode (x : Bsb_db.ts) (buf : Buffer.t) =     
+  nl buf; 
+  let len = Array.length x in 
+  Buffer.add_string buf (string_of_int len); 
+  Ext_array.iter x (fun x -> encode_single x buf)
+
+type cursor = int ref 
+
+let extract_line (x : string) (cur : cursor) : string =
+  Ext_string.extract_until x cur '\n'
+
+let rec decode (x : string) (offset : cursor) =   
+  let len = int_of_string (extract_line x offset) in  
+  Array.init len (fun _ ->  decode_single x offset)
+and decode_single x (offset : cursor) = 
+  let cardinal = int_of_string (extract_line x offset) in 
+  Array.init cardinal (fun _ -> 
+    let module_name = extract_line x offset in 
+    let mli = decode_triple_intf (extract_line x offset) in 
+    let ml = decode_triple_impl (extract_line x offset) in 
+    module_name, Bsb_db.{mli ; ml}
+  )
+and decode_triple_intf (pair : string) : Bsb_db.mli_kind = 
+  if pair = "0" then Mli_empty 
+  else 
+    let cur = ref 0 in 
+    let name = Ext_string.extract_until pair cur ',' in 
+    let is_re =  Ext_string.extract_until pair cur ',' in 
+    let case = Ext_string.extract_until pair cur ',' in 
+    Mli_source(name,  is_re = "1", case = "1" )  
+and decode_triple_impl (pair : string) : Bsb_db.ml_kind =     
+  if pair = "0" then Ml_empty
+  else 
+    let cur = ref 0 in 
+    let name = Ext_string.extract_until pair cur ',' in 
+    let is_re =  Ext_string.extract_until pair cur ',' in 
+    let case = Ext_string.extract_until pair cur ',' in 
+    Ml_source (name, is_re = "1", case = "1")
+
+ 
 let write_build_cache ~dir (bs_files : Bsb_db.ts)  : unit = 
   let oc = open_out_bin (Filename.concat dir bsbuild_cache) in 
   output_string oc module_info_magic_number ;
-  output_value oc (linear bs_files);
+  let buf = Buffer.create 10_000 in 
+  encode bs_files buf; 
+  Buffer.output_buffer oc buf ; 
   close_out oc 
 
-let read_build_cache ~dir  : ts = 
+ 
+let read_build_cache ~dir  = 
   let ic = open_in_bin (Filename.concat dir bsbuild_cache) in 
-  let buffer = really_input_string ic (String.length module_info_magic_number) in
-  assert(buffer = module_info_magic_number); 
-  let data : ts = input_value ic in 
-  close_in ic ;
-  data 
+  let len = in_channel_length ic in 
+  let all_content = really_input_string ic len in 
+  let offset = ref 0 in 
+  let cur_module_info_magic_number = extract_line all_content offset in 
+  assert (cur_module_info_magic_number = module_info_magic_number); 
+  decode all_content offset
 
 let cmp (a : string) (b,_) = String_map.compare_key a b   
 

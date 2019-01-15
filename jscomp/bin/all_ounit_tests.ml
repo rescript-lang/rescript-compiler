@@ -1942,11 +1942,20 @@ val repeat : int -> string -> string
 
 val equal : string -> string -> bool
 
+(**
+  [extract_until s cursor sep]
+   When [sep] not found, the cursor is updated to -1,
+   otherwise cursor is increased to 1 + [sep_position]
+   User can not determine whether it is found or not by
+   telling the return string is empty since 
+   "\n\n" would result in an empty string too.
+*)
 val extract_until:
   string -> 
-  int -> 
+  int ref -> (* cursor to be updated *)
   char -> 
   string
+
 (**
   [find ~start ~sub s]
   returns [-1] if not found
@@ -2273,11 +2282,25 @@ let rec index_rec s lim i c =
   if String.unsafe_get s i = c then i 
   else index_rec s lim (i + 1) c
 
-let extract_until s start c =       
+let extract_until s cursor c =       
   let len = String.length s in   
-  assert (start >= 0 && start < len);  
-  let i = index_rec s len start c in   
-  String.sub s start ((if i < 0 then len else i) - start)
+  let start = !cursor in 
+  if start < 0 || start >= len then (
+    cursor := -1;
+    ""
+    )
+  else 
+    let i = index_rec s len start c in   
+    let finish = 
+      if i < 0 then (      
+        cursor := -1 ;
+        len 
+      )
+      else (
+        cursor := i + 1;
+        i 
+      ) in 
+    String.sub s start (finish - start)
   
 let rec rindex_rec s i c =
   if i < 0 then i else
@@ -14815,11 +14838,29 @@ let suites =
       Ext_string.rindex_neg "hello" 'l' =~ 3 ;
       Ext_string.rindex_neg "hello" 'o' =~ 4 ;
     end;
-    __LOC__ >:: begin fun _ -> 
-      let nl s = Ext_string.extract_until s 0 '\n' in 
-      nl "hello\n" =~ "hello";
-      nl "\nhell" =~ "";
-      nl "hello" =~ "hello"
+    __LOC__ >:: begin 
+      fun _ -> 
+      let nl cur s = Ext_string.extract_until s cur '\n' in 
+      nl (ref 0) "hello\n" =~ "hello";
+      nl (ref 0) "\nhell" =~ "";
+      nl (ref 0) "hello" =~ "hello";
+      let cur = ref 0 in 
+      let b = "a\nb\nc\nd" in 
+      nl cur b =~ "a";
+      nl cur b =~ "b";
+      nl cur b =~ "c";
+      nl cur b =~ "d";
+      nl cur b =~ "" ;
+      nl cur b =~ "" ;
+      cur := 0 ;
+      let b = "a\nb\nc\nd\n" in 
+      nl cur b =~ "a";
+      nl cur b =~ "b";
+      nl cur b =~ "c";
+      nl cur b =~ "d";
+      nl cur b =~ "" ;
+      nl cur b =~ "" ;
+
     end ;
     __LOC__ >:: begin fun _ -> 
       OUnit.assert_bool "empty string" (Ext_string.rindex_neg "" 'x' < 0 )
