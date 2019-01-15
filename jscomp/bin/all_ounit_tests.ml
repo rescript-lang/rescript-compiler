@@ -1956,6 +1956,13 @@ val extract_until:
   char -> 
   string
 
+val index_count:  
+  string -> 
+  int ->
+  char -> 
+  int -> 
+  int 
+
 (**
   [find ~start ~sub s]
   returns [-1] if not found
@@ -2282,6 +2289,19 @@ let rec index_rec s lim i c =
   if String.unsafe_get s i = c then i 
   else index_rec s lim (i + 1) c
 
+let rec index_rec_count s lim i c count =
+  if i >= lim then -1 else
+  if String.unsafe_get s i = c then 
+    if count = 1 then i 
+    else index_rec_count s lim (i + 1) c (count - 1)
+  else index_rec_count s lim (i + 1) c count
+
+let index_count s i c count =     
+  let lim = String.length s in 
+  if i < 0 || i >= lim || count < 1 then 
+    invalid_arg "index_count";
+    
+  index_rec_count s lim i c count 
 let extract_until s cursor c =       
   let len = String.length s in   
   let start = !cursor in 
@@ -14860,7 +14880,15 @@ let suites =
       nl cur b =~ "d";
       nl cur b =~ "" ;
       nl cur b =~ "" ;
-
+    end ;
+    __LOC__ >:: begin fun _ -> 
+      let b = "a\nb\nc\nd\n" in
+      let a = Ext_string.index_count in 
+      a b 0 '\n' 1 =~ 1 ;
+      a b 0 '\n' 2 =~ 3;
+      a b 0 '\n' 3 =~ 5;
+      a b 0 '\n' 4 =~ 7; 
+      a b 0 '\n' 5 =~ -1; 
     end ;
     __LOC__ >:: begin fun _ -> 
       OUnit.assert_bool "empty string" (Ext_string.rindex_neg "" 'x' < 0 )
