@@ -12427,19 +12427,21 @@ module Bsb_db_io : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
- type t  
+ 
   
- type ts = t array
+type t
 
 val write_build_cache : 
   dir:string -> Bsb_db.ts -> unit
 
-  
-val read_build_cache : dir:string -> ts
+
+val read_build_cache : 
+  dir:string -> t
 
 val find_opt :
-  t -> 
-  string -> 
+  t -> (* contains global info *)
+  int -> (* more likely to be zero *)
+  string -> (* module name *)
   Bsb_db.module_info option 
 end = struct
 #1 "bsb_db_io.ml"
@@ -12468,8 +12470,12 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
- type t = string array * Bsb_db.module_info array
- type ts = t array 
+ type group = {
+   modules : string array ; 
+   meta_info_offset : int 
+ }
+
+type t = group array * string (* string is whole content*)
 
 let bsbuild_cache = ".bsbuild"    
 
@@ -12542,22 +12548,22 @@ type cursor = int ref
 let extract_line (x : string) (cur : cursor) : string =
   Ext_string.extract_until x cur '\n'
 
+(* update [cursor] *)  
+let walk_module_infos (x : string) (cur : cursor) (cardinal : int) 
+  =   
+  cur := 
+    (Ext_string.index_count x !cur '\n' (cardinal * 2) + 1) 
 let rec decode (x : string) (offset : cursor) =   
   let len = int_of_string (extract_line x offset) in  
   Array.init len (fun _ ->  decode_single x offset)
-and decode_single x (offset : cursor) = 
+and decode_single x (offset : cursor) : group = 
   let cardinal = int_of_string (extract_line x offset) in 
-  let a = decode_modules x offset cardinal in 
-  let b = decode_module_infos x offset cardinal in 
-  a, b
+  let modules = decode_modules x offset cardinal in 
+  let meta_info_offset = !offset in 
+  walk_module_infos x offset cardinal ;
+  { modules ; meta_info_offset }
 and decode_modules x offset cardinal =   
   Array.init cardinal (fun _ -> extract_line x offset)
-and decode_module_infos x offset cardinal =   
-  Array.init cardinal (fun _ -> 
-      let mli = decode_triple_intf (extract_line x offset) in 
-      let ml = decode_triple_impl (extract_line x offset) in 
-      Bsb_db.{mli ; ml}
-    )
 and decode_triple_intf (pair : string) : Bsb_db.mli_kind = 
   if pair = "0" then Mli_empty 
   else 
@@ -12581,15 +12587,16 @@ let write_build_cache ~dir (bs_files : Bsb_db.ts)  : unit =
   output_string oc module_info_magic_number ;
   encode bs_files oc; 
   close_out oc 
- 
-let read_build_cache ~dir  : (string array * _) array = 
+
+
+let read_build_cache ~dir  : t = 
   let ic = open_in_bin (Filename.concat dir bsbuild_cache) in 
   let len = in_channel_length ic in 
   let all_content = really_input_string ic len in 
   let offset = ref 0 in 
   let cur_module_info_magic_number = extract_line all_content offset in 
   assert (cur_module_info_magic_number = module_info_magic_number); 
-  decode all_content offset
+  decode all_content offset, all_content
 
 let cmp (a : string) b = String_map.compare_key a b   
 
@@ -12624,11 +12631,22 @@ let find_opt_aux sorted key  : _ option =
       if c2 > 0 then None
       else binarySearchAux sorted 0 (len - 1) key
 
-let find_opt ((sorted,_) as x  : t) key : _ option = 
-  let i = find_opt_aux sorted key in 
+let find_opt 
+  ((sorteds,whole) : t )  i key : _ option = 
+  let group = sorteds.(i) in 
+  let i = find_opt_aux group.modules key in 
   match i with 
   | None -> None 
-  | Some index -> Some ((snd x).(index))
+  | Some index ->     
+    let cursor = 
+      if index = 0 then ref group.meta_info_offset 
+      else 
+        ref (Ext_string.index_count 
+            whole group.meta_info_offset '\n' (2 * index) + 1)
+    in 
+    let mli = decode_triple_intf (extract_line whole cursor) in 
+    let ml = decode_triple_impl (extract_line whole cursor) in 
+    Some (Bsb_db.{mli; ml})
 end
 module Bsb_namespace_map_gen : sig 
 #1 "bsb_namespace_map_gen.mli"
