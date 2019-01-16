@@ -119,7 +119,7 @@ let  handle_empty_sources
         else
           match Ext_string.is_valid_source_name name with 
           | Good ->   begin 
-              let new_acc = Bsb_db.map_update ~dir acc name  in 
+              let new_acc = Bsb_db.collect_module_by_filename ~dir acc name  in 
               String_vec.push name dyn_file_array ;
               new_acc 
             end 
@@ -192,7 +192,7 @@ let extract_generators
               output |> List.iter begin fun  output -> 
                   match Ext_string.is_valid_source_name output with
                   | Good ->
-                    cur_sources := Bsb_db.map_update ~dir !cur_sources output
+                    cur_sources := Bsb_db.collect_module_by_filename ~dir !cur_sources output
                   | Invalid_module_name ->                  
                     Bsb_log.warn warning_unused_file output dir 
                   | Suffix_mismatch -> ()                
@@ -290,7 +290,7 @@ let rec
             else 
               match Ext_string.is_valid_source_name name with 
               | Good -> 
-                Bsb_db.map_update  ~dir acc name 
+                Bsb_db.collect_module_by_filename  ~dir acc name 
               | Invalid_module_name ->
                 Bsb_log.warn
                   warning_unused_file
@@ -315,7 +315,7 @@ let rec
         Array.fold_left (fun acc (s : Ext_json_types.t) ->
             match s with 
             | Str {str = s} -> 
-              Bsb_db.map_update ~dir acc s
+              Bsb_db.collect_module_by_filename ~dir acc s
             | _ -> acc
           ) !cur_sources sx    
     | Some (Obj {map = m; loc} ) -> (* { excludes : [], slow_re : "" }*)
@@ -339,7 +339,7 @@ let rec
       cur_sources := Array.fold_left (fun acc name -> 
           if is_input_or_output generators name || not (predicate name) then acc 
           else 
-            Bsb_db.map_update  ~dir acc name 
+            Bsb_db.collect_module_by_filename  ~dir acc name 
         ) !cur_sources (Lazy.force file_array)      
     | Some x -> Bsb_exception.config_error x "files field expect array or object "
   end;

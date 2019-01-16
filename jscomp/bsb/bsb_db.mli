@@ -74,7 +74,7 @@ val filename_sans_suffix_of_module_info : module_info -> string
   Currently it is okay to have duplicated module, 
   In the future, we may emit a warning 
 *)
-val map_update : 
+val collect_module_by_filename : 
   dir:string -> t ->  string -> t
 
 (**
