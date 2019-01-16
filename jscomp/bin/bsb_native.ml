@@ -12526,10 +12526,10 @@ let read_build_cache ~dir  : t =
 
 let cmp (a : string) b = String_map.compare_key a b   
 
-let rec binarySearchAux arr (lo : int) (hi : int) (key : string)  : _ option = 
+let rec binarySearchAux (arr : string array) (lo : int) (hi : int) (key : string)  : _ option = 
   let mid = (lo + hi)/2 in 
   let midVal = Array.unsafe_get arr mid in 
-  let c = cmp key midVal [@bs] in 
+  let c = cmp key midVal in 
   if c = 0 then Some (mid)
   else if c < 0 then  (*  a[lo] =< key < a[mid] <= a[hi] *)
     if hi = mid then  
@@ -12549,11 +12549,11 @@ let find_opt_aux sorted key  : _ option =
   if len = 0 then None
   else 
     let lo = Array.unsafe_get sorted 0 in 
-    let c = cmp key lo [@bs] in 
+    let c = cmp key lo in 
     if c < 0 then None
     else
       let hi = Array.unsafe_get sorted (len - 1) in 
-      let c2 = cmp key hi [@bs]in 
+      let c2 = cmp key hi in 
       if c2 > 0 then None
       else binarySearchAux sorted 0 (len - 1) key
 
