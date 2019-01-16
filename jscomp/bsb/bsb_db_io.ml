@@ -32,7 +32,6 @@ type t = group array * string (* string is whole content*)
 
 let bsbuild_cache = ".bsbuild"    
 
-let module_info_magic_number = "BSBUILD20170802"
 
 let nl buf = 
   Buffer.add_char buf '\n'
@@ -99,11 +98,11 @@ type cursor = int ref
 let extract_line (x : string) (cur : cursor) : string =
   Ext_string.extract_until x cur '\n'
 
-(* update [cursor] *)  
-let walk_module_infos (x : string) (cur : cursor) (cardinal : int) 
-  =   
-  cur := 
-    (Ext_string.index_count x !cur '\n' (cardinal * 2) + 1) 
+let next_mdoule_info (s : string) (cur : int) ~count  =  
+  if count = 0 then cur 
+  else 
+    Ext_string.index_count s cur '\n' (count * 2) + 1
+
 let rec decode (x : string) (offset : cursor) =   
   let len = int_of_string (extract_line x offset) in  
   Array.init len (fun _ ->  decode_single x offset)
@@ -111,7 +110,7 @@ and decode_single x (offset : cursor) : group =
   let cardinal = int_of_string (extract_line x offset) in 
   let modules = decode_modules x offset cardinal in 
   let meta_info_offset = !offset in 
-  walk_module_infos x offset cardinal ;
+  offset := next_mdoule_info x meta_info_offset ~count:cardinal;
   { modules ; meta_info_offset }
 and decode_modules x (offset : cursor) cardinal =   
   let result = Array.make cardinal "" in 
@@ -120,7 +119,7 @@ and decode_modules x (offset : cursor) cardinal =
   done ;
   result
   
-and decode_triple_intf (pair : string) : Bsb_db.mli_kind = 
+let decode_triple_intf (pair : string) : Bsb_db.mli_kind = 
   if pair = "0" then Mli_empty 
   else 
     let cur = ref 0 in 
@@ -128,7 +127,7 @@ and decode_triple_intf (pair : string) : Bsb_db.mli_kind =
     let is_re =  Ext_string.extract_until pair cur ',' in 
     let case = Ext_string.extract_until pair cur ',' in 
     Mli_source(name,  is_re = "1", case = "1" )  
-and decode_triple_impl (pair : string) : Bsb_db.ml_kind =     
+let decode_triple_impl (pair : string) : Bsb_db.ml_kind =     
   if pair = "0" then Ml_empty
   else 
     let cur = ref 0 in 
@@ -140,7 +139,7 @@ and decode_triple_impl (pair : string) : Bsb_db.ml_kind =
 
 let write_build_cache ~dir (bs_files : Bsb_db.ts)  : unit = 
   let oc = open_out_bin (Filename.concat dir bsbuild_cache) in 
-  output_string oc module_info_magic_number ;
+  output_string oc Bs_version.version ;
   encode bs_files oc; 
   close_out oc 
 
@@ -151,7 +150,7 @@ let read_build_cache ~dir  : t =
   let all_content = really_input_string ic len in 
   let offset = ref 0 in 
   let cur_module_info_magic_number = extract_line all_content offset in 
-  assert (cur_module_info_magic_number = module_info_magic_number); 
+  assert (cur_module_info_magic_number = Bs_version.version); 
   decode all_content offset, all_content
 
 let cmp (a : string) b = String_map.compare_key a b   
@@ -188,17 +187,15 @@ let find_opt_aux sorted key  : _ option =
       else binarySearchAux sorted 0 (len - 1) key
 
 let find_opt 
-  ((sorteds,whole) : t )  i key : _ option = 
+  ((sorteds,whole) : t )  i key 
+    : Bsb_db.module_info option = 
   let group = sorteds.(i) in 
   let i = find_opt_aux group.modules key in 
   match i with 
   | None -> None 
-  | Some index ->     
+  | Some count ->     
     let cursor = 
-      if index = 0 then ref group.meta_info_offset 
-      else 
-        ref (Ext_string.index_count 
-            whole group.meta_info_offset '\n' (2 * index) + 1)
+      ref (next_mdoule_info whole group.meta_info_offset ~count)
     in 
     let mli = decode_triple_intf (extract_line whole cursor) in 
     let ml = decode_triple_impl (extract_line whole cursor) in 

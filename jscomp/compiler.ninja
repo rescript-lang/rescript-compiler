@@ -144,11 +144,13 @@ build ext/ext_modulename.cmx : optc ext/ext_modulename.ml | ext/ext_char.cmx ext
 build ext/ext_modulename.cmi : optc ext/ext_modulename.mli | 
 build ext/ext_namespace.cmx : optc ext/ext_namespace.ml | ext/ext_char.cmx ext/ext_namespace.cmi ext/ext_string.cmx
 build ext/ext_namespace.cmi : optc ext/ext_namespace.mli | 
+build ext/ext_obj.cmx : optc ext/ext_obj.ml | ext/ext_list.cmx ext/ext_obj.cmi
+build ext/ext_obj.cmi : optc ext/ext_obj.mli | 
 build ext/ext_option.cmx : optc ext/ext_option.ml | ext/ext_option.cmi
 build ext/ext_option.cmi : optc ext/ext_option.mli | 
 build ext/ext_path.cmx : optc ext/ext_path.ml | ext/ext_list.cmx ext/ext_path.cmi ext/ext_pervasives.cmx ext/ext_string.cmx ext/ext_sys.cmx ext/literals.cmx
 build ext/ext_path.cmi : optc ext/ext_path.mli | 
-build ext/ext_pervasives.cmx : optc ext/ext_pervasives.ml | ext/ext_list.cmx ext/ext_pervasives.cmi
+build ext/ext_pervasives.cmx : optc ext/ext_pervasives.ml | ext/ext_pervasives.cmi
 build ext/ext_pervasives.cmi : optc ext/ext_pervasives.mli | 
 build ext/ext_position.cmx : optc ext/ext_position.ml | ext/ext_position.cmi
 build ext/ext_position.cmi : optc ext/ext_position.mli | 
@@ -162,7 +164,7 @@ build ext/ext_scc.cmx : optc ext/ext_scc.ml | ext/ext_scc.cmi ext/int_vec.cmx ex
 build ext/ext_scc.cmi : optc ext/ext_scc.mli | ext/int_vec.cmi ext/int_vec_vec.cmi
 build ext/ext_stack.cmx : optc ext/ext_stack.ml | ext/ext_stack.cmi
 build ext/ext_stack.cmi : optc ext/ext_stack.mli | 
-build ext/ext_string.cmx : optc ext/ext_string.ml | ext/ext_bytes.cmx ext/ext_char.cmx ext/ext_string.cmi
+build ext/ext_string.cmx : optc ext/ext_string.ml | ext/ext_bytes.cmx ext/ext_char.cmx ext/ext_pervasives.cmx ext/ext_string.cmi
 build ext/ext_string.cmi : optc ext/ext_string.mli | 
 build ext/ext_sys.cmx : optc ext/ext_sys.ml | ext/ext_sys.cmi
 build ext/ext_sys.cmi : optc ext/ext_sys.mli | 
@@ -573,7 +575,7 @@ build bsb/bsb_config_parse.cmi : optc bsb/bsb_config_parse.mli | bsb/bsb_config_
 build bsb/bsb_config_types.cmx bsb/bsb_config_types.cmi : optc bsb/bsb_config_types.ml | bsb/bsb_file_groups.cmx bsb/bsb_package_specs.cmx bsb/bsb_pkg_types.cmx bsb/bsb_warning.cmx ext/string_hash_set.cmx ext/string_map.cmx
 build bsb/bsb_db.cmx : optc bsb/bsb_db.ml | bsb/bsb_db.cmi bsb/bsb_exception.cmx ext/ext_modulename.cmx ext/ext_path.cmx ext/ext_pervasives.cmx ext/ext_string.cmx ext/string_map.cmx
 build bsb/bsb_db.cmi : optc bsb/bsb_db.mli | ext/string_map.cmi
-build bsb/bsb_db_io.cmx : optc bsb/bsb_db_io.ml | bsb/bsb_db.cmx bsb/bsb_db_io.cmi ext/ext_array.cmx ext/ext_string.cmx ext/string_map.cmx
+build bsb/bsb_db_io.cmx : optc bsb/bsb_db_io.ml | bsb/bsb_db.cmx bsb/bsb_db_io.cmi common/bs_version.cmx ext/ext_array.cmx ext/ext_string.cmx ext/string_map.cmx
 build bsb/bsb_db_io.cmi : optc bsb/bsb_db_io.mli | bsb/bsb_db.cmi
 build bsb/bsb_default.cmx : optc bsb/bsb_default.ml | bsb/bsb_config_types.cmx bsb/bsb_default.cmi
 build bsb/bsb_default.cmi : optc bsb/bsb_default.mli | bsb/bsb_config_types.cmx
@@ -648,7 +650,7 @@ build ounit/oUnitTypes.cmx ounit/oUnitTypes.cmi : optc ounit/oUnitTypes.ml |
 build ounit/oUnitUtils.cmx ounit/oUnitUtils.cmi : optc ounit/oUnitUtils.ml | ounit/oUnitTypes.cmx
 build ounit_tests/ounit_array_tests.cmx ounit_tests/ounit_array_tests.cmi : optc ounit_tests/ounit_array_tests.ml | ext/ext_array.cmx ext/ext_string.cmx ounit/oUnit.cmx
 build ounit_tests/ounit_bal_tree_tests.cmx ounit_tests/ounit_bal_tree_tests.cmi : optc ounit_tests/ounit_bal_tree_tests.ml | ext/set_gen.cmx ext/set_int.cmx ounit/oUnit.cmx ounit_tests/ounit_tests_util.cmx
-build ounit_tests/ounit_bsb_pkg_tests.cmx ounit_tests/ounit_bsb_pkg_tests.cmi : optc ounit_tests/ounit_bsb_pkg_tests.ml | bsb/bsb_pkg_types.cmx ounit/oUnit.cmx
+build ounit_tests/ounit_bsb_pkg_tests.cmx ounit_tests/ounit_bsb_pkg_tests.cmi : optc ounit_tests/ounit_bsb_pkg_tests.ml | bsb/bsb_db_io.cmx bsb/bsb_pkg_types.cmx ounit/oUnit.cmx
 build ounit_tests/ounit_bsb_regex_tests.cmx ounit_tests/ounit_bsb_regex_tests.cmi : optc ounit_tests/ounit_bsb_regex_tests.ml | bsb/bsb_regex.cmx ounit/oUnit.cmx
 build ounit_tests/ounit_cmd_tests.cmx ounit_tests/ounit_cmd_tests.cmi : optc ounit_tests/ounit_cmd_tests.ml | ext/ext_string.cmx ounit/oUnit.cmx ounit_tests/ounit_cmd_util.cmx
 build ounit_tests/ounit_cmd_util.cmx : optc ounit_tests/ounit_cmd_util.ml | ext/literals.cmx ounit_tests/ounit_cmd_util.cmi
@@ -662,7 +664,7 @@ build ounit_tests/ounit_hashtbl_tests.cmx ounit_tests/ounit_hashtbl_tests.cmi : 
 build ounit_tests/ounit_ident_mask_tests.cmx ounit_tests/ounit_ident_mask_tests.cmi : optc ounit_tests/ounit_ident_mask_tests.ml | ext/hash_set_ident_mask.cmx ounit/oUnit.cmx
 build ounit_tests/ounit_int_vec_tests.cmx ounit_tests/ounit_int_vec_tests.cmi : optc ounit_tests/ounit_int_vec_tests.ml | ext/int_vec.cmx ext/int_vec_util.cmx ounit/oUnit.cmx
 build ounit_tests/ounit_js_regex_checker_tests.cmx ounit_tests/ounit_js_regex_checker_tests.cmi : optc ounit_tests/ounit_js_regex_checker_tests.ml | ext/ext_js_regex.cmx ounit/oUnit.cmx
-build ounit_tests/ounit_json_tests.cmx ounit_tests/ounit_json_tests.cmi : optc ounit_tests/ounit_json_tests.ml | ext/ext_json.cmx ext/ext_json_noloc.cmx ext/ext_json_parse.cmx ext/ext_json_types.cmx ext/ext_pervasives.cmx ext/string_map.cmx ounit/oUnit.cmx
+build ounit_tests/ounit_json_tests.cmx ounit_tests/ounit_json_tests.cmi : optc ounit_tests/ounit_json_tests.ml | ext/ext_json.cmx ext/ext_json_noloc.cmx ext/ext_json_parse.cmx ext/ext_json_types.cmx ext/ext_obj.cmx ext/string_map.cmx ounit/oUnit.cmx
 build ounit_tests/ounit_list_test.cmx ounit_tests/ounit_list_test.cmi : optc ounit_tests/ounit_list_test.ml | ext/ext_list.cmx ounit/oUnit.cmx
 build ounit_tests/ounit_map_tests.cmx ounit_tests/ounit_map_tests.cmi : optc ounit_tests/ounit_map_tests.ml | ext/int_map.cmx ounit/oUnit.cmx
 build ounit_tests/ounit_ordered_hash_set_tests.cmx ounit_tests/ounit_ordered_hash_set_tests.cmi : optc ounit_tests/ounit_ordered_hash_set_tests.ml | ext/ext_string.cmx ext/ext_util.cmx ext/ordered_hash_set_string.cmx ounit/oUnit.cmx
@@ -694,7 +696,7 @@ build main/jsoo_main.cmi : optc main/jsoo_main.mli |
 build main/ounit_tests_main.cmx : optc main/ounit_tests_main.ml | ext/resize_array.cmx main/ounit_tests_main.cmi ounit/oUnit.cmx ounit_tests/ounit_array_tests.cmx ounit_tests/ounit_bal_tree_tests.cmx ounit_tests/ounit_bsb_pkg_tests.cmx ounit_tests/ounit_bsb_regex_tests.cmx ounit_tests/ounit_cmd_tests.cmx ounit_tests/ounit_ffi_error_debug_test.cmx ounit_tests/ounit_hash_set_tests.cmx ounit_tests/ounit_hash_stubs_test.cmx ounit_tests/ounit_hashtbl_tests.cmx ounit_tests/ounit_ident_mask_tests.cmx ounit_tests/ounit_int_vec_tests.cmx ounit_tests/ounit_js_regex_checker_tests.cmx ounit_tests/ounit_json_tests.cmx ounit_tests/ounit_list_test.cmx ounit_tests/ounit_map_tests.cmx ounit_tests/ounit_ordered_hash_set_tests.cmx ounit_tests/ounit_path_tests.cmx ounit_tests/ounit_scc_tests.cmx ounit_tests/ounit_string_tests.cmx ounit_tests/ounit_topsort_tests.cmx ounit_tests/ounit_unicode_tests.cmx ounit_tests/ounit_union_find_tests.cmx ounit_tests/ounit_utf8_test.cmx ounit_tests/ounit_vec_test.cmx
 build main/ounit_tests_main.cmi : optc main/ounit_tests_main.mli | 
 
-build ext/ext.cmxa : archive ext/ext_array.cmx ext/ext_bytes.cmx ext/ext_char.cmx ext/ext_cmp.cmx ext/ext_string.cmx ext/ext_list.cmx ext/ext_color.cmx ext/vec_gen.cmx ext/resize_array.cmx ext/string_vec.cmx ext/ext_file_pp.cmx ext/literals.cmx ext/ext_pervasives.cmx ext/ext_sys.cmx ext/ext_path.cmx ext/ext_filename.cmx ext/ext_format.cmx ext/ext_util.cmx ext/hashtbl_gen.cmx ext/string_hashtbl.cmx ext/js_reserved_map.cmx ext/ext_ident.cmx ext/ext_int.cmx ext/ext_io.cmx ext/ext_utf8.cmx ext/ext_js_regex.cmx ext/map_gen.cmx ext/string_map.cmx ext/ext_json_types.cmx ext/ext_json.cmx ext/ext_json_noloc.cmx ext/ext_position.cmx ext/ext_json_parse.cmx ext/ext_json_write.cmx ext/ext_marshal.cmx ext/ext_modulename.cmx ext/ext_namespace.cmx ext/ext_option.cmx ext/ext_pp.cmx ext/int_map.cmx ext/set_gen.cmx ext/ident_set.cmx ext/ext_pp_scope.cmx ext/ext_ref.cmx ext/int_vec.cmx ext/int_vec_vec.cmx ext/ext_scc.cmx ext/ext_stack.cmx ext/set_int.cmx ext/ext_topsort.cmx ext/hash_set_gen.cmx ext/hash_set.cmx ext/hash_set_ident_mask.cmx ext/hash_set_poly.cmx ext/hashtbl_make.cmx ext/ident_hash_set.cmx ext/ident_hashtbl.cmx ext/ident_map.cmx ext/int_hash_set.cmx ext/int_hashtbl.cmx ext/int_vec_util.cmx ext/ordered_hash_map_gen.cmx ext/ordered_hash_map_local_ident.cmx ext/ordered_hash_set_gen.cmx ext/ordered_hash_set_ident.cmx ext/ordered_hash_set_make.cmx ext/ordered_hash_set_string.cmx ext/string_hash_set.cmx ext/string_set.cmx ext/union_find.cmx
+build ext/ext.cmxa : archive ext/ext_array.cmx ext/ext_bytes.cmx ext/ext_char.cmx ext/ext_cmp.cmx ext/ext_pervasives.cmx ext/ext_string.cmx ext/ext_list.cmx ext/ext_color.cmx ext/vec_gen.cmx ext/resize_array.cmx ext/string_vec.cmx ext/ext_file_pp.cmx ext/literals.cmx ext/ext_sys.cmx ext/ext_path.cmx ext/ext_filename.cmx ext/ext_format.cmx ext/ext_util.cmx ext/hashtbl_gen.cmx ext/string_hashtbl.cmx ext/js_reserved_map.cmx ext/ext_ident.cmx ext/ext_int.cmx ext/ext_io.cmx ext/ext_utf8.cmx ext/ext_js_regex.cmx ext/map_gen.cmx ext/string_map.cmx ext/ext_json_types.cmx ext/ext_json.cmx ext/ext_json_noloc.cmx ext/ext_position.cmx ext/ext_json_parse.cmx ext/ext_json_write.cmx ext/ext_marshal.cmx ext/ext_modulename.cmx ext/ext_namespace.cmx ext/ext_obj.cmx ext/ext_option.cmx ext/ext_pp.cmx ext/int_map.cmx ext/set_gen.cmx ext/ident_set.cmx ext/ext_pp_scope.cmx ext/ext_ref.cmx ext/int_vec.cmx ext/int_vec_vec.cmx ext/ext_scc.cmx ext/ext_stack.cmx ext/set_int.cmx ext/ext_topsort.cmx ext/hash_set_gen.cmx ext/hash_set.cmx ext/hash_set_ident_mask.cmx ext/hash_set_poly.cmx ext/hashtbl_make.cmx ext/ident_hash_set.cmx ext/ident_hashtbl.cmx ext/ident_map.cmx ext/int_hash_set.cmx ext/int_hashtbl.cmx ext/int_vec_util.cmx ext/ordered_hash_map_gen.cmx ext/ordered_hash_map_local_ident.cmx ext/ordered_hash_set_gen.cmx ext/ordered_hash_set_ident.cmx ext/ordered_hash_set_make.cmx ext/ordered_hash_set_string.cmx ext/string_hash_set.cmx ext/string_set.cmx ext/union_find.cmx
 build common/common.cmxa : archive common/bs_loc.cmx common/bs_version.cmx common/js_config.cmx common/bs_warnings.cmx common/ext_log.cmx common/lam_methname.cmx common/ml_binary.cmx
 build syntax/syntax.cmxa : archive syntax/bs_syntaxerr.cmx syntax/bs_ast_iterator.cmx syntax/ast_utf8_string.cmx syntax/ast_compatible.cmx syntax/ast_utf8_string_interp.cmx syntax/ast_literal.cmx syntax/ast_comb.cmx syntax/ast_core_type.cmx syntax/bs_ast_invariant.cmx syntax/ast_payload.cmx syntax/ast_attributes.cmx syntax/bs_ast_mapper.cmx syntax/external_arg_spec.cmx syntax/external_ffi_types.cmx syntax/ast_polyvar.cmx syntax/external_process.cmx syntax/ast_pat.cmx syntax/ast_external_mk.cmx syntax/ast_exp.cmx syntax/ast_util.cmx syntax/ast_core_type_class_type.cmx syntax/ast_signature.cmx syntax/ast_structure.cmx syntax/ast_derive.cmx syntax/ast_derive_util.cmx syntax/ast_derive_abstract.cmx syntax/ast_derive_constructor.cmx syntax/ast_derive_dyn.cmx syntax/ast_derive_js_mapper.cmx syntax/ast_derive_projector.cmx syntax/ast_tuple_pattern_flatten.cmx syntax/ast_exp_apply.cmx syntax/ast_exp_extension.cmx syntax/ast_lift.cmx syntax/ast_primitive.cmx syntax/ast_tdcls.cmx syntax/ppx_entry.cmx
 build depends/depends.cmxa : archive depends/bs_exception.cmx depends/ast_extract.cmx depends/binary_ast.cmx

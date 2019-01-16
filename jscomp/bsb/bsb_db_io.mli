@@ -27,6 +27,16 @@
   
 type t
 
+type group = {
+   modules : string array ; 
+   meta_info_offset : int 
+ }
+
+val decode : 
+  string -> 
+  int ref ->
+  group array 
+  
 val write_build_cache : 
   dir:string -> Bsb_db.ts -> unit
 
