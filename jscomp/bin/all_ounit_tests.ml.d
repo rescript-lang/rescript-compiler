@@ -1,10 +1,18 @@
 bin/all_ounit_tests.ml:
+./bsb/bsb_db.ml
+./bsb/bsb_db.mli
+./bsb/bsb_db_io.ml
+./bsb/bsb_db_io.mli
+./bsb/bsb_exception.ml
+./bsb/bsb_exception.mli
 ./bsb/bsb_pkg_types.ml
 ./bsb/bsb_pkg_types.mli
 ./bsb/bsb_regex.ml
 ./bsb/bsb_regex.mli
 ./common/bs_loc.ml
 ./common/bs_loc.mli
+./common/bs_version.ml
+./common/bs_version.mli
 ./ext/ext_array.ml
 ./ext/ext_array.mli
 ./ext/ext_bytes.ml
@@ -30,6 +38,8 @@ bin/all_ounit_tests.ml:
 ./ext/ext_modulename.mli
 ./ext/ext_namespace.ml
 ./ext/ext_namespace.mli
+./ext/ext_obj.ml
+./ext/ext_obj.mli
 ./ext/ext_path.ml
 ./ext/ext_path.mli
 ./ext/ext_pervasives.ml

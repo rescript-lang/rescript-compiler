@@ -217,13 +217,12 @@ let output_ninja_and_namespace_map
   output_reason_config ();
   Bsb_db_io.write_build_cache ~dir:cwd_lib_bs bs_groups ;
   emit_bsc_lib_includes bsc_lib_dirs;
-  List.iter 
-    (fun output -> 
-       Bsb_ninja_util.output_build
-         oc
-         ~output
-         ~input:(Bsb_config.proj_rel output)
-         ~rule:Bsb_rule.copy_resources) static_resources ;
+  Ext_list.iter static_resources (fun output -> 
+      Bsb_ninja_util.output_build
+        oc
+        ~output
+        ~input:(Bsb_config.proj_rel output)
+        ~rule:Bsb_rule.copy_resources);
   (** Generate build statement for each file *)        
   let all_info =      
     Bsb_ninja_file_groups.handle_file_groups oc  

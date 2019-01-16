@@ -59,5 +59,36 @@ let suites =
     s_test0 "@x/y/z" ("y/z","@x");
     s_test1 "xx" "xx";
     s_test1 "xx/yy/zz" "xx/yy/zz"
-  end
+  end;
+  __LOC__ >:: begin fun _ -> 
+   let u = (Bsb_db_io.decode {|4.0.19
+2
+1
+Demo
+0
+src/demo,0,0
+1
+Test
+0
+examples/test,0,0
+|} (ref 7)) in  
+  OUnit.assert_equal u  [| {modules = [|"Demo"|]; meta_info_offset = 16}; {modules = [|"Test"|]; meta_info_offset = 38}|]
+  end ;
+  __LOC__ >:: begin fun _ -> 
+  let v = Bsb_db_io.decode {|4.0.19
+3
+2
+Fib
+Demo
+0
+src/hi/fib,0,0
+0
+src/demo,0,0
+0
+0|} (ref 7) in 
+  OUnit.assert_equal v [| {modules = [|"Fib"; "Demo"|]; meta_info_offset = 20 }; {modules = [||]; meta_info_offset = 54}; {modules = [||]; meta_info_offset = -1} |]
+  end 
   ]
+
+
+

@@ -390,6 +390,160 @@ let lowercase_ascii =
       
 
 end
+module Ext_pervasives : sig 
+#1 "ext_pervasives.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** Extension to standard library [Pervavives] module, safe to open 
+  *)
+
+external reraise: exn -> 'a = "%reraise"
+
+val finally : 'a -> ('a -> 'c) -> ('a -> 'b) -> 'b
+
+val try_it : (unit -> 'a) ->  unit 
+
+val with_file_as_chan : string -> (out_channel -> 'a) -> 'a
+
+val with_file_as_pp : string -> (Format.formatter -> 'a) -> 'a
+
+val is_pos_pow : Int32.t -> int
+
+val failwithf : loc:string -> ('a, unit, string, 'b) format4 -> 'a
+
+val invalid_argf : ('a, unit, string, 'b) format4 -> 'a
+
+val bad_argf : ('a, unit, string, 'b) format4 -> 'a
+
+
+
+
+external id : 'a -> 'a = "%identity"
+
+(** Copied from {!Btype.hash_variant}:
+    need sync up and add test case
+ *)
+val hash_variant : string -> int
+
+val todo : string -> 'a
+end = struct
+#1 "ext_pervasives.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+external reraise: exn -> 'a = "%reraise"
+
+let finally v action f   = 
+  match f v with
+  | exception e -> 
+      action v ;
+      reraise e 
+  | e ->  action v ; e 
+
+let try_it f  =   
+  try ignore (f ()) with _ -> ()
+
+let with_file_as_chan filename f = 
+  finally (open_out_bin filename) close_out f 
+
+let with_file_as_pp filename f = 
+  finally (open_out_bin filename) close_out
+    (fun chan -> 
+      let fmt = Format.formatter_of_out_channel chan in
+      let v = f  fmt in
+      Format.pp_print_flush fmt ();
+      v
+    ) 
+
+
+let  is_pos_pow n = 
+  let module M = struct exception E end in 
+  let rec aux c (n : Int32.t) = 
+    if n <= 0l then -2 
+    else if n = 1l then c 
+    else if Int32.logand n 1l =  0l then   
+      aux (c + 1) (Int32.shift_right n 1 )
+    else raise M.E in 
+  try aux 0 n  with M.E -> -1
+
+let failwithf ~loc fmt = Format.ksprintf (fun s -> failwith (loc ^ s))
+    fmt
+    
+let invalid_argf fmt = Format.ksprintf invalid_arg fmt
+
+let bad_argf fmt = Format.ksprintf (fun x -> raise (Arg.Bad x ) ) fmt
+
+external id : 'a -> 'a = "%identity"
+
+
+let hash_variant s =
+  let accu = ref 0 in
+  for i = 0 to String.length s - 1 do
+    accu := 223 * !accu + Char.code s.[i]
+  done;
+  (* reduce to 31 bits *)
+  accu := !accu land (1 lsl 31 - 1);
+  (* make it signed for 64 bits architectures *)
+  if !accu > 0x3FFFFFFF then !accu - (1 lsl 31) else !accu
+
+let todo loc = 
+  failwith (loc ^ " Not supported yet")
+end
 module Ext_string : sig 
 #1 "ext_string.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -487,6 +641,27 @@ val is_empty : string -> bool
 val repeat : int -> string -> string 
 
 val equal : string -> string -> bool
+
+(**
+  [extract_until s cursor sep]
+   When [sep] not found, the cursor is updated to -1,
+   otherwise cursor is increased to 1 + [sep_position]
+   User can not determine whether it is found or not by
+   telling the return string is empty since 
+   "\n\n" would result in an empty string too.
+*)
+val extract_until:
+  string -> 
+  int ref -> (* cursor to be updated *)
+  char -> 
+  string
+
+val index_count:  
+  string -> 
+  int ->
+  char -> 
+  int -> 
+  int 
 
 (**
   [find ~start ~sub s]
@@ -809,6 +984,44 @@ let tail_from s x =
 
 let equal (x : string) y  = x = y
 
+let rec index_rec s lim i c =
+  if i >= lim then -1 else
+  if String.unsafe_get s i = c then i 
+  else index_rec s lim (i + 1) c
+
+let rec index_rec_count s lim i c count =
+  if i >= lim then -1 else
+  if String.unsafe_get s i = c then 
+    if count = 1 then i 
+    else index_rec_count s lim (i + 1) c (count - 1)
+  else index_rec_count s lim (i + 1) c count
+
+let index_count s i c count =     
+  let lim = String.length s in 
+  if i < 0 || i >= lim || count < 1 then 
+    Ext_pervasives.invalid_argf "index_count: (%d,%d)"  i count;
+
+  index_rec_count s lim i c count 
+let extract_until s cursor c =       
+  let len = String.length s in   
+  let start = !cursor in 
+  if start < 0 || start >= len then (
+    cursor := -1;
+    ""
+    )
+  else 
+    let i = index_rec s len start c in   
+    let finish = 
+      if i < 0 then (      
+        cursor := -1 ;
+        len 
+      )
+      else (
+        cursor := i + 1;
+        i 
+      ) in 
+    String.sub s start (finish - start)
+  
 let rec rindex_rec s i c =
   if i < 0 then i else
   if String.unsafe_get s i = c then i else rindex_rec s (i - 1) c;;
@@ -5582,246 +5795,6 @@ let parse_json_from_file s =
 
 # 688 "ext/ext_json_parse.ml"
 
-end
-module Ext_pervasives : sig 
-#1 "ext_pervasives.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(** Extension to standard library [Pervavives] module, safe to open 
-  *)
-
-external reraise: exn -> 'a = "%reraise"
-
-val finally : 'a -> ('a -> 'c) -> ('a -> 'b) -> 'b
-
-val try_it : (unit -> 'a) ->  unit 
-
-val with_file_as_chan : string -> (out_channel -> 'a) -> 'a
-
-val with_file_as_pp : string -> (Format.formatter -> 'a) -> 'a
-
-val is_pos_pow : Int32.t -> int
-
-val failwithf : loc:string -> ('a, unit, string, 'b) format4 -> 'a
-
-val invalid_argf : ('a, unit, string, 'b) format4 -> 'a
-
-val bad_argf : ('a, unit, string, 'b) format4 -> 'a
-
-
-
-val dump : 'a -> string 
-val pp_any : Format.formatter -> 'a -> unit 
-external id : 'a -> 'a = "%identity"
-
-(** Copied from {!Btype.hash_variant}:
-    need sync up and add test case
- *)
-val hash_variant : string -> int
-
-val todo : string -> 'a
-end = struct
-#1 "ext_pervasives.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-external reraise: exn -> 'a = "%reraise"
-
-let finally v action f   = 
-  match f v with
-  | exception e -> 
-      action v ;
-      reraise e 
-  | e ->  action v ; e 
-
-let try_it f  =   
-  try ignore (f ()) with _ -> ()
-
-let with_file_as_chan filename f = 
-  finally (open_out_bin filename) close_out f 
-
-let with_file_as_pp filename f = 
-  finally (open_out_bin filename) close_out
-    (fun chan -> 
-      let fmt = Format.formatter_of_out_channel chan in
-      let v = f  fmt in
-      Format.pp_print_flush fmt ();
-      v
-    ) 
-
-
-let  is_pos_pow n = 
-  let module M = struct exception E end in 
-  let rec aux c (n : Int32.t) = 
-    if n <= 0l then -2 
-    else if n = 1l then c 
-    else if Int32.logand n 1l =  0l then   
-      aux (c + 1) (Int32.shift_right n 1 )
-    else raise M.E in 
-  try aux 0 n  with M.E -> -1
-
-let failwithf ~loc fmt = Format.ksprintf (fun s -> failwith (loc ^ s))
-    fmt
-    
-let invalid_argf fmt = Format.ksprintf invalid_arg fmt
-
-let bad_argf fmt = Format.ksprintf (fun x -> raise (Arg.Bad x ) ) fmt
-
-
-let rec dump r =
-  if Obj.is_int r then
-    string_of_int (Obj.magic r : int)
-  else (* Block. *)
-    let rec get_fields acc = function
-      | 0 -> acc
-      | n -> let n = n-1 in get_fields (Obj.field r n :: acc) n
-    in
-    let rec is_list r =
-      if Obj.is_int r then
-        r = Obj.repr 0 (* [] *)
-      else
-        let s = Obj.size r and t = Obj.tag r in
-        t = 0 && s = 2 && is_list (Obj.field r 1) (* h :: t *)
-    in
-    let rec get_list r =
-      if Obj.is_int r then
-        []
-      else
-        let h = Obj.field r 0 and t = get_list (Obj.field r 1) in
-        h :: t
-    in
-    let opaque name =
-      (* XXX In future, print the address of value 'r'.  Not possible
-       * in pure OCaml at the moment.  *)
-      "<" ^ name ^ ">"
-    in
-    let s = Obj.size r and t = Obj.tag r in
-    (* From the tag, determine the type of block. *)
-    match t with
-    | _ when is_list r ->
-      let fields = get_list r in
-      "[" ^ String.concat "; " (Ext_list.map fields dump) ^ "]"
-    | 0 ->
-      let fields = get_fields [] s in
-      "(" ^ String.concat ", " (Ext_list.map fields dump) ^ ")"
-    | x when x = Obj.lazy_tag ->
-      (* Note that [lazy_tag .. forward_tag] are < no_scan_tag.  Not
-         * clear if very large constructed values could have the same
-         * tag. XXX *)
-      opaque "lazy"
-    | x when x = Obj.closure_tag ->
-      opaque "closure"
-    | x when x = Obj.object_tag ->
-      let fields = get_fields [] s in
-      let _clasz, id, slots =
-        match fields with
-        | h::h'::t -> h, h', t
-        | _ -> assert false
-      in
-      (* No information on decoding the class (first field).  So just print
-         * out the ID and the slots. *)
-      "Object #" ^ dump id ^ " (" ^ String.concat ", " (Ext_list.map slots dump) ^ ")"
-    | x when x = Obj.infix_tag ->
-      opaque "infix"
-    | x when x = Obj.forward_tag ->
-      opaque "forward"
-    | x when x < Obj.no_scan_tag ->
-      let fields = get_fields [] s in
-      "Tag" ^ string_of_int t ^
-      " (" ^ String.concat ", " (Ext_list.map fields dump) ^ ")"
-    | x when x = Obj.string_tag ->
-      "\"" ^ String.escaped (Obj.magic r : string) ^ "\""
-    | x when x = Obj.double_tag ->
-      string_of_float (Obj.magic r : float)
-    | x when x = Obj.abstract_tag ->
-      opaque "abstract"
-    | x when x = Obj.custom_tag ->
-      opaque "custom"
-    | x when x = Obj.custom_tag ->
-      opaque "final"
-    | x when x = Obj.double_array_tag ->
-      "[|"^
-      String.concat ";"
-        (Array.to_list (Array.map string_of_float (Obj.magic r : float array))) ^
-      "|]"
-    | _ ->
-      opaque (Printf.sprintf "unknown: tag %d size %d" t s)
-
-let dump v = dump (Obj.repr v)
-
-let pp_any fmt v = 
-  Format.fprintf fmt "@[%s@]"
-  (dump v )
-external id : 'a -> 'a = "%identity"
-
-
-let hash_variant s =
-  let accu = ref 0 in
-  for i = 0 to String.length s - 1 do
-    accu := 223 * !accu + Char.code s.[i]
-  done;
-  (* reduce to 31 bits *)
-  accu := !accu land (1 lsl 31 - 1);
-  (* make it signed for 64 bits architectures *)
-  if !accu > 0x3FFFFFFF then !accu - (1 lsl 31) else !accu
-
-let todo loc = 
-  failwith (loc ^ " Not supported yet")
 end
 module Ext_sys : sig 
 #1 "ext_sys.mli"
@@ -12368,17 +12341,31 @@ module Bsb_db_io : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
- type t  
+ 
   
- type ts = t array
+type t
 
+type group = {
+   modules : string array ; 
+   meta_info_offset : int 
+ }
+
+val decode : 
+  string -> 
+  int ref ->
+  group array 
+  
 val write_build_cache : 
   dir:string -> Bsb_db.ts -> unit
-val read_build_cache : dir:string -> ts
+
+
+val read_build_cache : 
+  dir:string -> t
 
 val find_opt :
-  t -> 
-  string -> 
+  t -> (* contains global info *)
+  int -> (* more likely to be zero *)
+  string -> (* module name *)
   Bsb_db.module_info option 
 end = struct
 #1 "bsb_db_io.ml"
@@ -12406,53 +12393,158 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type pair = (string * Bsb_db.module_info)
- type t = pair array
- type ts = t array 
+
+ type group = {
+   modules : string array ; 
+   meta_info_offset : int 
+ }
+
+type t = group array * string (* string is whole content*)
 
 let bsbuild_cache = ".bsbuild"    
 
-let module_info_magic_number = "BSBUILD20170802"
 
-(* String_map.compare_key *)
-let linear (x : Bsb_db.ts) : ts = 
-  Ext_array.map  x String_map.to_sorted_array
+let nl buf = 
+  Buffer.add_char buf '\n'
+let comma buf = 
+  Buffer.add_char buf ','
+let bool buf b =   
+  Buffer.add_char buf (if b then '1' else '0')
+let rec encode_module_info  (x : Bsb_db.module_info) (buf : Buffer.t) =   
+  encode_mli x.mli buf;
+  nl buf; 
+  encode_ml x.ml buf 
+and encode_ml (ml_kind : Bsb_db.ml_kind ) (buf : Buffer.t) =   
+  match ml_kind with 
+  | Ml_empty -> Buffer.add_char buf '0'
+  | Ml_source (name,is_re,case) -> 
+    encode_triple name is_re case buf
+and encode_mli (mli_kind : Bsb_db.mli_kind) (buf : Buffer.t) =     
+  match mli_kind with 
+  | Mli_empty -> Buffer.add_char buf '0'
+  | Mli_source (name,is_re,case) -> 
+    encode_triple name is_re case buf 
+and encode_triple name is_re case buf =     
+  Buffer.add_string buf name; 
+  comma buf;
+  bool buf is_re ; 
+  comma buf;
+  bool buf case
+
+let encode_pair (name : string) (module_info : Bsb_db.module_info) 
+  (buf : Buffer.t) buf2 = 
+  nl buf; 
+  Buffer.add_string buf name; 
+  nl buf2; 
+  encode_module_info module_info buf2 
+
+(* Make sure [tmp_buf1] and [tmp_buf2] is cleared ,
+  they are only used to control the order.
+  Strictly speaking, [tmp_buf1] is not needed
+*)
+let encode_single (x : Bsb_db.t) (buf : Buffer.t)  (buf2 : Buffer.t) =    
+  let len = String_map.cardinal x in 
+  nl buf ; 
+  Buffer.add_string buf (string_of_int len);
+  String_map.iter (fun name module_info -> encode_pair name module_info buf buf2) x
+
+let encode (x : Bsb_db.ts) (oc : out_channel)=     
+  output_char oc '\n';
+  let len = Array.length x in 
+  output_string oc (string_of_int len); 
+  let tmp_buf1 = Buffer.create 10_000 in 
+  let tmp_buf2 = Buffer.create 60_000 in 
+  Ext_array.iter x (fun x -> begin 
+        encode_single x  tmp_buf1 tmp_buf2;
+        Buffer.output_buffer oc tmp_buf1;
+        Buffer.output_buffer oc tmp_buf2;
+        Buffer.clear tmp_buf1; 
+        Buffer.clear tmp_buf2
+      end
+    )
+
+
+type cursor = int ref 
+
+let extract_line (x : string) (cur : cursor) : string =
+  Ext_string.extract_until x cur '\n'
+
+let next_mdoule_info (s : string) (cur : int) ~count  =  
+  if count = 0 then cur 
+  else 
+    Ext_string.index_count s cur '\n' (count * 2) + 1
+
+let rec decode (x : string) (offset : cursor) =   
+  let len = int_of_string (extract_line x offset) in  
+  Array.init len (fun _ ->  decode_single x offset)
+and decode_single x (offset : cursor) : group = 
+  let cardinal = int_of_string (extract_line x offset) in 
+  let modules = decode_modules x offset cardinal in 
+  let meta_info_offset = !offset in 
+  offset := next_mdoule_info x meta_info_offset ~count:cardinal;
+  { modules ; meta_info_offset }
+and decode_modules x (offset : cursor) cardinal =   
+  let result = Array.make cardinal "" in 
+  for i = 0 to cardinal - 1 do 
+    Array.unsafe_set result i (extract_line x offset)
+  done ;
+  result
+  
+let decode_triple_intf (pair : string) : Bsb_db.mli_kind = 
+  if pair = "0" then Mli_empty 
+  else 
+    let cur = ref 0 in 
+    let name = Ext_string.extract_until pair cur ',' in 
+    let is_re =  Ext_string.extract_until pair cur ',' in 
+    let case = Ext_string.extract_until pair cur ',' in 
+    Mli_source(name,  is_re = "1", case = "1" )  
+let decode_triple_impl (pair : string) : Bsb_db.ml_kind =     
+  if pair = "0" then Ml_empty
+  else 
+    let cur = ref 0 in 
+    let name = Ext_string.extract_until pair cur ',' in 
+    let is_re =  Ext_string.extract_until pair cur ',' in 
+    let case = Ext_string.extract_until pair cur ',' in 
+    Ml_source (name, is_re = "1", case = "1")
+
 
 let write_build_cache ~dir (bs_files : Bsb_db.ts)  : unit = 
   let oc = open_out_bin (Filename.concat dir bsbuild_cache) in 
-  output_string oc module_info_magic_number ;
-  output_value oc (linear bs_files);
+  output_string oc Bs_version.version ;
+  encode bs_files oc; 
   close_out oc 
 
-let read_build_cache ~dir  : ts = 
+
+let read_build_cache ~dir  : t = 
   let ic = open_in_bin (Filename.concat dir bsbuild_cache) in 
-  let buffer = really_input_string ic (String.length module_info_magic_number) in
-  assert(buffer = module_info_magic_number); 
-  let data : ts = input_value ic in 
-  close_in ic ;
-  data 
+  let len = in_channel_length ic in 
+  let all_content = really_input_string ic len in 
+  let offset = ref 0 in 
+  let cur_module_info_magic_number = extract_line all_content offset in 
+  assert (cur_module_info_magic_number = Bs_version.version); 
+  decode all_content offset, all_content
 
-let cmp (a : string) (b,_) = String_map.compare_key a b   
+let cmp (a : string) b = String_map.compare_key a b   
 
-let rec binarySearchAux (arr : t) (lo : int) (hi : int) (key : string)  : _ option = 
+let rec binarySearchAux arr (lo : int) (hi : int) (key : string)  : _ option = 
   let mid = (lo + hi)/2 in 
   let midVal = Array.unsafe_get arr mid in 
   let c = cmp key midVal [@bs] in 
-  if c = 0 then Some (snd midVal)
+  if c = 0 then Some (mid)
   else if c < 0 then  (*  a[lo] =< key < a[mid] <= a[hi] *)
     if hi = mid then  
       let loVal = (Array.unsafe_get arr lo) in 
-      if  fst loVal = key then Some (snd loVal)
+      if  loVal = key then Some lo
       else None
     else binarySearchAux arr lo mid key 
   else  (*  a[lo] =< a[mid] < key <= a[hi] *)
   if lo = mid then 
     let hiVal = (Array.unsafe_get arr hi) in 
-    if fst hiVal = key then Some (snd hiVal)
+    if  hiVal = key then Some hi
     else None
   else binarySearchAux arr mid hi key 
 
-let find_opt sorted key  : _ option =  
+let find_opt_aux sorted key  : _ option =  
   let len = Array.length sorted in 
   if len = 0 then None
   else 
@@ -12465,7 +12557,20 @@ let find_opt sorted key  : _ option =
       if c2 > 0 then None
       else binarySearchAux sorted 0 (len - 1) key
 
-
+let find_opt 
+  ((sorteds,whole) : t )  i key 
+    : Bsb_db.module_info option = 
+  let group = sorteds.(i) in 
+  let i = find_opt_aux group.modules key in 
+  match i with 
+  | None -> None 
+  | Some count ->     
+    let cursor = 
+      ref (next_mdoule_info whole group.meta_info_offset ~count)
+    in 
+    let mli = decode_triple_intf (extract_line whole cursor) in 
+    let ml = decode_triple_impl (extract_line whole cursor) in 
+    Some (Bsb_db.{mli; ml})
 end
 module Bsb_namespace_map_gen : sig 
 #1 "bsb_namespace_map_gen.mli"
@@ -13737,13 +13842,12 @@ let output_ninja_and_namespace_map
   output_reason_config ();
   Bsb_db_io.write_build_cache ~dir:cwd_lib_bs bs_groups ;
   emit_bsc_lib_includes bsc_lib_dirs;
-  List.iter 
-    (fun output -> 
-       Bsb_ninja_util.output_build
-         oc
-         ~output
-         ~input:(Bsb_config.proj_rel output)
-         ~rule:Bsb_rule.copy_resources) static_resources ;
+  Ext_list.iter static_resources (fun output -> 
+      Bsb_ninja_util.output_build
+        oc
+        ~output
+        ~input:(Bsb_config.proj_rel output)
+        ~rule:Bsb_rule.copy_resources);
   (** Generate build statement for each file *)        
   let all_info =      
     Bsb_ninja_file_groups.handle_file_groups oc  
