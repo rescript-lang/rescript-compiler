@@ -439,15 +439,16 @@ let suites = Mt.[
       Eq("1976-03-08T11:11:56.789Z", Js.Date.toJSON (date ())));
     "toJSONUnsafe", (fun _ ->
       Eq("1976-03-08T11:11:56.789Z", Js.Date.toJSONUnsafe (date ())));
-    (* locale dependent
     "toLocaleDateStringWithLocale", (fun _ ->
-      Eq("1976 M03 8, Mon", Js.Date.toLocaleDateStringWithLocale (date ()) ~locale:"de-DE" ~options:[%bs.obj
+      Eq([%raw {|new Date(1976,2,8).toLocaleDateString('de-DE',{ weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })|}]
+        , Js.Date.toLocaleDateStringWithLocale (date ()) ~locale:"de-DE" ~options:[%bs.obj
                  {
                    weekday = (("long")[@reason.raw_literal "long"]);
                    year = (("numeric")[@reason.raw_literal "numeric"]);
                    month = (("long")[@reason.raw_literal "long"]);
                    day = (("numeric")[@reason.raw_literal "numeric"])
                  }] ()));
+    (* locale dependent
     "toLocaleString", (fun _ ->
       Eq("3/8/1976, 12:11:56 PM", Js.Date.toLocaleString (date ())));
     "toLocaleTimeString", (fun _ ->
