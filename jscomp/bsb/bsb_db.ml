@@ -95,6 +95,7 @@ let map_update ~dir (map : t)
   let name_sans_extension = 
     Ext_path.chop_extension (Filename.concat dir file_name) in 
   String_map.adjust 
+    map
     module_name 
     (fun () -> 
        adjust_module_info 
@@ -104,7 +105,7 @@ let map_update ~dir (map : t)
     (fun v -> 
        adjust_module_info v suffix name_sans_extension upper
     )
-    map
+
 
 
 let sanity_check (map  : t ) = 
