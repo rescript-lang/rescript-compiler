@@ -439,9 +439,9 @@ let suites = Mt.[
       Eq("1976-03-08T11:11:56.789Z", Js.Date.toJSON (date ())));
     "toJSONUnsafe", (fun _ ->
       Eq("1976-03-08T11:11:56.789Z", Js.Date.toJSONUnsafe (date ())));
+    "toLocaleDateStringWithLocale", (fun _ ->
+      Eq("Montag, 8. März 1976", Js.Date.toLocaleDateStringWithLocale (date ()) ~locale:"de-DE"));
     (* locale dependent
-    "toLocaleDateString", (fun _ ->
-      Eq("3/8/1976", Js.Date.toLocaleDateString (date ())));
     "toLocaleString", (fun _ ->
       Eq("3/8/1976, 12:11:56 PM", Js.Date.toLocaleString (date ())));
     "toLocaleTimeString", (fun _ ->

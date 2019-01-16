@@ -130,6 +130,7 @@ external toJSON : t -> string = "" [@@bs.send]
 [@@ocaml.deprecated "This method is unsafe. It will be changed to return option in a future release. Please use toJSONUnsafe instead."]
 external toJSONUnsafe : t -> string = "toJSON" [@@bs.send]
 external toLocaleDateString : t -> string = "" [@@bs.send] (* TODO: has overloads with somewhat poor browser support *)
+external toLocaleDateStringWithLocale : t -> ?options:'a -> locale:string -> string = "" [@@bs.send] (* TODO: has overloads with somewhat poor browser support *)
 external toLocaleString: t -> string = "" [@@bs.send] (* TODO: has overloads with somewhat poor browser support *)
 external toLocaleTimeString: t -> string = "" [@@bs.send] (* TODO: has overloads with somewhat poor browser support *)
 external toString : t -> string = "" [@@bs.send]
