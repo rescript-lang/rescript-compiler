@@ -258,8 +258,8 @@ let rec index_rec_count s lim i c count =
 let index_count s i c count =     
   let lim = String.length s in 
   if i < 0 || i >= lim || count < 1 then 
-    invalid_arg "index_count";
-    
+    Ext_pervasives.invalid_argf "index_count: (%d,%d)"  i count;
+
   index_rec_count s lim i c count 
 let extract_until s cursor c =       
   let len = String.length s in   
