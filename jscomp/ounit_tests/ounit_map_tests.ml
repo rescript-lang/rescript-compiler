@@ -49,8 +49,8 @@ let suites =
       let v = Int_map.empty in
       let u = 
         begin 
-          let v = Array.fold_left (fun acc key -> Int_map.adjust acc key (fun _ -> 1) (succ)  ) v a   in 
-          Array.fold_left (fun acc key -> Int_map.adjust acc key (fun _ -> 1) succ  ) v a  
+          let v = Array.fold_left (fun acc key -> Int_map.adjust acc key (fun v ->  match v with None -> 1 | Some v -> succ v)  ) v a   in 
+          Array.fold_left (fun acc key -> Int_map.adjust acc key (fun v -> match v with None ->  1 | Some v -> succ v)   ) v a  
           end
         in  
        Int_map.iter (fun _ v -> v =~ 2 ) u   ;

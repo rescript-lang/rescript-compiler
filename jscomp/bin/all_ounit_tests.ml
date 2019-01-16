@@ -4147,9 +4147,9 @@ module type S =
     val add: key -> 'a -> 'a t -> 'a t
     (** [add x y m] 
         If [x] was already bound in [m], its previous binding disappears. *)
-    val adjust: 'a t -> key -> (unit -> 'a)  -> ('a ->  'a) ->  'a t 
-    (** [adjust k v f map] if not exist [add k v], otherwise 
-        [add k v (f old)]
+    val adjust: 'a t -> key -> ('a option->  'a) ->  'a t 
+    (** [adjust acc k replace ] if not exist [add (replace None ], otherwise 
+        [add k v (replace (Some old))]
     *)
     val singleton: key -> 'a -> 'a t
 
@@ -4342,18 +4342,18 @@ let rec add x data (tree : _ Map_gen.t as 'a) : 'a = match tree with
       bal l v d (add x data r)
 
 
-let rec adjust (tree : _ Map_gen.t as 'a) x data replace  : 'a = 
+let rec adjust (tree : _ Map_gen.t as 'a) x replace  : 'a = 
   match tree with 
   | Empty ->
-    Node(Empty, x, data (), Empty, 1)
+    Node(Empty, x, replace None, Empty, 1)
   | Node(l, v, d, r, h) ->
     let c = compare_key x v in
     if c = 0 then
-      Node(l, x, replace  d , r, h)
+      Node(l, x, replace  (Some d) , r, h)
     else if c < 0 then
-      bal (adjust l x data replace ) v d r
+      bal (adjust l x  replace ) v d r
     else
-      bal l v d (adjust r x data replace )
+      bal l v d (adjust r x  replace )
 
 
 let rec find_exn x (tree : _ Map_gen.t )  = match tree with 
@@ -7097,14 +7097,12 @@ let map_update ~dir (map : t)
   String_map.adjust 
     map
     module_name 
-    (fun () -> 
+    (fun opt_module_info -> 
+      let v = match opt_module_info with None -> empty_module_info | Some v -> v in
        adjust_module_info 
-         empty_module_info 
+         v
          suffix 
          name_sans_extension upper )
-    (fun v -> 
-       adjust_module_info v suffix name_sans_extension upper
-    )
 
 
 
@@ -13792,18 +13790,18 @@ let rec add x data (tree : _ Map_gen.t as 'a) : 'a = match tree with
       bal l v d (add x data r)
 
 
-let rec adjust (tree : _ Map_gen.t as 'a) x data replace  : 'a = 
+let rec adjust (tree : _ Map_gen.t as 'a) x replace  : 'a = 
   match tree with 
   | Empty ->
-    Node(Empty, x, data (), Empty, 1)
+    Node(Empty, x, replace None, Empty, 1)
   | Node(l, v, d, r, h) ->
     let c = compare_key x v in
     if c = 0 then
-      Node(l, x, replace  d , r, h)
+      Node(l, x, replace  (Some d) , r, h)
     else if c < 0 then
-      bal (adjust l x data replace ) v d r
+      bal (adjust l x  replace ) v d r
     else
-      bal l v d (adjust r x data replace )
+      bal l v d (adjust r x  replace )
 
 
 let rec find_exn x (tree : _ Map_gen.t )  = match tree with 
@@ -13960,8 +13958,8 @@ let suites =
       let v = Int_map.empty in
       let u = 
         begin 
-          let v = Array.fold_left (fun acc key -> Int_map.adjust acc key (fun _ -> 1) (succ)  ) v a   in 
-          Array.fold_left (fun acc key -> Int_map.adjust acc key (fun _ -> 1) succ  ) v a  
+          let v = Array.fold_left (fun acc key -> Int_map.adjust acc key (fun v ->  match v with None -> 1 | Some v -> succ v)  ) v a   in 
+          Array.fold_left (fun acc key -> Int_map.adjust acc key (fun v -> match v with None ->  1 | Some v -> succ v)   ) v a  
           end
         in  
        Int_map.iter (fun _ v -> v =~ 2 ) u   ;

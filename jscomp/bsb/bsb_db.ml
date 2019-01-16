@@ -97,14 +97,12 @@ let map_update ~dir (map : t)
   String_map.adjust 
     map
     module_name 
-    (fun () -> 
+    (fun opt_module_info -> 
+      let v = match opt_module_info with None -> empty_module_info | Some v -> v in
        adjust_module_info 
-         empty_module_info 
+         v
          suffix 
          name_sans_extension upper )
-    (fun v -> 
-       adjust_module_info v suffix name_sans_extension upper
-    )
 
 
 

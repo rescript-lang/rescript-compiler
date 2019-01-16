@@ -47,18 +47,18 @@ let rec add x data (tree : _ Map_gen.t as 'a) : 'a = match tree with
       bal l v d (add x data r)
 
 
-let rec adjust (tree : _ Map_gen.t as 'a) x data replace  : 'a = 
+let rec adjust (tree : _ Map_gen.t as 'a) x replace  : 'a = 
   match tree with 
   | Empty ->
-    Node(Empty, x, data (), Empty, 1)
+    Node(Empty, x, replace None, Empty, 1)
   | Node(l, v, d, r, h) ->
     let c = compare_key x v in
     if c = 0 then
-      Node(l, x, replace  d , r, h)
+      Node(l, x, replace  (Some d) , r, h)
     else if c < 0 then
-      bal (adjust l x data replace ) v d r
+      bal (adjust l x  replace ) v d r
     else
-      bal l v d (adjust r x data replace )
+      bal l v d (adjust r x  replace )
 
 
 let rec find_exn x (tree : _ Map_gen.t )  = match tree with 
