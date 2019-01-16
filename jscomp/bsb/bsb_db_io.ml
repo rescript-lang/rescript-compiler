@@ -40,9 +40,9 @@ let comma buf =
 let bool buf b =   
   Buffer.add_char buf (if b then '1' else '0')
 let rec encode_module_info  (x : Bsb_db.module_info) (buf : Buffer.t) =   
-  encode_mli x.mli buf;
+  encode_mli x.mli_info buf;
   nl buf; 
-  encode_ml x.ml buf 
+  encode_ml x.ml_info buf 
 and encode_ml (ml_kind : Bsb_db.ml_kind ) (buf : Buffer.t) =   
   match ml_kind with 
   | Ml_empty -> Buffer.add_char buf '0'
@@ -197,6 +197,6 @@ let find_opt
     let cursor = 
       ref (next_mdoule_info whole group.meta_info_offset ~count)
     in 
-    let mli = decode_triple_intf (extract_line whole cursor) in 
-    let ml = decode_triple_impl (extract_line whole cursor) in 
-    Some (Bsb_db.{mli; ml})
+    let mli_info = decode_triple_intf (extract_line whole cursor) in 
+    let ml_info = decode_triple_impl (extract_line whole cursor) in 
+    Some {mli_info; ml_info}

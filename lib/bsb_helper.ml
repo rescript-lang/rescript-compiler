@@ -4889,8 +4889,8 @@ type mli_kind =
 
 type module_info = 
   {
-    mli : mli_kind ; 
-    ml : ml_kind ; 
+    mli_info : mli_kind ; 
+    ml_info : ml_kind ; 
   }
 
 type t = module_info String_map.t 
@@ -4963,8 +4963,8 @@ type mli_kind =
 
 type module_info = 
   {
-    mli : mli_kind ; 
-    ml : ml_kind ; 
+    mli_info : mli_kind ; 
+    ml_info : ml_kind ; 
   }
 
 
@@ -4977,11 +4977,11 @@ type ts = t array
 
 let dir_of_module_info (x : module_info)
   = 
-  match x.mli with 
+  match x.mli_info with 
   | Mli_source (s,_,_) -> 
     Filename.dirname s 
   | Mli_empty -> 
-    match x.ml with 
+    match x.ml_info with 
     | Ml_source (s,_,_) -> 
       Filename.dirname s 
     | Ml_empty -> Ext_string.empty
@@ -4989,34 +4989,48 @@ let dir_of_module_info (x : module_info)
     
 
 let filename_sans_suffix_of_module_info (x : module_info) =
-  match x.mli with 
+  match x.mli_info with 
   | Mli_source (s,_,_) -> 
     s 
   | Mli_empty -> 
-    match x.ml with 
+    match x.ml_info with 
     | Ml_source (s,_,_)  -> 
       s 
     | Ml_empty -> assert false
 
 
-
-let empty_module_info = {mli = Mli_empty ;  ml = Ml_empty}
-
-
-let adjust_module_info x suffix name_sans_extension upper =
+let adjust_module_info (x : _ option) suffix name_sans_extension upper =
   match suffix with 
-  | ".ml" -> {x with ml = Ml_source  (name_sans_extension, false, upper)}
-  | ".re" -> {x with ml = Ml_source  (name_sans_extension, true, upper)}
-  | ".mli" ->  {x with mli = Mli_source (name_sans_extension,false, upper) }
-  | ".rei" -> { x with mli = Mli_source (name_sans_extension,true, upper) }
+  | ".ml" -> 
+    let ml_info = Ml_source  (name_sans_extension, false, upper) in 
+    (match x with 
+    | None -> 
+      {ml_info ; mli_info = Mli_empty}
+    | Some x -> 
+      {x with ml_info })
+  | ".re" -> 
+    let ml_info = Ml_source  (name_sans_extension, true, upper)in
+    (match x with None -> 
+      {ml_info  ; mli_info = Mli_empty} 
+    | Some x -> {x with ml_info})
+  | ".mli" ->  
+    let mli_info = Mli_source (name_sans_extension,false, upper) in 
+    (match x with None -> 
+      {mli_info ; ml_info = Ml_empty}
+    | Some x -> 
+      {x with mli_info })
+  | ".rei" -> 
+    let mli_info = Mli_source (name_sans_extension,true, upper) in
+    (match x with None -> 
+      {  mli_info ; ml_info = Ml_empty}
+    | Some x -> 
+      { x with mli_info})
   | _ -> 
     Ext_pervasives.failwithf ~loc:__LOC__ 
       "don't know what to do with %s%s" 
       name_sans_extension suffix
 
-let map_update ~dir (map : t)  
-    file_name : t  = 
-
+let map_update ~dir (map : t) file_name : t  = 
   let module_name, upper = 
     Ext_modulename.module_name_of_file_if_any_with_upper file_name in 
   let suffix = Ext_path.get_extension file_name in 
@@ -5026,9 +5040,8 @@ let map_update ~dir (map : t)
     map
     module_name 
     (fun opt_module_info -> 
-      let v = match opt_module_info with None -> empty_module_info | Some v -> v in
        adjust_module_info 
-         v
+         opt_module_info
          suffix 
          name_sans_extension upper )
 
@@ -5037,19 +5050,19 @@ let map_update ~dir (map : t)
 let sanity_check (map  : t ) = 
   String_map.fold (fun k module_info has_re ->
       match module_info with 
-      |  { ml = Ml_source(file1,is_re,ml_case); 
-           mli = Mli_source(file2,is_rei,mli_case) } ->
+      |  { ml_info = Ml_source(file1,is_re,ml_case); 
+           mli_info = Mli_source(file2,is_rei,mli_case) } ->
         (if ml_case <> mli_case then 
            Bsb_exception.invalid_spec
              (Printf.sprintf          
                 "%S and %S have different cases"
                 file1 file2));
         has_re || is_re || is_rei
-      | {ml = Ml_source(_,is_re,_); mli = Mli_empty}
+      | {ml_info = Ml_source(_,is_re,_); mli_info = Mli_empty}
         -> has_re || is_re
-      | {mli = Mli_source(_,is_rei,_); ml = Ml_empty}
+      | {mli_info = Mli_source(_,is_rei,_); ml_info = Ml_empty}
         -> has_re || is_rei
-      | {ml = Ml_empty ; mli = Mli_empty } -> has_re
+      | {ml_info = Ml_empty ; mli_info = Mli_empty } -> has_re
     )  map false
 
 end
@@ -5150,9 +5163,9 @@ let comma buf =
 let bool buf b =   
   Buffer.add_char buf (if b then '1' else '0')
 let rec encode_module_info  (x : Bsb_db.module_info) (buf : Buffer.t) =   
-  encode_mli x.mli buf;
+  encode_mli x.mli_info buf;
   nl buf; 
-  encode_ml x.ml buf 
+  encode_ml x.ml_info buf 
 and encode_ml (ml_kind : Bsb_db.ml_kind ) (buf : Buffer.t) =   
   match ml_kind with 
   | Ml_empty -> Buffer.add_char buf '0'
@@ -5307,9 +5320,9 @@ let find_opt
     let cursor = 
       ref (next_mdoule_info whole group.meta_info_offset ~count)
     in 
-    let mli = decode_triple_intf (extract_line whole cursor) in 
-    let ml = decode_triple_impl (extract_line whole cursor) in 
-    Some (Bsb_db.{mli; ml})
+    let mli_info = decode_triple_intf (extract_line whole cursor) in 
+    let ml_info = decode_triple_impl (extract_line whole cursor) in 
+    Some {mli_info; ml_info}
 end
 module Ext_namespace : sig 
 #1 "ext_namespace.mli"
@@ -5683,7 +5696,7 @@ let oc_impl
   for i = 0 to Array.length dependent_module_set - 1 do
     let k = Array.unsafe_get dependent_module_set i in 
     match Bsb_db_io.find_opt  data 0 k with
-    | Some {ml = Ml_source (source,_,_) }  
+    | Some {ml_info = Ml_source (source,_,_) }  
       -> 
       if source <> input_file then 
         begin 
@@ -5693,13 +5706,13 @@ let oc_impl
           (* #3260 cmj changes does not imply cmi change anymore *)
           oc_cmi buf namespace source
         end
-    | Some {mli = Mli_source (source,_,_)  } -> 
+    | Some {mli_info = Mli_source (source,_,_)  } -> 
       if source <> input_file then oc_cmi buf namespace source        
-    | Some {mli= Mli_empty; ml = Ml_empty} -> assert false
+    | Some {mli_info = Mli_empty; ml_info = Ml_empty} -> assert false
     | None  -> 
       if not (Bsb_dir_index.is_lib_dir index) then      
         begin match Bsb_db_io.find_opt data ((index  :> int)) k with 
-          | Some {ml = Ml_source (source,_,_) }
+          | Some {ml_info = Ml_source (source,_,_) }
             -> 
             if source <> input_file then 
               begin 
@@ -5708,9 +5721,9 @@ let oc_impl
                 Buffer.add_string buf rhs_suffix;
                 oc_cmi buf namespace source
               end
-          | Some {mli = Mli_source (source,_,_) } -> 
+          | Some {mli_info = Mli_source (source,_,_) } -> 
             if source <> input_file then oc_cmi buf namespace source              
-          | Some {mli = Mli_empty; ml = Ml_empty} -> assert false
+          | Some {mli_info = Mli_empty; ml_info = Ml_empty} -> assert false
           | None -> ()
         end
   done    
@@ -5732,17 +5745,17 @@ let oc_intf
   for i = 0 to Array.length dependent_module_set - 1 do               
     let k = Array.unsafe_get dependent_module_set i in 
     match Bsb_db_io.find_opt data 0 k with 
-    | Some ({ ml = Ml_source (source,_,_)  }
-           | { mli = Mli_source (source,_,_) }) -> 
+    | Some ({ ml_info = Ml_source (source,_,_)  }
+           | { mli_info = Mli_source (source,_,_) }) -> 
       if source <> input_file then oc_cmi buf namespace source             
-    | Some {ml =  Ml_empty; mli = Mli_empty } -> assert false
+    | Some {ml_info =  Ml_empty; mli_info = Mli_empty } -> assert false
     | None -> 
       if not (Bsb_dir_index.is_lib_dir index)  then 
         match Bsb_db_io.find_opt data ((index :> int)) k with 
-        | Some ({ ml = Ml_source (source,_,_)  }
-               | { mli = Mli_source (source,_,_)  }) -> 
+        | Some ({ ml_info = Ml_source (source,_,_)  }
+               | { mli_info = Mli_source (source,_,_)  }) -> 
           if source <> input_file then  oc_cmi buf namespace source    
-        | Some {ml = Ml_empty; mli = Mli_empty} -> assert false
+        | Some {ml_info = Ml_empty; mli_info = Mli_empty} -> assert false
         | None -> () 
   done  
 

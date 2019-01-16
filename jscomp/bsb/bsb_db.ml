@@ -35,8 +35,8 @@ type mli_kind =
 
 type module_info = 
   {
-    mli : mli_kind ; 
-    ml : ml_kind ; 
+    mli_info : mli_kind ; 
+    ml_info : ml_kind ; 
   }
 
 
@@ -49,11 +49,11 @@ type ts = t array
 
 let dir_of_module_info (x : module_info)
   = 
-  match x.mli with 
+  match x.mli_info with 
   | Mli_source (s,_,_) -> 
     Filename.dirname s 
   | Mli_empty -> 
-    match x.ml with 
+    match x.ml_info with 
     | Ml_source (s,_,_) -> 
       Filename.dirname s 
     | Ml_empty -> Ext_string.empty
@@ -61,34 +61,48 @@ let dir_of_module_info (x : module_info)
     
 
 let filename_sans_suffix_of_module_info (x : module_info) =
-  match x.mli with 
+  match x.mli_info with 
   | Mli_source (s,_,_) -> 
     s 
   | Mli_empty -> 
-    match x.ml with 
+    match x.ml_info with 
     | Ml_source (s,_,_)  -> 
       s 
     | Ml_empty -> assert false
 
 
-
-let empty_module_info = {mli = Mli_empty ;  ml = Ml_empty}
-
-
-let adjust_module_info x suffix name_sans_extension upper =
+let adjust_module_info (x : _ option) suffix name_sans_extension upper =
   match suffix with 
-  | ".ml" -> {x with ml = Ml_source  (name_sans_extension, false, upper)}
-  | ".re" -> {x with ml = Ml_source  (name_sans_extension, true, upper)}
-  | ".mli" ->  {x with mli = Mli_source (name_sans_extension,false, upper) }
-  | ".rei" -> { x with mli = Mli_source (name_sans_extension,true, upper) }
+  | ".ml" -> 
+    let ml_info = Ml_source  (name_sans_extension, false, upper) in 
+    (match x with 
+    | None -> 
+      {ml_info ; mli_info = Mli_empty}
+    | Some x -> 
+      {x with ml_info })
+  | ".re" -> 
+    let ml_info = Ml_source  (name_sans_extension, true, upper)in
+    (match x with None -> 
+      {ml_info  ; mli_info = Mli_empty} 
+    | Some x -> {x with ml_info})
+  | ".mli" ->  
+    let mli_info = Mli_source (name_sans_extension,false, upper) in 
+    (match x with None -> 
+      {mli_info ; ml_info = Ml_empty}
+    | Some x -> 
+      {x with mli_info })
+  | ".rei" -> 
+    let mli_info = Mli_source (name_sans_extension,true, upper) in
+    (match x with None -> 
+      {  mli_info ; ml_info = Ml_empty}
+    | Some x -> 
+      { x with mli_info})
   | _ -> 
     Ext_pervasives.failwithf ~loc:__LOC__ 
       "don't know what to do with %s%s" 
       name_sans_extension suffix
 
-let map_update ~dir (map : t)  
-    file_name : t  = 
-
+let map_update ~dir (map : t) file_name : t  = 
   let module_name, upper = 
     Ext_modulename.module_name_of_file_if_any_with_upper file_name in 
   let suffix = Ext_path.get_extension file_name in 
@@ -98,9 +112,8 @@ let map_update ~dir (map : t)
     map
     module_name 
     (fun opt_module_info -> 
-      let v = match opt_module_info with None -> empty_module_info | Some v -> v in
        adjust_module_info 
-         v
+         opt_module_info
          suffix 
          name_sans_extension upper )
 
@@ -109,17 +122,17 @@ let map_update ~dir (map : t)
 let sanity_check (map  : t ) = 
   String_map.fold (fun k module_info has_re ->
       match module_info with 
-      |  { ml = Ml_source(file1,is_re,ml_case); 
-           mli = Mli_source(file2,is_rei,mli_case) } ->
+      |  { ml_info = Ml_source(file1,is_re,ml_case); 
+           mli_info = Mli_source(file2,is_rei,mli_case) } ->
         (if ml_case <> mli_case then 
            Bsb_exception.invalid_spec
              (Printf.sprintf          
                 "%S and %S have different cases"
                 file1 file2));
         has_re || is_re || is_rei
-      | {ml = Ml_source(_,is_re,_); mli = Mli_empty}
+      | {ml_info = Ml_source(_,is_re,_); mli_info = Mli_empty}
         -> has_re || is_re
-      | {mli = Mli_source(_,is_rei,_); ml = Ml_empty}
+      | {mli_info = Mli_source(_,is_rei,_); ml_info = Ml_empty}
         -> has_re || is_rei
-      | {ml = Ml_empty ; mli = Mli_empty } -> has_re
+      | {ml_info = Ml_empty ; mli_info = Mli_empty } -> has_re
     )  map false

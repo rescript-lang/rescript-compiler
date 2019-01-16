@@ -231,7 +231,7 @@ let handle_module_info
     ( module_info : Bsb_db.module_info)
     namespace
   : info =
-  match module_info.ml, module_info.mli with
+  match module_info.ml_info, module_info.mli_info with
   | Ml_source (input_impl,impl_is_re,_), 
     Mli_source(input_intf, intf_is_re,_) ->
     emit_impl_build 

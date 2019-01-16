@@ -113,7 +113,7 @@ let oc_impl
   for i = 0 to Array.length dependent_module_set - 1 do
     let k = Array.unsafe_get dependent_module_set i in 
     match Bsb_db_io.find_opt  data 0 k with
-    | Some {ml = Ml_source (source,_,_) }  
+    | Some {ml_info = Ml_source (source,_,_) }  
       -> 
       if source <> input_file then 
         begin 
@@ -123,13 +123,13 @@ let oc_impl
           (* #3260 cmj changes does not imply cmi change anymore *)
           oc_cmi buf namespace source
         end
-    | Some {mli = Mli_source (source,_,_)  } -> 
+    | Some {mli_info = Mli_source (source,_,_)  } -> 
       if source <> input_file then oc_cmi buf namespace source        
-    | Some {mli= Mli_empty; ml = Ml_empty} -> assert false
+    | Some {mli_info = Mli_empty; ml_info = Ml_empty} -> assert false
     | None  -> 
       if not (Bsb_dir_index.is_lib_dir index) then      
         begin match Bsb_db_io.find_opt data ((index  :> int)) k with 
-          | Some {ml = Ml_source (source,_,_) }
+          | Some {ml_info = Ml_source (source,_,_) }
             -> 
             if source <> input_file then 
               begin 
@@ -138,9 +138,9 @@ let oc_impl
                 Buffer.add_string buf rhs_suffix;
                 oc_cmi buf namespace source
               end
-          | Some {mli = Mli_source (source,_,_) } -> 
+          | Some {mli_info = Mli_source (source,_,_) } -> 
             if source <> input_file then oc_cmi buf namespace source              
-          | Some {mli = Mli_empty; ml = Ml_empty} -> assert false
+          | Some {mli_info = Mli_empty; ml_info = Ml_empty} -> assert false
           | None -> ()
         end
   done    
@@ -162,17 +162,17 @@ let oc_intf
   for i = 0 to Array.length dependent_module_set - 1 do               
     let k = Array.unsafe_get dependent_module_set i in 
     match Bsb_db_io.find_opt data 0 k with 
-    | Some ({ ml = Ml_source (source,_,_)  }
-           | { mli = Mli_source (source,_,_) }) -> 
+    | Some ({ ml_info = Ml_source (source,_,_)  }
+           | { mli_info = Mli_source (source,_,_) }) -> 
       if source <> input_file then oc_cmi buf namespace source             
-    | Some {ml =  Ml_empty; mli = Mli_empty } -> assert false
+    | Some {ml_info =  Ml_empty; mli_info = Mli_empty } -> assert false
     | None -> 
       if not (Bsb_dir_index.is_lib_dir index)  then 
         match Bsb_db_io.find_opt data ((index :> int)) k with 
-        | Some ({ ml = Ml_source (source,_,_)  }
-               | { mli = Mli_source (source,_,_)  }) -> 
+        | Some ({ ml_info = Ml_source (source,_,_)  }
+               | { mli_info = Mli_source (source,_,_)  }) -> 
           if source <> input_file then  oc_cmi buf namespace source    
-        | Some {ml = Ml_empty; mli = Mli_empty} -> assert false
+        | Some {ml_info = Ml_empty; mli_info = Mli_empty} -> assert false
         | None -> () 
   done  
 

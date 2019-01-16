@@ -47,8 +47,8 @@ type mli_kind =
 
 type module_info = 
   {
-    mli : mli_kind ; 
-    ml : ml_kind ; 
+    mli_info : mli_kind ; 
+    ml_info : ml_kind ; 
   }
 
 type t = module_info String_map.t 
