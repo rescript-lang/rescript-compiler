@@ -98,12 +98,12 @@ let encode_single (x : Bsb_db.t) (buf : Buffer.t)  (buf2 : Buffer.t) =
   let len = String_map.cardinal x in 
   nl buf ; 
   Buffer.add_string buf (string_of_int len);
-  String_map.iter (fun name module_info ->
+  String_map.iter x (fun name module_info ->
       nl buf; 
       Buffer.add_string buf name; 
       nl buf2; 
       encode_module_info module_info buf2 
-    ) x
+    ) 
 
 let encode (x : Bsb_db.ts) (oc : out_channel)=     
   output_char oc '\n';

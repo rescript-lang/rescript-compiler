@@ -1930,10 +1930,10 @@ let merge t1 t2 =
     bal t1 x d (remove_min_binding t2)
 
 
-let rec iter f = function
+let rec iter x f = match x with 
     Empty -> ()
   | Node(l, v, d, r, _) ->
-    iter f l; f v d; iter f r
+    iter l f; f v d; iter r f
 
 let rec map f = function
     Empty ->
@@ -2101,7 +2101,7 @@ module type S =
 
     val equal: ('a -> 'a -> bool) -> 'a t -> 'a t -> bool
 
-    val iter: (key -> 'a -> unit) -> 'a t -> unit
+    val iter: 'a t -> (key -> 'a -> unit) ->  unit
     (** [iter f m] applies [f] to all bindings in map [m].
         The bindings are passed to [f] in increasing order. *)
 
@@ -5213,12 +5213,12 @@ let encode_single (x : Bsb_db.t) (buf : Buffer.t)  (buf2 : Buffer.t) =
   let len = String_map.cardinal x in 
   nl buf ; 
   Buffer.add_string buf (string_of_int len);
-  String_map.iter (fun name module_info ->
+  String_map.iter x (fun name module_info ->
       nl buf; 
       Buffer.add_string buf name; 
       nl buf2; 
       encode_module_info module_info buf2 
-    ) x
+    ) 
 
 let encode (x : Bsb_db.ts) (oc : out_channel)=     
   output_char oc '\n';

@@ -39,14 +39,14 @@ let empty =
 
 let rec print fmt v = 
   Format.fprintf fmt "@[<v>{"  ;
-  String_map.iter (fun k m -> 
+  String_map.iter v (fun k m -> 
       Format.fprintf fmt "%s: @[%a@],@ " k print_int_map m       
-    )  v;
+    )  ;
   Format.fprintf fmt "}@]"  
 and print_int_map fmt m = 
-  Int_map.iter (fun k v -> 
+  Int_map.iter m (fun k v -> 
       Format.fprintf fmt "%d - %d" k v       
-    ) m    
+    )    
 
 let add_ident ~mangled:name stamp (cxt : t) : int * t = 
   match String_map.find_opt name cxt with 

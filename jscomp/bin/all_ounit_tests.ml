@@ -4002,10 +4002,10 @@ let merge t1 t2 =
     bal t1 x d (remove_min_binding t2)
 
 
-let rec iter f = function
+let rec iter x f = match x with 
     Empty -> ()
   | Node(l, v, d, r, _) ->
-    iter f l; f v d; iter f r
+    iter l f; f v d; iter r f
 
 let rec map f = function
     Empty ->
@@ -4173,7 +4173,7 @@ module type S =
 
     val equal: ('a -> 'a -> bool) -> 'a t -> 'a t -> bool
 
-    val iter: (key -> 'a -> unit) -> 'a t -> unit
+    val iter: 'a t -> (key -> 'a -> unit) ->  unit
     (** [iter f m] applies [f] to all bindings in map [m].
         The bindings are passed to [f] in increasing order. *)
 
@@ -7285,12 +7285,12 @@ let encode_single (x : Bsb_db.t) (buf : Buffer.t)  (buf2 : Buffer.t) =
   let len = String_map.cardinal x in 
   nl buf ; 
   Buffer.add_string buf (string_of_int len);
-  String_map.iter (fun name module_info ->
+  String_map.iter x (fun name module_info ->
       nl buf; 
       Buffer.add_string buf name; 
       nl buf2; 
       encode_module_info module_info buf2 
-    ) x
+    ) 
 
 let encode (x : Bsb_db.ts) (oc : out_channel)=     
   output_char oc '\n';
@@ -7415,6 +7415,33 @@ let printer_string = fun x -> x
 let (=~) = OUnit.assert_equal  ~printer:printer_string  
 
 
+let parse_data_one = 
+(Bsb_db_io.decode {|4.0.19
+2
+1
+Demo
+src/demo,01
+1
+Test
+examples/test,01
+|} (ref 7))
+
+let parse_data_two = 
+  Bsb_db_io.decode {|4.0.19
+3
+2
+Fib
+Demo
+src/hi/fib,01
+src/demo,01
+0
+0|} (ref 7)
+let data_one : Bsb_db_io.group array = 
+  [| {modules = [|"Demo"|]; meta_info_offset = 16}; {modules = [|"Test"|]; meta_info_offset = 35}|]
+
+let data_two : Bsb_db_io.group array =  
+  [| {modules = [|"Fib"; "Demo"|]; meta_info_offset = 20 }; {modules = [||]; meta_info_offset = 48}; {modules = [||]; meta_info_offset = -1} |]
+
 
 let scope_test s (a,b,c)= 
   match Bsb_pkg_types.extract_pkg_name_and_file s with 
@@ -7469,32 +7496,11 @@ let suites =
     s_test1 "xx/yy/zz" "xx/yy/zz"
   end;
   __LOC__ >:: begin fun _ -> 
-   let u = (Bsb_db_io.decode {|4.0.19
-2
-1
-Demo
-0
-src/demo,0,0
-1
-Test
-0
-examples/test,0,0
-|} (ref 7)) in  
-  OUnit.assert_equal u  [| {modules = [|"Demo"|]; meta_info_offset = 16}; {modules = [|"Test"|]; meta_info_offset = 38}|]
+  OUnit.assert_equal parse_data_one  data_one
   end ;
   __LOC__ >:: begin fun _ -> 
-  let v = Bsb_db_io.decode {|4.0.19
-3
-2
-Fib
-Demo
-0
-src/hi/fib,0,0
-0
-src/demo,0,0
-0
-0|} (ref 7) in 
-  OUnit.assert_equal v [| {modules = [|"Fib"; "Demo"|]; meta_info_offset = 20 }; {modules = [||]; meta_info_offset = 54}; {modules = [||]; meta_info_offset = -1} |]
+  
+  OUnit.assert_equal parse_data_two data_two
   end 
   ]
 
@@ -13982,7 +13988,7 @@ let suites =
           Array.fold_left (fun acc key -> Int_map.adjust acc key (fun v -> match v with None ->  1 | Some v -> succ v)   ) v a  
           end
         in  
-       Int_map.iter (fun _ v -> v =~ 2 ) u   ;
+       Int_map.iter u (fun _ v -> v =~ 2 ) ;
        Int_map.cardinal u =~ count
     end
   ]

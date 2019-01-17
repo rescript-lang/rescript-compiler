@@ -36,9 +36,9 @@ let output ~dir namespace
   let oc = open_out_bin (dir// fname ) in 
   List.iter
     (fun  (x : Bsb_file_groups.file_group) ->
-      String_map.iter (fun k _ -> 
+      String_map.iter x.sources (fun k _ -> 
         output_string oc k ;
         output_string oc "\n"
-      ) x.sources 
+      ) 
      )  file_groups ;
   close_out oc 

@@ -1894,10 +1894,10 @@ let merge t1 t2 =
     bal t1 x d (remove_min_binding t2)
 
 
-let rec iter f = function
+let rec iter x f = match x with 
     Empty -> ()
   | Node(l, v, d, r, _) ->
-    iter f l; f v d; iter f r
+    iter l f; f v d; iter r f
 
 let rec map f = function
     Empty ->
@@ -2065,7 +2065,7 @@ module type S =
 
     val equal: ('a -> 'a -> bool) -> 'a t -> 'a t -> bool
 
-    val iter: (key -> 'a -> unit) -> 'a t -> unit
+    val iter: 'a t -> (key -> 'a -> unit) ->  unit
     (** [iter f m] applies [f] to all bindings in map [m].
         The bindings are passed to [f] in increasing order. *)
 
@@ -12473,12 +12473,12 @@ let encode_single (x : Bsb_db.t) (buf : Buffer.t)  (buf2 : Buffer.t) =
   let len = String_map.cardinal x in 
   nl buf ; 
   Buffer.add_string buf (string_of_int len);
-  String_map.iter (fun name module_info ->
+  String_map.iter x (fun name module_info ->
       nl buf; 
       Buffer.add_string buf name; 
       nl buf2; 
       encode_module_info module_info buf2 
-    ) x
+    ) 
 
 let encode (x : Bsb_db.ts) (oc : out_channel)=     
   output_char oc '\n';
@@ -12666,10 +12666,10 @@ let output ~dir namespace
   let oc = open_out_bin (dir// fname ) in 
   List.iter
     (fun  (x : Bsb_file_groups.file_group) ->
-      String_map.iter (fun k _ -> 
+      String_map.iter x.sources (fun k _ -> 
         output_string oc k ;
         output_string oc "\n"
-      ) x.sources 
+      ) 
      )  file_groups ;
   close_out oc 
 end
@@ -13850,7 +13850,7 @@ let output_ninja_and_namespace_map
       for i = 1 to number_of_dev_groups  do
         let c = bs_groups.(i) in
         has_reason_files :=  Bsb_db.sanity_check c || !has_reason_files ;
-        String_map.iter (fun k _ -> if String_map.mem k lib then failwith ("conflict files found:" ^ k)) c ;
+        String_map.iter c (fun k _ -> if String_map.mem k lib then failwith ("conflict files found:" ^ k)) ;
         Bsb_ninja_util.output_kv 
           (Bsb_dir_index.(string_of_bsb_dev_include (of_int i)))
           (Bsb_build_util.include_dirs @@ source_dirs.(i)) oc
