@@ -7149,22 +7149,23 @@ module Bsb_db : sig
 type case = bool 
 
 
-type ml_kind =
-  | Ml_source of string * bool  * bool
+type ml_info =
+  | Ml_source of  bool  * bool
      (* No extension stored
       Ml_source(name,is_re)
       [is_re] default to false
       *)
   
   | Ml_empty
-type mli_kind = 
-  | Mli_source of string  * bool * bool
+type mli_info = 
+  | Mli_source of  bool * bool
   | Mli_empty
 
 type module_info = 
   {
-    mli_info : mli_kind ; 
-    ml_info : ml_kind ; 
+    mli_info : mli_info ; 
+    ml_info : ml_info ; 
+    name_sans_extension : string
   }
 
 type t = module_info String_map.t 
@@ -7228,17 +7229,18 @@ end = struct
 type case = bool
 (** true means upper case*)
 
-type ml_kind =
-  | Ml_source of string  * bool  * case (*  Ml_source(name, is_re) default to false  *)
+type ml_info =
+  | Ml_source of  bool  * case (*  Ml_source(is_re, case) default to false  *)
   | Ml_empty
-type mli_kind = 
-  | Mli_source of string * bool  * case  
+type mli_info = 
+  | Mli_source of  bool  * case  
   | Mli_empty
 
 type module_info = 
   {
-    mli_info : mli_kind ; 
-    ml_info : ml_kind ; 
+    mli_info : mli_info ; 
+    ml_info : ml_info ; 
+    name_sans_extension : string  ;
   }
 
 
@@ -7251,53 +7253,49 @@ type ts = t array
 
 let dir_of_module_info (x : module_info)
   = 
-  match x.mli_info with 
-  | Mli_source (s,_,_) -> 
-    Filename.dirname s 
-  | Mli_empty -> 
-    match x.ml_info with 
-    | Ml_source (s,_,_) -> 
-      Filename.dirname s 
-    | Ml_empty -> Ext_string.empty
-    
+  Filename.dirname x.name_sans_extension
     
 
 let filename_sans_suffix_of_module_info (x : module_info) =
-  match x.mli_info with 
-  | Mli_source (s,_,_) -> 
-    s 
-  | Mli_empty -> 
-    match x.ml_info with 
-    | Ml_source (s,_,_)  -> 
-      s 
-    | Ml_empty -> assert false
+  x.name_sans_extension
 
+let check (x : module_info) name_sans_extension =  
+  if x.name_sans_extension <> name_sans_extension then 
+    Bsb_exception.invalid_spec 
+      (Printf.sprintf 
+         "implementation and interface have different path names or different cases %s vs %s"
+         x.name_sans_extension name_sans_extension)
 
 let adjust_module_info (x : _ option) suffix name_sans_extension upper =
   match suffix with 
   | ".ml" -> 
-    let ml_info = Ml_source  (name_sans_extension, false, upper) in 
+    let ml_info = Ml_source  ( false, upper) in 
     (match x with 
     | None -> 
-      {ml_info ; mli_info = Mli_empty}
+      {name_sans_extension ; ml_info ; mli_info = Mli_empty}
     | Some x -> 
+      check x name_sans_extension;
       {x with ml_info })
   | ".re" -> 
-    let ml_info = Ml_source  (name_sans_extension, true, upper)in
+    let ml_info = Ml_source  ( true, upper)in
     (match x with None -> 
-      {ml_info  ; mli_info = Mli_empty} 
-    | Some x -> {x with ml_info})
-  | ".mli" ->  
-    let mli_info = Mli_source (name_sans_extension,false, upper) in 
-    (match x with None -> 
-      {mli_info ; ml_info = Ml_empty}
+      {name_sans_extension; ml_info  ; mli_info = Mli_empty} 
     | Some x -> 
+      check x name_sans_extension;
+      {x with ml_info})
+  | ".mli" ->  
+    let mli_info = Mli_source (false, upper) in 
+    (match x with None -> 
+      {name_sans_extension; mli_info ; ml_info = Ml_empty}
+    | Some x -> 
+      check x name_sans_extension;
       {x with mli_info })
   | ".rei" -> 
-    let mli_info = Mli_source (name_sans_extension,true, upper) in
+    let mli_info = Mli_source (true, upper) in
     (match x with None -> 
-      {  mli_info ; ml_info = Ml_empty}
+      { name_sans_extension; mli_info ; ml_info = Ml_empty}
     | Some x -> 
+      check x name_sans_extension;
       { x with mli_info})
   | _ -> 
     Ext_pervasives.failwithf ~loc:__LOC__ 
@@ -7322,22 +7320,16 @@ let collect_module_by_filename ~dir (map : t) file_name : t  =
 
 
 let sanity_check (map  : t ) = 
-  String_map.fold (fun k module_info has_re ->
+  String_map.exists (fun _ module_info ->
       match module_info with 
-      |  { ml_info = Ml_source(file1,is_re,ml_case); 
-           mli_info = Mli_source(file2,is_rei,mli_case) } ->
-        (if ml_case <> mli_case then 
-           Bsb_exception.invalid_spec
-             (Printf.sprintf          
-                "%S and %S have different cases"
-                file1 file2));
-        has_re || is_re || is_rei
-      | {ml_info = Ml_source(_,is_re,_); mli_info = Mli_empty}
-        -> has_re || is_re
-      | {mli_info = Mli_source(_,is_rei,_); ml_info = Ml_empty}
-        -> has_re || is_rei
-      | {ml_info = Ml_empty ; mli_info = Mli_empty } -> has_re
-    )  map false
+      |  { ml_info = Ml_source(is_re,_); 
+           mli_info = Mli_source(is_rei,_) } ->
+        is_re || is_rei
+      | {ml_info = Ml_source(is_re,_); mli_info = Mli_empty}    
+      | {mli_info = Mli_source(is_re,_); ml_info = Ml_empty}
+        ->  is_re
+      | {ml_info = Ml_empty ; mli_info = Mli_empty } -> false
+    )  map 
 
 end
 module Bsb_dir_index : sig 
@@ -12422,33 +12414,56 @@ let comma buf =
   Buffer.add_char buf ','
 let bool buf b =   
   Buffer.add_char buf (if b then '1' else '0')
-let rec encode_module_info  (x : Bsb_db.module_info) (buf : Buffer.t) =   
-  encode_mli x.mli_info buf;
-  nl buf; 
-  encode_ml x.ml_info buf 
-and encode_ml (ml_kind : Bsb_db.ml_kind ) (buf : Buffer.t) =   
-  match ml_kind with 
-  | Ml_empty -> Buffer.add_char buf '0'
-  | Ml_source (name,is_re,case) -> 
-    encode_triple name is_re case buf
-and encode_mli (mli_kind : Bsb_db.mli_kind) (buf : Buffer.t) =     
-  match mli_kind with 
-  | Mli_empty -> Buffer.add_char buf '0'
-  | Mli_source (name,is_re,case) -> 
-    encode_triple name is_re case buf 
-and encode_triple name is_re case buf =     
-  Buffer.add_string buf name; 
-  comma buf;
-  bool buf is_re ; 
-  comma buf;
-  bool buf case
 
-let encode_pair (name : string) (module_info : Bsb_db.module_info) 
-  (buf : Buffer.t) buf2 = 
-  nl buf; 
-  Buffer.add_string buf name; 
-  nl buf2; 
-  encode_module_info module_info buf2 
+(* IDEAS: 
+  Pros: 
+    - could be even shortened to a single byte
+  Cons: 
+    - decode would allocate
+    - code too verbose
+    - not readable 
+ *)  
+let encode_ml_info (x : Bsb_db.ml_info ) : char =   
+  match x with 
+  | Ml_empty -> '0'
+  | Ml_source(false,false) -> '1'
+  | Ml_source(false,true) -> '2'
+  | Ml_source(true, false) -> '3'
+  | Ml_source(true, true) -> '4'
+
+let decode_ml_info (x : char ) : Bsb_db.ml_info =   
+  match x with 
+  | '0' -> Ml_empty 
+  | '1' -> Ml_source(false,false) 
+  | '2' -> Ml_source(false,true) 
+  | '3' -> Ml_source(true, false) 
+  | '4' -> Ml_source(true, true) 
+  | _ -> assert false
+
+let encode_mli_info (x : Bsb_db.mli_info ) : char =   
+  match x with 
+  | Mli_empty -> '0'
+  | Mli_source(false,false) -> '1'
+  | Mli_source(false,true) -> '2'
+  | Mli_source(true, false) -> '3'
+  | Mli_source(true, true) -> '4'
+
+let decode_mli_info (x : char ) : Bsb_db.mli_info =   
+  match x with 
+  | '0' -> Mli_empty 
+  | '1' -> Mli_source(false,false) 
+  | '2' -> Mli_source(false,true) 
+  | '3' -> Mli_source(true, false)
+  | '4' -> Mli_source(true, true) 
+  | _ -> assert false
+
+let rec encode_module_info  (x : Bsb_db.module_info) (buf : Buffer.t) =   
+  Buffer.add_string buf x.name_sans_extension;
+  comma buf; 
+  Buffer.add_char buf (encode_mli_info x.mli_info);  
+  Buffer.add_char buf (encode_ml_info x.ml_info)
+  
+
 
 (* Make sure [tmp_buf1] and [tmp_buf2] is cleared ,
   they are only used to control the order.
@@ -12458,7 +12473,12 @@ let encode_single (x : Bsb_db.t) (buf : Buffer.t)  (buf2 : Buffer.t) =
   let len = String_map.cardinal x in 
   nl buf ; 
   Buffer.add_string buf (string_of_int len);
-  String_map.iter (fun name module_info -> encode_pair name module_info buf buf2) x
+  String_map.iter (fun name module_info ->
+      nl buf; 
+      Buffer.add_string buf name; 
+      nl buf2; 
+      encode_module_info module_info buf2 
+    ) x
 
 let encode (x : Bsb_db.ts) (oc : out_channel)=     
   output_char oc '\n';
@@ -12484,7 +12504,7 @@ let extract_line (x : string) (cur : cursor) : string =
 let next_mdoule_info (s : string) (cur : int) ~count  =  
   if count = 0 then cur 
   else 
-    Ext_string.index_count s cur '\n' (count * 2) + 1
+    Ext_string.index_count s cur '\n' count  + 1
 
 let rec decode (x : string) (offset : cursor) =   
   let len = int_of_string (extract_line x offset) in  
@@ -12502,22 +12522,7 @@ and decode_modules x (offset : cursor) cardinal =
   done ;
   result
   
-let decode_triple_intf (pair : string) : Bsb_db.mli_kind = 
-  if pair = "0" then Mli_empty 
-  else 
-    let cur = ref 0 in 
-    let name = Ext_string.extract_until pair cur ',' in 
-    let is_re =  Ext_string.extract_until pair cur ',' in 
-    let case = Ext_string.extract_until pair cur ',' in 
-    Mli_source(name,  is_re = "1", case = "1" )  
-let decode_triple_impl (pair : string) : Bsb_db.ml_kind =     
-  if pair = "0" then Ml_empty
-  else 
-    let cur = ref 0 in 
-    let name = Ext_string.extract_until pair cur ',' in 
-    let is_re =  Ext_string.extract_until pair cur ',' in 
-    let case = Ext_string.extract_until pair cur ',' in 
-    Ml_source (name, is_re = "1", case = "1")
+
 
 
 let write_build_cache ~dir (bs_files : Bsb_db.ts)  : unit = 
@@ -12580,9 +12585,11 @@ let find_opt
     let cursor = 
       ref (next_mdoule_info whole group.meta_info_offset ~count)
     in 
-    let mli_info = decode_triple_intf (extract_line whole cursor) in 
-    let ml_info = decode_triple_impl (extract_line whole cursor) in 
-    Some {mli_info; ml_info}
+    let name_sans_extension = 
+        Ext_string.extract_until whole cursor ',' in 
+    let mli_info =  decode_mli_info whole.[!cursor] in 
+    let ml_info = decode_ml_info whole.[!cursor + 1] in
+    Some {mli_info ; ml_info; name_sans_extension}
 end
 module Bsb_namespace_map_gen : sig 
 #1 "bsb_namespace_map_gen.mli"
@@ -13502,12 +13509,12 @@ let handle_module_info
     js_post_build_cmd
     ~bs_suffix
     oc  module_name 
-    ( module_info : Bsb_db.module_info)
+    ( {name_sans_extension = input} as module_info : Bsb_db.module_info)
     namespace
   : info =
   match module_info.ml_info, module_info.mli_info with
-  | Ml_source (input_impl,impl_is_re,_), 
-    Mli_source(input_intf, intf_is_re,_) ->
+  | Ml_source (impl_is_re,_), 
+    Mli_source(intf_is_re,_) ->
     emit_impl_build 
       package_specs
       group_dir_index
@@ -13517,15 +13524,15 @@ let handle_module_info
       ~is_re:impl_is_re
       js_post_build_cmd      
       namespace
-      input_impl  @ 
+      input  @ 
     emit_intf_build 
       package_specs
       group_dir_index
       oc         
       ~is_re:intf_is_re
       namespace
-      input_intf 
-  | Ml_source(input,is_re,_), Mli_empty ->
+      input 
+  | Ml_source(is_re,_), Mli_empty ->
     emit_impl_build 
       package_specs
       group_dir_index
@@ -13536,7 +13543,7 @@ let handle_module_info
       ~is_re
       namespace
       input 
-  | Ml_empty, Mli_source(input,is_re,_) ->    
+  | Ml_empty, Mli_source(is_re,_) ->    
     emit_intf_build 
       package_specs
       group_dir_index

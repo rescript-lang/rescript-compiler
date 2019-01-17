@@ -573,7 +573,7 @@ build bsb/bsb_config.cmi : optc bsb/bsb_config.mli |
 build bsb/bsb_config_parse.cmx : optc bsb/bsb_config_parse.ml | bsb/bsb_build_schemas.cmx bsb/bsb_build_util.cmx bsb/bsb_config.cmx bsb/bsb_config_parse.cmi bsb/bsb_config_types.cmx bsb/bsb_default.cmx bsb/bsb_exception.cmx bsb/bsb_package_specs.cmx bsb/bsb_parse_sources.cmx bsb/bsb_pkg.cmx bsb/bsb_pkg_types.cmx bsb/bsb_warning.cmx bsb/bsb_watcher_gen.cmx common/bs_version.cmx ext/ext_array.cmx ext/ext_file_pp.cmx ext/ext_json.cmx ext/ext_json_parse.cmx ext/ext_json_types.cmx ext/ext_list.cmx ext/ext_namespace.cmx ext/ext_path.cmx ext/literals.cmx ext/string_hash_set.cmx ext/string_map.cmx
 build bsb/bsb_config_parse.cmi : optc bsb/bsb_config_parse.mli | bsb/bsb_config_types.cmx bsb/bsb_package_specs.cmi
 build bsb/bsb_config_types.cmx bsb/bsb_config_types.cmi : optc bsb/bsb_config_types.ml | bsb/bsb_file_groups.cmx bsb/bsb_package_specs.cmx bsb/bsb_pkg_types.cmx bsb/bsb_warning.cmx ext/string_hash_set.cmx ext/string_map.cmx
-build bsb/bsb_db.cmx : optc bsb/bsb_db.ml | bsb/bsb_db.cmi bsb/bsb_exception.cmx ext/ext_modulename.cmx ext/ext_path.cmx ext/ext_pervasives.cmx ext/ext_string.cmx ext/string_map.cmx
+build bsb/bsb_db.cmx : optc bsb/bsb_db.ml | bsb/bsb_db.cmi bsb/bsb_exception.cmx ext/ext_modulename.cmx ext/ext_path.cmx ext/ext_pervasives.cmx ext/string_map.cmx
 build bsb/bsb_db.cmi : optc bsb/bsb_db.mli | ext/string_map.cmi
 build bsb/bsb_db_io.cmx : optc bsb/bsb_db_io.ml | bsb/bsb_db.cmx bsb/bsb_db_io.cmi common/bs_version.cmx ext/ext_array.cmx ext/ext_string.cmx ext/string_map.cmx
 build bsb/bsb_db_io.cmi : optc bsb/bsb_db_io.mli | bsb/bsb_db.cmi
@@ -588,7 +588,7 @@ build bsb/bsb_file.cmi : optc bsb/bsb_file.mli |
 build bsb/bsb_file_groups.cmx bsb/bsb_file_groups.cmi : optc bsb/bsb_file_groups.ml | bsb/bsb_db.cmx bsb/bsb_dir_index.cmx ext/ext_file_pp.cmx ext/ext_list.cmx ext/string_map.cmx ext/string_set.cmx
 build bsb/bsb_helper_dep_graph.cmx : optc bsb/bsb_helper_dep_graph.ml | bsb/bsb_helper_dep_graph.cmi bsb/bsb_log.cmx ext/string_hashtbl.cmx ext/string_map.cmx ext/string_set.cmx
 build bsb/bsb_helper_dep_graph.cmi : optc bsb/bsb_helper_dep_graph.mli | ext/string_hashtbl.cmi ext/string_map.cmi ext/string_set.cmi
-build bsb/bsb_helper_depfile_gen.cmx : optc bsb/bsb_helper_depfile_gen.ml | bsb/bsb_db_io.cmx bsb/bsb_dir_index.cmx bsb/bsb_helper_depfile_gen.cmi ext/ext_namespace.cmx ext/ext_string.cmx ext/literals.cmx
+build bsb/bsb_helper_depfile_gen.cmx : optc bsb/bsb_helper_depfile_gen.ml | bsb/bsb_db.cmx bsb/bsb_db_io.cmx bsb/bsb_dir_index.cmx bsb/bsb_helper_depfile_gen.cmi ext/ext_namespace.cmx ext/ext_option.cmx ext/ext_string.cmx ext/literals.cmx
 build bsb/bsb_helper_depfile_gen.cmi : optc bsb/bsb_helper_depfile_gen.mli | bsb/bsb_dir_index.cmi
 build bsb/bsb_helper_extract.cmx : optc bsb/bsb_helper_extract.ml | bsb/bsb_helper_extract.cmi ext/ext_string.cmx ext/string_set.cmx
 build bsb/bsb_helper_extract.cmi : optc bsb/bsb_helper_extract.mli | ext/string_set.cmi

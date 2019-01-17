@@ -28,6 +28,8 @@
 ./ext/ext_modulename.mli
 ./ext/ext_namespace.ml
 ./ext/ext_namespace.mli
+./ext/ext_option.ml
+./ext/ext_option.mli
 ./ext/ext_path.ml
 ./ext/ext_path.mli
 ./ext/ext_pervasives.ml

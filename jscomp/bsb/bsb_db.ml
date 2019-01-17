@@ -56,6 +56,12 @@ let dir_of_module_info (x : module_info)
 let filename_sans_suffix_of_module_info (x : module_info) =
   x.name_sans_extension
 
+let check (x : module_info) name_sans_extension =  
+  if x.name_sans_extension <> name_sans_extension then 
+    Bsb_exception.invalid_spec 
+      (Printf.sprintf 
+         "implementation and interface have different path names or different cases %s vs %s"
+         x.name_sans_extension name_sans_extension)
 
 let adjust_module_info (x : _ option) suffix name_sans_extension upper =
   match suffix with 
@@ -65,23 +71,28 @@ let adjust_module_info (x : _ option) suffix name_sans_extension upper =
     | None -> 
       {name_sans_extension ; ml_info ; mli_info = Mli_empty}
     | Some x -> 
+      check x name_sans_extension;
       {x with ml_info })
   | ".re" -> 
     let ml_info = Ml_source  ( true, upper)in
     (match x with None -> 
       {name_sans_extension; ml_info  ; mli_info = Mli_empty} 
-    | Some x -> {x with ml_info})
+    | Some x -> 
+      check x name_sans_extension;
+      {x with ml_info})
   | ".mli" ->  
     let mli_info = Mli_source (false, upper) in 
     (match x with None -> 
       {name_sans_extension; mli_info ; ml_info = Ml_empty}
     | Some x -> 
+      check x name_sans_extension;
       {x with mli_info })
   | ".rei" -> 
     let mli_info = Mli_source (true, upper) in
     (match x with None -> 
       { name_sans_extension; mli_info ; ml_info = Ml_empty}
     | Some x -> 
+      check x name_sans_extension;
       { x with mli_info})
   | _ -> 
     Ext_pervasives.failwithf ~loc:__LOC__ 
@@ -106,19 +117,13 @@ let collect_module_by_filename ~dir (map : t) file_name : t  =
 
 
 let sanity_check (map  : t ) = 
-  String_map.fold (fun k module_info has_re ->
+  String_map.exists (fun _ module_info ->
       match module_info with 
-      |  { ml_info = Ml_source(file1,is_re,ml_case); 
-           mli_info = Mli_source(file2,is_rei,mli_case) } ->
-        (if ml_case <> mli_case then 
-           Bsb_exception.invalid_spec
-             (Printf.sprintf          
-                "%S and %S have different cases"
-                file1 file2));
-        has_re || is_re || is_rei
-      | {ml_info = Ml_source(_,is_re,_); mli_info = Mli_empty}
-        -> has_re || is_re
-      | {mli_info = Mli_source(_,is_rei,_); ml_info = Ml_empty}
-        -> has_re || is_rei
-      | {ml_info = Ml_empty ; mli_info = Mli_empty } -> has_re
-    )  map false
+      |  { ml_info = Ml_source(is_re,_); 
+           mli_info = Mli_source(is_rei,_) } ->
+        is_re || is_rei
+      | {ml_info = Ml_source(is_re,_); mli_info = Mli_empty}    
+      | {mli_info = Mli_source(is_re,_); ml_info = Ml_empty}
+        ->  is_re
+      | {ml_info = Ml_empty ; mli_info = Mli_empty } -> false
+    )  map 
