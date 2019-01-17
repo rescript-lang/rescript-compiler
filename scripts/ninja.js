@@ -1,4 +1,4 @@
-#!/usr/bin/env node 
+#!/usr/bin/env node
 //@ts-check
 
 var fs = require('fs')
@@ -26,16 +26,16 @@ var othersTarget = pseudoTarget('others')
 var stdlibTarget = pseudoTarget(stdlibVersion)
 var ocamldep = path.join(__dirname,'..','vendor','ocaml','bin','ocamldep.opt')
 /**
- * 
- * @param {string} name 
- * @param {string} content 
+ *
+ * @param {string} name
+ * @param {string} content
  */
 function writeFile(name,content){
     fs.writeFile(name,content,'ascii',throwIfError)
 }
 /**
- * 
- * @param {NodeJS.ErrnoException} err 
+ *
+ * @param {NodeJS.ErrnoException} err
  */
 function throwIfError(err){
     if(err!==null){
@@ -43,24 +43,24 @@ function throwIfError(err){
     }
 }
 /**
- * 
- * @typedef { {kind : "file" , name : string} | {kind : "pseudo" , name : string}} Target 
+ *
+ * @typedef { {kind : "file" , name : string} | {kind : "pseudo" , name : string}} Target
  * @typedef {{key : string, value : string}} Override
  * @typedef { Target[]} Targets
- * @typedef {Map<string,TargetSet>} DepsMap 
+ * @typedef {Map<string,TargetSet>} DepsMap
  */
 
 class TargetSet {
     /**
-     * 
-     * @param {Targets} xs 
+     *
+     * @param {Targets} xs
      */
     constructor(xs=[]){
-        this.data = xs 
+        this.data = xs
     }
     /**
-     * 
-     * @param {Target} x 
+     *
+     * @param {Target} x
      */
     add (x){
         var data = this.data
@@ -78,7 +78,7 @@ class TargetSet {
         return this
     }
     /**
-     * @returns {Targets} a copy 
+     * @returns {Targets} a copy
      *
      */
     toSortedArray(){
@@ -94,7 +94,7 @@ class TargetSet {
                 if(x.name > y.name){
                     return 1
                 } else if(x.name < y.name) {
-                    return -1    
+                    return -1
                 } else {
                     return 0
                 }
@@ -103,8 +103,8 @@ class TargetSet {
         return newData
     }
     /**
-     * 
-     * @param {(item:Target)=>void} callback 
+     *
+     * @param {(item:Target)=>void} callback
      */
     forEach(callback){
         this.data.forEach(callback)
@@ -112,23 +112,23 @@ class TargetSet {
 }
 
 /**
- * 
- * @param {string} target 
- * @param {string} dependency 
+ *
+ * @param {string} target
+ * @param {string} dependency
  * @param {DepsMap} depsMap
  */
-function updateDepsKVByFile(target, dependency, depsMap) {    
-    var singleTon = fileTarget(dependency) 
+function updateDepsKVByFile(target, dependency, depsMap) {
+    var singleTon = fileTarget(dependency)
     if (depsMap.has(target)) {
         depsMap.get(target).add(singleTon)
-    } else {        
+    } else {
         depsMap.set(target, new TargetSet([ singleTon]))
     }
 }
 /**
- * 
- * @param {string} target 
- * @param {string[]} dependencies 
+ *
+ * @param {string} target
+ * @param {string[]} dependencies
  * @param {DepsMap} depsMap
  */
 function updateDepsKVsByFile(target, dependencies, depsMap) {
@@ -144,34 +144,34 @@ function updateDepsKVsByFile(target, dependencies, depsMap) {
 }
 
  /**
-  * 
-  * @param {Target} file 
-  * @param {string} cwd 
+  *
+  * @param {Target} file
+  * @param {string} cwd
   */
 function targetToString(file,cwd){
     switch(file.kind){
         case "file":
             return path.join(cwd,file.name)
         case "pseudo":
-            return file.name    
-        default:    
+            return file.name
+        default:
             throw  Error
     }
 }
 /**
- * 
- * @param {Targets} files 
- * @param {string} cwd 
- * 
+ *
+ * @param {Targets} files
+ * @param {string} cwd
+ *
  * @returns {string} return a string separated with whitespace
  */
 function targetsToString(files,cwd){
     return files.map(x=>targetToString(x,cwd)).join(' ')
 }
 /**
- * 
- * @param {Targets} outputs 
- * @param {Targets} inputs 
+ *
+ * @param {Targets} outputs
+ * @param {Targets} inputs
  * @param {Targets} deps
  * @param {Override[]} overrides
  * @param {string} rule
@@ -181,7 +181,7 @@ function targetsToString(files,cwd){
 function ninjaBuild(outputs, inputs, rule, deps, cwd, overrides){
     var fileOutputs = targetsToString(outputs,cwd)
     var fileInputs = targetsToString(inputs,cwd)
-    var stmt =  `build ${fileOutputs} : ${rule} ${fileInputs}` 
+    var stmt =  `build ${fileOutputs} : ${rule} ${fileInputs}`
     // deps.push(pseudoTarget('../lib/bsc.exe'))
     if (deps.length > 0) {
         var fileDeps = targetsToString(deps,cwd)
@@ -190,16 +190,16 @@ function ninjaBuild(outputs, inputs, rule, deps, cwd, overrides){
     if (overrides.length > 0) {
         stmt +=   `\n` + overrides.map(x=>{
             return `    ${x.key} = ${x.value}`
-        }).join('\n') 
+        }).join('\n')
     }
-    return stmt    
+    return stmt
 }
 
 /**
- * 
- * @param {Target} outputs 
- * @param {Targets} inputs 
- * @param {string} cwd 
+ *
+ * @param {Target} outputs
+ * @param {Targets} inputs
+ * @param {string} cwd
  */
 function phony(outputs,inputs,cwd){
     return ninjaBuild([outputs],inputs,'phony',[],cwd,[])
@@ -207,50 +207,50 @@ function phony(outputs,inputs,cwd){
 
 
 /**
- * 
- * @param {string | string[]} outputs 
- * @param {string | string[]} inputs  
- * @param {string | string[]} fileDeps 
- * @param {string} rule 
- * @param {string} cwd 
- * @param {[string,string][]} overrides 
+ *
+ * @param {string | string[]} outputs
+ * @param {string | string[]} inputs
+ * @param {string | string[]} fileDeps
+ * @param {string} rule
+ * @param {string} cwd
+ * @param {[string,string][]} overrides
  * @param {Target | Targets} extraDeps
  */
 function ninjaQuickBuild(outputs,inputs,rule,cwd, overrides,fileDeps,extraDeps){
-    var os = 
+    var os =
         Array.isArray(outputs)?
-            fileTargets(outputs) : 
+            fileTargets(outputs) :
             [fileTarget(outputs)]
-    var is =         
+    var is =
         Array.isArray(inputs) ?
-            fileTargets(inputs) : 
+            fileTargets(inputs) :
             [fileTarget(inputs)]
-    var ds = 
+    var ds =
         Array.isArray(fileDeps) ?
-            fileTargets(fileDeps) :         
+            fileTargets(fileDeps) :
             [fileTarget(fileDeps)]
-    var dds =             
+    var dds =
         Array.isArray(extraDeps) ?
             extraDeps : [extraDeps]
 
     return ninjaBuild(os, is, rule, ds.concat(dds), cwd, overrides.map(x=>{
         return {key : x[0], value : x[1]}
-    }))         
-    
+    }))
+
 }
 
 /**
  * @typedef { (string | string []) } Strings
  * @typedef { [Strings, Strings,  string, string, [string,string][], Strings, (Target|Targets)] } BuildList
- * @param {BuildList[]} xs 
+ * @param {BuildList[]} xs
  * @returns {string}
  */
 function ninjaQuickBuidList(xs){
     return xs.map(x => ninjaQuickBuild(x[0],x[1],x[2],x[3],x[4],x[5],x[6])).join('\n')
 }
 /**
- * 
- * @param {string} name 
+ *
+ * @param {string} name
  * @returns {Target}
  */
 function fileTarget(name){
@@ -258,8 +258,8 @@ function fileTarget(name){
 }
 
 /**
- * 
- * @param {string} name 
+ *
+ * @param {string} name
  * @returns {Target}
  */
 function pseudoTarget(name){
@@ -268,8 +268,8 @@ function pseudoTarget(name){
 
 
 /**
- * 
- * @param {string[]} args 
+ *
+ * @param {string[]} args
  * @returns {Targets}
  */
 function fileTargets(args){
@@ -277,10 +277,10 @@ function fileTargets(args){
 }
 
 /**
- * 
- * @param {string[]} outputs 
- * @param {string[]} inputs 
- * @param {DepsMap} depsMap 
+ *
+ * @param {string[]} outputs
+ * @param {string[]} inputs
+ * @param {DepsMap} depsMap
  * @param {Override[]} overrides
  * @param {Targets} extraDeps
  * @param {string} rule
@@ -303,16 +303,16 @@ function buildStmt(outputs, inputs, rule, depsMap, cwd, overrides,extraDeps){
 
 
 /**
- * 
- * @param {string} x 
+ *
+ * @param {string} x
  */
 function replaceCmj(x) {
     return x.trim().replace('cmx', 'cmj')
 }
 
 /**
- * 
- * @param {string[]} files 
+ *
+ * @param {string[]} files
  * @param {string} dir
  * @param {DepsMap} depsMap
  * @return {Promise<DepsMap>}
@@ -339,15 +339,15 @@ function ocamlDepForBscAsync(files,dir, depsMap) {
                 )
                 return resolve(depsMap)
             }
-        })        
-    })    
+        })
+    })
 }
 
 
 
 /**
  * @typedef {('HAS_ML' | 'HAS_MLI' | 'HAS_BOTH')} FileInfo
- * @param {string[]} sourceFiles 
+ * @param {string[]} sourceFiles
  * @returns {Map<string, FileInfo>}
  * We make a set to ensure that `sourceFiles` are not duplicated
  */
@@ -380,44 +380,44 @@ function collectTarget(sourceFiles){
             }
         }
     })
-    return allTargets 
+    return allTargets
 }
 
 /**
- * 
- * @param {Map<string, FileInfo>} allTargets 
+ *
+ * @param {Map<string, FileInfo>} allTargets
  * @param {string[]} collIn
- * @returns {string[]} A new copy which is 
- * 
+ * @returns {string[]} A new copy which is
+ *
  */
 function scanFileTargets(allTargets,collIn){
     var coll = collIn.concat()
     allTargets.forEach((ext,mod)=>{
         switch(ext){
-            case 'HAS_MLI':    
+            case 'HAS_MLI':
                 coll.push(`${mod}.cmi`)
                 break
             case 'HAS_BOTH':
                 coll.push(`${mod}.cmi`,`${mod}.cmj`)
                 break;
-            case 'HAS_ML':    
+            case 'HAS_ML':
                 coll.push(`${mod}.cmi`,`${mod}.cmj`)
                 break;
         }
     })
-   return coll  
+   return coll
 }
 
 /**
- * 
- * @param {DepsMap} depsMap 
+ *
+ * @param {DepsMap} depsMap
  * @param {Map<string,string>} allTargets
  * @param {string} cwd
  * @param {Targets} extraDeps
  * @return {string[]}
  */
 function generateNinja(depsMap,allTargets, cwd,extraDeps=[]){
-    
+
     /**
      * @type {string[]}
      */
@@ -436,9 +436,9 @@ function generateNinja(depsMap,allTargets, cwd,extraDeps=[]){
         }
 
         /**
-         * 
-         * @param {string[]} outputs 
-         * @param {string[]} inputs 
+         *
+         * @param {string[]} outputs
+         * @param {string[]} inputs
          */
         var mk = (outputs,inputs) => {
             return build_stmts.push(buildStmt(outputs,inputs,'cc',depsMap,cwd,overrides,extraDeps))
@@ -446,7 +446,7 @@ function generateNinja(depsMap,allTargets, cwd,extraDeps=[]){
         switch (x) {
             case 'HAS_BOTH':
                 mk([ouptput_cmj],[input_ml])
-                mk([output_cmi], [input_mli])                
+                mk([output_cmi], [input_mli])
                 break;
             case 'HAS_ML':
                 mk([output_cmi, ouptput_cmj], [input_ml])
@@ -457,7 +457,7 @@ function generateNinja(depsMap,allTargets, cwd,extraDeps=[]){
 
         }
     })
-   return build_stmts   
+   return build_stmts
 }
 
 
@@ -472,46 +472,46 @@ async function runtimeNinja(devmode=true){
     var ninjaOutput = devmode ? 'build.ninja' : 'release.ninja'
     var templateRuntimeRules = `
 ${BSC_COMPILER}
-bsc_no_open_flags = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-no-check-div-by-zero -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js -bs-package-output amdjs:lib/amdjs -bs-package-output es6:lib/es6  -nostdlib -nopervasives  -unsafe -warn-error A -w -40-49-103 -bin-annot 
+bsc_no_open_flags = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-no-check-div-by-zero -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js -bs-package-output amdjs:lib/amdjs -bs-package-output es6:lib/es6  -nostdlib -nopervasives  -unsafe -warn-error A -w -40-49-103 -bin-annot
 bsc_flags = $bsc_no_open_flags -open Bs_stdlib_mini
 rule cc
     command = $bsc -bs-cmi -bs-cmj $bsc_flags -bs-no-implicit-include  -I ${ninjaCwd} -c $in
     description = $in -> $out
-    
+
 ${ninjaQuickBuidList([
-    ['bs_stdlib_mini.cmi', 'bs_stdlib_mini.mli', 
+    ['bs_stdlib_mini.cmi', 'bs_stdlib_mini.mli',
         'cc', ninjaCwd, [["bsc_flags", "-nostdlib -nopervasives"]], [],externalDeps],
-    [['js.cmj', 'js.cmi'], 'js.ml', 
+    [['js.cmj', 'js.cmi'], 'js.ml',
         'cc', ninjaCwd,[["bsc_flags", "$bsc_no_open_flags"]], [], externalDeps]
-])}    
+])}
 `
     /**
      * @type {DepsMap}
      */
     var depsMap = new Map
     var allTargets = collectTarget([...runtimeMliFiles, ...runtimeMlFiles])
-    var manualDeps = ['bs_stdlib_mini.cmi','js.cmj','js.cmi']  
+    var manualDeps = ['bs_stdlib_mini.cmi','js.cmj','js.cmi']
     var allFileTargetsInRuntime = scanFileTargets(allTargets,manualDeps)
     allTargets.forEach((ext,mod)=>{
         switch(ext){
-            case 'HAS_MLI':    
+            case 'HAS_MLI':
             case 'HAS_BOTH':
                 updateDepsKVsByFile(mod+".cmi", manualDeps,depsMap)
                 break;
-            case 'HAS_ML':    
+            case 'HAS_ML':
                 updateDepsKVsByFile(mod+".cmj",manualDeps,depsMap)
                 break;
         }
-    }) 
+    })
     // FIXME: in dev mode, it should not rely on reading js file
     // since it may cause a bootstrapping issues
     try{
         await Promise.all([ runJSCheckAsync(depsMap),
-                            ocamlDepForBscAsync(runtimeSourceFiles,runtimeDir, depsMap)])        
+                            ocamlDepForBscAsync(runtimeSourceFiles,runtimeDir, depsMap)])
         var stmts = generateNinja(depsMap,allTargets,ninjaCwd,externalDeps)
         stmts.push(phony(runtimeTarget,fileTargets(allFileTargetsInRuntime),ninjaCwd))
         writeFile(
-                path.join(runtimeDir, ninjaOutput), 
+                path.join(runtimeDir, ninjaOutput),
                 templateRuntimeRules + stmts.join('\n') + '\n'
              )
     }catch(e){
@@ -527,7 +527,7 @@ var dTypeString = [['type', 'TYPE_STRING']]
 /**
  * @type {[string,string][]}
  */
-var dTypeInt = [['type', 'TYPE_INT']] 
+var dTypeInt = [['type', 'TYPE_INT']]
 
 /**
  * @type {[string,string][]}
@@ -567,93 +567,93 @@ ${ devmode ?
     command = cppo -D $type $in -o $out
     generator = true
 ${ninjaQuickBuidList([
-['belt_HashSetString.ml', 'hashset.cppo.ml', 
-    cppoRule, ninjaCwd, dTypeString, [], []],    
-['belt_HashSetString.mli', 'hashset.cppo.mli', 
-    cppoRule, ninjaCwd, dTypeString, [], []],        
-['belt_HashSetInt.ml', 'hashset.cppo.ml', 
-    cppoRule, ninjaCwd, dTypeInt, [], []],        
-['belt_HashSetInt.mli', 'hashset.cppo.mli', 
-    cppoRule, ninjaCwd, dTypeInt, [], []],        
+['belt_HashSetString.ml', 'hashset.cppo.ml',
+    cppoRule, ninjaCwd, dTypeString, [], []],
+['belt_HashSetString.mli', 'hashset.cppo.mli',
+    cppoRule, ninjaCwd, dTypeString, [], []],
+['belt_HashSetInt.ml', 'hashset.cppo.ml',
+    cppoRule, ninjaCwd, dTypeInt, [], []],
+['belt_HashSetInt.mli', 'hashset.cppo.mli',
+    cppoRule, ninjaCwd, dTypeInt, [], []],
 
-['belt_HashMapString.ml', 'hashmap.cppo.ml', 
-    cppoRule, ninjaCwd, dTypeString, [], []],    
-['belt_HashMapString.mli', 'hashmap.cppo.mli', 
-    cppoRule, ninjaCwd, dTypeString, [], []],    
-['belt_HashMapInt.ml', 'hashmap.cppo.ml', 
-    cppoRule, ninjaCwd, dTypeInt, [], []],        
-['belt_HashMapInt.mli', 'hashmap.cppo.mli', 
-    cppoRule, ninjaCwd, dTypeInt, [], []],        
+['belt_HashMapString.ml', 'hashmap.cppo.ml',
+    cppoRule, ninjaCwd, dTypeString, [], []],
+['belt_HashMapString.mli', 'hashmap.cppo.mli',
+    cppoRule, ninjaCwd, dTypeString, [], []],
+['belt_HashMapInt.ml', 'hashmap.cppo.ml',
+    cppoRule, ninjaCwd, dTypeInt, [], []],
+['belt_HashMapInt.mli', 'hashmap.cppo.mli',
+    cppoRule, ninjaCwd, dTypeInt, [], []],
 
-['belt_MapString.ml', 'map.cppo.ml', 
-    cppoRule, ninjaCwd, dTypeString, [], []],    
-['belt_MapString.mli', 'map.cppo.mli', 
-    cppoRule, ninjaCwd, dTypeString, [], []],    
-['belt_MapInt.ml', 'map.cppo.ml', 
-    cppoRule, ninjaCwd, dTypeInt, [], []],        
-['belt_MapInt.mli', 'map.cppo.mli', 
-    cppoRule, ninjaCwd, dTypeInt, [], []],        
+['belt_MapString.ml', 'map.cppo.ml',
+    cppoRule, ninjaCwd, dTypeString, [], []],
+['belt_MapString.mli', 'map.cppo.mli',
+    cppoRule, ninjaCwd, dTypeString, [], []],
+['belt_MapInt.ml', 'map.cppo.ml',
+    cppoRule, ninjaCwd, dTypeInt, [], []],
+['belt_MapInt.mli', 'map.cppo.mli',
+    cppoRule, ninjaCwd, dTypeInt, [], []],
 
-['belt_SetString.ml', 'set.cppo.ml', 
-    cppoRule, ninjaCwd, dTypeString, [], []],    
-['belt_SetString.mli', 'set.cppo.mli', 
-    cppoRule, ninjaCwd, dTypeString, [], []],    
-['belt_SetInt.ml', 'set.cppo.ml', 
-    cppoRule, ninjaCwd, dTypeInt, [], []],        
-['belt_SetInt.mli', 'set.cppo.mli', 
-    cppoRule, ninjaCwd, dTypeInt, [], []],        
+['belt_SetString.ml', 'set.cppo.ml',
+    cppoRule, ninjaCwd, dTypeString, [], []],
+['belt_SetString.mli', 'set.cppo.mli',
+    cppoRule, ninjaCwd, dTypeString, [], []],
+['belt_SetInt.ml', 'set.cppo.ml',
+    cppoRule, ninjaCwd, dTypeInt, [], []],
+['belt_SetInt.mli', 'set.cppo.mli',
+    cppoRule, ninjaCwd, dTypeInt, [], []],
 
-['belt_MutableMapString.ml', 'mapm.cppo.ml', 
-    cppoRule, ninjaCwd, dTypeString, [], []],    
-['belt_MutableMapString.mli', 'mapm.cppo.mli', 
-    cppoRule, ninjaCwd, dTypeString, [], []],    
-['belt_MutableMapInt.ml', 'mapm.cppo.ml', 
-    cppoRule, ninjaCwd, dTypeInt, [], []],        
-['belt_MutableMapInt.mli', 'mapm.cppo.mli', 
-    cppoRule, ninjaCwd, dTypeInt, [], []],        
+['belt_MutableMapString.ml', 'mapm.cppo.ml',
+    cppoRule, ninjaCwd, dTypeString, [], []],
+['belt_MutableMapString.mli', 'mapm.cppo.mli',
+    cppoRule, ninjaCwd, dTypeString, [], []],
+['belt_MutableMapInt.ml', 'mapm.cppo.ml',
+    cppoRule, ninjaCwd, dTypeInt, [], []],
+['belt_MutableMapInt.mli', 'mapm.cppo.mli',
+    cppoRule, ninjaCwd, dTypeInt, [], []],
 
-['belt_MutableSetString.ml', 'setm.cppo.ml', 
-    cppoRule, ninjaCwd, dTypeString, [], []],    
-['belt_MutableSetString.mli', 'setm.cppo.mli', 
-    cppoRule, ninjaCwd, dTypeString, [], []],    
-['belt_MutableSetInt.ml', 'setm.cppo.ml', 
-    cppoRule, ninjaCwd, dTypeInt, [], []],        
-['belt_MutableSetInt.mli', 'setm.cppo.mli', 
-    cppoRule, ninjaCwd, dTypeInt, [], []],        
+['belt_MutableSetString.ml', 'setm.cppo.ml',
+    cppoRule, ninjaCwd, dTypeString, [], []],
+['belt_MutableSetString.mli', 'setm.cppo.mli',
+    cppoRule, ninjaCwd, dTypeString, [], []],
+['belt_MutableSetInt.ml', 'setm.cppo.ml',
+    cppoRule, ninjaCwd, dTypeInt, [], []],
+['belt_MutableSetInt.mli', 'setm.cppo.mli',
+    cppoRule, ninjaCwd, dTypeInt, [], []],
 
 
-['belt_SortArrayString.ml', 'sort.cppo.ml', 
-    cppoRule, ninjaCwd, dTypeString, [], []],    
-['belt_SortArrayString.mli', 'sort.cppo.mli', 
-    cppoRule, ninjaCwd, dTypeString, [], []],    
-['belt_SortArrayInt.ml', 'sort.cppo.ml', 
-    cppoRule, ninjaCwd, dTypeInt, [], []],        
-['belt_SortArrayInt.mli', 'sort.cppo.mli', 
-    cppoRule, ninjaCwd, dTypeInt, [], []],        
+['belt_SortArrayString.ml', 'sort.cppo.ml',
+    cppoRule, ninjaCwd, dTypeString, [], []],
+['belt_SortArrayString.mli', 'sort.cppo.mli',
+    cppoRule, ninjaCwd, dTypeString, [], []],
+['belt_SortArrayInt.ml', 'sort.cppo.ml',
+    cppoRule, ninjaCwd, dTypeInt, [], []],
+['belt_SortArrayInt.mli', 'sort.cppo.mli',
+    cppoRule, ninjaCwd, dTypeInt, [], []],
 
-['belt_internalMapString.ml', 'internal_map.cppo.ml', 
-    cppoRule, ninjaCwd, dTypeString, [], []],    
-['belt_internalMapInt.ml', 'internal_map.cppo.ml', 
-    cppoRule, ninjaCwd, dTypeInt, [], []],        
+['belt_internalMapString.ml', 'internal_map.cppo.ml',
+    cppoRule, ninjaCwd, dTypeString, [], []],
+['belt_internalMapInt.ml', 'internal_map.cppo.ml',
+    cppoRule, ninjaCwd, dTypeInt, [], []],
 
-['belt_internalSetString.ml', 'internal_set.cppo.ml', 
-    cppoRule, ninjaCwd, dTypeString, [], []],    
-['belt_internalSetInt.ml', 'internal_set.cppo.ml', 
-    cppoRule, ninjaCwd, dTypeInt, [], []],        
+['belt_internalSetString.ml', 'internal_set.cppo.ml',
+    cppoRule, ninjaCwd, dTypeString, [], []],
+['belt_internalSetInt.ml', 'internal_set.cppo.ml',
+    cppoRule, ninjaCwd, dTypeInt, [], []],
 
-])}    
+])}
 `
 :
 `
-`    
+`
 }
 ${ninjaQuickBuidList([
     [['belt.cmj','belt.cmi'],'belt.ml',
     'cc',ninjaCwd,[], [],externalDeps],
     [['node.cmj','node.cmi'],'node.ml',
     'cc',ninjaCwd,[], [],externalDeps],
-])}    
-`    
+])}
+`
     var othersDirFiles = fs.readdirSync(othersDir, 'ascii')
     var jsPrefixSourceFiles = othersDirFiles.filter(
         x => x.startsWith('js') && (x.endsWith('.ml') || x.endsWith(".mli")) && !(x.includes('.cppo'))
@@ -672,7 +672,7 @@ ${ninjaQuickBuidList([
     jsOutput.push(phony(js_package,fileTargets(allJsTargets),ninjaCwd))
 
     // Note compiling belt.ml still try to read
-    // belt_xx.cmi we need enforce the order to 
+    // belt_xx.cmi we need enforce the order to
     // avoid data race issues
     var beltPackage = fileTarget('belt.cmi')
     var nodePackage = fileTarget('node.cmi')
@@ -685,8 +685,8 @@ ${ninjaQuickBuidList([
         }
         s.add(js_package)
     })
-    var allOthersTarget = scanFileTargets(beltTargets,[]) 
-    var beltOutput = generateNinja(depsMap, beltTargets,ninjaCwd,externalDeps)    
+    var allOthersTarget = scanFileTargets(beltTargets,[])
+    var beltOutput = generateNinja(depsMap, beltTargets,ninjaCwd,externalDeps)
     beltOutput.push(phony(othersTarget,fileTargets(allOthersTarget),ninjaCwd))
     // ninjaBuild([`belt_HashSetString.ml`,])
     writeFile(
@@ -709,22 +709,22 @@ ${BSC_COMPILER}
 ${bsc_flags} = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-no-check-div-by-zero -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js -bs-package-output amdjs:lib/amdjs -bs-package-output es6:lib/es6  -nostdlib -warn-error A -w -40-49-103 -bin-annot  -bs-no-warn-unimplemented-external  -I ./runtime  -I ./others
 rule cc
     command = $bsc -bs-cmi -bs-cmj $${bsc_flags} -bs-no-implicit-include  -I ${ninjaCwd} -c $in
-    description = $in -> $out 
+    description = $in -> $out
 
 ${ninjaQuickBuidList([
-    ['camlinternalFormatBasics.cmi', 'camlinternalFormatBasics.mli', 
+    ['camlinternalFormatBasics.cmi', 'camlinternalFormatBasics.mli',
         'cc', ninjaCwd, bsc_builtin_overrides, [], externalDeps],
-        // we make it still depends on external 
+        // we make it still depends on external
         // to enjoy free ride on dev config for compiler-deps
         // May add stdlib-402/build.ninja release.ninja later
     ['camlinternalFormatBasics.cmj', 'camlinternalFormatBasics.ml',
         'cc', ninjaCwd, bsc_builtin_overrides, 'camlinternalFormatBasics.cmi',externalDeps],
     ['pervasives.cmj', 'pervasives.ml',
-        'cc',ninjaCwd, bsc_builtin_overrides,'pervasives.cmi', externalDeps],    
+        'cc',ninjaCwd, bsc_builtin_overrides,'pervasives.cmi', externalDeps],
     [ 'pervasives.cmi', 'pervasives.mli',
-      'cc', ninjaCwd, bsc_builtin_overrides, 'camlinternalFormatBasics.cmj', externalDeps]    
-])}    
-`      
+      'cc', ninjaCwd, bsc_builtin_overrides, 'camlinternalFormatBasics.cmj', externalDeps]
+])}
+`
     var stdlibDirFiles = fs.readdirSync(stdlibDir,'ascii')
     var sources = stdlibDirFiles.filter(x=>{
         return !(x.startsWith('camlinternalFormatBasics')) &&
@@ -744,7 +744,7 @@ ${ninjaQuickBuidList([
             case 'HAS_BOTH':
                 updateDepsKVByFile(mod+".cmi", 'pervasives.cmj',depsMap)
                 break
-            case 'HAS_ML':                
+            case 'HAS_ML':
                 updateDepsKVByFile(mod+".cmj", 'pervasives.cmj', depsMap)
                 break
         }
@@ -754,12 +754,12 @@ ${ninjaQuickBuidList([
 
     writeFile(
         path.join(stdlibDir,ninjaOutput),
-        templateStdlibRules  + output.join('\n') + '\n'    
-    )    
+        templateStdlibRules  + output.join('\n') + '\n'
+    )
 }
 /**
- * 
- * @param {string} text 
+ *
+ * @param {string} text
  */
 function getDeps(text) {
     /**
@@ -775,8 +775,8 @@ function getDeps(text) {
 }
 
 /**
- * 
- * @param {string} x 
+ *
+ * @param {string} x
  */
 function baseName(x) {
     return x.substr(0, x.indexOf('.'))
@@ -791,12 +791,12 @@ bsc_flags = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-cross
 rule cc
     command = $bsc -bs-cmi -bs-cmj $bsc_flags -bs-no-implicit-include -I ${ninjaCwd} -c $in
     description = $in -> $out
-    
-rule mll    
+
+rule mll
     command = ocamllex.opt $in
     generator = true
 ${ninjaQuickBuidList([
-    ['arith_lexer.ml','arith_lexer.mll', 
+    ['arith_lexer.ml','arith_lexer.mll',
         'mll',ninjaCwd,[],[], []],
     ['number_lexer.ml','number_lexer.mll',
         'mll',ninjaCwd,[],[],[]],
@@ -804,7 +804,7 @@ ${ninjaQuickBuidList([
         'mll',ninjaCwd,[],[],[]],
 ])}
 `
-    var testDirFiles = fs.readdirSync(testDir,'ascii')    
+    var testDirFiles = fs.readdirSync(testDir,'ascii')
     var sources = testDirFiles.filter(x=>{
         return (x.endsWith('.ml') || x.endsWith('.mli')) &&
             (!x.endsWith('bspack.ml'))
@@ -815,17 +815,17 @@ ${ninjaQuickBuidList([
     var output = generateNinja(depsMap, targets,ninjaCwd,[stdlibTarget])
     writeFile(
         path.join(testDir,'build.ninja'),
-        templateTestRules + output.join('\n') + '\n'    
+        templateTestRules + output.join('\n') + '\n'
     )
 }
 
 /**
- * 
- * @param {DepsMap} depsMap 
+ *
+ * @param {DepsMap} depsMap
  */
 function runJSCheckAsync(depsMap){
 
-    
+
     return new Promise((resolve) => {
         var count = 0
         var tasks = runtimeJsFiles.length
@@ -833,8 +833,8 @@ function runJSCheckAsync(depsMap){
             count ++
             if(count === tasks){
                 resolve(count)
-            } 
-        }        
+            }
+        }
         runtimeJsFiles.forEach((name) => {
             var jsFile = path.join(jsDir, name + ".js")
             fs.readFile(jsFile, 'utf8', function (err, fileContent) {
@@ -893,9 +893,9 @@ function checkEffect() {
     })
 
     var black_list = new Set(["caml_builtin_exceptions.js", "caml_int32.js", "caml_int64.js", "caml_lexer.js", "caml_parser.js"])
-    
+
     var assert = require('assert')
-    assert (effect.length === black_list.size &&   
+    assert (effect.length === black_list.size &&
             effect.every(x=> black_list.has(x.file))
             )
 
@@ -904,9 +904,9 @@ function checkEffect() {
 
 
 /**
- * 
- * @param {string[]} domain 
- * @param {Map<string,Set<string>>} dependency_graph 
+ *
+ * @param {string[]} domain
+ * @param {Map<string,Set<string>>} dependency_graph
  * @returns {string[]}
  */
 function sortFilesByDeps(domain, dependency_graph){
@@ -917,10 +917,10 @@ function sortFilesByDeps(domain, dependency_graph){
     var result = []
     var workList = new Set(domain)
     /**
-     * 
-     * @param {Set<string>} visiting 
-     * @param {string[]} path 
-     * @param {string} current 
+     *
+     * @param {Set<string>} visiting
+     * @param {string[]} path
+     * @param {string} current
      */
     var visit = function(visiting,path,current){
         if(visiting.has(current)){
@@ -928,8 +928,8 @@ function sortFilesByDeps(domain, dependency_graph){
         }
         if(workList.has(current)){
             visiting.add(current)
-            var next = dependency_graph.get(current)            
-            if(next !== undefined && next.size > 0){                
+            var next = dependency_graph.get(current)
+            if(next !== undefined && next.size > 0){
                 next.forEach(x=>{
                     visit(visiting, path.concat(current),x)
                 })
@@ -950,7 +950,7 @@ function sortFilesByDeps(domain, dependency_graph){
 if (require.main === module) {
     if(process.argv.includes('-check')){
         checkEffect()
-    }    
+    }
     if (process.argv.length === 2) {
         updateDev()
         updateRelease()
@@ -986,8 +986,8 @@ exports.updateDev = updateDev
 exports.updateRelease = updateRelease
 
 /**
- * 
- * @param {string} dir 
+ *
+ * @param {string} dir
  */
 function readdirSync(dir){
     return fs.readdirSync(dir,'ascii')
@@ -995,19 +995,19 @@ function readdirSync(dir){
 
 
 /**
- * 
- * @param {string} dir 
+ *
+ * @param {string} dir
  */
-function test(dir){    
+function test(dir){
     return readdirSync(path.join(jscompDir,dir)).filter(x=> {
-        return (x.endsWith('.ml') || x.endsWith('.mli')) && 
+        return (x.endsWith('.ml') || x.endsWith('.mli')) &&
                 !(x.endsWith('.cppo.ml') || x.endsWith('.cppo.mli'))
     }).map(x=>path.join(dir,x))
 }
 
 /**
- * 
- * @param {Set<string>} xs 
+ *
+ * @param {Set<string>} xs
  * @returns {string}
  */
 function setSortedToString(xs){
@@ -1017,7 +1017,7 @@ function setSortedToString(xs){
 
 /**
  * Note don't run `ninja -t clean -g`
- * Since it will remove generated ml file which has 
+ * Since it will remove generated ml file which has
  * an effect on depfile
  */
 function nativeNinja() {
@@ -1025,25 +1025,25 @@ function nativeNinja() {
         var includes = sourceDirs.map(x=>`-I ${x}`).join(' ')
 
         var templateNative = `
-ocamlopt = ../vendor/ocaml/bin/ocamlopt.opt      
+ocamlopt = ../vendor/ocaml/bin/ocamlopt.opt
 rule optc
     command = $ocamlopt -I +compiler-libs  ${includes} -g -w +6-40-30-23 -warn-error +a-40-30-23 -absname -c $in
     description = $out : $in
 rule archive
-    command = $ocamlopt -a $in -o $out    
+    command = $ocamlopt -a $in -o $out
 rule link
     command =  $ocamlopt -g  -I +compiler-libs $flags $libs $in -o $out
 rule mk_bsversion
     command = node $in
     generator = true
-rule gcc 
+rule gcc
     command = $ocamlopt -ccopt -O2 -ccopt -o -ccopt $out -c $in
-build stubs/ext_basic_hash_stubs.o : gcc  stubs/ext_basic_hash_stubs.c   
+build stubs/ext_basic_hash_stubs.o : gcc  stubs/ext_basic_hash_stubs.c
 rule ocamlmklib
     command = ocamlmklib $in -o $name
-    
-rule mk_keywords    
-    command = ocaml $in 
+
+rule mk_keywords
+    command = ocaml $in
     generator = true
 build ext/js_reserved_map.ml: mk_keywords build_sorted.ml keywords.list
 
@@ -1051,14 +1051,14 @@ build stubs/libbs_hash.a stubs/dllbs_hash.so: ocamlmklib stubs/ext_basic_hash_st
     name = stubs/bs_hash
 rule stubslib
     command = $ocamlopt -a $ml -o $out -cclib $clib
-build stubs/stubs.cmxa : stubslib stubs/bs_hash_stubs.cmx stubs/libbs_hash.a    
+build stubs/stubs.cmxa : stubslib stubs/bs_hash_stubs.cmx stubs/libbs_hash.a
     ml = stubs/bs_hash_stubs.cmx
     clib = stubs/libbs_hash.a
 
 rule p4of
-    command = camlp4of $flags -impl $in -printer o -o $out    
+    command = camlp4of $flags -impl $in -printer o -o $out
     generator = true
-build core/js_fold.ml: p4of core/js_fold.mlp | core/j.ml  
+build core/js_fold.ml: p4of core/js_fold.mlp | core/j.ml
     flags = -I core -filter map -filter trash
 build core/js_map.ml: p4of core/js_map.mlp | core/j.ml
     flags = -I core -filter Camlp4FoldGenerator -filter trash
@@ -1074,15 +1074,15 @@ build ../lib/bsb_helper.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cm
 build ./bin/bspack.exe: link ./stubs/ext_basic_hash_stubs.c  stubs/stubs.cmxa ext/ext.cmxa ./common/common.cmxa ./syntax/syntax.cmxa depends/depends.cmxa ./main/bspack_main.cmx
     libs = unix.cmxa ocamlcommon.cmxa
     flags = -I ./bin -w -40-30
-build ./bin/cmjdump.exe: link ./stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa core/core.cmxa main/cmjdump_main.cmx   
+build ./bin/cmjdump.exe: link ./stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa core/core.cmxa main/cmjdump_main.cmx
     libs = ocamlcommon.cmxa
-rule bspack    
+rule bspack
     command = ./bin/bspack.exe $flags -bs-main $main -o $out
     depfile = $out.d
     generator = true
 build ./bin/tests.exe: link ounit/ounit.cmxa stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa bsb/bsb.cmxa core/core.cmxa ounit_tests/ounit_tests.cmxa main/ounit_tests_main.cmx
     libs = str.cmxa unix.cmxa ocamlcommon.cmxa
-rule cppo    
+rule cppo
     command = cppo -D $type $in -o $out
     generator = true
 ${ninjaQuickBuidList([
@@ -1100,11 +1100,11 @@ ${ninjaQuickBuidList([
     ],
     ['hash_set_poly.ml', 'hash_set.cppo.ml',
         'cppo', 'ext', dTypePoly, [], []
-    ],    
-    ['int_vec.ml','vec.cppo.ml', 
+    ],
+    ['int_vec.ml','vec.cppo.ml',
         'cppo','ext',dTypeInt, [],[]
     ],
-    ['resize_array.ml','vec.cppo.ml', 
+    ['resize_array.ml','vec.cppo.ml',
         'cppo','ext',dTypeFunctor, [],[]
     ],
     ['string_set.ml', 'set.cppo.ml',
@@ -1156,7 +1156,7 @@ ${ninjaQuickBuidList([
         'cppo', 'ext', dTypeFunctor, [],[]
     ],
     
-])}    
+])}
 
 rule mk_shared
     command = $ocamlopt -I +compiler-libs -shared $flags -o $out $in
@@ -1164,7 +1164,7 @@ build ../odoc_gen/generator.cmxs : mk_shared ../odoc_gen/generator.mli ../odoc_g
     flags = -I +ocamldoc -I ../odoc_gen
 `
 
-    
+
     /**
      * @type { {name : string, libs: string[]}[]}
      */
@@ -1172,7 +1172,7 @@ build ../odoc_gen/generator.cmxs : mk_shared ../odoc_gen/generator.mli ../odoc_g
     sourceDirs.forEach(name=>{
         if(name !== 'main' && name !== 'stubs'){
             libs.push({name, libs : []})
-        }         
+        }
     })
     /**
      * @type{string[]}
@@ -1180,7 +1180,7 @@ build ../odoc_gen/generator.cmxs : mk_shared ../odoc_gen/generator.mli ../odoc_g
     var files = []
     for (let dir of sourceDirs) {
         files = files.concat(test(dir))
-    }    
+    }
     var out = cp.execSync(`${ocamldep} -one-line -native ${includes} ${files.join(' ')}`, { cwd: jscompDir, encoding: 'ascii' })
 
     /**
@@ -1200,11 +1200,11 @@ build ../odoc_gen/generator.cmxs : mk_shared ../odoc_gen/generator.mli ../odoc_g
             libs.forEach(x=>{
                 if(key.startsWith(x.name)){
                     x.libs.push(key)}
-            })            
+            })
         }
     })
 
-   
+
     // not ocamldep output
     // when no mli exists no deps for cmi otherwise add cmi
     var stmts = pairs.map((pair) => {
@@ -1231,7 +1231,7 @@ build ../odoc_gen/generator.cmxs : mk_shared ../odoc_gen/generator.mli ../odoc_g
         var name = x.name
         stmts.push(`build ${name}/${name}.cmxa : archive ${output.join(' ')}`)
     })
-    
+
     writeFile(path.join(jscompDir, 'compiler.ninja'),
         templateNative +
         stmts.join('\n') +

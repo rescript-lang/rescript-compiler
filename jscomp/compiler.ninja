@@ -1,23 +1,23 @@
 
-ocamlopt = ../vendor/ocaml/bin/ocamlopt.opt      
+ocamlopt = ../vendor/ocaml/bin/ocamlopt.opt
 rule optc
     command = $ocamlopt -I +compiler-libs  -I stubs -I ext -I common -I syntax -I depends -I core -I super_errors -I outcome_printer -I bsb -I ounit -I ounit_tests -I main -g -w +6-40-30-23 -warn-error +a-40-30-23 -absname -c $in
     description = $out : $in
 rule archive
-    command = $ocamlopt -a $in -o $out    
+    command = $ocamlopt -a $in -o $out
 rule link
     command =  $ocamlopt -g  -I +compiler-libs $flags $libs $in -o $out
 rule mk_bsversion
     command = node $in
     generator = true
-rule gcc 
+rule gcc
     command = $ocamlopt -ccopt -O2 -ccopt -o -ccopt $out -c $in
-build stubs/ext_basic_hash_stubs.o : gcc  stubs/ext_basic_hash_stubs.c   
+build stubs/ext_basic_hash_stubs.o : gcc  stubs/ext_basic_hash_stubs.c
 rule ocamlmklib
     command = ocamlmklib $in -o $name
-    
-rule mk_keywords    
-    command = ocaml $in 
+
+rule mk_keywords
+    command = ocaml $in
     generator = true
 build ext/js_reserved_map.ml: mk_keywords build_sorted.ml keywords.list
 
@@ -25,14 +25,14 @@ build stubs/libbs_hash.a stubs/dllbs_hash.so: ocamlmklib stubs/ext_basic_hash_st
     name = stubs/bs_hash
 rule stubslib
     command = $ocamlopt -a $ml -o $out -cclib $clib
-build stubs/stubs.cmxa : stubslib stubs/bs_hash_stubs.cmx stubs/libbs_hash.a    
+build stubs/stubs.cmxa : stubslib stubs/bs_hash_stubs.cmx stubs/libbs_hash.a
     ml = stubs/bs_hash_stubs.cmx
     clib = stubs/libbs_hash.a
 
 rule p4of
-    command = camlp4of $flags -impl $in -printer o -o $out    
+    command = camlp4of $flags -impl $in -printer o -o $out
     generator = true
-build core/js_fold.ml: p4of core/js_fold.mlp | core/j.ml  
+build core/js_fold.ml: p4of core/js_fold.mlp | core/j.ml
     flags = -I core -filter map -filter trash
 build core/js_map.ml: p4of core/js_map.mlp | core/j.ml
     flags = -I core -filter Camlp4FoldGenerator -filter trash
@@ -48,15 +48,15 @@ build ../lib/bsb_helper.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cm
 build ./bin/bspack.exe: link ./stubs/ext_basic_hash_stubs.c  stubs/stubs.cmxa ext/ext.cmxa ./common/common.cmxa ./syntax/syntax.cmxa depends/depends.cmxa ./main/bspack_main.cmx
     libs = unix.cmxa ocamlcommon.cmxa
     flags = -I ./bin -w -40-30
-build ./bin/cmjdump.exe: link ./stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa core/core.cmxa main/cmjdump_main.cmx   
+build ./bin/cmjdump.exe: link ./stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa core/core.cmxa main/cmjdump_main.cmx
     libs = ocamlcommon.cmxa
-rule bspack    
+rule bspack
     command = ./bin/bspack.exe $flags -bs-main $main -o $out
     depfile = $out.d
     generator = true
 build ./bin/tests.exe: link ounit/ounit.cmxa stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa bsb/bsb.cmxa core/core.cmxa ounit_tests/ounit_tests.cmxa main/ounit_tests_main.cmx
     libs = str.cmxa unix.cmxa ocamlcommon.cmxa
-rule cppo    
+rule cppo
     command = cppo -D $type $in -o $out
     generator = true
 build ext/string_hash_set.ml : cppo ext/hash_set.cppo.ml
@@ -96,7 +96,7 @@ build ext/int_hashtbl.ml : cppo ext/hashtbl.cppo.ml
 build ext/ident_hashtbl.ml : cppo ext/hashtbl.cppo.ml
     type = TYPE_IDENT
 build ext/hashtbl_make.ml : cppo ext/hashtbl.cppo.ml
-    type = TYPE_FUNCTOR    
+    type = TYPE_FUNCTOR
 
 rule mk_shared
     command = $ocamlopt -I +compiler-libs -shared $flags -o $out $in

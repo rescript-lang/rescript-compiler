@@ -4,8 +4,8 @@ bsc_flags = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-cross
 rule cc
     command = $bsc -bs-cmi -bs-cmj $bsc_flags -bs-no-implicit-include -I test -c $in
     description = $in -> $out
-    
-rule mll    
+
+rule mll
     command = ocamllex.opt $in
     generator = true
 build test/arith_lexer.ml : mll test/arith_lexer.mll
