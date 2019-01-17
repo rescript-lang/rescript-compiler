@@ -641,6 +641,9 @@ ${ninjaQuickBuidList([
 ['belt_internalSetInt.ml', 'internal_set.cppo.ml',
     cppoRule, ninjaCwd, dTypeInt, [], []],
 
+['js_typed_array.ml', 'js_typed_array.cppo.ml',
+    cppoRule, ninjaCwd, [], [], []],
+
 ])}
 `
 :
@@ -1155,7 +1158,6 @@ ${ninjaQuickBuidList([
     ['hashtbl_make.ml', 'hashtbl.cppo.ml',
         'cppo', 'ext', dTypeFunctor, [],[]
     ],
-    
 ])}
 
 rule mk_shared
