@@ -26,17 +26,18 @@
 type case = bool
 (** true means upper case*)
 
-type ml_kind =
-  | Ml_source of string  * bool  * case (*  Ml_source(name, is_re) default to false  *)
+type ml_info =
+  | Ml_source of  bool  * case (*  Ml_source(is_re, case) default to false  *)
   | Ml_empty
-type mli_kind = 
-  | Mli_source of string * bool  * case  
+type mli_info = 
+  | Mli_source of  bool  * case  
   | Mli_empty
 
 type module_info = 
   {
-    mli_info : mli_kind ; 
-    ml_info : ml_kind ; 
+    mli_info : mli_info ; 
+    ml_info : ml_info ; 
+    name_sans_extension : string  ;
   }
 
 
@@ -49,52 +50,37 @@ type ts = t array
 
 let dir_of_module_info (x : module_info)
   = 
-  match x.mli_info with 
-  | Mli_source (s,_,_) -> 
-    Filename.dirname s 
-  | Mli_empty -> 
-    match x.ml_info with 
-    | Ml_source (s,_,_) -> 
-      Filename.dirname s 
-    | Ml_empty -> Ext_string.empty
-    
+  Filename.dirname x.name_sans_extension
     
 
 let filename_sans_suffix_of_module_info (x : module_info) =
-  match x.mli_info with 
-  | Mli_source (s,_,_) -> 
-    s 
-  | Mli_empty -> 
-    match x.ml_info with 
-    | Ml_source (s,_,_)  -> 
-      s 
-    | Ml_empty -> assert false
+  x.name_sans_extension
 
 
 let adjust_module_info (x : _ option) suffix name_sans_extension upper =
   match suffix with 
   | ".ml" -> 
-    let ml_info = Ml_source  (name_sans_extension, false, upper) in 
+    let ml_info = Ml_source  ( false, upper) in 
     (match x with 
     | None -> 
-      {ml_info ; mli_info = Mli_empty}
+      {name_sans_extension ; ml_info ; mli_info = Mli_empty}
     | Some x -> 
       {x with ml_info })
   | ".re" -> 
-    let ml_info = Ml_source  (name_sans_extension, true, upper)in
+    let ml_info = Ml_source  ( true, upper)in
     (match x with None -> 
-      {ml_info  ; mli_info = Mli_empty} 
+      {name_sans_extension; ml_info  ; mli_info = Mli_empty} 
     | Some x -> {x with ml_info})
   | ".mli" ->  
-    let mli_info = Mli_source (name_sans_extension,false, upper) in 
+    let mli_info = Mli_source (false, upper) in 
     (match x with None -> 
-      {mli_info ; ml_info = Ml_empty}
+      {name_sans_extension; mli_info ; ml_info = Ml_empty}
     | Some x -> 
       {x with mli_info })
   | ".rei" -> 
-    let mli_info = Mli_source (name_sans_extension,true, upper) in
+    let mli_info = Mli_source (true, upper) in
     (match x with None -> 
-      {  mli_info ; ml_info = Ml_empty}
+      { name_sans_extension; mli_info ; ml_info = Ml_empty}
     | Some x -> 
       { x with mli_info})
   | _ -> 

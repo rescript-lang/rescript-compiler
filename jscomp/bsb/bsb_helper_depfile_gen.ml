@@ -97,6 +97,23 @@ let oc_cmi buf namespace source =
   output_file buf source namespace;
   Buffer.add_string buf Literals.suffix_cmi 
 
+
+let handle_module_info 
+    (module_info : Bsb_db.module_info)
+    input_file 
+    namespace rhs_suffix buf = 
+  let source = module_info.name_sans_extension in 
+  if source <> input_file then 
+    begin 
+      if module_info.ml_info <> Ml_empty then 
+        begin
+          Buffer.add_char buf '\n';  
+          output_file buf source namespace;
+          Buffer.add_string buf rhs_suffix
+        end;
+      (* #3260 cmj changes does not imply cmi change anymore *)
+      oc_cmi buf namespace source
+    end
 let oc_impl 
     (dependent_module_set : string array)
     (input_file : string)
@@ -113,36 +130,13 @@ let oc_impl
   for i = 0 to Array.length dependent_module_set - 1 do
     let k = Array.unsafe_get dependent_module_set i in 
     match Bsb_db_io.find_opt  data 0 k with
-    | Some {ml_info = Ml_source (source,_,_) }  
-      -> 
-      if source <> input_file then 
-        begin 
-          Buffer.add_char buf '\n';  
-          output_file buf source namespace;
-          Buffer.add_string buf rhs_suffix; 
-          (* #3260 cmj changes does not imply cmi change anymore *)
-          oc_cmi buf namespace source
-        end
-    | Some {mli_info = Mli_source (source,_,_)  } -> 
-      if source <> input_file then oc_cmi buf namespace source        
-    | Some {mli_info = Mli_empty; ml_info = Ml_empty} -> assert false
+    | Some module_info -> 
+      handle_module_info module_info input_file namespace rhs_suffix buf
     | None  -> 
       if not (Bsb_dir_index.is_lib_dir index) then      
-        begin match Bsb_db_io.find_opt data ((index  :> int)) k with 
-          | Some {ml_info = Ml_source (source,_,_) }
-            -> 
-            if source <> input_file then 
-              begin 
-                Buffer.add_char buf '\n' ;  
-                output_file buf source namespace;
-                Buffer.add_string buf rhs_suffix;
-                oc_cmi buf namespace source
-              end
-          | Some {mli_info = Mli_source (source,_,_) } -> 
-            if source <> input_file then oc_cmi buf namespace source              
-          | Some {mli_info = Mli_empty; ml_info = Ml_empty} -> assert false
-          | None -> ()
-        end
+        Ext_option.iter (Bsb_db_io.find_opt data ((index  :> int)) k)
+          (fun module_info -> 
+             handle_module_info module_info input_file namespace rhs_suffix buf)
   done    
 
 
@@ -162,18 +156,15 @@ let oc_intf
   for i = 0 to Array.length dependent_module_set - 1 do               
     let k = Array.unsafe_get dependent_module_set i in 
     match Bsb_db_io.find_opt data 0 k with 
-    | Some ({ ml_info = Ml_source (source,_,_)  }
-           | { mli_info = Mli_source (source,_,_) }) -> 
+    | Some module_info -> 
+      let source = module_info.name_sans_extension in 
       if source <> input_file then oc_cmi buf namespace source             
-    | Some {ml_info =  Ml_empty; mli_info = Mli_empty } -> assert false
     | None -> 
       if not (Bsb_dir_index.is_lib_dir index)  then 
-        match Bsb_db_io.find_opt data ((index :> int)) k with 
-        | Some ({ ml_info = Ml_source (source,_,_)  }
-               | { mli_info = Mli_source (source,_,_)  }) -> 
-          if source <> input_file then  oc_cmi buf namespace source    
-        | Some {ml_info = Ml_empty; mli_info = Mli_empty} -> assert false
-        | None -> () 
+        Ext_option.iter (Bsb_db_io.find_opt data ((index :> int)) k)
+          ( fun module_info -> 
+              let source = module_info.name_sans_extension in 
+              if source <> input_file then  oc_cmi buf namespace source)
   done  
 
 
