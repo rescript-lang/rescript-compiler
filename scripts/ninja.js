@@ -1047,6 +1047,8 @@ build ../lib/bsb_helper.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cm
 build ./bin/bspack.exe: link ./stubs/ext_basic_hash_stubs.c  stubs/stubs.cmxa ext/ext.cmxa ./common/common.cmxa ./syntax/syntax.cmxa depends/depends.cmxa ./main/bspack_main.cmx
     libs = unix.cmxa ocamlcommon.cmxa
     flags = -I ./bin -w -40-30
+build ./bin/cppo.exe: link ../vendor/cppo/cppo_bin.ml
+    libs = unix.cmxa str.cmxa    
 build ./bin/cmjdump.exe: link ./stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa core/core.cmxa main/cmjdump_main.cmx
     libs = ocamlcommon.cmxa
 rule bspack
