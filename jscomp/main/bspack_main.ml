@@ -434,7 +434,7 @@ let () =
          raise (Arg.Bad (main_module ^ " does not pull in any libs, maybe wrong input"))
        ;
        let out_chan = Lazy.force out_chan in
-       let collect_modules  = !set_mllib_file in 
+       let collect_module_by_filenames  = !set_mllib_file in 
        let collection_modules = Queue.create () in
        let count = ref 0 in 
        let task_length = Queue.length tasks in 
@@ -443,7 +443,7 @@ let () =
          Ast_extract.handle_queue Format.err_formatter tasks ast_table
            (fun base ml_name (lazy(_, ml_content)) -> 
               incr count ;  
-              if collect_modules then 
+              if collect_module_by_filenames then 
                 Queue.add ml_name collection_modules; 
               let module_bound = not  export || task_length > !count  in 
               decorate_module_only ~module_bound out_chan base ml_name ml_content;
@@ -455,7 +455,7 @@ let () =
            )
            (fun base mli_name (lazy (_, mli_content))  -> 
               incr count ;                  
-              if collect_modules then 
+              if collect_module_by_filenames then 
                 Queue.add mli_name collection_modules;                 
 
               decorate_interface_only out_chan base mli_name mli_content;
@@ -471,7 +471,7 @@ let () =
                (*TODO: assume mli_name, ml_name are in the same dir,
                  Needs to be addressed 
                *)
-               if collect_modules then 
+               if collect_module_by_filenames then 
                  begin 
                    Queue.add ml_name collection_modules;
                    Queue.add mli_name collection_modules

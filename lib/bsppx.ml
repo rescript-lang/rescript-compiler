@@ -7807,10 +7807,10 @@ let merge t1 t2 =
     bal t1 x d (remove_min_binding t2)
 
 
-let rec iter f = function
+let rec iter x f = match x with 
     Empty -> ()
   | Node(l, v, d, r, _) ->
-    iter f l; f v d; iter f r
+    iter l f; f v d; iter r f
 
 let rec map f = function
     Empty ->
@@ -7952,9 +7952,9 @@ module type S =
     val add: key -> 'a -> 'a t -> 'a t
     (** [add x y m] 
         If [x] was already bound in [m], its previous binding disappears. *)
-    val adjust: key -> (unit -> 'a)  -> ('a ->  'a) -> 'a t -> 'a t 
-    (** [adjust k v f map] if not exist [add k v], otherwise 
-        [add k v (f old)]
+    val adjust: 'a t -> key -> ('a option->  'a) ->  'a t 
+    (** [adjust acc k replace ] if not exist [add (replace None ], otherwise 
+        [add k v (replace (Some old))]
     *)
     val singleton: key -> 'a -> 'a t
 
@@ -7978,7 +7978,7 @@ module type S =
 
     val equal: ('a -> 'a -> bool) -> 'a t -> 'a t -> bool
 
-    val iter: (key -> 'a -> unit) -> 'a t -> unit
+    val iter: 'a t -> (key -> 'a -> unit) ->  unit
     (** [iter f m] applies [f] to all bindings in map [m].
         The bindings are passed to [f] in increasing order. *)
 
@@ -8147,18 +8147,18 @@ let rec add x data (tree : _ Map_gen.t as 'a) : 'a = match tree with
       bal l v d (add x data r)
 
 
-let rec adjust x data replace (tree : _ Map_gen.t as 'a) : 'a = 
+let rec adjust (tree : _ Map_gen.t as 'a) x replace  : 'a = 
   match tree with 
   | Empty ->
-    Node(Empty, x, data (), Empty, 1)
+    Node(Empty, x, replace None, Empty, 1)
   | Node(l, v, d, r, h) ->
     let c = compare_key x v in
     if c = 0 then
-      Node(l, x, replace  d , r, h)
+      Node(l, x, replace  (Some d) , r, h)
     else if c < 0 then
-      bal (adjust x data replace l) v d r
+      bal (adjust l x  replace ) v d r
     else
-      bal l v d (adjust x data replace r)
+      bal l v d (adjust r x  replace )
 
 
 let rec find_exn x (tree : _ Map_gen.t )  = match tree with 

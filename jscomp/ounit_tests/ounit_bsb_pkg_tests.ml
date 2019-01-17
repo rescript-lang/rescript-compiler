@@ -7,7 +7,40 @@ let printer_string = fun x -> x
 let (=~) = OUnit.assert_equal  ~printer:printer_string  
 
 
+let parse_data_one = 
+(Bsb_db_io.decode {|4.0.19
+2
+1
+Demo
+src/demo,01
+1
+Test
+examples/test,01
+|} (ref 7))
 
+let parse_data_two = 
+  Bsb_db_io.decode {|4.0.19
+3
+2
+Fib
+Demo
+src/hi/fib,01
+src/demo,01
+0
+0|} (ref 7)
+let data_one : Bsb_db_io.group array = 
+  [| {modules = [|"Demo"|]; meta_info_offset = 16}; {modules = [|"Test"|]; meta_info_offset = 35}|]
+
+let data_two : Bsb_db_io.group array =  
+  [| {modules = [|"Fib"; "Demo"|]; meta_info_offset = 20 }; {modules = [||]; meta_info_offset = 48}; {modules = [||]; meta_info_offset = -1} |]
+
+#if 0 then  
+let () = 
+  Format.fprintf Format.err_formatter
+  "hi\n%a@.%a\n@."
+   Ext_obj.pp_any parse_data_one  
+   Ext_obj.pp_any parse_data_two
+#end
 let scope_test s (a,b,c)= 
   match Bsb_pkg_types.extract_pkg_name_and_file s with 
   | Scope(a0,b0),c0 -> 
@@ -61,32 +94,11 @@ let suites =
     s_test1 "xx/yy/zz" "xx/yy/zz"
   end;
   __LOC__ >:: begin fun _ -> 
-   let u = (Bsb_db_io.decode {|4.0.19
-2
-1
-Demo
-0
-src/demo,0,0
-1
-Test
-0
-examples/test,0,0
-|} (ref 7)) in  
-  OUnit.assert_equal u  [| {modules = [|"Demo"|]; meta_info_offset = 16}; {modules = [|"Test"|]; meta_info_offset = 38}|]
+  OUnit.assert_equal parse_data_one  data_one
   end ;
   __LOC__ >:: begin fun _ -> 
-  let v = Bsb_db_io.decode {|4.0.19
-3
-2
-Fib
-Demo
-0
-src/hi/fib,0,0
-0
-src/demo,0,0
-0
-0|} (ref 7) in 
-  OUnit.assert_equal v [| {modules = [|"Fib"; "Demo"|]; meta_info_offset = 20 }; {modules = [||]; meta_info_offset = 54}; {modules = [||]; meta_info_offset = -1} |]
+  
+  OUnit.assert_equal parse_data_two data_two
   end 
   ]
 

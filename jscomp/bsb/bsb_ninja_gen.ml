@@ -206,7 +206,7 @@ let output_ninja_and_namespace_map
       for i = 1 to number_of_dev_groups  do
         let c = bs_groups.(i) in
         has_reason_files :=  Bsb_db.sanity_check c || !has_reason_files ;
-        String_map.iter (fun k _ -> if String_map.mem k lib then failwith ("conflict files found:" ^ k)) c ;
+        String_map.iter c (fun k _ -> if String_map.mem k lib then failwith ("conflict files found:" ^ k)) ;
         Bsb_ninja_util.output_kv 
           (Bsb_dir_index.(string_of_bsb_dev_include (of_int i)))
           (Bsb_build_util.include_dirs @@ source_dirs.(i)) oc

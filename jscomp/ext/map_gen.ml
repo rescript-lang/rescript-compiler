@@ -137,10 +137,10 @@ let merge t1 t2 =
     bal t1 x d (remove_min_binding t2)
 
 
-let rec iter f = function
+let rec iter x f = match x with 
     Empty -> ()
   | Node(l, v, d, r, _) ->
-    iter f l; f v d; iter f r
+    iter l f; f v d; iter r f
 
 let rec map f = function
     Empty ->
@@ -282,9 +282,9 @@ module type S =
     val add: key -> 'a -> 'a t -> 'a t
     (** [add x y m] 
         If [x] was already bound in [m], its previous binding disappears. *)
-    val adjust: key -> (unit -> 'a)  -> ('a ->  'a) -> 'a t -> 'a t 
-    (** [adjust k v f map] if not exist [add k v], otherwise 
-        [add k v (f old)]
+    val adjust: 'a t -> key -> ('a option->  'a) ->  'a t 
+    (** [adjust acc k replace ] if not exist [add (replace None ], otherwise 
+        [add k v (replace (Some old))]
     *)
     val singleton: key -> 'a -> 'a t
 
@@ -308,7 +308,7 @@ module type S =
 
     val equal: ('a -> 'a -> bool) -> 'a t -> 'a t -> bool
 
-    val iter: (key -> 'a -> unit) -> 'a t -> unit
+    val iter: 'a t -> (key -> 'a -> unit) ->  unit
     (** [iter f m] applies [f] to all bindings in map [m].
         The bindings are passed to [f] in increasing order. *)
 

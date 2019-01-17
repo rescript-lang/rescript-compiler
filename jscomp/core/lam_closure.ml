@@ -30,11 +30,12 @@ type position = Lam_var_stats.position
 type stats = Lam_var_stats.stats
 
 let adjust ( pos : position) (v : Ident.t) (fv : stats Ident_map.t) : stats Ident_map.t = 
-  Ident_map.adjust 
-    v
-    (fun () -> Lam_var_stats.update pos Lam_var_stats.fresh_stats)
-    (fun v -> Lam_var_stats.update pos v) 
-    fv
+  Ident_map.adjust fv v
+    (fun v -> 
+      let stat = match v with None -> Lam_var_stats.fresh_stats | Some v -> v in 
+      Lam_var_stats.update pos stat)
+    
+    
 
 
 

@@ -8544,10 +8544,10 @@ let merge t1 t2 =
     bal t1 x d (remove_min_binding t2)
 
 
-let rec iter f = function
+let rec iter x f = match x with 
     Empty -> ()
   | Node(l, v, d, r, _) ->
-    iter f l; f v d; iter f r
+    iter l f; f v d; iter r f
 
 let rec map f = function
     Empty ->
@@ -8689,9 +8689,9 @@ module type S =
     val add: key -> 'a -> 'a t -> 'a t
     (** [add x y m] 
         If [x] was already bound in [m], its previous binding disappears. *)
-    val adjust: key -> (unit -> 'a)  -> ('a ->  'a) -> 'a t -> 'a t 
-    (** [adjust k v f map] if not exist [add k v], otherwise 
-        [add k v (f old)]
+    val adjust: 'a t -> key -> ('a option->  'a) ->  'a t 
+    (** [adjust acc k replace ] if not exist [add (replace None ], otherwise 
+        [add k v (replace (Some old))]
     *)
     val singleton: key -> 'a -> 'a t
 
@@ -8715,7 +8715,7 @@ module type S =
 
     val equal: ('a -> 'a -> bool) -> 'a t -> 'a t -> bool
 
-    val iter: (key -> 'a -> unit) -> 'a t -> unit
+    val iter: 'a t -> (key -> 'a -> unit) ->  unit
     (** [iter f m] applies [f] to all bindings in map [m].
         The bindings are passed to [f] in increasing order. *)
 
@@ -8884,18 +8884,18 @@ let rec add x data (tree : _ Map_gen.t as 'a) : 'a = match tree with
       bal l v d (add x data r)
 
 
-let rec adjust x data replace (tree : _ Map_gen.t as 'a) : 'a = 
+let rec adjust (tree : _ Map_gen.t as 'a) x replace  : 'a = 
   match tree with 
   | Empty ->
-    Node(Empty, x, data (), Empty, 1)
+    Node(Empty, x, replace None, Empty, 1)
   | Node(l, v, d, r, h) ->
     let c = compare_key x v in
     if c = 0 then
-      Node(l, x, replace  d , r, h)
+      Node(l, x, replace  (Some d) , r, h)
     else if c < 0 then
-      bal (adjust x data replace l) v d r
+      bal (adjust l x  replace ) v d r
     else
-      bal l v d (adjust x data replace r)
+      bal l v d (adjust r x  replace )
 
 
 let rec find_exn x (tree : _ Map_gen.t )  = match tree with 
@@ -27034,7 +27034,7 @@ let () =
          raise (Arg.Bad (main_module ^ " does not pull in any libs, maybe wrong input"))
        ;
        let out_chan = Lazy.force out_chan in
-       let collect_modules  = !set_mllib_file in 
+       let collect_module_by_filenames  = !set_mllib_file in 
        let collection_modules = Queue.create () in
        let count = ref 0 in 
        let task_length = Queue.length tasks in 
@@ -27043,7 +27043,7 @@ let () =
          Ast_extract.handle_queue Format.err_formatter tasks ast_table
            (fun base ml_name (lazy(_, ml_content)) -> 
               incr count ;  
-              if collect_modules then 
+              if collect_module_by_filenames then 
                 Queue.add ml_name collection_modules; 
               let module_bound = not  export || task_length > !count  in 
               decorate_module_only ~module_bound out_chan base ml_name ml_content;
@@ -27055,7 +27055,7 @@ let () =
            )
            (fun base mli_name (lazy (_, mli_content))  -> 
               incr count ;                  
-              if collect_modules then 
+              if collect_module_by_filenames then 
                 Queue.add mli_name collection_modules;                 
 
               decorate_interface_only out_chan base mli_name mli_content;
@@ -27071,7 +27071,7 @@ let () =
                (*TODO: assume mli_name, ml_name are in the same dir,
                  Needs to be addressed 
                *)
-               if collect_modules then 
+               if collect_module_by_filenames then 
                  begin 
                    Queue.add ml_name collection_modules;
                    Queue.add mli_name collection_modules

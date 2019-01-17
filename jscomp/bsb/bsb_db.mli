@@ -33,22 +33,23 @@
 type case = bool 
 
 
-type ml_kind =
-  | Ml_source of string * bool  * bool
+type ml_info =
+  | Ml_source of  bool  * bool
      (* No extension stored
       Ml_source(name,is_re)
       [is_re] default to false
       *)
   
   | Ml_empty
-type mli_kind = 
-  | Mli_source of string  * bool * bool
+type mli_info = 
+  | Mli_source of  bool * bool
   | Mli_empty
 
 type module_info = 
   {
-    mli : mli_kind ; 
-    ml : ml_kind ; 
+    mli_info : mli_info ; 
+    ml_info : ml_info ; 
+    name_sans_extension : string
   }
 
 type t = module_info String_map.t 
@@ -74,7 +75,7 @@ val filename_sans_suffix_of_module_info : module_info -> string
   Currently it is okay to have duplicated module, 
   In the future, we may emit a warning 
 *)
-val map_update : 
+val collect_module_by_filename : 
   dir:string -> t ->  string -> t
 
 (**
