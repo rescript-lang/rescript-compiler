@@ -165,18 +165,17 @@ end
 
 
   
-# 275
+# 274
   (* commented out until bs has a plan for iterators
   external values : elt array_iter = "" [@@bs.send.pipe: t]
   *)
 
 module Int8Array = struct
   
-# 280
+# 279
   
   (** *)
-  type elt =  int
-  type hey
+  type elt = int
   type 'a typed_array
   type t = elt typed_array
   
@@ -282,17 +281,16 @@ module Int8Array = struct
   external fromLength : int -> t = "Int8Array" [@@bs.new]
   external from : elt array_like -> t = "Int8Array.from" [@@bs.val]
   (* *Array.of is redundant, use make *) 
-# 281
+# 280
 end
 
 
 module Uint8Array = struct
   
-# 285
+# 284
   
   (** *)
-  type elt =  int
-  type hey
+  type elt = int
   type 'a typed_array
   type t = elt typed_array
   
@@ -398,16 +396,15 @@ module Uint8Array = struct
   external fromLength : int -> t = "Uint8Array" [@@bs.new]
   external from : elt array_like -> t = "Uint8Array.from" [@@bs.val]
   (* *Array.of is redundant, use make *) 
-# 286
+# 285
 end
 
 module Uint8ClampedArray = struct
   
-# 289
+# 288
   
   (** *)
-  type elt =  int
-  type hey
+  type elt = int
   type 'a typed_array
   type t = elt typed_array
   
@@ -513,16 +510,15 @@ module Uint8ClampedArray = struct
   external fromLength : int -> t = "Uint8ClampedArray" [@@bs.new]
   external from : elt array_like -> t = "Uint8ClampedArray.from" [@@bs.val]
   (* *Array.of is redundant, use make *) 
-# 290
+# 289
 end
 
 module Int16Array = struct
   
-# 293
+# 292
   
   (** *)
-  type elt =  int
-  type hey
+  type elt = int
   type 'a typed_array
   type t = elt typed_array
   
@@ -628,16 +624,15 @@ module Int16Array = struct
   external fromLength : int -> t = "Int16Array" [@@bs.new]
   external from : elt array_like -> t = "Int16Array.from" [@@bs.val]
   (* *Array.of is redundant, use make *) 
-# 294
+# 293
 end
 
 module Uint16Array = struct
   
-# 297
+# 296
   
   (** *)
-  type elt =  int
-  type hey
+  type elt = int
   type 'a typed_array
   type t = elt typed_array
   
@@ -743,16 +738,15 @@ module Uint16Array = struct
   external fromLength : int -> t = "Uint16Array" [@@bs.new]
   external from : elt array_like -> t = "Uint16Array.from" [@@bs.val]
   (* *Array.of is redundant, use make *) 
-# 298
+# 297
 end
 
 module Int32Array = struct
   
-# 301
+# 300
   
   (** *)
-  type elt =  int32
-  type hey
+  type elt = int32
   type 'a typed_array
   type t = elt typed_array
   
@@ -860,7 +854,7 @@ module Int32Array = struct
   (* *Array.of is redundant, use make *) 
 
   
-# 303
+# 302
   external create : int32 array -> t = "Int32Array" [@@bs.new]
   [@@ocaml.deprecated "use `make` instead"]
   external of_buffer : array_buffer -> t = "Int32Array" [@@bs.new]
@@ -872,11 +866,10 @@ module Int32_array = Int32Array
 
 module Uint32Array = struct
   
-# 313
+# 312
   
   (** *)
-  type elt =  int
-  type hey
+  type elt = int
   type 'a typed_array
   type t = elt typed_array
   
@@ -982,7 +975,7 @@ module Uint32Array = struct
   external fromLength : int -> t = "Uint32Array" [@@bs.new]
   external from : elt array_like -> t = "Uint32Array.from" [@@bs.val]
   (* *Array.of is redundant, use make *) 
-# 314
+# 313
 end
 
 
@@ -991,11 +984,10 @@ end
 *)
 module Float32Array = struct
   
-# 321
+# 320
   
   (** *)
-  type elt =  float
-  type hey
+  type elt = float
   type 'a typed_array
   type t = elt typed_array
   
@@ -1103,7 +1095,7 @@ module Float32Array = struct
   (* *Array.of is redundant, use make *) 
 
   
-# 323
+# 322
   external create : float array -> t = "Float32Array" [@@bs.new]
   [@@ocaml.deprecated "use `make` instead"]
   external of_buffer : array_buffer -> t = "Float32Array" [@@bs.new]
@@ -1115,11 +1107,10 @@ module Float32_array = Float32Array
 
 module Float64Array = struct
   
-# 333
+# 332
   
   (** *)
-  type elt =  float
-  type hey
+  type elt = float
   type 'a typed_array
   type t = elt typed_array
   
@@ -1227,7 +1218,7 @@ module Float64Array = struct
   (* *Array.of is redundant, use make *) 
 
   
-# 335
+# 334
   external create : float array -> t = "Float64Array" [@@bs.new]
   [@@ocaml.deprecated "use `make` instead"]
   external of_buffer : array_buffer -> t = "Float64Array" [@@bs.new]

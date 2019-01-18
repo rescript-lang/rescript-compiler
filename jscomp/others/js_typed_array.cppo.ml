@@ -165,7 +165,6 @@ end
 #define COMMON_EXTERNALS(moduleName, eltType)\
   (** *)\
   type elt = eltType\
-  type hey\
   type 'a typed_array\
   type t = elt typed_array\
   \
@@ -277,28 +276,28 @@ end
   *)
 
 module Int8Array = struct
-  COMMON_EXTERNALS(Int8Array, int)
+  COMMON_EXTERNALS(Int8Array,int)
 end
 
 
 module Uint8Array = struct
-  COMMON_EXTERNALS(Uint8Array, int)
+  COMMON_EXTERNALS(Uint8Array,int)
 end
 
 module Uint8ClampedArray = struct
-  COMMON_EXTERNALS(Uint8ClampedArray, int)
+  COMMON_EXTERNALS(Uint8ClampedArray,int)
 end
 
 module Int16Array = struct
-  COMMON_EXTERNALS(Int16Array, int)
+  COMMON_EXTERNALS(Int16Array,int)
 end
 
 module Uint16Array = struct
-  COMMON_EXTERNALS(Uint16Array, int)
+  COMMON_EXTERNALS(Uint16Array,int)
 end
 
 module Int32Array = struct
-  COMMON_EXTERNALS(Int32Array, int32)
+  COMMON_EXTERNALS(Int32Array,int32)
 
   external create : int32 array -> t = "Int32Array" [@@bs.new]
   [@@ocaml.deprecated "use `make` instead"]
@@ -310,7 +309,7 @@ module Int32_array = Int32Array
 
 
 module Uint32Array = struct
-  COMMON_EXTERNALS(Uint32Array, int)
+  COMMON_EXTERNALS(Uint32Array,int)
 end
 
 
@@ -318,7 +317,7 @@ end
  it still return number, [float] in this case
 *)
 module Float32Array = struct
-  COMMON_EXTERNALS(Float32Array, float)
+  COMMON_EXTERNALS(Float32Array,float)
 
   external create : float array -> t = "Float32Array" [@@bs.new]
   [@@ocaml.deprecated "use `make` instead"]
@@ -330,7 +329,7 @@ module Float32_array = Float32Array
 
 
 module Float64Array = struct
-  COMMON_EXTERNALS(Float64Array, float)
+  COMMON_EXTERNALS(Float64Array,float)
 
   external create : float array -> t = "Float64Array" [@@bs.new]
   [@@ocaml.deprecated "use `make` instead"]
