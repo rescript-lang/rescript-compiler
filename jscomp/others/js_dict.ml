@@ -67,8 +67,8 @@ let entries dict =
   let l = Js.Array2.length keys in
   let values = unsafeCreate l in
   for i = 0 to l - 1 do
-    let key = Js.Array2.unsafe_get keys i in
-    Js.Array2.unsafe_set values i (key, unsafeGet dict key)
+    let key = Js_array2.unsafe_get keys i in
+    Js_array2.unsafe_set values i (key, unsafeGet dict key)
   done;
   values
 
