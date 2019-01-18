@@ -19,7 +19,7 @@ let () =
               (bsc_exe ^ " -where ")
               (Node.Child_process.option  ~encoding:"utf8" ()) with
       | output ->
-        let dir = Js.String.trim output in
+        let dir = Js.String2.trim output in
         let files = Node.Fs.readdirSync dir  in
         let exists =
           files
