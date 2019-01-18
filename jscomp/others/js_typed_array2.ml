@@ -1,4 +1,4 @@
-# 1 "others/js_typed_array.cppo.ml"
+# 1 "others/js_typed_array2.cppo.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -28,13 +28,8 @@
 @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray> MDN
 *)
 
-type array_buffer = Js_typed_array2.array_buffer
-type 'a array_like = 'a Js_typed_array2.array_like
-
-module type Type = sig
-  type t
-end
-
+type array_buffer
+type 'a array_like (* should be shared with js_array *)
 
 module ArrayBuffer = struct
   (** The underlying buffer that the typed arrays provide views of
@@ -58,125 +53,21 @@ module ArrayBuffer = struct
   external slice : start:int -> end_:int -> array_buffer = "" [@@bs.send.pipe: t]
   external sliceFrom : int -> array_buffer = "slice" [@@bs.send.pipe: t]
 end
-module type S =  sig
-  (** Implements functionality common to all the typed arrays *)
-
-  type elt
-  type 'a typed_array
-  type t = elt typed_array
-
-  external unsafe_get : t -> int -> elt  = "" [@@bs.get_index]
-  external unsafe_set : t -> int -> elt -> unit = "" [@@bs.set_index]
-
-  external buffer : t -> array_buffer = "" [@@bs.get]
-  external byteLength : t -> int = "" [@@bs.get]
-  external byteOffset : t -> int = "" [@@bs.get]
-
-  external setArray : elt array -> unit = "set" [@@bs.send.pipe: t]
-  external setArrayOffset : elt array -> int -> unit = "set" [@@bs.send.pipe: t]
-  (* There's also an overload for typed arrays, but don't know how to model that without subtyping *)
-
-  (* Array interface(-ish)
-  * ---
-  *)
-  external length : t -> int = "" [@@bs.get]
-
-  (* Mutator functions
-  *)
-  external copyWithin : to_:int -> t = "" [@@bs.send.pipe: t]
-  external copyWithinFrom : to_:int -> from:int -> t = "copyWithin" [@@bs.send.pipe: t]
-  external copyWithinFromRange : to_:int -> start:int -> end_:int -> t = "copyWithin" [@@bs.send.pipe: t]
-
-  external fillInPlace : elt -> t = "fill" [@@bs.send.pipe: t]
-  external fillFromInPlace : elt -> from:int -> t = "fill" [@@bs.send.pipe: t]
-  external fillRangeInPlace : elt -> start:int -> end_:int -> t = "fill" [@@bs.send.pipe: t]
-
-  external reverseInPlace : t = "reverse" [@@bs.send.pipe: t]
-
-  external sortInPlace : t = "sort" [@@bs.send.pipe: t]
-  external sortInPlaceWith : (elt -> elt -> int [@bs]) -> t = "sort" [@@bs.send.pipe: t]
-
-  (* Accessor functions
-  *)
-  external includes : elt -> bool = "" [@@bs.send.pipe: t] (** ES2016 *)
-
-  external indexOf : elt  -> int = "" [@@bs.send.pipe: t]
-  external indexOfFrom : elt -> from:int -> int = "indexOf" [@@bs.send.pipe: t]
-
-  external join : string = "" [@@bs.send.pipe: t]
-  external joinWith : string -> string = "join" [@@bs.send.pipe: t]
-
-  external lastIndexOf : elt -> int = "" [@@bs.send.pipe: t]
-  external lastIndexOfFrom : elt -> from:int -> int = "lastIndexOf" [@@bs.send.pipe: t]
-
-  external slice : start:int -> end_:int -> t = "" [@@bs.send.pipe: t]
-  external copy : t = "slice" [@@bs.send.pipe: t]
-  external sliceFrom : int -> t = "slice" [@@bs.send.pipe: t]
-
-  external subarray : start:int -> end_:int -> t = "" [@@bs.send.pipe: t]
-  external subarrayFrom : int -> t = "subarray" [@@bs.send.pipe: t]
-
-  external toString : string = "" [@@bs.send.pipe: t]
-  external toLocaleString : string = "" [@@bs.send.pipe: t]
-
-
-  (* Iteration functions
-  *)
-  (* commented out until bs has a plan for iterators
-  external entries : (int * elt) array_iter = "" [@@bs.send.pipe: t]
-  *)
-
-  external every : (elt  -> bool [@bs]) -> bool = "" [@@bs.send.pipe: t]
-  external everyi : (elt -> int -> bool [@bs]) -> bool = "every" [@@bs.send.pipe: t]
-
-  (** should we use [bool] or [boolan] seems they are intechangeable here *)
-  external filter : (elt -> bool [@bs]) -> t = "" [@@bs.send.pipe: t]
-  external filteri : (elt -> int  -> bool [@bs]) -> t = "filter" [@@bs.send.pipe: t]
-
-  external find : (elt -> bool [@bs]) -> elt Js.undefined = "" [@@bs.send.pipe: t]
-  external findi : (elt -> int -> bool [@bs]) -> elt Js.undefined  = "find" [@@bs.send.pipe: t]
-
-  external findIndex : (elt -> bool [@bs]) -> int = "" [@@bs.send.pipe: t]
-  external findIndexi : (elt -> int -> bool [@bs]) -> int = "findIndex" [@@bs.send.pipe: t]
-
-  external forEach : (elt -> unit [@bs]) -> unit = "" [@@bs.send.pipe: t]
-  external forEachi : (elt -> int -> unit [@bs]) -> unit  = "forEach" [@@bs.send.pipe: t]
-
-  (* commented out until bs has a plan for iterators
-  external keys : int array_iter = "" [@@bs.send.pipe: t]
-  *)
-
-  external map : (elt  -> 'b [@bs]) -> 'b typed_array = "" [@@bs.send.pipe: t]
-  external mapi : (elt -> int ->  'b [@bs]) -> 'b typed_array = "map" [@@bs.send.pipe: t]
-
-  external reduce :  ('b -> elt  -> 'b [@bs]) -> 'b -> 'b = "" [@@bs.send.pipe: t]
-  external reducei : ('b -> elt -> int -> 'b [@bs]) -> 'b -> 'b = "reduce" [@@bs.send.pipe: t]
-
-  external reduceRight :  ('b -> elt  -> 'b [@bs]) -> 'b -> 'b = "" [@@bs.send.pipe: t]
-  external reduceRighti : ('b -> elt -> int -> 'b [@bs]) -> 'b -> 'b = "reduceRight" [@@bs.send.pipe: t]
-
-  external some : (elt  -> bool [@bs]) -> bool = "" [@@bs.send.pipe: t]
-  external somei : (elt  -> int -> bool [@bs]) -> bool = "some" [@@bs.send.pipe: t]
-
-  (* commented out until bs has a plan for iterators
-  external values : elt array_iter = "" [@@bs.send.pipe: t]
-  *)
-end
 
 
   
-# 274
+# 165
   (* commented out until bs has a plan for iterators
   external values : elt array_iter = "" [@@bs.send.pipe: t]
   *)
 
 module Int8Array = struct
   
-# 279
+# 170
   
   (** *)
   type elt = int
-  type 'a typed_array = 'a Js_typed_array2.Int8Array.typed_array
+  type 'a typed_array
   type t = elt typed_array
   
   external unsafe_get : t -> int -> elt  = "" [@@bs.get_index]
@@ -281,17 +172,17 @@ module Int8Array = struct
   external fromLength : int -> t = "Int8Array" [@@bs.new]
   external from : elt array_like -> t = "Int8Array.from" [@@bs.val]
   (* *Array.of is redundant, use make *) 
-# 280
+# 171
 end
 
 
 module Uint8Array = struct
   
-# 284
+# 175
   
   (** *)
   type elt = int
-  type 'a typed_array = 'a Js_typed_array2.Uint8Array.typed_array
+  type 'a typed_array
   type t = elt typed_array
   
   external unsafe_get : t -> int -> elt  = "" [@@bs.get_index]
@@ -396,16 +287,16 @@ module Uint8Array = struct
   external fromLength : int -> t = "Uint8Array" [@@bs.new]
   external from : elt array_like -> t = "Uint8Array.from" [@@bs.val]
   (* *Array.of is redundant, use make *) 
-# 285
+# 176
 end
 
 module Uint8ClampedArray = struct
   
-# 288
+# 179
   
   (** *)
   type elt = int
-  type 'a typed_array = 'a Js_typed_array2.Uint8ClampedArray.typed_array
+  type 'a typed_array
   type t = elt typed_array
   
   external unsafe_get : t -> int -> elt  = "" [@@bs.get_index]
@@ -510,16 +401,16 @@ module Uint8ClampedArray = struct
   external fromLength : int -> t = "Uint8ClampedArray" [@@bs.new]
   external from : elt array_like -> t = "Uint8ClampedArray.from" [@@bs.val]
   (* *Array.of is redundant, use make *) 
-# 289
+# 180
 end
 
 module Int16Array = struct
   
-# 292
+# 183
   
   (** *)
   type elt = int
-  type 'a typed_array = 'a Js_typed_array2.Int16Array.typed_array
+  type 'a typed_array
   type t = elt typed_array
   
   external unsafe_get : t -> int -> elt  = "" [@@bs.get_index]
@@ -624,16 +515,16 @@ module Int16Array = struct
   external fromLength : int -> t = "Int16Array" [@@bs.new]
   external from : elt array_like -> t = "Int16Array.from" [@@bs.val]
   (* *Array.of is redundant, use make *) 
-# 293
+# 184
 end
 
 module Uint16Array = struct
   
-# 296
+# 187
   
   (** *)
   type elt = int
-  type 'a typed_array = 'a Js_typed_array2.Uint16Array.typed_array
+  type 'a typed_array
   type t = elt typed_array
   
   external unsafe_get : t -> int -> elt  = "" [@@bs.get_index]
@@ -738,16 +629,16 @@ module Uint16Array = struct
   external fromLength : int -> t = "Uint16Array" [@@bs.new]
   external from : elt array_like -> t = "Uint16Array.from" [@@bs.val]
   (* *Array.of is redundant, use make *) 
-# 297
+# 188
 end
 
 module Int32Array = struct
   
-# 300
+# 191
   
   (** *)
   type elt = int32
-  type 'a typed_array = 'a Js_typed_array2.Int32Array.typed_array
+  type 'a typed_array
   type t = elt typed_array
   
   external unsafe_get : t -> int -> elt  = "" [@@bs.get_index]
@@ -852,25 +743,16 @@ module Int32Array = struct
   external fromLength : int -> t = "Int32Array" [@@bs.new]
   external from : elt array_like -> t = "Int32Array.from" [@@bs.val]
   (* *Array.of is redundant, use make *) 
-
-  
-# 302
-  external create : int32 array -> t = "Int32Array" [@@bs.new]
-  [@@ocaml.deprecated "use `make` instead"]
-  external of_buffer : array_buffer -> t = "Int32Array" [@@bs.new]
-  [@@ocaml.deprecated "use `fromBuffer` instead"]
+# 192
 end
-module Int32_array = Int32Array
-[@ocaml.deprecated "use `Int32Array` instead"]
-
 
 module Uint32Array = struct
   
-# 312
+# 195
   
   (** *)
   type elt = int
-  type 'a typed_array = 'a Js_typed_array2.Uint32Array.typed_array
+  type 'a typed_array
   type t = elt typed_array
   
   external unsafe_get : t -> int -> elt  = "" [@@bs.get_index]
@@ -975,20 +857,19 @@ module Uint32Array = struct
   external fromLength : int -> t = "Uint32Array" [@@bs.new]
   external from : elt array_like -> t = "Uint32Array.from" [@@bs.val]
   (* *Array.of is redundant, use make *) 
-# 313
+# 196
 end
-
 
 (*
  it still return number, [float] in this case
 *)
 module Float32Array = struct
   
-# 320
+# 202
   
   (** *)
   type elt = float
-  type 'a typed_array = 'a Js_typed_array2.Float32Array.typed_array
+  type 'a typed_array
   type t = elt typed_array
   
   external unsafe_get : t -> int -> elt  = "" [@@bs.get_index]
@@ -1093,25 +974,16 @@ module Float32Array = struct
   external fromLength : int -> t = "Float32Array" [@@bs.new]
   external from : elt array_like -> t = "Float32Array.from" [@@bs.val]
   (* *Array.of is redundant, use make *) 
-
-  
-# 322
-  external create : float array -> t = "Float32Array" [@@bs.new]
-  [@@ocaml.deprecated "use `make` instead"]
-  external of_buffer : array_buffer -> t = "Float32Array" [@@bs.new]
-  [@@ocaml.deprecated "use `fromBuffer` instead"]
+# 203
 end
-module Float32_array = Float32Array
-[@ocaml.deprecated "use `Float32Array` instead"]
-
 
 module Float64Array = struct
   
-# 332
+# 206
   
   (** *)
   type elt = float
-  type 'a typed_array = 'a Js_typed_array2.Float64Array.typed_array
+  type 'a typed_array
   type t = elt typed_array
   
   external unsafe_get : t -> int -> elt  = "" [@@bs.get_index]
@@ -1216,16 +1088,8 @@ module Float64Array = struct
   external fromLength : int -> t = "Float64Array" [@@bs.new]
   external from : elt array_like -> t = "Float64Array.from" [@@bs.val]
   (* *Array.of is redundant, use make *) 
-
-  
-# 334
-  external create : float array -> t = "Float64Array" [@@bs.new]
-  [@@ocaml.deprecated "use `make` instead"]
-  external of_buffer : array_buffer -> t = "Float64Array" [@@bs.new]
-  [@@ocaml.deprecated "use `fromBuffer` instead"]
+# 207
 end
-module Float64_array = Float64Array
-[@ocaml.deprecated "use `Float64Array` instead"]
 
 module DataView = struct
   (** The DataView view provides a low-level interface for reading and writing
@@ -1234,7 +1098,7 @@ module DataView = struct
     @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DataView> MDN
   *)
 
-  type t = Js_typed_array2.DataView.t
+  type t
 
   external make : array_buffer -> t = "DataView" [@@bs.new]
   external fromBuffer : array_buffer -> t = "DataView" [@@bs.new]
@@ -1298,5 +1162,4 @@ module DataView = struct
   external setFloat64: t -> int -> float -> unit = "" [@@bs.send]
   external setFloat64LittleEndian : t -> int -> float -> (_ [@bs.as 1]) -> unit =
     "setFloat64" [@@bs.send]
-
 end
