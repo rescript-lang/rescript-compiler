@@ -23,7 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 (** Provides bindings for JavaScript Regular Expressions
- 
+
 {4 Syntax sugar}
 BuckleScript provides a bit of syntax sugar for regex literals: [\[%re "/foo/g"\]]
 will evaluate to a {! t} that can be passed around and used like usual.
@@ -46,10 +46,10 @@ let maybeMatches = "banana" |> Js.String.match_ [\[%re "/na+/g"\]]
 *)
 
 (** the RegExp object *)
-type t
+type t = Js_re2.t
 
 (** the result of a executing a RegExp on a string *)
-type result
+type result = Js_re2.t
 
 (** an array of the match and captures, the first is the full match and the remaining are the substring captures *)
 external captures : result -> string Js.nullable array = "%identity"
