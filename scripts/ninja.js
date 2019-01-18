@@ -649,6 +649,8 @@ ${ninjaQuickBuidList([
 
 ['js_typed_array.ml', 'js_typed_array.cppo.ml',
     cppoRule, ninjaCwd, dTypeDummy, [], []],
+['js_typed_array2.ml', 'js_typed_array2.cppo.ml',
+    cppoRule, ninjaCwd, dTypeDummy, [], []],
 
 ])}
 `
