@@ -549,6 +549,12 @@ var dTypeIdent = [['type','TYPE_IDENT']]
  */
 var dTypePoly = [['type', 'TYPE_POLY']]
 
+/**
+ * @type {[string,string][]}
+ * placeholder, so that we don't have to change the format of the ninja.build rule. See usages below
+ */
+var dTypeDummy = [['type','DUMMY_PLACEHOLDER_FOR_NINJA_RULE']]
+
 async function othersNinja(devmode=true) {
     var externalDeps = [runtimeTarget]
     var ninjaOutput = devmode ? 'build.ninja' : 'release.ninja'
@@ -640,6 +646,9 @@ ${ninjaQuickBuidList([
     cppoRule, ninjaCwd, dTypeString, [], []],
 ['belt_internalSetInt.ml', 'internal_set.cppo.ml',
     cppoRule, ninjaCwd, dTypeInt, [], []],
+
+['js_typed_array.ml', 'js_typed_array.cppo.ml',
+    cppoRule, ninjaCwd, dTypeDummy, [], []],
 
 ])}
 `
@@ -1155,7 +1164,6 @@ ${ninjaQuickBuidList([
     ['hashtbl_make.ml', 'hashtbl.cppo.ml',
         'cppo', 'ext', dTypeFunctor, [],[]
     ],
-    
 ])}
 
 rule mk_shared
