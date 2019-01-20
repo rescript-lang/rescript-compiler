@@ -239,6 +239,7 @@ function ninjaQuickBuild(outputs,inputs,rule,cwd, overrides,fileDeps,extraDeps){
 
 }
 
+
 /**
  * @typedef { (string | string []) } Strings
  * @typedef { [Strings, Strings,  string, string, [string,string][], Strings, (Target|Targets)] } BuildList
@@ -247,6 +248,16 @@ function ninjaQuickBuild(outputs,inputs,rule,cwd, overrides,fileDeps,extraDeps){
  */
 function ninjaQuickBuidList(xs){
     return xs.map(x => ninjaQuickBuild(x[0],x[1],x[2],x[3],x[4],x[5],x[6])).join('\n')
+}
+
+/**
+ * @typedef { [string,string,[string,string][]]} CppoInput
+ * @param {CppoInput[]} xs 
+ * @param {string} cwd
+ * @returns {string}
+ */
+function cppoList(cwd,xs){
+    return xs.map(x=>ninjaQuickBuild(x[0],x[1],cppoRule,cwd,x[2],[],[])).join('\n')
 }
 /**
  *
@@ -554,13 +565,13 @@ var dTypePoly = [['type', 'TYPE_POLY']]
  * placeholder, so that we don't have to change the format of the ninja.build rule. See usages below
  */
 var dTypeDummy = [['type','DUMMY_PLACEHOLDER_FOR_NINJA_RULE']]
-
+var cppoRule = `cppo`
 async function othersNinja(devmode=true) {
     var externalDeps = [runtimeTarget]
     var ninjaOutput = devmode ? 'build.ninja' : 'release.ninja'
     var ninjaCwd = 'others'
 
-    var cppoRule = `cppo`
+
     var templateOthersRules = `
 ${BSC_COMPILER}
 bsc_flags = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-no-check-div-by-zero -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js -bs-package-output amdjs:lib/amdjs -bs-package-output es6:lib/es6  -nostdlib -nopervasives  -unsafe -warn-error A -w -40-49-103 -bin-annot -bs-noassertfalse -open Bs_stdlib_mini -I ./runtime
@@ -572,85 +583,85 @@ ${ devmode ?
 `rule ${cppoRule}
     command = cppo -D $type $in -o $out
     generator = true
-${ninjaQuickBuidList([
+${cppoList(ninjaCwd, [
 ['belt_HashSetString.ml', 'hashset.cppo.ml',
-    cppoRule, ninjaCwd, dTypeString, [], []],
+      dTypeString],
 ['belt_HashSetString.mli', 'hashset.cppo.mli',
-    cppoRule, ninjaCwd, dTypeString, [], []],
+      dTypeString ],
 ['belt_HashSetInt.ml', 'hashset.cppo.ml',
-    cppoRule, ninjaCwd, dTypeInt, [], []],
+      dTypeInt ],
 ['belt_HashSetInt.mli', 'hashset.cppo.mli',
-    cppoRule, ninjaCwd, dTypeInt, [], []],
+      dTypeInt ],
 
 ['belt_HashMapString.ml', 'hashmap.cppo.ml',
-    cppoRule, ninjaCwd, dTypeString, [], []],
+      dTypeString ],
 ['belt_HashMapString.mli', 'hashmap.cppo.mli',
-    cppoRule, ninjaCwd, dTypeString, [], []],
+      dTypeString ],
 ['belt_HashMapInt.ml', 'hashmap.cppo.ml',
-    cppoRule, ninjaCwd, dTypeInt, [], []],
+      dTypeInt ],
 ['belt_HashMapInt.mli', 'hashmap.cppo.mli',
-    cppoRule, ninjaCwd, dTypeInt, [], []],
+      dTypeInt, ],
 
 ['belt_MapString.ml', 'map.cppo.ml',
-    cppoRule, ninjaCwd, dTypeString, [], []],
+      dTypeString, ],
 ['belt_MapString.mli', 'map.cppo.mli',
-    cppoRule, ninjaCwd, dTypeString, [], []],
+      dTypeString, ],
 ['belt_MapInt.ml', 'map.cppo.ml',
-    cppoRule, ninjaCwd, dTypeInt, [], []],
+      dTypeInt, ],
 ['belt_MapInt.mli', 'map.cppo.mli',
-    cppoRule, ninjaCwd, dTypeInt, [], []],
+      dTypeInt, ],
 
 ['belt_SetString.ml', 'set.cppo.ml',
-    cppoRule, ninjaCwd, dTypeString, [], []],
+      dTypeString, ],
 ['belt_SetString.mli', 'set.cppo.mli',
-    cppoRule, ninjaCwd, dTypeString, [], []],
+      dTypeString, ],
 ['belt_SetInt.ml', 'set.cppo.ml',
-    cppoRule, ninjaCwd, dTypeInt, [], []],
+      dTypeInt, ],
 ['belt_SetInt.mli', 'set.cppo.mli',
-    cppoRule, ninjaCwd, dTypeInt, [], []],
+      dTypeInt, ],
 
 ['belt_MutableMapString.ml', 'mapm.cppo.ml',
-    cppoRule, ninjaCwd, dTypeString, [], []],
+      dTypeString, ],
 ['belt_MutableMapString.mli', 'mapm.cppo.mli',
-    cppoRule, ninjaCwd, dTypeString, [], []],
+      dTypeString, ],
 ['belt_MutableMapInt.ml', 'mapm.cppo.ml',
-    cppoRule, ninjaCwd, dTypeInt, [], []],
+      dTypeInt, ],
 ['belt_MutableMapInt.mli', 'mapm.cppo.mli',
-    cppoRule, ninjaCwd, dTypeInt, [], []],
+      dTypeInt, ],
 
 ['belt_MutableSetString.ml', 'setm.cppo.ml',
-    cppoRule, ninjaCwd, dTypeString, [], []],
+      dTypeString, ],
 ['belt_MutableSetString.mli', 'setm.cppo.mli',
-    cppoRule, ninjaCwd, dTypeString, [], []],
+      dTypeString, ],
 ['belt_MutableSetInt.ml', 'setm.cppo.ml',
-    cppoRule, ninjaCwd, dTypeInt, [], []],
+      dTypeInt, ],
 ['belt_MutableSetInt.mli', 'setm.cppo.mli',
-    cppoRule, ninjaCwd, dTypeInt, [], []],
+      dTypeInt, ],
 
 
 ['belt_SortArrayString.ml', 'sort.cppo.ml',
-    cppoRule, ninjaCwd, dTypeString, [], []],
+      dTypeString, ],
 ['belt_SortArrayString.mli', 'sort.cppo.mli',
-    cppoRule, ninjaCwd, dTypeString, [], []],
+      dTypeString, ],
 ['belt_SortArrayInt.ml', 'sort.cppo.ml',
-    cppoRule, ninjaCwd, dTypeInt, [], []],
+      dTypeInt, ],
 ['belt_SortArrayInt.mli', 'sort.cppo.mli',
-    cppoRule, ninjaCwd, dTypeInt, [], []],
+      dTypeInt, ],
 
 ['belt_internalMapString.ml', 'internal_map.cppo.ml',
-    cppoRule, ninjaCwd, dTypeString, [], []],
+      dTypeString, ],
 ['belt_internalMapInt.ml', 'internal_map.cppo.ml',
-    cppoRule, ninjaCwd, dTypeInt, [], []],
+      dTypeInt, ],
 
 ['belt_internalSetString.ml', 'internal_set.cppo.ml',
-    cppoRule, ninjaCwd, dTypeString, [], []],
+      dTypeString, ],
 ['belt_internalSetInt.ml', 'internal_set.cppo.ml',
-    cppoRule, ninjaCwd, dTypeInt, [], []],
+      dTypeInt, ],
 
 ['js_typed_array.ml', 'js_typed_array.cppo.ml',
-    cppoRule, ninjaCwd, dTypeDummy, [], []],
+      dTypeDummy, ],
 ['js_typed_array2.ml', 'js_typed_array2.cppo.ml',
-    cppoRule, ninjaCwd, dTypeDummy, [], []],
+      dTypeDummy, ],
 
 ])}
 `
@@ -1093,7 +1104,7 @@ rule bspack
     generator = true
 build ./bin/tests.exe: link ounit/ounit.cmxa stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa bsb/bsb.cmxa core/core.cmxa ounit_tests/ounit_tests.cmxa main/ounit_tests_main.cmx
     libs = str.cmxa unix.cmxa ocamlcommon.cmxa
-rule cppo
+rule ${cppoRule}
     command = cppo -D $type $in -o $out
     generator = true
 ${ninjaQuickBuidList([
