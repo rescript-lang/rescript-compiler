@@ -239,14 +239,39 @@ function ninjaQuickBuild(outputs,inputs,rule,cwd, overrides,fileDeps,extraDeps){
 
 }
 
+
 /**
  * @typedef { (string | string []) } Strings
- * @typedef { [Strings, Strings,  string, string, [string,string][], Strings, (Target|Targets)] } BuildList
+ * @typedef { [string,string]} KV
+ * @typedef { [Strings, Strings,  string, string, KV[], Strings, (Target|Targets)] } BuildList
  * @param {BuildList[]} xs
  * @returns {string}
  */
 function ninjaQuickBuidList(xs){
     return xs.map(x => ninjaQuickBuild(x[0],x[1],x[2],x[3],x[4],x[5],x[6])).join('\n')
+}
+
+/**
+ * @typedef { [string,string,string?]} CppoInput
+ * @param {CppoInput[]} xs 
+ * @param {string} cwd
+ * @returns {string}
+ */
+function cppoList(cwd,xs){
+    
+    return xs.map(x=>{
+
+        /**
+         * @type {KV[]}
+         */
+        var variables;
+        if (x[2]){
+            variables = [['type',`-D ${x[2]}`]]
+        } else {
+            variables = []
+        }
+        return ninjaQuickBuild(x[0],x[1],cppoRuleName,cwd,variables,[],[])
+    }).join('\n')
 }
 /**
  *
@@ -519,48 +544,31 @@ ${ninjaQuickBuidList([
     }
 }
 
-/**
- * @type {[string,string][]}
- */
-var dTypeString = [['type', 'TYPE_STRING']]
 
-/**
- * @type {[string,string][]}
- */
-var dTypeInt = [['type', 'TYPE_INT']]
+var dTypeString = 'TYPE_STRING'
 
-/**
- * @type {[string,string][]}
- */
-var dTypeFunctor = [['type','TYPE_FUNCTOR']]
+var dTypeInt = 'TYPE_INT'
 
-/**
- * @type {[string,string][]}
- */
-var dTypeLocalIdent = [['type','TYPE_LOCAL_IDENT']]
+var dTypeFunctor = 'TYPE_FUNCTOR'
 
-/**
- * @type {[string,string][]}
- */
-var dTypeIdent = [['type','TYPE_IDENT']]
+var dTypeLocalIdent = 'TYPE_LOCAL_IDENT'
 
-/**
- * @type {[string,string][]}
- */
-var dTypePoly = [['type', 'TYPE_POLY']]
+var dTypeIdent = 'TYPE_IDENT'
 
-/**
- * @type {[string,string][]}
- * placeholder, so that we don't have to change the format of the ninja.build rule. See usages below
- */
-var dTypeDummy = [['type','DUMMY_PLACEHOLDER_FOR_NINJA_RULE']]
+var dTypePoly =  'TYPE_POLY'
 
+var cppoRuleName = `cppo`
+var cppoRule = `
+rule ${cppoRuleName}
+    command = cppo $type $in -o $out
+    generator = true
+`
 async function othersNinja(devmode=true) {
     var externalDeps = [runtimeTarget]
     var ninjaOutput = devmode ? 'build.ninja' : 'release.ninja'
     var ninjaCwd = 'others'
 
-    var cppoRule = `cppo`
+
     var templateOthersRules = `
 ${BSC_COMPILER}
 bsc_flags = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-no-check-div-by-zero -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js -bs-package-output amdjs:lib/amdjs -bs-package-output es6:lib/es6  -nostdlib -nopervasives  -unsafe -warn-error A -w -40-49-103 -bin-annot -bs-noassertfalse -open Bs_stdlib_mini -I ./runtime
@@ -569,88 +577,42 @@ rule cc
     description = $in -> $out
 
 ${ devmode ?
-`rule ${cppoRule}
-    command = cppo -D $type $in -o $out
-    generator = true
-${ninjaQuickBuidList([
-['belt_HashSetString.ml', 'hashset.cppo.ml',
-    cppoRule, ninjaCwd, dTypeString, [], []],
-['belt_HashSetString.mli', 'hashset.cppo.mli',
-    cppoRule, ninjaCwd, dTypeString, [], []],
-['belt_HashSetInt.ml', 'hashset.cppo.ml',
-    cppoRule, ninjaCwd, dTypeInt, [], []],
-['belt_HashSetInt.mli', 'hashset.cppo.mli',
-    cppoRule, ninjaCwd, dTypeInt, [], []],
-
-['belt_HashMapString.ml', 'hashmap.cppo.ml',
-    cppoRule, ninjaCwd, dTypeString, [], []],
-['belt_HashMapString.mli', 'hashmap.cppo.mli',
-    cppoRule, ninjaCwd, dTypeString, [], []],
-['belt_HashMapInt.ml', 'hashmap.cppo.ml',
-    cppoRule, ninjaCwd, dTypeInt, [], []],
-['belt_HashMapInt.mli', 'hashmap.cppo.mli',
-    cppoRule, ninjaCwd, dTypeInt, [], []],
-
-['belt_MapString.ml', 'map.cppo.ml',
-    cppoRule, ninjaCwd, dTypeString, [], []],
-['belt_MapString.mli', 'map.cppo.mli',
-    cppoRule, ninjaCwd, dTypeString, [], []],
-['belt_MapInt.ml', 'map.cppo.ml',
-    cppoRule, ninjaCwd, dTypeInt, [], []],
-['belt_MapInt.mli', 'map.cppo.mli',
-    cppoRule, ninjaCwd, dTypeInt, [], []],
-
-['belt_SetString.ml', 'set.cppo.ml',
-    cppoRule, ninjaCwd, dTypeString, [], []],
-['belt_SetString.mli', 'set.cppo.mli',
-    cppoRule, ninjaCwd, dTypeString, [], []],
-['belt_SetInt.ml', 'set.cppo.ml',
-    cppoRule, ninjaCwd, dTypeInt, [], []],
-['belt_SetInt.mli', 'set.cppo.mli',
-    cppoRule, ninjaCwd, dTypeInt, [], []],
-
-['belt_MutableMapString.ml', 'mapm.cppo.ml',
-    cppoRule, ninjaCwd, dTypeString, [], []],
-['belt_MutableMapString.mli', 'mapm.cppo.mli',
-    cppoRule, ninjaCwd, dTypeString, [], []],
-['belt_MutableMapInt.ml', 'mapm.cppo.ml',
-    cppoRule, ninjaCwd, dTypeInt, [], []],
-['belt_MutableMapInt.mli', 'mapm.cppo.mli',
-    cppoRule, ninjaCwd, dTypeInt, [], []],
-
-['belt_MutableSetString.ml', 'setm.cppo.ml',
-    cppoRule, ninjaCwd, dTypeString, [], []],
-['belt_MutableSetString.mli', 'setm.cppo.mli',
-    cppoRule, ninjaCwd, dTypeString, [], []],
-['belt_MutableSetInt.ml', 'setm.cppo.ml',
-    cppoRule, ninjaCwd, dTypeInt, [], []],
-['belt_MutableSetInt.mli', 'setm.cppo.mli',
-    cppoRule, ninjaCwd, dTypeInt, [], []],
-
-
-['belt_SortArrayString.ml', 'sort.cppo.ml',
-    cppoRule, ninjaCwd, dTypeString, [], []],
-['belt_SortArrayString.mli', 'sort.cppo.mli',
-    cppoRule, ninjaCwd, dTypeString, [], []],
-['belt_SortArrayInt.ml', 'sort.cppo.ml',
-    cppoRule, ninjaCwd, dTypeInt, [], []],
-['belt_SortArrayInt.mli', 'sort.cppo.mli',
-    cppoRule, ninjaCwd, dTypeInt, [], []],
-
-['belt_internalMapString.ml', 'internal_map.cppo.ml',
-    cppoRule, ninjaCwd, dTypeString, [], []],
-['belt_internalMapInt.ml', 'internal_map.cppo.ml',
-    cppoRule, ninjaCwd, dTypeInt, [], []],
-
-['belt_internalSetString.ml', 'internal_set.cppo.ml',
-    cppoRule, ninjaCwd, dTypeString, [], []],
-['belt_internalSetInt.ml', 'internal_set.cppo.ml',
-    cppoRule, ninjaCwd, dTypeInt, [], []],
-
-['js_typed_array.ml', 'js_typed_array.cppo.ml',
-    cppoRule, ninjaCwd, dTypeDummy, [], []],
-['js_typed_array2.ml', 'js_typed_array2.cppo.ml',
-    cppoRule, ninjaCwd, dTypeDummy, [], []],
+`${cppoRule}
+${cppoList(ninjaCwd, [
+['belt_HashSetString.ml', 'hashset.cppo.ml', dTypeString],
+['belt_HashSetString.mli', 'hashset.cppo.mli', dTypeString ],
+['belt_HashSetInt.ml', 'hashset.cppo.ml', dTypeInt ],
+['belt_HashSetInt.mli', 'hashset.cppo.mli', dTypeInt ],
+['belt_HashMapString.ml', 'hashmap.cppo.ml', dTypeString ],
+['belt_HashMapString.mli', 'hashmap.cppo.mli', dTypeString ],
+['belt_HashMapInt.ml', 'hashmap.cppo.ml', dTypeInt ],
+['belt_HashMapInt.mli', 'hashmap.cppo.mli', dTypeInt, ],
+['belt_MapString.ml', 'map.cppo.ml', dTypeString ],
+['belt_MapString.mli', 'map.cppo.mli', dTypeString ],
+['belt_MapInt.ml', 'map.cppo.ml', dTypeInt ],
+['belt_MapInt.mli', 'map.cppo.mli', dTypeInt ],
+['belt_SetString.ml', 'set.cppo.ml', dTypeString ],
+['belt_SetString.mli', 'set.cppo.mli', dTypeString ],
+['belt_SetInt.ml', 'set.cppo.ml', dTypeInt ],
+['belt_SetInt.mli', 'set.cppo.mli', dTypeInt ],
+['belt_MutableMapString.ml', 'mapm.cppo.ml', dTypeString ],
+['belt_MutableMapString.mli', 'mapm.cppo.mli', dTypeString ],
+['belt_MutableMapInt.ml', 'mapm.cppo.ml', dTypeInt ],
+['belt_MutableMapInt.mli', 'mapm.cppo.mli', dTypeInt ],
+['belt_MutableSetString.ml', 'setm.cppo.ml',dTypeString ],
+['belt_MutableSetString.mli', 'setm.cppo.mli', dTypeString ],
+['belt_MutableSetInt.ml', 'setm.cppo.ml', dTypeInt ],
+['belt_MutableSetInt.mli', 'setm.cppo.mli', dTypeInt ],
+['belt_SortArrayString.ml', 'sort.cppo.ml', dTypeString ],
+['belt_SortArrayString.mli', 'sort.cppo.mli', dTypeString ],
+['belt_SortArrayInt.ml', 'sort.cppo.ml', dTypeInt ],
+['belt_SortArrayInt.mli', 'sort.cppo.mli', dTypeInt ],
+['belt_internalMapString.ml', 'internal_map.cppo.ml', dTypeString ],
+['belt_internalMapInt.ml', 'internal_map.cppo.ml', dTypeInt ],
+['belt_internalSetString.ml', 'internal_set.cppo.ml', dTypeString ],
+['belt_internalSetInt.ml', 'internal_set.cppo.ml', dTypeInt ],
+['js_typed_array.ml', 'js_typed_array.cppo.ml',''],
+['js_typed_array2.ml', 'js_typed_array2.cppo.ml',''],
 
 ])}
 `
@@ -1093,79 +1055,27 @@ rule bspack
     generator = true
 build ./bin/tests.exe: link ounit/ounit.cmxa stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa bsb/bsb.cmxa core/core.cmxa ounit_tests/ounit_tests.cmxa main/ounit_tests_main.cmx
     libs = str.cmxa unix.cmxa ocamlcommon.cmxa
-rule cppo
-    command = cppo -D $type $in -o $out
-    generator = true
-${ninjaQuickBuidList([
-    ['string_hash_set.ml', 'hash_set.cppo.ml',
-        'cppo', 'ext', dTypeString, [],[]
-    ],
-    ['int_hash_set.ml', 'hash_set.cppo.ml',
-        'cppo', 'ext', dTypeInt, [], []
-    ],
-    ['ident_hash_set.ml', 'hash_set.cppo.ml',
-        'cppo', 'ext', dTypeIdent, [], []
-    ],
-    ['hash_set.ml', 'hash_set.cppo.ml',
-        'cppo', 'ext', dTypeFunctor, [], []
-    ],
-    ['hash_set_poly.ml', 'hash_set.cppo.ml',
-        'cppo', 'ext', dTypePoly, [], []
-    ],
-    ['int_vec.ml','vec.cppo.ml',
-        'cppo','ext',dTypeInt, [],[]
-    ],
-    ['resize_array.ml','vec.cppo.ml',
-        'cppo','ext',dTypeFunctor, [],[]
-    ],
-    ['string_set.ml', 'set.cppo.ml',
-        'cppo','ext',dTypeString,[],[]
-    ],
-    ['set_int.ml', 'set.cppo.ml',
-        'cppo','ext',dTypeInt,[],[]
-    ],
-    ['ident_set.ml', 'set.cppo.ml',
-        'cppo', 'ext', dTypeIdent, [], []
-    ],
-    ['string_map.ml', 'map.cppo.ml',
-        'cppo','ext',dTypeString,[],[]
-    ],
-    ['int_map.ml', 'map.cppo.ml',
-        'cppo','ext',dTypeInt,[],[]
-    ],
-    ['ident_map.ml', 'map.cppo.ml',
-        'cppo','ext',dTypeIdent,[],[]
-    ],
-
-    // ['ordered_hash_map_make.ml', 'ordered_hash_map.cppo.ml',
-    //     'cppo','ext',dTypeFunctor,[],[]
-    // ],
-
-    ['ordered_hash_map_local_ident.ml', 'ordered_hash_map.cppo.ml',
-        'cppo','ext',dTypeLocalIdent,[],[]
-    ],
-
-    ['ordered_hash_set_make.ml', 'ordered_hash_set.cppo.ml' ,
-        'cppo','ext', dTypeFunctor, [],[]
-    ],
-    // ['orderd_hash_set_string.ml','ordered_hash_set.cppo.ml' ,
-    //     'cppo', 'ext', dTypeString, [],[]
-    // ],
-    // ['orderd_hash_set_ident.ml','ordered_hash_set.cppo.ml' ,
-    //     'cppo', 'ext', dTypeIdent, [],[]
-    // ],
-    ['string_hashtbl.ml', 'hashtbl.cppo.ml',
-        'cppo', 'ext', dTypeString, [],[]
-    ],
-    ['int_hashtbl.ml', 'hashtbl.cppo.ml',
-        'cppo', 'ext', dTypeInt, [],[]
-    ],
-    ['ident_hashtbl.ml', 'hashtbl.cppo.ml',
-        'cppo', 'ext', dTypeIdent, [],[]
-    ],
-    ['hashtbl_make.ml', 'hashtbl.cppo.ml',
-        'cppo', 'ext', dTypeFunctor, [],[]
-    ],
+${cppoRule}
+${cppoList('ext',[
+    ['string_hash_set.ml', 'hash_set.cppo.ml', dTypeString],
+    ['int_hash_set.ml', 'hash_set.cppo.ml', dTypeInt],
+    ['ident_hash_set.ml', 'hash_set.cppo.ml', dTypeIdent],
+    ['hash_set.ml', 'hash_set.cppo.ml', dTypeFunctor],
+    ['hash_set_poly.ml', 'hash_set.cppo.ml',dTypePoly],
+    ['int_vec.ml','vec.cppo.ml', dTypeInt ],
+    ['resize_array.ml','vec.cppo.ml', dTypeFunctor ],
+    ['string_set.ml', 'set.cppo.ml', dTypeString ],
+    ['set_int.ml', 'set.cppo.ml', dTypeInt],
+    ['ident_set.ml', 'set.cppo.ml', dTypeIdent],
+    ['string_map.ml', 'map.cppo.ml', dTypeString],
+    ['int_map.ml', 'map.cppo.ml', dTypeInt],
+    ['ident_map.ml', 'map.cppo.ml', dTypeIdent],
+    ['ordered_hash_map_local_ident.ml', 'ordered_hash_map.cppo.ml',dTypeLocalIdent],
+    ['ordered_hash_set_make.ml', 'ordered_hash_set.cppo.ml', dTypeFunctor],
+    ['string_hashtbl.ml', 'hashtbl.cppo.ml', dTypeString],
+    ['int_hashtbl.ml', 'hashtbl.cppo.ml', dTypeInt],
+    ['ident_hashtbl.ml', 'hashtbl.cppo.ml', dTypeIdent],
+    ['hashtbl_make.ml', 'hashtbl.cppo.ml', dTypeFunctor],
 ])}
 
 rule mk_shared
