@@ -1049,8 +1049,6 @@ build ../lib/bsb_helper.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cm
 build ./bin/bspack.exe: link ./stubs/ext_basic_hash_stubs.c  stubs/stubs.cmxa ext/ext.cmxa ./common/common.cmxa ./syntax/syntax.cmxa depends/depends.cmxa ./main/bspack_main.cmx
     libs = unix.cmxa ocamlcommon.cmxa
     flags = -I ./bin -w -40-30
-build ${cppoFile}: link ../vendor/cppo/cppo_bin.ml
-    libs = unix.cmxa str.cmxa    
 build ./bin/cmjdump.exe: link ./stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa core/core.cmxa main/cmjdump_main.cmx
     libs = ocamlcommon.cmxa
 rule bspack
@@ -1059,6 +1057,8 @@ rule bspack
     generator = true
 build ./bin/tests.exe: link ounit/ounit.cmxa stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa bsb/bsb.cmxa core/core.cmxa ounit_tests/ounit_tests.cmxa main/ounit_tests_main.cmx
     libs = str.cmxa unix.cmxa ocamlcommon.cmxa
+build ${cppoFile}: link ../vendor/cppo/cppo_bin.ml
+    libs = unix.cmxa str.cmxa
 ${cppoRule}
 ${cppoList('ext',[
     ['string_hash_set.ml', 'hash_set.cppo.ml', dTypeString],
