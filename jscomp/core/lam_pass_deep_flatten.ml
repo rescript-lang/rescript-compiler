@@ -165,7 +165,7 @@ let deep_flatten
               flatten (
                 Ext_list.fold_left_with_offset args accux  0
                   (fun arg  acc i ->
-                     match Int_map.find_opt i tuple_mapping with
+                     match Int_map.find_opt tuple_mapping i with
                      | None ->
                         Lam_group.nop_cons arg acc
                      | Some key ->

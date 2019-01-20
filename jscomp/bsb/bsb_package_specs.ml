@@ -87,10 +87,10 @@ and from_json_single (x : Ext_json_types.t) : spec =
     else
       (bad_module_format_message_exn ~loc format)
   | Obj {map; loc} ->
-    begin match String_map.find_exn "module" map with
+    begin match String_map.find_exn map "module" with
       | Str {str = format} ->
         let in_source = 
-          match String_map.find_opt Bsb_build_schemas.in_source map with
+          match String_map.find_opt map  Bsb_build_schemas.in_source with
           | Some (True _) -> true
           | Some _
           | None -> false

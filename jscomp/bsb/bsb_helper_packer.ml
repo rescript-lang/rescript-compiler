@@ -51,7 +51,7 @@ let pack pack_byte_or_native ~batch_files ~includes =
       dependency_graph String_set.empty in
   let sorted_tasks = Bsb_helper_dep_graph.sort_files_by_dependencies ~domain dependency_graph in
   let list_of_object_files = Queue.fold
-    (fun acc v -> match String_map.find_opt v module_to_filepath with
+    (fun acc v -> match String_map.find_opt module_to_filepath v with
       | Some file -> (file ^ suffix_object_files) :: acc
       | None -> failwith @@ "build.ninja is missing the file '" ^ v ^ "' that was used in the project. Try force-regenerating but this shouldn't happen."
       )

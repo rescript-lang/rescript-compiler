@@ -73,7 +73,7 @@ let collect_occurs  lam : occ_tbl =
 
   (* Record a use of a variable *)
   let add_one_use bv ident  =
-    match Ident_map.find_opt ident bv with 
+    match Ident_map.find_opt bv ident with 
     | Some r  -> r.times <- r.times + 1 
     | None ->
       (* ident is not locally bound, therefore this is a use under a lambda
@@ -90,7 +90,7 @@ let collect_occurs  lam : occ_tbl =
       match Ident_hashtbl.find_opt occ bid with
       | None -> dummy_info ()
       | Some v -> v in
-    match Ident_map.find_opt ident bv with 
+    match Ident_map.find_opt bv ident with 
     | Some r  -> absorb_info r n
     | None ->
       (* ident is not locally bound, therefore this is a use under a lambda

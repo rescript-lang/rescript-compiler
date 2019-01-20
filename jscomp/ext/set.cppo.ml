@@ -201,9 +201,9 @@ let print fmt s =
   Format.fprintf 
    fmt   "@[<v>{%a}@]@."
     (fun fmt s   -> 
-       iter 
+       iter s
          (fun e -> Format.fprintf fmt "@[<v>%a@],@ " 
-         print_elt e) s
+         print_elt e) 
     )
     s     
 

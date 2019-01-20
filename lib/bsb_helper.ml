@@ -2069,7 +2069,7 @@ module type S =
     val empty: 'a t
     val compare_key: key -> key -> int 
     val is_empty: 'a t -> bool
-    val mem: key -> 'a t -> bool
+    val mem: 'a t -> key -> bool
     val to_sorted_array : 
       'a t -> (key * 'a ) array
     val add: 'a t -> key -> 'a -> 'a t
@@ -2167,11 +2167,11 @@ module type S =
         @since 3.12.0
      *)
 
-    val find_exn: key -> 'a t -> 'a
+    val find_exn: 'a t -> key ->  'a
     (** [find x m] returns the current binding of [x] in [m],
        or raises [Not_found] if no such binding exists. *)
-    val find_opt: key -> 'a t -> 'a option
-    val find_default: key  -> 'a t -> 'a  -> 'a 
+    val find_opt:  'a t ->  key ->'a option
+    val find_default: 'a t -> key  ->  'a  -> 'a 
     val map: ('a -> 'b) -> 'a t -> 'b t
     (** [map f m] returns a map with same domain as [m], where the
        associated value [a] of all bindings of [m] has been
@@ -2284,34 +2284,34 @@ let rec adjust (tree : _ Map_gen.t as 'a) x replace  : 'a =
       bal l v d (adjust r x  replace )
 
 
-let rec find_exn x (tree : _ Map_gen.t )  = match tree with 
+let rec find_exn (tree : _ Map_gen.t ) x = match tree with 
   | Empty ->
     raise Not_found
   | Node(l, v, d, r, _) ->
     let c = compare_key x v in
     if c = 0 then d
-    else find_exn x (if c < 0 then l else r)
+    else find_exn (if c < 0 then l else r) x
 
-let rec find_opt x (tree : _ Map_gen.t )  = match tree with 
+let rec find_opt (tree : _ Map_gen.t ) x = match tree with 
   | Empty -> None 
   | Node(l, v, d, r, _) ->
     let c = compare_key x v in
     if c = 0 then Some d
-    else find_opt x (if c < 0 then l else r)
+    else find_opt (if c < 0 then l else r) x
 
-let rec find_default x (tree : _ Map_gen.t ) default     = match tree with 
+let rec find_default (tree : _ Map_gen.t ) x  default     = match tree with 
   | Empty -> default  
   | Node(l, v, d, r, _) ->
     let c = compare_key x v in
     if c = 0 then  d
-    else find_default x   (if c < 0 then l else r) default
+    else find_default (if c < 0 then l else r) x default
 
-let rec mem x (tree : _ Map_gen.t )   = match tree with 
+let rec mem (tree : _ Map_gen.t )  x= match tree with 
   | Empty ->
     false
   | Node(l, v, d, r, _) ->
     let c = compare_key x v in
-    c = 0 || mem x (if c < 0 then l else r)
+    c = 0 || mem (if c < 0 then l else r) x 
 
 let rec remove (tree : _ Map_gen.t as 'a) x : 'a = match tree with 
   | Empty ->
@@ -2664,7 +2664,7 @@ type status =
 let test   ?(fail=(fun () -> ())) key 
     (cb : callback) (m  : Ext_json_types.t String_map.t)
   =
-  begin match String_map.find_exn key m, cb with 
+  begin match String_map.find_exn m key, cb with 
     | exception Not_found  ->
       begin match cb with `Not_found f ->  f ()
                         | _ -> fail ()
@@ -2691,7 +2691,7 @@ let query path (json : Ext_json_types.t ) =
     | p :: rest -> 
       begin match json with 
         | Obj {map = m} -> 
-          begin match String_map.find_exn p m with 
+          begin match String_map.find_exn m p with 
             | m'  -> aux (p::acc) rest m'
             | exception Not_found ->  No_path
           end

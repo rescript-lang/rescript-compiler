@@ -74,7 +74,7 @@ let package_specs_from_bsconfig () =
   begin match json with
     | Obj {map} ->
       begin 
-        match String_map.find_opt Bsb_build_schemas.package_specs map with 
+        match String_map.find_opt map  Bsb_build_schemas.package_specs with 
         | Some x ->
           Bsb_package_specs.from_json x
         | None -> 
@@ -93,7 +93,7 @@ let package_specs_from_bsconfig () =
 let extract_package_name_and_namespace
     loc (map : Ext_json_types.t String_map.t) : string * string option =   
   let package_name = 
-    match String_map.find_opt Bsb_build_schemas.name map with 
+    match String_map.find_opt map Bsb_build_schemas.name with 
 
     | Some (Str { str = "_" })
       -> 
@@ -105,7 +105,7 @@ let extract_package_name_and_namespace
         "field name  as string is required"
   in 
   let namespace = 
-    match String_map.find_opt Bsb_build_schemas.namespace map with 
+    match String_map.find_opt map Bsb_build_schemas.namespace with 
     | None -> None 
     | Some (True _) -> 
       Some (Ext_namespace.namespace_of_package_name package_name)
@@ -159,7 +159,7 @@ let interpret_json
     let package_name, namespace = 
       extract_package_name_and_namespace loc  map in 
     let refmt =   
-      match String_map.find_opt Bsb_build_schemas.refmt map with 
+      match String_map.find_opt map Bsb_build_schemas.refmt with 
       | Some (Flo {flo} as config) -> 
         begin match flo with 
         | "3" -> Bsb_config_types.Refmt_v3
@@ -178,7 +178,7 @@ let interpret_json
 
     in 
     let bs_suffix = 
-          match String_map.find_opt Bsb_build_schemas.suffix map with 
+          match String_map.find_opt map Bsb_build_schemas.suffix with 
           | None -> false  
           | Some (Str {str} as config ) -> 
             if str = Literals.suffix_js then false 
@@ -190,7 +190,7 @@ let interpret_json
               "expect .bs.js or .js string here"
     in   
     (* The default situation is empty *)
-    (match String_map.find_opt Bsb_build_schemas.use_stdlib map with      
+    (match String_map.find_opt map Bsb_build_schemas.use_stdlib with      
      | Some (False _) -> 
        ()
      | None 
@@ -203,7 +203,7 @@ let interpret_json
               (Filename.concat stdlib_path Literals.package_json) in 
           match json_spec with 
           | Obj {map}  -> 
-            (match String_map.find_exn Bsb_build_schemas.version map with 
+            (match String_map.find_exn map Bsb_build_schemas.version with 
             | Str {str } -> 
               if str <> Bs_version.version then 
               (
@@ -227,13 +227,13 @@ let interpret_json
         end
     ) ;
     let package_specs =     
-      match String_map.find_opt Bsb_build_schemas.package_specs map with 
+      match String_map.find_opt map Bsb_build_schemas.package_specs with 
       | Some x ->
         Bsb_package_specs.from_json x 
       | None ->  Bsb_package_specs.default_package_specs 
     in
     let pp_flags : string option = 
-      match String_map.find_opt Bsb_build_schemas.pp_flags map with 
+      match String_map.find_opt map Bsb_build_schemas.pp_flags with 
       | Some (Str {str = p }) ->
         if p = "" then failwith "invalid pp, empty string found"
         else 
@@ -245,7 +245,7 @@ let interpret_json
     in 
     map
     |? (Bsb_build_schemas.reason, `Obj begin fun m -> 
-        match String_map.find_opt Bsb_build_schemas.react_jsx m with 
+        match String_map.find_opt m Bsb_build_schemas.react_jsx with 
         | Some (Flo{loc; flo}) -> 
           begin match flo with 
             | "2" -> 
@@ -298,8 +298,8 @@ let interpret_json
           Array.fold_left (fun acc json -> 
               match (json : Ext_json_types.t) with 
               | Obj {map = m ; loc}  -> 
-                begin match String_map.find_opt  Bsb_build_schemas.name m,
-                            String_map.find_opt  Bsb_build_schemas.command m with 
+                begin match String_map.find_opt  m Bsb_build_schemas.name,
+                            String_map.find_opt  m Bsb_build_schemas.command with 
                 | Some (Str {str = name}), Some ( Str {str = command}) -> 
                   String_map.add acc name command 
                 | _, _ -> 
@@ -309,7 +309,7 @@ let interpret_json
     |? (Bsb_build_schemas.refmt_flags, `Arr (fun s -> refmt_flags := get_list_string s))
     |? (Bsb_build_schemas.entries, `Arr (fun s -> entries := parse_entries s))
     |> ignore ;
-    begin match String_map.find_opt Bsb_build_schemas.sources map with 
+    begin match String_map.find_opt map Bsb_build_schemas.sources with 
       | Some x -> 
         let res = Bsb_parse_sources.scan
             ~not_dev
@@ -335,7 +335,7 @@ let interpret_json
             Unix.rename output_file config_json
         end;
         let warning : Bsb_warning.t option  = 
-          match String_map.find_opt Bsb_build_schemas.warnings map with 
+          match String_map.find_opt map Bsb_build_schemas.warnings with 
           | None -> None 
           | Some (Obj {map }) -> Bsb_warning.from_map map 
           | Some config -> Bsb_exception.config_error config "expect an object"

@@ -179,7 +179,7 @@ let rec walk_all_deps_aux visited paths top dir cb =
   match Ext_json_parse.parse_json_from_file bsconfig_json with
   | Obj {map; loc} ->
     let cur_package_name = 
-      match String_map.find_opt Bsb_build_schemas.name map  with 
+      match String_map.find_opt map Bsb_build_schemas.name with 
       | Some (Str {str }) -> str
       | Some _ 
       | None -> Bsb_exception.errorf ~loc "package name missing in %s/bsconfig.json" dir 

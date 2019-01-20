@@ -54,7 +54,7 @@ let values_of_export
              )
          | Some _ 
          | None ->
-           begin match Ident_map.find_opt x export_map with 
+           begin match Ident_map.find_opt export_map x with 
              | Some (Lprim {primitive = Pmakeblock (_,_, Immutable); args }) ->
                Submodule (Ext_array.of_list_map args (fun lam -> 
                    Lam_arity_analysis.get_arity meta lam))
@@ -64,7 +64,7 @@ let values_of_export
        in
        let persistent_closed_lambda = 
          if not !Js_config.cross_module_inline then None
-         else match Ident_map.find_opt x export_map with 
+         else match Ident_map.find_opt export_map x with 
          | Some lambda  -> 
            if Lam_analysis.safe_to_inline lambda
            (* when inlning a non function, we have to be very careful,

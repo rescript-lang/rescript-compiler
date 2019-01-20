@@ -66,7 +66,7 @@ let collect_pub_modules
     match v with 
     | Str { str ; loc }
       -> 
-      if String_map.mem str cache then 
+      if String_map.mem cache str then 
         set := String_set.add str !set
       else 
         begin 
@@ -82,7 +82,7 @@ let collect_pub_modules
   !set
 
 let extract_pub (input : Ext_json_types.t String_map.t) (cur_sources : Bsb_db.t) =   
-  match String_map.find_opt Bsb_build_schemas.public input with 
+  match String_map.find_opt input  Bsb_build_schemas.public with 
   | Some (Str{str = s; loc}) ->  
     if s = Bsb_build_schemas.export_all then (Export_all : public) else 
     if s = Bsb_build_schemas.export_none then Export_none else 
@@ -95,7 +95,7 @@ let extract_pub (input : Ext_json_types.t String_map.t) (cur_sources : Bsb_db.t)
     Export_all 
 
 let extract_resources (input : Ext_json_types.t String_map.t) =   
-  match String_map.find_opt  Bsb_build_schemas.resources  input with 
+  match String_map.find_opt input  Bsb_build_schemas.resources with 
   | Some (Arr {content = s}) ->
     Bsb_build_util.get_list_string s 
   | Some config -> 
@@ -171,14 +171,14 @@ let extract_generators
     (cur_sources : Bsb_db.t ref)
      : build_generator list  =
   let generators : build_generator list ref  = ref [] in
-  begin match String_map.find_opt Bsb_build_schemas.generators input with
+  begin match String_map.find_opt input  Bsb_build_schemas.generators with
     | Some (Arr { content ; loc_start}) ->
       (* Need check is dev build or not *)
       Ext_array.iter content (fun x ->
         match x with
         | Obj { map = generator; loc} ->
-          begin match String_map.find_opt Bsb_build_schemas.name generator,
-                      String_map.find_opt Bsb_build_schemas.edge generator
+          begin match String_map.find_opt generator Bsb_build_schemas.name ,
+                      String_map.find_opt generator Bsb_build_schemas.edge
             with
             | Some (Str{str = command}), Some (Arr {content })->
 
@@ -233,7 +233,7 @@ let clean_staled_bs_js_files
          let lib_parent = 
            Filename.concat (Filename.concat context.root Bsb_config.lib_bs) 
              context.cwd in 
-         if not (String_map.mem (Ext_string.capitalize_ascii basename) cur_sources) then 
+         if not (String_map.mem cur_sources (Ext_string.capitalize_ascii basename) ) then 
            begin 
              Unix.unlink (Filename.concat parent current_file);
              let basename = 
@@ -277,10 +277,10 @@ let rec
       extract_generators input (cut_generators || not_dev) dir 
       cur_sources
   in 
-  let sub_dirs_field = String_map.find_opt Bsb_build_schemas.subdirs input in 
+  let sub_dirs_field = String_map.find_opt input  Bsb_build_schemas.subdirs in 
   let file_array = lazy (Sys.readdir (Filename.concat cxt.root dir)) in 
   begin 
-    match String_map.find_opt Bsb_build_schemas.files input with 
+    match String_map.find_opt input Bsb_build_schemas.files with 
     | None ->  (* No setting on [!files]*)
       (** We should avoid temporary files *)
       cur_sources := 
@@ -321,11 +321,11 @@ let rec
     | Some (Obj {map = m; loc} ) -> (* { excludes : [], slow_re : "" }*)
       cur_globbed_dirs := [dir];  
       let excludes = 
-        match String_map.find_opt Bsb_build_schemas.excludes m with 
+        match String_map.find_opt m  Bsb_build_schemas.excludes with 
         | None -> []   
         | Some (Arr {content = arr}) -> Bsb_build_util.get_list_string arr 
         | Some x -> Bsb_exception.config_error x  "excludes expect array "in 
-      let slow_re = String_map.find_opt Bsb_build_schemas.slow_re m in 
+      let slow_re = String_map.find_opt m Bsb_build_schemas.slow_re in 
       let predicate = 
         match slow_re, excludes with 
         | Some (Str {str = s}), [] -> 
@@ -401,7 +401,7 @@ and parsing_single_source ({not_dev; dir_index ; cwd} as cxt ) (x : Ext_json_typ
         String_map.empty  
   | Obj {map} ->
     let current_dir_index = 
-      match String_map.find_opt Bsb_build_schemas.type_ map with 
+      match String_map.find_opt map Bsb_build_schemas.type_ with 
       | Some (Str {str="dev"}) -> 
         Bsb_dir_index.get_dev_index ()
       | Some _ -> Bsb_exception.config_error x {|type field expect "dev" literal |}
@@ -410,7 +410,7 @@ and parsing_single_source ({not_dev; dir_index ; cwd} as cxt ) (x : Ext_json_typ
       Bsb_file_groups.empty 
     else 
       let dir = 
-        match String_map.find_opt Bsb_build_schemas.dir map with 
+        match String_map.find_opt map Bsb_build_schemas.dir with 
         | Some (Str{str}) -> 
           Ext_filename.simple_convert_node_path_to_os_path str 
         | Some x -> Bsb_exception.config_error x "dir expected to be a string"
@@ -474,7 +474,7 @@ and walk_single_source cxt (x : Ext_json_types.t) =
       }
       String_map.empty   
   | Obj {map} ->       
-    begin match String_map.find_opt Bsb_build_schemas.dir map with 
+    begin match String_map.find_opt map Bsb_build_schemas.dir with 
     | Some (Str{str}) -> 
       let dir = Ext_filename.simple_convert_node_path_to_os_path str  in 
       walk_source_dir_map 
@@ -494,7 +494,7 @@ and walk_source_dir_map (cxt : walk_cxt) (input : Ext_json_types.t String_map.t)
           Sys.remove (Filename.concat working_dir file)
     end; 
     let sub_dirs_field = 
-        String_map.find_opt Bsb_build_schemas.subdirs input in 
+        String_map.find_opt input Bsb_build_schemas.subdirs in 
     let cxt_traverse = cxt.traverse in     
     match sub_dirs_field, cxt_traverse with     
     | None, true 
@@ -520,12 +520,12 @@ let clean_re_js root =
   match Ext_json_parse.parse_json_from_file 
       (Filename.concat root Literals.bsconfig_json) with 
   | Obj {map ; loc} -> 
-    (match String_map.find_opt Bsb_build_schemas.sources map with 
-    | Some config -> 
-      Ext_pervasives.try_it (fun () -> 
-           walk_sources { root ; traverse = true; cwd = Filename.current_dir_name} config
-        )      
-    | None  -> ())
+    Ext_option.iter (String_map.find_opt map Bsb_build_schemas.sources) 
+      (fun config -> 
+         Ext_pervasives.try_it (fun () -> 
+             walk_sources { root ; traverse = true; cwd = Filename.current_dir_name} config
+           )      
+      )
   | _  -> () 
   | exception _ -> ()    
   

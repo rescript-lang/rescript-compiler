@@ -48,7 +48,7 @@ type status =
 let test   ?(fail=(fun () -> ())) key 
     (cb : callback) (m  : Ext_json_types.t String_map.t)
   =
-  begin match String_map.find_exn key m, cb with 
+  begin match String_map.find_exn m key, cb with 
     | exception Not_found  ->
       begin match cb with `Not_found f ->  f ()
                         | _ -> fail ()
@@ -75,7 +75,7 @@ let query path (json : Ext_json_types.t ) =
     | p :: rest -> 
       begin match json with 
         | Obj {map = m} -> 
-          begin match String_map.find_exn p m with 
+          begin match String_map.find_exn m p with 
             | m'  -> aux (p::acc) rest m'
             | exception Not_found ->  No_path
           end

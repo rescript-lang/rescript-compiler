@@ -54,7 +54,7 @@ let get_bs_platform_version_if_exists dir =
     (Filename.concat dir Literals.package_json) with 
   | Obj {map} 
     -> 
-    (match String_map.find_exn Bsb_build_schemas.version map with 
+    (match String_map.find_exn map Bsb_build_schemas.version with 
     | Str {str} -> str 
     | _ -> assert false)
   | _ -> assert false 

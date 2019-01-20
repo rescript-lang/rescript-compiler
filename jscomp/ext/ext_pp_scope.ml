@@ -49,11 +49,11 @@ and print_int_map fmt m =
     )    
 
 let add_ident ~mangled:name stamp (cxt : t) : int * t = 
-  match String_map.find_opt name cxt with 
+  match String_map.find_opt cxt name with 
   | None -> 
     (0, String_map.add cxt name (Int_map.add Int_map.empty stamp 0  )  )
   | Some imap -> (
-      match Int_map.find_opt stamp imap with
+      match Int_map.find_opt imap stamp with
       | None -> 
         let v = Int_map.cardinal imap in
         v, String_map.add  cxt name (Int_map.add imap stamp v )
@@ -127,10 +127,10 @@ let merge set cxt  =
 let sub_scope (scope : t) (idents : Ident_set.t) : t =
   Ident_set.fold (fun ({name } : Ident.t) (acc : t) -> 
       let mangled = Ext_ident.convert name in 
-      match String_map.find_exn mangled scope with 
+      match String_map.find_exn scope mangled with 
       | exception Not_found -> assert false 
       | imap -> 
-          if String_map.mem mangled acc then acc 
+          if String_map.mem acc  mangled then acc 
           else String_map.add acc mangled imap 
     ) idents empty
 

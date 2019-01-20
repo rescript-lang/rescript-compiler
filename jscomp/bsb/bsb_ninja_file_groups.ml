@@ -41,10 +41,9 @@ let zero : info =
 let handle_generators oc 
     (group : Bsb_file_groups.file_group) custom_rules =   
   let map_to_source_dir = 
-    (fun x -> Bsb_config.proj_rel (group.dir //x )) in
-  group.generators
-  |> List.iter (fun  ({output; input; command}  : Bsb_file_groups.build_generator)-> 
-      begin match String_map.find_opt command custom_rules with 
+    (fun x -> Bsb_config.proj_rel (group.dir //x )) in  
+  Ext_list.iter group.generators (fun {output; input; command} -> 
+      begin match String_map.find_opt custom_rules command with 
         | None -> Ext_pervasives.failwithf ~loc:__LOC__ "custom rule %s used but  not defined" command
         | Some rule -> 
           begin match output, input with

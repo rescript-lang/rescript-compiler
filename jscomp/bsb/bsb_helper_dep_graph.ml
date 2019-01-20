@@ -27,7 +27,7 @@
          We should combine them at some point to avoid the duplicated logic. *)
 let sort_files_by_dependencies ~domain dependency_graph =
   let next current =
-    (String_map.find_exn  current dependency_graph) in
+    String_map.find_exn  dependency_graph current in
   let worklist = ref domain in
   let result = Queue.create () in
   let rec visit visiting path current =
@@ -37,11 +37,10 @@ let sort_files_by_dependencies ~domain dependency_graph =
            Format.pp_print_string)
         (current::path)
     else if String_set.mem current !worklist then
-      begin
-        next current |>
-        String_set.iter
+      begin        
+        String_set.iter (next current)
           (fun node ->
-             if  String_map.mem node  dependency_graph then
+             if  String_map.mem dependency_graph node then
                visit (String_set.add current visiting) (current::path) node)
         ;
         worklist := String_set.remove  current !worklist;
@@ -62,7 +61,7 @@ let simple_collect_from_main ?alias_map ast_table main_module =
   let result = Queue.create () in
   let next module_name : String_set.t =
     let module_set =
-      match String_map.find_exn module_name ast_table with
+      match String_map.find_exn ast_table module_name with
       | exception _ -> String_set.empty
       | x -> x
     in
@@ -79,13 +78,13 @@ let simple_collect_from_main ?alias_map ast_table main_module =
         (current::path)
     else
     if not (String_hashtbl.mem visited current)
-    && String_map.mem current ast_table then
+    && String_map.mem ast_table current then
       begin
-        String_set.iter
+        String_set.iter (next current)
           (visit
              (String_set.add current visiting)
              (current::path))
-          (next current) ;
+          ;
         Queue.push current result;
         String_hashtbl.add visited current ();
       end in

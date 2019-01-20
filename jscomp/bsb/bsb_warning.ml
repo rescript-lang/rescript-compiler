@@ -87,8 +87,8 @@ let warning_to_string not_dev
 
 
 let from_map (m : Ext_json_types.t String_map.t) =
-  let number_opt = String_map.find_opt Bsb_build_schemas.number m  in
-  let error_opt = String_map.find_opt Bsb_build_schemas.error m  in
+  let number_opt = String_map.find_opt m Bsb_build_schemas.number in
+  let error_opt = String_map.find_opt m  Bsb_build_schemas.error in
   match number_opt, error_opt  with
   | None, None -> None
   | _, _ ->
