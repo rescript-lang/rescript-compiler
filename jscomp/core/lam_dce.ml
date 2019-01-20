@@ -37,18 +37,16 @@ let transitive_closure
     (ident_freevars : Ident_set.t Ident_hashtbl.t) 
   =
   let visited  = Ident_hash_set.create 31 in 
-  let rec dfs (id : Ident.t) =
-    if Ident_hash_set.mem visited id || Ext_ident.is_js_or_global id  
-    then ()
-    else 
+  let rec dfs (id : Ident.t) : unit =
+    if not (Ident_hash_set.mem visited id || Ext_ident.is_js_or_global id ) then
       begin 
         Ident_hash_set.add visited id;
         match Ident_hashtbl.find_opt ident_freevars id with 
         | None -> 
-          Ext_pervasives.failwithf ~loc:__LOC__ "%s/%d not found"  (Ident.name id) (id.Ident.stamp)  
+          Ext_pervasives.failwithf ~loc:__LOC__ "%s/%d not found"  (Ident.name id) (id.stamp)  
         | Some e -> Ident_set.iter e dfs
       end  in 
-  List.iter dfs initial_idents;
+  Ext_list.iter initial_idents dfs;
   visited
 
 let remove export_idents (rest : Lam_group.t list) : Lam_group.t list  = 
