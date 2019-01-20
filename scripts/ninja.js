@@ -270,7 +270,7 @@ function cppoList(cwd,xs){
         } else {
             variables = []
         }
-        return ninjaQuickBuild(x[0],x[1],cppoRule,cwd,variables,[],[])
+        return ninjaQuickBuild(x[0],x[1],cppoRuleName,cwd,variables,[],[])
     }).join('\n')
 }
 /**
@@ -557,7 +557,12 @@ var dTypeIdent = 'TYPE_IDENT'
 
 var dTypePoly =  'TYPE_POLY'
 
-var cppoRule = `cppo`
+var cppoRuleName = `cppo`
+var cppoRule = `
+rule ${cppoRuleName}
+    command = cppo $type $in -o $out
+    generator = true
+`
 async function othersNinja(devmode=true) {
     var externalDeps = [runtimeTarget]
     var ninjaOutput = devmode ? 'build.ninja' : 'release.ninja'
@@ -572,9 +577,7 @@ rule cc
     description = $in -> $out
 
 ${ devmode ?
-`rule ${cppoRule}
-    command = cppo $type $in -o $out
-    generator = true
+`${cppoRule}
 ${cppoList(ninjaCwd, [
 ['belt_HashSetString.ml', 'hashset.cppo.ml', dTypeString],
 ['belt_HashSetString.mli', 'hashset.cppo.mli', dTypeString ],
@@ -1052,9 +1055,7 @@ rule bspack
     generator = true
 build ./bin/tests.exe: link ounit/ounit.cmxa stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa bsb/bsb.cmxa core/core.cmxa ounit_tests/ounit_tests.cmxa main/ounit_tests_main.cmx
     libs = str.cmxa unix.cmxa ocamlcommon.cmxa
-rule ${cppoRule}
-    command = cppo $type $in -o $out
-    generator = true
+${cppoRule}
 ${cppoList('ext',[
     ['string_hash_set.ml', 'hash_set.cppo.ml', dTypeString],
     ['int_hash_set.ml', 'hash_set.cppo.ml', dTypeInt],

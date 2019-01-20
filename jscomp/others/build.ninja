@@ -5,9 +5,11 @@ rule cc
     command = $bsc -bs-cmi -bs-cmj $bsc_flags -bs-no-implicit-include  -I others -c $in
     description = $in -> $out
 
+
 rule cppo
     command = cppo $type $in -o $out
     generator = true
+
 build others/belt_HashSetString.ml : cppo others/hashset.cppo.ml
     type = -D TYPE_STRING
 build others/belt_HashSetString.mli : cppo others/hashset.cppo.mli

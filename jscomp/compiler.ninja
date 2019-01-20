@@ -56,9 +56,11 @@ rule bspack
     generator = true
 build ./bin/tests.exe: link ounit/ounit.cmxa stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa bsb/bsb.cmxa core/core.cmxa ounit_tests/ounit_tests.cmxa main/ounit_tests_main.cmx
     libs = str.cmxa unix.cmxa ocamlcommon.cmxa
+
 rule cppo
     command = cppo $type $in -o $out
     generator = true
+
 build ext/string_hash_set.ml : cppo ext/hash_set.cppo.ml
     type = -D TYPE_STRING
 build ext/int_hash_set.ml : cppo ext/hash_set.cppo.ml
