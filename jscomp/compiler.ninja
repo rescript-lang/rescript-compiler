@@ -57,46 +57,46 @@ rule bspack
 build ./bin/tests.exe: link ounit/ounit.cmxa stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa bsb/bsb.cmxa core/core.cmxa ounit_tests/ounit_tests.cmxa main/ounit_tests_main.cmx
     libs = str.cmxa unix.cmxa ocamlcommon.cmxa
 rule cppo
-    command = cppo -D $type $in -o $out
+    command = cppo $type $in -o $out
     generator = true
 build ext/string_hash_set.ml : cppo ext/hash_set.cppo.ml
-    type = TYPE_STRING
+    type = -D TYPE_STRING
 build ext/int_hash_set.ml : cppo ext/hash_set.cppo.ml
-    type = TYPE_INT
+    type = -D TYPE_INT
 build ext/ident_hash_set.ml : cppo ext/hash_set.cppo.ml
-    type = TYPE_IDENT
+    type = -D TYPE_IDENT
 build ext/hash_set.ml : cppo ext/hash_set.cppo.ml
-    type = TYPE_FUNCTOR
+    type = -D TYPE_FUNCTOR
 build ext/hash_set_poly.ml : cppo ext/hash_set.cppo.ml
-    type = TYPE_POLY
+    type = -D TYPE_POLY
 build ext/int_vec.ml : cppo ext/vec.cppo.ml
-    type = TYPE_INT
+    type = -D TYPE_INT
 build ext/resize_array.ml : cppo ext/vec.cppo.ml
-    type = TYPE_FUNCTOR
+    type = -D TYPE_FUNCTOR
 build ext/string_set.ml : cppo ext/set.cppo.ml
-    type = TYPE_STRING
+    type = -D TYPE_STRING
 build ext/set_int.ml : cppo ext/set.cppo.ml
-    type = TYPE_INT
+    type = -D TYPE_INT
 build ext/ident_set.ml : cppo ext/set.cppo.ml
-    type = TYPE_IDENT
+    type = -D TYPE_IDENT
 build ext/string_map.ml : cppo ext/map.cppo.ml
-    type = TYPE_STRING
+    type = -D TYPE_STRING
 build ext/int_map.ml : cppo ext/map.cppo.ml
-    type = TYPE_INT
+    type = -D TYPE_INT
 build ext/ident_map.ml : cppo ext/map.cppo.ml
-    type = TYPE_IDENT
+    type = -D TYPE_IDENT
 build ext/ordered_hash_map_local_ident.ml : cppo ext/ordered_hash_map.cppo.ml
-    type = TYPE_LOCAL_IDENT
+    type = -D TYPE_LOCAL_IDENT
 build ext/ordered_hash_set_make.ml : cppo ext/ordered_hash_set.cppo.ml
-    type = TYPE_FUNCTOR
+    type = -D TYPE_FUNCTOR
 build ext/string_hashtbl.ml : cppo ext/hashtbl.cppo.ml
-    type = TYPE_STRING
+    type = -D TYPE_STRING
 build ext/int_hashtbl.ml : cppo ext/hashtbl.cppo.ml
-    type = TYPE_INT
+    type = -D TYPE_INT
 build ext/ident_hashtbl.ml : cppo ext/hashtbl.cppo.ml
-    type = TYPE_IDENT
+    type = -D TYPE_IDENT
 build ext/hashtbl_make.ml : cppo ext/hashtbl.cppo.ml
-    type = TYPE_FUNCTOR
+    type = -D TYPE_FUNCTOR
 
 rule mk_shared
     command = $ocamlopt -I +compiler-libs -shared $flags -o $out $in

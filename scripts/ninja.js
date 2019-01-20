@@ -242,7 +242,8 @@ function ninjaQuickBuild(outputs,inputs,rule,cwd, overrides,fileDeps,extraDeps){
 
 /**
  * @typedef { (string | string []) } Strings
- * @typedef { [Strings, Strings,  string, string, [string,string][], Strings, (Target|Targets)] } BuildList
+ * @typedef { [string,string]} KV
+ * @typedef { [Strings, Strings,  string, string, KV[], Strings, (Target|Targets)] } BuildList
  * @param {BuildList[]} xs
  * @returns {string}
  */
@@ -251,13 +252,26 @@ function ninjaQuickBuidList(xs){
 }
 
 /**
- * @typedef { [string,string,[string,string][]]} CppoInput
+ * @typedef { [string,string,string?]} CppoInput
  * @param {CppoInput[]} xs 
  * @param {string} cwd
  * @returns {string}
  */
 function cppoList(cwd,xs){
-    return xs.map(x=>ninjaQuickBuild(x[0],x[1],cppoRule,cwd,x[2],[],[])).join('\n')
+    
+    return xs.map(x=>{
+
+        /**
+         * @type {KV[]}
+         */
+        var variables;
+        if (x[2]){
+            variables = [['type',`-D ${x[2]}`]]
+        } else {
+            variables = []
+        }
+        return ninjaQuickBuild(x[0],x[1],cppoRule,cwd,variables,[],[])
+    }).join('\n')
 }
 /**
  *
@@ -530,41 +544,23 @@ ${ninjaQuickBuidList([
     }
 }
 
-/**
- * @type {[string,string][]}
- */
-var dTypeString = [['type', 'TYPE_STRING']]
 
-/**
- * @type {[string,string][]}
- */
-var dTypeInt = [['type', 'TYPE_INT']]
+var dTypeString = 'TYPE_STRING'
 
-/**
- * @type {[string,string][]}
- */
-var dTypeFunctor = [['type','TYPE_FUNCTOR']]
+var dTypeInt = 'TYPE_INT'
 
-/**
- * @type {[string,string][]}
- */
-var dTypeLocalIdent = [['type','TYPE_LOCAL_IDENT']]
+var dTypeFunctor = 'TYPE_FUNCTOR'
 
-/**
- * @type {[string,string][]}
- */
-var dTypeIdent = [['type','TYPE_IDENT']]
+var dTypeLocalIdent = 'TYPE_LOCAL_IDENT'
 
-/**
- * @type {[string,string][]}
- */
-var dTypePoly = [['type', 'TYPE_POLY']]
+var dTypeIdent = 'TYPE_IDENT'
 
-/**
- * @type {[string,string][]}
+var dTypePoly =  'TYPE_POLY'
+/*
+ * 
  * placeholder, so that we don't have to change the format of the ninja.build rule. See usages below
  */
-var dTypeDummy = [['type','DUMMY_PLACEHOLDER_FOR_NINJA_RULE']]
+var dTypeDummy = 'DUMMY_PLACEHOLDER_FOR_NINJA_RULE'
 var cppoRule = `cppo`
 async function othersNinja(devmode=true) {
     var externalDeps = [runtimeTarget]
@@ -581,7 +577,7 @@ rule cc
 
 ${ devmode ?
 `rule ${cppoRule}
-    command = cppo -D $type $in -o $out
+    command = cppo $type $in -o $out
     generator = true
 ${cppoList(ninjaCwd, [
 ['belt_HashSetString.ml', 'hashset.cppo.ml', dTypeString],
@@ -1061,7 +1057,7 @@ rule bspack
 build ./bin/tests.exe: link ounit/ounit.cmxa stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa bsb/bsb.cmxa core/core.cmxa ounit_tests/ounit_tests.cmxa main/ounit_tests_main.cmx
     libs = str.cmxa unix.cmxa ocamlcommon.cmxa
 rule ${cppoRule}
-    command = cppo -D $type $in -o $out
+    command = cppo $type $in -o $out
     generator = true
 ${cppoList('ext',[
     ['string_hash_set.ml', 'hash_set.cppo.ml', dTypeString],
