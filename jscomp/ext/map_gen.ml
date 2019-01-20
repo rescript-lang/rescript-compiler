@@ -279,7 +279,7 @@ module type S =
     val mem: key -> 'a t -> bool
     val to_sorted_array : 
       'a t -> (key * 'a ) array
-    val add: key -> 'a -> 'a t -> 'a t
+    val add: 'a t -> key -> 'a -> 'a t
     (** [add x y m] 
         If [x] was already bound in [m], its previous binding disappears. *)
     val adjust: 'a t -> key -> ('a option->  'a) ->  'a t 

@@ -51,12 +51,12 @@ and print_int_map fmt m =
 let add_ident ~mangled:name stamp (cxt : t) : int * t = 
   match String_map.find_opt name cxt with 
   | None -> 
-    (0, String_map.add name (Int_map.add stamp 0  Int_map.empty) cxt )
+    (0, String_map.add cxt name (Int_map.add Int_map.empty stamp 0  )  )
   | Some imap -> (
       match Int_map.find_opt stamp imap with
       | None -> 
         let v = Int_map.cardinal imap in
-        v, String_map.add name (Int_map.add stamp v imap) cxt
+        v, String_map.add  cxt name (Int_map.add imap stamp v )
       | Some i -> i, cxt
     )
 
@@ -131,6 +131,6 @@ let sub_scope (scope : t) (idents : Ident_set.t) : t =
       | exception Not_found -> assert false 
       | imap -> 
           if String_map.mem mangled acc then acc 
-          else String_map.add mangled imap acc
+          else String_map.add acc mangled imap 
     ) idents empty
 

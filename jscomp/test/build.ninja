@@ -5,9 +5,11 @@ rule cc
     command = $bsc -bs-cmi -bs-cmj $bsc_flags -bs-no-implicit-include -I test -c $in
     description = $in -> $out
 
+
 rule mll
-    command = ocamllex.opt $in
+    command = ../vendor/ocaml/bin/ocamllex.opt $in
     generator = true
+
 build test/arith_lexer.ml : mll test/arith_lexer.mll
 build test/number_lexer.ml : mll test/number_lexer.mll
 build test/simple_lexer_test.ml : mll test/simple_lexer_test.mll

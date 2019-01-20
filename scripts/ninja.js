@@ -275,6 +275,18 @@ function cppoList(cwd,xs){
     }).join('\n')
 }
 /**
+ * 
+ * @param {string} cwd 
+ * @param {string[]} xs 
+ * @returns {string}
+ */
+function mllList(cwd, xs){
+    return xs.map(x=>{
+        var output  = baseName(x)+'.ml'
+        return ninjaQuickBuild(output,x,mllRuleName,cwd,[],[],[])
+    }).join('\n')
+}
+/**
  *
  * @param {string} name
  * @returns {Target}
@@ -560,9 +572,17 @@ var dTypePoly =  'TYPE_POLY'
 
 var cppoRuleName = `cppo`
 var cppoFile = `./bin/cppo.exe`
+var ocamloptFile = `../vendor/ocaml/bin/ocamlopt.opt`
 var cppoRule = `
 rule ${cppoRuleName}
     command = ${cppoFile} $type $in -o $out
+    generator = true
+`
+var ocamllexFile = `../vendor/ocaml/bin/ocamllex.opt`
+var mllRuleName = `mll`
+var mllRule = `
+rule ${mllRuleName}
+    command = ${ocamllexFile} $in
     generator = true
 `
 async function othersNinja(devmode=true) {
@@ -767,17 +787,9 @@ rule cc
     command = $bsc -bs-cmi -bs-cmj $bsc_flags -bs-no-implicit-include -I ${ninjaCwd} -c $in
     description = $in -> $out
 
-rule mll
-    command = ocamllex.opt $in
-    generator = true
-${ninjaQuickBuidList([
-    ['arith_lexer.ml','arith_lexer.mll',
-        'mll',ninjaCwd,[],[], []],
-    ['number_lexer.ml','number_lexer.mll',
-        'mll',ninjaCwd,[],[],[]],
-    ['simple_lexer_test.ml','simple_lexer_test.mll',
-        'mll',ninjaCwd,[],[],[]],
-])}
+${mllRule}
+${mllList(ninjaCwd, ['arith_lexer.mll','number_lexer.mll','simple_lexer_test.mll' ],
+)}
 `
     var testDirFiles = fs.readdirSync(testDir,'ascii')
     var sources = testDirFiles.filter(x=>{
@@ -1000,7 +1012,7 @@ function nativeNinja() {
         var includes = sourceDirs.map(x=>`-I ${x}`).join(' ')
 
         var templateNative = `
-ocamlopt = ../vendor/ocaml/bin/ocamlopt.opt
+ocamlopt = ${ocamloptFile}
 rule optc
     command = $ocamlopt -I +compiler-libs  ${includes} -g -w +6-40-30-23 -warn-error +a-40-30-23 -absname -c $in
     description = $out : $in
@@ -1060,6 +1072,8 @@ build ./bin/tests.exe: link ounit/ounit.cmxa stubs/stubs.cmxa ext/ext.cmxa commo
 build ${cppoFile}: link ../vendor/cppo/cppo_bin.ml
     libs = unix.cmxa str.cmxa
 ${cppoRule}
+${mllRule}
+${mllList('ext',['ext_json_parse.mll'])}
 ${cppoList('ext',[
     ['string_hash_set.ml', 'hash_set.cppo.ml', dTypeString],
     ['int_hash_set.ml', 'hash_set.cppo.ml', dTypeInt],

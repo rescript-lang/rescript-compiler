@@ -301,7 +301,7 @@ let interpret_json
                 begin match String_map.find_opt  Bsb_build_schemas.name m,
                             String_map.find_opt  Bsb_build_schemas.command m with 
                 | Some (Str {str = name}), Some ( Str {str = command}) -> 
-                  String_map.add name command acc 
+                  String_map.add acc name command 
                 | _, _ -> 
                   Bsb_exception.errorf ~loc {| generators exepect format like { "name" : "cppo",  "command"  : "cppo $in -o $out"} |}
                 end

@@ -103,7 +103,7 @@ let add_jmps
         (acc,handlers)        
         order_id 
         ->     
-          HandlerMap.add label {exit_id; bindings; order_id } acc, 
+          HandlerMap.add acc label {exit_id; bindings; order_id } , 
           (order_id,handler)::handlers
       )   in 
   map, List.rev handlers

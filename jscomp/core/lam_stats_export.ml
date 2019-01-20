@@ -95,7 +95,7 @@ let values_of_export
            else
              None
          | None -> None  in 
-       String_map.add x.name  Js_cmj_format.({arity ; persistent_closed_lambda }) acc          
+       String_map.add  acc x.name  Js_cmj_format.{arity ; persistent_closed_lambda }
     )
 
 (* ATTENTION: all runtime modules, if it is not hard required, 

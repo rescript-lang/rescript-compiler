@@ -115,7 +115,7 @@ let handle_exports (meta : Lam_stats.t)
              Lam_util.alias_ident_or_global meta newid id NA kind;
               { acc with
               export_list = newid :: acc.export_list;
-              export_map = Ident_map.add newid lam acc.export_map;
+              export_map = Ident_map.add acc.export_map newid lam ;
               groups = Single(kind, newid, lam) :: acc.groups
               }
           | _ ->
@@ -149,7 +149,7 @@ let handle_exports (meta : Lam_stats.t)
               );
             { acc with
               export_list = newid :: acc.export_list;
-              export_map = Ident_map.add newid lam acc.export_map;
+              export_map = Ident_map.add acc.export_map newid lam ;
               groups = Single(Strict, newid, lam) :: acc.groups
             })
       )
@@ -162,7 +162,7 @@ let handle_exports (meta : Lam_stats.t)
       (fun (export_map, acc) x ->
          (match (x : Lam_group.t)  with
           | Single (_,id,lam) when Ident_set.mem id export_set
-            -> Ident_map.add id lam export_map
+            -> Ident_map.add export_map id lam 
               (** relies on the Invariant that [eoid] can not be bound before
                   FIX: such invariant may not hold
               *)

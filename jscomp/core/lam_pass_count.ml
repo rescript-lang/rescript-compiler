@@ -69,7 +69,7 @@ let collect_occurs  lam : occ_tbl =
   let bind_var bv ident =
     let r = dummy_info () in
     Ident_hashtbl.add occ ident r;
-    Ident_map.add ident r bv in
+    Ident_map.add bv ident r  in
 
   (* Record a use of a variable *)
   let add_one_use bv ident  =

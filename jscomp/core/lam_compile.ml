@@ -1265,7 +1265,7 @@ and compile_apply
                   | None ->
                     ret.immutable_mask.(i)<- false;
                     let v = Ext_ident.create ("_"^param.Ident.name) in
-                    v, (Ident_map.add param v new_params)
+                    v, (Ident_map.add new_params param v)
                   | Some v -> v, new_params  in
                 (i+1, (new_param, arg) :: assigns, m)
             ) in

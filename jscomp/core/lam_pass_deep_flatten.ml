@@ -31,7 +31,7 @@ let rec eliminate_tuple (id : Ident.t) (lam : Lam.t) acc =
   | Llet (Alias,v, Lprim {primitive = Pfield (i,_); args = [Lvar tuple]}, e2)
     when Ident.same tuple id
     ->
-    eliminate_tuple id e2 (Int_map.add i v acc)
+    eliminate_tuple id e2 (Int_map.add acc i v )
     (* it is okay to have duplicates*)
   | _ ->
     if Lam_hit.hit_variable id lam then
