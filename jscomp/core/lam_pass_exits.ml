@@ -208,7 +208,7 @@ let subst_helper (subst : subst_tbl) (query : int -> int) (lam : Lam.t) : Lam.t 
          let ys = Ext_list.map xs Ident.rename in
          let env =
            Ext_list.fold_right2 xs ys Ident_map.empty 
-             (fun x y t -> Ident_map.add x (Lam.var y) t) in
+             (fun x y t -> Ident_map.add t x (Lam.var y) ) in
          Ext_list.fold_right2 ys ls 
            (Lam_subst.subst  env  handler)
            (fun y l r -> Lam.let_ Strict y l r)

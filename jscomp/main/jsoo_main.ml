@@ -161,9 +161,9 @@ let shake_compile impl ~use_super_errors =
 let load_module cmi_path cmi_content cmj_name cmj_content =
   Js.create_file cmi_path cmi_content;
   Js_cmj_datasets.data_sets :=
-    String_map.add
+    String_map.add !Js_cmj_datasets.data_sets
       cmj_name (lazy (Js_cmj_format.from_string cmj_content))
-      !Js_cmj_datasets.data_sets
+      
 
 
 let export (field : string) v =

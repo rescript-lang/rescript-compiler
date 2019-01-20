@@ -41,7 +41,7 @@ type derive_table  =
 let derive_table : derive_table ref = ref String_map.empty
 
 let register key value = 
-  derive_table := String_map.add key value !derive_table 
+  derive_table := String_map.add !derive_table key value 
 
 
 

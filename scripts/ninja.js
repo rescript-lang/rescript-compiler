@@ -560,9 +560,15 @@ var dTypePoly =  'TYPE_POLY'
 
 var cppoRuleName = `cppo`
 var cppoFile = `./bin/cppo.exe`
+var ocamloptFile = `../vendor/ocaml/bin/ocamlopt.opt`
 var cppoRule = `
 rule ${cppoRuleName}
     command = ${cppoFile} $type $in -o $out
+    generator = true
+`
+var mllRule = `
+rule mll
+    command = ocamllex.opt $in
     generator = true
 `
 async function othersNinja(devmode=true) {
@@ -767,9 +773,7 @@ rule cc
     command = $bsc -bs-cmi -bs-cmj $bsc_flags -bs-no-implicit-include -I ${ninjaCwd} -c $in
     description = $in -> $out
 
-rule mll
-    command = ocamllex.opt $in
-    generator = true
+${mllRule}
 ${ninjaQuickBuidList([
     ['arith_lexer.ml','arith_lexer.mll',
         'mll',ninjaCwd,[],[], []],
@@ -1000,7 +1004,7 @@ function nativeNinja() {
         var includes = sourceDirs.map(x=>`-I ${x}`).join(' ')
 
         var templateNative = `
-ocamlopt = ../vendor/ocaml/bin/ocamlopt.opt
+ocamlopt = ${ocamloptFile}
 rule optc
     command = $ocamlopt -I +compiler-libs  ${includes} -g -w +6-40-30-23 -warn-error +a-40-30-23 -absname -c $in
     description = $out : $in
@@ -1060,6 +1064,8 @@ build ./bin/tests.exe: link ounit/ounit.cmxa stubs/stubs.cmxa ext/ext.cmxa commo
 build ${cppoFile}: link ../vendor/cppo/cppo_bin.ml
     libs = unix.cmxa str.cmxa
 ${cppoRule}
+${mllRule}
+build ext/ext_json_parse.ml: mll ext/ext_json_parse.mll
 ${cppoList('ext',[
     ['string_hash_set.ml', 'hash_set.cppo.ml', dTypeString],
     ['int_hash_set.ml', 'hash_set.cppo.ml', dTypeInt],

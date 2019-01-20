@@ -648,9 +648,9 @@ let rec parse_json lexbuf =
       | Colon ->
         let value = json lexbuf in
         begin match token () with 
-        | Rbrace -> Obj {map = String_map.add key value acc ; loc = loc_start}
+        | Rbrace -> Obj {map = String_map.add acc key value  ; loc = loc_start}
         | Comma -> 
-          parse_map loc_start  (String_map.add key value acc) lexbuf 
+          parse_map loc_start  (String_map.add acc key value ) lexbuf 
         | _ -> error lexbuf Expect_comma_or_rbrace
         end
       | _ -> error lexbuf Expect_colon

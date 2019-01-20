@@ -158,19 +158,19 @@ let collect_ast_map ppf files parse_implementation parse_interface  =
         let module_name = Ext_modulename.module_name_of_file source_file in
         begin match String_map.find_exn module_name acc with
           | exception Not_found ->
-            String_map.add module_name
+            String_map.add acc module_name
               {ast_info =
                  (Ml (source_file, parse_implementation
                         ppf source_file, opref));
                module_name ;
-              } acc
+              } 
           | {ast_info = (Ml (source_file2, _, _)
                         | Ml_mli(source_file2, _, _,_,_,_))} ->
             Bs_exception.error
               (Bs_duplicated_module (source_file, source_file2))
           | {ast_info =  Mli (source_file2, intf, opref2)}
             ->
-            String_map.add module_name
+            String_map.add acc module_name
               {ast_info =
                  Ml_mli (source_file,
                          parse_implementation ppf source_file,
@@ -179,16 +179,16 @@ let collect_ast_map ppf files parse_implementation parse_interface  =
                          intf,
                          opref2
                         );
-               module_name} acc
+               module_name} 
         end
       | `Mli, opref ->
         let module_name = Ext_modulename.module_name_of_file source_file in
         begin match String_map.find_exn module_name acc with
           | exception Not_found ->
-            String_map.add module_name
+            String_map.add acc module_name
               {ast_info = (Mli (source_file, parse_interface
                                   ppf source_file, opref));
-               module_name } acc
+               module_name } 
           | {ast_info =
                (Mli (source_file2, _, _) |
                 Ml_mli(_,_,_,source_file2,_,_)) } ->
@@ -196,7 +196,7 @@ let collect_ast_map ppf files parse_implementation parse_interface  =
               (Bs_duplicated_module (source_file, source_file2))
           | {ast_info = Ml (source_file2, impl, opref2)}
             ->
-            String_map.add module_name
+            String_map.add acc module_name
               {ast_info =
                  Ml_mli
                    (source_file2,
@@ -206,7 +206,7 @@ let collect_ast_map ppf files parse_implementation parse_interface  =
                     parse_interface ppf source_file,
                     opref
                    );
-               module_name} acc
+               module_name} 
         end
     ) String_map.empty files
 ;;

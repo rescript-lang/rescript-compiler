@@ -2072,7 +2072,7 @@ module type S =
     val mem: key -> 'a t -> bool
     val to_sorted_array : 
       'a t -> (key * 'a ) array
-    val add: key -> 'a -> 'a t -> 'a t
+    val add: 'a t -> key -> 'a -> 'a t
     (** [add x y m] 
         If [x] was already bound in [m], its previous binding disappears. *)
     val adjust: 'a t -> key -> ('a option->  'a) ->  'a t 
@@ -2257,7 +2257,7 @@ let max_binding_exn = Map_gen.max_binding_exn
 let min_binding_exn = Map_gen.min_binding_exn
 
 
-let rec add x data (tree : _ Map_gen.t as 'a) : 'a = match tree with 
+let rec add (tree : _ Map_gen.t as 'a) x data  : 'a = match tree with 
   | Empty ->
     Node(Empty, x, data, Empty, 1)
   | Node(l, v, d, r, h) ->
@@ -2265,9 +2265,9 @@ let rec add x data (tree : _ Map_gen.t as 'a) : 'a = match tree with
     if c = 0 then
       Node(l, x, data, r, h)
     else if c < 0 then
-      bal (add x data l) v d r
+      bal (add l x data ) v d r
     else
-      bal l v d (add x data r)
+      bal l v d (add r x data )
 
 
 let rec adjust (tree : _ Map_gen.t as 'a) x replace  : 'a = 
@@ -2376,12 +2376,12 @@ let compare cmp m1 m2 = Map_gen.compare compare_key cmp m1 m2
 let equal cmp m1 m2 = Map_gen.equal compare_key cmp m1 m2 
 
 let add_list (xs : _ list ) init = 
-  List.fold_left (fun acc (k,v) -> add k v acc) init xs 
+  List.fold_left (fun acc (k,v) -> add acc k v ) init xs 
 
 let of_list xs = add_list xs empty
 
 let of_array xs = 
-  Array.fold_left (fun acc (k,v) -> add k v acc) empty xs
+  Array.fold_left (fun acc (k,v) -> add acc k v ) empty xs
 
 end
 module Ext_json_types

@@ -41,7 +41,7 @@ let adjust ( pos : position) (v : Ident.t) (fv : stats Ident_map.t) : stats Iden
 
 let param_map_of_list lst : stats Ident_map.t = 
   Ext_list.fold_left lst Ident_map.empty 
-    (fun l acc -> Ident_map.add l Lam_var_stats.fresh_stats acc) 
+    (fun l acc -> Ident_map.add acc l Lam_var_stats.fresh_stats ) 
 
 let sink_pos = Lam_var_stats.sink    
 (** Sanity check, remove all varaibles in [local_set] in the last pass *)  
