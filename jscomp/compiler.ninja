@@ -65,10 +65,10 @@ rule cppo
 
 
 rule mll
-    command = ocamllex.opt $in
+    command = ../vendor/ocaml/bin/ocamllex.opt $in
     generator = true
 
-build ext/ext_json_parse.ml: mll ext/ext_json_parse.mll
+build ext/ext_json_parse.ml : mll ext/ext_json_parse.mll
 build ext/string_hash_set.ml : cppo ext/hash_set.cppo.ml | ./bin/cppo.exe
     type = -D TYPE_STRING
 build ext/int_hash_set.ml : cppo ext/hash_set.cppo.ml | ./bin/cppo.exe

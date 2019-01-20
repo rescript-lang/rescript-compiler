@@ -275,6 +275,18 @@ function cppoList(cwd,xs){
     }).join('\n')
 }
 /**
+ * 
+ * @param {string} cwd 
+ * @param {string[]} xs 
+ * @returns {string}
+ */
+function mllList(cwd, xs){
+    return xs.map(x=>{
+        var output  = baseName(x)+'.ml'
+        return ninjaQuickBuild(output,x,mllRuleName,cwd,[],[],[])
+    }).join('\n')
+}
+/**
  *
  * @param {string} name
  * @returns {Target}
@@ -566,9 +578,11 @@ rule ${cppoRuleName}
     command = ${cppoFile} $type $in -o $out
     generator = true
 `
+var ocamllexFile = `../vendor/ocaml/bin/ocamllex.opt`
+var mllRuleName = `mll`
 var mllRule = `
-rule mll
-    command = ocamllex.opt $in
+rule ${mllRuleName}
+    command = ${ocamllexFile} $in
     generator = true
 `
 async function othersNinja(devmode=true) {
@@ -774,14 +788,8 @@ rule cc
     description = $in -> $out
 
 ${mllRule}
-${ninjaQuickBuidList([
-    ['arith_lexer.ml','arith_lexer.mll',
-        'mll',ninjaCwd,[],[], []],
-    ['number_lexer.ml','number_lexer.mll',
-        'mll',ninjaCwd,[],[],[]],
-    ['simple_lexer_test.ml','simple_lexer_test.mll',
-        'mll',ninjaCwd,[],[],[]],
-])}
+${mllList(ninjaCwd, ['arith_lexer.mll','number_lexer.mll','simple_lexer_test.mll' ],
+)}
 `
     var testDirFiles = fs.readdirSync(testDir,'ascii')
     var sources = testDirFiles.filter(x=>{
@@ -1065,7 +1073,7 @@ build ${cppoFile}: link ../vendor/cppo/cppo_bin.ml
     libs = unix.cmxa str.cmxa
 ${cppoRule}
 ${mllRule}
-build ext/ext_json_parse.ml: mll ext/ext_json_parse.mll
+${mllList('ext',['ext_json_parse.mll'])}
 ${cppoList('ext',[
     ['string_hash_set.ml', 'hash_set.cppo.ml', dTypeString],
     ['int_hash_set.ml', 'hash_set.cppo.ml', dTypeInt],
