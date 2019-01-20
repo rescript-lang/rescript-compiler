@@ -288,7 +288,7 @@ module type S =
     *)
     val singleton: key -> 'a -> 'a t
 
-    val remove: key -> 'a t -> 'a t
+    val remove: 'a t -> key -> 'a t
     (** [remove x m] returns a map containing the same bindings as
        [m], except for [x] which is unbound in the returned map. *)
 

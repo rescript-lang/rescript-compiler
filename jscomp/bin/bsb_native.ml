@@ -2045,7 +2045,7 @@ module type S =
     *)
     val singleton: key -> 'a -> 'a t
 
-    val remove: key -> 'a t -> 'a t
+    val remove: 'a t -> key -> 'a t
     (** [remove x m] returns a map containing the same bindings as
        [m], except for [x] which is unbound in the returned map. *)
 
@@ -2277,7 +2277,7 @@ let rec mem x (tree : _ Map_gen.t )   = match tree with
     let c = compare_key x v in
     c = 0 || mem x (if c < 0 then l else r)
 
-let rec remove x (tree : _ Map_gen.t as 'a) : 'a = match tree with 
+let rec remove (tree : _ Map_gen.t as 'a) x : 'a = match tree with 
   | Empty ->
     Empty
   | Node(l, v, d, r, h) ->
@@ -2285,9 +2285,9 @@ let rec remove x (tree : _ Map_gen.t as 'a) : 'a = match tree with
     if c = 0 then
       Map_gen.merge l r
     else if c < 0 then
-      bal (remove x l) v d r
+      bal (remove l x) v d r
     else
-      bal l v d (remove x r)
+      bal l v d (remove r x )
 
 
 let rec split x (tree : _ Map_gen.t as 'a) : 'a * _ option * 'a  = match tree with 
