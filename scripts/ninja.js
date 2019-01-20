@@ -556,11 +556,7 @@ var dTypeLocalIdent = 'TYPE_LOCAL_IDENT'
 var dTypeIdent = 'TYPE_IDENT'
 
 var dTypePoly =  'TYPE_POLY'
-/*
- * 
- * placeholder, so that we don't have to change the format of the ninja.build rule. See usages below
- */
-var dTypeDummy = 'DUMMY_PLACEHOLDER_FOR_NINJA_RULE'
+
 var cppoRule = `cppo`
 async function othersNinja(devmode=true) {
     var externalDeps = [runtimeTarget]
@@ -612,8 +608,8 @@ ${cppoList(ninjaCwd, [
 ['belt_internalMapInt.ml', 'internal_map.cppo.ml', dTypeInt ],
 ['belt_internalSetString.ml', 'internal_set.cppo.ml', dTypeString ],
 ['belt_internalSetInt.ml', 'internal_set.cppo.ml', dTypeInt ],
-['js_typed_array.ml', 'js_typed_array.cppo.ml', dTypeDummy ],
-['js_typed_array2.ml', 'js_typed_array2.cppo.ml',dTypeDummy ],
+['js_typed_array.ml', 'js_typed_array.cppo.ml',''],
+['js_typed_array2.ml', 'js_typed_array2.cppo.ml',''],
 
 ])}
 `

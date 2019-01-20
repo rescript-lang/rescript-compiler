@@ -73,9 +73,7 @@ build others/belt_internalSetString.ml : cppo others/internal_set.cppo.ml
 build others/belt_internalSetInt.ml : cppo others/internal_set.cppo.ml
     type = -D TYPE_INT
 build others/js_typed_array.ml : cppo others/js_typed_array.cppo.ml
-    type = -D DUMMY_PLACEHOLDER_FOR_NINJA_RULE
 build others/js_typed_array2.ml : cppo others/js_typed_array2.cppo.ml
-    type = -D DUMMY_PLACEHOLDER_FOR_NINJA_RULE
 
 build others/belt.cmj others/belt.cmi : cc others/belt.ml | runtime
 build others/node.cmj others/node.cmi : cc others/node.ml | runtime
