@@ -50,5 +50,5 @@ val mem: elt -> t -> bool
 val add: t -> elt ->  t
 
 val of_list : elt list -> t
-val find : elt -> t -> elt 
+val find : t -> elt -> elt 
 (***********************************************************************) 

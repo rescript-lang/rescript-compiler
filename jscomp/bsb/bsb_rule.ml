@@ -32,7 +32,7 @@ let rule_names = ref String_set.empty
 let ask_name name =
   let current_id = !rule_id in
   let () = incr rule_id in
-  match String_set.find name !rule_names with
+  match String_set.find !rule_names name with
   | exception Not_found ->
     rule_names := String_set.add !rule_names name;
     name

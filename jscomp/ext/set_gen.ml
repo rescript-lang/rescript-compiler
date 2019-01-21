@@ -389,7 +389,7 @@ module type S = sig
   val filter: (elt -> bool) -> t -> t
 
   val split: elt -> t -> t * bool * t
-  val find: elt -> t -> elt
+  val find:  t -> elt -> elt
   val of_list: elt list -> t
   val of_sorted_list : elt list ->  t
   val of_sorted_array : elt array -> t 

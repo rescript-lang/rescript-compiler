@@ -161,12 +161,12 @@ let rec subset (s1 : t) (s2 : t) =
 
 
 
-let rec find x (tree : t) = match tree with
+let rec find (tree : t) x = match tree with
   | Empty -> raise Not_found
   | Node(l, v, r, _) ->
     let c = compare_elt x v in
     if c = 0 then v
-    else find x (if c < 0 then l else r)
+    else find (if c < 0 then l else r) x 
 
 
 
