@@ -61,36 +61,36 @@ let rec adjust (tree : _ Map_gen.t as 'a) x replace  : 'a =
       bal l v d (adjust r x  replace )
 
 
-let rec find_exn x (tree : _ Map_gen.t )  = match tree with 
+let rec find_exn (tree : _ Map_gen.t ) x = match tree with 
   | Empty ->
     raise Not_found
   | Node(l, v, d, r, _) ->
     let c = compare_key x v in
     if c = 0 then d
-    else find_exn x (if c < 0 then l else r)
+    else find_exn (if c < 0 then l else r) x
 
-let rec find_opt x (tree : _ Map_gen.t )  = match tree with 
+let rec find_opt (tree : _ Map_gen.t ) x = match tree with 
   | Empty -> None 
   | Node(l, v, d, r, _) ->
     let c = compare_key x v in
     if c = 0 then Some d
-    else find_opt x (if c < 0 then l else r)
+    else find_opt (if c < 0 then l else r) x
 
-let rec find_default x (tree : _ Map_gen.t ) default     = match tree with 
+let rec find_default (tree : _ Map_gen.t ) x  default     = match tree with 
   | Empty -> default  
   | Node(l, v, d, r, _) ->
     let c = compare_key x v in
     if c = 0 then  d
-    else find_default x   (if c < 0 then l else r) default
+    else find_default (if c < 0 then l else r) x default
 
-let rec mem x (tree : _ Map_gen.t )   = match tree with 
+let rec mem (tree : _ Map_gen.t )  x= match tree with 
   | Empty ->
     false
   | Node(l, v, d, r, _) ->
     let c = compare_key x v in
-    c = 0 || mem x (if c < 0 then l else r)
+    c = 0 || mem (if c < 0 then l else r) x 
 
-let rec remove x (tree : _ Map_gen.t as 'a) : 'a = match tree with 
+let rec remove (tree : _ Map_gen.t as 'a) x : 'a = match tree with 
   | Empty ->
     Empty
   | Node(l, v, d, r, h) ->
@@ -98,9 +98,9 @@ let rec remove x (tree : _ Map_gen.t as 'a) : 'a = match tree with
     if c = 0 then
       Map_gen.merge l r
     else if c < 0 then
-      bal (remove x l) v d r
+      bal (remove l x) v d r
     else
-      bal l v d (remove x r)
+      bal l v d (remove r x )
 
 
 let rec split x (tree : _ Map_gen.t as 'a) : 'a * _ option * 'a  = match tree with 

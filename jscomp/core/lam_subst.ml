@@ -35,7 +35,7 @@
   let rec subst_aux (x : Lam.t) : Lam.t =
     match x with 
     | Lvar id as l ->
-      Ident_map.find_default id s l
+      Ident_map.find_default s id  l
     | Lconst sc as l -> l
     | Lapply{fn; args; loc; status} -> 
       Lam.apply (subst_aux fn) (Ext_list.map args subst_aux ) loc status

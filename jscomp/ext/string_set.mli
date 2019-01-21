@@ -31,10 +31,10 @@ val compare_elt : elt -> elt -> int
 type t
 val empty: t
 val is_empty: t -> bool
-val iter: (elt -> unit) -> t -> unit
+val iter:  t -> (elt -> unit) -> unit
 val fold: (elt -> 'a -> 'a) -> t -> 'a -> 'a
-val for_all: (elt -> bool) -> t -> bool
-val exists: (elt -> bool) -> t -> bool
+val for_all: t -> (elt -> bool) -> bool
+val exists:  t -> (elt -> bool) -> bool
 val singleton: elt -> t
 val cardinal: t -> int
 val elements: t -> elt list

@@ -110,4 +110,4 @@ let add_jmps
 
 
 let find_exn i cxt = 
-  Int_map.find_exn i cxt.jmp_table  
+  Int_map.find_exn cxt.jmp_table i 

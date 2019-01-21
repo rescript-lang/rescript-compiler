@@ -276,7 +276,7 @@ module type S =
     val empty: 'a t
     val compare_key: key -> key -> int 
     val is_empty: 'a t -> bool
-    val mem: key -> 'a t -> bool
+    val mem: 'a t -> key -> bool
     val to_sorted_array : 
       'a t -> (key * 'a ) array
     val add: 'a t -> key -> 'a -> 'a t
@@ -288,7 +288,7 @@ module type S =
     *)
     val singleton: key -> 'a -> 'a t
 
-    val remove: key -> 'a t -> 'a t
+    val remove: 'a t -> key -> 'a t
     (** [remove x m] returns a map containing the same bindings as
        [m], except for [x] which is unbound in the returned map. *)
 
@@ -374,11 +374,11 @@ module type S =
         @since 3.12.0
      *)
 
-    val find_exn: key -> 'a t -> 'a
+    val find_exn: 'a t -> key ->  'a
     (** [find x m] returns the current binding of [x] in [m],
        or raises [Not_found] if no such binding exists. *)
-    val find_opt: key -> 'a t -> 'a option
-    val find_default: key  -> 'a t -> 'a  -> 'a 
+    val find_opt:  'a t ->  key ->'a option
+    val find_default: 'a t -> key  ->  'a  -> 'a 
     val map: ('a -> 'b) -> 'a t -> 'b t
     (** [map f m] returns a map with same domain as [m], where the
        associated value [a] of all bindings of [m] has been

@@ -8683,7 +8683,7 @@ module type S =
     val empty: 'a t
     val compare_key: key -> key -> int 
     val is_empty: 'a t -> bool
-    val mem: key -> 'a t -> bool
+    val mem: 'a t -> key -> bool
     val to_sorted_array : 
       'a t -> (key * 'a ) array
     val add: 'a t -> key -> 'a -> 'a t
@@ -8695,7 +8695,7 @@ module type S =
     *)
     val singleton: key -> 'a -> 'a t
 
-    val remove: key -> 'a t -> 'a t
+    val remove: 'a t -> key -> 'a t
     (** [remove x m] returns a map containing the same bindings as
        [m], except for [x] which is unbound in the returned map. *)
 
@@ -8781,11 +8781,11 @@ module type S =
         @since 3.12.0
      *)
 
-    val find_exn: key -> 'a t -> 'a
+    val find_exn: 'a t -> key ->  'a
     (** [find x m] returns the current binding of [x] in [m],
        or raises [Not_found] if no such binding exists. *)
-    val find_opt: key -> 'a t -> 'a option
-    val find_default: key  -> 'a t -> 'a  -> 'a 
+    val find_opt:  'a t ->  key ->'a option
+    val find_default: 'a t -> key  ->  'a  -> 'a 
     val map: ('a -> 'b) -> 'a t -> 'b t
     (** [map f m] returns a map with same domain as [m], where the
        associated value [a] of all bindings of [m] has been
@@ -8898,36 +8898,36 @@ let rec adjust (tree : _ Map_gen.t as 'a) x replace  : 'a =
       bal l v d (adjust r x  replace )
 
 
-let rec find_exn x (tree : _ Map_gen.t )  = match tree with 
+let rec find_exn (tree : _ Map_gen.t ) x = match tree with 
   | Empty ->
     raise Not_found
   | Node(l, v, d, r, _) ->
     let c = compare_key x v in
     if c = 0 then d
-    else find_exn x (if c < 0 then l else r)
+    else find_exn (if c < 0 then l else r) x
 
-let rec find_opt x (tree : _ Map_gen.t )  = match tree with 
+let rec find_opt (tree : _ Map_gen.t ) x = match tree with 
   | Empty -> None 
   | Node(l, v, d, r, _) ->
     let c = compare_key x v in
     if c = 0 then Some d
-    else find_opt x (if c < 0 then l else r)
+    else find_opt (if c < 0 then l else r) x
 
-let rec find_default x (tree : _ Map_gen.t ) default     = match tree with 
+let rec find_default (tree : _ Map_gen.t ) x  default     = match tree with 
   | Empty -> default  
   | Node(l, v, d, r, _) ->
     let c = compare_key x v in
     if c = 0 then  d
-    else find_default x   (if c < 0 then l else r) default
+    else find_default (if c < 0 then l else r) x default
 
-let rec mem x (tree : _ Map_gen.t )   = match tree with 
+let rec mem (tree : _ Map_gen.t )  x= match tree with 
   | Empty ->
     false
   | Node(l, v, d, r, _) ->
     let c = compare_key x v in
-    c = 0 || mem x (if c < 0 then l else r)
+    c = 0 || mem (if c < 0 then l else r) x 
 
-let rec remove x (tree : _ Map_gen.t as 'a) : 'a = match tree with 
+let rec remove (tree : _ Map_gen.t as 'a) x : 'a = match tree with 
   | Empty ->
     Empty
   | Node(l, v, d, r, h) ->
@@ -8935,9 +8935,9 @@ let rec remove x (tree : _ Map_gen.t as 'a) : 'a = match tree with
     if c = 0 then
       Map_gen.merge l r
     else if c < 0 then
-      bal (remove x l) v d r
+      bal (remove l x) v d r
     else
-      bal l v d (remove x r)
+      bal l v d (remove r x )
 
 
 let rec split x (tree : _ Map_gen.t as 'a) : 'a * _ option * 'a  = match tree with 
@@ -9183,7 +9183,7 @@ type ('a,'b) t =
 let sort_files_by_dependencies ~(domain : String_set.t) (dependency_graph : String_set.t String_map.t) : 
   string Queue.t =
   let next current =
-    (String_map.find_exn  current dependency_graph) in    
+    String_map.find_exn  dependency_graph current in    
   let worklist = ref domain in
   let result = Queue.create () in
   let rec visit (visiting : String_set.t) path (current : string) =
@@ -9196,7 +9196,7 @@ let sort_files_by_dependencies ~(domain : String_set.t) (dependency_graph : Stri
         next current |>        
         String_set.iter
           (fun node ->
-             if  String_map.mem node  dependency_graph then
+             if  String_map.mem dependency_graph node then
                visit next_set next_path node)
         ;
         worklist := String_set.remove  current !worklist;
@@ -9261,7 +9261,7 @@ let collect_ast_map ppf files parse_implementation parse_interface  =
       match check_suffix source_file with
       | `Ml, opref ->
         let module_name = Ext_modulename.module_name_of_file source_file in
-        begin match String_map.find_exn module_name acc with
+        begin match String_map.find_exn acc module_name with
           | exception Not_found ->
             String_map.add acc module_name
               {ast_info =
@@ -9288,7 +9288,7 @@ let collect_ast_map ppf files parse_implementation parse_interface  =
         end
       | `Mli, opref ->
         let module_name = Ext_modulename.module_name_of_file source_file in
-        begin match String_map.find_exn module_name acc with
+        begin match String_map.find_exn acc module_name with
           | exception Not_found ->
             String_map.add acc module_name
               {ast_info = (Mli (source_file, parse_interface
@@ -9356,7 +9356,7 @@ let collect_from_main
   let result = Queue.create () in  
   let next module_name : String_set.t =
     let module_set = 
-      match String_map.find_exn module_name ast_table with
+      match String_map.find_exn ast_table module_name with
       | exception _ -> String_set.empty
       | {ast_info = Ml (_,  impl, _)} ->
         read_parse_and_extract Ml (project_impl impl)
@@ -9378,7 +9378,7 @@ let collect_from_main
       Bs_exception.error (Bs_cyclic_depends (current::path))
     else
     if not (String_hashtbl.mem visited current)
-    && String_map.mem current ast_table then
+    && String_map.mem ast_table current then
       begin
         String_set.iter
           (visit
@@ -9400,7 +9400,7 @@ let build_queue ppf queue
   queue
   |> Queue.iter
     (fun modname -> 
-       match String_map.find_exn modname ast_table  with
+       match String_map.find_exn ast_table modname  with
        | {ast_info = Ml(source_file,ast, opref)}
          -> 
          after_parsing_impl ppf source_file 
@@ -9426,7 +9426,7 @@ let handle_queue
   queue 
   |> Queue.iter
     (fun base ->
-       match (String_map.find_exn  base ast_table).ast_info with
+       match (String_map.find_exn ast_table base ).ast_info with
        | exception Not_found -> assert false
        | Ml (ml_name,  ml_content, _)
          ->
@@ -9446,7 +9446,7 @@ let build_lazy_queue ppf queue (ast_table : _ t String_map.t)
     after_parsing_sig    
   =
   queue |> Queue.iter (fun modname -> 
-      match String_map.find_exn modname ast_table  with
+      match String_map.find_exn ast_table modname  with
       | {ast_info = Ml(source_file,lazy ast, opref)}
         -> 
         after_parsing_impl ppf source_file opref ast 

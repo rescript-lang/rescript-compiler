@@ -268,7 +268,7 @@ let table_dispatch table (action : action)
   = 
   match action with 
   | {txt =  name; loc  }, y -> 
-    begin match String_map.find_exn name table with 
+    begin match String_map.find_exn table name with 
       | fn -> fn y
       | exception _ -> Location.raise_errorf ~loc "%s is not supported" name
     end

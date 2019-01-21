@@ -2033,7 +2033,7 @@ module type S =
     val empty: 'a t
     val compare_key: key -> key -> int 
     val is_empty: 'a t -> bool
-    val mem: key -> 'a t -> bool
+    val mem: 'a t -> key -> bool
     val to_sorted_array : 
       'a t -> (key * 'a ) array
     val add: 'a t -> key -> 'a -> 'a t
@@ -2045,7 +2045,7 @@ module type S =
     *)
     val singleton: key -> 'a -> 'a t
 
-    val remove: key -> 'a t -> 'a t
+    val remove: 'a t -> key -> 'a t
     (** [remove x m] returns a map containing the same bindings as
        [m], except for [x] which is unbound in the returned map. *)
 
@@ -2131,11 +2131,11 @@ module type S =
         @since 3.12.0
      *)
 
-    val find_exn: key -> 'a t -> 'a
+    val find_exn: 'a t -> key ->  'a
     (** [find x m] returns the current binding of [x] in [m],
        or raises [Not_found] if no such binding exists. *)
-    val find_opt: key -> 'a t -> 'a option
-    val find_default: key  -> 'a t -> 'a  -> 'a 
+    val find_opt:  'a t ->  key ->'a option
+    val find_default: 'a t -> key  ->  'a  -> 'a 
     val map: ('a -> 'b) -> 'a t -> 'b t
     (** [map f m] returns a map with same domain as [m], where the
        associated value [a] of all bindings of [m] has been
@@ -2248,36 +2248,36 @@ let rec adjust (tree : _ Map_gen.t as 'a) x replace  : 'a =
       bal l v d (adjust r x  replace )
 
 
-let rec find_exn x (tree : _ Map_gen.t )  = match tree with 
+let rec find_exn (tree : _ Map_gen.t ) x = match tree with 
   | Empty ->
     raise Not_found
   | Node(l, v, d, r, _) ->
     let c = compare_key x v in
     if c = 0 then d
-    else find_exn x (if c < 0 then l else r)
+    else find_exn (if c < 0 then l else r) x
 
-let rec find_opt x (tree : _ Map_gen.t )  = match tree with 
+let rec find_opt (tree : _ Map_gen.t ) x = match tree with 
   | Empty -> None 
   | Node(l, v, d, r, _) ->
     let c = compare_key x v in
     if c = 0 then Some d
-    else find_opt x (if c < 0 then l else r)
+    else find_opt (if c < 0 then l else r) x
 
-let rec find_default x (tree : _ Map_gen.t ) default     = match tree with 
+let rec find_default (tree : _ Map_gen.t ) x  default     = match tree with 
   | Empty -> default  
   | Node(l, v, d, r, _) ->
     let c = compare_key x v in
     if c = 0 then  d
-    else find_default x   (if c < 0 then l else r) default
+    else find_default (if c < 0 then l else r) x default
 
-let rec mem x (tree : _ Map_gen.t )   = match tree with 
+let rec mem (tree : _ Map_gen.t )  x= match tree with 
   | Empty ->
     false
   | Node(l, v, d, r, _) ->
     let c = compare_key x v in
-    c = 0 || mem x (if c < 0 then l else r)
+    c = 0 || mem (if c < 0 then l else r) x 
 
-let rec remove x (tree : _ Map_gen.t as 'a) : 'a = match tree with 
+let rec remove (tree : _ Map_gen.t as 'a) x : 'a = match tree with 
   | Empty ->
     Empty
   | Node(l, v, d, r, h) ->
@@ -2285,9 +2285,9 @@ let rec remove x (tree : _ Map_gen.t as 'a) : 'a = match tree with
     if c = 0 then
       Map_gen.merge l r
     else if c < 0 then
-      bal (remove x l) v d r
+      bal (remove l x) v d r
     else
-      bal l v d (remove x r)
+      bal l v d (remove r x )
 
 
 let rec split x (tree : _ Map_gen.t as 'a) : 'a * _ option * 'a  = match tree with 
@@ -2628,7 +2628,7 @@ type status =
 let test   ?(fail=(fun () -> ())) key 
     (cb : callback) (m  : Ext_json_types.t String_map.t)
   =
-  begin match String_map.find_exn key m, cb with 
+  begin match String_map.find_exn m key, cb with 
     | exception Not_found  ->
       begin match cb with `Not_found f ->  f ()
                         | _ -> fail ()
@@ -2655,7 +2655,7 @@ let query path (json : Ext_json_types.t ) =
     | p :: rest -> 
       begin match json with 
         | Obj {map = m} -> 
-          begin match String_map.find_exn p m with 
+          begin match String_map.find_exn m p with 
             | m'  -> aux (p::acc) rest m'
             | exception Not_found ->  No_path
           end
@@ -6761,7 +6761,7 @@ let rec walk_all_deps_aux visited paths top dir cb =
   match Ext_json_parse.parse_json_from_file bsconfig_json with
   | Obj {map; loc} ->
     let cur_package_name = 
-      match String_map.find_opt Bsb_build_schemas.name map  with 
+      match String_map.find_opt map Bsb_build_schemas.name with 
       | Some (Str {str }) -> str
       | Some _ 
       | None -> Bsb_exception.errorf ~loc "package name missing in %s/bsconfig.json" dir 
@@ -8398,22 +8398,22 @@ let elements s =
 
 let choose = min_elt
 
-let rec iter f = function
+let rec iter  x f = match x with
   | Empty -> ()
-  | Node(l, v, r, _) -> iter f l; f v; iter f r
+  | Node(l, v, r, _) -> iter l f ; f v; iter r f 
 
 let rec fold f s accu =
   match s with
   | Empty -> accu
   | Node(l, v, r, _) -> fold f r (f v (fold f l accu))
 
-let rec for_all p = function
+let rec for_all x p = match x with
   | Empty -> true
-  | Node(l, v, r, _) -> p v && for_all p l && for_all p r
+  | Node(l, v, r, _) -> p v && for_all l p && for_all r p 
 
-let rec exists p = function
+let rec exists x p = match x with
   | Empty -> false
-  | Node(l, v, r, _) -> p v || exists p l || exists p r
+  | Node(l, v, r, _) -> p v || exists l p  || exists r p
 
 
 let max_int3 (a : int) b c = 
@@ -8696,10 +8696,10 @@ module type S = sig
   type t
   val empty: t
   val is_empty: t -> bool
-  val iter: (elt -> unit) -> t -> unit
+  val iter: t ->  (elt -> unit) -> unit
   val fold: (elt -> 'a -> 'a) -> t -> 'a -> 'a
-  val for_all: (elt -> bool) -> t -> bool
-  val exists: (elt -> bool) -> t -> bool
+  val for_all: t -> (elt -> bool) ->  bool
+  val exists: t -> (elt -> bool) -> bool
   val singleton: elt -> t
   val cardinal: t -> int
   val elements: t -> elt list
@@ -8767,10 +8767,10 @@ val compare_elt : elt -> elt -> int
 type t
 val empty: t
 val is_empty: t -> bool
-val iter: (elt -> unit) -> t -> unit
+val iter:  t -> (elt -> unit) -> unit
 val fold: (elt -> 'a -> 'a) -> t -> 'a -> 'a
-val for_all: (elt -> bool) -> t -> bool
-val exists: (elt -> bool) -> t -> bool
+val for_all: t -> (elt -> bool) -> bool
+val exists:  t -> (elt -> bool) -> bool
 val singleton: elt -> t
 val cardinal: t -> int
 val elements: t -> elt list
@@ -8978,9 +8978,9 @@ let print fmt s =
   Format.fprintf 
    fmt   "@[<v>{%a}@]@."
     (fun fmt s   -> 
-       iter 
+       iter s
          (fun e -> Format.fprintf fmt "@[<v>%a@],@ " 
-         print_elt e) s
+         print_elt e) 
     )
     s     
 
@@ -9423,6 +9423,94 @@ let namespace_of_package_name (s : string) : string =
   Buffer.contents buf 
 
 end
+module Ext_option : sig 
+#1 "ext_option.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** Utilities for [option] type *)
+
+val map : 'a option -> ('a -> 'b) -> 'b option
+
+val iter : 'a option -> ('a -> unit) -> unit
+
+val exists : 'a option -> ('a -> bool) -> bool
+end = struct
+#1 "ext_option.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+let map v f = 
+  match v with 
+  | None -> None
+  | Some x -> Some (f x )
+
+let iter v f =   
+  match v with 
+  | None -> ()
+  | Some x -> f x 
+
+let exists v f =    
+  match v with 
+  | None -> false
+  | Some x -> f x 
+end
 module Bsb_parse_sources : sig 
 #1 "bsb_parse_sources.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -9537,7 +9625,7 @@ let collect_pub_modules
     match v with 
     | Str { str ; loc }
       -> 
-      if String_map.mem str cache then 
+      if String_map.mem cache str then 
         set := String_set.add str !set
       else 
         begin 
@@ -9553,7 +9641,7 @@ let collect_pub_modules
   !set
 
 let extract_pub (input : Ext_json_types.t String_map.t) (cur_sources : Bsb_db.t) =   
-  match String_map.find_opt Bsb_build_schemas.public input with 
+  match String_map.find_opt input  Bsb_build_schemas.public with 
   | Some (Str{str = s; loc}) ->  
     if s = Bsb_build_schemas.export_all then (Export_all : public) else 
     if s = Bsb_build_schemas.export_none then Export_none else 
@@ -9566,7 +9654,7 @@ let extract_pub (input : Ext_json_types.t String_map.t) (cur_sources : Bsb_db.t)
     Export_all 
 
 let extract_resources (input : Ext_json_types.t String_map.t) =   
-  match String_map.find_opt  Bsb_build_schemas.resources  input with 
+  match String_map.find_opt input  Bsb_build_schemas.resources with 
   | Some (Arr {content = s}) ->
     Bsb_build_util.get_list_string s 
   | Some config -> 
@@ -9642,14 +9730,14 @@ let extract_generators
     (cur_sources : Bsb_db.t ref)
      : build_generator list  =
   let generators : build_generator list ref  = ref [] in
-  begin match String_map.find_opt Bsb_build_schemas.generators input with
+  begin match String_map.find_opt input  Bsb_build_schemas.generators with
     | Some (Arr { content ; loc_start}) ->
       (* Need check is dev build or not *)
       Ext_array.iter content (fun x ->
         match x with
         | Obj { map = generator; loc} ->
-          begin match String_map.find_opt Bsb_build_schemas.name generator,
-                      String_map.find_opt Bsb_build_schemas.edge generator
+          begin match String_map.find_opt generator Bsb_build_schemas.name ,
+                      String_map.find_opt generator Bsb_build_schemas.edge
             with
             | Some (Str{str = command}), Some (Arr {content })->
 
@@ -9704,7 +9792,7 @@ let clean_staled_bs_js_files
          let lib_parent = 
            Filename.concat (Filename.concat context.root Bsb_config.lib_bs) 
              context.cwd in 
-         if not (String_map.mem (Ext_string.capitalize_ascii basename) cur_sources) then 
+         if not (String_map.mem cur_sources (Ext_string.capitalize_ascii basename) ) then 
            begin 
              Unix.unlink (Filename.concat parent current_file);
              let basename = 
@@ -9748,10 +9836,10 @@ let rec
       extract_generators input (cut_generators || not_dev) dir 
       cur_sources
   in 
-  let sub_dirs_field = String_map.find_opt Bsb_build_schemas.subdirs input in 
+  let sub_dirs_field = String_map.find_opt input  Bsb_build_schemas.subdirs in 
   let file_array = lazy (Sys.readdir (Filename.concat cxt.root dir)) in 
   begin 
-    match String_map.find_opt Bsb_build_schemas.files input with 
+    match String_map.find_opt input Bsb_build_schemas.files with 
     | None ->  (* No setting on [!files]*)
       (** We should avoid temporary files *)
       cur_sources := 
@@ -9792,11 +9880,11 @@ let rec
     | Some (Obj {map = m; loc} ) -> (* { excludes : [], slow_re : "" }*)
       cur_globbed_dirs := [dir];  
       let excludes = 
-        match String_map.find_opt Bsb_build_schemas.excludes m with 
+        match String_map.find_opt m  Bsb_build_schemas.excludes with 
         | None -> []   
         | Some (Arr {content = arr}) -> Bsb_build_util.get_list_string arr 
         | Some x -> Bsb_exception.config_error x  "excludes expect array "in 
-      let slow_re = String_map.find_opt Bsb_build_schemas.slow_re m in 
+      let slow_re = String_map.find_opt m Bsb_build_schemas.slow_re in 
       let predicate = 
         match slow_re, excludes with 
         | Some (Str {str = s}), [] -> 
@@ -9872,7 +9960,7 @@ and parsing_single_source ({not_dev; dir_index ; cwd} as cxt ) (x : Ext_json_typ
         String_map.empty  
   | Obj {map} ->
     let current_dir_index = 
-      match String_map.find_opt Bsb_build_schemas.type_ map with 
+      match String_map.find_opt map Bsb_build_schemas.type_ with 
       | Some (Str {str="dev"}) -> 
         Bsb_dir_index.get_dev_index ()
       | Some _ -> Bsb_exception.config_error x {|type field expect "dev" literal |}
@@ -9881,7 +9969,7 @@ and parsing_single_source ({not_dev; dir_index ; cwd} as cxt ) (x : Ext_json_typ
       Bsb_file_groups.empty 
     else 
       let dir = 
-        match String_map.find_opt Bsb_build_schemas.dir map with 
+        match String_map.find_opt map Bsb_build_schemas.dir with 
         | Some (Str{str}) -> 
           Ext_filename.simple_convert_node_path_to_os_path str 
         | Some x -> Bsb_exception.config_error x "dir expected to be a string"
@@ -9945,7 +10033,7 @@ and walk_single_source cxt (x : Ext_json_types.t) =
       }
       String_map.empty   
   | Obj {map} ->       
-    begin match String_map.find_opt Bsb_build_schemas.dir map with 
+    begin match String_map.find_opt map Bsb_build_schemas.dir with 
     | Some (Str{str}) -> 
       let dir = Ext_filename.simple_convert_node_path_to_os_path str  in 
       walk_source_dir_map 
@@ -9965,7 +10053,7 @@ and walk_source_dir_map (cxt : walk_cxt) (input : Ext_json_types.t String_map.t)
           Sys.remove (Filename.concat working_dir file)
     end; 
     let sub_dirs_field = 
-        String_map.find_opt Bsb_build_schemas.subdirs input in 
+        String_map.find_opt input Bsb_build_schemas.subdirs in 
     let cxt_traverse = cxt.traverse in     
     match sub_dirs_field, cxt_traverse with     
     | None, true 
@@ -9991,12 +10079,12 @@ let clean_re_js root =
   match Ext_json_parse.parse_json_from_file 
       (Filename.concat root Literals.bsconfig_json) with 
   | Obj {map ; loc} -> 
-    (match String_map.find_opt Bsb_build_schemas.sources map with 
-    | Some config -> 
-      Ext_pervasives.try_it (fun () -> 
-           walk_sources { root ; traverse = true; cwd = Filename.current_dir_name} config
-        )      
-    | None  -> ())
+    Ext_option.iter (String_map.find_opt map Bsb_build_schemas.sources) 
+      (fun config -> 
+         Ext_pervasives.try_it (fun () -> 
+             walk_sources { root ; traverse = true; cwd = Filename.current_dir_name} config
+           )      
+      )
   | _  -> () 
   | exception _ -> ()    
   
@@ -10376,10 +10464,10 @@ and from_json_single (x : Ext_json_types.t) : spec =
     else
       (bad_module_format_message_exn ~loc format)
   | Obj {map; loc} ->
-    begin match String_map.find_exn "module" map with
+    begin match String_map.find_exn map "module" with
       | Str {str = format} ->
         let in_source = 
-          match String_map.find_opt Bsb_build_schemas.in_source map with
+          match String_map.find_opt map  Bsb_build_schemas.in_source with
           | Some (True _) -> true
           | Some _
           | None -> false
@@ -10616,8 +10704,8 @@ let warning_to_string not_dev
 
 
 let from_map (m : Ext_json_types.t String_map.t) =
-  let number_opt = String_map.find_opt Bsb_build_schemas.number m  in
-  let error_opt = String_map.find_opt Bsb_build_schemas.error m  in
+  let number_opt = String_map.find_opt m Bsb_build_schemas.number in
+  let error_opt = String_map.find_opt m  Bsb_build_schemas.error in
   match number_opt, error_opt  with
   | None, None -> None
   | _, _ ->
@@ -11506,7 +11594,7 @@ let package_specs_from_bsconfig () =
   begin match json with
     | Obj {map} ->
       begin 
-        match String_map.find_opt Bsb_build_schemas.package_specs map with 
+        match String_map.find_opt map  Bsb_build_schemas.package_specs with 
         | Some x ->
           Bsb_package_specs.from_json x
         | None -> 
@@ -11525,7 +11613,7 @@ let package_specs_from_bsconfig () =
 let extract_package_name_and_namespace
     loc (map : Ext_json_types.t String_map.t) : string * string option =   
   let package_name = 
-    match String_map.find_opt Bsb_build_schemas.name map with 
+    match String_map.find_opt map Bsb_build_schemas.name with 
 
     | Some (Str { str = "_" })
       -> 
@@ -11537,7 +11625,7 @@ let extract_package_name_and_namespace
         "field name  as string is required"
   in 
   let namespace = 
-    match String_map.find_opt Bsb_build_schemas.namespace map with 
+    match String_map.find_opt map Bsb_build_schemas.namespace with 
     | None -> None 
     | Some (True _) -> 
       Some (Ext_namespace.namespace_of_package_name package_name)
@@ -11591,7 +11679,7 @@ let interpret_json
     let package_name, namespace = 
       extract_package_name_and_namespace loc  map in 
     let refmt =   
-      match String_map.find_opt Bsb_build_schemas.refmt map with 
+      match String_map.find_opt map Bsb_build_schemas.refmt with 
       | Some (Flo {flo} as config) -> 
         begin match flo with 
         | "3" -> Bsb_config_types.Refmt_v3
@@ -11610,7 +11698,7 @@ let interpret_json
 
     in 
     let bs_suffix = 
-          match String_map.find_opt Bsb_build_schemas.suffix map with 
+          match String_map.find_opt map Bsb_build_schemas.suffix with 
           | None -> false  
           | Some (Str {str} as config ) -> 
             if str = Literals.suffix_js then false 
@@ -11622,7 +11710,7 @@ let interpret_json
               "expect .bs.js or .js string here"
     in   
     (* The default situation is empty *)
-    (match String_map.find_opt Bsb_build_schemas.use_stdlib map with      
+    (match String_map.find_opt map Bsb_build_schemas.use_stdlib with      
      | Some (False _) -> 
        ()
      | None 
@@ -11635,7 +11723,7 @@ let interpret_json
               (Filename.concat stdlib_path Literals.package_json) in 
           match json_spec with 
           | Obj {map}  -> 
-            (match String_map.find_exn Bsb_build_schemas.version map with 
+            (match String_map.find_exn map Bsb_build_schemas.version with 
             | Str {str } -> 
               if str <> Bs_version.version then 
               (
@@ -11659,13 +11747,13 @@ let interpret_json
         end
     ) ;
     let package_specs =     
-      match String_map.find_opt Bsb_build_schemas.package_specs map with 
+      match String_map.find_opt map Bsb_build_schemas.package_specs with 
       | Some x ->
         Bsb_package_specs.from_json x 
       | None ->  Bsb_package_specs.default_package_specs 
     in
     let pp_flags : string option = 
-      match String_map.find_opt Bsb_build_schemas.pp_flags map with 
+      match String_map.find_opt map Bsb_build_schemas.pp_flags with 
       | Some (Str {str = p }) ->
         if p = "" then failwith "invalid pp, empty string found"
         else 
@@ -11677,7 +11765,7 @@ let interpret_json
     in 
     map
     |? (Bsb_build_schemas.reason, `Obj begin fun m -> 
-        match String_map.find_opt Bsb_build_schemas.react_jsx m with 
+        match String_map.find_opt m Bsb_build_schemas.react_jsx with 
         | Some (Flo{loc; flo}) -> 
           begin match flo with 
             | "2" -> 
@@ -11730,8 +11818,8 @@ let interpret_json
           Array.fold_left (fun acc json -> 
               match (json : Ext_json_types.t) with 
               | Obj {map = m ; loc}  -> 
-                begin match String_map.find_opt  Bsb_build_schemas.name m,
-                            String_map.find_opt  Bsb_build_schemas.command m with 
+                begin match String_map.find_opt  m Bsb_build_schemas.name,
+                            String_map.find_opt  m Bsb_build_schemas.command with 
                 | Some (Str {str = name}), Some ( Str {str = command}) -> 
                   String_map.add acc name command 
                 | _, _ -> 
@@ -11741,7 +11829,7 @@ let interpret_json
     |? (Bsb_build_schemas.refmt_flags, `Arr (fun s -> refmt_flags := get_list_string s))
     |? (Bsb_build_schemas.entries, `Arr (fun s -> entries := parse_entries s))
     |> ignore ;
-    begin match String_map.find_opt Bsb_build_schemas.sources map with 
+    begin match String_map.find_opt map Bsb_build_schemas.sources with 
       | Some x -> 
         let res = Bsb_parse_sources.scan
             ~not_dev
@@ -11767,7 +11855,7 @@ let interpret_json
             Unix.rename output_file config_json
         end;
         let warning : Bsb_warning.t option  = 
-          match String_map.find_opt Bsb_build_schemas.warnings map with 
+          match String_map.find_opt map Bsb_build_schemas.warnings with 
           | None -> None 
           | Some (Obj {map }) -> Bsb_warning.from_map map 
           | Some config -> Bsb_exception.config_error config "expect an object"
@@ -11805,94 +11893,6 @@ let interpret_json
     end
   | _ -> failwith "bsconfig.json expect a json object {}"
 
-end
-module Ext_option : sig 
-#1 "ext_option.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(** Utilities for [option] type *)
-
-val map : 'a option -> ('a -> 'b) -> 'b option
-
-val iter : 'a option -> ('a -> unit) -> unit
-
-val exists : 'a option -> ('a -> bool) -> bool
-end = struct
-#1 "ext_option.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-let map v f = 
-  match v with 
-  | None -> None
-  | Some x -> Some (f x )
-
-let iter v f =   
-  match v with 
-  | None -> ()
-  | Some x -> f x 
-
-let exists v f =    
-  match v with 
-  | None -> false
-  | Some x -> f x 
 end
 module Bsb_merlin_gen : sig 
 #1 "bsb_merlin_gen.mli"
@@ -13322,10 +13322,9 @@ let zero : info =
 let handle_generators oc 
     (group : Bsb_file_groups.file_group) custom_rules =   
   let map_to_source_dir = 
-    (fun x -> Bsb_config.proj_rel (group.dir //x )) in
-  group.generators
-  |> List.iter (fun  ({output; input; command}  : Bsb_file_groups.build_generator)-> 
-      begin match String_map.find_opt command custom_rules with 
+    (fun x -> Bsb_config.proj_rel (group.dir //x )) in  
+  Ext_list.iter group.generators (fun {output; input; command} -> 
+      begin match String_map.find_opt custom_rules command with 
         | None -> Ext_pervasives.failwithf ~loc:__LOC__ "custom rule %s used but  not defined" command
         | Some rule -> 
           begin match output, input with
@@ -13850,7 +13849,7 @@ let output_ninja_and_namespace_map
       for i = 1 to number_of_dev_groups  do
         let c = bs_groups.(i) in
         has_reason_files :=  Bsb_db.sanity_check c || !has_reason_files ;
-        String_map.iter c (fun k _ -> if String_map.mem k lib then failwith ("conflict files found:" ^ k)) ;
+        String_map.iter c (fun k _ -> if String_map.mem lib k  then failwith ("conflict files found:" ^ k)) ;
         Bsb_ninja_util.output_kv 
           (Bsb_dir_index.(string_of_bsb_dev_include (of_int i)))
           (Bsb_build_util.include_dirs @@ source_dirs.(i)) oc
@@ -16470,7 +16469,7 @@ let get_bs_platform_version_if_exists dir =
     (Filename.concat dir Literals.package_json) with 
   | Obj {map} 
     -> 
-    (match String_map.find_exn Bsb_build_schemas.version map with 
+    (match String_map.find_exn map Bsb_build_schemas.version with 
     | Str {str} -> str 
     | _ -> assert false)
   | _ -> assert false 

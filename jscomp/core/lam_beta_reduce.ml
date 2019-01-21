@@ -119,7 +119,7 @@ let propogate_beta_reduce_with_map
 
          | _ -> 
            if  Lam_analysis.no_side_effects arg then
-             match Ident_map.find_exn old_param map with 
+             match Ident_map.find_exn map old_param with 
              | exception Not_found -> assert false 
              | stat -> 
                if Lam_var_stats.top_and_used_zero_or_one stat then 

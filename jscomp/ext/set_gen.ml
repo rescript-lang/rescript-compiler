@@ -65,22 +65,22 @@ let elements s =
 
 let choose = min_elt
 
-let rec iter f = function
+let rec iter  x f = match x with
   | Empty -> ()
-  | Node(l, v, r, _) -> iter f l; f v; iter f r
+  | Node(l, v, r, _) -> iter l f ; f v; iter r f 
 
 let rec fold f s accu =
   match s with
   | Empty -> accu
   | Node(l, v, r, _) -> fold f r (f v (fold f l accu))
 
-let rec for_all p = function
+let rec for_all x p = match x with
   | Empty -> true
-  | Node(l, v, r, _) -> p v && for_all p l && for_all p r
+  | Node(l, v, r, _) -> p v && for_all l p && for_all r p 
 
-let rec exists p = function
+let rec exists x p = match x with
   | Empty -> false
-  | Node(l, v, r, _) -> p v || exists p l || exists p r
+  | Node(l, v, r, _) -> p v || exists l p  || exists r p
 
 
 let max_int3 (a : int) b c = 
@@ -363,10 +363,10 @@ module type S = sig
   type t
   val empty: t
   val is_empty: t -> bool
-  val iter: (elt -> unit) -> t -> unit
+  val iter: t ->  (elt -> unit) -> unit
   val fold: (elt -> 'a -> 'a) -> t -> 'a -> 'a
-  val for_all: (elt -> bool) -> t -> bool
-  val exists: (elt -> bool) -> t -> bool
+  val for_all: t -> (elt -> bool) ->  bool
+  val exists: t -> (elt -> bool) -> bool
   val singleton: elt -> t
   val cardinal: t -> int
   val elements: t -> elt list

@@ -266,7 +266,7 @@ and compile_recursive_let ~all_bindings
           *)
           ~immutable_mask:ret.immutable_mask
           (Ext_list.map params (fun x ->
-               Ident_map.find_default x ret.new_params x )
+               Ident_map.find_default ret.new_params x  x )
               )
           [
             S.while_ (* ~label:continue_label *)
@@ -1261,7 +1261,7 @@ and compile_apply
                 (i + 1, assigns, new_params)
               | _ ->
                 let new_param, m  =
-                  match Ident_map.find_opt  param ret.new_params with
+                  match Ident_map.find_opt ret.new_params param  with
                   | None ->
                     ret.immutable_mask.(i)<- false;
                     let v = Ext_ident.create ("_"^param.Ident.name) in
