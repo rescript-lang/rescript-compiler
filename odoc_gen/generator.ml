@@ -40,8 +40,6 @@ let charset = ref "utf-8"
 
 type tag_function = Odoc_info.text -> string
 
-let html_of_example b g t  =
-  bp b {|<pre class="example"> %a  </pre>|} g#html_of_text t 
 
 let wrap_tag f b v =
   bp b {|<div class="tag"> %a </div>|} f  v
@@ -58,13 +56,18 @@ let encoding = 	 {|<meta charset="utf8">|}
 
 module Generator (G : Odoc_html.Html_generator) =
 struct
+  let html_of_example b (g : G.html) t  =
+    bp b {|<pre class="example"> %a  </pre>|} (fun a b -> g#html_of_text a b) t 
+
   class html =
     object(self)
       inherit G.html as super
 
       val! mutable doctype = "<!doctype html>\n"
-
-      method! character_encoding () = encoding
+#if OCAML_VERSION =~ ">4.03" then
+#else
+      method! character_encoding _ = encoding
+#end      
 
    
       method! html_of_author_list = wrap_tag_list super#html_of_author_list
@@ -89,7 +92,7 @@ struct
                      %a
                      </div>
                    |} 
-                Odoc_messages.deprecated self#html_of_text  d );
+                Odoc_messages.deprecated (fun a b -> self#html_of_text a b) d );
           i_desc |?
           (function 
             | [Odoc_info.Raw ""] -> ()
@@ -125,7 +128,7 @@ struct
                               %a
                               </div>
                             |} 
-                         Odoc_messages.deprecated self#html_of_text  d );
+                         Odoc_messages.deprecated (fun a b -> self#html_of_text a b)  d );
                   i_desc |?
                     (function 
                       | [Odoc_info.Raw ""] -> ()
@@ -163,6 +166,8 @@ struct
 
 
       (** Print html code for a type. *)
+#if OCAML_VERSION =~ ">4.03.0" then
+#else
       method! html_of_type b t =
         bs b "<div class=\"type-declaration\">";
         Odoc_info.reset_type_names ();
@@ -356,7 +361,7 @@ struct
         bs b "</div>\n";
         self#html_of_info b t.ty_info;
         bs b "\n"
-
+#end
       val mutable navbar_module_index = ""
 
       method private print_module_index b = 
@@ -541,7 +546,7 @@ struct
 
       initializer
         tag_functions <- ("example", 
-                          bufferize (fun b text -> html_of_example b self text))
+                          bufferize (fun b text -> html_of_example b (self :> G.html) text))
                          :: tag_functions
   end
 end
