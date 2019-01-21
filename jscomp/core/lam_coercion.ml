@@ -107,7 +107,7 @@ let handle_exports (meta : Lam_stats.t)
               export_list = id :: acc.export_list ;
               export_set =
                 if id.stamp = original_export_id.stamp then acc.export_set
-                else (Ident_set.add id (Ident_set.remove original_export_id acc.export_set))
+                else (Ident_set.add (Ident_set.remove acc.export_set original_export_id) id )
             }
             else
              let newid = Ident.rename original_export_id in

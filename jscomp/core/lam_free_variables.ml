@@ -32,29 +32,29 @@
   and free (l : Lam.t) =
 
     match l with
-    | Lvar id -> fv := Ident_set.add id !fv
+    | Lvar id -> fv := Ident_set.add !fv id
     | Lassign(id, e) ->
       free e;
-      fv := Ident_set.add id !fv
+      fv := Ident_set.add !fv id
     | Lstaticcatch(e1, (_,vars), e2) ->
       free e1; free e2;
-      List.iter (fun id -> fv := Ident_set.remove id !fv) vars
+      Ext_list.iter vars (fun id -> fv := Ident_set.remove !fv id) 
     | Ltrywith(e1, exn, e2) ->
       free e1; free e2;
-      fv := Ident_set.remove exn !fv
+      fv := Ident_set.remove !fv exn 
     | Lfunction{body;params} ->
       free body;
-      List.iter (fun param -> fv := Ident_set.remove param !fv) params
+      Ext_list.iter params (fun param -> fv := Ident_set.remove !fv param) 
     | Llet(str, id, arg, body) ->
       free arg; free body;
-      fv := Ident_set.remove id !fv
+      fv := Ident_set.remove !fv id
     | Lletrec(decl, body) ->
       free body;
       free_list_snd decl;
-      List.iter (fun (id, exp) -> fv := Ident_set.remove id !fv) decl
+      Ext_list.iter decl (fun (id, exp) -> fv := Ident_set.remove !fv id) 
     | Lfor(v, e1, e2, dir, e3) ->
       free e1; free e2; free e3;
-      fv := Ident_set.remove v !fv
+      fv := Ident_set.remove !fv v 
     | Lconst _ -> ()
     | Lapply{fn; args; _} ->
       free fn; free_list args

@@ -144,15 +144,15 @@ let scope_pass  =
       {< loop_mutable_values =  b >}
 
     method add_loop_mutable_variable id = 
-      {< loop_mutable_values = Ident_set.add id loop_mutable_values;
-         mutable_values = Ident_set.add id mutable_values
+      {< loop_mutable_values = Ident_set.add loop_mutable_values id;
+         mutable_values = Ident_set.add mutable_values id 
          >}
 
     method add_mutable_variable id = 
-      {< mutable_values = Ident_set.add id mutable_values >}
+      {< mutable_values = Ident_set.add mutable_values id >}
 
     method add_defined_ident ident = 
-      {< defined_idents = Ident_set.add ident defined_idents >} 
+      {< defined_idents = Ident_set.add defined_idents ident >} 
 
     method! expression x = 
       match x.expression_desc with 
@@ -306,15 +306,15 @@ let scope_pass  =
           } 
           })
        *)
-      {< used_idents = Ident_set.add x used_idents;
-         defined_idents = Ident_set.add x defined_idents
+      {< used_idents = Ident_set.add used_idents x ;
+         defined_idents = Ident_set.add defined_idents x
          >}
-    method! for_ident x = {< loop_mutable_values = Ident_set.add x loop_mutable_values >}
+    method! for_ident x = {< loop_mutable_values = Ident_set.add loop_mutable_values x >}
 
     method! ident x = 
       if Ident_set.mem x defined_idents then 
         self
-      else {< used_idents = Ident_set.add x used_idents >}
+      else {< used_idents = Ident_set.add used_idents x >}
   end
 
 let program js = 

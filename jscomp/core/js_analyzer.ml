@@ -47,13 +47,13 @@ let free_variables used_idents defined_idents =
       match st with 
       | { ident; value = None}
         -> 
-        {< defined_idents = Ident_set.add ident defined_idents >}
+        {< defined_idents = Ident_set.add defined_idents ident >}
       | { ident; value = Some v}
         -> 
-        {< defined_idents = Ident_set.add ident defined_idents >} # expression v
+        {< defined_idents = Ident_set.add defined_idents ident >} # expression v
     method! ident id = 
       if Ident_set.mem id defined_idents then self
-      else {<used_idents = Ident_set.add id used_idents >}
+      else {<used_idents = Ident_set.add used_idents id>}
     method! expression exp = 
 
       match exp.expression_desc with

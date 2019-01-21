@@ -378,8 +378,8 @@ module type S = sig
   val partition: (elt -> bool) -> t -> t * t
 
   val mem: elt -> t -> bool
-  val add: elt -> t -> t
-  val remove: elt -> t -> t
+  val add:  t -> elt -> t
+  val remove: t -> elt -> t
   val union: t -> t -> t
   val inter: t -> t -> t
   val diff: t -> t -> t

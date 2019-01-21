@@ -47,7 +47,7 @@ let layered_dfs (g : t) =
         let new_entries = 
         Edge_vec.inplace_filter_with 
         (fun (x : edges) -> not (Int_vec.is_empty x.deps) ) 
-        ~cb_no:(fun x acc -> Set_int.add x.id acc) Set_int.empty  g in 
+        ~cb_no:(fun x acc -> Set_int.add acc x.id) Set_int.empty  g in 
         if not (Set_int.is_empty new_entries) 
         then 
         begin 

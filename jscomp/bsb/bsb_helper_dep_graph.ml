@@ -41,9 +41,9 @@ let sort_files_by_dependencies ~domain dependency_graph =
         String_set.iter (next current)
           (fun node ->
              if  String_map.mem dependency_graph node then
-               visit (String_set.add current visiting) (current::path) node)
+               visit (String_set.add visiting current) (current::path) node)
         ;
-        worklist := String_set.remove  current !worklist;
+        worklist := String_set.remove !worklist  current;
         Queue.push current result ;
       end in
   while not (String_set.is_empty !worklist) do
@@ -68,7 +68,7 @@ let simple_collect_from_main ?alias_map ast_table main_module =
     match alias_map with
     | None -> module_set
     | Some map ->
-      String_set.fold (fun x acc -> String_set.add (String_hashtbl.find_default map x x) acc  ) module_set String_set.empty
+      String_set.fold (fun x acc -> String_set.add acc (String_hashtbl.find_default map x x) ) module_set String_set.empty
   in
   let rec visit visiting path current =
     if String_set.mem current visiting  then
@@ -82,7 +82,7 @@ let simple_collect_from_main ?alias_map ast_table main_module =
       begin
         String_set.iter (next current)
           (visit
-             (String_set.add current visiting)
+             (String_set.add visiting current)
              (current::path))
           ;
         Queue.push current result;
@@ -94,7 +94,7 @@ let simple_collect_from_main ?alias_map ast_table main_module =
 let get_otherlibs_dependencies dependency_graph file_extension =
   let addIfPresentInSet v moduleName fileName acc = 
     if String_set.mem moduleName v then
-      String_set.add (fileName ^ file_extension) acc 
+      String_set.add acc (fileName ^ file_extension)
     else
       acc
   in

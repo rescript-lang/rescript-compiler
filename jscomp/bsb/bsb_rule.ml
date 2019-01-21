@@ -34,7 +34,7 @@ let ask_name name =
   let () = incr rule_id in
   match String_set.find name !rule_names with
   | exception Not_found ->
-    rule_names := String_set.add name !rule_names ;
+    rule_names := String_set.add !rule_names name;
     name
   | _ ->
     begin (* could be improved later
@@ -42,7 +42,7 @@ let ask_name name =
              2. the rule id is increased only when actually used
           *)
       let new_name =  (name ^ Printf.sprintf "_%d" current_id) in
-      rule_names := String_set.add new_name  !rule_names ;
+      rule_names := String_set.add !rule_names new_name;
       new_name
     end
 

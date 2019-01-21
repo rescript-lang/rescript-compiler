@@ -8711,8 +8711,8 @@ module type S = sig
   val partition: (elt -> bool) -> t -> t * t
 
   val mem: elt -> t -> bool
-  val add: elt -> t -> t
-  val remove: elt -> t -> t
+  val add:  t -> elt -> t
+  val remove: t -> elt -> t
   val union: t -> t -> t
   val inter: t -> t -> t
   val diff: t -> t -> t
@@ -8774,7 +8774,7 @@ val exists:  t -> (elt -> bool) -> bool
 val singleton: elt -> t
 val cardinal: t -> int
 val elements: t -> elt list
-val remove : elt -> t -> t
+val remove : t -> elt ->  t
 val min_elt: t -> elt
 val max_elt: t -> elt
 val choose: t -> elt
@@ -8783,7 +8783,7 @@ val of_sorted_array : elt array -> t
 val partition: (elt -> bool) -> t -> t * t
 
 val mem: elt -> t -> bool
-val add: elt -> t -> t
+val add: t -> elt ->  t
 
 val of_list : elt list -> t
 val find : elt -> t -> elt 
@@ -8862,12 +8862,12 @@ let rec split x (tree : t) : t * bool * t =  match tree with
       let (ll, pres, rl) = split x l in (ll, pres, Set_gen.internal_join rl v r)
     else
       let (lr, pres, rr) = split x r in (Set_gen.internal_join l v lr, pres, rr)
-let rec add x (tree : t) : t =  match tree with 
+let rec add (tree : t) x : t =  match tree with 
   | Empty -> Node(Empty, x, Empty, 1)
   | Node(l, v, r, _) as t ->
     let c = compare_elt x v in
     if c = 0 then t else
-    if c < 0 then Set_gen.internal_bal (add x l) v r else Set_gen.internal_bal l v (add x r)
+    if c < 0 then Set_gen.internal_bal (add l x ) v r else Set_gen.internal_bal l v (add r x )
 
 let rec union (s1 : t) (s2 : t) : t  =
   match (s1, s2) with
@@ -8875,12 +8875,12 @@ let rec union (s1 : t) (s2 : t) : t  =
   | (t1, Empty) -> t1
   | (Node(l1, v1, r1, h1), Node(l2, v2, r2, h2)) ->
     if h1 >= h2 then
-      if h2 = 1 then add v2 s1 else begin
+      if h2 = 1 then add s1 v2 else begin
         let (l2, _, r2) = split v1 s2 in
         Set_gen.internal_join (union l1 l2) v1 (union r1 r2)
       end
     else
-    if h1 = 1 then add v1 s2 else begin
+    if h1 = 1 then add s2 v1 else begin
       let (l1, _, r1) = split v2 s1 in
       Set_gen.internal_join (union l1 l2) v2 (union r1 r2)
     end    
@@ -8916,12 +8916,12 @@ let rec mem x (tree : t) =  match tree with
     let c = compare_elt x v in
     c = 0 || mem x (if c < 0 then l else r)
 
-let rec remove x (tree : t) : t = match tree with 
+let rec remove (tree : t)  x : t = match tree with 
   | Empty -> Empty
   | Node(l, v, r, _) ->
     let c = compare_elt x v in
     if c = 0 then Set_gen.internal_merge l r else
-    if c < 0 then Set_gen.internal_bal (remove x l) v r else Set_gen.internal_bal l v (remove x r)
+    if c < 0 then Set_gen.internal_bal (remove l x) v r else Set_gen.internal_bal l v (remove r x )
 
 let compare s1 s2 = Set_gen.compare ~cmp:compare_elt s1 s2 
 
@@ -8960,14 +8960,14 @@ let of_list l =
   match l with
   | [] -> empty
   | [x0] -> singleton x0
-  | [x0; x1] -> add x1 (singleton x0)
-  | [x0; x1; x2] -> add x2 (add x1 (singleton x0))
-  | [x0; x1; x2; x3] -> add x3 (add x2 (add x1 (singleton x0)))
-  | [x0; x1; x2; x3; x4] -> add x4 (add x3 (add x2 (add x1 (singleton x0))))
+  | [x0; x1] -> add (singleton x0) x1 
+  | [x0; x1; x2] -> add (add (singleton x0)  x1) x2 
+  | [x0; x1; x2; x3] -> add (add (add (singleton x0) x1 ) x2 ) x3 
+  | [x0; x1; x2; x3; x4] -> add (add (add (add (singleton x0) x1) x2 ) x3 ) x4 
   | _ -> of_sorted_list (List.sort_uniq compare_elt l)
 
 let of_array l = 
-  Array.fold_left (fun  acc x -> add x acc) empty l
+  Array.fold_left (fun  acc x -> add acc x ) empty l
 
 (* also check order *)
 let invariant t =
@@ -9626,7 +9626,7 @@ let collect_pub_modules
     | Str { str ; loc }
       -> 
       if String_map.mem cache str then 
-        set := String_set.add str !set
+        set := String_set.add !set str
       else 
         begin 
           Bsb_log.warn
@@ -12833,7 +12833,7 @@ let ask_name name =
   let () = incr rule_id in
   match String_set.find name !rule_names with
   | exception Not_found ->
-    rule_names := String_set.add name !rule_names ;
+    rule_names := String_set.add !rule_names name;
     name
   | _ ->
     begin (* could be improved later
@@ -12841,7 +12841,7 @@ let ask_name name =
              2. the rule id is increased only when actually used
           *)
       let new_name =  (name ^ Printf.sprintf "_%d" current_id) in
-      rule_names := String_set.add new_name  !rule_names ;
+      rule_names := String_set.add !rule_names new_name;
       new_name
     end
 

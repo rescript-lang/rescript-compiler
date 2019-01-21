@@ -56,7 +56,7 @@ let get_initial_exports
                 else 
                   Ident_set.(
                   union (Js_analyzer.free_variables_of_expression empty empty x) 
-                    (add ident acc))
+                    (add acc ident))
             end
       | _ -> 
           (* recalcuate again and again ... *)
