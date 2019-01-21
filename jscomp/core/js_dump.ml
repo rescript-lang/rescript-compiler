@@ -457,7 +457,7 @@ and  pp_function is_method
           | _ -> semi f (* has binding, a statement *)  in
       handle 
         (match name with
-         | Name_top name | Name_non_top name  when Ident_set.mem name lexical ->
+         | Name_top name | Name_non_top name  when Ident_set.mem lexical name ->
            (*TODO: when calculating lexical we should not include itself *)
            Ident_set.remove lexical name
          | _ -> lexical) in

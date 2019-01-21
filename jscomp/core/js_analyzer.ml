@@ -52,7 +52,7 @@ let free_variables used_idents defined_idents =
         -> 
         {< defined_idents = Ident_set.add defined_idents ident >} # expression v
     method! ident id = 
-      if Ident_set.mem id defined_idents then self
+      if Ident_set.mem defined_idents id then self
       else {<used_idents = Ident_set.add used_idents id>}
     method! expression exp = 
 

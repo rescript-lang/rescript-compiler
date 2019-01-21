@@ -31,12 +31,12 @@ let sort_files_by_dependencies ~domain dependency_graph =
   let worklist = ref domain in
   let result = Queue.create () in
   let rec visit visiting path current =
-    if String_set.mem current visiting then
+    if String_set.mem visiting current  then
       Bsb_log.error "@{<error>Cyclic depends@} : @[%a@]"
         (Format.pp_print_list ~pp_sep:Format.pp_print_space
            Format.pp_print_string)
         (current::path)
-    else if String_set.mem current !worklist then
+    else if String_set.mem !worklist current then
       begin        
         String_set.iter (next current)
           (fun node ->
@@ -71,7 +71,7 @@ let simple_collect_from_main ?alias_map ast_table main_module =
       String_set.fold (fun x acc -> String_set.add acc (String_hashtbl.find_default map x x) ) module_set String_set.empty
   in
   let rec visit visiting path current =
-    if String_set.mem current visiting  then
+    if String_set.mem visiting current then
       Bsb_log.error "@{<error>Cyclic depends@} : @[%a@]"
         (Format.pp_print_list ~pp_sep:Format.pp_print_space
            Format.pp_print_string)
@@ -93,7 +93,7 @@ let simple_collect_from_main ?alias_map ast_table main_module =
 
 let get_otherlibs_dependencies dependency_graph file_extension =
   let addIfPresentInSet v moduleName fileName acc = 
-    if String_set.mem moduleName v then
+    if String_set.mem v moduleName then
       String_set.add acc (fileName ^ file_extension)
     else
       acc

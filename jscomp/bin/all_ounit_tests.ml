@@ -3210,8 +3210,8 @@ module type S = sig
   val of_sorted_array : elt array -> t
   val partition: (elt -> bool) -> t -> t * t
 
-  val mem: elt -> t -> bool
-  val add:  t -> elt -> t
+  val mem: t -> elt -> bool
+  val add: t -> elt -> t
   val remove: t -> elt -> t
   val union: t -> t -> t
   val inter: t -> t -> t
@@ -3423,11 +3423,11 @@ let rec diff (s1 : t) (s2 : t) : t  =
     end
 
 
-let rec mem x (tree : t) =  match tree with 
+let rec mem (tree : t) x =  match tree with 
   | Empty -> false
   | Node(l, v, r, _) ->
     let c = compare_elt x v in
-    c = 0 || mem x (if c < 0 then l else r)
+    c = 0 || mem (if c < 0 then l else r) x
 
 let rec remove (tree : t)  x : t = match tree with 
   | Empty -> Empty
@@ -16158,7 +16158,7 @@ let layered_dfs (g : t) =
             Queue.push new_entries queue ; 
             Edge_vec.iter 
             (fun edges -> Int_vec.inplace_filter  
-                (fun x -> not (Set_int.mem x new_entries)) edges.deps ) g ;
+                (fun x -> not (Set_int.mem new_entries x)) edges.deps ) g ;
             aux g 
         end
   in aux  g ; queue      

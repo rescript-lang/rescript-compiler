@@ -46,7 +46,7 @@ val of_sorted_list : elt list -> t
 val of_sorted_array : elt array -> t
 val partition: (elt -> bool) -> t -> t * t
 
-val mem: elt -> t -> bool
+val mem: t -> elt -> bool
 val add: t -> elt ->  t
 
 val of_list : elt list -> t

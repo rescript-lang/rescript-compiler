@@ -85,7 +85,7 @@ let mark_dead = object (self)
     | Some (`Info x) ->  Js_op_util.update_used_stats x Used 
 
   method scan b ident (ident_info : J.ident_info) = 
-    let is_export = Ident_set.mem ident export_set in
+    let is_export = Ident_set.mem export_set ident in
     let () = 
       if is_export (* && false *) then 
         Js_op_util.update_used_stats ident_info Exported 

@@ -180,7 +180,7 @@ let scope_pass  =
         (* mark which param is used *)
         params |> List.iteri 
           (fun i v -> 
-             if not (Ident_set.mem v used_idents') then 
+             if not (Ident_set.mem used_idents' v) then 
                Js_fun_env.mark_unused env i) ;
         let closured_idents' =  (* pass param_set down *)
           Ident_set.(diff used_idents' (union defined_idents' param_set )) in
@@ -312,7 +312,7 @@ let scope_pass  =
     method! for_ident x = {< loop_mutable_values = Ident_set.add loop_mutable_values x >}
 
     method! ident x = 
-      if Ident_set.mem x defined_idents then 
+      if Ident_set.mem defined_idents x then 
         self
       else {< used_idents = Ident_set.add used_idents x >}
   end

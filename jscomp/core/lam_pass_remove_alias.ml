@@ -230,7 +230,7 @@ let simplify_alias
                 let param_map = 
                   Lam_closure.is_closed_with_map 
                     meta.export_idents params body in
-                let is_export_id = Ident_set.mem v meta.export_idents in
+                let is_export_id = Ident_set.mem meta.export_idents v in
                 match is_export_id, param_map with 
                 | false, (_, param_map)
                 | true, (true, param_map) -> 

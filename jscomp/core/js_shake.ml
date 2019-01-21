@@ -38,7 +38,7 @@ let get_initial_exports
     (fun acc (st : J.statement) -> 
       match st.statement_desc with
       | Variable {ident ; value; _} ->
-          if Ident_set.mem ident acc then 
+          if Ident_set.mem acc ident then 
             begin match value with
             | None -> acc  
             | Some x -> 
@@ -108,7 +108,7 @@ let shake_program (program : J.program) =
       (fun  (st : J.statement) acc -> 
         match st.statement_desc with
         | Variable {ident; value ; _} -> 
-            if Ident_set.mem ident really_set  then st:: acc 
+            if Ident_set.mem really_set ident then st:: acc 
             else 
               begin match value with 
               | None -> acc 

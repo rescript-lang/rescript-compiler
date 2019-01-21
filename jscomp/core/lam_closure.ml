@@ -71,7 +71,7 @@ let free_variables
      relies on [identifier] uniquely bound *)    
   let used (cur_pos : position) (v : Ident.t) = 
 
-    if not (Ident_set.mem v !local_set) then 
+    if not (Ident_set.mem !local_set v) then 
       fv := adjust cur_pos v !fv in
 
   let rec iter (top : position) (lam : Lam.t) =

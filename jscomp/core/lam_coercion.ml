@@ -161,7 +161,7 @@ let handle_exports (meta : Lam_stats.t)
     List.fold_left
       (fun (export_map, acc) x ->
          (match (x : Lam_group.t)  with
-          | Single (_,id,lam) when Ident_set.mem id export_set
+          | Single (_,id,lam) when Ident_set.mem export_set id 
             -> Ident_map.add export_map id lam 
               (** relies on the Invariant that [eoid] can not be bound before
                   FIX: such invariant may not hold

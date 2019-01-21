@@ -117,11 +117,11 @@ let rec diff (s1 : t) (s2 : t) : t  =
     end
 
 
-let rec mem x (tree : t) =  match tree with 
+let rec mem (tree : t) x =  match tree with 
   | Empty -> false
   | Node(l, v, r, _) ->
     let c = compare_elt x v in
-    c = 0 || mem x (if c < 0 then l else r)
+    c = 0 || mem (if c < 0 then l else r) x
 
 let rec remove (tree : t)  x : t = match tree with 
   | Empty -> Empty

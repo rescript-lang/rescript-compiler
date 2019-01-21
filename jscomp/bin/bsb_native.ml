@@ -8710,8 +8710,8 @@ module type S = sig
   val of_sorted_array : elt array -> t
   val partition: (elt -> bool) -> t -> t * t
 
-  val mem: elt -> t -> bool
-  val add:  t -> elt -> t
+  val mem: t -> elt -> bool
+  val add: t -> elt -> t
   val remove: t -> elt -> t
   val union: t -> t -> t
   val inter: t -> t -> t
@@ -8782,7 +8782,7 @@ val of_sorted_list : elt list -> t
 val of_sorted_array : elt array -> t
 val partition: (elt -> bool) -> t -> t * t
 
-val mem: elt -> t -> bool
+val mem: t -> elt -> bool
 val add: t -> elt ->  t
 
 val of_list : elt list -> t
@@ -8910,11 +8910,11 @@ let rec diff (s1 : t) (s2 : t) : t  =
     end
 
 
-let rec mem x (tree : t) =  match tree with 
+let rec mem (tree : t) x =  match tree with 
   | Empty -> false
   | Node(l, v, r, _) ->
     let c = compare_elt x v in
-    c = 0 || mem x (if c < 0 then l else r)
+    c = 0 || mem (if c < 0 then l else r) x
 
 let rec remove (tree : t)  x : t = match tree with 
   | Empty -> Empty
@@ -13572,7 +13572,7 @@ let handle_file_group
         | Export_all -> true
         | Export_none -> false
         | Export_set set ->  
-          String_set.mem module_name set in
+          String_set.mem set module_name in
       if installable then 
         String_hash_set.add files_to_install (Bsb_db.filename_sans_suffix_of_module_info module_info);
       (handle_module_info 

@@ -377,8 +377,8 @@ module type S = sig
   val of_sorted_array : elt array -> t
   val partition: (elt -> bool) -> t -> t * t
 
-  val mem: elt -> t -> bool
-  val add:  t -> elt -> t
+  val mem: t -> elt -> bool
+  val add: t -> elt -> t
   val remove: t -> elt -> t
   val union: t -> t -> t
   val inter: t -> t -> t
