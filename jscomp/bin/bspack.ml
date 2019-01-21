@@ -8059,7 +8059,7 @@ module type S = sig
 
   val replace: 'a t -> key -> 'a -> unit
   val mem: 'a t -> key -> bool
-  val iter: (key -> 'a -> unit) -> 'a t -> unit
+  val iter: 'a t -> (key -> 'a -> unit) -> unit
   val fold: (key -> 'a -> 'b -> 'b) -> 'a t -> 'b -> 'b
   val length: 'a t -> int
   val stats: 'a t -> Hashtbl.statistics
@@ -8121,7 +8121,7 @@ let resize indexfun h =
 
 
 
-let iter f h =
+let iter h f =
   let rec do_bucket = function
     | Empty ->
       ()

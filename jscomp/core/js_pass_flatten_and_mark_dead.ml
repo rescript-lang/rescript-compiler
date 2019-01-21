@@ -106,14 +106,14 @@ let mark_dead = object (self)
         Js_op_util.update_used_stats ident_info 
           (if b then Scanning_pure else Scanning_non_pure)
   method promote_dead = 
-    Ident_hashtbl.iter (fun _id (info : [`Info of J.ident_info  | `Recursive]) ->
+    Ident_hashtbl.iter ident_use_stats (fun _id (info : [`Info of J.ident_info  | `Recursive]) ->
       match info  with 
       | `Info ({used_stats = Scanning_pure} as info) -> 
           Js_op_util.update_used_stats info Dead_pure
       | `Info ({used_stats = Scanning_non_pure} as info) -> 
           Js_op_util.update_used_stats info Dead_non_pure
       | _ -> ())
-      ident_use_stats;
+      ;
     Ident_hashtbl.clear ident_use_stats (* clear to make it re-entrant *)
 
   method! program x = 
