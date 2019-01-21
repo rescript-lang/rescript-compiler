@@ -1,5 +1,5 @@
 
-ocamlopt = ../vendor/ocaml/bin/ocamlopt.opt
+
 rule optc
     command = $ocamlopt -I +compiler-libs  -I stubs -I ext -I common -I syntax -I depends -I core -I super_errors -I outcome_printer -I bsb -I ounit -I ounit_tests -I main -g -w +6-40-30-23 -warn-error +a-40-30-23 -absname -c $in
     description = $out : $in

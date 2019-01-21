@@ -34,19 +34,6 @@ var getOcamldepFile = ()=>{
     return path.join(__dirname,'..','vendor','ocaml','bin','ocamldep.opt')
 }
 
-/**
- * @returns {string}
- */
-var getOcamloptFile = ()=>{
-    return `../vendor/ocaml/bin/ocamlopt.opt`
-}
-
-/**
- * @returns {string}
- */
-var getOcamllexFile = () => {
-    return `../vendor/ocaml/bin/ocamllex.opt`
-}
 
 /**
  * Fixed since it is already vendored
@@ -609,7 +596,7 @@ rule ${cppoRuleName}
 var mllRuleName = `mll`
 var mllRule = `
 rule ${mllRuleName}
-    command = ${getOcamllexFile()} $in
+    command = $ocamllex $in
     generator = true
 `
 async function othersNinja(devmode=true) {
@@ -1039,7 +1026,7 @@ function nativeNinja() {
         var includes = sourceDirs.map(x=>`-I ${x}`).join(' ')
 
         var templateNative = `
-ocamlopt = ${getOcamloptFile()}
+
 rule optc
     command = $ocamlopt -I +compiler-libs  ${includes} -g -w +6-40-30-23 -warn-error +a-40-30-23 -absname -c $in
     description = $out : $in
