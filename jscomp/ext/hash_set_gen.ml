@@ -55,7 +55,7 @@ let copy h = { h with data = Array.copy h.data }
 
 let length h = h.size
 
-let iter f h =
+let iter h f =
   let rec do_bucket = function
     | [ ] ->
       ()
@@ -155,8 +155,8 @@ sig
   val add :  t -> key -> unit
   val of_array : key array -> t 
   val check_add : t -> key -> bool
-  val mem :  t -> key -> bool
-  val iter: (key -> unit) ->  t -> unit
+  val mem : t -> key -> bool
+  val iter: t -> (key -> unit) -> unit
   val fold: (key -> 'b -> 'b) ->  t -> 'b -> 'b
   val length:  t -> int
   val stats:  t -> Hashtbl.statistics

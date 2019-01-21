@@ -107,7 +107,7 @@ let handle_exports (meta : Lam_stats.t)
               export_list = id :: acc.export_list ;
               export_set =
                 if id.stamp = original_export_id.stamp then acc.export_set
-                else (Ident_set.add id (Ident_set.remove original_export_id acc.export_set))
+                else (Ident_set.add (Ident_set.remove acc.export_set original_export_id) id )
             }
             else
              let newid = Ident.rename original_export_id in
@@ -161,7 +161,7 @@ let handle_exports (meta : Lam_stats.t)
     List.fold_left
       (fun (export_map, acc) x ->
          (match (x : Lam_group.t)  with
-          | Single (_,id,lam) when Ident_set.mem id export_set
+          | Single (_,id,lam) when Ident_set.mem export_set id 
             -> Ident_map.add export_map id lam 
               (** relies on the Invariant that [eoid] can not be bound before
                   FIX: such invariant may not hold

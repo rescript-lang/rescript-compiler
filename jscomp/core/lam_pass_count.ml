@@ -40,9 +40,9 @@ let pp_info fmt (x : used_info) =
   Format.fprintf fmt "(<captured:%b>:%d)"  x.captured x.times
 
 let pp_occ_tbl fmt tbl = 
-  Ident_hashtbl.iter (fun k v -> 
+  Ident_hashtbl.iter tbl (fun k v -> 
       Format.fprintf fmt "@[%a@ %a@]@." Ident.print k pp_info v 
-    ) tbl 
+    ) 
 (* The global table [occ] associates to each let-bound identifier
    the number of its uses (as a reference):
    - 0 if never used

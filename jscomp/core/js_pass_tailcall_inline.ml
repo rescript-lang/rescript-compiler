@@ -77,8 +77,8 @@ let count_collects () =
         -> self#expression x 
     method! ident id = self#add_use id; self
     method get_stats = 
-      Ident_hashtbl.iter (fun ident (v : J.variable_declaration) -> 
-          if Ident_set.mem ident export_set then 
+      Ident_hashtbl.iter defined_idents (fun ident v  -> 
+          if Ident_set.mem export_set ident then 
             Js_op_util.update_used_stats v.ident_info Exported
           else 
             let pure = 
@@ -93,7 +93,7 @@ let count_collects () =
               if !num = 1 then 
                 Js_op_util.update_used_stats v.ident_info 
                   (if pure then Once_pure else Used) 
-        ) defined_idents; defined_idents
+        ) ; defined_idents
   end
 
 
@@ -170,7 +170,7 @@ let subst name export_set stats  =
             Variable ({value =
                          Some ({expression_desc = Fun _; _ } as v )
                       } as vd) ; comment = _} as st) :: rest  -> 
-        let is_export = Ident_set.mem vd.ident export_set in
+        let is_export = Ident_set.mem export_set vd.ident in
         if is_export then 
           self#statement st :: self#block rest 
         else 

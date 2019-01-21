@@ -38,7 +38,7 @@ val exists:  t -> (elt -> bool) -> bool
 val singleton: elt -> t
 val cardinal: t -> int
 val elements: t -> elt list
-val remove : elt -> t -> t
+val remove : t -> elt ->  t
 val min_elt: t -> elt
 val max_elt: t -> elt
 val choose: t -> elt
@@ -46,9 +46,9 @@ val of_sorted_list : elt list -> t
 val of_sorted_array : elt array -> t
 val partition: (elt -> bool) -> t -> t * t
 
-val mem: elt -> t -> bool
-val add: elt -> t -> t
+val mem: t -> elt -> bool
+val add: t -> elt ->  t
 
 val of_list : elt list -> t
-val find : elt -> t -> elt 
+val find : t -> elt -> elt 
 (***********************************************************************) 

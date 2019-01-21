@@ -291,7 +291,7 @@ let handle_file_group
         | Export_all -> true
         | Export_none -> false
         | Export_set set ->  
-          String_set.mem module_name set in
+          String_set.mem set module_name in
       if installable then 
         String_hash_set.add files_to_install (Bsb_db.filename_sans_suffix_of_module_info module_info);
       (handle_module_info 

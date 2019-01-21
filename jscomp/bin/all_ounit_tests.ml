@@ -3210,9 +3210,9 @@ module type S = sig
   val of_sorted_array : elt array -> t
   val partition: (elt -> bool) -> t -> t * t
 
-  val mem: elt -> t -> bool
-  val add: elt -> t -> t
-  val remove: elt -> t -> t
+  val mem: t -> elt -> bool
+  val add: t -> elt -> t
+  val remove: t -> elt -> t
   val union: t -> t -> t
   val inter: t -> t -> t
   val diff: t -> t -> t
@@ -3222,7 +3222,7 @@ module type S = sig
   val filter: (elt -> bool) -> t -> t
 
   val split: elt -> t -> t * bool * t
-  val find: elt -> t -> elt
+  val find:  t -> elt -> elt
   val of_list: elt list -> t
   val of_sorted_list : elt list ->  t
   val of_sorted_array : elt array -> t 
@@ -3375,12 +3375,12 @@ let rec split x (tree : t) : t * bool * t =  match tree with
       let (ll, pres, rl) = split x l in (ll, pres, Set_gen.internal_join rl v r)
     else
       let (lr, pres, rr) = split x r in (Set_gen.internal_join l v lr, pres, rr)
-let rec add x (tree : t) : t =  match tree with 
+let rec add (tree : t) x : t =  match tree with 
   | Empty -> Node(Empty, x, Empty, 1)
   | Node(l, v, r, _) as t ->
     let c = compare_elt x v in
     if c = 0 then t else
-    if c < 0 then Set_gen.internal_bal (add x l) v r else Set_gen.internal_bal l v (add x r)
+    if c < 0 then Set_gen.internal_bal (add l x ) v r else Set_gen.internal_bal l v (add r x )
 
 let rec union (s1 : t) (s2 : t) : t  =
   match (s1, s2) with
@@ -3388,12 +3388,12 @@ let rec union (s1 : t) (s2 : t) : t  =
   | (t1, Empty) -> t1
   | (Node(l1, v1, r1, h1), Node(l2, v2, r2, h2)) ->
     if h1 >= h2 then
-      if h2 = 1 then add v2 s1 else begin
+      if h2 = 1 then add s1 v2 else begin
         let (l2, _, r2) = split v1 s2 in
         Set_gen.internal_join (union l1 l2) v1 (union r1 r2)
       end
     else
-    if h1 = 1 then add v1 s2 else begin
+    if h1 = 1 then add s2 v1 else begin
       let (l1, _, r1) = split v2 s1 in
       Set_gen.internal_join (union l1 l2) v2 (union r1 r2)
     end    
@@ -3423,18 +3423,18 @@ let rec diff (s1 : t) (s2 : t) : t  =
     end
 
 
-let rec mem x (tree : t) =  match tree with 
+let rec mem (tree : t) x =  match tree with 
   | Empty -> false
   | Node(l, v, r, _) ->
     let c = compare_elt x v in
-    c = 0 || mem x (if c < 0 then l else r)
+    c = 0 || mem (if c < 0 then l else r) x
 
-let rec remove x (tree : t) : t = match tree with 
+let rec remove (tree : t)  x : t = match tree with 
   | Empty -> Empty
   | Node(l, v, r, _) ->
     let c = compare_elt x v in
     if c = 0 then Set_gen.internal_merge l r else
-    if c < 0 then Set_gen.internal_bal (remove x l) v r else Set_gen.internal_bal l v (remove x r)
+    if c < 0 then Set_gen.internal_bal (remove l x) v r else Set_gen.internal_bal l v (remove r x )
 
 let compare s1 s2 = Set_gen.compare ~cmp:compare_elt s1 s2 
 
@@ -3460,12 +3460,12 @@ let rec subset (s1 : t) (s2 : t) =
 
 
 
-let rec find x (tree : t) = match tree with
+let rec find (tree : t) x = match tree with
   | Empty -> raise Not_found
   | Node(l, v, r, _) ->
     let c = compare_elt x v in
     if c = 0 then v
-    else find x (if c < 0 then l else r)
+    else find (if c < 0 then l else r) x 
 
 
 
@@ -3473,14 +3473,14 @@ let of_list l =
   match l with
   | [] -> empty
   | [x0] -> singleton x0
-  | [x0; x1] -> add x1 (singleton x0)
-  | [x0; x1; x2] -> add x2 (add x1 (singleton x0))
-  | [x0; x1; x2; x3] -> add x3 (add x2 (add x1 (singleton x0)))
-  | [x0; x1; x2; x3; x4] -> add x4 (add x3 (add x2 (add x1 (singleton x0))))
+  | [x0; x1] -> add (singleton x0) x1 
+  | [x0; x1; x2] -> add (add (singleton x0)  x1) x2 
+  | [x0; x1; x2; x3] -> add (add (add (singleton x0) x1 ) x2 ) x3 
+  | [x0; x1; x2; x3; x4] -> add (add (add (add (singleton x0) x1) x2 ) x3 ) x4 
   | _ -> of_sorted_list (List.sort_uniq compare_elt l)
 
 let of_array l = 
-  Array.fold_left (fun  acc x -> add x acc) empty l
+  Array.fold_left (fun  acc x -> add acc x ) empty l
 
 (* also check order *)
 let invariant t =
@@ -3568,7 +3568,7 @@ let suites =
       let v = ref Set_int.empty in 
       for i = 0 to arr_size - 1 do
         let size = Random.int 0x3FFFFFFF in  
-         v := Set_int.add size !v                      
+         v := Set_int.add !v size                       
       done;       
       OUnit.assert_bool __LOC__ (Set_int.invariant !v)
     end;
@@ -8383,7 +8383,7 @@ let copy h = { h with data = Array.copy h.data }
 
 let length h = h.size
 
-let iter f h =
+let iter h f =
   let rec do_bucket = function
     | [ ] ->
       ()
@@ -8483,8 +8483,8 @@ sig
   val add :  t -> key -> unit
   val of_array : key array -> t 
   val check_add : t -> key -> bool
-  val mem :  t -> key -> bool
-  val iter: (key -> unit) ->  t -> unit
+  val mem : t -> key -> bool
+  val iter: t -> (key -> unit) -> unit
   val fold: (key -> 'b -> 'b) ->  t -> 'b -> 'b
   val length:  t -> int
   val stats:  t -> Hashtbl.statistics
@@ -8675,7 +8675,7 @@ val remove : 'a t -> 'a -> unit
 
 val mem : 'a t -> 'a -> bool
 
-val iter : ('a -> unit) -> 'a t -> unit
+val iter : 'a t -> ('a -> unit) -> unit
 
 val elements : 'a t -> 'a list
 
@@ -9677,7 +9677,7 @@ module type S = sig
 
   val replace: 'a t -> key -> 'a -> unit
   val mem: 'a t -> key -> bool
-  val iter: (key -> 'a -> unit) -> 'a t -> unit
+  val iter: 'a t -> (key -> 'a -> unit) -> unit
   val fold: (key -> 'a -> 'b -> 'b) -> 'a t -> 'b -> 'b
   val length: 'a t -> int
   val stats: 'a t -> Hashtbl.statistics
@@ -9739,7 +9739,7 @@ let resize indexfun h =
 
 
 
-let iter f h =
+let iter h f =
   let rec do_bucket = function
     | Empty ->
       ()
@@ -15287,7 +15287,7 @@ let test2  (input : (string * string list) list) =
     (fun (x,others) -> List.iter add (x::others));
   let nodes_num = String_hashtbl.length tbl in
   let other_mapping = Array.make nodes_num "" in 
-  String_hashtbl.iter (fun k v  -> other_mapping.(v) <- k ) tbl ;
+  String_hashtbl.iter tbl (fun k v  -> other_mapping.(v) <- k ) ;
   
   let node_array = 
       Array.init nodes_num
@@ -16151,14 +16151,14 @@ let layered_dfs (g : t) =
         let new_entries = 
         Edge_vec.inplace_filter_with 
         (fun (x : edges) -> not (Int_vec.is_empty x.deps) ) 
-        ~cb_no:(fun x acc -> Set_int.add x.id acc) Set_int.empty  g in 
+        ~cb_no:(fun x acc -> Set_int.add acc x.id) Set_int.empty  g in 
         if not (Set_int.is_empty new_entries) 
         then 
         begin 
             Queue.push new_entries queue ; 
             Edge_vec.iter 
             (fun edges -> Int_vec.inplace_filter  
-                (fun x -> not (Set_int.mem x new_entries)) edges.deps ) g ;
+                (fun x -> not (Set_int.mem new_entries x)) edges.deps ) g ;
             aux g 
         end
   in aux  g ; queue      
@@ -19092,7 +19092,7 @@ let suites =
       let count = 1000 in 
       let init_array = (Array.init count (fun i -> i)) in 
       let u = Int_vec.of_array  init_array in 
-      let v = Int_vec.inplace_filter_with (fun x -> x mod 2 = 0) ~cb_no:Set_int.add Set_int.empty u  in
+      let v = Int_vec.inplace_filter_with (fun x -> x mod 2 = 0) ~cb_no:(fun a b -> Set_int.add b a)Set_int.empty u  in
       let (even,odd) = init_array |> Array.to_list |> List.partition (fun x -> x mod 2 = 0) in 
       OUnit.assert_equal 
       (Set_int.elements v) odd ;

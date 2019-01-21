@@ -284,11 +284,11 @@ let get_required_modules
     extras 
     (hard_dependencies 
      : Lam_module_ident.Hash_set.t) : Lam_module_ident.t list =  
-  Lam_module_ident.Hash.iter (fun id  _  ->
+  Lam_module_ident.Hash.iter cached_tbl (fun id  _  ->
       if not @@ is_pure_module id 
-      then add  hard_dependencies id) cached_tbl ;
-  Lam_module_ident.Hash_set.iter (fun id  -> 
+      then add  hard_dependencies id);
+  Lam_module_ident.Hash_set.iter extras (fun id  -> 
       (if not @@ is_pure_module  id 
        then add hard_dependencies id : unit)
-    ) extras;
+    );
   Lam_module_ident.Hash_set.elements hard_dependencies

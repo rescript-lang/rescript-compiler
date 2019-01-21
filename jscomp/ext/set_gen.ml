@@ -377,9 +377,9 @@ module type S = sig
   val of_sorted_array : elt array -> t
   val partition: (elt -> bool) -> t -> t * t
 
-  val mem: elt -> t -> bool
-  val add: elt -> t -> t
-  val remove: elt -> t -> t
+  val mem: t -> elt -> bool
+  val add: t -> elt -> t
+  val remove: t -> elt -> t
   val union: t -> t -> t
   val inter: t -> t -> t
   val diff: t -> t -> t
@@ -389,7 +389,7 @@ module type S = sig
   val filter: (elt -> bool) -> t -> t
 
   val split: elt -> t -> t * bool * t
-  val find: elt -> t -> elt
+  val find:  t -> elt -> elt
   val of_list: elt list -> t
   val of_sorted_list : elt list ->  t
   val of_sorted_array : elt array -> t 

@@ -67,7 +67,7 @@ let collect_pub_modules
     | Str { str ; loc }
       -> 
       if String_map.mem cache str then 
-        set := String_set.add str !set
+        set := String_set.add !set str
       else 
         begin 
           Bsb_log.warn

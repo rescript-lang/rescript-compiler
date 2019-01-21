@@ -23,7 +23,7 @@ let rec eliminate_ref id (lam : Lam.t) =
   | Lprim {primitive = Pfield (0,_); args =  [Lvar v]} when Ident.same v id ->
     Lam.var id
   | Lfunction{params; body} as lam ->
-    if Ident_set.mem id (Lam_free_variables.pass_free_variables  lam) (*TODO: optmization: no need construct*)
+    if Ident_set.mem (Lam_free_variables.pass_free_variables  lam) id (*TODO: optmization: no need construct*)
     then raise_notrace Real_reference
     else lam
   (* In Javascript backend, its okay, we can reify it later

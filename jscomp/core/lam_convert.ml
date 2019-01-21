@@ -683,14 +683,14 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
     | Alias , Lvar u  ->
       let new_u = Ident_hashtbl.find_default alias_tbl u u in
       Ident_hashtbl.add alias_tbl id new_u ;
-      if Ident_set.mem id exports then
+      if Ident_set.mem exports id then
         Lam.let_ kind id (Lam.var new_u) (convert_aux body)
       else convert_aux body
     | Alias ,  Lprim (Pgetglobal u,[], _) when not (Ident.is_predef_exn u)
       ->
       Ident_hashtbl.add alias_tbl id u;
       may_depend may_depends (Lam_module_ident.of_ml u);
-      if Ident_set.mem id exports then
+      if Ident_set.mem exports id then
         Lam.let_ kind id (Lam.var u) (convert_aux body)
       else convert_aux body
 

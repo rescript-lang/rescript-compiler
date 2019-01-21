@@ -365,7 +365,7 @@ and  pp_function is_method
       | No_name ->
         Js_fun_env.get_unbounded env
       | Name_top id | Name_non_top id -> 
-        Ident_set.add id (Js_fun_env.get_unbounded env ) in
+        Ident_set.add (Js_fun_env.get_unbounded env ) id in
     (* the context will be continued after this function *)
     let outer_cxt = Ext_pp_scope.merge set_env cxt in
 
@@ -457,9 +457,9 @@ and  pp_function is_method
           | _ -> semi f (* has binding, a statement *)  in
       handle 
         (match name with
-         | Name_top name | Name_non_top name  when Ident_set.mem name lexical ->
+         | Name_top name | Name_non_top name  when Ident_set.mem lexical name ->
            (*TODO: when calculating lexical we should not include itself *)
-           Ident_set.remove name lexical
+           Ident_set.remove lexical name
          | _ -> lexical) in
     enclose lexical return;
     outer_cxt

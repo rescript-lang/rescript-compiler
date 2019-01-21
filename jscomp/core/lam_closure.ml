@@ -63,15 +63,15 @@ let free_variables
   let fv = ref params in
   let local_set = ref export_idents in
   let local_add k =
-    local_set := Ident_set.add k !local_set in
+    local_set := Ident_set.add !local_set k in
   let local_add_list ks = 
     local_set :=  
-      Ext_list.fold_left ks !local_set (fun k acc -> Ident_set.add k acc) in    
+      Ext_list.fold_left ks !local_set (fun k acc -> Ident_set.add acc k) in    
   (* base don the envrionmet, recoring the use cases of arguments 
      relies on [identifier] uniquely bound *)    
   let used (cur_pos : position) (v : Ident.t) = 
 
-    if not (Ident_set.mem v !local_set) then 
+    if not (Ident_set.mem !local_set v) then 
       fv := adjust cur_pos v !fv in
 
   let rec iter (top : position) (lam : Lam.t) =
@@ -95,7 +95,7 @@ let free_variables
       iter sink_pos body
     | Lletrec(decl, body) ->
       local_set := Ext_list.fold_left decl !local_set  (fun (id, _) acc -> 
-          Ident_set.add id acc) ;        
+          Ident_set.add acc id) ;        
       Ext_list.iter decl (fun (_, exp) -> iter sink_pos exp);
       iter sink_pos body
     | Lswitch(arg, 

@@ -31,7 +31,7 @@ let hit_variables (fv : Ident_set.t) (l : t) : bool  =
     match x with 
     | None -> false 
     | Some a -> hit a
-  and hit_var (id : Ident.t) = Ident_set.mem id fv   
+  and hit_var (id : Ident.t) = Ident_set.mem fv id 
   and hit_list_snd : 'a. ('a * t ) list -> bool = fun x ->    
     Ext_list.exists_snd x hit
   and hit_list xs = List.exists hit xs 

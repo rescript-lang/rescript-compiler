@@ -47,7 +47,7 @@ let pack pack_byte_or_native ~batch_files ~includes =
     batch_files in
   let domain =
     String_map.fold
-      (fun k _ acc -> String_set.add k acc)
+      (fun k _ acc -> String_set.add acc k)
       dependency_graph String_set.empty in
   let sorted_tasks = Bsb_helper_dep_graph.sort_files_by_dependencies ~domain dependency_graph in
   let list_of_object_files = Queue.fold

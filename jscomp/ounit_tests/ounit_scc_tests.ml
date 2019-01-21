@@ -266,7 +266,7 @@ let test2  (input : (string * string list) list) =
     (fun (x,others) -> List.iter add (x::others));
   let nodes_num = String_hashtbl.length tbl in
   let other_mapping = Array.make nodes_num "" in 
-  String_hashtbl.iter (fun k v  -> other_mapping.(v) <- k ) tbl ;
+  String_hashtbl.iter tbl (fun k v  -> other_mapping.(v) <- k ) ;
   
   let node_array = 
       Array.init nodes_num

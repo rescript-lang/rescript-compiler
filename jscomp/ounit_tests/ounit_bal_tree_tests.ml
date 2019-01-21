@@ -60,7 +60,7 @@ let suites =
       let v = ref Set_int.empty in 
       for i = 0 to arr_size - 1 do
         let size = Random.int 0x3FFFFFFF in  
-         v := Set_int.add size !v                      
+         v := Set_int.add !v size                       
       done;       
       OUnit.assert_bool __LOC__ (Set_int.invariant !v)
     end;

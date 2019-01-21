@@ -70,15 +70,15 @@ type t = {
 let pp = Format.fprintf
 
 let pp_alias_tbl fmt (tbl : alias_tbl) = 
-  Ident_hashtbl.iter (fun k v -> pp fmt "@[%a -> %a@]@." Ident.print k Ident.print v)
-    tbl
+  Ident_hashtbl.iter  tbl (fun k v -> pp fmt "@[%a -> %a@]@." Ident.print k Ident.print v)
+  
 
 
 
 let pp_ident_tbl fmt (ident_tbl : ident_tbl) = 
-  Ident_hashtbl.iter (fun k v -> pp fmt "@[%a -> %a@]@." 
+  Ident_hashtbl.iter ident_tbl (fun k v -> pp fmt "@[%a -> %a@]@." 
     Ident.print k Lam_id_kind.print v)
-    ident_tbl
+    
 
 let print fmt (v : t) = 
     pp fmt "@[Alias table:@ @[%a@]@]" pp_alias_tbl v.alias_tbl ;    
