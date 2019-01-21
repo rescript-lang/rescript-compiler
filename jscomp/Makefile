@@ -621,7 +621,7 @@ bootbspack:
 	@echo "Bootstrap seems finished, please check diffs in bspack.exe"
 	@echo "Rebuilding bspack.exe"
 	make -C bin -B bspack.exe
-	@echo "Rebuilding bspack.exe finsihed"
+	@echo "Rebuilding bspack.exe finished"
 
 libs:	
 	$(MAKE) -w -C runtime all
