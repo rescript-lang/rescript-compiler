@@ -6,38 +6,53 @@ Thanks for your help! Due to BuckleScript's nature, the contribution setup isn't
 
 Prerequisites:
 
-- [OPAM](https://opam.ocaml.org/), the OCaml package manager (v2)
 - [NodeJS](https://nodejs.org/)
-- Make
-- [Go](https://golang.org) to run tests
+- [Ninja](https://ninja-build.org/manual.html)
+- C compiler toolchain
 - OS: Mac/Linux (BuckleScript works on Windows, but developing the repo in Windows isn't tested. Contribution welcome!)
 
+### Build the vendored ocaml compiler
 ```
-# Use the correct opam switch for working on BuckleScript
-opam update
-opam switch create 4.02.3+buckle-master
-eval `opam config env`
-opam switch reinstall 4.02.3+buckle-master # do this if you get errors even from a clean compilation
-ocaml -version # confirm you're using 4.02.3
-opam install camlp4 cppo
-
-# Install dev-time npm dependencies
-npm install
-
-# Build BuckleScript's forked OCaml
-cd vendor/ocaml
-./configure -prefix `pwd`
-make world.opt
-make install
-
-# Build BuckleScript itself
-cd ../../
-make
-make install
-
-# install this local bs globally
-npm -g install .
+cd vendor/ocaml && ./configure -prefix `pwd` && make -j9 world.opt && make install
 ```
+
+### Build everything in dev mode
+```
+ninja -C jscomp
+```
+
+### Edit file and test changes
+
+In general, you edit files and rerun `ninja -C jscomp`. 
+
+Note we have a watcher script to automate this, suppose you are in `jscomp` dir,
+
+```sh
+node ../scripts/task.js
+```
+### Trouble-shooting when build is broken
+
+We use `../scripts/ninja.js` to generate `jscomp/build.ninja` to drive the whole build process, when it does not work, try to run `../scripts/ninja.js`  and do `ninja -C jscomp` again.
+
+## Test against OCaml 4.06
+
+Clone and install our patched [OCaml 4.06](https://github.com/bucklescript/ocaml). 
+Make sure `ocamlopt.opt` is in PATH.
+
+run `../scripts/ninja.js -v6` to generate ninja file accordingly and `ninja -C jscomp -f 406.ninja`
+
+Note when you switch between 4.02 and 4.06, make sure to clean up before build
+
+For example, switch from 4.06 to 4.02
+```
+ninja -C jscomp -f 406.ninja -t clean && ninja -C jscomp -f build.ninja
+```
+
+Switch from 4.02 to 4.06
+```
+ninja -C jscomp -f build.ninja -t clean && ninja -C jscomp -f 406.ninja
+```
+
 
 ## Test on a Dummy Project
 
