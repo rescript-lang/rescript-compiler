@@ -238,7 +238,7 @@ function checkPrebuiltBscCompiler() {
 function buildLibs(){
     cp.execFileSync(ninja_bin_output, [ "-f", "release.ninja", "-t", "clean"], { cwd: jscomp_dir, stdio: [0, 1, 2] , shell: false})
     cp.execFileSync(ninja_bin_output, [ "-f", "release.ninja"], { cwd: jscomp_dir, stdio: [0, 1, 2] , shell: false})
-    console.log('Build finsihed')
+    console.log('Build finished')
 }
 
 function provideCompiler() {
