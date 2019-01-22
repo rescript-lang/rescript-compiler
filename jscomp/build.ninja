@@ -2,7 +2,7 @@
 ocamlopt = ../vendor/ocaml/bin/ocamlopt.opt
 ocamllex = ../vendor/ocaml/bin/ocamllex.opt
 stdlib = stdlib-402
-subninja compiler.ninja
+subninja compiler402.ninja
 subninja snapshot.ninja
 subninja runtime/build.ninja
 subninja others/build.ninja
