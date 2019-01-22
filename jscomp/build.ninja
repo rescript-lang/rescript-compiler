@@ -1,3 +1,6 @@
+
+ocamlopt = ../vendor/ocaml/bin/ocamlopt.opt
+ocamllex = ../vendor/ocaml/bin/ocamllex.opt
 subninja compiler.ninja
 subninja snapshot.ninja
 subninja runtime/build.ninja

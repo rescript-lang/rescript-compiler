@@ -24,7 +24,21 @@ var js_package = pseudoTarget('js_pkg')
 var runtimeTarget = pseudoTarget('runtime')
 var othersTarget = pseudoTarget('others')
 var stdlibTarget = pseudoTarget(stdlibVersion)
-var ocamldep = path.join(__dirname,'..','vendor','ocaml','bin','ocamldep.opt')
+
+/**
+ * Note this file is not used in ninja file
+ * It is used to generate ninja file
+ * @returns {string}
+ */
+var getOcamldepFile = ()=>{
+    return path.join(__dirname,'..','vendor','ocaml','bin','ocamldep.opt')
+}
+
+
+/**
+ * Fixed since it is already vendored
+ */
+var cppoMonoFile = `../vendor/cppo/cppo_bin.ml`
 /**
  *
  * @param {string} name
@@ -359,7 +373,7 @@ function replaceCmj(x) {
  */
 function ocamlDepForBscAsync(files,dir, depsMap) {
     return new Promise((resolve,reject) =>{
-        cp.exec(`${ocamldep} -one-line -native ${files.join(' ')}`, {
+        cp.exec(`${getOcamldepFile()} -one-line -native ${files.join(' ')}`, {
             cwd: dir,
             encoding: 'ascii'
         },function(error,stdout,stderr){
@@ -572,17 +586,17 @@ var dTypePoly =  'TYPE_POLY'
 
 var cppoRuleName = `cppo`
 var cppoFile = `./bin/cppo.exe`
-var ocamloptFile = `../vendor/ocaml/bin/ocamlopt.opt`
+
 var cppoRule = `
 rule ${cppoRuleName}
     command = ${cppoFile} $type $in -o $out
     generator = true
 `
-var ocamllexFile = `../vendor/ocaml/bin/ocamllex.opt`
+
 var mllRuleName = `mll`
 var mllRule = `
 rule ${mllRuleName}
-    command = ${ocamllexFile} $in
+    command = $ocamllex $in
     generator = true
 `
 async function othersNinja(devmode=true) {
@@ -1012,7 +1026,7 @@ function nativeNinja() {
         var includes = sourceDirs.map(x=>`-I ${x}`).join(' ')
 
         var templateNative = `
-ocamlopt = ${ocamloptFile}
+
 rule optc
     command = $ocamlopt -I +compiler-libs  ${includes} -g -w +6-40-30-23 -warn-error +a-40-30-23 -absname -c $in
     description = $out : $in
@@ -1069,7 +1083,7 @@ rule bspack
     generator = true
 build ./bin/tests.exe: link ounit/ounit.cmxa stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa bsb/bsb.cmxa core/core.cmxa ounit_tests/ounit_tests.cmxa main/ounit_tests_main.cmx
     libs = str.cmxa unix.cmxa ocamlcommon.cmxa
-build ${cppoFile}: link ../vendor/cppo/cppo_bin.ml
+build ${cppoFile}: link ${cppoMonoFile}
     libs = unix.cmxa str.cmxa
 ${cppoRule}
 ${mllRule}
@@ -1119,7 +1133,7 @@ build ../odoc_gen/generator.cmxs : mk_shared ../odoc_gen/generator.mli ../odoc_g
     for (let dir of sourceDirs) {
         files = files.concat(test(dir))
     }
-    var out = cp.execSync(`${ocamldep} -one-line -native ${includes} ${files.join(' ')}`, { cwd: jscompDir, encoding: 'ascii' })
+    var out = cp.execSync(`${getOcamldepFile()} -one-line -native ${includes} ${files.join(' ')}`, { cwd: jscompDir, encoding: 'ascii' })
 
     /**
      * @type {Map<string,Set<string>>}
