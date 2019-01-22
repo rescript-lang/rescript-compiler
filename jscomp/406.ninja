@@ -10,6 +10,6 @@ subninja compiler406.ninja
 subninja runtime/build.ninja
 subninja others/build.ninja
 subninja $stdlib/build.ninja
-subninja test/build.ninja
+subninja test/build406.ninja
 build all: phony runtime others $stdlib test
 

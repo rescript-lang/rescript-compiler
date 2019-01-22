@@ -875,8 +875,12 @@ function baseName(x) {
     return x.substr(0, x.indexOf('.'))
 }
 
-
-async function testNinja(){
+/**
+ * 
+ * @param {boolean} version6 
+ */
+async function testNinja(version6){
+    var ninjaOutput = version6 ? 'build406.ninja' : 'build.ninja'
     var ninjaCwd = `test`
     var templateTestRules = `
 ${BSC_COMPILER}
@@ -899,7 +903,7 @@ ${mllList(ninjaCwd, ['arith_lexer.mll','number_lexer.mll','simple_lexer_test.mll
     var targets = collectTarget(sources)
     var output = generateNinja(depsMap, targets,ninjaCwd,[stdlibTarget])
     writeFile(
-        path.join(testDir,'build.ninja'),
+        path.join(testDir, ninjaOutput),
         templateTestRules + output.join('\n') + '\n'
     )
 }
@@ -1031,15 +1035,16 @@ function sortFilesByDeps(domain, dependency_graph){
 }
 
 
-
+var emptyCount = 2 
 if (require.main === module) {
     if(process.argv.includes('-v6')){
         version6 = true
+        emptyCount ++
     }
     if(process.argv.includes('-check')){
         checkEffect()
     }
-    if (process.argv.length === 2) {
+    if (process.argv.length === emptyCount) {
         updateDev()
         updateRelease()
 
@@ -1070,12 +1075,13 @@ function updateRelease(){
 function updateDev(){
     runtimeNinja()
     if (version6) {
-        stdlib406Ninja()
+        stdlib406Ninja() // TODO dispatch internally       
     } else {
         stdlib402Ninja()
     }
+    testNinja(version6)
     othersNinja()
-    testNinja()
+    
     nativeNinja(version6)
 }
 exports.updateDev = updateDev
