@@ -2,7 +2,7 @@
 ocamllex = ocamlopt.opt
 ocamlopt = ocamlopt.opt
 stdlib = stdlib-406
-subninja compiler.ninja
+subninja compiler406.ninja
 
 # it works but create unnecessary diffs
 # and we are actually snapshoting over 4.02

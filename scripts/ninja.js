@@ -25,6 +25,7 @@ var runtimeTarget = pseudoTarget('runtime')
 var othersTarget = pseudoTarget('others')
 var stdlibTarget = pseudoTarget('$stdlib')
 
+var version6 = false
 /**
  * Note this file is not used in ninja file
  * It is used to generate ninja file
@@ -32,8 +33,11 @@ var stdlibTarget = pseudoTarget('$stdlib')
  * Note ocamldep.opt has built-in macro handling OCAML_VERSION
  */
 var getOcamldepFile = ()=>{
-    return path.join(__dirname,'..','vendor','ocaml','bin','ocamldep.opt')
-    // return `ocamldep.opt`
+    if(version6){
+        return `ocamldep.opt`
+    } else{
+        return path.join(__dirname,'..','vendor','ocaml','bin','ocamldep.opt')
+    }
 }
 
 
@@ -1029,6 +1033,9 @@ function sortFilesByDeps(domain, dependency_graph){
 
 
 if (require.main === module) {
+    if(process.argv.includes('-v6')){
+        version6 = true
+    }
     if(process.argv.includes('-check')){
         checkEffect()
     }
@@ -1052,18 +1059,24 @@ if (require.main === module) {
 }
 function updateRelease(){
     runtimeNinja(false)
-    stdlib402Ninja(false)
-    // stdlib406Ninja(false)
+    if(version6){
+        stdlib406Ninja(false)
+    } else{
+        stdlib402Ninja(false)
+    }        
     othersNinja(false)
 }
 
 function updateDev(){
     runtimeNinja()
-    stdlib402Ninja()
-    // stdlib406Ninja()
+    if (version6) {
+        stdlib406Ninja()
+    } else {
+        stdlib402Ninja()
+    }
     othersNinja()
     testNinja()
-    nativeNinja()
+    nativeNinja(version6)
 }
 exports.updateDev = updateDev
 exports.updateRelease = updateRelease
@@ -1103,7 +1116,8 @@ function setSortedToString(xs){
  * Since it will remove generated ml file which has
  * an effect on depfile
  */
-function nativeNinja() {
+function nativeNinja(version6=false) {
+        var ninjaOutput = version6 ? 'compiler406.ninja' : 'compiler402.ninja'
         var sourceDirs = ['stubs','ext', 'common', 'syntax', 'depends', 'core', 'super_errors', 'outcome_printer', 'bsb', 'ounit','ounit_tests','main']
         var includes = sourceDirs.map(x=>`-I ${x}`).join(' ')
 
@@ -1266,7 +1280,7 @@ build ../odoc_gen/generator.cmxs : mk_shared ../odoc_gen/generator.mli ../odoc_g
         stmts.push(`build ${name}/${name}.cmxa : archive ${output.join(' ')}`)
     })
 
-    writeFile(path.join(jscompDir, 'compiler.ninja'),
+    writeFile(path.join(jscompDir, ninjaOutput),
         templateNative +
         stmts.join('\n') +
         '\n'
