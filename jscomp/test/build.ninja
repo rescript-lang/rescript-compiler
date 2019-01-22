@@ -7,7 +7,7 @@ rule cc
 
 
 rule mll
-    command = ../vendor/ocaml/bin/ocamllex.opt $in
+    command = $ocamllex $in
     generator = true
 
 build test/arith_lexer.ml : mll test/arith_lexer.mll
