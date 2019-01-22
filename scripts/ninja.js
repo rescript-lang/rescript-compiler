@@ -725,7 +725,7 @@ ${ninjaQuickBuidList([
         'cc', ninjaCwd, bsc_builtin_overrides, [], externalDeps],
         // we make it still depends on external
         // to enjoy free ride on dev config for compiler-deps
-        // May add stdlib-402/build.ninja release.ninja later
+        
     ['camlinternalFormatBasics.cmj', 'camlinternalFormatBasics.ml',
         'cc', ninjaCwd, bsc_builtin_overrides, 'camlinternalFormatBasics.cmi',externalDeps],
     ['pervasives.cmj', 'pervasives.ml',
@@ -796,7 +796,7 @@ async function testNinja(){
     var ninjaCwd = `test`
     var templateTestRules = `
 ${BSC_COMPILER}
-bsc_flags = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:jscomp/test  -w -40-52 -warn-error A+8-3-30-26+101-102-103-104-52 -bin-annot -I ./runtime -I ./stdlib-402 -I ./others
+bsc_flags = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:jscomp/test  -w -40-52 -warn-error A+8-3-30-26+101-102-103-104-52 -bin-annot -I runtime -I $stdlib -I others
 rule cc
     command = $bsc -bs-cmi -bs-cmj $bsc_flags -bs-no-implicit-include -I ${ninjaCwd} -c $in
     description = $in -> $out
