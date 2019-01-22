@@ -79,13 +79,14 @@ external counters : unit -> (float * float * float) = "caml_gc_counters"
 external minor_words : unit -> (float [@unboxed])
   = "caml_gc_minor_words" "caml_gc_minor_words_unboxed"
 #if BS then
-let gc () : control =   {
+let get () : control =   {
    minor_heap_size = 0; 
    major_heap_increment = 0;
    space_overhead = 0;
    verbose = 0;
    max_overhead = 0;
    stack_limit = 0;
+   window_size = 0;
    allocation_policy = 0;}
 #else  
 external get : unit -> control = "caml_gc_get"

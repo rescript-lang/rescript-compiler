@@ -1,3 +1,4 @@
+[@@@ocaml.warning "-a"]
 module Config : sig 
 #1 "config.mli"
 (***********************************************************************)
@@ -45125,6 +45126,8 @@ and type_label_access env loc srecord lid =
    (Handling of * modifiers contributed by Thorsten Ohl.) *)
 
 and type_format loc str env =
+#if 1 then assert false
+#else 
   let loc = {loc with Location.loc_ghost = true} in
   try
     CamlinternalFormatBasics.(CamlinternalFormat.(
@@ -45363,7 +45366,7 @@ and type_format loc str env =
     ))
   with Failure msg ->
     raise (Error (loc, env, Invalid_format msg))
-
+#end
 and type_label_exp create env loc ty_expected
           (lid, label, sarg) =
   (* Here also ty_expected may be at generic_level *)

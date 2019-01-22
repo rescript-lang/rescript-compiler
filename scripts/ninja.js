@@ -29,9 +29,11 @@ var stdlibTarget = pseudoTarget('$stdlib')
  * Note this file is not used in ninja file
  * It is used to generate ninja file
  * @returns {string}
+ * Note ocamldep.opt has built-in macro handling OCAML_VERSION
  */
 var getOcamldepFile = ()=>{
     return path.join(__dirname,'..','vendor','ocaml','bin','ocamldep.opt')
+    // return `ocamldep.opt`
 }
 
 
@@ -1051,12 +1053,14 @@ if (require.main === module) {
 function updateRelease(){
     runtimeNinja(false)
     stdlib402Ninja(false)
+    // stdlib406Ninja(false)
     othersNinja(false)
 }
 
 function updateDev(){
     runtimeNinja()
     stdlib402Ninja()
+    // stdlib406Ninja()
     othersNinja()
     testNinja()
     nativeNinja()
