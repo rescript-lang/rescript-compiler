@@ -11,8 +11,8 @@ var othersDir = path.join(jscompDir,'others')
 var testDir = path.join(jscompDir,'test')
 
 var jsDir = path.join(__dirname, '..', 'lib', 'js')
-var stdlibVersion = 'stdlib-402'
-var stdlibDir = path.join(jscompDir,stdlibVersion)
+
+
 
 var runtimeFiles = fs.readdirSync(runtimeDir, 'ascii')
 var runtimeMlFiles = runtimeFiles.filter(x=>!x.startsWith("bs_stdlib_mini") && x.endsWith('.ml') && x !== "js.ml")
@@ -703,9 +703,15 @@ ${ninjaQuickBuidList([
         templateOthersRules + jsOutput.join('\n') + '\n' + beltOutput.join('\n') + '\n'
     )
 }
-
-async function stdlibNinja(devmode=true){
-    var ninjaCwd = stdlibVersion
+/**
+ * 
+ * @param {boolean} devmode 
+ * generate build.ninja/release.ninja for stdlib-402 
+ */
+async function stdlib402Ninja(devmode=true){
+    var stdlib402Version = 'stdlib-402'
+    var ninjaCwd = stdlib402Version
+    var stdlib402Dir = path.join(jscompDir,stdlib402Version)
     var externalDeps = [othersTarget]
     var ninjaOutput = devmode? 'build.ninja' : 'release.ninja'
     var bsc_flags = 'bsc_flags'
@@ -734,14 +740,14 @@ ${ninjaQuickBuidList([
       'cc', ninjaCwd, bsc_builtin_overrides, 'camlinternalFormatBasics.cmj', externalDeps]
 ])}
 `
-    var stdlibDirFiles = fs.readdirSync(stdlibDir,'ascii')
+    var stdlibDirFiles = fs.readdirSync(stdlib402Dir,'ascii')
     var sources = stdlibDirFiles.filter(x=>{
         return !(x.startsWith('camlinternalFormatBasics')) &&
             !(x.startsWith('pervasives')) &&
             (x.endsWith('.ml') || x.endsWith('.mli'))
     })
 
-    var depsMap  = await ocamlDepForBscAsync(sources, stdlibDir, new Map)
+    var depsMap  = await ocamlDepForBscAsync(sources, stdlib402Dir, new Map)
     var targets = collectTarget(sources)
     var allTargets = scanFileTargets(targets,
             ['camlinternalFormatBasics.cmi','camlinternalFormatBasics.cmj',
@@ -759,13 +765,85 @@ ${ninjaQuickBuidList([
         }
     })
     var output = generateNinja(depsMap,targets,ninjaCwd, externalDeps)
-    output.push(phony(stdlibTarget,fileTargets(allTargets),stdlibVersion))
+    output.push(phony(stdlibTarget,fileTargets(allTargets),ninjaCwd))
 
     writeFile(
-        path.join(stdlibDir,ninjaOutput),
+        path.join(stdlib402Dir,ninjaOutput),
         templateStdlibRules  + output.join('\n') + '\n'
     )
 }
+
+
+/**
+ * 
+ * @param {boolean} devmode 
+ * generate build.ninja/release.ninja for stdlib-406 
+ */
+async function stdlib406Ninja(devmode=true){
+    var stdlib406Version = 'stdlib-406'
+    var ninjaCwd = stdlib406Version
+    var stdlib402Dir = path.join(jscompDir,ninjaCwd)
+    var externalDeps = [othersTarget]
+    var ninjaOutput = devmode? 'build.ninja' : 'release.ninja'
+    var bsc_flags = 'bsc_flags'
+    /**
+     * @type [string,string][]
+     */
+    var bsc_builtin_overrides = [[bsc_flags,`$${bsc_flags} -nopervasives`]]
+    var templateStdlibRules = `
+${BSC_COMPILER}
+${bsc_flags} = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-no-check-div-by-zero -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js -bs-package-output amdjs:lib/amdjs -bs-package-output es6:lib/es6  -nostdlib -warn-error A -w -40-49-103 -bin-annot  -bs-no-warn-unimplemented-external  -I ./runtime  -I ./others
+rule cc
+    command = $bsc -bs-cmi -bs-cmj $${bsc_flags} -bs-no-implicit-include  -I ${ninjaCwd} -c $in
+    description = $in -> $out
+
+${ninjaQuickBuidList([
+    ['camlinternalFormatBasics.cmi', 'camlinternalFormatBasics.mli',
+        'cc', ninjaCwd, bsc_builtin_overrides, [], externalDeps],
+        // we make it still depends on external
+        // to enjoy free ride on dev config for compiler-deps
+        
+    ['camlinternalFormatBasics.cmj', 'camlinternalFormatBasics.ml',
+        'cc', ninjaCwd, bsc_builtin_overrides, 'camlinternalFormatBasics.cmi',externalDeps],
+    ['pervasives.cmj', 'pervasives.ml',
+        'cc',ninjaCwd, bsc_builtin_overrides,'pervasives.cmi', externalDeps],
+    [ 'pervasives.cmi', 'pervasives.mli',
+      'cc', ninjaCwd, bsc_builtin_overrides, 'camlinternalFormatBasics.cmj', externalDeps]
+])}
+`
+    var stdlibDirFiles = fs.readdirSync(stdlib402Dir,'ascii')
+    var sources = stdlibDirFiles.filter(x=>{
+        return !(x.startsWith('camlinternalFormatBasics')) &&
+            !(x.startsWith('pervasives')) &&
+            (x.endsWith('.ml') || x.endsWith('.mli'))
+    })
+
+    var depsMap  = await ocamlDepForBscAsync(sources, stdlib402Dir, new Map)
+    var targets = collectTarget(sources)
+    var allTargets = scanFileTargets(targets,
+            ['camlinternalFormatBasics.cmi','camlinternalFormatBasics.cmj',
+            'pervasives.cmi', 'pervasives.cmj'
+        ])
+    targets.forEach((ext,mod)=>{
+        switch(ext){
+            case 'HAS_MLI':
+            case 'HAS_BOTH':
+                updateDepsKVByFile(mod+".cmi", 'pervasives.cmj',depsMap)
+                break
+            case 'HAS_ML':
+                updateDepsKVByFile(mod+".cmj", 'pervasives.cmj', depsMap)
+                break
+        }
+    })
+    var output = generateNinja(depsMap,targets,ninjaCwd, externalDeps)
+    output.push(phony(stdlibTarget,fileTargets(allTargets),ninjaCwd))
+
+    writeFile(
+        path.join(stdlib402Dir,ninjaOutput),
+        templateStdlibRules  + output.join('\n') + '\n'
+    )
+}
+
 /**
  *
  * @param {string} text
@@ -972,13 +1050,13 @@ if (require.main === module) {
 }
 function updateRelease(){
     runtimeNinja(false)
-    stdlibNinja(false)
+    stdlib402Ninja(false)
     othersNinja(false)
 }
 
 function updateDev(){
     runtimeNinja()
-    stdlibNinja()
+    stdlib402Ninja()
     othersNinja()
     testNinja()
     nativeNinja()
