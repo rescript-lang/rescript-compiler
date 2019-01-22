@@ -1,11 +1,12 @@
 
 ocamlopt = ../vendor/ocaml/bin/ocamlopt.opt
 ocamllex = ../vendor/ocaml/bin/ocamllex.opt
-subninja compiler.ninja
+stdlib = stdlib-402
+subninja compiler402.ninja
 subninja snapshot.ninja
 subninja runtime/build.ninja
 subninja others/build.ninja
-subninja stdlib-402/build.ninja
+subninja $stdlib/build.ninja
 subninja test/build.ninja
-build all: phony runtime others stdlib-402 test
+build all: phony runtime others $stdlib test
 

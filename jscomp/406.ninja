@@ -1,11 +1,15 @@
 
 ocamllex = ocamlopt.opt
 ocamlopt = ocamlopt.opt
-subninja compiler.ninja
+stdlib = stdlib-406
+subninja compiler406.ninja
+
+# it works but create unnecessary diffs
+# and we are actually snapshoting over 4.02
 # subninja snapshot.ninja
-# subninja runtime/build.ninja
-# subninja others/build.ninja
-# subninja stdlib-402/build.ninja
-# subninja test/build.ninja
-# build all: phony runtime others stdlib-402 test
+subninja runtime/build.ninja
+subninja others/build.ninja
+subninja $stdlib/build.ninja
+subninja test/build406.ninja
+build all: phony runtime others $stdlib test
 

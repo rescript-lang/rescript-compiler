@@ -1,7 +1,7 @@
-
+stdlib = stdlib-402
 subninja runtime/release.ninja
 subninja others/release.ninja
-subninja stdlib-402/release.ninja
+subninja $stdlib/release.ninja
 
-build all: phony runtime others stdlib-402
+build all: phony runtime others $stdlib
 
