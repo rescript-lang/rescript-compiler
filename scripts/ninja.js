@@ -23,7 +23,7 @@ var runtimeJsFiles = [...new Set(runtimeSourceFiles.map(baseName))]
 var js_package = pseudoTarget('js_pkg')
 var runtimeTarget = pseudoTarget('runtime')
 var othersTarget = pseudoTarget('others')
-var stdlibTarget = pseudoTarget(stdlibVersion)
+var stdlibTarget = pseudoTarget('$stdlib')
 
 /**
  * Note this file is not used in ninja file
