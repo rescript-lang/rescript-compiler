@@ -163,12 +163,16 @@ external unicode : t -> bool = "" [@@bs.get]
  *)
 
 let re = [%re "/quick\s(brown).+?(jumps)/ig" in
-let result = re |> Js.Re.exec "The Quick Brown Fox Jumps Over The Lazy Dog"
+let result = re |. Js.Re.execRe "The Quick Brown Fox Jumps Over The Lazy Dog"
 ]}
 
 @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/exec> MDN
 *)
-external exec : string -> result option = "" [@@bs.send.pipe: t] [@@bs.return {null_to_opt}]
+external execRe : t -> string -> result option = "exec" [@@bs.send] [@@bs.return null_to_opt]
+
+(** @deprecated please use {!execRe} instead *)
+external exec : string -> result option = "" [@@bs.send.pipe: t] [@@bs.return null_to_opt]
+[@@ocaml.deprecated "please use execRe instead"]
 
 (** tests whether the given RegExp object will match a given string
 
@@ -179,13 +183,19 @@ external exec : string -> result option = "" [@@bs.send.pipe: t] [@@bs.return {n
 
 let str = "hello world!"
 
-let startsWith substring target =
+let startsWith target substring =
   Js.Re.fromString ("^" ^ substring)
-    |> Js.Re.test target
+    |. Js.Re.testRe target
 
-let () = Js.log (str |> startsWith "hello") (* prints "true" *)
+let () = Js.log (str |. startsWith "hello") (* prints "true" *)
 ]}
 
 @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/test> MDN
 *)
+external testRe : t -> string -> bool = "test" [@@bs.send]
+
+(**
+  @deprecated please use {!testRe} instead
+*)
 external test : string -> bool = "" [@@bs.send.pipe: t]
+[@@ocaml.deprecated "Please use testRe instead"]
