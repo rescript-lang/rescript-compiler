@@ -141,7 +141,6 @@ clean::
 	belt_MutableMapString.mli belt_MutableMapString.ml\
 	belt_MutableMapInt.mli belt_MutableMapInt.ml
 
-ifndef BS_RELEASE_BUILD
 belt_HashSetString.ml: ../others/hashset.cppo.ml
 	cppo -D BS_NATIVE -D TYPE_STRING $^ > $@
 belt_HashSetInt.ml: ../others/hashset.cppo.ml
@@ -210,7 +209,6 @@ belt_SortArrayInt.mli : ../others/sort.cppo.mli
 	cppo -D BS_NATIVE -D TYPE_INT $^ > $@
 belt_gSortArrayString.mli : ../others/sort.cppo.mli
 	cppo -D BS_NATIVE -D TYPE_STRING $^ > $@
-endif	
 
 .mli.cmi:
 	BS_NATIVE=true $(COMPILER) $(INCLUDES) -pp $(BSPP) $(COMPFLAGS) -o $@ -c $<
