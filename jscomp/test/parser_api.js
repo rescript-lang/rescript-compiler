@@ -34,7 +34,7 @@ var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 var Caml_missing_polyfill = require("../../lib/js/caml_missing_polyfill.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
-var standard_library_default = "/Users/hongbozhang/git/bucklescript/vendor/ocaml/lib/ocaml";
+var standard_library_default = "/Users/chenglou/Github/bucklescript/vendor/ocaml/lib/ocaml";
 
 var standard_library;
 
@@ -49,7 +49,7 @@ catch (exn){
   }
 }
 
-var standard_runtime = "/Users/hongbozhang/git/bucklescript/vendor/ocaml/bin/ocamlrun";
+var standard_runtime = "/Users/chenglou/Github/bucklescript/vendor/ocaml/bin/ocamlrun";
 
 var ccomp_type = "cc";
 
@@ -107,9 +107,9 @@ var ext_lib = ".a";
 
 var ext_dll = ".so";
 
-var host = "x86_64-apple-darwin17.7.0";
+var host = "x86_64-apple-darwin18.2.0";
 
-var target = "x86_64-apple-darwin17.7.0";
+var target = "x86_64-apple-darwin18.2.0";
 
 var default_executable_name = "a.out";
 
@@ -12639,16 +12639,11 @@ function directive_parse(token_with_comments, lexbuf) {
                               ];
                         }), /* Dir_float */Block.__(1, [Caml_format.caml_float_of_string(curr_token[0])]));
         case 7 : 
+            var v$1 = curr_token[0];
             return token_op(calc, (function (e) {
-                          throw [
-                                $$Error$2,
-                                /* Conditional_expr_expected_type */Block.__(7, [
-                                    /* Dir_type_bool */0,
-                                    /* Dir_type_int */2
-                                  ]),
-                                curr_loc
-                              ];
-                        }), /* Dir_int */Block.__(2, [curr_token[0]]));
+                          push(e);
+                          return v$1 !== 0;
+                        }), /* Dir_int */Block.__(2, [v$1]));
         case 11 : 
             var r = curr_token[0];
             var exit = 0;
@@ -13960,7 +13955,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
                   Caml_builtin_exceptions.assert_failure,
                   /* tuple */[
                     "lexer.mll",
-                    989,
+                    992,
                     16
                   ]
                 ];
@@ -13997,7 +13992,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
                           Caml_builtin_exceptions.assert_failure,
                           /* tuple */[
                             "lexer.mll",
-                            1003,
+                            1006,
                             18
                           ]
                         ];
@@ -14048,7 +14043,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
                           Caml_builtin_exceptions.assert_failure,
                           /* tuple */[
                             "lexer.mll",
-                            1023,
+                            1026,
                             18
                           ]
                         ];
@@ -14087,7 +14082,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
                   Caml_builtin_exceptions.assert_failure,
                   /* tuple */[
                     "lexer.mll",
-                    1053,
+                    1056,
                     16
                   ]
                 ];
