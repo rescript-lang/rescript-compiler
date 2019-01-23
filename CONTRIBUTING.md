@@ -36,8 +36,8 @@ We use `../scripts/ninja.js` to generate `jscomp/build.ninja` to drive the whole
 
 ## Test against OCaml 4.06
 
-Clone and install our patched [OCaml 4.06](https://github.com/bucklescript/ocaml). 
-Make sure `ocamlopt.opt` is in PATH.
+Clone and install our patched [OCaml 4.06](https://github.com/bucklescript/ocaml), please refer  [install instructions](https://github.com/BuckleScript/ocaml/blob/4.06/INSTALL.adoc) for how to install. 
+After installation, make sure the installed `ocamlopt.opt` is in PATH.
 
 run `../scripts/ninja.js -v6` to generate ninja file accordingly and `ninja -C jscomp -f 406.ninja`
 
