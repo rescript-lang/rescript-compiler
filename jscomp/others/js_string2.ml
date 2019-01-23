@@ -340,9 +340,9 @@ match begins, and the whole string being matched
 let str = "beautiful vowels"
 let re = [%re "/[aeiou]/g"]
 let matchFn matchPart offset wholeString =
-  Js.String.toUpperCase matchPart
+  Js.String2.toUpperCase matchPart
 
-let replaced = Js.String.unsafeReplaceBy0 str re matchFn
+let replaced = Js.String2.unsafeReplaceBy0 str re matchFn
 
 let () = Js.log replaced (* prints "bEAUtifUl vOwEls" *)
 ]}
@@ -362,7 +362,7 @@ let re = [%re "/increment (\\d+)/g"]
 let matchFn matchPart p1 offset wholeString =
   wholeString ^ " is " ^ (string_of_int ((int_of_string p1) + 1))
 
-let replaced = Js.String.unsafeReplaceBy1 str re matchFn
+let replaced = Js.String2.unsafeReplaceBy1 str re matchFn
 
 let () = Js.log replaced (* prints "increment 23 is 24" *)
 ]}
@@ -382,7 +382,7 @@ let re = [%re "/(\\d+) times (\\d+)/"]
 let matchFn matchPart p1 p2 offset wholeString =
   string_of_int ((int_of_string p1) * (int_of_string p2))
 
-let replaced = Js.String.unsafeReplaceBy2 str re matchFn
+let replaced = Js.String2.unsafeReplaceBy2 str re matchFn
 
 let () = Js.log replaced (* prints "42" *)
 ]}

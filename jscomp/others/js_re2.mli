@@ -33,7 +33,7 @@ flag set will modify the {! lastIndex} property when the RegExp object is used,
 and subsequent uses will ocntinue the search from the previous {! lastIndex}.
 
 @example {[
-let maybeMatches = "banana" |> Js.String.match_ [\[%re "/na+/g"\]]
+let maybeMatches = Js.String2.match_ "banana" [\[%re "/na+/g"\]]
 ]}
 
 @see
@@ -54,12 +54,6 @@ type result
 (** an array of the match and captures, the first is the full match and the remaining are the substring captures *)
 external captures : result -> string Js.nullable array = "%identity"
 
-(** an array of the matches, the first is the full match and the remaining are the substring matches
- *  @deprecated Use [captures] instead.
- *)
-external matches : result -> string array = "%identity"
-[@@deprecated "Use Js.Re.captures instead"]
-
 (** 0-based index of the match in the input string *)
 external index : result -> int = "" [@@bs.get]
 
@@ -76,10 +70,10 @@ Regex literals ([\[%re "/.../"\]]) should generally be preferred, but
 (* A function that extracts the content of the first element with the given tag *)
 
 let contentOf tag xmlString =
-  Js.Re.fromString ("<" ^ tag ^ ">(.*?)<\\/" ^ tag ^">")
-    |> Js.Re.exec xmlString
-    |> function
-      | Some result -> Js.Nullable.to_opt (Js.Re.captures result).(1)
+  Js.Re2.fromString ("<" ^ tag ^ ">(.*?)<\\/" ^ tag ^">")
+    |. Js.Re2.exec xmlString
+    |. function
+      | Some result -> Js.Nullable.toOption (Js.Re2.captures result).(1)
       | None -> None
 ]}
 *)
@@ -124,11 +118,11 @@ let str = "abbcdefabh" in
 
 let break = ref false in
 while not !break do
-  match re |> Js.Re.exec str with
+  match Js.Re2.exec re str with
   | None -> break := true
   | Some result ->
-    Js.Nullable.iter (Js.Re.captures result).(0) ((fun match_ ->
-      let next = string_of_int (Js.Re.lastIndex re) in
+    Js.Nullable.iter (Js.Re2.captures result).(0) ((fun match_ ->
+      let next = string_of_int (Js.Re2.lastIndex re) in
       Js.log ("Found " ^ match_ ^ ". Next match starts at " ^ next)))
 done
 ]}
@@ -163,7 +157,7 @@ external unicode : t -> bool = "" [@@bs.get]
  *)
 
 let re = [%re "/quick\s(brown).+?(jumps)/ig" in
-let result = re |> Js.Re.exec "The Quick Brown Fox Jumps Over The Lazy Dog"
+let result = Js.Re2.exec re "The Quick Brown Fox Jumps Over The Lazy Dog"
 ]}
 
 @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/exec> MDN
@@ -175,15 +169,15 @@ external exec : t -> string -> result option = "" [@@bs.send] [@@bs.return {null
 {b returns} [true] if a match is found, [false] otherwise
 
 @example {[
-(* A simple implementation of Js.String.startsWith *)
+(* A simple implementation of Js.String2.startsWith *)
 
 let str = "hello world!"
 
-let startsWith substring target =
-  Js.Re.fromString ("^" ^ substring)
-    |> Js.Re.test target
+let startsWith target substring =
+  Js.Re2.fromString ("^" ^ substring)
+    |. Js.Re2.test target
 
-let () = Js.log (str |> startsWith "hello") (* prints "true" *)
+let () = Js.log (str |. startsWith "hello") (* prints "true" *)
 ]}
 
 @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/test> MDN

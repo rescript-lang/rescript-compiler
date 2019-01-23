@@ -79,7 +79,7 @@ let contentOf tag xmlString =
   Js.Re.fromString ("<" ^ tag ^ ">(.*?)<\\/" ^ tag ^">")
     |> Js.Re.exec xmlString
     |> function
-      | Some result -> Js.Nullable.to_opt (Js.Re.captures result).(1)
+      | Some result -> Js.Nullable.toOption (Js.Re.captures result).(1)
       | None -> None
 ]}
 *)
