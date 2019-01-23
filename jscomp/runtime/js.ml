@@ -226,6 +226,9 @@ module Array2 = Js_array2
 module String = Js_string
 (** Provide bindings to JS string *)
 
+module String2 = Js_string2
+(** Provide bindings to JS string *)
+
 module Re = Js_re
 (** Provide bindings to Js regex expression *)
 
