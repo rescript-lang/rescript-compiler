@@ -1,5 +1,5 @@
 [@@@ocaml.warning "-a"]
-module Config : sig 
+module Config : sig
 #1 "config.mli"
 (***********************************************************************)
 (*                                                                     *)
@@ -161,10 +161,10 @@ let version = Sys.ocaml_version
 let standard_library_default = "/Users/hongbozhang/git/bucklescript/vendor/ocaml/lib/ocaml"
 
 let standard_library =
- 
-  try 
+
+  try
     Sys.getenv "BSLIB"
-  with Not_found -> 
+  with Not_found ->
 
     standard_library_default
 
@@ -277,7 +277,7 @@ let print_config oc =
 ;;
 
 end
-module Clflags : sig 
+module Clflags : sig
 #1 "clflags.mli"
 (***********************************************************************)
 (*                                                                     *)
@@ -380,11 +380,11 @@ val unsafe_string : bool ref
 val opaque : bool ref
 
 
- 
+
 type mli_status = Mli_na | Mli_exists | Mli_non_exists
 val no_implicit_current_dir : bool ref
-val assume_no_mli : mli_status ref 
-val record_event_when_debug : bool ref 
+val assume_no_mli : mli_status ref
+val record_event_when_debug : bool ref
 val bs_vscode : bool
 val dont_record_crc_unit : string option ref
 val bs_only : bool ref (* set true on bs top*)
@@ -515,14 +515,14 @@ let keep_locs = ref false              (* -keep-locs *)
 let unsafe_string = ref true;;         (* -safe-string / -unsafe-string *)
 
 
- 
+
 type mli_status = Mli_na | Mli_exists | Mli_non_exists
 let no_implicit_current_dir = ref false
 let assume_no_mli = ref Mli_na
 let record_event_when_debug = ref true (* turned off in BuckleScript*)
-let bs_vscode = 
+let bs_vscode =
     try ignore @@ Sys.getenv "BS_VSCODE" ; true with _ -> false
-    (* We get it from environment variable mostly due to 
+    (* We get it from environment variable mostly due to
        we don't want to rebuild when flip on or off
     *)
 let dont_record_crc_unit : string option ref = ref None
@@ -540,7 +540,7 @@ let color = ref None ;; (* -color *)
 
 
 end
-module Misc : sig 
+module Misc : sig
 #1 "misc.mli"
 (***********************************************************************)
 (*                                                                     *)
@@ -1228,7 +1228,7 @@ module Color = struct
   (* external isatty : out_channel -> bool = "caml_sys_isatty" *)
 
   (* reasonable heuristic on whether colors should be enabled *)
-   let should_enable_color () = false  
+   let should_enable_color () = false
 (*    let term = try Sys.getenv "TERM" with Not_found -> "" in
     term <> "dumb"
     && term <> "" *)
@@ -1254,7 +1254,7 @@ end
 
 
 end
-module Terminfo : sig 
+module Terminfo : sig
 #1 "terminfo.mli"
 (***********************************************************************)
 (*                                                                     *)
@@ -1307,7 +1307,7 @@ external standout : bool -> unit = "caml_terminfo_standout";;
 external resume : int -> unit = "caml_terminfo_resume";;
 
 end
-module Warnings : sig 
+module Warnings : sig
 #1 "warnings.mli"
 (***********************************************************************)
 (*                                                                     *)
@@ -1402,7 +1402,7 @@ val backup: unit -> state
 val restore: state -> unit
 
 
-val message : t -> string 
+val message : t -> string
 val number: t -> int
 val super_print : (t -> string) -> formatter -> t -> unit;;
 
@@ -1552,7 +1552,7 @@ let number = function
 
 let last_warning_number = 104
 (* Must be the max number returned by the [number] function. *)
-let letter_all = 
+let letter_all =
   let rec loop i = if i = 0 then [] else i :: loop (i - 1) in
   loop last_warning_number
 
@@ -1819,7 +1819,7 @@ let message = function
   | Bs_ffi_warning s ->
       "BuckleScript FFI warning: " ^ s
   | Bs_derive_warning s ->
-      "BuckleScript bs.deriving warning: " ^ s 
+      "BuckleScript bs.deriving warning: " ^ s
 ;;
 
 let nerrors = ref 0;;
@@ -1938,7 +1938,7 @@ let help_warnings () =
 ;;
 
 end
-module Location : sig 
+module Location : sig
 #1 "location.mli"
 (***********************************************************************)
 (*                                                                     *)
@@ -2047,7 +2047,7 @@ val print_error_prefix: formatter -> unit -> unit
 
 val error: ?loc:t -> ?sub:error list -> ?if_highlight:string -> string -> error
 
- 
+
 val pp_ksprintf : ?before:(formatter -> unit) -> (string -> 'a) -> ('b, formatter, unit, 'a) format4 -> 'b
 
 
@@ -2342,10 +2342,10 @@ let setup_colors () =
 let print_loc ppf loc =
   setup_colors ();
   let (file, line, startchar) = get_pos_info loc.loc_start in
- 
-  let startchar = 
-    if Clflags.bs_vscode then startchar + 1 else startchar in 
-    
+
+  let startchar =
+    if Clflags.bs_vscode then startchar + 1 else startchar in
+
   let endchar = loc.loc_end.pos_cnum - loc.loc_start.pos_cnum + startchar in
   if file = "//toplevel//" then begin
     if highlight_locations ppf [loc] then () else
@@ -2589,7 +2589,7 @@ type variance =
   | Invariant
 
 end
-module Ident : sig 
+module Ident : sig
 #1 "ident.mli"
 (***********************************************************************)
 (*                                                                     *)
@@ -2884,7 +2884,7 @@ let make_key_generator () =
     { id with name = key_name; stamp = stamp; }
 
 end
-module Path : sig 
+module Path : sig
 #1 "path.mli"
 (***********************************************************************)
 (*                                                                     *)
@@ -2975,7 +2975,7 @@ let rec last = function
   | Papply(_, p) -> last p
 
 end
-module Longident : sig 
+module Longident : sig
 #1 "longident.mli"
 (***********************************************************************)
 (*                                                                     *)
@@ -3880,7 +3880,7 @@ and directive_argument =
   | Pdir_bool of bool
 
 end
-module Primitive : sig 
+module Primitive : sig
 #1 "primitive.mli"
 (***********************************************************************)
 (*                                                                     *)
@@ -3976,7 +3976,7 @@ let byte_name p =
   p.prim_name
 
 end
-module Types : sig 
+module Types : sig
 #1 "types.mli"
 (***********************************************************************)
 (*                                                                     *)
@@ -4587,17 +4587,17 @@ and ext_status =
   | Text_next                      (* not first constructor of an extension *)
   | Text_exception                 (* an exception *)
 
-let equal_tag t1 t2 = 
+let equal_tag t1 t2 =
    match (t1, t2) with
    | Cstr_constant i1, Cstr_constant i2 -> i2 = i1
    | Cstr_block i1, Cstr_block i2 -> i2 = i1
-   | Cstr_extension (path1, b1), Cstr_extension (path2, b2) -> 
+   | Cstr_extension (path1, b1), Cstr_extension (path2, b2) ->
        Path.same path1 path2 && b1 = b2
    | (Cstr_constant _|Cstr_block _|Cstr_extension _), _ -> false
- 
+
 
 end
-module Btype : sig 
+module Btype : sig
 #1 "btype.mli"
 (***********************************************************************)
 (*                                                                     *)
@@ -5481,7 +5481,7 @@ let backtrack (changes, old) =
       Weak.set trail 0 (Some changes)
 
 end
-module Cmi_format : sig 
+module Cmi_format : sig
 #1 "cmi_format.mli"
 (***********************************************************************)
 (*                                                                     *)
@@ -5632,7 +5632,7 @@ let () =
     )
 
 end
-module Consistbl : sig 
+module Consistbl : sig
 #1 "consistbl.mli"
 (***********************************************************************)
 (*                                                                     *)
@@ -5761,7 +5761,7 @@ let filter p tbl =
     !to_remove
 
 end
-module Datarepr : sig 
+module Datarepr : sig
 #1 "datarepr.mli"
 (***********************************************************************)
 (*                                                                     *)
@@ -5846,7 +5846,7 @@ let free_vars ty =
   !ret
 
 let internal_optional = "internal.optional"
-  
+
 let optional_shape : Parsetree.attribute =
   {txt = internal_optional ; loc = Location.none}, PStr []
 
@@ -5854,7 +5854,7 @@ let constructor_has_optional_shape ({cstr_attributes = attrs} : constructor_desc
   List.exists (fun (x,_) -> x.txt = internal_optional) attrs
 
 
-    
+
 let constructor_descrs ty_res cstrs priv =
   let num_consts = ref 0 and num_nonconsts = ref 0  and num_normal = ref 0 in
   List.iter
@@ -5900,7 +5900,7 @@ let constructor_descrs ty_res cstrs priv =
             cstr_attributes = cd_attributes;
           } in
         (cd_id, cstr) :: descr_rem in
-  let result = describe_constructors 0 0 cstrs in 
+  let result = describe_constructors 0 0 cstrs in
   match result with
   | (
     [ ({name = "None"} as a_id, ({cstr_args = []} as a_descr) )  ;
@@ -6002,7 +6002,7 @@ let find_constr_by_tag tag cstrlist =
   find_constr tag 0 0 cstrlist
 
 end
-module Predef : sig 
+module Predef : sig
 #1 "predef.mli"
 (***********************************************************************)
 (*                                                                     *)
@@ -6310,7 +6310,7 @@ let _ = Ident.set_current_time 999
 let builtin_idents = List.rev !builtin_idents
 
 end
-module Docstrings : sig 
+module Docstrings : sig
 #1 "docstrings.mli"
 (***********************************************************************)
 (*                                                                     *)
@@ -6809,7 +6809,7 @@ let init () =
 
 
 end
-module Ast_helper : sig 
+module Ast_helper : sig
 #1 "ast_helper.mli"
 (***********************************************************************)
 (*                                                                     *)
@@ -7688,7 +7688,7 @@ end
 
 
 end
-module Ast_mapper : sig 
+module Ast_mapper : sig
 #1 "ast_mapper.mli"
 (***********************************************************************)
 (*                                                                     *)
@@ -8794,7 +8794,7 @@ let register_function = ref (fun _name f -> run_main f)
 let register name f = !register_function name f
 
 end
-module Tbl : sig 
+module Tbl : sig
 #1 "tbl.mli"
 (***********************************************************************)
 (*                                                                     *)
@@ -8943,7 +8943,7 @@ let print print_key print_data ppf tbl =
   fprintf ppf "@[<hv 2>[[%a]]@]" print_tbl tbl
 
 end
-module Subst : sig 
+module Subst : sig
 #1 "subst.mli"
 (***********************************************************************)
 (*                                                                     *)
@@ -9423,7 +9423,7 @@ let compose s1 s2 =
     for_saving = false }
 
 end
-module Env : sig 
+module Env : sig
 #1 "env.mli"
 (***********************************************************************)
 (*                                                                     *)
@@ -11036,7 +11036,7 @@ and check_value_name name loc =
   (* Note: we could also check here general validity of the
      identifier, to protect against bad identifiers forged by -pp or
      -ppx preprocessors. *)
-  if !Clflags.bs_only && name = "|." then raise (Error(Illegal_value_name(loc, name)))  
+  if !Clflags.bs_only && name = "|." then raise (Error(Illegal_value_name(loc, name)))
   else if String.length name > 0 && (name.[0] = '#') then
     for i = 1 to String.length name - 1 do
       if name.[i] = '#' then
@@ -11358,16 +11358,16 @@ let crc_of_unit name =
 (* Return the list of imported interfaces with their CRCs *)
 
 let imports() =
-   
-  let dont_record_crc_unit = !Clflags.dont_record_crc_unit in 
-  match dont_record_crc_unit with 
+
+  let dont_record_crc_unit = !Clflags.dont_record_crc_unit in
+  match dont_record_crc_unit with
   | None -> Consistbl.extract (StringSet.elements !imported_units) crc_units
-  | Some x -> 
-    Consistbl.extract 
-      (StringSet.fold 
-      (fun m acc -> if m = x then acc else m::acc) 
+  | Some x ->
+    Consistbl.extract
+      (StringSet.fold
+      (fun m acc -> if m = x then acc else m::acc)
       !imported_units []) crc_units
-  
+
 
 (* Save a signature to a file *)
 
@@ -11580,7 +11580,7 @@ let () =
     )
 
 end
-module Mt : sig 
+module Mt : sig
 #1 "mt.mli"
 type  eq =
   | Eq :  'a *'a  ->  eq
@@ -11598,22 +11598,22 @@ type  pair_suites = (string * (unit ->  eq)) list
 val from_suites : string -> (string * (unit -> unit)) list -> unit
 val from_pair_suites : string ->  pair_suites -> unit
 
-type promise_suites = (string * eq Js.Promise.t) list 
+type promise_suites = (string * eq Js.Promise2.t) list
 
-val from_promise_suites : 
+val from_promise_suites :
   string ->
-  promise_suites -> 
+  promise_suites ->
   unit
 
-val eq_suites :   
+val eq_suites :
   test_id:int ref ->
   suites:pair_suites ref -> string -> 'b -> 'b -> unit
-  
+
 val bool_suites :
   test_id:int ref ->
   suites: pair_suites ref -> string -> bool -> unit
 
-val throw_suites : 
+val throw_suites :
   test_id:int ref ->
   suites: pair_suites ref -> string -> (unit -> unit) -> unit
 end = struct
@@ -11627,7 +11627,7 @@ external describe : string -> (unit -> unit[@bs]) -> unit = "describe"
 external it : string -> (unit -> unit[@bs.uncurry]) -> unit = "it"
 [@@bs.val]
 
-external it_promise : string -> (unit -> _ Js.Promise.t [@bs.uncurry]) -> unit = "it"
+external it_promise : string -> (unit -> _ Js.Promise2.t [@bs.uncurry]) -> unit = "it"
 [@@bs.val]
 
 external eq : 'a -> 'a -> unit = "deepEqual"
@@ -11704,7 +11704,7 @@ type eq =
   (* TODO: | Exception : exn -> (unit -> unit) -> _ eq  *)
 
 type  pair_suites = (string * (unit ->  eq)) list
-type promise_suites = (string * eq Js.Promise.t) list 
+type promise_suites = (string * eq Js.Promise2.t) list
 let close_enough ?(threshold=0.0000001 (* epsilon_float *)) a b =
   abs_float (a -. b) < threshold
 
@@ -11724,7 +11724,7 @@ let node_from_pair_suites (name : string) (suites :  pair_suites) =
       | Ok a -> Js.log (name, a, "ok?")
     ) suites
 
-let handleCode spec = 
+let handleCode spec =
 
   match spec with
   | Eq(a,b) -> assert_equal a b
@@ -11754,8 +11754,8 @@ let from_pair_suites name (suites :  pair_suites) =
         )
     else node_from_pair_suites name suites
   | _ -> ()
-let val_unit = Js.Promise.resolve ()
-let from_promise_suites name (suites : (string * _ Js.Promise.t ) list) =
+let val_unit = Js.Promise2.resolve ()
+let from_promise_suites name (suites : (string * _ Js.Promise2.t ) list) =
   match Array.to_list Node.Process.process##argv with
   | cmd :: _ ->
     if is_mocha () then
@@ -11763,7 +11763,7 @@ let from_promise_suites name (suites : (string * _ Js.Promise.t ) list) =
           suites |>
           List.iter (fun (name, code) ->
               it_promise name (fun _ ->
-                  code |> Js.Promise.then_ (fun x -> handleCode x; val_unit)
+                  code |. Js.Promise2.then_ (fun x -> handleCode x; val_unit)
 
                 )
             )
@@ -11792,22 +11792,22 @@ let from_pair_suites_non_top name suites =
       from_pair_suites name suites
 *)
 
-let eq_suites ~test_id ~suites loc x y  = 
-  incr test_id ; 
-  suites := 
+let eq_suites ~test_id ~suites loc x y  =
+  incr test_id ;
+  suites :=
     (loc ^" id " ^ (string_of_int !test_id), (fun _ -> Eq(x,y))) :: !suites
 
-let bool_suites  ~test_id ~suites loc x   = 
-  incr test_id ; 
-  suites := 
-    (loc ^" id " ^ (string_of_int !test_id), (fun _ -> Ok(x))) :: !suites  
+let bool_suites  ~test_id ~suites loc x   =
+  incr test_id ;
+  suites :=
+    (loc ^" id " ^ (string_of_int !test_id), (fun _ -> Ok(x))) :: !suites
 
-let throw_suites ~test_id ~suites loc x =     
-  incr test_id ; 
-  suites := 
+let throw_suites ~test_id ~suites loc x =
+  incr test_id ;
+  suites :=
     (loc ^" id " ^ (string_of_int !test_id), (fun _ -> ThrowAny(x))) :: !suites
 end
-module Syntaxerr : sig 
+module Syntaxerr : sig
 #1 "syntaxerr.mli"
 (***********************************************************************)
 (*                                                                     *)
@@ -11927,7 +11927,7 @@ let ill_formed_ast loc s =
   raise (Error (Ill_formed_ast (loc, s)))
 
 end
-module Parser : sig 
+module Parser : sig
 #1 "parser.mli"
 type token =
   | AMPERAMPER
@@ -24208,7 +24208,7 @@ let parse_pattern (lexfun : Lexing.lexbuf -> token) (lexbuf : Lexing.lexbuf) =
 ;;
 
 end
-module Lexer : sig 
+module Lexer : sig
 #1 "lexer.mli"
 (***********************************************************************)
 (*                                                                     *)
@@ -24228,7 +24228,7 @@ val init : unit -> unit
 val token: Lexing.lexbuf -> Parser.token
 val skip_sharp_bang: Lexing.lexbuf -> unit
 
-type directive_type 
+type directive_type
 
 (* type directive_value = *)
 (*   | Dir_bool of bool  *)
@@ -24247,8 +24247,8 @@ type error =
   | Literal_overflow of string
   | Unterminated_paren_in_conditional
   | Unterminated_if
-  | Unterminated_else 
-  | Unexpected_token_in_conditional 
+  | Unterminated_else
+  | Unexpected_token_in_conditional
   | Expect_hash_then_in_conditional
   | Illegal_semver of string
   | Unexpected_directive
@@ -24305,7 +24305,7 @@ val filter_directive_from_lexbuf : Lexing.lexbuf -> (int * int) list
 
 val replace_directive_int : string -> int -> unit
 val replace_directive_string : string -> string -> unit
-val replace_directive_bool : string -> bool -> unit 
+val replace_directive_bool : string -> bool -> unit
 val remove_directive_built_in_value : string -> unit
 
 (** @return false means failed to define *)
@@ -24315,35 +24315,35 @@ val list_variables : Format.formatter -> unit
 end = struct
 #1 "lexer.ml"
 # 15 "parsing/lexer.mll"
- 
+
 open Lexing
 open Misc
 open Parser
 
 type directive_value =
-  | Dir_bool of bool 
+  | Dir_bool of bool
   | Dir_float of float
   | Dir_int of int
   | Dir_string of string
-  | Dir_null 
+  | Dir_null
 
-type directive_type = 
-  | Dir_type_bool 
-  | Dir_type_float 
-  | Dir_type_int 
-  | Dir_type_string 
-  | Dir_type_null 
+type directive_type =
+  | Dir_type_bool
+  | Dir_type_float
+  | Dir_type_int
+  | Dir_type_string
+  | Dir_type_null
 
 let type_of_directive x =
-  match x with 
+  match x with
   | Dir_bool _ -> Dir_type_bool
   | Dir_float _ -> Dir_type_float
   | Dir_int _ -> Dir_type_int
   | Dir_string _ -> Dir_type_string
   | Dir_null -> Dir_type_null
 
-let string_of_type_directive x = 
-  match x with 
+let string_of_type_directive x =
+  match x with
   | Dir_type_bool  -> "bool"
   | Dir_type_float  -> "float"
   | Dir_type_int  -> "int"
@@ -24360,20 +24360,20 @@ type error =
   | Literal_overflow of string
   | Unterminated_paren_in_conditional
   | Unterminated_if
-  | Unterminated_else 
-  | Unexpected_token_in_conditional 
+  | Unterminated_else
+  | Unexpected_token_in_conditional
   | Expect_hash_then_in_conditional
   | Illegal_semver of string
-  | Unexpected_directive 
+  | Unexpected_directive
   | Conditional_expr_expected_type of directive_type * directive_type
 
 ;;
 
 exception Error of error * Location.t;;
 
-let assert_same_type  lexbuf x y = 
+let assert_same_type  lexbuf x y =
   let lhs = type_of_directive x in let rhs =  type_of_directive y  in
-  if lhs <> rhs then 
+  if lhs <> rhs then
     raise (Error(Conditional_expr_expected_type(lhs,rhs), Location.curr lexbuf))
   else y
 
@@ -24381,50 +24381,50 @@ let directive_built_in_values  =
   Hashtbl.create 51
 
 
-let replace_directive_built_in_value k v = 
-  Hashtbl.replace directive_built_in_values k v 
+let replace_directive_built_in_value k v =
+  Hashtbl.replace directive_built_in_values k v
 
-let remove_directive_built_in_value k  = 
+let remove_directive_built_in_value k  =
   Hashtbl.replace directive_built_in_values k Dir_null
 
-let replace_directive_int k v = 
+let replace_directive_int k v =
   Hashtbl.replace directive_built_in_values k (Dir_int v)
 
-let replace_directive_bool k v = 
+let replace_directive_bool k v =
   Hashtbl.replace directive_built_in_values k (Dir_bool v)
 
-let replace_directive_string k v = 
+let replace_directive_string k v =
   Hashtbl.replace directive_built_in_values k (Dir_string v)
 
 let () =
-  (* Note we use {!Config} instead of {!Sys} becasue 
-     we want to overwrite in some cases with the 
+  (* Note we use {!Config} instead of {!Sys} becasue
+     we want to overwrite in some cases with the
      same stdlib
   *)
-  let version = 
- 
+  let version =
+
     Config.version (* so that it can be overridden*)
 
   in
-  replace_directive_built_in_value "OCAML_VERSION" 
+  replace_directive_built_in_value "OCAML_VERSION"
     (Dir_string version);
   replace_directive_built_in_value "OCAML_PATCH"
-    (Dir_string 
-       (match String.rindex version '+' with 
+    (Dir_string
+       (match String.rindex version '+' with
        | exception Not_found -> ""
-       | i -> 
+       | i ->
            String.sub version (i + 1)
              (String.length version - i - 1)))
   ;
-  replace_directive_built_in_value "OS_TYPE" 
+  replace_directive_built_in_value "OS_TYPE"
     (Dir_string Sys.os_type);
-  replace_directive_built_in_value "BIG_ENDIAN" 
+  replace_directive_built_in_value "BIG_ENDIAN"
     (Dir_bool Sys.big_endian);
-  replace_directive_built_in_value "WORD_SIZE" 
+  replace_directive_built_in_value "WORD_SIZE"
     (Dir_int Sys.word_size)
 
 let find_directive_built_in_value k =
-  Hashtbl.find directive_built_in_values k 
+  Hashtbl.find directive_built_in_values k
 
 let iter_directive_built_in_value f = Hashtbl.iter f directive_built_in_values
 
@@ -24439,15 +24439,15 @@ let iter_directive_built_in_value f = Hashtbl.iter f directive_built_in_values
      # semver 0 "12.3.10+x";;
      - : int * int * int * string = (12, 3, 10, "+x")
    ]}
-*)    
-let zero = Char.code '0' 
+*)
+let zero = Char.code '0'
 let dot = Char.code '.'
-let semantic_version_parse str start  last_index = 
+let semantic_version_parse str start  last_index =
   let rec aux start  acc last_index =
     if start <= last_index then
       let c = Char.code (String.unsafe_get str start) in
       if c = dot then (acc, start + 1) (* consume [4.] instead of [4]*)
-      else 
+      else
         let v =  c - zero in
         if v >=0 && v <= 9  then
           aux (start + 1) (acc * 10 + v) last_index
@@ -24456,11 +24456,11 @@ let semantic_version_parse str start  last_index =
   in
   let major, major_end =  aux start 0 last_index  in
   let minor, minor_end = aux major_end 0 last_index in
-  let patch, patch_end = aux minor_end 0 last_index in 
+  let patch, patch_end = aux minor_end 0 last_index in
   let additional = String.sub str patch_end (last_index - patch_end  +1) in
   (major, minor, patch), additional
 
-(** 
+(**
    {[
      semver Location.none "1.2.3" "~1.3.0" = false;;
      semver Location.none "1.2.3" "^1.3.0" = true ;;
@@ -24471,38 +24471,38 @@ let semantic_version_parse str start  last_index =
    ]}
 *)
 let semver loc lhs str =
-  let last_index = String.length str - 1 in 
+  let last_index = String.length str - 1 in
   if last_index < 0 then raise (Error(Illegal_semver str, loc))
-  else 
-    let pred, ((major, minor,patch) as version, _) = 
-      let v = String.unsafe_get str 0 in 
+  else
+    let pred, ((major, minor,patch) as version, _) =
+      let v = String.unsafe_get str 0 in
       match v with
-      | '>' -> 
-          if last_index = 0 then raise (Error(Illegal_semver str, loc)) else 
-          if String.unsafe_get str 1 = '=' then 
+      | '>' ->
+          if last_index = 0 then raise (Error(Illegal_semver str, loc)) else
+          if String.unsafe_get str 1 = '=' then
             `Ge, semantic_version_parse str 2 last_index
           else `Gt, semantic_version_parse str 1 last_index
-      | '<' 
+      | '<'
         ->
-          if last_index = 0 then raise (Error(Illegal_semver str, loc)) else 
-          if String.unsafe_get str 1 = '=' then 
+          if last_index = 0 then raise (Error(Illegal_semver str, loc)) else
+          if String.unsafe_get str 1 = '=' then
             `Le, semantic_version_parse str 2 last_index
           else `Lt, semantic_version_parse str 1 last_index
-      | '^' 
+      | '^'
         -> `Compatible, semantic_version_parse str 1 last_index
       | '~' ->  `Approximate, semantic_version_parse str 1 last_index
-      | _ -> `Exact, semantic_version_parse str 0 last_index 
-    in 
+      | _ -> `Exact, semantic_version_parse str 0 last_index
+    in
     let ((l_major, l_minor, l_patch) as lversion,_) =
-      semantic_version_parse lhs 0 (String.length lhs - 1) in 
-    match pred with 
-    | `Ge -> lversion >= version 
-    | `Gt -> lversion > version 
+      semantic_version_parse lhs 0 (String.length lhs - 1) in
+    match pred with
+    | `Ge -> lversion >= version
+    | `Gt -> lversion > version
     | `Le -> lversion <= version
-    | `Lt -> lversion < version 
-    | `Approximate -> major = l_major && minor = l_minor 
+    | `Lt -> lversion < version
+    | `Approximate -> major = l_major && minor = l_minor
     |  `Compatible -> major = l_major
-    | `Exact -> lversion = version 
+    | `Exact -> lversion = version
 
 
 let pp_directive_value fmt (x : directive_value) =
@@ -24511,10 +24511,10 @@ let pp_directive_value fmt (x : directive_value) =
   | Dir_int b -> Format.pp_print_int fmt b
   | Dir_float b -> Format.pp_print_float fmt b
   | Dir_string s  -> Format.fprintf fmt "%S" s
-  | Dir_null -> Format.pp_print_string fmt "null"    
+  | Dir_null -> Format.pp_print_string fmt "null"
 
-let list_variables fmt = 
-  iter_directive_built_in_value 
+let list_variables fmt =
+  iter_directive_built_in_value
     (fun s  dir_value ->
        Format.fprintf
          fmt "@[%s@ %a@]@."
@@ -24522,11 +24522,11 @@ let list_variables fmt =
     )
 
 let defined str =
-  begin match  find_directive_built_in_value str with 
-  |  Dir_null -> false 
+  begin match  find_directive_built_in_value str with
+  |  Dir_null -> false
   | _ ->  true
-  | exception _ -> 
-      try ignore @@ Sys.getenv str; true with _ ->  false 
+  | exception _ ->
+      try ignore @@ Sys.getenv str; true with _ ->  false
   end
 
 let query loc str =
@@ -24534,21 +24534,21 @@ let query loc str =
   | Dir_null -> Dir_bool false
   | v -> v
   | exception Not_found ->
-      begin match Sys.getenv str with 
-      | v -> 
-          begin 
-            try Dir_bool (bool_of_string v) with 
-              _ -> 
-                begin 
+      begin match Sys.getenv str with
+      | v ->
+          begin
+            try Dir_bool (bool_of_string v) with
+              _ ->
+                begin
                   try Dir_int (int_of_string v )
-                  with 
-                    _ -> 
-                      begin try (Dir_float (float_of_string v)) 
+                  with
+                    _ ->
+                      begin try (Dir_float (float_of_string v))
                       with _ -> Dir_string v
                       end
                 end
           end
-      | exception Not_found -> 
+      | exception Not_found ->
           Dir_bool false
       end
   end
@@ -24556,37 +24556,37 @@ let query loc str =
 
 let define_key_value key v  =
   if String.length key > 0
-      && Char.uppercase (key.[0]) = key.[0] then 
-    begin 
+      && Char.uppercase (key.[0]) = key.[0] then
+    begin
       replace_directive_built_in_value key
       begin
         (* NEED Sync up across {!lexer.mll} {!bspp.ml} and here,
            TODO: put it in {!lexer.mll}
         *)
-        try Dir_bool (bool_of_string v) with 
-          _ -> 
-          begin 
+        try Dir_bool (bool_of_string v) with
+          _ ->
+          begin
             try Dir_int (int_of_string v )
-            with 
-              _ -> 
-              begin try (Dir_float (float_of_string v)) 
+            with
+              _ ->
+              begin try (Dir_float (float_of_string v))
                 with _ -> Dir_string v
               end
           end
       end;
     true
     end
-  else false 
+  else false
 
 
-let value_of_token loc (t : Parser.token)  = 
-  match t with 
-  | INT i -> Dir_int i 
-  | STRING (s,_) -> Dir_string s 
+let value_of_token loc (t : Parser.token)  =
+  match t with
+  | INT i -> Dir_int i
+  | STRING (s,_) -> Dir_string s
   | FLOAT s  -> Dir_float (float_of_string s)
   | TRUE -> Dir_bool true
   | FALSE -> Dir_bool false
-  | UIDENT s -> query loc s 
+  | UIDENT s -> query loc s
   | _ -> raise (Error (Unexpected_token_in_conditional, loc))
 
 
@@ -24594,59 +24594,59 @@ let directive_parse token_with_comments lexbuf =
   let look_ahead = ref None in
   let token () : Parser.token =
     let v = !look_ahead in
-    match v with 
-    | Some v -> 
+    match v with
+    | Some v ->
         look_ahead := None ;
         v
     | None ->
-       let rec skip () = 
+       let rec skip () =
         match token_with_comments lexbuf  with
         | COMMENT _ -> skip ()
 
         | DOCSTRING _ -> skip ()
 
         | EOL -> skip ()
-        | EOF -> raise (Error (Unterminated_if, Location.curr lexbuf)) 
-        | t -> t 
+        | EOF -> raise (Error (Unterminated_if, Location.curr lexbuf))
+        | t -> t
         in  skip ()
   in
   let push e =
     (* INVARIANT: only look at most one token *)
     assert (!look_ahead = None);
-    look_ahead := Some e 
+    look_ahead := Some e
   in
   let rec
     token_op calc   ~no  lhs   =
-    match token () with 
-    | (LESS 
-    | GREATER 
-    | INFIXOP0 "<=" 
-    | INFIXOP0 ">=" 
+    match token () with
+    | (LESS
+    | GREATER
+    | INFIXOP0 "<="
+    | INFIXOP0 ">="
     | EQUAL
     | INFIXOP0 "<>" as op) ->
-        let f =  
-          match op with 
-          | LESS -> (<) 
+        let f =
+          match op with
+          | LESS -> (<)
           | GREATER -> (>)
           | INFIXOP0 "<=" -> (<=)
           | EQUAL -> (=)
-          | INFIXOP0 "<>" -> (<>) 
+          | INFIXOP0 "<>" -> (<>)
           | _ -> assert false
-        in 
-        let curr_loc = Location.curr lexbuf in 
-        let rhs = value_of_token curr_loc (token ()) in 
+        in
+        let curr_loc = Location.curr lexbuf in
+        let rhs = value_of_token curr_loc (token ()) in
         not calc ||
         f lhs (assert_same_type lexbuf lhs rhs)
-    | INFIXOP0 "=~" -> 
+    | INFIXOP0 "=~" ->
         not calc ||
-        begin match lhs with 
+        begin match lhs with
         | Dir_string s ->
-            let curr_loc = Location.curr lexbuf in 
-            let rhs = value_of_token curr_loc (token ()) in 
-            begin match rhs with 
-            | Dir_string rhs -> 
+            let curr_loc = Location.curr lexbuf in
+            let rhs = value_of_token curr_loc (token ()) in
+            begin match rhs with
+            | Dir_string rhs ->
                 semver curr_loc s rhs
-            | _ -> 
+            | _ ->
                 raise
                   (Error
                      ( Conditional_expr_expected_type
@@ -24657,7 +24657,7 @@ let directive_parse token_with_comments lexbuf =
                     ( Conditional_expr_expected_type
                         (Dir_type_string, type_of_directive lhs), Location.curr lexbuf))
         end
-    | e -> no e 
+    | e -> no e
   and
     parse_or calc : bool =
     parse_or_aux calc (parse_and calc)
@@ -24667,9 +24667,9 @@ let directive_parse token_with_comments lexbuf =
     match token () with
     | BARBAR ->
         let b =   parse_or (calc && not v)  in
-        v || b 
+        v || b
     | e -> push e ; v
-  and parse_and calc = 
+  and parse_and calc =
     parse_and_aux calc (parse_relation calc)
   and parse_and_aux calc v = (* a && (b && (c && d)) *)
     (* let l = v  in *)
@@ -24682,33 +24682,33 @@ let directive_parse token_with_comments lexbuf =
     let curr_token = token () in
     let curr_loc = Location.curr lexbuf in
     match curr_token with
-    | TRUE -> true 
+    | TRUE -> true
     | FALSE -> false
     | UIDENT v ->
         let value_v = query curr_loc v in
-        token_op calc 
+        token_op calc
           ~no:(fun e -> push e ;
-                match value_v with 
-                | Dir_bool b -> b 
-                | _ -> 
+                match value_v with
+                | Dir_bool b -> b
+                | _ ->
                     let ty = type_of_directive value_v in
                     raise
                       (Error(Conditional_expr_expected_type (Dir_type_bool, ty),
                              curr_loc)))
           value_v
-    | INT v -> 
+    | INT v ->
         token_op calc
-          ~no:(fun e -> 
-              raise(Error(Conditional_expr_expected_type(Dir_type_bool,Dir_type_int), 
+          ~no:(fun e ->
+              raise(Error(Conditional_expr_expected_type(Dir_type_bool,Dir_type_int),
                           curr_loc)))
           (Dir_int v)
-    | FLOAT v -> 
+    | FLOAT v ->
         token_op calc
-          ~no:(fun e -> 
+          ~no:(fun e ->
               raise (Error(Conditional_expr_expected_type(Dir_type_bool, Dir_type_float),
                            curr_loc)))
           (Dir_float (float_of_string v))
-    | STRING (v,_) -> 
+    | STRING (v,_) ->
         token_op calc
           ~no:(fun e ->
               raise (Error
@@ -24716,14 +24716,14 @@ let directive_parse token_with_comments lexbuf =
                         curr_loc)))
           (Dir_string v)
     | LIDENT ("defined" | "undefined" as r) ->
-        let t = token () in 
+        let t = token () in
         let loc = Location.curr lexbuf in
         begin match t with
-        | UIDENT s -> 
-            not calc || 
-            if r.[0] = 'u' then 
+        | UIDENT s ->
+            not calc ||
+            if r.[0] = 'u' then
               not @@ defined s
-            else defined s 
+            else defined s
         | _ -> raise (Error (Unexpected_token_in_conditional, loc))
         end
     | LPAREN ->
@@ -24731,13 +24731,13 @@ let directive_parse token_with_comments lexbuf =
         begin match token () with
         | RPAREN ->  v
         | _ -> raise (Error(Unterminated_paren_in_conditional, Location.curr lexbuf))
-        end 
+        end
 
     | _ -> raise (Error (Unexpected_token_in_conditional, curr_loc))
   in
   let v = parse_or true in
   begin match token () with
-  | THEN ->  v 
+  | THEN ->  v
   | _ -> raise (Error (Expect_hash_then_in_conditional, Location.curr lexbuf))
   end
 
@@ -24745,10 +24745,10 @@ let directive_parse token_with_comments lexbuf =
 type dir_conditional =
   | Dir_if_true
   | Dir_if_false
-  | Dir_out 
+  | Dir_out
 
 let string_of_dir_conditional (x : dir_conditional) =
-  match x with 
+  match x with
   | Dir_if_true -> "Dir_if_true"
   | Dir_if_false -> "Dir_if_false"
   | Dir_out -> "Dir_out"
@@ -24864,10 +24864,10 @@ let in_string () = !is_in_string
 let print_warnings = ref true
 let if_then_else = ref Dir_out
 let sharp_look_ahead = ref None
-let update_if_then_else v = 
+let update_if_then_else v =
   (* Format.fprintf Format.err_formatter "@[update %s \n@]@." (string_of_dir_conditional v); *)
   if_then_else := v
-    
+
 let with_comment_buffer comment lexbuf =
   let start_loc = Location.curr lexbuf  in
   comment_start_loc := [start_loc];
@@ -25008,22 +25008,22 @@ let report_error ppf = function
   | Literal_overflow ty ->
       fprintf ppf "Integer literal exceeds the range of representable \
                    integers of type %s" ty
-  | Unterminated_if -> 
+  | Unterminated_if ->
       fprintf ppf "#if not terminated"
-  | Unterminated_else -> 
+  | Unterminated_else ->
       fprintf ppf "#else not terminated"
   | Unexpected_directive -> fprintf ppf "Unexpected directive"
-  | Unexpected_token_in_conditional -> 
+  | Unexpected_token_in_conditional ->
       fprintf ppf "Unexpected token in conditional predicate"
   | Unterminated_paren_in_conditional ->
     fprintf ppf "Unterminated parens in conditional predicate"
-  | Expect_hash_then_in_conditional -> 
+  | Expect_hash_then_in_conditional ->
       fprintf ppf "Expect `then` after conditional predicate"
-  | Conditional_expr_expected_type (a,b) -> 
-      fprintf ppf "Conditional expression type mismatch (%s,%s)" 
+  | Conditional_expr_expected_type (a,b) ->
+      fprintf ppf "Conditional expression type mismatch (%s,%s)"
         (string_of_type_directive a )
         (string_of_type_directive b )
-  | Illegal_semver s -> 
+  | Illegal_semver s ->
       fprintf ppf "Illegal semantic version string %s" s
 let () =
   Location.register_error_of_exn
@@ -25037,7 +25037,7 @@ let () =
 
 # 727 "parsing/lexer.ml"
 let __ocaml_lex_tables = {
-  Lexing.lex_base = 
+  Lexing.lex_base =
    "\000\000\164\255\165\255\224\000\003\001\038\001\073\001\108\001\
     \143\001\188\255\178\001\215\001\196\255\091\000\252\001\031\002\
     \068\000\071\000\084\000\066\002\213\255\215\255\218\255\101\002\
@@ -25064,7 +25064,7 @@ let __ocaml_lex_tables = {
     \252\255\238\006\254\255\255\255\111\001\112\001\253\255\074\007\
     \016\001\019\001\050\001\063\001\026\001\107\001\033\001\019\000\
     \255\255";
-  Lexing.lex_backtrk = 
+  Lexing.lex_backtrk =
    "\255\255\255\255\255\255\088\000\087\000\084\000\083\000\076\000\
     \074\000\255\255\065\000\062\000\255\255\055\000\054\000\052\000\
     \050\000\046\000\044\000\079\000\255\255\255\255\255\255\035\000\
@@ -25091,7 +25091,7 @@ let __ocaml_lex_tables = {
     \255\255\003\000\255\255\255\255\003\000\255\255\255\255\255\255\
     \002\000\255\255\255\255\001\000\255\255\255\255\255\255\255\255\
     \255\255";
-  Lexing.lex_default = 
+  Lexing.lex_default =
    "\001\000\000\000\000\000\255\255\255\255\255\255\255\255\255\255\
     \255\255\000\000\255\255\255\255\000\000\255\255\255\255\255\255\
     \255\255\255\255\255\255\255\255\000\000\000\000\000\000\255\255\
@@ -25118,7 +25118,7 @@ let __ocaml_lex_tables = {
     \000\000\255\255\000\000\000\000\255\255\255\255\000\000\255\255\
     \255\255\255\255\194\000\197\000\255\255\197\000\255\255\255\255\
     \000\000";
-  Lexing.lex_trans = 
+  Lexing.lex_trans =
    "\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
     \000\000\039\000\040\000\040\000\039\000\041\000\045\000\043\000\
     \043\000\040\000\044\000\044\000\045\000\073\000\098\000\104\000\
@@ -25614,7 +25614,7 @@ let __ocaml_lex_tables = {
     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
     \000\000\000\000\000\000\000\000\000\000\000\000\255\255";
-  Lexing.lex_check = 
+  Lexing.lex_check =
    "\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
     \255\255\000\000\000\000\041\000\000\000\000\000\041\000\042\000\
     \044\000\045\000\042\000\044\000\045\000\074\000\099\000\105\000\
@@ -26110,7 +26110,7 @@ let __ocaml_lex_tables = {
     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
     \255\255\255\255\255\255\255\255\255\255\255\255\169\000";
-  Lexing.lex_base_code = 
+  Lexing.lex_base_code =
    "\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
@@ -26137,7 +26137,7 @@ let __ocaml_lex_tables = {
     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
     \000\000";
-  Lexing.lex_backtrk_code = 
+  Lexing.lex_backtrk_code =
    "\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
@@ -26164,7 +26164,7 @@ let __ocaml_lex_tables = {
     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
     \000\000";
-  Lexing.lex_default_code = 
+  Lexing.lex_default_code =
    "\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
@@ -26191,7 +26191,7 @@ let __ocaml_lex_tables = {
     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
     \000\000";
-  Lexing.lex_trans_code = 
+  Lexing.lex_trans_code =
    "\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
     \000\000\001\000\000\000\036\000\036\000\000\000\036\000\000\000\
     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
@@ -26229,7 +26229,7 @@ let __ocaml_lex_tables = {
     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
     \000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\
     \000\000\000\000\000\000\000\000\000\000";
-  Lexing.lex_check_code = 
+  Lexing.lex_check_code =
    "\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
     \255\255\024\000\101\000\169\000\176\000\101\000\177\000\255\255\
     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
@@ -26267,7 +26267,7 @@ let __ocaml_lex_tables = {
     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
     \255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\255\
     \255\255\255\255\255\255\255\255\255\255";
-  Lexing.lex_code = 
+  Lexing.lex_code =
    "\255\004\255\255\005\255\255\007\255\006\255\255\003\255\000\004\
     \001\005\255\007\255\255\006\255\007\255\255\000\004\001\005\003\
     \006\002\007\255\001\255\255\000\001\255";
@@ -26463,7 +26463,7 @@ and __ocaml_lex_token_rec lexbuf __ocaml_lex_state =
 # 865 "parsing/lexer.mll"
       ( let s, loc = with_comment_buffer comment lexbuf in
 
-        DOCSTRING (Docstrings.docstring s loc) 
+        DOCSTRING (Docstrings.docstring s loc)
 
 )
 # 2160 "parsing/lexer.ml"
@@ -26818,9 +26818,9 @@ and
         if !if_then_else = Dir_if_true then
           raise (Error (Unterminated_if, Location.curr lexbuf))
         else raise (Error(Unterminated_else, Location.curr lexbuf))
-      else 
+      else
         EOF
-        
+
     )
 # 2516 "parsing/lexer.ml"
 
@@ -26831,7 +26831,7 @@ and
       )
 # 2523 "parsing/lexer.ml"
 
-  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
+  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf;
       __ocaml_lex_token_rec lexbuf __ocaml_lex_state
 
 and comment lexbuf =
@@ -26960,7 +26960,7 @@ and __ocaml_lex_comment_rec lexbuf __ocaml_lex_state =
       ( store_lexeme lexbuf; comment lexbuf )
 # 2652 "parsing/lexer.ml"
 
-  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
+  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf;
       __ocaml_lex_comment_rec lexbuf __ocaml_lex_state
 
 and string lexbuf =
@@ -27042,7 +27042,7 @@ let
         string lexbuf )
 # 2734 "parsing/lexer.ml"
 
-  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
+  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf;
       __ocaml_lex_string_rec lexbuf __ocaml_lex_state
 
 and quoted_string delim lexbuf =
@@ -27079,7 +27079,7 @@ and __ocaml_lex_quoted_string_rec delim lexbuf __ocaml_lex_state =
         quoted_string delim lexbuf )
 # 2771 "parsing/lexer.ml"
 
-  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
+  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf;
       __ocaml_lex_quoted_string_rec delim lexbuf __ocaml_lex_state
 
 and skip_sharp_bang lexbuf =
@@ -27101,17 +27101,17 @@ and __ocaml_lex_skip_sharp_bang_rec lexbuf __ocaml_lex_state =
        ( () )
 # 2793 "parsing/lexer.ml"
 
-  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
+  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf;
       __ocaml_lex_skip_sharp_bang_rec lexbuf __ocaml_lex_state
 
 ;;
 
 # 1139 "parsing/lexer.mll"
- 
 
-  let at_bol lexbuf = 
-    let pos = Lexing.lexeme_start_p lexbuf in 
-    pos.pos_cnum = pos.pos_bol 
+
+  let at_bol lexbuf =
+    let pos = Lexing.lexeme_start_p lexbuf in
+    pos.pos_cnum = pos.pos_bol
 
   let token_with_comments lexbuf =
     match !preprocessor with
@@ -27137,42 +27137,42 @@ and __ocaml_lex_skip_sharp_bang_rec lexbuf __ocaml_lex_state =
 
   and docstring = Docstrings.docstring
 
-  let interpret_directive lexbuf cont look_ahead = 
+  let interpret_directive lexbuf cont look_ahead =
     let if_then_else = !if_then_else in
-    begin match token_with_comments lexbuf, if_then_else with 
+    begin match token_with_comments lexbuf, if_then_else with
     |  IF, Dir_out  ->
-        let rec skip_from_if_false () = 
+        let rec skip_from_if_false () =
           let token = token_with_comments lexbuf in
-          if token = EOF then 
+          if token = EOF then
             raise (Error (Unterminated_if, Location.curr lexbuf)) else
-          if token = SHARP && at_bol lexbuf then 
-            begin 
+          if token = SHARP && at_bol lexbuf then
+            begin
               let token = token_with_comments lexbuf in
               match token with
-              | END -> 
+              | END ->
                   begin
                     update_if_then_else Dir_out;
                     cont lexbuf
                   end
-              | ELSE -> 
+              | ELSE ->
                   begin
                     update_if_then_else Dir_if_false;
                     cont lexbuf
                   end
               | IF ->
                   raise (Error (Unexpected_directive, Location.curr lexbuf))
-              | _ -> 
+              | _ ->
                   if is_elif token &&
                      directive_parse token_with_comments lexbuf then
                     begin
                       update_if_then_else Dir_if_true;
                       cont lexbuf
                     end
-                  else skip_from_if_false ()                               
+                  else skip_from_if_false ()
             end
-          else skip_from_if_false () in 
+          else skip_from_if_false () in
         if directive_parse token_with_comments lexbuf then
-          begin 
+          begin
             update_if_then_else Dir_if_true (* Next state: ELSE *);
             cont lexbuf
           end
@@ -27183,46 +27183,46 @@ and __ocaml_lex_skip_sharp_bang_rec lexbuf __ocaml_lex_state =
     | LIDENT "elif", (Dir_if_false | Dir_out)
       -> (* when the predicate is false, it will continue eating `elif` *)
         raise (Error(Unexpected_directive, Location.curr lexbuf))
-    | (LIDENT "elif" | ELSE as token), Dir_if_true ->           
+    | (LIDENT "elif" | ELSE as token), Dir_if_true ->
         (* looking for #end, however, it can not see #if anymore *)
-        let rec skip_from_if_true else_seen = 
+        let rec skip_from_if_true else_seen =
           let token = token_with_comments lexbuf in
-          if token = EOF then 
+          if token = EOF then
             raise (Error (Unterminated_else, Location.curr lexbuf)) else
-          if token = SHARP && at_bol lexbuf then 
-            begin 
-              let token = token_with_comments lexbuf in 
-              match token with  
-              | END -> 
+          if token = SHARP && at_bol lexbuf then
+            begin
+              let token = token_with_comments lexbuf in
+              match token with
+              | END ->
                   begin
                     update_if_then_else Dir_out;
                     cont lexbuf
-                  end  
-              | IF ->  
-                  raise (Error (Unexpected_directive, Location.curr lexbuf)) 
+                  end
+              | IF ->
+                  raise (Error (Unexpected_directive, Location.curr lexbuf))
               | ELSE ->
-                  if else_seen then 
+                  if else_seen then
                     raise (Error (Unexpected_directive, Location.curr lexbuf))
-                  else 
+                  else
                     skip_from_if_true true
               | _ ->
-                  if else_seen && is_elif token then  
+                  if else_seen && is_elif token then
                     raise (Error (Unexpected_directive, Location.curr lexbuf))
-                  else 
+                  else
                     skip_from_if_true else_seen
             end
-          else skip_from_if_true else_seen in 
+          else skip_from_if_true else_seen in
         skip_from_if_true (token = ELSE)
-    | ELSE, Dir_if_false 
-    | ELSE, Dir_out -> 
+    | ELSE, Dir_if_false
+    | ELSE, Dir_out ->
         raise (Error(Unexpected_directive, Location.curr lexbuf))
-    | END, (Dir_if_false | Dir_if_true ) -> 
+    | END, (Dir_if_false | Dir_if_true ) ->
         update_if_then_else  Dir_out;
         cont lexbuf
-    | END,  Dir_out  -> 
+    | END,  Dir_out  ->
         raise (Error(Unexpected_directive, Location.curr lexbuf))
     | token, (Dir_if_true | Dir_if_false | Dir_out) ->
-        look_ahead token 
+        look_ahead token
     end
 
   let token lexbuf =
@@ -27273,8 +27273,8 @@ and __ocaml_lex_skip_sharp_bang_rec lexbuf __ocaml_lex_state =
             | BlankLine -> BlankLine
           in
           loop lines' docs lexbuf
-      | SHARP when at_bol lexbuf -> 
-          interpret_directive lexbuf 
+      | SHARP when at_bol lexbuf ->
+          interpret_directive lexbuf
             (fun lexbuf -> loop lines docs lexbuf)
             (fun token -> sharp_look_ahead := Some token; SHARP)
 
@@ -27297,12 +27297,12 @@ and __ocaml_lex_skip_sharp_bang_rec lexbuf __ocaml_lex_state =
 
           tok
 
-          
+
     in
       match !sharp_look_ahead with
-      | None -> 
+      | None ->
            loop NoLine Initial lexbuf
-      | Some token -> 
+      | Some token ->
            sharp_look_ahead := None ;
            token
 
@@ -27320,20 +27320,20 @@ and __ocaml_lex_skip_sharp_bang_rec lexbuf __ocaml_lex_state =
     match token_with_comments lexbuf with
     | SHARP when at_bol lexbuf ->
         (* ^[start_pos]#if ... #then^[end_pos] *)
-        let start_pos = Lexing.lexeme_start lexbuf in 
-        interpret_directive lexbuf 
-          (fun lexbuf -> 
-             filter_directive 
+        let start_pos = Lexing.lexeme_start lexbuf in
+        interpret_directive lexbuf
+          (fun lexbuf ->
+             filter_directive
                (Lexing.lexeme_end lexbuf)
                ((pos, start_pos) :: acc)
                lexbuf
-          
+
           )
           (fun _token -> filter_directive pos acc lexbuf  )
     | EOF -> (pos, Lexing.lexeme_end lexbuf) :: acc
     | _ -> filter_directive pos  acc lexbuf
 
-  let filter_directive_from_lexbuf lexbuf = 
+  let filter_directive_from_lexbuf lexbuf =
     List.rev (filter_directive 0 [] lexbuf )
 
   let set_preprocessor init preprocess =
@@ -27344,7 +27344,7 @@ and __ocaml_lex_skip_sharp_bang_rec lexbuf __ocaml_lex_state =
 # 3035 "parsing/lexer.ml"
 
 end
-module Parse : sig 
+module Parse : sig
 #1 "parse.mli"
 (***********************************************************************)
 (*                                                                     *)
@@ -27436,7 +27436,7 @@ and expression = wrap Parser.parse_expression
 and pattern = wrap Parser.parse_pattern
 
 end
-module Typedtree : sig 
+module Typedtree : sig
 #1 "typedtree.mli"
 (***********************************************************************)
 (*                                                                     *)
@@ -28569,7 +28569,7 @@ type ident =
 ;;
 
 end
-module TypedtreeMap : sig 
+module TypedtreeMap : sig
 #1 "typedtreeMap.mli"
 (***********************************************************************)
 (*                                                                     *)
@@ -29366,7 +29366,7 @@ module DefaultMapArgument = struct
 end
 
 end
-module Cmt_format : sig 
+module Cmt_format : sig
 #1 "cmt_format.mli"
 (***********************************************************************)
 (*                                                                     *)
@@ -29735,7 +29735,7 @@ let save_cmt filename modname binary_annots sourcefile initial_env sg =
   clear ()
 
 end
-module Ctype : sig 
+module Ctype : sig
 #1 "ctype.mli"
 (***********************************************************************)
 (*                                                                     *)
@@ -34654,7 +34654,7 @@ type out_phrase =
   | Ophr_exception of (exn * out_value)
 
 end
-module Oprint : sig 
+module Oprint : sig
 #1 "oprint.mli"
 (***********************************************************************)
 (*                                                                     *)
@@ -34880,7 +34880,7 @@ and print_simple_out_type ppf =
     Otyp_class (ng, id, tyl) ->
       fprintf ppf "@[%a%s#%a@]" print_typargs tyl (if ng then "_" else "")
         print_ident id
-         
+
   | Otyp_constr ( (Oide_dot (((Oide_dot (Oide_ident "Js", "Internal"))| (Oide_ident "Js_internal")),
                              ("fn" | "meth" as name )) as id) ,
                  ([Otyp_variant(_,Ovar_fields [ variant, _, tys], _,_); result] as tyl))
@@ -34891,19 +34891,19 @@ and print_simple_out_type ppf =
           Otyp_arrow ("", Otyp_constr (Oide_ident "unit", []),result)
         else
             match tys with
-          | [ Otyp_tuple tys as single] -> 
+          | [ Otyp_tuple tys as single] ->
               if variant = "Arity_1" then
                 Otyp_arrow ("", single, result)
-              else 
+              else
                 List.fold_right (fun x acc  -> Otyp_arrow("",x,acc) ) tys result
           | [single] ->
               Otyp_arrow ("", single, result)
-          | _ -> 
+          | _ ->
               raise_notrace Not_found
       in
       begin match (make tys result) with
       | exception _ ->
-          begin 
+          begin
             pp_open_box ppf 0;
             print_typargs ppf tyl;
             print_ident ppf id;
@@ -34911,11 +34911,11 @@ and print_simple_out_type ppf =
           end
       | res ->
           begin match name  with
-          | "fn" -> 
+          | "fn" ->
               fprintf ppf "@[<0>(%a@ [@bs])@]" print_out_type_1 res
           | "meth" ->
               fprintf ppf "@[<0>(%a@ [@bs.meth])@]" print_out_type_1 res
-          | _ -> assert false 
+          | _ -> assert false
           end
       end
   | Otyp_constr ((Oide_dot ((Oide_dot (Oide_ident "Js", "Internal") | (Oide_ident "Js_internal")), "meth_callback" ) as id) ,
@@ -34923,18 +34923,18 @@ and print_simple_out_type ppf =
     ->
       let make tys result =
           match tys with
-          | [ Otyp_tuple tys as single ] -> 
+          | [ Otyp_tuple tys as single ] ->
               if variant = "Arity_1" then Otyp_arrow ("", single, result)
-              else 
+              else
                 List.fold_right (fun x acc  -> Otyp_arrow("",x,acc) ) tys result
           | [single] ->
               Otyp_arrow ("", single, result)
-          | _ -> 
+          | _ ->
               raise_notrace Not_found
       in
       begin match (make tys result) with
       | exception _ ->
-          begin 
+          begin
             pp_open_box ppf 0;
             print_typargs ppf tyl;
             print_ident ppf id;
@@ -34944,7 +34944,7 @@ and print_simple_out_type ppf =
           fprintf ppf "@[<0>(%a@ [@bs.this])@]" print_out_type_1 res
 
       end
-      
+
   | Otyp_constr (id, tyl) ->
       pp_open_box ppf 0;
       print_typargs ppf tyl;
@@ -35193,10 +35193,10 @@ and print_out_sig_item ppf =
 
     let len = String.length s in
     if len >= 3 && s.[0] = 'B' && s.[1] = 'S' && s.[2] = ':' then
-      fprintf ppf "@ \"BS-EXTERNAL\"" 
+      fprintf ppf "@ \"BS-EXTERNAL\""
     else
       fprintf ppf "@ \"%s\"" s
-                  
+
               ) sl
       in
       fprintf ppf "@[<2>%s %a :@ %a%a@]" kwd value_ident name !out_type
@@ -35393,7 +35393,7 @@ let print_out_phrase ppf =
 let out_phrase = ref print_out_phrase
 
 end
-module Printtyp : sig 
+module Printtyp : sig
 #1 "printtyp.mli"
 (***********************************************************************)
 (*                                                                     *)
@@ -36977,14 +36977,14 @@ let super_type_expansion ~tag t ppf t' =
 let super_trace ppf =
   let rec super_trace first_report ppf = function
     | (t1, t1') :: (t2, t2') :: rem ->
-      fprintf ppf 
+      fprintf ppf
         "@,@,@[<v 2>";
-      if first_report then 
+      if first_report then
         fprintf ppf "The incompatible parts:@,"
-      else begin 
+      else begin
         fprintf ppf "Further expanded:@,"
       end;
-      fprintf ppf 
+      fprintf ppf
         "@[<v>\
           @[%a@]@,\
           vs@,\
@@ -37090,7 +37090,7 @@ let report_ambiguous_type_error ppf env (tp0, tp0') tpl txt1 txt2 txt3 =
           txt3 (type_path_expansion tp0) tp0')
 
 end
-module Includeclass : sig 
+module Includeclass : sig
 #1 "includeclass.mli"
 (***********************************************************************)
 (*                                                                     *)
@@ -37232,7 +37232,7 @@ let report_error ppf = function
       fprintf ppf "@[<v>%a%a@]" include_err err print_errs errs
 
 end
-module Includecore : sig 
+module Includecore : sig
 #1 "includecore.mli"
 (***********************************************************************)
 (*                                                                     *)
@@ -37615,7 +37615,7 @@ let vars vars1 vars2 =
     vars2 ([], [])
 
 end
-module Mtype : sig 
+module Mtype : sig
 #1 "mtype.mli"
 (***********************************************************************)
 (*                                                                     *)
@@ -38044,7 +38044,7 @@ let remove_aliases env sg =
   remove_aliases env excl sg
 
 end
-module Includemod : sig 
+module Includemod : sig
 #1 "includemod.mli"
 (***********************************************************************)
 (*                                                                     *)
@@ -38721,7 +38721,7 @@ let () =
     )
 
 end
-module Stypes : sig 
+module Stypes : sig
 #1 "stypes.mli"
 (***********************************************************************)
 (*                                                                     *)
@@ -38970,7 +38970,7 @@ let dump filename =
 ;;
 
 end
-module Parmatch : sig 
+module Parmatch : sig
 #1 "parmatch.mli"
 (***********************************************************************)
 (*                                                                     *)
@@ -41072,7 +41072,7 @@ let check_partial_gadt pred loc casel =
         do_check_fragile_gadt loc casel
 
 end
-module Typetexp : sig 
+module Typetexp : sig
 #1 "typetexp.mli"
 (***********************************************************************)
 (*                                                                     *)
@@ -41302,12 +41302,12 @@ let check_deprecated loc attrs s =
     | ({txt = "ocaml.deprecated"|"deprecated"; _}, p) ->
       begin match string_of_payload p with
       | Some txt ->
- 
-if Clflags.bs_vscode then    
+
+if Clflags.bs_vscode then
      Location.prerr_warning loc (Warnings.Deprecated (s ^ " " ^ txt))
-else           
+else
      Location.prerr_warning loc (Warnings.Deprecated (s ^ "\n" ^ txt))
-          
+
       | None ->
           Location.prerr_warning loc (Warnings.Deprecated s)
       end
@@ -42225,7 +42225,7 @@ let () =
     )
 
 end
-module Typecore : sig 
+module Typecore : sig
 #1 "typecore.mli"
 (***********************************************************************)
 (*                                                                     *)
@@ -45127,7 +45127,7 @@ and type_label_access env loc srecord lid =
 
 and type_format loc str env =
 #if 1 then assert false
-#else 
+#else
   let loc = {loc with Location.loc_ghost = true} in
   try
     CamlinternalFormatBasics.(CamlinternalFormat.(
@@ -46366,7 +46366,7 @@ let () =
   Env.add_delayed_check_forward := add_delayed_check
 
 end
-module Typedecl : sig 
+module Typedecl : sig
 #1 "typedecl.mli"
 (***********************************************************************)
 (*                                                                     *)
@@ -47774,18 +47774,18 @@ let transl_exception env sext =
   let newenv = Env.add_extension ~check:true ext.ext_id ext.ext_type env in
     ext, newenv
 
- let customize_arity arity pval_attributes = 
-  let cur_arity = ref arity in 
-  List.iter (fun (x:Parsetree.attribute) -> 
-    match x with 
-    | {txt = "internal.arity";_}, 
+ let customize_arity arity pval_attributes =
+  let cur_arity = ref arity in
+  List.iter (fun (x:Parsetree.attribute) ->
+    match x with
+    | {txt = "internal.arity";_},
       PStr [ {pstr_desc = Pstr_eval
                   (
                     ({pexp_desc = Pexp_constant (Const_int i)} :
                        Parsetree.expression) ,_)}]
       -> if i < !cur_arity then cur_arity := i
     | _ -> ()
-  ) pval_attributes ;     
+  ) pval_attributes ;
   !cur_arity
 
 (* Translate a value declaration *)
@@ -47800,7 +47800,7 @@ let transl_value_decl env loc valdecl =
   | decl ->
       let arity = customize_arity (Ctype.arity ty) valdecl.pval_attributes in
       let prim = Primitive.parse_declaration  arity decl in
-      let prim_native_name = prim.prim_native_name in 
+      let prim_native_name = prim.prim_native_name in
       if arity = 0 && not ( String.length prim_native_name > 3 &&
                             String.unsafe_get prim_native_name 0 = 'B' &&
                             String.unsafe_get prim_native_name 1 = 'S' &&
@@ -48148,7 +48148,7 @@ let () =
     )
 
 end
-module Typeclass : sig 
+module Typeclass : sig
 #1 "typeclass.mli"
 (***********************************************************************)
 (*                                                                     *)
@@ -50120,7 +50120,7 @@ let () =
     )
 
 end
-module Typemod : sig 
+module Typemod : sig
 #1 "typemod.mli"
 (***********************************************************************)
 (*                                                                     *)
@@ -51822,8 +51822,8 @@ let type_implementation_more sourcefile outputprefix modulename initial_env ast 
   end else begin
     let sourceintf =
       Misc.chop_extension_if_any sourcefile ^ !Config.interface_suffix in
- 
-    let mli_status = !Clflags.assume_no_mli in 
+
+    let mli_status = !Clflags.assume_no_mli in
     if (mli_status = Clflags.Mli_na && Sys.file_exists sourceintf) || (mli_status = Clflags.Mli_exists) then begin
 
       let intf_file =
@@ -51871,8 +51871,8 @@ let type_implementation_more sourcefile outputprefix modulename initial_env ast 
       (Some sourcefile) initial_env None;
     raise e
 let type_implementation sourcefile outputprefix modulename initial_env ast =
-  let (a,b,_,_) = 
-    type_implementation_more sourcefile outputprefix modulename initial_env ast in 
+  let (a,b,_,_) =
+    type_implementation_more sourcefile outputprefix modulename initial_env ast in
   a,b
 
 let save_signature modname tsg outputprefix source_file initial_env cmi =
@@ -51923,7 +51923,7 @@ let package_units initial_env objfiles cmifile modulename =
   let prefix = chop_extension_if_any cmifile in
   let mlifile = prefix ^ !Config.interface_suffix in
 
-  let mli_status = !Clflags.assume_no_mli in 
+  let mli_status = !Clflags.assume_no_mli in
   if (mli_status = Clflags.Mli_na && Sys.file_exists mlifile) || (mli_status = Clflags.Mli_exists) then begin
 
     if not (Sys.file_exists cmifile) then begin
@@ -52055,28 +52055,28 @@ module Ocaml_typed_tree_main
 #1 "ocaml_typed_tree_main.ml"
 let suites :  Mt.pair_suites ref  = ref []
 let test_id = ref 0
-let eq loc x y = 
-  incr test_id ; 
-  suites := 
+let eq loc x y =
+  incr test_id ;
+  suites :=
     (loc ^" id " ^ (string_of_int !test_id), (fun _ -> Mt.Eq(x,y))) :: !suites
 
-let v str = 
-  str  
-  |> Lexing.from_string 
+let v str =
+  str
+  |> Lexing.from_string
   |> Parse.implementation
 
-let ( ) = 
-  begin 
+let ( ) =
+  begin
     Clflags.dont_write_files := true;
     Clflags.unsafe_string := false;
     Clflags.debug := true;
     Clflags.record_event_when_debug := false;
-    Clflags.binary_annotations := false; 
+    Clflags.binary_annotations := false;
     Clflags.nopervasives := true;
     Clflags.assume_no_mli := Mli_non_exists
   end
 
-let x = 
+let x =
   let modulename = "Test" in
   Typemod.type_implementation modulename modulename modulename Env.empty (v {|
 type int
@@ -52092,8 +52092,8 @@ external ( mod ) : int -> int -> int = "%modint"
  let f x y = x + y|});;
 
 
-let () = 
-  match x with 
+let () =
+  match x with
   | ({Typedtree.str_items =
         {Typedtree.str_desc =
            Typedtree.Tstr_type
@@ -52276,7 +52276,7 @@ let () =
   | _ -> eq __LOC__ true false
     (* [%debugger] ; Js.log x *)
 
-let () = 
+let () =
   Mt.from_pair_suites __MODULE__ !suites
 (* local variables: *)
 (* compile-command: "ocamlc.opt -c -I +compiler-libs ocaml_typed_tree_main.ml" *)

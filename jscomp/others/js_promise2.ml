@@ -29,8 +29,8 @@
     ]}
 *)
 
-type + 'a t = 'a Js_promise2.t
-type error = Js_promise2.error
+type + 'a t
+type error (* abstract error type *)
 
 
 external make : (resolve:('a -> unit [@bs]) ->
@@ -47,12 +47,12 @@ external all6 : 'a0 t * 'a1 t * 'a2 t  * 'a3 t * 'a4 t * 'a5 t ->    ('a0 * 'a1 
 
 external race : 'a t array -> 'a t = "race" [@@bs.val] [@@bs.scope "Promise"]
 
-external then_ : ('a -> 'b t [@bs.uncurry]) -> 'b t = "then" [@@bs.send.pipe: 'a t]
+external then_ : 'a t -> ('a -> 'b t [@bs.uncurry]) -> 'b t = "then" [@@bs.send]
 
 
 
-external catch : (error -> 'a t [@bs.uncurry]) -> 'a t = "catch" [@@bs.send.pipe: 'a t]
-(* [ p|> catch handler]
+external catch : 'a t -> (error -> 'a t [@bs.uncurry]) -> 'a t = "catch" [@@bs.send]
+(* [ p |. catch handler]
     Note in JS the returned promise type is actually runtime dependent,
     if promise is rejected, it will pick the [handler] otherwise the original promise,
     to make it strict we enforce reject handler

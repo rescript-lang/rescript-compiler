@@ -14,21 +14,21 @@ type  pair_suites = (string * (unit ->  eq)) list
 val from_suites : string -> (string * (unit -> unit)) list -> unit
 val from_pair_suites : string ->  pair_suites -> unit
 
-type promise_suites = (string * eq Js.Promise.t) list 
+type promise_suites = (string * eq Js.Promise2.t) list
 
-val from_promise_suites : 
+val from_promise_suites :
   string ->
-  promise_suites -> 
+  promise_suites ->
   unit
 
-val eq_suites :   
+val eq_suites :
   test_id:int ref ->
   suites:pair_suites ref -> string -> 'b -> 'b -> unit
-  
+
 val bool_suites :
   test_id:int ref ->
   suites: pair_suites ref -> string -> bool -> unit
 
-val throw_suites : 
+val throw_suites :
   test_id:int ref ->
   suites: pair_suites ref -> string -> (unit -> unit) -> unit

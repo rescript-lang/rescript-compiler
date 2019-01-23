@@ -288,7 +288,7 @@ Mt.from_pair_suites("Js_promise_basic_test", suites[0]);
 var twop = Promise.resolve(2);
 
 function then_(prim, prim$1) {
-  return prim$1.then(Curry.__1(prim));
+  return prim.then(Curry.__1(prim$1));
 }
 
 function re(prim) {
