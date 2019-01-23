@@ -43,6 +43,10 @@ let incompatible o =
   exit 2
 
 module Options = Main_args.Make_optcomp_options (struct
+#if undefined  BS_NO_COMPILER_PATCH then 
+  let _super_errors () = ()
+#end
+
   let _a () = make_archive := true; option "-a" ()
   let _absname = option "-absname"
   let _annot = option "-annot"

@@ -369,7 +369,11 @@ let toArray n =
   | None -> [||]
   | Some n ->
     let size = lengthNode n in
+#if BS_NATIVE then
+    let v = A.makeUninitializedUnsafe size (n |. valueGet) in
+#else
     let v = A.makeUninitializedUnsafe size in
+#end
     ignore (fillArray n 0 v : int);  (* may add assertion *)
     v
 
@@ -452,7 +456,11 @@ let keepCopyU n p : _ t =
   | None -> empty
   | Some n ->
     let size = lengthNode n in
+#if BS_NATIVE then
+    let  v = A.makeUninitializedUnsafe size (n |. valueGet) in
+#else
     let  v = A.makeUninitializedUnsafe size in
+#end
     let last =
       fillArrayWithFilter n 0 v p in
     fromSortedArrayAux v 0 last
@@ -464,7 +472,11 @@ let partitionCopyU n p  =
   | None -> empty, empty
   | Some n ->
     let size = lengthNode n in
+#if BS_NATIVE then
+    let v = A.makeUninitializedUnsafe size (n |. valueGet) in
+#else
     let v = A.makeUninitializedUnsafe size in
+#end
     let backward = size - 1 in
     let cursor = cursor ~forward:0 ~backward in
     fillArrayWithPartition n cursor v p ;

@@ -32,4 +32,4 @@ val simple_collect_from_main :
            string -> string Queue.t
 
 (* Returns a list of extra modules which are part of the "otherlibs" stdlib to link in. *)
-val get_otherlibs_dependencies : String_set.t String_map.t -> string -> string list
+val get_otherlibs_dependencies : ocamlfind:bool -> String_set.t String_map.t -> string -> string list

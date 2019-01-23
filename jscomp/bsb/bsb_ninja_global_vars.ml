@@ -53,3 +53,24 @@ let namespace = "namespace"
 
 
 let warnings = "warnings"
+
+#if BS_NATIVE then
+let package_sep = "-"
+let build_artifacts_dir = "build_artifacts_dir"
+
+let bs_super_errors = "bs_super_errors"
+let bs_super_errors_ocamlfind = "bs_super_errors_ocamlfind"
+
+let ocamlc = "ocamlc"
+let ocamlopt = "ocamlopt"
+let ocamlfind = "ocamlfind"
+let ocamlfind_dependencies = "ocamlfind_dependencies"
+let external_deps_for_linking = "external_deps_for_linking"
+let open_flag = "open_flag"
+let ocaml_flags = "ocaml_flags"
+let ocaml_linker_flags = "ocaml_linker_flags"
+let berror = "berror"
+let ocaml_dependencies = "ocaml_dependencies"
+let bsb_helper_warnings = "bsb_helper_warnings"
+let bsb_helper_verbose = "bsb_helper_verbose"
+#end

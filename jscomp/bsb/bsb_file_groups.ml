@@ -34,6 +34,9 @@ type build_generator =
     output : string list;
     command : string}  
 
+#if BS_NATIVE then
+type compilation_kind_t = Js | Bytecode | Native
+#end
 
 type  file_group = 
   { dir : string ;
@@ -42,6 +45,11 @@ type  file_group =
     public : public ;
     dir_index : Bsb_dir_index.t  ;
     generators : build_generator list ; 
+#if BS_NATIVE then
+    backend: compilation_kind_t list;
+    is_ppx: bool;
+    ppx: string list;
+#end
     (* output of [generators] should be added to [sources],
        if it is [.ml,.mli,.re,.rei]
     *)

@@ -26,6 +26,9 @@ type command =
   { 
     cmd : string ;
     cwd : string ; 
+#if BS_NATIVE then
+    env : string array ;
+#end
     args : string array 
   }  
 
@@ -36,3 +39,9 @@ val run_command_execv :   command -> int
 
 
 val remove_dir_recursive : string -> unit 
+
+#if BS_NATIVE then
+val run_command_capture_stdout: string -> string
+
+val run_command_with_env: string -> string array -> string
+#end

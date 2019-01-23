@@ -52,6 +52,11 @@ type cxt = {
   traverse : bool;
   namespace : string option;
   clean_staled_bs_js: bool;
+#if BS_NATIVE then
+  backend: Bsb_file_groups.compilation_kind_t list;
+  is_ppx: bool;
+  ppx: string list;
+#end
 }
 
 (** [public] has a list of modules, we do a sanity check to see if all the listed 
@@ -231,9 +236,14 @@ let clean_staled_bs_js_files
     | Some basename -> (* Found [.bs.js] files *)
          let parent = Filename.concat context.root context.cwd in 
          let lib_parent = 
+#if BS_NATIVE then
+           Filename.concat (Filename.concat context.root Bsb_config.lib_bs) 
+             (Bsb_build_util.get_build_artifacts_location context.cwd) in 
+#else
            Filename.concat (Filename.concat context.root Bsb_config.lib_bs) 
              context.cwd in 
-         if not (String_map.mem cur_sources (Ext_string.capitalize_ascii basename) ) then 
+#end
+         if not (String_map.mem cur_sources (Ext_string.capitalize_ascii basename)) then 
            begin 
              Unix.unlink (Filename.concat parent current_file);
              let basename = 
@@ -241,6 +251,8 @@ let clean_staled_bs_js_files
                | None -> basename
                | Some ns -> Ext_namespace.make ~ns basename in 
              (
+              (* \O/ we use env vars!?!?
+                    Bne - August 10th 2018 *)
                match Sys.getenv "BS_CMT_POST_PROCESS_CMD" with 
                | exception _ -> ()
                | cmd -> 
@@ -252,6 +264,8 @@ let clean_staled_bs_js_files
                  )
              );
              Ext_list.iter [
+                (* What about cmi, cmt, mlast and mliast ?
+                       Ben - August 10th 2018 *)
                 Literals.suffix_cmi; Literals.suffix_cmj ; 
                 Literals.suffix_cmt; Literals.suffix_cmti ; 
                 Literals.suffix_mlast; Literals.suffix_mlastd;
@@ -262,6 +276,31 @@ let clean_staled_bs_js_files
              )
            end           
   )
+
+#if BS_NATIVE then
+let parse_backend parent_backend input =
+  let maybeBackend : Ext_json_types.t option = begin match String_map.find_opt Bsb_build_schemas.kind input with
+    | None -> String_map.find_opt Bsb_build_schemas.backend input
+    | x ->
+      Bsb_log.warn "@{<warn>Warning@} 'kind' field in 'sources' is deprecated and will be removed in the next release. Please use 'backend'.@.";
+      x
+  end in
+  begin match maybeBackend with 
+    | Some (Arr {loc_start; content = s }) -> (* [ a,b ] *)
+      List.map (fun (s : string) ->
+        match s with 
+        | "js"       -> Bsb_file_groups.Js
+        | "native"   -> Bsb_file_groups.Native
+        | "bytecode" -> Bsb_file_groups.Bytecode
+        | str -> Bsb_exception.errorf ~loc:loc_start "'backend' field expects one of: 'js', 'bytecode' or 'native'. Found '%s'" str
+      ) (Bsb_build_util.get_list_string s);
+    | Some (Str {str = "js"} )       -> [Bsb_file_groups.Js]
+    | Some (Str {str = "native"} )   -> [Bsb_file_groups.Native]
+    | Some (Str {str = "bytecode"} ) -> [Bsb_file_groups.Bytecode]
+    | Some x -> Bsb_exception.config_error x "'backend' field expects one of: 'js', 'bytecode' or 'native'"
+    | None -> parent_backend
+  end
+#end
 
 let rec 
   parsing_source_dir_map 
@@ -382,6 +421,11 @@ let rec
                  resources ;
                  public ;
                  dir_index = cxt.dir_index ;
+#if BS_NATIVE then
+                 backend = cxt.backend;
+                 is_ppx = cxt.is_ppx;
+                 ppx = cxt.ppx;
+#end
                 generators  } ] ;
     intervals = !cur_update_queue ;
     globbed_dirs = !cur_globbed_dirs ;
@@ -400,12 +444,28 @@ and parsing_single_source ({not_dev; dir_index ; cwd} as cxt ) (x : Ext_json_typ
          cwd = Ext_path.concat cwd (Ext_filename.simple_convert_node_path_to_os_path dir)}
         String_map.empty  
   | Obj {map} ->
+#if BS_NATIVE then
+    let backend = parse_backend cxt.backend map in
+    let ppx = match String_map.find_opt Bsb_build_schemas.ppx map with 
+        | Some (Arr {loc_start; content = s }) -> Bsb_build_util.get_list_string s
+        | Some (Str {str} )                    -> [ str ]
+        | None                                 -> cxt.ppx
+        | _ -> Bsb_exception.config_error x "Field 'ppx' not recognized. Should be a string or an array of strings." 
+      in
+    let (current_dir_index, is_ppx) = 
+      match String_map.find_opt Bsb_build_schemas.type_ map with 
+      | Some (Str {str="dev"}) -> (Bsb_dir_index.get_dev_index (), false)
+      | Some (Str {str="ppx"}) -> (dir_index, true)
+      | Some _ -> Bsb_exception.config_error x {|type field expect "dev" or "ppx" literal |}
+      | None -> (dir_index, cxt.is_ppx) in 
+#else
     let current_dir_index = 
       match String_map.find_opt map Bsb_build_schemas.type_ with 
       | Some (Str {str="dev"}) -> 
         Bsb_dir_index.get_dev_index ()
       | Some _ -> Bsb_exception.config_error x {|type field expect "dev" literal |}
       | None -> dir_index in 
+#end
     if not_dev && not (Bsb_dir_index.is_lib_dir current_dir_index) then 
       Bsb_file_groups.empty 
     else 
@@ -421,8 +481,18 @@ and parsing_single_source ({not_dev; dir_index ; cwd} as cxt ) (x : Ext_json_typ
 
       in
       parsing_source_dir_map 
+#if BS_NATIVE then
+        {cxt with 
+          dir_index = current_dir_index; 
+          cwd= Ext_path.concat cwd dir;
+          backend = backend;
+          is_ppx=is_ppx;
+          ppx = ppx;
+        } map
+#else
         {cxt with dir_index = current_dir_index; 
                   cwd= Ext_path.concat cwd dir} map
+#end
   | _ -> Bsb_file_groups.empty
 and  parsing_arr_sources cxt (file_groups : Ext_json_types.t array)  = 
   Array.fold_left (fun  origin x ->
@@ -446,6 +516,11 @@ let scan ~not_dev ~root ~cut_generators ~namespace ~clean_staled_bs_js x =
     cut_generators;
     namespace;
     clean_staled_bs_js;
+#if BS_NATIVE then
+    backend = [Bsb_file_groups.Js; Bsb_file_groups.Native; Bsb_file_groups.Bytecode];
+    is_ppx = false;
+    ppx = [];
+#end
     traverse = false
   } x
 

@@ -103,6 +103,10 @@ let emit_impl_build
     ~no_intf_file:(no_intf_file : bool) 
     js_post_build_cmd
     ~is_re
+#if BS_NATIVE then
+    ~local_ppx_flags
+    ~local_ppx_deps
+#end
     namespace
     filename_sans_extension
   : info =    
@@ -127,6 +131,13 @@ let emit_impl_build
     make_common_shadows is_re package_specs
       (Filename.dirname file_cmi)
       group_dir_index in
+#if BS_NATIVE then
+  let shadows = List.map (fun f -> 
+    Bsb_ninja_util.{
+     key = "ppx_flags"; 
+     op = AppendList ["-ppx"; "\"" ^ f ^ " -bsb-backend js\""]
+   }) local_ppx_flags in
+#end
   begin
     Bsb_ninja_util.output_build oc
       ~output:output_mlast
@@ -134,7 +145,13 @@ let emit_impl_build
       ~rule:( if is_re then 
                 Bsb_rule.build_ast_and_module_sets_from_re
               else
+#if BS_NATIVE then
+                Bsb_rule.build_ast_and_module_sets)
+      ~implicit_deps:local_ppx_deps
+      ~shadows;
+#else
                 Bsb_rule.build_ast_and_module_sets);
+#end
     Bsb_ninja_util.output_build
       oc
       ~output:output_mlastd
@@ -174,6 +191,10 @@ let emit_intf_build
     (group_dir_index : Bsb_dir_index.t)
     oc
     ~is_re
+#if BS_NATIVE then
+    ~local_ppx_flags
+    ~local_ppx_deps
+#end
     namespace
     filename_sans_extension
   : info =
@@ -191,6 +212,13 @@ let emit_intf_build
     make_common_shadows is_re package_specs
       (Filename.dirname output_cmi)
       group_dir_index in
+#if BS_NATIVE then
+  let shadows = List.map (fun f -> 
+    Bsb_ninja_util.{
+     key = "ppx_flags"; 
+     op = AppendList ["-ppx"; "\"" ^ f ^ " -bsb-backend js\""]
+   }) local_ppx_flags in
+#end
   Bsb_ninja_util.output_build oc
     ~output:output_mliast
       (* TODO: we can get rid of absloute path if we fixed the location to be 
@@ -200,7 +228,13 @@ let emit_intf_build
               (if is_re then filename_sans_extension ^ Literals.suffix_rei 
                else filename_sans_extension ^ Literals.suffix_mli))
     ~rule:(if is_re then Bsb_rule.build_ast_and_module_sets_from_rei
+#if BS_NATIVE then
+           else Bsb_rule.build_ast_and_module_sets)
+      ~implicit_deps:local_ppx_deps
+      ~shadows;
+#else
            else Bsb_rule.build_ast_and_module_sets);
+#end
   Bsb_ninja_util.output_build oc
     ~output:output_mliastd
     ~input:output_mliast
@@ -226,6 +260,10 @@ let handle_module_info
     (package_specs : Bsb_package_specs.t) 
     js_post_build_cmd
     ~bs_suffix
+#if BS_NATIVE then
+    ~local_ppx_flags
+    ~local_ppx_deps
+#end
     oc  module_name 
     ( {name_sans_extension = input} as module_info : Bsb_db.module_info)
     namespace
@@ -240,6 +278,10 @@ let handle_module_info
       ~bs_suffix
       ~no_intf_file:false
       ~is_re:impl_is_re
+#if BS_NATIVE then
+      ~local_ppx_flags
+      ~local_ppx_deps
+#end
       js_post_build_cmd      
       namespace
       input  @ 
@@ -248,6 +290,10 @@ let handle_module_info
       group_dir_index
       oc         
       ~is_re:intf_is_re
+#if BS_NATIVE then
+      ~local_ppx_flags
+      ~local_ppx_deps
+#end
       namespace
       input 
   | Ml_source(is_re,_), Mli_empty ->
@@ -259,6 +305,10 @@ let handle_module_info
       ~no_intf_file:true
       js_post_build_cmd      
       ~is_re
+#if BS_NATIVE then
+      ~local_ppx_flags
+      ~local_ppx_deps
+#end
       namespace
       input 
   | Ml_empty, Mli_source(is_re,_) ->    
@@ -267,6 +317,10 @@ let handle_module_info
       group_dir_index
       oc         
       ~is_re
+#if BS_NATIVE then
+      ~local_ppx_flags
+      ~local_ppx_deps
+#end
       namespace
       input 
   | Ml_empty, Mli_empty -> zero
@@ -278,6 +332,10 @@ let handle_file_group
     ~custom_rules 
     ~package_specs 
     ~js_post_build_cmd  
+#if BS_NATIVE then
+    ~local_ppx_flags 
+    ~local_ppx_deps
+#end
     (files_to_install : String_hash_set.t) 
     (namespace  : string option)
     acc 
@@ -296,6 +354,10 @@ let handle_file_group
         String_hash_set.add files_to_install (Bsb_db.filename_sans_suffix_of_module_info module_info);
       (handle_module_info 
         ~bs_suffix
+#if BS_NATIVE then
+        ~local_ppx_flags
+        ~local_ppx_deps
+#end
          group.dir_index 
          package_specs js_post_build_cmd 
          oc 
@@ -305,18 +367,97 @@ let handle_file_group
       ) @  acc
     ) 
 
+#if BS_NATIVE then
+
+(* This function separate entries into two set, the ppx ones and the non-ppx ones. It'll also filter
+   out the entries that don't match the backend being built. *)
+let separate_ppx_entries_and_filter entries backend =
+  List.fold_left Bsb_config_types.(fun acc ({kind; } as project_entry) -> 
+  let separate_for_backend (entries, ppx_entries) entry_backend =
+    let entries = if backend = entry_backend && kind <> Ppx then 
+      project_entry :: entries
+    else entries in
+    let ppx_entries = if kind = Ppx then project_entry :: ppx_entries else ppx_entries in
+    (entries, ppx_entries)
+  in
+  
+  (* Iterate over all backends. *)
+  List.fold_left (fun acc b -> 
+      match b with 
+      | JsTarget -> separate_for_backend acc Js
+      | NativeTarget -> separate_for_backend acc Native
+      | BytecodeTarget -> separate_for_backend acc Bytecode
+    ) acc project_entry.backend;
+) ([], []) entries
+
+(* If we're building a normal project or library (not a ppx), we need to find the right 
+   executable path for each ppx that the `sources` depends on.
+   To do that we iterate over each ppx name, then find it in the array of ppx_entries,
+   then either use its `output_name` if any or use the default name.
+   If we can't find it in the local array of ppxes we look at the dependencies, to see if
+   they expose anything. *)
+let get_local_ppx_deps ~ppx_list ~root_project_dir ~backend ~dependency_info ~ppx_entries =
+  List.fold_left (fun (local_ppx_flags, local_ppx_deps) ppx -> 
+    try
+      let ppx_entry = List.find (fun {Bsb_config_types.main_module_name;} -> main_module_name = ppx) ppx_entries in
+      let output = begin match ppx_entry.output_name with 
+        | None -> 
+          let extension = if Ext_sys.is_windows_or_cygwin then ".exe" else "" in
+          (String.lowercase ppx_entry.main_module_name) ^ ".native" ^ extension
+        | Some name -> name
+      end in
+      let output = if Ext_sys.is_windows_or_cygwin then output else "./" ^ output in
+      (output :: local_ppx_flags, output :: local_ppx_deps)
+    with
+    | Not_found -> ((Bsb_dependency_info.check_if_dep ~root_project_dir ~backend dependency_info ppx) :: local_ppx_flags, local_ppx_deps)
+  ) ([], []) ppx_list
+#end
 
 let handle_file_groups
     oc ~package_specs 
     ~bs_suffix
     ~js_post_build_cmd
+#if BS_NATIVE then
+    ~backend
+    ~entries
+    ~dependency_info
+    ~root_project_dir
+    ~is_top_level
+    ~ppx_flags_internal
+#end
     ~files_to_install ~custom_rules
     (file_groups  :  Bsb_file_groups.file_groups)
     namespace (st : info) : info  =
+#if BS_NATIVE then
+  let file_groups = List.filter (fun (group : Bsb_file_groups.file_group) ->
+    match backend with 
+    | Bsb_config_types.Js       -> 
+      not group.is_ppx && List.mem Bsb_file_groups.Js group.Bsb_file_groups.backend
+    | Bsb_config_types.Native   -> List.mem Bsb_file_groups.Native group.Bsb_file_groups.backend
+    | Bsb_config_types.Bytecode -> List.mem Bsb_file_groups.Bytecode group.Bsb_file_groups.backend
+  ) file_groups in 
+  (* Separate entries into two set, the ppx ones and the non-ppx ones *)
+  let (entries, ppx_entries) = separate_ppx_entries_and_filter entries backend in
+  List.fold_left 
+    (fun comp_info (group : Bsb_file_groups.file_group) -> 
+      if group.is_ppx then
+        comp_info
+      else begin
+        let (local_ppx_flags, local_ppx_deps) = get_local_ppx_deps ~ppx_list:(group.ppx @ ppx_flags_internal) ~root_project_dir ~backend ~dependency_info ~ppx_entries in
+        handle_file_group 
+         oc  ~bs_suffix ~package_specs ~custom_rules ~js_post_build_cmd ~local_ppx_flags ~local_ppx_deps
+         files_to_install 
+         namespace
+         comp_info
+        group
+      end
+    ) 
+#else
   List.fold_left 
     (handle_file_group 
        oc  ~bs_suffix ~package_specs ~custom_rules ~js_post_build_cmd
        files_to_install 
        namespace
     ) 
+#end
     st  file_groups

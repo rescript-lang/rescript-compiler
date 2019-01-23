@@ -30,4 +30,13 @@ val
   cwd:string ->  
   bsc_dir:string ->  
   not_dev:bool -> 
+#if BS_NATIVE then
+  dependency_info:Bsb_dependency_info.t ->
+  ocaml_dir:string ->
+  root_project_dir:string ->
+  is_top_level: bool ->
+  backend:Bsb_config_types.compilation_kind_t ->
+  main_bs_super_errors:bool ->
+  build_library:string option ->
+#end
   Bsb_config_types.t -> unit 

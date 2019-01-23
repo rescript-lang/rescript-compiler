@@ -208,7 +208,13 @@ let rec fillAux i arr cell =
     fillAux (i + 1) arr (nextGet x) 
 
 let toArray x =         
+#if BS_NATIVE then
+  let v = match Js.Null.toOption (firstGet x) with
+    | None -> [||] 
+    | Some y -> A.makeUninitializedUnsafe (lengthGet x) (contentGet y) in 
+#else
   let v = A.makeUninitializedUnsafe (lengthGet x) in 
+#end
   fillAux 0 v (firstGet x);
   v
 

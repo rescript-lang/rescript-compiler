@@ -25,5 +25,10 @@
 
 
 
+#if BS_NATIVE then
+val merlin_file_gen :
+    cwd:string -> backend:Bsb_config_types.compilation_kind_t -> string  -> Bsb_config_types.t ->  unit 
+#else
 val merlin_file_gen : 
-    cwd:string -> string  -> Bsb_config_types.t ->  unit 
+    cwd:string -> string  -> Bsb_config_types.t ->  unit
+#end

@@ -27,6 +27,9 @@ type t
 
 
 
+#if BS_NATIVE then
+val sep_char : char
+#end
 
 (**
    [combine path1 path2]

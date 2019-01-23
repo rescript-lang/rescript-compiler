@@ -43,6 +43,30 @@ let collect_file name =
 let dev_group = ref 0
 let namespace = ref None
 
+#if BS_NATIVE then
+let verbose = ref false
+
+let warnings = ref ""
+
+let warn_error = ref ""
+
+let ocaml_dependencies = ref []
+
+let add_ocaml_dependencies s = 
+  ocaml_dependencies := s :: !ocaml_dependencies
+
+let clibs = ref []
+let add_clib file = clibs := file :: !clibs 
+
+let flags = ref []
+let add_flag flag = flags := flag :: !flags 
+
+let ocamlfind_packages = ref []
+
+let bs_super_errors = ref false
+
+let build_library = ref None
+#end
 
 let anonymous filename =
   collect_file filename
@@ -50,15 +74,43 @@ let usage = "Usage: bsb_helper.exe [options] \nOptions are:"
 #if BS_NATIVE then
 let link link_byte_or_native = 
   begin match !main_module with
-    | None -> failwith "Linking needs a main module. Please add -main-module MyMainModule to the invocation."
-    | Some main_module ->
-      Bsb_helper_linker.link 
-        link_byte_or_native
-        ~main_module:main_module
-        ~includes:!includes
-        ~batch_files:!batch_files
+  | None -> Bsb_exception.missing_main()
+  | Some main_module ->
+    Bsb_helper_linker.link 
+      link_byte_or_native
+      ~main_module:main_module
+      (* `includes` is not reversed here because it gets reversed inside when we fold_list and 
+          prepend a new list. *)
+      ~includes:!includes
+      ~batch_files:!batch_files
+      ~clibs:(List.rev !clibs)
+      ~flags:(List.rev !flags)
+      ~ocamlfind_packages:!ocamlfind_packages
+      ~bs_super_errors:!bs_super_errors
+      ~namespace:!namespace
+      ~ocaml_dependencies:(List.rev !ocaml_dependencies)
+      ~warnings:!warnings
+      ~warn_error:!warn_error
+      ~verbose:!verbose
+      (Sys.getcwd ())
   end
-#end  
+let pack link_byte_or_native =
+  Bsb_helper_packer.pack
+    link_byte_or_native
+    ~main_module:!main_module
+    ~includes:!includes
+    ~batch_files:!batch_files
+    ~flags:(List.rev !flags)
+    ~ocamlfind_packages:!ocamlfind_packages
+    ~bs_super_errors:!bs_super_errors
+    ~namespace:!namespace
+    ~warnings:!warnings
+    ~warn_error:!warn_error
+    ~verbose:!verbose
+    ~build_library:!build_library
+    (Sys.getcwd ())
+#end
+
 let () =
   Arg.parse [
     "-g", Arg.Int (fun i -> dev_group := i ),
@@ -77,12 +129,12 @@ let () =
 #if BS_NATIVE then    
     "-MD-bytecode", Arg.String (
       fun x -> 
-        Bsb_helper_depfile_gen.make
+        Bsb_helper_depfile_gen.emit_dep_file
           Bytecode 
           x (Bsb_dir_index.of_int !dev_group ) !namespace),          
     " (internal)Generate dep file for ninja format(from .ml[i]deps)";
     "-MD-native", Arg.String (fun x -> 
-        Bsb_helper_depfile_gen.make
+        Bsb_helper_depfile_gen.emit_dep_file
           Native 
            x (Bsb_dir_index.of_int !dev_group )
            !namespace
@@ -128,20 +180,42 @@ let () =
     "-link-native", (Arg.String (fun x -> link (Bsb_helper_linker.LinkNative x))),
     " link native files into an executable";
 
+    "-package", (Arg.String (fun x -> ocamlfind_packages := "-package" :: x :: !ocamlfind_packages)),
+    " add an ocamlfind pacakge to be packed/linked";
+    
     "-pack-native-library", (Arg.Unit (fun () -> 
-        Bsb_helper_packer.pack
-          Bsb_helper_packer.PackNative
-          ~includes:!includes
-          ~batch_files:!batch_files
-      )),
+      pack Bsb_helper_packer.PackNative
+        
+    )),
     " pack native files (cmx) into a library file (cmxa)";
 
     "-pack-bytecode-library", (Arg.Unit (fun () -> 
-        Bsb_helper_packer.pack
-          Bsb_helper_packer.PackBytecode
-          ~includes:!includes
-          ~batch_files:!batch_files
-      )),
+      pack Bsb_helper_packer.PackBytecode
+    )),
     " pack bytecode files (cmo) into a library file (cma)";
-#end    
+
+    "-bs-super-errors", (Arg.Unit (fun () -> bs_super_errors := true)),
+    " Better error message combined with other tools ";
+    
+    "-add-clib", (Arg.String add_clib),
+    " adds a .a library file to be linked into the final executable";
+    
+    "-add-flag", (Arg.String add_flag),
+    " passes flag to underlaying ocaml compiler for packing/linking phase.";
+    
+    "-add-ocaml-dependency", (Arg.String add_ocaml_dependencies),
+    " Add a dependency on otherlibs or compiler-libs.";
+    
+    "-w", (Arg.String (fun w -> warnings := w )),
+    " Use warnings for packer/linker.";
+    
+    "-warn-error", (Arg.String (fun w -> warn_error := w )),
+    " Turn warnings into errors for packer/linker.";
+    
+    "-verbose", (Arg.Unit (fun v -> verbose := true)),
+    " Turn on verbose Maude.";
+    
+    "-build-library", (Arg.String (fun v -> build_library := Some v)),
+    " Create a library file with all the object files from the given entry point."
+#end
   ] anonymous usage

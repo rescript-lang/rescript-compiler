@@ -28,6 +28,10 @@ let (//) = Ext_path.combine
 let sourcedirs_meta = ".sourcedirs.json"
 
 let generate_sourcedirs_meta cwd (res : Bsb_file_groups.t) = 
+#if BS_NATIVE then
+  (* Just in case this is called early on, create the directory structure. *)
+  Bsb_build_util.mkp (cwd // Bsb_config.lib_bs);
+#end
   let ochan = open_out_bin (cwd // Bsb_config.lib_bs // sourcedirs_meta) in
   let v = 
     Ext_json_noloc.(

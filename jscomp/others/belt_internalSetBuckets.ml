@@ -48,7 +48,11 @@ let rec copy ( x : _ t) : _ t=
     ~buckets:(copyBuckets (C.bucketsGet x))
 and copyBuckets ( buckets : _ bucket C.opt array) =  
   let len = A.length buckets in 
+#if BS_NATIVE then
+  let newBuckets = if len > 0 then A.makeUninitializedUnsafe len (A.getUnsafe buckets 0) else [||] in 
+#else
   let newBuckets = A.makeUninitializedUnsafe len in 
+#end
   for i = 0 to len - 1 do 
     A.setUnsafe newBuckets i 
     (copyBucket (A.getUnsafe buckets i))
@@ -99,6 +103,29 @@ let rec fillArray i arr cell =
   | None -> i + 1
   | Some v -> fillArray (i + 1) arr v 
 
+#if BS_NATIVE then 
+let toArray h = 
+  let d = C.bucketsGet h in 
+  let current = ref 0 in 
+  let arr = ref None in
+  for i = 0 to A.length d - 1 do  
+    let cell = A.getUnsafe d i in 
+    match C.toOpt cell with 
+    | None -> ()
+    | Some cell -> 
+      let arr = begin match !arr with 
+        | None -> 
+          let a = A.makeUninitializedUnsafe (C.sizeGet h) (keyGet cell) in
+          arr := Some a;
+          a
+        | Some arr -> arr
+      end in
+      current := fillArray !current arr cell
+  done;
+  match !arr with 
+  | None -> [||]
+  | Some arr -> arr
+#else
 let toArray h = 
   let d = C.bucketsGet h in 
   let current = ref 0 in 
@@ -112,6 +139,7 @@ let toArray h =
   done;
   arr 
 
+#end
 
 
 let rec doBucketFold ~f b accu =
@@ -150,8 +178,16 @@ let getBucketHistogram h =
 
 let logStats h =
   let histogram =  getBucketHistogram h in 
+#if BS_NATIVE then
+  Printf.printf 
+    "{\n\tbindings: %d,\n\tbuckets: %d\n\thistogram: %s\n}" 
+    (C.sizeGet h) 
+    (A.length (C.bucketsGet h))
+    (A.reduceU histogram "" (fun[@bs] acc x -> acc ^ (string_of_int x)))
+#else
   Js.log [%obj{ bindings = C.sizeGet h;
                 buckets = A.length (C.bucketsGet h);
                 histogram  }]
 
+#end
 

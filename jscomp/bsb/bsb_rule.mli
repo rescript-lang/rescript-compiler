@@ -45,7 +45,30 @@ val build_bin_deps : t
 val build_cmj_js : t
 val build_cmj_cmi_js : t 
 val build_cmi : t
+
+#if BS_NATIVE then
+val build_ast_and_module_sets_gen_simple : t
+val build_ast_and_module_sets_from_re_gen_simple : t 
+val build_ast_and_module_sets_from_rei_gen_simple : t 
+val build_bin_deps_bytecode : t 
+val build_bin_deps_native : t 
+val reload : t 
+val build_cmo_cmi_bytecode : t
+val build_cmi_bytecode : t
+val build_cmx_cmi_native : t
+val build_cmi_native : t
+val linking_bytecode : t
+val linking_native : t
+val build_cma_library : t
+val build_cmxa_library : t
+#end
+
 val build_package : t 
+#if BS_NATIVE then
+val build_package_gen_mlast_simple : t
+val build_package_build_cmi_bytecode : t
+val build_package_build_cmi_native : t
+#end
 
 (** rules are generally composed of built-in rules and customized rules, there are two design choices:
     1. respect custom rules with the same name, then we need adjust our built-in 
@@ -58,3 +81,13 @@ val build_package : t
     we must make sure it is re-entrant
 *)
 val reset : string String_map.t -> t String_map.t
+
+#if BS_NATIVE then
+val define :
+    command:string ->
+    ?depfile:string ->
+    ?restat:unit ->
+    ?description:string ->
+    string -> 
+    t
+#end

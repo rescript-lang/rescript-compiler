@@ -30,5 +30,12 @@
 
 val make_world_deps:
   string ->
+#if BS_NATIVE then
+  root_project_dir:string ->
+  backend:Bsb_config_types.compilation_kind_t ->
+  main_config:Bsb_config_types.t ->
+  Bsb_dependency_info.t
+#else
   Bsb_config_types.t option ->
-  unit  
+  unit
+#end

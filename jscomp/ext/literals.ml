@@ -124,7 +124,12 @@ let native = "native"
 let bytecode = "bytecode"
 let js = "js"
 
+let ppx = "ppx"
 
+#if BS_NATIVE then
+let library = "library"
+let dot_static_libraries = ".static_libraries"
+#end
 
 (** Used when produce node compatible paths *)
 let node_sep = "/"

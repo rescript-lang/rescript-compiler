@@ -1,6 +1,8 @@
 # 2 "others/hashset.cppo.ml"
 type key = string
 type seed = int
+
+# 16 "hashset.cppo.ml"
 external caml_hash_mix_string : seed -> string -> seed  = "caml_hash_mix_string"
 external final_mix : seed -> seed = "caml_hash_final_mix"
 let hash (s : key) =   

@@ -30,6 +30,16 @@ type error =
   | Invalid_json of string
   | Invalid_spec of string
   | Conflict_module of string * string * string
+#if BS_NATIVE then
+  | Missing_main
+  | Missing_entry of string
+  | Missing_object_file of string
+  | No_files_to_link of string * string
+  | No_files_to_pack of string
+  | Missing_static_libraries_file of string
+  | No_package_found_for_ppx of string * string
+  | Ppx_not_found_for_package of string * string
+#end
 
 
 exception Error of error
@@ -77,12 +87,52 @@ let print (fmt : Format.formatter) (x : error) =
     Format.fprintf fmt
     "File %S, line 1\n\
     @{<error>Error: Invalid json format@}" s
+#if BS_NATIVE then
+  | Missing_main ->
+    Format.fprintf fmt
+    "@{<error>Error:@} Linking needs a main module. Please add -main-module MyMainModule to the invocation.\n"
+  | Missing_entry name ->
+    Format.fprintf fmt
+    "@{<error>Error:@} Could not find an item in the entries field to compile to '%s'\n"
+    name
+  | Missing_object_file name ->
+    Format.fprintf fmt
+    "@{<error>Error:@} build.ninja is missing the file '%s' that was used in the project. Try force-regenerating but this shouldn't happen.\n"
+    name
+  | No_files_to_link (suffix, main) ->
+    Format.fprintf fmt
+    "@{<error>Error:@} No %s to link.\nHint: is the entry point module '%s' right?\nHint 2: is the source for that entry listed under `sources` in your bsconfig.json?\n"
+    suffix main
+  | No_files_to_pack suffix ->
+    Format.fprintf fmt
+    "@{<error>Error:@} No %s to pack into a lib.\n"
+    suffix
+  | Missing_static_libraries_file name ->
+    Format.fprintf fmt
+    "@{<error>Error:@} No .static_library file found for project '%s' but had a build_script. Did that build_script exit normally?\n" name
+  | No_package_found_for_ppx (package_name, ppx_name) ->
+    Format.fprintf fmt
+    "@{<error>Error:@} No package named '%s' with ppx '%s'. Check the `entries` field in bsconfig.json.\n" package_name ppx_name
+  | Ppx_not_found_for_package (package_name, ppx_name) ->
+    Format.fprintf fmt
+    "@{<error>Error:@} Couldn't find ppx called '%s' under dep '%s'.\n" package_name ppx_name
+#end
 
 let conflict_module modname dir1 dir2 =
   error (Conflict_module (modname,dir1,dir2))
 let errorf ~loc fmt =
   Format.ksprintf (fun s -> error (Json_config (loc,s))) fmt
 
+#if BS_NATIVE then
+let missing_main () = error Missing_main
+let missing_entry name = error (Missing_entry name)
+let missing_object_file name = error (Missing_object_file name)
+let no_files_to_link suffix main = error (No_files_to_link (suffix, main))
+let no_files_to_pack suffix = error (No_files_to_pack suffix)
+let missing_static_libraries_file name = error (Missing_static_libraries_file name)
+let no_package_found_for_ppx package_name ppx_name = error (No_package_found_for_ppx (package_name, ppx_name))
+let ppx_not_found_for_package package_name ppx_name = error (Ppx_not_found_for_package (package_name, ppx_name))
+#end
 
 let config_error config fmt =
   let loc = Ext_json.loc_of config in

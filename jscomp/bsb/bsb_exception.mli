@@ -39,6 +39,17 @@ val errorf : loc:Ext_position.t ->  ('a, unit, string, 'b) format4 -> 'a
 
 val config_error : Ext_json_types.t -> string -> 'a 
 
+#if BS_NATIVE then
+val missing_main : unit -> 'a
+val missing_entry : string -> 'a
+val missing_object_file : string -> 'a
+val no_files_to_link : string -> string -> 'a
+val no_files_to_pack : string -> 'a
+val missing_static_libraries_file : string -> 'a
+val no_package_found_for_ppx : string -> string -> 'a
+val ppx_not_found_for_package : string -> string -> 'a
+#end
+
 val invalid_spec : string -> 'a
 
 val invalid_json : string -> 'a

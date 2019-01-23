@@ -129,6 +129,9 @@ let package_flag ({format; in_source } : spec) dir =
     (Ext_string.concat3
        format
        Ext_string.single_colon
+#if BS_NATIVE then
+      (Bsb_config.build_artifacts_dir
+#end
        (if in_source then dir else
           (if format = Literals.amdjs then 
              amd_js_prefix dir 
@@ -141,6 +144,9 @@ let package_flag ({format; in_source } : spec) dir =
            else if format = Literals.amdjs_global then 
              amdjs_global_prefix dir 
            else assert false))
+#if BS_NATIVE then
+      )
+#end
     )
 
 let package_flag_of_package_specs (package_specs : t) 
@@ -171,7 +177,11 @@ let package_output ({format; in_source } : spec) output=
          amdjs_global_prefix
        else assert false)
   in
+#if BS_NATIVE then
+  (Bsb_config.build_artifacts_dir @@ prefix output )
+#else
   (Bsb_config.proj_rel @@ prefix output )
+#end
 
 (**
     [get_list_of_output_js specs "src/hi/hello"]

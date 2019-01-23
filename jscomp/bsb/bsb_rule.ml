@@ -90,19 +90,71 @@ let define
     since the default is already good -- it does not*)
 let build_ast_and_module_sets =
   define
+#if BS_NATIVE then
+    ~command:"${bsc}  ${pp_flags} ${ppx_flags} ${bs_super_errors} ${warnings} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast ${in}"
+#else
     ~command:"${bsc}  ${pp_flags} ${ppx_flags} ${warnings} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast ${in}"
+#end
     "build_ast_and_module_sets"
 
 
 let build_ast_and_module_sets_from_re =
   define
+#if BS_NATIVE then
+    ~command:"${bsc} -pp \"${refmt} ${refmt_flags}\" ${reason_react_jsx}  ${ppx_flags} ${bs_super_errors} ${warnings} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -impl ${in}"
+#else
     ~command:"${bsc} -pp \"${refmt} ${refmt_flags}\" ${reason_react_jsx}  ${ppx_flags} ${warnings} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -impl ${in}"
+#end
     "build_ast_and_module_sets_from_re"
 
 let build_ast_and_module_sets_from_rei =
   define
+#if BS_NATIVE then
+    ~command:"${bsc} -pp \"${refmt} ${refmt_flags}\" ${reason_react_jsx} ${ppx_flags} ${bs_super_errors} ${warnings} ${bsc_flags}  -c -o ${out} -bs-syntax-only -bs-binary-ast -intf ${in}"
+#else
     ~command:"${bsc} -pp \"${refmt} ${refmt_flags}\" ${reason_react_jsx} ${ppx_flags} ${warnings} ${bsc_flags}  -c -o ${out} -bs-syntax-only -bs-binary-ast -intf ${in}"
+#end
     "build_ast_and_module_sets_from_rei"
+
+#if BS_NATIVE then
+(* We need those because they'll generate the mlast_simple for us (and the previous three won't for performance reason). *)
+let build_ast_and_module_sets_gen_simple =
+  define
+    ~command:"${bsc}  ${pp_flags} ${ppx_flags} ${bs_super_errors} ${warnings} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-simple-binary-ast -bs-binary-ast ${in}"
+    "build_ast_and_module_sets_gen_simple"
+    
+let build_ast_and_module_sets_from_re_gen_simple =
+  define
+    ~command:"${bsc} -pp \"${refmt} ${refmt_flags}\" ${reason_react_jsx}  ${ppx_flags} ${bs_super_errors} ${warnings} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-simple-binary-ast -bs-binary-ast -impl ${in}"
+    "build_ast_and_module_sets_from_re_gen_simple"
+    
+let build_ast_and_module_sets_from_rei_gen_simple =
+  define
+    ~command:"${bsc} -pp \"${refmt} ${refmt_flags}\" ${reason_react_jsx} ${ppx_flags} ${bs_super_errors} ${warnings} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-simple-binary-ast -bs-binary-ast -intf ${in}"
+    "build_ast_and_module_sets_from_rei_gen_simple"
+#end
+
+let build_bin_deps =
+  define
+    ~command:"${bsdep} ${namespace} -g ${bsb_dir_group} -MD ${in}"
+    "build_deps"
+
+#if BS_NATIVE then
+let build_bin_deps_bytecode =
+  define
+    ~command:"${bsdep} ${namespace} -g ${bsb_dir_group} -MD-bytecode ${in}"
+    "build_deps_bytecode"
+
+let build_bin_deps_native =
+  define
+    ~command:"${bsdep} ${namespace} -g ${bsb_dir_group} -MD-native ${in}"
+    "build_deps_native"
+
+let reload =
+  define
+    ~command:"${bsbuild} -init"
+    "reload"
+#end
 
 let copy_resources =
   let name = "copy_resource" in
@@ -136,8 +188,13 @@ let build_bin_deps =
 (* [bsc_lib_includes] are fixed for libs *)
 let build_cmj_js =
   define
+#if BS_NATIVE then
+    ~command:"${bsc} ${bs_super_errors} ${bs_package_flags} -bs-assume-has-mli -bs-no-builtin-ppx-ml -bs-no-implicit-include  \
+              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${warnings} ${bsc_flags} -o ${out} -c  ${in} $postbuild"
+#else
     ~command:"${bsc} ${bs_package_flags} -bs-assume-has-mli -bs-no-builtin-ppx-ml -bs-no-implicit-include  \
               ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${warnings} ${bsc_flags} -o ${out} -c  ${in} $postbuild"
+#end
     ~depfile:"${in}.d"
     ~restat:() (* Always restat when having mli *)
     "build_cmj_only"
@@ -145,15 +202,25 @@ let build_cmj_js =
 
 let build_cmj_cmi_js =
   define
+#if BS_NATIVE then
+    ~command:"${bsc} ${bs_package_flags} -bs-assume-no-mli -bs-no-builtin-ppx-ml -bs-no-implicit-include \
+             ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${warnings} ${bsc_flags} -o ${out} -c  ${in} $postbuild"
+#else
     ~command:"${bsc} ${bs_package_flags} -bs-assume-no-mli -bs-no-builtin-ppx-ml -bs-no-implicit-include \
               ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${warnings} ${bsc_flags} -o ${out} -c  ${in} $postbuild"
+#end
     ~depfile:"${in}.d"
     ~restat:() (* may not need it in the future *)
     "build_cmj_cmi" (* the compiler should never consult [.cmi] when [.mli] does not exist *)
 let build_cmi =
   define
+#if BS_NATIVE then
+    ~command:"${bsc} ${bs_super_errors} ${bs_package_flags} -bs-no-builtin-ppx-mli -bs-no-implicit-include \
+              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${warnings} ${bsc_flags} -o ${out} -c  ${in}"
+#else
     ~command:"${bsc} ${bs_package_flags} -bs-no-builtin-ppx-mli -bs-no-implicit-include \
               ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${warnings} ${bsc_flags} -o ${out} -c  ${in}"
+#end
     ~depfile:"${in}.d"
     ~restat:()
     "build_cmi" (* the compiler should always consult [.cmi], current the vanilla ocaml compiler only consult [.cmi] when [.mli] found*)
@@ -164,25 +231,130 @@ let build_package =
     ~restat:()
     "build_package"
 
+#if BS_NATIVE then
+let build_package_gen_mlast_simple = 
+  define
+    ~command:"${bsc} -w -49 -no-alias-deps -bs-binary-ast -bs-simple-binary-ast -c ${in}"
+    "build_package_gen_mlast_simple"
+    
+let build_package_build_cmi_bytecode = 
+  define
+    ~command:"${ocamlfind}${ocamlc} ${bs_super_errors_ocamlfind} ${bs_package_includes} ${ocaml_lib_includes} ${bsc_extra_includes} ${ocamlfind_dependencies} ${ocaml_flags} \
+              -o ${out} ${warnings} -no-alias-deps -w -49 -g -c -intf-suffix .mliast_simple -impl ${in} ${postbuild}"
+    "build_package_build_cmi_bytecode"
+
+let build_package_build_cmi_native = 
+  define
+    ~command:"${ocamlfind}${ocamlopt} ${bs_super_errors_ocamlfind} ${bs_package_includes} ${ocaml_lib_includes} ${bsc_extra_includes} ${ocamlfind_dependencies} ${ocaml_flags} \
+              -o ${out} ${warnings} -no-alias-deps -w -49 -g -c -intf-suffix .mliast_simple -impl ${in} ${postbuild}"
+    "build_package_build_cmi_native"
+
+
+let build_cmo_cmi_bytecode =
+  define
+    ~command:"${ocamlfind}${ocamlc} ${open_flag} ${bs_super_errors_ocamlfind} ${bs_package_includes} ${ocaml_lib_includes} ${bsc_extra_includes} ${ocamlfind_dependencies} ${ocaml_flags} \
+              -o ${out} ${warnings} -g -c -intf-suffix .mliast_simple -impl ${in}_simple ${postbuild}"
+    ~depfile:"${in}.d"
+    "build_cmo_cmi_bytecode"
+    
+let build_cmi_bytecode =
+  define
+    ~command:"${ocamlfind}${ocamlc} ${open_flag} ${bs_super_errors_ocamlfind} ${bs_package_includes} ${ocaml_lib_includes} ${bsc_extra_includes} ${ocamlfind_dependencies} ${ocaml_flags} \
+              -o ${out} ${warnings} -g -c -intf ${in}_simple ${postbuild}"
+    ~depfile:"${in}.d"
+    "build_cmi_bytecode"
+
+let build_cmx_cmi_native =
+  define
+    ~command:"${ocamlfind}${ocamlopt} ${open_flag} ${bs_super_errors_ocamlfind} ${bs_package_includes} ${ocaml_lib_includes} ${bsc_extra_includes} ${ocamlfind_dependencies} ${ocaml_flags} \
+              -o ${out} ${warnings} -g -c -intf-suffix .mliast_simple -impl ${in}_simple ${postbuild}"
+    ~depfile:"${in}.d"
+    "build_cmx_cmi_native"
+
+let build_cmi_native =
+  define
+    ~command:"${ocamlfind}${ocamlopt} ${open_flag} ${bs_super_errors_ocamlfind} ${bs_package_includes} ${ocaml_lib_includes} ${bsc_extra_includes} ${ocamlfind_dependencies} ${ocaml_flags} \
+              -o ${out} ${warnings} -g -c -intf ${in}_simple ${postbuild}"
+    ~depfile:"${in}.d"
+    "build_cmi_native"
+    
+    
+
+let linking_bytecode =
+  define
+    ~command:"${bsdep} ${bsb_helper_verbose} ${ocaml_dependencies} ${ocaml_linker_flags} ${warnings} ${namespace} -bs-main ${main_module} ${bs_super_errors} ${static_libraries} \
+              ${ocamlfind_dependencies} ${external_deps_for_linking} ${in} -link-bytecode ${out}"
+    "linking_bytecode"
+
+let linking_native =
+  define
+    ~command:"${bsdep} ${bsb_helper_verbose} ${ocaml_dependencies} ${ocaml_linker_flags} ${warnings} ${namespace} -bs-main ${main_module} ${bs_super_errors} ${static_libraries} \
+              ${ocamlfind_dependencies} ${external_deps_for_linking} ${in} -link-native ${out}"
+    "linking_native"
+
+
+let build_cma_library =
+  define
+    ~command:"${bsdep} ${bsb_helper_verbose} ${build_library} ${ocaml_dependencies} ${ocaml_linker_flags} ${warnings} ${namespace} ${bs_super_errors} ${static_libraries} ${ocamlfind_dependencies} \
+              ${bs_package_includes} ${ocaml_lib_includes} ${bsc_extra_includes} \
+              ${in} -pack-bytecode-library"
+    "build_cma_library"
+
+let build_cmxa_library =
+  define
+    ~command:"${bsdep} ${bsb_helper_verbose} ${build_library} ${ocaml_dependencies} ${ocaml_linker_flags} ${warnings} ${namespace} ${bs_super_errors} ${static_libraries} ${ocamlfind_dependencies} \
+              ${bs_package_includes} ${ocaml_lib_includes} ${bsc_extra_includes} \
+              ${in} -pack-native-library"
+    "build_cmxa_library"
+#end
+
 (* a snapshot of rule_names environment*)
 let built_in_rule_names = !rule_names 
 let built_in_rule_id = !rule_id
 
 let reset (custom_rules : string String_map.t) = 
-  rule_id := built_in_rule_id;
-  rule_names := built_in_rule_names;
-  build_ast_and_module_sets.used <- false ;
-  build_ast_and_module_sets_from_re.used <- false ;  
-  build_ast_and_module_sets_from_rei.used <- false ;
-  build_bin_deps.used <- false;
-  copy_resources.used <- false ;
+    rule_id := built_in_rule_id;
+    rule_names := built_in_rule_names;
 
-  build_cmj_js.used <- false;
-  build_cmj_cmi_js.used <- false ;
-  build_cmi.used <- false ;
-  build_package.used <- false;    
-  String_map.mapi custom_rules begin fun name command -> 
-    define ~command name
-  end
+    build_ast_and_module_sets.used <- false ;
+    build_ast_and_module_sets_from_re.used <- false ;  
+    build_ast_and_module_sets_from_rei.used <- false ;
+    build_bin_deps.used <- false;
+    copy_resources.used <- false ;
+
+    build_cmj_js.used <- false;
+    build_cmj_cmi_js.used <- false ;
+    build_cmi.used <- false ;
+#if BS_NATIVE then
+    build_bin_deps_bytecode.used <- false;
+    build_bin_deps_native.used <- false;
+
+    build_ast_and_module_sets_gen_simple.used <- false ;
+    build_ast_and_module_sets_from_re_gen_simple.used <- false ;  
+    build_ast_and_module_sets_from_rei_gen_simple.used <- false ;
+
+    reload.used <- false; 
+
+    build_cmo_cmi_bytecode.used <- false;
+    build_cmi_bytecode.used <- false;
+    build_cmx_cmi_native.used <- false;
+    build_cmi_native.used <- false;
+    
+    linking_bytecode.used <- false;
+    linking_native.used <- false;
+    
+    build_cma_library.used <- false;
+    build_cmxa_library.used <- false;
+    
+    build_package_gen_mlast_simple.used <- false;
+    build_package_build_cmi_bytecode.used <- false;
+    build_package_build_cmi_native.used <- false;
+#end
+
+    build_package.used <- false;
+    
+    String_map.mapi custom_rules begin fun name command -> 
+        define ~command name
+  	end
 
 

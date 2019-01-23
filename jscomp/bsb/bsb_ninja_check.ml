@@ -32,6 +32,10 @@ type t =
     source_directory :  string ;
     bsb_version : string;
     bsc_version : string;
+#if BS_NATIVE then
+    cmdline_backend: Bsb_config_types.compilation_kind_t;
+    cmdline_build_library: string option;
+#end
   }
 
 
@@ -55,6 +59,9 @@ type check_result =
   | Bsb_source_directory_changed
   | Bsb_bsc_version_mismatch
   | Bsb_forced
+#if BS_NATIVE then
+  | Bsb_different_cmdline_arg
+#end
   | Other of string
 
 let pp_check_result fmt (check_resoult : check_result) =
@@ -67,6 +74,10 @@ let pp_check_result fmt (check_resoult : check_result) =
         "Bsc or bsb version mismatch"
       | Bsb_forced ->
         "Bsb forced rebuild"
+#if BS_NATIVE then
+      | Bsb_different_cmdline_arg ->
+        "Bsb called with a different build argument"
+#end
       | Other s -> s)
 
 let rec check_aux cwd xs i finish =
@@ -91,7 +102,11 @@ let read (fname : string) cont =
       cont res
   | exception _ -> Bsb_file_not_exist
 
+#if BS_NATIVE then
+let record ~cwd ~file cmdline_backend cmdline_build_library file_or_dirs =
+#else
 let record ~cwd ~file  file_or_dirs =
+#end
   let file_stamps = 
     Ext_array.of_list_map file_or_dirs
       (fun  x -> 
@@ -103,6 +118,10 @@ let record ~cwd ~file  file_or_dirs =
     { file_stamps ;
       source_directory = cwd ;
       bsb_version ;
+#if BS_NATIVE then
+      cmdline_backend = cmdline_backend;
+      cmdline_build_library = cmdline_build_library; 
+#end
       bsc_version = Bs_version.version }
 
 (** check time stamp for all files
@@ -111,15 +130,27 @@ let record ~cwd ~file  file_or_dirs =
     Even forced, we still need walk through a little
     bit in case we found a different version of compiler
 *)
+#if BS_NATIVE then
+let check ~cwd ~forced ~file cmdline_backend cmdline_build_library : check_result =
+#else
 let check ~cwd ~forced ~file : check_result =
+#end
   read file  begin  function  {
     file_stamps = xs; source_directory; bsb_version = old_version;
+#if BS_NATIVE then
+    cmdline_backend = old_cmdline_backend; 
+    cmdline_build_library = old_cmdline_build_library;
+#end
     bsc_version
   } ->
     if old_version <> bsb_version then Bsb_bsc_version_mismatch else
     if cwd <> source_directory then Bsb_source_directory_changed else
     if bsc_version <> Bs_version.version then Bsb_bsc_version_mismatch else
     if forced then Bsb_forced (* No need walk through *)
+#if BS_NATIVE then
+    else if cmdline_backend <> old_cmdline_backend
+      || cmdline_build_library <> old_cmdline_build_library then Bsb_different_cmdline_arg
+#end
     else
       try
         check_aux cwd xs  0 (Array.length xs)
@@ -131,4 +162,3 @@ let check ~cwd ~forced ~file : check_result =
           Bsb_file_not_exist
         end
   end
-

@@ -72,7 +72,20 @@ COMP=bytecomp/lambda.cmo bytecomp/printlambda.cmo \
   driver/pparse.cmo driver/main_args.cmo \
   driver/compenv.cmo driver/compmisc.cmo 
 
-COMMON=$(UTILS) $(PARSING) $(TYPING) $(COMP)
+# @Hack We hardcode `super_packed` here. It's generated with the following
+# command:
+# ../../jscomp/bin/bspack.exe -bs-no-implicit-include -bs-main Super_main -I ../../jscomp/super_errors/ -I ../../jscomp/ext/ -I driver -o super_packed.ml
+#
+# I commented out `caml_string_length_based_compare` because I couldn't figure out how to build 
+# the C code and link it inside ocaml.
+#
+# We probably should fix the makefile up to point to some rules which allow
+# building super_errors in a better way.
+#        Ben - August 11th 2017
+super_packed.cmo: $(UTILS) $(PARSING) $(TYPING) super_packed.ml
+	$(CAMLC) $(COMPFLAGS) -c super_packed.ml
+
+COMMON=$(UTILS) $(PARSING) $(TYPING) super_packed.cmo $(COMP)
 
 BYTECOMP=bytecomp/meta.cmo bytecomp/instruct.cmo bytecomp/bytegen.cmo \
   bytecomp/printinstr.cmo bytecomp/opcodes.cmo bytecomp/emitcode.cmo \
@@ -105,6 +118,8 @@ TOPLEVEL=toplevel/genprintval.cmo toplevel/toploop.cmo \
   toplevel/trace.cmo toplevel/topdirs.cmo toplevel/topmain.cmo
 
 BYTESTART=driver/main.cmo
+driver/main.cmo: super_packed.cmo driver/main.ml
+	$(CAMLC) $(COMPFLAGS) -c driver/main.ml
 
 OPTSTART=driver/optmain.cmo
 

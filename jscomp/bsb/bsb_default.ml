@@ -26,7 +26,8 @@
 (* for default warning flags, please see bsb_warning.ml *)
 let bsc_flags =
   [
-    "-color"; "always"
+    "-color"; "always";
+    "-no-alias-deps"
   ] 
 
 
@@ -35,4 +36,16 @@ let refmt_flags = ["--print"; "binary"]
 let refmt_v3 = "refmt.exe"
 let refmt_none = "refmt.exe"
 
-let main_entries = [Bsb_config_types.JsTarget "Index"]
+let main_entries = [{ Bsb_config_types.kind = Library; main_module_name="Index"; output_name=None; backend = [JsTarget]}]
+
+#if BS_NATIVE then
+let ocaml_flags = ["-no-alias-deps"; 
+(* "-bin-annot"; *)
+]
+
+let ocaml_linker_flags = []
+
+let allowed_build_kinds = [Bsb_config_types.Js; Bsb_config_types.Bytecode; Bsb_config_types.Native]
+
+let ocaml_dependencies = ["unix"; "bigarray"; "str"; "dynlink"; "nums"; "threads"; ]
+#end

@@ -40,6 +40,9 @@ type check_result =
   | Bsb_source_directory_changed
   | Bsb_bsc_version_mismatch  
   | Bsb_forced
+#if BS_NATIVE then
+  | Bsb_different_cmdline_arg
+#end
   | Other of string
 
 val pp_check_result : Format.formatter -> check_result -> unit
@@ -55,10 +58,20 @@ val pp_check_result : Format.formatter -> check_result -> unit
     We serialize such data structure and call {!check} to decide
     [build.ninja] should be regenerated
 *)
+#if BS_NATIVE then
+val record : cwd:string -> file:string -> Bsb_config_types.compilation_kind_t -> string option -> string list -> unit
+#else
 val record : cwd:string -> file:string -> string list -> unit
+#end
 
 
 (** check if [build.ninja] should be regenerated *)
+#if BS_NATIVE then
+val check :
+  cwd:string ->  
+  forced:bool -> file:string -> Bsb_config_types.compilation_kind_t -> string option -> check_result
+#else
 val check :
   cwd:string ->  
   forced:bool -> file:string -> check_result
+#end

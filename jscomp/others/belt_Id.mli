@@ -147,9 +147,18 @@ val hashable :
 
 
 
+#if BS_NATIVE then
+
+val getHashInternal : ('a,'id) hash -> ('a -> int [@bs])
+val getEqInternal : ('a, 'id) eq -> ('a -> 'a -> bool [@bs])
+val getCmpInternal : ('a,'id) cmp -> ('a -> 'a -> int [@bs])
+
+#else
 
 (**/**)
 external getHashInternal : ('a,'id) hash -> ('a -> int [@bs]) = "%identity"
 external getEqInternal : ('a, 'id) eq -> ('a -> 'a -> bool [@bs]) = "%identity"
 external getCmpInternal : ('a,'id) cmp -> ('a -> 'a -> int [@bs]) = "%identity"
 (**/**)
+
+#end

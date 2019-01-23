@@ -77,6 +77,9 @@ let merlin_s = "\nS "
 let merlin_b = "\nB "
 
 
+#if BS_NATIVE then
+let merlin_pkg = "\nPKG"
+#end
 let merlin_flg = "\nFLG "
 let bs_flg_prefix = "-bs-"
 
@@ -90,11 +93,19 @@ let output_merlin_namespace buffer ns=
     Buffer.add_string buffer "-open ";
     Buffer.add_string buffer x 
 
+#if BS_NATIVE then
+let bsc_flg_to_merlin_ocamlc_flg ~backend bsc_flags  =
+#else
 let bsc_flg_to_merlin_ocamlc_flg bsc_flags  =
+#end
   merlin_flg ^ 
   String.concat Ext_string.single_space 
     (List.filter (fun x -> not (Ext_string.starts_with x bs_flg_prefix )) @@ 
+#if BS_NATIVE then
+     if backend = Bsb_config_types.Js then Literals.dash_nostdlib::bsc_flags else bsc_flags)
+#else
      Literals.dash_nostdlib::bsc_flags) 
+#end 
 
 (* No need for [-warn-error] in merlin  *)     
 let warning_to_merlin_flg (warning: Bsb_warning.t option) : string=     
@@ -102,6 +113,9 @@ let warning_to_merlin_flg (warning: Bsb_warning.t option) : string=
 
 
 let merlin_file_gen ~cwd
+#if BS_NATIVE then
+    ~backend
+#end
     built_in_ppx
     ({bs_file_groups = res_files ; 
       generate_merlin;
@@ -116,6 +130,9 @@ let merlin_file_gen ~cwd
       namespace;
       package_name;
       warning; 
+#if BS_NATIVE then
+      ocamlfind_dependencies;
+#end
      } : Bsb_config_types.t)
   =
   if generate_merlin then begin     
@@ -145,16 +162,37 @@ let merlin_file_gen ~cwd
         Buffer.add_string buffer merlin_b;
         Buffer.add_string buffer path ;
       );      
-    Ext_option.iter built_in_dependency (fun package -> 
-        let path = package.package_install_path in 
-        Buffer.add_string buffer (merlin_s ^ path );
-        Buffer.add_string buffer (merlin_b ^ path)                      
-      );
+#if BS_NATIVE then
+    let nested = match backend with
+      | Bsb_config_types.Js       -> "js"
+      | Bsb_config_types.Native   -> "native"
+      | Bsb_config_types.Bytecode -> "bytecode" 
+    in
+#end
+    Ext_option.iter built_in_dependency (fun package ->
+       let path = package.package_install_path in 
+#if BS_NATIVE then
+       Buffer.add_string buffer ((merlin_s ^ path) // nested);
+       Buffer.add_string buffer ((merlin_b ^ path) // nested)  
+#else
+       Buffer.add_string buffer (merlin_s ^ path );
+       Buffer.add_string buffer (merlin_b ^ path)                      
+#end
+    );
+
+#if BS_NATIVE then
+    let bsc_string_flag = bsc_flg_to_merlin_ocamlc_flg ~backend bsc_flags in 
+#else
     let bsc_string_flag = bsc_flg_to_merlin_ocamlc_flg bsc_flags in 
+#end
     Buffer.add_string buffer bsc_string_flag ;
     Buffer.add_string buffer (warning_to_merlin_flg  warning); 
     Ext_list.iter bs_dependencies (fun package ->
-        let path = package.package_install_path in
+#if BS_NATIVE then
+        let path = package.Bsb_config_types.package_install_path // nested in
+#else
+        let path = package.Bsb_config_types.package_install_path in
+#end
         Buffer.add_string buffer merlin_s ;
         Buffer.add_string buffer path ;
         Buffer.add_string buffer merlin_b;
@@ -162,7 +200,11 @@ let merlin_file_gen ~cwd
       );
     Ext_list.iter bs_dev_dependencies (**TODO: shall we generate .merlin for dev packages ?*)
     (fun package ->    
-        let path = package.package_install_path in
+#if BS_NATIVE then
+        let path = package.Bsb_config_types.package_install_path // nested in
+#else
+        let path = package.Bsb_config_types.package_install_path in
+#end
         Buffer.add_string buffer merlin_s ;
         Buffer.add_string buffer path ;
         Buffer.add_string buffer merlin_b;
@@ -174,9 +216,22 @@ let merlin_file_gen ~cwd
             Buffer.add_string buffer merlin_s;
             Buffer.add_string buffer x.dir ;
             Buffer.add_string buffer merlin_b;
+#if BS_NATIVE then
+            Buffer.add_string buffer (Bsb_config.lib_bs // nested // x.dir) ;
+#else
             Buffer.add_string buffer (Bsb_config.lib_bs//x.dir) ;
+#end
           end
       ) ;
+#if BS_NATIVE then
+    if List.length ocamlfind_dependencies > 0 then begin
+      Buffer.add_string buffer merlin_pkg;
+      ocamlfind_dependencies |> List.iter (fun x ->
+        Buffer.add_string buffer " ";
+        Buffer.add_string buffer x;
+      );
+    end;
+#end
     Buffer.add_string buffer "\n";
     revise_merlin (cwd // merlin) buffer 
   end

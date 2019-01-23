@@ -28,12 +28,34 @@ type info =  string list
 
 val zero : info
 
+#if BS_NATIVE then
+val separate_ppx_entries_and_filter :
+  Bsb_config_types.entries_t list ->
+  Bsb_config_types.compilation_kind_t ->
+  (Bsb_config_types.entries_t list * Bsb_config_types.entries_t list)
+
+val get_local_ppx_deps : 
+  ppx_list:string list -> 
+  root_project_dir:string -> 
+  backend:Bsb_config_types.compilation_kind_t -> 
+  dependency_info:Bsb_dependency_info.t -> 
+  ppx_entries:Bsb_config_types.entries_t list -> 
+  (string list * string list)
+#end
 
 val handle_file_groups :
   out_channel ->
   package_specs:Bsb_package_specs.t ->  
   bs_suffix:bool ->
   js_post_build_cmd:string option -> 
+#if BS_NATIVE then
+  backend:Bsb_config_types.compilation_kind_t -> 
+  entries:Bsb_config_types.entries_t list ->
+  dependency_info:Bsb_dependency_info.t -> 
+  root_project_dir:string ->
+  is_top_level:bool ->
+  ppx_flags_internal:string list ->
+#end
   files_to_install:String_hash_set.t ->  
   custom_rules:Bsb_rule.t String_map.t ->
   Bsb_file_groups.file_groups ->

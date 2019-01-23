@@ -31,3 +31,7 @@
 (** Port the {!Bytes.escaped} from trunk to make it not locale sensitive *)
 
 val escaped : bytes -> bytes
+
+#if BS_NATIVE then
+val ninja_escaped : bytes -> bytes
+#end

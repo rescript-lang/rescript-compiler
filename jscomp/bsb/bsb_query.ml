@@ -39,6 +39,16 @@ let query_sources ({bs_file_groups} : Bsb_config_types.t) : Ext_json_noloc.t
 
 
 let query_current_package_sources cwd bsc_dir = 
+#if BS_NATIVE then
+  let main_config = 
+    Bsb_config_parse.interpret_json 
+      ~override_package_specs:None
+      ~bsc_dir
+      ~generate_watch_metadata:true
+      ~not_dev:false
+      cwd in 
+  Some (query_sources main_config)
+#else
     let config_opt  = Bsb_ninja_regen.regenerate_ninja 
       ~not_dev:false
       ~override_package_specs:None
@@ -49,6 +59,7 @@ let query_current_package_sources cwd bsc_dir =
      
     | Some config ->
       Some (query_sources config)
+#end
 
 
 let query ~cwd ~bsc_dir str = 

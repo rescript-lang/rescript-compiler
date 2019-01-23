@@ -72,6 +72,10 @@ module Options = Main_args.Make_optcomp_options (struct
   let set r () = r := true
   let clear r () = r := false
 
+#if undefined  BS_NO_COMPILER_PATCH then 
+  let _super_errors () = Super_packed.Super_main.setup ()
+#end
+
   let _a = set make_archive
   let _absname = set Location.absname
   let _annot = set annotations

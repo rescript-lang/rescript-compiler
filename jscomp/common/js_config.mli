@@ -92,6 +92,9 @@ val dump_js : bool ref
 val syntax_only  : bool ref
 val binary_ast : bool ref
 
+#if BS_NATIVE then
+val simple_binary_ast : bool ref
+#end
 
 val bs_suffix : bool ref
 val debug : bool ref

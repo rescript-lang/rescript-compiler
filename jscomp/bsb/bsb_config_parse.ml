@@ -38,36 +38,117 @@ let resolve_package cwd  package_name =
 let (|?)  m (key, cb) =
   m  |> Ext_json.test key cb
 
-let parse_entries (field : Ext_json_types.t array) =
+let parse_entries name (field : Ext_json_types.t array) =
   Ext_array.to_list_map (function
-      | Ext_json_types.Obj {map} ->
-        (* kind defaults to bytecode *)
-        let kind = ref "js" in
+      | Ext_json_types.Obj {map} as entry ->
+        let backend = ref [] in
         let main = ref None in
+        let output_name = ref None in
+        let kind = ref Bsb_config_types.Library in
+        
         let _ = map
-                |? (Bsb_build_schemas.kind, `Str (fun x -> kind := x))
-                |? (Bsb_build_schemas.main, `Str (fun x -> main := Some x))
+                |? (Bsb_build_schemas.backend, `Str (fun x -> backend := [x]))
+                |? (Bsb_build_schemas.backend, `Arr (fun s -> backend := Bsb_build_util.get_list_string s))
+                |? (Bsb_build_schemas.main_module, `Str (fun x -> main := Some x))
+                |? (Bsb_build_schemas.output_name, `Str (fun x -> output_name := Some x))
+                  (* Only accept ppx for now, until I can figure out how we can let the user link in specific entries from their project. 
+                     If a project has 2 bytecode entries which are libraries, right now they'll conflict because we create the same lib.cma for both.
+                     And the user has no way to specify sub-dependencies.
+                  *)
+                |? (Bsb_build_schemas.type_, `Str (fun x -> 
+                if x = Literals.ppx then
+                    kind := Bsb_config_types.Ppx
+                else 
+                  Bsb_exception.config_error entry "Field 'kind' not recognized. Should be empty or 'ppx'" ))
+                |? (Bsb_build_schemas.kind, `Str (fun x -> 
+                  if (x = Literals.native 
+                       || x = Literals.bytecode 
+                       || x = Literals.js) then begin
+                    Bsb_log.warn "@{<warn>Warning@} package %s: 'kind' field in 'entries' is deprecated and will be removed in the next release. Please use 'backend'.@." name;
+                    backend := [x];
+                  end else 
+                    Bsb_exception.config_error entry "Field 'kind' not recognized. Please use 'backend'." 
+                  ))
         in
-        let path = begin match !main with
+        
+        let backend = if !backend = [] then ["js"] else !backend in
+          
+        let main_module_name = begin match !main with
           (* This is technically optional when compiling to js *)
-          | None when !kind = Literals.js ->
-            "Index"
+          | None when backend = [Literals.js] -> "Index"
           | None -> 
-            failwith "Missing field 'main'. That field is required its value needs to be the main module for the target"
-          | Some path -> path
+            Bsb_exception.config_error entry "Missing field 'main-module'. That field is required its value needs to be the main module for the target"
+          | Some main_module_name -> main_module_name
         end in
-        if !kind = Literals.native then
-          Some (Bsb_config_types.NativeTarget path)
-        else if !kind = Literals.bytecode then
-          Some (Bsb_config_types.BytecodeTarget path)
-        else if !kind = Literals.js then
-          Some (Bsb_config_types.JsTarget path)
-        else
-          failwith "Missing field 'kind'. That field is required and its value be 'js', 'native' or 'bytecode'"
-      | _ -> failwith "Unrecognized object inside array 'entries' field.") 
+        
+        if !kind = Bsb_config_types.Ppx && backend <> [Literals.native] then
+          Bsb_exception.config_error entry "Ppx can only be compiled to native for now. Set `backend` to `native`.";
+        
+        let backend = List.map Bsb_config_types.(function
+          | "js" -> 
+            if !kind = Ppx then
+              Bsb_exception.config_error entry "Ppx can't be compiled to JS for now. Please set the backend to `native`.";
+              
+            JsTarget
+          | "bytecode" -> BytecodeTarget
+          | "native" -> NativeTarget
+          | _ -> Bsb_exception.config_error entry "Missing field 'backend'. That field is required and its value be 'js', 'native' or 'bytecode'"
+        ) backend in
+        
+        Some {Bsb_config_types.kind = !kind; main_module_name; output_name = !output_name; backend}  
+      | entry -> Bsb_exception.config_error entry "Unrecognized object inside array 'entries' field.") 
     field
 
+#if BS_NATIVE then
+let entries_from_bsconfig () = 
+  let json = Ext_json_parse.parse_json_from_file Literals.bsconfig_json in
+  match json with
+    | Obj {map} ->
+      let entries = ref Bsb_default.main_entries in
+      let name = ref "[unnamed]" in
+      map 
+        |? (Bsb_build_schemas.name, `Str (fun s -> name := s))
+        |? (Bsb_build_schemas.entries, `Arr (fun s -> entries := parse_entries !name s)) |> ignore;
+      !entries
+    | _ -> assert false
 
+(* Shawdows the previous resolve_package *)
+let resolve_package cwd  package_name = 
+  let x =  Bsb_pkg.resolve_bs_package ~cwd package_name  in
+  {
+    Bsb_config_types.package_name ;
+    package_install_path = (Bsb_build_util.get_build_artifacts_location x) // Bsb_config.lib_ocaml
+  }
+
+let parse_allowed_build_kinds map =
+  let open Ext_json_types in
+  match String_map.find_opt Bsb_build_schemas.allowed_build_kinds map with 
+  | Some (Arr {loc_start; content = s }) ->   
+    List.map (fun (s : string) ->
+      match s with 
+      | "js"       -> Bsb_config_types.Js
+      | "native"   -> Bsb_config_types.Native
+      | "bytecode" -> Bsb_config_types.Bytecode
+      | str -> Bsb_exception.errorf ~loc:loc_start "'allowed-build-kinds' field expects one of, or an array of: 'js', 'bytecode' or 'native'. Found '%s'" str
+    ) (Bsb_build_util.get_list_string s) 
+  | Some (Str {str = "js"} )       -> [Bsb_config_types.Js]
+  | Some (Str {str = "native"} )   -> [Bsb_config_types.Native]
+  | Some (Str {str = "bytecode"} ) -> [Bsb_config_types.Bytecode]
+  | Some (Str {str; loc} ) -> Bsb_exception.errorf ~loc:loc "'allowed-build-kinds' field expects one of, or an array of: 'js', 'bytecode' or 'native'. Found '%s'" str
+  | Some x -> Bsb_exception.config_error x "'allowed-build-kinds' field expects one of, or an array of: 'js', 'bytecode' or 'native'"
+  | None -> Bsb_default.allowed_build_kinds
+
+let replace_sep_if_necessary path =
+  if Ext_sys.is_windows_or_cygwin then
+    let cp = Bytes.of_string path in
+    for i = 0 to (Bytes.length cp - 1) do
+      if Bytes.get cp i = '/' then
+        Bytes.set cp i '\\';
+    done;
+    Bytes.to_string cp
+  else path
+
+#end
 
 let package_specs_from_bsconfig () = 
   let json = Ext_json_parse.parse_json_from_file Literals.bsconfig_json in
@@ -139,6 +220,16 @@ let interpret_json
   *)
   let bsc_flags = ref Bsb_default.bsc_flags in  
   let ppx_flags = ref [] in 
+
+#if BS_NATIVE then
+  let build_script = ref None in
+  let static_libraries = ref [] in
+  let c_linker_flags = ref [] in
+  let ocamlfind_dependencies = ref [] in
+  let ocaml_flags = ref Bsb_default.ocaml_flags in
+  let ocaml_linker_flags = ref Bsb_default.ocaml_linker_flags in
+  let ocaml_dependencies= ref Bsb_default.ocaml_dependencies in 
+#end
   let js_post_build_cmd = ref None in 
   let built_in_package = ref None in
   let generate_merlin = ref true in 
@@ -155,7 +246,6 @@ let interpret_json
      1. if [build.ninja] does use [ninja] we need set a variable
      2. we need store it so that we can call ninja correctly
   *)
-  let entries = ref Bsb_default.main_entries in
   let cut_generators = ref false in 
   let config_json_chan = open_in_bin config_json  in
   let global_data = 
@@ -314,7 +404,15 @@ let interpret_json
                 end
               | _ -> acc ) String_map.empty  s  ))
     |? (Bsb_build_schemas.refmt_flags, `Arr (fun s -> refmt_flags := get_list_string s))
-    |? (Bsb_build_schemas.entries, `Arr (fun s -> entries := parse_entries s))
+#if BS_NATIVE then
+    |? (Bsb_build_schemas.static_libraries, `Arr (fun s -> static_libraries := (List.map (fun v -> cwd // (replace_sep_if_necessary v)) (get_list_string s))))
+    |? (Bsb_build_schemas.c_linker_flags, `Arr (fun s -> c_linker_flags := (List.fold_left (fun acc v -> "-ccopt" :: v :: acc) [] (List.rev (get_list_string s))) @ !c_linker_flags))
+    |? (Bsb_build_schemas.build_script, `Str (fun s -> build_script := Some (replace_sep_if_necessary s)))
+    |? (Bsb_build_schemas.ocamlfind_dependencies, `Arr (fun s -> ocamlfind_dependencies := get_list_string s))
+    |? (Bsb_build_schemas.ocaml_flags, `Arr (fun s -> ocaml_flags := !ocaml_flags @ (get_list_string s)))
+    |? (Bsb_build_schemas.ocaml_linker_flags, `Arr (fun s -> ocaml_linker_flags := !ocaml_linker_flags @ (get_list_string s)))
+    |? (Bsb_build_schemas.ocaml_dependencies, `Arr (fun s -> ocaml_dependencies := (get_list_string s)))
+#end
     |> ignore ;
     begin match String_map.find_opt map Bsb_build_schemas.sources with 
       | Some x -> 
@@ -325,8 +423,26 @@ let interpret_json
             ~clean_staled_bs_js:bs_suffix
             ~namespace
             x in 
+#if BS_NATIVE then
+        let allowed_build_kinds = parse_allowed_build_kinds map in
+        let build_script = begin match !build_script with 
+          | Some bs -> 
+            let is_ml_or_re = Filename.check_suffix bs ".re" || Filename.check_suffix bs ".ml" in
+            if Sys.file_exists (cwd // bs) && is_ml_or_re then 
+              Some (cwd // bs, true)
+            else begin
+              Bsb_log.warn "@{<warn>Warning@} package %s: field 'build-script' has changed. It should be a path to an ml/re file instead of a shell command.@." package_name;
+              Some (bs, false)
+            end
+          | None -> None
+        end in
+        
+        if generate_watch_metadata then
+          Bsb_watcher_gen.generate_sourcedirs_meta (Bsb_build_util.get_build_artifacts_location cwd) res ;
+#else
         if generate_watch_metadata then
           Bsb_watcher_gen.generate_sourcedirs_meta cwd res ;     
+#end
         begin match List.sort Ext_file_pp.interval_compare  res.intervals with
           | [] -> ()
           | queue ->
@@ -348,6 +464,12 @@ let interpret_json
           | Some config -> Bsb_exception.config_error config "expect an object"
         in 
 
+        let entries  = 
+          match String_map.find_opt Bsb_build_schemas.entries map with 
+          | None -> Bsb_default.main_entries 
+          | Some (Arr {content}) -> parse_entries package_name content
+          | Some config -> Bsb_exception.config_error config "`entries` should be an array"
+        in 
         {
           bs_suffix ;
           package_name ;
@@ -372,8 +494,18 @@ let interpret_json
           built_in_dependency = !built_in_package;
           generate_merlin = !generate_merlin ;
           reason_react_jsx = !reason_react_jsx ;  
-          entries = !entries;
+          entries = entries;
           generators = !generators ; 
+#if BS_NATIVE then
+          static_libraries = !static_libraries;
+          c_linker_flags = !c_linker_flags;
+          build_script = build_script;
+          allowed_build_kinds = allowed_build_kinds;
+          ocamlfind_dependencies = !ocamlfind_dependencies;
+          ocaml_flags = !ocaml_flags;
+          ocaml_linker_flags = !ocaml_linker_flags;
+          ocaml_dependencies = !ocaml_dependencies;
+#end
           cut_generators = !cut_generators
         }
       | None -> failwith "no sources specified, please checkout the schema for more details"

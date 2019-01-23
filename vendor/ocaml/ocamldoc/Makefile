@@ -65,7 +65,8 @@ INCLUDES_DEP=-I $(OCAMLSRCDIR)/parsing \
 	-I $(OCAMLSRCDIR)/driver \
 	-I $(OCAMLSRCDIR)/bytecomp \
 	-I $(OCAMLSRCDIR)/tools \
-	-I $(OCAMLSRCDIR)/toplevel/
+	-I $(OCAMLSRCDIR)/toplevel/ \
+	-I $(OCAMLSRCDIR)
 
 INCLUDES_NODEP=	-I $(OCAMLSRCDIR)/stdlib \
 	-I $(OCAMLSRCDIR)/otherlibs/str \

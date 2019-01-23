@@ -14,6 +14,10 @@
   to update ocamldoc options too, in odoc_args.ml. *)
 
 module type Common_options = sig
+#if undefined  BS_NO_COMPILER_PATCH then 
+  val _super_errors : unit -> unit
+#end
+
   val _absname : unit -> unit
   val _I : string -> unit
   val _labels : unit -> unit

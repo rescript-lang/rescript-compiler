@@ -190,6 +190,10 @@ let anonymous f =
 module Options = Main_args.Make_ocamldoc_options(struct
   let set r () = r := true
   let unset r () = r := false
+#if undefined  BS_NO_COMPILER_PATCH then 
+  let _super_errors () = Super_packed.Super_main.setup ()
+#end
+
   let _absname = set Location.absname
   let _I s = Odoc_global.include_dirs :=
        (Misc.expand_directory Config.standard_library s) :: !Odoc_global.include_dirs

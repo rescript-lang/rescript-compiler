@@ -185,7 +185,7 @@ let emit_dep_file
     let lhs_suffix, rhs_suffix =
       match compilation_kind with
       | Js       -> Literals.suffix_cmj, Literals.suffix_cmj
-      | Bytecode -> Literals.suffix_cmo, Literals.suffix_cmi
+      | Bytecode -> Literals.suffix_cmo, Literals.suffix_cmo
       | Native   -> Literals.suffix_cmx, Literals.suffix_cmx 
     in    
 #else     

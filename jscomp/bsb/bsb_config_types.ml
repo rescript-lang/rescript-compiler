@@ -30,8 +30,24 @@ type dependency =
   }
 type dependencies = dependency list 
 
-(* `string` is a path to the entrypoint *)
-type entries_t = JsTarget of string | NativeTarget of string | BytecodeTarget of string
+type kind_t = Library | Ppx
+
+type backend_t = 
+    | JsTarget
+    | NativeTarget
+    | BytecodeTarget
+
+
+type entries_t = {
+    main_module_name: string;
+    output_name: string option;
+    kind: kind_t;
+    backend: backend_t list
+}
+
+#if BS_NATIVE then
+type compilation_kind_t = Js | Bytecode | Native
+#end
 
 type reason_react_jsx = string option 
 
@@ -70,4 +86,15 @@ type t =
     generators : string String_map.t ; 
     cut_generators : bool; (* note when used as a dev mode, we will always ignore it *)
     bs_suffix : bool ; (* true means [.bs.js] we should pass [-bs-suffix] flag *)
+    
+#if BS_NATIVE then
+    static_libraries: string list;
+    c_linker_flags: string list;
+    build_script: (string * bool) option;
+    allowed_build_kinds: compilation_kind_t list;
+    ocamlfind_dependencies: string list;
+    ocaml_flags: string list;
+    ocaml_linker_flags: string list;
+    ocaml_dependencies: string list;
+#end
   }

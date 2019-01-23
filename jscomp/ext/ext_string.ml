@@ -225,7 +225,7 @@ let non_overlap_count ~sub s =
 let rfind ~sub s =
   let n = String.length sub in
   let i = ref (String.length s - n) in
-  let module M = struct exception Exit end in 
+  (* let module M = struct exception Exit end in  *)
   try
     while !i >= 0 do
       if unsafe_is_sub ~sub 0 s !i ~len:n then 

@@ -278,7 +278,11 @@ let intersect dataa datab  =
     let sizea, sizeb = 
         N.lengthNode dataa0, N.lengthNode datab0 in          
     let totalSize = sizea + sizeb in 
+    
+# 288 "setm.cppo.ml"
     let tmp = A.makeUninitializedUnsafe totalSize in 
+    
+# 290 "setm.cppo.ml"
     ignore @@ N.fillArray dataa0 0 tmp ; 
     ignore @@ N.fillArray datab0 sizea tmp;
     if ((A.getUnsafe tmp (sizea - 1) < 
@@ -290,7 +294,11 @@ let intersect dataa datab  =
       )
        then make ()
     else 
+    
+# 304 "setm.cppo.ml"
     let tmp2 = A.makeUninitializedUnsafe (Pervasives.min sizea sizeb) in 
+    
+# 306 "setm.cppo.ml"
     let k = S.intersect tmp 0 sizea tmp sizea sizeb tmp2 0  in 
     t ~data:(N.fromSortedArrayAux tmp2 0 k)
   
@@ -302,7 +310,11 @@ let diff dataa datab : t =
   | Some dataa0, Some datab0 -> 
     let sizea, sizeb = N.lengthNode dataa0, N.lengthNode datab0 in  
     let totalSize = sizea + sizeb in 
+    
+# 320 "setm.cppo.ml"
     let tmp = A.makeUninitializedUnsafe totalSize in 
+    
+# 322 "setm.cppo.ml"
     ignore @@ N.fillArray dataa0 0 tmp ; 
     ignore @@ N.fillArray datab0 sizea tmp;
     if ( (A.getUnsafe tmp (sizea - 1)) < 
@@ -312,7 +324,11 @@ let diff dataa datab : t =
       < A.getUnsafe tmp 0) 
        then t ~data:(N.copy dataa) 
     else 
+    
+# 334 "setm.cppo.ml"
     let tmp2 = A.makeUninitializedUnsafe sizea in 
+    
+# 336 "setm.cppo.ml"
     let k = S.diff tmp 0 sizea tmp sizea sizeb tmp2 0  in 
     t ~data:(N.fromSortedArrayAux tmp2 0 k)
 
@@ -325,7 +341,11 @@ let union (dataa : t)  (datab : t) : t =
     -> 
     let sizea, sizeb = N.lengthNode dataa0, N.lengthNode datab0 in 
     let totalSize = sizea + sizeb in 
+    
+# 351 "setm.cppo.ml"
     let tmp = A.makeUninitializedUnsafe totalSize in 
+    
+# 353 "setm.cppo.ml"
     ignore @@ N.fillArray dataa0 0 tmp ;
     ignore @@ N.fillArray datab0 sizea tmp ;
     if 
@@ -333,7 +353,11 @@ let union (dataa : t)  (datab : t) : t =
       A.getUnsafe tmp sizea)  then 
       t  ~data:(N.fromSortedArrayAux tmp 0 totalSize) 
     else   
+      
+# 363 "setm.cppo.ml"
       let tmp2 = A.makeUninitializedUnsafe totalSize in 
+      
+# 365 "setm.cppo.ml"
       let k = S.union tmp 0 sizea tmp sizea sizeb tmp2 0  in 
       t ~data:(N.fromSortedArrayAux tmp2 0 k) 
   

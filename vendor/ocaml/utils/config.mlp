@@ -19,11 +19,12 @@
 (**                                                                   **)
 (***********************************************************************)
 
+let ( // ) = Filename.concat
 
 (* The main OCaml version string has moved to ../VERSION *)
 let version = Sys.ocaml_version
 
-let standard_library_default = "%%LIBDIR%%"
+let standard_library_default = (Filename.dirname Sys.executable_name) // "lib" // "ocaml"
 
 let standard_library =
 #if defined BS_NO_COMPILER_PATCH then
@@ -40,7 +41,8 @@ let standard_library =
 #end
     standard_library_default
 
-let standard_runtime = "%%BYTERUN%%"
+let extension = if Sys.win32 || Sys.cygwin then ".exe" else ""
+let standard_runtime = (Filename.dirname Sys.executable_name) // "bin" // "ocamlrun" ^ extension
 let ccomp_type = "%%CCOMPTYPE%%"
 let bytecomp_c_compiler = "%%BYTECC%%"
 let bytecomp_c_libraries = "%%BYTECCLIBS%%"

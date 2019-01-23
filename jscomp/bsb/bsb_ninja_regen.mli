@@ -31,7 +31,21 @@
 *)
 val regenerate_ninja :
   not_dev:bool ->
+#if BS_NATIVE then
+  ?dependency_info: Bsb_dependency_info.t ->
+  is_top_level:bool ->
+  root_project_dir:string ->
+  build_library:string option ->
+  backend: Bsb_config_types.compilation_kind_t ->
+  main_config : Bsb_config_types.t ->
+  ocaml_dir:string ->
+#else
   override_package_specs:Bsb_package_specs.t option ->
   generate_watch_metadata: bool -> 
+#end
   forced: bool -> string -> string -> 
-  Bsb_config_types.t option 
+#if BS_NATIVE then
+  bool
+#else
+  Bsb_config_types.t option
+#end

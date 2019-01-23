@@ -126,6 +126,13 @@ val native : string
 val bytecode : string
 val js : string
 
+val ppx : string
+
+#if BS_NATIVE then
+val library : string
+val dot_static_libraries : string
+#end
+
 val node_sep : string 
 val node_parent : string 
 val node_current : string 

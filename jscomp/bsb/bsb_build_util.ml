@@ -249,3 +249,29 @@ let rec walk_all_deps_aux visited paths top dir cb =
 let walk_all_deps dir cb = 
   let visited = String_hashtbl.create 0 in 
   walk_all_deps_aux visited [] true dir cb 
+
+#if BS_NATIVE then
+let get_ocaml_dir cwd =
+  (Filename.dirname (get_bsc_dir ~cwd)) // "vendor" // "ocaml"
+
+let get_ocaml_lib_dir ~is_js cwd =
+  if is_js then (Filename.dirname (get_bsc_dir ~cwd)) // "lib" // "ocaml"
+  else (get_ocaml_dir cwd) // "lib" // "ocaml"
+
+let build_artifacts_dir = ref None
+
+let get_build_artifacts_location cwd =
+  (* If the project's parent folder is not node_modules, we know it's the top level one. *)
+  if (Filename.basename (Filename.dirname cwd)) <> "node_modules" then
+    match !build_artifacts_dir with
+    | None -> cwd
+    | Some dir -> dir
+  else begin
+    match !build_artifacts_dir with
+    | None -> cwd
+      (* (Filename.dirname (Filename.dirname cwd)) // Bsb_config.lib_lit // Bsb_config.node_modules // project_name *)
+    | Some dir ->
+      let project_name = Filename.basename cwd in
+      dir // Bsb_config.lib_lit // Bsb_config.node_modules // project_name
+  end
+#end

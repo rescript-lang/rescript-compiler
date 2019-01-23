@@ -22,6 +22,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+(** 
+Use:
+{[
+flag_concat "-ppx" [ppxs]
+]}
+*)
+val flag_concat : string -> string list -> string
+
 (**
 Build quoted commandline arguments for bsc.exe for the given ppx flags
 
@@ -94,3 +102,13 @@ type package_context = {
 }
 
 val walk_all_deps : string -> (package_context -> unit) -> unit
+
+#if BS_NATIVE then
+val get_ocaml_dir: string -> string
+
+val get_ocaml_lib_dir : is_js:bool -> string -> string
+
+val build_artifacts_dir : (string option) ref
+
+val get_build_artifacts_location : string -> string
+#end

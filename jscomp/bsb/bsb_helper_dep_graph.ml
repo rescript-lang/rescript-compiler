@@ -91,22 +91,26 @@ let simple_collect_from_main ?alias_map ast_table main_module =
   visit (String_set.empty) [] main_module ;
   result
 
-let get_otherlibs_dependencies dependency_graph file_extension =
-  let addIfPresentInSet v moduleName fileName acc = 
-    if String_set.mem v moduleName then
-      String_set.add acc (fileName ^ file_extension)
-    else
-      acc
+let get_otherlibs_dependencies ~ocamlfind dependency_graph file_extension =
+  let set_of_otherlib_deps = String_set.empty
+    |> String_set.add ("unix")
+    |> String_set.add ("bigarray")
+    |> String_set.add ("str")
+    (** We need to add -thread when adding threads. Not sure why.
+        Will do this later.
+           - Ben May 4th 2017
+     **)
+    (* |> String_set.add ("threads" ^ file_extension) *)
+    |> String_set.add ("dynlink")
+    (* |> String_set.add ("graphics" ^ file_extension) *)
   in
-  let set_of_otherlib_deps = String_map.fold dependency_graph String_set.empty (fun k v acc ->
-    let addIfPresent = addIfPresentInSet v in
-    acc
-      |> addIfPresent "Unix"     "unix"
-      |> addIfPresent "Bigarray" "bigarray"
-      |> addIfPresent "Str"      "str"
-      |> addIfPresent "Num"      "nums"
-      |> addIfPresent "Threads"  "threads"
-      |> addIfPresent "Dynlink"  "dynlink"
-      |> addIfPresent "Graphics" "graphics"
-  )  in
-  String_set.fold (fun v acc -> v :: acc) set_of_otherlib_deps []
+  (* When we're using ocamlfind, we should link those libraries using the -package 
+     mechanism to allow it to dedup dependencies. Otherwise we reference those 
+     libraries with their file names, ocaml will know where to find them. *)
+  if ocamlfind then
+    let set_of_otherlib_deps = set_of_otherlib_deps |> String_set.add ("num") in
+    String_set.fold (fun v acc -> "-package" :: v :: acc) set_of_otherlib_deps []
+  else 
+    (* the package and the file are named differently sometimes... *)
+    let set_of_otherlib_deps = set_of_otherlib_deps |> String_set.add ("nums") in
+    String_set.fold (fun v acc -> (v ^ file_extension) :: acc) set_of_otherlib_deps []

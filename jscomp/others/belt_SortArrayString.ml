@@ -224,7 +224,11 @@ let stableSortInPlace  (a : element array)  =
   else begin
     let l1 = l / 2 in
     let l2 = l - l1 in
+    
+# 234 "sort.cppo.ml"
     let t = Belt_Array.makeUninitializedUnsafe l2 in 
+    
+# 236 "sort.cppo.ml"
     sortTo a l1 t 0 l2 ;
     sortTo a 0 a l2 l1 ;
     merge a l2 l1 t 0 l2 a 0 ;

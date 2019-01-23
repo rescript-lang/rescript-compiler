@@ -228,7 +228,11 @@ let stableSortInPlace  (a : element array)  =
   else begin
     let l1 = l / 2 in
     let l2 = l - l1 in
+#ifdef BS_NATIVE
+    let t = Belt_Array.makeUninitializedUnsafe l2 (Belt_Array.getUnsafe a 0) in  
+#else
     let t = Belt_Array.makeUninitializedUnsafe l2 in 
+#endif
     sortTo a l1 t 0 l2 ;
     sortTo a 0 a l2 l1 ;
     merge a l2 l1 t 0 l2 a 0 ;

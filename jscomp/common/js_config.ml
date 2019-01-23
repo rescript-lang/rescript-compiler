@@ -104,6 +104,10 @@ let dump_js = ref false
 let syntax_only = ref false
 let binary_ast = ref false
 
+#if BS_NATIVE then
+let simple_binary_ast = ref false
+#end
+
 let bs_suffix = ref false 
 
 let debug = ref false

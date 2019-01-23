@@ -254,4 +254,6 @@ module Result = Belt_Result
 
     Utilities for set up debugging
 *)
+#if BS_NATIVE <> true then
 module Debug = Belt_Debug
+#end

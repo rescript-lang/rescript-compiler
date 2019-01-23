@@ -394,5 +394,5 @@ module type S =
     val of_list : (key * 'a) list -> 'a t 
     val of_array : (key * 'a ) array -> 'a t 
     val add_list : (key * 'b) list -> 'b t -> 'b t
-
+    val update : key -> ('a option -> 'a option) -> 'a t -> 'a t
   end

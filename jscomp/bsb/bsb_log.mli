@@ -25,6 +25,15 @@
 
 val setup : unit -> unit 
 
+#if BS_NATIVE then
+type level = 
+  | Debug
+  | Info 
+  | Warn
+  | Error 
+
+val log_level : level ref
+#end
 type 'a fmt = Format.formatter -> ('a, Format.formatter, unit) format -> 'a
 
 type 'a log = ('a, Format.formatter, unit) format -> 'a

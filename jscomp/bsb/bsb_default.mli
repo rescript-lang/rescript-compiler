@@ -33,3 +33,13 @@ val refmt_v3 : string
 val refmt_none : string
 
 val main_entries : Bsb_config_types.entries_t list
+
+#if BS_NATIVE then
+val ocaml_flags : string list 
+
+val ocaml_linker_flags : string list 
+
+val allowed_build_kinds : Bsb_config_types.compilation_kind_t list
+
+val ocaml_dependencies : string list
+#end

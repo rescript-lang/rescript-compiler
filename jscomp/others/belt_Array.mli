@@ -53,7 +53,11 @@ external getUnsafe: 'a array -> int -> 'a = "%array_unsafe_get"
     if [i] does not stay within range
 *)
 
+#if BS_NATIVE then
+val getUndefined : 'a array -> int -> 'a Js.undefined
+#else
 external getUndefined: 'a array -> int -> 'a Js.undefined = "%array_unsafe_get"
+#end
 (** [getUndefined arr i]
 
     It does the samething in the runtime as {!getUnsafe};
@@ -100,7 +104,11 @@ val reverse: 'a array -> 'a array
     ]}
 *)
 
+#if BS_NATIVE then
+val makeUninitialized : int -> 'a Js.undefined array
+#else
 external makeUninitialized: int -> 'a Js.undefined array = "Array" [@@bs.new]
+#end
 (**
   [makeUninitialized n] creates an array of length [n] filled with the undefined value.
   You must specify the type of data that will eventually fill the array.
@@ -111,7 +119,11 @@ external makeUninitialized: int -> 'a Js.undefined array = "Array" [@@bs.new]
   ]}
 *)
 
+#if BS_NATIVE then
+val makeUninitializedUnsafe: int -> 'a -> 'a array
+#else
 external makeUninitializedUnsafe: int -> 'a array = "Array" [@@bs.new]
+#end
 (** [makeUninitializedUnsafe n]
 
     {b Unsafe}
@@ -272,7 +284,11 @@ val sliceToEnd: 'a array -> int -> 'a array
 *)
 
 
+#if BS_NATIVE then
+val copy :  'a array -> 'a array
+#else
 external copy : 'a array -> (_ [@bs.as 0]) -> 'a array = "slice" [@@bs.send]
+#end
 (** [copy a]
 
     @return a copy of [a];that is;a fresh array
@@ -591,7 +607,11 @@ val eq:  'a array -> 'a array -> ('a -> 'a -> bool ) -> bool
     ]}
 *)
 
+#if BS_NATIVE then
+val truncateToLengthUnsafe: 'a array -> int ->  'a array
+#else
 external truncateToLengthUnsafe: 'a array -> int ->  unit = "length" [@@bs.set]
+#end
 (** {b Unsafe}
   [truncateToLengthUnsafe xs n] sets length of array [xs] to [n].
 

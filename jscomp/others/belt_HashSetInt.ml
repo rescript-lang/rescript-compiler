@@ -1,6 +1,7 @@
 # 10 "others/hashset.cppo.ml"
 type key = int
 type seed = int
+# 32 "hashset.cppo.ml"
 external caml_hash_mix_int : seed -> int -> seed  = "caml_hash_mix_int"
 external final_mix : seed -> seed = "caml_hash_final_mix"
 let hash (s : key) = 

@@ -1,13 +1,13 @@
-open Misc
+(* open Misc
 open Asttypes
 open Parsetree
 open Types
 open Typedtree
 open Btype
-open Ctype
+open Ctype *)
 
 open Format
-open Printtyp
+(* open Printtyp *)
 
 open Location
 

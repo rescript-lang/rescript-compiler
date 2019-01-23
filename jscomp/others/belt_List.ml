@@ -63,7 +63,28 @@ type 'a t = 'a list
 
 module A = Belt_Array
 
+#if BS_NATIVE then
+
 external mutableCell :
+  'a -> 'a t ->  'a t = "belt_makemutablelist"
+(* 
+    [mutableCell x []] == [x]
+    but tell the compiler that is a mutable cell, so it wont
+    be mis-inlined in the future
+     dont inline a binding to mutable cell, it is mutable
+*)
+let unsafeMutateTail a b =
+  Obj.set_field (Obj.repr a) 1 (Obj.repr b)
+ 
+(*
+   - the cell is not empty   
+   - it is mutated
+*)  
+let unsafeTail a = Obj.obj (Obj.field (Obj.repr a) 1)
+
+#else
+
+external mutableCell : 
   'a -> 'a t ->  'a t = "#makemutablelist"
 (*
     [mutableCell x []] == [x]
@@ -82,6 +103,8 @@ external unsafeTail :
 (*
    - the cell is not empty
 *)
+
+#end
 
 let head x =
   match x with
@@ -416,7 +439,14 @@ let fromArray a =
 
 let toArray ( x : _ t) =
   let len = length x in
+#if BS_NATIVE then
+  let arr = match x with 
+  | x :: _ -> A.makeUninitializedUnsafe len x 
+  | _ -> [||] 
+  in
+#else
   let arr = A.makeUninitializedUnsafe len in
+#end
   fillAux arr 0 x;
   arr
 

@@ -298,7 +298,11 @@ let intersect a b  : _ t =
     let sizea, sizeb = 
       N.lengthNode dataa0, N.lengthNode datab0 in          
     let totalSize = sizea + sizeb in 
+#if BS_NATIVE then
+    let tmp = A.makeUninitializedUnsafe totalSize (dataa0 |. N.valueGet) in 
+#else
     let tmp = A.makeUninitializedUnsafe totalSize in 
+#end
     ignore @@ N.fillArray dataa0 0 tmp ; 
     ignore @@ N.fillArray datab0 sizea tmp;
     let p = Belt_Id.getCmpInternal cmp in 
@@ -311,7 +315,11 @@ let intersect a b  : _ t =
        )
     then S.t ~cmp ~data:N.empty
     else 
+#if BS_NATIVE then
+      let tmp2 = A.makeUninitializedUnsafe (Pervasives.min sizea sizeb) (dataa0 |. N.valueGet) in 
+#else
       let tmp2 = A.makeUninitializedUnsafe (Pervasives.min sizea sizeb) in 
+#end
       let k = Sort.intersectU tmp 0 sizea tmp sizea sizeb tmp2 0 p in 
       S.t ~data:(N.fromSortedArrayAux tmp2 0 k)
         ~cmp
@@ -327,7 +335,11 @@ let diff a b : _ t =
     -> 
     let sizea, sizeb = N.lengthNode dataa0, N.lengthNode datab0 in  
     let totalSize = sizea + sizeb in 
+#if BS_NATIVE then
+    let tmp = A.makeUninitializedUnsafe totalSize (dataa0 |. N.valueGet) in 
+#else
     let tmp = A.makeUninitializedUnsafe totalSize in 
+#end
     ignore @@ N.fillArray dataa0 0 tmp ; 
     ignore @@ N.fillArray datab0 sizea tmp;
     let p = Belt_Id.getCmpInternal cmp in 
@@ -340,7 +352,11 @@ let diff a b : _ t =
        )
     then S.t ~data:(N.copy dataa) ~cmp
     else 
+#if BS_NATIVE then
+      let tmp2 = A.makeUninitializedUnsafe sizea (dataa0 |. N.valueGet) in 
+#else
       let tmp2 = A.makeUninitializedUnsafe sizea in 
+#end
       let k = Sort.diffU tmp 0 sizea tmp sizea sizeb tmp2 0 p in 
       S.t ~data:(N.fromSortedArrayAux tmp2 0 k) ~cmp
 
@@ -354,7 +370,11 @@ let union a b =
     -> 
     let sizea, sizeb = N.lengthNode dataa0, N.lengthNode datab0 in 
     let totalSize = sizea + sizeb in 
+#if BS_NATIVE then
+    let tmp = A.makeUninitializedUnsafe totalSize (dataa0 |. N.valueGet) in 
+#else
     let tmp = A.makeUninitializedUnsafe totalSize in 
+#end
     ignore @@ N.fillArray dataa0 0 tmp ;
     ignore @@ N.fillArray datab0 sizea tmp ;
     let p = (Belt_Id.getCmpInternal cmp)  in 
@@ -363,7 +383,11 @@ let union a b =
         (A.getUnsafe tmp sizea) [@bs] < 0 then 
       S.t ~data:(N.fromSortedArrayAux tmp 0 totalSize) ~cmp
     else   
+#if BS_NATIVE then   
+      let tmp2 = A.makeUninitializedUnsafe totalSize (dataa0 |. N.valueGet) in 
+#else
       let tmp2 = A.makeUninitializedUnsafe totalSize in 
+#end
       let k = Sort.unionU tmp 0 sizea tmp sizea sizeb tmp2 0 p in 
       S.t ~data:(N.fromSortedArrayAux tmp2 0 k) ~cmp
       

@@ -27,10 +27,20 @@ type ('k, 'id) cmp = ('k, 'id) Belt_Id.cmp
 
 module A = Belt_Array
 module S = Belt_SortArray
+
+#if BS_NATIVE then
+let toOpt : 'a Js.null -> 'a option = Js.toOpt
+let return a =
+  Js.Null.return a
+  
+let empty : 'a Js.null = Js.empty
+let unsafeCoerce a = Js.Null.getUnsafe a
+#else
 external toOpt : 'a Js.null -> 'a option = "#null_to_opt"
 external return : 'a -> 'a Js.null = "%identity"
 external empty : 'a Js.null = "#null"
 external unsafeCoerce : 'a Js.null -> 'a = "%identity"
+#end
 
 
 
@@ -477,7 +487,11 @@ let toArray n =
   | None -> [||]
   | Some n ->
     let size = lengthNode n in
+#if BS_NATIVE then
+    let v = A.makeUninitializedUnsafe size (n |. keyGet, n |. valueGet) in
+#else
     let v = A.makeUninitializedUnsafe size in
+#end
     ignore (fillArray n 0 v : int);  (* may add assertion *)
     v
 
@@ -486,7 +500,11 @@ let keysToArray n =
   | None -> [||]
   | Some n ->
     let size = lengthNode n in
+#if BS_NATIVE then
+    let v = A.makeUninitializedUnsafe size (n |. keyGet) in
+#else
     let v = A.makeUninitializedUnsafe size in
+#end
     ignore (fillArrayKey n 0 v : int);  (* may add assertion *)
     v
 
@@ -495,7 +513,11 @@ let valuesToArray n =
   | None -> [||]
   | Some n ->
     let size = lengthNode n in
+#if BS_NATIVE then
+    let v = A.makeUninitializedUnsafe size (n |. valueGet) in
+#else
     let v = A.makeUninitializedUnsafe size in
+#end
     ignore (fillArrayValue n 0 v : int);  (* may add assertion *)
     v
 
