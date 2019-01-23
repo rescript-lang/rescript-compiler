@@ -101,29 +101,29 @@ external get : t -> int -> t = "" [@@bs.get_index]
 (** [charAt n s] gets the character at index [n] within string [s]. If [n] is negative or greater than the length of [s], returns the empty string. If the string contains characters outside the range [\u0000-\uffff], it will return the first 16-bit value at that position in the string.
 
 @example {[
-  charAt 0, "Reason" = "R"
-  charAt( 12, "Reason") = "";
-  charAt( 5, {js|Rẽasöń|js} = {js|ń|js}
+  charAt "Reason" 0 = "R"
+  charAt "Reason" 12 = "";
+  charAt {js|Rẽasöń|js} 5 = {js|ń|js}
 ]}
 *)
-external charAt : t -> int ->  t = "" [@@bs.send]
+external charAt : t -> int -> t = "" [@@bs.send]
 
 (** [charCodeAt n s] returns the character code at position [n] in string [s]; the result is in the range 0-65535, unlke [codePointAt], so it will not work correctly for characters with code points greater than or equal to [0x10000].
 The return type is [float] because this function returns [NaN] if [n] is less than zero or greater than the length of the string.
 
 @example {[
-  charCodeAt 0 {js|😺|js} returns 0xd83d
-  codePointAt 0 {js|😺|js} returns Some 0x1f63a
+  charCodeAt {js|😺|js} 0 returns 0xd83d
+  codePointAt {js|😺|js} 0 returns Some 0x1f63a
 ]}
 
 *)
-external charCodeAt : t -> int -> float  = "" [@@bs.send]
+external charCodeAt : t -> int -> float = "" [@@bs.send]
 
 (** [codePointAt n s] returns the code point at position [n] within string [s] as a [Some] value. The return value handles code points greater than or equal to [0x10000]. If there is no code point at the given position, the function returns [None].
 
 @example {[
-  codePointAt 1 {js|¿😺?|js} = Some 0x1f63a
-  codePointAt 5 "abc" = None
+  codePointAt {js|¿😺?|js} 1 = Some 0x1f63a
+  codePointAt "abc" 5 = None
 ]}
 *)
 external codePointAt : t -> int -> int option = "" [@@bs.send] [@@bs.return {undefined_to_opt}] (** ES2015 *)
@@ -131,7 +131,7 @@ external codePointAt : t -> int -> int option = "" [@@bs.send] [@@bs.return {und
 (** [concat append original] returns a new string with [append] added after [original].
 
 @example {[
-  concat "bell" "cow" = "cowbell";;
+  concat "cow" "bell" = "cowbell";;
 ]}
 *)
 external concat : t -> t -> t = "" [@@bs.send]
@@ -139,7 +139,7 @@ external concat : t -> t -> t = "" [@@bs.send]
 (** [concat arr original] returns a new string consisting of each item of an array of strings added to the [original] string.
 
 @example {[
-  concatMany [|"2nd"; "3rd"; "4th"|] "1st" = "1st2nd3rd4th";;
+  concatMany "1st" [|"2nd"; "3rd"; "4th"|] = "1st2nd3rd4th";;
 ]}
 *)
 external concatMany : t -> t array -> t = "concat" [@@bs.send] [@@bs.splice]
@@ -148,8 +148,8 @@ external concatMany : t -> t array -> t = "concat" [@@bs.send] [@@bs.splice]
     [endsWith substr str] returns [true] if the [str] ends with [substr], [false] otherwise.
 
 @example {[
-  endsWith "Script" "BuckleScript" = true;;
-  endsWith "Script" "BuckleShoes" = false;;
+  endsWith "BuckleScript" "Script" = true;;
+  endsWith "BuckleShoes" "Script" = false;;
 ]}
 *)
 external endsWith : t -> t -> bool = "" [@@bs.send]
@@ -157,10 +157,10 @@ external endsWith : t -> t -> bool = "" [@@bs.send]
 (** [endsWithFrom ending len str] returns [true] if the first [len] characters of [str] end with [ending], [false] otherwise. If [n] is greater than or equal to the length of [str], then it works like [endsWith]. (Honestly, this should have been named [endsWithAt], but oh well.)
 
 @example {[
-  endsWithFrom "cd" 4 "abcd" = true;;
-  endsWithFrom "cd" 3 "abcde" = false;;
-  endsWithFrom "cde" 99 "abcde" = true;;
-  endsWithFrom "ple" 7 "example.dat" = true;;
+  endsWithFrom "abcd" "cd" 4 = true;;
+  endsWithFrom "abcde" "cd" 3 = false;;
+  endsWithFrom "abcde" "cde" 99 = true;;
+  endsWithFrom "example.dat" "ple" 7 = true;;
 ]}
 *)
 external endsWithFrom : t -> t -> int -> bool = "endsWith" [@@bs.send] (** ES2015 *)
@@ -169,10 +169,10 @@ external endsWithFrom : t -> t -> int -> bool = "endsWith" [@@bs.send] (** ES201
   [includes searchValue s] returns [true] if [searchValue] is found anywhere within [s], [false] otherwise.
 
 @example {[
-  includes "gram" "programmer" = true;;
-  includes "er" "programmer" = true;;
-  includes "pro" "programmer" = true;;
-  includes "xyz" "programmer" = false;;
+  includes "programmer" "gram" = true;;
+  includes "programmer" "er" = true;;
+  includes "programmer" "pro" = true;;
+  includes "programmer" "xyz" = false;;
 ]}
 *)
 external includes : t -> t -> bool = "" [@@bs.send] (** ES2015 *)
@@ -181,9 +181,9 @@ external includes : t -> t -> bool = "" [@@bs.send] (** ES2015 *)
   [includes searchValue start s] returns [true] if [searchValue] is found anywhere within [s] starting at character number [start] (where 0 is the first character), [false] otherwise.
 
 @example {[
-  includesFrom "gram" 1 "programmer" = true;;
-  includesFrom "gram" 4 "programmer" = false;;
-  includesFrom {js|한|js} 1 {js|대한민국|js} = true;;
+  includesFrom "programmer" "gram" 1 = true;;
+  includesFrom "programmer" "gram" 4 = false;;
+  includesFrom {js|대한민국|js} {js|한|js} 1 = true;;
 ]}
 *)
 external includesFrom : t -> t -> int -> bool = "includes" [@@bs.send] (** ES2015 *)
@@ -192,10 +192,10 @@ external includesFrom : t -> t -> int -> bool = "includes" [@@bs.send] (** ES201
   [indexOf searchValue s] returns the position at which [searchValue] was first found within [s], or [-1] if [searchValue] is not in [s].
 
 @example {[
-  indexOf "ok" "bookseller" = 2;;
-  indexOf "sell" "bookseller" = 4;;
-  indexOf "ee" "beekeeper" = 1;;
-  indexOf "xyz" "bookseller" = -1;;
+  indexOf "bookseller" "ok" = 2;;
+  indexOf "bookseller" "sell" = 4;;
+  indexOf "beekeeper" "ee" = 1;;
+  indexOf "bookseller" "xyz" = -1;;
 ]}
 *)
 external indexOf : t -> t -> int = "" [@@bs.send]
@@ -204,10 +204,10 @@ external indexOf : t -> t -> int = "" [@@bs.send]
   [indexOfFrom searchValue start s] returns the position at which [searchValue] was found within [s] starting at character position [start], or [-1] if [searchValue] is not found in that portion of [s]. The return value is relative to the beginning of the string, no matter where the search started from.
 
 @example {[
-  indexOfFrom "ok" 1 "bookseller" = 2;;
-  indexOfFrom "sell" 2 "bookseller" = 4;;
-  indexOfFrom "sell" 5 "bookseller" = -1;;
-  indexOf "xyz" "bookseller" = -1;;
+  indexOfFrom "bookseller" "ok" 1 = 2;;
+  indexOfFrom "bookseller" "sell" 2 = 4;;
+  indexOfFrom "bookseller" "sell" 5 = -1;;
+  indexOf "bookseller" "xyz" = -1;;
 ]}
 *)
 external indexOfFrom : t -> t -> int -> int = "indexOf" [@@bs.send]
@@ -216,9 +216,9 @@ external indexOfFrom : t -> t -> int -> int = "indexOf" [@@bs.send]
   [lastIndexOf searchValue s] returns the position of the {i last} occurrence of [searchValue] within [s], searching backwards from the end of the string. Returns [-1] if [searchValue] is not in [s]. The return value is always relative to the beginning of the string.
 
 @example {[
-  lastIndexOf "ok" "bookseller" = 2;;
-  lastIndexOf "ee" "beekeeper" = 4;;
-  lastIndexOf "xyz" "abcdefg" = -1;;
+  lastIndexOf "bookseller" "ok" = 2;;
+  lastIndexOf "beekeeper" "ee" = 4;;
+  lastIndexOf "abcdefg" "xyz" = -1;;
 ]}
 *)
 external lastIndexOf : t -> t -> int = "" [@@bs.send]
@@ -227,10 +227,10 @@ external lastIndexOf : t -> t -> int = "" [@@bs.send]
   [lastIndexOfFrom searchValue start s] returns the position of the {i last} occurrence of [searchValue] within [s], searching backwards from the given [start] position. Returns [-1] if [searchValue] is not in [s]. The return value is always relative to the beginning of the string.
 
 @example {[
-  lastIndexOfFrom "ok" 6 "bookseller" = 2;;
-  lastIndexOfFrom "ee" 8 "beekeeper" = 4;;
-  lastIndexOfFrom "ee" 3 "beekeeper" = 1;;
-  lastIndexOfFrom "xyz" 4 "abcdefg" = -1;;
+  lastIndexOfFrom "bookseller" "ok" 6 = 2;;
+  lastIndexOfFrom "beekeeper" "ee" 8 = 4;;
+  lastIndexOfFrom "beekeeper" "ee" 3 = 1;;
+  lastIndexOfFrom "abcdefg" "xyz" 4 = -1;;
 ]}
 *)
 external lastIndexOfFrom : t -> t -> int -> int = "lastIndexOf" [@@bs.send]
@@ -246,10 +246,10 @@ external lastIndexOfFrom : t -> t -> int -> int = "lastIndexOf" [@@bs.send]
   {- a positive value if [reference] comes after [comparison] in sort order}}
 
 @example {[
-  (localeCompare "ant" "zebra") > 0.0;;
-  (localeCompare "zebra" "ant") < 0.0;;
+  (localeCompare "zebra" "ant") > 0.0;;
+  (localeCompare "ant" "zebra") < 0.0;;
   (localeCompare "cat" "cat") = 0.0;;
-  (localeCompare "cat" "CAT") > 0.0;;
+  (localeCompare "CAT" "cat") > 0.0;;
 ]}
 *)
 external localeCompare : t -> t -> float = "" [@@bs.send]
@@ -266,11 +266,10 @@ external localeCompare : t -> t -> float = "" [@@bs.send]
   For regular expressions with the [g] modifier, a matched expression returns [Some array] with all the matched substrings and no capture groups.
 
 @example {[
-  match [%re "/b[aeiou]t/"] "The better bats" = Some [|"bet"|]
-  match [%re "/b[aeiou]t/g"] "The better bats" = Some [|"bet";"bat"|]
-  match [%re "/(\\d+)-(\\d+)-(\\d+)/"] "Today is 2018-04-05." =
-    Some [|"2018-04-05"; "2018"; "04"; "05"|]
-  match [%re "/b[aeiou]g/"] "The large container." = None
+  match "The better bats" [%re "/b[aeiou]t/"] = Some [|"bet"|]
+  match "The better bats" [%re "/b[aeiou]t/g"] = Some [|"bet";"bat"|]
+  match "Today is 2018-04-05." [%re "/(\\d+)-(\\d+)-(\\d+)/"] = Some [|"2018-04-05"; "2018"; "04"; "05"|]
+  match "The large container." [%re "/b[aeiou]g/"] = None
 ]}
 
 *)
@@ -302,8 +301,8 @@ external normalizeByForm : t -> t -> t = "normalize" [@@bs.send]
   [repeat n s] returns a string that consists of [n] repetitions of [s]. Raises [RangeError] if [n] is negative.
 
 @example {[
-  repeat 3 "ha" = "hahaha"
-  repeat 0 "empty" = ""
+  repeat "ha" 3 = "hahaha"
+  repeat "empty" 0 = ""
 ]}
 *)
 external repeat : t -> int -> t = "" [@@bs.send] (** ES2015 *)
@@ -316,21 +315,21 @@ replaced by [newSubstr].
 expression.
 
 @example {[
-  replace "old" "new" "old string" = "new string"
-  replace "the" "this" "the cat and the dog" = "this cat and the dog"
+  replace "old string" "old" "new" = "new string"
+  replace "the cat and the dog" "the" "this" = "this cat and the dog"
 ]}
 *)
-external replace : t -> t ->  t ->  t = "" [@@bs.send]
+external replace : t -> t -> t -> t = "" [@@bs.send]
 
 (** [replaceByRe regex replacement string] returns a new string where occurrences matching [regex]
 have been replaced by [replacement].
 
 @example {[
-  replaceByRe [%re "/[aeiou]/g"] "x" "vowels be gone" = "vxwxls bx gxnx"
-  replaceByRe [%re "/(\\w+) (\\w+)/"] "$2, $1" "Juan Fulano" = "Fulano, Juan"
+  replaceByRe "vowels be gone" [%re "/[aeiou]/g"] "x" = "vxwxls bx gxnx"
+  replaceByRe "Juan Fulano" [%re "/(\\w+) (\\w+)/"] "$2, $1" = "Fulano, Juan"
 ]}
 *)
-external replaceByRe : t -> Js_re.t ->  t ->  t = "replace" [@@bs.send]
+external replaceByRe : t -> Js_re.t -> t -> t = "replace" [@@bs.send]
 
 (** returns a new string with some or all matches of a pattern with no capturing
 parentheses replaced by the value returned from the given function.
@@ -343,7 +342,7 @@ let re = [%re "/[aeiou]/g"]
 let matchFn matchPart offset wholeString =
   Js.String.toUpperCase matchPart
 
-let replaced = Js.String.unsafeReplaceBy0 re matchFn str
+let replaced = Js.String.unsafeReplaceBy0 str re matchFn
 
 let () = Js.log replaced (* prints "bEAUtifUl vOwEls" *)
 ]}
@@ -363,7 +362,7 @@ let re = [%re "/increment (\\d+)/g"]
 let matchFn matchPart p1 offset wholeString =
   wholeString ^ " is " ^ (string_of_int ((int_of_string p1) + 1))
 
-let replaced = Js.String.unsafeReplaceBy1 re matchFn str
+let replaced = Js.String.unsafeReplaceBy1 str re matchFn
 
 let () = Js.log replaced (* prints "increment 23 is 24" *)
 ]}
@@ -383,7 +382,7 @@ let re = [%re "/(\\d+) times (\\d+)/"]
 let matchFn matchPart p1 p2 offset wholeString =
   string_of_int ((int_of_string p1) * (int_of_string p2))
 
-let replaced = Js.String.unsafeReplaceBy2 re matchFn str
+let replaced = Js.String.unsafeReplaceBy2 str re matchFn
 
 let () = Js.log replaced (* prints "42" *)
 ]}
@@ -404,8 +403,8 @@ external unsafeReplaceBy3 : t -> Js_re.t -> (t -> t -> t -> t -> int -> t -> t [
 (** [search regexp str] returns the starting position of the first match of [regexp] in the given [str], or -1 if there is no match.
 
 @example {[
-search [%re "/\\d+/"] "testing 1 2 3" = 8;;
-search [%re "/\\d+/"] "no numbers" = -1;;
+search "testing 1 2 3" [%re "/\\d+/"] = 8;;
+search "no numbers" [%re "/\\d+/"] = -1;;
 ]}
 *)
 external search : t -> Js_re.t -> int = "" [@@bs.send]
@@ -419,10 +418,10 @@ If [n2] is greater than the length of [str], then it is treated as [length str].
 If [n1] is greater than [n2], [slice] returns the empty string.
 
 @example {[
-  slice ~from:2 ~to_:5 "abcdefg" == "cde";;
-  slice ~from:2 ~to_:9 "abcdefg" == "cdefg";;
-  slice ~from:(-4) ~to_:(-2) "abcdefg" == "de";;
-  slice ~from:5 ~to_:1 "abcdefg" == "";;
+  slice "abcdefg" ~from:2 ~to_:5 == "cde";;
+  slice "abcdefg" ~from:2 ~to_:9 == "cdefg";;
+  slice "abcdefg" ~from:(-4) ~to_:(-2) == "de";;
+  slice "abcdefg" ~from:5 ~to_:1 == "";;
 ]}
 *)
 external slice : t -> from:int -> to_:int ->  t = "" [@@bs.send]
@@ -434,9 +433,9 @@ If [n] is negative, then it is evaluated as [length str - n].
 If [n] is greater than the length of [str], then [sliceToEnd] returns the empty string.
 
 @example {[
-  sliceToEnd ~from: 4 "abcdefg" == "efg";;
-  sliceToEnd ~from: (-2) "abcdefg" == "fg";;
-  sliceToEnd ~from: 7 "abcdefg" == "";;
+  sliceToEnd "abcdefg" ~from: 4 == "efg";;
+  sliceToEnd "abcdefg" ~from: (-2) == "fg";;
+  sliceToEnd "abcdefg" ~from: 7 == "";;
 ]}
 *)
 external sliceToEnd : t -> from:int ->  t = "slice" [@@bs.send]
@@ -446,10 +445,10 @@ external sliceToEnd : t -> from:int ->  t = "slice" [@@bs.send]
   array of the resulting substrings.
 
 @example {[
-  split "-" "2018-01-02" = [|"2018"; "01"; "02"|];;
-  split "," "a,b,,c" = [|"a"; "b"; ""; "c"|];;
-  split "::" "good::bad as great::awful" = [|"good"; "bad as great"; "awful"|];;
-  split ";" "has-no-delimiter" = [|"has-no-delimiter"|];;
+  split "2018-01-02" "-" = [|"2018"; "01"; "02"|];;
+  split "a,b,,c" "," = [|"a"; "b"; ""; "c"|];;
+  split "good::bad as great::awful" "::" = [|"good"; "bad as great"; "awful"|];;
+  split "has-no-delimiter" ";" = [|"has-no-delimiter"|];;
 ]};
 *)
 external split : t -> t -> t array  = "" [@@bs.send]
@@ -458,9 +457,9 @@ external split : t -> t -> t array  = "" [@@bs.send]
   [splitAtMost delimiter ~limit: n str] splits the given [str] at every occurrence of [delimiter] and returns an array of the first [n] resulting substrings. If [n] is negative or greater than the number of substrings, the array will contain all the substrings.
 
 @example {[
-  splitAtMost "/" ~limit: 3 "ant/bee/cat/dog/elk" = [|"ant"; "bee"; "cat"|];;
-  splitAtMost "/" ~limit: 0 "ant/bee/cat/dog/elk" = [| |];;
-  splitAtMost "/" ~limit: 9 "ant/bee/cat/dog/elk" = [|"ant"; "bee"; "cat"; "dog"; "elk"|];;
+  splitAtMost "ant/bee/cat/dog/elk" "/" ~limit: 3 = [|"ant"; "bee"; "cat"|];;
+  splitAtMost "ant/bee/cat/dog/elk" "/" ~limit: 0 = [| |];;
+  splitAtMost "ant/bee/cat/dog/elk" "/" ~limit: 9 = [|"ant"; "bee"; "cat"; "dog"; "elk"|];;
 ]}
 *)
 external splitAtMost: t -> t -> limit:int -> t array = "split" [@@bs.send]
@@ -470,20 +469,20 @@ external splitAtMost: t -> t -> limit:int -> t array = "split" [@@bs.send]
   array of the resulting substrings.
 
 @example {[
-  splitByRe [%re "/\\s*[,;]\\s*/"] "art; bed , cog ;dad" = [|"art"; "bed"; "cog"; "dad"|];;
-  splitByRe [%re "/[,;]/"] "has:no:match" = [|"has:no:match"|];;
+  splitByRe "art; bed , cog ;dad" [%re "/\\s*[,;]\\s*/"] = [|"art"; "bed"; "cog"; "dad"|];;
+  splitByRe "has:no:match" [%re "/[,;]/"] = [|"has:no:match"|];;
 ]};
 *)
-external splitByRe : t -> Js_re.t ->  t array = "split" [@@bs.send]
+external splitByRe : t -> Js_re.t -> t array = "split" [@@bs.send]
 
 (**
   [splitByReAtMost regex ~limit: n str] splits the given [str] at every occurrence of [regex] and returns an
   array of the first [n] resulting substrings. If [n] is negative or greater than the number of substrings, the array will contain all the substrings.
 
 @example {[
-  splitByReAtMost [%re "/\\s*:\\s*/"] ~limit: 3 "one: two: three: four" = [|"one"; "two"; "three"|];;
-  splitByReAtMost [%re "/\\s*:\\s*/"] ~limit: 0 "one: two: three: four" = [| |];;
-  splitByReAtMost [%re "/\\s*:\\s*/"] ~limit: 8 "one: two: three: four" = [|"one"; "two"; "three"; "four"|];;
+  splitByReAtMost "one: two: three: four" [%re "/\\s*:\\s*/"] ~limit: 3 = [|"one"; "two"; "three"|];;
+  splitByReAtMost "one: two: three: four" [%re "/\\s*:\\s*/"] ~limit: 0 = [| |];;
+  splitByReAtMost "one: two: three: four" [%re "/\\s*:\\s*/"] ~limit: 8 = [|"one"; "two"; "three"; "four"|];;
 ]};
 *)
 external splitByReAtMost : t -> Js_re.t -> limit:int ->  t array = "split" [@@bs.send]
@@ -492,9 +491,9 @@ external splitByReAtMost : t -> Js_re.t -> limit:int ->  t array = "split" [@@bs
     [startsWith substr str] returns [true] if the [str] starts with [substr], [false] otherwise.
 
 @example {[
-  startsWith "Buckle" "BuckleScript" = true;;
-  startsWith "" "BuckleScript" = true;;
-  startsWith "Buckle" "JavaScript" = false;;
+  startsWith "BuckleScript" "Buckle" = true;;
+  startsWith "BuckleScript" "" = true;;
+  startsWith "JavaScript" "Buckle" = false;;
 ]}
 *)
 external startsWith : t -> t -> bool = "" [@@bs.send]
@@ -503,9 +502,9 @@ external startsWith : t -> t -> bool = "" [@@bs.send]
     [startsWithFrom substr n str] returns [true] if the [str] starts with [substr] starting at position [n], [false] otherwise. If [n] is negative, the search starts at the beginning of [str].
 
 @example {[
-  startsWithFrom "kle" 3 "BuckleScript" = true;;
-  startsWithFrom "" 3 "BuckleScript" = true;;
-  startsWithFrom "Buckle" 2 "JavaScript" = false;;
+  startsWithFrom "BuckleScript" "kle" 3 = true;;
+  startsWithFrom "BuckleScript" "" 3 = true;;
+  startsWithFrom "JavaScript" "Buckle" 2 = false;;
 ]}
 *)
 external startsWithFrom : t -> t -> int -> bool = "startsWith" [@@bs.send]
@@ -518,9 +517,9 @@ external startsWithFrom : t -> t -> int -> bool = "startsWith" [@@bs.send]
   If [n] is greater than or equal to the length of [str], returns the empty string.
 
 @example {[
-  substr ~from: 3 "abcdefghij" = "defghij"
-  substr ~from: (-3) "abcdefghij" = "hij"
-  substr ~from: 12 "abcdefghij" = ""
+  substr "abcdefghij" ~from: 3 = "defghij"
+  substr "abcdefghij" ~from: (-3) = "hij"
+  substr "abcdefghij" ~from: 12 = ""
 ]}
 *)
 external substr : t -> from:int -> t = "" [@@bs.send]
@@ -535,9 +534,9 @@ external substr : t -> from:int -> t = "" [@@bs.send]
   If [n] is less than or equal to zero, returns the empty string.
 
 @example {[
-  substrAtMost ~from: 3 ~length: 4 "abcdefghij" = "defghij"
-  substrAtMost ~from: (-3) ~length: 4 "abcdefghij" = "hij"
-  substrAtMost ~from: 12 ~ length: 2 "abcdefghij" = ""
+  substrAtMost "abcdefghij" ~from: 3 ~length: 4 = "defghij"
+  substrAtMost "abcdefghij" ~from: (-3) ~length: 4 = "hij"
+  substrAtMost "abcdefghij" ~from: 12 ~ length: 2 = ""
 ]}
 *)
 external substrAtMost : t -> from:int -> length:int -> t = "substr" [@@bs.send]
@@ -552,9 +551,9 @@ external substrAtMost : t -> from:int -> length:int -> t = "substr" [@@bs.send]
   If [start] is greater than [finish], the start and finish points are swapped.
 
 @example {[
-  substring ~from: 3 ~to_: 6 "playground" = "ygr";;
-  substring ~from: 6 ~to_: 3 "playground" = "ygr";;
-  substring ~from: 4 ~to_: 12 "playground" = "ground";;
+  substring "playground" ~from: 3 ~to_: 6 = "ygr";;
+  substring "playground" ~from: 6 ~to_: 3 = "ygr";;
+  substring "playground" ~from: 4 ~to_: 12 = "ground";;
 ]}
 *)
 external substring : t -> from:int -> to_:int ->  t = "" [@@bs.send]
@@ -567,9 +566,9 @@ external substring : t -> from:int -> to_:int ->  t = "" [@@bs.send]
   If [start] is greater than or equal to the length of [str], the empty string is returned.
 
 @example {[
-  substringToEnd ~from: 4 "playground" = "ground";;
-  substringToEnd ~from: (-3) "playground" = "playground";;
-  substringToEnd ~from: 12 "playground" = "";
+  substringToEnd "playground" ~from: 4 = "ground";;
+  substringToEnd "playground" ~from: (-3) = "playground";;
+  substringToEnd "playground" ~from: 12 = "";
 ]}
 *)
 external substringToEnd : t -> from:int ->  t = "substring" [@@bs.send]
@@ -622,7 +621,7 @@ external trim : t -> t = "" [@@bs.send]
   [anchor anchorName anchorText] creates a string with an HTML [<a>] element with [name] attribute of [anchorName] and [anchorText] as its content.
 
 @example {[
-  anchor "page1" "Page One" = "<a name=\"page1\">Page One</a>"
+  anchor "Page One" "page1" = "<a name=\"page1\">Page One</a>"
 ]}
 *)
 external anchor : t -> t -> t = "" [@@bs.send] (** ES2015 *)
@@ -631,7 +630,7 @@ external anchor : t -> t -> t = "" [@@bs.send] (** ES2015 *)
   [link urlText linkText] creates a string withan HTML [<a>] element with [href] attribute of [urlText] and [linkText] as its content.
 
 @example {[
-  link "page2.html" "Go to page two" = "<a href=\"page2.html\">Go to page two</a>"
+  link "Go to page two" "page2.html" = "<a href=\"page2.html\">Go to page two</a>"
 ]}
 *)
 external link : t -> t -> t = "" [@@bs.send] (** ES2015 *)
