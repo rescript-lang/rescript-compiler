@@ -12831,16 +12831,15 @@ let rule_names = ref String_set.empty
 let ask_name name =
   let current_id = !rule_id in
   let () = incr rule_id in
-  match String_set.find !rule_names name with
-  | exception Not_found ->
-    rule_names := String_set.add !rule_names name;
-    name
-  | _ ->
+  if not (String_set.mem !rule_names name) then
+    (rule_names := String_set.add !rule_names name;
+      name)
+  else
     begin (* could be improved later
              1. instead of having a global id, having a unique id per rule name
              2. the rule id is increased only when actually used
           *)
-      let new_name =  (name ^ Printf.sprintf "_%d" current_id) in
+      let new_name =  name ^ Printf.sprintf "_%d" current_id in
       rule_names := String_set.add !rule_names new_name;
       new_name
     end
