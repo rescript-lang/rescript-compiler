@@ -169,23 +169,21 @@ let built_in_rule_names = !rule_names
 let built_in_rule_id = !rule_id
 
 let reset (custom_rules : string String_map.t) = 
-  begin 
-    rule_id := built_in_rule_id;
-    rule_names := built_in_rule_names;
+  rule_id := built_in_rule_id;
+  rule_names := built_in_rule_names;
 
-    build_ast_and_module_sets.used <- false ;
-    build_ast_and_module_sets_from_re.used <- false ;  
-    build_ast_and_module_sets_from_rei.used <- false ;
-    build_bin_deps.used <- false;
-    copy_resources.used <- false ;
+  build_ast_and_module_sets.used <- false ;
+  build_ast_and_module_sets_from_re.used <- false ;  
+  build_ast_and_module_sets_from_rei.used <- false ;
+  build_bin_deps.used <- false;
+  copy_resources.used <- false ;
 
-    build_cmj_js.used <- false;
-    build_cmj_cmi_js.used <- false ;
-    build_cmi.used <- false ;
-    build_package.used <- false;
-    
-    String_map.mapi (fun name command -> 
-        define ~command name
-      ) custom_rules
+  build_cmj_js.used <- false;
+  build_cmj_cmi_js.used <- false ;
+  build_cmi.used <- false ;
+  build_package.used <- false;    
+  String_map.mapi custom_rules begin fun name command -> 
+    define ~command name
   end
+
 
