@@ -369,7 +369,7 @@ build core/js_dump.cmi : optc core/js_dump.mli | core/j.cmx ext/ext_pp.cmi ext/e
 build core/js_dump_import_export.cmx : optc core/js_dump_import_export.ml | core/js_dump_import_export.cmi core/js_dump_lit.cmx core/js_dump_string.cmx ext/ext_ident.cmx ext/ext_list.cmx ext/ext_pp.cmx ext/ext_pp_scope.cmx ext/ext_string.cmx
 build core/js_dump_import_export.cmi : optc core/js_dump_import_export.mli | ext/ext_pp.cmi ext/ext_pp_scope.cmi
 build core/js_dump_lit.cmx core/js_dump_lit.cmi : optc core/js_dump_lit.ml | ext/ext_string.cmx
-build core/js_dump_program.cmx : optc core/js_dump_program.ml | common/bs_version.cmx common/js_config.cmx core/j.cmx core/js_dump.cmx core/js_dump_import_export.cmx core/js_dump_lit.cmx core/js_dump_program.cmi core/js_dump_string.cmx core/js_name_of_module_id.cmx core/js_packages_info.cmx core/lam_module_ident.cmx ext/ext_list.cmx ext/ext_pp.cmx ext/ext_pp_scope.cmx
+build core/js_dump_program.cmx : optc core/js_dump_program.ml | common/bs_version.cmx common/js_config.cmx core/j.cmx core/js_dump.cmx core/js_dump_import_export.cmx core/js_dump_lit.cmx core/js_dump_program.cmi core/js_name_of_module_id.cmx core/js_packages_info.cmx core/lam_module_ident.cmx ext/ext_list.cmx ext/ext_pp.cmx ext/ext_pp_scope.cmx
 build core/js_dump_program.cmi : optc core/js_dump_program.mli | core/j.cmx core/js_packages_info.cmi ext/ext_pp.cmi
 build core/js_dump_property.cmx : optc core/js_dump_property.ml | core/js_dump_lit.cmx core/js_dump_property.cmi core/js_dump_string.cmx ext/ext_pp.cmx ext/ext_string.cmx
 build core/js_dump_property.cmi : optc core/js_dump_property.mli | ext/ext_pp.cmi
