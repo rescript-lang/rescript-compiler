@@ -1,0 +1,5 @@
+File "main.ml", line 1, characters 14-17:
+Error: This expression has type M.b but an expression was expected of type
+         M.a
+M.b is abstract because no corresponding cmi file was found in path.
+M.a is abstract because no corresponding cmi file was found in path.

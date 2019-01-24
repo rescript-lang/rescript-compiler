@@ -1,0 +1,13 @@
+== Running the testsuite
+
+== Creating a new test
+
+== Useful Makefile targets
+
+`make parallel`:: runs the tests in parallel using the link:https://www.gnu.org/software/parallel/[GNU parallel] tool: tests run twice as fast with no difference in output order.
+
+`make all-foo`, `make parallel-foo`:: runs only the tests in the directories whose name starts with `foo`: `parallel-typing`, `all-lib`, etc.
+
+`make one DIR=tests/foo`:: runs only the tests in the directory `tests/foo`. This is often equivalent to `cd tests/foo && make`, but sometimes the latter breaks the test makefile if it contains fragile relative filesystem paths. Such errors should be fixed if you find them, but `make one DIR=...` is the more reliable option as it runs exactly as `make all` which is heavily tested.
+
+`make promote DIR=tests/foo`:: most test run a program and compare the result of the program, store in a file `foo.result`, with a reference output stored in `foo.reference` -- the test fails if the two output differ. Sometimes a change in result is innocuous, it comes from an intended change in output instead of a regression. `make promote` copies the new result file into the reference file, making the test pass again. Whenever you use this rule please check carefully, using `git diff`, that the change really corresponds to an intended output difference, and not to a regression. You then need to commit the change to reference file, and your commit message should explain why the output changed.

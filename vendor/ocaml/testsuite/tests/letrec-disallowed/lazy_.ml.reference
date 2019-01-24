@@ -1,0 +1,8 @@
+
+# Characters 12-18:
+  let rec a = lazy b and b = 3;;
+              ^^^^^^
+Error: This kind of expression is not allowed as right-hand side of `let rec'
+#   val e : ('a -> unit) lazy_t = lazy <fun>
+val f : unit = ()
+# 

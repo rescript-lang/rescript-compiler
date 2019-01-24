@@ -1,0 +1,14 @@
+
+#   - : unit = ()
+#   Characters 16-19:
+  let _ = ignore (+);;
+                 ^^^
+Warning 5: this function application is partial,
+maybe some arguments are missing.
+- : unit = ()
+# Characters 19-20:
+  let _ = raise Exit 3;;
+                     ^
+Warning 20: this argument will not be used by the function.
+Exception: Pervasives.Exit.
+# 

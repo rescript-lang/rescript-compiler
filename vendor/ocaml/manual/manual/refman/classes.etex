@@ -1,0 +1,530 @@
+\section{Classes}
+\pdfsection{Classes}
+%HEVEA\cutname{classes.html}
+Classes are defined using a small language, similar to the module
+language.
+
+\subsection{Class types}
+
+Class types are the class-level equivalent of type expressions: they
+specify the general shape and type properties of classes.
+
+\ikwd{object\@\texttt{object}}
+\ikwd{end\@\texttt{end}}
+\ikwd{inherit\@\texttt{inherit}}
+\ikwd{val\@\texttt{val}}
+\ikwd{mutable\@\texttt{mutable}}
+\ikwd{method\@\texttt{method}}
+\ikwd{private\@\texttt{private}}
+\ikwd{virtual\@\texttt{virtual}|see{\texttt{val}, \texttt{method}, \texttt{class}}}
+\ikwd{constraint\@\texttt{constraint}}
+
+\begin{syntax}
+class-type:
+      [['?']label-name':'] typexpr '->' class-type
+  |   class-body-type
+;
+class-body-type:
+      'object' ['(' typexpr ')'] {class-field-spec} 'end'
+   |  ['[' typexpr {',' typexpr} ']'] classtype-path
+   |  'let' 'open' module-path 'in' class-body-type
+;
+%\end{syntax} \begin{syntax}
+class-field-spec:
+      'inherit' class-body-type
+   |  'val' ['mutable'] ['virtual'] inst-var-name ':' typexpr
+   |  'val' 'virtual' 'mutable' inst-var-name ':' typexpr
+   |  'method' ['private'] ['virtual'] method-name ':' poly-typexpr
+   |  'method' 'virtual' 'private' method-name ':' poly-typexpr
+   |  'constraint' typexpr '=' typexpr
+\end{syntax}
+See also the following language extensions:
+\hyperref[s:attributes]{attributes} and
+\hyperref[s:extension-nodes]{extension nodes}.
+
+\subsubsection*{Simple class expressions}
+
+The expression @classtype-path@ is equivalent to the class type bound to
+the name @classtype-path@. Similarly, the expression
+@'[' typexpr_1 ',' \ldots typexpr_n ']' classtype-path@ is equivalent to
+the parametric class type bound to the name @classtype-path@, in which
+type parameters have been instantiated to respectively @typexpr_1@,
+\ldots @typexpr_n@.
+
+\subsubsection*{Class function type}
+
+The class type expression @typexpr '->' class-type@ is the type of
+class functions (functions from values to classes) that take as
+argument a value of type @typexpr@ and return as result a class of
+type @class-type@.
+
+\subsubsection*{Class body type}
+
+The class type expression
+@'object' ['(' typexpr ')'] {class-field-spec} 'end'@
+is the type of a class body. It specifies its instance variables and
+methods. In this type, @typexpr@ is matched against the self type, therefore
+providing a name for the self type.
+
+A class body will match a class body type if it provides definitions
+for all the components specified in the class body type, and these
+definitions meet the type requirements given in the class body type.
+Furthermore, all methods either virtual or public present in the class
+body must also be present in the class body type (on the other hand, some
+instance variables and concrete private methods may be omitted).  A
+virtual method will match a concrete method, which makes it possible
+to forget its implementation. An immutable instance variable will match a
+mutable instance variable.
+
+\subsubsection*{Local opens}
+
+Local opens are supported in class types since OCaml 4.06.
+
+\subsubsection*{Inheritance}
+
+\ikwd{inherit\@\texttt{inherit}}
+
+The inheritance construct @'inherit' class-body-type@ provides for inclusion of
+methods and instance variables from other class types.
+The instance variable and method types from @class-body-type@ are added
+into the current class type.
+
+\subsubsection*{Instance variable specification}
+
+\ikwd{val\@\texttt{val}}
+\ikwd{mutable\@\texttt{mutable}}
+
+A specification of an instance variable is written
+@'val' ['mutable'] ['virtual'] inst-var-name ':' typexpr@, where
+@inst-var-name@
+is the name of the instance variable and @typexpr@ its expected type.
+%
+The flag @'mutable'@ indicates whether this instance variable can be
+physically modified.
+%
+The flag @'virtual'@ indicates that this instance variable is not
+initialized. It can be initialized later through inheritance.
+
+An instance variable specification will hide any previous
+specification of an instance variable of the same name.
+
+\subsubsection*{Method specification}
+\label{sec-methspec}
+
+\ikwd{method\@\texttt{method}}
+\ikwd{private\@\texttt{private}}
+
+The specification of a method is written
+@'method' ['private'] method-name ':' poly-typexpr@, where
+@method-name@ is the name of the method and @poly-typexpr@ its
+expected type, possibly polymorphic.  The flag @'private'@ indicates
+that the method cannot be accessed from outside the object.
+
+The polymorphism may be left implicit in public method specifications:
+any type variable which is not bound to a class parameter and does not
+appear elsewhere inside the class specification will be assumed to be
+universal, and made polymorphic in the resulting method type.
+Writing an explicit polymorphic type will disable this behaviour.
+
+If several specifications are present for the same method, they
+must have compatible types.
+Any non-private specification of a method forces it to be public.
+
+\subsubsection*{Virtual method specification}
+
+\ikwd{method\@\texttt{method}}
+\ikwd{private\@\texttt{private}}
+
+A virtual method specification is written @'method' ['private']
+'virtual' method-name ':' poly-typexpr@, where @method-name@ is the
+name of the method and @poly-typexpr@ its expected type.
+
+\subsubsection*{Constraints on type parameters}
+
+\ikwd{constraint\@\texttt{constraint}}
+
+The construct @'constraint' typexpr_1 '=' typexpr_2@ forces the two
+type expressions to be equal. This is typically used to specify type
+parameters: in this way, they can be bound to specific type
+expressions.
+
+\subsection{Class expressions}
+
+Class expressions are the class-level equivalent of value expressions:
+they evaluate to classes, thus providing implementations for the
+specifications expressed in class types.
+
+\ikwd{object\@\texttt{object}}
+\ikwd{end\@\texttt{end}}
+\ikwd{fun\@\texttt{fun}}
+\ikwd{let\@\texttt{let}}
+\ikwd{and\@\texttt{and}}
+\ikwd{inherit\@\texttt{inherit}}
+\ikwd{as\@\texttt{as}}
+\ikwd{val\@\texttt{val}}
+\ikwd{mutable\@\texttt{mutable}}
+\ikwd{method\@\texttt{method}}
+\ikwd{private\@\texttt{private}}
+\ikwd{constraint\@\texttt{constraint}}
+\ikwd{initializer\@\texttt{initializer}}
+
+\begin{syntax}
+class-expr:
+      class-path
+   |  '[' typexpr {',' typexpr} ']' class-path
+   |  '(' class-expr ')'
+   |  '(' class-expr ':' class-type ')'
+   |  class-expr {{argument}}
+   |  'fun' {{parameter}} '->' class-expr
+   |  'let' ['rec'] let-binding {'and' let-binding} 'in' class-expr
+   |  'object' class-body 'end'
+   |  'let' 'open' module-path 'in' class-expr
+;
+%BEGIN LATEX
+\end{syntax} \begin{syntax}
+%END LATEX
+class-field:
+      'inherit' class-expr ['as' lowercase-ident]
+   |  'inherit!' class-expr ['as' lowercase-ident]
+   |  'val' ['mutable'] inst-var-name [':' typexpr] '=' expr
+   |  'val!' ['mutable'] inst-var-name [':' typexpr] '=' expr
+   |  'val' ['mutable'] 'virtual' inst-var-name ':' typexpr
+   |  'val' 'virtual' 'mutable' inst-var-name ':' typexpr
+   |  'method' ['private'] method-name {parameter} [':' typexpr] '=' expr
+   |  'method!' ['private'] method-name {parameter} [':' typexpr] '=' expr
+   |  'method' ['private'] method-name ':' poly-typexpr '=' expr
+   |  'method!' ['private'] method-name ':' poly-typexpr '=' expr
+   |  'method' ['private'] 'virtual' method-name ':' poly-typexpr
+   |  'method' 'virtual' 'private' method-name ':' poly-typexpr
+   |  'constraint' typexpr '=' typexpr
+   |  'initializer' expr
+\end{syntax}
+See also the following language extensions:
+\hyperref[s:locally-abstract]{locally abstract types},
+\hyperref[s:attributes]{attributes} and
+\hyperref[s:extension-nodes]{extension nodes}.
+
+\subsubsection*{Simple class expressions}
+
+The expression @class-path@ evaluates to the class bound to the name
+@class-path@. Similarly, the expression
+@'[' typexpr_1 ',' \ldots typexpr_n ']' class-path@
+evaluates to the parametric class bound to the name @class-path@,
+in which type parameters have been instantiated respectively to
+@typexpr_1@, \ldots @typexpr_n@.
+
+The expression @'(' class-expr ')'@ evaluates to the same module as
+@class-expr@.
+
+The expression @'(' class-expr ':' class-type ')'@ checks that
+@class-type@ matches the type of @class-expr@ (that is, that the
+implementation @class-expr@ meets the type specification
+@class-type@). The whole expression evaluates to the same class as
+@class-expr@, except that all components not specified in
+@class-type@ are hidden and can no longer be accessed.
+
+\subsubsection*{Class application}
+
+Class application is denoted by juxtaposition of (possibly labeled)
+expressions. It denotes the class whose constructor is the first
+expression applied to the given arguments. The arguments are
+evaluated as for expression application, but the constructor itself will
+only be evaluated when objects are created. In particular, side-effects
+caused by the application of the constructor will only occur at object
+creation time.
+
+\subsubsection*{Class function}
+
+The expression @'fun' [['?']label-name':']pattern '->' class-expr@ evaluates
+to a function from values to classes.
+When this function is applied to a value \var{v}, this value is
+matched against the pattern @pattern@ and the result is the result of
+the evaluation of @class-expr@ in the extended environment.
+
+Conversion from functions with default values to functions with
+patterns only works identically for class functions as for normal
+functions.
+
+The expression
+\begin{center}
+@"fun" parameter_1 \ldots parameter_n "->" class-expr@
+\end{center}
+is a short form for
+\begin{center}
+@"fun" parameter_1 "->" \ldots "fun" parameter_n "->" expr@
+\end{center}
+
+\subsubsection*{Local definitions}
+
+The {\tt let} and {\tt let rec} constructs bind value names locally,
+as for the core language expressions.
+
+If a local definition occurs at the very beginning of a class
+definition, it will be evaluated when the class is created (just as if
+the definition was outside of the class).
+Otherwise, it will be evaluated when the object constructor is called.
+
+\subsubsection*{Local opens}
+
+Local opens are supported in class expressions since OCaml 4.06.
+
+\subsubsection*{Class\label{ss:class-body} body}
+\begin{syntax}
+class-body:  ['(' pattern [':' typexpr] ')'] { class-field }
+\end{syntax}
+The expression
+@'object' class-body 'end'@ denotes
+a class body. This is the prototype for an object : it lists the
+instance variables and methods of an objet of this class.
+
+A class body is a class value: it is not evaluated at once. Rather,
+its components are evaluated each time an object is created.
+
+In a class body, the pattern @'(' pattern [':' typexpr] ')'@ is
+matched against self, therefore providing a binding for self and self
+type.  Self can only be used in method and initializers.
+
+Self type cannot be a closed object type, so that the class remains
+extensible.
+
+Since OCaml 4.01, it is an error if the same method or instance
+variable name is defined several times in the same class body.
+
+\subsubsection*{Inheritance}
+
+\ikwd{inherit\@\texttt{inherit}}
+
+The inheritance construct @'inherit' class-expr@ allows reusing
+methods and instance variables from other classes. The class
+expression @class-expr@ must evaluate to a class body.  The instance
+variables, methods and initializers from this class body are added
+into the current class.  The addition of a method will override any
+previously defined method of the same name.
+
+\ikwd{as\@\texttt{as}}
+An ancestor can be bound by appending @'as' lowercase-ident@
+to the inheritance construct.  @lowercase-ident@ is not a true
+variable and can only be used to select a method, i.e. in an expression
+@lowercase-ident '#' method-name@.  This gives access to the
+method @method-name@ as it was defined in the parent class even if it is
+redefined in the current class.
+The scope of this ancestor binding is limited to the current class.
+The ancestor method may be called from a subclass but only indirectly.
+
+\subsubsection*{Instance variable definition}
+
+\ikwd{val\@\texttt{val}}
+\ikwd{mutable\@\texttt{mutable}}
+
+The definition @'val' ['mutable'] inst-var-name '=' expr@ adds an
+instance variable @inst-var-name@ whose initial value is the value of
+expression @expr@.
+%
+The flag @'mutable'@ allows physical modification of this variable by
+methods.
+
+An instance variable can only be used in the methods and
+initializers that follow its definition.
+
+Since version 3.10, redefinitions of a visible instance variable with
+the same name do not create a new variable, but are merged, using the
+last value for initialization.  They must have identical types and
+mutability.
+However, if an instance variable is hidden by
+omitting it from an interface, it will be kept distinct from
+other instance variables with the same name.
+
+\subsubsection*{Virtual instance variable definition}
+
+\ikwd{val\@\texttt{val}}
+\ikwd{mutable\@\texttt{mutable}}
+
+A variable specification is written @'val' ['mutable'] 'virtual'
+inst-var-name ':' typexpr@.  It specifies whether the variable is
+modifiable, and gives its type.
+
+Virtual instance variables were added in version 3.10.
+
+\subsubsection*{Method definition}
+
+\ikwd{method\@\texttt{method}}
+\ikwd{private\@\texttt{private}}
+
+A method definition is written @'method' method-name '=' expr@.  The
+definition of a method overrides any previous definition of this
+method.  The method will be public (that is, not private) if any of
+the definition states so.
+
+A private method, @'method' 'private' method-name '=' expr@, is a
+method that can only be invoked on self (from other methods of the
+same object, defined in this class or one of its subclasses).  This
+invocation is performed using the expression
+@value-name '#' method-name@, where @value-name@ is directly bound to
+self at the beginning of the class definition.  Private methods do
+not appear in object types.  A method may have both public and private
+definitions, but as soon as there is a public one, all subsequent
+definitions will be made public.
+
+Methods may have an explicitly polymorphic type, allowing them to be
+used polymorphically in programs (even for the same object). The
+explicit declaration may be done in one of three ways: (1) by giving an
+explicit polymorphic type in the method definition, immediately after
+the method name, {\em i.e.}
+@'method' ['private'] method-name ':' {{"'" ident}} '.' typexpr '='
+expr@; (2) by a forward declaration of the explicit polymorphic type
+through a virtual method definition; (3) by importing such a
+declaration through inheritance and/or constraining the type of {\em
+self}.
+
+Some special expressions are available in method bodies for
+manipulating instance variables and duplicating self:
+\begin{syntax}
+expr:
+    \ldots
+  | inst-var-name '<-' expr
+  | '{<' [ inst-var-name '=' expr { ';' inst-var-name '=' expr } [';'] ] '>}'
+\end{syntax}
+
+The expression @inst-var-name '<-' expr@ modifies in-place the current
+object by replacing the value associated to @inst-var-name@ by the
+value of @expr@. Of course, this instance variable must have been
+declared mutable.
+
+The expression
+@'{<' inst-var-name_1 '=' expr_1 ';' \ldots ';' inst-var-name_n '=' expr_n '>}'@
+evaluates to a copy of the current object in which the values of
+instance variables @inst-var-name_1, \ldots, inst-var-name_n@ have
+been replaced by the values of the corresponding expressions @expr_1,
+\ldots, expr_n@.
+
+\subsubsection*{Virtual method definition}
+
+\ikwd{method\@\texttt{method}}
+\ikwd{private\@\texttt{private}}
+
+A method specification is written @'method' ['private'] 'virtual'
+method-name ':' poly-typexpr@.  It specifies whether the method is
+public or private, and gives its type. If the method is intended to be
+polymorphic, the type must be explicitly polymorphic.
+
+\subsubsection*{Explicit overriding}
+
+Since Ocaml 3.12, the keywords @"inherit!"@, @"val!"@ and @"method!"@
+have the same semantics as @"inherit"@, @"val"@ and @"method"@, but
+they additionally require the definition they introduce to be
+overriding. Namely, @"method!"@ requires @method-name@ to be already
+defined in this class, @"val!"@ requires @inst-var-name@ to be already
+defined in this class, and @"inherit!"@ requires @class-expr@ to
+override some definitions. If no such overriding occurs, an error is
+signaled.
+
+As a side-effect, these 3 keywords avoid the warnings~7
+(method override) and~13 (instance variable override).
+Note that warning~7 is disabled by default.
+
+\subsubsection*{Constraints on type parameters}
+
+\ikwd{constraint\@\texttt{constraint}}
+The construct @'constraint' typexpr_1 '=' typexpr_2@ forces the two
+type expressions to be equals. This is typically used to specify type
+parameters: in that way they can be bound to specific type
+expressions.
+
+\subsubsection*{Initializers}
+
+\ikwd{initializer\@\texttt{initializer}}
+
+A class initializer @'initializer' expr@ specifies an expression that
+will be evaluated whenever an object is created from the class, once
+all its instance variables have been initialized.
+
+\subsection{Class definitions}
+\label{s:classdef}
+
+\ikwd{class\@\texttt{class}}
+\ikwd{and\@\texttt{and}}
+
+\begin{syntax}
+class-definition:
+          'class' class-binding { 'and' class-binding }
+;
+class-binding:
+          ['virtual'] ['[' type-parameters ']'] class-name
+          {parameter} [':' class-type] \\ '=' class-expr
+;
+type-parameters:
+          "'" ident { "," "'" ident }
+\end{syntax}
+
+A class definition @'class' class-binding { 'and' class-binding }@ is
+recursive. Each @class-binding@ defines a @class-name@ that can be
+used in the whole expression except for inheritance. It can also be
+used for inheritance, but only in the definitions that follow its own.
+
+A class binding binds the class name @class-name@ to the value of
+expression @class-expr@. It also binds the class type @class-name@ to
+the type of the class, and defines two type abbreviations :
+@class-name@ and @'#' class-name@. The first one is the type of
+objects of this class, while the second is more general as it unifies
+with the type of any object belonging to a subclass (see
+section~\ref{s:sharp-types}).
+
+\subsubsection*{Virtual class}
+
+A class must be flagged virtual if one of its methods is virtual (that
+is, appears in the class type, but is not actually defined).
+Objects cannot be created from a virtual class.
+
+\subsubsection*{Type parameters}
+
+The class type parameters correspond to the ones of the class type and
+of the two type abbreviations defined by the class binding.  They must
+be bound to actual types in the class definition using type
+constraints.  So that the abbreviations are well-formed, type
+variables of the inferred type of the class must either be type
+parameters or be bound in the constraint clause.
+
+\subsection{Class specifications}
+\label{s:class-spec}
+
+\ikwd{class\@\texttt{class}}
+\ikwd{and\@\texttt{and}}
+
+\begin{syntax}
+class-specification:
+           'class' class-spec { 'and' class-spec }
+;
+class-spec:
+           ['virtual'] ['[' type-parameters ']'] class-name ':'
+           class-type
+\end{syntax}
+
+This is the counterpart in signatures of class definitions.
+A class specification matches a class definition if they have the same
+type parameters and their types match.
+
+\subsection{Class type definitions}
+\label{s:classtype}
+
+\ikwd{class\@\texttt{class}}
+\ikwd{type\@\texttt{type}}
+\ikwd{and\@\texttt{and}}
+
+\begin{syntax}
+classtype-definition:
+           'class' 'type' classtype-def
+                  { 'and' classtype-def }
+;
+classtype-def:
+    ['virtual'] ['[' type-parameters ']'] class-name '=' class-body-type
+\end{syntax}
+
+A class type definition @'class' class-name '=' class-body-type@
+defines an abbreviation @class-name@ for the class body type
+@class-body-type@.  As for class definitions, two type abbreviations
+@class-name@ and @'#' class-name@ are also defined. The definition can
+be parameterized by some type parameters. If any method in the class
+type body is virtual, the definition must be flagged @'virtual'@.
+
+Two class type definitions match if they have the same type parameters
+and they expand to matching types.

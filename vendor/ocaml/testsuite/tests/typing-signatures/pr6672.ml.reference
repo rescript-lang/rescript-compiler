@@ -1,0 +1,10 @@
+
+# module type S = sig type 'a t end
+# module type T = sig type 'a t = 'a list end
+# Characters 23-43:
+  module type T = S with type -'a t = 'a list;;
+                         ^^^^^^^^^^^^^^^^^^^^
+Error: In this definition, expected parameter variances are not satisfied.
+       The 1st type parameter was expected to be contravariant,
+       but it is injective covariant.
+# 

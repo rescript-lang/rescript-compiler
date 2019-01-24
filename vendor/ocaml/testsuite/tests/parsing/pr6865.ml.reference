@@ -1,0 +1,52 @@
+[
+  structure_item (pr6865.ml[1,0+0]..[1,0+14]) ghost
+    Pstr_extension "foo"
+    [
+      structure_item (pr6865.ml[1,0+0]..[1,0+14])
+        Pstr_value Nonrec
+        [
+          <def>
+            pattern (pr6865.ml[1,0+8]..[1,0+9])
+              Ppat_var "x" (pr6865.ml[1,0+8]..[1,0+9])
+            expression (pr6865.ml[1,0+12]..[1,0+14])
+              Pexp_constant PConst_int (42,None)
+        ]
+    ]
+  structure_item (pr6865.ml[2,15+0]..[2,15+25]) ghost
+    Pstr_extension "foo"
+    [
+      structure_item (pr6865.ml[2,15+0]..[2,15+25])
+        Pstr_value Nonrec
+        [
+          <def>
+            pattern (pr6865.ml[2,15+8]..[2,15+9])
+              Ppat_any
+            expression (pr6865.ml[2,15+12]..[2,15+14])
+              Pexp_construct "()" (pr6865.ml[2,15+12]..[2,15+14])
+              None
+          <def>
+            pattern (pr6865.ml[2,15+19]..[2,15+20])
+              Ppat_any
+            expression (pr6865.ml[2,15+23]..[2,15+25])
+              Pexp_construct "()" (pr6865.ml[2,15+23]..[2,15+25])
+              None
+        ]
+    ]
+  structure_item (pr6865.ml[3,41+0]..[3,41+14]) ghost
+    Pstr_extension "foo"
+    [
+      structure_item (pr6865.ml[3,41+0]..[3,41+14])
+        Pstr_value Nonrec
+        [
+          <def>
+            pattern (pr6865.ml[3,41+8]..[3,41+9])
+              Ppat_any
+            expression (pr6865.ml[3,41+12]..[3,41+14])
+              Pexp_construct "()" (pr6865.ml[3,41+12]..[3,41+14])
+              None
+        ]
+    ]
+]
+
+File "pr6865.ml", line 1, characters 4-7:
+Error: Uninterpreted extension 'foo'.

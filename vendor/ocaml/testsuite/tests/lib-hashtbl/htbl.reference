@@ -1,0 +1,56 @@
+-- Random integers, large range
+Insertion: passed
+Insertion: passed
+Removal: passed
+-- Random integers, narrow range
+Insertion: passed
+Insertion: passed
+Removal: passed
+-- Strings, generic interface
+Insertion: passed
+Insertion: passed
+Removal: passed
+-- Strings, functorial interface
+Insertion: passed
+Insertion: passed
+Removal: passed
+-- Pairs of strings
+Insertion: passed
+Insertion: passed
+Removal: passed
+-- Lists of strings
+Insertion: passed
+Insertion: passed
+Removal: passed
+-- Weak K1 -- Strings, functorial interface
+Insertion: passed
+Insertion: passed
+Removal: passed
+-- Weak K1 -- Pairs of strings
+Insertion: passed
+Insertion: passed
+Removal: passed
+-- Weak K2 -- Pairs of strings
+Insertion: passed
+Insertion: passed
+Removal: passed
+-- Weak K1 -- Lists of strings
+Insertion: passed
+Insertion: passed
+Removal: passed
+-- Weak Kn -- Arrays of strings
+Insertion: passed
+Insertion: passed
+Removal: passed
+1000 elements
+100,2
+200,4
+300,6
+400,8
+500,10
+600,12
+700,14
+800,16
+900,18
+1000,20
+10 elements

@@ -1,0 +1,19 @@
+## Test 1: a binary program in the path
+## Test 2: a #! script in the path
+--- subdir/script1
+FOO is foo, BAR is bar, BUZ is 
+3 arguments:  2 3 4
+## Test 3: a script without #! in the path
+--- subdir/script2
+FOO is foo, BAR is bar, BUZ is 
+3 arguments:  5 6 7
+## Test 4: a script in the current directory
+--- ./script3
+FOO is foo, BAR is bar, BUZ is 
+2 arguments:  8 9
+## Test 5: a non-existent program
+No such file nosuchprogram
+## Test 6: a non-executable program
+Permission denied nonexec
+## Test 7: a script in the current directory
+No such file script3

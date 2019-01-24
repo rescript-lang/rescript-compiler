@@ -1,0 +1,467 @@
+Index: typing/typecore.ml
+===================================================================
+--- typing/typecore.ml	(revision 13003)
++++ typing/typecore.ml	(working copy)
+@@ -61,6 +61,7 @@
+   | Not_a_packed_module of type_expr
+   | Recursive_local_constraint of (type_expr * type_expr) list
+   | Unexpected_existential
++  | Pattern_newtype_non_closed of string * type_expr
+ 
+ exception Error of Location.t * error
+ 
+@@ -121,7 +122,7 @@
+     | Pexp_function (_, eo, pel) ->
+         may expr eo; List.iter (fun (_, e) -> expr e) pel
+     | Pexp_apply (e, lel) -> expr e; List.iter (fun (_, e) -> expr e) lel
+-    | Pexp_let (_, pel, e)
++    | Pexp_let (_, pel, e) -> expr e; List.iter (fun (_, e) -> expr e) pel
+     | Pexp_match (e, pel)
+     | Pexp_try (e, pel) -> expr e; List.iter (fun (_, e) -> expr e) pel
+     | Pexp_array el
+@@ -1454,7 +1455,7 @@
+ 
+ let duplicate_ident_types loc caselist env =
+   let caselist =
+-    List.filter (fun (pat, _) -> contains_gadt env pat) caselist in
++    List.filter (fun ((_,pat), _) -> contains_gadt env pat) caselist in
+   let idents = all_idents (List.map snd caselist) in
+   List.fold_left
+     (fun env s ->
+@@ -1552,7 +1553,7 @@
+         exp_env = env }
+   | Pexp_let(Nonrecursive, [spat, sval], sbody) when contains_gadt env spat ->
+       type_expect ?in_function env
+-        {sexp with pexp_desc = Pexp_match (sval, [spat, sbody])}
++        {sexp with pexp_desc = Pexp_match (sval, [([],spat), sbody])}
+         ty_expected
+   | Pexp_let(rec_flag, spat_sexp_list, sbody) ->
+       let scp =
+@@ -1572,20 +1573,21 @@
+         exp_env = env }
+   | Pexp_function (l, Some default, [spat, sbody]) ->
+       let default_loc = default.pexp_loc in
+-      let scases = [
++      let scases = [([],
+          {ppat_loc = default_loc;
+           ppat_desc =
+             Ppat_construct
+               (mknoloc (Longident.(Ldot (Lident "*predef*", "Some"))),
+                Some {ppat_loc = default_loc;
+                      ppat_desc = Ppat_var (mknoloc "*sth*")},
+-               false)},
++               false)}),
+          {pexp_loc = default_loc;
+           pexp_desc = Pexp_ident(mknoloc (Longident.Lident "*sth*"))};
++	 ([],
+          {ppat_loc = default_loc;
+           ppat_desc = Ppat_construct
+              (mknoloc (Longident.(Ldot (Lident "*predef*", "None"))),
+-              None, false)},
++              None, false)}),
+          default;
+       ] in
+       let smatch = {
+@@ -1603,10 +1605,10 @@
+         pexp_desc =
+          Pexp_function (
+            l, None,
+-           [ {ppat_loc = loc;
+-              ppat_desc = Ppat_var (mknoloc "*opt*")},
++           [ ([], {ppat_loc = loc;
++		   ppat_desc = Ppat_var (mknoloc "*opt*")}),
+              {pexp_loc = loc;
+-              pexp_desc = Pexp_let(Default, [spat, smatch], sbody);
++              pexp_desc = Pexp_let(Default, [snd spat, smatch], sbody);
+              }
+            ]
+          )
+@@ -2733,10 +2735,10 @@
+ and type_cases ?in_function env ty_arg ty_res partial_flag loc caselist =
+   (* ty_arg is _fully_ generalized *)
+   let dont_propagate, has_gadts =
+-    let patterns = List.map fst caselist in
++    let patterns = List.map (fun ((_,p),_) -> p) caselist in
+     List.exists contains_polymorphic_variant patterns,
+-    List.exists (contains_gadt env) patterns in
+-(*  prerr_endline ( if has_gadts then "contains gadt" else "no gadt"); *)
++    List.exists (contains_gadt env) patterns ||
++    List.exists (fun ((l,_),_) -> l <> []) caselist in
+   let ty_arg, ty_res, env =
+     if has_gadts && not !Clflags.principal then
+       correct_levels ty_arg, correct_levels ty_res,
+@@ -2761,9 +2763,21 @@
+     Printtyp.raw_type_expr ty_arg; *)
+   let pat_env_list =
+     List.map
+-      (fun (spat, sexp) ->
++      (fun ((stypes,spat), sexp) ->
+         let loc = sexp.pexp_loc in
+         if !Clflags.principal then begin_def (); (* propagation of pattern *)
++        (* For local types *)
++        if stypes <> [] then begin_def ();
++        let lev' = get_current_level () in
++        let types = List.map (fun name -> name, newvar ~name ()) stypes in
++        let env =
++          List.fold_left (fun env (name, manifest) ->
++            (* "Vanishing" definition *)
++            let decl = new_declaration ~manifest (lev',lev') in
++            snd (Env.enter_type name decl env))
++            env types
++        in
++        (* Type the pattern itself *)
+         let scope = Some (Annot.Idef loc) in
+         let (pat, ext_env, force, unpacks) =
+           let partial =
+@@ -2773,14 +2787,42 @@
+           in type_pattern ~lev env spat scope ty_arg
+         in
+         pattern_force := force @ !pattern_force;
++        (* For local types *)
++        let ext_env =
++          List.fold_left (fun env (name, ty) ->
++            let ty = expand_head env ty in
++            match ty.desc with
++              Tconstr ((Path.Pident id as p), [], _) when
++                let decl = Env.find_type p env in
++                decl.type_newtype_level = Some (lev, lev) &&
++                decl.type_kind = Type_abstract ->
++                  let (id', env) =
++                    Env.enter_type name (new_declaration (lev, lev)) env in
++                  let manifest = newconstr (Path.Pident id') [] in
++                  (* Make previous existential "vanish" *)
++                  Env.add_type id (new_declaration ~manifest (lev',lev')) env
++            | _ ->
++                if free_variables ty <> [] then
++                  raise (Error (spat.ppat_loc,
++                                Pattern_newtype_non_closed (name,ty)));
++                let manifest = correct_levels ty in
++                let decl = new_declaration ~manifest (lev, lev) in
++                snd (Env.enter_type name decl env))
++            ext_env types
++        in
++        if stypes <> [] then begin
++          end_def ();
++          iter_pattern (fun p -> unify_pat ext_env p (newvar())) pat;
++        end;
++        (* Principality *)
+         let pat =
+           if !Clflags.principal then begin
+             end_def ();
+             iter_pattern (fun {pat_type=t} -> generalize_structure t) pat;
+-            { pat with pat_type = instance env pat.pat_type }
++            { pat with pat_type = instance ext_env pat.pat_type }
+           end else pat
+         in
+-        unify_pat env pat ty_arg';
++        unify_pat ext_env pat ty_arg';
+         (pat, (ext_env, unpacks)))
+       caselist in
+   (* Check for polymorphic variants to close *)
+@@ -2802,7 +2844,7 @@
+   let in_function = if List.length caselist = 1 then in_function else None in
+   let cases =
+     List.map2
+-      (fun (pat, (ext_env, unpacks)) (spat, sexp) ->
++      (fun (pat, (ext_env, unpacks)) ((stypes,spat), sexp) ->
+         let sexp = wrap_unpacks sexp unpacks in
+         let ty_res' =
+           if !Clflags.principal then begin
+@@ -2811,8 +2853,8 @@
+             end_def ();
+             generalize_structure ty; ty
+           end
+-          else if contains_gadt env spat then correct_levels ty_res
+-          else ty_res in
++          else if contains_gadt env spat || stypes <> []
++          then correct_levels ty_res else ty_res in
+ (*        Format.printf "@[%i %i, ty_res' =@ %a@]@." lev (get_current_level())
+           Printtyp.raw_type_expr ty_res'; *)
+         let exp = type_expect ?in_function ext_env sexp ty_res' in
+@@ -3218,6 +3260,11 @@
+   | Unexpected_existential ->
+       fprintf ppf
+         "Unexpected existential"
++  | Pattern_newtype_non_closed (name, ty) ->
++      reset_and_mark_loops ty;
++      fprintf ppf
++       "@[In this pattern, local type %s has been inferred as@ %a@ %s@]"
++        name type_expr ty "It should not contain variables."
+ 
+ let () =
+   Env.add_delayed_check_forward := add_delayed_check
+Index: typing/ctype.mli
+===================================================================
+--- typing/ctype.mli	(revision 13003)
++++ typing/ctype.mli	(working copy)
+@@ -140,6 +140,9 @@
+         the parameters [pi] and returns the corresponding instance of
+         [t]. Exception [Cannot_apply] is raised in case of failure. *)
+ 
++val new_declaration:
++    ?manifest:type_expr -> ?loc:Location.t  -> (int * int) -> type_declaration
++
+ val expand_head_once: Env.t -> type_expr -> type_expr
+ val expand_head: Env.t -> type_expr -> type_expr
+ val try_expand_once_opt: Env.t -> type_expr -> type_expr
+Index: typing/typeclass.ml
+===================================================================
+--- typing/typeclass.ml	(revision 13003)
++++ typing/typeclass.ml	(working copy)
+@@ -347,8 +347,8 @@
+   let mkid s = mkloc s self_loc in
+   { pexp_desc =
+       Pexp_function ("", None,
+-                     [mkpat (Ppat_alias (mkpat (Ppat_var (mkid "self-*")),
+-                                         mkid ("self-" ^ cl_num))),
++                     [([],mkpat (Ppat_alias (mkpat (Ppat_var (mkid "self-*")),
++                                         mkid ("self-" ^ cl_num)))),
+                       expr]);
+     pexp_loc = expr.pexp_loc }
+ 
+@@ -836,15 +836,15 @@
+   | Pcl_fun (l, Some default, spat, sbody) ->
+       let loc = default.pexp_loc in
+       let scases =
+-        [{ppat_loc = loc; ppat_desc = Ppat_construct (
++        [([], {ppat_loc = loc; ppat_desc = Ppat_construct (
+           mknoloc (Longident.(Ldot (Lident"*predef*", "Some"))),
+           Some{ppat_loc = loc; ppat_desc = Ppat_var (mknoloc "*sth*")},
+-          false)},
++          false)}),
+          {pexp_loc = loc; pexp_desc =
+           Pexp_ident(mknoloc (Longident.Lident"*sth*"))};
+-         {ppat_loc = loc; ppat_desc =
++         ([], {ppat_loc = loc; ppat_desc =
+           Ppat_construct(mknoloc (Longident.(Ldot (Lident"*predef*", "None"))),
+-                         None, false)},
++                         None, false)}),
+          default] in
+       let smatch =
+         {pexp_loc = loc; pexp_desc =
+Index: typing/ctype.ml
+===================================================================
+--- typing/ctype.ml	(revision 13003)
++++ typing/ctype.ml	(working copy)
+@@ -696,6 +696,7 @@
+       Path.binding_time p
+ 
+ let rec update_level env level ty =
++  (* Format.eprintf "update_level %d %a@." level !Btype.print_raw ty; *)
+   let ty = repr ty in
+   if ty.level > level then begin
+     if Env.has_local_constraints env then begin
+@@ -1043,7 +1044,7 @@
+   reified_var_counter := Vars.add s index !reified_var_counter;
+   Printf.sprintf "%s#%d" s index
+ 
+-let new_declaration newtype manifest =
++let new_declaration ?manifest ?(loc=Location.none) newtype =
+   {
+     type_params = [];
+     type_arity = 0;
+@@ -1051,7 +1052,7 @@
+     type_private = Public;
+     type_manifest = manifest;
+     type_variance = [];
+-    type_newtype_level = newtype;
++    type_newtype_level = Some newtype;
+     type_loc = Location.none;
+   }
+ 
+@@ -1060,7 +1061,7 @@
+   | None -> ()
+   | Some (env, newtype_lev) ->
+       let process existential =
+-        let decl = new_declaration (Some (newtype_lev, newtype_lev)) None in
++        let decl = new_declaration (newtype_lev, newtype_lev) in
+         let name =
+           match repr existential with
+             {desc = Tvar (Some name)} -> name
+@@ -1808,7 +1809,7 @@
+ let reify env t =
+   let newtype_level = get_newtype_level () in
+   let create_fresh_constr lev name =
+-    let decl = new_declaration (Some (newtype_level, newtype_level)) None in
++    let decl = new_declaration (newtype_level, newtype_level) in
+     let name = get_new_abstract_name name in
+     let (id, new_env) = Env.enter_type name decl !env in
+     let t = newty2 lev (Tconstr (Path.Pident id,[],ref Mnil))  in
+@@ -2039,7 +2040,7 @@
+ let add_gadt_equation env source destination =
+   let destination = duplicate_type destination in
+   let source_lev = find_newtype_level !env (Path.Pident source) in
+-  let decl = new_declaration (Some source_lev) (Some destination) in
++  let decl = new_declaration ~manifest:destination source_lev in
+   let newtype_level = get_newtype_level () in
+   env := Env.add_local_constraint source decl newtype_level !env;
+   cleanup_abbrev ()
+Index: typing/typecore.mli
+===================================================================
+--- typing/typecore.mli	(revision 13003)
++++ typing/typecore.mli	(working copy)
+@@ -103,6 +103,7 @@
+   | Not_a_packed_module of type_expr
+   | Recursive_local_constraint of (type_expr * type_expr) list
+   | Unexpected_existential
++  | Pattern_newtype_non_closed of string * type_expr
+ 
+ exception Error of Location.t * error
+ 
+Index: testsuite/tests/typing-gadts/test.ml.reference
+===================================================================
+--- testsuite/tests/typing-gadts/test.ml.reference	(revision 13003)
++++ testsuite/tests/typing-gadts/test.ml.reference	(working copy)
+@@ -293,4 +293,18 @@
+ #       type 'a ty = Int : int -> int ty
+ #     val f : 'a ty -> 'a = <fun>
+ #       val g : 'a ty -> 'a = <fun>
++#         - : unit -> unit list = <fun>
++# - : unit list = []
++# Characters 17-19:
++  function type a. () -> ();; (* fail *)
++                   ^^
++Error: In this pattern, local type a has been inferred as 'a
++       It should not contain variables.
++#     type t = D : 'a * ('a -> int) -> t
++# val f : t -> int = <fun>
++# Characters 42-43:
++  let f = function type b. D ((x:b), f) -> (f:t->int) x;; (* fail *)
++                                            ^
++Error: This expression has type b -> int
++       but an expression was expected of type t -> int
+ # 
+Index: testsuite/tests/typing-gadts/test.ml
+===================================================================
+--- testsuite/tests/typing-gadts/test.ml	(revision 13003)
++++ testsuite/tests/typing-gadts/test.ml	(working copy)
+@@ -512,3 +512,15 @@
+ let g : type a. a ty -> a =
+   let () = () in
+   fun x -> match x with Int y -> y;;
++
++(* Implicit type declarations in patterns *)
++
++(* alias *)
++function type a. (() : a) -> ([] : a list);;
++(function type a. (() : a) -> ([] : a list)) ();;
++function type a. () -> ();; (* fail *)
++
++(* existential *)
++type t = D : 'a * ('a -> int) -> t;;
++let f = function type b. D ((x:b), f) -> (f:b->int) x;;
++let f = function type b. D ((x:b), f) -> (f:t->int) x;; (* fail *)
+Index: testsuite/tests/typing-gadts/test.ml.principal.reference
+===================================================================
+--- testsuite/tests/typing-gadts/test.ml.principal.reference	(revision 13003)
++++ testsuite/tests/typing-gadts/test.ml.principal.reference	(working copy)
+@@ -306,4 +306,18 @@
+ #       type 'a ty = Int : int -> int ty
+ #     val f : 'a ty -> 'a = <fun>
+ #       val g : 'a ty -> 'a = <fun>
++#         - : unit -> unit list = <fun>
++# - : unit list = []
++# Characters 17-19:
++  function type a. () -> ();; (* fail *)
++                   ^^
++Error: In this pattern, local type a has been inferred as 'a
++       It should not contain variables.
++#     type t = D : 'a * ('a -> int) -> t
++# val f : t -> int = <fun>
++# Characters 42-43:
++  let f = function type b. D ((x:b), f) -> (f:t->int) x;; (* fail *)
++                                            ^
++Error: This expression has type b -> int
++       but an expression was expected of type t -> int
+ # 
+Index: parsing/parser.mly
+===================================================================
+--- parsing/parser.mly	(revision 13003)
++++ parsing/parser.mly	(working copy)
+@@ -967,7 +967,7 @@
+   | FUNCTION opt_bar match_cases
+       { mkexp(Pexp_function("", None, List.rev $3)) }
+   | FUN labeled_simple_pattern fun_def
+-      { let (l,o,p) = $2 in mkexp(Pexp_function(l, o, [p, $3])) }
++      { let (l,o,p) = $2 in mkexp(Pexp_function(l, o, [([],p), $3])) }
+   | FUN LPAREN TYPE LIDENT RPAREN fun_def
+       { mkexp(Pexp_newtype($4, $6)) }
+   | MATCH seq_expr WITH opt_bar match_cases
+@@ -1187,18 +1187,18 @@
+     EQUAL seq_expr
+       { $2 }
+   | labeled_simple_pattern fun_binding
+-      { let (l, o, p) = $1 in ghexp(Pexp_function(l, o, [p, $2])) }
++      { let (l, o, p) = $1 in ghexp(Pexp_function(l, o, [([],p), $2])) }
+   | LPAREN TYPE LIDENT RPAREN fun_binding
+       { mkexp(Pexp_newtype($3, $5)) }
+ ;
+ match_cases:
+-    pattern match_action                        { [$1, $2] }
+-  | match_cases BAR pattern match_action        { ($3, $4) :: $1 }
++    match_pattern match_action                  { [$1, $2] }
++  | match_cases BAR match_pattern match_action  { ($3, $4) :: $1 }
+ ;
+ fun_def:
+     match_action                                { $1 }
+   | labeled_simple_pattern fun_def
+-      { let (l,o,p) = $1 in ghexp(Pexp_function(l, o, [p, $2])) }
++      { let (l,o,p) = $1 in ghexp(Pexp_function(l, o, [([],p), $2])) }
+   | LPAREN TYPE LIDENT RPAREN fun_def
+       { mkexp(Pexp_newtype($3, $5)) }
+ ;
+@@ -1245,6 +1245,10 @@
+ 
+ /* Patterns */
+ 
++match_pattern:
++    pattern                                     { [], $1 }
++  | TYPE lident_list DOT pattern                { $2, $4 }
++;
+ pattern:
+     simple_pattern
+       { $1 }
+Index: parsing/parsetree.mli
+===================================================================
+--- parsing/parsetree.mli	(revision 13003)
++++ parsing/parsetree.mli	(working copy)
+@@ -90,10 +90,11 @@
+     Pexp_ident of Longident.t loc
+   | Pexp_constant of constant
+   | Pexp_let of rec_flag * (pattern * expression) list * expression
+-  | Pexp_function of label * expression option * (pattern * expression) list
++  | Pexp_function of
++      label * expression option * ((string list * pattern) * expression) list
+   | Pexp_apply of expression * (label * expression) list
+-  | Pexp_match of expression * (pattern * expression) list
+-  | Pexp_try of expression * (pattern * expression) list
++  | Pexp_match of expression * ((string list * pattern) * expression) list
++  | Pexp_try of expression * ((string list * pattern) * expression) list
+   | Pexp_tuple of expression list
+   | Pexp_construct of Longident.t loc * expression option * bool
+   | Pexp_variant of label * expression option
+@@ -104,7 +105,8 @@
+   | Pexp_ifthenelse of expression * expression * expression option
+   | Pexp_sequence of expression * expression
+   | Pexp_while of expression * expression
+-  | Pexp_for of string loc *  expression * expression * direction_flag * expression
++  | Pexp_for of
++      string loc *  expression * expression * direction_flag * expression
+   | Pexp_constraint of expression * core_type option * core_type option
+   | Pexp_when of expression * expression
+   | Pexp_send of expression * string
+Index: parsing/printast.ml
+===================================================================
+--- parsing/printast.ml	(revision 13003)
++++ parsing/printast.ml	(working copy)
+@@ -686,8 +686,9 @@
+   line i ppf "%a\n" fmt_longident li;
+   pattern (i+1) ppf p;
+ 
+-and pattern_x_expression_case i ppf (p, e) =
++and pattern_x_expression_case i ppf ((l,p), e) =
+   line i ppf "<case>\n";
++  list (i+1) string ppf l;
+   pattern (i+1) ppf  p;
+   expression (i+1) ppf e;
+ 

@@ -1,0 +1,16 @@
+
+# type t = A | B
+# type u = C of t
+# Characters 18-54:
+  let print_t out = function A -> Format.fprintf out "A";;
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Warning 8: this pattern-matching is not exhaustive.
+Here is an example of a case that is not matched:
+B
+val print_t : Format.formatter -> t -> unit = <fun>
+# # - : t =
+<printer print_t raised an exception: File "//toplevel//", line 1, characters 18-23: Pattern matching failed>
+# - : u =
+C
+ <printer print_t raised an exception: File "//toplevel//", line 1, characters 18-23: Pattern matching failed>
+# 

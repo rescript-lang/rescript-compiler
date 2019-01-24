@@ -1,0 +1,998 @@
+\section{Expressions\label{s:value-expr}}
+\pdfsection{Expressions}
+%HEVEA\cutname{expr.html}
+\ikwd{in\@\texttt{in}|see{\texttt{let}}}
+\ikwd{and\@\texttt{and}}
+\ikwd{rec\@\texttt{rec}|see{\texttt{let}, \texttt{module}}}
+\ikwd{let\@\texttt{let}}
+\ikwd{try\@\texttt{try}}
+\ikwd{function\@\texttt{function}}
+\ikwd{fun\@\texttt{fun}}
+\ikwd{with\@\texttt{with}}
+\ikwd{done\@\texttt{done}|see{\texttt{while}, \texttt{for}}}
+\ikwd{do\@\texttt{do}|see{\texttt{while}, \texttt{for}}}
+\ikwd{downto\@\texttt{downto}|see{\texttt{for}}}
+\ikwd{to\@\texttt{to}|see{\texttt{for}}}
+\ikwd{for\@\texttt{for}}
+\ikwd{else\@\texttt{else}|see{\texttt{if}}}
+\ikwd{then\@\texttt{then}|see{\texttt{if}}}
+\ikwd{if\@\texttt{if}}
+\ikwd{or\@\texttt{or}}
+\ikwd{match\@\texttt{match}}
+\ikwd{begin\@\texttt{begin}}
+\ikwd{end\@\texttt{end}}
+\ikwd{when\@\texttt{when}}
+\ikwd{new\@\texttt{new}}
+\ikwd{object\@\texttt{object}}
+\ikwd{lazy\@\texttt{lazy}}
+
+\begin{syntax}
+expr:
+    value-path
+  | constant
+  | '(' expr ')'
+  | 'begin' expr 'end'
+  | '(' expr ':' typexpr ')'
+  | expr {{',' expr}}
+  | constr expr
+  | "`"tag-name expr
+  | expr '::' expr
+  | '[' expr { ';' expr } [';'] ']'
+  | '[|' expr { ';' expr } [';'] '|]'
+  | '{' field [':' typexpr] ['=' expr]%
+    { ';' field [':' typexpr] ['=' expr] } [';'] '}'
+  | '{' expr 'with' field [':' typexpr] ['=' expr]%
+    { ';' field [':' typexpr] ['=' expr] } [';'] '}'
+  | expr {{ argument }}
+  | prefix-symbol expr
+  | '-' expr
+  | '-.' expr
+  | expr infix-op expr
+  | expr '.' field
+  | expr '.' field '<-' expr
+  | expr '.(' expr ')'
+  | expr '.(' expr ')' '<-' expr
+  | expr '.[' expr ']'
+  | expr '.[' expr ']' '<-' expr
+  | 'if' expr 'then' expr [ 'else' expr ]
+  | 'while' expr 'do' expr 'done'
+  | 'for' value-name '=' expr ( 'to' || 'downto' ) expr 'do' expr 'done'
+  | expr ';' expr
+  | 'match' expr 'with' pattern-matching
+  | 'function' pattern-matching
+  | 'fun' {{ parameter }} [ ':' typexpr ] '->' expr
+  | 'try' expr 'with' pattern-matching
+  | 'let' ['rec'] let-binding { 'and' let-binding } 'in' expr
+  | 'new' class-path
+  | 'object' class-body 'end'
+  | expr '#' method-name
+  | inst-var-name
+  | inst-var-name '<-' expr
+  | '(' expr ':>' typexpr ')'
+  | '(' expr ':' typexpr ':>' typexpr ')'
+  | '{<' [ inst-var-name '=' expr { ';' inst-var-name '=' expr } [';'] ] '>}'
+  | 'assert' expr
+  | 'lazy' expr
+  | 'let' 'module' module-name { '(' module-name ':' module-type ')' }
+    [ ':' module-type ] \\ '=' module-expr 'in' expr
+  | "let" "open" module-path "in" expr
+  | module-path '.(' expr ')'
+  | module-path '.[' expr ']'
+  | module-path '.[|' expr '|]'
+  | module-path '.{' expr '}'
+  | module-path '.{<' expr '>}'
+;
+%BEGIN LATEX
+\end{syntax} \begin{syntax}
+%END LATEX
+argument:
+    expr
+  | '~' label-name
+  | '~' label-name ':' expr
+  | '?' label-name
+  | '?' label-name ':' expr
+;
+%\end{syntax} \begin{syntax}
+pattern-matching:
+    [ '|' ] pattern ['when' expr] '->' expr
+    { '|' pattern ['when' expr] '->' expr }
+;
+let-binding:
+    pattern '=' expr
+  | value-name { parameter } [':' typexpr] [':>' typexpr] '=' expr
+  | value-name ':' poly-typexpr '=' expr %since 3.12
+;
+parameter:
+    pattern
+  | '~' label-name
+  | '~' '(' label-name [':' typexpr] ')'
+  | '~' label-name ':' pattern
+  | '?' label-name
+  | '?' '(' label-name [':' typexpr] ['=' expr] ')'
+  | '?' label-name ':' pattern
+  | '?' label-name ':' '(' pattern [':' typexpr] ['=' expr] ')'
+\end{syntax}
+See also the following language extensions:
+\hyperref[s:object-notations]{object notations},
+\hyperref[s-first-class-modules]{first-class modules},
+\hyperref[s:explicit-overriding-open]{overriding in open statements},
+\hyperref[s:bigarray-access]{syntax for Bigarray access},
+\hyperref[s:attributes]{attributes},
+\hyperref[s:extension-nodes]{extension nodes},
+\hyperref[s:local-exceptions]{local exceptions}
+\hyperref[s:index-operators]{extended indexing operators}.
+
+The table below shows the relative precedences and associativity of
+operators and non-closed constructions. The constructions with higher
+precedence come first. For infix and prefix symbols, we write
+``"*"\ldots'' to mean ``any symbol starting with "*"''.
+\ikwd{or\@\texttt{or}}%
+\ikwd{if\@\texttt{if}}%
+\ikwd{fun\@\texttt{fun}}%
+\ikwd{function\@\texttt{function}}%
+\ikwd{match\@\texttt{match}}%
+\ikwd{try\@\texttt{try}}%
+\ikwd{let\@\texttt{let}}%
+\ikwd{mod\@\texttt{mod}}
+\ikwd{land\@\texttt{land}}
+\ikwd{lor\@\texttt{lor}}
+\ikwd{lxor\@\texttt{lxor}}
+\ikwd{lsl\@\texttt{lsl}}
+\ikwd{lsr\@\texttt{lsr}}
+\ikwd{asr\@\texttt{asr}}
+\begin{tableau}{|l|l|}{Construction or operator}{Associativity}
+\entree{prefix-symbol}{--}
+\entree{".   .(   .[   .{" (see section~\ref{s:bigarray-access})}{--}
+\entree{"#"\ldots}{--}
+\entree{function application, constructor application, tag
+        application, "assert",
+        "lazy"}{left}
+\entree{"-   -." (prefix)}{--}
+\entree{"**"\ldots"   lsl   lsr   asr"}{right}
+\entree{"*"\ldots"   /"\ldots"   %"\ldots"   mod   land   lor   lxor"}{left}
+ %% "`"@ident@"`"
+\entree{"+"\ldots"   -"\ldots}{left}
+\entree{"::"}{right}
+\entree{{\tt \char64}\ldots "   ^"\ldots}{right}
+\entree{"="\ldots"   <"\ldots"   >"\ldots"   |"\ldots"   &"\ldots"   $"\ldots"   !="}{left}
+\entree{"&   &&"}{right}
+\entree{"or  ||"}{right}
+\entree{","}{--}
+\entree{"<-   :="}{right}
+\entree{"if"}{--}
+\entree{";"}{right}
+\entree{"let  match  fun  function  try"}{--}
+\end{tableau}
+
+\subsection{Basic expressions}
+
+\subsubsection*{Constants}
+
+An expression consisting in a constant evaluates to this constant.
+
+\subsubsection*{Value paths} \label{expr:var}
+
+An expression consisting in an access path evaluates to the value bound to
+this path in the current evaluation environment. The path can
+be either a value name or an access path to a value component of a module.
+
+\subsubsection*{Parenthesized expressions}
+\ikwd{begin\@\texttt{begin}}
+\ikwd{end\@\texttt{end}}
+
+The expressions @'(' expr ')'@ and @'begin' expr 'end'@ have the same
+value as @expr@. The two constructs are semantically equivalent, but it
+is good style to use @'begin' \ldots 'end'@ inside control structures:
+\begin{alltt}
+        if \ldots then begin \ldots ; \ldots end else begin \ldots ; \ldots end
+\end{alltt}
+and @'(' \ldots ')'@ for the other grouping situations.
+
+Parenthesized expressions can contain a type constraint, as in @'('
+expr ':' typexpr ')'@. This constraint forces the type of @expr@ to be
+compatible with @typexpr@.
+
+Parenthesized expressions can also contain coercions
+@'(' expr [':' typexpr] ':>' typexpr')'@ (see
+subsection~\ref{s:coercions} below).
+
+
+\subsubsection*{Function application}
+
+Function application is denoted by juxtaposition of (possibly labeled)
+expressions. The expression @expr argument_1 \ldots argument_n@
+evaluates the expression @expr@ and those appearing in @argument_1@
+to @argument_n@. The expression @expr@ must evaluate to a
+functional value $f$, which is then applied to the values of
+@argument_1, \ldots, argument_n@.
+
+The order in which the expressions @expr, argument_1, \ldots,
+argument_n@ are evaluated is not specified.
+
+Arguments and parameters are matched according to their respective
+labels. Argument order is irrelevant, except among arguments with the
+same label, or no label.
+
+If a parameter is specified as optional (label prefixed by @"?"@) in the
+type of @expr@, the corresponding argument will be automatically
+wrapped with the constructor "Some", except if the argument itself is
+also prefixed by @"?"@, in which case it is passed as is.
+%
+If a non-labeled argument is passed, and its corresponding parameter
+is preceded by one or several optional parameters, then these
+parameters are {\em defaulted}, {\em i.e.} the value "None" will be
+passed for them.
+%
+All other missing parameters (without corresponding argument), both
+optional and non-optional, will be kept, and the result of the
+function will still be a function of these missing parameters to the
+body of $f$.
+
+As a special case, if the function has a known arity, all the
+arguments are unlabeled, and their number matches the number of
+non-optional parameters, then labels are ignored and non-optional
+parameters are matched in their definition order. Optional arguments
+are defaulted.
+
+In all cases but exact match of order and labels, without optional
+parameters, the function type should be known at the application
+point.  This can be ensured by adding a type constraint.  Principality
+of the derivation can be checked in the "-principal" mode.
+
+\subsubsection*{Function definition}
+
+Two syntactic forms are provided to define functions. The first form
+is introduced by the keyword "function":
+\ikwd{function\@\texttt{function}}
+
+$$\begin{array}{rlll}
+\token{function} & \textsl{pattern}_1 & \token{->} & \textsl{expr}_1 \\
+\token{|}   & \ldots \\
+\token{|}   & \textsl{pattern}_n & \token{->} & \textsl{expr}_n
+\end{array}$$
+This expression evaluates to a functional value with one argument.
+When this function is applied to a value \var{v}, this value is
+matched against each pattern @pattern_1@ to @pattern_n@.
+If one of these matchings succeeds, that is, if the value \var{v}
+matches the pattern @pattern_i@ for some \var{i},
+then the expression @expr_i@ associated to the selected pattern
+is evaluated, and its value becomes the value of the function
+application. The evaluation of @expr_i@ takes place in an
+environment enriched by the bindings performed during the matching.
+
+If several patterns match the argument \var{v}, the one that occurs
+first in the function definition is selected. If none of the patterns
+matches the argument, the exception "Match_failure" is raised.
+%
+\index{Matchfailure\@\verb`Match_failure`}
+
+\medskip
+
+The other form of function definition is introduced by the keyword "fun":
+\ikwd{fun\@\texttt{fun}}
+\begin{center}
+@"fun" parameter_1 \ldots parameter_n "->" expr@
+\end{center}
+This expression is equivalent to:
+\begin{center}
+@"fun" parameter_1 "->" \ldots "fun" parameter_n "->" expr@
+\end{center}
+
+An optional type constraint @typexpr@ can be added before "->" to enforce
+the type of the result to be compatible with the constraint @typexpr@:
+\begin{center}
+@"fun" parameter_1 \ldots parameter_n ":" typexpr "->" expr@
+\end{center}
+is equivalent to
+\begin{center}
+  @"fun" parameter_1 "->" \ldots "fun" parameter_n "->" %
+  (expr ":" typexpr )@
+\end{center}
+Beware of the small syntactic difference between a type constraint on
+the last parameter
+\begin{center}
+  @"fun" parameter_1 \ldots (parameter_n":"typexpr)"->" expr @
+\end{center}
+and one on the result
+\begin{center}
+  @"fun" parameter_1 \ldots parameter_n":" typexpr "->" expr @
+\end{center}
+
+The parameter patterns @"~"lab@ and @"~("lab [":" typ]")"@
+are shorthands for respectively @"~"lab":"lab@ and
+@"~"lab":("lab [":" typ]")"@, and similarly for their optional
+counterparts.
+
+A function of the form @"fun" "?" lab ":(" pattern '=' expr_0 ')' '->'
+expr@ is equivalent to
+\begin{center}
+@"fun" "?" lab ":" ident '->'
+  "let" pattern '='
+    "match" ident "with" "Some" ident "->" ident '|' "None" '->' expr_0
+  "in" expr@
+\end{center}
+where @ident@
+is a fresh variable, except that it is unspecified when @expr_0@ is evaluated.
+
+After these two transformations, expressions are of the form
+\begin{center}
+@"fun" [label_1] pattern_1 "->" \ldots "fun" [label_n] pattern_n "->" expr@
+\end{center}
+If we ignore labels, which will only be meaningful at function
+application, this is equivalent to
+\begin{center}
+@"function" pattern_1 "->" \ldots "function" pattern_n "->" expr@
+\end{center}
+That is, the @"fun"@ expression above evaluates to a curried function
+with \var{n} arguments: after applying this function $n$ times to the
+values @@v@_1 \ldots @v@_n@, the values will be matched
+in parallel against the patterns @pattern_1 \ldots pattern_n@.
+If the matching succeeds, the function returns the value of @expr@ in
+an environment enriched by the bindings performed during the matchings.
+If the matching fails, the exception "Match_failure" is raised.
+
+\subsubsection*{Guards in pattern-matchings}
+
+\ikwd{when\@\texttt{when}}
+The cases of a pattern matching (in the @"function"@, @"match"@ and
+@"try"@ constructs) can include guard expressions, which are
+arbitrary boolean expressions that must evaluate to "true" for the
+match case to be selected. Guards occur just before the @"->"@ token and
+are introduced by the @"when"@ keyword:
+
+$$\begin{array}{rlll}
+\token{function} & \nt{pattern}_1 \; [\token{when} \; \nt{cond}_1] & \token{->} & \nt{expr}_1 \\
+\token{|}   & \ldots \\
+\token{|}   & \nt{pattern}_n  \; [\token{when} \; \nt{cond}_n] & \token{->} & \nt{expr}_n
+\end{array}$$
+
+
+Matching proceeds as described before, except that if the value
+matches some pattern @pattern_i@ which has a guard @@cond@_i@, then the
+expression @@cond@_i@ is evaluated (in an environment enriched by the
+bindings performed during matching). If @@cond@_i@ evaluates to "true",
+then @expr_i@ is evaluated and its value returned as the result of the
+matching, as usual. But if @@cond@_i@ evaluates to "false", the matching
+is resumed against the patterns following @pattern_i@.
+
+\subsubsection*{Local definitions} \label{s:localdef}
+
+\ikwd{let\@\texttt{let}}
+
+The @"let"@ and @"let" "rec"@ constructs bind value names locally.
+The construct
+\begin{center}
+@"let" pattern_1 "=" expr_1 "and" \ldots "and" pattern_n "=" expr_n "in" expr@
+\end{center}
+evaluates @expr_1 \ldots expr_n@ in some unspecified order and matches
+their values against the patterns @pattern_1 \ldots pattern_n@. If the
+matchings succeed, @expr@ is evaluated in the environment enriched by
+the bindings performed during matching, and the value of @expr@ is
+returned as the value of the whole @"let"@ expression. If one of the
+matchings fails, the exception "Match_failure" is raised.
+%
+\index{Matchfailure\@\verb`Match_failure`}
+
+An alternate syntax is provided to bind variables to functional
+values: instead of writing
+\begin{center}
+@"let" ident "=" "fun" parameter_1 \ldots parameter_m "->" expr@
+\end{center}
+in a @"let"@ expression, one may instead write
+\begin{center}
+@"let" ident parameter_1 \ldots parameter_m "=" expr@
+\end{center}
+
+\medskip
+\noindent
+Recursive definitions of names are introduced by @"let" "rec"@:
+\begin{center}
+@"let" "rec" pattern_1 "=" expr_1 "and" \ldots "and" pattern_n "=" expr_n
+       "in" expr@
+\end{center}
+The only difference with the @"let"@ construct described above is
+that the bindings of names to values performed by the
+pattern-matching are considered already performed when the expressions
+@expr_1@ to @expr_n@ are evaluated. That is, the expressions @expr_1@
+to @expr_n@ can reference identifiers that are bound by one of the
+patterns @pattern_1, \ldots, pattern_n@, and expect them to have the
+same value as in @expr@, the body of the @"let" "rec"@ construct.
+
+The recursive definition is guaranteed to behave as described above if
+the expressions @expr_1@ to @expr_n@ are function definitions
+(@"fun" \ldots@ or @"function" \ldots@), and the patterns @pattern_1
+\ldots pattern_n@ are just value names, as in:
+\begin{center}
+@"let" "rec" name_1 "=" "fun" \ldots
+"and" \ldots
+"and" name_n "=" "fun" \ldots
+"in" expr@
+\end{center}
+This defines @name_1 \ldots name_n@ as mutually recursive functions
+local to @expr@.
+
+The behavior of other forms of @"let" "rec"@ definitions is
+implementation-dependent. The current implementation also supports
+a certain class of recursive definitions of non-functional values,
+as explained in section~\ref{s:letrecvalues}.
+\subsubsection{Explicit polymorphic type annotations}
+(Introduced in OCaml 3.12)
+
+Polymorphic type annotations in @"let"@-definitions behave in a way
+similar to polymorphic methods:
+
+\begin{center}
+@"let" pattern_1 ":" typ_1 \ldots typ_n "." typeexpr "=" expr  @
+\end{center}
+
+These annotations explicitly require the defined value to be polymorphic,
+and allow one to use this polymorphism in recursive occurrences
+(when using @"let" "rec"@). Note however that this is a normal polymorphic
+type, unifiable with any instance of itself.
+
+\subsection{Control structures}
+
+\subsubsection*{Sequence}
+
+The expression @expr_1 ";" expr_2@ evaluates @expr_1@ first, then
+@expr_2@, and returns the value of @expr_2@.
+
+\subsubsection*{Conditional}
+\ikwd{if\@\texttt{if}}
+
+The expression @"if" expr_1 "then" expr_2 "else" expr_3@ evaluates to
+the value of @expr_2@ if @expr_1@ evaluates to the boolean @"true"@,
+and to the value of @expr_3@ if @expr_1@ evaluates to the boolean
+@"false"@.
+
+The @"else" expr_3@ part can be omitted, in which case it defaults to
+@"else" "()"@.
+
+\subsubsection*{Case expression}\ikwd{match\@\texttt{match}}
+
+The expression
+$$\begin{array}{rlll}
+\token{match} & \textsl{expr} \\
+\token{with} & \textsl{pattern}_1 & \token{->} & \textsl{expr}_1 \\
+\token{|}     & \ldots \\
+\token{|}     & \textsl{pattern}_n & \token{->} & \textsl{expr}_n
+\end{array}$$
+matches the value of @expr@ against the patterns @pattern_1@ to
+@pattern_n@. If the matching against @pattern_i@ succeeds, the
+associated expression @expr_i@ is evaluated, and its value becomes the
+value of the whole @'match'@ expression. The evaluation of
+@expr_i@ takes place in an environment enriched by the bindings
+performed during matching. If several patterns match the value of
+@expr@, the one that occurs first in the @'match'@ expression is
+selected. If none of the patterns match the value of @expr@, the
+exception "Match_failure" is raised.
+%
+\index{Matchfailure\@\verb`Match_failure`}
+
+\subsubsection*{Boolean operators}
+
+The expression @expr_1 '&&' expr_2@ evaluates to @'true'@ if both
+@expr_1@ and @expr_2@ evaluate to @'true'@; otherwise, it evaluates to
+@'false'@. The first component, @expr_1@, is evaluated first. The
+second component, @expr_2@, is not evaluated if the first component
+evaluates to @'false'@. Hence, the expression @expr_1 '&&' expr_2@ behaves
+exactly as
+\begin{center}
+@'if' expr_1 'then' expr_2 'else' 'false'@.
+\end{center}
+
+The expression @expr_1 '||' expr_2@ evaluates to @'true'@ if one of
+the expressions
+@expr_1@ and @expr_2@ evaluates to @'true'@; otherwise, it evaluates to
+@'false'@. The first component, @expr_1@, is evaluated first. The
+second component, @expr_2@, is not evaluated if the first component
+evaluates to @'true'@. Hence, the expression @expr_1 '||' expr_2@ behaves
+exactly as
+\begin{center}
+@'if' expr_1 'then' 'true' 'else' expr_2@.
+\end{center}
+
+\ikwd{or\@\texttt{or}}
+The boolean operators @'&'@ and @'or'@ are deprecated synonyms for
+(respectively) @'&&'@ and @'||'@.
+
+\subsubsection*{Loops}
+
+\ikwd{while\@\texttt{while}}
+The expression @'while' expr_1 'do' expr_2 'done'@ repeatedly
+evaluates @expr_2@ while @expr_1@ evaluates to @'true'@. The loop
+condition @expr_1@ is evaluated and tested at the beginning of each
+iteration. The whole @'while' \ldots 'done'@ expression evaluates to
+the unit value @'()'@.
+
+\ikwd{for\@\texttt{for}}
+The expression @'for' name '=' expr_1 'to' expr_2 'do' expr_3 'done'@
+first evaluates the expressions @expr_1@ and @expr_2@ (the boundaries)
+into integer values \var{n} and \var{p}. Then, the loop body @expr_3@ is
+repeatedly evaluated in an environment where @name@ is successively
+bound to the values
+   $n$, $n+1$, \ldots, $p-1$, $p$.
+   The loop body is never evaluated if $n > p$.
+
+
+The expression @'for' name '=' expr_1 'downto' expr_2 'do' expr_3 'done'@
+evaluates similarly, except that @name@ is successively bound to the values
+   $n$, $n-1$, \ldots, $p+1$, $p$.
+   The loop body is never evaluated if $n < p$.
+
+
+In both cases, the whole @'for'@ expression evaluates to the unit
+value @'()'@.
+
+\subsubsection*{Exception handling}
+\ikwd{try\@\texttt{try}}
+
+The expression
+$$\begin{array}{rlll}
+\token{try~} & \textsl{expr} \\
+\token{with} & \textsl{pattern}_1 & \token{->} & \textsl{expr}_1 \\
+\token{|}   & \ldots \\
+\token{|}   & \textsl{pattern}_n & \token{->} & \textsl{expr}_n
+\end{array}$$
+evaluates the expression @expr@ and returns its value if the
+evaluation of @expr@ does not raise any exception. If the evaluation
+of @expr@ raises an exception, the exception value is matched against
+the patterns @pattern_1@ to @pattern_n@. If the matching against
+@pattern_i@ succeeds, the associated expression @expr_i@ is evaluated,
+and its value becomes the value of the whole @'try'@ expression. The
+evaluation of @expr_i@ takes place in an environment enriched by the
+bindings performed during matching. If several patterns match the value of
+@expr@, the one that occurs first in the @'try'@ expression is
+selected. If none of the patterns matches the value of @expr@, the
+exception value is raised again, thereby transparently ``passing
+through'' the @'try'@ construct.
+
+\subsection{Operations on data structures}
+
+\subsubsection*{Products}
+
+The expression @expr_1 ',' \ldots ',' expr_n@ evaluates to the
+\var{n}-tuple of the values of expressions @expr_1@ to @expr_n@. The
+evaluation order of the subexpressions is not specified.
+
+\subsubsection*{Variants}
+
+The expression @constr expr@ evaluates to the unary variant value
+whose constructor is @constr@, and whose argument is the value of
+@expr@. Similarly, the expression @constr '(' expr_1 ',' \ldots ','
+expr_n ')'@ evaluates to the n-ary variant value whose constructor is
+@constr@ and whose arguments are the values of @expr_1, \ldots,
+expr_n@.
+
+The expression @constr '('expr_1, \ldots, expr_n')'@ evaluates to the
+variant value whose constructor is @constr@, and whose arguments are
+the values of @expr_1 \ldots expr_n@.
+
+For lists, some syntactic sugar is provided. The expression
+@expr_1 '::' expr_2@ stands for the constructor @'(' '::' ')' @
+applied to the arguments @'(' expr_1 ',' expr_2 ')'@, and therefore
+evaluates to the list whose head is the value of @expr_1@ and whose tail
+is the value of @expr_2@. The expression @'[' expr_1 ';' \ldots ';'
+expr_n ']'@ is equivalent to @expr_1 '::' \ldots '::' expr_n '::'
+'[]'@, and therefore evaluates to the list whose elements are the
+values of @expr_1@ to @expr_n@.
+
+\subsubsection*{Polymorphic variants}
+
+The expression @"`"tag-name expr@ evaluates to the polymorphic variant
+value whose tag is @tag-name@, and whose argument is the value of @expr@.
+
+\subsubsection*{Records}
+
+The expression @'{' field_1 ['=' expr_1] ';' \ldots ';' field_n ['='
+expr_n ']}'@ evaluates to the record value
+$\{ field_1 = v_1; \ldots; field_n = v_n \}$
+where $v_i$ is the value of @expr_i@ for \fromoneto{i}{n}.
+A single identifier @field_k@ stands for @field_k '=' field_k@,
+and a qualified identifier @module-path '.' field_k@ stands for
+@module-path '.' field_k '=' field_k@.
+The fields @field_1@ to @field_n@ must all belong to the same record
+type; each field of this record type must appear exactly
+once in the record expression, though they can appear in any
+order. The order in which @expr_1@ to @expr_n@ are evaluated is not
+specified. Optional type constraints can be added after each field
+@'{' field_1 ':' typexpr_1 '=' expr_1 ';'%
+ \ldots ';' field_n ':' typexpr_n '=' expr_n '}'@
+to force the type of @field_k@ to be compatible with @typexpr_k@.
+
+The expression
+@"{" expr "with" field_1 ["=" expr_1] ";" \ldots ";" field_n ["=" expr_n] "}"@
+builds a fresh record with fields @field_1 \ldots field_n@ equal to
+@expr_1 \ldots expr_n@, and all other fields having the same value as
+in the record @expr@.  In other terms, it returns a shallow copy of
+the record @expr@, except for the fields @field_1 \ldots field_n@,
+which are initialized to @expr_1 \ldots expr_n@. As previously,
+single identifier @field_k@ stands for @field_k '=' field_k@,
+a qualified identifier @module-path '.' field_k@ stands for
+@module-path '.' field_k '=' field_k@ and it is
+possible to add an optional type constraint on each field being updated
+with
+@"{" expr "with" field_1 ':' typexpr_1 "=" expr_1 ";" %
+ \ldots ";" field_n ':' typexpr_n "=" expr_n "}"@.
+
+The expression @expr_1 '.' field@ evaluates @expr_1@ to a record
+value, and returns the value associated to @field@ in this record
+value.
+
+The expression @expr_1 '.' field '<-' expr_2@ evaluates @expr_1@ to a record
+value, which is then modified in-place by replacing the value
+associated to @field@ in this record by the value of
+@expr_2@. This operation is permitted only if @field@ has been
+declared @'mutable'@ in the definition of the record type. The whole
+expression @expr_1 '.' field '<-' expr_2@ evaluates to the unit value
+@'()'@.
+
+\subsubsection*{Arrays}
+
+The expression @'[|' expr_1 ';' \ldots ';' expr_n '|]'@ evaluates to
+a \var{n}-element array, whose elements are initialized with the values of
+@expr_1@ to @expr_n@ respectively. The order in which these
+expressions are evaluated is unspecified.
+
+The expression @expr_1 '.(' expr_2 ')'@ returns the value of element
+number @expr_2@ in the array denoted by @expr_1@. The first element
+has number 0; the last element has number $n-1$, where \var{n} is the
+size of the array. The exception "Invalid_argument" is raised if the
+access is out of bounds.
+
+The expression @expr_1 '.(' expr_2 ')' '<-' expr_3@ modifies in-place
+the array denoted by @expr_1@, replacing element number @expr_2@ by
+the value of @expr_3@. The exception "Invalid_argument" is raised if
+the access is out of bounds. The value of the whole expression is @'()'@.
+
+\subsubsection*{Strings}
+
+The expression @expr_1 '.[' expr_2 ']'@ returns the value of character
+number @expr_2@ in the string denoted by @expr_1@. The first character
+has number 0; the last character has number $n-1$, where \var{n} is the
+length of the string. The exception "Invalid_argument" is raised if the
+access is out of bounds.
+
+The expression @expr_1 '.[' expr_2 ']' '<-' expr_3@ modifies in-place
+the string denoted by @expr_1@, replacing character number @expr_2@ by
+the value of @expr_3@. The exception "Invalid_argument" is raised if
+the access is out of bounds. The value of the whole expression is @'()'@.
+
+{\bf Note:} this possibility is offered only for backward
+compatibility with older versions of OCaml and will be removed in a
+future version. New code should use byte sequences and the "Bytes.set"
+function.
+
+\subsection{Operators}
+\ikwd{mod\@\texttt{mod}}
+\ikwd{land\@\texttt{land}}
+\ikwd{lor\@\texttt{lor}}
+\ikwd{lxor\@\texttt{lxor}}
+\ikwd{lsl\@\texttt{lsl}}
+\ikwd{lsr\@\texttt{lsr}}
+\ikwd{asr\@\texttt{asr}}
+
+Symbols from the class @infix-symbol@, as well as the keywords
+@"*"@, @"+"@, @"-"@, @'-.'@, @"="@, @"!="@, @"<"@, @">"@, @"or"@, @"||"@,
+@"&"@, @"&&"@, @":="@, @"mod"@, @"land"@, @"lor"@, @"lxor"@, @"lsl"@, @"lsr"@,
+and @"asr"@ can appear in infix position (between two
+expressions). Symbols from the class @prefix-symbol@, as well as
+the keywords @"-"@ and @"-."@
+can appear in prefix position (in front of an expression).
+
+Infix and prefix symbols do not have a fixed meaning: they are simply
+interpreted as applications of functions bound to the names
+corresponding to the symbols.  The expression @prefix-symbol expr@ is
+interpreted as the application @'(' prefix-symbol ')'
+expr@. Similarly, the expression @expr_1 infix-symbol expr_2@ is
+interpreted as the application @'(' infix-symbol ')' expr_1 expr_2@.
+
+The table below lists the symbols defined in the initial environment
+and their initial meaning. (See the description of the core
+library module "Pervasives" in chapter~\ref{c:corelib} for more
+details). Their meaning may be changed at any time using
+@"let" "(" infix-op ")" name_1 name_2 "=" \ldots@
+
+Note: the operators @'&&'@, @'||'@, and @'~-'@ are handled specially
+and it is not advisable to change their meaning.
+
+The keywords @'-'@ and @'-.'@ can appear both as infix and
+prefix operators. When they appear as prefix operators, they are
+interpreted respectively as the functions @'(~-)'@ and @'(~-.)'@.
+
+%% Conversely, a regular function identifier can also be used as an infix
+%% operator by enclosing it in backquotes: @expr_1 '`' ident '`' expr_2@
+%% is interpreted as the application @ident expr_1 expr_2@.
+
+\ikwd{mod\@\texttt{mod}}%
+\ikwd{land\@\texttt{land}}%
+\ikwd{lor\@\texttt{lor}}%
+\ikwd{lxor\@\texttt{lxor}}%
+\ikwd{lsl\@\texttt{lsl}}%
+\ikwd{lsr\@\texttt{lsr}}%
+\ikwd{asr\@\texttt{asr}}%
+\begin{tableau}{|l|p{12cm}|}{Operator}{Initial meaning}
+\entree{"+"}{Integer addition.}
+\entree{"-" (infix)}{Integer subtraction.}
+\entree{"~-   -" (prefix)}{Integer negation.}
+\entree{"*"}{Integer multiplication.}
+\entree{"/"}{Integer division.
+        Raise "Division_by_zero" if second argument is zero.}
+\entree{"mod"}{Integer modulus. Raise
+        "Division_by_zero" if second argument is zero.}
+\entree{"land"}{Bitwise logical ``and'' on integers.}
+\entree{"lor"}{Bitwise logical ``or'' on integers.}
+\entree{"lxor"}{Bitwise logical ``exclusive or'' on integers.}
+\entree{"lsl"}{Bitwise logical shift left on integers.}
+\entree{"lsr"}{Bitwise logical shift right on integers.}
+\entree{"asr"}{Bitwise arithmetic shift right on integers.}
+\entree{"+."}{Floating-point addition.}
+\entree{"-." (infix)}{Floating-point subtraction.}
+\entree{"~-.   -." (prefix)}{Floating-point negation.}
+\entree{"*."}{Floating-point multiplication.}
+\entree{"/."}{Floating-point division.}
+\entree{"**"}{Floating-point exponentiation.}
+\entree{{\tt\char64} }{List concatenation.}
+\entree{"^" }{String concatenation.}
+\entree{"!" }{Dereferencing (return the current
+        contents of a reference).}
+\entree{":="}{Reference assignment (update the
+        reference given as first argument with the value of the second
+        argument).}
+\entree{"=" }{Structural equality test.}
+\entree{"<>" }{Structural inequality test.}
+\entree{"==" }{Physical equality test.}
+\entree{"!=" }{Physical inequality test.}
+\entree{"<" }{Test ``less than''.}
+\entree{"<=" }{Test ``less than or equal''.}
+\entree{">" }{Test ``greater than''.}
+\entree{">=" }{Test ``greater than or equal''.}
+\entree{"&&   &"}{Boolean conjunction.}
+\entree{"||   or"}{Boolean disjunction.}
+\end{tableau}
+
+\subsection{Objects}  \label{s:objects}
+
+\subsubsection*{Object creation}
+
+\ikwd{new\@\texttt{new}}
+
+When @class-path@ evaluates to a class body, @'new' class-path@
+evaluates to a new object containing the instance variables and
+methods of this class.
+
+When @class-path@ evaluates to a class function, @'new' class-path@
+evaluates to a function expecting the same number of arguments and
+returning a new object of this class.
+
+\subsubsection*{Immediate object creation}
+
+\ikwd{object\@\texttt{object}}
+
+Creating directly an object through the @'object' class-body 'end'@
+construct is operationally equivalent to defining locally a @'class'
+class-name '=' 'object' class-body 'end'@ ---see sections
+\ref{ss:class-body} and following for the syntax of @class-body@---
+and immediately creating a single object from it by @'new' class-name@.
+
+The typing of immediate objects is slightly different from explicitly
+defining a class in two respects. First, the inferred object type may
+contain free type variables. Second, since the class body of an
+immediate object will never be extended, its self type can be unified
+with a closed object type.
+
+\subsubsection*{Method invocation}
+
+The expression @expr '#' method-name@ invokes the method
+@method-name@ of the object denoted by @expr@.
+
+If @method-name@ is a polymorphic method, its type should be known at
+the invocation site.  This is true for instance if @expr@ is the name
+of a fresh object (@'let' ident = 'new' class-path \dots @) or if
+there is a type constraint.  Principality of the derivation can be
+checked in the "-principal" mode.
+
+\subsubsection*{Accessing and modifying instance variables}
+
+The instance variables of a class are visible only in the body of the
+methods defined in the same class or a class that inherits from the
+class defining the instance variables.  The expression @inst-var-name@
+evaluates to the value of the given instance variable.  The expression
+@inst-var-name '<-' expr@ assigns the value of @expr@ to the instance
+variable @inst-var-name@, which must be mutable.  The whole expression
+@inst-var-name '<-' expr@ evaluates to @"()"@.
+
+
+\subsubsection*{Object duplication}
+
+An object can be duplicated using the library function "Oo.copy"
+(see
+\ifouthtml \ahref{libref/Oo.html}{Module \texttt{Oo}}\else
+section~\ref{Oo}\fi). Inside a method, the expression
+@ '{<' inst-var-name '=' expr { ';' inst-var-name '=' expr } '>}'@
+returns a copy of self with the given instance variables replaced by
+the values of the associated expressions; other instance variables
+have the same value in the returned object as in self.
+
+\subsection{Coercions} \label{s:coercions}
+
+Expressions whose type contains object or polymorphic variant types
+can be explicitly coerced (weakened) to a supertype.
+%
+The expression @'('expr ':>' typexpr')'@ coerces the expression @expr@
+to type @typexpr@.
+%
+The expression @'('expr ':' typexpr_1 ':>' typexpr_2')'@ coerces the
+expression @expr@ from type @typexpr_1@ to type @typexpr_2@.
+
+The former operator will sometimes fail to coerce an expression @expr@
+from a type @typ_1@ to a type @typ_2@
+even if type @typ_1@ is a subtype of type
+@typ_2@: in the current implementation it only expands two levels of
+type abbreviations containing objects and/or polymorphic variants,
+keeping only recursion when it is explicit in the class type (for objects).
+As an exception to the above algorithm, if both the inferred type of @expr@
+and @typ@ are ground ({\em i.e.} do not contain type variables), the
+former operator behaves as the latter one, taking the inferred type of
+@expr@ as @typ_1@. In case of failure with the former operator,
+the latter one should be used.
+
+It is only possible to coerce an expression @expr@ from type
+@typ_1@ to type @typ_2@, if the type of @expr@ is an instance of
+@typ_1@ (like for a type annotation), and @typ_1@ is a subtype
+of @typ_2@. The type of the coerced expression is an
+instance of @typ_2@. If the types contain variables,
+they may be instantiated by the subtyping algorithm, but this is only
+done after determining whether @typ_1@ is a potential subtype of
+@typ_2@. This means that typing may fail during this latter
+unification step, even if some instance of @typ_1@ is a subtype of
+some instance of @typ_2@.
+%
+In the following paragraphs we describe the subtyping relation used.
+
+\subsubsection*{Object types}
+
+A fixed object type admits as subtype any object type that includes all
+its methods. The types of the methods shall be subtypes of those in
+the supertype. Namely,
+\begin{center}
+@ '<' met_1 ':' typ_1 ';' \dots ';' met_n ':' typ_n '>' @
+\end{center}
+is a supertype of
+\begin{center}
+@ '<' met_1 ':' typ@$'_1$@ ';' \dots ';' met_n ':' typ@$'_n$@ ';'
+met@$_{n+1}$@ ':' typ@$'_{n+1}$@ ';' \dots ';' met@$_{n+m}$@ ':' typ@$'_{n+m}$@
+~[';' '..'] '>' @
+\end{center}
+which may contain an ellipsis ".." if every @typ_i@ is a supertype of
+the corresponding @typ@$'_i$.
+
+A monomorphic method type can be a supertype of a polymorphic method
+type. Namely, if @typ@ is an instance of @typ@$'$, then @ "'"@a@_1
+\dots "'"@a@_n '.' typ@$'$ is a subtype of @typ@.
+
+Inside a class definition, newly defined types are not available for
+subtyping, as the type abbreviations are not yet completely
+defined. There is an exception for coercing @@self@@ to the (exact)
+type of its class: this is allowed if the type of @@self@@ does not
+appear in a contravariant position in the class type, {\em i.e.} if
+there are no binary methods.
+
+\subsubsection*{Polymorphic variant types}
+
+A polymorphic variant type @typ@ is a subtype of another polymorphic
+variant type @typ@$'$ if the upper bound of @typ@ ({\em i.e.} the
+maximum set of constructors that may appear in an instance of @typ@)
+is included in the lower bound of @typ@$'$, and the types of arguments
+for the constructors of @typ@ are subtypes of those in
+@typ@$'$. Namely,
+\begin{center}
+@ "["["<"] "`"C_1 "of" typ_1 "|" \dots "|" "`"C_n "of" typ_n "]" @
+\end{center}
+which may be a shrinkable type, is a subtype of
+\begin{center}
+@ "["[">"] "`"C_1 "of" typ@$'_1$@ "|" \dots "|" "`"C_n "of" typ@$'_n$@
+ "|" "`"C@$_{n+1}$@ "of" typ@$'_{n+1}$@ "|" \dots "|" "`"C@$_{n+m}$@ "of"
+  typ@$'_{n+m}$@ "]" @
+\end{center}
+which may be an extensible type, if every @typ_i@ is a subtype of @typ@$'_i$.
+
+\subsubsection*{Variance}
+
+Other types do not introduce new subtyping, but they may propagate the
+subtyping of their arguments. For instance, @typ_1 "*" typ_2@ is a
+subtype of @typ@$'_1$@ "*" typ@$'_2$ when @typ_1@ and @typ_2@ are
+respectively subtypes of @typ@$'_1$ and @typ@$'_2$.
+For function types, the relation is more subtle:
+@typ_1 "->" typ_2@ is a subtype of @typ@$'_1$@~"->" typ@$'_2$
+if @typ_1@ is a supertype of @typ@$'_1$ and @typ_2@ is a
+subtype of @typ@$'_2$. For this reason, function types are covariant in
+their second argument (like tuples), but contravariant in their first
+argument. Mutable types, like "array" or "ref" are neither covariant
+nor contravariant, they are nonvariant, that is they do not propagate
+subtyping.
+
+For user-defined types, the variance is automatically inferred: a
+parameter is covariant if it has only covariant occurrences,
+contravariant if it has only contravariant occurrences,
+variance-free if it has no occurrences, and nonvariant otherwise.
+A variance-free parameter may change freely through subtyping, it does
+not have to be a subtype or a supertype.
+%
+For abstract and private types, the variance must be given explicitly
+(see section~\ref{s:type-defs}),
+otherwise the default is nonvariant. This is also the case for
+constrained arguments in type definitions.
+
+
+\subsection{Other}
+
+\subsubsection*{Assertion checking}
+
+
+\ikwd{assert\@\texttt{assert}}
+
+OCaml supports the @"assert"@ construct to check debugging assertions.
+The expression @"assert" expr@ evaluates the expression @expr@ and
+returns @"()"@ if @expr@ evaluates to @"true"@.  If it evaluates to
+@"false"@ the exception
+"Assert_failure" is raised with the source file name and the
+location of @expr@ as arguments.  Assertion
+checking can be turned off with the "-noassert" compiler option.  In
+this case, @expr@ is not evaluated at all.
+
+As a special case, @"assert false"@ is reduced to
+@'raise' '('@"Assert_failure ..."@')'@, which gives it a polymorphic
+type.  This means that it can be used in place of any expression (for
+example as a branch of any pattern-matching).  It also means that
+the @"assert false"@ ``assertions'' cannot be turned off by the
+"-noassert" option.
+%
+\index{Assertfailure\@\verb`Assert_failure`}
+
+\subsubsection*{Lazy expressions}
+\ikwd{lazy\@\texttt{lazy}}
+
+The expression @"lazy" expr@ returns a value \var{v} of type "Lazy.t" that
+encapsulates the computation of @expr@.  The argument @expr@ is not
+evaluated at this point in the program.  Instead, its evaluation will
+be performed the first time the function "Lazy.force" is applied to the value
+\var{v}, returning the actual value of @expr@. Subsequent applications
+of "Lazy.force" to \var{v} do not evaluate @expr@ again. Applications
+of "Lazy.force" may be implicit through pattern matching (see~\ref{s:lazypat}).
+
+\subsubsection*{Local modules}
+\ikwd{let\@\texttt{let}}
+\ikwd{module\@\texttt{module}}
+
+The expression
+@"let" "module" module-name "=" module-expr "in" expr@
+locally binds the module expression @module-expr@ to the identifier
+@module-name@ during the evaluation of the expression @expr@.
+It then returns the value of @expr@.  For example:
+\begin{verbatim}
+        let remove_duplicates comparison_fun string_list =
+          let module StringSet =
+            Set.Make(struct type t = string
+                            let compare = comparison_fun end) in
+          StringSet.elements
+            (List.fold_right StringSet.add string_list StringSet.empty)
+\end{verbatim}
+
+\subsubsection*{Local opens}
+\ikwd{let\@\texttt{let}}
+\ikwd{module\@\texttt{open}}
+
+The expressions @"let" "open" module-path "in" expr@ and
+@module-path'.('expr')'@ are strictly equivalent. These
+constructions locally open the module referred to by the module path
+@module-path@ in the respective scope of the expression @expr@.
+
+When the body of a local open expression is delimited by
+@'[' ']'@,  @'[|' '|]'@,  or @'{' '}'@, the parentheses can be omitted.
+For expression, parentheses can also be omitted for @'{<' '>}'@.
+For example, @module-path'.['expr']'@ is equivalent to
+@module-path'.(['expr'])'@, and @module-path'.[|' expr '|]'@ is
+equivalent to @module-path'.([|' expr '|])'@.
+
+%% \newpage

@@ -1,0 +1,4 @@
+Fatal error: exception Pervasives.Exit
+Raised at file "pr6920_why_at.ml", line 1, characters 35-45
+Called from file "pr6920_why_at.ml", line 3, characters 2-11
+Called from file "pr6920_why_at.ml", line 9, characters 2-6

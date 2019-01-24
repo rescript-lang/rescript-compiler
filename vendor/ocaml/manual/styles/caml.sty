@@ -1,0 +1,31 @@
+% CAML style option, for use with the caml-latex filter.
+
+\typeout{Document Style option `caml' <7 Apr 92>.}
+
+{\catcode`\^^M=\active %
+ \gdef\@camlinputline#1^^M{\tt\##1\par} %
+ \gdef\@camloutputline#1^^M{\tt#1\par} } %
+\def\@camlblankline{\medskip}
+\chardef\@camlbackslash="5C
+
+\def\caml{
+  \bgroup
+  \flushleft
+  \parindent 0pt
+  \parskip 0pt
+  \let\do\@makeother\dospecials
+  \catcode`\^^M=\active
+  \catcode`\\=0
+  \catcode`\ \active
+  \frenchspacing
+  \@vobeyspaces
+  \let\?\@camlinputline
+  \let\:\@camloutputline
+  \let\;\@camlblankline
+  \let\\\@camlbackslash
+}
+
+\def\endcaml{
+  \endflushleft
+  \egroup\noindent
+}

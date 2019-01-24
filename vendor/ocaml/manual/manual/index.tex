@@ -1,0 +1,20 @@
+\ifouthtml
+\begin{rawhtml}
+<ul>
+<li><a HREF=libref/index_modules.html>Index of modules</a></li>
+<li><a HREF=libref/index_module_types.html>Index of module types</a></li>
+<li><a HREF=libref/index_types.html>Index of types</a></li>
+<li><a HREF=libref/index_exceptions.html>Index of exceptions</a></li>
+<li><a HREF=libref/index_values.html>Index of values</a></li>
+</ul>
+\end{rawhtml}
+\else
+\chapter*{Index to the library}
+\markright{Index to the library}
+\addcontentsline{toc}{chapter}{Index to the library}
+\myprintindex{\jobname.ind}
+\fi
+\chapter*{Index of keywords}
+\markright{Index of keywords}
+\addcontentsline{toc}{chapter}{Index of keywords}
+\myprintindex{\jobname.kwd.ind}

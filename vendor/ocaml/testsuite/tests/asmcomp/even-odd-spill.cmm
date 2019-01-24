@@ -1,0 +1,19 @@
+("format_odd": string "odd %d\n\000")
+("format_even": string "even %d\n\000")
+
+(function "force_spill" (a:int) 0)
+
+(function "is_even" (b:int)
+  (catch (exit even b)
+   with (odd v)
+     (if (== v 0) 0
+         (seq
+           (extcall "printf_int" "format_odd" v unit)
+           (let v2 (- v 1)
+             (app "force_spill" 0 int)
+             (exit even v2))))
+   and (even v)
+     (if (== v 0) 1
+         (seq
+           (extcall "printf_int" "format_even" v unit)
+           (exit odd (- v 1))))))

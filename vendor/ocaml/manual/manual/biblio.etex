@@ -1,0 +1,240 @@
+\chapter{Further reading}
+
+For the interested reader, we list below some references to books and
+reports related (sometimes loosely) to Caml Light.
+
+\section{Programming in ML}
+
+The books below are programming courses taught in ML. Their main goal
+is to teach programming, not to describe ML in full details --- though
+most contain fairly good introductions to the ML language. Some of
+those books use the Standard ML dialect instead of the Caml dialect,
+so you will have to keep in mind the differences in syntax and in
+semantics.
+
+\begin{itemize}
+
+\item Pierre Weis and Xavier Leroy. {\it Le langage Caml.}
+InterÉditions, 1993.
+
+The natural companion to this manual, provided you read French. This
+book is a step-by-step introduction to programming in Caml, and
+presents many realistic examples of Caml programs.
+
+\item  Guy Cousineau and Michel Mauny. {\it Approche fonctionnelle de
+la programmation}. Ediscience, 1995.
+
+Another Caml programming course written in French, with many original
+examples.
+
+\item Lawrence C.\ Paulson. {\it ML for the working programmer.}
+Cambridge University Press, 1991.
+
+A good introduction to programming in Standard ML. Develops a
+theorem prover as a complete example. Contains a presentation of
+the module system of Standard ML.
+
+\item Jeffrey D.\ Ullman. {\it Elements of ML programming.}
+Prentice Hall, 1993.
+
+Another good introduction to programming in Standard ML. No realistic
+examples, but a very detailed presentation of the language constructs.
+
+\item Ryan Stansifer. {\em ML primer.} Prentice-Hall, 1992.
+
+A short, but nice introduction to programming in Standard ML.
+
+\item Thérèse Accart Hardin and Véronique Donzeau-Gouge Viguié. {\em
+Concepts et outils de la programmation. Du fonctionnel à
+l'impératif avec Caml et Ada.} InterÉditions, 1992.
+
+A first course in programming, that first introduces the main programming
+notions in Caml, then shows them underlying Ada. Intended for
+beginners; slow-paced for the others.
+
+\item Rachel Harrison. {\em Abstract Data Types in Standard ML}.
+John Wiley \& Sons, 1993.
+
+A presentation of Standard ML from the standpoint of abstract data
+types. Uses intensively the Standard ML module system.
+
+\item Harold Abelson and Gerald Jay Sussman.
+{\em Structure and Interpretation of Computer Programs.} The MIT
+press, 1985.  (French translation: {\em Structure et interprétation
+des programmes informatiques}, InterÉditions, 1989.)
+
+An outstanding course on programming, taught in Scheme, the modern
+dialect of Lisp. Well worth reading, even if you are more interested
+in ML than in Lisp.
+
+\end{itemize}
+
+\section{Descriptions of ML dialects}
+
+The books and reports below are descriptions of various programming
+languages from the ML family. They assume some familiarity with ML.
+
+\begin{itemize}
+
+\item Xavier Leroy and Pierre Weis. {\em Manuel de référence du
+langage Caml.} InterÉditions, 1993.
+
+The French edition of the present reference manual and user's manual.
+
+\item Robert Harper. {\em Introduction to Standard ML.} Technical
+report ECS-LFCS-86-14, University of Edinburgh, 1986.
+
+An overview of Standard ML, including the module system. Terse, but
+still readable.
+
+\item Robin Milner, Mads Tofte and Robert Harper. {\em The definition
+of Standard ML.} The MIT press, 1990.
+
+A complete formal definition of Standard ML, in the framework of
+structured operational semantics. This book is probably the most
+mathematically precise definition of a programming language ever
+written. It is heavy on formalism and extremely terse, so
+even readers who are thoroughly familiar with ML will have
+major difficulties with it.
+
+\item Robin Milner and Mads Tofte. {\em Commentary on Standard ML.}
+The MIT Press, 1991.
+
+A commentary on the book above, that attempts to explain the most
+delicate parts and motivate the design choices. Easier to read than the
+Definition, but still rather involving.
+
+\item Guy Cousineau and Gérard Huet. {\em The CAML primer.} Technical
+report~122, INRIA, 1990.
+
+A short description of the original Caml system, from which Caml Light
+has evolved. Some familiarity with Lisp is assumed.
+
+\item Pierre Weis et al. {\em The CAML reference manual, version
+2.6.1.} Technical report~121, INRIA, 1990.
+
+The manual for the original Caml system, from which Caml Light
+has evolved.  
+
+\item Michael J.\ Gordon, Arthur J.\ Milner and Christopher P.\ Wadsworth.
+{\em Edinburgh LCF.} Lecture Notes in Computer Science
+volume~78, Springer-Verlag, 1979.
+
+This is the first published description of the ML language, at the
+time when it was nothing more than the control language for the LCF
+system, a theorem prover. This book is now obsolete, since the ML
+language has much evolved since then; but it is still of historical
+interest.
+
+\item Paul Hudak, Simon Peyton-Jones and Philip Wadler. {\em
+Report on the programming language Haskell, version 1.1.} Technical
+report, Yale University, 1991.
+
+Haskell is a purely functional language with lazy semantics that
+shares many important points with ML (full functionality, polymorphic
+typing), but has interesting features of its own (dynamic overloading,
+also called type classes).
+
+\end{itemize}
+
+\section{Implementing functional programming languages}
+
+The references below are intended for those who are curious to learn
+how a language like Caml Light is compiled and implemented.
+
+\begin{itemize}
+
+\item Xavier Leroy. {\em The ZINC experiment: an economical
+implementation of the ML language.} Technical report~117, INRIA, 1990.
+(Available by anonymous FTP on "ftp.inria.fr".)
+
+A description of the ZINC implementation, the prototype ML
+implementation that has evolved into Caml Light. Large parts of this
+report still apply to the current Caml Light system, in particular the
+description of the execution model and abstract machine. Other parts
+are now obsolete. Yet this report still gives a complete overview of the
+implementation techniques used in Caml Light.
+
+\item Simon Peyton-Jones. {\em The implementation of functional
+programming languages.} Prentice-Hall, 1987. (French translation:
+{\em Mise en \oe uvre des langages fonctionnels de programmation},
+Masson, 1990.)
+
+An excellent description of the implementation of purely functional
+languages with lazy semantics, using the technique known as graph
+reduction. The part of the book that deals with the transformation
+from ML to enriched lambda-calculus directly applies to Caml Light.
+You will find a good description of how pattern-matching is compiled
+and how types are inferred. The remainder of the book does not apply
+directly to Caml Light, since Caml Light is not purely functional (it
+has side-effects), has strict semantics, and does not use graph
+reduction at all.
+
+\item Andrew W.\ Appel. {\em Compiling with continuations.} Cambridge
+University Press, 1992.
+
+A complete description of an optimizing compiler for Standard ML,
+based on an intermediate representation called continuation-passing
+style. Shows how many advanced program optimizations can be applied to
+ML. Not directly relevant to the Caml Light system, since Caml Light
+does not use continuation-passing style at all, and makes little
+attempts at optimizing programs.
+
+\end{itemize}
+
+\section{Applications of ML}
+
+The following reports show ML at work in various, sometimes
+unexpected, areas.
+
+\begin{itemize}
+
+\item Emmanuel Chailloux and Guy Cousineau. {\em The MLgraph primer.}
+Technical report 92-15, École Normale Supérieure, 1992. (Available by
+anonymous FTP on "ftp.ens.fr".)
+%, répertoire "biblio", fichier
+% "liens-92-15.A4.300dpi.ps.Z".)
+
+Describes a Caml Light library that produces Postscript pictures
+through high-level drawing functions.
+
+\item Xavier Leroy. {\em Programmation du système Unix en Caml Light.}
+Technical report~147, INRIA, 1992. (Available by anonymous FTP on
+"ftp.inria.fr".)
+%, répertoire "INRIA/publication", fichier "RT-0147.ps.Z".)
+
+A Unix systems programming course, demonstrating the use of the Caml
+Light library that gives access to Unix system calls.
+
+\item John H.\ Reppy. {\em Concurrent programming with events --- The
+concurrent ML manual.} Cornell University, 1990.
+(Available by anonymous FTP on "research.att.com".)
+%, répertoire "dist/ml", fichier "CML-0.9.8.tar.Z".)
+
+Concurrent ML extends Standard ML of New Jersey with concurrent
+processes that communicate through channels and events.
+
+\item Jeannette M. Wing, Manuel Faehndrich, J.\ Gregory Morrisett and
+Scottt Nettles. {\em Extensions to Standard ML to support
+transactions.} Technical report CMU-CS-92-132, Carnegie-Mellon
+University, 1992. (Available by anonymous FTP on
+"reports.adm.cs.cmu.edu".)
+% , répertoire "1992", fichier "CMU-CS-92-132.ps".)
+
+How to integrate the basic database operations to Standard ML.
+
+\item Emden R.\ Gansner and John H.\ Reppy. {\em eXene.} Bell Labs,
+1991. (Available by anonymous FTP on "research.att.com".)
+%, répertoire "dist/ml", fichier "eXene-0.4.tar.Z".)
+
+An interface between Standard ML of New Jersey and the X Windows
+windowing system.
+
+%% \item Daniel de Rauglaudre. {\em X toolkit in Caml Light.} INRIA,
+%% 1992. (Included in the Caml Light distribution.)
+%% % Disponible par FTP anonyme sur
+%% % "ftp.inria.fr", répertoire "lang/caml-light", fichier "rt5.tar.Z".)
+%% 
+%% An interface between Caml Light and the X Windows windowing system. 
+
+\end{itemize}

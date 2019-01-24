@@ -1,0 +1,12 @@
+This test focuses on ocamldoc "-open" command line option.
+It ensures that the modules passed as argument to this "-open" option
+are opened in the initial environment of ocamldoc.
+
+More precisely, it checks that
+
+* both cmi files and inner modules can be opened
+* modules are opened in the left-to-right order
+
+The test builds a latex documentation file for the three modules
+"Main", "Alias" and "Inner". Changes to ocamldoc latex output might
+trigger spurious errors in this test.

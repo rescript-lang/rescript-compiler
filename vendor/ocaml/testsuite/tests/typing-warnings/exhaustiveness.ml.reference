@@ -1,0 +1,143 @@
+
+#       Characters 58-110:
+  ........function
+      None, None -> 1
+    | Some _, Some _ -> 2..
+Warning 8: this pattern-matching is not exhaustive.
+Here is an example of a case that is not matched:
+((Some _, None)|(None, Some _))
+val f : 'a option * 'b option -> int = <fun>
+#             type _ t = A : int t | B : bool t | C : char t | D : float t
+type (_, _, _, _) u = U : (int, int, int, int) u
+type v = E | F | G
+#               Characters 124-205:
+  .function A, A, A, A, A, A, A, _, U, U -> 1
+     | _, _, _, _, _, _, _, G, _, _ -> 1
+Warning 8: this pattern-matching is not exhaustive.
+Here is an example of a case that is not matched:
+(A, A, A, A, A, A, B, (E|F), _, _)
+Characters 172-200:
+     | _, _, _, _, _, _, _, G, _, _ -> 1
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Warning 56: this match case is unreachable.
+Consider replacing it with a refutation case '<pat> -> .'
+val f :
+  'a t * 'b t * 'c t * 'd t * 'e t * 'f t * 'g t * v * ('a, 'b, 'c, 'd) u *
+  ('e, 'f, 'g, 'g) u -> int = <fun>
+#     Characters 40-68:
+  let f (x : int t) = match x with A -> 1 | _ -> 2;; (* warn *)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Warning 4: this pattern-matching is fragile.
+It will remain exhaustive when constructors are added to type t.
+Characters 62-63:
+  let f (x : int t) = match x with A -> 1 | _ -> 2;; (* warn *)
+                                            ^
+Warning 56: this match case is unreachable.
+Consider replacing it with a refutation case '<pat> -> .'
+val f : int t -> int = <fun>
+# Characters 53-54:
+  let f (x : unit t option) = match x with None -> 1 | _ -> 2 ;; (* warn? *)
+                                                       ^
+Warning 56: this match case is unreachable.
+Consider replacing it with a refutation case '<pat> -> .'
+val f : unit t option -> int = <fun>
+# Characters 53-59:
+  let f (x : unit t option) = match x with None -> 1 | Some _ -> 2 ;; (* warn *)
+                                                       ^^^^^^
+Warning 56: this match case is unreachable.
+Consider replacing it with a refutation case '<pat> -> .'
+val f : unit t option -> int = <fun>
+# val f : int t option -> int = <fun>
+# Characters 27-49:
+  let f (x : int t option) = match x with None -> 1;; (* warn *)
+                             ^^^^^^^^^^^^^^^^^^^^^^
+Warning 8: this pattern-matching is not exhaustive.
+Here is an example of a case that is not matched:
+Some A
+val f : int t option -> int = <fun>
+#         type 'a box = Box of 'a
+type 'a pair = { left : 'a; right : 'a; }
+#   Characters 50-69:
+  let f : (int t box pair * bool) option -> unit = function None -> ();;
+                                                   ^^^^^^^^^^^^^^^^^^^
+Warning 8: this pattern-matching is not exhaustive.
+Here is an example of a case that is not matched:
+Some ({left=Box A; right=Box A}, _)
+val f : (int t box pair * bool) option -> unit = <fun>
+# val f : (string t box pair * bool) option -> unit = <fun>
+# Characters 8-39:
+  let f = function {left=Box 0; _ } -> ();;
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Warning 8: this pattern-matching is not exhaustive.
+Here is an example of a case that is not matched:
+{left=Box 1; _ }
+val f : int box pair -> unit = <fun>
+# Characters 8-47:
+  let f = function {left=Box 0;right=Box 1} -> ();;
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Warning 8: this pattern-matching is not exhaustive.
+Here is an example of a case that is not matched:
+{left=Box 0; right=Box 0}
+val f : int box pair -> unit = <fun>
+#             type _ t = Int : int t | Bool : bool t
+#         val f : 'a t -> 'a = <fun>
+#     val g : int t -> int = <fun>
+#         val h : 'a t -> 'a t -> bool = <fun>
+#           type (_, _) cmp = Eq : ('a, 'a) cmp | Any : ('a, 'b) cmp
+module A : sig type a type b val eq : (a, b) cmp end
+#   Characters 33-51:
+  let f : (A.a, A.b) cmp -> unit = function Any -> ()
+                                   ^^^^^^^^^^^^^^^^^^
+Warning 8: this pattern-matching is not exhaustive.
+Here is an example of a case that is not matched:
+Eq
+val f : (A.a, A.b) cmp -> unit = <fun>
+#     val deep : char t option -> char = <fun>
+#     type zero = Zero
+type _ succ = Succ
+#         type (_, _, _) plus =
+    Plus0 : (zero, 'a, 'a) plus
+  | PlusS : ('a, 'b, 'c) plus -> ('a succ, 'b, 'c succ) plus
+#     val trivial : (zero succ, zero, zero) plus option -> bool = <fun>
+#     val easy : (zero, zero succ, zero) plus option -> bool = <fun>
+#     Characters 71-93:
+    function None -> false
+    ^^^^^^^^^^^^^^^^^^^^^^
+Warning 8: this pattern-matching is not exhaustive.
+Here is an example of a case that is not matched:
+Some (PlusS _)
+val harder : (zero succ, zero succ, zero succ) plus option -> bool = <fun>
+#     val harder : (zero succ, zero succ, zero succ) plus option -> bool = <fun>
+#         val inv_zero : ('a, 'b, 'c) plus -> ('c, 'd, zero) plus -> bool = <fun>
+#         type _ t = Int : int t
+# val f : bool t -> 'a = <fun>
+#         Characters 54-55:
+  let f () = match None with _ -> .;; (* error *)
+                             ^
+Error: This match case could not be refuted.
+       Here is an example of a value that would reach it: _
+# Characters 47-48:
+  let g () = match None with _ -> () | exception _ -> .;; (* error *)
+                                                 ^
+Error: This match case could not be refuted.
+       Here is an example of a value that would reach it: _
+# Characters 27-28:
+  let h () = match None with _ -> .  | exception _ -> .;; (* error *)
+                             ^
+Error: This match case could not be refuted.
+       Here is an example of a value that would reach it: _
+# val f : 'a option -> unit = <fun>
+#       Characters 47-77:
+  let f x y = match 1 with 1 when x = y -> 1;;
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Warning 8: this pattern-matching is not exhaustive.
+All clauses in this pattern-matching are guarded.
+val f : 'a -> 'a -> int = <fun>
+#     Characters 62-91:
+  let f = function {contents=_}, 0 -> 0;;
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Warning 8: this pattern-matching is not exhaustive.
+Here is an example of a case that is not matched:
+(_, 1)
+val f : 'a ref * int -> int = <fun>
+# 

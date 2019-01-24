@@ -1,0 +1,116 @@
+#!/bin/bash
+
+#**************************************************************************
+#*                                                                        *
+#*                                 OCaml                                  *
+#*                                                                        *
+#*                  Damien Doligez, Jane Street Group, LLC                *
+#*                                                                        *
+#*   Copyright 2015 Institut National de Recherche en Informatique et     *
+#*     en Automatique.                                                    *
+#*                                                                        *
+#*   All rights reserved.  This file is distributed under the terms of    *
+#*   the GNU Lesser General Public License version 2.1, with the          *
+#*   special exception on linking described in the file LICENSE.          *
+#*                                                                        *
+#**************************************************************************
+
+# Use this script on OCAML_INSTR_FILE files
+
+default_curves=major,minor,coll,dispatch
+
+usage () {
+    echo 'usage: ocaml-instr-graph file [options]'
+    echo '  options:'
+    echo "  -d names   plot the data for names (default: $default_curves)"
+    echo '  -t title   set the graph title'
+    echo '  -m n       clip the values to n (default 1G)'
+    echo '  -rt n      set the range for times to 0..n'
+    echo '  -rn n      set the range for counts to 0..n'
+    echo '  -from t    start at time t'
+    echo '  -to t      stop at time t'
+    echo '  -help      display this help message and exit'
+}
+
+datafile=
+curves=,
+title=
+titleset=false
+max=1000000000
+ranget=
+rangen=
+from=0
+to=1e19
+
+while [[ $# > 0 ]]; do
+    case $1 in
+        -d) curves=$curves$2,; shift 2;;
+        -t) title=$2; titleset=true; shift 2;;
+        -m) max=$2; shift 2;;
+        -rt) ranget="set yrange [0:$2]"; shift 2;;
+        -rn) rangen="set y2range [0:$2]"; shift 2;;
+        -from) from=$2; shift 2;;
+        -to) to=$2; shift 2;;
+        -help) usage; exit 0;;
+        *) datafile=$1; shift 1;;
+    esac
+done
+
+if [[ "$curves" = , ]]; then
+    curves=,$default_curves,
+fi
+
+if ! $titleset; then
+    title=$datafile
+fi
+
+tmpfile=/tmp/ocaml-instr-graph.$$
+
+rm -f $tmpfile-*
+
+awk -v curves="$curves" -v clip=$max -v tmpfile="$tmpfile" -v from=$from \
+    -v to=$to '
+  function output (filename){
+    time = ($2 - starttime) / 1e9;
+    if (time < from || time >= to) return;
+    if (index(curves, "," filename ",") != 0){
+      gsub (/\//,":",filename);
+      if (filename ~ /#/){
+        point = $3;
+      }else{
+        point = ($3 - $2) / 1000;
+      }
+      if (point > clip) point = clip;
+      printf ("%.6f %.3f\n", time, point) >> tmpfile "-" filename;
+    }
+  }
+  BEGIN {starttime = 9e18;}
+  $1 != "@@" { next; }
+  $2 < starttime { starttime = $2 }
+  { output($4); }
+' $datafile
+
+( echo set title \"$title\"
+  echo set key left top
+  echo set ytics nomirror
+  echo 'set format y "%gus"'
+  echo "$ranget"
+  echo "$rangen"
+  echo set y2tics nomirror
+  echo 'set format x "%gs"'
+  printf "plot "
+  for curve in ${curves//,/ }; do
+      f=$tmpfile-${curve//\//:}
+      if [ -f $f ]; then
+          case $f in
+              *#) printf "\"%s\" using 1:2 axes x1y2 title '%s', " "$f" \
+                         "$curve"
+                  ;;
+              *)  printf "\"%s\" using 1:2 title '%s', " "$f" "$curve";;
+          esac
+      fi
+  done
+  printf "\n"
+) | gnuplot -p
+
+rm -f $tmpfile-*

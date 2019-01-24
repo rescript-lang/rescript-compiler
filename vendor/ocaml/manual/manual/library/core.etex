@@ -1,0 +1,36 @@
+\chapter{The core library} \label{c:corelib}\cutname{core.html}
+\pdfchapterfold{-1}{The core library}
+
+This chapter describes the OCaml core library, which is
+ composed of declarations for built-in types and exceptions, plus
+the module "Pervasives" that provides basic operations on these
+ built-in types.  The "Pervasives" module is special in two
+ways:
+\begin{itemize}
+\item It is automatically linked with the user's object code files by
+the "ocamlc" command (chapter~\ref{c:camlc}).
+
+\item It is automatically ``opened'' when a compilation starts, or
+when the toplevel system is launched. Hence, it is possible to use
+unqualified identifiers to refer to the functions provided by the
+"Pervasives" module, without adding a "open Pervasives" directive.
+\end{itemize}
+
+\section*{Conventions}
+
+The declarations of the built-in types and the components of module
+"Pervasives" are printed one by one in typewriter font, followed by a
+short comment.  All library modules and the components they provide are
+indexed at the end of this report.
+
+\input{builtin.tex}
+
+\ifouthtml
+\section{Module {\tt Pervasives}: the initially opened module}
+\begin{links}
+\item \ahref{libref/Pervasives.html}{Module \texttt{Pervasives}: the initially opened module}
+\end{links}
+\else
+\input{Pervasives.tex}
+\fi
+

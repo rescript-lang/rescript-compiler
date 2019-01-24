@@ -1,0 +1,207 @@
+#**************************************************************************
+#*                                                                        *
+#*                                 OCaml                                  *
+#*                                                                        *
+#*            Xavier Leroy, projet Cristal, INRIA Rocquencourt            *
+#*                                                                        *
+#*   Copyright 1999 Institut National de Recherche en Informatique et     *
+#*     en Automatique.                                                    *
+#*                                                                        *
+#*   All rights reserved.  This file is distributed under the terms of    *
+#*   the GNU Lesser General Public License version 2.1, with the          *
+#*   special exception on linking described in the file LICENSE.          *
+#*                                                                        *
+#**************************************************************************
+
+# Configuration for Windows, Visual C++ compiler
+
+######### General configuration
+
+PREFIX=C:/ocamlms
+
+### Where to install the binaries.
+BINDIR=$(PREFIX)/bin
+
+### Standard runtime system
+BYTERUN=ocamlrun
+
+### Where to install the standard library
+LIBDIR=$(PREFIX)/lib
+
+### Where to install the stub DLLs
+STUBLIBDIR=$(LIBDIR)/stublibs
+
+### Where to install the info files
+DISTRIB=$(PREFIX)
+
+### Where to install the man pages
+MANDIR=$(PREFIX)/man
+
+########## Toolchain and OS dependencies
+
+TOOLCHAIN=msvc
+
+# It doesn't make much sense to set "TARGET" and "HOST" for msvc but it's needed
+# for the myocamlbuild config.
+# The only case these will be used currently is to check whether we're
+# cross-compiling or not so setting them to the same value is what matters.
+HOST=msvc
+TARGET=$(HOST)
+
+CCOMPTYPE=msvc
+O=obj
+A=lib
+S=asm
+SO=s.obj
+EXE=.exe
+OUTPUTEXE=-Fe
+EXT_DLL=.dll
+EXT_OBJ=.$(O)
+OUTPUTOBJ=-Fo
+EXT_LIB=.$(A)
+EXT_ASM=.$(S)
+PROGRAMS_MAN_SECTION=1
+LIBRARIES_MAN_SECTION=3
+HASHBANGSCRIPTS=false
+PTHREAD_LINK=
+PTHREAD_CAML_LINK=
+X11_INCLUDES=
+X11_LINK=
+RPATH=
+SUPPORTS_SHARED_LIBRARIES=true
+SHAREDCCCOMPOPTS=
+NATIVECCPROFOPTS=
+ASM=ml -nologo -coff -Cp -c -Fo
+ASPP=
+ASPPPROFFLAGS=
+PROFILING=false
+DYNLINKOPTS=
+CC_PROFILE=
+SYSTHREAD_SUPPORT=true
+EXTRALIBS=
+CMXS=cmxs
+NATDYNLINK=true
+NATDYNLINKOPTS=
+RUNTIMED=false
+ASM_CFI_SUPPORTED=false
+WITH_FRAME_POINTERS=false
+UNIX_OR_WIN32=win32
+UNIXLIB=win32unix
+GRAPHLIB=win32graph
+FLAMBDA=false
+WITH_PROFINFO=false
+WITH_SPACETIME=false
+ENABLE_CALL_COUNTS=false
+LIBUNWIND_AVAILABLE=false
+LIBUNWIND_LINK_FLAGS=
+PROFINFO_WIDTH=0
+FORCE_SAFE_STRING=false
+DEFAULT_SAFE_STRING=true
+WINDOWS_UNICODE=1
+AFL_INSTRUMENT=false
+
+########## Configuration for the bytecode compiler
+
+### Which C compiler to use for the bytecode interpreter.
+CC=cl
+CFLAGS=-nologo -O2 -Gy- -MD
+CPPFLAGS=-D_CRT_SECURE_NO_DEPRECATE -DCAML_NAME_SPACE -DUNICODE -D_UNICODE -DWINDOWS_UNICODE=$(WINDOWS_UNICODE)
+OCAMLC_CFLAGS=-nologo -O2 -Gy- -MD
+OCAMLC_CPPFLAGS=-D_CRT_SECURE_NO_DEPRECATE
+BYTECCDBGCOMPOPTS=-Zi
+
+LDFLAGS=/ENTRY:wmainCRTStartup
+
+### Libraries needed
+BYTECCLIBS=advapi32.lib ws2_32.lib version.lib
+NATIVECCLIBS=advapi32.lib ws2_32.lib version.lib
+
+### How to invoke the C preprocessor
+CPP=cl -nologo -EP
+
+### Flexlink
+FLEXLINK_CMD=flexlink
+FLEXDLL_CHAIN=msvc
+# FLEXLINK_FLAGS must be safe to insert in an OCaml string
+#   (see ocamlmklibconfig.ml in tools/Makefile)
+FLEXLINK_FLAGS=-merge-manifest -stack 16777216
+FLEXLINK=$(FLEXLINK_CMD) $(FLEXLINK_FLAGS)
+FLEXDIR:=$(shell $(FLEXLINK) -where 2>/dev/null)
+ifeq ($(FLEXDIR),)
+IFLEXDIR=-I"../flexdll"
+else
+IFLEXDIR=-I"$(FLEXDIR)"
+endif
+# MKDLL, MKEXE and MKMAINDLL must ultimately be equivalent to
+#   $(FLEXLINK_CMD) $(FLEXLINK_FLAGS) [-exe|-maindll]
+# or OCAML_FLEXLINK overriding will not work (see utils/config.mlp)
+MKDLL=$(FLEXLINK)
+MKEXE=$(MKEXE_ANSI) $(if $(LDFLAGS),-link "$(LDFLAGS)")
+MKEXEDEBUGFLAG=
+MKMAINDLL=$(FLEXLINK) -maindll
+
+### Native command to build ocamlrun.exe without flexlink
+MERGEMANIFESTEXE=test ! -f $(1).manifest \
+	         || mt -nologo -outputresource:$(1) -manifest $(1).manifest \
+	            && rm -f $(1).manifest
+MKEXE_BOOT=$(CC) $(CFLAGS) $(OUTPUTEXE)$(1) $(2) /link /subsystem:console $(LDFLAGS) \
+	   && ($(MERGEMANIFESTEXE))
+
+### Native command to build an ANSI executable
+MKEXE_ANSI=$(FLEXLINK) -exe
+
+### How to build a static library
+MKLIB=link -lib -nologo -out:$(1) $(2)
+#ml let mklib out files opts =
+#ml   Printf.sprintf "link -lib -nologo -out:%s %s %s" out opts files;;
+MKSHAREDLIBRPATH=
+
+### Canonicalize the name of a system library
+SYSLIB=$(1).lib
+#ml let syslib x = x ^ ".lib";;
+
+### The ranlib command
+RANLIB=echo
+RANLIBCMD=
+
+### The ar command
+ARCMD=
+
+############# Configuration for the native-code compiler
+
+### Name of architecture for the native-code compiler
+ARCH=i386
+
+### Name of architecture model for the native-code compiler.
+MODEL=default
+
+### Name of operating system family for the native-code compiler.
+SYSTEM=win32
+
+OCAMLOPT_CFLAGS=-nologo -O2 -Gy- -MD
+OCAMLOPT_CPPFLAGS=-D_CRT_SECURE_NO_DEPRECATE
+
+### Build partially-linked object file
+PACKLD=link -lib -nologo -out:# there must be no space after this '-out:'
+
+### Clear this to disable compiling ocamldebug
+WITH_DEBUGGER=ocamldebugger
+
+### Clear this to disable compiling ocamldoc
+WITH_OCAMLDOC=ocamldoc
+
+############# Configuration for the contributed libraries
+
+OTHERLIBRARIES=win32unix systhreads str win32graph dynlink bigarray
+
+############# for the testsuite makefiles
+#ml let topdir = "" and wintopdir = "";;
+OTOPDIR=$(WINTOPDIR)
+CTOPDIR=$(WINTOPDIR)
+CYGPATH=cygpath -m
+DIFF=/usr/bin/diff -q --strip-trailing-cr
+FIND=/usr/bin/find
+SORT=/usr/bin/sort
+SET_LD_PATH=PATH="$(PATH):$(LD_PATH)"
+MAX_TESTSUITE_DIR_RETRIES=1
+FLAT_FLOAT_ARRAY=true

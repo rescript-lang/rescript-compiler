@@ -1,0 +1,281 @@
+\chapter{The runtime system (ocamlrun)} \label{c:runtime}
+\pdfchapter{The runtime system (ocamlrun)}
+%HEVEA\cutname{runtime.html}
+
+The "ocamlrun" command executes bytecode files produced by the
+linking phase of the "ocamlc" command.
+
+\section{Overview}
+
+The "ocamlrun" command comprises three main parts: the bytecode
+interpreter, that actually executes bytecode files; the memory
+allocator and garbage collector; and a set of C functions that
+implement primitive operations such as input/output.
+
+The usage for "ocamlrun" is:
+\begin{alltt}
+        ocamlrun \var{options} \var{bytecode-executable} \nth{arg}{1} ... \nth{arg}{n}
+\end{alltt}
+The first non-option argument is taken to be the name of the file
+containing the executable bytecode. (That file is searched in the
+executable path as well as in the current directory.) The remaining
+arguments are passed to the OCaml program, in the string array
+"Sys.argv". Element 0 of this array is the name of the
+bytecode executable file; elements 1 to \var{n} are the remaining
+arguments \nth{arg}{1} to \nth{arg}{n}.
+
+As mentioned in chapter~\ref{c:camlc}, the bytecode executable files
+produced by the "ocamlc" command are self-executable, and manage to
+launch the "ocamlrun" command on themselves automatically. That is,
+assuming "a.out" is a bytecode executable file,
+\begin{alltt}
+        a.out \nth{arg}{1} ... \nth{arg}{n}
+\end{alltt}
+works exactly as
+\begin{alltt}
+        ocamlrun a.out \nth{arg}{1} ... \nth{arg}{n}
+\end{alltt}
+Notice that it is not possible to pass options to "ocamlrun" when
+invoking "a.out" directly.
+
+\begin{windows}
+Under several versions of Windows, bytecode executable files are
+self-executable only if their name ends in ".exe".  It is recommended
+to always give ".exe" names to bytecode executables, e.g. compile
+with "ocamlc -o myprog.exe ..." rather than "ocamlc -o myprog ...".
+\end{windows}
+
+\section{Options} \label{ocamlrun-options}
+
+The following command-line options are recognized by "ocamlrun".
+
+\begin{options}
+
+\item["-b"]
+When the program aborts due to an uncaught exception, print a detailed
+``back trace'' of the execution, showing where the exception was
+raised and which function calls were outstanding at this point.  The
+back trace is printed only if the bytecode executable contains
+debugging information, i.e. was compiled and linked with the "-g"
+option to "ocamlc" set.  This is equivalent to setting the "b" flag
+in the "OCAMLRUNPARAM" environment variable (see below).
+\item["-I" \var{dir}]
+Search the directory \var{dir} for dynamically-loaded libraries,
+in addition to the standard search path (see
+section~\ref{s-ocamlrun-dllpath}).
+\item["-p"]
+Print the names of the primitives known to this version of
+"ocamlrun" and exit.
+\item["-v"]
+Direct the memory manager to print some progress messages on
+standard error.  This is equivalent to setting "v=63" in the
+"OCAMLRUNPARAM" environment variable (see below).
+\item["-version"]
+Print version string and exit.
+\item["-vnum"]
+Print short version number and exit.
+
+\end{options}
+
+\noindent
+The following environment variables are also consulted:
+
+\begin{options}
+\item["CAML_LD_LIBRARY_PATH"]  Additional directories to search for
+  dynamically-loaded libraries (see section~\ref{s-ocamlrun-dllpath}).
+
+\item["OCAMLLIB"] The directory containing the OCaml standard
+  library.  (If "OCAMLLIB" is not set, "CAMLLIB" will be used instead.)
+  Used to locate the "ld.conf" configuration file for
+  dynamic loading (see section~\ref{s-ocamlrun-dllpath}).  If not set,
+  default to the library directory specified when compiling OCaml.
+
+\item["OCAMLRUNPARAM"] Set the runtime system options
+  and garbage collection parameters.
+  (If "OCAMLRUNPARAM" is not set, "CAMLRUNPARAM" will be used instead.)
+  This variable must be a sequence of parameter specifications separated
+  by commas.
+  A parameter specification is an option letter followed by an "="
+  sign, a decimal number (or an hexadecimal number prefixed by "0x"),
+  and an optional multiplier.  The options are documented below;
+  the last six correspond to the fields of the
+  "control" record documented in
+\ifouthtml
+ \ahref{libref/Gc.html}{Module \texttt{Gc}}.
+\else
+ section~\ref{Gc}.
+\fi
+  \begin{options}
+  \item[b] (backtrace) Trigger the printing of a stack backtrace
+        when an uncaught exception aborts the program.
+        This option takes no argument.
+  \item[p] (parser trace) Turn on debugging support for
+        "ocamlyacc"-generated parsers.  When this option is on,
+        the pushdown automaton that executes the parsers prints a
+        trace of its actions.  This option takes no argument.
+  \item[R] (randomize) Turn on randomization of all hash tables by default
+        (see
+\ifouthtml
+  \ahref{libref/Hashtbl.html}{Module \texttt{Hashtbl}}).
+\else
+  section~\ref{Hashtbl}).
+\fi
+        This option takes no argument.
+  \item[h] The initial size of the major heap (in words).
+  \item[a] ("allocation_policy") The policy used for allocating in the
+  OCaml heap.  Possible values are 0 for the next-fit policy, and 1
+  for the first-fit policy.  Next-fit is usually faster, but first-fit
+  is better for avoiding fragmentation and the associated heap
+  compactions.
+  \item[s] ("minor_heap_size")  Size of the minor heap. (in words)
+  \item[i] ("major_heap_increment")  Default size increment for the
+  major heap. (in words)
+  \item[o] ("space_overhead")  The major GC speed setting.
+  \item[O] ("max_overhead")  The heap compaction trigger setting.
+  \item[l] ("stack_limit") The limit (in words) of the stack size.
+  \item[v] ("verbose")  What GC messages to print to stderr.  This
+  is a sum of values selected from the following:
+  \begin{options}
+        \item[1   (= 0x001)] Start of major GC cycle.
+        \item[2   (= 0x002)] Minor collection and major GC slice.
+        \item[4   (= 0x004)] Growing and shrinking of the heap.
+        \item[8   (= 0x008)] Resizing of stacks and memory manager tables.
+        \item[16  (= 0x010)] Heap compaction.
+        \item[32  (= 0x020)] Change of GC parameters.
+        \item[64  (= 0x040)] Computation of major GC slice size.
+        \item[128 (= 0x080)] Calling of finalization functions
+        \item[256 (= 0x100)] Startup messages (loading the bytecode
+           executable file, resolving shared libraries).
+        \item[512 (= 0x200)] Computation of compaction-triggering condition.
+        \item[1024 (= 0x400)] Output GC statistics at program exit.
+  \end{options}
+  \item[c] ("cleanup_on_exit") Shut the runtime down gracefully on exit (see
+  "caml_shutdown" in section~\ref{s:embedded-code}). The option also enables
+  pooling (as in "caml_startup_pooled"). This mode can be used to detect
+  leaks with a third-party memory debugger.
+  \end{options}
+  The multiplier is "k", "M", or "G", for multiplication by $2^{10}$,
+  $2^{20}$, and $2^{30}$ respectively.
+
+  If the option letter is not recognized, the whole parameter is ignored;
+  if the equal sign or the number is missing, the value is taken as 1;
+  if the multiplier is not recognized, it is ignored.
+
+  For example, on a 32-bit machine, under "bash" the command
+\begin{verbatim}
+        export OCAMLRUNPARAM='b,s=256k,v=0x015'
+\end{verbatim}
+  tells a subsequent "ocamlrun" to print backtraces for uncaught exceptions,
+  set its initial minor heap size to 1~megabyte and
+  print a message at the start of each major GC cycle, when the heap
+  size changes, and when compaction is triggered.
+
+\item["CAMLRUNPARAM"]  If "OCAMLRUNPARAM" is not found in the
+  environment, then "CAMLRUNPARAM" will be used instead.  If
+  "CAMLRUNPARAM" is also not found, then the default values will be used.
+
+\item["PATH"] List of directories searched to find the bytecode
+executable file.
+\end{options}
+
+\section{Dynamic loading of shared libraries} \label{s-ocamlrun-dllpath}
+
+On platforms that support dynamic loading, "ocamlrun" can link
+dynamically with C shared libraries (DLLs) providing additional C primitives
+beyond those provided by the standard runtime system.  The names for
+these libraries are provided at link time as described in
+section~\ref{dynlink-c-code}), and recorded in the bytecode executable
+file;  "ocamlrun", then, locates these libraries and resolves references
+to their primitives when the bytecode executable program starts.
+
+The "ocamlrun" command searches shared libraries in the following
+directories, in the order indicated:
+\begin{enumerate}
+\item Directories specified on the "ocamlrun" command line with the
+"-I" option.
+\item Directories specified in the "CAML_LD_LIBRARY_PATH" environment
+variable.
+\item Directories specified at link-time via the "-dllpath" option to
+"ocamlc".  (These directories are recorded in the bytecode executable
+file.)
+\item Directories specified in the file "ld.conf".  This file resides
+in the OCaml standard library directory, and lists directory
+names (one per line) to be searched.  Typically, it contains only one
+line naming the "stublibs" subdirectory of the OCaml standard
+library directory.  Users can add there the names of other directories
+containing frequently-used shared libraries; however, for consistency
+of installation, we recommend that shared libraries are installed
+directly in the system "stublibs" directory, rather than adding lines
+to the "ld.conf" file.
+\item Default directories searched by the system dynamic loader.
+Under Unix, these generally include "/lib" and "/usr/lib", plus the
+directories listed in the file "/etc/ld.so.conf" and the environment
+variable "LD_LIBRARY_PATH".  Under Windows, these include the Windows
+system directories, plus the directories listed in the "PATH"
+environment variable.
+\end{enumerate}
+
+\section{Common errors}
+
+This section describes and explains the most frequently encountered
+error messages.
+
+\begin{options}
+
+\item[{\it filename}": no such file or directory"]
+If {\it filename} is the name of a self-executable bytecode file, this
+means that either that file does not exist, or that it failed to run
+the "ocamlrun" bytecode interpreter on itself. The second possibility
+indicates that OCaml has not been properly installed on your
+system.
+
+\item["Cannot exec ocamlrun"]
+(When launching a self-executable bytecode file.) The "ocamlrun"
+ could not be found in the executable path. Check that OCaml
+ has been properly installed on your system.
+
+\item["Cannot find the bytecode file"]
+The file that "ocamlrun" is trying to execute (e.g. the file given as
+first non-option argument to "ocamlrun") either does not exist, or is
+not a valid executable bytecode file.
+
+\item["Truncated bytecode file"]
+The file that "ocamlrun" is trying to execute is not a valid executable
+bytecode file. Probably it has been truncated or mangled since
+created. Erase and rebuild it.
+
+\item["Uncaught exception"]
+The program being executed contains a ``stray'' exception. That is,
+it raises an exception at some point, and this exception is never
+caught. This causes immediate termination of the program. The name of
+the exception is printed, along with its string, byte sequence, and
+integer arguments
+(arguments of more complex types are not correctly printed).
+To locate the context of the uncaught exception, compile the program
+with the "-g" option and either run it again under the "ocamldebug"
+debugger (see chapter~\ref{c:debugger}), or run it with "ocamlrun -b"
+or with the "OCAMLRUNPARAM" environment variable set to "b=1".
+
+\item["Out of memory"]
+The program being executed requires more memory than available. Either
+the program builds excessively large data structures; or the program
+contains too many nested function calls, and the stack overflows.  In
+some cases, your program is perfectly correct, it just requires more
+memory than your machine provides. In other cases, the ``out of
+memory'' message reveals an error in your program: non-terminating
+recursive function, allocation of an excessively large array,
+string or byte sequence, attempts to build an infinite list or other
+data structure, \ldots
+
+To help you diagnose this error, run your program with the "-v" option
+to "ocamlrun", or with the "OCAMLRUNPARAM" environment variable set to
+"v=63". If it displays lots of ``"Growing stack"\ldots''
+messages, this is probably a looping recursive function. If it
+displays lots of ``"Growing heap"\ldots'' messages, with the heap size
+growing slowly, this is probably an attempt to construct a data
+structure with too many (infinitely many?) cells. If it displays few
+``"Growing heap"\ldots'' messages, but with a huge increment in the
+heap size, this is probably an attempt to build an excessively large
+array, string or byte sequence.
+
+\end{options}

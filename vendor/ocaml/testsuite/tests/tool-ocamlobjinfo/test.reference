@@ -1,0 +1,10 @@
+File question.cmxs
+Name: Question
+CRC of implementation: <MD5>
+Globals defined:
+	Question
+Interfaces imported:
+	<MD5>	Question
+	<MD5>	Pervasives
+	<MD5>	CamlinternalFormatBasics
+Implementations imported:

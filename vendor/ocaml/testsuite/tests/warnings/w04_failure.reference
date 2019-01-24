@@ -1,0 +1,9 @@
+File "w04_failure.ml", line 9, characters 2-78:
+Warning 4: this pattern-matching is fragile.
+It will remain exhaustive when constructors are added to type repr.
+File "w04_failure.ml", line 9, characters 2-78:
+Warning 4: this pattern-matching is fragile.
+It will remain exhaustive when constructors are added to type ab.
+File "w04_failure.ml", line 9, characters 2-78:
+Warning 4: this pattern-matching is fragile.
+It will remain exhaustive when constructors are added to type xy.

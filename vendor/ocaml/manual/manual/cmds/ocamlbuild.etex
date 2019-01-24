@@ -1,0 +1,6 @@
+\chapter{The ocamlbuild compilation manager} \label{c:ocamlbuild}
+\pdfchapter{The ocamlbuild compilation manager}
+
+Since OCaml version 4.03, the ocamlbuild compilation manager is
+distributed separately from the OCaml compiler. The project is now
+hosted at \url{https://github.com/ocaml/ocamlbuild/}.

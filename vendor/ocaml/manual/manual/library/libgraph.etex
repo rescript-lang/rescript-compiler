@@ -1,0 +1,100 @@
+\chapter{The graphics library}
+\pdfchapterfold{-1}{The graphics library}
+%HEVEA\cutname{libgraph.html}
+
+The "graphics" library provides a set of portable drawing primitives.
+Drawing takes place
+in a separate window that is created when "Graphics.open_graph" is called.
+
+\begin{unix}
+This library is implemented under the X11 windows system. 
+Programs that use the "graphics" library must be linked as follows:
+\begin{alltt}
+        ocamlc \var{other options} graphics.cma \var{other files}
+\end{alltt}
+For interactive use of the "graphics" library, do:
+\begin{alltt}
+        ocamlmktop -o mytop graphics.cma
+        ./mytop
+\end{alltt}
+or (if dynamic linking of C libraries is supported on your platform),
+start "ocaml" and type "#load \"graphics.cma\";;".
+
+Here are the graphics mode specifications supported by
+"Graphics.open_graph" on
+the X11 implementation of this library:
+the argument to "Graphics.open_graph" has the format
+"\""{\it display-name} {\it geometry\/}"\"",
+where {\it display-name} is the name of the X-windows display to
+connect to, and {\it geometry} is a standard X-windows geometry
+specification. The two components are separated by a space. Either can
+be omitted, or both. Examples:
+\begin{options}
+\item["Graphics.open_graph \"foo:0\""]
+connects to the display "foo:0" and creates a window with the default geometry
+\item["Graphics.open_graph \"foo:0 300x100+50-0\""]
+connects to the display "foo:0" and creates a window 300 pixels wide
+by 100 pixels tall, at location $(50,0)$
+\item["Graphics.open_graph \" 300x100+50-0\""]
+connects to the default display and creates a window 300 pixels wide
+by 100 pixels tall, at location $(50,0)$
+\item["Graphics.open_graph \"\""]
+connects to the default display and creates a window with the default
+geometry.
+\end{options}
+\end{unix}
+
+\begin{windows}
+This library is available both for standalone compiled programs and
+under the toplevel application "ocamlwin.exe".  For the latter, this
+library must be loaded in-core by typing
+\begin{verbatim}
+        #load "graphics.cma";;
+\end{verbatim}
+\end{windows}
+
+The screen coordinates are interpreted as shown in the figure below.
+Notice that the coordinate system used is the same as in mathematics:
+$y$ increases from the bottom of the screen to the top of the screen,
+and angles are measured counterclockwise (in degrees).
+Drawing is clipped to the screen.
+%
+\begin{latexonly}
+\begin{center}
+\setlength{\unitlength}{0.5mm}
+\begin{picture}(130,100)(-10,-10)
+\thicklines
+\put(-10,0){\vector(1,0){130}}
+\put(125,0){\makebox(0,0)[l]{$x$}}
+\put(0,-10){\vector(0,1){100}}
+\put(0,95){\makebox(0,0){$y$}}
+\thinlines
+\put(100,80){\line(-1,0){105}}
+\put(100,80){\line(0,-1){85}}
+\put(95,75){\makebox(0,0)[tr]{Screen}}
+\put(100,-10){\makebox(0,0){\tt size\_x()}}
+\put(-10,80){\makebox(0,0)[r]{\tt size\_y()}}
+\put(30,40){\makebox(4,4){\rule{2mm}{2mm}}}
+\put(36,40){pixel at $(x,y)$}
+\put(30,40){\line(-1,0){35}}
+\put(30,-10){\makebox(0,0){$x$}}
+\put(30,40){\line(0,-1){45}}
+\put(-10,40){\makebox(0,0)[r]{$y$}}
+\end{picture}
+\end{center}
+\end{latexonly}
+
+\begin{htmlonly}
+\begin{center}
+\imgsrc{libgraph.gif}
+\end{center}
+\end{htmlonly}
+%
+
+\ifouthtml
+\begin{links}
+\item \ahref{libref/Graphics.html}{Module \texttt{Graphics}: machine-independent graphics primitives}
+\end{links}
+\else
+\input{Graphics.tex}
+\fi

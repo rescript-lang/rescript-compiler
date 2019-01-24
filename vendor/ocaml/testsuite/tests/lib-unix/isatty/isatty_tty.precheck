@@ -1,0 +1,1 @@
+test "$TOOLCHAIN" = "msvc" || test "$TOOLCHAIN" = "mingw"

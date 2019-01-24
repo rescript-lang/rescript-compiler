@@ -1,0 +1,2 @@
+let () =
+  ignore (File.getcwd ())

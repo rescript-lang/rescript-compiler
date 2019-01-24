@@ -1,0 +1,8 @@
+x = 20000
+x = 10000
+x = 0
+Stack overflow caught
+x = 20000
+x = 10000
+x = 0
+second Stack overflow caught

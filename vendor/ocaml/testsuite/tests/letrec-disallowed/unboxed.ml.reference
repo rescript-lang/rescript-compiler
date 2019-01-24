@@ -1,0 +1,12 @@
+
+# type t = { x : int64; } [@@unboxed]
+# Characters 12-19:
+  let rec x = {x = y} and y = 3L;;
+              ^^^^^^^
+Error: This kind of expression is not allowed as right-hand side of `let rec'
+#   type r = A of r [@@unboxed]
+# Characters 12-15:
+  let rec y = A y;;
+              ^^^
+Error: This kind of expression is not allowed as right-hand side of `let rec'
+#   

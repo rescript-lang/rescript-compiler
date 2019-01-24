@@ -1,0 +1,35 @@
+#**************************************************************************
+#*                                                                        *
+#*                                 OCaml                                  *
+#*                                                                        *
+#*                  Jeremie Dimino, Jane Street Europe                    *
+#*                                                                        *
+#*   Copyright 2016 Jane Street Group LLC                                 *
+#*                                                                        *
+#*   All rights reserved.  This file is distributed under the terms of    *
+#*   the GNU Lesser General Public License version 2.1, with the          *
+#*   special exception on linking described in the file LICENSE.          *
+#*                                                                        *
+#**************************************************************************
+
+.PHONY: default
+default:
+	@for file in *.ml; do \
+	  printf " ... testing '$$file':"; \
+	  TERM=dumb $(EXPECT_TEST) -repo-root $(OTOPDIR) $$file && \
+	  TERM=dumb $(EXPECT_TEST) -repo-root $(OTOPDIR) -principal \
+	    $$file.corrected && \
+	  mv $$file.corrected.corrected $$file.corrected && \
+	  $(DIFF) $$file $$file.corrected && \
+	  echo " => passed" || echo " => failed"; \
+	done
+
+.PHONY: promote
+promote:
+	@for file in *.corrected; do \
+	  cp $$file `basename $$file .corrected`; \
+	done
+
+.PHONY: clean
+clean: defaultclean
+	@rm -f *.corrected

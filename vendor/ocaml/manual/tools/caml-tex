@@ -1,0 +1,131 @@
+#!/usr/bin/perl
+
+$camllight = "TERM=dumb ocaml";
+$camlbegin = "\\caml\n";
+$camlend = "\\endcaml\n";
+$camlin = "\\?";
+$camlout = "\\:";
+$camlblank = "\\;\n";
+
+$linelen = 72;
+$output = "";
+$cut_at_blanks = 0;
+
+while ($#ARGV >= 0) {
+  $_ = $ARGV[0];
+  last unless (/^-/);
+  $linelen = $ARGV[1], shift, shift, next    if (/^-n$/);
+  $output  = $ARGV[1], shift, shift, next    if (/^-o$/);
+  $camllight = $ARGV[1], shift, shift, next    if (/^-caml$/);
+  $cut_at_blanks = 1, shift, next            if (/^-w$/);
+  printf STDERR ("Unknown option '%s', ignored\n", $_);
+  shift;
+}
+
+# First pass: extract the Caml phrases to evaluate
+
+open(ML, "> .input.ml") || die("Cannot create .input.ml : $!");
+
+foreach $infile (@ARGV) {
+  open(IN, $infile) || die("Cannot open $infile : $!");
+  while(<IN>) {
+    if (m/^\\begin{caml_(example|example\*|eval)}\s*$/) {
+      while(<IN>) {
+        last if m/^\\end{caml_(example|example\*|eval)}\s*$/;
+        print ML $_;
+      }
+    }
+  }
+  close(IN);
+}
+
+close(ML);
+
+# Feed the phrases to a Caml toplevel
+
+open(TOPLEVEL, "$camllight 2>&1 < .input.ml |") ||
+       die("Cannot start camllight : $!");
+
+<TOPLEVEL>; <TOPLEVEL>;	        # skip the banner
+$lastread = <TOPLEVEL>;
+$lastread =~ s/^# //;
+
+# Second pass: shuffle the TeX source and the output of the toplevel
+
+if ($output) {
+  if ($output eq "-") {
+    open(OUT, ">&STDOUT");
+  } else {
+    open(OUT, ">$output") || die("Cannot create $output: $!");
+  }
+}
+
+foreach $infile (@ARGV) {
+  open(IN, $infile) || die("Cannot open $infile: $!");
+  if (! $output) {
+    $outfile = $infile;
+    $outfile =~ s/\.tex$//;
+    open(OUT, "> $outfile.ml.tex") || die("Cannot create $outfile.ml.tex: $!");
+  }
+  while(<IN>) {
+    if (m/^\\begin{caml_example(\*?)}\s*$/) {
+      $omit_answer = $1;     # true if caml_example*, false if caml_example
+      print OUT $camlbegin;
+      $severalphrases = 0;
+      while(<IN>) {
+        last if m/\\end{caml_example\*?}\s*$/;
+        print OUT $camlblank if ($severalphrases);
+        while(1) {
+          s/\\/\\\\/g;
+          print OUT $camlin, $_;
+          last if m/;; *$/;
+          $_ = <IN>;
+        }
+	while ($lastread =~ s/^  //) { }
+        while($lastread) {
+          last if $lastread =~ s/^# //;
+          print STDERR $lastread;
+          if (! $omit_answer) {
+            while (length($lastread) > $linelen) {
+              if ($cut_at_blanks) {
+                $cutpos = rindex($lastread, ' ', $linelen);
+                if ($cutpos == -1) { $cutpos = $linelen; } else { $cutpos++; }
+              } else {
+                $cutpos = $linelen;
+              }
+              $line = substr($lastread, 0, $cutpos);
+              $line =~ s/\\/\\\\/g;
+              print OUT $camlout, $line, "\n";
+              $lastread = substr($lastread, $cutpos,
+                                 length($lastread) - $cutpos);
+            }
+            $lastread =~ s/\\/\\\\/g;
+            print OUT $camlout, $lastread;
+	  }
+          $lastread = <TOPLEVEL>;
+        }
+        $severalphrases = 1;
+      }
+      print OUT $camlend;
+    }
+    elsif (m/^\\begin{caml_eval}\s*$/) {
+      while(<IN>) {
+        last if m/^\\end{caml_eval}\s*$/;
+        if (m/;; *$/) {
+          while ($lastread =~ s/^  //) { }
+	  while($lastread) {
+	    last if $lastread =~ s/^#//;
+	    print STDERR $lastread;
+	    $lastread = <TOPLEVEL>;
+	  }
+        }
+      }
+    }
+    else {
+      print OUT $_;
+    }
+  }
+  close(IN);
+}
+
+close(TOPLEVEL);

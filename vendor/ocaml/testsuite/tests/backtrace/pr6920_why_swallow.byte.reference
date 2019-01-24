@@ -1,0 +1,4 @@
+Fatal error: exception Pervasives.Exit
+Raised at file "pr6920_why_swallow.ml", line 1, characters 41-45
+Called from file "pr6920_why_swallow.ml", line 4, characters 4-13
+Called from file "pr6920_why_swallow.ml", line 11, characters 2-6

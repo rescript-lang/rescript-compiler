@@ -1,0 +1,153 @@
+#!/usr/bin/perl
+
+$sep = "\246";
+
+$html = 0;
+if ($ARGV[0] eq "-html") {
+    $html = 1;
+    shift;
+}
+
+# Skip initial junk
+
+while(($_ = <>) && ! m/^\(\* Module \[(.*)\]:/) { }
+m/^\(\* Module \[(.*)\]:/;
+$modname = $1;
+chop;
+s/^\(\* *//;
+s/ *\*\) *$//;
+s/\[/{\\tt /g;
+s/\]/}/g;
+print "\\section{$_}\n\n";
+$label = $modname; $label =~ s/[^A-Za-z0-9]//g;
+print "\\label{s:$label}\n";
+print "\\index{$modname (module)@\\verb~$modname~ (module)}%\n\n";
+s/{\\tt //g;
+s/}//g;
+s/_//g;
+print "\\pdfsection{$_}\n\n";
+
+$incomment = 0;
+$inverbatim = 0;
+
+line:
+while(<>) {
+  chop;
+  last line if /^\s*\(\*--/;
+  if (s/^\(\*- //) {
+      s/ *\*\)$//;
+  }
+  if (m/^\s*\(\*\*\*\s*(.*)\*\)\s*$/) {
+    if ($inverbatim) {
+      do end_verbatim();
+    }
+    print "\\subsection*{", $1, "}\n";
+    next line;
+  }
+  if (m/^\s*\(\*\*\s*(.*)\*\)\s*$/) {
+    if ($inverbatim) {
+      do end_verbatim();
+    }
+    print "\\subsubsection*{", $1, "}\n";
+    next line;
+  }
+  if (s/^\s*\(\*//) {
+    if ($inverbatim) {
+      do end_verbatim();
+    }
+    print "\\begin{comment}\n";
+    $incomment = 1;
+  }
+  if ($incomment) {
+    $endcomment = s/\*\)\s*$//;
+    if (m/^\s*\[\s*$/) {
+      print "\\begin{restoreindent}\n" unless $html;
+      print "\\begin{verbatim}\n";
+      while (($_ = <>) && ! m/^\s*\]\s*$/) {
+        print $_;
+      }
+      print "\\end{verbatim}\n";
+      print "\\end{restoreindent}\n" unless $html;
+    } else {
+      if (s/^-//) {
+        print "\\\\";
+        print "[\\smallskipamount]" unless $html;
+      }
+      s/^\s*//;
+      $count = 0;
+      foreach $part (split(/(\\?[\[\]])/, $_)) {
+        if ($part eq "[") {
+          print ($count == 0 ? "\\verb$sep" : "[");
+          $count++;
+        } elsif ($part eq "]") {
+          $count--;
+          print ($count == 0 ? "$sep" : "]");
+        } elsif ($part =~ m/^\\([\[\]])$/) {
+          print $1;
+        } else {
+          print $part;
+        }
+      }
+    }
+    if ($endcomment) {
+      print "\n\\end{comment}";
+      $incomment = 0;
+      $inverbatim = 0;
+    }
+  } else {
+    next line if /^$/;
+    if (! $inverbatim) {
+      print "\\begin{verbatim}\n";
+      $inverbatim = 1;
+    }
+    s/^external /val /;
+    s/ = ("[^"]*"\s*)+$//;
+    next line if /^\s*$/;
+    s/^val \( ([^ )]+) \)/val (\1)/;
+    {
+      do indexentry($1, " (operator)"), last
+        if (m/^val \(([^)]*)\)/);
+      do indexentry($1, ""), last
+        if (m/^val ([a-zA-Z0-9_']*)/);
+      do indexentry($1, " (type)"), last
+        if (m/^type\s.*([a-zA-Z0-9_']*)\s*=/);
+      do indexentry($1, " (exception)"), last
+        if (m/^exception ([a-zA-Z0-9_']*)/);
+      do indexentry($1, " (module type)"), last
+        if (m/^module type ([a-zA-Z0-9_']*)/);
+      do indexentry($1, " (functor)"), last
+        if (m/^module ([a-zA-Z0-9_']*)\s*\(/);
+      do indexentry($1, " (module)"), last
+        if (m/^module ([a-zA-Z0-9_']*)/);
+    }
+    print $_;
+  }
+  print "\n";
+}
+do end_verbatim() if $inverbatim;
+print "\\end{comment}\n" if $incomment;
+
+sub indexentry {
+  local ($_, $comment) = @_;
+  return if m/^$/ || m/^[a-zA-Z]$/;
+  s/([@|!])/"$1/g;
+  if (! m|`|) {
+    $s = "`";
+  } elsif (! m|~|) {
+    $s = "~";
+  } elsif (! m/\|/) {
+    $s = "|";
+  } else {
+    die("Can't find quote character for $_");
+  }
+  push (@index, "\\index{$_$comment@\\verb$s$_$s$comment}");
+}
+
+sub end_verbatim {
+  print "\\end{verbatim}\n";
+  foreach $idx (@index) {
+    print $idx, "%\n";
+  }
+  undef(@index);
+  $inverbatim = 0;
+}

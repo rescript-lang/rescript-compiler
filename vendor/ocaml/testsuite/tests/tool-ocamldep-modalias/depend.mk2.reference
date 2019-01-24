@@ -1,0 +1,8 @@
+LibA.cmo : lib.cmi
+LibA.cmx : lib.cmi
+LibB.cmo : LibA.cmo lib.cmi
+LibB.cmx : LibA.cmx lib.cmi
+LibC.cmo : LibB.cmo LibA.cmo lib.cmi
+LibC.cmx : LibB.cmx LibA.cmx lib.cmi
+LibD.cmo : lib.cmi
+LibD.cmx : lib.cmi

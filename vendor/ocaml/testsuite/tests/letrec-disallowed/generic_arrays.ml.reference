@@ -1,0 +1,6 @@
+
+# *   Characters 162-172:
+  let f z = let rec x = [| y; z |] and y = z in x;;
+                        ^^^^^^^^^^
+Error: This kind of expression is not allowed as right-hand side of `let rec'
+# 

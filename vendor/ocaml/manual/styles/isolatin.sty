@@ -1,0 +1,174 @@
+% 1-Jun-1992
+%
+% File  bases on iso1ibm.tex  Version 1.0 of May, 9 1990
+\message{ISO-latin-1 input coding, version 0.9 of 1-Jun-1992.}
+%
+% For input of 8 bits character.
+% This allows reading ISO-8859 Latin-1 codes.
+%
+\chardef \atcode = \the \catcode `\@
+\catcode `\@ = 11
+%
+\catcode160=13  \def^^a0{{\bf?}}      % 160 '240, "a0
+\catcode161=13  \def^^a1{!`}          % 161 '241, "a1
+\catcode162=13  \def^^a2{{\bf?}}      % 162 '242, "a2
+\catcode163=13  \def^^a3{\pounds{}}   % 163 '243, "a3
+\catcode164=13  \def^^a4{{\bf?}}      % 164 '244, "a4
+\catcode165=13  \def^^a5{{\bf?}}      % 165 '245, "a5
+\catcode166=13  \def^^a6{$\vert$}        % 166 '246, "a6
+\catcode167=13  \def^^a7{\S{}}        % 167 '247, "a7   \S{} ISO-1, 
+\catcode168=13  \def^^a8{\"{ }}       % 168 '250, "a8
+\catcode169=13  \def^^a9{\copyright{}}% 169, '251, "a9
+\catcode170=13  \def^^aa{{\bf?}}      % 170 '252, "aa
+\catcode171=13                        % 171 '253, "ab, 
+\@ifundefined{lguill}{\def^^ab{$<<$}}{\def^^ab{\lguill}}     
+\catcode172=13  \def^^ac{{\bf?}}      % 172 '254, "ac
+\catcode173=13  \def^^ad{{\bf?}}      % 173 '255 "ad
+\catcode174=13  \def^^ae{{\bf?}}      % 174 '256, "ae
+\catcode175=13  \def^^af{{\bf?}}      % 175 '257, "af
+\catcode176=13  \def^^b0{{\bf?}}      % 176 '260, "b0  ?? \No
+\catcode177=13  \def^^b1{$\pm$}       % 177 '261, "b1  ISO-1 plus-minus  
+\catcode178=13  \def^^b2{${}^2$}      % 178, '262, "b2
+\catcode179=13  \def^^b3{${}^3$}      % 179, '263, "b3
+\catcode180=13  \def^^b4{\'{ }}       % 180, '264, "b4
+\catcode181=13  \def^^b5{{\bf?}}      % 181, '265, "b5
+\catcode182=13  \def^^b6{\P{}}        % 182, '266, "b6
+\catcode183=13  \def^^b7{$\cdot$}     % 183, '267, "b7
+\catcode184=13  \def^^b8{\c{ }}       % 184, '270, "b8
+\catcode185=13  \def^^b9{${}^1$}      % 185, '271, "b9
+\catcode186=13  \def^^ba{{\bf?}}      % 186, '272, "ba
+\catcode187=13                        % 187, '273, "bb 
+\@ifundefined{rguill}{\def^^bb{$>>$}}{\def^^bb{\rguill}}     
+\catcode188=13  \def^^bc{$\frac 1 4$}      % 188, '274, "bc
+\catcode189=13  \def^^bd{$\frac 1 2$}      % 189, '275, "bd
+\catcode190=13  \def^^be{$\frac 3 4$}      % 190, '276, "be
+\catcode191=13  \def^^bf{?`}          % 191, '277, "bf
+\catcode192=13  \def^^c0{\`A}         % 192, '300, "c0
+\@ifundefined{@grave@A@grave@}{\def^^c0{\`A}}{\let^^c0=\@grave@A@grave@}
+\catcode193=13  \def^^c1{\'A}         % 193, '301, "c1
+\@ifundefined{@acute@A@acute@}{\def^^c1{\'A}}{\let^^c1=\@acute@A@acute@}
+\catcode194=13  \def^^c2{\^A}         %  194, '302, "c2
+\@ifundefined{@circflx@A@circflx@}{\def^^c2{\^A}}{\let^^c2=\@circflx@A@circflx@}
+\catcode195=13  \def^^c3{\~A}     % 195, '303, "c3
+\@ifundefined{@tileda@A@tilda@}{\def^^c3{\~A}}{\let^^c3=\@tileda@A@tilda@}
+\catcode196=13  \def^^c4{\"A}     % 196, '304, "c4
+\@ifundefined{@Umlaut@A@Umlaut@}{\def^^c4{\"A}}{\let^^c4=\@Umlaut@A@Umlaut@}
+\catcode197=13  \def^^c5{\AA{}}   % 197, '305, "c5
+\@ifundefined{@A@A@}{\def^^c5{\AA{}}}{\let^^c5=\@A@A@}
+\catcode198=13 \def^^c6{\AE{}}    % 198, '306, "c6
+\@ifundefined{@A@E@}{\def^^c6{\AE{}}}{\let^^c6=\@A@E@}
+\catcode199=13  \def^^c7{\c{C}}   % 199, '307, "c7
+\@ifundefined{@cedilla@C@cedilla}{\def^^c7{\c{C}}}{\let^^c7=\@cedilla@C@cedilla}
+\catcode200=13  \def^^c8{\`E}     % 200, '310, "c8
+\@ifundefined{@grave@E@grave@}{\def^^c8{\`E}}{\let^^c8=\@grave@E@grave@}
+\catcode201=13  \def^^c9{\'E}     % 201, '311, "c9
+\@ifundefined{@acute@E@acute@}{\def^^c9{\'E}}{\let^^c9=\@acute@E@acute@}
+\catcode202=13  \def^^ca{\^E}     % 202, '312, "ca
+\@ifundefined{@circflx@E@circflx@}{\def^^ca{\^E}}{\let^^ca=\@circflx@E@circflx@}
+\catcode203=13  \def^^cb{{\"E}}   % 203, '313, "cb
+\@ifundefined{@Umlaut@E@Umlaut@}{\def^^cb{\"E}}{\let^^cb=\@Umlaut@E@Umlaut@}
+\catcode204=13  \def^^cc{\`I}     % 204, '314, "cc
+\@ifundefined{@grave@I@grave@}{\def^^cc{\`I}}{\let^^cc=\@grave@I@grave@}
+\catcode205=13  \def^^cd{\'I}     % 205, '315, "cd
+\@ifundefined{@acute@I@acute@}{\def^^cd{\'I}}{\let^^cd=\@acute@I@acute@}
+\catcode206=13  \def^^ce{\^I}     % 206, '316, "ce
+\@ifundefined{@circflx@I@circflx@}{\def^^ce{\^I}}{\let^^ce=\@circflx@I@circflx@}
+\catcode207=13  \def^^cf{{\"I}}   % 207, '317, "cf
+\@ifundefined{@Umlaut@I@Umlaut@}{\def^^cf{\"I}}{\let^^cf=\@Umlaut@I@Umlaut@}
+\catcode208=13  \def^^d0{\rlap{\raise0.3ex\hbox{--}}D}      % 208, '320, "d0
+\@ifundefined{@Eth@}{}{\let^^d0=\@Eth@}
+\catcode209=13  \def^^d1{¥}       % 209, '321, "d1
+\@ifundefined{@tileda@N@tilda@}{\def^^d1{\~N}}{\let^^d1\@tileda@N@tilda@}
+\catcode210=13  \def^^d2{\`O}     % 210, '322, "d2
+\@ifundefined{@grave@O@grave@}{\def^^d2{\`O}}{\let^^d2=\@grave@O@grave@}
+\catcode211=13  \def^^d3{\'O}     % 211, '323, "d3
+\@ifundefined{@acute@O@acute@}{\def^^d3{\'O}}{\let^^d3\@acute@O@acute@}
+\catcode212=13  \def^^d4{\^O}     % 212, '324, "d4
+\@ifundefined{@circflx@O@circflx@}{\def^^d4{\^O}}{\let^^d4=\@circflx@O@circflx@}
+\catcode213=13  \def^^d5{\~O}     % 213, '325, "d5
+\@ifundefined{@tileda@O@tilda@}{\def^^d5{\~O}}{\let^^d5\@tileda@O@tilda@}
+\catcode214=13  \def^^d6{\"O}     % 214, '326, "d6
+\@ifundefined{@Umlaut@O@Umlaut@}{\def^^d6{\"O}}{\let^^d6=\@Umlaut@O@Umlaut@}
+\catcode215=13  \def^^d7{$\times$}% 215, '327, "d7
+\catcode216=13  \def^^d8{\O{}}    % 216, '330, "d8
+\@ifundefined{@OOO@}{\def^^d8{\O{}}}{\let^^d8=\@OOO@}
+\catcode217=13  \def^^d9{\`U}     % 217, '331, "d9
+\@ifundefined{@grave@U@grave@}{\def^^d9{\`U}}{\let^^d9=\@grave@U@grave@}
+\catcode218=13  \def^^da{\'U}     % 218, '332, "da
+\@ifundefined{@acute@U@acute@}{\def^^da{\'U}}{\let^^da=\@acute@U@acute@}
+\catcode219=13  \def^^db{\^U}     % 219, '333, "db
+\@ifundefined{@circflx@U@circflx@}{\def^^db{\^U}}{\let^^db=\@circflx@U@circflx@}
+\catcode220=13  \def^^dc{\"U}     % 220, '334, "dc
+\@ifundefined{@Umlaut@U@Umlaut@}{\def^^dc{\"U}}{\let^^dc=\@Umlaut@U@Umlaut@}
+\catcode221=13  \def^^dd{{\'Y}}   % 221, '335, "dd
+\@ifundefined{@acute@Y@acute@}{\def^^dd{\'Y}}{\let^^dd=\@acute@Y@acute@}
+\catcode222=13  \def^^de{\lower 0.7ex \hbox{l}\hskip-1ex\relax b} % 222, '336, "de
+\@ifundefined{@Thorn@}{}{\let^^de=\@Thorn@}
+\catcode223=13  \def^^df{\ss{}}   % 223, '337, "df
+\@ifundefined{@sss@}{\def^^df{\ss{}}}{\let^^df=\@sss@}
+\catcode224=13  \def^^e0{\`a}     % 224, '340, "e0
+\@ifundefined{@grave@a@grave@}{\def^^e0{\`a}}{\let^^e0=\@grave@a@grave@}
+\catcode225=13  \def^^e1{\'a}     % 225, '341, "e1
+\@ifundefined{@acute@a@acute@}{\def^^e1{\'a}}{\let^^e1=\@acute@a@acute@}
+\catcode226=13  \def^^e2{\^a}     % 226, '342, "e2
+\@ifundefined{@circflx@a@circflx@}{\def^^e2{\^a}}{\let^^e2=\@circflx@a@circflx@}
+\catcode227=13  \def^^e3{\~a}     % 227, '343, "e3
+\@ifundefined{@tileda@a@tilda@}{\def^^e3{\~a}}{\let^^e3=\@tileda@a@tilda@}
+\catcode228=13  \def^^e4{\"a}     % 228, '344, "e4
+\@ifundefined{@Umlaut@a@Umlaut@}{\def^^e4{\"a}}{\let^^e4=\@Umlaut@a@Umlaut@}
+\catcode229=13  \def^^e5{\aa{}}   % 229, '345, "e5
+\@ifundefined{@a@a@}{\def^^e5{\aa{}}}{\let^^e5=\@a@a@}
+\catcode230=13  \def^^e6{\ae{}}   % 230, '346, "e6
+\@ifundefined{@a@e@}{\def^^e6{\ae{}}}{\let^^e6=\@a@e@}
+\catcode231=13  \def^^e7{\c{c}}   % 231, '347, "e7
+\@ifundefined{@cedilla@c@cedilla}{\def^^e7{\c{c}}}{\let^^e7=\@cedilla@c@cedilla}
+\catcode232=13  \def^^e8{\`e}     % 232, '350, "e8
+\@ifundefined{@grave@e@grave@}{\def^^e8{\`e}}{\let^^e8=\@grave@e@grave@}
+\catcode233=13  \def^^e9{\'e}     % 233, '351, "e9
+\@ifundefined{@acute@e@acute@}{\def^^e9{\'e}}{\let^^e9=\@acute@e@acute@}
+\catcode234=13  \def^^ea{\^e}     % 234, '352, "ea
+\@ifundefined{@circflx@e@circflx@}{\def^^ea{\^e}}{\let^^ea=\@circflx@e@circflx@}
+\catcode235=13  \def^^eb{\"e}     % 235, '353, "eb
+\@ifundefined{@Umlaut@e@Umlaut@}{\def^^eb{\"e}}{\let^^eb=\@Umlaut@e@Umlaut@}
+\catcode236=13  \def^^ec{\`{\i}}  % 236, '354, "ec
+\@ifundefined{@grave@i@grave@}{\def^^ec{\`{\i}}}{\let^^ec=\@grave@i@grave@}
+\catcode237=13  \def^^ed{\'{\i}}  % 237, '355, "ed
+\@ifundefined{@acute@i@acute@}{\def^^ed{\'{\i}}}{\let^^ed=\@acute@i@acute@}
+\catcode238=13  \def^^ee{\^{\i}}  % 238, '356, "ee
+\@ifundefined{@circflx@i@circflx@}{\def^^ee{\^{\i}}}{\let^^ee=\@circflx@i@circflx@}
+\catcode239=13  \def^^ef{\"{\i}}  % 239, '357, "ef
+\@ifundefined{@Umlaut@i@Umlaut@}{\def^^ef{\"{\i}}}{\let^^ef=\@Umlaut@i@Umlaut@}
+\catcode240=13  \def^^f0{$\partial$}      % 240, '360, "f0
+\@ifundefined{@eth@}{\def^^f0{$\partial$}}{\let^^f0=\@eth@}
+\catcode241=13  \def^^f1{\~n}     % 241, '361, "f1
+\@ifundefined{@tileda@n@tilda@}{\def^^f1{\~n}}{\let^^f1\@tileda@n@tilda@}
+\catcode242=13  \def^^f2{\`o}     % 242, '362, "f2
+\@ifundefined{@grave@o@grave@}{\def^^f2{\`o}}{\let^^f2=\@grave@o@grave@}
+\catcode243=13  \def^^f3{\'o}     % 243, '363, "f3
+\@ifundefined{@acute@o@acute@}{\def^^f3{\'o}}{\let^^f3\@acute@o@acute@}
+\catcode244=13  \def^^f4{\^o}     % 244, '364, "f4
+\@ifundefined{@circflx@o@circflx@}{\def^^f4{\^o}}{\let^^f4=\@circflx@o@circflx@}
+\catcode245=13  \def^^f5{\~o}     % 245, '365, "f5
+\@ifundefined{@tileda@o@tilda@}{\def^^f5{\~o}}{\let^^f5\@tileda@o@tilda@}
+\catcode246=13  \def^^f6{\"o}     % 246, '366, "f6
+\@ifundefined{@Umlaut@o@Umlaut@}{\def^^f6{\"o}}{\let^^f6=\@Umlaut@o@Umlaut@}
+\catcode247=13  \def^^f7{$\div$}   % 247, '367, "f7
+\catcode248=13  \def^^f8{\o{}}    % 248, '370, "f8
+\@ifundefined{@ooo@}{\def^^f8{\o{}}}{\let^^f8=\@ooo@}
+\catcode249=13  \def^^f9{\`u}     % 249, '371, "f9
+\@ifundefined{@grave@u@grave@}{\def^^f9{\`u}}{\let^^f9=\@grave@u@grave@}
+\catcode250=13  \def^^fa{\'u}     % 250, '372, "fa
+\@ifundefined{@acute@u@acute@}{\def^^fa{\'u}}{\let^^fa=\@acute@u@acute@}
+\catcode251=13  \def^^fb{\^u}     % 251, '373, "fb
+\@ifundefined{@circflx@u@circflx@}{\def^^fb{\^u}}{\let^^fb=\@circflx@u@circflx@}
+\catcode252=13  \def^^fc{\"u}     % 252, '374, "fc
+\@ifundefined{@Umlaut@u@Umlaut@}{\def^^fc{\"u}}{\let^^fc=\@Umlaut@u@Umlaut@}
+\catcode253=13  \def^^fd{\'y}     % 253, '375, "fd
+\@ifundefined{@acute@y@acute@}{\def^^fd{\'y}}{\let^^fd=\@acute@y@acute@}
+\catcode254=13  \def^^fe{\lower 0.8ex\hbox{l}\hskip-1ex\relax b} % 254, '376, "fe
+\@ifundefined{@thorn@}{}{\let^^fe=\@thorn@}
+\catcode255=13  \def^^ff{\"y}     % 255, '377, "ff
+\@ifundefined{@Umlaut@y@Umlaut@}{\def^^ff{\"y}}{\let^^ff=\@Umlaut@y@Umlaut@}
+\catcode `\@ = \the \atcode
+\endinput
+% End of iso-latin-1.tex

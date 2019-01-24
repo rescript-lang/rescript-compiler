@@ -1,0 +1,14 @@
+
+# #   Characters 5-10:
+  1 + "foo";;
+      ^^^^^
+Error: This expression has type
+         string
+       but an expression was expected of type
+         int
+#   #   Characters 5-10:
+  1 + "foo";;
+      ^^^^^
+Error: This expression has type string but an expression was expected of type
+         int
+# 

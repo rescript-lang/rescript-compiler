@@ -1,0 +1,82 @@
+\chapter*{Foreword}
+\markboth{Foreword}{}
+%HEVEA\cutname{foreword.html}
+
+This manual documents the release \ocamlversion\ of the OCaml
+system. It is organized as follows.
+\begin{itemize}
+\item Part~\ref{p:tutorials}, ``An introduction to OCaml'',
+gives an overview of the language.
+\item Part~\ref{p:refman}, ``The OCaml language'', is the
+reference description of the language.
+\item Part~\ref{p:commands}, ``The OCaml tools'', documents
+the compilers, toplevel system, and programming utilities.
+\item Part~\ref{p:library}, ``The OCaml library'', describes the
+modules provided in the standard library.
+\begin{latexonly}
+\item Part~\ref{p:appendix}, ``Appendix'', contains an
+index of all identifiers defined in the standard library, and an
+index of keywords.
+\end{latexonly}
+\end{itemize}
+
+\section*{Conventions}
+
+OCaml runs on several operating systems. The parts of
+this manual that are specific to one operating system are presented as
+shown below:
+
+\begin{unix} This is material specific to the Unix family of operating
+systems, including Linux and \hbox{MacOS~X}.
+\end{unix}
+
+\begin{windows} This is material specific to Microsoft Windows
+  (XP, Vista, 7, 8, 10).
+\end{windows}
+
+\section*{License}
+
+The OCaml system is copyright \copyright\ 1996--\number\year\
+Institut National de Recherche en Informatique et en
+Automatique (INRIA).
+INRIA holds all ownership rights to the OCaml system.
+
+The OCaml system is open source and can be freely
+redistributed.  See the file "LICENSE" in the distribution for
+licensing information.
+
+The present documentation is copyright \copyright\ \number\year\
+Institut National de Recherche en Informatique et en
+Automatique (INRIA).  The OCaml documentation and user's
+manual may be reproduced and distributed in whole or
+in part, subject to the following conditions:
+\begin{itemize}
+\item The copyright notice above and this permission notice must be
+preserved complete on all complete or partial copies.
+\item Any translation or derivative work of the OCaml
+documentation and user's manual must be approved by the authors in
+writing before distribution.
+\item If you distribute the OCaml
+documentation and user's manual in part, instructions for obtaining
+the complete version of this manual must be included, and a
+means for obtaining a complete version provided.
+\item Small portions may be reproduced as illustrations for reviews or
+quotes in other works without this permission notice if proper
+citation is given.
+\end{itemize}
+
+\section*{Availability}
+
+\begin{latexonly}
+The complete OCaml distribution can be accessed via the Web
+sites \url{http://www.ocaml.org/} and \url{http://caml.inria.fr/}.
+The former Web site contains a lot of additional information on OCaml.
+\end{latexonly}
+
+\begin{htmlonly}
+The complete OCaml distribution can be accessed via the
+\href{http://www.ocaml.org/}{community Caml Web site} and the
+\href{http://caml.inria.fr/}{older Caml Web site}.
+The \href{http://www.ocaml.org/}{community Caml Web site}
+contains a lot of additional information on OCaml.
+\end{htmlonly}

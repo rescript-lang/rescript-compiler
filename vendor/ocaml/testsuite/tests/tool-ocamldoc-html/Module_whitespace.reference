@@ -1,0 +1,24 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="Start" href="index.html">
+<link rel="Up" href="index.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Module_whitespace" rel="Chapter" href="Module_whitespace.html"><title>Module_whitespace</title>
+</head>
+<body>
+<div class="navbar">&nbsp;<a class="up" href="index.html" title="Index">Up</a>
+&nbsp;</div>
+<h1>Module <a href="type_Module_whitespace.html">Module_whitespace</a></h1>
+
+<pre><span id="MODULEModule_whitespace"><span class="keyword">module</span> Module_whitespace</span>: <code class="code"><span class="keyword">sig</span></code> <a href="Module_whitespace.html">..</a> <code class="code"><span class="keyword">end</span></code></pre><hr width="100%">
+
+<pre><span id="MODULEM"><span class="keyword">module</span> <a href="Module_whitespace.M.html">M</a></span>: <code class="type">Set.Make</code><code class="code">(</code><code class="code"><span class="keyword">sig</span></code></pre><div class="sig_block">
+<pre><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> = <code class="type">int</code> </pre>
+
+
+<pre><span id="VALcompare"><span class="keyword">val</span> compare</span> : <code class="type">'a -> 'a -> int</code></pre></div>
+<pre><code class="code"><span class="keyword">end</span></code><code class="code">)</code></pre></body></html>

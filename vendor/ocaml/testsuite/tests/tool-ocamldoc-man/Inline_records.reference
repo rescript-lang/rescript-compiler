@@ -1,0 +1,201 @@
+.SH NAME
+Inline_records \- This test focuses on the printing of documentation for inline record within the latex generator.
+.SH Module
+Module   Inline_records
+.SH Documentation
+.sp
+Module
+.BI "Inline_records"
+ : 
+.B sig  end
+
+.sp
+This test focuses on the printing of documentation for inline record
+within the latex generator\&.
+
+.sp
+
+.sp
+.sp
+
+.I exception Simple 
+
+.sp
+A nice exception
+
+.sp
+.I type ext 
+= ..
+
+.sp
+An open sum type
+
+.sp
+.I type r 
+= {
+ lbl : 
+.B int
+;  (* Field documentation for non\-inline, 
+.B lbl : int
+
+ *) 
+ more : 
+.B int list
+;  (* More documentation for r, 
+.B more : int list
+
+ *) 
+ }
+
+.sp
+A simple record type for reference
+
+.sp
+.I type t 
+=
+ | A
+.B of {
+ lbl : 
+.B int
+;  (* 
+.B A
+field documentation
+ *) 
+ more : 
+.B int list
+;  (* More 
+.B A
+field documentation
+ *) 
+ }
+.I "  "
+  (* Constructor documentation
+ *)
+ 
+.sp
+A sum type with one inline record
+
+.sp
+.I type s 
+=
+ | B
+.B of {
+ a_label_for_B : 
+.B int
+;  (* 
+.B B
+field documentation
+ *) 
+ more_label_for_B : 
+.B int list
+;  (* More 
+.B B
+field documentation
+ *) 
+ }
+.I "  "
+  (* Constructor B documentation
+ *)
+ | C
+.B of {
+ c_has_label_too : 
+.B float
+;  (* 
+.B C
+field documentation
+ *) 
+ more_than_one : 
+.B unit
+;  (* \&.\&.\&. documentations
+ *) 
+ }
+.I "  "
+  (* Constructor C documentation
+ *)
+ 
+.sp
+A sum type with two inline records
+
+.sp
+.I type any 
+=
+ | D
+.B of {
+ any : 
+.B 'a
+;  (* 
+.B A
+field 
+.B any:\&'a
+for 
+.B D
+in 
+.B any
+\&.
+ *) 
+ }
+.B -> 
+.B any
+.I "  "
+  (* Constructor D documentation
+ *)
+ 
+.sp
+A gadt constructor
+
+.sp
+
+.I exception Error 
+.B of {
+ name : 
+.B string
+;  (* Error field documentation 
+.B name:string
+
+ *) 
+ }
+
+.sp
+
+.sp
+.I type ext 
++=
+ | E
+.B of {
+ yet_another_field : 
+.B unit
+;  (* Field documentation for 
+.B E
+in ext
+ *) 
+ }
+.I "  "
+(* Constructor E documentation
+ *)
+ | F
+.B of {
+ even_more : 
+.B int -> int
+;  (* Some field documentations for 
+.B F
+
+ *) 
+ }
+.I "  "
+(* Constructor F documentation
+ *)
+ | G
+.B of {
+ last : 
+.B int -> int
+;  (* The last and least field documentation
+ *) 
+ }
+.I "  "
+(* Constructor G documentation
+ *)
+ 
+.sp
+Two new constructors for ext
+
+.sp

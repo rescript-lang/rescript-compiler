@@ -1,0 +1,42 @@
+\section{Compilation units}
+\pdfsection{Compilation units}
+%HEVEA\cutname{compunit.html}
+
+\begin{syntax}
+unit-interface: { specification [';;'] }
+;
+unit-implementation: [ module-items ]
+\end{syntax}
+
+Compilation units bridge the module system and the separate
+compilation system. A compilation unit is composed of two parts: an
+interface and an implementation. The interface contains a sequence of
+specifications, just as the inside of a @'sig' \ldots 'end'@
+signature expression. The implementation contains a sequence of
+definitions and expressions, just as the inside of a
+@'struct' \ldots 'end'@ module
+expression. A compilation unit also has a name @unit-name@, derived
+from the names of the files containing the interface and the
+implementation (see chapter~\ref{c:camlc} for more details). A
+compilation unit behaves roughly as the module definition
+\begin{center}
+@'module' unit-name ':' 'sig' unit-interface 'end' '='
+ 'struct' unit-implementation 'end'@
+\end{center}
+
+A compilation unit can refer to other compilation units by their
+names, as if they were regular modules. For instance, if "U" is a
+compilation unit that defines a type "t", other compilation units can
+refer to that type under the name "U.t"; they can also refer to "U" as
+a whole structure. Except for names of other compilation units, a unit
+interface or unit implementation must not have any other free variables.
+In other terms, the type-checking and compilation of an interface or
+implementation proceeds in the initial environment
+\begin{center}
+@name_1 ':' 'sig' specification_1 'end' \ldots
+ name_n ':' 'sig' specification_n 'end'@
+\end{center}
+where @name_1 \ldots name_n@ are the names of the other
+compilation units available in the search path (see
+chapter~\ref{c:camlc} for more details) and @specification_1 \ldots
+specification_n@ are their respective interfaces.

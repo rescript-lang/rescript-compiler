@@ -1,0 +1,43 @@
+# Makefile using -no-alias-deps only for lib.ml/mli
+
+SOURCES = A.ml B.ml C.ml D.ml
+OBJECTS = lib.cmo $(SOURCES:%.ml=Lib%.cmo)
+NOBJECTS = $(OBJECTS:%.cmo=%.cmx)
+
+byte: main.byt
+opt: main.opt
+
+main.byt: lib.cma main.cmo
+	$(OCAMLC) lib.cma main.cmo -o $@
+
+lib.ml: lib_impl.ml
+	cp $< $@
+
+lib.cma: $(OBJECTS)
+	$(OCAMLC) -a -o $@ $(OBJECTS)
+
+lib.cmi: lib.mli
+	$(OCAMLC) -c -no-alias-deps -w -49 $<
+
+lib.cmo: lib.ml
+	$(OCAMLC) -c -no-alias-deps -w -49 $<
+
+Lib%.cmo: %.ml
+	$(OCAMLC) -c -open Lib -o $@ $<
+
+main.opt: lib.cmxa main.cmx
+	$(OCAMLOPT) lib.cmxa main.cmx -o $@
+
+lib.cmxa: $(NOBJECTS)
+	$(OCAMLOPT) -a -o $@ $(NOBJECTS)
+
+lib.cmx: lib.ml
+	$(OCAMLOPT) -c -no-alias-deps -w -49 $<
+
+Lib%.cmx: %.ml
+	$(OCAMLOPT) -c -open Lib -o $@ $<
+
+include depend.mk
+
+BASEDIR=../..
+include $(BASEDIR)/makefiles/Makefile.common

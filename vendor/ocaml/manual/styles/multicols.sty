@@ -1,0 +1,176 @@
+% Save file as: MULTICOLS.STY          Source: FILESERV@SHSU.BITNET  
+% multicols.sty version 1.0
+% Allows for multiple column typesetting
+% From TUGboat, voulme 10 (1989), No. 3
+%
+% Frank Mittelback
+% Electronic Data Systems
+% (Deutschland) GmbH
+% Eisenstrasse 56
+% D-6090 Russelsheim
+% Federal Republic of Germany
+% Bitnet: pzf5hz@drueds2
+%
+% Variables:
+%   \premulticols - If the space left on the page is less than this, a new
+%         page is started before the multiple columns.  Otherwise, a \vskip
+%         of \multicolsep is added.
+%   \postmulticols - analogous to \premulticols
+%   \columnseprule - the width of the rule separating the columns.
+%
+% Commands:
+%   \raggedcolumns - don't align bottom lines of columns
+%   \flushcolumns  - align bottom lines (default)
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\@ifundefined{mult@cols}{}{\endinput}
+
+\def\multicols#1{\col@number#1\relax
+  \ifnum\col@number<\@ne
+     \@warning{Using '\number\col@number' columns doesn't seem a good idea.^^J
+             I therefore use two columns instead}%
+     \col@number\tw@ \fi
+  \@ifnextchar[\mult@cols{\mult@cols[]}}
+
+\def\mult@cols[#1]{\@ifnextchar[%
+  {\mult@@cols{#1}}%
+  {\mult@@cols{#1}[\premulticols]}}
+
+\def\mult@@cols#1[#2]{%
+  \enough@room#2%
+  #1\par\addvspace\multicolsep
+  \begingroup
+  \prepare@multicols\ignorespaces}
+
+\def\enough@room#1{\par \penalty\z@
+   \page@free \pagegoal
+   \advance \page@free -\pagetotal
+   \ifdim \page@free <#1\newpage \fi}
+
+\def\prepare@multicols{%
+  \output{\global\setbox\partial@page
+  		 \vbox{\unvbox\@cclv}}\eject
+  \vbadness9999 \hbadness5000
+  \tolerance\multicoltolerance
+  \doublecol@number\col@number
+  \multiply\doublecol@number\tw@
+  \advance\baselineskip\multicolbaselineskip
+  \advance\@colroom-\ht\partial@page
+  \vsize\col@number\@colroom
+  \advance\vsize\c@collectmore\baselineskip
+  \hsize\columnwidth \advance\hsize\columnsep
+  \advance\hsize-\col@number\columnsep
+  \divide\hsize\col@number
+  \linewidth\hsize
+  \output{\multi@columnout}%
+  \multiply\count\footins\col@number
+  \multiply\skip \footins\col@number
+  \reinsert@footnotes}
+
+\def\endmulticols{\par\penalty\z@
+  \output{\balance@columns}\eject
+  \endgroup \reinsert@footnotes
+  \global\c@unbalance\z@
+  \enough@room\postmulticols
+  \addvspace\multicolsep}
+
+\newcount\c@unbalance      \c@unbalance   = 0
+\newcount\c@collectmore    \c@collectmore = 0
+\newcount\col@number
+\newcount\doublecol@number
+\newcount\multicoltolerance \multicoltolerance = 9999
+\newdimen\page@free
+\newdimen\premulticols \premulticols = 50pt
+\newdimen\postmulticols \postmulticols = 20pt
+\newskip\multicolsep \multicolsep = 12pt plus 4pt minus 3pt
+\newskip\multicolbaselineskip \multicolbaselineskip=0pt
+\newbox\partial@page
+
+\def\process@cols#1#2{\count@#1\relax
+    \loop #2%
+    \advance\count@\tw@
+    \ifnum\count@<\doublecol@number
+  \repeat}
+
+\def\page@sofar{\unvbox\partial@page
+  \process@cols\z@{\wd\count@\hsize}%
+  \hbox to\textwidth{%
+    \process@cols\tw@{\box\count@
+      \hss\vrule\@width\columnseprule\hss}%
+    \box\z@}}
+
+\def\reinsert@footnotes{\ifvoid\footins\else
+	\insert\footins{\unvbox\footins}\fi}
+
+\def\multi@columnout{%
+  \ifnum\outputpenalty <-\@Mi
+     \speci@ls \else
+     \splittopskip\topskip
+     \splitmaxdepth\maxdepth
+     \dimen@\@colroom
+     \divide\skip\footins\col@number
+     \ifvoid\footins \else
+       \advance\dimen@-\skip\footins
+       \advance\dimen@-\ht\footins \fi
+     \process@cols\tw@{\setbox\count@
+        \vsplit\@cclv to\dimen@}%
+     \setbox\z@\vsplit\@cclv to\dimen@
+     \ifvoid\@cclv \else
+       \unvbox\@cclv
+       \penalty\outputpenalty
+       \fi
+     \setbox\@cclv\vbox{\page@sofar}%
+     \@makecol\@outputpage
+     \global\@colroom\@colht
+     \process@deferreds
+     \global\vsize\col@number\@colroom
+     \global\advance\vsize
+       \c@collectmore\baselineskip
+     \multiply\skip\footins\col@number\fi}
+
+\def\speci@ls{%
+  \typeout{floats and marginpars not allowed inside `multicols' environment}%
+  \unvbox\@cclv\reinsert@footnotes
+  \gdef\@currlist{}}
+
+\def\process@deferreds{%
+  \@floatplacement
+  \begingroup
+   \let\@tempb\@deferlist
+   \gdef\@deferlist{}%
+   \let\@elt\@scolelt
+   \@tempb \endgroup}
+
+\newif\ifshr@nking
+
+\def\raggedcolumns{%
+  \@bsphack\shr@nkingtrue\@esphack}
+\def\flushcolumns{%
+  \@bsphack\shr@nkingfale\@esphack}
+
+\def\balance@columns{%
+  \splittopskip\topskip
+  \splitmaxdepth\maxdepth
+  \setbox\z@\vbox{\unvbox\@cclv}\dimen@\ht\z@
+  \advance\dimen@\col@number\topskip
+  \advance\dimen@-\col@number\baselineskip
+  \divide\dimen@\col@number
+  \advance\dimen@\c@unbalance\baselineskip
+  {\vbadness\@M \loop
+    {\process@cols\@ne{\global\setbox\count@\box\voidb@x}}%
+     \global\setbox\@ne\copy\z@
+     {\process@cols\thr@@{\global\setbox\count@\vsplit\@ne to\dimen@}}%
+     \ifshr@nking \global\setbox\thr@@\vbox{\unvbox\thr@@}%
+       \fi
+     \ifdim\ht\@ne >\ht\thr@@
+     \global\advance\dimen@\p@
+     \repeat}%
+    \dimen@\ht\thr@@
+    \process@cols\z@{\@tempcnta\count@
+      \advance\@tempcnta\@ne
+      \setbox\count@\vtop to\dimen@
+        {\unvbox\@tempcnta
+	 \ifshr@nking\vfill\fi}}%
+     \global\vsize\@colroom
+     \global\advance\vsize\ht\partial@page
+     \page@sofar}

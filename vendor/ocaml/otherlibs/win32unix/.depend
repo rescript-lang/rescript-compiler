@@ -1,0 +1,18 @@
+windbug.$(O): windbug.c windbug.h
+cst2constr.$(O): cst2constr.c ../../byterun/caml/mlvalues.h \
+  ../../byterun/caml/config.h ../../byterun/caml/m.h \
+  ../../byterun/caml/s.h ../../byterun/caml/misc.h \
+  ../../byterun/caml/fail.h ../unix/cst2constr.h
+mmap_ba.$(O): mmap_ba.c ../../byterun/caml/alloc.h ../../byterun/caml/misc.h \
+  ../../byterun/caml/config.h ../../byterun/caml/m.h \
+  ../../byterun/caml/s.h ../../byterun/caml/mlvalues.h \
+  ../../byterun/caml/bigarray.h ../../byterun/caml/custom.h \
+  ../../byterun/caml/memory.h ../../byterun/caml/gc.h \
+  ../../byterun/caml/major_gc.h ../../byterun/caml/freelist.h \
+  ../../byterun/caml/minor_gc.h ../../byterun/caml/address_class.h
+unix.cmo : unix.cmi
+unix.cmx : unix.cmi
+unix.cmi :
+unixLabels.cmo : unix.cmi unixLabels.cmi
+unixLabels.cmx : unix.cmx unixLabels.cmi
+unixLabels.cmi : unix.cmi

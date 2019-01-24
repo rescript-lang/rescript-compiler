@@ -1,0 +1,94 @@
+\chapter{The unix library: Unix system calls}
+\pdfchapterfold{-1}{The unix library: Unix system calls}
+%HEVEA\cutname{libunix.html}
+
+The "unix" library makes many Unix
+system calls and system-related library functions available to
+OCaml programs. This chapter describes briefly the functions
+provided.  Refer to sections 2~and~3 of the Unix manual for more
+details on the behavior of these functions.
+
+Not all functions are provided by all Unix variants. If some functions
+are not available, they will raise "Invalid_arg" when called.
+
+Programs that use the "unix" library must be linked as follows:
+\begin{alltt}
+        ocamlc \var{other options} unix.cma \var{other files}
+        ocamlopt \var{other options} unix.cmxa \var{other files}
+\end{alltt}
+For interactive use of the "unix" library, do:
+\begin{alltt}
+        ocamlmktop -o mytop unix.cma
+        ./mytop
+\end{alltt}
+or (if dynamic linking of C libraries is supported on your platform),
+start "ocaml" and type "#load \"unix.cma\";;".
+
+\begin{windows}
+A fairly complete emulation of the Unix system calls is provided in
+the Windows version of OCaml. The end of this chapter gives
+more information on the functions that are not supported under Windows.
+\end{windows}
+
+\ifouthtml
+\begin{links}
+\item \ahref{libref/Unix.html}{Module \texttt{Unix}: Unix system calls}
+\item \ahref{libref/UnixLabels.html}{Module \texttt{UnixLabels}: Labeled
+   Unix system calls}
+\end{links}
+\else
+\input{Unix.tex}
+
+\section{Module \texttt{UnixLabels}: labelized version of the interface}
+\label{UnixLabels}
+\index{UnixLabels (module)@\verb~UnixLabels~ (module)}%
+\pdfsection{Module UnixLabels: labelized version of the interface}
+
+This module is identical to "Unix"~(\ref{Unix}), and only differs by
+the addition of labels. You may see these labels directly by looking
+at "unixLabels.mli", or by using the "ocamlbrowser" tool.
+\fi
+
+\newpage
+\begin{windows}
+The Cygwin port of OCaml fully implements all functions from
+the Unix module.  The native Win32 ports implement a subset of them.
+Below is a list of the functions that are not implemented, or only
+partially implemented, by the Win32 ports. Functions not mentioned are
+fully implemented and behave as described previously in this chapter.
+
+\begin{tableau}{|l|p{8cm}|}{Functions}{Comment}
+\entree{"fork"}{not implemented, use "create_process" or threads}
+\entree{"wait"}{not implemented, use "waitpid"}
+\entree{"waitpid"}{can only wait for a given PID, not any child process}
+\entree{"getppid"}{not implemented (meaningless under Windows)}
+\entree{"nice"}{not implemented}
+\entree{"truncate", "ftruncate"}{not implemented}
+\entree{"link"}{implemented (since 3.02)}
+\entree{"symlink", "readlink"}{implemented (since 4.03.0)}
+\entree{"access"}{execute permission "X_OK" cannot be tested,
+  it just tests for read permission instead}
+\entree{"fchmod"}{not implemented}
+\entree{"chown", "fchown"}{not implemented (make no sense on a DOS
+file system)}
+\entree{"umask"}{not implemented}
+\entree{"mkfifo"}{not implemented}
+\entree{"kill"}{partially implemented (since 4.00.0): only the "sigkill" signal
+is implemented}
+\entree{"pause"}{not implemented (no inter-process signals in Windows)}
+\entree{"alarm"}{not implemented}
+\entree{"times"}{partially implemented, will not report timings for child
+processes}
+\entree{"getitimer", "setitimer"}{not implemented}
+\entree{"getuid", "geteuid", "getgid", "getegid"}{always return 1}
+\entree{"getgroups"}{always returns "[|1|]" (since 2.00)}
+\entree{"setuid", "setgid", "setgroups"}{not implemented}
+\entree{"getpwnam", "getpwuid"}{always raise "Not_found"}
+\entree{"getgrnam", "getgrgid"}{always raise "Not_found"}
+\entree{type "socket_domain"}{"PF_INET" is fully supported;
+"PF_INET6" is fully supported (since 4.01.0); "PF_UNIX" is not supported }
+\entree{"establish_server"}{not implemented; use threads}
+\entree{terminal functions ("tc*")}{not implemented}
+\end{tableau}
+
+\end{windows}

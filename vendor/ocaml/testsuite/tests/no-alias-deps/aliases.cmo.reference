@@ -1,0 +1,15 @@
+File aliases.cmo
+Unit name: Aliases
+Interfaces imported:
+	aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa	Pervasives
+	aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa	D
+	aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa	CamlinternalFormatBasics
+	--------------------------------	C
+	--------------------------------	B
+	aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa	Aliases
+	--------------------------------	A
+Required globals:
+	D
+	Pervasives
+Uses unsafe features: no
+Force link: no

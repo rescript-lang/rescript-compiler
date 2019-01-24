@@ -1,0 +1,6 @@
+File "w55.opt_backend.ml", line 12, characters 10-26:
+Warning 55: Cannot inline: [@inlined] attributes may not be used on partial applications
+File "w55.opt_backend.ml", line 8, characters 10-27:
+Warning 55: Cannot inline: [@inlined] attribute was not used on this function application (the optimizer did not know what function was being applied)
+File "w55.opt_backend.ml", line 18, characters 12-30:
+Warning 55: Cannot inline: [@inlined] attribute was not used on this function application (the optimizer did not know what function was being applied)

@@ -1,0 +1,86 @@
+run_unix.$(O): run_unix.c run.h ../byterun/caml/misc.h \
+  ../byterun/caml/config.h ../byterun/caml/m.h ../byterun/caml/s.h \
+  run_common.h
+run_stubs.$(O): run_stubs.c run.h ../byterun/caml/misc.h \
+  ../byterun/caml/config.h ../byterun/caml/m.h ../byterun/caml/s.h \
+  ../byterun/caml/mlvalues.h ../byterun/caml/memory.h \
+  ../byterun/caml/gc.h ../byterun/caml/major_gc.h \
+  ../byterun/caml/freelist.h ../byterun/caml/minor_gc.h \
+  ../byterun/caml/address_class.h ../byterun/caml/io.h \
+  ../byterun/caml/osdeps.h
+actions.cmo : environments.cmi actions.cmi
+actions.cmx : environments.cmx actions.cmi
+actions.cmi : environments.cmi
+backends.cmo : backends.cmi
+backends.cmx : backends.cmi
+backends.cmi :
+builtin_actions.cmo : variables.cmi testlib.cmi run_command.cmi \
+    ocamltest_config.cmi filetype.cmi filecompare.cmi environments.cmi \
+    builtin_variables.cmi builtin_modifiers.cmi backends.cmi actions.cmi \
+    builtin_actions.cmi
+builtin_actions.cmx : variables.cmx testlib.cmx run_command.cmx \
+    ocamltest_config.cmx filetype.cmx filecompare.cmx environments.cmx \
+    builtin_variables.cmx builtin_modifiers.cmx backends.cmx actions.cmx \
+    builtin_actions.cmi
+builtin_actions.cmi : actions.cmi
+builtin_modifiers.cmo : ocamltest_config.cmi environments.cmi \
+    builtin_variables.cmi builtin_modifiers.cmi
+builtin_modifiers.cmx : ocamltest_config.cmx environments.cmx \
+    builtin_variables.cmx builtin_modifiers.cmi
+builtin_modifiers.cmi : environments.cmi
+builtin_tests.cmo : tests.cmi ocamltest_config.cmi builtin_actions.cmi \
+    builtin_tests.cmi
+builtin_tests.cmx : tests.cmx ocamltest_config.cmx builtin_actions.cmx \
+    builtin_tests.cmi
+builtin_tests.cmi : tests.cmi
+builtin_variables.cmo : variables.cmi builtin_variables.cmi
+builtin_variables.cmx : variables.cmx builtin_variables.cmi
+builtin_variables.cmi : variables.cmi
+environments.cmo : variables.cmi environments.cmi
+environments.cmx : variables.cmx environments.cmi
+environments.cmi : variables.cmi
+filecompare.cmo : testlib.cmi run_command.cmi filecompare.cmi
+filecompare.cmx : testlib.cmx run_command.cmx filecompare.cmi
+filecompare.cmi :
+filetype.cmo : filetype.cmi
+filetype.cmx : filetype.cmi
+filetype.cmi :
+main.cmo : tsl_semantics.cmi tsl_parser.cmi tsl_lexer.cmi tests.cmi \
+    testlib.cmi options.cmi ocamltest_config.cmi environments.cmi \
+    builtin_variables.cmi actions.cmi main.cmi
+main.cmx : tsl_semantics.cmx tsl_parser.cmx tsl_lexer.cmx tests.cmx \
+    testlib.cmx options.cmx ocamltest_config.cmx environments.cmx \
+    builtin_variables.cmx actions.cmx main.cmi
+main.cmi :
+ocamltest_config.cmo : ocamltest_config.cmi
+ocamltest_config.cmx : ocamltest_config.cmi
+ocamltest_config.cmi :
+options.cmo : tests.cmi actions.cmi options.cmi
+options.cmx : tests.cmx actions.cmx options.cmi
+options.cmi :
+run_command.cmo : testlib.cmi run_command.cmi
+run_command.cmx : testlib.cmx run_command.cmi
+run_command.cmi :
+testlib.cmo : testlib.cmi
+testlib.cmx : testlib.cmi
+testlib.cmi :
+tests.cmo : actions.cmi tests.cmi
+tests.cmx : actions.cmx tests.cmi
+tests.cmi : environments.cmi actions.cmi
+tsl_ast.cmo : tsl_ast.cmi
+tsl_ast.cmx : tsl_ast.cmi
+tsl_ast.cmi :
+tsl_lexer.cmo : tsl_parser.cmi tsl_lexer.cmi
+tsl_lexer.cmx : tsl_parser.cmx tsl_lexer.cmi
+tsl_lexer.cmi : tsl_parser.cmi
+tsl_parser.cmo : tsl_ast.cmi tsl_parser.cmi
+tsl_parser.cmx : tsl_ast.cmx tsl_parser.cmi
+tsl_parser.cmi : tsl_ast.cmi
+tsl_semantics.cmo : variables.cmi tsl_ast.cmi tests.cmi testlib.cmi \
+    environments.cmi actions.cmi tsl_semantics.cmi
+tsl_semantics.cmx : variables.cmx tsl_ast.cmx tests.cmx testlib.cmx \
+    environments.cmx actions.cmx tsl_semantics.cmi
+tsl_semantics.cmi : tsl_ast.cmi tests.cmi environments.cmi actions.cmi
+variables.cmo : variables.cmi
+variables.cmx : variables.cmi
+variables.cmi :

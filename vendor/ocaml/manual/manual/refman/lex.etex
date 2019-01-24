@@ -1,0 +1,300 @@
+\section{Lexical conventions}
+\pdfsection{Lexical conventions}
+%HEVEA\cutname{lex.html}
+\subsubsection*{Blanks}
+
+The following characters are considered as blanks: space,
+horizontal tabulation, carriage return, line feed and form feed. Blanks are
+ignored, but they separate adjacent identifiers, literals and
+keywords that would otherwise be confused as one single identifier,
+literal or keyword.
+
+\subsubsection*{Comments}
+
+Comments are introduced by the two characters  @"(*"@, with no
+intervening blanks, and terminated by the characters @"*)"@, with
+no intervening blanks. Comments are treated as blank characters.
+Comments do not occur inside string or character literals. Nested
+comments are handled correctly.
+
+\subsubsection*{Identifiers}
+
+\begin{syntax}
+ident: ( letter || "_" ) { letter || "0" \ldots "9" || "_" || "'" } ;
+capitalized-ident: ("A" \ldots "Z") { letter || "0" \ldots "9" || "_" || "'" } ;
+lowercase-ident:
+   ("a" \ldots "z" || "_") { letter || "0" \ldots "9" || "_" || "'" } ;
+letter: "A" \ldots "Z" || "a" \ldots "z"
+\end{syntax}
+
+Identifiers are sequences of letters, digits, "_" (the underscore
+character), and "'" (the single quote), starting with a
+letter or an underscore.
+Letters contain at least the 52 lowercase and uppercase
+letters from the ASCII set. The current implementation
+also recognizes as letters some characters from the ISO
+8859-1 set (characters 192--214 and 216--222 as uppercase letters;
+characters 223--246 and 248--255 as lowercase letters). This
+feature is deprecated and should be avoided for future compatibility.
+
+All characters in an identifier are
+meaningful. The current implementation accepts identifiers up to
+16000000 characters in length.
+
+In many places, OCaml makes a distinction between capitalized
+identifiers and identifiers that begin with a lowercase letter.  The
+underscore character is considered a lowercase letter for this
+purpose.
+
+\subsubsection*{Integer literals}
+
+\begin{syntax}
+integer-literal:
+          ["-"] ("0"\ldots"9") { "0"\ldots"9" || "_" }
+        | ["-"] ("0x"||"0X") ("0"\ldots"9"||"A"\ldots"F"||"a"\ldots"f")
+                            { "0"\ldots"9"||"A"\ldots"F"||"a"\ldots"f"||"_" }
+        | ["-"] ("0o"||"0O") ("0"\ldots"7") { "0"\ldots"7"||"_" }
+        | ["-"] ("0b"||"0B") ("0"\ldots"1") { "0"\ldots"1"||"_" }
+\end{syntax}
+
+An integer literal is a sequence of one or more digits, optionally
+preceded by a minus sign. By default, integer literals are in decimal
+(radix 10). The following prefixes select a different radix:
+\begin{tableau}{|l|l|}{Prefix}{Radix}
+\entree{"0x", "0X"}{hexadecimal (radix 16)}
+\entree{"0o", "0O"}{octal (radix 8)}
+\entree{"0b", "0B"}{binary (radix 2)}
+\end{tableau}
+(The initial @"0"@ is the digit zero; the @"O"@ for octal is the letter O.)
+The interpretation of integer literals that fall outside the range of
+representable integer values is undefined.
+
+For convenience and readability, underscore characters (@"_"@) are accepted
+(and ignored) within integer literals.
+
+\subsubsection*{Floating-point literals}
+
+\begin{syntax}
+float-literal:
+          ["-"] ("0"\ldots"9") { "0"\ldots"9"||"_" } ["." { "0"\ldots"9"||"_" }]
+          [("e"||"E") ["+"||"-"] ("0"\ldots"9") { "0"\ldots"9"||"_" }]
+        | ["-"] ("0x"||"0X")
+          ("0"\ldots"9"||"A"\ldots"F"||"a"\ldots"f")
+          { "0"\ldots"9"||"A"\ldots"F"||"a"\ldots"f"||"_" } \\
+          ["." { "0"\ldots"9"||"A"\ldots"F"||"a"\ldots"f"||"_" }]
+          [("p"||"P") ["+"||"-"] ("0"\ldots"9") { "0"\ldots"9"||"_" }]
+\end{syntax}
+
+Floating-point decimal literals consist in an integer part, a
+fractional part and
+an exponent part. The integer part is a sequence of one or more
+digits, optionally preceded by a minus sign. The fractional part is a
+decimal point followed by zero, one or more digits.
+The exponent part is the character @"e"@ or @"E"@ followed by an
+optional @"+"@ or @"-"@ sign, followed by one or more digits.  It is
+interpreted as a power of 10.
+The fractional part or the exponent part can be omitted but not both, to
+avoid ambiguity with integer literals.
+The interpretation of floating-point literals that fall outside the
+range of representable floating-point values is undefined.
+
+Floating-point hexadecimal literals are denoted with the @"0x"@ or @"0X"@
+prefix.  The syntax is similar to that of floating-point decimal
+literals, with the following differences.
+The integer part and the fractional part use hexadecimal
+digits.  The exponent part starts with the character  @"p"@ or @"P"@.
+It is written in decimal and interpreted as a power of 2.
+
+For convenience and readability, underscore characters (@"_"@) are accepted
+(and ignored) within floating-point literals.
+
+\subsubsection*{Character literals}
+\label{s:characterliteral}
+
+\begin{syntax}
+char-literal:
+          "'" regular-char "'"
+        | "'" escape-sequence "'"
+;
+escape-sequence:
+          "\" ( "\" || '"' || "'" || "n" || "t" || "b" || "r" || space )
+        | "\" ("0"\ldots"9") ("0"\ldots"9") ("0"\ldots"9")
+        | "\x" ("0"\ldots"9"||"A"\ldots"F"||"a"\ldots"f")
+               ("0"\ldots"9"||"A"\ldots"F"||"a"\ldots"f")
+        | "\o" ("0"\ldots"3") ("0"\ldots"7") ("0"\ldots"7")
+\end{syntax}
+
+Character literals are delimited by @"'"@ (single quote) characters.
+The two single quotes enclose either one character different from
+@"'"@ and @'\'@, or one of the escape sequences below:
+\begin{tableau}{|l|l|}{Sequence}{Character denoted}
+\entree{"\\\\"}{backslash ("\\")}
+\entree{"\\\""}{double quote ("\"")}
+\entree{"\\'"}{single quote ("'")}
+\entree{"\\n"}{linefeed (LF)}
+\entree{"\\r"}{carriage return (CR)}
+\entree{"\\t"}{horizontal tabulation (TAB)}
+\entree{"\\b"}{backspace (BS)}
+\entree{"\\"\var{space}}{space (SPC)}
+\entree{"\\"\var{ddd}}{the character with ASCII code \var{ddd} in decimal}
+\entree{"\\x"\var{hh}}{the character with ASCII code \var{hh} in hexadecimal}
+\entree{"\\o"\var{ooo}}{the character with ASCII code \var{ooo} in octal}
+\end{tableau}
+
+\subsubsection*{String literals}
+\label{s:stringliteral}
+
+\begin{syntax}
+string-literal:
+          '"' { string-character } '"'
+;
+string-character:
+          regular-string-char
+        | escape-sequence
+        | "\u{" {{ "0"\ldots"9"||"A"\ldots"F"||"a"\ldots"f" }} "}"
+        | '\' newline { space || tab }
+\end{syntax}
+
+String literals are delimited by @'"'@ (double quote) characters.
+The two double quotes enclose a sequence of either characters
+different from @'"'@ and @'\'@, or escape sequences from the
+table given above for character literals, or a Unicode character
+escape sequence.
+
+A Unicode character escape sequence is substituted by the UTF-8
+encoding of the specified Unicode scalar value. The Unicode scalar
+value, an integer in the ranges 0x0000...0xD7FF or 0xE000...0x10FFFF,
+is defined using 1 to 6 hexadecimal digits; leading zeros are allowed.
+
+To allow splitting long string literals across lines, the sequence
+"\\"\var{newline}~\var{spaces-or-tabs} (a backslash at the end of a line
+followed by any number of spaces and horizontal tabulations at the
+beginning of the next line) is ignored inside string literals.
+
+The current implementation places practically no restrictions on the
+length of string literals.
+
+\subsubsection*{Naming labels}
+\label{s:labelname}
+
+To avoid ambiguities, naming labels in expressions cannot just be defined
+syntactically as the sequence of the three tokens "~", @ident@ and
+":", and have to be defined at the lexical level.
+
+\begin{syntax}
+label-name: lowercase-ident
+;
+label: "~" label-name ":"
+;
+optlabel: "?" label-name ":"
+\end{syntax}
+
+Naming labels come in two flavours: @label@ for normal arguments and
+@optlabel@ for optional ones. They are simply distinguished by their
+first character, either "~" or "?".
+
+Despite @label@ and @optlabel@ being lexical entities in expressions,
+their expansions @'~' label-name ':'@ and @'?' label-name ':'@ will be
+used in grammars, for the sake of readability. Note also that inside
+type expressions, this expansion can be taken literally, {\em i.e.}
+there are really 3 tokens, with optional blanks between them.
+
+\subsubsection*{Prefix and infix symbols}
+
+%%  || '`' lowercase-ident '`'
+
+\begin{syntax}
+infix-symbol:
+        ('=' || '<' || '>' || '@' || '^' || '|' || '&' ||
+         '+' || '-' || '*' || '/' || '$' || '%') { operator-char }
+      | "#" {{ operator-char }}
+;
+prefix-symbol:
+        '!' { operator-char }
+      | ('?' || '~') {{ operator-char }}
+;
+operator-char:
+        '!' || '$' || '%' || '&' || '*' || '+' || '-' || '.' ||
+        '/' || ':' || '<' || '=' || '>' || '?' || '@' ||
+        '^' || '|' || '~'
+\end{syntax}
+See also the following language extensions:
+\hyperref[s:ext-ops]{extension operators} and
+\hyperref[s:index-operators]{extended indexing operators}.
+
+Sequences of ``operator characters'', such as "<=>" or "!!",
+are read as a single token from the @infix-symbol@ or @prefix-symbol@
+class. These symbols are parsed as prefix and infix operators inside
+expressions, but otherwise behave like normal identifiers.
+%% Identifiers starting with a lowercase letter and enclosed
+%% between backquote characters @'`' lowercase-ident '`'@ are also parsed
+%% as infix operators.
+
+\subsubsection*{Keywords}
+
+The identifiers below are reserved as keywords, and cannot be employed
+otherwise:
+\begin{verbatim}
+      and         as          assert      asr         begin       class
+      constraint  do          done        downto      else        end
+      exception   external    false       for         fun         function
+      functor     if          in          include     inherit     initializer
+      land        lazy        let         lor         lsl         lsr
+      lxor        match       method      mod         module      mutable
+      new         nonrec      object      of          open        or
+      private     rec         sig         struct      then        to
+      true        try         type        val         virtual     when
+      while       with
+\end{verbatim}
+%
+\goodbreak%
+%
+The following character sequences are also keywords:
+%
+%% FIXME the token >] is not used anywhere in the syntax
+%
+\begin{alltt}
+"    !=    #     &     &&    '     (     )     *     +     ,     -"
+"    -.    ->    .     ..    :     ::    :=    :>    ;     ;;    <"
+"    <-    =     >     >]    >}    ?     [     [<    [>    [|    ]"
+"    _     `     {     {<    |     |]    ||    }     ~"
+\end{alltt}
+%
+Note that the following identifiers are keywords of the Camlp4
+extensions and should be avoided for compatibility reasons.
+%
+\begin{verbatim}
+    parser    value    $     $$    $:    <:    <<    >>    ??
+\end{verbatim}
+
+\subsubsection*{Ambiguities}
+
+Lexical ambiguities are resolved according to the ``longest match''
+rule: when a character sequence can be decomposed into two tokens in
+several different ways, the decomposition retained is the one with the
+longest first token.
+
+\subsubsection*{Line number directives}
+
+\begin{syntax}
+linenum-directive:
+        '#' {{"0" \ldots "9"}}
+      | '#' {{"0" \ldots "9"}} '"' { string-character } '"'
+\end{syntax}
+
+Preprocessors that generate OCaml source code can insert line number
+directives in their output so that error messages produced by the
+compiler contain line numbers and file names referring to the source
+file before preprocessing, instead of after preprocessing.
+A line number directive is composed of a @"#"@ (sharp sign), followed by
+a positive integer (the source line number), optionally followed by a
+character string (the source file name).
+Line number directives are treated as blanks during lexical
+analysis.
+
+% FIXME spaces and tabs are allowed before and after the number
+% FIXME ``string-character'' is inaccurate: everything is allowed except
+%       CR, LF, and doublequote; moreover, backslash escapes are not
+% interpreted (especially backslash-doublequote)
+% FIXME any number of random characters are allowed (and ignored) at the
+%       end of the line, except CR and LF.

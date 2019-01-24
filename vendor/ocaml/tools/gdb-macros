@@ -1,0 +1,321 @@
+#**************************************************************************
+#*                                                                        *
+#*                                 OCaml                                  *
+#*                                                                        *
+#*                 Damien Doligez, Jane Street Group, LLC                 *
+#*                                                                        *
+#*   Copyright 2015 Institut National de Recherche en Informatique et     *
+#*     en Automatique.                                                    *
+#*                                                                        *
+#*   All rights reserved.  This file is distributed under the terms of    *
+#*   the GNU Lesser General Public License version 2.1, with the          *
+#*   special exception on linking described in the file LICENSE.          *
+#*                                                                        *
+#**************************************************************************
+
+# A set of macros for low-level debugging of OCaml programs and of the
+# OCaml runtime itself (both native and byte-code).
+
+# This file should be loaded in gdb with [ source gdb-macros ].
+# It defines one command: [caml]
+# Usage:
+# [caml <value>]
+# If <value> is an OCaml value, this will display it in a low-level
+# but legible format, including the header information.
+
+# To do: a [camlsearch] command to find all (gc-traceable) pointers to
+# a given heap block.
+
+set $camlwordsize = sizeof(char *)
+
+if $camlwordsize == 8
+  set $caml_unalloc_mask = 0xFF00FFFFFF00FFFF
+  set $caml_unalloc_value = 0xD700D7D7D700D6D7
+else
+  set $caml_unalloc_mask = 0xFF00FFFF
+  set $caml_unalloc_value = 0xD700D6D7
+end
+
+define camlcheckheader
+  if $arg0 >> 10 <= 0 || $arg0 >> 10 >= 0x1000000000000
+    if ($arg0 & $caml_unalloc_mask) == $caml_unalloc_value
+      set $camlcheckheader_result = 2
+    else
+      if $arg0 == (unsigned long) 0
+        set $camlcheckheader_result = 3
+      else
+        set $camlcheckheader_result = 1
+      end
+    end
+  else
+    set $camlcheckheader_result = 0
+  end
+end
+
+define camlheader
+  set $hd = * (unsigned long *) ($arg0 - $camlwordsize)
+  set $tag = $hd & 0xFF
+  set $color = ($hd >> 8) & 3
+  set $size = $hd >> 10
+
+  camlcheckheader $hd
+  if $camlcheckheader_result != 0
+    if $camlcheckheader_result == 2
+      printf "[UNALLOCATED MEMORY]"
+    else
+      if $camlcheckheader_result == 3
+        printf "[** fragment **] 0x%016lu", $hd
+      else
+        printf "[**invalid header**] 0x%016lu", $hd
+      end
+    end
+    set $size = 0
+  else
+    printf "["
+    if $color == 0
+      printf "white "
+    end
+    if $color == 1
+      printf "gray "
+    end
+    if $color == 2
+      printf "blue "
+    end
+    if $color == 3
+      printf "black "
+    end
+
+    if $tag < 246
+      printf "tag%d ", $tag
+    end
+    if $tag == 246
+      printf "Lazy "
+    end
+    if $tag == 247
+      printf "Closure "
+    end
+    if $tag == 248
+      printf "Object "
+    end
+    if $tag == 249
+      printf "Infix "
+    end
+    if $tag == 250
+      printf "Forward "
+    end
+    if $tag == 251
+      printf "Abstract "
+    end
+    if $tag == 252
+      printf "String "
+    end
+    if $tag == 253
+      printf "Double "
+    end
+    if $tag == 254
+      printf "Double_array "
+    end
+    if $tag == 255
+      printf "Custom "
+    end
+
+    printf "%lu]", $size
+  end
+end
+
+define camlheap
+  if $arg0 >= caml_young_start && $arg0 < caml_young_end
+    printf "YOUNG"
+    set $camlheap_result = 1
+  else
+    set $chunk = caml_heap_start
+    set $found = 0
+    while $chunk != 0 && ! $found
+      set $chunk_size = * (unsigned long *) ($chunk - 2 * $camlwordsize)
+      if $arg0 > $chunk && $arg0 <= $chunk + $chunk_size
+        printf "OLD"
+        set $found = 1
+      end
+      set $chunk = * (unsigned long *) ($chunk - $camlwordsize)
+    end
+    if $found
+      set $camlheap_result = 1
+    else
+      printf "OUT-OF-HEAP"
+      set $camlheap_result = 0
+    end
+  end
+end
+
+define camlint
+  if ($arg0 & $caml_unalloc_mask) == $caml_unalloc_value
+    printf "UNALLOCATED MEMORY"
+  else
+    printf "INT %ld", ($arg0 >> 1)
+  end
+  if ($arg0 & 0xFF) == 0xF9 && ($arg0 >> 10) < 0x1000000000000
+    printf " [possible infix header]"
+  end
+end
+
+define camlblock
+  printf "%#lx: ", $arg0 - $camlwordsize
+  camlheap $arg0
+  printf " "
+  camlheader $arg0
+  set $mysize = $size
+  set $camlnext = $arg0 + $camlwordsize * ($size + 1)
+  printf "\n"
+
+  if $tag == 252
+    x/s $arg0
+  end
+  if $tag == 253
+    x/f $arg0
+  end
+  if $tag == 254
+    while $count < $mysize && $count < 10
+      if $count + 1 < $size
+        x/2f $arg0 + $camlwordsize * $count
+      else
+        x/f $arg0 + $camlwordsize * $count
+      end
+      set $count = $count + 2
+    end
+    if $count < $mysize
+      printf "... truncated ...\n"
+    end
+  end
+
+  if $tag == 249
+    printf "... infix header, displaying enclosing block:\n"
+    set $mybaseaddr = $arg0 - $camlwordsize * $mysize
+    camlblock $mybaseaddr
+    # reset $tag, which was clobbered by the recursive call (yuck)
+    set $tag = 249
+  end
+
+  if $tag != 249 && $tag != 252 && $tag != 253 && $tag != 254
+    set $isvalues = $tag < 251
+    set $count = 0
+    while $count < $mysize && $count < 10
+      set $adr = $arg0 + $camlwordsize * $count
+      set $field = * (unsigned long *) $adr
+      printf "%#lx: [%d] 0x%016lx ", $adr, $count, $field
+      if ($field & 7) == 0 && $isvalues
+        camlheap $field
+        if $camlheap_result
+          printf " "
+          camlheader $field
+        end
+      end
+      if ($field & 1) == 1
+        camlint $field
+      end
+      printf "\n"
+      set $count = $count + 1
+    end
+    if $count < $mysize
+      printf "... truncated ...\n"
+    end
+  end
+  printf "next block head: %#lx   value: %#lx\n", \
+         $arg0 + $camlwordsize * $mysize, $arg0 + $camlwordsize * ($mysize+1)
+end
+
+# displays an OCaml value
+define caml
+  set $camllast = (long) $arg0
+  if ($camllast & 1) == 1
+    set $camlnext = 0
+    camlint $camllast
+    printf "\n"
+  end
+  if ($camllast & 7) == 0
+    camlblock $camllast
+  end
+  if ($camllast & 7) != 0 && ($camllast & 1) != 1
+    set $camlnext = 0
+    printf "invalid pointer: %#016lx\n", $camllast
+  end
+end
+
+# displays the next OCaml value in memory
+define camlnext
+  caml $camlnext
+end
+
+# displays the n-th field of the previously displayed value
+define camlfield
+  set $camlfield_addr = ((long *) $camllast)[$arg0]
+  caml $camlfield_addr
+end
+
+# displays the list of heap chunks
+define camlchunks
+  set $chunk = * (unsigned long *) &caml_heap_start
+  while $chunk != 0
+    set $chunk_size = * (unsigned long *) ($chunk - 2 * $camlwordsize)
+    set $chunk_alloc = * (unsigned long *) ($chunk - 3 * $camlwordsize)
+    printf "chunk: addr = %#lx .. %#lx", $chunk, $chunk + $chunk_size
+    printf "  (size = %#lx; alloc = %#lx)\n", $chunk_size, $chunk_alloc
+    set $chunk = * (unsigned long *) ($chunk - $camlwordsize)
+  end
+end
+
+# walk the heap and launch command `camlvisitfun` on each block
+# the variables `$hp` `$val` `$hd` `$tag` `$color` and `$size`
+# are set before calling `camlvisitfun`
+# `camlvisitfun` can set `$camlvisitstop` to stop the iteration
+
+define camlvisit
+  set $cvchunk = * (unsigned long *) &caml_heap_start
+  set $camlvisitstop = 0
+  while $cvchunk != 0 && ! $camlvisitstop
+    set $cvchunk_size = * (unsigned long *) ($cvchunk - 2 * $camlwordsize)
+    set $cvhp = $cvchunk
+    while $cvhp < $cvchunk + $cvchunk_size && !$camlvisitstop
+      set $hp = $cvhp
+      set $val = $hp + $camlwordsize
+      set $hd = * (unsigned long *) $hp
+      set $tag = $hd & 0xFF
+      set $color = ($hd >> 8) & 3
+      set $cvsize = $hd >> 10
+      set $size = $cvsize
+      camlvisitfun
+      set $cvhp = $cvhp + (($cvsize + 1) * $camlwordsize)
+    end
+    set $cvchunk = * (unsigned long *) ($cvchunk - $camlwordsize)
+  end
+end
+
+define caml_cv_check_fl0
+  if $hp == * (unsigned long *) &caml_heap_start
+    set $flcheck_prev = ((unsigned long) &sentinels + 16)
+  end
+  if $color == 2 && $size > 5
+    if $val != * (unsigned long *) $flcheck_prev
+      printf "free-list: missing link %#x -> %#x\n", $flcheck_prev, $val
+      set $camlvisitstop = 1
+    end
+    set $flcheck_prev = $val
+  end
+end
+
+define caml_check_fl
+  set $listsize = $arg0
+  set $blueseen = $listsize == 0
+  set $val = * (unsigned long *) ((long) &sentinels + 16 + 32 * $listsize)
+  while $val != 0
+    printf "%#x\n", $val
+    set $hd = * (unsigned long *) ($val - 8)
+    set $color = ($hd >> 8) & 3
+    if $blueseen && $color != 2
+      printf "non-blue block at address %#x\n", $val
+      loop_break
+    else
+      set $blueseen = 1
+    end
+    set $val = * (unsigned long *) $val
+  end
+end

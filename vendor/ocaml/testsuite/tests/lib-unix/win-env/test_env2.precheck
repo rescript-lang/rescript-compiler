@@ -1,0 +1,4 @@
+# test_env2.ml disabled because it fails due to the fact that
+# Windows POSIX environment is not updated when using the native
+# API SetEnvironmentVariable (see MPR#4499)
+exit 1

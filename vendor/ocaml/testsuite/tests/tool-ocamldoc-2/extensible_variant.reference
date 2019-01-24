@@ -1,0 +1,125 @@
+\documentclass[11pt]{article} 
+\usepackage[latin1]{inputenc} 
+\usepackage[T1]{fontenc} 
+\usepackage{textcomp}
+\usepackage{fullpage} 
+\usepackage{url} 
+\usepackage{ocamldoc}
+\begin{document}
+\tableofcontents
+\section{Module {\tt{Extensible\_variant}} : Testing display of extensible variant types and exceptions.}
+\label{Extensible-underscorevariant}\index{Extensible-underscorevariant@\verb`Extensible_variant`}
+
+
+
+
+\ocamldocvspace{0.5cm}
+
+
+
+Also check reference for {\tt{Extensible\_variant.M.A}}[\ref{extension:Extensible-underscorevariant.M.A}], {\tt{Extensible\_variant.M.B}}[\ref{extension:Extensible-underscorevariant.M.B}], {\tt{Extensible\_variant.M.C}}[\ref{extension:Extensible-underscorevariant.M.C}] and {\tt{Extensible\_variant.E}}[\ref{exception:Extensible-underscorevariant.E}]
+
+
+
+\label{TYPExtensible-underscorevariant.e}\begin{ocamldoccode}
+type e = ..
+\end{ocamldoccode}
+\index{e@\verb`e`}
+\begin{ocamldocdescription}
+Extensible type
+
+
+\end{ocamldocdescription}
+
+
+
+
+\begin{ocamldoccode}
+{\tt{module }}{\tt{M}}{\tt{ : }}\end{ocamldoccode}
+\label{Extensible-underscorevariant.M}\index{M@\verb`M`}
+
+\begin{ocamldocsigend}
+
+
+\begin{ocamldoccode}
+type e +=
+\end{ocamldoccode}
+\label{extension:Extensible-underscorevariant.M.A}\begin{ocamldoccode}
+  | A
+\end{ocamldoccode}
+\begin{ocamldoccomment}
+A doc
+
+
+\end{ocamldoccomment}
+\label{extension:Extensible-underscorevariant.M.B}\begin{ocamldoccode}
+  | B
+\end{ocamldoccode}
+\begin{ocamldoccomment}
+B doc
+
+
+\end{ocamldoccomment}
+\label{extension:Extensible-underscorevariant.M.C}\begin{ocamldoccode}
+  | C
+\end{ocamldoccode}
+\begin{ocamldoccomment}
+C doc
+
+
+\end{ocamldoccomment}
+\end{ocamldocsigend}
+
+
+
+
+
+
+\begin{ocamldoccode}
+{\tt{module type }}{\tt{MT}}{\tt{ = }}\end{ocamldoccode}
+\label{Extensible-underscorevariant.MT}\index{MT@\verb`MT`}
+
+\begin{ocamldocsigend}
+
+
+\begin{ocamldoccode}
+type e +=
+\end{ocamldoccode}
+\label{extension:Extensible-underscorevariant.MT.A}\begin{ocamldoccode}
+  | A
+\end{ocamldoccode}
+\begin{ocamldoccomment}
+A doc
+
+
+\end{ocamldoccomment}
+\label{extension:Extensible-underscorevariant.MT.B}\begin{ocamldoccode}
+  | B
+\end{ocamldoccode}
+\begin{ocamldoccomment}
+B doc
+
+
+\end{ocamldoccomment}
+\label{extension:Extensible-underscorevariant.MT.C}\begin{ocamldoccode}
+  | C
+\end{ocamldoccode}
+\begin{ocamldoccomment}
+C doc
+
+
+\end{ocamldoccomment}
+\end{ocamldocsigend}
+
+
+
+
+
+
+\label{exception:Extensible-underscorevariant.E}\begin{ocamldoccode}
+exception E
+\end{ocamldoccode}
+\index{E@\verb`E`}
+
+
+\end{document}

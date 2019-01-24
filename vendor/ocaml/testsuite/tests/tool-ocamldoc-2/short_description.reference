@@ -1,0 +1,21 @@
+\documentclass[11pt]{article} 
+\usepackage[latin1]{inputenc} 
+\usepackage[T1]{fontenc} 
+\usepackage{textcomp}
+\usepackage{fullpage} 
+\usepackage{url} 
+\usepackage{ocamldoc}
+\begin{document}
+\tableofcontents
+\section{Short\_description : Short global description in text mode}
+\label{Short-underscoredescription}\index{Short-underscoredescription@\verb`Short_description`}
+
+
+
+This file tests that documentation in text mode are given
+a short description in the global description of modules.
+
+
+
+
+\end{document}

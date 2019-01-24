@@ -1,0 +1,20 @@
+
+#                                   Characters 292-322:
+       match M.is_t () with None -> 0
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Warning 8: this pattern-matching is not exhaustive.
+Here is an example of a case that is not matched:
+Some (Is Eq)
+module TypEq : sig type (_, _) t = Eq : ('a, 'a) t end
+module type T =
+  sig
+    type _ is_t = Is : ('a, 'b) TypEq.t -> 'a is_t
+    val is_t : unit -> unit is_t option
+  end
+module Make : functor (M : T) -> sig val f : unit -> int end
+#         Characters 89-90:
+    let g : t -> int = function _ -> .
+                                ^
+Error: This match case could not be refuted.
+       Here is an example of a value that would reach it: T (Is Eq)
+# 

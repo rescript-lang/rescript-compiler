@@ -1,0 +1,10 @@
+
+#           val f : 'a -> 'b -> 'b = <fun>
+val blah : '_weak1 -> '_weak1 = <fun>
+val splash : unit -> '_weak1 = <fun>
+val blurp : '_weak2 -> '_weak2 = <fun>
+#   - : int = 1
+#   val g : '_weak3 -> '_weak3 = <fun>
+#   - : '_weak4 -> '_weak4 = <fun>
+# val h : '_weak4 -> '_weak4 = <fun>
+# 

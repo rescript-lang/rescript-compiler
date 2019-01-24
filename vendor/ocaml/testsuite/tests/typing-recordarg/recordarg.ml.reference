@@ -1,0 +1,67 @@
+
+# type t = A of { x : int; mutable y : int; }
+# Characters 14-15:
+  let f (A r) = r;;  (* -> escape *)
+                ^
+Error: This form is not allowed as the type of the inlined record could escape.
+# val f : t -> int = <fun>
+# val f : int -> t = <fun>
+# val f : t -> t = <fun>
+# Characters 14-15:
+  let f () = A {a = 1};; (* customized error message *)
+                ^
+Error: The field a is not part of the record argument for the t.A constructor
+# val f : unit -> t = <fun>
+#   type _ t = A : { x : 'a; y : 'b; } -> 'a t
+# val f : 'a t -> 'a t = <fun>
+# val f : 'a t -> 'a t = <fun>
+#               module M :
+  sig
+    type 'a t = A of { x : 'a; } | B : { u : 'b; } -> unit t
+    exception Foo of { x : int; }
+  end
+#                           module N :
+  sig
+    type 'b t = 'b M.t = A of { x : 'b; } | B : { u : 'bla; } -> unit t
+    exception Foo of { x : int; }
+  end
+#     module type S = sig exception A of { x : int; } end
+#       Characters 65-74:
+    module A = (val X.x)
+               ^^^^^^^^^
+Error: This expression creates fresh types.
+       It is not allowed inside applicative functors.
+#           Characters 61-62:
+    exception A of {x : string}
+              ^
+Error: Multiple definition of the extension constructor name A.
+       Names must be unique in a given structure or signature.
+#         Characters 58-59:
+    exception A of {x : string}
+              ^
+Error: Multiple definition of the extension constructor name A.
+       Names must be unique in a given structure or signature.
+#         module M1 : sig exception A of { x : int; } end
+#         Characters 34-44:
+    include M1
+    ^^^^^^^^^^
+Error: Multiple definition of the extension constructor name A.
+       Names must be unique in a given structure or signature.
+#         module type S1 = sig exception A of { x : int; } end
+#         Characters 36-46:
+    include S1
+    ^^^^^^^^^^
+Error: Multiple definition of the extension constructor name A.
+       Names must be unique in a given structure or signature.
+#       module M : sig exception A of { x : int; } end
+#       module X1 : sig type t = .. end
+#     module X2 : sig type t = .. end
+#       Characters 62-63:
+    type X2.t += A of {x: int}
+                 ^
+Error: Multiple definition of the extension constructor name A.
+       Names must be unique in a given structure or signature.
+#         type _ c = C : [ `A ] c
+type t = T : { x : [< `A ] c; } -> t
+# val f : t -> unit = <fun>
+# 

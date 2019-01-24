@@ -1,0 +1,88 @@
+(setglobal Array_spec!
+  (let
+    (int_a = (makearray[int] 1 2 3)
+     float_a = (makearray[addr] 1. 2. 3.)
+     addr_a = (makearray[addr] "a" "b" "c"))
+    (seq (array.length[int] int_a) (array.length[addr] float_a)
+      (array.length[addr] addr_a)
+      (function a (array.length[addr] a))
+      (array.get[int] int_a 0) (array.get[addr] float_a 0)
+      (array.get[addr] addr_a 0)
+      (function a (array.get[addr] a 0))
+      (array.unsafe_get[int] int_a 0)
+      (array.unsafe_get[addr] float_a 0)
+      (array.unsafe_get[addr] addr_a 0)
+      (function a (array.unsafe_get[addr] a 0))
+      (array.set[int] int_a 0 1) (array.set[addr] float_a 0 1.)
+      (array.set[addr] addr_a 0 "a")
+      (function a x (array.set[addr] a 0 x))
+      (array.unsafe_set[int] int_a 0 1)
+      (array.unsafe_set[addr] float_a 0 1.)
+      (array.unsafe_set[addr] addr_a 0 "a")
+      (function a x (array.unsafe_set[addr] a 0 x))
+      (let
+        (eta_gen_len =
+           (function prim stub (array.length[addr] prim))
+         eta_gen_safe_get =
+           (function prim prim stub
+             (array.get[addr] prim prim))
+         eta_gen_unsafe_get =
+           (function prim prim stub
+             (array.unsafe_get[addr] prim prim))
+         eta_gen_safe_set =
+           (function prim prim prim stub
+             (array.set[addr] prim prim prim))
+         eta_gen_unsafe_set =
+           (function prim prim prim stub
+             (array.unsafe_set[addr] prim prim prim))
+         eta_int_len =
+           (function prim stub (array.length[int] prim))
+         eta_int_safe_get =
+           (function prim prim stub
+             (array.get[int] prim prim))
+         eta_int_unsafe_get =
+           (function prim prim stub
+             (array.unsafe_get[int] prim prim))
+         eta_int_safe_set =
+           (function prim prim prim stub
+             (array.set[int] prim prim prim))
+         eta_int_unsafe_set =
+           (function prim prim prim stub
+             (array.unsafe_set[int] prim prim prim))
+         eta_float_len =
+           (function prim stub (array.length[addr] prim))
+         eta_float_safe_get =
+           (function prim prim stub
+             (array.get[addr] prim prim))
+         eta_float_unsafe_get =
+           (function prim prim stub
+             (array.unsafe_get[addr] prim prim))
+         eta_float_safe_set =
+           (function prim prim prim stub
+             (array.set[addr] prim prim prim))
+         eta_float_unsafe_set =
+           (function prim prim prim stub
+             (array.unsafe_set[addr] prim prim prim))
+         eta_addr_len =
+           (function prim stub (array.length[addr] prim))
+         eta_addr_safe_get =
+           (function prim prim stub
+             (array.get[addr] prim prim))
+         eta_addr_unsafe_get =
+           (function prim prim stub
+             (array.unsafe_get[addr] prim prim))
+         eta_addr_safe_set =
+           (function prim prim prim stub
+             (array.set[addr] prim prim prim))
+         eta_addr_unsafe_set =
+           (function prim prim prim stub
+             (array.unsafe_set[addr] prim prim prim)))
+        (makeblock 0 int_a float_a addr_a eta_gen_len
+          eta_gen_safe_get eta_gen_unsafe_get eta_gen_safe_set
+          eta_gen_unsafe_set eta_int_len eta_int_safe_get
+          eta_int_unsafe_get eta_int_safe_set
+          eta_int_unsafe_set eta_float_len eta_float_safe_get
+          eta_float_unsafe_get eta_float_safe_set
+          eta_float_unsafe_set eta_addr_len eta_addr_safe_get
+          eta_addr_unsafe_get eta_addr_safe_set
+          eta_addr_unsafe_set)))))

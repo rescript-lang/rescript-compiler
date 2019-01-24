@@ -1,0 +1,9 @@
+Standard Library: Module Buffer
+Buffer truncate: negative passed
+Buffer truncate: large passed
+Buffer truncate: in-range passed
+Buffer reset: non-zero passed
+Buffer reset: zero passed
+Buffer add_utf_8_uchar: test against spec passed
+Buffer add_utf_16be_uchar: test against spec passed
+Buffer add_utf_16le_uchar: test against spec passed

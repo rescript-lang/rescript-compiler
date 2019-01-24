@@ -1,0 +1,54 @@
+% CAML style option, for use with the caml-latex filter.
+
+\typeout{Document Style option `caml-sl' <7 Apr 92>.}
+
+{\catcode`\^^M=\active %
+ \gdef\@camlinputline#1^^M{\normalsize\tt\# #1\par} %
+ \gdef\@camloutputline#1^^M{\small\ttfamily\slshape#1\par} } %
+\def\@camlblankline{\medskip}
+\chardef\@camlbackslash="5C
+\def\@bunderline{\setbox0\hbox\bgroup\let\par\@parinunderline}
+
+\def \@parinunderline {\futurelet \@next \@@parinunderline}
+\def \@@parinunderline {\ifx \@next \? \let \@do \@@par@inunderline \else \let \@do \@@@parinunderline \fi \@do}
+\def \@@par@inunderline #1{\@eunderline\@oldpar\?\@bunderline}
+\def \@@@parinunderline {\@eunderline\@oldpar\@bunderline}
+\def\@eunderline{\egroup\underline{\box0}}
+\def\@camlnoop{}
+
+\def\caml{
+    \bgroup
+    \parindent 0pt
+    \parskip 0pt
+    \let\do\@makeother\dospecials
+    \catcode13=\active    % 13 = ^M = CR
+    \catcode92=0          % 92 = \
+    \catcode32=\active    % 32 = SPC
+    \frenchspacing
+    \@vobeyspaces
+    \let\@oldpar\par
+    \let\?\@camlinputline
+    \let\:\@camloutputline
+    \let\;\@camlblankline
+    \let\<\@bunderline
+    \let\>\@eunderline
+    \let\\\@camlbackslash
+    \let\-\@camlnoop
+}
+
+\def\endcaml{
+  \egroup
+  \addvspace{\medskipamount}
+}
+
+% Caml-example related command
+\def\camlexample{\begin{flushleft}}
+\def\endcamlexample{\end{flushleft}}
+\def\camlinput{}
+\def\endcamlinput{}
+\def\camloutput{}
+\def\endcamloutput{}
+\def\camlerror{}
+\def\endcamlerror{}
+\def\camlwarn{}
+\def\endcamlwarn{}

@@ -1,0 +1,789 @@
+%
+% This file describes the native/bytecode compiler and toplevel
+% options. Since specific options can exist in only a subset of
+% \{toplevel, bytecode compiler, native compiler \} and their description
+% might differ across this subset, this file uses macros to adapt the
+% description tool by tool:
+\long\def\comp#1{\ifcomp#1\else\fi}
+% \long is needed for multiparagraph macros
+\long\def\nat#1{\ifnat#1\else\fi}
+\long\def\top#1{\iftop#1\else\fi}
+\long\def\notop#1{\iftop\else#1\fi}
+% ( Note that the previous definitions relies on the three boolean values
+%   \top, \nat and \comp. The manual section must therefore
+%   set these boolean values accordingly.
+% )
+% The macros (\comp, \nat, \top) adds a supplementary text
+% if we are respectively in the (bytecode compiler, native compiler, toplevel)
+% section.
+% The toplevel options are quite different from the compilers' options.
+% It is therefore useful to have also a substractive \notop macro
+% that prints its content only outside of the topvel section
+%
+% For instance, to add an option "-foo" that applies to the native and
+% bytecode compiler, one can write
+% \notop{\item["-foo"]
+%   ...
+% }
+%
+% Similarly, an option "-bar" only available in the native compiler
+% can be introduced with
+% \nat{\item["-bar"]
+%   ...
+% }
+% These macros can be also used to add information that are only relevant to
+% some tools or differ slightly from one tool to another. For instance, we
+%  define the following macro for the pairs cma/cmxa cmo/cmxo and ocamlc/ocamlopt
+%
+\def\cma{\comp{.cma}\nat{.cmxa}}
+\def\cmo{\comp{.cmo}\nat{.cmx}}
+\def\qcmo{{\machine\cmo}}
+\def\qcma{{\machine\cma}}
+\def\ocamlx{\comp{ocamlc}\nat{ocamlopt}}
+%
+%
+\begin{options}
+\notop{%
+\item["-a"]
+Build a library(\nat{".cmxa" and ".a"/".lib" files}\comp{".cma" file})
+with the object files (\nat{".cmx" and ".o"/".obj" files}\comp{ ".cmo" files})
+given on the command line, instead of linking them into an executable file.
+The name of the library must be set with the "-o" option.
+
+If \comp{"-custom", }"-cclib" or "-ccopt" options are passed on the command
+line, these options are stored in the resulting \qcma library. Then,
+linking with this library automatically adds back the \comp{"-custom", }
+"-cclib" and "-ccopt" options as if they had been provided on the
+command line, unless the "-noautolink" option is given.
+}%notop
+
+\item["-absname"]
+Force error messages to show absolute paths for file names.
+
+\notop{\item["-annot"]
+Dump detailed information about the compilation (types, bindings,
+tail-calls, etc).  The information for file \var{src}".ml"
+is put into file \var{src}".annot".  In case of a type error, dump
+all the information inferred by the type-checker before the error.
+The \var{src}".annot" file can be used with the emacs commands given in
+"emacs/caml-types.el" to display types and other annotations
+interactively.
+}%notop
+
+\item["-args" \var{filename}]
+Read additional newline-terminated command line arguments from \var{filename}.
+\top{It is not possible to pass a \var{scriptfile} via file to the toplevel.
+}%top
+\item["-args0" \var{filename}]
+ Read additional null character terminated command line arguments from \var{filename}.
+\top{It is not possible to pass a \var{scriptfile} via file to the toplevel.
+}%top
+
+
+\notop{\item["-bin-annot"]
+Dump detailed information about the compilation (types, bindings,
+tail-calls, etc) in binary format. The information for file \var{src}".ml"
+(resp. \var{src}".mli") is put into file \var{src}".cmt"
+(resp. \var{src}".cmti").  In case of a type error, dump
+all the information inferred by the type-checker before the error.
+The "*.cmt" and "*.cmti" files produced by "-bin-annot" contain
+more information and are much more compact than the files produced by
+"-annot".
+}%notop
+
+\notop{\item["-c"]
+Compile only. Suppress the linking phase of the
+compilation. Source code files are turned into compiled files, but no
+executable file is produced. This option is useful to
+compile modules separately.
+}%notop
+
+\notop{%
+\item["-cc" \var{ccomp}]
+Use \var{ccomp} as the C linker \nat{called to build the final executable }
+\comp{when linking in ``custom runtime'' mode (see the "-custom" option)}
+and as the C compiler for compiling ".c" source files.
+}%notop
+
+\notop{%
+\item["-cclib" "-l"\var{libname}]
+Pass the "-l"\var{libname} option to the \comp{C} linker
+\comp{when linking in ``custom runtime'' mode (see the "-custom" option)}.
+This causes the given C library to be linked with the program.
+}%notop
+
+\notop{%
+\item["-ccopt" \var{option}]
+Pass the given option to the C compiler and linker.
+\comp{When linking in ``custom runtime'' mode, for instance}%
+\nat{For instance,}%
+"-ccopt -L"\var{dir} causes the C linker to search for C libraries in
+directory \var{dir}.\comp{(See the "-custom" option.)}
+}%notop
+
+\notop{%
+\item["-color" \var{mode}]
+Enable or disable colors in compiler messages (especially warnings and errors).
+The following modes are supported:
+\begin{description}
+  \item["auto"] use heuristics to enable colors only if the output supports them (an ANSI-compatible tty terminal);
+  \item["always"] enable colors unconditionally;
+  \item["never"] disable color output.
+\end{description}
+The default setting is 'auto', and the current heuristic
+checks that the "TERM" environment variable exists and is
+not empty or "dumb", and that 'isatty(stderr)' holds.
+
+The environment variable "OCAML_COLOR" is considered if "-color" is not
+provided. Its values are auto/always/never as above.
+}%notop
+
+\comp{%
+\item["-compat-32"]
+Check that the generated bytecode executable can run on 32-bit
+platforms and signal an error if it cannot. This is useful when
+compiling bytecode on a 64-bit machine.
+}%comp
+
+\nat{%
+\item["-compact"]
+Optimize the produced code for space rather than for time. This
+results in slightly smaller but slightly slower programs. The default is to
+optimize for speed.
+}%nat
+
+\item["-config"]
+Print the version number of {\machine\ocamlx} and a detailed
+summary of its configuration, then exit.
+
+\comp{%
+\item["-custom"]
+Link in ``custom runtime'' mode. In the default linking mode, the
+linker produces bytecode that is intended to be executed with the
+shared runtime system, "ocamlrun". In the custom runtime mode, the
+linker produces an output file that contains both the runtime system
+and the bytecode for the program. The resulting file is larger, but it
+can be executed directly, even if the "ocamlrun" command is not
+installed. Moreover, the ``custom runtime'' mode enables static
+linking of OCaml code with user-defined C functions, as described in
+chapter~\ref{c:intf-c}.
+\begin{unix}
+Never use the "strip" command on executables produced by "ocamlc -custom",
+this would remove the bytecode part of the executable.
+\end{unix}
+\begin{unix}
+Security warning: never set the ``setuid'' or ``setgid'' bits on executables
+produced by "ocamlc -custom", this would make them vulnerable to attacks.
+\end{unix}
+}%comp
+
+\notop{%
+\item["-depend" \var{ocamldep-args}]
+Compute dependencies, as the "ocamldep" command would do. The remaining
+arguments are interpreted as if they were given to the "ocamldep" command.
+}%notop
+
+\comp{
+\item["-dllib" "-l"\var{libname}]
+Arrange for the C shared library "dll"\var{libname}".so"
+("dll"\var{libname}".dll" under Windows) to be loaded dynamically
+by the run-time system "ocamlrun" at program start-up time.
+}%comp
+
+\comp{\item["-dllpath" \var{dir}]
+Adds the directory \var{dir} to the run-time search path for shared
+C libraries.  At link-time, shared libraries are searched in the
+standard search path (the one corresponding to the "-I" option).
+The "-dllpath" option simply stores \var{dir} in the produced
+executable file, where "ocamlrun" can find it and use it as
+described in section~\ref{s-ocamlrun-dllpath}.
+}%comp
+
+\notop{%
+\item["-for-pack" \var{module-path}]
+Generate an object file (\qcmo\nat{ and ".o"/".obj" files})
+that can later be included
+as a sub-module (with the given access path) of a compilation unit
+constructed with "-pack".  For instance,
+{\machine\ocamlx\ -for-pack\ P\ -c\ A.ml}
+will generate {\machine a.\cmo}\nat{ and "a.o" files} that can
+later be used with {\machine \ocamlx\ -pack\ -o\ P\cmo\ a\cmo}.
+Note: you can still pack a module that was compiled without
+"-for-pack" but in this case exceptions will be printed with the wrong
+names.
+}%notop
+
+\notop{%
+\item["-g"]
+Add debugging information while compiling and linking. This option is
+required in order to \comp{be able to debug the program with "ocamldebug"
+(see chapter~\ref{c:debugger}), and to} produce stack backtraces when
+the program terminates on an uncaught exception (see
+section~\ref{ocamlrun-options}).
+}%notop
+
+\notop{%
+\item["-i"]
+Cause the compiler to print all defined names (with their inferred
+types or their definitions) when compiling an implementation (".ml"
+file).  No compiled files (".cmo" and ".cmi" files) are produced.
+This can be useful to check the types inferred by the
+compiler. Also, since the output follows the syntax of interfaces, it
+can help in writing an explicit interface (".mli" file) for a file:
+just redirect the standard output of the compiler to a ".mli" file,
+and edit that file to remove all declarations of unexported names.
+}%notop
+
+\item["-I" \var{directory}]
+Add the given directory to the list of directories searched for
+\nat{compiled interface files (".cmi"), compiled object code files (".cmx"),
+and libraries (".cmxa").}
+\comp{compiled interface files (".cmi"), compiled object code files ".cmo",
+libraries (".cma") and C libraries specified with "-cclib -lxxx".}
+\top{source and compiled files.}
+By default, the current directory is searched first, then the standard
+library directory. Directories added with "-I" are searched after the
+current directory, in the order in which they were given on the command line,
+but before the standard library directory. See also option "-nostdlib".
+
+If the given directory starts with "+", it is taken relative to the
+standard library directory.  For instance, "-I +unix" adds the
+subdirectory "unix" of the standard library to the search path.
+
+\top{%
+Directories can also be added to the list once
+the toplevel is running with the "#directory" directive
+(section~\ref{s:toplevel-directives}).
+}%top
+
+\top{%
+\item["-init" \var{file}]
+Load the given file instead of the default initialization file.
+The default file is ".ocamlinit" in the current directory if it
+exists, otherwise ".ocamlinit" in the user's home directory.
+}%top
+
+\notop{%
+\item["-impl" \var{filename}]
+Compile the file \var{filename} as an implementation file, even if its
+extension is not ".ml".
+}%notop
+
+\nat{%
+\item["-inline" \var{n}]
+Set aggressiveness of inlining to \var{n}, where \var{n} is a positive
+integer. Specifying "-inline 0" prevents all functions from being
+inlined, except those whose body is smaller than the call site. Thus,
+inlining causes no expansion in code size. The default aggressiveness,
+"-inline 1", allows slightly larger functions to be inlined, resulting
+in a slight expansion in code size. Higher values for the "-inline"
+option cause larger and larger functions to become candidate for
+inlining, but can result in a serious increase in code size.
+}%nat
+
+\notop{%
+\item["-intf" \var{filename}]
+Compile the file \var{filename} as an interface file, even if its
+extension is not ".mli".
+}%notop
+
+\notop{%
+\item["-intf-suffix" \var{string}]
+Recognize file names ending with \var{string} as interface files
+(instead of the default ".mli").
+}%\notop
+
+\item["-labels"]
+Labels are not ignored in types, labels may be used in applications,
+and labelled parameters can be given in any order.  This is the default.
+
+\notop{%
+\item["-linkall"]
+Force all modules contained in libraries to be linked in. If this
+flag is not given, unreferenced modules are not linked in. When
+building a library (option "-a"), setting the "-linkall" option forces all
+subsequent links of programs involving that library to link all the
+modules contained in the library.  When compiling a module (option
+"-c"), setting the "-linkall" option ensures that this module will
+always be linked if it is put in a library and this library is linked.
+}%notop
+
+\comp{%
+\item["-make-runtime"]
+Build a custom runtime system (in the file specified by option "-o")
+incorporating the C object files and libraries given on the command
+line.  This custom runtime system can be used later to execute
+bytecode executables produced with the
+"ocamlc -use-runtime" \var{runtime-name} option.
+See section~\ref{s:custom-runtime} for more information.
+}%comp
+
+\notop{%
+\item["-no-alias-deps"]
+Do not record dependencies for module aliases. See
+section~\ref{s:module-alias} for more information.
+}%notop
+
+\item["-no-app-funct"]
+Deactivates the applicative behaviour of functors. With this option,
+each functor application generates new types in its result and
+applying the same functor twice to the same argument yields two
+incompatible structures.
+
+\item["-noassert"]
+Do not compile assertion checks.  Note that the special form
+"assert false" is always compiled because it is typed specially.
+\notop{This flag has no effect when linking already-compiled files.}
+
+\notop{%
+\item["-noautolink"]
+When linking \qcma libraries, ignore \comp{"-custom",} "-cclib" and "-ccopt"
+options potentially contained in the libraries (if these options were
+given when building the libraries).  This can be useful if a library
+contains incorrect specifications of C libraries or C options; in this
+case, during linking, set "-noautolink" and pass the correct C
+libraries and options on the command line.
+}%
+
+\nat{%
+\item["-nodynlink"]
+Allow the compiler to use some optimizations that are valid only for code
+that is never dynlinked.
+}%nat
+
+\item["-nolabels"]
+Ignore non-optional labels in types. Labels cannot be used in
+applications, and parameter order becomes strict.
+
+\top{%
+\item["-noprompt"]
+Do not display any prompt when waiting for input.
+}%top
+
+\top{%
+\item["-nopromptcont"]
+Do not display the secondary prompt when waiting for continuation
+lines in multi-line inputs.  This should be used e.g. when running
+"ocaml" in an "emacs" window.
+}%top
+
+\item["-nostdlib"]
+\top{%
+Do not include the standard library directory in the list of
+directories searched for source and compiled files.
+}%top
+\comp{%
+Do not include the standard library directory in the list of
+directories searched for
+compiled interface files (".cmi"), compiled object code files
+(".cmo"), libraries (".cma"), and C libraries specified with
+"-cclib -lxxx". See also option "-I".
+}%comp
+\nat{%
+Do not automatically add the standard library directory the list of
+directories searched for compiled interface files (".cmi"), compiled
+object code files (".cmx"), and libraries (".cmxa"). See also option
+"-I".
+}%nat
+
+\notop{%
+\item["-o" \var{exec-file}]
+Specify the name of the output file produced by the
+\nat{linker}\comp{compiler}. The
+default output name is "a.out" under Unix and "camlprog.exe" under
+Windows. If the "-a" option is given, specify the name of the library
+produced.  If the "-pack" option is given, specify the name of the
+packed object file produced.  If the "-output-obj" option is given,
+specify the name of the output file produced.
+\nat{If the "-shared" option is given, specify the name of plugin
+file produced.}
+\comp{If the "-c" option is given, specify the name of the object
+file produced for the {\em next} source file that appears on the
+command line.}
+}%notop
+
+\notop{%
+\item["-opaque"]
+When the native compiler compiles an implementation, by default it
+produces a ".cmx" file containing information for cross-module
+optimization. It also expects ".cmx" files to be present for the
+dependencies of the currently compiled source, and uses them for
+optimization. Since OCaml 4.03, the compiler will emit a warning if it
+is unable to locate the ".cmx" file of one of those dependencies.
+
+The "-opaque" option, available since 4.04, disables cross-module
+optimization information for the currently compiled unit. When
+compiling ".mli" interface, using "-opaque" marks the compiled ".cmi"
+interface so that subsequent compilations of modules that depend on it
+will not rely on the corresponding ".cmx" file, nor warn if it is
+absent. When the native compiler compiles a ".ml" implementation,
+using "-opaque" generates a ".cmx" that does not contain any
+cross-module optimization information.
+
+Using this option may degrade the quality of generated code, but it
+reduces compilation time, both on clean and incremental
+builds. Indeed, with the native compiler, when the implementation of
+a compilation unit changes, all the units that depend on it may need
+to be recompiled -- because the cross-module information may have
+changed. If the compilation unit whose implementation changed was
+compiled with "-opaque", no such recompilation needs to occur. This
+option can thus be used, for example, to get faster edit-compile-test
+feedback loops.
+}%notop
+
+\notop{%
+\item["-open" \var{Module}]
+Opens the given module before processing the interface or
+implementation files. If several "-open" options are given,
+they are processed in order, just as if
+the statements "open!" \var{Module1}";;" "..." "open!" \var{ModuleN}";;"
+were added at the top of each file.
+}%notop
+
+\notop{%
+\item["-output-obj"]
+Cause the linker to produce a C object file instead of
+\comp{a bytecode executable file}\nat{an executable file}.
+This is useful to wrap OCaml code as a C library,
+callable from any C program. See chapter~\ref{c:intf-c},
+section~\ref{s:embedded-code}. The name of the output object file
+must be set with the "-o" option.
+This option can also be used to produce a \comp{C source file (".c" extension) or
+a} compiled shared/dynamic library (".so" extension, ".dll" under Windows).
+}%notop
+
+\nat{%
+\item["-p"]
+Generate extra code to write profile information when the program is
+executed.  The profile information can then be examined with the
+analysis program "gprof".  (See chapter~\ref{c:profiler} for more
+information on profiling.)  The "-p" option must be given both at
+compile-time and at link-time.  Linking object files not compiled with
+"-p" is possible, but results in less precise profiling.
+
+\begin{unix} See the Unix manual page for "gprof(1)" for more
+information about the profiles.
+
+Full support for "gprof" is only available for certain platforms
+(currently: Intel x86 32 and 64 bits under Linux, BSD and MacOS X).
+On other platforms, the "-p" option will result in a less precise
+profile (no call graph information, only a time profile).
+\end{unix}
+
+\begin{windows}
+The "-p" option does not work under Windows.
+\end{windows}
+}%nat
+
+\nat{%
+\item["-pack"]
+Build an object file (".cmx" and ".o"/".obj" files) and its associated compiled
+interface (".cmi") that combines the ".cmx" object
+files given on the command line, making them appear as sub-modules of
+the output ".cmx" file.  The name of the output ".cmx" file must be
+given with the "-o" option.  For instance,
+\begin{verbatim}
+        ocamlopt -pack -o P.cmx A.cmx B.cmx C.cmx
+\end{verbatim}
+generates compiled files "P.cmx", "P.o" and "P.cmi" describing a
+compilation unit having three sub-modules "A", "B" and "C",
+corresponding to the contents of the object files "A.cmx", "B.cmx" and
+"C.cmx".  These contents can be referenced as "P.A", "P.B" and "P.C"
+in the remainder of the program.
+
+The ".cmx" object files being combined must have been compiled with
+the appropriate "-for-pack" option.  In the example above,
+"A.cmx", "B.cmx" and "C.cmx" must have been compiled with
+"ocamlopt -for-pack P".
+
+Multiple levels of packing can be achieved by combining "-pack" with
+"-for-pack".  Consider the following example:
+\begin{verbatim}
+        ocamlopt -for-pack P.Q -c A.ml
+        ocamlopt -pack -o Q.cmx -for-pack P A.cmx
+        ocamlopt -for-pack P -c B.ml
+        ocamlopt -pack -o P.cmx Q.cmx B.cmx
+\end{verbatim}
+The resulting "P.cmx" object file has sub-modules "P.Q", "P.Q.A"
+and "P.B".
+}%nat
+
+\comp{%
+\item["-pack"]
+Build a bytecode object file (".cmo" file) and its associated compiled
+interface (".cmi") that combines the object
+files given on the command line, making them appear as sub-modules of
+the output ".cmo" file.  The name of the output ".cmo" file must be
+given with the "-o" option.  For instance,
+\begin{verbatim}
+        ocamlc -pack -o p.cmo a.cmo b.cmo c.cmo
+\end{verbatim}
+generates compiled files "p.cmo" and "p.cmi" describing a compilation
+unit having three sub-modules "A", "B" and "C", corresponding to the
+contents of the object files "a.cmo", "b.cmo" and "c.cmo".  These
+contents can be referenced as "P.A", "P.B" and "P.C" in the remainder
+of the program.
+}%comp
+
+
+\notop{%
+\item["-plugin" \var{plugin}]
+Dynamically load the code of the given \var{plugin}
+(a ".cmo", ".cma" or ".cmxs" file) in the compiler. \var{plugin} must exist in
+the same kind of code as the compiler ({\machine \ocamlx.byte} must load bytecode
+plugins, while {\machine \ocamlx.opt} must load native code plugins), and
+extension adaptation is done automatically for ".cma" files (to ".cmxs" files
+if the compiler is compiled in native code).
+}%notop
+
+\notop{%
+\item["-pp" \var{command}]
+Cause the compiler to call the given \var{command} as a preprocessor
+for each source file. The output of \var{command} is redirected to
+an intermediate file, which is compiled. If there are no compilation
+errors, the intermediate file is deleted afterwards.
+}%notop
+
+\item["-ppx" \var{command}]
+After parsing, pipe the abstract syntax tree through the preprocessor
+\var{command}. The module "Ast_mapper", described in
+\ifouthtml
+chapter~\ref{c:parsinglib}: \ahref{libref/Ast\_mapper.html}{ \texttt{Ast_mapper} }
+\else section~\ref{Ast-underscoremapper}\fi,
+implements the external interface of a preprocessor.
+
+\item["-principal"]
+Check information path during type-checking, to make sure that all
+types are derived in a principal way.  When using labelled arguments
+and/or polymorphic methods, this flag is required to ensure future
+versions of the compiler will be able to infer types correctly, even
+if internal algorithms change.
+All programs accepted in "-principal" mode are also accepted in the
+default mode with equivalent types, but different binary signatures,
+and this may slow down type checking; yet it is a good idea to
+use it once before publishing source code.
+
+\item["-rectypes"]
+Allow arbitrary recursive types during type-checking.  By default,
+only recursive types where the recursion goes through an object type
+are supported.\notop{Note that once you have created an interface using this
+flag, you must use it again for all dependencies.}
+
+\notop{%
+\item["-runtime-variant" \var{suffix}]
+Add the \var{suffix} string to the name of the runtime library used by
+the program.  Currently, only one such suffix is supported: "d", and
+only if the OCaml compiler was configured with option
+"-with-debug-runtime".  This suffix gives the debug version of the
+runtime, which is useful for debugging pointer problems in low-level
+code such as C stubs.
+}%notop
+
+\nat{%
+\item["-S"]
+Keep the assembly code produced during the compilation. The assembly
+code for the source file \var{x}".ml" is saved in the file \var{x}".s".
+}%nat
+
+\nat{%
+\item["-shared"]
+Build a plugin (usually ".cmxs") that can be dynamically loaded with
+the "Dynlink" module. The name of the plugin must be
+set with the "-o" option. A plugin can include a number of OCaml
+modules and libraries, and extra native objects (".o", ".obj", ".a",
+".lib" files). Building native plugins is only supported for some
+operating system. Under some systems (currently,
+only Linux AMD 64), all the OCaml code linked in a plugin must have
+been compiled without the "-nodynlink" flag. Some constraints might also
+apply to the way the extra native objects have been compiled (under
+Linux AMD 64, they must contain only position-independent code).
+}%nat
+
+\item["-safe-string"]
+Enforce the separation between types "string" and "bytes",
+thereby making strings read-only. This will become the default in
+a future version of OCaml.
+
+\item["-short-paths"]
+When a type is visible under several module-paths, use the shortest
+one when printing the type's name in inferred interfaces and error and
+warning messages. Identifier names starting with an underscore "_" or
+containing double underscores "__" incur a penalty of $+10$ when computing
+their length.
+
+\top{
+\item["-stdin"]
+Read the standard input as a script file rather than starting an
+interactive session.
+}%top
+
+\item["-strict-sequence"]
+Force the left-hand part of each sequence to have type unit.
+
+\item["-strict-formats"]
+Reject invalid formats that were accepted in legacy format
+implementations. You should use this flag to detect and fix such
+invalid formats, as they will be rejected by future OCaml versions.
+
+\notop{%
+\item["-thread"]
+Compile or link multithreaded programs, in combination with the
+system "threads" library described in chapter~\ref{c:threads}.
+}%notop
+
+\notop{%
+\item["-unboxed-types"]
+When a type is unboxable (i.e. a record with a single argument or a
+concrete datatype with a single constructor of one argument) it will
+be unboxed unless annotated with "[@@ocaml.boxed]".
+}%notop
+
+\notop{%
+\item["-no-unboxed-types"]
+When a type is unboxable  it will be boxed unless annotated with
+"[@@ocaml.unboxed]". This is the default.
+}%notop
+
+\item["-unsafe"]
+Turn bound checking off for array and string accesses (the "v.(i)" and
+"s.[i]" constructs). Programs compiled with "-unsafe" are therefore
+\comp{slightly} faster, but unsafe: anything can happen if the program
+accesses an array or string outside of its bounds.
+\notop{%
+Additionally, turn off the check for zero divisor in integer division
+ and modulus operations. With "-unsafe", an integer division
+(or modulus) by zero can halt the program or continue with an
+unspecified result instead of raising a "Division_by_zero" exception.
+}%notop
+
+\item["-unsafe-string"]
+Identify the types "string" and "bytes",
+thereby making strings writable. For reasons of backward compatibility,
+this is the default setting for the moment, but this will change in a future
+version of OCaml.
+
+\comp{%
+\item["-use-runtime" \var{runtime-name}]
+Generate a bytecode executable file that can be executed on the custom
+runtime system \var{runtime-name}, built earlier with
+"ocamlc -make-runtime" \var{runtime-name}.
+See section~\ref{s:custom-runtime} for more information.
+}%comp
+
+\item["-v"]
+Print the version number of the compiler and the location of the
+standard library directory, then exit.
+
+\item["-verbose"]
+Print all external commands before they are executed,
+\nat{in particular invocations of the assembler, C compiler, and linker.}
+\comp{in particular invocations of the C compiler and linker in "-custom" mode.}
+Useful to debug C library problems.
+
+\comp{%
+\item["-vmthread"]
+Compile or link multithreaded programs, in combination with the
+VM-level "threads" library described in chapter~\ref{c:threads}.
+}%comp
+
+\notop{%
+\item["-version" or "-vnum"]
+Print the version number of the compiler in short form (e.g. "3.11.0"),
+then exit.
+}%notop
+
+\top{%
+\item["-version"]
+Print version string and exit.
+
+\item["-vnum"]
+Print short version number and exit.
+
+\item["-no-version"]
+Do not print the version banner at startup.
+}%top
+
+\item["-w" \var{warning-list}]
+Enable, disable, or mark as fatal the warnings specified by the argument
+\var{warning-list}.
+Each warning can be {\em enabled} or {\em disabled}, and each warning
+can be {\em fatal} or {\em non-fatal}.
+If a warning is disabled, it isn't displayed and doesn't affect
+compilation in any way (even if it is fatal).  If a warning is
+enabled, it is displayed normally by the compiler whenever the source
+code triggers it.  If it is enabled and fatal, the compiler will also
+stop with an error after displaying it.
+
+The \var{warning-list} argument is a sequence of warning specifiers,
+with no separators between them.  A warning specifier is one of the
+following:
+
+\begin{options}
+\item["+"\var{num}] Enable warning number \var{num}.
+\item["-"\var{num}] Disable warning number \var{num}.
+\item["@"\var{num}] Enable and mark as fatal warning number \var{num}.
+\item["+"\var{num1}..\var{num2}] Enable warnings in the given range.
+\item["-"\var{num1}..\var{num2}] Disable warnings in the given range.
+\item["@"\var{num1}..\var{num2}] Enable and mark as fatal warnings in
+the given range.
+\item["+"\var{letter}] Enable the set of warnings corresponding to
+\var{letter}. The letter may be uppercase or lowercase.
+\item["-"\var{letter}] Disable the set of warnings corresponding to
+\var{letter}. The letter may be uppercase or lowercase.
+\item["@"\var{letter}] Enable and mark as fatal the set of warnings
+corresponding to \var{letter}. The letter may be uppercase or
+lowercase.
+\item[\var{uppercase-letter}] Enable the set of warnings corresponding
+to \var{uppercase-letter}.
+\item[\var{lowercase-letter}] Disable the set of warnings corresponding
+to \var{lowercase-letter}.
+\end{options}
+
+Warning numbers and letters which are out of the range of warnings
+that are currently defined are ignored. The warnings are as follows.
+\begin{options}
+\input{warnings-help.tex}
+\end{options}
+
+The default setting is "-w +a-4-6-7-9-27-29-32..42-44-45-48-50-60".
+It is displayed by {\machine\ocamlx\ -help}.
+Note that warnings 5 and 10 are not always triggered, depending on
+the internals of the type checker.
+
+
+\item["-warn-error" \var{warning-list}]
+Mark as fatal the warnings specified in the argument \var{warning-list}.
+The compiler will stop with an error when one of these warnings is
+emitted. The \var{warning-list} has the same meaning as for
+the "-w" option: a "+" sign (or an uppercase letter) marks the
+corresponding warnings as fatal, a "-"
+sign (or a lowercase letter) turns them back into non-fatal warnings,
+and a "@" sign both enables and marks as fatal the corresponding
+warnings.
+
+Note: it is not recommended to use warning sets (i.e. letters) as
+arguments to "-warn-error"
+in production code, because this can break your build when future versions
+of OCaml add some new warnings.
+
+The default setting is "-warn-error -a+31" (only warning 31 is fatal).
+
+\item["-warn-help"]
+Show the description of all available warning numbers.
+
+\notop{%
+\item["-where"]
+Print the location of the standard library, then exit.
+}%notop
+
+\item["-" \var{file}]
+\notop{Process \var{file} as a file name, even if it starts with a dash ("-")
+character.}
+\top{Use \var{file} as a script file name, even when it starts with a
+hyphen (-).}
+
+\item["-help" or "--help"]
+Display a short usage summary and exit.
+
+\end{options}
+%

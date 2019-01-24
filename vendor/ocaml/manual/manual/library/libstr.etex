@@ -1,0 +1,32 @@
+\chapter{The str library: regular expressions and string processing}
+\pdfchapterfold{-1}{The str library: regular expressions and string processing}
+%HEVEA\cutname{libstr.html}
+
+The "str" library provides high-level string processing functions,
+some based on regular expressions. It is intended to support the kind
+of file processing that is usually performed with scripting languages
+such as "awk", "perl" or "sed".
+
+Programs that use the "str" library must be linked as follows:
+\begin{alltt}
+        ocamlc \var{other options} str.cma \var{other files}
+        ocamlopt \var{other options} str.cmxa \var{other files}
+\end{alltt}
+For interactive use of the "str" library, do:
+\begin{alltt}
+        ocamlmktop -o mytop str.cma
+        ./mytop
+\end{alltt}
+or (if dynamic linking of C libraries is supported on your platform),
+start "ocaml" and type "#load \"str.cma\";;".
+
+\ifouthtml
+\begin{links}
+\item \ahref{libref/Str.html}{Module \texttt{Str}: regular expressions and string processing}
+\end{links}
+
+\else
+\input{Str.tex}
+\fi
+
+

@@ -1,0 +1,51 @@
+#!/bin/bash
+#**************************************************************************
+#*                                                                        *
+#*                                 OCaml                                  *
+#*                                                                        *
+#*                David Allsopp, MetaStack Solutions Ltd.                 *
+#*                                                                        *
+#*   Copyright 2015 MetaStack Solutions Ltd.                              *
+#*                                                                        *
+#*   All rights reserved.  This file is distributed under the terms of    *
+#*   the GNU Lesser General Public License version 2.1, with the          *
+#*   special exception on linking described in the file LICENSE.          *
+#*                                                                        *
+#**************************************************************************
+
+# Ensure that the Microsoft Linker isn't being messed up by /usr/bin/link
+if [ "`link --version | head -1 | \
+     fgrep "Microsoft (R) Incremental Linker"`" != "" ] ; then
+  echo "link already refers to the Microsoft Linker">&2
+  exit 0
+fi
+
+IFS=:
+T=
+FOUND=0
+FIRST=1
+for i in $PATH
+do
+  if [ $FIRST -eq 1 ] ; then
+    T="$i"
+    FIRST=0
+  else
+    if [ $FOUND -eq 0 -a -x $i/link ] && [ "`$i/link --version | head -1 | \
+                       fgrep "Microsoft (R) Incremental Linker"`" != "" ] ; then
+      FOUND=1
+      T="$i:$T"
+      PROM=$i
+    else
+      T="$T:$i"
+    fi
+  fi
+done
+unset IFS
+
+if [ $FOUND -eq 0 ] ; then
+  echo The Microsoft Linker was not found in any of the PATH entries!>&2
+  exit 1
+else
+  echo "$PROM moved to the front of \$PATH">&2
+  echo export PATH=\"$T\"
+fi

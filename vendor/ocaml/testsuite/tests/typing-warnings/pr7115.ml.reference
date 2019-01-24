@@ -1,0 +1,22 @@
+
+# type t = A : t
+#         Characters 40-41:
+    let _f ~x (* x unused argument *) = function
+            ^
+Warning 27: unused variable x.
+module X1 : sig  end
+#           Characters 36-37:
+    let x = 42 (* unused value *)
+        ^
+Warning 32: unused value x.
+module X2 : sig  end
+#               Characters 54-55:
+    module O = struct let x = 42 (* unused *) end
+                          ^
+Warning 32: unused value x.
+Characters 80-86:
+    open O (* unused open *)
+    ^^^^^^
+Warning 33: unused open O.
+module X3 : sig  end
+# 

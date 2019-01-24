@@ -1,0 +1,250 @@
+\makeatletter
+% Pour hevea
+\newif\ifouthtml\outhtmlfalse
+\newcommand{\cutname}[1]{}
+% Notations pour les metavariables
+\def\var#1{{\it#1}}
+\def\nth#1#2{${\it#1}_{#2}$}
+\def\nmth#1#2#3{${\it#1}_{#2}^{#3}$}
+\def\optvar#1{\textrm{[}\var{#1}\/\textrm{]}}
+\def\event{$\bowtie$}
+\def\fromoneto#1#2{$#1 = 1, \ldots, #2$}
+
+% Pour avoir les exposants sur la ligne au-dessus (???)
+
+\ifplaintext
+\fontdimen14\tensy=12pt
+\fi
+
+% Numerotation
+\setcounter{secnumdepth}{2}     % Pour numeroter les \subsection
+\setcounter{tocdepth}{1}        % Pour ne pas mettre les \subsection
+                                % dans la table des matieres
+
+% Pour avoir "_" qui marche en mode math et en mode normal
+\catcode`\_=13
+\catcode`\=8
+\def\_{\hbox{\tt\char95}}
+\def_{\ifmmode\else\_\fi}
+
+\ifplaintext
+\def\ttstretch{\tt}
+\else
+\def\ttstretch{\tt\spaceskip=5.77pt plus 1.83pt minus 1.22pt}
+% La fonte cmr10 a normalement des espaces de 5.25pt non extensibles.
+% En 11 pt ca fait 5.77 pt. On lui ajoute la meme flexibilite que
+% cmr10 agrandie a 11 pt.
+\fi
+
+% Pour la traduction "xxxx" -> {\machine{xxxx}} faite par texquote2
+\def\machine#1{\mbox{\ttstretch{#1}}}
+
+% Pour la traduction "\begin{verbatim}...\end{verbatim}"
+%                    -> "\begin{machineenv}...\end{machineenv}"
+% faite aussi par texquote2.
+\newenvironment{machineenv}{\alltt}{\endalltt}
+
+% Environnements
+
+\newlength{\versionwidth}
+\setbox0=\hbox{\bf Windows:} \setlength{\versionwidth}{\wd0}
+
+\def\versionspecific#1{
+  \begin{description}\item[#1:]~\\}
+
+\def\unix{\versionspecific{Unix}}
+\def\endunix{\end{description}}
+%\def\macos{\versionspecific{MacOS 9}}
+%\def\endmacos{\end{description}}
+\def\windows{\versionspecific{Windows}}
+\def\endwindows{\end{description}}
+
+\def\requirements{\trivlist \item[\hskip\labelsep {\bf Requirements.}]}
+\def\endrequirements{\endtrivlist}
+\def\installation{\trivlist \item[\hskip\labelsep {\bf Installation.}]}
+\def\endinstallation{\endtrivlist}
+\def\troubleshooting{\trivlist \item[\hskip\labelsep {\bf Troubleshooting.}]}
+\def\endtroubleshooting{\endtrivlist}
+
+\newtheorem{gcrule}{Rule}
+
+% Pour les tables de priorites et autres tableaux a deux colonnes, encadres
+
+\def\tableau#1#2#3{%
+\begin{center}
+\begin{tabular}{#1}
+\hline
+#2 & #3 \\
+\hline
+}
+\def\endtableau{\hline\end{tabular}\end{center}}
+\def\entree#1#2{#1 & #2 \\}
+
+% L'environnement option
+
+\def\optionitem[#1]{\if@noparitem \@donoparitem
+  \else \if@inlabel \indent \par \fi
+         \ifhmode \unskip\unskip \par \fi
+         \if@newlist \if@nobreak \@nbitem \else
+                        \addpenalty\@beginparpenalty
+                        \addvspace\@topsep \addvspace{-\parskip}\fi
+           \else \addpenalty\@itempenalty \addvspace\itemsep
+          \fi
+    \global\@inlabeltrue
+\fi
+\everypar{\global\@minipagefalse\global\@newlistfalse
+          \if@inlabel\global\@inlabelfalse \hskip -\parindent \box\@labels
+             \penalty\z@ \fi
+          \everypar{}}\global\@nobreakfalse
+\if@noitemarg \@noitemargfalse \if@nmbrlist \refstepcounter{\@listctr}\fi \fi
+\setbox\@tempboxa\hbox{\makelabel{#1}}%
+\global\setbox\@labels
+\ifdim \wd\@tempboxa >\labelwidth
+ \hbox{\unhbox\@labels
+       \hskip -\leftmargin
+       \box\@tempboxa}\hfil\break
+ \else
+ \hbox{\unhbox\@labels
+       \hskip -\leftmargin
+       \hbox to\leftmargin {\makelabel{#1}\hfil}}
+ \fi
+ \ignorespaces}
+
+\def\optionlabel#1{\bf #1}
+\def\options{\list{}{\let\makelabel\optionlabel\let\@item\optionitem}}
+\def\endoptions{\endlist}
+
+% L'environnement library (pour composer les descriptions des modules
+% de bibliotheque).
+
+\def\comment{\penalty200\list{}{}\item[]}
+\def\endcomment{\endlist\penalty-100}
+
+\def\library{
+\begingroup
+\raggedright
+\let\@savedlistI=\@listI%
+\def\@listI{\leftmargin\leftmargini\parsep 0pt plus 1pt\topsep 0pt plus 2pt}%
+\itemsep 0pt
+\topsep 0pt plus 2pt
+\partopsep 0pt
+}
+
+\def\endlibrary{
+\endgroup
+}
+
+\def\restoreindent{\begingroup\let\@listI=\@savedlistI}
+\def\endrestoreindent{\endgroup}
+
+% ^^A...^^A: compose l'interieur en \tt, comme \verb
+
+\catcode`\^^A=\active
+\def{%
+\begingroup\catcode``=13\@noligs\ttstretch\let\do\@makeother\dospecials%
+\def\@xobeysp{\leavevmode\penalty100\ }%
+\@vobeyspaces\frenchspacing\catcode`\^^A=\active\def{\endgroup}}
+
+% Pour l'index
+
+\let\indexentry=\index
+\def\index{\indexentry{\jobname}}
+\def\ikwd{\indexentry{\jobname.kwd}}
+
+% Les en-tetes personnalises
+
+\pagestyle{myheadings}
+\def\partmark#1{\markboth{Part \thepart. \ #1}{}}
+\def\chaptermark#1{\markright{Chapter \thechapter. \ #1}}
+
+% nth
+
+\def\th{^{\hbox{\scriptsize th}}}
+
+% Pour annuler l'espacement vertical qui suit un "verbatim"
+\def\cancelverbatim{\vspace{-\topsep}\vspace{-\parskip}}% exact.
+
+% Pour annuler l'espacement vertical entre deux \item consecutifs dans \options
+\def\cancelitemspace{\vspace{-8mm}}% determine empiriquement
+
+% Pour faire la cesure apres _ dans les identificateurs
+\def\={\discretionary{}{}{}}
+\def\cuthere{\discretionary{}{}{}}
+
+% Pour la coupure en petits documents
+
+\let\mysection=\section
+
+%%% Augmenter l'espace entre numero de section
+%   et nom de section dans la table des matieres.
+
+\ifplaintext\else
+\def\l@section{\@dottedtocline{1}{1.5em}{2.8em}}  % D'origine: 2.3
+\fi
+
+% Pour alltt
+
+\def\rminalltt#1{{\rm #1}}
+
+% redefinition de l'environnement alltt pour que les {} \ et % soient
+% dans la bonne fonte
+
+\let\@oldalltt=\alltt
+\let\@oldendalltt=\endalltt
+\renewenvironment{alltt}{%
+\begingroup%
+\renewcommand{\{}{\char`\{}%
+\renewcommand{\}}{\char`\}}%
+\renewcommand{\\}{\char`\\}%
+\renewcommand{\%}{\char`\%}%
+\@oldalltt%
+}{%
+\@oldendalltt%
+\endgroup%
+}
+
+% Index stuff -- cf multind.sty
+
+\def\printindex#1#2{\@restonecoltrue\if@twocolumn\@restonecolfalse\fi
+  \columnseprule \z@ \columnsep 35pt
+  \newpage \phantomsection \twocolumn[{\Large\bf #2 \vskip4ex}]
+  \markright{\uppercase{#2}}
+  \addcontentsline{toc}{chapter}{#2}
+  \pdfsection{#2}
+  \@input{#1.ind}}
+
+% PDF stuff -- no longer needed, Hyperref does the job
+
+\def\pdfchapterfold#1#2{}
+\def\pdfchapter#1{}
+\def\pdfsection#1{}
+
+%\ifpdf
+%\newcount\pdflabel
+%\pdflabel=1
+%\def\pdfchapterfold#1#2{
+%\pdfdest num \pdflabel fit
+%\pdfoutline goto num \pdflabel count #1 {\arabic{chapter}. #2}
+%\global\advance\pdflabel by 1
+%}
+%\def\pdfsection#1{
+%\pdfdest num \pdflabel fit
+%\pdfoutline goto num \pdflabel {#1}
+%\global\advance\pdflabel by 1
+%}
+%\else
+%\def\pdfchapterfold#1#2{}
+%\def\pdfsection#1{}
+%\fi
+%
+%\def\pdfchapter{\pdfchapterfold{0}}
+
+%%% Pour camlidl
+
+\def\transl#1{$[\![\mbox{#1}]\!]$}
+
+%%% Pour les references des modules
+\newcommand{\moduleref}[1]{\ref{#1}}
+%%% Fin des hacks
+
+\makeatother

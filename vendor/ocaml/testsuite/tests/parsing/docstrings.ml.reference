@@ -1,0 +1,146 @@
+[
+  structure_item (docstrings.ml[1,0+0]..[4,105+7])
+    Pstr_type Rec
+    [
+      type_declaration "with_default" (docstrings.ml[1,0+8]..[1,0+20]) (docstrings.ml[1,0+0]..[4,105+7])
+        ptype_params =
+          [
+            core_type (docstrings.ml[1,0+5]..[1,0+7])
+              Ptyp_var a
+          ]
+        ptype_cstrs =
+          []
+        ptype_kind =
+          Ptype_abstract
+        ptype_private = Public
+        ptype_manifest =
+          Some
+            core_type (docstrings.ml[2,21+5]..[4,105+7])
+              Ptyp_arrow
+              Optional "size"
+              core_type (docstrings.ml[2,21+11]..[2,21+14])
+                attribute "ocaml.doc"
+                  [
+                    structure_item (docstrings.ml[2,21+21]..[2,21+40])
+                      Pstr_eval
+                      expression (docstrings.ml[2,21+21]..[2,21+40])
+                        Pexp_constant PConst_string(" default [42] ",None)
+                  ]
+                Ptyp_constr "int" (docstrings.ml[2,21+11]..[2,21+14])
+                []
+              core_type (docstrings.ml[3,62+5]..[4,105+7])
+                Ptyp_arrow
+                Optional "resizable"
+                core_type (docstrings.ml[3,62+16]..[3,62+20])
+                  attribute "ocaml.doc"
+                    [
+                      structure_item (docstrings.ml[3,62+21]..[3,62+42])
+                        Pstr_eval
+                        expression (docstrings.ml[3,62+21]..[3,62+42])
+                          Pexp_constant PConst_string(" default [true] ",None)
+                    ]
+                  Ptyp_constr "bool" (docstrings.ml[3,62+16]..[3,62+20])
+                  []
+                core_type (docstrings.ml[4,105+5]..[4,105+7])
+                  Ptyp_var a
+    ]
+  structure_item (docstrings.ml[6,114+0]..[11,208+1])
+    Pstr_type Rec
+    [
+      type_declaration "obj" (docstrings.ml[6,114+5]..[6,114+8]) (docstrings.ml[6,114+0]..[11,208+1])
+        ptype_params =
+          []
+        ptype_cstrs =
+          []
+        ptype_kind =
+          Ptype_abstract
+        ptype_private = Public
+        ptype_manifest =
+          Some
+            core_type (docstrings.ml[6,114+11]..[11,208+1])
+              Ptyp_object Closed
+                method meth1
+                  attribute "ocaml.doc"
+                    [
+                      structure_item (docstrings.ml[8,149+2]..[8,149+17])
+                        Pstr_eval
+                        expression (docstrings.ml[8,149+2]..[8,149+17])
+                          Pexp_constant PConst_string(" method 1 ",None)
+                    ]
+                  core_type (docstrings.ml[7,127+10]..[7,127+20])
+                    Ptyp_arrow
+                    Nolabel
+                    core_type (docstrings.ml[7,127+10]..[7,127+13])
+                      Ptyp_constr "int" (docstrings.ml[7,127+10]..[7,127+13])
+                      []
+                    core_type (docstrings.ml[7,127+17]..[7,127+20])
+                      Ptyp_constr "int" (docstrings.ml[7,127+17]..[7,127+20])
+                      []
+                method meth2
+                  attribute "ocaml.doc"
+                    [
+                      structure_item (docstrings.ml[10,168+23]..[10,168+38])
+                        Pstr_eval
+                        expression (docstrings.ml[10,168+23]..[10,168+38])
+                          Pexp_constant PConst_string(" method 2 ",None)
+                    ]
+                  core_type (docstrings.ml[10,168+9]..[10,168+22])
+                    Ptyp_arrow
+                    Nolabel
+                    core_type (docstrings.ml[10,168+9]..[10,168+13])
+                      Ptyp_constr "unit" (docstrings.ml[10,168+9]..[10,168+13])
+                      []
+                    core_type (docstrings.ml[10,168+17]..[10,168+22])
+                      Ptyp_constr "float" (docstrings.ml[10,168+17]..[10,168+22])
+                      []
+    ]
+  structure_item (docstrings.ml[13,211+0]..[16,280+1])
+    Pstr_type Rec
+    [
+      type_declaration "var" (docstrings.ml[13,211+5]..[13,211+8]) (docstrings.ml[13,211+0]..[16,280+1])
+        ptype_params =
+          []
+        ptype_cstrs =
+          []
+        ptype_kind =
+          Ptype_abstract
+        ptype_private = Public
+        ptype_manifest =
+          Some
+            core_type (docstrings.ml[13,211+11]..[16,280+1])
+              Ptyp_variant closed=Closed
+              [
+                Rtag "Foo" true
+                    attribute "ocaml.doc"
+                      [
+                        structure_item (docstrings.ml[14,224+9]..[14,224+19])
+                          Pstr_eval
+                          expression (docstrings.ml[14,224+9]..[14,224+19])
+                            Pexp_constant PConst_string(" foo ",None)
+                      ]
+                  []
+                Rtag "Bar" false
+                    attribute "ocaml.doc"
+                      [
+                        structure_item (docstrings.ml[15,244+25]..[15,244+35])
+                          Pstr_eval
+                          expression (docstrings.ml[15,244+25]..[15,244+35])
+                            Pexp_constant PConst_string(" bar ",None)
+                      ]
+                  [
+                    core_type (docstrings.ml[15,244+12]..[15,244+24])
+                      Ptyp_tuple
+                      [
+                        core_type (docstrings.ml[15,244+12]..[15,244+15])
+                          Ptyp_constr "int" (docstrings.ml[15,244+12]..[15,244+15])
+                          []
+                        core_type (docstrings.ml[15,244+18]..[15,244+24])
+                          Ptyp_constr "string" (docstrings.ml[15,244+18]..[15,244+24])
+                          []
+                      ]
+                  ]
+              ]
+              None
+    ]
+]
+

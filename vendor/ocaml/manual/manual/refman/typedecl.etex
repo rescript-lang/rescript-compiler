@@ -1,0 +1,225 @@
+\section{Type and exception definitions}
+%HEVEA\cutname{typedecl.html}%
+\pdfsection{Type and exception definitions}
+
+\subsection{Type definitions}
+\label{s:type-defs}
+
+Type definitions bind type constructors to data types: either
+variant types, record types, type abbreviations, or abstract data
+types. They also bind the value constructors and record fields
+associated with the definition.
+
+\ikwd{type\@\texttt{type}}
+\ikwd{and\@\texttt{and}}
+\ikwd{nonrec\@\texttt{nonrec}}
+\ikwd{of\@\texttt{of}}
+
+\begin{syntax}
+type-definition:
+          'type' ['nonrec'] typedef { 'and' typedef }
+;
+typedef:
+          [type-params] typeconstr-name type-information
+;
+type-information:
+          [type-equation] [type-representation] { type-constraint }
+;
+type-equation:
+          '=' typexpr
+;
+type-representation:
+          '=' ['|'] constr-decl { '|' constr-decl }
+        | '=' record-decl
+;
+type-params:
+          type-param
+        | '(' type-param { "," type-param } ')'
+;
+type-param:
+          [variance] "'" ident
+;
+variance:
+          '+'
+        | '-'
+;
+record-decl:
+         '{' field-decl { ';' field-decl } [';'] '}'
+;
+constr-decl:
+          (constr-name || '[]' || '(::)') [ 'of' constr-args ]
+;
+constr-args:
+          typexpr { '*' typexpr }
+;
+field-decl:
+          ['mutable'] field-name ':' poly-typexpr
+;
+type-constraint:
+    'constraint' "'" ident '=' typexpr
+\end{syntax}
+\ikwd{mutable\@\texttt{mutable}}
+\ikwd{constraint\@\texttt{constraint}}
+See also the following language extensions:
+\hyperref[s:private-types]{private types},
+\hyperref[s:gadts]{generalized algebraic datatypes},
+\hyperref[s:attributes]{attributes},
+\hyperref[s:extension-nodes]{extension nodes},
+\hyperref[s:extensible-variants]{extensible variant types} and
+\hyperref[s:inline-records]{inline records}.
+
+Type definitions are introduced by the "type" keyword, and
+consist in one or several simple definitions, possibly mutually
+recursive, separated by the "and" keyword. Each simple definition
+defines one type constructor.
+
+A simple definition consists in a lowercase identifier, possibly
+preceded by one or several type parameters, and followed by an
+optional type equation, then an optional type representation, and then
+a constraint clause. The identifier is the name of the type
+constructor being defined.
+
+In the right-hand side of type definitions, references to one of the
+type constructor name being defined are considered as recursive,
+unless "type" is followed by "nonrec". The "nonrec" keyword was
+introduced in OCaml 4.02.2.
+
+The optional type parameters are either one type variable @"'" ident@,
+for type constructors with one parameter, or a list of type variables
+@"('"ident_1,\ldots,"'"ident_n")"@, for type constructors with several
+parameters. Each type parameter may be prefixed by a variance
+constraint @"+"@ (resp. @"-"@) indicating that the parameter is
+covariant (resp. contravariant).  These type parameters can appear in
+the type expressions of the right-hand side of the definition,
+optionally restricted by a variance constraint ; {\em i.e.\/} a
+covariant parameter may only appear on the right side of a functional
+arrow (more precisely, follow the left branch of an even number of
+arrows), and a contravariant parameter only the left side (left branch of
+an odd number of arrows). If the type has a representation or
+an equation, and the parameter is free ({\em i.e.\/} not bound via a
+type constraint to a constructed type), its variance constraint is
+checked but subtyping {\em etc.\/} will use the inferred variance of the
+parameter, which may be less restrictive; otherwise ({\em i.e.\/} for abstract
+types or non-free parameters), the variance must be given explicitly,
+and the parameter is invariant if no variance is given.
+
+The optional type equation @'=' typexpr@ makes the defined type
+equivalent to the type expression @typexpr@:
+one can be substituted  for the other during typing.
+If no type equation is given, a new type is generated: the defined type
+is incompatible with any other type.
+
+The optional type representation describes the data structure
+representing the defined type, by giving the list of associated
+constructors (if it is a variant type) or associated fields (if it is
+a record type). If no type representation is given, nothing is
+assumed on the structure of the type besides what is stated in the
+optional type equation.
+
+The type representation @'=' ['|'] constr-decl { '|' constr-decl }@
+describes a variant type. The constructor declarations
+@constr-decl_1, \ldots, constr-decl_n@ describe the constructors
+associated to this variant type. The constructor
+declaration @constr-name 'of' typexpr_1 '*' \ldots '*' typexpr_n@
+declares the name @constr-name@ as a non-constant constructor, whose
+arguments have types @typexpr_1@ \ldots @typexpr_n@.
+The constructor declaration @constr-name@
+declares the name @constr-name@ as a constant
+constructor. Constructor names must be capitalized.
+
+The type representation @'=' '{' field-decl { ';' field-decl } [';'] '}'@
+describes a record type. The field declarations @field-decl_1, \ldots,
+field-decl_n@ describe the fields associated to this record type.
+The field declaration @field-name ':' poly-typexpr@ declares
+@field-name@ as a field whose argument has type @poly-typexpr@.
+The field declaration @'mutable' field-name ':' poly-typexpr@
+\ikwd{mutable\@\texttt{mutable}}
+behaves similarly; in addition, it allows physical modification of
+this field.
+Immutable fields are covariant, mutable fields are non-variant.
+Both mutable and immutable fields may have explicitly polymorphic
+types.  The polymorphism of the contents is statically checked whenever
+a record value is created or modified.  Extracted values may have their
+types instantiated.
+
+The two components of a type definition, the optional equation and the
+optional representation, can be combined independently, giving
+rise to four typical situations:
+
+\begin{description}
+\item[Abstract type: no equation, no representation.] ~\\
+When appearing in a module signature, this definition specifies
+nothing on the type constructor, besides its number of parameters:
+its representation is hidden and it is assumed incompatible with any
+other type.
+
+\item[Type abbreviation: an equation, no representation.] ~\\
+This defines the type constructor as an abbreviation for the type
+expression on the right of the @'='@ sign.
+
+\item[New variant type or record type: no equation, a representation.] ~\\
+This generates a new type constructor and defines associated
+constructors or fields, through which values of that type can be
+directly built or inspected.
+
+\item[Re-exported variant type or record type: an equation,
+a representation.] ~\\
+In this case, the type constructor is defined as an abbreviation for
+the type expression given in the equation, but in addition the
+constructors or fields given in the representation remain attached to
+the defined type constructor. The type expression in the equation part
+must agree with the representation: it must be of the same kind
+(record or variant) and have exactly the same constructors or fields,
+in the same order, with the same arguments.
+\end{description}
+
+The type variables appearing as type parameters can optionally be
+prefixed by "+" or "-" to indicate that the type constructor is
+covariant or contravariant with respect to this parameter.  This
+variance information is used to decide subtyping relations when
+checking the validity of @":>"@ coercions (see section \ref{s:coercions}).
+
+For instance, "type +'a t" declares "t" as an abstract type that is
+covariant in its parameter; this means that if the type $\tau$ is a
+subtype of the type $\sigma$, then $\tau " t"$ is a subtype of $\sigma
+" t"$.  Similarly, "type -'a t" declares that the abstract type "t" is
+contravariant in its parameter: if $\tau$ is a subtype of $\sigma$, then
+$\sigma " t"$ is a subtype of $\tau " t"$.  If no "+" or "-" variance
+annotation is given, the type constructor is assumed non-variant in the
+corresponding parameter.  For instance, the abstract type declaration
+"type 'a t" means that $\tau " t"$ is neither a subtype nor a
+supertype of $\sigma " t"$ if $\tau$ is subtype of $\sigma$.
+
+The variance indicated by the "+" and "-" annotations on parameters
+is enforced only for abstract and private types, or when there are
+type constraints.
+Otherwise, for abbreviations, variant and record types without type
+constraints, the variance properties of the type constructor
+are inferred from its definition, and the variance annotations are
+only checked for conformance with the definition.
+
+\ikwd{constraint\@\texttt{constraint}}
+The construct @ 'constraint' "'" ident '=' typexpr @ allows the
+specification of
+type parameters.  Any actual type argument corresponding to the type
+parameter @ident@ has to be an instance of @typexpr@ (more precisely,
+@ident@ and @typexpr@ are unified). Type variables of @typexpr@ can
+appear in the type equation and the type declaration.
+
+\subsection{Exception definitions} \label{s:excdef}
+\ikwd{exception\@\texttt{exception}}
+
+\begin{syntax}
+exception-definition:
+        'exception' constr-decl
+      | 'exception' constr-name '=' constr
+\end{syntax}
+
+Exception definitions add new constructors to the built-in variant
+type \verb"exn" of exception values. The constructors are declared as
+for a definition of a variant type.
+
+The form @'exception' constr-decl@
+generates a new exception, distinct from all other exceptions in the system.
+The form @'exception' constr-name '=' constr@
+gives an alternate name to an existing exception.

@@ -1,0 +1,27 @@
+#!/bin/sh
+
+program=$1
+if test -z "$program"; then echo "Usage: exec.run <program>" 1&>2; exit 2; fi
+
+exec 2>&1
+
+export PATH="/bin:/usr/bin:./subdir:"
+export BAR=bar
+
+echo "## Test 1: a binary program in the path"
+$program ls / > /dev/null || echo "ls failed"
+echo "## Test 2: a #! script in the path"
+$program script1 2 3 4 || echo "script1 failed"
+echo "## Test 3: a script without #! in the path"
+$program script2 5 6 7 || echo "script2 failed"
+echo "## Test 4: a script in the current directory"
+$program script3 8 9 || echo "script3 failed"
+echo "## Test 5: a non-existent program"
+$program nosuchprogram
+echo "## Test 6: a non-executable program"
+$program nonexec
+
+export PATH="/bin:/usr/bin:./subdir"
+echo "## Test 7: a script in the current directory"
+$program script3 9 && echo "script3 should have failed"
+exit 0

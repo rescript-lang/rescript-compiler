@@ -1,0 +1,84 @@
+#**************************************************************************
+#*                                                                        *
+#*                                 OCaml                                  *
+#*                                                                        *
+#*                 Xavier Clerc, SED, INRIA Rocquencourt                  *
+#*                                                                        *
+#*   Copyright 2010 Institut National de Recherche en Informatique et     *
+#*     en Automatique.                                                    *
+#*                                                                        *
+#*   All rights reserved.  This file is distributed under the terms of    *
+#*   the GNU Lesser General Public License version 2.1, with the          *
+#*   special exception on linking described in the file LICENSE.          *
+#*                                                                        *
+#**************************************************************************
+
+TOPDIR=$(BASEDIR)/..
+include $(TOPDIR)/Makefile.tools
+
+.PHONY: defaultpromote
+defaultpromote:
+	@for file in *.reference; do \
+	  cp `basename $$file reference`result $$file; \
+	done
+
+.PHONY: defaultclean
+defaultclean:
+	@rm -f *.cmo *.cmi *.cmx *.cma *.cmxa *.cmxs *.$(O) *.$(SO) *.$(A) *.exe
+	@rm -f *.exe.manifest
+	@for dsym in *.dSYM; do \
+	  if [ -d $$dsym ]; then \
+	    rm -fr $$dsym; \
+	  fi \
+	done
+
+.SUFFIXES:
+.SUFFIXES: .mli .ml .mly .mll .cmi .cmo .cmx .cmm .cmxa .s .S .$(O) .so .c .f
+
+.mli.cmi:
+	@$(OCAMLC) -c $(ADD_COMPFLAGS) $<
+
+.ml.cmi:
+	@$(OCAMLC) -c $(ADD_COMPFLAGS) $<
+
+.ml.cmo:
+	@if [ -f $<i ]; then $(OCAMLC) -c $(ADD_COMPFLAGS) $<i; fi
+	@$(OCAMLC) -c $(ADD_COMPFLAGS) $<
+
+.ml.cmx:
+	@$(OCAMLOPT) -c $(ADD_COMPFLAGS) $<
+
+.cmx.so:
+	@$(OCAMLOPT) -o $@ -shared $(ADD_COMPFLAGS) $<
+
+.cmxa.so:
+	@$(OCAMLOPT) -o $@ -shared -linkall $(ADD_COMPFLAGS) $<
+
+%.ml %.mli: %.mly
+	@$(OCAMLYACC) -q $< 2> /dev/null
+
+.mll.ml:
+	@$(OCAMLLEX) -q $< > /dev/null
+
+.cmm.s:
+	@$(OCAMLRUN) ./codegen -S $*.cmm
+
+.cmm.obj:
+	@$(OCAMLRUN) ./codegen $*.cmm \
+	| grep -v "_caml_\(young_ptr\|young_limit\|extra_params\
+	\|allocN\|raise_exn\|reraise_exn\)" > $*.s
+	@set -o pipefail ; \
+	$(ASM) $*.obj $*.s | tail -n +2
+
+.S.o:
+	@$(ASPP) $(ASPPFLAGS) -DSYS_$(SYSTEM) -DMODEL_$(MODEL) -o $*.o $*.S
+
+.PRECIOUS: %.s
+.s.o:
+	@$(ASPP) $(ASPPFLAGS) -DSYS_$(SYSTEM) -o $*.o $*.s
+
+.c.o:
+	@$(CC) $(CFLAGS) -c -I$(CTOPDIR)/byterun $*.c -o $*.$(O)
+
+.f.o:
+	@$(FORTRAN_COMPILER) -c -I$(CTOPDIR)/byterun $*.f -o $*.$(O)

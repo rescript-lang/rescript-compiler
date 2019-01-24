@@ -1,0 +1,27 @@
+#
+# module T04:
+# Odoc_info.string_of_module_type:
+<[sig  end]>
+# Odoc_info.string_of_module_type ~complete: true :
+<[sig  end]>
+#
+# module T04.A:
+# Odoc_info.string_of_module_type:
+<[sig  end]>
+# Odoc_info.string_of_module_type ~complete: true :
+<[sig type a = A of { lbl : int; } end]>
+# type T04.A.a:
+# manifest (Odoc_info.string_of_type_expr):
+<[None]>
+#
+# module type T04.E:
+# Odoc_info.string_of_module_type:
+<[sig  end]>
+# Odoc_info.string_of_module_type ~complete: true :
+<[sig exception E of { lbl : int; } end]>
+#
+# module T04.E_bis:
+# Odoc_info.string_of_module_type:
+<[sig  end]>
+# Odoc_info.string_of_module_type ~complete: true :
+<[sig exception E of { lbl : int; } end]>

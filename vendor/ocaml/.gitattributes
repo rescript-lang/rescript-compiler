@@ -1,0 +1,192 @@
+#**************************************************************************
+#*                                                                        *
+#*                                 OCaml                                  *
+#*                                                                        *
+#*                 Damien Doligez, projet Gallium, INRIA                  *
+#*                                                                        *
+#*   Copyright 2015 Institut National de Recherche en Informatique et     *
+#*     en Automatique.                                                    *
+#*                                                                        *
+#*   All rights reserved.  This file is distributed under the terms of    *
+#*   the GNU Lesser General Public License version 2.1, with the          *
+#*   special exception on linking described in the file LICENSE.          *
+#*                                                                        *
+#**************************************************************************
+
+# Default behaviour, for if core.autocrlf isn't set
+* text=auto
+
+# Don't believe there's a way to wrap lines in .gitattributes
+.gitattributes ocaml-typo=long-line
+
+# Binary files
+/boot/ocamlc binary
+/boot/ocamllex binary
+/boot/ocamldep binary
+*.gif binary
+*.png binary
+*.tfm binary
+
+# 'union' merge driver just unions textual content in case of conflict
+#   http://krlmlr.github.io/using-gitattributes-to-avoid-merge-conflicts/
+/.mailmap                merge=union
+
+
+# We tried using 'union' for Changes and it did not work:
+# instead of creating Changes conflict it would silently duplicate
+# the lines involved in the conflict, which is arguably worse
+#/Changes                 merge=union
+
+# No header for text files (would be too obtrusive).
+*.md                     ocaml-typo=missing-header
+README*                  ocaml-typo=missing-header
+*.adoc                   ocaml-typo=missing-header,long-line,unused-prop
+
+/.mailmap                ocaml-typo=long-line,missing-header,non-ascii
+/.merlin                 ocaml-typo=missing-header
+/Changes                 ocaml-typo=non-ascii,missing-header
+/INSTALL                 ocaml-typo=missing-header
+/LICENSE                 ocaml-typo=long-line,very-long-line,missing-header
+# appveyor_build.cmd only has missing-header because dra27 too lazy to update
+# check-typo to interpret Cmd-style comments!
+/appveyor_build.cmd      ocaml-typo=long-line,very-long-line,missing-header text eol=crlf
+/appveyor_build.sh       ocaml-typo=non-ascii
+
+
+asmcomp/*/emit.mlp       ocaml-typo=tab,long-line,unused-prop
+asmcomp/power/NOTES.md   ocaml-typo=missing-header
+
+asmrun/i386.S            ocaml-typo=long-line
+
+config/gnu               ocaml-typo=prune
+
+emacs/*.el               ocaml-typo=long-line,unused-prop
+emacs/caml.el            ocaml-typo=long-line,unused-prop,missing-header
+emacs/COPYING            ocaml-typo=tab,non-printing,missing-header
+emacs/ocamltags.in       ocaml-typo=non-printing
+
+experimental             ocaml-typo=prune
+
+manual                   ocaml-typo=prune
+
+ocamlbuild/*             ocaml-typo=long-line
+ocamlbuild/AUTHORS       ocaml-typo=missing-header
+ocamlbuild/ChangeLog     ocaml-typo=tab,missing-header
+ocamlbuild/TODO          ocaml-typo=missing-header
+
+ocamldoc/Changes.txt     ocaml-typo=missing-header
+ocamldoc/ocamldoc.sty    ocaml-typo=missing-header
+
+otherlibs/win32unix/readlink.c    ocaml-typo=long-line
+otherlibs/win32unix/stat.c        ocaml-typo=long-line
+otherlibs/win32unix/symlink.c     ocaml-typo=long-line
+
+stdlib/hashbang     ocaml-typo=white-at-eol,missing-lf
+
+testsuite/tests/**                        ocaml-typo=missing-header
+testsuite/tests/lib-unix/win-stat/fakeclock.c ocaml-typo=
+testsuite/tests/lib-bigarray-2/bigarrf.f  ocaml-typo=missing-header,tab
+testsuite/tests/misc-unsafe/almabench.ml  ocaml-typo=missing-header,long-line
+testsuite/typing                          ocaml-typo=missing-header
+
+tools/magic         ocaml-typo=missing-header
+
+yacc/*.[ch]   ocaml-typo=long-line,very-long-line,unused-prop
+
+# Line-ending specifications, for Windows interoperability
+*.sh text eol=lf
+*.sh.in text eol=lf
+*.awk text eol=lf
+
+# Test suite command fragments
+*.checker text eol=lf
+*.precheck text eol=lf
+*.runner text eol=lf
+
+configure text eol=lf
+config/auto-aux/hasgot text eol=lf
+config/auto-aux/hasgot2 text eol=lf
+config/auto-aux/runtest text eol=lf
+config/auto-aux/searchpath text eol=lf
+config/auto-aux/solaris-ld text eol=lf
+config/auto-aux/tryassemble text eol=lf
+config/auto-aux/trycompile text eol=lf
+config/gnu/config.guess text eol=lf
+config/gnu/config.sub text eol=lf
+ocamldoc/remove_DEBUG text eol=lf
+ocamltest/getocamloptdefaultflags text eol=lf
+stdlib/Compflags text eol=lf
+stdlib/sharpbang text eol=lf
+tools/check-typo text eol=lf
+tools/ci-build text eol=lf
+tools/msvs-promote-path text eol=lf
+tools/gdb-macros text eol=lf
+tools/magic text eol=lf
+tools/make-opcodes text eol=lf
+tools/make-package-macosx text eol=lf
+tools/ocaml-objcopy-macosx text eol=lf
+tools/ocamlmktop.tpl text eol=lf
+tools/ocamlsize text eol=lf
+
+# These two are cat scripts, so may not actually require this
+config/auto-aux/sharpbang text eol=lf
+config/auto-aux/sharpbang2 text eol=lf
+
+# Similarly, these are all Perl scripts, so may not actually require this
+manual/tools/caml-tex text eol=lf
+manual/tools/format-intf text eol=lf
+manual/tools/htmlcut text eol=lf
+manual/tools/htmltbl text eol=lf
+manual/tools/htmlthread text eol=lf
+manual/tools/texexpand text eol=lf
+
+# Tests which include references spanning multiple lines fail with \r\n
+# endings, so use \n endings only, even on Windows.
+testsuite/tests/parsing/*.ml text eol=lf
+testsuite/tests/docstrings/empty.ml text eol=lf
+testsuite/tests/functors/functors.ml text eol=lf
+testsuite/tests/translprim/module_coercion.ml text eol=lf
+testsuite/tests/warnings/w04.ml text eol=lf
+testsuite/tests/warnings/w04_failure.ml text eol=lf
+testsuite/tests/warnings/w32.ml text eol=lf
+
+# These are forced to \n to allow the Cygwin testsuite to pass on a
+# Windows-checkout
+testsuite/tests/formatting/margins.ml text eol=lf
+testsuite/tests/letrec-disallowed/disallowed.ml text eol=lf
+testsuite/tests/letrec-disallowed/extension_constructor.ml text eol=lf
+testsuite/tests/letrec-disallowed/float_block.ml text eol=lf
+testsuite/tests/letrec-disallowed/generic_arrays.ml text eol=lf
+testsuite/tests/letrec-disallowed/module_constraints.ml text eol=lf
+testsuite/tests/letrec-disallowed/pr7215.ml text eol=lf
+testsuite/tests/lexing/uchar_esc.ml text eol=lf
+testsuite/tests/match-exception-warnings/exhaustiveness_warnings.ml text eol=lf
+testsuite/tests/typing-extension-constructor/test.ml text eol=lf
+testsuite/tests/typing-extensions/extensions.ml text eol=lf
+testsuite/tests/typing-extensions/open_types.ml text eol=lf
+testsuite/tests/typing-objects/Exemples.ml text eol=lf
+testsuite/tests/typing-objects/pr5619_bad.ml text eol=lf
+testsuite/tests/typing-objects/pr6123_bad.ml text eol=lf
+testsuite/tests/typing-objects/pr6907_bad.ml text eol=lf
+testsuite/tests/typing-objects/Tests.ml text eol=lf
+testsuite/tests/typing-pattern_open/pattern_open.ml text eol=lf
+testsuite/tests/typing-private/private.ml text eol=lf
+testsuite/tests/typing-recordarg/recordarg.ml text eol=lf
+testsuite/tests/typing-short-paths/pr5918.ml text eol=lf
+testsuite/tests/typing-sigsubst/sigsubst.ml text eol=lf
+testsuite/tests/typing-typeparam/newtype.ml text eol=lf
+testsuite/tests/typing-unboxed/test.ml text eol=lf
+testsuite/tests/typing-unboxed-types/test.ml text eol=lf
+testsuite/tests/typing-warnings/ambiguous_guarded_disjunction.ml text eol=lf
+testsuite/tests/typing-warnings/application.ml text eol=lf
+testsuite/tests/typing-warnings/coercions.ml text eol=lf
+testsuite/tests/typing-warnings/exhaustiveness.ml text eol=lf
+testsuite/tests/typing-warnings/pr6587.ml text eol=lf
+testsuite/tests/typing-warnings/pr6872.ml text eol=lf
+testsuite/tests/typing-warnings/pr7085.ml text eol=lf
+testsuite/tests/typing-warnings/pr7115.ml text eol=lf
+testsuite/tests/typing-warnings/pr7261.ml text eol=lf
+testsuite/tests/typing-warnings/pr7297.ml text eol=lf
+testsuite/tests/typing-warnings/pr7553.ml text eol=lf
+testsuite/tests/typing-warnings/records.ml text eol=lf
+testsuite/tests/typing-warnings/unused_types.ml text eol=lf

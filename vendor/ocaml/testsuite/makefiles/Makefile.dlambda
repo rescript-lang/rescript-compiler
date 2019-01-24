@@ -1,0 +1,38 @@
+#**************************************************************************
+#*                                                                        *
+#*                                 OCaml                                  *
+#*                                                                        *
+#*                 Xavier Clerc, SED, INRIA Rocquencourt                  *
+#*                                                                        *
+#*   Copyright 2010 Institut National de Recherche en Informatique et     *
+#*     en Automatique.                                                    *
+#*                                                                        *
+#*   All rights reserved.  This file is distributed under the terms of    *
+#*   the GNU Lesser General Public License version 2.1, with the          *
+#*   special exception on linking described in the file LICENSE.          *
+#*                                                                        *
+#**************************************************************************
+
+# To avoid tests breaking each time the internal name generation
+# changes, we strip -dlambda-produced identifiers of their unique
+# identifier: "x/1234" becomes simply "x".
+
+.PHONY: default
+default:
+	@for file in *.ml; do \
+	  $(OCAMLC) -dlambda -c $$file 2>&1 | \
+	  sed -e "s|\\([A-Za-z_][A-Za-z_']*\)/[0-9][0-9]*|\\1|g" \
+	      > $$file.result; \
+	done
+	@for file in *.reference; do \
+	  printf " ... testing '$$file':"; \
+	  $(DIFF) $$file `basename $$file reference`result >/dev/null \
+          && echo " => passed" || echo " => failed"; \
+	done
+
+.PHONY: promote
+promote: defaultpromote
+
+.PHONY: clean
+clean: defaultclean
+	@rm -f *.result

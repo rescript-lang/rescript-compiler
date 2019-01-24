@@ -1,0 +1,109 @@
+#**************************************************************************
+#*                                                                        *
+#*                                 OCaml                                  *
+#*                                                                        *
+#*                 Xavier Clerc, SED, INRIA Rocquencourt                  *
+#*                                                                        *
+#*   Copyright 2010 Institut National de Recherche en Informatique et     *
+#*     en Automatique.                                                    *
+#*                                                                        *
+#*   All rights reserved.  This file is distributed under the terms of    *
+#*   the GNU Lesser General Public License version 2.1, with the          *
+#*   special exception on linking described in the file LICENSE.          *
+#*                                                                        *
+#**************************************************************************
+
+# This makefile provides variables for using the in-tree compiler,
+# interpreter, lexer and other associated tools. It is intended to be
+# included within other makefiles.
+# See testsuite/makefiles/Makefile.common, manual/tools/Makefile and
+# manual/manual/tutorials/Makefile as examples.
+# Note that these makefile should define the $(TOPDIR) variable on their
+# own.
+
+WINTOPDIR=`cygpath -m "$(TOPDIR)"`
+
+# TOPDIR is the root directory of the OCaml sources, in Unix syntax.
+# WINTOPDIR is the same directory, in Windows syntax.
+
+OTOPDIR=$(TOPDIR)
+CTOPDIR=$(TOPDIR)
+CYGPATH=echo
+DIFF=diff -q
+SORT=sort
+SET_LD_PATH=CAML_LD_LIBRARY_PATH="$(LD_PATH)"
+
+# The variables above may be overridden by .../config/Makefile
+# OTOPDIR is either TOPDIR or WINTOPDIR, whichever is appropriate for
+#   arguments given to the OCaml compiler.
+# CTOPDIR is either TOPDIR or WINTOPDIR, whichever is appropriate for
+#   arguments given to the C and Fortran compilers.
+# CYGPATH is the command that translates unix-style file names into
+#   whichever syntax is appropriate for arguments of OCaml programs.
+# DIFF is a "diff -q" command that ignores trailing CRs under Windows.
+# SORT is the Unix "sort" command. Usually a simple command, but may be an
+#   absolute name if the Windows "sort" command is in the PATH.
+# SET_LD_PATH is a command prefix that sets the path for dynamic libraries
+#   (CAML_LD_LIBRARY_PATH for Unix, PATH for Windows) using the LD_PATH shell
+#   variable. Note that for Windows we add Unix-syntax directory names in
+#   PATH, and Cygwin will translate it to Windows syntax.
+
+include $(TOPDIR)/config/Makefile
+
+ifneq ($(USE_RUNTIME),)
+#Check USE_RUNTIME value
+ifeq ($(findstring $(USE_RUNTIME),d i),)
+$(error If set, USE_RUNTIME must be equal to "d" (debug runtime) \
+        or "i" (instrumented runtime))
+endif
+
+RUNTIME_VARIANT=-I $(OTOPDIR)/asmrun -I $(OTOPDIR)/byterun \
+                -runtime-variant $(USE_RUNTIME)
+export OCAMLRUNPARAM?=v=0
+endif
+
+OCAMLRUN=$(TOPDIR)/byterun/ocamlrun$(USE_RUNTIME)$(EXE)
+
+OCFLAGS=-nostdlib -I $(OTOPDIR)/stdlib $(COMPFLAGS)
+OCOPTFLAGS=
+
+ifeq ($(SUPPORTS_SHARED_LIBRARIES),false)
+  CUSTOM = -custom
+else
+  CUSTOM =
+endif
+
+OCAML=$(OCAMLRUN) $(OTOPDIR)/ocaml $(OCFLAGS) -noinit
+EXPECT_TEST=$(OCAMLRUN) $(OTOPDIR)/testsuite/tools/expect_test$(EXE)
+ifeq "$(FLEXLINK)" ""
+  FLEXLINK_PREFIX=
+else
+  ifeq "$(wildcard $(TOPDIR)/flexdll/Makefile)" ""
+    FLEXLINK_PREFIX=
+  else
+    EMPTY=
+    FLEXLINK_PREFIX=OCAML_FLEXLINK="$(WINTOPDIR)/boot/ocamlrun \
+	                            $(WINTOPDIR)/flexdll/flexlink.exe" $(EMPTY)
+  endif
+endif
+OCAMLC=$(FLEXLINK_PREFIX)$(OCAMLRUN) $(OTOPDIR)/ocamlc $(CUSTOM) $(OCFLAGS) \
+       $(RUNTIME_VARIANT)
+OCAMLOPT=$(FLEXLINK_PREFIX)$(OCAMLRUN) $(OTOPDIR)/ocamlopt $(OCFLAGS) \
+         $(RUNTIME_VARIANT)
+OCAMLDOC=$(OCAMLRUN) $(OTOPDIR)/ocamldoc/ocamldoc
+OCAMLLEX=$(OCAMLRUN) $(OTOPDIR)/lex/ocamllex
+OCAMLMKLIB=$(FLEXLINK_PREFIX)$(OCAMLRUN) $(OTOPDIR)/tools/ocamlmklib \
+           -ocamlc "$(OTOPDIR)/byterun/ocamlrun$(USE_RUNTIME)$(EXE) \
+                    $(OTOPDIR)/ocamlc $(OCFLAGS) $(RUNTIME_VARIANT)" \
+           -ocamlopt "$(OTOPDIR)/byterun/ocamlrun$(USE_RUNTIME)$(EXE) \
+                      $(OTOPDIR)/ocamlopt $(OCFLAGS) $(RUNTIME_VARIANT)"
+OCAMLYACC=$(TOPDIR)/yacc/ocamlyacc$(EXE)
+DUMPOBJ=$(OCAMLRUN) $(OTOPDIR)/tools/dumpobj
+OBJINFO=$(OCAMLRUN) $(OTOPDIR)/tools/ocamlobjinfo
+BYTECODE_ONLY=[ "$(ARCH)" = "none" -o "$(ASM)" = "none" ]
+NATIVECODE_ONLY=false
+
+#FORTRAN_COMPILER=
+#FORTRAN_LIBRARY=
+
+UNIXLIBVAR=`case "$(OTHERLIBRARIES)" in *win32unix*) echo win32;; esac`

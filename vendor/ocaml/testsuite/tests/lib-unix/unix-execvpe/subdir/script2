@@ -1,0 +1,3 @@
+echo "--- subdir/script2"
+echo "FOO is $FOO, BAR is $BAR, BUZ is $BUZ"
+echo "$# arguments:  $*"

@@ -1,0 +1,2 @@
+Sys.getenv FOO -> None
+Unix.environment FOO -> None

@@ -1,0 +1,14 @@
+File "deprecated_module_use.ml", line 1, characters 5-22:
+Warning 3: deprecated: module Deprecated_module
+
+  As you could guess, Deprecated_module is deprecated.
+  Please use something else!
+
+File "deprecated_module_use.ml", line 3, characters 9-12:
+Warning 3: deprecated: module Deprecated_module.M
+File "deprecated_module_use.ml", line 3, characters 9-12:
+Warning 3: deprecated: Deprecated_module.M.t
+File "deprecated_module_use.ml", line 5, characters 5-6:
+Warning 3: deprecated: module Deprecated_module.M
+File "deprecated_module_use.ml", line 6, characters 8-9:
+Warning 3: deprecated: Deprecated_module.M.x

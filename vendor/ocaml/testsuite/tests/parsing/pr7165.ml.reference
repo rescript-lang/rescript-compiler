@@ -1,0 +1,2 @@
+File "pr7165.ml", line 4, characters 0-21:
+Error: Invalid lexer directive "#9342101923012312312": line number out of range

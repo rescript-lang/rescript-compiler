@@ -1,0 +1,451 @@
+\chapter{The toplevel system or REPL (ocaml)} \label{c:camllight}
+\pdfchapter{The toplevel system or REPL (ocaml)}
+%HEVEA\cutname{toplevel.html}
+
+This chapter describes the toplevel system for OCaml, that permits
+interactive use of the OCaml system
+through a read-eval-print loop (REPL). In this mode, the system repeatedly
+reads OCaml phrases from the input, then typechecks, compile and
+evaluate them, then prints the inferred type and result value, if
+any. The system prints a "#" (sharp) prompt before reading each
+phrase.
+
+Input to the toplevel can span several lines. It is terminated by @";;"@ (a
+double-semicolon). The toplevel input consists in one or several
+toplevel phrases, with the following syntax:
+
+\begin{syntax}
+toplevel-input:
+          {{ definition }} ';;'
+        | expr ';;'
+        | '#' ident [ directive-argument ] ';;'
+;
+directive-argument:
+          string-literal
+        | integer-literal
+        | value-path
+        | 'true' || 'false'
+\end{syntax}
+
+A phrase can consist of a definition, like those found in
+implementations of compilation units or in @'struct' \ldots 'end'@
+module expressions. The definition can bind value names, type names,
+an exception, a module name, or a module type name. The toplevel
+system performs the bindings, then prints the types and values (if
+any) for the names thus defined.
+
+A phrase may also consist in a value expression
+(section~\ref{s:value-expr}). It is simply evaluated
+without performing any bindings, and its value is
+printed.
+
+Finally, a phrase can also consist in a toplevel directive,
+starting with @"#"@ (the sharp sign). These directives control the
+behavior of the toplevel; they are listed below in
+section~\ref{s:toplevel-directives}.
+
+\begin{unix}
+The toplevel system is started by the command "ocaml", as follows:
+\begin{alltt}
+        ocaml \var{options} \var{objects}                # interactive mode
+        ocaml \var{options} \var{objects} \var{scriptfile}        # script mode
+\end{alltt}
+\var{options} are described below.
+\var{objects} are filenames ending in ".cmo" or ".cma"; they are
+loaded into the interpreter immediately after \var{options} are set.
+\var{scriptfile} is any file name not ending in ".cmo" or ".cma".
+
+If no \var{scriptfile} is given on the command line, the toplevel system
+enters interactive mode: phrases are read on standard input, results
+are printed on standard output, errors on standard error. End-of-file
+on standard input terminates "ocaml" (see also the "#quit" directive
+in section~\ref{s:toplevel-directives}).
+
+On start-up (before the first phrase is read), if the file
+".ocamlinit" exists in the current directory,
+its contents are read as a sequence of OCaml phrases
+and executed as per the "#use" directive
+described in section~\ref{s:toplevel-directives}.
+The evaluation outcode for each phrase are not displayed.
+If the current directory does not contain an ".ocamlinit" file, but
+the user's home directory (environment variable "HOME") does, the
+latter is read and executed as described below.
+
+The toplevel system does not perform line editing, but it can
+easily be used in conjunction with an external line editor such as
+"ledit", "ocaml2" or "rlwrap"
+\begin{latexonly}
+(see the Caml Hump "http://caml.inria.fr/humps/index_framed_caml.html").
+\end{latexonly}
+\begin{htmlonly}
+(see the
+\ahref{http://caml.inria.fr/humps/index\_framed\_caml.html}{Caml Hump}).
+\end{htmlonly}
+Another option is to use "ocaml" under Gnu Emacs, which gives the
+full editing power of Emacs (command "run-caml" from library "inf-caml").
+
+At any point, the parsing, compilation or evaluation of the current
+phrase can be interrupted by pressing "ctrl-C" (or, more precisely,
+by sending the "INTR" signal to the "ocaml" process). The toplevel
+then immediately returns to the "#" prompt.
+
+If \var{scriptfile} is given on the command-line to "ocaml", the toplevel
+system enters script mode: the contents of the file are read as a
+sequence of OCaml phrases and executed, as per the "#use"
+directive (section~\ref{s:toplevel-directives}). The outcome of the
+evaluation is not printed.  On reaching the end of file, the "ocaml"
+command exits immediately.  No commands are read from standard input.
+"Sys.argv" is transformed, ignoring all OCaml parameters, and
+starting with the script file name in "Sys.argv.(0)".
+
+In script mode, the first line of the script is ignored if it starts
+with "#!".  Thus, it should be possible to make the script
+itself executable and put as first line "#!/usr/local/bin/ocaml",
+thus calling the toplevel system automatically when the script is
+run.  However, "ocaml" itself is a "#!" script on most installations
+of OCaml, and Unix kernels usually do not handle nested "#!"
+scripts.  A better solution is to put the following as the first line
+of the script:
+\begin{verbatim}
+        #!/usr/local/bin/ocamlrun /usr/local/bin/ocaml
+\end{verbatim}
+
+\end{unix}
+
+\section{Options} \label{s:toplevel-options}
+
+The following command-line options are recognized by the "ocaml" command.
+% Configure boolean variables used by the macros in unified-options.etex
+\compfalse
+\natfalse
+\toptrue
+% unified-options gathers all options across the native/bytecode
+% compilers and toplevel
+\input{unified-options.tex}
+
+\begin{unix}
+The following environment variables are also consulted:
+\begin{options}
+\item["OCAMLTOP_UTF_8"] When printing string values, non-ascii bytes
+($ {} > "\0x7E" $) are printed as decimal escape sequence if "OCAMLTOP_UTF_8" is
+set to false. Otherwise, they are printed unescaped.
+
+\item["TERM"] When printing error messages, the toplevel system
+attempts to underline visually the location of the error. It
+consults the "TERM" variable to determines the type of output terminal
+and look up its capabilities in the terminal database.
+
+\item["HOME"] Directory where the ".ocamlinit" file is searched.
+\end{options}
+\end{unix}
+
+\section{Toplevel directives}
+\label{s:toplevel-directives}
+
+The following directives control the toplevel behavior, load files in
+memory, and trace program execution.
+
+{\bf Note:} all directives start with a "#" (sharp) symbol.  This "#"
+must be typed before the directive, and must not be confused with the
+"#" prompt displayed by the interactive loop.  For instance,
+typing "#quit;;" will exit the toplevel loop, but typing "quit;;"
+will result in an ``unbound value "quit"'' error.
+
+%
+% Remark: this list of options should be kept synchronized with the documentation
+% in toplevel/topdirs.ml.
+%
+\begin{options}
+\item[General]
+  \begin{options}
+  \item["#help;;"]
+    Prints a list of all available directives, with corresponding argument type
+    if appropriate.
+  \item["#quit;;"]
+    Exit the toplevel loop and terminate the "ocaml" command.
+  \end{options}
+
+\item[Loading codes]
+  \begin{options}
+
+  \item["#cd \""\var{dir-name}"\";;"]
+    Change the current working directory.
+
+  \item["#directory \""\var{dir-name}"\";;"]
+    Add the given directory to the list of directories searched for
+    source and compiled files.
+
+  \item["#remove_directory \""\var{dir-name}"\";;"]
+    Remove the given directory from the list of directories searched for
+    source and compiled files.  Do nothing if the list does not contain
+    the given directory.
+
+  \item["#load \""\var{file-name}"\";;"]
+    Load in memory a bytecode object file (".cmo" file) or library file
+    (".cma" file) produced by the batch compiler "ocamlc".
+
+  \item["#load_rec \""\var{file-name}"\";;"]
+    Load in memory a bytecode object file (".cmo" file) or library file
+    (".cma" file) produced by the batch compiler "ocamlc".
+    When loading an object file that depends on other modules
+    which have not been loaded yet, the .cmo files for these modules
+    are searched and loaded as well, recursively. The loading order
+    is not specified.
+
+  \item["#use \""\var{file-name}"\";;"]
+    Read, compile and execute source phrases from the given file.
+    This is textual inclusion: phrases are processed just as if
+    they were typed on standard input. The reading of the file stops at
+    the first error encountered.
+
+  \item["#mod_use \""\var{file-name}"\";;"]
+    Similar to "#use" but also wrap the code into a top-level module of the
+    same name as capitalized file name without extensions, following
+    semantics of the compiler.
+  \end{options}
+
+For directives that take file names as arguments, if the given file
+name specifies no directory, the file is searched in the following
+directories:
+\begin{enumerate}
+  \item In script mode, the directory containing the script currently
+    executing; in interactive mode, the current working directory.
+  \item Directories added with the "#directory" directive.
+  \item Directories given on the command line with "-I" options.
+  \item The standard library directory.
+\end{enumerate}    
+
+\item[Environment queries]
+  \begin{options}
+  \item["#show_class "\var{class-path}";;"]\vspace{-4.7ex}
+  \item["#show_class_type "\var{class-path}";;"]\vspace{-4.7ex}
+  \item["#show_exception "\var{ident}";;"]\vspace{-4.7ex}
+  \item["#show_module "\var{module-path}";;"]\vspace{-4.7ex}
+  \item["#show_module_type "\var{modtype-path}";;"]\vspace{-4.7ex}
+  \item["#show_type "\var{typeconstr}";;"]\vspace{-4.7ex}
+  \item["#show_val "\var{value-path}";;"]
+    Print the signature of the corresponding component.
+
+  \item["#show "\var{ident}";;"]
+    Print the signatures of components with name \var{ident} in all the
+    above categories.
+    \end{options}
+
+\item[Pretty-printing]
+  \begin{options}
+
+  \item["#install_printer "\var{printer-name}";;"]
+    This directive registers the function named \var{printer-name} (a
+    value path) as a printer for values whose types match the argument
+    type of the function. That is, the toplevel loop will call
+    \var{printer-name} when it has such a value to print.
+
+    The printing function \var{printer-name} should have type
+    @"Format.formatter" "->" @t@ "->" "unit"@, where @@t@@ is the
+    type for the values to be printed, and should output its textual
+    representation for the value of type @@t@@ on the given formatter,
+    using the functions provided by the "Format" library.  For backward
+    compatibility, \var{printer-name} can also have type
+    @@t@ "->" "unit"@ and should then output on the standard
+    formatter, but this usage is deprecated.
+
+  \item["#print_depth "\var{n}";;"]
+    Limit the printing of values to a maximal depth of \var{n}.
+    The parts of values whose depth exceeds \var{n} are printed as "..."
+    (ellipsis).
+
+  \item["#print_length "\var{n}";;"]
+    Limit the number of value nodes printed to at most \var{n}.
+    Remaining parts of values are printed as "..." (ellipsis).
+
+  \item["#remove_printer "\var{printer-name}";;"]
+    Remove the named function from the table of toplevel printers.
+\end{options}
+
+\item[Tracing]
+  \begin{options}
+  \item["#trace "\var{function-name}";;"]
+    After executing this directive, all calls to the function named
+    \var{function-name} will be ``traced''. That is, the argument and the
+    result are displayed for each call, as well as the exceptions escaping
+    out of the function, raised either by the function itself or by
+    another function it calls. If the function is curried, each argument
+    is printed as it is passed to the function.
+
+  \item["#untrace "\var{function-name}";;"]
+    Stop tracing the given function.
+
+  \item["#untrace_all;;"]
+    Stop tracing all functions traced so far.
+  \end{options}
+
+\item[Compiler options]
+  \begin{options}
+  \item["#labels "\var{bool}";;"]
+    Ignore labels in function types if argument is "false", or switch back
+    to default behaviour (commuting style) if argument is "true".
+
+  \item["#ppx  \""\var{file-name}"\";;"]
+    After parsing, pipe the abstract syntax tree through the preprocessor
+    command.
+
+  \item["#principal "\var{bool}";;"]
+    If the argument is "true", check information paths during
+    type-checking, to make sure that all types are derived in a principal
+    way. If the argument is "false", do not check information paths.
+
+  \item["#rectypes;;"]
+    Allow arbitrary recursive types during type-checking. Note: once
+    enabled, this option cannot be disabled because that would lead to
+    unsoundness of the type system.
+
+  \item["#warn_error \""\var{warning-list}"\";;"]
+    Treat as errors the warnings enabled by the argument and as normal
+    warnings the warnings disabled by the argument.
+
+  \item["#warnings \""\var{warning-list}"\";;"]
+    Enable or disable warnings according to the argument.
+
+  \end{options}
+
+\end{options}
+
+\section{The toplevel and the module system} \label{s:toplevel-modules}
+
+Toplevel phrases can refer to identifiers defined in compilation units
+with the same mechanisms as for separately compiled units: either by
+using qualified names ("Modulename.localname"), or by using
+the "open" construct and unqualified names (see section~\ref{s:names}).
+
+However, before referencing another compilation unit, an
+implementation of that unit must be present in memory.
+At start-up, the toplevel system contains implementations for all the
+modules in the the standard library. Implementations for user modules
+can be entered with the "#load" directive described above. Referencing
+a unit for which no implementation has been provided
+results in the error "Reference to undefined global `...'".
+
+Note that entering "open "\var{Mod} merely accesses the compiled
+interface (".cmi" file) for \var{Mod}, but does not load the
+implementation of \var{Mod}, and does not cause any error if no
+implementation of \var{Mod} has been loaded. The error
+``reference to undefined global \var{Mod}'' will occur only when
+executing a value or module definition that refers to \var{Mod}.
+
+\section{Common errors}
+
+This section describes and explains the most frequently encountered
+error messages.
+
+\begin{options}
+
+\item[Cannot find file \var{filename}]
+The named file could not be found in the current directory, nor in the
+directories of the search path.
+
+If \var{filename} has the format \var{mod}".cmi", this
+means you have referenced the compilation unit \var{mod}, but its
+compiled interface could not be found. Fix: compile \var{mod}".mli" or
+\var{mod}".ml" first, to create the compiled interface \var{mod}".cmi".
+
+If \var{filename} has the format \var{mod}".cmo", this
+means you are trying to load with "#load" a bytecode object file that
+does not exist yet. Fix: compile \var{mod}".ml" first.
+
+If your program spans several directories, this error can also appear
+because you haven't specified the directories to look into. Fix: use
+the "#directory" directive to add the correct directories to the
+search path.
+
+\item[This expression has type \nth{t}{1}, but is used with type \nth{t}{2}]
+See section~\ref{s:comp-errors}.
+
+\item[Reference to undefined global \var{mod}]
+You have neglected to load in memory an implementation for a module
+with "#load". See section~\ref{s:toplevel-modules} above.
+
+\end{options}
+
+\section{Building custom toplevel systems: \texttt{ocamlmktop}}
+
+The "ocamlmktop" command builds OCaml toplevels that
+contain user code preloaded at start-up.
+
+The "ocamlmktop" command takes as argument a set of ".cmo" and ".cma"
+files, and links them with the object files that implement the OCaml toplevel.
+The typical use is:
+\begin{verbatim}
+        ocamlmktop -o mytoplevel foo.cmo bar.cmo gee.cmo
+\end{verbatim}
+This creates the bytecode file "mytoplevel", containing the OCaml toplevel
+system, plus the code from the three ".cmo"
+files. This toplevel is directly executable and is started by:
+\begin{verbatim}
+        ./mytoplevel
+\end{verbatim}
+This enters a regular toplevel loop, except that the code from
+"foo.cmo", "bar.cmo" and "gee.cmo" is already loaded in memory, just as
+if you had typed:
+\begin{verbatim}
+        #load "foo.cmo";;
+        #load "bar.cmo";;
+        #load "gee.cmo";;
+\end{verbatim}
+on entrance to the toplevel. The modules "Foo", "Bar" and "Gee" are
+not opened, though; you still have to do
+\begin{verbatim}
+        open Foo;;
+\end{verbatim}
+yourself, if this is what you wish.
+
+\subsection{Options}
+
+The following command-line options are recognized by "ocamlmktop".
+
+\begin{options}
+
+\item["-cclib" \var{libname}]
+Pass the "-l"\var{libname} option to the C linker when linking in
+``custom runtime'' mode. See the corresponding option for
+"ocamlc", in chapter~\ref{c:camlc}.
+
+\item["-ccopt" \var{option}]
+Pass the given option to the C compiler and linker, when linking in
+``custom runtime'' mode. See the corresponding option for
+"ocamlc", in chapter~\ref{c:camlc}.
+
+\item["-custom"]
+Link in ``custom runtime'' mode. See the corresponding option for
+"ocamlc", in chapter~\ref{c:camlc}.
+
+\item["-I" \var{directory}]
+Add the given directory to the list of directories searched for
+compiled object code files (".cmo" and ".cma").
+
+\item["-o" \var{exec-file}]
+Specify the name of the toplevel file produced by the linker.
+The default is "a.out".
+
+\end{options}
+
+\section{The native toplevel: \texttt{ocamlnat}\ (experimental)}
+
+{\bf This section describes a tool that is not yet officially supported %
+but may be found useful.}
+
+OCaml code executing in the traditional toplevel system uses the bytecode
+interpreter.  When increased performance is required, or for testing
+programs that will only execute correctly when compiled to native code,
+the {\em native toplevel} may be used instead.
+
+For the majority of installations the native toplevel will not have been
+installed along with the rest of the OCaml toolchain.  In such circumstances
+it will be necessary to build the OCaml distribution from source.
+From the built source tree of the distribution you may use
+{\tt make natruntop} to build and execute a native toplevel.  (Alternatively
+{\tt make ocamlnat} can be used, which just performs the build step.)
+
+If the {\tt make install} command is run after having built the native
+toplevel then the {\tt ocamlnat} program (either from the source or the
+installation directory) may be invoked directly rather than using
+{\tt make natruntop}.

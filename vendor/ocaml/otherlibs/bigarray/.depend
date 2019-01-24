@@ -1,0 +1,13 @@
+bigarray_stubs.$(O): bigarray_stubs.c ../../byterun/caml/alloc.h \
+  ../../byterun/caml/misc.h ../../byterun/caml/config.h \
+  ../../byterun/caml/m.h ../../byterun/caml/s.h \
+  ../../byterun/caml/mlvalues.h ../../byterun/caml/bigarray.h \
+  ../../byterun/caml/custom.h ../../byterun/caml/fail.h \
+  ../../byterun/caml/intext.h ../../byterun/caml/io.h \
+  ../../byterun/caml/hash.h ../../byterun/caml/memory.h \
+  ../../byterun/caml/gc.h ../../byterun/caml/major_gc.h \
+  ../../byterun/caml/freelist.h ../../byterun/caml/minor_gc.h \
+  ../../byterun/caml/address_class.h ../../byterun/caml/signals.h
+bigarray.cmo : bigarray.cmi
+bigarray.cmx : bigarray.cmi
+bigarray.cmi :

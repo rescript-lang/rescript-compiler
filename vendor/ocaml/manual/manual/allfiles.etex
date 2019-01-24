@@ -1,0 +1,110 @@
+\makeindex{\jobname}
+\makeindex{\jobname.kwd}
+
+\setlength{\emergencystretch}{50pt}  % pour que TeX resolve les overfull hbox lui-meme
+
+\begin{document}
+
+\thispagestyle{empty}
+\begin{center}
+~\vfill
+\Huge           The OCaml system \\
+                release \ocamlversion \\[1cm]
+\Large          Documentation and user's manual \\[1cm]
+\large          Xavier Leroy, \\
+                Damien Doligez, Alain Frisch, Jacques Garrigue, Didier Rémy and Jérôme Vouillon \\[1cm]
+                \today \\
+                ~
+\vfill
+\normalsize     Copyright \copyright\ \number\year\ Institut National de
+                Recherche en Informatique et en Automatique
+\end{center}
+\cleardoublepage
+\setcounter{page}{1}
+
+
+\begin{htmlonly}
+\begin{quote}
+\rule{}{}
+This manual is also available in
+\ahref{http://caml.inria.fr/distrib/ocaml-\ocamlversion/ocaml-\ocamlversion-refman.pdf}{PDF}.
+\ahref{http://caml.inria.fr/distrib/ocaml-\ocamlversion/ocaml-\ocamlversion-refman.ps.gz}{Postscript},
+\ahref{http://caml.inria.fr/distrib/ocaml-\ocamlversion/ocaml-\ocamlversion-refman.dvi.gz}{DVI},
+\ahref{http://caml.inria.fr/distrib/ocaml-\ocamlversion/ocaml-\ocamlversion-refman.txt}{plain text},
+as a
+\ahref{http://caml.inria.fr/distrib/ocaml-\ocamlversion/ocaml-\ocamlversion-refman-html.tar.gz}{bundle of HTML files},
+and as a
+\ahref{http://caml.inria.fr/distrib/ocaml-\ocamlversion/ocaml-\ocamlversion-refman.info.tar.gz}{bundle of Emacs Info files}.
+\rule{}{}
+\end{quote}
+\end{htmlonly}
+
+\tableofcontents
+
+\input{foreword.tex}
+
+\part{An introduction to OCaml}
+\label{p:tutorials}
+\input{coreexamples.tex}
+\input{moduleexamples.tex}
+\input{objectexamples.tex}
+\input{lablexamples.tex}
+\input{polymorphism.tex}
+\input{advexamples.tex}
+
+\part{The OCaml language}
+\label{p:refman}
+\input{refman.tex}
+\input{exten.tex}
+
+\part{The OCaml tools}
+\label{p:commands}
+
+\input{comp.tex}
+\input{top.tex}
+\input{runtime.tex}
+\input{native.tex}
+\input{lexyacc.tex}
+\input{depend.tex}
+\input{browser.tex}
+\input{ocamldoc.tex}
+\input{debugger.tex}
+\input{profil.tex}
+\input{ocamlbuild.tex}
+% \input emacs.tex
+\input{intf-c.tex}
+\input{flambda.tex}
+\input{spacetime.tex}
+\input{afl-fuzz.tex}
+\input{plugins}
+
+\part{The OCaml library}
+\label{p:library}
+\input{core.tex}
+\input{stdlib.tex}
+\input{compilerlibs.tex}
+\input{libunix.tex}
+\input{libnum.tex}
+\input{libstr.tex}
+\input{libthreads.tex}
+\input{libgraph.tex}
+\input{libdynlink.tex}
+\input{libbigarray.tex}
+
+\part{Appendix}
+\label{p:appendix}
+
+\ifouthtml
+\begin{links}
+\item \ahref{libref/index_modules.html}{Index of modules}
+\item \ahref{libref/index_module_types.html}{Index of module types}
+\item \ahref{libref/index_types.html}{Index of types}
+\item \ahref{libref/index_exceptions.html}{Index of exceptions}
+\item \ahref{libref/index_values.html}{Index of values}
+\end{links}
+\else
+\printindex{\jobname}{Index to the library}
+\fi
+\printindex{\jobname.kwd}{Index of keywords}
+
+\end{document}

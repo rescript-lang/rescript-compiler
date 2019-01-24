@@ -1,0 +1,190 @@
+\documentclass[11pt]{article} 
+\usepackage[latin1]{inputenc} 
+\usepackage[T1]{fontenc} 
+\usepackage{textcomp}
+\usepackage{fullpage} 
+\usepackage{url} 
+\usepackage{ocamldoc}
+\begin{document}
+\tableofcontents
+\section{Module {\tt{Variants}} : This test is here to check the latex code generated for variants}
+\label{Variants}\index{Variants@\verb`Variants`}
+
+
+
+
+\ocamldocvspace{0.5cm}
+
+
+
+\label{TYPVariants.s}\begin{ocamldoccode}
+type s =
+  | A
+  | B
+\end{ocamldoccode}
+\begin{ocamldoccomment}
+only B is documented here
+
+
+\end{ocamldoccomment}
+\begin{ocamldoccode}
+  | C
+\end{ocamldoccode}
+\index{s@\verb`s`}
+
+
+
+
+\label{TYPVariants.t}\begin{ocamldoccode}
+type t =
+  | A
+\end{ocamldoccode}
+\begin{ocamldoccomment}
+doc for A
+
+
+\end{ocamldoccomment}
+\begin{ocamldoccode}
+  | B
+\end{ocamldoccode}
+\begin{ocamldoccomment}
+doc for B
+
+
+\end{ocamldoccomment}
+\index{t@\verb`t`}
+
+
+
+
+\label{TYPVariants.u}\begin{ocamldoccode}
+type u =
+  | A
+\end{ocamldoccode}
+\begin{ocamldoccomment}
+doc for A
+
+
+\end{ocamldoccomment}
+\begin{ocamldoccode}
+  | B of unit
+\end{ocamldoccode}
+\begin{ocamldoccomment}
+doc for B
+
+
+\end{ocamldoccomment}
+\index{u@\verb`u`}
+\begin{ocamldocdescription}
+Some documentation for u
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{TYPVariants.w}\begin{ocamldoccode}
+type w =
+  | A of {\char123}  x : int ;
+{\char125}
+\end{ocamldoccode}
+\begin{ocamldoccomment}
+doc for A
+
+
+\end{ocamldoccomment}
+\begin{ocamldoccode}
+  | B of {\char123}  y : int ;
+{\char125}
+\end{ocamldoccode}
+\begin{ocamldoccomment}
+doc for B
+
+
+\end{ocamldoccomment}
+\index{w@\verb`w`}
+\begin{ocamldocdescription}
+With records
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{TYPVariants.z}\begin{ocamldoccode}
+type z =
+  | A of int
+\end{ocamldoccode}
+\begin{ocamldoccomment}
+doc for A
+
+
+\end{ocamldoccomment}
+\begin{ocamldoccode}
+  | B of int
+\end{ocamldoccode}
+\begin{ocamldoccomment}
+doc for B
+
+
+\end{ocamldoccomment}
+\index{z@\verb`z`}
+\begin{ocamldocdescription}
+With args
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{TYPVariants.a}\begin{ocamldoccode}
+type a =
+  | A : a
+\end{ocamldoccode}
+\begin{ocamldoccomment}
+doc for A
+
+
+\end{ocamldoccomment}
+\index{a@\verb`a`}
+\begin{ocamldocdescription}
+Gadt notation
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{TYPVariants.b}\begin{ocamldoccode}
+type b =
+  | B
+\end{ocamldoccode}
+\begin{ocamldoccomment}
+doc for B
+
+
+\end{ocamldoccomment}
+\index{b@\verb`b`}
+\begin{ocamldocdescription}
+Lonely constructor
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{TYPVariants.no-underscoredocumentation}\begin{ocamldoccode}
+type no_documentation =
+  | A
+  | B
+  | C
+\end{ocamldoccode}
+\index{no-underscoredocumentation@\verb`no_documentation`}
+
+
+\end{document}

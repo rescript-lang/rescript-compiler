@@ -1,0 +1,97 @@
+# The format of this file is generally of the form
+# <correct authorship information> <information found in commit message>
+# for example:
+# Proper Name <commit@email>
+# <proper@email> <commit@email>
+# Proper Name <proper@email> Commit Name <commit@email>
+#
+# See the MAPPING AUTHORS section of 'man git-shortlog' for more details.
+
+# Such a remapping may be useful in particular for tracking authorship
+# of commits erroneously made under an obscure alias or email adress.
+# (Some Name <some@name.com>, pour ne pas le citer)
+
+Alain Frisch <alain@frisch.fr> alainfrisch <alain@frisch.fr>
+<damien.doligez@inria.fr> <damien.doligez-inria.fr>
+<damien.doligez@inria.fr> <damien.doligez@gmail.com>
+Luc Maranget <luc.maranget@inria.fr>
+<luc.maranget@inria.fr> <Luc.Maranget@inria.fr>
+<luc.maranget@inria.fr> <maranget@pl-59086.rocq.inria.fr>
+<pierre.chambart@ocamlpro.com> <chambart@users.noreply.github.com>
+<xavier.leroy@inria.fr> <xavierleroy@users.noreply.github.com>
+<leo@lpw25.net> <lpw25@cl.cam.ac.uk>
+<Jerome.Vouillon@pps.jussieu.fr> <jerome.vouillon@pps.univ-paris-diderot.fr>
+cvs2svn <no_author@ocaml.org>
+Damien Doligez <damien.doligez@inria.fr> Some Name <some@name.com>
+Damien Doligez <damien.doligez@inria.fr> doligez <damien.doligez@inria.fr>
+Mohamed Iguernelala <mohamed.iguernelala@gmail.com>
+Jérémie Dimino <jdimino@janestreet.com>
+Jeremy Yallop <yallop@gmail.com> yallop <yallop@gmail.com>
+
+# The aliases below correspond to preference expressed by
+# contributors on the name under which they credited, for example
+# if they use an opaque nickname from github or mantis:
+#
+#   Preferred Name <email> nickname <contribution-email>
+# or
+#   Preferred Name <nickname@mantis>
+#   Preferred Name <nickname@github>
+# to indicate a preference associated to a Mantis account.
+
+Florian Angeletti <octa@polychoron.fr> octachron <octa@polychoron.fr>
+Gabriel Radanne <drupyog@zoho.com> Drup <drupyog@zoho.com>
+Pierre Weis <Pierre.Weis@inria.fr> pierreweis <Pierre.Weis@inria.fr>
+John Christopher McAlpine <christophermcalpine@gmail.com> chrismamo1 <christophermcalpine@gmail.com>
+Runhang Li <runhang@posteo.de> marklrh <marklrh@gmail.com>
+Francis Souther <francis.southern@gmail.com> FDSouthern <francis.southern@gmail.com>
+Simon Cruanes <simon.cruanes.2007@m4x.org> <c-cube@mantis>
+Frederic Bour <frederic.bour@lakaban.net> <def@mantis>
+David Sheets <dsheets@mantis>
+David Allsopp <dra@mantis>
+David Allsopp <dra27@github>
+Tim Cuthbertson <gfxmonk@mantis>
+Grégoire Henry <hnrgrgr@mantis>
+Julien Moutinho <julm@mantis>
+Adam Borowski <KiloByte@mantis>
+Mikhail Mandrykin <mandrykin@mantis>
+Maverick Woo <maverickwoo>
+Andi McClure <mcc>
+Michael Grünewald <michi>
+Michael O'Connor <mkoconnor>
+Florian Angeletti <octachron>
+Kenji Tokudome <pocarist>
+Philippe Veber <pveber>
+Valentin Gatien-Baron <sliquister>
+Valentin Gatien-Baron <valentin.gatienbaron@gmail.com>
+Stephen Dolan <stedolan>
+Junsong Li <lijunsong@mantis>
+Junsong Li <ljs.darkfish@gmail.com>
+Christophe Raffali <craff@mantis>
+Anton Bachin <antron@mantis>
+Reed Wilson <omion>
+David Scott <djs55>
+Martin Neuhäußer <sawfish@mantis>
+Goswin von Brederlow <mrvn>
+Thomas Leonard <talex@mantis>
+Thomas Leonard <talex5@github>
+Adrien Nader <adrien-n@github>
+Sébastien Hinderer <shindere@github>
+Sébastien Hinderer <Sebastien.Hinderer@inria.fr>
+Gabriel Scherer <gasche@github>
+Immanuel Litzroth <sdev@mantis>
+Jacques Le Normand <rathereasy@github>
+Konstantin Romanov <const-rs@github>
+Arseniy Alekseyev <aalekseyev@janestreet.com>
+Dwight Guth <dwight.guth@runtimeverification.com>
+Dwight Guth <dwightguth@github>
+Andreas Hauptmann <andreashauptmann@t-online.de> fdopen <andreashauptmann@t-online.de>
+Andreas Hauptmann <andreashauptmann@t-online.de> <fdopen@users.noreply.github.com>
+Hendrik Tews <hendrik@askra.de>
+Hugo Heuzard <hugo.heuzard@gmail.com>
+Miod Vallat <miod@mantis>
+
+# These contributors prefer to be referred to pseudonymously
+whitequark <whitequark@whitequark.org>
+<william@mantis> <william@mantis>
+tkob <ether4@gmail.com> tkob <ether4@gmail.com>
+ygrek <ygrek@autistici.org> ygrek <ygrek@autistici.org>

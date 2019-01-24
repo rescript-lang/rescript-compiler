@@ -1,0 +1,8 @@
+
+#   type (_, _) eq = Refl : ('a, 'a) eq
+# val cast : ('a, 'b) eq -> 'a -> 'b = <fun>
+#           Characters 53-78:
+    let rec (p : (int, a) eq) = match p with Refl -> Refl in
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^
+Error: This kind of expression is not allowed as right-hand side of `let rec'
+# 

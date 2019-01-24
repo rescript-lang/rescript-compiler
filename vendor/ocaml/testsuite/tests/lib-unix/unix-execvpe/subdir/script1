@@ -1,0 +1,4 @@
+#!/bin/sh
+echo "--- subdir/script1"
+echo "FOO is $FOO, BAR is $BAR, BUZ is $BUZ"
+echo "$# arguments:  $*"

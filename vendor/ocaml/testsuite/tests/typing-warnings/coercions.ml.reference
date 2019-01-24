@@ -1,0 +1,18 @@
+
+#     - : bool -> ('a, 'b, 'c, 'd, 'd, 'a) format6 = <fun>
+# Characters 28-48:
+  fun b -> if b then "x" else format_of_string "y";;
+                              ^^^^^^^^^^^^^^^^^^^^
+Error: This expression has type
+         ('a, 'b, 'c, 'd, 'd, 'a) format6 =
+           ('a, 'b, 'c, 'd, 'd, 'a) CamlinternalFormatBasics.format6
+       but an expression was expected of type string
+# - : bool -> ('a, 'b, 'a) format = <fun>
+#                   module PR7135 :
+  sig
+    module M : sig type t = private int end
+    type t = M.t
+    val lift2 : (int -> int -> int) -> t -> t -> int
+  end
+#             module Test1 : sig type t = private int val f : t -> int end
+# 

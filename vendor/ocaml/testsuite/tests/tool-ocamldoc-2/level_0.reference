@@ -1,0 +1,36 @@
+\documentclass[11pt]{article} 
+\usepackage[latin1]{inputenc} 
+\usepackage[T1]{fontenc} 
+\usepackage{textcomp}
+\usepackage{fullpage} 
+\usepackage{url} 
+\usepackage{ocamldoc}
+\begin{document}
+\tableofcontents
+\section{Module {\tt{Level\_0}} : Test for level 0 headings }
+\label{Level-underscore0}\index{Level-underscore0@\verb`Level_0`}
+
+
+
+  \subsection*{Level 1}
+ 
+
+
+   Standard heading levels start at 1.
+
+
+  \section{Level 0}
+
+  A level 0 heading is guaranted to be at the same level that
+  the main heading of the module.
+
+
+  This setup allows users to start their standard heading at level 1 rather 
+  than 2, without losing the ability to add global level heading, 
+  when, if ever, such heading is warranted
+
+
+
+\ocamldocvspace{0.5cm}
+
+\end{document}

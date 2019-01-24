@@ -1,0 +1,52 @@
+[
+  structure_item (empty.ml[1,0+0]..[1,0+14])
+    Pstr_type Rec
+    [
+      type_declaration "t" (empty.ml[1,0+5]..[1,0+6]) (empty.ml[1,0+0]..[1,0+14])
+        attribute "ocaml.doc"
+          [
+            structure_item (empty.ml[2,20+0]..[2,20+20])
+              Pstr_eval
+              expression (empty.ml[2,20+0]..[2,20+20])
+                Pexp_constant PConst_string(" attached to t ",None)
+          ]
+        ptype_params =
+          []
+        ptype_cstrs =
+          []
+        ptype_kind =
+          Ptype_variant
+            [
+              (empty.ml[1,0+9]..[1,0+14])
+                "Label" (empty.ml[1,0+9]..[1,0+14])
+                []
+                None
+            ]
+        ptype_private = Public
+        ptype_manifest =
+          None
+    ]
+  structure_item (empty.ml[6,48+0]..[6,48+62])
+    Pstr_attribute "ocaml.text"
+    [
+      structure_item (empty.ml[6,48+0]..[6,48+62])
+        Pstr_eval
+        expression (empty.ml[6,48+0]..[6,48+62])
+          Pexp_constant PConst_string(" Empty docstring comments should not generate attributes ",None)
+    ]
+  structure_item (empty.ml[8,112+0]..[8,112+6])
+    Pstr_type Rec
+    [
+      type_declaration "w" (empty.ml[8,112+5]..[8,112+6]) (empty.ml[8,112+0]..[8,112+6])
+        ptype_params =
+          []
+        ptype_cstrs =
+          []
+        ptype_kind =
+          Ptype_abstract
+        ptype_private = Public
+        ptype_manifest =
+          None
+    ]
+]
+

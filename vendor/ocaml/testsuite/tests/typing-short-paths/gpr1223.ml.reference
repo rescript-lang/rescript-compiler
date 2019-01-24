@@ -1,0 +1,4 @@
+
+#   val y : Gpr1223_bar.N.O.t = Gpr1223_bar.N.O.T
+#   val x : Gpr1223_bar.M.t = Gpr1223_bar.M.T
+# 

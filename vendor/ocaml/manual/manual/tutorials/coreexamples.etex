@@ -1,0 +1,749 @@
+\chapter{The core language} \label{c:core-xamples}
+\pdfchapterfold{-9}{Tutorial: The core language}
+%HEVEA\cutname{coreexamples.html}
+
+This part of the manual is a tutorial introduction to the
+OCaml language. A good familiarity with programming in a conventional
+languages (say, Pascal or C) is assumed, but no prior exposure to
+functional languages is required. The present chapter introduces the
+core language. Chapter~\ref{c:moduleexamples} deals with the
+module system, chapter~\ref{c:objectexamples} with the
+object-oriented features, chapter~\ref{c:labl-examples} with
+extensions to the core language (labeled arguments and polymorphic
+variants), and chapter~\ref{c:advexamples} gives some advanced examples.
+
+\section{Basics}
+\pdfsection{Basics}
+
+For this overview of OCaml, we use the interactive system, which
+is started by running "ocaml" from the Unix shell, or by launching the
+"OCamlwin.exe" application under Windows. This tutorial is presented
+as the transcript of a session with the interactive system:
+lines starting with "#" represent user input; the system responses are
+printed below, without a leading "#".
+
+Under the interactive system, the user types OCaml phrases terminated
+by ";;" in response to the "#" prompt, and the system compiles them
+on the fly, executes them, and prints the outcome of evaluation.
+Phrases are either simple expressions, or "let" definitions of
+identifiers (either values or functions).
+\begin{caml_example}{toplevel}
+1+2*3;;
+let pi = 4.0 *. atan 1.0;;
+let square x = x *. x;;
+square (sin pi) +. square (cos pi);;
+\end{caml_example}
+The OCaml system computes both the value and the type for
+each phrase. Even function parameters need no explicit type declaration:
+the system infers their types from their usage in the
+function. Notice also that integers and floating-point numbers are
+distinct types, with distinct operators: "+" and "*" operate on
+integers, but "+." and "*."  operate on floats.
+\begin{caml_example}{toplevel}[error]
+1.0 * 2;;
+\end{caml_example}
+
+Recursive functions are defined with the "let rec" binding:
+\begin{caml_example}{toplevel}
+let rec fib n =
+  if n < 2 then n else fib (n-1) + fib (n-2);;
+fib 10;;
+\end{caml_example}
+
+\section{Data types}
+\pdfsection{Data types}
+
+In addition to integers and floating-point numbers, OCaml offers the
+usual basic data types: booleans, characters, and immutable character strings.
+\begin{caml_example}{toplevel}
+(1 < 2) = false;;
+'a';;
+"Hello world";;
+\end{caml_example}
+
+Predefined data structures include tuples, arrays, and lists. General
+mechanisms for defining your own data structures are also provided.
+They will be covered in more details later; for now, we concentrate on lists.
+Lists are either given in extension as a bracketed list of
+semicolon-separated elements, or built from the empty list "[]"
+(pronounce ``nil'') by adding elements in front using the "::"
+(``cons'') operator.
+\begin{caml_example}{toplevel}
+let l = ["is"; "a"; "tale"; "told"; "etc."];;
+"Life" :: l;;
+\end{caml_example}
+As with all other OCaml data structures, lists do not need to be
+explicitly allocated and deallocated from memory: all memory
+management is entirely automatic in OCaml. Similarly, there is no
+explicit handling of pointers: the OCaml compiler silently introduces
+pointers where necessary.
+
+As with most OCaml data structures, inspecting and destructuring lists
+is performed by pattern-matching. List patterns have the exact same
+shape as list expressions, with identifier representing unspecified
+parts of the list. As an example, here is insertion sort on a list:
+\begin{caml_example}{toplevel}
+let rec sort lst =
+  match lst with
+    [] -> []
+  | head :: tail -> insert head (sort tail)
+and insert elt lst =
+  match lst with
+    [] -> [elt]
+  | head :: tail -> if elt <= head then elt :: lst else head :: insert elt tail
+;;
+sort l;;
+\end{caml_example}
+
+The type inferred for "sort", "'a list -> 'a list", means that "sort"
+can actually apply to lists of any type, and returns a list of the
+same type. The type "'a" is a {\em type variable}, and stands for any
+given type. The reason why "sort" can apply to lists of any type is
+that the comparisons ("=", "<=", etc.) are {\em polymorphic} in OCaml:
+they operate between any two values of the same type. This makes
+"sort" itself polymorphic over all list types.
+\begin{caml_example}{toplevel}
+sort [6;2;5;3];;
+sort [3.14; 2.718];;
+\end{caml_example}
+
+The "sort" function above does not modify its input list: it builds
+and returns a new list containing the same elements as the input list,
+in ascending order. There is actually no way in OCaml to modify
+in-place a list once it is built: we say that lists are  {\em immutable}
+data structures. Most OCaml data structures are immutable, but a few
+(most notably arrays) are {\em mutable}, meaning that they can be
+modified in-place at any time.
+
+\section{Functions as values}
+\pdfsection{Functions as values}
+
+OCaml is a  functional language: functions in the full mathematical
+sense are supported and can be passed around freely just as any other
+piece of data. For instance, here is a "deriv" function that takes any
+float function as argument and returns an approximation of its
+derivative function:
+\begin{caml_example}{toplevel}
+let deriv f dx = function x -> (f (x +. dx) -. f x) /. dx;;
+let sin' = deriv sin 1e-6;;
+sin' pi;;
+\end{caml_example}
+Even function composition is definable:
+\begin{caml_example}{toplevel}
+let compose f g = function x -> f (g x);;
+let cos2 = compose square cos;;
+\end{caml_example}
+
+Functions that take other functions as arguments are called
+``functionals'', or ``higher-order functions''. Functionals are
+especially useful to provide iterators or similar generic operations
+over a data structure. For instance, the standard OCaml library
+provides a "List.map" functional that applies a given function to each
+element of a list, and returns the list of the results:
+\begin{caml_example}{toplevel}
+List.map (function n -> n * 2 + 1) [0;1;2;3;4];;
+\end{caml_example}
+This functional, along with a number of other list and array
+functionals, is predefined because it is often useful, but there is
+nothing magic with it: it can easily be defined as follows.
+\begin{caml_example}{toplevel}
+let rec map f l =
+  match l with
+    [] -> []
+  | hd :: tl -> f hd :: map f tl;;
+\end{caml_example}
+
+\section{Records and variants}
+\pdfsection{Records and variants}
+\label{s:tut-recvariants}
+
+User-defined data structures include records and variants. Both are
+defined with the "type" declaration. Here, we declare a record type to
+represent rational numbers.
+\begin{caml_example}{toplevel}
+type ratio = {num: int; denom: int};;
+let add_ratio r1 r2 =
+  {num = r1.num * r2.denom + r2.num * r1.denom;
+   denom = r1.denom * r2.denom};;
+add_ratio {num=1; denom=3} {num=2; denom=5};;
+\end{caml_example}
+Record fields can also be accessed through pattern-matching:
+\begin{caml_example}{toplevel}
+let integer_part r =
+  match r with
+    {num=num; denom=denom} -> num / denom;;
+\end{caml_example}
+Since there is only one case in this pattern matching, it
+is safe to expand directly the argument "r" in a record pattern:
+\begin{caml_example}{toplevel}
+let integer_part {num=num; denom=denom} = num / denom;;
+\end{caml_example}
+Unneeded fields can be omitted:
+\begin{caml_example}{toplevel}
+let get_denom {denom=denom} = denom;;
+\end{caml_example}
+Optionally, missing fields can be made explicit by ending the list of
+fields with a trailing wildcard "_"::
+\begin{caml_example}{toplevel}
+let get_num {num=num; _ } = num;;
+\end{caml_example}
+When both sides of the "=" sign are the same, it is possible to avoid
+repeating the field name by eliding the "=field" part:
+\begin{caml_example}{toplevel}
+let integer_part {num; denom} = num / denom;;
+\end{caml_example}
+This short notation for fields also works when constructing records:
+\begin{caml_example}{toplevel}
+let ratio num denom = {num; denom};;
+\end{caml_example}
+At last, it is possible to update few fields of a record at once:
+\begin{caml_example}{toplevel}
+  let integer_product integer ratio = { ratio with num = integer * ratio.num };;
+\end{caml_example}
+With this functional update notation, the record on the left-hand side
+of "with" is copied except for the fields on the right-hand side which
+are updated.
+
+The declaration of a variant type lists all possible shapes for values
+of that type. Each case is identified by a name, called a constructor,
+which serves both for constructing values of the variant type and
+inspecting them by pattern-matching. Constructor names are capitalized
+to distinguish them from variable names (which must start with a
+lowercase letter). For instance, here is a variant
+type for doing mixed arithmetic (integers and floats):
+\begin{caml_example}{toplevel}
+type number = Int of int | Float of float | Error;;
+\end{caml_example}
+This declaration expresses that a value of type "number" is either an
+integer, a floating-point number, or the constant "Error" representing
+the result of an invalid operation (e.g. a division by zero).
+
+Enumerated types are a special case of variant types, where all
+alternatives are constants:
+\begin{caml_example}{toplevel}
+type sign = Positive | Negative;;
+let sign_int n = if n >= 0 then Positive else Negative;;
+\end{caml_example}
+
+To define arithmetic operations for the "number" type, we use
+pattern-matching on the two numbers involved:
+\begin{caml_example}{toplevel}
+let add_num n1 n2 =
+  match (n1, n2) with
+    (Int i1, Int i2) ->
+      (* Check for overflow of integer addition *)
+      if sign_int i1 = sign_int i2 && sign_int (i1 + i2) <> sign_int i1
+      then Float(float i1 +. float i2)
+      else Int(i1 + i2)
+  | (Int i1, Float f2) -> Float(float i1 +. f2)
+  | (Float f1, Int i2) -> Float(f1 +. float i2)
+  | (Float f1, Float f2) -> Float(f1 +. f2)
+  | (Error, _) -> Error
+  | (_, Error) -> Error;;
+add_num (Int 123) (Float 3.14159);;
+\end{caml_example}
+
+Another interesting example of variant type is the built-in
+"'a option" type which represents either a value of type "'a" or an
+absence of value:
+\begin{caml_example}{toplevel}
+type 'a option = Some of 'a | None;;
+\end{caml_example}
+This type is particularly useful when defining function that can
+fail in common situations, for instance
+\begin{caml_example}{toplevel}
+let safe_square_root x = if x > 0. then Some(sqrt x) else None;;
+\end{caml_example}
+
+The most common usage of variant types is to describe recursive data
+structures. Consider for example the type of binary trees:
+\begin{caml_example}{toplevel}
+type 'a btree = Empty | Node of 'a * 'a btree * 'a btree;;
+\end{caml_example}
+This definition reads as follows: a binary tree containing values of
+type "'a" (an arbitrary type) is either empty, or is a node containing
+one value of type "'a" and two subtrees containing also values of type
+"'a", that is, two "'a btree".
+
+Operations on binary trees are naturally expressed as recursive functions
+following the same structure as the type definition itself. For
+instance, here are functions performing lookup and insertion in
+ordered binary trees (elements increase from left to right):
+\begin{caml_example}{toplevel}
+let rec member x btree =
+  match btree with
+    Empty -> false
+  | Node(y, left, right) ->
+      if x = y then true else
+      if x < y then member x left else member x right;;
+let rec insert x btree =
+  match btree with
+    Empty -> Node(x, Empty, Empty)
+  | Node(y, left, right) ->
+      if x <= y then Node(y, insert x left, right)
+                else Node(y, left, insert x right);;
+\end{caml_example}
+
+
+\subsection{Record and variant disambiguation}
+( This subsection can be skipped on the first reading )
+
+Astute readers may have wondered what happens when two or more record
+fields or constructors share the same name
+
+\begin{caml_example*}{toplevel}
+type first_record  = { x:int; y:int; z:int }
+type middle_record = { x:int; z:int }
+type last_record   = { x:int };;
+type first_variant = A | B | C
+type last_variant  = A;;
+\end{caml_example*}
+
+The answer is that when confronted with multiple options, OCaml tries to
+use locally available information to disambiguate between the various fields
+and constructors. First, if the type of the record or variant is known,
+OCaml can pick unambiguously the corresponding field or constructor.
+For instance:
+
+\begin{caml_example}{toplevel}
+let look_at_x_then_z (r:first_record) =
+  let x = r.x in
+  x + r.z;;
+let permute (x:first_variant) = match x with
+  | A -> (B:first_variant)
+  | B -> A
+  | C -> C;;
+type wrapped = First of first_record
+let f (First r) = r, r.x;;
+\end{caml_example}
+
+In the first example, "(r:first_record)" is an explicit annotation
+telling OCaml that the type of "r" is "first_record". With this
+annotation, Ocaml knows that "r.x" refers to the "x" field of the first
+record type. Similarly, the type annotation in the second example makes
+it clear to OCaml that the constructors "A", "B" and "C" come from the
+first variant type. Contrarily, in the last example, OCaml has inferred
+by itself that the type of "r" can only be "first_record" and there are
+no needs for explicit type annotations.
+
+Those explicit type annotations can in fact be used anywhere.
+Most of the time they are unnecessary, but they are useful to guide
+disambiguation, to debug unexpected type errors, or combined with some
+of the more advanced features of OCaml described in later chapters.
+
+Secondly, for records, OCaml can also deduce the right record type by
+looking at the whole set of fields used in a expression or pattern:
+\begin{caml_example}{toplevel}
+let project_and_rotate {x;y; _ } = { x= - y; y = x ; z = 0} ;;
+\end{caml_example}
+Since the fields "x" and "y" can only appear simultaneously in the first
+record type, OCaml infers that the type of "project_and_rotate" is
+"first_record -> first_record".
+
+In last resort, if there is not enough information to disambiguate between
+different fields or constructors, Ocaml picks the last defined type
+amongst all locally valid choices:
+
+\begin{caml_example}{toplevel}
+let look_at_xz {x;z} = x;;
+\end{caml_example}
+
+Here, OCaml has inferred that the possible choices for the type of
+"{x;z}" are "first_record" and "middle_record", since the type
+"last_record" has no field "z". Ocaml then picks the type "middle_record"
+as the last defined type between the two possibilities.
+
+Beware that this last resort disambiguation is local: once Ocaml has
+chosen a disambiguation, it sticks to this choice, even if it leads to
+an ulterior type error:
+
+\begin{caml_example}{toplevel}[error]
+let look_at_x_then_y r =
+  let x = r.x in (* Ocaml deduces [r: last_record] *)
+  x + r.y;;
+let is_a_or_b x = match x with
+  | A -> true (* OCaml infers [x: last_variant] *)
+  | B -> true;;
+\end{caml_example}
+
+Moreover, being the last defined type is a quite unstable position that
+may change surreptitiously after adding or moving around a type
+definition, or after opening a module (see chapter \ref{c:moduleexamples}).
+Consequently, adding explicit type annotations to guide disambiguation is
+more robust than relying on the last defined type disambiguation.
+
+\section{Imperative features}
+\pdfsection{Imperative features}
+
+Though all examples so far were written in purely applicative style,
+OCaml is also equipped with full imperative features. This includes the
+usual "while" and "for" loops, as well as mutable data structures such
+as arrays. Arrays are either given in extension between "[|" and "|]"
+brackets, or allocated and initialized with the "Array.make"
+function, then filled up later by assignments. For instance, the
+function below sums two vectors (represented as float arrays) componentwise.
+\begin{caml_example}{toplevel}
+let add_vect v1 v2 =
+  let len = min (Array.length v1) (Array.length v2) in
+  let res = Array.make len 0.0 in
+  for i = 0 to len - 1 do
+    res.(i) <- v1.(i) +. v2.(i)
+  done;
+  res;;
+add_vect [| 1.0; 2.0 |] [| 3.0; 4.0 |];;
+\end{caml_example}
+
+Record fields can also be modified by assignment, provided they are
+declared "mutable" in the definition of the record type:
+\begin{caml_example}{toplevel}
+type mutable_point = { mutable x: float; mutable y: float };;
+let translate p dx dy =
+  p.x <- p.x +. dx; p.y <- p.y +. dy;;
+let mypoint = { x = 0.0; y = 0.0 };;
+translate mypoint 1.0 2.0;;
+mypoint;;
+\end{caml_example}
+
+OCaml has no built-in notion of variable -- identifiers whose current
+value can be changed by assignment. (The "let" binding is not an
+assignment, it introduces a new identifier with a new scope.)
+However, the standard library provides references, which are mutable
+indirection cells (or one-element arrays), with operators "!" to fetch
+the current contents of the reference and ":=" to assign the contents.
+Variables can then be emulated by "let"-binding a reference. For
+instance, here is an in-place insertion sort over arrays:
+\begin{caml_example}{toplevel}
+let insertion_sort a =
+  for i = 1 to Array.length a - 1 do
+    let val_i = a.(i) in
+    let j = ref i in
+    while !j > 0 && val_i < a.(!j - 1) do
+      a.(!j) <- a.(!j - 1);
+      j := !j - 1
+    done;
+    a.(!j) <- val_i
+  done;;
+\end{caml_example}
+
+References are also useful to write functions that maintain a current
+state between two calls to the function. For instance, the following
+pseudo-random number generator keeps the last returned number in a
+reference:
+\begin{caml_example}{toplevel}
+let current_rand = ref 0;;
+let random () =
+  current_rand := !current_rand * 25713 + 1345;
+  !current_rand;;
+\end{caml_example}
+
+Again, there is nothing magical with references: they are implemented as
+a single-field mutable record, as follows.
+\begin{caml_example}{toplevel}
+type 'a ref = { mutable contents: 'a };;
+let ( ! ) r = r.contents;;
+let ( := ) r newval = r.contents <- newval;;
+\end{caml_example}
+
+In some special cases, you may need to store a polymorphic function in
+a data structure, keeping its polymorphism.  Without user-provided
+type annotations, this is not allowed, as polymorphism is only
+introduced on a global level.  However, you can give explicitly
+polymorphic types to record fields.
+\begin{caml_example}{toplevel}
+type idref = { mutable id: 'a. 'a -> 'a };;
+let r = {id = fun x -> x};;
+let g s = (s.id 1, s.id true);;
+r.id <- (fun x -> print_string "called id\n"; x);;
+g r;;
+\end{caml_example}
+
+\section{Exceptions}
+\pdfsection{Exceptions}
+
+OCaml provides exceptions for signalling and handling exceptional
+conditions. Exceptions can also be used as a general-purpose non-local
+control structure. Exceptions are declared with the "exception"
+construct, and signalled with the "raise" operator. For instance, the
+function below for taking the head of a list uses an exception  to
+signal the case where an empty list is given.
+\begin{caml_example}{toplevel}
+exception Empty_list;;
+let head l =
+  match l with
+    [] -> raise Empty_list
+  | hd :: tl -> hd;;
+head [1;2];;
+head [];;
+\end{caml_example}
+
+Exceptions are used throughout the standard library to signal cases
+where the library functions cannot complete normally. For instance,
+the "List.assoc" function, which returns the data associated with a
+given key in a list of (key, data) pairs, raises the predefined
+exception "Not_found" when the key does not appear in the list:
+\begin{caml_example}{toplevel}
+List.assoc 1 [(0, "zero"); (1, "one")];;
+List.assoc 2 [(0, "zero"); (1, "one")];;
+\end{caml_example}
+
+Exceptions can be trapped with the "try"\ldots"with" construct:
+\begin{caml_example}{toplevel}
+let name_of_binary_digit digit =
+  try
+    List.assoc digit [0, "zero"; 1, "one"]
+  with Not_found ->
+    "not a binary digit";;
+name_of_binary_digit 0;;
+name_of_binary_digit (-1);;
+\end{caml_example}
+
+The "with" part is actually a regular pattern-matching on the
+exception value. Thus, several exceptions can be caught by one
+"try"\ldots"with" construct. Also, finalization can be performed by
+trapping all exceptions, performing the finalization, then raising
+again the exception:
+\begin{caml_example}{toplevel}
+let temporarily_set_reference ref newval funct =
+  let oldval = !ref in
+  try
+    ref := newval;
+    let res = funct () in
+    ref := oldval;
+    res
+  with x ->
+    ref := oldval;
+    raise x;;
+\end{caml_example}
+
+\section{Symbolic processing of expressions}
+\pdfsection{Symbolic processing of expressions}
+
+We finish this introduction with a more complete example
+representative of the use of OCaml for symbolic processing: formal
+manipulations of arithmetic expressions containing variables. The
+following variant type describes the expressions we shall manipulate:
+\begin{caml_example}{toplevel}
+type expression =
+    Const of float
+  | Var of string
+  | Sum of expression * expression    (* e1 + e2 *)
+  | Diff of expression * expression   (* e1 - e2 *)
+  | Prod of expression * expression   (* e1 * e2 *)
+  | Quot of expression * expression   (* e1 / e2 *)
+;;
+\end{caml_example}
+
+We first define a function to evaluate an expression given an
+environment that maps variable names to their values. For simplicity,
+the environment is represented as an association list.
+\begin{caml_example}{toplevel}
+exception Unbound_variable of string;;
+let rec eval env exp =
+  match exp with
+    Const c -> c
+  | Var v ->
+      (try List.assoc v env with Not_found -> raise (Unbound_variable v))
+  | Sum(f, g) -> eval env f +. eval env g
+  | Diff(f, g) -> eval env f -. eval env g
+  | Prod(f, g) -> eval env f *. eval env g
+  | Quot(f, g) -> eval env f /. eval env g;;
+eval [("x", 1.0); ("y", 3.14)] (Prod(Sum(Var "x", Const 2.0), Var "y"));;
+\end{caml_example}
+
+Now for a real symbolic processing, we define the derivative of an
+expression with respect to a variable "dv":
+\begin{caml_example}{toplevel}
+let rec deriv exp dv =
+  match exp with
+    Const c -> Const 0.0
+  | Var v -> if v = dv then Const 1.0 else Const 0.0
+  | Sum(f, g) -> Sum(deriv f dv, deriv g dv)
+  | Diff(f, g) -> Diff(deriv f dv, deriv g dv)
+  | Prod(f, g) -> Sum(Prod(f, deriv g dv), Prod(deriv f dv, g))
+  | Quot(f, g) -> Quot(Diff(Prod(deriv f dv, g), Prod(f, deriv g dv)),
+                       Prod(g, g))
+;;
+deriv (Quot(Const 1.0, Var "x")) "x";;
+\end{caml_example}
+
+\section{Pretty-printing}
+\pdfsection{Pretty-printing}
+
+As shown in the examples above, the internal representation (also
+called {\em abstract syntax\/}) of expressions quickly becomes hard to
+read and write as the expressions get larger. We need a printer and a
+parser to go back and forth between the abstract syntax and the {\em
+concrete syntax}, which in the case of expressions is the familiar
+algebraic notation (e.g. "2*x+1").
+
+For the printing function, we take into account the usual precedence
+rules (i.e. "*" binds tighter than "+") to avoid printing unnecessary
+parentheses. To this end, we maintain the current operator precedence
+and print parentheses around an operator only if its precedence is
+less than the current precedence.
+\begin{caml_example}{toplevel}
+let print_expr exp =
+  (* Local function definitions *)
+  let open_paren prec op_prec =
+    if prec > op_prec then print_string "(" in
+  let close_paren prec op_prec =
+    if prec > op_prec then print_string ")" in
+  let rec print prec exp =     (* prec is the current precedence *)
+    match exp with
+      Const c -> print_float c
+    | Var v -> print_string v
+    | Sum(f, g) ->
+        open_paren prec 0;
+        print 0 f; print_string " + "; print 0 g;
+        close_paren prec 0
+    | Diff(f, g) ->
+        open_paren prec 0;
+        print 0 f; print_string " - "; print 1 g;
+        close_paren prec 0
+    | Prod(f, g) ->
+        open_paren prec 2;
+        print 2 f; print_string " * "; print 2 g;
+        close_paren prec 2
+    | Quot(f, g) ->
+        open_paren prec 2;
+        print 2 f; print_string " / "; print 3 g;
+        close_paren prec 2
+  in print 0 exp;;
+let e = Sum(Prod(Const 2.0, Var "x"), Const 1.0);;
+print_expr e; print_newline ();;
+print_expr (deriv e "x"); print_newline ();;
+\end{caml_example}
+
+%%%%%%%%%%% Should be moved to the camlp4 documentation.
+%% Parsing (transforming concrete syntax into abstract syntax) is usually
+%% more delicate. OCaml offers several tools to help write parsers:
+%% on the one hand, OCaml versions of the lexer generator Lex and the
+%% parser generator Yacc (see chapter~\ref{c:ocamlyacc}), which handle
+%% LALR(1) languages using push-down automata; on the other hand, a
+%% predefined type of streams (of characters or tokens) and
+%% pattern-matching over streams, which facilitate the writing of
+%% recursive-descent parsers for LL(1) languages. An example using
+%% "ocamllex" and "ocamlyacc" is given in
+%% chapter~\ref{c:ocamlyacc}. Here, we will use stream parsers.
+%% The syntactic support for stream parsers is provided by the Camlp4
+%% preprocessor, which can be loaded into the interactive toplevel via
+%% the "#load" directives below.
+%%
+%% \begin{caml_example}
+%% #load "dynlink.cma";;
+%% #load "camlp4o.cma";;
+%% open Genlex;;
+%% let lexer = make_lexer ["("; ")"; "+"; "-"; "*"; "/"];;
+%% \end{caml_example}
+%% For the lexical analysis phase (transformation of the input text into
+%% a stream of tokens), we use a ``generic'' lexer provided in the
+%% standard library module "Genlex". The "make_lexer" function takes a
+%% list of keywords and returns a lexing function that ``tokenizes'' an
+%% input stream of characters. Tokens are either identifiers, keywords,
+%% or literals (integer, floats, characters, strings). Whitespace and
+%% comments are skipped.
+%% \begin{caml_example}
+%% let token_stream = lexer (Stream.of_string "1.0 +x");;
+%% Stream.next token_stream;;
+%% Stream.next token_stream;;
+%% Stream.next token_stream;;
+%% \end{caml_example}
+%%
+%% The parser itself operates by pattern-matching on the stream of
+%% tokens. As usual with recursive descent parsers, we use several
+%% intermediate parsing functions to reflect the precedence and
+%% associativity of operators. Pattern-matching over streams is more
+%% powerful than on regular data structures, as it allows recursive calls
+%% to parsing functions inside the patterns, for matching sub-components of
+%% the input stream. See the Camlp4 documentation for more details.
+%%
+%% %Already said above
+%% %In order to use stream parsers at toplevel, we must first load the
+%% %"camlp4" preprocessor.
+%% %\begin{caml_example}
+%% %#load"camlp4o.cma";;
+%% %\end{caml_example}
+%% %Then we are ready to define our parser.
+%% \begin{caml_example}{toplevel}
+%% let rec parse_expr = parser
+%%     [< e1 = parse_mult; e = parse_more_adds e1 >] -> e
+%% and parse_more_adds e1 = parser
+%%     [< 'Kwd "+"; e2 = parse_mult; e = parse_more_adds (Sum(e1, e2)) >] -> e
+%%   | [< 'Kwd "-"; e2 = parse_mult; e = parse_more_adds (Diff(e1, e2)) >] -> e
+%%   | [< >] -> e1
+%% and parse_mult = parser
+%%     [< e1 = parse_simple; e = parse_more_mults e1 >] -> e
+%% and parse_more_mults e1 = parser
+%%     [< 'Kwd "*"; e2 = parse_simple; e = parse_more_mults (Prod(e1, e2)) >] -> e
+%%   | [< 'Kwd "/"; e2 = parse_simple; e = parse_more_mults (Quot(e1, e2)) >] -> e
+%%   | [< >] -> e1
+%% and parse_simple = parser
+%%     [< 'Ident s >] -> Var s
+%%   | [< 'Int i >] -> Const(float i)
+%%   | [< 'Float f >] -> Const f
+%%   | [< 'Kwd "("; e = parse_expr; 'Kwd ")" >] -> e;;
+%% let parse_expression = parser [< e = parse_expr; _ = Stream.empty >] -> e;;
+%% \end{caml_example}
+%%
+%% Composing the lexer and parser, we finally obtain a function to read
+%% an expression from a character string:
+%% \begin{caml_example}
+%% let read_expression s = parse_expression (lexer (Stream.of_string s));;
+%% read_expression "2*(x+y)";;
+%% \end{caml_example}
+%% A small puzzle: why do we get different results in the following two
+%% examples?
+%% \begin{caml_example}
+%% read_expression "x - 1";;
+%% read_expression "x-1";;
+%% \end{caml_example}
+%% Answer: the generic lexer provided by "Genlex" recognizes negative
+%% integer literals as one integer token.  Hence, "x-1" is read as
+%% the token "Ident \"x\"" followed by the token "Int(-1)"; this sequence
+%% does not match any of the parser rules.  On the other hand,
+%% the second space in "x - 1" causes the lexer to return the three
+%% expected tokens: "Ident \"x\"", then "Kwd \"-\"", then "Int(1)".
+
+\section{Standalone OCaml programs}
+\pdfsection{Standalone OCaml programs}
+
+All examples given so far were executed under the interactive system.
+OCaml code can also be compiled separately and executed
+non-interactively using the batch compilers "ocamlc" and "ocamlopt".
+The source code must be put in a file with extension ".ml". It
+consists of a sequence of phrases, which will be evaluated at runtime
+in their order of appearance in the source file. Unlike in interactive
+mode, types and values are not printed automatically; the program must
+call printing functions explicitly to produce some output. Here is a
+sample standalone program to print Fibonacci numbers:
+\begin{verbatim}
+(* File fib.ml *)
+let rec fib n =
+  if n < 2 then 1 else fib (n-1) + fib (n-2);;
+let main () =
+  let arg = int_of_string Sys.argv.(1) in
+  print_int (fib arg);
+  print_newline ();
+  exit 0;;
+main ();;
+\end{verbatim}
+"Sys.argv" is an array of strings containing the command-line
+parameters. "Sys.argv.(1)" is thus the first command-line parameter.
+The program above is compiled and executed with the following shell
+commands:
+\begin{verbatim}
+$ ocamlc -o fib fib.ml
+$ ./fib 10
+89
+$ ./fib 20
+10946
+\end{verbatim}
+
+More complex standalone OCaml programs are typically composed of
+multiple source files, and can link with precompiled libraries.
+Chapters~\ref{c:camlc} and~\ref{c:nativecomp} explain how to use the
+batch compilers "ocamlc" and "ocamlopt".  Recompilation of
+multi-file OCaml projects can be automated using third-party
+build systems, such as the
+\href{https://github.com/ocaml/ocamlbuild/}{ocamlbuild}
+compilation manager.

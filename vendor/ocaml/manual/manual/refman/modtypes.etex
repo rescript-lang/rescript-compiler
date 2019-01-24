@@ -1,0 +1,303 @@
+\section{Module types (module specifications)}
+\pdfsection{Module types (module specifications)}
+%HEVEA\cutname{modtypes.html}
+
+Module types are the module-level equivalent of type expressions: they
+specify the general shape and type properties of modules.
+
+\ikwd{sig\@\texttt{sig}}
+\ikwd{end\@\texttt{end}}
+\ikwd{functor\@\texttt{functor}}
+\ikwd{with\@\texttt{with}}
+\ikwd{and\@\texttt{and}}
+\ikwd{val\@\texttt{val}}
+\ikwd{external\@\texttt{external}}
+\ikwd{type\@\texttt{type}}
+\ikwd{exception\@\texttt{exception}}
+\ikwd{class\@\texttt{class}}
+\ikwd{module\@\texttt{module}}
+\ikwd{open\@\texttt{open}}
+\ikwd{include\@\texttt{include}}
+
+\begin{syntax}
+module-type:
+          modtype-path
+        | 'sig' { specification [';;'] } 'end'
+        | 'functor' '(' module-name ':' module-type ')' '->' module-type
+        | module-type '->' module-type
+        | module-type 'with' mod-constraint { 'and' mod-constraint }
+        | '(' module-type ')'
+;
+mod-constraint:
+          'type' [type-params] typeconstr type-equation { type-constraint }
+        | 'module' module-path '=' extended-module-path
+;
+%BEGIN LATEX
+\end{syntax}
+\begin{syntax}
+%END LATEX
+specification:
+          'val' value-name ':' typexpr
+        | 'external' value-name ':' typexpr '=' external-declaration
+        | type-definition
+        | 'exception' constr-decl
+        | class-specification
+        | classtype-definition
+        | 'module' module-name ':' module-type
+        | 'module' module-name { '(' module-name ':' module-type ')' }
+          ':' module-type
+        | 'module' 'type' modtype-name
+        | 'module' 'type' modtype-name '=' module-type
+        | 'open' module-path
+        | 'include' module-type
+\end{syntax}
+See also the following language extensions:
+\hyperref[s:module-type-of]{recovering the type of a module},
+\hyperref[s:signature-substitution]{substitution inside a signature},
+\hyperref[s:module-alias]{type-level module aliases},
+\hyperref[s:attributes]{attributes},
+\hyperref[s:extension-nodes]{extension nodes} and
+\hyperref[s:generative-functors]{generative functors}.
+
+\subsection{Simple module types}
+
+The expression @modtype-path@ is equivalent to the module type bound
+to the name @modtype-path@.
+The expression @'(' module-type ')'@ denotes the same type as
+@module-type@.
+
+\subsection{Signatures}
+
+\ikwd{sig\@\texttt{sig}}
+\ikwd{end\@\texttt{end}}
+
+Signatures are type specifications for structures. Signatures
+@'sig' \ldots 'end'@ are collections of type specifications for value
+names, type names, exceptions, module names and module type names. A
+structure will match a signature if the structure provides definitions
+(implementations) for all the names specified in the signature (and
+possibly more), and these definitions meet the type requirements given
+in the signature.
+
+An optional @";;"@ is allowed after each specification in a
+signature. It serves as a syntactic separator with no semantic
+meaning.
+
+\subsubsection*{Value specifications}
+
+\ikwd{val\@\texttt{val}}
+
+A specification of a value component in a signature is written
+@'val' value-name ':' typexpr@, where @value-name@ is the name of the
+value and @typexpr@ its expected type.
+
+\ikwd{external\@\texttt{external}}
+
+The form @'external' value-name ':' typexpr '=' external-declaration@
+is similar, except that it requires in addition the name to be
+implemented as the external function specified in @external-declaration@
+(see chapter~\ref{c:intf-c}).
+
+\subsubsection*{Type specifications}
+
+\ikwd{type\@\texttt{type}}
+
+A specification of one or several type components in a signature is
+written @'type' typedef { 'and' typedef }@ and consists of a sequence
+of mutually recursive definitions of type names.
+
+Each type definition in the signature specifies an optional type
+equation @'=' typexpr@ and an optional type representation
+@'=' constr-decl \ldots@ or @'=' '{' field-decl \ldots '}'@.
+The implementation of the type name in a matching structure must
+be compatible with the type expression specified in the equation (if
+given), and have the specified representation (if given). Conversely,
+users of that signature will be able to rely on the type equation
+or type representation, if given. More precisely, we have the
+following four situations:
+
+\begin{description}
+\item[Abstract type: no equation, no representation.] ~ \\
+Names that are defined as abstract types in a signature can be
+implemented in a matching structure by any kind of type definition
+(provided it has the same number of type parameters). The exact
+implementation of the type will be hidden to the users of the
+structure. In particular, if the type is implemented as a variant type
+or record type, the associated constructors and fields will not be
+accessible to the users; if the type is implemented as an
+abbreviation, the type equality between the type name and the
+right-hand side of the abbreviation will be hidden from the users of the
+structure. Users of the structure consider that type as incompatible
+with any other type: a fresh type has been generated.
+
+\item[Type abbreviation: an equation @'=' typexpr@, no representation.] ~ \\
+The type name must be implemented by a type compatible with @typexpr@.
+All users of the structure know that the type name is
+compatible with @typexpr@.
+
+\item[New variant type or record type: no equation, a representation.] ~ \\
+The type name must be implemented by a variant type or record type
+with exactly the constructors or fields specified. All users of the
+structure have access to the constructors or fields, and can use them
+to create or inspect values of that type. However, users of the
+structure consider that type as incompatible with any other type: a
+fresh type has been generated.
+
+\item[Re-exported variant type or record type: an equation,
+a representation.] ~ \\
+This case combines the previous two: the representation of the type is
+made visible to all users, and no fresh type is generated.
+\end{description}
+
+\subsubsection*{Exception specification}
+
+\ikwd{exception\@\texttt{exception}}
+
+The specification @'exception' constr-decl@ in a signature requires the
+matching structure to provide an exception with the name and arguments
+specified in the definition, and makes the exception available to all
+users of the structure.
+
+\subsubsection*{Class specifications}
+
+\ikwd{class\@\texttt{class}}
+
+A specification of one or several classes in a signature is written
+@'class' class-spec { 'and' class-spec }@ and consists of a sequence
+of mutually recursive definitions of class names.
+
+Class specifications are described more precisely in
+section~\ref{s:class-spec}.
+
+\subsubsection*{Class type specifications}
+
+\ikwd{class\@\texttt{class}}
+\ikwd{type\@\texttt{type}}
+
+A specification of one or several classe types in a signature is
+written @'class' 'type' classtype-def@ @{ 'and' classtype-def }@ and
+consists of a sequence of mutually recursive definitions of class type
+names. Class type specifications are described more precisely in
+section~\ref{s:classtype}.
+
+\subsubsection*{Module specifications}
+
+\ikwd{module\@\texttt{module}}
+
+A specification of a module component in a signature is written
+@'module' module-name ':' module-type@, where @module-name@ is the
+name of the module component and @module-type@ its expected type.
+Modules can be nested arbitrarily; in particular, functors can appear
+as components of structures and functor types as components of
+signatures.
+
+For specifying a module component that is a functor, one may write
+\begin{center}
+@'module' module-name '(' name_1 ':' module-type_1 ')'
+               \ldots '(' name_n ':' module-type_n ')'
+          ':' module-type@
+\end{center}
+instead of
+\begin{center}
+@'module' module-name ':'
+ 'functor' '(' name_1 ':' module-type_1 ')' '->' \ldots
+                                            '->' module-type@
+\end{center}
+
+\subsubsection*{Module type specifications}
+
+\ikwd{type\@\texttt{type}}
+\ikwd{module\@\texttt{module}}
+
+A module type component of a signature can be specified either as a
+manifest module type or as an abstract module type.
+
+An abstract module type specification
+@'module' 'type' modtype-name@ allows the name @modtype-name@ to be
+implemented by any module type in a matching signature, but hides the
+implementation of the module type to all users of the signature.
+
+A manifest module type specification
+@'module' 'type' modtype-name '=' module-type@
+requires the name @modtype-name@ to be implemented by the module type
+@module-type@ in a matching signature, but makes the equality between
+@modtype-name@ and @module-type@ apparent to all users of the signature.
+
+\subsubsection{Opening a module path}
+
+\ikwd{open\@\texttt{open}}
+
+The expression @'open' module-path@ in a signature does not specify
+any components. It simply affects the parsing of the following items
+of the signature, allowing components of the module denoted by
+@module-path@ to be referred to by their simple names @name@ instead of
+path accesses @module-path '.' name@. The scope of the @"open"@
+stops at the end of the signature expression.
+
+\subsubsection{Including a signature}
+
+\ikwd{include\@\texttt{include}}
+
+The expression @'include' module-type@ in a signature performs textual
+inclusion of the components of the signature denoted by @module-type@.
+It behaves as if the components of the included signature were copied
+at the location of the @'include'@.  The @module-type@ argument must
+refer to a module type that is a signature, not a functor type.
+
+\subsection{Functor types}
+
+\ikwd{functor\@\texttt{functor}}
+
+The module type expression
+@'functor' '(' module-name ':' module-type_1 ')' '->' module-type_2@
+is the type of functors (functions from modules to modules) that take
+as argument a module of type @module-type_1@ and return as result a
+module of type @module-type_2@. The module type @module-type_2@ can
+use the name @module-name@ to refer to type components of the actual
+argument of the functor. If the type @module-type_2@ does not
+depend on type components of @module-name@, the module type expression
+can be simplified with the alternative short syntax
+@ module-type_1 '->' module-type_2 @.
+No restrictions are placed on the type of the functor argument; in
+particular, a functor may take another functor as argument
+(``higher-order'' functor).
+
+\subsection{The "with" operator}
+
+\ikwd{with\@\texttt{with}}
+
+Assuming @module-type@ denotes a signature, the expression
+@module-type 'with' mod-constraint@ @{ 'and' mod-constraint }@ denotes
+the same signature where type equations have been added to some of the
+type specifications, as described by the constraints following the
+"with" keyword. The constraint @'type' [type-parameters] typeconstr
+'=' typexpr@  adds the type equation @'=' typexpr@ to the specification
+of the type component named @typeconstr@ of the constrained signature.
+The constraint @'module' module-path '=' extended-module-path@ adds
+type equations to all type components of the sub-structure denoted by
+@module-path@, making them equivalent to the corresponding type
+components of the structure denoted by @extended-module-path@.
+
+For instance, if the module type name "S" is bound to the signature
+\begin{verbatim}
+        sig type t module M: (sig type u end) end
+\end{verbatim}
+then "S with type t=int" denotes the signature
+\begin{verbatim}
+        sig type t=int module M: (sig type u end) end
+\end{verbatim}
+and "S with module M = N" denotes the signature
+\begin{verbatim}
+        sig type t module M: (sig type u=N.u end) end
+\end{verbatim}
+A functor taking two arguments of type "S" that share their "t" component
+is written
+\begin{verbatim}
+        functor (A: S) (B: S with type t = A.t) ...
+\end{verbatim}
+
+Constraints are added left to right.  After each constraint has been
+applied, the resulting signature must be a subtype of the signature
+before the constraint was applied.  Thus, the @'with'@ operator can
+only add information on the type components of a signature, but never
+remove information.

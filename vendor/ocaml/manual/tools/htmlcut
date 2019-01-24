@@ -1,0 +1,111 @@
+#!/usr/local/bin/perl
+# Split an HTML file into smaller nodes.
+# Split at <H1> headers and also at some <H2> headers.
+
+$h0 = "H0";
+$h1 = "H1";
+$h2 = "H2";
+
+# Parse options
+
+option:
+while(1) {
+  $_ = $ARGV[0];
+  if (/^-([0-9]+)$/) {
+    $split2[$1] = 1;
+  }
+  elsif (/^-article/) {
+    $h0 = "H1";
+    $h1 = "H2";
+    $h2 = "H3";
+  }
+  else {
+    last option;
+  }
+  shift(@ARGV);
+}
+
+$infile = $ARGV[0];
+
+# Find URL's for the links
+
+$level0 = 0;
+$level1 = 0;
+$uselabel = 1;
+open(INPUT, $infile);
+while(<INPUT>) {
+  if (m|^<$h0>(.*)</$h0>|o) {
+    $level0++;
+    $currfile = "node" . ($level1 + 1) . ".html";
+    $lblnum = $level0;
+    $uselabel = 0;
+  }
+  if (m|^<$h1>(.*)</$h1>|o) {
+    $level1++;
+    $level2 = 0;
+    $currfile = "node$level1.html"; 
+    $lblnum = $level1;
+    $uselabel = 1;
+  }
+  if (m|^<$h2>(.*)</$h2>|o) {
+    $level2++;
+    if ($split2[$level1]) { $currfile = "node$level1.$level2.html"; }
+    $lblnum = "$level1.$level2";
+  }
+  s|<A NAME="([^"]*)"></A>|do set_url($1)|ige;
+}
+
+sub set_url {
+  local ($lbl) = @_;
+  if ($uselabel) {
+      $url{$lbl} = "$currfile#$lbl";
+  } else {
+      $url{$lbl} = $currfile;
+  }
+  $label{$lbl} = $lblnum;
+}
+
+# Cut the file
+
+$level1 = 0;
+open(INPUT, $infile);
+while(<INPUT>) {
+  if (m|^<$h0>(.*)</$h0>|o) {
+    if ($level2 > 0) { print FILE1 "</UL>\n"; }
+    select(STDOUT);
+    if ($level1 >= 1) { print "</UL>"; }
+    print "<$h2>$1</$h2>\n";
+    if ($level1 >= 1) { print "<UL>"; }
+    next;
+  }
+  if (m|^<$h1>(.*)</$h1>|o) {
+    if ($level2 > 0) { print FILE1 "</UL>\n"; }
+    $level1++;
+    $level2 = 0;
+    select(STDOUT);
+    if ($level1 == 1) { print "<HR><BR><UL>\n"; }
+    print "<LI><A HREF=\"node$level1.html\">$1</A>\n";
+    open(FILE1, "> node$level1.html");
+    select(FILE1);
+    &print_title($1);
+  }
+  if ($split2[$level1] && m|^<$h2>(.*)</$h2>|o) {
+    $level2++;
+    select(FILE1);
+    if ($level2 == 1) { print "<HR><BR><UL>\n"; }
+    print "<LI><A HREF=\"node$level1.$level2.html\">$1</A>\n";
+    open(FILE2, "> node$level1.$level2.html");
+    select(FILE2);
+    &print_title($1);
+  }
+  s|<A HREF="#([^"]*)">X</A>|'<A HREF="' . $url{$1} . '">' . $label{$1} . '</A>'|ige;
+  print $_;
+}
+select(STDOUT);
+if ($level1 >= 1) { print "</UL>\n"; }
+
+sub print_title {
+    local ($title) = @_;
+    $title =~ s|<[a-zA-Z/]+>||g;
+    print "<TITLE>$title</TITLE>\n";
+}

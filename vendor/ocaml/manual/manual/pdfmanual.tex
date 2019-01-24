@@ -1,0 +1,31 @@
+%\pdfoutput=1
+\pdfpagewidth=21cm
+\pdfpageheight=11in
+\pdfcompresslevel=7
+
+\documentclass[11pt]{book}
+
+\usepackage[latin1]{inputenc}
+\usepackage{alltt}
+\usepackage{fullpage}
+\usepackage{syntaxdef}
+\usepackage{multind}
+\usepackage{html}
+\usepackage{textcomp}
+\usepackage{caml-sl}
+\usepackage{ocamldoc}
+\usepackage{xspace}
+
+\newif\ifplaintext
+\plaintextfalse
+%\newif\ifpdf
+%\pdftrue
+\input macros.tex
+
+\usepackage[colorlinks,linkcolor=blue]{hyperref}
+\def\th{^{\hbox{\scriptsize th}}}
+
+\raggedbottom
+\input{version.tex}
+
+\input allfiles.tex

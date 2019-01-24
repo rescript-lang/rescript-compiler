@@ -1,0 +1,5 @@
+*.haux
+*.hind
+*.info*.gz
+*.info.body*
+ocaml.hocaml.kwd

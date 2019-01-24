@@ -1,0 +1,74 @@
+\documentclass[11pt]{article} 
+\usepackage[latin1]{inputenc} 
+\usepackage[T1]{fontenc} 
+\usepackage{textcomp}
+\usepackage{fullpage} 
+\usepackage{url} 
+\usepackage{ocamldoc}
+\begin{document}
+\tableofcontents
+\section{Module {\tt{Test}} : Ten comments for tests}
+\label{Test}\index{Test@\verb`Test`}
+
+
+
+
+\ocamldocvspace{0.5cm}
+
+
+
+\subsection*{A first comments for title }
+
+
+
+
+\subsubsection*{A subsection for ocamldoc *}
+
+
+
+
+\subsubsection*{Bis }
+
+
+
+
+\subsubsection*{Ter }
+
+
+
+
+\subsection*{A new section }
+
+
+
+
+\subsubsection*{And its subsection }
+
+
+
+
+\subsubsection*{Encore }
+
+
+
+
+Encore! Encore!
+
+
+
+\subsubsection*{With strange aeons }
+
+
+
+
+\begin{ocamldoccode}
+{\tt{module }}{\tt{End}}{\tt{ : }}\end{ocamldoccode}
+\label{Test.End}\index{End@\verb`End`}
+
+\begin{ocamldocsigend}
+\end{ocamldocsigend}
+
+
+
+
+\end{document}

@@ -1,0 +1,7 @@
+# This .gitignore is here to force git to create the compilerlibs directory
+# because git doesn't create empty directories.
+# The lines tell git to ignore everything in this directory except
+# the .gitignore file itself.
+
+*
+!.gitignore

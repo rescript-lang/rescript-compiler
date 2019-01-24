@@ -1,0 +1,60 @@
+(setglobal Functors!
+  (let
+    (O =
+       (module-defn(O) functors.ml(5):48-143
+         (function X is_a_functor always_inline
+           (let
+             (cow = (function x (apply (field 0 X) x))
+              sheep = (function x (+ 1 (apply cow x))))
+             (makeblock 0 cow sheep))))
+     F =
+       (module-defn(F) functors.ml(10):145-256
+         (function X Y is_a_functor always_inline
+           (let
+             (cow =
+                (function x
+                  (apply (field 0 Y) (apply (field 0 X) x)))
+              sheep = (function x (+ 1 (apply cow x))))
+             (makeblock 0 cow sheep))))
+     F1/1022 =
+       (module-defn(F1/1022) functors.ml(24):380-496
+         (function X Y is_a_functor always_inline
+           (let
+             (cow =
+                (function x
+                  (apply (field 0 Y) (apply (field 0 X) x)))
+              sheep = (function x (+ 1 (apply cow x))))
+             (makeblock 0 sheep))))
+     F2/1029 =
+       (module-defn(F2/1029) functors.ml(29):498-648
+         (function X Y is_a_functor always_inline
+           (let
+             (X =a (makeblock 0 (field 1 X))
+              Y =a (makeblock 0 (field 1 Y))
+              cow =
+                (function x
+                  (apply (field 0 Y) (apply (field 0 X) x)))
+              sheep = (function x (+ 1 (apply cow x))))
+             (makeblock 0 sheep))))
+     M =
+       (module-defn(M) functors.ml(34):650-834
+         (let
+           (F =
+              (module-defn(F) functors.ml(37):713-830
+                (function X Y is_a_functor always_inline
+                  (let
+                    (cow =
+                       (function x
+                         (apply (field 0 Y)
+                           (apply (field 0 X) x)))
+                     sheep =
+                       (function x (+ 1 (apply cow x))))
+                    (makeblock 0 cow sheep)))))
+           (makeblock 0
+             (function funarg funarg is_a_functor stub
+               (let
+                 (let =
+                    (apply F (makeblock 0 (field 1 funarg))
+                      (makeblock 0 (field 1 funarg))))
+                 (makeblock 0 (field 1 let))))))))
+    (makeblock 0 O F F1/1022 F2/1029 M)))

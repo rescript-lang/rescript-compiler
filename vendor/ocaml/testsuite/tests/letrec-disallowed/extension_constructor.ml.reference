@@ -1,0 +1,7 @@
+
+# * * *     module type T = sig exception A of int end
+#           Characters 15-49:
+  ..let module M = (val m) in
+    M.A 42
+Error: This kind of expression is not allowed as right-hand side of `let rec'
+# 

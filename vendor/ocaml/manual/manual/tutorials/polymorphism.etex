@@ -1,0 +1,477 @@
+
+\chapter{Polymorphism and its limitations}%
+\label{c:polymorphism}
+\pdfchapterfold{0}{Tutorial: Polymorphism limitations}
+%HEVEA\cutname{polymorphism.html}
+
+\bigskip
+
+\noindent This chapter covers more advanced questions related to the
+limitations of polymorphic functions and types. There are some situations
+in OCaml where the type inferred by the type checker may be less generic
+than expected. Such non-genericity can stem either from interactions
+between side-effect and typing or the difficulties of implicit polymorphic
+recursion and higher-rank polymorphism.
+
+This chapter details each of these situations and, if it is possible,
+how to recover genericity.
+
+\section{Weak polymorphism and mutation}
+\subsection{Weakly polymorphic types}
+\label{ss:weaktypes}
+Maybe the most frequent examples of non-genericity derive from the
+interactions between polymorphic types and mutation. A simple example
+appears when typing the following expression
+\begin{caml_example}{toplevel}
+let store = ref None ;;
+\end{caml_example}
+Since the type of "None" is "'a option" and the function "ref" has type
+"'b -> 'b ref", a natural deduction for the type of "store" would be
+"'a option ref". However, the inferred type, "'_weak1 option ref", is
+different. Type variables whose name starts with a "_weak" prefix like
+"'_weak1" are weakly polymorphic type variables, sometimes shortened as
+weak type variables.
+A weak type variable is a placeholder for a single type that is currently
+unknown. Once the specific type "t" behind the placeholder type "'_weak1"
+is known, all occurrences of "'_weak1" will be replaced by "t". For instance,
+we can define another option reference and store an "int" inside:
+\begin{caml_example}{toplevel}
+let another_store = ref None ;;
+another_store := Some 0;
+another_store ;;
+\end{caml_example}
+After storing an "int" inside "another_store", the type of "another_store" has
+been updated from "'_weak2 option ref" to "int option ref".
+This distinction between weakly and generic polymorphic type variable protects
+OCaml programs from unsoundness and runtime errors. To understand from where
+unsoundness might come, consider this simple function which swaps a value "x"
+with the value stored inside a "store" reference, if there is such value:
+\begin{caml_example}{toplevel}
+let swap store x = match !store with
+  | None -> store := Some x; x
+  | Some y -> store := Some x; y;;
+\end{caml_example}
+We can apply this function to our store
+\begin{caml_example}{toplevel}
+let one = swap store 1
+let one_again = swap store 2
+let two = swap store 3;;
+\end{caml_example}
+After these three swaps the stored value is "3". Everything is fine up to
+now. We can then try to swap "3" with a more interesting value, for
+instance a function:
+\begin{caml_example}{toplevel}[error]
+let error = swap store (fun x -> x);;
+\end{caml_example}
+At this point, the type checker rightfully complains that it is not
+possible to swap an integer and a function, and that an "int" should always
+be traded for another "int". Furthermore, the type checker prevents us to
+change manually the type of the value stored by "store":
+\begin{caml_example}{toplevel}[error]
+store := Some (fun x -> x);;
+\end{caml_example}
+Indeed, looking at the type of store, we see that the weak type "'_weak1" has
+been replaced by the type "int"
+\begin{caml_example}{toplevel}
+store;;
+\end{caml_example}
+Therefore, after placing an "int" in "store", we cannot use it to store any
+value other than an "int". More generally, weak types protect the program from
+undue mutation of values with a polymorphic type.
+
+%todo: fix indentation in pdfmanual
+Moreover, weak types cannot appear in the signature of toplevel modules:
+types must be known at compilation time. Otherwise, different compilation
+units could replace the weak type with different and incompatible types.
+For this reason, compiling the following small piece of code
+\begin{verbatim}
+let option_ref = ref None
+\end{verbatim}
+yields a compilation error
+\begin{verbatim}
+Error: The type of this expression, '_weak1 option ref,
+       contains type variables that cannot be generalized
+\end{verbatim}
+To solve this error, it is enough to add an explicit type annotation to
+specify the type at declaration time:
+\begin{verbatim}
+let option_ref: int option ref = ref None
+\end{verbatim}
+This is in any case a good practice for such global mutable variables.
+Otherwise, they will pick out the type of first use. If there is a mistake
+at this point, this can result in confusing type errors when later, correct
+uses are flagged as errors.
+
+\subsection{The value restriction}\label{ss:valuerestriction}
+
+Identifying the exact context in which polymorphic types should be
+replaced by weak types in a modular way is a difficult question. Indeed
+the type system must handle the possibility that functions may hide persistent
+mutable states. For instance, the following function uses an internal reference
+to implement a delayed identity function
+\begin{caml_example}{toplevel}
+let make_fake_id () =
+  let store = ref None in
+  fun x -> swap store x ;;
+let fake_id = make_fake_id();;
+\end{caml_example}
+It would be unsound to apply this "fake_id" function to values with different
+types. The function "fake_id" is therefore rightfully assigned the type
+"'_weak3 -> '_weak3" rather than "'a -> 'a". At the same time, it ought to
+be possible to use a local mutable state without impacting the type of a
+function.
+%todo: add an example?
+
+To circumvent these dual difficulties, the type checker considers that any value
+returned by a function might rely on persistent mutable states behind the scene
+and should be given a weak type. This restriction on the type of mutable
+values and the results of function application is called the value restriction.
+Note that this value restriction is conservative: there are situations where the
+value restriction is too cautious and gives a weak type to a value that could be
+safely generalized to a polymorphic type:
+\begin{caml_example}{toplevel}
+let not_id = (fun x -> x) (fun x -> x);;
+\end{caml_example}
+Quite often, this happens when defining function using higher order function.
+To avoid this problem, a solution is to add an explicit argument to the
+function:
+\begin{caml_example}{toplevel}
+let id_again = fun x -> (fun x -> x) (fun x -> x) x;;
+\end{caml_example}
+With this argument, "id_again" is seen as a function definition by the type
+checker and can therefore be generalized. This kind of manipulation is called
+eta-expansion in lambda calculus and is sometimes referred under this name.
+
+\subsection{The relaxed value restriction}
+
+There is another partial solution to the problem of unnecessary weak type,
+which is implemented directly within the type checker. Briefly, it is possible
+to prove that weak types that only appear as type parameters in covariant
+positions --also called positive positions-- can be safely generalized to
+polymorphic types. For instance, the type "'a list" is covariant in "'a":
+\begin{caml_example}{toplevel}
+  let f () = [];;
+  let empty = f ();;
+\end{caml_example}
+Remark that the type inferred for "empty" is "'a list" and not "'_weak5 list"
+that should have occurred with the value restriction since "f ()" is a
+function application.
+
+The value restriction combined with this generalization for covariant type
+parameters is called the relaxed value restriction.
+
+%question: is here the best place for describing variance?
+\subsection{Variance and value restriction}
+Variance describes how type constructors behave with respect to subtyping.
+Consider for instance a pair of type "x" and "xy" with "x" a subtype of "xy",
+denoted "x :> xy":
+\begin{caml_example}{toplevel}
+  type x = [ `X ];;
+  type xy = [ `X | `Y ];;
+\end{caml_example}
+As "x" is a subtype of "xy", we can convert a value of type "x"
+to a value of type "xy":
+\begin{caml_example}{toplevel}
+  let x:x = `X;;
+  let x' = ( x :> xy);;
+\end{caml_example}
+Similarly, if we have a value of type "x list", we can convert it to a value
+of type "xy list", since we could convert each element one by one:
+\begin{caml_example}{toplevel}
+  let l:x list = [`X; `X];;
+  let l' = ( l :> xy list);;
+\end{caml_example}
+In other words, "x :> xy" implies that "x list :> xy list", therefore
+the type constructor "'a list" is covariant (it preserves subtyping)
+in its parameter "'a".
+
+Contrarily, if we have a function that can handle values of type "xy"
+\begin{caml_example}{toplevel}
+  let f: xy -> unit = function
+  | `X -> ()
+  | `Y -> ();;
+\end{caml_example}
+it can also handle values of type "x":
+\begin{caml_example}{toplevel}
+  let f' = (f :> x -> unit);;
+\end{caml_example}
+Note that we can rewrite the type of "f" and "f'" as
+\begin{caml_example}{toplevel}
+  type 'a proc = 'a -> unit
+  let f' = (f: xy proc :> x proc);;
+\end{caml_example}
+In this case, we have "x :> xy" implies "xy proc :> x proc". Notice
+that the second subtyping relation reverse the order of "x" and "xy":
+the type constructor "'a proc" is contravariant in its parameter "'a".
+More generally, the function type constructor "'a -> 'b" is covariant in
+its return type "'b" and contravariant in its argument type "'a".
+
+A type constructor can also be invariant in some of its type parameters,
+neither covariant nor contravariant. A typical example is a reference:
+\begin{caml_example}{toplevel}
+  let x: x ref = ref `X;;
+\end{caml_example}
+If we were able to coerce "x" to the type "xy ref" as a variable "xy",
+we could use "xy" to store the value "`Y" inside the reference and then use
+the "x" value to read this content as a value of type "x",
+which would break the type system.
+
+More generally, as soon as a type variable appears in a position describing
+mutable state it becomes invariant. As a corollary, covariant variables will
+never denote mutable locations and can be safely generalized.
+For a better description, interested readers can consult the original
+article by Jacques Garrigue on
+\url{http://www.math.nagoya-u.ac.jp/~garrigue/papers/morepoly-long.pdf}
+
+Together, the relaxed value restriction and type parameter covariance
+help to avoid eta-expansion in many situations.
+
+\subsection{Abstract data types}
+Moreover, when the type definitions are exposed, the type checker
+is able to infer variance information on its own and one can benefit from
+the relaxed value restriction even unknowingly. However, this is not the case
+anymore when defining new abstract types. As an illustration, we can define a
+module type collection as:
+\begin{caml_example}{toplevel}
+module type COLLECTION = sig
+  type 'a t
+  val empty: unit -> 'a t
+end
+
+module Implementation = struct
+  type 'a t = 'a list
+  let empty ()= []
+end;;
+
+module List2: COLLECTION = Implementation;;
+\end{caml_example}
+
+In this situation, when coercing the module "List2" to the module type
+"COLLECTION", the type checker forgets that "'a List2.t" was covariant
+in "'a". Consequently, the relaxed value restriction does not apply anymore:
+
+\begin{caml_example}{toplevel}
+  List2.empty ();;
+\end{caml_example}
+
+To keep the relaxed value restriction, we need to declare the abstract type
+"'a COLLECTION.t" as covariant in "'a":
+\begin{caml_example}{toplevel}
+module type COLLECTION = sig
+  type +'a t
+  val empty: unit -> 'a t
+end
+
+module List2: COLLECTION = Implementation;;
+\end{caml_example}
+
+We then recover polymorphism:
+
+\begin{caml_example}{toplevel}
+  List2.empty ();;
+\end{caml_example}
+
+\section{Polymorphic recursion}\label{s:polymorphic-recursion}
+
+The second major class of non-genericity is directly related to the problem
+of type inference for polymorphic functions. In some circumstances, the type
+inferred by OCaml might be not general enough to allow the definition of
+some recursive functions, in particular for recursive function acting on
+non-regular algebraic data type.
+
+With a regular polymorphic algebraic data type, the type parameters of
+the type constructor are constant within the definition of the type. For
+instance, we can look at arbitrarily nested list defined as:
+\begin{caml_example}{toplevel}
+  type 'a regular_nested = List of 'a list | Nested of 'a regular_nested list
+  let l = Nested[ List [1]; Nested [List[2;3]]; Nested[Nested[]] ];;
+\end{caml_example}
+Note that the type constructor "regular_nested" always appears as
+"'a regular_nested" in the definition above, with the same parameter
+"'a". Equipped with this type, one can compute a maximal depth with
+a classic recursive function
+\begin{caml_example}{toplevel}
+  let rec maximal_depth = function
+  | List _ -> 1
+  | Nested [] -> 0
+  | Nested (a::q) -> 1 + max (maximal_depth a) (maximal_depth (Nested q));;
+\end{caml_example}
+
+Non-regular recursive algebraic data types correspond to polymorphic algebraic
+data types whose parameter types vary between the left and right side of
+the type definition. For instance, it might be interesting to define a datatype
+that ensures that all lists are nested at the same depth:
+\begin{caml_example}{toplevel}
+  type 'a nested = List of 'a list | Nested of 'a list nested;;
+\end{caml_example}
+Intuitively, a value of type "'a nested" is a list of list \dots of list of
+elements "a" with "k" nested list. We can then adapt the "maximal_depth"
+function defined on "regular_depth" into a "depth" function that computes this
+"k". As a first try, we may define
+\begin{caml_example}{toplevel}[error]
+let rec depth = function
+  | List _ -> 1
+  | Nested n -> 1 + depth n;;
+\end{caml_example}
+The type error here comes from the fact that during the definition of "depth",
+the type checker first assigns to "depth" the type "'a -> 'b ".
+When typing the pattern matching, "'a -> 'b" becomes "'a nested -> 'b", then
+"'a nested -> int" once the "List" branch is typed.
+However, when typing the application "depth n" in the "Nested" branch,
+the type checker encounters a problem: "depth n" is applied to
+"'a list nested", it must therefore have the type
+"'a list nested -> 'b". Unifying this constraint with the previous one
+leads to the impossible constraint "'a list nested = 'a nested".
+In other words, within its definition, the recursive function "depth" is
+applied to values of type "'a t" with different types "'a" due to the
+non-regularity of the type constructor "nested". This creates a problem because
+the type checker had introduced a new type variable "'a" only at the
+\emph{definition} of the function "depth" whereas, here, we need a
+different type variable for every \emph{application} of the function "depth".
+
+\subsection{Explicitly polymorphic annotations}
+The solution of this conundrum is to use an explicitly polymorphic type
+annotation for the type "'a":
+\begin{caml_example}{toplevel}
+let rec depth: 'a. 'a nested -> int = function
+  | List _ -> 1
+  | Nested n -> 1 + depth n;;
+depth ( Nested(List [ [7]; [8] ]) );;
+\end{caml_example}
+In the type of "depth",  "'a.'a nested -> int", the type variable "'a"
+is universally quantified. In other words, "'a.'a nested -> int" reads as
+``for all type "'a", "depth" maps "'a nested" values to integers''.
+Whereas the standard type "'a nested -> int" can be interpreted
+as ``let be a type variable "'a", then "depth" maps "'a nested" values
+to integers''. There are two major differences with these two type
+expressions. First, the explicit polymorphic annotation indicates to the
+type checker that it needs to introduce a new type variable every times
+the function "depth" is applied. This solves our problem with the definition
+of the function "depth".
+
+Second, it also notifies the type checker that the type of the function should
+be polymorphic. Indeed, without explicit polymorphic type annotation, the
+following type annotation is perfectly valid
+\begin{caml_example}{toplevel}
+  let sum: 'a -> 'b -> 'c = fun x y -> x + y;;
+\end{caml_example}
+since "'a","'b" and "'c" denote type variables that may or may not be
+polymorphic. Whereas, it is an error to unify an explicitly polymorphic type
+with a non-polymorphic type:
+\begin{caml_example}{toplevel}[error]
+  let sum: 'a 'b 'c. 'a -> 'b -> 'c = fun x y -> x + y;;
+\end{caml_example}
+
+An important remark here is that it is not needed to explicit fully
+the type of "depth": it is sufficient to add annotations only for the
+universally quantified type variables:
+\begin{caml_example}{toplevel}
+let rec depth: 'a. 'a nested -> _ = function
+  | List _ -> 1
+  | Nested n -> 1 + depth n;;
+depth ( Nested(List [ [7]; [8] ]) );;
+\end{caml_example}
+
+%todo: add a paragraph on the interaction with locally abstract type
+
+\subsection{More examples}
+With explicit polymorphic annotations, it becomes possible to implement
+any recursive function that depends only on the structure of the nested
+lists and not on the type of the elements. For instance, a more complex
+example would be to compute the total number of elements of the nested
+lists:
+\begin{caml_example}{toplevel}
+  let len nested =
+    let map_and_sum f = List.fold_left (fun acc x -> acc + f x) 0 in
+    let rec len: 'a. ('a list -> int ) -> 'a nested -> int =
+    fun nested_len n ->
+      match n with
+      | List l -> nested_len l
+      | Nested n -> len (map_and_sum nested_len) n
+    in
+  len List.length nested;;
+len (Nested(Nested(List [ [ [1;2]; [3] ]; [ []; [4]; [5;6;7]]; [[]] ])));;
+\end{caml_example}
+
+Similarly, it may be necessary to use more than one explicitly
+polymorphic type variables, like for computing the nested list of
+list lengths of the nested list:
+\begin{caml_example}{toplevel}
+let shape n =
+  let rec shape: 'a 'b. ('a nested -> int nested) ->
+    ('b list list -> 'a list) -> 'b nested -> int nested
+    = fun nest nested_shape ->
+      function
+      | List l -> raise
+       (Invalid_argument "shape requires nested_list of depth greater than 1")
+      | Nested (List l) -> nest @@ List (nested_shape l)
+      | Nested n ->
+        let nested_shape = List.map nested_shape in
+        let nest x = nest (Nested x) in
+        shape nest nested_shape n in
+  shape (fun n -> n ) (fun l -> List.map List.length l ) n;;
+
+shape (Nested(Nested(List [ [ [1;2]; [3] ]; [ []; [4]; [5;6;7]]; [[]] ])));;
+\end{caml_example}
+
+\section{Higher-rank polymorphic functions}
+
+Explicit polymorphic annotations are however not sufficient to cover all
+the cases where the inferred type of a function is less general than
+expected. A similar problem arises when using polymorphic functions as arguments
+of higher-order functions. For instance, we may want to compute the average
+depth or length of two nested lists:
+\begin{caml_example}{toplevel}
+  let average_depth x y = (depth x + depth y) / 2;;
+  let average_len x y = (len x + len y) / 2;;
+  let one = average_len (List [2]) (List [[]]);;
+\end{caml_example}
+It would be natural to factorize these two definitions as:
+\begin{caml_example}{toplevel}
+    let average f x y = (f x + f y) / 2;;
+\end{caml_example}
+However, the type of "average len" is less generic than the type of
+"average_len", since it requires the type of the first and second argument to
+be the same:
+\begin{caml_example}{toplevel}
+  average_len (List [2]) (List [[]]);;
+  average len (List [2]) (List [[]])[@@expect error];;
+\end{caml_example}
+
+As previously with polymorphic recursion, the problem stems from the fact that
+type variables are introduced only at the start of the "let" definitions. When
+we compute both "f x" and "f y", the type of "x" and "y" are unified together.
+To avoid this unification, we need to indicate to the type checker
+that f is polymorphic in its first argument. In some sense, we would want
+"average" to have type
+\begin{verbatim}
+val average: ('a. 'a nested -> int) -> 'a nested -> 'b nested -> int
+\end{verbatim}
+Note that this syntax is not valid within OCaml: "average" has an universally
+quantified type "'a" inside the type of one of its argument whereas for
+polymorphic recursion the universally quantified type was introduced before
+the rest of the type. This position of the universally quantified type means
+that "average" is a second-rank polymorphic function. This kind of higher-rank
+functions is not directly supported by OCaml: type inference for second-rank
+polymorphic function and beyond is undecidable; therefore using this kind of
+higher-rank functions requires to handle manually these universally quantified
+types.
+
+In OCaml, there are two ways to introduce this kind of explicit universally
+quantified types: universally quantified record fields,
+\begin{caml_example}{toplevel}
+  type 'a nested_reduction = { f:'elt. 'elt nested -> 'a };;
+  let boxed_len = { f = len };;
+\end{caml_example}
+and universally quantified object methods:
+\begin{caml_example}{toplevel}
+  let obj_len = object method f:'a. 'a nested -> 'b = len end;;
+\end{caml_example}
+To solve our problem, we can therefore use either the record solution:
+\begin{caml_example}{toplevel}
+  let average nsm x y = (nsm.f x + nsm.f y) / 2 ;;
+\end{caml_example}
+or the object one:
+\begin{caml_example}{toplevel}
+  let average (obj:<f:'a. 'a nested -> _ > ) x y = (obj#f x + obj#f y) / 2 ;;
+\end{caml_example}

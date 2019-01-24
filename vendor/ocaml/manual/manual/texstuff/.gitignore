@@ -1,0 +1,13 @@
+*.aux
+*.dvi
+*.idx
+*.ilg
+*.ind
+*.log
+*.toc
+*.ipr
+*.txt
+*.pdf
+*.ps
+pdfmanual.out
+manual.out

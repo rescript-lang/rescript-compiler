@@ -1,0 +1,81 @@
+
+#                 val pp : ('a, out_channel, unit) format -> 'a = <fun>
+type 'a box = B of 'a
+module M : sig type c = C type t = { x : c box; } end
+#             module N : sig type d = D val d : d type t = { x : d box; } end
+#   val f : M.t -> 'a -> M.c * 'a = <fun>
+#   val g : int -> int -> int = <fun>
+#         val g : M.c list -> M.c list = <fun>
+#         val h : M.c array -> M.c option = <fun>
+#     val f2 : M.c box box -> M.c = <fun>
+#   #     #               module L :
+  sig
+    type _ c = C : unit c
+    type t = { t : unit c; }
+    type r = { r : unit c; }
+    val x : unit -> unit
+  end
+#             module K :
+  sig
+    type _ c = C : unit c
+    type t = { t : unit c; }
+    type r = { r : unit c; }
+    val x : unit -> unit
+  end
+#               Right value K.x
+#                                   module Exterior :
+  sig
+    module Gadt :
+      sig
+        module Boolean :
+          sig
+            type t = { b : bool; }
+            type wrong = false | true
+            val print : unit -> unit
+          end
+        type _ t =
+            Bool : Boolean.t -> bool t
+          | Int : int -> int t
+          | Eq : 'a t * 'a t -> bool t
+        val print : unit -> unit
+      end
+    val print : unit -> unit
+  end
+#                                         Right function print
+Right function print
+val eval : 't Exterior.Gadt.t -> 't = <fun>
+#               module Existential :
+  sig type printable = E : 'a * ('a -> unit) -> printable end
+val print : Existential.printable -> unit = <fun>
+# *             module S :
+  sig
+    type 'a t = Sep : unit t
+    type ex = Ex : 'a * 'a -> ex
+    val s : unit t
+  end
+#     Characters 58-61:
+    | S.(Sep), (S.(Sep,Sep), Sep) -> ()
+                             ^^^
+Error: Unbound constructor Sep
+#     Characters 50-52:
+    | S.(Ex(a,b)), Ex(c,d) -> ()
+                   ^^
+Error: Unbound constructor Ex
+#     Characters 48-49:
+    | S.(Sep) -> s
+                 ^
+Error: Unbound value s
+#                                           module PR6437 :
+  sig
+    module Ctx :
+      sig
+        type ('a, 'b) t =
+            Nil : (unit, unit) t
+          | Cons : ('a, 'b) t -> ('a * unit, 'b * unit) t
+      end
+    module Var :
+      sig type 'a t = O : ('a * unit) t | S : 'a t -> ('a * unit) t end
+  end
+val f : ('g1, 'g2) PR6437.Ctx.t * 'g1 PR6437.Var.t -> 'g2 PR6437.Var.t =
+  <fun>
+# 

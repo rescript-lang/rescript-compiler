@@ -1,0 +1,807 @@
+afl.$(O): afl.c caml/config.h caml/m.h caml/s.h caml/misc.h caml/mlvalues.h \
+  caml/osdeps.h caml/memory.h caml/gc.h caml/major_gc.h caml/freelist.h \
+  caml/minor_gc.h caml/address_class.h
+alloc.$(O): alloc.c caml/alloc.h caml/misc.h caml/config.h caml/m.h caml/s.h \
+  caml/mlvalues.h caml/custom.h caml/major_gc.h caml/freelist.h \
+  caml/memory.h caml/gc.h caml/minor_gc.h caml/address_class.h \
+  caml/stacks.h
+array.$(O): array.c caml/alloc.h caml/misc.h caml/config.h caml/m.h caml/s.h \
+  caml/mlvalues.h caml/fail.h caml/memory.h caml/gc.h caml/major_gc.h \
+  caml/freelist.h caml/minor_gc.h caml/address_class.h caml/signals.h \
+  caml/spacetime.h
+backtrace.$(O): backtrace.c caml/alloc.h caml/misc.h caml/config.h caml/m.h \
+  caml/s.h caml/mlvalues.h caml/memory.h caml/gc.h caml/major_gc.h \
+  caml/freelist.h caml/minor_gc.h caml/address_class.h caml/backtrace.h \
+  caml/exec.h caml/backtrace_prim.h caml/fail.h
+backtrace_prim.$(O): backtrace_prim.c caml/config.h caml/m.h caml/s.h \
+  caml/mlvalues.h caml/misc.h caml/alloc.h caml/custom.h caml/io.h \
+  caml/instruct.h caml/intext.h caml/exec.h caml/fix_code.h \
+  caml/memory.h caml/gc.h caml/major_gc.h caml/freelist.h \
+  caml/minor_gc.h caml/address_class.h caml/startup.h caml/stacks.h \
+  caml/sys.h caml/backtrace.h caml/fail.h caml/backtrace_prim.h
+bigarray.$(O): bigarray.c caml/alloc.h caml/misc.h caml/config.h caml/m.h \
+  caml/s.h caml/mlvalues.h caml/bigarray.h caml/custom.h caml/fail.h \
+  caml/intext.h caml/io.h caml/hash.h caml/memory.h caml/gc.h \
+  caml/major_gc.h caml/freelist.h caml/minor_gc.h caml/address_class.h
+callback.$(O): callback.c caml/callback.h caml/mlvalues.h caml/config.h \
+  caml/m.h caml/s.h caml/misc.h caml/fail.h caml/memory.h caml/gc.h \
+  caml/major_gc.h caml/freelist.h caml/minor_gc.h caml/address_class.h \
+  caml/interp.h caml/instruct.h caml/fix_code.h caml/stacks.h
+compact.$(O): compact.c caml/address_class.h caml/config.h caml/m.h caml/s.h \
+  caml/misc.h caml/mlvalues.h caml/finalise.h caml/roots.h caml/memory.h \
+  caml/gc.h caml/major_gc.h caml/freelist.h caml/minor_gc.h \
+  caml/gc_ctrl.h caml/weak.h caml/compact.h
+compare.$(O): compare.c caml/custom.h caml/mlvalues.h caml/config.h caml/m.h \
+  caml/s.h caml/misc.h caml/fail.h caml/memory.h caml/gc.h \
+  caml/major_gc.h caml/freelist.h caml/minor_gc.h caml/address_class.h
+custom.$(O): custom.c caml/alloc.h caml/misc.h caml/config.h caml/m.h \
+  caml/s.h caml/mlvalues.h caml/custom.h caml/fail.h caml/memory.h \
+  caml/gc.h caml/major_gc.h caml/freelist.h caml/minor_gc.h \
+  caml/address_class.h
+debugger.$(O): debugger.c caml/alloc.h caml/misc.h caml/config.h caml/m.h \
+  caml/s.h caml/mlvalues.h caml/debugger.h caml/osdeps.h caml/memory.h \
+  caml/gc.h caml/major_gc.h caml/freelist.h caml/minor_gc.h \
+  caml/address_class.h caml/fail.h caml/fix_code.h caml/instruct.h \
+  caml/intext.h caml/io.h caml/stacks.h caml/sys.h
+dynlink.$(O): dynlink.c caml/config.h caml/m.h caml/s.h caml/alloc.h \
+  caml/misc.h caml/mlvalues.h caml/dynlink.h caml/fail.h caml/memory.h \
+  caml/gc.h caml/major_gc.h caml/freelist.h caml/minor_gc.h \
+  caml/address_class.h caml/osdeps.h caml/prims.h caml/signals.h
+extern.$(O): extern.c caml/alloc.h caml/misc.h caml/config.h caml/m.h \
+  caml/s.h caml/mlvalues.h caml/custom.h caml/fail.h caml/gc.h \
+  caml/intext.h caml/io.h caml/md5.h caml/memory.h caml/major_gc.h \
+  caml/freelist.h caml/minor_gc.h caml/address_class.h caml/reverse.h
+fail.$(O): fail.c caml/alloc.h caml/misc.h caml/config.h caml/m.h caml/s.h \
+  caml/mlvalues.h caml/fail.h caml/io.h caml/gc.h caml/memory.h \
+  caml/major_gc.h caml/freelist.h caml/minor_gc.h caml/address_class.h \
+  caml/printexc.h caml/signals.h caml/stacks.h
+finalise.$(O): finalise.c caml/callback.h caml/mlvalues.h caml/config.h \
+  caml/m.h caml/s.h caml/misc.h caml/compact.h caml/fail.h \
+  caml/finalise.h caml/roots.h caml/memory.h caml/gc.h caml/major_gc.h \
+  caml/freelist.h caml/minor_gc.h caml/address_class.h caml/signals.h
+fix_code.$(O): fix_code.c caml/config.h caml/m.h caml/s.h caml/debugger.h \
+  caml/misc.h caml/mlvalues.h caml/fix_code.h caml/instruct.h \
+  caml/intext.h caml/io.h caml/md5.h caml/memory.h caml/gc.h \
+  caml/major_gc.h caml/freelist.h caml/minor_gc.h caml/address_class.h \
+  caml/reverse.h
+floats.$(O): floats.c caml/alloc.h caml/misc.h caml/config.h caml/m.h \
+  caml/s.h caml/mlvalues.h caml/fail.h caml/memory.h caml/gc.h \
+  caml/major_gc.h caml/freelist.h caml/minor_gc.h caml/address_class.h \
+  caml/reverse.h caml/stacks.h
+freelist.$(O): freelist.c caml/config.h caml/m.h caml/s.h caml/freelist.h \
+  caml/misc.h caml/mlvalues.h caml/gc.h caml/gc_ctrl.h caml/memory.h \
+  caml/major_gc.h caml/minor_gc.h caml/address_class.h
+gc_ctrl.$(O): gc_ctrl.c caml/alloc.h caml/misc.h caml/config.h caml/m.h \
+  caml/s.h caml/mlvalues.h caml/backtrace.h caml/exec.h caml/compact.h \
+  caml/custom.h caml/fail.h caml/finalise.h caml/roots.h caml/memory.h \
+  caml/gc.h caml/major_gc.h caml/freelist.h caml/minor_gc.h \
+  caml/address_class.h caml/gc_ctrl.h caml/signals.h caml/stacks.h \
+  caml/startup_aux.h
+globroots.$(O): globroots.c caml/memory.h caml/config.h caml/m.h caml/s.h \
+  caml/gc.h caml/mlvalues.h caml/misc.h caml/major_gc.h caml/freelist.h \
+  caml/minor_gc.h caml/address_class.h caml/roots.h caml/globroots.h
+hash.$(O): hash.c caml/mlvalues.h caml/config.h caml/m.h caml/s.h \
+  caml/misc.h caml/custom.h caml/memory.h caml/gc.h caml/major_gc.h \
+  caml/freelist.h caml/minor_gc.h caml/address_class.h caml/hash.h
+instrtrace.$(O): instrtrace.c
+intern.$(O): intern.c caml/alloc.h caml/misc.h caml/config.h caml/m.h \
+  caml/s.h caml/mlvalues.h caml/callback.h caml/custom.h caml/fail.h \
+  caml/gc.h caml/intext.h caml/io.h caml/md5.h caml/memory.h \
+  caml/major_gc.h caml/freelist.h caml/minor_gc.h caml/address_class.h \
+  caml/reverse.h
+interp.$(O): interp.c caml/alloc.h caml/misc.h caml/config.h caml/m.h \
+  caml/s.h caml/mlvalues.h caml/backtrace.h caml/exec.h caml/callback.h \
+  caml/debugger.h caml/fail.h caml/fix_code.h caml/instrtrace.h \
+  caml/instruct.h caml/interp.h caml/major_gc.h caml/freelist.h \
+  caml/memory.h caml/gc.h caml/minor_gc.h caml/address_class.h \
+  caml/prims.h caml/signals.h caml/stacks.h caml/startup_aux.h \
+  caml/jumptbl.h
+ints.$(O): ints.c caml/alloc.h caml/misc.h caml/config.h caml/m.h caml/s.h \
+  caml/mlvalues.h caml/custom.h caml/fail.h caml/intext.h caml/io.h \
+  caml/memory.h caml/gc.h caml/major_gc.h caml/freelist.h \
+  caml/minor_gc.h caml/address_class.h
+io.$(O): io.c caml/config.h caml/m.h caml/s.h caml/alloc.h caml/misc.h \
+  caml/mlvalues.h caml/custom.h caml/fail.h caml/io.h caml/memory.h \
+  caml/gc.h caml/major_gc.h caml/freelist.h caml/minor_gc.h \
+  caml/address_class.h caml/osdeps.h caml/signals.h caml/sys.h
+lexing.$(O): lexing.c caml/fail.h caml/misc.h caml/config.h caml/m.h \
+  caml/s.h caml/mlvalues.h caml/stacks.h caml/memory.h caml/gc.h \
+  caml/major_gc.h caml/freelist.h caml/minor_gc.h caml/address_class.h
+main.$(O): main.c caml/misc.h caml/config.h caml/m.h caml/s.h \
+  caml/mlvalues.h caml/sys.h caml/osdeps.h caml/memory.h caml/gc.h \
+  caml/major_gc.h caml/freelist.h caml/minor_gc.h caml/address_class.h
+major_gc.$(O): major_gc.c caml/compact.h caml/config.h caml/m.h caml/s.h \
+  caml/misc.h caml/mlvalues.h caml/custom.h caml/fail.h caml/finalise.h \
+  caml/roots.h caml/memory.h caml/gc.h caml/major_gc.h caml/freelist.h \
+  caml/minor_gc.h caml/address_class.h caml/gc_ctrl.h caml/signals.h \
+  caml/weak.h
+md5.$(O): md5.c caml/alloc.h caml/misc.h caml/config.h caml/m.h caml/s.h \
+  caml/mlvalues.h caml/fail.h caml/md5.h caml/io.h caml/memory.h \
+  caml/gc.h caml/major_gc.h caml/freelist.h caml/minor_gc.h \
+  caml/address_class.h caml/reverse.h
+memory.$(O): memory.c caml/address_class.h caml/config.h caml/m.h caml/s.h \
+  caml/misc.h caml/mlvalues.h caml/fail.h caml/freelist.h caml/gc.h \
+  caml/gc_ctrl.h caml/major_gc.h caml/memory.h caml/minor_gc.h \
+  caml/signals.h
+meta.$(O): meta.c caml/alloc.h caml/misc.h caml/config.h caml/m.h caml/s.h \
+  caml/mlvalues.h caml/fail.h caml/fix_code.h caml/interp.h \
+  caml/intext.h caml/io.h caml/major_gc.h caml/freelist.h caml/memory.h \
+  caml/gc.h caml/minor_gc.h caml/address_class.h caml/prims.h \
+  caml/stacks.h
+minor_gc.$(O): minor_gc.c caml/custom.h caml/mlvalues.h caml/config.h \
+  caml/m.h caml/s.h caml/misc.h caml/fail.h caml/finalise.h caml/roots.h \
+  caml/memory.h caml/gc.h caml/major_gc.h caml/freelist.h \
+  caml/minor_gc.h caml/address_class.h caml/gc_ctrl.h caml/signals.h \
+  caml/weak.h
+misc.$(O): misc.c caml/config.h caml/m.h caml/s.h caml/misc.h caml/memory.h \
+  caml/gc.h caml/mlvalues.h caml/major_gc.h caml/freelist.h \
+  caml/minor_gc.h caml/address_class.h caml/osdeps.h caml/version.h
+obj.$(O): obj.c caml/alloc.h caml/misc.h caml/config.h caml/m.h caml/s.h \
+  caml/mlvalues.h caml/fail.h caml/gc.h caml/interp.h caml/major_gc.h \
+  caml/freelist.h caml/memory.h caml/minor_gc.h caml/address_class.h \
+  caml/prims.h caml/spacetime.h
+parsing.$(O): parsing.c caml/config.h caml/m.h caml/s.h caml/mlvalues.h \
+  caml/misc.h caml/memory.h caml/gc.h caml/major_gc.h caml/freelist.h \
+  caml/minor_gc.h caml/address_class.h caml/alloc.h
+prims.$(O): prims.c caml/mlvalues.h caml/config.h caml/m.h caml/s.h \
+  caml/misc.h caml/prims.h
+printexc.$(O): printexc.c caml/backtrace.h caml/mlvalues.h caml/config.h \
+  caml/m.h caml/s.h caml/misc.h caml/exec.h caml/callback.h \
+  caml/debugger.h caml/fail.h caml/printexc.h caml/memory.h caml/gc.h \
+  caml/major_gc.h caml/freelist.h caml/minor_gc.h caml/address_class.h
+roots.$(O): roots.c caml/finalise.h caml/roots.h caml/misc.h caml/config.h \
+  caml/m.h caml/s.h caml/memory.h caml/gc.h caml/mlvalues.h \
+  caml/major_gc.h caml/freelist.h caml/minor_gc.h caml/address_class.h \
+  caml/globroots.h caml/stacks.h
+signals.$(O): signals.c caml/alloc.h caml/misc.h caml/config.h caml/m.h \
+  caml/s.h caml/mlvalues.h caml/callback.h caml/fail.h caml/memory.h \
+  caml/gc.h caml/major_gc.h caml/freelist.h caml/minor_gc.h \
+  caml/address_class.h caml/roots.h caml/signals.h \
+  caml/signals_machdep.h caml/sys.h
+signals_byt.$(O): signals_byt.c caml/config.h caml/m.h caml/s.h \
+  caml/memory.h caml/gc.h caml/mlvalues.h caml/misc.h caml/major_gc.h \
+  caml/freelist.h caml/minor_gc.h caml/address_class.h caml/osdeps.h \
+  caml/signals.h caml/signals_machdep.h
+spacetime.$(O): spacetime.c caml/fail.h caml/misc.h caml/config.h caml/m.h \
+  caml/s.h caml/mlvalues.h
+stacks.$(O): stacks.c caml/config.h caml/m.h caml/s.h caml/fail.h \
+  caml/misc.h caml/mlvalues.h caml/stacks.h caml/memory.h caml/gc.h \
+  caml/major_gc.h caml/freelist.h caml/minor_gc.h caml/address_class.h
+startup.$(O): startup.c caml/config.h caml/m.h caml/s.h caml/alloc.h \
+  caml/misc.h caml/mlvalues.h caml/backtrace.h caml/exec.h \
+  caml/callback.h caml/custom.h caml/debugger.h caml/dynlink.h \
+  caml/fail.h caml/fix_code.h caml/freelist.h caml/gc_ctrl.h \
+  caml/instrtrace.h caml/interp.h caml/intext.h caml/io.h caml/memory.h \
+  caml/gc.h caml/major_gc.h caml/minor_gc.h caml/address_class.h \
+  caml/osdeps.h caml/prims.h caml/printexc.h caml/reverse.h \
+  caml/signals.h caml/stacks.h caml/sys.h caml/startup.h \
+  caml/startup_aux.h caml/version.h
+startup_aux.$(O): startup_aux.c caml/backtrace.h caml/mlvalues.h \
+  caml/config.h caml/m.h caml/s.h caml/misc.h caml/exec.h caml/memory.h \
+  caml/gc.h caml/major_gc.h caml/freelist.h caml/minor_gc.h \
+  caml/address_class.h caml/callback.h caml/dynlink.h caml/osdeps.h \
+  caml/startup_aux.h
+str.$(O): str.c caml/alloc.h caml/misc.h caml/config.h caml/m.h caml/s.h \
+  caml/mlvalues.h caml/fail.h caml/memory.h caml/gc.h caml/major_gc.h \
+  caml/freelist.h caml/minor_gc.h caml/address_class.h
+sys.$(O): sys.c caml/config.h caml/m.h caml/s.h caml/alloc.h caml/misc.h \
+  caml/mlvalues.h caml/debugger.h caml/fail.h caml/gc_ctrl.h caml/io.h \
+  caml/osdeps.h caml/memory.h caml/gc.h caml/major_gc.h caml/freelist.h \
+  caml/minor_gc.h caml/address_class.h caml/signals.h caml/stacks.h \
+  caml/sys.h caml/version.h caml/callback.h caml/startup_aux.h
+terminfo.$(O): terminfo.c caml/config.h caml/m.h caml/s.h caml/alloc.h \
+  caml/misc.h caml/mlvalues.h caml/fail.h caml/io.h
+unix.$(O): unix.c caml/config.h caml/m.h caml/s.h caml/fail.h caml/misc.h \
+  caml/mlvalues.h caml/memory.h caml/gc.h caml/major_gc.h \
+  caml/freelist.h caml/minor_gc.h caml/address_class.h caml/osdeps.h \
+  caml/signals.h caml/sys.h caml/io.h caml/alloc.h
+weak.$(O): weak.c caml/alloc.h caml/misc.h caml/config.h caml/m.h caml/s.h \
+  caml/mlvalues.h caml/fail.h caml/major_gc.h caml/freelist.h \
+  caml/memory.h caml/gc.h caml/minor_gc.h caml/address_class.h \
+  caml/weak.h
+afl.d.$(O): afl.c caml/config.h caml/m.h caml/s.h caml/misc.h caml/mlvalues.h \
+  caml/osdeps.h caml/memory.h caml/gc.h caml/major_gc.h caml/freelist.h \
+  caml/minor_gc.h caml/address_class.h
+alloc.d.$(O): alloc.c caml/alloc.h caml/misc.h caml/config.h caml/m.h caml/s.h \
+  caml/mlvalues.h caml/custom.h caml/major_gc.h caml/freelist.h \
+  caml/memory.h caml/gc.h caml/minor_gc.h caml/address_class.h \
+  caml/stacks.h
+array.d.$(O): array.c caml/alloc.h caml/misc.h caml/config.h caml/m.h caml/s.h \
+  caml/mlvalues.h caml/fail.h caml/memory.h caml/gc.h caml/major_gc.h \
+  caml/freelist.h caml/minor_gc.h caml/address_class.h caml/signals.h \
+  caml/spacetime.h
+backtrace.d.$(O): backtrace.c caml/alloc.h caml/misc.h caml/config.h caml/m.h \
+  caml/s.h caml/mlvalues.h caml/memory.h caml/gc.h caml/major_gc.h \
+  caml/freelist.h caml/minor_gc.h caml/address_class.h caml/backtrace.h \
+  caml/exec.h caml/backtrace_prim.h caml/fail.h
+backtrace_prim.d.$(O): backtrace_prim.c caml/config.h caml/m.h caml/s.h \
+  caml/mlvalues.h caml/misc.h caml/alloc.h caml/custom.h caml/io.h \
+  caml/instruct.h caml/intext.h caml/exec.h caml/fix_code.h \
+  caml/memory.h caml/gc.h caml/major_gc.h caml/freelist.h \
+  caml/minor_gc.h caml/address_class.h caml/startup.h caml/stacks.h \
+  caml/sys.h caml/backtrace.h caml/fail.h caml/backtrace_prim.h
+bigarray.d.$(O): bigarray.c caml/alloc.h caml/misc.h caml/config.h caml/m.h \
+  caml/s.h caml/mlvalues.h caml/bigarray.h caml/custom.h caml/fail.h \
+  caml/intext.h caml/io.h caml/hash.h caml/memory.h caml/gc.h \
+  caml/major_gc.h caml/freelist.h caml/minor_gc.h caml/address_class.h
+callback.d.$(O): callback.c caml/callback.h caml/mlvalues.h caml/config.h \
+  caml/m.h caml/s.h caml/misc.h caml/fail.h caml/memory.h caml/gc.h \
+  caml/major_gc.h caml/freelist.h caml/minor_gc.h caml/address_class.h \
+  caml/interp.h caml/instruct.h caml/fix_code.h caml/stacks.h
+compact.d.$(O): compact.c caml/address_class.h caml/config.h caml/m.h caml/s.h \
+  caml/misc.h caml/mlvalues.h caml/finalise.h caml/roots.h caml/memory.h \
+  caml/gc.h caml/major_gc.h caml/freelist.h caml/minor_gc.h \
+  caml/gc_ctrl.h caml/weak.h caml/compact.h
+compare.d.$(O): compare.c caml/custom.h caml/mlvalues.h caml/config.h caml/m.h \
+  caml/s.h caml/misc.h caml/fail.h caml/memory.h caml/gc.h \
+  caml/major_gc.h caml/freelist.h caml/minor_gc.h caml/address_class.h
+custom.d.$(O): custom.c caml/alloc.h caml/misc.h caml/config.h caml/m.h \
+  caml/s.h caml/mlvalues.h caml/custom.h caml/fail.h caml/memory.h \
+  caml/gc.h caml/major_gc.h caml/freelist.h caml/minor_gc.h \
+  caml/address_class.h
+debugger.d.$(O): debugger.c caml/alloc.h caml/misc.h caml/config.h caml/m.h \
+  caml/s.h caml/mlvalues.h caml/debugger.h caml/osdeps.h caml/memory.h \
+  caml/gc.h caml/major_gc.h caml/freelist.h caml/minor_gc.h \
+  caml/address_class.h caml/fail.h caml/fix_code.h caml/instruct.h \
+  caml/intext.h caml/io.h caml/stacks.h caml/sys.h
+dynlink.d.$(O): dynlink.c caml/config.h caml/m.h caml/s.h caml/alloc.h \
+  caml/misc.h caml/mlvalues.h caml/dynlink.h caml/fail.h caml/memory.h \
+  caml/gc.h caml/major_gc.h caml/freelist.h caml/minor_gc.h \
+  caml/address_class.h caml/osdeps.h caml/prims.h caml/signals.h
+extern.d.$(O): extern.c caml/alloc.h caml/misc.h caml/config.h caml/m.h \
+  caml/s.h caml/mlvalues.h caml/custom.h caml/fail.h caml/gc.h \
+  caml/intext.h caml/io.h caml/md5.h caml/memory.h caml/major_gc.h \
+  caml/freelist.h caml/minor_gc.h caml/address_class.h caml/reverse.h
+fail.d.$(O): fail.c caml/alloc.h caml/misc.h caml/config.h caml/m.h caml/s.h \
+  caml/mlvalues.h caml/fail.h caml/io.h caml/gc.h caml/memory.h \
+  caml/major_gc.h caml/freelist.h caml/minor_gc.h caml/address_class.h \
+  caml/printexc.h caml/signals.h caml/stacks.h
+finalise.d.$(O): finalise.c caml/callback.h caml/mlvalues.h caml/config.h \
+  caml/m.h caml/s.h caml/misc.h caml/compact.h caml/fail.h \
+  caml/finalise.h caml/roots.h caml/memory.h caml/gc.h caml/major_gc.h \
+  caml/freelist.h caml/minor_gc.h caml/address_class.h caml/signals.h
+fix_code.d.$(O): fix_code.c caml/config.h caml/m.h caml/s.h caml/debugger.h \
+  caml/misc.h caml/mlvalues.h caml/fix_code.h caml/instruct.h \
+  caml/intext.h caml/io.h caml/md5.h caml/memory.h caml/gc.h \
+  caml/major_gc.h caml/freelist.h caml/minor_gc.h caml/address_class.h \
+  caml/reverse.h
+floats.d.$(O): floats.c caml/alloc.h caml/misc.h caml/config.h caml/m.h \
+  caml/s.h caml/mlvalues.h caml/fail.h caml/memory.h caml/gc.h \
+  caml/major_gc.h caml/freelist.h caml/minor_gc.h caml/address_class.h \
+  caml/reverse.h caml/stacks.h
+freelist.d.$(O): freelist.c caml/config.h caml/m.h caml/s.h caml/freelist.h \
+  caml/misc.h caml/mlvalues.h caml/gc.h caml/gc_ctrl.h caml/memory.h \
+  caml/major_gc.h caml/minor_gc.h caml/address_class.h
+gc_ctrl.d.$(O): gc_ctrl.c caml/alloc.h caml/misc.h caml/config.h caml/m.h \
+  caml/s.h caml/mlvalues.h caml/backtrace.h caml/exec.h caml/compact.h \
+  caml/custom.h caml/fail.h caml/finalise.h caml/roots.h caml/memory.h \
+  caml/gc.h caml/major_gc.h caml/freelist.h caml/minor_gc.h \
+  caml/address_class.h caml/gc_ctrl.h caml/signals.h caml/stacks.h \
+  caml/startup_aux.h
+globroots.d.$(O): globroots.c caml/memory.h caml/config.h caml/m.h caml/s.h \
+  caml/gc.h caml/mlvalues.h caml/misc.h caml/major_gc.h caml/freelist.h \
+  caml/minor_gc.h caml/address_class.h caml/roots.h caml/globroots.h
+hash.d.$(O): hash.c caml/mlvalues.h caml/config.h caml/m.h caml/s.h \
+  caml/misc.h caml/custom.h caml/memory.h caml/gc.h caml/major_gc.h \
+  caml/freelist.h caml/minor_gc.h caml/address_class.h caml/hash.h
+instrtrace.d.$(O): instrtrace.c caml/instrtrace.h caml/mlvalues.h \
+  caml/config.h caml/m.h caml/s.h caml/misc.h caml/instruct.h \
+  caml/opnames.h caml/prims.h caml/stacks.h caml/memory.h caml/gc.h \
+  caml/major_gc.h caml/freelist.h caml/minor_gc.h caml/address_class.h \
+  caml/startup_aux.h
+intern.d.$(O): intern.c caml/alloc.h caml/misc.h caml/config.h caml/m.h \
+  caml/s.h caml/mlvalues.h caml/callback.h caml/custom.h caml/fail.h \
+  caml/gc.h caml/intext.h caml/io.h caml/md5.h caml/memory.h \
+  caml/major_gc.h caml/freelist.h caml/minor_gc.h caml/address_class.h \
+  caml/reverse.h
+interp.d.$(O): interp.c caml/alloc.h caml/misc.h caml/config.h caml/m.h \
+  caml/s.h caml/mlvalues.h caml/backtrace.h caml/exec.h caml/callback.h \
+  caml/debugger.h caml/fail.h caml/fix_code.h caml/instrtrace.h \
+  caml/instruct.h caml/interp.h caml/major_gc.h caml/freelist.h \
+  caml/memory.h caml/gc.h caml/minor_gc.h caml/address_class.h \
+  caml/prims.h caml/signals.h caml/stacks.h caml/startup_aux.h
+ints.d.$(O): ints.c caml/alloc.h caml/misc.h caml/config.h caml/m.h caml/s.h \
+  caml/mlvalues.h caml/custom.h caml/fail.h caml/intext.h caml/io.h \
+  caml/memory.h caml/gc.h caml/major_gc.h caml/freelist.h \
+  caml/minor_gc.h caml/address_class.h
+io.d.$(O): io.c caml/config.h caml/m.h caml/s.h caml/alloc.h caml/misc.h \
+  caml/mlvalues.h caml/custom.h caml/fail.h caml/io.h caml/memory.h \
+  caml/gc.h caml/major_gc.h caml/freelist.h caml/minor_gc.h \
+  caml/address_class.h caml/osdeps.h caml/signals.h caml/sys.h
+lexing.d.$(O): lexing.c caml/fail.h caml/misc.h caml/config.h caml/m.h \
+  caml/s.h caml/mlvalues.h caml/stacks.h caml/memory.h caml/gc.h \
+  caml/major_gc.h caml/freelist.h caml/minor_gc.h caml/address_class.h
+main.d.$(O): main.c caml/misc.h caml/config.h caml/m.h caml/s.h \
+  caml/mlvalues.h caml/sys.h caml/osdeps.h caml/memory.h caml/gc.h \
+  caml/major_gc.h caml/freelist.h caml/minor_gc.h caml/address_class.h
+major_gc.d.$(O): major_gc.c caml/compact.h caml/config.h caml/m.h caml/s.h \
+  caml/misc.h caml/mlvalues.h caml/custom.h caml/fail.h caml/finalise.h \
+  caml/roots.h caml/memory.h caml/gc.h caml/major_gc.h caml/freelist.h \
+  caml/minor_gc.h caml/address_class.h caml/gc_ctrl.h caml/signals.h \
+  caml/weak.h
+md5.d.$(O): md5.c caml/alloc.h caml/misc.h caml/config.h caml/m.h caml/s.h \
+  caml/mlvalues.h caml/fail.h caml/md5.h caml/io.h caml/memory.h \
+  caml/gc.h caml/major_gc.h caml/freelist.h caml/minor_gc.h \
+  caml/address_class.h caml/reverse.h
+memory.d.$(O): memory.c caml/address_class.h caml/config.h caml/m.h caml/s.h \
+  caml/misc.h caml/mlvalues.h caml/fail.h caml/freelist.h caml/gc.h \
+  caml/gc_ctrl.h caml/major_gc.h caml/memory.h caml/minor_gc.h \
+  caml/signals.h
+meta.d.$(O): meta.c caml/alloc.h caml/misc.h caml/config.h caml/m.h caml/s.h \
+  caml/mlvalues.h caml/fail.h caml/fix_code.h caml/interp.h \
+  caml/intext.h caml/io.h caml/major_gc.h caml/freelist.h caml/memory.h \
+  caml/gc.h caml/minor_gc.h caml/address_class.h caml/prims.h \
+  caml/stacks.h
+minor_gc.d.$(O): minor_gc.c caml/custom.h caml/mlvalues.h caml/config.h \
+  caml/m.h caml/s.h caml/misc.h caml/fail.h caml/finalise.h caml/roots.h \
+  caml/memory.h caml/gc.h caml/major_gc.h caml/freelist.h \
+  caml/minor_gc.h caml/address_class.h caml/gc_ctrl.h caml/signals.h \
+  caml/weak.h
+misc.d.$(O): misc.c caml/config.h caml/m.h caml/s.h caml/misc.h caml/memory.h \
+  caml/gc.h caml/mlvalues.h caml/major_gc.h caml/freelist.h \
+  caml/minor_gc.h caml/address_class.h caml/osdeps.h caml/version.h
+obj.d.$(O): obj.c caml/alloc.h caml/misc.h caml/config.h caml/m.h caml/s.h \
+  caml/mlvalues.h caml/fail.h caml/gc.h caml/interp.h caml/major_gc.h \
+  caml/freelist.h caml/memory.h caml/minor_gc.h caml/address_class.h \
+  caml/prims.h caml/spacetime.h
+parsing.d.$(O): parsing.c caml/config.h caml/m.h caml/s.h caml/mlvalues.h \
+  caml/misc.h caml/memory.h caml/gc.h caml/major_gc.h caml/freelist.h \
+  caml/minor_gc.h caml/address_class.h caml/alloc.h
+prims.d.$(O): prims.c caml/mlvalues.h caml/config.h caml/m.h caml/s.h \
+  caml/misc.h caml/prims.h
+printexc.d.$(O): printexc.c caml/backtrace.h caml/mlvalues.h caml/config.h \
+  caml/m.h caml/s.h caml/misc.h caml/exec.h caml/callback.h \
+  caml/debugger.h caml/fail.h caml/printexc.h caml/memory.h caml/gc.h \
+  caml/major_gc.h caml/freelist.h caml/minor_gc.h caml/address_class.h
+roots.d.$(O): roots.c caml/finalise.h caml/roots.h caml/misc.h caml/config.h \
+  caml/m.h caml/s.h caml/memory.h caml/gc.h caml/mlvalues.h \
+  caml/major_gc.h caml/freelist.h caml/minor_gc.h caml/address_class.h \
+  caml/globroots.h caml/stacks.h
+signals.d.$(O): signals.c caml/alloc.h caml/misc.h caml/config.h caml/m.h \
+  caml/s.h caml/mlvalues.h caml/callback.h caml/fail.h caml/memory.h \
+  caml/gc.h caml/major_gc.h caml/freelist.h caml/minor_gc.h \
+  caml/address_class.h caml/roots.h caml/signals.h \
+  caml/signals_machdep.h caml/sys.h
+signals_byt.d.$(O): signals_byt.c caml/config.h caml/m.h caml/s.h \
+  caml/memory.h caml/gc.h caml/mlvalues.h caml/misc.h caml/major_gc.h \
+  caml/freelist.h caml/minor_gc.h caml/address_class.h caml/osdeps.h \
+  caml/signals.h caml/signals_machdep.h
+spacetime.d.$(O): spacetime.c caml/fail.h caml/misc.h caml/config.h caml/m.h \
+  caml/s.h caml/mlvalues.h
+stacks.d.$(O): stacks.c caml/config.h caml/m.h caml/s.h caml/fail.h \
+  caml/misc.h caml/mlvalues.h caml/stacks.h caml/memory.h caml/gc.h \
+  caml/major_gc.h caml/freelist.h caml/minor_gc.h caml/address_class.h
+startup.d.$(O): startup.c caml/config.h caml/m.h caml/s.h caml/alloc.h \
+  caml/misc.h caml/mlvalues.h caml/backtrace.h caml/exec.h \
+  caml/callback.h caml/custom.h caml/debugger.h caml/dynlink.h \
+  caml/fail.h caml/fix_code.h caml/freelist.h caml/gc_ctrl.h \
+  caml/instrtrace.h caml/interp.h caml/intext.h caml/io.h caml/memory.h \
+  caml/gc.h caml/major_gc.h caml/minor_gc.h caml/address_class.h \
+  caml/osdeps.h caml/prims.h caml/printexc.h caml/reverse.h \
+  caml/signals.h caml/stacks.h caml/sys.h caml/startup.h \
+  caml/startup_aux.h caml/version.h
+startup_aux.d.$(O): startup_aux.c caml/backtrace.h caml/mlvalues.h \
+  caml/config.h caml/m.h caml/s.h caml/misc.h caml/exec.h caml/memory.h \
+  caml/gc.h caml/major_gc.h caml/freelist.h caml/minor_gc.h \
+  caml/address_class.h caml/callback.h caml/dynlink.h caml/osdeps.h \
+  caml/startup_aux.h
+str.d.$(O): str.c caml/alloc.h caml/misc.h caml/config.h caml/m.h caml/s.h \
+  caml/mlvalues.h caml/fail.h caml/memory.h caml/gc.h caml/major_gc.h \
+  caml/freelist.h caml/minor_gc.h caml/address_class.h
+sys.d.$(O): sys.c caml/config.h caml/m.h caml/s.h caml/alloc.h caml/misc.h \
+  caml/mlvalues.h caml/debugger.h caml/fail.h caml/gc_ctrl.h caml/io.h \
+  caml/osdeps.h caml/memory.h caml/gc.h caml/major_gc.h caml/freelist.h \
+  caml/minor_gc.h caml/address_class.h caml/signals.h caml/stacks.h \
+  caml/sys.h caml/version.h caml/callback.h caml/startup_aux.h
+terminfo.d.$(O): terminfo.c caml/config.h caml/m.h caml/s.h caml/alloc.h \
+  caml/misc.h caml/mlvalues.h caml/fail.h caml/io.h
+unix.d.$(O): unix.c caml/config.h caml/m.h caml/s.h caml/fail.h caml/misc.h \
+  caml/mlvalues.h caml/memory.h caml/gc.h caml/major_gc.h \
+  caml/freelist.h caml/minor_gc.h caml/address_class.h caml/osdeps.h \
+  caml/signals.h caml/sys.h caml/io.h caml/alloc.h
+weak.d.$(O): weak.c caml/alloc.h caml/misc.h caml/config.h caml/m.h caml/s.h \
+  caml/mlvalues.h caml/fail.h caml/major_gc.h caml/freelist.h \
+  caml/memory.h caml/gc.h caml/minor_gc.h caml/address_class.h \
+  caml/weak.h
+afl.i.$(O): afl.c caml/config.h caml/m.h caml/s.h caml/misc.h caml/mlvalues.h \
+  caml/osdeps.h caml/memory.h caml/gc.h caml/major_gc.h caml/freelist.h \
+  caml/minor_gc.h caml/address_class.h
+alloc.i.$(O): alloc.c caml/alloc.h caml/misc.h caml/config.h caml/m.h caml/s.h \
+  caml/mlvalues.h caml/custom.h caml/major_gc.h caml/freelist.h \
+  caml/memory.h caml/gc.h caml/minor_gc.h caml/address_class.h \
+  caml/stacks.h
+array.i.$(O): array.c caml/alloc.h caml/misc.h caml/config.h caml/m.h caml/s.h \
+  caml/mlvalues.h caml/fail.h caml/memory.h caml/gc.h caml/major_gc.h \
+  caml/freelist.h caml/minor_gc.h caml/address_class.h caml/signals.h \
+  caml/spacetime.h
+backtrace.i.$(O): backtrace.c caml/alloc.h caml/misc.h caml/config.h caml/m.h \
+  caml/s.h caml/mlvalues.h caml/memory.h caml/gc.h caml/major_gc.h \
+  caml/freelist.h caml/minor_gc.h caml/address_class.h caml/backtrace.h \
+  caml/exec.h caml/backtrace_prim.h caml/fail.h
+backtrace_prim.i.$(O): backtrace_prim.c caml/config.h caml/m.h caml/s.h \
+  caml/mlvalues.h caml/misc.h caml/alloc.h caml/custom.h caml/io.h \
+  caml/instruct.h caml/intext.h caml/exec.h caml/fix_code.h \
+  caml/memory.h caml/gc.h caml/major_gc.h caml/freelist.h \
+  caml/minor_gc.h caml/address_class.h caml/startup.h caml/stacks.h \
+  caml/sys.h caml/backtrace.h caml/fail.h caml/backtrace_prim.h
+bigarray.i.$(O): bigarray.c caml/alloc.h caml/misc.h caml/config.h caml/m.h \
+  caml/s.h caml/mlvalues.h caml/bigarray.h caml/custom.h caml/fail.h \
+  caml/intext.h caml/io.h caml/hash.h caml/memory.h caml/gc.h \
+  caml/major_gc.h caml/freelist.h caml/minor_gc.h caml/address_class.h
+callback.i.$(O): callback.c caml/callback.h caml/mlvalues.h caml/config.h \
+  caml/m.h caml/s.h caml/misc.h caml/fail.h caml/memory.h caml/gc.h \
+  caml/major_gc.h caml/freelist.h caml/minor_gc.h caml/address_class.h \
+  caml/interp.h caml/instruct.h caml/fix_code.h caml/stacks.h
+compact.i.$(O): compact.c caml/address_class.h caml/config.h caml/m.h caml/s.h \
+  caml/misc.h caml/mlvalues.h caml/finalise.h caml/roots.h caml/memory.h \
+  caml/gc.h caml/major_gc.h caml/freelist.h caml/minor_gc.h \
+  caml/gc_ctrl.h caml/weak.h caml/compact.h
+compare.i.$(O): compare.c caml/custom.h caml/mlvalues.h caml/config.h caml/m.h \
+  caml/s.h caml/misc.h caml/fail.h caml/memory.h caml/gc.h \
+  caml/major_gc.h caml/freelist.h caml/minor_gc.h caml/address_class.h
+custom.i.$(O): custom.c caml/alloc.h caml/misc.h caml/config.h caml/m.h \
+  caml/s.h caml/mlvalues.h caml/custom.h caml/fail.h caml/memory.h \
+  caml/gc.h caml/major_gc.h caml/freelist.h caml/minor_gc.h \
+  caml/address_class.h
+debugger.i.$(O): debugger.c caml/alloc.h caml/misc.h caml/config.h caml/m.h \
+  caml/s.h caml/mlvalues.h caml/debugger.h caml/osdeps.h caml/memory.h \
+  caml/gc.h caml/major_gc.h caml/freelist.h caml/minor_gc.h \
+  caml/address_class.h caml/fail.h caml/fix_code.h caml/instruct.h \
+  caml/intext.h caml/io.h caml/stacks.h caml/sys.h
+dynlink.i.$(O): dynlink.c caml/config.h caml/m.h caml/s.h caml/alloc.h \
+  caml/misc.h caml/mlvalues.h caml/dynlink.h caml/fail.h caml/memory.h \
+  caml/gc.h caml/major_gc.h caml/freelist.h caml/minor_gc.h \
+  caml/address_class.h caml/osdeps.h caml/prims.h caml/signals.h
+extern.i.$(O): extern.c caml/alloc.h caml/misc.h caml/config.h caml/m.h \
+  caml/s.h caml/mlvalues.h caml/custom.h caml/fail.h caml/gc.h \
+  caml/intext.h caml/io.h caml/md5.h caml/memory.h caml/major_gc.h \
+  caml/freelist.h caml/minor_gc.h caml/address_class.h caml/reverse.h
+fail.i.$(O): fail.c caml/alloc.h caml/misc.h caml/config.h caml/m.h caml/s.h \
+  caml/mlvalues.h caml/fail.h caml/io.h caml/gc.h caml/memory.h \
+  caml/major_gc.h caml/freelist.h caml/minor_gc.h caml/address_class.h \
+  caml/printexc.h caml/signals.h caml/stacks.h
+finalise.i.$(O): finalise.c caml/callback.h caml/mlvalues.h caml/config.h \
+  caml/m.h caml/s.h caml/misc.h caml/compact.h caml/fail.h \
+  caml/finalise.h caml/roots.h caml/memory.h caml/gc.h caml/major_gc.h \
+  caml/freelist.h caml/minor_gc.h caml/address_class.h caml/signals.h
+fix_code.i.$(O): fix_code.c caml/config.h caml/m.h caml/s.h caml/debugger.h \
+  caml/misc.h caml/mlvalues.h caml/fix_code.h caml/instruct.h \
+  caml/intext.h caml/io.h caml/md5.h caml/memory.h caml/gc.h \
+  caml/major_gc.h caml/freelist.h caml/minor_gc.h caml/address_class.h \
+  caml/reverse.h
+floats.i.$(O): floats.c caml/alloc.h caml/misc.h caml/config.h caml/m.h \
+  caml/s.h caml/mlvalues.h caml/fail.h caml/memory.h caml/gc.h \
+  caml/major_gc.h caml/freelist.h caml/minor_gc.h caml/address_class.h \
+  caml/reverse.h caml/stacks.h
+freelist.i.$(O): freelist.c caml/config.h caml/m.h caml/s.h caml/freelist.h \
+  caml/misc.h caml/mlvalues.h caml/gc.h caml/gc_ctrl.h caml/memory.h \
+  caml/major_gc.h caml/minor_gc.h caml/address_class.h
+gc_ctrl.i.$(O): gc_ctrl.c caml/alloc.h caml/misc.h caml/config.h caml/m.h \
+  caml/s.h caml/mlvalues.h caml/backtrace.h caml/exec.h caml/compact.h \
+  caml/custom.h caml/fail.h caml/finalise.h caml/roots.h caml/memory.h \
+  caml/gc.h caml/major_gc.h caml/freelist.h caml/minor_gc.h \
+  caml/address_class.h caml/gc_ctrl.h caml/signals.h caml/stacks.h \
+  caml/startup_aux.h
+globroots.i.$(O): globroots.c caml/memory.h caml/config.h caml/m.h caml/s.h \
+  caml/gc.h caml/mlvalues.h caml/misc.h caml/major_gc.h caml/freelist.h \
+  caml/minor_gc.h caml/address_class.h caml/roots.h caml/globroots.h
+hash.i.$(O): hash.c caml/mlvalues.h caml/config.h caml/m.h caml/s.h \
+  caml/misc.h caml/custom.h caml/memory.h caml/gc.h caml/major_gc.h \
+  caml/freelist.h caml/minor_gc.h caml/address_class.h caml/hash.h
+instrtrace.i.$(O): instrtrace.c
+intern.i.$(O): intern.c caml/alloc.h caml/misc.h caml/config.h caml/m.h \
+  caml/s.h caml/mlvalues.h caml/callback.h caml/custom.h caml/fail.h \
+  caml/gc.h caml/intext.h caml/io.h caml/md5.h caml/memory.h \
+  caml/major_gc.h caml/freelist.h caml/minor_gc.h caml/address_class.h \
+  caml/reverse.h
+interp.i.$(O): interp.c caml/alloc.h caml/misc.h caml/config.h caml/m.h \
+  caml/s.h caml/mlvalues.h caml/backtrace.h caml/exec.h caml/callback.h \
+  caml/debugger.h caml/fail.h caml/fix_code.h caml/instrtrace.h \
+  caml/instruct.h caml/interp.h caml/major_gc.h caml/freelist.h \
+  caml/memory.h caml/gc.h caml/minor_gc.h caml/address_class.h \
+  caml/prims.h caml/signals.h caml/stacks.h caml/startup_aux.h \
+  caml/jumptbl.h
+ints.i.$(O): ints.c caml/alloc.h caml/misc.h caml/config.h caml/m.h caml/s.h \
+  caml/mlvalues.h caml/custom.h caml/fail.h caml/intext.h caml/io.h \
+  caml/memory.h caml/gc.h caml/major_gc.h caml/freelist.h \
+  caml/minor_gc.h caml/address_class.h
+io.i.$(O): io.c caml/config.h caml/m.h caml/s.h caml/alloc.h caml/misc.h \
+  caml/mlvalues.h caml/custom.h caml/fail.h caml/io.h caml/memory.h \
+  caml/gc.h caml/major_gc.h caml/freelist.h caml/minor_gc.h \
+  caml/address_class.h caml/osdeps.h caml/signals.h caml/sys.h
+lexing.i.$(O): lexing.c caml/fail.h caml/misc.h caml/config.h caml/m.h \
+  caml/s.h caml/mlvalues.h caml/stacks.h caml/memory.h caml/gc.h \
+  caml/major_gc.h caml/freelist.h caml/minor_gc.h caml/address_class.h
+main.i.$(O): main.c caml/misc.h caml/config.h caml/m.h caml/s.h \
+  caml/mlvalues.h caml/sys.h caml/osdeps.h caml/memory.h caml/gc.h \
+  caml/major_gc.h caml/freelist.h caml/minor_gc.h caml/address_class.h
+major_gc.i.$(O): major_gc.c caml/compact.h caml/config.h caml/m.h caml/s.h \
+  caml/misc.h caml/mlvalues.h caml/custom.h caml/fail.h caml/finalise.h \
+  caml/roots.h caml/memory.h caml/gc.h caml/major_gc.h caml/freelist.h \
+  caml/minor_gc.h caml/address_class.h caml/gc_ctrl.h caml/signals.h \
+  caml/weak.h
+md5.i.$(O): md5.c caml/alloc.h caml/misc.h caml/config.h caml/m.h caml/s.h \
+  caml/mlvalues.h caml/fail.h caml/md5.h caml/io.h caml/memory.h \
+  caml/gc.h caml/major_gc.h caml/freelist.h caml/minor_gc.h \
+  caml/address_class.h caml/reverse.h
+memory.i.$(O): memory.c caml/address_class.h caml/config.h caml/m.h caml/s.h \
+  caml/misc.h caml/mlvalues.h caml/fail.h caml/freelist.h caml/gc.h \
+  caml/gc_ctrl.h caml/major_gc.h caml/memory.h caml/minor_gc.h \
+  caml/signals.h
+meta.i.$(O): meta.c caml/alloc.h caml/misc.h caml/config.h caml/m.h caml/s.h \
+  caml/mlvalues.h caml/fail.h caml/fix_code.h caml/interp.h \
+  caml/intext.h caml/io.h caml/major_gc.h caml/freelist.h caml/memory.h \
+  caml/gc.h caml/minor_gc.h caml/address_class.h caml/prims.h \
+  caml/stacks.h
+minor_gc.i.$(O): minor_gc.c caml/custom.h caml/mlvalues.h caml/config.h \
+  caml/m.h caml/s.h caml/misc.h caml/fail.h caml/finalise.h caml/roots.h \
+  caml/memory.h caml/gc.h caml/major_gc.h caml/freelist.h \
+  caml/minor_gc.h caml/address_class.h caml/gc_ctrl.h caml/signals.h \
+  caml/weak.h
+misc.i.$(O): misc.c caml/config.h caml/m.h caml/s.h caml/misc.h caml/memory.h \
+  caml/gc.h caml/mlvalues.h caml/major_gc.h caml/freelist.h \
+  caml/minor_gc.h caml/address_class.h caml/osdeps.h caml/version.h
+obj.i.$(O): obj.c caml/alloc.h caml/misc.h caml/config.h caml/m.h caml/s.h \
+  caml/mlvalues.h caml/fail.h caml/gc.h caml/interp.h caml/major_gc.h \
+  caml/freelist.h caml/memory.h caml/minor_gc.h caml/address_class.h \
+  caml/prims.h caml/spacetime.h
+parsing.i.$(O): parsing.c caml/config.h caml/m.h caml/s.h caml/mlvalues.h \
+  caml/misc.h caml/memory.h caml/gc.h caml/major_gc.h caml/freelist.h \
+  caml/minor_gc.h caml/address_class.h caml/alloc.h
+prims.i.$(O): prims.c caml/mlvalues.h caml/config.h caml/m.h caml/s.h \
+  caml/misc.h caml/prims.h
+printexc.i.$(O): printexc.c caml/backtrace.h caml/mlvalues.h caml/config.h \
+  caml/m.h caml/s.h caml/misc.h caml/exec.h caml/callback.h \
+  caml/debugger.h caml/fail.h caml/printexc.h caml/memory.h caml/gc.h \
+  caml/major_gc.h caml/freelist.h caml/minor_gc.h caml/address_class.h
+roots.i.$(O): roots.c caml/finalise.h caml/roots.h caml/misc.h caml/config.h \
+  caml/m.h caml/s.h caml/memory.h caml/gc.h caml/mlvalues.h \
+  caml/major_gc.h caml/freelist.h caml/minor_gc.h caml/address_class.h \
+  caml/globroots.h caml/stacks.h
+signals.i.$(O): signals.c caml/alloc.h caml/misc.h caml/config.h caml/m.h \
+  caml/s.h caml/mlvalues.h caml/callback.h caml/fail.h caml/memory.h \
+  caml/gc.h caml/major_gc.h caml/freelist.h caml/minor_gc.h \
+  caml/address_class.h caml/roots.h caml/signals.h \
+  caml/signals_machdep.h caml/sys.h
+signals_byt.i.$(O): signals_byt.c caml/config.h caml/m.h caml/s.h \
+  caml/memory.h caml/gc.h caml/mlvalues.h caml/misc.h caml/major_gc.h \
+  caml/freelist.h caml/minor_gc.h caml/address_class.h caml/osdeps.h \
+  caml/signals.h caml/signals_machdep.h
+spacetime.i.$(O): spacetime.c caml/fail.h caml/misc.h caml/config.h caml/m.h \
+  caml/s.h caml/mlvalues.h
+stacks.i.$(O): stacks.c caml/config.h caml/m.h caml/s.h caml/fail.h \
+  caml/misc.h caml/mlvalues.h caml/stacks.h caml/memory.h caml/gc.h \
+  caml/major_gc.h caml/freelist.h caml/minor_gc.h caml/address_class.h
+startup.i.$(O): startup.c caml/config.h caml/m.h caml/s.h caml/alloc.h \
+  caml/misc.h caml/mlvalues.h caml/backtrace.h caml/exec.h \
+  caml/callback.h caml/custom.h caml/debugger.h caml/dynlink.h \
+  caml/fail.h caml/fix_code.h caml/freelist.h caml/gc_ctrl.h \
+  caml/instrtrace.h caml/interp.h caml/intext.h caml/io.h caml/memory.h \
+  caml/gc.h caml/major_gc.h caml/minor_gc.h caml/address_class.h \
+  caml/osdeps.h caml/prims.h caml/printexc.h caml/reverse.h \
+  caml/signals.h caml/stacks.h caml/sys.h caml/startup.h \
+  caml/startup_aux.h caml/version.h
+startup_aux.i.$(O): startup_aux.c caml/backtrace.h caml/mlvalues.h \
+  caml/config.h caml/m.h caml/s.h caml/misc.h caml/exec.h caml/memory.h \
+  caml/gc.h caml/major_gc.h caml/freelist.h caml/minor_gc.h \
+  caml/address_class.h caml/callback.h caml/dynlink.h caml/osdeps.h \
+  caml/startup_aux.h
+str.i.$(O): str.c caml/alloc.h caml/misc.h caml/config.h caml/m.h caml/s.h \
+  caml/mlvalues.h caml/fail.h caml/memory.h caml/gc.h caml/major_gc.h \
+  caml/freelist.h caml/minor_gc.h caml/address_class.h
+sys.i.$(O): sys.c caml/config.h caml/m.h caml/s.h caml/alloc.h caml/misc.h \
+  caml/mlvalues.h caml/debugger.h caml/fail.h caml/gc_ctrl.h caml/io.h \
+  caml/osdeps.h caml/memory.h caml/gc.h caml/major_gc.h caml/freelist.h \
+  caml/minor_gc.h caml/address_class.h caml/signals.h caml/stacks.h \
+  caml/sys.h caml/version.h caml/callback.h caml/startup_aux.h
+terminfo.i.$(O): terminfo.c caml/config.h caml/m.h caml/s.h caml/alloc.h \
+  caml/misc.h caml/mlvalues.h caml/fail.h caml/io.h
+unix.i.$(O): unix.c caml/config.h caml/m.h caml/s.h caml/fail.h caml/misc.h \
+  caml/mlvalues.h caml/memory.h caml/gc.h caml/major_gc.h \
+  caml/freelist.h caml/minor_gc.h caml/address_class.h caml/osdeps.h \
+  caml/signals.h caml/sys.h caml/io.h caml/alloc.h
+weak.i.$(O): weak.c caml/alloc.h caml/misc.h caml/config.h caml/m.h caml/s.h \
+  caml/mlvalues.h caml/fail.h caml/major_gc.h caml/freelist.h \
+  caml/memory.h caml/gc.h caml/minor_gc.h caml/address_class.h \
+  caml/weak.h
+afl.pic.$(O): afl.c caml/config.h caml/m.h caml/s.h caml/misc.h caml/mlvalues.h \
+  caml/osdeps.h caml/memory.h caml/gc.h caml/major_gc.h caml/freelist.h \
+  caml/minor_gc.h caml/address_class.h
+alloc.pic.$(O): alloc.c caml/alloc.h caml/misc.h caml/config.h caml/m.h caml/s.h \
+  caml/mlvalues.h caml/custom.h caml/major_gc.h caml/freelist.h \
+  caml/memory.h caml/gc.h caml/minor_gc.h caml/address_class.h \
+  caml/stacks.h
+array.pic.$(O): array.c caml/alloc.h caml/misc.h caml/config.h caml/m.h caml/s.h \
+  caml/mlvalues.h caml/fail.h caml/memory.h caml/gc.h caml/major_gc.h \
+  caml/freelist.h caml/minor_gc.h caml/address_class.h caml/signals.h \
+  caml/spacetime.h
+backtrace.pic.$(O): backtrace.c caml/alloc.h caml/misc.h caml/config.h caml/m.h \
+  caml/s.h caml/mlvalues.h caml/memory.h caml/gc.h caml/major_gc.h \
+  caml/freelist.h caml/minor_gc.h caml/address_class.h caml/backtrace.h \
+  caml/exec.h caml/backtrace_prim.h caml/fail.h
+backtrace_prim.pic.$(O): backtrace_prim.c caml/config.h caml/m.h caml/s.h \
+  caml/mlvalues.h caml/misc.h caml/alloc.h caml/custom.h caml/io.h \
+  caml/instruct.h caml/intext.h caml/exec.h caml/fix_code.h \
+  caml/memory.h caml/gc.h caml/major_gc.h caml/freelist.h \
+  caml/minor_gc.h caml/address_class.h caml/startup.h caml/stacks.h \
+  caml/sys.h caml/backtrace.h caml/fail.h caml/backtrace_prim.h
+bigarray.pic.$(O): bigarray.c caml/alloc.h caml/misc.h caml/config.h caml/m.h \
+  caml/s.h caml/mlvalues.h caml/bigarray.h caml/custom.h caml/fail.h \
+  caml/intext.h caml/io.h caml/hash.h caml/memory.h caml/gc.h \
+  caml/major_gc.h caml/freelist.h caml/minor_gc.h caml/address_class.h
+callback.pic.$(O): callback.c caml/callback.h caml/mlvalues.h caml/config.h \
+  caml/m.h caml/s.h caml/misc.h caml/fail.h caml/memory.h caml/gc.h \
+  caml/major_gc.h caml/freelist.h caml/minor_gc.h caml/address_class.h \
+  caml/interp.h caml/instruct.h caml/fix_code.h caml/stacks.h
+compact.pic.$(O): compact.c caml/address_class.h caml/config.h caml/m.h caml/s.h \
+  caml/misc.h caml/mlvalues.h caml/finalise.h caml/roots.h caml/memory.h \
+  caml/gc.h caml/major_gc.h caml/freelist.h caml/minor_gc.h \
+  caml/gc_ctrl.h caml/weak.h caml/compact.h
+compare.pic.$(O): compare.c caml/custom.h caml/mlvalues.h caml/config.h caml/m.h \
+  caml/s.h caml/misc.h caml/fail.h caml/memory.h caml/gc.h \
+  caml/major_gc.h caml/freelist.h caml/minor_gc.h caml/address_class.h
+custom.pic.$(O): custom.c caml/alloc.h caml/misc.h caml/config.h caml/m.h \
+  caml/s.h caml/mlvalues.h caml/custom.h caml/fail.h caml/memory.h \
+  caml/gc.h caml/major_gc.h caml/freelist.h caml/minor_gc.h \
+  caml/address_class.h
+debugger.pic.$(O): debugger.c caml/alloc.h caml/misc.h caml/config.h caml/m.h \
+  caml/s.h caml/mlvalues.h caml/debugger.h caml/osdeps.h caml/memory.h \
+  caml/gc.h caml/major_gc.h caml/freelist.h caml/minor_gc.h \
+  caml/address_class.h caml/fail.h caml/fix_code.h caml/instruct.h \
+  caml/intext.h caml/io.h caml/stacks.h caml/sys.h
+dynlink.pic.$(O): dynlink.c caml/config.h caml/m.h caml/s.h caml/alloc.h \
+  caml/misc.h caml/mlvalues.h caml/dynlink.h caml/fail.h caml/memory.h \
+  caml/gc.h caml/major_gc.h caml/freelist.h caml/minor_gc.h \
+  caml/address_class.h caml/osdeps.h caml/prims.h caml/signals.h
+extern.pic.$(O): extern.c caml/alloc.h caml/misc.h caml/config.h caml/m.h \
+  caml/s.h caml/mlvalues.h caml/custom.h caml/fail.h caml/gc.h \
+  caml/intext.h caml/io.h caml/md5.h caml/memory.h caml/major_gc.h \
+  caml/freelist.h caml/minor_gc.h caml/address_class.h caml/reverse.h
+fail.pic.$(O): fail.c caml/alloc.h caml/misc.h caml/config.h caml/m.h caml/s.h \
+  caml/mlvalues.h caml/fail.h caml/io.h caml/gc.h caml/memory.h \
+  caml/major_gc.h caml/freelist.h caml/minor_gc.h caml/address_class.h \
+  caml/printexc.h caml/signals.h caml/stacks.h
+finalise.pic.$(O): finalise.c caml/callback.h caml/mlvalues.h caml/config.h \
+  caml/m.h caml/s.h caml/misc.h caml/compact.h caml/fail.h \
+  caml/finalise.h caml/roots.h caml/memory.h caml/gc.h caml/major_gc.h \
+  caml/freelist.h caml/minor_gc.h caml/address_class.h caml/signals.h
+fix_code.pic.$(O): fix_code.c caml/config.h caml/m.h caml/s.h caml/debugger.h \
+  caml/misc.h caml/mlvalues.h caml/fix_code.h caml/instruct.h \
+  caml/intext.h caml/io.h caml/md5.h caml/memory.h caml/gc.h \
+  caml/major_gc.h caml/freelist.h caml/minor_gc.h caml/address_class.h \
+  caml/reverse.h
+floats.pic.$(O): floats.c caml/alloc.h caml/misc.h caml/config.h caml/m.h \
+  caml/s.h caml/mlvalues.h caml/fail.h caml/memory.h caml/gc.h \
+  caml/major_gc.h caml/freelist.h caml/minor_gc.h caml/address_class.h \
+  caml/reverse.h caml/stacks.h
+freelist.pic.$(O): freelist.c caml/config.h caml/m.h caml/s.h caml/freelist.h \
+  caml/misc.h caml/mlvalues.h caml/gc.h caml/gc_ctrl.h caml/memory.h \
+  caml/major_gc.h caml/minor_gc.h caml/address_class.h
+gc_ctrl.pic.$(O): gc_ctrl.c caml/alloc.h caml/misc.h caml/config.h caml/m.h \
+  caml/s.h caml/mlvalues.h caml/backtrace.h caml/exec.h caml/compact.h \
+  caml/custom.h caml/fail.h caml/finalise.h caml/roots.h caml/memory.h \
+  caml/gc.h caml/major_gc.h caml/freelist.h caml/minor_gc.h \
+  caml/address_class.h caml/gc_ctrl.h caml/signals.h caml/stacks.h \
+  caml/startup_aux.h
+globroots.pic.$(O): globroots.c caml/memory.h caml/config.h caml/m.h caml/s.h \
+  caml/gc.h caml/mlvalues.h caml/misc.h caml/major_gc.h caml/freelist.h \
+  caml/minor_gc.h caml/address_class.h caml/roots.h caml/globroots.h
+hash.pic.$(O): hash.c caml/mlvalues.h caml/config.h caml/m.h caml/s.h \
+  caml/misc.h caml/custom.h caml/memory.h caml/gc.h caml/major_gc.h \
+  caml/freelist.h caml/minor_gc.h caml/address_class.h caml/hash.h
+instrtrace.pic.$(O): instrtrace.c
+intern.pic.$(O): intern.c caml/alloc.h caml/misc.h caml/config.h caml/m.h \
+  caml/s.h caml/mlvalues.h caml/callback.h caml/custom.h caml/fail.h \
+  caml/gc.h caml/intext.h caml/io.h caml/md5.h caml/memory.h \
+  caml/major_gc.h caml/freelist.h caml/minor_gc.h caml/address_class.h \
+  caml/reverse.h
+interp.pic.$(O): interp.c caml/alloc.h caml/misc.h caml/config.h caml/m.h \
+  caml/s.h caml/mlvalues.h caml/backtrace.h caml/exec.h caml/callback.h \
+  caml/debugger.h caml/fail.h caml/fix_code.h caml/instrtrace.h \
+  caml/instruct.h caml/interp.h caml/major_gc.h caml/freelist.h \
+  caml/memory.h caml/gc.h caml/minor_gc.h caml/address_class.h \
+  caml/prims.h caml/signals.h caml/stacks.h caml/startup_aux.h \
+  caml/jumptbl.h
+ints.pic.$(O): ints.c caml/alloc.h caml/misc.h caml/config.h caml/m.h caml/s.h \
+  caml/mlvalues.h caml/custom.h caml/fail.h caml/intext.h caml/io.h \
+  caml/memory.h caml/gc.h caml/major_gc.h caml/freelist.h \
+  caml/minor_gc.h caml/address_class.h
+io.pic.$(O): io.c caml/config.h caml/m.h caml/s.h caml/alloc.h caml/misc.h \
+  caml/mlvalues.h caml/custom.h caml/fail.h caml/io.h caml/memory.h \
+  caml/gc.h caml/major_gc.h caml/freelist.h caml/minor_gc.h \
+  caml/address_class.h caml/osdeps.h caml/signals.h caml/sys.h
+lexing.pic.$(O): lexing.c caml/fail.h caml/misc.h caml/config.h caml/m.h \
+  caml/s.h caml/mlvalues.h caml/stacks.h caml/memory.h caml/gc.h \
+  caml/major_gc.h caml/freelist.h caml/minor_gc.h caml/address_class.h
+main.pic.$(O): main.c caml/misc.h caml/config.h caml/m.h caml/s.h \
+  caml/mlvalues.h caml/sys.h caml/osdeps.h caml/memory.h caml/gc.h \
+  caml/major_gc.h caml/freelist.h caml/minor_gc.h caml/address_class.h
+major_gc.pic.$(O): major_gc.c caml/compact.h caml/config.h caml/m.h caml/s.h \
+  caml/misc.h caml/mlvalues.h caml/custom.h caml/fail.h caml/finalise.h \
+  caml/roots.h caml/memory.h caml/gc.h caml/major_gc.h caml/freelist.h \
+  caml/minor_gc.h caml/address_class.h caml/gc_ctrl.h caml/signals.h \
+  caml/weak.h
+md5.pic.$(O): md5.c caml/alloc.h caml/misc.h caml/config.h caml/m.h caml/s.h \
+  caml/mlvalues.h caml/fail.h caml/md5.h caml/io.h caml/memory.h \
+  caml/gc.h caml/major_gc.h caml/freelist.h caml/minor_gc.h \
+  caml/address_class.h caml/reverse.h
+memory.pic.$(O): memory.c caml/address_class.h caml/config.h caml/m.h caml/s.h \
+  caml/misc.h caml/mlvalues.h caml/fail.h caml/freelist.h caml/gc.h \
+  caml/gc_ctrl.h caml/major_gc.h caml/memory.h caml/minor_gc.h \
+  caml/signals.h
+meta.pic.$(O): meta.c caml/alloc.h caml/misc.h caml/config.h caml/m.h caml/s.h \
+  caml/mlvalues.h caml/fail.h caml/fix_code.h caml/interp.h \
+  caml/intext.h caml/io.h caml/major_gc.h caml/freelist.h caml/memory.h \
+  caml/gc.h caml/minor_gc.h caml/address_class.h caml/prims.h \
+  caml/stacks.h
+minor_gc.pic.$(O): minor_gc.c caml/custom.h caml/mlvalues.h caml/config.h \
+  caml/m.h caml/s.h caml/misc.h caml/fail.h caml/finalise.h caml/roots.h \
+  caml/memory.h caml/gc.h caml/major_gc.h caml/freelist.h \
+  caml/minor_gc.h caml/address_class.h caml/gc_ctrl.h caml/signals.h \
+  caml/weak.h
+misc.pic.$(O): misc.c caml/config.h caml/m.h caml/s.h caml/misc.h caml/memory.h \
+  caml/gc.h caml/mlvalues.h caml/major_gc.h caml/freelist.h \
+  caml/minor_gc.h caml/address_class.h caml/osdeps.h caml/version.h
+obj.pic.$(O): obj.c caml/alloc.h caml/misc.h caml/config.h caml/m.h caml/s.h \
+  caml/mlvalues.h caml/fail.h caml/gc.h caml/interp.h caml/major_gc.h \
+  caml/freelist.h caml/memory.h caml/minor_gc.h caml/address_class.h \
+  caml/prims.h caml/spacetime.h
+parsing.pic.$(O): parsing.c caml/config.h caml/m.h caml/s.h caml/mlvalues.h \
+  caml/misc.h caml/memory.h caml/gc.h caml/major_gc.h caml/freelist.h \
+  caml/minor_gc.h caml/address_class.h caml/alloc.h
+prims.pic.$(O): prims.c caml/mlvalues.h caml/config.h caml/m.h caml/s.h \
+  caml/misc.h caml/prims.h
+printexc.pic.$(O): printexc.c caml/backtrace.h caml/mlvalues.h caml/config.h \
+  caml/m.h caml/s.h caml/misc.h caml/exec.h caml/callback.h \
+  caml/debugger.h caml/fail.h caml/printexc.h caml/memory.h caml/gc.h \
+  caml/major_gc.h caml/freelist.h caml/minor_gc.h caml/address_class.h
+roots.pic.$(O): roots.c caml/finalise.h caml/roots.h caml/misc.h caml/config.h \
+  caml/m.h caml/s.h caml/memory.h caml/gc.h caml/mlvalues.h \
+  caml/major_gc.h caml/freelist.h caml/minor_gc.h caml/address_class.h \
+  caml/globroots.h caml/stacks.h
+signals.pic.$(O): signals.c caml/alloc.h caml/misc.h caml/config.h caml/m.h \
+  caml/s.h caml/mlvalues.h caml/callback.h caml/fail.h caml/memory.h \
+  caml/gc.h caml/major_gc.h caml/freelist.h caml/minor_gc.h \
+  caml/address_class.h caml/roots.h caml/signals.h \
+  caml/signals_machdep.h caml/sys.h
+signals_byt.pic.$(O): signals_byt.c caml/config.h caml/m.h caml/s.h \
+  caml/memory.h caml/gc.h caml/mlvalues.h caml/misc.h caml/major_gc.h \
+  caml/freelist.h caml/minor_gc.h caml/address_class.h caml/osdeps.h \
+  caml/signals.h caml/signals_machdep.h
+spacetime.pic.$(O): spacetime.c caml/fail.h caml/misc.h caml/config.h caml/m.h \
+  caml/s.h caml/mlvalues.h
+stacks.pic.$(O): stacks.c caml/config.h caml/m.h caml/s.h caml/fail.h \
+  caml/misc.h caml/mlvalues.h caml/stacks.h caml/memory.h caml/gc.h \
+  caml/major_gc.h caml/freelist.h caml/minor_gc.h caml/address_class.h
+startup.pic.$(O): startup.c caml/config.h caml/m.h caml/s.h caml/alloc.h \
+  caml/misc.h caml/mlvalues.h caml/backtrace.h caml/exec.h \
+  caml/callback.h caml/custom.h caml/debugger.h caml/dynlink.h \
+  caml/fail.h caml/fix_code.h caml/freelist.h caml/gc_ctrl.h \
+  caml/instrtrace.h caml/interp.h caml/intext.h caml/io.h caml/memory.h \
+  caml/gc.h caml/major_gc.h caml/minor_gc.h caml/address_class.h \
+  caml/osdeps.h caml/prims.h caml/printexc.h caml/reverse.h \
+  caml/signals.h caml/stacks.h caml/sys.h caml/startup.h \
+  caml/startup_aux.h caml/version.h
+startup_aux.pic.$(O): startup_aux.c caml/backtrace.h caml/mlvalues.h \
+  caml/config.h caml/m.h caml/s.h caml/misc.h caml/exec.h caml/memory.h \
+  caml/gc.h caml/major_gc.h caml/freelist.h caml/minor_gc.h \
+  caml/address_class.h caml/callback.h caml/dynlink.h caml/osdeps.h \
+  caml/startup_aux.h
+str.pic.$(O): str.c caml/alloc.h caml/misc.h caml/config.h caml/m.h caml/s.h \
+  caml/mlvalues.h caml/fail.h caml/memory.h caml/gc.h caml/major_gc.h \
+  caml/freelist.h caml/minor_gc.h caml/address_class.h
+sys.pic.$(O): sys.c caml/config.h caml/m.h caml/s.h caml/alloc.h caml/misc.h \
+  caml/mlvalues.h caml/debugger.h caml/fail.h caml/gc_ctrl.h caml/io.h \
+  caml/osdeps.h caml/memory.h caml/gc.h caml/major_gc.h caml/freelist.h \
+  caml/minor_gc.h caml/address_class.h caml/signals.h caml/stacks.h \
+  caml/sys.h caml/version.h caml/callback.h caml/startup_aux.h
+terminfo.pic.$(O): terminfo.c caml/config.h caml/m.h caml/s.h caml/alloc.h \
+  caml/misc.h caml/mlvalues.h caml/fail.h caml/io.h
+unix.pic.$(O): unix.c caml/config.h caml/m.h caml/s.h caml/fail.h caml/misc.h \
+  caml/mlvalues.h caml/memory.h caml/gc.h caml/major_gc.h \
+  caml/freelist.h caml/minor_gc.h caml/address_class.h caml/osdeps.h \
+  caml/signals.h caml/sys.h caml/io.h caml/alloc.h
+weak.pic.$(O): weak.c caml/alloc.h caml/misc.h caml/config.h caml/m.h caml/s.h \
+  caml/mlvalues.h caml/fail.h caml/major_gc.h caml/freelist.h \
+  caml/memory.h caml/gc.h caml/minor_gc.h caml/address_class.h \
+  caml/weak.h

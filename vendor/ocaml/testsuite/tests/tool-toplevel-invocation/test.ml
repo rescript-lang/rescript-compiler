@@ -1,0 +1,1 @@
+printf "Test succeeds\n";;

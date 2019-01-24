@@ -1,0 +1,6 @@
+graphics.cmo : graphics.cmi
+graphics.cmx : graphics.cmi
+graphics.cmi :
+graphicsX11.cmo : graphics.cmi graphicsX11.cmi
+graphicsX11.cmx : graphics.cmx graphicsX11.cmi
+graphicsX11.cmi :

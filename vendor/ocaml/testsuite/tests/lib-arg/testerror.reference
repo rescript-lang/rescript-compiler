@@ -1,0 +1,45 @@
+(1/7) Bad:
+testerror: option '-s' needs an argument.
+Arg module testing
+  -s missing arg
+  -help  Display this list of options
+  --help  Display this list of options
+
+(2/7) Bad:
+testerror: wrong argument 'true'; option '-set=true' expects no argument.
+Arg module testing
+  -set no argument expected
+  -help  Display this list of options
+  --help  Display this list of options
+
+(3/7) Help:
+Arg module testing
+  -help  Display this list of options
+  --help  Display this list of options
+
+(4/7) Bad:
+testerror: wrong argument 'not_an_int'; option '-int' expects an integer.
+Arg module testing
+  -int wrong argument type
+  -help  Display this list of options
+  --help  Display this list of options
+
+(5/7) Bad:
+testerror: unknown option '-an-unknown-option'.
+Arg module testing
+  -help  Display this list of options
+  --help  Display this list of options
+
+(6/7) Bad:
+testerror: User-raised error.
+Arg module testing
+  -help  Display this list of options
+  --help  Display this list of options
+
+(7/7) Bad:
+testerror: User-raised error bis.
+Arg module testing
+  -error user raised error
+  -help  Display this list of options
+  --help  Display this list of options
+

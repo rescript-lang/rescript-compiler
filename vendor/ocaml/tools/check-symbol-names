@@ -1,0 +1,33 @@
+#!/bin/bash
+
+#**************************************************************************
+#*                                                                        *
+#*                                 OCaml                                  *
+#*                                                                        *
+#*                 Stephen Dolan, University of Cambridge                 *
+#*                                                                        *
+#*   Copyright 2016 Stephen Dolan.                                        *
+#*                                                                        *
+#*   All rights reserved.  This file is distributed under the terms of    *
+#*   the GNU Lesser General Public License version 2.1, with the          *
+#*   special exception on linking described in the file LICENSE.          *
+#*                                                                        *
+#**************************************************************************
+
+set -o pipefail
+
+[ -z "$*" ] && { echo "Usage: $0 libfoo.a" 1>&2; exit 2; }
+
+nm -A -P "$@" | awk '
+# ignore caml_foo, camlFoo_bar, _caml_foo, _camlFoo_bar
+$2 ~ /^(_?caml[_A-Z])/ { next }
+# ignore local and undefined symbols
+$3 ~ /^[rbdtsU]$/ { next }
+# ignore "main", which should be externally linked
+$2 ~ /^_?main$/ { next }
+# print the rest
+{ found=1; print $1 " " $2 " " $3 }
+# fail if there were any results
+END { exit found ? 1 : 0 }
+'
+exit $?

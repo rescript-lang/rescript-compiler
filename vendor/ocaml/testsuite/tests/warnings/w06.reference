@@ -1,0 +1,4 @@
+File "w06.ml", line 5, characters 9-12:
+Warning 6: label bar was omitted in the application of this function.
+File "w06.ml", line 6, characters 9-12:
+Warning 6: labels foo, baz were omitted in the application of this function.

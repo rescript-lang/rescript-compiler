@@ -1,0 +1,50 @@
+(setglobal Ref_spec!
+  (let
+    (int_ref = (makemutable 0 (int) 1)
+     var_ref = (makemutable 0 65a)
+     vargen_ref = (makemutable 0 65a)
+     cst_ref = (makemutable 0 0a)
+     gen_ref = (makemutable 0 0a)
+     flt_ref = (makemutable 0 (float) 0.))
+    (seq (setfield_imm 0 int_ref 2) (setfield_imm 0 var_ref 66a)
+      (setfield_ptr 0 vargen_ref [0: 66 0])
+      (setfield_ptr 0 vargen_ref 67a) (setfield_imm 0 cst_ref 1a)
+      (setfield_ptr 0 gen_ref [0: "foo"])
+      (setfield_ptr 0 gen_ref 0a) (setfield_ptr 0 flt_ref 1.)
+      (let
+        (int_rec = (makemutable 0 (*,int) 0a 1)
+         var_rec = (makemutable 0 0a 65a)
+         vargen_rec = (makemutable 0 0a 65a)
+         cst_rec = (makemutable 0 0a 0a)
+         gen_rec = (makemutable 0 0a 0a)
+         flt_rec = (makemutable 0 (*,float) 0a 0.)
+         flt_rec' = (makearray[float] 0. 0.))
+        (seq (setfield_imm 1 int_rec 2)
+          (setfield_imm 1 var_rec 66a)
+          (setfield_ptr 1 vargen_rec [0: 66 0])
+          (setfield_ptr 1 vargen_rec 67a)
+          (setfield_imm 1 cst_rec 1a)
+          (setfield_ptr 1 gen_rec [0: "foo"])
+          (setfield_ptr 1 gen_rec 0a) (setfield_ptr 1 flt_rec 1.)
+          (setfloatfield 1 flt_rec' 1.)
+          (let
+            (set_open_poly =
+               (function r y (setfield_ptr 0 r y))
+             set_open_poly =
+               (function r y (setfield_imm 0 r y))
+             set_open_poly =
+               (function r y (setfield_imm 0 r y))
+             set_open_poly =
+               (function r y (setfield_imm 0 r y))
+             set_open_poly =
+               (function r y (setfield_ptr 0 r y))
+             set_open_poly =
+               (function r y (setfield_ptr 0 r y))
+             set_open_poly =
+               (function r y (setfield_ptr 0 r y))
+             set_open_poly =
+               (function r y (setfield_ptr 0 r y)))
+            (makeblock 0 int_ref var_ref vargen_ref
+              cst_ref gen_ref flt_ref int_rec
+              var_rec vargen_rec cst_rec gen_rec
+              flt_rec flt_rec' set_open_poly)))))))

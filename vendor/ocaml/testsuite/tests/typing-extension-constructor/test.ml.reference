@@ -1,0 +1,12 @@
+
+#   type t = ..
+# type t += A
+#   - : extension_constructor = <abstr>
+# - : extension_constructor = <abstr>
+#       module M : sig type extension_constructor = int end
+#   #   Characters 2-28:
+  ([%extension_constructor A] : extension_constructor);;
+   ^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error: This expression has type extension_constructor
+       but an expression was expected of type M.extension_constructor = int
+# 

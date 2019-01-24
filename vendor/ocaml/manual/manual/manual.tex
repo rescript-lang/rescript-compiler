@@ -1,0 +1,30 @@
+\documentclass[11pt]{book}
+\usepackage[latin1]{inputenc}
+%HEVEA\@def@charset{US-ASCII}%
+\usepackage{alltt}
+\usepackage{fullpage}
+\usepackage{syntaxdef}
+\usepackage{multind}
+\usepackage{html}
+\usepackage{textcomp}
+\usepackage{caml-sl}
+\usepackage{ocamldoc}
+\usepackage{xspace}
+\newif\ifplaintext
+\plaintextfalse
+%\newif\ifpdf
+%\pdffalse
+\input{macros.tex}
+
+\usepackage{hyperref}
+%\makeatletter \def\@wrindex#1#2{\xdef \@indexfile{\csname #1@idxfile\endcsname}\@@wrindex#2||\\}\makeatother
+\def\th{^{\hbox{\scriptsize th}}}
+
+\raggedbottom
+\input{version.tex}
+%HEVEA\tocnumber
+%HEVEA\setcounter{cuttingdepth}{1}
+%HEVEA\title{The OCaml system, release \ocamlversion}
+\input{allfiles.tex}
+
+

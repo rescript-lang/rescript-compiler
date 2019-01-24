@@ -1,0 +1,2 @@
+echo "This script lacks the x bit and should not run!"
+

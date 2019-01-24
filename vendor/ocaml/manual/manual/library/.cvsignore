@@ -1,0 +1,5 @@
+*.tex
+*.htex
+arithstatus.mli
+ocamldoc.out
+ocamldoc.sty

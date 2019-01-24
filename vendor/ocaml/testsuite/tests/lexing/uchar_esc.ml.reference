@@ -1,0 +1,36 @@
+
+#                                         #         Characters 34-43:
+  let invalid_sv = "\u{0D800}" ;;
+                    ^^^^^^^^^
+Error: Illegal backslash escape in string or character (\u{0D800}, D800 is not a Unicode scalar value)
+# Characters 18-26:
+  let invalid_sv = "\u{D800}" ;;
+                    ^^^^^^^^
+Error: Illegal backslash escape in string or character (\u{D800}, D800 is not a Unicode scalar value)
+# Characters 18-26:
+  let invalid_sv = "\u{D900}" ;;
+                    ^^^^^^^^
+Error: Illegal backslash escape in string or character (\u{D900}, D900 is not a Unicode scalar value)
+# Characters 18-26:
+  let invalid_sv = "\u{DFFF}" ;;
+                    ^^^^^^^^
+Error: Illegal backslash escape in string or character (\u{DFFF}, DFFF is not a Unicode scalar value)
+# Characters 18-28:
+  let invalid_sv = "\u{110000} ;;
+                    ^^^^^^^^^^
+Error: Illegal backslash escape in string or character (\u{110000}, 110000 is not a Unicode scalar value)
+#   Characters 24-36:
+  let too_many_digits = "\u{01234567}" ;;
+                         ^^^^^^^^^^^^
+Error: Illegal backslash escape in string or character (\u{01234567}, too many digits, expected 1 to 6 hexadecimal digits)
+# Characters 21-23:
+  let no_hex_digits = "\u{}" ;;
+                       ^^
+Warning 14: illegal backslash escape in string.
+val no_hex_digits : string = "\\u{}"
+# Characters 25-27:
+  let illegal_hex_digit = "\u{u}" ;;
+                           ^^
+Warning 14: illegal backslash escape in string.
+val illegal_hex_digit : string = "\\u{u}"
+# 

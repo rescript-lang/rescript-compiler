@@ -1,0 +1,8 @@
+
+#   - : unit = ()
+#   Characters 10-20:
+  let () = raise Exit; () ;; (* warn *)
+           ^^^^^^^^^^
+Warning 21: this statement never returns (or has an unsound type.)
+Exception: Pervasives.Exit.
+# 

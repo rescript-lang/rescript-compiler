@@ -1,0 +1,36 @@
+\documentclass[11pt]{article} 
+\usepackage[latin1]{inputenc} 
+\usepackage[T1]{fontenc} 
+\usepackage{textcomp}
+\usepackage{fullpage} 
+\usepackage{url} 
+\usepackage{ocamldoc}
+\begin{document}
+\tableofcontents
+\section{Module {\tt{Loop}}}
+\label{Loop}\index{Loop@\verb`Loop`}
+
+
+\ocamldocvspace{0.5cm}
+
+
+
+\begin{ocamldoccode}
+{\tt{module }}{\tt{A}}{\tt{ : }}\end{ocamldoccode}
+\label{Loop.A}\index{A@\verb`A`}
+
+{\tt{B}}
+
+
+
+
+
+\begin{ocamldoccode}
+{\tt{module }}{\tt{B}}{\tt{ : }}\end{ocamldoccode}
+\label{Loop.B}\index{B@\verb`B`}
+
+{\tt{A}}
+
+
+
+\end{document}

@@ -1,0 +1,88 @@
+\chapter{Compiler plugins\label{c:plugins}}
+\pdfchapterfold{-9}{Compiler plugind}
+%HEVEA\cutname{plugins.html}
+
+\section{Overview}
+
+Starting from OCaml 4.03, it is possible to extend the native and bytecode compilers
+with plugins using the "-plugin" command line option of both tools.
+This possibility is also available for "ocamldep" for OCaml version ulterior to 4.05.
+Beware however that plugins are an advanced feature of which the design
+is still in flux and breaking changes may happen in the future. Plugins features
+are based on the compiler library API. In complement, new hooks have been added to
+the compiler to increase its flexibility.
+
+In particular, hooks are available in the
+\ifouthtml\ahref{libref/Pparse.html}{\texttt{Pparse} module}
+\else\texttt{Pparse} module (see section~\ref{Pparse})\fi
+to transform the parsed abstract syntax tree, providing similar functionality
+to extension point based preprocessors.
+Other hooks are available to analyze the typed tree in the
+\ifouthtml\ahref{libref/Typemod.html}{\texttt{Typemod} module}
+\else\texttt{Typemod} module (see section~\ref{Typemod})\fi
+after the type-checking phase of the compiler. Since the typed tree relies
+on numerous invariants that play a vital part in ulterior phases of the
+compiler, it is not possible however to transform the typed tree.
+Similarly, the intermediary lambda representation can be modified by using the
+hooks provided in the
+\ifouthtml\ahref{libref/Simplif.html}{\texttt{Simplif} module}
+\else\texttt{Simplif} module (see section~\ref{Simplif})\fi.
+A plugin can also add new options to a tool through the
+"Clflags.add_arguments" function (see
+\ifouthtml\ahref{libref/Clflags.html}{\texttt{Clflags} module}
+\else\texttt{Clflags} module (see section~\ref{Clflags})\fi).
+
+Plugins are dynamically loaded and need to be compiled in the same mode (i.e.
+native or bytecode) that the tool they extend.
+
+\section{Basic example}
+
+As an illustration, we shall build a simple "Hello world" plugin that adds
+a simple statement "print_endline \"Hello from:$sourcefile\"" to a compiled file.
+
+The simplest way to implement this feature is to modify the abstract syntax
+tree. We will therefore add an hooks to the "Pparse.ImplementationHooks".
+Since the proposed modification is very basic, we could implement the hook
+directly. However, for the sake of this illustration, we use the "Ast_mapper"
+structure that provides a better path to build more interesting plugins.
+
+The first step is to build the AST fragment corresponding to the
+evaluation of "print_endline":
+\begin{verbatim}
+  let print_endline name =
+    let open Ast_helper in
+    let print_endline = Exp.ident
+    @@ Location.mknoloc @@Longident.Lident "print_endline" in
+    let hello = Exp.constant @@ Const.string @@ "Hello from: " ^ name in
+    Str.eval @@ Exp.apply print_endline [Asttypes.Nolabel, hello]
+\end{verbatim}%
+Then, we can construct an ast mapper that adds this fragment to the parsed
+ast tree.
+\begin{verbatim}
+let add_hello name (mapper:Ast_mapper.mapper) structure =
+  let default = Ast_mapper.default_mapper in
+  (print_endline name) :: (default.structure default structure)
+
+let ast_mapper name =
+  { Ast_mapper.default_mapper with structure = add_hello name }
+\end{verbatim}%
+%
+Once this AST mapper is constructed, we need to convert it to a hook and adds this
+hook to the "Pparse.ImplementationsHooks".
+\begin{verbatim}
+let transform hook_info structure =
+        let astm = ast_mapper hook_info.Misc.sourcefile in
+        astm.structure astm structure
+
+let () = Pparse.ImplementationHooks.add_hook "Hello world hook" transform
+\end{verbatim}
+%
+The resulting simplistic plugin can then be compiled with
+\begin{verbatim}
+$ ocamlopt -I +compiler-libs -shared plugin.ml -o plugin.cmxs
+\end{verbatim}
+%
+Compiling other files with this plugin enabled is then as simple as
+\begin{verbatim}
+$ ocamlopt -plugin plugin.cmxs test.ml -o test
+\end{verbatim}

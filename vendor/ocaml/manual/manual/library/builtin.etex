@@ -1,0 +1,281 @@
+\section{Built-in types and predefined exceptions}
+
+The following built-in types and predefined exceptions are always
+defined in the
+compilation environment, but are not part of any module.  As a
+consequence, they can only be referred by their short names.
+
+%\vspace{0.1cm}
+\subsection*{Built-in types}
+%\vspace{0.1cm}
+
+\begin{ocamldoccode}
+ type int
+\end{ocamldoccode}
+\index{int@\verb`int`}
+\begin{ocamldocdescription}
+    The type of integer numbers.
+\end{ocamldocdescription}
+
+\begin{ocamldoccode}
+ type char
+\end{ocamldoccode}
+\index{char@\verb`char`}
+\begin{ocamldocdescription}
+   The type of characters.
+\end{ocamldocdescription}
+
+\begin{ocamldoccode}
+ type bytes
+\end{ocamldoccode}
+\index{bytes@\verb`bytes`}
+\begin{ocamldocdescription}
+ The type of (writable) byte sequences.
+\end{ocamldocdescription}
+
+\begin{ocamldoccode}
+ type string
+\end{ocamldoccode}
+\index{string@\verb`string`}
+\begin{ocamldocdescription}
+ The type of (read-only) character strings.
+\end{ocamldocdescription}
+
+\begin{ocamldoccode}
+ type float
+\end{ocamldoccode}
+\index{float@\verb`float`}
+\begin{ocamldocdescription}
+  The type of floating-point numbers.
+\end{ocamldocdescription}
+
+\begin{ocamldoccode}
+ type bool = false | true
+\end{ocamldoccode}
+\index{bool@\verb`bool`}
+\begin{ocamldocdescription}
+   The type of booleans (truth values).
+\end{ocamldocdescription}
+
+\begin{ocamldoccode}
+ type unit = ()
+\end{ocamldoccode}
+\index{unit@\verb`unit`}
+\begin{ocamldocdescription}
+ The type of the unit value.
+\end{ocamldocdescription}
+
+\begin{ocamldoccode}
+ type exn
+\end{ocamldoccode}
+\index{exn@\verb`exn`}
+\begin{ocamldocdescription}
+    The type of exception values.
+\end{ocamldocdescription}
+
+\begin{ocamldoccode}
+ type 'a array
+\end{ocamldoccode}
+\index{array@\verb`array`}
+\begin{ocamldocdescription}
+  The type of arrays whose elements have type "'a".
+\end{ocamldocdescription}
+
+\begin{ocamldoccode}
+ type 'a list = [] | :: of 'a * 'a list
+\end{ocamldoccode}
+\index{list@\verb`list`}
+\begin{ocamldocdescription}
+  The type of lists whose elements have type "'a".
+\end{ocamldocdescription}
+
+\begin{ocamldoccode}
+type 'a option = None | Some of 'a
+\end{ocamldoccode}
+\index{option@\verb`option`}
+\begin{ocamldocdescription}
+  The type of optional values of type "'a".
+\end{ocamldocdescription}
+
+\begin{ocamldoccode}
+type int32
+\end{ocamldoccode}
+\index{int32@\verb`int32`}
+\begin{ocamldocdescription}
+ The type of signed 32-bit integers.
+ See the "Int32"[\moduleref{Int32}] module.
+\end{ocamldocdescription}
+
+\begin{ocamldoccode}
+type int64
+\end{ocamldoccode}
+\index{int64@\verb`int64`}
+\begin{ocamldocdescription}
+ The type of signed 64-bit integers.
+ See the "Int64"[\moduleref{Int64}] module.
+\end{ocamldocdescription}
+
+\begin{ocamldoccode}
+type nativeint
+\end{ocamldoccode}
+\index{nativeint@\verb`nativeint`}
+\begin{ocamldocdescription}
+ The type of signed, platform-native integers (32 bits on 32-bit
+ processors, 64 bits on 64-bit processors).
+ See the "Nativeint"[\moduleref{Nativeint}] module.
+\end{ocamldocdescription}
+
+\begin{ocamldoccode}
+type ('a, 'b, 'c, 'd, 'e, 'f) format6
+\end{ocamldoccode}
+\index{format4@\verb`format4`}
+\begin{ocamldocdescription}
+  The type of format strings. "'a" is the type of the parameters of
+  the format, "'f" is the result type for the "printf"-style
+  functions, "'b" is the type of the first argument given to "%a" and
+  "%t" printing functions (see module "Printf"[\moduleref{Printf}]),
+  "'c" is the result type of these functions, and also the type of the
+  argument transmitted to the first argument of "kprintf"-style
+  functions, "'d" is the result type for the "scanf"-style functions
+  (see module "Scanf"[\moduleref{Scanf}]),
+  and "'e" is the type of the receiver function for the "scanf"-style
+  functions.
+\end{ocamldocdescription}
+
+\begin{ocamldoccode}
+type 'a lazy_t
+\end{ocamldoccode}
+\index{lazyt@\verb`lazy_t`}
+\begin{ocamldocdescription}
+ This type is used to implement the "Lazy"[\moduleref{Lazy}] module.
+ It should not be used directly.
+\end{ocamldocdescription}
+
+%\vspace{0.1cm}
+\subsection*{Predefined exceptions}
+%\vspace{0.1cm}
+
+\begin{ocamldoccode}
+exception Match_failure of (string * int * int)
+\end{ocamldoccode}
+\index{Matchfailure@\verb`Match_failure`}
+\begin{ocamldocdescription}
+   Exception raised when none of the cases of a pattern-matching
+   apply. The arguments are the location of the "match" keyword
+   in the source code (file name, line number, column number).
+\end{ocamldocdescription}
+
+\begin{ocamldoccode}
+exception Assert_failure of (string * int * int)
+\end{ocamldoccode}
+\index{Assertfailure@\verb`Assert_failure`}
+\begin{ocamldocdescription}
+   Exception raised when an assertion fails.  The arguments are
+   the location of the "assert" keyword in the source code
+   (file name, line number, column number).
+\end{ocamldocdescription}
+
+\begin{ocamldoccode}
+exception Invalid_argument of string
+\end{ocamldoccode}
+\index{Invalidargument@\verb`Invalid_argument`}
+\begin{ocamldocdescription}
+   Exception raised by library functions to signal that the given
+   arguments do not make sense.  The string gives some information
+   to the programmer.  As a general rule, this exception should not
+   be caught, it denotes a programming error and the code should be
+   modified not to trigger it.
+\end{ocamldocdescription}
+
+\begin{ocamldoccode}
+exception Failure of string
+\end{ocamldoccode}
+\index{Failure@\verb`Failure`}
+\begin{ocamldocdescription}
+  Exception raised by library functions to signal that they are
+  undefined on the given arguments.  The string is meant to give some
+  information to the programmer; you must \emph{not} pattern match on
+  the string literal because it may change in future versions (use
+  \verb`Failure _` instead).
+\end{ocamldocdescription}
+
+\begin{ocamldoccode}
+exception Not_found
+\end{ocamldoccode}
+\index{Notfound@\verb`Not_found`}
+\begin{ocamldocdescription}
+   Exception raised by search functions when the desired object
+   could not be found.
+\end{ocamldocdescription}
+
+\begin{ocamldoccode}
+exception Out_of_memory
+\end{ocamldoccode}
+\index{Outofmemory@\verb`Out_of_memory`}
+\begin{ocamldocdescription}
+   Exception raised by the garbage collector
+   when there is insufficient memory to complete the computation.
+\end{ocamldocdescription}
+
+\begin{ocamldoccode}
+exception Stack_overflow
+\end{ocamldoccode}
+\index{Stackoverflow@\verb`Stack_overflow`}
+\begin{ocamldocdescription}
+   Exception raised by the bytecode interpreter when the evaluation
+   stack reaches its maximal size. This often indicates infinite
+   or excessively deep recursion in the user's program.
+   (Not fully implemented by the native-code compiler;
+    see section~\ref{s:compat-native-bytecode}.)
+\end{ocamldocdescription}
+
+\begin{ocamldoccode}
+exception Sys_error of string
+\end{ocamldoccode}
+\index{Syserror@\verb`Sys_error`}
+\begin{ocamldocdescription}
+  Exception raised by the input/output functions to report an
+  operating system error.  The string is meant to give some
+  information to the programmer; you must \emph{not} pattern match on
+  the string literal because it may change in future versions (use
+  \verb`Sys_error _` instead).
+\end{ocamldocdescription}
+
+\begin{ocamldoccode}
+exception End_of_file
+\end{ocamldoccode}
+\index{Endoffile@\verb`End_of_file`}
+\begin{ocamldocdescription}
+   Exception raised by input functions to signal that the
+   end of file has been reached.
+\end{ocamldocdescription}
+
+\begin{ocamldoccode}
+exception Division_by_zero
+\end{ocamldoccode}
+\index{Divisionbyzero@\verb`Division_by_zero`}
+\begin{ocamldocdescription}
+   Exception raised by integer division and remainder operations
+   when their second argument is zero.
+\end{ocamldocdescription}
+
+\begin{ocamldoccode}
+exception Sys_blocked_io
+\end{ocamldoccode}
+\index{Sysblockedio@\verb`Sys_blocked_io`}
+\begin{ocamldocdescription}
+   A special case of "Sys_error" raised when no I/O is possible
+   on a non-blocking I/O channel.
+\end{ocamldocdescription}
+
+\begin{ocamldoccode}
+exception Undefined_recursive_module of (string * int * int)
+\end{ocamldoccode}
+\index{Undefinedrecursivemodule@\verb`Undefined_recursive_module`}
+\begin{ocamldocdescription}
+   Exception raised when an ill-founded recursive module definition
+   is evaluated.  (See section~\ref{s-recursive-modules}.)
+   The arguments are the location of the definition in the source code
+   (file name, line number, column number).
+\end{ocamldocdescription}
+

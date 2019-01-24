@@ -1,0 +1,44 @@
+#**************************************************************************
+#*                                                                        *
+#*                                 OCaml                                  *
+#*                                                                        *
+#*                         Christophe Troestler                           *
+#*                                                                        *
+#*   Copyright 2015 Christophe Troestler                                  *
+#*                                                                        *
+#*   All rights reserved.  This file is distributed under the terms of    *
+#*   the GNU Lesser General Public License version 2.1, with the          *
+#*   special exception on linking described in the file LICENSE.          *
+#*                                                                        *
+#**************************************************************************
+
+# Compile the 64 bits version
+platform:
+  - x64
+
+image: Visual Studio 2015
+
+# Do a shallow clone of the repo to speed up the build
+clone_depth: 1
+
+environment:
+  global:
+    CYG_ROOT: C:/cygwin64
+    CYG_MIRROR: http://mirrors.kernel.org/sourceware/cygwin/
+    CYG_CACHE: C:/cygwin64/var/cache/setup
+    FLEXDLL_VERSION: 0.37
+    OCAMLRUNPARAM: v=0,b
+
+cache:
+  - C:\cygwin64\var\cache\setup
+
+install:
+# This is a hangover from monitoring effects of MPR#7452
+  - wmic cpu get name
+  - call "%APPVEYOR_BUILD_FOLDER%\appveyor_build.cmd" install
+
+build_script:
+  - call "%APPVEYOR_BUILD_FOLDER%\appveyor_build.cmd" build
+
+test_script:
+  - call "%APPVEYOR_BUILD_FOLDER%\appveyor_build.cmd" test

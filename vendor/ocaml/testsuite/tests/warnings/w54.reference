@@ -1,0 +1,8 @@
+File "w54.ml", line 9, characters 0-43:
+Warning 54: the "inline" attribute is used more than once on this expression
+File "w54.ml", line 5, characters 26-39:
+Warning 54: the "ocaml.inlined" attribute is used more than once on this expression
+File "w54.ml", line 3, characters 51-63:
+Warning 54: the "ocaml.inline" attribute is used more than once on this expression
+File "w54.ml", line 2, characters 33-39:
+Warning 54: the "inline" attribute is used more than once on this expression

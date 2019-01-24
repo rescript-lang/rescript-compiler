@@ -1,0 +1,72 @@
+File "deprecated_module_assigment.ml", line 9, characters 33-34:
+Warning 3: deprecated: x
+DEPRECATED
+  File "deprecated_module_assigment.ml", line 4, characters 2-41:
+  Definition
+  File "deprecated_module_assigment.ml", line 9, characters 15-26:
+  Expected signature
+File "deprecated_module_assigment.ml", line 15, characters 13-14:
+Warning 3: deprecated: x
+DEPRECATED
+  File "deprecated_module_assigment.ml", line 4, characters 2-41:
+  Definition
+  File "deprecated_module_assigment.ml", line 13, characters 17-28:
+  Expected signature
+File "deprecated_module_assigment.ml", line 25, characters 39-78:
+Warning 3: deprecated: A
+  File "deprecated_module_assigment.ml", line 25, characters 55-70:
+  Definition
+  File "deprecated_module_assigment.ml", line 25, characters 27-28:
+  Expected signature
+File "deprecated_module_assigment.ml", line 29, characters 2-20:
+Warning 3: deprecated: A
+  File "deprecated_module_assigment.ml", line 28, characters 11-26:
+  Definition
+  File "deprecated_module_assigment.ml", line 29, characters 15-16:
+  Expected signature
+File "deprecated_module_assigment.ml", line 37, characters 0-58:
+Warning 3: deprecated: mutating field x
+  File "deprecated_module_assigment.ml", line 37, characters 17-53:
+  Definition
+  File "deprecated_module_assigment.ml", line 36, characters 14-28:
+  Expected signature
+File "deprecated_module_assigment.ml", line 41, characters 2-31:
+Warning 3: deprecated: mutating field x
+  File "deprecated_module_assigment.ml", line 40, characters 12-48:
+  Definition
+  File "deprecated_module_assigment.ml", line 41, characters 16-30:
+  Expected signature
+File "deprecated_module_assigment.ml", line 46, characters 37-75:
+Warning 3: deprecated: t
+  File "deprecated_module_assigment.ml", line 46, characters 44-71:
+  Definition
+  File "deprecated_module_assigment.ml", line 46, characters 18-30:
+  Expected signature
+File "deprecated_module_assigment.ml", line 52, characters 0-52:
+Warning 3: deprecated: c
+FOO
+  File "deprecated_module_assigment.ml", line 52, characters 7-48:
+  Definition
+  File "deprecated_module_assigment.ml", line 51, characters 4-24:
+  Expected signature
+File "deprecated_module_assigment.ml", line 56, characters 0-57:
+Warning 3: deprecated: c
+FOO
+  File "deprecated_module_assigment.ml", line 56, characters 7-53:
+  Definition
+  File "deprecated_module_assigment.ml", line 55, characters 4-29:
+  Expected signature
+File "deprecated_module_assigment.ml", line 63, characters 0-55:
+Warning 3: deprecated: S
+FOO
+  File "deprecated_module_assigment.ml", line 63, characters 7-51:
+  Definition
+  File "deprecated_module_assigment.ml", line 62, characters 4-27:
+  Expected signature
+File "deprecated_module_assigment.ml", line 74, characters 0-53:
+Warning 3: deprecated: M
+FOO
+  File "deprecated_module_assigment.ml", line 74, characters 7-49:
+  Definition
+  File "deprecated_module_assigment.ml", line 73, characters 4-22:
+  Expected signature

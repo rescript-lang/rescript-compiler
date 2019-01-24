@@ -1,0 +1,48 @@
+\chapter{The OCaml language} \label{c:refman}
+\pdfchapterfold{-12}{Reference manual for the OCaml language}
+%HEVEA\cutname{language.html}
+
+%better html output that way, sniff.
+%HEVEA\subsection*{Foreword}
+%BEGIN LATEX
+\section*{Foreword}
+%END LATEX
+
+This document is intended as a reference manual for the OCaml
+language. It lists the language constructs, and gives their precise
+syntax and informal semantics. It is by no means a tutorial
+introduction to the language: there is not a single example. A good
+working knowledge of OCaml is assumed.
+
+No attempt has been made at mathematical rigor: words are employed
+with their intuitive meaning, without further definition. As a
+consequence, the typing rules have been left out, by lack of the
+mathematical framework required to express them, while they are
+definitely part of a full formal definition of the language.
+
+
+\subsection*{Notations}
+
+The syntax of the language is given in BNF-like notation. Terminal
+symbols are set in typewriter font (@'like' 'this'@).
+Non-terminal symbols are set in italic font (@like that@).
+Square brackets @[\ldots]@ denote optional components. Curly brackets
+@{\ldots}@ denotes zero, one or several repetitions of the enclosed
+components. Curly brackets with a trailing plus sign @{{\ldots}}@
+denote one or several repetitions of the enclosed components.
+Parentheses @(\ldots)@ denote grouping.
+
+%HEVEA\cutdef{section}
+\input{lex}
+\input{values}
+\input{names}
+\input{types}
+\input{const}
+\input{patterns}
+\input{expr}
+\input{typedecl}
+\input{classes}
+\input{modtypes}
+\input{modules}
+\input{compunit}
+%HEVEA\cutend

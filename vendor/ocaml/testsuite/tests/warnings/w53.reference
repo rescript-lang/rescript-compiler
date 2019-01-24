@@ -1,0 +1,26 @@
+File "w53.ml", line 2, characters 4-5:
+Warning 32: unused value h.
+File "w53.ml", line 31, characters 17-29:
+Warning 53: the "ocaml.inline" attribute cannot appear in this context
+File "w53.ml", line 30, characters 16-22:
+Warning 53: the "inline" attribute cannot appear in this context
+File "w53.ml", line 24, characters 0-39:
+Warning 53: the "inline" attribute cannot appear in this context
+File "w53.ml", line 23, characters 0-32:
+Warning 53: the "inline" attribute cannot appear in this context
+File "w53.ml", line 15, characters 16-24:
+Warning 53: the "tailcall" attribute cannot appear in this context
+File "w53.ml", line 12, characters 14-28:
+Warning 53: the "ocaml.tailcall" attribute cannot appear in this context
+File "w53.ml", line 11, characters 14-22:
+Warning 53: the "tailcall" attribute cannot appear in this context
+File "w53.ml", line 9, characters 16-23:
+Warning 53: the "inlined" attribute cannot appear in this context
+File "w53.ml", line 6, characters 14-27:
+Warning 53: the "ocaml.inlined" attribute cannot appear in this context
+File "w53.ml", line 5, characters 14-21:
+Warning 53: the "inlined" attribute cannot appear in this context
+File "w53.ml", line 3, characters 14-26:
+Warning 53: the "ocaml.inline" attribute cannot appear in this context
+File "w53.ml", line 2, characters 14-20:
+Warning 53: the "inline" attribute cannot appear in this context

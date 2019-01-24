@@ -1,0 +1,74 @@
+\chapter{The compiler front-end} \label{c:parsinglib}\cutname{parsing.html}
+\pdfchapterfold{-1}{The compiler front-end}
+
+This chapter describes the OCaml front-end, which declares the abstract
+syntax tree used by the compiler, provides a way to parse, print
+and pretty-print OCaml code, and ultimately allows to write abstract
+syntax tree preprocessors invoked via the {\tt -ppx} flag (see chapters~\ref{c:camlc}
+and~\ref{c:nativecomp}) and plugins invoked via the {\tt -plugin} flag
+(see chapter~\ref{c:plugins}).
+
+It is important to note that the exported front-end interface follows the evolution of the OCaml language and implementation, and thus does not provide {\bf any} backwards compatibility guarantees.
+
+The front-end is a part of "compiler-libs" library.
+Programs that use the "compiler-libs" library should be built as follows:
+\begin{alltt}
+        ocamlfind ocamlc \var{other options} -package compiler-libs.common \var{other files}
+        ocamlfind ocamlopt \var{other options} -package compiler-libs.common \var{other files}
+\end{alltt}
+Use of the {\tt ocamlfind} utility is recommended. However, if this is not possible, an alternative method may be used:
+\begin{alltt}
+        ocamlc \var{other options} -I +compiler-libs ocamlcommon.cma \var{other files}
+        ocamlopt \var{other options} -I +compiler-libs ocamlcommon.cmxa \var{other files}
+\end{alltt}
+For interactive use of the "compiler-libs" library, start "ocaml" and
+type\\*"#load \"compiler-libs/ocamlcommon.cma\";;".
+
+% Some of the files below are commented out as the documentation is too poor
+% or they are thought to be nonessential.
+
+\ifouthtml
+\begin{links}
+\item \ahref{libref/Ast\_helper.html}{Module \texttt{Ast_helper}: helper functions for AST construction}
+\item \ahref{libref/Ast\_mapper.html}{Module \texttt{Ast_mapper}: -ppx rewriter interface}
+\item \ahref{libref/Asttypes.html}{Module \texttt{Asttypes}: auxiliary types used by Parsetree}
+% \item \ahref{libref/Lexer.html}{Module \texttt{Lexer}: OCaml syntax lexing}
+\item \ahref{libref/Location.html}{Module \texttt{Location}: source code locations}
+\item \ahref{libref/Longident.html}{Module \texttt{Longident}: long identifiers}
+\item \ahref{libref/Parse.html}{Module \texttt{Parse}: OCaml syntax parsing}
+\item \ahref{libref/Parsetree.html}{Module \texttt{Parsetree}: OCaml syntax tree}
+\item \ahref{libref/Pprintast.html}{Module \texttt{Pprintast}: OCaml syntax printing}
+% \item \ahref{libref/Printast.html}{Module \texttt{Printast}: AST printing}
+\end{links}
+
+\else
+% Ast_helper is excluded from the PDF and text manuals.
+% It is over 20 pages long and does not have doc-comments. It is expected
+% that Ast_helper will be only useful in the HTML manual (to look up signatures).
+% \input{Asthelper.tex}
+\input{Astmapper.tex}
+\input{Asttypes.tex}
+% \input{Lexer.tex}
+\input{Location.tex}
+\input{Longident.tex}
+\input{Parse.tex}
+\input{Parsetree.tex}
+\input{Pprintast.tex}
+% \input{Printast.tex}
+\fi
+
+\ifouthtml
+The following modules provides hooks for compiler plugins:
+\begin{links}
+\item \ahref{libref/Pparse.html}{Module \texttt{Pparse}: OCaml parser driver}
+\item \ahref{libref/Typemod.html}{Module \texttt{Typemod}:
+OCaml module type checking}
+\item \ahref{libref/Simplif.html}{Module \texttt{Simplif}: Lambda simplification}
+\item \ahref{libref/Clflags.html}{Module \texttt{Clflags}: command line flags}
+\end{links}
+\else
+\input{Pparse.tex}
+\input{Typemod.tex}
+\input{Simplif.tex}
+\input{Clflags.tex}
+\fi

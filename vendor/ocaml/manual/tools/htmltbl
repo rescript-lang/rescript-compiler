@@ -1,0 +1,134 @@
+#!/usr/local/bin/perl
+
+while (<>) {
+  if (m|^<tbl[> ]|) {
+    while (! m|</tbl>$|) { $_ .= <>; }
+    s/\n//g;
+    print "<pre>\n";
+    do format_table($_);
+    print "</pre>\n";
+  } else {
+    print $_;
+  }
+}
+
+sub format_table {
+# On input, $_ contains:
+# <tbl [border]><th>Header 1<th>Header2<th>...<th>Header M<tr>
+# <td>Data11<td>Data12<td>...<td>Data1M<tr>
+# ...
+# <td>DataN1<td>DataN2<td>...<td>DataNM<tr>
+# </tbl>
+
+# Extract the entries and compute the number of lines and columns
+
+  $numlines = 0;
+  $numcols = 0;
+  $border = 0;
+  $header = 0;
+  $x = 0;
+  $y = 0;
+  foreach $_ (split(/(<tbl[ a-zA-Z]*>|<th>|<td>|<tr>|<\/tbl>)/, $_)) {
+    if (/^$/) { next; }
+    elsif (/<tbl border>/) { $border = 1; }
+    elsif (/<tr>/i) {
+      if ($x > $numcols) { $numcols = $x; }
+      $x = 0;
+      $y++;
+    }
+    elsif (/<th>/) { $header = 1; }
+    elsif (!/(<tbl[ a-zA-Z]*>|<th>|<td>|<tr>|<\/tbl>)/) {
+      s|</?[a-zA-Z]*>||g;       # Remove embedded tags
+      s/^\s*//;                 # and initial blanks
+      s/\s*$//;                 # and final blanks
+      s/\s\s\s*/ /g;            # and extra blanks
+      s/&lt;/</g;               # Unescape HTML specials
+      s/&gt;/>/g;
+      s/&amp;/&/g;
+      $entry{$x, $y} = $_;
+      $x++;
+    }
+  }
+  $numlines = $y;
+
+# Compute the max width of each column
+
+  $totalwidth = 0;
+
+  for ($x = 0; $x < $numcols; $x++) {
+    $max = 0;
+    for ($y = 0; $y < $numlines; $y++) {
+      $len = length($entry{$x, $y});
+      if ($len > $max) { $max = $len; }
+    }
+    $width[$x] = $max;
+    $totalwidth += $max;
+  }
+
+# If it does not fit in one line, turn wide fields into multi-line fields
+
+  if ($totalwidth >= 65) {
+    $totalwidth = 0;
+    $maxwidth = 65 / $numcols;
+    for ($x = 0; $x < $numcols; $x++) {
+      if ($width[$x] > $maxwidth) {
+        if ($x < $numcols - 1) {
+          $width[$x] = $maxwidth;
+        } else {
+          $width[$x] = 70 - $totalwidth;
+        }
+      }
+      $totalwidth += $width[$x];
+    }
+  }
+
+# Compute the separators
+
+  if ($border) {
+    $horsep = '+-';
+    for ($x = 0; $x < $numcols; $x++) {
+      if ($x > 0) { $horsep .= '-+-'; }
+      $horsep .= '-' x $width[$x];
+    }
+    $horsep .= '-+';
+    $verleft = '| ';
+    $versep = ' | ';
+    $verright = ' |';
+  } else {
+    $horsep = '';
+    $verleft = '  ';
+    $versep = '   ';
+    $verright = '  ';
+  }
+
+# Print the table
+  print $horsep, "\n";
+  for ($y = 0; $y < $numlines; $y++) {
+    do {
+      $overflow = 0;
+      print $verleft;
+      for ($x = 0; $x < $numcols; $x++) {
+        if ($x > 0) { print $versep; }
+        $_ = $entry{$x, $y};
+        if (length($_) > $width[$x]) {
+          $pos = rindex($_, ' ', $width[$x]);
+          if ($pos < 0) { $pos = $width[$x]; } else { $pos++; }
+          $entry{$x, $y} = substr($_, $pos);
+          $_ = substr($_, 0, $pos - 1);
+          $overflow = 1;
+        } else {
+          $entry{$x, $y} = '';
+        }
+        $len = length($_);
+        s/&/&amp;/g;
+        s/</&lt;/g;
+        s/>/&gt;/g;
+        print $_, ' ' x ($width[$x] - $len);
+      }
+      print $verright, "\n";
+    } while($overflow);
+    if ($header && $y == 0) { print $horsep, "\n"; }
+  }
+  print $horsep, "\n";
+}
+

@@ -1,0 +1,60 @@
+\chapter{The threads library}
+\label{c:threads}\cutname{threads.html}
+\pdfchapterfold{-5}{The threads library}
+%HEVEA\cutname{libthreads.html}
+
+The "threads" library allows concurrent programming in OCaml.
+It provides multiple threads of control (also called lightweight
+processes) that execute concurrently in the same memory space. Threads
+communicate by in-place modification of shared data structures, or by
+sending and receiving data on communication channels.
+
+The "threads" library is implemented by time-sharing on a single
+processor. It will not take advantage of multi-processor machines.
+Using this library will therefore never make programs run
+faster. However, many programs are easier to write when structured as
+several communicating processes.
+
+Two implementations of the "threads" library are available, depending
+on the capabilities of the operating system:
+\begin{itemize}
+\item System threads.  This implementation builds on the OS-provided threads
+facilities: POSIX 1003.1c threads for Unix, and Win32 threads for
+Windows.  When available, system threads support both bytecode and
+native-code programs.
+\item VM-level threads.  This implementation performs time-sharing and
+context switching at the level of the OCaml virtual machine (bytecode
+interpreter).  It is available on Unix systems, and supports only
+bytecode programs.  It cannot be used with native-code programs.
+\end{itemize}
+Programs that use system threads must be linked as follows:
+\begin{alltt}
+        ocamlc -thread \var{other options} unix.cma threads.cma \var{other files}
+        ocamlopt -thread \var{other options} unix.cmxa threads.cmxa \var{other files}
+\end{alltt}
+Compilation units that use the "threads" library must also be compiled with
+the "-thread" option (see chapter~\ref{c:camlc}).
+
+Programs that use VM-level threads must be compiled with the "-vmthread"
+option to "ocamlc" (see chapter~\ref{c:camlc}), and be linked as follows:
+\begin{alltt}
+        ocamlc -vmthread \var{other options} threads.cma \var{other files}
+\end{alltt}
+Compilation units that use "threads" library must also be compiled with
+the "-vmthread" option (see chapter~\ref{c:camlc}).
+
+\ifouthtml
+\begin{links}
+\item \ahref{libref/Thread.html}{Module \texttt{Thread}: lightweight threads}
+\item \ahref{libref/Mutex.html}{Module \texttt{Mutex}: locks for mutual exclusion}
+\item \ahref{libref/Condition.html}{Module \texttt{Condition}: condition variables to synchronize between threads}
+\item \ahref{libref/Event.html}{Module \texttt{Event}: first-class synchronous communication}
+\item \ahref{libref/ThreadUnix.html}{Module \texttt{ThreadUnix}: thread-compatible system calls}
+\end{links}
+\else
+\input{Thread.tex}
+\input{Mutex.tex}
+\input{Condition.tex}
+\input{Event.tex}
+\input{ThreadUnix.tex}
+\fi

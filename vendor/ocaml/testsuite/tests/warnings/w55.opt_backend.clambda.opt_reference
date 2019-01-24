@@ -1,0 +1,12 @@
+File "w55.opt_backend.ml", line 4, characters 10-26:
+Warning 55: Cannot inline: Function information unavailable
+File "w55.opt_backend.ml", line 8, characters 10-27:
+Warning 55: Cannot inline: Unknown function
+File "w55.opt_backend.ml", line 12, characters 10-26:
+Warning 55: Cannot inline: Partial application
+File "w55.opt_backend.ml", line 18, characters 12-30:
+Warning 55: Cannot inline: Over-application
+File "w55.opt_backend.ml", line 18, characters 12-30:
+Warning 55: Cannot inline: Function information unavailable
+File "w55.opt_backend.ml", line 21, characters 10-26:
+Warning 55: Cannot inline: Function information unavailable

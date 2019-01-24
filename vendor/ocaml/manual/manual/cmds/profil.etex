@@ -1,0 +1,176 @@
+\chapter{Profiling (ocamlprof)} \label{c:profiler}
+\pdfchapter{Profiling (ocamlprof)}
+%HEVEA\cutname{profil.html}
+
+This chapter describes how the execution of OCaml
+programs can be profiled, by recording how many times functions are
+called, branches of conditionals are taken, \ldots
+
+\section{Compiling for profiling}
+
+Before profiling an execution, the program must be compiled in
+profiling mode, using the "ocamlcp" front-end to the "ocamlc" compiler
+(see chapter~\ref{c:camlc}) or the "ocamloptp" front-end to the
+"ocamlopt" compiler (see chapter~\ref{c:nativecomp}). When compiling
+modules separately, "ocamlcp" or "ocamloptp" must be used when
+compiling the modules (production of ".cmo" or ".cmx" files), and can
+also be used (though this is not strictly necessary) when linking them
+together.
+
+\paragraph{Note} If a module (".ml" file) doesn't have a corresponding
+interface (".mli" file), then compiling it with "ocamlcp" will produce
+object files (".cmi" and ".cmo") that are not compatible with the ones
+produced by "ocamlc", which may lead to problems (if the ".cmi" or
+".cmo" is still around) when switching between profiling and
+non-profiling compilations.  To avoid this problem, you should always
+have a ".mli" file for each ".ml" file.  The same problem exists with
+"ocamloptp".
+
+\paragraph{Note} To make sure your programs can be compiled in
+profiling mode, avoid using any identifier that begins with
+"__ocaml_prof".
+
+The amount of profiling information can be controlled through the "-P"
+option to "ocamlcp" or "ocamloptp", followed by one or several letters
+indicating which parts of the program should be profiled:
+
+%% description des options
+\begin{options}
+\item["a"] all options
+\item["f"] function calls : a count point is set at the beginning of
+each function body
+\item["i"] {\bf if \ldots then \ldots else \ldots} : count points are set in
+both {\bf then} branch and {\bf else} branch
+\item["l"] {\bf while, for} loops: a count point is set at the beginning of
+the loop body
+\item["m"] {\bf match} branches: a count point is set at the beginning of the
+body of each branch
+\item["t"] {\bf try \ldots with \ldots} branches: a count point is set at the
+beginning of the body of each branch
+\end{options}
+
+For instance, compiling with "ocamlcp -P film" profiles function calls,
+if\ldots then\ldots else\ldots, loops and pattern matching.
+
+Calling "ocamlcp" or "ocamloptp" without the "-P" option defaults to
+"-P fm", meaning that only function calls and pattern matching are
+profiled.
+
+\paragraph{Note} For compatibility with previous releases, "ocamlcp"
+also accepts the "-p" option, with the same arguments and behaviour as
+"-P".
+
+The "ocamlcp" and "ocamloptp" commands also accept all the options of
+the corresponding "ocamlc" or "ocamlopt" compiler, except the "-pp"
+(preprocessing) option.
+
+
+\section{Profiling an execution}
+
+Running an executable that has been compiled with "ocamlcp" or
+"ocamloptp" records the execution counts for the specified parts of
+the program and saves them in a file called "ocamlprof.dump" in the
+current directory.
+
+If the environment variable "OCAMLPROF_DUMP" is set when the program
+exits, its value is used as the file name instead of "ocamlprof.dump".
+
+The dump file is written only if the program terminates
+normally (by calling "exit" or by falling through). It is not written
+if the program terminates with an uncaught exception.
+
+If a compatible dump file already exists in the current directory, then the
+profiling information is accumulated in this dump file. This allows, for
+instance, the profiling of several executions of a program on
+different inputs.  Note that dump files produced by byte-code
+executables (compiled with "ocamlcp") are compatible with the dump
+files produced by native executables (compiled with "ocamloptp").
+
+\section{Printing profiling information}
+
+The "ocamlprof" command produces a source listing of the program modules
+where execution counts have been inserted as comments. For instance,
+\begin{verbatim}
+        ocamlprof foo.ml
+\end{verbatim}
+prints the source code for the "foo" module, with comments indicating
+how many times the functions in this module have been called. Naturally,
+this information is accurate only if the source file has not been modified
+after it was compiled.
+
+The following options are recognized by "ocamlprof":
+
+\begin{options}
+
+\item["-args" \var{filename}]
+ Read additional newline-terminated command line arguments from \var{filename}.
+
+\item["-args0" \var{filename}]
+ Read additional null character terminated command line arguments from \var{filename}.
+
+\item["-f" \var{dumpfile}]
+Specifies an alternate dump file of profiling information to be read.
+
+\item["-F" \var{string}]
+Specifies an additional string to be output with profiling information.
+By default, "ocamlprof" will annotate programs with comments of the form
+{\tt (* \var{n} *)} where \var{n} is the counter value for a profiling
+point. With option {\tt -F \var{s}}, the annotation will be
+{\tt (* \var{s}\var{n} *)}.
+
+\item["-impl" \var{filename}]
+Process the file \var{filename} as an implementation file, even if its
+extension is not ".ml".
+
+\item["-intf" \var{filename}]
+Process the file \var{filename} as an interface file, even if its
+extension is not ".mli".
+
+\item["-version"]
+Print version string and exit.
+
+\item["-vnum"]
+Print short version number and exit.
+
+\item["-help" or "--help"]
+Display a short usage summary and exit.
+%
+\end{options}
+
+\section{Time profiling}
+
+Profiling with "ocamlprof" only records execution counts, not the actual
+time spent within each function. There is currently no way to perform
+time profiling on bytecode programs generated by "ocamlc".
+
+Native-code programs generated by "ocamlopt" can be profiled for time
+and execution counts using the "-p" option and the standard Unix
+profiler "gprof".  Just add the "-p" option when compiling and linking
+the program:
+\begin{alltt}
+        ocamlopt -o myprog -p \var{other-options} \var{files}
+        ./myprog
+        gprof myprog
+\end{alltt}
+OCaml function names in the output of "gprof" have the following format:
+\begin{alltt}
+        \var{Module-name}_\var{function-name}_\var{unique-number}
+\end{alltt}
+Other functions shown are either parts of the OCaml run-time system or
+external C functions linked with the program.
+
+The output of "gprof" is described in the Unix manual page for
+"gprof(1)".  It generally consists of two parts: a ``flat'' profile
+showing the time spent in each function and the number of invocation
+of each function, and a ``hierarchical'' profile based on the call
+graph.  Currently, only the Intel x86 ports of "ocamlopt" under
+Linux, BSD and MacOS X support the two profiles.  On other platforms,
+"gprof" will report only the ``flat'' profile with just time
+information.  When reading the output of "gprof", keep in mind that
+the accumulated times computed by "gprof" are based on heuristics and
+may not be exact.
+
+\paragraph{Note} The "ocamloptp" command also accepts the "-p"
+option.  In that case, both kinds of profiling are performed by the
+program, and you can display the results with the "gprof" and "ocamlprof"
+commands, respectively.

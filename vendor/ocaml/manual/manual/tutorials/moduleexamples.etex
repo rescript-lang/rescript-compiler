@@ -1,0 +1,392 @@
+\chapter{The module system} \label{c:moduleexamples}
+\pdfchapterfold{-5}{Tutorial: The module system}
+%HEVEA\cutname{moduleexamples.html}
+
+This chapter introduces the module system of OCaml.
+
+\section{Structures}
+\pdfsection{Structures}
+
+A primary motivation for modules is to package together related
+definitions (such as the definitions of a data type and associated
+operations over that type) and enforce a consistent naming scheme for
+these definitions. This avoids running out of names or accidentally
+confusing names. Such a package is called a {\em structure} and
+is introduced by the "struct"\ldots"end" construct, which contains an
+arbitrary sequence of definitions. The structure is usually given a
+name with the "module" binding. Here is for instance a structure
+packaging together a type of priority queues and their operations:
+\begin{caml_example}{toplevel}
+module PrioQueue =
+  struct
+    type priority = int
+    type 'a queue = Empty | Node of priority * 'a * 'a queue * 'a queue
+    let empty = Empty
+    let rec insert queue prio elt =
+      match queue with
+        Empty -> Node(prio, elt, Empty, Empty)
+      | Node(p, e, left, right) ->
+          if prio <= p
+          then Node(prio, elt, insert right p e, left)
+          else Node(p, e, insert right prio elt, left)
+    exception Queue_is_empty
+    let rec remove_top = function
+        Empty -> raise Queue_is_empty
+      | Node(prio, elt, left, Empty) -> left
+      | Node(prio, elt, Empty, right) -> right
+      | Node(prio, elt, (Node(lprio, lelt, _, _) as left),
+                        (Node(rprio, relt, _, _) as right)) ->
+          if lprio <= rprio
+          then Node(lprio, lelt, remove_top left, right)
+          else Node(rprio, relt, left, remove_top right)
+    let extract = function
+        Empty -> raise Queue_is_empty
+      | Node(prio, elt, _, _) as queue -> (prio, elt, remove_top queue)
+  end;;
+\end{caml_example}
+Outside the structure, its components can be referred to using the
+``dot notation'', that is, identifiers qualified by a structure name.
+For instance, "PrioQueue.insert" is the function "insert" defined
+inside the structure "PrioQueue" and "PrioQueue.queue" is the type
+"queue" defined in "PrioQueue".
+\begin{caml_example}{toplevel}
+PrioQueue.insert PrioQueue.empty 1 "hello";;
+\end{caml_example}
+
+Another possibility is to open the module, which brings all
+identifiers defined inside the module in the scope of the current
+structure.
+
+\begin{caml_example}{toplevel}
+  open PrioQueue;;
+  insert empty 1 "hello";;
+\end{caml_example}
+
+Opening a module enables lighter access to its components, at the
+cost of making it harder to identify in which module a identifier
+has been defined. In particular, opened modules can shadow
+identifiers present in the current scope, potentially leading
+to confusing errors:
+
+\begin{caml_example}{toplevel}
+  let empty = []
+  open PrioQueue;;
+  let x = 1 :: empty [@@expect error];;
+\end{caml_example}
+
+
+A partial solution to this conundrum is to open modules locally,
+making the components of the module available only in the
+concerned expression. This can also make the code easier to read
+-- the open statement is closer to where it is used-- and to refactor
+-- the code fragment is more self-contained.
+Two constructions are available for this purpose:
+\begin{caml_example}{toplevel}
+  let open PrioQueue in
+  insert empty 1 "hello";;
+\end{caml_example}
+and
+\begin{caml_example}{toplevel}
+  PrioQueue.(insert empty 1 "hello");;
+\end{caml_example}
+In the second form, when the body of a local open is itself delimited
+by parentheses, braces or bracket, the parentheses of the local open
+can be omitted. For instance,
+\begin{caml_example}{toplevel}
+  PrioQueue.[empty] = PrioQueue.([empty]);;
+  PrioQueue.[|empty|] = PrioQueue.([|empty|]);;
+   PrioQueue.{ contents = empty } = PrioQueue.({ contents = empty });;
+\end{caml_example}
+becomes
+\begin{caml_example}{toplevel}
+  PrioQueue.[insert empty 1 "hello"];;
+\end{caml_example}
+
+It is also possible to copy the components of a module inside
+another module by using an "include" statement. This can be
+particularly useful to extend existing modules. As an illustration,
+we could add functions that returns an optional value rather than
+an exception when the priority queue is empty.
+\begin{caml_example}{toplevel}
+  module PrioQueueOpt =
+  struct
+    include PrioQueue
+
+    let remove_top_opt x =
+      try Some(remove_top x) with Queue_is_empty -> None
+
+    let extract_opt x =
+      try Some(extract x) with Queue_is_empty -> None
+  end;;
+\end{caml_example}
+
+\section{Signatures}
+\pdfsection{Signatures}
+
+Signatures are interfaces for structures. A signature specifies
+which components of a structure are accessible from the outside, and
+with which type. It can be used to hide some components of a structure
+(e.g. local function definitions) or export some components with a
+restricted type. For instance, the signature below specifies the three
+priority queue operations "empty", "insert" and "extract", but not the
+auxiliary function "remove_top". Similarly, it makes the "queue" type
+abstract (by not providing its actual representation as a concrete type).
+\begin{caml_example}{toplevel}
+module type PRIOQUEUE =
+  sig
+    type priority = int         (* still concrete *)
+    type 'a queue               (* now abstract *)
+    val empty : 'a queue
+    val insert : 'a queue -> int -> 'a -> 'a queue
+    val extract : 'a queue -> int * 'a * 'a queue
+    exception Queue_is_empty
+  end;;
+\end{caml_example}
+Restricting the "PrioQueue" structure by this signature results in
+another view of the "PrioQueue" structure where the "remove_top"
+function is not accessible and the actual representation of priority
+queues is hidden:
+\begin{caml_example}{toplevel}
+module AbstractPrioQueue = (PrioQueue : PRIOQUEUE);;
+AbstractPrioQueue.remove_top [@@expect error];;
+AbstractPrioQueue.insert AbstractPrioQueue.empty 1 "hello";;
+\end{caml_example}
+The restriction can also be performed during the definition of the
+structure, as in
+\begin{verbatim}
+module PrioQueue = (struct ... end : PRIOQUEUE);;
+\end{verbatim}
+An alternate syntax is provided for the above:
+\begin{verbatim}
+module PrioQueue : PRIOQUEUE = struct ... end;;
+\end{verbatim}
+
+Like for modules, it is possible to include a signature to copy
+its components inside the current signature. For instance, we
+can extend the PRIOQUEUE signature with the "extract_opt"
+function:
+
+\begin{caml_example}{toplevel}
+module type PRIOQUEUE_WITH_OPT =
+  sig
+    include PRIOQUEUE
+    val extract_opt : 'a queue -> (int * 'a * 'a queue) option
+  end;;
+\end{caml_example}
+
+
+\section{Functors}
+\pdfsection{Functors}
+
+Functors are ``functions'' from structures to structures. They are used to
+express parameterized structures: a structure \var{A} parameterized by a
+structure \var{B} is simply a functor \var{F} with a formal parameter
+\var{B} (along with the expected signature for \var{B}) which returns
+the actual structure \var{A} itself. The functor \var{F} can then be
+applied to one or several implementations \nth{B}{1} \ldots \nth{B}{n}
+of \var{B}, yielding the corresponding structures
+\nth{A}{1} \ldots \nth{A}{n}.
+
+For instance, here is a structure implementing sets as sorted lists,
+parameterized by a structure providing the type of the set elements
+and an ordering function over this type (used to keep the sets
+sorted):
+\begin{caml_example}{toplevel}
+type comparison = Less | Equal | Greater;;
+module type ORDERED_TYPE =
+  sig
+    type t
+    val compare: t -> t -> comparison
+  end;;
+module Set =
+  functor (Elt: ORDERED_TYPE) ->
+    struct
+      type element = Elt.t
+      type set = element list
+      let empty = []
+      let rec add x s =
+        match s with
+          [] -> [x]
+        | hd::tl ->
+           match Elt.compare x hd with
+             Equal   -> s         (* x is already in s *)
+           | Less    -> x :: s    (* x is smaller than all elements of s *)
+           | Greater -> hd :: add x tl
+      let rec member x s =
+        match s with
+          [] -> false
+        | hd::tl ->
+            match Elt.compare x hd with
+              Equal   -> true     (* x belongs to s *)
+            | Less    -> false    (* x is smaller than all elements of s *)
+            | Greater -> member x tl
+    end;;
+\end{caml_example}
+By applying the "Set" functor to a structure implementing an ordered
+type, we obtain set operations for this type:
+\begin{caml_example}{toplevel}
+module OrderedString =
+  struct
+    type t = string
+    let compare x y = if x = y then Equal else if x < y then Less else Greater
+  end;;
+module StringSet = Set(OrderedString);;
+StringSet.member "bar" (StringSet.add "foo" StringSet.empty);;
+\end{caml_example}
+
+\section{Functors and type abstraction}
+\pdfsection{Functors and type abstraction}
+
+As in the "PrioQueue" example, it would be good style to hide the
+actual implementation of the type "set", so that users of the
+structure will not rely on sets being lists, and we can switch later
+to another, more efficient representation of sets without breaking
+their code. This can be achieved by restricting "Set" by a suitable
+functor signature:
+\begin{caml_example}{toplevel}
+module type SETFUNCTOR =
+  functor (Elt: ORDERED_TYPE) ->
+    sig
+      type element = Elt.t      (* concrete *)
+      type set                  (* abstract *)
+      val empty : set
+      val add : element -> set -> set
+      val member : element -> set -> bool
+    end;;
+module AbstractSet = (Set : SETFUNCTOR);;
+module AbstractStringSet = AbstractSet(OrderedString);;
+AbstractStringSet.add "gee" AbstractStringSet.empty;;
+\end{caml_example}
+
+In an attempt to write the type constraint above more elegantly,
+one may wish to name the signature of the structure
+returned by the functor, then use that signature in the constraint:
+\begin{caml_example}{toplevel}
+module type SET =
+  sig
+    type element
+    type set
+    val empty : set
+    val add : element -> set -> set
+    val member : element -> set -> bool
+  end;;
+module WrongSet = (Set : functor(Elt: ORDERED_TYPE) -> SET);;
+module WrongStringSet = WrongSet(OrderedString);;
+WrongStringSet.add "gee" WrongStringSet.empty [@@expect error];;
+\end{caml_example}
+The problem here is that "SET" specifies the type "element"
+abstractly, so that the type equality between "element" in the result
+of the functor and "t" in its argument is forgotten. Consequently,
+"WrongStringSet.element" is not the same type as "string", and the
+operations of "WrongStringSet" cannot be applied to strings.
+As demonstrated above, it is important that the type "element" in the
+signature "SET" be declared equal to "Elt.t"; unfortunately, this is
+impossible above since "SET" is defined in a context where "Elt" does
+not exist. To overcome this difficulty, OCaml provides a
+"with type" construct over signatures that allows enriching a signature
+with extra type equalities:
+\begin{caml_example}{toplevel}
+module AbstractSet2 =
+  (Set : functor(Elt: ORDERED_TYPE) -> (SET with type element = Elt.t));;
+\end{caml_example}
+
+As in the case of simple structures, an alternate syntax is provided
+for defining functors and restricting their result:
+\begin{verbatim}
+module AbstractSet2(Elt: ORDERED_TYPE) : (SET with type element = Elt.t) =
+  struct ... end;;
+\end{verbatim}
+
+Abstracting a type component in a functor result is a powerful
+technique that provides a high degree of type safety, as we now
+illustrate. Consider an ordering over character strings that is
+different from the standard ordering implemented in the
+"OrderedString" structure. For instance, we compare strings without
+distinguishing upper and lower case.
+\begin{caml_example}{toplevel}
+module NoCaseString =
+  struct
+    type t = string
+    let compare s1 s2 =
+      OrderedString.compare (String.lowercase_ascii s1) (String.lowercase_ascii s2)
+  end;;
+module NoCaseStringSet = AbstractSet(NoCaseString);;
+NoCaseStringSet.add "FOO" AbstractStringSet.empty [@@expect error];;
+\end{caml_example}
+Note that the two types "AbstractStringSet.set" and
+"NoCaseStringSet.set" are not compatible, and values of these
+two types do not match. This is the correct behavior: even though both
+set types contain elements of the same type (strings), they are built
+upon different orderings of that type, and different invariants need
+to be maintained by the operations (being strictly increasing for the
+standard ordering and for the case-insensitive ordering). Applying
+operations from "AbstractStringSet" to values of type
+"NoCaseStringSet.set" could give incorrect results, or build
+lists that violate the invariants of "NoCaseStringSet".
+
+\section{Modules and separate compilation}
+\pdfsection{Modules and separate compilation}
+
+All examples of modules so far have been given in the context of the
+interactive system. However, modules are most useful for large,
+batch-compiled programs. For these programs, it is a practical
+necessity to split the source into several files, called compilation
+units, that can be compiled separately, thus minimizing recompilation
+after changes.
+
+In OCaml, compilation units are special cases of structures
+and signatures, and the relationship between the units can be
+explained easily in terms of the module system. A compilation unit \var{A}
+comprises two files:
+\begin{itemize}
+\item the implementation file \var{A}".ml", which contains a sequence
+of definitions, analogous to the inside of a "struct"\ldots"end"
+construct;
+\item the interface file \var{A}".mli", which contains a sequence of
+specifications, analogous to the inside of a "sig"\ldots"end"
+construct.
+\end{itemize}
+These two files together define a structure named \var{A} as if
+the following definition was entered at top-level:
+\begin{alltt}
+module \var{A}: sig (* \hbox{contents of file} \var{A}.mli *) end
+        = struct (* \hbox{contents of file} \var{A}.ml *) end;;
+\end{alltt}
+The files that define the compilation units can be compiled separately
+using the "ocamlc -c" command (the "-c" option means ``compile only, do
+not try to link''); this produces compiled interface files (with
+extension ".cmi") and compiled object code files (with extension
+".cmo"). When all units have been compiled, their ".cmo" files are
+linked together using the "ocamlc" command. For instance, the following
+commands compile and link a program composed of two compilation units
+"Aux" and "Main":
+\begin{verbatim}
+$ ocamlc -c Aux.mli                     # produces aux.cmi
+$ ocamlc -c Aux.ml                      # produces aux.cmo
+$ ocamlc -c Main.mli                    # produces main.cmi
+$ ocamlc -c Main.ml                     # produces main.cmo
+$ ocamlc -o theprogram Aux.cmo Main.cmo
+\end{verbatim}
+The program behaves exactly as if the following phrases were entered
+at top-level:
+\begin{alltt}
+module Aux: sig (* \rminalltt{contents of} Aux.mli *) end
+          = struct (* \rminalltt{contents of} Aux.ml *) end;;
+module Main: sig (* \rminalltt{contents of} Main.mli *) end
+           = struct (* \rminalltt{contents of} Main.ml *) end;;
+\end{alltt}
+In particular, "Main" can refer to "Aux": the definitions and
+declarations contained in "Main.ml" and "Main.mli" can refer to
+definition in "Aux.ml", using the "Aux."\var{ident} notation, provided
+these definitions are exported in "Aux.mli".
+
+The order in which the ".cmo" files are given to "ocamlc" during the
+linking phase determines the order in which the module definitions
+occur. Hence, in the example above, "Aux" appears first and "Main" can
+refer to it, but "Aux" cannot refer to "Main".
+
+Note that only top-level structures can be mapped to
+separately-compiled files, but neither functors nor module types.
+However, all module-class objects can appear as components of a
+structure, so the solution is to put the functor or module type
+inside a structure, which can then be mapped to a file.

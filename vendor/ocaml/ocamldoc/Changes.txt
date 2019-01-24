@@ -1,0 +1,209 @@
+TODO:
+ - need to fix display of type parameters for inherited classes/class types
+ - need to add an environment while generating to print correct links:
+   file foo.mli:
+     type u
+     module type M = sig type u end
+     module N : sig include M val f: u -> unit end
+   Here, in html for example, f in displayed being of type Foo.u instead of Foo.M.u
+ - latex: types variant polymorphes depassent de la page quand ils sont trop longs
+ - utilisation nouvelles infos de Xavier: "debut de rec", etc.
+ - xml generator
+
+=====
+Release > 3.11.0:
+- option -g also for native code version (loading custom generators)
+
+=====
+Release 3.09.3:
+- mod: PR#4017 new option -short-functors to use a short form to display
+  functors in html generator
+- fix: PR#4016 (using modtype constraint to filter module elements displayed in doc)
+- fix: PR#4066 (missing crossref in text from intro files)
+- fix: PR#4007 (error in merging of top dependencies of modules)
+- fix: PR#3981 (-dot-colors has no effect)
+- mod: name resolution in cross-referencing: {!name} if name is not
+  found, then it is searched in the parent module/class, and in the parent
+  of the parent, and so on until it is found.
+
+=====
+Release 3.09.1:
+ - fix: remove .TP for generated man pages, use .sp instead
+   (.TP caused a lot of odd margins)
+ - fix: html generator now output DOCTYPE and character encoding information.
+ - add: m_text_only field in Module.t_module, to separate real modules
+   from text files handled as modules.
+ - fix: display only text for "text modules"
+ - extensible {foo } syntax
+ - user can give .txt files on the command line, containing ocamldoc formatted
+   text, to be able to include bigger texts out of source files
+ - -o option is now used by the html generator to indicate the prefix
+   of generated index files (to avoid conflict when a Index module exists
+   on case-insensitive file systems).
+
+=====
+Release 3.08.4:
+ - some improvements in html display
+ - better error messages for misplaced variant constructors comments
+ - some fixes in man page generation (escaping characters)
+
+=====
+Release 3.08.2:
+ - fix: error "Lexing: empty token" (PR#3173)
+
+=====
+Release 3.08.1:
+ - add: new -intf and -impl options supported (PR#3036)
+ - fix: display of class parameters in HTML and LaTeX (PR#2994)
+ - fix: display of link to class page in html (PR#2994)
+
+=====
+Release 3.08.0:
+ - fix: method parameters names in signature are now retrieved correctly
+   (fix of Odoc_value.parameter_list_from_arrows to handle Tpoly for methods)
+ - ajout a la doc de Module_list et Index_list (utilise dans le html seulement)
+ - ajout a la doc: fichier de l'option -intro utilise pour l'index en html
+ - fix: create a Module_with instead of a Module_alias when we encounter
+     module A : Foo in a signature
+ - latex: style latex pour indenter dans les module kind et les class kind
+ - latex: il manque la generation des parametres de classe
+ - parse des {!modules: } et {!indexlist}
+ - gestion des Module_list et Index_list
+ - no need to Dynlink.add_available_units any more
+ - generate html from module_kind rather than from module_type
+   + same for classes and class types
+ - add the kind to module parameters (the way the parameter was build in the parsetree)
+ - fix: the generated ocamldoc.sty is more robust for paragraphs in
+     ocamldocdescription environment
+ - fix: when generating separated files in latex, generate them in
+     the same directory than the main file, (the one specified by -o)
+ - mod: one section per to module in latex output + improve latex output
+ - mod: odoc_latex: use buffers instead of string concatenation
+ - add: new ocamldoc man page, thanks to Samuel Mimram
+ - fix: useless parenthesis around agruments of arguments of a type constructor in
+     type definitions, and aournd arguments of exceptions in exception definitions.
+ - fix: blank lines in verbatim, latex, code pre, code and ele ref modes
+     are now accepted
+ - fix: html generator: included module names were displayed with their simple
+     name rather than their fully qualified name
+ - fix: use a formatter from a buffer rather Format.str_formatter in
+     Odoc_mist.sting_of_module_type, to avoid too much blanks
+ - new module odoc_print, will work when Format.pp_print_flush is fixed
+ - odoc_html: use buffers instead of string concatenation
+ - odoc_man: use buffers instead of string concatenation
+ - odoc_cross.ml: use hash tables modified on the fly to resolve
+    (module | module type | exception) name aliases
+ - odoc_html: replace some calls to Str. by specific functions on strings
+ - odoc_cross.ml: use a Map to associate a complete name to
+    the known elements with this name, instead of searching each time
+    through the whole list of modules -> a gain of more than 90% in speed
+    for cross-referencing (Odoc_cross.associate)
+ - fix: Odoc_name.cut printed a '(' instead of a '.'
+ - add: new option -customdir
+ - add: new option -i (to add a path to the directory where
+     to look for custom generators)
+ - add: add odoc_config.ml{,i}
+ - add: keep_code in Odoc_info.Args interface
+ - add: m_code_intf and m_code fields for modules, fit when the
+   Odoc_args.keep_code option is set, and fit for all modules, not
+   only toplevel ones
+ - fix: bug preventing to get the code in a .mli
+ - fix: missing spaces after carriage return in types (Odoc_misc.string_of_type_expr)
+ - fixes: some bugs in the text parser
+     ( ]} meaning end of code and somehting else instead of end of precode)
+ - add: in Odoc_info: text_of_string, text_string_of_text, info_of_string
+ - fix: better output of titles in html (use more the style)
+ - add: -intro option to use a file content as ocamldoc comment to use as
+   introduction for LaTeX document and HTML index page
+ - add: the HTML generator generates the code of the module if available
+ - add: field m_code for modules, to keep the code of top modules
+ - fix: display "include Foo" instead of "include module Foo" in Latex, Man, Texi
+ - fix: not display comments associated to include directives
+ - fix: bad display of type parameters for class and class types
+
+======
+
+Release 3.05 :
+ - added link tags in html header to reference sections and subsections
+   in each page (for browser which handle those tags)
+ - no titles nor lists in first sentence of text in indexes and latex titles
+ - only one table for the titles in HTML output
+ - fix of bad comment association for types in .ml files
+ - dumps now contain a magic number, checked when dumps are loaded
+ - new option -o to use with texi, latex and dot generators
+ - new .code CSS class used
+ - better output for classes and modules, with their type
+ - added texinfo generator, by Olivier Andrieu
+ - removed iso generator, which became the odoc_check custom generator
+ - link syntax {{:url}text} added to the manual
+ - (** comments in code is colorized in ocaml code html pages
+ - new class .code in style
+ - new generator : -dot . Output dot code to display
+   modules or types dependencies.
+ - new option -inv-merge-ml-mli to inverse the priority of
+   .ml and .mli when merging
+ - option -werr becomes -warn-error
+ - possibility to define and reference section labels
+   Exemple:
+    (** {2:mysectionlabel My title bla bla bla} *)
+   in module Foo
+
+   This section is referenced with {!Foo.mysectionlabel} in
+   a comment.
+
+Pre-release 4 :
+ - new option -werr to treat ocamldoc warnings as errors
+ - new option -hide to remove some modules from complete names,
+   (e.g., print ref instead of Pervasives.ref)
+ - HTML doc in classic style only contain indexes to existing element kinds
+   (i.e. there is no class index if the doc does not contain any class.)
+ - First description sentence now stops at the first period followed by a blank,
+   or at the first blank line.
+ - update of user manual
+ - check report generator added (options -iso and -iso-{val|ty|cl|ex|mod})
+ - Odoc_info.Scan.scanner base class added
+ - support for custom tags (@xxx with xxx not a predefined tag), see manual
+ - new classes info in Odoc_html, Odoc_to_text, Odoc_latex, and Odoc_man, which
+   contains the functions for printing info structures
+ - replacement of modules Odoc_html.Text and Odoc_latex.Text by
+   classes Odoc_html.text and Odoc_latex.text to allow the redefinition
+   of their methods in custom generators
+ - bug fix : a shortcut list can be pu after a blank line
+ - improved display of variant constructors, record fields and
+   their comments in classic HTML
+ - blank lines in comments become <p> in HTML instead of <br>
+ - bug fix : there can be blanks between the last item
+   and the ending } of a list
+ - new option -latextitles
+ - number of errors encountered is displayed
+ - if at least one error occurs, exit code is not 0
+ - more precise error messages
+ - bug fix : \n and other blanks are accepted after, for example, {i
+
+Pre-release 3 :
+ - option -stars
+ - complete paths of executables in the generated Makefile
+ - names of executables changed to ocamldoc and ocamldoc.opt
+ - better LaTeX output
+ - option -sepfiles for LaTeX
+ - ocamldoc.sty used by the generated LaTeX
+ - ocamldoc.hva added to use Hevea on the generated LaTeX
+ - user manual updated
+ - {[ ]} marks to put pre-formatted code on more than one line
+ - {!Toto.tutu} to add cross references between elements
+ - some bug fixes
+
+Rep-release 2 :
+- generator of texinfo files : odoc_texi.cma
+- use of CSS in generated html
+- new option -css-style to provide a different style sheet
+- improved html
+- added more precise titles in generated html pages
+- no more links to unknown elements
+- added indexes
+- simple html : added <LINK ...> in <HEAD> : compliant
+  browsers should display quick access to modules and indexes in
+  their navigation bar (for example, mozilla 0.9.5 is compliant)
+- '{bone}' doesn't work any more ; a space is required as in '{b one}'.
+  Same for {e, {i, and some others marks. Check the manual
+- bug fixes

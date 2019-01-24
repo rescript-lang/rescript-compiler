@@ -1,0 +1,70 @@
+\documentclass[11pt]{article} 
+\usepackage[latin1]{inputenc} 
+\usepackage[T1]{fontenc} 
+\usepackage{textcomp}
+\usepackage{fullpage} 
+\usepackage{url} 
+\usepackage{ocamldoc}
+\begin{document}
+\tableofcontents
+\section{Module {\tt{Alias}}}
+\label{module:Alias}\index{Alias@\verb`Alias`}
+
+
+\ocamldocvspace{0.5cm}
+
+
+
+\begin{ocamldoccode}
+{\tt{module }}{\tt{Container}}{\tt{ : }}\end{ocamldoccode}
+\label{module:Alias.Container}\index{Container@\verb`Container`}
+
+\begin{ocamldocsigend}
+
+
+\begin{ocamldoccode}
+{\tt{module }}{\tt{Aliased\_inner}}{\tt{ : }}\end{ocamldoccode}
+\label{module:Alias.Container.Aliased-underscoreinner}\index{Aliased-underscoreinner@\verb`Aliased_inner`}
+{\tt{Inner}}
+
+\end{ocamldocsigend}
+
+
+
+
+\section{Module {\tt{Inner}}}
+\label{module:Inner}\index{Inner@\verb`Inner`}
+
+
+\ocamldocvspace{0.5cm}
+
+
+
+\label{type:Inner.a}\begin{ocamldoccode}
+type a = int 
+\end{ocamldoccode}
+\index{a@\verb`a`}
+
+
+\section{Module {\tt{Main}} : Documentation test}
+\label{module:Main}\index{Main@\verb`Main`}
+
+
+
+
+\ocamldocvspace{0.5cm}
+
+
+
+\label{type:Main.t}\begin{ocamldoccode}
+type t = Alias.Container.Aliased_inner.a 
+\end{ocamldoccode}
+\index{t@\verb`t`}
+\begin{ocamldocdescription}
+Alias to type Inner.a
+
+
+\end{ocamldocdescription}
+
+
+\end{document}

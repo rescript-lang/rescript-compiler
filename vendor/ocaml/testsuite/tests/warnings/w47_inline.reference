@@ -1,0 +1,15 @@
+File "w47_inline.ml", line 13, characters 15-22:
+Warning 47: illegal payload for attribute 'inlined'.
+It must be either empty, 'always' or 'never'
+File "w47_inline.ml", line 8, characters 23-29:
+Warning 47: illegal payload for attribute 'inline'.
+It must be either empty, 'always' or 'never'
+File "w47_inline.ml", line 7, characters 23-29:
+Warning 47: illegal payload for attribute 'inline'.
+It must be either empty, 'always' or 'never'
+File "w47_inline.ml", line 6, characters 23-29:
+Warning 47: illegal payload for attribute 'inline'.
+It must be either empty, 'always' or 'never'
+File "w47_inline.ml", line 5, characters 23-29:
+Warning 47: illegal payload for attribute 'inline'.
+It must be either empty, 'always' or 'never'

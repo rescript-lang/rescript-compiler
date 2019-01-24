@@ -1,0 +1,7 @@
+File "w45.ml", line 13, characters 2-9:
+Warning 45: this open statement shadows the constructor X (which is later used)
+File "w45.ml", line 15, characters 14-15:
+Warning 41: X belongs to several types: T2.s T1.s
+The first one was selected. Please disambiguate if this is wrong.
+File "w45.ml", line 12, characters 2-9:
+Warning 33: unused open T1.

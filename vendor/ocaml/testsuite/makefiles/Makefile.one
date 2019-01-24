@@ -1,0 +1,104 @@
+#**************************************************************************
+#*                                                                        *
+#*                                 OCaml                                  *
+#*                                                                        *
+#*                 Xavier Clerc, SED, INRIA Rocquencourt                  *
+#*                                                                        *
+#*   Copyright 2010 Institut National de Recherche en Informatique et     *
+#*     en Automatique.                                                    *
+#*                                                                        *
+#*   All rights reserved.  This file is distributed under the terms of    *
+#*   the GNU Lesser General Public License version 2.1, with the          *
+#*   special exception on linking described in the file LICENSE.          *
+#*                                                                        *
+#**************************************************************************
+
+CMI_FILES=$(MODULES:=.cmi)
+CMO_FILES=$(MODULES:=.cmo)
+CMX_FILES=$(MODULES:=.cmx)
+CMA_FILES=$(LIBRARIES:=.cma)
+CMXA_FILES=$(LIBRARIES:=.cmxa)
+ML_LEX_FILES=$(LEX_MODULES:=.ml)
+ML_YACC_FILES=$(YACC_MODULES:=.ml)
+MLI_YACC_FILES=$(YACC_MODULES:=.mli)
+ML_FILES=$(ML_LEX_FILES) $(ML_YACC_FILES)
+O_FILES=$(C_FILES:=.$(O))
+ADD_CMO_FILES=$(ADD_MODULES:=.cmo)
+ADD_CMX_FILES=$(ADD_MODULES:=.cmx)
+
+GENERATED_SOURCES=$(ML_LEX_FILES) $(ML_YACC_FILES) $(MLI_YACC_FILES)
+
+CUSTOM_FLAG=`if [ -n "$(C_FILES)" ]; then echo '-custom'; fi`
+ADD_CFLAGS+=$(CUSTOM_FLAG)
+MYRUNTIME=`if [ -z "$(C_FILES)$(CUSTOM)" ]; then echo '$(OCAMLRUN)'; fi`
+
+C_INCLUDES+=-I $(CTOPDIR)/byterun
+
+.PHONY: default
+default:
+	@$(MAKE) compile
+	@$(NATIVECODE_ONLY) && $(BYTECODE_ONLY) \
+	 && echo " ... testing => skipped" \
+	 || $(SET_LD_PATH) $(MAKE) run
+
+# See run-file in Makefile.several for the use of mktemp (included for
+# completeness; should be unnecessary)
+.PHONY: compile
+compile: $(ML_FILES)
+	@for file in $(C_FILES); do \
+	  $(OCAMLC) -c $(C_INCLUDES) $$file.c; \
+	done
+	@if $(NATIVECODE_ONLY); then : ; else \
+	  test -e program.byte.exe && { \
+	    T="`mktemp -p .`"; \
+	    mv -f program.byte.exe "$$T"; \
+	    rm -f "$$T"; \
+	  } ; \
+	  rm -f program.byte program.byte.exe; \
+	  $(MAKE) $(CMO_FILES) $(MAIN_MODULE).cmo; \
+	  $(OCAMLC) $(ADD_COMPFLAGS) $(ADD_CFLAGS) -o program.byte$(EXE) \
+	            $(O_FILES) $(CMA_FILES) $(CMO_FILES) $(ADD_CMO_FILES) \
+	            $(MAIN_MODULE).cmo; \
+	fi
+	@if $(BYTECODE_ONLY); then : ; else \
+	  test -e program.native.exe && { \
+	    T="`mktemp -p .`"; \
+	    mv -f program.native.exe "$$T"; \
+	    rm -f "$$T"; \
+	  } ; \
+	  rm -f program.native program.native.exe; \
+	  $(MAKE) $(CMX_FILES) $(MAIN_MODULE).cmx; \
+	  $(OCAMLOPT) $(ADD_COMPFLAGS) $(ADD_OPTCOMPFLAGS) \
+	              -o program.native$(EXE) $(O_FILES) \
+	              $(CMXA_FILES) $(CMX_FILES) $(ADD_CMX_FILES) \
+	              $(MAIN_MODULE).cmx; \
+	fi
+
+.PHONY: run
+run:
+	@printf " ... testing with"
+	@if $(NATIVECODE_ONLY); then : ; else \
+	   printf " ocamlc"; \
+	   FLAMBDA=$(FLAMBDA) $(MYRUNTIME) ./program.byte$(EXE) $(EXEC_ARGS) \
+	                >$(MAIN_MODULE).result \
+	   && $(DIFF) $(MAIN_MODULE).reference $(MAIN_MODULE).result \
+	      >/dev/null; \
+	 fi \
+	&& if $(BYTECODE_ONLY); then : ; else \
+	     printf " ocamlopt"; \
+	     FLAMBDA=$(FLAMBDA) ./program.native$(EXE) $(EXEC_ARGS) \
+	                             > $(MAIN_MODULE).result \
+	     && $(DIFF) $(MAIN_MODULE).reference $(MAIN_MODULE).result \
+	                >/dev/null; \
+	   fi \
+	&& echo " => passed" || echo " => failed"
+
+
+.PHONY: promote
+promote: defaultpromote
+
+.PHONY: clean
+clean: defaultclean
+	@rm -f *.result program.byte program.byte.exe \
+	       program.native program.native.exe \
+	       $(GENERATED_SOURCES) $(O_FILES) $(TEST_TEMP_FILES)

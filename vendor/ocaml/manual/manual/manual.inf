@@ -1,0 +1,121 @@
+\input{book.hva}
+\renewcommand{\@indexsection}[1]{\chapter{#1}}
+\newcommand{\black}{\htmlcolor{#000000}}
+\newcommand{\machine}{\tt}
+\newenvironment{machineenv}{\begin{alltt}}{\end{alltt}}
+\newenvironment{camlunder}{\@style{U}}{}
+\newcommand{\caml}{\begin{alltt}\renewcommand{\\}{\char92}\def\<{\begin{camlunder}}\def\>{\end{camlunder}}\activebracefalse}
+\newcommand{\endcaml}{\activebracetrue\end{alltt}}
+\newcommand{\?}{\black\#\blue }
+\renewcommand{\:}{\maroon}
+\def\camlinput{}
+\def\endcamlinput{}
+\def\camloutput{}
+\def\endcamloutput{}
+\def\camlerror{}
+\def\endcamlerror{}
+\def\camlwarn{}
+\def\endcamlwarn{}
+\newcommand{\var}[1]{\textit{#1}}
+
+\newenvironment{library}{}{}
+\newcounter{page}
+\newenvironment{comment}{\begin{quote}}{\end{quote}}
+\newcommand{\nth}[2]{\({#1}_{#2}\)}
+\newenvironment{options}{\begin{description}}{\end{description}}
+
+
+%%venant de macros.tex
+\newif\ifouthtml\outhtmlfalse
+\def\versionspecific#1{
+\quad\textsf{#1:}
+\begin{quote}}
+
+\def\unix{\versionspecific{Unix}}
+\def\endunix{\end{quote}}
+\def\macos{\versionspecific{MacOS}}
+\def\endmacos{\end{quote}}
+\def\windows{\versionspecific{Windows}}
+\def\endwindows{\end{quote}}
+
+\def\requirements{\trivlist \item[\hskip\labelsep {\bf Requirements.}]}
+\def\endrequirements{\endtrivlist}
+\def\installation{\trivlist \item[\hskip\labelsep {\bf Installation.}]}
+\def\endinstallation{\endtrivlist}
+\def\troubleshooting{\trivlist \item[\hskip\labelsep {\bf Troubleshooting.}]}
+\def\endtroubleshooting{\endtrivlist}
+
+\newtheorem{gcrule}{Rule}
+
+% Pour les tables de priorites et autres tableaux a deux colonnes, encadres
+
+%\def\entree#1#2{#1 & #2 \\}
+%\def\tableau#1#2#3{%
+%\par\begin{center}%
+%\begin{tabular}{#1}%
+%\multicolumn{1}{c}{\textbf{#2}} &
+%\multicolumn{1}{c}{\textbf{#3}} \\
+%%#2 & #3 \\%
+%}%
+%\def\endtableau{\end{tabular}\end{center}\par}
+
+% Pour les tables de priorites et autres tableaux a deux colonnes, encadres
+
+\def\tableau#1#2#3{%
+\begin{center}
+\begin{tabular}{#1}
+\hline
+\multicolumn{1}{|c|}{\textbf{#2}} & \multicolumn{1}{c|}{\textbf{#3}} \\
+\hline
+}
+\def\endtableau{\hline\end{tabular}\end{center}}
+\def\entree#1#2{#1 & #2 \\}
+
+
+
+% L'environnement library (pour composer les descriptions des modules
+% de bibliotheque).
+
+
+\def\restoreindent{\begingroup\let\@listI=\@savedlistI}
+\def\endrestoreindent{\endgroup}
+
+
+% PDF stuff
+
+\def\pdfchapterfold#1#2{}
+\def\pdfsection#1{}
+\def\pdfchapter{\pdfchapterfold{0}}
+
+%%% Pour camlidl
+
+\def\transl#1{$[\![\mbox{#1}]\!]$}
+
+% Pour l'index
+\usepackage{multind}
+\let\indexentry=\index
+\renewcommand{\index}[1]{\indexentry{\jobname}{#1}}
+\def\ikwd#1{\indexentry{\jobname.kwd}{#1}}
+
+
+% nth
+\def\th{^{\mbox{\scriptsize th}}}
+\renewcommand{\hbox}[1]{\mbox{#1}}
+
+% Notations pour les metavariables
+\def\nmth#1#2#3{\({#1}_{#2}^{#3}\)}
+\def\optvar#1{[\var{#1}\/]}
+\def\event{§§}
+\def\fromoneto#1#2{$#1 = 1,\ldots{} , #2$}
+
+\newcommand{\vfill}{}
+\def\number{}
+\def\year{2013}
+
+% Pour alltt
+
+\def\rminalltt#1{{\rm #1}}
+
+\def\goodbreak{\ \\}
+
+\def\@savedlistI{}

@@ -1,0 +1,51 @@
+#
+# module T01:
+# Odoc_info.string_of_module_type:
+<[sig  end]>
+# Odoc_info.string_of_module_type ~complete: true :
+<[sig  end]>
+#
+# module T01.M:
+# Odoc_info.string_of_module_type:
+<[sig  end]>
+# Odoc_info.string_of_module_type ~complete: true :
+<[sig val y : int end]>
+#
+# module type T01.MT:
+# Odoc_info.string_of_module_type:
+<[sig  end]>
+# Odoc_info.string_of_module_type ~complete: true :
+<[sig
+  type t =
+      string ->
+      int ->
+      string ->
+      string * string * string ->
+      string * string * string -> string * string * string -> unit
+  val y : int
+  type ob = < f : int >
+  type obj_type =
+      < bar : float -> string; f : int; foo : int;
+        gee : int -> int * string >
+  type g = [ `A ]
+  type h = [ `A | `B of int | `C of string ]
+end]>
+# type T01.MT.t:
+# manifest (Odoc_info.string_of_type_expr):
+<[string ->
+  int ->
+  string ->
+  string * string * string ->
+  string * string * string -> string * string * string -> unit]>
+# type T01.MT.ob:
+# manifest (Odoc_info.string_of_type_expr):
+<[< f: int ; >]>
+# type T01.MT.obj_type:
+# manifest (Odoc_info.string_of_type_expr):
+<[< bar: float -> string ; f: int ; foo: int ; gee: int -> int * string ; >]>
+# type T01.MT.g:
+# manifest (Odoc_info.string_of_type_expr):
+<[[ `A ]]>
+# type T01.MT.h:
+# manifest (Odoc_info.string_of_type_expr):
+<[[ `A | `B of int | `C of string ]]>

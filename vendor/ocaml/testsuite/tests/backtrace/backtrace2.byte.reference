@@ -1,0 +1,58 @@
+a
+No exception
+b
+Uncaught exception Backtrace2.Error("b")
+Raised at file "backtrace2.ml", line 8, characters 23-34
+Called from file "backtrace2.ml", line 8, characters 44-55
+Called from file "backtrace2.ml", line 8, characters 44-55
+Called from file "backtrace2.ml", line 8, characters 44-55
+Called from file "backtrace2.ml", line 8, characters 44-55
+Called from file "backtrace2.ml", line 8, characters 44-55
+Called from file "backtrace2.ml", line 13, characters 4-11
+Re-raised at file "backtrace2.ml", line 15, characters 68-71
+Called from file "backtrace2.ml", line 58, characters 11-23
+Uncaught exception Backtrace2.Error("c")
+Raised at file "backtrace2.ml", line 16, characters 26-37
+Called from file "backtrace2.ml", line 58, characters 11-23
+Uncaught exception Backtrace2.Error("d")
+Raised at file "backtrace2.ml", line 8, characters 23-34
+Called from file "backtrace2.ml", line 8, characters 44-55
+Called from file "backtrace2.ml", line 8, characters 44-55
+Called from file "backtrace2.ml", line 8, characters 44-55
+Called from file "backtrace2.ml", line 8, characters 44-55
+Called from file "backtrace2.ml", line 8, characters 44-55
+Called from file "backtrace2.ml", line 13, characters 4-11
+Called from file "backtrace2.ml", line 58, characters 11-23
+e
+Uncaught exception Backtrace2.Error("e")
+Raised at file "backtrace2.ml", line 22, characters 56-59
+Called from file "backtrace2.ml", line 58, characters 11-23
+f
+Uncaught exception Backtrace2.Error("f")
+Raised at file "backtrace2.ml", line 28, characters 68-71
+Called from file "backtrace2.ml", line 58, characters 11-23
+Uncaught exception Invalid_argument("index out of bounds")
+Raised by primitive operation at file "backtrace2.ml", line 58, characters 14-22
+test_Not_found
+Uncaught exception Not_found
+Raised at file "hashtbl.ml", line 194, characters 19-28
+Called from file "backtrace2.ml", line 39, characters 9-42
+Re-raised at file "backtrace2.ml", line 39, characters 67-70
+Called from file "backtrace2.ml", line 58, characters 11-23
+Uncaught exception Not_found
+Raised at file "backtrace2.ml", line 43, characters 24-33
+Called from file "backtrace2.ml", line 43, characters 43-52
+Called from file "backtrace2.ml", line 43, characters 43-52
+Called from file "backtrace2.ml", line 43, characters 43-52
+Called from file "backtrace2.ml", line 43, characters 43-52
+Called from file "backtrace2.ml", line 43, characters 43-52
+Called from file "camlinternalLazy.ml", line 27, characters 17-27
+Re-raised at file "camlinternalLazy.ml", line 34, characters 10-11
+Called from file "backtrace2.ml", line 58, characters 11-23
+Uncaught exception Not_found
+Raised at file "hashtbl.ml", line 194, characters 19-28
+Called from file "backtrace2.ml", line 46, characters 8-41
+Re-raised at file "camlinternalLazy.ml", line 33, characters 62-63
+Called from file "camlinternalLazy.ml", line 27, characters 17-27
+Re-raised at file "camlinternalLazy.ml", line 34, characters 10-11
+Called from file "backtrace2.ml", line 58, characters 11-23

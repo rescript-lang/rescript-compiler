@@ -1,0 +1,10 @@
+
+#     class type ['e] t = object ('a) method update : 'e -> 'a end
+#       Characters 23-48:
+    class base : 'e -> ['e] t
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+Error: Some type variables are unbound in this type:
+         class base : 'e -> ['e] t
+       The method update has type 'e -> < update : 'a; .. > as 'a where 'e
+       is unbound
+# 

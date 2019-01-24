@@ -1,0 +1,20 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="Start" href="index.html">
+<link rel="Up" href="index.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Loop" rel="Chapter" href="Loop.html"><title>Loop</title>
+</head>
+<body>
+<div class="navbar">&nbsp;<a class="up" href="index.html" title="Index">Up</a>
+&nbsp;</div>
+<h1>Module <a href="type_Loop.html">Loop</a></h1>
+
+<pre><span id="MODULELoop"><span class="keyword">module</span> Loop</span>: <code class="code"><span class="keyword">sig</span></code> <a href="Loop.html">..</a> <code class="code"><span class="keyword">end</span></code></pre><hr width="100%">
+
+<pre><span id="MODULEA"><span class="keyword">module</span> <a href="Loop.A.html">A</a></span>: <code class="type"><a href="Loop.B.html">B</a></code></pre>
+<pre><span id="MODULEB"><span class="keyword">module</span> <a href="Loop.B.html">B</a></span>: <code class="type"><a href="Loop.A.html">A</a></code></pre></body></html>

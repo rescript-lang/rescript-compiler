@@ -1,0 +1,126 @@
+
+# Characters 12-27:
+  let rec x = let y = () in x;;
+              ^^^^^^^^^^^^^^^
+Error: This kind of expression is not allowed as right-hand side of `let rec'
+#   Characters 13-77:
+  let rec x = let module M = struct let f = x let g = x () end in fun () -> ();;
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error: This kind of expression is not allowed as right-hand side of `let rec'
+#   Characters 13-77:
+  let rec x = let module M = struct let f = x () let g = x end in fun () -> ();;
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error: This kind of expression is not allowed as right-hand side of `let rec'
+#     Characters 13-79:
+  let rec x = (let module M = struct let f = y 0 let g = () end in fun () -> ())
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error: This kind of expression is not allowed as right-hand side of `let rec'
+#   Characters 13-79:
+  let rec x = let module M = struct module N = struct let y = x end end in M.N.y;;
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error: This kind of expression is not allowed as right-hand side of `let rec'
+#   Characters 13-77:
+  let rec x = let module M = struct let f = x () and g = x end in fun () -> ();;
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error: This kind of expression is not allowed as right-hand side of `let rec'
+#   class c : 'a -> object  end
+# Characters 12-19:
+  let rec x = new c x;;
+              ^^^^^^^
+Error: This kind of expression is not allowed as right-hand side of `let rec'
+#   Characters 13-21:
+  let rec x = ignore x;;
+              ^^^^^^^^
+Error: This kind of expression is not allowed as right-hand side of `let rec'
+#   Characters 13-16:
+  let rec x = y 0 and y _ = ();;
+              ^^^
+Error: This kind of expression is not allowed as right-hand side of `let rec'
+#   Characters 13-40:
+  let rec c = { c with Complex.re = 1.0 };;
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error: This kind of expression is not allowed as right-hand side of `let rec'
+#   Characters 13-38:
+  let rec b = if b then true else false;;
+              ^^^^^^^^^^^^^^^^^^^^^^^^^
+Error: This kind of expression is not allowed as right-hand side of `let rec'
+#     Characters 28-34:
+  let rec x = r := x;;
+              ^^^^^^
+Error: This kind of expression is not allowed as right-hand side of `let rec'
+#           Characters 15-65:
+  ..for i = 0 to 1 do
+      let z = y in ignore z
+    done
+Error: This kind of expression is not allowed as right-hand side of `let rec'
+#           Characters 15-46:
+  ..for i = 0 to y do
+      ()
+    done
+Error: This kind of expression is not allowed as right-hand side of `let rec'
+#           Characters 15-47:
+  ..for i = y to 10 do
+      ()
+    done
+Error: This kind of expression is not allowed as right-hand side of `let rec'
+#           Characters 15-62:
+  ..while false do
+      let y = x in ignore y
+    done
+Error: This kind of expression is not allowed as right-hand side of `let rec'
+#           Characters 15-39:
+  ..while y do
+      ()
+    done
+Error: This kind of expression is not allowed as right-hand side of `let rec'
+#           Characters 15-58:
+  ..while y do
+      let y = x in ignore y
+    done
+Error: This kind of expression is not allowed as right-hand side of `let rec'
+#   Characters 13-16:
+  let rec x = y#m and y = object method m = () end;;
+              ^^^
+Error: This kind of expression is not allowed as right-hand side of `let rec'
+#   Characters 13-45:
+  let rec x = (object method m _ = () end)#m x;;
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error: This kind of expression is not allowed as right-hand side of `let rec'
+#   Characters 13-23:
+  let rec x = y.contents and y = { contents = 3 };;
+              ^^^^^^^^^^
+Error: This kind of expression is not allowed as right-hand side of `let rec'
+#   Characters 13-59:
+  let rec x = object val mutable v = 0 method m = v <- y end and y = 1;;
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error: This kind of expression is not allowed as right-hand side of `let rec'
+#   Characters 13-21:
+  let rec x = assert y and y = true;;
+              ^^^^^^^^
+Error: This kind of expression is not allowed as right-hand side of `let rec'
+#   Characters 13-36:
+  let rec x = object method m = x end;;
+              ^^^^^^^^^^^^^^^^^^^^^^^
+Error: This kind of expression is not allowed as right-hand side of `let rec'
+#   Characters 13-43:
+  let rec x = object method m = ignore x end;;
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error: This kind of expression is not allowed as right-hand side of `let rec'
+#   *                   Characters 230-246:
+    let rec x = Pervasives.ref y
+                ^^^^^^^^^^^^^^^^
+Error: This kind of expression is not allowed as right-hand side of `let rec'
+#   *                 Characters 127-175:
+      if p then (fun y -> x + g y) else (fun y -> g y)
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error: This kind of expression is not allowed as right-hand side of `let rec'
+#         Characters 37-61:
+  let rec x = (module (val y : T) : T)
+              ^^^^^^^^^^^^^^^^^^^^^^^^
+Error: This kind of expression is not allowed as right-hand side of `let rec'
+#             Characters 15-98:
+  ..match let _ = y in raise Not_found with
+      _ -> "x"
+    | exception Not_found -> "z".
+Error: This kind of expression is not allowed as right-hand side of `let rec'
+#   

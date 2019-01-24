@@ -1,0 +1,330 @@
+#!/bin/sh
+
+#**************************************************************************
+#*                                                                        *
+#*                                 OCaml                                  *
+#*                                                                        *
+#*           Damien Doligez, projet Gallium, INRIA Rocquencourt           *
+#*                                                                        *
+#*   Copyright 2012 Institut National de Recherche en Informatique et     *
+#*     en Automatique.                                                    *
+#*                                                                        *
+#*   All rights reserved.  This file is distributed under the terms of    *
+#*   the GNU Lesser General Public License version 2.1, with the          *
+#*   special exception on linking described in the file LICENSE.          *
+#*                                                                        *
+#**************************************************************************
+
+# check-typo - Check typographic conventions on OCaml sources.
+
+# This program will check files for the following rules:
+
+# - absence of TAB characters (tab)
+# - absence of non-ASCII characters (non-ascii)
+# - absence of non-printing ASCII characters (non-printing)
+# - absence of white space at end of line (white-at-eol)
+# - absence of empty lines at end of file (white-at-eof)
+# - presence of a LF character at the end of the file (missing-lf)
+# - maximum line length of 80 characters (long-line)
+# - maximum line length of 132 characters (very-long-line)
+# - presence of a copyright header (missing-header)
+# - absence of a leftover "$Id" string (svn-keyword)
+
+# Exceptions are handled with a git attribute: "ocaml-typo".
+# Its value for a given file is a comma-separated list of rule names,
+# which lists the rules that should be disabled for this file.
+# The rule names are the ones shown above in parentheses.
+
+# Built-in exceptions:
+# - Any file git identifies as binary
+#   is automatically exempt from all the rules.
+# - Any file whose name matches one of the following patterns is
+#   automatically exempt from all rules
+#     *.reference
+#     *.opt_reference
+#     */reference
+#     */.depend*
+# - Any file whose name begins with "Makefile" is automatically exempt
+#   from the "tabs" rule.
+# - Any file whose name matches one of the following patterns is
+#   automatically exempt from the "missing-header" rule.
+#     *.mlpack
+#     *.mllib
+#     *.mltop
+#     *.odocl
+#     *.clib
+# - Any file whose name matches the following pattern is automatically
+#   exempt from the "long-line" rule (but not from "very-long-line").
+#   */ocamldoc/*
+
+# ASCII characters are bytes from 0 to 127.  Any other byte is
+# flagged as a non-ASCII character.
+
+# For the purpose of this tool, printing ASCII characters are:
+# - the non-white printable ASCII characters (33 to 126)
+# - TAB (09)
+# - LF (10)
+# - SPC (32)
+# Anything else is flagged as a non-printing ASCII character.
+
+# This program will recursively explore the files and directories given
+# on the command line (or by default the current directory), and check
+# every file therein for compliance to the rules.
+
+# Directories named .git (and their contents) are always ignored.
+# This program ignores any file that is not under git control, unless
+# explicitly given on the command line.
+
+# If a directory has the git attribute "ocaml-typo" set to "prune",
+# then it and its contents are ignored.
+
+# You can ignore a rule by giving the option -<rule> on the command
+# line (before any file names).
+
+# First prevent i18n from messing up everything.
+export LC_ALL=C
+
+# Special case for recursive call from the find command (see IGNORE_DIRS).
+case "$1" in
+  --check-prune)
+    case `git check-attr ocaml-typo "$2" 2>/dev/null` in
+      *prune*) echo "INFO: pruned directory $2 (ocaml-typo=prune)" >&2; exit 0;;
+      *) exit 3;;
+    esac;;
+esac
+
+usage () {
+  echo "usage: check-typo {-<rule>} [--] {<file-or-dir>}" >&2
+  exit 2
+}
+
+userrules=''
+
+while : ; do
+  case "$1" in
+    -help|--help) usage;;
+    -*) userrules="${1#-},$userrules"; shift;;
+    --) shift; break;;
+    *) break;;
+  esac
+done
+
+IGNORE_DIRS="
+  -name .git -prune -o
+  -type d -exec $0 --check-prune {} ; -prune -o
+"
+
+( case $# in
+    0) find . $IGNORE_DIRS -type f -print;;
+    *) for i in "$@"; do find "$i" $IGNORE_DIRS -type f -print; done;;
+  esac
+) | (
+  while read f; do
+    case `git ls-files "$f" 2>&1` in
+      "") is_svn=false;;
+      *) is_svn=true;;
+    esac
+    case "$*" in
+      *$f*) is_cmd_line=true;;
+      *) is_cmd_line=false;;
+    esac
+    if $is_svn || $is_cmd_line; then :; else continue; fi
+    svnrules=''
+    if $is_svn; then
+      # Below is a git plumbing command to detect whether git regards a
+      # particular file as binary. This takes into account .gitattributes, but
+      # also works if the file has been automatically detected as binary by git.
+      # EMPTY is the hash of the empty tree (which is specially known to git -
+      # it is automatically included in every repository) as a way to get
+      # `diff-tree` to print the whole tree state; its `--numstat` output then
+      # prints a summary where two dashes in the first two columns indicates a
+      # binary file.
+      #   (See https://git-scm.com/docs/git-diff-tree#_other_diff_formats and
+      #    the documentation for the --numstat option. Commands designated as
+      #    "plumbing" commands in git have stable output intended for parsing)
+      EMPTY=`git hash-object -t tree /dev/null`
+      git diff-tree --numstat $EMPTY HEAD -- "$f" | grep -q "^-[[:blank:]]-" \
+        && continue
+      svnrules=`git check-attr ocaml-typo "$f" | sed -e 's/.*: //'`
+      case $svnrules in unspecified) svnrules= ;; esac
+    fi
+    rules="$userrules"
+    add_hd(){ rules="missing-header,$rules"; }
+    case "$f" in
+      Makefile*|*/Makefile*) rules="tab,$rules";;
+      *.mlpack|*.mllib|*.mltop|*.odocl|*.itarget|*.clib) add_hd;;
+      *.reference|*.opt_reference|*/reference|*/.depend*) continue;;
+    esac
+    case "$f" in
+      ocamldoc/*|*/ocamldoc/*) rules="long-line,$rules";;
+    esac
+
+    (cat "$f" | tr -d '\r'; echo) \
+    | awk -v rules="$rules" -v svnrules="$svnrules" -v file="$f" \
+      '
+        function is_err(name) {
+          return (("," rules svnrules ",") !~ ("[, ]" name "[, ]"));
+        }
+
+        function err(name, msg) {
+          ++ counts[name];
+          if (is_err(name) && counts[name] <= 10){
+            printf ("%s:%d.%d:", file, NR, RSTART + RLENGTH);
+            printf (" [%s] %s\n", name, msg);
+            got_errors = 1;
+            if (counts[name] == 10){
+              printf ("WARNING: too many [%s] in this file.", name);
+              printf ("  Others will not be reported.\n");
+            }
+          }
+        }
+
+        function more_columns(str, limit,       c){
+          c = 0;
+          for (i = 1; i <= length(str); i++){
+            if (substr(str, i, 1) == "\t"){
+              c = int((c + 8) / 8) * 8;
+            }else{
+              ++ c;
+            }
+          }
+          return c > limit;
+        }
+
+        BEGIN { state = "(first line)"; }
+
+        match($0, /\t/) {
+          err("tab", "TAB character(s)");
+          if (more_columns($0, 80)){
+            RSTART=81;
+            RLENGTH = 0;
+            err("long-line", "line is over 80 columns");
+          }
+          if (more_columns($0, 132)){
+            RSTART=133;
+            RLENGTH = 0;
+            err("very-long-line", "line is over 132 columns");
+          }
+        }
+
+        match($0, /[\200-\377]/) \
+        && state != "authors" && state != "copyright" {
+          err("non-ascii", "non-ASCII character(s)");
+          if (header_utf8 && !is_err("non-ascii")) {
+            err("non-ascii-utf8", \
+                "non-ASCII character(s) AND UTF-8 encountered");
+          }
+        }
+
+        match($0, /[^\t\200-\377 -~]/) {
+          err("non-printing", "non-printing ASCII character(s)");
+        }
+
+        match($0, /[ \t]+$/) {
+          err("white-at-eol", "whitespace at end of line");
+        }
+
+        match($0, /\$Id(: .*)?\$/) {
+          err("svn-keyword", "SVN keyword marker");
+        }
+
+        $0 !~ /\t/ && length($0) > 80 {
+          t = $0;
+          sub(/https?:[A-Za-z0-9._~:/?#\[\]@!$&\047()*+,;=%-]{73,}$/, "", t);
+          if (length(t) > 80) {
+            RSTART = 81;
+            RLENGTH = 0;
+            err("long-line", "line is over 80 columns");
+          }
+        }
+
+        $0 !~ /\t/ && length($0) > 132 {
+          RSTART = 133;
+          RLENGTH = 0;
+          err("very-long-line", "line is over 132 columns");
+        }
+
+        # Record that the header contained UTF-8 sequences
+        match($0, /[\300-\367][\200-\277]+/) \
+        && (state == "authors" || state == "copyright") {
+          header_utf8 = 1;
+          if (counts["non-ascii"] > 0 && is_err("non-ascii")) {
+            err("non-ascii-utf8", \
+                "non-ASCII character(s) AND UTF-8 encountered");
+          }
+        }
+
+        # Header-recognition automaton. Read this from bottom to top.
+        # Valid UTF-8 chars are recognised in copyright and authors
+        # TODO: ensure all files are valid UTF-8 before awking them.
+        # Note that this code also assumes that combining characters are NOT
+        # used (i.e. that every Unicode code-point corresponds to exactly
+        # one displayed character, i.e. no Camels and no including
+        # weird-and-wonderful ways of encoded accented letters).
+
+        state == "close" && $0 ~ /\*{74}/ { state = "OK"; }
+        state == "close" { state = "(last line)"; }
+        state == "blurb" && $0 ~ /\* {72}\*/ { state = "close"; }
+        state == "blurb" && $0 ~ /\/LICENSE/ { state = "(license path)" }
+        state == "blurb1" && $0 ~ /\*   All rights reserved. .{47} \*/ \
+                                                 { state = "blurb"; }
+        state == "blurb1" { state = "(blurb line 1)"; }
+        state == "copyright" && $0 ~ /\* {72}\*/ { state = "blurb1"; }
+        state == "copyright" \
+          && $0 !~ /\*   Copyright [0-9]{4}([\300-\367][\200-\277]+|.){54} \*/ \
+          && $0 !~ /\*     ([\300-\367][\200-\277]+|.){66} \*/ \
+                      { state = "(copyright lines)"; }
+        state == "authors" && $0 ~ /\* {72}\*/ { state = "copyright"; }
+        state == "authors" \
+          && $0 !~ /\* ([\300-\367][\200-\277]+|.){70} \*/ \
+                      { state = "(authors)"; }
+        state == "blank2" && $0 ~ /\* {72}\*/ { state = "authors"; }
+        state == "blank2" { state = "(blank line 2)"; }
+        state == "title" && $0 ~ /\* {33}OCaml {34}\*/ { state = "blank2"; }
+        state == "title" { state = "(title line)"; }
+        state == "blank1" && $0 ~ /\* {72}\*/ { state = "title"; }
+        state == "blank1" { state = "(blank line 1)"; }
+        state == "(first line)" && NR < 4 && $0 ~ /\*{74}/ { state = "blank1"; }
+
+        {
+          prev_line = last_line;
+          last_line = $0;
+        }
+
+        END {
+          if (match(last_line, /.+/)){
+            err("missing-lf", "missing linefeed at EOF");
+            prev_line = last_line;
+            ++ NR;
+            empty_file = 0;
+          }else{
+            empty_file = NR == 1;
+          }
+          if (!empty_file && match(prev_line, /^$/)){
+            err("white-at-eof", "empty line(s) at EOF");
+          }
+          if (state != "OK"){
+            if (NR >= 10){
+              NR = 1;
+              RSTART = 1;
+              RLENGTH = 0;
+              err("missing-header", sprintf("bad copyright header %s", state));
+            }else{
+              counts["missing-header"] = 1;
+            }
+          }
+          split(svnrules, r, "[, ]");
+          for (i in r){
+            name = r[i];
+            if (name != "" && !counts[name]){
+              NR = 1;
+              RSTART = 1;
+              RLENGTH = 0;
+              err("unused-prop", sprintf("unused [%s] in ocaml-typo", name));
+            }
+          }
+          exit got_errors;
+        }
+      '
+  done
+)

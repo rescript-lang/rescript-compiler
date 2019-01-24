@@ -1,0 +1,58 @@
+#!/usr/local/bin/perl
+# Insert Next/Previous/Contents buttons in a set of pages.
+
+@pages = sort fragmentorder @ARGV;
+
+sub fragmentorder {
+  $a =~ /^node([0-9]+)/; $na = $1;
+  if ($a =~ /^node[0-9]+\.([0-9]+)\.html/) { $fa = $1; } else { $fa = 0; }
+  $b =~ /^node([0-9]+)/; $nb = $1;
+  if ($b =~ /^node[0-9]+\.([0-9]+)\.html/) { $fb = $1; } else { $fb = 0; }
+  return (($na <=> $nb) || ($fa <=> $fb));
+}
+
+for ($i = 0; $i <= $#pages; $i++) {
+  open(SRC, $pages[$i]);
+  open(DST, "> newpage.html");
+  select(DST);
+  $_ = <SRC>;   # Title line
+  print "<HEAD>\n";
+  print $_;
+  do links();
+  print "</HEAD>\n";
+  print "<BODY>\n";
+  do buttons();
+  print "<HR>\n";
+  $numlines = 0;
+  while (<SRC>) {
+    $numlines++;
+    print $_;
+  }
+  if ($numlines >= 40) {
+    print "<HR>\n";
+    do buttons();
+  }
+  close(SRC);
+  close(DST);
+  rename("newpage.html", $pages[$i]);
+}
+
+sub links {
+  if ($i > 0) {
+    print '<LINK REL="Prev" HREF="', $pages[$i-1], "\">\n";
+  }
+  if ($i < $#pages) {
+    print '<LINK REL="Next" HREF="', $pages[$i+1], "\">\n";
+  }
+  print "<LINK REL=\"ToC\" HREF=\"index.html\">\n";
+}
+
+sub buttons {
+  if ($i > 0) {
+    print '<A HREF="', $pages[$i-1], '"><IMG SRC="previous_motif.gif" ALT="Previous"></A>', "\n";
+  }
+  if ($i < $#pages) {
+    print '<A HREF="', $pages[$i+1], '"><IMG SRC="next_motif.gif" ALT="Next"></A>', "\n";
+  }
+  print '<A HREF="index.html"><IMG SRC="contents_motif.gif" ALT="Contents"></A>', "\n";
+}

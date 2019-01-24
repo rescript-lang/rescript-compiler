@@ -1,0 +1,29 @@
+\chapter{The dynlink library: dynamic loading and linking of object files}
+\pdfchapterfold{-1}{The dynlink library: dynamic loading and linking of object files}
+%HEVEA\cutname{libdynlink.html}
+
+The "dynlink" library supports type-safe dynamic loading and linking
+of bytecode object files (".cmo" and ".cma" files) in a running
+bytecode program, or of native plugins (usually ".cmxs" files) in a
+running native program.  Type safety is ensured by limiting the set of
+modules from the running program that the loaded object file can
+access, and checking that the running program and the loaded object
+file have been compiled against the same interfaces for these modules.
+In native code, there are also some compatibility checks on the
+implementations (to avoid errors with cross-module optimizations); it
+might be useful to hide ".cmx" files when building native plugins so
+that they remain independent of the implementation of modules in the
+main program.
+
+Programs that use the "dynlink" library simply need to link
+"dynlink.cma" or "dynlink.cmxa" with their object files and other libraries. 
+
+\ifouthtml
+\begin{links}
+\item \ahref{libref/Dynlink.html}{Module \texttt{Dynlink}: dynamic loading of bytecode object files}
+\end{links}
+
+\else
+\input{Dynlink.tex}
+\fi
+

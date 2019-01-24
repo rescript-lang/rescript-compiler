@@ -1,0 +1,75 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="Start" href="index.html">
+<link rel="Up" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Paragraph" rel="Chapter" href="Paragraph.html"><title>Paragraph</title>
+</head>
+<body>
+<div class="navbar">&nbsp;<a class="up" href="index.html" title="Index">Up</a>
+&nbsp;</div>
+<h1>Module <a href="type_Paragraph.html">Paragraph</a></h1>
+
+<pre><span id="MODULEParagraph"><span class="keyword">module</span> Paragraph</span>: <code class="code"><span class="keyword">sig</span></code> <a href="Paragraph.html">..</a> <code class="code"><span class="keyword">end</span></code></pre><div class="info module top">
+<div class="info-desc">
+<p>This file tests the generation of paragraph within module comments.</p>
+
+<p>At least three points should be exercised in this tests</p>
+
+<ul>
+<li>First, all text should be tagged</li>
+<li>Second, no paragraph should contain only spaces characters</li>
+<li>Third, the mixing of different text style should not create
+    invalid p tags</li>
+</ul>
+<p>See also <a href=" http://caml.inria.fr/mantis/view.php?id=7352"> MPR:7352</a>,
+    <a href=" http://caml.inria.fr/mantis/view.php?id=7353"> MPR:7353</a></p>
+
+<h3 id="here">Testing non-text elements </h3>
+<p><code class="code">code&nbsp;x&nbsp;</code> <i>should </i> be inside a p.</p>
+
+<p><em>But</em> <b>not</b></p>
+<pre class="codepre"><code class="code">      <span class="keyword">let</span> complex_code = ()
+    </code></pre><p>here.</p>
+
+<OL>
+<li>An enumerated list first element</li>
+<li>second element</li>
+</OL>
+<div align=left>Alignement test: left</div><div align=right>Right</div><center>Center</center>
+<p>Other complex text<sub class="subscript">in subscript </sub><sup class="superscript">and superscript</sup></p>
+
+<p>There is also html specific  elements.</p>
+</div>
+<ul class="info-attributes">
+<li><b>Author(s):</b> : Florian Angeletti</li>
+<li><b>Version:</b> : 1</li>
+</ul>
+</div>
+<hr width="100%">
+
+<pre><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> </pre>
+<div class="info ">
+<div class="info-desc">
+<p>And cross-reference <a href="Paragraph.html#TYPEt"><code class="code"><span class="constructor">Paragraph</span>.t</code></a>.
+   
+<table class="indextable module-list">
+<tr><td class="module"><a href="Paragraph.html">Paragraph</a></td><td><div class="info">
+<p>This file tests the generation of paragraph within module comments.</p>
+
+</div>
+</td></tr>
+</table></p>
+<ul class="indexlist">
+<li><a href="index_types.html">Index of types</a></li>
+<li><a href="index_modules.html">Index of modules</a></li>
+</ul>
+</div>
+</div>
+
+</body></html>

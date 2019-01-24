@@ -1,0 +1,97 @@
+\section{Values}
+\pdfsection{Values}
+%HEVEA\cutname{values.html}
+
+This section describes the kinds of values that are manipulated by
+OCaml programs.
+
+\subsection{Base values}
+
+\subsubsection*{Integer numbers}
+
+Integer values are integer numbers from $-2^{30}$ to $2^{30}-1$, that
+is $-1073741824$ to $1073741823$. The implementation may support a
+wider range of integer values: on 64-bit platforms, the current
+implementation supports integers ranging from $-2^{62}$ to $2^{62}-1$.
+
+\subsubsection*{Floating-point numbers}
+
+Floating-point values are numbers in floating-point representation.
+The current implementation uses double-precision floating-point
+numbers conforming to the IEEE 754 standard, with 53 bits of mantissa
+and an exponent ranging from $-1022$ to $1023$.
+
+\subsubsection*{Characters}
+
+Character values are represented as 8-bit integers between 0 and 255.
+Character codes between 0 and 127 are interpreted following the ASCII
+standard. The current implementation interprets character codes
+between 128 and 255 following the ISO 8859-1 standard.
+
+\subsubsection*{Character strings} \label{s:string-val}
+
+String values are finite sequences of characters. The current
+implementation supports strings containing up to $2^{24} - 5$
+characters (16777211 characters); on 64-bit platforms, the limit is
+$2^{57} - 9$.
+
+\subsection{Tuples}
+
+Tuples of values are written @'('@v@_1',' \ldots',' @v@_n')'@, standing for the
+$n$-tuple of values @@v@_1@ to @@v@_n@. The current implementation
+supports tuple of up to $2^{22} - 1$ elements (4194303 elements).
+
+\subsection{Records}
+
+Record values are labeled tuples of values. The record value written
+@'{' field_1 '=' @v@_1';' \ldots';' field_n '=' @v@_n '}'@ associates the value
+@@v@_i@ to the record field @field_i@, for $i = 1 \ldots n$. The current
+implementation supports records with up to $2^{22} - 1$ fields
+(4194303 fields).
+
+\subsection{Arrays}
+
+Arrays are finite, variable-sized sequences of values of the same
+type.  The current implementation supports arrays containing up to
+$2^{22} - 1$ elements (4194303 elements) unless the elements are
+floating-point numbers (2097151 elements in this case); on 64-bit
+platforms, the limit is $2^{54} - 1$ for all arrays.
+
+\subsection{Variant values}
+
+Variant values are either a constant constructor, or a non-constant
+constructor applied to a number of values. The former case is written
+@constr@; the latter case is written @constr '('@v@_1',' ... ',' @v@_n
+')'@, where the @@v@_i@ are said to be the arguments of the non-constant
+constructor @constr@. The parentheses may be omitted if there is only
+one argument.
+
+The following constants are treated like built-in constant
+constructors:
+\begin{tableau}{|l|l|}{Constant}{Constructor}
+\entree{"false"}{the boolean false}
+\entree{"true"}{the boolean true}
+\entree{"()"}{the ``unit'' value}
+\entree{"[]"}{the empty list}
+\end{tableau}
+
+The current implementation limits each variant type to have at most
+246 non-constant constructors and $2^{30}-1$ constant constructors.
+
+\subsection{Polymorphic variants}
+
+Polymorphic variants are an alternate form of variant values, not
+belonging explicitly to a predefined variant type, and following
+specific typing rules. They can be either constant, written
+@"`"tag-name@, or non-constant, written @"`"tag-name'('@v@')'@.
+
+\subsection{Functions}
+
+Functional values are mappings from values to values.
+
+\subsection{Objects}
+
+Objects are composed of a hidden internal state which is a
+record of instance variables, and a set of methods for accessing and
+modifying these variables.  The structure of an object is described by
+the toplevel class that created it.

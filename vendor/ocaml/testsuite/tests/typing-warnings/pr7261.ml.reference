@@ -1,0 +1,11 @@
+
+#   Characters 30-32:
+      Foo: [> `Bla ] as 'b ) * 'b -> foo;;
+                     ^^
+Error: Syntax error
+#   Characters 46-60:
+      Foo: 'b * 'b -> foo constraint 'b = [> `Bla ];;
+                                     ^^^^^^^^^^^^^^
+Warning 62: Type constraints do not apply to GADT cases of variant types.
+type foo = Foo : 'b * 'b -> foo
+# 

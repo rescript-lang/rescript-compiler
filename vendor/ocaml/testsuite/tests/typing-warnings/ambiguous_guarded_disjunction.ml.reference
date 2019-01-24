@@ -1,0 +1,140 @@
+
+#   - : unit = ()
+#                               
+<----------------------------------------------------------------------
+To check the result file for this test, it suffices to look for "val"
+lines corresponding to toplevel answers. If they start with
+
+    val ambiguous_...
+
+then just above there should be the warning text for Warning 57
+(we try to avoid all other warnings). If they start with
+
+   val not_ambiguous_...
+
+then just above there should be *no* warning text.
+---------------------------------------------------------------------->
+
+#     type expr = Val of int | Rest
+#                   Characters 46-71:
+    | ((Val x, _) | (_, Val x)) when x < 0 -> ()
+      ^^^^^^^^^^^^^^^^^^^^^^^^^
+Warning 57: Ambiguous or-pattern variables under guard;
+variable x may match different arguments. (See manual section 8.5)
+val ambiguous_typical_example : expr * expr -> unit = <fun>
+#   Note that an Assert_failure is expected just below.
+#   Exception: Assert_failure ("//toplevel//", 25, 6).
+#           val not_ambiguous__no_orpat : int option -> unit = <fun>
+#         val not_ambiguous__no_guard : [< `A | `B | `C ] -> unit = <fun>
+#         val not_ambiguous__no_patvar_in_guard :
+  bool -> [> `B of 'a | `C of 'a ] -> unit = <fun>
+#         val not_ambiguous__disjoint_cases : [> `B of bool | `C of bool ] -> unit =
+  <fun>
+#   * * *         val not_ambiguous__prefix_variables :
+  [> `B of bool * 'a option * 'a option ] -> unit = <fun>
+#         Characters 33-72:
+    | (`B (x, _, Some y) | `B (x, Some y, _)) when y -> ignore x
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Warning 57: Ambiguous or-pattern variables under guard;
+variable y may match different arguments. (See manual section 8.5)
+val ambiguous__y : [> `B of 'a * bool option * bool option ] -> unit = <fun>
+#   * * * * * * * *         val not_ambiguous__rhs_not_protected :
+  [> `B of 'a * bool option * bool option ] -> unit = <fun>
+#         Characters 35-74:
+    | (`B (x, _, Some y) | `B (x, Some y, _)) when x < y -> ()
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Warning 57: Ambiguous or-pattern variables under guard;
+variable y may match different arguments. (See manual section 8.5)
+val ambiguous__x_y : [> `B of 'a * 'a option * 'a option ] -> unit = <fun>
+#         Characters 37-76:
+    | (`B (x, z, Some y) | `B (x, Some y, z)) when x < y || Some x = z -> ()
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Warning 57: Ambiguous or-pattern variables under guard;
+variables y,z may match different arguments. (See manual section 8.5)
+val ambiguous__x_y_z : [> `B of 'a * 'a option * 'a option ] -> unit = <fun>
+#         val not_ambiguous__disjoint_in_depth :
+  [> `A of [> `B of bool | `C of bool ] ] -> unit = <fun>
+#         val not_ambiguous__prefix_variables_in_depth :
+  [> `A of [> `B of bool * [> `C1 | `C2 ] ] ] -> unit = <fun>
+#         Characters 40-76:
+    | `A (`B (Some x, _) | `B (_, Some x)) when x -> ()
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Warning 57: Ambiguous or-pattern variables under guard;
+variable x may match different arguments. (See manual section 8.5)
+val ambiguous__in_depth :
+  [> `A of [> `B of bool option * bool option ] ] -> unit = <fun>
+#               val not_ambiguous__several_orpats :
+  [> `A of
+       [> `B of 'a * 'b option * 'c option ] *
+       [> `C of 'a * 'd option * 'e option ] *
+       [> `D1 of 'f * 'a * 'g option * 'h | `D2 of 'i * 'a * 'j * 'k option ] ] ->
+  unit = <fun>
+#           Characters 43-140:
+  ....`A ((`B (Some x, _) | `B (_, Some x)),
+          (`C (Some y, Some _, _) | `C (Some y, _, Some _))).................
+Warning 57: Ambiguous or-pattern variables under guard;
+variable x may match different arguments. (See manual section 8.5)
+val ambiguous__first_orpat :
+  [> `A of
+       [> `B of 'a option * 'a option ] *
+       [> `C of 'a option * 'b option * 'c option ] ] ->
+  unit = <fun>
+#           Characters 44-141:
+  ....`A ((`B (Some x, Some _, _) | `B (Some x, _, Some _)),
+          (`C (Some y, _) | `C (_, Some y))).................
+Warning 57: Ambiguous or-pattern variables under guard;
+variable y may match different arguments. (See manual section 8.5)
+val ambiguous__second_orpat :
+  [> `A of
+       [> `B of 'a option * 'b option * 'c option ] *
+       [> `C of 'a option * 'a option ] ] ->
+  unit = <fun>
+#           val not_ambiguous__pairs : bool * 'a option * 'b option -> unit = <fun>
+#             val not_ambiguous__vars : bool -> unit = <fun>
+#         val not_ambiguous__as :
+  ('a list * 'b list -> bool) -> 'a list * 'b list -> unit = <fun>
+#         val not_ambiguous__as_var : ('a list * 'b -> bool) -> 'a list * 'b -> unit =
+  <fun>
+#         val not_ambiguous__var_as :
+  ('a list * 'b -> bool) -> ('a list * 'b) * 'c option * 'd option -> unit =
+  <fun>
+#           val not_ambiguous__lazy : ('a list * 'b list) * bool lazy_t -> unit = <fun>
+#   type t = A of int * int option * int option | B
+#         val not_ambiguous__constructor : t -> unit = <fun>
+#       type amoi = Z of int | Y of int * int | X of amoi * amoi
+#             Characters 40-73:
+  ..X (Z x,Y (y,0))
+  | X (Z y,Y (x,_))
+Warning 57: Ambiguous or-pattern variables under guard;
+variables x,y may match different arguments. (See manual section 8.5)
+val ambiguous__amoi : amoi -> int = <fun>
+#     module type S = sig val b : bool end
+#           Characters 56-101:
+  ....(module M:S),_,(1,_)
+    | _,(module M:S),(_,1)...................
+Warning 57: Ambiguous or-pattern variables under guard;
+variable M may match different arguments. (See manual section 8.5)
+val ambiguous__module_variable :
+  (module S) * (module S) * (int * int) -> bool -> int = <fun>
+#           val not_ambiguous__module_variable :
+  (module S) * (module S) * (int * int) -> bool -> int = <fun>
+#         type t = A of int * int | B of int * int
+#         Characters 55-56:
+    | A (x as z,(0 as y))|A (0 as y as z,x)|B (x,(y as z)) when g x (y+z) -> 1
+      ^
+Warning 41: A belongs to several types: t t
+The first one was selected. Please disambiguate if this is wrong.
+Characters 42-138:
+  .........................................function
+    | A (x as z,(0 as y))|A (0 as y as z,x)|B (x,(y as z)) when g x (y+z) -> 1
+    | _ -> 2
+Warning 4: this pattern-matching is fragile.
+It will remain exhaustive when constructors are added to type t.
+Characters 55-107:
+    | A (x as z,(0 as y))|A (0 as y as z,x)|B (x,(y as z)) when g x (y+z) -> 1
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Warning 57: Ambiguous or-pattern variables under guard;
+variables x,y may match different arguments. (See manual section 8.5)
+val ambiguous_xy_but_not_ambiguous_z : (int -> int -> bool) -> t -> int =
+  <fun>
+# 

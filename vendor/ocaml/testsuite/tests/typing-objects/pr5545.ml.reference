@@ -1,0 +1,6 @@
+
+# type foo = int
+#           class o : object method x : foo method y : int end
+#             class o : object method x : foo method y : int end
+#               class o : object method x : int method y : foo end
+# 

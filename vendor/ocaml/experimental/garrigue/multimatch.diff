@@ -1,0 +1,1418 @@
+Index: parsing/lexer.mll
+===================================================================
+RCS file: /net/yquem/devel/caml/repository/csl/parsing/lexer.mll,v
+retrieving revision 1.73
+diff -u -r1.73 lexer.mll
+--- parsing/lexer.mll	11 Apr 2005 16:44:26 -0000	1.73
++++ parsing/lexer.mll	2 Feb 2006 06:28:32 -0000
+@@ -63,6 +63,8 @@
+     "match", MATCH;
+     "method", METHOD;
+     "module", MODULE;
++    "multifun", MULTIFUN;
++    "multimatch", MULTIMATCH;
+     "mutable", MUTABLE;
+     "new", NEW;
+     "object", OBJECT;
+Index: parsing/parser.mly
+===================================================================
+RCS file: /net/yquem/devel/caml/repository/csl/parsing/parser.mly,v
+retrieving revision 1.123
+diff -u -r1.123 parser.mly
+--- parsing/parser.mly	23 Mar 2005 03:08:37 -0000	1.123
++++ parsing/parser.mly	2 Feb 2006 06:28:32 -0000
+@@ -257,6 +257,8 @@
+ %token MINUSDOT
+ %token MINUSGREATER
+ %token MODULE
++%token MULTIFUN
++%token MULTIMATCH
+ %token MUTABLE
+ %token <nativeint> NATIVEINT
+ %token NEW
+@@ -325,7 +327,7 @@
+ %nonassoc SEMI                          /* below EQUAL ({lbl=...; lbl=...}) */
+ %nonassoc LET                           /* above SEMI ( ...; let ... in ...) */
+ %nonassoc below_WITH
+-%nonassoc FUNCTION WITH                 /* below BAR  (match ... with ...) */
++%nonassoc FUNCTION WITH MULTIFUN        /* below BAR  (match ... with ...) */
+ %nonassoc AND             /* above WITH (module rec A: SIG with ... and ...) */
+ %nonassoc THEN                          /* below ELSE (if ... then ...) */
+ %nonassoc ELSE                          /* (if ... then ... else ...) */
+@@ -804,8 +806,12 @@
+       { mkexp(Pexp_function("", None, List.rev $3)) }
+   | FUN labeled_simple_pattern fun_def
+       { let (l,o,p) = $2 in mkexp(Pexp_function(l, o, [p, $3])) }
++  | MULTIFUN opt_bar match_cases
++      { mkexp(Pexp_multifun(List.rev $3)) }
+   | MATCH seq_expr WITH opt_bar match_cases
+-      { mkexp(Pexp_match($2, List.rev $5)) }
++      { mkexp(Pexp_match($2, List.rev $5, false)) }
++  | MULTIMATCH seq_expr WITH opt_bar match_cases
++      { mkexp(Pexp_match($2, List.rev $5, true)) }
+   | TRY seq_expr WITH opt_bar match_cases
+       { mkexp(Pexp_try($2, List.rev $5)) }
+   | TRY seq_expr WITH error
+@@ -1318,10 +1324,10 @@
+   | simple_core_type2                           { Rinherit $1 }
+ ;
+ tag_field:
+-    name_tag OF opt_ampersand amper_type_list
+-      { Rtag ($1, $3, List.rev $4) }
+-  | name_tag
+-      { Rtag ($1, true, []) }
++    name_tag OF opt_ampersand amper_type_list amper_type_pair_list
++      { Rtag ($1, $3, List.rev $4, $5) }
++  | name_tag amper_type_pair_list
++      { Rtag ($1, true, [], $2) }
+ ;
+ opt_ampersand:
+     AMPERSAND                                   { true }
+@@ -1331,6 +1337,11 @@
+     core_type                                   { [$1] }
+   | amper_type_list AMPERSAND core_type         { $3 :: $1 }
+ ;
++amper_type_pair_list:
++    AMPERSAND core_type EQUAL core_type amper_type_pair_list
++      { ($2, $4) :: $5 }
++  | /* empty */
++      { [] }
+ opt_present:
+     LBRACKETGREATER name_tag_list RBRACKET      { List.rev $2 }
+   | /* empty */                                 { [] }
+Index: parsing/parsetree.mli
+===================================================================
+RCS file: /net/yquem/devel/caml/repository/csl/parsing/parsetree.mli,v
+retrieving revision 1.42
+diff -u -r1.42 parsetree.mli
+--- parsing/parsetree.mli	23 Mar 2005 03:08:37 -0000	1.42
++++ parsing/parsetree.mli	2 Feb 2006 06:28:32 -0000
+@@ -43,7 +43,7 @@
+   | Pfield_var
+ 
+ and row_field =
+-    Rtag of label * bool * core_type list
++    Rtag of label * bool * core_type list * (core_type * core_type) list
+   | Rinherit of core_type
+ 
+ (* XXX Type expressions for the class language *)
+@@ -86,7 +86,7 @@
+   | Pexp_let of rec_flag * (pattern * expression) list * expression
+   | Pexp_function of label * expression option * (pattern * expression) list
+   | Pexp_apply of expression * (label * expression) list
+-  | Pexp_match of expression * (pattern * expression) list
++  | Pexp_match of expression * (pattern * expression) list * bool
+   | Pexp_try of expression * (pattern * expression) list
+   | Pexp_tuple of expression list
+   | Pexp_construct of Longident.t * expression option * bool
+@@ -111,6 +111,7 @@
+   | Pexp_lazy of expression
+   | Pexp_poly of expression * core_type option
+   | Pexp_object of class_structure
++  | Pexp_multifun of (pattern * expression) list
+ 
+ (* Value descriptions *)
+ 
+Index: parsing/printast.ml
+===================================================================
+RCS file: /net/yquem/devel/caml/repository/csl/parsing/printast.ml,v
+retrieving revision 1.29
+diff -u -r1.29 printast.ml
+--- parsing/printast.ml	4 Jan 2006 16:55:50 -0000	1.29
++++ parsing/printast.ml	2 Feb 2006 06:28:32 -0000
+@@ -205,10 +205,14 @@
+       line i ppf "Pexp_apply\n";
+       expression i ppf e;
+       list i label_x_expression ppf l;
+-  | Pexp_match (e, l) ->
++  | Pexp_match (e, l, b) ->
+       line i ppf "Pexp_match\n";
+       expression i ppf e;
+       list i pattern_x_expression_case ppf l;
++      bool i ppf b
++  | Pexp_multifun l ->
++      line i ppf "Pexp_multifun\n";
++      list i pattern_x_expression_case ppf l;
+   | Pexp_try (e, l) ->
+       line i ppf "Pexp_try\n";
+       expression i ppf e;
+@@ -653,7 +657,7 @@
+ 
+ and label_x_bool_x_core_type_list i ppf x =
+   match x with
+-    Rtag (l, b, ctl) ->
++    Rtag (l, b, ctl, cstr) ->
+       line i ppf "Rtag \"%s\" %s\n" l (string_of_bool b);
+       list (i+1) core_type ppf ctl
+   | Rinherit (ct) ->
+Index: typing/btype.ml
+===================================================================
+RCS file: /net/yquem/devel/caml/repository/csl/typing/btype.ml,v
+retrieving revision 1.38
+diff -u -r1.38 btype.ml
+--- typing/btype.ml	4 Jan 2006 16:55:50 -0000	1.38
++++ typing/btype.ml	2 Feb 2006 06:28:32 -0000
+@@ -66,16 +66,16 @@
+     Clink r when !r <> Cunknown -> commu_repr !r
+   | c -> c
+ 
+-let rec row_field_repr_aux tl = function
+-    Reither(_, tl', _, {contents = Some fi}) ->
+-      row_field_repr_aux (tl@tl') fi
+-  | Reither(c, tl', m, r) ->
+-      Reither(c, tl@tl', m, r)
++let rec row_field_repr_aux tl tl2 = function
++    Reither(_, tl', _, tl2', {contents = Some fi}) ->
++      row_field_repr_aux (tl@tl') (tl2@tl2') fi
++  | Reither(c, tl', m, tl2', r) ->
++      Reither(c, tl@tl', m, tl2@tl2', r)
+   | Rpresent (Some _) when tl <> [] ->
+       Rpresent (Some (List.hd tl))
+   | fi -> fi
+ 
+-let row_field_repr fi = row_field_repr_aux [] fi
++let row_field_repr fi = row_field_repr_aux [] [] fi
+ 
+ let rec rev_concat l ll =
+   match ll with
+@@ -170,7 +170,8 @@
+     (fun (_, fi) ->
+       match row_field_repr fi with
+       | Rpresent(Some ty) -> f ty
+-      | Reither(_, tl, _, _) -> List.iter f tl
++      | Reither(_, tl, _, tl2, _) ->
++          List.iter f tl; List.iter (fun (t1,t2) -> f t1; f t2) tl2
+       | _ -> ())
+     row.row_fields;
+   match (repr row.row_more).desc with
+@@ -208,15 +209,17 @@
+       (fun (l, fi) -> l,
+         match row_field_repr fi with
+         | Rpresent(Some ty) -> Rpresent(Some(f ty))
+-        | Reither(c, tl, m, e) ->
++        | Reither(c, tl, m, tpl, e) ->
+             let e = if keep then e else ref None in
+             let m = if row.row_fixed then fixed else m in
+             let tl = List.map f tl in
++            let tl1 = List.map (fun (t1,_) -> repr (f t1)) tpl
++            and tl2 = List.map (fun (_,t2) -> repr (f t2)) tpl in
+             bound := List.filter
+                 (function {desc=Tconstr(_,[],_)} -> false | _ -> true)
+-                (List.map repr tl)
++                (List.map repr tl @ tl1 @ tl2)
+               @ !bound;
+-            Reither(c, tl, m, e)
++            Reither(c, tl, m, List.combine tl1 tl2, e)
+         | _ -> fi)
+       row.row_fields in
+   let name =
+Index: typing/ctype.ml
+===================================================================
+RCS file: /net/yquem/devel/caml/repository/csl/typing/ctype.ml,v
+retrieving revision 1.200
+diff -u -r1.200 ctype.ml
+--- typing/ctype.ml	6 Jan 2006 02:16:24 -0000	1.200
++++ typing/ctype.ml	2 Feb 2006 06:28:32 -0000
+@@ -340,7 +340,7 @@
+       let fi = filter_row_fields erase fi in
+       match row_field_repr f with
+         Rabsent -> fi
+-      | Reither(_,_,false,e) when erase -> set_row_field e Rabsent; fi
++      | Reither(_,_,false,_,e) when erase -> set_row_field e Rabsent; fi
+       | _ -> p :: fi
+ 
+                     (**************************************)
+@@ -1286,6 +1286,10 @@
+ 
+ module TypeMap = Map.Make (TypeOps)
+ 
++
++(* A list of univars which may appear free in a type, but only if generic *)
++let allowed_univars = ref TypeSet.empty
++
+ (* Test the occurence of free univars in a type *)
+ (* that's way too expansive. Must do some kind of cacheing *)
+ let occur_univar env ty =
+@@ -1307,7 +1311,12 @@
+     then
+       match ty.desc with
+         Tunivar ->
+-          if not (TypeSet.mem ty bound) then raise (Unify [ty, newgenvar()])
++          if TypeSet.mem ty bound then () else
++          if TypeSet.mem ty !allowed_univars &&
++            (ty.level = generic_level ||
++             ty.level = pivot_level - generic_level)
++          then ()
++          else raise (Unify [ty, newgenvar()])
+       | Tpoly (ty, tyl) ->
+           let bound = List.fold_right TypeSet.add (List.map repr tyl) bound in
+           occur_rec bound  ty
+@@ -1393,6 +1402,7 @@
+   with exn -> univar_pairs := old_univars; raise exn
+ 
+ let univar_pairs = ref []
++let delayed_conditionals = ref []
+ 
+ 
+                               (*****************)
+@@ -1691,9 +1701,11 @@
+               with Not_found -> (h,l)::hl)
+             (List.map (fun (l,_) -> (hash_variant l, l)) row1.row_fields)
+             (List.map fst r2));
++  let fixed1 = row1.row_fixed || rm1.desc <> Tvar
++  and fixed2 = row2.row_fixed || rm2.desc <> Tvar in
+   let more =
+-    if row1.row_fixed then rm1 else
+-    if row2.row_fixed then rm2 else
++    if fixed1 then rm1 else
++    if fixed2 then rm2 else
+     newgenvar ()
+   in update_level env (min rm1.level rm2.level) more;
+   let fixed = row1.row_fixed || row2.row_fixed
+@@ -1726,18 +1738,18 @@
+   let bound = row1.row_bound @ row2.row_bound in
+   let row0 = {row_fields = []; row_more = more; row_bound = bound;
+               row_closed = closed; row_fixed = fixed; row_name = name} in
+-  let set_more row rest =
++  let set_more row row_fixed rest =
+     let rest =
+       if closed then
+         filter_row_fields row.row_closed rest
+       else rest in
+-    if rest <> [] && (row.row_closed || row.row_fixed)
+-    || closed && row.row_fixed && not row.row_closed then begin
++    if rest <> [] && (row.row_closed || row_fixed)
++    || closed && row_fixed && not row.row_closed then begin
+       let t1 = mkvariant [] true and t2 = mkvariant rest false in
+       raise (Unify [if row == row1 then (t1,t2) else (t2,t1)])
+     end;
+     let rm = row_more row in
+-    if row.row_fixed then
++    if row_fixed then
+       if row0.row_more == rm then () else
+       if rm.desc = Tvar then link_type rm row0.row_more else
+       unify env rm row0.row_more
+@@ -1748,11 +1760,11 @@
+   in
+   let md1 = rm1.desc and md2 = rm2.desc in
+   begin try
+-    set_more row1 r2;
+-    set_more row2 r1;
++    set_more row1 fixed1 r2;
++    set_more row2 fixed2 r1;
+     List.iter
+       (fun (l,f1,f2) ->
+-        try unify_row_field env row1.row_fixed row2.row_fixed l f1 f2
++        try unify_row_field env fixed1 fixed2 row1 row2 l f1 f2
+         with Unify trace ->
+           raise (Unify ((mkvariant [l,f1] true,
+                          mkvariant [l,f2] true) :: trace)))
+@@ -1761,13 +1773,13 @@
+     log_type rm1; rm1.desc <- md1; log_type rm2; rm2.desc <- md2; raise exn
+   end
+ 
+-and unify_row_field env fixed1 fixed2 l f1 f2 =
++and unify_row_field env fixed1 fixed2 row1 row2 l f1 f2 =
+   let f1 = row_field_repr f1 and f2 = row_field_repr f2 in
+   if f1 == f2 then () else
+   match f1, f2 with
+     Rpresent(Some t1), Rpresent(Some t2) -> unify env t1 t2
+   | Rpresent None, Rpresent None -> ()
+-  | Reither(c1, tl1, m1, e1), Reither(c2, tl2, m2, e2) ->
++  | Reither(c1, tl1, m1, tp1, e1), Reither(c2, tl2, m2, tp2, e2) ->
+       if e1 == e2 then () else
+       let redo =
+         (m1 || m2) &&
+@@ -1777,32 +1789,70 @@
+             List.iter (unify env t1) tl;
+             !e1 <> None || !e2 <> None
+         end in
+-      if redo then unify_row_field env fixed1 fixed2 l f1 f2 else
++      let redo =
++        redo || begin
++          if tp1 = [] && fixed1 then unify_pairs env tp2;
++          if tp2 = [] && fixed2 then unify_pairs env tp1;
++          !e1 <> None || !e2 <> None
++        end
++      in
++      if redo then unify_row_field env fixed1 fixed2 row1 row2 l f1 f2 else
+       let tl1 = List.map repr tl1 and tl2 = List.map repr tl2 in
+       let rec remq tl = function [] -> []
+         | ty :: tl' ->
+             if List.memq ty tl then remq tl tl' else ty :: remq tl tl'
+       in
+       let tl2' = remq tl2 tl1 and tl1' = remq tl1 tl2 in
++      let repr_pairs = List.map (fun (t1,t2) -> repr t1, repr t2) in
++      let tp1 = repr_pairs tp1 and tp2 = repr_pairs tp2 in
++      let rec rempq tp = function [] -> []
++        | (t1,t2 as p) :: tp' ->
++            if List.exists (fun (t1',t2') -> t1==t1' && t2==t2') (tp@tp') then
++              rempq tp tp'
++            else p :: rempq tp tp'
++      in
++      let tp1' =
++        if fixed2 then begin
++          delayed_conditionals :=
++            (!univar_pairs, tp1, l, row2) :: !delayed_conditionals;
++          []
++        end else rempq tp2 tp1
++      and tp2' =
++        if fixed1 then begin
++          delayed_conditionals :=
++            (!univar_pairs, tp2, l, row1) :: !delayed_conditionals;
++          []
++        end else rempq tp1 tp2
++      in
+       let e = ref None in
+-      let f1' = Reither(c1 || c2, tl1', m1 || m2, e)
+-      and f2' = Reither(c1 || c2, tl2', m1 || m2, e) in
+-      set_row_field e1 f1'; set_row_field e2 f2';
+-  | Reither(_, _, false, e1), Rabsent -> set_row_field e1 f2
+-  | Rabsent, Reither(_, _, false, e2) -> set_row_field e2 f1
++      let f1' = Reither(c1 || c2, tl1', m1 || m2, tp2', e)
++      and f2' = Reither(c1 || c2, tl2', m1 || m2, tp1', e) in
++      set_row_field e1 f1'; set_row_field e2 f2'
++  | Reither(_, _, false, _, e1), Rabsent -> set_row_field e1 f2
++  | Rabsent, Reither(_, _, false, _, e2) -> set_row_field e2 f1
+   | Rabsent, Rabsent -> ()
+-  | Reither(false, tl, _, e1), Rpresent(Some t2) when not fixed1 ->
++  | Reither(false, tl, _, tp, e1), Rpresent(Some t2) when not fixed1 ->
+       set_row_field e1 f2;
+-      (try List.iter (fun t1 -> unify env t1 t2) tl
++      begin try
++        List.iter (fun t1 -> unify env t1 t2) tl;
++        List.iter (fun (t1,t2) -> unify env t1 t2) tp
++      with exn -> e1 := None; raise exn
++      end
++  | Rpresent(Some t1), Reither(false, tl, _, tp, e2) when not fixed2 ->
++      set_row_field e2 f1;
++      begin try
++        List.iter (unify env t1) tl;
++        List.iter (fun (t1,t2) -> unify env t1 t2) tp
++      with exn -> e2 := None; raise exn
++      end
++  | Reither(true, [], _, tpl, e1), Rpresent None when not fixed1 ->
++      set_row_field e1 f2;
++      (try List.iter (fun (t1,t2) -> unify env t1 t2) tpl
+       with exn -> e1 := None; raise exn)
+-  | Rpresent(Some t1), Reither(false, tl, _, e2) when not fixed2 ->
++  | Rpresent None, Reither(true, [], _, tpl, e2) when not fixed2 ->
+       set_row_field e2 f1;
+-      (try List.iter (unify env t1) tl
++      (try List.iter (fun (t1,t2) -> unify env t1 t2) tpl
+       with exn -> e2 := None; raise exn)
+-  | Reither(true, [], _, e1), Rpresent None when not fixed1 ->
+-      set_row_field e1 f2
+-  | Rpresent None, Reither(true, [], _, e2) when not fixed2 ->
+-      set_row_field e2 f1
+   | _ -> raise (Unify [])
+     
+ 
+@@ -1920,6 +1970,166 @@
+                         (*  Matching between type schemes  *)
+                         (***********************************)
+ 
++(* Forward declaration (order should be reversed...) *)
++let equal' = ref (fun _ -> failwith "Ctype.equal'")
++
++let make_generics_univars tyl =
++  let polyvars = ref TypeSet.empty in
++  let rec make_rec ty =
++    let ty = repr ty in
++    if ty.level = generic_level then begin
++      if ty.desc = Tvar  then begin
++        log_type ty;
++        ty.desc <- Tunivar;
++        polyvars := TypeSet.add ty !polyvars
++      end
++      else if ty.desc = Tunivar then set_level ty (generic_level - 1);
++      ty.level <- pivot_level - generic_level;
++      iter_type_expr make_rec ty
++    end
++  in
++  List.iter make_rec tyl;
++  List.iter unmark_type tyl;
++  !polyvars
++
++(* New version of moregeneral, using unification *)
++
++let copy_cond (p,tpl,l,row) =
++  let row =
++    match repr (copy (newgenty (Tvariant row))) with
++      {desc=Tvariant row} -> row
++    | _ -> assert false
++  and pairs =
++    List.map (fun (t1,t2) -> copy t1, copy t2) tpl in
++  (p, pairs, l, row)
++
++let get_row_field l row =
++  try row_field_repr (List.assoc l (row_repr row).row_fields)
++  with Not_found -> Rabsent
++
++let rec check_conditional_list env cdtls pattvars tpls =
++  match cdtls with
++    [] ->
++      let finished =
++        List.for_all (fun (_,t1,t2) -> !equal' env false [t1] [t2]) tpls in
++      if not finished then begin
++        let polyvars = make_generics_univars pattvars in
++        delayed_conditionals := [];
++        allowed_univars := polyvars;
++        List.iter (fun (pairs, ty1, ty2) -> unify_pairs env ty1 ty2 pairs)
++          tpls;
++        check_conditionals env polyvars !delayed_conditionals
++      end
++  | (pairs, tpl1, l, row2 as cond) :: cdtls ->
++      let cont = check_conditional_list env cdtls pattvars in
++      let tpl1 =
++        List.filter (fun (t1,t2) -> not (!equal' env false [t1] [t2])) tpl1 in
++      let included =
++        List.for_all
++          (fun (t1,t2) ->
++            List.exists
++              (fun (_,t1',t2') -> !equal' env false [t1;t2] [t1';t2'])
++              tpls)
++          tpl1 in
++      if included then cont tpls else
++      match get_row_field l row2 with
++        Rpresent _ ->
++          cont (List.map (fun (t1,t2) -> (pairs,t1,t2)) tpl1 @ tpls)
++      | Rabsent -> cont tpls
++      | Reither (c, tl2, _, _, _) ->
++          cont tpls;
++          if c && tl2 <> [] then () (* cannot succeed *) else
++          let (pairs, tpl1, l, row2) = copy_cond cond
++          and tpls = List.map (fun (p,t1,t2) -> p, copy t1, copy t2) tpls
++          and pattvars = List.map copy pattvars
++          and cdtls = List.map copy_cond cdtls in
++          cleanup_types ();
++          let tl2, tpl2, e2 =
++            match get_row_field l row2 with
++              Reither (c, tl2, _, tpl2, e2) -> tl2, tpl2, e2
++            | _ -> assert false
++          in
++          let snap = Btype.snapshot () in
++          let ok =
++            try
++              begin match tl2 with
++                [] ->
++                  set_row_field e2 (Rpresent None)
++              | t::tl ->
++                  set_row_field e2 (Rpresent (Some t));
++                  List.iter (unify env t) tl
++              end;
++              List.iter (fun (t1,t2) -> unify_pairs env t1 t2 pairs) tpl2;
++              true
++            with exn ->
++              Btype.backtrack snap;
++              false
++          in
++            (* This is not [cont] : types have been copied *)
++          if ok then
++            check_conditional_list env cdtls pattvars
++              (List.map (fun (t1,t2) -> (pairs,t1,t2)) tpl1 @ tpls)
++
++and check_conditionals env polyvars cdtls =
++  let cdtls = List.map copy_cond cdtls in
++  let pattvars = ref [] in
++  TypeSet.iter
++    (fun ty ->
++      let ty = repr ty in
++      match ty.desc with
++        Tsubst ty ->
++          let ty = repr ty in
++          begin match ty.desc with
++            Tunivar ->
++              log_type ty;
++              ty.desc <- Tvar;
++              pattvars := ty :: !pattvars
++          | Ttuple [tv;_] ->
++              if tv.desc = Tunivar then
++                (log_type tv; tv.desc <- Tvar; pattvars := ty :: !pattvars)
++              else if tv.desc <> Tvar then assert false
++          | Tvar -> ()
++          | _ -> assert false
++          end
++      | _ -> ())
++    polyvars;
++  cleanup_types ();
++  check_conditional_list env cdtls !pattvars []
++  
++
++(* Must empty univar_pairs first *)
++let unify_poly env polyvars subj patt =
++  let old_level = !current_level in
++  current_level := generic_level;
++  delayed_conditionals := [];
++  allowed_univars := polyvars;
++  try
++    unify env subj patt;
++    check_conditionals env polyvars !delayed_conditionals;
++    current_level := old_level;
++    allowed_univars := TypeSet.empty;
++    delayed_conditionals := []
++  with exn ->
++    current_level := old_level;
++    allowed_univars := TypeSet.empty;
++    delayed_conditionals := [];
++    raise exn
++
++let moregeneral env _ subj patt =
++  let old_level = !current_level in
++  current_level := generic_level;
++  let subj = instance subj
++  and patt = instance patt in
++  let polyvars = make_generics_univars [patt] in
++  current_level := old_level;
++  let snap = Btype.snapshot () in
++  try
++    unify_poly env polyvars subj patt;
++    true
++  with Unify _ ->
++    Btype.backtrack snap;
++    false
++
+ (*
+    Update the level of [ty]. First check that the levels of generic
+    variables from the subject are not lowered.
+@@ -2072,35 +2282,101 @@
+         Rpresent(Some t1), Rpresent(Some t2) ->
+           moregen inst_nongen type_pairs env t1 t2
+       | Rpresent None, Rpresent None -> ()
+-      | Reither(false, tl1, _, e1), Rpresent(Some t2) when not univ ->
++      | Reither(false, tl1, _, [], e1), Rpresent(Some t2) when not univ ->
+           set_row_field e1 f2;
+           List.iter (fun t1 -> moregen inst_nongen type_pairs env t1 t2) tl1
+-      | Reither(c1, tl1, _, e1), Reither(c2, tl2, m2, e2) ->
++      | Reither(c1, tl1, _, tpl1, e1), Reither(c2, tl2, m2, tpl2, e2) ->
+           if e1 != e2 then begin
+             if c1 && not c2 then raise(Unify []);
+-            set_row_field e1 (Reither (c2, [], m2, e2));
+-            if List.length tl1 = List.length tl2 then
+-              List.iter2 (moregen inst_nongen type_pairs env) tl1 tl2
+-            else match tl2 with
+-              t2 :: _ ->
++            let tpl' = if tpl1 = [] then tpl2 else [] in
++            set_row_field e1 (Reither (c2, [], m2, tpl', e2));
++            begin match tl2 with
++              [t2] ->
+                 List.iter (fun t1 -> moregen inst_nongen type_pairs env t1 t2)
+                   tl1
+-            | [] ->
+-                if tl1 <> [] then raise (Unify [])
++            | _ ->
++                if List.length tl1 <> List.length tl2 then raise (Unify []);
++                List.iter2 (moregen inst_nongen type_pairs env) tl1 tl2
++            end;
++            if tpl1 <> [] then
++              delayed_conditionals :=
++                (!univar_pairs, tpl1, l, row2) :: !delayed_conditionals
+           end
+-      | Reither(true, [], _, e1), Rpresent None when not univ ->
++      | Reither(true, [], _, [], e1), Rpresent None when not univ ->
+           set_row_field e1 f2
+-      | Reither(_, _, _, e1), Rabsent when not univ ->
++      | Reither(_, _, _, [], e1), Rabsent when not univ ->
+           set_row_field e1 f2
+       | Rabsent, Rabsent -> ()
+       | _ -> raise (Unify []))
+     pairs
+ 
++let check_conditional env (pairs, tpl1, l, row2) tpls cont =
++  let tpl1 =
++    List.filter (fun (t1,t2) -> not (!equal' env false [t1] [t2])) tpl1 in
++  let included =
++    List.for_all
++      (fun (t1,t2) ->
++        List.exists (fun (t1',t2') -> !equal' env false [t1;t2] [t1';t2'])
++          tpls)
++      tpl1 in
++  if tpl1 = [] || included then cont tpls else
++  match get_row_field l row2 with
++    Rpresent _ -> cont (tpl1 @ tpls)
++  | Rabsent -> cont tpls
++  | Reither (c, tl2, _, tpl2, e2) ->
++      if not c || tl2 = [] then begin
++        let snap = Btype.snapshot () in
++        let ok =
++          try
++            begin match tl2 with
++              [] ->
++                set_row_field e2 (Rpresent None)
++            | t::tl ->
++                set_row_field e2 (Rpresent (Some t));
++                List.iter (unify env t) tl
++            end;
++            List.iter (fun (t1,t2) -> unify_pairs env t1 t2 pairs) tpl2;
++            true
++          with Unify _ -> false
++        in
++        if ok then cont (tpl1 @ tpls);
++        Btype.backtrack snap
++      end;
++      cont tpls
++
++let rec check_conditionals inst_nongen env cdtls tpls =
++  match cdtls with
++    [] ->
++      let tpls =
++        List.filter (fun (t1,t2) -> not (!equal' env false [t1] [t2])) tpls in
++      if tpls = [] then () else begin
++        delayed_conditionals := [];
++        let tl1, tl2 = List.split tpls in
++        let type_pairs = TypePairs.create 13 in
++        List.iter2 (moregen false type_pairs env) tl2 tl1;
++        check_conditionals inst_nongen env !delayed_conditionals []
++      end
++  | cdtl :: cdtls ->
++      check_conditional env cdtl tpls
++        (check_conditionals inst_nongen env cdtls)
++
++
+ (* Must empty univar_pairs first *)
+ let moregen inst_nongen type_pairs env patt subj =
+   univar_pairs := [];
+-  moregen inst_nongen type_pairs env patt subj
++  delayed_conditionals := [];
++  try
++    moregen inst_nongen type_pairs env patt subj;
++    check_conditionals inst_nongen env !delayed_conditionals [];
++    univar_pairs := [];
++    delayed_conditionals := []
++  with exn ->
++    univar_pairs := [];
++    delayed_conditionals := [];
++    raise exn
++
+ 
++(* old implementation
+ (*
+    Non-generic variable can be instanciated only if [inst_nongen] is
+    true. So, [inst_nongen] should be set to false if the subject might
+@@ -2128,6 +2404,7 @@
+   in
+   current_level := old_level;
+   res
++*)
+ 
+ 
+ (* Alternative approach: "rigidify" a type scheme,
+@@ -2296,30 +2573,36 @@
+     {desc=Tvariant row2} -> eqtype_row rename type_pairs subst env row1 row2
+   | _ -> raise Cannot_expand
+   with Cannot_expand ->
++  let eqtype_rec = eqtype rename type_pairs subst env in
+   let row1 = row_repr row1 and row2 = row_repr row2 in
+   let r1, r2, pairs = merge_row_fields row1.row_fields row2.row_fields in
+   if row1.row_closed <> row2.row_closed
+   || not row1.row_closed && (r1 <> [] || r2 <> [])
+   || filter_row_fields false (r1 @ r2) <> []
+   then raise (Unify []);
+-  if not (static_row row1) then
+-    eqtype rename type_pairs subst env row1.row_more row2.row_more;
++  if not (static_row row1) then eqtype_rec row1.row_more row2.row_more;
+   List.iter
+     (fun (_,f1,f2) ->
+       match row_field_repr f1, row_field_repr f2 with
+         Rpresent(Some t1), Rpresent(Some t2) ->
+-          eqtype rename type_pairs subst env t1 t2
+-      | Reither(true, [], _, _), Reither(true, [], _, _) ->
+-          ()
+-      | Reither(false, t1::tl1, _, _), Reither(false, t2::tl2, _, _) ->
+-          eqtype rename type_pairs subst env t1 t2;
++          eqtype_rec t1 t2
++      | Reither(true, [], _, tp1, _), Reither(true, [], _, tp2, _) ->
++          List.iter2
++            (fun (t1,t1') (t2,t2') -> eqtype_rec t1 t2; eqtype_rec t1' t2')
++            tp1 tp2
++      | Reither(false, t1::tl1, _, tpl1, _),
++        Reither(false, t2::tl2, _, tpl2, _) ->
++          eqtype_rec t1 t2;
++          List.iter2
++            (fun (t1,t1') (t2,t2') -> eqtype_rec t1 t2; eqtype_rec t1' t2')
++            tpl1 tpl2;
+           if List.length tl1 = List.length tl2 then
+             (* if same length allow different types (meaning?) *)
+-            List.iter2 (eqtype rename type_pairs subst env) tl1 tl2
++            List.iter2 eqtype_rec tl1 tl2
+           else begin
+             (* otherwise everything must be equal *)
+-            List.iter (eqtype rename type_pairs subst env t1) tl2;
+-            List.iter (fun t1 -> eqtype rename type_pairs subst env t1 t2) tl1
++            List.iter (eqtype_rec t1) tl2;
++            List.iter (fun t1 -> eqtype_rec t1 t2) tl1
+           end
+       | Rpresent None, Rpresent None -> ()
+       | Rabsent, Rabsent -> ()
+@@ -2334,6 +2617,8 @@
+   with
+     Unify _ -> false
+ 
++let () = equal' := equal
++
+ (* Must empty univar_pairs first *)  
+ let eqtype rename type_pairs subst env t1 t2 =
+   univar_pairs := [];
+@@ -2770,14 +3055,14 @@
+           (fun (l,f as orig) -> match row_field_repr f with
+             Rpresent None ->
+               if posi then
+-                (l, Reither(true, [], false, ref None)), Unchanged
++                (l, Reither(true, [], false, [], ref None)), Unchanged
+               else
+                 orig, Unchanged
+           | Rpresent(Some t) ->
+               let (t', c) = build_subtype env visited loops posi level' t in
+               if posi && level > 0 then begin
+                 bound := t' :: !bound;
+-                (l, Reither(false, [t'], false, ref None)), c
++                (l, Reither(false, [t'], false, [], ref None)), c
+               end else
+                 (l, Rpresent(Some t')), c
+           | _ -> assert false)
+@@ -2960,11 +3245,11 @@
+       List.fold_left
+         (fun cstrs (_,f1,f2) ->
+           match row_field_repr f1, row_field_repr f2 with
+-            (Rpresent None|Reither(true,_,_,_)), Rpresent None ->
++            (Rpresent None|Reither(true,_,_,[],_)), Rpresent None ->
+               cstrs
+           | Rpresent(Some t1), Rpresent(Some t2) ->
+               subtype_rec env ((t1, t2)::trace) t1 t2 cstrs
+-          | Reither(false, t1::_, _, _), Rpresent(Some t2) ->
++          | Reither(false, t1::_, _, [], _), Rpresent(Some t2) ->
+               subtype_rec env ((t1, t2)::trace) t1 t2 cstrs
+           | Rabsent, _ -> cstrs
+           | _ -> raise Exit)
+@@ -2977,11 +3262,11 @@
+         (fun cstrs (_,f1,f2) ->
+           match row_field_repr f1, row_field_repr f2 with
+             Rpresent None, Rpresent None
+-          | Reither(true,[],_,_), Reither(true,[],_,_)
++          | Reither(true,[],_,[],_), Reither(true,[],_,[],_)
+           | Rabsent, Rabsent ->
+               cstrs
+           | Rpresent(Some t1), Rpresent(Some t2)
+-          | Reither(false,[t1],_,_), Reither(false,[t2],_,_) ->
++          | Reither(false,[t1],_,[],_), Reither(false,[t2],_,[],_) ->
+               subtype_rec env ((t1, t2)::trace) t1 t2 cstrs
+           | _ -> raise Exit)
+         cstrs pairs
+@@ -3079,16 +3364,26 @@
+       let fields = List.map
+           (fun (l,f) ->
+             let f = row_field_repr f in l,
+-            match f with Reither(b, ty::(_::_ as tyl), m, e) ->
+-              let tyl' =
+-                List.fold_left
+-                  (fun tyl ty ->
+-                    if List.exists (fun ty' -> equal env false [ty] [ty']) tyl
+-                    then tyl else ty::tyl)
+-                  [ty] tyl
++            match f with Reither(b, tyl, m, tp, e) ->
++              let rem_dbl eq l =
++                List.rev
++                  (List.fold_left
++                     (fun xs x -> if List.exists (eq x) xs then xs else x::xs)
++                     [] l)
++              in
++              let tyl' = rem_dbl (fun t1 t2 -> equal env false [t1] [t2]) tyl
++              and tp' =
++                  List.filter
++                    (fun (ty1,ty2) -> not (equal env false [ty1] [ty2])) tp
++              in
++              let tp' =
++                rem_dbl
++                  (fun (t1,t2) (t1',t2') -> equal env false [t1;t2] [t1';t2'])
++                  tp'
+               in
+-              if List.length tyl' <= List.length tyl then
+-                let f = Reither(b, List.rev tyl', m, ref None) in
++              if List.length tyl' < List.length tyl
++              || List.length tp' < List.length tp then
++                let f = Reither(b, tyl', m, tp', ref None) in
+                 set_row_field e f;
+                 f
+               else f
+@@ -3344,9 +3639,9 @@
+       List.iter
+         (fun (l,fi) ->
+           match row_field_repr fi with
+-            Reither (c, t1::(_::_ as tl), m, e) ->
++            Reither (c, t1::(_::_ as tl), m, tp, e) ->
+               List.iter (unify env t1) tl;
+-              set_row_field e (Reither (c, [t1], m, ref None))
++              set_row_field e (Reither (c, [t1], m, tp, ref None))
+           | _ ->
+               ())
+         row.row_fields;
+Index: typing/includecore.ml
+===================================================================
+RCS file: /net/yquem/devel/caml/repository/csl/typing/includecore.ml,v
+retrieving revision 1.32
+diff -u -r1.32 includecore.ml
+--- typing/includecore.ml	8 Aug 2005 05:40:52 -0000	1.32
++++ typing/includecore.ml	2 Feb 2006 06:28:32 -0000
+@@ -71,10 +71,10 @@
+ 	(fun (_, f1, f2) ->
+ 	  match Btype.row_field_repr f1, Btype.row_field_repr f2 with
+ 	    Rpresent(Some t1),
+-	    (Rpresent(Some t2) | Reither(false, [t2], _, _)) ->
++	    (Rpresent(Some t2) | Reither(false,[t2],_,[],_)) ->
+ 	      to_equal := (t1,t2) :: !to_equal; true
+-	  | Rpresent None, (Rpresent None | Reither(true, [], _, _)) -> true
+-	  | Reither(c1,tl1,_,_), Reither(c2,tl2,_,_)
++	  | Rpresent None, (Rpresent None | Reither(true,[],_,[],_)) -> true
++	  | Reither(c1,tl1,_,[],_), Reither(c2,tl2,_,[],_)
+ 	    when List.length tl1 = List.length tl2 && c1 = c2 ->
+ 	      to_equal := List.combine tl1 tl2 @ !to_equal; true
+ 	  | Rabsent, (Reither _ | Rabsent) -> true
+Index: typing/oprint.ml
+===================================================================
+RCS file: /net/yquem/devel/caml/repository/csl/typing/oprint.ml,v
+retrieving revision 1.22
+diff -u -r1.22 oprint.ml
+--- typing/oprint.ml	23 Mar 2005 03:08:37 -0000	1.22
++++ typing/oprint.ml	2 Feb 2006 06:28:33 -0000
+@@ -223,14 +223,18 @@
+       print_fields rest ppf []
+   | (s, t) :: l ->
+       fprintf ppf "%s : %a;@ %a" s print_out_type t (print_fields rest) l
+-and print_row_field ppf (l, opt_amp, tyl) =
++and print_row_field ppf (l, opt_amp, tyl, tpl) =
+   let pr_of ppf =
+     if opt_amp then fprintf ppf " of@ &@ "
+     else if tyl <> [] then fprintf ppf " of@ "
+-    else fprintf ppf ""
+-  in
+-  fprintf ppf "@[<hv 2>`%s%t%a@]" l pr_of (print_typlist print_out_type " &")
+-    tyl
++  and pr_tp ppf (t1,t2) =
++    fprintf ppf "@[<hv 2>%a =@ %a@]"
++      print_out_type t1
++      print_out_type t2
++  in
++  fprintf ppf "@[<hv 2>`%s%t%a%a@]" l pr_of
++    (print_typlist print_out_type " &") tyl
++    (print_list_init pr_tp (fun ppf -> fprintf ppf " &@ ")) tpl
+ and print_typlist print_elem sep ppf =
+   function
+     [] -> ()
+Index: typing/outcometree.mli
+===================================================================
+RCS file: /net/yquem/devel/caml/repository/csl/typing/outcometree.mli,v
+retrieving revision 1.14
+diff -u -r1.14 outcometree.mli
+--- typing/outcometree.mli	23 Mar 2005 03:08:37 -0000	1.14
++++ typing/outcometree.mli	2 Feb 2006 06:28:33 -0000
+@@ -61,7 +61,8 @@
+       bool * out_variant * bool * (string list) option
+   | Otyp_poly of string list * out_type
+ and out_variant =
+-  | Ovar_fields of (string * bool * out_type list) list
++  | Ovar_fields of
++      (string * bool * out_type list * (out_type * out_type) list ) list
+   | Ovar_name of out_ident * out_type list
+ 
+ type out_class_type =
+Index: typing/parmatch.ml
+===================================================================
+RCS file: /net/yquem/devel/caml/repository/csl/typing/parmatch.ml,v
+retrieving revision 1.70
+diff -u -r1.70 parmatch.ml
+--- typing/parmatch.ml	24 Mar 2005 17:20:54 -0000	1.70
++++ typing/parmatch.ml	2 Feb 2006 06:28:33 -0000
+@@ -568,11 +568,11 @@
+     List.fold_left
+       (fun nm (tag,f) ->
+         match Btype.row_field_repr f with
+-        | Reither(_, _, false, e) ->
++        | Reither(_, _, false, _, e) ->
+             (* m=false means that this tag is not explicitly matched *)
+             Btype.set_row_field e Rabsent;
+             None
+-        | Rabsent | Reither (_, _, true, _) | Rpresent _ -> nm)
++        | Rabsent | Reither (_, _, true, _, _) | Rpresent _ -> nm)
+       row.row_name row.row_fields in
+   if not row.row_closed || nm != row.row_name then begin
+     (* this unification cannot fail *)
+@@ -605,8 +605,8 @@
+       List.for_all
+         (fun (tag,f) ->
+           match Btype.row_field_repr f with
+-            Rabsent | Reither(_, _, false, _) -> true
+-          | Reither (_, _, true, _)
++            Rabsent | Reither(_, _, false, _, _) -> true
++          | Reither (_, _, true, _, _)
+               (* m=true, do not discard matched tags, rather warn *)
+           | Rpresent _ -> List.mem tag fields)
+         row.row_fields
+@@ -739,7 +739,7 @@
+           match Btype.row_field_repr f with
+             Rabsent (* | Reither _ *) -> others
+           (* This one is called after erasing pattern info *)
+-          | Reither (c, _, _, _) -> make_other_pat tag c :: others
++          | Reither (c, _, _, _, _) -> make_other_pat tag c :: others
+           | Rpresent arg -> make_other_pat tag (arg = None) :: others)
+         [] row.row_fields
+     with
+Index: typing/printtyp.ml
+===================================================================
+RCS file: /net/yquem/devel/caml/repository/csl/typing/printtyp.ml,v
+retrieving revision 1.140
+diff -u -r1.140 printtyp.ml
+--- typing/printtyp.ml	4 Jan 2006 16:55:50 -0000	1.140
++++ typing/printtyp.ml	2 Feb 2006 06:28:33 -0000
+@@ -157,9 +157,12 @@
+ and raw_field ppf = function
+     Rpresent None -> fprintf ppf "Rpresent None"
+   | Rpresent (Some t) -> fprintf ppf "@[<1>Rpresent(Some@,%a)@]" raw_type t
+-  | Reither (c,tl,m,e) ->
+-      fprintf ppf "@[<hov1>Reither(%b,@,%a,@,%b,@,@[<1>ref%t@])@]" c
+-        raw_type_list tl m
++  | Reither (c,tl,m,tpl,e) ->
++      fprintf ppf "@[<hov1>Reither(%b,@,%a,@,%b,@,%a,@,@[<1>ref%t@])@]"
++        c raw_type_list tl m
++        (raw_list
++           (fun ppf (t1,t2) ->
++             fprintf ppf "@[%a,@,%a@]" raw_type t1 raw_type t2)) tpl
+         (fun ppf ->
+           match !e with None -> fprintf ppf " None"
+           | Some f -> fprintf ppf "@,@[<1>(%a)@]" raw_field f)
+@@ -219,8 +222,9 @@
+   List.for_all
+     (fun (_, f) ->
+        match row_field_repr f with
+-       | Reither(c, l, _, _) ->
+-           row.row_closed && if c then l = [] else List.length l = 1
++       | Reither(c, l, _, pl, _) ->
++           row.row_closed && pl = [] &&
++           if c then l = [] else List.length l = 1
+        | _ -> true)
+     row.row_fields
+ 
+@@ -392,13 +396,16 @@
+ 
+ and tree_of_row_field sch (l, f) =
+   match row_field_repr f with
+-  | Rpresent None | Reither(true, [], _, _) -> (l, false, [])
+-  | Rpresent(Some ty) -> (l, false, [tree_of_typexp sch ty])
+-  | Reither(c, tyl, _, _) ->
+-      if c (* contradiction: un constructeur constant qui a un argument *)
+-      then (l, true, tree_of_typlist sch tyl)
+-      else (l, false, tree_of_typlist sch tyl)
+-  | Rabsent -> (l, false, [] (* une erreur, en fait *))
++  | Rpresent None | Reither(true, [], _, [], _) -> (l, false, [], [])
++  | Rpresent(Some ty) -> (l, false, [tree_of_typexp sch ty], [])
++  | Reither(c, tyl, _, tpl, _) ->
++      let ttpl =
++        List.map
++          (fun (t1,t2) -> tree_of_typexp sch t1, tree_of_typexp sch t2)
++          tpl
++      in
++      (l, c && tpl = [], tree_of_typlist sch tyl, ttpl)
++  | Rabsent -> (l, false, [], [] (* une erreur, en fait *))
+ 
+ and tree_of_typlist sch tyl =
+   List.map (tree_of_typexp sch) tyl
+Index: typing/typeclass.ml
+===================================================================
+RCS file: /net/yquem/devel/caml/repository/csl/typing/typeclass.ml,v
+retrieving revision 1.85
+diff -u -r1.85 typeclass.ml
+--- typing/typeclass.ml	22 Jul 2005 06:42:36 -0000	1.85
++++ typing/typeclass.ml	2 Feb 2006 06:28:33 -0000
+@@ -727,7 +727,7 @@
+         {pexp_loc = loc; pexp_desc =
+          Pexp_match({pexp_loc = loc; pexp_desc =
+                      Pexp_ident(Longident.Lident"*opt*")},
+-                    scases)} in
++                    scases, false)} in
+       let sfun =
+         {pcl_loc = scl.pcl_loc; pcl_desc =
+          Pcl_fun(l, None, {ppat_loc = loc; ppat_desc = Ppat_var"*opt*"},
+Index: typing/typecore.ml
+===================================================================
+RCS file: /net/yquem/devel/caml/repository/csl/typing/typecore.ml,v
+retrieving revision 1.178
+diff -u -r1.178 typecore.ml
+--- typing/typecore.ml	6 Jan 2006 02:25:37 -0000	1.178
++++ typing/typecore.ml	2 Feb 2006 06:28:33 -0000
+@@ -156,15 +156,21 @@
+       let field = row_field tag row in
+       begin match field with
+       | Rabsent -> assert false
+-      | Reither (true, [], _, e) when not row.row_closed ->
+-          set_row_field e (Rpresent None)
+-      | Reither (false, ty::tl, _, e) when not row.row_closed ->
++      | Reither (true, [], _, tpl, e) when not row.row_closed ->
++          set_row_field e (Rpresent None);
++          List.iter
++            (fun (t1,t2) -> unify_pat pat.pat_env {pat with pat_type=t1} t2)
++            tpl
++      | Reither (false, ty::tl, _, tpl, e) when not row.row_closed ->
+           set_row_field e (Rpresent (Some ty));
++          List.iter
++            (fun (t1,t2) -> unify_pat pat.pat_env {pat with pat_type=t1} t2)
++            tpl;
+           begin match opat with None -> assert false
+           | Some pat -> List.iter (unify_pat pat.pat_env pat) (ty::tl)
+           end
+-      | Reither (c, l, true, e) when not row.row_fixed ->
+-          set_row_field e (Reither (c, [], false, ref None))
++      | Reither (c, l, true, tpl, e) when not row.row_fixed ->
++          set_row_field e (Reither (c, [], false, [], ref None))
+       | _ -> ()
+       end;
+       (* Force check of well-formedness *)
+@@ -307,13 +313,13 @@
+         match row_field_repr f with
+           Rpresent None ->
+             (l,None) :: pats,
+-            (l, Reither(true,[], true, ref None)) :: fields
++            (l, Reither(true,[], true, [], ref None)) :: fields
+         | Rpresent (Some ty) ->
+             bound := ty :: !bound;
+             (l, Some {pat_desc=Tpat_any; pat_loc=Location.none; pat_env=env;
+                       pat_type=ty})
+             :: pats,
+-            (l, Reither(false, [ty], true, ref None)) :: fields
++            (l, Reither(false, [ty], true, [], ref None)) :: fields
+         | _ -> pats, fields)
+       ([],[]) fields in
+   let row =
+@@ -337,6 +343,18 @@
+           pat pats in
+       rp { r with pat_loc = loc }
+ 
++let rec flatten_or_pat pat =
++  match pat.pat_desc with
++    Tpat_or (p1, p2, _) ->
++      flatten_or_pat p1 @ flatten_or_pat p2
++  | _ ->
++      [pat]
++
++let all_variants pat =
++  List.for_all
++    (function {pat_desc=Tpat_variant _} -> true | _ -> false)
++    (flatten_or_pat pat)
++
+ let rec find_record_qual = function
+   | [] -> None
+   | (Longident.Ldot (modname, _), _) :: _ -> Some modname
+@@ -423,7 +441,7 @@
+       let arg = may_map (type_pat env) sarg in
+       let arg_type = match arg with None -> [] | Some arg -> [arg.pat_type]  in
+       let row = { row_fields =
+-                    [l, Reither(arg = None, arg_type, true, ref None)];
++                    [l, Reither(arg = None, arg_type, true, [], ref None)];
+                   row_bound = arg_type;
+                   row_closed = false;
+                   row_more = newvar ();
+@@ -788,7 +806,7 @@
+        newty (Tarrow(p, type_option (newvar ()), type_approx env e, Cok))
+   | Pexp_function (p,_,(_,e)::_) ->
+        newty (Tarrow(p, newvar (), type_approx env e, Cok))
+-  | Pexp_match (_, (_,e)::_) -> type_approx env e
++  | Pexp_match (_, (_,e)::_, false) -> type_approx env e
+   | Pexp_try (e, _) -> type_approx env e
+   | Pexp_tuple l -> newty (Ttuple(List.map (type_approx env) l))
+   | Pexp_ifthenelse (_,e,_) -> type_approx env e
+@@ -939,17 +957,26 @@
+         exp_loc = sexp.pexp_loc;
+         exp_type = ty_res;
+         exp_env = env }
+-  | Pexp_match(sarg, caselist) ->
++  | Pexp_match(sarg, caselist, multi) ->
+       let arg = type_exp env sarg in
+       let ty_res = newvar() in
+       let cases, partial =
+-        type_cases env arg.exp_type ty_res (Some sexp.pexp_loc) caselist
++        type_cases env arg.exp_type ty_res (Some sexp.pexp_loc) caselist ~multi
+       in
+       re {
+         exp_desc = Texp_match(arg, cases, partial);
+         exp_loc = sexp.pexp_loc;
+         exp_type = ty_res;
+         exp_env = env }
++  | Pexp_multifun caselist ->
++      let ty_arg = newvar() and ty_res = newvar() in
++      let cases, partial =
++        type_cases env ty_arg ty_res (Some sexp.pexp_loc) caselist ~multi:true
++      in
++      { exp_desc = Texp_function (cases, partial);
++        exp_loc = sexp.pexp_loc;
++        exp_type = newty (Tarrow ("", ty_arg, ty_res, Cok));
++        exp_env = env }
+   | Pexp_try(sbody, caselist) ->
+       let body = type_exp env sbody in
+       let cases, _ =
+@@ -1758,7 +1785,7 @@
+         {pexp_loc = loc; pexp_desc =
+          Pexp_match({pexp_loc = loc; pexp_desc =
+                      Pexp_ident(Longident.Lident"*opt*")},
+-                    scases)} in
++                    scases, false)} in
+       let sfun =
+         {pexp_loc = sexp.pexp_loc; pexp_desc =
+          Pexp_function(l, None,[{ppat_loc = loc; ppat_desc = Ppat_var"*opt*"},
+@@ -1864,7 +1891,8 @@
+ 
+ (* Typing of match cases *)
+ 
+-and type_cases ?in_function env ty_arg ty_res partial_loc caselist =
++and type_cases ?in_function ?(multi=false)
++    env ty_arg ty_res partial_loc caselist =
+   let ty_arg' = newvar () in
+   let pattern_force = ref [] in
+   let pat_env_list =
+@@ -1898,10 +1926,64 @@
+   let cases =
+     List.map2
+       (fun (pat, ext_env) (spat, sexp) ->
+-        let exp = type_expect ?in_function ext_env sexp ty_res in
+-        (pat, exp))
+-      pat_env_list caselist
+-  in
++        let add_variant_case lab row ty_res ty_res' =
++          let fi = List.assoc lab (row_repr row).row_fields in
++          begin match row_field_repr fi with
++            Reither (c, _, m, _, e) ->
++              let row' =
++                { row_fields =
++                  [lab, Reither(c,[],false,[ty_res,ty_res'], ref None)];
++                  row_more = newvar (); row_bound = [ty_res; ty_res'];
++                  row_closed = false; row_fixed = false; row_name = None }
++              in
++              unify_pat ext_env {pat with pat_type= newty (Tvariant row)}
++                (newty (Tvariant row'))
++          | _ ->
++              unify_exp ext_env
++                { exp_desc = Texp_tuple []; exp_type = ty_res;
++                  exp_env = ext_env; exp_loc = sexp.pexp_loc }
++                ty_res'
++          end
++        in
++        pat,
++        match pat.pat_desc with
++          _ when multi && all_variants pat ->
++            let ty_res' = newvar () in
++            List.iter
++              (function {pat_desc=Tpat_variant(lab,_,row)} ->
++                add_variant_case lab row ty_res ty_res'
++              | _ -> assert false)
++              (flatten_or_pat pat);
++            type_expect ?in_function ext_env sexp ty_res'
++        | Tpat_alias (p, id) when multi && all_variants p ->
++            let vd = Env.find_value (Path.Pident id) ext_env in
++            let row' =
++              match repr vd.val_type with
++                {desc=Tvariant row'} -> row'
++              | _ -> assert false
++            in
++            begin_def ();
++            let tv = newvar () in
++            let env = Env.add_value id {vd with val_type=tv} ext_env in
++            let exp = type_exp env sexp in
++            end_def ();
++            generalize exp.exp_type;
++            generalize tv;
++            List.iter
++              (function {pat_desc=Tpat_variant(lab,_,row)}, [tv'; ty'] ->
++                let fi' = List.assoc lab (row_repr row').row_fields in
++                let row' =
++                  {row' with row_fields=[lab,fi']; row_more=newvar()} in
++                unify_pat ext_env {pat with pat_type=tv'}
++                  (newty (Tvariant row'));
++                add_variant_case lab row ty_res ty'
++              | _ -> assert false)
++              (List.map (fun p -> p, instance_list [tv; exp.exp_type])
++                 (flatten_or_pat p));
++            {exp with exp_type = instance exp.exp_type}
++        | _ ->
++            type_expect ?in_function ext_env sexp ty_res)
++      pat_env_list caselist in
+   let partial =
+     match partial_loc with None -> Partial
+     | Some loc -> Parmatch.check_partial loc cases
+Index: typing/typedecl.ml
+===================================================================
+RCS file: /net/yquem/devel/caml/repository/csl/typing/typedecl.ml,v
+retrieving revision 1.75
+diff -u -r1.75 typedecl.ml
+--- typing/typedecl.ml	16 Aug 2005 00:48:56 -0000	1.75
++++ typing/typedecl.ml	2 Feb 2006 06:28:33 -0000
+@@ -432,8 +432,10 @@
+               match Btype.row_field_repr f with
+                 Rpresent (Some ty) ->
+                   compute_same ty
+-              | Reither (_, tyl, _, _) ->
+-                  List.iter compute_same tyl
++              | Reither (_, tyl, _, tpl, _) ->
++                  List.iter compute_same tyl;
++                  List.iter (compute_variance_rec true true true)
++                    (List.map fst tpl @ List.map snd tpl)
+               | _ -> ())
+             row.row_fields;
+           compute_same row.row_more
+@@ -856,8 +858,8 @@
+               explain row.row_fields
+                 (fun (l,f) -> match Btype.row_field_repr f with
+                   Rpresent (Some t) -> t
+-                | Reither (_,[t],_,_) -> t
+-                | Reither (_,tl,_,_) -> Btype.newgenty (Ttuple tl)
++                | Reither (_,[t],_,_,_) -> t
++                | Reither (_,tl,_,_,_) -> Btype.newgenty (Ttuple tl)
+                 | _ -> Btype.newgenty (Ttuple[]))
+                 "case" (fun (lab,_) -> "`" ^ lab ^ " of ")
+           | _ -> trivial ty'
+Index: typing/types.ml
+===================================================================
+RCS file: /net/yquem/devel/caml/repository/csl/typing/types.ml,v
+retrieving revision 1.25
+diff -u -r1.25 types.ml
+--- typing/types.ml	9 Dec 2004 12:40:53 -0000	1.25
++++ typing/types.ml	2 Feb 2006 06:28:33 -0000
+@@ -48,7 +48,9 @@
+ 
+ and row_field =
+     Rpresent of type_expr option
+-  | Reither of bool * type_expr list * bool * row_field option ref
++  | Reither of
++      bool * type_expr list * bool *
++      (type_expr * type_expr) list * row_field option ref
+   | Rabsent
+ 
+ and abbrev_memo =
+Index: typing/types.mli
+===================================================================
+RCS file: /net/yquem/devel/caml/repository/csl/typing/types.mli,v
+retrieving revision 1.25
+diff -u -r1.25 types.mli
+--- typing/types.mli	9 Dec 2004 12:40:53 -0000	1.25
++++ typing/types.mli	2 Feb 2006 06:28:33 -0000
+@@ -47,7 +47,9 @@
+ 
+ and row_field =
+     Rpresent of type_expr option
+-  | Reither of bool * type_expr list * bool * row_field option ref
++  | Reither of
++      bool * type_expr list * bool *
++      (type_expr * type_expr) list * row_field option ref
+         (* 1st true denotes a constant constructor *)
+         (* 2nd true denotes a tag in a pattern matching, and
+            is erased later *)
+Index: typing/typetexp.ml
+===================================================================
+RCS file: /net/yquem/devel/caml/repository/csl/typing/typetexp.ml,v
+retrieving revision 1.54
+diff -u -r1.54 typetexp.ml
+--- typing/typetexp.ml	22 Jul 2005 06:42:36 -0000	1.54
++++ typing/typetexp.ml	2 Feb 2006 06:28:33 -0000
+@@ -207,9 +207,9 @@
+                 match Btype.row_field_repr f with
+                 | Rpresent (Some ty) ->
+                     bound := ty :: !bound;
+-                    Reither(false, [ty], false, ref None)
++                    Reither(false, [ty], false, [], ref None)
+                 | Rpresent None ->
+-                    Reither (true, [], false, ref None)
++                    Reither (true, [], false, [], ref None)
+                 | _ -> f)
+               row.row_fields
+           in
+@@ -273,13 +273,16 @@
+           (l, f) :: fields
+       in
+       let rec add_field fields = function
+-          Rtag (l, c, stl) ->
++          Rtag (l, c, stl, stpl) ->
+             name := None;
+             let f = match present with
+               Some present when not (List.mem l present) ->
+-                let tl = List.map (transl_type env policy) stl in
+-                bound := tl @ !bound;
+-                Reither(c, tl, false, ref None)
++                let transl_list = List.map (transl_type env policy) in
++                let tl = transl_list stl in
++                let stpl1, stpl2 = List.split stpl in
++                let tpl1 = transl_list stpl1 and tpl2 = transl_list stpl2 in
++                bound := tl @ tpl1 @ tpl2 @ !bound;
++                Reither(c, tl, false, List.combine tpl1 tpl2, ref None)
+             | _ ->
+                 if List.length stl > 1 || c && stl <> [] then
+                   raise(Error(styp.ptyp_loc, Present_has_conjunction l));
+@@ -311,9 +314,9 @@
+                     begin match f with
+                       Rpresent(Some ty) ->
+                         bound := ty :: !bound;
+-                        Reither(false, [ty], false, ref None)
++                        Reither(false, [ty], false, [], ref None)
+                     | Rpresent None ->
+-                        Reither(true, [], false, ref None)
++                        Reither(true, [], false, [], ref None)
+                     | _ ->
+                         assert false
+                     end
+@@ -406,7 +409,8 @@
+               {row with row_fixed=true;
+                row_fields = List.map
+                  (fun (s,f as p) -> match Btype.row_field_repr f with
+-                   Reither (c, tl, m, r) -> s, Reither (c, tl, true, r)
++                   Reither (c, tl, m, tpl, r) ->
++                     s, Reither (c, tl, true, tpl, r)
+                  | _ -> p)
+                  row.row_fields};
+         Btype.iter_row make_fixed_univars row
+Index: typing/unused_var.ml
+===================================================================
+RCS file: /net/yquem/devel/caml/repository/csl/typing/unused_var.ml,v
+retrieving revision 1.5
+diff -u -r1.5 unused_var.ml
+--- typing/unused_var.ml	4 Jan 2006 16:55:50 -0000	1.5
++++ typing/unused_var.ml	2 Feb 2006 06:28:33 -0000
+@@ -122,9 +122,11 @@
+   | Pexp_apply (e, lel) ->
+       expression ppf tbl e;
+       List.iter (fun (_, e) -> expression ppf tbl e) lel;
+-  | Pexp_match (e, pel) ->
++  | Pexp_match (e, pel, _) ->
+       expression ppf tbl e;
+       match_pel ppf tbl pel;
++  | Pexp_multifun pel ->
++      match_pel ppf tbl pel;
+   | Pexp_try (e, pel) ->
+       expression ppf tbl e;
+       match_pel ppf tbl pel;
+Index: bytecomp/matching.ml
+===================================================================
+RCS file: /net/yquem/devel/caml/repository/csl/bytecomp/matching.ml,v
+retrieving revision 1.67
+diff -u -r1.67 matching.ml
+--- bytecomp/matching.ml	7 Sep 2005 16:07:48 -0000	1.67
++++ bytecomp/matching.ml	2 Feb 2006 06:28:33 -0000
+@@ -1991,7 +1991,7 @@
+     List.iter
+       (fun (_, f) ->
+         match Btype.row_field_repr f with
+-          Rabsent | Reither(true, _::_, _, _) -> ()
++          Rabsent | Reither(true, _::_, _, _, _) -> ()
+         | _ -> incr num_constr)
+       row.row_fields
+   else
+Index: toplevel/genprintval.ml
+===================================================================
+RCS file: /net/yquem/devel/caml/repository/csl/toplevel/genprintval.ml,v
+retrieving revision 1.38
+diff -u -r1.38 genprintval.ml
+--- toplevel/genprintval.ml	13 Jun 2005 04:55:53 -0000	1.38
++++ toplevel/genprintval.ml	2 Feb 2006 06:28:33 -0000
+@@ -293,7 +293,7 @@
+                   | (l, f) :: fields ->
+                       if Btype.hash_variant l = tag then
+                         match Btype.row_field_repr f with
+-                        | Rpresent(Some ty) | Reither(_,[ty],_,_) ->
++                        | Rpresent(Some ty) | Reither(_,[ty],_,_,_) ->
+                             let args =
+                               tree_of_val (depth - 1) (O.field obj 1) ty in
+                             Oval_variant (l, Some args)

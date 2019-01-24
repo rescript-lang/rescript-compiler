@@ -1,0 +1,239 @@
+\section{Module\label{s:module-expr} expressions (module implementations)}
+\pdfsection{Module expressions (module implementations)}
+%HEVEA\cutname{modules.html}
+
+Module expressions are the module-level equivalent of value
+expressions: they evaluate to modules, thus providing implementations
+for the specifications expressed in module types.
+
+\ikwd{struct\@\texttt{struct}}
+\ikwd{end\@\texttt{end}}
+\ikwd{functor\@\texttt{functor}}
+\ikwd{let\@\texttt{let}}
+\ikwd{and\@\texttt{and}}
+\ikwd{external\@\texttt{external}}
+\ikwd{type\@\texttt{type}}
+\ikwd{exception\@\texttt{exception}}
+\ikwd{class\@\texttt{class}}
+\ikwd{module\@\texttt{module}}
+\ikwd{open\@\texttt{open}}
+\ikwd{include\@\texttt{include}}
+
+\begin{syntax}
+module-expr:
+          module-path
+        | 'struct' [ module-items ] 'end'
+        | 'functor' '(' module-name ':' module-type ')' '->' module-expr
+        | module-expr '(' module-expr ')'
+        | '(' module-expr ')'
+        | '(' module-expr ':' module-type ')'
+;
+module-items:
+        {';;'} ( definition || expr ) { {';;'} ( definition || ';;' expr) } {';;'}
+;
+%\end{syntax} \begin{syntax}
+definition:
+          'let' ['rec'] let-binding { 'and' let-binding }
+        | 'external' value-name ':' typexpr '=' external-declaration
+        | type-definition
+        | exception-definition
+        | class-definition
+        | classtype-definition
+        | 'module' module-name { '(' module-name ':' module-type ')' }
+                   [ ':' module-type ] \\ '=' module-expr
+        | 'module' 'type' modtype-name '=' module-type
+        | 'open' module-path
+        | 'include' module-expr
+\end{syntax}
+See also the following language extensions:
+\hyperref[s-recursive-modules]{recursive modules},
+\hyperref[s-first-class-modules]{first-class modules},
+\hyperref[s:explicit-overriding-open]{overriding in open statements},
+\hyperref[s:attributes]{attributes},
+\hyperref[s:extension-nodes]{extension nodes} and
+\hyperref[s:generative-functors]{generative functors}.
+
+\subsection{Simple module expressions}
+
+The expression @module-path@ evaluates to the module bound to the name
+@module-path@.
+
+The expression @'(' module-expr ')'@ evaluates to the same module as
+@module-expr@.
+
+The expression @'(' module-expr ':' module-type ')'@ checks that the
+type of @module-expr@ is a subtype of @module-type@, that is, that all
+components specified in @module-type@ are implemented in
+@module-expr@, and their implementation meets the requirements given
+in @module-type@. In other terms, it checks that the implementation
+@module-expr@ meets the type specification @module-type@. The whole
+expression evaluates to the same module as @module-expr@, except that
+all components not specified in @module-type@ are hidden and can no
+longer be accessed.
+
+\subsection{Structures}
+
+\ikwd{struct\@\texttt{struct}}
+\ikwd{end\@\texttt{end}}
+
+Structures @'struct' \ldots 'end'@ are collections of definitions for
+value names, type names, exceptions, module names and module type
+names. The definitions are evaluated in the order in which they appear
+in the structure. The scopes of the bindings performed by the
+definitions extend to the end of the structure. As a consequence, a
+definition may refer to names bound by earlier definitions in the same
+structure.
+
+For compatibility with toplevel phrases (chapter~\ref{c:camllight}),
+optional @";;"@ are allowed after and before each definition in a structure. These
+@";;"@ have no semantic meanings. Similarly, an @expr@ preceded by ";;" is allowed as
+a component of a structure. It is equivalent to @'let' '_' '=' expr@, i.e. @expr@ is
+evaluated for its side-effects but is not bound to any identifier. If @expr@ is
+the first component of a structure, the preceding ";;" can be omitted.
+
+\subsubsection*{Value definitions}
+
+\ikwd{let\@\texttt{let}}
+
+A value definition @'let' ['rec'] let-binding  { 'and' let-binding }@
+bind value names in the same way as a @'let' \ldots 'in' \ldots@ expression
+(see section~\ref{s:localdef}). The value names appearing in the
+left-hand sides of the bindings are bound to the corresponding values
+in the right-hand sides.
+
+\ikwd{external\@\texttt{external}}
+
+A value definition @'external' value-name ':' typexpr '=' external-declaration@
+implements @value-name@ as the external function specified in
+@external-declaration@ (see chapter~\ref{c:intf-c}).
+
+\subsubsection*{Type definitions}
+
+\ikwd{type\@\texttt{type}}
+
+A definition of one or several type components is written
+@'type' typedef { 'and' typedef }@ and consists of a sequence
+of mutually recursive definitions of type names.
+
+\subsubsection*{Exception definitions}
+
+\ikwd{exception\@\texttt{exception}}
+
+Exceptions are defined with the syntax @'exception' constr-decl@
+or @'exception' constr-name '=' constr@.
+
+\subsubsection*{Class definitions}
+
+\ikwd{class\@\texttt{class}}
+
+A definition of one or several classes is written @'class'
+class-binding { 'and' class-binding }@ and consists of a sequence of
+mutually recursive definitions of class names. Class definitions are
+described more precisely in section~\ref{s:classdef}.
+
+\subsubsection*{Class type definitions}
+
+\ikwd{class\@\texttt{class}}
+\ikwd{type\@\texttt{type}}
+
+A definition of one or several classes is written
+@'class' 'type' classtype-def { 'and' classtype-def }@ and consists of
+a sequence of mutually recursive definitions of class type names.
+Class type definitions are described more precisely in
+section~\ref{s:classtype}.
+
+\subsubsection*{Module definitions}
+
+\ikwd{module\@\texttt{module}}
+
+The basic form for defining a module component is
+@'module' module-name '=' module-expr@, which evaluates @module-expr@ and binds
+the result to the name @module-name@.
+
+One can write
+\begin{center}
+@'module' module-name ':' module-type '=' module-expr@
+\end{center}
+instead of
+\begin{center}
+@'module' module-name '=' '(' module-expr ':' module-type ')'@.
+\end{center}
+Another derived form is
+\begin{center}
+@'module' module-name '(' name_1 ':' module-type_1 ')' \ldots
+                      '(' name_n ':' module-type_n ')' '=' module-expr@
+\end{center}
+which is equivalent to
+\begin{center}
+@'module' module-name '='
+ 'functor' '(' name_1 ':' module-type_1 ')' '->' \ldots
+                                            '->' module-expr@
+\end{center}
+
+\subsubsection*{Module type definitions}
+
+\ikwd{type\@\texttt{type}}
+\ikwd{module\@\texttt{module}}
+
+A definition for a module type is written
+@'module' 'type' modtype-name '=' module-type@.
+It binds the name @modtype-name@ to the module type denoted by the
+expression @module-type@.
+
+\subsubsection*{Opening a module path}
+
+\ikwd{open\@\texttt{open}}
+
+The expression @'open' module-path@ in a structure does not define any
+components nor perform any bindings. It simply affects the parsing of
+the following items of the structure, allowing components of the
+module denoted by @module-path@ to be referred to by their simple names
+@name@ instead of path accesses @module-path '.' name@.  The scope of
+the @"open"@ stops at the end of the structure expression.
+
+\subsubsection*{Including the components of another structure}
+
+\ikwd{include\@\texttt{include}}
+
+The expression @'include' module-expr@ in a structure re-exports in
+the current structure all definitions of the structure denoted by
+@module-expr@.  For instance, if the identifier "S" is bound to the
+module
+\begin{verbatim}
+        struct type t = int  let x = 2 end
+\end{verbatim}
+the module expression
+\begin{verbatim}
+        struct include S  let y = (x + 1 : t) end
+\end{verbatim}
+is equivalent to the module expression
+\begin{verbatim}
+        struct type t = S.t  let x = S.x  let y = (x + 1 : t) end
+\end{verbatim}
+The difference between @'open'@ and @'include'@ is that @'open'@
+simply provides short names for the components of the opened
+structure, without defining any components of the current structure,
+while @'include'@ also adds definitions for the components of the
+included structure.
+
+\subsection{Functors}
+
+\subsubsection*{Functor definition}
+
+\ikwd{functor\@\texttt{functor}}
+
+The expression @'functor' '(' module-name ':' module-type ')' '->'
+module-expr@ evaluates to a functor that takes as argument modules of
+the type @module-type_1@, binds @module-name@ to these modules,
+evaluates @module-expr@ in the extended environment, and returns the
+resulting modules as results. No restrictions are placed on the type of the
+functor argument; in particular, a functor may take another functor as
+argument (``higher-order'' functor).
+
+\subsubsection*{Functor application}
+
+The expression @module-expr_1 '(' module-expr_2 ')'@ evaluates
+@module-expr_1@ to a functor and @module-expr_2@ to a module, and
+applies the former to the latter. The type of @module-expr_2@ must
+match the type expected for the arguments of the functor @module-expr_1@.
+

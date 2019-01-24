@@ -1,0 +1,86 @@
+[
+  structure_item (int_and_float_with_modifier.ml[1,0+0]..[2,31+57])
+    Pstr_value Nonrec
+    [
+      <def>
+        pattern (int_and_float_with_modifier.ml[1,0+4]..[1,0+28])
+          Ppat_var "int_with_custom_modifier" (int_and_float_with_modifier.ml[1,0+4]..[1,0+28])
+        expression (int_and_float_with_modifier.ml[2,31+2]..[2,31+57])
+          Pexp_constant PConst_int (1234567890_1234567890_1234567890_1234567890_1234567890,Some z)
+    ]
+  structure_item (int_and_float_with_modifier.ml[3,89+0]..[4,122+58])
+    Pstr_value Nonrec
+    [
+      <def>
+        pattern (int_and_float_with_modifier.ml[3,89+4]..[3,89+30])
+          Ppat_var "float_with_custom_modifier" (int_and_float_with_modifier.ml[3,89+4]..[3,89+30])
+        expression (int_and_float_with_modifier.ml[4,122+2]..[4,122+58])
+          Pexp_constant PConst_float (1234567890_1234567890_1234567890_1234567890_1234567890.,Some z)
+    ]
+  structure_item (int_and_float_with_modifier.ml[6,182+0]..[6,182+21])
+    Pstr_value Nonrec
+    [
+      <def>
+        pattern (int_and_float_with_modifier.ml[6,182+4]..[6,182+9])
+          Ppat_var "int32" (int_and_float_with_modifier.ml[6,182+4]..[6,182+9])
+        expression (int_and_float_with_modifier.ml[6,182+16]..[6,182+21])
+          Pexp_constant PConst_int (1234,Some l)
+    ]
+  structure_item (int_and_float_with_modifier.ml[7,204+0]..[7,204+21])
+    Pstr_value Nonrec
+    [
+      <def>
+        pattern (int_and_float_with_modifier.ml[7,204+4]..[7,204+9])
+          Ppat_var "int64" (int_and_float_with_modifier.ml[7,204+4]..[7,204+9])
+        expression (int_and_float_with_modifier.ml[7,204+16]..[7,204+21])
+          Pexp_constant PConst_int (1234,Some L)
+    ]
+  structure_item (int_and_float_with_modifier.ml[8,226+0]..[8,226+21])
+    Pstr_value Nonrec
+    [
+      <def>
+        pattern (int_and_float_with_modifier.ml[8,226+4]..[8,226+13])
+          Ppat_var "nativeint" (int_and_float_with_modifier.ml[8,226+4]..[8,226+13])
+        expression (int_and_float_with_modifier.ml[8,226+16]..[8,226+21])
+          Pexp_constant PConst_int (1234,Some n)
+    ]
+  structure_item (int_and_float_with_modifier.ml[10,249+0]..[10,249+32])
+    Pstr_value Nonrec
+    [
+      <def>
+        pattern (int_and_float_with_modifier.ml[10,249+4]..[10,249+24])
+          Ppat_var "hex_without_modifier" (int_and_float_with_modifier.ml[10,249+4]..[10,249+24])
+        expression (int_and_float_with_modifier.ml[10,249+27]..[10,249+32])
+          Pexp_constant PConst_int (0x32f,None)
+    ]
+  structure_item (int_and_float_with_modifier.ml[11,282+0]..[11,282+32])
+    Pstr_value Nonrec
+    [
+      <def>
+        pattern (int_and_float_with_modifier.ml[11,282+4]..[11,282+21])
+          Ppat_var "hex_with_modifier" (int_and_float_with_modifier.ml[11,282+4]..[11,282+21])
+        expression (int_and_float_with_modifier.ml[11,282+27]..[11,282+32])
+          Pexp_constant PConst_int (0x32,Some g)
+    ]
+  structure_item (int_and_float_with_modifier.ml[13,316+0]..[13,316+33])
+    Pstr_value Nonrec
+    [
+      <def>
+        pattern (int_and_float_with_modifier.ml[13,316+4]..[13,316+25])
+          Ppat_var "float_without_modifer" (int_and_float_with_modifier.ml[13,316+4]..[13,316+25])
+        expression (int_and_float_with_modifier.ml[13,316+28]..[13,316+33])
+          Pexp_constant PConst_float (1.2e3,None)
+    ]
+  structure_item (int_and_float_with_modifier.ml[14,350+0]..[14,350+32])
+    Pstr_value Nonrec
+    [
+      <def>
+        pattern (int_and_float_with_modifier.ml[14,350+4]..[14,350+22])
+          Ppat_var "float_with_modifer" (int_and_float_with_modifier.ml[14,350+4]..[14,350+22])
+        expression (int_and_float_with_modifier.ml[14,350+28]..[14,350+32])
+          Pexp_constant PConst_float (1.2,Some g)
+    ]
+]
+
+File "int_and_float_with_modifier.ml", line 2, characters 2-57:
+Error: Unknown modifier 'z' for literal 1234567890_1234567890_1234567890_1234567890_1234567890z

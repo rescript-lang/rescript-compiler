@@ -1,0 +1,226 @@
+\chapter{Native-code compilation (ocamlopt)} \label{c:nativecomp}
+\pdfchapter{Native-code compilation (ocamlopt)}
+%HEVEA\cutname{native.html}
+
+This chapter describes the OCaml high-performance
+native-code compiler "ocamlopt", which compiles OCaml source files to
+native code object files and links these object files to produce
+standalone executables.
+
+The native-code compiler is only available on certain platforms.
+It produces code that runs faster than the bytecode produced by
+"ocamlc", at the cost of increased compilation time and executable code
+size. Compatibility with the bytecode compiler is extremely high: the
+same source code should run identically when compiled with "ocamlc" and
+"ocamlopt".
+
+It is not possible to mix native-code object files produced by "ocamlopt"
+with bytecode object files produced by "ocamlc": a program must be
+compiled entirely with "ocamlopt" or entirely with "ocamlc". Native-code
+object files produced by "ocamlopt" cannot be loaded in the toplevel
+system "ocaml".
+
+\section{Overview of the compiler}
+
+The "ocamlopt" command has a command-line interface very close to that
+of "ocamlc". It accepts the same types of arguments, and processes them
+sequentially, after all options have been processed:
+
+\begin{itemize}
+\item
+Arguments ending in ".mli" are taken to be source files for
+compilation unit interfaces. Interfaces specify the names exported by
+compilation units: they declare value names with their types, define
+public data types, declare abstract data types, and so on. From the
+file \var{x}".mli", the "ocamlopt" compiler produces a compiled interface
+in the file \var{x}".cmi". The interface produced is identical to that
+produced by the bytecode compiler "ocamlc".
+
+\item
+Arguments ending in ".ml" are taken to be source files for compilation
+unit implementations. Implementations provide definitions for the
+names exported by the unit, and also contain expressions to be
+evaluated for their side-effects.  From the file \var{x}".ml", the "ocamlopt"
+compiler produces two files: \var{x}".o", containing native object code,
+and \var{x}".cmx", containing extra information for linking and
+optimization of the clients of the unit. The compiled implementation
+should always be referred to under the name \var{x}".cmx" (when given
+a ".o" or ".obj" file, "ocamlopt" assumes that it contains code compiled from C,
+not from OCaml).
+
+The implementation is checked against the interface file \var{x}".mli"
+(if it exists) as described in the manual for "ocamlc"
+(chapter~\ref{c:camlc}).
+
+\item
+Arguments ending in ".cmx" are taken to be compiled object code.  These
+files are linked together, along with the object files obtained
+by compiling ".ml" arguments (if any), and the OCaml standard
+library, to produce a native-code executable program. The order in
+which ".cmx" and ".ml" arguments are presented on the command line is
+relevant: compilation units are initialized in that order at
+run-time, and it is a link-time error to use a component of a unit
+before having initialized it. Hence, a given \var{x}".cmx" file must come
+before all ".cmx" files that refer to the unit \var{x}.
+
+\item
+Arguments ending in ".cmxa" are taken to be libraries of object code.
+Such a library packs in two files (\var{lib}".cmxa" and \var{lib}".a"/".lib")
+a set of object files (".cmx" and ".o"/".obj" files). Libraries are build with
+"ocamlopt -a" (see the description of the "-a" option below). The object
+files contained in the library are linked as regular ".cmx" files (see
+above), in the order specified when the library was built. The only
+difference is that if an object file contained in a library is not
+referenced anywhere in the program, then it is not linked in.
+
+\item
+Arguments ending in ".c" are passed to the C compiler, which generates
+a ".o"/".obj" object file. This object file is linked with the program.
+
+\item
+Arguments ending in ".o", ".a" or ".so" (".obj", ".lib" and ".dll"
+under Windows) are assumed to be C object files and
+libraries. They are linked with the program.
+
+\end{itemize}
+
+The output of the linking phase is a regular Unix or Windows
+executable file. It does not need "ocamlrun" to run.
+
+\section{Options}
+
+The following command-line options are recognized by "ocamlopt".
+The options "-pack", "-a", "-shared", "-c" and "-output-obj" are mutually
+exclusive.
+
+% Configure boolean variables used by the macros in unified-options.etex
+\compfalse
+\nattrue
+\topfalse
+% unified-options gathers all options across the native/bytecode
+% compilers and toplevel
+\input{unified-options.tex}
+
+\paragraph{Options for the IA32 architecture}
+The IA32 code generator (Intel Pentium, AMD Athlon) supports the
+following additional option:
+
+\begin{options}
+\item["-ffast-math"] Use the IA32 instructions to compute
+trigonometric and exponential functions, instead of calling the
+corresponding library routines.  The functions affected are:
+"atan", "atan2", "cos", "log", "log10", "sin", "sqrt" and "tan".
+The resulting code runs faster, but the range of supported arguments
+and the precision of the result can be reduced.  In particular,
+trigonometric operations "cos", "sin", "tan" have their range reduced to
+$[-2^{64}, 2^{64}]$.
+\end{options}
+
+\paragraph{Options for the AMD64 architecture}
+The AMD64 code generator (64-bit versions of Intel Pentium and AMD
+Athlon) supports the following additional options:
+
+\begin{options}
+\item["-fPIC"] Generate position-independent machine code.  This is
+the default.
+\item["-fno-PIC"] Generate position-dependent machine code.
+\end{options}
+
+\paragraph{Contextual control of command-line options}
+
+The compiler command line can be modified ``from the outside''
+with the following mechanisms. These are experimental
+and subject to change. They should be used only for experimental and
+development work, not in released packages.
+
+\begin{options}
+\item["OCAMLPARAM" \rm(environment variable)]
+Arguments that will be inserted before or after the arguments from the
+command line.
+\item["ocaml_compiler_internal_params" \rm(file in the stdlib directory)]
+A mapping of file names to lists of arguments that
+will be added to the command line (and "OCAMLPARAM") arguments.
+\item["OCAML_FLEXLINK" \rm(environment variable)]
+Alternative executable to use on native
+Windows for "flexlink" instead of the
+configured value. Primarily used for bootstrapping.
+\end{options}
+
+\section{Common errors}
+
+The error messages are almost identical to those of "ocamlc".
+See section~\ref{s:comp-errors}.
+
+\section{Running executables produced by ocamlopt}
+
+Executables generated by "ocamlopt" are native, stand-alone executable
+files that can be invoked directly.  They do
+not depend on the "ocamlrun" bytecode runtime system nor on
+dynamically-loaded C/OCaml stub libraries.
+
+During execution of an "ocamlopt"-generated executable,
+the following environment variables are also consulted:
+\begin{options}
+\item["OCAMLRUNPARAM"]  Same usage as in "ocamlrun"
+  (see section~\ref{ocamlrun-options}), except that option "l"
+  is ignored (the operating system's stack size limit
+  is used instead).
+\item["CAMLRUNPARAM"]  If "OCAMLRUNPARAM" is not found in the
+  environment, then "CAMLRUNPARAM" will be used instead.  If
+  "CAMLRUNPARAM" is not found, then the default values will be used.
+\end{options}
+
+\section{Compatibility with the bytecode compiler}
+\label{s:compat-native-bytecode}
+
+This section lists the known incompatibilities between the bytecode
+compiler and the native-code compiler. Except on those points, the two
+compilers should generate code that behave identically.
+
+\begin{itemize}
+
+\item Signals are detected only when the program performs an
+allocation in the heap. That is, if a signal is delivered while in a
+piece of code that does not allocate, its handler will not be called
+until the next heap allocation.
+
+\item Stack overflow, typically caused by excessively deep recursion,
+is not always turned into a "Stack_overflow" exception like the
+bytecode compiler does.  The runtime system makes a best effort to
+trap stack overflows and raise the "Stack_overflow" exception, but
+sometimes it fails and a ``segmentation fault'' or another system fault
+occurs instead.
+
+\item On ARM and PowerPC processors (32 and 64 bits), fused
+  multiply-add (FMA) instructions can be generated for a
+  floating-point multiplication followed by a floating-point addition
+  or subtraction, as in "x *. y +. z".  The FMA instruction avoids
+  rounding the intermediate result "x *. y", which is generally
+  beneficial, but produces floating-point results that differ slightly
+  from those produced by the bytecode interpreter.
+
+\item On IA32 processors only (Intel and AMD x86 processors in 32-bit
+mode), some intermediate results in floating-point computations are
+kept in extended precision rather than being rounded to double
+precision like the bytecode compiler always does.  Floating-point
+results can therefore differ slightly between bytecode and native code.
+
+\item The native-code compiler performs a number of optimizations that
+the bytecode compiler does not perform, especially when the Flambda
+optimizer is active.  In particular, the native-code compiler
+identifies and eliminates ``dead code'', i.e.\ computations that do
+not contribute to the results of the program.  For example,
+\begin{verbatim}
+        let _ = ignore M.f
+\end{verbatim}
+contains a reference to compilation unit "M" when compiled to
+bytecode.  This reference forces "M" to be linked and its
+initialization code to be executed.  The native-code compiler
+eliminates the reference to "M", hence the compilation unit "M" may
+not be linked and executed.  A workaround is to compile "M" with the
+"-linkall" flag so that it will always be linked and executed, even if
+not referenced.  See also the "Sys.opaque_identity" function from the
+"Sys" standard library module.
+
+\end{itemize}
+

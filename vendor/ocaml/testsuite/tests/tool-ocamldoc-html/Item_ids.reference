@@ -1,0 +1,53 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="Start" href="index.html">
+<link rel="Up" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of extensions" rel=Appendix href="index_extensions.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of classes" rel=Appendix href="index_classes.html">
+<link title="Index of class types" rel=Appendix href="index_class_types.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Index of module types" rel=Appendix href="index_module_types.html">
+<link title="Item_ids" rel="Chapter" href="Item_ids.html"><title>Item_ids</title>
+</head>
+<body>
+<div class="navbar">&nbsp;<a class="up" href="index.html" title="Index">Up</a>
+&nbsp;</div>
+<h1>Module <a href="type_Item_ids.html">Item_ids</a></h1>
+
+<pre><span id="MODULEItem_ids"><span class="keyword">module</span> Item_ids</span>: <code class="code"><span class="keyword">sig</span></code> <a href="Item_ids.html">..</a> <code class="code"><span class="keyword">end</span></code></pre><div class="info module top">
+<div class="info-desc">
+<p>Check that all toplevel items are given a unique id.</p>
+</div>
+</div>
+<hr width="100%">
+
+<pre><span id="EXCEPTIONEx"><span class="keyword">exception</span> Ex</span></pre>
+
+<pre><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> </pre>
+
+
+<pre><span id="VALx"><span class="keyword">val</span> x</span> : <code class="type"><a href="Item_ids.html#TYPEt">t</a></code></pre>
+<pre><span id="TYPEext"><span class="keyword">type</span> <code class="type"></code>ext</span> = ..</pre>
+
+<pre><code><span class="keyword">type</span> <code class="type"></code><a href="Item_ids.html#TYPEext">ext</a> += </code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="EXTENSIONA">A</span></code></td>
+
+</tr></table>
+
+
+
+<pre><span id="TYPEc"><span class="keyword">class</span> <a href="Item_ids.c-c.html">c</a></span> : <code class="type"></code><code class="code"><span class="keyword">object</span></code> <a href="Item_ids.c-c.html">..</a> <code class="code"><span class="keyword">end</span></code></pre>
+<pre><span id="TYPEct"><span class="keyword">class type</span> <a href="Item_ids.ct-c.html">ct</a></span> = <code class="code"><span class="keyword">object</span></code> <a href="Item_ids.ct-c.html">..</a> <code class="code"><span class="keyword">end</span></code></pre>
+<pre><span id="MODULEM"><span class="keyword">module</span> <a href="Item_ids.M.html">M</a></span>: <code class="code"><span class="keyword">sig</span></code> <a href="Item_ids.M.html">..</a> <code class="code"><span class="keyword">end</span></code></pre>
+<pre><span id="MODULETYPEs"><span class="keyword">module type</span> <a href="Item_ids.s-c.html">s</a></span> = <code class="code"><span class="keyword">sig</span></code> <a href="Item_ids.s-c.html">..</a> <code class="code"><span class="keyword">end</span></code></pre></body></html>

@@ -1,0 +1,203 @@
+#**************************************************************************
+#*                                                                        *
+#*                                 OCaml                                  *
+#*                                                                        *
+#*            Xavier Leroy, projet Cristal, INRIA Rocquencourt            *
+#*                                                                        *
+#*   Copyright 1999 Institut National de Recherche en Informatique et     *
+#*     en Automatique.                                                    *
+#*                                                                        *
+#*   All rights reserved.  This file is distributed under the terms of    *
+#*   the GNU Lesser General Public License version 2.1, with the          *
+#*   special exception on linking described in the file LICENSE.          *
+#*                                                                        *
+#**************************************************************************
+
+# Configuration for Windows, Mingw compiler
+
+######### General configuration
+
+PREFIX=C:/ocamlmgw
+
+### Remove this to disable compiling ocamldebug
+WITH_DEBUGGER=ocamldebugger
+
+### Remove this to disable compiling ocamldoc
+WITH_OCAMLDOC=ocamldoc
+
+### Where to install the binaries
+BINDIR=$(PREFIX)/bin
+
+### Standard runtime system
+BYTERUN=ocamlrun
+
+### Where to install the standard library
+LIBDIR=$(PREFIX)/lib
+
+### Where to install the stub DLLs
+STUBLIBDIR=$(LIBDIR)/stublibs
+
+### Where to install the info files
+DISTRIB=$(PREFIX)
+
+### Where to install the man pages
+MANDIR=$(PREFIX)/man
+
+########## Toolchain and OS dependencies
+
+TOOLCHAIN=mingw
+
+### Toolchain prefix
+TARGET=i686-w64-mingw32
+HOST=i686-w64-mingw32
+
+TOOLPREF=$(TARGET)-
+
+CCOMPTYPE=cc
+O=o
+A=a
+S=s
+SO=s.o
+EXE=.exe
+EMPTY=
+OUTPUTEXE=-o $(EMPTY)
+EXT_DLL=.dll
+EXT_OBJ=.$(O)
+OUTPUTOBJ=-o $(EMPTY)
+EXT_LIB=.$(A)
+EXT_ASM=.$(S)
+PROGRAMS_MAN_SECTION=1
+LIBRARIES_MAN_SECTION=3
+HASHBANGSCRIPTS=false
+PTHREAD_LINK=
+PTHREAD_CAML_LINK=
+X11_INCLUDES=
+X11_LINK=
+RPATH=
+SUPPORTS_SHARED_LIBRARIES=true
+SHAREDCCCOMPOPTS=
+MKSHAREDLIBRPATH=
+NATIVECCPROFOPTS=
+ASM=$(TOOLPREF)as
+ASPP=$(TOOLPREF)gcc -c
+ASPPPROFFLAGS=
+PROFILING=false
+DYNLINKOPTS=
+CC_PROFILE=
+SYSTHREAD_SUPPORT=true
+EXTRALIBS=
+NATDYNLINK=true
+NATDYNLINKOPTS=
+CMXS=cmxs
+RUNTIMED=false
+ASM_CFI_SUPPORTED=false
+WITH_FRAME_POINTERS=false
+UNIX_OR_WIN32=win32
+UNIXLIB=win32unix
+GRAPHLIB=win32graph
+FLAMBDA=false
+WITH_SPACETIME=false
+ENABLE_CALL_COUNTS=false
+WITH_PROFINFO=false
+LIBUNWIND_AVAILABLE=false
+LIBUNWIND_LINK_FLAGS=
+PROFINFO_WIDTH=0
+FORCE_SAFE_STRING=false
+DEFAULT_SAFE_STRING=true
+WINDOWS_UNICODE=1
+AFL_INSTRUMENT=false
+
+########## Configuration for the bytecode compiler
+
+### Which C compiler to use for the bytecode interpreter.
+CC=$(TOOLPREF)gcc
+CFLAGS=-O -mms-bitfields -Wall -Wno-unused -fno-tree-vrp
+# -fno-tree-vrp is here to try to work around the Skylake/Kaby lake bug,
+# and only works on GCC 4.2 and later.
+CPPFLAGS=-DCAML_NAME_SPACE -DUNICODE -D_UNICODE -DWINDOWS_UNICODE=$(WINDOWS_UNICODE)
+OCAMLC_CFLAGS=-O -mms-bitfields
+
+BYTECCDBGCOMPOPTS=-g
+
+LDFLAGS=-municode
+
+### Libraries needed
+BYTECCLIBS=-lws2_32 -lversion
+NATIVECCLIBS=-lws2_32 -lversion
+
+### How to invoke the C preprocessor
+CPP=cpp
+
+### Flexlink
+FLEXLINK_CMD=flexlink
+FLEXDLL_CHAIN=mingw
+# FLEXLINK_FLAGS must be safe to insert in an OCaml string
+#   (see ocamlmklibconfig.ml in tools/Makefile)
+FLEXLINK_FLAGS=-chain $(FLEXDLL_CHAIN) -stack 16777216 -link -static-libgcc
+FLEXLINK=$(FLEXLINK_CMD) $(FLEXLINK_FLAGS)
+FLEXDIR:=$(shell $(FLEXLINK) -where 2>/dev/null)
+ifeq ($(FLEXDIR),)
+IFLEXDIR=-I"../flexdll"
+else
+IFLEXDIR=-I"$(FLEXDIR)"
+endif
+# MKDLL, MKEXE and MKMAINDLL must ultimately be equivalent to
+#   $(FLEXLINK_CMD) $(FLEXLINK_FLAGS) [-exe|-maindll]
+# or OCAML_FLEXLINK overriding will not work (see utils/config.mlp)
+MKDLL=$(FLEXLINK)
+MKEXE=$(MKEXE_ANSI) $(if $(LDFLAGS),-link "$(LDFLAGS)")
+MKEXEDEBUGFLAG=-g
+MKMAINDLL=$(FLEXLINK) -maindll
+
+### Native command to build ocamlrun.exe without flexlink
+MKEXE_BOOT=$(CC) $(CFLAGS) $(LDFLAGS) $(OUTPUTEXE)$(1) $(2)
+
+### Native command to build an ANSI executable
+MKEXE_ANSI=$(FLEXLINK) -exe
+
+### How to build a static library
+MKLIB=rm -f $(1); $(TOOLPREF)ar rc $(1) $(2); $(RANLIB) $(1)
+#ml let mklib out files opts =
+#ml   Printf.sprintf "rm -f %s && %sar rcs %s %s %s"
+#ml                  out toolpref opts out files;;
+
+### Canonicalize the name of a system library
+SYSLIB=-l$(1)
+#ml let syslib x = "-l"^x;;
+
+### The ranlib command
+RANLIB=$(TOOLPREF)ranlib
+RANLIBCMD=$(TOOLPREF)ranlib
+
+### The ar command
+ARCMD=$(TOOLPREF)ar
+
+############# Configuration for the native-code compiler
+
+### Name of architecture for the native-code compiler
+ARCH=i386
+
+### Name of architecture model for the native-code compiler.
+MODEL=default
+
+### Name of operating system family for the native-code compiler.
+SYSTEM=mingw
+
+OCAMLOPT_CFLAGS=-O -mms-bitfields
+
+### Build partially-linked object file
+PACKLD=$(TOOLPREF)ld -r -o # must have a space after '-o'
+
+############# Configuration for the contributed libraries
+
+OTHERLIBRARIES=win32unix str win32graph dynlink bigarray systhreads
+
+############# for the testsuite makefiles
+#ml let topdir = "" and wintopdir = "";;
+OTOPDIR=$(WINTOPDIR)
+CTOPDIR=$(TOPDIR)
+CYGPATH=cygpath -m
+DIFF=/usr/bin/diff -q --strip-trailing-cr
+SET_LD_PATH=PATH="$(PATH):$(LD_PATH)"
+MAX_TESTSUITE_DIR_RETRIES=1
+FLAT_FLOAT_ARRAY=true

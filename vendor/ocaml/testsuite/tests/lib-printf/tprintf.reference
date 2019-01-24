@@ -1,0 +1,95 @@
+d/i positive
+ 0 1 2 3 4 5 6 7
+d/i negative
+ 8 9 10 11 12 13 14 15
+u positive
+ 16 17 18 19 20 21
+u negative
+ 22
+x positive
+ 23 24 25 26 27 28 29 30 31 32 33
+x negative
+ 34
+X positive
+ 35 36 37 38 39 40
+x negative
+ 41
+o positive
+ 42 43 44 45 46 47
+o negative
+ 48
+s
+ 49 50 51 52 53 54 55 56 57 58
+S
+ 59 60 61 62 63 64 65 66
+c
+ 67
+C
+ 68 69
+f
+ 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84
+F
+ 85 86 87 88 89 90 91
+h
+ 92 93 94 95 96 97 98 99 100 101 102 103 104
+H
+ 105 106 107 108 109 110 111 112 113 114 115 116 117
+e
+ 118 119 120 121 122 123 124 125 126 127 128 129 130 131
+E
+ 132 133 134 135 136 137 138 139 140 141 142 143 144 145
+B
+ 146 147 148 149
+ld/li positive
+ 150 151 152 153 154 155 156
+ld/li negative
+ 157 158 159 160 161 162 163
+lu positive
+ 164 165 166 167 168
+lu negative
+ 169
+lx positive
+ 170 171 172 173 174 175
+lx negative
+ 176
+lX positive
+ 177 178 179 180 181 182
+lx negative
+ 183
+lo positive
+ 184 185 186 187 188 189
+lo negative
+ 190
+Ld/Li positive
+ 191 192 193 194 195
+Ld/Li negative
+ 196 197 198 199 200
+Lu positive
+ 201 202 203 204 205
+Lu negative
+ 206
+Lx positive
+ 207 208 209 210 211 212
+Lx negative
+ 213
+LX positive
+ 214 215 216 217 218 219
+Lx negative
+ 220
+Lo positive
+ 221 222 223 224 225 226
+Lo negative
+ 227
+a
+ 228
+t
+ 229
+{...%}
+ 230
+(...%)
+ 231
+! % @ , and constants
+ 232 233 234 235 236 237 238
+end of tests
+
+All tests succeeded.

@@ -1,0 +1,59 @@
+S ./asmcomp
+B ./asmcomp
+
+S ./middle_end
+B ./middle_end
+
+S ./middle_end/base_types
+B ./middle_end/base_types
+
+S ./bytecomp
+B ./bytecomp
+
+S ./driver
+B ./driver
+
+S ./lex
+B ./lex
+
+S ./otherlibs/bigarray
+B ./otherlibs/bigarray
+
+S ./otherlibs/dynlink
+B ./otherlibs/dynlink
+
+S ./otherlibs/graph
+B ./otherlibs/graph
+
+S ./otherlibs/num
+B ./otherlibs/num
+
+S ./otherlibs/str
+B ./otherlibs/str
+
+S ./otherlibs/systhreads
+B ./otherlibs/systhreads
+
+S ./otherlibs/threads
+B ./otherlibs/threads
+
+S ./otherlibs/unix
+B ./otherlibs/unix
+
+S ./parsing
+B ./parsing
+
+S ./stdlib
+B ./stdlib
+
+S ./toplevel
+B ./toplevel
+
+S ./typing
+B ./typing
+
+S ./utils
+B ./utils
+
+S ./ocamltest
+B ./ocamltest

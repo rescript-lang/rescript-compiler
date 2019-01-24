@@ -1,0 +1,2 @@
+-args
+first_arg_fail.txt

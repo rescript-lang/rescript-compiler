@@ -1,0 +1,222 @@
+% LaTeX2HTML Version 0.6.4 : html.sty
+%
+% This file contains definitions of LaTeX commands which are
+% processed in a special way by the translator. 
+% For example, there are commands for embedding external hypertext links,
+% for cross-references between documents or for including
+% raw HTML.
+% This file includes the comments.sty file v2.0 by Victor Eijkhout
+% In most cases these commands do nothing when processed by LaTeX.
+
+% Modifications:
+%
+%  nd = Nikos Drakos <nikos@cbl.leeds.ac.uk>
+%  jz = Jelle van Zeijl <jvzeijl@isou17.estec.esa.nl>
+
+% jz 22-APR-94 - Added support for htmlref
+% nd  - Created
+
+
+
+% Exit if the style file is already loaded
+% (suggested by Lee Shombert <las@potomac.wash.inmet.com>
+\ifx \htmlstyloaded\relax \endinput\else\let\htmlstyloaded\relax\fi
+
+%%% LINKS TO EXTERNAL DOCUMENTS
+%
+% This can be used to provide links to arbitrary documents.
+% The first argumment should be the text that is going to be
+% highlighted and the second argument a URL.
+% The hyperlink will appear as a hyperlink in the HTML 
+% document and as a footnote in the dvi or ps files.
+%
+\newcommand{\htmladdnormallinkfoot}[2]{ #1\footnote{#2}} 
+
+% This is an alternative definition of the command above which
+% will ignore the URL in the dvi or ps files.
+\newcommand{\htmladdnormallink}[2]{ #1 }
+
+% This command takes as argument a URL pointing to an image.
+% The image will be embedded in the HTML document but will
+% be ignored in the dvi and ps files.
+%
+\newcommand{\htmladdimg}[1]{ }
+
+%%% CROSS-REFERENCES BETWEEN (LOCAL OR REMOTE) DOCUMENTS
+%
+% This can be used to refer to symbolic labels in other Latex 
+% documents that have already been processed by the translator.
+% The arguments should be:
+% #1 : the URL to the directory containing the external document
+% #2 : the path to the labels.pl file of the external document.
+% If the external document lives on a remote machine then labels.pl 
+% must be copied on the local machine.
+%
+%e.g. \externallabels{http://cbl.leeds.ac.uk/nikos/WWW/doc/tex2html/latex2html}
+%                    {/usr/cblelca/nikos/tmp/labels.pl}
+% The arguments are ignored in the dvi and ps files.
+%
+\newcommand{\externallabels}[2]{ }
+
+% This complements the \externallabels command above. The argument
+% should be a label defined in another latex document and will be
+% ignored in the dvi and ps files.
+%
+\newcommand{\externalref}[1]{ }
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Comment.sty   version 2.0, 19 June 1992
+% selectively in/exclude pieces of text: the user can define new
+% comment versions, and each is controlled separately.
+% This style can be used with plain TeX or LaTeX, and probably
+% most other packages too.
+%
+% Examples of use in LaTeX and TeX follow \endinput
+%
+% Author
+%    Victor Eijkhout
+%    Department of Computer Science
+%    University Tennessee at Knoxville
+%    104 Ayres Hall
+%    Knoxville, TN 37996
+%    USA
+%
+%    eijkhout@cs.utk.edu
+%
+% Usage: all text included in between
+%    \comment ... \endcomment
+% or \begin{comment} ... \end{comment}
+% is discarded. The closing command should appear on a line
+% of its own. No starting spaces, nothing after it.
+% This environment should work with arbitrary amounts
+% of comment.
+%
+% Other 'comment' environments are defined by
+% and are selected/deselected with
+% \includecomment{versiona}
+% \excludecoment{versionb}
+%
+% These environments are used as
+% \versiona ... \endversiona
+% or \begin{versiona} ... \end{versiona}
+% with the closing command again on a line of its own.
+%
+% Basic approach:
+% to comment something out, scoop up  every line in verbatim mode
+% as macro argument, then throw it away.
+% For inclusions, both the opening and closing comands
+% are defined as noop
+%
+% Changed \next to \html@next to prevent clashes with other sty files
+% (mike@emn.fr)
+% Changed \html@next to \htmlnext so the \makeatletter and
+% \makeatother commands could be removed (they were cuasing other
+% style files - changebar.sty - to crash) (nikos@cbl.leeds.ac.uk)
+
+
+\def\makeinnocent#1{\catcode`#1=12 }
+\def\csarg#1#2{\expandafter#1\csname#2\endcsname}
+
+\def\ThrowAwayComment#1{\begingroup
+    \def\CurrentComment{#1}%
+    \let\do\makeinnocent \dospecials
+    \makeinnocent\^^L% and whatever other special cases
+    \endlinechar`\^^M \catcode`\^^M=12 \xComment}
+{\catcode`\^^M=12 \endlinechar=-1 %
+ \gdef\xComment#1^^M{\def\test{#1}
+      \csarg\ifx{PlainEnd\CurrentComment Test}\test
+          \let\htmlnext\endgroup
+      \else \csarg\ifx{LaLaEnd\CurrentComment Test}\test
+            \edef\htmlnext{\endgroup\noexpand\end{\CurrentComment}}
+      \else \let\htmlnext\xComment
+      \fi \fi \htmlnext}
+}
+
+\def\includecomment
+ #1{\expandafter\def\csname#1\endcsname{}%
+    \expandafter\def\csname end#1\endcsname{}}
+\def\excludecomment
+ #1{\expandafter\def\csname#1\endcsname{\ThrowAwayComment{#1}}%
+    {\escapechar=-1\relax
+     \csarg\xdef{PlainEnd#1Test}{\string\\end#1}%
+     \csarg\xdef{LaLaEnd#1Test}{\string\\end\string\{#1\string\}}%
+    }}
+
+\excludecomment{comment}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%% RAW HTML 
+% 
+% Enclose raw HTML between a \begin{rawhtml} and \end{rawhtml}.
+% The html environment ignores its body
+%
+\excludecomment{rawhtml}
+
+%%% HTML ONLY
+%
+% Enclose LaTeX constructs which will only appear in the 
+% HTML output and will be ignored by LaTeX with 
+% \begin{htmlonly} and \end{htmlonly}
+%
+\excludecomment{htmlonly}
+
+%%% LaTeX ONLY
+% Enclose LaTeX constructs which will only appear in the 
+% DVI output and will be ignored by latex2html with 
+%\begin{latexonly} and \end{latexonly}
+%
+\newenvironment{latexonly}{}{}
+
+%%% HYPERREF 
+% Suggested by Eric M. Carol <eric@ca.utoronto.utcc.enfm>
+% Similar to \ref but accepts conditional text. 
+% The first argument is HTML text which will become ``hyperized''
+% (underlined).
+% The second and third arguments are text which will appear only in the paper
+% version (DVI file), enclosing the fourth argument which is a reference to a label.
+%
+%e.g. \hyperref{using the tracer}{using the tracer (see Section}{)}{trace}
+% where there is a corresponding \label{trace}
+%
+\newcommand{\hyperref}[4]{#2\ref{#4}#3}
+
+%%% HTMLREF
+% Reference in HTML version only.
+% Mix between \htmladdnormallink and \hyperref.
+% First arg is text for in both versions, second is label for use in HTML
+% version.
+\newcommand{\htmlref}[2]{#1}
+
+%%% HTMLIMAGE
+% This command can be used inside any environment that is converted
+% into an inlined image (eg a "figure" environment) in order to change
+% the way the image will be translated. The argument of \htmlimage
+% is really a string of options separated by commas ie 
+% [scale=<scale factor>],[external],[thumbnail=<reduction factor>
+% The scale option allows control over the size of the final image.
+% The ``external'' option will cause the image not to be inlined 
+% (images are inlined by default). External images will be accessible
+% via a hypertext link. 
+% The ``thumbnail'' option will cause a small inlined image to be 
+% placed in the caption. The size of the thumbnail depends on the
+% reduction factor. The use of the ``thumbnail'' option implies
+% the ``external'' option.
+%
+% Example:
+% \htmlimage{scale=1.5,external,thumbnail=0.2}
+% will cause a small thumbnail image 1/5th of the original size to be
+% placed in the final document, pointing to an external image 1.5
+% times bigger than the original.
+% 
+\newcommand{\htmlimage}[1]{}
+
+%%% HTMLADDTONAVIGATION
+% This command appends its argument to the buttons in the navigation
+% panel. It is ignored by LaTeX.
+%
+% Example:
+% \htmladdtonavigation{\htmladdnormallink
+%              {\htmladdimg{http://server/path/to/gif}}
+%              {http://server/path}}
+\newcommand{\htmladdtonavigation}[1]{}

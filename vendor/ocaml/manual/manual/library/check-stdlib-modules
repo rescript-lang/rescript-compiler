@@ -1,0 +1,23 @@
+#!/bin/sh
+
+TMPDIR="${TMPDIR:-/tmp}"
+
+(cd $1/stdlib; ls -1 *.mli) | sed -e 's/\.mli//' >$TMPDIR/stdlib-$$-files
+cut -c 1 $TMPDIR/stdlib-$$-files | tr a-z A-Z >$TMPDIR/stdlib-$$-initials
+cut -c 2- $TMPDIR/stdlib-$$-files \
+| paste -d '\0' $TMPDIR/stdlib-$$-initials - >$TMPDIR/stdlib-$$-modules
+
+exitcode=0
+for i in `cat $TMPDIR/stdlib-$$-modules`; do
+  case $i in
+    Camlinternal* | *Labels | Obj | Pervasives) continue;;
+  esac
+  grep -q -e '"'$i'" & p\.~\\pageref{'$i'} &' stdlib.etex || {
+    echo "Module $i is missing from stdlib.etex." >&2
+    exitcode=2
+  }
+done
+
+rm -f $TMPDIR/stdlib-$$-*
+
+exit $exitcode

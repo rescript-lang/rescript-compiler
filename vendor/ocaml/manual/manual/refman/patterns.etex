@@ -1,0 +1,178 @@
+\section{Patterns}
+\pdfsection{Patterns}
+\ikwd{as\@\texttt{as}}
+%HEVEA\cutname{patterns.html}
+\begin{syntax}
+pattern:
+    value-name
+  | '_'
+  | constant
+  | pattern 'as' value-name
+  | '(' pattern ')'
+  | '(' pattern ':' typexpr ')'
+  | pattern '|' pattern
+  | constr pattern
+  | "`"tag-name pattern
+  | "#"typeconstr
+  | pattern {{ ',' pattern }}
+  | '{' field [':' typexpr] ['=' pattern]%
+    { ';' field [':' typexpr] ['=' pattern] } [';' '_' ] [ ';' ] '}'
+  | '[' pattern { ';' pattern } [ ';' ] ']'
+  | pattern '::' pattern
+  | '[|' pattern { ';' pattern } [ ';' ] '|]'
+  | char-literal '..' char-literal
+\end{syntax}
+See also the following language extensions: \hyperref[s:lazypat]{lazy patterns},
+\hyperref[s:local-opens]{local opens},
+\hyperref[s-first-class-modules]{first-class modules},
+\hyperref[s:attributes]{attributes},
+\hyperref[s:extension-nodes]{extension nodes} and
+\hyperref[s:exception-match]{exception cases in pattern matching}.
+
+The table below shows the relative precedences and associativity of
+operators and non-closed pattern constructions. The constructions with
+higher precedences come first.
+\ikwd{as\@\texttt{as}}
+\begin{tableau}{|l|l|}{Operator}{Associativity}
+\entree{".."}{--}
+\entree{"lazy" (see section~\ref{s:lazypat})}{--}
+\entree{Constructor application, Tag application}{right}
+\entree{"::"}{right}
+\entree{","}{--}
+\entree{"|"}{left}
+\entree{"as"}{--}
+\end{tableau}
+
+Patterns are templates that allow selecting data structures of a
+given shape, and binding identifiers to components of the data
+structure. This selection operation is called pattern matching; its
+outcome is either ``this value does not match this pattern'', or
+``this value matches this pattern, resulting in the following bindings
+of names to values''.
+
+\subsubsection*{Variable patterns}
+
+A pattern that consists in a value name matches any value,
+binding the name to the value. The pattern @"_"@ also matches
+any value, but does not bind any name.
+
+Patterns are {\em linear\/}: a variable cannot be bound several times by
+a given pattern. In particular, there is no way to test for equality
+between two parts of a data structure using only a pattern (but
+@"when"@ guards can be used for this purpose).
+
+\subsubsection*{Constant patterns}
+
+A pattern consisting in a constant matches the values that
+are equal to this constant.
+
+%% FIXME for negative numbers, blanks are allowed between the minus
+%% sign and the first digit.
+
+\subsubsection*{Alias patterns}
+\ikwd{as\@\texttt{as}}
+
+The pattern @pattern_1 "as" value-name@ matches the same values as
+@pattern_1@. If the matching against @pattern_1@ is successful,
+the name @value-name@ is bound to the matched value, in addition to the
+bindings performed by the matching against @pattern_1@.
+
+\subsubsection*{Parenthesized patterns}
+
+The pattern @"(" pattern_1 ")"@ matches the same values as
+@pattern_1@. A type constraint can appear in a
+parenthesized pattern, as in @"(" pattern_1 ":" typexpr ")"@. This
+constraint forces the type of @pattern_1@ to be compatible with
+@typexpr@.
+
+\subsubsection*{``Or'' patterns}
+
+The pattern @pattern_1 "|" pattern_2@ represents the logical ``or'' of
+the two patterns @pattern_1@ and @pattern_2@. A value matches
+@pattern_1 "|" pattern_2@ if it matches @pattern_1@ or
+@pattern_2@. The two sub-patterns @pattern_1@ and @pattern_2@
+must bind exactly the same identifiers to values having the same types.
+Matching is performed from left to right.
+More precisely,
+in case some value~$v$ matches @pattern_1 "|" pattern_2@, the bindings
+performed are those of @pattern_1@ when $v$ matches @pattern_1@.
+Otherwise, value~$v$ matches @pattern_2@ whose bindings are performed.
+
+
+\subsubsection*{Variant patterns}
+
+The pattern @constr '(' pattern_1 ',' \ldots ',' pattern_n ')'@ matches
+all variants whose
+constructor is equal to @constr@, and whose arguments match
+@pattern_1 \ldots pattern_n@.  It is a type error if $n$ is not the
+number of arguments expected by the constructor.
+
+The pattern @constr '_'@ matches all variants whose constructor is
+@constr@.
+
+The pattern @pattern_1 "::" pattern_2@ matches non-empty lists whose
+heads match @pattern_1@, and whose tails match @pattern_2@.
+
+The pattern @"[" pattern_1 ";" \ldots ";" pattern_n "]"@ matches lists
+of length $n$ whose elements match @pattern_1@ \ldots @pattern_n@,
+respectively. This pattern behaves like
+@pattern_1 "::" \ldots "::" pattern_n "::" "[]"@.
+
+\subsubsection*{Polymorphic variant patterns}
+
+The pattern @"`"tag-name pattern_1@ matches all polymorphic variants
+whose tag is equal to @tag-name@, and whose argument matches
+@pattern_1@.
+
+\subsubsection*{Polymorphic variant abbreviation patterns}
+
+If the type @["('a,'b,"\ldots")"] typeconstr = "[" "`"tag-name_1 typexpr_1 "|"
+\ldots "|" "`"tag-name_n typexpr_n"]"@ is defined, then the pattern @"#"typeconstr@
+is a shorthand for the following or-pattern:
+@"(" "`"tag-name_1"(_" ":" typexpr_1")" "|" \ldots "|" "`"tag-name_n"(_"
+":" typexpr_n"))"@. It matches all values of type @"[<" typeconstr "]"@.
+
+\subsubsection*{Tuple patterns}
+
+The pattern @pattern_1 "," \ldots "," pattern_n@ matches $n$-tuples
+whose components match the patterns @pattern_1@ through @pattern_n@. That
+is, the pattern matches the tuple values $(v_1, \ldots, v_n)$ such that
+@pattern_i@ matches $v_i$ for \fromoneto{i}{n}.
+
+\subsubsection*{Record patterns}
+
+The pattern @"{" field_1 ["=" pattern_1] ";" \ldots ";" field_n ["="
+pattern_n] "}"@ matches records that define at least the fields
+@field_1@ through @field_n@, and such that the value associated to
+@field_i@ matches the pattern @pattern_i@, for \fromoneto{i}{n}.
+A single identifier @field_k@ stands for @field_k '=' field_k @,
+and a single qualified identifier @module-path '.' field_k@ stands
+for @module-path '.' field_k '=' field_k @.
+The record value can define more fields than @field_1@ \ldots
+@field_n@; the values associated to these extra fields are not taken
+into account for matching. Optionally, a record pattern can be terminated
+by @';' '_'@ to convey the fact that not all fields of the record type are
+listed in the record pattern and that it is intentional.
+Optional type constraints can be added field by field with
+@"{" field_1 ":" typexpr_1 "=" pattern_1 ";"%
+\ldots ";"field_n ":" typexpr_n "=" pattern_n "}"@ to force the type
+of @field_k@ to be compatible with @typexpr_k@.
+
+
+\subsubsection*{Array patterns}
+
+The pattern @"[|" pattern_1 ";" \ldots ";" pattern_n "|]"@
+matches arrays of length $n$ such that the $i$-th array element
+matches the pattern @pattern_i@, for \fromoneto{i}{n}.
+
+\subsubsection*{Range patterns}
+
+The pattern
+@"'" @c@ "'" ".." "'" @d@ "'"@ is a shorthand for the pattern
+\begin{center}
+@"'" @c@ "'" "|" "'" @c@_1 "'" "|" "'" @c@_2 "'" "|" \ldots
+        "|" "'" @c@_n "'" "|" "'" @d@ "'"@
+\end{center}
+where \nth{c}{1}, \nth{c}{2}, \ldots, \nth{c}{n} are the characters
+that occur between \var{c} and \var{d} in the ASCII character set. For
+instance, the pattern "'0'"@'..'@"'9'" matches all characters that are digits.

@@ -1,0 +1,223 @@
+Index: parsing/parser.mly
+===================================================================
+--- parsing/parser.mly	(revision 14285)
++++ parsing/parser.mly	(working copy)
+@@ -542,8 +542,12 @@
+       { unclosed "struct" 1 "end" 3 }
+   | FUNCTOR LPAREN UIDENT COLON module_type RPAREN MINUSGREATER module_expr
+       { mkmod(Pmod_functor(mkrhs $3 3, $5, $8)) }
++  | FUNCTOR LPAREN RPAREN MINUSGREATER module_expr
++      { mkmod(Pmod_functor(mkrhs "*" 3, mkmty (Pmty_signature []), $5)) }
+   | module_expr LPAREN module_expr RPAREN
+       { mkmod(Pmod_apply($1, $3)) }
++  | module_expr LPAREN RPAREN
++      { mkmod(Pmod_apply($1, mkmod (Pmod_structure []))) }
+   | module_expr LPAREN module_expr error
+       { unclosed "(" 2 ")" 4 }
+   | LPAREN module_expr COLON module_type RPAREN
+@@ -641,6 +645,8 @@
+       { mkmod(Pmod_constraint($4, $2)) }
+   | LPAREN UIDENT COLON module_type RPAREN module_binding_body
+       { mkmod(Pmod_functor(mkrhs $2 2, $4, $6)) }
++  | LPAREN RPAREN module_binding_body
++      { mkmod(Pmod_functor(mkrhs "*" 1, mkmty(Pmty_signature []), $3)) }
+ ;
+ module_bindings:
+     module_binding                        { [$1] }
+@@ -663,6 +669,9 @@
+   | FUNCTOR LPAREN UIDENT COLON module_type RPAREN MINUSGREATER module_type
+       %prec below_WITH
+       { mkmty(Pmty_functor(mkrhs $3 3, $5, $8)) }
++  | FUNCTOR LPAREN RPAREN MINUSGREATER module_type
++      %prec below_WITH
++      { mkmty(Pmty_functor(mkrhs "*" 2, mkmty(Pmty_signature []), $5)) }
+   | module_type WITH with_constraints
+       { mkmty(Pmty_with($1, List.rev $3)) }
+   | MODULE TYPE OF module_expr %prec below_LBRACKETAT
+@@ -725,6 +734,8 @@
+       { $2 }
+   | LPAREN UIDENT COLON module_type RPAREN module_declaration
+       { mkmty(Pmty_functor(mkrhs $2 2, $4, $6)) }
++  | LPAREN RPAREN module_declaration
++      { mkmty(Pmty_functor(mkrhs "*" 1, mkmty (Pmty_signature []), $3)) }
+ ;
+ module_rec_declarations:
+     module_rec_declaration                              { [$1] }
+Index: parsing/pprintast.ml
+===================================================================
+--- parsing/pprintast.ml	(revision 14285)
++++ parsing/pprintast.ml	(working copy)
+@@ -834,6 +834,8 @@
+     | Pmty_signature (s) ->
+         pp f "@[<hv0>@[<hv2>sig@ %a@]@ end@]" (* "@[<hov>sig@ %a@ end@]" *)
+           (self#list self#signature_item  ) s (* FIXME wrong indentation*)
++    | Pmty_functor ({txt="*"}, mt1, mt2) ->
++        pp f "@[<hov2>functor () ->@ %a@]" self#module_type mt2 
+     | Pmty_functor (s, mt1, mt2) ->
+         pp f "@[<hov2>functor@ (%s@ :@ %a)@ ->@ %a@]" s.txt
+           self#module_type mt1  self#module_type mt2
+@@ -940,6 +942,8 @@
+           self#module_type mt
+     | Pmod_ident (li) ->
+         pp f "%a" self#longident_loc li;
++    | Pmod_functor ({txt="*"}, mt, me) ->
++        pp f "functor ()@;->@;%a" self#module_expr me
+     | Pmod_functor (s, mt, me) ->
+         pp f "functor@ (%s@ :@ %a)@;->@;%a"
+           s.txt  self#module_type mt  self#module_expr me
+@@ -1025,7 +1029,8 @@
+     | Pstr_module x ->
+         let rec module_helper me = match me.pmod_desc with
+         | Pmod_functor(s,mt,me) ->
+-            pp f "(%s:%a)"  s.txt  self#module_type mt ;
++            if s.txt = "*" then pp f "()"
++            else pp f "(%s:%a)"  s.txt  self#module_type mt ;
+             module_helper me
+         | _ -> me in
+         pp f "@[<hov2>module %s%a@]"
+Index: typing/includemod.ml
+===================================================================
+--- typing/includemod.ml	(revision 14285)
++++ typing/includemod.ml	(working copy)
+@@ -35,6 +35,7 @@
+       Ident.t * class_declaration * class_declaration *
+       Ctype.class_match_failure list
+   | Unbound_modtype_path of Path.t
++  | Impure_functor
+ 
+ type pos =
+     Module of Ident.t | Modtype of Ident.t | Arg of Ident.t | Body of Ident.t
+@@ -165,6 +166,8 @@
+   | (Mty_signature sig1, Mty_signature sig2) ->
+       signatures env cxt subst sig1 sig2
+   | (Mty_functor(param1, arg1, res1), Mty_functor(param2, arg2, res2)) ->
++      if Ident.name param1 = "*" && Ident.name param2 <> "*" then
++        raise (Error [cxt, env, Impure_functor]);
+       let arg2' = Subst.modtype subst arg2 in
+       let cc_arg = modtypes env (Arg param1::cxt) Subst.identity arg2' arg1 in
+       let cc_res =
+@@ -422,6 +425,8 @@
+       Includeclass.report_error reason
+   | Unbound_modtype_path path ->
+       fprintf ppf "Unbound module type %a" Printtyp.path path
++  | Impure_functor ->
++      fprintf ppf "An impure functor cannot be made applicative"
+ 
+ let rec context ppf = function
+     Module id :: rem ->
+Index: typing/includemod.mli
+===================================================================
+--- typing/includemod.mli	(revision 14285)
++++ typing/includemod.mli	(working copy)
+@@ -40,6 +40,7 @@
+       Ident.t * class_declaration * class_declaration *
+       Ctype.class_match_failure list
+   | Unbound_modtype_path of Path.t
++  | Impure_functor
+ 
+ type pos =
+     Module of Ident.t | Modtype of Ident.t | Arg of Ident.t | Body of Ident.t
+Index: typing/mtype.ml
+===================================================================
+--- typing/mtype.ml	(revision 14285)
++++ typing/mtype.ml	(working copy)
+@@ -34,7 +34,8 @@
+   match scrape env mty with
+     Mty_signature sg ->
+       Mty_signature(strengthen_sig env sg p)
+-  | Mty_functor(param, arg, res) when !Clflags.applicative_functors ->
++  | Mty_functor(param, arg, res)
++    when !Clflags.applicative_functors && Ident.name param <> "*" ->
+       Mty_functor(param, arg, strengthen env res (Papply(p, Pident param)))
+   | mty ->
+       mty
+Index: typing/oprint.ml
+===================================================================
+--- typing/oprint.ml	(revision 14285)
++++ typing/oprint.ml	(working copy)
+@@ -344,6 +344,8 @@
+ let rec print_out_module_type ppf =
+   function
+     Omty_abstract -> ()
++  | Omty_functor ("*", _, mty_res) ->
++      fprintf ppf "@[<2>functor@ () ->@ %a@]" print_out_module_type mty_res
+   | Omty_functor (name, mty_arg, mty_res) ->
+       fprintf ppf "@[<2>functor@ (%s : %a) ->@ %a@]" name
+         print_out_module_type mty_arg print_out_module_type mty_res
+Index: typing/typemod.ml
+===================================================================
+--- typing/typemod.ml	(revision 14285)
++++ typing/typemod.ml	(working copy)
+@@ -39,6 +39,7 @@
+   | Scoping_pack of Longident.t * type_expr
+   | Extension of string
+   | Recursive_module_require_explicit_type
++  | Apply_impure
+ 
+ exception Error of Location.t * Env.t * error
+ 
+@@ -950,8 +951,10 @@
+            mod_loc = smod.pmod_loc }
+   | Pmod_functor(name, smty, sbody) ->
+       let mty = transl_modtype env smty in
+-      let (id, newenv) = Env.enter_module name.txt mty.mty_type env in
+-      let body = type_module sttn true None newenv sbody in
++      let (id, newenv), funct_body =
++	if name.txt = "*" then (Ident.create "*", env), false else 
++	Env.enter_module name.txt mty.mty_type env, true in
++      let body = type_module sttn funct_body None newenv sbody in
+       rm { mod_desc = Tmod_functor(id, name, mty, body);
+            mod_type = Mty_functor(id, mty.mty_type, body.mod_type);
+            mod_env = env;
+@@ -964,6 +967,13 @@
+         type_module (sttn && path <> None) funct_body None env sfunct in
+       begin match Mtype.scrape env funct.mod_type with
+         Mty_functor(param, mty_param, mty_res) as mty_functor ->
++          let impure = Ident.name param = "*" in
++          if impure then begin
++            if sarg.pmod_desc <> Pmod_structure [] then
++              raise (Error (sfunct.pmod_loc, env, Apply_impure));
++            if funct_body then
++              raise (Error (smod.pmod_loc, env, Not_allowed_in_functor_body));
++          end;
+           let coercion =
+             try
+               Includemod.modtypes env arg.mod_type mty_param
+@@ -975,6 +985,7 @@
+                 Subst.modtype (Subst.add_module param path Subst.identity)
+                               mty_res
+             | None ->
++                if impure then mty_res else
+                 try
+                   Mtype.nondep_supertype
+                     (Env.add_module param arg.mod_type env) param mty_res
+@@ -1549,7 +1560,7 @@
+         Location.print_filename intf_name
+   | Not_allowed_in_functor_body ->
+       fprintf ppf
+-        "This kind of expression is not allowed within the body of a functor."
++        "This kind of expression is only allowed inside impure functors."
+   | With_need_typeconstr ->
+       fprintf ppf
+         "Only type constructors with identical parameters can be substituted."
+@@ -1570,6 +1581,8 @@
+       fprintf ppf "Uninterpreted extension '%s'." s
+   | Recursive_module_require_explicit_type ->
+       fprintf ppf "Recursive modules require an explicit module type."
++  | Apply_impure ->
++      fprintf ppf "This functor is impure. It can only be applied to ()"
+ 
+ let report_error env ppf err =
+   Printtyp.wrap_printing_env env (fun () -> report_error ppf err)
+Index: typing/typemod.mli
+===================================================================
+--- typing/typemod.mli	(revision 14285)
++++ typing/typemod.mli	(working copy)
+@@ -60,6 +60,7 @@
+   | Scoping_pack of Longident.t * type_expr
+   | Extension of string
+   | Recursive_module_require_explicit_type
++  | Apply_impure
+ 
+ exception Error of Location.t * Env.t * error
+ 

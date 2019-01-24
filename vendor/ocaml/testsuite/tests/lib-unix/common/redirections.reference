@@ -1,0 +1,28 @@
+** create_process
+---- File tmpout.txt
+aaaa
+123
+<end of file>
+xvar
+---- File tmperr.txt
+bbbb
+456
+** create_process 2>&1 redirection
+123
+456
+789
+** create_process swap 1-2
+123
+** open_process_in
+123
+456
+** open_process_out
+aa
+bbbb
+<end of file>
+** open_process_full
+123
+aa
+xvar
+456
+bbbb

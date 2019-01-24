@@ -1,0 +1,1 @@
+For implementation reasons, the toplevel does not support having script files (here "test.ml") inside expanded arguments passed through the -args{,0} command-line option.

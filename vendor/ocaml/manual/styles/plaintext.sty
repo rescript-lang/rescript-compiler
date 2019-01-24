@@ -1,0 +1,268 @@
+% Plain text style file.
+
+\typeout{Style option Plaintext}
+
+% Version from John Pavel's dvidoc.sty, March 1987
+% Heavily hacked by Xavier Leroy, June 1993.
+
+% Redefine all fonts to be the "doc" pseudo-font, with fixed spacing.
+% Since rm, tt and mi have different character encodings, we keep
+% several copies of the doc font, with different names, so that dvi2txt
+% can select the right encoding according to the name. Also, we use
+% different names for boldface and italics, so that dvi2txt can select
+% the right style whenever possible.
+
+\def\sl{\rm}
+\def\sc{\rm}
+
+\def\vpt{}
+\def\vipt{}
+\def\viipt{}
+\def\viiipt{}
+\def\ixpt{}
+\def\xipt{}
+\def\xiipt{}
+\def\xivpt{}
+\def\xviipt{}
+\def\xxpt{}
+\def\xxvpt{}
+
+%%% for i in fiv six sev egt nin ten elv twl frtn svnt twty twfv; do
+%%%   echo "\\font\\${i}rm = docrm"
+%%%   echo "\\font\\${i}mi = docmi"
+%%%   echo "\\font\\${i}sy = cmsy10"
+%%%   echo "\\font\\${i}it = docit"
+%%%   echo "\\font\\${i}bf = docbf"
+%%%   echo "\\font\\${i}tt = doctt"
+%%%   echo "\\font\\${i}sf = docrm"
+%%% done
+
+\font\fivrm = docrm
+\font\fivmi = docmi
+\font\fivsy = cmsy10
+\font\fivit = docit
+\font\fivbf = docbf
+\font\fivtt = doctt
+\font\fivsf = docrm
+\font\sixrm = docrm
+\font\sixmi = docmi
+\font\sixsy = cmsy10
+\font\sixit = docit
+\font\sixbf = docbf
+\font\sixtt = doctt
+\font\sixsf = docrm
+\font\sevrm = docrm
+\font\sevmi = docmi
+\font\sevsy = cmsy10
+\font\sevit = docit
+\font\sevbf = docbf
+\font\sevtt = doctt
+\font\sevsf = docrm
+\font\egtrm = docrm
+\font\egtmi = docmi
+\font\egtsy = cmsy10
+\font\egtit = docit
+\font\egtbf = docbf
+\font\egttt = doctt
+\font\egtsf = docrm
+\font\ninrm = docrm
+\font\ninmi = docmi
+\font\ninsy = cmsy10
+\font\ninit = docit
+\font\ninbf = docbf
+\font\nintt = doctt
+\font\ninsf = docrm
+\font\tenrm = docrm
+\font\tenmi = docmi
+\font\tensy = cmsy10
+\font\tenit = docit
+\font\tenbf = docbf
+\font\tentt = doctt
+\font\tensf = docrm
+\font\elvrm = docrm
+\font\elvmi = docmi
+\font\elvsy = cmsy10
+\font\elvit = docit
+\font\elvbf = docbf
+\font\elvtt = doctt
+\font\elvsf = docrm
+\font\twlrm = docrm
+\font\twlmi = docmi
+\font\twlsy = cmsy10
+\font\twlit = docit
+\font\twlbf = docbf
+\font\twltt = doctt
+\font\twlsf = docrm
+\font\frtnrm = docrm
+\font\frtnmi = docmi
+\font\frtnsy = cmsy10
+\font\frtnit = docit
+\font\frtnbf = docbf
+\font\frtntt = doctt
+\font\frtnsf = docrm
+\font\svtnrm = docrm
+\font\svtnmi = docmi
+\font\svtnsy = cmsy10
+\font\svtnit = docit
+\font\svtnbf = docbf
+\font\svtntt = doctt
+\font\svtnsf = docrm
+\font\twtyrm = docrm
+\font\twtymi = docmi
+\font\twtysy = cmsy10
+\font\twtyit = docit
+\font\twtybf = docbf
+\font\twtytt = doctt
+\font\twtysf = docrm
+\font\twfvrm = docrm
+\font\twfvmi = docmi
+\font\twfvsy = cmsy10
+\font\twfvit = docit
+\font\twfvbf = docbf
+\font\twfvtt = doctt
+\font\twfvsf = docrm
+
+\rm
+
+% Dimensions
+
+\hsize 78 em                     % 78 characters per line so fit any screen
+\textwidth 78 em
+\raggedright                     % Do not try to align on the right
+\parindent=2em                   % Two blanks for paragraph indentation
+\def\enspace{\kern 1em} \def\enskip{\hskip 1em\relax}
+
+% Vertical skips may best be multiples of \baselineskip
+\baselineskip=12pt               % 6 lines per inch
+\normalbaselineskip=\baselineskip
+\vsize 58\baselineskip           % 58 lines per page
+\textheight 58\baselineskip
+\voffset=0pt
+\parskip=0pt
+\smallskipamount=0pt
+\medskipamount= \baselineskip
+\bigskipamount=2\baselineskip
+\raggedbottom                    % do not try to align the page bottom
+
+% By default itemize is done with bullets, which don't look good.
+
+\def\labelitemi{-}
+\def\labelitemii{-}
+\def\labelitemiii{-}
+\def\labelitemiv{-}
+
+% Fix up table of contents.  Default latex uses fractional spacing between 
+% the section number and title.  This comes out as no space in the doc file 
+% so we add a space to numberline, and expand tempdima by one em to allow 
+% for it.  Also, go out of math mode for the dot in the leader.  Dots in 
+% math mode turn out to be colons! 
+%
+\def\@dottedtocline#1#2#3#4#5{\ifnum #1>\c@tocdepth \else
+  \vskip \z@ plus .2pt
+ {\hangindent #2\relax \rightskip \@tocrmarg \parfillskip -\rightskip
+   \parindent #2\relax\@afterindenttrue
+  \interlinepenalty\@M
+  \leavevmode 
+  \@tempdima #3\relax
+  \addtolength\@tempdima{1em}
+   #4\nobreak\leaders\hbox to 2em{\hss.\hss}\hfill \nobreak \hbox to\@pnumwidth{\hfil\rm #5}\par}\fi}
+\def\numberline#1{\advance\hangindent\@tempdima \hbox to\@tempdima{#1\hfil}\ }
+%
+% Can't really do superscripts, so do footnotes with [] 
+%
+\def\@makefnmark{\hbox{(\@thefnmark)}}
+\long\def\@makefntext#1{\parindent 1em\noindent 
+            \hbox to 3em{\hss\@thefnmark.}\ #1}
+\skip\footins 24pt plus 4pt minus 2pt
+\def\footnoterule{\kern-12\p@   
+\hbox to .4\columnwidth{\leaders\hbox{-}\hfill}} 
+%
+% \arrayrulewidth 1em \doublerulesep 1em 
+%
+% Some fairly obvious hacks.  No odd/even pages in doc files.  Can't do the
+% fancy TeX symbols.
+%
+\oddsidemargin 0pt \evensidemargin 0pt
+\def\TeX{TeX}
+\def\LaTeX{LaTeX}
+\def\SliTeX{SliTeX}
+\def\BibTeX{BibTeX}
+%
+% special versions of stuff from xxx10.sty, since only one font size
+%
+\def\@normalsize{\@setsize\normalsize{12pt}\xpt\@xpt
+\abovedisplayskip 12pt
+\belowdisplayskip 12pt
+\abovedisplayshortskip 12pt
+\belowdisplayshortskip 12pt
+\let\@listi\@listI}   % Setting of \@listi added 9 Jun 87
+\let\small\@normalsize
+\let\footnotesize\@normalsize
+\normalsize
+\footnotesep 12pt
+\labelsep 10pt
+\def\@listI{\leftmargin\leftmargini \parsep 12pt%
+\topsep 12pt%
+\partopsep 0pt%
+\itemsep 0pt}
+\let\@listi\@listI
+\let\@listii\@listI
+\let\@listiii\@listI
+\let\@listiv\@listI
+\let\@listv\@listI
+\let\@listvi\@listI
+\@listI
+
+% We had sort of random numbers of blank lines around section numbers.
+% Turns out they used various fractional spacing.  Rather than depend
+% upon the definition of startsection, just wrap something around it
+% that normalizes the arguments to 12pt.  Negative args have special
+% meanings.
+\let\@oldstartsec\@startsection
+\def\@startsection#1#2#3#4#5#6{
+  \@tempskipa #4\relax
+  \@tempskipb #5\relax
+  \ifdim \@tempskipa <\z@ \@tempskipa -12pt \else \@tempskipa 12pt \fi
+  \ifdim \@tempskipb >\z@ \@tempskipb 12pt \fi
+\@oldstartsec{#1}{#2}{#3}{\@tempskipa}{\@tempskipb}{#6}
+}
+
+% To get even spacing in the table of contents
+
+\def\@pnumwidth{3em}
+
+\def\l@part#1#2{\addpenalty{-\@highpenalty}%
+   \addvspace{12pt}% space above part line
+   \begingroup
+   \@tempdima 3em
+     \parindent \z@ \rightskip \@pnumwidth
+     \parfillskip -\@pnumwidth
+     {\large \bf
+     \leavevmode
+     #1\hfil \hbox to\@pnumwidth{\hss #2}}\par
+     \nobreak
+    \global\@nobreaktrue
+    \everypar{\global\@nobreakfalse\everypar{}}%% suggested by
+
+   \endgroup}
+
+\def\l@chapter#1#2{\addpenalty{-\@highpenalty}%
+   \vskip 12pt
+   \@tempdima 2em
+   \begingroup
+     \parindent \z@ \rightskip \@pnumwidth
+     \parfillskip -\@pnumwidth
+     \bf
+     \leavevmode
+      \advance\leftskip\@tempdima
+      \hskip -\leftskip
+     #1\nobreak\hfil \nobreak\hbox to\@pnumwidth{\hss #2}\par
+     \penalty\@highpenalty
+   \endgroup}
+
+\def\l@section{\@dottedtocline{1}{2em}{3em}}
+\def\l@subsection{\@dottedtocline{2}{4em}{3em}}
+\def\l@subsubsection{\@dottedtocline{3}{7em}{4em}}
+\def\l@paragraph{\@dottedtocline{4}{10em}{5em}}
+\def\l@subparagraph{\@dottedtocline{5}{12em}{6em}}
+

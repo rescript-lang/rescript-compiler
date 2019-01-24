@@ -1,0 +1,18 @@
+## Keep last 1000 alive, check each 100 ##
+length: 2228
+sum of kept alive 500500
+stats      :  (2228,2048,  6): 0: 658, 1: 791, 2: 413, 3: 143, 4: 34, 5: 8, 6: 1, 
+stats_alive:  (2228,2048,  6): 0: 658, 1: 791, 2: 413, 3: 143, 4: 34, 5: 8, 6: 1, 
+
+## Keep last 20 alive, check each 100 ##
+length: 458
+sum of kept alive 19810
+stats      :  (458,2048,  3): 0: 1636, 1: 370, 2: 38, 3: 4, 
+stats_alive:  (458,2048,  3): 0: 1636, 1: 370, 2: 38, 3: 4, 
+
+## Keep last 10 alive, check each 500 ##
+length: 339
+sum of kept alive 9955
+stats      :  (339,2048,  3): 0: 1740, 1: 279, 2: 27, 3: 2, 
+stats_alive:  (339,2048,  3): 0: 1740, 1: 279, 2: 27, 3: 2, 
+

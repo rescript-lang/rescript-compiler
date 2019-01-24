@@ -1,0 +1,35 @@
+
+#   - : unit = ()
+#   exception A
+# type a = A
+#   Characters 1-2:
+  A;;
+  ^
+Warning 41: A belongs to several types: a exn
+The first one was selected. Please disambiguate if this is wrong.
+- : a = A
+# Characters 6-7:
+  raise A;;
+        ^
+Warning 42: this use of A relies on type-directed disambiguation,
+it will not compile with OCaml 4.00 or earlier.
+Exception: A.
+# - : a -> unit = <fun>
+# Characters 26-27:
+  function Not_found -> 1 | A -> 2 | _ -> 3;;
+                            ^
+Warning 42: this use of A relies on type-directed disambiguation,
+it will not compile with OCaml 4.00 or earlier.
+- : exn -> int = <fun>
+# Characters 10-11:
+  try raise A with A -> 2;;
+            ^
+Warning 42: this use of A relies on type-directed disambiguation,
+it will not compile with OCaml 4.00 or earlier.
+Characters 17-18:
+  try raise A with A -> 2;;
+                   ^
+Warning 42: this use of A relies on type-directed disambiguation,
+it will not compile with OCaml 4.00 or earlier.
+- : int = 2
+# 

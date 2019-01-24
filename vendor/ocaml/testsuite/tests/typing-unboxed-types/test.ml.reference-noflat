@@ -1,0 +1,172 @@
+
+#       type t1 = A of string [@@unboxed]
+#       - : bool = true
+#     type t2 = { f : string; } [@@unboxed]
+#       - : bool = true
+#     type t3 = B of { g : string; } [@@unboxed]
+#       - : bool = true
+#     Characters 29-58:
+  type t4 = C [@@ocaml.unboxed];;  (* no argument *)
+  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error: This type cannot be unboxed because its constructor has no argument.
+# Characters 0-45:
+  type t5 = D of int * string [@@ocaml.unboxed];; (* more than one argument *)
+  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error: This type cannot be unboxed because
+       its constructor has more than one argument.
+# Characters 0-33:
+  type t5 = E | F [@@ocaml.unboxed];;          (* more than one constructor *)
+  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error: This type cannot be unboxed because it has more than one constructor.
+# Characters 0-40:
+  type t6 = G of int | H [@@ocaml.unboxed];;
+  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error: This type cannot be unboxed because it has more than one constructor.
+# Characters 0-51:
+  type t7 = I of string | J of bool [@@ocaml.unboxed];;
+  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error: This type cannot be unboxed because it has more than one constructor.
+#   Characters 1-50:
+  type t8 = { h : bool; i : int } [@@ocaml.unboxed];;  (* more than one field *)
+  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error: This type cannot be unboxed because it has more than one field.
+# Characters 0-56:
+  type t9 = K of { j : string; l : int } [@@ocaml.unboxed];;
+  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error: This type cannot be unboxed because
+       its constructor has more than one argument.
+#     type t10 = A of t10 [@@unboxed]
+# Characters 12-15:
+  let rec x = A x;;
+              ^^^
+Error: This kind of expression is not allowed as right-hand side of `let rec'
+#             Characters 121-172:
+  ......struct
+    type t = A of string [@@ocaml.unboxed]
+  end..
+Error: Signature mismatch:
+       Modules do not match:
+         sig type t = A of string [@@unboxed] end
+       is not included in
+         sig type t = A of string end
+       Type declarations do not match:
+         type t = A of string [@@unboxed]
+       is not included in
+         type t = A of string
+       Their internal representations differ:
+       the first declaration uses unboxed representation.
+#           Characters 63-96:
+  ......struct
+    type t = A of string
+  end..
+Error: Signature mismatch:
+       Modules do not match:
+         sig type t = A of string end
+       is not included in
+         sig type t = A of string [@@unboxed] end
+       Type declarations do not match:
+         type t = A of string
+       is not included in
+         type t = A of string [@@unboxed]
+       Their internal representations differ:
+       the second declaration uses unboxed representation.
+#           Characters 48-102:
+  ......struct
+    type t = { f : string } [@@ocaml.unboxed]
+  end..
+Error: Signature mismatch:
+       Modules do not match:
+         sig type t = { f : string; } [@@unboxed] end
+       is not included in
+         sig type t = { f : string; } end
+       Type declarations do not match:
+         type t = { f : string; } [@@unboxed]
+       is not included in
+         type t = { f : string; }
+       Their internal representations differ:
+       the first declaration uses unboxed representation.
+#           Characters 66-102:
+  ......struct
+    type t = { f : string }
+  end..
+Error: Signature mismatch:
+       Modules do not match:
+         sig type t = { f : string; } end
+       is not included in
+         sig type t = { f : string; } [@@unboxed] end
+       Type declarations do not match:
+         type t = { f : string; }
+       is not included in
+         type t = { f : string; } [@@unboxed]
+       Their internal representations differ:
+       the second declaration uses unboxed representation.
+#           Characters 53-112:
+  ......struct
+    type t = A of { f : string } [@@ocaml.unboxed]
+  end..
+Error: Signature mismatch:
+       Modules do not match:
+         sig type t = A of { f : string; } [@@unboxed] end
+       is not included in
+         sig type t = A of { f : string; } end
+       Type declarations do not match:
+         type t = A of { f : string; } [@@unboxed]
+       is not included in
+         type t = A of { f : string; }
+       Their internal representations differ:
+       the first declaration uses unboxed representation.
+#           Characters 71-112:
+  ......struct
+    type t = A of { f : string }
+  end..
+Error: Signature mismatch:
+       Modules do not match:
+         sig type t = A of { f : string; } end
+       is not included in
+         sig type t = A of { f : string; } [@@unboxed] end
+       Type declarations do not match:
+         type t = A of { f : string; }
+       is not included in
+         type t = A of { f : string; } [@@unboxed]
+       Their internal representations differ:
+       the second declaration uses unboxed representation.
+#       type t11 = L of float [@@unboxed]
+#     - : unit = ()
+#       type 'a t12 = M of 'a t12 [@@unboxed]
+# val f : int t12 array -> int t12 = <fun>
+#     type t13 = A : 'a t12 -> t13 [@@unboxed]
+#         type t14
+# type t15 = A of t14 [@@unboxed]
+#     type 'a abs
+# type t16 = A : 'a abs -> t16 [@@unboxed]
+#     type t18 = A : 'a list abs -> t18 [@@unboxed]
+#   *               Characters 176-256:
+  ......struct
+    type t = A of float [@@ocaml.unboxed]
+    type u = { f1 : t; f2 : t }
+  end..
+Error: Signature mismatch:
+       ...
+       Type declarations do not match:
+         type u = { f1 : t; f2 : t; }
+       is not included in
+         type u = { f1 : t; f2 : t; }
+       Their internal representations differ:
+       the first declaration uses unboxed float representation.
+#     * *           module T : sig type t [@@immediate] end
+#   *   type 'a s = S : 'a -> 'a s [@@unboxed]
+# type t = T : 'a s -> t [@@unboxed]
+#     type 'a s = S : 'a -> 'a option s [@@unboxed]
+# type t = T : 'a s -> t [@@unboxed]
+#                 module M :
+  sig type 'a r constraint 'a = unit -> 'b val inj : 'b -> (unit -> 'b) r end
+#     type t = T : (unit -> 'a) M.r -> t [@@unboxed]
+#   type 'a s = S : (unit -> 'a) M.r -> 'a option s [@@unboxed]
+#     type t = T : 'a s -> t [@@unboxed]
+#     type 'a t = T : 'a s -> 'a t [@@unboxed]
+#           type _ s = S : 'a t -> 'b s [@@unboxed]
+and _ t = T : 'a -> 'a s t
+#             type 'a s
+type ('a, 'p) t = private 'a s
+type 'a packed = T : ('a, 'b) t -> 'a packed [@@unboxed]
+# 

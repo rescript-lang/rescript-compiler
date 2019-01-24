@@ -1,0 +1,3 @@
+File "w04.ml", line 10, characters 10-40:
+Warning 4: this pattern-matching is fragile.
+It will remain exhaustive when constructors are added to type t.

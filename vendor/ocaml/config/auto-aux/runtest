@@ -1,0 +1,26 @@
+#!/bin/sh
+
+#**************************************************************************
+#*                                                                        *
+#*                                 OCaml                                  *
+#*                                                                        *
+#*            Xavier Leroy, projet Cristal, INRIA Rocquencourt            *
+#*                                                                        *
+#*   Copyright 1995 Institut National de Recherche en Informatique et     *
+#*     en Automatique.                                                    *
+#*                                                                        *
+#*   All rights reserved.  This file is distributed under the terms of    *
+#*   the GNU Lesser General Public License version 2.1, with the          *
+#*   special exception on linking described in the file LICENSE.          *
+#*                                                                        *
+#**************************************************************************
+
+cmd="$cc $cflags -o tst $* $ldflags $cclibs"
+
+if $verbose; then
+  echo "runtest: $cmd" >&2
+  $cmd || exit 100
+else
+  $cmd 2> /dev/null || exit 100
+fi
+exec ./tst

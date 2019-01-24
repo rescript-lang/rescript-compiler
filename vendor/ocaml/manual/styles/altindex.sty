@@ -1,0 +1,39 @@
+%% An attempt to have several index files
+%%
+%% Defines      \altindex{filename}{word to index}
+%% and          \makealtindex{filename}
+%%
+%% It is possible to define a macro for each index as follows:
+%%              \newcommand{\myindex}{\altindex{myindexfile}}
+%%
+%% This code is not really clean, there are still a number of things
+%% that I don't understand... but it works.
+
+%% \makealtindex{filename} opens filename.idx for writing.
+
+\def\makealtindex#1{\if@filesw
+  \expandafter\newwrite\csname @#1altindexfile\endcsname
+  \immediate\openout\expandafter\csname @#1altindexfile\endcsname=#1.idx
+  \typeout{Writing alternate index file #1.idx}\fi}
+
+%% \@wraltindex makes the assumes that a trailing `\fi' will get bound
+%% to #2. So, it `eats' it as second parameter and reinserts it.
+%% Quick and dirty, I know...
+%% Writes the index entry #3 into #1.
+
+\def\@wraltindex#1#2#3{\let\thepage\relax
+   \xdef\@gtempa{\write#1{\string
+      \indexentry{#3}{\thepage}}}\fi\endgroup\@gtempa
+   \if@nobreak \ifvmode\nobreak\fi\fi\@esphack}
+
+%% \altindex{filename}{index entry} does nothing if
+%% \@<filename>altindexfile is \relax (i.e. filename.idx not open).
+%% Otherwise, writes the index entry, and closes the whole stuff (some
+%% groups, and some \if).
+
+\def\altindex#1{\@bsphack\begingroup
+   \def\protect##1{\string##1\space}\@sanitize
+   \@ifundefined{@#1altindexfile}%
+          {\endgroup\@esphack}%
+          {\@wraltindex{\expandafter\csname @#1altindexfile\endcsname}}
+}

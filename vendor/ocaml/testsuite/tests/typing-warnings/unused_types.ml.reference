@@ -1,0 +1,58 @@
+
+#         Characters 35-52:
+    type unused = int
+    ^^^^^^^^^^^^^^^^^
+Warning 34: unused type unused.
+module Unused : sig  end
+#             Characters 68-93:
+    type nonrec unused = used
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+Warning 34: unused type unused.
+module Unused_nonrec : sig  end
+#           Characters 40-65:
+    type unused = A of unused
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+Warning 34: unused type unused.
+Characters 40-65:
+    type unused = A of unused
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+Warning 37: unused constructor A.
+module Unused_rec : sig  end
+#           Characters 46-70:
+    exception Nobody_uses_me
+    ^^^^^^^^^^^^^^^^^^^^^^^^
+Warning 38: unused exception Nobody_uses_me
+module Unused_exception : sig  end
+#               Characters 96-110:
+    type t += Nobody_uses_me
+              ^^^^^^^^^^^^^^
+Warning 38: unused extension constructor Nobody_uses_me
+module Unused_extension_constructor : sig type t = .. end
+#                   Characters 91-121:
+    exception Nobody_constructs_me
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Warning 38: exception Nobody_constructs_me is never used to build values.
+(However, this constructor appears in patterns.)
+module Unused_exception_outside_patterns : sig val falsity : exn -> bool end
+#                       Characters 127-147:
+    type t += Nobody_constructs_me
+              ^^^^^^^^^^^^^^^^^^^^
+Warning 38: extension constructor Nobody_constructs_me is never used to build values.
+(However, this constructor appears in patterns.)
+module Unused_extension_outside_patterns :
+  sig type t = .. val falsity : t -> bool end
+#             Characters 88-109:
+    exception Private_exn
+    ^^^^^^^^^^^^^^^^^^^^^
+Warning 38: exception Private_exn is never used to build values.
+It is exported or rebound as a private extension.
+module Unused_private_exception : sig type exn += private Private_exn end
+#                 Characters 124-135:
+    type t += Private_ext
+              ^^^^^^^^^^^
+Warning 38: extension constructor Private_ext is never used to build values.
+It is exported or rebound as a private extension.
+module Unused_private_extension :
+  sig type t = .. type t += private Private_ext end
+#           module Pr7438 : sig  end
+# 

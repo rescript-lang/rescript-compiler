@@ -1,0 +1,2 @@
+File "_none_", line 1:
+Warning 58: no cmx file was found in path for module Module_without_cmx, and its interface was not compiled with -opaque

@@ -1,0 +1,360 @@
+
+#01. Testing test_readdir unix_readdir
+=================================
+
+Unix.{opendir,readdir} "." ... "été.txt" "simple.txt" "sœur.txt" "你好.txt"
+
+#02. Testing test_readdir sys_readdir
+================================
+
+Sys.readdir "." ... "été.txt" "simple.txt" "sœur.txt" "你好.txt"
+
+#03. Testing test_open_in
+====================
+
+Sys.readdir "." ... "été.txt" "simple.txt" "sœur.txt" "你好.txt"
+open_in "été.txt" ... OK
+open_in "simple.txt" ... OK
+open_in "sœur.txt" ... OK
+open_in "你好.txt" ... OK
+
+#04. Testing test_open_out
+=====================
+
+open_out "верблюды" ... OK
+open_out "骆驼" ... OK
+open_out "קעמל" ... OK
+open_out "اونٹ" ... OK
+open_out "Lạc đà" ... OK
+open_out "ఒంటె" ... OK
+open_out "ஒட்டகம்" ... OK
+open_out "وشتر" ... OK
+open_out "उष्ट्रः" ... OK
+open_out "اٺ" ... OK
+
+#05. Testing test_file_exists
+========================
+
+Sys.file_exists "верблюды" ... true
+Sys.file_exists "骆驼" ... true
+Sys.file_exists "קעמל" ... true
+Sys.file_exists "اونٹ" ... true
+Sys.file_exists "Lạc đà" ... true
+Sys.file_exists "ఒంటె" ... true
+Sys.file_exists "ஒட்டகம்" ... true
+Sys.file_exists "وشتر" ... true
+Sys.file_exists "उष्ट्रः" ... true
+Sys.file_exists "اٺ" ... true
+
+#06. Testing test_stat
+=================
+
+Unix.stat "верблюды" ... S_REG
+Unix.lstat "верблюды" ... S_REG
+Unix.LargeFile.stat "верблюды" ... S_REG
+Unix.LargeFile.lstat "верблюды" ... S_REG
+Unix.stat "骆驼" ... S_REG
+Unix.lstat "骆驼" ... S_REG
+Unix.LargeFile.stat "骆驼" ... S_REG
+Unix.LargeFile.lstat "骆驼" ... S_REG
+Unix.stat "קעמל" ... S_REG
+Unix.lstat "קעמל" ... S_REG
+Unix.LargeFile.stat "קעמל" ... S_REG
+Unix.LargeFile.lstat "קעמל" ... S_REG
+Unix.stat "اونٹ" ... S_REG
+Unix.lstat "اونٹ" ... S_REG
+Unix.LargeFile.stat "اونٹ" ... S_REG
+Unix.LargeFile.lstat "اونٹ" ... S_REG
+Unix.stat "Lạc đà" ... S_REG
+Unix.lstat "Lạc đà" ... S_REG
+Unix.LargeFile.stat "Lạc đà" ... S_REG
+Unix.LargeFile.lstat "Lạc đà" ... S_REG
+Unix.stat "ఒంటె" ... S_REG
+Unix.lstat "ఒంటె" ... S_REG
+Unix.LargeFile.stat "ఒంటె" ... S_REG
+Unix.LargeFile.lstat "ఒంటె" ... S_REG
+Unix.stat "ஒட்டகம்" ... S_REG
+Unix.lstat "ஒட்டகம்" ... S_REG
+Unix.LargeFile.stat "ஒட்டகம்" ... S_REG
+Unix.LargeFile.lstat "ஒட்டகம்" ... S_REG
+Unix.stat "وشتر" ... S_REG
+Unix.lstat "وشتر" ... S_REG
+Unix.LargeFile.stat "وشتر" ... S_REG
+Unix.LargeFile.lstat "وشتر" ... S_REG
+Unix.stat "उष्ट्रः" ... S_REG
+Unix.lstat "उष्ट्रः" ... S_REG
+Unix.LargeFile.stat "उष्ट्रः" ... S_REG
+Unix.LargeFile.lstat "उष्ट्रः" ... S_REG
+Unix.stat "اٺ" ... S_REG
+Unix.lstat "اٺ" ... S_REG
+Unix.LargeFile.stat "اٺ" ... S_REG
+Unix.LargeFile.lstat "اٺ" ... S_REG
+
+#07. Testing test_access
+===================
+
+Unix.access "верблюды" ... OK
+Unix.access "骆驼" ... OK
+Unix.access "קעמל" ... OK
+Unix.access "اونٹ" ... OK
+Unix.access "Lạc đà" ... OK
+Unix.access "ఒంటె" ... OK
+Unix.access "ஒட்டகம்" ... OK
+Unix.access "وشتر" ... OK
+Unix.access "उष्ट्रः" ... OK
+Unix.access "اٺ" ... OK
+
+#08. Testing test_rename unix_rename
+===============================
+
+Unix.rename "верблюды" "верблюды-1" ... OK
+Sys.file_exists "верблюды" ... false
+Sys.file_exists "верблюды-1" ... true
+Unix.rename "верблюды-1" "верблюды" ... OK
+Sys.file_exists "верблюды" ... true
+Sys.file_exists "верблюды-1" ... false
+Unix.rename "骆驼" "骆驼-1" ... OK
+Sys.file_exists "骆驼" ... false
+Sys.file_exists "骆驼-1" ... true
+Unix.rename "骆驼-1" "骆驼" ... OK
+Sys.file_exists "骆驼" ... true
+Sys.file_exists "骆驼-1" ... false
+Unix.rename "קעמל" "קעמל-1" ... OK
+Sys.file_exists "קעמל" ... false
+Sys.file_exists "קעמל-1" ... true
+Unix.rename "קעמל-1" "קעמל" ... OK
+Sys.file_exists "קעמל" ... true
+Sys.file_exists "קעמל-1" ... false
+Unix.rename "اونٹ" "اونٹ-1" ... OK
+Sys.file_exists "اونٹ" ... false
+Sys.file_exists "اونٹ-1" ... true
+Unix.rename "اونٹ-1" "اونٹ" ... OK
+Sys.file_exists "اونٹ" ... true
+Sys.file_exists "اونٹ-1" ... false
+Unix.rename "Lạc đà" "Lạc đà-1" ... OK
+Sys.file_exists "Lạc đà" ... false
+Sys.file_exists "Lạc đà-1" ... true
+Unix.rename "Lạc đà-1" "Lạc đà" ... OK
+Sys.file_exists "Lạc đà" ... true
+Sys.file_exists "Lạc đà-1" ... false
+Unix.rename "ఒంటె" "ఒంటె-1" ... OK
+Sys.file_exists "ఒంటె" ... false
+Sys.file_exists "ఒంటె-1" ... true
+Unix.rename "ఒంటె-1" "ఒంటె" ... OK
+Sys.file_exists "ఒంటె" ... true
+Sys.file_exists "ఒంటె-1" ... false
+Unix.rename "ஒட்டகம்" "ஒட்டகம்-1" ... OK
+Sys.file_exists "ஒட்டகம்" ... false
+Sys.file_exists "ஒட்டகம்-1" ... true
+Unix.rename "ஒட்டகம்-1" "ஒட்டகம்" ... OK
+Sys.file_exists "ஒட்டகம்" ... true
+Sys.file_exists "ஒட்டகம்-1" ... false
+Unix.rename "وشتر" "وشتر-1" ... OK
+Sys.file_exists "وشتر" ... false
+Sys.file_exists "وشتر-1" ... true
+Unix.rename "وشتر-1" "وشتر" ... OK
+Sys.file_exists "وشتر" ... true
+Sys.file_exists "وشتر-1" ... false
+Unix.rename "उष्ट्रः" "उष्ट्रः-1" ... OK
+Sys.file_exists "उष्ट्रः" ... false
+Sys.file_exists "उष्ट्रः-1" ... true
+Unix.rename "उष्ट्रः-1" "उष्ट्रः" ... OK
+Sys.file_exists "उष्ट्रः" ... true
+Sys.file_exists "उष्ट्रः-1" ... false
+Unix.rename "اٺ" "اٺ-1" ... OK
+Sys.file_exists "اٺ" ... false
+Sys.file_exists "اٺ-1" ... true
+Unix.rename "اٺ-1" "اٺ" ... OK
+Sys.file_exists "اٺ" ... true
+Sys.file_exists "اٺ-1" ... false
+
+#09. Testing test_rename sys_rename
+==============================
+
+Sys.rename "верблюды" "верблюды-1" ... OK
+Sys.file_exists "верблюды" ... false
+Sys.file_exists "верблюды-1" ... true
+Sys.rename "верблюды-1" "верблюды" ... OK
+Sys.file_exists "верблюды" ... true
+Sys.file_exists "верблюды-1" ... false
+Sys.rename "骆驼" "骆驼-1" ... OK
+Sys.file_exists "骆驼" ... false
+Sys.file_exists "骆驼-1" ... true
+Sys.rename "骆驼-1" "骆驼" ... OK
+Sys.file_exists "骆驼" ... true
+Sys.file_exists "骆驼-1" ... false
+Sys.rename "קעמל" "קעמל-1" ... OK
+Sys.file_exists "קעמל" ... false
+Sys.file_exists "קעמל-1" ... true
+Sys.rename "קעמל-1" "קעמל" ... OK
+Sys.file_exists "קעמל" ... true
+Sys.file_exists "קעמל-1" ... false
+Sys.rename "اونٹ" "اونٹ-1" ... OK
+Sys.file_exists "اونٹ" ... false
+Sys.file_exists "اونٹ-1" ... true
+Sys.rename "اونٹ-1" "اونٹ" ... OK
+Sys.file_exists "اونٹ" ... true
+Sys.file_exists "اونٹ-1" ... false
+Sys.rename "Lạc đà" "Lạc đà-1" ... OK
+Sys.file_exists "Lạc đà" ... false
+Sys.file_exists "Lạc đà-1" ... true
+Sys.rename "Lạc đà-1" "Lạc đà" ... OK
+Sys.file_exists "Lạc đà" ... true
+Sys.file_exists "Lạc đà-1" ... false
+Sys.rename "ఒంటె" "ఒంటె-1" ... OK
+Sys.file_exists "ఒంటె" ... false
+Sys.file_exists "ఒంటె-1" ... true
+Sys.rename "ఒంటె-1" "ఒంటె" ... OK
+Sys.file_exists "ఒంటె" ... true
+Sys.file_exists "ఒంటె-1" ... false
+Sys.rename "ஒட்டகம்" "ஒட்டகம்-1" ... OK
+Sys.file_exists "ஒட்டகம்" ... false
+Sys.file_exists "ஒட்டகம்-1" ... true
+Sys.rename "ஒட்டகம்-1" "ஒட்டகம்" ... OK
+Sys.file_exists "ஒட்டகம்" ... true
+Sys.file_exists "ஒட்டகம்-1" ... false
+Sys.rename "وشتر" "وشتر-1" ... OK
+Sys.file_exists "وشتر" ... false
+Sys.file_exists "وشتر-1" ... true
+Sys.rename "وشتر-1" "وشتر" ... OK
+Sys.file_exists "وشتر" ... true
+Sys.file_exists "وشتر-1" ... false
+Sys.rename "उष्ट्रः" "उष्ट्रः-1" ... OK
+Sys.file_exists "उष्ट्रः" ... false
+Sys.file_exists "उष्ट्रः-1" ... true
+Sys.rename "उष्ट्रः-1" "उष्ट्रः" ... OK
+Sys.file_exists "उष्ट्रः" ... true
+Sys.file_exists "उष्ट्रः-1" ... false
+Sys.rename "اٺ" "اٺ-1" ... OK
+Sys.file_exists "اٺ" ... false
+Sys.file_exists "اٺ-1" ... true
+Sys.rename "اٺ-1" "اٺ" ... OK
+Sys.file_exists "اٺ" ... true
+Sys.file_exists "اٺ-1" ... false
+
+#10. Testing test_remove remove
+==========================
+
+Sys.remove "верблюды" ... OK
+Sys.file_exists "верблюды" ... false
+Sys.remove "骆驼" ... OK
+Sys.file_exists "骆驼" ... false
+Sys.remove "קעמל" ... OK
+Sys.file_exists "קעמל" ... false
+Sys.remove "اونٹ" ... OK
+Sys.file_exists "اونٹ" ... false
+Sys.remove "Lạc đà" ... OK
+Sys.file_exists "Lạc đà" ... false
+Sys.remove "ఒంటె" ... OK
+Sys.file_exists "ఒంటె" ... false
+Sys.remove "ஒட்டகம்" ... OK
+Sys.file_exists "ஒட்டகம்" ... false
+Sys.remove "وشتر" ... OK
+Sys.file_exists "وشتر" ... false
+Sys.remove "उष्ट्रः" ... OK
+Sys.file_exists "उष्ट्रः" ... false
+Sys.remove "اٺ" ... OK
+Sys.file_exists "اٺ" ... false
+
+#11. Testing test_file_exists
+========================
+
+Sys.file_exists "верблюды" ... false
+Sys.file_exists "骆驼" ... false
+Sys.file_exists "קעמל" ... false
+Sys.file_exists "اونٹ" ... false
+Sys.file_exists "Lạc đà" ... false
+Sys.file_exists "ఒంటె" ... false
+Sys.file_exists "ஒட்டகம்" ... false
+Sys.file_exists "وشتر" ... false
+Sys.file_exists "उष्ट्रः" ... false
+Sys.file_exists "اٺ" ... false
+
+#12. Testing test_mkdir
+==================
+
+Unix.mkdir "été" 493 ... OK
+Sys.file_exists "été" ... true
+Sys.is_directory "été" ... true
+Unix.mkdir "simple" 493 ... OK
+Sys.file_exists "simple" ... true
+Sys.is_directory "simple" ... true
+Unix.mkdir "sœur" 493 ... OK
+Sys.file_exists "sœur" ... true
+Sys.is_directory "sœur" ... true
+Unix.mkdir "你好" 493 ... OK
+Sys.file_exists "你好" ... true
+Sys.is_directory "你好" ... true
+
+#13. Testing test_chdir sys_chdir sys_getcwd
+=======================================
+
+Sys.chdir "été" ... OK
+Sys.getcwd () ... "été"
+Sys.chdir ".." ... OK
+Sys.chdir "simple" ... OK
+Sys.getcwd () ... "simple"
+Sys.chdir ".." ... OK
+Sys.chdir "sœur" ... OK
+Sys.getcwd () ... "sœur"
+Sys.chdir ".." ... OK
+Sys.chdir "你好" ... OK
+Sys.getcwd () ... "你好"
+Sys.chdir ".." ... OK
+
+#14. Testing test_chdir unix_chdir unix_getcwd
+=========================================
+
+Unix.chdir "été" ... OK
+Unix.getcwd () ... "été"
+Unix.chdir ".." ... OK
+Unix.chdir "simple" ... OK
+Unix.getcwd () ... "simple"
+Unix.chdir ".." ... OK
+Unix.chdir "sœur" ... OK
+Unix.getcwd () ... "sœur"
+Unix.chdir ".." ... OK
+Unix.chdir "你好" ... OK
+Unix.getcwd () ... "你好"
+Unix.chdir ".." ... OK
+
+#15. Testing test_rmdir
+==================
+
+Unix.rmdir "été" ... OK
+Sys.file_exists "été" ... false
+Unix.rmdir "simple" ... OK
+Sys.file_exists "simple" ... false
+Unix.rmdir "sœur" ... OK
+Sys.file_exists "sœur" ... false
+Unix.rmdir "你好" ... OK
+Sys.file_exists "你好" ... false
+
+#16. Testing test_getenv
+===================
+
+Unix.putenv "été" "верблюды" ... OK
+Sys.getenv "été" ... "верблюды"
+Unix.environment "été" ... "верблюды"
+Unix.putenv "simple" "骆驼" ... OK
+Sys.getenv "simple" ... "骆驼"
+Unix.environment "simple" ... "骆驼"
+Unix.putenv "sœur" "קעמל" ... OK
+Sys.getenv "sœur" ... "קעמל"
+Unix.environment "sœur" ... "קעמל"
+Unix.putenv "你好" "اونٹ" ... OK
+Sys.getenv "你好" ... "اونٹ"
+Unix.environment "你好" ... "اونٹ"
+
+#17. Testing test_open_process_in
+============================
+
+Unix.open_process_in ... ... "верблюды" "骆驼" "קעמל" "اونٹ" "Lạc đà" "ఒంటె" "ஒட்டகம்" "وشتر" "उष्ट्रः" "اٺ"
+
+#18. Testing test_open_process_full
+==============================
+
+Unix.open_process_full ... "OCAML_UTF8_VAR0=верблюды" "OCAML_UTF8_VAR1=骆驼" "OCAML_UTF8_VAR2=קעמל" "OCAML_UTF8_VAR3=اونٹ" ... "OCAML_UTF8_VAR0=верблюды" "OCAML_UTF8_VAR1=骆驼" "OCAML_UTF8_VAR2=קעמל" "OCAML_UTF8_VAR3=اونٹ"
+
+
+*** ALL TESTS DONE (207/207 OK) ***

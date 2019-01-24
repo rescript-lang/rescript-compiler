@@ -1,0 +1,40 @@
+#!/usr/local/bin/perl
+# Expand \input commands
+
+@path = split(/:/, $ENV{'TEXINPUTS'});
+
+while(<>) {
+  if (/^\\input\s*([^\s]*)/) {
+    do expand($1);
+  } else {
+    print $_;
+  }
+}
+
+sub expand {
+  local ($filename) = @_;
+  local (*INPUT);
+  $filename =~ s/\.tex$//;
+  $filename = do find_in_path($filename);
+  open(INPUT, $filename) || (warn("cannot find $filename"), return);
+  print "%%% $filename\n";
+  while(<INPUT>) {
+    if (/^\\input\s*([^\s]*)/) {
+      do expand($1);
+    } else {
+      print $_;
+    }
+  }
+  close(INPUT);
+}
+
+sub find_in_path {
+    local ($name) = @_;
+    local ($dir);
+    foreach $dir (@path) {
+        return "$dir/$name.htex" if (-f "$dir/$name.htex");
+        return "$dir/$name.tex" if (-f "$dir/$name.tex");
+    }
+    return $name;
+}
+

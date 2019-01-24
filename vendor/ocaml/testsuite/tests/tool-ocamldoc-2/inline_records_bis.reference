@@ -1,0 +1,286 @@
+\documentclass[11pt]{article} 
+\usepackage[latin1]{inputenc} 
+\usepackage[T1]{fontenc} 
+\usepackage{textcomp}
+\usepackage{fullpage} 
+\usepackage{url} 
+\usepackage{ocamldoc}
+\begin{document}
+\tableofcontents
+\section{Module {\tt{Inline\_records\_bis}} : This test focuses on the printing of documentation for inline record
+  within the latex generator.}
+\label{Inline-underscorerecords-underscorebis}\index{Inline-underscorerecords-underscorebis@\verb`Inline_records_bis`}
+
+
+
+
+\ocamldocvspace{0.5cm}
+
+
+
+\label{exception:Inline-underscorerecords-underscorebis.Simple}\begin{ocamldoccode}
+exception Simple
+\end{ocamldoccode}
+\index{Simple@\verb`Simple`}
+\begin{ocamldocdescription}
+A nice exception
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{exception:Inline-underscorerecords-underscorebis.Less}\begin{ocamldoccode}
+exception Less of int
+\end{ocamldoccode}
+\index{Less@\verb`Less`}
+\begin{ocamldocdescription}
+A less simple exception
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{TYPInline-underscorerecords-underscorebis.ext}\begin{ocamldoccode}
+type ext = ..
+\end{ocamldoccode}
+\index{ext@\verb`ext`}
+\begin{ocamldocdescription}
+An open sum type
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{TYPInline-underscorerecords-underscorebis.r}\begin{ocamldoccode}
+type r = 
+{\char123}  lbl : int ;
+\end{ocamldoccode}
+\begin{ocamldoccomment}
+Field documentation for non-inline, {\tt{lbl : int}}
+
+
+\end{ocamldoccomment}
+\begin{ocamldoccode}
+  more : int list ;
+\end{ocamldoccode}
+\begin{ocamldoccomment}
+More documentation for r, {\tt{more : int list}}
+
+
+\end{ocamldoccomment}
+\begin{ocamldoccode}
+{\char125}
+\end{ocamldoccode}
+\index{r@\verb`r`}
+\begin{ocamldocdescription}
+A simple record type for reference
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{TYPInline-underscorerecords-underscorebis.t}\begin{ocamldoccode}
+type t =
+  | A of {\char123}  lbl : int ;
+\end{ocamldoccode}
+\begin{ocamldoccomment}
+{\tt{A}} field documentation
+
+
+\end{ocamldoccomment}
+\begin{ocamldoccode}
+  more : int list ;
+\end{ocamldoccode}
+\begin{ocamldoccomment}
+More {\tt{A}} field documentation
+
+
+\end{ocamldoccomment}
+\begin{ocamldoccode}
+{\char125}
+\end{ocamldoccode}
+\begin{ocamldoccomment}
+Constructor documentation
+
+
+\end{ocamldoccomment}
+\index{t@\verb`t`}
+\begin{ocamldocdescription}
+A sum type with one inline record
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{TYPInline-underscorerecords-underscorebis.s}\begin{ocamldoccode}
+type s =
+  | B of {\char123}  a_label_for_B : int ;
+\end{ocamldoccode}
+\begin{ocamldoccomment}
+{\tt{B}} field documentation
+
+
+\end{ocamldoccomment}
+\begin{ocamldoccode}
+  more_label_for_B : int list ;
+\end{ocamldoccode}
+\begin{ocamldoccomment}
+More {\tt{B}} field documentation
+
+
+\end{ocamldoccomment}
+\begin{ocamldoccode}
+{\char125}
+\end{ocamldoccode}
+\begin{ocamldoccomment}
+Constructor B documentation
+
+
+\end{ocamldoccomment}
+\begin{ocamldoccode}
+  | C of {\char123}  c_has_label_too : float ;
+\end{ocamldoccode}
+\begin{ocamldoccomment}
+{\tt{C}} field documentation
+
+
+\end{ocamldoccomment}
+\begin{ocamldoccode}
+  more_than_one : unit ;
+\end{ocamldoccode}
+\begin{ocamldoccomment}
+$\ldots$ documentations
+
+
+\end{ocamldoccomment}
+\begin{ocamldoccode}
+{\char125}
+\end{ocamldoccode}
+\begin{ocamldoccomment}
+Constructor C documentation
+
+
+\end{ocamldoccomment}
+\index{s@\verb`s`}
+\begin{ocamldocdescription}
+A sum type with two inline records
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{TYPInline-underscorerecords-underscorebis.any}\begin{ocamldoccode}
+type any =
+  | D : {\char123}  any : {\textquotesingle}a ;
+\end{ocamldoccode}
+\begin{ocamldoccomment}
+{\tt{A}} field {\tt{any:{\textquotesingle}a}} for {\tt{D}} in {\tt{any}}.
+
+
+\end{ocamldoccomment}
+\begin{ocamldoccode}
+{\char125}
+ ->
+any
+\end{ocamldoccode}
+\begin{ocamldoccomment}
+Constructor D documentation
+
+
+\end{ocamldoccomment}
+\index{any@\verb`any`}
+\begin{ocamldocdescription}
+A gadt constructor
+
+
+\end{ocamldocdescription}
+
+
+
+
+\label{exception:Inline-underscorerecords-underscorebis.Error}\begin{ocamldoccode}
+exception Error of {\char123}  name : string ;
+\end{ocamldoccode}
+\begin{ocamldoccomment}
+Error field documentation {\tt{name:string}}
+
+
+\end{ocamldoccomment}
+\begin{ocamldoccode}
+{\char125}
+\end{ocamldoccode}
+\index{Error@\verb`Error`}
+
+
+
+
+\begin{ocamldoccode}
+type ext +=
+\end{ocamldoccode}
+\label{extension:Inline-underscorerecords-underscorebis.E}\begin{ocamldoccode}
+  | E of {\char123}  yet_another_field : unit ;
+\end{ocamldoccode}
+\begin{ocamldoccomment}
+Field documentation for {\tt{E}} in ext
+
+
+\end{ocamldoccomment}
+\begin{ocamldoccode}
+{\char125}
+\end{ocamldoccode}
+\begin{ocamldoccomment}
+Constructor E documentation
+
+
+\end{ocamldoccomment}
+\label{extension:Inline-underscorerecords-underscorebis.F}\begin{ocamldoccode}
+  | F of {\char123}  even_more : int -> int ;
+\end{ocamldoccode}
+\begin{ocamldoccomment}
+Some field documentations for {\tt{F}}
+
+
+\end{ocamldoccomment}
+\begin{ocamldoccode}
+{\char125}
+\end{ocamldoccode}
+\begin{ocamldoccomment}
+Constructor F documentation
+
+
+\end{ocamldoccomment}
+\label{extension:Inline-underscorerecords-underscorebis.G}\begin{ocamldoccode}
+  | G of {\char123}  last : int -> int ;
+\end{ocamldoccode}
+\begin{ocamldoccomment}
+The last and least field documentation
+
+
+\end{ocamldoccomment}
+\begin{ocamldoccode}
+{\char125}
+\end{ocamldoccode}
+\begin{ocamldoccomment}
+Constructor G documentation
+
+
+\end{ocamldoccomment}
+
+
+
+
+Two new constructors for ext
+
+\end{document}

@@ -1,0 +1,22 @@
+\newif\ifspace
+\def\addspace{\ifspace\  \spacefalse\fi}
+\def\token#1{\addspace\hbox{\tt #1}\spacetrue\ignorespaces}
+%%% \def\nonterm#1{\addspace\hbox{\tt <#1>}\spacetrue\ignorespaces}
+\def\nonterm#1{\addspace\hbox{\it #1}\spacetrue\ignorespaces}
+\def\brepet{\addspace\hbox to1em{$\{$\hfil}\ignorespaces}
+\def\erepet{\hbox to1em{$\}$\hfil}\ignorespaces}
+\def\boption{\addspace[\ignorespaces}
+\def\eoption{]\ignorespaces}
+\def\brepets{\brepet\ignorespaces}
+\def\erepets{\erepet+\ignorespaces}
+\def\bparen{\addspace(\ignorespaces}
+\def\eparen{)\ignorespaces}
+\def\orelse{~\hbox to1em{$|$\hfil}~\spacefalse\ignorespaces}
+\def\is{& ::= & \spacefalse\ignorespaces}
+\def\alt{\\ & \hbox to1em{$|$\hfil} & \spacefalse }
+\def\sep{\\[\baselineskip] \spacefalse}
+\def\emptystring{nothing}
+\def\syntax{\begin{center}\begin{tabular}{rrl}\spacefalse\ignorespaces}
+\def\endsyntax{\end{tabular}\end{center}}
+\def\ldots{\spacefalse...\ignorespaces}
+\def\synt#1{$\spacefalse#1$}

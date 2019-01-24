@@ -1,0 +1,74 @@
+1: true
+2: true
+3: true
+4: true
+5: true
+6: true
+7: true
+8: false
+9: 1 true
+10: 2 false
+11: true
+12: false
+13: 3 true
+14: 4 true
+15: 5 true
+16: 6 true
+17: 7 true
+18: 8 true
+19: 9 true
+20: 10 false
+21: 11 12 true
+22: 13 14 false
+23: 15 true
+24: 16 false
+25: true
+26: true
+27: true
+28: true
+29: true
+30: true
+31: true
+32: false
+33: 17 true
+34: 18 false
+35: true
+36: false
+37: true
+38: false
+39: 19 true
+40: 20 false
+41: true
+42: false
+43: false
+44: false
+45: false
+46: false
+47: false
+48: false
+49: 21 true
+50: 22 false
+51: 23 24 true
+52: 25 26 false
+53: 27 true
+54: 28 false
+55: 29 false
+56: 30 false
+57: 31 false
+58: 32 false
+59: 33 false
+60: 34 false
+61: true
+62: false
+63: 35 true
+64: 36 false
+65: true
+66: false
+67: false
+68: false
+69: false
+70: false
+71: false
+72: false
+
+All tests succeeded.

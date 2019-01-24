@@ -1,0 +1,310 @@
+= Hacking the compiler :camel:
+
+This document is a work-in-progress attempt to provide useful
+information for people willing to inspect or modify the compiler
+distribution's codebase. Feel free to improve it by sending change
+proposals for it.
+
+If you already have a patch that you would like to contribute to the
+official distribution, please see link:CONTRIBUTING.md[].
+
+=== Your first compiler modification
+
+1. Create a new git branch to store your changes.
++
+----
+git checkout -b my-modification
+----
+
+2. Consult link:INSTALL.adoc[] for build instructions. Here is the gist of it:
++
+----
+./configure
+make world.opt
+----
+
+3. Try the newly built compiler binaries `ocamlc`, `ocamlopt` or their
+`.opt` version. To try the toplevel, use:
++
+----
+make runtop
+----
+
+4. Hack frenetically and keep rebuilding.
+
+5. Run the testsuite from time to time.
++
+----
+make tests
+----
+
+5. Install in a new opam switch to try things out:
++
+----
+opam compiler-conf install
+----
+
+6. You did it, Well done! Consult link:CONTRIBUTING.md[] to send your contribution upstream.
+
+See our <<Development tips and tricks>> for various helpful details,
+for example on how to automatically <<opam compiler script,create an
+opam switch>> from a compiler branch.
+
+=== What to do
+
+There is always a lot of potential tasks, both for old and
+newcomers. Here are various potential projects:
+
+* http://caml.inria.fr/mantis/view_all_bug_page.php[The OCaml
+  bugtracker] contains reported bugs and feature requests. Some
+  changes that should be accessible to newcomers are marked with the
+  tag link:++http://caml.inria.fr/mantis/search.php?
+project_id=1&sticky_issues=1&sortby=last_updated&dir=DESC&highlight_changed=24&hide_status_id=90&tag_string=junior_job++[
+  junior_job].
+
+* The
+  https://github.com/ocamllabs/compiler-hacking/wiki/Things-to-work-on[OCaml
+  Labs compiler-hacking wiki] contains various ideas of changes to
+  propose, some easy, some requiring a fair amount of work.
+
+* Documentation improvements are always much appreciated, either in
+  the various `.mli` files or in the official manual
+  (See link:manual/README.md[]). If you invest effort in understanding
+  a part of the codebase, submitting a pull request that adds
+  clarifying comments can be an excellent contribution to help you,
+  next time, and other code readers.
+
+* The https://github.com/ocaml/ocaml[github project] contains a lot of
+  pull requests, many of them being in dire need of a review -- we
+  have more people willing to contribute changes than to review
+  someone else's change. Picking one of them, trying to understand the
+  code (looking at the code around it) and asking questions about what
+  you don't understand or what feels odd is super-useful. It helps the
+  contribution process, and it is also an excellent way to get to know
+  various parts of the compiler from the angle of a specific aspect or
+  feature.
++
+Again, reviewing small or medium-sized pull requests is accessible to
+anyone with OCaml programming experience, and helps maintainers and
+other contributors. If you also submit pull requests yourself, a good
+discipline is to review at least as many pull requests as you submit.
+
+== Structure of the compiler
+
+The compiler codebase can be intimidating at first sight. Here are
+a few pointers to get started.
+
+=== Compilation pipeline
+
+==== The driver -- link:driver/[]
+
+The driver contains the "main" function of the compilers that drive
+compilation. It parses the command-line arguments and composes the
+required compiler passes by calling functions from the various parts
+of the compiler described below.
+
+==== Parsing -- link:parsing/[]
+
+Parses source files and produces an Abstract Syntax Tree (AST)
+(link:parsing/parsetree.mli[] has lot of helpful comments). See
+link:parsing/HACKING.adoc[].
+
+The logic for Camlp4 and Ppx preprocessing is not in link:parsing/[],
+but in link:driver/[], see link:driver/pparse.mli[] and
+link:driver/pparse.ml[].
+
+==== Typing -- link:typing/[]
+
+Type-checks the AST and produces a typed representation of the program
+(link:parsing/typedtree.mli[] has some helpful comments). See
+link:typing/HACKING.adoc[].
+
+==== The bytecode compiler -- link:bytecomp/[]
+
+==== The native compiler -- link:middle_end/[] and link:asmcomp/[]
+
+=== Runtime system
+
+=== Libraries
+
+link:stdlib/[]:: The standard library. Each file is largely
+independent and should not need further knowledge.
+
+link:otherlibs/[]:: External libraries such as `unix`, `threads`,
+`dynlink`, `str` and `bigarray`.
+
+Instructions for building the full reference manual are provided in
+link:manual/README.md[]. However, if you only modify the documentation
+comments in `.mli` files in the compiler codebase, you can observe the
+result by running
+
+----
+make html_doc
+----
+
+and then opening link:./ocamldoc/stdlib_html/index.html[] in a web browser.
+
+=== Tools
+
+link:lex/[]:: The `ocamllex` lexer generator.
+
+link:yacc/[]:: The `ocamlyacc` parser generator. We do not recommend
+using it for user projects in need of a parser generator. Please
+consider using and contributing to
+link:http://gallium.inria.fr/~fpottier/menhir/[menhir] instead, which
+has tons of extra features, lets you write more readable grammars, and
+has excellent documentation.
+
+=== Complete file listing
+
+  Changes::               what's new with each release
+  configure::             configure script
+  CONTRIBUTING.md::       how to contribute to OCaml
+  HACKING.adoc::          this file
+  INSTALL.adoc::          instructions for installation
+  LICENSE::               license and copyright notice
+  Makefile::              main Makefile
+  Makefile.nt::           Windows Makefile (deprecated)
+  Makefile.tools::        used by manual/ and testsuite/ Makefiles
+  README.adoc::           general information on the compiler distribution
+  README.win32.adoc::     general information on the Windows ports of OCaml
+  VERSION::               version string
+  asmcomp/::              native-code compiler and linker
+  asmrun/::               native-code runtime library
+  boot/::                 bootstrap compiler
+  bytecomp/::             bytecode compiler and linker
+  byterun/::              bytecode interpreter and runtime system
+  compilerlibs/::         the OCaml compiler as a library
+  config/::               configuration files
+  debugger/::             source-level replay debugger
+  driver/::               driver code for the compilers
+  emacs/::                editing mode and debugger interface for GNU Emacs
+  experimental/::         experiments not built by default
+  flexdll/::              git submodule -- see link:README.win32.adoc[]
+  lex/::                  lexer generator
+  man/::                  man pages
+  manual/::               system to generate the manual
+  middle_end/::           the flambda optimisation phase
+  ocamldoc/::             documentation generator
+  otherlibs/::            several additional libraries
+  parsing/::              syntax analysis -- see link:parsing/HACKING.adoc[]
+  stdlib/::               standard library
+  testsuite/::            tests -- see link:testsuite/HACKING.adoc[]
+  tools/::                various utilities
+  toplevel/::             interactive system
+  typing/::               typechecking -- see link:typing/HACKING.adoc[]
+  utils/::                utility libraries
+  yacc/::                 parser generator
+
+== Development tips and tricks
+
+=== opam compiler script
+
+The separately-distributed script
+https://github.com/gasche/opam-compiler-conf[`opam-compiler-conf`] can
+be used to easily build opam switches out of a git branch of the
+compiler distribution. This lets you easily install and test opam
+packages from an under-modification compiler version.
+
+=== Useful Makefile targets
+
+Besides the targets listed in link:INSTALL.adoc[] for build and
+installation, the following targets may be of use:
+
+`make runtop` :: builds and runs the ocaml toplevel of the distribution
+                          (optionally uses `rlwrap` for readline+history support)
+`make natruntop`:: builds and runs the native ocaml toplevel (experimental)
+
+`make partialclean`:: Clean the OCaml files but keep the compiled C files.
+
+`make depend`:: Regenerate the `.depend` file. Should be used each time new dependencies are added between files.
+
+`make -C testsuite parallel`:: see link:testsuite/HACKING.adoc[]
+
+=== Bootstrapping
+
+The OCaml compiler is bootstrapped. This means that
+previously-compiled bytecode versions of the compiler, dependency
+generator and lexer are included in the repository under the
+link:boot/[] directory. These bytecode images are used once the
+bytecode runtime (which is written in C) has been built to compile the
+standard library and then to build a fresh compiler. Details can be
+found in link:INSTALL.adoc#bootstrap[INSTALL.adoc].
+
+=== Continuous integration
+
+==== Github's CI: Travis and AppVeyor
+
+The script that is run on Travis continuous integration servers is
+link:.travis-ci.sh[]; its configuration can be found as
+a Travis configuration file in link:.travis.yml[].
+
+For example, if you want to reproduce the default build on your
+machine, you can use the configuration values and run command taken from
+link:.travis.yml[]:
+
+----
+CI_KIND=build XARCH=x64 bash -ex .travis-ci.sh
+----
+
+The scripts support two other kinds of tests (values of the
+`CI_KIND` variable) which both inspect the patch submitted as part of
+a pull request. `tests` checks that the testsuite has been modified
+(hopefully, improved) by the patch, and `changes` checks that the
+link:Changes[] file has been modified (hopefully to add a new entry).
+
+These tests rely on the `$TRAVIS_COMMIT_RANGE` variable which you can
+set explicitly to reproduce them locally.
+
+The `changes` check can be disabled by including "(no change
+entry needed)" in one of your commit messages -- but in general all
+patches submitted should come with a Changes entry; see the guidelines
+in link:CONTRIBUTING.md[].
+
+==== INRIA's Continuous Integration (CI)
+
+INRIA provides a Jenkins continuous integration service that OCaml
+uses, see link:https://ci.inria.fr/ocaml/[]. It provides a wider
+architecture support (MSVC and MinGW, a zsystems s390x machine, and
+various MacOS versions) than the Travis/AppVeyor testing on github,
+but only runs on commits to the trunk or release branches, not on every
+PR.
+
+You do not need to be an INRIA employee to open an account on this
+jenkins service; anyone can create an account there to access build
+logs and manually restart builds. If you
+would like to do this but have trouble doing it, please email
+ocaml-ci-admin@inria.fr
+
+To be notified by email of build failures, you can subscribe to the
+ocaml-ci-notifications@inria.fr mailing list by visiting
+https://sympa.inria.fr/sympa/info/ocaml-ci-notifications[its web page]
+
+==== Running INRIA's CI on a publicly available git branch
+
+If you have suspicions that your changes may fail on exotic architectures
+(they touch the build system or the backend code generator,
+for example) and would like to get wider testing than github's CI
+provides, it is possible to manually start INRIA's CI on arbitrary git
+branches even before opening a pull request as follows:
+
+1. Make sure you have an account on Inria's CI as described before.
+
+2. Make sure you have been added to the ocaml project.
+
+3. Prepare a branch with the code you'd like to test, say "mybranch". It
+is probably a good idea to make sure your branch is based on the latest
+trunk.
+
+4. Make your branch publicly available. For instance, you can fork
+OCaml's GitHub repository and then push "mybranch" to your fork.
+
+5. Visit https://ci.inria.fr/ocaml/job/precheck and log in. Click on
+"Build with parameters".
+
+6. Fill in the REPO_URL and BRANCH fields as appropriate and run the build.
+
+7. You should receive a bunch of e-mails with the build logs for each
+slave and each tested configuration (with and without flambda) attached.
+
+Happy Hacking!

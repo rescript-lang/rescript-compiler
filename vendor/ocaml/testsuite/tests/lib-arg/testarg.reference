@@ -1,0 +1,11 @@
+
+  -foo FOO     Do foo with FOO
+  -bar FOO BAR Do bar with FOO and BAR
+  -cha         Another option
+  -sym {a|b}
+               y	foo
+  -sym2 {a|b}
+             x bar
+  -help        Display this list of options
+  --help       Display this list of options
+
