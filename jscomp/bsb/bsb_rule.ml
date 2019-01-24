@@ -50,12 +50,10 @@ type t = {
 }
 
 let get_name (x : t) oc = x.name oc
-let print_rule oc ~description ?restat ?depfile ~command   name  =
+let print_rule oc ~description ?(restat : unit option)  ?depfile ~command   name  =
   output_string oc "rule "; output_string oc name ; output_string oc "\n";
   output_string oc "  command = "; output_string oc command; output_string oc "\n";
-  begin match depfile with
-    | None -> ()
-    | Some f ->
+  Ext_option.iter depfile begin fun f ->
       output_string oc "  depfile = "; output_string oc f; output_string oc  "\n"
   end;
   (if restat <>  None then   
