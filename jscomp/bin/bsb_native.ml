@@ -12827,22 +12827,20 @@ let rule_id = ref 0
 let rule_names = ref String_set.empty
 (** To make it re-entrant across multiple ninja files, 
     We must reset [rule_id]
+    could be improved later
+             1. instead of having a global id, having a unique id per rule name
+             2. the rule id is increased only when actually used
 *)
 let ask_name name =
   let current_id = !rule_id in
   let () = incr rule_id in
-  if not (String_set.mem !rule_names name) then
-    (rule_names := String_set.add !rule_names name;
-      name)
-  else
-    begin (* could be improved later
-             1. instead of having a global id, having a unique id per rule name
-             2. the rule id is increased only when actually used
-          *)
-      let new_name =  name ^ Printf.sprintf "_%d" current_id in
-      rule_names := String_set.add !rule_names new_name;
-      new_name
-    end
+  let new_name  = 
+      if String_set.mem !rule_names name then 
+        name ^ Printf.sprintf "_%d" current_id
+      else name in   
+  rule_names := String_set.add !rule_names new_name ;    
+  new_name
+
 
 type t = { 
   mutable used : bool; 
