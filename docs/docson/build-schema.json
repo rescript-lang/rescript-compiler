@@ -4,12 +4,10 @@
         "module-format": {
             "enum": [
                 "commonjs",
-                "amdjs",
-                "amdjs-global",
                 "es6",
                 "es6-global"
             ],
-            "description": "amdjs-global and es6-global generate relative `require` paths instead of relying on NodeJS' module resolution. Default: commonjs."
+            "description": "es6-global generate relative `require` paths instead of relying on NodeJS' module resolution. Default: commonjs."
         },
         "module-format-object": {
             "type": "object",
@@ -415,7 +413,7 @@
         },
         "package-specs": {
             "$ref": "#/definitions/package-specs",
-            "description": "BuckleScript can currently output to [Commonjs](https://en.wikipedia.org/wiki/CommonJS), [AMD](http://requirejs.org/docs/whyamd.html),  and [ES6 modules](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import)"
+            "description": "BuckleScript can currently output to [Commonjs](https://en.wikipedia.org/wiki/CommonJS), and [ES6 modules](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import)"
         },
         "entries": {
             "$ref": "#/definitions/entries",

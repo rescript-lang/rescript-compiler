@@ -78,44 +78,6 @@ let node_program ~output_dir f ( x : J.deps_program) =
   program f cxt x.program  
 
 
-let amd_program ~output_dir kind f (  x : J.deps_program) = 
-  let cxt = Ext_pp_scope.empty in
-  P.string f L.strict_directive; 
-  P.newline f ;
-  P.vgroup f 1 @@ fun _ -> 
-  P.string f L.define;
-  P.string f "([";
-  P.string f (Printf.sprintf "%S" L.exports);
-
-  List.iter (fun x ->
-      let s : string = 
-        Js_name_of_module_id.string_of_module_id ~output_dir
-          kind 
-          x in
-      P.string f L.comma ;
-      P.space f; 
-      Js_dump_string.pp_string f  s;
-    ) x.modules ;
-  P.string f "]";
-  P.string f L.comma;
-  P.newline f;
-  P.string f L.function_;
-  P.string f "(";
-  P.string f L.exports;
-
-  let cxt = 
-    Ext_list.fold_left x.modules cxt (fun x cxt ->         
-        let id = Lam_module_ident.id x in
-        P.string f L.comma;
-        P.space f ; 
-        Ext_pp_scope.ident cxt f id) in
-  P.string f ")";
-  let v = P.brace_vgroup f 1 @@ (fun _ -> 
-      P.string f L.strict_directive;
-      program f cxt x.program
-    ) in
-  P.string f ")";
-  v
 
 
 let es6_program  ~output_dir fmt f (  x : J.deps_program) = 
@@ -163,8 +125,6 @@ let pp_deps_program
       ignore (match kind with 
           | Es6 | Es6_global -> 
             es6_program ~output_dir kind f program
-          | AmdJS | AmdJS_global -> 
-            amd_program ~output_dir kind f program
           | NodeJS -> 
             node_program ~output_dir f program
         ) ;

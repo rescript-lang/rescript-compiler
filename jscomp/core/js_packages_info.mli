@@ -25,10 +25,9 @@
 
 type module_system = 
   | NodeJS 
-  | AmdJS
   | Es6
   | Es6_global
-  | AmdJS_global (* affect [.cmj] format*)
+  (* affect [.cmj] format*)
 
 type package_info = 
   module_system * string 

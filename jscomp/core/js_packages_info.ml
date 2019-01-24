@@ -27,22 +27,18 @@ type path = string
 
 type module_system =
   | NodeJS 
-  | AmdJS 
   | Es6
   | Es6_global (* ignore node_modules, just calcluating relative path *)
-  | AmdJS_global (* see ^ *)
+  
 
 (* ocamlopt could not optimize such simple case..*)
 let compatible (exist : module_system) 
     (query : module_system) =
   match query with 
   | NodeJS -> exist = NodeJS 
-  | AmdJS -> exist = AmdJS
   | Es6  -> exist = Es6
   | Es6_global  
     -> exist = Es6_global || exist = Es6
-  | AmdJS_global 
-    -> exist = AmdJS_global || exist = AmdJS
 (* As a dependency Leaf Node, it is the same either [global] or [not] *)
 
 
@@ -86,19 +82,16 @@ let is_empty  (x : t) =
 let string_of_module_system (ms : module_system) = 
   match ms with 
   | NodeJS -> "NodeJS"
-  | AmdJS -> "AmdJS"
   | Es6 -> "Es6"
   | Es6_global -> "Es6_global"
-  | AmdJS_global -> "AmdJS_globl"
+  
 
 
 let module_system_of_string package_name : module_system option = 
   match package_name with
   | "commonjs" -> Some NodeJS
-  | "amdjs" -> Some AmdJS
   | "es6" -> Some Es6
   | "es6-global" -> Some Es6_global
-  | "amdjs-global" -> Some AmdJS_global 
   | _ -> None 
 
 let dump_package_info 
@@ -224,7 +217,6 @@ let string_of_module_id
       let  dep_path  = "lib" //
         match module_system with 
         | NodeJS ->  "js"
-        | AmdJS_global | AmdJS -> "amdjs"
         | Es6 | Es6_global -> "es6"            
       in 
       begin match current_pkg_info with        
@@ -241,11 +233,11 @@ let string_of_module_id
               *)
           else  
             match module_system with 
-            | AmdJS | NodeJS | Es6 -> 
+            | NodeJS | Es6 -> 
               runtime_package_name // dep_path // js_file
             (** Note we did a post-processing when working on Windows *)
             | Es6_global 
-            | AmdJS_global -> 
+              -> 
               (** lib/ocaml/xx.cmj --               
                   HACKING: FIXME
                   maybe we can caching relative package path calculation or employ package map *)
@@ -304,7 +296,7 @@ let string_of_module_id
               *)
           else  
             begin match module_system with 
-              | AmdJS | NodeJS | Es6 -> 
+              | NodeJS | Es6 -> 
 #if BS_NATIVE then
           if Filename.is_relative dep_path then 
             dep_package_name // dep_path // js_file
@@ -315,7 +307,7 @@ let string_of_module_id
 #end
               (** Note we did a post-processing when working on Windows *)
               | Es6_global 
-              | AmdJS_global -> 
+              -> 
                 (** lib/ocaml/xx.cmj --               
                     HACKING: FIXME
                     maybe we can caching relative package path calculation or employ package map *)
