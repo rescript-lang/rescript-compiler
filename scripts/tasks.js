@@ -55,6 +55,8 @@ function buildFinished(code,signal){
         if(code===0){
             // This is not always correct
             require('./ninja.js').updateDev()
+        } else{
+            console.log(`Error: please run ninja.js manually see if it gets fixed`)
         }
         
     }
