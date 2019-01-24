@@ -37,13 +37,13 @@ let classify_file name =
   else Non_exists   
 
 let replace s env : string =
-  Bsb_regex.global_substitute "\\${bsb:\\([-a-zA-Z0-9]+\\)}"
+  Bsb_regex.global_substitute s ~reg:"\\${bsb:\\([-a-zA-Z0-9]+\\)}"
     (fun (_s : string) templates ->
        match templates with
        | key::_ ->
          String_hashtbl.find_exn  env key
        | _ -> assert false
-    ) s
+    ) 
 
 let (//) = Filename.concat
 

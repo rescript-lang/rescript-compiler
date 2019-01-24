@@ -7,12 +7,12 @@ let (=~) = OUnit.assert_equal
 
 
 let test_eq x y  = 
-    Bsb_regex.global_substitute "\\${bsb:\\([-a-zA-Z0-9]+\\)}"
+    Bsb_regex.global_substitute ~reg:"\\${bsb:\\([-a-zA-Z0-9]+\\)}" x
         (fun _ groups -> 
             match groups with 
             | x::xs -> x 
             | _ -> assert false 
-        ) x =~ y 
+        )  =~ y 
 
 
 let suites = 

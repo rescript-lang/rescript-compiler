@@ -171,7 +171,6 @@ let built_in_rule_id = !rule_id
 let reset (custom_rules : string String_map.t) = 
   rule_id := built_in_rule_id;
   rule_names := built_in_rule_names;
-
   build_ast_and_module_sets.used <- false ;
   build_ast_and_module_sets_from_re.used <- false ;  
   build_ast_and_module_sets_from_rei.used <- false ;

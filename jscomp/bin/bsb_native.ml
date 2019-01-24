@@ -12968,25 +12968,22 @@ let built_in_rule_names = !rule_names
 let built_in_rule_id = !rule_id
 
 let reset (custom_rules : string String_map.t) = 
-  begin 
-    rule_id := built_in_rule_id;
-    rule_names := built_in_rule_names;
+  rule_id := built_in_rule_id;
+  rule_names := built_in_rule_names;
+  build_ast_and_module_sets.used <- false ;
+  build_ast_and_module_sets_from_re.used <- false ;  
+  build_ast_and_module_sets_from_rei.used <- false ;
+  build_bin_deps.used <- false;
+  copy_resources.used <- false ;
 
-    build_ast_and_module_sets.used <- false ;
-    build_ast_and_module_sets_from_re.used <- false ;  
-    build_ast_and_module_sets_from_rei.used <- false ;
-    build_bin_deps.used <- false;
-    copy_resources.used <- false ;
-
-    build_cmj_js.used <- false;
-    build_cmj_cmi_js.used <- false ;
-    build_cmi.used <- false ;
-    build_package.used <- false;
-    
-    String_map.mapi custom_rules (fun name command -> 
-        define ~command name
-      ) 
+  build_cmj_js.used <- false;
+  build_cmj_cmi_js.used <- false ;
+  build_cmi.used <- false ;
+  build_package.used <- false;    
+  String_map.mapi custom_rules begin fun name command -> 
+    define ~command name
   end
+
 
 
 end
@@ -14126,15 +14123,63 @@ let query ~cwd ~bsc_dir str =
 end
 module Bsb_regex : sig 
 #1 "bsb_regex.mli"
+(* Copyright (C) 2017 Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-
+(** Used in `bsb -init` command *)
 val global_substitute:
- string ->
-  (string -> string list -> string)
-  -> string -> string
+  string -> 
+  reg:string ->
+  (string -> string list -> string) -> 
+  string
 end = struct
 #1 "bsb_regex.ml"
+(* Copyright (C) 2017 Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
 let string_after s n = String.sub s n (String.length s - n)
 
 
@@ -14146,8 +14191,7 @@ Str.global_substitute (Str.regexp "\\${bsb:\\([-a-zA-Z0-9]+\\)}") (fun x -> (x^"
 "      ${bsb:hello-world}  ${bsb:x} ${x}:found     ${bsb:hello-world}  ${bsb:x} ${x}:found ${x}"
 ]}
 *)
-
-let global_substitute expr repl_fun text =
+let global_substitute text ~reg:expr repl_fun =
   let text_len = String.length text in 
   let expr = Str.regexp expr in  
   let rec replace accu start last_was_empty =
@@ -16447,13 +16491,13 @@ let classify_file name =
   else Non_exists   
 
 let replace s env : string =
-  Bsb_regex.global_substitute "\\${bsb:\\([-a-zA-Z0-9]+\\)}"
+  Bsb_regex.global_substitute s ~reg:"\\${bsb:\\([-a-zA-Z0-9]+\\)}"
     (fun (_s : string) templates ->
        match templates with
        | key::_ ->
          String_hashtbl.find_exn  env key
        | _ -> assert false
-    ) s
+    ) 
 
 let (//) = Filename.concat
 
