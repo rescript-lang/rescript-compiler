@@ -635,7 +635,7 @@ build bsb/bsb_query.cmx : optc bsb/bsb_query.ml | bsb/bsb_config_types.cmx bsb/b
 build bsb/bsb_query.cmi : optc bsb/bsb_query.mli | 
 build bsb/bsb_regex.cmx : optc bsb/bsb_regex.ml | bsb/bsb_regex.cmi
 build bsb/bsb_regex.cmi : optc bsb/bsb_regex.mli | 
-build bsb/bsb_rule.cmx : optc bsb/bsb_rule.ml | bsb/bsb_rule.cmi ext/ext_sys.cmx ext/string_map.cmx ext/string_set.cmx
+build bsb/bsb_rule.cmx : optc bsb/bsb_rule.ml | bsb/bsb_rule.cmi ext/ext_option.cmx ext/ext_sys.cmx ext/string_map.cmx ext/string_set.cmx
 build bsb/bsb_rule.cmi : optc bsb/bsb_rule.mli | ext/string_map.cmi
 build bsb/bsb_templates.cmx : optc bsb/bsb_templates.ml | bsb/bsb_templates.cmi bsb/oCamlRes.cmx
 build bsb/bsb_templates.cmi : optc bsb/bsb_templates.mli | bsb/oCamlRes.cmx

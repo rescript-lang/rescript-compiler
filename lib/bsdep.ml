@@ -25883,13 +25883,13 @@ let rec map f = function
     let r' = map f r in
     Node(l', v, d', r', h)
 
-let rec mapi f = function
+let rec mapi x f = match x with
     Empty ->
     Empty
   | Node(l, v, d, r, h) ->
-    let l' = mapi f l in
+    let l' = mapi l f in
     let d' = f v d in
-    let r' = mapi f r in
+    let r' = mapi r f in
     Node(l', v, d', r', h)
 
 let rec fold f m accu =
@@ -26118,7 +26118,7 @@ module type S =
        The bindings are passed to [f] in increasing order
        with respect to the ordering over the type of the keys. *)
 
-    val mapi: (key -> 'a -> 'b) -> 'a t -> 'b t
+    val mapi: 'a t ->  (key -> 'a -> 'b) -> 'b t
     (** Same as {!Map.S.map}, but the function receives as arguments both the
        key and the associated value for each binding of the map. *)
 

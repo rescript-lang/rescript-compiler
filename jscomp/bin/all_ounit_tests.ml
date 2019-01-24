@@ -4016,13 +4016,13 @@ let rec map f = function
     let r' = map f r in
     Node(l', v, d', r', h)
 
-let rec mapi f = function
+let rec mapi x f = match x with
     Empty ->
     Empty
   | Node(l, v, d, r, h) ->
-    let l' = mapi f l in
+    let l' = mapi l f in
     let d' = f v d in
-    let r' = mapi f r in
+    let r' = mapi r f in
     Node(l', v, d', r', h)
 
 let rec fold f m accu =
@@ -4251,7 +4251,7 @@ module type S =
        The bindings are passed to [f] in increasing order
        with respect to the ordering over the type of the keys. *)
 
-    val mapi: (key -> 'a -> 'b) -> 'a t -> 'b t
+    val mapi: 'a t ->  (key -> 'a -> 'b) -> 'b t
     (** Same as {!Map.S.map}, but the function receives as arguments both the
        key and the associated value for each binding of the map. *)
 
@@ -7510,15 +7510,63 @@ let suites =
 end
 module Bsb_regex : sig 
 #1 "bsb_regex.mli"
+(* Copyright (C) 2017 Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-
+(** Used in `bsb -init` command *)
 val global_substitute:
- string ->
-  (string -> string list -> string)
-  -> string -> string
+  string -> 
+  reg:string ->
+  (string -> string list -> string) -> 
+  string
 end = struct
 #1 "bsb_regex.ml"
+(* Copyright (C) 2017 Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
 let string_after s n = String.sub s n (String.length s - n)
 
 
@@ -7530,8 +7578,7 @@ Str.global_substitute (Str.regexp "\\${bsb:\\([-a-zA-Z0-9]+\\)}") (fun x -> (x^"
 "      ${bsb:hello-world}  ${bsb:x} ${x}:found     ${bsb:hello-world}  ${bsb:x} ${x}:found ${x}"
 ]}
 *)
-
-let global_substitute expr repl_fun text =
+let global_substitute text ~reg:expr repl_fun =
   let text_len = String.length text in 
   let expr = Str.regexp expr in  
   let rec replace accu start last_was_empty =
@@ -7571,12 +7618,12 @@ let (=~) = OUnit.assert_equal
 
 
 let test_eq x y  = 
-    Bsb_regex.global_substitute "\\${bsb:\\([-a-zA-Z0-9]+\\)}"
+    Bsb_regex.global_substitute ~reg:"\\${bsb:\\([-a-zA-Z0-9]+\\)}" x
         (fun _ groups -> 
             match groups with 
             | x::xs -> x 
             | _ -> assert false 
-        ) x =~ y 
+        )  =~ y 
 
 
 let suites = 

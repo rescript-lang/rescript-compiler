@@ -28,23 +28,20 @@ let rule_id = ref 0
 let rule_names = ref String_set.empty
 (** To make it re-entrant across multiple ninja files, 
     We must reset [rule_id]
+    could be improved later
+             1. instead of having a global id, having a unique id per rule name
+             2. the rule id is increased only when actually used
 *)
 let ask_name name =
   let current_id = !rule_id in
   let () = incr rule_id in
-  match String_set.find !rule_names name with
-  | exception Not_found ->
-    rule_names := String_set.add !rule_names name;
-    name
-  | _ ->
-    begin (* could be improved later
-             1. instead of having a global id, having a unique id per rule name
-             2. the rule id is increased only when actually used
-          *)
-      let new_name =  (name ^ Printf.sprintf "_%d" current_id) in
-      rule_names := String_set.add !rule_names new_name;
-      new_name
-    end
+  let new_name  = 
+      if String_set.mem !rule_names name then 
+        name ^ Printf.sprintf "_%d" current_id
+      else name in   
+  rule_names := String_set.add !rule_names new_name ;    
+  new_name
+
 
 type t = { 
   mutable used : bool; 
@@ -53,12 +50,10 @@ type t = {
 }
 
 let get_name (x : t) oc = x.name oc
-let print_rule oc ~description ?restat ?depfile ~command   name  =
+let print_rule oc ~description ?(restat : unit option)  ?depfile ~command   name  =
   output_string oc "rule "; output_string oc name ; output_string oc "\n";
   output_string oc "  command = "; output_string oc command; output_string oc "\n";
-  begin match depfile with
-    | None -> ()
-    | Some f ->
+  Ext_option.iter depfile begin fun f ->
       output_string oc "  depfile = "; output_string oc f; output_string oc  "\n"
   end;
   (if restat <>  None then   
@@ -174,23 +169,20 @@ let built_in_rule_names = !rule_names
 let built_in_rule_id = !rule_id
 
 let reset (custom_rules : string String_map.t) = 
-  begin 
-    rule_id := built_in_rule_id;
-    rule_names := built_in_rule_names;
+  rule_id := built_in_rule_id;
+  rule_names := built_in_rule_names;
+  build_ast_and_module_sets.used <- false ;
+  build_ast_and_module_sets_from_re.used <- false ;  
+  build_ast_and_module_sets_from_rei.used <- false ;
+  build_bin_deps.used <- false;
+  copy_resources.used <- false ;
 
-    build_ast_and_module_sets.used <- false ;
-    build_ast_and_module_sets_from_re.used <- false ;  
-    build_ast_and_module_sets_from_rei.used <- false ;
-    build_bin_deps.used <- false;
-    copy_resources.used <- false ;
-
-    build_cmj_js.used <- false;
-    build_cmj_cmi_js.used <- false ;
-    build_cmi.used <- false ;
-    build_package.used <- false;
-    
-    String_map.mapi (fun name command -> 
-        define ~command name
-      ) custom_rules
+  build_cmj_js.used <- false;
+  build_cmj_cmi_js.used <- false ;
+  build_cmi.used <- false ;
+  build_package.used <- false;    
+  String_map.mapi custom_rules begin fun name command -> 
+    define ~command name
   end
+
 

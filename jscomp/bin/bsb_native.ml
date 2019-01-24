@@ -1908,13 +1908,13 @@ let rec map f = function
     let r' = map f r in
     Node(l', v, d', r', h)
 
-let rec mapi f = function
+let rec mapi x f = match x with
     Empty ->
     Empty
   | Node(l, v, d, r, h) ->
-    let l' = mapi f l in
+    let l' = mapi l f in
     let d' = f v d in
-    let r' = mapi f r in
+    let r' = mapi r f in
     Node(l', v, d', r', h)
 
 let rec fold f m accu =
@@ -2143,7 +2143,7 @@ module type S =
        The bindings are passed to [f] in increasing order
        with respect to the ordering over the type of the keys. *)
 
-    val mapi: (key -> 'a -> 'b) -> 'a t -> 'b t
+    val mapi: 'a t ->  (key -> 'a -> 'b) -> 'b t
     (** Same as {!Map.S.map}, but the function receives as arguments both the
        key and the associated value for each binding of the map. *)
 
@@ -12827,23 +12827,20 @@ let rule_id = ref 0
 let rule_names = ref String_set.empty
 (** To make it re-entrant across multiple ninja files, 
     We must reset [rule_id]
+    could be improved later
+             1. instead of having a global id, having a unique id per rule name
+             2. the rule id is increased only when actually used
 *)
 let ask_name name =
   let current_id = !rule_id in
   let () = incr rule_id in
-  match String_set.find !rule_names name with
-  | exception Not_found ->
-    rule_names := String_set.add !rule_names name;
-    name
-  | _ ->
-    begin (* could be improved later
-             1. instead of having a global id, having a unique id per rule name
-             2. the rule id is increased only when actually used
-          *)
-      let new_name =  (name ^ Printf.sprintf "_%d" current_id) in
-      rule_names := String_set.add !rule_names new_name;
-      new_name
-    end
+  let new_name  = 
+      if String_set.mem !rule_names name then 
+        name ^ Printf.sprintf "_%d" current_id
+      else name in   
+  rule_names := String_set.add !rule_names new_name ;    
+  new_name
+
 
 type t = { 
   mutable used : bool; 
@@ -12852,12 +12849,10 @@ type t = {
 }
 
 let get_name (x : t) oc = x.name oc
-let print_rule oc ~description ?restat ?depfile ~command   name  =
+let print_rule oc ~description ?(restat : unit option)  ?depfile ~command   name  =
   output_string oc "rule "; output_string oc name ; output_string oc "\n";
   output_string oc "  command = "; output_string oc command; output_string oc "\n";
-  begin match depfile with
-    | None -> ()
-    | Some f ->
+  Ext_option.iter depfile begin fun f ->
       output_string oc "  depfile = "; output_string oc f; output_string oc  "\n"
   end;
   (if restat <>  None then   
@@ -12973,25 +12968,22 @@ let built_in_rule_names = !rule_names
 let built_in_rule_id = !rule_id
 
 let reset (custom_rules : string String_map.t) = 
-  begin 
-    rule_id := built_in_rule_id;
-    rule_names := built_in_rule_names;
+  rule_id := built_in_rule_id;
+  rule_names := built_in_rule_names;
+  build_ast_and_module_sets.used <- false ;
+  build_ast_and_module_sets_from_re.used <- false ;  
+  build_ast_and_module_sets_from_rei.used <- false ;
+  build_bin_deps.used <- false;
+  copy_resources.used <- false ;
 
-    build_ast_and_module_sets.used <- false ;
-    build_ast_and_module_sets_from_re.used <- false ;  
-    build_ast_and_module_sets_from_rei.used <- false ;
-    build_bin_deps.used <- false;
-    copy_resources.used <- false ;
-
-    build_cmj_js.used <- false;
-    build_cmj_cmi_js.used <- false ;
-    build_cmi.used <- false ;
-    build_package.used <- false;
-    
-    String_map.mapi (fun name command -> 
-        define ~command name
-      ) custom_rules
+  build_cmj_js.used <- false;
+  build_cmj_cmi_js.used <- false ;
+  build_cmi.used <- false ;
+  build_package.used <- false;    
+  String_map.mapi custom_rules begin fun name command -> 
+    define ~command name
   end
+
 
 
 end
@@ -14131,15 +14123,63 @@ let query ~cwd ~bsc_dir str =
 end
 module Bsb_regex : sig 
 #1 "bsb_regex.mli"
+(* Copyright (C) 2017 Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-
+(** Used in `bsb -init` command *)
 val global_substitute:
- string ->
-  (string -> string list -> string)
-  -> string -> string
+  string -> 
+  reg:string ->
+  (string -> string list -> string) -> 
+  string
 end = struct
 #1 "bsb_regex.ml"
+(* Copyright (C) 2017 Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
 let string_after s n = String.sub s n (String.length s - n)
 
 
@@ -14151,8 +14191,7 @@ Str.global_substitute (Str.regexp "\\${bsb:\\([-a-zA-Z0-9]+\\)}") (fun x -> (x^"
 "      ${bsb:hello-world}  ${bsb:x} ${x}:found     ${bsb:hello-world}  ${bsb:x} ${x}:found ${x}"
 ]}
 *)
-
-let global_substitute expr repl_fun text =
+let global_substitute text ~reg:expr repl_fun =
   let text_len = String.length text in 
   let expr = Str.regexp expr in  
   let rec replace accu start last_was_empty =
@@ -16452,13 +16491,13 @@ let classify_file name =
   else Non_exists   
 
 let replace s env : string =
-  Bsb_regex.global_substitute "\\${bsb:\\([-a-zA-Z0-9]+\\)}"
+  Bsb_regex.global_substitute s ~reg:"\\${bsb:\\([-a-zA-Z0-9]+\\)}"
     (fun (_s : string) templates ->
        match templates with
        | key::_ ->
          String_hashtbl.find_exn  env key
        | _ -> assert false
-    ) s
+    ) 
 
 let (//) = Filename.concat
 

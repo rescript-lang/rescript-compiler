@@ -50,6 +50,10 @@ function buildFinished(code,signal){
         buildAppending = false
         rebuild()
     } else{
+        if(code !== 0){
+            console.log(`File "BUILD", line 1, characters 1-1:`)
+            console.log(`Error: Failed to build`)
+        }
         console.log(">>>> Finish compiling")
         // TODO: check ninja exit error code
         if(code===0){
