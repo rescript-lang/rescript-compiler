@@ -1,7 +1,0 @@
-
-# * *       val test : (int -> string, unit, string) format -> string = <fun>
-#       %n: true
-#       %l: true
-#       %N: true
-#       %L: true
-# 
