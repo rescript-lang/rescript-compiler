@@ -1,5 +1,6 @@
 module Config_whole_compiler : sig 
 #1 "config_whole_compiler.mli"
+
 (***********************************************************************)
 (*                                                                     *)
 (*                                OCaml                                *)
@@ -133,6 +134,7 @@ val print_config : out_channel -> unit;;
 
 end = struct
 #1 "config_whole_compiler.ml"
+
 (***********************************************************************)
 (*                                                                     *)
 (*                                OCaml                                *)
@@ -216,10 +218,7 @@ let host = "%%HOST%%"
 let target = "%%TARGET%%"
 
 let default_executable_name =
-  match Sys.os_type with
-    "Unix" -> "a.out"
-  | "Win32" | "Cygwin" -> "camlprog.exe"
-  | _ -> "camlprog"
+ ""
 
 let systhread_supported = false (*dontcare*);;
 
