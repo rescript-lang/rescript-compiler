@@ -174,7 +174,7 @@ build bsb/bsb_query.cmx : optc bsb/bsb_query.ml | bsb/bsb_config_types.cmx bsb/b
 build bsb/bsb_query.cmi : optc bsb/bsb_query.mli | 
 build bsb/bsb_regex.cmx : optc bsb/bsb_regex.ml | bsb/bsb_regex.cmi
 build bsb/bsb_regex.cmi : optc bsb/bsb_regex.mli | 
-build bsb/bsb_rule.cmx : optc bsb/bsb_rule.ml | bsb/bsb_rule.cmi ext/ext_sys.cmx ext/string_map.cmx ext/string_set.cmx
+build bsb/bsb_rule.cmx : optc bsb/bsb_rule.ml | bsb/bsb_rule.cmi ext/ext_option.cmx ext/ext_sys.cmx ext/string_map.cmx ext/string_set.cmx
 build bsb/bsb_rule.cmi : optc bsb/bsb_rule.mli | ext/string_map.cmi
 build bsb/bsb_templates.cmx : optc bsb/bsb_templates.ml | bsb/bsb_templates.cmi bsb/oCamlRes.cmx
 build bsb/bsb_templates.cmi : optc bsb/bsb_templates.mli | bsb/oCamlRes.cmx
@@ -233,7 +233,7 @@ build core/js_dump.cmi : optc core/js_dump.mli | core/j.cmx ext/ext_pp.cmi ext/e
 build core/js_dump_import_export.cmx : optc core/js_dump_import_export.ml | core/js_dump_import_export.cmi core/js_dump_lit.cmx core/js_dump_string.cmx ext/ext_ident.cmx ext/ext_list.cmx ext/ext_pp.cmx ext/ext_pp_scope.cmx ext/ext_string.cmx
 build core/js_dump_import_export.cmi : optc core/js_dump_import_export.mli | ext/ext_pp.cmi ext/ext_pp_scope.cmi
 build core/js_dump_lit.cmx core/js_dump_lit.cmi : optc core/js_dump_lit.ml | ext/ext_string.cmx
-build core/js_dump_program.cmx : optc core/js_dump_program.ml | common/bs_version.cmx common/js_config.cmx core/j.cmx core/js_dump.cmx core/js_dump_import_export.cmx core/js_dump_lit.cmx core/js_dump_program.cmi core/js_dump_string.cmx core/js_name_of_module_id.cmx core/js_packages_info.cmx core/lam_module_ident.cmx ext/ext_list.cmx ext/ext_pp.cmx ext/ext_pp_scope.cmx
+build core/js_dump_program.cmx : optc core/js_dump_program.ml | common/bs_version.cmx common/js_config.cmx core/j.cmx core/js_dump.cmx core/js_dump_import_export.cmx core/js_dump_lit.cmx core/js_dump_program.cmi core/js_name_of_module_id.cmx core/js_packages_info.cmx core/lam_module_ident.cmx ext/ext_list.cmx ext/ext_pp.cmx ext/ext_pp_scope.cmx
 build core/js_dump_program.cmi : optc core/js_dump_program.mli | core/j.cmx core/js_packages_info.cmi ext/ext_pp.cmi
 build core/js_dump_property.cmx : optc core/js_dump_property.ml | core/js_dump_lit.cmx core/js_dump_property.cmi core/js_dump_string.cmx ext/ext_pp.cmx ext/ext_string.cmx
 build core/js_dump_property.cmi : optc core/js_dump_property.mli | ext/ext_pp.cmi
