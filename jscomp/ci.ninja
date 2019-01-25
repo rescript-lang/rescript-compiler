@@ -1,4 +1,0 @@
-
-ocamllex = ../vendor/ocaml/bin/ocamllex.opt
-stdlib = stdlib-402
-subninja test/build.ninja
