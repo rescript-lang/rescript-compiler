@@ -87,6 +87,13 @@ odoc_gen/*.cmxs
 
 .bsbuild
 build.ninja
+jscomp/compiler.ninja
+jscomp/runtime/build.ninja
+jscomp/others/build.ninja
+jscomp/stdlib-402/build.ninja
+jscomp/stdlib-406/build.ninja
+jscomp/test/build.ninja
+
 jscomp/bin/bsb
 jscomp/bin/bsc
 lib/bs

@@ -139,18 +139,18 @@ func main() {
 		}
 	}
 	if *mochaTest {
-		make := cmd(ninja, "-C", "jscomp", "-f", "ci.ninja" )
+		// make := cmd(ninja, "-C", "jscomp", "-f", "ci.ninja" )
+		// make.Stdout = os.Stdout
+		// make.Stderr = os.Stderr
+		// error := make.Run()
+		// if error != nil {
+		// 	fmt.Println(error)
+		// 	os.Exit(2)
+		// }
+		make := cmd("sh", "-c", "mocha jscomp/test/**/*test.js") 
 		make.Stdout = os.Stdout
 		make.Stderr = os.Stderr
 		error := make.Run()
-		if error != nil {
-			fmt.Println(error)
-			os.Exit(2)
-		}
-		make = cmd("sh", "-c", "mocha jscomp/test/**/*test.js") 
-		make.Stdout = os.Stdout
-		make.Stderr = os.Stderr
-		error = make.Run()
 		if error != nil {
 			fmt.Println(error)
 			os.Exit(2)
