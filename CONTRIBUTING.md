@@ -16,12 +16,15 @@ Prerequisites:
 cd vendor/ocaml && ./configure -prefix `pwd` && make -j9 world.opt && make install
 ```
 
-### Build everything in dev mode
+### Build everything in dev mode using vendored compiler
+
 ```
-ninja -C jscomp
+../script/ninja.js && ninja -C jscomp
 ```
 
-### Edit file and test changes
+`../script/ninja.js` will generate `build.ninja` file inside `jscomp` directory, `ninja` by default will pick up `build.ninja`.
+
+#### Edit file and test changes
 
 In general, you edit files and rerun `ninja -C jscomp`. 
 
@@ -30,28 +33,45 @@ Note we have a watcher script to automate this, suppose you are in `jscomp` dir,
 ```sh
 node ../scripts/task.js
 ```
+
+### Building everything in dev mode using environment compiler
+
+```
+../script/ninja.js -env && ninja -C jscomp -f env.ninja
+```
+
+`../script/ninja.js -env` will generate `env.ninja` file inside `jscomp` directory.
+
+Note this is useful when you want to use different compilers to test
+something quickly (only for advanced developers)
+
 ### Trouble-shooting when build is broken
 
 We use `../scripts/ninja.js` to generate `jscomp/build.ninja` to drive the whole build process, when it does not work, try to run `../scripts/ninja.js`  and do `ninja -C jscomp` again.
 
-## Test against OCaml 4.06
+## Switch test between vendored compiler and environment provided compiler
+
+
+```
+ninja -C jscomp -f env.ninja -t clean && ninja -C jscomp 
+```
+
+
+```
+ninja -C jscomp  -t clean && ninja -C jscomp -f env.ninja
+```
+
+Note clean up is necessary since the binary artifacts between versions of compiler
+may be incompatible
+
+### Example of using environment provided compiler
 
 Clone and install our patched [OCaml 4.06](https://github.com/bucklescript/ocaml), please refer  [install instructions](https://github.com/BuckleScript/ocaml/blob/4.06/INSTALL.adoc) for how to install. 
 After installation, make sure the installed `ocamlopt.opt` is in PATH.
 
-run `../scripts/ninja.js -v6` to generate ninja file accordingly and `ninja -C jscomp -f 406.ninja`
+run `../scripts/ninja.js -env` to generate ninja file accordingly and `ninja -C jscomp -f env.ninja` to do the build
 
-Note when you switch between 4.02 and 4.06, make sure to clean up before build
 
-For example, switch from 4.06 to 4.02
-```
-ninja -C jscomp -f 406.ninja -t clean && ninja -C jscomp -f build.ninja
-```
-
-Switch from 4.02 to 4.06
-```
-ninja -C jscomp -f build.ninja -t clean && ninja -C jscomp -f 406.ninja
-```
 
 
 ## Test on a Dummy Project
