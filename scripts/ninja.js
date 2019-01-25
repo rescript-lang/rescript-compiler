@@ -79,8 +79,19 @@ var getOcamldepFile = ()=>{
     }
 }
 
-var versionString = cp.execSync(`${getOcamldepFile()} -version`,{encoding : 'ascii'})
-var version6 = ! versionString.includes('4.02')
+/**
+ * @type {boolean}
+ */
+var versionCached = undefined
+var version6 = () =>{
+    if (versionCached === undefined) {
+        var versionString = cp.execSync(`${getOcamldepFile()} -version`, { encoding: 'ascii' })
+        versionCached = !versionString.includes('4.02')
+        return versionCached
+    } else {
+        return versionCached
+    }
+}
 
 
 
@@ -758,11 +769,11 @@ ${ninjaQuickBuidList([
  * generate build.ninja/release.ninja for stdlib-402 
  */
 async function stdlibNinja(devmode=true){
-    var stdlibVersion = version6 ? 'stdlib-406' : 'stdlib-402'
+    var stdlibVersion = version6 ()? 'stdlib-406' : 'stdlib-402'
     var ninjaCwd = stdlibVersion
     var stdlibDir = path.join(jscompDir,stdlibVersion)
     var externalDeps = [othersTarget]
-    var ninjaOutput = devmode? 'build.ninja' : 'release.ninja'
+    var ninjaOutput = devmode? (useEnv ? 'env.ninja' : 'build.ninja') : 'release.ninja'
     var bsc_flags = 'bsc_flags'
     /**
      * @type [string,string][]
@@ -1050,7 +1061,7 @@ function updateDev(){
         writeFile(path.join(jscompDir,'env.ninja'),`
 ocamlopt = ocamlopt.opt
 ocamllex = ocamllex.opt
-stdlib = ${version6 ? `stdlib-406` : `stdlib-402`}
+stdlib = ${version6() ? `stdlib-406` : `stdlib-402`}
 subninja compilerEnv.ninja
 subninja runtime/env.ninja
 subninja others/env.ninja
@@ -1062,7 +1073,7 @@ build all: phony runtime others $stdlib test
         writeFile(path.join(jscompDir, 'build.ninja'), `
 ocamlopt = ../vendor/ocaml/bin/ocamlopt.opt
 ocamllex = ../vendor/ocaml/bin/ocamllex.opt
-stdlib = ${version6 ? `stdlib-406` : `stdlib-402`}
+stdlib = ${version6() ? `stdlib-406` : `stdlib-402`}
 subninja compiler.ninja
 subninja snapshot.ninja
 subninja runtime/build.ninja
