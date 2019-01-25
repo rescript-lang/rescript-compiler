@@ -25,7 +25,46 @@ var runtimeTarget = pseudoTarget('runtime')
 var othersTarget = pseudoTarget('others')
 var stdlibTarget = pseudoTarget('$stdlib')
 
-var version6 = false
+
+/**
+ * By default we use vendored,
+ * we produce two ninja files which won't overlap
+ * one is build.ninja which use  vendored config
+ * the other is env.ninja which use binaries from environment
+ * 
+ * In dev mode, files generated for vendor config
+ * 
+ * build.ninja
+ * compiler.ninja 
+ * snapshot.ninja
+ * runtime/build.ninja
+ * others/build.ninja
+ * $stdlib/build.ninja
+ * test/build.ninja
+ * 
+ * files generated for env config
+ * 
+ * env.ninja
+ * compilerEnv.ninja (no snapshot since env can not provide snapshot)
+ * runtime/env.ninja
+ * others/env.ninja
+ * $stdlib/env.ninja
+ * test/env.ninja
+ *
+ * In release mode:
+ * 
+ * release.ninja
+ * runtime/release.ninja
+ * others/release.ninja
+ * $stdlib/release.ninja
+ * 
+ * Like that our snapshot is so robust that 
+ * we don't do snapshot in CI, we don't
+ * need do test build in CI either
+ * 
+ */
+var useEnv = false
+
 /**
  * Note this file is not used in ninja file
  * It is used to generate ninja file
@@ -33,12 +72,27 @@ var version6 = false
  * Note ocamldep.opt has built-in macro handling OCAML_VERSION
  */
 var getOcamldepFile = ()=>{
-    if(version6){
+    if(useEnv){
         return `ocamldep.opt`
     } else{
         return path.join(__dirname,'..','vendor','ocaml','bin','ocamldep.opt')
     }
 }
+
+/**
+ * @type {boolean}
+ */
+var versionCached = undefined
+var version6 = () =>{
+    if (versionCached === undefined) {
+        var versionString = cp.execSync(`${getOcamldepFile()} -version`, { encoding: 'ascii' })
+        versionCached = !versionString.includes('4.02')
+        return versionCached
+    } else {
+        return versionCached
+    }
+}
+
 
 
 /**
@@ -527,7 +581,7 @@ var compilerTarget = pseudoTarget(COMPILIER)
 async function runtimeNinja(devmode=true){
     var ninjaCwd = "runtime"
     var externalDeps = devmode ? [compilerTarget] : []
-    var ninjaOutput = devmode ? 'build.ninja' : 'release.ninja'
+    var ninjaOutput = devmode ? (useEnv ? 'env.ninja' : 'build.ninja') : 'release.ninja'
     var templateRuntimeRules = `
 ${BSC_COMPILER}
 bsc_no_open_flags = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-no-check-div-by-zero -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js  -bs-package-output es6:lib/es6  -nostdlib -nopervasives  -unsafe -warn-error A -w -40-49-103 -bin-annot
@@ -607,7 +661,7 @@ rule ${mllRuleName}
 `
 async function othersNinja(devmode=true) {
     var externalDeps = [runtimeTarget]
-    var ninjaOutput = devmode ? 'build.ninja' : 'release.ninja'
+    var ninjaOutput = devmode ? (useEnv ?'env.ninja' : 'build.ninja') : 'release.ninja'
     var ninjaCwd = 'others'
 
 
@@ -714,12 +768,12 @@ ${ninjaQuickBuidList([
  * @param {boolean} devmode 
  * generate build.ninja/release.ninja for stdlib-402 
  */
-async function stdlib402Ninja(devmode=true){
-    var stdlib402Version = 'stdlib-402'
-    var ninjaCwd = stdlib402Version
-    var stdlib402Dir = path.join(jscompDir,stdlib402Version)
+async function stdlibNinja(devmode=true){
+    var stdlibVersion = version6 ()? 'stdlib-406' : 'stdlib-402'
+    var ninjaCwd = stdlibVersion
+    var stdlibDir = path.join(jscompDir,stdlibVersion)
     var externalDeps = [othersTarget]
-    var ninjaOutput = devmode? 'build.ninja' : 'release.ninja'
+    var ninjaOutput = devmode? (useEnv ? 'env.ninja' : 'build.ninja') : 'release.ninja'
     var bsc_flags = 'bsc_flags'
     /**
      * @type [string,string][]
@@ -746,14 +800,14 @@ ${ninjaQuickBuidList([
       'cc', ninjaCwd, bsc_builtin_overrides, 'camlinternalFormatBasics.cmj', externalDeps]
 ])}
 `
-    var stdlibDirFiles = fs.readdirSync(stdlib402Dir,'ascii')
+    var stdlibDirFiles = fs.readdirSync(stdlibDir,'ascii')
     var sources = stdlibDirFiles.filter(x=>{
         return !(x.startsWith('camlinternalFormatBasics')) &&
             !(x.startsWith('pervasives')) &&
             (x.endsWith('.ml') || x.endsWith('.mli'))
     })
 
-    var depsMap  = await ocamlDepForBscAsync(sources, stdlib402Dir, new Map)
+    var depsMap  = await ocamlDepForBscAsync(sources, stdlibDir, new Map)
     var targets = collectTarget(sources)
     var allTargets = scanFileTargets(targets,
             ['camlinternalFormatBasics.cmi','camlinternalFormatBasics.cmj',
@@ -774,81 +828,13 @@ ${ninjaQuickBuidList([
     output.push(phony(stdlibTarget,fileTargets(allTargets),ninjaCwd))
 
     writeFile(
-        path.join(stdlib402Dir,ninjaOutput),
+        path.join(stdlibDir,ninjaOutput),
         templateStdlibRules  + output.join('\n') + '\n'
     )
 }
 
 
-/**
- * 
- * @param {boolean} devmode 
- * generate build.ninja/release.ninja for stdlib-406 
- */
-async function stdlib406Ninja(devmode=true){
-    var stdlib406Version = 'stdlib-406'
-    var ninjaCwd = stdlib406Version
-    var stdlib402Dir = path.join(jscompDir,ninjaCwd)
-    var externalDeps = [othersTarget]
-    var ninjaOutput = devmode? 'build.ninja' : 'release.ninja'
-    var bsc_flags = 'bsc_flags'
-    /**
-     * @type [string,string][]
-     */
-    var bsc_builtin_overrides = [[bsc_flags,`$${bsc_flags} -nopervasives`]]
-    var templateStdlibRules = `
-${BSC_COMPILER}
-${bsc_flags} = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-no-check-div-by-zero -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js  -bs-package-output es6:lib/es6  -nostdlib -warn-error A -w -40-49-103 -bin-annot  -bs-no-warn-unimplemented-external  -I ./runtime  -I ./others
-rule cc
-    command = $bsc -bs-cmi -bs-cmj $${bsc_flags} -bs-no-implicit-include  -I ${ninjaCwd} -c $in
-    description = $in -> $out
 
-${ninjaQuickBuidList([
-    ['camlinternalFormatBasics.cmi', 'camlinternalFormatBasics.mli',
-        'cc', ninjaCwd, bsc_builtin_overrides, [], externalDeps],
-        // we make it still depends on external
-        // to enjoy free ride on dev config for compiler-deps
-        
-    ['camlinternalFormatBasics.cmj', 'camlinternalFormatBasics.ml',
-        'cc', ninjaCwd, bsc_builtin_overrides, 'camlinternalFormatBasics.cmi',externalDeps],
-    ['pervasives.cmj', 'pervasives.ml',
-        'cc',ninjaCwd, bsc_builtin_overrides,'pervasives.cmi', externalDeps],
-    [ 'pervasives.cmi', 'pervasives.mli',
-      'cc', ninjaCwd, bsc_builtin_overrides, 'camlinternalFormatBasics.cmj', externalDeps]
-])}
-`
-    var stdlibDirFiles = fs.readdirSync(stdlib402Dir,'ascii')
-    var sources = stdlibDirFiles.filter(x=>{
-        return !(x.startsWith('camlinternalFormatBasics')) &&
-            !(x.startsWith('pervasives')) &&
-            (x.endsWith('.ml') || x.endsWith('.mli'))
-    })
-
-    var depsMap  = await ocamlDepForBscAsync(sources, stdlib402Dir, new Map)
-    var targets = collectTarget(sources)
-    var allTargets = scanFileTargets(targets,
-            ['camlinternalFormatBasics.cmi','camlinternalFormatBasics.cmj',
-            'pervasives.cmi', 'pervasives.cmj'
-        ])
-    targets.forEach((ext,mod)=>{
-        switch(ext){
-            case 'HAS_MLI':
-            case 'HAS_BOTH':
-                updateDepsKVByFile(mod+".cmi", 'pervasives.cmj',depsMap)
-                break
-            case 'HAS_ML':
-                updateDepsKVByFile(mod+".cmj", 'pervasives.cmj', depsMap)
-                break
-        }
-    })
-    var output = generateNinja(depsMap,targets,ninjaCwd, externalDeps)
-    output.push(phony(stdlibTarget,fileTargets(allTargets),ninjaCwd))
-
-    writeFile(
-        path.join(stdlib402Dir,ninjaOutput),
-        templateStdlibRules  + output.join('\n') + '\n'
-    )
-}
 
 /**
  *
@@ -877,10 +863,10 @@ function baseName(x) {
 
 /**
  * 
- * @param {boolean} version6 
+ * 
  */
-async function testNinja(version6){
-    var ninjaOutput = version6 ? 'build406.ninja' : 'build.ninja'
+async function testNinja(){
+    var ninjaOutput =  useEnv ? 'env.ninja' : 'build.ninja'
     var ninjaCwd = `test`
     var templateTestRules = `
 ${BSC_COMPILER}
@@ -1037,8 +1023,8 @@ function sortFilesByDeps(domain, dependency_graph){
 
 var emptyCount = 2 
 if (require.main === module) {
-    if(process.argv.includes('-v6')){
-        version6 = true
+    if(process.argv.includes('-env')){
+        useEnv = true
         emptyCount ++
     }
     if(process.argv.includes('-check')){
@@ -1063,26 +1049,45 @@ if (require.main === module) {
     }
 }
 function updateRelease(){
-    runtimeNinja(false)
-    if(version6){
-        stdlib406Ninja(false)
-    } else{
-        stdlib402Ninja(false)
-    }        
-    othersNinja(false)
+    if (!useEnv) {
+        runtimeNinja(false)
+        stdlibNinja(false)
+        othersNinja(false)
+    }    
 }
 
 function updateDev(){
-    runtimeNinja()
-    if (version6) {
-        stdlib406Ninja() // TODO dispatch internally       
+    if(useEnv){
+        writeFile(path.join(jscompDir,'env.ninja'),`
+ocamlopt = ocamlopt.opt
+ocamllex = ocamllex.opt
+stdlib = ${version6() ? `stdlib-406` : `stdlib-402`}
+subninja compilerEnv.ninja
+subninja runtime/env.ninja
+subninja others/env.ninja
+subninja $stdlib/env.ninja
+subninja test/env.ninja
+build all: phony runtime others $stdlib test        
+`)
     } else {
-        stdlib402Ninja()
-    }
-    testNinja(version6)
-    othersNinja()
-    
-    nativeNinja(version6)
+        writeFile(path.join(jscompDir, 'build.ninja'), `
+ocamlopt = ../vendor/ocaml/bin/ocamlopt.opt
+ocamllex = ../vendor/ocaml/bin/ocamllex.opt
+stdlib = ${version6() ? `stdlib-406` : `stdlib-402`}
+subninja compiler.ninja
+subninja snapshot.ninja
+subninja runtime/build.ninja
+subninja others/build.ninja
+subninja $stdlib/build.ninja
+subninja test/build.ninja
+build all: phony runtime others $stdlib test
+`)
+    }  
+    runtimeNinja()
+    stdlibNinja(true)
+    testNinja()
+    othersNinja()    
+    nativeNinja()
 }
 exports.updateDev = updateDev
 exports.updateRelease = updateRelease
@@ -1122,8 +1127,8 @@ function setSortedToString(xs){
  * Since it will remove generated ml file which has
  * an effect on depfile
  */
-function nativeNinja(version6=false) {
-        var ninjaOutput = version6 ? 'compiler406.ninja' : 'compiler402.ninja'
+function nativeNinja() {
+        var ninjaOutput = useEnv ? 'compilerEnv.ninja' : 'compiler.ninja'
         var sourceDirs = ['stubs','ext', 'common', 'syntax', 'depends', 'core', 'super_errors', 'outcome_printer', 'bsb', 'ounit','ounit_tests','main']
         var includes = sourceDirs.map(x=>`-I ${x}`).join(' ')
 
