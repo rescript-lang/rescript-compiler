@@ -86,7 +86,7 @@ odoc_gen/*.cmxs
 .bs_dir_cache
 
 .bsbuild
-
+jscomp/build.ninja
 jscomp/compiler.ninja
 jscomp/runtime/build.ninja
 jscomp/others/build.ninja
