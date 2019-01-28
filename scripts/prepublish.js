@@ -86,5 +86,8 @@ clean()
 verifyIsCleanWorkTree()
 console.log(`okay to publish`)
 
-console.log(`checking windows`)
-checkWinBinary()
+
+if(!process.argv.includes('-weekly')){
+    console.log(`checking windows`)
+    checkWinBinary()
+}
