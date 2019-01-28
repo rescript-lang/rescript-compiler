@@ -22,6 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+[@@@ocaml.warning "+9"]
 
 type path = string
 
@@ -51,12 +52,15 @@ type t =
     name : package_name ;
     module_systems: package_info  list
   }
-[@@@ocaml.warning "+9"]
-let equal (x : t) ({name; module_systems}) = 
+
+let iter (x : t) cb =    
+  Ext_list.iter x.module_systems cb 
+
+(* let equal (x : t) ({name; module_systems}) = 
     x.name = name && 
     Ext_list.for_all2_no_exn
       x.module_systems module_systems
-      (fun (a0,a1) (b0,b1) -> a0 = b0 && a1 = b1)
+      (fun (a0,a1) (b0,b1) -> a0 = b0 && a1 = b1) *)
 
 (* we don't want force people to use package *) 
 
@@ -65,7 +69,7 @@ let equal (x : t) ({name; module_systems}) =
    For empty package, [-bs-package-output] does not make sense
    it is only allowed to generate commonjs file in the same directory
 *)  
-let empty = 
+let empty : t = 
   { name = "_";
     module_systems =  []
   }

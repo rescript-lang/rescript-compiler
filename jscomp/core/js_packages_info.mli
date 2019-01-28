@@ -32,14 +32,12 @@ type module_system =
 type package_info = 
   module_system * string 
 
-type package_name  = string
+type t 
 
-
-type t =
-  private {
-  name : package_name ;
-  module_systems :  package_info  list
-}
+val iter : 
+  t -> 
+  (package_info -> unit) ->
+  unit 
 
 val empty : t 
 val from_name : string -> t 
@@ -55,7 +53,7 @@ val add_npm_package_path :
 (** Note here we compare the package info by order
   in theory, we can compare it by set semantics
 *)
-val equal : t -> t -> bool 
+(* val equal : t -> t -> bool  *)
 
 (**
    generate the mdoule path so that it can be spliced here:
