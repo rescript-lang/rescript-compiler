@@ -29,17 +29,19 @@ type module_system =
   | Es6_global
   (* affect [.cmj] format*)
 
-type package_info = 
-  module_system * string 
+type package_info 
+  = 
+  { 
+    module_system : module_system ;
+    path :  string 
+  }
 
-type package_name  = string
+type t 
 
-
-type t =
-  private {
-  name : package_name ;
-  module_systems :  package_info  list
-}
+val iter : 
+  t -> 
+  (package_info -> unit) ->
+  unit 
 
 val empty : t 
 val from_name : string -> t 
@@ -48,14 +50,18 @@ val dump_packages_info :
   Format.formatter -> t -> unit
 
 
-(** used by command line option *)
-val add_npm_package_path : 
-  string -> t -> t  
+(** used by command line option 
+  e.g [-bs-package-output commonjs:xx/path]
+*)
+val add_npm_package_path :   
+  t ->
+  string -> 
+  t  
 
 (** Note here we compare the package info by order
   in theory, we can compare it by set semantics
 *)
-val equal : t -> t -> bool 
+(* val equal : t -> t -> bool  *)
 
 (**
    generate the mdoule path so that it can be spliced here:

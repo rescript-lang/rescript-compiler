@@ -22,6 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+[@@@ocaml.warning "+9"]
 
 type path = string
 
@@ -43,7 +44,7 @@ let compatible (exist : module_system)
 
 
 type package_info =
-  module_system * string 
+  { module_system : module_system ; path :  string }
 
 type package_name  = string
 type t =
@@ -51,12 +52,15 @@ type t =
     name : package_name ;
     module_systems: package_info  list
   }
-[@@@ocaml.warning "+9"]
-let equal (x : t) ({name; module_systems}) = 
+
+let iter (x : t) cb =    
+  Ext_list.iter x.module_systems cb 
+
+(* let equal (x : t) ({name; module_systems}) = 
     x.name = name && 
     Ext_list.for_all2_no_exn
       x.module_systems module_systems
-      (fun (a0,a1) (b0,b1) -> a0 = b0 && a1 = b1)
+      (fun (a0,a1) (b0,b1) -> a0 = b0 && a1 = b1) *)
 
 (* we don't want force people to use package *) 
 
@@ -65,7 +69,7 @@ let equal (x : t) ({name; module_systems}) =
    For empty package, [-bs-package-output] does not make sense
    it is only allowed to generate commonjs file in the same directory
 *)  
-let empty = 
+let empty : t = 
   { name = "_";
     module_systems =  []
   }
@@ -96,7 +100,7 @@ let module_system_of_string package_name : module_system option =
 
 let dump_package_info 
     (fmt : Format.formatter)
-    ((ms, name) : package_info)
+    ({module_system = ms; path =  name} : package_info)
   = 
   Format.fprintf
     fmt 
@@ -123,13 +127,14 @@ type info_query =
 
 
 let query_package_infos 
-    (package_info : t) module_system : info_query =
+    (package_info : t) 
+    (module_system  : module_system) : info_query =
   if is_empty package_info then Package_script 
   else 
-    match List.find (fun (k, _) -> 
-        compatible k  module_system) package_info.module_systems with
-    | (_, x) -> Package_found (package_info.name, x)
-    | exception _ -> Package_not_found
+    match Ext_list.find_first package_info.module_systems (fun k -> 
+        compatible k.module_system  module_system)  with
+    | Some k -> Package_found (package_info.name, k.path)
+    | None -> Package_not_found
 
 
 let runtime_package_name = "bs-platform"
@@ -144,10 +149,10 @@ let runtime_package_path =
 
 let get_js_path module_system 
     (x : t ) = 
-  match List.find (fun (k,_) -> 
-      compatible k  module_system) x.module_systems with
-  | (_, path) ->  path
-  |  exception _ -> assert false
+  match Ext_list.find_first x.module_systems (fun k -> 
+      compatible k.module_system  module_system) with
+  | Some k ->  k.path
+  | None -> assert false
 
 (* for a single pass compilation, [output_dir]
    can be cached
@@ -160,11 +165,11 @@ let get_output_dir ~package_dir module_system
 
 
 
-let add_npm_package_path s (packages_info : t)  : t =
+let add_npm_package_path (packages_info : t) (s : string)  : t =
   if is_empty packages_info then 
     Ext_pervasives.bad_argf "please set package name first using -bs-package-name "
   else   
-    let env, path =
+    let module_system, path =
       match Ext_string.split ~keep_empty:false s ':' with
       | [ module_system; path]  ->
         (match module_system_of_string module_system with
@@ -180,7 +185,7 @@ let add_npm_package_path s (packages_info : t)  : t =
       | _ ->
         Ext_pervasives.bad_argf "invalid npm package path: %s" s
     in
-    { packages_info with module_systems = (env,path)::packages_info.module_systems}
+    { packages_info with module_systems = {module_system; path}::packages_info.module_systems}
 
 
 
