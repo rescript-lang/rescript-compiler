@@ -78,14 +78,6 @@ You would then need a bundler for the different module systems:
 `webpack` supports `commonjs` and `amdjs` while
 `google closure compiler` supports all.
 
-### -bs-gen-tds
-
-Trigger the generation of TypeScript `.d.ts` files.
-`bsc.exe` has the ability to also emit `.d.ts` for better interaction with
-TypeScript. This is still experimental.
-
-For more options, please see the documentation of `bsc.exe -help`.
-
 ### -bs-no-warn-ffi-type
 
 Turn off warnings on FFI type declarations.
