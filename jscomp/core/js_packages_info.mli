@@ -46,9 +46,13 @@ val dump_packages_info :
   Format.formatter -> t -> unit
 
 
-(** used by command line option *)
-val add_npm_package_path : 
-  string -> t -> t  
+(** used by command line option 
+  e.g [-bs-package-output commonjs:xx/path]
+*)
+val add_npm_package_path :   
+  t ->
+  string -> 
+  t  
 
 (** Note here we compare the package info by order
   in theory, we can compare it by set semantics

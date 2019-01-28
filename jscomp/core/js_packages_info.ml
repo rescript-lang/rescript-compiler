@@ -149,10 +149,10 @@ let runtime_package_path =
 
 let get_js_path module_system 
     (x : t ) = 
-  match List.find (fun (k,_) -> 
-      compatible k  module_system) x.module_systems with
-  | (_, path) ->  path
-  |  exception _ -> assert false
+  match Ext_list.find_first x.module_systems (fun (k,_) -> 
+      compatible k  module_system) with
+  | Some (_, path) ->  path
+  | None -> assert false
 
 (* for a single pass compilation, [output_dir]
    can be cached
@@ -165,7 +165,7 @@ let get_output_dir ~package_dir module_system
 
 
 
-let add_npm_package_path s (packages_info : t)  : t =
+let add_npm_package_path (packages_info : t) (s : string)  : t =
   if is_empty packages_info then 
     Ext_pervasives.bad_argf "please set package name first using -bs-package-name "
   else   

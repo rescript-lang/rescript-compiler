@@ -42,6 +42,7 @@ let set_package_map name =
       !Clflags.open_modules
       
 let update_npm_package_path s  = 
-  packages_info := Js_packages_info.add_npm_package_path s !packages_info
+  packages_info := 
+    Js_packages_info.add_npm_package_path !packages_info s 
 
 let get_packages_info () = !packages_info  
