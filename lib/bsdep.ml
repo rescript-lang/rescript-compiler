@@ -38731,7 +38731,7 @@ let set_attrs = [Ast_attributes.bs_set]
 
 let deprecated name = 
   Ast_attributes.deprecated  
-    ("use " ^ name ^ "Get instead")
+    ("use " ^ name ^ "Get instead or use {abstract = light} explicitly")
 
 
 let handleTdcl 
