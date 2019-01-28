@@ -44,7 +44,7 @@ let compatible (exist : module_system)
 
 
 type package_info =
-  module_system * string 
+  { module_system : module_system ; path :  string }
 
 type package_name  = string
 type t =
@@ -100,7 +100,7 @@ let module_system_of_string package_name : module_system option =
 
 let dump_package_info 
     (fmt : Format.formatter)
-    ((ms, name) : package_info)
+    ({module_system = ms; path =  name} : package_info)
   = 
   Format.fprintf
     fmt 
@@ -131,9 +131,9 @@ let query_package_infos
     (module_system  : module_system) : info_query =
   if is_empty package_info then Package_script 
   else 
-    match Ext_list.find_first package_info.module_systems (fun (k, _) -> 
-        compatible k  module_system)  with
-    | Some (_, x) -> Package_found (package_info.name, x)
+    match Ext_list.find_first package_info.module_systems (fun k -> 
+        compatible k.module_system  module_system)  with
+    | Some k -> Package_found (package_info.name, k.path)
     | None -> Package_not_found
 
 
@@ -149,9 +149,9 @@ let runtime_package_path =
 
 let get_js_path module_system 
     (x : t ) = 
-  match Ext_list.find_first x.module_systems (fun (k,_) -> 
-      compatible k  module_system) with
-  | Some (_, path) ->  path
+  match Ext_list.find_first x.module_systems (fun k -> 
+      compatible k.module_system  module_system) with
+  | Some k ->  k.path
   | None -> assert false
 
 (* for a single pass compilation, [output_dir]
@@ -169,7 +169,7 @@ let add_npm_package_path (packages_info : t) (s : string)  : t =
   if is_empty packages_info then 
     Ext_pervasives.bad_argf "please set package name first using -bs-package-name "
   else   
-    let env, path =
+    let module_system, path =
       match Ext_string.split ~keep_empty:false s ':' with
       | [ module_system; path]  ->
         (match module_system_of_string module_system with
@@ -185,7 +185,7 @@ let add_npm_package_path (packages_info : t) (s : string)  : t =
       | _ ->
         Ext_pervasives.bad_argf "invalid npm package path: %s" s
     in
-    { packages_info with module_systems = (env,path)::packages_info.module_systems}
+    { packages_info with module_systems = {module_system; path}::packages_info.module_systems}
 
 
 

@@ -29,8 +29,12 @@ type module_system =
   | Es6_global
   (* affect [.cmj] format*)
 
-type package_info = 
-  module_system * string 
+type package_info 
+  = 
+  { 
+    module_system : module_system ;
+    path :  string 
+  }
 
 type t 
 

@@ -311,7 +311,7 @@ let lambda_as_module
           output_chan
     end
   else
-    Js_packages_info.iter package_info (fun (module_system, _path) -> 
+    Js_packages_info.iter package_info (fun {module_system; path = _path} -> 
         let output_chan chan  = 
           Js_dump_program.dump_deps_program ~output_prefix
             module_system 
