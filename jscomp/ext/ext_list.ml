@@ -477,6 +477,13 @@ let rec drop h n =
     | _ :: tl ->   
       drop tl (n - 1)
 
+let rec find_first x p = 
+  match x with 
+  | [] -> None
+  | x :: l -> 
+    if p x then Some x 
+    else find_first l p
+
 let rec find_first_not  xs p = 
   match xs with 
   | [] -> None

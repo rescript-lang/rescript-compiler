@@ -213,6 +213,11 @@ val drop :
   int -> 
   'a list 
 
+val find_first :   
+    'a list ->
+    ('a -> bool) ->
+    'a option 
+    
 (** [find_first_not p lst ]
     if all elements in [lst] pass, return [None] 
     otherwise return the first element [e] as [Some e] which

@@ -146,17 +146,17 @@ let list_themes () =
 
 (* @raise [Not_found] *)
 let process_themes env theme proj_dir (themes : OCamlRes.Res.node list ) =
-  match List.find (fun (x : OCamlRes.Res.node) ->
+  match Ext_list.find_first themes (fun x ->
       match  x with
       | Dir (dir, _) -> dir = theme
       | File _ -> false
-    ) themes  with
-  | exception Not_found ->
+    )  with
+  | None ->
     list_themes ();
     raise (Arg.Bad( "theme " ^ theme ^ " not found")  )
-  | Dir(_theme, nodes ) ->
+  | Some (Dir(_theme, nodes )) ->
     List.iter (fun node -> process_theme_aux env proj_dir node ) nodes
-  | _ -> assert false
+  | Some _ -> assert false
 
 (** TODO: run npm link *)
 let init_sample_project ~cwd ~theme name =

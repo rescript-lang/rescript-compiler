@@ -127,13 +127,14 @@ type info_query =
 
 
 let query_package_infos 
-    (package_info : t) module_system : info_query =
+    (package_info : t) 
+    (module_system  : module_system) : info_query =
   if is_empty package_info then Package_script 
   else 
-    match List.find (fun (k, _) -> 
-        compatible k  module_system) package_info.module_systems with
-    | (_, x) -> Package_found (package_info.name, x)
-    | exception _ -> Package_not_found
+    match Ext_list.find_first package_info.module_systems (fun (k, _) -> 
+        compatible k  module_system)  with
+    | Some (_, x) -> Package_found (package_info.name, x)
+    | None -> Package_not_found
 
 
 let runtime_package_name = "bs-platform"

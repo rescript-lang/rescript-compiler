@@ -6188,6 +6188,11 @@ val drop :
   int -> 
   'a list 
 
+val find_first :   
+    'a list ->
+    ('a -> bool) ->
+    'a option 
+    
 (** [find_first_not p lst ]
     if all elements in [lst] pass, return [None] 
     otherwise return the first element [e] as [Some e] which
@@ -6786,6 +6791,13 @@ let rec drop h n =
       invalid_arg "Ext_list.drop"
     | _ :: tl ->   
       drop tl (n - 1)
+
+let rec find_first x p = 
+  match x with 
+  | [] -> None
+  | x :: l -> 
+    if p x then Some x 
+    else find_first l p
 
 let rec find_first_not  xs p = 
   match xs with 
