@@ -53,3 +53,15 @@ let uff3 f =
   match f |. yyyy2Get with 
   | None -> 0
   | Some x  -> x 0 
+
+
+
+type u3 = {
+  x : int; 
+  yyyy : (int -> int [@bs]);
+  yyyy1 : (int -> int -> int  [@bs]);
+  yyyy2 : int -> int  [@bs.optional]
+} [@@bs.deriving { abstract = light} ]
+
+
+let fx v = v |. x 

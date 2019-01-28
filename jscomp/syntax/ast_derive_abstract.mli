@@ -22,8 +22,23 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type abstractKind = 
+  | Not_abstract
+  | Light_abstract
+  | Complex_abstract 
+
+val isAbstract : 
+  Ast_payload.action list -> abstractKind
+(** if only [abstract] happens  [true]
+    if [abstract] does not appear [false]
+    if [abstract] happens with other, raise exception
+*)  
+
+
 val handleTdclsInStr : 
+  light:bool -> 
   Parsetree.type_declaration list -> Parsetree.structure
 
 val handleTdclsInSig:  
+  light:bool ->
   Parsetree.type_declaration list -> Parsetree.signature
