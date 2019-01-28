@@ -31,13 +31,13 @@ let init_path native =
   in
   let exp_dirs =
     List.map (Misc.expand_directory Config.standard_library) dirs in
-  let extra_dll_hack = (Filename.dirname Sys.executable_name) // "lib" // "ocaml" // "stublibs" in
-#if undefined BS_NO_COMPILER_PATCH then 
+  let extra_dll_hack = (Filename.dirname (Filename.dirname Sys.executable_name)) // "lib" // "ocaml" // "stublibs" in
+#if undefined BS_NO_COMPILER_PATCH then
     Config.load_path :=
       extra_dll_hack ::
-      (if !Clflags.no_implicit_current_dir then 
+      (if !Clflags.no_implicit_current_dir then
          List.rev_append exp_dirs (Clflags.std_include_dir ())
-       else 
+       else
          "" :: List.rev_append exp_dirs (Clflags.std_include_dir ()));
 #else
   Config.load_path := "" ::

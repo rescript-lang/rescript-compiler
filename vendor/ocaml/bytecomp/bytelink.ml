@@ -314,11 +314,16 @@ let link_bytecode ppf tolink exec_name standalone =
               let inchan = open_in_bin (find_in_path !load_path header) in
               copy_file inchan outchan;
               close_in inchan
-          | _ -> 
-            let header = if String.length !Clflags.use_runtime > 0 then "" else 
-              make_absolute ((Filename.dirname Sys.executable_name) // "bin" // "ocamlrun")
-            in
-            output_string outchan ("#!" ^ header ^ "\n")
+          | _ ->
+            if String.length !Clflags.use_runtime > 0 then
+              let header = make_absolute ((Filename.dirname Sys.executable_name) // "ocamlrun") in
+              output_string outchan ("#!" ^ header ^ "\n")
+            else begin
+               let headerPath = "camlheader" ^ !Clflags.runtime_variant in
+               let inchan = open_in_bin (find_in_path !load_path headerPath) in
+                copy_file inchan outchan;
+                close_in inchan
+            end
         end
       with Not_found | Sys_error _ -> ()
     end;
@@ -329,7 +334,7 @@ let link_bytecode ppf tolink exec_name standalone =
       output_char outchan '\n';
       Bytesections.record outchan "RNTM"
     end else begin
-      output_string outchan (make_absolute ((Filename.dirname Sys.executable_name) // "bin" // "ocamlrun.exe"));
+      output_string outchan (make_absolute ((Filename.dirname Sys.executable_name) // "ocamlrun.exe"));
       output_char outchan '\n';
       Bytesections.record outchan "RNTM"
     end;
@@ -357,7 +362,7 @@ let link_bytecode ppf tolink exec_name standalone =
     (* DLL stuff *)
     if standalone then begin
       (* The extra search path for DLLs *)
-      output_stringlist outchan (((Filename.dirname Sys.executable_name) // "lib" // "ocaml" // "stublibs") :: !Clflags.dllpaths);
+      output_stringlist outchan (((Filename.dirname (Filename.dirname Sys.executable_name)) // "lib" // "ocaml" // "stublibs") :: !Clflags.dllpaths);
       Bytesections.record outchan "DLPT";
       (* The names of the DLLs *)
       output_stringlist outchan sharedobjs;
