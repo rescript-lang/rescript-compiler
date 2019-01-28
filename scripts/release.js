@@ -11,12 +11,12 @@ var jscompDir = path.join(rootDir,'jscomp')
 
 function run() {
 
-
-    for (let file of fs.readdirSync(libJsDir)) {
-        if (file.endsWith('.js')) {
-            fs.unlinkSync(path.join(libJsDir, file))
-        }
-    }
+    // Note removing js file would affect `release.ninja`
+    // for (let file of fs.readdirSync(libJsDir)) {
+    //     if (file.endsWith('.js')) {
+    //         fs.unlinkSync(path.join(libJsDir, file))
+    //     }
+    // }
 
 
     cp.execSync(`git clean -dfx stubs ext common syntax depends core bsb main .`,

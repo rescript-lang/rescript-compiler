@@ -2,26 +2,52 @@
 //@ts-check
 var fs = require('fs')
 var path = require('path')
+/**
+ * 
+ * @param {number} n 
+ */
 function* range(n) {
     for (var i = 0; i < n; ++i) {
         yield i
     }
 }
 
+/**
+ * 
+ * @param {number} n 
+ */
 var constructors = (n) => {
     return [...range(n)].map((x => `| A${x} \n`)).reduce((x, y) => x + y)
 }
 
+/**
+ * 
+ * @param {number} n 
+ */
 var polyConstructors = (n) => {
     return [...range(n)].map((x => `| \`variant${x} \n`)).reduce((x, y) => x + y)
 }
 
+/**
+ * 
+ * @param {number} n 
+ */
 var matches = (n) => {
     return [...range(n)].map((x => `| A${x} -> ${x} \n `)).reduce((x, y) => x + y)
 }
+
+/**
+ * 
+ * @param {number} n 
+ */
 var xs = (n) => {
     return [...range(n)].map((x => `| A${x} -> "A${x}" \n `)).reduce((x, y) => x + y)
 }
+
+/**
+ * 
+ * @param {number} n 
+ */
 var code = (n) => {
     var content = `type t = \n ${constructors(n)}`
     var match = `let to_enum = function\n ${matches(n)}`
@@ -30,6 +56,10 @@ var code = (n) => {
     return content + match + to_string
 }
 
+/**
+ * 
+ * @param {number} n 
+ */
 var polyCode = (n) =>{
     var content = `type t = [ \n ${polyConstructors(n)}\n ] [@@bs.deriving jsConverter] `
     var eq = `
