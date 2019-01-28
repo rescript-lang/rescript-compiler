@@ -230,9 +230,9 @@ let build_bs_deps cwd deps =
           end     
         end else begin
           dependency_info.all_toplevel_ppxes <- List.fold_left (fun all_toplevel_ppxes ({package_name} : Bsb_config_types.dependency) ->
-            match String_map.find_opt package_name !all_ppxes with
+            match String_map.find_opt !all_ppxes (Bsb_pkg_types.to_string package_name) with
             | None -> all_toplevel_ppxes
-            | Some v -> String_map.add package_name v all_toplevel_ppxes
+            | Some v -> String_map.add all_toplevel_ppxes (Bsb_pkg_types.to_string package_name) v
           ) dependency_info.all_toplevel_ppxes main_config.bs_dependencies
         end
       );

@@ -12,10 +12,14 @@ OCAML_SRC_BYTECOMP=../vendor/ocaml/bytecomp
 OCAML_SRC_DRIVER=../vendor/ocaml/driver
 OCAML_SRC_TOOLS=../vendor/ocaml/tools   
 includes = -I stubs -I ext -I common -I syntax -I depends -I core -I super_errors -I outcome_printer -I bsb -I ounit -I ounit_tests -I main
-build snapshot: phony  ../lib/whole_compiler.ml ../lib/bsppx.ml ../lib/bsdep.ml ../lib/bsb_helper.ml ../lib/bsb.ml ../lib/bspp.ml bin/all_ounit_tests.ml
+build snapshot: phony  ../lib/whole_compiler.ml ../lib/whole_compiler_native.ml ../lib/bsppx.ml ../lib/belt_bsppx.ml ../lib/bsdep.ml ../lib/bsb_helper.ml ../lib/bsb_helper_native.ml ../lib/bsb.ml ../lib/bsb_native.ml ../lib/bspp.ml bin/all_ounit_tests.ml
 
 build ../lib/whole_compiler.ml: bspack | ./bin/bspack.exe
     flags = ${releaseMode} -bs-MD -module-alias Config=Config_whole_compiler -bs-exclude-I config  -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I $OCAML_SRC_TYPING -I $OCAML_SRC_BYTECOMP -I $OCAML_SRC_DRIVER   ${includes}
+    main = Js_main
+
+build ../lib/whole_compiler_native.ml: bspack | ./bin/bspack.exe
+    flags = ${releaseMode} -bs-MD -module-alias Config=Config_whole_compiler -D BS_NATIVE=true -bs-exclude-I config  -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I $OCAML_SRC_TYPING -I $OCAML_SRC_BYTECOMP -I $OCAML_SRC_DRIVER   ${includes}
     main = Js_main
 
 
@@ -23,6 +27,9 @@ build ../lib/bsppx.ml: bspack | ./bin/bspack.exe
     flags =  ${releaseMode} -bs-MD  -module-alias Config=Config_whole_compiler  -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING  -I stubs -I common -I ext -I syntax -I core -I main 
     main = Bsppx_main
 
+build ../lib/belt_bsppx.ml: bspack | ./bin/bspack.exe
+    flags =  ${releaseMode} -bs-MD  -module-alias Config=Config_whole_compiler  -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING  -I stubs -I common -I ext -I syntax -I core -I belt_byte/belt_bsppx
+    main = Belt_bsppx_main
 
 build ../lib/bsdep.ml: bspack | ./bin/bspack.exe
     flags = -D BS_OCAMLDEP=true  ${releaseMode} -bs-MD  -module-alias Config=Config_whole_compiler   -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I $OCAML_SRC_DRIVER -I $OCAML_SRC_TOOLS -I common -I ext -I syntax -I depends -I core -I stubs -I main 
@@ -32,17 +39,18 @@ build ../lib/bsb_helper.ml: bspack | ./bin/bspack.exe
      flags = -bs-MD ${releaseMode}   -I stubs -I common -I ext -I syntax -I depends -I bsb  -I main 
      main = Bsb_helper_main 
 
+build ../lib/bsb_helper_native.ml: bspack | ./bin/bspack.exe
+     flags = -bs-MD ${releaseMode}  -D BS_NATIVE=true -I stubs -I common -I ext -I syntax -I depends -I bsb  -I main
+     main = Bsb_helper_main
+
 build ../lib/bsb.ml: bspack | ./bin/bspack.exe
      flags =   -D BS_MIN_LEX_DEPS=true -bs-MD ${releaseMode} -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I stubs -I common -I ext -I syntax -I depends -I bsb -I ext -I main 
      main = Bsb_main 
 
-build ./bin/bsb_native.ml: bspack | ./bin/bspack.exe
-     flags =   -D BS_MIN_LEX_DEPS=true -D BS_NATIVE=true -bs-MD ${releaseMode} -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I stubs -I common -I ext -I syntax -I depends -I bsb -I ext -I main 
-     main = Bsb_main 
-rule bsbnative
-    command = $ocamlopt -w -a  unix.cmxa str.cmxa  ./stubs/ext_basic_hash_stubs.c $in -o $out
-# only check if it compiles     
-build ./bin/bsb_native.exe: bsbnative ./bin/bsb_native.ml
+
+build ../lib/bsb_native.ml: bspack | ./bin/bspack.exe
+     flags =   -D BS_MIN_LEX_DEPS=true -D BS_NATIVE=true -bs-MD ${releaseMode} -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I stubs -I common -I ext -I syntax -I depends -I bsb -I ext -I main
+     main = Bsb_main
 
 build ../lib/bspp.ml: bspack | ./bin/bspack.exe
      flags = -D BS_MIN_LEX_DEPS=true ${releaseMode} -bs-MD -module-alias Config=Config_whole_compiler   -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING?parser   -I common -I ext -I syntax -I depends -I bspp -I core -I main 
@@ -56,3 +64,6 @@ build bin/bspack.ml: bspack | ./bin/bspack.exe
     flags = -bs-MD -module-alias Config=Config_whole_compiler  -I $OCAML_SRC_PARSING -I $OCAML_SRC_UTILS -I stubs -I ext -I common -I depends -I core -I main -bs-main Bspack_main
     main = Bspack_main
 
+build ../lib/bsb_internals.ml: bspack | ./bin/bspack.exe
+     flags =   -D BS_MIN_LEX_DEPS=true -D BS_NATIVE=true -bs-MD ${releaseMode} -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I stubs -I common -I ext -I syntax -I depends -I bsb -I ext -I main
+     main = Bsb_internals

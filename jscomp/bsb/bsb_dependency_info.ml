@@ -16,8 +16,8 @@ let check_if_dep ~root_project_dir ~backend (dependency_info : t) flag_exec =
   let components = Ext_string.split_by (fun c -> c = Ext_path.sep_char) flag_exec in
   match components with 
   | [dep_name; entry_name] -> begin 
-    match String_map.find_opt dep_name dependency_info.all_toplevel_ppxes with
-    | None -> 
+    match String_map.find_opt dependency_info.all_toplevel_ppxes dep_name with
+    | None ->
       Bsb_exception.no_package_found_for_ppx dep_name entry_name
     | Some l -> begin 
       match List.filter Bsb_config_types.(fun {main_module_name} -> main_module_name = entry_name) l with 

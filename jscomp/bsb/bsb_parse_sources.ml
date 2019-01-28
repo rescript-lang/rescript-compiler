@@ -279,8 +279,8 @@ let clean_staled_bs_js_files
 
 #if BS_NATIVE then
 let parse_backend parent_backend input =
-  let maybeBackend : Ext_json_types.t option = begin match String_map.find_opt Bsb_build_schemas.kind input with
-    | None -> String_map.find_opt Bsb_build_schemas.backend input
+  let maybeBackend : Ext_json_types.t option = begin match String_map.find_opt input Bsb_build_schemas.kind with
+    | None -> String_map.find_opt input Bsb_build_schemas.backend
     | x ->
       Bsb_log.warn "@{<warn>Warning@} 'kind' field in 'sources' is deprecated and will be removed in the next release. Please use 'backend'.@.";
       x
@@ -446,14 +446,14 @@ and parsing_single_source ({not_dev; dir_index ; cwd} as cxt ) (x : Ext_json_typ
   | Obj {map} ->
 #if BS_NATIVE then
     let backend = parse_backend cxt.backend map in
-    let ppx = match String_map.find_opt Bsb_build_schemas.ppx map with 
+    let ppx = match String_map.find_opt map Bsb_build_schemas.ppx with
         | Some (Arr {loc_start; content = s }) -> Bsb_build_util.get_list_string s
         | Some (Str {str} )                    -> [ str ]
         | None                                 -> cxt.ppx
         | _ -> Bsb_exception.config_error x "Field 'ppx' not recognized. Should be a string or an array of strings." 
       in
     let (current_dir_index, is_ppx) = 
-      match String_map.find_opt Bsb_build_schemas.type_ map with 
+      match String_map.find_opt map Bsb_build_schemas.type_ with
       | Some (Str {str="dev"}) -> (Bsb_dir_index.get_dev_index (), false)
       | Some (Str {str="ppx"}) -> (dir_index, true)
       | Some _ -> Bsb_exception.config_error x {|type field expect "dev" or "ppx" literal |}

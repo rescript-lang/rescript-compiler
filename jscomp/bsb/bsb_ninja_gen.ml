@@ -306,13 +306,13 @@ let output_ninja_and_namespace_map
         
         Bsb_ninja_global_vars.external_deps_for_linking, Bsb_build_util.flag_concat dash_i dependency_info.Bsb_dependency_info.all_external_deps;
         Bsb_ninja_global_vars.ocamlc, if use_ocamlfind then ocamlc
-          else (ocaml_dir // ocamlc ^ ".opt");
+          else (ocaml_dir // "bin" // ocamlc ^ ".opt");
         Bsb_ninja_global_vars.ocamlopt, if use_ocamlfind then ocamlopt
-          else (ocaml_dir // ocamlopt ^ ".opt");
-          
-        (* Add a space after "ocamlfind" so that when we're _not_ using ocamlfind there is no leading space to the command being executed. 
-           This only matters on Windows on which ninja dies if there's such space. 
-           
+          else (ocaml_dir // "bin" // ocamlopt ^ ".opt");
+
+        (* Add a space after "ocamlfind" so that when we're _not_ using ocamlfind there is no leading space to the command being executed.
+           This only matters on Windows on which ninja dies if there's such space.
+
                       Ben - January 20th 2018
          *)
         Bsb_ninja_global_vars.ocamlfind, if use_ocamlfind then ocamlfind ^ " " else "";

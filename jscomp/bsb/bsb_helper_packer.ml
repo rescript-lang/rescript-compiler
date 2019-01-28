@@ -93,7 +93,7 @@ let pack pack_byte_or_native
         | Some namespace -> "-" ^ namespace
       in
       Queue.fold
-        (fun acc v -> match String_map.find_opt v module_to_filepath with
+        (fun acc v -> match String_map.find_opt module_to_filepath v with
           | Some file -> (file ^ namespace ^ suffix_object_files) :: acc
           | None -> Bsb_exception.missing_object_file v
           )
@@ -107,7 +107,7 @@ let pack pack_byte_or_native
       | Some namespace -> "-" ^ namespace
     in
     List.rev (Queue.fold
-        (fun acc v -> match String_map.find_opt v module_to_filepath with
+        (fun acc v -> match String_map.find_opt module_to_filepath v with
           | Some file -> (file ^ namespace ^ suffix_object_files) :: acc
           | None -> Bsb_exception.missing_object_file v
           )
@@ -136,9 +136,9 @@ let pack pack_byte_or_native
     if ocamlfind_packages = [] then
       let compiler_extension = if Ext_sys.is_windows_or_cygwin then ".opt.exe" else ".opt" in
       let ocaml_dir = Bsb_build_util.get_ocaml_dir cwd in
-      let compiler = ocaml_dir // compiler ^ compiler_extension in
-      
-      let list_of_args = (compiler :: "-a" :: "-g" 
+      let compiler = ocaml_dir // "bin" // compiler ^ compiler_extension in
+
+      let list_of_args = (compiler :: "-a" :: "-g"
         :: (if bs_super_errors then ["-bs-super-errors"] else []) )
         @ warning_command
         @ flags

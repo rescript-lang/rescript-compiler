@@ -113,12 +113,12 @@ let rec remove (tree : _ Map_gen.t as 'a) x : 'a = match tree with
       bal l v d (remove r x )
 
 let update k fn (tree : _ Map_gen.t as 'a) : 'a =
-  let cur = find_opt k tree in
+  let cur = find_opt tree k in
   match (cur, fn cur) with
   | None, None -> tree
-  | None, Some v -> add k v tree
-  | Some v, None -> remove k tree
-  | Some v1, Some v2 -> adjust k (fun () -> assert false) (fun _ -> v2) tree
+  | None, Some v -> add tree k v
+  | Some v, None -> remove tree k
+  | Some v1, Some v2 -> adjust tree k (fun _ -> v2)
 
 let rec split x (tree : _ Map_gen.t as 'a) : 'a * _ option * 'a  = match tree with 
   | Empty ->

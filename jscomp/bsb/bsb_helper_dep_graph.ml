@@ -92,25 +92,25 @@ let simple_collect_from_main ?alias_map ast_table main_module =
   result
 
 let get_otherlibs_dependencies ~ocamlfind dependency_graph file_extension =
-  let set_of_otherlib_deps = String_set.empty
-    |> String_set.add ("unix")
-    |> String_set.add ("bigarray")
-    |> String_set.add ("str")
+  let set_of_otherlib_deps = String_set.empty in
+  let set_of_otherlib_deps = String_set.add set_of_otherlib_deps ("unix") in
+  let set_of_otherlib_deps = String_set.add set_of_otherlib_deps ("bigarray") in
+  let set_of_otherlib_deps = String_set.add set_of_otherlib_deps ("str") in
     (** We need to add -thread when adding threads. Not sure why.
         Will do this later.
            - Ben May 4th 2017
      **)
     (* |> String_set.add ("threads" ^ file_extension) *)
-    |> String_set.add ("dynlink")
-    (* |> String_set.add ("graphics" ^ file_extension) *)
-  in
-  (* When we're using ocamlfind, we should link those libraries using the -package 
-     mechanism to allow it to dedup dependencies. Otherwise we reference those 
+  let set_of_otherlib_deps = String_set.add set_of_otherlib_deps ("threads" ^ file_extension) in
+  let set_of_otherlib_deps = String_set.add set_of_otherlib_deps ("dynlink") in
+  let set_of_otherlib_deps = String_set.add set_of_otherlib_deps ("graphics" ^ file_extension) in
+  (* When we're using ocamlfind, we should link those libraries using the -package
+     mechanism to allow it to dedup dependencies. Otherwise we reference those
      libraries with their file names, ocaml will know where to find them. *)
   if ocamlfind then
-    let set_of_otherlib_deps = set_of_otherlib_deps |> String_set.add ("num") in
+    let set_of_otherlib_deps =  String_set.add set_of_otherlib_deps ("num") in
     String_set.fold (fun v acc -> "-package" :: v :: acc) set_of_otherlib_deps []
-  else 
+  else
     (* the package and the file are named differently sometimes... *)
-    let set_of_otherlib_deps = set_of_otherlib_deps |> String_set.add ("nums") in
+    let set_of_otherlib_deps = String_set.add set_of_otherlib_deps ("nums") in
     String_set.fold (fun v acc -> (v ^ file_extension) :: acc) set_of_otherlib_deps []

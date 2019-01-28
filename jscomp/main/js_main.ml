@@ -149,6 +149,13 @@ let buckle_script_flags : (string * Arg.spec * string) list =
     "-bs-binary-ast", Arg.Set Js_config.binary_ast,
     " Generate binary .mli_ast and ml_ast"
   )
+#if BS_NATIVE then
+  ::
+  (
+    "-bs-simple-binary-ast", Arg.Set Js_config.simple_binary_ast,
+    " Generate binary .mliast_simple and mlast_simple"
+  )
+#end
   ::
   ("-bs-syntax-only", 
    Arg.Set Js_config.syntax_only,

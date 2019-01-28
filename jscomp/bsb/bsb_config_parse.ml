@@ -122,8 +122,8 @@ let resolve_package cwd  package_name =
 
 let parse_allowed_build_kinds map =
   let open Ext_json_types in
-  match String_map.find_opt Bsb_build_schemas.allowed_build_kinds map with 
-  | Some (Arr {loc_start; content = s }) ->   
+  match String_map.find_opt map Bsb_build_schemas.allowed_build_kinds with
+  | Some (Arr {loc_start; content = s }) ->
     List.map (fun (s : string) ->
       match s with 
       | "js"       -> Bsb_config_types.Js
@@ -465,8 +465,8 @@ let interpret_json
         in 
 
         let entries  = 
-          match String_map.find_opt Bsb_build_schemas.entries map with 
-          | None -> Bsb_default.main_entries 
+          match String_map.find_opt map Bsb_build_schemas.entries with
+          | None -> Bsb_default.main_entries
           | Some (Arr {content}) -> parse_entries package_name content
           | Some config -> Bsb_exception.config_error config "`entries` should be an array"
         in 

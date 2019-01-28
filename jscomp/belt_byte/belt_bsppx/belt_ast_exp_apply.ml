@@ -69,7 +69,7 @@ let handle_exp_apply
             | {pexp_desc = Pexp_apply (fn, args); pexp_loc; pexp_attributes} ->
               let fn = self.expr self fn in
               let args = Ext_list.map  args (fun (lab,exp) -> lab, self.expr self exp ) in
-              Bs_ast_invariant.warn_unused_attributes pexp_attributes;
+              Bs_ast_invariant.warn_discarded_unused_attributes pexp_attributes;
               { Parsetree.pexp_desc = Pexp_apply(fn, (Ast_compatible.no_label, new_obj_arg) :: args);
                 pexp_attributes = [];
                 pexp_loc = pexp_loc}
@@ -88,7 +88,7 @@ let handle_exp_apply
                                 ->
                                 let fn = self.expr self fn in
                                 let args = Ext_list.map  args (fun (lab,exp) -> lab, self.expr self exp ) in
-                                Bs_ast_invariant.warn_unused_attributes pexp_attributes;
+                                Bs_ast_invariant.warn_discarded_unused_attributes pexp_attributes;
                                 { Parsetree.pexp_desc = Pexp_apply(fn, (Ast_compatible.no_label, bounded_obj_arg) :: args);
                                   pexp_attributes = [];
                                   pexp_loc = pexp_loc}

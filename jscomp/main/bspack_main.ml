@@ -39,7 +39,7 @@ let preprocess_to_buffer fn (str : string) (oc : Buffer.t) : unit =
   let segments =    
     Lexer.filter_directive_from_lexbuf  lexbuf in
   Ext_list.iter segments
-    (fun (start, pos) ->
+    (fun (start, pos, _) ->
        Buffer.add_substring  oc str start (pos - start)
     )
 
@@ -57,7 +57,7 @@ let preprocess_string fn (str : string) oc =
   let segments =    
     Lexer.filter_directive_from_lexbuf  lexbuf in
   Ext_list.iter segments
-    (fun (start, pos) ->
+    (fun (start, pos, _) ->
        output_substring  oc str start (pos - start)
     )
 

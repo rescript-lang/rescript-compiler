@@ -47,9 +47,9 @@ let handle_generators oc
     (fun x -> Bsb_config.proj_rel (group.dir //x )) in
   group.generators
   |> List.iter (fun  ({output; input; command}  : Bsb_file_groups.build_generator)-> 
-      begin match String_map.find_opt command custom_rules with 
+      begin match String_map.find_opt custom_rules command with
         | None -> Ext_pervasives.failwithf ~loc:__LOC__ "custom rule %s used but  not defined" command
-        | Some rule -> 
+        | Some rule ->
           begin match output, input with
             | output::outputs, input::inputs -> 
               Bsb_ninja_util.output_build oc 
@@ -315,13 +315,13 @@ let handle_module_info
   ~ocaml_lib
   ~is_ppx
   ~root_project_dir
-  oc  module_name 
-  ( module_info : Bsb_db.module_info)
+  oc  module_name
+  ( {name_sans_extension = input} as module_info : Bsb_db.module_info)
   namespace  =
-  match module_info.ml, module_info.mli with
-  | Ml_source (input_impl,impl_is_re,_), 
-    Mli_source(input_intf, intf_is_re,_) -> 
-    emit_impl_build 
+  match module_info.ml_info, module_info.mli_info with
+  | Ml_source (impl_is_re, _),
+    Mli_source(intf_is_re, _) ->
+    emit_impl_build
       package_specs
       group_dir_index
       oc 
@@ -335,10 +335,10 @@ let handle_module_info
       ~ocaml_lib
       ~is_ppx
       ~root_project_dir
-      js_post_build_cmd      
+      js_post_build_cmd
       namespace
-      input_impl  @ 
-    emit_intf_build 
+      input  @
+    emit_intf_build
       package_specs
       group_dir_index
       oc
@@ -351,9 +351,9 @@ let handle_module_info
       ~is_ppx
       ~root_project_dir
       namespace
-      input_intf 
-  | Ml_source(input,is_re,_), Mli_empty ->
-    emit_impl_build 
+      input
+  | Ml_source(is_re,_), Mli_empty ->
+    emit_impl_build
       package_specs
       group_dir_index
       oc
@@ -369,9 +369,9 @@ let handle_module_info
       js_post_build_cmd      
       ~is_re
       namespace
-      input 
-  | Ml_empty, Mli_source(input,is_re,_) ->
-    emit_intf_build 
+      input
+  | Ml_empty, Mli_source(is_re,_) ->
+    emit_intf_build
       package_specs
       group_dir_index
       oc
@@ -411,9 +411,9 @@ let handle_file_group oc
         match group.public with
         | Export_all -> true
         | Export_none -> false
-        | Export_set set ->  
-          String_set.mem module_name set in
-      if installable then 
+        | Export_set set ->
+          String_set.mem set module_name in
+      if installable then
         String_hash_set.add files_to_install (Bsb_db.filename_sans_suffix_of_module_info module_info);
       (handle_module_info
         ~local_ppx_deps
@@ -483,22 +483,21 @@ let link oc comp_info
           kind = Ppx
         end in
       let (all_mlast_files, all_cmo_or_cmx_files, all_cmi_files) =
-        List.fold_left (fun acc (group : Bsb_file_groups.file_group) -> 
+        List.fold_left (fun acc (group : Bsb_file_groups.file_group) ->
           if group.is_ppx = is_ppx then
-            String_map.fold (fun _ (v : Bsb_db.module_info) (all_mlast_files, all_cmo_or_cmx_files, all_cmi_files) -> 
-              let mlname = match v.ml with
-                | Ml_source (input, _, _) ->
-                let input = (Ext_path.chop_extension_if_any input)  in
-                begin match namespace with 
+            String_map.fold (fun _ (v : Bsb_db.module_info) (all_mlast_files, all_cmo_or_cmx_files, all_cmi_files) ->
+              let input = v.name_sans_extension in
+              let mlname = match v.ml_info with
+                | Ml_source _ ->
+                begin match namespace with
                   | None    -> Some (input, input)
                   | Some ns -> Some (input, (Ext_namespace.make ~ns input))
                 end
                 | Ml_empty -> None
               in
-              let mliname = match v.mli with
-                | Mli_source (input, _, _) ->
-                let input = (Ext_path.chop_extension_if_any input)  in
-                begin match namespace with 
+              let mliname = match v.mli_info with
+                | Mli_source _ ->
+                begin match namespace with
                   | None    -> Some (input, input)
                   | Some ns -> Some (input, (Ext_namespace.make ~ns input))
                 end
@@ -578,24 +577,23 @@ let pack oc comp_info ~entries ?build_library ~backend ~file_groups ~namespace (
     (* TODO(sansouci): we pack all source files of the dependency, but we could just pack the
        files that are used by the main project. *)
     let all_cmo_or_cmx_files, all_cmi_files =
-      List.fold_left (fun acc (group : Bsb_file_groups.file_group) -> 
+      List.fold_left (fun acc (group : Bsb_file_groups.file_group) ->
         if not group.is_ppx then
-          String_map.fold (fun _ (v : Bsb_db.module_info) (all_cmo_or_cmx_files, all_cmi_files) -> 
-            let mlname = match v.ml with
-                | Ml_source (input, _, _) ->
-                let input = (Ext_path.chop_extension_if_any input)  in
-                begin match namespace with 
-                  | None    -> Some (input)
-                  | Some ns -> Some ((Ext_namespace.make ~ns input))
+          String_map.fold (fun _ (v : Bsb_db.module_info) (all_cmo_or_cmx_files, all_cmi_files) ->
+            let input = v.name_sans_extension in
+              let mlname = match v.ml_info with
+                | Ml_source _ ->
+                begin match namespace with
+                  | None    -> Some input
+                  | Some ns -> Some (Ext_namespace.make ~ns input)
                 end
                 | Ml_empty -> None
               in
-              let mliname = match v.mli with
-                | Mli_source (input, _, _) ->
-                let input = (Ext_path.chop_extension_if_any input)  in
-                begin match namespace with 
+              let mliname = match v.mli_info with
+                | Mli_source _ ->
+                begin match namespace with
                   | None    -> Some (input)
-                  | Some ns -> Some ((Ext_namespace.make ~ns input))
+                  | Some ns -> Some (Ext_namespace.make ~ns input)
                 end
                 | Mli_empty -> None 
               in

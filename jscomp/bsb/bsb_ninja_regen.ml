@@ -63,9 +63,9 @@ let collect_dependency_info ~cwd ~bsc_dir ~backend ~nested ~config:(config : Bsb
     (fun {top; cwd} ->
       if top then begin
         dependency_info.all_toplevel_ppxes <- List.fold_left (fun all_toplevel_ppxes ({package_name} : Bsb_config_types.dependency) ->
-          match String_map.find_opt package_name !all_ppxes with
+          match String_map.find_opt !all_ppxes (Bsb_pkg_types.to_string package_name) with
           | None -> all_toplevel_ppxes
-          | Some v -> String_map.add package_name v all_toplevel_ppxes
+          | Some v -> String_map.add all_toplevel_ppxes (Bsb_pkg_types.to_string package_name) v
         ) dependency_info.all_toplevel_ppxes config.bs_dependencies;
        end else begin 
         let build_artifacts_dir = Bsb_build_util.get_build_artifacts_location cwd in

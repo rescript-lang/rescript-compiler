@@ -142,7 +142,7 @@ let link link_byte_or_native
      *)
     if ocamlfind_packages = [] then
       let compiler_extension = if Ext_sys.is_windows_or_cygwin then ".opt.exe" else ".opt" in
-      let compiler = ocaml_dir // compiler ^ compiler_extension in
+      let compiler = ocaml_dir // "bin" // compiler ^ compiler_extension in
       let list_of_args = (compiler :: "-g"
         :: (if bs_super_errors then ["-bs-super-errors"] else [])) 
         @ warning_command
