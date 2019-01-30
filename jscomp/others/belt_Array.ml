@@ -269,7 +269,7 @@ let getByU a p =
   let l = length a in
   let i = ref 0 in
   let r = ref None in
-  while !r == None && !i < l do
+  while !r = None && !i < l do
     let v = (getUnsafe a !i) in
     if p v [@bs] then
       begin

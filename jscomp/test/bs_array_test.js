@@ -1542,7 +1542,23 @@ b("File \"bs_array_test.ml\", line 331, characters 4-11", Belt_Array.cmp(/* arra
           3
         ], Caml_primitive.caml_int_compare) > 0);
 
-Mt.from_pair_suites("File \"bs_array_test.ml\", line 334, characters 23-30", suites[0]);
+eq("File \"bs_array_test.ml\", line 334, characters 5-12", Belt_Array.getBy(/* array */[
+          1,
+          2,
+          3
+        ], (function (x) {
+            return x > 1;
+          })), 2);
+
+eq("File \"bs_array_test.ml\", line 335, characters 5-12", Belt_Array.getBy(/* array */[
+          1,
+          2,
+          3
+        ], (function (x) {
+            return x > 3;
+          })), undefined);
+
+Mt.from_pair_suites("File \"bs_array_test.ml\", line 337, characters 23-30", suites[0]);
 
 var A = 0;
 

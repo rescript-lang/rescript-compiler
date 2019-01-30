@@ -328,7 +328,10 @@ let () =
   b __LOC__ (A.cmp [|0;1;2;3|] [|1;2;3|]  compare > 0) ;
   b __LOC__ (A.cmp [|1;2;3|] [|0;1;2|]  (fun x y -> compare  x y) > 0);
   b __LOC__ (A.cmp [|1;2;3|] [|1;2;3|]  (fun x y -> compare x y) = 0);
-  b __LOC__ (A.cmp [|1;2;4|] [|1;2;3|]  (fun x y -> compare x y) > 0);
+  b __LOC__ (A.cmp [|1;2;4|] [|1;2;3|]  (fun x y -> compare x y) > 0)
 
+let () =
+  eq __LOC__ (A.getBy [|1;2;3|] (fun x -> x > 1)) (Some 2);
+  eq __LOC__ (A.getBy [|1;2;3|] (fun x -> x > 3)) None;
 
 ;; Mt.from_pair_suites __LOC__ !suites
