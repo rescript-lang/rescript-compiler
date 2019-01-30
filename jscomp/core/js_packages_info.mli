@@ -28,10 +28,6 @@ type module_system =
   | Es6
   | Es6_global  
 
-type package_name 
-  = string
-
-
   
 val runtime_dir_of_module_system :  
   module_system ->
@@ -82,7 +78,7 @@ val add_npm_package_path :
 
 type package_found_info =     
   {
-    name : package_name ; 
+
     rel_path : string ;  
     pkg_rel_path : string   
   }

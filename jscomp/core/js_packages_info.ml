@@ -145,7 +145,7 @@ let dump_packages_info
 
 type package_found_info =     
   {
-    name : package_name ; 
+
     rel_path : string ;     
     pkg_rel_path : string
   }
@@ -168,7 +168,6 @@ let query_package_infos
       let pkg_rel_path = name // rel_path in 
       Package_found 
         { 
-          name = package_info.name; 
           rel_path ;
           pkg_rel_path 
         }
