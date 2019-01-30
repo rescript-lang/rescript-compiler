@@ -265,6 +265,22 @@ let mapU a f =
 
 let map a f = mapU a (fun[@bs] a -> f a)
 
+let getByU a p =
+  let l = length a in
+  let i = ref 0 in
+  let r = ref None in
+  while !r = None && !i < l do
+    let v = (getUnsafe a !i) in
+    if p v [@bs] then
+      begin
+        r := Some v;
+      end;
+    incr i
+  done;
+  !r
+
+let getBy a p = getByU a (fun[@bs] a -> p a)
+
 let keepU a f =
   let l = length a in
   let r = makeUninitializedUnsafe l in
