@@ -55,12 +55,12 @@ let get_runtime_module_path
   | Package_not_found -> assert false
   | Package_script -> 
     Js_packages_info.runtime_package_path module_system js_file          
-  | Package_found { rel_path = cur_path} -> 
+  | Package_found pkg -> 
     let  dep_path  = 
       "lib" // Js_packages_info.runtime_dir_of_module_system module_system in 
     if  Js_packages_info.is_runtime_package current_package_info then 
       Ext_path.node_rebase_file
-        ~from:cur_path
+        ~from:pkg.rel_path
         ~to_:dep_path 
         js_file
         (** TODO: we assume that both [x] and [path] could only be relative path
@@ -127,24 +127,23 @@ let string_of_module_id
           Bs_exception.error (Dependency_script_module_dependent_not js_file)
         | (Package_script  | Package_found _ ), Package_not_found -> assert false
 
-        | Package_found {name = dep_package_name; rel_path = dep_path}, 
-          Package_script 
+        | Package_found pkg, Package_script 
           ->    
 #if BS_NATIVE then
           if Filename.is_relative dep_path then 
-            dep_package_name // dep_path // js_file
+            pkg.pkg_rel_path // js_file
           else 
-            dep_path // js_file
+            pkg.dep_path // js_file
 #else
-          dep_package_name // dep_path // js_file
+          pkg.pkg_rel_path // js_file
 #end
 
-        | Package_found {name = dep_package_name; rel_path = dep_path},
-          Package_found {name = cur_package_name; rel_path = cur_path} -> 
+        | Package_found dep_pkg,
+          Package_found cur_pkg -> 
           if  Js_packages_info.same_package_by_name current_package_info  dep_package_info then 
             Ext_path.node_rebase_file
-              ~from:cur_path
-              ~to_:dep_path 
+              ~from:cur_pkg.rel_path
+              ~to_:dep_pkg.rel_path 
               js_file
               (** TODO: we assume that both [x] and [path] could only be relative path
                   which is guaranteed by [-bs-package-output]
@@ -154,11 +153,11 @@ let string_of_module_id
               | NodeJS | Es6 -> 
 #if BS_NATIVE then
           if Filename.is_relative dep_path then 
-            dep_package_name // dep_path // js_file
+            dep_pkg.pkg_rel_path // js_file
           else 
             dep_path // js_file
 #else
-                dep_package_name // dep_path // js_file
+                dep_pkg.pkg_rel_path // js_file
 #end
               (** Note we did a post-processing when working on Windows *)
               | Es6_global 
@@ -177,7 +176,7 @@ let string_of_module_id
                         module_system 
                     )
                     ((Filename.dirname 
-                        (Filename.dirname (Filename.dirname cmj_path))) // dep_path // js_file)              
+                        (Filename.dirname (Filename.dirname cmj_path))) // dep_pkg.rel_path // js_file)              
                 end
             end
         | Package_script, Package_script 

@@ -83,7 +83,8 @@ val add_npm_package_path :
 type package_found_info =     
   {
     name : package_name ; 
-    rel_path : string ;     
+    rel_path : string ;  
+    pkg_rel_path : string   
   }
 
 type info_query =
