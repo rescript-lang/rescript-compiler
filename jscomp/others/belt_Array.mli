@@ -369,8 +369,8 @@ val map: 'a array ->  ('a -> 'b ) -> 'b array
 
 *)
 
-val getByU: 'a t -> ('a -> bool [@bs]) -> 'a option
-val getBy: 'a t -> ('a -> bool) -> 'a option
+val getByU: 'a array -> ('a -> bool [@bs]) -> 'a option
+val getBy: 'a array -> ('a -> bool) -> 'a option
 (** [getBy xs p] returns [Some value] for the first value in [xs] that satisifies the predicate function [p]; returns [None] if no element satisifies the function.
 
   @example {[
