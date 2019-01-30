@@ -28,7 +28,7 @@ let (=)  (x : int) (y:float) = assert false
 (* "xx/lib/ocaml/js.cmj" 
    Enhancement: This can be delegated to build system
 *)
-let runtime_package_path = 
+let runtime_package_path : string Lazy.t = 
   lazy (Filename.dirname (Filename.dirname 
     (Filename.dirname 
       (match Config_util.find_opt "js.cmj" with 
@@ -47,14 +47,10 @@ let fix_path_for_windows : string -> string =
 let string_of_module_id 
     (dep_module_id : Lam_module_ident.t) 
     ~(output_dir : string )
-    (module_system : Js_packages_info.module_system)    
-    (current_package_info : Js_packages_info.t)
-    (get_package_path_from_cmj : 
-       Lam_module_ident.t -> (string * Js_packages_info.t * Ext_namespace.file_kind) option
-    )
-
+    (module_system : Js_packages_info.module_system)        
   : string =
-  fix_path_for_windows (
+  let current_package_info = Js_packages_state.get_packages_info ()  in 
+  fix_path_for_windows (    
     match dep_module_id.kind  with 
     | External name -> name (* the literal string for external package *)
     (** This may not be enough, 
@@ -114,7 +110,7 @@ let string_of_module_id
         Js_packages_info.query_package_infos current_package_info
           module_system  
       in
-      match get_package_path_from_cmj dep_module_id with 
+      match Lam_compile_env.get_package_path_from_cmj dep_module_id with 
       | None -> 
         Bs_exception.error (Missing_ml_dependency dep_module_id.id.name)
       | Some (cmj_path, package_info, little) -> 
@@ -202,7 +198,7 @@ let string_of_module_id
 
   
 
-
+(* Override it in browser *)
 #if BS_COMPILER_IN_BROWSER then   
 let string_of_module_id_in_browser (x : Lam_module_ident.t) =  
    match x.kind with
@@ -214,18 +210,4 @@ let string_of_module_id
     ~output_dir:(_:string)
     (_module_system : Js_packages_info.module_system)
      = string_of_module_id_in_browser id
-#else
-
-let string_of_module_id 
-      (id : Lam_module_ident.t)
-      ~output_dir
-      module_system
-    = 
-    string_of_module_id
-      id    
-      ~output_dir
-      module_system
-      (Js_packages_state.get_packages_info ())
-      Lam_compile_env.get_package_path_from_cmj
-
 #end
