@@ -31,9 +31,6 @@ type module_system =
 type package_name 
   = string
 
-val is_runtime_package:
-  package_name ->
-  bool
 
   
 val runtime_dir_of_module_system :  
@@ -53,6 +50,10 @@ type package_info
   }
 
 type t 
+
+val is_runtime_package:
+  t ->
+  bool
 
 val same_package_by_name :   
   t ->

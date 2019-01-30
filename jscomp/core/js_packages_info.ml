@@ -51,8 +51,6 @@ type package_name  = string
 
 let runtime_package_name = "bs-platform"
 
-let is_runtime_package (x : string) = 
-    x = runtime_package_name
 
 let (//) = Filename.concat    
 
@@ -75,6 +73,9 @@ type t =
   }
 
 let same_package_by_name (x : t) (y : t) = x.name = y.name 
+
+let is_runtime_package (x : t) = 
+    x.name = runtime_package_name
 
 let iter (x : t) cb =    
   Ext_list.iter x.module_systems cb 
