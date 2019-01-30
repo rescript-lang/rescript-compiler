@@ -42,6 +42,7 @@ val same_package :
   
 val runtime_package_path:  
   module_system ->
+  string ->
   string
 
 type package_info 

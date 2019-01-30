@@ -25,8 +25,6 @@
 let (=)  (x : int) (y:float) = assert false 
 *)
 
-let runtime_package_name = "bs-platform"
-
 (* "xx/lib/ocaml/js.cmj" 
    Enhancement: This can be delegated to build system
 *)
@@ -79,7 +77,8 @@ let string_of_module_id
       in 
       begin match current_pkg_info with        
         | Package_not_found -> assert false
-        | Package_script -> runtime_package_name // dep_path // js_file
+        | Package_script -> 
+          Js_packages_info.runtime_package_path module_system js_file          
         | Package_found(cur_package_name, cur_path) -> 
           if  Js_packages_info.is_runtime_package cur_package_name then 
             Ext_path.node_rebase_file
@@ -92,7 +91,7 @@ let string_of_module_id
           else  
             match module_system with 
             | NodeJS | Es6 -> 
-              runtime_package_name // dep_path // js_file
+              Js_packages_info.runtime_package_path module_system js_file              
             (** Note we did a post-processing when working on Windows *)
             | Es6_global 
               -> 
