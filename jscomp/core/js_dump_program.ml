@@ -70,10 +70,11 @@ let node_program ~output_dir f ( x : J.deps_program) =
       (Ext_list.map x.modules 
          (fun x -> 
             Lam_module_ident.id x,
-            Js_name_of_module_id.string_of_module_id ~output_dir
+            Js_name_of_module_id.string_of_module_id 
+              x
+              ~output_dir
               NodeJS 
-              x)
-         )
+         ))
   in
   program f cxt x.program  
 
@@ -88,10 +89,9 @@ let es6_program  ~output_dir fmt f (  x : J.deps_program) =
       (Ext_list.map x.modules
          (fun x -> 
             Lam_module_ident.id x,
-            Js_name_of_module_id.string_of_module_id ~output_dir
+            Js_name_of_module_id.string_of_module_id x ~output_dir
               fmt 
-              x)
-         )
+              ))
   in
   let () = P.force_newline f in 
   let cxt = Js_dump.statement_list true cxt f x.program.block in 
