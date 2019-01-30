@@ -55,15 +55,18 @@ let is_runtime_package (x : string) =
     x = runtime_package_name
 
 let (//) = Filename.concat    
+
+(* in runtime lib, [es6] and [es6] are treated the same wway *)
+let runtime_dir_of_module_system (ms : module_system ) = 
+  match ms with 
+  | NodeJS -> "js"
+  | Es6 | Es6_global -> "es6"
+
 let runtime_package_path 
-  (module_system : module_system) 
-  js_file =      
-  match module_system with 
-  | NodeJS ->
-    runtime_package_name // "lib" // "js" // js_file
-  | Es6 
-  | Es6_global ->
-    runtime_package_name // "lib" // "es6" // js_file
+    (ms : module_system) 
+    js_file =        
+  runtime_package_name // "lib" // runtime_dir_of_module_system ms // js_file
+
 
 type t =
   { 

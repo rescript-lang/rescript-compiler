@@ -43,6 +43,7 @@ let fix_path_for_windows : string -> string =
   else fun s -> s 
 
 
+
 (* [output_dir] is decided by the command line argument *)
 let string_of_module_id 
     (dep_module_id : Lam_module_ident.t) 
@@ -61,21 +62,17 @@ let string_of_module_id
          so having plugin may sound not that bad   
     *)
     | Runtime  -> 
-      let id = dep_module_id.id in
-      let current_pkg_info = 
+      let current_info_query = 
         Js_packages_info.query_package_infos current_package_info
           module_system  in
-      let js_file =  Ext_namespace.js_name_of_modulename Little_js id.name in     
-      let  dep_path  = "lib" //
-        match module_system with 
-        | NodeJS ->  "js"
-        | Es6 | Es6_global -> "es6"            
-      in 
-      begin match current_pkg_info with        
+      let js_file =  Ext_namespace.js_name_of_modulename Little_js dep_module_id.id.name in     
+      begin match current_info_query with        
         | Package_not_found -> assert false
         | Package_script -> 
           Js_packages_info.runtime_package_path module_system js_file          
         | Package_found(cur_package_name, cur_path) -> 
+          let  dep_path  = 
+              "lib" // Js_packages_info.runtime_dir_of_module_system module_system in 
           if  Js_packages_info.is_runtime_package cur_package_name then 
             Ext_path.node_rebase_file
               ~from:cur_path

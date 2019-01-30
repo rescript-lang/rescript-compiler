@@ -40,6 +40,10 @@ val same_package :
   package_name -> 
   bool 
   
+val runtime_dir_of_module_system :  
+  module_system ->
+  string
+
 val runtime_package_path:  
   module_system ->
   string ->
