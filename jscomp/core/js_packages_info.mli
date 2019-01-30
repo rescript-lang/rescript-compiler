@@ -80,11 +80,16 @@ val add_npm_package_path :
   string -> 
   t  
 
+type package_found_info =     
+  {
+    name : package_name ; 
+    rel_path : string ;     
+  }
+
 type info_query =
   | Package_script 
-  | Package_found of package_name * string
   | Package_not_found 
-
+  | Package_found of package_found_info
 
 val get_output_dir:  
   t ->

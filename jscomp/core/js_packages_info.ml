@@ -143,11 +143,15 @@ let dump_packages_info
        dump_package_info 
     ) ls
 
+type package_found_info =     
+  {
+    name : package_name ; 
+    rel_path : string ;     
+  }
 type info_query =
   | Package_script 
-  | Package_found of package_name * string
   | Package_not_found 
-
+  | Package_found of package_found_info
 
 
 let query_package_infos 
@@ -157,7 +161,8 @@ let query_package_infos
   else 
     match Ext_list.find_first package_info.module_systems (fun k -> 
         compatible k.module_system  module_system)  with
-    | Some k -> Package_found (package_info.name, k.path)
+    | Some k -> 
+      Package_found {name = package_info.name; rel_path = k.path}
     | None -> Package_not_found
 
 

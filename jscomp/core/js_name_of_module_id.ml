@@ -45,7 +45,7 @@ let fix_path_for_windows : string -> string =
 
 let get_runtime_module_path 
     (dep_module_id : Lam_module_ident.t) 
-    current_package_info 
+    (current_package_info : Js_packages_info.t)
     module_system = 
   let current_info_query = 
     Js_packages_info.query_package_infos current_package_info
@@ -55,7 +55,7 @@ let get_runtime_module_path
   | Package_not_found -> assert false
   | Package_script -> 
     Js_packages_info.runtime_package_path module_system js_file          
-  | Package_found(_, cur_path) -> 
+  | Package_found { rel_path = cur_path} -> 
     let  dep_path  = 
       "lib" // Js_packages_info.runtime_dir_of_module_system module_system in 
     if  Js_packages_info.is_runtime_package current_package_info then 
@@ -127,7 +127,7 @@ let string_of_module_id
           Bs_exception.error (Dependency_script_module_dependent_not js_file)
         | (Package_script  | Package_found _ ), Package_not_found -> assert false
 
-        | Package_found(dep_package_name, dep_path), 
+        | Package_found {name = dep_package_name; rel_path = dep_path}, 
           Package_script 
           ->    
 #if BS_NATIVE then
@@ -139,8 +139,8 @@ let string_of_module_id
           dep_package_name // dep_path // js_file
 #end
 
-        | Package_found(dep_package_name, dep_path),
-          Package_found(cur_package_name, cur_path) -> 
+        | Package_found {name = dep_package_name; rel_path = dep_path},
+          Package_found {name = cur_package_name; rel_path = cur_path} -> 
           if  Js_packages_info.same_package_by_name current_package_info  dep_package_info then 
             Ext_path.node_rebase_file
               ~from:cur_path
