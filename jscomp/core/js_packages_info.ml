@@ -33,20 +33,24 @@ type module_system =
   
 
 (* ocamlopt could not optimize such simple case..*)
-let compatible (exist : module_system) 
+let compatible (dep : module_system) 
     (query : module_system) =
   match query with 
-  | NodeJS -> exist = NodeJS 
-  | Es6  -> exist = Es6
+  | NodeJS -> dep = NodeJS 
+  | Es6  -> dep = Es6
   | Es6_global  
-    -> exist = Es6_global || exist = Es6
+    -> dep = Es6_global || dep = Es6
 (* As a dependency Leaf Node, it is the same either [global] or [not] *)
 
 
 type package_info =
   { module_system : module_system ; path :  string }
 
-type package_name  = string
+type package_name  = 
+  | Pkg_empty 
+  | Pkg_runtime 
+  | Pkg_normal of string
+
 
 
 let runtime_package_name = "bs-platform"
@@ -75,7 +79,7 @@ type t =
 let same_package_by_name (x : t) (y : t) = x.name = y.name 
 
 let is_runtime_package (x : t) = 
-    x.name = runtime_package_name
+    x.name = Pkg_runtime
 
 let iter (x : t) cb =    
   Ext_list.iter x.module_systems cb 
@@ -94,19 +98,24 @@ let iter (x : t) cb =
    it is only allowed to generate commonjs file in the same directory
 *)  
 let empty : t = 
-  { name = "_";
+  { name = Pkg_empty ;
     module_systems =  []
   }
 
-let from_name name =
-  {
-    name ;
-    module_systems = [] 
-  }
+let from_name (name : string) =
+  if name = runtime_package_name then 
+    {
+      name = Pkg_runtime ; module_systems = [] 
+    }
+  else 
+    {
+      name = Pkg_normal name  ;
+      module_systems = [] 
+    }
+
 let is_empty  (x : t) =
-  match x.name with 
-  | "_"  -> true 
-  | _ -> false 
+  x.name = Pkg_empty
+  
 
 let string_of_module_system (ms : module_system) = 
   match ms with 
@@ -132,11 +141,17 @@ let dump_package_info
     (string_of_module_system ms)
     name 
 
+let dump_package_name fmt (x : package_name) = 
+  match x with 
+  | Pkg_empty -> Format.fprintf fmt "@empty_pkg@"
+  | Pkg_normal s -> Format.pp_print_string fmt s 
+  | Pkg_runtime -> Format.pp_print_string fmt runtime_package_name
 
 let dump_packages_info 
     (fmt : Format.formatter) 
     ({name ; module_systems = ls } : t) = 
-  Format.fprintf fmt "@[%s;@ @[%a@]@]"
+  Format.fprintf fmt "@[%a;@ @[%a@]@]"
+    dump_package_name
     name
     (Format.pp_print_list
        ~pp_sep:(fun fmt () -> Format.pp_print_space fmt ())
@@ -154,18 +169,32 @@ type info_query =
   | Package_not_found 
   | Package_found of package_found_info
 
-
+(* Note that package-name has to be exactly the same as 
+  npm package name, otherwise the path resolution will be wrong *)
 let query_package_infos 
-    (package_info : t) 
+    ({name; module_systems } : t) 
     (module_system  : module_system) : info_query =
-  if is_empty package_info then Package_script 
-  else 
-    match Ext_list.find_first package_info.module_systems (fun k -> 
+  match name with 
+  | Pkg_empty -> 
+    Package_script 
+  | Pkg_normal name ->
+    (match Ext_list.find_first module_systems (fun k -> 
         compatible k.module_system  module_system)  with
     | Some k -> 
       let rel_path = k.path in 
-      let name = package_info.name in 
       let pkg_rel_path = name // rel_path in 
+      Package_found 
+        { 
+          rel_path ;
+          pkg_rel_path 
+        }
+    | None -> Package_not_found)
+  | Pkg_runtime -> 
+    match Ext_list.find_first module_systems (fun k -> 
+        compatible k.module_system  module_system)  with
+    | Some k -> 
+      let rel_path = k.path in 
+      let pkg_rel_path = runtime_package_name // rel_path in 
       Package_found 
         { 
           rel_path ;

@@ -64,6 +64,7 @@ val iter :
 val empty : t 
 val from_name : string -> t 
 val is_empty : t -> bool 
+
 val dump_packages_info : 
   Format.formatter -> t -> unit
 
