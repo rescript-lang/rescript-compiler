@@ -43,6 +43,48 @@ let fix_path_for_windows : string -> string =
   else fun s -> s 
 
 
+let get_runtime_module_path 
+    (dep_module_id : Lam_module_ident.t) 
+    current_package_info module_system = 
+  let current_info_query = 
+    Js_packages_info.query_package_infos current_package_info
+      module_system  in
+  let js_file =  Ext_namespace.js_name_of_modulename Little_js dep_module_id.id.name in     
+  match current_info_query with        
+  | Package_not_found -> assert false
+  | Package_script -> 
+    Js_packages_info.runtime_package_path module_system js_file          
+  | Package_found(cur_package_name, cur_path) -> 
+    let  dep_path  = 
+      "lib" // Js_packages_info.runtime_dir_of_module_system module_system in 
+    if  Js_packages_info.is_runtime_package cur_package_name then 
+      Ext_path.node_rebase_file
+        ~from:cur_path
+        ~to_:dep_path 
+        js_file
+        (** TODO: we assume that both [x] and [path] could only be relative path
+            which is guaranteed by [-bs-package-output]
+        *)
+    else  
+      match module_system with 
+      | NodeJS | Es6 -> 
+        Js_packages_info.runtime_package_path module_system js_file              
+      (** Note we did a post-processing when working on Windows *)
+      | Es6_global 
+        -> 
+        (** lib/ocaml/xx.cmj --               
+            HACKING: FIXME
+            maybe we can caching relative package path calculation or employ package map *)
+        (* assert false  *)
+        Ext_path.rel_normalized_absolute_path              
+          ~from:(
+            Js_packages_info.get_output_dir 
+              current_package_info
+              ~package_dir:(Lazy.force Ext_filename.package_dir)
+              module_system )
+          (Lazy.force runtime_package_path // dep_path // js_file)  
+
+
 
 (* [output_dir] is decided by the command line argument *)
 let string_of_module_id 
@@ -62,47 +104,9 @@ let string_of_module_id
          so having plugin may sound not that bad   
     *)
     | Runtime  -> 
-      let current_info_query = 
-        Js_packages_info.query_package_infos current_package_info
-          module_system  in
-      let js_file =  Ext_namespace.js_name_of_modulename Little_js dep_module_id.id.name in     
-      begin match current_info_query with        
-        | Package_not_found -> assert false
-        | Package_script -> 
-          Js_packages_info.runtime_package_path module_system js_file          
-        | Package_found(cur_package_name, cur_path) -> 
-          let  dep_path  = 
-              "lib" // Js_packages_info.runtime_dir_of_module_system module_system in 
-          if  Js_packages_info.is_runtime_package cur_package_name then 
-            Ext_path.node_rebase_file
-              ~from:cur_path
-              ~to_:dep_path 
-              js_file
-              (** TODO: we assume that both [x] and [path] could only be relative path
-                  which is guaranteed by [-bs-package-output]
-              *)
-          else  
-            match module_system with 
-            | NodeJS | Es6 -> 
-              Js_packages_info.runtime_package_path module_system js_file              
-            (** Note we did a post-processing when working on Windows *)
-            | Es6_global 
-              -> 
-              (** lib/ocaml/xx.cmj --               
-                  HACKING: FIXME
-                  maybe we can caching relative package path calculation or employ package map *)
-              (* assert false  *)
-              Ext_path.rel_normalized_absolute_path              
-                ~from:(
-                  Js_packages_info.get_output_dir 
-                    current_package_info
-                    ~package_dir:(Lazy.force Ext_filename.package_dir)
-                    module_system )
-                (Lazy.force runtime_package_path // dep_path // js_file)  
-      end
+      get_runtime_module_path dep_module_id current_package_info module_system
     | Ml  -> 
-      let id = dep_module_id.id in
-      
+      let id = dep_module_id.id in      
       let current_pkg_info = 
         Js_packages_info.query_package_infos current_package_info
           module_system  
