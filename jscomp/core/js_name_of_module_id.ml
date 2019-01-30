@@ -31,20 +31,22 @@ let string_of_module_id_in_browser (x : Lam_module_ident.t) =
    | Runtime | Ml -> 
                    "./stdlib/" ^  Ext_string.uncapitalize_ascii x.id.name ^ ".js"
 let string_of_module_id 
+    (id : Lam_module_ident.t)
     ~output_dir:(_:string)
     (_module_system : Js_packages_info.module_system)
-    id = string_of_module_id_in_browser id
+     = string_of_module_id_in_browser id
 #else
 
 let string_of_module_id 
+      (id : Lam_module_ident.t)
       ~output_dir
       module_system
-      id
     = 
     Js_packages_info.string_of_module_id
+      id    
       ~output_dir
       module_system
       (Js_packages_state.get_packages_info ())
       Lam_compile_env.get_package_path_from_cmj
-      id    
+
 #end

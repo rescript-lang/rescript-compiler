@@ -47,6 +47,7 @@ type package_info =
   { module_system : module_system ; path :  string }
 
 type package_name  = string
+
 type t =
   { 
     name : package_name ;
@@ -73,6 +74,7 @@ let empty : t =
   { name = "_";
     module_systems =  []
   }
+
 let from_name name =
   {
     name ;
@@ -89,7 +91,6 @@ let string_of_module_system (ms : module_system) =
   | Es6 -> "Es6"
   | Es6_global -> "Es6_global"
   
-
 
 let module_system_of_string package_name : module_system option = 
   match package_name with
@@ -196,13 +197,15 @@ let (//) = Filename.concat
 
 
 let string_of_module_id 
+    (dep_module_id : Lam_module_ident.t) 
     ~(output_dir : string )
     (module_system : module_system)    
     (current_package_info : t)
     (get_package_path_from_cmj : 
        Lam_module_ident.t -> (string * t * Ext_namespace.file_kind) option
     )
-    (dep_module_id : Lam_module_ident.t) : string =
+
+  : string =
   let result = 
     match dep_module_id.kind  with 
     | External name -> name (* the literal string for external package *)
