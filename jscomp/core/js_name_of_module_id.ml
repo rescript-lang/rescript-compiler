@@ -21,7 +21,187 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+(*
+let (=)  (x : int) (y:float) = assert false 
+*)
 
+let runtime_package_name = "bs-platform"
+
+(* "xx/lib/ocaml/js.cmj" 
+   Enhancement: This can be delegated to build system
+*)
+let runtime_package_path = 
+  lazy (Filename.dirname (Filename.dirname 
+    (Filename.dirname 
+      (match Config_util.find_opt "js.cmj" with 
+      | None -> assert false
+      | Some x -> x))))
+
+let (//) = Filename.concat 
+
+
+let fix_path_for_windows : string -> string = 
+  if Ext_sys.is_windows_or_cygwin then Ext_string.replace_backward_slash
+  else fun s -> s 
+
+
+(* [output_dir] is decided by the command line argument *)
+let string_of_module_id 
+    (dep_module_id : Lam_module_ident.t) 
+    ~(output_dir : string )
+    (module_system : Js_packages_info.module_system)    
+    (current_package_info : Js_packages_info.t)
+    (get_package_path_from_cmj : 
+       Lam_module_ident.t -> (string * Js_packages_info.t * Ext_namespace.file_kind) option
+    )
+
+  : string =
+  fix_path_for_windows (
+    match dep_module_id.kind  with 
+    | External name -> name (* the literal string for external package *)
+    (** This may not be enough, 
+        1. For cross packages, we may need settle 
+        down a single js package
+        2. We may need es6 path for dead code elimination
+         But frankly, very few JS packages have no dependency, 
+         so having plugin may sound not that bad   
+    *)
+    | Runtime  -> 
+      let id = dep_module_id.id in
+      let current_pkg_info = 
+        Js_packages_info.query_package_infos current_package_info
+          module_system  in
+      let js_file =  Ext_namespace.js_name_of_modulename Little_js id.name in     
+      let  dep_path  = "lib" //
+        match module_system with 
+        | NodeJS ->  "js"
+        | Es6 | Es6_global -> "es6"            
+      in 
+      begin match current_pkg_info with        
+        | Package_not_found -> assert false
+        | Package_script -> runtime_package_name // dep_path // js_file
+        | Package_found(cur_package_name, cur_path) -> 
+          if  Js_packages_info.is_runtime_package cur_package_name then 
+            Ext_path.node_rebase_file
+              ~from:cur_path
+              ~to_:dep_path 
+              js_file
+              (** TODO: we assume that both [x] and [path] could only be relative path
+                  which is guaranteed by [-bs-package-output]
+              *)
+          else  
+            match module_system with 
+            | NodeJS | Es6 -> 
+              runtime_package_name // dep_path // js_file
+            (** Note we did a post-processing when working on Windows *)
+            | Es6_global 
+              -> 
+              (** lib/ocaml/xx.cmj --               
+                  HACKING: FIXME
+                  maybe we can caching relative package path calculation or employ package map *)
+              (* assert false  *)
+              Ext_path.rel_normalized_absolute_path              
+                ~from:(
+                  Js_packages_info.get_output_dir 
+                    current_package_info
+                    ~package_dir:(Lazy.force Ext_filename.package_dir)
+                    module_system )
+                (Lazy.force runtime_package_path // dep_path // js_file)  
+      end
+    | Ml  -> 
+      let id = dep_module_id.id in
+      
+      let current_pkg_info = 
+        Js_packages_info.query_package_infos current_package_info
+          module_system  
+      in
+      match get_package_path_from_cmj dep_module_id with 
+      | None -> 
+        Bs_exception.error (Missing_ml_dependency dep_module_id.id.name)
+      | Some (cmj_path, package_info, little) -> 
+        let js_file =  Ext_namespace.js_name_of_modulename little id.name in 
+        let dependency_pkg_info =  
+          Js_packages_info.query_package_infos package_info module_system 
+        in 
+        match dependency_pkg_info, current_pkg_info with
+        | Package_not_found , _  -> 
+          Bs_exception.error (Missing_ml_dependency dep_module_id.id.name)
+        | Package_script , Package_found _  -> 
+          Bs_exception.error (Dependency_script_module_dependent_not js_file)
+        | (Package_script  | Package_found _ ), Package_not_found -> assert false
+
+        | Package_found(dep_package_name, dep_path), 
+          Package_script 
+          ->    
+#if BS_NATIVE then
+          if Filename.is_relative dep_path then 
+            dep_package_name // dep_path // js_file
+          else 
+            dep_path // js_file
+#else
+          dep_package_name // dep_path // js_file
+#end
+
+        | Package_found(dep_package_name, dep_path),
+          Package_found(cur_package_name, cur_path) -> 
+          if  Js_packages_info.same_package cur_package_name  dep_package_name then 
+            Ext_path.node_rebase_file
+              ~from:cur_path
+              ~to_:dep_path 
+              js_file
+              (** TODO: we assume that both [x] and [path] could only be relative path
+                  which is guaranteed by [-bs-package-output]
+              *)
+          else  
+            begin match module_system with 
+              | NodeJS | Es6 -> 
+#if BS_NATIVE then
+          if Filename.is_relative dep_path then 
+            dep_package_name // dep_path // js_file
+          else 
+            dep_path // js_file
+#else
+                dep_package_name // dep_path // js_file
+#end
+              (** Note we did a post-processing when working on Windows *)
+              | Es6_global 
+              -> 
+                (** lib/ocaml/xx.cmj --               
+                    HACKING: FIXME
+                    maybe we can caching relative package path calculation or employ package map *)
+                (* assert false  *)
+
+                begin 
+                  Ext_path.rel_normalized_absolute_path              
+                    ~from:(
+                      Js_packages_info.get_output_dir 
+                        current_package_info
+                        ~package_dir:(Lazy.force Ext_filename.package_dir)
+                        module_system 
+                    )
+                    ((Filename.dirname 
+                        (Filename.dirname (Filename.dirname cmj_path))) // dep_path // js_file)              
+                end
+            end
+        | Package_script, Package_script 
+          -> 
+          match Config_util.find_opt js_file with 
+          | Some file -> 
+            let basename = Filename.basename file in 
+            let dirname = Filename.dirname file in 
+            Ext_path.node_rebase_file
+              ~from:(
+                Ext_path.absolute_path 
+                  Ext_filename.cwd output_dir)
+              ~to_:(
+                Ext_path.absolute_path 
+                  Ext_filename.cwd
+                  dirname)
+              basename  
+          | None -> 
+            Bs_exception.error (Js_not_found js_file))
+
+  
 
 
 #if BS_COMPILER_IN_BROWSER then   
@@ -42,7 +222,7 @@ let string_of_module_id
       ~output_dir
       module_system
     = 
-    Js_packages_info.string_of_module_id
+    string_of_module_id
       id    
       ~output_dir
       module_system

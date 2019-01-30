@@ -47,7 +47,22 @@ type package_info =
   { module_system : module_system ; path :  string }
 
 type package_name  = string
+let same_package = Ext_string.equal
 
+let runtime_package_name = "bs-platform"
+
+let is_runtime_package (x : string) = 
+    x = runtime_package_name
+
+let (//) = Filename.concat    
+let runtime_package_path (module_system : module_system) =    
+  match module_system with 
+  | NodeJS ->
+    runtime_package_name // "lib" // "js"
+  | Es6 
+  | Es6_global ->
+    runtime_package_name // "lib" // "es6" 
+    
 type t =
   { 
     name : package_name ;
@@ -138,18 +153,11 @@ let query_package_infos
     | None -> Package_not_found
 
 
-let runtime_package_name = "bs-platform"
-(* "xx/lib/ocaml/js.cmj" *)
-let runtime_package_path = 
-  lazy (Filename.dirname (Filename.dirname 
-    (Filename.dirname 
-      (match Config_util.find_opt "js.cmj" with 
-      | None -> assert false
-      | Some x -> x))))
 
-
-let get_js_path module_system 
-    (x : t ) = 
+let get_js_path 
+    (x : t )
+    module_system 
+  = 
   match Ext_list.find_first x.module_systems (fun k -> 
       compatible k.module_system  module_system) with
   | Some k ->  k.path
@@ -158,10 +166,12 @@ let get_js_path module_system
 (* for a single pass compilation, [output_dir]
    can be cached
 *)
-let get_output_dir ~package_dir module_system 
-    (info: t ) =
+let get_output_dir 
+    (info: t )
+    ~package_dir module_system 
+  =
   Filename.concat package_dir 
-    (get_js_path module_system info)
+    (get_js_path info module_system)
 
 
 
@@ -187,177 +197,6 @@ let add_npm_package_path (packages_info : t) (s : string)  : t =
         Ext_pervasives.bad_argf "invalid npm package path: %s" s
     in
     { packages_info with module_systems = {module_system; path}::packages_info.module_systems}
-
-
-
-
-let (//) = Filename.concat 
-
-
-
-
-let string_of_module_id 
-    (dep_module_id : Lam_module_ident.t) 
-    ~(output_dir : string )
-    (module_system : module_system)    
-    (current_package_info : t)
-    (get_package_path_from_cmj : 
-       Lam_module_ident.t -> (string * t * Ext_namespace.file_kind) option
-    )
-
-  : string =
-  let result = 
-    match dep_module_id.kind  with 
-    | External name -> name (* the literal string for external package *)
-    (** This may not be enough, 
-        1. For cross packages, we may need settle 
-        down a single js package
-        2. We may need es6 path for dead code elimination
-         But frankly, very few JS packages have no dependency, 
-         so having plugin may sound not that bad   
-    *)
-    | Runtime  -> 
-      let id = dep_module_id.id in
-      let current_pkg_info = 
-        query_package_infos current_package_info
-          module_system  in
-      let js_file =  Ext_namespace.js_name_of_modulename Little_js id.name in     
-      let  dep_path  = "lib" //
-        match module_system with 
-        | NodeJS ->  "js"
-        | Es6 | Es6_global -> "es6"            
-      in 
-      begin match current_pkg_info with        
-        | Package_not_found -> assert false
-        | Package_script -> runtime_package_name // dep_path // js_file
-        | Package_found(cur_package_name, cur_path) -> 
-          if  cur_package_name = runtime_package_name then 
-            Ext_path.node_rebase_file
-              ~from:cur_path
-              ~to_:dep_path 
-              js_file
-              (** TODO: we assume that both [x] and [path] could only be relative path
-                  which is guaranteed by [-bs-package-output]
-              *)
-          else  
-            match module_system with 
-            | NodeJS | Es6 -> 
-              runtime_package_name // dep_path // js_file
-            (** Note we did a post-processing when working on Windows *)
-            | Es6_global 
-              -> 
-              (** lib/ocaml/xx.cmj --               
-                  HACKING: FIXME
-                  maybe we can caching relative package path calculation or employ package map *)
-              (* assert false  *)
-              Ext_path.rel_normalized_absolute_path              
-                ~from:(get_output_dir 
-                         ~package_dir:(Lazy.force Ext_filename.package_dir)
-                         module_system 
-                         current_package_info
-                      )
-                (Lazy.force runtime_package_path // dep_path // js_file)  
-      end
-    | Ml  -> 
-      let id = dep_module_id.id in
-      
-      let current_pkg_info = 
-        query_package_infos current_package_info
-          module_system  
-      in
-      match get_package_path_from_cmj dep_module_id with 
-      | None -> 
-        Bs_exception.error (Missing_ml_dependency dep_module_id.id.name)
-      | Some (cmj_path, package_info, little) -> 
-        let js_file =  Ext_namespace.js_name_of_modulename little id.name in 
-        let dependency_pkg_info =  
-          query_package_infos package_info module_system 
-        in 
-        match dependency_pkg_info, current_pkg_info with
-        | Package_not_found , _  -> 
-          Bs_exception.error (Missing_ml_dependency dep_module_id.id.name)
-        | Package_script , Package_found _  -> 
-          Bs_exception.error (Dependency_script_module_dependent_not js_file)
-        | (Package_script  | Package_found _ ), Package_not_found -> assert false
-
-        | Package_found(dep_package_name, dep_path), 
-          Package_script 
-          ->    
-#if BS_NATIVE then
-          if Filename.is_relative dep_path then 
-            dep_package_name // dep_path // js_file
-          else 
-            dep_path // js_file
-#else
-          dep_package_name // dep_path // js_file
-#end
-
-        | Package_found(dep_package_name, dep_path),
-          Package_found(cur_package_name, cur_path) -> 
-          if  cur_package_name = dep_package_name then 
-            Ext_path.node_rebase_file
-              ~from:cur_path
-              ~to_:dep_path 
-              js_file
-              (** TODO: we assume that both [x] and [path] could only be relative path
-                  which is guaranteed by [-bs-package-output]
-              *)
-          else  
-            begin match module_system with 
-              | NodeJS | Es6 -> 
-#if BS_NATIVE then
-          if Filename.is_relative dep_path then 
-            dep_package_name // dep_path // js_file
-          else 
-            dep_path // js_file
-#else
-                dep_package_name // dep_path // js_file
-#end
-              (** Note we did a post-processing when working on Windows *)
-              | Es6_global 
-              -> 
-                (** lib/ocaml/xx.cmj --               
-                    HACKING: FIXME
-                    maybe we can caching relative package path calculation or employ package map *)
-                (* assert false  *)
-
-                begin 
-                  Ext_path.rel_normalized_absolute_path              
-                    ~from:(get_output_dir 
-                             ~package_dir:(Lazy.force Ext_filename.package_dir)
-                             module_system 
-                             current_package_info
-                          )
-                    ((Filename.dirname 
-                        (Filename.dirname (Filename.dirname cmj_path))) // dep_path // js_file)              
-                end
-            end
-        | Package_script , 
-          Package_script 
-          -> 
-          begin match Config_util.find_opt js_file with 
-            | Some file -> 
-              let basename = Filename.basename file in 
-              let dirname = Filename.dirname file in 
-              Ext_path.node_rebase_file
-                ~from:(
-                  Ext_path.absolute_path 
-                  Ext_filename.cwd output_dir)
-                ~to_:(
-                  Ext_path.absolute_path 
-                  Ext_filename.cwd
-                  dirname
-                )
-                basename  
-            | None -> 
-              Bs_exception.error (Js_not_found js_file)
-          end
-  in 
-  if Ext_sys.is_windows_or_cygwin then 
-    Ext_string.replace_backward_slash result 
-  else result 
-
-
 
 (* support es6 modules instead
    TODO: enrich ast to support import export 

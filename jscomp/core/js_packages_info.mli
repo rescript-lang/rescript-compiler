@@ -24,10 +24,25 @@
 
 
 type module_system = 
-  | NodeJS 
+  | NodeJS  
   | Es6
-  | Es6_global
-  (* affect [.cmj] format*)
+  | Es6_global  
+
+type package_name 
+  = string
+
+val is_runtime_package:
+  package_name ->
+  bool
+
+val same_package :   
+  package_name ->
+  package_name -> 
+  bool 
+  
+val runtime_package_path:  
+  module_system ->
+  string
 
 type package_info 
   = 
@@ -58,23 +73,24 @@ val add_npm_package_path :
   string -> 
   t  
 
+type info_query =
+  | Package_script 
+  | Package_found of package_name * string
+  | Package_not_found 
+
+
+val get_output_dir:  
+  t ->
+  package_dir:string ->
+  module_system ->
+  string
+
+val query_package_infos:  
+  t ->
+  module_system ->
+  info_query
 (** Note here we compare the package info by order
   in theory, we can compare it by set semantics
 *)
-(* val equal : t -> t -> bool  *)
 
-(**
-   generate the mdoule path so that it can be spliced here:
-   {[
-     var Xx = require("package/path/to/xx.js")
-   ]}
-   Note that it has to be consistent to how it is generated
-*)  
-val string_of_module_id :
-  Lam_module_ident.t ->
-  output_dir:string -> 
-  module_system ->
-  t ->
-  (Lam_module_ident.t ->
-   (string * t * Ext_namespace.file_kind) option ) -> 
-  string
+
