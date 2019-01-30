@@ -47,7 +47,7 @@ type package_info =
   { module_system : module_system ; path :  string }
 
 type package_name  = string
-let same_package = Ext_string.equal
+
 
 let runtime_package_name = "bs-platform"
 
@@ -73,6 +73,8 @@ type t =
     name : package_name ;
     module_systems: package_info  list
   }
+
+let same_package_by_name (x : t) (y : t) = x.name = y.name 
 
 let iter (x : t) cb =    
   Ext_list.iter x.module_systems cb 

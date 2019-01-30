@@ -45,7 +45,8 @@ let fix_path_for_windows : string -> string =
 
 let get_runtime_module_path 
     (dep_module_id : Lam_module_ident.t) 
-    current_package_info module_system = 
+    current_package_info 
+    module_system = 
   let current_info_query = 
     Js_packages_info.query_package_infos current_package_info
       module_system  in
@@ -106,7 +107,6 @@ let string_of_module_id
     | Runtime  -> 
       get_runtime_module_path dep_module_id current_package_info module_system
     | Ml  -> 
-      let id = dep_module_id.id in      
       let current_pkg_info = 
         Js_packages_info.query_package_infos current_package_info
           module_system  
@@ -115,7 +115,7 @@ let string_of_module_id
       | None -> 
         Bs_exception.error (Missing_ml_dependency dep_module_id.id.name)
       | Some (cmj_path, package_info, little) -> 
-        let js_file =  Ext_namespace.js_name_of_modulename little id.name in 
+        let js_file =  Ext_namespace.js_name_of_modulename little dep_module_id.id.name in 
         let dependency_pkg_info =  
           Js_packages_info.query_package_infos package_info module_system 
         in 
@@ -140,7 +140,7 @@ let string_of_module_id
 
         | Package_found(dep_package_name, dep_path),
           Package_found(cur_package_name, cur_path) -> 
-          if  Js_packages_info.same_package cur_package_name  dep_package_name then 
+          if  Js_packages_info.same_package_by_name current_package_info  package_info then 
             Ext_path.node_rebase_file
               ~from:cur_path
               ~to_:dep_path 
