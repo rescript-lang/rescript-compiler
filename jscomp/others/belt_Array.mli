@@ -369,6 +369,16 @@ val map: 'a array ->  ('a -> 'b ) -> 'b array
 
 *)
 
+val getByU: 'a t -> ('a -> bool [@bs]) -> 'a option
+val getBy: 'a t -> ('a -> bool) -> 'a option
+(** [getBy xs p] returns [Some value] for the first value in [xs] that satisifies the predicate function [p]; returns [None] if no element satisifies the function.
+
+  @example {[
+      getBy [|1;4;3;2|] (fun x -> x mod 2 = 0) = Some 4
+      getBy [|15;13;11|] (fun x -> x mod 2 = 0) = None
+    ]}
+*)
+
 val keepU: 'a array -> ('a -> bool [@bs]) -> 'a array
 val keep: 'a array -> ('a -> bool ) -> 'a array
 (** [keep xs p ]
