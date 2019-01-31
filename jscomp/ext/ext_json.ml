@@ -73,14 +73,12 @@ let query path (json : Ext_json_types.t ) =
     match path with 
     | [] ->  Found json
     | p :: rest -> 
-      begin match json with 
-        | Obj {map = m} -> 
-          begin match String_map.find_exn m p with 
-            | m'  -> aux (p::acc) rest m'
-            | exception Not_found ->  No_path
-          end
-        | _ -> Wrong_type acc 
-      end
+      match json with 
+      | Obj {map } -> 
+        (match String_map.find_opt map p with 
+         | Some m  -> aux (p::acc) rest m
+         | None ->  No_path)          
+      | _ -> Wrong_type acc       
   in aux [] path json
 
 

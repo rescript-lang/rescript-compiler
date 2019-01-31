@@ -2653,14 +2653,12 @@ let query path (json : Ext_json_types.t ) =
     match path with 
     | [] ->  Found json
     | p :: rest -> 
-      begin match json with 
-        | Obj {map = m} -> 
-          begin match String_map.find_exn m p with 
-            | m'  -> aux (p::acc) rest m'
-            | exception Not_found ->  No_path
-          end
-        | _ -> Wrong_type acc 
-      end
+      match json with 
+      | Obj {map } -> 
+        (match String_map.find_opt map p with 
+         | Some m  -> aux (p::acc) rest m
+         | None ->  No_path)          
+      | _ -> Wrong_type acc       
   in aux [] path json
 
 
@@ -11638,11 +11636,18 @@ let extract_package_name_and_namespace
   in 
   let namespace = 
     match String_map.find_opt map Bsb_build_schemas.namespace with 
-    | None -> None 
+    | None 
+    | Some (False _) 
+      -> None 
     | Some (True _) -> 
       Some (Ext_namespace.namespace_of_package_name package_name)
-    | Some (False _) 
-    | Some _ -> None in 
+    | Some (Str {str}) -> 
+      (*TODO : check the validity of namespace *)
+      Some (Ext_namespace.namespace_of_package_name str)        
+    | Some x ->
+      Bsb_exception.errorf ~loc:(Ext_json.loc_of x)
+      "namespace field expects string or boolean"
+  in 
   package_name, namespace
 (** ATT: make sure such function is re-entrant. 
     With a given [cwd] it works anywhere*)
@@ -13743,7 +13748,10 @@ let output_ninja_and_namespace_map
     | None -> 
       Ext_string.inter2 "-bs-package-name" package_name, Ext_string.empty
     | Some s -> 
-      Ext_string.inter2 "-bs-package-map" package_name ,
+      Ext_string.inter4 
+        "-bs-package-name" package_name 
+        "-bs-package-map" s
+      ,
       Ext_string.inter2 "-ns" s  
   in  
   let bsc_flags = 

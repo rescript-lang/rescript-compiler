@@ -106,11 +106,18 @@ let extract_package_name_and_namespace
   in 
   let namespace = 
     match String_map.find_opt map Bsb_build_schemas.namespace with 
-    | None -> None 
+    | None 
+    | Some (False _) 
+      -> None 
     | Some (True _) -> 
       Some (Ext_namespace.namespace_of_package_name package_name)
-    | Some (False _) 
-    | Some _ -> None in 
+    | Some (Str {str}) -> 
+      (*TODO : check the validity of namespace *)
+      Some (Ext_namespace.namespace_of_package_name str)        
+    | Some x ->
+      Bsb_exception.errorf ~loc:(Ext_json.loc_of x)
+      "namespace field expects string or boolean"
+  in 
   package_name, namespace
 (** ATT: make sure such function is re-entrant. 
     With a given [cwd] it works anywhere*)
