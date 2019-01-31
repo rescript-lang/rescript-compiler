@@ -343,6 +343,10 @@ let suites =
       Ext_namespace.namespace_of_package_name "bs-json"
       =~ "BsJson"
     end;
+    __LOC__ >:: begin fun _ -> 
+      Ext_namespace.namespace_of_package_name "xx"
+      =~ "Xx"
+    end;
     __LOC__ >:: begin fun _ ->
       let (=~) = OUnit.assert_equal ~printer:(fun x -> x) in
       Ext_namespace.namespace_of_package_name
