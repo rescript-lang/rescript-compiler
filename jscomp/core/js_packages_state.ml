@@ -33,9 +33,9 @@ let set_package_name name =
   else
     Ext_pervasives.bad_argf "duplicated flag for -bs-package-name"
 
-let set_package_map name = 
-    set_package_name name ; 
-    let module_name = Ext_namespace.namespace_of_package_name name  in 
+let set_package_map module_name = 
+    (* set_package_name name ; 
+    let module_name = Ext_namespace.namespace_of_package_name name  in  *)
     Clflags.dont_record_crc_unit := Some module_name;
     Clflags.open_modules := 
       module_name::
