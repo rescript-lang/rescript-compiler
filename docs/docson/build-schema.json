@@ -34,6 +34,18 @@
                 }
             ]
         },
+        "namespace-spec" : {
+            "oneOf" : [
+                {
+                    "type" : "boolean",
+                    "description": "true to use the package name as namespace, false to not use"
+                },
+                {
+                    "type" : "string",
+                    "description": "provide customized namespace name"
+                }
+            ]
+        },
         "package-specs": {
             "oneOf": [
                 {
@@ -343,8 +355,8 @@
             "description": "Package name"
         },
         "namespace": {
-            "type": "boolean",
-            "description": "(WIP)whether use namespace or not, the name of namespace is automatically converted from name"
+            "$ref": "#/definitions/namespace-spec",
+            "description": "can be true/false or a customized name"
         },
         "sources": {
             "$ref": "#/definitions/sources",
