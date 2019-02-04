@@ -428,11 +428,15 @@ var suites_001 = /* :: */[
                                                                               (function (param) {
                                                                                   return /* Eq */Block.__(0, [
                                                                                             /* array */[
-                                                                                              "foo",
-                                                                                              "bar",
-                                                                                              "baz"
+                                                                                              "a",
+                                                                                              "#",
+                                                                                              undefined,
+                                                                                              "b",
+                                                                                              "#",
+                                                                                              ":",
+                                                                                              "c"
                                                                                             ],
-                                                                                            "foo bar baz".split((/\s/))
+                                                                                            "a#b#:c".split((/(#)(:)?/))
                                                                                           ]);
                                                                                 })
                                                                             ],
@@ -442,10 +446,11 @@ var suites_001 = /* :: */[
                                                                                 (function (param) {
                                                                                     return /* Eq */Block.__(0, [
                                                                                               /* array */[
-                                                                                                "foo",
-                                                                                                "bar"
+                                                                                                "a",
+                                                                                                "#",
+                                                                                                undefined
                                                                                               ],
-                                                                                              "foo bar baz".split((/\s/), 2)
+                                                                                              "a#b#:c".split((/(#)(:)?/), 3)
                                                                                             ]);
                                                                                   })
                                                                               ],
