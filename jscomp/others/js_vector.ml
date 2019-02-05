@@ -37,8 +37,8 @@ external unsafe_set : 'a t -> int -> 'a -> unit = "%array_unsafe_set"
 let filterInPlace p a =
   let  i = ref 0 in
   let j = ref 0 in
-  while !i < Js.Array2.length a do
-    let v = Js.Array2.unsafe_get a !i in
+  while !i < Js_array2.length a do
+    let v = Js_array2.unsafe_get a !i in
     if p v   [@bs] then
       begin
         Js.Array2.unsafe_set a !j v ;
