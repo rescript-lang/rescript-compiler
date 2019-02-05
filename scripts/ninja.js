@@ -31,19 +31,19 @@ var stdlibTarget = pseudoTarget('$stdlib')
  * we produce two ninja files which won't overlap
  * one is build.ninja which use  vendored config
  * the other is env.ninja which use binaries from environment
- * 
+ *
  * In dev mode, files generated for vendor config
- * 
+ *
  * build.ninja
- * compiler.ninja 
+ * compiler.ninja
  * snapshot.ninja
  * runtime/build.ninja
  * others/build.ninja
  * $stdlib/build.ninja
  * test/build.ninja
- * 
+ *
  * files generated for env config
- * 
+ *
  * env.ninja
  * compilerEnv.ninja (no snapshot since env can not provide snapshot)
  * runtime/env.ninja
@@ -52,16 +52,16 @@ var stdlibTarget = pseudoTarget('$stdlib')
  * test/env.ninja
  *
  * In release mode:
- * 
+ *
  * release.ninja
  * runtime/release.ninja
  * others/release.ninja
  * $stdlib/release.ninja
- * 
- * Like that our snapshot is so robust that 
+ *
+ * Like that our snapshot is so robust that
  * we don't do snapshot in CI, we don't
  * need do test build in CI either
- * 
+ *
  */
 var useEnv = false
 
@@ -327,12 +327,12 @@ function ninjaQuickBuidList(xs){
 
 /**
  * @typedef { [string,string,string?]} CppoInput
- * @param {CppoInput[]} xs 
+ * @param {CppoInput[]} xs
  * @param {string} cwd
  * @returns {string}
  */
 function cppoList(cwd,xs){
-    
+
     return xs.map(x=>{
 
         /**
@@ -349,9 +349,9 @@ function cppoList(cwd,xs){
     }).join('\n')
 }
 /**
- * 
- * @param {string} cwd 
- * @param {string[]} xs 
+ *
+ * @param {string} cwd
+ * @param {string[]} xs
  * @returns {string}
  */
 function mllList(cwd, xs){
@@ -764,9 +764,9 @@ ${ninjaQuickBuidList([
     )
 }
 /**
- * 
- * @param {boolean} devmode 
- * generate build.ninja/release.ninja for stdlib-402 
+ *
+ * @param {boolean} devmode
+ * generate build.ninja/release.ninja for stdlib-402
  */
 async function stdlibNinja(devmode=true){
     var stdlibVersion = version6 ()? 'stdlib-406' : 'stdlib-402'
@@ -791,7 +791,7 @@ ${ninjaQuickBuidList([
         'cc', ninjaCwd, bsc_builtin_overrides, [], externalDeps],
         // we make it still depends on external
         // to enjoy free ride on dev config for compiler-deps
-        
+
     ['camlinternalFormatBasics.cmj', 'camlinternalFormatBasics.ml',
         'cc', ninjaCwd, bsc_builtin_overrides, 'camlinternalFormatBasics.cmi',externalDeps],
     ['pervasives.cmj', 'pervasives.ml',
@@ -862,8 +862,8 @@ function baseName(x) {
 }
 
 /**
- * 
- * 
+ *
+ *
  */
 async function testNinja(){
     var ninjaOutput =  useEnv ? 'env.ninja' : 'build.ninja'
@@ -1021,7 +1021,7 @@ function sortFilesByDeps(domain, dependency_graph){
 }
 
 
-var emptyCount = 2 
+var emptyCount = 2
 if (require.main === module) {
     if(process.argv.includes('-env')){
         useEnv = true
@@ -1053,7 +1053,7 @@ function updateRelease(){
         runtimeNinja(false)
         stdlibNinja(false)
         othersNinja(false)
-    }    
+    }
 }
 
 function updateDev(){
@@ -1066,7 +1066,7 @@ subninja runtime/env.ninja
 subninja others/env.ninja
 subninja $stdlib/env.ninja
 subninja test/env.ninja
-build all: phony runtime others $stdlib test        
+build all: phony runtime others $stdlib test
 `)
     } else {
         writeFile(path.join(jscompDir, 'build.ninja'), `
@@ -1080,11 +1080,11 @@ subninja $stdlib/build.ninja
 subninja test/build.ninja
 build all: phony runtime others $stdlib test
 `)
-    }  
+    }
     runtimeNinja()
     stdlibNinja(true)
     testNinja()
-    othersNinja()    
+    othersNinja()
     nativeNinja()
 }
 exports.updateDev = updateDev
@@ -1130,12 +1130,12 @@ function nativeNinja() {
     var sourceDirs = ['stubs', 'ext', 'common', 'syntax', 'depends', 'core', 'super_errors', 'outcome_printer', 'bsb', 'ounit', 'ounit_tests', 'main']
     var includes = sourceDirs.map(x => `-I ${x}`).join(' ')
     var cppoNative = `
-include ${useEnv ? 'envConfig.ninja' : 'vendorConfig.ninja'}        
+include ${useEnv ? 'envConfig.ninja' : 'vendorConfig.ninja'}
 rule link
     command =  $ocamlopt -g  -I +compiler-libs $flags $libs $in -o $out
 build ${cppoFile}: link ${cppoMonoFile}
     libs = unix.cmxa str.cmxa
-${cppoRule}    
+${cppoRule}
 ${cppoList('ext', [
         ['string_hash_set.ml', 'hash_set.cppo.ml', dTypeString],
         ['int_hash_set.ml', 'hash_set.cppo.ml', dTypeInt],
@@ -1237,7 +1237,7 @@ build ../odoc_gen/generator.cmxs : mk_shared ../odoc_gen/generator.mli ../odoc_g
         }
     })
 
-    fs.writeFile(cppoNinjaFile, cppoNative, 'ascii', function (err) {
+    fs.writeFile(path.join(jscompDir, cppoNinjaFile), cppoNative, 'ascii', function (err) {
         if (err !== null) {
             throw err
         }
@@ -1249,7 +1249,7 @@ build ../odoc_gen/generator.cmxs : mk_shared ../odoc_gen/generator.mli ../odoc_g
         for (let dir of sourceDirs) {
             files = files.concat(test(dir))
         }
-    
+
         var out = cp.execSync(`${getOcamldepFile()} -one-line -native ${includes} ${files.join(' ')}`, { cwd: jscompDir, encoding: 'ascii' })
 
         /**
