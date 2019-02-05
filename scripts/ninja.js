@@ -1059,8 +1059,7 @@ function updateRelease(){
 function updateDev(){
     if(useEnv){
         writeFile(path.join(jscompDir,'env.ninja'),`
-ocamlopt = ocamlopt.opt
-ocamllex = ocamllex.opt
+include envConfig.ninja
 stdlib = ${version6() ? `stdlib-406` : `stdlib-402`}
 subninja compilerEnv.ninja
 subninja runtime/env.ninja
@@ -1071,8 +1070,7 @@ build all: phony runtime others $stdlib test
 `)
     } else {
         writeFile(path.join(jscompDir, 'build.ninja'), `
-ocamlopt = ../vendor/ocaml/bin/ocamlopt.opt
-ocamllex = ../vendor/ocaml/bin/ocamllex.opt
+include vendorConfig.ninja
 stdlib = ${version6() ? `stdlib-406` : `stdlib-402`}
 subninja compiler.ninja
 subninja snapshot.ninja
@@ -1128,12 +1126,41 @@ function setSortedToString(xs){
  * an effect on depfile
  */
 function nativeNinja() {
-        var ninjaOutput = useEnv ? 'compilerEnv.ninja' : 'compiler.ninja'
-        var sourceDirs = ['stubs','ext', 'common', 'syntax', 'depends', 'core', 'super_errors', 'outcome_printer', 'bsb', 'ounit','ounit_tests','main']
-        var includes = sourceDirs.map(x=>`-I ${x}`).join(' ')
-
-        var templateNative = `
-
+    var ninjaOutput = useEnv ? 'compilerEnv.ninja' : 'compiler.ninja'
+    var sourceDirs = ['stubs', 'ext', 'common', 'syntax', 'depends', 'core', 'super_errors', 'outcome_printer', 'bsb', 'ounit', 'ounit_tests', 'main']
+    var includes = sourceDirs.map(x => `-I ${x}`).join(' ')
+    var cppoNative = `
+include ${useEnv ? 'envConfig.ninja' : 'vendorConfig.ninja'}        
+rule link
+    command =  $ocamlopt -g  -I +compiler-libs $flags $libs $in -o $out
+build ${cppoFile}: link ${cppoMonoFile}
+    libs = unix.cmxa str.cmxa
+${cppoRule}    
+${cppoList('ext', [
+        ['string_hash_set.ml', 'hash_set.cppo.ml', dTypeString],
+        ['int_hash_set.ml', 'hash_set.cppo.ml', dTypeInt],
+        ['ident_hash_set.ml', 'hash_set.cppo.ml', dTypeIdent],
+        ['hash_set.ml', 'hash_set.cppo.ml', dTypeFunctor],
+        ['hash_set_poly.ml', 'hash_set.cppo.ml', dTypePoly],
+        ['int_vec.ml', 'vec.cppo.ml', dTypeInt],
+        ['resize_array.ml', 'vec.cppo.ml', dTypeFunctor],
+        ['string_set.ml', 'set.cppo.ml', dTypeString],
+        ['set_int.ml', 'set.cppo.ml', dTypeInt],
+        ['ident_set.ml', 'set.cppo.ml', dTypeIdent],
+        ['string_map.ml', 'map.cppo.ml', dTypeString],
+        ['int_map.ml', 'map.cppo.ml', dTypeInt],
+        ['ident_map.ml', 'map.cppo.ml', dTypeIdent],
+        ['ordered_hash_map_local_ident.ml', 'ordered_hash_map.cppo.ml', dTypeLocalIdent],
+        ['ordered_hash_set_make.ml', 'ordered_hash_set.cppo.ml', dTypeFunctor],
+        ['string_hashtbl.ml', 'hashtbl.cppo.ml', dTypeString],
+        ['int_hashtbl.ml', 'hashtbl.cppo.ml', dTypeInt],
+        ['ident_hashtbl.ml', 'hashtbl.cppo.ml', dTypeIdent],
+        ['hashtbl_make.ml', 'hashtbl.cppo.ml', dTypeFunctor],
+    ])}
+`
+    var cppoNinjaFile = useEnv ? 'cppoEnv.ninja' : 'cppoVendor.ninja'
+    var templateNative = `
+subninja ${cppoNinjaFile}
 rule optc
     command = $ocamlopt -I +compiler-libs  ${includes} -g -w +6-40-30-23 -warn-error +a-40-30-23 -absname -c $in
     description = $out : $in
@@ -1148,7 +1175,7 @@ rule gcc
     command = $ocamlopt -ccopt -O2 -ccopt -o -ccopt $out -c $in
 build stubs/ext_basic_hash_stubs.o : gcc  stubs/ext_basic_hash_stubs.c
 rule ocamlmklib
-    command = ocamlmklib $in -o $name
+    command = $ocamlmklib $in -o $name
 
 rule mk_keywords
     command = ocaml $in
@@ -1190,111 +1217,101 @@ rule bspack
     generator = true
 build ./bin/tests.exe: link ounit/ounit.cmxa stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa bsb/bsb.cmxa core/core.cmxa ounit_tests/ounit_tests.cmxa main/ounit_tests_main.cmx
     libs = str.cmxa unix.cmxa ocamlcommon.cmxa
-build ${cppoFile}: link ${cppoMonoFile}
-    libs = unix.cmxa str.cmxa
-${cppoRule}
+
 ${mllRule}
 ${mllList('ext',['ext_json_parse.mll'])}
-${cppoList('ext',[
-    ['string_hash_set.ml', 'hash_set.cppo.ml', dTypeString],
-    ['int_hash_set.ml', 'hash_set.cppo.ml', dTypeInt],
-    ['ident_hash_set.ml', 'hash_set.cppo.ml', dTypeIdent],
-    ['hash_set.ml', 'hash_set.cppo.ml', dTypeFunctor],
-    ['hash_set_poly.ml', 'hash_set.cppo.ml',dTypePoly],
-    ['int_vec.ml','vec.cppo.ml', dTypeInt ],
-    ['resize_array.ml','vec.cppo.ml', dTypeFunctor ],
-    ['string_set.ml', 'set.cppo.ml', dTypeString ],
-    ['set_int.ml', 'set.cppo.ml', dTypeInt],
-    ['ident_set.ml', 'set.cppo.ml', dTypeIdent],
-    ['string_map.ml', 'map.cppo.ml', dTypeString],
-    ['int_map.ml', 'map.cppo.ml', dTypeInt],
-    ['ident_map.ml', 'map.cppo.ml', dTypeIdent],
-    ['ordered_hash_map_local_ident.ml', 'ordered_hash_map.cppo.ml',dTypeLocalIdent],
-    ['ordered_hash_set_make.ml', 'ordered_hash_set.cppo.ml', dTypeFunctor],
-    ['string_hashtbl.ml', 'hashtbl.cppo.ml', dTypeString],
-    ['int_hashtbl.ml', 'hashtbl.cppo.ml', dTypeInt],
-    ['ident_hashtbl.ml', 'hashtbl.cppo.ml', dTypeIdent],
-    ['hashtbl_make.ml', 'hashtbl.cppo.ml', dTypeFunctor],
-])}
+
 
 rule mk_shared
     command = $ocamlopt -I +compiler-libs -shared $flags -o $out $in
 build ../odoc_gen/generator.cmxs : mk_shared ../odoc_gen/generator.mli ../odoc_gen/generator.ml
     flags = -I +ocamldoc -I ../odoc_gen -absname
 `
-
-
     /**
-     * @type { {name : string, libs: string[]}[]}
-     */
+       * @type { {name : string, libs: string[]}[]}
+       */
     var libs = []
-    sourceDirs.forEach(name=>{
-        if(name !== 'main' && name !== 'stubs'){
-            libs.push({name, libs : []})
-        }
-    })
-    /**
-     * @type{string[]}
-     */
-    var files = []
-    for (let dir of sourceDirs) {
-        files = files.concat(test(dir))
-    }
-    var out = cp.execSync(`${getOcamldepFile()} -one-line -native ${includes} ${files.join(' ')}`, { cwd: jscompDir, encoding: 'ascii' })
-
-    /**
-     * @type {Map<string,Set<string>>}
-     */
-    var map = new Map()
-
-    var pairs = out.split('\n').map(x => x.split(':').map(x => x.trim()))
-    pairs.forEach(pair => {
-        var deps
-        var key = pair[0]
-        if (pair[1] !== undefined && (deps = pair[1].trim())) {
-            deps = deps.split(' ')
-            map.set(key, new Set(deps))
-        }
-        if (key.endsWith('cmx')) {
-            libs.forEach(x=>{
-                if(key.startsWith(x.name)){
-                    x.libs.push(key)}
-            })
+    sourceDirs.forEach(name => {
+        if (name !== 'main' && name !== 'stubs') {
+            libs.push({ name, libs: [] })
         }
     })
 
+    fs.writeFile(cppoNinjaFile, cppoNative, 'ascii', function (err) {
+        if (err !== null) {
+            throw err
+        }
+        cp.execSync(`ninja -f ${cppoNinjaFile}`, { cwd: jscompDir })
+        /**
+         * @type{string[]}
+         */
+        var files = []
+        for (let dir of sourceDirs) {
+            files = files.concat(test(dir))
+        }
+    
+        var out = cp.execSync(`${getOcamldepFile()} -one-line -native ${includes} ${files.join(' ')}`, { cwd: jscompDir, encoding: 'ascii' })
 
-    // not ocamldep output
-    // when no mli exists no deps for cmi otherwise add cmi
-    var stmts = pairs.map((pair) => {
-        if (pair[0]) {
-            var target = pair[0]
-            var y = path.parse(target)
-            /**
-             * @type {Set<string>}
-            */
-            var deps = map.get(target) || new Set()
-            if (y.ext === '.cmx') {
-                var intf = path.join(y.dir, y.name + ".cmi")
-                var ml = path.join(y.dir, y.name + '.ml')
-                return `build ${deps.has(intf) ? target : [target, intf].join(' ')} : optc ${ml} | ${setSortedToString(deps)}`
-            } else {
-                // === 'cmi'
-                var mli = path.join(y.dir, y.name + '.mli')
-                return `build ${target} : optc ${mli} | ${setSortedToString(deps)}`
+        /**
+         * @type {Map<string,Set<string>>}
+         */
+        var map = new Map()
+
+        var pairs = out.split('\n').map(x => x.split(':').map(x => x.trim()))
+        pairs.forEach(pair => {
+            var deps
+            var key = pair[0]
+            if (pair[1] !== undefined && (deps = pair[1].trim())) {
+                deps = deps.split(' ')
+                map.set(key, new Set(deps))
             }
-        }
-    })
-    libs.forEach(x=>{
-        var output = sortFilesByDeps(x.libs, map)
-        var name = x.name
-        stmts.push(`build ${name}/${name}.cmxa : archive ${output.join(' ')}`)
+            if (key.endsWith('cmx')) {
+                libs.forEach(x => {
+                    if (key.startsWith(x.name)) {
+                        x.libs.push(key)
+                    }
+                })
+            }
+        })
+
+
+        // not ocamldep output
+        // when no mli exists no deps for cmi otherwise add cmi
+        var stmts = pairs.map((pair) => {
+            if (pair[0]) {
+                var target = pair[0]
+                var y = path.parse(target)
+                /**
+                 * @type {Set<string>}
+                */
+                var deps = map.get(target) || new Set()
+                if (y.ext === '.cmx') {
+                    var intf = path.join(y.dir, y.name + ".cmi")
+                    var ml = path.join(y.dir, y.name + '.ml')
+                    return `build ${deps.has(intf) ? target : [target, intf].join(' ')} : optc ${ml} | ${setSortedToString(deps)}`
+                } else {
+                    // === 'cmi'
+                    var mli = path.join(y.dir, y.name + '.mli')
+                    return `build ${target} : optc ${mli} | ${setSortedToString(deps)}`
+                }
+            }
+        })
+        libs.forEach(x => {
+            var output = sortFilesByDeps(x.libs, map)
+            var name = x.name
+            stmts.push(`build ${name}/${name}.cmxa : archive ${output.join(' ')}`)
+        })
+
+        writeFile(path.join(jscompDir, ninjaOutput),
+            templateNative +
+            stmts.join('\n') +
+            '\n'
+        )
     })
 
-    writeFile(path.join(jscompDir, ninjaOutput),
-        templateNative +
-        stmts.join('\n') +
-        '\n'
-    )
+
+
+
+
 }
 
