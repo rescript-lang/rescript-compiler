@@ -95,7 +95,8 @@ jscomp/stdlib-406/build.ninja
 jscomp/test/build.ninja
 jscomp/compilerEnv.ninja
 env.ninja
-
+jscomp/cppoVendor.ninja
+jscomp/cppoEnv.ninja
 jscomp/bin/bsb
 jscomp/bin/bsc
 lib/bs
