@@ -120,7 +120,7 @@ let check_add (h : _ Hash_set_gen.t) key =
 let mem (h :  _ Hash_set_gen.t) key =
   Hash_set_gen.small_bucket_mem eq_key key (Array.unsafe_get h.data (key_index h key)) 
 
-#if defined TYPE_FUNCTOR
+#ifdef TYPE_FUNCTOR
 end
 #endif
   
