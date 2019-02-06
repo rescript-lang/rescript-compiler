@@ -11878,7 +11878,7 @@ let iter h f =
     do_bucket (Array.unsafe_get d i)
   done
 
-let fold f h init =
+let fold h init f =
   let rec do_bucket b accu =
     match b with
       [ ] ->
@@ -11912,7 +11912,7 @@ let resize indexfun h =
   end
 
 let elements set = 
-  fold  (fun k  acc ->  k :: acc) set []
+  fold set [] (fun k  acc ->  k :: acc) 
 
 
 
@@ -11969,7 +11969,7 @@ sig
   val check_add : t -> key -> bool
   val mem : t -> key -> bool
   val iter: t -> (key -> unit) -> unit
-  val fold: (key -> 'b -> 'b) ->  t -> 'b -> 'b
+  val fold: t -> 'b  -> (key -> 'b -> 'b) -> 'b
   val length:  t -> int
   val stats:  t -> Hashtbl.statistics
   val elements : t -> key list 
