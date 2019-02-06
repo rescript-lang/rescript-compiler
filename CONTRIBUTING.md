@@ -8,10 +8,11 @@ Prerequisites:
 
 - [NodeJS](https://nodejs.org/)
 - [Ninja](https://ninja-build.org/manual.html)
-- C compiler toolchain
-- OS: Mac/Linux (BuckleScript works on Windows, but developing the repo in Windows isn't tested. Contribution welcome!)
+- C compiler toolchain (you probably already have it installed)
+- OS: Mac/Linux (BuckleScript works on Windows, but developing the repo using Windows isn't tested. Contribution welcome!)
 
 ### Build the vendored ocaml compiler
+
 ```
 cd vendor/ocaml && ./configure -prefix `pwd` && make -j9 world.opt && make install
 ```
@@ -19,60 +20,66 @@ cd vendor/ocaml && ./configure -prefix `pwd` && make -j9 world.opt && make insta
 ### Build everything in dev mode using vendored compiler
 
 ```
-../script/ninja.js && ninja -C jscomp
+node ./scripts/ninja.js && ninja -C jscomp
 ```
 
-`../script/ninja.js` will generate `build.ninja` file inside `jscomp` directory, `ninja` by default will pick up `build.ninja`.
+`scripts/ninja.js` will generate many `.ninja` build files inside the `jscomp` directory, then you'd invoke `ninja` to execute them.
 
 #### Edit file and test changes
 
-In general, you edit files and rerun `ninja -C jscomp`. 
+In general, you'd edit files and rerun `ninja -C jscomp`.
 
-Note we have a watcher script to automate this, suppose you are in `jscomp` dir,
+We have an optional watcher to auto rebuild on file changes. Suppose you are in `jscomp`:
 
 ```sh
 node ../scripts/task.js
 ```
 
-### Building everything in dev mode using environment compiler
+### Troubleshooting broken builds
+
+Try to run:
 
 ```
-../script/ninja.js -env && ninja -C jscomp -f env.ninja
+ninja -C jscomp -t clean # asks ninja to clean the artifacts
+./scripts/ninja.js # repeat the usual step from scratch
+ninja -C jscomp
 ```
 
-`../script/ninja.js -env` will generate `env.ninja` file inside `jscomp` directory.
+### Advanced: building everything in dev mode using a different compiler
 
-Note this is useful when you want to use different compilers to test
-something quickly (only for advanced developers)
+This is primarily used when you need to test the repo with a different OCaml than the vendored one.
 
-### Trouble-shooting when build is broken
-
-We use `../scripts/ninja.js` to generate `jscomp/build.ninja` to drive the whole build process, when it does not work, try to run `../scripts/ninja.js`  and do `ninja -C jscomp` again.
-
-## Switch test between vendored compiler and environment provided compiler
-
+For example, you might be testing BuckleScript on the 4.06 OCaml compiler instead of 4.02. Clone our patched [OCaml 4.06](https://github.com/bucklescript/ocaml), then do:
 
 ```
-ninja -C jscomp -f env.ninja -t clean && ninja -C jscomp 
+./configure -prefix `pwd` && make -j9 world.opt && make install
 ```
 
+Make sure the new compiler (`ocamlopt.opt`) is in your environment:
 
 ```
-ninja -C jscomp  -t clean && ninja -C jscomp -f env.ninja
+export PATH="/absolute-path-to-the-bucklescript-forked-ocaml-repo/bin:$PATH"
 ```
 
-Note clean up is necessary since the binary artifacts between versions of compiler
-may be incompatible
+Then:
 
-### Example of using environment provided compiler
+```
+./scripts/ninja.js -env && ninja -C jscomp -f env.ninja
+```
 
-Clone and install our patched [OCaml 4.06](https://github.com/bucklescript/ocaml), please refer  [install instructions](https://github.com/BuckleScript/ocaml/blob/4.06/INSTALL.adoc) for how to install. 
-After installation, make sure the installed `ocamlopt.opt` is in PATH.
+Done!
 
-run `../scripts/ninja.js -env` to generate ninja file accordingly and `ninja -C jscomp -f env.ninja` to do the build
+Tip: you can also quickly switch between the environment compiler and the vendored one like so:
 
+```
+ninja -C jscomp -f env.ninja -t clean && ninja -C jscomp
+```
 
+```
+ninja -C jscomp -t clean && ninja -C jscomp -f env.ninja
+```
 
+Note: clean up is necessary since the binary artifacts between versions of compiler may be incompatible.
 
 ## Test on a Dummy Project
 
