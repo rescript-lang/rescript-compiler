@@ -24,7 +24,7 @@ build others/js_global.cmi others/js_global.cmj : cc others/js_global.ml | runti
 build others/js_int.cmi others/js_int.cmj : cc others/js_int.ml | runtime
 build others/js_json.cmj : cc others/js_json.ml | others/js_array2.cmj others/js_dict.cmj others/js_json.cmi others/js_string.cmj others/js_types.cmj runtime
 build others/js_json.cmi : cc others/js_json.mli | others/js_dict.cmi others/js_null.cmi others/js_string.cmj others/js_types.cmi runtime
-build others/js_list.cmj : cc others/js_list.ml | others/js_list.cmi others/js_vector.cmj runtime
+build others/js_list.cmj : cc others/js_list.ml | others/js_array2.cmj others/js_list.cmi others/js_vector.cmj runtime
 build others/js_list.cmi : cc others/js_list.mli | others/js_vector.cmi runtime
 build others/js_mapperRt.cmj : cc others/js_mapperRt.ml | others/js_array2.cmj others/js_exn.cmj others/js_mapperRt.cmi runtime
 build others/js_mapperRt.cmi : cc others/js_mapperRt.mli | runtime
