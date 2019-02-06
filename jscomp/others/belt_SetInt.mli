@@ -1,4 +1,4 @@
-# 1 "others/set.cppo.mli"
+# 1 "others/belt_Set.cppo.mli"
 (* Copyright (C) 2017 Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -30,9 +30,9 @@
     {b See} {!Belt.Set}
 *)
 
-# 35 "others/set.cppo.mli"
+# 35 "others/belt_Set.cppo.mli"
 type value = int
-# 39 "others/set.cppo.mli"
+# 39 "others/belt_Set.cppo.mli"
 (** The type of the set elements. *)
 
 
