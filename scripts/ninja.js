@@ -79,20 +79,26 @@ var getOcamldepFile = ()=>{
     }
 }
 
-/**
- * @type {boolean}
- */
-var versionCached = undefined
-var version6 = () =>{
-    if (versionCached === undefined) {
-        var versionString = cp.execSync(`${getOcamldepFile()} -version`, { encoding: 'ascii' })
-        versionCached = !versionString.includes('4.02')
-        return versionCached
-    } else {
-        return versionCached
-    }
-}
 
+/**
+ * @type {string}
+ */
+var versionString = undefined
+
+var getVersionString = () =>{
+    if (versionString === undefined) {
+        var searcher = 'version'         
+        var output = cp.execSync(`${getOcamldepFile()} -version`, { encoding: 'ascii' })
+        versionString = output.substring(output.indexOf(searcher) + searcher.length).trim()
+    } 
+    return versionString
+}
+/**
+ * @returns {boolean}
+ */
+var version6 = ()=>{
+    return !(getVersionString().includes('4.02'))
+}
 
 
 /**
@@ -649,7 +655,7 @@ var cppoFile = `./bin/cppo.exe`
 
 var cppoRule = `
 rule ${cppoRuleName}
-    command = ${cppoFile} $type $in -o $out
+    command = ${cppoFile} -V OCAML:${getVersionString()} $type $in -o $out
     generator = true
 `
 
@@ -1157,6 +1163,9 @@ ${cppoList('ext', [
         ['ident_hashtbl.ml', 'hashtbl.cppo.ml', dTypeIdent],
         ['hashtbl_make.ml', 'hashtbl.cppo.ml', dTypeFunctor],
     ])}
+${cppoList('outcome_printer',[
+    ['tweaked_reason_oprint.ml','tweaked_reason_oprint.cppo.ml','']
+])}    
 `
     var cppoNinjaFile = useEnv ? 'cppoEnv.ninja' : 'cppoVendor.ninja'
     var templateNative = `
