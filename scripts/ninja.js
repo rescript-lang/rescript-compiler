@@ -87,10 +87,10 @@ var versionString = undefined
 
 var getVersionString = () =>{
     if (versionString === undefined) {
-        var searcher = 'version'         
+        var searcher = 'version'
         var output = cp.execSync(`${getOcamldepFile()} -version`, { encoding: 'ascii' })
         versionString = output.substring(output.indexOf(searcher) + searcher.length).trim()
-    } 
+    }
     return versionString
 }
 /**
@@ -653,7 +653,7 @@ var dTypePoly =  'TYPE_POLY'
 var cppoRuleName = `cppo`
 var cppoFile = `./bin/cppo.exe`
 
-var cppoRule = `
+var cppoRule = () => `
 rule ${cppoRuleName}
     command = ${cppoFile} -V OCAML:${getVersionString()} $type $in -o $out
     generator = true
@@ -679,7 +679,7 @@ rule cc
     description = $in -> $out
 
 ${ devmode ?
-`${cppoRule}
+`${cppoRule()}
 ${cppoList(ninjaCwd, [
 ['belt_HashSetString.ml', 'hashset.cppo.ml', dTypeString],
 ['belt_HashSetString.mli', 'hashset.cppo.mli', dTypeString ],
@@ -1141,7 +1141,7 @@ rule link
     command =  $ocamlopt -g  -I +compiler-libs $flags $libs $in -o $out
 build ${cppoFile}: link ${cppoMonoFile}
     libs = unix.cmxa str.cmxa
-${cppoRule}
+${cppoRule()}
 ${cppoList('ext', [
         ['string_hash_set.ml', 'hash_set.cppo.ml', dTypeString],
         ['int_hash_set.ml', 'hash_set.cppo.ml', dTypeInt],
@@ -1165,7 +1165,7 @@ ${cppoList('ext', [
     ])}
 ${cppoList('outcome_printer',[
     ['tweaked_reason_oprint.ml','tweaked_reason_oprint.cppo.ml','']
-])}    
+])}
 `
     var cppoNinjaFile = useEnv ? 'cppoEnv.ninja' : 'cppoVendor.ninja'
     var templateNative = `
