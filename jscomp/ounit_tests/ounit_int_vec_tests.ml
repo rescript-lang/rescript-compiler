@@ -16,17 +16,17 @@ let suites =
             let v = Int_vec.make 100 in 
             OUnit.assert_bool __LOC__ 
                 (not @@ Int_vec_util.mem 0 v) ;
-            Int_vec.push 0 v ;
+            Int_vec.push v 0;
             OUnit.assert_bool __LOC__ 
                 (Int_vec_util.mem 0 v )
         end;
 
         __LOC__ >:: begin fun _ -> 
             let u = Int_vec.make 100 in 
-            Int_vec.push 1 u ;
+            Int_vec.push u 1;
             OUnit.assert_bool __LOC__
             (not @@ Int_vec_util.mem 0 u );
-            Int_vec.push 0 u ; 
+            Int_vec.push u 0; 
             OUnit.assert_bool __LOC__
             (Int_vec_util.mem 0 u)
         end

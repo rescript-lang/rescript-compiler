@@ -48,7 +48,7 @@ sig
   *)
   val unsafe_internal_array : t -> elt array
   val reserve : t -> int -> unit
-  val push :  elt -> t -> unit
+  val push :  t -> elt -> unit
   val delete : t -> int -> unit 
   val pop : t -> unit
   val get_last_and_pop : t -> elt

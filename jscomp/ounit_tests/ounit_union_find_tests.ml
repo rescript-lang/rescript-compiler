@@ -950,7 +950,7 @@ let process_file file =
         begin match Ext_string.quick_split_by_ws v with
           | [a;b] ->
             let a,b = int_of_string a , int_of_string b in
-            Int_vec_vec.push  (Int_vec.of_array [|a;b|]) edges; 
+            Int_vec_vec.push  edges (Int_vec.of_array [|a;b|]); 
           | _ -> ()
         end;
         aux ((i+1) mod 10000);

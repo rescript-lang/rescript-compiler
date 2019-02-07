@@ -5,7 +5,7 @@ let handle graph =
   let len = List.length graph in 
   let result = Ext_topsort.Edge_vec.make len in 
   List.iter (fun (id,deps) -> 
-      Ext_topsort.Edge_vec.push {id ; deps = Int_vec.of_list deps } result 
+      Ext_topsort.Edge_vec.push result {id ; deps = Int_vec.of_list deps } 
     ) graph; 
   result 
 
