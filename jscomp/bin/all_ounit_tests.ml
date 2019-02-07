@@ -11478,7 +11478,7 @@ sig
   *)
   val unsafe_internal_array : t -> elt array
   val reserve : t -> int -> unit
-  val push :  elt -> t -> unit
+  val push :  t -> elt -> unit
   val delete : t -> int -> unit 
   val pop : t -> unit
   val get_last_and_pop : t -> elt
@@ -11859,7 +11859,7 @@ let init len f =
        unsafe_blit d_arr 0 new_d_arr 0 d_len;
       d.arr <- new_d_arr 
 
-  let push v (d : t) =
+  let push (d : t) v  =
     let d_len = d.len in
     let d_arr = d.arr in 
     let d_arr_len = Array.length d_arr in
@@ -12110,17 +12110,17 @@ let suites =
             let v = Int_vec.make 100 in 
             OUnit.assert_bool __LOC__ 
                 (not @@ Int_vec_util.mem 0 v) ;
-            Int_vec.push 0 v ;
+            Int_vec.push v 0;
             OUnit.assert_bool __LOC__ 
                 (Int_vec_util.mem 0 v )
         end;
 
         __LOC__ >:: begin fun _ -> 
             let u = Int_vec.make 100 in 
-            Int_vec.push 1 u ;
+            Int_vec.push u 1;
             OUnit.assert_bool __LOC__
             (not @@ Int_vec_util.mem 0 u );
-            Int_vec.push 0 u ; 
+            Int_vec.push u 0; 
             OUnit.assert_bool __LOC__
             (Int_vec_util.mem 0 u)
         end
@@ -14676,7 +14676,7 @@ let init len f =
        unsafe_blit d_arr 0 new_d_arr 0 d_len;
       d.arr <- new_d_arr 
 
-  let push v (d : t) =
+  let push (d : t) v  =
     let d_len = d.len in
     let d_arr = d.arr in 
     let d_arr_len = Array.length d_arr in
@@ -15024,7 +15024,7 @@ let graph  e =
   let rec scc v_data  =
     let new_index = !index + 1 in 
     index := new_index ;
-    Int_vec.push  v_data s ; 
+    Int_vec.push s v_data; 
 
     index_array.(v_data) <- new_index ;  
     lowlink_array.(v_data) <- new_index ; 
@@ -15059,7 +15059,7 @@ let graph  e =
           u := Int_vec.unsafe_get s !last_index
         done ;
         on_stack_array.(v_data) <- false; (* necessary *)
-        Int_vec_vec.push   (Int_vec.get_and_delete_range s !last_index (s_len  - !last_index)) output;
+        Int_vec_vec.push output (Int_vec.get_and_delete_range s !last_index (s_len  - !last_index));
       end   
   in
   for i = 0 to node_numes - 1 do 
@@ -15273,11 +15273,11 @@ let handle_lines tiny_test_cases =
         (fun i -> Int_vec.empty () )
     in 
     begin 
-      rest |> List.iter (fun x ->
+    Ext_list.iter rest (fun x ->
           match Ext_string.split x ' ' with 
           | [ a ; b] -> 
             let a , b = int_of_string a , int_of_string b in 
-            Int_vec.push  b node_array.(a) 
+            Int_vec.push node_array.(a) b  
           | _ -> assert false 
         );
       node_array 
@@ -15295,7 +15295,7 @@ let read_file file =
       begin match Ext_string.split x ' ' with 
       | [ a ; b] -> 
         let a , b = int_of_string a , int_of_string b in 
-        Int_vec.push  b node_array.(a) 
+        Int_vec.push node_array.(a) b 
       | _ -> (* assert false  *) ()
       end; 
       aux () in 
@@ -15325,7 +15325,7 @@ let test  (input : (string * string list) list) =
   List.iter (fun (x,others) -> 
       let idx = String_hashtbl.find_exn tbl  x  in 
       others |> 
-      List.iter (fun y -> Int_vec.push (String_hashtbl.find_exn tbl y ) node_array.(idx) )
+      List.iter (fun y -> Int_vec.push node_array.(idx) (String_hashtbl.find_exn tbl y ) )
     ) ; 
   Ext_scc.graph_check node_array 
 
@@ -15353,7 +15353,7 @@ let test2  (input : (string * string list) list) =
   List.iter (fun (x,others) -> 
       let idx = String_hashtbl.find_exn tbl  x  in 
       others |> 
-      List.iter (fun y -> Int_vec.push (String_hashtbl.find_exn tbl y ) node_array.(idx) )
+      List.iter (fun y -> Int_vec.push node_array.(idx) (String_hashtbl.find_exn tbl y ) )
     )  ;
   let output = Ext_scc.graph node_array in 
   output |> Int_vec_vec.map_into_array (fun int_vec -> Int_vec.map_into_array (fun i -> other_mapping.(i)) int_vec )
@@ -16236,7 +16236,7 @@ let handle graph =
   let len = List.length graph in 
   let result = Ext_topsort.Edge_vec.make len in 
   List.iter (fun (id,deps) -> 
-      Ext_topsort.Edge_vec.push {id ; deps = Int_vec.of_list deps } result 
+      Ext_topsort.Edge_vec.push result {id ; deps = Int_vec.of_list deps } 
     ) graph; 
   result 
 
@@ -19028,7 +19028,7 @@ let process_file file =
         begin match Ext_string.quick_split_by_ws v with
           | [a;b] ->
             let a,b = int_of_string a , int_of_string b in
-            Int_vec_vec.push  (Int_vec.of_array [|a;b|]) edges; 
+            Int_vec_vec.push  edges (Int_vec.of_array [|a;b|]); 
           | _ -> ()
         end;
         aux ((i+1) mod 10000);
@@ -19114,7 +19114,7 @@ let suites =
     "inplace_filter " ^ __LOC__ >:: begin fun _ -> 
       v =~~ [|0; 1; 2; 3; 4; 5; 6; 7; 8; 9|];
       
-      ignore @@ Int_vec.push  32 v;
+      ignore @@ Int_vec.push v 32;
       let capacity = Int_vec.capacity v  in 
       v =~~ [|0; 1; 2; 3; 4; 5; 6; 7; 8; 9; 32|];
       Int_vec.inplace_filter (fun x -> x mod 2 = 0) v ;
@@ -19131,7 +19131,7 @@ let suites =
     "inplace_filter_from " ^ __LOC__ >:: begin fun _ -> 
       let v = Int_vec.of_array (Array.init 10 (fun i -> i)) in 
       v =~~ [|0; 1; 2; 3; 4; 5; 6; 7; 8; 9|]; 
-      Int_vec.push 96 v  ;      
+      Int_vec.push v 96  ;      
       Int_vec.inplace_filter_from 2 (fun x -> x mod 2 = 0) v ;
       v =~~ [|0; 1; 2; 4; 6; 8; 96|];
       Int_vec.inplace_filter_from 2 (fun x -> x mod 3 = 0) v ;
@@ -19188,17 +19188,17 @@ let suites =
       let v = Int_vec.make 5 in 
       OUnit.assert_bool __LOC__
         (try ignore @@ Int_vec.sub v 0 2 ; false with Invalid_argument _  -> true);
-      Int_vec.push 1 v;
+      Int_vec.push v 1;
       OUnit.assert_bool __LOC__
         (try ignore @@ Int_vec.sub v 0 2 ; false with Invalid_argument _  -> true);
-      Int_vec.push 2 v ;  
+      Int_vec.push v 2;  
       ( Int_vec.sub v 0 2 =~~ [|1;2|])
     end;
     "reserve" ^ __LOC__ >:: begin fun _ -> 
       let v = Int_vec.empty () in 
       Int_vec.reserve v  1000 ;
       for i = 0 to 900 do
-        Int_vec.push i v 
+        Int_vec.push v i
       done ;
       OUnit.assert_equal (Int_vec.length v) 901 ;
       OUnit.assert_equal (Int_vec.capacity v) 1000
@@ -19207,23 +19207,23 @@ let suites =
       let v = Int_vec.of_array [|3|] in 
       Int_vec.reserve v 10 ;
       v =~~ [|3 |];
-      Int_vec.push 1 v ;
-      Int_vec.push 2 v ;
-      Int_vec.push 5 v ;
+      Int_vec.push v 1 ;
+      Int_vec.push v 2 ;
+      Int_vec.push v 5;
       v=~~ [|3;1;2;5|];
       OUnit.assert_equal (Int_vec.capacity v  ) 10 ;
       for i = 0 to 5 do
-        Int_vec.push i  v
+        Int_vec.push v i
       done;
       v=~~ [|3;1;2;5;0;1;2;3;4;5|];
-      Int_vec.push   100 v;
+      Int_vec.push v 100;
       v=~~[|3;1;2;5;0;1;2;3;4;5;100|];
       OUnit.assert_equal (Int_vec.capacity v ) 20
     end
     ;
     __LOC__  >:: begin fun _ -> 
       let empty = Int_vec.empty () in 
-      Int_vec.push   3 empty;
+      Int_vec.push empty 3;
       empty =~~ [|3|];
 
     end
@@ -19237,8 +19237,8 @@ let suites =
     end;
     __LOC__ >:: begin fun _ ->
       let v = Int_vec.make 4 in 
-      Int_vec.push 1 v;
-      Int_vec.push 2 v;
+      Int_vec.push v  1 ;
+      Int_vec.push v 2;
       Int_vec.reverse_in_place v;
       v =~~ [|2;1|]
     end

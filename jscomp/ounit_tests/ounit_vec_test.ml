@@ -21,7 +21,7 @@ let suites =
     "inplace_filter " ^ __LOC__ >:: begin fun _ -> 
       v =~~ [|0; 1; 2; 3; 4; 5; 6; 7; 8; 9|];
       
-      ignore @@ Int_vec.push  32 v;
+      ignore @@ Int_vec.push v 32;
       let capacity = Int_vec.capacity v  in 
       v =~~ [|0; 1; 2; 3; 4; 5; 6; 7; 8; 9; 32|];
       Int_vec.inplace_filter (fun x -> x mod 2 = 0) v ;
@@ -38,7 +38,7 @@ let suites =
     "inplace_filter_from " ^ __LOC__ >:: begin fun _ -> 
       let v = Int_vec.of_array (Array.init 10 (fun i -> i)) in 
       v =~~ [|0; 1; 2; 3; 4; 5; 6; 7; 8; 9|]; 
-      Int_vec.push 96 v  ;      
+      Int_vec.push v 96  ;      
       Int_vec.inplace_filter_from 2 (fun x -> x mod 2 = 0) v ;
       v =~~ [|0; 1; 2; 4; 6; 8; 96|];
       Int_vec.inplace_filter_from 2 (fun x -> x mod 3 = 0) v ;
@@ -95,17 +95,17 @@ let suites =
       let v = Int_vec.make 5 in 
       OUnit.assert_bool __LOC__
         (try ignore @@ Int_vec.sub v 0 2 ; false with Invalid_argument _  -> true);
-      Int_vec.push 1 v;
+      Int_vec.push v 1;
       OUnit.assert_bool __LOC__
         (try ignore @@ Int_vec.sub v 0 2 ; false with Invalid_argument _  -> true);
-      Int_vec.push 2 v ;  
+      Int_vec.push v 2;  
       ( Int_vec.sub v 0 2 =~~ [|1;2|])
     end;
     "reserve" ^ __LOC__ >:: begin fun _ -> 
       let v = Int_vec.empty () in 
       Int_vec.reserve v  1000 ;
       for i = 0 to 900 do
-        Int_vec.push i v 
+        Int_vec.push v i
       done ;
       OUnit.assert_equal (Int_vec.length v) 901 ;
       OUnit.assert_equal (Int_vec.capacity v) 1000
@@ -114,23 +114,23 @@ let suites =
       let v = Int_vec.of_array [|3|] in 
       Int_vec.reserve v 10 ;
       v =~~ [|3 |];
-      Int_vec.push 1 v ;
-      Int_vec.push 2 v ;
-      Int_vec.push 5 v ;
+      Int_vec.push v 1 ;
+      Int_vec.push v 2 ;
+      Int_vec.push v 5;
       v=~~ [|3;1;2;5|];
       OUnit.assert_equal (Int_vec.capacity v  ) 10 ;
       for i = 0 to 5 do
-        Int_vec.push i  v
+        Int_vec.push v i
       done;
       v=~~ [|3;1;2;5;0;1;2;3;4;5|];
-      Int_vec.push   100 v;
+      Int_vec.push v 100;
       v=~~[|3;1;2;5;0;1;2;3;4;5;100|];
       OUnit.assert_equal (Int_vec.capacity v ) 20
     end
     ;
     __LOC__  >:: begin fun _ -> 
       let empty = Int_vec.empty () in 
-      Int_vec.push   3 empty;
+      Int_vec.push empty 3;
       empty =~~ [|3|];
 
     end
@@ -144,8 +144,8 @@ let suites =
     end;
     __LOC__ >:: begin fun _ ->
       let v = Int_vec.make 4 in 
-      Int_vec.push 1 v;
-      Int_vec.push 2 v;
+      Int_vec.push v  1 ;
+      Int_vec.push v 2;
       Int_vec.reverse_in_place v;
       v =~~ [|2;1|]
     end

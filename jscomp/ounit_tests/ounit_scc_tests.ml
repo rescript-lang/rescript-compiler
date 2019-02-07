@@ -195,11 +195,11 @@ let handle_lines tiny_test_cases =
         (fun i -> Int_vec.empty () )
     in 
     begin 
-      rest |> List.iter (fun x ->
+    Ext_list.iter rest (fun x ->
           match Ext_string.split x ' ' with 
           | [ a ; b] -> 
             let a , b = int_of_string a , int_of_string b in 
-            Int_vec.push  b node_array.(a) 
+            Int_vec.push node_array.(a) b  
           | _ -> assert false 
         );
       node_array 
@@ -217,7 +217,7 @@ let read_file file =
       begin match Ext_string.split x ' ' with 
       | [ a ; b] -> 
         let a , b = int_of_string a , int_of_string b in 
-        Int_vec.push  b node_array.(a) 
+        Int_vec.push node_array.(a) b 
       | _ -> (* assert false  *) ()
       end; 
       aux () in 
@@ -247,7 +247,7 @@ let test  (input : (string * string list) list) =
   List.iter (fun (x,others) -> 
       let idx = String_hashtbl.find_exn tbl  x  in 
       others |> 
-      List.iter (fun y -> Int_vec.push (String_hashtbl.find_exn tbl y ) node_array.(idx) )
+      List.iter (fun y -> Int_vec.push node_array.(idx) (String_hashtbl.find_exn tbl y ) )
     ) ; 
   Ext_scc.graph_check node_array 
 
@@ -275,7 +275,7 @@ let test2  (input : (string * string list) list) =
   List.iter (fun (x,others) -> 
       let idx = String_hashtbl.find_exn tbl  x  in 
       others |> 
-      List.iter (fun y -> Int_vec.push (String_hashtbl.find_exn tbl y ) node_array.(idx) )
+      List.iter (fun y -> Int_vec.push node_array.(idx) (String_hashtbl.find_exn tbl y ) )
     )  ;
   let output = Ext_scc.graph node_array in 
   output |> Int_vec_vec.map_into_array (fun int_vec -> Int_vec.map_into_array (fun i -> other_mapping.(i)) int_vec )

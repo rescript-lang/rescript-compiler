@@ -7517,7 +7517,7 @@ sig
   *)
   val unsafe_internal_array : t -> elt array
   val reserve : t -> int -> unit
-  val push :  elt -> t -> unit
+  val push :  t -> elt -> unit
   val delete : t -> int -> unit 
   val pop : t -> unit
   val get_last_and_pop : t -> elt
@@ -7903,7 +7903,7 @@ let init len f =
        unsafe_blit d_arr 0 new_d_arr 0 d_len;
       d.arr <- new_d_arr 
 
-  let push v (d : t) =
+  let push (d : t) v  =
     let d_len = d.len in
     let d_arr = d.arr in 
     let d_arr_len = Array.length d_arr in
@@ -9662,7 +9662,7 @@ let  handle_empty_sources
           match Ext_string.is_valid_source_name name with 
           | Good ->   begin 
               let new_acc = Bsb_db.collect_module_by_filename ~dir acc name  in 
-              String_vec.push name dyn_file_array ;
+              String_vec.push dyn_file_array name;
               new_acc 
             end 
           | Invalid_module_name ->

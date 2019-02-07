@@ -120,7 +120,7 @@ let  handle_empty_sources
           match Ext_string.is_valid_source_name name with 
           | Good ->   begin 
               let new_acc = Bsb_db.collect_module_by_filename ~dir acc name  in 
-              String_vec.push name dyn_file_array ;
+              String_vec.push dyn_file_array name;
               new_acc 
             end 
           | Invalid_module_name ->

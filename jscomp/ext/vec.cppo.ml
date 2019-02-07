@@ -319,7 +319,7 @@ let init len f =
        unsafe_blit d_arr 0 new_d_arr 0 d_len;
       d.arr <- new_d_arr 
 
-  let push v (d : t) =
+  let push (d : t) v  =
     let d_len = d.len in
     let d_arr = d.arr in 
     let d_arr_len = Array.length d_arr in
