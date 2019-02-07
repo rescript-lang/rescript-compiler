@@ -23,7 +23,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-
+#if BS_NATIVE then
+#else
 
 let setupChromeDebugger : unit -> unit = fun%raw unit -> {|
   // I don't know how to directly refer to the classes that chrome's built-in
@@ -187,3 +188,5 @@ if (typeof window === "undefined"){
 return 0
 
 |};
+
+#end

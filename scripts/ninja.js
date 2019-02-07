@@ -235,7 +235,7 @@ function targetToString(file,cwd){
         case "pseudo":
             return file.name
         default:
-            throw  Error
+            throw new Error("file kind not supported: " + file.kind);
     }
 }
 /**
@@ -258,13 +258,20 @@ function targetsToString(files,cwd){
  * @param {string} cwd
  * @return {string}
  */
-function ninjaBuild(outputs, inputs, rule, deps, cwd, overrides){
-    var fileOutputs = targetsToString(outputs,cwd)
-    var fileInputs = targetsToString(inputs,cwd)
-    var stmt =  `build ${fileOutputs} : ${rule} ${fileInputs}`
+ // @BENHACK implicitOutputs
+function ninjaBuild(outputs, inputs, rule, deps, sourceCwd, targetCwd, overrides, implicitOutputs){
+    var fileOutputs = targetsToString(outputs, targetCwd);
+    var fileInputs = targetsToString(inputs, sourceCwd);
+
+    var stmt =  `build ${fileOutputs}`
+    if (implicitOutputs.length > 0) {
+        stmt += ` | ${targetsToString(implicitOutputs, targetCwd)}`;
+    }
+    stmt += ` : ${rule} ${fileInputs}`;
+
     // deps.push(pseudoTarget('../lib/bsc.exe'))
     if (deps.length > 0) {
-        var fileDeps = targetsToString(deps,cwd)
+        var fileDeps = targetsToString(deps,targetCwd)
         stmt += ` | ${fileDeps}`
     }
     if (overrides.length > 0) {
@@ -282,7 +289,7 @@ function ninjaBuild(outputs, inputs, rule, deps, cwd, overrides){
  * @param {string} cwd
  */
 function phony(outputs,inputs,cwd){
-    return ninjaBuild([outputs],inputs,'phony',[],cwd,[])
+    return ninjaBuild([outputs],inputs,'phony',[],cwd,cwd,[], [])
 }
 
 
@@ -292,11 +299,12 @@ function phony(outputs,inputs,cwd){
  * @param {string | string[]} inputs
  * @param {string | string[]} fileDeps
  * @param {string} rule
- * @param {string} cwd
+ * @param {string} sourceCwd
+ * @param {string} targetCwd
  * @param {[string,string][]} overrides
  * @param {Target | Targets} extraDeps
  */
-function ninjaQuickBuild(outputs,inputs,rule,cwd, overrides,fileDeps,extraDeps){
+function ninjaQuickBuild(outputs,inputs,rule,sourceCwd, targetCwd, overrides,fileDeps,extraDeps, implicitOutputs=[]){
     var os =
         Array.isArray(outputs)?
             fileTargets(outputs) :
@@ -313,9 +321,9 @@ function ninjaQuickBuild(outputs,inputs,rule,cwd, overrides,fileDeps,extraDeps){
         Array.isArray(extraDeps) ?
             extraDeps : [extraDeps]
 
-    return ninjaBuild(os, is, rule, ds.concat(dds), cwd, overrides.map(x=>{
+    return ninjaBuild(os, is, rule, ds.concat(dds), sourceCwd, targetCwd, overrides.map(x=>{
         return {key : x[0], value : x[1]}
-    }))
+    }), implicitOutputs)
 
 }
 
@@ -328,16 +336,17 @@ function ninjaQuickBuild(outputs,inputs,rule,cwd, overrides,fileDeps,extraDeps){
  * @returns {string}
  */
 function ninjaQuickBuidList(xs){
-    return xs.map(x => ninjaQuickBuild(x[0],x[1],x[2],x[3],x[4],x[5],x[6])).join('\n')
+    return xs.map(x => ninjaQuickBuild(x[0],x[1],x[2],x[3],x[4],x[5],x[6],x[7], x[8])).join('\n')
 }
 
 /**
  * @typedef { [string,string,string?]} CppoInput
  * @param {CppoInput[]} xs
- * @param {string} cwd
+ * @param {string} sourceCwd
+ * @param {string} targetCwd
  * @returns {string}
  */
-function cppoList(cwd,xs){
+function cppoList(sourceCwd, targetCwd, xs){
 
     return xs.map(x=>{
 
@@ -345,13 +354,13 @@ function cppoList(cwd,xs){
          * @type {KV[]}
          */
         var variables;
-        if (x[2]){
-            variables = [['type',`-D ${x[2]}`]]
+        if (x[2] && x[2].length > 0){
+            variables = [['type', x[2].map(d => `-D ${d}`).join(' ')]];
         } else {
             variables = []
         }
         var extraDeps = pseudoTarget(cppoFile)
-        return ninjaQuickBuild(x[0],x[1],cppoRuleName,cwd,variables,[],extraDeps)
+        return ninjaQuickBuild(x[0],x[1],cppoRuleName,sourceCwd,targetCwd, variables,[],extraDeps)
     }).join('\n')
 }
 /**
@@ -363,7 +372,7 @@ function cppoList(cwd,xs){
 function mllList(cwd, xs){
     return xs.map(x=>{
         var output  = baseName(x)+'.ml'
-        return ninjaQuickBuild(output,x,mllRuleName,cwd,[],[],[])
+        return ninjaQuickBuild(output,x,mllRuleName,cwd,cwd,[],[],[],[])
     }).join('\n')
 }
 /**
@@ -398,15 +407,19 @@ function fileTargets(args){
  *
  * @param {string[]} outputs
  * @param {string[]} inputs
+ * @param {string} rule
  * @param {DepsMap} depsMap
+ * @param {string} sourceCwd
+ * @param {string} targetCwd
  * @param {Override[]} overrides
  * @param {Targets} extraDeps
- * @param {string} rule
- * @param {string} cwd
+ * @param {string[]} implicitOutputs
  */
-function buildStmt(outputs, inputs, rule, depsMap, cwd, overrides,extraDeps){
+ // @BENHACK isGenerated implicitOutputs
+function buildStmt(outputs, inputs, rule, depsMap, sourceCwd, targetCwd, overrides,extraDeps, implicitOutputs){
     var os = outputs.map(fileTarget)
     var is = inputs.map(fileTarget)
+    var implicitOs = implicitOutputs.map(fileTarget);
     var deps = new TargetSet()
     for (var i = 0 ; i < outputs.length ; ++i ){
         var curDeps = depsMap.get(outputs[i])
@@ -415,7 +428,7 @@ function buildStmt(outputs, inputs, rule, depsMap, cwd, overrides,extraDeps){
         }
     }
     extraDeps.forEach(x=>deps.add(x))
-    return ninjaBuild(os,is,rule,deps.toSortedArray(),cwd,overrides)
+    return ninjaBuild(os,is,rule,deps.toSortedArray(),sourceCwd,targetCwd, overrides, implicitOs)
 }
 
 
@@ -437,9 +450,9 @@ function replaceCmj(x) {
  * Note `bsdep.exe` does not need post processing and -one-line flag
  * By default `ocamldep.opt` only list dependencies in its args
  */
-function ocamlDepForBscAsync(files,dir, depsMap) {
+function ocamlDepForBscAsync(files,dir, depsMap, cppoGeneratedFiles=[], backend="js") {
     return new Promise((resolve,reject) =>{
-        cp.exec(`${getOcamldepFile()} -one-line -native ${files.join(' ')}`, {
+        cp.exec(`${getOcamldepFile()} -one-line ${backend === "bytecode" ? "" : "-native"} ${files.join(' ')}`, {
             cwd: dir,
             encoding: 'ascii'
         },function(error,stdout,stderr){
@@ -451,7 +464,9 @@ function ocamlDepForBscAsync(files,dir, depsMap) {
                     var deps;
                     if (x[1] !== undefined && (deps = x[1].trim())) {
                         deps = deps.split(' ');
-                        updateDepsKVsByFile(replaceCmj(x[0]), deps.map(x => replaceCmj(x)), depsMap)
+                        deps = deps.map(x => backend === "js" ? replaceCmj(x) : x.trim());
+
+                        updateDepsKVsByFile(backend === "js" ? replaceCmj(x[0]) : x[0].trim(), deps, depsMap)
                     }
                 }
                 )
@@ -508,18 +523,24 @@ function collectTarget(sourceFiles){
  * @returns {string[]} A new copy which is
  *
  */
-function scanFileTargets(allTargets,collIn){
+function scanFileTargets(allTargets,collIn, backend="js"){
     var coll = collIn.concat()
+    var extension = "cmj";
+    if (backend === "bytecode") {
+        extension = "cmo";
+    } else if (backend === "native") {
+        extension = "cmx";
+    }
     allTargets.forEach((ext,mod)=>{
         switch(ext){
             case 'HAS_MLI':
                 coll.push(`${mod}.cmi`)
                 break
             case 'HAS_BOTH':
-                coll.push(`${mod}.cmi`,`${mod}.cmj`)
+                coll.push(`${mod}.cmi`,`${mod}.${extension}`)
                 break;
             case 'HAS_ML':
-                coll.push(`${mod}.cmi`,`${mod}.cmj`)
+                coll.push(`${mod}.cmi`,`${mod}.${extension}`)
                 break;
         }
     })
@@ -530,20 +551,32 @@ function scanFileTargets(allTargets,collIn){
  *
  * @param {DepsMap} depsMap
  * @param {Map<string,string>} allTargets
- * @param {string} cwd
+ * @param {string} sourceCwd
+ * @param {string} targetCwd
  * @param {Targets} extraDeps
  * @return {string[]}
  */
-function generateNinja(depsMap,allTargets, cwd,extraDeps=[]){
+function generateNinja(depsMap,allTargets, cppoGeneratedFiles, sourceCwd, targetCwd, extraDeps=[], backend="js"){
 
     /**
      * @type {string[]}
      */
-    var build_stmts = []
+    var build_stmts = [];
+    var ext_obj = ".cmj";
+    if (backend === "bytecode") {
+        ext_obj = ".cmo";
+    } else if (backend === "native") {
+        ext_obj = ".cmx";
+    }
     allTargets.forEach((x,mod)=>{
-        var ouptput_cmj = mod + ".cmj"
+        var ouptput_cmj = mod + ext_obj
+
         var output_cmi = mod + ".cmi"
         var input_ml = mod + ".ml"
+        let isGenerated = !!cppoGeneratedFiles.filter(cppoFile => {
+            return cppoFile[0].split('.')[0] === mod;
+        })[0];
+
         var input_mli = mod + ".mli"
         /**
          * @type {Override[]}
@@ -553,13 +586,14 @@ function generateNinja(depsMap,allTargets, cwd,extraDeps=[]){
             overrides.push({key:'bsc_flags',value : '$bsc_flags -nolabels'})
         }
 
+        let cwd = isGenerated ? targetCwd : sourceCwd;
         /**
          *
          * @param {string[]} outputs
          * @param {string[]} inputs
          */
-        var mk = (outputs,inputs) => {
-            return build_stmts.push(buildStmt(outputs,inputs,'cc',depsMap,cwd,overrides,extraDeps))
+        var mk = (outputs, inputs, implicitOutputs = []) => {
+            return build_stmts.push(buildStmt(outputs,inputs,'cc',depsMap,cwd,targetCwd,overrides,extraDeps, implicitOutputs))
         }
         switch (x) {
             case 'HAS_BOTH':
@@ -567,7 +601,7 @@ function generateNinja(depsMap,allTargets, cwd,extraDeps=[]){
                 mk([output_cmi], [input_mli])
                 break;
             case 'HAS_ML':
-                mk([output_cmi, ouptput_cmj], [input_ml])
+                mk([ouptput_cmj], [input_ml], [output_cmi])
                 break;
             case 'HAS_MLI':
                 mk([output_cmi], [input_mli])
@@ -598,9 +632,9 @@ rule cc
 
 ${ninjaQuickBuidList([
     ['bs_stdlib_mini.cmi', 'bs_stdlib_mini.mli',
-        'cc', ninjaCwd, [["bsc_flags", "-nostdlib -nopervasives"]], [],externalDeps],
+        'cc', ninjaCwd, ninjaCwd, [["bsc_flags", "-nostdlib -nopervasives"]], [],externalDeps, []],
     [['js.cmj', 'js.cmi'], 'js.ml',
-        'cc', ninjaCwd,[["bsc_flags", "$bsc_no_open_flags"]], [], externalDeps]
+        'cc', ninjaCwd,ninjaCwd, [["bsc_flags", "$bsc_no_open_flags"]], [], externalDeps, []]
 ])}
 `
     /**
@@ -626,7 +660,7 @@ ${ninjaQuickBuidList([
     try{
         await Promise.all([ runJSCheckAsync(depsMap),
                             ocamlDepForBscAsync(runtimeSourceFiles,runtimeDir, depsMap)])
-        var stmts = generateNinja(depsMap,allTargets,ninjaCwd,externalDeps)
+        var stmts = generateNinja(depsMap,allTargets,[], ninjaCwd,ninjaCwd,externalDeps)
         stmts.push(phony(runtimeTarget,fileTargets(allFileTargetsInRuntime),ninjaCwd))
         writeFile(
                 path.join(runtimeDir, ninjaOutput),
@@ -665,86 +699,193 @@ rule ${mllRuleName}
     command = $ocamllex $in
     generator = true
 `
-async function othersNinja(devmode=true) {
+async function othersNinja(devmode=true, backend="js") {
     var externalDeps = [runtimeTarget]
     var ninjaOutput = devmode ? (useEnv ?'env.ninja' : 'build.ninja') : 'release.ninja'
     var ninjaCwd = 'others'
 
-
-    var templateOthersRules = `
-${BSC_COMPILER}
-bsc_flags = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-no-check-div-by-zero -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js  -bs-package-output es6:lib/es6  -nostdlib -nopervasives  -unsafe -warn-error A -w -40-49-103 -bin-annot -bs-noassertfalse -open Bs_stdlib_mini -I ./runtime
+    var compiler = BSC_COMPILER;
+    var commands = `
 rule cc
-    command = $bsc -bs-cmi -bs-cmj $bsc_flags -bs-no-implicit-include  -I ${ninjaCwd} -c $in
+    command = $bsc -bs-cmi -bs-cmj $bsc_flags $flags -bs-no-implicit-include  -I ${ninjaCwd} -c $in
+    description = $in -> $out
+`;
+    var special_belt_rule = ninjaQuickBuidList([
+        [['belt.cmj','belt.cmi'],'belt.ml',
+        'cc',ninjaCwd,ninjaCwd,[], [],externalDeps, []],
+        [['node.cmj','node.cmi'],'node.ml',
+        'cc',ninjaCwd,ninjaCwd,[], [],externalDeps, []],
+    ]);
+
+    var outputDir = ninjaCwd;
+
+    if (backend === "bytecode") {
+        outputDir = "belt_byte";
+        compiler = `ocamlc = ../vendor/ocaml/bin/ocamlc.opt`;
+        commands = `
+rule cc
+    command = BS_NATIVE=true $ocamlc $flags -ppx ../lib/belt_bsppx.exe  -I belt_byte -o $out -c $in
     description = $in -> $out
 
-${ devmode ?
-`${cppoRule()}
-${cppoList(ninjaCwd, [
-['belt_HashSetString.ml', 'hashset.cppo.ml', dTypeString],
-['belt_HashSetString.mli', 'hashset.cppo.mli', dTypeString ],
-['belt_HashSetInt.ml', 'hashset.cppo.ml', dTypeInt ],
-['belt_HashSetInt.mli', 'hashset.cppo.mli', dTypeInt ],
-['belt_HashMapString.ml', 'hashmap.cppo.ml', dTypeString ],
-['belt_HashMapString.mli', 'hashmap.cppo.mli', dTypeString ],
-['belt_HashMapInt.ml', 'hashmap.cppo.ml', dTypeInt ],
-['belt_HashMapInt.mli', 'hashmap.cppo.mli', dTypeInt, ],
-['belt_MapString.ml', 'map.cppo.ml', dTypeString ],
-['belt_MapString.mli', 'map.cppo.mli', dTypeString ],
-['belt_MapInt.ml', 'map.cppo.ml', dTypeInt ],
-['belt_MapInt.mli', 'map.cppo.mli', dTypeInt ],
-['belt_SetString.ml', 'belt_Set.cppo.ml', dTypeString ],
-['belt_SetString.mli', 'belt_Set.cppo.mli', dTypeString ],
-['belt_SetInt.ml', 'belt_Set.cppo.ml', dTypeInt ],
-['belt_SetInt.mli', 'belt_Set.cppo.mli', dTypeInt ],
-['belt_MutableMapString.ml', 'mapm.cppo.ml', dTypeString ],
-['belt_MutableMapString.mli', 'mapm.cppo.mli', dTypeString ],
-['belt_MutableMapInt.ml', 'mapm.cppo.ml', dTypeInt ],
-['belt_MutableMapInt.mli', 'mapm.cppo.mli', dTypeInt ],
-['belt_MutableSetString.ml', 'setm.cppo.ml',dTypeString ],
-['belt_MutableSetString.mli', 'setm.cppo.mli', dTypeString ],
-['belt_MutableSetInt.ml', 'setm.cppo.ml', dTypeInt ],
-['belt_MutableSetInt.mli', 'setm.cppo.mli', dTypeInt ],
-['belt_SortArrayString.ml', 'sort.cppo.ml', dTypeString ],
-['belt_SortArrayString.mli', 'sort.cppo.mli', dTypeString ],
-['belt_SortArrayInt.ml', 'sort.cppo.ml', dTypeInt ],
-['belt_SortArrayInt.mli', 'sort.cppo.mli', dTypeInt ],
-['belt_internalMapString.ml', 'internal_map.cppo.ml', dTypeString ],
-['belt_internalMapInt.ml', 'internal_map.cppo.ml', dTypeInt ],
-['belt_internalSetString.ml', 'internal_set.cppo.ml', dTypeString ],
-['belt_internalSetInt.ml', 'internal_set.cppo.ml', dTypeInt ],
-['js_typed_array.ml', 'js_typed_array.cppo.ml',''],
-['js_typed_array2.ml', 'js_typed_array2.cppo.ml',''],
+rule link
+    command = $ocamlc -a -o $out $in
+    description = creating $out
 
-])}
+rule compileC
+    command = $ocamlc -c -ccopt -o -ccopt $out $in
+    description = Compiling $in
+`;
+        special_belt_rule = ninjaQuickBuidList([
+            [['belt.cmo'],'belt.ml',
+            'cc',ninjaCwd,outputDir, [], [],[fileTarget('../../lib/belt_bsppx.exe')], [fileTarget('belt.cmi')]],
+
+            [['js.cmi'],['js.mli'],
+            'cc','belt_byte',outputDir,[], [], [fileTarget('../../lib/belt_bsppx.exe')], []],
+            [['js.cmo'],['js.ml'],
+            'cc','belt_byte',outputDir,[], [], [fileTarget('js.cmi'), fileTarget('../../lib/belt_bsppx.exe')], []],
+
+            [['js_math.cmo'],['js_math.ml'],
+            'cc',ninjaCwd,outputDir, [], [], [fileTarget('../../lib/belt_bsppx.exe')], []],
+
+            [['js_null.cmo'],'js_null.ml',
+            'cc','belt_byte',outputDir,[], [], [fileTarget('../../lib/belt_bsppx.exe'), fileTarget('js.cmo')], [fileTarget('js_null.cmi')]],
+
+            [['caml_hash.cmo'],'caml_hash.ml',
+            'cc','belt_byte',outputDir,[], [], [fileTarget('../../lib/belt_bsppx.exe')], [fileTarget('caml_hash.cmi')]],
+        ])
+    } else if (backend === "native") {
+        outputDir = "belt_native";
+        compiler = `ocamlopt = ../vendor/ocaml/bin/ocamlopt.opt`;
+        commands = `
+rule cc
+    command = BS_NATIVE=true $ocamlopt $flags -ppx ../lib/belt_bsppx.exe  -I belt_byte -o $out -c $in
+    description = $in -> $out
+
+rule link
+    command = $ocamlopt -a -o $out $in
+    description = creating $out
+
+rule compileC
+    command = $ocamlopt -c -ccopt -o -ccopt $out $in
+    description = Compiling $in
+
+rule copy
+    command = cp $in $out
+    description = Copying $in into $out
+`;
+        special_belt_rule = ninjaQuickBuidList([
+            [['belt.cmx'],'belt.ml',
+            'cc',ninjaCwd,outputDir,[], [],externalDeps.concat(fileTarget('../../lib/belt_bsppx.exe')), [fileTarget('belt.cmi')]],
+
+            [['js.cmi'],['js.mli'],
+            'cc','belt_native',outputDir,[], [], [fileTarget('../../lib/belt_bsppx.exe')], []],
+            [['js.cmx'],['js.ml'],
+            'cc','belt_native',outputDir,[], [], [fileTarget('js.cmi'), fileTarget('../../lib/belt_bsppx.exe')], []],
+
+            [['js_math.cmx'],['js_math.ml'],
+            'cc',ninjaCwd,outputDir,[], [], [fileTarget('../../lib/belt_bsppx.exe')], []],
+
+            [['js_null.cmx'],'js_null.ml',
+            'cc','belt_native',outputDir,[], [], [fileTarget('../../lib/belt_bsppx.exe'), fileTarget('js.cmx')], [fileTarget('js_null.cmi')]],
+
+            [['caml_hash.cmx'],'caml_hash.ml',
+            'cc','belt_native',outputDir,[], [], [fileTarget('../../lib/belt_bsppx.exe')], [fileTarget('caml_hash.cmi')]],
+
+            // Copy from belt_byte into belt_native
+            [['js_null.ml'],'js_null.ml',
+            'copy','belt_byte',outputDir,[], [], [], []],
+            [['js.ml'],'js.ml',
+            'copy','belt_byte',outputDir,[], [], [], []],
+            [['js.mli'],'js.mli',
+            'copy','belt_byte',outputDir,[], [], [], []],
+
+        ]);
+    }
+
+    const dBsNative = "BS_NATIVE";
+
+    var cppoGeneratedFiles = [
+        ['belt_HashSetString.ml', 'hashset.cppo.ml', [dTypeString] ],
+        ['belt_HashSetString.mli', 'hashset.cppo.mli', [dTypeString] ],
+        ['belt_HashSetInt.ml', 'hashset.cppo.ml', [dTypeInt] ],
+        ['belt_HashSetInt.mli', 'hashset.cppo.mli', [dTypeInt] ],
+        ['belt_HashMapString.ml', 'hashmap.cppo.ml', [dTypeString] ],
+        ['belt_HashMapString.mli', 'hashmap.cppo.mli', [dTypeString] ],
+        ['belt_HashMapInt.ml', 'hashmap.cppo.ml', [dTypeInt] ],
+        ['belt_HashMapInt.mli', 'hashmap.cppo.mli', [dTypeInt], ],
+        ['belt_MapString.ml', 'map.cppo.ml', [dTypeString] ],
+        ['belt_MapString.mli', 'map.cppo.mli', [dTypeString] ],
+        ['belt_MapInt.ml', 'map.cppo.ml', [dTypeInt] ],
+        ['belt_MapInt.mli', 'map.cppo.mli', [dTypeInt] ],
+        ['belt_SetString.ml', 'belt_Set.cppo.ml', [dTypeString] ],
+        ['belt_SetString.mli', 'belt_Set.cppo.mli', [dTypeString] ],
+        ['belt_SetInt.ml', 'belt_Set.cppo.ml', [dTypeInt] ],
+        ['belt_SetInt.mli', 'belt_Set.cppo.mli', [dTypeInt] ],
+        ['belt_MutableMapString.ml', 'mapm.cppo.ml', [dTypeString] ],
+        ['belt_MutableMapString.mli', 'mapm.cppo.mli', [dTypeString] ],
+        ['belt_MutableMapInt.ml', 'mapm.cppo.ml', [dTypeInt] ],
+        ['belt_MutableMapInt.mli', 'mapm.cppo.mli', [dTypeInt] ],
+        ['belt_MutableSetString.ml', 'setm.cppo.ml',[dTypeString] ],
+        ['belt_MutableSetString.mli', 'setm.cppo.mli', [dTypeString] ],
+        ['belt_MutableSetInt.ml', 'setm.cppo.ml', [dTypeInt] ],
+        ['belt_MutableSetInt.mli', 'setm.cppo.mli', [dTypeInt] ],
+        ['belt_SortArrayString.ml', 'sort.cppo.ml', [dTypeString] ],
+        ['belt_SortArrayString.mli', 'sort.cppo.mli', [dTypeString] ],
+        ['belt_SortArrayInt.ml', 'sort.cppo.ml', [dTypeInt] ],
+        ['belt_SortArrayInt.mli', 'sort.cppo.mli', [dTypeInt] ],
+        ['belt_internalMapString.ml', 'internal_map.cppo.ml', [dTypeString] ],
+        ['belt_internalMapInt.ml', 'internal_map.cppo.ml', [dTypeInt] ],
+        ['belt_internalSetString.ml', 'internal_set.cppo.ml', [dTypeString] ],
+        ['belt_internalSetInt.ml', 'internal_set.cppo.ml', [dTypeInt] ],
+        ['js_typed_array.ml', 'js_typed_array.cppo.ml',[] ],
+        ['js_typed_array2.ml', 'js_typed_array2.cppo.ml',[] ],
+    ];
+
+    if (backend !== "js") {
+        cppoGeneratedFiles = cppoGeneratedFiles.map(([x, y, z]) => [x, y, [...z, dBsNative]]);
+    }
+
+
+    var templateOthersRules = `
+${compiler}
+flags = -absname -no-alias-deps -unsafe -warn-error A -w -40-49-103 -bin-annot
+bsc_flags = -bs-no-version-header -bs-diagnose -bs-no-check-div-by-zero -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js -bs-package-output amdjs:lib/amdjs -bs-package-output es6:lib/es6  -nostdlib -nopervasives -bs-noassertfalse -open Bs_stdlib_mini -I ./runtime
+${commands}
+
+${ devmode ?
+`${cppoRule}
+${cppoList(ninjaCwd, outputDir, cppoGeneratedFiles)}
 `
 :
 `
 `
 }
-${ninjaQuickBuidList([
-    [['belt.cmj','belt.cmi'],'belt.ml',
-    'cc',ninjaCwd,[], [],externalDeps],
-    [['node.cmj','node.cmi'],'node.ml',
-    'cc',ninjaCwd,[], [],externalDeps],
-])}
+${special_belt_rule}
 `
     var othersDirFiles = fs.readdirSync(othersDir, 'ascii')
-    var jsPrefixSourceFiles = othersDirFiles.filter(
-        x => x.startsWith('js') && (x.endsWith('.ml') || x.endsWith(".mli")) && !(x.includes('.cppo'))
-        )
-     var othersFiles = othersDirFiles.filter(
-         x => !x.startsWith('js') && (x !== 'belt.ml') && (x!=='node.ml')  && (x.endsWith('.ml') || x.endsWith('.mli')) && !(x.includes('.cppo')) // we have node ..
-     )
-    var jsTargets = collectTarget(jsPrefixSourceFiles)
-    var allJsTargets = scanFileTargets(jsTargets,[])
-    var [jsDepsMap, depsMap] = await Promise.all([ocamlDepForBscAsync(jsPrefixSourceFiles,
-        othersDir,
-        new Map
-    ),
-        ocamlDepForBscAsync(othersFiles, othersDir, new Map())])
-    var jsOutput = generateNinja(jsDepsMap, jsTargets,ninjaCwd,externalDeps)
-    jsOutput.push(phony(js_package,fileTargets(allJsTargets),ninjaCwd))
+    var othersFiles = backend === "js"
+        ? othersDirFiles.filter(x => !x.startsWith('js') && (x !== 'belt.ml') && (x!=='node.ml')  && (x.endsWith('.ml') || x.endsWith('.mli')) && !(x.includes('.cppo')))
+        : othersDirFiles.filter(x => !x.startsWith('js') && (x !== 'belt.ml') && !x.startsWith('node') && !x.startsWith('dom') && (x.endsWith('.ml') || x.endsWith('.mli')) && !(x.includes('.cppo')));
+    var jsOutput = [];
+    var depsMap = new Map();
+    if (backend === "js") {
+        var jsPrefixSourceFiles = othersDirFiles.filter(
+            x => x.startsWith('js') && (x.endsWith('.ml') || x.endsWith(".mli")) && !(x.includes('.cppo'))
+            )
+        var jsTargets = collectTarget(jsPrefixSourceFiles)
+        var allJsTargets = scanFileTargets(jsTargets,[])
+        var allDeps = await Promise.all([ocamlDepForBscAsync(jsPrefixSourceFiles,
+            othersDir,
+            new Map
+        ),
+            ocamlDepForBscAsync(othersFiles, othersDir, new Map())])
+        var jsDepsMap = allDeps[0];
+        depsMap = allDeps[1];
+        jsOutput = generateNinja(jsDepsMap, jsTargets,[], ninjaCwd,ninjaCwd,externalDeps)
+        jsOutput.push(phony(js_package,fileTargets(allJsTargets),ninjaCwd))
+    } else {
+        depsMap = await ocamlDepForBscAsync(othersFiles, othersDir, new Map(), cppoGeneratedFiles, backend);
+    }
 
     // Note compiling belt.ml still try to read
     // belt_xx.cmi we need enforce the order to
@@ -755,17 +896,60 @@ ${ninjaQuickBuidList([
     depsMap.forEach((s,k)=>{
         if(k.startsWith('belt')){
             s.add(beltPackage)
-        } else if(k.startsWith('node')){
-            s.add(nodePackage)
         }
-        s.add(js_package)
+
+        if (backend == "js") {
+            if(k.startsWith('node')){
+                s.add(nodePackage)
+            }
+          s.add(js_package)
+        }
     })
-    var allOthersTarget = scanFileTargets(beltTargets,[])
-    var beltOutput = generateNinja(depsMap, beltTargets,ninjaCwd,externalDeps)
-    beltOutput.push(phony(othersTarget,fileTargets(allOthersTarget),ninjaCwd))
+
+    var allOthersTarget = scanFileTargets(beltTargets,[], backend)
+    externalDeps = externalDeps.concat([fileTarget('../../lib/bsc.exe')]);
+    if (backend === "bytecode") {
+        externalDeps = [fileTarget('../../lib/belt_bsppx.exe'), fileTarget('caml_hash.cmo'), fileTarget('js.cmo')];
+    } else if (backend === "native") {
+        externalDeps = [fileTarget('../../lib/belt_bsppx.exe'), fileTarget('caml_hash.cmx'), fileTarget('js.cmx')];
+    }
+
+    var beltOutput = generateNinja(depsMap, beltTargets, cppoGeneratedFiles, ninjaCwd, outputDir, externalDeps, backend)
+
+    var phonyDeps = fileTargets(allOthersTarget);
+    if (backend === "bytecode") {
+        phonyDeps = [fileTarget("lib.cma"), fileTarget("stubs.o")];
+        let [allCmos, allCmis] = allOthersTarget.reduce((acc, val) => {
+            if (val.split('.')[1] === "cmi") {
+                return [acc[0], [...acc[1], val]]
+            } else {
+                return [[...acc[0], val], acc[1]]
+            }
+        }, [[], []]);
+
+        beltOutput.push(ninjaBuild([fileTarget('lib.cma')], fileTargets(allCmos), 'link', fileTargets(allCmis), outputDir, outputDir, [], []));
+
+        beltOutput.push(ninjaBuild([fileTarget('stubs.o')], [fileTarget('stubs.c')], 'compileC', [], outputDir, outputDir, [], []));
+
+    } else if (backend === "native") {
+        phonyDeps = [fileTarget("lib.cmxa"), fileTarget("stubs.o")];
+        let [allCmos, allCmis] = allOthersTarget.reduce((acc, val) => {
+            if (val.split('.')[1] === "cmi") {
+                return [acc[0], [...acc[1], val]]
+            } else {
+                return [[...acc[0], val], acc[1]]
+            }
+        }, [[], []])
+        beltOutput.push(ninjaBuild([fileTarget('lib.cmxa')], fileTargets(allCmos), 'link', fileTargets(allCmis), outputDir, outputDir, [], []));
+
+        beltOutput.push(ninjaBuild([fileTarget('stubs.o')], [fileTarget('stubs.c')], 'compileC', [], outputDir, outputDir, [], []));
+    }
+
+
+    beltOutput.push(phony(pseudoTarget(outputDir),phonyDeps,outputDir))
     // ninjaBuild([`belt_HashSetString.ml`,])
     writeFile(
-        path.join(othersDir, ninjaOutput),
+        path.join(outputDir, ninjaOutput),
         templateOthersRules + jsOutput.join('\n') + '\n' + beltOutput.join('\n') + '\n'
     )
 }
@@ -794,16 +978,16 @@ rule cc
 
 ${ninjaQuickBuidList([
     ['camlinternalFormatBasics.cmi', 'camlinternalFormatBasics.mli',
-        'cc', ninjaCwd, bsc_builtin_overrides, [], externalDeps],
+        'cc', ninjaCwd,ninjaCwd, bsc_builtin_overrides, [], externalDeps, []],
         // we make it still depends on external
         // to enjoy free ride on dev config for compiler-deps
 
     ['camlinternalFormatBasics.cmj', 'camlinternalFormatBasics.ml',
-        'cc', ninjaCwd, bsc_builtin_overrides, 'camlinternalFormatBasics.cmi',externalDeps],
+        'cc', ninjaCwd,ninjaCwd, bsc_builtin_overrides, 'camlinternalFormatBasics.cmi',externalDeps, []],
     ['pervasives.cmj', 'pervasives.ml',
-        'cc',ninjaCwd, bsc_builtin_overrides,'pervasives.cmi', externalDeps],
+        'cc',ninjaCwd,ninjaCwd, bsc_builtin_overrides,'pervasives.cmi', externalDeps, []],
     [ 'pervasives.cmi', 'pervasives.mli',
-      'cc', ninjaCwd, bsc_builtin_overrides, 'camlinternalFormatBasics.cmj', externalDeps]
+      'cc', ninjaCwd,ninjaCwd, bsc_builtin_overrides, 'camlinternalFormatBasics.cmj', externalDeps, []]
 ])}
 `
     var stdlibDirFiles = fs.readdirSync(stdlibDir,'ascii')
@@ -830,7 +1014,7 @@ ${ninjaQuickBuidList([
                 break
         }
     })
-    var output = generateNinja(depsMap,targets,ninjaCwd, externalDeps)
+    var output = generateNinja(depsMap,targets,[], ninjaCwd, ninjaCwd, externalDeps)
     output.push(phony(stdlibTarget,fileTargets(allTargets),ninjaCwd))
 
     writeFile(
@@ -893,7 +1077,7 @@ ${mllList(ninjaCwd, ['arith_lexer.mll','number_lexer.mll','simple_lexer_test.mll
 
     var depsMap = await ocamlDepForBscAsync(sources, testDir, new Map)
     var targets = collectTarget(sources)
-    var output = generateNinja(depsMap, targets,ninjaCwd,[stdlibTarget])
+    var output = generateNinja(depsMap, targets,[], ninjaCwd,ninjaCwd,[stdlibTarget])
     writeFile(
         path.join(testDir, ninjaOutput),
         templateTestRules + output.join('\n') + '\n'
@@ -1091,7 +1275,11 @@ build all: phony runtime others $stdlib test
     stdlibNinja(true)
     testNinja()
     othersNinja()
-    nativeNinja()
+
+    othersNinja(true, "bytecode")
+    othersNinja(true, "native")
+
+    nativeNinja(version6)
 }
 exports.updateDev = updateDev
 exports.updateRelease = updateRelease
@@ -1171,7 +1359,7 @@ ${cppoList('outcome_printer',[
     var templateNative = `
 subninja ${cppoNinjaFile}
 rule optc
-    command = $ocamlopt -I +compiler-libs  ${includes} -g -w +6-40-30-23 -warn-error +a-40-30-23 -absname -c $in
+    command = $ocamlopt -I +compiler-libs  ${includes} $flags -g -w +6-40-30-23 -warn-error +a-40-30-23 -absname -c $in
     description = $out : $in
 rule archive
     command = $ocamlopt -a $in -o $out
@@ -1228,12 +1416,17 @@ rule bspack
     command = ./bin/bspack.exe $flags -bs-main $main -o $out
     depfile = $out.d
     generator = true
+
+build ../lib/belt_bsppx.cmx: optc ../lib/belt_bsppx.ml
+    flags = -I ../lib
+build ../lib/belt_bsppx.exe: link stubs/stubs.cmxa ../lib/belt_bsppx.cmx
+    flags = -I ../lib
+
 build ./bin/tests.exe: link ounit/ounit.cmxa stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa bsb/bsb.cmxa core/core.cmxa ounit_tests/ounit_tests.cmxa main/ounit_tests_main.cmx
     libs = str.cmxa unix.cmxa ocamlcommon.cmxa
 
 ${mllRule}
 ${mllList('ext',['ext_json_parse.mll'])}
-
 
 rule mk_shared
     command = $ocamlopt -I +compiler-libs -shared $flags -o $out $in

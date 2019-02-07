@@ -3,20 +3,32 @@ flags = -g -w -a ../jscomp/stubs/ext_basic_hash_stubs.c
 rule cc
     command = $ocamlopt $flags -o $out $in
     description = Making $out
+
+rule byte
+    command = $ocamlc $flags -o $out $in
+    description = Making $out
 # -inline 1000 makes size too large
 # TODO: make sure it can be bootstrapped, at least is a very good
 # test case of our optimizations
 
 # build bsdep.exe: cc bsdep.mli bsdep.ml
 build bsppx.$ext: cc bsppx.mli bsppx.ml
+build belt_bsppx.$ext: cc belt_bsppx.mli belt_bsppx.ml
 # build bspp.exe:  cc bspp.mli bspp.ml
 build bsb.$ext:  cc bsb.mli bsb.ml
     flags = $flags unix.cmxa str.cmxa
+build bsb_native.$ext:  cc bsb_native.mli bsb_native.ml | bsb_internals.cmi bsb_internals.cmo
+    flags = $flags unix.cmxa str.cmxa ../jscomp/stubs/bsb_c_stubs.c
 build bsb_helper.$ext:  cc bsb_helper.mli bsb_helper.ml
     flags = $flags unix.cmxa -w -a
+build bsb_helper_native.$ext:  cc bsb_helper_native.mli bsb_helper_native.ml
+    flags = $flags unix.cmxa -w -a
 build refmt.$ext: cc refmt_main3.mli refmt_main3.ml
-    flags = $flags -w -40-30 -no-alias-deps -I +compiler-libs ocamlcommon.cmxa 
+    flags = $flags -w -40-30 -no-alias-deps -I +compiler-libs ocamlcommon.cmxa
 build reactjs_jsx_ppx_2.$ext: cc reactjs_jsx_ppx_v2.mli reactjs_jsx_ppx_v2.ml
     flags = $flags -w -40-30 -no-alias-deps -I +compiler-libs ocamlcommon.cmxa
 build bsc.$ext: cc whole_compiler.mli whole_compiler.ml
+build bsc_native.$ext: cc whole_compiler_native.mli whole_compiler_native.ml
 
+build bsb_internals.cmi bsb_internals.cmo: byte bsb_internals.ml
+    flags = $flags -c
