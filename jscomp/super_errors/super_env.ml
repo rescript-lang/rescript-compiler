@@ -3,13 +3,13 @@ let fprintf = Format.fprintf
 (* taken from https://github.com/BuckleScript/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/typing/env.ml#L1842 *)
 (* modified branches are commented *)
 let report_error ppf = function
-  | Env.Illegal_renaming(name, modname, filename) -> 
+  | Env.Illegal_renaming(name, modname, filename) ->
       (* modified *)
       fprintf ppf
         "@[You referred to the module %s, but we've found one called %s instead.@ \
           Is the name's casing right?@]"
         name modname
-  | Inconsistent_import(name, source1, source2) -> 
+  | Inconsistent_import(name, source1, source2) ->
       (* modified *)
      fprintf ppf "@[<v>\
         @[@{<info>It's possible that your build is stale.@}@ Try to clean the artifacts and build again?@]@,@,\
@@ -23,6 +23,13 @@ let report_error ppf = function
       fprintf ppf
         "@[<hov>Unit %s imports from %s, which uses recursive types.@ %s@]"
         export import "The compilation flag -rectypes is required"
+#if OCAML_VERSION =~ ">4.03.0" then
+  | Depend_on_unsafe_string_unit(import, export) ->
+      fprintf ppf
+        "@[<hov>Unit %s imports from %s, compiled with -unsafe-string.@ %s@]"
+        export import "This compiler has been configured in strict \
+                       safe-string mode (-force-safe-string)"
+#end
   | Missing_module(_, path1, path2) ->
       fprintf ppf "@[@[<hov>";
       if Path.same path1 path2 then
@@ -36,10 +43,7 @@ let report_error ppf = function
   | Illegal_value_name(_loc, name) ->
       fprintf ppf "'%s' is not a valid value identifier."
         name
-#if OCAML_VERSION =~ ">4.03.0"  then 
-  | Depend_on_unsafe_string_unit (_,_) -> 
-      fprintf ppf "Depend_on_unsafe_string_unit" (*TODO*)
-#end
+
 (* This will be called in super_main. This is how you'd override the default error printer from the compiler & register new error_of_exn handlers *)
 let setup () =
   Location.register_error_of_exn
