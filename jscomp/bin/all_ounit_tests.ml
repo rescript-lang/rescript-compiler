@@ -3074,23 +3074,23 @@ let internal_concat t1 t2 =
   | (t, Empty) -> t
   | (_, _) -> internal_join t1 (min_elt t2) (remove_min_elt t2)
 
-let rec filter p = function
+let rec filter x p = match x with 
   | Empty -> Empty
   | Node(l, v, r, _) ->
     (* call [p] in the expected left-to-right order *)
-    let l' = filter p l in
+    let l' = filter l p in
     let pv = p v in
-    let r' = filter p r in
+    let r' = filter r p in
     if pv then internal_join l' v r' else internal_concat l' r'
 
 
-let rec partition p = function
+let rec partition x p = match x with 
   | Empty -> (Empty, Empty)
   | Node(l, v, r, _) ->
     (* call [p] in the expected left-to-right order *)
-    let (lt, lf) = partition p l in
+    let (lt, lf) = partition l p in
     let pv = p v in
-    let (rt, rf) = partition p r in
+    let (rt, rf) = partition r p in
     if pv
     then (internal_join lt v rt, internal_concat lf rf)
     else (internal_concat lt rt, internal_join lf v rf)
@@ -3208,7 +3208,7 @@ module type S = sig
   val choose: t -> elt
   val of_sorted_list : elt list -> t 
   val of_sorted_array : elt array -> t
-  val partition: (elt -> bool) -> t -> t * t
+  val partition: t -> (elt -> bool) ->  t * t
 
   val mem: t -> elt -> bool
   val add: t -> elt -> t
@@ -3219,7 +3219,7 @@ module type S = sig
   val compare: t -> t -> int
   val equal: t -> t -> bool
   val subset: t -> t -> bool
-  val filter: (elt -> bool) -> t -> t
+  val filter: t -> (elt -> bool) ->  t
 
   val split: elt -> t -> t * bool * t
   val find:  t -> elt -> elt
