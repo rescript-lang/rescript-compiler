@@ -285,7 +285,7 @@ let handle_file_group
   : info =
 
   handle_generators oc group custom_rules ;
-  String_map.fold (fun  module_name module_info  acc ->
+  String_map.fold group.sources  acc (fun  module_name module_info  acc ->
       let installable =
         match group.public with
         | Export_all -> true
@@ -303,7 +303,7 @@ let handle_file_group
          module_info
          namespace
       ) @  acc
-    ) group.sources  acc 
+    ) 
 
 
 let handle_file_groups

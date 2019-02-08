@@ -1899,13 +1899,13 @@ let rec iter x f = match x with
   | Node(l, v, d, r, _) ->
     iter l f; f v d; iter r f
 
-let rec map f = function
+let rec map x f = match x with
     Empty ->
     Empty
   | Node(l, v, d, r, h) ->
-    let l' = map f l in
+    let l' = map l f in
     let d' = f d in
-    let r' = map f r in
+    let r' = map r f in
     Node(l', v, d', r', h)
 
 let rec mapi x f = match x with
@@ -1917,19 +1917,19 @@ let rec mapi x f = match x with
     let r' = mapi r f in
     Node(l', v, d', r', h)
 
-let rec fold f m accu =
+let rec fold m accu f =
   match m with
     Empty -> accu
   | Node(l, v, d, r, _) ->
-    fold f r (f v d (fold f l accu))
+    fold r (f v d (fold l accu f)) f 
 
-let rec for_all p = function
+let rec for_all x p = match x with 
     Empty -> true
-  | Node(l, v, d, r, _) -> p v d && for_all p l && for_all p r
+  | Node(l, v, d, r, _) -> p v d && for_all l p && for_all r p
 
-let rec exists p = function
+let rec exists x p = match x with
     Empty -> false
-  | Node(l, v, d, r, _) -> p v d || exists p l || exists p r
+  | Node(l, v, d, r, _) -> p v d || exists l p || exists r p
 
 (* Beware: those two functions assume that the added k is *strictly*
    smaller (or bigger) than all the present keys in the tree; it
@@ -1978,22 +1978,22 @@ let concat_or_join t1 v d t2 =
   | Some d -> join t1 v d t2
   | None -> concat t1 t2
 
-let rec filter p = function
+let rec filter x p = match x with
     Empty -> Empty
   | Node(l, v, d, r, _) ->
     (* call [p] in the expected left-to-right order *)
-    let l' = filter p l in
+    let l' = filter l p in
     let pvd = p v d in
-    let r' = filter p r in
+    let r' = filter r p in
     if pvd then join l' v d r' else concat l' r'
 
-let rec partition p = function
+let rec partition x p = match x with
     Empty -> (Empty, Empty)
   | Node(l, v, d, r, _) ->
     (* call [p] in the expected left-to-right order *)
-    let (lt, lf) = partition p l in
+    let (lt, lf) = partition l p in
     let pvd = p v d in
-    let (rt, rf) = partition p r in
+    let (rt, rf) = partition r p in
     if pvd
     then (join lt v d rt, concat lf rf)
     else (concat lt rt, join lf v d rf)
@@ -2050,48 +2050,49 @@ module type S =
        [m], except for [x] which is unbound in the returned map. *)
 
     val merge:
-         (key -> 'a option -> 'b option -> 'c option) -> 'a t -> 'b t -> 'c t
+         'a t -> 'b t ->
+         (key -> 'a option -> 'b option -> 'c option) ->  'c t
     (** [merge f m1 m2] computes a map whose keys is a subset of keys of [m1]
         and of [m2]. The presence of each such binding, and the corresponding
         value, is determined with the function [f].
         @since 3.12.0
      *)
 
-     val disjoint_merge : 'a t -> 'a t -> 'a t
+    val disjoint_merge : 'a t -> 'a t -> 'a t
      (* merge two maps, will raise if they have the same key *)
-    val compare: ('a -> 'a -> int) -> 'a t -> 'a t -> int
+    val compare: 'a t -> 'a t -> ('a -> 'a -> int) -> int
     (** Total ordering between maps.  The first argument is a total ordering
         used to compare data associated with equal keys in the two maps. *)
 
-    val equal: ('a -> 'a -> bool) -> 'a t -> 'a t -> bool
+    val equal: 'a t -> 'a t -> ('a -> 'a -> bool) ->  bool
 
     val iter: 'a t -> (key -> 'a -> unit) ->  unit
     (** [iter f m] applies [f] to all bindings in map [m].
         The bindings are passed to [f] in increasing order. *)
 
-    val fold: (key -> 'a -> 'b -> 'b) -> 'a t -> 'b -> 'b
+    val fold: 'a t -> 'b -> (key -> 'a -> 'b -> 'b) -> 'b
     (** [fold f m a] computes [(f kN dN ... (f k1 d1 a)...)],
        where [k1 ... kN] are the keys of all bindings in [m]
        (in increasing order) *)
 
-    val for_all: (key -> 'a -> bool) -> 'a t -> bool
+    val for_all: 'a t -> (key -> 'a -> bool) -> bool
     (** [for_all p m] checks if all the bindings of the map.
         order unspecified
      *)
 
-    val exists: (key -> 'a -> bool) -> 'a t -> bool
+    val exists: 'a t -> (key -> 'a -> bool) -> bool
     (** [exists p m] checks if at least one binding of the map
         satisfy the predicate [p]. 
         order unspecified
      *)
 
-    val filter: (key -> 'a -> bool) -> 'a t -> 'a t
+    val filter: 'a t -> (key -> 'a -> bool) -> 'a t
     (** [filter p m] returns the map with all the bindings in [m]
         that satisfy predicate [p].
         order unspecified
      *)
 
-    val partition: (key -> 'a -> bool) -> 'a t -> 'a t * 'a t
+    val partition: 'a t -> (key -> 'a -> bool) ->  'a t * 'a t
     (** [partition p m] returns a pair of maps [(m1, m2)], where
         [m1] contains all the bindings of [s] that satisfy the
         predicate [p], and [m2] is the map with all the bindings of
@@ -2136,7 +2137,7 @@ module type S =
        or raises [Not_found] if no such binding exists. *)
     val find_opt:  'a t ->  key ->'a option
     val find_default: 'a t -> key  ->  'a  -> 'a 
-    val map: ('a -> 'b) -> 'a t -> 'b t
+    val map: 'a t -> ('a -> 'b) -> 'b t
     (** [map f m] returns a map with same domain as [m], where the
        associated value [a] of all bindings of [m] has been
        replaced by the result of the application of [f] to [a].
@@ -2301,15 +2302,15 @@ let rec split x (tree : _ Map_gen.t as 'a) : 'a * _ option * 'a  = match tree wi
     else
       let (lr, pres, rr) = split x r in (Map_gen.join l v d lr, pres, rr)
 
-let rec merge f (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) : _ Map_gen.t =
+let rec merge (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) f  : _ Map_gen.t =
   match (s1, s2) with
   | (Empty, Empty) -> Empty
   | (Node (l1, v1, d1, r1, h1), _) when h1 >= height s2 ->
     let (l2, d2, r2) = split v1 s2 in
-    Map_gen.concat_or_join (merge f l1 l2) v1 (f v1 (Some d1) d2) (merge f r1 r2)
+    Map_gen.concat_or_join (merge l1 l2 f) v1 (f v1 (Some d1) d2) (merge r1 r2 f)
   | (_, Node (l2, v2, d2, r2, h2)) ->
     let (l1, d1, r1) = split v2 s1 in
-    Map_gen.concat_or_join (merge f l1 l2) v2 (f v2 d1 (Some d2)) (merge f r1 r2)
+    Map_gen.concat_or_join (merge l1 l2 f) v2 (f v2 d1 (Some d2)) (merge r1 r2 f)
   | _ ->
     assert false
 
@@ -2335,9 +2336,9 @@ let rec disjoint_merge  (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) : _ Map_gen.t =
 
 
 
-let compare cmp m1 m2 = Map_gen.compare compare_key cmp m1 m2
+let compare m1 m2 cmp = Map_gen.compare compare_key cmp m1 m2
 
-let equal cmp m1 m2 = Map_gen.equal compare_key cmp m1 m2 
+let equal m1 m2 cmp = Map_gen.equal compare_key cmp m1 m2 
 
 let add_list (xs : _ list ) init = 
   List.fold_left (fun acc (k,v) -> add acc k v ) init xs 
@@ -2712,7 +2713,7 @@ let rec equal
   | Obj {map} -> 
     begin match y with 
       | Obj { map = map2} -> 
-        String_map.equal equal map map2
+        String_map.equal map map2 equal
       | _ -> false 
     end 
 
@@ -7330,7 +7331,7 @@ let collect_module_by_filename ~dir (map : t) file_name : t  =
 
 
 let sanity_check (map  : t ) = 
-  String_map.exists (fun _ module_info ->
+  String_map.exists map (fun _ module_info ->
       match module_info with 
       |  { ml_info = Ml_source(is_re,_); 
            mli_info = Mli_source(is_rei,_) } ->
@@ -7339,7 +7340,7 @@ let sanity_check (map  : t ) =
       | {mli_info = Mli_source(is_re,_); ml_info = Ml_empty}
         ->  is_re
       | {ml_info = Ml_empty ; mli_info = Mli_empty } -> false
-    )  map 
+    )  
 
 end
 module Bsb_dir_index : sig 
@@ -7531,10 +7532,10 @@ sig
   val of_array : elt array -> t
   val copy : t -> t 
   val reverse_in_place : t -> unit
-  val iter : (elt -> unit) -> t -> unit 
-  val iteri : (int -> elt -> unit ) -> t -> unit 
-  val iter_range : from:int -> to_:int -> (elt -> unit) -> t -> unit 
-  val iteri_range : from:int -> to_:int -> (int -> elt -> unit) -> t -> unit
+  val iter : t -> (elt -> unit) -> unit 
+  val iteri : t -> (int -> elt -> unit ) -> unit 
+  val iter_range : t -> from:int -> to_:int -> (elt -> unit) -> unit 
+  val iteri_range : t -> from:int -> to_:int -> (int -> elt -> unit) -> unit
   val map : (elt -> elt) -> t ->  t
   val mapi : (int -> elt -> elt) -> t -> t
   val map_into_array : (elt -> 'f) -> t -> 'f array
@@ -7713,19 +7714,19 @@ let sub (src : t) start len =
   { len ; 
     arr = unsafe_sub src.arr start len }
 
-let iter f d = 
+let iter d  f = 
   let arr = d.arr in 
   for i = 0 to d.len - 1 do
     f (Array.unsafe_get arr i)
   done
 
-let iteri f d =
+let iteri d f =
   let arr = d.arr in
   for i = 0 to d.len - 1 do
     f i (Array.unsafe_get arr i)
   done
 
-let iter_range ~from ~to_ f d =
+let iter_range d ~from ~to_ f =
   if from < 0 || to_ >= d.len then invalid_arg "Resize_array.iter_range"
   else 
     let d_arr = d.arr in 
@@ -7733,7 +7734,7 @@ let iter_range ~from ~to_ f d =
       f  (Array.unsafe_get d_arr i)
     done
 
-let iteri_range ~from ~to_ f d =
+let iteri_range d ~from ~to_ f =
   if from < 0 || to_ >= d.len then invalid_arg "Resize_array.iteri_range"
   else 
     let d_arr = d.arr in 
@@ -8311,8 +8312,8 @@ let print_arrays file_array oc offset  =
   | _ (* first::(_::_ as rest) *)
     -> 
     output_string oc "[ \n";
-    String_vec.iter_range ~from:0 ~to_:(len - 2 ) 
-      (fun s -> p_str @@ "\"" ^ s ^ "\",") file_array;
+    String_vec.iter_range file_array ~from:0 ~to_:(len - 2 ) 
+      (fun s -> p_str @@ "\"" ^ s ^ "\",") ;
     p_str @@ "\"" ^ (String_vec.last file_array) ^ "\"";
 
     p_str "]"
@@ -11305,7 +11306,7 @@ let rec equal
   | Obj map -> 
     begin match y with 
       | Obj map2 -> 
-        String_map.equal equal map map2
+        String_map.equal map map2 equal 
       | _ -> false 
     end 
 
@@ -11344,7 +11345,7 @@ let rec encode_aux (x : t )
         (*prerr_endline "WEIRD";
         prerr_endline (string_of_int @@ String_map.cardinal map );   *)
         a "{ ";
-        let _ : int =  String_map.fold (fun  k v i -> 
+        let _ : int =  String_map.fold map 0 (fun  k v i -> 
             if i <> 0 then begin
               a " , " 
             end; 
@@ -11352,7 +11353,7 @@ let rec encode_aux (x : t )
             a " : ";
             encode_aux v buf ;
             i + 1 
-          ) map 0 in 
+          ) in 
           a " }"
       end
 
@@ -13548,7 +13549,7 @@ let handle_file_group
   : info =
 
   handle_generators oc group custom_rules ;
-  String_map.fold (fun  module_name module_info  acc ->
+  String_map.fold group.sources  acc (fun  module_name module_info  acc ->
       let installable =
         match group.public with
         | Export_all -> true
@@ -13566,7 +13567,7 @@ let handle_file_group
          module_info
          namespace
       ) @  acc
-    ) group.sources  acc 
+    ) 
 
 
 let handle_file_groups
@@ -13654,7 +13655,7 @@ let (//) = Ext_path.combine
 *)
 
 let merge_module_info_map acc sources : Bsb_db.t =
-  String_map.merge (fun modname k1 k2 ->
+  String_map.merge acc sources (fun modname k1 k2 ->
       match k1 , k2 with
       | None , None ->
         assert false
@@ -13664,7 +13665,7 @@ let merge_module_info_map acc sources : Bsb_db.t =
           (Bsb_db.dir_of_module_info b)     
       | Some v, None  -> Some v
       | None, Some v ->  Some v
-    ) acc  sources 
+    )
 
 
 let bsc_exe = "bsc.exe"

@@ -52,9 +52,8 @@ let layered_dfs (g : t) =
         then 
         begin 
             Queue.push new_entries queue ; 
-            Edge_vec.iter 
-            (fun edges -> Int_vec.inplace_filter  
-                (fun x -> not (Set_int.mem new_entries x)) edges.deps ) g ;
+            Edge_vec.iter g (fun edges -> Int_vec.inplace_filter  
+                (fun x -> not (Set_int.mem new_entries x)) edges.deps ) ;
             aux g 
         end
   in aux  g ; queue      

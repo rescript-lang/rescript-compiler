@@ -16,7 +16,7 @@ let rec strip (x : Ext_json_types.t) : Ext_json_noloc.t =
   | Str {str = s} -> str s 
   | Arr {content } -> arr (Array.map strip content)
   | Obj {map} -> 
-    obj (String_map.map strip map)
+    obj (String_map.map map strip)
 
 let id_parsing_serializing x = 
   let normal_s = 

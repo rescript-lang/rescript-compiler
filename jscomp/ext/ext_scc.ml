@@ -54,11 +54,9 @@ let graph  e =
 
     index_array.(v_data) <- new_index ;  
     lowlink_array.(v_data) <- new_index ; 
-    on_stack_array.(v_data) <- true ;
-    
-    let v = e.(v_data) in 
-    v
-    |> Int_vec.iter (fun w_data  ->
+    on_stack_array.(v_data) <- true ;    
+    let v = e.(v_data) in     
+    Int_vec.iter v (fun w_data  ->
         if Array.unsafe_get index_array w_data < 0 then (* not processed *)
           begin  
             scc w_data;

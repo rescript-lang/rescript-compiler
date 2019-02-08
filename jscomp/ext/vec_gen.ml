@@ -62,10 +62,10 @@ sig
   val of_array : elt array -> t
   val copy : t -> t 
   val reverse_in_place : t -> unit
-  val iter : (elt -> unit) -> t -> unit 
-  val iteri : (int -> elt -> unit ) -> t -> unit 
-  val iter_range : from:int -> to_:int -> (elt -> unit) -> t -> unit 
-  val iteri_range : from:int -> to_:int -> (int -> elt -> unit) -> t -> unit
+  val iter : t -> (elt -> unit) -> unit 
+  val iteri : t -> (int -> elt -> unit ) -> unit 
+  val iter_range : t -> from:int -> to_:int -> (elt -> unit) -> unit 
+  val iteri_range : t -> from:int -> to_:int -> (int -> elt -> unit) -> unit
   val map : (elt -> elt) -> t ->  t
   val mapi : (int -> elt -> elt) -> t -> t
   val map_into_array : (elt -> 'f) -> t -> 'f array

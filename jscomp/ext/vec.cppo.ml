@@ -129,19 +129,19 @@ let sub (src : t) start len =
   { len ; 
     arr = unsafe_sub src.arr start len }
 
-let iter f d = 
+let iter d  f = 
   let arr = d.arr in 
   for i = 0 to d.len - 1 do
     f (Array.unsafe_get arr i)
   done
 
-let iteri f d =
+let iteri d f =
   let arr = d.arr in
   for i = 0 to d.len - 1 do
     f i (Array.unsafe_get arr i)
   done
 
-let iter_range ~from ~to_ f d =
+let iter_range d ~from ~to_ f =
   if from < 0 || to_ >= d.len then invalid_arg "Resize_array.iter_range"
   else 
     let d_arr = d.arr in 
@@ -149,7 +149,7 @@ let iter_range ~from ~to_ f d =
       f  (Array.unsafe_get d_arr i)
     done
 
-let iteri_range ~from ~to_ f d =
+let iteri_range d ~from ~to_ f =
   if from < 0 || to_ >= d.len then invalid_arg "Resize_array.iteri_range"
   else 
     let d_arr = d.arr in 

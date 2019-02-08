@@ -272,10 +272,10 @@ and compile_recursive_let ~all_bindings
             S.while_ (* ~label:continue_label *)
               E.true_
               (
-                Ident_map.fold
+                Ident_map.fold ret.new_params body_block
                   (fun old new_param  acc ->
                      S.define_variable ~kind:Alias old (E.var new_param) :: acc)
-                  ret.new_params body_block
+                  
               )
           ]
 
