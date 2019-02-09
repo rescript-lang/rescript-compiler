@@ -62,7 +62,7 @@ let rec encode_aux (x : Ext_json_types.t )
         (*prerr_endline "WEIRD";
         prerr_endline (string_of_int @@ String_map.cardinal map );   *)
         a "{ ";
-        let _ : int =  String_map.fold (fun  k v i -> 
+        let _ : int =  String_map.fold map 0  (fun  k v i -> 
             if i <> 0 then begin
               a " , " 
             end; 
@@ -70,7 +70,7 @@ let rec encode_aux (x : Ext_json_types.t )
             a " : ";
             encode_aux v buf ;
             i + 1 
-          ) map 0 in 
+          ) in 
           a " }"
       end
 

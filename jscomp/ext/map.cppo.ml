@@ -2,7 +2,7 @@
 (* we don't create [map_poly], since some operations require raise an exception which carries [key] *)
 
 
-#if defined TYPE_FUNCTOR
+#ifdef TYPE_FUNCTOR
 module Make(Ord: Map.OrderedType) = struct
   type key = Ord.t
   let compare_key = Ord.compare 
@@ -124,15 +124,15 @@ let rec split x (tree : _ Map_gen.t as 'a) : 'a * _ option * 'a  = match tree wi
     else
       let (lr, pres, rr) = split x r in (Map_gen.join l v d lr, pres, rr)
 
-let rec merge f (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) : _ Map_gen.t =
+let rec merge (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) f  : _ Map_gen.t =
   match (s1, s2) with
   | (Empty, Empty) -> Empty
   | (Node (l1, v1, d1, r1, h1), _) when h1 >= height s2 ->
     let (l2, d2, r2) = split v1 s2 in
-    Map_gen.concat_or_join (merge f l1 l2) v1 (f v1 (Some d1) d2) (merge f r1 r2)
+    Map_gen.concat_or_join (merge l1 l2 f) v1 (f v1 (Some d1) d2) (merge r1 r2 f)
   | (_, Node (l2, v2, d2, r2, h2)) ->
     let (l1, d1, r1) = split v2 s1 in
-    Map_gen.concat_or_join (merge f l1 l2) v2 (f v2 d1 (Some d2)) (merge f r1 r2)
+    Map_gen.concat_or_join (merge l1 l2 f) v2 (f v2 d1 (Some d2)) (merge r1 r2 f)
   | _ ->
     assert false
 
@@ -158,9 +158,9 @@ let rec disjoint_merge  (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) : _ Map_gen.t =
 
 
 
-let compare cmp m1 m2 = Map_gen.compare compare_key cmp m1 m2
+let compare m1 m2 cmp = Map_gen.compare compare_key cmp m1 m2
 
-let equal cmp m1 m2 = Map_gen.equal compare_key cmp m1 m2 
+let equal m1 m2 cmp = Map_gen.equal compare_key cmp m1 m2 
 
 let add_list (xs : _ list ) init = 
   List.fold_left (fun acc (k,v) -> add acc k v ) init xs 
@@ -169,6 +169,6 @@ let of_list xs = add_list xs empty
 
 let of_array xs = 
   Array.fold_left (fun acc (k,v) -> add acc k v ) empty xs
-#if defined TYPE_FUNCTOR
+#ifdef TYPE_FUNCTOR
 end
 #endif

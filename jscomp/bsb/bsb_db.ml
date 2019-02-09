@@ -117,7 +117,7 @@ let collect_module_by_filename ~dir (map : t) file_name : t  =
 
 
 let sanity_check (map  : t ) = 
-  String_map.exists (fun _ module_info ->
+  String_map.exists map (fun _ module_info ->
       match module_info with 
       |  { ml_info = Ml_source(is_re,_); 
            mli_info = Mli_source(is_rei,_) } ->
@@ -126,4 +126,4 @@ let sanity_check (map  : t ) =
       | {mli_info = Mli_source(is_re,_); ml_info = Ml_empty}
         ->  is_re
       | {ml_info = Ml_empty ; mli_info = Mli_empty } -> false
-    )  map 
+    )  

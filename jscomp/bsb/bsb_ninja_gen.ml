@@ -29,7 +29,7 @@ let (//) = Ext_path.combine
 *)
 
 let merge_module_info_map acc sources : Bsb_db.t =
-  String_map.merge (fun modname k1 k2 ->
+  String_map.merge acc sources (fun modname k1 k2 ->
       match k1 , k2 with
       | None , None ->
         assert false
@@ -39,7 +39,7 @@ let merge_module_info_map acc sources : Bsb_db.t =
           (Bsb_db.dir_of_module_info b)     
       | Some v, None  -> Some v
       | None, Some v ->  Some v
-    ) acc  sources 
+    )
 
 
 let bsc_exe = "bsc.exe"

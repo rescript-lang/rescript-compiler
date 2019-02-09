@@ -25,30 +25,4 @@
 
 
 
-type elt = String.t
-val compare_elt : elt -> elt -> int 
-(***********************************************************************)             
-type t
-val empty: t
-val is_empty: t -> bool
-val iter:  t -> (elt -> unit) -> unit
-val fold: (elt -> 'a -> 'a) -> t -> 'a -> 'a
-val for_all: t -> (elt -> bool) -> bool
-val exists:  t -> (elt -> bool) -> bool
-val singleton: elt -> t
-val cardinal: t -> int
-val elements: t -> elt list
-val remove : t -> elt ->  t
-val min_elt: t -> elt
-val max_elt: t -> elt
-val choose: t -> elt
-val of_sorted_list : elt list -> t 
-val of_sorted_array : elt array -> t
-val partition: (elt -> bool) -> t -> t * t
-
-val mem: t -> elt -> bool
-val add: t -> elt ->  t
-
-val of_list : elt list -> t
-val find : t -> elt -> elt 
-(***********************************************************************) 
+include Set_gen.S with type elt = string

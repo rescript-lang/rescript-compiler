@@ -129,19 +129,19 @@ let sub (src : t) start len =
   { len ; 
     arr = unsafe_sub src.arr start len }
 
-let iter f d = 
+let iter d  f = 
   let arr = d.arr in 
   for i = 0 to d.len - 1 do
     f (Array.unsafe_get arr i)
   done
 
-let iteri f d =
+let iteri d f =
   let arr = d.arr in
   for i = 0 to d.len - 1 do
     f i (Array.unsafe_get arr i)
   done
 
-let iter_range ~from ~to_ f d =
+let iter_range d ~from ~to_ f =
   if from < 0 || to_ >= d.len then invalid_arg "Resize_array.iter_range"
   else 
     let d_arr = d.arr in 
@@ -149,7 +149,7 @@ let iter_range ~from ~to_ f d =
       f  (Array.unsafe_get d_arr i)
     done
 
-let iteri_range ~from ~to_ f d =
+let iteri_range d ~from ~to_ f =
   if from < 0 || to_ >= d.len then invalid_arg "Resize_array.iteri_range"
   else 
     let d_arr = d.arr in 
@@ -319,7 +319,7 @@ let init len f =
        unsafe_blit d_arr 0 new_d_arr 0 d_len;
       d.arr <- new_d_arr 
 
-  let push v (d : t) =
+  let push (d : t) v  =
     let d_len = d.len in
     let d_arr = d.arr in 
     let d_arr_len = Array.length d_arr in
@@ -353,7 +353,7 @@ let init len f =
      unsafe_blit arr (idx + 1) arr idx  (d_len - idx - 1);
     let idx = d_len - 1 in 
     d.len <- idx
-#if defined TYPE_INT
+#ifdef TYPE_INT
 #else 
     ;
     Array.unsafe_set arr idx  null
@@ -364,7 +364,7 @@ let init len f =
     let idx  = d.len - 1  in
     if idx < 0 then invalid_arg "Resize_array.pop";
     d.len <- idx
-#if defined TYPE_INT    
+#ifdef TYPE_INT    
 #else     
     ;    
     Array.unsafe_set d.arr idx null
@@ -376,7 +376,7 @@ let init len f =
     if idx < 0 then invalid_arg "Resize_array.get_last_and_pop";
     let last = Array.unsafe_get d.arr idx in 
     d.len <- idx 
-#if defined TYPE_INT    
+#ifdef TYPE_INT    
 #else 
     ;
     Array.unsafe_set d.arr idx null
@@ -391,7 +391,7 @@ let init len f =
     let arr = d.arr in 
      unsafe_blit arr (idx + len) arr idx (d_len  - idx - len);
     d.len <- d_len - len
-#if defined TYPE_INT 
+#ifdef TYPE_INT 
 #else    
     ;
     for i = d_len - len to d_len - 1 do
@@ -407,7 +407,7 @@ let init len f =
     let value =  unsafe_sub arr idx len in
      unsafe_blit arr (idx + len) arr idx (d_len  - idx - len);
     d.len <- d_len - len; 
-#if defined TYPE_INT    
+#ifdef TYPE_INT    
 #else 
     for i = d_len - len to d_len - 1 do
       Array.unsafe_set arr i null
@@ -419,7 +419,7 @@ let init len f =
   (** Below are simple wrapper around normal Array operations *)  
 
   let clear (d : t ) =
-#if defined TYPE_INT
+#ifdef TYPE_INT
 #else 
     for i = 0 to d.len - 1 do 
       Array.unsafe_set d.arr i null
@@ -444,7 +444,7 @@ let init len f =
         end
     done ;
     let last = !p  in 
-#if defined TYPE_INT 
+#ifdef TYPE_INT 
     d.len <-  last 
     (* INT , there is not need to reset it, since it will cause GC behavior *)
 #else         
@@ -467,7 +467,7 @@ let init len f =
         end
     done ;
     let last = !p  in 
-#if defined TYPE_INT 
+#ifdef TYPE_INT 
     d.len <-  last 
 #else         
     delete_range d last  (d_len - last)
@@ -493,7 +493,7 @@ let init len f =
         acc := cb_no  x  !acc
     done ;
     let last = !p  in 
-#if defined TYPE_INT 
+#ifdef TYPE_INT 
     d.len <-  last 
     (* INT , there is not need to reset it, since it will cause GC behavior *)
 #else         
@@ -503,6 +503,6 @@ let init len f =
 
 
 
-#if defined TYPE_FUNCTOR
+#ifdef TYPE_FUNCTOR
 end
 #endif 

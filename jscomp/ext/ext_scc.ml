@@ -50,15 +50,13 @@ let graph  e =
   let rec scc v_data  =
     let new_index = !index + 1 in 
     index := new_index ;
-    Int_vec.push  v_data s ; 
+    Int_vec.push s v_data; 
 
     index_array.(v_data) <- new_index ;  
     lowlink_array.(v_data) <- new_index ; 
-    on_stack_array.(v_data) <- true ;
-    
-    let v = e.(v_data) in 
-    v
-    |> Int_vec.iter (fun w_data  ->
+    on_stack_array.(v_data) <- true ;    
+    let v = e.(v_data) in     
+    Int_vec.iter v (fun w_data  ->
         if Array.unsafe_get index_array w_data < 0 then (* not processed *)
           begin  
             scc w_data;
@@ -85,7 +83,7 @@ let graph  e =
           u := Int_vec.unsafe_get s !last_index
         done ;
         on_stack_array.(v_data) <- false; (* necessary *)
-        Int_vec_vec.push   (Int_vec.get_and_delete_range s !last_index (s_len  - !last_index)) output;
+        Int_vec_vec.push output (Int_vec.get_and_delete_range s !last_index (s_len  - !last_index));
       end   
   in
   for i = 0 to node_numes - 1 do 

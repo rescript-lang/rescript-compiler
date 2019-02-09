@@ -114,11 +114,11 @@ let sort_files_by_dependencies ~(domain : String_set.t) (dependency_graph : Stri
 
 let sort  project_ml project_mli (ast_table : _ t String_map.t) = 
   let domain =
-    String_map.fold
+    String_map.fold ast_table String_set.empty 
       (fun k _ acc -> String_set.add k acc)
-      ast_table String_set.empty in
+  in
   let h =
-    String_map.map
+    String_map.map ast_table
       (fun
         ({ast_info})
         ->
@@ -134,7 +134,7 @@ let sort  project_ml project_mli (ast_table : _ t String_map.t) =
             String_set.union
               (read_parse_and_extract Ml (project_ml impl))
               (read_parse_and_extract Mli (project_mli intf))              
-      ) ast_table in    
+      ) in    
   sort_files_by_dependencies  ~domain h
 
 (** same as {!Ocaml_parse.check_suffix} but does not care with [-c -o] option*)

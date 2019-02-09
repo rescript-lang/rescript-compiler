@@ -3074,23 +3074,23 @@ let internal_concat t1 t2 =
   | (t, Empty) -> t
   | (_, _) -> internal_join t1 (min_elt t2) (remove_min_elt t2)
 
-let rec filter p = function
+let rec filter x p = match x with 
   | Empty -> Empty
   | Node(l, v, r, _) ->
     (* call [p] in the expected left-to-right order *)
-    let l' = filter p l in
+    let l' = filter l p in
     let pv = p v in
-    let r' = filter p r in
+    let r' = filter r p in
     if pv then internal_join l' v r' else internal_concat l' r'
 
 
-let rec partition p = function
+let rec partition x p = match x with 
   | Empty -> (Empty, Empty)
   | Node(l, v, r, _) ->
     (* call [p] in the expected left-to-right order *)
-    let (lt, lf) = partition p l in
+    let (lt, lf) = partition l p in
     let pv = p v in
-    let (rt, rf) = partition p r in
+    let (rt, rf) = partition r p in
     if pv
     then (internal_join lt v rt, internal_concat lf rf)
     else (internal_concat lt rt, internal_join lf v rf)
@@ -3208,7 +3208,7 @@ module type S = sig
   val choose: t -> elt
   val of_sorted_list : elt list -> t 
   val of_sorted_array : elt array -> t
-  val partition: (elt -> bool) -> t -> t * t
+  val partition: t -> (elt -> bool) ->  t * t
 
   val mem: t -> elt -> bool
   val add: t -> elt -> t
@@ -3219,7 +3219,7 @@ module type S = sig
   val compare: t -> t -> int
   val equal: t -> t -> bool
   val subset: t -> t -> bool
-  val filter: (elt -> bool) -> t -> t
+  val filter: t -> (elt -> bool) ->  t
 
   val split: elt -> t -> t * bool * t
   val find:  t -> elt -> elt
@@ -4007,13 +4007,13 @@ let rec iter x f = match x with
   | Node(l, v, d, r, _) ->
     iter l f; f v d; iter r f
 
-let rec map f = function
+let rec map x f = match x with
     Empty ->
     Empty
   | Node(l, v, d, r, h) ->
-    let l' = map f l in
+    let l' = map l f in
     let d' = f d in
-    let r' = map f r in
+    let r' = map r f in
     Node(l', v, d', r', h)
 
 let rec mapi x f = match x with
@@ -4025,19 +4025,19 @@ let rec mapi x f = match x with
     let r' = mapi r f in
     Node(l', v, d', r', h)
 
-let rec fold f m accu =
+let rec fold m accu f =
   match m with
     Empty -> accu
   | Node(l, v, d, r, _) ->
-    fold f r (f v d (fold f l accu))
+    fold r (f v d (fold l accu f)) f 
 
-let rec for_all p = function
+let rec for_all x p = match x with 
     Empty -> true
-  | Node(l, v, d, r, _) -> p v d && for_all p l && for_all p r
+  | Node(l, v, d, r, _) -> p v d && for_all l p && for_all r p
 
-let rec exists p = function
+let rec exists x p = match x with
     Empty -> false
-  | Node(l, v, d, r, _) -> p v d || exists p l || exists p r
+  | Node(l, v, d, r, _) -> p v d || exists l p || exists r p
 
 (* Beware: those two functions assume that the added k is *strictly*
    smaller (or bigger) than all the present keys in the tree; it
@@ -4086,22 +4086,22 @@ let concat_or_join t1 v d t2 =
   | Some d -> join t1 v d t2
   | None -> concat t1 t2
 
-let rec filter p = function
+let rec filter x p = match x with
     Empty -> Empty
   | Node(l, v, d, r, _) ->
     (* call [p] in the expected left-to-right order *)
-    let l' = filter p l in
+    let l' = filter l p in
     let pvd = p v d in
-    let r' = filter p r in
+    let r' = filter r p in
     if pvd then join l' v d r' else concat l' r'
 
-let rec partition p = function
+let rec partition x p = match x with
     Empty -> (Empty, Empty)
   | Node(l, v, d, r, _) ->
     (* call [p] in the expected left-to-right order *)
-    let (lt, lf) = partition p l in
+    let (lt, lf) = partition l p in
     let pvd = p v d in
-    let (rt, rf) = partition p r in
+    let (rt, rf) = partition r p in
     if pvd
     then (join lt v d rt, concat lf rf)
     else (concat lt rt, join lf v d rf)
@@ -4158,48 +4158,49 @@ module type S =
        [m], except for [x] which is unbound in the returned map. *)
 
     val merge:
-         (key -> 'a option -> 'b option -> 'c option) -> 'a t -> 'b t -> 'c t
+         'a t -> 'b t ->
+         (key -> 'a option -> 'b option -> 'c option) ->  'c t
     (** [merge f m1 m2] computes a map whose keys is a subset of keys of [m1]
         and of [m2]. The presence of each such binding, and the corresponding
         value, is determined with the function [f].
         @since 3.12.0
      *)
 
-     val disjoint_merge : 'a t -> 'a t -> 'a t
+    val disjoint_merge : 'a t -> 'a t -> 'a t
      (* merge two maps, will raise if they have the same key *)
-    val compare: ('a -> 'a -> int) -> 'a t -> 'a t -> int
+    val compare: 'a t -> 'a t -> ('a -> 'a -> int) -> int
     (** Total ordering between maps.  The first argument is a total ordering
         used to compare data associated with equal keys in the two maps. *)
 
-    val equal: ('a -> 'a -> bool) -> 'a t -> 'a t -> bool
+    val equal: 'a t -> 'a t -> ('a -> 'a -> bool) ->  bool
 
     val iter: 'a t -> (key -> 'a -> unit) ->  unit
     (** [iter f m] applies [f] to all bindings in map [m].
         The bindings are passed to [f] in increasing order. *)
 
-    val fold: (key -> 'a -> 'b -> 'b) -> 'a t -> 'b -> 'b
+    val fold: 'a t -> 'b -> (key -> 'a -> 'b -> 'b) -> 'b
     (** [fold f m a] computes [(f kN dN ... (f k1 d1 a)...)],
        where [k1 ... kN] are the keys of all bindings in [m]
        (in increasing order) *)
 
-    val for_all: (key -> 'a -> bool) -> 'a t -> bool
+    val for_all: 'a t -> (key -> 'a -> bool) -> bool
     (** [for_all p m] checks if all the bindings of the map.
         order unspecified
      *)
 
-    val exists: (key -> 'a -> bool) -> 'a t -> bool
+    val exists: 'a t -> (key -> 'a -> bool) -> bool
     (** [exists p m] checks if at least one binding of the map
         satisfy the predicate [p]. 
         order unspecified
      *)
 
-    val filter: (key -> 'a -> bool) -> 'a t -> 'a t
+    val filter: 'a t -> (key -> 'a -> bool) -> 'a t
     (** [filter p m] returns the map with all the bindings in [m]
         that satisfy predicate [p].
         order unspecified
      *)
 
-    val partition: (key -> 'a -> bool) -> 'a t -> 'a t * 'a t
+    val partition: 'a t -> (key -> 'a -> bool) ->  'a t * 'a t
     (** [partition p m] returns a pair of maps [(m1, m2)], where
         [m1] contains all the bindings of [s] that satisfy the
         predicate [p], and [m2] is the map with all the bindings of
@@ -4244,7 +4245,7 @@ module type S =
        or raises [Not_found] if no such binding exists. *)
     val find_opt:  'a t ->  key ->'a option
     val find_default: 'a t -> key  ->  'a  -> 'a 
-    val map: ('a -> 'b) -> 'a t -> 'b t
+    val map: 'a t -> ('a -> 'b) -> 'b t
     (** [map f m] returns a map with same domain as [m], where the
        associated value [a] of all bindings of [m] has been
        replaced by the result of the application of [f] to [a].
@@ -4409,15 +4410,15 @@ let rec split x (tree : _ Map_gen.t as 'a) : 'a * _ option * 'a  = match tree wi
     else
       let (lr, pres, rr) = split x r in (Map_gen.join l v d lr, pres, rr)
 
-let rec merge f (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) : _ Map_gen.t =
+let rec merge (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) f  : _ Map_gen.t =
   match (s1, s2) with
   | (Empty, Empty) -> Empty
   | (Node (l1, v1, d1, r1, h1), _) when h1 >= height s2 ->
     let (l2, d2, r2) = split v1 s2 in
-    Map_gen.concat_or_join (merge f l1 l2) v1 (f v1 (Some d1) d2) (merge f r1 r2)
+    Map_gen.concat_or_join (merge l1 l2 f) v1 (f v1 (Some d1) d2) (merge r1 r2 f)
   | (_, Node (l2, v2, d2, r2, h2)) ->
     let (l1, d1, r1) = split v2 s1 in
-    Map_gen.concat_or_join (merge f l1 l2) v2 (f v2 d1 (Some d2)) (merge f r1 r2)
+    Map_gen.concat_or_join (merge l1 l2 f) v2 (f v2 d1 (Some d2)) (merge r1 r2 f)
   | _ ->
     assert false
 
@@ -4443,9 +4444,9 @@ let rec disjoint_merge  (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) : _ Map_gen.t =
 
 
 
-let compare cmp m1 m2 = Map_gen.compare compare_key cmp m1 m2
+let compare m1 m2 cmp = Map_gen.compare compare_key cmp m1 m2
 
-let equal cmp m1 m2 = Map_gen.equal compare_key cmp m1 m2 
+let equal m1 m2 cmp = Map_gen.equal compare_key cmp m1 m2 
 
 let add_list (xs : _ list ) init = 
   List.fold_left (fun acc (k,v) -> add acc k v ) init xs 
@@ -4820,7 +4821,7 @@ let rec equal
   | Obj {map} -> 
     begin match y with 
       | Obj { map = map2} -> 
-        String_map.equal equal map map2
+        String_map.equal map map2 equal
       | _ -> false 
     end 
 
@@ -7128,7 +7129,7 @@ let collect_module_by_filename ~dir (map : t) file_name : t  =
 
 
 let sanity_check (map  : t ) = 
-  String_map.exists (fun _ module_info ->
+  String_map.exists map (fun _ module_info ->
       match module_info with 
       |  { ml_info = Ml_source(is_re,_); 
            mli_info = Mli_source(is_rei,_) } ->
@@ -7137,7 +7138,7 @@ let sanity_check (map  : t ) =
       | {mli_info = Mli_source(is_re,_); ml_info = Ml_empty}
         ->  is_re
       | {ml_info = Ml_empty ; mli_info = Mli_empty } -> false
-    )  map 
+    )  
 
 end
 module Bsb_db_io : sig 
@@ -8451,7 +8452,7 @@ let iter h f =
     do_bucket (Array.unsafe_get d i)
   done
 
-let fold f h init =
+let fold h init f =
   let rec do_bucket b accu =
     match b with
       [ ] ->
@@ -8485,7 +8486,7 @@ let resize indexfun h =
   end
 
 let elements set = 
-  fold  (fun k  acc ->  k :: acc) set []
+  fold set [] (fun k  acc ->  k :: acc) 
 
 
 
@@ -8542,7 +8543,7 @@ sig
   val check_add : t -> key -> bool
   val mem : t -> key -> bool
   val iter: t -> (key -> unit) -> unit
-  val fold: (key -> 'b -> 'b) ->  t -> 'b -> 'b
+  val fold: t -> 'b  -> (key -> 'b -> 'b) -> 'b
   val length:  t -> int
   val stats:  t -> Hashtbl.statistics
   val elements : t -> key list 
@@ -11478,7 +11479,7 @@ sig
   *)
   val unsafe_internal_array : t -> elt array
   val reserve : t -> int -> unit
-  val push :  elt -> t -> unit
+  val push :  t -> elt -> unit
   val delete : t -> int -> unit 
   val pop : t -> unit
   val get_last_and_pop : t -> elt
@@ -11492,10 +11493,10 @@ sig
   val of_array : elt array -> t
   val copy : t -> t 
   val reverse_in_place : t -> unit
-  val iter : (elt -> unit) -> t -> unit 
-  val iteri : (int -> elt -> unit ) -> t -> unit 
-  val iter_range : from:int -> to_:int -> (elt -> unit) -> t -> unit 
-  val iteri_range : from:int -> to_:int -> (int -> elt -> unit) -> t -> unit
+  val iter : t -> (elt -> unit) -> unit 
+  val iteri : t -> (int -> elt -> unit ) -> unit 
+  val iter_range : t -> from:int -> to_:int -> (elt -> unit) -> unit 
+  val iteri_range : t -> from:int -> to_:int -> (int -> elt -> unit) -> unit
   val map : (elt -> elt) -> t ->  t
   val mapi : (int -> elt -> elt) -> t -> t
   val map_into_array : (elt -> 'f) -> t -> 'f array
@@ -11669,19 +11670,19 @@ let sub (src : t) start len =
   { len ; 
     arr = unsafe_sub src.arr start len }
 
-let iter f d = 
+let iter d  f = 
   let arr = d.arr in 
   for i = 0 to d.len - 1 do
     f (Array.unsafe_get arr i)
   done
 
-let iteri f d =
+let iteri d f =
   let arr = d.arr in
   for i = 0 to d.len - 1 do
     f i (Array.unsafe_get arr i)
   done
 
-let iter_range ~from ~to_ f d =
+let iter_range d ~from ~to_ f =
   if from < 0 || to_ >= d.len then invalid_arg "Resize_array.iter_range"
   else 
     let d_arr = d.arr in 
@@ -11689,7 +11690,7 @@ let iter_range ~from ~to_ f d =
       f  (Array.unsafe_get d_arr i)
     done
 
-let iteri_range ~from ~to_ f d =
+let iteri_range d ~from ~to_ f =
   if from < 0 || to_ >= d.len then invalid_arg "Resize_array.iteri_range"
   else 
     let d_arr = d.arr in 
@@ -11859,7 +11860,7 @@ let init len f =
        unsafe_blit d_arr 0 new_d_arr 0 d_len;
       d.arr <- new_d_arr 
 
-  let push v (d : t) =
+  let push (d : t) v  =
     let d_len = d.len in
     let d_arr = d.arr in 
     let d_arr_len = Array.length d_arr in
@@ -12110,17 +12111,17 @@ let suites =
             let v = Int_vec.make 100 in 
             OUnit.assert_bool __LOC__ 
                 (not @@ Int_vec_util.mem 0 v) ;
-            Int_vec.push 0 v ;
+            Int_vec.push v 0;
             OUnit.assert_bool __LOC__ 
                 (Int_vec_util.mem 0 v )
         end;
 
         __LOC__ >:: begin fun _ -> 
             let u = Int_vec.make 100 in 
-            Int_vec.push 1 u ;
+            Int_vec.push u 1;
             OUnit.assert_bool __LOC__
             (not @@ Int_vec_util.mem 0 u );
-            Int_vec.push 0 u ; 
+            Int_vec.push u 0; 
             OUnit.assert_bool __LOC__
             (Int_vec_util.mem 0 u)
         end
@@ -12548,7 +12549,7 @@ let rec equal
   | Obj map -> 
     begin match y with 
       | Obj map2 -> 
-        String_map.equal equal map map2
+        String_map.equal map map2 equal 
       | _ -> false 
     end 
 
@@ -12587,7 +12588,7 @@ let rec encode_aux (x : t )
         (*prerr_endline "WEIRD";
         prerr_endline (string_of_int @@ String_map.cardinal map );   *)
         a "{ ";
-        let _ : int =  String_map.fold (fun  k v i -> 
+        let _ : int =  String_map.fold map 0 (fun  k v i -> 
             if i <> 0 then begin
               a " , " 
             end; 
@@ -12595,7 +12596,7 @@ let rec encode_aux (x : t )
             a " : ";
             encode_aux v buf ;
             i + 1 
-          ) map 0 in 
+          ) in 
           a " }"
       end
 
@@ -13504,7 +13505,7 @@ let rec strip (x : Ext_json_types.t) : Ext_json_noloc.t =
   | Str {str = s} -> str s 
   | Arr {content } -> arr (Array.map strip content)
   | Obj {map} -> 
-    obj (String_map.map strip map)
+    obj (String_map.map map strip)
 
 let id_parsing_serializing x = 
   let normal_s = 
@@ -13940,15 +13941,15 @@ let rec split x (tree : _ Map_gen.t as 'a) : 'a * _ option * 'a  = match tree wi
     else
       let (lr, pres, rr) = split x r in (Map_gen.join l v d lr, pres, rr)
 
-let rec merge f (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) : _ Map_gen.t =
+let rec merge (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) f  : _ Map_gen.t =
   match (s1, s2) with
   | (Empty, Empty) -> Empty
   | (Node (l1, v1, d1, r1, h1), _) when h1 >= height s2 ->
     let (l2, d2, r2) = split v1 s2 in
-    Map_gen.concat_or_join (merge f l1 l2) v1 (f v1 (Some d1) d2) (merge f r1 r2)
+    Map_gen.concat_or_join (merge l1 l2 f) v1 (f v1 (Some d1) d2) (merge r1 r2 f)
   | (_, Node (l2, v2, d2, r2, h2)) ->
     let (l1, d1, r1) = split v2 s1 in
-    Map_gen.concat_or_join (merge f l1 l2) v2 (f v2 d1 (Some d2)) (merge f r1 r2)
+    Map_gen.concat_or_join (merge l1 l2 f) v2 (f v2 d1 (Some d2)) (merge r1 r2 f)
   | _ ->
     assert false
 
@@ -13974,9 +13975,9 @@ let rec disjoint_merge  (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) : _ Map_gen.t =
 
 
 
-let compare cmp m1 m2 = Map_gen.compare compare_key cmp m1 m2
+let compare m1 m2 cmp = Map_gen.compare compare_key cmp m1 m2
 
-let equal cmp m1 m2 = Map_gen.equal compare_key cmp m1 m2 
+let equal m1 m2 cmp = Map_gen.equal compare_key cmp m1 m2 
 
 let add_list (xs : _ list ) init = 
   List.fold_left (fun acc (k,v) -> add acc k v ) init xs 
@@ -14486,19 +14487,19 @@ let sub (src : t) start len =
   { len ; 
     arr = unsafe_sub src.arr start len }
 
-let iter f d = 
+let iter d  f = 
   let arr = d.arr in 
   for i = 0 to d.len - 1 do
     f (Array.unsafe_get arr i)
   done
 
-let iteri f d =
+let iteri d f =
   let arr = d.arr in
   for i = 0 to d.len - 1 do
     f i (Array.unsafe_get arr i)
   done
 
-let iter_range ~from ~to_ f d =
+let iter_range d ~from ~to_ f =
   if from < 0 || to_ >= d.len then invalid_arg "Resize_array.iter_range"
   else 
     let d_arr = d.arr in 
@@ -14506,7 +14507,7 @@ let iter_range ~from ~to_ f d =
       f  (Array.unsafe_get d_arr i)
     done
 
-let iteri_range ~from ~to_ f d =
+let iteri_range d ~from ~to_ f =
   if from < 0 || to_ >= d.len then invalid_arg "Resize_array.iteri_range"
   else 
     let d_arr = d.arr in 
@@ -14676,7 +14677,7 @@ let init len f =
        unsafe_blit d_arr 0 new_d_arr 0 d_len;
       d.arr <- new_d_arr 
 
-  let push v (d : t) =
+  let push (d : t) v  =
     let d_len = d.len in
     let d_arr = d.arr in 
     let d_arr_len = Array.length d_arr in
@@ -15024,15 +15025,13 @@ let graph  e =
   let rec scc v_data  =
     let new_index = !index + 1 in 
     index := new_index ;
-    Int_vec.push  v_data s ; 
+    Int_vec.push s v_data; 
 
     index_array.(v_data) <- new_index ;  
     lowlink_array.(v_data) <- new_index ; 
-    on_stack_array.(v_data) <- true ;
-    
-    let v = e.(v_data) in 
-    v
-    |> Int_vec.iter (fun w_data  ->
+    on_stack_array.(v_data) <- true ;    
+    let v = e.(v_data) in     
+    Int_vec.iter v (fun w_data  ->
         if Array.unsafe_get index_array w_data < 0 then (* not processed *)
           begin  
             scc w_data;
@@ -15059,7 +15058,7 @@ let graph  e =
           u := Int_vec.unsafe_get s !last_index
         done ;
         on_stack_array.(v_data) <- false; (* necessary *)
-        Int_vec_vec.push   (Int_vec.get_and_delete_range s !last_index (s_len  - !last_index)) output;
+        Int_vec_vec.push output (Int_vec.get_and_delete_range s !last_index (s_len  - !last_index));
       end   
   in
   for i = 0 to node_numes - 1 do 
@@ -15273,11 +15272,11 @@ let handle_lines tiny_test_cases =
         (fun i -> Int_vec.empty () )
     in 
     begin 
-      rest |> List.iter (fun x ->
+    Ext_list.iter rest (fun x ->
           match Ext_string.split x ' ' with 
           | [ a ; b] -> 
             let a , b = int_of_string a , int_of_string b in 
-            Int_vec.push  b node_array.(a) 
+            Int_vec.push node_array.(a) b  
           | _ -> assert false 
         );
       node_array 
@@ -15295,7 +15294,7 @@ let read_file file =
       begin match Ext_string.split x ' ' with 
       | [ a ; b] -> 
         let a , b = int_of_string a , int_of_string b in 
-        Int_vec.push  b node_array.(a) 
+        Int_vec.push node_array.(a) b 
       | _ -> (* assert false  *) ()
       end; 
       aux () in 
@@ -15325,7 +15324,7 @@ let test  (input : (string * string list) list) =
   List.iter (fun (x,others) -> 
       let idx = String_hashtbl.find_exn tbl  x  in 
       others |> 
-      List.iter (fun y -> Int_vec.push (String_hashtbl.find_exn tbl y ) node_array.(idx) )
+      List.iter (fun y -> Int_vec.push node_array.(idx) (String_hashtbl.find_exn tbl y ) )
     ) ; 
   Ext_scc.graph_check node_array 
 
@@ -15353,7 +15352,7 @@ let test2  (input : (string * string list) list) =
   List.iter (fun (x,others) -> 
       let idx = String_hashtbl.find_exn tbl  x  in 
       others |> 
-      List.iter (fun y -> Int_vec.push (String_hashtbl.find_exn tbl y ) node_array.(idx) )
+      List.iter (fun y -> Int_vec.push node_array.(idx) (String_hashtbl.find_exn tbl y ) )
     )  ;
   let output = Ext_scc.graph node_array in 
   output |> Int_vec_vec.map_into_array (fun int_vec -> Int_vec.map_into_array (fun i -> other_mapping.(i)) int_vec )
@@ -16217,9 +16216,8 @@ let layered_dfs (g : t) =
         then 
         begin 
             Queue.push new_entries queue ; 
-            Edge_vec.iter 
-            (fun edges -> Int_vec.inplace_filter  
-                (fun x -> not (Set_int.mem new_entries x)) edges.deps ) g ;
+            Edge_vec.iter g (fun edges -> Int_vec.inplace_filter  
+                (fun x -> not (Set_int.mem new_entries x)) edges.deps ) ;
             aux g 
         end
   in aux  g ; queue      
@@ -16236,7 +16234,7 @@ let handle graph =
   let len = List.length graph in 
   let result = Ext_topsort.Edge_vec.make len in 
   List.iter (fun (id,deps) -> 
-      Ext_topsort.Edge_vec.push {id ; deps = Int_vec.of_list deps } result 
+      Ext_topsort.Edge_vec.push result {id ; deps = Int_vec.of_list deps } 
     ) graph; 
   result 
 
@@ -19028,7 +19026,7 @@ let process_file file =
         begin match Ext_string.quick_split_by_ws v with
           | [a;b] ->
             let a,b = int_of_string a , int_of_string b in
-            Int_vec_vec.push  (Int_vec.of_array [|a;b|]) edges; 
+            Int_vec_vec.push  edges (Int_vec.of_array [|a;b|]); 
           | _ -> ()
         end;
         aux ((i+1) mod 10000);
@@ -19114,7 +19112,7 @@ let suites =
     "inplace_filter " ^ __LOC__ >:: begin fun _ -> 
       v =~~ [|0; 1; 2; 3; 4; 5; 6; 7; 8; 9|];
       
-      ignore @@ Int_vec.push  32 v;
+      ignore @@ Int_vec.push v 32;
       let capacity = Int_vec.capacity v  in 
       v =~~ [|0; 1; 2; 3; 4; 5; 6; 7; 8; 9; 32|];
       Int_vec.inplace_filter (fun x -> x mod 2 = 0) v ;
@@ -19131,7 +19129,7 @@ let suites =
     "inplace_filter_from " ^ __LOC__ >:: begin fun _ -> 
       let v = Int_vec.of_array (Array.init 10 (fun i -> i)) in 
       v =~~ [|0; 1; 2; 3; 4; 5; 6; 7; 8; 9|]; 
-      Int_vec.push 96 v  ;      
+      Int_vec.push v 96  ;      
       Int_vec.inplace_filter_from 2 (fun x -> x mod 2 = 0) v ;
       v =~~ [|0; 1; 2; 4; 6; 8; 96|];
       Int_vec.inplace_filter_from 2 (fun x -> x mod 3 = 0) v ;
@@ -19188,17 +19186,17 @@ let suites =
       let v = Int_vec.make 5 in 
       OUnit.assert_bool __LOC__
         (try ignore @@ Int_vec.sub v 0 2 ; false with Invalid_argument _  -> true);
-      Int_vec.push 1 v;
+      Int_vec.push v 1;
       OUnit.assert_bool __LOC__
         (try ignore @@ Int_vec.sub v 0 2 ; false with Invalid_argument _  -> true);
-      Int_vec.push 2 v ;  
+      Int_vec.push v 2;  
       ( Int_vec.sub v 0 2 =~~ [|1;2|])
     end;
     "reserve" ^ __LOC__ >:: begin fun _ -> 
       let v = Int_vec.empty () in 
       Int_vec.reserve v  1000 ;
       for i = 0 to 900 do
-        Int_vec.push i v 
+        Int_vec.push v i
       done ;
       OUnit.assert_equal (Int_vec.length v) 901 ;
       OUnit.assert_equal (Int_vec.capacity v) 1000
@@ -19207,23 +19205,23 @@ let suites =
       let v = Int_vec.of_array [|3|] in 
       Int_vec.reserve v 10 ;
       v =~~ [|3 |];
-      Int_vec.push 1 v ;
-      Int_vec.push 2 v ;
-      Int_vec.push 5 v ;
+      Int_vec.push v 1 ;
+      Int_vec.push v 2 ;
+      Int_vec.push v 5;
       v=~~ [|3;1;2;5|];
       OUnit.assert_equal (Int_vec.capacity v  ) 10 ;
       for i = 0 to 5 do
-        Int_vec.push i  v
+        Int_vec.push v i
       done;
       v=~~ [|3;1;2;5;0;1;2;3;4;5|];
-      Int_vec.push   100 v;
+      Int_vec.push v 100;
       v=~~[|3;1;2;5;0;1;2;3;4;5;100|];
       OUnit.assert_equal (Int_vec.capacity v ) 20
     end
     ;
     __LOC__  >:: begin fun _ -> 
       let empty = Int_vec.empty () in 
-      Int_vec.push   3 empty;
+      Int_vec.push empty 3;
       empty =~~ [|3|];
 
     end
@@ -19237,8 +19235,8 @@ let suites =
     end;
     __LOC__ >:: begin fun _ ->
       let v = Int_vec.make 4 in 
-      Int_vec.push 1 v;
-      Int_vec.push 2 v;
+      Int_vec.push v  1 ;
+      Int_vec.push v 2;
       Int_vec.reverse_in_place v;
       v =~~ [|2;1|]
     end

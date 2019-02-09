@@ -110,7 +110,7 @@ let preprocess_deps (groups : bindings) : _ * Ident.t array * Int_vec.t array   
           if hit then
             begin
               let key = Ordered_hash_map_local_ident.rank domain ident in
-              Int_vec.push key base_key;
+              Int_vec.push base_key key;
             end
         );
 

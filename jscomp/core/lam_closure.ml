@@ -158,8 +158,9 @@ let is_closed_by (set : Ident_set.t) (lam : Lam.t) : bool =
 
 (** A bit consverative , it should be empty *)
 let is_closed  lam = 
-  Ident_map.for_all (fun k _ -> Ident.global k)
-    (free_variables Ident_set.empty Ident_map.empty lam)  
+  Ident_map.for_all (free_variables Ident_set.empty Ident_map.empty lam)
+    (fun k _ -> Ident.global k)
+      
 
 
 let is_closed_with_map 

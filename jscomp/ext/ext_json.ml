@@ -132,7 +132,7 @@ let rec equal
   | Obj {map} -> 
     begin match y with 
       | Obj { map = map2} -> 
-        String_map.equal equal map map2
+        String_map.equal map map2 equal
       | _ -> false 
     end 
 
