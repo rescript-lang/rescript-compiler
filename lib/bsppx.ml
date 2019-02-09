@@ -6039,8 +6039,10 @@ val map_append :
   'a list
 
 val fold_right : 
-  'a list -> 'b -> 
-  ('a -> 'b -> 'b) -> 'b
+  'a list -> 
+  'b -> 
+  ('a -> 'b -> 'b) -> 
+  'b
 
 val fold_right2 : 
   'a list -> 
@@ -10282,10 +10284,8 @@ let transform_interp loc s =
     | [ segment] ->
       aux loc segment
     | a::rest ->
-      List.fold_left (fun (acc : Parsetree.expression)
-       (x : segment) ->
-          concat_exp (aux loc x) acc )
-        (aux loc a) rest
+      Ext_list.fold_left rest (aux loc a) (fun acc x ->
+          concat_exp (aux loc x) acc )        
   with
     Error (start,pos, error)
     ->
@@ -12424,16 +12424,13 @@ type ('a,'b) st =
 
 
 let process_method_attributes_rev (attrs : t) =
-  List.fold_left (fun (st,acc) (({txt ; loc}, payload) as attr : attr) ->
-
+  Ext_list.fold_left attrs ({get = None ; set = None}, []) (fun (st,acc) (({txt ; loc}, payload) as attr ) ->
       match txt  with
       | "bs.get" (* [@@bs.get{null; undefined}]*)
         ->
         let result =
-          List.fold_left
-            (fun
-              (null, undefined)
-              (({txt ; loc}, opt_expr) : Ast_payload.action) ->
+          Ext_list.fold_left (Ast_payload.ident_or_record_as_config loc payload) (false, false)
+            (fun (null, undefined) ({txt ; loc}, opt_expr) ->
               match txt with
               | "null" ->
                 (match opt_expr with
@@ -12455,16 +12452,15 @@ let process_method_attributes_rev (attrs : t) =
                     v,v
                 end
               | _ -> Bs_syntaxerr.err loc Unsupported_predicates
-            ) (false, false)
-            (Ast_payload.ident_or_record_as_config loc payload)  in
+            ) in
 
         ({st with get = Some result}, acc  )
 
       | "bs.set"
         ->
         let result =
-          List.fold_left
-            (fun st (({txt ; loc}, opt_expr) : Ast_payload.action) ->
+          Ext_list.fold_left (Ast_payload.ident_or_record_as_config loc payload) `Get 
+            (fun st ({txt ; loc}, opt_expr)  ->
                if txt =  "no_get" then
                  match opt_expr with
                  | None -> `No_get
@@ -12473,14 +12469,14 @@ let process_method_attributes_rev (attrs : t) =
                      `No_get
                    else `Get
                else Bs_syntaxerr.err loc Unsupported_predicates
-            ) `Get (Ast_payload.ident_or_record_as_config loc payload)  in
+            )  in
         (* properties -- void
               [@@bs.set{only}]
         *)
         {st with set = Some result }, acc
       | _ ->
         (st, attr::acc  )
-    ) ( {get = None ; set = None}, []) attrs
+    ) 
 
 type attr_kind = 
   | Nothing 
@@ -12489,7 +12485,7 @@ type attr_kind =
   | Method of attr
 
 let process_attributes_rev (attrs : t) : attr_kind * t =
-  List.fold_left (fun (st, acc) (({txt; loc}, _) as attr : attr) ->
+  Ext_list.fold_left attrs ( Nothing, []) (fun (st, acc) (({txt; loc}, _) as attr) ->
       match txt, st  with
       | "bs", (Nothing | Uncurry _)
         ->
@@ -12503,10 +12499,10 @@ let process_attributes_rev (attrs : t) : attr_kind * t =
         -> Bs_syntaxerr.err loc Conflict_bs_bs_this_bs_meth
       | _ , _ ->
         st, attr::acc
-    ) ( Nothing, []) attrs
+    ) 
 
 let process_pexp_fun_attributes_rev (attrs : t) =
-  List.fold_left (fun (st, acc) (({txt; loc}, _) as attr : attr) ->
+  Ext_list.fold_left attrs (`Nothing, []) (fun (st, acc) (({txt; loc}, _) as attr ) ->
       match txt, st  with
       | "bs.open", (`Nothing | `Exn)
         ->
@@ -12514,17 +12510,17 @@ let process_pexp_fun_attributes_rev (attrs : t) =
 
       | _ , _ ->
         st, attr::acc
-    ) ( `Nothing, []) attrs
+    ) 
 
-let process_bs attrs =
-  List.fold_left (fun (st, acc) (({txt; loc}, _) as attr : attr) ->
+let process_bs (attrs : t) =
+  Ext_list.fold_left attrs (`Nothing, []) (fun (st, acc) (({txt; loc}, _) as attr ) ->
       match txt, st  with
       | "bs", _
         ->
         `Has, acc
       | _ , _ ->
         st, attr::acc
-    ) ( `Nothing, []) attrs
+    ) 
 
 let process_external attrs =
   List.exists (fun (({txt; }, _)  : attr) ->
@@ -12538,10 +12534,9 @@ type derive_attr = {
   bs_deriving : Ast_payload.action list option
 }
 
-let process_derive_type attrs : derive_attr * t =
-  List.fold_left
-    (fun (st, acc)
-      (({txt ; loc}, payload  as attr): attr)  ->
+let process_derive_type (attrs : t) : derive_attr * t =
+  Ext_list.fold_left attrs ({explict_nonrec = false; bs_deriving = None }, []) 
+    (fun (st, acc) ({txt ; loc}, payload  as attr)  ->
       match  st, txt  with
       |  {bs_deriving = None}, "bs.deriving"
         ->
@@ -12558,13 +12553,12 @@ let process_derive_type attrs : derive_attr * t =
             { st with explict_nonrec = true }
           else st in
         st, attr::acc
-    ) ( {explict_nonrec = false; bs_deriving = None }, []) attrs
+    ) 
 
-let iter_process_derive_type attrs =
+let iter_process_derive_type (attrs : t) =
   let st = ref {explict_nonrec = false; bs_deriving = None } in
-  List.iter
-    (fun
-      (({txt ; loc}, payload  as attr): attr)  ->
+  Ext_list.iter attrs
+    (fun ({txt ; loc}, payload  as attr)  ->
       match  txt  with
       |  "bs.deriving"
         ->
@@ -12584,7 +12578,7 @@ let iter_process_derive_type attrs =
           { !st with explict_nonrec = true }
       (* non bs attribute, no need to mark its use *)
       | _ -> ()
-    )  attrs;
+    ) ;
   !st
 
 
@@ -15055,12 +15049,11 @@ end = struct
 let map_row_fields_into_ints ptyp_loc
     (row_fields : Parsetree.row_field list) 
   = 
-  let _, acc
-    = 
-    (List.fold_left 
+  let _, acc = 
+    Ext_list.fold_left row_fields (0, []) 
        (fun (i,acc) rtag -> 
           match rtag with 
-          | Parsetree.Rtag (label, attrs, true,  [])
+          | Rtag (label, attrs, true,  [])
             -> 
             begin match Ast_attributes.iter_process_bs_int_as attrs with 
               | Some i -> 
@@ -15072,7 +15065,7 @@ let map_row_fields_into_ints ptyp_loc
             end
           | _ -> 
             Bs_syntaxerr.err ptyp_loc Invalid_bs_int_type
-       ) (0, []) row_fields) in 
+       )  in 
   List.rev acc
 
 (** Note this is okay with enums, for variants,
@@ -15085,11 +15078,10 @@ let map_constructor_declarations_into_ints
   let mark = ref `nothing in 
   let _, acc
     = 
-    (List.fold_left 
-       (fun (i,acc) (rtag : Parsetree.constructor_declaration) -> 
-
+    Ext_list.fold_left row_fields (0, []) 
+       (fun (i,acc) rtag -> 
           let attrs = rtag.pcd_attributes in 
-          begin match Ast_attributes.iter_process_bs_int_as attrs with 
+           match Ast_attributes.iter_process_bs_int_as attrs with 
             | Some j -> 
               if j <> i then 
                 (
@@ -15102,9 +15094,7 @@ let map_constructor_declarations_into_ints
             | None -> 
               i + 1 , 
               ( i:: acc )
-          end
-
-       ) (0, []) row_fields) in 
+       ) in 
   match !mark with 
   | `nothing -> `Offset 0
   | `offset j -> `Offset j 
@@ -16076,21 +16066,20 @@ end = struct
 
 let variant_can_bs_unwrap_fields (row_fields : Parsetree.row_field list) : bool =
   let validity =
-    List.fold_left
+    Ext_list.fold_left row_fields `No_fields      
       begin fun st row ->
         match st, row with
         | (* we've seen no fields or only valid fields so far *)
           (`No_fields | `Valid_fields),
           (* and this field has one constructor arg that we can unwrap to *)
-          Parsetree.Rtag (label, attrs, false, ([ _ ]))
+          Rtag (label, attrs, false, ([ _ ]))
           ->
           `Valid_fields
         | (* otherwise, this field or a previous field was invalid *)
           _ ->
           `Invalid_field
       end
-      `No_fields
-      row_fields
+
   in
   match validity with
   | `Valid_fields -> true
@@ -17714,8 +17703,8 @@ let generic_to_uncurry_exp kind loc (self : Bs_ast_mapper.mapper)  pat body
 
   let result, rev_extra_args = aux [first_arg] body in 
   let body = 
-    List.fold_left (fun e p -> Ast_compatible.fun_ ~loc p e )
-      result rev_extra_args in
+    Ext_list.fold_left rev_extra_args result (fun e p -> Ast_compatible.fun_ ~loc p e )
+    in
   let len = List.length rev_extra_args in 
   let arity = 
     match kind with 
@@ -19834,15 +19823,15 @@ let map_open_tuple
   match destruct_open_tuple e [] with
   | None ->  None (** not an open tuple *)
   | Some (qualifiers, es, attrs ) ->
-    Some (List.fold_left (fun x hole  ->
+    Some (Ext_list.fold_left qualifiers (f es attrs) (fun x hole  ->
         match hole with
         | Let_open (flag, lid,loc,attrs) ->
-          {Parsetree.
+          {
             pexp_desc = Pexp_open (flag,lid,x);
             pexp_attributes = attrs;
             pexp_loc = loc
           }
-      ) (f es attrs) qualifiers)
+      ) )
 (*
   [let (a,b) = M.N.(c,d) ]
   =>
@@ -19873,15 +19862,15 @@ let flattern_tuple_pattern_vb
                  ( match wholes with
                    | [] -> exp
                    | _ ->
-                     List.fold_left (fun x  whole ->
+                     Ext_list.fold_left wholes exp (fun x  whole ->
                          match whole with
                          | Let_open (flag,lid,loc,attrs) ->
-                           {Parsetree.
+                           {
                              pexp_desc = Pexp_open(flag,lid,x);
                              pexp_attributes = attrs;
                              pexp_loc = loc
                            }
-                       ) exp wholes) ;
+                       ) ) ;
                pvb_attributes;
                pvb_loc ;
              } :: acc

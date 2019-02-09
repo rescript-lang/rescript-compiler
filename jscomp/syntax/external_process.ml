@@ -29,21 +29,20 @@
 
 let variant_can_bs_unwrap_fields (row_fields : Parsetree.row_field list) : bool =
   let validity =
-    List.fold_left
+    Ext_list.fold_left row_fields `No_fields      
       begin fun st row ->
         match st, row with
         | (* we've seen no fields or only valid fields so far *)
           (`No_fields | `Valid_fields),
           (* and this field has one constructor arg that we can unwrap to *)
-          Parsetree.Rtag (label, attrs, false, ([ _ ]))
+          Rtag (label, attrs, false, ([ _ ]))
           ->
           `Valid_fields
         | (* otherwise, this field or a previous field was invalid *)
           _ ->
           `Invalid_field
       end
-      `No_fields
-      row_fields
+
   in
   match validity with
   | `Valid_fields -> true

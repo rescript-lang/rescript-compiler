@@ -253,8 +253,8 @@ let generic_to_uncurry_exp kind loc (self : Bs_ast_mapper.mapper)  pat body
 
   let result, rev_extra_args = aux [first_arg] body in 
   let body = 
-    List.fold_left (fun e p -> Ast_compatible.fun_ ~loc p e )
-      result rev_extra_args in
+    Ext_list.fold_left rev_extra_args result (fun e p -> Ast_compatible.fun_ ~loc p e )
+    in
   let len = List.length rev_extra_args in 
   let arity = 
     match kind with 

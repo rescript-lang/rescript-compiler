@@ -189,11 +189,11 @@ let destruct_constructor_declaration
     | Pcstr_record _ -> assert false in 
 #end    
   let last_i, core_type_exprs, pats = 
-    List.fold_left (fun (i,core_type_exps, pats) core_type -> 
+    Ext_list.fold_left pcd_args (0, [], []) (fun (i,core_type_exps, pats) core_type -> 
       let  txt = "a" ^ string_of_int i  in
       (i+1, (core_type, Exp.ident {txt = Lident txt  ;loc}) :: core_type_exps, 
        Pat.var {txt ; loc} :: pats )
-    ) (0, [], []) pcd_args in 
+    ) in 
   let core_type_exprs, pats  = List.rev core_type_exprs, List.rev pats in
   Pat.construct {txt = Lident txt ; loc}
     (if last_i = 0 then 

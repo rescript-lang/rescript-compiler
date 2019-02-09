@@ -1820,8 +1820,10 @@ val map_append :
   'a list
 
 val fold_right : 
-  'a list -> 'b -> 
-  ('a -> 'b -> 'b) -> 'b
+  'a list -> 
+  'b -> 
+  ('a -> 'b -> 'b) -> 
+  'b
 
 val fold_right2 : 
   'a list -> 
