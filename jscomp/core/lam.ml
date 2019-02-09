@@ -416,7 +416,7 @@ let rec seq (a : t) b : t =
   | Lprim 
     {primitive = Pmakeblock(_); 
      args= x::xs} -> 
-    seq (List.fold_left seq x xs) b 
+    seq (Ext_list.fold_left xs x seq ) b 
   | _ -> 
   Lsequence (a, b)
 

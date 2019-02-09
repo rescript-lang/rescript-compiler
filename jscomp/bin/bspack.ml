@@ -6246,10 +6246,6 @@ let rec split_map l f =
     b1::b2::b3::b4::b5::bss
 
 
-let reduce_from_left lst fn = 
-  match lst with 
-  | first :: rest ->  List.fold_left fn first rest 
-  | _ -> invalid_arg "Ext_list.reduce_from_left"
 
 
 let sort_via_array lst cmp =
@@ -6326,6 +6322,11 @@ let rec fold_left l accu f =
   match l with
     [] -> accu
   | a::l -> fold_left l (f accu a) f 
+  
+let reduce_from_left lst fn = 
+  match lst with 
+  | first :: rest ->  fold_left rest first fn 
+  | _ -> invalid_arg "Ext_list.reduce_from_left"
 
 let rec fold_left2 l1 l2 accu f =
   match (l1, l2) with
