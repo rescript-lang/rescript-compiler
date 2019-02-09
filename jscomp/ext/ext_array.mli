@@ -89,3 +89,9 @@ val iter :
   'a array -> 
   ('a -> unit) -> 
   unit
+
+val fold_left :   
+  'b array -> 
+  'a -> 
+  ('a -> 'b -> 'a) ->   
+  'a

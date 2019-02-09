@@ -1340,6 +1340,12 @@ val iter :
   'a array -> 
   ('a -> unit) -> 
   unit
+
+val fold_left :   
+  'b array -> 
+  'a -> 
+  ('a -> 'b -> 'a) ->   
+  'a
 end = struct
 #1 "ext_array.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -1600,6 +1606,15 @@ let iter a f =
   let open Array in 
   for i = 0 to length a - 1 do f(unsafe_get a i) done
 
+
+  let fold_left a x f =
+    let open Array in 
+    let r = ref x in    
+    for i = 0 to length a - 1 do
+      r := f !r (unsafe_get a i)
+    done;
+    !r
+  
 end
 module Ext_bytes : sig 
 #1 "ext_bytes.mli"
@@ -3480,7 +3495,7 @@ let of_list l =
   | _ -> of_sorted_list (List.sort_uniq compare_elt l)
 
 let of_array l = 
-  Array.fold_left (fun  acc x -> add acc x ) empty l
+  Ext_array.fold_left l empty (fun  acc x -> add acc x ) 
 
 (* also check order *)
 let invariant t =
@@ -5475,7 +5490,7 @@ let add_list (xs : _ list ) init =
 let of_list xs = add_list xs empty
 
 let of_array xs = 
-  Array.fold_left (fun acc (k,v) -> add acc k v ) empty xs
+  Ext_array.fold_left xs empty (fun acc (k,v) -> add acc k v ) 
 
 end
 module Ext_json_types
@@ -8496,7 +8511,7 @@ let elements set =
 
 let stats h =
   let mbl =
-    Array.fold_left (fun m b -> max m (List.length b)) 0 h.data in
+    Ext_array.fold_left h.data 0 (fun m b -> max m (List.length b)) in
   let histo = Array.make (mbl + 1) 0 in
   Ext_array.iter h.data
     (fun b ->
@@ -9070,7 +9085,7 @@ let rec bucket_length acc (x : _ bucket) =
 
 let stats h =
   let mbl =
-    Array.fold_left (fun m (b : _ bucket) -> max m (bucket_length 0 b)) 0 h.data in
+    Ext_array.fold_left h.data 0 (fun m (b : _ bucket) -> max m (bucket_length 0 b)) in
   let histo = Array.make (mbl + 1) 0 in
   Ext_array.iter h.data
     (fun b ->
@@ -9831,7 +9846,7 @@ let rec bucket_length accu = function
 
 let stats h =
   let mbl =
-    Array.fold_left (fun m b -> max m (bucket_length 0 b)) 0 h.data in
+    Ext_array.fold_left h.data 0 (fun m b -> max m (bucket_length 0 b)) in
   let histo = Array.make (mbl + 1) 0 in
   Ext_array.iter h.data
     (fun b ->
@@ -13988,7 +14003,7 @@ let add_list (xs : _ list ) init =
 let of_list xs = add_list xs empty
 
 let of_array xs = 
-  Array.fold_left (fun acc (k,v) -> add acc k v ) empty xs
+  Ext_array.fold_left xs empty (fun acc (k,v) -> add acc k v ) 
 
 end
 module Ounit_map_tests

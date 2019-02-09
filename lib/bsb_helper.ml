@@ -1527,6 +1527,12 @@ val iter :
   'a array -> 
   ('a -> unit) -> 
   unit
+
+val fold_left :   
+  'b array -> 
+  'a -> 
+  ('a -> 'b -> 'a) ->   
+  'a
 end = struct
 #1 "ext_array.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -1787,6 +1793,15 @@ let iter a f =
   let open Array in 
   for i = 0 to length a - 1 do f(unsafe_get a i) done
 
+
+  let fold_left a x f =
+    let open Array in 
+    let r = ref x in    
+    for i = 0 to length a - 1 do
+      r := f !r (unsafe_get a i)
+    done;
+    !r
+  
 end
 module Ext_list : sig 
 #1 "ext_list.mli"
@@ -3403,7 +3418,7 @@ let add_list (xs : _ list ) init =
 let of_list xs = add_list xs empty
 
 let of_array xs = 
-  Array.fold_left (fun acc (k,v) -> add acc k v ) empty xs
+  Ext_array.fold_left xs empty (fun acc (k,v) -> add acc k v ) 
 
 end
 module Ext_json_types

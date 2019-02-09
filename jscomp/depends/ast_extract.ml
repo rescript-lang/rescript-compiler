@@ -237,13 +237,13 @@ let collect_from_main
               (fun x -> [x ^ ".ml" ; x ^ ".mli" ])
               ) 
         in 
-        Array.fold_left (fun acc source_file -> 
+        Ext_array.fold_left (Sys.readdir dirname) acc (fun acc source_file -> 
             if (Ext_string.ends_with source_file ".ml" ||
                 Ext_string.ends_with source_file ".mli" )
             && (* not_excluded source_file *) (not (List.mem source_file excludes))
             then 
               (Filename.concat dirname source_file) :: acc else acc
-          ) acc (Sys.readdir dirname))
+          ) )
   in
   let ast_table = collect_ast_map ppf files parse_implementation parse_interface in 
   let visited = String_hashtbl.create 31 in

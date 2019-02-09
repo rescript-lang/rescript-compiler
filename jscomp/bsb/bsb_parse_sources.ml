@@ -114,7 +114,7 @@ let  handle_empty_sources
   let files_array = Lazy.force file_array in 
   let dyn_file_array = String_vec.make (Array.length files_array) in 
   let files  =
-    Array.fold_left (fun acc name -> 
+    Ext_array.fold_left files_array !cur_sources (fun acc name -> 
         if is_input_or_output generators name then acc 
         else
           match Ext_string.is_valid_source_name name with 
@@ -128,7 +128,7 @@ let  handle_empty_sources
               warning_unused_file name dir ;
             acc 
           | Suffix_mismatch -> acc 
-      ) !cur_sources files_array in 
+      ) in 
   cur_sources := files ;    
   [ Ext_file_pp.patch_action dyn_file_array 
       loc_start loc_end
@@ -284,7 +284,7 @@ let rec
     | None ->  (* No setting on [!files]*)
       (** We should avoid temporary files *)
       cur_sources := 
-        Array.fold_left (fun acc name -> 
+        Ext_array.fold_left (Lazy.force file_array) !cur_sources (fun acc name -> 
             if is_input_or_output generators name then 
               acc 
             else 
@@ -298,7 +298,7 @@ let rec
                 ; 
                 acc 
               | Suffix_mismatch ->  acc
-          ) !cur_sources (Lazy.force file_array);
+          ) ;
       cur_globbed_dirs :=  [dir]  
     | Some (Arr ({content = [||] }as empty_json_array)) -> 
       (* [ ] populatd by scanning the dir (just once) *)         
@@ -312,12 +312,12 @@ let rec
          TODO: still need check?
       *)      
       cur_sources := 
-        Array.fold_left (fun acc (s : Ext_json_types.t) ->
+        Ext_array.fold_left sx !cur_sources (fun acc s ->
             match s with 
             | Str {str = s} -> 
               Bsb_db.collect_module_by_filename ~dir acc s
             | _ -> acc
-          ) !cur_sources sx    
+          ) 
     | Some (Obj {map = m; loc} ) -> (* { excludes : [], slow_re : "" }*)
       cur_globbed_dirs := [dir];  
       let excludes = 
@@ -336,11 +336,11 @@ let rec
           fun name -> Str.string_match re name 0 && not (List.mem name excludes)
         | Some x, _ -> Bsb_exception.errorf ~loc "slow-re expect a string literal"
         | None , _ -> Bsb_exception.errorf ~loc  "missing field: slow-re"  in 
-      cur_sources := Array.fold_left (fun acc name -> 
+      cur_sources := Ext_array.fold_left (Lazy.force file_array) !cur_sources (fun acc name -> 
           if is_input_or_output generators name || not (predicate name) then acc 
           else 
             Bsb_db.collect_module_by_filename  ~dir acc name 
-        ) !cur_sources (Lazy.force file_array)      
+        ) 
     | Some x -> Bsb_exception.config_error x "files field expect array or object "
   end;
   let cur_sources = !cur_sources in 
@@ -354,7 +354,7 @@ let rec
     | Some (True _), _ -> 
       let root = cxt.root in 
       let parent = Filename.concat root dir in
-      Array.fold_left (fun origin x -> 
+      Ext_array.fold_left (Lazy.force file_array) Bsb_file_groups.empty (fun origin x -> 
             if Sys.is_directory (Filename.concat parent x) then 
               Bsb_file_groups.merge
               (
@@ -365,7 +365,7 @@ let rec
                    traverse = true
                   } String_map.empty)  origin               
             else origin  
-          ) Bsb_file_groups.empty (Lazy.force file_array) 
+          ) 
         (* readdir parent avoiding scanning twice *)        
     | None, false  
     | Some (False _), _  -> Bsb_file_groups.empty
@@ -425,10 +425,9 @@ and parsing_single_source ({not_dev; dir_index ; cwd} as cxt ) (x : Ext_json_typ
                   cwd= Ext_path.concat cwd dir} map
   | _ -> Bsb_file_groups.empty
 and  parsing_arr_sources cxt (file_groups : Ext_json_types.t array)  = 
-  Array.fold_left (fun  origin x ->
+  Ext_array.fold_left file_groups Bsb_file_groups.empty (fun  origin x ->
       Bsb_file_groups.merge (parsing_single_source cxt x) origin 
-    ) Bsb_file_groups.empty  file_groups 
-
+    ) 
 and  parse_sources ( cxt : cxt) (sources : Ext_json_types.t )  = 
   match sources with   
   | Arr file_groups -> 

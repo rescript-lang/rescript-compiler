@@ -190,7 +190,7 @@ let of_list l =
   | _ -> of_sorted_list (List.sort_uniq compare_elt l)
 
 let of_array l = 
-  Array.fold_left (fun  acc x -> add acc x ) empty l
+  Ext_array.fold_left l empty (fun  acc x -> add acc x ) 
 
 (* also check order *)
 let invariant t =

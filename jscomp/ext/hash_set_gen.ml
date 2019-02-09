@@ -107,7 +107,7 @@ let elements set =
 
 let stats h =
   let mbl =
-    Array.fold_left (fun m b -> max m (List.length b)) 0 h.data in
+    Ext_array.fold_left h.data 0 (fun m b -> max m (List.length b)) in
   let histo = Array.make (mbl + 1) 0 in
   Ext_array.iter h.data
     (fun b ->
