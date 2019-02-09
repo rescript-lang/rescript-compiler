@@ -212,14 +212,14 @@ let rel_normalized_absolute_path ~from to_ =
         else if y = Filename.current_dir_name then go xss ys
         else 
           let start = 
-            List.fold_left (fun acc _ -> acc // Ext_string.parent_dir_lit )
-              Ext_string.parent_dir_lit  xs in 
-          List.fold_left (fun acc v -> acc // v) start yss
+            Ext_list.fold_left xs Ext_string.parent_dir_lit (fun acc  _  -> acc // Ext_string.parent_dir_lit )
+          in 
+          Ext_list.fold_left yss start (fun acc v -> acc // v)
       | [], [] -> Ext_string.empty
-      | [], y::ys -> List.fold_left (fun acc x -> acc // x) y ys
+      | [], y::ys -> Ext_list.fold_left ys y (fun acc x -> acc // x) 
       | x::xs, [] ->
-        List.fold_left (fun acc _ -> acc // Ext_string.parent_dir_lit )
-          Ext_string.parent_dir_lit xs in
+        Ext_list.fold_left xs Ext_string.parent_dir_lit (fun acc _ -> acc // Ext_string.parent_dir_lit )
+     in
     let v =  go paths1 paths2  in 
 
     if Ext_string.is_empty v then  Literals.node_current

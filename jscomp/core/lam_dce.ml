@@ -55,7 +55,7 @@ let remove export_idents (rest : Lam_group.t list) : Lam_group.t list  =
      at the same time, populate dependency set [ident_free_vars]
   *)
   let initial_idents =
-    List.fold_left (fun acc (x : Lam_group.t) -> 
+    Ext_list.fold_left rest export_idents (fun acc x -> 
         match x with
         | Single(kind, id,lam) ->                   
           begin
@@ -66,20 +66,20 @@ let remove export_idents (rest : Lam_group.t list) : Lam_group.t list  =
             | Strict | Variable -> id :: acc 
           end
         | Recursive bindings -> 
-          List.fold_left (fun acc (id,lam) -> 
+          Ext_list.fold_left bindings acc (fun acc (id,lam) -> 
               Ident_hashtbl.add ident_free_vars id (Lam_free_variables.pass_free_variables lam);
-              match (lam : Lam.t) with
+              match lam with
               | Lfunction _ -> acc 
               | _ -> id :: acc
-            ) acc bindings 
+            ) 
         | Nop lam ->
           if Lam_analysis.no_side_effects lam then acc
           else 
             (** its free varaibles here will be defined above *)
             Ident_set.fold (Lam_free_variables.pass_free_variables lam) acc (fun x acc -> x :: acc) 
-      )  export_idents rest in 
+      )  in 
   let visited = transitive_closure initial_idents ident_free_vars in 
-  List.fold_left (fun (acc : _ list) (x : Lam_group.t) ->
+  Ext_list.fold_left rest [] (fun acc x->
       match x with 
       | Single(_,id,_) -> 
         if Ident_hash_set.mem visited id  then 
@@ -97,6 +97,6 @@ let remove export_idents (rest : Lam_group.t list) : Lam_group.t list  =
         match b with 
         | [] -> acc  
         | _ -> (Recursive b) :: acc
-    ) [] rest |> List.rev   
+    )  |> List.rev   
 
   

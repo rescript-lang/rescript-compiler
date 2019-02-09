@@ -34,8 +34,8 @@
 let get_initial_exports 
     count_non_variable_declaration_statement 
     (export_set : Ident_set.t) (block : J.block ) = 
-  let result = List.fold_left 
-    (fun acc (st : J.statement) -> 
+  let result = Ext_list.fold_left block export_set 
+    (fun acc st -> 
       match st.statement_desc with
       | Variable {ident ; value; _} ->
           if Ident_set.mem acc ident then 
@@ -63,7 +63,7 @@ let get_initial_exports
           if Js_analyzer.no_side_effect_statement st || (not count_non_variable_declaration_statement)
           then acc
           else Ident_set.(union (Js_analyzer.free_variables_of_statement empty empty st) acc)
-    ) export_set block  in result, Ident_set.(diff result export_set)
+    ) in result, Ident_set.(diff result export_set)
 
 let shake_program (program : J.program) = 
   let debug_file = "pervasives.ml" in

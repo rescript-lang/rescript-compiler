@@ -78,9 +78,9 @@ let transform_under_supply n loc status fn args =
                  loc 
                  status
               ) in
-    List.fold_left (fun lam (id,x) ->
+    Ext_list.fold_left bindings rest (fun lam (id,x) ->
         Lam.let_ Strict id x lam
-      ) rest bindings
+      ) 
   | _, _ -> assert false
   end
 

@@ -37,11 +37,11 @@ let generate_sourcedirs_meta cwd (res : Bsb_file_groups.t) =
       str x.dir 
       ) ) ;
       "generated" ,
-      arr @@ Array.of_list @@ List.fold_left (fun acc (x : Bsb_file_groups.file_group) -> 
+      arr @@ Array.of_list @@ Ext_list.fold_left res.files []  (fun acc x -> 
       Ext_list.flat_map_append x.generators acc
       (fun x -> 
         Ext_list.map x.output str)   
-      )  [] res.files 
+      )  
       ]
      ) in 
   Ext_json_noloc.to_channel ochan v ;

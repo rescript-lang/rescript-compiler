@@ -150,9 +150,8 @@ let check_suffix  name  =
 
 
 let collect_ast_map ppf files parse_implementation parse_interface  =
-  List.fold_left
-    (fun (acc : _ t String_map.t)
-      source_file ->
+  Ext_list.fold_left files String_map.empty
+    (fun acc source_file ->
       match check_suffix source_file with
       | `Ml, opref ->
         let module_name = Ext_modulename.module_name_of_file source_file in
@@ -208,7 +207,7 @@ let collect_ast_map ppf files parse_implementation parse_interface  =
                    );
                module_name} 
         end
-    ) String_map.empty files
+    ) 
 ;;
 type dir_spec = 
   { dir : string ;
@@ -226,7 +225,7 @@ let collect_from_main
     project_intf 
     main_module =
   let files = 
-    List.fold_left (fun acc dir_spec -> 
+    Ext_list.fold_left extra_dirs [] (fun acc dir_spec -> 
         let  dirname, excludes = 
           match dir_spec with 
           | { dir =  dirname; excludes = dir_excludes} ->
@@ -245,7 +244,7 @@ let collect_from_main
             then 
               (Filename.concat dirname source_file) :: acc else acc
           ) acc (Sys.readdir dirname))
-      [] extra_dirs in
+  in
   let ast_table = collect_ast_map ppf files parse_implementation parse_interface in 
   let visited = String_hashtbl.create 31 in
   let result = Queue.create () in  

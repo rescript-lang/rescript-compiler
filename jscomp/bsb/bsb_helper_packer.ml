@@ -29,22 +29,20 @@ let pack pack_byte_or_native ~batch_files ~includes =
   | PackBytecode -> Literals.suffix_cmo, Literals.suffix_cma , "ocamlc.opt"
   | PackNative   -> Literals.suffix_cmx, Literals.suffix_cmxa, "ocamlopt.opt"
   end in
-  let module_to_filepath = List.fold_left
+  let module_to_filepath = Ext_list.fold_left batch_files  String_map.empty
     (fun m v ->
       String_map.add m
       (Ext_modulename.module_name_of_file_if_any v)
       (Ext_path.chop_extension_if_any v)
-      )
-    String_map.empty
-    batch_files in
-  let dependency_graph = List.fold_left
+      )  
+  in
+  let dependency_graph = Ext_list.fold_left batch_files String_map.empty
     (fun m file ->
       String_map.add m
         (Ext_modulename.module_name_of_file_if_any file)
         (Bsb_helper_extract.read_dependency_graph_from_mlast_file ((Ext_path.chop_extension file) ^ Literals.suffix_mlast))
-        )
-    String_map.empty
-    batch_files in
+        )    
+  in
   let domain =
     String_map.fold dependency_graph String_set.empty 
       (fun k _ acc -> String_set.add acc k)
@@ -59,7 +57,7 @@ let pack pack_byte_or_native ~batch_files ~includes =
     sorted_tasks in
   (* This list will be reversed so we append the otherlibs object files at the end, and they'll end at the beginning. *)
   if list_of_object_files <> [] then
-    let includes = List.fold_left (fun acc dir -> "-I" :: dir :: acc) [] includes in
+    let includes = Ext_list.fold_left includes [] (fun acc dir -> "-I" :: dir :: acc)  in
     let otherlibs = Bsb_helper_dep_graph.get_otherlibs_dependencies dependency_graph suffix_library_files in
     let all_object_files = List.rev (list_of_object_files @ otherlibs) in
     Unix.execvp

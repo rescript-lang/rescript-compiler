@@ -388,7 +388,7 @@ and compile_recursive_lets cxt id_args : Js_output.t  =
     | first::rest  ->
       let acc = compile_recursive_lets_aux cxt first in
       Ext_list.fold_left rest acc 
-        (fun x acc ->
+        (fun acc x ->
            Js_output.append_output
              acc  (compile_recursive_lets_aux cxt x )) 
 

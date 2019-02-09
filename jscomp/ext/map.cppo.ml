@@ -163,7 +163,7 @@ let compare m1 m2 cmp = Map_gen.compare compare_key cmp m1 m2
 let equal m1 m2 cmp = Map_gen.equal compare_key cmp m1 m2 
 
 let add_list (xs : _ list ) init = 
-  List.fold_left (fun acc (k,v) -> add acc k v ) init xs 
+  Ext_list.fold_left xs init (fun  acc (k,v) -> add acc k v )
 
 let of_list xs = add_list xs empty
 

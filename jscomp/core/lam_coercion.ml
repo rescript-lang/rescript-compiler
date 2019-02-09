@@ -158,15 +158,15 @@ let handle_exports (meta : Lam_stats.t)
   in
 
   let (export_map, coerced_input) =
-    List.fold_left
+    Ext_list.fold_left reverse_input (result.export_map, result.groups)
       (fun (export_map, acc) x ->
-         (match (x : Lam_group.t)  with
+         (match x with
           | Single (_,id,lam) when Ident_set.mem export_set id 
             -> Ident_map.add export_map id lam 
               (** relies on the Invariant that [eoid] can not be bound before
                   FIX: such invariant may not hold
               *)
-          | _ -> export_map), x :: acc ) (result.export_map, result.groups) reverse_input in
+          | _ -> export_map), x :: acc )  in
   { result with export_map ; groups = Lam_dce.remove export_list coerced_input }
 
 (** TODO: more flattening,

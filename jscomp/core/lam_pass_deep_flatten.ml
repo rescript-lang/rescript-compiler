@@ -104,12 +104,12 @@ let rec eliminate_tuple (id : Ident.t) (lam : Lam.t) acc =
       *)
       (* Printlambda.lambda Format.err_formatter lam ; assert false  *)
 let lambda_of_groups ~(rev_bindings : Lam_group.t list) (result : Lam.t)  : Lam.t =
-  List.fold_left (fun acc x ->
-      match (x : Lam_group.t) with
+  Ext_list.fold_left rev_bindings result (fun acc x ->
+      match x with
       | Nop l -> Lam.seq l acc
       | Single(kind,ident,lam) -> Lam_util.refine_let ~kind ident lam acc
       | Recursive bindings -> Lam.letrec bindings acc)
-    result rev_bindings
+    
 
 
 (* TODO:
@@ -218,12 +218,12 @@ let deep_flatten
         ]}
       *)
       let (rev_bindings, rev_wrap, _) =
-        List.fold_left (fun  (inner_recursive_bindings,  wrap,stop)  ((id,lam) )  ->
+        Ext_list.fold_left groups ([],  [], false ) (fun (inner_recursive_bindings,  wrap,stop) (id,lam) ->
           if stop || Lam_hit.hit_variables collections lam  then
               (id, lam) :: inner_recursive_bindings, wrap, true
           else
               (inner_recursive_bindings,  (Lam_group.Single (Strict, id, lam)) :: wrap, false)
-          ) ([],  [], false ) groups in
+          ) in
       lambda_of_groups
       ~rev_bindings:rev_wrap (* These bindings are extracted from [letrec] *)
         (Lam.letrec  (List.rev rev_bindings)  (aux body))

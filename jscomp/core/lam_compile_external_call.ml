@@ -207,7 +207,7 @@ let translate_scoped_module_val module_name fn  scopes =
       | x :: rest -> 
         (* let start = E.dot (E.var id )  x in  *)
         let start = E.external_var_dot ~external_name ~dot:x id in 
-        List.fold_left (fun acc x -> E.dot  acc x) start (Ext_list.append rest  [fn])
+        Ext_list.fold_left (Ext_list.append rest  [fn]) start E.dot
     end
   | None ->  
     (*  no [@@bs.module], assume it's global *)
@@ -217,7 +217,7 @@ let translate_scoped_module_val module_name fn  scopes =
         E.js_global fn
       | x::rest -> 
         let start = E.js_global x  in 
-        List.fold_left (fun acc x -> E.dot acc x) start (Ext_list.append rest  [fn])
+        Ext_list.fold_left (Ext_list.append rest  [fn]) start E.dot
     end
 
 
@@ -226,7 +226,7 @@ let translate_scoped_access scopes obj =
   match scopes with 
   | [] ->  obj
   | x::xs -> 
-    List.fold_left (fun acc x -> E.dot acc x) (E.dot obj x) xs 
+    Ext_list.fold_left xs (E.dot obj x) E.dot
   
 let translate_ffi 
     call_loc 

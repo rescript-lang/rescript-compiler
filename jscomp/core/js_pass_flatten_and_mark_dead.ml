@@ -228,7 +228,7 @@ let subst_map name = object (self)
           do it only when block size is larger than one
       *)
       let (_, e, bindings) = 
-        Ext_list.fold_left ls (0, [], []) (fun x (i,e,  acc)  -> 
+        Ext_list.fold_left ls (0, [], []) (fun (i,e, acc) x -> 
              match x.expression_desc with 
              | Var _ | Number _ | Str _ | J.Bool _ | Undefined
                ->  (* TODO: check the optimization *)

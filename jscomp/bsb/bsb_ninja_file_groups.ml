@@ -280,7 +280,7 @@ let handle_file_group
     ~js_post_build_cmd  
     (files_to_install : String_hash_set.t) 
     (namespace  : string option)
-    acc 
+    acc     
     (group: Bsb_file_groups.file_group ) 
   : info =
 
@@ -313,10 +313,10 @@ let handle_file_groups
     ~files_to_install ~custom_rules
     (file_groups  :  Bsb_file_groups.file_groups)
     namespace (st : info) : info  =
-  List.fold_left 
+  Ext_list.fold_left file_groups st  
     (handle_file_group 
        oc  ~bs_suffix ~package_specs ~custom_rules ~js_post_build_cmd
        files_to_install 
        namespace
     ) 
-    st  file_groups
+  

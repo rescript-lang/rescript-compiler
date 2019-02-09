@@ -30,22 +30,20 @@ let link link_byte_or_native ~main_module ~batch_files ~includes =
   | LinkNative output_file   -> Literals.suffix_cmx, Literals.suffix_cmxa, "ocamlopt.opt", output_file
   end in
   (* Map used to track the path to the files as the dependency_graph that we're going to read from the mlast file only contains module names *)
-  let module_to_filepath = List.fold_left
+  let module_to_filepath = Ext_list.fold_left batch_files String_map.empty
     (fun m v ->
       String_map.add m
       (Ext_modulename.module_name_of_file_if_any v)
       (Ext_path.chop_extension_if_any v)
-      )
-    String_map.empty
-    batch_files in
-  let dependency_graph = List.fold_left
+      )    
+  in
+  let dependency_graph = Ext_list.fold_left batch_files String_map.empty
     (fun m file ->
       String_map.add m
         (Ext_modulename.module_name_of_file_if_any file)
         (Bsb_helper_extract.read_dependency_graph_from_mlast_file ((Ext_path.chop_extension file) ^ Literals.suffix_mlast))
-        )
-    String_map.empty
-    batch_files in
+        )    
+  in
   let tasks = Bsb_helper_dep_graph.simple_collect_from_main dependency_graph main_module in
   let list_of_object_files = Queue.fold
     (fun acc v -> match String_map.find_opt module_to_filepath v with
@@ -55,10 +53,10 @@ let link link_byte_or_native ~main_module ~batch_files ~includes =
     []
     tasks in
   if list_of_object_files <> [] then begin
-    let library_files = List.fold_left
+    let library_files = Ext_list.fold_left includes [] 
       (fun acc dir ->
         (Ext_path.combine dir (Literals.library_file ^ suffix_library_files)) :: acc)
-      [] includes in
+    in
     (* This list will be reversed so we append the otherlibs object files at the end, and they'll end at the beginning. *)
     let otherlibs = Bsb_helper_dep_graph.get_otherlibs_dependencies dependency_graph suffix_library_files in
     let all_object_files = List.rev (list_of_object_files @ otherlibs) in

@@ -331,7 +331,7 @@ val fold_left2:
 val fold_left:    
     'a list -> 
     'b -> 
-    ('a -> 'b -> 'b) -> 
+    ('b -> 'a -> 'b) -> 
     'b
 
 val singleton_exn:     

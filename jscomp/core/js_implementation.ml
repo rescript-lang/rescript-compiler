@@ -197,7 +197,7 @@ let implementation_map ppf sourcefile outputprefix =
   let ns = 
     Ext_string.capitalize_ascii
       (Filename.chop_extension (Filename.basename sourcefile)) in
-  let ml_ast = Ext_list.fold_left list_of_modules [] (fun module_name acc -> 
+  let ml_ast = Ext_list.fold_left list_of_modules [] (fun acc module_name -> 
       if Ext_string.is_empty module_name then acc 
       else make_structure_item ~ns module_name :: acc 
     )  in 

@@ -183,27 +183,27 @@ let output_ninja_and_namespace_map
     let number_of_dev_groups = Bsb_dir_index.get_current_number_of_dev_groups () in
     if number_of_dev_groups = 0 then
       let bs_group, source_dirs,static_resources  =
-        List.fold_left 
-          (fun (acc, dirs,acc_resources) 
-            ({sources ; dir; resources } as x : Bsb_file_groups.file_group) ->
+        Ext_list.fold_left bs_file_groups (String_map.empty,[],[]) 
+          (fun (acc, dirs,acc_resources) ({sources ; dir; resources } as x)   
+            ->
             merge_module_info_map  acc  sources ,  
             (if Bsb_file_groups.is_empty x then dirs else  dir::dirs) , 
             ( if resources = [] then acc_resources
               else Ext_list.map_append resources acc_resources (fun x -> dir // x ) )
-          ) (String_map.empty,[],[]) bs_file_groups in
+          )  in
       has_reason_files := Bsb_db.sanity_check bs_group || !has_reason_files;     
       [|bs_group|], source_dirs, static_resources
     else
       let bs_groups = Array.init  (number_of_dev_groups + 1 ) (fun i -> String_map.empty) in
       let source_dirs = Array.init (number_of_dev_groups + 1 ) (fun i -> []) in
       let static_resources =
-        List.fold_left (fun (acc_resources : string list)  
-          ({sources; dir; resources; dir_index} : Bsb_file_groups.file_group)  ->
+        Ext_list.fold_left bs_file_groups [] (fun (acc_resources : string list) {sources; dir; resources; dir_index} 
+           ->
             let dir_index = (dir_index :> int) in 
             bs_groups.(dir_index) <- merge_module_info_map bs_groups.(dir_index) sources ;
             source_dirs.(dir_index) <- dir :: source_dirs.(dir_index);
             Ext_list.map_append resources  acc_resources (fun x -> dir//x) 
-          ) [] bs_file_groups in
+          ) in
       let lib = bs_groups.((Bsb_dir_index.lib_dir_index :> int)) in               
       has_reason_files := Bsb_db.sanity_check lib || !has_reason_files;
       for i = 1 to number_of_dev_groups  do

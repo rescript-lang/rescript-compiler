@@ -30,7 +30,7 @@ let esModule  = "__esModule", "true"
 (** Print exports in Google module format, CommonJS format *)
 let exports cxt f (idents : Ident.t list) = 
   let outer_cxt, reversed_list = 
-    List.fold_left (fun (cxt, acc) (id : Ident.t) -> 
+    Ext_list.fold_left idents (cxt, []) (fun (cxt, acc) id -> 
         let id_name = id.name in 
         let s = Ext_ident.convert id_name in        
         let str,cxt  = Ext_pp_scope.str_of_ident cxt id in         
@@ -39,7 +39,7 @@ let exports cxt f (idents : Ident.t list) =
             (* TODO check how it will affect AMDJS*)
             esModule :: (default_export, str) :: (s,str)::acc 
           else (s,str) :: acc ))
-      (cxt, []) idents in    
+  in    
   P.newline f ;
   Ext_list.rev_iter reversed_list (fun (s,export) -> 
       P.group f 0 @@ (fun _ ->  
@@ -59,7 +59,7 @@ let exports cxt f (idents : Ident.t list) =
 (** Print module in ES6 format, it is ES6, trailing comma is valid ES6 code *)
 let es6_export cxt f (idents : Ident.t list) = 
   let outer_cxt, reversed_list = 
-    List.fold_left (fun (cxt, acc) (id : Ident.t) -> 
+    Ext_list.fold_left idents (cxt, []) (fun (cxt, acc) id  -> 
         let id_name = id.name in 
         let s = Ext_ident.convert id_name in        
         let str,cxt  = Ext_pp_scope.str_of_ident cxt id in         
@@ -68,7 +68,7 @@ let es6_export cxt f (idents : Ident.t list) =
             (default_export,str)::(s,str)::acc
           else 
             (s,str) :: acc ))
-      (cxt, []) idents in    
+  in    
   P.newline f ;
   P.string f L.export ; 
   P.space f ; 
@@ -94,11 +94,11 @@ let requires require_lit cxt f (modules : (Ident.t * string) list ) =
   P.newline f ; 
   (* the context used to print the following program *)  
   let outer_cxt, reversed_list  =
-    List.fold_left
-      (fun (cxt, acc) (id,s) ->
+    Ext_list.fold_left modules (cxt, []) 
+      (fun (cxt, acc) (id,s)  ->
          let str, cxt = Ext_pp_scope.str_of_ident cxt id  in
          cxt, ((str,s) :: acc))
-      (cxt, []) modules in
+  in
   P.force_newline f ;    
   Ext_list.rev_iter reversed_list (fun (s,file) ->
       P.string f L.var;
@@ -120,11 +120,11 @@ let imports  cxt f (modules : (Ident.t * string) list ) =
   P.newline f ; 
   (* the context used to print the following program *)  
   let outer_cxt, reversed_list =
-    List.fold_left
+    Ext_list.fold_left modules (cxt, []) 
       (fun (cxt, acc) (id,s) ->
          let str, cxt = Ext_pp_scope.str_of_ident cxt id  in
          cxt, ((str,s) :: acc))
-      (cxt, []) modules in
+  in
   P.force_newline f ;    
   Ext_list.rev_iter reversed_list (fun (s,file) ->
 

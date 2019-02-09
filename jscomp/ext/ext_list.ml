@@ -664,7 +664,7 @@ let rec concat_append
 let rec fold_left l accu f =
   match l with
     [] -> accu
-  | a::l -> fold_left l (f a accu) f 
+  | a::l -> fold_left l (f accu a) f 
 
 let rec fold_left2 l1 l2 accu f =
   match (l1, l2) with
