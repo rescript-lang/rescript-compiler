@@ -24368,7 +24368,7 @@ val fold_left2:
 val fold_left:    
     'a list -> 
     'b -> 
-    ('a -> 'b -> 'b) -> 
+    ('b -> 'a -> 'b) -> 
     'b
 
 val singleton_exn:     
@@ -25041,7 +25041,7 @@ let rec concat_append
 let rec fold_left l accu f =
   match l with
     [] -> accu
-  | a::l -> fold_left l (f a accu) f 
+  | a::l -> fold_left l (f accu a) f 
 
 let rec fold_left2 l1 l2 accu f =
   match (l1, l2) with
@@ -26327,7 +26327,7 @@ let compare m1 m2 cmp = Map_gen.compare compare_key cmp m1 m2
 let equal m1 m2 cmp = Map_gen.equal compare_key cmp m1 m2 
 
 let add_list (xs : _ list ) init = 
-  List.fold_left (fun acc (k,v) -> add acc k v ) init xs 
+  Ext_list.fold_left xs init (fun  acc (k,v) -> add acc k v )
 
 let of_list xs = add_list xs empty
 

@@ -5652,7 +5652,7 @@ val fold_left2:
 val fold_left:    
     'a list -> 
     'b -> 
-    ('a -> 'b -> 'b) -> 
+    ('b -> 'a -> 'b) -> 
     'b
 
 val singleton_exn:     
@@ -6325,7 +6325,7 @@ let rec concat_append
 let rec fold_left l accu f =
   match l with
     [] -> accu
-  | a::l -> fold_left l (f a accu) f 
+  | a::l -> fold_left l (f accu a) f 
 
 let rec fold_left2 l1 l2 accu f =
   match (l1, l2) with
@@ -6992,14 +6992,14 @@ let rel_normalized_absolute_path ~from to_ =
         else if y = Filename.current_dir_name then go xss ys
         else 
           let start = 
-            List.fold_left (fun acc _ -> acc // Ext_string.parent_dir_lit )
-              Ext_string.parent_dir_lit  xs in 
-          List.fold_left (fun acc v -> acc // v) start yss
+            Ext_list.fold_left xs Ext_string.parent_dir_lit (fun acc  _  -> acc // Ext_string.parent_dir_lit )
+          in 
+          Ext_list.fold_left yss start (fun acc v -> acc // v)
       | [], [] -> Ext_string.empty
-      | [], y::ys -> List.fold_left (fun acc x -> acc // x) y ys
+      | [], y::ys -> Ext_list.fold_left ys y (fun acc x -> acc // x) 
       | x::xs, [] ->
-        List.fold_left (fun acc _ -> acc // Ext_string.parent_dir_lit )
-          Ext_string.parent_dir_lit xs in
+        Ext_list.fold_left xs Ext_string.parent_dir_lit (fun acc _ -> acc // Ext_string.parent_dir_lit )
+     in
     let v =  go paths1 paths2  in 
 
     if Ext_string.is_empty v then  Literals.node_current
@@ -9002,7 +9002,7 @@ let compare m1 m2 cmp = Map_gen.compare compare_key cmp m1 m2
 let equal m1 m2 cmp = Map_gen.equal compare_key cmp m1 m2 
 
 let add_list (xs : _ list ) init = 
-  List.fold_left (fun acc (k,v) -> add acc k v ) init xs 
+  Ext_list.fold_left xs init (fun  acc (k,v) -> add acc k v )
 
 let of_list xs = add_list xs empty
 
@@ -9267,9 +9267,8 @@ let check_suffix  name  =
 
 
 let collect_ast_map ppf files parse_implementation parse_interface  =
-  List.fold_left
-    (fun (acc : _ t String_map.t)
-      source_file ->
+  Ext_list.fold_left files String_map.empty
+    (fun acc source_file ->
       match check_suffix source_file with
       | `Ml, opref ->
         let module_name = Ext_modulename.module_name_of_file source_file in
@@ -9325,7 +9324,7 @@ let collect_ast_map ppf files parse_implementation parse_interface  =
                    );
                module_name} 
         end
-    ) String_map.empty files
+    ) 
 ;;
 type dir_spec = 
   { dir : string ;
@@ -9343,7 +9342,7 @@ let collect_from_main
     project_intf 
     main_module =
   let files = 
-    List.fold_left (fun acc dir_spec -> 
+    Ext_list.fold_left extra_dirs [] (fun acc dir_spec -> 
         let  dirname, excludes = 
           match dir_spec with 
           | { dir =  dirname; excludes = dir_excludes} ->
@@ -9362,7 +9361,7 @@ let collect_from_main
             then 
               (Filename.concat dirname source_file) :: acc else acc
           ) acc (Sys.readdir dirname))
-      [] extra_dirs in
+  in
   let ast_table = collect_ast_map ppf files parse_implementation parse_interface in 
   let visited = String_hashtbl.create 31 in
   let result = Queue.create () in  
@@ -26706,15 +26705,12 @@ let rec process_line cwd filedir  line =
         | _
           ->  Ext_pervasives.failwithf ~loc:__LOC__ "invalid line %s" line
       end
-and read_lines (cwd : string) (file : string) : string list =
-  file
-  |> Ext_io.rev_lines_of_file
-  |> List.fold_left (fun acc f ->
+and read_lines (cwd : string) (file : string) : string list =    
+  Ext_list.fold_left (Ext_io.rev_lines_of_file file) [] (fun acc f ->
       let filedir  =   Filename.dirname file in
       let extras = process_line  cwd filedir f in
       Ext_list.append extras   acc
-    ) []
-
+    ) 
 let implementation sourcefile =
   let content = Ext_io.load_file sourcefile in
   let ast =
