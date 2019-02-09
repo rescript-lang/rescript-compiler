@@ -8045,7 +8045,7 @@ module type S =
        but equal bindings will be chosen for equal maps.
      *)
 
-    val split: key -> 'a t -> 'a t * 'a option * 'a t
+    val split: 'a t -> key -> 'a t * 'a option * 'a t
     (** [split x m] returns a triple [(l, data, r)], where
           [l] is the map with all the bindings of [m] whose key
         is strictly less than [x];
@@ -8215,25 +8215,25 @@ let rec remove (tree : _ Map_gen.t as 'a) x : 'a = match tree with
       bal l v d (remove r x )
 
 
-let rec split x (tree : _ Map_gen.t as 'a) : 'a * _ option * 'a  = match tree with 
+let rec split (tree : _ Map_gen.t as 'a) x : 'a * _ option * 'a  = match tree with 
   | Empty ->
     (Empty, None, Empty)
   | Node(l, v, d, r, _) ->
     let c = compare_key x v in
     if c = 0 then (l, Some d, r)
     else if c < 0 then
-      let (ll, pres, rl) = split x l in (ll, pres, Map_gen.join rl v d r)
+      let (ll, pres, rl) = split l x in (ll, pres, Map_gen.join rl v d r)
     else
-      let (lr, pres, rr) = split x r in (Map_gen.join l v d lr, pres, rr)
+      let (lr, pres, rr) = split r x in (Map_gen.join l v d lr, pres, rr)
 
 let rec merge (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) f  : _ Map_gen.t =
   match (s1, s2) with
   | (Empty, Empty) -> Empty
   | (Node (l1, v1, d1, r1, h1), _) when h1 >= height s2 ->
-    let (l2, d2, r2) = split v1 s2 in
+    let (l2, d2, r2) = split s2 v1 in
     Map_gen.concat_or_join (merge l1 l2 f) v1 (f v1 (Some d1) d2) (merge r1 r2 f)
   | (_, Node (l2, v2, d2, r2, h2)) ->
-    let (l1, d1, r1) = split v2 s1 in
+    let (l1, d1, r1) = split s1 v2 in
     Map_gen.concat_or_join (merge l1 l2 f) v2 (f v2 d1 (Some d2)) (merge r1 r2 f)
   | _ ->
     assert false
@@ -8242,14 +8242,14 @@ let rec disjoint_merge  (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) : _ Map_gen.t =
   match (s1, s2) with
   | (Empty, Empty) -> Empty
   | (Node (l1, v1, d1, r1, h1), _) when h1 >= height s2 ->
-    begin match split v1 s2 with 
+    begin match split s2 v1 with 
     | l2, None, r2 -> 
       Map_gen.join (disjoint_merge  l1 l2) v1 d1 (disjoint_merge r1 r2)
     | _, Some _, _ ->
       raise (Duplicate_key  v1)
     end        
   | (_, Node (l2, v2, d2, r2, h2)) ->
-    begin match  split v2 s1 with 
+    begin match  split s1 v2 with 
     | (l1, None, r1) -> 
       Map_gen.join (disjoint_merge  l1 l2) v2 d2 (disjoint_merge  r1 r2)
     | (_, Some _, _) -> 

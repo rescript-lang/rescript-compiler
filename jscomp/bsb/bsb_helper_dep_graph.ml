@@ -68,7 +68,7 @@ let simple_collect_from_main ?alias_map ast_table main_module =
     match alias_map with
     | None -> module_set
     | Some map ->
-      String_set.fold (fun x acc -> String_set.add acc (String_hashtbl.find_default map x x) ) module_set String_set.empty
+      String_set.fold module_set String_set.empty (fun x acc -> String_set.add acc (String_hashtbl.find_default map x x) ) 
   in
   let rec visit visiting path current =
     if String_set.mem visiting current then
@@ -109,4 +109,4 @@ let get_otherlibs_dependencies dependency_graph file_extension =
       |> addIfPresent "Dynlink"  "dynlink"
       |> addIfPresent "Graphics" "graphics"
   )  in
-  String_set.fold (fun v acc -> v :: acc) set_of_otherlib_deps []
+  String_set.fold set_of_otherlib_deps [] (fun v acc -> v :: acc) 

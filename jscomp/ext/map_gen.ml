@@ -364,7 +364,7 @@ module type S =
        but equal bindings will be chosen for equal maps.
      *)
 
-    val split: key -> 'a t -> 'a t * 'a option * 'a t
+    val split: 'a t -> key -> 'a t * 'a option * 'a t
     (** [split x m] returns a triple [(l, data, r)], where
           [l] is the map with all the bindings of [m] whose key
         is strictly less than [x];

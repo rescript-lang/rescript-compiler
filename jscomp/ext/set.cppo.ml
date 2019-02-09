@@ -75,16 +75,16 @@ let filter = Set_gen.filter
 let of_sorted_list = Set_gen.of_sorted_list
 let of_sorted_array = Set_gen.of_sorted_array
 
-let rec split x (tree : t) : t * bool * t =  match tree with 
+let rec split (tree : t) x : t * bool * t =  match tree with 
   | Empty ->
     (Empty, false, Empty)
   | Node(l, v, r, _) ->
     let c = compare_elt x v in
     if c = 0 then (l, true, r)
     else if c < 0 then
-      let (ll, pres, rl) = split x l in (ll, pres, Set_gen.internal_join rl v r)
+      let (ll, pres, rl) = split l x in (ll, pres, Set_gen.internal_join rl v r)
     else
-      let (lr, pres, rr) = split x r in (Set_gen.internal_join l v lr, pres, rr)
+      let (lr, pres, rr) = split r x in (Set_gen.internal_join l v lr, pres, rr)
 let rec add (tree : t) x : t =  match tree with 
   | Empty -> Node(Empty, x, Empty, 1)
   | Node(l, v, r, _) as t ->
@@ -99,12 +99,12 @@ let rec union (s1 : t) (s2 : t) : t  =
   | (Node(l1, v1, r1, h1), Node(l2, v2, r2, h2)) ->
     if h1 >= h2 then
       if h2 = 1 then add s1 v2 else begin
-        let (l2, _, r2) = split v1 s2 in
+        let (l2, _, r2) = split s2 v1 in
         Set_gen.internal_join (union l1 l2) v1 (union r1 r2)
       end
     else
     if h1 = 1 then add s2 v1 else begin
-      let (l1, _, r1) = split v2 s1 in
+      let (l1, _, r1) = split s1 v2 in
       Set_gen.internal_join (union l1 l2) v2 (union r1 r2)
     end    
 
@@ -113,7 +113,7 @@ let rec inter (s1 : t)  (s2 : t) : t  =
   | (Empty, t2) -> Empty
   | (t1, Empty) -> Empty
   | (Node(l1, v1, r1, _), t2) ->
-    begin match split v1 t2 with
+    begin match split t2 v1 with
       | (l2, false, r2) ->
         Set_gen.internal_concat (inter l1 l2) (inter r1 r2)
       | (l2, true, r2) ->
@@ -125,7 +125,7 @@ let rec diff (s1 : t) (s2 : t) : t  =
   | (Empty, t2) -> Empty
   | (t1, Empty) -> t1
   | (Node(l1, v1, r1, _), t2) ->
-    begin match split v1 t2 with
+    begin match split t2 v1 with
       | (l2, false, r2) ->
         Set_gen.internal_join (diff l1 l2) v1 (diff r1 r2)
       | (l2, true, r2) ->
