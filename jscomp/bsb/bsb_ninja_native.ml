@@ -406,7 +406,7 @@ let handle_file_group oc
   (group: Bsb_file_groups.file_group) : Bsb_ninja_file_groups.info =
   
   handle_generators oc group custom_rules ;
-  String_map.fold (fun  module_name module_info  acc ->
+  String_map.fold group.sources acc (fun  module_name module_info  acc ->
       let installable =
         match group.public with
         | Export_all -> true
@@ -432,7 +432,7 @@ let handle_file_group oc
         module_info
         namespace
       ) @  acc
-    ) group.sources  acc 
+    )
 
 let link oc comp_info 
   ~entries
@@ -485,7 +485,7 @@ let link oc comp_info
       let (all_mlast_files, all_cmo_or_cmx_files, all_cmi_files) =
         List.fold_left (fun acc (group : Bsb_file_groups.file_group) ->
           if group.is_ppx = is_ppx then
-            String_map.fold (fun _ (v : Bsb_db.module_info) (all_mlast_files, all_cmo_or_cmx_files, all_cmi_files) ->
+            String_map.fold group.sources acc (fun _ (v : Bsb_db.module_info) (all_mlast_files, all_cmo_or_cmx_files, all_cmi_files) ->
               let input = v.name_sans_extension in
               let mlname = match v.ml_info with
                 | Ml_source _ ->
@@ -518,7 +518,7 @@ let link oc comp_info
                  all_cmo_or_cmx_files,
                  (namespacedName ^ Literals.suffix_cmi)   :: all_cmi_files)
               end    
-            ) group.sources acc
+            )
           else acc
         ) ([], [], []) file_groups 
       in
@@ -579,7 +579,7 @@ let pack oc comp_info ~entries ?build_library ~backend ~file_groups ~namespace (
     let all_cmo_or_cmx_files, all_cmi_files =
       List.fold_left (fun acc (group : Bsb_file_groups.file_group) ->
         if not group.is_ppx then
-          String_map.fold (fun _ (v : Bsb_db.module_info) (all_cmo_or_cmx_files, all_cmi_files) ->
+          String_map.fold group.Bsb_file_groups.sources acc (fun _ (v : Bsb_db.module_info) (all_cmo_or_cmx_files, all_cmi_files) ->
             let input = v.name_sans_extension in
               let mlname = match v.ml_info with
                 | Ml_source _ ->
@@ -609,7 +609,7 @@ let pack oc comp_info ~entries ?build_library ~backend ~file_groups ~namespace (
                 (all_cmo_or_cmx_files,
                  (name ^ Literals.suffix_cmi)   :: all_cmi_files)
               end    
-        ) group.Bsb_file_groups.sources acc
+        )
       else acc
       ) 
       ([], [])

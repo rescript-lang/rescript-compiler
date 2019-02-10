@@ -75,9 +75,8 @@ let pack pack_byte_or_native
     begin match main_module with 
     | None -> 
       let domain =
-        String_map.fold
-          (fun k _ acc -> String_set.add acc k)
-          dependency_graph String_set.empty in
+        String_map.fold dependency_graph String_set.empty
+          (fun k _ acc -> String_set.add acc k) in
       let sorted_tasks = Bsb_helper_dep_graph.sort_files_by_dependencies ~domain dependency_graph in
       List.rev (Queue.fold
       (fun acc v -> match String_map.find_opt module_to_filepath v with

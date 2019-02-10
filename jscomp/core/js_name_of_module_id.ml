@@ -130,10 +130,10 @@ let string_of_module_id
         | Package_found pkg, Package_script 
           ->    
 #if BS_NATIVE then
-          if Filename.is_relative dep_path then 
+          if Filename.is_relative pkg.rel_path then
             pkg.pkg_rel_path // js_file
           else 
-            pkg.dep_path // js_file
+            pkg.rel_path // js_file
 #else
           pkg.pkg_rel_path // js_file
 #end
@@ -152,10 +152,10 @@ let string_of_module_id
             begin match module_system with 
               | NodeJS | Es6 -> 
 #if BS_NATIVE then
-          if Filename.is_relative dep_path then 
+          if Filename.is_relative dep_pkg.rel_path then
             dep_pkg.pkg_rel_path // js_file
           else 
-            dep_path // js_file
+            dep_pkg.rel_path // js_file
 #else
                 dep_pkg.pkg_rel_path // js_file
 #end

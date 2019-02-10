@@ -96,7 +96,8 @@ let handleTdclsInSigi
     let loc = sigi.psig_loc in
     let originalTdclsNewAttrs = newTdcls tdcls newAttrs in (* remove the processed attr*)
     let newTdclsNewAttrs = self.type_declaration_list self originalTdclsNewAttrs in
-    if Ast_payload.isAbstract actions then
+    let kind = Ast_derive_abstract.isAbstract actions in
+    if kind <> Not_abstract then
       let  codes = Belt_ast_derive_abstract.handleTdclsInSig originalTdclsNewAttrs in
       Ast_signature.fuseAll ~loc
         (
@@ -143,7 +144,8 @@ let handleTdclsInStru
       { pstr_desc = Pstr_type (self.type_declaration_list self originalTdclsNewAttrs);
         pstr_loc = loc}
     in
-    if Ast_payload.isAbstract actions then
+    let kind = Ast_derive_abstract.isAbstract actions in
+    if kind <> Not_abstract then
       let (codes, codes_sig) = Belt_ast_derive_abstract.handleTdclsInStr originalTdclsNewAttrs in
       (* the codes_sig will hide the implementation of the type that is a record. *)
       Ast_structure.constraint_ ~loc

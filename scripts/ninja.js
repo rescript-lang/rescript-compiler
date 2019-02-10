@@ -12,6 +12,7 @@ var testDir = path.join(jscompDir,'test')
 
 var jsDir = path.join(__dirname, '..', 'lib', 'js')
 
+var ninjaExe = path.join(__dirname, '..', 'lib', 'ninja.exe')
 
 
 var runtimeFiles = fs.readdirSync(runtimeDir, 'ascii')
@@ -39,6 +40,8 @@ var stdlibTarget = pseudoTarget('$stdlib')
  * snapshot.ninja
  * runtime/build.ninja
  * others/build.ninja
+ * belt_byte/build.ninja
+ * belt_native/build.ninja
  * $stdlib/build.ninja
  * test/build.ninja
  *
@@ -48,6 +51,8 @@ var stdlibTarget = pseudoTarget('$stdlib')
  * compilerEnv.ninja (no snapshot since env can not provide snapshot)
  * runtime/env.ninja
  * others/env.ninja
+ * belt_byte/env.ninja
+ * belt_native/env.ninja
  * $stdlib/env.ninja
  * test/env.ninja
  *
@@ -850,11 +855,11 @@ rule copy
     var templateOthersRules = `
 ${compiler}
 flags = -absname -no-alias-deps -unsafe -warn-error A -w -40-49-103 -bin-annot
-bsc_flags = -bs-no-version-header -bs-diagnose -bs-no-check-div-by-zero -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js -bs-package-output amdjs:lib/amdjs -bs-package-output es6:lib/es6  -nostdlib -nopervasives -bs-noassertfalse -open Bs_stdlib_mini -I ./runtime
+bsc_flags = -bs-no-version-header -bs-diagnose -bs-no-check-div-by-zero -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js -bs-package-output es6:lib/es6  -nostdlib -nopervasives -bs-noassertfalse -open Bs_stdlib_mini -I ./runtime
 ${commands}
 
 ${ devmode ?
-`${cppoRule}
+`${cppoRule()}
 ${cppoList(ninjaCwd, outputDir, cppoGeneratedFiles)}
 `
 :
@@ -1259,6 +1264,8 @@ stdlib = ${version6() ? `stdlib-406` : `stdlib-402`}
 subninja compilerEnv.ninja
 subninja runtime/env.ninja
 subninja others/env.ninja
+subninja belt_byte/env.ninja
+subninja belt_native/env.ninja
 subninja $stdlib/env.ninja
 subninja test/env.ninja
 build all: phony runtime others $stdlib test
@@ -1271,6 +1278,8 @@ subninja compiler.ninja
 subninja snapshot.ninja
 subninja runtime/build.ninja
 subninja others/build.ninja
+subninja belt_byte/build.ninja
+subninja belt_native/build.ninja
 subninja $stdlib/build.ninja
 subninja test/build.ninja
 build all: phony runtime others $stdlib test
@@ -1337,29 +1346,29 @@ rule link
 build ${cppoFile}: link ${cppoMonoFile}
     libs = unix.cmxa str.cmxa
 ${cppoRule()}
-${cppoList('ext', [
-        ['string_hash_set.ml', 'hash_set.cppo.ml', dTypeString],
-        ['int_hash_set.ml', 'hash_set.cppo.ml', dTypeInt],
-        ['ident_hash_set.ml', 'hash_set.cppo.ml', dTypeIdent],
-        ['hash_set.ml', 'hash_set.cppo.ml', dTypeFunctor],
-        ['hash_set_poly.ml', 'hash_set.cppo.ml', dTypePoly],
-        ['int_vec.ml', 'vec.cppo.ml', dTypeInt],
-        ['resize_array.ml', 'vec.cppo.ml', dTypeFunctor],
-        ['string_set.ml', 'set.cppo.ml', dTypeString],
-        ['set_int.ml', 'set.cppo.ml', dTypeInt],
-        ['ident_set.ml', 'set.cppo.ml', dTypeIdent],
-        ['string_map.ml', 'map.cppo.ml', dTypeString],
-        ['int_map.ml', 'map.cppo.ml', dTypeInt],
-        ['ident_map.ml', 'map.cppo.ml', dTypeIdent],
-        ['ordered_hash_map_local_ident.ml', 'ordered_hash_map.cppo.ml', dTypeLocalIdent],
-        ['ordered_hash_set_make.ml', 'ordered_hash_set.cppo.ml', dTypeFunctor],
-        ['string_hashtbl.ml', 'hashtbl.cppo.ml', dTypeString],
-        ['int_hashtbl.ml', 'hashtbl.cppo.ml', dTypeInt],
-        ['ident_hashtbl.ml', 'hashtbl.cppo.ml', dTypeIdent],
-        ['hashtbl_make.ml', 'hashtbl.cppo.ml', dTypeFunctor],
+${cppoList('ext', 'ext', [
+        ['string_hash_set.ml', 'hash_set.cppo.ml', [dTypeString]],
+        ['int_hash_set.ml', 'hash_set.cppo.ml', [dTypeInt]],
+        ['ident_hash_set.ml', 'hash_set.cppo.ml', [dTypeIdent]],
+        ['hash_set.ml', 'hash_set.cppo.ml', [dTypeFunctor]],
+        ['hash_set_poly.ml', 'hash_set.cppo.ml', [dTypePoly]],
+        ['int_vec.ml', 'vec.cppo.ml', [dTypeInt]],
+        ['resize_array.ml', 'vec.cppo.ml', [dTypeFunctor]],
+        ['string_set.ml', 'set.cppo.ml', [dTypeString]],
+        ['set_int.ml', 'set.cppo.ml', [dTypeInt]],
+        ['ident_set.ml', 'set.cppo.ml', [dTypeIdent]],
+        ['string_map.ml', 'map.cppo.ml', [dTypeString]],
+        ['int_map.ml', 'map.cppo.ml', [dTypeInt]],
+        ['ident_map.ml', 'map.cppo.ml', [dTypeIdent]],
+        ['ordered_hash_map_local_ident.ml', 'ordered_hash_map.cppo.ml', [dTypeLocalIdent]],
+        ['ordered_hash_set_make.ml', 'ordered_hash_set.cppo.ml', [dTypeFunctor]],
+        ['string_hashtbl.ml', 'hashtbl.cppo.ml', [dTypeString]],
+        ['int_hashtbl.ml', 'hashtbl.cppo.ml', [dTypeInt]],
+        ['ident_hashtbl.ml', 'hashtbl.cppo.ml', [dTypeIdent]],
+        ['hashtbl_make.ml', 'hashtbl.cppo.ml', [dTypeFunctor]],
     ])}
-${cppoList('outcome_printer',[
-    ['tweaked_reason_oprint.ml','tweaked_reason_oprint.cppo.ml','']
+${cppoList('outcome_printer','outcome_printer',[
+    ['tweaked_reason_oprint.ml','tweaked_reason_oprint.cppo.ml', []]
 ])}
 `
     var cppoNinjaFile = useEnv ? 'cppoEnv.ninja' : 'cppoVendor.ninja'
@@ -1424,7 +1433,7 @@ rule bspack
     depfile = $out.d
     generator = true
 
-build ../lib/belt_bsppx.cmx: optc ../lib/belt_bsppx.ml
+build ../lib/belt_bsppx.cmx: optc ../lib/belt_bsppx.mli ../lib/belt_bsppx.ml
     flags = -I ../lib
 build ../lib/belt_bsppx.exe: link stubs/stubs.cmxa ../lib/belt_bsppx.cmx
     flags = -I ../lib
@@ -1454,7 +1463,15 @@ build ../odoc_gen/generator.cmxs : mk_shared ../odoc_gen/generator.mli ../odoc_g
         if (err !== null) {
             throw err
         }
-        cp.execSync(`ninja -f ${cppoNinjaFile}`, { cwd: jscompDir })
+        var exists = fs.existsSync(ninjaExe);
+        if (!exists) {
+            // TODO: this won't work on all platforms because `process.platform` can be other
+            // things than the snapshots of ninja that we have.
+            var ninjaSnapshotExe = path.join(__dirname, '..', 'vendor', 'ninja', 'snapshot', 'ninja.' + process.platform);
+            cp.execSync(`cp ${ninjaSnapshotExe} ${ninjaExe}`);
+        }
+
+        cp.execSync(`${ninjaExe} -f ${cppoNinjaFile}`, { cwd: jscompDir })
         /**
          * @type{string[]}
          */
