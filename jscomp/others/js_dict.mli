@@ -68,7 +68,7 @@ val entries : 'a t -> (key * 'a) array
 
 (* external values : 'a t -> 'a array = "Object.values" [@@bs.val] *)
 val values : 'a t -> 'a array
-(** [entries dict] returns the values in [dict] (ES2017) *)
+(** [values dict] returns the values in [dict] (ES2017) *)
 
 val fromList : (key * 'a) list -> 'a t
 (** [fromList entries] creates a new dictionary containing each
