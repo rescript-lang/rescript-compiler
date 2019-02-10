@@ -452,7 +452,7 @@ function replaceCmj(x) {
  */
 function ocamlDepForBscAsync(files,dir, depsMap, cppoGeneratedFiles=[], backend="js") {
     return new Promise((resolve,reject) =>{
-        var cmd = `BS_NATIVE=${BS_NATIVE} ${getOcamldepFile()} -one-line ${backend === "bytecode" ? "" : "-native"} ${files.join(' ')}`;
+        var cmd = `BS_NATIVE=${backend !== "js" ? BS_NATIVE : false} ${getOcamldepFile()} -one-line ${backend === "bytecode" ? "" : "-native"} ${files.join(' ')}`;
         cp.exec(cmd, {
             cwd: dir,
             encoding: 'ascii'
