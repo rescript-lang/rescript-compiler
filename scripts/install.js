@@ -21,6 +21,8 @@ var runtime_dir = path.join(jscomp_dir,'runtime')
 var others_dir = path.join(jscomp_dir,'others')
 var stdlib_dir = path.join(jscomp_dir, 'stdlib-402')
 
+var belt_byte_dir = path.join(jscomp_dir,'belt_byte')
+var belt_native_dir = path.join(jscomp_dir,'belt_native')
 
 var ocaml_dir = path.join(lib_dir,'ocaml')
 var config = require('./config.js')
@@ -175,6 +177,28 @@ function install(){
         var y = path.parse(file)
         return y.ext === '.ml' || y.ext === '.mli' || y.ext.includes('cm')
     })
+
+    if (BS_NATIVE) {
+        const bytecode = path.join(ocaml_dir, 'bytecode');
+        const native = path.join(ocaml_dir, 'native');
+
+        if (!fs.existsSync(bytecode)) {
+            fs.mkdirSync(bytecode)
+        }
+        if (!fs.existsSync(native)) {
+            fs.mkdirSync(native)
+        }
+        installDirBy(belt_byte_dir,bytecode,function(file){
+            var y = path.parse(file)
+            return y.ext === '.ml' || y.ext === '.mli' || y.ext === '.o' || y.ext.includes('cm')
+        })
+
+        installDirBy(belt_native_dir,native,function(file){
+            var y = path.parse(file)
+            return y.ext === '.ml' || y.ext === '.mli' || y.ext === '.o' || y.ext === '.a' || y.ext.includes('cm')
+        })
+    }
+
     installDirBy(stdlib_dir,ocaml_dir,function(file){
         var y = path.parse(file)
         return y.ext === '.ml' || y.ext === '.mli' || y.ext.includes('cm')

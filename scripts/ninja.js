@@ -65,6 +65,8 @@ var stdlibTarget = pseudoTarget('$stdlib')
  */
 var useEnv = false
 
+var BS_NATIVE = false
+
 /**
  * Note this file is not used in ninja file
  * It is used to generate ninja file
@@ -450,7 +452,8 @@ function replaceCmj(x) {
  */
 function ocamlDepForBscAsync(files,dir, depsMap, cppoGeneratedFiles=[], backend="js") {
     return new Promise((resolve,reject) =>{
-        cp.exec(`${getOcamldepFile()} -one-line ${backend === "bytecode" ? "" : "-native"} ${files.join(' ')}`, {
+        var cmd = `BS_NATIVE=${BS_NATIVE} ${getOcamldepFile()} -one-line ${backend === "bytecode" ? "" : "-native"} ${files.join(' ')}`;
+        cp.exec(cmd, {
             cwd: dir,
             encoding: 'ascii'
         },function(error,stdout,stderr){
@@ -722,7 +725,7 @@ rule cc
         compiler = `ocamlc = ../vendor/ocaml/bin/ocamlc.opt`;
         commands = `
 rule cc
-    command = BS_NATIVE=true $ocamlc $flags -ppx ../lib/belt_bsppx.exe  -I belt_byte -o $out -c $in
+    command = BS_NATIVE=${BS_NATIVE} $ocamlc $flags -ppx ../lib/belt_bsppx.exe  -I ${outputDir} -o $out -c $in
     description = $in -> $out
 
 rule link
@@ -738,25 +741,25 @@ rule compileC
             'cc',ninjaCwd,outputDir, [], [],[fileTarget('../../lib/belt_bsppx.exe')], [fileTarget('belt.cmi')]],
 
             [['js.cmi'],['js.mli'],
-            'cc','belt_byte',outputDir,[], [], [fileTarget('../../lib/belt_bsppx.exe')], []],
+            'cc',outputDir,outputDir,[], [], [fileTarget('../../lib/belt_bsppx.exe')], []],
             [['js.cmo'],['js.ml'],
-            'cc','belt_byte',outputDir,[], [], [fileTarget('js.cmi'), fileTarget('../../lib/belt_bsppx.exe')], []],
+            'cc',outputDir,outputDir,[], [], [fileTarget('js.cmi'), fileTarget('../../lib/belt_bsppx.exe')], []],
 
             [['js_math.cmo'],['js_math.ml'],
             'cc',ninjaCwd,outputDir, [], [], [fileTarget('../../lib/belt_bsppx.exe')], []],
 
             [['js_null.cmo'],'js_null.ml',
-            'cc','belt_byte',outputDir,[], [], [fileTarget('../../lib/belt_bsppx.exe'), fileTarget('js.cmo')], [fileTarget('js_null.cmi')]],
+            'cc',outputDir,outputDir,[], [], [fileTarget('../../lib/belt_bsppx.exe'), fileTarget('js.cmo')], [fileTarget('js_null.cmi')]],
 
             [['caml_hash.cmo'],'caml_hash.ml',
-            'cc','belt_byte',outputDir,[], [], [fileTarget('../../lib/belt_bsppx.exe')], [fileTarget('caml_hash.cmi')]],
+            'cc',outputDir,outputDir,[], [], [fileTarget('../../lib/belt_bsppx.exe')], [fileTarget('caml_hash.cmi')]],
         ])
     } else if (backend === "native") {
         outputDir = "belt_native";
         compiler = `ocamlopt = ../vendor/ocaml/bin/ocamlopt.opt`;
         commands = `
 rule cc
-    command = BS_NATIVE=true $ocamlopt $flags -ppx ../lib/belt_bsppx.exe  -I belt_byte -o $out -c $in
+    command = BS_NATIVE=${BS_NATIVE} $ocamlopt $flags -ppx ../lib/belt_bsppx.exe  -I ${outputDir} -o $out -c $in
     description = $in -> $out
 
 rule link
@@ -776,18 +779,18 @@ rule copy
             'cc',ninjaCwd,outputDir,[], [],externalDeps.concat(fileTarget('../../lib/belt_bsppx.exe')), [fileTarget('belt.cmi')]],
 
             [['js.cmi'],['js.mli'],
-            'cc','belt_native',outputDir,[], [], [fileTarget('../../lib/belt_bsppx.exe')], []],
+            'cc',outputDir,outputDir,[], [], [fileTarget('../../lib/belt_bsppx.exe')], []],
             [['js.cmx'],['js.ml'],
-            'cc','belt_native',outputDir,[], [], [fileTarget('js.cmi'), fileTarget('../../lib/belt_bsppx.exe')], []],
+            'cc',outputDir,outputDir,[], [], [fileTarget('js.cmi'), fileTarget('../../lib/belt_bsppx.exe')], []],
 
             [['js_math.cmx'],['js_math.ml'],
             'cc',ninjaCwd,outputDir,[], [], [fileTarget('../../lib/belt_bsppx.exe')], []],
 
             [['js_null.cmx'],'js_null.ml',
-            'cc','belt_native',outputDir,[], [], [fileTarget('../../lib/belt_bsppx.exe'), fileTarget('js.cmx')], [fileTarget('js_null.cmi')]],
+            'cc',outputDir,outputDir,[], [], [fileTarget('../../lib/belt_bsppx.exe'), fileTarget('js.cmx')], [fileTarget('js_null.cmi')]],
 
             [['caml_hash.cmx'],'caml_hash.ml',
-            'cc','belt_native',outputDir,[], [], [fileTarget('../../lib/belt_bsppx.exe')], [fileTarget('caml_hash.cmi')]],
+            'cc',outputDir,outputDir,[], [], [fileTarget('../../lib/belt_bsppx.exe')], [fileTarget('caml_hash.cmi')]],
 
             // Copy from belt_byte into belt_native
             [['js_null.ml'],'js_null.ml',
@@ -1215,6 +1218,10 @@ if (require.main === module) {
         useEnv = true
         emptyCount ++
     }
+    if(process.argv.includes('-native')){
+        BS_NATIVE = true
+        emptyCount ++
+    }
     if(process.argv.includes('-check')){
         checkEffect()
     }
@@ -1274,8 +1281,10 @@ build all: phony runtime others $stdlib test
     testNinja()
     othersNinja()
 
-    othersNinja(true, "bytecode")
-    othersNinja(true, "native")
+    if (BS_NATIVE) {
+        othersNinja(true, "bytecode")
+        othersNinja(true, "native")
+    }
 
     nativeNinja(version6)
 }
@@ -1357,7 +1366,7 @@ ${cppoList('outcome_printer',[
     var templateNative = `
 subninja ${cppoNinjaFile}
 rule optc
-    command = $ocamlopt -I +compiler-libs  ${includes} $flags -g -w +6-40-30-23 -warn-error +a-40-30-23 -absname -c $in
+    command = BS_NATIVE=${BS_NATIVE} $ocamlopt -I +compiler-libs  ${includes} $flags -g -w +6-40-30-23 -warn-error +a-40-30-23 -absname -c $in
     description = $out : $in
 rule archive
     command = $ocamlopt -a $in -o $out
@@ -1454,7 +1463,7 @@ build ../odoc_gen/generator.cmxs : mk_shared ../odoc_gen/generator.mli ../odoc_g
             files = files.concat(test(dir))
         }
 
-        var out = cp.execSync(`${getOcamldepFile()} -one-line -native ${includes} ${files.join(' ')}`, { cwd: jscompDir, encoding: 'ascii' })
+        var out = cp.execSync(`BS_NATIVE=${BS_NATIVE} ${getOcamldepFile()} -one-line -native ${includes} ${files.join(' ')}`, { cwd: jscompDir, encoding: 'ascii' })
 
         /**
          * @type {Map<string,Set<string>>}
