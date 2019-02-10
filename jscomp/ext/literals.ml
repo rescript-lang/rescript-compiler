@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,7 +17,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -31,7 +31,7 @@
 let js_array_ctor = "Array"
 let js_type_number = "number"
 let js_type_string = "string"
-let js_type_object = "object" 
+let js_type_object = "object"
 let js_type_boolean = "boolean"
 let js_undefined = "undefined"
 let js_prop_length = "length"
@@ -93,8 +93,8 @@ let suffix_re = ".re"
 let suffix_rei = ".rei"
 let suffix_mlmap = ".mlmap"
 
-let suffix_cmt = ".cmt" 
-let suffix_cmti = ".cmti" 
+let suffix_cmt = ".cmt"
+let suffix_cmti = ".cmti"
 let suffix_mlast = ".mlast"
 let suffix_mlast_simple = ".mlast_simple"
 let suffix_mliast = ".mliast"
@@ -109,12 +109,12 @@ let suffix_gen_js = ".gen.js"
 let suffix_gen_tsx = ".gen.tsx"
 let suffix_tsx = ".tsx"
 
-let commonjs = "commonjs" 
+let commonjs = "commonjs"
 let amdjs = "amdjs"
 let es6 = "es6"
 let es6_global = "es6-global"
 let amdjs_global = "amdjs-global"
-let unused_attribute = "Unused attribute " 
+let unused_attribute = "Unused attribute "
 let dash_nostdlib = "-nostdlib"
 
 let reactjs_jsx_ppx_2_exe = "reactjs_jsx_ppx_2.exe"
@@ -125,8 +125,9 @@ let bytecode = "bytecode"
 let js = "js"
 
 
-#if BS_NATIVE then
 let ppx = "ppx"
+
+#if BS_NATIVE then
 let library = "library"
 let dot_static_libraries = ".static_libraries"
 #end

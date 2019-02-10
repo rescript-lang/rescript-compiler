@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,7 +17,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -27,7 +27,7 @@
 
 
 
-val js_array_ctor : string 
+val js_array_ctor : string
 val js_type_number : string
 val js_type_string : string
 val js_type_object : string
@@ -40,9 +40,9 @@ val partial_arg : string
 val prim : string
 
 (**temporary varaible used in {!Js_ast_util} *)
-val tmp : string 
+val tmp : string
 
-val create : string 
+val create : string
 val runtime : string
 val stdlib : string
 val imul : string
@@ -87,52 +87,52 @@ val suffix_cmi : string
 val suffix_cmx : string
 val suffix_cmxa : string
 val suffix_ml : string
-val suffix_mlast : string 
+val suffix_mlast : string
 val suffix_mlast_simple : string
 val suffix_mliast : string
 val suffix_mliast_simple : string
 val suffix_mlmap : string
 val suffix_mll : string
 val suffix_re : string
-val suffix_rei : string 
+val suffix_rei : string
 
 val suffix_d : string
 val suffix_js : string
-val suffix_bs_js : string 
+val suffix_bs_js : string
 (* val suffix_re_js : string *)
-val suffix_gen_js : string 
+val suffix_gen_js : string
 val suffix_gen_tsx: string
 
 val suffix_tsx : string
 val suffix_mlastd : string
 val suffix_mliastd : string
 
-val suffix_mli : string 
-val suffix_cmt : string 
-val suffix_cmti : string 
+val suffix_mli : string
+val suffix_cmt : string
+val suffix_cmti : string
 
-val commonjs : string 
-val amdjs : string 
-val es6 : string 
+val commonjs : string
+val amdjs : string
+val es6 : string
 val es6_global : string
-val amdjs_global : string 
-val unused_attribute : string 
+val amdjs_global : string
+val unused_attribute : string
 val dash_nostdlib : string
 
-val reactjs_jsx_ppx_2_exe : string 
-val reactjs_jsx_ppx_3_exe : string 
+val reactjs_jsx_ppx_2_exe : string
+val reactjs_jsx_ppx_3_exe : string
 
 val native : string
 val bytecode : string
 val js : string
 
+val ppx : string
 
 #if BS_NATIVE then
-val ppx : string
 val library : string
 val dot_static_libraries : string
 #end
 
-val node_sep : string 
-val node_parent : string 
-val node_current : string 
+val node_sep : string
+val node_parent : string
+val node_current : string

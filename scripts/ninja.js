@@ -1264,8 +1264,10 @@ stdlib = ${version6() ? `stdlib-406` : `stdlib-402`}
 subninja compilerEnv.ninja
 subninja runtime/env.ninja
 subninja others/env.ninja
+${BS_NATIVE ? `
 subninja belt_byte/env.ninja
 subninja belt_native/env.ninja
+` : ''}
 subninja $stdlib/env.ninja
 subninja test/env.ninja
 build all: phony runtime others $stdlib test
@@ -1278,8 +1280,10 @@ subninja compiler.ninja
 subninja snapshot.ninja
 subninja runtime/build.ninja
 subninja others/build.ninja
-subninja belt_byte/build.ninja
-subninja belt_native/build.ninja
+${BS_NATIVE ? `
+subninja belt_byte/env.ninja
+subninja belt_native/env.ninja
+` : ''}
 subninja $stdlib/build.ninja
 subninja test/build.ninja
 build all: phony runtime others $stdlib test
