@@ -25,7 +25,6 @@
 
 val ocaml_bin_install_prefix : string -> string
 val proj_rel : string -> string
-val build_artifacts_dir : string -> string
 
 val lib_js : string 
 val lib_amd : string 
@@ -42,6 +41,7 @@ val rev_lib_bs_prefix : string -> string
 (** default not install, only when -make-world, its dependencies will be installed  *)
 
 #if BS_NATIVE then
+val build_artifacts_dir : string -> string
 val lib_lit : string
 val node_modules : string
 #end

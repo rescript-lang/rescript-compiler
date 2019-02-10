@@ -1,15 +1,11 @@
-BYTE=ocamlc.opt$(EXE)
-NATIVE=ocamlopt.opt$(EXE)
+NATIVE=ocamlopt.opt
 
-OCAMLOPT_FLAGS= -g -w -40-30 ../jscomp/stubs/bsb_c_stubs.c ../jscomp/stubs/ext_basic_hash_stubs.c
+OCAMLOPT_FLAGS= -g -w -40-30 ../jscomp/stubs/ext_basic_hash_stubs.c
 # -inline 1000 makes size too large
 # TODO: make sure it can be bootstrapped, at least is a very good
 # test case of our optimizations
 bsppx.exe: bsppx.mli bsppx.ml
 	$(NATIVE) $(OCAMLOPT_FLAGS) $^ -o $@
-
-belt_bsppx.exe: belt_bsppx.ml
-	$(NATIVE) $(OCAMLOPT_FLAGS)  $^ -o $@
 
 bspp.exe:   bspp.mli bspp.ml
 	$(NATIVE) $(OCAMLOPT_FLAGS) $^ -o $@
@@ -23,8 +19,6 @@ bsb.exe:  bsb.mli bsb.ml
 bsb_helper.exe:  bsb_helper.mli bsb_helper.ml
 	$(NATIVE) $(OCAMLOPT_FLAGS) unix.cmxa -w -a $^ -o $@
 
-bs_ppx_tools.exe: bs_ppx_tools.ml
-	$(NATIVE) -w -17-40-30 -no-alias-deps  $^ -o $@
 
 refmt.exe: refmt_main3.mli refmt_main3.ml
 	$(NATIVE) -w -40-30 -no-alias-deps -I +compiler-libs ocamlcommon.cmxa $^ -o $@
@@ -32,15 +26,13 @@ refmt.exe: refmt_main3.mli refmt_main3.ml
 reactjs_jsx_ppx_2.exe:reactjs_jsx_ppx_v2.mli reactjs_jsx_ppx_v2.ml
 	$(NATIVE) -w -40-30 -no-alias-deps -I +compiler-libs ocamlcommon.cmxa $^ -o $@
 
-bsb_internals.cmo: bsb_internals.ml
-	$(BYTE) -c -w -40-30 -no-alias-deps  $^
 
 bsc.exe: whole_compiler.mli whole_compiler.ml
 	$(NATIVE) $(OCAMLOPT_FLAGS) $^  -o $@
 
 
 
-all: bsc.exe bsb.exe bsppx.exe bsb_helper.exe  refmt.exe reactjs_jsx_ppx_2.exe bsb_internals.cmo bs_ppx_tools.exe bspp.exe
+all: bsc.exe bsb.exe bsppx.exe bsb_helper.exe  refmt.exe reactjs_jsx_ppx_2.exe
 #  bspp.exe bsdep.exe
 # bspack.exe
 # bsppx.exe is needed for merlin

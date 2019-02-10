@@ -258,8 +258,7 @@ function targetsToString(files,cwd){
  * @param {string} cwd
  * @return {string}
  */
- // @BENHACK implicitOutputs
-function ninjaBuild(outputs, inputs, rule, deps, sourceCwd, targetCwd, overrides, implicitOutputs){
+function ninjaBuild(outputs, inputs, rule, implicitOutputs, deps, sourceCwd, targetCwd, overrides){
     var fileOutputs = targetsToString(outputs, targetCwd);
     var fileInputs = targetsToString(inputs, sourceCwd);
 
@@ -289,7 +288,7 @@ function ninjaBuild(outputs, inputs, rule, deps, sourceCwd, targetCwd, overrides
  * @param {string} cwd
  */
 function phony(outputs,inputs,cwd){
-    return ninjaBuild([outputs],inputs,'phony',[],cwd,cwd,[], [])
+    return ninjaBuild([outputs],inputs,'phony',[],[],cwd,cwd,[])
 }
 
 
@@ -321,9 +320,9 @@ function ninjaQuickBuild(outputs,inputs,rule,sourceCwd, targetCwd, overrides,fil
         Array.isArray(extraDeps) ?
             extraDeps : [extraDeps]
 
-    return ninjaBuild(os, is, rule, ds.concat(dds), sourceCwd, targetCwd, overrides.map(x=>{
+    return ninjaBuild(os, is, rule, implicitOutputs, ds.concat(dds), sourceCwd, targetCwd, overrides.map(x=>{
         return {key : x[0], value : x[1]}
-    }), implicitOutputs)
+    }))
 
 }
 
@@ -415,7 +414,6 @@ function fileTargets(args){
  * @param {Targets} extraDeps
  * @param {string[]} implicitOutputs
  */
- // @BENHACK isGenerated implicitOutputs
 function buildStmt(outputs, inputs, rule, depsMap, sourceCwd, targetCwd, overrides,extraDeps, implicitOutputs){
     var os = outputs.map(fileTarget)
     var is = inputs.map(fileTarget)
@@ -428,7 +426,7 @@ function buildStmt(outputs, inputs, rule, depsMap, sourceCwd, targetCwd, overrid
         }
     }
     extraDeps.forEach(x=>deps.add(x))
-    return ninjaBuild(os,is,rule,deps.toSortedArray(),sourceCwd,targetCwd, overrides, implicitOs)
+    return ninjaBuild(os,is,rule,implicitOs,deps.toSortedArray(),sourceCwd,targetCwd, overrides)
 }
 
 
@@ -927,9 +925,9 @@ ${special_belt_rule}
             }
         }, [[], []]);
 
-        beltOutput.push(ninjaBuild([fileTarget('lib.cma')], fileTargets(allCmos), 'link', fileTargets(allCmis), outputDir, outputDir, [], []));
+        beltOutput.push(ninjaBuild([fileTarget('lib.cma')], fileTargets(allCmos), 'link', [], fileTargets(allCmis), outputDir, outputDir, []));
 
-        beltOutput.push(ninjaBuild([fileTarget('stubs.o')], [fileTarget('stubs.c')], 'compileC', [], outputDir, outputDir, [], []));
+        beltOutput.push(ninjaBuild([fileTarget('stubs.o')], [fileTarget('stubs.c')], 'compileC', [], [], outputDir, outputDir, []));
 
     } else if (backend === "native") {
         phonyDeps = [fileTarget("lib.cmxa"), fileTarget("stubs.o")];
@@ -940,9 +938,9 @@ ${special_belt_rule}
                 return [[...acc[0], val], acc[1]]
             }
         }, [[], []])
-        beltOutput.push(ninjaBuild([fileTarget('lib.cmxa')], fileTargets(allCmos), 'link', fileTargets(allCmis), outputDir, outputDir, [], []));
+        beltOutput.push(ninjaBuild([fileTarget('lib.cmxa')], fileTargets(allCmos), 'link', [], fileTargets(allCmis), outputDir, outputDir, []));
 
-        beltOutput.push(ninjaBuild([fileTarget('stubs.o')], [fileTarget('stubs.c')], 'compileC', [], outputDir, outputDir, [], []));
+        beltOutput.push(ninjaBuild([fileTarget('stubs.o')], [fileTarget('stubs.c')], 'compileC', [], [], outputDir, outputDir, []));
     }
 
 

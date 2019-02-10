@@ -25,6 +25,8 @@ var stdlib_dir = path.join(jscomp_dir, 'stdlib-402')
 var ocaml_dir = path.join(lib_dir,'ocaml')
 var config = require('./config.js')
 
+var BS_NATIVE = process.argv.length > 2 && process.argv.includes('-native');
+
 var is_windows = config.is_windows
 var sys_extension = config.sys_extension
 
@@ -40,12 +42,12 @@ var ninja_bin_output = path.join(root_dir, 'lib', 'ninja.exe')
 
 
 /**
- * Make sure `ninja_bin_output` exists    
+ * Make sure `ninja_bin_output` exists
  * The installation of `ninja.exe` is re-entrant, since we always pre-check if it is already installed
  * This is less problematic since `ninja.exe` is very stable
  */
 function provideNinja() {
-    var vendor_ninja_version = '1.8.2'    
+    var vendor_ninja_version = '1.8.2'
     var ninja_source_dir = path.join(root_dir, 'vendor', 'ninja')
     function build_ninja() {
         console.log('No prebuilt Ninja, building Ninja now')
@@ -57,8 +59,8 @@ function provideNinja() {
 
     // sanity check to make sure the binary actually runs. Used for Linux. Too many variants
     /**
-     * 
-     * @param {string} binary_path 
+     *
+     * @param {string} binary_path
      */
     function test_ninja_compatible(binary_path) {
         var version;
@@ -81,7 +83,7 @@ function provideNinja() {
     }
     else if (fs.existsSync(ninja_os_path)) {
         if(fs.copyFileSync){
-            // ninja binary size is small    
+            // ninja binary size is small
             fs.copyFileSync(ninja_os_path,ninja_bin_output)
         }
         else {
@@ -97,8 +99,8 @@ function provideNinja() {
     }
 }
 /**
- * 
- * @param {NodeJS.ErrnoException} err 
+ *
+ * @param {NodeJS.ErrnoException} err
  */
 function throwWhenError(err){
     if(err!==null){
@@ -106,19 +108,19 @@ function throwWhenError(err){
     }
 }
 /**
- * 
- * @param {string} file 
- * @param {string} target 
+ *
+ * @param {string} file
+ * @param {string} target
  */
 function poorCopyFile(file, target) {
 	var stat = fs.statSync(file)
 	fs.createReadStream(file).pipe(
 		fs.createWriteStream(target,
-			{ mode: stat.mode }))            
+			{ mode: stat.mode }))
 }
 /**
- * @type {(x:string,y:string)=>void} 
- * 
+ * @type {(x:string,y:string)=>void}
+ *
  */
 var installTrytoCopy;
 if(fs.copyFile !== undefined){
@@ -136,10 +138,10 @@ if(fs.copyFile !== undefined){
 }
 
 /**
- * 
- * @param {string} src 
- * @param {(file:string)=>boolean} filter 
- * @param {string} dest 
+ *
+ * @param {string} src
+ * @param {(file:string)=>boolean} filter
+ * @param {string} dest
  */
 function installDirBy(src,dest,filter){
     fs.readdir(src,function(err,files){
@@ -149,7 +151,7 @@ function installDirBy(src,dest,filter){
                     var x = path.join(src,file)
                     var y = path.join(dest,file)
                     // console.log(x, '----->', y )
-                    installTrytoCopy(x,y)                    
+                    installTrytoCopy(x,y)
                 }
             })
         } else {
@@ -165,9 +167,9 @@ function install(){
     if (!fs.existsSync(ocaml_dir)) {
         fs.mkdirSync(ocaml_dir)
     }
-    installDirBy(runtime_dir,ocaml_dir,function(file){        
+    installDirBy(runtime_dir,ocaml_dir,function(file){
         var y = path.parse(file)
-        return y.name === 'js' || y.ext.includes('cm')        
+        return y.name === 'js' || y.ext.includes('cm')
     })
     installDirBy(others_dir,ocaml_dir,function(file){
         var y = path.parse(file)
@@ -227,7 +229,7 @@ function checkPrebuiltBscCompiler() {
         var version = cp.execFileSync(path.join(lib_dir, 'bsc' + sys_extension), ['-v'])
         console.log("checkoutput:", String(version))
         console.log("Prebuilt compiler works good")
-        
+
         return true
     } catch (e) {
         console.log("No working prebuilt buckleScript compiler")
@@ -257,7 +259,7 @@ function provideCompiler() {
         // under windows require '.exe'
         cp.execFileSync(ninja_bin_output, { cwd: lib_dir, stdio: [0, 1, 2] })
 
-    }    
+    }
 }
 
 provideNinja()

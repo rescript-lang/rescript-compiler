@@ -126,9 +126,9 @@ val native : string
 val bytecode : string
 val js : string
 
-val ppx : string
 
 #if BS_NATIVE then
+val ppx : string
 val library : string
 val dot_static_libraries : string
 #end

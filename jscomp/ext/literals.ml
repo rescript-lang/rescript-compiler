@@ -124,9 +124,9 @@ let native = "native"
 let bytecode = "bytecode"
 let js = "js"
 
-let ppx = "ppx"
 
 #if BS_NATIVE then
+let ppx = "ppx"
 let library = "library"
 let dot_static_libraries = ".static_libraries"
 #end
