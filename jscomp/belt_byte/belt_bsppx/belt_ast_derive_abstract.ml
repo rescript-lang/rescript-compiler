@@ -56,12 +56,12 @@ let rec checkNotFunciton (ty : Parsetree.core_type) =
   | Ptyp_extension _ -> ()
 
 
-let strip_option arg_name = 
-  if arg_name.[0] = '?' then 
+let strip_option arg_name =
+  if arg_name.[0] = '?' then
     String.sub arg_name 1 (String.length arg_name - 1)
   else arg_name
 
-(* @Todo refactor me please, this is a bit of a mess due to Ben wanting to ship too quickly. 
+(* @Todo refactor me please, this is a bit of a mess due to Ben wanting to ship too quickly.
 
          Ben - June 8th 2018
 *)
@@ -75,9 +75,9 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
     let (has_optional_field, new_label_declarations) =
       List.fold_right (fun ({pld_type; pld_loc; pld_attributes} as dcl : Parsetree.label_declaration) (has_optional_field, acc) ->
           let has_optional_field_local = Belt_ast_attributes.has_bs_optional pld_attributes in
-          let acc = if has_optional_field_local then 
+          let acc = if has_optional_field_local then
           (* @Incomplete remove ALL attributes when we might want to only remove the bs.optional.
-              
+
                      Ben - June 8th 2018
            *)
             { dcl with
@@ -126,14 +126,14 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
               [new_name], {pld_name with txt = new_name}
           in
           let is_option = Belt_ast_attributes.has_bs_optional pld_attributes in
-          (* Add the question mark back because that's how ocaml 4.02.3 determines if the argument 
+          (* Add the question mark back because that's how ocaml 4.02.3 determines if the argument
             label is for a optional argument vs a named argument. *)
           let newLabel = if is_option then {newLabel with txt = "?" ^ newLabel.Asttypes.txt} else newLabel in
-          
+
           let maker, getter_type =
              if is_option then
               let maker_optional_type = Ast_core_type.lift_option_type pld_type in
-              let getter_optional_type = { 
+              let getter_optional_type = {
                 Parsetree.ptyp_desc =
                  Ptyp_constr(
                    {txt = Lident "option";
@@ -142,17 +142,17 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
                 ptyp_loc = pld_loc;
                 ptyp_attributes = [];
               } in
-              Typ.arrow ~loc:pld_loc label_name maker_optional_type maker,
+              Typ.arrow ~loc:pld_loc ("?" ^ label_name) maker_optional_type maker,
               Typ.arrow ~loc "" core_type getter_optional_type
             else
               Typ.arrow ~loc:pld_loc label_name pld_type maker,
                Typ.arrow ~loc "" core_type pld_type
           in
-          let getter = 
+          let getter =
               Str.value Nonrecursive [
-                Vb.mk 
-                  (Pat.var {pld_name with txt = label_name ^ "Get"}) 
-                  (Exp.constraint_ (Exp.fun_ "" None 
+                Vb.mk
+                  (Pat.var {pld_name with txt = label_name ^ "Get"})
+                  (Exp.constraint_ (Exp.fun_ "" None
                       (Pat.var {Location.txt = "o"; loc = !default_loc})
                       (Exp.field (Exp.ident {Location.txt = Longident.Lident "o"; loc = !default_loc}) {txt = Longident.Lident pld_name.Location.txt; loc = !default_loc})) getter_type)]
             in
@@ -165,28 +165,28 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
                 (Typ.arrow "" core_type
                    (Typ.arrow ""
                       pld_type (* setter *)
-                      (Ast_literal.type_unit ()))) in  
+                      (Ast_literal.type_unit ()))) in
               let variable = (Exp.ident {Location.txt = Longident.Lident "v"; loc = !default_loc}) in
               let setter = Str.value Nonrecursive [
-                Vb.mk 
-                  (Pat.var {loc = label_loc; txt = label_name ^ "Set"}) 
-                  (Exp.constraint_ (Exp.fun_ "" None 
+                Vb.mk
+                  (Pat.var {loc = label_loc; txt = label_name ^ "Set"})
+                  (Exp.constraint_ (Exp.fun_ "" None
                       (Pat.var {Location.txt = "o"; loc = !default_loc})
-                      (Exp.fun_ "" None 
+                      (Exp.fun_ "" None
                         (Pat.var {Location.txt = "v"; loc = !default_loc})
-                        (Exp.setfield 
-                          (Exp.ident {Location.txt = Longident.Lident "o"; loc = !default_loc}) 
-                          {txt = Longident.Lident pld_name.Location.txt; loc = !default_loc} 
+                        (Exp.setfield
+                          (Exp.ident {Location.txt = Longident.Lident "o"; loc = !default_loc})
+                          {txt = Longident.Lident pld_name.Location.txt; loc = !default_loc}
                           (if is_option then Exp.construct {txt=Lident "Some"; loc = !default_loc} (Some variable) else variable))))
                       setter_type)
-                  ] 
+                  ]
                 in
               setter :: acc
             else acc in
           acc,
           maker,
           newLabel::labels
-        ) 
+        )
     in
     newTdcl,
     (if is_private then
@@ -198,20 +198,20 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
         )) None in
        (* This is to support bs.optional, which makes certain args of the function optional so we
           add a unit at the end to prevent auto-currying issues. *)
-       let body_with_extra_unit_fun = (if has_optional_field then 
-          (Exp.fun_ "" None 
+       let body_with_extra_unit_fun = (if has_optional_field then
+          (Exp.fun_ "" None
             (Pat.var ({txt = "()"; loc = !default_loc})) maker_body)
         else maker_body) in
        let myMaker =
         Str.value Nonrecursive [
-          Vb.mk 
-            (Pat.var {loc; txt = type_name}) 
+          Vb.mk
+            (Pat.var {loc; txt = type_name})
             (Exp.constraint_ (
               Ext_list.fold_right
                 labels
                 body_with_extra_unit_fun
                 (fun arg_name rest ->
-                  (Exp.fun_ arg_name.Asttypes.txt None 
+                  (Exp.fun_ arg_name.Asttypes.txt None
                     (Pat.var ({arg_name with txt = strip_option arg_name.Asttypes.txt})) rest))
                 ) makeType)
         ]
@@ -269,7 +269,7 @@ let handleTdclSig (tdcl : Parsetree.type_declaration) =
               [new_name], {pld_name with txt = new_name}
           in
           let is_option = Belt_ast_attributes.has_bs_optional pld_attributes in
-          
+
           let maker, getter_type =
              if is_option then
               let maker_optional_type = Ast_core_type.lift_option_type pld_type in
@@ -281,16 +281,16 @@ let handleTdclSig (tdcl : Parsetree.type_declaration) =
                     ptyp_loc = pld_loc;
                   ptyp_attributes = []
                 } in
-              Typ.arrow ~loc:pld_loc label_name maker_optional_type maker,
+              Typ.arrow ~loc:pld_loc ("?" ^ label_name) maker_optional_type maker,
               Typ.arrow ~loc "" core_type getter_optional_type
             else
               Typ.arrow ~loc:pld_loc label_name pld_type maker,
                Typ.arrow ~loc "" core_type pld_type
           in
-          let getter = 
+          let getter =
             Val.mk {pld_name with txt = label_name ^ "Get"}
               ~attrs:[]
-              ~prim:[] getter_type 
+              ~prim:[] getter_type
             in
           let acc =
             getter :: acc in
@@ -312,7 +312,7 @@ let handleTdclSig (tdcl : Parsetree.type_declaration) =
           acc,
           maker,
           (is_option, newLabel)::labels
-        ) 
+        )
     in
     newTdcl,
     (if is_private then
@@ -342,18 +342,18 @@ let handleTdclsInStr tdcls =
             {ntdcl with ptype_kind = Ptype_abstract }::tdcls_sig,
             Ext_list.map_append value_descriptions sts (fun x -> x),
             Ext_list.map_append value_descriptions code_sig (function
-              | {pstr_loc; pstr_desc = 
+              | {pstr_loc; pstr_desc =
                   Pstr_value (_, (({
-                    pvb_pat = {ppat_desc = Ppat_var name}; 
+                    pvb_pat = {ppat_desc = Ppat_var name};
                     pvb_expr = {pexp_desc = Pexp_constraint (_, typ)}
                   } as _makerVb) :: []))
-                } -> 
+                } ->
                 Sig.value (Val.mk ~loc:pstr_loc name typ)
               | _ -> Sig.type_ []
               )
           )
       ) tdcls ([],[], [], [])  in
-  
+
   (Str.type_ tdcls :: code, Sig.type_ tdcls_sig :: code_sig)
 (* still need perform transformation for non-abstract type*)
 
