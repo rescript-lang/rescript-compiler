@@ -447,10 +447,8 @@ let transform_interp loc s =
     | [ segment] ->
       aux loc segment
     | a::rest ->
-      List.fold_left (fun (acc : Parsetree.expression)
-       (x : segment) ->
-          concat_exp (aux loc x) acc )
-        (aux loc a) rest
+      Ext_list.fold_left rest (aux loc a) (fun acc x ->
+          concat_exp (aux loc x) acc )        
   with
     Error (start,pos, error)
     ->

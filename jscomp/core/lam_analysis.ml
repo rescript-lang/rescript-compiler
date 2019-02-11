@@ -304,7 +304,7 @@ let rec size (lam : Lam.t) =
     | Lswitch(_, _) -> really_big ()
     | Lstringswitch(_,_,_) -> really_big ()
     | Lstaticraise (i,ls) -> 
-        List.fold_left (fun acc x -> size x + acc) 1 ls 
+        Ext_list.fold_left ls 1 (fun acc x -> size x + acc) 
     | Lstaticcatch(l1, (i,x), l2) -> really_big () 
     | Ltrywith(l1, v, l2) -> really_big ()
     | Lifthenelse(l1, l2, l3) -> 1 + size  l1 + size  l2 +  size  l3
@@ -330,11 +330,11 @@ and size_constant x =
   | Const_string _ ->  1
   | Const_some s -> size_constant s   
   | Const_block (_, _, str) 
-    ->  List.fold_left (fun acc x -> acc + size_constant x ) 0 str
+    ->  Ext_list.fold_left str 0 (fun acc x -> acc + size_constant x ) 
   | Const_float_array xs  -> List.length xs
 
 and size_lams acc (lams : Lam.t list) = 
-  List.fold_left (fun acc l -> acc  + size l ) acc lams
+  Ext_list.fold_left lams acc (fun acc l -> acc  + size l ) 
 let args_all_const (args : Lam.t list) =
   Ext_list.for_all args (fun x -> match x with Lconst _ -> true | _ -> false) 
     

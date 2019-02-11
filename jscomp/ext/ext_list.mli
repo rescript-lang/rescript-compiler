@@ -64,8 +64,10 @@ val map_append :
   'a list
 
 val fold_right : 
-  'a list -> 'b -> 
-  ('a -> 'b -> 'b) -> 'b
+  'a list -> 
+  'b -> 
+  ('a -> 'b -> 'b) -> 
+  'b
 
 val fold_right2 : 
   'a list -> 
@@ -331,7 +333,7 @@ val fold_left2:
 val fold_left:    
     'a list -> 
     'b -> 
-    ('a -> 'b -> 'b) -> 
+    ('b -> 'a -> 'b) -> 
     'b
 
 val singleton_exn:     

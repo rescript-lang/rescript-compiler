@@ -285,7 +285,7 @@ let rec seq ?comment (e0 : t) (e1 : t) : t =
 
 let fuse_to_seq x xs = 
   if xs = [] then x  
-  else List.fold_left seq x xs 
+  else Ext_list.fold_left xs x seq 
 
 let empty_string_literal : t = 
   {expression_desc = Str (true,""); comment = None}  

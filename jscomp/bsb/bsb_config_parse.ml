@@ -302,8 +302,8 @@ let interpret_json
     |? (Bsb_build_schemas.cut_generators, `Bool (fun b -> cut_generators := b))
     |? (Bsb_build_schemas.generators, `Arr (fun s ->
         generators :=
-          Array.fold_left (fun acc json -> 
-              match (json : Ext_json_types.t) with 
+          Ext_array.fold_left s String_map.empty (fun acc json -> 
+              match json with 
               | Obj {map = m ; loc}  -> 
                 begin match String_map.find_opt  m Bsb_build_schemas.name,
                             String_map.find_opt  m Bsb_build_schemas.command with 
@@ -312,7 +312,7 @@ let interpret_json
                 | _, _ -> 
                   Bsb_exception.errorf ~loc {| generators exepect format like { "name" : "cppo",  "command"  : "cppo $in -o $out"} |}
                 end
-              | _ -> acc ) String_map.empty  s  ))
+              | _ -> acc ) ))
     |? (Bsb_build_schemas.refmt_flags, `Arr (fun s -> refmt_flags := get_list_string s))
     |? (Bsb_build_schemas.entries, `Arr (fun s -> entries := parse_entries s))
     |> ignore ;

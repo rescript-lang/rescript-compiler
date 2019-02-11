@@ -69,15 +69,15 @@ let map_open_tuple
   match destruct_open_tuple e [] with
   | None ->  None (** not an open tuple *)
   | Some (qualifiers, es, attrs ) ->
-    Some (List.fold_left (fun x hole  ->
+    Some (Ext_list.fold_left qualifiers (f es attrs) (fun x hole  ->
         match hole with
         | Let_open (flag, lid,loc,attrs) ->
-          {Parsetree.
+          {
             pexp_desc = Pexp_open (flag,lid,x);
             pexp_attributes = attrs;
             pexp_loc = loc
           }
-      ) (f es attrs) qualifiers)
+      ) )
 (*
   [let (a,b) = M.N.(c,d) ]
   =>
@@ -108,15 +108,15 @@ let flattern_tuple_pattern_vb
                  ( match wholes with
                    | [] -> exp
                    | _ ->
-                     List.fold_left (fun x  whole ->
+                     Ext_list.fold_left wholes exp (fun x  whole ->
                          match whole with
                          | Let_open (flag,lid,loc,attrs) ->
-                           {Parsetree.
+                           {
                              pexp_desc = Pexp_open(flag,lid,x);
                              pexp_attributes = attrs;
                              pexp_loc = loc
                            }
-                       ) exp wholes) ;
+                       ) ) ;
                pvb_attributes;
                pvb_loc ;
              } :: acc

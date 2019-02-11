@@ -94,15 +94,12 @@ let rec process_line cwd filedir  line =
         | _
           ->  Ext_pervasives.failwithf ~loc:__LOC__ "invalid line %s" line
       end
-and read_lines (cwd : string) (file : string) : string list =
-  file
-  |> Ext_io.rev_lines_of_file
-  |> List.fold_left (fun acc f ->
+and read_lines (cwd : string) (file : string) : string list =    
+  Ext_list.fold_left (Ext_io.rev_lines_of_file file) [] (fun acc f ->
       let filedir  =   Filename.dirname file in
       let extras = process_line  cwd filedir f in
       Ext_list.append extras   acc
-    ) []
-
+    ) 
 let implementation sourcefile =
   let content = Ext_io.load_file sourcefile in
   let ast =

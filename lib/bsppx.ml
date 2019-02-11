@@ -6039,8 +6039,10 @@ val map_append :
   'a list
 
 val fold_right : 
-  'a list -> 'b -> 
-  ('a -> 'b -> 'b) -> 'b
+  'a list -> 
+  'b -> 
+  ('a -> 'b -> 'b) -> 
+  'b
 
 val fold_right2 : 
   'a list -> 
@@ -6306,7 +6308,7 @@ val fold_left2:
 val fold_left:    
     'a list -> 
     'b -> 
-    ('a -> 'b -> 'b) -> 
+    ('b -> 'a -> 'b) -> 
     'b
 
 val singleton_exn:     
@@ -6900,10 +6902,6 @@ let rec split_map l f =
     b1::b2::b3::b4::b5::bss
 
 
-let reduce_from_left lst fn = 
-  match lst with 
-  | first :: rest ->  List.fold_left fn first rest 
-  | _ -> invalid_arg "Ext_list.reduce_from_left"
 
 
 let sort_via_array lst cmp =
@@ -6979,7 +6977,12 @@ let rec concat_append
 let rec fold_left l accu f =
   match l with
     [] -> accu
-  | a::l -> fold_left l (f a accu) f 
+  | a::l -> fold_left l (f accu a) f 
+  
+let reduce_from_left lst fn = 
+  match lst with 
+  | first :: rest ->  fold_left rest first fn 
+  | _ -> invalid_arg "Ext_list.reduce_from_left"
 
 let rec fold_left2 l1 l2 accu f =
   match (l1, l2) with
@@ -7676,6 +7679,375 @@ let js_regex_checker s =
   | exception Ext_utf8.Invalid_utf8 _ -> false 
 
 end
+module Ext_array : sig 
+#1 "ext_array.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+(** Some utilities for {!Array} operations *)
+val reverse_range : 'a array -> int -> int -> unit
+val reverse_in_place : 'a array -> unit
+val reverse : 'a array -> 'a array 
+val reverse_of_list : 'a list -> 'a array
+
+val filter : ('a -> bool) -> 'a array -> 'a array
+
+val filter_map : ('a -> 'b option) -> 'a array -> 'b array
+
+val range : int -> int -> int array
+
+val map2i : (int -> 'a -> 'b -> 'c ) -> 'a array -> 'b array -> 'c array
+
+val to_list_f : ('a -> 'b) -> 'a array -> 'b list 
+val to_list_map : ('a -> 'b option) -> 'a array -> 'b list 
+
+val to_list_map_acc : 
+  ('a -> 'b option) -> 
+  'a array -> 
+  'b list -> 
+  'b list 
+
+val of_list_map : 
+  'a list -> 
+  ('a -> 'b) -> 
+  'b array 
+
+val rfind_with_index : 'a array -> ('a -> 'b -> bool) -> 'b -> int
+
+
+type 'a split = [ `No_split | `Split of 'a array * 'a array ]
+
+val rfind_and_split : 
+  'a array ->
+  ('a -> 'b -> bool) ->
+  'b -> 'a split
+
+val find_and_split : 
+  'a array ->
+  ('a -> 'b -> bool) ->
+  'b -> 'a split
+
+val exists : ('a -> bool) -> 'a array -> bool 
+
+val is_empty : 'a array -> bool 
+
+val for_all2_no_exn : 
+  'a array ->
+  'b array -> 
+  ('a -> 'b -> bool) -> 
+  bool
+
+val map :   
+  'a array -> 
+  ('a -> 'b) -> 
+  'b array
+
+val iter :
+  'a array -> 
+  ('a -> unit) -> 
+  unit
+
+val fold_left :   
+  'b array -> 
+  'a -> 
+  ('a -> 'b -> 'a) ->   
+  'a
+end = struct
+#1 "ext_array.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+let reverse_range a i len =
+  if len = 0 then ()
+  else
+    for k = 0 to (len-1)/2 do
+      let t = Array.unsafe_get a (i+k) in
+      Array.unsafe_set a (i+k) ( Array.unsafe_get a (i+len-1-k));
+      Array.unsafe_set a (i+len-1-k) t;
+    done
+
+
+let reverse_in_place a =
+  reverse_range a 0 (Array.length a)
+
+let reverse a =
+  let b_len = Array.length a in
+  if b_len = 0 then [||] else  
+    let b = Array.copy a in  
+    for i = 0 to  b_len - 1 do
+      Array.unsafe_set b i (Array.unsafe_get a (b_len - 1 -i )) 
+    done;
+    b  
+
+let reverse_of_list =  function
+  | [] -> [||]
+  | hd::tl as l ->
+    let len = List.length l in
+    let a = Array.make len hd in
+    let rec fill i = function
+      | [] -> a
+      | hd::tl -> Array.unsafe_set a (len - i - 2) hd; fill (i+1) tl in
+    fill 0 tl
+
+let filter f a =
+  let arr_len = Array.length a in
+  let rec aux acc i =
+    if i = arr_len 
+    then reverse_of_list acc 
+    else
+      let v = Array.unsafe_get a i in
+      if f  v then 
+        aux (v::acc) (i+1)
+      else aux acc (i + 1) 
+  in aux [] 0
+
+
+let filter_map (f : _ -> _ option) a =
+  let arr_len = Array.length a in
+  let rec aux acc i =
+    if i = arr_len 
+    then reverse_of_list acc 
+    else
+      let v = Array.unsafe_get a i in
+      match f  v with 
+      | Some v -> 
+        aux (v::acc) (i+1)
+      | None -> 
+        aux acc (i + 1) 
+  in aux [] 0
+
+let range from to_ =
+  if from > to_ then invalid_arg "Ext_array.range"  
+  else Array.init (to_ - from + 1) (fun i -> i + from)
+
+let map2i f a b = 
+  let len = Array.length a in 
+  if len <> Array.length b then 
+    invalid_arg "Ext_array.map2i"  
+  else
+    Array.mapi (fun i a -> f i  a ( Array.unsafe_get b i )) a 
+
+let rec tolist_f_aux a f  i res =
+  if i < 0 then res else
+    let v = Array.unsafe_get a i in
+    tolist_f_aux a f  (i - 1)
+      (f v :: res)
+       
+let to_list_f f a = tolist_f_aux a f (Array.length a  - 1) []
+
+let rec tolist_aux a f  i res =
+  if i < 0 then res else
+    let v = Array.unsafe_get a i in
+    tolist_aux a f  (i - 1)
+      (match f v with
+       | Some v -> v :: res
+       | None -> res) 
+
+let to_list_map f a = 
+  tolist_aux a f (Array.length a - 1) []
+
+let to_list_map_acc f a acc = 
+  tolist_aux a f (Array.length a - 1) acc
+
+
+let of_list_map a f = 
+  match a with 
+  | [] -> [||]
+  | [a0] -> 
+    let b0 = f a0 in
+    [|b0|]
+  | [a0;a1] -> 
+    let b0 = f a0 in  
+    let b1 = f a1 in 
+    [|b0;b1|]
+  | [a0;a1;a2] -> 
+    let b0 = f a0 in  
+    let b1 = f a1 in 
+    let b2 = f a2 in  
+    [|b0;b1;b2|]
+  | [a0;a1;a2;a3] -> 
+    let b0 = f a0 in  
+    let b1 = f a1 in 
+    let b2 = f a2 in  
+    let b3 = f a3 in 
+    [|b0;b1;b2;b3|]
+  | [a0;a1;a2;a3;a4] -> 
+    let b0 = f a0 in  
+    let b1 = f a1 in 
+    let b2 = f a2 in  
+    let b3 = f a3 in 
+    let b4 = f a4 in 
+    [|b0;b1;b2;b3;b4|]
+
+  | a0::a1::a2::a3::a4::tl -> 
+    let b0 = f a0 in  
+    let b1 = f a1 in 
+    let b2 = f a2 in  
+    let b3 = f a3 in 
+    let b4 = f a4 in 
+    let len = List.length tl + 5 in 
+    let arr = Array.make len b0  in
+    Array.unsafe_set arr 1 b1 ;  
+    Array.unsafe_set arr 2 b2 ;
+    Array.unsafe_set arr 3 b3 ; 
+    Array.unsafe_set arr 4 b4 ; 
+    let rec fill i = function
+      | [] -> arr 
+      | hd :: tl -> 
+        Array.unsafe_set arr i (f hd); 
+        fill (i + 1) tl in 
+    fill 5 tl
+
+(**
+   {[
+     # rfind_with_index [|1;2;3|] (=) 2;;
+     - : int = 1
+               # rfind_with_index [|1;2;3|] (=) 1;;
+     - : int = 0
+               # rfind_with_index [|1;2;3|] (=) 3;;
+     - : int = 2
+               # rfind_with_index [|1;2;3|] (=) 4;;
+     - : int = -1
+   ]}
+*)
+let rfind_with_index arr cmp v = 
+  let len = Array.length arr in 
+  let rec aux i = 
+    if i < 0 then i
+    else if  cmp (Array.unsafe_get arr i) v then i
+    else aux (i - 1) in 
+  aux (len - 1)
+
+type 'a split = [ `No_split | `Split of 'a array * 'a array ]
+let rfind_and_split arr cmp v : _ split = 
+  let i = rfind_with_index arr cmp v in 
+  if  i < 0 then 
+    `No_split 
+  else 
+    `Split (Array.sub arr 0 i , Array.sub arr  (i + 1 ) (Array.length arr - i - 1 ))
+
+
+let find_with_index arr cmp v = 
+  let len  = Array.length arr in 
+  let rec aux i len = 
+    if i >= len then -1 
+    else if cmp (Array.unsafe_get arr i ) v then i 
+    else aux (i + 1) len in 
+  aux 0 len
+
+let find_and_split arr cmp v : _ split = 
+  let i = find_with_index arr cmp v in 
+  if i < 0 then 
+    `No_split
+  else
+    `Split (Array.sub arr 0 i, Array.sub arr (i + 1 ) (Array.length arr - i - 1))        
+
+(** TODO: available since 4.03, use {!Array.exists} *)
+
+let exists p a =
+  let n = Array.length a in
+  let rec loop i =
+    if i = n then false
+    else if p (Array.unsafe_get a i) then true
+    else loop (succ i) in
+  loop 0
+
+
+let is_empty arr =
+  Array.length arr = 0
+
+
+let rec unsafe_loop index len p xs ys  = 
+  if index >= len then true
+  else 
+    p 
+      (Array.unsafe_get xs index)
+      (Array.unsafe_get ys index) &&
+    unsafe_loop (succ index) len p xs ys 
+
+let for_all2_no_exn xs ys p = 
+  let len_xs = Array.length xs in 
+  let len_ys = Array.length ys in 
+  len_xs = len_ys &&    
+  unsafe_loop 0 len_xs p xs ys
+
+
+let map a f =
+  let open Array in 
+  let l = length a in
+  if l = 0 then [||] else begin
+    let r = make l (f(unsafe_get a 0)) in
+    for i = 1 to l - 1 do
+      unsafe_set r i (f(unsafe_get a i))
+    done;
+    r
+  end
+
+let iter a f =
+  let open Array in 
+  for i = 0 to length a - 1 do f(unsafe_get a i) done
+
+
+  let fold_left a x f =
+    let open Array in 
+    let r = ref x in    
+    for i = 0 to length a - 1 do
+      r := f !r (unsafe_get a i)
+    done;
+    !r
+  
+end
 module Map_gen
 = struct
 #1 "map_gen.ml"
@@ -8045,7 +8417,7 @@ module type S =
        but equal bindings will be chosen for equal maps.
      *)
 
-    val split: key -> 'a t -> 'a t * 'a option * 'a t
+    val split: 'a t -> key -> 'a t * 'a option * 'a t
     (** [split x m] returns a triple [(l, data, r)], where
           [l] is the map with all the bindings of [m] whose key
         is strictly less than [x];
@@ -8215,25 +8587,25 @@ let rec remove (tree : _ Map_gen.t as 'a) x : 'a = match tree with
       bal l v d (remove r x )
 
 
-let rec split x (tree : _ Map_gen.t as 'a) : 'a * _ option * 'a  = match tree with 
+let rec split (tree : _ Map_gen.t as 'a) x : 'a * _ option * 'a  = match tree with 
   | Empty ->
     (Empty, None, Empty)
   | Node(l, v, d, r, _) ->
     let c = compare_key x v in
     if c = 0 then (l, Some d, r)
     else if c < 0 then
-      let (ll, pres, rl) = split x l in (ll, pres, Map_gen.join rl v d r)
+      let (ll, pres, rl) = split l x in (ll, pres, Map_gen.join rl v d r)
     else
-      let (lr, pres, rr) = split x r in (Map_gen.join l v d lr, pres, rr)
+      let (lr, pres, rr) = split r x in (Map_gen.join l v d lr, pres, rr)
 
 let rec merge (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) f  : _ Map_gen.t =
   match (s1, s2) with
   | (Empty, Empty) -> Empty
   | (Node (l1, v1, d1, r1, h1), _) when h1 >= height s2 ->
-    let (l2, d2, r2) = split v1 s2 in
+    let (l2, d2, r2) = split s2 v1 in
     Map_gen.concat_or_join (merge l1 l2 f) v1 (f v1 (Some d1) d2) (merge r1 r2 f)
   | (_, Node (l2, v2, d2, r2, h2)) ->
-    let (l1, d1, r1) = split v2 s1 in
+    let (l1, d1, r1) = split s1 v2 in
     Map_gen.concat_or_join (merge l1 l2 f) v2 (f v2 d1 (Some d2)) (merge r1 r2 f)
   | _ ->
     assert false
@@ -8242,14 +8614,14 @@ let rec disjoint_merge  (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) : _ Map_gen.t =
   match (s1, s2) with
   | (Empty, Empty) -> Empty
   | (Node (l1, v1, d1, r1, h1), _) when h1 >= height s2 ->
-    begin match split v1 s2 with 
+    begin match split s2 v1 with 
     | l2, None, r2 -> 
       Map_gen.join (disjoint_merge  l1 l2) v1 d1 (disjoint_merge r1 r2)
     | _, Some _, _ ->
       raise (Duplicate_key  v1)
     end        
   | (_, Node (l2, v2, d2, r2, h2)) ->
-    begin match  split v2 s1 with 
+    begin match  split s1 v2 with 
     | (l1, None, r1) -> 
       Map_gen.join (disjoint_merge  l1 l2) v2 d2 (disjoint_merge  r1 r2)
     | (_, Some _, _) -> 
@@ -8265,12 +8637,12 @@ let compare m1 m2 cmp = Map_gen.compare compare_key cmp m1 m2
 let equal m1 m2 cmp = Map_gen.equal compare_key cmp m1 m2 
 
 let add_list (xs : _ list ) init = 
-  List.fold_left (fun acc (k,v) -> add acc k v ) init xs 
+  Ext_list.fold_left xs init (fun  acc (k,v) -> add acc k v )
 
 let of_list xs = add_list xs empty
 
 let of_array xs = 
-  Array.fold_left (fun acc (k,v) -> add acc k v ) empty xs
+  Ext_array.fold_left xs empty (fun acc (k,v) -> add acc k v ) 
 
 end
 module Ast_payload : sig 
@@ -10281,10 +10653,8 @@ let transform_interp loc s =
     | [ segment] ->
       aux loc segment
     | a::rest ->
-      List.fold_left (fun (acc : Parsetree.expression)
-       (x : segment) ->
-          concat_exp (aux loc x) acc )
-        (aux loc a) rest
+      Ext_list.fold_left rest (aux loc a) (fun acc x ->
+          concat_exp (aux loc x) acc )        
   with
     Error (start,pos, error)
     ->
@@ -11376,360 +11746,6 @@ let error_unescaped_delimiter loc txt =
 *)
 
 end
-module Ext_array : sig 
-#1 "ext_array.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-(** Some utilities for {!Array} operations *)
-val reverse_range : 'a array -> int -> int -> unit
-val reverse_in_place : 'a array -> unit
-val reverse : 'a array -> 'a array 
-val reverse_of_list : 'a list -> 'a array
-
-val filter : ('a -> bool) -> 'a array -> 'a array
-
-val filter_map : ('a -> 'b option) -> 'a array -> 'b array
-
-val range : int -> int -> int array
-
-val map2i : (int -> 'a -> 'b -> 'c ) -> 'a array -> 'b array -> 'c array
-
-val to_list_f : ('a -> 'b) -> 'a array -> 'b list 
-val to_list_map : ('a -> 'b option) -> 'a array -> 'b list 
-
-val to_list_map_acc : 
-  ('a -> 'b option) -> 
-  'a array -> 
-  'b list -> 
-  'b list 
-
-val of_list_map : 
-  'a list -> 
-  ('a -> 'b) -> 
-  'b array 
-
-val rfind_with_index : 'a array -> ('a -> 'b -> bool) -> 'b -> int
-
-
-type 'a split = [ `No_split | `Split of 'a array * 'a array ]
-
-val rfind_and_split : 
-  'a array ->
-  ('a -> 'b -> bool) ->
-  'b -> 'a split
-
-val find_and_split : 
-  'a array ->
-  ('a -> 'b -> bool) ->
-  'b -> 'a split
-
-val exists : ('a -> bool) -> 'a array -> bool 
-
-val is_empty : 'a array -> bool 
-
-val for_all2_no_exn : 
-  'a array ->
-  'b array -> 
-  ('a -> 'b -> bool) -> 
-  bool
-
-val map :   
-  'a array -> 
-  ('a -> 'b) -> 
-  'b array
-
-val iter :
-  'a array -> 
-  ('a -> unit) -> 
-  unit
-end = struct
-#1 "ext_array.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-let reverse_range a i len =
-  if len = 0 then ()
-  else
-    for k = 0 to (len-1)/2 do
-      let t = Array.unsafe_get a (i+k) in
-      Array.unsafe_set a (i+k) ( Array.unsafe_get a (i+len-1-k));
-      Array.unsafe_set a (i+len-1-k) t;
-    done
-
-
-let reverse_in_place a =
-  reverse_range a 0 (Array.length a)
-
-let reverse a =
-  let b_len = Array.length a in
-  if b_len = 0 then [||] else  
-    let b = Array.copy a in  
-    for i = 0 to  b_len - 1 do
-      Array.unsafe_set b i (Array.unsafe_get a (b_len - 1 -i )) 
-    done;
-    b  
-
-let reverse_of_list =  function
-  | [] -> [||]
-  | hd::tl as l ->
-    let len = List.length l in
-    let a = Array.make len hd in
-    let rec fill i = function
-      | [] -> a
-      | hd::tl -> Array.unsafe_set a (len - i - 2) hd; fill (i+1) tl in
-    fill 0 tl
-
-let filter f a =
-  let arr_len = Array.length a in
-  let rec aux acc i =
-    if i = arr_len 
-    then reverse_of_list acc 
-    else
-      let v = Array.unsafe_get a i in
-      if f  v then 
-        aux (v::acc) (i+1)
-      else aux acc (i + 1) 
-  in aux [] 0
-
-
-let filter_map (f : _ -> _ option) a =
-  let arr_len = Array.length a in
-  let rec aux acc i =
-    if i = arr_len 
-    then reverse_of_list acc 
-    else
-      let v = Array.unsafe_get a i in
-      match f  v with 
-      | Some v -> 
-        aux (v::acc) (i+1)
-      | None -> 
-        aux acc (i + 1) 
-  in aux [] 0
-
-let range from to_ =
-  if from > to_ then invalid_arg "Ext_array.range"  
-  else Array.init (to_ - from + 1) (fun i -> i + from)
-
-let map2i f a b = 
-  let len = Array.length a in 
-  if len <> Array.length b then 
-    invalid_arg "Ext_array.map2i"  
-  else
-    Array.mapi (fun i a -> f i  a ( Array.unsafe_get b i )) a 
-
-let rec tolist_f_aux a f  i res =
-  if i < 0 then res else
-    let v = Array.unsafe_get a i in
-    tolist_f_aux a f  (i - 1)
-      (f v :: res)
-       
-let to_list_f f a = tolist_f_aux a f (Array.length a  - 1) []
-
-let rec tolist_aux a f  i res =
-  if i < 0 then res else
-    let v = Array.unsafe_get a i in
-    tolist_aux a f  (i - 1)
-      (match f v with
-       | Some v -> v :: res
-       | None -> res) 
-
-let to_list_map f a = 
-  tolist_aux a f (Array.length a - 1) []
-
-let to_list_map_acc f a acc = 
-  tolist_aux a f (Array.length a - 1) acc
-
-
-let of_list_map a f = 
-  match a with 
-  | [] -> [||]
-  | [a0] -> 
-    let b0 = f a0 in
-    [|b0|]
-  | [a0;a1] -> 
-    let b0 = f a0 in  
-    let b1 = f a1 in 
-    [|b0;b1|]
-  | [a0;a1;a2] -> 
-    let b0 = f a0 in  
-    let b1 = f a1 in 
-    let b2 = f a2 in  
-    [|b0;b1;b2|]
-  | [a0;a1;a2;a3] -> 
-    let b0 = f a0 in  
-    let b1 = f a1 in 
-    let b2 = f a2 in  
-    let b3 = f a3 in 
-    [|b0;b1;b2;b3|]
-  | [a0;a1;a2;a3;a4] -> 
-    let b0 = f a0 in  
-    let b1 = f a1 in 
-    let b2 = f a2 in  
-    let b3 = f a3 in 
-    let b4 = f a4 in 
-    [|b0;b1;b2;b3;b4|]
-
-  | a0::a1::a2::a3::a4::tl -> 
-    let b0 = f a0 in  
-    let b1 = f a1 in 
-    let b2 = f a2 in  
-    let b3 = f a3 in 
-    let b4 = f a4 in 
-    let len = List.length tl + 5 in 
-    let arr = Array.make len b0  in
-    Array.unsafe_set arr 1 b1 ;  
-    Array.unsafe_set arr 2 b2 ;
-    Array.unsafe_set arr 3 b3 ; 
-    Array.unsafe_set arr 4 b4 ; 
-    let rec fill i = function
-      | [] -> arr 
-      | hd :: tl -> 
-        Array.unsafe_set arr i (f hd); 
-        fill (i + 1) tl in 
-    fill 5 tl
-
-(**
-   {[
-     # rfind_with_index [|1;2;3|] (=) 2;;
-     - : int = 1
-               # rfind_with_index [|1;2;3|] (=) 1;;
-     - : int = 0
-               # rfind_with_index [|1;2;3|] (=) 3;;
-     - : int = 2
-               # rfind_with_index [|1;2;3|] (=) 4;;
-     - : int = -1
-   ]}
-*)
-let rfind_with_index arr cmp v = 
-  let len = Array.length arr in 
-  let rec aux i = 
-    if i < 0 then i
-    else if  cmp (Array.unsafe_get arr i) v then i
-    else aux (i - 1) in 
-  aux (len - 1)
-
-type 'a split = [ `No_split | `Split of 'a array * 'a array ]
-let rfind_and_split arr cmp v : _ split = 
-  let i = rfind_with_index arr cmp v in 
-  if  i < 0 then 
-    `No_split 
-  else 
-    `Split (Array.sub arr 0 i , Array.sub arr  (i + 1 ) (Array.length arr - i - 1 ))
-
-
-let find_with_index arr cmp v = 
-  let len  = Array.length arr in 
-  let rec aux i len = 
-    if i >= len then -1 
-    else if cmp (Array.unsafe_get arr i ) v then i 
-    else aux (i + 1) len in 
-  aux 0 len
-
-let find_and_split arr cmp v : _ split = 
-  let i = find_with_index arr cmp v in 
-  if i < 0 then 
-    `No_split
-  else
-    `Split (Array.sub arr 0 i, Array.sub arr (i + 1 ) (Array.length arr - i - 1))        
-
-(** TODO: available since 4.03, use {!Array.exists} *)
-
-let exists p a =
-  let n = Array.length a in
-  let rec loop i =
-    if i = n then false
-    else if p (Array.unsafe_get a i) then true
-    else loop (succ i) in
-  loop 0
-
-
-let is_empty arr =
-  Array.length arr = 0
-
-
-let rec unsafe_loop index len p xs ys  = 
-  if index >= len then true
-  else 
-    p 
-      (Array.unsafe_get xs index)
-      (Array.unsafe_get ys index) &&
-    unsafe_loop (succ index) len p xs ys 
-
-let for_all2_no_exn xs ys p = 
-  let len_xs = Array.length xs in 
-  let len_ys = Array.length ys in 
-  len_xs = len_ys &&    
-  unsafe_loop 0 len_xs p xs ys
-
-
-let map a f =
-  let open Array in 
-  let l = length a in
-  if l = 0 then [||] else begin
-    let r = make l (f(unsafe_get a 0)) in
-    for i = 1 to l - 1 do
-      unsafe_set r i (f(unsafe_get a i))
-    done;
-    r
-  end
-
-let iter a f =
-  let open Array in 
-  for i = 0 to length a - 1 do f(unsafe_get a i) done
-
-end
 module Ext_util : sig 
 #1 "ext_util.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -11920,7 +11936,7 @@ let elements set =
 
 let stats h =
   let mbl =
-    Array.fold_left (fun m b -> max m (List.length b)) 0 h.data in
+    Ext_array.fold_left h.data 0 (fun m b -> max m (List.length b)) in
   let histo = Array.make (mbl + 1) 0 in
   Ext_array.iter h.data
     (fun b ->
@@ -12423,16 +12439,13 @@ type ('a,'b) st =
 
 
 let process_method_attributes_rev (attrs : t) =
-  List.fold_left (fun (st,acc) (({txt ; loc}, payload) as attr : attr) ->
-
+  Ext_list.fold_left attrs ({get = None ; set = None}, []) (fun (st,acc) (({txt ; loc}, payload) as attr ) ->
       match txt  with
       | "bs.get" (* [@@bs.get{null; undefined}]*)
         ->
         let result =
-          List.fold_left
-            (fun
-              (null, undefined)
-              (({txt ; loc}, opt_expr) : Ast_payload.action) ->
+          Ext_list.fold_left (Ast_payload.ident_or_record_as_config loc payload) (false, false)
+            (fun (null, undefined) ({txt ; loc}, opt_expr) ->
               match txt with
               | "null" ->
                 (match opt_expr with
@@ -12454,16 +12467,15 @@ let process_method_attributes_rev (attrs : t) =
                     v,v
                 end
               | _ -> Bs_syntaxerr.err loc Unsupported_predicates
-            ) (false, false)
-            (Ast_payload.ident_or_record_as_config loc payload)  in
+            ) in
 
         ({st with get = Some result}, acc  )
 
       | "bs.set"
         ->
         let result =
-          List.fold_left
-            (fun st (({txt ; loc}, opt_expr) : Ast_payload.action) ->
+          Ext_list.fold_left (Ast_payload.ident_or_record_as_config loc payload) `Get 
+            (fun st ({txt ; loc}, opt_expr)  ->
                if txt =  "no_get" then
                  match opt_expr with
                  | None -> `No_get
@@ -12472,14 +12484,14 @@ let process_method_attributes_rev (attrs : t) =
                      `No_get
                    else `Get
                else Bs_syntaxerr.err loc Unsupported_predicates
-            ) `Get (Ast_payload.ident_or_record_as_config loc payload)  in
+            )  in
         (* properties -- void
               [@@bs.set{only}]
         *)
         {st with set = Some result }, acc
       | _ ->
         (st, attr::acc  )
-    ) ( {get = None ; set = None}, []) attrs
+    ) 
 
 type attr_kind = 
   | Nothing 
@@ -12488,7 +12500,7 @@ type attr_kind =
   | Method of attr
 
 let process_attributes_rev (attrs : t) : attr_kind * t =
-  List.fold_left (fun (st, acc) (({txt; loc}, _) as attr : attr) ->
+  Ext_list.fold_left attrs ( Nothing, []) (fun (st, acc) (({txt; loc}, _) as attr) ->
       match txt, st  with
       | "bs", (Nothing | Uncurry _)
         ->
@@ -12502,10 +12514,10 @@ let process_attributes_rev (attrs : t) : attr_kind * t =
         -> Bs_syntaxerr.err loc Conflict_bs_bs_this_bs_meth
       | _ , _ ->
         st, attr::acc
-    ) ( Nothing, []) attrs
+    ) 
 
 let process_pexp_fun_attributes_rev (attrs : t) =
-  List.fold_left (fun (st, acc) (({txt; loc}, _) as attr : attr) ->
+  Ext_list.fold_left attrs (`Nothing, []) (fun (st, acc) (({txt; loc}, _) as attr ) ->
       match txt, st  with
       | "bs.open", (`Nothing | `Exn)
         ->
@@ -12513,17 +12525,17 @@ let process_pexp_fun_attributes_rev (attrs : t) =
 
       | _ , _ ->
         st, attr::acc
-    ) ( `Nothing, []) attrs
+    ) 
 
-let process_bs attrs =
-  List.fold_left (fun (st, acc) (({txt; loc}, _) as attr : attr) ->
+let process_bs (attrs : t) =
+  Ext_list.fold_left attrs (`Nothing, []) (fun (st, acc) (({txt; loc}, _) as attr ) ->
       match txt, st  with
       | "bs", _
         ->
         `Has, acc
       | _ , _ ->
         st, attr::acc
-    ) ( `Nothing, []) attrs
+    ) 
 
 let process_external attrs =
   List.exists (fun (({txt; }, _)  : attr) ->
@@ -12537,10 +12549,9 @@ type derive_attr = {
   bs_deriving : Ast_payload.action list option
 }
 
-let process_derive_type attrs : derive_attr * t =
-  List.fold_left
-    (fun (st, acc)
-      (({txt ; loc}, payload  as attr): attr)  ->
+let process_derive_type (attrs : t) : derive_attr * t =
+  Ext_list.fold_left attrs ({explict_nonrec = false; bs_deriving = None }, []) 
+    (fun (st, acc) ({txt ; loc}, payload  as attr)  ->
       match  st, txt  with
       |  {bs_deriving = None}, "bs.deriving"
         ->
@@ -12557,13 +12568,12 @@ let process_derive_type attrs : derive_attr * t =
             { st with explict_nonrec = true }
           else st in
         st, attr::acc
-    ) ( {explict_nonrec = false; bs_deriving = None }, []) attrs
+    ) 
 
-let iter_process_derive_type attrs =
+let iter_process_derive_type (attrs : t) =
   let st = ref {explict_nonrec = false; bs_deriving = None } in
-  List.iter
-    (fun
-      (({txt ; loc}, payload  as attr): attr)  ->
+  Ext_list.iter attrs
+    (fun ({txt ; loc}, payload  as attr)  ->
       match  txt  with
       |  "bs.deriving"
         ->
@@ -12583,7 +12593,7 @@ let iter_process_derive_type attrs =
           { !st with explict_nonrec = true }
       (* non bs attribute, no need to mark its use *)
       | _ -> ()
-    )  attrs;
+    ) ;
   !st
 
 
@@ -15054,12 +15064,11 @@ end = struct
 let map_row_fields_into_ints ptyp_loc
     (row_fields : Parsetree.row_field list) 
   = 
-  let _, acc
-    = 
-    (List.fold_left 
+  let _, acc = 
+    Ext_list.fold_left row_fields (0, []) 
        (fun (i,acc) rtag -> 
           match rtag with 
-          | Parsetree.Rtag (label, attrs, true,  [])
+          | Rtag (label, attrs, true,  [])
             -> 
             begin match Ast_attributes.iter_process_bs_int_as attrs with 
               | Some i -> 
@@ -15071,7 +15080,7 @@ let map_row_fields_into_ints ptyp_loc
             end
           | _ -> 
             Bs_syntaxerr.err ptyp_loc Invalid_bs_int_type
-       ) (0, []) row_fields) in 
+       )  in 
   List.rev acc
 
 (** Note this is okay with enums, for variants,
@@ -15084,11 +15093,10 @@ let map_constructor_declarations_into_ints
   let mark = ref `nothing in 
   let _, acc
     = 
-    (List.fold_left 
-       (fun (i,acc) (rtag : Parsetree.constructor_declaration) -> 
-
+    Ext_list.fold_left row_fields (0, []) 
+       (fun (i,acc) rtag -> 
           let attrs = rtag.pcd_attributes in 
-          begin match Ast_attributes.iter_process_bs_int_as attrs with 
+           match Ast_attributes.iter_process_bs_int_as attrs with 
             | Some j -> 
               if j <> i then 
                 (
@@ -15101,9 +15109,7 @@ let map_constructor_declarations_into_ints
             | None -> 
               i + 1 , 
               ( i:: acc )
-          end
-
-       ) (0, []) row_fields) in 
+       ) in 
   match !mark with 
   | `nothing -> `Offset 0
   | `offset j -> `Offset j 
@@ -16075,21 +16081,20 @@ end = struct
 
 let variant_can_bs_unwrap_fields (row_fields : Parsetree.row_field list) : bool =
   let validity =
-    List.fold_left
+    Ext_list.fold_left row_fields `No_fields      
       begin fun st row ->
         match st, row with
         | (* we've seen no fields or only valid fields so far *)
           (`No_fields | `Valid_fields),
           (* and this field has one constructor arg that we can unwrap to *)
-          Parsetree.Rtag (label, attrs, false, ([ _ ]))
+          Rtag (label, attrs, false, ([ _ ]))
           ->
           `Valid_fields
         | (* otherwise, this field or a previous field was invalid *)
           _ ->
           `Invalid_field
       end
-      `No_fields
-      row_fields
+
   in
   match validity with
   | `Valid_fields -> true
@@ -17713,8 +17718,8 @@ let generic_to_uncurry_exp kind loc (self : Bs_ast_mapper.mapper)  pat body
 
   let result, rev_extra_args = aux [first_arg] body in 
   let body = 
-    List.fold_left (fun e p -> Ast_compatible.fun_ ~loc p e )
-      result rev_extra_args in
+    Ext_list.fold_left rev_extra_args result (fun e p -> Ast_compatible.fun_ ~loc p e )
+    in
   let len = List.length rev_extra_args in 
   let arity = 
     match kind with 
@@ -19833,15 +19838,15 @@ let map_open_tuple
   match destruct_open_tuple e [] with
   | None ->  None (** not an open tuple *)
   | Some (qualifiers, es, attrs ) ->
-    Some (List.fold_left (fun x hole  ->
+    Some (Ext_list.fold_left qualifiers (f es attrs) (fun x hole  ->
         match hole with
         | Let_open (flag, lid,loc,attrs) ->
-          {Parsetree.
+          {
             pexp_desc = Pexp_open (flag,lid,x);
             pexp_attributes = attrs;
             pexp_loc = loc
           }
-      ) (f es attrs) qualifiers)
+      ) )
 (*
   [let (a,b) = M.N.(c,d) ]
   =>
@@ -19872,15 +19877,15 @@ let flattern_tuple_pattern_vb
                  ( match wholes with
                    | [] -> exp
                    | _ ->
-                     List.fold_left (fun x  whole ->
+                     Ext_list.fold_left wholes exp (fun x  whole ->
                          match whole with
                          | Let_open (flag,lid,loc,attrs) ->
-                           {Parsetree.
+                           {
                              pexp_desc = Pexp_open(flag,lid,x);
                              pexp_attributes = attrs;
                              pexp_loc = loc
                            }
-                       ) exp wholes) ;
+                       ) ) ;
                pvb_attributes;
                pvb_loc ;
              } :: acc

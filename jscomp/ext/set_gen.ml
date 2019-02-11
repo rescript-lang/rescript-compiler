@@ -69,10 +69,10 @@ let rec iter  x f = match x with
   | Empty -> ()
   | Node(l, v, r, _) -> iter l f ; f v; iter r f 
 
-let rec fold f s accu =
+let rec fold s accu f =
   match s with
   | Empty -> accu
-  | Node(l, v, r, _) -> fold f r (f v (fold f l accu))
+  | Node(l, v, r, _) -> fold r (f v (fold l accu f)) f 
 
 let rec for_all x p = match x with
   | Empty -> true
@@ -364,7 +364,7 @@ module type S = sig
   val empty: t
   val is_empty: t -> bool
   val iter: t ->  (elt -> unit) -> unit
-  val fold: (elt -> 'a -> 'a) -> t -> 'a -> 'a
+  val fold: t -> 'a -> (elt -> 'a -> 'a) -> 'a
   val for_all: t -> (elt -> bool) ->  bool
   val exists: t -> (elt -> bool) -> bool
   val singleton: elt -> t
@@ -388,7 +388,7 @@ module type S = sig
   val subset: t -> t -> bool
   val filter: t -> (elt -> bool) ->  t
 
-  val split: elt -> t -> t * bool * t
+  val split: t -> elt -> t * bool * t
   val find:  t -> elt -> elt
   val of_list: elt list -> t
   val of_sorted_list : elt list ->  t

@@ -26,12 +26,11 @@
 let map_row_fields_into_ints ptyp_loc
     (row_fields : Parsetree.row_field list) 
   = 
-  let _, acc
-    = 
-    (List.fold_left 
+  let _, acc = 
+    Ext_list.fold_left row_fields (0, []) 
        (fun (i,acc) rtag -> 
           match rtag with 
-          | Parsetree.Rtag (label, attrs, true,  [])
+          | Rtag (label, attrs, true,  [])
             -> 
             begin match Ast_attributes.iter_process_bs_int_as attrs with 
               | Some i -> 
@@ -43,7 +42,7 @@ let map_row_fields_into_ints ptyp_loc
             end
           | _ -> 
             Bs_syntaxerr.err ptyp_loc Invalid_bs_int_type
-       ) (0, []) row_fields) in 
+       )  in 
   List.rev acc
 
 (** Note this is okay with enums, for variants,
@@ -56,11 +55,10 @@ let map_constructor_declarations_into_ints
   let mark = ref `nothing in 
   let _, acc
     = 
-    (List.fold_left 
-       (fun (i,acc) (rtag : Parsetree.constructor_declaration) -> 
-
+    Ext_list.fold_left row_fields (0, []) 
+       (fun (i,acc) rtag -> 
           let attrs = rtag.pcd_attributes in 
-          begin match Ast_attributes.iter_process_bs_int_as attrs with 
+           match Ast_attributes.iter_process_bs_int_as attrs with 
             | Some j -> 
               if j <> i then 
                 (
@@ -73,9 +71,7 @@ let map_constructor_declarations_into_ints
             | None -> 
               i + 1 , 
               ( i:: acc )
-          end
-
-       ) (0, []) row_fields) in 
+       ) in 
   match !mark with 
   | `nothing -> `Offset 0
   | `offset j -> `Offset j 

@@ -503,7 +503,7 @@ and pp_one_case_clause : 'a .
 and loop_case_clauses  :  'a . cxt ->
   P.t -> (P.t -> 'a -> unit) -> 'a J.case_clause list -> cxt
   = fun  cxt  f pp_cond cases ->
-    Ext_list.fold_left cases cxt (fun x acc -> pp_one_case_clause acc f pp_cond x)              
+    Ext_list.fold_left cases cxt (fun acc x -> pp_one_case_clause acc f pp_cond x)              
 
 and vident cxt f  (v : J.vident) =
   match v with

@@ -41,7 +41,7 @@ let adjust ( pos : position) (v : Ident.t) (fv : stats Ident_map.t) : stats Iden
 
 let param_map_of_list lst : stats Ident_map.t = 
   Ext_list.fold_left lst Ident_map.empty 
-    (fun l acc -> Ident_map.add acc l Lam_var_stats.fresh_stats ) 
+    (fun acc l -> Ident_map.add acc l Lam_var_stats.fresh_stats ) 
 
 let sink_pos = Lam_var_stats.sink    
 (** Sanity check, remove all varaibles in [local_set] in the last pass *)  
@@ -66,7 +66,7 @@ let free_variables
     local_set := Ident_set.add !local_set k in
   let local_add_list ks = 
     local_set :=  
-      Ext_list.fold_left ks !local_set (fun k acc -> Ident_set.add acc k) in    
+      Ext_list.fold_left ks !local_set Ident_set.add in    
   (* base don the envrionmet, recoring the use cases of arguments 
      relies on [identifier] uniquely bound *)    
   let used (cur_pos : position) (v : Ident.t) = 
@@ -94,7 +94,7 @@ let free_variables
       local_add id ;  
       iter sink_pos body
     | Lletrec(decl, body) ->
-      local_set := Ext_list.fold_left decl !local_set  (fun (id, _) acc -> 
+      local_set := Ext_list.fold_left decl !local_set  (fun acc (id, _) -> 
           Ident_set.add acc id) ;        
       Ext_list.iter decl (fun (_, exp) -> iter sink_pos exp);
       iter sink_pos body

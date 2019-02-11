@@ -42,7 +42,7 @@ let values_of_export
   : Js_cmj_format.cmj_value String_map.t 
   = 
   Ext_list.fold_left meta.exports  String_map.empty    
-    (fun (x : Ident.t) acc   ->
+    (fun  acc x ->
        let arity : Js_cmj_format.arity =
          match Ident_hashtbl.find_opt meta.ident_tbl x with 
          | Some (FunctionId {arity ; _}) -> Single arity 

@@ -1527,6 +1527,12 @@ val iter :
   'a array -> 
   ('a -> unit) -> 
   unit
+
+val fold_left :   
+  'b array -> 
+  'a -> 
+  ('a -> 'b -> 'a) ->   
+  'a
 end = struct
 #1 "ext_array.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -1787,1125 +1793,15 @@ let iter a f =
   let open Array in 
   for i = 0 to length a - 1 do f(unsafe_get a i) done
 
-end
-module Map_gen
-= struct
-#1 "map_gen.ml"
-(***********************************************************************)
-(*                                                                     *)
-(*                                OCaml                                *)
-(*                                                                     *)
-(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
-(*                                                                     *)
-(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
-(*  en Automatique.  All rights reserved.  This file is distributed    *)
-(*  under the terms of the GNU Library General Public License, with    *)
-(*  the special exception on linking described in file ../LICENSE.     *)
-(*                                                                     *)
-(***********************************************************************)
-(** adapted from stdlib *)
 
-type ('key,'a) t =
-  | Empty
-  | Node of ('key,'a) t * 'key * 'a * ('key,'a) t * int
-
-type ('key,'a) enumeration =
-  | End
-  | More of 'key * 'a * ('key,'a) t * ('key, 'a) enumeration
-
-let rec cardinal_aux acc  = function
-  | Empty -> acc 
-  | Node (l,_,_,r, _) -> 
-    cardinal_aux  (cardinal_aux (acc + 1)  r ) l 
-
-let cardinal s = cardinal_aux 0 s 
-
-let rec bindings_aux accu = function
-  | Empty -> accu
-  | Node(l, v, d, r, _) -> bindings_aux ((v, d) :: bindings_aux accu r) l
-
-let bindings s =
-  bindings_aux [] s
-
+  let fold_left a x f =
+    let open Array in 
+    let r = ref x in    
+    for i = 0 to length a - 1 do
+      r := f !r (unsafe_get a i)
+    done;
+    !r
   
-let rec fill_array_aux (s : _ t) i arr : int =    
-  match s with 
-  | Empty -> i 
-  | Node (l,k,v,r,_) -> 
-    let inext = fill_array_aux l i arr in 
-    Array.unsafe_set arr inext (k,v);
-    fill_array_aux r (inext + 1) arr 
-
-let to_sorted_array (s : ('key,'a) t)  : ('key * 'a ) array =    
-  match s with 
-  | Empty -> [||]
-  | Node(l,k,v,r,_) -> 
-    let len = 
-      cardinal_aux (cardinal_aux 1 r) l in 
-    let arr =
-      Array.make len (k,v) in  
-    ignore (fill_array_aux s 0 arr : int);
-    arr 
-let rec keys_aux accu = function
-    Empty -> accu
-  | Node(l, v, _, r, _) -> keys_aux (v :: keys_aux accu r) l
-
-let keys s = keys_aux [] s
-
-
-
-let rec cons_enum m e =
-  match m with
-    Empty -> e
-  | Node(l, v, d, r, _) -> cons_enum l (More(v, d, r, e))
-
-
-let height = function
-  | Empty -> 0
-  | Node(_,_,_,_,h) -> h
-
-let create l x d r =
-  let hl = height l and hr = height r in
-  Node(l, x, d, r, (if hl >= hr then hl + 1 else hr + 1))
-
-let singleton x d = Node(Empty, x, d, Empty, 1)
-
-let bal l x d r =
-  let hl = match l with Empty -> 0 | Node(_,_,_,_,h) -> h in
-  let hr = match r with Empty -> 0 | Node(_,_,_,_,h) -> h in
-  if hl > hr + 2 then begin
-    match l with
-      Empty -> invalid_arg "Map.bal"
-    | Node(ll, lv, ld, lr, _) ->
-      if height ll >= height lr then
-        create ll lv ld (create lr x d r)
-      else begin
-        match lr with
-          Empty -> invalid_arg "Map.bal"
-        | Node(lrl, lrv, lrd, lrr, _)->
-          create (create ll lv ld lrl) lrv lrd (create lrr x d r)
-      end
-  end else if hr > hl + 2 then begin
-    match r with
-      Empty -> invalid_arg "Map.bal"
-    | Node(rl, rv, rd, rr, _) ->
-      if height rr >= height rl then
-        create (create l x d rl) rv rd rr
-      else begin
-        match rl with
-          Empty -> invalid_arg "Map.bal"
-        | Node(rll, rlv, rld, rlr, _) ->
-          create (create l x d rll) rlv rld (create rlr rv rd rr)
-      end
-  end else
-    Node(l, x, d, r, (if hl >= hr then hl + 1 else hr + 1))
-
-let empty = Empty
-
-let is_empty = function Empty -> true | _ -> false
-
-let rec min_binding_exn = function
-    Empty -> raise Not_found
-  | Node(Empty, x, d, r, _) -> (x, d)
-  | Node(l, x, d, r, _) -> min_binding_exn l
-
-let choose = min_binding_exn
-
-let rec max_binding_exn = function
-    Empty -> raise Not_found
-  | Node(l, x, d, Empty, _) -> (x, d)
-  | Node(l, x, d, r, _) -> max_binding_exn r
-
-let rec remove_min_binding = function
-    Empty -> invalid_arg "Map.remove_min_elt"
-  | Node(Empty, x, d, r, _) -> r
-  | Node(l, x, d, r, _) -> bal (remove_min_binding l) x d r
-
-let merge t1 t2 =
-  match (t1, t2) with
-    (Empty, t) -> t
-  | (t, Empty) -> t
-  | (_, _) ->
-    let (x, d) = min_binding_exn t2 in
-    bal t1 x d (remove_min_binding t2)
-
-
-let rec iter x f = match x with 
-    Empty -> ()
-  | Node(l, v, d, r, _) ->
-    iter l f; f v d; iter r f
-
-let rec map x f = match x with
-    Empty ->
-    Empty
-  | Node(l, v, d, r, h) ->
-    let l' = map l f in
-    let d' = f d in
-    let r' = map r f in
-    Node(l', v, d', r', h)
-
-let rec mapi x f = match x with
-    Empty ->
-    Empty
-  | Node(l, v, d, r, h) ->
-    let l' = mapi l f in
-    let d' = f v d in
-    let r' = mapi r f in
-    Node(l', v, d', r', h)
-
-let rec fold m accu f =
-  match m with
-    Empty -> accu
-  | Node(l, v, d, r, _) ->
-    fold r (f v d (fold l accu f)) f 
-
-let rec for_all x p = match x with 
-    Empty -> true
-  | Node(l, v, d, r, _) -> p v d && for_all l p && for_all r p
-
-let rec exists x p = match x with
-    Empty -> false
-  | Node(l, v, d, r, _) -> p v d || exists l p || exists r p
-
-(* Beware: those two functions assume that the added k is *strictly*
-   smaller (or bigger) than all the present keys in the tree; it
-   does not test for equality with the current min (or max) key.
-
-   Indeed, they are only used during the "join" operation which
-   respects this precondition.
-*)
-
-let rec add_min_binding k v = function
-  | Empty -> singleton k v
-  | Node (l, x, d, r, h) ->
-    bal (add_min_binding k v l) x d r
-
-let rec add_max_binding k v = function
-  | Empty -> singleton k v
-  | Node (l, x, d, r, h) ->
-    bal l x d (add_max_binding k v r)
-
-(* Same as create and bal, but no assumptions are made on the
-   relative heights of l and r. *)
-
-let rec join l v d r =
-  match (l, r) with
-    (Empty, _) -> add_min_binding v d r
-  | (_, Empty) -> add_max_binding v d l
-  | (Node(ll, lv, ld, lr, lh), Node(rl, rv, rd, rr, rh)) ->
-    if lh > rh + 2 then bal ll lv ld (join lr v d r) else
-    if rh > lh + 2 then bal (join l v d rl) rv rd rr else
-      create l v d r
-
-(* Merge two trees l and r into one.
-   All elements of l must precede the elements of r.
-   No assumption on the heights of l and r. *)
-
-let concat t1 t2 =
-  match (t1, t2) with
-    (Empty, t) -> t
-  | (t, Empty) -> t
-  | (_, _) ->
-    let (x, d) = min_binding_exn t2 in
-    join t1 x d (remove_min_binding t2)
-
-let concat_or_join t1 v d t2 =
-  match d with
-  | Some d -> join t1 v d t2
-  | None -> concat t1 t2
-
-let rec filter x p = match x with
-    Empty -> Empty
-  | Node(l, v, d, r, _) ->
-    (* call [p] in the expected left-to-right order *)
-    let l' = filter l p in
-    let pvd = p v d in
-    let r' = filter r p in
-    if pvd then join l' v d r' else concat l' r'
-
-let rec partition x p = match x with
-    Empty -> (Empty, Empty)
-  | Node(l, v, d, r, _) ->
-    (* call [p] in the expected left-to-right order *)
-    let (lt, lf) = partition l p in
-    let pvd = p v d in
-    let (rt, rf) = partition r p in
-    if pvd
-    then (join lt v d rt, concat lf rf)
-    else (concat lt rt, join lf v d rf)
-
-let compare compare_key cmp_val m1 m2 =
-  let rec compare_aux e1  e2 =
-    match (e1, e2) with
-      (End, End) -> 0
-    | (End, _)  -> -1
-    | (_, End) -> 1
-    | (More(v1, d1, r1, e1), More(v2, d2, r2, e2)) ->
-      let c = compare_key v1 v2 in
-      if c <> 0 then c else
-        let c = cmp_val d1 d2 in
-        if c <> 0 then c else
-          compare_aux (cons_enum r1 e1) (cons_enum r2 e2)
-  in compare_aux (cons_enum m1 End) (cons_enum m2 End)
-
-let equal compare_key cmp m1 m2 =
-  let rec equal_aux e1 e2 =
-    match (e1, e2) with
-      (End, End) -> true
-    | (End, _)  -> false
-    | (_, End) -> false
-    | (More(v1, d1, r1, e1), More(v2, d2, r2, e2)) ->
-      compare_key v1 v2 = 0 && cmp d1 d2 &&
-      equal_aux (cons_enum r1 e1) (cons_enum r2 e2)
-  in equal_aux (cons_enum m1 End) (cons_enum m2 End)
-
-
-
-    
-module type S =
-  sig
-    type key
-    type +'a t
-    val empty: 'a t
-    val compare_key: key -> key -> int 
-    val is_empty: 'a t -> bool
-    val mem: 'a t -> key -> bool
-    val to_sorted_array : 
-      'a t -> (key * 'a ) array
-    val add: 'a t -> key -> 'a -> 'a t
-    (** [add x y m] 
-        If [x] was already bound in [m], its previous binding disappears. *)
-    val adjust: 'a t -> key -> ('a option->  'a) ->  'a t 
-    (** [adjust acc k replace ] if not exist [add (replace None ], otherwise 
-        [add k v (replace (Some old))]
-    *)
-    val singleton: key -> 'a -> 'a t
-
-    val remove: 'a t -> key -> 'a t
-    (** [remove x m] returns a map containing the same bindings as
-       [m], except for [x] which is unbound in the returned map. *)
-
-    val merge:
-         'a t -> 'b t ->
-         (key -> 'a option -> 'b option -> 'c option) ->  'c t
-    (** [merge f m1 m2] computes a map whose keys is a subset of keys of [m1]
-        and of [m2]. The presence of each such binding, and the corresponding
-        value, is determined with the function [f].
-        @since 3.12.0
-     *)
-
-    val disjoint_merge : 'a t -> 'a t -> 'a t
-     (* merge two maps, will raise if they have the same key *)
-    val compare: 'a t -> 'a t -> ('a -> 'a -> int) -> int
-    (** Total ordering between maps.  The first argument is a total ordering
-        used to compare data associated with equal keys in the two maps. *)
-
-    val equal: 'a t -> 'a t -> ('a -> 'a -> bool) ->  bool
-
-    val iter: 'a t -> (key -> 'a -> unit) ->  unit
-    (** [iter f m] applies [f] to all bindings in map [m].
-        The bindings are passed to [f] in increasing order. *)
-
-    val fold: 'a t -> 'b -> (key -> 'a -> 'b -> 'b) -> 'b
-    (** [fold f m a] computes [(f kN dN ... (f k1 d1 a)...)],
-       where [k1 ... kN] are the keys of all bindings in [m]
-       (in increasing order) *)
-
-    val for_all: 'a t -> (key -> 'a -> bool) -> bool
-    (** [for_all p m] checks if all the bindings of the map.
-        order unspecified
-     *)
-
-    val exists: 'a t -> (key -> 'a -> bool) -> bool
-    (** [exists p m] checks if at least one binding of the map
-        satisfy the predicate [p]. 
-        order unspecified
-     *)
-
-    val filter: 'a t -> (key -> 'a -> bool) -> 'a t
-    (** [filter p m] returns the map with all the bindings in [m]
-        that satisfy predicate [p].
-        order unspecified
-     *)
-
-    val partition: 'a t -> (key -> 'a -> bool) ->  'a t * 'a t
-    (** [partition p m] returns a pair of maps [(m1, m2)], where
-        [m1] contains all the bindings of [s] that satisfy the
-        predicate [p], and [m2] is the map with all the bindings of
-        [s] that do not satisfy [p].
-     *)
-
-    val cardinal: 'a t -> int
-    (** Return the number of bindings of a map. *)
-
-    val bindings: 'a t -> (key * 'a) list
-    (** Return the list of all bindings of the given map.
-       The returned list is sorted in increasing order with respect
-       to the ordering *)
-    val keys : 'a t -> key list 
-    (* Increasing order *)
-
-    val min_binding_exn: 'a t -> (key * 'a)
-    (** raise [Not_found] if the map is empty. *)
-
-    val max_binding_exn: 'a t -> (key * 'a)
-    (** Same as {!Map.S.min_binding} *)
-
-    val choose: 'a t -> (key * 'a)
-    (** Return one binding of the given map, or raise [Not_found] if
-       the map is empty. Which binding is chosen is unspecified,
-       but equal bindings will be chosen for equal maps.
-     *)
-
-    val split: key -> 'a t -> 'a t * 'a option * 'a t
-    (** [split x m] returns a triple [(l, data, r)], where
-          [l] is the map with all the bindings of [m] whose key
-        is strictly less than [x];
-          [r] is the map with all the bindings of [m] whose key
-        is strictly greater than [x];
-          [data] is [None] if [m] contains no binding for [x],
-          or [Some v] if [m] binds [v] to [x].
-        @since 3.12.0
-     *)
-
-    val find_exn: 'a t -> key ->  'a
-    (** [find x m] returns the current binding of [x] in [m],
-       or raises [Not_found] if no such binding exists. *)
-    val find_opt:  'a t ->  key ->'a option
-    val find_default: 'a t -> key  ->  'a  -> 'a 
-    val map: 'a t -> ('a -> 'b) -> 'b t
-    (** [map f m] returns a map with same domain as [m], where the
-       associated value [a] of all bindings of [m] has been
-       replaced by the result of the application of [f] to [a].
-       The bindings are passed to [f] in increasing order
-       with respect to the ordering over the type of the keys. *)
-
-    val mapi: 'a t ->  (key -> 'a -> 'b) -> 'b t
-    (** Same as {!Map.S.map}, but the function receives as arguments both the
-       key and the associated value for each binding of the map. *)
-
-    val of_list : (key * 'a) list -> 'a t 
-    val of_array : (key * 'a ) array -> 'a t 
-    val add_list : (key * 'b) list -> 'b t -> 'b t
-
-  end
-
-end
-module String_map : sig 
-#1 "string_map.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-include Map_gen.S with type key = string
-
-end = struct
-#1 "string_map.ml"
-
-# 2 "ext/map.cppo.ml"
-(* we don't create [map_poly], since some operations require raise an exception which carries [key] *)
-
-
-  
-# 10 "ext/map.cppo.ml"
-  type key = string 
-  let compare_key = Ext_string.compare
-
-# 22 "ext/map.cppo.ml"
-type 'a t = (key,'a) Map_gen.t
-exception Duplicate_key of key 
-
-let empty = Map_gen.empty 
-let is_empty = Map_gen.is_empty
-let iter = Map_gen.iter
-let fold = Map_gen.fold
-let for_all = Map_gen.for_all 
-let exists = Map_gen.exists 
-let singleton = Map_gen.singleton 
-let cardinal = Map_gen.cardinal
-let bindings = Map_gen.bindings
-let to_sorted_array = Map_gen.to_sorted_array
-let keys = Map_gen.keys
-let choose = Map_gen.choose 
-let partition = Map_gen.partition 
-let filter = Map_gen.filter 
-let map = Map_gen.map 
-let mapi = Map_gen.mapi
-let bal = Map_gen.bal 
-let height = Map_gen.height 
-let max_binding_exn = Map_gen.max_binding_exn
-let min_binding_exn = Map_gen.min_binding_exn
-
-
-let rec add (tree : _ Map_gen.t as 'a) x data  : 'a = match tree with 
-  | Empty ->
-    Node(Empty, x, data, Empty, 1)
-  | Node(l, v, d, r, h) ->
-    let c = compare_key x v in
-    if c = 0 then
-      Node(l, x, data, r, h)
-    else if c < 0 then
-      bal (add l x data ) v d r
-    else
-      bal l v d (add r x data )
-
-
-let rec adjust (tree : _ Map_gen.t as 'a) x replace  : 'a = 
-  match tree with 
-  | Empty ->
-    Node(Empty, x, replace None, Empty, 1)
-  | Node(l, v, d, r, h) ->
-    let c = compare_key x v in
-    if c = 0 then
-      Node(l, x, replace  (Some d) , r, h)
-    else if c < 0 then
-      bal (adjust l x  replace ) v d r
-    else
-      bal l v d (adjust r x  replace )
-
-
-let rec find_exn (tree : _ Map_gen.t ) x = match tree with 
-  | Empty ->
-    raise Not_found
-  | Node(l, v, d, r, _) ->
-    let c = compare_key x v in
-    if c = 0 then d
-    else find_exn (if c < 0 then l else r) x
-
-let rec find_opt (tree : _ Map_gen.t ) x = match tree with 
-  | Empty -> None 
-  | Node(l, v, d, r, _) ->
-    let c = compare_key x v in
-    if c = 0 then Some d
-    else find_opt (if c < 0 then l else r) x
-
-let rec find_default (tree : _ Map_gen.t ) x  default     = match tree with 
-  | Empty -> default  
-  | Node(l, v, d, r, _) ->
-    let c = compare_key x v in
-    if c = 0 then  d
-    else find_default (if c < 0 then l else r) x default
-
-let rec mem (tree : _ Map_gen.t )  x= match tree with 
-  | Empty ->
-    false
-  | Node(l, v, d, r, _) ->
-    let c = compare_key x v in
-    c = 0 || mem (if c < 0 then l else r) x 
-
-let rec remove (tree : _ Map_gen.t as 'a) x : 'a = match tree with 
-  | Empty ->
-    Empty
-  | Node(l, v, d, r, h) ->
-    let c = compare_key x v in
-    if c = 0 then
-      Map_gen.merge l r
-    else if c < 0 then
-      bal (remove l x) v d r
-    else
-      bal l v d (remove r x )
-
-
-let rec split x (tree : _ Map_gen.t as 'a) : 'a * _ option * 'a  = match tree with 
-  | Empty ->
-    (Empty, None, Empty)
-  | Node(l, v, d, r, _) ->
-    let c = compare_key x v in
-    if c = 0 then (l, Some d, r)
-    else if c < 0 then
-      let (ll, pres, rl) = split x l in (ll, pres, Map_gen.join rl v d r)
-    else
-      let (lr, pres, rr) = split x r in (Map_gen.join l v d lr, pres, rr)
-
-let rec merge (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) f  : _ Map_gen.t =
-  match (s1, s2) with
-  | (Empty, Empty) -> Empty
-  | (Node (l1, v1, d1, r1, h1), _) when h1 >= height s2 ->
-    let (l2, d2, r2) = split v1 s2 in
-    Map_gen.concat_or_join (merge l1 l2 f) v1 (f v1 (Some d1) d2) (merge r1 r2 f)
-  | (_, Node (l2, v2, d2, r2, h2)) ->
-    let (l1, d1, r1) = split v2 s1 in
-    Map_gen.concat_or_join (merge l1 l2 f) v2 (f v2 d1 (Some d2)) (merge r1 r2 f)
-  | _ ->
-    assert false
-
-let rec disjoint_merge  (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) : _ Map_gen.t =
-  match (s1, s2) with
-  | (Empty, Empty) -> Empty
-  | (Node (l1, v1, d1, r1, h1), _) when h1 >= height s2 ->
-    begin match split v1 s2 with 
-    | l2, None, r2 -> 
-      Map_gen.join (disjoint_merge  l1 l2) v1 d1 (disjoint_merge r1 r2)
-    | _, Some _, _ ->
-      raise (Duplicate_key  v1)
-    end        
-  | (_, Node (l2, v2, d2, r2, h2)) ->
-    begin match  split v2 s1 with 
-    | (l1, None, r1) -> 
-      Map_gen.join (disjoint_merge  l1 l2) v2 d2 (disjoint_merge  r1 r2)
-    | (_, Some _, _) -> 
-      raise (Duplicate_key v2)
-    end
-  | _ ->
-    assert false
-
-
-
-let compare m1 m2 cmp = Map_gen.compare compare_key cmp m1 m2
-
-let equal m1 m2 cmp = Map_gen.equal compare_key cmp m1 m2 
-
-let add_list (xs : _ list ) init = 
-  List.fold_left (fun acc (k,v) -> add acc k v ) init xs 
-
-let of_list xs = add_list xs empty
-
-let of_array xs = 
-  Array.fold_left (fun acc (k,v) -> add acc k v ) empty xs
-
-end
-module Ext_json_types
-= struct
-#1 "ext_json_types.ml"
-(* Copyright (C) 2015-2017 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type loc = Lexing.position
-type json_str = 
-  { str : string ; loc : loc}
-
-type json_flo  =
-  { flo : string ; loc : loc}
-type json_array =
-  { content : t array ; 
-    loc_start : loc ; 
-    loc_end : loc ; 
-  }
-
-and json_map = 
-  { map : t String_map.t ; loc :  loc }
-and t = 
-  | True of loc 
-  | False of loc 
-  | Null of loc 
-  | Flo of json_flo
-  | Str of json_str
-  | Arr  of json_array
-  | Obj of json_map
-   
-
-end
-module Ext_position : sig 
-#1 "ext_position.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-type t = Lexing.position = {
-    pos_fname : string ;
-    pos_lnum : int ;
-    pos_bol : int ;
-    pos_cnum : int
-}
-
-(** [offset pos newpos]
-    return a new position
-    here [newpos] is zero based, the use case is that
-    at position [pos], we get a string and Lexing from that string,
-    therefore, we get a [newpos] and we need rebase it on top of 
-    [pos]
-*)
-val offset : t -> t -> t 
-
-val lexbuf_from_channel_with_fname:
-    in_channel -> string -> 
-    Lexing.lexbuf
-
-val print : Format.formatter -> t -> unit 
-end = struct
-#1 "ext_position.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-type t = Lexing.position = {
-    pos_fname : string ;
-    pos_lnum : int ;
-    pos_bol : int ;
-    pos_cnum : int
-}
-
-let offset (x : t) (y:t) =
-  {
-    x with 
-    pos_lnum =
-       x.pos_lnum + y.pos_lnum - 1;
-    pos_cnum = 
-      x.pos_cnum + y.pos_cnum;
-    pos_bol = 
-      if y.pos_lnum = 1 then 
-        x.pos_bol
-      else x.pos_cnum + y.pos_bol
-  }
-
-let print fmt (pos : t) =
-  Format.fprintf fmt "(line %d, column %d)" pos.pos_lnum (pos.pos_cnum - pos.pos_bol)
-
-
-
-let lexbuf_from_channel_with_fname ic fname = 
-  let x = Lexing.from_function (fun buf n -> input ic buf 0 n) in 
-  let pos : t = {
-    pos_fname = fname ; 
-    pos_lnum = 1; 
-    pos_bol = 0;
-    pos_cnum = 0 (* copied from zero_pos*)
-  } in 
-  x.lex_start_p <- pos;
-  x.lex_curr_p <- pos ; 
-  x
-
-
-end
-module Ext_json : sig 
-#1 "ext_json.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-type path = string list 
-type status = 
-  | No_path
-  | Found of Ext_json_types.t 
-  | Wrong_type of path 
-
-
-type callback = 
-  [
-    `Str of (string -> unit) 
-  | `Str_loc of (string -> Lexing.position -> unit)
-  | `Flo of (string -> unit )
-  | `Flo_loc of (string -> Lexing.position -> unit )
-  | `Bool of (bool -> unit )
-  | `Obj of (Ext_json_types.t String_map.t -> unit)
-  | `Arr of (Ext_json_types.t array -> unit )
-  | `Arr_loc of 
-    (Ext_json_types.t array -> Lexing.position -> Lexing.position -> unit)
-  | `Null of (unit -> unit)
-  | `Not_found of (unit -> unit)
-  | `Id of (Ext_json_types.t -> unit )
-  ]
-
-val test:
-  ?fail:(unit -> unit) ->
-  string -> callback 
-  -> Ext_json_types.t String_map.t
-   -> Ext_json_types.t String_map.t
-
-val query : path -> Ext_json_types.t ->  status
-
-val loc_of : Ext_json_types.t -> Ext_position.t
-
-val equal : Ext_json_types.t -> Ext_json_types.t -> bool 
-
-end = struct
-#1 "ext_json.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type callback = 
-  [
-    `Str of (string -> unit) 
-  | `Str_loc of (string -> Lexing.position -> unit)
-  | `Flo of (string -> unit )
-  | `Flo_loc of (string -> Lexing.position -> unit )
-  | `Bool of (bool -> unit )
-  | `Obj of (Ext_json_types.t String_map.t -> unit)
-  | `Arr of (Ext_json_types.t array -> unit )
-  | `Arr_loc of (Ext_json_types.t array -> Lexing.position -> Lexing.position -> unit)
-  | `Null of (unit -> unit)
-  | `Not_found of (unit -> unit)
-  | `Id of (Ext_json_types.t -> unit )
-  ]
-
-
-type path = string list 
-
-type status = 
-  | No_path
-  | Found  of Ext_json_types.t 
-  | Wrong_type of path 
-
-let test   ?(fail=(fun () -> ())) key 
-    (cb : callback) (m  : Ext_json_types.t String_map.t)
-  =
-  begin match String_map.find_exn m key, cb with 
-    | exception Not_found  ->
-      begin match cb with `Not_found f ->  f ()
-                        | _ -> fail ()
-      end      
-    | True _, `Bool cb -> cb true
-    | False _, `Bool cb  -> cb false 
-    | Flo {flo = s} , `Flo cb  -> cb s 
-    | Flo {flo = s; loc} , `Flo_loc cb  -> cb s loc
-    | Obj {map = b} , `Obj cb -> cb b 
-    | Arr {content}, `Arr cb -> cb content 
-    | Arr {content; loc_start ; loc_end}, `Arr_loc cb -> 
-      cb content  loc_start loc_end 
-    | Null _, `Null cb  -> cb ()
-    | Str {str = s }, `Str cb  -> cb s 
-    | Str {str = s ; loc }, `Str_loc cb -> cb s loc 
-    |  any  , `Id  cb -> cb any
-    | _, _ -> fail () 
-  end;
-  m
-let query path (json : Ext_json_types.t ) =
-  let rec aux acc paths json =
-    match path with 
-    | [] ->  Found json
-    | p :: rest -> 
-      match json with 
-      | Obj {map } -> 
-        (match String_map.find_opt map p with 
-         | Some m  -> aux (p::acc) rest m
-         | None ->  No_path)          
-      | _ -> Wrong_type acc       
-  in aux [] path json
-
-
-let loc_of (x : Ext_json_types.t) =
-  match x with
-  | True p | False p | Null p -> p 
-  | Str p -> p.loc 
-  | Arr p -> p.loc_start
-  | Obj p -> p.loc
-  | Flo p -> p.loc
-
-
-let rec equal 
-    (x : Ext_json_types.t)
-    (y : Ext_json_types.t) = 
-  match x with 
-  | Null _ -> (* [%p? Null _ ] *)
-    begin match y with
-      | Null _ -> true
-      | _ -> false end
-  | Str {str } -> 
-    begin match y with 
-      | Str {str = str2} -> str = str2
-      | _ -> false end
-  | Flo {flo} 
-    ->
-    begin match y with
-      |  Flo {flo = flo2} -> 
-        flo = flo2 
-      | _ -> false
-    end
-  | True _ -> 
-    begin match y with 
-      | True _ -> true 
-      | _ -> false 
-    end
-  | False _ -> 
-    begin match y with 
-      | False _ -> true 
-      | _ -> false 
-    end     
-  | Arr {content} 
-    -> 
-    begin match y with 
-      | Arr {content = content2}
-        ->
-        Ext_array.for_all2_no_exn content content2 equal
-      | _ -> false 
-    end
-
-  | Obj {map} -> 
-    begin match y with 
-      | Obj { map = map2} -> 
-        String_map.equal map map2 equal
-      | _ -> false 
-    end 
-
-
-end
-module Bsb_exception : sig 
-#1 "bsb_exception.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-(**
-    This module is used for fatal errros
-*)
-type error  
-exception Error of error
-
-val print : Format.formatter -> error -> unit 
-val package_not_found : pkg:Bsb_pkg_types.t -> json:string option -> 'a
-
-val conflict_module:
-    string -> string -> string -> 'a 
-    
-val errorf : loc:Ext_position.t ->  ('a, unit, string, 'b) format4 -> 'a
-
-val config_error : Ext_json_types.t -> string -> 'a 
-
-val invalid_spec : string -> 'a
-
-val invalid_json : string -> 'a
-end = struct
-#1 "bsb_exception.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-type error =
-  | Package_not_found of Bsb_pkg_types.t * string option (* json file *)
-  | Json_config of Ext_position.t * string
-  | Invalid_json of string
-  | Invalid_spec of string
-  | Conflict_module of string * string * string
-
-
-exception Error of error
-
-let error err = raise (Error err)
-let package_not_found ~pkg ~json =
-  error (Package_not_found(pkg,json))
-
-let print (fmt : Format.formatter) (x : error) =
-  match x with
-  | Conflict_module (modname,dir1,dir2) ->
-    Format.fprintf fmt
-    "@{<error>Error:@} %s found in two directories: (%s, %s)\n\
-    File names must be unique per project"
-      modname dir1 dir2
-  | Package_not_found (name,json_opt) ->
-    let in_json = match json_opt with
-    | None -> Ext_string.empty
-    | Some x -> " in " ^ x in
-    let name = Bsb_pkg_types.to_string name in 
-    if Ext_string.equal name Bs_version.package_name then
-      Format.fprintf fmt
-      "File \"bsconfig.json\", line 1\n\
-       @{<error>Error:@} package @{<error>bs-platform@} is not found %s\n\
-       It's the basic, required package. If you have it installed globally,\n\
-       Please run `npm link bs-platform` to make it available" in_json
-    else
-      Format.fprintf fmt
-        "File \"bsconfig.json\", line 1\n\
-         @{<error>Error:@} package @{<error>%s@} not found or built %s\n\
-         - Did you install it?\n\
-         - If you did, did you run `bsb -make-world`?"
-         name
-         in_json
-
-  | Json_config (pos,s) ->
-    Format.fprintf fmt "File \"bsconfig.json\", line %d:\n\
-                        @{<error>Error:@} %s \n\
-                        For more details, please checkout the schema http://bucklescript.github.io/bucklescript/docson/#build-schema.json"
-                        pos.pos_lnum s
-  | Invalid_spec s ->
-    Format.fprintf fmt
-    "@{<error>Error: Invalid bsconfig.json%s@}" s
-  | Invalid_json s ->
-    Format.fprintf fmt
-    "File %S, line 1\n\
-    @{<error>Error: Invalid json format@}" s
-
-let conflict_module modname dir1 dir2 =
-  error (Conflict_module (modname,dir1,dir2))
-let errorf ~loc fmt =
-  Format.ksprintf (fun s -> error (Json_config (loc,s))) fmt
-
-
-let config_error config fmt =
-  let loc = Ext_json.loc_of config in
-
-  error (Json_config (loc,fmt))
-
-let invalid_spec s = error (Invalid_spec s)
-
-let invalid_json s = error (Invalid_json s)
-
-let () =
-  Printexc.register_printer (fun x ->
-      match x with
-      | Error x ->
-        Some (Format.asprintf "%a" print x )
-      | _ -> None
-    )
-
 end
 module Ext_list : sig 
 #1 "ext_list.mli"
@@ -2975,8 +1871,10 @@ val map_append :
   'a list
 
 val fold_right : 
-  'a list -> 'b -> 
-  ('a -> 'b -> 'b) -> 'b
+  'a list -> 
+  'b -> 
+  ('a -> 'b -> 'b) -> 
+  'b
 
 val fold_right2 : 
   'a list -> 
@@ -3242,7 +2140,7 @@ val fold_left2:
 val fold_left:    
     'a list -> 
     'b -> 
-    ('a -> 'b -> 'b) -> 
+    ('b -> 'a -> 'b) -> 
     'b
 
 val singleton_exn:     
@@ -3836,10 +2734,6 @@ let rec split_map l f =
     b1::b2::b3::b4::b5::bss
 
 
-let reduce_from_left lst fn = 
-  match lst with 
-  | first :: rest ->  List.fold_left fn first rest 
-  | _ -> invalid_arg "Ext_list.reduce_from_left"
 
 
 let sort_via_array lst cmp =
@@ -3915,7 +2809,12 @@ let rec concat_append
 let rec fold_left l accu f =
   match l with
     [] -> accu
-  | a::l -> fold_left l (f a accu) f 
+  | a::l -> fold_left l (f accu a) f 
+  
+let reduce_from_left lst fn = 
+  match lst with 
+  | first :: rest ->  fold_left rest first fn 
+  | _ -> invalid_arg "Ext_list.reduce_from_left"
 
 let rec fold_left2 l1 l2 accu f =
   match (l1, l2) with
@@ -3924,6 +2823,1125 @@ let rec fold_left2 l1 l2 accu f =
   | (_, _) -> invalid_arg "List.fold_left2"
 
 let singleton_exn xs = match xs with [x] -> x | _ -> assert false
+end
+module Map_gen
+= struct
+#1 "map_gen.ml"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the GNU Library General Public License, with    *)
+(*  the special exception on linking described in file ../LICENSE.     *)
+(*                                                                     *)
+(***********************************************************************)
+(** adapted from stdlib *)
+
+type ('key,'a) t =
+  | Empty
+  | Node of ('key,'a) t * 'key * 'a * ('key,'a) t * int
+
+type ('key,'a) enumeration =
+  | End
+  | More of 'key * 'a * ('key,'a) t * ('key, 'a) enumeration
+
+let rec cardinal_aux acc  = function
+  | Empty -> acc 
+  | Node (l,_,_,r, _) -> 
+    cardinal_aux  (cardinal_aux (acc + 1)  r ) l 
+
+let cardinal s = cardinal_aux 0 s 
+
+let rec bindings_aux accu = function
+  | Empty -> accu
+  | Node(l, v, d, r, _) -> bindings_aux ((v, d) :: bindings_aux accu r) l
+
+let bindings s =
+  bindings_aux [] s
+
+  
+let rec fill_array_aux (s : _ t) i arr : int =    
+  match s with 
+  | Empty -> i 
+  | Node (l,k,v,r,_) -> 
+    let inext = fill_array_aux l i arr in 
+    Array.unsafe_set arr inext (k,v);
+    fill_array_aux r (inext + 1) arr 
+
+let to_sorted_array (s : ('key,'a) t)  : ('key * 'a ) array =    
+  match s with 
+  | Empty -> [||]
+  | Node(l,k,v,r,_) -> 
+    let len = 
+      cardinal_aux (cardinal_aux 1 r) l in 
+    let arr =
+      Array.make len (k,v) in  
+    ignore (fill_array_aux s 0 arr : int);
+    arr 
+let rec keys_aux accu = function
+    Empty -> accu
+  | Node(l, v, _, r, _) -> keys_aux (v :: keys_aux accu r) l
+
+let keys s = keys_aux [] s
+
+
+
+let rec cons_enum m e =
+  match m with
+    Empty -> e
+  | Node(l, v, d, r, _) -> cons_enum l (More(v, d, r, e))
+
+
+let height = function
+  | Empty -> 0
+  | Node(_,_,_,_,h) -> h
+
+let create l x d r =
+  let hl = height l and hr = height r in
+  Node(l, x, d, r, (if hl >= hr then hl + 1 else hr + 1))
+
+let singleton x d = Node(Empty, x, d, Empty, 1)
+
+let bal l x d r =
+  let hl = match l with Empty -> 0 | Node(_,_,_,_,h) -> h in
+  let hr = match r with Empty -> 0 | Node(_,_,_,_,h) -> h in
+  if hl > hr + 2 then begin
+    match l with
+      Empty -> invalid_arg "Map.bal"
+    | Node(ll, lv, ld, lr, _) ->
+      if height ll >= height lr then
+        create ll lv ld (create lr x d r)
+      else begin
+        match lr with
+          Empty -> invalid_arg "Map.bal"
+        | Node(lrl, lrv, lrd, lrr, _)->
+          create (create ll lv ld lrl) lrv lrd (create lrr x d r)
+      end
+  end else if hr > hl + 2 then begin
+    match r with
+      Empty -> invalid_arg "Map.bal"
+    | Node(rl, rv, rd, rr, _) ->
+      if height rr >= height rl then
+        create (create l x d rl) rv rd rr
+      else begin
+        match rl with
+          Empty -> invalid_arg "Map.bal"
+        | Node(rll, rlv, rld, rlr, _) ->
+          create (create l x d rll) rlv rld (create rlr rv rd rr)
+      end
+  end else
+    Node(l, x, d, r, (if hl >= hr then hl + 1 else hr + 1))
+
+let empty = Empty
+
+let is_empty = function Empty -> true | _ -> false
+
+let rec min_binding_exn = function
+    Empty -> raise Not_found
+  | Node(Empty, x, d, r, _) -> (x, d)
+  | Node(l, x, d, r, _) -> min_binding_exn l
+
+let choose = min_binding_exn
+
+let rec max_binding_exn = function
+    Empty -> raise Not_found
+  | Node(l, x, d, Empty, _) -> (x, d)
+  | Node(l, x, d, r, _) -> max_binding_exn r
+
+let rec remove_min_binding = function
+    Empty -> invalid_arg "Map.remove_min_elt"
+  | Node(Empty, x, d, r, _) -> r
+  | Node(l, x, d, r, _) -> bal (remove_min_binding l) x d r
+
+let merge t1 t2 =
+  match (t1, t2) with
+    (Empty, t) -> t
+  | (t, Empty) -> t
+  | (_, _) ->
+    let (x, d) = min_binding_exn t2 in
+    bal t1 x d (remove_min_binding t2)
+
+
+let rec iter x f = match x with 
+    Empty -> ()
+  | Node(l, v, d, r, _) ->
+    iter l f; f v d; iter r f
+
+let rec map x f = match x with
+    Empty ->
+    Empty
+  | Node(l, v, d, r, h) ->
+    let l' = map l f in
+    let d' = f d in
+    let r' = map r f in
+    Node(l', v, d', r', h)
+
+let rec mapi x f = match x with
+    Empty ->
+    Empty
+  | Node(l, v, d, r, h) ->
+    let l' = mapi l f in
+    let d' = f v d in
+    let r' = mapi r f in
+    Node(l', v, d', r', h)
+
+let rec fold m accu f =
+  match m with
+    Empty -> accu
+  | Node(l, v, d, r, _) ->
+    fold r (f v d (fold l accu f)) f 
+
+let rec for_all x p = match x with 
+    Empty -> true
+  | Node(l, v, d, r, _) -> p v d && for_all l p && for_all r p
+
+let rec exists x p = match x with
+    Empty -> false
+  | Node(l, v, d, r, _) -> p v d || exists l p || exists r p
+
+(* Beware: those two functions assume that the added k is *strictly*
+   smaller (or bigger) than all the present keys in the tree; it
+   does not test for equality with the current min (or max) key.
+
+   Indeed, they are only used during the "join" operation which
+   respects this precondition.
+*)
+
+let rec add_min_binding k v = function
+  | Empty -> singleton k v
+  | Node (l, x, d, r, h) ->
+    bal (add_min_binding k v l) x d r
+
+let rec add_max_binding k v = function
+  | Empty -> singleton k v
+  | Node (l, x, d, r, h) ->
+    bal l x d (add_max_binding k v r)
+
+(* Same as create and bal, but no assumptions are made on the
+   relative heights of l and r. *)
+
+let rec join l v d r =
+  match (l, r) with
+    (Empty, _) -> add_min_binding v d r
+  | (_, Empty) -> add_max_binding v d l
+  | (Node(ll, lv, ld, lr, lh), Node(rl, rv, rd, rr, rh)) ->
+    if lh > rh + 2 then bal ll lv ld (join lr v d r) else
+    if rh > lh + 2 then bal (join l v d rl) rv rd rr else
+      create l v d r
+
+(* Merge two trees l and r into one.
+   All elements of l must precede the elements of r.
+   No assumption on the heights of l and r. *)
+
+let concat t1 t2 =
+  match (t1, t2) with
+    (Empty, t) -> t
+  | (t, Empty) -> t
+  | (_, _) ->
+    let (x, d) = min_binding_exn t2 in
+    join t1 x d (remove_min_binding t2)
+
+let concat_or_join t1 v d t2 =
+  match d with
+  | Some d -> join t1 v d t2
+  | None -> concat t1 t2
+
+let rec filter x p = match x with
+    Empty -> Empty
+  | Node(l, v, d, r, _) ->
+    (* call [p] in the expected left-to-right order *)
+    let l' = filter l p in
+    let pvd = p v d in
+    let r' = filter r p in
+    if pvd then join l' v d r' else concat l' r'
+
+let rec partition x p = match x with
+    Empty -> (Empty, Empty)
+  | Node(l, v, d, r, _) ->
+    (* call [p] in the expected left-to-right order *)
+    let (lt, lf) = partition l p in
+    let pvd = p v d in
+    let (rt, rf) = partition r p in
+    if pvd
+    then (join lt v d rt, concat lf rf)
+    else (concat lt rt, join lf v d rf)
+
+let compare compare_key cmp_val m1 m2 =
+  let rec compare_aux e1  e2 =
+    match (e1, e2) with
+      (End, End) -> 0
+    | (End, _)  -> -1
+    | (_, End) -> 1
+    | (More(v1, d1, r1, e1), More(v2, d2, r2, e2)) ->
+      let c = compare_key v1 v2 in
+      if c <> 0 then c else
+        let c = cmp_val d1 d2 in
+        if c <> 0 then c else
+          compare_aux (cons_enum r1 e1) (cons_enum r2 e2)
+  in compare_aux (cons_enum m1 End) (cons_enum m2 End)
+
+let equal compare_key cmp m1 m2 =
+  let rec equal_aux e1 e2 =
+    match (e1, e2) with
+      (End, End) -> true
+    | (End, _)  -> false
+    | (_, End) -> false
+    | (More(v1, d1, r1, e1), More(v2, d2, r2, e2)) ->
+      compare_key v1 v2 = 0 && cmp d1 d2 &&
+      equal_aux (cons_enum r1 e1) (cons_enum r2 e2)
+  in equal_aux (cons_enum m1 End) (cons_enum m2 End)
+
+
+
+    
+module type S =
+  sig
+    type key
+    type +'a t
+    val empty: 'a t
+    val compare_key: key -> key -> int 
+    val is_empty: 'a t -> bool
+    val mem: 'a t -> key -> bool
+    val to_sorted_array : 
+      'a t -> (key * 'a ) array
+    val add: 'a t -> key -> 'a -> 'a t
+    (** [add x y m] 
+        If [x] was already bound in [m], its previous binding disappears. *)
+    val adjust: 'a t -> key -> ('a option->  'a) ->  'a t 
+    (** [adjust acc k replace ] if not exist [add (replace None ], otherwise 
+        [add k v (replace (Some old))]
+    *)
+    val singleton: key -> 'a -> 'a t
+
+    val remove: 'a t -> key -> 'a t
+    (** [remove x m] returns a map containing the same bindings as
+       [m], except for [x] which is unbound in the returned map. *)
+
+    val merge:
+         'a t -> 'b t ->
+         (key -> 'a option -> 'b option -> 'c option) ->  'c t
+    (** [merge f m1 m2] computes a map whose keys is a subset of keys of [m1]
+        and of [m2]. The presence of each such binding, and the corresponding
+        value, is determined with the function [f].
+        @since 3.12.0
+     *)
+
+    val disjoint_merge : 'a t -> 'a t -> 'a t
+     (* merge two maps, will raise if they have the same key *)
+    val compare: 'a t -> 'a t -> ('a -> 'a -> int) -> int
+    (** Total ordering between maps.  The first argument is a total ordering
+        used to compare data associated with equal keys in the two maps. *)
+
+    val equal: 'a t -> 'a t -> ('a -> 'a -> bool) ->  bool
+
+    val iter: 'a t -> (key -> 'a -> unit) ->  unit
+    (** [iter f m] applies [f] to all bindings in map [m].
+        The bindings are passed to [f] in increasing order. *)
+
+    val fold: 'a t -> 'b -> (key -> 'a -> 'b -> 'b) -> 'b
+    (** [fold f m a] computes [(f kN dN ... (f k1 d1 a)...)],
+       where [k1 ... kN] are the keys of all bindings in [m]
+       (in increasing order) *)
+
+    val for_all: 'a t -> (key -> 'a -> bool) -> bool
+    (** [for_all p m] checks if all the bindings of the map.
+        order unspecified
+     *)
+
+    val exists: 'a t -> (key -> 'a -> bool) -> bool
+    (** [exists p m] checks if at least one binding of the map
+        satisfy the predicate [p]. 
+        order unspecified
+     *)
+
+    val filter: 'a t -> (key -> 'a -> bool) -> 'a t
+    (** [filter p m] returns the map with all the bindings in [m]
+        that satisfy predicate [p].
+        order unspecified
+     *)
+
+    val partition: 'a t -> (key -> 'a -> bool) ->  'a t * 'a t
+    (** [partition p m] returns a pair of maps [(m1, m2)], where
+        [m1] contains all the bindings of [s] that satisfy the
+        predicate [p], and [m2] is the map with all the bindings of
+        [s] that do not satisfy [p].
+     *)
+
+    val cardinal: 'a t -> int
+    (** Return the number of bindings of a map. *)
+
+    val bindings: 'a t -> (key * 'a) list
+    (** Return the list of all bindings of the given map.
+       The returned list is sorted in increasing order with respect
+       to the ordering *)
+    val keys : 'a t -> key list 
+    (* Increasing order *)
+
+    val min_binding_exn: 'a t -> (key * 'a)
+    (** raise [Not_found] if the map is empty. *)
+
+    val max_binding_exn: 'a t -> (key * 'a)
+    (** Same as {!Map.S.min_binding} *)
+
+    val choose: 'a t -> (key * 'a)
+    (** Return one binding of the given map, or raise [Not_found] if
+       the map is empty. Which binding is chosen is unspecified,
+       but equal bindings will be chosen for equal maps.
+     *)
+
+    val split: 'a t -> key -> 'a t * 'a option * 'a t
+    (** [split x m] returns a triple [(l, data, r)], where
+          [l] is the map with all the bindings of [m] whose key
+        is strictly less than [x];
+          [r] is the map with all the bindings of [m] whose key
+        is strictly greater than [x];
+          [data] is [None] if [m] contains no binding for [x],
+          or [Some v] if [m] binds [v] to [x].
+        @since 3.12.0
+     *)
+
+    val find_exn: 'a t -> key ->  'a
+    (** [find x m] returns the current binding of [x] in [m],
+       or raises [Not_found] if no such binding exists. *)
+    val find_opt:  'a t ->  key ->'a option
+    val find_default: 'a t -> key  ->  'a  -> 'a 
+    val map: 'a t -> ('a -> 'b) -> 'b t
+    (** [map f m] returns a map with same domain as [m], where the
+       associated value [a] of all bindings of [m] has been
+       replaced by the result of the application of [f] to [a].
+       The bindings are passed to [f] in increasing order
+       with respect to the ordering over the type of the keys. *)
+
+    val mapi: 'a t ->  (key -> 'a -> 'b) -> 'b t
+    (** Same as {!Map.S.map}, but the function receives as arguments both the
+       key and the associated value for each binding of the map. *)
+
+    val of_list : (key * 'a) list -> 'a t 
+    val of_array : (key * 'a ) array -> 'a t 
+    val add_list : (key * 'b) list -> 'b t -> 'b t
+
+  end
+
+end
+module String_map : sig 
+#1 "string_map.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+include Map_gen.S with type key = string
+
+end = struct
+#1 "string_map.ml"
+
+# 2 "ext/map.cppo.ml"
+(* we don't create [map_poly], since some operations require raise an exception which carries [key] *)
+
+
+  
+# 10 "ext/map.cppo.ml"
+  type key = string 
+  let compare_key = Ext_string.compare
+
+# 22 "ext/map.cppo.ml"
+type 'a t = (key,'a) Map_gen.t
+exception Duplicate_key of key 
+
+let empty = Map_gen.empty 
+let is_empty = Map_gen.is_empty
+let iter = Map_gen.iter
+let fold = Map_gen.fold
+let for_all = Map_gen.for_all 
+let exists = Map_gen.exists 
+let singleton = Map_gen.singleton 
+let cardinal = Map_gen.cardinal
+let bindings = Map_gen.bindings
+let to_sorted_array = Map_gen.to_sorted_array
+let keys = Map_gen.keys
+let choose = Map_gen.choose 
+let partition = Map_gen.partition 
+let filter = Map_gen.filter 
+let map = Map_gen.map 
+let mapi = Map_gen.mapi
+let bal = Map_gen.bal 
+let height = Map_gen.height 
+let max_binding_exn = Map_gen.max_binding_exn
+let min_binding_exn = Map_gen.min_binding_exn
+
+
+let rec add (tree : _ Map_gen.t as 'a) x data  : 'a = match tree with 
+  | Empty ->
+    Node(Empty, x, data, Empty, 1)
+  | Node(l, v, d, r, h) ->
+    let c = compare_key x v in
+    if c = 0 then
+      Node(l, x, data, r, h)
+    else if c < 0 then
+      bal (add l x data ) v d r
+    else
+      bal l v d (add r x data )
+
+
+let rec adjust (tree : _ Map_gen.t as 'a) x replace  : 'a = 
+  match tree with 
+  | Empty ->
+    Node(Empty, x, replace None, Empty, 1)
+  | Node(l, v, d, r, h) ->
+    let c = compare_key x v in
+    if c = 0 then
+      Node(l, x, replace  (Some d) , r, h)
+    else if c < 0 then
+      bal (adjust l x  replace ) v d r
+    else
+      bal l v d (adjust r x  replace )
+
+
+let rec find_exn (tree : _ Map_gen.t ) x = match tree with 
+  | Empty ->
+    raise Not_found
+  | Node(l, v, d, r, _) ->
+    let c = compare_key x v in
+    if c = 0 then d
+    else find_exn (if c < 0 then l else r) x
+
+let rec find_opt (tree : _ Map_gen.t ) x = match tree with 
+  | Empty -> None 
+  | Node(l, v, d, r, _) ->
+    let c = compare_key x v in
+    if c = 0 then Some d
+    else find_opt (if c < 0 then l else r) x
+
+let rec find_default (tree : _ Map_gen.t ) x  default     = match tree with 
+  | Empty -> default  
+  | Node(l, v, d, r, _) ->
+    let c = compare_key x v in
+    if c = 0 then  d
+    else find_default (if c < 0 then l else r) x default
+
+let rec mem (tree : _ Map_gen.t )  x= match tree with 
+  | Empty ->
+    false
+  | Node(l, v, d, r, _) ->
+    let c = compare_key x v in
+    c = 0 || mem (if c < 0 then l else r) x 
+
+let rec remove (tree : _ Map_gen.t as 'a) x : 'a = match tree with 
+  | Empty ->
+    Empty
+  | Node(l, v, d, r, h) ->
+    let c = compare_key x v in
+    if c = 0 then
+      Map_gen.merge l r
+    else if c < 0 then
+      bal (remove l x) v d r
+    else
+      bal l v d (remove r x )
+
+
+let rec split (tree : _ Map_gen.t as 'a) x : 'a * _ option * 'a  = match tree with 
+  | Empty ->
+    (Empty, None, Empty)
+  | Node(l, v, d, r, _) ->
+    let c = compare_key x v in
+    if c = 0 then (l, Some d, r)
+    else if c < 0 then
+      let (ll, pres, rl) = split l x in (ll, pres, Map_gen.join rl v d r)
+    else
+      let (lr, pres, rr) = split r x in (Map_gen.join l v d lr, pres, rr)
+
+let rec merge (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) f  : _ Map_gen.t =
+  match (s1, s2) with
+  | (Empty, Empty) -> Empty
+  | (Node (l1, v1, d1, r1, h1), _) when h1 >= height s2 ->
+    let (l2, d2, r2) = split s2 v1 in
+    Map_gen.concat_or_join (merge l1 l2 f) v1 (f v1 (Some d1) d2) (merge r1 r2 f)
+  | (_, Node (l2, v2, d2, r2, h2)) ->
+    let (l1, d1, r1) = split s1 v2 in
+    Map_gen.concat_or_join (merge l1 l2 f) v2 (f v2 d1 (Some d2)) (merge r1 r2 f)
+  | _ ->
+    assert false
+
+let rec disjoint_merge  (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) : _ Map_gen.t =
+  match (s1, s2) with
+  | (Empty, Empty) -> Empty
+  | (Node (l1, v1, d1, r1, h1), _) when h1 >= height s2 ->
+    begin match split s2 v1 with 
+    | l2, None, r2 -> 
+      Map_gen.join (disjoint_merge  l1 l2) v1 d1 (disjoint_merge r1 r2)
+    | _, Some _, _ ->
+      raise (Duplicate_key  v1)
+    end        
+  | (_, Node (l2, v2, d2, r2, h2)) ->
+    begin match  split s1 v2 with 
+    | (l1, None, r1) -> 
+      Map_gen.join (disjoint_merge  l1 l2) v2 d2 (disjoint_merge  r1 r2)
+    | (_, Some _, _) -> 
+      raise (Duplicate_key v2)
+    end
+  | _ ->
+    assert false
+
+
+
+let compare m1 m2 cmp = Map_gen.compare compare_key cmp m1 m2
+
+let equal m1 m2 cmp = Map_gen.equal compare_key cmp m1 m2 
+
+let add_list (xs : _ list ) init = 
+  Ext_list.fold_left xs init (fun  acc (k,v) -> add acc k v )
+
+let of_list xs = add_list xs empty
+
+let of_array xs = 
+  Ext_array.fold_left xs empty (fun acc (k,v) -> add acc k v ) 
+
+end
+module Ext_json_types
+= struct
+#1 "ext_json_types.ml"
+(* Copyright (C) 2015-2017 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type loc = Lexing.position
+type json_str = 
+  { str : string ; loc : loc}
+
+type json_flo  =
+  { flo : string ; loc : loc}
+type json_array =
+  { content : t array ; 
+    loc_start : loc ; 
+    loc_end : loc ; 
+  }
+
+and json_map = 
+  { map : t String_map.t ; loc :  loc }
+and t = 
+  | True of loc 
+  | False of loc 
+  | Null of loc 
+  | Flo of json_flo
+  | Str of json_str
+  | Arr  of json_array
+  | Obj of json_map
+   
+
+end
+module Ext_position : sig 
+#1 "ext_position.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type t = Lexing.position = {
+    pos_fname : string ;
+    pos_lnum : int ;
+    pos_bol : int ;
+    pos_cnum : int
+}
+
+(** [offset pos newpos]
+    return a new position
+    here [newpos] is zero based, the use case is that
+    at position [pos], we get a string and Lexing from that string,
+    therefore, we get a [newpos] and we need rebase it on top of 
+    [pos]
+*)
+val offset : t -> t -> t 
+
+val lexbuf_from_channel_with_fname:
+    in_channel -> string -> 
+    Lexing.lexbuf
+
+val print : Format.formatter -> t -> unit 
+end = struct
+#1 "ext_position.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type t = Lexing.position = {
+    pos_fname : string ;
+    pos_lnum : int ;
+    pos_bol : int ;
+    pos_cnum : int
+}
+
+let offset (x : t) (y:t) =
+  {
+    x with 
+    pos_lnum =
+       x.pos_lnum + y.pos_lnum - 1;
+    pos_cnum = 
+      x.pos_cnum + y.pos_cnum;
+    pos_bol = 
+      if y.pos_lnum = 1 then 
+        x.pos_bol
+      else x.pos_cnum + y.pos_bol
+  }
+
+let print fmt (pos : t) =
+  Format.fprintf fmt "(line %d, column %d)" pos.pos_lnum (pos.pos_cnum - pos.pos_bol)
+
+
+
+let lexbuf_from_channel_with_fname ic fname = 
+  let x = Lexing.from_function (fun buf n -> input ic buf 0 n) in 
+  let pos : t = {
+    pos_fname = fname ; 
+    pos_lnum = 1; 
+    pos_bol = 0;
+    pos_cnum = 0 (* copied from zero_pos*)
+  } in 
+  x.lex_start_p <- pos;
+  x.lex_curr_p <- pos ; 
+  x
+
+
+end
+module Ext_json : sig 
+#1 "ext_json.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type path = string list 
+type status = 
+  | No_path
+  | Found of Ext_json_types.t 
+  | Wrong_type of path 
+
+
+type callback = 
+  [
+    `Str of (string -> unit) 
+  | `Str_loc of (string -> Lexing.position -> unit)
+  | `Flo of (string -> unit )
+  | `Flo_loc of (string -> Lexing.position -> unit )
+  | `Bool of (bool -> unit )
+  | `Obj of (Ext_json_types.t String_map.t -> unit)
+  | `Arr of (Ext_json_types.t array -> unit )
+  | `Arr_loc of 
+    (Ext_json_types.t array -> Lexing.position -> Lexing.position -> unit)
+  | `Null of (unit -> unit)
+  | `Not_found of (unit -> unit)
+  | `Id of (Ext_json_types.t -> unit )
+  ]
+
+val test:
+  ?fail:(unit -> unit) ->
+  string -> callback 
+  -> Ext_json_types.t String_map.t
+   -> Ext_json_types.t String_map.t
+
+val query : path -> Ext_json_types.t ->  status
+
+val loc_of : Ext_json_types.t -> Ext_position.t
+
+val equal : Ext_json_types.t -> Ext_json_types.t -> bool 
+
+end = struct
+#1 "ext_json.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type callback = 
+  [
+    `Str of (string -> unit) 
+  | `Str_loc of (string -> Lexing.position -> unit)
+  | `Flo of (string -> unit )
+  | `Flo_loc of (string -> Lexing.position -> unit )
+  | `Bool of (bool -> unit )
+  | `Obj of (Ext_json_types.t String_map.t -> unit)
+  | `Arr of (Ext_json_types.t array -> unit )
+  | `Arr_loc of (Ext_json_types.t array -> Lexing.position -> Lexing.position -> unit)
+  | `Null of (unit -> unit)
+  | `Not_found of (unit -> unit)
+  | `Id of (Ext_json_types.t -> unit )
+  ]
+
+
+type path = string list 
+
+type status = 
+  | No_path
+  | Found  of Ext_json_types.t 
+  | Wrong_type of path 
+
+let test   ?(fail=(fun () -> ())) key 
+    (cb : callback) (m  : Ext_json_types.t String_map.t)
+  =
+  begin match String_map.find_exn m key, cb with 
+    | exception Not_found  ->
+      begin match cb with `Not_found f ->  f ()
+                        | _ -> fail ()
+      end      
+    | True _, `Bool cb -> cb true
+    | False _, `Bool cb  -> cb false 
+    | Flo {flo = s} , `Flo cb  -> cb s 
+    | Flo {flo = s; loc} , `Flo_loc cb  -> cb s loc
+    | Obj {map = b} , `Obj cb -> cb b 
+    | Arr {content}, `Arr cb -> cb content 
+    | Arr {content; loc_start ; loc_end}, `Arr_loc cb -> 
+      cb content  loc_start loc_end 
+    | Null _, `Null cb  -> cb ()
+    | Str {str = s }, `Str cb  -> cb s 
+    | Str {str = s ; loc }, `Str_loc cb -> cb s loc 
+    |  any  , `Id  cb -> cb any
+    | _, _ -> fail () 
+  end;
+  m
+let query path (json : Ext_json_types.t ) =
+  let rec aux acc paths json =
+    match path with 
+    | [] ->  Found json
+    | p :: rest -> 
+      match json with 
+      | Obj {map } -> 
+        (match String_map.find_opt map p with 
+         | Some m  -> aux (p::acc) rest m
+         | None ->  No_path)          
+      | _ -> Wrong_type acc       
+  in aux [] path json
+
+
+let loc_of (x : Ext_json_types.t) =
+  match x with
+  | True p | False p | Null p -> p 
+  | Str p -> p.loc 
+  | Arr p -> p.loc_start
+  | Obj p -> p.loc
+  | Flo p -> p.loc
+
+
+let rec equal 
+    (x : Ext_json_types.t)
+    (y : Ext_json_types.t) = 
+  match x with 
+  | Null _ -> (* [%p? Null _ ] *)
+    begin match y with
+      | Null _ -> true
+      | _ -> false end
+  | Str {str } -> 
+    begin match y with 
+      | Str {str = str2} -> str = str2
+      | _ -> false end
+  | Flo {flo} 
+    ->
+    begin match y with
+      |  Flo {flo = flo2} -> 
+        flo = flo2 
+      | _ -> false
+    end
+  | True _ -> 
+    begin match y with 
+      | True _ -> true 
+      | _ -> false 
+    end
+  | False _ -> 
+    begin match y with 
+      | False _ -> true 
+      | _ -> false 
+    end     
+  | Arr {content} 
+    -> 
+    begin match y with 
+      | Arr {content = content2}
+        ->
+        Ext_array.for_all2_no_exn content content2 equal
+      | _ -> false 
+    end
+
+  | Obj {map} -> 
+    begin match y with 
+      | Obj { map = map2} -> 
+        String_map.equal map map2 equal
+      | _ -> false 
+    end 
+
+
+end
+module Bsb_exception : sig 
+#1 "bsb_exception.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+(**
+    This module is used for fatal errros
+*)
+type error  
+exception Error of error
+
+val print : Format.formatter -> error -> unit 
+val package_not_found : pkg:Bsb_pkg_types.t -> json:string option -> 'a
+
+val conflict_module:
+    string -> string -> string -> 'a 
+    
+val errorf : loc:Ext_position.t ->  ('a, unit, string, 'b) format4 -> 'a
+
+val config_error : Ext_json_types.t -> string -> 'a 
+
+val invalid_spec : string -> 'a
+
+val invalid_json : string -> 'a
+end = struct
+#1 "bsb_exception.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+type error =
+  | Package_not_found of Bsb_pkg_types.t * string option (* json file *)
+  | Json_config of Ext_position.t * string
+  | Invalid_json of string
+  | Invalid_spec of string
+  | Conflict_module of string * string * string
+
+
+exception Error of error
+
+let error err = raise (Error err)
+let package_not_found ~pkg ~json =
+  error (Package_not_found(pkg,json))
+
+let print (fmt : Format.formatter) (x : error) =
+  match x with
+  | Conflict_module (modname,dir1,dir2) ->
+    Format.fprintf fmt
+    "@{<error>Error:@} %s found in two directories: (%s, %s)\n\
+    File names must be unique per project"
+      modname dir1 dir2
+  | Package_not_found (name,json_opt) ->
+    let in_json = match json_opt with
+    | None -> Ext_string.empty
+    | Some x -> " in " ^ x in
+    let name = Bsb_pkg_types.to_string name in 
+    if Ext_string.equal name Bs_version.package_name then
+      Format.fprintf fmt
+      "File \"bsconfig.json\", line 1\n\
+       @{<error>Error:@} package @{<error>bs-platform@} is not found %s\n\
+       It's the basic, required package. If you have it installed globally,\n\
+       Please run `npm link bs-platform` to make it available" in_json
+    else
+      Format.fprintf fmt
+        "File \"bsconfig.json\", line 1\n\
+         @{<error>Error:@} package @{<error>%s@} not found or built %s\n\
+         - Did you install it?\n\
+         - If you did, did you run `bsb -make-world`?"
+         name
+         in_json
+
+  | Json_config (pos,s) ->
+    Format.fprintf fmt "File \"bsconfig.json\", line %d:\n\
+                        @{<error>Error:@} %s \n\
+                        For more details, please checkout the schema http://bucklescript.github.io/bucklescript/docson/#build-schema.json"
+                        pos.pos_lnum s
+  | Invalid_spec s ->
+    Format.fprintf fmt
+    "@{<error>Error: Invalid bsconfig.json%s@}" s
+  | Invalid_json s ->
+    Format.fprintf fmt
+    "File %S, line 1\n\
+    @{<error>Error: Invalid json format@}" s
+
+let conflict_module modname dir1 dir2 =
+  error (Conflict_module (modname,dir1,dir2))
+let errorf ~loc fmt =
+  Format.ksprintf (fun s -> error (Json_config (loc,s))) fmt
+
+
+let config_error config fmt =
+  let loc = Ext_json.loc_of config in
+
+  error (Json_config (loc,fmt))
+
+let invalid_spec s = error (Invalid_spec s)
+
+let invalid_json s = error (Invalid_json s)
+
+let () =
+  Printexc.register_printer (fun x ->
+      match x with
+      | Error x ->
+        Some (Format.asprintf "%a" print x )
+      | _ -> None
+    )
+
 end
 module Ext_sys : sig 
 #1 "ext_sys.mli"
@@ -4582,14 +4600,14 @@ let rel_normalized_absolute_path ~from to_ =
         else if y = Filename.current_dir_name then go xss ys
         else 
           let start = 
-            List.fold_left (fun acc _ -> acc // Ext_string.parent_dir_lit )
-              Ext_string.parent_dir_lit  xs in 
-          List.fold_left (fun acc v -> acc // v) start yss
+            Ext_list.fold_left xs Ext_string.parent_dir_lit (fun acc  _  -> acc // Ext_string.parent_dir_lit )
+          in 
+          Ext_list.fold_left yss start (fun acc v -> acc // v)
       | [], [] -> Ext_string.empty
-      | [], y::ys -> List.fold_left (fun acc x -> acc // x) y ys
+      | [], y::ys -> Ext_list.fold_left ys y (fun acc x -> acc // x) 
       | x::xs, [] ->
-        List.fold_left (fun acc _ -> acc // Ext_string.parent_dir_lit )
-          Ext_string.parent_dir_lit xs in
+        Ext_list.fold_left xs Ext_string.parent_dir_lit (fun acc _ -> acc // Ext_string.parent_dir_lit )
+     in
     let v =  go paths1 paths2  in 
 
     if Ext_string.is_empty v then  Literals.node_current
