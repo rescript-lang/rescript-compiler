@@ -123,6 +123,12 @@ let buckle_script_flags : (string * Arg.spec * string) list =
    " Print compiler output in Reason syntax"
   )
   ::
+  (
+    "-bs-gentype",
+    Arg.String (fun s -> Clflags.bs_gentype := Some s),
+    " Pass gentype command"
+  )
+  ::
   ("-bs-suffix",
     Arg.Set Js_config.bs_suffix,
     " Set suffix to .bs.js"
