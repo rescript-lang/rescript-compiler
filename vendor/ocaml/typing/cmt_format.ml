@@ -236,8 +236,8 @@ let save_cmt filename modname binary_annots sourcefile initial_env sg =
     output_cmt oc cmt;
     close_out oc;
     (* TODO: does not make sense to do post-proccesing for [Partial_implementaiton]*)
-    match Sys.getenv "BS_CMT_POST_PROCESS_CMD" with
-    | exception _ -> ()
-    | cmd -> ignore (Sys.command (cmd ^ " -cmt-add " ^ filename ^ (match sourcefile with None -> "" | Some sourcefile -> ":" ^ sourcefile)))
+    match !Clflags.bs_gentype with
+    | None -> ()
+    | Some cmd -> ignore (Sys.command (cmd ^ " -cmt-add " ^ filename ^ (match sourcefile with None -> "" | Some sourcefile -> ":" ^ sourcefile)))
   end;
   clear ()

@@ -382,6 +382,7 @@ val record_event_when_debug : bool ref
 val bs_vscode : bool
 val dont_record_crc_unit : string option ref
 val bs_only : bool ref (* set true on bs top*)
+val bs_gentype : string option ref
 val no_assert_false : bool ref
 
 
@@ -521,6 +522,7 @@ let bs_vscode =
     *)
 let dont_record_crc_unit : string option ref = ref None
 let bs_only = ref false
+let bs_gentype = ref None
 let no_assert_false = ref false
 
 
