@@ -3976,6 +3976,10 @@ let report_error env ppf = function
       fprintf ppf
         "@[Exception patterns must be at the top level of a match case.@]"
 
+#if true then
+let super_report_error_no_wrap_printing_env = report_error
+#end
+
 let report_error env ppf err =
   wrap_printing_env env (fun () -> report_error env ppf err)
 
