@@ -118,7 +118,7 @@ let after_parsing_impl ppf sourcefile outputprefix ast =
           |> print_if ppf Clflags.dump_typedtree
             (fun fmt (ty,co,_,_) -> Printtyped.implementation_with_coercion fmt  (ty,co))
         in
-        if !Clflags.print_types then begin
+        if !Clflags.print_types || !Js_config.cmi_only then begin
           Warnings.check_fatal ();
         end else begin
           (typedtree, coercion)
