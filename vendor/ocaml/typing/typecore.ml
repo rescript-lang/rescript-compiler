@@ -3979,6 +3979,10 @@ let report_error env ppf = function
 let report_error env ppf err =
   wrap_printing_env env (fun () -> report_error env ppf err)
 
+#if true then
+let super_report_error_no_wrap_printing_env = report_error
+#end  
+
 let () =
   Location.register_error_of_exn
     (function
