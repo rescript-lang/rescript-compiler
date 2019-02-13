@@ -289,6 +289,15 @@
             },
             "description": "A list of buildable targets"
         },
+        "gentype-specs" : {
+            "type" : "object",
+            "properties": {
+                "path" : {
+                    "type" : "string"
+                }
+            },
+            "description": "path to gentype, path resolution is similar to reason"
+        },
         "reason-specs": {
             "type": "object",
             "properties": {
@@ -385,6 +394,10 @@
             "$ref": "#/definitions/reason-specs",
             "description": "BuckleScript comes with [Reason](http://reasonml.github.io/) by default. Specific configurations here."
         },
+        "gentypeconfig": {
+            "$ref" : "#/definitions/gentype-specs",
+            "description": "gentype config, see cristianoc/genType for more details"
+        },        
         "bsc-flags": {
             "$ref": "#/definitions/bsc-flags",
             "description": "Flags passed to bsc.exe"
