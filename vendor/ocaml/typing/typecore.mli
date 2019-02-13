@@ -116,6 +116,10 @@ type error =
 exception Error of Location.t * Env.t * error
 exception Error_forward of Location.error
 
+#if true then
+val super_report_error_no_wrap_printing_env: Env.t -> formatter -> error -> unit
+#end
+
 val report_error: Env.t -> formatter -> error -> unit
  (* Deprecated.  Use Location.{error_of_exn, report_error}. *)
 
