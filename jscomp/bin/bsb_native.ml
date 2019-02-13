@@ -146,6 +146,8 @@ let warnings = "warnings"
 let number = "number"
 let error = "error"
 let suffix = "suffix"
+let gentypeconfig = "gentypeconfig"
+let path = "path"
 end
 module Ext_bytes : sig 
 #1 "ext_bytes.mli"
@@ -11074,6 +11076,9 @@ type refmt =
   | Refmt_none
   | Refmt_v3 
   | Refmt_custom of string 
+type gentype_config = {
+  path : string option 
+}
 type t = 
   {
     package_name : string ; 
@@ -11105,6 +11110,7 @@ type t =
     generators : string String_map.t ; 
     cut_generators : bool; (* note when used as a dev mode, we will always ignore it *)
     bs_suffix : bool ; (* true means [.bs.js] we should pass [-bs-suffix] flag *)
+    gentype_config : gentype_config option
   }
 
 end
@@ -11701,10 +11707,25 @@ let interpret_json
       | Some config  -> 
         Bsb_exception.config_error config "expect version 2 or 3"
       | None ->
-        Refmt_none
-        
-
+        Refmt_none        
     in 
+    let gentype_config : Bsb_config_types.gentype_config option  = 
+      match String_map.find_opt map Bsb_build_schemas.gentypeconfig with 
+      | None -> None
+      | Some (Obj {map = obj}) -> 
+        Some { path = 
+          match String_map.find_opt obj Bsb_build_schemas.path with
+          | None -> None 
+          | Some (Str {str}) -> Some str 
+          | Some config -> 
+            Bsb_exception.config_error config
+              "path expect to be a string"
+        }
+        
+      | Some config -> 
+        Bsb_exception.config_error 
+          config "gentypeconfig expect an object"
+    in  
     let bs_suffix = 
           match String_map.find_opt map Bsb_build_schemas.suffix with 
           | None -> false  
@@ -11870,6 +11891,7 @@ let interpret_json
         in 
 
         {
+          gentype_config;
           bs_suffix ;
           package_name ;
           namespace ;    
