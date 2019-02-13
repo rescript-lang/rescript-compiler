@@ -128,16 +128,16 @@ let print_expr_type_clash env trace ppf =
         ~pp_sep:(fun ppf _ -> fprintf ppf ",@ ")
         (fun ppf (label, argtype) ->
 #if OCAML_VERSION =~ ">4.03.0" then
-          match label with 
+          match label with
           | Nolabel -> fprintf ppf "@[%a@]" type_expr argtype
-          | Labelled label -> 
+          | Labelled label ->
             fprintf ppf "@[(~%s: %a)@]" label type_expr argtype
-          | Optional label -> 
+          | Optional label ->
             fprintf ppf "@[(?%s: %a)@]" label type_expr argtype
 #else
           if label = "" then fprintf ppf "@[%a@]" type_expr argtype
           else fprintf ppf "@[(~%s: %a)@]" label type_expr argtype
-#end          
+#end
         )
     in
     match missing_arguments with
@@ -174,6 +174,7 @@ let print_expr_type_clash env trace ppf =
             fprintf ppf "But somewhere wanted:");
       show_extra_help ppf env trace;
     end
+
 (* taken from https://github.com/BuckleScript/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/typing/typecore.ml#L3769 *)
 (* modified branches are commented *)
 let report_error env ppf = function
