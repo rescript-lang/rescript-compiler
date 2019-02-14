@@ -146,6 +146,8 @@ let warnings = "warnings"
 let number = "number"
 let error = "error"
 let suffix = "suffix"
+let gentypeconfig = "gentypeconfig"
+let path = "path"
 end
 module Ext_bytes : sig 
 #1 "ext_bytes.mli"
@@ -11074,6 +11076,10 @@ type refmt =
   | Refmt_none
   | Refmt_v3 
   | Refmt_custom of string 
+
+type gentype_config = {
+  path : string (* resolved *)
+}
 type t = 
   {
     package_name : string ; 
@@ -11105,6 +11111,7 @@ type t =
     generators : string String_map.t ; 
     cut_generators : bool; (* note when used as a dev mode, we will always ignore it *)
     bs_suffix : bool ; (* true means [.bs.js] we should pass [-bs-suffix] flag *)
+    gentype_config : gentype_config option
   }
 
 end
@@ -11701,10 +11708,30 @@ let interpret_json
       | Some config  -> 
         Bsb_exception.config_error config "expect version 2 or 3"
       | None ->
-        Refmt_none
-        
-
+        Refmt_none        
     in 
+    let gentype_config : Bsb_config_types.gentype_config option  = 
+      match String_map.find_opt map Bsb_build_schemas.gentypeconfig with 
+      | None -> None
+      | Some (Obj {map = obj}) -> 
+        Some { path = 
+          match String_map.find_opt obj Bsb_build_schemas.path with
+          | None -> 
+            Bsb_build_util.resolve_bsb_magic_file
+            ~cwd ~desc:"gentype.exe"
+            "gentype/gentype.exe"
+          | Some (Str {str}) ->  
+            Bsb_build_util.resolve_bsb_magic_file
+            ~cwd ~desc:"gentype.exe" str 
+          | Some config -> 
+            Bsb_exception.config_error config
+              "path expect to be a string"
+        }
+        
+      | Some config -> 
+        Bsb_exception.config_error 
+          config "gentypeconfig expect an object"
+    in  
     let bs_suffix = 
           match String_map.find_opt map Bsb_build_schemas.suffix with 
           | None -> false  
@@ -11870,6 +11897,7 @@ let interpret_json
         in 
 
         {
+          gentype_config;
           bs_suffix ;
           package_name ;
           namespace ;    
@@ -12737,8 +12765,10 @@ let postbuild = "postbuild"
 
 let namespace = "namespace" 
 
-
 let warnings = "warnings"
+
+let gentypeconfig = "gentypeconfig"
+
 end
 module Bsb_rule : sig 
 #1 "bsb_rule.mli"
@@ -12944,7 +12974,7 @@ let build_bin_deps =
 let build_cmj_js =
   define
     ~command:"${bsc} ${bs_package_flags} -bs-assume-has-mli -bs-no-builtin-ppx-ml -bs-no-implicit-include  \
-              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${warnings} ${bsc_flags} -o ${out} -c  ${in} $postbuild"
+              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${warnings} ${bsc_flags} ${gentypeconfig} -o ${out} -c  ${in} $postbuild"
     ~depfile:"${in}.d"
     ~restat:() (* Always restat when having mli *)
     "build_cmj_only"
@@ -12953,14 +12983,14 @@ let build_cmj_js =
 let build_cmj_cmi_js =
   define
     ~command:"${bsc} ${bs_package_flags} -bs-assume-no-mli -bs-no-builtin-ppx-ml -bs-no-implicit-include \
-              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${warnings} ${bsc_flags} -o ${out} -c  ${in} $postbuild"
+              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${warnings} ${bsc_flags} ${gentypeconfig} -o ${out} -c  ${in} $postbuild"
     ~depfile:"${in}.d"
     ~restat:() (* may not need it in the future *)
     "build_cmj_cmi" (* the compiler should never consult [.cmi] when [.mli] does not exist *)
 let build_cmi =
   define
     ~command:"${bsc} ${bs_package_flags} -bs-no-builtin-ppx-mli -bs-no-implicit-include \
-              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${warnings} ${bsc_flags} -o ${out} -c  ${in}"
+              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${warnings} ${bsc_flags} ${gentypeconfig} -o ${out} -c  ${in}"
     ~depfile:"${in}.d"
     ~restat:()
     "build_cmi" (* the compiler should always consult [.cmi], current the vanilla ocaml compiler only consult [.cmi] when [.mli] found*)
@@ -13715,6 +13745,7 @@ let output_ninja_and_namespace_map
       generators ;
       namespace ; 
       warning;
+      gentype_config; 
     } : Bsb_config_types.t)
   =
   let custom_rules = Bsb_rule.reset generators in 
@@ -13785,6 +13816,12 @@ let output_ninja_and_namespace_map
       Bsb_ninja_util.output_kv Bsb_ninja_global_vars.pp_flags
       (Bsb_build_util.pp_flag flag) oc 
     );
+    Ext_option.iter gentype_config (fun {path} -> 
+      (* resolved earlier *)
+      Bsb_ninja_util.output_kv Bsb_ninja_global_vars.gentypeconfig
+      path oc
+    )
+    ;  
     Bsb_ninja_util.output_kvs
       [|
         Bsb_ninja_global_vars.bs_package_flags, bs_package_flags ; 

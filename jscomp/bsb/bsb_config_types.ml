@@ -39,6 +39,10 @@ type refmt =
   | Refmt_none
   | Refmt_v3 
   | Refmt_custom of string 
+
+type gentype_config = {
+  path : string (* resolved *)
+}
 type t = 
   {
     package_name : string ; 
@@ -70,4 +74,5 @@ type t =
     generators : string String_map.t ; 
     cut_generators : bool; (* note when used as a dev mode, we will always ignore it *)
     bs_suffix : bool ; (* true means [.bs.js] we should pass [-bs-suffix] flag *)
+    gentype_config : gentype_config option
   }
