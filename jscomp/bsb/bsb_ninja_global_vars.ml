@@ -51,5 +51,6 @@ let postbuild = "postbuild"
 
 let namespace = "namespace" 
 
-
 let warnings = "warnings"
+
+let gentypeconfig = "gentypeconfig"

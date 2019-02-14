@@ -11076,8 +11076,9 @@ type refmt =
   | Refmt_none
   | Refmt_v3 
   | Refmt_custom of string 
+
 type gentype_config = {
-  path : string option 
+  path : string (* resolved *)
 }
 type t = 
   {
@@ -11715,8 +11716,13 @@ let interpret_json
       | Some (Obj {map = obj}) -> 
         Some { path = 
           match String_map.find_opt obj Bsb_build_schemas.path with
-          | None -> None 
-          | Some (Str {str}) -> Some str 
+          | None -> 
+            Bsb_build_util.resolve_bsb_magic_file
+            ~cwd ~desc:"gentype.exe"
+            "gentype/gentype.exe"
+          | Some (Str {str}) ->  
+            Bsb_build_util.resolve_bsb_magic_file
+            ~cwd ~desc:"gentype.exe" str 
           | Some config -> 
             Bsb_exception.config_error config
               "path expect to be a string"
@@ -12759,8 +12765,10 @@ let postbuild = "postbuild"
 
 let namespace = "namespace" 
 
-
 let warnings = "warnings"
+
+let gentypeconfig = "gentypeconfig"
+
 end
 module Bsb_rule : sig 
 #1 "bsb_rule.mli"
@@ -12966,7 +12974,7 @@ let build_bin_deps =
 let build_cmj_js =
   define
     ~command:"${bsc} ${bs_package_flags} -bs-assume-has-mli -bs-no-builtin-ppx-ml -bs-no-implicit-include  \
-              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${warnings} ${bsc_flags} -o ${out} -c  ${in} $postbuild"
+              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${warnings} ${bsc_flags} ${gentypeconfig} -o ${out} -c  ${in} $postbuild"
     ~depfile:"${in}.d"
     ~restat:() (* Always restat when having mli *)
     "build_cmj_only"
@@ -12975,14 +12983,14 @@ let build_cmj_js =
 let build_cmj_cmi_js =
   define
     ~command:"${bsc} ${bs_package_flags} -bs-assume-no-mli -bs-no-builtin-ppx-ml -bs-no-implicit-include \
-              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${warnings} ${bsc_flags} -o ${out} -c  ${in} $postbuild"
+              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${warnings} ${bsc_flags} ${gentypeconfig} -o ${out} -c  ${in} $postbuild"
     ~depfile:"${in}.d"
     ~restat:() (* may not need it in the future *)
     "build_cmj_cmi" (* the compiler should never consult [.cmi] when [.mli] does not exist *)
 let build_cmi =
   define
     ~command:"${bsc} ${bs_package_flags} -bs-no-builtin-ppx-mli -bs-no-implicit-include \
-              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${warnings} ${bsc_flags} -o ${out} -c  ${in}"
+              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${warnings} ${bsc_flags} ${gentypeconfig} -o ${out} -c  ${in}"
     ~depfile:"${in}.d"
     ~restat:()
     "build_cmi" (* the compiler should always consult [.cmi], current the vanilla ocaml compiler only consult [.cmi] when [.mli] found*)
@@ -13737,6 +13745,7 @@ let output_ninja_and_namespace_map
       generators ;
       namespace ; 
       warning;
+      gentype_config; 
     } : Bsb_config_types.t)
   =
   let custom_rules = Bsb_rule.reset generators in 
@@ -13807,6 +13816,12 @@ let output_ninja_and_namespace_map
       Bsb_ninja_util.output_kv Bsb_ninja_global_vars.pp_flags
       (Bsb_build_util.pp_flag flag) oc 
     );
+    Ext_option.iter gentype_config (fun {path} -> 
+      (* resolved earlier *)
+      Bsb_ninja_util.output_kv Bsb_ninja_global_vars.gentypeconfig
+      path oc
+    )
+    ;  
     Bsb_ninja_util.output_kvs
       [|
         Bsb_ninja_global_vars.bs_package_flags, bs_package_flags ; 

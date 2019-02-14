@@ -39,8 +39,9 @@ type refmt =
   | Refmt_none
   | Refmt_v3 
   | Refmt_custom of string 
+
 type gentype_config = {
-  path : string option 
+  path : string (* resolved *)
 }
 type t = 
   {

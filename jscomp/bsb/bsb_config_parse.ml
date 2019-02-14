@@ -188,8 +188,13 @@ let interpret_json
       | Some (Obj {map = obj}) -> 
         Some { path = 
           match String_map.find_opt obj Bsb_build_schemas.path with
-          | None -> None 
-          | Some (Str {str}) -> Some str 
+          | None -> 
+            Bsb_build_util.resolve_bsb_magic_file
+            ~cwd ~desc:"gentype.exe"
+            "gentype/gentype.exe"
+          | Some (Str {str}) ->  
+            Bsb_build_util.resolve_bsb_magic_file
+            ~cwd ~desc:"gentype.exe" str 
           | Some config -> 
             Bsb_exception.config_error config
               "path expect to be a string"

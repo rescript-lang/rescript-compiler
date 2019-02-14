@@ -72,6 +72,7 @@ let output_ninja_and_namespace_map
       generators ;
       namespace ; 
       warning;
+      gentype_config; 
     } : Bsb_config_types.t)
   =
   let custom_rules = Bsb_rule.reset generators in 
@@ -142,6 +143,12 @@ let output_ninja_and_namespace_map
       Bsb_ninja_util.output_kv Bsb_ninja_global_vars.pp_flags
       (Bsb_build_util.pp_flag flag) oc 
     );
+    Ext_option.iter gentype_config (fun {path} -> 
+      (* resolved earlier *)
+      Bsb_ninja_util.output_kv Bsb_ninja_global_vars.gentypeconfig
+      path oc
+    )
+    ;  
     Bsb_ninja_util.output_kvs
       [|
         Bsb_ninja_global_vars.bs_package_flags, bs_package_flags ; 
