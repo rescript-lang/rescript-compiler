@@ -146,7 +146,7 @@ let output_ninja_and_namespace_map
     Ext_option.iter gentype_config (fun {path} -> 
       (* resolved earlier *)
       Bsb_ninja_util.output_kv Bsb_ninja_global_vars.gentypeconfig
-      path oc
+      ("-bs-gentype " ^ path) oc
     )
     ;  
     Bsb_ninja_util.output_kvs
