@@ -63,6 +63,7 @@ external apply8 : ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7 -> 'a8) 
 (* Intenral use *)  
 let curry_1 o a0 arity =
   match arity with
+  | 0
   | 1 -> apply1 (Obj.magic o) a0
   | 2 -> apply2 (Obj.magic o) a0
   | 3 -> apply3 (Obj.magic o) a0
