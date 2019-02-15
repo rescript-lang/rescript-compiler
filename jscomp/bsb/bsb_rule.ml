@@ -160,7 +160,7 @@ let build_cmi =
 
 let build_package = 
   define
-    ~command:"${bsc} -w -49 -no-alias-deps -c ${in}"
+    ~command:"${bsc} -w -49 -no-alias-deps -bs-cmi-only -c ${in}"
     ~restat:()
     "build_package"
 
