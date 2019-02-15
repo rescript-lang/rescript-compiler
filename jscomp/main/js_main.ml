@@ -170,6 +170,12 @@ let buckle_script_flags : (string * Arg.spec * string) list =
   )
   ::
   (
+    "-bs-cmi-only",
+    Arg.Set Js_config.cmi_only,
+    " Stop after generating cmi file"
+  )
+  ::
+  (
   "-bs-cmi",
     Arg.Set Js_config.force_cmi,
     " Not using cached cmi, always generate cmi"

@@ -29522,6 +29522,7 @@ val binary_ast : bool ref
 val bs_suffix : bool ref
 val debug : bool ref
 
+val cmi_only  : bool ref
 val force_cmi : bool ref 
 val force_cmj : bool ref
 end = struct
@@ -29636,6 +29637,7 @@ let bs_suffix = ref false
 
 let debug = ref false
 
+let cmi_only = ref false  
 let force_cmi = ref false
 let force_cmj = ref false
 end
