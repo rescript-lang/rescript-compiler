@@ -62,79 +62,10 @@ let fold_labels x = fold_descr Env.fold_labels (fun d -> d.lbl_name) x
 (* taken from https://github.com/BuckleScript/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/typing/typetexp.ml#L918 *)
 (* modified branches are commented *)
 let report_error env ppf = function
-  | Typetexp.Unbound_type_variable name ->
-    fprintf ppf "Unbound type parameter %s@." name
-  | Unbound_type_constructor lid ->
+  | Typetexp.Unbound_type_constructor lid ->
     (* modified *)
     fprintf ppf "This type constructor's parameter, `%a`, can't be found. Is it a typo?" longident lid;
     spellcheck ppf Env.fold_types env lid;
-  | Unbound_type_constructor_2 p ->
-    fprintf ppf "The type constructor@ %a@ is not yet completely defined"
-      path p
-  | Type_arity_mismatch(lid, expected, provided) ->
-    fprintf ppf
-      "@[The type constructor %a@ expects %i argument(s),@ \
-        but is here applied to %i argument(s)@]"
-      longident lid expected provided
-  | Bound_type_variable name ->
-    fprintf ppf "Already bound type parameter '%s" name
-  | Recursive_type ->
-    fprintf ppf "This type is recursive"
-  | Unbound_row_variable lid ->
-      (* we don't use "spellcheck" here: this error is not raised
-         anywhere so it's unclear how it should be handled *)
-      fprintf ppf "Unbound row variable in #%a" longident lid
-  | Type_mismatch trace ->
-      Printtyp.super_report_unification_error ppf Env.empty trace
-        (function ppf ->
-           fprintf ppf "This type")
-        (function ppf ->
-           fprintf ppf "should be an instance of type")
-  | Alias_type_mismatch trace ->
-      Printtyp.super_report_unification_error ppf Env.empty trace
-        (function ppf ->
-           fprintf ppf "This alias is bound to type")
-        (function ppf ->
-           fprintf ppf "but is used as an instance of type")
-  | Present_has_conjunction l ->
-      fprintf ppf "The present constructor %s has a conjunctive type" l
-  | Present_has_no_type l ->
-      fprintf ppf "The present constructor %s has no type" l
-  | Constructor_mismatch (ty, ty') ->
-      wrap_printing_env env (fun ()  ->
-        Printtyp.reset_and_mark_loops_list [ty; ty'];
-        fprintf ppf "@[<hov>%s %a@ %s@ %a@]"
-          "This variant type contains a constructor"
-          Printtyp.type_expr ty
-          "which should be"
-          Printtyp.type_expr ty')
-  | Not_a_variant ty ->
-      Printtyp.reset_and_mark_loops ty;
-      fprintf ppf "@[The type %a@ is not a polymorphic variant type@]"
-        Printtyp.type_expr ty
-  | Variant_tags (lab1, lab2) ->
-      fprintf ppf
-        "@[Variant tags `%s@ and `%s have the same hash value.@ %s@]"
-        lab1 lab2 "Change one of them."
-  | Invalid_variable_name name ->
-      fprintf ppf "The type variable name %s is not allowed in programs" name
-  | Cannot_quantify (name, v) ->
-      fprintf ppf
-        "@[<hov>The universal type variable '%s cannot be generalized:@ %s.@]"
-        name
-        (if Btype.is_Tvar v then "it escapes its scope" else
-         if Btype.is_Tunivar v then "it is already bound to another variable"
-         else "it is not a variable")
-  | Multiple_constraints_on_type s ->
-      fprintf ppf "Multiple constraints for type %a" longident s
-#if OCAML_VERSION =~ ">4.03.0" then
-  | Method_mismatch _ -> 
-    fprintf ppf "Method mismatch" (*TODO*)
-#else
-  | Repeated_method_label s ->
-      fprintf ppf "@[This is the second method `%s' of this object type.@ %s@]"
-        s "Multiple occurences are not allowed."
-#end        
   | Unbound_value lid ->
       (* modified *)
       begin
@@ -149,7 +80,7 @@ let report_error env ppf = function
   | Unbound_module lid ->
       (* modified *)
       begin match lid with
-      | Lident "Str" -> 
+      | Lident "Str" ->
         begin
           fprintf ppf "@[\
               @{<info>The module or file %a can't be found.@}@,@,\
@@ -157,9 +88,9 @@ let report_error env ppf = function
               If you're compiling to JavaScript,@ use @{<info>Js.Re@} instead.@ \
               Otherwise, add str.cma to your ocamlc/ocamlopt command.\
             @]"
-            longident lid 
+            longident lid
         end
-      | lid -> 
+      | lid ->
         begin
           fprintf ppf "@[<v>\
               @{<info>The module or file %a can't be found.@}@,\
@@ -189,7 +120,7 @@ let report_error env ppf = function
 #else
       Typetexp.spellcheck_simple ppf Env.fold_constructors (fun d -> d.cstr_name)
         env lid;
-#end        
+#end
   | Unbound_label lid ->
       (* modified *)
       fprintf ppf "@[<v>\
@@ -203,27 +134,9 @@ let report_error env ppf = function
       Typetexp.spellcheck ppf fold_labels env lid
 #else
       Typetexp.spellcheck_simple ppf Env.fold_labels (fun d -> d.lbl_name) env lid;
-#end      
-  | Unbound_class lid ->
-      fprintf ppf "Unbound class %a" longident lid;
-      spellcheck ppf Env.fold_classs env lid;
-  | Unbound_modtype lid ->
-      fprintf ppf "Unbound module type %a" longident lid;
-      spellcheck ppf Env.fold_modtypes env lid;
-  | Unbound_cltype lid ->
-      fprintf ppf "Unbound class type %a" longident lid;
-      spellcheck ppf Env.fold_cltypes env lid;
-  | Ill_typed_functor_application lid ->
-      fprintf ppf "Ill-typed functor application %a" longident lid
-  | Illegal_reference_to_recursive_module ->
-      fprintf ppf "Illegal recursive module reference"
-  | Access_functor_as_structure lid ->
-      fprintf ppf "The module %a is a functor, not a structure" longident lid
-#if OCAML_VERSION =~ ">4.03.0" then 
-  | (Apply_structure_as_functor _|Cannot_scrape_alias (_, _)|Opened_object _|
-Not_an_object _) -> 
-    fprintf ppf "TODO" (*TODO*)
 #end
+  | anythingElse ->
+      Typetexp.report_error env ppf anythingElse
 
 (* This will be called in super_main. This is how you'd override the default error printer from the compiler & register new error_of_exn handlers *)
 let setup () =
