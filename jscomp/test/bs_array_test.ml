@@ -332,6 +332,10 @@ let () =
 
 let () =
   eq __LOC__ (A.getBy [|1;2;3|] (fun x -> x > 1)) (Some 2);
-  eq __LOC__ (A.getBy [|1;2;3|] (fun x -> x > 3)) None;
+  eq __LOC__ (A.getBy [|1;2;3|] (fun x -> x > 3)) None
+
+let () =
+  eq __LOC__ (A.getIndexBy [|1;2;3|] (fun x -> x > 1)) (Some 1);
+  eq __LOC__ (A.getIndexBy [|1;2;3|] (fun x -> x > 3)) None;
 
 ;; Mt.from_pair_suites __LOC__ !suites
