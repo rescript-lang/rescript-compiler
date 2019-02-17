@@ -379,6 +379,16 @@ val getBy: 'a array -> ('a -> bool) -> 'a option
     ]}
 *)
 
+val getIndexByU: 'a array -> ('a -> bool [@bs]) -> int option
+val getIndexBy: 'a array -> ('a -> bool) -> int option
+(** [getIndexBy xs p] returns [Some index] for the first value in [xs] that satisifies the predicate function [p]; returns [None] if no element satisifies the function.
+
+  @example {[
+      getIndexBy [|1;4;3;2|] (fun x -> x mod 2 = 0) = Some 1
+      getIndexBy [|15;13;11|] (fun x -> x mod 2 = 0) = None
+    ]}
+*)
+
 val keepU: 'a array -> ('a -> bool [@bs]) -> 'a array
 val keep: 'a array -> ('a -> bool ) -> 'a array
 (** [keep xs p ]

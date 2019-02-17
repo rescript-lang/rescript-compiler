@@ -1558,7 +1558,23 @@ eq("File \"bs_array_test.ml\", line 335, characters 5-12", Belt_Array.getBy(/* a
             return x > 3;
           })), undefined);
 
-Mt.from_pair_suites("File \"bs_array_test.ml\", line 337, characters 23-30", suites[0]);
+eq("File \"bs_array_test.ml\", line 338, characters 5-12", Belt_Array.getIndexBy(/* array */[
+          1,
+          2,
+          3
+        ], (function (x) {
+            return x > 1;
+          })), 1);
+
+eq("File \"bs_array_test.ml\", line 339, characters 5-12", Belt_Array.getIndexBy(/* array */[
+          1,
+          2,
+          3
+        ], (function (x) {
+            return x > 3;
+          })), undefined);
+
+Mt.from_pair_suites("File \"bs_array_test.ml\", line 341, characters 23-30", suites[0]);
 
 var A = 0;
 
