@@ -3,8 +3,10 @@
 #
 
 pkg = Belt
-lib = runtime
+libs = -I runtime -I others
 odoc = esy @docs x odoc
+outdir = ../generated_docs
+lang = re
 
 bsc = ../lib/bsc.exe
 bsc_flags = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-no-check-div-by-zero -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js  -bs-package-output es6:lib/es6  -nostdlib -nopervasives  -unsafe -warn-error A -w -40-49-103 -bin-annot -bs-noassertfalse -open Bs_stdlib_mini -I ./runtime
@@ -17,152 +19,152 @@ rule cc
     description = $in -> $out
 
 rule odoc
-    command = $odoc compile -I $lib --pkg=$pkg $in
+    command = $odoc compile $libs --pkg=$pkg $in
     description = $in -> $out
 
 rule html
-    command = $odoc html -I $lib -o $outdir --syntax=$lang --semantic-uris $in
+    command = $odoc html $libs -o $outdir --syntax=$lang --semantic-uris $in
     description = $in -> $out
 
 #
 # Targets
 #
 
-build others/belt.cmti others/belt.cmi : cc others/belt.ml | runtime
-build others/node.cmti others/node.cmi : cc others/node.ml | runtime
-build others/js_array.cmi others/js_array.cmti : cc others/js_array.ml | others/js_array2.cmti runtime
-build others/js_array2.cmi others/js_array2.cmti : cc others/js_array2.ml | runtime
-build others/js_cast.cmti : cc others/js_cast.ml | others/js_cast.cmi runtime
-build others/js_cast.cmi : cc others/js_cast.mli | runtime
-build others/js_console.cmi others/js_console.cmti : cc others/js_console.ml | runtime
-build others/js_date.cmi others/js_date.cmti : cc others/js_date.ml | runtime
-build others/js_dict.cmti : cc others/js_dict.ml | others/js_array2.cmti others/js_dict.cmi runtime
-build others/js_dict.cmi : cc others/js_dict.mli | runtime
-build others/js_exn.cmti : cc others/js_exn.ml | others/js_exn.cmi runtime
-build others/js_exn.cmi : cc others/js_exn.mli | runtime
-build others/js_float.cmi others/js_float.cmti : cc others/js_float.ml | runtime
-build others/js_global.cmi others/js_global.cmti : cc others/js_global.ml | runtime
-build others/js_int.cmi others/js_int.cmti : cc others/js_int.ml | runtime
-build others/js_json.cmti : cc others/js_json.ml | others/js_array2.cmti others/js_dict.cmti others/js_json.cmi others/js_string.cmti others/js_types.cmti runtime
-build others/js_json.cmi : cc others/js_json.mli | others/js_dict.cmi others/js_null.cmi others/js_string.cmti others/js_types.cmi runtime
-build others/js_list.cmti : cc others/js_list.ml | others/js_array2.cmti others/js_list.cmi others/js_vector.cmti runtime
-build others/js_list.cmi : cc others/js_list.mli | others/js_vector.cmi runtime
-build others/js_mapperRt.cmti : cc others/js_mapperRt.ml | others/js_array2.cmti others/js_exn.cmti others/js_mapperRt.cmi runtime
-build others/js_mapperRt.cmi : cc others/js_mapperRt.mli | runtime
-build others/js_math.cmi others/js_math.cmti : cc others/js_math.ml | others/js_int.cmti runtime
-build others/js_null.cmti : cc others/js_null.ml | others/js_exn.cmti others/js_null.cmi runtime
-build others/js_null.cmi : cc others/js_null.mli | runtime
-build others/js_null_undefined.cmti : cc others/js_null_undefined.ml | others/js_null_undefined.cmi runtime
-build others/js_null_undefined.cmi : cc others/js_null_undefined.mli | runtime
-build others/js_obj.cmi others/js_obj.cmti : cc others/js_obj.ml | runtime
-build others/js_option.cmti : cc others/js_option.ml | others/js_exn.cmti others/js_option.cmi runtime
-build others/js_option.cmi : cc others/js_option.mli | runtime
-build others/js_promise.cmi others/js_promise.cmti : cc others/js_promise.ml | others/js_promise2.cmti runtime
-build others/js_promise2.cmi others/js_promise2.cmti : cc others/js_promise2.ml | runtime
-build others/js_re.cmi : cc others/js_re.mli | others/js_re2.cmi runtime
-build others/js_re2.cmi : cc others/js_re2.mli | runtime
-build others/js_result.cmti : cc others/js_result.ml | others/js_result.cmi runtime
-build others/js_result.cmi : cc others/js_result.mli | runtime
-build others/js_string.cmi others/js_string.cmti : cc others/js_string.ml | others/js_array2.cmti others/js_re.cmi runtime
-build others/js_string2.cmi others/js_string2.cmti : cc others/js_string2.ml | others/js_array2.cmti others/js_re.cmi runtime
-build others/js_typed_array.cmi others/js_typed_array.cmti : cc others/js_typed_array.ml | others/js_typed_array2.cmti runtime
-build others/js_typed_array2.cmi others/js_typed_array2.cmti : cc others/js_typed_array2.ml | runtime
-build others/js_types.cmti : cc others/js_types.ml | others/js_null.cmti others/js_types.cmi runtime
-build others/js_types.cmi : cc others/js_types.mli | runtime
-build others/js_undefined.cmti : cc others/js_undefined.ml | others/js_exn.cmti others/js_undefined.cmi runtime
-build others/js_undefined.cmi : cc others/js_undefined.mli | runtime
-build others/js_vector.cmti : cc others/js_vector.ml | others/js_array2.cmti others/js_vector.cmi runtime
-build others/js_vector.cmi : cc others/js_vector.mli | runtime
-build js_pkg : phony others/js_array.cmi others/js_array.cmti others/js_array2.cmi others/js_array2.cmti others/js_cast.cmi others/js_cast.cmti others/js_console.cmi others/js_console.cmti others/js_date.cmi others/js_date.cmti others/js_dict.cmi others/js_dict.cmti others/js_exn.cmi others/js_exn.cmti others/js_float.cmi others/js_float.cmti others/js_global.cmi others/js_global.cmti others/js_int.cmi others/js_int.cmti others/js_json.cmi others/js_json.cmti others/js_list.cmi others/js_list.cmti others/js_mapperRt.cmi others/js_mapperRt.cmti others/js_math.cmi others/js_math.cmti others/js_null.cmi others/js_null.cmti others/js_null_undefined.cmi others/js_null_undefined.cmti others/js_obj.cmi others/js_obj.cmti others/js_option.cmi others/js_option.cmti others/js_promise.cmi others/js_promise.cmti others/js_promise2.cmi others/js_promise2.cmti others/js_re.cmi others/js_re2.cmi others/js_result.cmi others/js_result.cmti others/js_string.cmi others/js_string.cmti others/js_string2.cmi others/js_string2.cmti others/js_typed_array.cmi others/js_typed_array.cmti others/js_typed_array2.cmi others/js_typed_array2.cmti others/js_types.cmi others/js_types.cmti others/js_undefined.cmi others/js_undefined.cmti others/js_vector.cmi others/js_vector.cmti
-build others/belt_Array.cmti : cc others/belt_Array.ml | others/belt.cmi others/belt_Array.cmi others/js_math.cmti js_pkg runtime
-build others/belt_Array.cmi : cc others/belt_Array.mli | runtime
-build others/belt_Debug.cmi others/belt_Debug.cmti : cc others/belt_Debug.ml | runtime
-build others/belt_HashMap.cmti : cc others/belt_HashMap.ml | others/belt.cmi others/belt_Array.cmti others/belt_HashMap.cmi others/belt_HashMapInt.cmti others/belt_HashMapString.cmti others/belt_Id.cmti others/belt_internalBuckets.cmti others/belt_internalBucketsType.cmti js_pkg runtime
-build others/belt_HashMap.cmi : cc others/belt_HashMap.mli | others/belt.cmi others/belt_HashMapInt.cmi others/belt_HashMapString.cmi others/belt_Id.cmi js_pkg runtime
-build others/belt_HashMapInt.cmti : cc others/belt_HashMapInt.ml | others/belt.cmi others/belt_Array.cmti others/belt_HashMapInt.cmi others/belt_internalBuckets.cmti others/belt_internalBucketsType.cmti js_pkg runtime
-build others/belt_HashMapInt.cmi : cc others/belt_HashMapInt.mli | runtime
-build others/belt_HashMapString.cmti : cc others/belt_HashMapString.ml | others/belt.cmi others/belt_Array.cmti others/belt_HashMapString.cmi others/belt_internalBuckets.cmti others/belt_internalBucketsType.cmti js_pkg runtime
-build others/belt_HashMapString.cmi : cc others/belt_HashMapString.mli | runtime
-build others/belt_HashSet.cmti : cc others/belt_HashSet.ml | others/belt.cmi others/belt_Array.cmti others/belt_HashSet.cmi others/belt_HashSetInt.cmti others/belt_HashSetString.cmti others/belt_Id.cmti others/belt_internalBucketsType.cmti others/belt_internalSetBuckets.cmti js_pkg runtime
-build others/belt_HashSet.cmi : cc others/belt_HashSet.mli | others/belt.cmi others/belt_HashSetInt.cmi others/belt_HashSetString.cmi others/belt_Id.cmi js_pkg runtime
-build others/belt_HashSetInt.cmti : cc others/belt_HashSetInt.ml | others/belt.cmi others/belt_Array.cmti others/belt_HashSetInt.cmi others/belt_internalBucketsType.cmti others/belt_internalSetBuckets.cmti js_pkg runtime
-build others/belt_HashSetInt.cmi : cc others/belt_HashSetInt.mli | runtime
-build others/belt_HashSetString.cmti : cc others/belt_HashSetString.ml | others/belt.cmi others/belt_Array.cmti others/belt_HashSetString.cmi others/belt_internalBucketsType.cmti others/belt_internalSetBuckets.cmti js_pkg runtime
-build others/belt_HashSetString.cmi : cc others/belt_HashSetString.mli | runtime
-build others/belt_Id.cmti : cc others/belt_Id.ml | others/belt.cmi others/belt_Id.cmi js_pkg runtime
-build others/belt_Id.cmi : cc others/belt_Id.mli | runtime
-build others/belt_List.cmti : cc others/belt_List.ml | others/belt.cmi others/belt_Array.cmti others/belt_List.cmi others/belt_SortArray.cmti js_pkg runtime
-build others/belt_List.cmi : cc others/belt_List.mli | runtime
-build others/belt_Map.cmti : cc others/belt_Map.ml | others/belt.cmi others/belt_Array.cmti others/belt_Id.cmti others/belt_Map.cmi others/belt_MapDict.cmti others/belt_MapInt.cmti others/belt_MapString.cmti js_pkg runtime
-build others/belt_Map.cmi : cc others/belt_Map.mli | others/belt.cmi others/belt_Id.cmi others/belt_MapDict.cmi others/belt_MapInt.cmi others/belt_MapString.cmi js_pkg runtime
-build others/belt_MapDict.cmti : cc others/belt_MapDict.ml | others/belt.cmi others/belt_Array.cmti others/belt_Id.cmti others/belt_MapDict.cmi others/belt_internalAVLtree.cmti js_pkg runtime
-build others/belt_MapDict.cmi : cc others/belt_MapDict.mli | others/belt.cmi others/belt_Id.cmi js_pkg runtime
-build others/belt_MapInt.cmti : cc others/belt_MapInt.ml | others/belt.cmi others/belt_Array.cmti others/belt_MapInt.cmi others/belt_internalAVLtree.cmti others/belt_internalMapInt.cmti js_pkg runtime
-build others/belt_MapInt.cmi : cc others/belt_MapInt.mli | runtime
-build others/belt_MapString.cmti : cc others/belt_MapString.ml | others/belt.cmi others/belt_Array.cmti others/belt_MapString.cmi others/belt_internalAVLtree.cmti others/belt_internalMapString.cmti js_pkg runtime
-build others/belt_MapString.cmi : cc others/belt_MapString.mli | runtime
-build others/belt_MutableMap.cmti : cc others/belt_MutableMap.ml | others/belt.cmi others/belt_Array.cmti others/belt_Id.cmti others/belt_MutableMap.cmi others/belt_MutableMapInt.cmti others/belt_MutableMapString.cmti others/belt_internalAVLtree.cmti js_pkg runtime
-build others/belt_MutableMap.cmi : cc others/belt_MutableMap.mli | others/belt.cmi others/belt_Id.cmi others/belt_MutableMapInt.cmi others/belt_MutableMapString.cmi js_pkg runtime
-build others/belt_MutableMapInt.cmti : cc others/belt_MutableMapInt.ml | others/belt.cmi others/belt_Array.cmti others/belt_MutableMapInt.cmi others/belt_internalAVLtree.cmti others/belt_internalMapInt.cmti js_pkg runtime
-build others/belt_MutableMapInt.cmi : cc others/belt_MutableMapInt.mli | runtime
-build others/belt_MutableMapString.cmti : cc others/belt_MutableMapString.ml | others/belt.cmi others/belt_Array.cmti others/belt_MutableMapString.cmi others/belt_internalAVLtree.cmti others/belt_internalMapString.cmti js_pkg runtime
-build others/belt_MutableMapString.cmi : cc others/belt_MutableMapString.mli | runtime
-build others/belt_MutableQueue.cmti : cc others/belt_MutableQueue.ml | others/belt.cmi others/belt_Array.cmti others/belt_MutableQueue.cmi others/js_null.cmti js_pkg runtime
-build others/belt_MutableQueue.cmi : cc others/belt_MutableQueue.mli | runtime
-build others/belt_MutableSet.cmti : cc others/belt_MutableSet.ml | others/belt.cmi others/belt_Array.cmti others/belt_Id.cmti others/belt_MutableSet.cmi others/belt_MutableSetInt.cmti others/belt_MutableSetString.cmti others/belt_SortArray.cmti others/belt_internalAVLset.cmti js_pkg runtime
-build others/belt_MutableSet.cmi : cc others/belt_MutableSet.mli | others/belt.cmi others/belt_Id.cmi others/belt_MutableSetInt.cmi others/belt_MutableSetString.cmi js_pkg runtime
-build others/belt_MutableSetInt.cmti : cc others/belt_MutableSetInt.ml | others/belt.cmi others/belt_Array.cmti others/belt_MutableSetInt.cmi others/belt_SortArrayInt.cmti others/belt_internalAVLset.cmti others/belt_internalSetInt.cmti js_pkg runtime
-build others/belt_MutableSetInt.cmi : cc others/belt_MutableSetInt.mli | runtime
-build others/belt_MutableSetString.cmti : cc others/belt_MutableSetString.ml | others/belt.cmi others/belt_Array.cmti others/belt_MutableSetString.cmi others/belt_SortArrayString.cmti others/belt_internalAVLset.cmti others/belt_internalSetString.cmti js_pkg runtime
-build others/belt_MutableSetString.cmi : cc others/belt_MutableSetString.mli | runtime
-build others/belt_MutableStack.cmti : cc others/belt_MutableStack.ml | others/belt.cmi others/belt_MutableStack.cmi others/js_null.cmti js_pkg runtime
-build others/belt_MutableStack.cmi : cc others/belt_MutableStack.mli | runtime
-build others/belt_Option.cmti : cc others/belt_Option.ml | others/belt.cmi others/belt_Option.cmi js_pkg runtime
-build others/belt_Option.cmi : cc others/belt_Option.mli | runtime
-build others/belt_Range.cmti : cc others/belt_Range.ml | others/belt.cmi others/belt_Range.cmi js_pkg runtime
-build others/belt_Range.cmi : cc others/belt_Range.mli | runtime
-build others/belt_Result.cmti : cc others/belt_Result.ml | others/belt.cmi others/belt_Result.cmi js_pkg runtime
-build others/belt_Result.cmi : cc others/belt_Result.mli | runtime
-build others/belt_Set.cmti : cc others/belt_Set.ml | others/belt.cmi others/belt_Array.cmti others/belt_Id.cmti others/belt_Set.cmi others/belt_SetDict.cmti others/belt_SetInt.cmti others/belt_SetString.cmti js_pkg runtime
-build others/belt_Set.cmi : cc others/belt_Set.mli | others/belt.cmi others/belt_Id.cmi others/belt_SetDict.cmi others/belt_SetInt.cmi others/belt_SetString.cmi js_pkg runtime
-build others/belt_SetDict.cmti : cc others/belt_SetDict.ml | others/belt.cmi others/belt_Array.cmti others/belt_Id.cmti others/belt_SetDict.cmi others/belt_internalAVLset.cmti js_pkg runtime
-build others/belt_SetDict.cmi : cc others/belt_SetDict.mli | others/belt.cmi others/belt_Id.cmi js_pkg runtime
-build others/belt_SetInt.cmti : cc others/belt_SetInt.ml | others/belt.cmi others/belt_Array.cmti others/belt_SetInt.cmi others/belt_internalAVLset.cmti others/belt_internalSetInt.cmti js_pkg runtime
-build others/belt_SetInt.cmi : cc others/belt_SetInt.mli | runtime
-build others/belt_SetString.cmti : cc others/belt_SetString.ml | others/belt.cmi others/belt_Array.cmti others/belt_SetString.cmi others/belt_internalAVLset.cmti others/belt_internalSetString.cmti js_pkg runtime
-build others/belt_SetString.cmi : cc others/belt_SetString.mli | runtime
-build others/belt_SortArray.cmti : cc others/belt_SortArray.ml | others/belt.cmi others/belt_Array.cmti others/belt_SortArray.cmi others/belt_SortArrayInt.cmti others/belt_SortArrayString.cmti js_pkg runtime
-build others/belt_SortArray.cmi : cc others/belt_SortArray.mli | others/belt.cmi others/belt_SortArrayInt.cmi others/belt_SortArrayString.cmi js_pkg runtime
-build others/belt_SortArrayInt.cmti : cc others/belt_SortArrayInt.ml | others/belt.cmi others/belt_Array.cmti others/belt_SortArrayInt.cmi js_pkg runtime
-build others/belt_SortArrayInt.cmi : cc others/belt_SortArrayInt.mli | runtime
-build others/belt_SortArrayString.cmti : cc others/belt_SortArrayString.ml | others/belt.cmi others/belt_Array.cmti others/belt_SortArrayString.cmi js_pkg runtime
-build others/belt_SortArrayString.cmi : cc others/belt_SortArrayString.mli | runtime
-build others/belt_internalAVLset.cmti : cc others/belt_internalAVLset.ml | others/belt.cmi others/belt_Array.cmti others/belt_Id.cmti others/belt_SortArray.cmti others/belt_internalAVLset.cmi js_pkg runtime
-build others/belt_internalAVLset.cmi : cc others/belt_internalAVLset.mli | others/belt.cmi others/belt_Id.cmi js_pkg runtime
-build others/belt_internalAVLtree.cmti : cc others/belt_internalAVLtree.ml | others/belt.cmi others/belt_Array.cmti others/belt_Id.cmti others/belt_SortArray.cmti others/belt_internalAVLtree.cmi js_pkg runtime
-build others/belt_internalAVLtree.cmi : cc others/belt_internalAVLtree.mli | others/belt.cmi others/belt_Id.cmi js_pkg runtime
-build others/belt_internalBuckets.cmti : cc others/belt_internalBuckets.ml | others/belt.cmi others/belt_Array.cmti others/belt_internalBuckets.cmi others/belt_internalBucketsType.cmti js_pkg runtime
-build others/belt_internalBuckets.cmi : cc others/belt_internalBuckets.mli | others/belt.cmi others/belt_internalBucketsType.cmi js_pkg runtime
-build others/belt_internalBucketsType.cmti : cc others/belt_internalBucketsType.ml | others/belt.cmi others/belt_Array.cmti others/belt_internalBucketsType.cmi js_pkg runtime
-build others/belt_internalBucketsType.cmi : cc others/belt_internalBucketsType.mli | runtime
-build others/belt_internalMapInt.cmi others/belt_internalMapInt.cmti : cc others/belt_internalMapInt.ml | others/belt.cmi others/belt_Array.cmti others/belt_SortArray.cmti others/belt_internalAVLtree.cmti js_pkg runtime
-build others/belt_internalMapString.cmi others/belt_internalMapString.cmti : cc others/belt_internalMapString.ml | others/belt.cmi others/belt_Array.cmti others/belt_SortArray.cmti others/belt_internalAVLtree.cmti js_pkg runtime
-build others/belt_internalSetBuckets.cmti : cc others/belt_internalSetBuckets.ml | others/belt.cmi others/belt_Array.cmti others/belt_internalBucketsType.cmti others/belt_internalSetBuckets.cmi js_pkg runtime
-build others/belt_internalSetBuckets.cmi : cc others/belt_internalSetBuckets.mli | others/belt.cmi others/belt_internalBucketsType.cmi js_pkg runtime
-build others/belt_internalSetInt.cmi others/belt_internalSetInt.cmti : cc others/belt_internalSetInt.ml | others/belt.cmi others/belt_Array.cmti others/belt_SortArrayInt.cmti others/belt_internalAVLset.cmti js_pkg runtime
-build others/belt_internalSetString.cmi others/belt_internalSetString.cmti : cc others/belt_internalSetString.ml | others/belt.cmi others/belt_Array.cmti others/belt_SortArrayString.cmti others/belt_internalAVLset.cmti js_pkg runtime
-build others/dom.cmi : cc others/dom.mli | others/dom_storage.cmi others/dom_storage2.cmi js_pkg runtime
-build others/dom_storage.cmi : cc others/dom_storage.mli | others/dom_storage2.cmi js_pkg runtime
-build others/dom_storage2.cmi : cc others/dom_storage2.mli | runtime
-build others/node_buffer.cmi others/node_buffer.cmti : cc others/node_buffer.ml | others/node.cmi others/node.cmti js_pkg runtime
-build others/node_child_process.cmi others/node_child_process.cmti : cc others/node_child_process.ml | others/node.cmi others/node.cmti js_pkg runtime
-build others/node_fs.cmi others/node_fs.cmti : cc others/node_fs.ml | others/js_string.cmti others/node.cmi others/node.cmti others/node_fs2.cmti js_pkg runtime
-build others/node_fs2.cmi others/node_fs2.cmti : cc others/node_fs2.ml | others/js_string.cmti others/node.cmi others/node.cmti js_pkg runtime
-build others/node_module.cmi others/node_module.cmti : cc others/node_module.ml | others/js_dict.cmti others/node.cmi others/node.cmti js_pkg runtime
-build others/node_path.cmi others/node_path.cmti : cc others/node_path.ml | runtime
-build others/node_process.cmti : cc others/node_process.ml | others/js_dict.cmti others/node.cmi others/node_process.cmi js_pkg runtime
-build others/node_process.cmi : cc others/node_process.mli | others/js_dict.cmi others/node.cmi js_pkg runtime
-build others : phony others/belt_Array.cmi others/belt_Array.cmti others/belt_Debug.cmi others/belt_Debug.cmti others/belt_HashMap.cmi others/belt_HashMap.cmti others/belt_HashMapInt.cmi others/belt_HashMapInt.cmti others/belt_HashMapString.cmi others/belt_HashMapString.cmti others/belt_HashSet.cmi others/belt_HashSet.cmti others/belt_HashSetInt.cmi others/belt_HashSetInt.cmti others/belt_HashSetString.cmi others/belt_HashSetString.cmti others/belt_Id.cmi others/belt_Id.cmti others/belt_List.cmi others/belt_List.cmti others/belt_Map.cmi others/belt_Map.cmti others/belt_MapDict.cmi others/belt_MapDict.cmti others/belt_MapInt.cmi others/belt_MapInt.cmti others/belt_MapString.cmi others/belt_MapString.cmti others/belt_MutableMap.cmi others/belt_MutableMap.cmti others/belt_MutableMapInt.cmi others/belt_MutableMapInt.cmti others/belt_MutableMapString.cmi others/belt_MutableMapString.cmti others/belt_MutableQueue.cmi others/belt_MutableQueue.cmti others/belt_MutableSet.cmi others/belt_MutableSet.cmti others/belt_MutableSetInt.cmi others/belt_MutableSetInt.cmti others/belt_MutableSetString.cmi others/belt_MutableSetString.cmti others/belt_MutableStack.cmi others/belt_MutableStack.cmti others/belt_Option.cmi others/belt_Option.cmti others/belt_Range.cmi others/belt_Range.cmti others/belt_Result.cmi others/belt_Result.cmti others/belt_Set.cmi others/belt_Set.cmti others/belt_SetDict.cmi others/belt_SetDict.cmti others/belt_SetInt.cmi others/belt_SetInt.cmti others/belt_SetString.cmi others/belt_SetString.cmti others/belt_SortArray.cmi others/belt_SortArray.cmti others/belt_SortArrayInt.cmi others/belt_SortArrayInt.cmti others/belt_SortArrayString.cmi others/belt_SortArrayString.cmti others/belt_internalAVLset.cmi others/belt_internalAVLset.cmti others/belt_internalAVLtree.cmi others/belt_internalAVLtree.cmti others/belt_internalBuckets.cmi others/belt_internalBuckets.cmti others/belt_internalBucketsType.cmi others/belt_internalBucketsType.cmti others/belt_internalMapInt.cmi others/belt_internalMapInt.cmti others/belt_internalMapString.cmi others/belt_internalMapString.cmti others/belt_internalSetBuckets.cmi others/belt_internalSetBuckets.cmti others/belt_internalSetInt.cmi others/belt_internalSetInt.cmti others/belt_internalSetString.cmi others/belt_internalSetString.cmti others/dom.cmi others/dom_storage.cmi others/dom_storage2.cmi others/node_buffer.cmi others/node_buffer.cmti others/node_child_process.cmi others/node_child_process.cmti others/node_fs.cmi others/node_fs.cmti others/node_fs2.cmi others/node_fs2.cmti others/node_module.cmi others/node_module.cmti others/node_path.cmi others/node_path.cmti others/node_process.cmi others/node_process.cmti
+build others/belt.cmt others/belt.cmti : cc others/belt.ml | runtime
+build others/node.cmt others/node.cmti : cc others/node.ml | runtime
+build others/js_array.cmti others/js_array.cmt : cc others/js_array.ml | others/js_array2.cmt runtime
+build others/js_array2.cmti others/js_array2.cmt : cc others/js_array2.ml | runtime
+build others/js_cast.cmt : cc others/js_cast.ml | others/js_cast.cmti runtime
+build others/js_cast.cmti : cc others/js_cast.mli | runtime
+build others/js_console.cmti others/js_console.cmt : cc others/js_console.ml | runtime
+build others/js_date.cmti others/js_date.cmt : cc others/js_date.ml | runtime
+build others/js_dict.cmt : cc others/js_dict.ml | others/js_array2.cmt others/js_dict.cmti runtime
+build others/js_dict.cmti : cc others/js_dict.mli | runtime
+build others/js_exn.cmt : cc others/js_exn.ml | others/js_exn.cmti runtime
+build others/js_exn.cmti : cc others/js_exn.mli | runtime
+build others/js_float.cmti others/js_float.cmt : cc others/js_float.ml | runtime
+build others/js_global.cmti others/js_global.cmt : cc others/js_global.ml | runtime
+build others/js_int.cmti others/js_int.cmt : cc others/js_int.ml | runtime
+build others/js_json.cmt : cc others/js_json.ml | others/js_array2.cmt others/js_dict.cmt others/js_json.cmti others/js_string.cmt others/js_types.cmt runtime
+build others/js_json.cmti : cc others/js_json.mli | others/js_dict.cmti others/js_null.cmti others/js_string.cmt others/js_types.cmti runtime
+build others/js_list.cmt : cc others/js_list.ml | others/js_array2.cmt others/js_list.cmti others/js_vector.cmt runtime
+build others/js_list.cmti : cc others/js_list.mli | others/js_vector.cmti runtime
+build others/js_mapperRt.cmt : cc others/js_mapperRt.ml | others/js_array2.cmt others/js_exn.cmt others/js_mapperRt.cmti runtime
+build others/js_mapperRt.cmti : cc others/js_mapperRt.mli | runtime
+build others/js_math.cmti others/js_math.cmt : cc others/js_math.ml | others/js_int.cmt runtime
+build others/js_null.cmt : cc others/js_null.ml | others/js_exn.cmt others/js_null.cmti runtime
+build others/js_null.cmti : cc others/js_null.mli | runtime
+build others/js_null_undefined.cmt : cc others/js_null_undefined.ml | others/js_null_undefined.cmti runtime
+build others/js_null_undefined.cmti : cc others/js_null_undefined.mli | runtime
+build others/js_obj.cmti others/js_obj.cmt : cc others/js_obj.ml | runtime
+build others/js_option.cmt : cc others/js_option.ml | others/js_exn.cmt others/js_option.cmti runtime
+build others/js_option.cmti : cc others/js_option.mli | runtime
+build others/js_promise.cmti others/js_promise.cmt : cc others/js_promise.ml | others/js_promise2.cmt runtime
+build others/js_promise2.cmti others/js_promise2.cmt : cc others/js_promise2.ml | runtime
+build others/js_re.cmti : cc others/js_re.mli | others/js_re2.cmti runtime
+build others/js_re2.cmti : cc others/js_re2.mli | runtime
+build others/js_result.cmt : cc others/js_result.ml | others/js_result.cmti runtime
+build others/js_result.cmti : cc others/js_result.mli | runtime
+build others/js_string.cmti others/js_string.cmt : cc others/js_string.ml | others/js_array2.cmt others/js_re.cmti runtime
+build others/js_string2.cmti others/js_string2.cmt : cc others/js_string2.ml | others/js_array2.cmt others/js_re.cmti runtime
+build others/js_typed_array.cmti others/js_typed_array.cmt : cc others/js_typed_array.ml | others/js_typed_array2.cmt runtime
+build others/js_typed_array2.cmti others/js_typed_array2.cmt : cc others/js_typed_array2.ml | runtime
+build others/js_types.cmt : cc others/js_types.ml | others/js_null.cmt others/js_types.cmti runtime
+build others/js_types.cmti : cc others/js_types.mli | runtime
+build others/js_undefined.cmt : cc others/js_undefined.ml | others/js_exn.cmt others/js_undefined.cmti runtime
+build others/js_undefined.cmti : cc others/js_undefined.mli | runtime
+build others/js_vector.cmt : cc others/js_vector.ml | others/js_array2.cmt others/js_vector.cmti runtime
+build others/js_vector.cmti : cc others/js_vector.mli | runtime
+build js_pkg : phony others/js_array.cmti others/js_array.cmt others/js_array2.cmti others/js_array2.cmt others/js_cast.cmti others/js_cast.cmt others/js_console.cmti others/js_console.cmt others/js_date.cmti others/js_date.cmt others/js_dict.cmti others/js_dict.cmt others/js_exn.cmti others/js_exn.cmt others/js_float.cmti others/js_float.cmt others/js_global.cmti others/js_global.cmt others/js_int.cmti others/js_int.cmt others/js_json.cmti others/js_json.cmt others/js_list.cmti others/js_list.cmt others/js_mapperRt.cmti others/js_mapperRt.cmt others/js_math.cmti others/js_math.cmt others/js_null.cmti others/js_null.cmt others/js_null_undefined.cmti others/js_null_undefined.cmt others/js_obj.cmti others/js_obj.cmt others/js_option.cmti others/js_option.cmt others/js_promise.cmti others/js_promise.cmt others/js_promise2.cmti others/js_promise2.cmt others/js_re.cmti others/js_re2.cmti others/js_result.cmti others/js_result.cmt others/js_string.cmti others/js_string.cmt others/js_string2.cmti others/js_string2.cmt others/js_typed_array.cmti others/js_typed_array.cmt others/js_typed_array2.cmti others/js_typed_array2.cmt others/js_types.cmti others/js_types.cmt others/js_undefined.cmti others/js_undefined.cmt others/js_vector.cmti others/js_vector.cmt
+build others/belt_Array.cmt : cc others/belt_Array.ml | others/belt.cmti others/belt_Array.cmti others/js_math.cmt js_pkg runtime
+build others/belt_Array.cmti : cc others/belt_Array.mli | runtime
+build others/belt_Debug.cmti others/belt_Debug.cmt : cc others/belt_Debug.ml | runtime
+build others/belt_HashMap.cmt : cc others/belt_HashMap.ml | others/belt.cmti others/belt_Array.cmt others/belt_HashMap.cmti others/belt_HashMapInt.cmt others/belt_HashMapString.cmt others/belt_Id.cmt others/belt_internalBuckets.cmt others/belt_internalBucketsType.cmt js_pkg runtime
+build others/belt_HashMap.cmti : cc others/belt_HashMap.mli | others/belt.cmti others/belt_HashMapInt.cmti others/belt_HashMapString.cmti others/belt_Id.cmti js_pkg runtime
+build others/belt_HashMapInt.cmt : cc others/belt_HashMapInt.ml | others/belt.cmti others/belt_Array.cmt others/belt_HashMapInt.cmti others/belt_internalBuckets.cmt others/belt_internalBucketsType.cmt js_pkg runtime
+build others/belt_HashMapInt.cmti : cc others/belt_HashMapInt.mli | runtime
+build others/belt_HashMapString.cmt : cc others/belt_HashMapString.ml | others/belt.cmti others/belt_Array.cmt others/belt_HashMapString.cmti others/belt_internalBuckets.cmt others/belt_internalBucketsType.cmt js_pkg runtime
+build others/belt_HashMapString.cmti : cc others/belt_HashMapString.mli | runtime
+build others/belt_HashSet.cmt : cc others/belt_HashSet.ml | others/belt.cmti others/belt_Array.cmt others/belt_HashSet.cmti others/belt_HashSetInt.cmt others/belt_HashSetString.cmt others/belt_Id.cmt others/belt_internalBucketsType.cmt others/belt_internalSetBuckets.cmt js_pkg runtime
+build others/belt_HashSet.cmti : cc others/belt_HashSet.mli | others/belt.cmti others/belt_HashSetInt.cmti others/belt_HashSetString.cmti others/belt_Id.cmti js_pkg runtime
+build others/belt_HashSetInt.cmt : cc others/belt_HashSetInt.ml | others/belt.cmti others/belt_Array.cmt others/belt_HashSetInt.cmti others/belt_internalBucketsType.cmt others/belt_internalSetBuckets.cmt js_pkg runtime
+build others/belt_HashSetInt.cmti : cc others/belt_HashSetInt.mli | runtime
+build others/belt_HashSetString.cmt : cc others/belt_HashSetString.ml | others/belt.cmti others/belt_Array.cmt others/belt_HashSetString.cmti others/belt_internalBucketsType.cmt others/belt_internalSetBuckets.cmt js_pkg runtime
+build others/belt_HashSetString.cmti : cc others/belt_HashSetString.mli | runtime
+build others/belt_Id.cmt : cc others/belt_Id.ml | others/belt.cmti others/belt_Id.cmti js_pkg runtime
+build others/belt_Id.cmti : cc others/belt_Id.mli | runtime
+build others/belt_List.cmt : cc others/belt_List.ml | others/belt.cmti others/belt_Array.cmt others/belt_List.cmti others/belt_SortArray.cmt js_pkg runtime
+build others/belt_List.cmti : cc others/belt_List.mli | runtime
+build others/belt_Map.cmt : cc others/belt_Map.ml | others/belt.cmti others/belt_Array.cmt others/belt_Id.cmt others/belt_Map.cmti others/belt_MapDict.cmt others/belt_MapInt.cmt others/belt_MapString.cmt js_pkg runtime
+build others/belt_Map.cmti : cc others/belt_Map.mli | others/belt.cmti others/belt_Id.cmti others/belt_MapDict.cmti others/belt_MapInt.cmti others/belt_MapString.cmti js_pkg runtime
+build others/belt_MapDict.cmt : cc others/belt_MapDict.ml | others/belt.cmti others/belt_Array.cmt others/belt_Id.cmt others/belt_MapDict.cmti others/belt_internalAVLtree.cmt js_pkg runtime
+build others/belt_MapDict.cmti : cc others/belt_MapDict.mli | others/belt.cmti others/belt_Id.cmti js_pkg runtime
+build others/belt_MapInt.cmt : cc others/belt_MapInt.ml | others/belt.cmti others/belt_Array.cmt others/belt_MapInt.cmti others/belt_internalAVLtree.cmt others/belt_internalMapInt.cmt js_pkg runtime
+build others/belt_MapInt.cmti : cc others/belt_MapInt.mli | runtime
+build others/belt_MapString.cmt : cc others/belt_MapString.ml | others/belt.cmti others/belt_Array.cmt others/belt_MapString.cmti others/belt_internalAVLtree.cmt others/belt_internalMapString.cmt js_pkg runtime
+build others/belt_MapString.cmti : cc others/belt_MapString.mli | runtime
+build others/belt_MutableMap.cmt : cc others/belt_MutableMap.ml | others/belt.cmti others/belt_Array.cmt others/belt_Id.cmt others/belt_MutableMap.cmti others/belt_MutableMapInt.cmt others/belt_MutableMapString.cmt others/belt_internalAVLtree.cmt js_pkg runtime
+build others/belt_MutableMap.cmti : cc others/belt_MutableMap.mli | others/belt.cmti others/belt_Id.cmti others/belt_MutableMapInt.cmti others/belt_MutableMapString.cmti js_pkg runtime
+build others/belt_MutableMapInt.cmt : cc others/belt_MutableMapInt.ml | others/belt.cmti others/belt_Array.cmt others/belt_MutableMapInt.cmti others/belt_internalAVLtree.cmt others/belt_internalMapInt.cmt js_pkg runtime
+build others/belt_MutableMapInt.cmti : cc others/belt_MutableMapInt.mli | runtime
+build others/belt_MutableMapString.cmt : cc others/belt_MutableMapString.ml | others/belt.cmti others/belt_Array.cmt others/belt_MutableMapString.cmti others/belt_internalAVLtree.cmt others/belt_internalMapString.cmt js_pkg runtime
+build others/belt_MutableMapString.cmti : cc others/belt_MutableMapString.mli | runtime
+build others/belt_MutableQueue.cmt : cc others/belt_MutableQueue.ml | others/belt.cmti others/belt_Array.cmt others/belt_MutableQueue.cmti others/js_null.cmt js_pkg runtime
+build others/belt_MutableQueue.cmti : cc others/belt_MutableQueue.mli | runtime
+build others/belt_MutableSet.cmt : cc others/belt_MutableSet.ml | others/belt.cmti others/belt_Array.cmt others/belt_Id.cmt others/belt_MutableSet.cmti others/belt_MutableSetInt.cmt others/belt_MutableSetString.cmt others/belt_SortArray.cmt others/belt_internalAVLset.cmt js_pkg runtime
+build others/belt_MutableSet.cmti : cc others/belt_MutableSet.mli | others/belt.cmti others/belt_Id.cmti others/belt_MutableSetInt.cmti others/belt_MutableSetString.cmti js_pkg runtime
+build others/belt_MutableSetInt.cmt : cc others/belt_MutableSetInt.ml | others/belt.cmti others/belt_Array.cmt others/belt_MutableSetInt.cmti others/belt_SortArrayInt.cmt others/belt_internalAVLset.cmt others/belt_internalSetInt.cmt js_pkg runtime
+build others/belt_MutableSetInt.cmti : cc others/belt_MutableSetInt.mli | runtime
+build others/belt_MutableSetString.cmt : cc others/belt_MutableSetString.ml | others/belt.cmti others/belt_Array.cmt others/belt_MutableSetString.cmti others/belt_SortArrayString.cmt others/belt_internalAVLset.cmt others/belt_internalSetString.cmt js_pkg runtime
+build others/belt_MutableSetString.cmti : cc others/belt_MutableSetString.mli | runtime
+build others/belt_MutableStack.cmt : cc others/belt_MutableStack.ml | others/belt.cmti others/belt_MutableStack.cmti others/js_null.cmt js_pkg runtime
+build others/belt_MutableStack.cmti : cc others/belt_MutableStack.mli | runtime
+build others/belt_Option.cmt : cc others/belt_Option.ml | others/belt.cmti others/belt_Option.cmti js_pkg runtime
+build others/belt_Option.cmti : cc others/belt_Option.mli | runtime
+build others/belt_Range.cmt : cc others/belt_Range.ml | others/belt.cmti others/belt_Range.cmti js_pkg runtime
+build others/belt_Range.cmti : cc others/belt_Range.mli | runtime
+build others/belt_Result.cmt : cc others/belt_Result.ml | others/belt.cmti others/belt_Result.cmti js_pkg runtime
+build others/belt_Result.cmti : cc others/belt_Result.mli | runtime
+build others/belt_Set.cmt : cc others/belt_Set.ml | others/belt.cmti others/belt_Array.cmt others/belt_Id.cmt others/belt_Set.cmti others/belt_SetDict.cmt others/belt_SetInt.cmt others/belt_SetString.cmt js_pkg runtime
+build others/belt_Set.cmti : cc others/belt_Set.mli | others/belt.cmti others/belt_Id.cmti others/belt_SetDict.cmti others/belt_SetInt.cmti others/belt_SetString.cmti js_pkg runtime
+build others/belt_SetDict.cmt : cc others/belt_SetDict.ml | others/belt.cmti others/belt_Array.cmt others/belt_Id.cmt others/belt_SetDict.cmti others/belt_internalAVLset.cmt js_pkg runtime
+build others/belt_SetDict.cmti : cc others/belt_SetDict.mli | others/belt.cmti others/belt_Id.cmti js_pkg runtime
+build others/belt_SetInt.cmt : cc others/belt_SetInt.ml | others/belt.cmti others/belt_Array.cmt others/belt_SetInt.cmti others/belt_internalAVLset.cmt others/belt_internalSetInt.cmt js_pkg runtime
+build others/belt_SetInt.cmti : cc others/belt_SetInt.mli | runtime
+build others/belt_SetString.cmt : cc others/belt_SetString.ml | others/belt.cmti others/belt_Array.cmt others/belt_SetString.cmti others/belt_internalAVLset.cmt others/belt_internalSetString.cmt js_pkg runtime
+build others/belt_SetString.cmti : cc others/belt_SetString.mli | runtime
+build others/belt_SortArray.cmt : cc others/belt_SortArray.ml | others/belt.cmti others/belt_Array.cmt others/belt_SortArray.cmti others/belt_SortArrayInt.cmt others/belt_SortArrayString.cmt js_pkg runtime
+build others/belt_SortArray.cmti : cc others/belt_SortArray.mli | others/belt.cmti others/belt_SortArrayInt.cmti others/belt_SortArrayString.cmti js_pkg runtime
+build others/belt_SortArrayInt.cmt : cc others/belt_SortArrayInt.ml | others/belt.cmti others/belt_Array.cmt others/belt_SortArrayInt.cmti js_pkg runtime
+build others/belt_SortArrayInt.cmti : cc others/belt_SortArrayInt.mli | runtime
+build others/belt_SortArrayString.cmt : cc others/belt_SortArrayString.ml | others/belt.cmti others/belt_Array.cmt others/belt_SortArrayString.cmti js_pkg runtime
+build others/belt_SortArrayString.cmti : cc others/belt_SortArrayString.mli | runtime
+build others/belt_internalAVLset.cmt : cc others/belt_internalAVLset.ml | others/belt.cmti others/belt_Array.cmt others/belt_Id.cmt others/belt_SortArray.cmt others/belt_internalAVLset.cmti js_pkg runtime
+build others/belt_internalAVLset.cmti : cc others/belt_internalAVLset.mli | others/belt.cmti others/belt_Id.cmti js_pkg runtime
+build others/belt_internalAVLtree.cmt : cc others/belt_internalAVLtree.ml | others/belt.cmti others/belt_Array.cmt others/belt_Id.cmt others/belt_SortArray.cmt others/belt_internalAVLtree.cmti js_pkg runtime
+build others/belt_internalAVLtree.cmti : cc others/belt_internalAVLtree.mli | others/belt.cmti others/belt_Id.cmti js_pkg runtime
+build others/belt_internalBuckets.cmt : cc others/belt_internalBuckets.ml | others/belt.cmti others/belt_Array.cmt others/belt_internalBuckets.cmti others/belt_internalBucketsType.cmt js_pkg runtime
+build others/belt_internalBuckets.cmti : cc others/belt_internalBuckets.mli | others/belt.cmti others/belt_internalBucketsType.cmti js_pkg runtime
+build others/belt_internalBucketsType.cmt : cc others/belt_internalBucketsType.ml | others/belt.cmti others/belt_Array.cmt others/belt_internalBucketsType.cmti js_pkg runtime
+build others/belt_internalBucketsType.cmti : cc others/belt_internalBucketsType.mli | runtime
+build others/belt_internalMapInt.cmti others/belt_internalMapInt.cmt : cc others/belt_internalMapInt.ml | others/belt.cmti others/belt_Array.cmt others/belt_SortArray.cmt others/belt_internalAVLtree.cmt js_pkg runtime
+build others/belt_internalMapString.cmti others/belt_internalMapString.cmt : cc others/belt_internalMapString.ml | others/belt.cmti others/belt_Array.cmt others/belt_SortArray.cmt others/belt_internalAVLtree.cmt js_pkg runtime
+build others/belt_internalSetBuckets.cmt : cc others/belt_internalSetBuckets.ml | others/belt.cmti others/belt_Array.cmt others/belt_internalBucketsType.cmt others/belt_internalSetBuckets.cmti js_pkg runtime
+build others/belt_internalSetBuckets.cmti : cc others/belt_internalSetBuckets.mli | others/belt.cmti others/belt_internalBucketsType.cmti js_pkg runtime
+build others/belt_internalSetInt.cmti others/belt_internalSetInt.cmt : cc others/belt_internalSetInt.ml | others/belt.cmti others/belt_Array.cmt others/belt_SortArrayInt.cmt others/belt_internalAVLset.cmt js_pkg runtime
+build others/belt_internalSetString.cmti others/belt_internalSetString.cmt : cc others/belt_internalSetString.ml | others/belt.cmti others/belt_Array.cmt others/belt_SortArrayString.cmt others/belt_internalAVLset.cmt js_pkg runtime
+build others/dom.cmti : cc others/dom.mli | others/dom_storage.cmti others/dom_storage2.cmti js_pkg runtime
+build others/dom_storage.cmti : cc others/dom_storage.mli | others/dom_storage2.cmti js_pkg runtime
+build others/dom_storage2.cmti : cc others/dom_storage2.mli | runtime
+build others/node_buffer.cmti others/node_buffer.cmt : cc others/node_buffer.ml | others/node.cmti others/node.cmt js_pkg runtime
+build others/node_child_process.cmti others/node_child_process.cmt : cc others/node_child_process.ml | others/node.cmti others/node.cmt js_pkg runtime
+build others/node_fs.cmti others/node_fs.cmt : cc others/node_fs.ml | others/js_string.cmt others/node.cmti others/node.cmt others/node_fs2.cmt js_pkg runtime
+build others/node_fs2.cmti others/node_fs2.cmt : cc others/node_fs2.ml | others/js_string.cmt others/node.cmti others/node.cmt js_pkg runtime
+build others/node_module.cmti others/node_module.cmt : cc others/node_module.ml | others/js_dict.cmt others/node.cmti others/node.cmt js_pkg runtime
+build others/node_path.cmti others/node_path.cmt : cc others/node_path.ml | runtime
+build others/node_process.cmt : cc others/node_process.ml | others/js_dict.cmt others/node.cmti others/node_process.cmti js_pkg runtime
+build others/node_process.cmti : cc others/node_process.mli | others/js_dict.cmti others/node.cmti js_pkg runtime
+build others : phony others/belt_Array.cmti others/belt_Array.cmt others/belt_Debug.cmti others/belt_Debug.cmt others/belt_HashMap.cmti others/belt_HashMap.cmt others/belt_HashMapInt.cmti others/belt_HashMapInt.cmt others/belt_HashMapString.cmti others/belt_HashMapString.cmt others/belt_HashSet.cmti others/belt_HashSet.cmt others/belt_HashSetInt.cmti others/belt_HashSetInt.cmt others/belt_HashSetString.cmti others/belt_HashSetString.cmt others/belt_Id.cmti others/belt_Id.cmt others/belt_List.cmti others/belt_List.cmt others/belt_Map.cmti others/belt_Map.cmt others/belt_MapDict.cmti others/belt_MapDict.cmt others/belt_MapInt.cmti others/belt_MapInt.cmt others/belt_MapString.cmti others/belt_MapString.cmt others/belt_MutableMap.cmti others/belt_MutableMap.cmt others/belt_MutableMapInt.cmti others/belt_MutableMapInt.cmt others/belt_MutableMapString.cmti others/belt_MutableMapString.cmt others/belt_MutableQueue.cmti others/belt_MutableQueue.cmt others/belt_MutableSet.cmti others/belt_MutableSet.cmt others/belt_MutableSetInt.cmti others/belt_MutableSetInt.cmt others/belt_MutableSetString.cmti others/belt_MutableSetString.cmt others/belt_MutableStack.cmti others/belt_MutableStack.cmt others/belt_Option.cmti others/belt_Option.cmt others/belt_Range.cmti others/belt_Range.cmt others/belt_Result.cmti others/belt_Result.cmt others/belt_Set.cmti others/belt_Set.cmt others/belt_SetDict.cmti others/belt_SetDict.cmt others/belt_SetInt.cmti others/belt_SetInt.cmt others/belt_SetString.cmti others/belt_SetString.cmt others/belt_SortArray.cmti others/belt_SortArray.cmt others/belt_SortArrayInt.cmti others/belt_SortArrayInt.cmt others/belt_SortArrayString.cmti others/belt_SortArrayString.cmt others/belt_internalAVLset.cmti others/belt_internalAVLset.cmt others/belt_internalAVLtree.cmti others/belt_internalAVLtree.cmt others/belt_internalBuckets.cmti others/belt_internalBuckets.cmt others/belt_internalBucketsType.cmti others/belt_internalBucketsType.cmt others/belt_internalMapInt.cmti others/belt_internalMapInt.cmt others/belt_internalMapString.cmti others/belt_internalMapString.cmt others/belt_internalSetBuckets.cmti others/belt_internalSetBuckets.cmt others/belt_internalSetInt.cmti others/belt_internalSetInt.cmt others/belt_internalSetString.cmti others/belt_internalSetString.cmt others/dom.cmti others/dom_storage.cmti others/dom_storage2.cmti others/node_buffer.cmti others/node_buffer.cmt others/node_child_process.cmti others/node_child_process.cmt others/node_fs.cmti others/node_fs.cmt others/node_fs2.cmti others/node_fs2.cmt others/node_module.cmti others/node_module.cmt others/node_path.cmti others/node_path.cmt others/node_process.cmti others/node_process.cmt
 
 #################################################################################
 #
@@ -170,5 +172,5 @@ build others : phony others/belt_Array.cmi others/belt_Array.cmti others/belt_De
 #
 #
 
-build others/belt.odoc : odoc others/belt.cmti | others/belt.cmti
-build others/belt.html : html others/belt.odoc
+build others/js_option.odoc : odoc others/js_option.cmti | runtime others
+build others/js_option.html : html others/js_option.odoc | runtime others
