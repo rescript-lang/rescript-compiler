@@ -7,14 +7,19 @@
   "dependencies": {
     "@esy-ocaml/reason": "*",
     "@opam/odoc": "1.3.0",
+    "@opam/result": "1.3",
+    "@opam/seq": "base",
     "ocaml": "*"
   },
   "resolutions": {
+    "@opam/tyxml":
+      "github:ocsigen/tyxml:tyxml.opam#f3f86a88762e1eacedf493bffb5cfc175a6a6402",
+    "@opam/re":
+      "github:ocaml/ocaml-re:re.opam#159c491687a4a61f432295ed1477675d311c695b",
+    "@opam/cmdliner":
+      "github:dbuenzli/cmdliner:cmdliner.opam#6866e3137fb74098e026447abcc05783153828d6",
+    "@opam/ocamlbuild": "0",
     "ocaml": "link:../ocaml"
   },
-  "devDependencies": {
-    "@opam/merlin": "*",
-    "ocaml": "*",
-    "refmterr": "*"
-  }
+  "devDependencies": { "@opam/merlin": "*", "ocaml": "*", "refmterr": "*" }
 }
