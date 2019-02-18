@@ -128,3 +128,6 @@ jscomp/ext/string_hashtbl.ml
 jscomp/ext/string_map.ml
 jscomp/ext/string_set.ml
 jscomp/outcome_printer/tweaked_reason_oprint.ml
+
+_esy
+.merlin
