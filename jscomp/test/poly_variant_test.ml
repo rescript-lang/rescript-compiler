@@ -48,7 +48,7 @@ external test_int_type :
   "hey_int" [@@bs.val]
 
 external test_string_extended_closed :
-  flag:([> u] [@bs.string]) -> string  =
+  flag:([< u] [@bs.string]) -> string  =
   "hey_string" [@@bs.val]
 
 let uu =
