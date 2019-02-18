@@ -2,9 +2,10 @@
 # Options
 #
 
-pkg = Belt
+pkg = BuckleScript
 libs = -I runtime -I others
-odoc = esy @docs x odoc
+# odoc = esy @docs x \#{\@opam/odoc.bin}/odoc
+odoc = /Users/ostera/repos/github.com/BuckleScript/bucklescript/_esy/docs/store/i/opam__s__odoc-opam__c__1.3.0-c1ea7866/bin/odoc
 outdir = ../generated_docs
 lang = re
 
@@ -61,8 +62,8 @@ build others/js_option.cmt : cc others/js_option.ml | others/js_exn.cmt others/j
 build others/js_option.cmti : cc others/js_option.mli | runtime
 build others/js_promise.cmti others/js_promise.cmt : cc others/js_promise.ml | others/js_promise2.cmt runtime
 build others/js_promise2.cmti others/js_promise2.cmt : cc others/js_promise2.ml | runtime
-build others/js_re.cmti : cc others/js_re.mli | others/js_re2.cmti runtime
-build others/js_re2.cmti : cc others/js_re2.mli | runtime
+build others/js_re.cmt others/js_re.cmti : cc others/js_re.mli | others/js_re2.cmti runtime
+build others/js_re2.cmt others/js_re2.cmti : cc others/js_re2.mli | runtime
 build others/js_result.cmt : cc others/js_result.ml | others/js_result.cmti runtime
 build others/js_result.cmti : cc others/js_result.mli | runtime
 build others/js_string.cmti others/js_string.cmt : cc others/js_string.ml | others/js_array2.cmt others/js_re.cmti runtime
@@ -170,7 +171,179 @@ build others : phony others/belt_Array.cmti others/belt_Array.cmt others/belt_De
 #
 # Docs
 #
-#
+#################################################################################
 
-build others/js_option.odoc : odoc others/js_option.cmti | runtime others
-build others/js_option.html : html others/js_option.odoc | runtime others
+#
+# Js Docs
+#
+build others/js_array.odoc : odoc others/js_array.cmt | js_pkg 
+build $outdir/js_array.html : html others/js_array.odoc | js_pkg 
+build others/js_array2.odoc : odoc others/js_array2.cmt | js_pkg 
+build $outdir/js_array2.html : html others/js_array2.odoc | js_pkg 
+build others/js_cast.odoc : odoc others/js_cast.cmt | js_pkg 
+build $outdir/js_cast.html : html others/js_cast.odoc | js_pkg 
+build others/js_console.odoc : odoc others/js_console.cmt | js_pkg 
+build $outdir/js_console.html : html others/js_console.odoc | js_pkg 
+build others/js_date.odoc : odoc others/js_date.cmt | js_pkg 
+build $outdir/js_date.html : html others/js_date.odoc | js_pkg 
+build others/js_dict.odoc : odoc others/js_dict.cmti | js_pkg 
+build $outdir/js_dict.html : html others/js_dict.odoc | js_pkg 
+build others/js_exn.odoc : odoc others/js_exn.cmti | js_pkg 
+build $outdir/js_exn.html : html others/js_exn.odoc | js_pkg 
+build others/js_float.odoc : odoc others/js_float.cmt | js_pkg 
+build $outdir/js_float.html : html others/js_float.odoc | js_pkg 
+build others/js_global.odoc : odoc others/js_global.cmt | js_pkg 
+build $outdir/js_global.html : html others/js_global.odoc | js_pkg 
+# build others/js_int.odoc : odoc others/js_int.cmt | js_pkg 
+# build $outdir/js_int.html : html others/js_int.odoc | js_pkg 
+build others/js_json.odoc : odoc others/js_json.cmti | js_pkg 
+build $outdir/js_json.html : html others/js_json.odoc | js_pkg 
+build others/js_list.odoc : odoc others/js_list.cmt | js_pkg 
+build $outdir/js_list.html : html others/js_list.odoc | js_pkg 
+build others/js_mapperRt.odoc : odoc others/js_mapperRt.cmt | js_pkg 
+build $outdir/js_mapperRt.html : html others/js_mapperRt.odoc | js_pkg 
+build others/js_math.odoc : odoc others/js_math.cmt | js_pkg 
+build $outdir/js_math.html : html others/js_math.odoc | js_pkg 
+build others/js_null.odoc : odoc others/js_null.cmt | js_pkg 
+build $outdir/js_null.html : html others/js_null.odoc | js_pkg 
+build others/js_null_undefined.odoc : odoc others/js_null_undefined.cmt | js_pkg 
+build others/js_obj.odoc : odoc others/js_obj.cmt | js_pkg 
+build $outdir/js_obj.html : html others/js_obj.odoc | js_pkg 
+build $outdir/js_null_undefined.html : html others/js_null_undefined.odoc | js_pkg 
+build others/js_option.odoc : odoc others/js_option.cmt | js_pkg 
+build $outdir/js_option.html : html others/js_option.odoc | js_pkg 
+build others/js_promise.odoc : odoc others/js_promise.cmt | js_pkg 
+build $outdir/js_promise.html : html others/js_promise.odoc | js_pkg 
+build others/js_promise2.odoc : odoc others/js_promise2.cmt | js_pkg 
+build $outdir/js_promise2.html : html others/js_promise2.odoc | js_pkg 
+build others/js_re.odoc : odoc others/js_re.cmti | js_pkg 
+build $outdir/js_re.html : html others/js_re.odoc | js_pkg 
+build others/js_re2.odoc : odoc others/js_re2.cmti | js_pkg 
+build $outdir/js_re2.html : html others/js_re2.odoc | js_pkg 
+build others/js_result.odoc : odoc others/js_result.cmt | js_pkg 
+build $outdir/js_result.html : html others/js_result.odoc | js_pkg 
+build others/js_string.odoc : odoc others/js_string.cmt | js_pkg 
+build $outdir/js_string.html : html others/js_string.odoc | js_pkg 
+build others/js_string2.odoc : odoc others/js_string2.cmt | js_pkg 
+build $outdir/js_string2.html : html others/js_string2.odoc | js_pkg 
+build others/js_typed_array.odoc : odoc others/js_typed_array.cmt | js_pkg 
+build $outdir/js_typed_array.html : html others/js_typed_array.odoc | js_pkg 
+build others/js_typed_array2.odoc : odoc others/js_typed_array2.cmt | js_pkg 
+build $outdir/js_typed_array2.html : html others/js_typed_array2.odoc | js_pkg 
+build others/js_types.odoc : odoc others/js_types.cmti | js_pkg 
+build $outdir/js_types.html : html others/js_types.odoc | js_pkg 
+build others/js_undefined.odoc : odoc others/js_undefined.cmt | js_pkg 
+build $outdir/js_undefined.html : html others/js_undefined.odoc | js_pkg 
+build others/js_vector.odoc : odoc others/js_vector.cmt | js_pkg 
+build $outdir/js_vector.html : html others/js_vector.odoc | js_pkg 
+
+build others/dom.odoc : odoc others/dom.cmti | others/dom_storage.cmti others/dom_storage2.cmti js_pkg runtime
+build $outdir/dom.html : html others/dom.odoc | others/dom_storage.cmti others/dom_storage2.cmti js_pkg runtime
+build others/dom_storage.odoc : odoc others/dom_storage.cmti | others/dom_storage2.cmti js_pkg runtime
+build $outdir/dom_storage.html : html others/dom_storage.odoc | others/dom_storage2.cmti js_pkg runtime
+build others/dom_storage2.odoc : odoc others/dom_storage2.cmti | runtime
+build $outdir/dom_storage2.html : html others/dom_storage2.odoc | runtime
+
+# 
+# Node Docs
+#
+build others/node.odoc : odoc others/node.cmt | js_pkg 
+build $outdir/node.html : html others/node.odoc | js_pkg 
+build others/node_buffer.odoc : odoc others/node_buffer.cmt | others/node.cmt js_pkg runtime
+build $outdir/node_buffer.html : html others/node_buffer.odoc | others/node.cmt js_pkg runtime
+build others/node_child_process.odoc : odoc others/node_child_process.cmt |  others/node.cmt js_pkg runtime
+build $outdir/node_child_process.html : html others/node_child_process.odoc |  others/node.cmt js_pkg runtime
+build others/node_fs.odoc : odoc others/node_fs.cmt | others/js_string.cmt  others/node.cmt others/node_fs2.cmt js_pkg runtime
+build $outdir/node_fs.html : html others/node_fs.odoc | others/js_string.cmt  others/node.cmt others/node_fs2.cmt js_pkg runtime
+build others/node_fs2.odoc : odoc others/node_fs2.cmt | others/js_string.cmt  others/node.cmt js_pkg runtime
+build $outdir/node_fs2.html : html others/node_fs2.odoc | others/js_string.cmt  others/node.cmt js_pkg runtime
+build others/node_module.odoc : odoc others/node_module.cmt | others/js_dict.cmt  others/node.cmt js_pkg runtime
+build $outdir/node_module.html : html others/node_module.odoc | others/js_dict.cmt  others/node.cmt js_pkg runtime
+build others/node_path.odoc : odoc others/node_path.cmt | runtime
+build $outdir/node_path.html : html others/node_path.odoc | runtime
+build others/node_process.odoc : odoc others/node_process.cmt | others/js_dict.cmti others/node.cmt js_pkg runtime
+build $outdir/node_process.html : html others/node_process.odoc | others/js_dict.cmti others/node.cmt js_pkg runtime
+
+#
+# Belt Docs
+#
+build others/belt.odoc : odoc others/belt.cmt | js_pkg 
+build $outdir/belt.html : html others/belt.odoc | js_pkg 
+build others/belt_Array.odoc : odoc others/belt_Array.cmti | runtime
+build $outdir/belt_Array.html : html others/belt_Array.odoc | runtime
+build others/belt_Debug.odoc others/belt_Debug.cmt : odoc others/belt_Debug.cmt | runtime
+build $outdir/belt_Debug.html others/belt_Debug.cmt : html others/belt_Debug.odoc | runtime
+build others/belt_HashMap.odoc : odoc others/belt_HashMap.cmti | others/belt.cmti others/belt_HashMapInt.cmti others/belt_HashMapString.cmti others/belt_Id.cmti js_pkg runtime
+build $outdir/belt_HashMap.html : html others/belt_HashMap.odoc | others/belt.cmti others/belt_HashMapInt.cmti others/belt_HashMapString.cmti others/belt_Id.cmti js_pkg runtime
+build others/belt_HashMapInt.odoc : odoc others/belt_HashMapInt.cmti | runtime
+build $outdir/belt_HashMapInt.html : html others/belt_HashMapInt.odoc | runtime
+build others/belt_HashMapString.odoc : odoc others/belt_HashMapString.cmti | runtime
+build $outdir/belt_HashMapString.html : html others/belt_HashMapString.odoc | runtime
+build others/belt_HashSet.odoc : odoc others/belt_HashSet.cmti | others/belt.cmti others/belt_HashSetInt.cmti others/belt_HashSetString.cmti others/belt_Id.cmti js_pkg runtime
+build $outdir/belt_HashSet.html : html others/belt_HashSet.odoc | others/belt.cmti others/belt_HashSetInt.cmti others/belt_HashSetString.cmti others/belt_Id.cmti js_pkg runtime
+build others/belt_HashSetInt.odoc : odoc others/belt_HashSetInt.cmti | runtime
+build $outdir/belt_HashSetInt.html : html others/belt_HashSetInt.odoc | runtime
+build others/belt_HashSetString.odoc : odoc others/belt_HashSetString.cmti | runtime
+build $outdir/belt_HashSetString.html : html others/belt_HashSetString.odoc | runtime
+build others/belt_Id.odoc : odoc others/belt_Id.cmti | runtime
+build $outdir/belt_Id.html : html others/belt_Id.odoc | runtime
+build others/belt_List.odoc : odoc others/belt_List.cmti | runtime
+build $outdir/belt_List.html : html others/belt_List.odoc | runtime
+build others/belt_Map.odoc : odoc others/belt_Map.cmti | others/belt.cmti others/belt_Id.cmti others/belt_MapDict.cmti others/belt_MapInt.cmti others/belt_MapString.cmti js_pkg runtime
+build $outdir/belt_Map.html : html others/belt_Map.odoc | others/belt.cmti others/belt_Id.cmti others/belt_MapDict.cmti others/belt_MapInt.cmti others/belt_MapString.cmti js_pkg runtime
+build others/belt_MapDict.odoc : odoc others/belt_MapDict.cmti | others/belt.cmti others/belt_Id.cmti js_pkg runtime
+build $outdir/belt_MapDict.html : html others/belt_MapDict.odoc | others/belt.cmti others/belt_Id.cmti js_pkg runtime
+build others/belt_MapInt.odoc : odoc others/belt_MapInt.cmti | runtime
+build $outdir/belt_MapInt.html : html others/belt_MapInt.odoc | runtime
+build others/belt_MapString.odoc : odoc others/belt_MapString.cmti | runtime
+build $outdir/belt_MapString.html : html others/belt_MapString.odoc | runtime
+build others/belt_MutableMap.odoc : odoc others/belt_MutableMap.cmti | others/belt.cmti others/belt_Id.cmti others/belt_MutableMapInt.cmti others/belt_MutableMapString.cmti js_pkg runtime
+build $outdir/belt_MutableMap.html : html others/belt_MutableMap.odoc | others/belt.cmti others/belt_Id.cmti others/belt_MutableMapInt.cmti others/belt_MutableMapString.cmti js_pkg runtime
+build others/belt_MutableMapInt.odoc : odoc others/belt_MutableMapInt.cmti | runtime
+build $outdir/belt_MutableMapInt.html : html others/belt_MutableMapInt.odoc | runtime
+build others/belt_MutableMapString.odoc : odoc others/belt_MutableMapString.cmti | runtime
+build $outdir/belt_MutableMapString.html : html others/belt_MutableMapString.odoc | runtime
+build others/belt_MutableQueue.odoc : odoc others/belt_MutableQueue.cmti | runtime
+build $outdir/belt_MutableQueue.html : html others/belt_MutableQueue.odoc | runtime
+build others/belt_MutableSet.odoc : odoc others/belt_MutableSet.cmti | others/belt.cmti others/belt_Id.cmti others/belt_MutableSetInt.cmti others/belt_MutableSetString.cmti js_pkg runtime
+build $outdir/belt_MutableSet.html : html others/belt_MutableSet.odoc | others/belt.cmti others/belt_Id.cmti others/belt_MutableSetInt.cmti others/belt_MutableSetString.cmti js_pkg runtime
+build others/belt_MutableSetInt.odoc : odoc others/belt_MutableSetInt.cmti | runtime
+build $outdir/belt_MutableSetInt.html : html others/belt_MutableSetInt.odoc | runtime
+build others/belt_MutableSetString.odoc : odoc others/belt_MutableSetString.cmti | runtime
+build $outdir/belt_MutableSetString.html : html others/belt_MutableSetString.odoc | runtime
+build others/belt_MutableStack.odoc : odoc others/belt_MutableStack.cmti | runtime
+build $outdir/belt_MutableStack.html : html others/belt_MutableStack.odoc | runtime
+build others/belt_Option.odoc : odoc others/belt_Option.cmti | runtime
+build $outdir/belt_Option.html : html others/belt_Option.odoc | runtime
+build others/belt_Range.odoc : odoc others/belt_Range.cmti | runtime
+build $outdir/belt_Range.html : html others/belt_Range.odoc | runtime
+build others/belt_Result.odoc : odoc others/belt_Result.cmti | runtime
+build $outdir/belt_Result.html : html others/belt_Result.odoc | runtime
+build others/belt_Set.odoc : odoc others/belt_Set.cmti | others/belt.cmti others/belt_Id.cmti others/belt_SetDict.cmti others/belt_SetInt.cmti others/belt_SetString.cmti js_pkg runtime
+build $outdir/belt_Set.html : html others/belt_Set.odoc | others/belt.cmti others/belt_Id.cmti others/belt_SetDict.cmti others/belt_SetInt.cmti others/belt_SetString.cmti js_pkg runtime
+build others/belt_SetDict.odoc : odoc others/belt_SetDict.cmti | others/belt.cmti others/belt_Id.cmti js_pkg runtime
+build $outdir/belt_SetDict.html : html others/belt_SetDict.odoc | others/belt.cmti others/belt_Id.cmti js_pkg runtime
+build others/belt_SetInt.odoc : odoc others/belt_SetInt.cmti | runtime
+build $outdir/belt_SetInt.html : html others/belt_SetInt.odoc | runtime
+build others/belt_SetString.odoc : odoc others/belt_SetString.cmti | runtime
+build $outdir/belt_SetString.html : html others/belt_SetString.odoc | runtime
+build others/belt_SortArray.odoc : odoc others/belt_SortArray.cmti | others/belt.cmti others/belt_SortArrayInt.cmti others/belt_SortArrayString.cmti js_pkg runtime
+build $outdir/belt_SortArray.html : html others/belt_SortArray.odoc | others/belt.cmti others/belt_SortArrayInt.cmti others/belt_SortArrayString.cmti js_pkg runtime
+build others/belt_SortArrayInt.odoc : odoc others/belt_SortArrayInt.cmti | runtime
+build $outdir/belt_SortArrayInt.html : html others/belt_SortArrayInt.odoc | runtime
+build others/belt_SortArrayString.odoc : odoc others/belt_SortArrayString.cmti | runtime
+build $outdir/belt_SortArrayString.html : html others/belt_SortArrayString.odoc | runtime
+build others/belt_internalAVLset.odoc : odoc others/belt_internalAVLset.cmti | others/belt.cmti others/belt_Id.cmti js_pkg runtime
+build $outdir/belt_internalAVLset.html : html others/belt_internalAVLset.odoc | others/belt.cmti others/belt_Id.cmti js_pkg runtime
+build others/belt_internalAVLtree.odoc : odoc others/belt_internalAVLtree.cmti | others/belt.cmti others/belt_Id.cmti js_pkg runtime
+build $outdir/belt_internalAVLtree.html : html others/belt_internalAVLtree.odoc | others/belt.cmti others/belt_Id.cmti js_pkg runtime
+build others/belt_internalBuckets.odoc : odoc others/belt_internalBuckets.cmti | others/belt.cmti others/belt_internalBucketsType.cmti js_pkg runtime
+build $outdir/belt_internalBuckets.html : html others/belt_internalBuckets.odoc | others/belt.cmti others/belt_internalBucketsType.cmti js_pkg runtime
+build others/belt_internalBucketsType.odoc : odoc others/belt_internalBucketsType.cmti | runtime
+build $outdir/belt_internalBucketsType.html : html others/belt_internalBucketsType.odoc | runtime
+# build others/belt_internalMapString.odoc others/belt_internalMapString.cmt : odoc others/belt_internalMapString.cmt | others/belt.cmti others/belt_Array.cmt others/belt_SortArray.cmt others/belt_internalAVLtree.cmt js_pkg runtime
+# build $outdir/belt_internalMapString.html others/belt_internalMapString.cmt : html others/belt_internalMapString.cmt | others/belt.odoc others/belt_Array.cmt others/belt_SortArray.cmt others/belt_internalAVLtree.cmt js_pkg runtime
+build others/belt_internalSetBuckets.odoc : odoc others/belt_internalSetBuckets.cmti | others/belt.cmti others/belt_internalBucketsType.cmti js_pkg runtime
+build $outdir/belt_internalSetBuckets.html : html others/belt_internalSetBuckets.odoc | others/belt.cmti others/belt_internalBucketsType.cmti js_pkg runtime
+# build others/belt_internalSetString.odoc others/belt_internalSetString.cmt : odoc others/belt_internalSetString.cmt | others/belt.cmti others/belt_Array.cmt others/belt_SortArrayString.cmt others/belt_internalAVLset.cmt js_pkg runtime
+# build $outdir/belt_internalSetString.html others/belt_internalSetString.cmt : html others/belt_internalSetString.cmt | others/belt.odoc others/belt_Array.cmt others/belt_SortArrayString.cmt others/belt_internalAVLset.cmt js_pkg runtime
