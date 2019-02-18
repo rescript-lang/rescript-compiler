@@ -65,7 +65,7 @@ let ww =
 let () =
   eq __LOC__ vv [|3;0;4|];
   eq __LOC__ (test_int_type `again, test_int_type `hey) (5,6);
-  eq __LOC__ uu [|"on_open"; "on_closed"; "in"|]
+  eq __LOC__ uu [|"on_open"; "on_closed"; "in"|];
   eq __LOC__ ww [|"on_open"; "on_closed"; "in"|]
 
 
