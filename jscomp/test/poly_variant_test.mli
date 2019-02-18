@@ -1,5 +1,5 @@
 
-
+type u = [`on_closed | `on_open | `in_[@bs.as "in"]]
 
 external test_string_type : flag:([`on_closed | `on_open | `in_ [@bs.as "in"]]
                 [@bs.string]) -> string  = 
@@ -15,8 +15,13 @@ external test_int_type :
      [@bs.int]) -> int  = 
   "hey_int" [@@bs.val]
 
+external test_string_extended_closed :
+  flag:([< u] [@bs.string]) -> string  =
+  "hey_string" [@@bs.val]
+
 val uu : string array
 val vv : int array
+val ww : string array
 
 type readline
 

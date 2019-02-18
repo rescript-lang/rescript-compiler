@@ -26,8 +26,7 @@ function hey_int (option){
  }
 |}]
 
-type u = [`on_closed | `on_open | `in_ 
-            (* [@bs.as "in"] TODO: warning test  *)]
+type u = [`on_closed | `on_open | `in_ [@bs.as "in"]]
 (* indeed we have a warning here*)
 (* TODO: add warning test 
 *)
