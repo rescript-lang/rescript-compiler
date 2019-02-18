@@ -131,3 +131,4 @@ jscomp/outcome_printer/tweaked_reason_oprint.ml
 
 _esy
 .merlin
+*.odoc
