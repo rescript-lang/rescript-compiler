@@ -1181,7 +1181,7 @@ rule mk_bsversion
     command = node $in
     generator = true
 rule gcc
-    command = $ocamlopt -ccopt -O2 -ccopt -o -ccopt $out -c $in
+    command = $ocamlopt -ccopt -fPIC -ccopt -O2 -ccopt -o -ccopt $out -c $in
 build stubs/ext_basic_hash_stubs.o : gcc  stubs/ext_basic_hash_stubs.c
 rule ocamlmklib
     command = $ocamlmklib $in -o $name
@@ -1215,7 +1215,7 @@ build ../lib/bsb.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa bsb/
     libs = ocamlcommon.cmxa unix.cmxa str.cmxa
 build ../lib/bsb_helper.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa  bsb/bsb.cmxa main/bsb_helper_main.cmx
     libs = ocamlcommon.cmxa unix.cmxa str.cmxa
-build ./bin/bspack.exe: link ./stubs/ext_basic_hash_stubs.c  stubs/stubs.cmxa ext/ext.cmxa ./common/common.cmxa ./syntax/syntax.cmxa depends/depends.cmxa ./main/bspack_main.cmx
+build ./bin/bspack.exe: link stubs/stubs.cmxa ext/ext.cmxa ./common/common.cmxa ./syntax/syntax.cmxa depends/depends.cmxa ./main/bspack_main.cmx
     libs = unix.cmxa ocamlcommon.cmxa
     flags = -I ./bin -w -40-30
 build ./bin/cmjdump.exe: link ./stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa core/core.cmxa main/cmjdump_main.cmx
