@@ -102,6 +102,7 @@ let get_arg_type
     | `String ->
       begin match ptyp_desc with
         | Ptyp_variant ( row_fields, Closed, None)
+        | Ptyp_variant ( row_fields, Closed, Some [])
           ->
           Ast_polyvar.map_row_fields_into_strings ptyp.ptyp_loc row_fields
         | _ ->

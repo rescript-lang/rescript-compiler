@@ -47,6 +47,10 @@ external test_int_type :
                 [@bs.int])  -> int  = 
   "hey_int" [@@bs.val]
 
+external test_string_extended_closed :
+  flag:([> u] [@bs.string]) -> string  =
+  "hey_string" [@@bs.val]
+
 let uu =
   [| test_string_type ~flag: `on_open; test_string_type ~flag: `on_closed; 
      test_string_type ~flag: `in_ |]
@@ -54,10 +58,15 @@ let uu =
 let vv = 
   [| test_int_type `on_open; test_int_type `on_closed; test_int_type `in_ |]
 
-let () = 
+let ww =
+  [| test_string_extended_closed ~flag: `on_open; test_string_extended_closed ~flag: `on_closed;
+     test_string_extended_closed ~flag: `in_ |]
+
+let () =
   eq __LOC__ vv [|3;0;4|];
   eq __LOC__ (test_int_type `again, test_int_type `hey) (5,6);
   eq __LOC__ uu [|"on_open"; "on_closed"; "in"|]
+  eq __LOC__ ww [|"on_open"; "on_closed"; "in"|]
 
 
 let option = `on_closed 
