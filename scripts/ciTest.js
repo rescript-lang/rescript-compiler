@@ -1,0 +1,93 @@
+
+
+//@ts-check
+var cp = require('child_process')
+var config = require('./config')
+var path = require('path')
+
+var installGlobal = false
+var ounitTest = false
+var mochaTest = false
+var themeTest = false
+var bsbTest = false
+var all = false
+
+if (process.argv.includes('-install-global')){
+    installGlobal = true
+}
+
+if (process.argv.includes('-ounit')){
+    ounitTest = true
+}
+
+if (process.argv.includes('-mocha')){
+    mochaTest = true
+}
+
+if (process.argv.includes('-theme')){
+    themeTest = true
+}
+
+if (process.argv.includes('-bsb')){
+    bsbTest = true
+}
+
+if (process.argv.includes('-all')){
+    all = true
+}
+if (all){
+    installGlobal = true
+    ounitTest = true
+    mochaTest = true
+    themeTest = true
+    bsbTest = true
+}
+
+var os = require('os')
+var fs = require('fs') 
+
+var ninjaPath = ''
+
+function init(){
+    var vendorOCamlPath = 
+        path.join(__dirname,'..','vendor','ocaml','bin')
+
+    process.env['PATH'] = 
+        vendorOCamlPath + path.delimiter +  process.env['PATH']
+    
+    var vendored =
+        path.join(__dirname, '..', 'vendor', 'ninja', 'snapshot',
+            'ninja' + config.sys_extension)
+
+    if (fs.existsSync(vendored)){
+        ninjaPath = vendored
+    } else {
+        var newPath = path.join(__dirname,'..','lib','ninja.exe')
+        if(fs.existsSync(newPath)){
+            ninjaPath = newPath 
+        } else {
+            throw new Error("ninja could not be configured")
+        }
+    }
+}
+
+function main() {
+    init()
+
+    var output =
+        cp.execSync('which ocaml', { encoding: 'ascii' })
+    console.log('OCaml:', output)
+    var binDir = path.join(__dirname, '..','jscomp', 'bin')
+    if(ounitTest){
+        cp.execSync(`ocamlopt.opt -g -w -40-30 ../stubs/ext_basic_hash_stubs.c -I +compiler-libs ocamlcommon.cmxa unix.cmxa str.cmxa all_ounit_tests.mli all_ounit_tests.ml -o test.exe`,
+            {
+                cwd: binDir,
+                stdio : [0,1,2]
+            })
+         cp.execSync(`./test.exe`,{cwd: binDir, stdio : [0,1,2]})   
+    }
+}
+
+
+main()
+debugger    
