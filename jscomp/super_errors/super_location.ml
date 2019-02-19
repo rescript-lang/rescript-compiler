@@ -59,17 +59,15 @@ let print_loc ~normalizedRange ppf loc =
     fprintf ppf "@{<filename>%a@}%a" print_filename file dim_loc normalizedRange
 ;;
 
-let print ~is_warning intro ppf loc =
-  setup_colors ();
+let print ~message_kind intro ppf loc =
   if loc.loc_start.pos_fname = "//toplevel//"
   && highlight_locations ppf [loc] then ()
   else
-    if is_warning then
-      fprintf ppf "@[@{<info>%s@}@]@," intro
-    else begin
-      fprintf ppf "@[@{<error>%s@}@]@," intro
+    begin match message_kind with
+    | `warning -> fprintf ppf "@[@{<info>%s@}@]@," intro
+    | `warning_as_error -> fprintf ppf "@[@{<error>%s@} (configured as error) @]@," intro
+    | `error -> fprintf ppf "@[@{<error>%s@}@]@," intro
     end;
-
     (* ocaml's reported line/col numbering is horrible and super error-prone
       when being handled programmatically (or humanly for that matter. If you're
       an ocaml contributor reading this: who the heck reads the character count
@@ -103,7 +101,7 @@ let print ~is_warning intro ppf loc =
            branch might not be reached (aka no inline file content display) so
            we don't wanna end up with two line breaks in the the consequent *)
         fprintf ppf "@,%a"
-          (Super_misc.print_file ~is_warning ~lines ~range)
+          (Super_misc.print_file ~is_warning:(message_kind=`warning) ~lines ~range)
           ()
       with
       (* this might happen if the file is e.g. "", "_none_" or any of the fake file name placeholders.
@@ -128,8 +126,9 @@ let rec super_error_reporter ppf ({Location.loc; msg; sub; if_highlight} as err)
   if highlighted then
     Format.pp_print_string ppf if_highlight
   else begin
+    setup_colors ();
     (* open a vertical box. Everything in our message is indented 2 spaces *)
-    Format.fprintf ppf "@[<v 2>@,%a@,%s@,@]" (print ~is_warning:false "We've found a bug for you!") loc msg;
+    Format.fprintf ppf "@[<v 2>@,%a@,%s@,@]" (print ~message_kind:`error "We've found a bug for you!") loc msg;
     List.iter (Format.fprintf ppf "@,@[%a@]" super_error_reporter) sub;
     (* no need to flush here; location's report_exception (which uses this ultimately) flushes *)
   end
@@ -138,13 +137,23 @@ let rec super_error_reporter ppf ({Location.loc; msg; sub; if_highlight} as err)
 (* This is the warning report entry point. We'll replace the default printer with this one *)
 let super_warning_printer loc ppf w =
 #if OCAML_VERSION =~ ">4.03.0"  then
-  () (*TODO*)
+  match Warnings.report w with
+  | `Inactive -> ()
+  | `Active { Warnings. number; message; is_error; sub_locs } ->
+    setup_colors ();
+    let message_kind = if is_error then `warning_as_error else `warning in
+    Format.fprintf ppf "@[<v 2>@,%a@,%s@,@]"
+      (print ~message_kind ("Warning number " ^ (Warnings.number w |> string_of_int)))
+      loc
+      (Super_warnings.message w);
+    (* at this point, you can display sub_locs too, from e.g. https://github.com/ocaml/ocaml/commit/f6d53cc38f87c67fbf49109f5fb79a0334bab17a
+      but we won't bother for now *)
 #else
   if Warnings.is_active w then begin
     setup_colors ();
     (* open a vertical box. Everything in our message is indented 2 spaces *)
     Format.fprintf ppf "@[<v 2>@,%a@,%a@,@]"
-      (print ~is_warning:true ("Warning number " ^ (Warnings.number w |> string_of_int)))
+      (print ~message_kind:`warning ("Warning number " ^ (Warnings.number w |> string_of_int)))
       loc
       (Warnings.super_print Super_warnings.message)
       w
