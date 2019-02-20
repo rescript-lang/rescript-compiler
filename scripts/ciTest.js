@@ -114,11 +114,24 @@ function main() {
         var themesDir = path.join(__dirname,'..','themes') 
         fs.mkdirSync(themesDir)
         themes.forEach(function(theme){
-            cp.execSync(`bsb -theme ${theme} -init ${theme}`, 
-                {cwd : themesDir, stdio:[0,1,2]})
-            console.log('working on theme', theme)    
-            cp.execSync(`npm install && npm run build`, {cwd : path.join(themesDir,theme), stdio:[0,1,2]})    
+            
+            cp.exec(`bsb -theme ${theme} -init ${theme}`, { cwd: themesDir, encoding: 'utf8' }, function (error, stdout, stderr) {
+                console.log(stdout)
+                console.log(stderr)
+                if(error === null){
+                    cp.exec(`npm install && npm run build`, {cwd : path.join(themesDir,theme)}, function (error, stdout,stderr){
+                        console.log(stdout)
+                        console.log(stderr)
+                        if(error === null){
 
+                        } else {
+                            throw new Error(`install & build theme ${theme} failed`)
+                        }
+                    })    
+                } else {
+                    throw new Error(`init theme ${theme} failed`)
+                }
+            })                        
         })
     }
 
@@ -130,7 +143,15 @@ function main() {
             if(!fs.existsSync(path.join(testDir,'input.js'))){
                 console.warn(`input.js does not exist in ${testDir}`)
             } else {
-                cp.execSync(`node input.js`, {cwd : testDir, stdio : [0,1,2]})
+                cp.exec(`node input.js`, {cwd : testDir, encoding : 'utf8'},function (error, stdout, stderr){
+                    console.log(stdout)
+                    console.log(stderr)
+                    if (error === null) {
+
+                    } else {
+                        throw new Error (`working in ${testDir} Error: \n${error} `)
+                    }
+                })
             }
         })
     }
