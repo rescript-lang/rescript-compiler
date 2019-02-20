@@ -3,8 +3,14 @@ const fs = require('fs')
 const path = require('path')
 const child_process = require('child_process')
 
+// if bsc doesn't exist, we're probably on CI
+const bsc = fs.existsSync('lib/bsc') ? 'lib/bsc' : 'bsc'
+const refmt = fs.existsSync('lib/bsrefmt') ? 'lib/bsrefmt' : 'bsrefmt'
+
 const trimTrailingWhitespace = text => text.replace(/ *$/gm, '')
 const trimTmpNames = text => text.replace(/> \/var\/folders\/.+$/gim, '/var/folders/[elided]')
+const trimErrorReportAbsolutePath = text => text.replace(/\/[^ ]+?jscomp\/build_tests\/super_errors\/tmp/gim, '/[elided]')
+const turnLibBsrefmtIntoBsrefmt = text => text.replace(/[^ ]+?\/refmt.exe /gim, '/[elided]/refmt.exe ')
 
 const processFile = ([name, fullPath], colors, rebuild) => {
   const raw = fs.readFileSync(fullPath, 'utf8')
@@ -19,11 +25,11 @@ const processFile = ([name, fullPath], colors, rebuild) => {
     return new Promise((res, rej) => {
       // we need this so we can reference Js_unsafe & other bucklescript goodies
       const runtime = path.join(__dirname, '../../runtime')
-      const prefix = `lib/bsc.exe -bs-re-out -I ${runtime} -pp 'lib/refmt.exe --print binary' -w +10-40+6+7+27+32..39+44+45`
+      const prefix = `${bsc} -bs-re-out -I ${runtime} -pp '${refmt} --print binary' -w +10-40+6+7+27+32..39+44+45`
       child_process.exec(`${prefix} -color ${colors ? 'always' : 'never'} -bs-super-errors -impl ${dest}`, (err, stdout, stderr) => {
-        const superErr = trimTmpNames(trimTrailingWhitespace(stderr).trimRight())
+        const superErr = turnLibBsrefmtIntoBsrefmt(trimErrorReportAbsolutePath(trimTmpNames(trimTrailingWhitespace(stderr).trimRight())))
         child_process.exec(`${prefix} -color never -impl ${dest}`, (err, stdout, stderr) => {
-          stderr = trimTmpNames(trimTrailingWhitespace(stderr).trimRight())
+          stderr = turnLibBsrefmtIntoBsrefmt(trimErrorReportAbsolutePath(trimTmpNames(trimTrailingWhitespace(stderr).trimRight())))
           fs.unlinkSync(dest)
           try {
             fs.unlinkSync(cmt)
