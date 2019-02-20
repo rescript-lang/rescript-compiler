@@ -86,6 +86,10 @@ function main() {
             })
          cp.execSync(`./test.exe`,{cwd: binDir, stdio : [0,1,2]})   
     }
+    
+    if(mochaTest){
+        cp.execSync(`mocha jscomp/test/**/*test.js`,{cwd : path.join(__dirname,'..')})
+    }
 }
 
 
