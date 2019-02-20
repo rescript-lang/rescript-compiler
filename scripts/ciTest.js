@@ -71,6 +71,7 @@ function init(){
     }
 }
 
+
 function main() {
     init()
 
@@ -86,10 +87,18 @@ function main() {
             })
          cp.execSync(`./test.exe`,{cwd: binDir, stdio : [0,1,2]})   
     }
-    
+
     if(mochaTest){
-        cp.execSync(`mocha jscomp/test/**/*test.js`,{cwd : path.join(__dirname,'..')})
+        cp.execSync(`mocha jscomp/test/**/*test.js`,{cwd : path.join(__dirname,'..'), stdio : [0,1,2]})
     }
+
+    if(installGlobal){
+        cp.execSync('npm i -g .', {cwd : path.join(__dirname, '..'), stdio: [0,1,2]})
+    }
+
+    var bsbDir = cp.execSync(`bsb -where`, {cwd : path.join(__dirname, '..'), stdio : [0,1,2], encoding : 'utf8' })
+
+    console.log("BSBDIR:",  bsbDir)
 }
 
 
