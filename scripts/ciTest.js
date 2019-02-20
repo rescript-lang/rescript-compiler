@@ -126,15 +126,12 @@ function main() {
         var buildTestDir = path.join(__dirname,'..','jscomp','build_tests')
         var files = fs.readdirSync(buildTestDir)
         files.forEach(function(file){
-
-            var testDir = path.join(buildTestDir, file)
-                        
+            var testDir = path.join(buildTestDir, file)                        
             if(!fs.existsSync(path.join(testDir,'input.js'))){
-                throw new Error(`input.js does not exist in ${testDir}`)
+                console.warn(`input.js does not exist in ${testDir}`)
+            } else {
+                cp.execSync(`node input.js`, {cwd : testDir, stdio : [0,1,2]})
             }
-
-            cp.execSync(`node input.js`, {cwd : testDir, stdio : [0,1,2]})
-
         })
     }
 }
