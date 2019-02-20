@@ -96,7 +96,7 @@ function main() {
         cp.execSync('npm i -g .', {cwd : path.join(__dirname, '..'), stdio: [0,1,2]})
     }
 
-    var bsbDir = cp.execSync(`bsb -where`, {cwd : path.join(__dirname, '..'), stdio : [0,1,2], encoding : 'utf8' })
+    var bsbDir = cp.execSync(`bsb -where`, {cwd : path.join(__dirname, '..'), encoding : 'utf8' }).trim()
 
     console.log("BSBDIR:",  bsbDir)
 
@@ -118,6 +118,22 @@ function main() {
                 {cwd : themesDir, stdio:[0,1,2]})
             console.log('working on theme', theme)    
             cp.execSync(`npm install && npm run build`, {cwd : path.join(themesDir,theme), stdio:[0,1,2]})    
+
+        })
+    }
+
+    if (bsbTest){
+        var buildTestDir = path.join(__dirname,'..','jscomp','build_tests')
+        var files = fs.readdirSync(buildTestDir)
+        files.forEach(function(file){
+
+            var testDir = path.join(buildTestDir, file)
+                        
+            if(!fs.existsSync(path.join(testDir,'input.js'))){
+                throw new Error(`input.js does not exist in ${testDir}`)
+            }
+
+            cp.execSync(`node input.js`, {cwd : testDir, stdio : [0,1,2]})
 
         })
     }
