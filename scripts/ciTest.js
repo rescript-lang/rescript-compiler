@@ -99,6 +99,28 @@ function main() {
     var bsbDir = cp.execSync(`bsb -where`, {cwd : path.join(__dirname, '..'), stdio : [0,1,2], encoding : 'utf8' })
 
     console.log("BSBDIR:",  bsbDir)
+
+    var themes = [
+            "basic",
+            "basic-reason",
+            "generator",
+            "minimal",
+            "node",
+            "react"
+        ]
+     
+    if (themeTest) {
+        
+        var themesDir = path.join(__dirname,'..','themes') 
+        fs.mkdirSync(themesDir)
+        themes.forEach(function(theme){
+            cp.execSync(`bsb -theme ${theme} -init ${theme}`, 
+                {cwd : themesDir, stdio:[0,1,2]})
+            console.log('working on theme', theme)    
+            cp.execSync(`npm install && npm run build`, {cwd : path.join(themesDir,theme), stdio:[0,1,2]})    
+
+        })
+    }
 }
 
 
