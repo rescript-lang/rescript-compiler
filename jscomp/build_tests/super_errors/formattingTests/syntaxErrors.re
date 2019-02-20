@@ -1,89 +1,105 @@
 let b = fo;;;;;;;;;;;;;;;;
 /*
-File "/Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/formatting_syntaxErrors_case0.re", line 1, characters 10-12:
-Error: 869: syntax error, consider adding a `;' before
-File "/Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/formatting_syntaxErrors_case0.re", line 1:
+File "/[elided]/formatting_syntaxErrors_case0.re", line 1, characters 24-26:
+Error: Syntax error
+Error happened when running command /[elided]/refmt.exe with args [ '--print',
+  'binary',
+  '/[elided]/formatting_syntaxErrors_case0.re' ]
+File "/[elided]/formatting_syntaxErrors_case0.re", line 1:
 Error: Error while running external preprocessor
-Command line: refmt3.exe --print binary '/Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/formatting_syntaxErrors_case0.re' /var/folders/[elided]
+Command line: lib/bsrefmt --print binary '/[elided]/formatting_syntaxErrors_case0.re' /var/folders/[elided]
 =====
-File "/Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/formatting_syntaxErrors_case0.re", line 1, characters 10-12:
-Error: 869: syntax error, consider adding a `;' before
+File "/[elided]/formatting_syntaxErrors_case0.re", line 1, characters 24-26:
+Error: Syntax error
+Error happened when running command /[elided]/refmt.exe with args [ '--print',
+  'binary',
+  '/[elided]/formatting_syntaxErrors_case0.re' ]
 
   [1;31mWe've found a bug for you![0m
-  [36m/Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/formatting_syntaxErrors_case0.re[0m
+  [36m/[elided]/formatting_syntaxErrors_case0.re[0m
 
-  [1;33mThere's been an error running Reason's refmt parser on a file.[0m
-  This was the command:
-
-  refmt3.exe --print binary '/Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/formatting_syntaxErrors_case0.re' /var/folders/[elided]
-
+  [1;33mThere's been an error running Reason's parser on a file.[0m
+  The error location should be slightly above this message.
   Please file an issue on github.com/facebook/reason. Thanks!
 */
 
 let a = (1, 2
 /*
-File "/Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/formatting_syntaxErrors_case1.re", line 1, characters 13-13:
-Error: 1387: <UNKNOWN SYNTAX ERROR>
-File "/Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/formatting_syntaxErrors_case1.re", line 1:
+File "/[elided]/formatting_syntaxErrors_case1.re", line 1, characters 13-13:
+Error: Syntax error: ')' expected
+File "/[elided]/formatting_syntaxErrors_case1.re", line 1, characters 8-9:
+Error: This '(' might be unmatched
+Error happened when running command /[elided]/refmt.exe with args [ '--print',
+  'binary',
+  '/[elided]/formatting_syntaxErrors_case1.re' ]
+File "/[elided]/formatting_syntaxErrors_case1.re", line 1:
 Error: Error while running external preprocessor
-Command line: refmt3.exe --print binary '/Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/formatting_syntaxErrors_case1.re' /var/folders/[elided]
+Command line: lib/bsrefmt --print binary '/[elided]/formatting_syntaxErrors_case1.re' /var/folders/[elided]
 =====
-File "/Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/formatting_syntaxErrors_case1.re", line 1, characters 13-13:
-Error: 1387: <UNKNOWN SYNTAX ERROR>
+File "/[elided]/formatting_syntaxErrors_case1.re", line 1, characters 13-13:
+Error: Syntax error: ')' expected
+File "/[elided]/formatting_syntaxErrors_case1.re", line 1, characters 8-9:
+Error: This '(' might be unmatched
+Error happened when running command /[elided]/refmt.exe with args [ '--print',
+  'binary',
+  '/[elided]/formatting_syntaxErrors_case1.re' ]
 
   [1;31mWe've found a bug for you![0m
-  [36m/Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/formatting_syntaxErrors_case1.re[0m
+  [36m/[elided]/formatting_syntaxErrors_case1.re[0m
 
-  [1;33mThere's been an error running Reason's refmt parser on a file.[0m
-  This was the command:
-
-  refmt3.exe --print binary '/Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/formatting_syntaxErrors_case1.re' /var/folders/[elided]
-
+  [1;33mThere's been an error running Reason's parser on a file.[0m
+  The error location should be slightly above this message.
   Please file an issue on github.com/facebook/reason. Thanks!
 */
 
 let () =
   I'm glad you're looking at this file =)
 /*
-File "/Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/formatting_syntaxErrors_case2.re", line 2, characters 6-10:
-Error: 1378: syntax error, consider adding a `;' before
-File "/Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/formatting_syntaxErrors_case2.re", line 1:
+File "/[elided]/formatting_syntaxErrors_case2.re", line 2, characters 34-38:
+Error: Syntax error
+Error happened when running command /[elided]/refmt.exe with args [ '--print',
+  'binary',
+  '/[elided]/formatting_syntaxErrors_case2.re' ]
+File "/[elided]/formatting_syntaxErrors_case2.re", line 1:
 Error: Error while running external preprocessor
-Command line: refmt3.exe --print binary '/Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/formatting_syntaxErrors_case2.re' /var/folders/[elided]
+Command line: lib/bsrefmt --print binary '/[elided]/formatting_syntaxErrors_case2.re' /var/folders/[elided]
 =====
-File "/Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/formatting_syntaxErrors_case2.re", line 2, characters 6-10:
-Error: 1378: syntax error, consider adding a `;' before
+File "/[elided]/formatting_syntaxErrors_case2.re", line 2, characters 34-38:
+Error: Syntax error
+Error happened when running command /[elided]/refmt.exe with args [ '--print',
+  'binary',
+  '/[elided]/formatting_syntaxErrors_case2.re' ]
 
   [1;31mWe've found a bug for you![0m
-  [36m/Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/formatting_syntaxErrors_case2.re[0m
+  [36m/[elided]/formatting_syntaxErrors_case2.re[0m
 
-  [1;33mThere's been an error running Reason's refmt parser on a file.[0m
-  This was the command:
-
-  refmt3.exe --print binary '/Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/formatting_syntaxErrors_case2.re' /var/folders/[elided]
-
+  [1;33mThere's been an error running Reason's parser on a file.[0m
+  The error location should be slightly above this message.
   Please file an issue on github.com/facebook/reason. Thanks!
 */
 
 let a = print_char('a)
 /*
-File "/Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/formatting_syntaxErrors_case3.re", line 1, characters 19-20:
-Error: 864: <UNKNOWN SYNTAX ERROR>
-File "/Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/formatting_syntaxErrors_case3.re", line 1:
+File "/[elided]/formatting_syntaxErrors_case3.re", line 1, characters 20-21:
+Error: Syntax error
+Error happened when running command /[elided]/refmt.exe with args [ '--print',
+  'binary',
+  '/[elided]/formatting_syntaxErrors_case3.re' ]
+File "/[elided]/formatting_syntaxErrors_case3.re", line 1:
 Error: Error while running external preprocessor
-Command line: refmt3.exe --print binary '/Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/formatting_syntaxErrors_case3.re' /var/folders/[elided]
+Command line: lib/bsrefmt --print binary '/[elided]/formatting_syntaxErrors_case3.re' /var/folders/[elided]
 =====
-File "/Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/formatting_syntaxErrors_case3.re", line 1, characters 19-20:
-Error: 864: <UNKNOWN SYNTAX ERROR>
+File "/[elided]/formatting_syntaxErrors_case3.re", line 1, characters 20-21:
+Error: Syntax error
+Error happened when running command /[elided]/refmt.exe with args [ '--print',
+  'binary',
+  '/[elided]/formatting_syntaxErrors_case3.re' ]
 
   [1;31mWe've found a bug for you![0m
-  [36m/Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/formatting_syntaxErrors_case3.re[0m
+  [36m/[elided]/formatting_syntaxErrors_case3.re[0m
 
-  [1;33mThere's been an error running Reason's refmt parser on a file.[0m
-  This was the command:
-
-  refmt3.exe --print binary '/Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/formatting_syntaxErrors_case3.re' /var/folders/[elided]
-
+  [1;33mThere's been an error running Reason's parser on a file.[0m
+  The error location should be slightly above this message.
   Please file an issue on github.com/facebook/reason. Thanks!
 */
 
@@ -112,13 +128,13 @@ aa"
 /* */
 /* */
 /*
-File "/Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/formatting_syntaxErrors_case4.re", line 4, characters 12-86:
+File "/[elided]/formatting_syntaxErrors_case4.re", line 4, characters 12-86:
 Error: This expression has type string but an expression was expected of type
          int
 =====
 
   [1;31mWe've found a bug for you![0m
-  [36m/Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/formatting_syntaxErrors_case4.re[0m [2m4:13-20:3[0m
+  [36m/[elided]/formatting_syntaxErrors_case4.re[0m [2m4:13-20:3[0m
 
    2 [2m│[0m /* */
    3 [2m│[0m /* */
@@ -130,8 +146,8 @@ Error: This expression has type string but an expression was expected of type
   21 [2m│[0m /* */
   22 [2m│[0m /* */
 
-  This value has type:
+  This has type:
     [1;31mstring[0m
-  But was expected to be:
+  But somewhere wanted:
     [1;33mint[0m
 */
