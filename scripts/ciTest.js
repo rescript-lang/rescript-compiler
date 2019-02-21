@@ -94,6 +94,7 @@ function main() {
     }
 
     if(installGlobal){
+        console.log('install bucklescript globally')
         cp.execSync('npm i -g .', {cwd : path.join(__dirname, '..'), stdio: [0,1,2]})
     }
 
@@ -125,6 +126,7 @@ function main() {
     }
 
     if (bsbTest){
+        console.log('Doing build_tests')
         var buildTestDir = path.join(__dirname,'..','jscomp','build_tests')
         var files = fs.readdirSync(buildTestDir)
         files.forEach(function(file){
@@ -139,6 +141,7 @@ function main() {
                     if (error !== null) {
                         throw new Error (`working in ${testDir} Error: \n${error} `)
                     }
+                    console.log('success in ', file)
                 })
             }
         })
