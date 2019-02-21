@@ -22,10 +22,10 @@
     "bsrefmt": "lib/bsrefmt"
   },
   "scripts": {
-    "test": "go build -o test.exe scripts/test.go && ./test.exe -all",
-    "test-theme": "go run scripts/test.go -theme",
-    "test-bsb": "go run scripts/test.go -bsb",
-    "test-ocaml": "go run scripts/test.go -ounit",
+    "test": "node scripts/ciTest.js  -all",
+    "test-theme": "node scripts/ciTest.js -theme",
+    "test-bsb": "node scripts/ciTest.js -bsb",
+    "test-ocaml": "node scripts/ciTest.js -ounit",
     "cover": "istanbul cover --report html ./node_modules/.bin/_mocha --   ./jscomp/test/**/*test.js && open coverage/index.html",
     "coverage": "istanbul cover ./node_modules/.bin/_mocha --report lcovonly --  './jscomp/test/*test.js'",
     "coveralls": "npm run-script coverage && node ./node_modules/.bin/coveralls < coverage/lcov.info",
