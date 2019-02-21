@@ -46,6 +46,7 @@ if (all){
 var os = require('os')
 var fs = require('fs') 
 
+// TODO: seems it is never used, remove it later
 var ninjaPath = ''
 
 function init(){
@@ -100,38 +101,26 @@ function main() {
 
     console.log("BSBDIR:",  bsbDir)
 
-    var themes = [
-            "basic",
-            "basic-reason",
-            "generator",
-            "minimal",
-            "node",
-            "react"
-        ]
-     
     if (themeTest) {
-        
+        var themeOutput = cp.execSync(`bsb -themes`,{encoding : 'ascii'}) 
+        var themes = themeOutput.split('\n').slice(1).map(x=>x.trim()).filter(x=>x)        
         var themesDir = path.join(__dirname,'..','themes') 
         fs.mkdirSync(themesDir)
-        themes.forEach(function(theme){
-            
+        themes.forEach(function (theme) {
             cp.exec(`bsb -theme ${theme} -init ${theme}`, { cwd: themesDir, encoding: 'utf8' }, function (error, stdout, stderr) {
                 console.log(stdout)
                 console.log(stderr)
-                if(error === null){
-                    cp.exec(`npm install && npm run build`, {cwd : path.join(themesDir,theme)}, function (error, stdout,stderr){
-                        console.log(stdout)
-                        console.log(stderr)
-                        if(error === null){
-
-                        } else {
-                            throw new Error(`install & build theme ${theme} failed`)
-                        }
-                    })    
-                } else {
+                if (error !== null) {
                     throw new Error(`init theme ${theme} failed`)
                 }
-            })                        
+                cp.exec(`npm install && npm run build`, { cwd: path.join(themesDir, theme) }, function (error, stdout, stderr) {
+                    console.log(stdout)
+                    console.log(stderr)
+                    if (error !== null) {
+                        throw new Error(`install & build theme ${theme} failed`)
+                    }
+                })
+            })
         })
     }
 
@@ -143,12 +132,11 @@ function main() {
             if(!fs.existsSync(path.join(testDir,'input.js'))){
                 console.warn(`input.js does not exist in ${testDir}`)
             } else {
+                // note existsSync test already ensure that it is a directory
                 cp.exec(`node input.js`, {cwd : testDir, encoding : 'utf8'},function (error, stdout, stderr){
                     console.log(stdout)
                     console.log(stderr)
-                    if (error === null) {
-
-                    } else {
+                    if (error !== null) {
                         throw new Error (`working in ${testDir} Error: \n${error} `)
                     }
                 })
@@ -157,6 +145,4 @@ function main() {
     }
 }
 
-
 main()
-debugger    
