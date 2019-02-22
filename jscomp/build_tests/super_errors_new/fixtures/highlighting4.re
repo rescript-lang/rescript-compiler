@@ -1,3 +1,5 @@
 
 /* single char highlighted */
-let asd = {}
+[@deprecated]
+type a = int;
+type b = a
