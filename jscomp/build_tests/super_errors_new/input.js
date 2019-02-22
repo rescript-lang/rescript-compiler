@@ -24,11 +24,15 @@ function postProcessErrorOutput(output) {
   return output
 }
 
+let doneTasksCount = 0
+let atLeastOneTaskFailed = false
+
 fixtures.forEach(fileName => {
   const fullFilePath = path.join(__dirname, 'fixtures', fileName)
   const command = `${prefix} -color always -bs-super-errors -impl ${fullFilePath}`
 
   child_process.exec(command, (err, stdout, stderr) => {
+    doneTasksCount++
     // careful of:
     // - warning test that actually succeeded in compiling (warning's still in stderr, so the code path is shared here)
     // - accidentally succeeding tests (not likely in this context),
@@ -45,6 +49,10 @@ fixtures.forEach(fileName => {
         console.error(expectedErrorOutput)
         console.error('\n=== New:')
         console.error(actualErrorOutput)
+        atLeastOneTaskFailed = true
+      }
+
+      if (doneTasksCount === fixtures.length && atLeastOneTaskFailed) {
         process.exit(1)
       }
     }
