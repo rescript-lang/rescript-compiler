@@ -19,7 +19,7 @@ const updateTests = process.argv[2] === 'update'
 
 function postProcessErrorOutput(output) {
   output = output.trimRight()
-  output = output.replace(/\/[^ ]+?jscomp\/build_tests\/super_errors_new\//g, '/.../')
+  output = output.replace(/\/[^ ]+?jscomp\/build_tests\/super_errors\//g, '/.../')
   output = output.replace(/[^ ]+?\/refmt.exe /gim, '/.../refmt.exe ')
   return output
 }
