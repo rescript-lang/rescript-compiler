@@ -1,0 +1,8 @@
+
+  [1;31mWe've found a bug for you![0m
+  [36m/.../fixtures/moreArguments1.re[0m [2m2:9-15[0m
+  
+  1 [2m│[0m let x = (~a, ~b) => a + b;
+  [1;31m2[0m [2m│[0m let y = [1;31mx(~a=2)[0m + 2;
+  
+  [1;33mThis call is missing an argument[0m of type (~b: int)

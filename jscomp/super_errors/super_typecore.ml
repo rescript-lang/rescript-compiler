@@ -41,8 +41,8 @@ let print_simple_conversion ppf (actual, expected) =
   ) with | Not_found -> ()
 
 let print_simple_message ppf = function
-  | ("float", "int") -> fprintf ppf "If this is a literal, you want a number without a trailing dot (e.g. @{<info>20@}).@;"
-  | ("int", "float") -> fprintf ppf "If this is a literal, you want a number with a trailing dot (e.g. @{<info>20.@}).@;"
+  | ("float", "int") -> fprintf ppf "@[If this is a literal, you want a number without a trailing dot (e.g. @{<info>20@}).@]"
+  | ("int", "float") -> fprintf ppf "@[If this is a literal, you want a number with a trailing dot (e.g. @{<info>20.@}).@]"
   | _ -> ()
 
 let show_extra_help ppf env trace = begin

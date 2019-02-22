@@ -1,0 +1,13 @@
+
+  [1;31mWe've found a bug for you![0m
+  [36m/.../fixtures/primitives2.re[0m [2m2:1[0m
+  
+  1 [2m│[0m /* got int, wanted string */
+  [1;31m2[0m [2m│[0m [1;31m2[0m ++ " things";
+  
+  This has type:
+    [1;31mint[0m
+  But somewhere wanted:
+    [1;33mstring[0m
+
+You can convert a [1;33mint[0m to a [1;33mstring[0m with [1;33mstring_of_int[0m.

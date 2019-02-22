@@ -1,0 +1,10 @@
+
+  [1;31mWe've found a bug for you![0m
+  [36m/.../fixtures/primitives3.re[0m [2m3:1[0m
+  
+  1 [2m│[0m /* Too many arguments */
+  2 [2m│[0m let x = (a) => a + 2;
+  [1;31m3[0m [2m│[0m [1;31mx[0m(2, 4);
+  
+  This function has type [1;33mint => int[0m
+  It only accepts 1 argument; here, it's called with more.
