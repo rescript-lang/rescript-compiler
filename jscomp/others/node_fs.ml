@@ -35,7 +35,7 @@ external readdirSync : string -> string array  = "" [@@bs.module "fs"]
 
 external renameSync : string -> string = "" [@@bs.module "fs"]
 
-type fd = Node_fs2.fd
+type fd = private int
 
 type path = string
 (**
@@ -44,8 +44,8 @@ type path = string
 *)
 
 module Watch = struct
-  type t = Node_fs2.Watch.t
-  type config = Node_fs2.Watch.config
+  type t 
+  type config 
   external config :
     ?persistent: bool ->
     ?recursive: bool ->
@@ -73,9 +73,18 @@ module Watch = struct
     ] [@bs.string]
     ) -> t = ""
   [@@bs.send.pipe: t]
+  [@@ocaml.deprecated "Please use `Node.Fs.onEvent` instead "]
 
-
-  external close :  unit = "" [@@bs.send.pipe:t]
+  external onEvent : 
+    t ->
+    ([
+      `change of (string (*eventType*) -> Node.string_buffer (* filename *) -> unit  [@bs])
+    | `error of (unit -> unit [@bs])
+    ] [@bs.string]
+    ) ->
+    t = "on"
+    [@@bs.send]
+  external close :  t -> unit = "" [@@bs.send]
 end
 
 external ftruncateSync : fd -> int -> unit = "" [@@bs.module "fs"]
