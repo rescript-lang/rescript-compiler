@@ -49,7 +49,7 @@ let write_file name  (buf : Buffer.t) =
   else 
     write_buf name buf 
     
-(* Make suer it is the same as {!Binary_ast.magic_sep_char}*)
+(* Make sure it is the same as {!Binary_ast.magic_sep_char}*)
 let magic_sep_char = '\n'
 
 let deps_of_channel (ic : in_channel) : string array = 
@@ -117,27 +117,26 @@ let handle_module_info
 let oc_impl 
     (dependent_module_set : string array)
     (input_file : string)
-    (lhs_suffix : string)
-    (rhs_suffix : string)
     (index : Bsb_dir_index.t)
-    (data : Bsb_db_io.t)
+    (db : Bsb_db_io.t)
     (namespace : string option)
     (buf : Buffer.t)
+    (lhs_suffix : string)
+    (rhs_suffix : string)
   = 
   output_file buf input_file namespace ; 
   Buffer.add_string buf lhs_suffix; 
   Buffer.add_string buf dep_lit ; 
-  for i = 0 to Array.length dependent_module_set - 1 do
-    let k = Array.unsafe_get dependent_module_set i in 
-    match Bsb_db_io.find_opt  data 0 k with
+  Ext_array.iter dependent_module_set begin fun dependent_module ->
+    match Bsb_db_io.find_opt  db 0 dependent_module with
     | Some module_info -> 
       handle_module_info module_info input_file namespace rhs_suffix buf
     | None  -> 
       if not (Bsb_dir_index.is_lib_dir index) then      
-        Ext_option.iter (Bsb_db_io.find_opt data ((index  :> int)) k)
+        Ext_option.iter (Bsb_db_io.find_opt db (index  :> int) dependent_module)
           (fun module_info -> 
              handle_module_info module_info input_file namespace rhs_suffix buf)
-  done    
+  end
 
 
 (** Note since dependent file is [mli], it only depends on 
@@ -147,25 +146,24 @@ let oc_intf
     (dependent_module_set : string array)
     input_file 
     (index : Bsb_dir_index.t)
-    (data : Bsb_db_io.t)
+    (db : Bsb_db_io.t)
     (namespace : string option)
-    (buf : Buffer.t) =   
+    (buf : Buffer.t) : unit =   
   output_file buf input_file namespace ; 
   Buffer.add_string buf Literals.suffix_cmi ; 
   Buffer.add_string buf dep_lit;
-  for i = 0 to Array.length dependent_module_set - 1 do               
-    let k = Array.unsafe_get dependent_module_set i in 
-    match Bsb_db_io.find_opt data 0 k with 
+  Ext_array.iter dependent_module_set begin fun dependent_module ->
+    match Bsb_db_io.find_opt db 0 dependent_module with 
     | Some module_info -> 
       let source = module_info.name_sans_extension in 
       if source <> input_file then oc_cmi buf namespace source             
     | None -> 
       if not (Bsb_dir_index.is_lib_dir index)  then 
-        Ext_option.iter (Bsb_db_io.find_opt data ((index :> int)) k)
+        Ext_option.iter (Bsb_db_io.find_opt db ((index :> int)) dependent_module)
           ( fun module_info -> 
               let source = module_info.name_sans_extension in 
               if source <> input_file then  oc_cmi buf namespace source)
-  done  
+  end
 
 
 (* OPT: Don't touch the .d file if nothing changed *)
@@ -196,14 +194,14 @@ let emit_dep_file
    oc_impl 
      set 
      input_file 
-     lhs_suffix 
-     rhs_suffix  
      index 
      data
      namespace
-     buf ;
-    let filename = (input_file ^ Literals.suffix_mlastd ) in 
-    write_file filename buf 
+     buf 
+     lhs_suffix 
+     rhs_suffix       
+     ;
+   write_file (input_file ^ Literals.suffix_mlastd ) buf 
     
   | None -> 
     begin match Ext_string.ends_with_then_chop fn Literals.suffix_mliast with 
