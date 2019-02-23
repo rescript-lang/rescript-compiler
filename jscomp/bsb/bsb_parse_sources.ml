@@ -33,12 +33,11 @@ type file_group = Bsb_file_groups.file_group
 type t = Bsb_file_groups.t 
 
 let is_input_or_output (xs : build_generator list) (x : string)  = 
-  List.exists 
-    (fun  ({input; output} : build_generator) -> 
-       let it_is = (fun y -> y = x ) in
-       List.exists it_is input ||
-       List.exists it_is output
-    ) xs   
+  Ext_list.exists xs (fun  {input; output} -> 
+      let it_is = fun y -> y = x  in
+      Ext_list.exists input it_is ||
+      Ext_list.exists output it_is
+    ) 
 
 let warning_unused_file : _ format = 
   "@{<warning>IGNORED@}: file %s under %s is ignored because it can't be turned into a valid module name. The build system transforms a file name into a module name by upper-casing the first letter@."
@@ -52,6 +51,7 @@ type cxt = {
   traverse : bool;
   namespace : string option;
   clean_staled_bs_js: bool;
+  ignored_dirs : String_set.t
 }
 
 (** [public] has a list of modules, we do a sanity check to see if all the listed 
@@ -434,8 +434,16 @@ and  parse_sources ( cxt : cxt) (sources : Ext_json_types.t )  =
 
 
 
-let scan ~not_dev ~root ~cut_generators ~namespace ~clean_staled_bs_js x = 
+let scan 
+  ~not_dev 
+  ~root 
+  ~cut_generators 
+  ~namespace 
+  ~clean_staled_bs_js 
+  ~ignored_dirs
+  x = 
   parse_sources {
+    ignored_dirs;
     not_dev;
     dir_index = Bsb_dir_index.lib_dir_index;
     cwd = Filename.current_dir_name;
@@ -448,6 +456,7 @@ let scan ~not_dev ~root ~cut_generators ~namespace ~clean_staled_bs_js x =
 
 
 
+(* Walk through to do some work *) 
 type walk_cxt = {
     cwd : string ;
     root : string;
@@ -456,8 +465,8 @@ type walk_cxt = {
   
 let rec walk_sources (cxt : walk_cxt) (sources : Ext_json_types.t) = 
   match sources with 
-  | Arr {content =  file_groups} -> 
-    Ext_array.iter file_groups (fun x -> walk_single_source cxt x) 
+  | Arr {content} -> 
+    Ext_array.iter content (fun x -> walk_single_source cxt x) 
   | x -> walk_single_source  cxt x    
 and walk_single_source cxt (x : Ext_json_types.t) =      
   match x with 
@@ -487,7 +496,6 @@ and walk_source_dir_map (cxt : walk_cxt) (input : Ext_json_types.t String_map.t)
         if Ext_string.ends_with file Literals.suffix_gen_js 
         || Ext_string.ends_with file Literals.suffix_gen_tsx 
         then 
-
           Sys.remove (Filename.concat working_dir file)
     end; 
     let sub_dirs_field = 
@@ -517,12 +525,11 @@ let clean_re_js root =
   match Ext_json_parse.parse_json_from_file 
       (Filename.concat root Literals.bsconfig_json) with 
   | Obj {map ; loc} -> 
-    Ext_option.iter (String_map.find_opt map Bsb_build_schemas.sources) 
-      (fun config -> 
-         Ext_pervasives.try_it (fun () -> 
-             walk_sources { root ; traverse = true; cwd = Filename.current_dir_name} config
-           )      
-      )
+    Ext_option.iter (String_map.find_opt map Bsb_build_schemas.sources) begin fun config -> 
+      Ext_pervasives.try_it (fun () -> 
+          walk_sources { root ; traverse = true; cwd = Filename.current_dir_name} config
+        )      
+    end
   | _  -> () 
   | exception _ -> ()    
   

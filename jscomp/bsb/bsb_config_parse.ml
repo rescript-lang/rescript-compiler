@@ -338,7 +338,16 @@ let interpret_json
     |> ignore ;
     begin match String_map.find_opt map Bsb_build_schemas.sources with 
       | Some x -> 
+        let ignored_dirs : String_set.t =   
+          match String_map.find_opt map Bsb_build_schemas.ignored_dirs with 
+          | None -> String_set.empty
+          | Some (Arr {content}) -> 
+            String_set.of_list (Bsb_build_util.get_list_string content)
+          | Some config -> 
+            Bsb_exception.config_error config "expect an array of string"
+        in
         let res = Bsb_parse_sources.scan
+            ~ignored_dirs
             ~not_dev
             ~root: cwd
             ~cut_generators: !cut_generators
