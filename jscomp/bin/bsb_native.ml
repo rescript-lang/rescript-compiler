@@ -9828,9 +9828,7 @@ let clean_staled_bs_js_files
 
 let rec 
   parsing_source_dir_map 
-    ({ cwd =  dir; not_dev; cut_generators ; 
-       traverse = cxt_traverse ;
-     } as cxt )
+    ({ cwd =  dir; not_dev; cut_generators } as cxt )
     (input : Ext_json_types.t String_map.t) : t     
   = 
   let cur_update_queue = ref [] in 
@@ -9877,8 +9875,8 @@ let rec
       cur_sources := 
         Ext_array.fold_left sx !cur_sources (fun acc s ->
             match s with 
-            | Str {str = s} -> 
-              Bsb_db.collect_module_by_filename ~dir acc s
+            | Str str -> 
+              Bsb_db.collect_module_by_filename ~dir acc str.str
             | _ -> acc
           ) 
     | Some (Obj {map = m; loc} ) -> (* { excludes : [], slow_re : "" }*)
@@ -9912,7 +9910,7 @@ let rec
   (** Doing recursive stuff *)  
   let children =     
     match sub_dirs_field, 
-          cxt_traverse with 
+          cxt.traverse with 
     | None , true
     | Some (True _), _ -> 
       let root = cxt.root in 
