@@ -10042,23 +10042,19 @@ and walk_single_source cxt (x : Ext_json_types.t) =
   match x with 
   | Str {str = dir} 
     -> 
+    let dir = Ext_filename.simple_convert_node_path_to_os_path dir in
     walk_source_dir_map 
-      {cxt with 
-        cwd = 
-        Ext_path.concat cxt.cwd 
-        (Ext_filename.simple_convert_node_path_to_os_path dir)
-      }
-      String_map.empty   
+    {cxt with cwd = Ext_path.concat cxt.cwd dir } None (* String_map.empty *)
   | Obj {map} ->       
     begin match String_map.find_opt map Bsb_build_schemas.dir with 
     | Some (Str{str}) -> 
       let dir = Ext_filename.simple_convert_node_path_to_os_path str  in 
       walk_source_dir_map 
-      {cxt with cwd = Ext_path.concat cxt.cwd dir} map
+      {cxt with cwd = Ext_path.concat cxt.cwd dir} (String_map.find_opt map Bsb_build_schemas.subdirs)
     | _ -> ()
     end
   | _ -> ()  
-and walk_source_dir_map (cxt : walk_cxt) (input : Ext_json_types.t String_map.t) =   
+and walk_source_dir_map (cxt : walk_cxt)  sub_dirs_field (* input : Ext_json_types.t String_map.t *) =   
     let working_dir = Filename.concat cxt.root cxt.cwd in 
     let file_array = Sys.readdir working_dir in 
     (* Remove .re.js when clean up *)
@@ -10068,8 +10064,6 @@ and walk_source_dir_map (cxt : walk_cxt) (input : Ext_json_types.t String_map.t)
         then 
           Sys.remove (Filename.concat working_dir file)
     end; 
-    let sub_dirs_field = 
-        String_map.find_opt input Bsb_build_schemas.subdirs in 
     let cxt_traverse = cxt.traverse in     
     match sub_dirs_field, cxt_traverse with     
     | None, true 
@@ -10082,7 +10076,7 @@ and walk_source_dir_map (cxt : walk_cxt) (input : Ext_json_types.t String_map.t)
             Ext_path.concat cxt.cwd
             (Ext_filename.simple_convert_node_path_to_os_path f);
           traverse = true
-          } String_map.empty 
+          } None (* String_map.empty *)
       end   
     | None, _ 
     | Some (False _), _ -> ()      
@@ -10094,7 +10088,7 @@ and walk_source_dir_map (cxt : walk_cxt) (input : Ext_json_types.t String_map.t)
 let clean_re_js root =     
   match Ext_json_parse.parse_json_from_file 
       (Filename.concat root Literals.bsconfig_json) with 
-  | Obj {map ; loc} -> 
+  | Obj { map } -> 
     Ext_option.iter (String_map.find_opt map Bsb_build_schemas.sources) begin fun config -> 
       Ext_pervasives.try_it (fun () -> 
           walk_sources { root ; traverse = true; cwd = Filename.current_dir_name} config
