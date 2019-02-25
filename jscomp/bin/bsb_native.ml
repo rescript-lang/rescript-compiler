@@ -9838,122 +9838,125 @@ let rec
     ({ cwd =  dir;} as cxt )
     (input : Ext_json_types.t String_map.t) : t     
   = 
-  let cur_update_queue = ref [] in 
-  let cur_globbed_dirs = ref [] in 
-  let cur_sources = ref String_map.empty in   
-  let generators = 
+  if String_set.mem cxt.ignored_dirs dir then Bsb_file_groups.empty
+  else 
+    let cur_update_queue = ref [] in 
+    let cur_globbed_dirs = ref [] in 
+    let cur_sources = ref String_map.empty in   
+    let generators = 
       extract_generators input (cxt.cut_generators || cxt.not_dev) dir 
-      cur_sources
-  in 
-  let sub_dirs_field = String_map.find_opt input  Bsb_build_schemas.subdirs in 
-  let file_array = lazy (Sys.readdir (Filename.concat cxt.root dir)) in 
-  begin 
-    match String_map.find_opt input Bsb_build_schemas.files with 
-    | None ->  (* No setting on [!files]*)
-      (** We should avoid temporary files *)
-      cur_sources := 
-        Ext_array.fold_left (Lazy.force file_array) !cur_sources (fun acc name -> 
-            if is_input_or_output generators name then 
-              acc 
-            else 
-              match Ext_string.is_valid_source_name name with 
-              | Good -> 
-                Bsb_db.collect_module_by_filename  ~dir acc name 
-              | Invalid_module_name ->
-                Bsb_log.warn
-                  warning_unused_file
-                  name dir 
-                ; 
+        cur_sources
+    in 
+    let sub_dirs_field = String_map.find_opt input  Bsb_build_schemas.subdirs in 
+    let file_array = lazy (Sys.readdir (Filename.concat cxt.root dir)) in 
+    begin 
+      match String_map.find_opt input Bsb_build_schemas.files with 
+      | None ->  (* No setting on [!files]*)
+        (** We should avoid temporary files *)
+        cur_sources := 
+          Ext_array.fold_left (Lazy.force file_array) !cur_sources (fun acc name -> 
+              if is_input_or_output generators name then 
                 acc 
-              | Suffix_mismatch ->  acc
-          ) ;
-      cur_globbed_dirs :=  [dir]  
-    | Some (Arr ({content = [||] }as empty_json_array)) -> 
-      (* [ ] populatd by scanning the dir (just once) *)         
-      cur_update_queue := 
+              else 
+                match Ext_string.is_valid_source_name name with 
+                | Good -> 
+                  Bsb_db.collect_module_by_filename  ~dir acc name 
+                | Invalid_module_name ->
+                  Bsb_log.warn
+                    warning_unused_file
+                    name dir 
+                  ; 
+                  acc 
+                | Suffix_mismatch ->  acc
+            ) ;
+        cur_globbed_dirs :=  [dir]  
+      | Some (Arr ({content = [||] }as empty_json_array)) -> 
+        (* [ ] populatd by scanning the dir (just once) *)         
+        cur_update_queue := 
           handle_empty_sources cur_sources cxt.cwd 
-          file_array 
-          empty_json_array
-          generators
-    | Some (Arr {loc_start;loc_end; content = sx }) -> 
-      (* [ a,b ] populated by users themselves 
-         TODO: still need check?
-      *)      
-      cur_sources := 
-        Ext_array.fold_left sx !cur_sources (fun acc s ->
-            match s with 
-            | Str str -> 
-              Bsb_db.collect_module_by_filename ~dir acc str.str
-            | _ -> acc
+            file_array 
+            empty_json_array
+            generators
+      | Some (Arr {loc_start;loc_end; content = sx }) -> 
+        (* [ a,b ] populated by users themselves 
+           TODO: still need check?
+        *)      
+        cur_sources := 
+          Ext_array.fold_left sx !cur_sources (fun acc s ->
+              match s with 
+              | Str str -> 
+                Bsb_db.collect_module_by_filename ~dir acc str.str
+              | _ -> acc
+            ) 
+      | Some (Obj {map = m; loc} ) -> (* { excludes : [], slow_re : "" }*)
+        cur_globbed_dirs := [dir];  
+        let excludes = 
+          match String_map.find_opt m  Bsb_build_schemas.excludes with 
+          | None -> []   
+          | Some (Arr {content = arr}) -> Bsb_build_util.get_list_string arr 
+          | Some x -> Bsb_exception.config_error x  "excludes expect array "in 
+        let slow_re = String_map.find_opt m Bsb_build_schemas.slow_re in 
+        let predicate = 
+          match slow_re, excludes with 
+          | Some (Str {str = s}), [] -> 
+            let re = Str.regexp s  in 
+            fun name -> Str.string_match re name 0 
+          | Some (Str {str = s}) , _::_ -> 
+            let re = Str.regexp s in   
+            fun name -> Str.string_match re name 0 && not (List.mem name excludes)
+          | Some x, _ -> Bsb_exception.errorf ~loc "slow-re expect a string literal"
+          | None , _ -> Bsb_exception.errorf ~loc  "missing field: slow-re"  in 
+        cur_sources := Ext_array.fold_left (Lazy.force file_array) !cur_sources (fun acc name -> 
+            if is_input_or_output generators name || not (predicate name) then acc 
+            else 
+              Bsb_db.collect_module_by_filename  ~dir acc name 
           ) 
-    | Some (Obj {map = m; loc} ) -> (* { excludes : [], slow_re : "" }*)
-      cur_globbed_dirs := [dir];  
-      let excludes = 
-        match String_map.find_opt m  Bsb_build_schemas.excludes with 
-        | None -> []   
-        | Some (Arr {content = arr}) -> Bsb_build_util.get_list_string arr 
-        | Some x -> Bsb_exception.config_error x  "excludes expect array "in 
-      let slow_re = String_map.find_opt m Bsb_build_schemas.slow_re in 
-      let predicate = 
-        match slow_re, excludes with 
-        | Some (Str {str = s}), [] -> 
-          let re = Str.regexp s  in 
-          fun name -> Str.string_match re name 0 
-        | Some (Str {str = s}) , _::_ -> 
-          let re = Str.regexp s in   
-          fun name -> Str.string_match re name 0 && not (List.mem name excludes)
-        | Some x, _ -> Bsb_exception.errorf ~loc "slow-re expect a string literal"
-        | None , _ -> Bsb_exception.errorf ~loc  "missing field: slow-re"  in 
-      cur_sources := Ext_array.fold_left (Lazy.force file_array) !cur_sources (fun acc name -> 
-          if is_input_or_output generators name || not (predicate name) then acc 
-          else 
-            Bsb_db.collect_module_by_filename  ~dir acc name 
-        ) 
-    | Some x -> Bsb_exception.config_error x "files field expect array or object "
-  end;
-  let cur_sources = !cur_sources in 
-  let resources = extract_resources input in
-  let public = extract_pub input cur_sources in 
-  (** Doing recursive stuff *)  
-  let children =     
-    match sub_dirs_field, 
-          cxt.traverse with 
-    | None , true
-    | Some (True _), _ -> 
-      let root = cxt.root in 
-      let parent = Filename.concat root dir in
-      Ext_array.fold_left (Lazy.force file_array) Bsb_file_groups.empty (fun origin x -> 
-            if Sys.is_directory (Filename.concat parent x) then 
+      | Some x -> Bsb_exception.config_error x "files field expect array or object "
+    end;
+    let cur_sources = !cur_sources in 
+    let resources = extract_resources input in
+    let public = extract_pub input cur_sources in 
+    (** Doing recursive stuff *)  
+    let children =     
+      match sub_dirs_field, 
+            cxt.traverse with 
+      | None , true
+      | Some (True _), _ -> 
+        let root = cxt.root in 
+        let parent = Filename.concat root dir in
+        Ext_array.fold_left (Lazy.force file_array) Bsb_file_groups.empty (fun origin x -> 
+            if  not (String_set.mem cxt.ignored_dirs x) && 
+                Sys.is_directory (Filename.concat parent x) then 
               Bsb_file_groups.merge
-              (
-                parsing_source_dir_map
-                  {cxt with 
-                   cwd = Ext_path.concat cxt.cwd 
-                        (Ext_filename.simple_convert_node_path_to_os_path x);
-                   traverse = true
-                  } String_map.empty)  origin               
+                (
+                  parsing_source_dir_map
+                    {cxt with 
+                     cwd = Ext_path.concat cxt.cwd 
+                         (Ext_filename.simple_convert_node_path_to_os_path x);
+                     traverse = true
+                    } String_map.empty)  origin               
             else origin  
           ) 
-        (* readdir parent avoiding scanning twice *)        
-    | None, false  
-    | Some (False _), _  -> Bsb_file_groups.empty
-    | Some s, _  -> parse_sources cxt s 
-  in 
-  (** Do some clean up *)  
-  if cxt.clean_staled_bs_js then 
-  begin
-    clean_staled_bs_js_files cxt cur_sources (Lazy.force file_array )
-  end;
-  Bsb_file_groups.merge {
-    files =  [ { dir ; 
-                 sources = cur_sources; 
-                 resources ;
-                 public ;
-                 dir_index = cxt.dir_index ;
-                generators  } ] ;
-    intervals = !cur_update_queue ;
-    globbed_dirs = !cur_globbed_dirs ;
-  }  children
+      (* readdir parent avoiding scanning twice *)        
+      | None, false  
+      | Some (False _), _  -> Bsb_file_groups.empty
+      | Some s, _  -> parse_sources cxt s 
+    in 
+    (** Do some clean up *)  
+    if cxt.clean_staled_bs_js then 
+      begin
+        clean_staled_bs_js_files cxt cur_sources (Lazy.force file_array )
+      end;
+    Bsb_file_groups.merge {
+      files =  [ { dir ; 
+                   sources = cur_sources; 
+                   resources ;
+                   public ;
+                   dir_index = cxt.dir_index ;
+                   generators  } ] ;
+      intervals = !cur_update_queue ;
+      globbed_dirs = !cur_globbed_dirs ;
+    }  children
 
 
 and parsing_single_source ({not_dev; dir_index ; cwd} as cxt ) (x : Ext_json_types.t )
