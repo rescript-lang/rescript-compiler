@@ -484,7 +484,7 @@ and walk_single_source cxt (x : Ext_json_types.t) =
     | _ -> ()
     end
   | _ -> ()  
-and walk_source_dir_map (cxt : walk_cxt)  sub_dirs_field (* input : Ext_json_types.t String_map.t *) =   
+and walk_source_dir_map (cxt : walk_cxt)  sub_dirs_field =   
     let working_dir = Filename.concat cxt.root cxt.cwd in 
     let file_array = Sys.readdir working_dir in 
     (* Remove .re.js when clean up *)
@@ -506,7 +506,7 @@ and walk_source_dir_map (cxt : walk_cxt)  sub_dirs_field (* input : Ext_json_typ
             Ext_path.concat cxt.cwd
             (Ext_filename.simple_convert_node_path_to_os_path f);
           traverse = true
-          } None (* String_map.empty *)
+          } None 
       end   
     | None, _ 
     | Some (False _), _ -> ()      
