@@ -265,14 +265,14 @@ let clean_staled_bs_js_files
 
 let rec 
   parsing_source_dir_map 
-    ({ cwd =  dir; not_dev; cut_generators } as cxt )
+    ({ cwd =  dir;} as cxt )
     (input : Ext_json_types.t String_map.t) : t     
   = 
   let cur_update_queue = ref [] in 
   let cur_globbed_dirs = ref [] in 
-  let cur_sources = ref String_map.empty in 
+  let cur_sources = ref String_map.empty in   
   let generators = 
-      extract_generators input (cut_generators || not_dev) dir 
+      extract_generators input (cxt.cut_generators || cxt.not_dev) dir 
       cur_sources
   in 
   let sub_dirs_field = String_map.find_opt input  Bsb_build_schemas.subdirs in 
