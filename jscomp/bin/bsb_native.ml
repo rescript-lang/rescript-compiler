@@ -10031,6 +10031,7 @@ type walk_cxt = {
     cwd : string ;
     root : string;
     traverse : bool;
+    ignored_dirs : String_set.t;
   }
   
 let rec walk_sources (cxt : walk_cxt) (sources : Ext_json_types.t) = 
@@ -10044,7 +10045,7 @@ and walk_single_source cxt (x : Ext_json_types.t) =
     -> 
     let dir = Ext_filename.simple_convert_node_path_to_os_path dir in
     walk_source_dir_map 
-    {cxt with cwd = Ext_path.concat cxt.cwd dir } None (* String_map.empty *)
+    {cxt with cwd = Ext_path.concat cxt.cwd dir } None 
   | Obj {map} ->       
     begin match String_map.find_opt map Bsb_build_schemas.dir with 
     | Some (Str{str}) -> 
@@ -10054,34 +10055,36 @@ and walk_single_source cxt (x : Ext_json_types.t) =
     | _ -> ()
     end
   | _ -> ()  
-and walk_source_dir_map (cxt : walk_cxt)  sub_dirs_field (* input : Ext_json_types.t String_map.t *) =   
+and walk_source_dir_map (cxt : walk_cxt)  sub_dirs_field =   
     let working_dir = Filename.concat cxt.root cxt.cwd in 
-    let file_array = Sys.readdir working_dir in 
-    (* Remove .re.js when clean up *)
-    Ext_array.iter file_array begin fun file -> 
+    if not (String_set.mem cxt.ignored_dirs cxt.cwd) then begin 
+      let file_array = Sys.readdir working_dir in 
+      (* Remove .re.js when clean up *)
+      Ext_array.iter file_array begin fun file -> 
         if Ext_string.ends_with file Literals.suffix_gen_js 
         || Ext_string.ends_with file Literals.suffix_gen_tsx 
         then 
           Sys.remove (Filename.concat working_dir file)
-    end; 
-    let cxt_traverse = cxt.traverse in     
-    match sub_dirs_field, cxt_traverse with     
-    | None, true 
-    | Some(True _), _ -> 
-      Ext_array.iter file_array begin fun f -> 
-      if Sys.is_directory (Filename.concat working_dir f ) then 
-        walk_source_dir_map 
-        {cxt with 
-          cwd = 
-            Ext_path.concat cxt.cwd
-            (Ext_filename.simple_convert_node_path_to_os_path f);
-          traverse = true
-          } None (* String_map.empty *)
-      end   
-    | None, _ 
-    | Some (False _), _ -> ()      
-    | Some s, _ -> walk_sources cxt s 
-
+      end; 
+      let cxt_traverse = cxt.traverse in     
+      match sub_dirs_field, cxt_traverse with     
+      | None, true 
+      | Some(True _), _ -> 
+        Ext_array.iter file_array begin fun f -> 
+          if not (String_set.mem cxt.ignored_dirs f) && 
+             Sys.is_directory (Filename.concat working_dir f ) then 
+            walk_source_dir_map 
+              {cxt with 
+               cwd = 
+                 Ext_path.concat cxt.cwd
+                   (Ext_filename.simple_convert_node_path_to_os_path f);
+               traverse = true
+              } None 
+        end   
+      | None, _ 
+      | Some (False _), _ -> ()      
+      | Some s, _ -> walk_sources cxt s 
+    end
 (* It makes use of the side effect when [walk_sources], removing suffix_re_js,
    TODO: make it configurable
  *)
@@ -10089,9 +10092,19 @@ let clean_re_js root =
   match Ext_json_parse.parse_json_from_file 
       (Filename.concat root Literals.bsconfig_json) with 
   | Obj { map } -> 
+    let ignored_dirs = 
+      match String_map.find_opt map Bsb_build_schemas.ignored_dirs with       
+      | Some (Arr {content = x}) -> String_set.of_list (Bsb_build_util.get_list_string x )
+      | Some _
+      | None -> String_set.empty
+    in  
     Ext_option.iter (String_map.find_opt map Bsb_build_schemas.sources) begin fun config -> 
       Ext_pervasives.try_it (fun () -> 
-          walk_sources { root ; traverse = true; cwd = Filename.current_dir_name} config
+          walk_sources { root ;                           
+                         traverse = true; 
+                         cwd = Filename.current_dir_name;
+                         ignored_dirs
+                         } config
         )      
     end
   | _  -> () 
