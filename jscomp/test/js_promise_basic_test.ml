@@ -7,7 +7,7 @@ let eq loc x y =
 
 
 
-open Js_promise2
+open Js_promise
 
 let assert_bool b =
   if b then ()
@@ -20,12 +20,12 @@ let fail _ =
 
 let thenTest () =
   let p = resolve 4 in
-  p |. then_ (fun x -> resolve @@ assert_bool (x = 4))
+  p |> then_ (fun x -> resolve @@ assert_bool (x = 4))
 
 let andThenTest () =
   let p = resolve 6 in
-  p |. then_ (fun _ -> resolve (12))
-    |. then_ (fun y -> resolve @@ assert_bool (y = 12))
+  p |> then_ (fun _ -> resolve (12))
+    |> then_ (fun y -> resolve @@ assert_bool (y = 12))
 
 let h = resolve ()
 
@@ -38,40 +38,40 @@ let assertIsNotFound (x : Js_promise.error) =
 (** would be nice to have [%bs.open? Stack_overflow]*)
 let catchTest () =
   let p = reject Not_found in
-  p |. then_ fail
-    |. catch (fun error ->
+  p |> then_ fail
+    |> catch (fun error ->
       assertIsNotFound error
     )
 
 let orResolvedTest () =
   let p = resolve 42 in
-  p |. catch (fun _ -> resolve 22)
-    |. then_ (fun value -> resolve @@ assert_bool (value = 42))
-    |. catch fail
+  p |> catch (fun _ -> resolve 22)
+    |> then_ (fun value -> resolve @@ assert_bool (value = 42))
+    |> catch fail
 
 let orRejectedTest () =
   let p = reject Not_found in
-  p |. catch (fun _ -> resolve 22)
-    |. then_ (fun value -> resolve @@ assert_bool (value = 22))
-    |. catch fail
+  p |> catch (fun _ -> resolve 22)
+    |> then_ (fun value -> resolve @@ assert_bool (value = 22))
+    |> catch fail
 
 let orElseResolvedTest () =
   let p = resolve 42 in
-  p |. catch (fun _ -> resolve 22)
-    |. then_ (fun value -> resolve @@ assert_bool (value = 42))
-    |. catch fail
+  p |> catch (fun _ -> resolve 22)
+    |> then_ (fun value -> resolve @@ assert_bool (value = 42))
+    |> catch fail
 
 let orElseRejectedResolveTest () =
   let p = reject Not_found in
-  p |. catch (fun _ -> resolve 22)
-    |. then_ (fun value -> resolve @@ assert_bool (value = 22))
-    |. catch fail
+  p |> catch (fun _ -> resolve 22)
+    |> then_ (fun value -> resolve @@ assert_bool (value = 22))
+    |> catch fail
 
 let orElseRejectedRejectTest () =
   let p = reject Not_found in
-  p |. catch (fun _ -> reject Stack_overflow)
-    |. then_ fail
-    |. catch (fun error ->
+  p |> catch (fun _ -> reject Stack_overflow)
+    |> then_ fail
+    |> catch (fun error ->
         match (function [@bs.open] Stack_overflow -> 0) error with
         | Some _ -> h
         | None -> assert false
@@ -79,11 +79,11 @@ let orElseRejectedRejectTest () =
 
 let resolveTest () =
   let p1 = resolve 10 in
-  p1 |. then_ (fun x -> resolve @@ assert_bool (x = 10))
+  p1 |> then_ (fun x -> resolve @@ assert_bool (x = 10))
 
 let rejectTest () =
   let p = reject Not_found in
-  p |. catch
+  p |> catch
     (fun error ->
        assertIsNotFound error
        (* resolve @@ assert_bool (Obj.magic error == Not_found) *)
@@ -91,13 +91,13 @@ let rejectTest () =
 
 let thenCatchChainResolvedTest () =
   let p = resolve 20 in
-  p |. then_ (fun value -> resolve @@ assert_bool (value = 20) )
-    |. catch fail
+  p |> then_ (fun value -> resolve @@ assert_bool (value = 20) )
+    |> catch fail
 
 let thenCatchChainRejectedTest () =
   let p = reject Not_found in
-  p |. then_ fail
-    |. catch (fun error ->
+  p |> then_ fail
+    |> catch (fun error ->
       assertIsNotFound error
       (* resolve @@ assert_bool (Obj.magic error == Not_found) *))
 
@@ -108,7 +108,7 @@ let allResolvedTest () =
   let p3 = resolve 3 in
   let promises = [| p1; p2; p3 |] in
   all promises
-  |. then_
+  |> then_
   (fun resolved ->
      assert_bool (resolved.(0) = 1) ;
      assert_bool (resolved.(1) = 2) ;
@@ -123,8 +123,8 @@ let allRejectTest () =
   let p3 = reject Not_found in
   let promises = [| p1; p2; p3 |] in
   all promises
-    |. then_ fail
-    |. catch (fun error -> assert_bool (Obj.magic error == Not_found) ; h)
+    |> then_ fail
+    |> catch (fun error -> assert_bool (Obj.magic error == Not_found) ; h)
 
 let raceTest () =
   let p1 = resolve "first" in
@@ -132,17 +132,17 @@ let raceTest () =
   let p3 = resolve "third" in
   let promises = [| p1; p2; p3 |] in
   race promises
-  |. then_ (fun resolved -> h)
-  |. catch fail
+  |> then_ (fun resolved -> h)
+  |> catch fail
 
 let createPromiseRejectTest () =
   make (fun ~resolve ~reject -> reject Not_found [@bs])
-  |. catch (fun error -> assert_bool (Obj.magic error == Not_found); h)
+  |> catch (fun error -> assert_bool (Obj.magic error == Not_found); h)
 
 let createPromiseFulfillTest () =
   make (fun ~resolve ~reject:_  -> resolve "success" [@bs])
-  |. then_ (fun resolved -> assert_bool (Obj.magic resolved = "success"); h)
-  |. catch fail
+  |> then_ (fun resolved -> assert_bool (Obj.magic resolved = "success"); h)
+  |> catch fail
 
 let () =
   ignore @@ thenTest ();
@@ -164,13 +164,13 @@ let () =
 (** TODO: async tests?
 *)
 let () =
-    (Js.Promise2.all2 (Js.Promise2.resolve 2, Js.Promise2.resolve 3))
-    |. Js.Promise2.then_ (fun (a,b) ->
+    (Js.Promise.all2 (Js.Promise.resolve 2, Js.Promise.resolve 3))
+    |> Js.Promise.then_ (fun (a,b) ->
     eq __LOC__ (a,b) (2,3);
 
-    Js.Promise2.resolve ()
+    Js.Promise.resolve ()
     )
-    |. ignore
+    |> ignore
 
 
 ;; Js.log (List.length !suites)
@@ -178,16 +178,16 @@ let () =
 ;; Js.log "hey"
 ;; Mt.from_pair_suites __MODULE__ !suites
 
-let twop = Js.Promise2.resolve 2
-let then_ = Js.Promise2.then_
-let re = Js.Promise2.resolve
+let twop = Js.Promise.resolve 2
+let then_ = Js.Promise.then_
+let re = Js.Promise.resolve
 
 ;; Mt.from_promise_suites __MODULE__
   [
     __LOC__,
     twop
-    |. then_ (fun x -> re @@ Mt.Eq(x,2));
+    |> then_ (fun x -> re @@ Mt.Eq(x,2));
     __LOC__,
     twop
-    |. then_ (fun x -> re @@ Mt.Neq(x,3))
+    |> then_ (fun x -> re @@ Mt.Neq(x,3))
   ]
