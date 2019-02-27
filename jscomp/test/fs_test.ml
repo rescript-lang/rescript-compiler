@@ -37,7 +37,7 @@ let () =
     | Some x -> x
     | None -> "<Not Node Js>"  in
   let _content = readFileSync current_file `utf8 in
-  let _file_list = Fs2.readdirSync current_dir_name in
+  let _file_list = Fs.readdirSync current_dir_name in
   let pathobj =   Path.parse current_dir_name in
   match  [%node _module] with
   | Some module_ ->

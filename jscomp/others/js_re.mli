@@ -46,10 +46,10 @@ let maybeMatches = "banana" |> Js.String.match_ [\[%re "/na+/g"\]]
 *)
 
 (** the RegExp object *)
-type t = Js_re2.t
+type t 
 
 (** the result of a executing a RegExp on a string *)
-type result = Js_re2.t
+type result
 
 (** an array of the match and captures, the first is the full match and the remaining are the substring captures *)
 external captures : result -> string Js.nullable array = "%identity"
@@ -163,12 +163,16 @@ external unicode : t -> bool = "" [@@bs.get]
  *)
 
 let re = [%re "/quick\s(brown).+?(jumps)/ig" in
-let result = re |> Js.Re.exec "The Quick Brown Fox Jumps Over The Lazy Dog"
+let result = re |. Js.Re.exec_ "The Quick Brown Fox Jumps Over The Lazy Dog"
 ]}
 
 @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/exec> MDN
 *)
-external exec : string -> result option = "" [@@bs.send.pipe: t] [@@bs.return {null_to_opt}]
+external exec_ : t -> string -> result option = "exec" [@@bs.send] [@@bs.return null_to_opt]
+
+(** @deprecated please use {!exec_} instead *)
+external exec : string -> result option = "" [@@bs.send.pipe: t] [@@bs.return null_to_opt]
+[@@ocaml.deprecated "please use Js.Re.exec_ instead"]
 
 (** tests whether the given RegExp object will match a given string
 
@@ -179,13 +183,19 @@ external exec : string -> result option = "" [@@bs.send.pipe: t] [@@bs.return {n
 
 let str = "hello world!"
 
-let startsWith substring target =
+let startsWith target substring =
   Js.Re.fromString ("^" ^ substring)
-    |> Js.Re.test target
+    |. Js.Re.test_ target
 
-let () = Js.log (str |> startsWith "hello") (* prints "true" *)
+let () = Js.log (str |. startsWith "hello") (* prints "true" *)
 ]}
 
 @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/test> MDN
 *)
+external test_ : t -> string -> bool = "test" [@@bs.send]
+
+(**
+  @deprecated please use {!test_} instead
+*)
 external test : string -> bool = "" [@@bs.send.pipe: t]
+[@@ocaml.deprecated "Please use Js.Re.test_ instead"]

@@ -13421,7 +13421,7 @@ let v =
   | Some f ->
     let f =  Node.Path.join [|f; "flow_parser_sample.js"|] in
     let v : < range : int * int; ..> Js.t =
-      (Obj.magic (Flow_parser_js.parse (Node.Fs2.readFileSync f `utf8 ) None )) in
+      (Obj.magic (Flow_parser_js.parse (Node.Fs.readFileSync f `utf8 ) None )) in
     eq __LOC__ (0,2842) (v## range)
   | None -> assert false
 

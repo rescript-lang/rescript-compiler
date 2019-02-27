@@ -27156,7 +27156,7 @@ module Lid = struct
   let js_null  : t = Ldot (Lident "Js", "null")
   let js_undefined : t = Ldot (Lident "Js", "undefined")
   let js_null_undefined : t = Ldot (Lident "Js", "null_undefined")
-  let js_re_id : t = Ldot (Ldot (Lident "Js", "Re2"), "t")
+  let js_re_id : t = Ldot (Ldot (Lident "Js", "Re"), "t")
 end
 
 module No_loc = struct
