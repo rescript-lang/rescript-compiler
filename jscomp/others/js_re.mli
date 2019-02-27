@@ -46,10 +46,10 @@ let maybeMatches = "banana" |> Js.String.match_ [\[%re "/na+/g"\]]
 *)
 
 (** the RegExp object *)
-type t = Js_re2.t
+type t 
 
 (** the result of a executing a RegExp on a string *)
-type result = Js_re2.t
+type result
 
 (** an array of the match and captures, the first is the full match and the remaining are the substring captures *)
 external captures : result -> string Js.nullable array = "%identity"
