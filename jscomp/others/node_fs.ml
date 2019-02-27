@@ -73,9 +73,9 @@ module Watch = struct
     ] [@bs.string]
     ) -> t = ""
   [@@bs.send.pipe: t]
-  [@@ocaml.deprecated "Please use `Node.Fs.onEvent` instead "]
+  [@@ocaml.deprecated "Please use `Node.Fs.on_` instead "]
 
-  external onEvent : 
+  external on_ : 
     t ->
     ([
       `change of (string (*eventType*) -> Node.string_buffer (* filename *) -> unit  [@bs])
