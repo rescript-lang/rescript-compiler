@@ -21217,12 +21217,6 @@ end = struct
 *)
 
 
-
-open Ast_helper
-
-
-
-
 let record_as_js_object = ref false (* otherwise has an attribute *)
 let no_export = ref false
 
@@ -21404,8 +21398,8 @@ let rec unsafe_mapper : Bs_ast_mapper.mapper =
   }
 
 
-
-
+type action_table = 
+  (Parsetree.expression option -> unit) String_map.t
 (** global configurations below *)
 let common_actions_table :
   (string *  (Parsetree.expression option -> unit)) list =
@@ -21413,7 +21407,7 @@ let common_actions_table :
   ]
 
 
-let structural_config_table  =
+let structural_config_table : action_table =
   String_map.of_list
     (( "no_export" ,
        (fun x ->
@@ -21424,8 +21418,7 @@ let structural_config_table  =
        ))
      :: common_actions_table)
 
-let signature_config_table :
-  (Parsetree.expression option -> unit) String_map.t=
+let signature_config_table : action_table =
   String_map.of_list common_actions_table
 
 
@@ -21444,7 +21437,7 @@ let rewrite_signature (x : Parsetree.signature) =
   Bs_ast_invariant.emit_external_warnings_on_signature result;
   result
 
-
+(* Note we also drop attributes like [@@@bs.deriving ] for convenience*)    
 let rewrite_implementation (x : Parsetree.structure) =  
   let result =
     match x with
@@ -21455,7 +21448,7 @@ let rewrite_implementation (x : Parsetree.structure) =
           (Ast_payload.table_dispatch structural_config_table) ;
         let rest = unsafe_mapper.structure unsafe_mapper rest in
         if !no_export then
-          [Str.include_ ~loc
+          Ast_helper.[Str.include_ ~loc
              (Incl.mk ~loc
                 (Mod.constraint_ ~loc
                    (Mod.structure ~loc rest  )
