@@ -20495,8 +20495,8 @@ let handle_extension record_as_js_object e (self : Bs_ast_mapper.mapper)
   end 
 
 end
-module Ast_primitive : sig 
-#1 "ast_primitive.mli"
+module Ast_external : sig 
+#1 "ast_external.mli"
 (* Copyright (C) 2018 Authors of BuckleScript
  *
  * This program is free software: you can redistribute it and/or modify
@@ -20536,7 +20536,7 @@ val handleExternalInStru:
   
 
 end = struct
-#1 "ast_primitive.ml"
+#1 "ast_external.ml"
 (* Copyright (C) 2018 Authors of BuckleScript
  *
  * This program is free software: you can redistribute it and/or modify
@@ -21354,7 +21354,7 @@ let rec unsafe_mapper : Bs_ast_mapper.mapper =
       | Psig_value prim
         when Ast_attributes.process_external prim.pval_attributes
         ->
-          Ast_primitive.handleExternalInSig self prim sigi
+          Ast_external.handleExternalInSig self prim sigi
       | _ -> Bs_ast_mapper.default_mapper.signature_item self sigi
     end;
     pat = begin fun self (pat : Parsetree.pattern) ->
@@ -21390,7 +21390,7 @@ let rec unsafe_mapper : Bs_ast_mapper.mapper =
         | Pstr_primitive prim
           when Ast_attributes.process_external prim.pval_attributes
           ->
-          Ast_primitive.handleExternalInStru self prim str
+          Ast_external.handleExternalInStru self prim str
         | _ -> Bs_ast_mapper.default_mapper.structure_item self str
       end
     end
