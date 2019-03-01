@@ -20621,7 +20621,33 @@ let handleExternalInStru
         pval_prim;
         pval_attributes
        }}
+(*
+  let open Ast_helper in 
+  Str.include_ ~loc 
+  (Incl.mk ~loc 
+  (Mod.constraint_ ~loc
+  (Mod.structure ~loc 
+  [{str with
+   pstr_desc =
+     Pstr_primitive
+       {prim with
+        pval_type ;
+        pval_prim;
+        pval_attributes
+       }}])
+       (Mty.signature ~loc [
+      {
+        psig_desc = Psig_value {
+            prim with 
+            pval_type ; 
+            pval_prim = [];
+            pval_attributes (* check attributes *);
 
+          };
+        psig_loc = loc
+      }])))
+
+*)
 end
 module Ast_derive_abstract : sig 
 #1 "ast_derive_abstract.mli"
