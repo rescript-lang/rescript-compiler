@@ -29,20 +29,20 @@ let handleExternalInSig
     (sigi : Parsetree.signature_item)
   : Parsetree.signature_item
   =
-  let pval_loc = prim.pval_loc in  
+  let loc = prim.pval_loc in  
   let pval_type = self.typ self prim.pval_type in
   let pval_attributes = self.attributes self prim.pval_attributes in
   let pval_type, pval_prim, pval_attributes =
     match prim.pval_prim with
     | [ v ] ->
       External_process.handle_attributes_as_string
-        pval_loc
+        loc
         prim.pval_name.txt
         pval_type
         pval_attributes v
     | _ ->
       Location.raise_errorf
-        ~loc:pval_loc
+        ~loc
         "only a single string is allowed in bs external" in
   {sigi with
    psig_desc =
@@ -58,19 +58,21 @@ let handleExternalInStru
     (prim : Parsetree.value_description)
     (str : Parsetree.structure_item)
     : Parsetree.structure_item =
-  let pval_loc = prim.pval_loc in 
+  let loc = prim.pval_loc in 
   let pval_type = self.typ self prim.pval_type in
   let pval_attributes = self.attributes self prim.pval_attributes in
   let pval_type, pval_prim, pval_attributes =
     match prim.pval_prim with
     | [ v] ->
       External_process.handle_attributes_as_string
-        pval_loc
+        loc
         prim.pval_name.txt
         pval_type pval_attributes v
-
-    | _ -> Location.raise_errorf
-             ~loc:pval_loc "only a single string is allowed in bs external" in
+    | _ -> 
+      Location.raise_errorf
+          ~loc 
+          "only a single string is allowed in bs external" 
+  in
   {str with
    pstr_desc =
      Pstr_primitive
