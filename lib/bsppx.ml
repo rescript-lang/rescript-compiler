@@ -20564,23 +20564,19 @@ end = struct
 
 let handleExternalInSig
     (self : Bs_ast_mapper.mapper)
-    ({pval_attributes;
-      pval_type;
-      pval_loc;
-      pval_prim;
-      pval_name ;
-     } as prim : Parsetree.value_description)
+    (prim : Parsetree.value_description)
     (sigi : Parsetree.signature_item)
   : Parsetree.signature_item
   =
-  let pval_type = self.typ self pval_type in
-  let pval_attributes = self.attributes self pval_attributes in
+  let pval_loc = prim.pval_loc in  
+  let pval_type = self.typ self prim.pval_type in
+  let pval_attributes = self.attributes self prim.pval_attributes in
   let pval_type, pval_prim, pval_attributes =
-    match pval_prim with
+    match prim.pval_prim with
     | [ v ] ->
       External_process.handle_attributes_as_string
         pval_loc
-        pval_name.txt
+        prim.pval_name.txt
         pval_type
         pval_attributes v
     | _ ->
@@ -20598,21 +20594,18 @@ let handleExternalInSig
 
 let handleExternalInStru
     (self : Bs_ast_mapper.mapper)
-    ({pval_attributes;
-      pval_prim;
-      pval_type;
-      pval_name;
-      pval_loc} as prim : Parsetree.value_description)
+    (prim : Parsetree.value_description)
     (str : Parsetree.structure_item)
     : Parsetree.structure_item =
-  let pval_type = self.typ self pval_type in
-  let pval_attributes = self.attributes self pval_attributes in
+  let pval_loc = prim.pval_loc in 
+  let pval_type = self.typ self prim.pval_type in
+  let pval_attributes = self.attributes self prim.pval_attributes in
   let pval_type, pval_prim, pval_attributes =
-    match pval_prim with
+    match prim.pval_prim with
     | [ v] ->
       External_process.handle_attributes_as_string
         pval_loc
-        pval_name.txt
+        prim.pval_name.txt
         pval_type pval_attributes v
 
     | _ -> Location.raise_errorf
