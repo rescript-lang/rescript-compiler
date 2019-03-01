@@ -197,7 +197,7 @@ let rec unsafe_mapper : Bs_ast_mapper.mapper =
       | Psig_value prim
         when Ast_attributes.process_external prim.pval_attributes
         ->
-          Ast_primitive.handlePrimitiveInSig self prim sigi
+          Ast_primitive.handleExternalInSig self prim sigi
       | _ -> Bs_ast_mapper.default_mapper.signature_item self sigi
     end;
     pat = begin fun self (pat : Parsetree.pattern) ->
@@ -237,7 +237,7 @@ let rec unsafe_mapper : Bs_ast_mapper.mapper =
         | Pstr_primitive prim
           when Ast_attributes.process_external prim.pval_attributes
           ->
-          Ast_primitive.handlePrimitiveInStru self prim str
+          Ast_primitive.handleExternalInStru self prim str
         | _ -> Bs_ast_mapper.default_mapper.structure_item self str
       end
     end

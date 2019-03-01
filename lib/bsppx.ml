@@ -20522,13 +20522,13 @@ module Ast_primitive : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-val handlePrimitiveInSig:
+val handleExternalInSig:
   Bs_ast_mapper.mapper ->
   Parsetree.value_description ->
   Parsetree.signature_item ->
   Parsetree.signature_item
 
-val handlePrimitiveInStru:
+val handleExternalInStru:
   Bs_ast_mapper.mapper ->
   Parsetree.value_description ->
   Parsetree.structure_item ->
@@ -20562,7 +20562,7 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-let handlePrimitiveInSig
+let handleExternalInSig
     (self : Bs_ast_mapper.mapper)
     ({pval_attributes;
       pval_type;
@@ -20596,7 +20596,7 @@ let handlePrimitiveInSig
         pval_attributes
        }}
 
-let handlePrimitiveInStru
+let handleExternalInStru
     (self : Bs_ast_mapper.mapper)
     ({pval_attributes;
       pval_prim;
@@ -21354,7 +21354,7 @@ let rec unsafe_mapper : Bs_ast_mapper.mapper =
       | Psig_value prim
         when Ast_attributes.process_external prim.pval_attributes
         ->
-          Ast_primitive.handlePrimitiveInSig self prim sigi
+          Ast_primitive.handleExternalInSig self prim sigi
       | _ -> Bs_ast_mapper.default_mapper.signature_item self sigi
     end;
     pat = begin fun self (pat : Parsetree.pattern) ->
@@ -21390,7 +21390,7 @@ let rec unsafe_mapper : Bs_ast_mapper.mapper =
         | Pstr_primitive prim
           when Ast_attributes.process_external prim.pval_attributes
           ->
-          Ast_primitive.handlePrimitiveInStru self prim str
+          Ast_primitive.handleExternalInStru self prim str
         | _ -> Bs_ast_mapper.default_mapper.structure_item self str
       end
     end

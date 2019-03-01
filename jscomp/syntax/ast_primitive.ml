@@ -23,7 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-let handlePrimitiveInSig
+let handleExternalInSig
     (self : Bs_ast_mapper.mapper)
     ({pval_attributes;
       pval_type;
@@ -57,7 +57,7 @@ let handlePrimitiveInSig
         pval_attributes
        }}
 
-let handlePrimitiveInStru
+let handleExternalInStru
     (self : Bs_ast_mapper.mapper)
     ({pval_attributes;
       pval_prim;
