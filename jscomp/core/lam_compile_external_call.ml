@@ -232,7 +232,7 @@ let translate_ffi
     call_loc 
     (cxt  : Lam_compile_context.t)
     arg_types 
-    (ffi : External_ffi_types.attr ) 
+    (ffi : External_ffi_types.external_spec ) 
     (args : J.expression list) = 
   match ffi with 
 

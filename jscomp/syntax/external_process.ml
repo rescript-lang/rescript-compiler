@@ -617,7 +617,7 @@ let handle_attributes
            )
         )  in
 
-    let ffi : External_ffi_types.attr  = match st with
+    let ffi : External_ffi_types.external_spec  = match st with
       | {set_index = true;
 
          val_name = `Nm_na;
