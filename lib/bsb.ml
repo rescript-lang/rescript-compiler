@@ -17015,6 +17015,7 @@ let generate_theme_with_path = ref None
 let regen = "-regen"
 let separator = "--"
 let watch_mode = ref false
+let watch_clear = ref false
 let make_world = ref false 
 let set_make_world () = make_world := true
 let bs_version_string = Bs_version.version
@@ -17034,6 +17035,8 @@ let bsb_main_flags : (string * Arg.spec * string) list=
     " Set the output(from bsb) to be verbose";
     "-w", Arg.Set watch_mode,
     " Watch mode" ;     
+    "-wc", Arg.Set watch_clear,
+    " Watch mode, and clear the screen upon rebuild" ;     
     "-clean-world", Arg.Unit (fun _ -> 
         Bsb_clean.clean_bs_deps bsc_dir cwd),
     " Clean all bs dependencies";
@@ -17149,7 +17152,7 @@ let () =
                      [bsb -clean-world]
                      [bsb -regen ]
                   *)
-                  if !watch_mode then begin
+                  if !watch_mode || !watch_clear then begin
                     watch_exit ()
                   end 
                 | make_world, force_regenerate ->
@@ -17157,7 +17160,7 @@ let () =
                   if make_world then begin
                     Bsb_world.make_world_deps cwd config_opt
                   end;
-                  if !watch_mode then begin
+                  if !watch_mode || !watch_clear then begin
                     watch_exit ()
                     (* ninja is not triggered in this case
                        There are several cases we wish ninja will not be triggered.
@@ -17177,7 +17180,7 @@ let () =
             (* [-make-world] should never be combined with [-package-specs] *)
             if !make_world then
               Bsb_world.make_world_deps cwd config_opt ;
-            if !watch_mode then watch_exit ()
+            if !watch_mode || !watch_clear then watch_exit ()
             else ninja_command_exit  vendor_ninja ninja_args 
           end
       end
