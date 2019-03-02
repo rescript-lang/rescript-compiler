@@ -28,6 +28,11 @@
 
 module E = Js_exp_make
 
+let splice_fn_apply fn args = 
+  E.runtime_call
+    Js_runtime_modules.block
+    "spliceApply"
+    [fn; E.array Immutable args]
 
 (** 
    [bind_name] is a hint to the compiler to generate 
@@ -305,14 +310,9 @@ let translate_ffi
     if splice then 
       let args, eff, dynamic  = 
           assemble_args_has_splice   call_loc ffi  arg_types args in 
-      (if dynamic then
-         add_eff eff 
-           (E.runtime_call
-              Js_runtime_modules.obj_runtime
-              "splice" (fn::args))
-       else 
-         add_eff eff 
-           (E.call ~info:{arity=Full; call_info = Call_na} fn args))
+      add_eff eff 
+        (if dynamic then splice_fn_apply fn args
+         else E.call ~info:{arity=Full; call_info = Call_na} fn args)
     else 
       let args, eff  = assemble_args_no_splice   call_loc ffi  arg_types args in 
       add_eff eff @@              
@@ -323,10 +323,20 @@ let translate_ffi
       let (id, name) = handle_external  module_name  in
       E.external_var_dot id ~external_name:name 
     in           
-    let args, eff = assemble_args   call_loc ffi splice arg_types args in 
-    (* TODO: fix in rest calling convention *)          
-    add_eff eff @@
-    E.call ~info:{arity=Full; call_info = Call_na} fn args
+    if splice then 
+      let args, eff, dynamic = 
+          assemble_args_has_splice   call_loc ffi  arg_types args in 
+      (* TODO: fix in rest calling convention *)          
+      add_eff eff (
+        if dynamic then
+          splice_fn_apply fn args
+        else 
+          E.call ~info:{arity=Full; call_info = Call_na} fn args
+      )              
+    else 
+      let args, eff = assemble_args_no_splice  call_loc ffi  arg_types args in 
+      (* TODO: fix in rest calling convention *)          
+      add_eff eff (E.call ~info:{arity=Full; call_info = Call_na} fn args)
 
   | Js_new { external_module_name = module_name; 
              name = fn;
