@@ -26,10 +26,12 @@
 
 
 val rewrite_signature :   
-  (Parsetree.signature -> Parsetree.signature) ref
+  Parsetree.signature -> 
+  Parsetree.signature
 
 val rewrite_implementation : 
-  (Parsetree.structure -> Parsetree.structure) ref
+  Parsetree.structure -> 
+  Parsetree.structure
 
 
 

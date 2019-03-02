@@ -33344,7 +33344,7 @@ type js_set_index = {
 
 
 
-type attr  =
+type external_spec  =
   | Js_global of js_global_val
   | Js_module_as_var of  external_module_name
   | Js_module_as_fn of js_module_as_fn
@@ -33369,15 +33369,15 @@ type t  =
   | Ffi_bs of
       External_arg_spec.t list  *
       return_wrapper *
-      attr
+      external_spec
   | Ffi_obj_create of obj_create
   | Ffi_normal
   (* When it's normal, it is handled as normal c functional ffi call *)
 
 
-val name_of_ffi : attr -> string
+val name_of_ffi : external_spec -> string
 
-val check_ffi : ?loc:Location.t ->  attr -> unit
+val check_ffi : ?loc:Location.t ->  external_spec -> unit
 
 val to_string : t -> string
 
@@ -33484,7 +33484,7 @@ type arg_label = External_arg_spec.label
 (**TODO: maybe we can merge [arg_label] and [arg_type] *)
 type obj_create = External_arg_spec.t list
 
-type attr =
+type external_spec =
   | Js_global of js_global_val
   | Js_module_as_var of  external_module_name
   | Js_module_as_fn of js_module_as_fn
@@ -33496,6 +33496,9 @@ type attr =
   | Js_get of js_get
   | Js_get_index of js_get_index
   | Js_set_index of js_set_index
+
+(* let not_inlineable (x : external_spec) =     *)
+
 
 let name_of_ffi ffi =
   match ffi with
@@ -33525,7 +33528,7 @@ type return_wrapper =
   | Return_replaced_with_unit
 type t  =
   | Ffi_bs of External_arg_spec.t list  *
-     return_wrapper * attr
+     return_wrapper * external_spec
   (**  [Ffi_bs(args,return,attr) ]
        [return] means return value is unit or not,
         [true] means is [unit]
@@ -34308,9 +34311,8 @@ let process_external_attributes
       end
 
   in
-  List.fold_left
-    (fun (st, attrs)
-      (({txt ; loc}, payload) as attr : Ast_attributes.attr)
+  Ext_list.fold_left prim_attributes (init_st, []) 
+    (fun (st, attrs) (({txt ; loc}, payload) as attr )
       ->
         if Ext_string.starts_with txt "bs." then
           begin match txt with
@@ -34387,7 +34389,7 @@ let process_external_attributes
           end, attrs
         else (st , attr :: attrs)
     )
-    (init_st, []) prim_attributes
+    
 
 
 let rec has_bs_uncurry (attrs : Ast_attributes.t) =
@@ -34435,10 +34437,9 @@ let handle_attributes
       It does not make sense
   *)
   if has_bs_uncurry type_annotation.ptyp_attributes then
-    begin
-      Location.raise_errorf
-        ~loc "[@@bs.uncurry] can not be applied to the whole definition"
-    end;
+    Location.raise_errorf
+      ~loc "[@@bs.uncurry] can not be applied to the whole definition"
+  ;
 
   let prim_name_or_pval_prim =
     if String.length prim_name = 0 then  `Nm_val pval_prim
@@ -34670,7 +34671,7 @@ let handle_attributes
            )
         )  in
 
-    let ffi : External_ffi_types.attr  = match st with
+    let ffi : External_ffi_types.external_spec  = match st with
       | {set_index = true;
 
          val_name = `Nm_na;
@@ -37858,7 +37859,7 @@ let map_open_tuple
 *)
 let flattern_tuple_pattern_vb
     (self : Bs_ast_mapper.mapper)
-    ({pvb_loc } as vb :  Parsetree.value_binding)
+    (vb :  Parsetree.value_binding)
     acc : Parsetree.value_binding list =
   let pvb_pat = self.pat self vb.pvb_pat in
   let pvb_expr = self.expr self vb.pvb_expr in
@@ -37890,24 +37891,23 @@ let flattern_tuple_pattern_vb
                            }
                        ) ) ;
                pvb_attributes;
-               pvb_loc ;
+               pvb_loc = vb.pvb_loc ;
              } :: acc
            ) 
       | _ ->
         {pvb_pat ;
          pvb_expr ;
-         pvb_loc ;
+         pvb_loc = vb.pvb_loc;
          pvb_attributes} :: acc
     end
   | _ ->
     {pvb_pat ;
      pvb_expr ;
-     pvb_loc ;
+     pvb_loc = vb.pvb_loc ;
      pvb_attributes} :: acc
 
 
-let handle_value_bindings  =
-  fun self (vbs : Parsetree.value_binding list) ->
+let handle_value_bindings (self : Bs_ast_mapper.mapper) (vbs : Parsetree.value_binding list) =
     (* Bs_ast_mapper.default_mapper.value_bindings self  vbs   *)
     List.fold_right (fun vb acc ->
         flattern_tuple_pattern_vb self vb acc
@@ -38495,8 +38495,8 @@ let handle_extension record_as_js_object e (self : Bs_ast_mapper.mapper)
   end 
 
 end
-module Ast_primitive : sig 
-#1 "ast_primitive.mli"
+module Ast_external : sig 
+#1 "ast_external.mli"
 (* Copyright (C) 2018 Authors of BuckleScript
  *
  * This program is free software: you can redistribute it and/or modify
@@ -38522,13 +38522,13 @@ module Ast_primitive : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-val handlePrimitiveInSig:
+val handleExternalInSig:
   Bs_ast_mapper.mapper ->
   Parsetree.value_description ->
   Parsetree.signature_item ->
   Parsetree.signature_item
 
-val handlePrimitiveInStru:
+val handleExternalInStru:
   Bs_ast_mapper.mapper ->
   Parsetree.value_description ->
   Parsetree.structure_item ->
@@ -38536,7 +38536,7 @@ val handlePrimitiveInStru:
   
 
 end = struct
-#1 "ast_primitive.ml"
+#1 "ast_external.ml"
 (* Copyright (C) 2018 Authors of BuckleScript
  *
  * This program is free software: you can redistribute it and/or modify
@@ -38562,30 +38562,26 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-let handlePrimitiveInSig
+let handleExternalInSig
     (self : Bs_ast_mapper.mapper)
-    ({pval_attributes;
-      pval_type;
-      pval_loc;
-      pval_prim;
-      pval_name ;
-     } as prim : Parsetree.value_description)
+    (prim : Parsetree.value_description)
     (sigi : Parsetree.signature_item)
   : Parsetree.signature_item
   =
-  let pval_type = self.typ self pval_type in
-  let pval_attributes = self.attributes self pval_attributes in
+  let loc = prim.pval_loc in  
+  let pval_type = self.typ self prim.pval_type in
+  let pval_attributes = self.attributes self prim.pval_attributes in
   let pval_type, pval_prim, pval_attributes =
-    match pval_prim with
+    match prim.pval_prim with
     | [ v ] ->
       External_process.handle_attributes_as_string
-        pval_loc
-        pval_name.txt
+        loc
+        prim.pval_name.txt
         pval_type
         pval_attributes v
     | _ ->
       Location.raise_errorf
-        ~loc:pval_loc
+        ~loc
         "only a single string is allowed in bs external" in
   {sigi with
    psig_desc =
@@ -38596,27 +38592,26 @@ let handlePrimitiveInSig
         pval_attributes
        }}
 
-let handlePrimitiveInStru
+let handleExternalInStru
     (self : Bs_ast_mapper.mapper)
-    ({pval_attributes;
-      pval_prim;
-      pval_type;
-      pval_name;
-      pval_loc} as prim : Parsetree.value_description)
+    (prim : Parsetree.value_description)
     (str : Parsetree.structure_item)
     : Parsetree.structure_item =
-  let pval_type = self.typ self pval_type in
-  let pval_attributes = self.attributes self pval_attributes in
+  let loc = prim.pval_loc in 
+  let pval_type = self.typ self prim.pval_type in
+  let pval_attributes = self.attributes self prim.pval_attributes in
   let pval_type, pval_prim, pval_attributes =
-    match pval_prim with
+    match prim.pval_prim with
     | [ v] ->
       External_process.handle_attributes_as_string
-        pval_loc
-        pval_name.txt
+        loc
+        prim.pval_name.txt
         pval_type pval_attributes v
-
-    | _ -> Location.raise_errorf
-             ~loc:pval_loc "only a single string is allowed in bs external" in
+    | _ -> 
+      Location.raise_errorf
+          ~loc 
+          "only a single string is allowed in bs external" 
+  in
   {str with
    pstr_desc =
      Pstr_primitive
@@ -38625,7 +38620,33 @@ let handlePrimitiveInStru
         pval_prim;
         pval_attributes
        }}
+(*
+  let open Ast_helper in 
+  Str.include_ ~loc 
+  (Incl.mk ~loc 
+  (Mod.constraint_ ~loc
+  (Mod.structure ~loc 
+  [{str with
+   pstr_desc =
+     Pstr_primitive
+       {prim with
+        pval_type ;
+        pval_prim;
+        pval_attributes
+       }}])
+       (Mty.signature ~loc [
+      {
+        psig_desc = Psig_value {
+            prim with 
+            pval_type ; 
+            pval_prim = [];
+            pval_attributes (* check attributes *);
 
+          };
+        psig_loc = loc
+      }])))
+
+*)
 end
 module Ast_derive_abstract : sig 
 #1 "ast_derive_abstract.mli"
@@ -39116,10 +39137,12 @@ module Ppx_entry : sig
 
 
 val rewrite_signature :   
-  (Parsetree.signature -> Parsetree.signature) ref
+  Parsetree.signature -> 
+  Parsetree.signature
 
 val rewrite_implementation : 
-  (Parsetree.structure -> Parsetree.structure) ref
+  Parsetree.structure -> 
+  Parsetree.structure
 
 
 
@@ -39212,12 +39235,6 @@ end = struct
    ]}
    And if it is inlined some where
 *)
-
-
-
-open Ast_helper
-
-
 
 
 let record_as_js_object = ref false (* otherwise has an attribute *)
@@ -39358,7 +39375,7 @@ let rec unsafe_mapper : Bs_ast_mapper.mapper =
       | Psig_value prim
         when Ast_attributes.process_external prim.pval_attributes
         ->
-          Ast_primitive.handlePrimitiveInSig self prim sigi
+          Ast_external.handleExternalInSig self prim sigi
       | _ -> Bs_ast_mapper.default_mapper.signature_item self sigi
     end;
     pat = begin fun self (pat : Parsetree.pattern) ->
@@ -39394,15 +39411,15 @@ let rec unsafe_mapper : Bs_ast_mapper.mapper =
         | Pstr_primitive prim
           when Ast_attributes.process_external prim.pval_attributes
           ->
-          Ast_primitive.handlePrimitiveInStru self prim str
+          Ast_external.handleExternalInStru self prim str
         | _ -> Bs_ast_mapper.default_mapper.structure_item self str
       end
     end
   }
 
 
-
-
+type action_table = 
+  (Parsetree.expression option -> unit) String_map.t
 (** global configurations below *)
 let common_actions_table :
   (string *  (Parsetree.expression option -> unit)) list =
@@ -39410,7 +39427,7 @@ let common_actions_table :
   ]
 
 
-let structural_config_table  =
+let structural_config_table : action_table =
   String_map.of_list
     (( "no_export" ,
        (fun x ->
@@ -39421,57 +39438,51 @@ let structural_config_table  =
        ))
      :: common_actions_table)
 
-let signature_config_table :
-  (Parsetree.expression option -> unit) String_map.t=
+let signature_config_table : action_table =
   String_map.of_list common_actions_table
 
 
-let rewrite_signature :
-  (Parsetree.signature  -> Parsetree.signature) ref =
-  ref (fun  x ->
-      let result =
-        match (x : Parsetree.signature) with
-        | {psig_desc = Psig_attribute ({txt = "bs.config"; loc}, payload); _} :: rest
-          ->
-          begin
-            Ast_payload.ident_or_record_as_config loc payload
-            |> List.iter (Ast_payload.table_dispatch signature_config_table) ;
-            unsafe_mapper.signature unsafe_mapper rest
-          end
-        | _ ->
-          unsafe_mapper.signature  unsafe_mapper x in
-      reset ();
-      (* Keep this check, since the check is not inexpensive*)
-      Bs_ast_invariant.emit_external_warnings_on_signature result;
-      result
-    )
+let rewrite_signature (x : Parsetree.signature) =  
+  let result = 
+    match x with
+    | {psig_desc = Psig_attribute ({txt = "bs.config"; loc}, payload); _} :: rest
+      ->          
+      Ext_list.iter (Ast_payload.ident_or_record_as_config loc payload) 
+        (Ast_payload.table_dispatch signature_config_table) ;
+      unsafe_mapper.signature unsafe_mapper rest          
+    | _ ->
+      unsafe_mapper.signature  unsafe_mapper x in
+  reset ();
+  (* Keep this check, since the check is not inexpensive*)
+  Bs_ast_invariant.emit_external_warnings_on_signature result;
+  result
 
-let rewrite_implementation : (Parsetree.structure -> Parsetree.structure) ref =
-  ref (fun (x : Parsetree.structure) ->
-      let result =
-        match x with
-        | {pstr_desc = Pstr_attribute ({txt = "bs.config"; loc}, payload); _} :: rest
-          ->
-          begin
-            Ext_list.iter (Ast_payload.ident_or_record_as_config loc payload)
-              (Ast_payload.table_dispatch structural_config_table) ;
-            let rest = unsafe_mapper.structure unsafe_mapper rest in
-            if !no_export then
-              [Str.include_ ~loc
-                 (Incl.mk ~loc
-                    (Mod.constraint_ ~loc
-                       (Mod.structure ~loc rest  )
-                       (Mty.signature ~loc [])
-                    ))]
-            else rest
-          end
-        | _ ->
-          unsafe_mapper.structure  unsafe_mapper x  in
-      reset ();
-      (* Keep this check since it is not inexpensive*)
-      Bs_ast_invariant.emit_external_warnings_on_structure result;
-      result
-    )
+(* Note we also drop attributes like [@@@bs.deriving ] for convenience*)    
+let rewrite_implementation (x : Parsetree.structure) =  
+  let result =
+    match x with
+    | {pstr_desc = Pstr_attribute ({txt = "bs.config"; loc}, payload); _} :: rest
+      ->
+      begin
+        Ext_list.iter (Ast_payload.ident_or_record_as_config loc payload)
+          (Ast_payload.table_dispatch structural_config_table) ;
+        let rest = unsafe_mapper.structure unsafe_mapper rest in
+        if !no_export then
+          Ast_helper.[Str.include_ ~loc
+             (Incl.mk ~loc
+                (Mod.constraint_ ~loc
+                   (Mod.structure ~loc rest  )
+                   (Mty.signature ~loc [])
+                ))]
+        else rest
+      end
+    | _ ->
+      unsafe_mapper.structure  unsafe_mapper x  in
+  reset ();
+  (* Keep this check since it is not inexpensive*)
+  Bs_ast_invariant.emit_external_warnings_on_structure result;
+  result
+
 
 
 end

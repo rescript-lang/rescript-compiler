@@ -54,8 +54,8 @@ let  () =
     let n = Array.length a in
     if n > 2 then
       apply_lazy ~source:a.(n - 2) ~target:a.(n - 1)
-        !Ppx_entry.rewrite_implementation
-        !Ppx_entry.rewrite_signature
+        Ppx_entry.rewrite_implementation        
+        Ppx_entry.rewrite_signature
     else
       begin
         Printf.eprintf "Usage: %s [extra_args] <infile> <outfile>\n%!"

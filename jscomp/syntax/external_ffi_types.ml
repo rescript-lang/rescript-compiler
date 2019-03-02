@@ -95,7 +95,7 @@ type arg_label = External_arg_spec.label
 (**TODO: maybe we can merge [arg_label] and [arg_type] *)
 type obj_create = External_arg_spec.t list
 
-type attr =
+type external_spec =
   | Js_global of js_global_val
   | Js_module_as_var of  external_module_name
   | Js_module_as_fn of js_module_as_fn
@@ -107,6 +107,9 @@ type attr =
   | Js_get of js_get
   | Js_get_index of js_get_index
   | Js_set_index of js_set_index
+
+(* let not_inlineable (x : external_spec) =     *)
+
 
 let name_of_ffi ffi =
   match ffi with
@@ -136,7 +139,7 @@ type return_wrapper =
   | Return_replaced_with_unit
 type t  =
   | Ffi_bs of External_arg_spec.t list  *
-     return_wrapper * attr
+     return_wrapper * external_spec
   (**  [Ffi_bs(args,return,attr) ]
        [return] means return value is unit or not,
         [true] means is [unit]

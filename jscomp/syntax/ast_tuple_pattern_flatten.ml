@@ -86,7 +86,7 @@ let map_open_tuple
 *)
 let flattern_tuple_pattern_vb
     (self : Bs_ast_mapper.mapper)
-    ({pvb_loc } as vb :  Parsetree.value_binding)
+    (vb :  Parsetree.value_binding)
     acc : Parsetree.value_binding list =
   let pvb_pat = self.pat self vb.pvb_pat in
   let pvb_expr = self.expr self vb.pvb_expr in
@@ -118,24 +118,23 @@ let flattern_tuple_pattern_vb
                            }
                        ) ) ;
                pvb_attributes;
-               pvb_loc ;
+               pvb_loc = vb.pvb_loc ;
              } :: acc
            ) 
       | _ ->
         {pvb_pat ;
          pvb_expr ;
-         pvb_loc ;
+         pvb_loc = vb.pvb_loc;
          pvb_attributes} :: acc
     end
   | _ ->
     {pvb_pat ;
      pvb_expr ;
-     pvb_loc ;
+     pvb_loc = vb.pvb_loc ;
      pvb_attributes} :: acc
 
 
-let handle_value_bindings  =
-  fun self (vbs : Parsetree.value_binding list) ->
+let handle_value_bindings (self : Bs_ast_mapper.mapper) (vbs : Parsetree.value_binding list) =
     (* Bs_ast_mapper.default_mapper.value_bindings self  vbs   *)
     List.fold_right (fun vb acc ->
         flattern_tuple_pattern_vb self vb acc

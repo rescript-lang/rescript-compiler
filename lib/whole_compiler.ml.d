@@ -492,6 +492,8 @@
 ./syntax/ast_exp_apply.mli
 ./syntax/ast_exp_extension.ml
 ./syntax/ast_exp_extension.mli
+./syntax/ast_external.ml
+./syntax/ast_external.mli
 ./syntax/ast_external_mk.ml
 ./syntax/ast_external_mk.mli
 ./syntax/ast_literal.ml
@@ -502,8 +504,6 @@
 ./syntax/ast_payload.mli
 ./syntax/ast_polyvar.ml
 ./syntax/ast_polyvar.mli
-./syntax/ast_primitive.ml
-./syntax/ast_primitive.mli
 ./syntax/ast_signature.ml
 ./syntax/ast_signature.mli
 ./syntax/ast_structure.ml

@@ -96,7 +96,7 @@ let implementation ~use_super_errors prefix impl str  : Js.Unsafe.obj =
   try
   impl (Lexing.from_string
     (if prefix then "[@@@bs.config{no_export}]\n#1 \"repl.ml\"\n"  ^ str else str ))
-  |> !Ppx_entry.rewrite_implementation
+  |> Ppx_entry.rewrite_implementation
   |> (fun x ->
       let (a,b,c,signature) = Typemod.type_implementation_more modulename modulename modulename env x in
       finalenv := c ;

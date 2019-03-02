@@ -53,12 +53,6 @@
 *)
 
 
-
-open Ast_helper
-
-
-
-
 let record_as_js_object = ref false (* otherwise has an attribute *)
 let no_export = ref false
 
@@ -203,7 +197,7 @@ let rec unsafe_mapper : Bs_ast_mapper.mapper =
       | Psig_value prim
         when Ast_attributes.process_external prim.pval_attributes
         ->
-          Ast_primitive.handlePrimitiveInSig self prim sigi
+          Ast_external.handleExternalInSig self prim sigi
       | _ -> Bs_ast_mapper.default_mapper.signature_item self sigi
     end;
     pat = begin fun self (pat : Parsetree.pattern) ->
@@ -243,15 +237,15 @@ let rec unsafe_mapper : Bs_ast_mapper.mapper =
         | Pstr_primitive prim
           when Ast_attributes.process_external prim.pval_attributes
           ->
-          Ast_primitive.handlePrimitiveInStru self prim str
+          Ast_external.handleExternalInStru self prim str
         | _ -> Bs_ast_mapper.default_mapper.structure_item self str
       end
     end
   }
 
 
-
-
+type action_table = 
+  (Parsetree.expression option -> unit) String_map.t
 (** global configurations below *)
 let common_actions_table :
   (string *  (Parsetree.expression option -> unit)) list =
@@ -259,7 +253,7 @@ let common_actions_table :
   ]
 
 
-let structural_config_table  =
+let structural_config_table : action_table =
   String_map.of_list
     (( "no_export" ,
        (fun x ->
@@ -270,55 +264,49 @@ let structural_config_table  =
        ))
      :: common_actions_table)
 
-let signature_config_table :
-  (Parsetree.expression option -> unit) String_map.t=
+let signature_config_table : action_table =
   String_map.of_list common_actions_table
 
 
-let rewrite_signature :
-  (Parsetree.signature  -> Parsetree.signature) ref =
-  ref (fun  x ->
-      let result =
-        match (x : Parsetree.signature) with
-        | {psig_desc = Psig_attribute ({txt = "bs.config"; loc}, payload); _} :: rest
-          ->
-          begin
-            Ast_payload.ident_or_record_as_config loc payload
-            |> List.iter (Ast_payload.table_dispatch signature_config_table) ;
-            unsafe_mapper.signature unsafe_mapper rest
-          end
-        | _ ->
-          unsafe_mapper.signature  unsafe_mapper x in
-      reset ();
-      (* Keep this check, since the check is not inexpensive*)
-      Bs_ast_invariant.emit_external_warnings_on_signature result;
-      result
-    )
+let rewrite_signature (x : Parsetree.signature) =  
+  let result = 
+    match x with
+    | {psig_desc = Psig_attribute ({txt = "bs.config"; loc}, payload); _} :: rest
+      ->          
+      Ext_list.iter (Ast_payload.ident_or_record_as_config loc payload) 
+        (Ast_payload.table_dispatch signature_config_table) ;
+      unsafe_mapper.signature unsafe_mapper rest          
+    | _ ->
+      unsafe_mapper.signature  unsafe_mapper x in
+  reset ();
+  (* Keep this check, since the check is not inexpensive*)
+  Bs_ast_invariant.emit_external_warnings_on_signature result;
+  result
 
-let rewrite_implementation : (Parsetree.structure -> Parsetree.structure) ref =
-  ref (fun (x : Parsetree.structure) ->
-      let result =
-        match x with
-        | {pstr_desc = Pstr_attribute ({txt = "bs.config"; loc}, payload); _} :: rest
-          ->
-          begin
-            Ext_list.iter (Ast_payload.ident_or_record_as_config loc payload)
-              (Ast_payload.table_dispatch structural_config_table) ;
-            let rest = unsafe_mapper.structure unsafe_mapper rest in
-            if !no_export then
-              [Str.include_ ~loc
-                 (Incl.mk ~loc
-                    (Mod.constraint_ ~loc
-                       (Mod.structure ~loc rest  )
-                       (Mty.signature ~loc [])
-                    ))]
-            else rest
-          end
-        | _ ->
-          unsafe_mapper.structure  unsafe_mapper x  in
-      reset ();
-      (* Keep this check since it is not inexpensive*)
-      Bs_ast_invariant.emit_external_warnings_on_structure result;
-      result
-    )
+(* Note we also drop attributes like [@@@bs.deriving ] for convenience*)    
+let rewrite_implementation (x : Parsetree.structure) =  
+  let result =
+    match x with
+    | {pstr_desc = Pstr_attribute ({txt = "bs.config"; loc}, payload); _} :: rest
+      ->
+      begin
+        Ext_list.iter (Ast_payload.ident_or_record_as_config loc payload)
+          (Ast_payload.table_dispatch structural_config_table) ;
+        let rest = unsafe_mapper.structure unsafe_mapper rest in
+        if !no_export then
+          Ast_helper.[Str.include_ ~loc
+             (Incl.mk ~loc
+                (Mod.constraint_ ~loc
+                   (Mod.structure ~loc rest  )
+                   (Mty.signature ~loc [])
+                ))]
+        else rest
+      end
+    | _ ->
+      unsafe_mapper.structure  unsafe_mapper x  in
+  reset ();
+  (* Keep this check since it is not inexpensive*)
+  Bs_ast_invariant.emit_external_warnings_on_structure result;
+  result
+
 

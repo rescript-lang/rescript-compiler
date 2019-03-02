@@ -253,9 +253,8 @@ let process_external_attributes
       end
 
   in
-  List.fold_left
-    (fun (st, attrs)
-      (({txt ; loc}, payload) as attr : Ast_attributes.attr)
+  Ext_list.fold_left prim_attributes (init_st, []) 
+    (fun (st, attrs) (({txt ; loc}, payload) as attr )
       ->
         if Ext_string.starts_with txt "bs." then
           begin match txt with
@@ -332,7 +331,7 @@ let process_external_attributes
           end, attrs
         else (st , attr :: attrs)
     )
-    (init_st, []) prim_attributes
+    
 
 
 let rec has_bs_uncurry (attrs : Ast_attributes.t) =
@@ -380,10 +379,9 @@ let handle_attributes
       It does not make sense
   *)
   if has_bs_uncurry type_annotation.ptyp_attributes then
-    begin
-      Location.raise_errorf
-        ~loc "[@@bs.uncurry] can not be applied to the whole definition"
-    end;
+    Location.raise_errorf
+      ~loc "[@@bs.uncurry] can not be applied to the whole definition"
+  ;
 
   let prim_name_or_pval_prim =
     if String.length prim_name = 0 then  `Nm_val pval_prim
@@ -619,7 +617,7 @@ let handle_attributes
            )
         )  in
 
-    let ffi : External_ffi_types.attr  = match st with
+    let ffi : External_ffi_types.external_spec  = match st with
       | {set_index = true;
 
          val_name = `Nm_na;

@@ -39,7 +39,7 @@ val translate_ffi :
   Location.t -> 
   Lam_compile_context.t -> 
   External_arg_spec.t list -> 
-  External_ffi_types.attr -> 
+  External_ffi_types.external_spec -> 
   J.expression list -> 
   J.expression 
   
