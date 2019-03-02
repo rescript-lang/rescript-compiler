@@ -199,8 +199,8 @@ let assemble_args_has_splice call_loc ffi (arg_types : specs) (args : exprs)
   : exprs * E.t option * bool = 
   let dynamic = ref false in 
   let rec aux (labels : specs) (args : exprs) = 
-    match labels, args with 
-    | [] , [] -> empty_pair
+    match labels, args with       
+    | [] , _ -> assert (args = []); empty_pair
     | { arg_label =  Empty (Some cst) ; _} :: labels  , args 
     | { arg_label =  Label (_, Some cst); _} :: labels  , args -> 
       let accs, eff = aux labels args in
@@ -220,8 +220,6 @@ let assemble_args_has_splice call_loc ffi (arg_types : specs) (args : exprs)
       end
     | { arg_label = Empty None | Label (_,None) | Optional _  ; _ } :: _ , [] 
       -> assert false 
-    | [],  _ :: _  -> assert false      
-
   in 
   let args, eff = aux arg_types args  in 
   args,
@@ -230,46 +228,6 @@ let assemble_args_has_splice call_loc ffi (arg_types : specs) (args : exprs)
     | x::xs ->  (** FIXME: the order of effects? *)
       Some (E.fuse_to_seq x xs)), !dynamic
   
-let assemble_args call_loc ffi  js_splice (arg_types : specs) (args : exprs) : exprs * E.t option = 
-  let rec aux (labels : specs) args = 
-    match labels, args with 
-    | [] , [] -> empty_pair
-    | { arg_label =  Empty (Some cst) ; _} :: labels  , args 
-    | { arg_label =  Label (_, Some cst); _} :: labels  , args -> 
-      let accs, eff = aux labels args in
-      Lam_compile_const.translate_arg_cst cst :: accs, eff 
-    | ({arg_label = Empty None | Label (_,None) | Optional _ ;_ } as arg_kind) ::labels, arg :: args
-      ->  
-      if js_splice && args = [] then 
-        let accs, eff = aux labels [] in 
-        begin match arg_kind.arg_type with 
-          | Array -> 
-            begin match (arg : E.t) with 
-              | {expression_desc = Array (ls,_mutable_flag) ;_ } -> 
-                Ext_list.append ls accs, eff 
-              | _ -> 
-                Location.raise_errorf ~loc:call_loc
-                  {|@{<error>Error:@} function call with %s  is a primitive with [@@bs.splice], it expects its `bs.splice` argument to be a syntactic array in the call site and  all arguments to be supplied|}
-                  (External_ffi_types.name_of_ffi ffi)
-            end
-          | _ -> assert false 
-        end
-      else 
-        let accs, eff = aux labels args in 
-        let acc, new_eff = ocaml_to_js_eff arg_kind arg in 
-        append_list acc  accs, Ext_list.append new_eff  eff
-    | { arg_label = Empty None | Label (_,None) | Optional _  ; _ } :: _ , [] 
-      -> assert false 
-    | [],  _ :: _  -> assert false      
-
-  in 
-  let args, eff = aux arg_types args  in 
-  args,
-  begin  match eff with
-    | [] -> None 
-    | x::xs ->  (** FIXME: the order of effects? *)
-      Some (E.fuse_to_seq x xs) 
-  end
 
 let translate_scoped_module_val module_name fn  scopes = 
   match handle_external_opt module_name with 
