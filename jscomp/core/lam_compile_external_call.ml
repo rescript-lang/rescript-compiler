@@ -237,12 +237,12 @@ let translate_ffi
   match ffi with 
 
   | Js_call{ external_module_name = module_name; 
-             name = fn; splice = js_splice ; 
+             name = fn; splice; 
              scopes
 
            } -> 
     let fn =  translate_scoped_module_val module_name fn scopes in 
-    let args, eff  = assemble_args   call_loc ffi js_splice arg_types args in 
+    let args, eff  = assemble_args   call_loc ffi splice arg_types args in 
     add_eff eff @@              
     E.call ~info:{arity=Full; call_info = Call_na} fn args
 
@@ -314,26 +314,26 @@ let translate_ffi
     *)
       translate_scoped_module_val external_module_name name scopes
 
-  | Js_send {splice  = js_splice ; name ; pipe = false; js_send_scopes = scopes } -> 
+  | Js_send {splice ; name ; pipe = false; js_send_scopes = scopes } -> 
     begin match args  with
       | self :: args -> 
         (* PR2162 [self_type] more checks in syntax:
           - should not be [bs.as] *)
         let [@warning"-8"] ( _self_type::arg_types )
           = arg_types in
-        let args, eff = assemble_args  call_loc ffi  js_splice arg_types args in
+        let args, eff = assemble_args  call_loc ffi  splice arg_types args in
         add_eff eff @@ 
           let self = translate_scoped_access scopes self in 
           E.call ~info:{arity=Full; call_info = Call_na}  (E.dot self name) args
       | _ -> 
         assert false 
     end
-  | Js_send { name ; pipe = true ; splice = js_splice; js_send_scopes = scopes  }
+  | Js_send { name ; pipe = true ; splice ; js_send_scopes = scopes  }
     -> (* splice should not happen *)
     (* assert (js_splice = false) ;  *)
     let args, self = Ext_list.split_at_last args in
     let arg_types, self_type = Ext_list.split_at_last arg_types in
-    let args, eff = assemble_args call_loc ffi  js_splice arg_types args in
+    let args, eff = assemble_args call_loc ffi  splice arg_types args in
     add_eff eff @@
     let self = translate_scoped_access scopes self in 
     E.call ~info:{arity=Full; call_info = Call_na}  (E.dot self name) args
