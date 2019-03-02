@@ -66,7 +66,7 @@ let spliceApply : obj -> obj -> obj = fun%raw fn args -> {|
   var i, argLen; 
   argLen = args.length
   var applied = []
-  for(i = 0; i < argLen - 2; ++i){
+  for(i = 0; i < argLen - 1; ++i){
     applied.push(args[i])
   }
   var lastOne = args[argLen - 1]
@@ -75,3 +75,17 @@ let spliceApply : obj -> obj -> obj = fun%raw fn args -> {|
   }
   return fn.apply(null,applied)
 |} 
+
+let spliceObjApply : obj -> obj -> obj -> obj = fun%raw obj name args -> {|
+  var i, argLen; 
+  argLen = args.length
+  var applied = []
+  for(i = 0; i < argLen - 1; ++i){
+    applied.push(args[i])
+  }
+  var lastOne = args[argLen - 1]
+  for(i = 0; i < lastOne.length; ++i ){
+    applied.push(lastOne[i])
+  }
+  return (obj[name]).apply(obj,applied)
+|}

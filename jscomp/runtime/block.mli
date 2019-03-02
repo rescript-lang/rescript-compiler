@@ -42,3 +42,5 @@ val localModule : 'a -> obj -> obj
 val polyVar : 'a -> obj -> obj
 
 val spliceApply : obj -> obj -> obj
+
+val spliceObjApply : obj -> obj -> obj -> obj

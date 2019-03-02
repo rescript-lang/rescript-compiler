@@ -33,7 +33,12 @@ let splice_fn_apply fn args =
     Js_runtime_modules.block
     "spliceApply"
     [fn; E.array Immutable args]
-
+let splice_obj_fn_apply obj name args =
+  E.runtime_call
+    Js_runtime_modules.block
+    "spliceObjApply"
+    [obj; E.str name; E.array Immutable args]
+    
 (** 
    [bind_name] is a hint to the compiler to generate 
    better names for external module 
@@ -367,12 +372,23 @@ let translate_ffi
     if pipe then 
       (* splice should not happen *)
       (* assert (js_splice = false) ;  *)
-      let args, self = Ext_list.split_at_last args in
-      let arg_types, self_type = Ext_list.split_at_last arg_types in
-      let args, eff = assemble_args call_loc ffi  splice arg_types args in
-      add_eff eff (
-        let self = translate_scoped_access js_send_scopes self in 
-        E.call ~info:{arity=Full; call_info = Call_na}  (E.dot self name) args)
+      if splice then 
+        let args, self = Ext_list.split_at_last args in
+        let arg_types, self_type = Ext_list.split_at_last arg_types in
+        let args, eff, dynamic = assemble_args_has_splice call_loc ffi arg_types args in
+        add_eff eff (          
+          let self = translate_scoped_access js_send_scopes self in 
+          if dynamic then
+            splice_obj_fn_apply self name args 
+          else 
+            E.call ~info:{arity=Full; call_info = Call_na}  (E.dot self name) args)
+      else 
+        let args, self = Ext_list.split_at_last args in
+        let arg_types, self_type = Ext_list.split_at_last arg_types in
+        let args, eff = assemble_args_no_splice call_loc ffi  arg_types args in
+        add_eff eff (
+          let self = translate_scoped_access js_send_scopes self in 
+          E.call ~info:{arity=Full; call_info = Call_na}  (E.dot self name) args)
     else    
       begin match args  with
         | self :: args -> 
@@ -380,10 +396,19 @@ let translate_ffi
              - should not be [bs.as] *)
           let [@warning"-8"] ( _self_type::arg_types )
             = arg_types in
-          let args, eff = assemble_args  call_loc ffi  splice arg_types args in
-          add_eff eff ( 
-            let self = translate_scoped_access js_send_scopes self in 
-            E.call ~info:{arity=Full; call_info = Call_na}  (E.dot self name) args)
+          if splice then   
+            let args, eff, dynamic = assemble_args_has_splice  call_loc ffi arg_types args in
+            add_eff eff ( 
+              let self = translate_scoped_access js_send_scopes self in 
+              if dynamic then 
+                splice_obj_fn_apply self name args 
+              else               
+                E.call ~info:{arity=Full; call_info = Call_na}  (E.dot self name) args)
+          else 
+            let args, eff = assemble_args_no_splice call_loc ffi  arg_types args in
+            add_eff eff ( 
+              let self = translate_scoped_access js_send_scopes self in 
+              E.call ~info:{arity=Full; call_info = Call_na}  (E.dot self name) args)
         | _ -> 
           assert false 
       end
