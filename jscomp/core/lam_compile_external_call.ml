@@ -340,7 +340,6 @@ let translate_ffi
 
   | Js_new { external_module_name = module_name; 
              name = fn;
-             splice ;
              scopes
            } -> (* handle [@@bs.new]*)
     (* This has some side effect, it will 
@@ -351,7 +350,7 @@ let translate_ffi
        TODO: we should propagate this property 
        as much as we can(in alias table)
     *)
-    let args, eff = assemble_args  call_loc  ffi splice arg_types args in
+    let args, eff = assemble_args_no_splice call_loc ffi  arg_types args in
     let fn =  translate_scoped_module_val module_name fn scopes in 
     add_eff eff 
       begin 

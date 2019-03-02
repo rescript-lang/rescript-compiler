@@ -58,7 +58,6 @@ type js_global_val = {
 type js_new_val = {
   name : string ;
   external_module_name : external_module_name option;
-  splice : bool ;
   scopes : string list;
 }
 
