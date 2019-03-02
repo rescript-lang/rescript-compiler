@@ -302,9 +302,21 @@ let translate_ffi
              scopes
            } -> 
     let fn =  translate_scoped_module_val module_name fn scopes in 
-    let args, eff  = assemble_args   call_loc ffi splice arg_types args in 
-    add_eff eff @@              
-    E.call ~info:{arity=Full; call_info = Call_na} fn args
+    if splice then 
+      let args, eff, dynamic  = 
+          assemble_args_has_splice   call_loc ffi  arg_types args in 
+      (if dynamic then
+         add_eff eff 
+           (E.runtime_call
+              Js_runtime_modules.obj_runtime
+              "splice" (fn::args))
+       else 
+         add_eff eff 
+           (E.call ~info:{arity=Full; call_info = Call_na} fn args))
+    else 
+      let args, eff  = assemble_args_no_splice   call_loc ffi  arg_types args in 
+      add_eff eff @@              
+      E.call ~info:{arity=Full; call_info = Call_na} fn args
 
   | Js_module_as_fn {external_module_name = module_name; splice} ->
     let fn =

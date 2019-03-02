@@ -8,11 +8,11 @@ external f : int -> int array -> int = "Math.max"
 external send : int -> int array -> int = "" 
   [@@bs.splice] [@@bs.send]
 
-let f a b =   
+let f00 a b =   
   a |. send [|b|]
 
 
-#if 0 then
-let f1 c =  f 1 c 
+#if 1 then
+let f1 (c : int array) =  f 1 c 
 ;; f1  [|2;3|] 
 #end
