@@ -28,7 +28,17 @@
 
 module E = Js_exp_make
 
-
+let splice_fn_apply fn args = 
+  E.runtime_call
+    Js_runtime_modules.block
+    "spliceApply"
+    [fn; E.array Immutable args]
+let splice_obj_fn_apply obj name args =
+  E.runtime_call
+    Js_runtime_modules.block
+    "spliceObjApply"
+    [obj; E.str name; E.array Immutable args]
+    
 (** 
    [bind_name] is a hint to the compiler to generate 
    better names for external module 
@@ -148,7 +158,9 @@ let add_eff eff e =
   | Some v -> E.seq v e 
 
 
+type specs = External_arg_spec.t list
 
+type exprs = E.t list 
 (* TODO: fix splice, 
    we need a static guarantee that it is static array construct
    otherwise, we should provide a good error message here, 
@@ -156,38 +168,25 @@ let add_eff eff e =
    Invariant : Array encoding
    @return arguments and effect
 *)
-let assemble_args call_loc ffi  js_splice arg_types args : E.t list * E.t option = 
-  let rec aux (labels : External_arg_spec.t list) args = 
+let assemble_args_no_splice call_loc ffi  
+  (arg_types : specs) 
+  (args : exprs) : exprs * E.t option = 
+  let rec aux (labels : specs) (args : exprs) : exprs * exprs = 
     match labels, args with 
-    | [] , [] -> empty_pair
-    | { arg_label =  Empty (Some cst) ; _} :: labels  , args 
-    | { arg_label =  Label (_, Some cst); _} :: labels  , args -> 
+    | [], _  
+      -> assert (args = []) ; empty_pair
+    | { arg_label =  Empty (Some cst) ; _} :: labels, args 
+    | { arg_label =  Label (_, Some cst); _} :: labels, args -> 
       let accs, eff = aux labels args in
       Lam_compile_const.translate_arg_cst cst :: accs, eff 
-    | ({arg_label = Empty None | Label (_,None) | Optional _ ;_ } as arg_kind) ::labels, arg :: args
+    | ({arg_label = Empty None | Label (_,None) | Optional _ ;_ } as arg_kind) ::labels,
+       arg :: args
       ->  
-      if js_splice && args = [] then 
-        let accs, eff = aux labels [] in 
-        begin match arg_kind.arg_type with 
-          | Array -> 
-            begin match (arg : E.t) with 
-              | {expression_desc = Array (ls,_mutable_flag) ;_ } -> 
-                Ext_list.append ls accs, eff 
-              | _ -> 
-                Location.raise_errorf ~loc:call_loc
-                  {|@{<error>Error:@} function call with %s  is a primitive with [@@bs.splice], it expects its `bs.splice` argument to be a syntactic array in the call site and  all arguments to be supplied|}
-                  (External_ffi_types.name_of_ffi ffi)
-            end
-          | _ -> assert false 
-        end
-      else 
         let accs, eff = aux labels args in 
         let acc, new_eff = ocaml_to_js_eff arg_kind arg in 
         append_list acc  accs, Ext_list.append new_eff  eff
     | { arg_label = Empty None | Label (_,None) | Optional _  ; _ } :: _ , [] 
       -> assert false 
-    | [],  _ :: _  -> assert false      
-
   in 
   let args, eff = aux arg_types args  in 
   args,
@@ -196,6 +195,39 @@ let assemble_args call_loc ffi  js_splice arg_types args : E.t list * E.t option
     | x::xs ->  (** FIXME: the order of effects? *)
       Some (E.fuse_to_seq x xs) 
   end
+let assemble_args_has_splice call_loc ffi (arg_types : specs) (args : exprs) 
+  : exprs * E.t option * bool = 
+  let dynamic = ref false in 
+  let rec aux (labels : specs) (args : exprs) = 
+    match labels, args with       
+    | [] , _ -> assert (args = []); empty_pair
+    | { arg_label =  Empty (Some cst) ; _} :: labels  , args 
+    | { arg_label =  Label (_, Some cst); _} :: labels  , args -> 
+      let accs, eff = aux labels args in
+      Lam_compile_const.translate_arg_cst cst :: accs, eff 
+    | ({arg_label = Empty None | Label (_,None) | Optional _ ;_ } as arg_kind) ::labels,
+      arg :: args
+      ->  
+      let accs, eff = aux labels args in 
+      begin match args, (arg : E.t) with 
+        | [], {expression_desc = Array (ls,_mutable_flag) ;_ } -> 
+          assert (arg_kind.arg_type = Array);
+          Ext_list.append ls accs, eff 
+        | _ -> 
+          if args = [] then dynamic := true ; 
+          let acc, new_eff = ocaml_to_js_eff arg_kind arg in 
+          append_list acc  accs, Ext_list.append new_eff  eff 
+      end
+    | { arg_label = Empty None | Label (_,None) | Optional _  ; _ } :: _ , [] 
+      -> assert false 
+  in 
+  let args, eff = aux arg_types args  in 
+  args,
+  (match eff with
+    | [] -> None 
+    | x::xs ->  (** FIXME: the order of effects? *)
+      Some (E.fuse_to_seq x xs)), !dynamic
+  
 
 let translate_scoped_module_val module_name fn  scopes = 
   match handle_external_opt module_name with 
@@ -220,8 +252,6 @@ let translate_scoped_module_val module_name fn  scopes =
         Ext_list.fold_left (Ext_list.append rest  [fn]) start E.dot
     end
 
-
-
 let translate_scoped_access scopes obj =
   match scopes with 
   | [] ->  obj
@@ -234,52 +264,45 @@ let translate_ffi
     arg_types 
     (ffi : External_ffi_types.external_spec ) 
     (args : J.expression list) = 
-  match ffi with 
-
+  match ffi with
   | Js_call{ external_module_name = module_name; 
-             name = fn; splice = js_splice ; 
+             name = fn; splice; 
              scopes
-
            } -> 
     let fn =  translate_scoped_module_val module_name fn scopes in 
-    let args, eff  = assemble_args   call_loc ffi js_splice arg_types args in 
-    add_eff eff @@              
-    E.call ~info:{arity=Full; call_info = Call_na} fn args
-
-  | Js_module_as_var module_name -> 
-    let (id, name) =  handle_external  module_name  in
-    E.external_var_dot id ~external_name:name 
+    if splice then 
+      let args, eff, dynamic  = 
+          assemble_args_has_splice   call_loc ffi  arg_types args in 
+      add_eff eff 
+        (if dynamic then splice_fn_apply fn args
+         else E.call ~info:{arity=Full; call_info = Call_na} fn args)
+    else 
+      let args, eff  = assemble_args_no_splice   call_loc ffi  arg_types args in 
+      add_eff eff @@              
+      E.call ~info:{arity=Full; call_info = Call_na} fn args
 
   | Js_module_as_fn {external_module_name = module_name; splice} ->
     let fn =
       let (id, name) = handle_external  module_name  in
       E.external_var_dot id ~external_name:name 
     in           
-    let args, eff = assemble_args   call_loc ffi splice arg_types args in 
-    (* TODO: fix in rest calling convention *)          
-    add_eff eff @@
-    E.call ~info:{arity=Full; call_info = Call_na} fn args
-
-  | Js_module_as_class module_name ->
-    let fn =
-      let (id,name) = handle_external  module_name in
-      E.external_var_dot id ~external_name:name  in           
-    let args,eff = assemble_args call_loc  ffi false  arg_types args in 
-    (* TODO: fix in rest calling convention *)   
-    add_eff eff        
-      begin 
-        (match cxt.continuation with 
-         | Declare (_, id) | Assign id  ->
-           (* Format.fprintf Format.err_formatter "%a@."Ident.print  id; *)
-           Ext_ident.make_js_object id 
-         | EffectCall _ | NeedValue _ -> ())
-        ;
-        E.new_ fn args
-      end            
+    if splice then 
+      let args, eff, dynamic = 
+          assemble_args_has_splice   call_loc ffi  arg_types args in 
+      (* TODO: fix in rest calling convention *)          
+      add_eff eff (
+        if dynamic then
+          splice_fn_apply fn args
+        else 
+          E.call ~info:{arity=Full; call_info = Call_na} fn args
+      )              
+    else 
+      let args, eff = assemble_args_no_splice  call_loc ffi  arg_types args in 
+      (* TODO: fix in rest calling convention *)          
+      add_eff eff (E.call ~info:{arity=Full; call_info = Call_na} fn args)
 
   | Js_new { external_module_name = module_name; 
              name = fn;
-             splice ;
              scopes
            } -> (* handle [@@bs.new]*)
     (* This has some side effect, it will 
@@ -290,7 +313,7 @@ let translate_ffi
        TODO: we should propagate this property 
        as much as we can(in alias table)
     *)
-    let args, eff = assemble_args  call_loc  ffi splice arg_types args in
+    let args, eff = assemble_args_no_splice call_loc ffi  arg_types args in
     let fn =  translate_scoped_module_val module_name fn scopes in 
     add_eff eff 
       begin 
@@ -303,7 +326,54 @@ let translate_ffi
         E.new_ fn args
       end            
 
+  | Js_send {splice ; name ; pipe ; js_send_scopes } -> 
+    if pipe then 
+      (* splice should not happen *)
+      (* assert (js_splice = false) ;  *)
+      if splice then 
+        let args, self = Ext_list.split_at_last args in
+        let arg_types, self_type = Ext_list.split_at_last arg_types in
+        let args, eff, dynamic = assemble_args_has_splice call_loc ffi arg_types args in
+        add_eff eff (          
+          let self = translate_scoped_access js_send_scopes self in 
+          if dynamic then
+            splice_obj_fn_apply self name args 
+          else 
+            E.call ~info:{arity=Full; call_info = Call_na}  (E.dot self name) args)
+      else 
+        let args, self = Ext_list.split_at_last args in
+        let arg_types, self_type = Ext_list.split_at_last arg_types in
+        let args, eff = assemble_args_no_splice call_loc ffi  arg_types args in
+        add_eff eff (
+          let self = translate_scoped_access js_send_scopes self in 
+          E.call ~info:{arity=Full; call_info = Call_na}  (E.dot self name) args)
+    else    
+      begin match args  with
+        | self :: args -> 
+          (* PR2162 [self_type] more checks in syntax:
+             - should not be [bs.as] *)
+          let [@warning"-8"] ( _self_type::arg_types )
+            = arg_types in
+          if splice then   
+            let args, eff, dynamic = assemble_args_has_splice  call_loc ffi arg_types args in
+            add_eff eff ( 
+              let self = translate_scoped_access js_send_scopes self in 
+              if dynamic then 
+                splice_obj_fn_apply self name args 
+              else               
+                E.call ~info:{arity=Full; call_info = Call_na}  (E.dot self name) args)
+          else 
+            let args, eff = assemble_args_no_splice call_loc ffi  arg_types args in
+            add_eff eff ( 
+              let self = translate_scoped_access js_send_scopes self in 
+              E.call ~info:{arity=Full; call_info = Call_na}  (E.dot self name) args)
+        | _ -> 
+          assert false 
+      end
 
+  | Js_module_as_var module_name -> 
+    let (id, name) =  handle_external  module_name  in
+    E.external_var_dot id ~external_name:name 
 
   | Js_global {name; external_module_name; scopes} -> 
 
@@ -314,32 +384,26 @@ let translate_ffi
     *)
       translate_scoped_module_val external_module_name name scopes
 
-  | Js_send {splice  = js_splice ; name ; pipe = false; js_send_scopes = scopes } -> 
-    begin match args  with
-      | self :: args -> 
-        (* PR2162 [self_type] more checks in syntax:
-          - should not be [bs.as] *)
-        let [@warning"-8"] ( _self_type::arg_types )
-          = arg_types in
-        let args, eff = assemble_args  call_loc ffi  js_splice arg_types args in
-        add_eff eff @@ 
-          let self = translate_scoped_access scopes self in 
-          E.call ~info:{arity=Full; call_info = Call_na}  (E.dot self name) args
-      | _ -> 
-        assert false 
-    end
-  | Js_send { name ; pipe = true ; splice = js_splice; js_send_scopes = scopes  }
-    -> (* splice should not happen *)
-    (* assert (js_splice = false) ;  *)
-    let args, self = Ext_list.split_at_last args in
-    let arg_types, self_type = Ext_list.split_at_last arg_types in
-    let args, eff = assemble_args call_loc ffi  js_splice arg_types args in
-    add_eff eff @@
-    let self = translate_scoped_access scopes self in 
-    E.call ~info:{arity=Full; call_info = Call_na}  (E.dot self name) args
 
+  | Js_module_as_class module_name ->
+    let fn =
+      let (id,name) = handle_external  module_name in
+      E.external_var_dot id ~external_name:name  in           
+    let args,eff = assemble_args_no_splice call_loc  ffi  arg_types args in 
+    (* TODO: fix in rest calling convention *)   
+    add_eff eff        
+      begin 
+        (match cxt.continuation with 
+         | Declare (_, id) | Assign id  ->
+           (* Format.fprintf Format.err_formatter "%a@."Ident.print  id; *)
+           Ext_ident.make_js_object id 
+         | EffectCall _ | NeedValue _ -> ())
+        ;
+        E.new_ fn args
+      end            
+  
   | Js_get {js_get_name = name; js_get_scopes = scopes } -> 
-    let args,cur_eff = assemble_args call_loc ffi false arg_types args in 
+    let args,cur_eff = assemble_args_no_splice call_loc ffi  arg_types args in 
     add_eff cur_eff @@ 
     begin match args with 
       | [obj] ->
@@ -349,7 +413,7 @@ let translate_ffi
     end  
   | Js_set {js_set_name = name; js_set_scopes = scopes  } -> 
     (* assert (js_splice = false) ;  *)
-    let args,cur_eff = assemble_args call_loc ffi false arg_types args in 
+    let args,cur_eff = assemble_args_no_splice call_loc ffi  arg_types args in 
     add_eff cur_eff @@
     begin match args, arg_types with 
       | [obj; v], _ -> 
@@ -360,7 +424,7 @@ let translate_ffi
     end
   | Js_get_index { js_get_index_scopes = scopes }
     -> 
-    let args,cur_eff = assemble_args call_loc ffi false arg_types args in 
+    let args,cur_eff = assemble_args_no_splice call_loc ffi  arg_types args in 
     add_eff cur_eff @@ 
     begin match args with
       | [obj; v ] -> 
@@ -369,7 +433,7 @@ let translate_ffi
     end
   | Js_set_index { js_set_index_scopes = scopes }
     -> 
-    let args,cur_eff = assemble_args call_loc ffi false arg_types args in 
+    let args,cur_eff = assemble_args_no_splice call_loc ffi arg_types args in 
     add_eff cur_eff @@ 
     begin match args with 
       | [obj; v ; value] -> 

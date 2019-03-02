@@ -40,7 +40,7 @@ module S = Js_stmt_make
 *)
 
 (* TODO: check stackoverflow *)
-let assemble_args_obj (labels : External_arg_spec.t list)  (args : J.expression list) 
+let assemble_obj_args (labels : External_arg_spec.t list)  (args : J.expression list) 
   : J.block * J.expression = 
    let rec aux (labels : External_arg_spec.t list) args 
     : (Js_op.property_name * E.t ) list  * J.expression list * _ = 

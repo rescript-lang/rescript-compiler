@@ -860,13 +860,13 @@ let handle_attributes
          val_send_pipe = None;
          set_name = `Nm_na ;
          get_name = `Nm_na ;
-         splice ;
+         splice = false;
          scopes;
          mk_obj = _ ;
          return_wrapper = _ ;
 
         }
-        -> Js_new {name; external_module_name; splice; scopes}
+        -> Js_new {name; external_module_name;  scopes}
       | {new_name = #bundle_source ; _ }
         ->
         Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.new]")

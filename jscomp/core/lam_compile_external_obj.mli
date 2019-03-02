@@ -37,7 +37,7 @@
     for compiling normal functions without attributes.
  *)
 
-val assemble_args_obj :
+val assemble_obj_args :
   External_arg_spec.t list -> 
   J.expression list -> 
   J.block * J.expression 

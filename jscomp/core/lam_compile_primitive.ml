@@ -585,7 +585,7 @@ let translate  loc
   | Pjs_object_create labels
     -> 
     assert false 
-  (*Lam_compile_external_obj.assemble_args_obj labels args *)
+
   | Pjs_call (_, arg_types, ffi) -> 
     Lam_compile_external_call.translate_ffi 
       loc cxt arg_types ffi args 

@@ -27,15 +27,20 @@
 
 
 (** *)
+type obj = Caml_obj_extern.t
 
-val __ : int -> Caml_obj_extern.t -> Caml_obj_extern.t
+val __ : int -> obj -> obj
 
-val record : 'a -> Caml_obj_extern.t -> Caml_obj_extern.t
+val record : 'a -> obj -> obj
 
-val variant : 'a -> int ->  Caml_obj_extern.t -> Caml_obj_extern.t
+val variant : 'a -> int ->  obj -> obj
 
-val simpleVariant : 'a -> Caml_obj_extern.t -> Caml_obj_extern.t
+val simpleVariant : 'a -> obj -> obj
 
-val localModule : 'a -> Caml_obj_extern.t -> Caml_obj_extern.t 
+val localModule : 'a -> obj -> obj 
 
-val polyVar : 'a -> Caml_obj_extern.t -> Caml_obj_extern.t
+val polyVar : 'a -> obj -> obj
+
+val spliceApply : obj -> obj -> obj
+
+val spliceObjApply : obj -> obj -> obj -> obj
