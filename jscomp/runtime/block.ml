@@ -26,7 +26,8 @@
 
 
 
-(** *)
+
+type obj = Caml_obj_extern.t
 
 (* Note that when we introduce it in {!Js_dump} 
    we need introduce dependency properly *)
@@ -59,3 +60,18 @@ let localModule meta xs =
 
 let polyVar meta xs =   
   xs |. addProp (cacheSymbol "BsPolyVar") [%obj {value = meta}]
+
+
+let spliceApply : obj -> obj -> obj = fun%raw fn args -> {|
+  var i, argLen; 
+  argLen = args.length
+  var applied = []
+  for(i = 0; i < argLen - 2; ++i){
+    applied.push(args[i])
+  }
+  var lastOne = args[argLen - 1]
+  for(i = 0; i < lastOne.length; ++i ){
+    applied.push(lastOne[i])
+  }
+  return fn.apply(null,applied)
+|} 
