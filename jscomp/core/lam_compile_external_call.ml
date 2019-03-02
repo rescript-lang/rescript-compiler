@@ -148,7 +148,7 @@ let add_eff eff e =
   | Some v -> E.seq v e 
 
 
-
+type specs = External_arg_spec.t list
 (* TODO: fix splice, 
    we need a static guarantee that it is static array construct
    otherwise, we should provide a good error message here, 
@@ -156,8 +156,8 @@ let add_eff eff e =
    Invariant : Array encoding
    @return arguments and effect
 *)
-let assemble_args call_loc ffi  js_splice arg_types args : E.t list * E.t option = 
-  let rec aux (labels : External_arg_spec.t list) args = 
+let assemble_args call_loc ffi  js_splice (arg_types : specs) (args : E.t list) : E.t list * E.t option = 
+  let rec aux (labels : specs) args = 
     match labels, args with 
     | [] , [] -> empty_pair
     | { arg_label =  Empty (Some cst) ; _} :: labels  , args 
