@@ -1,4 +1,4 @@
-(* Copyright (C) 2019- Authors of BuckleScript
+(* Copyright (C) 2019 Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -21,8 +21,4 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-let () = 
-  Ppx_driver.main Ppx_entry.rewrite_implementation Ppx_entry.rewrite_signature
 

@@ -39,6 +39,11 @@ build ../lib/bsb.ml: bspack | ./bin/bspack.exe
 build ./bin/bsb_native.ml: bspack | ./bin/bspack.exe
      flags =   -D BS_MIN_LEX_DEPS=true -D BS_NATIVE=true -bs-MD ${releaseMode} -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I stubs -I common -I ext -I syntax -I depends -I bsb -I ext -I main 
      main = Bsb_main 
+     
+build ./bin/native_ppx.ml: bspack | ./bin/bspack.exe     
+     flags =   -D BS_MIN_LEX_DEPS=true -D BS_NATIVE=true -bs-MD ${releaseMode} -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I stubs -I common -I ext -I syntax -I depends -I bsb -I ext -I main 
+     main = Native_ppx_main
+
 rule bsbnative
     command = $ocamlopt -w -a  unix.cmxa str.cmxa  ./stubs/ext_basic_hash_stubs.c $in -o $out
 # only check if it compiles     

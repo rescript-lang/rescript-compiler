@@ -23,6 +23,22 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-let () = 
-  Ppx_driver.main Ppx_entry.rewrite_implementation Ppx_entry.rewrite_signature
+type mapper = Bs_ast_mapper.mapper 
 
+let default_expr_mapper = Bs_ast_mapper.default_mapper.expr
+
+let expr_mapper (self : mapper) ( e : Parsetree.expression) = 
+  match e.pexp_desc with 
+  | Pexp_apply(fn, args) -> 
+    Ast_exp_apply.handle_exp_apply e self fn args 
+  | _  -> default_expr_mapper self e 
+
+let my_mapper : mapper = {
+  Bs_ast_mapper.default_mapper with 
+  expr = expr_mapper
+}
+
+let () = 
+  Ppx_driver.main  
+    (fun x -> my_mapper.structure my_mapper x)
+    (fun x -> my_mapper.signature my_mapper x)
