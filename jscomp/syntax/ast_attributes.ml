@@ -129,11 +129,11 @@ let process_bs (attrs : t) =
         st, attr::acc
     ) 
 
-let process_external attrs =
-  List.exists (fun (({txt; }, _)  : attr) ->
+let process_external (attrs : t)=
+  Ext_list.exists attrs (fun ({txt; }, _) ->
       if Ext_string.starts_with txt "bs." then true
       else false
-    ) attrs
+    ) 
 
 
 type derive_attr = {
@@ -193,7 +193,7 @@ let iter_process_derive_type (attrs : t) =
   it is worse in bs.uncurry since it will introduce
   inconsistency in arity
  *)  
-let iter_process_bs_string_int_unwrap_uncurry (attrs : Parsetree.attributes) =
+let iter_process_bs_string_int_unwrap_uncurry (attrs : t) =
   let st = ref `Nothing in 
   let assign v (({loc;_}, _ ) as attr : attr) = 
     if !st = `Nothing then 
@@ -275,11 +275,11 @@ let has_bs_optional  (attrs : t) : bool =
 
 
 
-let iter_process_bs_int_as  attrs =
+let iter_process_bs_int_as  (attrs : t) =
   let st = ref None in
-  List.iter
+  Ext_list.iter attrs
     (fun
-      (({txt ; loc}, payload ) as attr : attr)  ->
+      (({txt ; loc}, payload ) as attr)  ->
       match  txt with
       | "bs.as"
         ->
@@ -293,7 +293,7 @@ let iter_process_bs_int_as  attrs =
         else
           Bs_syntaxerr.err loc Duplicated_bs_as
       | _  -> ()
-    ) attrs; !st
+    ) ; !st
 
 
 let iter_process_bs_string_or_int_as (attrs : Parsetree.attributes) =
