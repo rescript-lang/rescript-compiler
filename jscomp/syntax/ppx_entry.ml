@@ -200,19 +200,6 @@ let rec unsafe_mapper : Bs_ast_mapper.mapper =
           Ast_external.handleExternalInSig self prim sigi
       | _ -> Bs_ast_mapper.default_mapper.signature_item self sigi
     end;
-    pat = begin fun self (pat : Parsetree.pattern) ->
-      match pat with
-      | { ppat_desc = Ppat_constant(
-#if OCAML_VERSION =~ ">4.03.0" then
-            Pconst_string
-#else            
-            Const_string 
-#end                    
-         (_, Some "j")); ppat_loc = loc} ->
-        Location.raise_errorf ~loc  "Unicode string is not allowed in pattern match"
-      | _  -> Bs_ast_mapper.default_mapper.pat self pat
-
-    end;
     value_bindings = Ast_tuple_pattern_flatten.handle_value_bindings;
     structure_item = begin fun self (str : Parsetree.structure_item) ->
       begin match str.pstr_desc with

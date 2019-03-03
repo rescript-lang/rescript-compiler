@@ -30356,7 +30356,17 @@ let emit_external_warnings : iterator=
              "%%identity expect its type to be of form 'a -> 'b (arity 1)"
          | _ ->
            default_iterator.value_description self v 
-      )
+      );
+      pat = begin fun self (pat : Parsetree.pattern) -> 
+                  match pat.ppat_desc with
+                  |  Ppat_constant(
+            
+            Const_string 
+                    
+         (_, Some "j")) ->
+        Location.raise_errorf ~loc:pat.ppat_loc  "Unicode string is not allowed in pattern match" 
+      | _ -> default_iterator.pat self pat
+      end 
   }
 
 let emit_external_warnings_on_structure  (stru : Parsetree.structure) = 
@@ -39375,17 +39385,6 @@ let rec unsafe_mapper : Bs_ast_mapper.mapper =
         ->
           Ast_external.handleExternalInSig self prim sigi
       | _ -> Bs_ast_mapper.default_mapper.signature_item self sigi
-    end;
-    pat = begin fun self (pat : Parsetree.pattern) ->
-      match pat with
-      | { ppat_desc = Ppat_constant(
-            
-            Const_string 
-                    
-         (_, Some "j")); ppat_loc = loc} ->
-        Location.raise_errorf ~loc  "Unicode string is not allowed in pattern match"
-      | _  -> Bs_ast_mapper.default_mapper.pat self pat
-
     end;
     value_bindings = Ast_tuple_pattern_flatten.handle_value_bindings;
     structure_item = begin fun self (str : Parsetree.structure_item) ->

@@ -132,7 +132,19 @@ let emit_external_warnings : iterator=
              "%%identity expect its type to be of form 'a -> 'b (arity 1)"
          | _ ->
            default_iterator.value_description self v 
-      )
+      );
+      pat = begin fun self (pat : Parsetree.pattern) -> 
+                  match pat.ppat_desc with
+                  |  Ppat_constant(
+#if OCAML_VERSION =~ ">4.03.0" then
+            Pconst_string
+#else            
+            Const_string 
+#end                    
+         (_, Some "j")) ->
+        Location.raise_errorf ~loc:pat.ppat_loc  "Unicode string is not allowed in pattern match" 
+      | _ -> default_iterator.pat self pat
+      end 
   }
 
 let emit_external_warnings_on_structure  (stru : Parsetree.structure) = 
