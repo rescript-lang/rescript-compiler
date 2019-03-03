@@ -3490,6 +3490,114 @@ and directive_argument =
   | Pdir_bool of bool
 
 end
+module Ppx_driver : sig 
+#1 "ppx_driver.mli"
+(* Copyright (C) 2019- Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+val main : 
+  (Parsetree.structure -> Parsetree.structure) ->
+  (Parsetree.signature -> Parsetree.signature) -> 
+  unit 
+  
+end = struct
+#1 "ppx_driver.ml"
+(* Copyright (C) 2019- Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+let apply_lazy ~source ~target 
+  (impl : Parsetree.structure -> Parsetree.structure) 
+  (iface : Parsetree.signature -> Parsetree.signature) 
+  =
+  let ic = open_in_bin source in
+  let magic =
+    really_input_string ic (String.length Config.ast_impl_magic_number)
+  in
+  if magic <> Config.ast_impl_magic_number
+  && magic <> Config.ast_intf_magic_number then
+    failwith "Bs_ast_mapper: OCaml version mismatch or malformed input";
+  Location.input_name := input_value ic;
+  let ast = input_value ic in
+  close_in ic;
+
+  let ast =
+    if magic = Config.ast_impl_magic_number
+    then Obj.magic (impl (Obj.magic ast))
+    else Obj.magic (iface (Obj.magic ast))
+  in
+  let oc = open_out_bin target in
+  output_string oc magic;
+  output_value oc !Location.input_name;
+  output_value oc ast;
+  close_out oc
+
+let main impl intf =
+  try
+    let a = Sys.argv in
+    let n = Array.length a in
+    if n > 2 then
+      apply_lazy ~source:a.(n - 2) ~target:a.(n - 1)
+        impl
+        intf
+    else
+      begin
+        Printf.eprintf "Usage: %s [extra_args] <infile> <outfile>\n%!"
+          Sys.executable_name;
+        exit 2
+      end
+  with exn ->
+    begin
+      Location.report_exception Format.err_formatter exn;
+      exit 2
+    end
+
+end
 module Docstrings : sig 
 #1 "docstrings.mli"
 (***********************************************************************)
@@ -19773,7 +19881,7 @@ val map_open_tuple:
   Parsetree.expression option
 
 
-val handle_value_bindings :
+val value_bindings_mapper :
   Bs_ast_mapper.mapper ->
   Parsetree.value_binding list ->
   Parsetree.value_binding list
@@ -19916,11 +20024,13 @@ let flattern_tuple_pattern_vb
      pvb_attributes} :: acc
 
 
-let handle_value_bindings (self : Bs_ast_mapper.mapper) (vbs : Parsetree.value_binding list) =
-    (* Bs_ast_mapper.default_mapper.value_bindings self  vbs   *)
-    List.fold_right (fun vb acc ->
-        flattern_tuple_pattern_vb self vb acc
-      ) vbs []
+let value_bindings_mapper 
+    (self : Bs_ast_mapper.mapper) 
+    (vbs : Parsetree.value_binding list) =
+  (* Bs_ast_mapper.default_mapper.value_bindings self  vbs   *)
+  List.fold_right (fun vb acc ->
+      flattern_tuple_pattern_vb self vb acc
+    ) vbs []
 
 end
 module Ast_exp_apply : sig 
@@ -21157,6 +21267,7 @@ val rewrite_implementation :
 
 
 
+
 (* object 
     for setter : we can push more into [Lsend] and enclose it with a unit type
 
@@ -21414,7 +21525,7 @@ let rec unsafe_mapper : mapper =
     typ = typ_mapper ;
     class_type = class_type_mapper;      
     signature_item =  signature_item_mapper ;
-    value_bindings = Ast_tuple_pattern_flatten.handle_value_bindings;
+    value_bindings = Ast_tuple_pattern_flatten.value_bindings_mapper;
     structure_item = structure_item_mapper
   }
 
@@ -21486,6 +21597,8 @@ let rewrite_implementation (x : Parsetree.structure) =
 
 
 
+
+
 end
 module Bsppx_main
 = struct
@@ -21516,49 +21629,7 @@ module Bsppx_main
 
 
 
-let apply_lazy ~source ~target impl iface =
-  let ic = open_in_bin source in
-  let magic =
-    really_input_string ic (String.length Config.ast_impl_magic_number)
-  in
-  if magic <> Config.ast_impl_magic_number
-  && magic <> Config.ast_intf_magic_number then
-    failwith "Bs_ast_mapper: OCaml version mismatch or malformed input";
-  Location.input_name := input_value ic;
-  let ast = input_value ic in
-  close_in ic;
-
-  let ast =
-    if magic = Config.ast_impl_magic_number
-    then Obj.magic (impl (Obj.magic ast))
-    else Obj.magic (iface (Obj.magic ast))
-  in
-  let oc = open_out_bin target in
-  output_string oc magic;
-  output_value oc !Location.input_name;
-  output_value oc ast;
-  close_out oc
-
-
-let  () =
-  try
-    let a = Sys.argv in
-    let n = Array.length a in
-    if n > 2 then
-      apply_lazy ~source:a.(n - 2) ~target:a.(n - 1)
-        Ppx_entry.rewrite_implementation        
-        Ppx_entry.rewrite_signature
-    else
-      begin
-        Printf.eprintf "Usage: %s [extra_args] <infile> <outfile>\n%!"
-          Sys.executable_name;
-        exit 2
-      end
-  with exn ->
-    begin
-      Location.report_exception Format.err_formatter exn;
-      exit 2
-    end
+Ppx_driver.main Ppx_entry.rewrite_implementation Ppx_entry.rewrite_signature
 
 
 end

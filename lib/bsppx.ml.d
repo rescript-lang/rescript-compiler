@@ -132,5 +132,7 @@
 ./syntax/external_ffi_types.mli
 ./syntax/external_process.ml
 ./syntax/external_process.mli
+./syntax/ppx_driver.ml
+./syntax/ppx_driver.mli
 ./syntax/ppx_entry.ml
 ./syntax/ppx_entry.mli

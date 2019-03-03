@@ -229,7 +229,7 @@ let rec unsafe_mapper : mapper =
     typ = typ_mapper ;
     class_type = class_type_mapper;      
     signature_item =  signature_item_mapper ;
-    value_bindings = Ast_tuple_pattern_flatten.handle_value_bindings;
+    value_bindings = Ast_tuple_pattern_flatten.value_bindings_mapper;
     structure_item = structure_item_mapper
   }
 
@@ -298,5 +298,7 @@ let rewrite_implementation (x : Parsetree.structure) =
   (* Keep this check since it is not inexpensive*)
   Bs_ast_invariant.emit_external_warnings_on_structure result;
   result
+
+
 
 

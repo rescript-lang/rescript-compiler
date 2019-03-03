@@ -31,7 +31,7 @@ val map_open_tuple:
   Parsetree.expression option
 
 
-val handle_value_bindings :
+val value_bindings_mapper :
   Bs_ast_mapper.mapper ->
   Parsetree.value_binding list ->
   Parsetree.value_binding list
