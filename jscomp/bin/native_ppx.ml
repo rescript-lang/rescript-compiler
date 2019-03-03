@@ -1,6 +1,5 @@
-module Config_whole_compiler : sig 
-#1 "config_whole_compiler.mli"
-
+module Config : sig 
+#1 "config.mli"
 (***********************************************************************)
 (*                                                                     *)
 (*                                OCaml                                *)
@@ -95,7 +94,7 @@ val architecture: string
         (* Name of processor type for the native-code compiler *)
 val model: string
         (* Name of processor submodel for the native-code compiler *)
-(* val system: string *)
+val system: string
         (* Name of operating system for the native-code compiler *)
 
 val asm: string
@@ -123,18 +122,16 @@ val default_executable_name: string
 val systhread_supported : bool
         (* Whether the system thread library is implemented *)
 
-(* val host : string *)
+val host : string
         (* Whether the compiler is a cross-compiler *)
 
-(* val target : string *)
+val target : string
         (* Whether the compiler is a cross-compiler *)
 
 val print_config : out_channel -> unit;;
 
-
 end = struct
-#1 "config_whole_compiler.ml"
-
+#1 "config.ml"
 (***********************************************************************)
 (*                                                                     *)
 (*                                OCaml                                *)
@@ -158,24 +155,31 @@ end = struct
 
 
 (* The main OCaml version string has moved to ../VERSION *)
-let version = "4.02.3+BS"
-let standard_library =
-  Filename.concat (Filename.dirname Sys.executable_name)  "ocaml"
-let standard_library_default = standard_library
+let version = Sys.ocaml_version
 
-let standard_runtime = "ocamlrun" (*dont care:path to ocamlrun*)
-let ccomp_type = "cc"(*dont care: cc or msvc*)
-let bytecomp_c_compiler = "gcc -O  -Wall -D_FILE_OFFSET_BITS=64 -D_REENTRANT -O" (*dont care*)
-let bytecomp_c_libraries = "-lcurses -lpthread" (*dont care*)
-let native_c_compiler = "gcc -O  -D_FILE_OFFSET_BITS=64 -D_REENTRANT" (*dont care*)
-let native_c_libraries = ""(*dont care*)
-let native_pack_linker = "ld -r -arch x86_64  -o"(*dont care*) 
-let ranlib = "ranlib"(*dont care*)
-let ar = ""(*dont care*)
-let cc_profile = "-pg"(*dont care*)
-let mkdll = ""(*dont care*)
-let mkexe = ""(*dont care*)
-let mkmaindll = ""(*dont care*)
+let standard_library_default = "/Users/hongbozhang/git/bucklescript/vendor/ocaml/lib/ocaml"
+
+let standard_library =
+ 
+  try 
+    Sys.getenv "BSLIB"
+  with Not_found -> 
+
+    standard_library_default
+
+let standard_runtime = "/Users/hongbozhang/git/bucklescript/vendor/ocaml/bin/ocamlrun"
+let ccomp_type = "cc"
+let bytecomp_c_compiler = "gcc -O  -Wall -D_FILE_OFFSET_BITS=64 -D_REENTRANT -O "
+let bytecomp_c_libraries = "-lcurses -lpthread"
+let native_c_compiler = "gcc -O  -D_FILE_OFFSET_BITS=64 -D_REENTRANT"
+let native_c_libraries = ""
+let native_pack_linker = "ld -r -arch x86_64  -o "
+let ranlib = "ranlib"
+let ar = "ar"
+let cc_profile = "-pg"
+let mkdll = "gcc -bundle -flat_namespace -undefined suppress -Wl,-no_compact_unwind"
+let mkexe = "gcc -Wl,-no_compact_unwind"
+let mkmaindll = "gcc -bundle -flat_namespace -undefined suppress -Wl,-no_compact_unwind"
 
 let exec_magic_number = "Caml1999X011"
 and cmi_magic_number = "Caml1999I017"
@@ -201,26 +205,29 @@ let lazy_tag = 246
 let max_young_wosize = 256
 let stack_threshold = 256 (* see byterun/config.h *)
 
-let architecture = "amd64" (*dont care*)
-let model = "default"(*dont care*)
+let architecture = "amd64"
+let model = "default"
 let system = "macosx"
 
 let asm = "clang -arch x86_64 -c"
-let asm_cfi_supported = false (*dont care*)
-let with_frame_pointers = false (*dontcare*)
+let asm_cfi_supported = true
+let with_frame_pointers = false
 
-let ext_obj = ".o" (*dont care*)
-let ext_asm = ".s" (*dont care*)
-let ext_lib = ".a" (*dont caer*)
-let ext_dll = ".a" (*dont care*)
+let ext_obj = ".o"
+let ext_asm = ".s"
+let ext_lib = ".a"
+let ext_dll = ".so"
 
-let host = "%%HOST%%"
-let target = "%%TARGET%%"
+let host = "x86_64-apple-darwin17.7.0"
+let target = "x86_64-apple-darwin17.7.0"
 
 let default_executable_name =
- ""
+  match Sys.os_type with
+    "Unix" -> "a.out"
+  | "Win32" | "Cygwin" -> "camlprog.exe"
+  | _ -> "camlprog"
 
-let systhread_supported = false (*dontcare*);;
+let systhread_supported = true;;
 
 let print_config oc =
   let p name valu = Printf.fprintf oc "%s: %s\n" name valu in
@@ -268,9 +275,7 @@ let print_config oc =
   flush oc;
 ;;
 
-
 end
-module Config = Config_whole_compiler 
 module Clflags : sig 
 #1 "clflags.mli"
 (***********************************************************************)
@@ -3488,114 +3493,6 @@ and directive_argument =
   | Pdir_int of int
   | Pdir_ident of Longident.t
   | Pdir_bool of bool
-
-end
-module Ppx_driver : sig 
-#1 "ppx_driver.mli"
-(* Copyright (C) 2019- Authors of BuckleScript
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-val main : 
-  (Parsetree.structure -> Parsetree.structure) ->
-  (Parsetree.signature -> Parsetree.signature) -> 
-  unit 
-  
-end = struct
-#1 "ppx_driver.ml"
-(* Copyright (C) 2019- Authors of BuckleScript
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-let apply_lazy ~source ~target 
-  (impl : Parsetree.structure -> Parsetree.structure) 
-  (iface : Parsetree.signature -> Parsetree.signature) 
-  =
-  let ic = open_in_bin source in
-  let magic =
-    really_input_string ic (String.length Config.ast_impl_magic_number)
-  in
-  if magic <> Config.ast_impl_magic_number
-  && magic <> Config.ast_intf_magic_number then
-    failwith "Bs_ast_mapper: OCaml version mismatch or malformed input";
-  Location.input_name := input_value ic;
-  let ast = input_value ic in
-  close_in ic;
-
-  let ast =
-    if magic = Config.ast_impl_magic_number
-    then Obj.magic (impl (Obj.magic ast))
-    else Obj.magic (iface (Obj.magic ast))
-  in
-  let oc = open_out_bin target in
-  output_string oc magic;
-  output_value oc !Location.input_name;
-  output_value oc ast;
-  close_out oc
-
-let main impl intf =
-  try
-    let a = Sys.argv in
-    let n = Array.length a in
-    if n > 2 then
-      apply_lazy ~source:a.(n - 2) ~target:a.(n - 1)
-        impl
-        intf
-    else
-      begin
-        Printf.eprintf "Usage: %s [extra_args] <infile> <outfile>\n%!"
-          Sys.executable_name;
-        exit 2
-      end
-  with exn ->
-    begin
-      Location.report_exception Format.err_formatter exn;
-      exit 2
-    end
 
 end
 module Docstrings : sig 
@@ -12911,350 +12808,6 @@ let deprecated s : attr =
       ; pstr_loc = locg}]
 
 end
-module Ast_exp : sig 
-#1 "ast_exp.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type t = Parsetree.expression 
-
-end = struct
-#1 "ast_exp.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type t = Parsetree.expression 
-
-end
-module Ast_external_mk : sig 
-#1 "ast_external_mk.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-(**
-  [local_module loc ~pval_prim ~pval_type args]
-  generate such code 
-  {[
-    let module J = struct 
-       external unsafe_expr : pval_type = pval_prim 
-    end in 
-    J.unssafe_expr args
-  ]}
-*)
-val local_external_apply :
-   Location.t ->
-  ?pval_attributes:Parsetree.attributes ->
-  pval_prim:string list ->
-  pval_type:Parsetree.core_type ->
-  ?local_module_name:string ->
-  ?local_fun_name:string ->
-  Parsetree.expression list -> 
-  Parsetree.expression_desc
-
-
-val local_external_obj :
-   Location.t ->
-  ?pval_attributes:Parsetree.attributes ->
-  pval_prim:string list ->
-  pval_type:Parsetree.core_type ->
-  ?local_module_name:string ->
-  ?local_fun_name:string ->
-  (string * Parsetree.expression) list ->  (* [ (label, exp )]*)  
-  Parsetree.expression_desc
-
-
-
-val local_extern_cont : 
-  Location.t ->
-  ?pval_attributes:Parsetree.attributes ->
-  pval_prim:string list ->
-  pval_type:Parsetree.core_type ->
-  ?local_module_name:string ->
-  ?local_fun_name:string ->
-  (Parsetree.expression -> Parsetree.expression) -> Parsetree.expression_desc
-
-end = struct
-#1 "ast_external_mk.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-let local_external_apply loc 
-     ?(pval_attributes=[])
-     ~pval_prim
-     ~pval_type 
-     ?(local_module_name = "J")
-     ?(local_fun_name = "unsafe_expr")
-     args
-  : Parsetree.expression_desc = 
-  Pexp_letmodule
-    ({txt = local_module_name; loc},
-     {pmod_desc =
-        Pmod_structure
-          [{pstr_desc =
-              Pstr_primitive
-                {pval_name = {txt = local_fun_name; loc};
-                 pval_type ;
-                 pval_loc = loc;
-                 pval_prim ;
-                 pval_attributes };
-            pstr_loc = loc;
-           }];
-      pmod_loc = loc;
-      pmod_attributes = []},
-      Ast_compatible.apply_simple 
-      ({pexp_desc = Pexp_ident {txt = Ldot (Lident local_module_name, local_fun_name); 
-                                      loc};
-              pexp_attributes = [] ;
-              pexp_loc = loc} : Parsetree.expression) args ~loc
-    )
-
-let local_external_obj loc 
-     ?(pval_attributes=[])
-     ~pval_prim
-     ~pval_type 
-     ?(local_module_name = "J")
-     ?(local_fun_name = "unsafe_expr")
-     args
-  : Parsetree.expression_desc = 
-  Pexp_letmodule
-    ({txt = local_module_name; loc},
-     {pmod_desc =
-        Pmod_structure
-          [{pstr_desc =
-              Pstr_primitive
-                {pval_name = {txt = local_fun_name; loc};
-                 pval_type ;
-                 pval_loc = loc;
-                 pval_prim ;
-                 pval_attributes };
-            pstr_loc = loc;
-           }];
-      pmod_loc = loc;
-      pmod_attributes = []},
-      Ast_compatible.apply_labels
-      ({pexp_desc = Pexp_ident {txt = Ldot (Lident local_module_name, local_fun_name); 
-                                      loc};
-              pexp_attributes = [] ;
-              pexp_loc = loc} : Parsetree.expression) args ~loc
-    )    
-
-let local_extern_cont loc 
-     ?(pval_attributes=[])
-     ~pval_prim
-     ~pval_type 
-     ?(local_module_name = "J")
-     ?(local_fun_name = "unsafe_expr")
-     (cb : Parsetree.expression -> 'a) 
-  : Parsetree.expression_desc = 
-  Pexp_letmodule
-    ({txt = local_module_name; loc},
-     {pmod_desc =
-        Pmod_structure
-          [{pstr_desc =
-              Pstr_primitive
-                {pval_name = {txt = local_fun_name; loc};
-                 pval_type ;
-                 pval_loc = loc;
-                 pval_prim ;
-                 pval_attributes };
-            pstr_loc = loc;
-           }];
-      pmod_loc = loc;
-      pmod_attributes = []},
-     cb {pexp_desc = Pexp_ident {txt = Ldot (Lident local_module_name, local_fun_name); 
-                                 loc};
-         pexp_attributes = [] ;
-         pexp_loc = loc}
-)
-
-end
-module Ast_pat : sig 
-#1 "ast_pat.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type t = Parsetree.pattern
-
-val is_unit_cont : yes:'a -> no:'a -> t -> 'a
-
-(** [arity_of_fun pat e] tells the arity of 
-    expression [fun pat -> e]*)
-val arity_of_fun : t -> Parsetree.expression -> int
-
-
-val is_single_variable_pattern_conservative : t -> bool
-
-end = struct
-#1 "ast_pat.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-type t = Parsetree.pattern
-
-
-let is_unit_cont ~yes ~no (p : t)  =
-  match p  with
-  | {ppat_desc = Ppat_construct({txt = Lident "()"}, None)}
-    -> yes 
-  | _ -> no
-
-
-(** [arity_of_fun pat e] tells the arity of 
-    expression [fun pat -> e]
-*)
-let arity_of_fun
-    (pat : Parsetree.pattern)
-    (e : Parsetree.expression) =
-  let rec aux (e : Parsetree.expression)  =
-    match e.pexp_desc with
-    | Pexp_fun (arg_label, _, pat, e) 
-      when Ast_compatible.is_arg_label_simple arg_label ->
-      1 + aux e       
-    | Pexp_fun _
-      -> Location.raise_errorf
-           ~loc:e.pexp_loc "Label is not allowed in JS object"
-    | _ -> 0 in
-  is_unit_cont ~yes:0 ~no:1 pat + aux e 
-
-
-let rec is_single_variable_pattern_conservative  (p : t ) =
-  match p.ppat_desc with 
-  | Parsetree.Ppat_any 
-  | Parsetree.Ppat_var _ -> true 
-  | Parsetree.Ppat_alias (p,_) 
-  | Parsetree.Ppat_constraint (p, _) -> 
-    is_single_variable_pattern_conservative p 
-  
-  | _ -> false
-
-end
 module Bs_ast_mapper : sig 
 #1 "bs_ast_mapper.mli"
 
@@ -14031,6 +13584,537 @@ let default_mapper =
          | PPat (x, g) -> PPat (this.pat this x, map_opt (this.expr this) g)
       );
   }
+
+end
+module Ast_tuple_pattern_flatten : sig 
+#1 "ast_tuple_pattern_flatten.mli"
+(* Copyright (C) 2018 Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+val map_open_tuple:
+  Parsetree.expression ->
+  (Parsetree.expression list ->
+    Parsetree.attributes ->
+   Parsetree.expression) ->
+  Parsetree.expression option
+
+
+val value_bindings_mapper :
+  Bs_ast_mapper.mapper ->
+  Parsetree.value_binding list ->
+  Parsetree.value_binding list
+
+end = struct
+#1 "ast_tuple_pattern_flatten.ml"
+(* Copyright (C) 2018 Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type loc = Location.t
+
+type exp = Parsetree.expression
+
+type pat = Parsetree.pattern
+
+
+type whole =
+  | Let_open of
+      (Asttypes.override_flag * Longident.t Asttypes.loc * loc *
+       Parsetree.attributes)
+
+type wholes = whole list
+
+let rec is_simple_pattern (p : Parsetree.pattern) =
+  match p.ppat_desc with
+  | Ppat_any -> true
+  | Ppat_var _ -> true
+  | Ppat_constraint(p,_) -> is_simple_pattern p
+  | _ -> false
+
+type destruct_output =
+  exp list
+  
+(**
+   destruct such pattern
+   {[ A.B.let open C in (a,b)]}
+*)
+let rec destruct_open_tuple
+    (e : Parsetree.expression)
+    (acc : whole list)
+  : (wholes * destruct_output * _) option =
+  match e.pexp_desc with
+  | Pexp_open (flag, lid, cont)
+    ->
+    destruct_open_tuple
+      cont
+      (Let_open (flag, lid, e.pexp_loc, e.pexp_attributes) :: acc)
+  | Pexp_tuple es -> Some (acc, es, e.pexp_attributes)
+  | _ -> None
+
+let map_open_tuple
+    (e : Parsetree.expression)
+    (f : Parsetree.expression list -> _ -> Parsetree.expression) =
+  match destruct_open_tuple e [] with
+  | None ->  None (** not an open tuple *)
+  | Some (qualifiers, es, attrs ) ->
+    Some (Ext_list.fold_left qualifiers (f es attrs) (fun x hole  ->
+        match hole with
+        | Let_open (flag, lid,loc,attrs) ->
+          {
+            pexp_desc = Pexp_open (flag,lid,x);
+            pexp_attributes = attrs;
+            pexp_loc = loc
+          }
+      ) )
+(*
+  [let (a,b) = M.N.(c,d) ]
+  =>
+  [ let a = M.N.c
+    and b = M.N.d ]
+*)
+let flattern_tuple_pattern_vb
+    (self : Bs_ast_mapper.mapper)
+    (vb :  Parsetree.value_binding)
+    acc : Parsetree.value_binding list =
+  let pvb_pat = self.pat self vb.pvb_pat in
+  let pvb_expr = self.expr self vb.pvb_expr in
+  let pvb_attributes = self.attributes self vb.pvb_attributes in
+  match pvb_pat.ppat_desc with
+  | Ppat_tuple xs when List.for_all is_simple_pattern xs ->
+    begin match destruct_open_tuple pvb_expr []  with
+      | Some (wholes, es, tuple_attributes)
+        when
+          List.for_all is_simple_pattern xs &&
+          Ext_list.same_length es xs
+        ->
+        Bs_ast_invariant.warn_discarded_unused_attributes tuple_attributes ; (* will be dropped*)
+        Ext_list.fold_right2 xs es acc (fun pat exp acc->
+             {Parsetree.
+               pvb_pat =
+                 pat;
+               pvb_expr =
+                 ( match wholes with
+                   | [] -> exp
+                   | _ ->
+                     Ext_list.fold_left wholes exp (fun x  whole ->
+                         match whole with
+                         | Let_open (flag,lid,loc,attrs) ->
+                           {
+                             pexp_desc = Pexp_open(flag,lid,x);
+                             pexp_attributes = attrs;
+                             pexp_loc = loc
+                           }
+                       ) ) ;
+               pvb_attributes;
+               pvb_loc = vb.pvb_loc ;
+             } :: acc
+           ) 
+      | _ ->
+        {pvb_pat ;
+         pvb_expr ;
+         pvb_loc = vb.pvb_loc;
+         pvb_attributes} :: acc
+    end
+  | _ ->
+    {pvb_pat ;
+     pvb_expr ;
+     pvb_loc = vb.pvb_loc ;
+     pvb_attributes} :: acc
+
+
+let value_bindings_mapper 
+    (self : Bs_ast_mapper.mapper) 
+    (vbs : Parsetree.value_binding list) =
+  (* Bs_ast_mapper.default_mapper.value_bindings self  vbs   *)
+  List.fold_right (fun vb acc ->
+      flattern_tuple_pattern_vb self vb acc
+    ) vbs []
+
+end
+module Ast_exp : sig 
+#1 "ast_exp.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type t = Parsetree.expression 
+
+end = struct
+#1 "ast_exp.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type t = Parsetree.expression 
+
+end
+module Ast_external_mk : sig 
+#1 "ast_external_mk.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+(**
+  [local_module loc ~pval_prim ~pval_type args]
+  generate such code 
+  {[
+    let module J = struct 
+       external unsafe_expr : pval_type = pval_prim 
+    end in 
+    J.unssafe_expr args
+  ]}
+*)
+val local_external_apply :
+   Location.t ->
+  ?pval_attributes:Parsetree.attributes ->
+  pval_prim:string list ->
+  pval_type:Parsetree.core_type ->
+  ?local_module_name:string ->
+  ?local_fun_name:string ->
+  Parsetree.expression list -> 
+  Parsetree.expression_desc
+
+
+val local_external_obj :
+   Location.t ->
+  ?pval_attributes:Parsetree.attributes ->
+  pval_prim:string list ->
+  pval_type:Parsetree.core_type ->
+  ?local_module_name:string ->
+  ?local_fun_name:string ->
+  (string * Parsetree.expression) list ->  (* [ (label, exp )]*)  
+  Parsetree.expression_desc
+
+
+
+val local_extern_cont : 
+  Location.t ->
+  ?pval_attributes:Parsetree.attributes ->
+  pval_prim:string list ->
+  pval_type:Parsetree.core_type ->
+  ?local_module_name:string ->
+  ?local_fun_name:string ->
+  (Parsetree.expression -> Parsetree.expression) -> Parsetree.expression_desc
+
+end = struct
+#1 "ast_external_mk.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+let local_external_apply loc 
+     ?(pval_attributes=[])
+     ~pval_prim
+     ~pval_type 
+     ?(local_module_name = "J")
+     ?(local_fun_name = "unsafe_expr")
+     args
+  : Parsetree.expression_desc = 
+  Pexp_letmodule
+    ({txt = local_module_name; loc},
+     {pmod_desc =
+        Pmod_structure
+          [{pstr_desc =
+              Pstr_primitive
+                {pval_name = {txt = local_fun_name; loc};
+                 pval_type ;
+                 pval_loc = loc;
+                 pval_prim ;
+                 pval_attributes };
+            pstr_loc = loc;
+           }];
+      pmod_loc = loc;
+      pmod_attributes = []},
+      Ast_compatible.apply_simple 
+      ({pexp_desc = Pexp_ident {txt = Ldot (Lident local_module_name, local_fun_name); 
+                                      loc};
+              pexp_attributes = [] ;
+              pexp_loc = loc} : Parsetree.expression) args ~loc
+    )
+
+let local_external_obj loc 
+     ?(pval_attributes=[])
+     ~pval_prim
+     ~pval_type 
+     ?(local_module_name = "J")
+     ?(local_fun_name = "unsafe_expr")
+     args
+  : Parsetree.expression_desc = 
+  Pexp_letmodule
+    ({txt = local_module_name; loc},
+     {pmod_desc =
+        Pmod_structure
+          [{pstr_desc =
+              Pstr_primitive
+                {pval_name = {txt = local_fun_name; loc};
+                 pval_type ;
+                 pval_loc = loc;
+                 pval_prim ;
+                 pval_attributes };
+            pstr_loc = loc;
+           }];
+      pmod_loc = loc;
+      pmod_attributes = []},
+      Ast_compatible.apply_labels
+      ({pexp_desc = Pexp_ident {txt = Ldot (Lident local_module_name, local_fun_name); 
+                                      loc};
+              pexp_attributes = [] ;
+              pexp_loc = loc} : Parsetree.expression) args ~loc
+    )    
+
+let local_extern_cont loc 
+     ?(pval_attributes=[])
+     ~pval_prim
+     ~pval_type 
+     ?(local_module_name = "J")
+     ?(local_fun_name = "unsafe_expr")
+     (cb : Parsetree.expression -> 'a) 
+  : Parsetree.expression_desc = 
+  Pexp_letmodule
+    ({txt = local_module_name; loc},
+     {pmod_desc =
+        Pmod_structure
+          [{pstr_desc =
+              Pstr_primitive
+                {pval_name = {txt = local_fun_name; loc};
+                 pval_type ;
+                 pval_loc = loc;
+                 pval_prim ;
+                 pval_attributes };
+            pstr_loc = loc;
+           }];
+      pmod_loc = loc;
+      pmod_attributes = []},
+     cb {pexp_desc = Pexp_ident {txt = Ldot (Lident local_module_name, local_fun_name); 
+                                 loc};
+         pexp_attributes = [] ;
+         pexp_loc = loc}
+)
+
+end
+module Ast_pat : sig 
+#1 "ast_pat.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type t = Parsetree.pattern
+
+val is_unit_cont : yes:'a -> no:'a -> t -> 'a
+
+(** [arity_of_fun pat e] tells the arity of 
+    expression [fun pat -> e]*)
+val arity_of_fun : t -> Parsetree.expression -> int
+
+
+val is_single_variable_pattern_conservative : t -> bool
+
+end = struct
+#1 "ast_pat.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type t = Parsetree.pattern
+
+
+let is_unit_cont ~yes ~no (p : t)  =
+  match p  with
+  | {ppat_desc = Ppat_construct({txt = Lident "()"}, None)}
+    -> yes 
+  | _ -> no
+
+
+(** [arity_of_fun pat e] tells the arity of 
+    expression [fun pat -> e]
+*)
+let arity_of_fun
+    (pat : Parsetree.pattern)
+    (e : Parsetree.expression) =
+  let rec aux (e : Parsetree.expression)  =
+    match e.pexp_desc with
+    | Pexp_fun (arg_label, _, pat, e) 
+      when Ast_compatible.is_arg_label_simple arg_label ->
+      1 + aux e       
+    | Pexp_fun _
+      -> Location.raise_errorf
+           ~loc:e.pexp_loc "Label is not allowed in JS object"
+    | _ -> 0 in
+  is_unit_cont ~yes:0 ~no:1 pat + aux e 
+
+
+let rec is_single_variable_pattern_conservative  (p : t ) =
+  match p.ppat_desc with 
+  | Parsetree.Ppat_any 
+  | Parsetree.Ppat_var _ -> true 
+  | Parsetree.Ppat_alias (p,_) 
+  | Parsetree.Ppat_constraint (p, _) -> 
+    is_single_variable_pattern_conservative p 
+  
+  | _ -> false
 
 end
 module Ext_json_types
@@ -18279,1760 +18363,6 @@ let convertBsErrorFunction loc  (self : Bs_ast_mapper.mapper) attrs (cases : Par
                        
 
 end
-module Ext_ref : sig 
-#1 "ext_ref.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-(** [non_exn_protect ref value f] assusme [f()] 
-    would not raise
-*)
-
-val non_exn_protect : 'a ref -> 'a -> (unit -> 'b) -> 'b
-val protect : 'a ref -> 'a -> (unit -> 'b) -> 'b
-
-val protect2 : 'a ref -> 'b ref -> 'a -> 'b -> (unit -> 'c) -> 'c
-
-(** [non_exn_protect2 refa refb va vb f ]
-    assume [f ()] would not raise
-*)
-val non_exn_protect2 : 'a ref -> 'b ref -> 'a -> 'b -> (unit -> 'c) -> 'c
-
-val protect_list : ('a ref * 'a) list -> (unit -> 'b) -> 'b
-
-end = struct
-#1 "ext_ref.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-let non_exn_protect r v body = 
-  let old = !r in
-  r := v;
-  let res = body() in
-  r := old;
-  res
-
-let protect r v body =
-  let old = !r in
-  try
-    r := v;
-    let res = body() in
-    r := old;
-    res
-  with x ->
-    r := old;
-    raise x
-
-let non_exn_protect2 r1 r2 v1 v2 body = 
-  let old1 = !r1 in
-  let old2 = !r2 in  
-  r1 := v1;
-  r2 := v2;
-  let res = body() in
-  r1 := old1;
-  r2 := old2;
-  res
-
-let protect2 r1 r2 v1 v2 body =
-  let old1 = !r1 in
-  let old2 = !r2 in  
-  try
-    r1 := v1;
-    r2 := v2;
-    let res = body() in
-    r1 := old1;
-    r2 := old2;
-    res
-  with x ->
-    r1 := old1;
-    r2 := old2;
-    raise x
-
-let protect_list rvs body = 
-  let olds =  Ext_list.map  rvs (fun (x,y) -> !x) in 
-  let () = List.iter (fun (x,y) -> x:=y) rvs in 
-  try 
-    let res = body () in 
-    List.iter2 (fun (x,_) old -> x := old) rvs olds;
-    res 
-  with e -> 
-    List.iter2 (fun (x,_) old -> x := old) rvs olds;
-    raise e 
-
-end
-module Ast_core_type_class_type : sig 
-#1 "ast_core_type_class_type.mli"
-(* Copyright (C) 2018 Authors of BuckleScript
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-val handle_class_type_fields :  
-  Bs_ast_mapper.mapper ->
-  Parsetree.class_type_field list -> 
-  Parsetree.class_type_field list 
-
-val handle_core_type :
-  Bs_ast_mapper.mapper ->
-  Parsetree.core_type ->  
-  bool ref ->
-  Parsetree.core_type
-end = struct
-#1 "ast_core_type_class_type.ml"
-(* Copyright (C) 2018 Authors of BuckleScript
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-open Ast_helper
-
-let process_getter_setter 
-    ~not_getter_setter
-    ~(get : Parsetree.core_type -> _ -> Parsetree.attributes -> _) ~set
-    loc name
-    (attrs : Ast_attributes.t)
-    (ty : Parsetree.core_type) (acc : _ list)  =
-  match Ast_attributes.process_method_attributes_rev attrs with 
-  | {get = None; set = None}, _  ->  not_getter_setter ty :: acc 
-  | st , pctf_attributes
-    -> 
-    let get_acc = 
-      match st.set with 
-      | Some `No_get -> acc 
-      | None 
-      | Some `Get -> 
-        let lift txt = 
-          Typ.constr ~loc {txt ; loc} [ty] in
-        let (null,undefined) =                
-          match st with 
-          | {get = Some (null, undefined) } -> (null, undefined)
-          | {get = None} -> (false, false ) in 
-        let ty = 
-          match (null,undefined) with 
-          | false, false -> ty
-          | true, false -> lift Ast_literal.Lid.js_null
-          | false, true -> lift Ast_literal.Lid.js_undefined
-          | true , true -> lift Ast_literal.Lid.js_null_undefined in
-        get ty name pctf_attributes
-        :: acc  
-    in 
-    if st.set = None then get_acc 
-    else
-      set ty 
-
-      (name ^ Literals.setter_suffix)
-
-      pctf_attributes         
-      :: get_acc 
-
-
-let handle_class_type_field self
-    ({pctf_loc = loc } as ctf : Parsetree.class_type_field)
-    acc =
-  match ctf.pctf_desc with 
-  | Pctf_method 
-      (name, private_flag, virtual_flag, ty) 
-    ->
-    let not_getter_setter (ty : Parsetree.core_type) =
-      let ty = 
-        match ty.ptyp_desc with 
-        | Ptyp_arrow (label, args, body) 
-          ->
-          Ast_util.to_method_type
-            ty.ptyp_loc  self label args body
-
-        | Ptyp_poly (strs, {ptyp_desc = Ptyp_arrow (label, args, body);
-                            ptyp_loc})
-          ->
-          {ty with ptyp_desc = 
-                     Ptyp_poly(strs,             
-                               Ast_util.to_method_type
-                                 ptyp_loc  self label args body  )}
-        | _ -> 
-          self.typ self ty
-      in 
-      {ctf with 
-       pctf_desc = 
-         Pctf_method (name , private_flag, virtual_flag, ty)}
-    in
-    let get ty name pctf_attributes =
-      {ctf with 
-       pctf_desc =  
-         Pctf_method (name , 
-                      private_flag, 
-                      virtual_flag, 
-                      self.typ self ty
-                     );
-       pctf_attributes} in
-    let set ty name pctf_attributes =
-      {ctf with 
-       pctf_desc =
-         Pctf_method (name, 
-                      private_flag,
-                      virtual_flag,
-                      Ast_util.to_method_type
-                        loc self Ast_compatible.no_label ty
-                        (Ast_literal.type_unit ~loc ())
-                     );
-       pctf_attributes} in
-    process_getter_setter ~not_getter_setter ~get ~set loc name ctf.pctf_attributes ty acc     
-
-  | Pctf_inherit _ 
-  | Pctf_val _ 
-  | Pctf_constraint _
-  | Pctf_attribute _ 
-  | Pctf_extension _  -> 
-    Bs_ast_mapper.default_mapper.class_type_field self ctf :: acc 
-      
-
-(*
-  Attributes are very hard to attribute
-  (since ptyp_attributes could happen in so many places), 
-  and write ppx extensions correctly, 
-  we can only use it locally
-*)
-
-let handle_core_type 
-    ~(super : Bs_ast_mapper.mapper) 
-    ~(self : Bs_ast_mapper.mapper)
-    (ty : Parsetree.core_type) 
-    record_as_js_object
-  = 
-  match ty with
-  | {ptyp_desc = Ptyp_extension({txt = ("bs.obj"|"obj")}, PTyp ty)}
-    -> 
-    Ext_ref.non_exn_protect record_as_js_object true 
-      (fun _ -> self.typ self ty )
-  | {ptyp_attributes ;
-     ptyp_desc = Ptyp_arrow (label, args, body);
-     (* let it go without regard label names, 
-        it will report error later when the label is not empty
-     *)     
-     ptyp_loc = loc
-    } ->
-    begin match  Ast_attributes.process_attributes_rev ptyp_attributes with 
-      | Uncurry _, ptyp_attributes ->
-        Ast_util.to_uncurry_type loc self label args body 
-      | Meth_callback _, ptyp_attributes ->
-        Ast_util.to_method_callback_type loc self label args body
-      | Method _, ptyp_attributes ->
-        Ast_util.to_method_type loc self label args body
-      | Nothing , _ -> 
-        Bs_ast_mapper.default_mapper.typ self ty
-    end
-  | {
-    ptyp_desc =  Ptyp_object ( methods, closed_flag) ;
-    ptyp_loc = loc 
-  } -> 
-    let (+>) attr (typ : Parsetree.core_type) =
-      {typ with ptyp_attributes = attr :: typ.ptyp_attributes} in           
-    let new_methods =
-      Ext_list.fold_right  methods []  (fun  meth_ acc ->
-        match meth_ with 
-        
-          (label, ptyp_attrs, core_type) -> 
-          let get ty name attrs =
-            let attrs, core_type =
-              match Ast_attributes.process_attributes_rev attrs with
-              | Nothing, attrs -> attrs, ty (* #1678 *)
-              | Uncurry attr , attrs ->
-                attrs, attr +> ty
-              | Method _, _
-                -> Location.raise_errorf ~loc "bs.get/set conflicts with bs.meth"
-              | Meth_callback attr, attrs ->
-                attrs, attr +> ty 
-            in 
-            Ast_compatible.object_field name  attrs (self.typ self core_type) in
-          let set ty name attrs =
-            let attrs, core_type =
-              match Ast_attributes.process_attributes_rev attrs with
-              | Nothing, attrs -> attrs, ty
-              | Uncurry attr, attrs ->
-                attrs, attr +> ty 
-              | Method _, _
-                -> Location.raise_errorf ~loc "bs.get/set conflicts with bs.meth"
-              | Meth_callback attr, attrs ->
-                attrs, attr +> ty
-            in               
-            Ast_compatible.object_field name attrs (Ast_util.to_method_type loc self Ast_compatible.no_label core_type 
-              (Ast_literal.type_unit ~loc ())) in
-          let not_getter_setter ty =
-            let attrs, core_type =
-              match Ast_attributes.process_attributes_rev ptyp_attrs with
-              | Nothing, attrs -> attrs, ty
-              | Uncurry attr, attrs ->
-                attrs, attr +> ty 
-              | Method attr, attrs -> 
-                attrs, attr +> ty 
-              | Meth_callback attr, attrs ->
-                attrs, attr +> ty  in            
-            Ast_compatible.object_field label attrs (self.typ self core_type) in
-          process_getter_setter ~not_getter_setter ~get ~set
-            loc label ptyp_attrs core_type acc
-        )in      
-    let inner_type =
-      { ty
-        with ptyp_desc = Ptyp_object(new_methods, closed_flag);
-      } in 
-    if !record_as_js_object then 
-      Ast_comb.to_js_type loc inner_type          
-    else inner_type
-  | _ -> super.typ self ty
-    
-let handle_class_type_fields self fields = 
-  Ext_list.fold_right fields []
-  (handle_class_type_field self)
-  
-  
-let handle_core_type self typ record_as_js_object =
-  handle_core_type 
-  ~super:Bs_ast_mapper.default_mapper
-  ~self typ record_as_js_object
-end
-module Ast_signature : sig 
-#1 "ast_signature.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type item = Parsetree.signature_item
-type t = item list 
-
-
-val fuseAll : ?loc:Ast_helper.loc ->  t -> item
-end = struct
-#1 "ast_signature.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type item = Parsetree.signature_item
-type t = item list 
-
-open Ast_helper
-
-let fuseAll ?(loc=Location.none)  (t : t) : item = 
-  Sig.include_ ~loc (Incl.mk ~loc (Mty.signature ~loc t))
-  
-end
-module Ast_structure : sig 
-#1 "ast_structure.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-type item = Parsetree.structure_item
-
-type t = item list 
-
-
-val fuseAll: ?loc:Ast_helper.loc ->  t -> item
-
-(* val fuse_with_constraint:
-  ?loc:Ast_helper.loc ->
-  Parsetree.type_declaration list ->
-  t   ->
-  Ast_signature.t -> 
-  item *)
-
-val constraint_ : ?loc:Ast_helper.loc -> t -> Ast_signature.t -> item
-
-val dummy_item : Location.t -> item 
-end = struct
-#1 "ast_structure.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type item = Parsetree.structure_item
-
-type t = item list 
-
-open Ast_helper
-
-
-let fuseAll ?(loc=Location.none)  (t : t) : item = 
-  Str.include_ ~loc 
-    (Incl.mk ~loc (Mod.structure ~loc t ))
-    
-(* let fuse_with_constraint
-    ?(loc=Location.none) 
-    (item : Parsetree.type_declaration list ) (t : t) (coercion) = 
-  Str.include_ ~loc 
-    (Incl.mk ~loc 
-       (Mod.constraint_
-         (Mod.structure ~loc 
-         ({pstr_loc = loc; pstr_desc = Pstr_type item} :: t) )
-         (
-           Mty.signature ~loc 
-           ({psig_loc = loc; psig_desc = Psig_type item} :: coercion)
-         )
-         )
-    )      *)
-let constraint_ ?(loc=Location.none) (stru : t) (sign : Ast_signature.t) = 
-  Str.include_ ~loc
-    (Incl.mk ~loc 
-       (Mod.constraint_ ~loc (Mod.structure ~loc stru) (Mty.signature ~loc sign)))
-
-let dummy_item  loc : item =        
-  Str.eval ~loc (Ast_literal.val_unit ~loc ())
-end
-module Ast_derive : sig 
-#1 "ast_derive.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type tdcls = Parsetree.type_declaration list 
-
-type gen = {
-  structure_gen : tdcls -> bool -> Ast_structure.t ;
-  signature_gen : tdcls -> bool -> Ast_signature.t ; 
-  expression_gen : (Parsetree.core_type -> Parsetree.expression) option ; 
-}
-
-(**
-   [register name cb]
-   example: [register "accessors" cb]
-*)
-val register : 
-  string -> 
-  (Parsetree.expression option -> gen) -> 
-  unit
-
-(* val gen_structure: 
-  tdcls  ->
-  Ast_payload.action list ->
-  bool -> 
-  Ast_structure.t *)
-
-val gen_signature: 
-  tdcls ->
-  Ast_payload.action list -> 
-  bool -> 
-  Ast_signature.t
-
-
-val gen_expression : 
-  string Asttypes.loc -> 
-  Parsetree.core_type -> 
-  Parsetree.expression
-
-
-
-val gen_structure_signature :  
-  Location.t -> 
-  Parsetree.type_declaration list ->
-  Ast_payload.action -> 
-  bool -> 
-  Parsetree.structure_item
-end = struct
-#1 "ast_derive.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type tdcls = Parsetree.type_declaration list
-
-type gen = {
-  structure_gen : tdcls -> bool -> Ast_structure.t ;
-  signature_gen : tdcls -> bool -> Ast_signature.t ; 
-  expression_gen : (Parsetree.core_type -> Parsetree.expression) option ; 
-}
-
-(* the first argument is [config] payload
-   {[
-     { x = {uu} }
-   ]}
-*)
-type derive_table  = 
-  (Parsetree.expression option -> gen) String_map.t
-
-let derive_table : derive_table ref = ref String_map.empty
-
-let register key value = 
-  derive_table := String_map.add !derive_table key value 
-
-
-
-(* let gen_structure 
-    (tdcls : tdcls)
-    (actions :  Ast_payload.action list ) 
-    (explict_nonrec : bool )
-  : Ast_structure.t = 
-  Ext_list.flat_map
-    (fun action -> 
-       (Ast_payload.table_dispatch !derive_table action).structure_gen 
-         tdcls explict_nonrec) actions *)
-
-let gen_signature
-    tdcls
-    (actions :  Ast_payload.action list ) 
-    (explict_nonrec : bool )
-  : Ast_signature.t = 
-  Ext_list.flat_map actions
-    (fun action -> 
-       (Ast_payload.table_dispatch !derive_table action).signature_gen
-         tdcls explict_nonrec) 
-
-(** used for cases like [%sexp] *)         
-let gen_expression ({Asttypes.txt ; loc}) typ =
-  let txt = Ext_string.tail_from txt (String.length Literals.bs_deriving_dot) in 
-  match (Ast_payload.table_dispatch !derive_table 
-           ({txt ; loc}, None)).expression_gen with 
-  | None ->
-    Bs_syntaxerr.err loc (Unregistered txt)
-
-  | Some f -> f typ
-
-open Ast_helper  
-let gen_structure_signature 
-    loc
-    (tdcls : tdcls)   
-    (action : Ast_payload.action)
-    (explicit_nonrec : bool) = 
-  let derive_table = !derive_table in  
-  let u = 
-    Ast_payload.table_dispatch derive_table action in  
-
-  let a = u.structure_gen tdcls explicit_nonrec in
-  let b = u.signature_gen tdcls explicit_nonrec in
-  Str.include_ ~loc  
-    (Incl.mk ~loc 
-       (Mod.constraint_ ~loc
-          (Mod.structure ~loc a)
-          (Mty.signature ~loc b )
-       )
-    )
-end
-module Ast_derive_util : sig 
-#1 "ast_derive_util.mli"
-(* Copyright (C) 2017 Authors of BuckleScript
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-(** Given a type declaration, extaract the type expression, mostly 
-  used in code gen later
- *)
- val core_type_of_type_declaration :
-  Parsetree.type_declaration -> Parsetree.core_type
-
-val new_type_of_type_declaration : 
-  Parsetree.type_declaration -> 
-  string -> 
-  Parsetree.core_type * Parsetree.type_declaration
-
-
-val mk_fun :
-  loc:Location.t ->
-  Parsetree.core_type ->
-  string -> Parsetree.expression -> Parsetree.expression
-val destruct_label_declarations :
-  loc:Location.t ->
-  string ->
-  Parsetree.label_declaration list ->
-  (Parsetree.core_type * Parsetree.expression) list * string list
-
-val notApplicable:   
-  Location.t ->
-  string -> 
-  unit 
-
-val invalid_config : Parsetree.expression -> 'a   
-end = struct
-#1 "ast_derive_util.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-open Ast_helper
-
-let core_type_of_type_declaration 
-    (tdcl : Parsetree.type_declaration) = 
-  match tdcl with 
-  | {ptype_name = {txt ; loc};
-     ptype_params ;
-    } -> 
-    Typ.constr 
-      {txt = Lident txt ; loc}
-      (Ext_list.map ptype_params  fst)
-
-let new_type_of_type_declaration 
-    (tdcl : Parsetree.type_declaration) newName = 
-  match tdcl with 
-  | {ptype_name = { loc};
-     ptype_params ;
-    } -> 
-    (Typ.constr 
-      {txt = Lident newName ; loc}
-      (Ext_list.map ptype_params fst ),
-      { Parsetree.ptype_params = tdcl.ptype_params;
-        ptype_name = {txt = newName;loc};
-        ptype_kind = Ptype_abstract; 
-        ptype_attributes = [];
-        ptype_loc = tdcl.ptype_loc;
-        ptype_cstrs = []; ptype_private = Public; ptype_manifest = None}
-    )
-      
-
-let mk_fun ~loc (typ : Parsetree.core_type) 
-    (value : string) body
-  : Parsetree.expression = 
-  Ast_compatible.fun_
-    (Pat.constraint_ (Pat.var {txt = value ; loc}) typ)
-    body
-
-let destruct_label_declarations ~loc
-    (arg_name : string)
-    (labels : Parsetree.label_declaration list) : 
-  (Parsetree.core_type * Parsetree.expression) list * string list 
-  =
-  Ext_list.fold_right labels ([], [])
-    (fun {pld_name = {txt}; pld_type} 
-      (core_type_exps, labels) -> 
-      ((pld_type, 
-        Exp.field (Exp.ident {txt = Lident arg_name ; loc}) 
-          {txt = Lident txt ; loc}) :: core_type_exps),
-      txt :: labels 
-    ) 
-
-let notApplicable 
-  loc derivingName = 
-  Location.prerr_warning 
-    loc
-    (Warnings.Bs_derive_warning ( derivingName ^ " not applicable to this type"))
-    
-let invalid_config (config : Parsetree.expression) = 
-  Location.raise_errorf ~loc:config.pexp_loc "such configuration is not supported"
-    
-end
-module Ast_derive_js_mapper : sig 
-#1 "ast_derive_js_mapper.mli"
-(* Copyright (C) 2017 Authors of BuckleScript
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-val init : unit -> unit
-end = struct
-#1 "ast_derive_js_mapper.ml"
-(* Copyright (C) 2017 Authors of BuckleScript
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-open Ast_helper
-module U = Ast_derive_util
-type tdcls = Parsetree.type_declaration list 
-
-let js_field (o : Parsetree.expression) m = 
-  Ast_compatible.app2
-    (Exp.ident {txt = Lident "##"; loc = o.pexp_loc})
-    o
-    (Exp.ident m)
-
-
-
-
-let handle_config (config : Parsetree.expression option) = 
-  match config with 
-  | Some config -> 
-    (match config.pexp_desc with 
-     | Pexp_record (
-         [ 
-           {txt = Lident "newType"}, 
-           {pexp_desc = 
-              (Pexp_construct 
-                 (
-                   {txt =
-                      Lident ("true" 
-                             | "false" 
-                               as x)}, None)
-              | Pexp_ident {txt = Lident ("newType" as x)}
-              )
-           }
-         ],None)
-       ->  not (x = "false")
-     | Pexp_ident {txt = Lident ("newType")} 
-       -> true
-     | _ -> U.invalid_config config)
-  | None -> false
-let noloc = Location.none
-(* [eraseType] will be instrumented, be careful about the name conflict*)  
-let eraseTypeLit = "jsMapperEraseType"
-let eraseTypeExp = Exp.ident {loc = noloc; txt = Lident eraseTypeLit}
-let eraseType x = 
-  Ast_compatible.app1 eraseTypeExp  x
-let eraseTypeStr = 
-  let any = Typ.any () in 
-  Str.primitive 
-    (Val.mk ~prim:["%identity"] {loc = noloc; txt = eraseTypeLit}
-       (Ast_compatible.arrow any any)
-    )
-
-let app2 = Ast_compatible.app2
-let app3 = Ast_compatible.app3
-
-let (<=~) a b =   
-  app2 (Exp.ident {loc = noloc; txt = Lident "<="}) a b 
-let (-~) a b =   
-  app2 (Exp.ident {loc = noloc; txt = Ldot(Lident "Pervasives","-")})
-    a b 
-let (+~) a b =   
-  app2 (Exp.ident {loc = noloc; txt = Ldot(Lident "Pervasives","+")})
-    a b 
-let (&&~) a b =   
-  app2 (Exp.ident {loc = noloc; txt = Ldot(Lident "Pervasives","&&")})
-    a b 
-let (->~) a b = Ast_compatible.arrow a b 
-let jsMapperRt =     
-  Longident.Ldot (Lident "Js", "MapperRt")
-
-let search upper polyvar array = 
-  app3
-    (Exp.ident ({loc = noloc; 
-                 txt = Longident.Ldot (jsMapperRt,"binarySearch") })
-    )                                 
-    upper
-    (eraseType polyvar)
-    array
-
-let revSearch len constantArray exp =   
-  app3 
-    (Exp.ident 
-       {loc= noloc; 
-        txt = Longident.Ldot (jsMapperRt, "revSearch")})
-    len
-    constantArray
-    exp
-
-let revSearchAssert  len constantArray exp =   
-  app3 
-    (Exp.ident 
-       {loc= noloc; 
-        txt = Longident.Ldot (jsMapperRt, "revSearchAssert")})
-    len
-    constantArray
-    exp
-
-let toInt exp array =     
-  app2
-    (Exp.ident 
-       { loc=noloc; 
-         txt = Longident.Ldot (jsMapperRt, "toInt")})
-    (eraseType exp)
-    array
-let fromInt len array exp = 
-  app3
-    (Exp.ident 
-       {loc = noloc; 
-        txt = Longident.Ldot (jsMapperRt,"fromInt")})
-    len
-    array
-    exp
-
-let fromIntAssert len array exp = 
-  app3
-    (Exp.ident 
-       {loc = noloc; 
-        txt = Longident.Ldot (jsMapperRt,"fromIntAssert")})
-    len
-    array
-    exp
-
-
-let assertExp e = 
-  Exp.extension 
-    ({Asttypes.loc = noloc; txt = "assert"},
-     (PStr 
-        [Str.eval e ]
-     )
-    )
-let derivingName = "jsConverter"
-
-(* let notApplicable loc = 
-   Location.prerr_warning 
-    loc
-    (Warnings.Bs_derive_warning ( derivingName ^ " not applicable to this type")) *)
-
-let init () =      
-  Ast_derive.register
-    derivingName
-    (fun ( x : Parsetree.expression option) -> 
-       let createType = handle_config x in 
-
-       {
-         structure_gen = (fun (tdcls : tdcls) _ -> 
-             let handle_tdcl (tdcl: Parsetree.type_declaration) =
-               let core_type = U.core_type_of_type_declaration tdcl
-               in 
-               let name = tdcl.ptype_name.txt in 
-               let toJs = name ^ "ToJs" in 
-               let fromJs = name ^ "FromJs" in 
-               let constantArray = "jsMapperConstantArray" in 
-               let loc = tdcl.ptype_loc in 
-               let patToJs = {Asttypes.loc; txt = toJs} in 
-               let patFromJs = {Asttypes.loc; txt = fromJs} in 
-               let param = "param" in 
-
-               let ident_param = {Asttypes.txt = Longident.Lident param; loc} in 
-               let pat_param = {Asttypes.loc; txt = param} in 
-               let exp_param = Exp.ident ident_param in 
-               let newType,newTdcl =
-                 U.new_type_of_type_declaration tdcl ("abs_" ^ name) in 
-               let newTypeStr = Ast_compatible.rec_type_str [newTdcl] in   
-               let toJsBody body = 
-                 Ast_comb.single_non_rec_value patToJs
-                   (Ast_compatible.fun_ (Pat.constraint_ (Pat.var pat_param) core_type) 
-                      body )
-               in 
-               let (+>) a ty = 
-                 Exp.constraint_ (eraseType a) ty in 
-               let (+:) a ty =                  
-                 eraseType (Exp.constraint_ a ty) in 
-               let coerceResultToNewType e =
-                 if createType then 
-                   e +> newType
-                 else e  in                  
-               match tdcl.ptype_kind with  
-               | Ptype_record label_declarations -> 
-                 let exp = 
-                   coerceResultToNewType
-                     (Exp.extension 
-                        (
-                          {Asttypes.loc; txt = "bs.obj"},
-                          (PStr
-                             [Str.eval  
-                                (Exp.record
-                                   (Ext_list.map label_declarations
-                                      (fun {pld_name = {loc; txt } }  -> 
-                                         let label = 
-                                           {Asttypes.loc; txt = Longident.Lident txt } in 
-                                         label,Exp.field exp_param label) ) None)]))) in 
-                 let toJs = 
-                   toJsBody exp
-                 in 
-                 let obj_exp = 
-                   Exp.record
-                     (Ext_list.map label_declarations
-                        (fun {pld_name = {loc; txt } } -> 
-                           let label = 
-                             {Asttypes.loc; txt = Longident.Lident txt } in 
-                           label,
-                           js_field exp_param  label) ) None in 
-                 let fromJs = 
-                   Ast_comb.single_non_rec_value patFromJs
-                     (Ast_compatible.fun_ (Pat.var pat_param)
-                        (if createType then                                             
-                           (Exp.let_ Nonrecursive
-                              [Vb.mk 
-                                 (Pat.var pat_param) 
-                                 (exp_param +: newType)]
-                              (Exp.constraint_ obj_exp core_type) )
-                         else 
-                           (Exp.constraint_ obj_exp core_type) ))
-                 in
-                 let rest = 
-                   [
-                     toJs;
-                     fromJs
-                   ] in 
-                 if createType then eraseTypeStr:: newTypeStr :: rest else rest 
-               | Ptype_abstract -> 
-                 (match Ast_polyvar.is_enum_polyvar tdcl with 
-                  | Some row_fields ->               
-                    let expConstantArray =   
-                      Exp.ident {loc; txt = Longident.Lident constantArray} in 
-                    let result :  _ list = 
-                      Ext_list.map row_fields (fun tag -> 
-                          match tag with 
-                          | Rtag (label, attrs, _, []) -> 
-                            (Ast_compatible.hash_label label,
-                             match Ast_attributes.iter_process_bs_string_as_ast attrs with 
-                             | Some name -> 
-                               name
-                             | None -> 
-                               Ast_compatible.const_exp_string(Ast_compatible.label_of_name label)
-                            )
-                          | _ -> assert false (* checked by [is_enum_polyvar] *)
-                        ) in 
-                    let result_len = List.length result in 
-                    let exp_len = Ast_compatible.const_exp_int result_len in 
-                    let v = [
-                      eraseTypeStr;
-                      Ast_comb.single_non_rec_value 
-                        {loc; txt = constantArray}
-                        (Exp.array
-                           (Ext_list.map (List.sort (fun (a,_) (b,_) -> compare (a:int) b) result)
-                              (fun (i,str) -> 
-                                 Exp.tuple 
-                                   [
-                                     Ast_compatible.const_exp_int i;
-                                     str
-                                   ]
-                              ) ));
-                      (
-                        toJsBody
-                          (coerceResultToNewType 
-                             (search
-                                exp_len
-                                exp_param
-                                expConstantArray 
-                             ))
-                      );
-                      Ast_comb.single_non_rec_value
-                        patFromJs
-                        (Ast_compatible.fun_
-                           (Pat.var pat_param)
-                           (if createType then 
-                              revSearchAssert
-                                exp_len
-                                expConstantArray
-                                (exp_param +: newType)
-                              +>
-                              core_type
-                            else 
-                              revSearch                                      
-                                exp_len
-                                expConstantArray
-                                exp_param                                      
-                              +>
-                              Ast_core_type.lift_option_type core_type
-                           )
-                        )
-                    ] in 
-                    if createType then 
-                      newTypeStr :: v 
-                    else v 
-                  | None -> 
-                    U.notApplicable 
-                      tdcl.Parsetree.ptype_loc 
-                      derivingName;
-                    []
-                 )
-
-               | Ptype_variant ctors -> 
-                 if Ast_polyvar.is_enum_constructors ctors then 
-                   let xs = Ast_polyvar.map_constructor_declarations_into_ints ctors in 
-                   match xs with 
-                   | `New xs ->
-                     let constantArrayExp = Exp.ident {loc; txt = Lident constantArray} in
-                     let exp_len = Ast_compatible.const_exp_int (List.length ctors) in
-                     let v = [
-                       eraseTypeStr;
-                       Ast_comb.single_non_rec_value 
-                         {loc; txt = constantArray}
-                         (Ast_compatible.const_exp_int_list_as_array xs)
-                       ;
-                       toJsBody                        
-                         (
-                           coerceResultToNewType @@
-                           toInt
-                             exp_param
-                             constantArrayExp
-                         )                       
-                       ;
-                       Ast_comb.single_non_rec_value
-                         patFromJs
-                         (Ast_compatible.fun_
-                            (Pat.var pat_param)
-                            (
-                              if createType then 
-                                fromIntAssert
-                                  exp_len
-                                  constantArrayExp
-                                  (exp_param +: newType)
-                                +>
-                                core_type
-                              else 
-                                fromInt                                 
-                                  exp_len
-                                  constantArrayExp
-                                  exp_param
-                                +>
-                                Ast_core_type.lift_option_type core_type
-
-                            )
-                         )
-                     ] in 
-                     if createType then newTypeStr :: v else v 
-                   | `Offset offset  ->                      
-                     let v = 
-                       [  eraseTypeStr;
-                          toJsBody (
-                            coerceResultToNewType
-                              (eraseType exp_param +~ Ast_compatible.const_exp_int offset)
-                          )
-                          ;
-                          let len = List.length ctors in 
-                          let range_low = Ast_compatible.const_exp_int (offset + 0) in 
-                          let range_upper = Ast_compatible.const_exp_int (offset + len - 1) in 
-
-                          Ast_comb.single_non_rec_value
-                            {loc ; txt = fromJs}
-                            (Ast_compatible.fun_
-                               (Pat.var pat_param)
-                               (if createType then 
-                                  (Exp.let_ Nonrecursive
-                                     [Vb.mk
-                                        (Pat.var pat_param)
-                                        (exp_param +: newType)
-                                     ]
-                                     (
-                                       Exp.sequence
-                                         (assertExp 
-                                            ((exp_param <=~ range_upper) &&~ (range_low <=~ exp_param))
-                                         )
-                                         (exp_param  -~ Ast_compatible.const_exp_int offset))
-                                  )
-                                  +>
-                                  core_type
-                                else
-                                  Exp.ifthenelse
-                                    ( (exp_param <=~ range_upper) &&~ (range_low <=~ exp_param))
-                                    (Exp.construct {loc; txt = Ast_literal.predef_some} 
-                                       ( Some (exp_param -~ Ast_compatible.const_exp_int offset)))
-                                    (Some (Exp.construct {loc; txt = Ast_literal.predef_none} None))
-                                  +>
-                                  Ast_core_type.lift_option_type core_type
-                               )
-                            )
-                       ] in 
-                     if createType then newTypeStr :: v else v 
-                 else 
-                   begin 
-                     U.notApplicable 
-                       tdcl.Parsetree.ptype_loc 
-                       derivingName;
-                     []  
-                   end
-               | Ptype_open -> 
-                 U.notApplicable tdcl.Parsetree.ptype_loc 
-                   derivingName;
-                 [] in 
-             Ext_list.flat_map tdcls handle_tdcl
-           );
-         signature_gen = 
-           (fun (tdcls : tdcls) _ -> 
-              let handle_tdcl tdcl =
-                let core_type = U.core_type_of_type_declaration tdcl 
-                in 
-                let name = tdcl.ptype_name.txt in 
-                let toJs = name ^ "ToJs" in 
-                let fromJs = name ^ "FromJs" in 
-                let loc = tdcl.ptype_loc in 
-                let patToJs = {Asttypes.loc; txt = toJs} in 
-                let patFromJs = {Asttypes.loc; txt = fromJs} in 
-                let toJsType result = 
-                  Ast_comb.single_non_rec_val patToJs (Ast_compatible.arrow core_type result) in
-                let newType,newTdcl =
-                  U.new_type_of_type_declaration tdcl ("abs_" ^ name) in 
-                let newTypeStr = Ast_compatible.rec_type_sig [newTdcl] in                     
-                let (+?) v rest = if createType then v :: rest else rest in 
-                match tdcl.ptype_kind with  
-                | Ptype_record label_declarations ->            
-
-                  let objType flag =                     
-                    Ast_comb.to_js_type loc @@  
-                    Ast_compatible.object_
-                      (Ext_list.map label_declarations
-                         (fun {pld_name = {loc; txt }; pld_type } -> 
-                            txt, [], pld_type)) 
-                      flag in                   
-                  newTypeStr +? 
-                  [
-                    toJsType (if createType then newType else  objType Closed);
-                    Ast_comb.single_non_rec_val patFromJs 
-                      ( (if createType then  newType else objType Open)->~ core_type)
-                  ] 
-
-                | Ptype_abstract ->   
-                  (match Ast_polyvar.is_enum_polyvar tdcl with 
-                   | Some _ ->                     
-                     let ty1 =  
-                       if createType then newType else 
-                         (Ast_literal.type_string ()) in 
-                     let ty2 = 
-                       if createType then core_type
-                       else Ast_core_type.lift_option_type core_type in 
-                     newTypeStr +? 
-                     [
-                       toJsType ty1;
-                       Ast_comb.single_non_rec_val     
-                         patFromJs
-                         (ty1 ->~ ty2)
-                     ] 
-
-                   | None -> 
-                     U.notApplicable tdcl.Parsetree.ptype_loc 
-                       derivingName;
-                     [])
-
-                | Ptype_variant ctors 
-                  -> 
-                  if Ast_polyvar.is_enum_constructors ctors then 
-                    let ty1 = 
-                      if createType then newType 
-                      else Ast_literal.type_int() in 
-                    let ty2 = 
-                      if createType then core_type
-                      else Ast_core_type.lift_option_type core_type in 
-                    newTypeStr +? 
-                    [
-                      toJsType ty1;
-                      Ast_comb.single_non_rec_val
-                        patFromJs
-                        (ty1 ->~ ty2)
-                    ] 
-
-                  else 
-                    begin
-                      U.notApplicable tdcl.Parsetree.ptype_loc 
-                        derivingName;
-                      []
-                    end
-                | Ptype_open -> 
-                  U.notApplicable tdcl.Parsetree.ptype_loc 
-                    derivingName;
-                  [] in 
-              Ext_list.flat_map tdcls handle_tdcl
-
-           );
-         expression_gen = None 
-       } 
-    )
-  ;
-
-end
-module Ast_derive_projector : sig 
-#1 "ast_derive_projector.mli"
-(* Copyright (C) 2017 Authors of BuckleScript
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-val init : unit -> unit
-
-end = struct
-#1 "ast_derive_projector.ml"
-open Ast_helper
-
-let invalid_config (config : Parsetree.expression) = 
-  Location.raise_errorf ~loc:config.pexp_loc "such configuration is not supported"
-
-
-
-type tdcls = Parsetree.type_declaration list 
-
-(* #if OCAML_VERSION =~ ">4.03.0" then 
-let constructor_arguments_length (xs : Parsetree.constructor_arguments) = 
-  match xs with 
-  | Pcstr_tuple xs -> List.length xs 
-  | Pcstr_record xs -> List.length xs (* inline record FIXME*) 
-#else
-let constructor_arguments_length = List.length 
-#end *)
-let derivingName = "accessors" 
-let init () =
-  
-  Ast_derive.register
-    derivingName
-    (fun (x : Parsetree.expression option) ->
-       (match x with 
-        | Some config -> invalid_config config
-        | None -> ());
-       {structure_gen = 
-          begin fun (tdcls : tdcls) _explict_nonrec ->
-            let handle_tdcl tdcl = 
-              let core_type = Ast_derive_util.core_type_of_type_declaration tdcl in 
-              match tdcl.ptype_kind with 
-              | Ptype_record label_declarations 
-                ->                  
-                Ext_list.map label_declarations (
-                  fun ({pld_name = {loc; txt = pld_label} as pld_name} : Parsetree.label_declaration) -> 
-                    let txt = "param" in
-                    Ast_comb.single_non_rec_value pld_name
-                      (Ast_compatible.fun_
-                         (Pat.constraint_ (Pat.var {txt ; loc}) core_type )
-                         (Exp.field (Exp.ident {txt = Lident txt ; loc}) 
-                            {txt = Longident.Lident pld_label ; loc}) )
-                )
-              | Ptype_variant constructor_declarations 
-                ->                 
-                Ext_list.map constructor_declarations
-                  (fun
-                    ( {pcd_name = {loc ; txt = con_name} ; pcd_args ; pcd_loc }:
-                        Parsetree.constructor_declaration)
-                    -> (* TODO: add type annotations *)
-                        
-                      let little_con_name = Ext_string.uncapitalize_ascii con_name  in
-                      let arity = List.length pcd_args in 
-                      Ast_comb.single_non_rec_value {loc ; txt = little_con_name}
-                        (
-                          if arity = 0 then (*TODO: add a prefix, better inter-op with FFI *)
-                            (Exp.constraint_
-                               (Exp.construct {loc ; txt = Longident.Lident con_name } None)
-                               core_type
-                            )
-                          else 
-                            begin 
-                              let vars = 
-                                Ext_list.init  arity (fun x -> "param_" ^ string_of_int x ) in 
-                              let exp = 
-                                Exp.constraint_
-                                  ( 
-                                    Exp.construct {loc ; txt = Longident.Lident con_name} @@ 
-                                    Some
-                                      ( 
-                                        if  arity = 1 then 
-                                          Exp.ident { loc ; txt = Longident.Lident (List.hd vars )}
-                                        else 
-                                          Exp.tuple (Ext_list.map vars 
-                                                       (fun x -> Exp.ident {loc ; txt = Longident.Lident x})                                                       
-                                                    ) )) core_type
-                              in 
-                              Ext_list.fold_right vars exp (fun var b -> 
-                                  Ast_compatible.fun_  (Pat.var {loc ; txt = var}) b 
-                                ) 
-
-                            end)
-                  )
-              | Ptype_abstract | Ptype_open ->
-                Ast_derive_util.notApplicable tdcl.ptype_loc derivingName ; 
-               []
-              (* Location.raise_errorf "projector only works with record" *)
-            in Ext_list.flat_map tdcls handle_tdcl
-
-
-          end;
-        signature_gen = 
-          begin fun (tdcls : Parsetree.type_declaration list) _explict_nonrec -> 
-            let handle_tdcl tdcl = 
-              let core_type = Ast_derive_util.core_type_of_type_declaration tdcl in 
-              match tdcl.ptype_kind with 
-              | Ptype_record label_declarations 
-                ->                 
-                Ext_list.map label_declarations 
-                  (fun 
-                    ({pld_name ;
-                      pld_type
-                     } : 
-                       Parsetree.label_declaration) -> 
-                    Ast_comb.single_non_rec_val pld_name (Ast_compatible.arrow core_type pld_type )
-                  )
-              | Ptype_variant constructor_declarations 
-                ->                 
-                Ext_list.map constructor_declarations
-                  (fun  ({pcd_name = {loc ; txt = con_name} ; pcd_args ; pcd_loc }:
-                           Parsetree.constructor_declaration)
-                    -> 
-                        
-                      Ast_comb.single_non_rec_val {loc ; txt = (Ext_string.uncapitalize_ascii con_name)}
-                        (Ext_list.fold_right pcd_args core_type
-                           (fun x acc -> Ast_compatible.arrow x acc)
-                           ))
-              | Ptype_open | Ptype_abstract -> 
-              Ast_derive_util.notApplicable tdcl.ptype_loc derivingName ; 
-              [] 
-            in 
-            Ext_list.flat_map tdcls handle_tdcl 
-          end;
-        expression_gen = None
-       }
-    )
-
-
-end
-module Ast_tuple_pattern_flatten : sig 
-#1 "ast_tuple_pattern_flatten.mli"
-(* Copyright (C) 2018 Authors of BuckleScript
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-val map_open_tuple:
-  Parsetree.expression ->
-  (Parsetree.expression list ->
-    Parsetree.attributes ->
-   Parsetree.expression) ->
-  Parsetree.expression option
-
-
-val value_bindings_mapper :
-  Bs_ast_mapper.mapper ->
-  Parsetree.value_binding list ->
-  Parsetree.value_binding list
-
-end = struct
-#1 "ast_tuple_pattern_flatten.ml"
-(* Copyright (C) 2018 Authors of BuckleScript
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type loc = Location.t
-
-type exp = Parsetree.expression
-
-type pat = Parsetree.pattern
-
-
-type whole =
-  | Let_open of
-      (Asttypes.override_flag * Longident.t Asttypes.loc * loc *
-       Parsetree.attributes)
-
-type wholes = whole list
-
-let rec is_simple_pattern (p : Parsetree.pattern) =
-  match p.ppat_desc with
-  | Ppat_any -> true
-  | Ppat_var _ -> true
-  | Ppat_constraint(p,_) -> is_simple_pattern p
-  | _ -> false
-
-type destruct_output =
-  exp list
-  
-(**
-   destruct such pattern
-   {[ A.B.let open C in (a,b)]}
-*)
-let rec destruct_open_tuple
-    (e : Parsetree.expression)
-    (acc : whole list)
-  : (wholes * destruct_output * _) option =
-  match e.pexp_desc with
-  | Pexp_open (flag, lid, cont)
-    ->
-    destruct_open_tuple
-      cont
-      (Let_open (flag, lid, e.pexp_loc, e.pexp_attributes) :: acc)
-  | Pexp_tuple es -> Some (acc, es, e.pexp_attributes)
-  | _ -> None
-
-let map_open_tuple
-    (e : Parsetree.expression)
-    (f : Parsetree.expression list -> _ -> Parsetree.expression) =
-  match destruct_open_tuple e [] with
-  | None ->  None (** not an open tuple *)
-  | Some (qualifiers, es, attrs ) ->
-    Some (Ext_list.fold_left qualifiers (f es attrs) (fun x hole  ->
-        match hole with
-        | Let_open (flag, lid,loc,attrs) ->
-          {
-            pexp_desc = Pexp_open (flag,lid,x);
-            pexp_attributes = attrs;
-            pexp_loc = loc
-          }
-      ) )
-(*
-  [let (a,b) = M.N.(c,d) ]
-  =>
-  [ let a = M.N.c
-    and b = M.N.d ]
-*)
-let flattern_tuple_pattern_vb
-    (self : Bs_ast_mapper.mapper)
-    (vb :  Parsetree.value_binding)
-    acc : Parsetree.value_binding list =
-  let pvb_pat = self.pat self vb.pvb_pat in
-  let pvb_expr = self.expr self vb.pvb_expr in
-  let pvb_attributes = self.attributes self vb.pvb_attributes in
-  match pvb_pat.ppat_desc with
-  | Ppat_tuple xs when List.for_all is_simple_pattern xs ->
-    begin match destruct_open_tuple pvb_expr []  with
-      | Some (wholes, es, tuple_attributes)
-        when
-          List.for_all is_simple_pattern xs &&
-          Ext_list.same_length es xs
-        ->
-        Bs_ast_invariant.warn_discarded_unused_attributes tuple_attributes ; (* will be dropped*)
-        Ext_list.fold_right2 xs es acc (fun pat exp acc->
-             {Parsetree.
-               pvb_pat =
-                 pat;
-               pvb_expr =
-                 ( match wholes with
-                   | [] -> exp
-                   | _ ->
-                     Ext_list.fold_left wholes exp (fun x  whole ->
-                         match whole with
-                         | Let_open (flag,lid,loc,attrs) ->
-                           {
-                             pexp_desc = Pexp_open(flag,lid,x);
-                             pexp_attributes = attrs;
-                             pexp_loc = loc
-                           }
-                       ) ) ;
-               pvb_attributes;
-               pvb_loc = vb.pvb_loc ;
-             } :: acc
-           ) 
-      | _ ->
-        {pvb_pat ;
-         pvb_expr ;
-         pvb_loc = vb.pvb_loc;
-         pvb_attributes} :: acc
-    end
-  | _ ->
-    {pvb_pat ;
-     pvb_expr ;
-     pvb_loc = vb.pvb_loc ;
-     pvb_attributes} :: acc
-
-
-let value_bindings_mapper 
-    (self : Bs_ast_mapper.mapper) 
-    (vbs : Parsetree.value_binding list) =
-  (* Bs_ast_mapper.default_mapper.value_bindings self  vbs   *)
-  List.fold_right (fun vb acc ->
-      flattern_tuple_pattern_vb self vb acc
-    ) vbs []
-
-end
 module Ast_exp_apply : sig 
 #1 "ast_exp_apply.mli"
 (* Copyright (C) 2018 Authors of BuckleScript
@@ -20291,1344 +18621,8 @@ let handle_exp_apply
   end
 
 end
-module Ast_exp_extension : sig 
-#1 "ast_exp_extension.mli"
-(* Copyright (C) 2018 Authors of BuckleScript
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-val handle_extension :
-  bool ref ->
-  Parsetree.expression ->
-  Bs_ast_mapper.mapper ->
-  Parsetree.extension ->
-  Parsetree.expression
-
-
-type t = { args : string list ; block :  string }
-
-val fromString : string -> t 
-  
-end = struct
-#1 "ast_exp_extension.ml"
-(* Copyright (C) 2018 Authors of BuckleScript
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-open Ast_helper
-
-
-let rec unroll_function_aux 
-  (acc : string list)
-  (body : Parsetree.expression) : string list * string =
-  match body.pexp_desc with
-  | Pexp_constant(
-    
-    Const_string
-    
-    (block,_)) -> acc, block
-  | Pexp_fun(arg_label,_,pat,cont)
-    when Ast_compatible.is_arg_label_simple arg_label -> 
-    (match pat.ppat_desc with 
-    | Ppat_var s -> 
-      unroll_function_aux (s.txt::acc) cont
-    | Ppat_any -> 
-      unroll_function_aux ("_"::acc) cont
-    | Ppat_constraint _ -> 
-      Location.raise_errorf ~loc:body.pexp_loc  
-      "type annotation around bs.raw arguments is invalid, please put in this form: let f : t1 -> t2 = fun%%raw param1 param2 -> .."
-    | _ -> 
-      Location.raise_errorf ~loc:body.pexp_loc  
-      "bs.raw can only be applied to a string or a special function form "
-    )
-  | _ -> 
-    Location.raise_errorf ~loc:body.pexp_loc  
-    "bs.raw can only be applied to a string or a special function form "
-
-type t = { args : string list ; block :  string }
-
-let toString (x : t) = 
-  Bs_version.version ^ Marshal.to_string x []
-
-(* exception handling*)
-let fromString (x : string) : t = 
-  if Ext_string.starts_with x Bs_version.version then 
-    Marshal.from_string x (String.length Bs_version.version)
-  else 
-     Ext_pervasives.failwithf
-        ~loc:__LOC__
-        "Compiler version mismatch. The project might have been built with one version of BuckleScript, and then with another. Please wipe the artifacts and do a clean build."
-
-let handle_extension record_as_js_object e (self : Bs_ast_mapper.mapper)
-    (({txt ; loc} as lid , payload) : Parsetree.extension) = 
-  begin match txt with
-    | "bs.raw" | "raw" -> 
-      begin match payload with 
-      | PStr [
-        {pstr_desc = Pstr_eval({pexp_desc = Pexp_fun(arg_label,_,pat,body)},_)}]
-        when Ast_compatible.is_arg_label_simple arg_label
-         -> 
-         begin match pat.ppat_desc, body.pexp_desc with 
-         | Ppat_construct ({txt = Lident "()"}, None), Pexp_constant(
-          
-           Const_string
-           
-           (block,_))
-           -> 
-            Ast_compatible.app1 ~loc 
-            (Exp.ident ~loc {txt = Ldot (Ast_literal.Lid.js_internal, Literals.raw_function);loc})            
-            (Ast_compatible.const_exp_string ~loc ( toString {args = [] ; block } ) )
-         | ppat_desc, _ -> 
-            let txt = 
-              match ppat_desc with 
-              | Ppat_var {txt} -> txt 
-              | Ppat_any -> "_"
-              | _ -> 
-                Location.raise_errorf ~loc "bs.raw can only be applied to a string or a special function form "
-            in 
-            let acc, block = unroll_function_aux [txt] body in 
-            Ast_compatible.app1 ~loc 
-              (Exp.ident ~loc {txt = Ldot (Ast_literal.Lid.js_internal, Literals.raw_function);loc})
-              (Ast_compatible.const_exp_string ~loc (toString {args = List.rev acc ; block }))
-         end 
-      | _ ->   Ast_util.handle_raw ~check_js_regex:false loc payload
-      end
-    | "bs.re" | "re" ->
-      Exp.constraint_ ~loc
-        (Ast_util.handle_raw ~check_js_regex:true loc payload)
-        (Ast_comb.to_js_re_type loc)
-    | "bs.external" | "external" ->
-      begin match Ast_payload.as_ident payload with 
-        | Some {txt = Lident x}
-          -> Ast_util.handle_external loc x
-        (* do we need support [%external gg.xx ] 
-
-           {[ Js.Undefined.to_opt (if Js.typeof x == "undefined" then x else Js.Undefined.empty ) ]}
-        *)
-
-        | None | Some _ -> 
-          Location.raise_errorf ~loc 
-            "external expects a single identifier"
-      end
-    | "bs.time"| "time" ->
-      (
-        match payload with 
-        | PStr [{pstr_desc = Pstr_eval (e,_)}] -> 
-          let locString = 
-            if loc.loc_ghost then 
-              "GHOST LOC"
-            else 
-              let loc_start = loc.loc_start in 
-              let (file, lnum, __) = Location.get_pos_info loc_start in                  
-              Printf.sprintf "%s %d"
-                file lnum in   
-          let e = self.expr self e in 
-          Exp.sequence ~loc
-            (Ast_compatible.app1 ~loc     
-               (Exp.ident ~loc {loc; 
-                                txt = 
-                                  Ldot (Ldot (Lident "Js", "Console"), "timeStart")   
-                               })
-               (Ast_compatible.const_exp_string ~loc locString)
-            )     
-            ( Exp.let_ ~loc Nonrecursive
-                [Vb.mk ~loc (Pat.var ~loc {loc; txt = "timed"}) e ;
-                ]
-                (Exp.sequence ~loc
-                   (Ast_compatible.app1 ~loc     
-                      (Exp.ident ~loc {loc; 
-                                       txt = 
-                                         Ldot (Ldot (Lident "Js", "Console"), "timeEnd")   
-                                      })
-                      (Ast_compatible.const_exp_string ~loc locString)
-                   )    
-                   (Exp.ident ~loc {loc; txt = Lident "timed"})
-                )
-            )
-        | _ -> 
-          Location.raise_errorf 
-            ~loc "expect a boolean expression in the payload"
-      )
-    | "bs.assert" | "assert" ->
-      (
-        match payload with 
-        | PStr [ {pstr_desc = Pstr_eval( e,_)}] -> 
-
-          let locString = 
-            if loc.loc_ghost then 
-              "ASSERT FAILURE"
-            else 
-              let loc_start = loc.loc_start in 
-              let (file, lnum, cnum) = Location.get_pos_info loc_start in
-              let file = Filename.basename file in 
-              let enum = 
-                loc.Location.loc_end.Lexing.pos_cnum -
-                loc_start.Lexing.pos_cnum + cnum in
-              Printf.sprintf "File %S, line %d, characters %d-%d"
-                file lnum cnum enum in   
-          let raiseWithString  locString =      
-              Ast_compatible.app1 ~loc 
-               (Exp.ident ~loc {loc; txt = 
-                                       Ldot(Ldot (Lident "Js","Exn"),"raiseError")})               
-                (Ast_compatible.const_exp_string locString)               
-          in 
-          (match e.pexp_desc with
-           | Pexp_construct({txt = Lident "false"},None) -> 
-             (* The backend will convert [assert false] into a nop later *)
-             if !Clflags.no_assert_false  then 
-               Exp.assert_ ~loc 
-                 (Exp.construct ~loc {txt = Lident "false";loc} None)
-             else 
-               (raiseWithString locString)
-           | Pexp_constant (
-    
-    Const_string
-              
-              (r, _)) -> 
-             if !Clflags.noassert then 
-               Exp.assert_ ~loc (Exp.construct ~loc {txt = Lident "true"; loc} None)
-               (* Need special handling to make it type check*)
-             else   
-               raiseWithString r
-           | _ ->    
-             let e = self.expr self  e in 
-             if !Clflags.noassert then 
-               (* pass down so that it still type check, but the backend will
-                  make it a nop
-               *)
-               Exp.assert_ ~loc e
-             else 
-               Exp.ifthenelse ~loc
-                 (Ast_compatible.app1 ~loc
-                    (Exp.ident {loc ; txt = Ldot(Lident "Pervasives","not")})
-                    e
-                 )
-                 (raiseWithString locString)
-                 None
-          )
-        | _ -> 
-          Location.raise_errorf 
-            ~loc "expect a boolean expression in the payload"
-      )
-    | "bs.node" | "node" ->
-      let strip s =
-        match s with 
-        | "_module" -> "module" 
-        | x -> x  in 
-      begin match Ast_payload.as_ident payload with
-        | Some {txt = Lident
-                    ( "__filename"
-                    | "__dirname"
-                    | "_module"
-                    | "require" as name); loc}
-          ->
-          let exp =
-            Ast_util.handle_external loc (strip name)  in
-          let typ =
-            Ast_core_type.lift_option_type  
-            @@                 
-            if name = "_module" then
-              Typ.constr ~loc
-                { txt = Ldot (Lident "Node", "node_module") ;
-                  loc} []   
-            else if name = "require" then
-              (Typ.constr ~loc
-                 { txt = Ldot (Lident "Node", "node_require") ;
-                   loc} [] )  
-            else
-              Ast_literal.type_string ~loc () in                  
-          Exp.constraint_ ~loc exp typ                
-        | Some _ | None ->
-          begin match payload with 
-            | PTyp _ -> 
-              Location.raise_errorf 
-                ~loc "Illegal payload, expect an expression payload instead of type payload"              
-            | PPat _ ->
-              Location.raise_errorf 
-                ~loc "Illegal payload, expect an expression payload instead of pattern  payload"        
-            | _ -> 
-              Location.raise_errorf 
-                ~loc "Illegal payload"
-          end
-
-      end             
-    | "bs.debugger"|"debugger" ->
-      {e with pexp_desc = Ast_util.handle_debugger loc payload}
-    | "bs.obj" | "obj" ->
-      begin match payload with 
-        | PStr [{pstr_desc = Pstr_eval (e,_)}]
-          -> 
-          Ext_ref.non_exn_protect record_as_js_object true
-            (fun () -> self.expr self e ) 
-        | _ -> Location.raise_errorf ~loc "Expect an expression here"
-      end
-    | _ ->
-      match payload with
-      | PTyp typ when Ext_string.starts_with txt Literals.bs_deriving_dot ->
-        self.expr self (Ast_derive.gen_expression lid typ)
-      | _ ->  
-        e (* For an unknown extension, we don't really need to process further*)
-        (* Exp.extension ~loc ~attrs:e.pexp_attributes (
-            self.extension self extension) *)
-        (* Bs_ast_mapper.default_mapper.expr self e   *)
-  end 
-
-end
-module Ast_external : sig 
-#1 "ast_external.mli"
-(* Copyright (C) 2018 Authors of BuckleScript
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-val handleExternalInSig:
-  Bs_ast_mapper.mapper ->
-  Parsetree.value_description ->
-  Parsetree.signature_item ->
-  Parsetree.signature_item
-
-val handleExternalInStru:
-  Bs_ast_mapper.mapper ->
-  Parsetree.value_description ->
-  Parsetree.structure_item ->
-  Parsetree.structure_item
-  
-
-end = struct
-#1 "ast_external.ml"
-(* Copyright (C) 2018 Authors of BuckleScript
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-let handleExternalInSig
-    (self : Bs_ast_mapper.mapper)
-    (prim : Parsetree.value_description)
-    (sigi : Parsetree.signature_item)
-  : Parsetree.signature_item
-  =
-  let loc = prim.pval_loc in  
-  let pval_type = self.typ self prim.pval_type in
-  let pval_attributes = self.attributes self prim.pval_attributes in
-  let pval_type, pval_prim, pval_attributes =
-    match prim.pval_prim with
-    | [ v ] ->
-      External_process.handle_attributes_as_string
-        loc
-        prim.pval_name.txt
-        pval_type
-        pval_attributes v
-    | _ ->
-      Location.raise_errorf
-        ~loc
-        "only a single string is allowed in bs external" in
-  {sigi with
-   psig_desc =
-     Psig_value
-       {prim with
-        pval_type ;
-        pval_prim ;
-        pval_attributes
-       }}
-
-let handleExternalInStru
-    (self : Bs_ast_mapper.mapper)
-    (prim : Parsetree.value_description)
-    (str : Parsetree.structure_item)
-    : Parsetree.structure_item =
-  let loc = prim.pval_loc in 
-  let pval_type = self.typ self prim.pval_type in
-  let pval_attributes = self.attributes self prim.pval_attributes in
-  let pval_type, pval_prim, pval_attributes =
-    match prim.pval_prim with
-    | [ v] ->
-      External_process.handle_attributes_as_string
-        loc
-        prim.pval_name.txt
-        pval_type pval_attributes v
-    | _ -> 
-      Location.raise_errorf
-          ~loc 
-          "only a single string is allowed in bs external" 
-  in
-  {str with
-   pstr_desc =
-     Pstr_primitive
-       {prim with
-        pval_type ;
-        pval_prim;
-        pval_attributes
-       }}
-(*
-  let open Ast_helper in 
-  Str.include_ ~loc 
-  (Incl.mk ~loc 
-  (Mod.constraint_ ~loc
-  (Mod.structure ~loc 
-  [{str with
-   pstr_desc =
-     Pstr_primitive
-       {prim with
-        pval_type ;
-        pval_prim;
-        pval_attributes
-       }}])
-       (Mty.signature ~loc [
-      {
-        psig_desc = Psig_value {
-            prim with 
-            pval_type ; 
-            pval_prim = [];
-            pval_attributes (* check attributes *);
-
-          };
-        psig_loc = loc
-      }])))
-
-*)
-end
-module Ast_derive_abstract : sig 
-#1 "ast_derive_abstract.mli"
-(* Copyright (C) 2017 Authors of BuckleScript
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type abstractKind = 
-  | Not_abstract
-  | Light_abstract
-  | Complex_abstract 
-
-val isAbstract : 
-  Ast_payload.action list -> abstractKind
-(** if only [abstract] happens  [true]
-    if [abstract] does not appear [false]
-    if [abstract] happens with other, raise exception
-*)  
-
-
-val handleTdclsInStr : 
-  light:bool -> 
-  Parsetree.type_declaration list -> Parsetree.structure
-
-val handleTdclsInSig:  
-  light:bool ->
-  Parsetree.type_declaration list -> Parsetree.signature
-end = struct
-#1 "ast_derive_abstract.ml"
-(* Copyright (C) 2017 Authors of BuckleScript
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-(* let derivingName = "abstract" *)
-module U = Ast_derive_util
-open Ast_helper
-type tdcls = Parsetree.type_declaration list
-
-type abstractKind = 
-  | Not_abstract
-  | Light_abstract
-  | Complex_abstract 
-
-let  isAbstract (xs :Ast_payload.action list) = 
-  match xs with 
-  | [{loc; txt = "abstract"}, 
-    (None 
-    )]  -> 
-    Complex_abstract
-  | [{loc; txt = "abstract"}, 
-    Some {pexp_desc = Pexp_ident {txt = Lident "light"}}  
-    ] -> Light_abstract
-  | [{loc; txt = "abstract"}, Some _ ]
-    -> 
-      Location.raise_errorf ~loc "invalid config for abstract"
-  | xs -> 
-    Ext_list.iter xs (function (({loc; txt}),_) ->  
-      match txt with 
-      | "abstract" -> 
-        Location.raise_errorf ~loc 
-          "bs.deriving abstract does not work with any other deriving"
-      | _ -> ()
-    ) ;
-    Not_abstract
-(* let handle_config (config : Parsetree.expression option) =
-  match config with
-  | Some config ->
-    U.invalid_config config
-  | None -> () *)
-
-
-
-let get_optional_attrs =
-  [ 
-    Ast_attributes.bs_get; 
-    Ast_attributes.bs_return_undefined
-    ]
-(** For this attributes, its type was wrapped as an option,
-   so we can still reuse existing frame work
-*)  
-
-let get_attrs = [ Ast_attributes.bs_get_arity]
-let set_attrs = [Ast_attributes.bs_set]
-
-let deprecated name = 
-  Ast_attributes.deprecated  
-    ("use " ^ name ^ "Get instead or use {abstract = light} explicitly")
-
-
-let handleTdcl 
-  light
-  (tdcl : Parsetree.type_declaration) 
-  : Parsetree.type_declaration * Parsetree.value_description list 
-  =
-  let core_type = U.core_type_of_type_declaration tdcl in
-  let loc = tdcl.ptype_loc in
-  let type_name = tdcl.ptype_name.txt in
-  let newTdcl = {
-    tdcl with
-    ptype_kind = Ptype_abstract;
-    ptype_attributes = [];
-    (* avoid non-terminating*)
-  } in
-  match tdcl.ptype_kind with
-  | Ptype_record label_declarations ->
-    let is_private = tdcl.ptype_private = Private in
-    let has_optional_field =
-      Ext_list.exists label_declarations (fun {pld_type; pld_attributes} ->
-          Ast_attributes.has_bs_optional pld_attributes
-        )  in
-    let setter_accessor, makeType, labels =
-      Ext_list.fold_right
-        label_declarations
-        ([],
-         (if has_optional_field then
-            Ast_compatible.arrow ~loc  (Ast_literal.type_unit ()) core_type
-          else  core_type),
-         [])
-        (fun
-          ({pld_name =
-              {txt = label_name; loc = label_loc} as pld_name;
-            pld_type;
-            pld_mutable;
-            pld_attributes;
-            pld_loc
-           }:
-             Parsetree.label_declaration) (acc, maker, labels) ->
-          let prim_as_name, newLabel =
-            match Ast_attributes.iter_process_bs_string_as pld_attributes with
-            | None ->
-              label_name, pld_name
-            | Some new_name ->
-              new_name, {pld_name with txt = new_name}
-          in
-          let prim = [prim_as_name] in 
-          let is_optional = Ast_attributes.has_bs_optional pld_attributes in
-          
-          let maker, acc =
-            if is_optional then
-              let optional_type = Ast_core_type.lift_option_type pld_type in
-              (Ast_compatible.opt_arrow ~loc:pld_loc label_name 
-
-                  optional_type
-              
-
-                maker,
-              let aux light deprec pld_name : Parsetree.value_description = 
-                (Val.mk ~loc:pld_loc
-                 (if light then pld_name else 
-                  {pld_name with txt = pld_name.txt ^ "Get"})
-                ~attrs:(if deprec then deprecated (pld_name.Asttypes.txt) :: get_optional_attrs  
-                        else get_optional_attrs) ~prim
-                (Ast_compatible.arrow ~loc  core_type optional_type)
-                ) in 
-                if not light then 
-                  aux true true pld_name :: aux false false pld_name  :: acc
-                else  aux true false pld_name :: acc                   
-              )
-            else
-              Ast_compatible.label_arrow ~loc:pld_loc label_name pld_type maker,
-              (
-                let aux light deprec pld_name = 
-                  Val.mk ~loc:pld_loc 
-                    (if light then pld_name else 
-                       {pld_name with txt = pld_name.txt ^ "Get"}
-                    ) ~attrs:(if deprec then deprecated pld_name.Asttypes.txt :: get_attrs else get_attrs)
-                    ~prim:(
-                ["" ; (* Not needed actually*)
-                External_ffi_types.to_string 
-                (Ffi_bs (
-                  [{arg_type = Nothing; arg_label = External_arg_spec.empty_label}],
-                  Return_identity,
-                  Js_get {js_get_name = prim_as_name; js_get_scopes = []}
-                  ))] )
-               (Ast_compatible.arrow ~loc  core_type pld_type)
-               in 
-               if not light then 
-                aux true true pld_name ::aux false false pld_name :: acc 
-               else aux true false pld_name :: acc 
-              )
-          in
-          let is_current_field_mutable = pld_mutable = Mutable in
-          let acc =
-            if is_current_field_mutable then
-              let setter_type =
-                (Ast_compatible.arrow core_type
-                   (Ast_compatible.arrow
-                      pld_type (* setter *)
-                      (Ast_literal.type_unit ()))) in
-              Val.mk ~loc:pld_loc
-                {loc = label_loc; txt = label_name ^ "Set"}
-                (* setter *)
-                ~attrs:set_attrs
-                ~prim setter_type
-              :: acc
-            else acc in
-          acc,
-          maker,
-          (is_optional, newLabel)::labels
-        ) 
-    in
-    newTdcl,
-    (if is_private then
-       setter_accessor
-     else
-       let myPrims =
-        External_process.pval_prim_of_option_labels
-          labels
-          has_optional_field
-        in
-       let myMaker =
-         Val.mk  ~loc
-           {loc; txt = type_name}
-           ~prim:myPrims makeType in
-       (myMaker :: setter_accessor))
-
-  | Ptype_abstract
-  | Ptype_variant _
-  | Ptype_open ->
-    (* Looks obvious that it does not make sense to warn *)
-    (* U.notApplicable tdcl.ptype_loc derivingName;  *)
-    tdcl, []
-
-let handleTdclsInStr ~light tdcls =
-  let tdcls, code =
-    Ext_list.fold_right tdcls ([],[]) (fun tdcl (tdcls, sts)  ->
-        match handleTdcl light tdcl with
-          ntdcl, value_descriptions ->
-          ntdcl::tdcls,
-          Ext_list.map_append value_descriptions sts (fun x -> Str.primitive x) 
-      ) in
-Ast_compatible.rec_type_str tdcls :: code
-(* still need perform transformation for non-abstract type*)
-
-let handleTdclsInSig ~light tdcls =
-  let tdcls, code =
-    Ext_list.fold_right tdcls ([],[]) (fun tdcl (tdcls, sts)  ->
-        match handleTdcl light tdcl with
-          ntdcl, value_descriptions ->
-          ntdcl::tdcls,
-          Ext_list.map_append value_descriptions sts (fun x -> Sig.value x) 
-      ) in
-  Ast_compatible.rec_type_sig tdcls :: code
-
-end
-module Ast_tdcls : sig 
-#1 "ast_tdcls.mli"
-(* Copyright (C) 2018 Authors of BuckleScript
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-val handleTdclsInSigi :
-  Bs_ast_mapper.mapper ->
-  Parsetree.signature_item ->
-  Parsetree.type_declaration list -> Ast_signature.item
-
-
-val handleTdclsInStru :
-  Bs_ast_mapper.mapper ->
-  Parsetree.structure_item ->
-  Parsetree.type_declaration list -> Ast_structure.item
-
-end = struct
-#1 "ast_tdcls.ml"
-(* Copyright (C) 2018 Authors of BuckleScript
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-open Ast_helper
-
-(**
-   [newTdcls tdcls newAttrs]
-   functional update attributes of last declaration *)
-let newTdcls
-    (tdcls : Parsetree.type_declaration list)
-    (newAttrs : Parsetree.attributes)
-  : Parsetree.type_declaration list
-  =
-  match tdcls with
-  | [ x ] ->
-    [{ x with Parsetree.ptype_attributes = newAttrs}]
-  | _ ->
-    Ext_list.map_last tdcls
-      (fun last x ->
-         if last then
-           { x with
-             Parsetree.ptype_attributes = newAttrs}
-         else x )
-      
-
-
-let handleTdclsInSigi
-    (self : Bs_ast_mapper.mapper)
-    (sigi : Parsetree.signature_item)
-    (tdcls : Parsetree.type_declaration list)
-  : Ast_signature.item =
-  begin match Ast_attributes.process_derive_type
-                (Ext_list.last tdcls).ptype_attributes  with
-  | {bs_deriving = Some actions; explict_nonrec}, newAttrs
-    ->
-    let loc = sigi.psig_loc in
-    let originalTdclsNewAttrs = newTdcls tdcls newAttrs in (* remove the processed attr*)
-    let newTdclsNewAttrs = self.type_declaration_list self originalTdclsNewAttrs in
-    let kind = Ast_derive_abstract.isAbstract actions in
-    if kind <> Not_abstract then
-      let  codes = Ast_derive_abstract.handleTdclsInSig ~light:(kind = Light_abstract) originalTdclsNewAttrs in
-      Ast_signature.fuseAll ~loc
-        (
-          Sig.include_ ~loc
-            (Incl.mk ~loc
-               (Mty.typeof_ ~loc
-                  (Mod.constraint_ ~loc
-                     (Mod.structure ~loc [
-                         Ast_compatible.rec_type_str ~loc newTdclsNewAttrs
-                         ] )
-                     (Mty.signature ~loc [])) ) )
-          :: (* include module type of struct [processed_code for checking like invariance ]end *)
-          self.signature self  codes
-        )
-    else
-      Ast_signature.fuseAll ~loc
-        ( 
-          Ast_compatible.rec_type_sig ~loc newTdclsNewAttrs
-        ::
-         self.signature
-           self
-           (Ast_derive.gen_signature tdcls actions explict_nonrec))
-  | {bs_deriving = None }, _  ->
-    Bs_ast_mapper.default_mapper.signature_item self sigi
-
-  end
-
-
-let handleTdclsInStru
-    (self : Bs_ast_mapper.mapper)
-    (str : Parsetree.structure_item)
-    (tdcls : Parsetree.type_declaration list)
-  : Ast_structure.item =
-  begin match
-      Ast_attributes.process_derive_type
-        ((Ext_list.last tdcls).ptype_attributes) with
-  | {bs_deriving = Some actions;
-     explict_nonrec
-    }, newAttrs ->
-    let loc = str.pstr_loc in
-    let originalTdclsNewAttrs = newTdcls tdcls newAttrs in
-    let newStr : Parsetree.structure_item =
-      Ast_compatible.rec_type_str ~loc (self.type_declaration_list self originalTdclsNewAttrs)
-    in
-    let kind = Ast_derive_abstract.isAbstract actions in 
-    if kind <> Not_abstract then
-      let codes = 
-          Ast_derive_abstract.handleTdclsInStr ~light:(kind = Light_abstract) originalTdclsNewAttrs in
-      (* use [tdcls2] avoid nonterminating *)
-      Ast_structure.fuseAll ~loc
-        (
-          Ast_structure.constraint_ ~loc [newStr] []
-          :: (* [include struct end : sig end] for error checking *)
-          self.structure self codes)
-    else
-      Ast_structure.fuseAll ~loc
-        (newStr ::
-         self.structure self
-           (
-             List.map
-               (fun action ->
-                  Ast_derive.gen_structure_signature
-                    loc
-                    tdcls action explict_nonrec
-               )    actions
-           ))
-  | {bs_deriving = None }, _  ->
-    Bs_ast_mapper.default_mapper.structure_item self str
-  end
-
-
-
-end
-module Ppx_entry : sig 
-#1 "ppx_entry.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-val rewrite_signature :   
-  Parsetree.signature -> 
-  Parsetree.signature
-
-val rewrite_implementation : 
-  Parsetree.structure -> 
-  Parsetree.structure
-
-
-
-
-
-
-(* object 
-    for setter : we can push more into [Lsend] and enclose it with a unit type
-
-    for getter :
-
-    (* Invariant: we expect the typechecker & lambda emitter  
-       will not do agressive inlining
-       Worst things could happen
-    {[
-      let x = y## case 3  in 
-      x 2
-    ]}
-       in normal case, it should be compiled into Lambda
-    {[
-      let x = Lsend(y,case, [3]) in 
-      Lapp(x,2)
-    ]}
-
-       worst:
-    {[ Lsend(y, case, [3,2])
-    ]}               
-       for setter(include case setter), this could 
-       be prevented by type system, for getter.
-
-       solution: we can prevent this by rewrite into 
-    {[
-      Fn.run1  (!x# case) v 
-      ]}
-       *)
-
-      *)
-
-end = struct
-#1 "ppx_entry.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-(* When we design a ppx, we should keep it simple, and also think about
-   how it would work with other tools like merlin and ocamldep  *)
-
-(**
-   1. extension point
-   {[
-     [%bs.raw{| blabla |}]
-   ]}
-   will be desugared into
-   {[
-     let module Js =
-     struct unsafe_js : string -> 'a end
-     in Js.unsafe_js {| blabla |}
-   ]}
-   The major benefit is to better error reporting (with locations).
-   Otherwise
-
-   {[
-
-     let f u = Js.unsafe_js u
-     let _ = f (1 + 2)
-   ]}
-   And if it is inlined some where
-*)
-
-
-let record_as_js_object = ref false (* otherwise has an attribute *)
-let no_export = ref false
-
-let () =
-  Ast_derive_projector.init ();
-  Ast_derive_js_mapper.init ()
-
-let reset () =
-  record_as_js_object := false ;
-  no_export  :=  false
-
-type mapper = Bs_ast_mapper.mapper
-let expr_mapper  (self : mapper) (e : Parsetree.expression) =
-        match e.pexp_desc with
-        (** Its output should not be rewritten anymore *)
-        | Pexp_extension extension ->
-          Ast_exp_extension.handle_extension record_as_js_object e self extension
-        | Pexp_constant (
-            
-            Const_string 
-            
-            (s, (Some delim)))
-          ->
-            Ast_utf8_string_interp.transform e s delim
-        (** End rewriting *)
-        | Pexp_function cases ->
-          (* {[ function [@bs.exn]
-                | Not_found -> 0
-                | Invalid_argument -> 1
-              ]}*)
-          begin match
-              Ast_attributes.process_pexp_fun_attributes_rev e.pexp_attributes
-            with
-            | `Nothing, _ ->
-              Bs_ast_mapper.default_mapper.expr self  e
-            | `Exn, pexp_attributes ->
-              Ast_util.convertBsErrorFunction e.pexp_loc self  pexp_attributes cases
-          end
-        | Pexp_fun (arg_label, _, pat , body)
-          when Ast_compatible.is_arg_label_simple arg_label
-          ->
-          begin match Ast_attributes.process_attributes_rev e.pexp_attributes with
-            | Nothing, _
-              -> Bs_ast_mapper.default_mapper.expr self e
-            | Uncurry _, pexp_attributes
-              ->
-              {e with
-               pexp_desc = Ast_util.to_uncurry_fn e.pexp_loc self pat body  ;
-               pexp_attributes}
-            | Method _ , _
-              ->  Location.raise_errorf ~loc:e.pexp_loc "bs.meth is not supported in function expression"
-            | Meth_callback _, pexp_attributes
-              ->
-              {e with pexp_desc = Ast_util.to_method_callback e.pexp_loc  self pat body ;
-                      pexp_attributes }
-          end
-        | Pexp_apply (fn, args  ) ->
-          Ast_exp_apply.handle_exp_apply e self fn args
-        | Pexp_record (label_exprs, opt_exp)  ->
-          if !record_as_js_object then
-            (match opt_exp with
-             | None ->
-               { e with
-                 pexp_desc =
-                   Ast_util.record_as_js_object e.pexp_loc self label_exprs;
-               }
-             | Some e ->
-               Location.raise_errorf
-                 ~loc:e.pexp_loc "`with` construct is not supported in bs.obj ")
-          else
-            (* could be supported using `Object.assign`?
-               type
-               {[
-                 external update : 'a Js.t -> 'b Js.t -> 'a Js.t = ""
-                 constraint 'b :> 'a
-               ]}
-            *)
-            Bs_ast_mapper.default_mapper.expr  self e
-        | Pexp_object {pcstr_self;  pcstr_fields} ->
-          begin match Ast_attributes.process_bs e.pexp_attributes with
-            | `Has, pexp_attributes
-              ->
-              {e with
-               pexp_desc =
-                 Ast_util.ocaml_obj_as_js_object
-                   e.pexp_loc self pcstr_self pcstr_fields;
-               pexp_attributes
-              }
-            | `Nothing , _ ->
-              Bs_ast_mapper.default_mapper.expr  self e
-          end
-        | _ ->  Bs_ast_mapper.default_mapper.expr self e
-
-
-let typ_mapper (self : mapper) typ = 
-  Ast_core_type_class_type.handle_core_type self typ record_as_js_object
-
-let class_type_mapper (self : mapper) ({pcty_attributes; pcty_loc} as ctd : Parsetree.class_type) = 
-  match Ast_attributes.process_bs pcty_attributes with
-  | `Nothing,  _ ->
-    Bs_ast_mapper.default_mapper.class_type self ctd
-  | `Has, pcty_attributes ->
-      (match ctd.pcty_desc with
-      | Pcty_signature ({pcsig_self; pcsig_fields })
-        ->
-        let pcsig_self = self.typ self pcsig_self in
-        {ctd with
-         pcty_desc = Pcty_signature {
-             pcsig_self ;
-             pcsig_fields = Ast_core_type_class_type.handle_class_type_fields self pcsig_fields
-           };
-         pcty_attributes
-        }               
-
-      | Pcty_constr _
-      | Pcty_extension _
-      | Pcty_arrow _ ->
-        Location.raise_errorf ~loc:pcty_loc "invalid or unused attribute `bs`")
-        (* {[class x : int -> object
-             end [@bs]
-           ]}
-           Actually this is not going to happpen as below is an invalid syntax
-           {[class type x = int -> object
-               end[@bs]]}
-        *)
-
-let signature_item_mapper (self : mapper) (sigi : Parsetree.signature_item) =        
-      match sigi.psig_desc with
-      | Psig_type (
-          
-           (_ :: _ as tdcls)) ->  (*FIXME: check recursive handling*)
-          Ast_tdcls.handleTdclsInSigi self sigi tdcls
-      | Psig_value prim when Ast_attributes.process_external prim.pval_attributes
-        ->
-        Ast_external.handleExternalInSig self prim sigi
-      | _ -> Bs_ast_mapper.default_mapper.signature_item self sigi
-
-let structure_item_mapper (self : mapper) (str : Parsetree.structure_item) =
-  match str.pstr_desc with
-  | Pstr_extension ( ({txt = ("bs.raw"| "raw") ; loc}, payload), _attrs)
-    ->
-    Ast_util.handle_raw_structure loc payload
-  | Pstr_extension (({txt = ("bs.debugger.chrome" | "debugger.chrome") ;loc}, payload),_)
-    ->          
-    if !Js_config.debug then 
-      let open Ast_helper in 
-      Str.eval ~loc (Ast_compatible.app1 ~loc 
-                       (Exp.ident ~loc {txt = Ldot(Ldot (Lident"Belt","Debug"), "setupChromeDebugger");loc} )
-                       (Ast_literal.val_unit ~loc ())
-                    )
-    else Ast_structure.dummy_item loc
-  | Pstr_type (
-          
-          (_ :: _ as tdcls )) (* [ {ptype_attributes} as tdcl ] *)->
-          Ast_tdcls.handleTdclsInStru self str tdcls
-   | Pstr_primitive prim when Ast_attributes.process_external prim.pval_attributes
-      ->
-      Ast_external.handleExternalInStru self prim str
-   | _ -> Bs_ast_mapper.default_mapper.structure_item self str
-
-
-    
-let rec unsafe_mapper : mapper =
-  { Bs_ast_mapper.default_mapper with
-    expr = expr_mapper;
-    typ = typ_mapper ;
-    class_type = class_type_mapper;      
-    signature_item =  signature_item_mapper ;
-    value_bindings = Ast_tuple_pattern_flatten.value_bindings_mapper;
-    structure_item = structure_item_mapper
-  }
-
-
-type action_table = 
-  (Parsetree.expression option -> unit) String_map.t
-(** global configurations below *)
-let common_actions_table :
-  (string *  (Parsetree.expression option -> unit)) list =
-  [
-  ]
-
-
-let structural_config_table : action_table =
-  String_map.of_list
-    (( "no_export" ,
-       (fun x ->
-          no_export := (
-            match x with
-            |Some e -> Ast_payload.assert_bool_lit e
-            | None -> true)
-       ))
-     :: common_actions_table)
-
-let signature_config_table : action_table =
-  String_map.of_list common_actions_table
-
-
-let rewrite_signature (x : Parsetree.signature) =  
-  let result = 
-    match x with
-    | {psig_desc = Psig_attribute ({txt = "bs.config"; loc}, payload); _} :: rest
-      ->          
-      Ext_list.iter (Ast_payload.ident_or_record_as_config loc payload) 
-        (Ast_payload.table_dispatch signature_config_table) ;
-      unsafe_mapper.signature unsafe_mapper rest          
-    | _ ->
-      unsafe_mapper.signature  unsafe_mapper x in
-  reset ();
-  (* Keep this check, since the check is not inexpensive*)
-  Bs_ast_invariant.emit_external_warnings_on_signature result;
-  result
-
-(* Note we also drop attributes like [@@@bs.deriving ] for convenience*)    
-let rewrite_implementation (x : Parsetree.structure) =  
-  let result =
-    match x with
-    | {pstr_desc = Pstr_attribute ({txt = "bs.config"; loc}, payload); _} :: rest
-      ->
-      begin
-        Ext_list.iter (Ast_payload.ident_or_record_as_config loc payload)
-          (Ast_payload.table_dispatch structural_config_table) ;
-        let rest = unsafe_mapper.structure unsafe_mapper rest in
-        if !no_export then
-          Ast_helper.[Str.include_ ~loc
-             (Incl.mk ~loc
-                (Mod.constraint_ ~loc
-                   (Mod.structure ~loc rest  )
-                   (Mty.signature ~loc [])
-                ))]
-        else rest
-      end
-    | _ ->
-      unsafe_mapper.structure  unsafe_mapper x  in
-  reset ();
-  (* Keep this check since it is not inexpensive*)
-  Bs_ast_invariant.emit_external_warnings_on_structure result;
-  result
-
-
-
-
-
-end
-module Bsppx_main : sig 
-#1 "bsppx_main.mli"
-(* Copyright (C) 2019 Authors of BuckleScript
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-end = struct
-#1 "bsppx_main.ml"
+module Ppx_driver : sig 
+#1 "ppx_driver.mli"
 (* Copyright (C) 2019- Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -21654,8 +18648,134 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
+
+val main : 
+  (Parsetree.structure -> Parsetree.structure) ->
+  (Parsetree.signature -> Parsetree.signature) -> 
+  unit 
+  
+end = struct
+#1 "ppx_driver.ml"
+(* Copyright (C) 2019- Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+let apply_lazy ~source ~target 
+  (impl : Parsetree.structure -> Parsetree.structure) 
+  (iface : Parsetree.signature -> Parsetree.signature) 
+  =
+  let ic = open_in_bin source in
+  let magic =
+    really_input_string ic (String.length Config.ast_impl_magic_number)
+  in
+  if magic <> Config.ast_impl_magic_number
+  && magic <> Config.ast_intf_magic_number then
+    failwith "Bs_ast_mapper: OCaml version mismatch or malformed input";
+  Location.input_name := input_value ic;
+  let ast = input_value ic in
+  close_in ic;
+
+  let ast =
+    if magic = Config.ast_impl_magic_number
+    then Obj.magic (impl (Obj.magic ast))
+    else Obj.magic (iface (Obj.magic ast))
+  in
+  let oc = open_out_bin target in
+  output_string oc magic;
+  output_value oc !Location.input_name;
+  output_value oc ast;
+  close_out oc
+
+let main impl intf =
+  try
+    let a = Sys.argv in
+    let n = Array.length a in
+    if n > 2 then
+      apply_lazy ~source:a.(n - 2) ~target:a.(n - 1)
+        impl
+        intf
+    else
+      begin
+        Printf.eprintf "Usage: %s [extra_args] <infile> <outfile>\n%!"
+          Sys.executable_name;
+        exit 2
+      end
+  with exn ->
+    begin
+      Location.report_exception Format.err_formatter exn;
+      exit 2
+    end
+
+end
+module Native_ppx_main : sig 
+#1 "native_ppx_main.mli"
+
+end = struct
+#1 "native_ppx_main.ml"
+(* Copyright (C) 2019- Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type mapper = Bs_ast_mapper.mapper 
+
+let default_expr_mapper = Bs_ast_mapper.default_mapper.expr
+
+let expr_mapper (self : mapper) ( e : Parsetree.expression) = 
+  match e.pexp_desc with 
+  | Pexp_apply(fn, args) -> 
+    Ast_exp_apply.handle_exp_apply e self fn args 
+  | _  -> default_expr_mapper self e 
+
+let my_mapper : mapper = {
+  Bs_ast_mapper.default_mapper with 
+  expr = expr_mapper
+}
+
 let () = 
-  Ppx_driver.main Ppx_entry.rewrite_implementation Ppx_entry.rewrite_signature
-
-
+  Ppx_driver.main  
+    (fun x -> my_mapper.structure my_mapper x)
+    (fun x -> my_mapper.signature my_mapper x)
 end

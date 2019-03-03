@@ -134,8 +134,10 @@ let flattern_tuple_pattern_vb
      pvb_attributes} :: acc
 
 
-let handle_value_bindings (self : Bs_ast_mapper.mapper) (vbs : Parsetree.value_binding list) =
-    (* Bs_ast_mapper.default_mapper.value_bindings self  vbs   *)
-    List.fold_right (fun vb acc ->
-        flattern_tuple_pattern_vb self vb acc
-      ) vbs []
+let value_bindings_mapper 
+    (self : Bs_ast_mapper.mapper) 
+    (vbs : Parsetree.value_binding list) =
+  (* Bs_ast_mapper.default_mapper.value_bindings self  vbs   *)
+  List.fold_right (fun vb acc ->
+      flattern_tuple_pattern_vb self vb acc
+    ) vbs []

@@ -30356,7 +30356,17 @@ let emit_external_warnings : iterator=
              "%%identity expect its type to be of form 'a -> 'b (arity 1)"
          | _ ->
            default_iterator.value_description self v 
-      )
+      );
+      pat = begin fun self (pat : Parsetree.pattern) -> 
+                  match pat.ppat_desc with
+                  |  Ppat_constant(
+            
+            Const_string 
+                    
+         (_, Some "j")) ->
+        Location.raise_errorf ~loc:pat.ppat_loc  "Unicode string is not allowed in pattern match" 
+      | _ -> default_iterator.pat self pat
+      end 
   }
 
 let emit_external_warnings_on_structure  (stru : Parsetree.structure) = 
@@ -30603,11 +30613,11 @@ let process_bs (attrs : t) =
         st, attr::acc
     ) 
 
-let process_external attrs =
-  List.exists (fun (({txt; }, _)  : attr) ->
+let process_external (attrs : t)=
+  Ext_list.exists attrs (fun ({txt; }, _) ->
       if Ext_string.starts_with txt "bs." then true
       else false
-    ) attrs
+    ) 
 
 
 type derive_attr = {
@@ -30667,7 +30677,7 @@ let iter_process_derive_type (attrs : t) =
   it is worse in bs.uncurry since it will introduce
   inconsistency in arity
  *)  
-let iter_process_bs_string_int_unwrap_uncurry (attrs : Parsetree.attributes) =
+let iter_process_bs_string_int_unwrap_uncurry (attrs : t) =
   let st = ref `Nothing in 
   let assign v (({loc;_}, _ ) as attr : attr) = 
     if !st = `Nothing then 
@@ -30749,11 +30759,11 @@ let has_bs_optional  (attrs : t) : bool =
 
 
 
-let iter_process_bs_int_as  attrs =
+let iter_process_bs_int_as  (attrs : t) =
   let st = ref None in
-  List.iter
+  Ext_list.iter attrs
     (fun
-      (({txt ; loc}, payload ) as attr : attr)  ->
+      (({txt ; loc}, payload ) as attr)  ->
       match  txt with
       | "bs.as"
         ->
@@ -30767,7 +30777,7 @@ let iter_process_bs_int_as  attrs =
         else
           Bs_syntaxerr.err loc Duplicated_bs_as
       | _  -> ()
-    ) attrs; !st
+    ) ; !st
 
 
 let iter_process_bs_string_or_int_as (attrs : Parsetree.attributes) =
@@ -37762,7 +37772,7 @@ val map_open_tuple:
   Parsetree.expression option
 
 
-val handle_value_bindings :
+val value_bindings_mapper :
   Bs_ast_mapper.mapper ->
   Parsetree.value_binding list ->
   Parsetree.value_binding list
@@ -37905,11 +37915,13 @@ let flattern_tuple_pattern_vb
      pvb_attributes} :: acc
 
 
-let handle_value_bindings (self : Bs_ast_mapper.mapper) (vbs : Parsetree.value_binding list) =
-    (* Bs_ast_mapper.default_mapper.value_bindings self  vbs   *)
-    List.fold_right (fun vb acc ->
-        flattern_tuple_pattern_vb self vb acc
-      ) vbs []
+let value_bindings_mapper 
+    (self : Bs_ast_mapper.mapper) 
+    (vbs : Parsetree.value_binding list) =
+  (* Bs_ast_mapper.default_mapper.value_bindings self  vbs   *)
+  List.fold_right (fun vb acc ->
+      flattern_tuple_pattern_vb self vb acc
+    ) vbs []
 
 end
 module Ast_exp_apply : sig 
@@ -39146,6 +39158,7 @@ val rewrite_implementation :
 
 
 
+
 (* object 
     for setter : we can push more into [Lsend] and enclose it with a unit type
 
@@ -39246,10 +39259,8 @@ let reset () =
   record_as_js_object := false ;
   no_export  :=  false
 
-
-let rec unsafe_mapper : Bs_ast_mapper.mapper =
-  { Bs_ast_mapper.default_mapper with
-    expr = (fun self e ->
+type mapper = Bs_ast_mapper.mapper
+let expr_mapper  (self : mapper) (e : Parsetree.expression) =
         match e.pexp_desc with
         (** Its output should not be rewritten anymore *)
         | Pexp_extension extension ->
@@ -39329,90 +39340,84 @@ let rec unsafe_mapper : Bs_ast_mapper.mapper =
               Bs_ast_mapper.default_mapper.expr  self e
           end
         | _ ->  Bs_ast_mapper.default_mapper.expr self e
-      );
-    typ = (fun self typ ->
-        Ast_core_type_class_type.handle_core_type self typ record_as_js_object);
-    class_type =
-      (fun self ({pcty_attributes; pcty_loc} as ctd) ->
-         match Ast_attributes.process_bs pcty_attributes with
-         | `Nothing,  _ ->
-           Bs_ast_mapper.default_mapper.class_type self ctd
-         | `Has, pcty_attributes ->
-             (match ctd.pcty_desc with
-             | Pcty_signature ({pcsig_self; pcsig_fields })
-               ->
-               let pcsig_self = self.typ self pcsig_self in
-               {ctd with
-                pcty_desc = Pcty_signature {
-                    pcsig_self ;
-                    pcsig_fields = Ast_core_type_class_type.handle_class_type_fields self pcsig_fields
-                  };
-                pcty_attributes
-               }               
 
-             | Pcty_constr _
-             | Pcty_extension _
-             | Pcty_arrow _ ->
-               Location.raise_errorf ~loc:pcty_loc "invalid or unused attribute `bs`")
-               (* {[class x : int -> object
-                    end [@bs]
-                  ]}
-                  Actually this is not going to happpen as below is an invalid syntax
-                  {[class type x = int -> object
-                      end[@bs]]}
-               *)
-      );
-    signature_item =  begin fun
-      (self : Bs_ast_mapper.mapper)
-      (sigi : Parsetree.signature_item) ->
+
+let typ_mapper (self : mapper) typ = 
+  Ast_core_type_class_type.handle_core_type self typ record_as_js_object
+
+let class_type_mapper (self : mapper) ({pcty_attributes; pcty_loc} as ctd : Parsetree.class_type) = 
+  match Ast_attributes.process_bs pcty_attributes with
+  | `Nothing,  _ ->
+    Bs_ast_mapper.default_mapper.class_type self ctd
+  | `Has, pcty_attributes ->
+      (match ctd.pcty_desc with
+      | Pcty_signature ({pcsig_self; pcsig_fields })
+        ->
+        let pcsig_self = self.typ self pcsig_self in
+        {ctd with
+         pcty_desc = Pcty_signature {
+             pcsig_self ;
+             pcsig_fields = Ast_core_type_class_type.handle_class_type_fields self pcsig_fields
+           };
+         pcty_attributes
+        }               
+
+      | Pcty_constr _
+      | Pcty_extension _
+      | Pcty_arrow _ ->
+        Location.raise_errorf ~loc:pcty_loc "invalid or unused attribute `bs`")
+        (* {[class x : int -> object
+             end [@bs]
+           ]}
+           Actually this is not going to happpen as below is an invalid syntax
+           {[class type x = int -> object
+               end[@bs]]}
+        *)
+
+let signature_item_mapper (self : mapper) (sigi : Parsetree.signature_item) =        
       match sigi.psig_desc with
       | Psig_type (
           
            (_ :: _ as tdcls)) ->  (*FIXME: check recursive handling*)
           Ast_tdcls.handleTdclsInSigi self sigi tdcls
-      | Psig_value prim
-        when Ast_attributes.process_external prim.pval_attributes
+      | Psig_value prim when Ast_attributes.process_external prim.pval_attributes
         ->
-          Ast_external.handleExternalInSig self prim sigi
+        Ast_external.handleExternalInSig self prim sigi
       | _ -> Bs_ast_mapper.default_mapper.signature_item self sigi
-    end;
-    pat = begin fun self (pat : Parsetree.pattern) ->
-      match pat with
-      | { ppat_desc = Ppat_constant(
-            
-            Const_string 
-                    
-         (_, Some "j")); ppat_loc = loc} ->
-        Location.raise_errorf ~loc  "Unicode string is not allowed in pattern match"
-      | _  -> Bs_ast_mapper.default_mapper.pat self pat
 
-    end;
-    value_bindings = Ast_tuple_pattern_flatten.handle_value_bindings;
-    structure_item = begin fun self (str : Parsetree.structure_item) ->
-      begin match str.pstr_desc with
-        | Pstr_extension ( ({txt = ("bs.raw"| "raw") ; loc}, payload), _attrs)
-          ->
-          Ast_util.handle_raw_structure loc payload
-        | Pstr_extension (({txt = ("bs.debugger.chrome" | "debugger.chrome") ;loc}, payload),_)
-          ->          
-          if !Js_config.debug then 
-            let open Ast_helper in 
-            Str.eval ~loc (Ast_compatible.app1 ~loc 
-            (Exp.ident ~loc {txt = Ldot(Ldot (Lident"Belt","Debug"), "setupChromeDebugger");loc} )
-             (Ast_literal.val_unit ~loc ())
-             )
-          else Ast_structure.dummy_item loc
-        | Pstr_type (
+let structure_item_mapper (self : mapper) (str : Parsetree.structure_item) =
+  match str.pstr_desc with
+  | Pstr_extension ( ({txt = ("bs.raw"| "raw") ; loc}, payload), _attrs)
+    ->
+    Ast_util.handle_raw_structure loc payload
+  | Pstr_extension (({txt = ("bs.debugger.chrome" | "debugger.chrome") ;loc}, payload),_)
+    ->          
+    if !Js_config.debug then 
+      let open Ast_helper in 
+      Str.eval ~loc (Ast_compatible.app1 ~loc 
+                       (Exp.ident ~loc {txt = Ldot(Ldot (Lident"Belt","Debug"), "setupChromeDebugger");loc} )
+                       (Ast_literal.val_unit ~loc ())
+                    )
+    else Ast_structure.dummy_item loc
+  | Pstr_type (
           
           (_ :: _ as tdcls )) (* [ {ptype_attributes} as tdcl ] *)->
           Ast_tdcls.handleTdclsInStru self str tdcls
-        | Pstr_primitive prim
-          when Ast_attributes.process_external prim.pval_attributes
-          ->
-          Ast_external.handleExternalInStru self prim str
-        | _ -> Bs_ast_mapper.default_mapper.structure_item self str
-      end
-    end
+   | Pstr_primitive prim when Ast_attributes.process_external prim.pval_attributes
+      ->
+      Ast_external.handleExternalInStru self prim str
+   | _ -> Bs_ast_mapper.default_mapper.structure_item self str
+
+
+    
+let rec unsafe_mapper : mapper =
+  { Bs_ast_mapper.default_mapper with
+    expr = expr_mapper;
+    typ = typ_mapper ;
+    class_type = class_type_mapper;      
+    signature_item =  signature_item_mapper ;
+    value_bindings = Ast_tuple_pattern_flatten.value_bindings_mapper;
+    structure_item = structure_item_mapper
   }
 
 
@@ -39480,6 +39485,8 @@ let rewrite_implementation (x : Parsetree.structure) =
   (* Keep this check since it is not inexpensive*)
   Bs_ast_invariant.emit_external_warnings_on_structure result;
   result
+
+
 
 
 

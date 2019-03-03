@@ -1,5 +1,5 @@
-(* Copyright (C) 2018 Authors of BuckleScript
- *
+(* Copyright (C) 2019- Authors of BuckleScript
+ * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,21 +17,28 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-val map_open_tuple:
-  Parsetree.expression ->
-  (Parsetree.expression list ->
-    Parsetree.attributes ->
-   Parsetree.expression) ->
-  Parsetree.expression option
+type mapper = Bs_ast_mapper.mapper 
 
+let default_expr_mapper = Bs_ast_mapper.default_mapper.expr
 
-val value_bindings_mapper :
-  Bs_ast_mapper.mapper ->
-  Parsetree.value_binding list ->
-  Parsetree.value_binding list
+let expr_mapper (self : mapper) ( e : Parsetree.expression) = 
+  match e.pexp_desc with 
+  | Pexp_apply(fn, args) -> 
+    Ast_exp_apply.handle_exp_apply e self fn args 
+  | _  -> default_expr_mapper self e 
+
+let my_mapper : mapper = {
+  Bs_ast_mapper.default_mapper with 
+  expr = expr_mapper
+}
+
+let () = 
+  Ppx_driver.main  
+    (fun x -> my_mapper.structure my_mapper x)
+    (fun x -> my_mapper.signature my_mapper x)
