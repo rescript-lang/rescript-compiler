@@ -15580,7 +15580,7 @@ type t  =
 
 val name_of_ffi : external_spec -> string
 
-val check_ffi : ?loc:Location.t ->  external_spec -> unit
+val check_ffi : ?loc:Location.t ->  external_spec -> bool
 
 val to_string : t -> string
 
@@ -15768,14 +15768,18 @@ let valid_ident (s : string) =
      true
    with E.E -> false )
 
+let non_npm_package_path (x : string) = 
+     Ext_string.starts_with x "./" ||
+     Ext_string.starts_with x "../"
+  
 let valid_global_name ?loc txt =
   if not (valid_ident txt) then
     let v = Ext_string.split_by ~keep_empty:true (fun x -> x = '.') txt in
-    List.iter
+    Ext_list.iter v
       (fun s ->
          if not (valid_ident s) then
            Location.raise_errorf ?loc "Not a valid global name %s"  txt
-      ) v
+      ) 
 
 (*
   We loose such check (see #2583),
@@ -15801,8 +15805,9 @@ let check_external_module_name_opt ?loc x =
   | Some v -> check_external_module_name ?loc v
 
 
-let check_ffi ?loc ffi =
-  match ffi with
+let check_ffi ?loc ffi : bool =
+  let relative = ref false in 
+  begin match ffi with
   | Js_global {name} -> valid_global_name ?loc  name
   | Js_send {name }
   | Js_set  {js_set_name = name}
@@ -15815,12 +15820,17 @@ let check_ffi ?loc ffi =
   | Js_module_as_var external_module_name
   | Js_module_as_fn {external_module_name; _}
   | Js_module_as_class external_module_name
-    -> check_external_module_name external_module_name
+    -> 
+      (* relative := non_npm_package_path external_module_name.bundle ; *)
+      check_external_module_name external_module_name
   | Js_new {external_module_name ;  name}
   | Js_call {external_module_name ;  name ; _}
     ->
+
     check_external_module_name_opt ?loc external_module_name ;
-    valid_global_name ?loc name
+    valid_global_name ?loc name 
+  end; 
+  !relative
 
 let bs_prefix = "BS:"
 let bs_prefix_length = String.length bs_prefix
@@ -16222,7 +16232,12 @@ module External_process : sig
 
 
 
-
+ type response = {
+  pval_type : Parsetree.core_type ; 
+  pval_prim : string list ; 
+  pval_attributes : Parsetree.attributes;
+  no_inline_cross_module : bool 
+}
 
 (**
   [handle_attributes_as_string
@@ -16238,7 +16253,7 @@ val handle_attributes_as_string :
   Ast_core_type.t ->
   Ast_attributes.t ->
   string   ->
-  Ast_core_type.t * string list * Ast_attributes.t
+  response
 
 
 
@@ -16625,7 +16640,12 @@ let check_return_wrapper
 
 
 
-
+type response = {
+  pval_type : Parsetree.core_type ; 
+  pval_prim : string list ; 
+  pval_attributes : Parsetree.attributes;
+  no_inline_cross_module : bool 
+}
 (** Note that the passed [type_annotation] is already processed by visitor pattern before
 *)
 let handle_attributes
@@ -16633,7 +16653,7 @@ let handle_attributes
     (pval_prim : string )
     (type_annotation : Parsetree.core_type)
     (prim_attributes : Ast_attributes.t) (prim_name : string)
-  : Ast_core_type.t * string * External_ffi_types.t * Ast_attributes.t =
+   =
   (** sanity check here
       {[ int -> int -> (int -> int -> int [@bs.uncurry])]}
       It does not make sense
@@ -16797,8 +16817,9 @@ let handle_attributes
           Ast_compatible.mk_fn_type new_arg_types_ty result
           ,
           prim_name,
-          Ffi_obj_create arg_kinds,
-          left_attrs
+          External_ffi_types.Ffi_obj_create arg_kinds,
+          left_attrs, 
+          false 
         end
 
       | _ -> Location.raise_errorf ~loc "Attribute found that conflicts with [@@bs.obj]"
@@ -17197,7 +17218,7 @@ let handle_attributes
         }
         ->  Location.raise_errorf ~loc "Could not infer which FFI category it belongs to, maybe you forgot [%@%@bs.val]? "  in
     begin
-      External_ffi_types.check_ffi ~loc ffi;
+      let relative = External_ffi_types.check_ffi ~loc ffi in 
       (* result type can not be labeled *)
       (* currently we don't process attributes of
          return type, in the future we may  *)
@@ -17208,16 +17229,22 @@ let handle_attributes
       in
       Ast_compatible.mk_fn_type new_arg_types_ty new_result_type,  
       prim_name,
-      (Ffi_bs (arg_type_specs,return_wrapper ,  ffi)), left_attrs
+      Ffi_bs (arg_type_specs,return_wrapper ,  ffi),
+      left_attrs,
+      relative 
     end
 
 let handle_attributes_as_string
     pval_loc
     pval_prim
-    (typ : Ast_core_type.t) attrs v =
-  let pval_type, prim_name, ffi, processed_attrs  =
+    (typ : Ast_core_type.t) attrs v : response =
+  let pval_type, prim_name, ffi, processed_attrs, relative  =
     handle_attributes pval_loc pval_prim typ attrs v  in
-  pval_type, [prim_name; External_ffi_types.to_string ffi], processed_attrs
+  { pval_type;
+    pval_prim = [prim_name; External_ffi_types.to_string ffi];
+    pval_attributes = processed_attrs;
+    no_inline_cross_module = relative
+  }
 
 
 
