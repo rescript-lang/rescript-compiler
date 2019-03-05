@@ -109,22 +109,22 @@ let process_attributes_rev (attrs : t) : attr_kind * t =
     ) 
 
 let process_pexp_fun_attributes_rev (attrs : t) =
-  Ext_list.fold_left attrs (`Nothing, []) (fun (st, acc) (({txt; loc}, _) as attr ) ->
-      match txt, st  with
-      | "bs.open", (`Nothing | `Exn)
+  Ext_list.fold_left attrs (false, []) (fun (st, acc) (({txt; loc}, _) as attr ) ->
+      match txt  with
+      | "bs.open"
         ->
-        `Exn, acc
-
-      | _ , _ ->
+        true, acc
+      | _  ->
         st, attr::acc
     ) 
 
+
 let process_bs (attrs : t) =
-  Ext_list.fold_left attrs (`Nothing, []) (fun (st, acc) (({txt; loc}, _) as attr ) ->
+  Ext_list.fold_left attrs (false, []) (fun (st, acc) (({txt; loc}, _) as attr ) ->
       match txt, st  with
       | "bs", _
         ->
-        `Has, acc
+        true, acc
       | _ , _ ->
         st, attr::acc
     ) 

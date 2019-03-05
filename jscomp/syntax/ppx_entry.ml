@@ -89,14 +89,12 @@ let expr_mapper  (self : mapper) (e : Parsetree.expression) =
                 | Not_found -> 0
                 | Invalid_argument -> 1
               ]}*)
-          begin match
-              Ast_attributes.process_pexp_fun_attributes_rev e.pexp_attributes
-            with
-            | `Nothing, _ ->
-              default_expr_mapper self  e
-            | `Exn, pexp_attributes ->
-              Ast_bs_open.convertBsErrorFunction e.pexp_loc self  pexp_attributes cases
-          end
+          (match Ast_attributes.process_pexp_fun_attributes_rev e.pexp_attributes with
+           | false, _ ->
+             default_expr_mapper self  e
+           | true, pexp_attributes ->
+             Ast_bs_open.convertBsErrorFunction e.pexp_loc self  pexp_attributes cases)
+          
         | Pexp_fun (arg_label, _, pat , body)
           when Ast_compatible.is_arg_label_simple arg_label
           ->
@@ -118,6 +116,13 @@ let expr_mapper  (self : mapper) (e : Parsetree.expression) =
         | Pexp_apply (fn, args  ) ->
           Ast_exp_apply.handle_exp_apply e self fn args
         | Pexp_record (label_exprs, opt_exp)  ->
+           (* could be supported using `Object.assign`?
+               type
+               {[
+                 external update : 'a Js.t -> 'b Js.t -> 'a Js.t = ""
+                 constraint 'b :> 'a
+               ]}
+            *)
           if !record_as_js_object then
             (match opt_exp with
              | None ->
@@ -129,17 +134,10 @@ let expr_mapper  (self : mapper) (e : Parsetree.expression) =
                Location.raise_errorf
                  ~loc:e.pexp_loc "`with` construct is not supported in bs.obj ")
           else
-            (* could be supported using `Object.assign`?
-               type
-               {[
-                 external update : 'a Js.t -> 'b Js.t -> 'a Js.t = ""
-                 constraint 'b :> 'a
-               ]}
-            *)
             default_expr_mapper self e
         | Pexp_object {pcstr_self;  pcstr_fields} ->
-          begin match Ast_attributes.process_bs e.pexp_attributes with
-            | `Has, pexp_attributes
+            (match Ast_attributes.process_bs e.pexp_attributes with
+            | true, pexp_attributes
               ->
               {e with
                pexp_desc =
@@ -147,9 +145,8 @@ let expr_mapper  (self : mapper) (e : Parsetree.expression) =
                    e.pexp_loc self pcstr_self pcstr_fields;
                pexp_attributes
               }
-            | `Nothing , _ ->
-              default_expr_mapper self e
-          end
+            | false , _ ->
+              default_expr_mapper self e)
         | _ ->  default_expr_mapper self e
 
 
@@ -158,9 +155,9 @@ let typ_mapper (self : mapper) (typ : Parsetree.core_type) =
 
 let class_type_mapper (self : mapper) ({pcty_attributes; pcty_loc} as ctd : Parsetree.class_type) = 
   match Ast_attributes.process_bs pcty_attributes with
-  | `Nothing,  _ ->
+  | false,  _ ->
     Bs_ast_mapper.default_mapper.class_type self ctd
-  | `Has, pcty_attributes ->
+  | true, pcty_attributes ->
       (match ctd.pcty_desc with
       | Pcty_signature ({pcsig_self; pcsig_fields })
         ->
