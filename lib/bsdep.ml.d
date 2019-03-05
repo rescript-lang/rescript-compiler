@@ -88,6 +88,8 @@
 ./stubs/bs_hash_stubs.ml
 ./syntax/ast_attributes.ml
 ./syntax/ast_attributes.mli
+./syntax/ast_bs_open.ml
+./syntax/ast_bs_open.mli
 ./syntax/ast_comb.ml
 ./syntax/ast_comb.mli
 ./syntax/ast_compatible.ml

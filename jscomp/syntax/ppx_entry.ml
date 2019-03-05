@@ -64,7 +64,11 @@ let reset () =
   record_as_js_object := false ;
   no_export  :=  false
 
+
+
 type mapper = Bs_ast_mapper.mapper
+let default_expr_mapper = Bs_ast_mapper.default_mapper.expr 
+
 let expr_mapper  (self : mapper) (e : Parsetree.expression) =
         match e.pexp_desc with
         (** Its output should not be rewritten anymore *)
@@ -89,16 +93,16 @@ let expr_mapper  (self : mapper) (e : Parsetree.expression) =
               Ast_attributes.process_pexp_fun_attributes_rev e.pexp_attributes
             with
             | `Nothing, _ ->
-              Bs_ast_mapper.default_mapper.expr self  e
+              default_expr_mapper self  e
             | `Exn, pexp_attributes ->
-              Ast_util.convertBsErrorFunction e.pexp_loc self  pexp_attributes cases
+              Ast_bs_open.convertBsErrorFunction e.pexp_loc self  pexp_attributes cases
           end
         | Pexp_fun (arg_label, _, pat , body)
           when Ast_compatible.is_arg_label_simple arg_label
           ->
           begin match Ast_attributes.process_attributes_rev e.pexp_attributes with
             | Nothing, _
-              -> Bs_ast_mapper.default_mapper.expr self e
+              -> default_expr_mapper self e
             | Uncurry _, pexp_attributes
               ->
               {e with
@@ -132,7 +136,7 @@ let expr_mapper  (self : mapper) (e : Parsetree.expression) =
                  constraint 'b :> 'a
                ]}
             *)
-            Bs_ast_mapper.default_mapper.expr  self e
+            default_expr_mapper self e
         | Pexp_object {pcstr_self;  pcstr_fields} ->
           begin match Ast_attributes.process_bs e.pexp_attributes with
             | `Has, pexp_attributes
@@ -144,13 +148,13 @@ let expr_mapper  (self : mapper) (e : Parsetree.expression) =
                pexp_attributes
               }
             | `Nothing , _ ->
-              Bs_ast_mapper.default_mapper.expr  self e
+              default_expr_mapper self e
           end
-        | _ ->  Bs_ast_mapper.default_mapper.expr self e
+        | _ ->  default_expr_mapper self e
 
 
-let typ_mapper (self : mapper) typ = 
-  Ast_core_type_class_type.handle_core_type self typ record_as_js_object
+let typ_mapper (self : mapper) (typ : Parsetree.core_type) = 
+  Ast_core_type_class_type.typ_mapper record_as_js_object self typ
 
 let class_type_mapper (self : mapper) ({pcty_attributes; pcty_loc} as ctd : Parsetree.class_type) = 
   match Ast_attributes.process_bs pcty_attributes with
@@ -196,6 +200,8 @@ let signature_item_mapper (self : mapper) (sigi : Parsetree.signature_item) =
         Ast_external.handleExternalInSig self prim sigi
       | _ -> Bs_ast_mapper.default_mapper.signature_item self sigi
 
+let setupChromeDebugger : Longident.t =  Ldot (Ldot (Lident"Belt","Debug"), "setupChromeDebugger")
+
 let structure_item_mapper (self : mapper) (str : Parsetree.structure_item) =
   match str.pstr_desc with
   | Pstr_extension ( ({txt = ("bs.raw"| "raw") ; loc}, payload), _attrs)
@@ -206,7 +212,7 @@ let structure_item_mapper (self : mapper) (str : Parsetree.structure_item) =
     if !Js_config.debug then 
       let open Ast_helper in 
       Str.eval ~loc (Ast_compatible.app1 ~loc 
-                       (Exp.ident ~loc {txt = Ldot(Ldot (Lident"Belt","Debug"), "setupChromeDebugger");loc} )
+                       (Exp.ident ~loc {txt = setupChromeDebugger;loc} )
                        (Ast_literal.val_unit ~loc ())
                     )
     else Ast_structure.dummy_item loc
