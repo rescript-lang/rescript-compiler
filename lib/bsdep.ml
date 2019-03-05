@@ -38063,6 +38063,7 @@ let bound (e : exp) (cb : exp -> _) =
       [ Vb.mk ~loc (Pat.var ~loc {txt = ocaml_obj_id; loc}) e ]
       (cb (Exp.ident ~loc {txt = Lident ocaml_obj_id; loc}))
 
+let default_expr_mapper = Bs_ast_mapper.default_mapper.expr      
 let handle_exp_apply
     (e  : exp)
     (self : Bs_ast_mapper.mapper)
@@ -38070,11 +38071,11 @@ let handle_exp_apply
     (args : (Ast_compatible.arg_label * Parsetree.expression) list)
   =
   let loc = e.pexp_loc in
-  begin match fn.pexp_desc with
-    | Pexp_apply (
-        {pexp_desc =
-           Pexp_ident  {txt = Lident "##"  ; loc} ; _},
-        [
+  match fn.pexp_desc with
+  | Pexp_apply (
+      {pexp_desc =
+         Pexp_ident  {txt = Lident "##"  ; loc} ; _},
+      [
 
           ("", obj) ;
           ("", {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _} )
@@ -38227,19 +38228,19 @@ let handle_exp_apply
                 Ast_util.method_apply loc self obj
                   (name ^ Literals.setter_suffix) [Ast_compatible.no_label, arg ]  }
             (Ast_literal.type_unit ~loc ())
-        | _ -> Bs_ast_mapper.default_mapper.expr self e
+        | _ -> default_expr_mapper self e
       end
     | _ ->
       begin match
           Ext_list.exclude_with_val
             e.pexp_attributes 
             Ast_attributes.is_bs with
-      | false, _ -> Bs_ast_mapper.default_mapper.expr self e
+      | false, _ -> default_expr_mapper self e
       | true, pexp_attributes ->
         {e with pexp_desc = Ast_util.uncurry_fn_apply loc self fn args ;
                 pexp_attributes }
       end
-  end
+
 
 end
 module Ast_exp_extension : sig 
