@@ -15483,6 +15483,94 @@ let header =
 let package_name = "bs-platform"   
     
 end
+module Ext_option : sig 
+#1 "ext_option.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** Utilities for [option] type *)
+
+val map : 'a option -> ('a -> 'b) -> 'b option
+
+val iter : 'a option -> ('a -> unit) -> unit
+
+val exists : 'a option -> ('a -> bool) -> bool
+end = struct
+#1 "ext_option.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+let map v f = 
+  match v with 
+  | None -> None
+  | Some x -> Some (f x )
+
+let iter v f =   
+  match v with 
+  | None -> ()
+  | Some x -> f x 
+
+let exists v f =    
+  match v with 
+  | None -> false
+  | Some x -> f x 
+end
 module External_ffi_types : sig 
 #1 "external_ffi_types.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -15688,7 +15776,6 @@ type js_new_val = {
 type js_module_as_fn =
   { external_module_name : external_module_name;
     splice : bool ;
-
   }
 type js_get =
   { js_get_name : string   ;
@@ -15800,7 +15887,7 @@ let valid_ident (s : string) =
      true
    with E.E -> false )
 
-let non_npm_package_path (x : string) = 
+let is_package_relative_path (x : string) = 
      Ext_string.starts_with x "./" ||
      Ext_string.starts_with x "../"
   
@@ -15840,7 +15927,9 @@ let check_external_module_name_opt ?loc x =
 let check_ffi ?loc ffi : bool =
   let relative = ref false in 
   begin match ffi with
-  | Js_global {name} -> valid_global_name ?loc  name
+  | Js_global {name} -> 
+    relative := is_package_relative_path name;
+    valid_global_name ?loc  name
   | Js_send {name }
   | Js_set  {js_set_name = name}
   | Js_get { js_get_name = name}
@@ -15850,15 +15939,16 @@ let check_ffi ?loc ffi : bool =
     -> ()
 
   | Js_module_as_var external_module_name
-  | Js_module_as_fn {external_module_name; _}
+  | Js_module_as_fn {external_module_name; splice = _}
   | Js_module_as_class external_module_name
     -> 
-      (* relative := non_npm_package_path external_module_name.bundle ; *)
+      relative := is_package_relative_path external_module_name.bundle ;
       check_external_module_name external_module_name
   | Js_new {external_module_name ;  name}
-  | Js_call {external_module_name ;  name ; _}
+  | Js_call {external_module_name ;  name ; splice = _; scopes = _ }
     ->
-
+    Ext_option.iter external_module_name (fun external_module_name ->
+        relative := is_package_relative_path external_module_name.bundle);
     check_external_module_name_opt ?loc external_module_name ;
     valid_global_name ?loc name 
   end; 

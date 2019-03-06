@@ -7,17 +7,23 @@ var List$3 = require("reactX");
 var WebpackConfigJs = require("../../../webpack.config.js");
 var WebpackMiddlewareConfigJs = require("../../../webpack.middleware.config.js");
 
-var WebpackConfig = /* module */[/* ../../../webpack.config.js */WebpackConfigJs];
+var configx = WebpackConfigJs;
 
-var WebpackDevMiddlewareConfig = /* module */[/* ../../../webpack.middleware.config.js */WebpackMiddlewareConfigJs];
+var WebpackConfig = /* module */[/* configx */configx];
+
+var configx$1 = WebpackMiddlewareConfigJs;
+
+var WebpackDevMiddlewareConfig = /* module */[/* configx */configx$1];
 
 function configX(prim) {
   return WebpackMiddlewareConfigJs.configX();
 }
 
-var U = /* module */[(function (prim) {
-      return WebpackConfigJs.configX();
-    })];
+function configX$1(prim) {
+  return WebpackConfigJs.configX();
+}
+
+var U = /* module */[/* configX */configX$1];
 
 var A = /* module */[];
 
@@ -63,4 +69,4 @@ exports.U = U;
 exports.A = A;
 exports.B = B;
 exports.f = f;
-/* WebpackConfig Not a pure module */
+/* configx Not a pure module */

@@ -63,6 +63,8 @@
 ./ext/ext_json_types.ml
 ./ext/ext_list.ml
 ./ext/ext_list.mli
+./ext/ext_option.ml
+./ext/ext_option.mli
 ./ext/ext_pervasives.ml
 ./ext/ext_pervasives.mli
 ./ext/ext_position.ml

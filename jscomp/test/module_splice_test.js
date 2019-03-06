@@ -27,6 +27,10 @@ function eq(loc, param) {
   return /* () */0;
 }
 
+function joinClasses(prim) {
+  return Block.spliceApply(JoinClasses, [prim]);
+}
+
 var a = JoinClasses(1, 2, 3);
 
 var pair = /* tuple */[
@@ -43,5 +47,6 @@ Mt.from_pair_suites("Module_splice_test", suites[0]);
 exports.suites = suites;
 exports.test_id = test_id;
 exports.eq = eq;
+exports.joinClasses = joinClasses;
 exports.a = a;
 /* a Not a pure module */

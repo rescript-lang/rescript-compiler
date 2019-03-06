@@ -64,7 +64,6 @@ type js_new_val = {
 type js_module_as_fn =
   { external_module_name : external_module_name;
     splice : bool ;
-
   }
 type js_get =
   { js_get_name : string   ;
@@ -176,7 +175,7 @@ let valid_ident (s : string) =
      true
    with E.E -> false )
 
-let non_npm_package_path (x : string) = 
+let is_package_relative_path (x : string) = 
      Ext_string.starts_with x "./" ||
      Ext_string.starts_with x "../"
   
@@ -216,7 +215,9 @@ let check_external_module_name_opt ?loc x =
 let check_ffi ?loc ffi : bool =
   let relative = ref false in 
   begin match ffi with
-  | Js_global {name} -> valid_global_name ?loc  name
+  | Js_global {name} -> 
+    relative := is_package_relative_path name;
+    valid_global_name ?loc  name
   | Js_send {name }
   | Js_set  {js_set_name = name}
   | Js_get { js_get_name = name}
@@ -226,15 +227,16 @@ let check_ffi ?loc ffi : bool =
     -> ()
 
   | Js_module_as_var external_module_name
-  | Js_module_as_fn {external_module_name; _}
+  | Js_module_as_fn {external_module_name; splice = _}
   | Js_module_as_class external_module_name
     -> 
-      (* relative := non_npm_package_path external_module_name.bundle ; *)
+      relative := is_package_relative_path external_module_name.bundle ;
       check_external_module_name external_module_name
   | Js_new {external_module_name ;  name}
-  | Js_call {external_module_name ;  name ; _}
+  | Js_call {external_module_name ;  name ; splice = _; scopes = _ }
     ->
-
+    Ext_option.iter external_module_name (fun external_module_name ->
+        relative := is_package_relative_path external_module_name.bundle);
     check_external_module_name_opt ?loc external_module_name ;
     valid_global_name ?loc name 
   end; 
