@@ -141,12 +141,12 @@ let rec mkp dir =
   else ()
 
 
-let get_list_string_acc s acc = 
-  Ext_array.to_list_map_acc  (fun (x : Ext_json_types.t) ->
+let get_list_string_acc (s : Ext_json_types.t array) acc = 
+  Ext_array.to_list_map_acc s acc (fun x ->
       match x with 
       | Str x -> Some x.str
       | _ -> None
-    ) s  acc 
+    ) 
 
 let get_list_string s = get_list_string_acc s []   
 

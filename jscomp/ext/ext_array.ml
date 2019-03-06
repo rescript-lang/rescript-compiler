@@ -115,7 +115,7 @@ let rec tolist_aux a f  i res =
 let to_list_map f a = 
   tolist_aux a f (Array.length a - 1) []
 
-let to_list_map_acc f a acc = 
+let to_list_map_acc a acc f = 
   tolist_aux a f (Array.length a - 1) acc
 
 

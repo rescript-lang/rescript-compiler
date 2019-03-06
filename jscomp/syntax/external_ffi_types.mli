@@ -125,7 +125,7 @@ type t  =
 
 val name_of_ffi : external_spec -> string
 
-val check_ffi : ?loc:Location.t ->  external_spec -> unit
+val check_ffi : ?loc:Location.t ->  external_spec -> bool
 
 val to_string : t -> string
 

@@ -42,9 +42,10 @@ val process_attributes_rev :
   t -> attr_kind * t
 
 val process_pexp_fun_attributes_rev :
-  t -> [ `Nothing | `Exn ] * t
+  t -> bool * t
+
 val process_bs :
-  t -> [ `Nothing | `Has] * t
+  t -> bool * t
 
 val process_external : t -> bool
 

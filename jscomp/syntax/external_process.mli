@@ -24,7 +24,12 @@
 
 
 
-
+ type response = {
+  pval_type : Parsetree.core_type ; 
+  pval_prim : string list ; 
+  pval_attributes : Parsetree.attributes;
+  no_inline_cross_module : bool 
+}
 
 (**
   [handle_attributes_as_string
@@ -40,7 +45,7 @@ val handle_attributes_as_string :
   Ast_core_type.t ->
   Ast_attributes.t ->
   string   ->
-  Ast_core_type.t * string list * Ast_attributes.t
+  response
 
 
 

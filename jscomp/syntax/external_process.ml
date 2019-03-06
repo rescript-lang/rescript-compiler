@@ -365,7 +365,12 @@ let check_return_wrapper
 
 
 
-
+type response = {
+  pval_type : Parsetree.core_type ; 
+  pval_prim : string list ; 
+  pval_attributes : Parsetree.attributes;
+  no_inline_cross_module : bool 
+}
 (** Note that the passed [type_annotation] is already processed by visitor pattern before
 *)
 let handle_attributes
@@ -373,7 +378,7 @@ let handle_attributes
     (pval_prim : string )
     (type_annotation : Parsetree.core_type)
     (prim_attributes : Ast_attributes.t) (prim_name : string)
-  : Ast_core_type.t * string * External_ffi_types.t * Ast_attributes.t =
+   =
   (** sanity check here
       {[ int -> int -> (int -> int -> int [@bs.uncurry])]}
       It does not make sense
@@ -539,8 +544,9 @@ let handle_attributes
           Ast_compatible.mk_fn_type new_arg_types_ty result
           ,
           prim_name,
-          Ffi_obj_create arg_kinds,
-          left_attrs
+          External_ffi_types.Ffi_obj_create arg_kinds,
+          left_attrs, 
+          false 
         end
 
       | _ -> Location.raise_errorf ~loc "Attribute found that conflicts with [@@bs.obj]"
@@ -941,7 +947,7 @@ let handle_attributes
         }
         ->  Location.raise_errorf ~loc "Could not infer which FFI category it belongs to, maybe you forgot [%@%@bs.val]? "  in
     begin
-      External_ffi_types.check_ffi ~loc ffi;
+      let relative = External_ffi_types.check_ffi ~loc ffi in 
       (* result type can not be labeled *)
       (* currently we don't process attributes of
          return type, in the future we may  *)
@@ -952,16 +958,22 @@ let handle_attributes
       in
       Ast_compatible.mk_fn_type new_arg_types_ty new_result_type,  
       prim_name,
-      (Ffi_bs (arg_type_specs,return_wrapper ,  ffi)), left_attrs
+      Ffi_bs (arg_type_specs,return_wrapper ,  ffi),
+      left_attrs,
+      relative 
     end
 
 let handle_attributes_as_string
     pval_loc
     pval_prim
-    (typ : Ast_core_type.t) attrs v =
-  let pval_type, prim_name, ffi, processed_attrs  =
+    (typ : Ast_core_type.t) attrs v : response =
+  let pval_type, prim_name, ffi, processed_attrs, relative  =
     handle_attributes pval_loc pval_prim typ attrs v  in
-  pval_type, [prim_name; External_ffi_types.to_string ffi], processed_attrs
+  { pval_type;
+    pval_prim = [prim_name; External_ffi_types.to_string ffi];
+    pval_attributes = processed_attrs;
+    no_inline_cross_module = relative
+  }
 
 
 

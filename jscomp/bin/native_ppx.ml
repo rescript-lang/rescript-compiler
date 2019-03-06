@@ -7735,9 +7735,9 @@ val to_list_f : ('a -> 'b) -> 'a array -> 'b list
 val to_list_map : ('a -> 'b option) -> 'a array -> 'b list 
 
 val to_list_map_acc : 
-  ('a -> 'b option) -> 
   'a array -> 
   'b list -> 
+  ('a -> 'b option) -> 
   'b list 
 
 val of_list_map : 
@@ -7904,7 +7904,7 @@ let rec tolist_aux a f  i res =
 let to_list_map f a = 
   tolist_aux a f (Array.length a - 1) []
 
-let to_list_map_acc f a acc = 
+let to_list_map_acc a acc f = 
   tolist_aux a f (Array.length a - 1) acc
 
 
@@ -12366,9 +12366,10 @@ val process_attributes_rev :
   t -> attr_kind * t
 
 val process_pexp_fun_attributes_rev :
-  t -> [ `Nothing | `Exn ] * t
+  t -> bool * t
+
 val process_bs :
-  t -> [ `Nothing | `Has] * t
+  t -> bool * t
 
 val process_external : t -> bool
 
@@ -12536,22 +12537,22 @@ let process_attributes_rev (attrs : t) : attr_kind * t =
     ) 
 
 let process_pexp_fun_attributes_rev (attrs : t) =
-  Ext_list.fold_left attrs (`Nothing, []) (fun (st, acc) (({txt; loc}, _) as attr ) ->
-      match txt, st  with
-      | "bs.open", (`Nothing | `Exn)
+  Ext_list.fold_left attrs (false, []) (fun (st, acc) (({txt; loc}, _) as attr ) ->
+      match txt  with
+      | "bs.open"
         ->
-        `Exn, acc
-
-      | _ , _ ->
+        true, acc
+      | _  ->
         st, attr::acc
     ) 
 
+
 let process_bs (attrs : t) =
-  Ext_list.fold_left attrs (`Nothing, []) (fun (st, acc) (({txt; loc}, _) as attr ) ->
+  Ext_list.fold_left attrs (false, []) (fun (st, acc) (({txt; loc}, _) as attr ) ->
       match txt, st  with
       | "bs", _
         ->
-        `Has, acc
+        true, acc
       | _ , _ ->
         st, attr::acc
     ) 
@@ -15450,6 +15451,94 @@ let header =
 let package_name = "bs-platform"   
     
 end
+module Ext_option : sig 
+#1 "ext_option.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** Utilities for [option] type *)
+
+val map : 'a option -> ('a -> 'b) -> 'b option
+
+val iter : 'a option -> ('a -> unit) -> unit
+
+val exists : 'a option -> ('a -> bool) -> bool
+end = struct
+#1 "ext_option.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+let map v f = 
+  match v with 
+  | None -> None
+  | Some x -> Some (f x )
+
+let iter v f =   
+  match v with 
+  | None -> ()
+  | Some x -> f x 
+
+let exists v f =    
+  match v with 
+  | None -> false
+  | Some x -> f x 
+end
 module External_ffi_types : sig 
 #1 "external_ffi_types.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -15579,7 +15668,7 @@ type t  =
 
 val name_of_ffi : external_spec -> string
 
-val check_ffi : ?loc:Location.t ->  external_spec -> unit
+val check_ffi : ?loc:Location.t ->  external_spec -> bool
 
 val to_string : t -> string
 
@@ -15655,7 +15744,6 @@ type js_new_val = {
 type js_module_as_fn =
   { external_module_name : external_module_name;
     splice : bool ;
-
   }
 type js_get =
   { js_get_name : string   ;
@@ -15767,14 +15855,18 @@ let valid_ident (s : string) =
      true
    with E.E -> false )
 
+let is_package_relative_path (x : string) = 
+     Ext_string.starts_with x "./" ||
+     Ext_string.starts_with x "../"
+  
 let valid_global_name ?loc txt =
   if not (valid_ident txt) then
     let v = Ext_string.split_by ~keep_empty:true (fun x -> x = '.') txt in
-    List.iter
+    Ext_list.iter v
       (fun s ->
          if not (valid_ident s) then
            Location.raise_errorf ?loc "Not a valid global name %s"  txt
-      ) v
+      ) 
 
 (*
   We loose such check (see #2583),
@@ -15800,9 +15892,12 @@ let check_external_module_name_opt ?loc x =
   | Some v -> check_external_module_name ?loc v
 
 
-let check_ffi ?loc ffi =
-  match ffi with
-  | Js_global {name} -> valid_global_name ?loc  name
+let check_ffi ?loc ffi : bool =
+  let relative = ref false in 
+  begin match ffi with
+  | Js_global {name} -> 
+    relative := is_package_relative_path name;
+    valid_global_name ?loc  name
   | Js_send {name }
   | Js_set  {js_set_name = name}
   | Js_get { js_get_name = name}
@@ -15812,14 +15907,20 @@ let check_ffi ?loc ffi =
     -> ()
 
   | Js_module_as_var external_module_name
-  | Js_module_as_fn {external_module_name; _}
+  | Js_module_as_fn {external_module_name; splice = _}
   | Js_module_as_class external_module_name
-    -> check_external_module_name external_module_name
+    -> 
+      relative := is_package_relative_path external_module_name.bundle ;
+      check_external_module_name external_module_name
   | Js_new {external_module_name ;  name}
-  | Js_call {external_module_name ;  name ; _}
+  | Js_call {external_module_name ;  name ; splice = _; scopes = _ }
     ->
+    Ext_option.iter external_module_name (fun external_module_name ->
+        relative := is_package_relative_path external_module_name.bundle);
     check_external_module_name_opt ?loc external_module_name ;
-    valid_global_name ?loc name
+    valid_global_name ?loc name 
+  end; 
+  !relative
 
 let bs_prefix = "BS:"
 let bs_prefix_length = String.length bs_prefix
@@ -16221,7 +16322,12 @@ module External_process : sig
 
 
 
-
+ type response = {
+  pval_type : Parsetree.core_type ; 
+  pval_prim : string list ; 
+  pval_attributes : Parsetree.attributes;
+  no_inline_cross_module : bool 
+}
 
 (**
   [handle_attributes_as_string
@@ -16237,7 +16343,7 @@ val handle_attributes_as_string :
   Ast_core_type.t ->
   Ast_attributes.t ->
   string   ->
-  Ast_core_type.t * string list * Ast_attributes.t
+  response
 
 
 
@@ -16624,7 +16730,12 @@ let check_return_wrapper
 
 
 
-
+type response = {
+  pval_type : Parsetree.core_type ; 
+  pval_prim : string list ; 
+  pval_attributes : Parsetree.attributes;
+  no_inline_cross_module : bool 
+}
 (** Note that the passed [type_annotation] is already processed by visitor pattern before
 *)
 let handle_attributes
@@ -16632,7 +16743,7 @@ let handle_attributes
     (pval_prim : string )
     (type_annotation : Parsetree.core_type)
     (prim_attributes : Ast_attributes.t) (prim_name : string)
-  : Ast_core_type.t * string * External_ffi_types.t * Ast_attributes.t =
+   =
   (** sanity check here
       {[ int -> int -> (int -> int -> int [@bs.uncurry])]}
       It does not make sense
@@ -16796,8 +16907,9 @@ let handle_attributes
           Ast_compatible.mk_fn_type new_arg_types_ty result
           ,
           prim_name,
-          Ffi_obj_create arg_kinds,
-          left_attrs
+          External_ffi_types.Ffi_obj_create arg_kinds,
+          left_attrs, 
+          false 
         end
 
       | _ -> Location.raise_errorf ~loc "Attribute found that conflicts with [@@bs.obj]"
@@ -17196,7 +17308,7 @@ let handle_attributes
         }
         ->  Location.raise_errorf ~loc "Could not infer which FFI category it belongs to, maybe you forgot [%@%@bs.val]? "  in
     begin
-      External_ffi_types.check_ffi ~loc ffi;
+      let relative = External_ffi_types.check_ffi ~loc ffi in 
       (* result type can not be labeled *)
       (* currently we don't process attributes of
          return type, in the future we may  *)
@@ -17207,16 +17319,22 @@ let handle_attributes
       in
       Ast_compatible.mk_fn_type new_arg_types_ty new_result_type,  
       prim_name,
-      (Ffi_bs (arg_type_specs,return_wrapper ,  ffi)), left_attrs
+      Ffi_bs (arg_type_specs,return_wrapper ,  ffi),
+      left_attrs,
+      relative 
     end
 
 let handle_attributes_as_string
     pval_loc
     pval_prim
-    (typ : Ast_core_type.t) attrs v =
-  let pval_type, prim_name, ffi, processed_attrs  =
+    (typ : Ast_core_type.t) attrs v : response =
+  let pval_type, prim_name, ffi, processed_attrs, relative  =
     handle_attributes pval_loc pval_prim typ attrs v  in
-  pval_type, [prim_name; External_ffi_types.to_string ffi], processed_attrs
+  { pval_type;
+    pval_prim = [prim_name; External_ffi_types.to_string ffi];
+    pval_attributes = processed_attrs;
+    no_inline_cross_module = relative
+  }
 
 
 
@@ -17664,11 +17782,6 @@ val ocaml_obj_as_js_object :
   (Parsetree.pattern ->
    Parsetree.class_field list ->
    Parsetree.expression_desc) cxt   
-
-
- val convertBsErrorFunction : 
-   
-   (Ast_helper.attrs -> Parsetree.case list -> Parsetree.expression) cxt
 
 end = struct
 #1 "ast_util.ml"
@@ -18314,54 +18427,6 @@ let record_as_js_object
     args 
 
 
-
-let isCamlExceptionOrOpenVariant : Longident.t = 
-  Ldot (Ldot (Lident "Js","Exn"), "isCamlExceptionOrOpenVariant")
-
-  
-let obj_magic : Longident.t = 
-  Ldot (Lident "Obj", "magic")
-
-
-let rec checkCases (cases : Parsetree.case list) = 
-  List.iter check_case cases 
-and check_case case = 
-  check_pat case.pc_lhs 
-and check_pat (pat : Parsetree.pattern) = 
-  match pat.ppat_desc with 
-  | Ppat_construct _ -> ()
-  | Ppat_or (l,r) -> 
-    check_pat l; check_pat r 
-  | _ ->  Location.raise_errorf ~loc:pat.ppat_loc "Unsupported pattern in `bs.open`" 
-
-let convertBsErrorFunction loc  (self : Bs_ast_mapper.mapper) attrs (cases : Parsetree.case list ) =
-  let txt  = "match" in 
-  let txt_expr = Exp.ident ~loc {txt = Lident txt; loc} in 
-  let none = Exp.construct ~loc {txt = Ast_literal.predef_none ; loc} None in
-  let () = checkCases cases in  
-  let cases = self.cases self cases in 
-  Ast_compatible.fun_ ~attrs ~loc ( Pat.var ~loc  {txt; loc })
-    (Exp.ifthenelse
-    ~loc 
-    (Ast_compatible.app1 ~loc (Exp.ident ~loc {txt = isCamlExceptionOrOpenVariant ; loc}) txt_expr )
-    (Exp.match_ ~loc 
-       (Exp.constraint_ ~loc 
-          (Ast_compatible.app1  ~loc (Exp.ident ~loc {txt =  obj_magic; loc})  txt_expr)
-          (Ast_literal.type_exn ~loc ())
-       )
-      (Ext_list.map_append cases 
-        [ Exp.case  (Pat.any ~loc ()) none] 
-        (fun x ->
-           let pc_rhs = x.pc_rhs in 
-           let  loc  = pc_rhs.pexp_loc in
-           {
-             x with pc_rhs = Exp.construct ~loc {txt = Ast_literal.predef_some;loc} (Some pc_rhs)
-                        
-           })))
-    (Some none))
-    
-                       
-
 end
 module Ast_exp_apply : sig 
 #1 "ast_exp_apply.mli"
@@ -18442,6 +18507,7 @@ let bound (e : exp) (cb : exp -> _) =
       [ Vb.mk ~loc (Pat.var ~loc {txt = ocaml_obj_id; loc}) e ]
       (cb (Exp.ident ~loc {txt = Lident ocaml_obj_id; loc}))
 
+let default_expr_mapper = Bs_ast_mapper.default_mapper.expr      
 let handle_exp_apply
     (e  : exp)
     (self : Bs_ast_mapper.mapper)
@@ -18449,11 +18515,11 @@ let handle_exp_apply
     (args : (Ast_compatible.arg_label * Parsetree.expression) list)
   =
   let loc = e.pexp_loc in
-  begin match fn.pexp_desc with
-    | Pexp_apply (
-        {pexp_desc =
-           Pexp_ident  {txt = Lident "##"  ; loc} ; _},
-        [
+  match fn.pexp_desc with
+  | Pexp_apply (
+      {pexp_desc =
+         Pexp_ident  {txt = Lident "##"  ; loc} ; _},
+      [
 
           ("", obj) ;
           ("", {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _} )
@@ -18606,19 +18672,19 @@ let handle_exp_apply
                 Ast_util.method_apply loc self obj
                   (name ^ Literals.setter_suffix) [Ast_compatible.no_label, arg ]  }
             (Ast_literal.type_unit ~loc ())
-        | _ -> Bs_ast_mapper.default_mapper.expr self e
+        | _ -> default_expr_mapper self e
       end
     | _ ->
       begin match
           Ext_list.exclude_with_val
             e.pexp_attributes 
             Ast_attributes.is_bs with
-      | false, _ -> Bs_ast_mapper.default_mapper.expr self e
+      | false, _ -> default_expr_mapper self e
       | true, pexp_attributes ->
         {e with pexp_desc = Ast_util.uncurry_fn_apply loc self fn args ;
                 pexp_attributes }
       end
-  end
+
 
 end
 module Ppx_driver : sig 

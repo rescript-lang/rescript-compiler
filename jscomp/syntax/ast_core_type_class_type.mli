@@ -29,8 +29,8 @@ val handle_class_type_fields :
   Parsetree.class_type_field list -> 
   Parsetree.class_type_field list 
 
-val handle_core_type :
+val typ_mapper :
+  bool ref ->
   Bs_ast_mapper.mapper ->
   Parsetree.core_type ->  
-  bool ref ->
   Parsetree.core_type

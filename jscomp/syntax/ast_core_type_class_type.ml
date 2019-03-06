@@ -124,6 +124,7 @@ let handle_class_type_field self
     Bs_ast_mapper.default_mapper.class_type_field self ctf :: acc 
       
 
+let default_typ_mapper = Bs_ast_mapper.default_mapper.typ
 (*
   Attributes are very hard to attribute
   (since ptyp_attributes could happen in so many places), 
@@ -131,11 +132,10 @@ let handle_class_type_field self
   we can only use it locally
 *)
 
-let handle_core_type 
-    ~(super : Bs_ast_mapper.mapper) 
-    ~(self : Bs_ast_mapper.mapper)
-    (ty : Parsetree.core_type) 
+let typ_mapper 
     record_as_js_object
+    (self : Bs_ast_mapper.mapper)
+    (ty : Parsetree.core_type) 
   = 
   match ty with
   | {ptyp_desc = Ptyp_extension({txt = ("bs.obj"|"obj")}, PTyp ty)}
@@ -219,14 +219,9 @@ let handle_core_type
     if !record_as_js_object then 
       Ast_comb.to_js_type loc inner_type          
     else inner_type
-  | _ -> super.typ self ty
+  | _ -> default_typ_mapper self ty
     
 let handle_class_type_fields self fields = 
   Ext_list.fold_right fields []
   (handle_class_type_field self)
   
-  
-let handle_core_type self typ record_as_js_object =
-  handle_core_type 
-  ~super:Bs_ast_mapper.default_mapper
-  ~self typ record_as_js_object
