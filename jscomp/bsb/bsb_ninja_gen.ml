@@ -75,7 +75,7 @@ let output_ninja_and_namespace_map
       gentype_config; 
     } : Bsb_config_types.t)
   =
-  let custom_rules = Bsb_rule.reset generators in 
+  let custom_rules = Bsb_ninja_rule.reset generators in 
   let bsc = bsc_dir // bsc_exe in   (* The path to [bsc.exe] independent of config  *)
   let bsdep = bsc_dir // bsb_helper_exe in (* The path to [bsb_heler.exe] *)
   let cwd_lib_bs = cwd // Bsb_config.lib_bs in 
@@ -232,7 +232,7 @@ let output_ninja_and_namespace_map
         oc
         ~output
         ~input:(Bsb_config.proj_rel output)
-        ~rule:Bsb_rule.copy_resources);
+        ~rule:Bsb_ninja_rule.copy_resources);
   (** Generate build statement for each file *)        
   let all_info =      
     Bsb_ninja_file_groups.handle_file_groups oc  
@@ -263,7 +263,7 @@ let output_ninja_and_namespace_map
        Bsb_ninja_util.output_build oc 
          ~output:(ns ^ Literals.suffix_cmi)
          ~input:(ns ^ Literals.suffix_mlmap)
-         ~rule:Bsb_rule.build_package
+         ~rule:Bsb_ninja_rule.build_package
          ;
        (ns ^ Literals.suffix_cmi) :: all_info in 
      Bsb_ninja_util.phony 

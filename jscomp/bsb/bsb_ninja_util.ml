@@ -58,7 +58,7 @@ let output_build
     ~input
     ~rule
     oc =
-  let rule = Bsb_rule.get_name rule  oc in (* Trigger building if not used *)
+  let rule = Bsb_ninja_rule.get_name rule  oc in (* Trigger building if not used *)
   output_string oc "build ";
   output_string oc output ;
   Ext_list.iter outputs (fun s -> output_string oc Ext_string.single_space ; output_string oc s  );

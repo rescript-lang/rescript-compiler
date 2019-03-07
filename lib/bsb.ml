@@ -12801,8 +12801,8 @@ let warnings = "warnings"
 let gentypeconfig = "gentypeconfig"
 
 end
-module Bsb_rule : sig 
-#1 "bsb_rule.mli"
+module Bsb_ninja_rule : sig 
+#1 "bsb_ninja_rule.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -12865,7 +12865,7 @@ val build_package : t
 val reset : string String_map.t -> t String_map.t
 
 end = struct
-#1 "bsb_rule.ml"
+#1 "bsb_ninja_rule.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -13109,7 +13109,7 @@ val output_build :
   ?restat:unit ->
   output:string ->
   input:string ->
-  rule:Bsb_rule.t -> out_channel -> unit
+  rule:Bsb_ninja_rule.t -> out_channel -> unit
 
 
 val phony  :
@@ -13183,7 +13183,7 @@ let output_build
     ~input
     ~rule
     oc =
-  let rule = Bsb_rule.get_name rule  oc in (* Trigger building if not used *)
+  let rule = Bsb_ninja_rule.get_name rule  oc in (* Trigger building if not used *)
   output_string oc "build ";
   output_string oc output ;
   Ext_list.iter outputs (fun s -> output_string oc Ext_string.single_space ; output_string oc s  );
@@ -13331,7 +13331,7 @@ val handle_file_groups :
   bs_suffix:bool ->
   js_post_build_cmd:string option -> 
   files_to_install:String_hash_set.t ->  
-  custom_rules:Bsb_rule.t String_map.t ->
+  custom_rules:Bsb_ninja_rule.t String_map.t ->
   Bsb_file_groups.file_groups ->
   string option -> 
   info -> info
@@ -13471,14 +13471,14 @@ let emit_impl_build
       ~output:output_mlast
       ~input
       ~rule:( if is_re then 
-                Bsb_rule.build_ast_and_module_sets_from_re
+                Bsb_ninja_rule.build_ast_and_module_sets_from_re
               else
-                Bsb_rule.build_ast_and_module_sets);
+                Bsb_ninja_rule.build_ast_and_module_sets);
     Bsb_ninja_util.output_build
       oc
       ~output:output_mlastd
       ~input:output_mlast
-      ~rule:Bsb_rule.build_bin_deps
+      ~rule:Bsb_ninja_rule.build_bin_deps
       ?shadows:(if Bsb_dir_index.is_lib_dir group_dir_index then None
                 else Some [{Bsb_ninja_util.key = Bsb_build_schemas.bsb_dir_group ; 
                             op = 
@@ -13494,8 +13494,8 @@ let emit_impl_build
     in
     let rule , cm_outputs, deps =
       if no_intf_file then 
-        Bsb_rule.build_cmj_cmi_js, [file_cmi], []
-      else  Bsb_rule.build_cmj_js, []  , [file_cmi]
+        Bsb_ninja_rule.build_cmj_cmi_js, [file_cmi], []
+      else  Bsb_ninja_rule.build_cmj_js, []  , [file_cmi]
     in
     Bsb_ninja_util.output_build oc
       ~output:output_cmj
@@ -13538,12 +13538,12 @@ let emit_intf_build
     ~input:(Bsb_config.proj_rel 
               (if is_re then filename_sans_extension ^ Literals.suffix_rei 
                else filename_sans_extension ^ Literals.suffix_mli))
-    ~rule:(if is_re then Bsb_rule.build_ast_and_module_sets_from_rei
-           else Bsb_rule.build_ast_and_module_sets);
+    ~rule:(if is_re then Bsb_ninja_rule.build_ast_and_module_sets_from_rei
+           else Bsb_ninja_rule.build_ast_and_module_sets);
   Bsb_ninja_util.output_build oc
     ~output:output_mliastd
     ~input:output_mliast
-    ~rule:Bsb_rule.build_bin_deps
+    ~rule:Bsb_ninja_rule.build_bin_deps
     ?shadows:(if Bsb_dir_index.is_lib_dir group_dir_index  then None
               else Some [{
                   key = Bsb_build_schemas.bsb_dir_group; 
@@ -13554,7 +13554,7 @@ let emit_intf_build
     ~output:output_cmi
     ~shadows:common_shadows
     ~input:output_mliast
-    ~rule:Bsb_rule.build_cmi
+    ~rule:Bsb_ninja_rule.build_cmi
     ;
   [output_mliastd]
 
@@ -13776,7 +13776,7 @@ let output_ninja_and_namespace_map
       gentype_config; 
     } : Bsb_config_types.t)
   =
-  let custom_rules = Bsb_rule.reset generators in 
+  let custom_rules = Bsb_ninja_rule.reset generators in 
   let bsc = bsc_dir // bsc_exe in   (* The path to [bsc.exe] independent of config  *)
   let bsdep = bsc_dir // bsb_helper_exe in (* The path to [bsb_heler.exe] *)
   let cwd_lib_bs = cwd // Bsb_config.lib_bs in 
@@ -13933,7 +13933,7 @@ let output_ninja_and_namespace_map
         oc
         ~output
         ~input:(Bsb_config.proj_rel output)
-        ~rule:Bsb_rule.copy_resources);
+        ~rule:Bsb_ninja_rule.copy_resources);
   (** Generate build statement for each file *)        
   let all_info =      
     Bsb_ninja_file_groups.handle_file_groups oc  
@@ -13964,7 +13964,7 @@ let output_ninja_and_namespace_map
        Bsb_ninja_util.output_build oc 
          ~output:(ns ^ Literals.suffix_cmi)
          ~input:(ns ^ Literals.suffix_mlmap)
-         ~rule:Bsb_rule.build_package
+         ~rule:Bsb_ninja_rule.build_package
          ;
        (ns ^ Literals.suffix_cmi) :: all_info in 
      Bsb_ninja_util.phony 

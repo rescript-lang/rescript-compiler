@@ -37,6 +37,8 @@ bin/bsb_native.ml:
 ./bsb/bsb_ninja_global_vars.ml
 ./bsb/bsb_ninja_regen.ml
 ./bsb/bsb_ninja_regen.mli
+./bsb/bsb_ninja_rule.ml
+./bsb/bsb_ninja_rule.mli
 ./bsb/bsb_ninja_util.ml
 ./bsb/bsb_ninja_util.mli
 ./bsb/bsb_package_specs.ml
@@ -51,8 +53,6 @@ bin/bsb_native.ml:
 ./bsb/bsb_query.mli
 ./bsb/bsb_regex.ml
 ./bsb/bsb_regex.mli
-./bsb/bsb_rule.ml
-./bsb/bsb_rule.mli
 ./bsb/bsb_templates.ml
 ./bsb/bsb_templates.mli
 ./bsb/bsb_theme_init.ml

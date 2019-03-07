@@ -132,14 +132,14 @@ let emit_impl_build
       ~output:output_mlast
       ~input
       ~rule:( if is_re then 
-                Bsb_rule.build_ast_and_module_sets_from_re
+                Bsb_ninja_rule.build_ast_and_module_sets_from_re
               else
-                Bsb_rule.build_ast_and_module_sets);
+                Bsb_ninja_rule.build_ast_and_module_sets);
     Bsb_ninja_util.output_build
       oc
       ~output:output_mlastd
       ~input:output_mlast
-      ~rule:Bsb_rule.build_bin_deps
+      ~rule:Bsb_ninja_rule.build_bin_deps
       ?shadows:(if Bsb_dir_index.is_lib_dir group_dir_index then None
                 else Some [{Bsb_ninja_util.key = Bsb_build_schemas.bsb_dir_group ; 
                             op = 
@@ -155,8 +155,8 @@ let emit_impl_build
     in
     let rule , cm_outputs, deps =
       if no_intf_file then 
-        Bsb_rule.build_cmj_cmi_js, [file_cmi], []
-      else  Bsb_rule.build_cmj_js, []  , [file_cmi]
+        Bsb_ninja_rule.build_cmj_cmi_js, [file_cmi], []
+      else  Bsb_ninja_rule.build_cmj_js, []  , [file_cmi]
     in
     Bsb_ninja_util.output_build oc
       ~output:output_cmj
@@ -199,12 +199,12 @@ let emit_intf_build
     ~input:(Bsb_config.proj_rel 
               (if is_re then filename_sans_extension ^ Literals.suffix_rei 
                else filename_sans_extension ^ Literals.suffix_mli))
-    ~rule:(if is_re then Bsb_rule.build_ast_and_module_sets_from_rei
-           else Bsb_rule.build_ast_and_module_sets);
+    ~rule:(if is_re then Bsb_ninja_rule.build_ast_and_module_sets_from_rei
+           else Bsb_ninja_rule.build_ast_and_module_sets);
   Bsb_ninja_util.output_build oc
     ~output:output_mliastd
     ~input:output_mliast
-    ~rule:Bsb_rule.build_bin_deps
+    ~rule:Bsb_ninja_rule.build_bin_deps
     ?shadows:(if Bsb_dir_index.is_lib_dir group_dir_index  then None
               else Some [{
                   key = Bsb_build_schemas.bsb_dir_group; 
@@ -215,7 +215,7 @@ let emit_intf_build
     ~output:output_cmi
     ~shadows:common_shadows
     ~input:output_mliast
-    ~rule:Bsb_rule.build_cmi
+    ~rule:Bsb_ninja_rule.build_cmi
     ;
   [output_mliastd]
 
