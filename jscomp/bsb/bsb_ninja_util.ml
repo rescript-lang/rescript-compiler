@@ -143,17 +143,14 @@ let phony ?(order_only_deps=[]) ?(restat : unit option) ~inputs ~output oc =
   output_string oc " : ";
   output_string oc "phony";
   output_string oc Ext_string.single_space;
-  inputs |> List.iter (fun s ->   output_string oc Ext_string.single_space ; output_string oc s);
-  begin match order_only_deps with
-    | [] -> ()
-    | _ ->
-      begin
-        output_string oc " || ";
-        order_only_deps
-        |>
-        List.iter (fun s -> output_string oc Ext_string.single_space ; output_string oc s)
-      end
-  end;
+  Ext_list.iter inputs  (fun s ->   output_string oc Ext_string.single_space ; output_string oc s);
+  (match order_only_deps with
+   | [] -> ()
+   | _ ->
+     begin
+       output_string oc " || ";                
+       Ext_list.iter order_only_deps (fun s -> output_string oc Ext_string.single_space ; output_string oc s)
+     end);
   output_string oc "\n";
   if restat <> None then 
     output_string oc "  restat = 1 \n"
