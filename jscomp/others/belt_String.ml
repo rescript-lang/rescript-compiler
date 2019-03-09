@@ -159,6 +159,11 @@ external substr : from:int -> t = "" [@@bs.send.pipe: t]
 *)
 external trim : t -> t = "" [@@bs.send]
 
+(* link to JS built-ins *)
+external str_length: t -> int = "length" [@@bs.get]
+external str_charAt: t -> int -> t = "charAt" [@@bs.send]
+external array_concat: 'a array -> 'a array -> 'a array = "concat" [@@bs.send]
+
 (**
   [reduce str f] takes a string argument, initial value, and a reducer
   function [f] whose arguments are an accumulated value and a character from the string.
@@ -178,11 +183,12 @@ external trim : t -> t = "" [@@bs.send]
   reduce "abcde" "" reverser = "edcba"
 ]}
 *)
+
 let reduce (s: string) (acc: 'a) (f: 'a -> string -> 'a) =
   (let rec helper (acc: 'a) (index: int) =
     match index with
-    | n when n == (Js.String.length s) -> acc
-    | n -> helper (f acc (Js.String.get s n)) (n + 1) in
+    | n when n == (str_length s) -> acc
+    | n -> helper (f acc (str_charAt s n)) (n + 1) in
 
   helper acc 0 : 'a)
 
@@ -209,7 +215,7 @@ map "abcde" toCode = [| 97.0; 98.0; 99.0; 100.0; 101.0 |]
 ]}
 *)
 let map (s : string) (f : string -> 'a) =
-  (reduce s [||] (fun acc item -> Belt.Array.concat acc [|(f item)|]) : 'a array)
+  (reduce s [||] (fun acc item -> array_concat acc [|(f item)|]) : 'a array)
 
 (**
   [stringKeep s f] applies a function [f] to each character in the given string [s].
@@ -237,4 +243,4 @@ keep "cauliflower" nonVowel = [|"c"; "l"; "f"; "l"; "w"; "r"|]
 *)
 let keep (s:string) (f: string -> bool) =
   (reduce s [||] (fun acc item ->
-    if (f item) then Belt.Array.concat acc [|item|] else acc) : 'a array)
+    if (f item) then array_concat acc [|item|] else acc) : 'a array)
