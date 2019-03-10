@@ -203,54 +203,55 @@ let reduce (s: string) (acc: 'a) (f: 'a -> string -> 'a) =
   helper acc 0 : 'a)
 
 (**
-  [stringMap s f] applies a function [f] to each character in the given string [s],
+  [map s f] applies a function [f] to each character in the given string [s],
   returning a new string with the concatenated results of the function calls.
+  Note that the return value from this function is a string.
 
 @example {[
 let addDash (s : string) = (s ^ "-" : string)
-stringMap "abcde" addDash = "a-b-c-d-e-"
+map "abcde" addDash = "a-b-c-d-e-"
 ]}
 *)
 
-let stringMap (s : string) (f : string -> string) =
+let map (s : string) (f : string -> string) =
   (reduce s "" (fun acc item -> acc ^ (f item)) : string)
 
 (**
-  [map s f] applies a function [f] to each character in the given string [s],
+  [arrayMap s f] applies a function [f] to each character in the given string [s],
   returning an array containing the results of the function calls.
   
 @example {[
 let toCode (s : string) = (Js.String.charCodeAt 0 s : float)
-map "abcde" toCode = [| 97.0; 98.0; 99.0; 100.0; 101.0 |]
+arrayMap "abcde" toCode = [| 97.0; 98.0; 99.0; 100.0; 101.0 |]
 ]}
 *)
-let map (s : string) (f : string -> 'a) =
+let arrayMap (s : string) (f : string -> 'a) =
   (reduce s [||] (fun acc item -> array_concat acc [|(f item)|]) : 'a array)
 
 (**
-  [stringKeep s f] applies a function [f] to each character in the given string [s].
+  [keep s f] applies a function [f] to each character in the given string [s].
   It returns a new string containing only the characters for which [f] returned [true].
 
 @example {[
 let nonVowel (s:string) = 
   (not (s = "a" || s = "e" || s = "i" || s = "o" || s = "u") : bool)
-stringKeep "cauliflower" nonVowel = "clflwr"
+keep "cauliflower" nonVowel = "clflwr"
 ]}
 *)
-let stringKeep (s: string) (f: string -> bool) =
+let keep (s: string) (f: string -> bool) =
   (reduce s "" (fun acc item ->
       if (f item) then acc ^ item else acc) : string)
 
 (**
-  [keep s f] applies a function [f] to each character in the given string [s].
+  [arrayKeep s f] applies a function [f] to each character in the given string [s].
   It returns an array containing only the characters for which [f] returned [true].
   
 @example {[
 let nonVowel (s:string) = 
   (not (s = "a" || s = "e" || s = "i" || s = "o" || s = "u") : bool)
-keep "cauliflower" nonVowel = [|"c"; "l"; "f"; "l"; "w"; "r"|]
+arrayKeep "cauliflower" nonVowel = [|"c"; "l"; "f"; "l"; "w"; "r"|]
 ]}
 *)
-let keep (s:string) (f: string -> bool) =
+let arrayKeep (s:string) (f: string -> bool) =
   (reduce s [||] (fun acc item ->
     if (f item) then array_concat acc [|item|] else acc) : 'a array)
