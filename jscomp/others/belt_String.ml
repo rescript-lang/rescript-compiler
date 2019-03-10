@@ -161,22 +161,30 @@ external trim : t -> t = "" [@@bs.send]
 
 (* link to JS built-ins *)
 external str_length: t -> int = "length" [@@bs.get]
-external str_charAt: t -> int -> t = "charAt" [@@bs.send]
 external array_concat: 'a array -> 'a array -> 'a array = "concat" [@@bs.send]
+external codePointAt : int -> int option = "" [@@bs.send.pipe: string] [@@bs.return {undefined_to_opt}] 
+external fromCodePoint : int -> t = "String.fromCodePoint" [@@bs.val] (** ES2015 *)
 
 (**
-  [reduce str f] takes a string argument, initial value, and a reducer
-  function [f] whose arguments are an accumulated value and a character from the string.
+  [unicodeCharAt] is a utility routine that returns a tuple containing
+  the Unicode character at position n and length in UTF-16 units (1 or 2). If
+  invalid, presume it consumes one UTF-16 unit.
+*)
+let unicodeCharAt (s: string) (n: int) =
+  (let cPoint = codePointAt n s in
+    match cPoint with
+      | Some point -> ((fromCodePoint point), if (point > 65535) then 2 else 1)
+      | None -> ("", 1)
+  : string * int)
+
+(**
+  [reduce] takes a string argument, initial value, and a reducer
+  function whose arguments are an accumulated value and a character from the string.
 
   [reduce] starts the accumulated value as the initial value, and updates it by
-  applying the reducer function [f] to each character in the string.
-  
-@example {[
-  let addCharCodes (total: float) (s:string) =
-    (total +. (Js.String.charCodeAt 0 s): float)
+  applying the reducer function to each character in the string.
 
-  reduce "abc" 0.0 addCharCodes = 294.0
-  
+@example {[  
   let reverser (result: string) (item: string) =
     (item ^ result : string)
   
@@ -187,8 +195,10 @@ external array_concat: 'a array -> 'a array -> 'a array = "concat" [@@bs.send]
 let reduce (s: string) (acc: 'a) (f: 'a -> string -> 'a) =
   (let rec helper (acc: 'a) (index: int) =
     match index with
-    | n when n == (str_length s) -> acc
-    | n -> helper (f acc (str_charAt s n)) (n + 1) in
+    | n when n >= (str_length s) -> acc
+    | n -> 
+        let (theChar, nBytes) = unicodeCharAt s n in
+        helper (f acc theChar) (n + nBytes) in
 
   helper acc 0 : 'a)
 
