@@ -138,7 +138,8 @@ let interpret_json
       since it is external configuration, no {!Bsb_build_util.convert_and_resolve_path}
   *)
   let bsc_flags = ref Bsb_default.bsc_flags in  
-  let ppx_flags = ref [] in 
+  let ppx_files : string list ref = ref [] in 
+  let ppx_checked_files : string list ref = ref [] in 
   let js_post_build_cmd = ref None in 
   let built_in_package = ref None in
   let generate_merlin = ref true in 
@@ -175,8 +176,8 @@ let interpret_json
       | Some (Str {str}) 
         -> 
         Refmt_custom
-        (Bsb_build_util.resolve_bsb_magic_file 
-          ~cwd ~desc:Bsb_build_schemas.refmt str)
+        (fst (Bsb_build_util.resolve_bsb_magic_file 
+          ~cwd ~desc:Bsb_build_schemas.refmt str))
       | Some config  -> 
         Bsb_exception.config_error config "expect version 2 or 3"
       | None ->
@@ -189,11 +190,11 @@ let interpret_json
         Some { path = 
           match String_map.find_opt obj Bsb_build_schemas.path with
           | None -> 
-            Bsb_build_util.resolve_bsb_magic_file
+            fst @@ Bsb_build_util.resolve_bsb_magic_file
             ~cwd ~desc:"gentype.exe"
             "gentype/gentype.exe"
           | Some (Str {str}) ->  
-            Bsb_build_util.resolve_bsb_magic_file
+            fst @@ Bsb_build_util.resolve_bsb_magic_file
             ~cwd ~desc:"gentype.exe" str 
           | Some config -> 
             Bsb_exception.config_error config
@@ -264,7 +265,7 @@ let interpret_json
       | Some (Str {str = p }) ->
         if p = "" then failwith "invalid pp, empty string found"
         else 
-          Some (Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.pp_flags p)
+          Some (fst @@ Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.pp_flags p)
       | Some x ->    
         Bsb_exception.errorf ~loc:(Ext_json.loc_of x) "pp-flags expected a string"
       | None ->  
@@ -294,7 +295,7 @@ let interpret_json
 
     |? (Bsb_build_schemas.js_post_build, `Obj begin fun m ->
         m |? (Bsb_build_schemas.cmd , `Str (fun s -> 
-            js_post_build_cmd := Some (Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.js_post_build s)
+            js_post_build_cmd := Some (fst @@ Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.js_post_build s)
 
           )
           )
@@ -313,10 +314,18 @@ let interpret_json
     |? (Bsb_build_schemas.bs_external_includes, `Arr (fun s -> bs_external_includes := get_list_string s))
     |? (Bsb_build_schemas.bsc_flags, `Arr (fun s -> bsc_flags := Bsb_build_util.get_list_string_acc s !bsc_flags))
     |? (Bsb_build_schemas.ppx_flags, `Arr (fun s -> 
-        ppx_flags := Ext_list.map (get_list_string s) (fun p ->
+        let args = get_list_string s in 
+        let a,b = Ext_list.map_split_opt  args (fun p ->
             if p = "" then failwith "invalid ppx, empty string found"
-            else Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.ppx_flags p
-          )
+            else 
+              let file, checked = 
+                Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.ppx_flags p 
+              in 
+              let some_file = Some file in 
+              some_file, if checked then some_file else None
+          ) in 
+        ppx_files := a ;  
+        ppx_checked_files := b    
       ))
 
     |? (Bsb_build_schemas.cut_generators, `Bool (fun b -> cut_generators := b))
@@ -385,8 +394,9 @@ let interpret_json
           warning = warning;
           external_includes = !bs_external_includes;
           bsc_flags = !bsc_flags ;
-          ppx_flags = !ppx_flags ;
-          pp_flags = pp_flags ;          
+          ppx_files = !ppx_files ;
+          ppx_checked_files = !ppx_checked_files;
+          pp_file = pp_flags ;          
           bs_dependencies = !bs_dependencies;
           bs_dev_dependencies = !bs_dev_dependencies;
           refmt;

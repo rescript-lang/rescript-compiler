@@ -67,33 +67,35 @@ let convert_and_resolve_path : string -> string -> string =
    ./foo/bar => /absolute/path/to/projectRoot/./foo/bar
    Input is node path, output is OS dependent (normalized) path
 *)
-let resolve_bsb_magic_file ~cwd ~desc p =
+let resolve_bsb_magic_file ~cwd ~desc p : string * bool =
+
   let no_slash = Ext_string.no_slash_idx p in
   if no_slash < 0 then
-    p (*FIXME: better error message for "" input *)
+    (* Single file FIXME: better error message for "" input *)
+    p, false  
   else 
-  let first_char = String.unsafe_get p 0 in 
-  if Filename.is_relative p &&  
-     first_char  <> '.' then
-    let package_name, rest = 
-      Bsb_pkg_types.extract_pkg_name_and_file p 
-    in 
-    let relative_path = 
+    let first_char = String.unsafe_get p 0 in 
+    if Filename.is_relative p &&  
+       first_char  <> '.' then
+      let package_name, rest = 
+        Bsb_pkg_types.extract_pkg_name_and_file p 
+      in 
+      let relative_path = 
         if Ext_sys.is_windows_or_cygwin then Ext_string.replace_slash_backward rest 
         else rest in       
-    (* let p = if Ext_sys.is_windows_or_cygwin then Ext_string.replace_slash_backward p else p in *)
-    let package_dir = Bsb_pkg.resolve_bs_package ~cwd package_name in
-    let path = package_dir // relative_path in 
-    if Sys.file_exists path then path
-    else 
-      begin 
-        Bsb_log.error "@{<error>Could not resolve @} %s in %s@." p cwd ; 
-        failwith (p ^ " not found when resolving " ^ desc)
-      end
+      (* let p = if Ext_sys.is_windows_or_cygwin then Ext_string.replace_slash_backward p else p in *)
+      let package_dir = Bsb_pkg.resolve_bs_package ~cwd package_name in
+      let path = package_dir // relative_path in 
+      if Sys.file_exists path then path, true
+      else 
+        begin 
+          Bsb_log.error "@{<error>Could not resolve @} %s in %s@." p cwd ; 
+          failwith (p ^ " not found when resolving " ^ desc)
+        end
 
-  else
-    (* relative path [./x/y]*)
-    convert_and_resolve_path cwd p
+    else
+      (* relative path [./x/y]*)
+      convert_and_resolve_path cwd p, true
 
 
 

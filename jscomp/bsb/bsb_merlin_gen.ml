@@ -105,8 +105,8 @@ let merlin_file_gen ~cwd
     built_in_ppx
     ({bs_file_groups = res_files ; 
       generate_merlin;
-      ppx_flags;
-      pp_flags ;
+      ppx_files;
+      pp_file;
       bs_dependencies;
       bs_dev_dependencies;
       bsc_flags; 
@@ -121,10 +121,10 @@ let merlin_file_gen ~cwd
   if generate_merlin then begin     
     let buffer = Buffer.create 1024 in
     output_merlin_namespace buffer namespace; 
-    Ext_list.iter ppx_flags (fun x ->
+    Ext_list.iter ppx_files (fun x ->
         Buffer.add_string buffer (merlin_flg_ppx ^ x )
       );
-    Ext_option.iter pp_flags (fun x -> 
+    Ext_option.iter pp_file (fun x -> 
       Buffer.add_string buffer (merlin_flg_pp ^ x)
     );  
     Ext_option.iter reason_react_jsx 

@@ -31,6 +31,7 @@ val zero : info
 
 val handle_file_groups :
   out_channel ->
+  has_checked_ppx:bool ->
   package_specs:Bsb_package_specs.t ->  
   bs_suffix:bool ->
   js_post_build_cmd:string option -> 
