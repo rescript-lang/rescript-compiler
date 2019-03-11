@@ -51,8 +51,9 @@ type t =
     (* CapitalPackage *)
     external_includes : string list ; 
     bsc_flags : string list ;
-    ppx_flags : string list ;
-    pp_flags : string option;
+    ppx_files : string list ;
+    ppx_checked_files : string list ;
+    pp_file : string option;
     bs_dependencies : dependencies;
     bs_dev_dependencies : dependencies;
     built_in_dependency : dependency option; 

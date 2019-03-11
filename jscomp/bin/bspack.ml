@@ -5715,7 +5715,15 @@ module Ext_list : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-val map : 'a list -> ('a -> 'b) ->  'b list 
+val map : 
+  'a list -> 
+  ('a -> 'b) -> 
+  'b list 
+
+val map_split_opt :  
+  'a list ->
+  ('a -> 'b option * 'c option) ->
+  'b list * 'c list 
 
 val mapi :
   'a list -> 
@@ -6089,6 +6097,17 @@ let rec map l f =
     let y5 = f x5 in
     y1::y2::y3::y4::y5::(map tail f)
 
+
+let rec map_split_opt 
+  (xs : 'a list)  (f : 'a -> 'b option * 'c option) 
+  : 'b list * 'c list = 
+  match xs with 
+  | [] -> [], []
+  | x::xs ->
+    let c,d = f x in 
+    let cs,ds = map_split_opt xs f in 
+    (match c with Some c -> c::cs | None -> cs),
+    (match d with Some d -> d::ds | None -> ds)
 
 let rec map_snd l f =
   match l with

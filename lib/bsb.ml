@@ -1797,7 +1797,15 @@ module Ext_list : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-val map : 'a list -> ('a -> 'b) ->  'b list 
+val map : 
+  'a list -> 
+  ('a -> 'b) -> 
+  'b list 
+
+val map_split_opt :  
+  'a list ->
+  ('a -> 'b option * 'c option) ->
+  'b list * 'c list 
 
 val mapi :
   'a list -> 
@@ -2171,6 +2179,17 @@ let rec map l f =
     let y5 = f x5 in
     y1::y2::y3::y4::y5::(map tail f)
 
+
+let rec map_split_opt 
+  (xs : 'a list)  (f : 'a -> 'b option * 'c option) 
+  : 'b list * 'c list = 
+  match xs with 
+  | [] -> [], []
+  | x::xs ->
+    let c,d = f x in 
+    let cs,ds = map_split_opt xs f in 
+    (match c with Some c -> c::cs | None -> cs),
+    (match d with Some d -> d::ds | None -> ds)
 
 let rec map_snd l f =
   match l with
@@ -6600,8 +6619,15 @@ val get_list_string :
     Ext_json_types.t array -> 
     string list
 
-
-val resolve_bsb_magic_file : cwd:string -> desc:string -> string -> string
+(* [resolve_bsb_magic_file]
+   returns a tuple (path,checked)
+   when checked is true, it means such file should exist without depending on env
+*)
+val resolve_bsb_magic_file : 
+  cwd:string -> 
+  desc:string ->
+  string -> 
+  string * bool
 
 type package_context = {
   cwd : string ; 
@@ -6681,33 +6707,35 @@ let convert_and_resolve_path : string -> string -> string =
    ./foo/bar => /absolute/path/to/projectRoot/./foo/bar
    Input is node path, output is OS dependent (normalized) path
 *)
-let resolve_bsb_magic_file ~cwd ~desc p =
+let resolve_bsb_magic_file ~cwd ~desc p : string * bool =
+
   let no_slash = Ext_string.no_slash_idx p in
   if no_slash < 0 then
-    p (*FIXME: better error message for "" input *)
+    (* Single file FIXME: better error message for "" input *)
+    p, false  
   else 
-  let first_char = String.unsafe_get p 0 in 
-  if Filename.is_relative p &&  
-     first_char  <> '.' then
-    let package_name, rest = 
-      Bsb_pkg_types.extract_pkg_name_and_file p 
-    in 
-    let relative_path = 
+    let first_char = String.unsafe_get p 0 in 
+    if Filename.is_relative p &&  
+       first_char  <> '.' then
+      let package_name, rest = 
+        Bsb_pkg_types.extract_pkg_name_and_file p 
+      in 
+      let relative_path = 
         if Ext_sys.is_windows_or_cygwin then Ext_string.replace_slash_backward rest 
         else rest in       
-    (* let p = if Ext_sys.is_windows_or_cygwin then Ext_string.replace_slash_backward p else p in *)
-    let package_dir = Bsb_pkg.resolve_bs_package ~cwd package_name in
-    let path = package_dir // relative_path in 
-    if Sys.file_exists path then path
-    else 
-      begin 
-        Bsb_log.error "@{<error>Could not resolve @} %s in %s@." p cwd ; 
-        failwith (p ^ " not found when resolving " ^ desc)
-      end
+      (* let p = if Ext_sys.is_windows_or_cygwin then Ext_string.replace_slash_backward p else p in *)
+      let package_dir = Bsb_pkg.resolve_bs_package ~cwd package_name in
+      let path = package_dir // relative_path in 
+      if Sys.file_exists path then path, true
+      else 
+        begin 
+          Bsb_log.error "@{<error>Could not resolve @} %s in %s@." p cwd ; 
+          failwith (p ^ " not found when resolving " ^ desc)
+        end
 
-  else
-    (* relative path [./x/y]*)
-    convert_and_resolve_path cwd p
+    else
+      (* relative path [./x/y]*)
+      convert_and_resolve_path cwd p, true
 
 
 
@@ -11110,8 +11138,9 @@ type t =
     (* CapitalPackage *)
     external_includes : string list ; 
     bsc_flags : string list ;
-    ppx_flags : string list ;
-    pp_flags : string option;
+    ppx_files : string list ;
+    ppx_checked_files : string list ;
+    pp_file : string option;
     bs_dependencies : dependencies;
     bs_dev_dependencies : dependencies;
     built_in_dependency : dependency option; 
@@ -11688,7 +11717,8 @@ let interpret_json
       since it is external configuration, no {!Bsb_build_util.convert_and_resolve_path}
   *)
   let bsc_flags = ref Bsb_default.bsc_flags in  
-  let ppx_flags = ref [] in 
+  let ppx_files : string list ref = ref [] in 
+  let ppx_checked_files : string list ref = ref [] in 
   let js_post_build_cmd = ref None in 
   let built_in_package = ref None in
   let generate_merlin = ref true in 
@@ -11725,8 +11755,8 @@ let interpret_json
       | Some (Str {str}) 
         -> 
         Refmt_custom
-        (Bsb_build_util.resolve_bsb_magic_file 
-          ~cwd ~desc:Bsb_build_schemas.refmt str)
+        (fst (Bsb_build_util.resolve_bsb_magic_file 
+          ~cwd ~desc:Bsb_build_schemas.refmt str))
       | Some config  -> 
         Bsb_exception.config_error config "expect version 2 or 3"
       | None ->
@@ -11739,11 +11769,11 @@ let interpret_json
         Some { path = 
           match String_map.find_opt obj Bsb_build_schemas.path with
           | None -> 
-            Bsb_build_util.resolve_bsb_magic_file
+            fst @@ Bsb_build_util.resolve_bsb_magic_file
             ~cwd ~desc:"gentype.exe"
             "gentype/gentype.exe"
           | Some (Str {str}) ->  
-            Bsb_build_util.resolve_bsb_magic_file
+            fst @@ Bsb_build_util.resolve_bsb_magic_file
             ~cwd ~desc:"gentype.exe" str 
           | Some config -> 
             Bsb_exception.config_error config
@@ -11814,7 +11844,7 @@ let interpret_json
       | Some (Str {str = p }) ->
         if p = "" then failwith "invalid pp, empty string found"
         else 
-          Some (Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.pp_flags p)
+          Some (fst @@ Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.pp_flags p)
       | Some x ->    
         Bsb_exception.errorf ~loc:(Ext_json.loc_of x) "pp-flags expected a string"
       | None ->  
@@ -11844,7 +11874,7 @@ let interpret_json
 
     |? (Bsb_build_schemas.js_post_build, `Obj begin fun m ->
         m |? (Bsb_build_schemas.cmd , `Str (fun s -> 
-            js_post_build_cmd := Some (Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.js_post_build s)
+            js_post_build_cmd := Some (fst @@ Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.js_post_build s)
 
           )
           )
@@ -11863,10 +11893,18 @@ let interpret_json
     |? (Bsb_build_schemas.bs_external_includes, `Arr (fun s -> bs_external_includes := get_list_string s))
     |? (Bsb_build_schemas.bsc_flags, `Arr (fun s -> bsc_flags := Bsb_build_util.get_list_string_acc s !bsc_flags))
     |? (Bsb_build_schemas.ppx_flags, `Arr (fun s -> 
-        ppx_flags := Ext_list.map (get_list_string s) (fun p ->
+        let args = get_list_string s in 
+        let a,b = Ext_list.map_split_opt  args (fun p ->
             if p = "" then failwith "invalid ppx, empty string found"
-            else Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.ppx_flags p
-          )
+            else 
+              let file, checked = 
+                Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.ppx_flags p 
+              in 
+              let some_file = Some file in 
+              some_file, if checked then some_file else None
+          ) in 
+        ppx_files := a ;  
+        ppx_checked_files := b    
       ))
 
     |? (Bsb_build_schemas.cut_generators, `Bool (fun b -> cut_generators := b))
@@ -11935,8 +11973,9 @@ let interpret_json
           warning = warning;
           external_includes = !bs_external_includes;
           bsc_flags = !bsc_flags ;
-          ppx_flags = !ppx_flags ;
-          pp_flags = pp_flags ;          
+          ppx_files = !ppx_files ;
+          ppx_checked_files = !ppx_checked_files;
+          pp_file = pp_flags ;          
           bs_dependencies = !bs_dependencies;
           bs_dev_dependencies = !bs_dev_dependencies;
           refmt;
@@ -12101,8 +12140,8 @@ let merlin_file_gen ~cwd
     built_in_ppx
     ({bs_file_groups = res_files ; 
       generate_merlin;
-      ppx_flags;
-      pp_flags ;
+      ppx_files;
+      pp_file;
       bs_dependencies;
       bs_dev_dependencies;
       bsc_flags; 
@@ -12117,10 +12156,10 @@ let merlin_file_gen ~cwd
   if generate_merlin then begin     
     let buffer = Buffer.create 1024 in
     output_merlin_namespace buffer namespace; 
-    Ext_list.iter ppx_flags (fun x ->
+    Ext_list.iter ppx_files (fun x ->
         Buffer.add_string buffer (merlin_flg_ppx ^ x )
       );
-    Ext_option.iter pp_flags (fun x -> 
+    Ext_option.iter pp_file (fun x -> 
       Buffer.add_string buffer (merlin_flg_pp ^ x)
     );  
     Ext_option.iter reason_react_jsx 
@@ -12779,9 +12818,8 @@ let bsdep = "bsdep"
 let bsc_flags = "bsc_flags"
 
 let ppx_flags = "ppx_flags"
-
+let ppx_checked_files = "ppx_checked_files"
 let pp_flags = "pp_flags"
-
 let bs_package_includes = "bs_package_includes"
 
 let bs_package_dev_includes = "bs_package_dev_includes"
@@ -12801,8 +12839,8 @@ let warnings = "warnings"
 let gentypeconfig = "gentypeconfig"
 
 end
-module Bsb_rule : sig 
-#1 "bsb_rule.mli"
+module Bsb_ninja_rule : sig 
+#1 "bsb_ninja_rule.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -12865,7 +12903,7 @@ val build_package : t
 val reset : string String_map.t -> t String_map.t
 
 end = struct
-#1 "bsb_rule.ml"
+#1 "bsb_ninja_rule.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -13109,7 +13147,7 @@ val output_build :
   ?restat:unit ->
   output:string ->
   input:string ->
-  rule:Bsb_rule.t -> out_channel -> unit
+  rule:Bsb_ninja_rule.t -> out_channel -> unit
 
 
 val phony  :
@@ -13183,7 +13221,7 @@ let output_build
     ~input
     ~rule
     oc =
-  let rule = Bsb_rule.get_name rule  oc in (* Trigger building if not used *)
+  let rule = Bsb_ninja_rule.get_name rule  oc in (* Trigger building if not used *)
   output_string oc "build ";
   output_string oc output ;
   Ext_list.iter outputs (fun s -> output_string oc Ext_string.single_space ; output_string oc s  );
@@ -13268,17 +13306,14 @@ let phony ?(order_only_deps=[]) ?(restat : unit option) ~inputs ~output oc =
   output_string oc " : ";
   output_string oc "phony";
   output_string oc Ext_string.single_space;
-  inputs |> List.iter (fun s ->   output_string oc Ext_string.single_space ; output_string oc s);
-  begin match order_only_deps with
-    | [] -> ()
-    | _ ->
-      begin
-        output_string oc " || ";
-        order_only_deps
-        |>
-        List.iter (fun s -> output_string oc Ext_string.single_space ; output_string oc s)
-      end
-  end;
+  Ext_list.iter inputs  (fun s ->   output_string oc Ext_string.single_space ; output_string oc s);
+  (match order_only_deps with
+   | [] -> ()
+   | _ ->
+     begin
+       output_string oc " || ";                
+       Ext_list.iter order_only_deps (fun s -> output_string oc Ext_string.single_space ; output_string oc s)
+     end);
   output_string oc "\n";
   if restat <> None then 
     output_string oc "  restat = 1 \n"
@@ -13330,11 +13365,12 @@ val zero : info
 
 val handle_file_groups :
   out_channel ->
+  has_checked_ppx:bool ->
   package_specs:Bsb_package_specs.t ->  
   bs_suffix:bool ->
   js_post_build_cmd:string option -> 
   files_to_install:String_hash_set.t ->  
-  custom_rules:Bsb_rule.t String_map.t ->
+  custom_rules:Bsb_ninja_rule.t String_map.t ->
   Bsb_file_groups.file_groups ->
   string option -> 
   info -> info
@@ -13441,6 +13477,7 @@ let emit_impl_build
     (package_specs : Bsb_package_specs.t)
     (group_dir_index : Bsb_dir_index.t) 
     oc 
+    ~has_checked_ppx
     ~bs_suffix
     ~no_intf_file:(no_intf_file : bool) 
     js_post_build_cmd
@@ -13473,15 +13510,17 @@ let emit_impl_build
     Bsb_ninja_util.output_build oc
       ~output:output_mlast
       ~input
+      ~implicit_deps:(if has_checked_ppx then [ "${ppx_checked_files}" ] else [])       
       ~rule:( if is_re then 
-                Bsb_rule.build_ast_and_module_sets_from_re
+                Bsb_ninja_rule.build_ast_and_module_sets_from_re
               else
-                Bsb_rule.build_ast_and_module_sets);
+                Bsb_ninja_rule.build_ast_and_module_sets);
     Bsb_ninja_util.output_build
       oc
       ~output:output_mlastd
       ~input:output_mlast
-      ~rule:Bsb_rule.build_bin_deps
+      ~rule:Bsb_ninja_rule.build_bin_deps
+      ~implicit_deps:(if has_checked_ppx then [ "${ppx_checked_files}" ] else [])       
       ?shadows:(if Bsb_dir_index.is_lib_dir group_dir_index then None
                 else Some [{Bsb_ninja_util.key = Bsb_build_schemas.bsb_dir_group ; 
                             op = 
@@ -13497,8 +13536,8 @@ let emit_impl_build
     in
     let rule , cm_outputs, deps =
       if no_intf_file then 
-        Bsb_rule.build_cmj_cmi_js, [file_cmi], []
-      else  Bsb_rule.build_cmj_js, []  , [file_cmi]
+        Bsb_ninja_rule.build_cmj_cmi_js, [file_cmi], []
+      else  Bsb_ninja_rule.build_cmj_js, []  , [file_cmi]
     in
     Bsb_ninja_util.output_build oc
       ~output:output_cmj
@@ -13516,6 +13555,7 @@ let emit_intf_build
     (group_dir_index : Bsb_dir_index.t)
     oc
     ~is_re
+    ~has_checked_ppx
     namespace
     filename_sans_extension
   : info =
@@ -13541,12 +13581,15 @@ let emit_intf_build
     ~input:(Bsb_config.proj_rel 
               (if is_re then filename_sans_extension ^ Literals.suffix_rei 
                else filename_sans_extension ^ Literals.suffix_mli))
-    ~rule:(if is_re then Bsb_rule.build_ast_and_module_sets_from_rei
-           else Bsb_rule.build_ast_and_module_sets);
+    ~rule:(if is_re then Bsb_ninja_rule.build_ast_and_module_sets_from_rei
+           else Bsb_ninja_rule.build_ast_and_module_sets)
+    ~implicit_deps:(if has_checked_ppx then [ "${ppx_checked_files}" ] else [])       
+    ;
   Bsb_ninja_util.output_build oc
     ~output:output_mliastd
     ~input:output_mliast
-    ~rule:Bsb_rule.build_bin_deps
+    ~rule:Bsb_ninja_rule.build_bin_deps
+    ~implicit_deps:(if has_checked_ppx then [ "${ppx_checked_files}" ] else [])       
     ?shadows:(if Bsb_dir_index.is_lib_dir group_dir_index  then None
               else Some [{
                   key = Bsb_build_schemas.bsb_dir_group; 
@@ -13557,7 +13600,7 @@ let emit_intf_build
     ~output:output_cmi
     ~shadows:common_shadows
     ~input:output_mliast
-    ~rule:Bsb_rule.build_cmi
+    ~rule:Bsb_ninja_rule.build_cmi
     ;
   [output_mliastd]
 
@@ -13567,6 +13610,7 @@ let handle_module_info
     (group_dir_index : Bsb_dir_index.t)
     (package_specs : Bsb_package_specs.t) 
     js_post_build_cmd
+    ~has_checked_ppx
     ~bs_suffix
     oc  module_name 
     ( {name_sans_extension = input} as module_info : Bsb_db.module_info)
@@ -13575,10 +13619,11 @@ let handle_module_info
   match module_info.ml_info, module_info.mli_info with
   | Ml_source (impl_is_re,_), 
     Mli_source(intf_is_re,_) ->
-    emit_impl_build 
+    emit_impl_build       
       package_specs
       group_dir_index
       oc 
+      ~has_checked_ppx
       ~bs_suffix
       ~no_intf_file:false
       ~is_re:impl_is_re
@@ -13589,6 +13634,7 @@ let handle_module_info
       package_specs
       group_dir_index
       oc         
+      ~has_checked_ppx
       ~is_re:intf_is_re
       namespace
       input 
@@ -13597,6 +13643,7 @@ let handle_module_info
       package_specs
       group_dir_index
       oc 
+      ~has_checked_ppx
       ~bs_suffix
       ~no_intf_file:true
       js_post_build_cmd      
@@ -13605,6 +13652,7 @@ let handle_module_info
       input 
   | Ml_empty, Mli_source(is_re,_) ->    
     emit_intf_build 
+      ~has_checked_ppx 
       package_specs
       group_dir_index
       oc         
@@ -13616,6 +13664,7 @@ let handle_module_info
 
 let handle_file_group 
     oc 
+    ~(has_checked_ppx : bool)
     ~bs_suffix
     ~custom_rules 
     ~package_specs 
@@ -13637,6 +13686,7 @@ let handle_file_group
       if installable then 
         String_hash_set.add files_to_install (Bsb_db.filename_sans_suffix_of_module_info module_info);
       (handle_module_info 
+        ~has_checked_ppx
         ~bs_suffix
          group.dir_index 
          package_specs js_post_build_cmd 
@@ -13649,7 +13699,9 @@ let handle_file_group
 
 
 let handle_file_groups
-    oc ~package_specs 
+    oc 
+    ~has_checked_ppx
+    ~package_specs 
     ~bs_suffix
     ~js_post_build_cmd
     ~files_to_install ~custom_rules
@@ -13657,7 +13709,9 @@ let handle_file_groups
     namespace (st : info) : info  =
   Ext_list.fold_left file_groups st  
     (handle_file_group 
-       oc  ~bs_suffix ~package_specs ~custom_rules ~js_post_build_cmd
+       oc  
+       ~has_checked_ppx
+       ~bs_suffix ~package_specs ~custom_rules ~js_post_build_cmd
        files_to_install 
        namespace
     ) 
@@ -13761,8 +13815,9 @@ let output_ninja_and_namespace_map
       package_name;
       external_includes;
       bsc_flags ; 
-      ppx_flags;
-      pp_flags ;
+      pp_file;
+      ppx_files ;
+      ppx_checked_files;
       bs_dependencies;
       bs_dev_dependencies;
       refmt;
@@ -13779,11 +13834,11 @@ let output_ninja_and_namespace_map
       gentype_config; 
     } : Bsb_config_types.t)
   =
-  let custom_rules = Bsb_rule.reset generators in 
+  let custom_rules = Bsb_ninja_rule.reset generators in 
   let bsc = bsc_dir // bsc_exe in   (* The path to [bsc.exe] independent of config  *)
   let bsdep = bsc_dir // bsb_helper_exe in (* The path to [bsb_heler.exe] *)
   let cwd_lib_bs = cwd // Bsb_config.lib_bs in 
-  let ppx_flags = Bsb_build_util.ppx_flags ppx_flags in
+  let ppx_flags = Bsb_build_util.ppx_flags ppx_files in
   let bsc_flags =  String.concat Ext_string.single_space bsc_flags in
   let refmt_flags = String.concat Ext_string.single_space refmt_flags in
   let oc = open_out_bin (cwd_lib_bs // Literals.build_ninja) in
@@ -13843,7 +13898,7 @@ let output_ninja_and_namespace_map
         |] oc 
   in   
   let () = 
-    Ext_option.iter pp_flags (fun flag ->
+    Ext_option.iter pp_file (fun flag ->
       Bsb_ninja_util.output_kv Bsb_ninja_global_vars.pp_flags
       (Bsb_build_util.pp_flag flag) oc 
     );
@@ -13853,6 +13908,11 @@ let output_ninja_and_namespace_map
       ("-bs-gentype " ^ path) oc
     )
     ;  
+    if ppx_checked_files <> [] then 
+      Bsb_ninja_util.output_kv Bsb_ninja_global_vars.ppx_checked_files 
+      (String.concat " " ppx_files) oc
+    ;
+
     Bsb_ninja_util.output_kvs
       [|
         Bsb_ninja_global_vars.bs_package_flags, bs_package_flags ; 
@@ -13936,10 +13996,11 @@ let output_ninja_and_namespace_map
         oc
         ~output
         ~input:(Bsb_config.proj_rel output)
-        ~rule:Bsb_rule.copy_resources);
+        ~rule:Bsb_ninja_rule.copy_resources);
   (** Generate build statement for each file *)        
   let all_info =      
     Bsb_ninja_file_groups.handle_file_groups oc  
+      ~has_checked_ppx:(ppx_checked_files <> [])
       ~bs_suffix     
       ~custom_rules
       ~js_post_build_cmd 
@@ -13967,7 +14028,7 @@ let output_ninja_and_namespace_map
        Bsb_ninja_util.output_build oc 
          ~output:(ns ^ Literals.suffix_cmi)
          ~input:(ns ^ Literals.suffix_mlmap)
-         ~rule:Bsb_rule.build_package
+         ~rule:Bsb_ninja_rule.build_package
          ;
        (ns ^ Literals.suffix_cmi) :: all_info in 
      Bsb_ninja_util.phony 

@@ -56,6 +56,17 @@ let rec map l f =
     y1::y2::y3::y4::y5::(map tail f)
 
 
+let rec map_split_opt 
+  (xs : 'a list)  (f : 'a -> 'b option * 'c option) 
+  : 'b list * 'c list = 
+  match xs with 
+  | [] -> [], []
+  | x::xs ->
+    let c,d = f x in 
+    let cs,ds = map_split_opt xs f in 
+    (match c with Some c -> c::cs | None -> cs),
+    (match d with Some d -> d::ds | None -> ds)
+
 let rec map_snd l f =
   match l with
   | [] ->
