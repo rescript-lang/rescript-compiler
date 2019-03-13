@@ -27,5 +27,12 @@ val handle_exp_apply :
   Parsetree.expression ->
   Bs_ast_mapper.mapper ->
   Parsetree.expression ->
-  (Ast_compatible.arg_label * Parsetree.expression) list ->
+  Ast_compatible.args ->
+  Parsetree.expression
+
+val app_exp_mapper :   
+  Parsetree.expression ->
+  Bs_ast_mapper.mapper ->
+  Parsetree.expression ->
+  Ast_compatible.args -> 
   Parsetree.expression

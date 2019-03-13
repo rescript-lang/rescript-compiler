@@ -114,7 +114,7 @@ let expr_mapper  (self : mapper) (e : Parsetree.expression) =
                       pexp_attributes }
           end
         | Pexp_apply (fn, args  ) ->
-          Ast_exp_apply.handle_exp_apply e self fn args
+          Ast_exp_apply.app_exp_mapper e self fn args
         | Pexp_record (label_exprs, opt_exp)  ->
            (* could be supported using `Object.assign`?
                type
