@@ -5720,6 +5720,10 @@ val map :
   ('a -> 'b) -> 
   'b list 
 
+val has_string :   
+  string list ->
+  string -> 
+  bool
 val map_split_opt :  
   'a list ->
   ('a -> 'b option * 'c option) ->
@@ -5810,7 +5814,7 @@ val exclude :
 val exclude_with_val : 
   'a list -> 
   ('a -> bool) -> 
-  bool * 'a list 
+  'a list option
 
 
 val same_length : 'a list -> 'b list -> bool
@@ -6097,6 +6101,19 @@ let rec map l f =
     let y5 = f x5 in
     y1::y2::y3::y4::y5::(map tail f)
 
+let rec has_string l f =
+  match l with
+  | [] ->
+    false
+  | [x1] ->
+    x1 = f
+  | [x1; x2] ->
+    x1 = f || x2 = f
+  | [x1; x2; x3] ->
+    x1 = f || x2 = f || x3 = f
+  | x1 :: x2 :: x3 :: x4 ->
+    x1 = f || x2 = f || x3 = f || has_string x4 f 
+  
 
 let rec map_split_opt 
   (xs : 'a list)  (f : 'a -> 'b option * 'c option) 
@@ -6321,7 +6338,7 @@ let rec filter_map xs (f: 'a -> 'b option)=
       | Some z -> z :: filter_map ys f 
     end
 
-let rec exclude xs p =   
+let rec exclude (xs : 'a list) (p : 'a -> bool) : 'a list =   
   match xs with 
   | [] ->  []
   | x::xs -> 
@@ -6330,20 +6347,19 @@ let rec exclude xs p =
 
 let rec exclude_with_val l p =
   match l with 
-  | [] ->  false, l
+  | [] ->  None
   | a0::xs -> 
-    if p a0 then true, exclude xs p
+    if p a0 then Some (exclude xs p)
     else 
       match xs with 
-      | [] -> false, l 
+      | [] -> None
       | a1::rest -> 
         if p a1 then 
-          true, a0:: exclude rest p
+          Some (a0:: exclude rest p)
         else 
-          let st,rest = exclude_with_val rest p in 
-          if st then 
-            st, a0::a1::rest
-          else st, l 
+          match exclude_with_val rest p with 
+          | None -> None 
+          | Some  rest -> Some (a0::a1::rest)
 
 
 
@@ -6727,6 +6743,8 @@ let rec fold_left2 l1 l2 accu f =
   | (_, _) -> invalid_arg "List.fold_left2"
 
 let singleton_exn xs = match xs with [x] -> x | _ -> assert false
+
+
 end
 module Ext_sys : sig 
 #1 "ext_sys.mli"

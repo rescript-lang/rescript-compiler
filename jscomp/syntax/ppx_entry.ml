@@ -114,7 +114,7 @@ let expr_mapper  (self : mapper) (e : Parsetree.expression) =
                       pexp_attributes }
           end
         | Pexp_apply (fn, args  ) ->
-          Ast_exp_apply.handle_exp_apply e self fn args
+          Ast_exp_apply.app_exp_mapper e self fn args
         | Pexp_record (label_exprs, opt_exp)  ->
            (* could be supported using `Object.assign`?
                type
@@ -176,13 +176,13 @@ let class_type_mapper (self : mapper) ({pcty_attributes; pcty_loc} as ctd : Pars
       | Pcty_extension _
       | Pcty_arrow _ ->
         Location.raise_errorf ~loc:pcty_loc "invalid or unused attribute `bs`")
-        (* {[class x : int -> object
+(* {[class x : int -> object
              end [@bs]
            ]}
            Actually this is not going to happpen as below is an invalid syntax
            {[class type x = int -> object
                end[@bs]]}
-        *)
+*)
 
 let signature_item_mapper (self : mapper) (sigi : Parsetree.signature_item) =        
       match sigi.psig_desc with

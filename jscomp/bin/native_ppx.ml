@@ -6010,6 +6010,10 @@ val map :
   ('a -> 'b) -> 
   'b list 
 
+val has_string :   
+  string list ->
+  string -> 
+  bool
 val map_split_opt :  
   'a list ->
   ('a -> 'b option * 'c option) ->
@@ -6100,7 +6104,7 @@ val exclude :
 val exclude_with_val : 
   'a list -> 
   ('a -> bool) -> 
-  bool * 'a list 
+  'a list option
 
 
 val same_length : 'a list -> 'b list -> bool
@@ -6387,6 +6391,19 @@ let rec map l f =
     let y5 = f x5 in
     y1::y2::y3::y4::y5::(map tail f)
 
+let rec has_string l f =
+  match l with
+  | [] ->
+    false
+  | [x1] ->
+    x1 = f
+  | [x1; x2] ->
+    x1 = f || x2 = f
+  | [x1; x2; x3] ->
+    x1 = f || x2 = f || x3 = f
+  | x1 :: x2 :: x3 :: x4 ->
+    x1 = f || x2 = f || x3 = f || has_string x4 f 
+  
 
 let rec map_split_opt 
   (xs : 'a list)  (f : 'a -> 'b option * 'c option) 
@@ -6611,7 +6628,7 @@ let rec filter_map xs (f: 'a -> 'b option)=
       | Some z -> z :: filter_map ys f 
     end
 
-let rec exclude xs p =   
+let rec exclude (xs : 'a list) (p : 'a -> bool) : 'a list =   
   match xs with 
   | [] ->  []
   | x::xs -> 
@@ -6620,20 +6637,19 @@ let rec exclude xs p =
 
 let rec exclude_with_val l p =
   match l with 
-  | [] ->  false, l
+  | [] ->  None
   | a0::xs -> 
-    if p a0 then true, exclude xs p
+    if p a0 then Some (exclude xs p)
     else 
       match xs with 
-      | [] -> false, l 
+      | [] -> None
       | a1::rest -> 
         if p a1 then 
-          true, a0:: exclude rest p
+          Some (a0:: exclude rest p)
         else 
-          let st,rest = exclude_with_val rest p in 
-          if st then 
-            st, a0::a1::rest
-          else st, l 
+          match exclude_with_val rest p with 
+          | None -> None 
+          | Some  rest -> Some (a0::a1::rest)
 
 
 
@@ -7017,6 +7033,8 @@ let rec fold_left2 l1 l2 accu f =
   | (_, _) -> invalid_arg "List.fold_left2"
 
 let singleton_exn xs = match xs with [x] -> x | _ -> assert false
+
+
 end
 module Ast_compatible : sig 
 #1 "ast_compatible.mli"
@@ -7208,6 +7226,10 @@ val object_field : string ->  attributes -> core_type -> object_field
 
 val hash_label : poly_var_label -> int 
 val label_of_name : poly_var_label -> string 
+
+type args  = 
+  (arg_label * Parsetree.expression) list 
+
 end = struct
 #1 "ast_compatible.ml"
 (* Copyright (C) 2018 Authors of BuckleScript
@@ -7466,6 +7488,10 @@ let object_field   l attrs ty =
 
 let hash_label : poly_var_label -> int = Ext_pervasives.hash_variant 
 external label_of_name : poly_var_label -> string = "%identity"
+
+
+type args  = 
+  (arg_label * Parsetree.expression) list 
 
 end
 module Ext_utf8 : sig 
@@ -12828,6 +12854,116 @@ let deprecated s : attr =
       ; pstr_loc = locg}]
 
 end
+module Ast_open_cxt : sig 
+#1 "ast_open_cxt.mli"
+(* Copyright (C) 2019 - Present Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type loc = Location.t 
+
+type whole 
+type t = whole list
+
+val restore_exp :
+   Parsetree.expression -> 
+   t -> 
+   Parsetree.expression
+
+val destruct_open_tuple :    
+  Parsetree.expression -> 
+  t -> 
+  (t * Parsetree.expression list * Parsetree.attributes ) option 
+end = struct
+#1 "ast_open_cxt.ml"
+(* Copyright (C) 2019 - Present Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type loc = Location.t 
+
+type whole =
+  | Let_open of
+      (Asttypes.override_flag * Longident.t Asttypes.loc * loc *
+       Parsetree.attributes)
+
+type t = whole list
+
+type exp = Parsetree.expression
+
+type destruct_output =
+  exp list
+  
+(**
+   destruct such pattern
+   {[ A.B.let open C in (a,b)]}
+*)
+let rec destruct_open_tuple
+    (e : Parsetree.expression)
+    (acc : t)
+  : (t * destruct_output * _) option =
+  match e.pexp_desc with
+  | Pexp_open (flag, lid, cont)
+    ->
+    destruct_open_tuple
+      cont
+      (Let_open (flag, lid, e.pexp_loc, e.pexp_attributes) :: acc)
+  | Pexp_tuple es -> Some (acc, es, e.pexp_attributes)
+  | _ -> None
+
+let restore_exp 
+    (xs : Parsetree.expression) 
+    (qualifiers : t) : Parsetree.expression = 
+  Ext_list.fold_left qualifiers xs (fun x hole  ->
+      match hole with
+      | Let_open (flag, lid,loc,attrs) ->
+        ({
+          pexp_desc = Pexp_open (flag,lid,x);
+          pexp_attributes = attrs;
+          pexp_loc = loc
+        } : Parsetree.expression)
+    ) 
+end
 module Bs_ast_mapper : sig 
 #1 "bs_ast_mapper.mli"
 
@@ -13679,12 +13815,6 @@ type exp = Parsetree.expression
 type pat = Parsetree.pattern
 
 
-type whole =
-  | Let_open of
-      (Asttypes.override_flag * Longident.t Asttypes.loc * loc *
-       Parsetree.attributes)
-
-type wholes = whole list
 
 let rec is_simple_pattern (p : Parsetree.pattern) =
   match p.ppat_desc with
@@ -13693,41 +13823,19 @@ let rec is_simple_pattern (p : Parsetree.pattern) =
   | Ppat_constraint(p,_) -> is_simple_pattern p
   | _ -> false
 
-type destruct_output =
-  exp list
-  
-(**
-   destruct such pattern
-   {[ A.B.let open C in (a,b)]}
-*)
-let rec destruct_open_tuple
-    (e : Parsetree.expression)
-    (acc : whole list)
-  : (wholes * destruct_output * _) option =
-  match e.pexp_desc with
-  | Pexp_open (flag, lid, cont)
-    ->
-    destruct_open_tuple
-      cont
-      (Let_open (flag, lid, e.pexp_loc, e.pexp_attributes) :: acc)
-  | Pexp_tuple es -> Some (acc, es, e.pexp_attributes)
-  | _ -> None
 
 let map_open_tuple
     (e : Parsetree.expression)
-    (f : Parsetree.expression list -> _ -> Parsetree.expression) =
-  match destruct_open_tuple e [] with
+    (f : 
+       Parsetree.expression list ->
+     Parsetree.attributes -> 
+     Parsetree.expression
+      ) 
+     =
+  match Ast_open_cxt.destruct_open_tuple e [] with
   | None ->  None (** not an open tuple *)
   | Some (qualifiers, es, attrs ) ->
-    Some (Ext_list.fold_left qualifiers (f es attrs) (fun x hole  ->
-        match hole with
-        | Let_open (flag, lid,loc,attrs) ->
-          {
-            pexp_desc = Pexp_open (flag,lid,x);
-            pexp_attributes = attrs;
-            pexp_loc = loc
-          }
-      ) )
+    Some (Ast_open_cxt.restore_exp (f es attrs) qualifiers)
 (*
   [let (a,b) = M.N.(c,d) ]
   =>
@@ -13743,7 +13851,7 @@ let flattern_tuple_pattern_vb
   let pvb_attributes = self.attributes self vb.pvb_attributes in
   match pvb_pat.ppat_desc with
   | Ppat_tuple xs when List.for_all is_simple_pattern xs ->
-    begin match destruct_open_tuple pvb_expr []  with
+    begin match Ast_open_cxt.destruct_open_tuple pvb_expr []  with
       | Some (wholes, es, tuple_attributes)
         when
           List.for_all is_simple_pattern xs &&
@@ -13751,26 +13859,15 @@ let flattern_tuple_pattern_vb
         ->
         Bs_ast_invariant.warn_discarded_unused_attributes tuple_attributes ; (* will be dropped*)
         Ext_list.fold_right2 xs es acc (fun pat exp acc->
-             {Parsetree.
-               pvb_pat =
-                 pat;
-               pvb_expr =
-                 ( match wholes with
-                   | [] -> exp
-                   | _ ->
-                     Ext_list.fold_left wholes exp (fun x  whole ->
-                         match whole with
-                         | Let_open (flag,lid,loc,attrs) ->
-                           {
-                             pexp_desc = Pexp_open(flag,lid,x);
-                             pexp_attributes = attrs;
-                             pexp_loc = loc
-                           }
-                       ) ) ;
-               pvb_attributes;
-               pvb_loc = vb.pvb_loc ;
-             } :: acc
-           ) 
+            {Parsetree.
+              pvb_pat =
+                pat;
+              pvb_expr =                 
+                Ast_open_cxt.restore_exp  exp wholes ;
+              pvb_attributes;
+              pvb_loc = vb.pvb_loc ;
+            } :: acc
+          ) 
       | _ ->
         {pvb_pat ;
          pvb_expr ;
@@ -17699,7 +17796,7 @@ module Ast_util : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-type args = (Ast_compatible.arg_label * Parsetree.expression) list
+
 type loc = Location.t 
 type label_exprs = (Longident.t Asttypes.loc * Parsetree.expression) list
 type 'a cxt = loc -> Bs_ast_mapper.mapper -> 'a
@@ -17723,22 +17820,22 @@ type uncurry_type_gen =
 (** syntax: {[f arg0 arg1 [@bs]]}*)
 val uncurry_fn_apply : 
   (Parsetree.expression ->
-  args ->
-  Parsetree.expression_desc ) cxt 
+   Parsetree.expression list ->
+   Parsetree.expression_desc ) cxt 
 
 (** syntax : {[f## arg0 arg1 ]}*)
 val method_apply : 
   (Parsetree.expression ->
   string ->
-  args ->
+  Parsetree.expression list ->
   Parsetree.expression_desc) cxt 
 
 (** syntax {[f#@ arg0 arg1 ]}*)
 val property_apply : 
   (Parsetree.expression ->
-  string ->
-  args ->
-  Parsetree.expression_desc) cxt 
+   string ->
+   Parsetree.expression list ->
+   Parsetree.expression_desc) cxt 
 
 
 (** 
@@ -17831,7 +17928,7 @@ end = struct
 open Ast_helper 
 type 'a cxt = Ast_helper.loc -> Bs_ast_mapper.mapper -> 'a
 type loc = Location.t 
-type args = (Ast_compatible.arg_label * Parsetree.expression) list
+
 type label_exprs = (Longident.t Asttypes.loc * Parsetree.expression) list
 type uncurry_expression_gen = 
   (Parsetree.pattern ->
@@ -17845,7 +17942,7 @@ type uncurry_type_gen =
 
 let uncurry_type_id = 
   Ast_literal.Lid.js_fn
-
+ 
 let method_id  = 
   Ast_literal.Lid.js_meth
 
@@ -17917,18 +18014,17 @@ let js_property loc obj (name : string) =
      [#=], 
 *)
 
-
+(*         
+  if not (Ast_compatible.is_arg_label_simple label) then
+    Bs_syntaxerr.err loc Label_in_uncurried_bs_attribute;
+*)
 let generic_apply  kind loc 
     (self : Bs_ast_mapper.mapper) 
     (obj : Parsetree.expression) 
-    (args : args ) cb   =
+    (args : Parsetree.expression list) cb   =
   let obj = self.expr self obj in
   let args =
-    Ext_list.map args (fun (label,e) ->
-        if not (Ast_compatible.is_arg_label_simple label) then
-          Bs_syntaxerr.err loc Label_in_uncurried_bs_attribute;
-        self.expr self e
-      ) in
+    Ext_list.map args (fun e -> self.expr self e) in
   let len = List.length args in 
   let arity, fn, args  = 
     match args with 
@@ -17968,7 +18064,7 @@ let generic_apply  kind loc
 let uncurry_fn_apply loc self fn args = 
   generic_apply `Fn loc self fn args (fun _ obj -> obj )
 
-let property_apply loc self obj name (args : args) 
+let property_apply loc self obj name args  
   =  generic_apply `PropertyFn loc self obj args 
     (fun loc obj -> Exp.mk ~loc (js_property loc obj name))
 
@@ -18474,13 +18570,13 @@ module Ast_exp_apply : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-val handle_exp_apply :
+
+val app_exp_mapper :   
   Parsetree.expression ->
   Bs_ast_mapper.mapper ->
   Parsetree.expression ->
-  (Ast_compatible.arg_label * Parsetree.expression) list ->
+  Ast_compatible.args -> 
   Parsetree.expression
-
 end = struct
 #1 "ast_exp_apply.ml"
 (* Copyright (C) 2018 Authors of BuckleScript
@@ -18527,137 +18623,133 @@ let bound (e : exp) (cb : exp -> _) =
       (cb (Exp.ident ~loc {txt = Lident ocaml_obj_id; loc}))
 
 let default_expr_mapper = Bs_ast_mapper.default_mapper.expr      
-let handle_exp_apply
-    (e  : exp)
-    (self : Bs_ast_mapper.mapper)
-    (fn : exp)
-    (args : (Ast_compatible.arg_label * Parsetree.expression) list)
-  =
-  let loc = e.pexp_loc in
-  match fn.pexp_desc with
-  | Pexp_apply (
-      {pexp_desc =
-         Pexp_ident  {txt = Lident "##"  ; loc} ; _},
-      [
 
-          ("", obj) ;
-          ("", {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _} )
-          
-        ]
-        )
-      ->  (* f##paint 1 2 *)
-      {e with pexp_desc = Ast_util.method_apply loc self obj name args }
-    | Pexp_apply (
-        {pexp_desc =
-           Pexp_ident  {txt = Lident "#@"  ; loc} ; _},
-        [
+let check_and_discard (args : Ast_compatible.args) = 
+  Ext_list.map args (fun (label,x) -> 
+      if not (Ast_compatible.is_arg_label_simple label) then 
+        Bs_syntaxerr.err x.pexp_loc Label_in_uncurried_bs_attribute;
+      x  
+    )
 
-          ("", obj) ;
-          ("", {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _} )
-          
-        ])
-      ->  (* f#@paint 1 2 *)
-      {e with pexp_desc = Ast_util.property_apply loc self obj name args  }
-    | Pexp_ident {txt = Lident "|."} ->
+type app_pattern = {
+  op : string;  
+  loc : Location.t; 
+  args : Parsetree.expression list
+}
+
+(* match fn as *)   
+let view_as_app (fn : exp) s : app_pattern option =      
+  match fn.pexp_desc with 
+  | Pexp_apply ({pexp_desc = Pexp_ident {txt = Lident op; loc}}, args ) 
+    when Ext_list.has_string s op
+    -> 
+      Some {op; loc; args = check_and_discard args}
+  | _ -> None 
+
+
+let inner_ops = ["##"; "#@"]      
+let infix_ops = [ "|."; "#=" ; "##"]
+let app_exp_mapper 
+  (e : exp)
+  (self : Bs_ast_mapper.mapper)
+  (fn : exp)
+  (args : Ast_compatible.args) : exp = 
+  (* - (f##paint) 1 2 
+     - (f#@paint) 1 2 
+  *)
+  match view_as_app fn inner_ops with
+  | Some { op;  loc;
+           args = [obj;
+          {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _}]}
+    ->  
+    {e with pexp_desc = 
+        (if op = "##" then
+        Ast_util.method_apply 
+        else Ast_util.property_apply)
+        loc self obj name (check_and_discard args) }
+   | Some {op; loc} ->
+      Location.raise_errorf ~loc "%s expect f%sproperty arg0 arg2 form" op op
+   | None -> 
+    match view_as_app e infix_ops with   
+    | Some { op = "|."; args =  [obj_arg; fn];loc} ->
       (*
         a |. f
         a |. f b c [@bs]  --> f a b c [@bs]
+        a |. M.(f b c) --> M.f a M.b M.c
+        a |. M.Some
       *)
-      begin match args with
-        | [ 
-
-          "", obj_arg ;
-          "", fn
-            
-          ] ->
-          let new_obj_arg = self.expr self obj_arg in
-          begin match fn with
-            | {pexp_desc = Pexp_apply (fn, args); pexp_loc; pexp_attributes} ->
-              let fn = self.expr self fn in
-              let args = Ext_list.map  args (fun (lab,exp) -> lab, self.expr self exp ) in
-              Bs_ast_invariant.warn_discarded_unused_attributes pexp_attributes;
-              { pexp_desc = Pexp_apply(fn, (Ast_compatible.no_label, new_obj_arg) :: args);
-                pexp_attributes = [];
-                pexp_loc = pexp_loc}
-            | {pexp_desc = Pexp_construct(ctor,None); pexp_loc; pexp_attributes} -> 
-              {fn with pexp_desc = Pexp_construct(ctor, Some new_obj_arg)}
-            | _ ->
-              let try_dispatch_by_tuple =
-                Ast_tuple_pattern_flatten.map_open_tuple fn (fun xs tuple_attrs ->
-                    bound new_obj_arg @@  fun bounded_obj_arg ->
-                    {
-                      pexp_desc =
-                        Pexp_tuple (
-                          Ext_list.map xs (fun (fn : Parsetree.expression) ->
-                              match fn with
-                              | {pexp_desc = Pexp_apply (fn,args); pexp_loc; pexp_attributes }
-                                ->
-                                let fn = self.expr self fn in
-                                let args = Ext_list.map  args (fun (lab,exp) -> lab, self.expr self exp ) in
-                                Bs_ast_invariant.warn_discarded_unused_attributes pexp_attributes;
-                                { Parsetree.pexp_desc = Pexp_apply(fn, (Ast_compatible.no_label, bounded_obj_arg) :: args);
-                                  pexp_attributes = [];
-                                  pexp_loc = pexp_loc}
-                              | {pexp_desc = Pexp_construct(ctor,None); pexp_loc; pexp_attributes}    
-                                -> 
-                                {fn with pexp_desc = Pexp_construct(ctor, Some bounded_obj_arg)}
-                              | _ ->
-                                Ast_compatible.app1 ~loc:fn.pexp_loc
-                                  (self.expr self fn )
-                                   bounded_obj_arg
-                            ));
-                      pexp_attributes = tuple_attrs;
-                      pexp_loc = fn.pexp_loc;
-                    }
-                  ) in
-              begin match try_dispatch_by_tuple  with
-                | Some x -> x
-                | None ->
-                  Ast_compatible.app1 ~loc (self.expr self fn) new_obj_arg
-              end
-          end
+      let new_obj_arg = self.expr self obj_arg in
+      begin match fn with
+        | {pexp_desc = Pexp_apply (fn, args); pexp_loc; pexp_attributes} ->
+          let fn = self.expr self fn in
+          let args = Ext_list.map  args (fun (lab,exp) -> lab, self.expr self exp ) in
+          Bs_ast_invariant.warn_discarded_unused_attributes pexp_attributes;
+          { pexp_desc = Pexp_apply(fn, (Ast_compatible.no_label, new_obj_arg) :: args);
+            pexp_attributes = [];
+            pexp_loc = pexp_loc}
+        | {pexp_desc = Pexp_construct(ctor,None); pexp_loc; pexp_attributes} -> 
+          {fn with pexp_desc = Pexp_construct(ctor, Some new_obj_arg)}
         | _ ->
-          Location.raise_errorf ~loc
-            "invalid |. syntax "
+          let try_dispatch_by_tuple =
+            Ast_tuple_pattern_flatten.map_open_tuple fn (fun xs tuple_attrs ->
+                bound new_obj_arg @@  fun bounded_obj_arg ->
+                {
+                  pexp_desc =
+                    Pexp_tuple (
+                      Ext_list.map xs (fun fn ->
+                          match fn with
+                          | {pexp_desc = Pexp_apply (fn,args); pexp_loc; pexp_attributes }
+                            ->
+                            let fn = self.expr self fn in
+                            let args = Ext_list.map  args (fun (lab,exp) -> lab, self.expr self exp ) in
+                            Bs_ast_invariant.warn_discarded_unused_attributes pexp_attributes;
+                            { Parsetree.pexp_desc = Pexp_apply(fn, (Ast_compatible.no_label, bounded_obj_arg) :: args);
+                              pexp_attributes = [];
+                              pexp_loc = pexp_loc}
+                          | {pexp_desc = Pexp_construct(ctor,None); pexp_loc; pexp_attributes}    
+                            -> 
+                            {fn with pexp_desc = Pexp_construct(ctor, Some bounded_obj_arg)}
+                          | _ ->
+                            Ast_compatible.app1 ~loc:fn.pexp_loc
+                              (self.expr self fn )
+                              bounded_obj_arg
+                        ));
+                  pexp_attributes = tuple_attrs;
+                  pexp_loc = fn.pexp_loc;
+                }
+              ) in
+          match try_dispatch_by_tuple  with
+          | Some x -> x
+          | None ->
+            Ast_compatible.app1 ~loc (self.expr self fn) new_obj_arg
       end
-
-    | Pexp_ident  {txt = Lident "##" ; loc}
-      ->
-      begin match args with
-        | [
-
-           ("", obj) ;
-           ("", {pexp_desc = Pexp_apply(
-                {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _},
-                args
-              ); pexp_attributes = attrs }
-           (* we should warn when we discard attributes *)
-           )
-           
-          ] -> (* f##(paint 1 2 ) *)
-          (* gpr#1063 foo##(bar##baz) we should rewrite (bar##baz)
+    | Some { op = "##" ; loc; args =  [obj; rest]} ->
+      (* - obj##property
+         - obj#(method a b )
+         we should warn when we discard attributes 
+         gpr#1063 foo##(bar##baz) we should rewrite (bar##baz)
              first  before pattern match.
              currently the pattern match is written in a top down style.
              Another corner case: f##(g a b [@bs])
-          *)
+      *)
+      begin match rest with
+          {pexp_desc = Pexp_apply(
+                {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _},
+                args
+              ); pexp_attributes = attrs }
+           -> 
           Bs_ast_invariant.warn_discarded_unused_attributes attrs ;
-          {e with pexp_desc = Ast_util.method_apply loc self obj name args}
-        | [
-
-          ("", obj) ;
-           ("",
+          {e with pexp_desc = Ast_util.method_apply loc self obj name (check_and_discard args)}
+        | 
             {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _}
-           )  (* f##paint  *)
-           
-          ] ->
+            (* f##paint  *)
+          ->
           { e with pexp_desc =
                      Ast_util.js_property loc (self.expr self obj) name
           }
-
-        | _ ->
-          Location.raise_errorf ~loc
-            "Js object ## expect syntax like obj##(paint (a,b)) "
-      end
+        | _ -> Location.raise_errorf ~loc "invalid ## syntax"
+        end  
+      
     (* we can not use [:=] for precedece cases
        like {[i @@ x##length := 3 ]}
        is parsed as {[ (i @@ x##length) := 3]}
@@ -18671,40 +18763,37 @@ let handle_exp_apply
          end
        ]}
     *)
-    | Pexp_ident {txt = Lident "#=" } ->
-      begin match args with
-        | [
-
-          "",
-           {pexp_desc =
-              Pexp_apply ({pexp_desc = Pexp_ident {txt = Lident "##"}},
-                          ["", obj;
-                           "", {pexp_desc = Pexp_ident {txt = Lident name}}
-                          ]
-                         )};
-           "", arg
-           
-          ] ->
+    | Some {op = "#="; loc; args = [obj; arg]}  ->
+      begin match view_as_app obj ["##"] with
+        | Some { args = [obj; {pexp_desc = Pexp_ident {txt = Lident name}}]}
+         -> 
           Exp.constraint_ ~loc
             { e with
               pexp_desc =
                 Ast_util.method_apply loc self obj
-                  (name ^ Literals.setter_suffix) [Ast_compatible.no_label, arg ]  }
+                  (name ^ Literals.setter_suffix) [arg]  }
             (Ast_literal.type_unit ~loc ())
-        | _ -> default_expr_mapper self e
+        | _ -> assert false
       end
-    | _ ->
-      begin match
-          Ext_list.exclude_with_val
-            e.pexp_attributes 
-            Ast_attributes.is_bs with
-      | false, _ -> default_expr_mapper self e
-      | true, pexp_attributes ->
-        {e with pexp_desc = Ast_util.uncurry_fn_apply loc self fn args ;
+    | Some { op = "|.";  loc; } ->
+      Location.raise_errorf ~loc
+        "invalid |. syntax, it can only be used as binary operator"
+    | Some {op = "##"; loc } ->
+      Location.raise_errorf ~loc
+        "Js object ## expect syntax like obj##(paint (a,b)) "
+    | Some {op; } -> Location.raise_errorf "invalid %s syntax" op
+    | None ->
+      match
+        Ext_list.exclude_with_val
+          e.pexp_attributes 
+          Ast_attributes.is_bs with
+      | None -> default_expr_mapper self e
+      | Some pexp_attributes ->
+        {e with pexp_desc = Ast_util.uncurry_fn_apply e.pexp_loc self fn (check_and_discard args) ;
                 pexp_attributes }
-      end
-
-
+      
+  
+  
 end
 module Ppx_driver : sig 
 #1 "ppx_driver.mli"
@@ -18851,7 +18940,7 @@ let default_expr_mapper = Bs_ast_mapper.default_mapper.expr
 let expr_mapper (self : mapper) ( e : Parsetree.expression) = 
   match e.pexp_desc with 
   | Pexp_apply(fn, args) -> 
-    Ast_exp_apply.handle_exp_apply e self fn args 
+    Ast_exp_apply.app_exp_mapper e self fn args 
   | _  -> default_expr_mapper self e 
 
 let my_mapper : mapper = {

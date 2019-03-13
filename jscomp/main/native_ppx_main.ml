@@ -30,7 +30,7 @@ let default_expr_mapper = Bs_ast_mapper.default_mapper.expr
 let expr_mapper (self : mapper) ( e : Parsetree.expression) = 
   match e.pexp_desc with 
   | Pexp_apply(fn, args) -> 
-    Ast_exp_apply.handle_exp_apply e self fn args 
+    Ast_exp_apply.app_exp_mapper e self fn args 
   | _  -> default_expr_mapper self e 
 
 let my_mapper : mapper = {

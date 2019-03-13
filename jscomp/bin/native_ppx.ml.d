@@ -83,6 +83,8 @@ bin/native_ppx.ml:
 ./syntax/ast_external_mk.mli
 ./syntax/ast_literal.ml
 ./syntax/ast_literal.mli
+./syntax/ast_open_cxt.ml
+./syntax/ast_open_cxt.mli
 ./syntax/ast_pat.ml
 ./syntax/ast_pat.mli
 ./syntax/ast_payload.ml

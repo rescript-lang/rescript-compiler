@@ -194,3 +194,6 @@ val object_field : string ->  attributes -> core_type -> object_field
 
 val hash_label : poly_var_label -> int 
 val label_of_name : poly_var_label -> string 
+
+type args  = 
+  (arg_label * Parsetree.expression) list 

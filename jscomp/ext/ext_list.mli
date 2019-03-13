@@ -28,6 +28,10 @@ val map :
   ('a -> 'b) -> 
   'b list 
 
+val has_string :   
+  string list ->
+  string -> 
+  bool
 val map_split_opt :  
   'a list ->
   ('a -> 'b option * 'c option) ->
@@ -118,7 +122,7 @@ val exclude :
 val exclude_with_val : 
   'a list -> 
   ('a -> bool) -> 
-  bool * 'a list 
+  'a list option
 
 
 val same_length : 'a list -> 'b list -> bool
