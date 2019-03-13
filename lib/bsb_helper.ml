@@ -1835,6 +1835,10 @@ val map :
   ('a -> 'b) -> 
   'b list 
 
+val has_string :   
+  string list ->
+  string -> 
+  bool
 val map_split_opt :  
   'a list ->
   ('a -> 'b option * 'c option) ->
@@ -2212,6 +2216,19 @@ let rec map l f =
     let y5 = f x5 in
     y1::y2::y3::y4::y5::(map tail f)
 
+let rec has_string l f =
+  match l with
+  | [] ->
+    false
+  | [x1] ->
+    x1 = f
+  | [x1; x2] ->
+    x1 = f || x2 = f
+  | [x1; x2; x3] ->
+    x1 = f || x2 = f || x3 = f
+  | x1 :: x2 :: x3 :: x4 ->
+    x1 = f || x2 = f || x3 = f || has_string x4 f 
+  
 
 let rec map_split_opt 
   (xs : 'a list)  (f : 'a -> 'b option * 'c option) 
@@ -2842,6 +2859,8 @@ let rec fold_left2 l1 l2 accu f =
   | (_, _) -> invalid_arg "List.fold_left2"
 
 let singleton_exn xs = match xs with [x] -> x | _ -> assert false
+
+
 end
 module Map_gen
 = struct

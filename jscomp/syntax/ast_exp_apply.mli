@@ -23,12 +23,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-val handle_exp_apply :
-  Parsetree.expression ->
-  Bs_ast_mapper.mapper ->
-  Parsetree.expression ->
-  Ast_compatible.args ->
-  Parsetree.expression
 
 val app_exp_mapper :   
   Parsetree.expression ->
