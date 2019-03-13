@@ -6104,7 +6104,7 @@ val exclude :
 val exclude_with_val : 
   'a list -> 
   ('a -> bool) -> 
-  bool * 'a list 
+  'a list option
 
 
 val same_length : 'a list -> 'b list -> bool
@@ -6628,7 +6628,7 @@ let rec filter_map xs (f: 'a -> 'b option)=
       | Some z -> z :: filter_map ys f 
     end
 
-let rec exclude xs p =   
+let rec exclude (xs : 'a list) (p : 'a -> bool) : 'a list =   
   match xs with 
   | [] ->  []
   | x::xs -> 
@@ -6637,20 +6637,19 @@ let rec exclude xs p =
 
 let rec exclude_with_val l p =
   match l with 
-  | [] ->  false, l
+  | [] ->  None
   | a0::xs -> 
-    if p a0 then true, exclude xs p
+    if p a0 then Some (exclude xs p)
     else 
       match xs with 
-      | [] -> false, l 
+      | [] -> None
       | a1::rest -> 
         if p a1 then 
-          true, a0:: exclude rest p
+          Some (a0:: exclude rest p)
         else 
-          let st,rest = exclude_with_val rest p in 
-          if st then 
-            st, a0::a1::rest
-          else st, l 
+          match exclude_with_val rest p with 
+          | None -> None 
+          | Some  rest -> Some (a0::a1::rest)
 
 
 
@@ -18711,15 +18710,15 @@ let app_exp_mapper
         "Js object ## expect syntax like obj##(paint (a,b)) "
     | Some {op; } -> Location.raise_errorf "invalid %s syntax" op
     | None ->
-      begin match
-          Ext_list.exclude_with_val
-            e.pexp_attributes 
-            Ast_attributes.is_bs with
-      | false, _ -> default_expr_mapper self e
-      | true, pexp_attributes ->
+      match
+        Ext_list.exclude_with_val
+          e.pexp_attributes 
+          Ast_attributes.is_bs with
+      | None -> default_expr_mapper self e
+      | Some pexp_attributes ->
         {e with pexp_desc = Ast_util.uncurry_fn_apply e.pexp_loc self fn (check_and_discard args) ;
                 pexp_attributes }
-      end
+      
   
   
 end

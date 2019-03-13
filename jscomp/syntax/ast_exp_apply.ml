@@ -200,14 +200,14 @@ let app_exp_mapper
         "Js object ## expect syntax like obj##(paint (a,b)) "
     | Some {op; } -> Location.raise_errorf "invalid %s syntax" op
     | None ->
-      begin match
-          Ext_list.exclude_with_val
-            e.pexp_attributes 
-            Ast_attributes.is_bs with
-      | false, _ -> default_expr_mapper self e
-      | true, pexp_attributes ->
+      match
+        Ext_list.exclude_with_val
+          e.pexp_attributes 
+          Ast_attributes.is_bs with
+      | None -> default_expr_mapper self e
+      | Some pexp_attributes ->
         {e with pexp_desc = Ast_util.uncurry_fn_apply e.pexp_loc self fn (check_and_discard args) ;
                 pexp_attributes }
-      end
+      
   
   

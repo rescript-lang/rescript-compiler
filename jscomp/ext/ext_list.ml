@@ -292,7 +292,7 @@ let rec filter_map xs (f: 'a -> 'b option)=
       | Some z -> z :: filter_map ys f 
     end
 
-let rec exclude xs p =   
+let rec exclude (xs : 'a list) (p : 'a -> bool) : 'a list =   
   match xs with 
   | [] ->  []
   | x::xs -> 
@@ -301,20 +301,19 @@ let rec exclude xs p =
 
 let rec exclude_with_val l p =
   match l with 
-  | [] ->  false, l
+  | [] ->  None
   | a0::xs -> 
-    if p a0 then true, exclude xs p
+    if p a0 then Some (exclude xs p)
     else 
       match xs with 
-      | [] -> false, l 
+      | [] -> None
       | a1::rest -> 
         if p a1 then 
-          true, a0:: exclude rest p
+          Some (a0:: exclude rest p)
         else 
-          let st,rest = exclude_with_val rest p in 
-          if st then 
-            st, a0::a1::rest
-          else st, l 
+          match exclude_with_val rest p with 
+          | None -> None 
+          | Some  rest -> Some (a0::a1::rest)
 
 
 
