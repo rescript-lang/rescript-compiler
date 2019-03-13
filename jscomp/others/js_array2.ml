@@ -83,7 +83,7 @@ external includes : 'a t -> 'a -> bool = "" [@@bs.send] (** ES2016 *)
 external indexOf : 'a t -> 'a  -> int = "" [@@bs.send]
 external indexOfFrom : 'a t -> 'a -> from:int -> int = "indexOf" [@@bs.send]
 
-external join : 'a t -> string = "" [@@bs.send]
+
 external joinWith : 'a t -> string -> string = "join" [@@bs.send]
 
 external lastIndexOf : 'a t -> 'a -> int = "" [@@bs.send]

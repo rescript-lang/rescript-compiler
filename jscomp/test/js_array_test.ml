@@ -159,7 +159,7 @@ let suites = Mt.[
     );
 
     "join", (fun _ ->
-      Eq("1,2,3", [| 1; 2; 3 |] |. Js.Array2.join)
+      Eq("1,2,3", [| 1; 2; 3 |] |. Js.Array.join)
     );
     "joinWith", (fun _ ->
       Eq("1;2;3", [| 1; 2; 3 |] |. Js.Array2.joinWith ";")
