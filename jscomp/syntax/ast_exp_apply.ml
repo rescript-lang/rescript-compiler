@@ -49,8 +49,19 @@ let check_and_discard (args : Ast_compatible.args) =
         Bs_syntaxerr.err x.pexp_loc Label_in_uncurried_bs_attribute;
       x  
     )
+
+
+(* match fn as *)   
+let view_as_app (fn : exp) s =      
+  match fn.pexp_desc with 
+  | Pexp_apply ({pexp_desc = Pexp_ident {txt = Lident op; loc}}, args ) 
+    when Ext_list.exists s (fun  x -> x = op)
+    -> 
+      Some (op, loc, check_and_discard args)
+  | _ -> None 
+
 let handle_exp_apply
-    (e  : exp)
+    (e  : exp) 
     (self : Bs_ast_mapper.mapper)
     (fn : exp)
     (args : (Ast_compatible.arg_label * Parsetree.expression) list)
