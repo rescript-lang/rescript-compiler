@@ -18548,14 +18548,19 @@ let check_and_discard (args : Ast_compatible.args) =
       x  
     )
 
+type app_pattern = {
+  op : string;  
+  loc : Location.t; 
+  args : Parsetree.expression list
+}
 
 (* match fn as *)   
-let view_as_app (fn : exp) s =      
+let view_as_app (fn : exp) s : app_pattern option =      
   match fn.pexp_desc with 
   | Pexp_apply ({pexp_desc = Pexp_ident {txt = Lident op; loc}}, args ) 
     when Ext_list.exists s (fun  x -> x = op)
     -> 
-      Some (op, loc, check_and_discard args)
+      Some {op; loc; args = check_and_discard args}
   | _ -> None 
 
 let handle_exp_apply
@@ -18735,96 +18740,96 @@ let handle_exp_apply
                 pexp_attributes }
       end
 
+let inner_ops = ["##"; "#@"]      
+let infix_ops = [ "|."; "#=" ; "##"]
 let app_exp_mapper 
   (e : exp)
   (self : Bs_ast_mapper.mapper)
   (fn : exp)
   (args : Ast_compatible.args) : exp = 
-  
-  match view_as_app fn ["##"; "#@"] with
-  | Some(op, loc,
-      [obj;
-         {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _}]) 
-      ->  (* f##paint 1 2 *)
-      {e with pexp_desc = 
+  (* - (f##paint) 1 2 
+     - (f#@paint) 1 2 
+  *)
+  match view_as_app fn inner_ops with
+  | Some { op;  loc;
+           args = [obj;
+          {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _}]}
+    ->  
+    {e with pexp_desc = 
         (if op = "##" then
         Ast_util.method_apply 
         else Ast_util.property_apply)
         loc self obj name (check_and_discard args) }
-   | Some _ -> assert false      
+   | Some {op; loc} ->
+      Location.raise_errorf ~loc "%s expect f%sproperty arg0 arg2 form" op op
    | None -> 
     let loc = e.pexp_loc in   
-    match view_as_app e  [ "|."; "#=" ; "##"]with   
-    | Some ("|.",_, [obj_arg; fn]) ->
+    match view_as_app e infix_ops with   
+    | Some { op = "|."; args =  [obj_arg; fn]} ->
       (*
         a |. f
         a |. f b c [@bs]  --> f a b c [@bs]
       *)
-          let new_obj_arg = self.expr self obj_arg in
-          begin match fn with
-            | {pexp_desc = Pexp_apply (fn, args); pexp_loc; pexp_attributes} ->
-              let fn = self.expr self fn in
-              let args = Ext_list.map  args (fun (lab,exp) -> lab, self.expr self exp ) in
-              Bs_ast_invariant.warn_discarded_unused_attributes pexp_attributes;
-              { pexp_desc = Pexp_apply(fn, (Ast_compatible.no_label, new_obj_arg) :: args);
-                pexp_attributes = [];
-                pexp_loc = pexp_loc}
-            | {pexp_desc = Pexp_construct(ctor,None); pexp_loc; pexp_attributes} -> 
-              {fn with pexp_desc = Pexp_construct(ctor, Some new_obj_arg)}
-            | _ ->
-              let try_dispatch_by_tuple =
-                Ast_tuple_pattern_flatten.map_open_tuple fn (fun xs tuple_attrs ->
-                    bound new_obj_arg @@  fun bounded_obj_arg ->
-                    {
-                      pexp_desc =
-                        Pexp_tuple (
-                          Ext_list.map xs (fun (fn : Parsetree.expression) ->
-                              match fn with
-                              | {pexp_desc = Pexp_apply (fn,args); pexp_loc; pexp_attributes }
-                                ->
-                                let fn = self.expr self fn in
-                                let args = Ext_list.map  args (fun (lab,exp) -> lab, self.expr self exp ) in
-                                Bs_ast_invariant.warn_discarded_unused_attributes pexp_attributes;
-                                { Parsetree.pexp_desc = Pexp_apply(fn, (Ast_compatible.no_label, bounded_obj_arg) :: args);
-                                  pexp_attributes = [];
-                                  pexp_loc = pexp_loc}
-                              | {pexp_desc = Pexp_construct(ctor,None); pexp_loc; pexp_attributes}    
-                                -> 
-                                {fn with pexp_desc = Pexp_construct(ctor, Some bounded_obj_arg)}
-                              | _ ->
-                                Ast_compatible.app1 ~loc:fn.pexp_loc
-                                  (self.expr self fn )
-                                   bounded_obj_arg
-                            ));
-                      pexp_attributes = tuple_attrs;
-                      pexp_loc = fn.pexp_loc;
-                    }
-                  ) in
-              begin match try_dispatch_by_tuple  with
-                | Some x -> x
-                | None ->
-                  Ast_compatible.app1 ~loc (self.expr self fn) new_obj_arg
-              end
-          end
-    | Some ("|.", loc, _) ->
-          Location.raise_errorf ~loc
-            "invalid |. syntax "
-      
-
-    | Some("##" , loc, [obj; rest])
-      ->
+      let new_obj_arg = self.expr self obj_arg in
+      begin match fn with
+        | {pexp_desc = Pexp_apply (fn, args); pexp_loc; pexp_attributes} ->
+          let fn = self.expr self fn in
+          let args = Ext_list.map  args (fun (lab,exp) -> lab, self.expr self exp ) in
+          Bs_ast_invariant.warn_discarded_unused_attributes pexp_attributes;
+          { pexp_desc = Pexp_apply(fn, (Ast_compatible.no_label, new_obj_arg) :: args);
+            pexp_attributes = [];
+            pexp_loc = pexp_loc}
+        | {pexp_desc = Pexp_construct(ctor,None); pexp_loc; pexp_attributes} -> 
+          {fn with pexp_desc = Pexp_construct(ctor, Some new_obj_arg)}
+        | _ ->
+          let try_dispatch_by_tuple =
+            Ast_tuple_pattern_flatten.map_open_tuple fn (fun xs tuple_attrs ->
+                bound new_obj_arg @@  fun bounded_obj_arg ->
+                {
+                  pexp_desc =
+                    Pexp_tuple (
+                      Ext_list.map xs (fun fn ->
+                          match fn with
+                          | {pexp_desc = Pexp_apply (fn,args); pexp_loc; pexp_attributes }
+                            ->
+                            let fn = self.expr self fn in
+                            let args = Ext_list.map  args (fun (lab,exp) -> lab, self.expr self exp ) in
+                            Bs_ast_invariant.warn_discarded_unused_attributes pexp_attributes;
+                            { Parsetree.pexp_desc = Pexp_apply(fn, (Ast_compatible.no_label, bounded_obj_arg) :: args);
+                              pexp_attributes = [];
+                              pexp_loc = pexp_loc}
+                          | {pexp_desc = Pexp_construct(ctor,None); pexp_loc; pexp_attributes}    
+                            -> 
+                            {fn with pexp_desc = Pexp_construct(ctor, Some bounded_obj_arg)}
+                          | _ ->
+                            Ast_compatible.app1 ~loc:fn.pexp_loc
+                              (self.expr self fn )
+                              bounded_obj_arg
+                        ));
+                  pexp_attributes = tuple_attrs;
+                  pexp_loc = fn.pexp_loc;
+                }
+              ) in
+          match try_dispatch_by_tuple  with
+          | Some x -> x
+          | None ->
+            Ast_compatible.app1 ~loc (self.expr self fn) new_obj_arg
+      end
+    | Some { op = "##" ; loc; args =  [obj; rest]} ->
+      (* - obj##property
+         - obj#(method a b )
+         we should warn when we discard attributes 
+         gpr#1063 foo##(bar##baz) we should rewrite (bar##baz)
+             first  before pattern match.
+             currently the pattern match is written in a top down style.
+             Another corner case: f##(g a b [@bs])
+      *)
       begin match rest with
           {pexp_desc = Pexp_apply(
                 {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _},
                 args
               ); pexp_attributes = attrs }
-           (* we should warn when we discard attributes *)
-           -> (* f##(paint 1 2 ) *)
-          (* gpr#1063 foo##(bar##baz) we should rewrite (bar##baz)
-             first  before pattern match.
-             currently the pattern match is written in a top down style.
-             Another corner case: f##(g a b [@bs])
-          *)
+           -> 
           Bs_ast_invariant.warn_discarded_unused_attributes attrs ;
           {e with pexp_desc = Ast_util.method_apply loc self obj name (check_and_discard args)}
         | 
@@ -18834,11 +18839,8 @@ let app_exp_mapper
           { e with pexp_desc =
                      Ast_util.js_property loc (self.expr self obj) name
           }
-        | _ -> assert false   
+        | _ -> Location.raise_errorf ~loc "invalid ## syntax"
         end  
-    | Some ("##", _, _) ->
-          Location.raise_errorf ~loc
-            "Js object ## expect syntax like obj##(paint (a,b)) "
       
     (* we can not use [:=] for precedece cases
        like {[i @@ x##length := 3 ]}
@@ -18853,9 +18855,9 @@ let app_exp_mapper
          end
        ]}
     *)
-    | Some ("#=", _, [obj; arg])  ->
+    | Some {op = "#="; loc; args = [obj; arg]}  ->
       begin match view_as_app obj ["##"] with
-        | Some (_, _, [obj; {pexp_desc = Pexp_ident {txt = Lident name}}])  
+        | Some { args = [obj; {pexp_desc = Pexp_ident {txt = Lident name}}]}
          -> 
           Exp.constraint_ ~loc
             { e with
@@ -18865,7 +18867,13 @@ let app_exp_mapper
             (Ast_literal.type_unit ~loc ())
         | _ -> assert false
       end
-    | Some _ -> assert false  
+    | Some { op = "|.";  loc; } ->
+      Location.raise_errorf ~loc
+        "invalid |. syntax, it can only be used as binary operator"
+    | Some {op = "##"; loc } ->
+      Location.raise_errorf ~loc
+        "Js object ## expect syntax like obj##(paint (a,b)) "
+    | Some {op; } -> Location.raise_errorf "invalid %s syntax" op
     | None ->
       begin match
           Ext_list.exclude_with_val
