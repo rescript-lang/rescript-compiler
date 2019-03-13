@@ -336,3 +336,6 @@ let label_of_name (x : poly_var_label) : string = x.txt
 let hash_label : poly_var_label -> int = Ext_pervasives.hash_variant 
 external label_of_name : poly_var_label -> string = "%identity"
 #end
+
+type args  = 
+  (arg_label * Parsetree.expression) list 

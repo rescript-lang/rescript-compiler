@@ -25,7 +25,7 @@
 open Ast_helper 
 type 'a cxt = Ast_helper.loc -> Bs_ast_mapper.mapper -> 'a
 type loc = Location.t 
-type args = (Ast_compatible.arg_label * Parsetree.expression) list
+
 type label_exprs = (Longident.t Asttypes.loc * Parsetree.expression) list
 type uncurry_expression_gen = 
   (Parsetree.pattern ->
@@ -39,7 +39,7 @@ type uncurry_type_gen =
 
 let uncurry_type_id = 
   Ast_literal.Lid.js_fn
-
+ 
 let method_id  = 
   Ast_literal.Lid.js_meth
 
@@ -115,18 +115,17 @@ let js_property loc obj (name : string) =
      [#=], 
 *)
 
-
+(*         
+  if not (Ast_compatible.is_arg_label_simple label) then
+    Bs_syntaxerr.err loc Label_in_uncurried_bs_attribute;
+*)
 let generic_apply  kind loc 
     (self : Bs_ast_mapper.mapper) 
     (obj : Parsetree.expression) 
-    (args : args ) cb   =
+    (args : Parsetree.expression list) cb   =
   let obj = self.expr self obj in
   let args =
-    Ext_list.map args (fun (label,e) ->
-        if not (Ast_compatible.is_arg_label_simple label) then
-          Bs_syntaxerr.err loc Label_in_uncurried_bs_attribute;
-        self.expr self e
-      ) in
+    Ext_list.map args (fun e -> self.expr self e) in
   let len = List.length args in 
   let arity, fn, args  = 
     match args with 
@@ -166,7 +165,7 @@ let generic_apply  kind loc
 let uncurry_fn_apply loc self fn args = 
   generic_apply `Fn loc self fn args (fun _ obj -> obj )
 
-let property_apply loc self obj name (args : args) 
+let property_apply loc self obj name args  
   =  generic_apply `PropertyFn loc self obj args 
     (fun loc obj -> Exp.mk ~loc (js_property loc obj name))
 

@@ -7311,6 +7311,10 @@ val object_field : string ->  attributes -> core_type -> object_field
 
 val hash_label : poly_var_label -> int 
 val label_of_name : poly_var_label -> string 
+
+type args  = 
+  (arg_label * Parsetree.expression) list 
+
 end = struct
 #1 "ast_compatible.ml"
 (* Copyright (C) 2018 Authors of BuckleScript
@@ -7569,6 +7573,10 @@ let object_field   l attrs ty =
 
 let hash_label : poly_var_label -> int = Ext_pervasives.hash_variant 
 external label_of_name : poly_var_label -> string = "%identity"
+
+
+type args  = 
+  (arg_label * Parsetree.expression) list 
 
 end
 module Ext_utf8 : sig 
@@ -17731,7 +17739,7 @@ module Ast_util : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-type args = (Ast_compatible.arg_label * Parsetree.expression) list
+
 type loc = Location.t 
 type label_exprs = (Longident.t Asttypes.loc * Parsetree.expression) list
 type 'a cxt = loc -> Bs_ast_mapper.mapper -> 'a
@@ -17755,22 +17763,22 @@ type uncurry_type_gen =
 (** syntax: {[f arg0 arg1 [@bs]]}*)
 val uncurry_fn_apply : 
   (Parsetree.expression ->
-  args ->
-  Parsetree.expression_desc ) cxt 
+   Parsetree.expression list ->
+   Parsetree.expression_desc ) cxt 
 
 (** syntax : {[f## arg0 arg1 ]}*)
 val method_apply : 
   (Parsetree.expression ->
   string ->
-  args ->
+  Parsetree.expression list ->
   Parsetree.expression_desc) cxt 
 
 (** syntax {[f#@ arg0 arg1 ]}*)
 val property_apply : 
   (Parsetree.expression ->
-  string ->
-  args ->
-  Parsetree.expression_desc) cxt 
+   string ->
+   Parsetree.expression list ->
+   Parsetree.expression_desc) cxt 
 
 
 (** 
@@ -17863,7 +17871,7 @@ end = struct
 open Ast_helper 
 type 'a cxt = Ast_helper.loc -> Bs_ast_mapper.mapper -> 'a
 type loc = Location.t 
-type args = (Ast_compatible.arg_label * Parsetree.expression) list
+
 type label_exprs = (Longident.t Asttypes.loc * Parsetree.expression) list
 type uncurry_expression_gen = 
   (Parsetree.pattern ->
@@ -17877,7 +17885,7 @@ type uncurry_type_gen =
 
 let uncurry_type_id = 
   Ast_literal.Lid.js_fn
-
+ 
 let method_id  = 
   Ast_literal.Lid.js_meth
 
@@ -17949,18 +17957,17 @@ let js_property loc obj (name : string) =
      [#=], 
 *)
 
-
+(*         
+  if not (Ast_compatible.is_arg_label_simple label) then
+    Bs_syntaxerr.err loc Label_in_uncurried_bs_attribute;
+*)
 let generic_apply  kind loc 
     (self : Bs_ast_mapper.mapper) 
     (obj : Parsetree.expression) 
-    (args : args ) cb   =
+    (args : Parsetree.expression list) cb   =
   let obj = self.expr self obj in
   let args =
-    Ext_list.map args (fun (label,e) ->
-        if not (Ast_compatible.is_arg_label_simple label) then
-          Bs_syntaxerr.err loc Label_in_uncurried_bs_attribute;
-        self.expr self e
-      ) in
+    Ext_list.map args (fun e -> self.expr self e) in
   let len = List.length args in 
   let arity, fn, args  = 
     match args with 
@@ -18000,7 +18007,7 @@ let generic_apply  kind loc
 let uncurry_fn_apply loc self fn args = 
   generic_apply `Fn loc self fn args (fun _ obj -> obj )
 
-let property_apply loc self obj name (args : args) 
+let property_apply loc self obj name args  
   =  generic_apply `PropertyFn loc self obj args 
     (fun loc obj -> Exp.mk ~loc (js_property loc obj name))
 
@@ -20309,6 +20316,13 @@ let bound (e : exp) (cb : exp -> _) =
       (cb (Exp.ident ~loc {txt = Lident ocaml_obj_id; loc}))
 
 let default_expr_mapper = Bs_ast_mapper.default_mapper.expr      
+
+let check_and_discard (args : Ast_compatible.args) = 
+  Ext_list.map args (fun (label,x) -> 
+      if not (Ast_compatible.is_arg_label_simple label) then 
+        Bs_syntaxerr.err x.pexp_loc Label_in_uncurried_bs_attribute;
+      x  
+    )
 let handle_exp_apply
     (e  : exp)
     (self : Bs_ast_mapper.mapper)
@@ -20328,7 +20342,7 @@ let handle_exp_apply
         ]
         )
       ->  (* f##paint 1 2 *)
-      {e with pexp_desc = Ast_util.method_apply loc self obj name args }
+      {e with pexp_desc = Ast_util.method_apply loc self obj name (check_and_discard args) }
     | Pexp_apply (
         {pexp_desc =
            Pexp_ident  {txt = Lident "#@"  ; loc} ; _},
@@ -20339,7 +20353,7 @@ let handle_exp_apply
           
         ])
       ->  (* f#@paint 1 2 *)
-      {e with pexp_desc = Ast_util.property_apply loc self obj name args  }
+      {e with pexp_desc = Ast_util.property_apply loc self obj name (check_and_discard args)  }
     | Pexp_ident {txt = Lident "|."} ->
       (*
         a |. f
@@ -20423,7 +20437,7 @@ let handle_exp_apply
              Another corner case: f##(g a b [@bs])
           *)
           Bs_ast_invariant.warn_discarded_unused_attributes attrs ;
-          {e with pexp_desc = Ast_util.method_apply loc self obj name args}
+          {e with pexp_desc = Ast_util.method_apply loc self obj name (check_and_discard args)}
         | [
 
           ("", obj) ;
@@ -20471,7 +20485,7 @@ let handle_exp_apply
             { e with
               pexp_desc =
                 Ast_util.method_apply loc self obj
-                  (name ^ Literals.setter_suffix) [Ast_compatible.no_label, arg ]  }
+                  (name ^ Literals.setter_suffix) [arg]  }
             (Ast_literal.type_unit ~loc ())
         | _ -> default_expr_mapper self e
       end
@@ -20482,7 +20496,7 @@ let handle_exp_apply
             Ast_attributes.is_bs with
       | false, _ -> default_expr_mapper self e
       | true, pexp_attributes ->
-        {e with pexp_desc = Ast_util.uncurry_fn_apply loc self fn args ;
+        {e with pexp_desc = Ast_util.uncurry_fn_apply loc self fn (check_and_discard args) ;
                 pexp_attributes }
       end
 
@@ -21669,13 +21683,13 @@ let class_type_mapper (self : mapper) ({pcty_attributes; pcty_loc} as ctd : Pars
       | Pcty_extension _
       | Pcty_arrow _ ->
         Location.raise_errorf ~loc:pcty_loc "invalid or unused attribute `bs`")
-        (* {[class x : int -> object
+(* {[class x : int -> object
              end [@bs]
            ]}
            Actually this is not going to happpen as below is an invalid syntax
            {[class type x = int -> object
                end[@bs]]}
-        *)
+*)
 
 let signature_item_mapper (self : mapper) (sigi : Parsetree.signature_item) =        
       match sigi.psig_desc with

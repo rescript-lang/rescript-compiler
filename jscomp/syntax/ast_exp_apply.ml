@@ -42,6 +42,13 @@ let bound (e : exp) (cb : exp -> _) =
       (cb (Exp.ident ~loc {txt = Lident ocaml_obj_id; loc}))
 
 let default_expr_mapper = Bs_ast_mapper.default_mapper.expr      
+
+let check_and_discard (args : Ast_compatible.args) = 
+  Ext_list.map args (fun (label,x) -> 
+      if not (Ast_compatible.is_arg_label_simple label) then 
+        Bs_syntaxerr.err x.pexp_loc Label_in_uncurried_bs_attribute;
+      x  
+    )
 let handle_exp_apply
     (e  : exp)
     (self : Bs_ast_mapper.mapper)
@@ -64,7 +71,7 @@ let handle_exp_apply
         ]
         )
       ->  (* f##paint 1 2 *)
-      {e with pexp_desc = Ast_util.method_apply loc self obj name args }
+      {e with pexp_desc = Ast_util.method_apply loc self obj name (check_and_discard args) }
     | Pexp_apply (
         {pexp_desc =
            Pexp_ident  {txt = Lident "#@"  ; loc} ; _},
@@ -78,7 +85,7 @@ let handle_exp_apply
 #end          
         ])
       ->  (* f#@paint 1 2 *)
-      {e with pexp_desc = Ast_util.property_apply loc self obj name args  }
+      {e with pexp_desc = Ast_util.property_apply loc self obj name (check_and_discard args)  }
     | Pexp_ident {txt = Lident "|."} ->
       (*
         a |. f
@@ -173,7 +180,7 @@ let handle_exp_apply
              Another corner case: f##(g a b [@bs])
           *)
           Bs_ast_invariant.warn_discarded_unused_attributes attrs ;
-          {e with pexp_desc = Ast_util.method_apply loc self obj name args}
+          {e with pexp_desc = Ast_util.method_apply loc self obj name (check_and_discard args)}
         | [
 #if OCAML_VERSION =~ ">4.03.0" then           
           (Nolabel, obj) ;
@@ -235,7 +242,7 @@ let handle_exp_apply
             { e with
               pexp_desc =
                 Ast_util.method_apply loc self obj
-                  (name ^ Literals.setter_suffix) [Ast_compatible.no_label, arg ]  }
+                  (name ^ Literals.setter_suffix) [arg]  }
             (Ast_literal.type_unit ~loc ())
         | _ -> default_expr_mapper self e
       end
@@ -246,7 +253,7 @@ let handle_exp_apply
             Ast_attributes.is_bs with
       | false, _ -> default_expr_mapper self e
       | true, pexp_attributes ->
-        {e with pexp_desc = Ast_util.uncurry_fn_apply loc self fn args ;
+        {e with pexp_desc = Ast_util.uncurry_fn_apply loc self fn (check_and_discard args) ;
                 pexp_attributes }
       end
 

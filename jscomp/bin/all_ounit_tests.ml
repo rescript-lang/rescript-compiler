@@ -16772,6 +16772,10 @@ val object_field : string ->  attributes -> core_type -> object_field
 
 val hash_label : poly_var_label -> int 
 val label_of_name : poly_var_label -> string 
+
+type args  = 
+  (arg_label * Parsetree.expression) list 
+
 end = struct
 #1 "ast_compatible.ml"
 (* Copyright (C) 2018 Authors of BuckleScript
@@ -17030,6 +17034,10 @@ let object_field   l attrs ty =
 
 let hash_label : poly_var_label -> int = Ext_pervasives.hash_variant 
 external label_of_name : poly_var_label -> string = "%identity"
+
+
+type args  = 
+  (arg_label * Parsetree.expression) list 
 
 end
 module Bs_loc : sig 

@@ -23,7 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-type args = (Ast_compatible.arg_label * Parsetree.expression) list
+
 type loc = Location.t 
 type label_exprs = (Longident.t Asttypes.loc * Parsetree.expression) list
 type 'a cxt = loc -> Bs_ast_mapper.mapper -> 'a
@@ -47,22 +47,22 @@ type uncurry_type_gen =
 (** syntax: {[f arg0 arg1 [@bs]]}*)
 val uncurry_fn_apply : 
   (Parsetree.expression ->
-  args ->
-  Parsetree.expression_desc ) cxt 
+   Parsetree.expression list ->
+   Parsetree.expression_desc ) cxt 
 
 (** syntax : {[f## arg0 arg1 ]}*)
 val method_apply : 
   (Parsetree.expression ->
   string ->
-  args ->
+  Parsetree.expression list ->
   Parsetree.expression_desc) cxt 
 
 (** syntax {[f#@ arg0 arg1 ]}*)
 val property_apply : 
   (Parsetree.expression ->
-  string ->
-  args ->
-  Parsetree.expression_desc) cxt 
+   string ->
+   Parsetree.expression list ->
+   Parsetree.expression_desc) cxt 
 
 
 (** 
