@@ -12854,6 +12854,116 @@ let deprecated s : attr =
       ; pstr_loc = locg}]
 
 end
+module Ast_open_cxt : sig 
+#1 "ast_open_cxt.mli"
+(* Copyright (C) 2019 - Present Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type loc = Location.t 
+
+type whole 
+type t = whole list
+
+val restore_exp :
+   Parsetree.expression -> 
+   t -> 
+   Parsetree.expression
+
+val destruct_open_tuple :    
+  Parsetree.expression -> 
+  t -> 
+  (t * Parsetree.expression list * Parsetree.attributes ) option 
+end = struct
+#1 "ast_open_cxt.ml"
+(* Copyright (C) 2019 - Present Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type loc = Location.t 
+
+type whole =
+  | Let_open of
+      (Asttypes.override_flag * Longident.t Asttypes.loc * loc *
+       Parsetree.attributes)
+
+type t = whole list
+
+type exp = Parsetree.expression
+
+type destruct_output =
+  exp list
+  
+(**
+   destruct such pattern
+   {[ A.B.let open C in (a,b)]}
+*)
+let rec destruct_open_tuple
+    (e : Parsetree.expression)
+    (acc : t)
+  : (t * destruct_output * _) option =
+  match e.pexp_desc with
+  | Pexp_open (flag, lid, cont)
+    ->
+    destruct_open_tuple
+      cont
+      (Let_open (flag, lid, e.pexp_loc, e.pexp_attributes) :: acc)
+  | Pexp_tuple es -> Some (acc, es, e.pexp_attributes)
+  | _ -> None
+
+let restore_exp 
+    (xs : Parsetree.expression) 
+    (qualifiers : t) : Parsetree.expression = 
+  Ext_list.fold_left qualifiers xs (fun x hole  ->
+      match hole with
+      | Let_open (flag, lid,loc,attrs) ->
+        ({
+          pexp_desc = Pexp_open (flag,lid,x);
+          pexp_attributes = attrs;
+          pexp_loc = loc
+        } : Parsetree.expression)
+    ) 
+end
 module Bs_ast_mapper : sig 
 #1 "bs_ast_mapper.mli"
 
@@ -13705,12 +13815,6 @@ type exp = Parsetree.expression
 type pat = Parsetree.pattern
 
 
-type whole =
-  | Let_open of
-      (Asttypes.override_flag * Longident.t Asttypes.loc * loc *
-       Parsetree.attributes)
-
-type wholes = whole list
 
 let rec is_simple_pattern (p : Parsetree.pattern) =
   match p.ppat_desc with
@@ -13719,41 +13823,19 @@ let rec is_simple_pattern (p : Parsetree.pattern) =
   | Ppat_constraint(p,_) -> is_simple_pattern p
   | _ -> false
 
-type destruct_output =
-  exp list
-  
-(**
-   destruct such pattern
-   {[ A.B.let open C in (a,b)]}
-*)
-let rec destruct_open_tuple
-    (e : Parsetree.expression)
-    (acc : whole list)
-  : (wholes * destruct_output * _) option =
-  match e.pexp_desc with
-  | Pexp_open (flag, lid, cont)
-    ->
-    destruct_open_tuple
-      cont
-      (Let_open (flag, lid, e.pexp_loc, e.pexp_attributes) :: acc)
-  | Pexp_tuple es -> Some (acc, es, e.pexp_attributes)
-  | _ -> None
 
 let map_open_tuple
     (e : Parsetree.expression)
-    (f : Parsetree.expression list -> _ -> Parsetree.expression) =
-  match destruct_open_tuple e [] with
+    (f : 
+       Parsetree.expression list ->
+     Parsetree.attributes -> 
+     Parsetree.expression
+      ) 
+     =
+  match Ast_open_cxt.destruct_open_tuple e [] with
   | None ->  None (** not an open tuple *)
   | Some (qualifiers, es, attrs ) ->
-    Some (Ext_list.fold_left qualifiers (f es attrs) (fun x hole  ->
-        match hole with
-        | Let_open (flag, lid,loc,attrs) ->
-          {
-            pexp_desc = Pexp_open (flag,lid,x);
-            pexp_attributes = attrs;
-            pexp_loc = loc
-          }
-      ) )
+    Some (Ast_open_cxt.restore_exp (f es attrs) qualifiers)
 (*
   [let (a,b) = M.N.(c,d) ]
   =>
@@ -13769,7 +13851,7 @@ let flattern_tuple_pattern_vb
   let pvb_attributes = self.attributes self vb.pvb_attributes in
   match pvb_pat.ppat_desc with
   | Ppat_tuple xs when List.for_all is_simple_pattern xs ->
-    begin match destruct_open_tuple pvb_expr []  with
+    begin match Ast_open_cxt.destruct_open_tuple pvb_expr []  with
       | Some (wholes, es, tuple_attributes)
         when
           List.for_all is_simple_pattern xs &&
@@ -13777,26 +13859,15 @@ let flattern_tuple_pattern_vb
         ->
         Bs_ast_invariant.warn_discarded_unused_attributes tuple_attributes ; (* will be dropped*)
         Ext_list.fold_right2 xs es acc (fun pat exp acc->
-             {Parsetree.
-               pvb_pat =
-                 pat;
-               pvb_expr =
-                 ( match wholes with
-                   | [] -> exp
-                   | _ ->
-                     Ext_list.fold_left wholes exp (fun x  whole ->
-                         match whole with
-                         | Let_open (flag,lid,loc,attrs) ->
-                           {
-                             pexp_desc = Pexp_open(flag,lid,x);
-                             pexp_attributes = attrs;
-                             pexp_loc = loc
-                           }
-                       ) ) ;
-               pvb_attributes;
-               pvb_loc = vb.pvb_loc ;
-             } :: acc
-           ) 
+            {Parsetree.
+              pvb_pat =
+                pat;
+              pvb_expr =                 
+                Ast_open_cxt.restore_exp  exp wholes ;
+              pvb_attributes;
+              pvb_loc = vb.pvb_loc ;
+            } :: acc
+          ) 
       | _ ->
         {pvb_pat ;
          pvb_expr ;
@@ -18604,6 +18675,8 @@ let app_exp_mapper
       (*
         a |. f
         a |. f b c [@bs]  --> f a b c [@bs]
+        a |. M.(f b c) --> M.f a M.b M.c
+        a |. M.Some
       *)
       let new_obj_arg = self.expr self obj_arg in
       begin match fn with

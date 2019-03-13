@@ -29,12 +29,6 @@ type exp = Parsetree.expression
 type pat = Parsetree.pattern
 
 
-type whole =
-  | Let_open of
-      (Asttypes.override_flag * Longident.t Asttypes.loc * loc *
-       Parsetree.attributes)
-
-type wholes = whole list
 
 let rec is_simple_pattern (p : Parsetree.pattern) =
   match p.ppat_desc with
@@ -43,41 +37,19 @@ let rec is_simple_pattern (p : Parsetree.pattern) =
   | Ppat_constraint(p,_) -> is_simple_pattern p
   | _ -> false
 
-type destruct_output =
-  exp list
-  
-(**
-   destruct such pattern
-   {[ A.B.let open C in (a,b)]}
-*)
-let rec destruct_open_tuple
-    (e : Parsetree.expression)
-    (acc : whole list)
-  : (wholes * destruct_output * _) option =
-  match e.pexp_desc with
-  | Pexp_open (flag, lid, cont)
-    ->
-    destruct_open_tuple
-      cont
-      (Let_open (flag, lid, e.pexp_loc, e.pexp_attributes) :: acc)
-  | Pexp_tuple es -> Some (acc, es, e.pexp_attributes)
-  | _ -> None
 
 let map_open_tuple
     (e : Parsetree.expression)
-    (f : Parsetree.expression list -> _ -> Parsetree.expression) =
-  match destruct_open_tuple e [] with
+    (f : 
+       Parsetree.expression list ->
+     Parsetree.attributes -> 
+     Parsetree.expression
+      ) 
+     =
+  match Ast_open_cxt.destruct_open_tuple e [] with
   | None ->  None (** not an open tuple *)
   | Some (qualifiers, es, attrs ) ->
-    Some (Ext_list.fold_left qualifiers (f es attrs) (fun x hole  ->
-        match hole with
-        | Let_open (flag, lid,loc,attrs) ->
-          {
-            pexp_desc = Pexp_open (flag,lid,x);
-            pexp_attributes = attrs;
-            pexp_loc = loc
-          }
-      ) )
+    Some (Ast_open_cxt.restore_exp (f es attrs) qualifiers)
 (*
   [let (a,b) = M.N.(c,d) ]
   =>
@@ -93,7 +65,7 @@ let flattern_tuple_pattern_vb
   let pvb_attributes = self.attributes self vb.pvb_attributes in
   match pvb_pat.ppat_desc with
   | Ppat_tuple xs when List.for_all is_simple_pattern xs ->
-    begin match destruct_open_tuple pvb_expr []  with
+    begin match Ast_open_cxt.destruct_open_tuple pvb_expr []  with
       | Some (wholes, es, tuple_attributes)
         when
           List.for_all is_simple_pattern xs &&
@@ -101,26 +73,15 @@ let flattern_tuple_pattern_vb
         ->
         Bs_ast_invariant.warn_discarded_unused_attributes tuple_attributes ; (* will be dropped*)
         Ext_list.fold_right2 xs es acc (fun pat exp acc->
-             {Parsetree.
-               pvb_pat =
-                 pat;
-               pvb_expr =
-                 ( match wholes with
-                   | [] -> exp
-                   | _ ->
-                     Ext_list.fold_left wholes exp (fun x  whole ->
-                         match whole with
-                         | Let_open (flag,lid,loc,attrs) ->
-                           {
-                             pexp_desc = Pexp_open(flag,lid,x);
-                             pexp_attributes = attrs;
-                             pexp_loc = loc
-                           }
-                       ) ) ;
-               pvb_attributes;
-               pvb_loc = vb.pvb_loc ;
-             } :: acc
-           ) 
+            {Parsetree.
+              pvb_pat =
+                pat;
+              pvb_expr =                 
+                Ast_open_cxt.restore_exp  exp wholes ;
+              pvb_attributes;
+              pvb_loc = vb.pvb_loc ;
+            } :: acc
+          ) 
       | _ ->
         {pvb_pat ;
          pvb_expr ;

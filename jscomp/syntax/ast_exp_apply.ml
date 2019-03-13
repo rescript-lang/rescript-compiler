@@ -94,6 +94,8 @@ let app_exp_mapper
       (*
         a |. f
         a |. f b c [@bs]  --> f a b c [@bs]
+        a |. M.(f b c) --> M.f a M.b M.c
+        a |. M.Some
       *)
       let new_obj_arg = self.expr self obj_arg in
       begin match fn with
