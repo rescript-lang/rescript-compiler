@@ -38,18 +38,6 @@ let rec is_simple_pattern (p : Parsetree.pattern) =
   | _ -> false
 
 
-let map_open_tuple
-    (e : Parsetree.expression)
-    (f : 
-       Parsetree.expression list ->
-     Parsetree.attributes -> 
-     Parsetree.expression
-      ) 
-     =
-  match Ast_open_cxt.destruct_open_tuple e [] with
-  | None ->  None (** not an open tuple *)
-  | Some (qualifiers, es, attrs ) ->
-    Some (Ast_open_cxt.restore_exp (f es attrs) qualifiers)
 (*
   [let (a,b) = M.N.(c,d) ]
   =>
@@ -59,7 +47,8 @@ let map_open_tuple
 let flattern_tuple_pattern_vb
     (self : Bs_ast_mapper.mapper)
     (vb :  Parsetree.value_binding)
-    acc : Parsetree.value_binding list =
+    (acc : Parsetree.value_binding list) 
+  : Parsetree.value_binding list =
   let pvb_pat = self.pat self vb.pvb_pat in
   let pvb_expr = self.expr self vb.pvb_expr in
   let pvb_attributes = self.attributes self vb.pvb_attributes in
@@ -68,12 +57,12 @@ let flattern_tuple_pattern_vb
     begin match Ast_open_cxt.destruct_open_tuple pvb_expr []  with
       | Some (wholes, es, tuple_attributes)
         when
-          List.for_all is_simple_pattern xs &&
+          Ext_list.for_all xs is_simple_pattern &&
           Ext_list.same_length es xs
         ->
         Bs_ast_invariant.warn_discarded_unused_attributes tuple_attributes ; (* will be dropped*)
         Ext_list.fold_right2 xs es acc (fun pat exp acc->
-            {Parsetree.
+            {
               pvb_pat =
                 pat;
               pvb_expr =                 

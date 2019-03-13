@@ -66,6 +66,19 @@ let view_as_app (fn : exp) s : app_pattern option =
   | _ -> None 
 
 
+let map_open_tuple
+    (e : Parsetree.expression)
+    (f : 
+       Parsetree.expression list ->
+     Parsetree.attributes -> 
+     Parsetree.expression
+    ) 
+  =
+  match Ast_open_cxt.destruct_open_tuple e [] with
+  | None ->  None (** not an open tuple *)
+  | Some (qualifiers, es, attrs ) ->
+    Some (Ast_open_cxt.restore_exp (f es attrs) qualifiers)
+
 let inner_ops = ["##"; "#@"]      
 let infix_ops = [ "|."; "#=" ; "##"]
 let app_exp_mapper 
@@ -110,7 +123,7 @@ let app_exp_mapper
           {fn with pexp_desc = Pexp_construct(ctor, Some new_obj_arg)}
         | _ ->
           let try_dispatch_by_tuple =
-            Ast_tuple_pattern_flatten.map_open_tuple fn (fun xs tuple_attrs ->
+            map_open_tuple fn (fun xs tuple_attrs ->
                 bound new_obj_arg @@  fun bounded_obj_arg ->
                 {
                   pexp_desc =
