@@ -53,6 +53,24 @@ let rec destruct_open_tuple
   | Pexp_tuple es -> Some (acc, es, e.pexp_attributes)
   | _ -> None
 
+let rec destructAux
+    (e : Parsetree.expression)
+    (acc : t) : t * Parsetree.expression
+  =
+  match e.pexp_desc with
+  | Pexp_open (flag, lid, cont)
+    ->
+    destructAux
+      cont
+      (Let_open (flag, lid, e.pexp_loc, e.pexp_attributes) :: acc)
+  | _ -> acc, e
+  
+let destruct e = 
+  match destructAux e [] with 
+  | [], _ -> None 
+  | wholes, exp -> Some (wholes, exp)
+
+
 let restore_exp 
     (xs : Parsetree.expression) 
     (qualifiers : t) : Parsetree.expression = 

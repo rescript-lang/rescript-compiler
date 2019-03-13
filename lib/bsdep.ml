@@ -37994,6 +37994,10 @@ val restore_exp :
    t -> 
    Parsetree.expression
 
+val destruct :     
+  Parsetree.expression -> 
+  (t * Parsetree.expression) option  
+  
 val destruct_open_tuple :    
   Parsetree.expression -> 
   t -> 
@@ -38054,6 +38058,24 @@ let rec destruct_open_tuple
       (Let_open (flag, lid, e.pexp_loc, e.pexp_attributes) :: acc)
   | Pexp_tuple es -> Some (acc, es, e.pexp_attributes)
   | _ -> None
+
+let rec destructAux
+    (e : Parsetree.expression)
+    (acc : t) : t * Parsetree.expression
+  =
+  match e.pexp_desc with
+  | Pexp_open (flag, lid, cont)
+    ->
+    destructAux
+      cont
+      (Let_open (flag, lid, e.pexp_loc, e.pexp_attributes) :: acc)
+  | _ -> acc, e
+  
+let destruct e = 
+  match destructAux e [] with 
+  | [], _ -> None 
+  | wholes, exp -> Some (wholes, exp)
+
 
 let restore_exp 
     (xs : Parsetree.expression) 
@@ -38228,38 +38250,35 @@ let app_exp_mapper
         | {pexp_desc = Pexp_construct(ctor,None); pexp_loc; pexp_attributes} -> 
           {fn with pexp_desc = Pexp_construct(ctor, Some new_obj_arg)}
         | _ ->
-          let try_dispatch_by_tuple =
-            map_open_tuple fn (fun xs tuple_attrs ->
-                bound new_obj_arg @@  fun bounded_obj_arg ->
-                {
-                  pexp_desc =
-                    Pexp_tuple (
-                      Ext_list.map xs (fun fn ->
-                          match fn with
-                          | {pexp_desc = Pexp_apply (fn,args); pexp_loc; pexp_attributes }
-                            ->
-                            let fn = self.expr self fn in
-                            let args = Ext_list.map  args (fun (lab,exp) -> lab, self.expr self exp ) in
-                            Bs_ast_invariant.warn_discarded_unused_attributes pexp_attributes;
-                            { Parsetree.pexp_desc = Pexp_apply(fn, (Ast_compatible.no_label, bounded_obj_arg) :: args);
-                              pexp_attributes = [];
-                              pexp_loc = pexp_loc}
-                          | {pexp_desc = Pexp_construct(ctor,None); pexp_loc; pexp_attributes}    
-                            -> 
-                            {fn with pexp_desc = Pexp_construct(ctor, Some bounded_obj_arg)}
-                          | _ ->
-                            Ast_compatible.app1 ~loc:fn.pexp_loc
-                              (self.expr self fn )
-                              bounded_obj_arg
-                        ));
-                  pexp_attributes = tuple_attrs;
-                  pexp_loc = fn.pexp_loc;
-                }
-              ) in
-          match try_dispatch_by_tuple  with
-          | Some x -> x
-          | None ->
-            Ast_compatible.app1 ~loc (self.expr self fn) new_obj_arg
+          begin match Ast_open_cxt.destruct_open_tuple fn [] with 
+            | None -> Ast_compatible.app1 ~loc (self.expr self fn) new_obj_arg
+            | Some (wholes, xs, tuple_attrs) ->  
+              (bound new_obj_arg @@  fun bounded_obj_arg ->
+               {
+                 pexp_desc =
+                   Pexp_tuple (
+                     Ext_list.map xs (fun fn ->
+                         match fn with
+                         | {pexp_desc = Pexp_apply (fn,args); pexp_loc; pexp_attributes }
+                           ->
+                           let fn = self.expr self fn in
+                           let args = Ext_list.map  args (fun (lab,exp) -> lab, self.expr self exp ) in
+                           Bs_ast_invariant.warn_discarded_unused_attributes pexp_attributes;
+                           { Parsetree.pexp_desc = Pexp_apply(fn, (Ast_compatible.no_label, bounded_obj_arg) :: args);
+                             pexp_attributes = [];
+                             pexp_loc = pexp_loc}
+                         | {pexp_desc = Pexp_construct(ctor,None); pexp_loc; pexp_attributes}    
+                           -> 
+                           {fn with pexp_desc = Pexp_construct(ctor, Some bounded_obj_arg)}
+                         | _ ->
+                           Ast_compatible.app1 ~loc:fn.pexp_loc
+                             (self.expr self fn )
+                             bounded_obj_arg
+                       ));
+                 pexp_attributes = tuple_attrs;
+                 pexp_loc = fn.pexp_loc;
+               }
+              ) end
       end
     | Some { op = "##" ; loc; args =  [obj; rest]} ->
       (* - obj##property
