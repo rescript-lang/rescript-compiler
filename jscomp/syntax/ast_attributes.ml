@@ -129,11 +129,10 @@ let process_bs (attrs : t) =
         st, attr::acc
     ) 
 
-let process_external (attrs : t)=
-  Ext_list.exists attrs (fun ({txt; }, _) ->
-      if Ext_string.starts_with txt "bs." then true
-      else false
-    ) 
+let external_needs_to_be_encoded (attrs : t)=
+  Ext_list.exists attrs 
+    (fun ({txt; }, _) ->
+       Ext_string.starts_with txt "bs." || txt = Literals.gentype_import) 
 
 
 type derive_attr = {

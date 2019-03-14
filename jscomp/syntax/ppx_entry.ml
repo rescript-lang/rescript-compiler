@@ -192,7 +192,9 @@ let signature_item_mapper (self : mapper) (sigi : Parsetree.signature_item) =
 #end          
            (_ :: _ as tdcls)) ->  (*FIXME: check recursive handling*)
           Ast_tdcls.handleTdclsInSigi self sigi tdcls
-      | Psig_value prim when Ast_attributes.process_external prim.pval_attributes
+      | Psig_value prim 
+        when 
+          Ast_attributes.external_needs_to_be_encoded prim.pval_attributes
         ->
         Ast_external.handleExternalInSig self prim sigi
       | _ -> Bs_ast_mapper.default_mapper.signature_item self sigi
@@ -219,7 +221,7 @@ let structure_item_mapper (self : mapper) (str : Parsetree.structure_item) =
 #end          
           (_ :: _ as tdcls )) (* [ {ptype_attributes} as tdcl ] *)->
           Ast_tdcls.handleTdclsInStru self str tdcls
-   | Pstr_primitive prim when Ast_attributes.process_external prim.pval_attributes
+   | Pstr_primitive prim when Ast_attributes.external_needs_to_be_encoded prim.pval_attributes
       ->
       Ast_external.handleExternalInStru self prim str
    | _ -> Bs_ast_mapper.default_mapper.structure_item self str

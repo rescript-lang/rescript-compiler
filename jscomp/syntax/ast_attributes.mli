@@ -47,7 +47,8 @@ val process_pexp_fun_attributes_rev :
 val process_bs :
   t -> bool * t
 
-val process_external : t -> bool
+val external_needs_to_be_encoded :
+  t -> bool
 
 type derive_attr = {
   explict_nonrec : bool;

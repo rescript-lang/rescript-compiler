@@ -92,30 +92,30 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.t)
 
  (** Also need analyze its depenency is pure or not *)
 let no_side_effects (rest : Lam_group.t list) : string option = 
-    Ext_list.find_opt rest (fun (x : Lam_group.t) -> 
-        match x with 
-        | Single(kind,id,body) -> 
-          begin 
-            match kind with 
-            | Strict | Variable -> 
-              if not @@ Lam_analysis.no_side_effects body 
-              then Some  (Printf.sprintf "%s" id.name)
-              else None
-            | _ -> None
-          end
-        | Recursive bindings -> 
-          Ext_list.find_opt  bindings (fun (id,lam) -> 
-              if not @@ Lam_analysis.no_side_effects lam 
-              then Some (Printf.sprintf "%s" id.Ident.name )
-              else None
-            )
-        | Nop lam -> 
-          if not @@ Lam_analysis.no_side_effects lam 
-          then 
-            (*  (Lam_util.string_of_lambda lam) *)
-            Some ""
-          else None (* TODO :*))
-      
+  Ext_list.find_opt rest (fun x -> 
+      match x with 
+      | Single(kind,id,body) -> 
+        begin 
+          match kind with 
+          | Strict | Variable -> 
+            if not @@ Lam_analysis.no_side_effects body 
+            then Some  (Printf.sprintf "%s" id.name)
+            else None
+          | _ -> None
+        end
+      | Recursive bindings -> 
+        Ext_list.find_opt  bindings (fun (id,lam) -> 
+            if not @@ Lam_analysis.no_side_effects lam 
+            then Some (Printf.sprintf "%s" id.Ident.name )
+            else None
+          )
+      | Nop lam -> 
+        if not @@ Lam_analysis.no_side_effects lam 
+        then 
+          (*  (Lam_util.string_of_lambda lam) *)
+          Some ""
+        else None (* TODO :*))
+
 
 
 
