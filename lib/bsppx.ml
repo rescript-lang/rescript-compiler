@@ -16669,12 +16669,21 @@ let init_st =
   }
 
 
+let return_wrapper loc (txt : string) : External_ffi_types.return_wrapper =
+  match txt with
+  | "undefined_to_opt" -> Return_undefined_to_opt
+  | "null_to_opt" -> Return_null_to_opt
+  | "nullable"
+  | "null_undefined_to_opt" -> Return_null_undefined_to_opt
+  | "identity" -> Return_identity
+  | _ ->
+    Bs_syntaxerr.err loc Not_supported_directive_in_bs_return
 
 
-
+(* The processed attributes will be dropped *)
 let process_external_attributes
-    (no_arguments : bool) 
-    (prim_name_or_pval_prim: [< bundle_source ] as 'a)
+    (no_arguments : bool)   
+    (prim_name_or_pval_prim: bundle_source )
     (pval_prim : string)
     (prim_attributes : Ast_attributes.t) : st * Ast_attributes.t =
 
@@ -16750,22 +16759,11 @@ let process_external_attributes
             | "bs.get_index"-> {st with get_index = true}
             | "bs.obj" -> {st with mk_obj = true}
             | "bs.return" ->
-              let aux loc txt : External_ffi_types.return_wrapper =
-                begin match txt with
-                  | "undefined_to_opt" -> Return_undefined_to_opt
-                  | "null_to_opt" -> Return_null_to_opt
-                  | "nullable"
-                  | "null_undefined_to_opt" -> Return_null_undefined_to_opt
-                  | "identity" -> Return_identity
-                  | _ ->
-                    Bs_syntaxerr.err loc Not_supported_directive_in_bs_return
-                end in
               let actions =
-                Ast_payload.ident_or_record_as_config loc payload
-              in
+                Ast_payload.ident_or_record_as_config loc payload in
               begin match actions with
                 | [ ({txt; _ },None) ] ->
-                  { st with return_wrapper = aux loc txt}
+                  { st with return_wrapper = return_wrapper loc txt}
                 | _ ->
                   Bs_syntaxerr.err loc Not_supported_directive_in_bs_return
               end
@@ -16813,8 +16811,8 @@ type response = {
   pval_attributes : Parsetree.attributes;
   no_inline_cross_module : bool 
 }
-(** Note that the passed [type_annotation] is already processed by visitor pattern before
-*)
+
+(** Note that the passed [type_annotation] is already processed by visitor pattern before*)
 let handle_attributes
     (loc : Bs_loc.t)
     (pval_prim : string )
@@ -17419,7 +17417,7 @@ let pval_prim_of_labels (labels : string Asttypes.loc list)
    =
   let arg_kinds =
     Ext_list.fold_right labels [] 
-      (fun {Asttypes.loc ; txt } arg_kinds
+      (fun {loc ; txt } arg_kinds
         ->
           let arg_label =
             External_arg_spec.label
