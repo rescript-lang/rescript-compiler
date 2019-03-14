@@ -44,12 +44,16 @@ bin/native_ppx.ml:
 ./ext/ext_list.mli
 ./ext/ext_option.ml
 ./ext/ext_option.mli
+./ext/ext_path.ml
+./ext/ext_path.mli
 ./ext/ext_pervasives.ml
 ./ext/ext_pervasives.mli
 ./ext/ext_position.ml
 ./ext/ext_position.mli
 ./ext/ext_string.ml
 ./ext/ext_string.mli
+./ext/ext_sys.ml
+./ext/ext_sys.mli
 ./ext/ext_utf8.ml
 ./ext/ext_utf8.mli
 ./ext/ext_util.ml

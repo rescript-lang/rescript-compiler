@@ -265,7 +265,14 @@ let process_external_attributes
   Ext_list.fold_left prim_attributes (init_st, []) 
     (fun (st, attrs) (({txt ; loc}, payload) as attr )
       ->
-        if Ext_string.starts_with txt "bs." then
+        if txt = "gentype.import" then 
+          let bundle = 
+              "./" ^ Ext_path.chop_extension_if_any  
+                (Filename.basename (Js_config.get_current_file ())) ^ ".gen"
+            in 
+          {st with external_module_name = Some { bundle; module_bind_name = Phint_nothing}}, 
+            attr::attrs
+        else if Ext_string.starts_with txt "bs." then
           begin match txt with
             | "bs.val" ->
               if no_arguments then

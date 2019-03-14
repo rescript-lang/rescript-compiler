@@ -131,7 +131,7 @@ let process_bs (attrs : t) =
 
 let process_external (attrs : t)=
   Ext_list.exists attrs (fun ({txt; }, _) ->
-      if Ext_string.starts_with txt "bs." then true
+      if Ext_string.starts_with txt "bs." || txt = "gentype.import" then true
       else false
     ) 
 
