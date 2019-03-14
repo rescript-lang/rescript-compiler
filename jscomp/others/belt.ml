@@ -250,6 +250,22 @@ module Option = Belt_Option
 
 module Result = Belt_Result
 
+(** {!Belt.Int}
+
+    Utilities for Int.
+*)
+
+module Int = Belt_Int
+
+
+(** {!Belt.Float}
+
+    Utilities for Float.
+*)
+
+module Float = Belt_Float
+
+
 (** {!Belt.Debug}
 
     Utilities for set up debugging
