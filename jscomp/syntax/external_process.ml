@@ -243,7 +243,7 @@ let process_external_attributes
     (no_arguments : bool)   
     (prim_name_or_pval_prim: bundle_source )
     (pval_prim : string)
-    (prim_attributes : Ast_attributes.t) : st * Ast_attributes.t =
+    (prim_attributes : Ast_attributes.t) : Ast_attributes.t * st =
 
   (* shared by `[@@bs.val]`, `[@@bs.send]`,
      `[@@bs.set]`, `[@@bs.get]` , `[@@bs.new]`
@@ -262,18 +262,18 @@ let process_external_attributes
       end
 
   in
-  Ext_list.fold_left prim_attributes (init_st, []) 
-    (fun (st, attrs) (({txt ; loc}, payload) as attr )
+  Ext_list.fold_left prim_attributes ([], init_st) 
+    (fun (attrs, st) (({txt ; loc}, payload) as attr )
       ->
-        if txt = "gentype.import" then 
+        if txt = Literals.gentype_import then 
           let bundle = 
               "./" ^ Ext_path.chop_extension_if_any  
                 (Filename.basename (Js_config.get_current_file ())) ^ ".gen"
             in 
-          {st with external_module_name = Some { bundle; module_bind_name = Phint_nothing}}, 
-            attr::attrs
+            attr::attrs, 
+            {st with external_module_name = Some { bundle; module_bind_name = Phint_nothing}}          
         else if Ext_string.starts_with txt "bs." then
-          begin match txt with
+           attrs, begin match txt with
             | "bs.val" ->
               if no_arguments then
                 {st with val_name = name_from_payload_or_prim ~loc payload}
@@ -333,8 +333,8 @@ let process_external_attributes
                   Bs_syntaxerr.err loc Not_supported_directive_in_bs_return
               end
             | _ -> (Location.prerr_warning loc (Bs_unused_attribute txt); st)
-          end, attrs
-        else (st , attr :: attrs)
+          end
+        else attr :: attrs, st
     )
     
 
@@ -406,7 +406,7 @@ let handle_attributes
         ~loc:result_type.ptyp_loc
         "[@@bs.uncurry] can not be applied to tailed position"
     end ;
-  let (st, left_attrs) =
+  let left_attrs, st =
     process_external_attributes
       (arg_types_ty = [])
       prim_name_or_pval_prim pval_prim prim_attributes in

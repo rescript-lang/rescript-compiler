@@ -131,3 +131,4 @@ let node_sep = "/"
 let node_parent = ".."
 let node_current = "."
 
+let gentype_import = "gentype.import"

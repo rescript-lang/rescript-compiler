@@ -4187,7 +4187,7 @@ val js : string
 val node_sep : string 
 val node_parent : string 
 val node_current : string 
-
+val gentype_import : string
 end = struct
 #1 "literals.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -4323,7 +4323,7 @@ let node_sep = "/"
 let node_parent = ".."
 let node_current = "."
 
-
+let gentype_import = "gentype.import"
 end
 module Ext_path : sig 
 #1 "ext_path.mli"
