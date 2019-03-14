@@ -17337,22 +17337,21 @@ let refine_arg_type ~(nolabel:bool)
 *)
 let get_opt_arg_type
     ~(nolabel : bool)
-    (ptyp : Ast_core_type.t) :
+    (ptyp_arg : Ast_core_type.t) :
   Ast_core_type.t * External_arg_spec.attr  =
   let ptyp =
 
-    if true then    
-      match ptyp.ptyp_desc with 
+      match ptyp_arg.ptyp_desc with 
       | Ptyp_constr (_, [ty]) -> ty  (*optional*)
       | _ -> assert false
-    else 
-    
-      ptyp in
-  if Ast_core_type.is_any ptyp then (* (_[@bs.as ])*)
-    (* extenral f : ?x:_ -> y:int -> _ = "" [@@bs.obj] is not allowed *)
-      Bs_syntaxerr.err ptyp.ptyp_loc Invalid_underscore_type_in_external
-  else (* ([`a|`b] [@bs.string]) *)    
-    ptyp, spec_of_ptyp nolabel ptyp
+      
+  in
+  ptyp, 
+  (if Ast_core_type.is_any ptyp then (* (_[@bs.as ])*)
+     (* extenral f : ?x:_ -> y:int -> _ = "" [@@bs.obj] is not allowed *)
+     Bs_syntaxerr.err ptyp.ptyp_loc Invalid_underscore_type_in_external
+   else (* ([`a|`b] [@bs.string]) *)    
+     spec_of_ptyp nolabel ptyp)
 
 
 
@@ -17690,30 +17689,25 @@ let handle_attributes
                    end
                  | Optional name ->
                    let new_ty_extract, arg_type = get_opt_arg_type ~nolabel:false  ty in
-                   let new_ty = 
-
-                      Ast_core_type.lift_option_type new_ty_extract 
-
-                   in
                    begin match arg_type with
                      | Ignore ->
                        External_arg_spec.empty_kind arg_type,
-                       (label,new_ty,attr,loc)::arg_types, result_types
+                       (label,ty,attr,loc)::arg_types, result_types
 
                      | Nothing | Array ->
                        let s = (Lam_methname.translate ~loc name) in
                        {arg_label = External_arg_spec.optional s; arg_type},
-                       (label,new_ty,attr,loc)::arg_types,
+                       (label,ty,attr,loc)::arg_types,
                        ( (name, [], Ast_comb.to_undefined_type loc new_ty_extract) ::  result_types)
                      | Int _  ->
                        let s = Lam_methname.translate ~loc name in
                        {arg_label = External_arg_spec.optional s ; arg_type },
-                       (label,new_ty,attr,loc)::arg_types,
+                       (label,ty,attr,loc)::arg_types,
                        ((name, [], Ast_comb.to_undefined_type loc @@ Ast_literal.type_int ~loc ()) :: result_types)
                      | NullString _  ->
                        let s = Lam_methname.translate ~loc name in
                        {arg_label = External_arg_spec.optional s ; arg_type },
-                       (label,new_ty,attr,loc)::arg_types,
+                       (label,ty,attr,loc)::arg_types,
                        ((name, [], Ast_comb.to_undefined_type loc @@ Ast_literal.type_string ~loc ()) :: result_types)
                      | Arg_cst _
                        ->
@@ -17780,7 +17774,7 @@ let handle_attributes
            let arg_label, arg_type, new_arg_types =
              match arg_label with
              | Optional s  ->
-               let new_ty , arg_type = get_opt_arg_type ~nolabel:false ty in
+               let _ , arg_type = get_opt_arg_type ~nolabel:false ty in
                begin match arg_type with
                  | NonNullString _ ->
                    (* ?x:([`x of int ] [@bs.string]) does not make sense *)
@@ -17789,12 +17783,7 @@ let handle_attributes
                      "[@@bs.string] does not work with optional when it has arities in label %s" s
                  | _ ->
                    External_arg_spec.optional s, arg_type,
-                   let new_ty = 
-
-                      Ast_core_type.lift_option_type new_ty 
-                      
-                    in
-                   ((label, new_ty, attr,loc) :: arg_types) end
+                   ((label, ty, attr,loc) :: arg_types) end
              | Labelled s  ->
                begin match refine_arg_type ~nolabel:false ty with
                  | new_ty, (Arg_cst ( i) as arg_type)  ->
