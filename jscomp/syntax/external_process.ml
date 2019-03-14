@@ -60,10 +60,10 @@ let variant_can_bs_unwrap_fields (row_fields : Parsetree.row_field list) : bool 
     The result type would be [ hi:string ]
 *)
 let get_arg_type
-    ~nolabel 
-    (is_optional : bool)
+    ~(nolabel : bool)
+    ~(is_optional : bool)
     (ptyp : Ast_core_type.t) :
-  External_arg_spec.attr * Ast_core_type.t  =
+  Ast_core_type.t * External_arg_spec.attr  =
   let ptyp =
 #if OCAML_VERSION =~ "<4.03.0" then
     if is_optional then    
@@ -88,17 +88,17 @@ let get_arg_type
       |  None ->
         Bs_syntaxerr.err ptyp.ptyp_loc Invalid_underscore_type_in_external
       | Some (`Int i) ->
-        Arg_cst(External_arg_spec.cst_int i), Ast_literal.type_int ~loc:ptyp.ptyp_loc ()
+        Ast_literal.type_int ~loc:ptyp.ptyp_loc (), Arg_cst(External_arg_spec.cst_int i)
       | Some (`Str i)->
-        Arg_cst (External_arg_spec.cst_string i), Ast_literal.type_string ~loc:ptyp.ptyp_loc ()
+        Ast_literal.type_string ~loc:ptyp.ptyp_loc (), Arg_cst (External_arg_spec.cst_string i)
       | Some (`Json_str s) ->
-        Arg_cst (External_arg_spec.cst_json ptyp.ptyp_loc s),
-        Ast_literal.type_string ~loc:ptyp.ptyp_loc ()
+        Ast_literal.type_string ~loc:ptyp.ptyp_loc (), Arg_cst (External_arg_spec.cst_json ptyp.ptyp_loc s)
+        
 
     end
   else (* ([`a|`b] [@bs.string]) *)
     let ptyp_desc = ptyp.ptyp_desc in
-    (match Ast_attributes.iter_process_bs_string_int_unwrap_uncurry ptyp.ptyp_attributes with
+    ptyp, (match Ast_attributes.iter_process_bs_string_int_unwrap_uncurry ptyp.ptyp_attributes with
     | `String ->
       begin match ptyp_desc with
         | Ptyp_variant ( row_fields, Closed, None)
@@ -150,7 +150,7 @@ let get_arg_type
           Nothing
         | _ ->
           Nothing
-      end), ptyp
+      end)
 
 
 
@@ -442,21 +442,19 @@ let handle_attributes
                let new_arg_label, new_arg_types,  output_tys =
                  match arg_label with
                  | Nolabel ->
-                   let arg_type, new_ty = get_arg_type ~nolabel:true false ty in
-                   begin match arg_type with
-                     | Extern_unit ->
-                       External_arg_spec.empty_kind arg_type, (label,new_ty,attr,loc)::arg_types, result_types
-                     | _ ->
-                       Location.raise_errorf ~loc "expect label, optional, or unit here"
-                   end
+                   let new_ty, arg_type = get_arg_type ~nolabel:true ~is_optional:false ty in
+                   if arg_type = Extern_unit then
+                     External_arg_spec.empty_kind arg_type, (label,new_ty,attr,loc)::arg_types, result_types
+                   else
+                     Location.raise_errorf ~loc "expect label, optional, or unit here"
                  | Labelled name ->
-                   let arg_type, new_ty = get_arg_type ~nolabel:false false ty in
+                   let new_ty, arg_type = get_arg_type ~nolabel:false ~is_optional:false ty in
                    begin match arg_type with
                      | Ignore ->
                        External_arg_spec.empty_kind arg_type,
                        (label,new_ty,attr,loc)::arg_types, result_types
                      | Arg_cst  i  ->
-                       let s = (Lam_methname.translate ~loc name) in
+                       let s = Lam_methname.translate ~loc name in
                        {arg_label = External_arg_spec.label s (Some i);
                         arg_type },
                        arg_types, (* ignored in [arg_types], reserved in [result_types] *)
@@ -489,7 +487,7 @@ let handle_attributes
                          "bs.obj label %s does not support [@bs.unwrap] arguments" name
                    end
                  | Optional name ->
-                   let arg_type, new_ty_extract = get_arg_type ~nolabel:false true ty in
+                   let new_ty_extract, arg_type = get_arg_type ~nolabel:false ~is_optional:true ty in
                    let new_ty = 
 #if OCAML_VERSION =~ "<4.03.0" then
                       Ast_core_type.lift_option_type new_ty_extract 
@@ -542,7 +540,7 @@ let handle_attributes
           if Ast_core_type.is_any  result_type then
             Ast_core_type.make_obj ~loc result_types
           else
-            snd @@ get_arg_type ~nolabel:true false result_type (* result type can not be labeled *)
+            fst (get_arg_type ~nolabel:true ~is_optional:false result_type) (* result type can not be labeled *)
 
         in
         begin          
@@ -564,7 +562,7 @@ let handle_attributes
       Ext_list.fold_right arg_types_ty
         (match st with
          | {val_send_pipe = Some obj; _ } ->
-           let arg_type, new_ty = get_arg_type ~nolabel:true false obj in
+           let new_ty, arg_type = get_arg_type ~nolabel:true ~is_optional:false obj in
            begin match arg_type with
              | Arg_cst _ ->
                Location.raise_errorf ~loc:obj.ptyp_loc "[@bs.as] is not supported in bs.send type "
@@ -582,8 +580,7 @@ let handle_attributes
            let arg_label, arg_type, new_arg_types =
              match arg_label with
              | Optional s  ->
-
-               let arg_type , new_ty = get_arg_type ~nolabel:false true ty in
+               let new_ty , arg_type = get_arg_type ~nolabel:false ~is_optional:true ty in
                begin match arg_type with
                  | NonNullString _ ->
                    (* ?x:([`x of int ] [@bs.string]) does not make sense *)
@@ -601,17 +598,17 @@ let handle_attributes
                     in
                    ((label, new_ty, attr,loc) :: arg_types) end
              | Labelled s  ->
-               begin match get_arg_type ~nolabel:false false  ty with
-                 | (Arg_cst ( i) as arg_type), new_ty ->
+               begin match get_arg_type ~nolabel:false ~is_optional:false  ty with
+                 | new_ty, (Arg_cst ( i) as arg_type)  ->
                    External_arg_spec.label s (Some i), arg_type, arg_types
-                 | arg_type, new_ty ->
+                 | new_ty, arg_type ->
                    External_arg_spec.label s None, arg_type, (label, new_ty,attr,loc) :: arg_types
                end
              | Nolabel ->
-               begin match get_arg_type ~nolabel:true false  ty with
-                 | (Arg_cst ( i) as arg_type), new_ty ->
+               begin match get_arg_type ~nolabel:true ~is_optional:false  ty with
+                 | new_ty , (Arg_cst ( i) as arg_type) ->
                    External_arg_spec.empty_lit i , arg_type,  arg_types
-                 | arg_type, new_ty ->
+                 | new_ty , arg_type ->
                    External_arg_spec.empty_label, arg_type, (label, new_ty,attr,loc) :: arg_types
                end
            in
