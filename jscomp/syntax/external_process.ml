@@ -231,10 +231,10 @@ let init_st =
 
 
 let process_external_attributes
-    no_arguments
+    (no_arguments : bool) 
     (prim_name_or_pval_prim: [< bundle_source ] as 'a)
-    pval_prim
-    (prim_attributes : Ast_attributes.t) : _ * Ast_attributes.t =
+    (pval_prim : string)
+    (prim_attributes : Ast_attributes.t) : st * Ast_attributes.t =
 
   (* shared by `[@@bs.val]`, `[@@bs.send]`,
      `[@@bs.set]`, `[@@bs.get]` , `[@@bs.new]`
