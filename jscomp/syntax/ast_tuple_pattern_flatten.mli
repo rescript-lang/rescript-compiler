@@ -23,12 +23,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-val map_open_tuple:
-  Parsetree.expression ->
-  (Parsetree.expression list ->
-    Parsetree.attributes ->
-   Parsetree.expression) ->
-  Parsetree.expression option
 
 
 val value_bindings_mapper :

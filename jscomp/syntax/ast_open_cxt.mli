@@ -32,6 +32,11 @@ val restore_exp :
    t -> 
    Parsetree.expression
 
+val destruct :    
+  Parsetree.expression -> 
+  t -> 
+  Parsetree.expression * t 
+
 val destruct_open_tuple :    
   Parsetree.expression -> 
   t -> 

@@ -91,8 +91,6 @@ bin/native_ppx.ml:
 ./syntax/ast_payload.mli
 ./syntax/ast_polyvar.ml
 ./syntax/ast_polyvar.mli
-./syntax/ast_tuple_pattern_flatten.ml
-./syntax/ast_tuple_pattern_flatten.mli
 ./syntax/ast_utf8_string.ml
 ./syntax/ast_utf8_string.mli
 ./syntax/ast_utf8_string_interp.ml
