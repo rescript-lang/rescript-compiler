@@ -127,6 +127,16 @@ let refine_arg_type ~(nolabel:bool)
         Ast_literal.type_string ~loc:ptyp.ptyp_loc (), Arg_cst (External_arg_spec.cst_json ptyp.ptyp_loc s)
   else (* ([`a|`b] [@bs.string]) *)
     ptyp, spec_of_ptyp nolabel ptyp   
+
+let get_basic_type_from_option_label (ptyp_arg : Ast_core_type.t) =     
+#if OCAML_VERSION =~ "<4.03.0" then
+      match ptyp_arg.ptyp_desc with 
+      | Ptyp_constr (_, [ty]) -> ty  (*optional*)
+      | _ -> assert false
+#else    
+      ptyp_arg 
+#end      
+  
 (** Given the type of argument, process its [bs.] attribute and new type,
     The new type is currently used to reconstruct the external type
     and result type in [@@bs.obj]
@@ -139,17 +149,8 @@ let refine_arg_type ~(nolabel:bool)
 let get_opt_arg_type
     ~(nolabel : bool)
     (ptyp_arg : Ast_core_type.t) :
-  Ast_core_type.t * External_arg_spec.attr  =
-  let ptyp =
-#if OCAML_VERSION =~ "<4.03.0" then
-      match ptyp_arg.ptyp_desc with 
-      | Ptyp_constr (_, [ty]) -> ty  (*optional*)
-      | _ -> assert false
-#else    
-      ptyp_arg 
-#end      
-  in
-  ptyp, 
+  External_arg_spec.attr  =
+  let ptyp = get_basic_type_from_option_label ptyp_arg in 
   (if Ast_core_type.is_any ptyp then (* (_[@bs.as ])*)
      (* extenral f : ?x:_ -> y:int -> _ = "" [@@bs.obj] is not allowed *)
      Bs_syntaxerr.err ptyp.ptyp_loc Invalid_underscore_type_in_external
@@ -491,17 +492,16 @@ let handle_attributes
                          "bs.obj label %s does not support [@bs.unwrap] arguments" name
                    end
                  | Optional name ->
-                   let new_ty_extract, arg_type = get_opt_arg_type ~nolabel:false  ty in
+                   let arg_type = get_opt_arg_type ~nolabel:false  ty in
                    begin match arg_type with
                      | Ignore ->
                        External_arg_spec.empty_kind arg_type,
                        (label,ty,attr,loc)::arg_types, result_types
-
                      | Nothing | Array ->
                        let s = (Lam_methname.translate ~loc name) in
                        {arg_label = External_arg_spec.optional s; arg_type},
                        (label,ty,attr,loc)::arg_types,
-                       ( (name, [], Ast_comb.to_undefined_type loc new_ty_extract) ::  result_types)
+                       ( (name, [], Ast_comb.to_undefined_type loc (get_basic_type_from_option_label ty)) ::  result_types)
                      | Int _  ->
                        let s = Lam_methname.translate ~loc name in
                        {arg_label = External_arg_spec.optional s ; arg_type },
@@ -577,7 +577,7 @@ let handle_attributes
            let arg_label, arg_type, new_arg_types =
              match arg_label with
              | Optional s  ->
-               let _ , arg_type = get_opt_arg_type ~nolabel:false ty in
+               let arg_type = get_opt_arg_type ~nolabel:false ty in
                begin match arg_type with
                  | NonNullString _ ->
                    (* ?x:([`x of int ] [@bs.string]) does not make sense *)
