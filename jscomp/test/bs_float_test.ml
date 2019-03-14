@@ -28,7 +28,7 @@ let () =
   eq __LOC__ (F.fromString "1.7") 1.7;
   eq __LOC__ (F.fromString "-1.0") (-1.0);
   eq __LOC__ (F.fromString "-1.5") (-1.5);
-  eq __LOC__ (F.fromString "-1.7") (-1.0)
+  eq __LOC__ (F.fromString "-1.7") (-1.7)
 
 let () =
   eq __LOC__ (F.toString 1.0) "1";

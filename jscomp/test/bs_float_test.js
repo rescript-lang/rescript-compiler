@@ -62,7 +62,7 @@ eq("File \"bs_float_test.ml\", line 29, characters 5-12", parseFloat("-1.0"), -1
 
 eq("File \"bs_float_test.ml\", line 30, characters 5-12", parseFloat("-1.5"), -1.5);
 
-eq("File \"bs_float_test.ml\", line 31, characters 5-12", parseFloat("-1.7"), -1.0);
+eq("File \"bs_float_test.ml\", line 31, characters 5-12", parseFloat("-1.7"), -1.7);
 
 eq("File \"bs_float_test.ml\", line 34, characters 5-12", String(1.0), "1");
 
