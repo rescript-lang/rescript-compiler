@@ -787,7 +787,7 @@ async function stdlibNinja(devmode=true){
     var bsc_builtin_overrides = [[bsc_flags,`$${bsc_flags} -nopervasives`]]
     var templateStdlibRules = `
 ${BSC_COMPILER}
-${bsc_flags} = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-no-check-div-by-zero -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js  -bs-package-output es6:lib/es6  -nostdlib -warn-error A -w -40-49-103 -bin-annot  -bs-no-warn-unimplemented-external  -I ./runtime  -I ./others
+${bsc_flags} = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-no-check-div-by-zero -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js  -bs-package-output es6:lib/es6  -nostdlib  -w -40-49-103 -bin-annot  -bs-no-warn-unimplemented-external  -I runtime  -I others
 rule cc
     command = $bsc -bs-cmi -bs-cmj $${bsc_flags} -bs-no-implicit-include  -I ${ninjaCwd} -c $in
     description = $in -> $out
