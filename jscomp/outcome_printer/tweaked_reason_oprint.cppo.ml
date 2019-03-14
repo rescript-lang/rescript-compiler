@@ -37,7 +37,7 @@
   patching the right parts, through the power of types(tm)
 *)
 
-#ifdef BS_NO_COMPILER_PATCH 
+#ifdef BS_NO_COMPILER_PATCH
 open Ast_404
 #endif
 
@@ -50,7 +50,7 @@ let cautious f ppf arg =
   try f ppf arg with
     Ellipsis -> fprintf ppf "..."
 
-#ifdef BS_NO_COMPILER_PATCH 
+#ifdef BS_NO_COMPILER_PATCH
 let rec print_ident ppf =
   function
     Oide_ident s -> pp_print_string ppf s
@@ -149,13 +149,11 @@ let print_out_value ppf tree =
     | Oval_nativeint i -> fprintf ppf "%nin" i
     | Oval_float f -> pp_print_string ppf (float_repres f)
     | Oval_char c -> fprintf ppf "%C" c
-    | Oval_string 
-#if OCAML_VERSION >= (4,3,0) 
-      (s,_,_)
+#if OCAML_VERSION >= (4,3,0) && not defined BS_NO_COMPILER_PATCH
+    | Oval_string (s,_,_) ->
 #else
-      s 
-#endif      
-      -> (** FIXME cc @chenglou *)
+    | Oval_string s ->
+#endif
         begin try fprintf ppf "\"%s\"" (Reason_syntax_util.escape_string s) with
           Invalid_argument s when s = "String.create" -> fprintf ppf "<huge string>"
         end
@@ -406,12 +404,12 @@ and print_simple_out_type ppf =
           Ovar_fields fields ->
             print_list print_row_field (fun ppf -> fprintf ppf "@;<1 -2>| ")
               ppf fields
-#if OCAML_VERSION >= (4,3,0)
-        | Ovar_typ typ -> print_simple_out_type ppf typ 
+#if OCAML_VERSION >= (4,3,0) && not defined BS_NO_COMPILER_PATCH
+        | Ovar_typ typ -> print_simple_out_type ppf typ
 #else
         | Ovar_name (id, tyl) ->
             fprintf ppf "@[%a%a@]" print_typargs tyl print_ident id
-#endif            
+#endif
       in
       fprintf ppf "%s[%s@[<hv>@[<hv>%a@]%a ]@]" (if non_gen then "_" else "")
         (if closed then if tags = None then " " else "< "
@@ -435,7 +433,7 @@ and print_simple_out_type ppf =
         )
         n tyl;
       fprintf ppf ")@]"
-#if OCAML_VERSION >= (4,3,0)
+#if OCAML_VERSION >= (4,3,0) || defined BS_NO_COMPILER_PATCH
   | Otyp_attribute (t, attr) ->
         fprintf ppf "@[<1>(%a [@@%s])@]" print_out_type t attr.oattr_name
 #endif
@@ -661,7 +659,7 @@ and print_out_sig_item ppf =
           | Orec_first -> "type"
           | Orec_next  -> "and")
         ppf td
-#if OCAML_VERSION >= (4,3,0)
+#if OCAML_VERSION >= (4,3,0) || defined BS_NO_COMPILER_PATCH
   | Osig_ellipsis ->
     fprintf ppf "..."
   | Osig_value {oval_name; oval_type; oval_prims; oval_attributes} ->
