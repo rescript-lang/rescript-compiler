@@ -197,7 +197,7 @@ let handleTdcl
        setter_accessor
      else
        let myPrims =
-        External_process.pval_prim_of_option_labels
+        Ast_external_process.pval_prim_of_option_labels
           labels
           has_optional_field
         in

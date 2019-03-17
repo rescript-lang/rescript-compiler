@@ -32317,109 +32317,6 @@ let local_extern_cont loc
 )
 
 end
-module Ast_pat : sig 
-#1 "ast_pat.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type t = Parsetree.pattern
-
-val is_unit_cont : yes:'a -> no:'a -> t -> 'a
-
-(** [arity_of_fun pat e] tells the arity of 
-    expression [fun pat -> e]*)
-val arity_of_fun : t -> Parsetree.expression -> int
-
-
-val is_single_variable_pattern_conservative : t -> bool
-
-end = struct
-#1 "ast_pat.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-type t = Parsetree.pattern
-
-
-let is_unit_cont ~yes ~no (p : t)  =
-  match p  with
-  | {ppat_desc = Ppat_construct({txt = Lident "()"}, None)}
-    -> yes 
-  | _ -> no
-
-
-(** [arity_of_fun pat e] tells the arity of 
-    expression [fun pat -> e]
-*)
-let arity_of_fun
-    (pat : Parsetree.pattern)
-    (e : Parsetree.expression) =
-  let rec aux (e : Parsetree.expression)  =
-    match e.pexp_desc with
-    | Pexp_fun (arg_label, _, pat, e) 
-      when Ast_compatible.is_arg_label_simple arg_label ->
-      1 + aux e       
-    | Pexp_fun _
-      -> Location.raise_errorf
-           ~loc:e.pexp_loc "Label is not allowed in JS object"
-    | _ -> 0 in
-  is_unit_cont ~yes:0 ~no:1 pat + aux e 
-
-
-let rec is_single_variable_pattern_conservative  (p : t ) =
-  match p.ppat_desc with 
-  | Parsetree.Ppat_any 
-  | Parsetree.Ppat_var _ -> true 
-  | Parsetree.Ppat_alias (p,_) 
-  | Parsetree.Ppat_constraint (p, _) -> 
-    is_single_variable_pattern_conservative p 
-  
-  | _ -> false
-
-end
 module Ext_json_types
 = struct
 #1 "ext_json_types.ml"
@@ -35019,8 +34916,8 @@ let translate ?loc name =
 
 
 end
-module External_process : sig 
-#1 "external_process.mli"
+module Ast_external_process : sig 
+#1 "ast_external_process.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -35087,7 +34984,7 @@ val pval_prim_of_option_labels :
   string list
 
 end = struct
-#1 "external_process.ml"
+#1 "ast_external_process.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -36101,6 +35998,109 @@ let pval_prim_of_option_labels
 
 
 end
+module Ast_pat : sig 
+#1 "ast_pat.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type t = Parsetree.pattern
+
+val is_unit_cont : yes:'a -> no:'a -> t -> 'a
+
+(** [arity_of_fun pat e] tells the arity of 
+    expression [fun pat -> e]*)
+val arity_of_fun : t -> Parsetree.expression -> int
+
+
+val is_single_variable_pattern_conservative : t -> bool
+
+end = struct
+#1 "ast_pat.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type t = Parsetree.pattern
+
+
+let is_unit_cont ~yes ~no (p : t)  =
+  match p  with
+  | {ppat_desc = Ppat_construct({txt = Lident "()"}, None)}
+    -> yes 
+  | _ -> no
+
+
+(** [arity_of_fun pat e] tells the arity of 
+    expression [fun pat -> e]
+*)
+let arity_of_fun
+    (pat : Parsetree.pattern)
+    (e : Parsetree.expression) =
+  let rec aux (e : Parsetree.expression)  =
+    match e.pexp_desc with
+    | Pexp_fun (arg_label, _, pat, e) 
+      when Ast_compatible.is_arg_label_simple arg_label ->
+      1 + aux e       
+    | Pexp_fun _
+      -> Location.raise_errorf
+           ~loc:e.pexp_loc "Label is not allowed in JS object"
+    | _ -> 0 in
+  is_unit_cont ~yes:0 ~no:1 pat + aux e 
+
+
+let rec is_single_variable_pattern_conservative  (p : t ) =
+  match p.ppat_desc with 
+  | Parsetree.Ppat_any 
+  | Parsetree.Ppat_var _ -> true 
+  | Parsetree.Ppat_alias (p,_) 
+  | Parsetree.Ppat_constraint (p, _) -> 
+    is_single_variable_pattern_conservative p 
+  
+  | _ -> false
+
+end
 module Ast_util : sig 
 #1 "ast_util.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -36848,7 +36848,7 @@ let ocaml_obj_as_js_object
       ) in
   Ast_external_mk.local_extern_cont
     loc
-    ~pval_prim:(External_process.pval_prim_of_labels labels)
+    ~pval_prim:(Ast_external_process.pval_prim_of_labels labels)
     (fun e ->
        Ast_compatible.apply_labels ~loc e
          (Ext_list.map2 labels exprs (fun l expr -> l.txt, expr) ) )
@@ -36869,7 +36869,7 @@ let record_as_js_object
         | Ldot _ | Lapply _ ->  
           Location.raise_errorf ~loc "invalid js label ")  in
   Ast_external_mk.local_external_obj loc 
-    ~pval_prim:(External_process.pval_prim_of_labels labels)
+    ~pval_prim:(Ast_external_process.pval_prim_of_labels labels)
     ~pval_type:(Ast_core_type.from_labels ~loc arity labels) 
     args 
 
@@ -39231,7 +39231,7 @@ let handleExternalInSig
       ~loc
       "only a single string is allowed in bs external" 
   | [ v ] ->
-    match External_process.handle_attributes_as_string
+    match Ast_external_process.handle_attributes_as_string
             loc
             prim.pval_name.txt
             pval_type
@@ -39261,7 +39261,7 @@ let handleExternalInStru
       ~loc 
       "only a single string is allowed in bs external" 
   | [ v] ->
-    match External_process.handle_attributes_as_string
+    match Ast_external_process.handle_attributes_as_string
             loc
             prim.pval_name.txt
             pval_type pval_attributes v with 
@@ -39543,7 +39543,7 @@ let handleTdcl
        setter_accessor
      else
        let myPrims =
-        External_process.pval_prim_of_option_labels
+        Ast_external_process.pval_prim_of_option_labels
           labels
           has_optional_field
         in

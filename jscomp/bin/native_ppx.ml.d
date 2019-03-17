@@ -85,6 +85,8 @@ bin/native_ppx.ml:
 ./syntax/ast_exp_apply.mli
 ./syntax/ast_external_mk.ml
 ./syntax/ast_external_mk.mli
+./syntax/ast_external_process.ml
+./syntax/ast_external_process.mli
 ./syntax/ast_literal.ml
 ./syntax/ast_literal.mli
 ./syntax/ast_open_cxt.ml
@@ -113,7 +115,5 @@ bin/native_ppx.ml:
 ./syntax/external_arg_spec.mli
 ./syntax/external_ffi_types.ml
 ./syntax/external_ffi_types.mli
-./syntax/external_process.ml
-./syntax/external_process.mli
 ./syntax/ppx_driver.ml
 ./syntax/ppx_driver.mli
