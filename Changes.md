@@ -1,5 +1,35 @@
 
 * potential break changes
+# 5.0.0
+
+Features
+- #3418 sync up with refmt 681c491ba760cdf3b49f92297c3dab1703682808 
+- #3395, #3417 better gentype support (gentype.import)
+- #3412,#3416 Warning against usage of `string_of_float`
+- #3414, #3415, #2893 allow usage of ` a |. M.(f a b)` 
+- #3403 first class bs.variadic support 
+- #3402 in watch mode, clear the screen upon rebuilding
+- #3397 add ignored-dirs support in bsconfig.json
+- #3377, #3376 add Linux prebuilt support for official release
+- #3372 add Belt.Array.getIndexBy 
+- #3357, add `-bs-cmi-only` flag support to bsc so that no js emitted
+- #3356, #3354 add gentypeconfig support in bsconfig.json
+- #3352 fix minor mistake in Js.Dict.values doc
+- #3329 Allow namespace in bsconfig.json to be customized
+- #3334 Add Belt.Array.getBy
+- #3204, #3208 add bs.deriving {light} support to allow short names
+Fixes
+- #3413, #2893 deprecate Js.Array.join
+- #3407, #3408  rebuild when ppx binary changes
+- #3406, #3399 fix the interaction between external and relative paths
+- #3393  deprecate Node.Fs.Watch.on in favor of Node.Fs.Watch.on_
+- #3315  depercate Js.Re.test, Js.Re.exec in favor of Js.Re.test_, Js.Re.exec_
+- #3386, #3387 fix a codegen in with bs.raw
+- #3386 make it more forgiving when interact with Js functions with arity 0 
+- #3381 remove golang as a dev dependency
+* #3388 (breaking) Fix Js.Re.(splitbyReAtMost, splitByRe) binding
+- #3332 remove `-bs-gen-tds` from docs in favor of gentype
+
 
 # 4.0.17
 Features
