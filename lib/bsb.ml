@@ -13928,7 +13928,7 @@ let output_ninja_and_namespace_map
     ;  
     if ppx_checked_files <> [] then 
       Bsb_ninja_util.output_kv Bsb_ninja_global_vars.ppx_checked_files 
-      (String.concat " " ppx_files) oc
+      (String.concat " " ppx_checked_files) oc
     ;
 
     Bsb_ninja_util.output_kvs
