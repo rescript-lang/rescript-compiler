@@ -7089,7 +7089,7 @@ let node_sep = "/"
 let node_parent = ".."
 let node_current = "."
 
-let gentype_import = "gentype.import"
+let gentype_import = "genType.import"
 end
 module Ext_path : sig 
 #1 "ext_path.mli"
