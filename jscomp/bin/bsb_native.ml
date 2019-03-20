@@ -4963,7 +4963,7 @@ let node_sep = "/"
 let node_parent = ".."
 let node_current = "."
 
-let gentype_import = "gentype.import"
+let gentype_import = "genType.import"
 end
 module Bsb_pkg : sig 
 #1 "bsb_pkg.mli"
@@ -13926,9 +13926,15 @@ let output_ninja_and_namespace_map
       ("-bs-gentype " ^ path) oc
     )
     ;  
-    if ppx_checked_files <> [] then 
+    (*
+    TODO: 
+    see https://github.com/ninja-build/ninja/issues/1375
+    *)
+    (match ppx_checked_files with
+    | first_ppx_checked_file :: _ -> 
       Bsb_ninja_util.output_kv Bsb_ninja_global_vars.ppx_checked_files 
-      (String.concat " " ppx_files) oc
+      first_ppx_checked_file oc
+    | [] -> ())
     ;
 
     Bsb_ninja_util.output_kvs
