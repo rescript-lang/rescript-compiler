@@ -27,7 +27,6 @@
 module Path = Node_path
 
 module Fs = Node_fs
-module Fs2 = Node_fs2
 
 module Process = Node_process
 
