@@ -26,7 +26,7 @@
     Utililites for Int
 *)
 
-external nan : int = "NaN" [@@bs.val] [@@bs.scope "Number"]
+external isNaN : int -> bool = "isNaN" [@@bs.val]
 
 external toFloat: int -> float = "%identity"
 
@@ -36,7 +36,7 @@ external fromString: string -> (_ [@bs.as 10]) -> int = "parseInt" [@@bs.val]
 
 let fromString i =
   match fromString i with
-  | i when i = nan -> None
+  | i when isNaN i -> None
   | i -> Some i
 
 external toString: int -> string = "String" [@@bs.val]
