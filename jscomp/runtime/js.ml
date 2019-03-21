@@ -232,9 +232,6 @@ module String2 = Js_string2
 module Re = Js_re
 (** Provide bindings to Js regex expression *)
 
-module Re2 = Js_re2
-(** Provide bindings to Js regex expression *)
-
 module Promise = Js_promise
 (** Provide bindings to JS promise *)
 

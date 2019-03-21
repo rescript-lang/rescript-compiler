@@ -4,6 +4,7 @@ var List = require("../../lib/js/list.js");
 var List$1 = require("List");
 var List$2 = require("reactV");
 var List$3 = require("reactX");
+var Local = require("./local");
 var WebpackConfigJs = require("../../../webpack.config.js");
 var WebpackMiddlewareConfigJs = require("../../../webpack.middleware.config.js");
 
@@ -62,6 +63,10 @@ List.length(/* :: */[
 
 List.length(/* [] */0);
 
+function ff(prim) {
+  return Local.ff();
+}
+
 exports.WebpackConfig = WebpackConfig;
 exports.WebpackDevMiddlewareConfig = WebpackDevMiddlewareConfig;
 exports.configX = configX;
@@ -69,4 +74,5 @@ exports.U = U;
 exports.A = A;
 exports.B = B;
 exports.f = f;
+exports.ff = ff;
 /* configx Not a pure module */

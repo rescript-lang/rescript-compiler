@@ -11,7 +11,6 @@
   },
   "suffix": ".bs.js",
   "bs-dependencies": [
-      // add your bs-dependencies here 
   ],
   "warnings": {
     "error" : "+101"
