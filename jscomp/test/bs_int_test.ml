@@ -23,12 +23,13 @@ let () =
   eq __LOC__ (I.fromFloat (-1.7)) (-1)
 
 let () =
-  eq __LOC__ (I.fromString "1") 1;
-  eq __LOC__ (I.fromString "-1") (-1);
-  eq __LOC__ (I.fromString "1.7") 1;
-  eq __LOC__ (I.fromString "-1.0") (-1);
-  eq __LOC__ (I.fromString "-1.5") (-1);
-  eq __LOC__ (I.fromString "-1.7") (-1)
+  eq __LOC__ (I.fromString "1") (Some 1);
+  eq __LOC__ (I.fromString "-1") (Some (-1));
+  eq __LOC__ (I.fromString "1.7") (Some 1);
+  eq __LOC__ (I.fromString "-1.0") (Some (-1));
+  eq __LOC__ (I.fromString "-1.5") (Some (-1));
+  eq __LOC__ (I.fromString "-1.7") (Some (-1));
+  eq __LOC__ (I.fromString "not an int") None
 
 let () =
   eq __LOC__ (I.toString 1) "1";

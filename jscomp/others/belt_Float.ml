@@ -26,11 +26,18 @@
     Utililites for Float
 *)
 
+external nan : float = "NaN" [@@bs.val] [@@bs.scope "Number"]
+
 external toInt: float -> int = "%intoffloat"
 
 external fromInt: int -> float = "%identity"
 
 external fromString: string -> float = "parseFloat" [@@bs.val]
+
+let fromString i =
+  match (fromString i) with
+  | i when i = nan -> None
+  | i -> Some i
 
 external toString: float -> string = "String" [@@bs.val]
 

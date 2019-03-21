@@ -2,6 +2,7 @@
 
 var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
+var Belt_Int = require("../../lib/js/belt_Int.js");
 
 var suites = /* record */[/* contents : [] */0];
 
@@ -52,31 +53,33 @@ eq("File \"bs_int_test.ml\", line 22, characters 5-12", -1, -1);
 
 eq("File \"bs_int_test.ml\", line 23, characters 5-12", -1, -1);
 
-eq("File \"bs_int_test.ml\", line 26, characters 5-12", parseInt("1", 10), 1);
+eq("File \"bs_int_test.ml\", line 26, characters 5-12", Belt_Int.fromString("1"), 1);
 
-eq("File \"bs_int_test.ml\", line 27, characters 5-12", parseInt("-1", 10), -1);
+eq("File \"bs_int_test.ml\", line 27, characters 5-12", Belt_Int.fromString("-1"), -1);
 
-eq("File \"bs_int_test.ml\", line 28, characters 5-12", parseInt("1.7", 10), 1);
+eq("File \"bs_int_test.ml\", line 28, characters 5-12", Belt_Int.fromString("1.7"), 1);
 
-eq("File \"bs_int_test.ml\", line 29, characters 5-12", parseInt("-1.0", 10), -1);
+eq("File \"bs_int_test.ml\", line 29, characters 5-12", Belt_Int.fromString("-1.0"), -1);
 
-eq("File \"bs_int_test.ml\", line 30, characters 5-12", parseInt("-1.5", 10), -1);
+eq("File \"bs_int_test.ml\", line 30, characters 5-12", Belt_Int.fromString("-1.5"), -1);
 
-eq("File \"bs_int_test.ml\", line 31, characters 5-12", parseInt("-1.7", 10), -1);
+eq("File \"bs_int_test.ml\", line 31, characters 5-12", Belt_Int.fromString("-1.7"), -1);
 
-eq("File \"bs_int_test.ml\", line 34, characters 5-12", String(1), "1");
+eq("File \"bs_int_test.ml\", line 32, characters 5-12", Belt_Int.fromString("not an int"), undefined);
 
-eq("File \"bs_int_test.ml\", line 35, characters 5-12", String(-1), "-1");
+eq("File \"bs_int_test.ml\", line 35, characters 5-12", String(1), "1");
 
-eq("File \"bs_int_test.ml\", line 39, characters 5-12", 5, 5);
+eq("File \"bs_int_test.ml\", line 36, characters 5-12", String(-1), "-1");
 
-eq("File \"bs_int_test.ml\", line 40, characters 5-12", -1, -1);
+eq("File \"bs_int_test.ml\", line 40, characters 5-12", 5, 5);
 
-eq("File \"bs_int_test.ml\", line 41, characters 5-12", 6, 6);
+eq("File \"bs_int_test.ml\", line 41, characters 5-12", -1, -1);
 
-eq("File \"bs_int_test.ml\", line 42, characters 5-12", 0, 0);
+eq("File \"bs_int_test.ml\", line 42, characters 5-12", 6, 6);
 
-Mt.from_pair_suites("File \"bs_int_test.ml\", line 44, characters 23-30", suites[0]);
+eq("File \"bs_int_test.ml\", line 43, characters 5-12", 0, 0);
+
+Mt.from_pair_suites("File \"bs_int_test.ml\", line 45, characters 23-30", suites[0]);
 
 var I = 0;
 

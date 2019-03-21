@@ -30,7 +30,7 @@ external toInt: float -> int = "%intoffloat"
 
 external fromInt: int -> float = "%identity"
 
-external fromString: string -> float = "parseFloat" [@@bs.val]
+val fromString: string -> float option
 
 external toString: float -> string = "String" [@@bs.val]
 
