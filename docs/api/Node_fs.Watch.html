@@ -54,8 +54,10 @@
 <li><a href="Belt_internalSetString.html">Belt_internalSetString</a></li>
 <li><a href="Dom.html">Dom</a></li>
 <li><a href="Dom_storage.html">Dom_storage</a></li>
+<li><a href="Dom_storage2.html">Dom_storage2</a></li>
 <li><a href="Js.html">Js</a></li>
 <li><a href="Js_array.html">Js_array</a></li>
+<li><a href="Js_array2.html">Js_array2</a></li>
 <li><a href="Js_cast.html">Js_cast</a></li>
 <li><a href="Js_console.html">Js_console</a></li>
 <li><a href="Js_date.html">Js_date</a></li>
@@ -76,7 +78,9 @@
 <li><a href="Js_re.html">Js_re</a></li>
 <li><a href="Js_result.html">Js_result</a></li>
 <li><a href="Js_string.html">Js_string</a></li>
+<li><a href="Js_string2.html">Js_string2</a></li>
 <li><a href="Js_typed_array.html">Js_typed_array</a></li>
+<li><a href="Js_typed_array2.html">Js_typed_array2</a></li>
 <li><a href="Js_types.html">Js_types</a></li>
 <li><a href="Js_undefined.html">Js_undefined</a></li>
 <li><a href="Js_vector.html">Js_vector</a></li>
@@ -105,11 +109,11 @@
 <pre><span id="VALwatch"><span class="keyword">val</span> watch</span> : <code class="type">string -> ?config:<a href="Node_fs.Watch.html#TYPEconfig">config</a> -> unit -> <a href="Node_fs.Watch.html#TYPEt">t</a></code></pre>
 <pre><span id="VALon"><span class="keyword">val</span> on</span> : <code class="type">[ `change of (string -> <a href="Node.html#TYPEstring_buffer">Node.string_buffer</a> -> unit [@bs])<br>       | `error of (unit -> unit [@bs]) ] -> <a href="Node_fs.Watch.html#TYPEt">t</a> -> <a href="Node_fs.Watch.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
-                    there is no need to accept listener, since we return a <code class="code">watcher</code> 
+                    there is no need to accept listener, since we return a <code class="code">watcher</code>
       back it can register event listener there .
-      Currently we introduce a type <code class="code">string_buffer</code>, for the 
-      <code class="code">filename</code>, it will be <code class="code">Buffer</code> when the encoding is `utf8. 
-      This is dependent type which can be tracked by GADT in some way, 
+      Currently we introduce a type <code class="code">string_buffer</code>, for the
+      <code class="code">filename</code>, it will be <code class="code">Buffer</code> when the encoding is `utf8.
+      This is dependent type which can be tracked by GADT in some way,
       but to make things simple, let's just introduce an or type<br>
  
                     </div>
@@ -117,4 +121,5 @@
                     </div>
 
                   
+<pre><span id="VALon_"><span class="keyword">val</span> on_</span> : <code class="type"><a href="Node_fs.Watch.html#TYPEt">t</a> -><br>       [ `change of (string -> <a href="Node.html#TYPEstring_buffer">Node.string_buffer</a> -> unit [@bs])<br>       | `error of (unit -> unit [@bs]) ] -> <a href="Node_fs.Watch.html#TYPEt">t</a></code></pre>
 <pre><span id="VALclose"><span class="keyword">val</span> close</span> : <code class="type"><a href="Node_fs.Watch.html#TYPEt">t</a> -> unit</code></pre></body></html>
