@@ -7,7 +7,7 @@
                  <script src="../api_static//script.js"></script>
                  <script>hljs.initHighlightingOnLoad();</script> 
                  <meta charset="utf8">
-                 <link rel="previous" href="Js_result.html"><link rel="next" href="Js_typed_array.html">
+                 <link rel="previous" href="Js_result.html"><link rel="next" href="Js_string2.html">
                  <title> Js_string </title></head> 
                <body>
 <nav class="module-index"><ul><li><a href="Belt.html">Belt</a></li>
@@ -54,8 +54,10 @@
 <li><a href="Belt_internalSetString.html">Belt_internalSetString</a></li>
 <li><a href="Dom.html">Dom</a></li>
 <li><a href="Dom_storage.html">Dom_storage</a></li>
+<li><a href="Dom_storage2.html">Dom_storage2</a></li>
 <li><a href="Js.html">Js</a></li>
 <li><a href="Js_array.html">Js_array</a></li>
+<li><a href="Js_array2.html">Js_array2</a></li>
 <li><a href="Js_cast.html">Js_cast</a></li>
 <li><a href="Js_console.html">Js_console</a></li>
 <li><a href="Js_date.html">Js_date</a></li>
@@ -76,7 +78,9 @@
 <li><a href="Js_re.html">Js_re</a></li>
 <li><a href="Js_result.html">Js_result</a></li>
 <li><a href="Js_string.html">Js_string</a></li>
+<li><a href="Js_string2.html">Js_string2</a></li>
 <li><a href="Js_typed_array.html">Js_typed_array</a></li>
+<li><a href="Js_typed_array2.html">Js_typed_array2</a></li>
 <li><a href="Js_types.html">Js_types</a></li>
 <li><a href="Js_undefined.html">Js_undefined</a></li>
 <li><a href="Js_vector.html">Js_vector</a></li>
@@ -89,7 +93,7 @@
 <li><a href="Node_process.html">Node_process</a></li></ul></nav>
 <div class="navbar"><a class="pre" href="Js_result.html" title="Js_result">Previous</a>
 &nbsp;<a class="up" href="index.html" title="Index">Up</a>
-&nbsp;<a class="post" href="Js_typed_array.html" title="Js_typed_array">Next</a>
+&nbsp;<a class="post" href="Js_string2.html" title="Js_string2">Next</a>
 </div>
 <h1>Module <a href="type_Js_string.html">Js_string</a></h1>
 
@@ -404,7 +408,7 @@ ES2015<br>
                     <pre class="example"> <pre class="codepre"><code class="code">  (localeCompare "ant" "zebra") &gt; 0.0;;
   (localeCompare "zebra" "ant") &lt; 0.0;;
   (localeCompare "cat" "cat") = 0.0;;
-  (localeCompare "cat" "CAT") &gt; 0.0;; 
+  (localeCompare "cat" "CAT") &gt; 0.0;;
 </code></pre>  </pre>
                     </div>
                     </div>
@@ -533,7 +537,7 @@ match begins, and the whole string being matched<br>
 let re = [%re "/[aeiou]/g"]
 let matchFn matchPart offset wholeString =
   Js.String.toUpperCase matchPart
-  
+
 let replaced = Js.String.unsafeReplaceBy0 re matchFn str
 
 let () = Js.log replaced (* prints "bEAUtifUl vOwEls" *)
@@ -556,7 +560,7 @@ the offset at which the match begins, and the whole string being matched.<br>
 let re = [%re "/increment (\\d+)/g"]
 let matchFn matchPart p1 offset wholeString =
   wholeString ^ " is " ^ (string_of_int ((int_of_string p1) + 1))
-  
+
 let replaced = Js.String.unsafeReplaceBy1 re matchFn str
 
 let () = Js.log replaced (* prints "increment 23 is 24" *)
@@ -579,7 +583,7 @@ the offset at which the match begins, and the whole string being matched.<br>
 let re = [%re "/(\\d+) times (\\d+)/"]
 let matchFn matchPart p1 p2 offset wholeString =
   string_of_int ((int_of_string p1) * (int_of_string p2))
-  
+
 let replaced = Js.String.unsafeReplaceBy2 re matchFn str
 
 let () = Js.log replaced (* prints "42" *)
@@ -631,7 +635,7 @@ If <code class="code">n1</code> is greater than <code class="code">n2</code>, <c
                      <div class="examples">
                     <pre class="example"> <pre class="codepre"><code class="code">  slice ~from:2 ~to_:5 "abcdefg" == "cde";;
   slice ~from:2 ~to_:9 "abcdefg" == "cdefg";;
-  slice ~from:(-4) ~to_:(-2) "abcdefg" == "de";; 
+  slice ~from:(-4) ~to_:(-2) "abcdefg" == "de";;
   slice ~from:5 ~to_:1 "abcdefg" == "";;
 </code></pre>  </pre>
                     </div>
@@ -651,7 +655,7 @@ If <code class="code">n</code> is greater than the length of <code class="code">
                     </div>
                      <div class="examples">
                     <pre class="example"> <pre class="codepre"><code class="code">  sliceToEnd ~from: 4 "abcdefg" == "efg";;
-  sliceToEnd ~from: (-2) "abcdefg" == "fg";; 
+  sliceToEnd ~from: (-2) "abcdefg" == "fg";;
   sliceToEnd ~from: 7 "abcdefg" == "";;
 </code></pre>  </pre>
                     </div>
@@ -697,30 +701,32 @@ If <code class="code">n</code> is greater than the length of <code class="code">
                     </div>
 
                   
-<pre><span id="VALsplitByRe"><span class="keyword">val</span> splitByRe</span> : <code class="type"><a href="Js_re.html#TYPEt">Js_re.t</a> -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> array</code></pre><div class="info ">
+<pre><span id="VALsplitByRe"><span class="keyword">val</span> splitByRe</span> : <code class="type"><a href="Js_re.html#TYPEt">Js_re.t</a> -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> option array</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">splitByRe regex str</code> splits the given <code class="code">str</code> at every occurrence of <code class="code">regex</code> and returns an
   array of the resulting substrings.<br>
  
                     </div>
                      <div class="examples">
-                    <pre class="example"> <pre class="codepre"><code class="code">  splitByRe [%re "/\\s*[,;]\\s*/"] "art; bed , cog ;dad" = [|"art"; "bed"; "cog"; "dad"|];;
-  splitByRe [%re "/[,;]/"] "has:no:match" = [|"has:no:match"|];;
+                    <pre class="example"> <pre class="codepre"><code class="code">  splitByRe [%re "/\\s*[,;]\\s*/"] "art; bed , cog ;dad" = [|Some "art"; Some "bed"; Some "cog"; Some "dad"|];;
+  splitByRe [%re "/[,;]/"] "has:no:match" = [|Some "has:no:match"|];;
+  splitByRe [%re "/(#)(:)?/"] "a#b#:c" = [|Some "a"; Some "#"; None; Some "b"; Some "#"; Some ":"; Some "c"|];;
 </code></pre>;  </pre>
                     </div>
                     </div>
 
                   
-<pre><span id="VALsplitByReAtMost"><span class="keyword">val</span> splitByReAtMost</span> : <code class="type"><a href="Js_re.html#TYPEt">Js_re.t</a> -> limit:int -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> array</code></pre><div class="info ">
+<pre><span id="VALsplitByReAtMost"><span class="keyword">val</span> splitByReAtMost</span> : <code class="type"><a href="Js_re.html#TYPEt">Js_re.t</a> -> limit:int -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> option array</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">splitByReAtMost regex ~limit: n str</code> splits the given <code class="code">str</code> at every occurrence of <code class="code">regex</code> and returns an
   array of the first <code class="code">n</code> resulting substrings. If <code class="code">n</code> is negative or greater than the number of substrings, the array will contain all the substrings.<br>
  
                     </div>
                      <div class="examples">
-                    <pre class="example"> <pre class="codepre"><code class="code">  splitByReAtMost [%re "/\\s*:\\s*/"] ~limit: 3 "one: two: three: four" = [|"one"; "two"; "three"|];;
+                    <pre class="example"> <pre class="codepre"><code class="code">  splitByReAtMost [%re "/\\s*:\\s*/"] ~limit: 3 "one: two: three: four" = [|Some "one"; Some "two"; Some "three"|];;
   splitByReAtMost [%re "/\\s*:\\s*/"] ~limit: 0 "one: two: three: four" = [| |];;
-  splitByReAtMost [%re "/\\s*:\\s*/"] ~limit: 8 "one: two: three: four" = [|"one"; "two"; "three"; "four"|];;
+  splitByReAtMost [%re "/\\s*:\\s*/"] ~limit: 8 "one: two: three: four" = [|Some "one"; Some "two"; Some "three"; Some "four"|];;
+  splitByReAtMost [%re "/(#)(:)?/"] ~limit:3 "a#b#:c" = [|Some "a"; Some "#"; None|];;
 </code></pre>;  </pre>
                     </div>
                     </div>
@@ -938,4 +944,4 @@ ES2015<br>
                   <br>
 ES2015<br>
 
-<pre><span id="VALcastToArrayLike"><span class="keyword">val</span> castToArrayLike</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> <a href="Js_array.html#TYPEarray_like">Js_array.array_like</a></code></pre></body></html>
+<pre><span id="VALcastToArrayLike"><span class="keyword">val</span> castToArrayLike</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> <a href="Js_array2.html#TYPEarray_like">Js_array2.array_like</a></code></pre></body></html>
