@@ -7,7 +7,7 @@
                  <script src="../api_static//script.js"></script>
                  <script>hljs.initHighlightingOnLoad();</script> 
                  <meta charset="utf8">
-                 <link rel="previous" href="Dom_storage.html"><link rel="next" href="Js_array.html">
+                 <link rel="previous" href="Dom_storage2.html"><link rel="next" href="Js_array.html">
                  <title> Js </title></head> 
                <body>
 <nav class="module-index"><ul><li><a href="Belt.html">Belt</a></li>
@@ -54,8 +54,10 @@
 <li><a href="Belt_internalSetString.html">Belt_internalSetString</a></li>
 <li><a href="Dom.html">Dom</a></li>
 <li><a href="Dom_storage.html">Dom_storage</a></li>
+<li><a href="Dom_storage2.html">Dom_storage2</a></li>
 <li><a href="Js.html">Js</a></li>
 <li><a href="Js_array.html">Js_array</a></li>
+<li><a href="Js_array2.html">Js_array2</a></li>
 <li><a href="Js_cast.html">Js_cast</a></li>
 <li><a href="Js_console.html">Js_console</a></li>
 <li><a href="Js_date.html">Js_date</a></li>
@@ -76,7 +78,9 @@
 <li><a href="Js_re.html">Js_re</a></li>
 <li><a href="Js_result.html">Js_result</a></li>
 <li><a href="Js_string.html">Js_string</a></li>
+<li><a href="Js_string2.html">Js_string2</a></li>
 <li><a href="Js_typed_array.html">Js_typed_array</a></li>
+<li><a href="Js_typed_array2.html">Js_typed_array2</a></li>
 <li><a href="Js_types.html">Js_types</a></li>
 <li><a href="Js_undefined.html">Js_undefined</a></li>
 <li><a href="Js_vector.html">Js_vector</a></li>
@@ -87,7 +91,7 @@
 <li><a href="Node_module.html">Node_module</a></li>
 <li><a href="Node_path.html">Node_path</a></li>
 <li><a href="Node_process.html">Node_process</a></li></ul></nav>
-<div class="navbar"><a class="pre" href="Dom_storage.html" title="Dom_storage">Previous</a>
+<div class="navbar"><a class="pre" href="Dom_storage2.html" title="Dom_storage2">Previous</a>
 &nbsp;<a class="up" href="index.html" title="Index">Up</a>
 &nbsp;<a class="post" href="Js_array.html" title="Js_array">Next</a>
 </div>
@@ -101,9 +105,9 @@
                     </div>
                      <div class="examples">
                     <pre class="example"> <pre class="codepre"><code class="code">        [| 1;2;3;4|]
-        |&gt; Js.Array.map (fun x -&gt; x + 1 )
-        |&gt; Js.Array.reduce (+) 0
-        |&gt; Js.log
+        |. Js.Array2.map (fun x -&gt; x + 1 )
+        |. Js.Array2.reduce (+) 0
+        |. Js.log
     </code></pre>  </pre>
                     </div>
                     </div>
@@ -284,7 +288,21 @@ Provide utilities for dealing with Js exceptions<br>
                 </div> <br>
 Provide bindings to Js array<br>
 
+<pre><span class="keyword">module</span> <a href="Js.Array2.html">Array2</a>: <code class="type"><a href="Js_array2.html">Js_array2</a></code></pre> <div class="info">                     
+                <div class="not-examples">
+                     
+                </div>
+                </div> <br>
+Provide bindings to Js array<br>
+
 <pre><span class="keyword">module</span> <a href="Js.String.html">String</a>: <code class="type"><a href="Js_string.html">Js_string</a></code></pre> <div class="info">                     
+                <div class="not-examples">
+                     
+                </div>
+                </div> <br>
+Provide bindings to JS string<br>
+
+<pre><span class="keyword">module</span> <a href="Js.String2.html">String2</a>: <code class="type"><a href="Js_string2.html">Js_string2</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                      
                 </div>
@@ -348,6 +366,13 @@ Provide bindings for JS <code class="code">Math</code> object<br>
 Provide utilities for <a href="Js.html#TYPEt"><code class="code">Js.t</code></a><br>
 
 <pre><span class="keyword">module</span> <a href="Js.Typed_array.html">Typed_array</a>: <code class="type"><a href="Js_typed_array.html">Js_typed_array</a></code></pre> <div class="info">                     
+                <div class="not-examples">
+                     
+                </div>
+                </div> <br>
+Provide bindings for JS typed array<br>
+
+<pre><span class="keyword">module</span> <a href="Js.TypedArray2.html">TypedArray2</a>: <code class="type"><a href="Js_typed_array2.html">Js_typed_array2</a></code></pre> <div class="info">                     
                 <div class="not-examples">
                      
                 </div>
