@@ -75,7 +75,7 @@ var getOcamldepFile = ()=>{
     if(useEnv){
         return `ocamldep.opt`
     } else{
-        return path.join(__dirname,'..','vendor','ocaml','bin','ocamldep.opt')
+        return path.join(__dirname,'..','native','bin','ocamldep.opt')
     }
 }
 

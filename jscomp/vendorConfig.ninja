@@ -1,4 +1,4 @@
 
-ocamlopt = ../vendor/ocaml/bin/ocamlopt.opt
-ocamllex = ../vendor/ocaml/bin/ocamllex.opt
-ocamlmklib = ../vendor/ocaml/bin/ocamlmklib
+ocamlopt = ../native/bin/ocamlopt.opt
+ocamllex = ../native/bin/ocamllex.opt
+ocamlmklib = ../native/bin/ocamlmklib

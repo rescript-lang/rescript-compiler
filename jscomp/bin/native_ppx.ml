@@ -157,7 +157,7 @@ end = struct
 (* The main OCaml version string has moved to ../VERSION *)
 let version = Sys.ocaml_version
 
-let standard_library_default = "/Users/hongbozhang/git/bucklescript/vendor/ocaml/lib/ocaml"
+let standard_library_default = "/Users/hongbozhang/git/bucklescript/native/lib/ocaml"
 
 let standard_library =
  
@@ -167,11 +167,11 @@ let standard_library =
 
     standard_library_default
 
-let standard_runtime = "/Users/hongbozhang/git/bucklescript/vendor/ocaml/bin/ocamlrun"
+let standard_runtime = "/Users/hongbozhang/git/bucklescript/native/bin/ocamlrun"
 let ccomp_type = "cc"
-let bytecomp_c_compiler = "gcc -O  -Wall -D_FILE_OFFSET_BITS=64 -D_REENTRANT -O "
-let bytecomp_c_libraries = "-lcurses -lpthread"
-let native_c_compiler = "gcc -O  -D_FILE_OFFSET_BITS=64 -D_REENTRANT"
+let bytecomp_c_compiler = "gcc -O  -Wall -D_FILE_OFFSET_BITS=64 -O "
+let bytecomp_c_libraries = ""
+let native_c_compiler = "gcc -O  -D_FILE_OFFSET_BITS=64"
 let native_c_libraries = ""
 let native_pack_linker = "ld -r -arch x86_64  -o "
 let ranlib = "ranlib"
@@ -227,7 +227,7 @@ let default_executable_name =
   | "Win32" | "Cygwin" -> "camlprog.exe"
   | _ -> "camlprog"
 
-let systhread_supported = true;;
+let systhread_supported = false;;
 
 let print_config oc =
   let p name valu = Printf.fprintf oc "%s: %s\n" name valu in
