@@ -1,9 +1,0 @@
-0: doesn't fail
-1: doesn't fail
-2: doesn't fail
-3: fails
-4: fails
--1: fails
-Trail: -1 4 3 2 1 0
-
-All tests succeeded.

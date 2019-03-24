@@ -1,7 +1,0 @@
-codegen
-parsecmm.ml
-parsecmm.mli
-lexcmm.ml
-*.s
-*.out
-*.out.dSYM
