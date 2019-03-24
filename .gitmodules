@@ -1,0 +1,3 @@
+[submodule "vendor/ocaml"]
+	path = vendor/ocaml
+	url = https://github.com/BuckleScript/ocaml
