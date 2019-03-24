@@ -187,7 +187,7 @@ function matchedCompilerExn() {
         console.log(output)
         console.log("Use the compiler above")
     } else {
-        console.log("No matched compiler found, may re-try")
+        console.log('version', output, "No matched compiler found, may re-try")
         throw ""
     }
 }
