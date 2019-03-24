@@ -183,11 +183,12 @@ function install(){
  */
 function matchedCompilerExn() {
     var output = cp.execSync('ocamlc.opt -v', { encoding: 'ascii' })
-    if (output.indexOf("4.02.3") >= 0) {
+    var neededVersion = require('./vendored_ocaml_version.js').getVersionPrefix()
+    if (output.indexOf(neededVersion) >= 0) {
         console.log(output)
         console.log("Use the compiler above")
     } else {
-        console.log('version', output, "No matched compiler found, may re-try")
+        console.log('version', output, 'needed version', neededVersion, "No matched compiler found, may re-try")
         throw ""
     }
 }
