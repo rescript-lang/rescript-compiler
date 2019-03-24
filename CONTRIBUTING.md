@@ -196,7 +196,7 @@ build all binaries and libraries and
 install the binaries into `bin` and lib files into `lib`.
 
 First it will try to generate `bin/config_whole_compiler.ml` based on existing
-OCaml installation, if it fails, it will try to invoke `buildocaml.sh` to
+OCaml installation, if it fails, it will try to invoke `node scripts/buildocaml.js` to
 install an OCaml compiler from scratch, and retry again.
 
 ### Publish Process

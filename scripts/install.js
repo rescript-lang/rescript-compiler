@@ -32,7 +32,7 @@ process.env.BS_RELEASE_BUILD = 'true'
 // Add vendor bin path
 // So that second try will work
 process.env.PATH =
-    path.join(__dirname, '..', 'vendor', 'ocaml', 'bin') +
+    path.join(__dirname, '..', 'native','bin') +
     path.delimiter +
     process.env.PATH
 
@@ -200,7 +200,7 @@ function tryToProvideOCamlCompiler() {
     } catch (e) {
         console.log('Build a local version of OCaml compiler, it may take a couple of minutes')
         try {
-            cp.execFileSync(path.join(__dirname, 'buildocaml.sh'))
+            require('./buildocaml.js').build()
         } catch (e) {
             console.log(e.stdout.toString());
             console.log(e.stderr.toString());
