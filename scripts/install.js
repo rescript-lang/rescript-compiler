@@ -32,7 +32,7 @@ process.env.BS_RELEASE_BUILD = 'true'
 // Add vendor bin path
 // So that second try will work
 process.env.PATH =
-    path.join(__dirname, '..', 'vendor', 'ocaml', 'bin') +
+    path.join(__dirname, '..', 'native','bin') +
     path.delimiter +
     process.env.PATH
 
@@ -183,11 +183,12 @@ function install(){
  */
 function matchedCompilerExn() {
     var output = cp.execSync('ocamlc.opt -v', { encoding: 'ascii' })
-    if (output.indexOf("4.02.3") >= 0) {
+    var neededVersion = require('./vendored_ocaml_version.js').getVersionPrefix()
+    if (output.indexOf(neededVersion) >= 0) {
         console.log(output)
         console.log("Use the compiler above")
     } else {
-        console.log("No matched compiler found, may re-try")
+        console.log('version', output, 'needed version', neededVersion, "No matched compiler found, may re-try")
         throw ""
     }
 }
@@ -200,7 +201,7 @@ function tryToProvideOCamlCompiler() {
     } catch (e) {
         console.log('Build a local version of OCaml compiler, it may take a couple of minutes')
         try {
-            cp.execFileSync(path.join(__dirname, 'buildocaml.sh'))
+            require('./buildocaml.js').build()
         } catch (e) {
             console.log(e.stdout.toString());
             console.log(e.stderr.toString());
