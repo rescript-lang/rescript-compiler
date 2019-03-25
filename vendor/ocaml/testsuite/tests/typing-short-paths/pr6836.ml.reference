@@ -1,7 +1,0 @@
-
-# type t = [ `A | `B ]
-# type 'a u = t
-# val a : [< int u > `A ] = `A
-#   type 'a s = 'a
-# val b : [< t > `B ] = `B
-# 
