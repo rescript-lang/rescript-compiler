@@ -14,29 +14,36 @@ OCAML_SRC_BYTECOMP=$NATIVE_OCAML_PATH/bytecomp
 OCAML_SRC_DRIVER=$NATIVE_OCAML_PATH/driver
 OCAML_SRC_TOOLS=$NATIVE_OCAML_PATH/tools   
 includes = -I stubs -I ext -I common -I syntax -I depends -I core -I super_errors -I outcome_printer -I bsb -I ounit -I ounit_tests -I main
-build snapshot: phony  ../lib/whole_compiler.ml ../lib/bsppx.ml ../lib/bsdep.ml ../lib/bsb_helper.ml ../lib/bsb.ml ../lib/bspp.ml bin/all_ounit_tests.ml
+SNAP=../lib/$snapshot_path
 
-build ../lib/whole_compiler.ml: bspack | ./bin/bspack.exe
+build snapshot: phony  $SNAP/whole_compiler.ml $SNAP/bsppx.ml $SNAP/bsdep.ml $SNAP/bsb_helper.ml $SNAP/bsb.ml $SNAP/bspp.ml bin/all_ounit_tests.ml
+
+build $SNAP/whole_compiler.ml: bspack | ./bin/bspack.exe
     flags = ${releaseMode} -bs-MD -module-alias Config=Config_whole_compiler -bs-exclude-I config  -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I $OCAML_SRC_TYPING -I $OCAML_SRC_BYTECOMP -I $OCAML_SRC_DRIVER   ${includes}
     main = Js_main
 
 
-build ../lib/bsppx.ml: bspack | ./bin/bspack.exe
+build $SNAP/bsppx.ml: bspack | ./bin/bspack.exe
     flags =  ${releaseMode} -bs-MD  -module-alias Config=Config_whole_compiler  -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING  -I stubs -I common -I ext -I syntax -I core -I main 
     main = Bsppx_main
 
 
-build ../lib/bsdep.ml: bspack | ./bin/bspack.exe
+build $SNAP/bsdep.ml: bspack | ./bin/bspack.exe
     flags = -D BS_OCAMLDEP=true  ${releaseMode} -bs-MD  -module-alias Config=Config_whole_compiler   -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I $OCAML_SRC_DRIVER -I $OCAML_SRC_TOOLS -I common -I ext -I syntax -I depends -I core -I stubs -I main 
     main = Ocamldep
 
-build ../lib/bsb_helper.ml: bspack | ./bin/bspack.exe
+build $SNAP/bsb_helper.ml: bspack | ./bin/bspack.exe
      flags = -bs-MD ${releaseMode}   -I stubs -I common -I ext -I syntax -I depends -I bsb  -I main 
      main = Bsb_helper_main 
 
-build ../lib/bsb.ml: bspack | ./bin/bspack.exe
+build $SNAP/bsb.ml: bspack | ./bin/bspack.exe
      flags =   -D BS_MIN_LEX_DEPS=true -bs-MD ${releaseMode} -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I stubs -I common -I ext -I syntax -I depends -I bsb -I ext -I main 
      main = Bsb_main 
+
+
+build $SNAP/bspp.ml: bspack | ./bin/bspack.exe
+     flags = -D BS_MIN_LEX_DEPS=true ${releaseMode} -bs-MD -module-alias Config=Config_whole_compiler   -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING?parser   -I common -I ext -I syntax -I depends -I bspp -I core -I main 
+     main = Bspp_main 
 
 build ./bin/bsb_native.ml: bspack | ./bin/bspack.exe
      flags =   -D BS_MIN_LEX_DEPS=true -D BS_NATIVE=true -bs-MD ${releaseMode} -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I stubs -I common -I ext -I syntax -I depends -I bsb -I ext -I main 
@@ -50,10 +57,6 @@ rule bsbnative
     command = $ocamlopt -w -a  unix.cmxa str.cmxa  ./stubs/ext_basic_hash_stubs.c $in -o $out
 # only check if it compiles     
 build ./bin/bsb_native.exe: bsbnative ./bin/bsb_native.ml
-
-build ../lib/bspp.ml: bspack | ./bin/bspack.exe
-     flags = -D BS_MIN_LEX_DEPS=true ${releaseMode} -bs-MD -module-alias Config=Config_whole_compiler   -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING?parser   -I common -I ext -I syntax -I depends -I bspp -I core -I main 
-     main = Bspp_main 
 
 build bin/all_ounit_tests.ml: bspack | ./bin/bspack.exe
     flags =  -bs-MD    -I ounit -I ounit_tests  -I stubs -I bsb -I common -I ext -I syntax -I depends -I bspp -I core -I main

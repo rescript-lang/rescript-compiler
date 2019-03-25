@@ -1,4 +1,4 @@
-../lib/bsb.ml:
+../lib/4.02.3+BS/bsb.ml:
 ./bsb/bsb_build_schemas.ml
 ./bsb/bsb_build_util.ml
 ./bsb/bsb_build_util.mli
