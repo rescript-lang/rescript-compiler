@@ -269,7 +269,7 @@ function provideCompiler() {
         // under windows require '.exe'
         var releaseNinja = `
 ocamlopt = ocamlopt.opt 
-ext = exe
+ext = .exe
 INCL= ${ocamlVersion.includes('4.02') ? '4.02.3+BS' : '4.06.1+BS'}
 include body.ninja        
 `
