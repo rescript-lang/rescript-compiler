@@ -15,7 +15,7 @@ var jscomp = path.join(__dirname,'..','jscomp')
 var runtime_prefix = path.relative(jscomp,runtime_dir)
 var others_prefix = path.relative(jscomp, others_dir)
 var ocamldoc = 
-        path.join(__dirname,'..','vendor','ocaml','bin','ocamldoc.opt')
+        path.join(__dirname,'..','native','bin','ocamldoc.opt')
 
 /**
  * 
@@ -70,7 +70,7 @@ function main() {
 
         var hidden_modules = ``
         // hidden_modules =  `-hide ${hidden_list.join(',')}`
-        // var ocamldoc = path.join(__dirname,'..','vendor','ocaml','ocamldoc','ocamldoc.opt')
+
         var prefix_flags = `${ocamldoc}  ${generator} ${hidden_modules} -w -40 -nostdlib -nopervasives  -I ${others_dir} -I ${runtime_dir} -open Bs_stdlib_mini -charset utf-8  -intro ${intro} -sort -ppx ${bsppx}  -d ${api_doc_dir}`
 
         // -html it is weird

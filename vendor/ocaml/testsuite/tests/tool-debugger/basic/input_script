@@ -1,5 +1,0 @@
-set arguments arg1 arg2
-environment foo=bar
-environment foo=notbar
-run
-quit

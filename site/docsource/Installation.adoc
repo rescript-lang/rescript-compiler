@@ -31,9 +31,7 @@ to your `$(PATH)` (e.g. `PATH=$(pwd)/bin:$PATH`).
 .Build Vendored OCaml compiler
 [source,sh]
 -----------
-cd bucklescript/vendor/ocaml
-./configure -prefix `pwd`
-make world && make install
+node scripts/buildocaml.js
 -----------
 
 .Build BuckleScript compiler and its toolchain

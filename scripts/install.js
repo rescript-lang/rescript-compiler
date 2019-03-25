@@ -178,17 +178,20 @@ function install(){
         return y.ext === '.ml' || y.ext === '.mli' || y.ext.includes('cm')
     })
 }
+
+var ocamlVersion = require('./vendored_ocaml_version.js').getVersionPrefix()
+
 /**
  * raise an exception if not matched
  */
 function matchedCompilerExn() {
     var output = cp.execSync('ocamlc.opt -v', { encoding: 'ascii' })
-    var neededVersion = require('./vendored_ocaml_version.js').getVersionPrefix()
-    if (output.indexOf(neededVersion) >= 0) {
+
+    if (output.indexOf(ocamlVersion) >= 0) {
         console.log(output)
         console.log("Use the compiler above")
     } else {
-        console.log('version', output, 'needed version', neededVersion, "No matched compiler found, may re-try")
+        console.log('version', output, 'needed version', ocamlVersion, "No matched compiler found, may re-try")
         throw ""
     }
 }
@@ -237,6 +240,14 @@ function checkPrebuiltBscCompiler() {
 }
 
 function buildLibs(){
+    var releaseNinja = `
+stdlib = ${ocamlVersion.includes('4.06')? 'stdlib-406' : 'stdlib-402'}
+subninja runtime/release.ninja
+subninja others/release.ninja
+subninja $stdlib/release.ninja
+build all: phony runtime others $stdlib
+`
+    fs.writeFileSync(path.join(jscomp_dir,'release.ninja'),releaseNinja,'ascii')
     cp.execFileSync(ninja_bin_output, [ "-f", "release.ninja", "-t", "clean"], { cwd: jscomp_dir, stdio: [0, 1, 2] , shell: false})
     cp.execFileSync(ninja_bin_output, [ "-f", "release.ninja"], { cwd: jscomp_dir, stdio: [0, 1, 2] , shell: false})
     console.log('Build finished')
@@ -256,7 +267,14 @@ function provideCompiler() {
         tryToProvideOCamlCompiler()
         // Note this ninja file only works under *nix due to the suffix
         // under windows require '.exe'
-        cp.execFileSync(ninja_bin_output, { cwd: lib_dir, stdio: [0, 1, 2] })
+        var releaseNinja = `
+ocamlopt = ocamlopt.opt 
+ext = .exe
+INCL= ${ocamlVersion.includes('4.02') ? '4.02.3+BS' : '4.06.1+BS'}
+include body.ninja        
+`
+        fs.writeFileSync(path.join(lib_dir,'release.ninja'),releaseNinja,'ascii')
+        cp.execFileSync(ninja_bin_output, ['-f', 'release.ninja'], { cwd: lib_dir, stdio: [0, 1, 2] })
 
     }    
 }

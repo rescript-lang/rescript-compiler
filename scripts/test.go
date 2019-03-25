@@ -63,7 +63,7 @@ func checkFileExist(f string) bool{
 }
 // Avoid rebuilding OCaml again
 func init() {
-	vendorOCamlPath, _ := filepath.Abs(filepath.Join(".", "vendor", "ocaml", "bin"))
+	vendorOCamlPath, _ := filepath.Abs(filepath.Join(".", "native", "bin"))
 	os.Setenv("PATH",
 		vendorOCamlPath+string(os.PathListSeparator)+os.Getenv("PATH"))
 	var extension string 	

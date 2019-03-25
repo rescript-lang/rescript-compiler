@@ -1,0 +1,3 @@
+[submodule "ocaml"]
+	path = ocaml
+	url = https://github.com/BuckleScript/ocaml

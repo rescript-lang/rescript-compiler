@@ -1,3 +1,0 @@
-Fatal error: exception Backtrace.Error("c")
-Raised at file "backtrace.ml", line 25, characters 26-37
-Called from file "backtrace.ml", line 29, characters 9-25
