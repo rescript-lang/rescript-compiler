@@ -60,8 +60,8 @@ function prepare() {
     e(`make bin/jsoo_reactjs_jsx_ppx_v2.ml`)
 
     e(`ocamlc.opt -w -30-40 -no-check-prims -o jsoo_reactjs_jsx_ppx_v2.byte -I +compiler-libs ocamlcommon.cma bin/jsoo_reactjs_jsx_ppx_v2.ml`)
-    // FIXME: vendor path 
-    var compilerlib = '../vendor/ocaml/lib/ocaml/compiler-libs'
+
+    var compilerlib = '../native/lib/ocaml/compiler-libs'
     e(`js_of_ocaml --disable share --toplevel +weak.js +toplevel.js jsoo_reactjs_jsx_ppx_v2.byte -I bin -I ${compilerlib} -o ${playground}/jsoo_reactjs_jsx_ppx_v2.js`)
 
 }

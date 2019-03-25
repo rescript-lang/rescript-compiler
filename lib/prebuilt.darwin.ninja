@@ -1,7 +1,7 @@
 
 
 
-ocamlopt = ../vendor/ocaml/bin/ocamlopt.opt
+ocamlopt = ../native/bin/ocamlopt.opt
 # ocamlopt = ocamlopt.opt
 # In general, we relies on its dynamic behavior for finding a proper ocamlopt
 # for prebuilt, it seems better locked

@@ -4,8 +4,8 @@ rule bspack
     depfile = $out.d
     generator = true
 
-# FIXME: vendor path
-NATIVE_OCAML_PATH=../vendor/ocaml/
+
+NATIVE_OCAML_PATH=../ocaml/
 
 OCAML_SRC_UTILS=$NATIVE_OCAML_PATH/utils
 OCAML_SRC_PARSING=$NATIVE_OCAML_PATH/parsing
