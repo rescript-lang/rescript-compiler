@@ -4,13 +4,15 @@ rule bspack
     depfile = $out.d
     generator = true
 
+# FIXME: vendor path
+NATIVE_OCAML_PATH=../vendor/ocaml/
 
-OCAML_SRC_UTILS=../vendor/ocaml/utils
-OCAML_SRC_PARSING=../vendor/ocaml/parsing
-OCAML_SRC_TYPING=../vendor/ocaml/typing
-OCAML_SRC_BYTECOMP=../vendor/ocaml/bytecomp
-OCAML_SRC_DRIVER=../vendor/ocaml/driver
-OCAML_SRC_TOOLS=../vendor/ocaml/tools   
+OCAML_SRC_UTILS=$NATIVE_OCAML_PATH/utils
+OCAML_SRC_PARSING=$NATIVE_OCAML_PATH/parsing
+OCAML_SRC_TYPING=$NATIVE_OCAML_PATH/typing
+OCAML_SRC_BYTECOMP=$NATIVE_OCAML_PATH/bytecomp
+OCAML_SRC_DRIVER=$NATIVE_OCAML_PATH/driver
+OCAML_SRC_TOOLS=$NATIVE_OCAML_PATH/tools   
 includes = -I stubs -I ext -I common -I syntax -I depends -I core -I super_errors -I outcome_printer -I bsb -I ounit -I ounit_tests -I main
 build snapshot: phony  ../lib/whole_compiler.ml ../lib/bsppx.ml ../lib/bsdep.ml ../lib/bsb_helper.ml ../lib/bsb.ml ../lib/bspp.ml bin/all_ounit_tests.ml
 
