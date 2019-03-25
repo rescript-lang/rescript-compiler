@@ -1088,7 +1088,15 @@ subninja others/build.ninja
 subninja $stdlib/build.ninja
 subninja test/build.ninja
 build all: phony runtime others $stdlib test
-`)
+`
+)
+        writeFile(path.join(jscompDir, '..', 'lib', 'build.ninja'), `
+ocamlopt = ocamlopt.opt 
+ext = exe
+INCL= ${version6()?'4.06.1+BS' : '4.02.3+BS'}
+include body.ninja               
+`) 
+
     }
     runtimeNinja()
     stdlibNinja(true)

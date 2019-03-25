@@ -267,7 +267,14 @@ function provideCompiler() {
         tryToProvideOCamlCompiler()
         // Note this ninja file only works under *nix due to the suffix
         // under windows require '.exe'
-        cp.execFileSync(ninja_bin_output, { cwd: lib_dir, stdio: [0, 1, 2] })
+        var releaseNinja = `
+ocamlopt = ocamlopt.opt 
+ext = exe
+INCL= ${ocamlVersion.includes('4.02') ? '4.02.3+BS' : '4.06.1+BS'}
+include body.ninja        
+`
+        fs.writeFileSync(path.join(lib_dir,'release.ninja'),releaseNinja,'ascii')
+        cp.execFileSync(ninja_bin_output, ['-f', 'release.ninja'], { cwd: lib_dir, stdio: [0, 1, 2] })
 
     }    
 }
