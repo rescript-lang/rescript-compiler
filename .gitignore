@@ -133,3 +133,4 @@ jscomp/outcome_printer/reason_syntax_util.mli
 native/bin
 native/lib
 native/main
+vendor/ocaml
