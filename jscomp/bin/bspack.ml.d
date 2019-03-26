@@ -2,6 +2,8 @@ bin/bspack.ml:
 ../ocaml/parsing/ast_helper.ml
 ../ocaml/parsing/ast_helper.mli
 ../ocaml/parsing/asttypes.mli
+../ocaml/parsing/builtin_attributes.ml
+../ocaml/parsing/builtin_attributes.mli
 ../ocaml/parsing/depend.ml
 ../ocaml/parsing/depend.mli
 ../ocaml/parsing/docstrings.ml
@@ -19,10 +21,18 @@ bin/bspack.ml:
 ../ocaml/parsing/parsetree.mli
 ../ocaml/parsing/syntaxerr.ml
 ../ocaml/parsing/syntaxerr.mli
+../ocaml/utils/arg_helper.ml
+../ocaml/utils/arg_helper.mli
 ../ocaml/utils/clflags.ml
 ../ocaml/utils/clflags.mli
+../ocaml/utils/identifiable.ml
+../ocaml/utils/identifiable.mli
 ../ocaml/utils/misc.ml
 ../ocaml/utils/misc.mli
+../ocaml/utils/numbers.ml
+../ocaml/utils/numbers.mli
+../ocaml/utils/profile.ml
+../ocaml/utils/profile.mli
 ../ocaml/utils/terminfo.ml
 ../ocaml/utils/terminfo.mli
 ../ocaml/utils/warnings.ml

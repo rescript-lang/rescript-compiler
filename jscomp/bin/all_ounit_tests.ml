@@ -1729,136 +1729,6 @@ let escaped s =
   end
 
 end
-module Ext_char : sig 
-#1 "ext_char.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-(** Extension to Standard char module, avoid locale sensitivity *)
-
-val escaped : char -> string
-
-
-val valid_hex : char -> bool
-
-val is_lower_case : char -> bool
-
-val uppercase_ascii : char -> char
-
-val lowercase_ascii : char -> char
-end = struct
-#1 "ext_char.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-(** {!Char.escaped} is locale sensitive in 4.02.3, fixed in the trunk,
-    backport it here
- *)
-
-module Unsafe = struct 
-    external bytes_unsafe_set : string -> int -> char -> unit
-                           = "%string_unsafe_set"
-    external string_create: int -> string = "caml_create_string"
-    external unsafe_chr: int -> char = "%identity"
-end 
-let escaped ch = 
-  let open Unsafe in 
-  match ch with 
-  | '\'' -> "\\'"
-  | '\\' -> "\\\\"
-  | '\n' -> "\\n"
-  | '\t' -> "\\t"
-  | '\r' -> "\\r"
-  | '\b' -> "\\b"
-  | ' ' .. '~' as c ->
-      let s = string_create 1 in
-      bytes_unsafe_set s 0 c;
-      s
-  | c ->
-      let n = Char.code c in
-      let s = string_create 4 in
-      bytes_unsafe_set s 0 '\\';
-      bytes_unsafe_set s 1 (unsafe_chr (48 + n / 100));
-      bytes_unsafe_set s 2 (unsafe_chr (48 + (n / 10) mod 10));
-      bytes_unsafe_set s 3 (unsafe_chr (48 + n mod 10));
-      s
-
-
-let valid_hex x = 
-    match x with 
-    | '0' .. '9'
-    | 'a' .. 'f'
-    | 'A' .. 'F' -> true
-    | _ -> false 
-
-
-
-let is_lower_case c =
-  (c >= 'a' && c <= 'z')
-  || (c >= '\224' && c <= '\246')
-  || (c >= '\248' && c <= '\254')    
-let uppercase_ascii =
-
-    Char.uppercase
-      
-
-let lowercase_ascii = 
-
-    Char.lowercase
-      
-
-end
 module Ext_pervasives : sig 
 #1 "ext_pervasives.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -2184,7 +2054,7 @@ val replace_backward_slash : string -> string
 val empty : string 
 
 
-external compare : string -> string -> int = "caml_string_length_based_compare" "noalloc";;
+external compare : string -> string -> int = "caml_string_length_based_compare" [@@noalloc];;  
   
 val single_space : string
 
@@ -2589,8 +2459,8 @@ let replace_backward_slash (x : string)=
 
 let empty = ""
 
-    
-external compare : string -> string -> int = "caml_string_length_based_compare" "noalloc";;
+
+external compare : string -> string -> int = "caml_string_length_based_compare" [@@noalloc];;    
 
 let single_space = " "
 let single_colon = ":"
@@ -2705,16 +2575,12 @@ let capitalize_ascii (s : string) : string =
 
 let uncapitalize_ascii =
 
-    String.uncapitalize
+    String.uncapitalize_ascii
       
 
 
-
-
-
-let lowercase_ascii (s : string) = 
-    Bytes.unsafe_to_string 
-      (Bytes.map Ext_char.lowercase_ascii (Bytes.unsafe_of_string s))
+ 
+let lowercase_ascii = String.lowercase_ascii
 
 
 
@@ -6052,6 +5918,110 @@ let () =
     )
 
 end
+module Ext_char : sig 
+#1 "ext_char.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+(** Extension to Standard char module, avoid locale sensitivity *)
+
+val escaped : char -> string
+
+
+val valid_hex : char -> bool
+
+val is_lower_case : char -> bool
+
+val uppercase_ascii : char -> char
+
+val lowercase_ascii : char -> char
+end = struct
+#1 "ext_char.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+(** {!Char.escaped} is locale sensitive in 4.02.3, fixed in the trunk,
+    backport it here
+ *)
+ 
+let escaped = Char.escaped
+
+
+let valid_hex x = 
+    match x with 
+    | '0' .. '9'
+    | 'a' .. 'f'
+    | 'A' .. 'F' -> true
+    | _ -> false 
+
+
+
+let is_lower_case c =
+  (c >= 'a' && c <= 'z')
+  || (c >= '\224' && c <= '\246')
+  || (c >= '\248' && c <= '\254')    
+let uppercase_ascii =
+
+    Char.uppercase_ascii
+      
+
+let lowercase_ascii = 
+
+    Char.lowercase_ascii
+      
+
+end
 module Ext_sys : sig 
 #1 "ext_sys.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -6122,8 +6092,7 @@ let is_directory_no_exn f =
 let is_windows_or_cygwin = Sys.win32 || Sys.cygwin
 
 
-let getenv_opt s = 
-  try Some (Sys.getenv s) with Not_found -> None
+let getenv_opt = Sys.getenv_opt
 
 end
 module Literals : sig 
@@ -8900,25 +8869,26 @@ module Bs_hash_stubs
 = struct
 #1 "bs_hash_stubs.ml"
 
- 
-external hash_string :  string -> int = "caml_bs_hash_string" "noalloc";;
+ (* not suporting nested if here..*)
+external hash_string :  string -> int = "caml_bs_hash_string" [@@noalloc];;
 
-external hash_string_int :  string -> int  -> int = "caml_bs_hash_string_and_int" "noalloc";;
+external hash_string_int :  string -> int  -> int = "caml_bs_hash_string_and_int" [@@noalloc];;
 
-external hash_string_small_int :  string -> int  -> int = "caml_bs_hash_string_and_small_int" "noalloc";;
+external hash_string_small_int :  string -> int  -> int = "caml_bs_hash_string_and_small_int" [@@noalloc];;
 
-external hash_stamp_and_name : int -> string -> int = "caml_bs_hash_stamp_and_name" "noalloc";;
+external hash_stamp_and_name : int -> string -> int = "caml_bs_hash_stamp_and_name" [@@noalloc];;
 
-external hash_small_int : int -> int = "caml_bs_hash_small_int" "noalloc";;
+external hash_small_int : int -> int = "caml_bs_hash_small_int" [@@noalloc];;
 
-external hash_int :  int  -> int = "caml_bs_hash_int" "noalloc";;
+external hash_int :  int  -> int = "caml_bs_hash_int" [@@noalloc];;
 
-external string_length_based_compare : string -> string -> int  = "caml_string_length_based_compare" "noalloc";;
+external string_length_based_compare : string -> string -> int  = "caml_string_length_based_compare" [@@noalloc];;
 
 
 external    
     int_unsafe_blit : 
-    int array -> int -> int array -> int -> int -> unit = "caml_int_array_blit" "noalloc";;
+    int array -> int -> int array -> int -> int -> unit = "caml_int_array_blit" [@@noalloc];;
+  
     
 
 end
@@ -16611,14 +16581,11 @@ module Ast_compatible : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-type poly_var_label = string 
-type arg_label = string 
-type label = 
-  | Nolabel
-  | Labelled of string
-  | Optional of string
-val convert: arg_label -> label
+ 
+type poly_var_label = Asttypes.label Asttypes.loc
+type arg_label = Asttypes.arg_label
+type label = arg_label
+external convert: arg_label -> label = "%identity"
 
 
 
@@ -16768,9 +16735,9 @@ val mk_fn_type:
   core_type
 
 type object_field = 
-   
-  string * attributes * core_type
-val object_field : string ->  attributes -> core_type -> object_field  
+ 
+  Parsetree.object_field 
+val object_field : Asttypes.label Asttypes.loc ->  attributes -> core_type -> object_field
   
 
 val hash_label : poly_var_label -> int 
@@ -16811,27 +16778,16 @@ open Parsetree
 let default_loc = Location.none
 
  
-type poly_var_label = string 
-type arg_label = string
-type label = 
+type poly_var_label = Asttypes.label Asttypes.loc
+
+type arg_label = Asttypes.arg_label = 
   | Nolabel
   | Labelled of string
   | Optional of string
-let no_label : arg_label = ""
-let is_arg_label_simple s = (s : arg_label) = no_label  
-
-let is_optional_label l =
-  String.length l > 0 && l.[0] = '?'
-
-(** for
-       [x:t] -> "x"
-       [?x:t] -> "?x"
-*)  
-let convert l : label =
-  if l = "" then Nolabel else
-  if is_optional_label l
-  then Optional (String.sub l 1 (String.length l - 1))
-  else Labelled l  
+let no_label : arg_label = Nolabel
+let is_arg_label_simple (s : arg_label) = s = (Nolabel : arg_label)  
+type label = arg_label 
+external convert : arg_label -> label = "%identity"
 
 
 let arrow ?(loc=default_loc) ?(attrs = []) a b  =
@@ -16912,7 +16868,7 @@ let const_exp_string
   {
     pexp_loc = loc; 
     pexp_attributes = attrs;
-    pexp_desc = Pexp_constant(Const_string(s,delimiter))
+    pexp_desc = Pexp_constant(Pconst_string(s,delimiter))
   }
 
 
@@ -16923,33 +16879,43 @@ let const_exp_int
   {
     pexp_loc = loc; 
     pexp_attributes = attrs;
-    pexp_desc = Pexp_constant(Const_int s)
+    pexp_desc = Pexp_constant(Pconst_integer (string_of_int s, None))
   }
-
-
 
 
 let apply_labels
  ?(loc = default_loc) 
  ?(attrs = [])
-  fn args : expression = 
+  fn (args : (string * expression) list) : expression = 
   { pexp_loc = loc; 
     pexp_attributes = attrs;
     pexp_desc = 
       Pexp_apply(
         fn, 
-        args ) }
+        Ext_list.map args (fun (l,a) -> Asttypes.Labelled l, a)   ) }
 
-let object_ = Ast_helper.Typ.object_
-
+let object_ 
+  ?(loc= default_loc)
+  ?(attrs = [])
+  (fields : (string * attributes * core_type) list)
+  (* FIXME after upgrade *)
+  flg : core_type = 
+  {
+    ptyp_desc = 
+      Ptyp_object(
+        Ext_list.map fields (fun (a,b,c) -> 
+          Parsetree.Otag ({txt = a; loc = c.ptyp_loc},b,c)),flg);
+    ptyp_loc = loc;
+    ptyp_attributes = attrs
+  }
 
  
 
 let label_arrow ?(loc=default_loc) ?(attrs=[]) s a b : core_type = 
   {
       ptyp_desc = Ptyp_arrow(
-
-      s
+ 
+      Asttypes.Labelled s
       
       ,
       a,
@@ -16961,8 +16927,8 @@ let label_arrow ?(loc=default_loc) ?(attrs=[]) s a b : core_type =
 let opt_arrow ?(loc=default_loc) ?(attrs=[]) s a b : core_type = 
   {
       ptyp_desc = Ptyp_arrow( 
-
-        "?" ^ s
+ 
+        Asttypes.Optional s
         
         ,
         a,
@@ -16975,6 +16941,8 @@ let rec_type_str ?(loc=default_loc)  tds : structure_item =
   {
     pstr_loc = loc;
     pstr_desc = Pstr_type ( 
+ 
+      Recursive,
       
       tds)
   }
@@ -16983,6 +16951,8 @@ let nonrec_type_str ?(loc=default_loc)  tds : structure_item =
   {
     pstr_loc = loc;
     pstr_desc = Pstr_type ( 
+ 
+      Nonrecursive,
       
       tds)
   }  
@@ -16991,6 +16961,8 @@ let rec_type_sig ?(loc=default_loc)  tds : signature_item =
   {
     psig_loc = loc;
     psig_desc = Psig_type ( 
+ 
+      Recursive,
       
       tds)
   }
@@ -17000,6 +16972,8 @@ let nonrec_type_sig ?(loc=default_loc)  tds : signature_item =
   {
     psig_loc = loc;
     psig_desc = Psig_type ( 
+ 
+      Nonrecursive,
       
       tds)
   }  
@@ -17026,17 +17000,19 @@ let const_exp_string_list_as_array xs =
   )
 
 type object_field = 
-   
-  string * attributes * core_type
+ 
+  Parsetree.object_field 
   
 
 let object_field   l attrs ty = 
+
+  Parsetree.Otag 
  (l,attrs,ty)  
 
 
-
-let hash_label : poly_var_label -> int = Ext_pervasives.hash_variant 
-external label_of_name : poly_var_label -> string = "%identity"
+ 
+let hash_label (x : poly_var_label) : int = Ext_pervasives.hash_variant x.txt
+let label_of_name (x : poly_var_label) : string = x.txt
 
 
 type args  = 
@@ -17677,7 +17653,7 @@ let transform (e : Parsetree.expression) s delim : Parsetree.expression =
         { e with pexp_desc =
                        Pexp_constant (
 
-            Const_string
+            Pconst_string
 
                          (js_str, escaped))}
     else if Ext_string.equal delim unescaped_j_delimiter then
