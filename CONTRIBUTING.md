@@ -17,6 +17,12 @@ Prerequisites:
 node scripts/buildocaml.js
 ```
 
+The codebase recently moved from keeping its version of OCaml in a subtree to using git submodules. If you run into error on this step, executing the following can help:
+
+```
+git submodule update --init
+```
+
 ### Build everything in dev mode using vendored compiler
 
 ```
