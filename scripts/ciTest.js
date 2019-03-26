@@ -80,8 +80,11 @@ function main() {
         cp.execSync('which ocaml', { encoding: 'ascii' })
     console.log('OCaml:', output)
     var binDir = path.join(__dirname, '..','jscomp', 'bin')
+    fs.copyFileSync(path.join(__dirname,'..','lib',require('./buildocaml.js').getVersionPrefix(),'unstable','all_ounit_tests.ml'),
+        path.join(binDir,'all_ounit_tests.ml'))
+    
     if(ounitTest){
-        cp.execSync(`ocamlopt.opt -g -w -40-30 ../stubs/ext_basic_hash_stubs.c -I +compiler-libs ocamlcommon.cmxa unix.cmxa str.cmxa all_ounit_tests.mli all_ounit_tests.ml -o test.exe`,
+        cp.execSync(`ocamlopt.opt -g -w -40-30 ../stubs/ext_basic_hash_stubs.c -I +compiler-libs ocamlcommon.cmxa unix.cmxa str.cmxa all_ounit_tests.ml -o test.exe`,
             {
                 cwd: binDir,
                 stdio : [0,1,2]

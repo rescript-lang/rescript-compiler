@@ -15,7 +15,7 @@ function buildCompiler() {
   var content = `
 ocamlopt = ../native/${version}/bin/ocamlopt.opt
 ext = ${sys_extension}
-INCL = ${version.includes('4.06') ? '4.06.1+BS' : '4.02.3+BS'}
+INCL = ${version}
 include body.ninja
 `
   fs.writeFileSync(path.join(root,'lib',prebuilt),content,'ascii')

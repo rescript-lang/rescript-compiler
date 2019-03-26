@@ -1080,7 +1080,7 @@ build all: phony runtime others $stdlib test
         writeFile(path.join(jscompDir, 'build.ninja'), `
 ${getVendorConfigNinja()}
 stdlib = ${version6() ? `stdlib-406` : `stdlib-402`}
-snapshot_path = ${version6()? '4.06.1+BS' : '4.02.3+BS'}
+snapshot_path = ${require('./buildocaml.js').getVersionPrefix()}
 subninja compiler.ninja
 subninja snapshot.ninja
 subninja runtime/build.ninja

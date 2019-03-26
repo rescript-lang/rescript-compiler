@@ -271,7 +271,7 @@ function provideCompiler() {
         var releaseNinja = `
 ocamlopt = ocamlopt.opt 
 ext = .exe
-INCL= ${ocamlVersion.includes('4.02') ? '4.02.3+BS' : '4.06.1+BS'}
+INCL= ${require('./buildocaml.js').getVersionPrefix()}
 include body.ninja        
 `
         fs.writeFileSync(path.join(lib_dir,'release.ninja'),releaseNinja,'ascii')
