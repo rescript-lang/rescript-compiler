@@ -179,7 +179,7 @@ function install(){
     })
 }
 
-var ocamlVersion = require('./vendored_ocaml_version.js').getVersionPrefix()
+var ocamlVersion = require('./buildocaml.js').getVersionPrefix()
 
 /**
  * raise an exception if not matched

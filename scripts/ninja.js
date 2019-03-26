@@ -75,7 +75,7 @@ var getOcamldepFile = ()=>{
     if(useEnv){
         return `ocamldep.opt`
     } else{
-        return path.join(__dirname,'..','native','bin','ocamldep.opt')
+        return path.join(__dirname,'..','native',require('./buildocaml.js').getVersionPrefix(), 'bin','ocamldep.opt')
     }
 }
 
@@ -1067,7 +1067,7 @@ function updateRelease(){
 function updateDev(){
     if(useEnv){
         writeFile(path.join(jscompDir,'env.ninja'),`
-include envConfig.ninja
+${getEnnvConfigNinja()}
 stdlib = ${version6() ? `stdlib-406` : `stdlib-402`}
 subninja compilerEnv.ninja
 subninja runtime/env.ninja
@@ -1078,7 +1078,7 @@ build all: phony runtime others $stdlib test
 `)
     } else {
         writeFile(path.join(jscompDir, 'build.ninja'), `
-include vendorConfig.ninja
+${getVendorConfigNinja()}
 stdlib = ${version6() ? `stdlib-406` : `stdlib-402`}
 snapshot_path = ${version6()? '4.06.1+BS' : '4.02.3+BS'}
 subninja compiler.ninja
@@ -1138,6 +1138,24 @@ function setSortedToString(xs){
 }
 
 /**
+ * @returns {string}
+ */
+function getVendorConfigNinja(){
+    var prefix = `../native/${require('./buildocaml.js').getVersionPrefix()}/bin`
+    return `
+ocamlopt = ${prefix}/ocamlopt.opt
+ocamllex = ${prefix}/ocamllex.opt
+ocamlmklib = ${prefix}/ocamlmklib
+`
+}
+function getEnnvConfigNinja(){
+    return `
+ocamlopt = ocamlopt.opt    
+ocamllex = ocamllex.opt
+ocamlmklib = ocamlmklib
+`
+}
+/**
  * Note don't run `ninja -t clean -g`
  * Since it will remove generated ml file which has
  * an effect on depfile
@@ -1147,7 +1165,7 @@ function nativeNinja() {
     var sourceDirs = ['stubs', 'ext', 'common', 'syntax', 'depends', 'core', 'super_errors', 'outcome_printer', 'bsb', 'ounit', 'ounit_tests', 'main']
     var includes = sourceDirs.map(x => `-I ${x}`).join(' ')
     var cppoNative = `
-include ${useEnv ? 'envConfig.ninja' : 'vendorConfig.ninja'}
+${useEnv ? getEnnvConfigNinja() : getVendorConfigNinja()}
 rule link
     command =  $ocamlopt -g  -I +compiler-libs $flags $libs $in -o $out
 build ${cppoFile}: link ${cppoMonoFile}
