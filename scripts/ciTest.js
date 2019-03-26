@@ -80,7 +80,7 @@ function main() {
         cp.execSync('which ocaml', { encoding: 'ascii' })
     console.log('OCaml:', output)
     var binDir = path.join(__dirname, '..','jscomp', 'bin')
-    fs.copyFileSync(path.join(__dirname,'..','lib',require('./buildocaml.js').getVersionPrefix(),'unstable','all_ounit_tests.ml'),
+    fs.renameSync(path.join(__dirname,'..','lib',require('./buildocaml.js').getVersionPrefix(),'unstable','all_ounit_tests.ml'),
         path.join(binDir,'all_ounit_tests.ml'))
     
     if(ounitTest){
