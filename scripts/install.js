@@ -29,10 +29,11 @@ var is_windows = config.is_windows
 var sys_extension = config.sys_extension
 
 process.env.BS_RELEASE_BUILD = 'true'
+var ocamlVersion = require('./buildocaml.js').getVersionPrefix()
 // Add vendor bin path
 // So that second try will work
 process.env.PATH =
-    path.join(__dirname, '..', 'native','bin') +
+    path.join(__dirname, '..', 'native',ocamlVersion,'bin') +
     path.delimiter +
     process.env.PATH
 
@@ -179,7 +180,7 @@ function install(){
     })
 }
 
-var ocamlVersion = require('./buildocaml.js').getVersionPrefix()
+
 
 /**
  * raise an exception if not matched
