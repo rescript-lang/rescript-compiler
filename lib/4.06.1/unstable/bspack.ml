@@ -403,7 +403,7 @@ end = struct
 (**************************************************************************)
 
 (* The main OCaml version string has moved to ../VERSION *)
-let version = "4.06.2+BS"
+let version = "4.06.1+BS"
 let standard_library =
   Filename.concat (Filename.dirname Sys.executable_name)  "ocaml"
 let standard_library_default = standard_library
