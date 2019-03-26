@@ -51,7 +51,7 @@ var ninjaPath = ''
 
 function init(){
     var vendorOCamlPath = 
-        path.join(__dirname,'..','native','bin')
+        path.join(__dirname,'..','native', require('./buildocaml.js').getVersionPrefix(),'bin')
 
     process.env['PATH'] = 
         vendorOCamlPath + path.delimiter +  process.env['PATH']
