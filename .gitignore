@@ -89,6 +89,7 @@ odoc_gen/*.cmxs
 lib/prebuilt.ninja
 lib/release.ninja
 lib/build.ninja
+lib/copy.ninja
 jscomp/release.ninja
 jscomp/build.ninja
 jscomp/compiler.ninja
