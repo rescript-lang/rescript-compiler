@@ -218,9 +218,41 @@ function tryToProvideOCamlCompiler() {
     }
 }
 
+/**
+ * 
+ * @param {string} sys_extension 
+ * 
+ */
+function createCopyNinja(sys_extension){
+    var output = ''
+    switch(sys_extension){
+        case '.win32':
+            output += `
+rule cp
+    command = cmd /q /c copy $in $out 1>nul
+`
+            break
+        default:
+            output += `
+rule cp 
+    command = cp $in $out
+`
+            break
+    }
+    output += [
+        'bsc','bsb','bsb_helper','bsppx',
+        'refmt','reactjs_jsx_ppx_2'
+    ].map(function(x){
+        return `build ${x}.exe: cp ${x}${sys_extension}`
+    }).join('\n')
+    output += '\n'
+    return output
+}
+
 function copyPrebuiltCompilers() {
+    fs.writeFileSync(path.join(lib_dir,'copy.ninja'),createCopyNinja(sys_extension),'ascii')
     cp.execFileSync(ninja_bin_output,
-        ["-f", "copy" + sys_extension + ".ninja"],
+        ["-f", 'copy.ninja'],
         { cwd: lib_dir, stdio: [0, 1, 2] })
 }
 
