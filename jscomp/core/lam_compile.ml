@@ -1441,7 +1441,7 @@ and compile_prim (prim_info : Lam.prim_info) (lambda_cxt : Lam_compile_context.t
               | {block ; value = Some b} -> block,b
               | {value = None} -> assert false ) in
       let block, exp  =
-        Lam_compile_external_obj.assemble_args_obj labels args_expr in
+        Lam_compile_external_obj.assemble_obj_args labels args_expr in
       Js_output.output_of_block_and_expression lambda_cxt.continuation
         (Ext_list.concat_append args_block block) exp
 

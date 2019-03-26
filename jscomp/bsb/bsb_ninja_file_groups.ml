@@ -99,6 +99,7 @@ let emit_impl_build
     (package_specs : Bsb_package_specs.t)
     (group_dir_index : Bsb_dir_index.t) 
     oc 
+    ~has_checked_ppx
     ~bs_suffix
     ~no_intf_file:(no_intf_file : bool) 
     js_post_build_cmd
@@ -131,15 +132,17 @@ let emit_impl_build
     Bsb_ninja_util.output_build oc
       ~output:output_mlast
       ~input
+      ~implicit_deps:(if has_checked_ppx then [ "${ppx_checked_files}" ] else [])       
       ~rule:( if is_re then 
-                Bsb_rule.build_ast_and_module_sets_from_re
+                Bsb_ninja_rule.build_ast_and_module_sets_from_re
               else
-                Bsb_rule.build_ast_and_module_sets);
+                Bsb_ninja_rule.build_ast_and_module_sets);
     Bsb_ninja_util.output_build
       oc
       ~output:output_mlastd
       ~input:output_mlast
-      ~rule:Bsb_rule.build_bin_deps
+      ~rule:Bsb_ninja_rule.build_bin_deps
+      ~implicit_deps:(if has_checked_ppx then [ "${ppx_checked_files}" ] else [])       
       ?shadows:(if Bsb_dir_index.is_lib_dir group_dir_index then None
                 else Some [{Bsb_ninja_util.key = Bsb_build_schemas.bsb_dir_group ; 
                             op = 
@@ -155,8 +158,8 @@ let emit_impl_build
     in
     let rule , cm_outputs, deps =
       if no_intf_file then 
-        Bsb_rule.build_cmj_cmi_js, [file_cmi], []
-      else  Bsb_rule.build_cmj_js, []  , [file_cmi]
+        Bsb_ninja_rule.build_cmj_cmi_js, [file_cmi], []
+      else  Bsb_ninja_rule.build_cmj_js, []  , [file_cmi]
     in
     Bsb_ninja_util.output_build oc
       ~output:output_cmj
@@ -174,6 +177,7 @@ let emit_intf_build
     (group_dir_index : Bsb_dir_index.t)
     oc
     ~is_re
+    ~has_checked_ppx
     namespace
     filename_sans_extension
   : info =
@@ -199,12 +203,15 @@ let emit_intf_build
     ~input:(Bsb_config.proj_rel 
               (if is_re then filename_sans_extension ^ Literals.suffix_rei 
                else filename_sans_extension ^ Literals.suffix_mli))
-    ~rule:(if is_re then Bsb_rule.build_ast_and_module_sets_from_rei
-           else Bsb_rule.build_ast_and_module_sets);
+    ~rule:(if is_re then Bsb_ninja_rule.build_ast_and_module_sets_from_rei
+           else Bsb_ninja_rule.build_ast_and_module_sets)
+    ~implicit_deps:(if has_checked_ppx then [ "${ppx_checked_files}" ] else [])       
+    ;
   Bsb_ninja_util.output_build oc
     ~output:output_mliastd
     ~input:output_mliast
-    ~rule:Bsb_rule.build_bin_deps
+    ~rule:Bsb_ninja_rule.build_bin_deps
+    ~implicit_deps:(if has_checked_ppx then [ "${ppx_checked_files}" ] else [])       
     ?shadows:(if Bsb_dir_index.is_lib_dir group_dir_index  then None
               else Some [{
                   key = Bsb_build_schemas.bsb_dir_group; 
@@ -215,7 +222,7 @@ let emit_intf_build
     ~output:output_cmi
     ~shadows:common_shadows
     ~input:output_mliast
-    ~rule:Bsb_rule.build_cmi
+    ~rule:Bsb_ninja_rule.build_cmi
     ;
   [output_mliastd]
 
@@ -225,6 +232,7 @@ let handle_module_info
     (group_dir_index : Bsb_dir_index.t)
     (package_specs : Bsb_package_specs.t) 
     js_post_build_cmd
+    ~has_checked_ppx
     ~bs_suffix
     oc  module_name 
     ( {name_sans_extension = input} as module_info : Bsb_db.module_info)
@@ -233,10 +241,11 @@ let handle_module_info
   match module_info.ml_info, module_info.mli_info with
   | Ml_source (impl_is_re,_), 
     Mli_source(intf_is_re,_) ->
-    emit_impl_build 
+    emit_impl_build       
       package_specs
       group_dir_index
       oc 
+      ~has_checked_ppx
       ~bs_suffix
       ~no_intf_file:false
       ~is_re:impl_is_re
@@ -247,6 +256,7 @@ let handle_module_info
       package_specs
       group_dir_index
       oc         
+      ~has_checked_ppx
       ~is_re:intf_is_re
       namespace
       input 
@@ -255,6 +265,7 @@ let handle_module_info
       package_specs
       group_dir_index
       oc 
+      ~has_checked_ppx
       ~bs_suffix
       ~no_intf_file:true
       js_post_build_cmd      
@@ -263,6 +274,7 @@ let handle_module_info
       input 
   | Ml_empty, Mli_source(is_re,_) ->    
     emit_intf_build 
+      ~has_checked_ppx 
       package_specs
       group_dir_index
       oc         
@@ -274,6 +286,7 @@ let handle_module_info
 
 let handle_file_group 
     oc 
+    ~(has_checked_ppx : bool)
     ~bs_suffix
     ~custom_rules 
     ~package_specs 
@@ -295,6 +308,7 @@ let handle_file_group
       if installable then 
         String_hash_set.add files_to_install (Bsb_db.filename_sans_suffix_of_module_info module_info);
       (handle_module_info 
+        ~has_checked_ppx
         ~bs_suffix
          group.dir_index 
          package_specs js_post_build_cmd 
@@ -307,7 +321,9 @@ let handle_file_group
 
 
 let handle_file_groups
-    oc ~package_specs 
+    oc 
+    ~has_checked_ppx
+    ~package_specs 
     ~bs_suffix
     ~js_post_build_cmd
     ~files_to_install ~custom_rules
@@ -315,7 +331,9 @@ let handle_file_groups
     namespace (st : info) : info  =
   Ext_list.fold_left file_groups st  
     (handle_file_group 
-       oc  ~bs_suffix ~package_specs ~custom_rules ~js_post_build_cmd
+       oc  
+       ~has_checked_ppx
+       ~bs_suffix ~package_specs ~custom_rules ~js_post_build_cmd
        files_to_install 
        namespace
     ) 

@@ -1,0 +1,9 @@
+
+  [1;33mWarning number 3[0m
+  [36m/.../fixtures/highlighting4.re[0m [2m5:10[0m
+  
+  3 [2m│[0m [@deprecated]
+  4 [2m│[0m type a = int;
+  [1;33m5[0m [2m│[0m type b = [1;33ma[0m
+  
+  deprecated: a

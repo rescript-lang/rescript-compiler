@@ -53,3 +53,7 @@ let f6 a = a |. Some
 let f7 a  = a |. (Some, Some, Some)
 
 let f8 a = a |. Some |. Some 
+
+
+let hi x = 
+  x |. Belt.Array.(map (fun x -> x + 1 ))

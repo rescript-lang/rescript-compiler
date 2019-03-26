@@ -164,6 +164,12 @@ Mt.from_pair_suites("Ffi_arity_test", /* :: */[
       ]
     ]);
 
+function bar(fn) {
+  return Curry._1(fn, /* () */0);
+}
+
+(Curry._1(function (){console.log("forgiving arity")}, /* () */0));
+
 exports.f = f;
 exports.v = v;
 exports.vv = vv;
@@ -174,4 +180,5 @@ exports.fff = fff;
 exports.g = g;
 exports.abc = abc;
 exports.abc_u = abc_u;
+exports.bar = bar;
 /* v Not a pure module */

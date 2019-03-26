@@ -49,7 +49,7 @@ val output_build :
   ?restat:unit ->
   output:string ->
   input:string ->
-  rule:Bsb_rule.t -> out_channel -> unit
+  rule:Bsb_ninja_rule.t -> out_channel -> unit
 
 
 val phony  :

@@ -31,7 +31,10 @@ Make.prototype.add = function(){
 |}]
 
 type t 
-external make : int array -> t = "Make" [@@bs.splice] [@@bs.new]
+
+
+external make : int -> int -> int -> int -> t = "Make"  [@@bs.new]
+
 
 external sum : t -> unit -> int = "" [@@bs.send]
 
@@ -49,7 +52,8 @@ let f x  =
   |> test  [| "a"; "b" |]
   |> test  [| "a"; "b" |]
   (* |> test u *)
-let v = make [|1;2;3;4|]
+
+let v = make 1 2 3 4
 
 let u = sum v ()
 

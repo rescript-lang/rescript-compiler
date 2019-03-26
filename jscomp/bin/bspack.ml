@@ -4080,9 +4080,9 @@ val to_list_f : ('a -> 'b) -> 'a array -> 'b list
 val to_list_map : ('a -> 'b option) -> 'a array -> 'b list 
 
 val to_list_map_acc : 
-  ('a -> 'b option) -> 
   'a array -> 
   'b list -> 
+  ('a -> 'b option) -> 
   'b list 
 
 val of_list_map : 
@@ -4249,7 +4249,7 @@ let rec tolist_aux a f  i res =
 let to_list_map f a = 
   tolist_aux a f (Array.length a - 1) []
 
-let to_list_map_acc f a acc = 
+let to_list_map_acc a acc f = 
   tolist_aux a f (Array.length a - 1) acc
 
 
@@ -5715,7 +5715,19 @@ module Ext_list : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-val map : 'a list -> ('a -> 'b) ->  'b list 
+val map : 
+  'a list -> 
+  ('a -> 'b) -> 
+  'b list 
+
+val has_string :   
+  string list ->
+  string -> 
+  bool
+val map_split_opt :  
+  'a list ->
+  ('a -> 'b option * 'c option) ->
+  'b list * 'c list 
 
 val mapi :
   'a list -> 
@@ -5802,7 +5814,7 @@ val exclude :
 val exclude_with_val : 
   'a list -> 
   ('a -> bool) -> 
-  bool * 'a list 
+  'a list option
 
 
 val same_length : 'a list -> 'b list -> bool
@@ -6089,6 +6101,30 @@ let rec map l f =
     let y5 = f x5 in
     y1::y2::y3::y4::y5::(map tail f)
 
+let rec has_string l f =
+  match l with
+  | [] ->
+    false
+  | [x1] ->
+    x1 = f
+  | [x1; x2] ->
+    x1 = f || x2 = f
+  | [x1; x2; x3] ->
+    x1 = f || x2 = f || x3 = f
+  | x1 :: x2 :: x3 :: x4 ->
+    x1 = f || x2 = f || x3 = f || has_string x4 f 
+  
+
+let rec map_split_opt 
+  (xs : 'a list)  (f : 'a -> 'b option * 'c option) 
+  : 'b list * 'c list = 
+  match xs with 
+  | [] -> [], []
+  | x::xs ->
+    let c,d = f x in 
+    let cs,ds = map_split_opt xs f in 
+    (match c with Some c -> c::cs | None -> cs),
+    (match d with Some d -> d::ds | None -> ds)
 
 let rec map_snd l f =
   match l with
@@ -6302,7 +6338,7 @@ let rec filter_map xs (f: 'a -> 'b option)=
       | Some z -> z :: filter_map ys f 
     end
 
-let rec exclude xs p =   
+let rec exclude (xs : 'a list) (p : 'a -> bool) : 'a list =   
   match xs with 
   | [] ->  []
   | x::xs -> 
@@ -6311,20 +6347,19 @@ let rec exclude xs p =
 
 let rec exclude_with_val l p =
   match l with 
-  | [] ->  false, l
+  | [] ->  None
   | a0::xs -> 
-    if p a0 then true, exclude xs p
+    if p a0 then Some (exclude xs p)
     else 
       match xs with 
-      | [] -> false, l 
+      | [] -> None
       | a1::rest -> 
         if p a1 then 
-          true, a0:: exclude rest p
+          Some (a0:: exclude rest p)
         else 
-          let st,rest = exclude_with_val rest p in 
-          if st then 
-            st, a0::a1::rest
-          else st, l 
+          match exclude_with_val rest p with 
+          | None -> None 
+          | Some  rest -> Some (a0::a1::rest)
 
 
 
@@ -6708,6 +6743,8 @@ let rec fold_left2 l1 l2 accu f =
   | (_, _) -> invalid_arg "List.fold_left2"
 
 let singleton_exn xs = match xs with [x] -> x | _ -> assert false
+
+
 end
 module Ext_sys : sig 
 #1 "ext_sys.mli"
@@ -6916,7 +6953,7 @@ val js : string
 val node_sep : string 
 val node_parent : string 
 val node_current : string 
-
+val gentype_import : string
 end = struct
 #1 "literals.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -7052,7 +7089,7 @@ let node_sep = "/"
 let node_parent = ".."
 let node_current = "."
 
-
+let gentype_import = "genType.import"
 end
 module Ext_path : sig 
 #1 "ext_path.mli"

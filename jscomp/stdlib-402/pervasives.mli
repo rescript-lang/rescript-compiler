@@ -671,7 +671,8 @@ external int_of_string : string -> int = "caml_int_of_string"
    a valid representation of an integer, or if the integer represented
    exceeds the range of integers representable in type [int]. *)
 
-val string_of_float : float -> string
+val string_of_float : float -> string 
+[@@ocaml.deprecated "Please use Js.Float.toString instead, string_of_float generates unparseable floats"]
 (** Return the string representation of a floating-point number. *)
 
 external float_of_string : string -> float = "caml_float_of_string"

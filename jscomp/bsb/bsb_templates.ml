@@ -60,7 +60,6 @@ let root = OCamlRes.Res.([
       \  },\n\
       \  \"suffix\": \".bs.js\",\n\
       \  \"bs-dependencies\": [\n\
-      \      // add your bs-dependencies here \n\
       \  ],\n\
       \  \"warnings\": {\n\
       \    \"error\" : \"+101\"\n\
@@ -181,9 +180,7 @@ let root = OCamlRes.Res.([
         \  }\n\
          ")]) ;
     File  ("bsconfig.json",
-      "// This is the configuration file used by BuckleScript's build system bsb. Its documentation lives here: http://bucklescript.github.io/bucklescript/docson/#build-schema.json\n\
-       // BuckleScript comes with its own parser for bsconfig.json, which is normal JSON, with the extra support of comments and trailing commas.\n\
-       {\n\
+      "{\n\
       \  \"name\": \"${bsb:name}\",\n\
       \  \"version\": \"${bsb:proj-version}\",\n\
       \  \"sources\": {\n\
@@ -196,7 +193,7 @@ let root = OCamlRes.Res.([
       \  },\n\
       \  \"suffix\": \".bs.js\",\n\
       \  \"bs-dependencies\": [\n\
-      \      // add your dependencies here. You'd usually install them normally through `npm install my-dependency`. If my-dependency has a bsconfig.json too, then everything will work seamlessly.\n\
+       \n\
       \  ],\n\
       \  \"warnings\": {\n\
       \    \"error\" : \"+101\"\n\
@@ -570,10 +567,7 @@ let root = OCamlRes.Res.([
          </html>\n\
          ")]) ;
     File  ("bsconfig.json",
-      "/* This is the BuckleScript configuration file. Note that this is a comment;\n\
-      \  BuckleScript comes with a JSON parser that supports comments and trailing\n\
-      \  comma. If this screws with your editor highlighting, please tell us by filing\n\
-      \  an issue! */\n\
+      "\n\
        {\n\
       \  \"name\": \"react-template\",\n\
       \  \"reason\": {\n\

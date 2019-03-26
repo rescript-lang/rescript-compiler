@@ -75,7 +75,7 @@ var getOcamldepFile = ()=>{
     if(useEnv){
         return `ocamldep.opt`
     } else{
-        return path.join(__dirname,'..','vendor','ocaml','bin','ocamldep.opt')
+        return path.join(__dirname,'..','native','bin','ocamldep.opt')
     }
 }
 
@@ -785,9 +785,11 @@ async function stdlibNinja(devmode=true){
      * @type [string,string][]
      */
     var bsc_builtin_overrides = [[bsc_flags,`$${bsc_flags} -nopervasives`]]
+    // It is interesting `-w -a` would generate not great code sometimes
+    var warnings = devmode ? '-w -40-49-103' : '-w -40-49-103-3'
     var templateStdlibRules = `
 ${BSC_COMPILER}
-${bsc_flags} = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-no-check-div-by-zero -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js  -bs-package-output es6:lib/es6  -nostdlib -warn-error A -w -40-49-103 -bin-annot  -bs-no-warn-unimplemented-external  -I ./runtime  -I ./others
+${bsc_flags} = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-no-check-div-by-zero -bs-cross-module-opt -bs-package-name bs-platform -bs-package-output commonjs:lib/js  -bs-package-output es6:lib/es6  -nostdlib  ${warnings} -bin-annot  -bs-no-warn-unimplemented-external  -I runtime  -I others
 rule cc
     command = $bsc -bs-cmi -bs-cmj $${bsc_flags} -bs-no-implicit-include  -I ${ninjaCwd} -c $in
     description = $in -> $out
@@ -1078,6 +1080,7 @@ build all: phony runtime others $stdlib test
         writeFile(path.join(jscompDir, 'build.ninja'), `
 include vendorConfig.ninja
 stdlib = ${version6() ? `stdlib-406` : `stdlib-402`}
+snapshot_path = ${version6()? '4.06.1+BS' : '4.02.3+BS'}
 subninja compiler.ninja
 subninja snapshot.ninja
 subninja runtime/build.ninja
@@ -1085,7 +1088,15 @@ subninja others/build.ninja
 subninja $stdlib/build.ninja
 subninja test/build.ninja
 build all: phony runtime others $stdlib test
-`)
+`
+)
+        writeFile(path.join(jscompDir, '..', 'lib', 'build.ninja'), `
+ocamlopt = ocamlopt.opt 
+ext = exe
+INCL= ${version6()?'4.06.1+BS' : '4.02.3+BS'}
+include body.ninja               
+`) 
+
     }
     runtimeNinja()
     stdlibNinja(true)
@@ -1164,7 +1175,9 @@ ${cppoList('ext', [
         ['hashtbl_make.ml', 'hashtbl.cppo.ml', dTypeFunctor],
     ])}
 ${cppoList('outcome_printer',[
-    ['tweaked_reason_oprint.ml','tweaked_reason_oprint.cppo.ml','']
+    ['tweaked_reason_oprint.ml','tweaked_reason_oprint.cppo.ml',''],
+    ['reason_syntax_util.ml', 'reason_syntax_util.cppo.ml',''],
+    ['reason_syntax_util.mli', 'reason_syntax_util.cppo.mli',''],
 ])}
 `
     var cppoNinjaFile = useEnv ? 'cppoEnv.ninja' : 'cppoVendor.ninja'
@@ -1181,7 +1194,7 @@ rule mk_bsversion
     command = node $in
     generator = true
 rule gcc
-    command = $ocamlopt -ccopt -O2 -ccopt -o -ccopt $out -c $in
+    command = $ocamlopt -ccopt -fPIC -ccopt -O2 -ccopt -o -ccopt $out -c $in
 build stubs/ext_basic_hash_stubs.o : gcc  stubs/ext_basic_hash_stubs.c
 rule ocamlmklib
     command = $ocamlmklib $in -o $name
@@ -1215,7 +1228,7 @@ build ../lib/bsb.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa bsb/
     libs = ocamlcommon.cmxa unix.cmxa str.cmxa
 build ../lib/bsb_helper.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa  bsb/bsb.cmxa main/bsb_helper_main.cmx
     libs = ocamlcommon.cmxa unix.cmxa str.cmxa
-build ./bin/bspack.exe: link ./stubs/ext_basic_hash_stubs.c  stubs/stubs.cmxa ext/ext.cmxa ./common/common.cmxa ./syntax/syntax.cmxa depends/depends.cmxa ./main/bspack_main.cmx
+build ./bin/bspack.exe: link stubs/stubs.cmxa ext/ext.cmxa ./common/common.cmxa ./syntax/syntax.cmxa depends/depends.cmxa ./main/bspack_main.cmx
     libs = unix.cmxa ocamlcommon.cmxa
     flags = -I ./bin -w -40-30
 build ./bin/cmjdump.exe: link ./stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa core/core.cmxa main/cmjdump_main.cmx

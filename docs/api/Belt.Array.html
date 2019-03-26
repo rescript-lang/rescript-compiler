@@ -54,8 +54,10 @@
 <li><a href="Belt_internalSetString.html">Belt_internalSetString</a></li>
 <li><a href="Dom.html">Dom</a></li>
 <li><a href="Dom_storage.html">Dom_storage</a></li>
+<li><a href="Dom_storage2.html">Dom_storage2</a></li>
 <li><a href="Js.html">Js</a></li>
 <li><a href="Js_array.html">Js_array</a></li>
+<li><a href="Js_array2.html">Js_array2</a></li>
 <li><a href="Js_cast.html">Js_cast</a></li>
 <li><a href="Js_console.html">Js_console</a></li>
 <li><a href="Js_date.html">Js_date</a></li>
@@ -76,7 +78,9 @@
 <li><a href="Js_re.html">Js_re</a></li>
 <li><a href="Js_result.html">Js_result</a></li>
 <li><a href="Js_string.html">Js_string</a></li>
+<li><a href="Js_string2.html">Js_string2</a></li>
 <li><a href="Js_typed_array.html">Js_typed_array</a></li>
+<li><a href="Js_typed_array2.html">Js_typed_array2</a></li>
 <li><a href="Js_types.html">Js_types</a></li>
 <li><a href="Js_undefined.html">Js_undefined</a></li>
 <li><a href="Js_vector.html">Js_vector</a></li>
@@ -605,6 +609,34 @@
                      <div class="examples">
                     <pre class="example"> <pre class="codepre"><code class="code">     map [|1;2|] (fun x-&gt; x + 1) = [|3;4|]
    </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALgetByU"><span class="keyword">val</span> getByU</span> : <code class="type">'a array -> ('a -> bool [@bs]) -> 'a option</code></pre>
+<pre><span id="VALgetBy"><span class="keyword">val</span> getBy</span> : <code class="type">'a array -> ('a -> bool) -> 'a option</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">getBy xs p</code> returns <code class="code">Some value</code> for the first value in <code class="code">xs</code> that satisifies the predicate function <code class="code">p</code>; returns <code class="code">None</code> if no element satisifies the function.<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">      getBy [|1;4;3;2|] (fun x -&gt; x mod 2 = 0) = Some 4
+      getBy [|15;13;11|] (fun x -&gt; x mod 2 = 0) = None
+    </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALgetIndexByU"><span class="keyword">val</span> getIndexByU</span> : <code class="type">'a array -> ('a -> bool [@bs]) -> int option</code></pre>
+<pre><span id="VALgetIndexBy"><span class="keyword">val</span> getIndexBy</span> : <code class="type">'a array -> ('a -> bool) -> int option</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">getIndexBy xs p</code> returns <code class="code">Some index</code> for the first value in <code class="code">xs</code> that satisifies the predicate function <code class="code">p</code>; returns <code class="code">None</code> if no element satisifies the function.<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">      getIndexBy [|1;4;3;2|] (fun x -&gt; x mod 2 = 0) = Some 1
+      getIndexBy [|15;13;11|] (fun x -&gt; x mod 2 = 0) = None
+    </code></pre>  </pre>
                     </div>
                     </div>
 

@@ -45,9 +45,9 @@ val to_list_f : ('a -> 'b) -> 'a array -> 'b list
 val to_list_map : ('a -> 'b option) -> 'a array -> 'b list 
 
 val to_list_map_acc : 
-  ('a -> 'b option) -> 
   'a array -> 
   'b list -> 
+  ('a -> 'b option) -> 
   'b list 
 
 val of_list_map : 

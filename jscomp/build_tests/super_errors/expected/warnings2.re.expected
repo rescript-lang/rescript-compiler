@@ -1,0 +1,10 @@
+
+  [1;33mWarning number 10[0m
+  [36m/.../fixtures/warnings2.re[0m [2m2:3-4[0m
+  
+  1 [2m│[0m let z = () => {
+  [1;33m2[0m [2m│[0m   [1;33m10[0m;
+  3 [2m│[0m   10
+  4 [2m│[0m };
+  
+  This expression returns a value, but you're not doing anything with it. If this is on purpose, wrap it with `ignore`.

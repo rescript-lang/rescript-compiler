@@ -2,7 +2,7 @@
 let package_json = "package.json"
 
 let rec find_package_json dir =
-  if Node.Fs2.existsSync
+  if Node.Fs.existsSync
       (Node.Path.join [|dir; package_json|])   then
     dir
   else

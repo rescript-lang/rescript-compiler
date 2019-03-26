@@ -58,14 +58,12 @@ type js_global_val = {
 type js_new_val = {
   name : string ;
   external_module_name : external_module_name option;
-  splice : bool ;
   scopes : string list;
 }
 
 type js_module_as_fn =
   { external_module_name : external_module_name;
     splice : bool ;
-
   }
 type js_get =
   { js_get_name : string   ;
@@ -95,7 +93,7 @@ type arg_label = External_arg_spec.label
 (**TODO: maybe we can merge [arg_label] and [arg_type] *)
 type obj_create = External_arg_spec.t list
 
-type attr =
+type external_spec =
   | Js_global of js_global_val
   | Js_module_as_var of  external_module_name
   | Js_module_as_fn of js_module_as_fn
@@ -107,6 +105,9 @@ type attr =
   | Js_get of js_get
   | Js_get_index of js_get_index
   | Js_set_index of js_set_index
+
+(* let not_inlineable (x : external_spec) =     *)
+
 
 let name_of_ffi ffi =
   match ffi with
@@ -136,7 +137,7 @@ type return_wrapper =
   | Return_replaced_with_unit
 type t  =
   | Ffi_bs of External_arg_spec.t list  *
-     return_wrapper * attr
+     return_wrapper * external_spec
   (**  [Ffi_bs(args,return,attr) ]
        [return] means return value is unit or not,
         [true] means is [unit]
@@ -174,14 +175,18 @@ let valid_ident (s : string) =
      true
    with E.E -> false )
 
+let is_package_relative_path (x : string) = 
+     Ext_string.starts_with x "./" ||
+     Ext_string.starts_with x "../"
+  
 let valid_global_name ?loc txt =
   if not (valid_ident txt) then
     let v = Ext_string.split_by ~keep_empty:true (fun x -> x = '.') txt in
-    List.iter
+    Ext_list.iter v
       (fun s ->
          if not (valid_ident s) then
            Location.raise_errorf ?loc "Not a valid global name %s"  txt
-      ) v
+      ) 
 
 (*
   We loose such check (see #2583),
@@ -207,9 +212,12 @@ let check_external_module_name_opt ?loc x =
   | Some v -> check_external_module_name ?loc v
 
 
-let check_ffi ?loc ffi =
-  match ffi with
-  | Js_global {name} -> valid_global_name ?loc  name
+let check_ffi ?loc ffi : bool =
+  let relative = ref false in 
+  begin match ffi with
+  | Js_global {name} -> 
+    relative := is_package_relative_path name;
+    valid_global_name ?loc  name
   | Js_send {name }
   | Js_set  {js_set_name = name}
   | Js_get { js_get_name = name}
@@ -219,14 +227,20 @@ let check_ffi ?loc ffi =
     -> ()
 
   | Js_module_as_var external_module_name
-  | Js_module_as_fn {external_module_name; _}
+  | Js_module_as_fn {external_module_name; splice = _}
   | Js_module_as_class external_module_name
-    -> check_external_module_name external_module_name
+    -> 
+      relative := is_package_relative_path external_module_name.bundle ;
+      check_external_module_name external_module_name
   | Js_new {external_module_name ;  name}
-  | Js_call {external_module_name ;  name ; _}
+  | Js_call {external_module_name ;  name ; splice = _; scopes = _ }
     ->
+    Ext_option.iter external_module_name (fun external_module_name ->
+        relative := is_package_relative_path external_module_name.bundle);
     check_external_module_name_opt ?loc external_module_name ;
-    valid_global_name ?loc name
+    valid_global_name ?loc name 
+  end; 
+  !relative
 
 let bs_prefix = "BS:"
 let bs_prefix_length = String.length bs_prefix

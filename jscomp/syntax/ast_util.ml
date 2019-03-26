@@ -25,7 +25,7 @@
 open Ast_helper 
 type 'a cxt = Ast_helper.loc -> Bs_ast_mapper.mapper -> 'a
 type loc = Location.t 
-type args = (Ast_compatible.arg_label * Parsetree.expression) list
+
 type label_exprs = (Longident.t Asttypes.loc * Parsetree.expression) list
 type uncurry_expression_gen = 
   (Parsetree.pattern ->
@@ -39,7 +39,7 @@ type uncurry_type_gen =
 
 let uncurry_type_id = 
   Ast_literal.Lid.js_fn
-
+ 
 let method_id  = 
   Ast_literal.Lid.js_meth
 
@@ -115,18 +115,17 @@ let js_property loc obj (name : string) =
      [#=], 
 *)
 
-
+(*         
+  if not (Ast_compatible.is_arg_label_simple label) then
+    Bs_syntaxerr.err loc Label_in_uncurried_bs_attribute;
+*)
 let generic_apply  kind loc 
     (self : Bs_ast_mapper.mapper) 
     (obj : Parsetree.expression) 
-    (args : args ) cb   =
+    (args : Parsetree.expression list) cb   =
   let obj = self.expr self obj in
   let args =
-    Ext_list.map args (fun (label,e) ->
-        if not (Ast_compatible.is_arg_label_simple label) then
-          Bs_syntaxerr.err loc Label_in_uncurried_bs_attribute;
-        self.expr self e
-      ) in
+    Ext_list.map args (fun e -> self.expr self e) in
   let len = List.length args in 
   let arity, fn, args  = 
     match args with 
@@ -166,7 +165,7 @@ let generic_apply  kind loc
 let uncurry_fn_apply loc self fn args = 
   generic_apply `Fn loc self fn args (fun _ obj -> obj )
 
-let property_apply loc self obj name (args : args) 
+let property_apply loc self obj name args  
   =  generic_apply `PropertyFn loc self obj args 
     (fun loc obj -> Exp.mk ~loc (js_property loc obj name))
 
@@ -618,7 +617,7 @@ let ocaml_obj_as_js_object
       ) in
   Ast_external_mk.local_extern_cont
     loc
-    ~pval_prim:(External_process.pval_prim_of_labels labels)
+    ~pval_prim:(Ast_external_process.pval_prim_of_labels labels)
     (fun e ->
        Ast_compatible.apply_labels ~loc e
          (Ext_list.map2 labels exprs (fun l expr -> l.txt, expr) ) )
@@ -639,55 +638,7 @@ let record_as_js_object
         | Ldot _ | Lapply _ ->  
           Location.raise_errorf ~loc "invalid js label ")  in
   Ast_external_mk.local_external_obj loc 
-    ~pval_prim:(External_process.pval_prim_of_labels labels)
+    ~pval_prim:(Ast_external_process.pval_prim_of_labels labels)
     ~pval_type:(Ast_core_type.from_labels ~loc arity labels) 
     args 
 
-
-
-let isCamlExceptionOrOpenVariant : Longident.t = 
-  Ldot (Ldot (Lident "Js","Exn"), "isCamlExceptionOrOpenVariant")
-
-  
-let obj_magic : Longident.t = 
-  Ldot (Lident "Obj", "magic")
-
-
-let rec checkCases (cases : Parsetree.case list) = 
-  List.iter check_case cases 
-and check_case case = 
-  check_pat case.pc_lhs 
-and check_pat (pat : Parsetree.pattern) = 
-  match pat.ppat_desc with 
-  | Ppat_construct _ -> ()
-  | Ppat_or (l,r) -> 
-    check_pat l; check_pat r 
-  | _ ->  Location.raise_errorf ~loc:pat.ppat_loc "Unsupported pattern in `bs.open`" 
-
-let convertBsErrorFunction loc  (self : Bs_ast_mapper.mapper) attrs (cases : Parsetree.case list ) =
-  let txt  = "match" in 
-  let txt_expr = Exp.ident ~loc {txt = Lident txt; loc} in 
-  let none = Exp.construct ~loc {txt = Ast_literal.predef_none ; loc} None in
-  let () = checkCases cases in  
-  let cases = self.cases self cases in 
-  Ast_compatible.fun_ ~attrs ~loc ( Pat.var ~loc  {txt; loc })
-    (Exp.ifthenelse
-    ~loc 
-    (Ast_compatible.app1 ~loc (Exp.ident ~loc {txt = isCamlExceptionOrOpenVariant ; loc}) txt_expr )
-    (Exp.match_ ~loc 
-       (Exp.constraint_ ~loc 
-          (Ast_compatible.app1  ~loc (Exp.ident ~loc {txt =  obj_magic; loc})  txt_expr)
-          (Ast_literal.type_exn ~loc ())
-       )
-      (Ext_list.map_append cases 
-        [ Exp.case  (Pat.any ~loc ()) none] 
-        (fun x ->
-           let pc_rhs = x.pc_rhs in 
-           let  loc  = pc_rhs.pexp_loc in
-           {
-             x with pc_rhs = Exp.construct ~loc {txt = Ast_literal.predef_some;loc} (Some pc_rhs)
-                        
-           })))
-    (Some none))
-    
-                       

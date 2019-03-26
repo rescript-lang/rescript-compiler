@@ -14,7 +14,13 @@ Prerequisites:
 ### Build the vendored ocaml compiler
 
 ```
-cd vendor/ocaml && ./configure -prefix `pwd` && make -j9 world.opt && make install
+node scripts/buildocaml.js
+```
+
+The codebase recently moved from keeping its version of OCaml in a subtree to using git submodules. If you run into error on this step, executing the following can help:
+
+```
+git submodule update --init
 ```
 
 ### Build everything in dev mode using vendored compiler
@@ -113,7 +119,7 @@ Whenever there are dependencies changes: do `make depend` in the specific direct
 
 ## Change the Vendored OCaml Compiler
 
-This section is reserved for when you're making a change to the vendored ocaml compiler itself, in `vendor/ocaml`, and then testing on super-errors changes at the same time. If you're doing this for whatever reason, then the previous quick iteration workflow wouldn't work. Here's what you have to do after each change:
+This section is reserved for when you're making a change to the vendored ocaml compiler itself, in `ocaml`, and then testing on super-errors changes at the same time. If you're doing this for whatever reason, then the previous quick iteration workflow wouldn't work. Here's what you have to do after each change:
 
 ```
 # at project root
@@ -196,7 +202,7 @@ build all binaries and libraries and
 install the binaries into `bin` and lib files into `lib`.
 
 First it will try to generate `bin/config_whole_compiler.ml` based on existing
-OCaml installation, if it fails, it will try to invoke `buildocaml.sh` to
+OCaml installation, if it fails, it will try to invoke `node scripts/buildocaml.js` to
 install an OCaml compiler from scratch, and retry again.
 
 ### Publish Process

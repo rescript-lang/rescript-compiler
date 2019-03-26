@@ -1,0 +1,5 @@
+rule cp 
+    command = cp $in $out
+
+ext = linux
+include copy.ninja

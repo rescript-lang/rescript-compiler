@@ -23,7 +23,19 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-val map : 'a list -> ('a -> 'b) ->  'b list 
+val map : 
+  'a list -> 
+  ('a -> 'b) -> 
+  'b list 
+
+val has_string :   
+  string list ->
+  string -> 
+  bool
+val map_split_opt :  
+  'a list ->
+  ('a -> 'b option * 'c option) ->
+  'b list * 'c list 
 
 val mapi :
   'a list -> 
@@ -110,7 +122,7 @@ val exclude :
 val exclude_with_val : 
   'a list -> 
   ('a -> bool) -> 
-  bool * 'a list 
+  'a list option
 
 
 val same_length : 'a list -> 'b list -> bool

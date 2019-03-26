@@ -7,7 +7,7 @@ external describe : string -> (unit -> unit[@bs]) -> unit = "describe"
 external it : string -> (unit -> unit[@bs.uncurry]) -> unit = "it"
 [@@bs.val]
 
-external it_promise : string -> (unit -> _ Js.Promise2.t [@bs.uncurry]) -> unit = "it"
+external it_promise : string -> (unit -> _ Js.Promise.t [@bs.uncurry]) -> unit = "it"
 [@@bs.val]
 
 external eq : 'a -> 'a -> unit = "deepEqual"
@@ -84,7 +84,7 @@ type eq =
   (* TODO: | Exception : exn -> (unit -> unit) -> _ eq  *)
 
 type  pair_suites = (string * (unit ->  eq)) list
-type promise_suites = (string * eq Js.Promise2.t) list
+type promise_suites = (string * eq Js.Promise.t) list
 let close_enough ?(threshold=0.0000001 (* epsilon_float *)) a b =
   abs_float (a -. b) < threshold
 
@@ -134,8 +134,8 @@ let from_pair_suites name (suites :  pair_suites) =
         )
     else node_from_pair_suites name suites
   | _ -> ()
-let val_unit = Js.Promise2.resolve ()
-let from_promise_suites name (suites : (string * _ Js.Promise2.t ) list) =
+let val_unit = Js.Promise.resolve ()
+let from_promise_suites name (suites : (string * _ Js.Promise.t ) list) =
   match Array.to_list Node.Process.process##argv with
   | cmd :: _ ->
     if is_mocha () then
@@ -143,7 +143,7 @@ let from_promise_suites name (suites : (string * _ Js.Promise2.t ) list) =
           suites |>
           List.iter (fun (name, code) ->
               it_promise name (fun _ ->
-                  code |. Js.Promise2.then_ (fun x -> handleCode x; val_unit)
+                  code |> Js.Promise.then_ (fun x -> handleCode x; val_unit)
 
                 )
             )

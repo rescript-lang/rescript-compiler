@@ -1,0 +1,9 @@
+
+  [1;31mWe've found a bug for you![0m
+  [36m/.../fixtures/moreArguments5.re[0m [2m5:9-12[0m
+  
+  3 [2m│[0m };
+  4 [2m│[0m let x = (a, b, c, d) => {Sub.a: 2};
+  [1;31m5[0m [2m│[0m let y = [1;31mx(2)[0m.Sub.a;
+  
+  [1;33mThis call is missing arguments[0m of type: 'a, 'b, 'c

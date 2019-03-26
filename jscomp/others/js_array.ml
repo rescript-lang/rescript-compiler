@@ -83,7 +83,9 @@ external includes : 'a -> bool = "" [@@bs.send.pipe: 'a t as 'this] (** ES2016 *
 external indexOf : 'a  -> int = "" [@@bs.send.pipe: 'a t as 'this]
 external indexOfFrom : 'a -> from:int -> int = "indexOf" [@@bs.send.pipe: 'a t as 'this]
 
-external join : string = "" [@@bs.send.pipe: 'a t as 'this]
+external join : 'a t -> string = "" 
+[@@bs.send] [@@ocaml.deprecated "please use joinWith instead"]
+
 external joinWith : string -> string = "join" [@@bs.send.pipe: 'a t as 'this]
 
 external lastIndexOf : 'a -> int = "" [@@bs.send.pipe: 'a t as 'this]

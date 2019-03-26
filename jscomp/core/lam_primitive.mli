@@ -52,7 +52,7 @@ type t =
     (* Location.t *  [loc] is passed down *)
     string *  (* prim_name *)
     External_arg_spec.t list * (* arg_types *)
-    External_ffi_types.attr  (* ffi *)
+    External_ffi_types.external_spec  (* ffi *)
   | Pjs_object_create of External_ffi_types.obj_create
 
   | Praise 

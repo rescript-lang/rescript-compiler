@@ -54,8 +54,10 @@
 <li><a href="Belt_internalSetString.html">Belt_internalSetString</a></li>
 <li><a href="Dom.html">Dom</a></li>
 <li><a href="Dom_storage.html">Dom_storage</a></li>
+<li><a href="Dom_storage2.html">Dom_storage2</a></li>
 <li><a href="Js.html">Js</a></li>
 <li><a href="Js_array.html">Js_array</a></li>
+<li><a href="Js_array2.html">Js_array2</a></li>
 <li><a href="Js_cast.html">Js_cast</a></li>
 <li><a href="Js_console.html">Js_console</a></li>
 <li><a href="Js_date.html">Js_date</a></li>
@@ -76,7 +78,9 @@
 <li><a href="Js_re.html">Js_re</a></li>
 <li><a href="Js_result.html">Js_result</a></li>
 <li><a href="Js_string.html">Js_string</a></li>
+<li><a href="Js_string2.html">Js_string2</a></li>
 <li><a href="Js_typed_array.html">Js_typed_array</a></li>
+<li><a href="Js_typed_array2.html">Js_typed_array2</a></li>
 <li><a href="Js_types.html">Js_types</a></li>
 <li><a href="Js_undefined.html">Js_undefined</a></li>
 <li><a href="Js_vector.html">Js_vector</a></li>
@@ -94,13 +98,105 @@
 <h1>Module <a href="type_Js_typed_array.Float64_array.html">Js_typed_array.Float64_array</a></h1>
 
 <pre><span class="keyword">module</span> Float64_array: <code class="type"><a href="Js_typed_array.Float64Array.html">Float64Array</a></code></pre><hr width="100%">
+<div class="type-declaration">
+<pre><span id="TYPEelt"><span class="keyword">type</span> <code class="type"></code>elt</span> = <code class="type">float</code> </pre>
+</div>
+<div class="info ">
+                    <div class="not-examples">
+                     
+                    </div>
+                    
+                    </div>
 
-<pre><span class="keyword">include</span> struct ... end</pre>
+                  
+<div class="type-declaration">
+<pre><span id="TYPEtyped_array"><span class="keyword">type</span> <code class="type">'a</code> typed_array</span> = <code class="type">'a <a href="Js_typed_array2.Float64Array.html#TYPEtyped_array">Js_typed_array2.Float64Array.typed_array</a></code> </pre>
+</div>
 
+<div class="type-declaration">
+<pre><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> = <code class="type"><a href="Js_typed_array.Float64Array.html#TYPEelt">elt</a> <a href="Js_typed_array.Float64Array.html#TYPEtyped_array">typed_array</a></code> </pre>
+</div>
+
+
+<pre><span id="VALunsafe_get"><span class="keyword">val</span> unsafe_get</span> : <code class="type"><a href="Js_typed_array.Float64Array.html#TYPEt">t</a> -> int -> <a href="Js_typed_array.Float64Array.html#TYPEelt">elt</a></code></pre>
+<pre><span id="VALunsafe_set"><span class="keyword">val</span> unsafe_set</span> : <code class="type"><a href="Js_typed_array.Float64Array.html#TYPEt">t</a> -><br>       int -> <a href="Js_typed_array.Float64Array.html#TYPEelt">elt</a> -> unit</code></pre>
+<pre><span id="VALbuffer"><span class="keyword">val</span> buffer</span> : <code class="type"><a href="Js_typed_array.Float64Array.html#TYPEt">t</a> -> <a href="Js_typed_array.html#TYPEarray_buffer">Js_typed_array.array_buffer</a></code></pre>
+<pre><span id="VALbyteLength"><span class="keyword">val</span> byteLength</span> : <code class="type"><a href="Js_typed_array.Float64Array.html#TYPEt">t</a> -> int</code></pre>
+<pre><span id="VALbyteOffset"><span class="keyword">val</span> byteOffset</span> : <code class="type"><a href="Js_typed_array.Float64Array.html#TYPEt">t</a> -> int</code></pre>
+<pre><span id="VALsetArray"><span class="keyword">val</span> setArray</span> : <code class="type"><a href="Js_typed_array.Float64Array.html#TYPEelt">elt</a> array -><br>       <a href="Js_typed_array.Float64Array.html#TYPEt">t</a> -> unit</code></pre>
+<pre><span id="VALsetArrayOffset"><span class="keyword">val</span> setArrayOffset</span> : <code class="type"><a href="Js_typed_array.Float64Array.html#TYPEelt">elt</a> array -><br>       int -> <a href="Js_typed_array.Float64Array.html#TYPEt">t</a> -> unit</code></pre>
+<pre><span id="VALlength"><span class="keyword">val</span> length</span> : <code class="type"><a href="Js_typed_array.Float64Array.html#TYPEt">t</a> -> int</code></pre>
+<pre><span id="VALcopyWithin"><span class="keyword">val</span> copyWithin</span> : <code class="type">to_:int -> <a href="Js_typed_array.Float64Array.html#TYPEt">t</a> -> <a href="Js_typed_array.Float64Array.html#TYPEt">t</a></code></pre>
+<pre><span id="VALcopyWithinFrom"><span class="keyword">val</span> copyWithinFrom</span> : <code class="type">to_:int -><br>       from:int -> <a href="Js_typed_array.Float64Array.html#TYPEt">t</a> -> <a href="Js_typed_array.Float64Array.html#TYPEt">t</a></code></pre>
+<pre><span id="VALcopyWithinFromRange"><span class="keyword">val</span> copyWithinFromRange</span> : <code class="type">to_:int -><br>       start:int -><br>       end_:int -> <a href="Js_typed_array.Float64Array.html#TYPEt">t</a> -> <a href="Js_typed_array.Float64Array.html#TYPEt">t</a></code></pre>
+<pre><span id="VALfillInPlace"><span class="keyword">val</span> fillInPlace</span> : <code class="type"><a href="Js_typed_array.Float64Array.html#TYPEelt">elt</a> -><br>       <a href="Js_typed_array.Float64Array.html#TYPEt">t</a> -> <a href="Js_typed_array.Float64Array.html#TYPEt">t</a></code></pre>
+<pre><span id="VALfillFromInPlace"><span class="keyword">val</span> fillFromInPlace</span> : <code class="type"><a href="Js_typed_array.Float64Array.html#TYPEelt">elt</a> -><br>       from:int -> <a href="Js_typed_array.Float64Array.html#TYPEt">t</a> -> <a href="Js_typed_array.Float64Array.html#TYPEt">t</a></code></pre>
+<pre><span id="VALfillRangeInPlace"><span class="keyword">val</span> fillRangeInPlace</span> : <code class="type"><a href="Js_typed_array.Float64Array.html#TYPEelt">elt</a> -><br>       start:int -><br>       end_:int -> <a href="Js_typed_array.Float64Array.html#TYPEt">t</a> -> <a href="Js_typed_array.Float64Array.html#TYPEt">t</a></code></pre>
+<pre><span id="VALreverseInPlace"><span class="keyword">val</span> reverseInPlace</span> : <code class="type"><a href="Js_typed_array.Float64Array.html#TYPEt">t</a> -> <a href="Js_typed_array.Float64Array.html#TYPEt">t</a></code></pre>
+<pre><span id="VALsortInPlace"><span class="keyword">val</span> sortInPlace</span> : <code class="type"><a href="Js_typed_array.Float64Array.html#TYPEt">t</a> -> <a href="Js_typed_array.Float64Array.html#TYPEt">t</a></code></pre>
+<pre><span id="VALsortInPlaceWith"><span class="keyword">val</span> sortInPlaceWith</span> : <code class="type">(<a href="Js_typed_array.Float64Array.html#TYPEelt">elt</a> -> <a href="Js_typed_array.Float64Array.html#TYPEelt">elt</a> -> int<br>       [@bs]) -> <a href="Js_typed_array.Float64Array.html#TYPEt">t</a> -> <a href="Js_typed_array.Float64Array.html#TYPEt">t</a></code></pre>
+<pre><span id="VALincludes"><span class="keyword">val</span> includes</span> : <code class="type"><a href="Js_typed_array.Float64Array.html#TYPEelt">elt</a> -> <a href="Js_typed_array.Float64Array.html#TYPEt">t</a> -> bool</code></pre><br>
+ES2016<br>
+
+<pre><span id="VALindexOf"><span class="keyword">val</span> indexOf</span> : <code class="type"><a href="Js_typed_array.Float64Array.html#TYPEelt">elt</a> -> <a href="Js_typed_array.Float64Array.html#TYPEt">t</a> -> int</code></pre>
+<pre><span id="VALindexOfFrom"><span class="keyword">val</span> indexOfFrom</span> : <code class="type"><a href="Js_typed_array.Float64Array.html#TYPEelt">elt</a> -><br>       from:int -> <a href="Js_typed_array.Float64Array.html#TYPEt">t</a> -> int</code></pre>
+<pre><span id="VALjoin"><span class="keyword">val</span> join</span> : <code class="type"><a href="Js_typed_array.Float64Array.html#TYPEt">t</a> -> string</code></pre>
+<pre><span id="VALjoinWith"><span class="keyword">val</span> joinWith</span> : <code class="type">string -> <a href="Js_typed_array.Float64Array.html#TYPEt">t</a> -> string</code></pre>
+<pre><span id="VALlastIndexOf"><span class="keyword">val</span> lastIndexOf</span> : <code class="type"><a href="Js_typed_array.Float64Array.html#TYPEelt">elt</a> -> <a href="Js_typed_array.Float64Array.html#TYPEt">t</a> -> int</code></pre>
+<pre><span id="VALlastIndexOfFrom"><span class="keyword">val</span> lastIndexOfFrom</span> : <code class="type"><a href="Js_typed_array.Float64Array.html#TYPEelt">elt</a> -><br>       from:int -> <a href="Js_typed_array.Float64Array.html#TYPEt">t</a> -> int</code></pre>
+<pre><span id="VALslice"><span class="keyword">val</span> slice</span> : <code class="type">start:int -><br>       end_:int -> <a href="Js_typed_array.Float64Array.html#TYPEt">t</a> -> <a href="Js_typed_array.Float64Array.html#TYPEt">t</a></code></pre>
+<pre><span id="VALcopy"><span class="keyword">val</span> copy</span> : <code class="type"><a href="Js_typed_array.Float64Array.html#TYPEt">t</a> -> <a href="Js_typed_array.Float64Array.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">start</code> is inclusive, <code class="code">end_</code> exclusive<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALsliceFrom"><span class="keyword">val</span> sliceFrom</span> : <code class="type">int -> <a href="Js_typed_array.Float64Array.html#TYPEt">t</a> -> <a href="Js_typed_array.Float64Array.html#TYPEt">t</a></code></pre>
+<pre><span id="VALsubarray"><span class="keyword">val</span> subarray</span> : <code class="type">start:int -><br>       end_:int -> <a href="Js_typed_array.Float64Array.html#TYPEt">t</a> -> <a href="Js_typed_array.Float64Array.html#TYPEt">t</a></code></pre>
+<pre><span id="VALsubarrayFrom"><span class="keyword">val</span> subarrayFrom</span> : <code class="type">int -> <a href="Js_typed_array.Float64Array.html#TYPEt">t</a> -> <a href="Js_typed_array.Float64Array.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">start</code> is inclusive, <code class="code">end_</code> exclusive<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALtoString"><span class="keyword">val</span> toString</span> : <code class="type"><a href="Js_typed_array.Float64Array.html#TYPEt">t</a> -> string</code></pre>
+<pre><span id="VALtoLocaleString"><span class="keyword">val</span> toLocaleString</span> : <code class="type"><a href="Js_typed_array.Float64Array.html#TYPEt">t</a> -> string</code></pre>
+<pre><span id="VALevery"><span class="keyword">val</span> every</span> : <code class="type">(<a href="Js_typed_array.Float64Array.html#TYPEelt">elt</a> -> bool [@bs]) -><br>       <a href="Js_typed_array.Float64Array.html#TYPEt">t</a> -> bool</code></pre>
+<pre><span id="VALeveryi"><span class="keyword">val</span> everyi</span> : <code class="type">(<a href="Js_typed_array.Float64Array.html#TYPEelt">elt</a> -> int -> bool [@bs]) -><br>       <a href="Js_typed_array.Float64Array.html#TYPEt">t</a> -> bool</code></pre>
+<pre><span id="VALfilter"><span class="keyword">val</span> filter</span> : <code class="type">(<a href="Js_typed_array.Float64Array.html#TYPEelt">elt</a> -> bool [@bs]) -><br>       <a href="Js_typed_array.Float64Array.html#TYPEt">t</a> -> <a href="Js_typed_array.Float64Array.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    should we use <code class="code">bool</code> or <code class="code">boolan</code> seems they are intechangeable here<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALfilteri"><span class="keyword">val</span> filteri</span> : <code class="type">(<a href="Js_typed_array.Float64Array.html#TYPEelt">elt</a> -> int -> bool [@bs]) -><br>       <a href="Js_typed_array.Float64Array.html#TYPEt">t</a> -> <a href="Js_typed_array.Float64Array.html#TYPEt">t</a></code></pre>
+<pre><span id="VALfind"><span class="keyword">val</span> find</span> : <code class="type">(<a href="Js_typed_array.Float64Array.html#TYPEelt">elt</a> -> bool [@bs]) -><br>       <a href="Js_typed_array.Float64Array.html#TYPEt">t</a> -> <a href="Js_typed_array.Float64Array.html#TYPEelt">elt</a> <a href="Js.html#TYPEundefined">Js.undefined</a></code></pre>
+<pre><span id="VALfindi"><span class="keyword">val</span> findi</span> : <code class="type">(<a href="Js_typed_array.Float64Array.html#TYPEelt">elt</a> -> int -> bool [@bs]) -><br>       <a href="Js_typed_array.Float64Array.html#TYPEt">t</a> -> <a href="Js_typed_array.Float64Array.html#TYPEelt">elt</a> <a href="Js.html#TYPEundefined">Js.undefined</a></code></pre>
+<pre><span id="VALfindIndex"><span class="keyword">val</span> findIndex</span> : <code class="type">(<a href="Js_typed_array.Float64Array.html#TYPEelt">elt</a> -> bool [@bs]) -><br>       <a href="Js_typed_array.Float64Array.html#TYPEt">t</a> -> int</code></pre>
+<pre><span id="VALfindIndexi"><span class="keyword">val</span> findIndexi</span> : <code class="type">(<a href="Js_typed_array.Float64Array.html#TYPEelt">elt</a> -> int -> bool [@bs]) -><br>       <a href="Js_typed_array.Float64Array.html#TYPEt">t</a> -> int</code></pre>
+<pre><span id="VALforEach"><span class="keyword">val</span> forEach</span> : <code class="type">(<a href="Js_typed_array.Float64Array.html#TYPEelt">elt</a> -> unit [@bs]) -><br>       <a href="Js_typed_array.Float64Array.html#TYPEt">t</a> -> unit</code></pre>
+<pre><span id="VALforEachi"><span class="keyword">val</span> forEachi</span> : <code class="type">(<a href="Js_typed_array.Float64Array.html#TYPEelt">elt</a> -> int -> unit [@bs]) -><br>       <a href="Js_typed_array.Float64Array.html#TYPEt">t</a> -> unit</code></pre>
+<pre><span id="VALmap"><span class="keyword">val</span> map</span> : <code class="type">(<a href="Js_typed_array.Float64Array.html#TYPEelt">elt</a> -> 'b [@bs]) -><br>       <a href="Js_typed_array.Float64Array.html#TYPEt">t</a> -> 'b <a href="Js_typed_array.Float64Array.html#TYPEtyped_array">typed_array</a></code></pre>
+<pre><span id="VALmapi"><span class="keyword">val</span> mapi</span> : <code class="type">(<a href="Js_typed_array.Float64Array.html#TYPEelt">elt</a> -> int -> 'b [@bs]) -><br>       <a href="Js_typed_array.Float64Array.html#TYPEt">t</a> -> 'b <a href="Js_typed_array.Float64Array.html#TYPEtyped_array">typed_array</a></code></pre>
+<pre><span id="VALreduce"><span class="keyword">val</span> reduce</span> : <code class="type">('b -> <a href="Js_typed_array.Float64Array.html#TYPEelt">elt</a> -> 'b [@bs]) -><br>       'b -> <a href="Js_typed_array.Float64Array.html#TYPEt">t</a> -> 'b</code></pre>
+<pre><span id="VALreducei"><span class="keyword">val</span> reducei</span> : <code class="type">('b -> <a href="Js_typed_array.Float64Array.html#TYPEelt">elt</a> -> int -> 'b [@bs]) -><br>       'b -> <a href="Js_typed_array.Float64Array.html#TYPEt">t</a> -> 'b</code></pre>
+<pre><span id="VALreduceRight"><span class="keyword">val</span> reduceRight</span> : <code class="type">('b -> <a href="Js_typed_array.Float64Array.html#TYPEelt">elt</a> -> 'b [@bs]) -><br>       'b -> <a href="Js_typed_array.Float64Array.html#TYPEt">t</a> -> 'b</code></pre>
+<pre><span id="VALreduceRighti"><span class="keyword">val</span> reduceRighti</span> : <code class="type">('b -> <a href="Js_typed_array.Float64Array.html#TYPEelt">elt</a> -> int -> 'b [@bs]) -><br>       'b -> <a href="Js_typed_array.Float64Array.html#TYPEt">t</a> -> 'b</code></pre>
+<pre><span id="VALsome"><span class="keyword">val</span> some</span> : <code class="type">(<a href="Js_typed_array.Float64Array.html#TYPEelt">elt</a> -> bool [@bs]) -><br>       <a href="Js_typed_array.Float64Array.html#TYPEt">t</a> -> bool</code></pre>
+<pre><span id="VALsomei"><span class="keyword">val</span> somei</span> : <code class="type">(<a href="Js_typed_array.Float64Array.html#TYPEelt">elt</a> -> int -> bool [@bs]) -><br>       <a href="Js_typed_array.Float64Array.html#TYPEt">t</a> -> bool</code></pre>
 <pre><span id="VAL_BYTES_PER_ELEMENT"><span class="keyword">val</span> _BYTES_PER_ELEMENT</span> : <code class="type">int</code></pre>
-<pre><span id="VALmake"><span class="keyword">val</span> make</span> : <code class="type">elt array -> t</code></pre>
-<pre><span id="VALfromBuffer"><span class="keyword">val</span> fromBuffer</span> : <code class="type"><a href="Js_typed_array.html#TYPEarray_buffer">Js_typed_array.array_buffer</a> -> t</code></pre>
-<pre><span id="VALfromBufferOffset"><span class="keyword">val</span> fromBufferOffset</span> : <code class="type"><a href="Js_typed_array.html#TYPEarray_buffer">Js_typed_array.array_buffer</a> -> int -> t</code></pre><div class="info ">
+<pre><span id="VALmake"><span class="keyword">val</span> make</span> : <code class="type"><a href="Js_typed_array.Float64Array.html#TYPEelt">elt</a> array -> <a href="Js_typed_array.Float64Array.html#TYPEt">t</a></code></pre>
+<pre><span id="VALfromBuffer"><span class="keyword">val</span> fromBuffer</span> : <code class="type"><a href="Js_typed_array.html#TYPEarray_buffer">Js_typed_array.array_buffer</a> -> <a href="Js_typed_array.Float64Array.html#TYPEt">t</a></code></pre>
+<pre><span id="VALfromBufferOffset"><span class="keyword">val</span> fromBufferOffset</span> : <code class="type"><a href="Js_typed_array.html#TYPEarray_buffer">Js_typed_array.array_buffer</a> -> int -> <a href="Js_typed_array.Float64Array.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
                     can throw<br>
  
@@ -109,24 +205,24 @@
                     </div>
 
                   
-<pre><span id="VALfromBufferRange"><span class="keyword">val</span> fromBufferRange</span> : <code class="type"><a href="Js_typed_array.html#TYPEarray_buffer">Js_typed_array.array_buffer</a> -> offset:int -> length:int -> t</code></pre><div class="info ">
+<pre><span id="VALfromBufferRange"><span class="keyword">val</span> fromBufferRange</span> : <code class="type"><a href="Js_typed_array.html#TYPEarray_buffer">Js_typed_array.array_buffer</a> -><br>       offset:int -> length:int -> <a href="Js_typed_array.Float64Array.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
-                    can throw, offset is in bytes<br>
- 
+                    <div class="tag"> <b>Raises</b> <code>Js.Exn.Error</code> raise Js exception<br>
+ </div> 
                     </div>
                     
                     </div>
 
                   
-<pre><span id="VALfromLength"><span class="keyword">val</span> fromLength</span> : <code class="type">int -> t</code></pre><div class="info ">
+<pre><span id="VALfromLength"><span class="keyword">val</span> fromLength</span> : <code class="type">int -> <a href="Js_typed_array.Float64Array.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
-                    can throw, offset is in bytes, length in elements<br>
- 
+                    <div class="tag"> <b>Raises</b> <code>Js.Exn.Error</code> raises Js exception<br>
+ </div> 
                     </div>
                     
                     </div>
 
                   
-<pre><span id="VALfrom"><span class="keyword">val</span> from</span> : <code class="type">elt <a href="Js_typed_array.html#TYPEarray_like">Js_typed_array.array_like</a> -> t</code></pre>
-<pre><span id="VALcreate"><span class="keyword">val</span> create</span> : <code class="type">float array -> t</code></pre>
-<pre><span id="VALof_buffer"><span class="keyword">val</span> of_buffer</span> : <code class="type"><a href="Js_typed_array.html#TYPEarray_buffer">Js_typed_array.array_buffer</a> -> t</code></pre></body></html>
+<pre><span id="VALfrom"><span class="keyword">val</span> from</span> : <code class="type"><a href="Js_typed_array.Float64Array.html#TYPEelt">elt</a> <a href="Js_typed_array.html#TYPEarray_like">Js_typed_array.array_like</a> -><br>       <a href="Js_typed_array.Float64Array.html#TYPEt">t</a></code></pre>
+<pre><span id="VALcreate"><span class="keyword">val</span> create</span> : <code class="type">float array -> <a href="Js_typed_array.Float64Array.html#TYPEt">t</a></code></pre>
+<pre><span id="VALof_buffer"><span class="keyword">val</span> of_buffer</span> : <code class="type"><a href="Js_typed_array.html#TYPEarray_buffer">Js_typed_array.array_buffer</a> -> <a href="Js_typed_array.Float64Array.html#TYPEt">t</a></code></pre></body></html>

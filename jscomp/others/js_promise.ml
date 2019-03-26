@@ -29,8 +29,8 @@
     ]}
 *)
 
-type + 'a t = 'a Js_promise2.t
-type error = Js_promise2.error
+type + 'a t 
+type error 
 
 
 external make : (resolve:('a -> unit [@bs]) ->

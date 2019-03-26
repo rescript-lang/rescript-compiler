@@ -1,0 +1,12 @@
+File "/.../fixtures/syntaxErrors3.re", line 1, characters 20-21:
+Error: Syntax error
+Error happened when running command /.../refmt.exe with args [ '--print',
+  'binary',
+  '/.../fixtures/syntaxErrors3.re' ]
+
+  [1;31mWe've found a bug for you![0m
+  [36m/.../fixtures/syntaxErrors3.re[0m
+  
+  [1;33mThere's been an error running Reason's parser on a file.[0m
+  The error location should be slightly above this message.
+  Please file an issue on github.com/facebook/reason. Thanks!

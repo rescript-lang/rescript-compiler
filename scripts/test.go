@@ -63,7 +63,7 @@ func checkFileExist(f string) bool{
 }
 // Avoid rebuilding OCaml again
 func init() {
-	vendorOCamlPath, _ := filepath.Abs(filepath.Join(".", "vendor", "ocaml", "bin"))
+	vendorOCamlPath, _ := filepath.Abs(filepath.Join(".", "native", "bin"))
 	os.Setenv("PATH",
 		vendorOCamlPath+string(os.PathListSeparator)+os.Getenv("PATH"))
 	var extension string 	
@@ -139,14 +139,7 @@ func main() {
 		}
 	}
 	if *mochaTest {
-		// make := cmd(ninja, "-C", "jscomp", "-f", "ci.ninja" )
-		// make.Stdout = os.Stdout
-		// make.Stderr = os.Stderr
-		// error := make.Run()
-		// if error != nil {
-		// 	fmt.Println(error)
-		// 	os.Exit(2)
-		// }
+	
 		make := cmd("sh", "-c", "mocha jscomp/test/**/*test.js") 
 		make.Stdout = os.Stdout
 		make.Stderr = os.Stderr

@@ -768,9 +768,7 @@ let result_wrap loc (result_type : External_ffi_types.return_wrapper) result  =
   | Return_unset
   | Return_identity ->
     result
-(* TODO: sort out the order here
-   consolidate {!Lam_compile_external_call.assemble_args_splice}
-*)
+
 let rec transform_uncurried_arg_type loc (arg_types : External_arg_spec.t list)
     (args : t list ) =
   match arg_types,args with

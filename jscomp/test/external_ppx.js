@@ -1,1 +1,10 @@
-/* This output is empty. Its source's type definitions, externals and/or unused code got optimized away. */
+'use strict';
+
+var External_ppxGen = require("./external_ppx.gen");
+
+function f(prim) {
+  return External_ppxGen.f(prim);
+}
+
+exports.f = f;
+/* ./external_ppx.gen Not a pure module */

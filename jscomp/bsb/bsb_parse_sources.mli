@@ -35,8 +35,14 @@ val scan :
   cut_generators: bool -> 
   namespace : string option -> 
   clean_staled_bs_js:bool -> 
+  ignored_dirs:String_set.t ->
   Ext_json_types.t ->   
   Bsb_file_groups.t
 
+(** This function has some duplication 
+  from [scan],
+  the parsing assuming the format is 
+  already valid
+*) 
 val clean_re_js:  
   string -> unit 

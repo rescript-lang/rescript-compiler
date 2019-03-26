@@ -371,6 +371,13 @@
             "$ref": "#/definitions/sources",
             "description": "Source code location"
         },
+        "ignored-dirs" : {
+            "type" : "array",
+            "items": { 
+                "type" : "string"
+            },
+            "description": "a list of directories that bsb will not look into"
+        },
         "bs-dependencies": {
             "$ref": "#/definitions/dependencies",
             "description": "OCaml/Reason dependencies of the library, like in package.json. Currently searches in `node_modules`"

@@ -6,11 +6,11 @@ let report_error ppf = function
   | Pparse.CannotRun cmd ->
     (* modified *)
     if Ext_string.contain_substring cmd "refmt" then
-      fprintf ppf 
-        "@[<v>@{<info>There's been an error running Reason's refmt parser on a file.@}@,\
-          This was the command:@,@,%s@,@,\
-          @[Please file an issue on@ github.com/facebook/reason.@ Thanks!@]@]" cmd
-    else 
+      fprintf ppf
+        "@[<v>@{<info>There's been an error running Reason's parser on a file.@}@,\
+          The error location should be slightly above this message.@,\
+          @[Please file an issue on@ github.com/facebook/reason.@ Thanks!@]@]"
+    else
       fprintf ppf "@[<v>@{<info>There's been an error running a preprocessor before the compilation of a file.@}@,\
                    This was the command:@,@,%s@]" cmd
   | WrongMagic cmd ->

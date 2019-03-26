@@ -56,7 +56,6 @@ type js_global_val = {
 type js_new_val = {
   name : string ;
   external_module_name : external_module_name option;
-  splice : bool ;
   scopes : string list;
 }
 
@@ -93,7 +92,7 @@ type js_set_index = {
 
 
 
-type attr  =
+type external_spec  =
   | Js_global of js_global_val
   | Js_module_as_var of  external_module_name
   | Js_module_as_fn of js_module_as_fn
@@ -118,15 +117,15 @@ type t  =
   | Ffi_bs of
       External_arg_spec.t list  *
       return_wrapper *
-      attr
+      external_spec
   | Ffi_obj_create of obj_create
   | Ffi_normal
   (* When it's normal, it is handled as normal c functional ffi call *)
 
 
-val name_of_ffi : attr -> string
+val name_of_ffi : external_spec -> string
 
-val check_ffi : ?loc:Location.t ->  attr -> unit
+val check_ffi : ?loc:Location.t ->  external_spec -> bool
 
 val to_string : t -> string
 

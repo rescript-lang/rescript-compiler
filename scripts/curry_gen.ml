@@ -1,3 +1,15 @@
+
+
+(* no mli file emitted, since mli is not very meaningful 
+   except which identifiers are exposed 
+   exported functions:
+
+   - [ app f args]
+      called when apply a curried function with a list of arugments
+   - [ _1 o arg ]  .. [ _n]
+      called when apply a curried function with [n] argument
+   - [ __1 o] .. [ __n o]
+*)
 let prelude ={|
 (* Copyright (C) 2015 -  Authors of BuckleScript
  * 
@@ -30,8 +42,9 @@ external sub : 'a array -> int -> int -> 'a array = "caml_array_sub"
 
 (** Public *)
 let rec app f args = 
-  let arity = function_length f in
-  let len = Array.length args in
+  let init_arity = function_length f in
+  let arity = if init_arity = 0 then 1 else init_arity in (* arity fixing *)
+  let len = Caml_array_extern.length args in
   let d = arity - len in 
   if d = 0 then 
     apply_args f  args (**f.apply (null,args) *)
@@ -40,7 +53,7 @@ let rec app f args =
     app (Obj.magic (apply_args f (sub args 0 arity)))
       (sub args arity (-d))
   else 
-    Obj.magic (fun x -> app f (Caml_array.append args [|x|] ))
+    Obj.magic (fun x -> app f (Caml_array_extern.append args [|x|] ))
   
 |}
 

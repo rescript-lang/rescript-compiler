@@ -1,0 +1,15 @@
+
+  [1;31mWe've found a bug for you![0m
+  [36m/.../fixtures/bucklescript.re[0m [2m4:1-3[0m
+  
+  2 [2m│[0m let app = [@bs] (f, x, y) => f(x);
+  3 [2m│[0m 
+  [1;31m4[0m [2m│[0m [1;31mapp[0m(((x) => x + 1), 2);
+  
+  This is an uncurried BuckleScript function. [1;33mIt must be applied with a dot[0m.
+  
+  Like this: [1;33mfoo(. a, b)[0m
+  Not like this: [2mfoo(a, b)[0m
+  
+  This guarantees that your function is fully applied. More info here:
+  https://bucklescript.github.io/docs/en/function.html#solution-guaranteed-uncurrying

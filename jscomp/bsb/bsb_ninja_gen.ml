@@ -57,8 +57,9 @@ let output_ninja_and_namespace_map
       package_name;
       external_includes;
       bsc_flags ; 
-      ppx_flags;
-      pp_flags ;
+      pp_file;
+      ppx_files ;
+      ppx_checked_files;
       bs_dependencies;
       bs_dev_dependencies;
       refmt;
@@ -75,11 +76,11 @@ let output_ninja_and_namespace_map
       gentype_config; 
     } : Bsb_config_types.t)
   =
-  let custom_rules = Bsb_rule.reset generators in 
+  let custom_rules = Bsb_ninja_rule.reset generators in 
   let bsc = bsc_dir // bsc_exe in   (* The path to [bsc.exe] independent of config  *)
   let bsdep = bsc_dir // bsb_helper_exe in (* The path to [bsb_heler.exe] *)
   let cwd_lib_bs = cwd // Bsb_config.lib_bs in 
-  let ppx_flags = Bsb_build_util.ppx_flags ppx_flags in
+  let ppx_flags = Bsb_build_util.ppx_flags ppx_files in
   let bsc_flags =  String.concat Ext_string.single_space bsc_flags in
   let refmt_flags = String.concat Ext_string.single_space refmt_flags in
   let oc = open_out_bin (cwd_lib_bs // Literals.build_ninja) in
@@ -139,7 +140,7 @@ let output_ninja_and_namespace_map
         |] oc 
   in   
   let () = 
-    Ext_option.iter pp_flags (fun flag ->
+    Ext_option.iter pp_file (fun flag ->
       Bsb_ninja_util.output_kv Bsb_ninja_global_vars.pp_flags
       (Bsb_build_util.pp_flag flag) oc 
     );
@@ -149,6 +150,17 @@ let output_ninja_and_namespace_map
       ("-bs-gentype " ^ path) oc
     )
     ;  
+    (*
+    TODO: 
+    see https://github.com/ninja-build/ninja/issues/1375
+    *)
+    (match ppx_checked_files with
+    | first_ppx_checked_file :: _ -> 
+      Bsb_ninja_util.output_kv Bsb_ninja_global_vars.ppx_checked_files 
+      first_ppx_checked_file oc
+    | [] -> ())
+    ;
+
     Bsb_ninja_util.output_kvs
       [|
         Bsb_ninja_global_vars.bs_package_flags, bs_package_flags ; 
@@ -232,10 +244,11 @@ let output_ninja_and_namespace_map
         oc
         ~output
         ~input:(Bsb_config.proj_rel output)
-        ~rule:Bsb_rule.copy_resources);
+        ~rule:Bsb_ninja_rule.copy_resources);
   (** Generate build statement for each file *)        
   let all_info =      
     Bsb_ninja_file_groups.handle_file_groups oc  
+      ~has_checked_ppx:(ppx_checked_files <> [])
       ~bs_suffix     
       ~custom_rules
       ~js_post_build_cmd 
@@ -263,7 +276,7 @@ let output_ninja_and_namespace_map
        Bsb_ninja_util.output_build oc 
          ~output:(ns ^ Literals.suffix_cmi)
          ~input:(ns ^ Literals.suffix_mlmap)
-         ~rule:Bsb_rule.build_package
+         ~rule:Bsb_ninja_rule.build_package
          ;
        (ns ^ Literals.suffix_cmi) :: all_info in 
      Bsb_ninja_util.phony 

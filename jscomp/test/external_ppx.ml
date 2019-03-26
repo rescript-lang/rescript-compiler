@@ -15,3 +15,6 @@ external make_config :  length:'a -> width:int -> unit = ""
 external opt_make : 
   length: int -> ?width:int -> (_ as 'event)  = 
   "" [@@bs.obj]
+
+
+external f : int -> int = "" [@@genType.import "hh"]  

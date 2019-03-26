@@ -1,7 +1,0 @@
-stdlib = stdlib-402
-subninja runtime/release.ninja
-subninja others/release.ninja
-subninja $stdlib/release.ninja
-
-build all: phony runtime others $stdlib
-

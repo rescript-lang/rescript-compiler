@@ -42,11 +42,13 @@ val process_attributes_rev :
   t -> attr_kind * t
 
 val process_pexp_fun_attributes_rev :
-  t -> [ `Nothing | `Exn ] * t
-val process_bs :
-  t -> [ `Nothing | `Has] * t
+  t -> bool * t
 
-val process_external : t -> bool
+val process_bs :
+  t -> bool * t
+
+val external_needs_to_be_encoded :
+  t -> bool
 
 type derive_attr = {
   explict_nonrec : bool;

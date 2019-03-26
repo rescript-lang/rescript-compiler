@@ -751,6 +751,7 @@ val int_of_string_opt: string -> int option
 *)
 
 val string_of_float : float -> string
+[@@ocaml.deprecated "Please use Js.Float.toString instead, string_of_float generates unparseable floats"]
 (** Return the string representation of a floating-point number. *)
 
 external float_of_string : string -> float = "caml_float_of_string"

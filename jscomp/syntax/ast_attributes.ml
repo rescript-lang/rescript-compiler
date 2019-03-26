@@ -109,31 +109,30 @@ let process_attributes_rev (attrs : t) : attr_kind * t =
     ) 
 
 let process_pexp_fun_attributes_rev (attrs : t) =
-  Ext_list.fold_left attrs (`Nothing, []) (fun (st, acc) (({txt; loc}, _) as attr ) ->
-      match txt, st  with
-      | "bs.open", (`Nothing | `Exn)
+  Ext_list.fold_left attrs (false, []) (fun (st, acc) (({txt; loc}, _) as attr ) ->
+      match txt  with
+      | "bs.open"
         ->
-        `Exn, acc
-
-      | _ , _ ->
+        true, acc
+      | _  ->
         st, attr::acc
     ) 
 
+
 let process_bs (attrs : t) =
-  Ext_list.fold_left attrs (`Nothing, []) (fun (st, acc) (({txt; loc}, _) as attr ) ->
+  Ext_list.fold_left attrs (false, []) (fun (st, acc) (({txt; loc}, _) as attr ) ->
       match txt, st  with
       | "bs", _
         ->
-        `Has, acc
+        true, acc
       | _ , _ ->
         st, attr::acc
     ) 
 
-let process_external attrs =
-  List.exists (fun (({txt; }, _)  : attr) ->
-      if Ext_string.starts_with txt "bs." then true
-      else false
-    ) attrs
+let external_needs_to_be_encoded (attrs : t)=
+  Ext_list.exists attrs 
+    (fun ({txt; }, _) ->
+       Ext_string.starts_with txt "bs." || txt = Literals.gentype_import) 
 
 
 type derive_attr = {
@@ -193,7 +192,7 @@ let iter_process_derive_type (attrs : t) =
   it is worse in bs.uncurry since it will introduce
   inconsistency in arity
  *)  
-let iter_process_bs_string_int_unwrap_uncurry (attrs : Parsetree.attributes) =
+let iter_process_bs_string_int_unwrap_uncurry (attrs : t) =
   let st = ref `Nothing in 
   let assign v (({loc;_}, _ ) as attr : attr) = 
     if !st = `Nothing then 
@@ -275,11 +274,11 @@ let has_bs_optional  (attrs : t) : bool =
 
 
 
-let iter_process_bs_int_as  attrs =
+let iter_process_bs_int_as  (attrs : t) =
   let st = ref None in
-  List.iter
+  Ext_list.iter attrs
     (fun
-      (({txt ; loc}, payload ) as attr : attr)  ->
+      (({txt ; loc}, payload ) as attr)  ->
       match  txt with
       | "bs.as"
         ->
@@ -293,7 +292,7 @@ let iter_process_bs_int_as  attrs =
         else
           Bs_syntaxerr.err loc Duplicated_bs_as
       | _  -> ()
-    ) attrs; !st
+    ) ; !st
 
 
 let iter_process_bs_string_or_int_as (attrs : Parsetree.attributes) =

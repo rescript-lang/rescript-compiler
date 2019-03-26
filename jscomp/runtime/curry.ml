@@ -30,7 +30,8 @@ external sub : 'a array -> int -> int -> 'a array = "caml_array_sub"
 
 (** Public *)
 let rec app f args = 
-  let arity = function_length f in
+  let init_arity = function_length f in
+  let arity = if init_arity = 0 then 1 else init_arity in (* arity fixing *)
   let len = Caml_array_extern.length args in
   let d = arity - len in 
   if d = 0 then 
