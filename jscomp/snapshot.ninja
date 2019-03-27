@@ -50,7 +50,7 @@ build $SNAP/unstable/bsb_native.ml: bspack | ./bin/bspack.exe
      main = Bsb_main 
      
 build $SNAP/unstable/native_ppx.ml: bspack | ./bin/bspack.exe     
-     flags =   -D BS_MIN_LEX_DEPS=true -D BS_NATIVE=true -bs-MD ${releaseMode} -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I stubs -I common -I ext -I syntax -I depends -I bsb -I ext -I main 
+     flags =   -module-alias Config=Config_whole_compiler -D BS_MIN_LEX_DEPS=true -D BS_NATIVE=true -bs-MD ${releaseMode} -I $OCAML_SRC_UTILS -I $OCAML_SRC_PARSING -I stubs -I common -I ext -I syntax -I depends -I bsb -I ext -I core -I main 
      main = Native_ppx_main
 
 
