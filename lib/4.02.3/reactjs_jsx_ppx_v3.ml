@@ -10,8 +10,9 @@
 *)
 
 (*
-  The actual transform:
+  There are two different transforms that can be selected in this file (v2 and v3):
 
+  v2:
   transform `[@JSX] div(~props1=a, ~props2=b, ~children=[foo, bar], ())` into
   `ReactDOMRe.createElement("div", ~props={"props1": 1, "props2": b}, [|foo,
   bar|])`.
@@ -25,6 +26,21 @@
 
   transform `[@JSX] [foo]` into
   `ReactDOMRe.createElement(ReasonReact.fragment, [|foo|])`
+
+  v3:
+  transform `[@JSX] div(~props1=a, ~props2=b, ~children=[foo, bar], ())` into
+  `ReactDOMRe.createDOMElementVariadic("div", ReactDOMRe.domProps(~props1=1, ~props2=b), [|foo, bar|])`.
+
+  transform the upper-cased case
+  `[@JSX] Foo.createElement(~key=a, ~ref=b, ~foo=bar, ~children=[], ())` into
+  `React.createElement(Foo.make, Foo.makeProps(~key=a, ~ref=b, ~foo=bar, ()))`
+
+  transform the upper-cased case
+  `[@JSX] Foo.createElement(~foo=bar, ~children=[foo, bar], ())` into
+  `React.createElementVariadic(Foo.make, Foo.makeProps(~foo=bar, ~children=React.null, ()), [|foo, bar|])`
+
+  transform `[@JSX] [foo]` into
+  `ReactDOMRe.createElement(ReasonReact.fragment, [|foo|])`
 *)
 
 let rec find_opt p = function
@@ -33,7 +49,7 @@ let rec find_opt p = function
 let nolabel = ""
 let labelled str = str
 let optional str = "?" ^ str
-let isOptional str = str <> "" && String.sub str 0 1 = "?"
+let isOptional str = str <> "" && str.[0] = '?'
 let isLabelled str = str <> "" && not (isOptional str)
 let getLabel str = if (isOptional str) then (String.sub str 1 ((String.length str) - 1)) else str
 
@@ -119,10 +135,7 @@ let otherAttrsPure (loc, _) =
   loc.txt <> "react.component"
 
 (* Iterate over the attributes and try to find the [@react.component] attribute *)
-let hasAttrOnBinding {pvb_attributes} =
-  match (find_opt hasAttr pvb_attributes) with
-  | Some(_) -> true
-  | None -> false
+let hasAttrOnBinding {pvb_attributes} = find_opt hasAttr pvb_attributes <> None
 
 (* Filter the [@react.component] attribute and immutably replace them on the binding *)
 let filterAttrOnBinding binding = {binding with pvb_attributes = List.filter otherAttrsPure binding.pvb_attributes}
