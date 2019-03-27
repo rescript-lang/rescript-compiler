@@ -1,7 +1,0 @@
-
-
-rule cp 
-    command = cp $in $out
-
-ext = darwin
-include copy.ninja

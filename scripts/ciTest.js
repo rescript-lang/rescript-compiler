@@ -51,7 +51,7 @@ var ninjaPath = ''
 
 function init(){
     var vendorOCamlPath = 
-        path.join(__dirname,'..','native','bin')
+        path.join(__dirname,'..','native', require('./buildocaml.js').getVersionPrefix(),'bin')
 
     process.env['PATH'] = 
         vendorOCamlPath + path.delimiter +  process.env['PATH']
@@ -81,7 +81,17 @@ function main() {
     console.log('OCaml:', output)
     var binDir = path.join(__dirname, '..','jscomp', 'bin')
     if(ounitTest){
-        cp.execSync(`ocamlopt.opt -g -w -40-30 ../stubs/ext_basic_hash_stubs.c -I +compiler-libs ocamlcommon.cmxa unix.cmxa str.cmxa all_ounit_tests.mli all_ounit_tests.ml -o test.exe`,
+        var fn = fs.copyFileSync ? fs.copyFileSync : fs.renameSync
+        fn(
+            path.join(
+                __dirname,
+                '..',
+                'lib',
+                require('./buildocaml.js').getVersionPrefix(),
+                'unstable',
+                'all_ounit_tests.ml'),
+            path.join(binDir, 'all_ounit_tests.ml'))
+        cp.execSync(`ocamlopt.opt -g -w -40-30 ../stubs/ext_basic_hash_stubs.c -I +compiler-libs ocamlcommon.cmxa unix.cmxa str.cmxa all_ounit_tests.ml -o test.exe`,
             {
                 cwd: binDir,
                 stdio : [0,1,2]

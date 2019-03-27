@@ -19,7 +19,7 @@ var lib_dir = path.join(root_dir, 'lib')
 var jscomp_dir = path.join(root_dir, 'jscomp')
 var runtime_dir = path.join(jscomp_dir,'runtime')
 var others_dir = path.join(jscomp_dir,'others')
-var stdlib_dir = path.join(jscomp_dir, 'stdlib-402')
+
 
 
 var ocaml_dir = path.join(lib_dir,'ocaml')
@@ -29,10 +29,12 @@ var is_windows = config.is_windows
 var sys_extension = config.sys_extension
 
 process.env.BS_RELEASE_BUILD = 'true'
+var ocamlVersion = require('./buildocaml.js').getVersionPrefix()
+var stdlib_dir = path.join(jscomp_dir, ocamlVersion.includes('4.02') ? 'stdlib-402' : 'stdlib-406')
 // Add vendor bin path
 // So that second try will work
 process.env.PATH =
-    path.join(__dirname, '..', 'native','bin') +
+    path.join(__dirname, '..', 'native',ocamlVersion,'bin') +
     path.delimiter +
     process.env.PATH
 
@@ -179,7 +181,7 @@ function install(){
     })
 }
 
-var ocamlVersion = require('./vendored_ocaml_version.js').getVersionPrefix()
+
 
 /**
  * raise an exception if not matched
@@ -217,9 +219,41 @@ function tryToProvideOCamlCompiler() {
     }
 }
 
+/**
+ * 
+ * @param {string} sys_extension 
+ * 
+ */
+function createCopyNinja(sys_extension){
+    var output = ''
+    switch(sys_extension){
+        case '.win32':
+            output += `
+rule cp
+    command = cmd /q /c copy $in $out 1>nul
+`
+            break
+        default:
+            output += `
+rule cp 
+    command = cp $in $out
+`
+            break
+    }
+    output += [
+        'bsc','bsb','bsb_helper','bsppx',
+        'refmt','reactjs_jsx_ppx_2'
+    ].map(function(x){
+        return `build ${x}.exe: cp ${x}${sys_extension}`
+    }).join('\n')
+    output += '\n'
+    return output
+}
+
 function copyPrebuiltCompilers() {
+    fs.writeFileSync(path.join(lib_dir,'copy.ninja'),createCopyNinja(sys_extension),'ascii')
     cp.execFileSync(ninja_bin_output,
-        ["-f", "copy" + sys_extension + ".ninja"],
+        ["-f", 'copy.ninja'],
         { cwd: lib_dir, stdio: [0, 1, 2] })
 }
 
@@ -270,7 +304,7 @@ function provideCompiler() {
         var releaseNinja = `
 ocamlopt = ocamlopt.opt 
 ext = .exe
-INCL= ${ocamlVersion.includes('4.02') ? '4.02.3+BS' : '4.06.1+BS'}
+INCL= ${require('./buildocaml.js').getVersionPrefix()}
 include body.ninja        
 `
         fs.writeFileSync(path.join(lib_dir,'release.ninja'),releaseNinja,'ascii')
