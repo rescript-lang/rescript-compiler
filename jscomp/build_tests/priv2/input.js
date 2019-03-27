@@ -9,7 +9,8 @@ assert.throws(
             { cwd: __dirname, encoding: 'utf8' })
     },
         (err) => {
-        if (err.stdout.match(/Unbound value Liba.Priv.v/)){
+        if (err.stdout.match(/Unbound value Liba.Priv.v/) ||err.stdout.match(/Liba.Priv is an alias/)){
+            // error message changed for 4.06    
             return true
         }
         return false

@@ -17,8 +17,6 @@
 ../ocaml/utils/arg_helper.mli
 ../ocaml/utils/clflags.ml
 ../ocaml/utils/clflags.mli
-../ocaml/utils/config.ml
-../ocaml/utils/config.mli
 ../ocaml/utils/identifiable.ml
 ../ocaml/utils/identifiable.mli
 ../ocaml/utils/misc.ml
@@ -41,6 +39,8 @@
 ./common/js_config.mli
 ./common/lam_methname.ml
 ./common/lam_methname.mli
+./core/config_whole_compiler.ml
+./core/config_whole_compiler.mli
 ./ext/ext_array.ml
 ./ext/ext_array.mli
 ./ext/ext_bytes.ml
