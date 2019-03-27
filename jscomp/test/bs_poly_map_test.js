@@ -4,7 +4,6 @@ var Mt = require("./mt.js");
 var Belt_Id = require("../../lib/js/belt_Id.js");
 var Belt_Map = require("../../lib/js/belt_Map.js");
 var Belt_Set = require("../../lib/js/belt_Set.js");
-var Caml_obj = require("../../lib/js/caml_obj.js");
 var Belt_Array = require("../../lib/js/belt_Array.js");
 var Belt_MapDict = require("../../lib/js/belt_MapDict.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
@@ -286,11 +285,15 @@ b("File \"bs_poly_map_test.ml\", line 131, characters 4-11", pres !== undefined 
 
 b("File \"bs_poly_map_test.ml\", line 132, characters 4-11", Belt_Array.eq(Belt_MapDict.keysToArray(match$1[0].data), Belt_Array.makeBy(5000, (function (i) {
                 return i;
-              })), Caml_obj.caml_equal));
+              })), (function (prim, prim$1) {
+            return prim === prim$1;
+          })));
 
 b("File \"bs_poly_map_test.ml\", line 133, characters 4-11", Belt_Array.eq(Belt_MapDict.keysToArray(match$1[1].data), Belt_Array.makeBy(5000, (function (i) {
                 return 5001 + i | 0;
-              })), Caml_obj.caml_equal));
+              })), (function (prim, prim$1) {
+            return prim === prim$1;
+          })));
 
 var v7 = Belt_Map.remove(v3, 5000);
 
@@ -302,11 +305,15 @@ b("File \"bs_poly_map_test.ml\", line 137, characters 4-11", match$5[1] === unde
 
 b("File \"bs_poly_map_test.ml\", line 138, characters 4-11", Belt_Array.eq(Belt_MapDict.keysToArray(match$6[0].data), Belt_Array.makeBy(5000, (function (i) {
                 return i;
-              })), Caml_obj.caml_equal));
+              })), (function (prim, prim$1) {
+            return prim === prim$1;
+          })));
 
 b("File \"bs_poly_map_test.ml\", line 139, characters 4-11", Belt_Array.eq(Belt_MapDict.keysToArray(match$6[1].data), Belt_Array.makeBy(5000, (function (i) {
                 return 5001 + i | 0;
-              })), Caml_obj.caml_equal));
+              })), (function (prim, prim$1) {
+            return prim === prim$1;
+          })));
 
 Mt.from_pair_suites("Bs_poly_map_test", suites[0]);
 
