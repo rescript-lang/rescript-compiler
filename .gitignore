@@ -89,6 +89,7 @@ odoc_gen/*.cmxs
 lib/prebuilt.ninja
 lib/release.ninja
 lib/build.ninja
+lib/copy.ninja
 jscomp/release.ninja
 jscomp/build.ninja
 jscomp/compiler.ninja
@@ -134,7 +135,6 @@ jscomp/ext/string_set.ml
 jscomp/outcome_printer/tweaked_reason_oprint.ml
 jscomp/outcome_printer/reason_syntax_util.ml
 jscomp/outcome_printer/reason_syntax_util.mli
-native/bin
-native/lib
-native/main
+jscomp/bin/all_ounit_tests.ml
+native/
 vendor/ocaml

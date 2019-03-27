@@ -39,6 +39,7 @@ type 'a kind = 'a Ml_binary.kind
 
 let read_parse_and_extract (type t) (k : t kind) (ast : t) : String_set.t =
   Depend.free_structure_names := String_set.empty;
+  Ext_ref.protect Clflags.transparent_modules false begin fun _ -> 
   List.iter
     (fun modname  ->
 #if OCAML_VERSION =~ ">4.03.0" then
@@ -50,7 +51,7 @@ let read_parse_and_extract (type t) (k : t kind) (ast : t) : String_set.t =
    | Ml_binary.Ml  -> Depend.add_implementation bound_vars ast
    | Ml_binary.Mli  -> Depend.add_signature bound_vars ast  ); 
   !Depend.free_structure_names
-
+  end
 
 type ('a,'b) ast_info =
   | Ml of
