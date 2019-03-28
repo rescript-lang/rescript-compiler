@@ -101,9 +101,9 @@ function main() {
 
 
     if(mochaTest){
-        console.log('generate build.ninja for dev mode')
-        require('./ninja.js').updateDev()
-        console.log('generate build.ninja finished')
+        // console.log('generate build.ninja for dev mode')
+        // require('./ninja.js').updateDev()
+        // console.log('generate build.ninja finished')
 
         cp.execFileSync(
             path.join(__dirname, '..', 'lib', 'ninja.exe'),
