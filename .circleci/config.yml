@@ -7,9 +7,14 @@ jobs: # a collection of steps
     steps: # a collection of executable commands
       - checkout # special step to check out source code to working directory
       - run:
+          name: "Pull Submodules"
+          command: |
+            git submodule init
+            git submodule update --remote      
+      - run:
           name: install-npm-wee
           command: npm install
-          
+
       - run: # run tests
           name: test
           command: npm test
