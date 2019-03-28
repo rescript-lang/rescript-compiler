@@ -251,9 +251,10 @@ rule cp
 }
 
 function copyPrebuiltCompilers() {
-    fs.writeFileSync(path.join(lib_dir,'copy.ninja'),createCopyNinja(sys_extension),'ascii')
+    var filePath = path.join(os.tmpdir(),'copy.ninja')
+    fs.writeFileSync(filePath,createCopyNinja(sys_extension),'ascii')
     cp.execFileSync(ninja_bin_output,
-        ["-f", 'copy.ninja'],
+        ["-f", filePath],
         { cwd: lib_dir, stdio: [0, 1, 2] })
 }
 
@@ -282,10 +283,10 @@ subninja $stdlib/release.ninja
 ${process.env.BS_TRAVIS_CI ? 'subninja test/build.ninja\n' : '\n'}
 build all: phony runtime others $stdlib
 `
-    var filePath = path.join(jscomp_dir,'release.ninja')
+    var filePath = path.join(os.tmpdir(),'release.ninja')
     fs.writeFileSync(filePath,releaseNinja,'ascii')
-    cp.execFileSync(ninja_bin_output, [ "-f", "release.ninja", "-t", "clean"], { cwd: jscomp_dir, stdio: [0, 1, 2] , shell: false})
-    cp.execFileSync(ninja_bin_output, [ "-f", "release.ninja"], { cwd: jscomp_dir, stdio: [0, 1, 2] , shell: false})
+    cp.execFileSync(ninja_bin_output, [ "-f", filePath, "-t", "clean"], { cwd: jscomp_dir, stdio: [0, 1, 2] , shell: false})
+    cp.execFileSync(ninja_bin_output, [ "-f", filePath], { cwd: jscomp_dir, stdio: [0, 1, 2] , shell: false})
     fs.unlinkSync(filePath)
     console.log('Build finished')
 }
