@@ -313,7 +313,7 @@ include body.ninja
         var tmp = os.tmpdir()
         var filePath =  path.join(tmp,'release.ninja')
         fs.writeFileSync(filePath,releaseNinja,'ascii')
-        cp.execFileSync(ninja_bin_output, ['-f', 'release.ninja'], { cwd: lib_dir, stdio: [0, 1, 2] })
+        cp.execFileSync(ninja_bin_output, ['-f', filePath], { cwd: lib_dir, stdio: [0, 1, 2] })
         fs.unlinkSync(filePath)
 
     }    
