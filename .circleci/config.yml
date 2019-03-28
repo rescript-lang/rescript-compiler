@@ -7,12 +7,12 @@ jobs: # a collection of steps
     steps: # a collection of executable commands
       - checkout # special step to check out source code to working directory
       - run:       
-        name: "Setting env variables"
-        command: |
+          name: "Setting env variables"
+          command: |
             echo 'export BS_TRAVIS_CI=1' >> $BASH_ENV
       - run:    
-        name: "Check env variables"
-        command: |
+          name: "Check env variables"
+          command: |
             echo BS_TRAVIS_CI ${BS_TRAVIS_CI}
       - run:
           name: "Pull Submodules"
