@@ -99,7 +99,20 @@ function main() {
          cp.execSync(`./test.exe`,{cwd: binDir, stdio : [0,1,2]})   
     }
 
+
     if(mochaTest){
+        console.log('generate build.ninja for dev mode')
+        require('./ninja.js').updateDev()
+        console.log('generate build.ninja finished')
+
+        cp.execFileSync(
+            path.join(__dirname, '..', 'lib', 'ninja.exe'),
+            {
+                cwd: path.join(__dirname, '..', 'jscomp'),
+                stdio: [0, 1, 2]
+            }
+            )
+            
         cp.execSync(`mocha jscomp/test/**/*test.js`,{cwd : path.join(__dirname,'..'), stdio : [0,1,2]})
     }
 
