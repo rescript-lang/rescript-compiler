@@ -12,7 +12,8 @@ jobs: # a collection of steps
             echo 'export BS_TRAVIS_CI=1' >> $BASH_ENV
       - run:    
         name: "Check env variables"
-        command: echo ${BS_TRAVIS_CI}
+        command: |
+            echo BS_TRAVIS_CI ${BS_TRAVIS_CI}
       - run:
           name: "Pull Submodules"
           command: |
