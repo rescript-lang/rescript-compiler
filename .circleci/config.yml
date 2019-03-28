@@ -9,7 +9,7 @@ jobs: # a collection of steps
       - run:       
         name: "Setting env variables"
         command: |
-          echo 'export BS_TRAVIS_CI=1' >> $BASH_ENV
+            echo 'export BS_TRAVIS_CI=1' >> $BASH_ENV
       - run:    
         name: "Check env variables"
         command: echo ${BS_TRAVIS_CI}
