@@ -118,7 +118,7 @@ function main() {
 
     if(installGlobal){
         console.log('install bucklescript globally')
-        cp.execSync('sudo npm i -g .', {cwd : path.join(__dirname, '..'), stdio: [0,1,2]})
+        cp.execSync('sudo npm i -g --unsafe-perm .', {cwd : path.join(__dirname, '..'), stdio: [0,1,2]})
     }
 
     var bsbDir = cp.execSync(`bsb -where`, {cwd : path.join(__dirname, '..'), encoding : 'utf8' }).trim()
