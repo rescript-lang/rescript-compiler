@@ -105,13 +105,13 @@ function main() {
         // require('./ninja.js').updateDev()
         // console.log('generate build.ninja finished')
 
-        cp.execFileSync(
-            path.join(__dirname, '..', 'lib', 'ninja.exe'),
-            {
-                cwd: path.join(__dirname, '..', 'jscomp'),
-                stdio: [0, 1, 2]
-            }
-            )
+        // cp.execFileSync(
+        //     path.join(__dirname, '..', 'lib', 'ninja.exe'),
+        //     {
+        //         cwd: path.join(__dirname, '..', 'jscomp'),
+        //         stdio: [0, 1, 2]
+        //     }
+        //     )
 
         cp.execSync(`mocha jscomp/test/**/*test.js`,{cwd : path.join(__dirname,'..'), stdio : [0,1,2]})
     }
