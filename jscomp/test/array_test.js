@@ -241,7 +241,9 @@ var array_suites_001 = /* :: */[
                                   26,
                                   27,
                                   28
-                                ], Caml_obj.caml_equal)
+                                ], (function (prim, prim$1) {
+                                    return prim === prim$1;
+                                  }))
                           ]);
                 })
             ],
@@ -282,7 +284,9 @@ var array_suites_001 = /* :: */[
                                     18,
                                     19,
                                     20
-                                  ], Caml_obj.caml_equal)
+                                  ], (function (prim, prim$1) {
+                                      return prim === prim$1;
+                                    }))
                             ]);
                   })
               ],

@@ -42,23 +42,21 @@ function test_js_error4(param) {
   catch (raw_e){
     var e = Caml_js_exceptions.internalToOCamlException(raw_e);
     var exit = 0;
-    var exit$1 = 0;
     if (e === Caml_builtin_exceptions.not_found) {
       return 2;
     } else if (e[0] === Caml_builtin_exceptions.invalid_argument && e[1] === "x") {
       return 3;
     } else {
-      exit$1 = 2;
-    }
-    if (exit$1 === 2) {
-      if (e[0] === A && e[1] === 2) {
-        return 4;
-      } else {
-        exit = 1;
-      }
+      exit = 1;
     }
     if (exit === 1) {
-      if (e === B) {
+      if (e[0] === A) {
+        if (e[1] !== 2) {
+          return 7;
+        } else {
+          return 4;
+        }
+      } else if (e === B) {
         return 5;
       } else if (e[0] === C && !(e[1] !== 1 || e[2] !== 2)) {
         return 6;
