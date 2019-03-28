@@ -289,7 +289,7 @@ build all: phony runtime others $stdlib
     fs.unlinkSync(filePath)
     console.log('Build finished')
 }
-
+var os = require('os') 
 function provideCompiler() {
     // FIXME: weird logic
     // if (fs.existsSync(path.join(lib_dir,'ocaml','pervasives.cmi'))) {
@@ -310,8 +310,11 @@ ext = .exe
 INCL= ${require('./buildocaml.js').getVersionPrefix()}
 include body.ninja        
 `
-        fs.writeFileSync(path.join(lib_dir,'release.ninja'),releaseNinja,'ascii')
+        var tmp = os.tmpdir()
+        var filePath =  path.join(tmp,'release.ninja')
+        fs.writeFileSync(filePath,releaseNinja,'ascii')
         cp.execFileSync(ninja_bin_output, ['-f', 'release.ninja'], { cwd: lib_dir, stdio: [0, 1, 2] })
+        fs.unlinkSync(filePath)
 
     }    
 }
