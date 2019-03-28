@@ -43,31 +43,37 @@
   `ReactDOMRe.createElement(ReasonReact.fragment, [|foo|])`
 *)
 
-let rec find_opt p = function
-  | [] -> None
-  | x :: l -> if p x then Some x else find_opt p l
-let nolabel = ""
-let labelled str = str
-let optional str = "?" ^ str
-let isOptional str = str <> "" && str.[0] = '?'
-let isLabelled str = str <> "" && not (isOptional str)
-let getLabel str = if (isOptional str) then (String.sub str 1 ((String.length str) - 1)) else str
-
-let argIsKeyRef = function
-  | (("key" | "ref"), _) | (("?key" | "?ref"), _) -> true
-  | _ -> false
-let constantString ~loc str = Ast_helper.Exp.constant ~loc (Asttypes.Const_string (str, None))
-let safeTypeFromValue valueStr =
-let valueStr = getLabel valueStr in
-match String.sub valueStr 0 1 with
-| "_" -> "T" ^ valueStr
-| _ -> valueStr
-
 open Ast_helper
 open Ast_mapper
 open Asttypes
 open Parsetree
 open Longident
+
+let rec find_opt p = function
+  | [] -> None
+  | x :: l -> if p x then Some x else find_opt p l
+let nolabel = Nolabel
+let labelled str = Labelled str
+let optional str = Optional str
+let isOptional str = match str with
+| Optional _ -> true
+| _ -> false
+let isLabelled str = match str with
+| Labelled _ -> true
+| _ -> false
+let getLabel str = match str with
+| Optional str | Labelled str -> str
+| Nolabel -> ""
+
+let argIsKeyRef = function
+  | (Labelled ("key" | "ref"), _) | (Optional ("key" | "ref"), _) -> true
+  | _ -> false
+let constantString ~loc str = Ast_helper.Exp.constant ~loc (Pconst_string (str, None))
+let safeTypeFromValue valueStr =
+let valueStr = getLabel valueStr in
+match String.sub valueStr 0 1 with
+| "_" -> "T" ^ valueStr
+| _ -> valueStr
 
 type 'a children = | ListLiteral of 'a | Exact of 'a
 type componentConfig = {
@@ -113,8 +119,8 @@ let transformChildrenIfList ~loc ~mapper theList =
 let extractChildren ?(removeLastPositionUnit=false) ~loc propsAndChildren =
   let rec allButLast_ lst acc = match lst with
     | [] -> []
-    | ("", {pexp_desc = Pexp_construct ({txt = Lident "()"}, None)})::[] -> acc
-    | ("", _)::rest -> raise (Invalid_argument "JSX: found non-labelled argument before the last position")
+    | (Nolabel, {pexp_desc = Pexp_construct ({txt = Lident "()"}, None)})::[] -> acc
+    | (Nolabel, _)::rest -> raise (Invalid_argument "JSX: found non-labelled argument before the last position")
     | arg::rest -> allButLast_ rest (arg::acc)
   in
   let allButLast lst = allButLast_ lst [] |> List.rev in
@@ -180,7 +186,7 @@ let filenameFromLoc (pstr_loc: Location.t) =
   let fileName = try
       Filename.chop_extension (Filename.basename fileName)
     with | Invalid_argument _-> fileName in
-  let fileName = String.capitalize fileName in
+  let fileName = String.capitalize_ascii fileName in
   fileName
 
 (* Build a string representation of a module name with segments separated by $ *)
@@ -283,11 +289,17 @@ let makePropsName ~loc name =
     ppat_attributes = [];
   }
 
+let makeObjectField loc (str, attrs, type_) =
+  Otag ({ loc; txt = str }, attrs, type_)
+
 (* Build an AST node representing a "closed" Js.t object representing a component's props *)
 let makePropsType ~loc namedTypeList =
   Typ.mk ~loc (
     Ptyp_constr({txt= Ldot (Lident("Js"), "t"); loc}, [{
-        ptyp_desc = Ptyp_object(namedTypeList, Closed);
+        ptyp_desc = Ptyp_object(
+          List.map (makeObjectField loc) namedTypeList,
+          Closed
+        );
         ptyp_loc = loc;
         ptyp_attributes = [];
       }])
@@ -321,7 +333,7 @@ let jsxMapper () =
         (childrenArg := Some expression;
         [(labelled "children", Exp.ident ~loc {loc; txt = Ldot (Lident "React", "null")})]))
       @ [(nolabel, Exp.construct ~loc {loc; txt = Lident "()"} None)] in
-    let isCap str = let first = String.sub str 0 1 in let capped = String.uppercase first in first = capped in
+    let isCap str = let first = String.sub str 0 1 in let capped = String.uppercase_ascii first in first = capped in
     let ident = match modulePath with
     | Lident _ -> Ldot (modulePath, "make")
     | (Ldot (modulePath, value) as fullPath) when isCap value -> Ldot (fullPath, "make")
@@ -482,10 +494,10 @@ let jsxMapper () =
     let expr = mapper.expr mapper expr in
     match expr.pexp_desc with
     (* TODO: make this show up with a loc. *)
-    | Pexp_fun ("key", _, _, _)
-    | Pexp_fun ("?key", _, _, _) -> raise (Invalid_argument "Key cannot be accessed inside of a component. Don't worry - you can always key a component from its parent!")
-    | Pexp_fun ("ref", _, _, _)
-    | Pexp_fun ("?ref", _, _, _) -> raise (Invalid_argument "Ref cannot be passed as a normal prop. Please use `forwardRef` API instead.")
+    | Pexp_fun (Labelled "key", _, _, _)
+    | Pexp_fun (Optional "key", _, _, _) -> raise (Invalid_argument "Key cannot be accessed inside of a component. Don't worry - you can always key a component from its parent!")
+    | Pexp_fun (Labelled "ref", _, _, _)
+    | Pexp_fun (Optional "ref", _, _, _) -> raise (Invalid_argument "Ref cannot be passed as a normal prop. Please use `forwardRef` API instead.")
     | Pexp_fun (arg, default, pattern, expression) when isOptional arg || isLabelled arg ->
       let alias = (match pattern with
       | {ppat_desc = Ppat_alias (_, {txt}) | Ppat_var {txt}} -> txt
@@ -550,7 +562,7 @@ let jsxMapper () =
       (match ptyp_desc with
       | Ptyp_arrow (name, type_, ({ptyp_desc = Ptyp_arrow _} as rest)) when isLabelled name || isOptional name ->
         getPropTypes ((name, ptyp_loc, type_)::types) rest
-      | Ptyp_arrow ("", _type, rest) ->
+      | Ptyp_arrow (Nolabel, _type, rest) ->
         getPropTypes types rest
       | Ptyp_arrow (name, type_, returnValue) when isLabelled name || isOptional name ->
         (returnValue, (name, returnValue.ptyp_loc, type_)::types)
@@ -743,7 +755,7 @@ let jsxMapper () =
       (match ptyp_desc with
       | Ptyp_arrow (name, type_, ({ptyp_desc = Ptyp_arrow _} as rest)) when isOptional name || isLabelled name ->
         getPropTypes ((name, ptyp_loc, type_)::types) rest
-      | Ptyp_arrow ("", _type, rest) ->
+      | Ptyp_arrow (Nolabel, _type, rest) ->
         getPropTypes types rest
       | Ptyp_arrow (name, type_, returnValue) when isOptional name || isLabelled name ->
         (returnValue, (name, returnValue.ptyp_loc, type_)::types)
@@ -789,8 +801,8 @@ let jsxMapper () =
         (* Foo.createElement(~prop1=foo, ~prop2=bar, ~children=[], ()) *)
         | {loc; txt = Ldot (modulePath, ("createElement" | "make"))} ->
           (match !jsxVersion with
-          | None
           | Some 2 -> transformUppercaseCall modulePath mapper loc attrs callExpression callArguments
+          | None
           | Some 3 -> transformUppercaseCall3 modulePath mapper loc attrs callExpression callArguments
           | Some _ -> raise (Invalid_argument "JSX: the JSX version must be 2 or 3"))
 
@@ -799,8 +811,8 @@ let jsxMapper () =
           ReactDOMRe.createElement(~props=ReactDOMRe.props(~props1=foo, ~props2=bar, ()), [|bla|]) *)
         | {loc; txt = Lident id} ->
           (match !jsxVersion with
-          | None
           | Some 2 -> transformLowercaseCall mapper loc attrs callArguments id
+          | None
           | Some 3 -> transformLowercaseCall3 mapper loc attrs callArguments id
           | Some _ -> raise (Invalid_argument "JSX: the JSX version must be 2 or 3"))
 
@@ -857,7 +869,7 @@ let jsxMapper () =
           (* no file-level jsx config found *)
           | ([], _) -> default_mapper.structure mapper structure
           (* {jsx: 2} *)
-          | ((_, {pexp_desc = Pexp_constant (Const_int version)})::rest, recordFieldsWithoutJsx) -> begin
+          | ((_, {pexp_desc = Pexp_constant (Pconst_integer (version, None)})::rest, recordFieldsWithoutJsx) -> begin
               (match version with
               | 2 -> jsxVersion := Some 2
               | 3 -> jsxVersion := Some 3

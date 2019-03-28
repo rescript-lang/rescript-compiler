@@ -26,7 +26,7 @@ function verifyIsCleanWorkTree() {
 }
 
 function checkWinBinary(){
-    var assocs = ['bsppx', 'bsb', 'bsb_helper', 'refmt', 'reactjs_jsx_ppx_2','bsc'].map(x=>{
+    var assocs = ['bsppx', 'bsb', 'bsb_helper', 'refmt', 'reactjs_jsx_ppx_2', 'reactjs_jsx_ppx_3', 'bsc'].map(x=>{
         return [x, { win32 : false, darwin : false}]
     })
     

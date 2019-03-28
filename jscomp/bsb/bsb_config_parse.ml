@@ -281,7 +281,9 @@ let interpret_json
                 Some (Filename.quote 
                         (Filename.concat bsc_dir Literals.reactjs_jsx_ppx_2_exe) )
             | "3" -> 
-              Bsb_exception.errorf ~loc "JSX version 3 is deprecated, please downgrade to 1.x for version 3"
+              reason_react_jsx := 
+                Some (Filename.quote 
+                        (Filename.concat bsc_dir Literals.reactjs_jsx_ppx_3_exe) )
             | _ -> Bsb_exception.errorf ~loc "Unsupported jsx version %s" flo
           end        
         | Some x -> Bsb_exception.config_error x 
