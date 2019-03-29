@@ -15064,6 +15064,7 @@ let root = OCamlRes.Res.([
        ## Build for Production\n\
        \n\
        ```sh\n\
+       npm run clean\n\
        npm run build\n\
        npm run webpack:production\n\
        ```\n\
@@ -15770,6 +15771,7 @@ let root = OCamlRes.Res.([
        ## Run Project\n\
        \n\
        ```sh\n\
+       npm run clean\n\
        npm install\n\
        npm start\n\
        ```\n\
