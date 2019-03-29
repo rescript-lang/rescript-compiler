@@ -3,6 +3,7 @@
 ## Run Project
 
 ```sh
+npm run clean
 npm install
 npm start
 ```

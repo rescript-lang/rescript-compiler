@@ -24,6 +24,7 @@ To use a port other than 8000 set the `PORT` environment variable (`PORT=8080 np
 ## Build for Production
 
 ```sh
+npm run clean
 npm run build
 npm run webpack:production
 ```
