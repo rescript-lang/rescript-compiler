@@ -279,6 +279,7 @@ stdlib = ${ocamlVersion.includes('4.06')? 'stdlib-406' : 'stdlib-402'}
 subninja runtime/release.ninja
 subninja others/release.ninja
 subninja $stdlib/release.ninja
+${process.env.BS_TRAVIS_CI ? 'subninja test/build.ninja\n' : '\n'}
 build all: phony runtime others $stdlib
 `
     fs.writeFileSync(path.join(jscomp_dir,'release.ninja'),releaseNinja,'ascii')

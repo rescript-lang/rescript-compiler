@@ -1,0 +1,28 @@
+version: 2 # use CircleCI 2.0
+jobs: # a collection of steps
+  build: # runs not using Workflows must have a `build` job as entry point
+    working_directory: ~/git/bucklescript # directory where steps will run
+    docker: # run the steps with Docker
+      - image: circleci/node:8.9.4 # ...with this image as the primary container; this is where all `steps` will run
+    steps: # a collection of executable commands
+      - checkout # special step to check out source code to working directory
+      - run:       
+          name: "Setting env variables"
+          command: |
+            echo 'export BS_TRAVIS_CI=1' >> $BASH_ENV
+      - run:    
+          name: "Check env variables"
+          command: |
+            echo BS_TRAVIS_CI ${BS_TRAVIS_CI}
+      - run:
+          name: "Pull Submodules"
+          command: |
+            git submodule init
+            git submodule update
+      - run:
+          name: install-npm-wee
+          command: npm install
+
+      - run: # run tests
+          name: test
+          command: npm test

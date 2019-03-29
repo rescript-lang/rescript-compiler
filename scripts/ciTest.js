@@ -105,7 +105,7 @@ function main() {
 
     if(installGlobal){
         console.log('install bucklescript globally')
-        cp.execSync('npm i -g .', {cwd : path.join(__dirname, '..'), stdio: [0,1,2]})
+        cp.execSync('sudo npm i -g --unsafe-perm .', {cwd : path.join(__dirname, '..'), stdio: [0,1,2]})
     }
 
     var bsbDir = cp.execSync(`bsb -where`, {cwd : path.join(__dirname, '..'), encoding : 'utf8' }).trim()
@@ -124,11 +124,11 @@ function main() {
                 if (error !== null) {
                     throw new Error(`init theme ${theme} failed`)
                 }
-                cp.exec(`npm install && npm run build`, { cwd: path.join(themesDir, theme) }, function (error, stdout, stderr) {
+                cp.exec(`npm install && npm run clean && npm run build`, { cwd: path.join(themesDir, theme) }, function (error, stdout, stderr) {
                     console.log(stdout)
                     console.log(stderr)
                     if (error !== null) {
-                        throw new Error(`install & build theme ${theme} failed`)
+                        throw new Error(`clean && install & build theme ${theme} failed`)
                     }
                 })
             })

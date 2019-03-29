@@ -869,10 +869,10 @@ let jsxMapper () =
           (* no file-level jsx config found *)
           | ([], _) -> default_mapper.structure mapper structure
           (* {jsx: 2} *)
-          | ((_, {pexp_desc = Pexp_constant (Pconst_integer (version, None)})::rest, recordFieldsWithoutJsx) -> begin
+          | ((_, {pexp_desc = Pexp_constant (Pconst_integer (version, None))})::rest, recordFieldsWithoutJsx) -> begin
               (match version with
-              | 2 -> jsxVersion := Some 2
-              | 3 -> jsxVersion := Some 3
+              | "2" -> jsxVersion := Some 2
+              | "3" -> jsxVersion := Some 3
               | _ -> raise (Invalid_argument "JSX: the file-level bs.config's jsx version must be 2 or 3"));
               match recordFieldsWithoutJsx with
               (* record empty now, remove the whole bs.config attribute *)

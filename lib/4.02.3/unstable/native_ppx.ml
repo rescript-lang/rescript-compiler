@@ -1,5 +1,6 @@
-module Config : sig 
-#1 "config.mli"
+module Config_whole_compiler : sig 
+#1 "config_whole_compiler.mli"
+
 (***********************************************************************)
 (*                                                                     *)
 (*                                OCaml                                *)
@@ -94,7 +95,7 @@ val architecture: string
         (* Name of processor type for the native-code compiler *)
 val model: string
         (* Name of processor submodel for the native-code compiler *)
-val system: string
+(* val system: string *)
         (* Name of operating system for the native-code compiler *)
 
 val asm: string
@@ -122,16 +123,18 @@ val default_executable_name: string
 val systhread_supported : bool
         (* Whether the system thread library is implemented *)
 
-val host : string
+(* val host : string *)
         (* Whether the compiler is a cross-compiler *)
 
-val target : string
+(* val target : string *)
         (* Whether the compiler is a cross-compiler *)
 
 val print_config : out_channel -> unit;;
 
+
 end = struct
-#1 "config.ml"
+#1 "config_whole_compiler.ml"
+
 (***********************************************************************)
 (*                                                                     *)
 (*                                OCaml                                *)
@@ -155,31 +158,24 @@ end = struct
 
 
 (* The main OCaml version string has moved to ../VERSION *)
-let version = Sys.ocaml_version
-
-let standard_library_default = "/Users/hongbozhang/git/bucklescript/native/4.02.3/lib/ocaml"
-
+let version = "4.02.3+BS"
 let standard_library =
- 
-  try 
-    Sys.getenv "BSLIB"
-  with Not_found -> 
+  Filename.concat (Filename.dirname Sys.executable_name)  "ocaml"
+let standard_library_default = standard_library
 
-    standard_library_default
-
-let standard_runtime = "/Users/hongbozhang/git/bucklescript/native/4.02.3/bin/ocamlrun"
-let ccomp_type = "cc"
-let bytecomp_c_compiler = "gcc -O  -Wall -D_FILE_OFFSET_BITS=64 -O "
-let bytecomp_c_libraries = ""
-let native_c_compiler = "gcc -O  -D_FILE_OFFSET_BITS=64"
-let native_c_libraries = ""
-let native_pack_linker = "ld -r -arch x86_64  -o "
-let ranlib = "ranlib"
-let ar = "ar"
-let cc_profile = "-pg"
-let mkdll = "gcc -bundle -flat_namespace -undefined suppress -Wl,-no_compact_unwind"
-let mkexe = "gcc -Wl,-no_compact_unwind"
-let mkmaindll = "gcc -bundle -flat_namespace -undefined suppress -Wl,-no_compact_unwind"
+let standard_runtime = "ocamlrun" (*dont care:path to ocamlrun*)
+let ccomp_type = "cc"(*dont care: cc or msvc*)
+let bytecomp_c_compiler = "gcc -O  -Wall -D_FILE_OFFSET_BITS=64 -D_REENTRANT -O" (*dont care*)
+let bytecomp_c_libraries = "-lcurses -lpthread" (*dont care*)
+let native_c_compiler = "gcc -O  -D_FILE_OFFSET_BITS=64 -D_REENTRANT" (*dont care*)
+let native_c_libraries = ""(*dont care*)
+let native_pack_linker = "ld -r -arch x86_64  -o"(*dont care*) 
+let ranlib = "ranlib"(*dont care*)
+let ar = ""(*dont care*)
+let cc_profile = "-pg"(*dont care*)
+let mkdll = ""(*dont care*)
+let mkexe = ""(*dont care*)
+let mkmaindll = ""(*dont care*)
 
 let exec_magic_number = "Caml1999X011"
 and cmi_magic_number = "Caml1999I017"
@@ -205,29 +201,26 @@ let lazy_tag = 246
 let max_young_wosize = 256
 let stack_threshold = 256 (* see byterun/config.h *)
 
-let architecture = "amd64"
-let model = "default"
+let architecture = "amd64" (*dont care*)
+let model = "default"(*dont care*)
 let system = "macosx"
 
 let asm = "clang -arch x86_64 -c"
-let asm_cfi_supported = true
-let with_frame_pointers = false
+let asm_cfi_supported = false (*dont care*)
+let with_frame_pointers = false (*dontcare*)
 
-let ext_obj = ".o"
-let ext_asm = ".s"
-let ext_lib = ".a"
-let ext_dll = ".so"
+let ext_obj = ".o" (*dont care*)
+let ext_asm = ".s" (*dont care*)
+let ext_lib = ".a" (*dont caer*)
+let ext_dll = ".a" (*dont care*)
 
-let host = "x86_64-apple-darwin17.7.0"
-let target = "x86_64-apple-darwin17.7.0"
+let host = "%%HOST%%"
+let target = "%%TARGET%%"
 
 let default_executable_name =
-  match Sys.os_type with
-    "Unix" -> "a.out"
-  | "Win32" | "Cygwin" -> "camlprog.exe"
-  | _ -> "camlprog"
+ ""
 
-let systhread_supported = false;;
+let systhread_supported = false (*dontcare*);;
 
 let print_config oc =
   let p name valu = Printf.fprintf oc "%s: %s\n" name valu in
@@ -275,7 +268,9 @@ let print_config oc =
   flush oc;
 ;;
 
+
 end
+module Config = Config_whole_compiler 
 module Clflags : sig 
 #1 "clflags.mli"
 (***********************************************************************)
