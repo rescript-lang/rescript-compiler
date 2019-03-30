@@ -251,10 +251,12 @@ rule cp
 }
 
 function copyPrebuiltCompilers() {
-    fs.writeFileSync(path.join(lib_dir,'copy.ninja'),createCopyNinja(sys_extension),'ascii')
+    var filePath = path.join(lib_dir,'copy.ninja')
+    fs.writeFileSync(filePath,createCopyNinja(sys_extension),'ascii')
     cp.execFileSync(ninja_bin_output,
         ["-f", 'copy.ninja'],
         { cwd: lib_dir, stdio: [0, 1, 2] })
+    fs.unlinkSync(filePath)    
 }
 
 /**
@@ -282,9 +284,11 @@ subninja $stdlib/release.ninja
 ${process.env.BS_TRAVIS_CI ? 'subninja test/build.ninja\n' : '\n'}
 build all: phony runtime others $stdlib
 `
-    fs.writeFileSync(path.join(jscomp_dir,'release.ninja'),releaseNinja,'ascii')
+    var filePath = path.join(jscomp_dir,'release.ninja')
+    fs.writeFileSync(filePath,releaseNinja,'ascii')
     cp.execFileSync(ninja_bin_output, [ "-f", "release.ninja", "-t", "clean"], { cwd: jscomp_dir, stdio: [0, 1, 2] , shell: false})
     cp.execFileSync(ninja_bin_output, [ "-f", "release.ninja"], { cwd: jscomp_dir, stdio: [0, 1, 2] , shell: false})
+    fs.unlinkSync(filePath)
     console.log('Build finished')
 }
 
@@ -308,8 +312,10 @@ ext = .exe
 INCL= ${require('./buildocaml.js').getVersionPrefix()}
 include body.ninja        
 `
-        fs.writeFileSync(path.join(lib_dir,'release.ninja'),releaseNinja,'ascii')
+        var filePath =  path.join(lib_dir,'release.ninja')
+        fs.writeFileSync(filePath,releaseNinja,'ascii')
         cp.execFileSync(ninja_bin_output, ['-f', 'release.ninja'], { cwd: lib_dir, stdio: [0, 1, 2] })
+        fs.unlinkSync(filePath)
 
     }    
 }
