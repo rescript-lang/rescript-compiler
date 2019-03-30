@@ -2,9 +2,14 @@ const fs = require('fs')
 const path = require('path')
 const child_process = require('child_process')
 
-// if bsc doesn't exist, we're probably on CI
-const bsc = fs.existsSync('lib/bsc') ? 'lib/bsc' : 'bsc'
-const refmt = fs.existsSync('lib/bsrefmt') ? 'lib/bsrefmt' : 'bsrefmt'
+
+var bsc = 'bsc'
+var refmt = 'bsrefmt'
+// process.env.BS_TRAVIS_CI = 1
+if(process.env.BS_TRAVIS_CI){
+  bsc = path.join(__dirname,'..','..','..','lib','bsc')
+  refmt = path.join(__dirname,'..','..','..','lib','bsrefmt') 
+} 
 
 const expectedDir = path.join(__dirname, 'expected')
 
@@ -30,7 +35,7 @@ let atLeastOneTaskFailed = false
 fixtures.forEach(fileName => {
   const fullFilePath = path.join(__dirname, 'fixtures', fileName)
   const command = `${prefix} -color always -bs-super-errors -impl ${fullFilePath}`
-
+  console.log(`running ${command}`)
   child_process.exec(command, (err, stdout, stderr) => {
     doneTasksCount++
     // careful of:
