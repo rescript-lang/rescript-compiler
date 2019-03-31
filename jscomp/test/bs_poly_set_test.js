@@ -152,7 +152,7 @@ var u29 = Belt_Set.union(u26, u27);
 
 b("File \"bs_poly_set_test.ml\", line 72, characters 4-11", Belt_Set.eq(u28, u29));
 
-b("File \"bs_poly_set_test.ml\", line 73, characters 4-11", Caml_obj.caml_equal(Belt_SetDict.toArray(u29.data), Belt_SortArray.stableSortBy(Belt_Array.concat(ss, /* array */[3]), Caml_obj.caml_compare)));
+b("File \"bs_poly_set_test.ml\", line 73, characters 4-11", Caml_obj.caml_equal(Belt_SetDict.toArray(u29.data), Belt_SortArray.stableSortBy(Belt_Array.concat(ss, /* array */[3]), Caml_primitive.caml_int_compare)));
 
 b("File \"bs_poly_set_test.ml\", line 74, characters 4-11", Belt_Set.eq(u19, u20));
 
