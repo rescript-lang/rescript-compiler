@@ -25,3 +25,4 @@ jscomp/*
 !jscomp/others
 !jscomp/stubs
 !jscomp/Makefile.shared
+ocaml/
