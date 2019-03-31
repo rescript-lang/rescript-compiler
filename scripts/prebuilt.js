@@ -1,5 +1,5 @@
 //@ts-check
-var child_process = require('child_process')
+var cp = require('child_process')
 var path = require('path')
 var {sys_extension, is_windows} = require('./config.js')
 
@@ -10,6 +10,7 @@ process.env.BS_RELEASE_BUILD = 'true'
 
 var version = require('./buildocaml.js').getVersionPrefix()
 var fs = require('fs')
+var hostPlatform = 'darwin'
 function buildCompiler() {
   var prebuilt = 'prebuilt.ninja'
   var content = `
@@ -19,11 +20,22 @@ INCL = ${version}
 include body.ninja
 `
   fs.writeFileSync(path.join(root,'lib',prebuilt),content,'ascii')
-	child_process.execSync(`ninja -C lib -f ${prebuilt} -t clean && ninja -C lib -f ${prebuilt}`,root_config)
+	cp.execSync(`ninja -C lib -f ${prebuilt} -t clean && ninja -C lib -f ${prebuilt}`,root_config)
 }
 if(!is_windows){
   require('./ninja.js').updateRelease()
 }
-
+var os = require('os')
+function createOCamlTar(){
+  if(os.platform ()=== hostPlatform){
+    cp.execSync(`git -C ocaml status -uno`, { cwd: root, stdio: [0, 1, 2] })    
+    cp.execSync(`git  -C ocaml archive --format=tar.gz HEAD -o ../ocaml.tar.gz`,
+      { cwd: root, stdio: [0, 1, 2] }
+    )
+    fs.copyFileSync(path.join(root,'ocaml','VERSION'),path.join(root,'OCAML_VERSION'))
+  }  
+}
+createOCamlTar()
 buildCompiler()
 
+// 

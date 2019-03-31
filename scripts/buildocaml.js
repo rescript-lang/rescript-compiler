@@ -7,20 +7,48 @@ var fs = require('fs')
 
 
 
+/**
+ * @type {string}
+ */
+var cached = undefined
 // FIXME: this works in CI, but for release build, submodule
 // is carried, so it needs to be fixed
 /**
  * @returns{string}
  */
 function getVersionPrefix(){
-    var version = fs.readFileSync(path.join(__dirname, '..', 'ocaml', 'VERSION'), 'ascii')
-    return version.substr(0, version.indexOf('+'))
+    if(cached !== undefined){
+        return cached
+    }
+    var file = path.join(__dirname, '..', 'ocaml', 'VERSION')
+    if(fs.existsSync(file)){
+        var version = fs.readFileSync(file, 'ascii')
+        cached = version.substr(0, version.indexOf('+'))
+        return cached
+    }
+
+    file = path.join(__dirname,'..','OCAML_VERSION')
+    if(fs.existsSync(file)){
+        var version = fs.readFileSync(file, 'ascii')
+        cached =  version.substr(0, version.indexOf('+'))
+        return cached
+    }
+    throw new Error("version file not found")
+    
 }
 exports.getVersionPrefix = getVersionPrefix
 
 
 function build() {
-    var prefix = path.normalize(path.join(__dirname,'..','native',getVersionPrefix()))
+    var ocamlSrcDir = path.join(__dirname, '..', 'ocaml')
+    if(!fs.existsSync(ocamlSrcDir)){
+        fs.mkdirSync(ocamlSrcDir)
+    }
+    if (!fs.existsSync(path.join(ocamlSrcDir, 'VERSION'))) {
+        cp.execSync(`tar xzvf ocaml.tar.gz`, { cwd: ocamlSrcDir, stdio: [0, 1, 2] })
+    }
+
+    var prefix = path.normalize(path.join(__dirname, '..', 'native', getVersionPrefix()))
     cp.execSync('./configure -prefix ' + prefix + ' -no-ocamlbuild  -no-curses -no-graph -no-pthread -no-debugger  && make clean && make -j9 world.opt && make install '
         , { cwd: path.join(__dirname, '..', 'ocaml'), stdio: [0, 1, 2] })
 }
