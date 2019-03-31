@@ -76,9 +76,10 @@ function init(){
 function main() {
     init()
 
-    var output =
-        cp.execSync('which ocaml', { encoding: 'ascii' })
-    console.log('OCaml:', output)
+    // when binary was prebuilt, there can be no ocaml installation
+    // var output =
+    //     cp.execSync('which ocaml', { encoding: 'ascii' })
+    // console.log('OCaml:', output)
     var binDir = path.join(__dirname, '..','jscomp', 'bin')
     if(ounitTest){
         var fn = fs.copyFileSync ? fs.copyFileSync : fs.renameSync
