@@ -242,7 +242,9 @@ rule cp
     }
     output += [
         'bsc','bsb','bsb_helper','bsppx',
-        'refmt','reactjs_jsx_ppx_2'
+        'refmt',
+        'reactjs_jsx_ppx_2',
+        'reactjs_jsx_ppx_3'
     ].map(function(x){
         return `build ${x}.exe: cp ${x}${sys_extension}`
     }).join('\n')
