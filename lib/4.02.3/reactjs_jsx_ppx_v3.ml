@@ -69,6 +69,7 @@ let valueStr = getLabel valueStr in
 match String.sub valueStr 0 1 with
 | "_" -> "T" ^ valueStr
 | _ -> valueStr
+let keyType loc = Typ.constr ~loc {loc; txt=optionIdent} [Typ.constr ~loc {loc; txt=Lident "string"} []]
 
 type 'a children = | ListLiteral of 'a | Exact of 'a
 type componentConfig = {
@@ -564,7 +565,7 @@ let jsxMapper () =
     let externalPropsDecl = makePropsExternal fnName pstr_loc ((
       optional "key",
       pstr_loc,
-      None
+      Some(keyType pstr_loc)
     ) :: List.map pluckLabelAndLoc propTypes) retPropsType in
     (* can't be an arrow because it will defensively uncurry *)
     let newExternalType = Ptyp_constr (
@@ -633,7 +634,7 @@ let jsxMapper () =
         let props = getPropsAttr payload in
         (* do stuff here! *)
         let (innerFunctionExpression, namedArgList, forwardRef) = recursivelyTransformNamedArgsForMake mapper expression [] in
-        let namedArgListWithKeyAndRef = (optional("key"), None, None, "key", pstr_loc, None) :: namedArgList in
+        let namedArgListWithKeyAndRef = (optional("key"), None, None, "key", pstr_loc, Some(keyType pstr_loc)) :: namedArgList in
         let namedArgListWithKeyAndRef = match forwardRef with
         | Some(_) ->  (optional("ref"), None, None, "ref", pstr_loc, None) :: namedArgListWithKeyAndRef
         | None -> namedArgListWithKeyAndRef
