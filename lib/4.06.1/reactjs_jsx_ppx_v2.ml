@@ -64,6 +64,7 @@ let isLabelled str = match str with
 let getLabel str = match str with
 | Optional str | Labelled str -> str
 | Nolabel -> ""
+let optionIdent = Lident "option"
 
 let argIsKeyRef = function
   | (Labelled ("key" | "ref"), _) | (Optional ("key" | "ref"), _) -> true
@@ -219,7 +220,7 @@ let rec recursivelyMakeNamedArgsForExternal list args =
     | (label, None) when isOptional label -> {
         ptyp_loc = loc;
         ptyp_attributes = [];
-        ptyp_desc = Ptyp_constr ({loc; txt=(Ldot (Lident "*predef*","option"))}, [{
+        ptyp_desc = Ptyp_constr ({loc; txt=optionIdent}, [{
           ptyp_desc = Ptyp_var (safeTypeFromValue label);
           ptyp_loc = loc;
           ptyp_attributes = [];
@@ -230,15 +231,15 @@ let rec recursivelyMakeNamedArgsForExternal list args =
       ptyp_loc = loc;
       ptyp_attributes = [];
     }
-    | (label, Some ({ptyp_desc = Ptyp_constr ({txt=(Ldot (Lident "*predef*","option"))}, _)} as type_)) when isOptional label ->
+    | (label, Some ({ptyp_desc = Ptyp_constr ({txt=optionIdent}, _)} as type_)) when isOptional label ->
       type_
     | (label, Some ({ptyp_desc = Ptyp_constr ({txt=(Lident "option")}, [type_])})) when isOptional label -> {
       type_ with
-      ptyp_desc = Ptyp_constr ({loc=type_.ptyp_loc; txt=(Ldot (Lident "*predef*","option"))}, [type_]);
+      ptyp_desc = Ptyp_constr ({loc=type_.ptyp_loc; txt=optionIdent}, [type_]);
     }
     | (label, Some (type_)) when isOptional label -> {
       type_ with
-      ptyp_desc = Ptyp_constr ({loc=type_.ptyp_loc; txt=(Ldot (Lident "*predef*","option"))}, [type_]);
+      ptyp_desc = Ptyp_constr ({loc=type_.ptyp_loc; txt=optionIdent}, [type_]);
     }
     | (_, Some type_) -> type_
     | (_, None) -> raise (Invalid_argument "This should never happen..")
@@ -520,7 +521,7 @@ let jsxMapper () =
       (getLabel name, [], type_) :: types
     | (None, name) when isOptional name ->
       (getLabel name, [], {
-        ptyp_desc = Ptyp_constr ({loc; txt=(Ldot (Lident "*predef*","option"))}, [{
+        ptyp_desc = Ptyp_constr ({loc; txt=optionIdent}, [{
           ptyp_desc = Ptyp_var (safeTypeFromValue name);
           ptyp_loc = loc;
           ptyp_attributes = [];
