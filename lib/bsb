@@ -394,7 +394,7 @@ if (watch_mode) {
             dlog(`Event ${event} ${reason}`);
             reasons_to_rebuild.push([event, reason])
             if (needRebuild()) {
-                if (! process.env.BS_WATCHNOCLEAR && console.clear) {console.clear()}
+                if (process.env.BS_WATCH_CLEAR && console.clear) {console.clear()}
                 build()
             }
         }
