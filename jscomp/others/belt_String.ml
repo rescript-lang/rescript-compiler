@@ -32,7 +32,7 @@ external get : t -> int -> t option = "%array_unsafe_get"
 
 external concat : t -> t -> t = "concat" [@@bs.send]
 
-external concatMany : t -> t array -> t = "concat" [@@bs.send] [@@bs.splice]
+external concatMany : t -> t array -> t = "concat" [@@bs.send] [@@bs.variadic]
 
 external endsWith : t -> t -> bool = "endsWith" [@@bs.send] 
 

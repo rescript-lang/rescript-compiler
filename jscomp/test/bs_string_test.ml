@@ -27,6 +27,8 @@ let () =
 
 let () =
   eq __LOC__ (S.concatMany "foo" [|"bar"; "baz"|]) "foobarbaz";
+  let array = [|"bar"; "baz"|] in
+    eq __LOC__ (S.concatMany "foo" array) "foobarbaz";
   eq __LOC__ (S.concatMany "" [||]) ""
 
 let () =
