@@ -43,6 +43,12 @@
   `ReactDOMRe.createElement(ReasonReact.fragment, [|foo|])`
 *)
 
+open Ast_helper
+open Ast_mapper
+open Asttypes
+open Parsetree
+open Longident
+
 let rec find_opt p = function
   | [] -> None
   | x :: l -> if p x then Some x else find_opt p l
@@ -52,6 +58,7 @@ let optional str = "?" ^ str
 let isOptional str = str <> "" && str.[0] = '?'
 let isLabelled str = str <> "" && not (isOptional str)
 let getLabel str = if (isOptional str) then (String.sub str 1 ((String.length str) - 1)) else str
+let optionIdent = Ldot (Lident "*predef*","option")
 
 let argIsKeyRef = function
   | (("key" | "ref"), _) | (("?key" | "?ref"), _) -> true
@@ -62,12 +69,7 @@ let valueStr = getLabel valueStr in
 match String.sub valueStr 0 1 with
 | "_" -> "T" ^ valueStr
 | _ -> valueStr
-
-open Ast_helper
-open Ast_mapper
-open Asttypes
-open Parsetree
-open Longident
+let keyType loc = Typ.constr ~loc {loc; txt=optionIdent} [Typ.constr ~loc {loc; txt=Lident "string"} []]
 
 type 'a children = | ListLiteral of 'a | Exact of 'a
 type componentConfig = {
@@ -213,7 +215,7 @@ let rec recursivelyMakeNamedArgsForExternal list args =
     | (label, None) when isOptional label -> {
         ptyp_loc = loc;
         ptyp_attributes = [];
-        ptyp_desc = Ptyp_constr ({loc; txt=(Ldot (Lident "*predef*","option"))}, [{
+        ptyp_desc = Ptyp_constr ({loc; txt=optionIdent}, [{
           ptyp_desc = Ptyp_var (safeTypeFromValue label);
           ptyp_loc = loc;
           ptyp_attributes = [];
@@ -224,15 +226,15 @@ let rec recursivelyMakeNamedArgsForExternal list args =
       ptyp_loc = loc;
       ptyp_attributes = [];
     }
-    | (label, Some ({ptyp_desc = Ptyp_constr ({txt=(Ldot (Lident "*predef*","option"))}, _)} as type_)) when isOptional label ->
+    | (label, Some ({ptyp_desc = Ptyp_constr ({txt=optionIdent}, _)} as type_)) when isOptional label ->
       type_
     | (label, Some ({ptyp_desc = Ptyp_constr ({txt=(Lident "option")}, [type_])})) when isOptional label -> {
       type_ with
-      ptyp_desc = Ptyp_constr ({loc=type_.ptyp_loc; txt=(Ldot (Lident "*predef*","option"))}, [type_]);
+      ptyp_desc = Ptyp_constr ({loc=type_.ptyp_loc; txt=optionIdent}, [type_]);
     }
     | (label, Some (type_)) when isOptional label -> {
       type_ with
-      ptyp_desc = Ptyp_constr ({loc=type_.ptyp_loc; txt=(Ldot (Lident "*predef*","option"))}, [type_]);
+      ptyp_desc = Ptyp_constr ({loc=type_.ptyp_loc; txt=optionIdent}, [type_]);
     }
     | (_, Some type_) -> type_
     | (_, None) -> raise (Invalid_argument "This should never happen..")
@@ -508,7 +510,7 @@ let jsxMapper () =
       (getLabel name, [], type_) :: types
     | (None, name) when isOptional name ->
       (getLabel name, [], {
-        ptyp_desc = Ptyp_constr ({loc; txt=(Ldot (Lident "*predef*","option"))}, [{
+        ptyp_desc = Ptyp_constr ({loc; txt=optionIdent}, [{
           ptyp_desc = Ptyp_var (safeTypeFromValue name);
           ptyp_loc = loc;
           ptyp_attributes = [];
@@ -563,7 +565,7 @@ let jsxMapper () =
     let externalPropsDecl = makePropsExternal fnName pstr_loc ((
       optional "key",
       pstr_loc,
-      None
+      Some(keyType pstr_loc)
     ) :: List.map pluckLabelAndLoc propTypes) retPropsType in
     (* can't be an arrow because it will defensively uncurry *)
     let newExternalType = Ptyp_constr (
@@ -632,7 +634,7 @@ let jsxMapper () =
         let props = getPropsAttr payload in
         (* do stuff here! *)
         let (innerFunctionExpression, namedArgList, forwardRef) = recursivelyTransformNamedArgsForMake mapper expression [] in
-        let namedArgListWithKeyAndRef = (optional("key"), None, None, "key", pstr_loc, None) :: namedArgList in
+        let namedArgListWithKeyAndRef = (optional("key"), None, None, "key", pstr_loc, Some(keyType pstr_loc)) :: namedArgList in
         let namedArgListWithKeyAndRef = match forwardRef with
         | Some(_) ->  (optional("ref"), None, None, "ref", pstr_loc, None) :: namedArgListWithKeyAndRef
         | None -> namedArgListWithKeyAndRef
