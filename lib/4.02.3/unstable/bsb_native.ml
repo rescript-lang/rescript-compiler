@@ -14549,7 +14549,10 @@ let root = OCamlRes.Res.([
         \    \"version\": \"${bsb:proj-version}\",\n\
         \    \"command\": \"npm\",\n\
         \    \"options\": {\n\
-        \      \"cwd\": \"${workspaceRoot}\"\n\
+        \      \"cwd\": \"${workspaceRoot}\",\n\
+        \      \"env\": {\n\
+        \        \"BS_VSCODE\" : \"true\"\n\
+        \      }\n\
         \    },\n\
         \    \"type\": \"shell\",\n\
         \    \"args\": [\"run\", \"start\"],\n\
