@@ -752,7 +752,7 @@ let jsxMapper () =
     let externalPropsDecl = makePropsExternalSig fnName psig_loc ((
       optional "key",
       psig_loc,
-      None
+      Some(keyType psig_loc)
     ) :: List.map pluckLabelAndLoc propTypes) retPropsType in
         (* can't be an arrow because it will defensively uncurry *)
     let newExternalType = Ptyp_constr (
