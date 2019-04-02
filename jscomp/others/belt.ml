@@ -266,6 +266,14 @@ module Int = Belt_Int
 module Float = Belt_Float
 
 
+(** {!Belt.String}
+
+    Utilities for String.
+*)
+
+module String = Belt_String
+
+
 (** {!Belt.Debug}
 
     Utilities for set up debugging

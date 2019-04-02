@@ -22,140 +22,61 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** JavaScript String API *)
+(** String API *)
 
 type t = string
 
+external length : t -> int = "length" [@@bs.get]
 
-(** [concat append original] returns a new string with [append] added after [original].
+external get : t -> int -> t option = "%array_unsafe_get"
 
-@example {[
-  concat "a" "b" = "ab";;
-]}
-*)
-external concat : t -> t -> t = "" [@@bs.send]
+external concat : t -> t -> t = "concat" [@@bs.send]
 
-(** [concat arr original] returns a new string consisting of each item of an array of strings added to the [original] string.
-
-@example {[
-  concatMany "1st" [|"2nd"; "3rd"; "4th"|]  = "1st2nd3rd4th";;
-]}
-*)
 external concatMany : t -> t array -> t = "concat" [@@bs.send] [@@bs.splice]
 
-(** ES2015:
-    [endsWith substr str] returns [true] if the [str] ends with [substr], [false] otherwise.
-    
-@example {[
-  endsWith "BuckleScript" "Script"  = true;;
-  endsWith "BuckleShoes" "Script"  = false;;
-]} 
-*)
-external endsWith : t -> t -> bool = "" [@@bs.send] 
+external endsWith : t -> t -> bool = "endsWith" [@@bs.send] 
 
+external indexOf : t -> t -> int = "indexOf" [@@bs.send]
 
-(**
-  [includes s searchValue ] returns [true] if [searchValue] is found anywhere within [s], [false] otherwise.
-  
-@example {[
-  includes "programmer" "gram" = true;;
-  includes "programmer" "er" = true;;
-  includes "programmer" "pro" = true;;
-  includes "programmer" "xyz" = false;;
-]}
-*)
-external includes : t -> t -> bool = "" [@@bs.send] (** ES2015 *)
+let indexOf s searchValue =
+  match indexOf s searchValue with
+    | -1 -> None
+    | value -> (Some value)
 
+external includes : t -> t -> bool = "includes" [@@bs.send] (** ES2015 *)
 
+external repeat : t -> int -> t = "repeat" [@@bs.send] (** ES2015 *)
 
-(**
-  [repeat n s] returns a string that consists of [n] repetitions of [s]. Raises [RangeError] if [n] is negative.
-  
-@example {[
-  repeat "ha" 3 = "hahaha"
-  repeat "empty" 0 = ""
-]}
-*)
-external repeat : t -> int -> t = "" [@@bs.send] (** ES2015 *)
+external replace : t -> old:t -> by:t -> t = "replace" [@@bs.send]
 
-(** [replace string substr newSubstr ] returns a new string which is
-identical to [string] except with the first matching instance of [substr]
-replaced by [newSubstr].
+external replaceRegex : t -> old:Js_re.t -> by:t -> t = "replace" [@@bs.send]
 
-[substr] is treated as a verbatim string to match, not a regular
-expression.
+external matchRegex : string -> Js_re.t -> t array option = "match" [@@bs.send] [@@bs.return {null_to_opt}]
 
-@example {[
-  replace "old string" "old" "new"  = "new string"
-  replace "the cat and the dog" "the" "this"  = "this cat and the dog"
-]}
-*)
-external replace : t -> t ->  t ->  t = "" [@@bs.send]
+external split : t ->  t -> t array  = "split" [@@bs.send]
 
-
-
-(**
-  [split delimiter str] splits the given [str] at every occurrence of [delimiter] and returns an
-  array of the resulting substrings.
-  
-@example {[
-  split "2018-01-02" "-" = [|"2018"; "01"; "02"|];;
-  split "a,b,,c" "," = [|"a"; "b"; ""; "c"|];;
-  split "good::bad as great::awful" "::" = [|"good"; "bad as great"; "awful"|];;
-  split "has-no-delimiter" ";"  = [|"has-no-delimiter"|];;
-]};
-*)
-external split : t ->  t -> t array  = "" [@@bs.send]
-
-(**
-  [splitAtMost str delimiter n] splits the given [str] at every occurrence of [delimiter] and 
-  returns an array of the first [n] resulting substrings. If [n] is negative or greater than the
-   number of substrings, the array will contain all the substrings.
-  
-@example {[
-  splitAtMost "ant/bee/cat/dog/elk" "/" 3  = [|"ant"; "bee"; "cat"|];;
-  splitAtMost "ant/bee/cat/dog/elk" "/"  0  = [| |];;
-  splitAtMost "ant/bee/cat/dog/elk" "/" 9  = [|"ant"; "bee"; "cat"; "dog"; "elk"|];;
-]}
-*)
 external splitAtMost: t -> t -> int -> t array = "split" [@@bs.send]
 
+external startsWith : t -> t -> bool = "startsWith" [@@bs.send]
 
-(** ES2015:
-    [startsWith str substr] returns [true] if the [str] starts with [substr], [false] otherwise.
-    
-@example {[
-  startsWith "BuckleScript" "Buckle"  = true;;
-  startsWith "BuckleScript" ""  = true;;
-  startsWith "JavaScript" "Buckle"  = false;;
-]} 
-*)
-external startsWith : t -> t -> bool = "" [@@bs.send]
+external substr : t -> from:int -> len:int -> t = "substr" [@@bs.send]
 
+external substrToEnd : t -> from:int -> t = "substr" [@@bs.send]
 
-(**
-  [substr ~from: n str] returns the substring of [str] from position [n] to the end of the string.
-  
-  If [n] is less than zero, the starting position is the length of [str] - [n].
-  
-  If [n] is greater than or equal to the length of [str], returns the empty string.
-  
-@example {[
-  substr ~from: 3 "abcdefghij" = "defghij"
-  substr ~from: (-3) "abcdefghij" = "hij"
-  substr ~from: 12 "abcdefghij" = ""
-]}
-*)
-external substr : from:int -> t = "" [@@bs.send.pipe: t]
+external slice : t -> from:int -> to_:int -> t = "slice" [@@bs.send]
 
+external sliceToEnd : t -> from:int -> t = "slice" [@@bs.send]
 
-(**
-  [trim str] returns a string that is [str] with whitespace stripped from both ends. Internal whitespace is not removed.
+external trim : t -> t = "trim" [@@bs.send]
 
-@example {[
-  trim "   abc def   " = "abc def"
-  trim "\n\r\t abc def \n\n\t\r " = "abc def"
-]}
-*)
-external trim : t -> t = "" [@@bs.send]
+external trimStart : t -> t = "trimStart" [@@bs.send] (** ES2015 *)
 
+external trimEnd : t -> t = "trimEnd" [@@bs.send] (** ES2015 *)
+
+external padStart : t -> int -> t -> t = "padStart" [@@bs.send] (** ES2015 *)
+
+external padEnd : t -> int -> t -> t = "padEnd" [@@bs.send] (** ES2015 *)
+
+external toLowerCase : t -> t = "toLowerCase" [@@bs.send]
+
+external toUpperCase : t -> t = "toUpperCase" [@@bs.send]
