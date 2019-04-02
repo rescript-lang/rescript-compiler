@@ -147,21 +147,21 @@ let compile  ~filename (output_prefix : string) env _sigs
   let _j = Js_pass_debug.dump in
   let lam = _d "initial"  lam in
   let lam  = Lam_pass_deep_flatten.deep_flatten lam in
-  let lam = _d  "flatten" lam in
+  let lam = _d  "flatten0" lam in
   let meta = 
     Lam_pass_collect.count_alias_globals env filename
       export_idents export_ident_sets lam in
   let lam = 
     let lam =  
       lam
-      |> _d "flattern"
+      |> _d "flattern1"
       |>  Lam_pass_exits.simplify_exits
       |> _d "simplyf_exits"
       |> (fun lam -> Lam_pass_collect.collect_helper meta lam; lam)
       |>  Lam_pass_remove_alias.simplify_alias  meta
       |> _d "simplify_alias"
       |> Lam_pass_deep_flatten.deep_flatten
-      |> _d "flatten"
+      |> _d "flatten2"
     in  (* Inling happens*)
 
     let ()  = Lam_pass_collect.collect_helper meta lam in

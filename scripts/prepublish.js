@@ -13,7 +13,7 @@ function clean() {
     p.execSync(`git clean -dfx .`, root_config)
 }
 function verifyIsCleanWorkTree() {
-    var output = p.execSync(`git status`, root_config)
+    var output = p.execSync(`git status -uno`, root_config)
     if (output.includes('nothing to commit')) {
         console.log(`still clean tree`)
 
