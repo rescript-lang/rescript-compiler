@@ -221,27 +221,8 @@ let rec recursivelyMakeNamedArgsForExternal list args =
     | (label, None) when isOptional label -> {
         ptyp_loc = loc;
         ptyp_attributes = [];
-        ptyp_desc = Ptyp_constr ({loc; txt=optionIdent}, [{
-          ptyp_desc = Ptyp_var (safeTypeFromValue label);
-          ptyp_loc = loc;
-          ptyp_attributes = [];
-        }]);
+        ptyp_desc = Ptyp_var (safeTypeFromValue label);
       }
-    | (label, None) when isLabelled label -> {
-      ptyp_desc = Ptyp_var (safeTypeFromValue label);
-      ptyp_loc = loc;
-      ptyp_attributes = [];
-    }
-    | (label, Some ({ptyp_desc = Ptyp_constr ({txt=optionIdent}, _)} as type_)) when isOptional label ->
-      type_
-    | (label, Some ({ptyp_desc = Ptyp_constr ({txt=(Lident "option")}, [type_])})) when isOptional label -> {
-      type_ with
-      ptyp_desc = Ptyp_constr ({loc=type_.ptyp_loc; txt=optionIdent}, [type_]);
-    }
-    | (label, Some (type_)) when isOptional label -> {
-      type_ with
-      ptyp_desc = Ptyp_constr ({loc=type_.ptyp_loc; txt=optionIdent}, [type_]);
-    }
     | (_, Some type_) -> type_
     | (_, None) -> raise (Invalid_argument "This should never happen..")
     )
@@ -291,8 +272,9 @@ let makePropsName ~loc name =
     ppat_attributes = [];
   }
 
-let makeObjectField loc (str, attrs, type_) =
-  Otag ({ loc; txt = str }, attrs, type_)
+let makeObjectField loc (str, _attrs, type_) =
+  (* intentionally not using attrs - they probably don't work on object fields. use on *Props instead *)
+  Otag ({ loc; txt = str }, [], {type_ with ptyp_attributes = []})
 
 (* Build an AST node representing a "closed" Js.t object representing a component's props *)
 let makePropsType ~loc namedTypeList =
