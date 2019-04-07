@@ -88,6 +88,6 @@ let value_bindings_mapper
     (self : Bs_ast_mapper.mapper) 
     (vbs : Parsetree.value_binding list) =
   (* Bs_ast_mapper.default_mapper.value_bindings self  vbs   *)
-  List.fold_right (fun vb acc ->
+  Ext_list.fold_right vbs [] (fun vb acc ->
       flattern_tuple_pattern_vb self vb acc
-    ) vbs []
+    ) 
