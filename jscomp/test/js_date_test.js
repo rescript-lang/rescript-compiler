@@ -2,6 +2,7 @@
 
 var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
+var Caml_obj = require("../../lib/js/caml_obj.js");
 
 function date(param) {
   return new Date("1976-03-08T12:34:56.789+01:23");
@@ -941,7 +942,18 @@ var suites_001 = /* :: */[
                                                                                                                                                 ]);
                                                                                                                                       })
                                                                                                                                   ],
-                                                                                                                                  /* [] */0
+                                                                                                                                  /* :: */[
+                                                                                                                                    /* tuple */[
+                                                                                                                                      "eq",
+                                                                                                                                      (function (param) {
+                                                                                                                                          var a = new Date("2013-03-01T01:10:00");
+                                                                                                                                          var b = new Date("2013-03-01T01:10:00");
+                                                                                                                                          var c = new Date("2013-03-01T01:10:01");
+                                                                                                                                          return /* Ok */Block.__(4, [Caml_obj.caml_equal(a, b) && Caml_obj.caml_notequal(b, c) && Caml_obj.caml_greaterthan(c, b)]);
+                                                                                                                                        })
+                                                                                                                                    ],
+                                                                                                                                    /* [] */0
+                                                                                                                                  ]
                                                                                                                                 ]
                                                                                                                               ]
                                                                                                                             ]
@@ -1015,6 +1027,9 @@ var suites = /* :: */[
 
 Mt.from_pair_suites("Js_date_test", suites);
 
+var N = 0;
+
+exports.N = N;
 exports.date = date;
 exports.suites = suites;
 /*  Not a pure module */

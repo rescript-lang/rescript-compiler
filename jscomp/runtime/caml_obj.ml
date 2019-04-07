@@ -232,6 +232,8 @@ let rec caml_compare (a : Caml_obj_extern.t) (b : Caml_obj_extern.t) : int =
           if len_a = len_b then
             if O.isArray(a)
             then aux_same_length a b 0 len_a
+            else if [%raw{|a instanceof Date && b instanceof Date|}] then 
+            [%raw{|a - b|}]
             else aux_obj_compare a b
           else if len_a < len_b then
             aux_length_a_short a b 0 len_a
@@ -327,6 +329,8 @@ let rec caml_equal (a : Caml_obj_extern.t) (b : Caml_obj_extern.t) : bool =
           if len_a = len_b then
             if O.isArray(a)
             then aux_equal_length a b 0 len_a
+            else if [%raw{|a instanceof Date && b instanceof Date|}] then
+            not (Js.unsafe_gt a  b || Js.unsafe_lt a  b)
             else aux_obj_equal a b
           else false
 and aux_equal_length  (a : Caml_obj_extern.t) (b : Caml_obj_extern.t) i same_length =
