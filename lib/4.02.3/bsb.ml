@@ -14890,10 +14890,13 @@ let root = OCamlRes.Res.([
          ReactDOMRe.renderToElementWithId(<Component2 greeting=\"Hello!\" />, \"index2\");\n\
          ") ;
       File  ("Component1.re",
-        "/* You're familiar handleClick from ReactJS. This mandatorily takes the payload,\n\
+        "/* This is the basic component. */\n\
+         let component = ReasonReact.statelessComponent(\"Component1\");\n\
+         \n\
+         /* Your familiar handleClick from ReactJS. This mandatorily takes the payload,\n\
         \   then the `self` record, which contains state (none here), `handle`, `reduce`\n\
         \   and other utilities */\n\
-         let handleClick = (_event) => Js.log(\"clicked!\");\n\
+         let handleClick = (_event, _self) => Js.log(\"clicked!\");\n\
          \n\
          /* `make` is the function that mandatorily takes `children` (if you want to use\n\
         \   `JSX). `message` is a named argument, which simulates ReactJS props. Usage:\n\
@@ -14903,11 +14906,13 @@ let root = OCamlRes.Res.([
         \   Which desugars to\n\
          \n\
         \   `ReasonReact.element(Component1.make(~message=\"hello\", [||]))` */\n\
-         [@react.component]\n\
-         let make = (~message) =>\n\
-        \  <div onClick={handleClick}>\n\
-        \    {ReasonReact.string(message)}\n\
-        \  </div>;\n\
+         let make = (~message, _children) => {\n\
+        \  ...component,\n\
+        \  render: self =>\n\
+        \    <div onClick={self.handle(handleClick)}>\n\
+        \      {ReasonReact.string(message)}\n\
+        \    </div>,\n\
+         };\n\
          ") ;
       File  ("Component2.re",
         "/* State declaration */\n\
@@ -14921,25 +14926,38 @@ let root = OCamlRes.Res.([
         \  | Click\n\
         \  | Toggle;\n\
          \n\
-         [@react.component]\n\
-         let make = (~greeting) => {\n\
-        \  let (state, dispatch) = React.useReducer((state, action) =>\n\
-        \  switch (action) {\n\
-        \  | Click => {...state, count: state.count + 1}\n\
-        \  | Toggle => {...state, show: ! state.show}\n\
-        \  }, {count: 0, show: true});\n\
+         /* Component template declaration.\n\
+        \   Needs to be **after** state and action declarations! */\n\
+         let component = ReasonReact.reducerComponent(\"Example\");\n\
          \n\
-        \  let message =\n\
-        \    \"You've clicked this \" ++ string_of_int(state.count) ++ \" times(s)\";\n\
-        \  <div>\n\
-        \    <button onClick={_event => dispatch(Click)}>\n\
-        \      {ReasonReact.string(message)}\n\
-        \    </button>\n\
-        \    <button onClick={_event => dispatch(Toggle)}>\n\
-        \      {ReasonReact.string(\"Toggle greeting\")}\n\
-        \    </button>\n\
-        \    {state.show ? ReasonReact.string(greeting) : ReasonReact.null}\n\
-        \  </div>;\n\
+         /* greeting and children are props. `children` isn't used, therefore ignored.\n\
+        \   We ignore it by prepending it with an underscore */\n\
+         let make = (~greeting, _children) => {\n\
+        \  /* spread the other default fields of component here and override a few */\n\
+        \  ...component,\n\
+         \n\
+        \  initialState: () => {count: 0, show: true},\n\
+         \n\
+        \  /* State transitions */\n\
+        \  reducer: (action, state) =>\n\
+        \    switch (action) {\n\
+        \    | Click => ReasonReact.Update({...state, count: state.count + 1})\n\
+        \    | Toggle => ReasonReact.Update({...state, show: ! state.show})\n\
+        \    },\n\
+         \n\
+        \  render: self => {\n\
+        \    let message =\n\
+        \      \"You've clicked this \" ++ string_of_int(self.state.count) ++ \" times(s)\";\n\
+        \    <div>\n\
+        \      <button onClick={_event => self.send(Click)}>\n\
+        \        {ReasonReact.string(message)}\n\
+        \      </button>\n\
+        \      <button onClick={_event => self.send(Toggle)}>\n\
+        \        {ReasonReact.string(\"Toggle greeting\")}\n\
+        \      </button>\n\
+        \      {self.state.show ? ReasonReact.string(greeting) : ReasonReact.null}\n\
+        \    </div>;\n\
+        \  },\n\
          };\n\
          ") ;
       File  ("index.html",
@@ -14965,7 +14983,7 @@ let root = OCamlRes.Res.([
        {\n\
       \  \"name\": \"react-template\",\n\
       \  \"reason\": {\n\
-      \    \"react-jsx\": 3\n\
+      \    \"react-jsx\": 2\n\
       \  },\n\
       \  \"sources\": {\n\
       \    \"dir\" : \"src\",\n\
@@ -15002,9 +15020,9 @@ let root = OCamlRes.Res.([
       \  \"author\": \"\",\n\
       \  \"license\": \"MIT\",\n\
       \  \"dependencies\": {\n\
-      \    \"react\": \"^16.8.1\",\n\
-      \    \"react-dom\": \"^16.8.1\",\n\
-      \    \"reason-react\": \">=0.7.0\"\n\
+      \    \"react\": \"^16.2.0\",\n\
+      \    \"react-dom\": \"^16.2.0\",\n\
+      \    \"reason-react\": \">=0.4.0\"\n\
       \  },\n\
       \  \"devDependencies\": {\n\
       \    \"bs-platform\": \"^${bsb:bs-version}\",\n\
