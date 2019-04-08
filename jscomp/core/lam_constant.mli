@@ -44,6 +44,4 @@ type t =
       [constant] is [undefined] or not 
     *) 
 val eq_approx : t -> t -> bool
-val convert_constant : 
-  Lambda.structured_constant -> 
-  t    
+val lam_none : t   

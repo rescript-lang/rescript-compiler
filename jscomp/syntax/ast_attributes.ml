@@ -130,10 +130,28 @@ let process_bs (attrs : t) =
     ) 
 
 let external_needs_to_be_encoded (attrs : t)=
-  Ext_list.exists attrs 
-    (fun ({txt; }, _) ->
+  Ext_list.exists_fst attrs 
+    (fun {txt} ->
        Ext_string.starts_with txt "bs." || txt = Literals.gentype_import) 
 
+let has_inline_in_stru (attrs : t) : bool =
+  Ext_list.exists attrs (fun 
+    (({txt;},_) as attr) -> 
+    if txt = "bs.inline" then
+      (Bs_ast_invariant.mark_used_bs_attribute attr;
+      true)
+    else false)       
+
+let has_inline_payload_in_sig (attrs : t)  = 
+  Ext_list.find_first attrs 
+    (fun (({txt},_) as attr) ->
+       if txt = "bs.inline" then
+       begin
+        Bs_ast_invariant.mark_used_bs_attribute attr;
+        true
+       end 
+       else false
+    ) 
 
 type derive_attr = {
   explict_nonrec : bool;

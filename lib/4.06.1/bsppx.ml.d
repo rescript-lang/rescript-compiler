@@ -41,6 +41,11 @@
 ./common/lam_methname.mli
 ./core/config_whole_compiler.ml
 ./core/config_whole_compiler.mli
+./core/lam_constant.ml
+./core/lam_constant.mli
+./core/lam_pointer_info.ml
+./core/lam_pointer_info.mli
+./core/lam_tag_info.ml
 ./ext/ext_array.ml
 ./ext/ext_array.mli
 ./ext/ext_bytes.ml

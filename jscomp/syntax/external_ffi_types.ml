@@ -143,6 +143,7 @@ type t  =
         [true] means is [unit]
   *)
   | Ffi_obj_create of obj_create
+  | Ffi_inline_const of Lam_constant.t
   | Ffi_normal
   (* When it's normal, it is handled as normal c functional ffi call *)
 
@@ -275,3 +276,35 @@ let from_string s : t =
         ~loc:__LOC__
         "Compiler version mismatch. The project might have been built with one version of BuckleScript, and then with another. Please wipe the artifacts and do a clean build."
   else Ffi_normal
+
+
+let inline_string_primitive (s : string) (op : string option) : string list = 
+  let lam : Lam_constant.t = 
+    match op with 
+    | Some op
+    when Ast_utf8_string_interp.is_unicode_string op ->
+      Const_unicode s
+    | _ ->
+      (Const_string s) in 
+  [""; to_string (Ffi_inline_const lam )]
+
+(* Let's only do it for string ATM
+    for boolean, and ints, a good optimizer should     
+    do it by default?
+    But it may not work after layers of indirection
+    e.g, submodule
+*)
+let inline_bool_primitive b : string list = 
+  let lam : Lam_constant.t = 
+    if  b then Lam_constant.Const_js_true 
+    else Lam_constant.Const_js_false
+  in 
+  [""; to_string (Ffi_inline_const lam )]
+
+(* FIXME: check overflow ?*)
+let inline_int_primitive i : string list =   
+  [""; 
+    to_string 
+    (Ffi_inline_const 
+      (Lam_constant.Const_int32 (Int32.of_int i)))
+  ]

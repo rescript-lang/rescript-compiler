@@ -293,6 +293,8 @@
 ./core/lam_compile_util.mli
 ./core/lam_constant.ml
 ./core/lam_constant.mli
+./core/lam_constant_convert.ml
+./core/lam_constant_convert.mli
 ./core/lam_convert.ml
 ./core/lam_convert.mli
 ./core/lam_dce.ml

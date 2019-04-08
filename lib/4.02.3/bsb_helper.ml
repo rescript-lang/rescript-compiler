@@ -2135,7 +2135,16 @@ val iter_snd : ('a * 'b) list -> ('b -> unit) -> unit
 val iter_fst : ('a * 'b) list -> ('a -> unit) -> unit 
 
 val exists : 'a list -> ('a -> bool) -> bool 
-val exists_snd : ('a * 'b) list -> ('b -> bool) -> bool
+
+val exists_fst : 
+  ('a * 'b) list ->
+  ('a -> bool) ->
+  bool
+
+val exists_snd : 
+  ('a * 'b) list -> 
+  ('b -> bool) -> 
+  bool
 
 val concat_append:
     'a list list -> 
@@ -2828,6 +2837,11 @@ let rec exists l p =
   match l with 
     [] -> false  
   | x :: xs -> p x || exists xs p
+
+let rec exists_fst l p = 
+  match l with 
+    [] -> false
+  | (a,_)::l -> p a || exists_fst l p 
 
 let rec exists_snd l p = 
   match l with 

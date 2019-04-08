@@ -8761,7 +8761,16 @@ val iter_snd : ('a * 'b) list -> ('b -> unit) -> unit
 val iter_fst : ('a * 'b) list -> ('a -> unit) -> unit 
 
 val exists : 'a list -> ('a -> bool) -> bool 
-val exists_snd : ('a * 'b) list -> ('b -> bool) -> bool
+
+val exists_fst : 
+  ('a * 'b) list ->
+  ('a -> bool) ->
+  bool
+
+val exists_snd : 
+  ('a * 'b) list -> 
+  ('b -> bool) -> 
+  bool
 
 val concat_append:
     'a list list -> 
@@ -9454,6 +9463,11 @@ let rec exists l p =
   match l with 
     [] -> false  
   | x :: xs -> p x || exists xs p
+
+let rec exists_fst l p = 
+  match l with 
+    [] -> false
+  | (a,_)::l -> p a || exists_fst l p 
 
 let rec exists_snd l p = 
   match l with 
@@ -11536,6 +11550,7 @@ val val_unit : expression_lit
 val type_unit : core_type_lit
 val type_exn : core_type_lit
 val type_string : core_type_lit
+val type_bool : core_type_lit
 val type_int : core_type_lit 
 val type_any : core_type_lit
 
@@ -11589,6 +11604,7 @@ module Lid = struct
   let type_string : t = Lident "string"
   let type_int : t = Lident "int" (* use *predef* *)
   let type_exn : t = Lident "exn" (* use *predef* *)
+  let type_bool : t = Lident "bool" (* use *predef* *)
   (* TODO should be renamed in to {!Js.fn} *)
   (* TODO should be moved into {!Js.t} Later *)
   let js_internal : t = Ldot (Lident "Js", "Internal")
@@ -11620,7 +11636,8 @@ module No_loc = struct
     Ast_helper.Typ.mk (Ptyp_constr ({txt = Lid.type_int; loc}, []))
   let type_string =
     Ast_helper.Typ.mk  (Ptyp_constr ({ txt = Lid.type_string; loc}, []))
-
+  let type_bool =
+    Ast_helper.Typ.mk  (Ptyp_constr ({ txt = Lid.type_bool; loc}, []))
   let type_any = Ast_helper.Typ.any ()
   let pat_unit = Pat.construct {txt = Lid.val_unit; loc} None
 end
@@ -11656,6 +11673,12 @@ let type_string ?loc () =
   | None -> No_loc.type_string
   | Some loc ->
     Ast_helper.Typ.mk ~loc  (Ptyp_constr ({ txt = Lid.type_string; loc}, []))
+
+let type_bool ?loc () =
+  match loc with
+  | None -> No_loc.type_bool
+  | Some loc ->
+    Ast_helper.Typ.mk ~loc  (Ptyp_constr ({ txt = Lid.type_bool; loc}, []))
 
 let type_int ?loc () =
   match loc with
@@ -15277,6 +15300,14 @@ val process_bs :
 val external_needs_to_be_encoded :
   t -> bool
 
+val has_inline_in_stru : 
+  t -> 
+  bool
+
+val has_inline_payload_in_sig :
+  t ->
+  attr option 
+
 type derive_attr = {
   explict_nonrec : bool;
   bs_deriving : Ast_payload.action list option
@@ -15462,10 +15493,28 @@ let process_bs (attrs : t) =
     ) 
 
 let external_needs_to_be_encoded (attrs : t)=
-  Ext_list.exists attrs 
-    (fun ({txt; }, _) ->
+  Ext_list.exists_fst attrs 
+    (fun {txt} ->
        Ext_string.starts_with txt "bs." || txt = Literals.gentype_import) 
 
+let has_inline_in_stru (attrs : t) : bool =
+  Ext_list.exists attrs (fun 
+    (({txt;},_) as attr) -> 
+    if txt = "bs.inline" then
+      (Bs_ast_invariant.mark_used_bs_attribute attr;
+      true)
+    else false)       
+
+let has_inline_payload_in_sig (attrs : t)  = 
+  Ext_list.find_first attrs 
+    (fun (({txt},_) as attr) ->
+       if txt = "bs.inline" then
+       begin
+        Bs_ast_invariant.mark_used_bs_attribute attr;
+        true
+       end 
+       else false
+    ) 
 
 type derive_attr = {
   explict_nonrec : bool;
@@ -17988,6 +18037,259 @@ let exists v f =
   | None -> false
   | Some x -> f x 
 end
+module Lam_pointer_info : sig 
+#1 "lam_pointer_info.mli"
+(* Copyright (C) 2018- Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type t = 
+  | Pt_constructor of string 
+  | Pt_variant of string 
+  | Pt_module_alias
+  | Pt_na 
+
+end = struct
+#1 "lam_pointer_info.ml"
+(* Copyright (C) 2018- Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type t = 
+  | Pt_constructor of string 
+  | Pt_variant of string 
+  | Pt_module_alias
+  | Pt_na 
+
+end
+module Lam_tag_info
+= struct
+#1 "lam_tag_info.ml"
+(* Copyright (C) 2018-Present Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+(* Similiar to {!Lambda.tag_info}
+  In particular, 
+  it reduces some branches e.g, 
+  [Blk_some], [Blk_some_not_nested]
+*)
+type t = 
+  | Blk_constructor of string * int
+  | Blk_tuple
+  | Blk_array
+  | Blk_variant of string 
+  | Blk_record of string array 
+  | Blk_module of string list option
+  | Blk_extension_slot
+  | Blk_na
+
+  | Blk_record_inlined of string array * string * int
+  | Blk_record_ext of string array
+
+end
+module Lam_constant : sig 
+#1 "lam_constant.mli"
+(* Copyright (C) 2018- Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type t =
+  | Const_js_null
+  | Const_js_undefined
+  | Const_js_true
+  | Const_js_false
+  | Const_int of int
+  | Const_char of char
+  | Const_string of string  (* use record later *)
+  | Const_unicode of string
+  | Const_float of string
+  | Const_int32 of int32
+  | Const_int64 of int64
+  | Const_nativeint of nativeint
+  | Const_pointer of int * Lam_pointer_info.t
+  | Const_block of int * Lam_tag_info.t * t list
+  | Const_float_array of string list
+  | Const_immstring of string
+  | Const_some of t 
+    (* eventually we can remove it, since we know
+      [constant] is [undefined] or not 
+    *) 
+val eq_approx : t -> t -> bool
+val lam_none : t   
+end = struct
+#1 "lam_constant.ml"
+(* Copyright (C) 2018- Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+ type t =
+  | Const_js_null
+  | Const_js_undefined
+  | Const_js_true
+  | Const_js_false
+  | Const_int of int
+  | Const_char of char
+  | Const_string of string  (* use record later *)
+  | Const_unicode of string
+  | Const_float of string
+  | Const_int32 of int32
+  | Const_int64 of int64
+  | Const_nativeint of nativeint
+  | Const_pointer of int * Lam_pointer_info.t
+  | Const_block of int * Lam_tag_info.t * t list
+  | Const_float_array of string list
+  | Const_immstring of string
+  | Const_some of t 
+    (* eventually we can remove it, since we know
+      [constant] is [undefined] or not 
+    *) 
+
+
+let rec eq_approx (x : t) (y : t) = 
+  match x with 
+  | Const_js_null -> y = Const_js_null
+  | Const_js_undefined -> y =  Const_js_undefined
+  | Const_js_true -> y = Const_js_true
+  | Const_js_false -> y =  Const_js_false
+  | Const_int ix -> 
+    (match y with Const_int iy -> ix = iy | _ -> false)
+  | Const_char ix ->   
+    (match y with Const_char iy -> ix = iy | _ -> false)
+  | Const_string ix -> 
+    (match y with Const_string iy -> ix = iy | _ -> false)
+  | Const_unicode ix ->   
+    (match y with Const_unicode iy -> ix = iy | _ -> false)
+  | Const_float  ix -> 
+    (match y with Const_float iy -> ix = iy | _ -> false)
+  | Const_int32 ix ->   
+    (match y with Const_int32 iy -> ix = iy | _ -> false)
+  | Const_int64 ix ->   
+    (match y with Const_int64 iy -> ix = iy | _ -> false)
+  | Const_nativeint ix ->   
+    (match y with Const_nativeint iy -> ix = iy | _ -> false)
+  | Const_pointer (ix,_) ->   
+    (match y with Const_pointer (iy,_) -> ix = iy | _ -> false)
+  | Const_block(ix,_,ixs) -> 
+    (match y with Const_block(iy,_,iys) -> ix = iy && Ext_list.for_all2_no_exn ixs iys eq_approx
+    | _ -> false)
+  | Const_float_array ixs ->   
+    (match y with Const_float_array iys -> 
+      Ext_list.for_all2_no_exn ixs iys Ext_string.equal
+    | _ -> false
+    )
+  | Const_immstring ix ->   
+   (match y with Const_immstring iy -> ix = iy | _ -> false)
+  | Const_some ix ->  
+    (match y with Const_some iy -> eq_approx ix iy | _ -> false)
+
+
+let lam_none : t = 
+   Const_js_undefined 
+
+end
 module External_ffi_types : sig 
 #1 "external_ffi_types.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -18111,6 +18413,7 @@ type t  =
       return_wrapper *
       external_spec
   | Ffi_obj_create of obj_create
+  | Ffi_inline_const of Lam_constant.t
   | Ffi_normal
   (* When it's normal, it is handled as normal c functional ffi call *)
 
@@ -18124,7 +18427,18 @@ val to_string : t -> string
 (** Note *)
 val from_string : string -> t
 
+val inline_string_primitive : 
+  string -> 
+  string option -> 
+  string list 
 
+val inline_bool_primitive :   
+  bool -> 
+  string list
+
+val inline_int_primitive :   
+  int -> 
+  string list
 end = struct
 #1 "external_ffi_types.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -18272,6 +18586,7 @@ type t  =
         [true] means is [unit]
   *)
   | Ffi_obj_create of obj_create
+  | Ffi_inline_const of Lam_constant.t
   | Ffi_normal
   (* When it's normal, it is handled as normal c functional ffi call *)
 
@@ -18405,6 +18720,37 @@ let from_string s : t =
         "Compiler version mismatch. The project might have been built with one version of BuckleScript, and then with another. Please wipe the artifacts and do a clean build."
   else Ffi_normal
 
+
+let inline_string_primitive (s : string) (op : string option) : string list = 
+  let lam : Lam_constant.t = 
+    match op with 
+    | Some op
+    when Ast_utf8_string_interp.is_unicode_string op ->
+      Const_unicode s
+    | _ ->
+      (Const_string s) in 
+  [""; to_string (Ffi_inline_const lam )]
+
+(* Let's only do it for string ATM
+    for boolean, and ints, a good optimizer should     
+    do it by default?
+    But it may not work after layers of indirection
+    e.g, submodule
+*)
+let inline_bool_primitive b : string list = 
+  let lam : Lam_constant.t = 
+    if  b then Lam_constant.Const_js_true 
+    else Lam_constant.Const_js_false
+  in 
+  [""; to_string (Ffi_inline_const lam )]
+
+(* FIXME: check overflow ?*)
+let inline_int_primitive i : string list =   
+  [""; 
+    to_string 
+    (Ffi_inline_const 
+      (Lam_constant.Const_int32 (Int32.of_int i)))
+  ]
 end
 module Bs_hash_stubs
 = struct

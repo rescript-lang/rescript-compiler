@@ -668,6 +668,11 @@ let rec exists l p =
     [] -> false  
   | x :: xs -> p x || exists xs p
 
+let rec exists_fst l p = 
+  match l with 
+    [] -> false
+  | (a,_)::l -> p a || exists_fst l p 
+
 let rec exists_snd l p = 
   match l with 
     [] -> false

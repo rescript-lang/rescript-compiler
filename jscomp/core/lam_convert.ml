@@ -446,7 +446,7 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
     | Ffi_bs(arg_types, result_type, ffi) ->
       let args = Ext_list.map args convert_aux in
       Lam.handle_bs_non_obj_ffi arg_types result_type ffi args loc prim_name
-
+    | Ffi_inline_const i -> Lam.const i
 
   and convert_js_primitive (p: Primitive_compat.t) (args : Lambda.lambda list) loc =
     let s = p.prim_name in
@@ -555,7 +555,7 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
       else
         Lam.var var
     | Lconst x ->
-      Lam.const (Lam_constant.convert_constant x )
+      Lam.const (Lam_constant_convert.convert_constant x )
     | Lapply 
 #if OCAML_VERSION =~ ">4.03.0" then
         {ap_func = fn; ap_args = args; ap_loc = loc; }

@@ -119,6 +119,7 @@ type t  =
       return_wrapper *
       external_spec
   | Ffi_obj_create of obj_create
+  | Ffi_inline_const of Lam_constant.t
   | Ffi_normal
   (* When it's normal, it is handled as normal c functional ffi call *)
 
@@ -132,3 +133,15 @@ val to_string : t -> string
 (** Note *)
 val from_string : string -> t
 
+val inline_string_primitive : 
+  string -> 
+  string option -> 
+  string list 
+
+val inline_bool_primitive :   
+  bool -> 
+  string list
+
+val inline_int_primitive :   
+  int -> 
+  string list

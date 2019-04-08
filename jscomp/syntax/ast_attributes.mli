@@ -50,6 +50,14 @@ val process_bs :
 val external_needs_to_be_encoded :
   t -> bool
 
+val has_inline_in_stru : 
+  t -> 
+  bool
+
+val has_inline_payload_in_sig :
+  t ->
+  attr option 
+
 type derive_attr = {
   explict_nonrec : bool;
   bs_deriving : Ast_payload.action list option
