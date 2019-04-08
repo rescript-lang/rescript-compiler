@@ -207,7 +207,13 @@ let signature_item_mapper (self : mapper) (sigi : Parsetree.signature_item) =
            pval_attributes with 
          | Some ({loc},PStr [{pstr_desc = Pstr_eval ({pexp_desc },_)}]) ->
            begin match pexp_desc with
-             | Pexp_constant (Const_string(s,dec)) -> 
+             | Pexp_constant (
+#if OCAML_VERSION =~ ">4.03.0" then
+               Pconst_string
+#else
+               Const_string
+#end               
+               (s,dec)) -> 
                Bs_ast_invariant.warn_discarded_unused_attributes pval_attributes;
                { sigi with 
                  psig_desc = Psig_value
@@ -216,8 +222,17 @@ let signature_item_mapper (self : mapper) (sigi : Parsetree.signature_item) =
                        pval_prim = External_ffi_types.inline_string_primitive s dec;
                        pval_attributes = []
                      }}
-             | Pexp_constant(Const_int s) ->         
+             | Pexp_constant(
+#if OCAML_VERSION =~ ">4.03.0" then               
+               Pconst_integer (s,None)
+#else
+               Const_int s
+#end               
+               ) ->         
                Bs_ast_invariant.warn_discarded_unused_attributes pval_attributes;
+#if OCAML_VERSION =~ ">4.03.0" then                
+               let s = int_of_string s in  
+#end
                { sigi with 
                  psig_desc = Psig_value
                      { 
@@ -283,7 +298,14 @@ let structure_item_mapper (self : mapper) (str : Parsetree.structure_item) =
     let pvb_attributes = self.attributes self pvb_attributes in 
     let has_inline_property = Ast_attributes.has_inline_in_stru pvb_attributes in
     begin match pvb_expr.pexp_desc, has_inline_property with 
-    | Pexp_constant(Const_string(s,dec)), true 
+    | Pexp_constant(
+#if OCAML_VERSION =~ ">4.03.0" then
+               Pconst_string
+#else
+               Const_string
+#end               
+
+              (s,dec)), true 
     ->      
         Bs_ast_invariant.warn_discarded_unused_attributes pvb_attributes; 
         {str with pstr_desc = Pstr_primitive  {
@@ -293,8 +315,17 @@ let structure_item_mapper (self : mapper) (str : Parsetree.structure_item) =
              pval_attributes = [];
              pval_prim = External_ffi_types.inline_string_primitive s dec
            } } 
-    | Pexp_constant(Const_int s), true   
+    | Pexp_constant(
+#if OCAML_VERSION =~ ">4.03.0" then      
+      Pconst_integer (s,None)
+#else      
+      Const_int s
+#end      
+      ), true   
       -> 
+#if OCAML_VERSION =~ ">4.03.0" then     
+      let s = int_of_string s in  
+#end
       Bs_ast_invariant.warn_discarded_unused_attributes pvb_attributes; 
       {str with pstr_desc = Pstr_primitive  {
            pval_name = pval_name ;
