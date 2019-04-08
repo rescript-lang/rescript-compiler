@@ -137,3 +137,11 @@ val inline_string_primitive :
   string -> 
   string option -> 
   string list 
+
+val inline_bool_primitive :   
+  bool -> 
+  string list
+
+val inline_int_primitive :   
+  int -> 
+  string list

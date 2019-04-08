@@ -287,3 +287,24 @@ let inline_string_primitive (s : string) (op : string option) : string list =
     | _ ->
       (Const_string s) in 
   [""; to_string (Ffi_inline_const lam )]
+
+(* Let's only do it for string ATM
+    for boolean, and ints, a good optimizer should     
+    do it by default?
+    But it may not work after layers of indirection
+    e.g, submodule
+*)
+let inline_bool_primitive b : string list = 
+  let lam : Lam_constant.t = 
+    if  b then Lam_constant.Const_js_true 
+    else Lam_constant.Const_js_false
+  in 
+  [""; to_string (Ffi_inline_const lam )]
+
+(* FIXME: check overflow ?*)
+let inline_int_primitive i : string list =   
+  [""; 
+    to_string 
+    (Ffi_inline_const 
+      (Lam_constant.Const_int32 (Int32.of_int i)))
+  ]

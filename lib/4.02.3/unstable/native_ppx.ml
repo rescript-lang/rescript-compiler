@@ -9086,6 +9086,7 @@ val val_unit : expression_lit
 val type_unit : core_type_lit
 val type_exn : core_type_lit
 val type_string : core_type_lit
+val type_bool : core_type_lit
 val type_int : core_type_lit 
 val type_any : core_type_lit
 
@@ -9139,6 +9140,7 @@ module Lid = struct
   let type_string : t = Lident "string"
   let type_int : t = Lident "int" (* use *predef* *)
   let type_exn : t = Lident "exn" (* use *predef* *)
+  let type_bool : t = Lident "bool" (* use *predef* *)
   (* TODO should be renamed in to {!Js.fn} *)
   (* TODO should be moved into {!Js.t} Later *)
   let js_internal : t = Ldot (Lident "Js", "Internal")
@@ -9170,7 +9172,8 @@ module No_loc = struct
     Ast_helper.Typ.mk (Ptyp_constr ({txt = Lid.type_int; loc}, []))
   let type_string =
     Ast_helper.Typ.mk  (Ptyp_constr ({ txt = Lid.type_string; loc}, []))
-
+  let type_bool =
+    Ast_helper.Typ.mk  (Ptyp_constr ({ txt = Lid.type_bool; loc}, []))
   let type_any = Ast_helper.Typ.any ()
   let pat_unit = Pat.construct {txt = Lid.val_unit; loc} None
 end
@@ -9206,6 +9209,12 @@ let type_string ?loc () =
   | None -> No_loc.type_string
   | Some loc ->
     Ast_helper.Typ.mk ~loc  (Ptyp_constr ({ txt = Lid.type_string; loc}, []))
+
+let type_bool ?loc () =
+  match loc with
+  | None -> No_loc.type_bool
+  | Some loc ->
+    Ast_helper.Typ.mk ~loc  (Ptyp_constr ({ txt = Lid.type_bool; loc}, []))
 
 let type_int ?loc () =
   match loc with
@@ -12699,9 +12708,13 @@ val process_bs :
 val external_needs_to_be_encoded :
   t -> bool
 
+val has_inline_in_stru : 
+  t -> 
+  bool
+
 val has_inline_payload_in_sig :
   t ->
-  (string * string option) option 
+  attr option 
 
 type derive_attr = {
   explict_nonrec : bool;
@@ -12892,16 +12905,31 @@ let external_needs_to_be_encoded (attrs : t)=
     (fun {txt} ->
        Ext_string.starts_with txt "bs." || txt = Literals.gentype_import) 
 
+let has_inline_in_stru (attrs : t) : bool =
+  Ext_list.exists attrs (fun 
+    (({txt;},_) as attr) -> 
+    if txt = "bs.inline" then
+      (Bs_ast_invariant.mark_used_bs_attribute attr;
+      true)
+    else false)       
+
 let has_inline_payload_in_sig (attrs : t)  = 
-  match Ext_list.find_first attrs 
-  (fun ({txt},_) ->
-     txt = "inline" 
-  ) with 
-  | None -> None 
+  Ext_list.find_first attrs 
+    (fun (({txt},_) as attr) ->
+       if txt = "bs.inline" then
+       begin
+        Bs_ast_invariant.mark_used_bs_attribute attr;
+        true
+       end 
+       else false
+    ) 
+
+  (* | None -> None 
   | Some (_,PStr [{pstr_desc = Pstr_eval ({pexp_desc= Pexp_constant(Const_string(s,dec))},_) }])
     -> Some (s,dec) 
   | Some ({loc}, _) ->  
-    Location.raise_errorf ~loc "Not supported constant payload"
+    Location.raise_errorf ~loc "Not supported constant payload" *)
+
 type derive_attr = {
   explict_nonrec : bool;
   bs_deriving : Ast_payload.action list option
@@ -15815,6 +15843,14 @@ val inline_string_primitive :
   string -> 
   string option -> 
   string list 
+
+val inline_bool_primitive :   
+  bool -> 
+  string list
+
+val inline_int_primitive :   
+  int -> 
+  string list
 end = struct
 #1 "external_ffi_types.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -16107,6 +16143,26 @@ let inline_string_primitive (s : string) (op : string option) : string list =
       (Const_string s) in 
   [""; to_string (Ffi_inline_const lam )]
 
+(* Let's only do it for string ATM
+    for boolean, and ints, a good optimizer should     
+    do it by default?
+    But it may not work after layers of indirection
+    e.g, submodule
+*)
+let inline_bool_primitive b : string list = 
+  let lam : Lam_constant.t = 
+    if  b then Lam_constant.Const_js_true 
+    else Lam_constant.Const_js_false
+  in 
+  [""; to_string (Ffi_inline_const lam )]
+
+(* FIXME: check overflow ?*)
+let inline_int_primitive i : string list =   
+  [""; 
+    to_string 
+    (Ffi_inline_const 
+      (Lam_constant.Const_int32 (Int32.of_int i)))
+  ]
 end
 module Bs_hash_stubs
 = struct

@@ -44,6 +44,7 @@ module Lid = struct
   let type_string : t = Lident "string"
   let type_int : t = Lident "int" (* use *predef* *)
   let type_exn : t = Lident "exn" (* use *predef* *)
+  let type_bool : t = Lident "bool" (* use *predef* *)
   (* TODO should be renamed in to {!Js.fn} *)
   (* TODO should be moved into {!Js.t} Later *)
   let js_internal : t = Ldot (Lident "Js", "Internal")
@@ -75,7 +76,8 @@ module No_loc = struct
     Ast_helper.Typ.mk (Ptyp_constr ({txt = Lid.type_int; loc}, []))
   let type_string =
     Ast_helper.Typ.mk  (Ptyp_constr ({ txt = Lid.type_string; loc}, []))
-
+  let type_bool =
+    Ast_helper.Typ.mk  (Ptyp_constr ({ txt = Lid.type_bool; loc}, []))
   let type_any = Ast_helper.Typ.any ()
   let pat_unit = Pat.construct {txt = Lid.val_unit; loc} None
 end
@@ -111,6 +113,12 @@ let type_string ?loc () =
   | None -> No_loc.type_string
   | Some loc ->
     Ast_helper.Typ.mk ~loc  (Ptyp_constr ({ txt = Lid.type_string; loc}, []))
+
+let type_bool ?loc () =
+  match loc with
+  | None -> No_loc.type_bool
+  | Some loc ->
+    Ast_helper.Typ.mk ~loc  (Ptyp_constr ({ txt = Lid.type_bool; loc}, []))
 
 let type_int ?loc () =
   match loc with

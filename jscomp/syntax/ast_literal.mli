@@ -56,6 +56,7 @@ val val_unit : expression_lit
 val type_unit : core_type_lit
 val type_exn : core_type_lit
 val type_string : core_type_lit
+val type_bool : core_type_lit
 val type_int : core_type_lit 
 val type_any : core_type_lit
 

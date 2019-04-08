@@ -184,6 +184,7 @@ let class_type_mapper (self : mapper) ({pcty_attributes; pcty_loc} as ctd : Pars
            {[class type x = int -> object
                end[@bs]]}
 *)
+let setupChromeDebugger : Longident.t =  Ldot (Ldot (Lident"Belt","Debug"), "setupChromeDebugger")
 
 let signature_item_mapper (self : mapper) (sigi : Parsetree.signature_item) =        
       match sigi.psig_desc with
@@ -193,14 +194,58 @@ let signature_item_mapper (self : mapper) (sigi : Parsetree.signature_item) =
 #end          
            (_ :: _ as tdcls)) ->  (*FIXME: check recursive handling*)
           Ast_tdcls.handleTdclsInSigi self sigi tdcls
-      | Psig_value prim 
-        when 
-          Ast_attributes.external_needs_to_be_encoded prim.pval_attributes
+      | Psig_value ({pval_attributes; pval_prim} as value_desc)
+        
         ->
-        Ast_external.handleExternalInSig self prim sigi
-      | _ -> Bs_ast_mapper.default_mapper.signature_item self sigi
+        let pval_attributes = self.attributes self pval_attributes in 
+        if pval_prim <> [] && (*  It is external *)
+          Ast_attributes.external_needs_to_be_encoded pval_attributes then 
+          Ast_external.handleExternalInSig self value_desc sigi
+        else 
+          (match 
+           Ast_attributes.has_inline_payload_in_sig
+           pval_attributes with 
+         | Some ({loc},PStr [{pstr_desc = Pstr_eval ({pexp_desc },_)}]) ->
+           begin match pexp_desc with
+             | Pexp_constant (Const_string(s,dec)) -> 
+               Bs_ast_invariant.warn_discarded_unused_attributes pval_attributes;
+               { sigi with 
+                 psig_desc = Psig_value
+                     { 
+                       value_desc with
+                       pval_prim = External_ffi_types.inline_string_primitive s dec;
+                       pval_attributes = []
+                     }}
+             | Pexp_constant(Const_int s) ->         
+               Bs_ast_invariant.warn_discarded_unused_attributes pval_attributes;
+               { sigi with 
+                 psig_desc = Psig_value
+                     { 
+                       value_desc with
+                       pval_prim = External_ffi_types.inline_int_primitive s ;
+                       pval_attributes = []
+                     }}
+              | Pexp_construct ({txt = Lident ("true" | "false" as txt)}, None)       
+                -> 
+                Bs_ast_invariant.warn_discarded_unused_attributes pval_attributes;
+                { sigi with 
+                 psig_desc = Psig_value
+                     { 
+                       value_desc with
+                       pval_prim = External_ffi_types.inline_bool_primitive (txt = "true") ;
+                       pval_attributes = []
+                     }}
+              | _ -> 
+                Location.raise_errorf ~loc "invalid payload in bs.inline"
+           end 
+         | Some ({loc}, _) ->                  
+           Location.raise_errorf ~loc "invalid payload in bs.inline"
+         | None ->
+          default_mapper.signature_item self sigi
+          )
+      | _ -> default_mapper.signature_item self sigi
 
-let setupChromeDebugger : Longident.t =  Ldot (Ldot (Lident"Belt","Debug"), "setupChromeDebugger")
+
 
 let structure_item_mapper (self : mapper) (str : Parsetree.structure_item) =
   match str.pstr_desc with
@@ -225,7 +270,52 @@ let structure_item_mapper (self : mapper) (str : Parsetree.structure_item) =
    | Pstr_primitive prim when Ast_attributes.external_needs_to_be_encoded prim.pval_attributes
       ->
       Ast_external.handleExternalInStru self prim str
-   | _ -> Bs_ast_mapper.default_mapper.structure_item self str
+   | Pstr_value 
+    (Nonrecursive, [
+      {
+        pvb_pat = ({ppat_desc = Ppat_var pval_name} as pvb_pat); 
+        pvb_expr ; 
+        pvb_attributes ; 
+        pvb_loc}]) 
+    
+    ->   
+    let pvb_expr = self.expr self pvb_expr in 
+    let pvb_attributes = self.attributes self pvb_attributes in 
+    let has_inline_property = Ast_attributes.has_inline_in_stru pvb_attributes in
+    begin match pvb_expr.pexp_desc, has_inline_property with 
+    | Pexp_constant(Const_string(s,dec)), true 
+    ->      
+        Bs_ast_invariant.warn_discarded_unused_attributes pvb_attributes; 
+        {str with pstr_desc = Pstr_primitive  {
+             pval_name = pval_name ;
+             pval_type = Ast_literal.type_string (); 
+             pval_loc = pvb_loc;
+             pval_attributes = [];
+             pval_prim = External_ffi_types.inline_string_primitive s dec
+           } } 
+    | Pexp_constant(Const_int s), true   
+      -> 
+      Bs_ast_invariant.warn_discarded_unused_attributes pvb_attributes; 
+      {str with pstr_desc = Pstr_primitive  {
+           pval_name = pval_name ;
+           pval_type = Ast_literal.type_int (); 
+           pval_loc = pvb_loc;
+           pval_attributes = [];
+           pval_prim = External_ffi_types.inline_int_primitive s
+         } }
+    | Pexp_construct ({txt = Lident ("true" | "false" as txt) },None), true -> 
+      Bs_ast_invariant.warn_discarded_unused_attributes pvb_attributes; 
+      {str with pstr_desc = Pstr_primitive  {
+           pval_name = pval_name ;
+           pval_type = Ast_literal.type_bool (); 
+           pval_loc = pvb_loc;
+           pval_attributes = [];
+           pval_prim = External_ffi_types.inline_bool_primitive (txt = "true")
+         } }
+    | _ -> 
+      { str with pstr_desc =  Pstr_value(Nonrecursive, [{pvb_pat ; pvb_expr; pvb_attributes; pvb_loc}])}
+    end 
+  | _ -> default_mapper.structure_item self str
 
 
     
