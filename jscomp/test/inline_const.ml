@@ -20,3 +20,10 @@ end
 let h = f 
 
 let hh = f ^ f 
+
+open N
+
+module H = N1 ()
+open H
+let a,b,c,d,e = 
+  f,f1,f2,f3,f4

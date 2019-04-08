@@ -67,6 +67,7 @@ let reset () =
 
 
 type mapper = Bs_ast_mapper.mapper
+let default_mapper = Bs_ast_mapper.default_mapper
 let default_expr_mapper = Bs_ast_mapper.default_mapper.expr 
 
 let expr_mapper  (self : mapper) (e : Parsetree.expression) =
@@ -156,7 +157,7 @@ let typ_mapper (self : mapper) (typ : Parsetree.core_type) =
 let class_type_mapper (self : mapper) ({pcty_attributes; pcty_loc} as ctd : Parsetree.class_type) = 
   match Ast_attributes.process_bs pcty_attributes with
   | false,  _ ->
-    Bs_ast_mapper.default_mapper.class_type self ctd
+    default_mapper.class_type self ctd
   | true, pcty_attributes ->
       (match ctd.pcty_desc with
       | Pcty_signature ({pcsig_self; pcsig_fields })
@@ -229,7 +230,7 @@ let structure_item_mapper (self : mapper) (str : Parsetree.structure_item) =
 
     
 let rec unsafe_mapper : mapper =
-  { Bs_ast_mapper.default_mapper with
+  { default_mapper with
     expr = expr_mapper;
     typ = typ_mapper ;
     class_type = class_type_mapper;      

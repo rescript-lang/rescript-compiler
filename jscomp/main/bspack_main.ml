@@ -504,10 +504,7 @@ let () =
                       *)
                       Filename.concat 
                         (Ext_path.rel_normalized_absolute_path
-                           ~from:
-                             (Ext_path.normalize_absolute_path (match !output_file with 
-                                    None -> cwd
-                                  | Some x -> cwd // Filename.dirname x ))
+                           ~from:cwd                             
                            (Filename.dirname collection_module)
                         ) (Filename.basename collection_module)
 

@@ -16,11 +16,11 @@ var f = "hello";
 
 var f1 = "a";
 
-var f2 = "\xe4\xb8\xad\xe6\x96\x87";
+var f2 = "中文";
 
-var f3 = "\xe4\xb8\xad\xe6\x96\x87";
+var f3 = "中文";
 
-var f4 = "\xe4\xb8\xad\xe6\x96\x87";
+var f4 = "中文";
 
 eq("File \"inline_const_test.ml\", line 23, characters 5-12", f, "hello");
 

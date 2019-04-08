@@ -446,7 +446,7 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
     | Ffi_bs(arg_types, result_type, ffi) ->
       let args = Ext_list.map args convert_aux in
       Lam.handle_bs_non_obj_ffi arg_types result_type ffi args loc prim_name
-
+    | Ffi_inline_const i -> Lam.const i
 
   and convert_js_primitive (p: Primitive_compat.t) (args : Lambda.lambda list) loc =
     let s = p.prim_name in
