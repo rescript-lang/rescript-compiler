@@ -27287,7 +27287,7 @@ let () =
            | None -> ()
            | Some file ->
              let output = file ^ ".d" in
-             let sorted_queue = 
+             let sorted_dep_queue = 
                Queue.fold 
                (fun acc collection_module -> 
                   L_string_set.add 
@@ -27298,7 +27298,10 @@ let () =
                       *)
                       Filename.concat 
                         (Ext_path.rel_normalized_absolute_path
-                           ~from:cwd 
+                           ~from:
+                             (Ext_path.normalize_absolute_path (match !output_file with 
+                                    None -> cwd
+                                  | Some x -> cwd // Filename.dirname x ))
                            (Filename.dirname collection_module)
                         ) (Filename.basename collection_module)
 
@@ -27310,12 +27313,11 @@ let () =
                output
                (                 
                  L_string_set.fold
-                   (fun collection_module acc  -> 
+                   (fun dep acc  -> 
                       acc ^ 
-                      collection_module
-                      ^ "\n"
-                      (* ^ a ^ " : ; touch " ^ output ^ "\n" *)
-                   ) sorted_queue
+                      dep ^
+                      "\n"
+                   ) sorted_dep_queue
                    (file ^ ":\n" )
                    (* collection_modules *)
                )
