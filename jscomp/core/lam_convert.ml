@@ -555,7 +555,7 @@ let convert (exports : Ident_set.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
       else
         Lam.var var
     | Lconst x ->
-      Lam.const (Lam_constant.convert_constant x )
+      Lam.const (Lam_constant_convert.convert_constant x )
     | Lapply 
 #if OCAML_VERSION =~ ">4.03.0" then
         {ap_func = fn; ap_args = args; ap_loc = loc; }

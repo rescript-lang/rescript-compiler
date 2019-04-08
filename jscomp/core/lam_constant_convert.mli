@@ -22,26 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type t =
-  | Const_js_null
-  | Const_js_undefined
-  | Const_js_true
-  | Const_js_false
-  | Const_int of int
-  | Const_char of char
-  | Const_string of string  (* use record later *)
-  | Const_unicode of string
-  | Const_float of string
-  | Const_int32 of int32
-  | Const_int64 of int64
-  | Const_nativeint of nativeint
-  | Const_pointer of int * Lam_pointer_info.t
-  | Const_block of int * Lam_tag_info.t * t list
-  | Const_float_array of string list
-  | Const_immstring of string
-  | Const_some of t 
-    (* eventually we can remove it, since we know
-      [constant] is [undefined] or not 
-    *) 
-val eq_approx : t -> t -> bool
-val lam_none : t   
+ 
+ val convert_constant:
+  Lambda.structured_constant -> 
+  Lam_constant.t
