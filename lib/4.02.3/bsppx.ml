@@ -13032,12 +13032,6 @@ let has_inline_payload_in_sig (attrs : t)  =
        else false
     ) 
 
-  (* | None -> None 
-  | Some (_,PStr [{pstr_desc = Pstr_eval ({pexp_desc= Pexp_constant(Const_string(s,dec))},_) }])
-    -> Some (s,dec) 
-  | Some ({loc}, _) ->  
-    Location.raise_errorf ~loc "Not supported constant payload" *)
-
 type derive_attr = {
   explict_nonrec : bool;
   bs_deriving : Ast_payload.action list option
@@ -22624,7 +22618,11 @@ let signature_item_mapper (self : mapper) (sigi : Parsetree.signature_item) =
            pval_attributes with 
          | Some ({loc},PStr [{pstr_desc = Pstr_eval ({pexp_desc },_)}]) ->
            begin match pexp_desc with
-             | Pexp_constant (Const_string(s,dec)) -> 
+             | Pexp_constant (
+
+               Const_string
+               
+               (s,dec)) -> 
                Bs_ast_invariant.warn_discarded_unused_attributes pval_attributes;
                { sigi with 
                  psig_desc = Psig_value
@@ -22633,8 +22631,13 @@ let signature_item_mapper (self : mapper) (sigi : Parsetree.signature_item) =
                        pval_prim = External_ffi_types.inline_string_primitive s dec;
                        pval_attributes = []
                      }}
-             | Pexp_constant(Const_int s) ->         
+             | Pexp_constant(
+
+               Const_int s
+               
+               ) ->         
                Bs_ast_invariant.warn_discarded_unused_attributes pval_attributes;
+
                { sigi with 
                  psig_desc = Psig_value
                      { 
@@ -22698,7 +22701,12 @@ let structure_item_mapper (self : mapper) (str : Parsetree.structure_item) =
     let pvb_attributes = self.attributes self pvb_attributes in 
     let has_inline_property = Ast_attributes.has_inline_in_stru pvb_attributes in
     begin match pvb_expr.pexp_desc, has_inline_property with 
-    | Pexp_constant(Const_string(s,dec)), true 
+    | Pexp_constant(
+
+               Const_string
+               
+
+              (s,dec)), true 
     ->      
         Bs_ast_invariant.warn_discarded_unused_attributes pvb_attributes; 
         {str with pstr_desc = Pstr_primitive  {
@@ -22708,8 +22716,13 @@ let structure_item_mapper (self : mapper) (str : Parsetree.structure_item) =
              pval_attributes = [];
              pval_prim = External_ffi_types.inline_string_primitive s dec
            } } 
-    | Pexp_constant(Const_int s), true   
+    | Pexp_constant(
+      
+      Const_int s
+      
+      ), true   
       -> 
+
       Bs_ast_invariant.warn_discarded_unused_attributes pvb_attributes; 
       {str with pstr_desc = Pstr_primitive  {
            pval_name = pval_name ;

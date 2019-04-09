@@ -12924,12 +12924,6 @@ let has_inline_payload_in_sig (attrs : t)  =
        else false
     ) 
 
-  (* | None -> None 
-  | Some (_,PStr [{pstr_desc = Pstr_eval ({pexp_desc= Pexp_constant(Const_string(s,dec))},_) }])
-    -> Some (s,dec) 
-  | Some ({loc}, _) ->  
-    Location.raise_errorf ~loc "Not supported constant payload" *)
-
 type derive_attr = {
   explict_nonrec : bool;
   bs_deriving : Ast_payload.action list option
