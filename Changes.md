@@ -1,5 +1,16 @@
 
 * potential break changes
+# 5.0.1
+Features
+- #3479 add a theme named react-hooks for the new ppx
+- #3476 add bs.inline support for literals (int, string, bool) so that it gets a stronger guarantee for inlining
+- #3473 upstream reason@3c6a9ca98
+- #3470,#3466 ract jsx ppx
+
+Fixes
+- #3455 fix polymorphic comparison and equality for js date
+- #3465 fix brutal console.clear 
+- #3468 add BS_VSCODE to disable -super-errors, which works better with vscode problem matcher
 # 5.0.0
 
 Features
