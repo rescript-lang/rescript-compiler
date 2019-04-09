@@ -819,7 +819,7 @@ let root = OCamlRes.Res.([
       \  \"dependencies\": {\n\
       \    \"react\": \"^16.8.1\",\n\
       \    \"react-dom\": \"^16.8.1\",\n\
-      \    \"reason-react\": \">=0.7.0\"\n\
+      \    \"reason-react\": \"0.7.0-alpha.0\"\n\
       \  },\n\
       \  \"devDependencies\": {\n\
       \    \"bs-platform\": \"^${bsb:bs-version}\",\n\
