@@ -14,7 +14,7 @@ var hostPlatform = 'darwin'
 function buildCompiler() {
   var prebuilt = 'prebuilt.ninja'
   var content = `
-ocamlopt = ../native/${version}/bin/ocamlopt.opt
+ocamlopt = ${is_windows?`ocamlopt.opt.exe`:`../native/${version}/bin/ocamlopt.opt`}
 ext = ${sys_extension}
 INCL = ${version}
 include body.ninja
