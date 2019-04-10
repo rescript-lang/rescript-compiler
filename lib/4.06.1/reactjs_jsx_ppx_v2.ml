@@ -647,8 +647,8 @@ let jsxMapper () =
               })
             ]
           ) in
-          let expression = match (label, default) with
-          | (label, Some default) when isOptional label -> Exp.match_ expression [
+          let expression = match (default) with
+          | (Some default) -> Exp.match_ expression [
             Exp.case
               (Pat.construct {loc; txt=Lident "Some"} (Some (Pat.var ~loc {txt = labelString; loc})))
               (Exp.ident ~loc {txt = (Lident labelString); loc});
@@ -656,7 +656,7 @@ let jsxMapper () =
               (Pat.construct {loc; txt=Lident "None"} None)
               default
           ]
-          | _ -> expression in
+          | None -> expression in
           let letExpression = Vb.mk
             (Pat.var ~loc {txt = alias; loc})
              expression in
