@@ -23,9 +23,13 @@ var s = /* module */[
   $$String.trim,
   $$String.escaped,
   $$String.index,
+  $$String.index_opt,
   $$String.rindex,
+  $$String.rindex_opt,
   $$String.index_from,
+  $$String.index_from_opt,
   $$String.rindex_from,
+  $$String.rindex_from_opt,
   $$String.contains,
   $$String.contains_from,
   $$String.rcontains_from,
@@ -33,7 +37,13 @@ var s = /* module */[
   $$String.lowercase,
   $$String.capitalize,
   $$String.uncapitalize,
-  $$String.compare
+  $$String.uppercase_ascii,
+  $$String.lowercase_ascii,
+  $$String.capitalize_ascii,
+  $$String.uncapitalize_ascii,
+  $$String.compare,
+  $$String.equal,
+  $$String.split_on_char
 ];
 
 var N = /* module */[/* s */s];
