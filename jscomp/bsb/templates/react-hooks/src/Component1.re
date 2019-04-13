@@ -10,7 +10,10 @@ let handleClick = (_event) => Js.log("clicked!");
 
    Which desugars to
 
-   `ReasonReact.element(Component1.make(~message="hello", [||]))` */
+   `React.createElement(
+     Component1.make,
+     Component1.makeProps(~message="hello", ())
+   )` */
 [@react.component]
 let make = (~message) =>
   <div onClick={handleClick}>
