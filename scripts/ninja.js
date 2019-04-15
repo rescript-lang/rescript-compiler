@@ -1251,6 +1251,8 @@ build ./bin/bspack.exe: link stubs/stubs.cmxa ext/ext.cmxa ./common/common.cmxa 
     flags = -I ./bin -w -40-30
 build ./bin/cmjdump.exe: link ./stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa core/core.cmxa main/cmjdump_main.cmx
     libs = ocamlcommon.cmxa
+build ./bin/cmjbrowser.exe: link ./stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa core/core.cmxa main/jscmj_main.cmx
+    libs = ocamlcommon.cmxa
 rule bspack
     command = ./bin/bspack.exe $flags -bs-main $main -o $out
     depfile = $out.d
