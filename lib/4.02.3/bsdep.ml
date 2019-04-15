@@ -34820,17 +34820,18 @@ let check_external_module_name ?loc x =
   | { module_bind_name = Phint_name "" } ->
     Location.raise_errorf ?loc "empty name encountered"
   | _ -> ()
-let check_external_module_name_opt ?loc x =
-  match x with
-  | None -> ()
-  | Some v -> check_external_module_name ?loc v
 
 
-let check_ffi ?loc ffi : bool =
-  let relative = ref false in 
+
+let check_ffi ?loc ffi : bool =  
+  let xrelative = ref false in 
+  let upgrade bool =    
+    if not (!xrelative) then xrelative := bool in 
   begin match ffi with
-  | Js_global {name} -> 
-    relative := is_package_relative_path name;
+  | Js_global {name; external_module_name} ->     
+    upgrade (is_package_relative_path name);
+    Ext_option.iter external_module_name (fun name -> 
+    upgrade (is_package_relative_path name.bundle));
     valid_global_name ?loc  name
   | Js_send {name }
   | Js_set  {js_set_name = name}
@@ -34844,17 +34845,20 @@ let check_ffi ?loc ffi : bool =
   | Js_module_as_fn {external_module_name; splice = _}
   | Js_module_as_class external_module_name
     -> 
-      relative := is_package_relative_path external_module_name.bundle ;
+      upgrade (is_package_relative_path external_module_name.bundle);
       check_external_module_name external_module_name
   | Js_new {external_module_name ;  name}
   | Js_call {external_module_name ;  name ; splice = _; scopes = _ }
     ->
     Ext_option.iter external_module_name (fun external_module_name ->
-        relative := is_package_relative_path external_module_name.bundle);
-    check_external_module_name_opt ?loc external_module_name ;
+        upgrade (is_package_relative_path external_module_name.bundle));
+    Ext_option.iter external_module_name (fun name ->
+        check_external_module_name ?loc name
+      );
+
     valid_global_name ?loc name 
   end; 
-  !relative
+  !xrelative
 
 let bs_prefix = "BS:"
 let bs_prefix_length = String.length bs_prefix
