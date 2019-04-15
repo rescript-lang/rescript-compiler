@@ -117,13 +117,18 @@ let from_cmi (files : string list) (output_file : string) =
       Ext_pp.string f "let data_sets = String_map.of_list "    ;
       Ext_pp.bracket_vgroup f 1 (fun _ -> List.iter aux files))
 
+let stdlib = 
+#if OCAML_VERSION =~ ">4.03" then "stdlib-406"
+#else 
+  "stdlib-402"
+#end
 
 let () = 
-  from_cmj ( Ext_list.append (get_files Literals.suffix_cmj "stdlib")
+  from_cmj ( Ext_list.append (get_files Literals.suffix_cmj stdlib)
              (Ext_list.append (get_files Literals.suffix_cmj "runtime")
              (get_files Literals.suffix_cmj "others"))) 
     (Filename.concat "core" "js_cmj_datasets.ml");
-  from_cmi (Ext_list.append (get_files ".cmi" "stdlib")
+  from_cmi (Ext_list.append (get_files ".cmi" stdlib)
               (get_files ".cmi" "others"))
     (Filename.concat "core" "js_cmi_datasets.ml")
 
