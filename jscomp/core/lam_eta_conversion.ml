@@ -184,9 +184,9 @@ let transform_under_supply n loc status fn args =
     cautiously, since 
     [let u = f] and we are chaning the arity of [f] it will affect 
     the collection of [u]
+    A typical use case is to pass an OCaml function to JS side as a callback (i.e, [@bs.uncurry])
 *)
-let unsafe_adjust_to_arity loc ~to_:(to_:int) ?from
-    (fn : Lam.t) = 
+let unsafe_adjust_to_arity loc ~(to_:int) ?(from : int option) (fn : Lam.t) : Lam.t = 
   begin match from, fn  with 
     | Some from, _ 
     | None, Lfunction{arity=from} ->
@@ -216,10 +216,9 @@ let unsafe_adjust_to_arity loc ~to_:(to_:int) ?from
 
           let cont = Lam.function_ 
               ~arity:0
-              
               ~params:[]
               ~body:(
-                Lam.apply new_fn [Lam.unit ; Lam.unit ] loc App_na
+                Lam.apply new_fn [Lam.unit ] loc App_na
               ) in 
 
           match wrapper with 
@@ -253,7 +252,7 @@ let unsafe_adjust_to_arity loc ~to_:(to_:int) ?from
           let cont = 
             Lam.function_ 
               ~arity
-              
+
               ~params:extra_args 
               ~body:(
                 let first_args, rest_args = Ext_list.split_at extra_args from in 
@@ -280,7 +279,7 @@ let unsafe_adjust_to_arity loc ~to_:(to_:int) ?from
             let extra_outer_args, extra_inner_args = Ext_list.split_at params arity in 
             Lam.function_ 
               ~arity 
-              
+
               ~params:extra_outer_args 
               ~body:(
                 Lam.function_ ~arity:(from - to_)
@@ -308,8 +307,8 @@ let unsafe_adjust_to_arity loc ~to_:(to_:int) ?from
                   Lam.function_ ~arity ~params:extra_inner_args 
                     ~body:(Lam.apply new_fn 
                              (Ext_list.map_append extra_outer_args 
-                             (Ext_list.map extra_inner_args Lam.var) 
-                             Lam.var 
+                                (Ext_list.map extra_inner_args Lam.var) 
+                                Lam.var 
                              )      
                              loc App_ml_full)
                 )  in 
@@ -333,7 +332,6 @@ let unsafe_adjust_to_arity loc ~to_:(to_:int) ?from
 
         let cont = Lam.function_ 
             ~arity:0
-            
             ~params:[]
             ~body:(
               Lam.apply new_fn [Lam.unit] loc App_na

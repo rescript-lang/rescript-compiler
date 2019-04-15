@@ -172,6 +172,7 @@ let compile  ~filename (output_prefix : string) env _sigs
       lam
       |> _d "alpha_before"
       |> Lam_pass_alpha_conversion.alpha_conversion meta
+      |> _d "alpha_after"
       |> Lam_pass_exits.simplify_exits in    
     let () = Lam_pass_collect.collect_helper meta lam in
 
