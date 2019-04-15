@@ -830,6 +830,14 @@ let root = OCamlRes.Res.([
       \  }\n\
        }\n\
        ") ;
+    File  (".gitignore",
+      ".DS_Store\n\
+       .merlin\n\
+       .bsb.lock\n\
+       npm-debug.log\n\
+       /lib/bs/\n\
+       /node_modules/\n\
+       ") ;
     File  ("README.md",
       "# ${bsb:name}\n\
        \n\

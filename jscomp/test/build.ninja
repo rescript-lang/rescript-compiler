@@ -455,6 +455,7 @@ build test/record_with_test.cmi test/record_with_test.cmj : cc test/record_with_
 build test/recursive_module.cmi test/recursive_module.cmj : cc test/recursive_module.ml | test/mt.cmj $stdlib
 build test/recursive_module_test.cmi test/recursive_module_test.cmj : cc test/recursive_module_test.ml | test/mt.cmj $stdlib
 build test/regression_print.cmi test/regression_print.cmj : cc test/regression_print.ml | $stdlib
+build test/relative_path.cmi test/relative_path.cmj : cc test/relative_path.ml | $stdlib
 build test/return_check.cmi test/return_check.cmj : cc test/return_check.ml | $stdlib
 build test/runtime_encoding_test.cmi test/runtime_encoding_test.cmj : cc test/runtime_encoding_test.ml | $stdlib
 build test/scanf_io.cmi test/scanf_io.cmj : cc test/scanf_io.ml | test/testing.cmj $stdlib
