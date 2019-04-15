@@ -5,7 +5,9 @@ let eq loc x y = Mt.eq_suites ~test_id ~suites loc x y
 [%%bs.raw "function foo(a){return a()}"]
 
 external foo : ((unit -> int)[@bs.uncurry ]) -> int = ""[@@bs.val "foo"]
-let fn () = 1
+let fn () = 
+   Js.log "hi";
+   1
 
 
 let () = 

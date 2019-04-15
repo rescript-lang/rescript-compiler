@@ -1,7 +1,6 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Curry = require("../../lib/js/curry.js");
 
 var suites = /* record */[/* contents : [] */0];
 
@@ -15,11 +14,13 @@ function foo(a){return a()}
 ;
 
 function fn(param) {
+  console.log("hi");
   return 1;
 }
 
-eq("File \"gpr_3492_test.ml\", line 12, characters 6-13", foo((function () {
-            return Curry._1(fn(/* () */0), /* () */0);
+eq("File \"gpr_3492_test.ml\", line 14, characters 6-13", foo((function () {
+            console.log("hi");
+            return 1;
           })), 1);
 
 Mt.from_pair_suites("gpr_3492_test.ml", suites[0]);

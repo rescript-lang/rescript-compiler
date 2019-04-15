@@ -184,6 +184,7 @@ let transform_under_supply n loc status fn args =
     cautiously, since 
     [let u = f] and we are chaning the arity of [f] it will affect 
     the collection of [u]
+    A typical use case is to pass an OCaml function to JS side as a callback (i.e, [@bs.uncurry])
 *)
 let unsafe_adjust_to_arity loc ~(to_:int) ?(from : int option) (fn : Lam.t) : Lam.t = 
   begin match from, fn  with 
@@ -215,10 +216,9 @@ let unsafe_adjust_to_arity loc ~(to_:int) ?(from : int option) (fn : Lam.t) : La
 
           let cont = Lam.function_ 
               ~arity:0
-
               ~params:[]
               ~body:(
-                Lam.apply new_fn [Lam.unit ; Lam.unit ] loc App_na
+                Lam.apply new_fn [Lam.unit ] loc App_na
               ) in 
 
           match wrapper with 
@@ -332,7 +332,6 @@ let unsafe_adjust_to_arity loc ~(to_:int) ?(from : int option) (fn : Lam.t) : La
 
         let cont = Lam.function_ 
             ~arity:0
-
             ~params:[]
             ~body:(
               Lam.apply new_fn [Lam.unit] loc App_na
