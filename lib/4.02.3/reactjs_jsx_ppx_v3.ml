@@ -521,6 +521,11 @@ let jsxMapper () =
 
 
   let argToType types (name, default, _noLabelName, _alias, loc, type_) = match (type_, name, default) with
+    | (Some ({ptyp_desc = Ptyp_constr ({txt=(Lident "option")}, [type_])}), name, _) when isOptional name ->
+      (getLabel name, [], {
+        type_ with
+        ptyp_desc = Ptyp_constr ({loc=type_.ptyp_loc; txt=optionIdent}, [type_]);
+      }) :: types
     | (Some type_, name, _) when isOptional name ->
       (getLabel name, [], {
       ptyp_desc = Ptyp_constr ({loc; txt=optionIdent}, [type_]);
