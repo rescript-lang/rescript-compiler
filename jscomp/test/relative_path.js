@@ -2,7 +2,15 @@
 
 var FileJs = require("./File.js");
 
-var bar = FileJs.foo;
+var foo = FileJs.foo;
 
+function foo2(prim) {
+  return FileJs.foo2(prim);
+}
+
+var bar = foo;
+
+exports.foo = foo;
+exports.foo2 = foo2;
 exports.bar = bar;
-/* bar Not a pure module */
+/* foo Not a pure module */
