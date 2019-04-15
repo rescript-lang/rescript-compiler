@@ -15110,7 +15110,10 @@ let root = OCamlRes.Res.([
          \n\
         \   Which desugars to\n\
          \n\
-        \   `ReasonReact.element(Component1.make(~message=\"hello\", [||]))` */\n\
+        \   `React.createElement(\n\
+        \     Component1.make,\n\
+        \     Component1.makeProps(~message=\"hello\", ())\n\
+        \   )` */\n\
          [@react.component]\n\
          let make = (~message) =>\n\
         \  <div onClick={handleClick}>\n\
@@ -15222,6 +15225,14 @@ let root = OCamlRes.Res.([
       \    \"webpack-dev-server\": \"^3.1.8\"\n\
       \  }\n\
        }\n\
+       ") ;
+    File  (".gitignore",
+      ".DS_Store\n\
+       .merlin\n\
+       .bsb.lock\n\
+       npm-debug.log\n\
+       /lib/bs/\n\
+       /node_modules/\n\
        ") ;
     File  ("README.md",
       "# ${bsb:name}\n\
