@@ -525,9 +525,9 @@ let jsxMapper () =
       | _ -> None) in
 
       recursivelyTransformNamedArgsForMake mapper expression ((arg, default, pattern, alias, pattern.ppat_loc, type_) :: list)
-    | Pexp_fun (nolabel, _, { ppat_desc = (Ppat_construct ({txt = Lident "()"}, _) | Ppat_any)}, expression) ->
+    | Pexp_fun (Nolabel, _, { ppat_desc = (Ppat_construct ({txt = Lident "()"}, _) | Ppat_any)}, expression) ->
         (expression.pexp_desc, list, None)
-    | Pexp_fun (nolabel, _, { ppat_desc = Ppat_var ({txt})}, expression) ->
+    | Pexp_fun (Nolabel, _, { ppat_desc = Ppat_var ({txt})}, expression) ->
         (expression.pexp_desc, list, Some txt)
     | innerExpression -> (innerExpression, list, None)
   in
@@ -641,6 +641,7 @@ let jsxMapper () =
         let modifiedBinding binding =
           let expression = binding.pvb_expr in
           let wrapExpressionWithBinding expressionFn expression = {(filterAttrOnBinding binding) with pvb_expr = expressionFn expression} in
+           (* TODO: there is a long-tail of unsupported features inside of blocks - Pexp_letmodule , Pexp_letexception , Pexp_ifthenelse *)
           let rec spelunkForFunExpression expression = (match expression with
           (* let make = (~prop) => ... *)
           | {
@@ -655,12 +656,22 @@ let jsxMapper () =
             ((fun expressionDesc -> {expression with pexp_desc = Pexp_let (recursive, vbs, wrapExpression expressionDesc)}), realReturnExpression)
           (* let make = React.forwardRef((~prop) => ...) *)
           | {
-              pexp_desc = Pexp_apply (wrapperExpression, [(nolabel, innerFunctionExpression)])
+              pexp_desc = Pexp_apply (wrapperExpression, [(Nolabel, innerFunctionExpression)])
             } ->
             let (wrapExpression, realReturnExpression) = spelunkForFunExpression innerFunctionExpression in
             ((fun expressionDesc -> {
               expression with pexp_desc =
                 Pexp_apply (wrapperExpression, [(nolabel, wrapExpression expressionDesc)])
+              }),
+              realReturnExpression
+            )
+          | {
+              pexp_desc = Pexp_sequence (wrapperExpression, innerFunctionExpression)
+            } ->
+            let (wrapExpression, realReturnExpression) = spelunkForFunExpression innerFunctionExpression in
+            ((fun expressionDesc -> {
+              expression with pexp_desc =
+                Pexp_sequence (wrapperExpression, wrapExpression expressionDesc)
               }),
               realReturnExpression
             )
