@@ -128,6 +128,7 @@ let () =
              (Ext_list.append (get_files Literals.suffix_cmj "runtime")
              (get_files Literals.suffix_cmj "others"))) 
     (Filename.concat "core" "js_cmj_datasets.ml");
+  (* FIXME: seems not needed *)
   from_cmi (Ext_list.append (get_files ".cmi" stdlib)
               (get_files ".cmi" "others"))
     (Filename.concat "core" "js_cmi_datasets.ml")
