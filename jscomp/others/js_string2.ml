@@ -473,7 +473,7 @@ external splitAtMost: t -> t -> limit:int -> t array = "split" [@@bs.send]
   splitByRe "has:no:match" [%re "/[,;]/"] = [|"has:no:match"|];;
 ]};
 *)
-external splitByRe : t -> Js_re.t -> t array = "split" [@@bs.send]
+external splitByRe : t -> Js_re.t -> t option array = "split" [@@bs.send]
 
 (**
   [splitByReAtMost regex ~limit: n str] splits the given [str] at every occurrence of [regex] and returns an
@@ -485,7 +485,7 @@ external splitByRe : t -> Js_re.t -> t array = "split" [@@bs.send]
   splitByReAtMost "one: two: three: four" [%re "/\\s*:\\s*/"] ~limit: 8 = [|"one"; "two"; "three"; "four"|];;
 ]};
 *)
-external splitByReAtMost : t -> Js_re.t -> limit:int ->  t array = "split" [@@bs.send]
+external splitByReAtMost : t -> Js_re.t -> limit:int ->  t option array = "split" [@@bs.send]
 
 (** ES2015:
     [startsWith substr str] returns [true] if the [str] starts with [substr], [false] otherwise.

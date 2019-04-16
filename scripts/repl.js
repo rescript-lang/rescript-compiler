@@ -19,7 +19,7 @@ function e(cmd) {
     console.log(`<<<<<<`)
 }
 
-process.env.BS_PLAYGROUND = `../../bucklescript-playground`
+// process.env.BS_PLAYGROUND = `../../bucklescript-playground`
 if (process.env.BS_PLAYGROUND == null) {
     console.error('please set env var BS_PLAYGROUND')
     process.exit(2)
