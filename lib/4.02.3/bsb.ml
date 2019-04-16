@@ -15140,7 +15140,10 @@ let root = OCamlRes.Res.([
          \n\
         \   Which desugars to\n\
          \n\
-        \   `ReasonReact.element(Component1.make(~message=\"hello\", [||]))` */\n\
+        \   `React.createElement(\n\
+        \     Component1.make,\n\
+        \     Component1.makeProps(~message=\"hello\", ())\n\
+        \   )` */\n\
          [@react.component]\n\
          let make = (~message) =>\n\
         \  <div onClick={handleClick}>\n\
