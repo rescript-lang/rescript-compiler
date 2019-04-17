@@ -33,7 +33,7 @@
 *)
 external readdirSync : string -> string array  = "" [@@bs.module "fs"]
 
-external renameSync : string -> string = "" [@@bs.module "fs"]
+external renameSync : string -> string -> unit = "" [@@bs.module "fs"]
 
 type fd = private int
 
