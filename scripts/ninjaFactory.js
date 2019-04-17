@@ -1,0 +1,39 @@
+
+
+
+//@ts-check
+/**
+ * 
+ * @param {{ocamlopt : string ; ext : string ; INCL : string}} config 
+ * 
+ */
+function libNinja(config){
+    return `
+ocamlopt = ${config.ocamlopt}
+ext = ${config.ext}
+INCL = ${config.INCL}
+flags = -I $INCL -g -w -a ../jscomp/stubs/ext_basic_hash_stubs.c
+rule cc
+    command = $ocamlopt $flags $in -o $out
+    description = Making $out
+# -inline 1000 makes size too large
+# TODO: make sure it can be bootstrapped, at least is a very good
+# test case of our optimizations
+# build bsdep.exe: cc bsdep.mli bsdep.ml
+build bsppx$ext: cc $INCL/bsppx.mli $INCL/bsppx.ml
+# build bspp.exe:  cc bspp.mli bspp.ml
+build bsb$ext:  cc $INCL/bsb.mli $INCL/bsb.ml
+    flags = $flags unix.cmxa str.cmxa
+build bsb_helper$ext:  cc $INCL/bsb_helper.mli $INCL/bsb_helper.ml
+    flags = $flags unix.cmxa -w -a
+build refmt$ext: cc $INCL/refmt_main3.mli $INCL/refmt_main3.ml
+    flags = $flags -w -40-30 -no-alias-deps -I +compiler-libs ocamlcommon.cmxa 
+build reactjs_jsx_ppx_2$ext: cc $INCL/reactjs_jsx_ppx_v2.mli $INCL/reactjs_jsx_ppx_v2.ml
+    flags = $flags -w -40-30 -no-alias-deps -I +compiler-libs ocamlcommon.cmxa
+build reactjs_jsx_ppx_3$ext: cc $INCL/reactjs_jsx_ppx_v3.mli $INCL/reactjs_jsx_ppx_v3.ml
+    flags = $flags -w -40-30 -no-alias-deps -I +compiler-libs ocamlcommon.cmxa
+build bsc$ext: cc $INCL/whole_compiler.mli $INCL/whole_compiler.ml    
+`
+}
+
+exports.libNinja = libNinja
