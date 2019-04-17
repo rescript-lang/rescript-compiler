@@ -11,14 +11,19 @@ process.env.BS_RELEASE_BUILD = 'true'
 var version = require('./buildocaml.js').getVersionPrefix()
 var fs = require('fs')
 var hostPlatform = 'darwin'
+
+
 function buildCompiler() {
+  // for 4.02.3 it relies on OCAMLLIB to find stdlib path
+  // for 4.06.1 OCAMLLIB is another PATH
+  // delete process.env.OCAMLLIB
   var prebuilt = 'prebuilt.ninja'
-  var content = `
-ocamlopt = ${is_windows?`ocamlopt.opt.exe`:`../native/${version}/bin/ocamlopt.opt`}
-ext = ${sys_extension}
-INCL = ${version}
-include body.ninja
-`
+  var content = require('./ninjaFactory.js').libNinja({
+    ocamlopt : is_windows?`ocamlopt.opt.exe`:`../native/${version}/bin/ocamlopt.opt`,
+    ext : sys_extension,
+    INCL : version
+  })
+  
   fs.writeFileSync(path.join(root,'lib',prebuilt),content,'ascii')
 	cp.execSync(`ninja -C lib -f ${prebuilt} -t clean && ninja -C lib -f ${prebuilt}`,root_config)
 }
