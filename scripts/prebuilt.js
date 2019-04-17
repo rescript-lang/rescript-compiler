@@ -14,7 +14,9 @@ var hostPlatform = 'darwin'
 
 
 function buildCompiler() {
-  delete process.env.OCAMLLIB
+  // for 4.02.3 it relies on OCAMLLIB to find stdlib path
+  // for 4.06.1 OCAMLLIB is another PATH
+  // delete process.env.OCAMLLIB
   var prebuilt = 'prebuilt.ninja'
   var content = require('./ninjaFactory.js').libNinja({
     ocamlopt : is_windows?`ocamlopt.opt.exe`:`../native/${version}/bin/ocamlopt.opt`,
