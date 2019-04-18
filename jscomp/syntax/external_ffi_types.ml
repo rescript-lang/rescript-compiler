@@ -49,7 +49,7 @@ type js_send = {
   js_send_scopes : string list;
 } (* we know it is a js send, but what will happen if you pass an ocaml objct *)
 
-type js_global_val = {
+type js_var = {
   name : string ;
   external_module_name : external_module_name option;
   scopes : string list ;
@@ -94,7 +94,7 @@ type arg_label = External_arg_spec.label
 type obj_create = External_arg_spec.t list
 
 type external_spec =
-  | Js_global of js_global_val
+  | Js_var of js_var
   | Js_module_as_var of  external_module_name
   | Js_module_as_fn of js_module_as_fn
   | Js_module_as_class of external_module_name
@@ -124,7 +124,7 @@ let name_of_ffi ffi =
   | Js_module_as_var v
     ->
     Printf.sprintf "[@@bs.module] %S " v.bundle
-  | Js_global v
+  | Js_var v (* FIXME: could be [@@bs.module "xx"] as well *)
     ->
     Printf.sprintf "[@@bs.val] %S " v.name
 
@@ -215,7 +215,7 @@ let check_ffi ?loc ffi : bool =
   let upgrade bool =    
     if not (!xrelative) then xrelative := bool in 
   begin match ffi with
-  | Js_global {name; external_module_name} ->     
+  | Js_var {name; external_module_name} ->     
     upgrade (is_package_relative_path name);
     Ext_option.iter external_module_name (fun name -> 
     upgrade (is_package_relative_path name.bundle));

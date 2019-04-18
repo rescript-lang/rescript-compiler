@@ -16636,7 +16636,7 @@ type js_send = {
   js_send_scopes : string list;
 } (* we know it is a js send, but what will happen if you pass an ocaml objct *)
 
-type js_global_val = {
+type js_var = {
   name : string ;
   external_module_name : external_module_name option;
   scopes : string list
@@ -16682,7 +16682,7 @@ type js_set_index = {
 
 
 type external_spec  =
-  | Js_global of js_global_val
+  | Js_var of js_var
   | Js_module_as_var of  external_module_name
   | Js_module_as_fn of js_module_as_fn
   | Js_module_as_class of external_module_name
@@ -16787,7 +16787,7 @@ type js_send = {
   js_send_scopes : string list;
 } (* we know it is a js send, but what will happen if you pass an ocaml objct *)
 
-type js_global_val = {
+type js_var = {
   name : string ;
   external_module_name : external_module_name option;
   scopes : string list ;
@@ -16832,7 +16832,7 @@ type arg_label = External_arg_spec.label
 type obj_create = External_arg_spec.t list
 
 type external_spec =
-  | Js_global of js_global_val
+  | Js_var of js_var
   | Js_module_as_var of  external_module_name
   | Js_module_as_fn of js_module_as_fn
   | Js_module_as_class of external_module_name
@@ -16862,7 +16862,7 @@ let name_of_ffi ffi =
   | Js_module_as_var v
     ->
     Printf.sprintf "[@@bs.module] %S " v.bundle
-  | Js_global v
+  | Js_var v (* FIXME: could be [@@bs.module "xx"] as well *)
     ->
     Printf.sprintf "[@@bs.val] %S " v.name
 
@@ -16953,7 +16953,7 @@ let check_ffi ?loc ffi : bool =
   let upgrade bool =    
     if not (!xrelative) then xrelative := bool in 
   begin match ffi with
-  | Js_global {name; external_module_name} ->     
+  | Js_var {name; external_module_name} ->     
     upgrade (is_package_relative_path name);
     Ext_option.iter external_module_name (fun name -> 
     upgrade (is_package_relative_path name.bundle));
@@ -17701,7 +17701,7 @@ let return_wrapper loc (txt : string) : External_ffi_types.return_wrapper =
 
 
 (* The processed attributes will be dropped *)
-let process_external_attributes
+let parse_external_attributes
     (no_arguments : bool)   
     (prim_name_or_pval_prim: bundle_source )
     (pval_prim : string)
@@ -17801,12 +17801,8 @@ let process_external_attributes
     
 
 
-let rec has_bs_uncurry (attrs : Ast_attributes.t) =
-  match attrs with
-  | ({txt = "bs.uncurry"; _ }, _) :: attrs ->
-    true
-  | _ :: attrs -> has_bs_uncurry attrs
-  | [] -> false
+let rec has_bs_uncurry (attrs : Ast_attributes.t) = 
+  Ext_list.exists_fst attrs (fun x -> x.txt = "bs.uncurry")
 
 
 let check_return_wrapper
@@ -17839,6 +17835,151 @@ type response = {
   no_inline_cross_module : bool 
 }
 
+
+let process_obj 
+  (st : st) 
+  (prim_name : string) 
+  loc 
+  (arg_types_ty : 
+     (Ast_compatible.arg_label * Ast_core_type.t * Parsetree.attributes *
+      Ast_compatible.loc)
+       list)
+  (result_type : Ast_core_type.t)
+  (left_attrs : Ast_attributes.t) = 
+  match st with
+  | {
+    val_name = `Nm_na;
+    external_module_name = None ;
+    module_as_val = None;
+    val_send = `Nm_na;
+    val_send_pipe = None;
+    splice = false;
+    new_name = `Nm_na;
+    call_name = `Nm_na;
+    set_name = `Nm_na ;
+    get_name = `Nm_na ;
+    get_index = false ;
+    return_wrapper = Return_unset ;
+    set_index = false ;
+    mk_obj = _;
+    scopes = [];
+    (* wrapper does not work with [bs.obj]
+       TODO: better error message *)
+  } ->
+    if String.length prim_name <> 0 then
+      Location.raise_errorf ~loc "[@@bs.obj] expect external names to be empty string";
+    let arg_kinds, new_arg_types_ty, result_types =
+      Ext_list.fold_right arg_types_ty ( [], [], [])
+        (fun (label,ty,attr,loc) ( arg_labels, arg_types, result_types) ->
+           let arg_label = Ast_compatible.convert label in
+           let new_arg_label, new_arg_types,  output_tys =
+             match arg_label with
+             | Nolabel ->
+               let new_ty, arg_type = refine_arg_type ~nolabel:true  ty in
+               if arg_type = Extern_unit then
+                 External_arg_spec.empty_kind arg_type, (label,new_ty,attr,loc)::arg_types, result_types
+               else
+                 Location.raise_errorf ~loc "expect label, optional, or unit here"
+             | Labelled name ->
+               let new_ty, arg_type = refine_arg_type ~nolabel:false  ty in
+               begin match arg_type with
+                 | Ignore ->
+                   External_arg_spec.empty_kind arg_type,
+                   (label,new_ty,attr,loc)::arg_types, result_types
+                 | Arg_cst  i  ->
+                   let s = Lam_methname.translate ~loc name in
+                   {arg_label = External_arg_spec.label s (Some i);
+                    arg_type },
+                   arg_types, (* ignored in [arg_types], reserved in [result_types] *)
+                   ((name , [], new_ty) :: result_types)
+                 | Nothing | Array ->
+                   let s = (Lam_methname.translate ~loc name) in
+                   {arg_label = External_arg_spec.label s None ; arg_type },
+                   (label,new_ty,attr,loc)::arg_types,
+                   ((name , [], new_ty) :: result_types)
+                 | Int _  ->
+                   let s = Lam_methname.translate ~loc name in
+                   {arg_label = External_arg_spec.label s None; arg_type},
+                   (label,new_ty,attr,loc)::arg_types,
+                   ((name, [], Ast_literal.type_int ~loc ()) :: result_types)
+                 | NullString _ ->
+                   let s = Lam_methname.translate ~loc name in
+                   {arg_label = External_arg_spec.label s None; arg_type},
+                   (label,new_ty,attr,loc)::arg_types,
+                   ((name, [], Ast_literal.type_string ~loc ()) :: result_types)
+                 | Fn_uncurry_arity _ ->
+                   Location.raise_errorf ~loc
+                     "The combination of [@@bs.obj], [@@bs.uncurry] is not supported yet"
+                 | Extern_unit -> assert false
+                 | NonNullString _
+                   ->
+                   Location.raise_errorf ~loc
+                     "bs.obj label %s does not support such arg type" name
+                 | Unwrap ->
+                   Location.raise_errorf ~loc
+                     "bs.obj label %s does not support [@bs.unwrap] arguments" name
+               end
+             | Optional name ->
+               let arg_type = get_opt_arg_type ~nolabel:false  ty in
+               begin match arg_type with
+                 | Ignore ->
+                   External_arg_spec.empty_kind arg_type,
+                   (label,ty,attr,loc)::arg_types, result_types
+                 | Nothing | Array ->
+                   let s = (Lam_methname.translate ~loc name) in
+                   {arg_label = External_arg_spec.optional s; arg_type},
+                   (label,ty,attr,loc)::arg_types,
+                   ( (name, [], Ast_comb.to_undefined_type loc (get_basic_type_from_option_label ty)) ::  result_types)
+                 | Int _  ->
+                   let s = Lam_methname.translate ~loc name in
+                   {arg_label = External_arg_spec.optional s ; arg_type },
+                   (label,ty,attr,loc)::arg_types,
+                   ((name, [], Ast_comb.to_undefined_type loc @@ Ast_literal.type_int ~loc ()) :: result_types)
+                 | NullString _  ->
+                   let s = Lam_methname.translate ~loc name in
+                   {arg_label = External_arg_spec.optional s ; arg_type },
+                   (label,ty,attr,loc)::arg_types,
+                   ((name, [], Ast_comb.to_undefined_type loc @@ Ast_literal.type_string ~loc ()) :: result_types)
+                 | Arg_cst _
+                   ->
+                   Location.raise_errorf ~loc "bs.as is not supported with optional yet"
+                 | Fn_uncurry_arity _ ->
+                   Location.raise_errorf ~loc
+                     "The combination of [@@bs.obj], [@@bs.uncurry] is not supported yet"
+                 | Extern_unit   -> assert false
+                 | NonNullString _
+                   ->
+                   Location.raise_errorf ~loc
+                     "bs.obj label %s does not support such arg type" name
+                 | Unwrap ->
+                   Location.raise_errorf ~loc
+                     "bs.obj label %s does not support [@bs.unwrap] arguments" name
+               end
+           in
+           (
+             new_arg_label::arg_labels,
+             new_arg_types,
+             output_tys)) in
+
+    let result =
+      if Ast_core_type.is_any  result_type then
+        Ast_core_type.make_obj ~loc result_types
+      else
+        fst (refine_arg_type ~nolabel:true result_type) (* result type can not be labeled *)
+
+    in
+    begin          
+      Ast_compatible.mk_fn_type new_arg_types_ty result
+      ,
+      prim_name,
+      External_ffi_types.Ffi_obj_create arg_kinds,
+      left_attrs, 
+      false 
+    end
+
+  | _ -> Location.raise_errorf ~loc "Attribute found that conflicts with [@@bs.obj]"
+
+
 (** Note that the passed [type_annotation] is already processed by visitor pattern before*)
 let handle_attributes
     (loc : Bs_loc.t)
@@ -17869,147 +18010,11 @@ let handle_attributes
         "[@@bs.uncurry] can not be applied to tailed position"
     end ;
   let left_attrs, st =
-    process_external_attributes
+    parse_external_attributes
       (arg_types_ty = [])
       prim_name_or_pval_prim pval_prim prim_attributes in
-
-
   if st.mk_obj then
-    begin match st with
-      | {
-        val_name = `Nm_na;
-        external_module_name = None ;
-        module_as_val = None;
-        val_send = `Nm_na;
-        val_send_pipe = None;
-        splice = false;
-        new_name = `Nm_na;
-        call_name = `Nm_na;
-        set_name = `Nm_na ;
-        get_name = `Nm_na ;
-        get_index = false ;
-        return_wrapper = Return_unset ;
-        set_index = false ;
-        mk_obj = _;
-        scopes = [];
-        (* wrapper does not work with [bs.obj]
-           TODO: better error message *)
-      } ->
-        if String.length prim_name <> 0 then
-          Location.raise_errorf ~loc "[@@bs.obj] expect external names to be empty string";
-        let arg_kinds, new_arg_types_ty, result_types =
-          Ext_list.fold_right arg_types_ty ( [], [], [])
-            (fun (label,ty,attr,loc) ( arg_labels, arg_types, result_types) ->
-               let arg_label = Ast_compatible.convert label in
-               let new_arg_label, new_arg_types,  output_tys =
-                 match arg_label with
-                 | Nolabel ->
-                   let new_ty, arg_type = refine_arg_type ~nolabel:true  ty in
-                   if arg_type = Extern_unit then
-                     External_arg_spec.empty_kind arg_type, (label,new_ty,attr,loc)::arg_types, result_types
-                   else
-                     Location.raise_errorf ~loc "expect label, optional, or unit here"
-                 | Labelled name ->
-                   let new_ty, arg_type = refine_arg_type ~nolabel:false  ty in
-                   begin match arg_type with
-                     | Ignore ->
-                       External_arg_spec.empty_kind arg_type,
-                       (label,new_ty,attr,loc)::arg_types, result_types
-                     | Arg_cst  i  ->
-                       let s = Lam_methname.translate ~loc name in
-                       {arg_label = External_arg_spec.label s (Some i);
-                        arg_type },
-                       arg_types, (* ignored in [arg_types], reserved in [result_types] *)
-                       ((name , [], new_ty) :: result_types)
-                     | Nothing | Array ->
-                       let s = (Lam_methname.translate ~loc name) in
-                       {arg_label = External_arg_spec.label s None ; arg_type },
-                       (label,new_ty,attr,loc)::arg_types,
-                       ((name , [], new_ty) :: result_types)
-                     | Int _  ->
-                       let s = Lam_methname.translate ~loc name in
-                       {arg_label = External_arg_spec.label s None; arg_type},
-                       (label,new_ty,attr,loc)::arg_types,
-                       ((name, [], Ast_literal.type_int ~loc ()) :: result_types)
-                     | NullString _ ->
-                       let s = Lam_methname.translate ~loc name in
-                       {arg_label = External_arg_spec.label s None; arg_type},
-                       (label,new_ty,attr,loc)::arg_types,
-                       ((name, [], Ast_literal.type_string ~loc ()) :: result_types)
-                     | Fn_uncurry_arity _ ->
-                       Location.raise_errorf ~loc
-                         "The combination of [@@bs.obj], [@@bs.uncurry] is not supported yet"
-                     | Extern_unit -> assert false
-                     | NonNullString _
-                       ->
-                       Location.raise_errorf ~loc
-                         "bs.obj label %s does not support such arg type" name
-                     | Unwrap ->
-                       Location.raise_errorf ~loc
-                         "bs.obj label %s does not support [@bs.unwrap] arguments" name
-                   end
-                 | Optional name ->
-                   let arg_type = get_opt_arg_type ~nolabel:false  ty in
-                   begin match arg_type with
-                     | Ignore ->
-                       External_arg_spec.empty_kind arg_type,
-                       (label,ty,attr,loc)::arg_types, result_types
-                     | Nothing | Array ->
-                       let s = (Lam_methname.translate ~loc name) in
-                       {arg_label = External_arg_spec.optional s; arg_type},
-                       (label,ty,attr,loc)::arg_types,
-                       ( (name, [], Ast_comb.to_undefined_type loc (get_basic_type_from_option_label ty)) ::  result_types)
-                     | Int _  ->
-                       let s = Lam_methname.translate ~loc name in
-                       {arg_label = External_arg_spec.optional s ; arg_type },
-                       (label,ty,attr,loc)::arg_types,
-                       ((name, [], Ast_comb.to_undefined_type loc @@ Ast_literal.type_int ~loc ()) :: result_types)
-                     | NullString _  ->
-                       let s = Lam_methname.translate ~loc name in
-                       {arg_label = External_arg_spec.optional s ; arg_type },
-                       (label,ty,attr,loc)::arg_types,
-                       ((name, [], Ast_comb.to_undefined_type loc @@ Ast_literal.type_string ~loc ()) :: result_types)
-                     | Arg_cst _
-                       ->
-                       Location.raise_errorf ~loc "bs.as is not supported with optional yet"
-                     | Fn_uncurry_arity _ ->
-                       Location.raise_errorf ~loc
-                         "The combination of [@@bs.obj], [@@bs.uncurry] is not supported yet"
-                     | Extern_unit   -> assert false
-                     | NonNullString _
-                       ->
-                       Location.raise_errorf ~loc
-                         "bs.obj label %s does not support such arg type" name
-                     | Unwrap ->
-                       Location.raise_errorf ~loc
-                         "bs.obj label %s does not support [@bs.unwrap] arguments" name
-                   end
-               in
-               (
-                 new_arg_label::arg_labels,
-                 new_arg_types,
-                 output_tys)) in
-
-        let result =
-          if Ast_core_type.is_any  result_type then
-            Ast_core_type.make_obj ~loc result_types
-          else
-            fst (refine_arg_type ~nolabel:true result_type) (* result type can not be labeled *)
-
-        in
-        begin          
-          Ast_compatible.mk_fn_type new_arg_types_ty result
-          ,
-          prim_name,
-          External_ffi_types.Ffi_obj_create arg_kinds,
-          left_attrs, 
-          false 
-        end
-
-      | _ -> Location.raise_errorf ~loc "Attribute found that conflicts with [@@bs.obj]"
-
-    end
-
+    process_obj st prim_name loc arg_types_ty result_type left_attrs
   else
     let splice = st.splice in
     let arg_type_specs, new_arg_types_ty, arg_type_specs_length   =
@@ -18214,8 +18219,13 @@ let handle_attributes
          splice = false ;
          scopes ;
         }
-        ->
-        Js_global { name; external_module_name; scopes}
+        -> (* 
+        if no_arguments -->
+        {[
+        external ff : int = "" [@@bs.val]
+        ]}
+        *)
+        Js_var { name; external_module_name; scopes}
       | {val_name = #bundle_source ; _ }
         ->
         Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.val]")
@@ -18240,7 +18250,12 @@ let handle_attributes
         ->
         let name = string_of_bundle_source prim_name_or_pval_prim in
         if arg_type_specs_length  = 0 then
-          Js_global { name; external_module_name; scopes}
+          (*
+          {[
+            external ff : int = "" [@@bs.module "xx"]
+          ]}
+          *)
+          Js_var { name; external_module_name; scopes}
         else  Js_call {splice; name; external_module_name; scopes}
       | {val_send = (`Nm_val name | `Nm_external name | `Nm_payload name);
          splice;

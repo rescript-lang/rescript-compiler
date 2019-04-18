@@ -375,7 +375,7 @@ let translate_ffi
     let (id, name) =  handle_external  module_name  in
     E.external_var_dot id ~external_name:name 
 
-  | Js_global {name; external_module_name; scopes} -> 
+  | Js_var {name; external_module_name; scopes} -> 
 
     (* TODO #11
        1. check args -- error checking 
