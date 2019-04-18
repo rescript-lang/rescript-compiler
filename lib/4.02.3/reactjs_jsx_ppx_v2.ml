@@ -58,7 +58,7 @@ let optional str = "?" ^ str
 let isOptional str = str <> "" && str.[0] = '?'
 let isLabelled str = str <> "" && not (isOptional str)
 let getLabel str = if (isOptional str) then (String.sub str 1 ((String.length str) - 1)) else str
-let optionIdent = Ldot (Lident "*predef*","option")
+let optionIdent = (Lident "option")
 
 let argIsKeyRef = function
   | (("key" | "ref"), _) | (("?key" | "?ref"), _) -> true

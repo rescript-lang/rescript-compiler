@@ -521,3 +521,4 @@
 ./syntax/external_ffi_types.mli
 ./syntax/ppx_entry.ml
 ./syntax/ppx_entry.mli
+./syntax/reactjs_jsx_ppx_v3.ml

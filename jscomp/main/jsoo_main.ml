@@ -96,8 +96,12 @@ let implementation ~use_super_errors prefix impl str  : Js.Unsafe.obj =
   try
   impl (Lexing.from_string
     (if prefix then "[@@@bs.config{no_export}]\n#1 \"repl.ml\"\n"  ^ str else str ))
+  |> Reactjs_jsx_ppx_v3.rewrite
   |> Ppx_entry.rewrite_implementation
   |> (fun x ->
+      Pprintast.structure Format.str_formatter pstr;
+      let ocaml_code = Format.flush_str_formatter () in
+      let _ = print_endline ocaml_code in
       let (a,b,c,signature) = Typemod.type_implementation_more modulename modulename modulename env x in
       finalenv := c ;
       types_signature := signature;
