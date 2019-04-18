@@ -81,7 +81,10 @@ let output_ninja_and_namespace_map
   let bsdep = bsc_dir // bsb_helper_exe in (* The path to [bsb_heler.exe] *)
   let cwd_lib_bs = cwd // Bsb_config.lib_bs in 
   let ppx_flags = Bsb_build_util.ppx_flags ppx_files in
-  let bsc_flags =  String.concat Ext_string.single_space bsc_flags in
+  let bsc_flags =  
+      String.concat Ext_string.single_space 
+      (if not_dev then "-bs-quiet" :: bsc_flags else bsc_flags)
+  in
   let refmt_flags = String.concat Ext_string.single_space refmt_flags in
   let oc = open_out_bin (cwd_lib_bs // Literals.build_ninja) in
   let bs_package_includes = 
@@ -114,9 +117,9 @@ let output_ninja_and_namespace_map
     in 
     if bs_suffix then Ext_string.inter2 "-bs-suffix" result else result
   in 
-
-  let warnings = Bsb_warning.opt_warning_to_string not_dev warning in
-
+  let warnings = 
+    Bsb_warning.opt_warning_to_string not_dev warning 
+  in
   let output_reason_config () =   
     if !has_reason_files then 
       let reason_react_jsx_flag = 
