@@ -70,7 +70,7 @@ let install_targets cwd (config : Bsb_config_types.t option) =
 
 
 
-let build_bs_deps cwd deps =
+let build_bs_deps cwd (deps : Bsb_package_specs.t) =
 
   let bsc_dir = Bsb_build_util.get_bsc_dir ~cwd in
   let vendor_ninja = bsc_dir // "ninja.exe" in

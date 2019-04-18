@@ -37,7 +37,7 @@ let regenerate_ninja
     ~override_package_specs
     ~generate_watch_metadata 
     ~forced cwd bsc_dir
-  : _ option =
+  : Bsb_config_types.t option =
   let output_deps = cwd // Bsb_config.lib_bs // bsdeps in
   let check_result  =
     Bsb_ninja_check.check 
