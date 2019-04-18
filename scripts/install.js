@@ -206,7 +206,7 @@ function tryToProvideOCamlCompiler() {
     } catch (e) {
         console.log('Build a local version of OCaml compiler, it may take a couple of minutes')
         try {
-            require('./buildocaml.js').build()
+            require('./buildocaml.js').build(true)
         } catch (e) {
             console.log(e.stdout.toString());
             console.log(e.stderr.toString());

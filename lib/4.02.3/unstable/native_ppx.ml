@@ -384,6 +384,7 @@ val dont_record_crc_unit : string option ref
 val bs_only : bool ref (* set true on bs top*)
 val bs_gentype : string option ref
 val no_assert_false : bool ref
+val bs_quiet : bool ref 
 
 
 type color_setting = Auto | Always | Never
@@ -524,6 +525,7 @@ let dont_record_crc_unit : string option ref = ref None
 let bs_only = ref false
 let bs_gentype = ref None
 let no_assert_false = ref false
+let bs_quiet = ref false
 
 
 type color_setting = Auto | Always | Never
@@ -2393,7 +2395,9 @@ let print_warning loc ppf w =
 ;;
 
 let formatter_for_warnings = ref err_formatter;;
-let prerr_warning loc w = print_warning loc !formatter_for_warnings w;;
+let prerr_warning loc w = 
+    if not !Clflags.bs_quiet then
+      print_warning loc !formatter_for_warnings w;;
 
 let echo_eof () =
   print_newline ();
@@ -11771,13 +11775,14 @@ let () =
 
 
 let warn_missing_primitive loc txt =      
-  if not @@ !Js_config.no_warn_unimplemented_external then
+  if not !Js_config.no_warn_unimplemented_external && not !Clflags.bs_quiet then
     begin 
       print_string_warning loc ( unimplemented_primitive ^ txt ^ " \n" );
       Format.pp_print_flush warning_formatter ()
     end
 
 let warn_literal_overflow loc = 
+  if not !Clflags.bs_quiet then
   begin 
     print_string_warning loc 
       "Integer literal exceeds the range of representable integers of type int";
