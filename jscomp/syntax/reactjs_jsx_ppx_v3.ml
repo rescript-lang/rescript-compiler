@@ -1,3 +1,4 @@
+# 1 "syntax/reactjs_jsx_ppx.cppo.ml"
 (*
   This is the file that handles turning Reason JSX' agnostic function call into
   a ReasonReact-specific function call. Aka, this is a macro, using OCaml's ppx
@@ -44,29 +45,8 @@ let rec find_opt p = function
   | [] -> None
   | x :: l -> if p x then Some x else find_opt p l
 
-#if OCAML_VERSION =~ ">4.03.0" then
 
-let nolabel = Nolabel
-let labelled str = Labelled str
-let optional str = Optional str
-let isOptional str = match str with
-| Optional _ -> true
-| _ -> false
-let isLabelled str = match str with
-| Labelled _ -> true
-| _ -> false
-let getLabel str = match str with
-| Optional str | Labelled str -> str
-| Nolabel -> ""
-let optionIdent = Lident "option"
-
-let argIsKeyRef = function
-  | (Labelled ("key" | "ref"), _) | (Optional ("key" | "ref"), _) -> true
-  | _ -> false
-let constantString ~loc str = Ast_helper.Exp.constant ~loc (Pconst_string (str, None))
-
-#else
-
+# 70 "syntax/reactjs_jsx_ppx.cppo.ml"
 let nolabel = ""
 let labelled str = str
 let optional str = "?" ^ str
@@ -80,7 +60,7 @@ let argIsKeyRef = function
   | _ -> false
 let constantString ~loc str = Ast_helper.Exp.constant ~loc (Asttypes.Const_string (str, None))
 
-#end
+# 84 "syntax/reactjs_jsx_ppx.cppo.ml"
 let safeTypeFromValue valueStr =
 let valueStr = getLabel valueStr in
 match String.sub valueStr 0 1 with
@@ -132,13 +112,12 @@ let transformChildrenIfList ~loc ~mapper theList =
 let extractChildren ?(removeLastPositionUnit=false) ~loc propsAndChildren =
   let rec allButLast_ lst acc = match lst with
     | [] -> []
-#if OCAML_VERSION =~ ">4.03.0" then
-    | (Nolabel, {pexp_desc = Pexp_construct ({txt = Lident "()"}, None)})::[] -> acc
-    | (Nolabel, _)::rest -> raise (Invalid_argument "JSX: found non-labelled argument before the last position")
-#else
+    
+# 139 "syntax/reactjs_jsx_ppx.cppo.ml"
     | ("", {pexp_desc = Pexp_construct ({txt = Lident "()"}, None)})::[] -> acc
     | ("", _)::_rest -> raise (Invalid_argument "JSX: found non-labelled argument before the last position")
-#end
+    
+# 142 "syntax/reactjs_jsx_ppx.cppo.ml"
     | arg::rest -> allButLast_ rest (arg::acc)
   in
   let allButLast lst = allButLast_ lst [] |> List.rev in
@@ -204,11 +183,11 @@ let filenameFromLoc (pstr_loc: Location.t) =
   let fileName = try
       Filename.chop_extension (Filename.basename fileName)
     with | Invalid_argument _-> fileName in
-#if OCAML_VERSION =~ ">4.03.0" then
-  let fileName = String.capitalize_ascii fileName in
-#else
+  
+# 210 "syntax/reactjs_jsx_ppx.cppo.ml"
   let fileName = String.capitalize fileName in
-#end
+  
+# 212 "syntax/reactjs_jsx_ppx.cppo.ml"
   fileName
 
 (* Build a string representation of a module name with segments separated by $ *)
@@ -239,13 +218,8 @@ let rec recursivelyMakeNamedArgsForExternal list args =
     (match (label, interiorType, default) with
     (* ~foo=1 *)
     | (label, None, Some _) ->
-#if OCAML_VERSION =~ ">4.03.0" then
-    {
-      ptyp_desc = Ptyp_var (safeTypeFromValue label);
-      ptyp_loc = loc;
-      ptyp_attributes = [];
-    }
-#else
+    
+# 249 "syntax/reactjs_jsx_ppx.cppo.ml"
     {
       ptyp_loc = loc;
       ptyp_attributes = [];
@@ -255,39 +229,35 @@ let rec recursivelyMakeNamedArgsForExternal list args =
         ptyp_attributes = [];
       }]);
     }
-#end
+    
+# 259 "syntax/reactjs_jsx_ppx.cppo.ml"
     (* ~foo: int=1 *)
     | (label, Some type_, Some _) ->
-#if OCAML_VERSION =~ ">4.03.0" then
-    type_
-#else
+    
+# 264 "syntax/reactjs_jsx_ppx.cppo.ml"
     {
       type_ with
       ptyp_desc = Ptyp_constr ({loc; txt=optionIdent}, [type_]);
     }
-#end
+    
+# 269 "syntax/reactjs_jsx_ppx.cppo.ml"
     (* ~foo: option(int)=? *)
     | (label, Some ({ptyp_desc = Ptyp_constr ({txt=(Lident "option")}, [type_])}), _)
     | (label, Some ({ptyp_desc = Ptyp_constr ({txt=(Ldot (Lident "*predef*", "option"))}, [type_])}), _) 
     (* ~foo: int=? - note this isnt valid. but we want to get a type error *)
     | (label, Some type_, _) when isOptional label ->
-#if OCAML_VERSION =~ ">4.03.0" then
-    type_
-#else
+    
+# 277 "syntax/reactjs_jsx_ppx.cppo.ml"
     {
       type_ with
       ptyp_desc = Ptyp_constr ({loc; txt=optionIdent}, [type_]);
     }
-#end
+    
+# 282 "syntax/reactjs_jsx_ppx.cppo.ml"
     (* ~foo=? *)
     | (label, None, _) when isOptional label -> 
-#if OCAML_VERSION =~ ">4.03.0" then
-    {
-      ptyp_desc = Ptyp_var (safeTypeFromValue label);
-      ptyp_loc = loc;
-      ptyp_attributes = [];
-    }
-#else
+    
+# 291 "syntax/reactjs_jsx_ppx.cppo.ml"
     {
       ptyp_loc = loc;
       ptyp_attributes = [];
@@ -297,7 +267,8 @@ let rec recursivelyMakeNamedArgsForExternal list args =
         ptyp_attributes = [];
       }]);
     }
-#end
+    
+# 301 "syntax/reactjs_jsx_ppx.cppo.ml"
     (* ~foo *)
     | (label, None, _) -> 
     {
@@ -354,24 +325,17 @@ let makePropsName ~loc name =
     ppat_attributes = [];
   }
 
-#if OCAML_VERSION =~ ">4.03.0" then
-let makeObjectField loc (str, _attrs, type_) =
-  (* intentionally not using attrs - they probably don't work on object fields. use on *Props instead *)
-  Otag ({ loc; txt = str }, [], {type_ with ptyp_attributes = []})
-#end
 
+# 363 "syntax/reactjs_jsx_ppx.cppo.ml"
 (* Build an AST node representing a "closed" Js.t object representing a component's props *)
 let makePropsType ~loc namedTypeList =
   Typ.mk ~loc (
     Ptyp_constr({txt= Ldot (Lident("Js"), "t"); loc}, [{
-#if OCAML_VERSION =~ ">4.03.0" then
-        ptyp_desc = Ptyp_object(
-          List.map (makeObjectField loc) namedTypeList,
-          Closed
-        );
-#else
+        
+# 373 "syntax/reactjs_jsx_ppx.cppo.ml"
         ptyp_desc = Ptyp_object(namedTypeList, Closed);
-#end
+        
+# 375 "syntax/reactjs_jsx_ppx.cppo.ml"
         ptyp_loc = loc;
         ptyp_attributes = [];
       }])
@@ -406,11 +370,11 @@ let jsxMapper () =
         [(labelled "children", Exp.ident ~loc {loc; txt = Ldot (Lident "React", "null")})]))
       @ [(nolabel, Exp.construct ~loc {loc; txt = Lident "()"} None)] in
     let isCap str = let first = String.sub str 0 1 in
-#if OCAML_VERSION =~ ">4.03.0" then
-    let capped = String.uppercase_ascii first in first = capped in
-#else
+    
+# 412 "syntax/reactjs_jsx_ppx.cppo.ml"
     let capped = String.uppercase first in first = capped in
-#end
+    
+# 414 "syntax/reactjs_jsx_ppx.cppo.ml"
     let ident = match modulePath with
     | Lident _ -> Ldot (modulePath, "make")
     | (Ldot (_modulePath, value) as fullPath) when isCap value -> Ldot (fullPath, "make")
@@ -571,17 +535,14 @@ let jsxMapper () =
     let expr = mapper.expr mapper expr in
     match expr.pexp_desc with
     (* TODO: make this show up with a loc. *)
-#if OCAML_VERSION =~ ">4.03.0" then
-    | Pexp_fun (Labelled "key", _, _, _)
-    | Pexp_fun (Optional "key", _, _, _) -> raise (Invalid_argument "Key cannot be accessed inside of a component. Don't worry - you can always key a component from its parent!")
-    | Pexp_fun (Labelled "ref", _, _, _)
-    | Pexp_fun (Optional "ref", _, _, _) -> raise (Invalid_argument "Ref cannot be passed as a normal prop. Please use `forwardRef` API instead.")
-#else
+    
+# 580 "syntax/reactjs_jsx_ppx.cppo.ml"
     | Pexp_fun ("key", _, _, _)
     | Pexp_fun ("?key", _, _, _) -> raise (Invalid_argument "Key cannot be accessed inside of a component. Don't worry - you can always key a component from its parent!")
     | Pexp_fun ("ref", _, _, _)
     | Pexp_fun ("?ref", _, _, _) -> raise (Invalid_argument "Ref cannot be passed as a normal prop. Please use `forwardRef` API instead.")
-#end
+    
+# 585 "syntax/reactjs_jsx_ppx.cppo.ml"
     | Pexp_fun (arg, default, pattern, expression) when isOptional arg || isLabelled arg ->
       let alias = (match pattern with
       | {ppat_desc = Ppat_alias (_, {txt}) | Ppat_var {txt}} -> txt
@@ -592,17 +553,14 @@ let jsxMapper () =
       | _ -> None) in
 
       recursivelyTransformNamedArgsForMake mapper expression ((arg, default, pattern, alias, pattern.ppat_loc, type_) :: list)
-#if OCAML_VERSION =~ ">4.03.0" then
-    | Pexp_fun (Nolabel, _, { ppat_desc = (Ppat_construct ({txt = Lident "()"}, _) | Ppat_any)}, expression) ->
-        (expression.pexp_desc, list, None)
-    | Pexp_fun (Nolabel, _, { ppat_desc = Ppat_var ({txt})}, expression) ->
-        (expression.pexp_desc, list, Some txt)
-#else
+    
+# 601 "syntax/reactjs_jsx_ppx.cppo.ml"
     | Pexp_fun ("", _, { ppat_desc = (Ppat_construct ({txt = Lident "()"}, _) | Ppat_any)}, expression) ->
         (expression.pexp_desc, list, None)
     | Pexp_fun ("", _, { ppat_desc = Ppat_var ({txt})}, expression) ->
         (expression.pexp_desc, list, Some txt)
-#end
+    
+# 606 "syntax/reactjs_jsx_ppx.cppo.ml"
     | innerExpression -> (innerExpression, list, None)
   in
 
@@ -665,11 +623,11 @@ let jsxMapper () =
       (match ptyp_desc with
       | Ptyp_arrow (name, type_, ({ptyp_desc = Ptyp_arrow _} as rest)) when isLabelled name || isOptional name ->
         getPropTypes ((name, ptyp_loc, type_)::types) rest
-#if OCAML_VERSION =~ ">4.03.0" then
-      | Ptyp_arrow (Nolabel, _type, rest) ->
-#else
+      
+# 671 "syntax/reactjs_jsx_ppx.cppo.ml"
       | Ptyp_arrow ("", _type, rest) ->
-#end
+        
+# 673 "syntax/reactjs_jsx_ppx.cppo.ml"
         getPropTypes types rest
       | Ptyp_arrow (name, type_, returnValue) when isLabelled name || isOptional name ->
         (returnValue, (name, returnValue.ptyp_loc, type_)::types)
@@ -730,11 +688,11 @@ let jsxMapper () =
             let (wrapExpression, realReturnExpression) = spelunkForFunExpression returnExpression in
             ((fun expressionDesc -> {expression with pexp_desc = Pexp_let (recursive, vbs, wrapExpression expressionDesc)}), realReturnExpression)
           (* let make = React.forwardRef((~prop) => ...) *)
-#if OCAML_VERSION =~ ">4.03.0" then
-          | { pexp_desc = Pexp_apply (wrapperExpression, [(Nolabel, innerFunctionExpression)]) } ->
-#else
+          
+# 736 "syntax/reactjs_jsx_ppx.cppo.ml"
           | { pexp_desc = Pexp_apply (wrapperExpression, [("", innerFunctionExpression)]) } ->
-#end
+            
+# 738 "syntax/reactjs_jsx_ppx.cppo.ml"
             let (wrapExpression, realReturnExpression) = spelunkForFunExpression innerFunctionExpression in
             ((fun expressionDesc -> {
               expression with pexp_desc =
@@ -876,11 +834,11 @@ let jsxMapper () =
       (match ptyp_desc with
       | Ptyp_arrow (name, type_, ({ptyp_desc = Ptyp_arrow _} as rest)) when isOptional name || isLabelled name ->
         getPropTypes ((name, ptyp_loc, type_)::types) rest
-#if OCAML_VERSION =~ ">4.03.0" then
-      | Ptyp_arrow (Nolabel, _type, rest) ->
-#else
+      
+# 882 "syntax/reactjs_jsx_ppx.cppo.ml"
       | Ptyp_arrow ("", _type, rest) ->
-#end
+        
+# 884 "syntax/reactjs_jsx_ppx.cppo.ml"
         getPropTypes types rest
       | Ptyp_arrow (name, type_, returnValue) when isOptional name || isLabelled name ->
         (returnValue, (name, returnValue.ptyp_loc, type_)::types)
@@ -927,8 +885,12 @@ let jsxMapper () =
         (* Foo.createElement(~prop1=foo, ~prop2=bar, ~children=[], ()) *)
         | {loc; txt = Ldot (modulePath, ("createElement" | "make"))} ->
           (match !jsxVersion with
+          
+# 934 "syntax/reactjs_jsx_ppx.cppo.ml"
           | Some 2 -> transformUppercaseCall modulePath mapper loc attrs callExpression callArguments
           | None
+          
+# 937 "syntax/reactjs_jsx_ppx.cppo.ml"
           | Some 3 -> transformUppercaseCall3 modulePath mapper loc attrs callExpression callArguments
           | Some _ -> raise (Invalid_argument "JSX: the JSX version must be 2 or 3"))
 
@@ -937,8 +899,12 @@ let jsxMapper () =
           ReactDOMRe.createElement(~props=ReactDOMRe.props(~props1=foo, ~props2=bar, ()), [|bla|]) *)
         | {loc; txt = Lident id} ->
           (match !jsxVersion with
+          
+# 949 "syntax/reactjs_jsx_ppx.cppo.ml"
           | Some 2 -> transformLowercaseCall mapper loc attrs callArguments id
           | None
+          
+# 952 "syntax/reactjs_jsx_ppx.cppo.ml"
           | Some 3 -> transformLowercaseCall3 mapper loc attrs callArguments id
           | Some _ -> raise (Invalid_argument "JSX: the JSX version must be 2 or 3"))
 
@@ -994,19 +960,18 @@ let jsxMapper () =
           (* no file-level jsx config found *)
           | ([], _) -> default_mapper.structure mapper structure
           (* {jsx: 2} *)
-#if OCAML_VERSION =~ ">4.03.0" then
-          | ((_, {pexp_desc = Pexp_constant (Pconst_integer (version, None))})::rest, recordFieldsWithoutJsx) -> begin
-#else
+          
+# 1010 "syntax/reactjs_jsx_ppx.cppo.ml"
           | ((_, {pexp_desc = Pexp_constant (Const_int version)})::_rest, recordFieldsWithoutJsx) -> begin
-#end
+              
+# 1012 "syntax/reactjs_jsx_ppx.cppo.ml"
               (match version with
-#if OCAML_VERSION =~ ">4.03.0" then
-              | "2" -> jsxVersion := Some 2
-              | "3" -> jsxVersion := Some 3
-#else
+              
+# 1017 "syntax/reactjs_jsx_ppx.cppo.ml"
               | 2 -> jsxVersion := Some 2
               | 3 -> jsxVersion := Some 3
-#end
+              
+# 1020 "syntax/reactjs_jsx_ppx.cppo.ml"
               | _ -> raise (Invalid_argument "JSX: the file-level bs.config's jsx version must be 2 or 3"));
               match recordFieldsWithoutJsx with
               (* record empty now, remove the whole bs.config attribute *)
@@ -1081,12 +1046,13 @@ let jsxMapper () =
   { default_mapper with structure; expr; signature; module_binding; }
 
 
-#if BS_COMPILER_IN_BROWSER then
 (* keep in sync with jscomp/core/jsoo_main.ml `let implementation` *)
 let rewrite (code: Parsetree.structure) =
   let mapper = jsxMapper () in
   Location.input_name := "Toplevel";
   mapper.structure mapper code
-#else
+
+# 1103 "syntax/reactjs_jsx_ppx.cppo.ml"
 let () = Ast_mapper.register "JSX" (fun _argv -> jsxMapper ())
-#end
+# 1108 "syntax/reactjs_jsx_ppx.cppo.ml"
+(* b *)

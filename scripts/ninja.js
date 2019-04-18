@@ -650,6 +650,9 @@ var dTypeIdent = 'TYPE_IDENT'
 
 var dTypePoly =  'TYPE_POLY'
 
+var REACT_JS_JSX_V2 =  'REACT_JS_JSX_V2'
+var BS_COMPILER_IN_BROWSER =  'BS_COMPILER_IN_BROWSER'
+
 var cppoRuleName = `cppo`
 var cppoFile = `./bin/cppo.exe`
 
@@ -1197,6 +1200,11 @@ ${cppoList('outcome_printer',[
     ['reason_syntax_util.ml', 'reason_syntax_util.cppo.ml',''],
     ['reason_syntax_util.mli', 'reason_syntax_util.cppo.mli',''],
 ])}
+${cppoList('syntax',[
+    ['reactjs_jsx_ppx_v3.ml','reactjs_jsx_ppx.cppo.ml',''],
+    ['reactjs_jsx_ppx_v2.ml', 'reactjs_jsx_ppx.cppo.ml', REACT_JS_JSX_V2],
+    ['reactjs_jsx_ppx_js.ml', 'reactjs_jsx_ppx.cppo.ml', [REACT_JS_JSX_V2, BS_COMPILER_IN_BROWSER].join(' -D ')],
+])}
 `
     var cppoNinjaFile = useEnv ? 'cppoEnv.ninja' : 'cppoVendor.ninja'
     var templateNative = `
@@ -1241,6 +1249,12 @@ build core/js_map.ml: p4of core/js_map.mlp | core/j.ml
 build common/bs_version.ml : mk_bsversion build_version.js ../package.json
 
 build ../lib/bsc.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa super_errors/super_errors.cmxa outcome_printer/outcome_printer.cmxa core/core.cmxa main/js_main.cmx
+    libs = ocamlcommon.cmxa
+build ../lib/reactjs_jsx_ppx_3.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/reactjs_jsx_ppx_v3.cmx
+    libs = ocamlcommon.cmxa
+build ../lib/reactjs_jsx_ppx_2.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/reactjs_jsx_ppx_v2.cmx
+    libs = ocamlcommon.cmxa
+build ../lib/reactjs_jsx_ppx_js.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/reactjs_jsx_ppx_js.cmx
     libs = ocamlcommon.cmxa
 build ../lib/bsb.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa bsb/bsb.cmxa main/bsb_main.cmx
     libs = ocamlcommon.cmxa unix.cmxa str.cmxa
