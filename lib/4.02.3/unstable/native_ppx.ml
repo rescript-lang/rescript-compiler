@@ -11775,13 +11775,14 @@ let () =
 
 
 let warn_missing_primitive loc txt =      
-  if not @@ !Js_config.no_warn_unimplemented_external then
+  if not !Js_config.no_warn_unimplemented_external && not !Clflags.bs_quiet then
     begin 
       print_string_warning loc ( unimplemented_primitive ^ txt ^ " \n" );
       Format.pp_print_flush warning_formatter ()
     end
 
 let warn_literal_overflow loc = 
+  if not !Clflags.bs_quiet then
   begin 
     print_string_warning loc 
       "Integer literal exceeds the range of representable integers of type int";
