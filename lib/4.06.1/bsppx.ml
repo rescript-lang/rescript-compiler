@@ -2815,6 +2815,7 @@ val dont_record_crc_unit : string option ref
 val bs_only : bool ref (* set true on bs top*)
 val bs_gentype : string option ref
 val no_assert_false : bool ref
+val bs_quiet : bool ref 
 
 
 end = struct
@@ -3239,6 +3240,7 @@ let dont_record_crc_unit : string option ref = ref None
 let bs_only = ref false
 let bs_gentype = ref None
 let no_assert_false = ref false
+let bs_quiet = ref false
 
 
 end
@@ -4630,7 +4632,9 @@ let print_warning loc ppf w =
 ;;
 
 let formatter_for_warnings = ref err_formatter;;
-let prerr_warning loc w = print_warning loc !formatter_for_warnings w;;
+let prerr_warning loc w = 
+    if not !Clflags.bs_quiet then
+      print_warning loc !formatter_for_warnings w;;
 
 let echo_eof () =
   print_newline ();
@@ -12035,7 +12039,7 @@ val err : Location.t -> error -> 'a
 end = struct
 #1 "bs_syntaxerr.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -12053,34 +12057,34 @@ end = struct
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
 
-type error 
+type error
   = Unsupported_predicates
-  | Conflict_bs_bs_this_bs_meth  
+  | Conflict_bs_bs_this_bs_meth
   | Duplicated_bs_deriving
   | Conflict_attributes
 
-  | Duplicated_bs_as 
+  | Duplicated_bs_as
   | Expect_int_literal
   | Expect_string_literal
   | Expect_int_or_string_or_json_literal
   | Unhandled_poly_type
-  | Unregistered of string 
+  | Unregistered of string
   | Invalid_underscore_type_in_external
-  | Invalid_bs_string_type 
-  | Invalid_bs_int_type 
+  | Invalid_bs_string_type
+  | Invalid_bs_int_type
   | Invalid_bs_unwrap_type
   | Conflict_ffi_attribute of string
   | Not_supported_in_bs_deriving
   | Canot_infer_arity_by_syntax
   | Illegal_attribute
-  | Inconsistent_arity of int * int 
+  | Inconsistent_arity of int * int
   (* we still rqeuire users to have explicit annotation to avoid
      {[ (((int -> int) -> int) -> int )]}
   *)
@@ -12092,8 +12096,8 @@ type error
 
 let pp_error fmt err =
   Format.pp_print_string fmt @@ match err with
-  | Label_in_uncurried_bs_attribute 
-    -> "label is not allowed here, it is due to `bs.` attribute indicate uncurried calling convention which does not support label argument yet"
+  | Label_in_uncurried_bs_attribute
+    -> "BuckleScript uncurried function doesn't support labeled arguments yet"
   | Expect_opt_in_bs_return_to_opt
       ->
         "bs.return directive *_to_opt expect return type to be \n\
@@ -12101,50 +12105,50 @@ let pp_error fmt err =
 
   | Not_supported_directive_in_bs_return
     ->
-    "Not supported return directive"                
+    "Not supported return directive"
   | Illegal_attribute ->
     "Illegal attributes"
   | Canot_infer_arity_by_syntax
-    ->   "Can not infer the arity by syntax, either [@bs.uncurry n] or \n\
+    ->   "Cannot infer the arity through the syntax, either [@bs.uncurry n] or \n\
               write it in arrow syntax "
   | Inconsistent_arity (arity,n)
-      -> Printf.sprintf "Inconsistent arity %d vs %d" arity n 
+      -> Printf.sprintf "Inconsistent arity %d vs %d" arity n
   | Not_supported_in_bs_deriving
     ->
     "not supported in deriving"
-  | Unsupported_predicates 
+  | Unsupported_predicates
     ->
      "unsupported predicates"
-  | Conflict_bs_bs_this_bs_meth -> 
+  | Conflict_bs_bs_this_bs_meth ->
      "[@bs.this], [@bs], [@bs.meth] can not be applied at the same time"
   | Duplicated_bs_deriving
-    -> "duplicated bs.deriving attribute"
+    -> "duplicate bs.deriving attribute"
   | Conflict_attributes
-    -> "conflicting attributes " 
+    -> "conflicting attributes "
   | Expect_string_literal
     -> "expect string literal "
-  | Duplicated_bs_as 
-    -> 
-    "duplicated bs.as "
-  | Expect_int_literal 
-    -> 
+  | Duplicated_bs_as
+    ->
+    "duplicate bs.as "
+  | Expect_int_literal
+    ->
     "expect int literal "
   | Expect_int_or_string_or_json_literal
     ->
-    "expect int or string literal or json literal ({json||json}) "
-  | Unhandled_poly_type 
-    -> 
+    "expect int, string literal or json literal {json|text here|json} "
+  | Unhandled_poly_type
+    ->
     "Unhandled poly type"
-  | Unregistered str 
-    -> "Unregistered " ^ str 
+  | Unregistered str
+    -> "Unregistered " ^ str
   | Invalid_underscore_type_in_external
     ->
     "_ is not allowed in combination with external optional type"
   | Invalid_bs_string_type
-    -> 
+    ->
     "Not a valid type for [@bs.string]"
-  | Invalid_bs_int_type 
-    -> 
+  | Invalid_bs_int_type
+    ->
     "Not a valid type for [@bs.int]"
   | Invalid_bs_unwrap_type
     ->
@@ -12154,15 +12158,15 @@ let pp_error fmt err =
     ->
     "Conflicting FFI attributes found: " ^ str
   | Bs_this_simple_pattern
-    -> 
+    ->
     "[@bs.this] expect its pattern variable to be simple form"
 
 type exn +=  Error of Location.t * error
 
 
-let () = 
+let () =
   Location.register_error_of_exn (function
-    | Error(loc,err) -> 
+    | Error(loc,err) ->
       Some (Location.error_of_printer loc pp_error err)
     | _ -> None
     )
@@ -18871,9 +18875,9 @@ end = struct
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)    
-let version = "5.0.3"
+let version = "5.0.4"
 let header = 
-   "// Generated by BUCKLESCRIPT VERSION 5.0.3, PLEASE EDIT WITH CARE"  
+   "// Generated by BUCKLESCRIPT VERSION 5.0.4, PLEASE EDIT WITH CARE"  
 let package_name = "bs-platform"   
     
 end
