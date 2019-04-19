@@ -178,8 +178,15 @@ val rec_type_sig:
   type_declaration list -> 
   signature_item
 
+type param_type = 
+  {label : arg_label ;
+   ty :  Parsetree.core_type ; 
+   attr :Parsetree.attributes;
+   loc : loc
+  }
+
 val mk_fn_type:  
-  (arg_label * core_type * attributes * loc) list -> 
+  param_type list -> 
   core_type -> 
   core_type
 
