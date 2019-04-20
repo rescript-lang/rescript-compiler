@@ -28,10 +28,6 @@ build bsb_helper$ext:  cc $INCL/bsb_helper.mli $INCL/bsb_helper.ml
     flags = $flags unix.cmxa -w -a
 build refmt$ext: cc $INCL/refmt_main3.mli $INCL/refmt_main3.ml
     flags = $flags -w -40-30 -no-alias-deps -I +compiler-libs ocamlcommon.cmxa 
-build reactjs_jsx_ppx_2$ext: cc $INCL/reactjs_jsx_ppx_v2.mli $INCL/reactjs_jsx_ppx_v2.ml
-    flags = $flags -w -40-30 -no-alias-deps -I +compiler-libs ocamlcommon.cmxa
-build reactjs_jsx_ppx_3$ext: cc $INCL/reactjs_jsx_ppx_v3.mli $INCL/reactjs_jsx_ppx_v3.ml
-    flags = $flags -w -40-30 -no-alias-deps -I +compiler-libs ocamlcommon.cmxa
 build bsc$ext: cc $INCL/whole_compiler.mli $INCL/whole_compiler.ml    
 `
 }
