@@ -130,7 +130,7 @@ let interpret_json
 
   : Bsb_config_types.t =
 
-  let reason_react_jsx = ref None in 
+  let reason_react_jsx : Bsb_config_types.reason_react_jsx option ref = ref None in 
   let config_json = cwd // Literals.bsconfig_json in
   let refmt_flags = ref Bsb_default.refmt_flags in
   let bs_external_includes = ref [] in 
@@ -277,13 +277,9 @@ let interpret_json
         | Some (Flo{loc; flo}) -> 
           begin match flo with 
             | "2" -> 
-              reason_react_jsx := 
-                Some (Filename.quote 
-                        (Filename.concat bsc_dir Literals.reactjs_jsx_ppx_2_exe) )
+              reason_react_jsx := Some Jsx_v2
             | "3" -> 
-              reason_react_jsx := 
-                Some (Filename.quote 
-                        (Filename.concat bsc_dir Literals.reactjs_jsx_ppx_3_exe) )
+              reason_react_jsx := Some Jsx_v3
             | _ -> Bsb_exception.errorf ~loc "Unsupported jsx version %s" flo
           end        
         | Some x -> Bsb_exception.config_error x 

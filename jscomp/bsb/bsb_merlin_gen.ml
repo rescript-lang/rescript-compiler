@@ -127,10 +127,15 @@ let merlin_file_gen ~cwd
     Ext_option.iter pp_file (fun x -> 
       Buffer.add_string buffer (merlin_flg_pp ^ x)
     );  
-    Ext_option.iter reason_react_jsx 
-      (fun s -> 
-         Buffer.add_string buffer (merlin_flg_ppx ^ s));
-    Buffer.add_string buffer (merlin_flg_ppx  ^ built_in_ppx);
+    Buffer.add_string buffer 
+      (merlin_flg_ppx  ^ 
+       (match reason_react_jsx with 
+        | None -> built_in_ppx
+        | Some opt ->
+          Printf.sprintf "'%s -bs-jsx %d'" built_in_ppx
+            (match opt with Jsx_v2 -> 2 | Jsx_v3 -> 3)
+       )
+      );
     (*
     (match external_includes with 
     | [] -> ()

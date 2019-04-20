@@ -22,25 +22,23 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+
+
 let parse_interface ppf sourcefile = 
-  let ast = Pparse.parse_interface ~tool_name:Js_config.tool_name ppf sourcefile in
-  if !Js_config.no_builtin_ppx_mli then ast else  Ppx_entry.rewrite_signature ast
+  Ppx_entry.rewrite_signature (Pparse.parse_interface ~tool_name:Js_config.tool_name ppf sourcefile)
+
 
 let lazy_parse_interface ppf sourcefile =
   lazy (parse_interface ppf sourcefile)
 
 let parse_implementation ppf sourcefile = 
-  let ast = 
-    Pparse.parse_implementation ~tool_name:Js_config.tool_name ppf sourcefile in 
-  if !Js_config.no_builtin_ppx_ml then ast else
-    Ppx_entry.rewrite_implementation ast 
+  Ppx_entry.rewrite_implementation
+    (Pparse.parse_implementation ~tool_name:Js_config.tool_name ppf sourcefile)
 
 let parse_implementation_from_string  str = 
   let lb = Lexing.from_string str in
   Location.init lb "//toplevel//";
-  let ast = Parse.implementation lb  in 
-  if !Js_config.no_builtin_ppx_ml then ast else 
-    Ppx_entry.rewrite_implementation ast 
+  Ppx_entry.rewrite_implementation (Parse.implementation lb)
 
 
 let lazy_parse_implementation ppf sourcefile =

@@ -117,6 +117,11 @@ let buckle_script_flags : (string * Arg.spec * string) list =
      ,
    " Better error message combined with other tools "
   )
+  ::
+  ("-bs-jsx",
+    Arg.Int (fun i -> Js_config.jsx_version := i),
+    " Set jsx version"
+  )
   :: 
   ("-bs-re-out",
     Arg.Unit Reason_outcome_printer_main.setup,

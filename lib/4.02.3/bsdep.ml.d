@@ -161,6 +161,8 @@
 ./syntax/bs_ast_iterator.mli
 ./syntax/bs_ast_mapper.ml
 ./syntax/bs_ast_mapper.mli
+./syntax/bs_builtin_ppx.ml
+./syntax/bs_builtin_ppx.mli
 ./syntax/bs_syntaxerr.ml
 ./syntax/bs_syntaxerr.mli
 ./syntax/external_arg_spec.ml
@@ -168,4 +170,5 @@
 ./syntax/external_ffi_types.ml
 ./syntax/external_ffi_types.mli
 ./syntax/ppx_entry.ml
-./syntax/ppx_entry.mli
+./syntax/reactjs_jsx_ppx_v2.ml
+./syntax/reactjs_jsx_ppx_v3.ml

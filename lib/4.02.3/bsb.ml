@@ -11152,7 +11152,11 @@ type dependencies = dependency list
 (* `string` is a path to the entrypoint *)
 type entries_t = JsTarget of string | NativeTarget of string | BytecodeTarget of string
 
-type reason_react_jsx = string option 
+
+type reason_react_jsx = 
+  | Jsx_v2
+  | Jsx_v3
+  (* string option  *)
 
 type refmt = 
   | Refmt_none
@@ -11189,7 +11193,7 @@ type t =
     bs_file_groups : Bsb_file_groups.file_groups;
     files_to_install : String_hash_set.t ;
     generate_merlin : bool ; 
-    reason_react_jsx : reason_react_jsx ; (* whether apply PPX transform or not*)
+    reason_react_jsx : reason_react_jsx option; (* whether apply PPX transform or not*)
     entries : entries_t list ;
     generators : string String_map.t ; 
     cut_generators : bool; (* note when used as a dev mode, we will always ignore it *)
@@ -11741,7 +11745,7 @@ let interpret_json
 
   : Bsb_config_types.t =
 
-  let reason_react_jsx = ref None in 
+  let reason_react_jsx : Bsb_config_types.reason_react_jsx option ref = ref None in 
   let config_json = cwd // Literals.bsconfig_json in
   let refmt_flags = ref Bsb_default.refmt_flags in
   let bs_external_includes = ref [] in 
@@ -11888,13 +11892,9 @@ let interpret_json
         | Some (Flo{loc; flo}) -> 
           begin match flo with 
             | "2" -> 
-              reason_react_jsx := 
-                Some (Filename.quote 
-                        (Filename.concat bsc_dir Literals.reactjs_jsx_ppx_2_exe) )
+              reason_react_jsx := Some Jsx_v2
             | "3" -> 
-              reason_react_jsx := 
-                Some (Filename.quote 
-                        (Filename.concat bsc_dir Literals.reactjs_jsx_ppx_3_exe) )
+              reason_react_jsx := Some Jsx_v3
             | _ -> Bsb_exception.errorf ~loc "Unsupported jsx version %s" flo
           end        
         | Some x -> Bsb_exception.config_error x 
@@ -12196,10 +12196,15 @@ let merlin_file_gen ~cwd
     Ext_option.iter pp_file (fun x -> 
       Buffer.add_string buffer (merlin_flg_pp ^ x)
     );  
-    Ext_option.iter reason_react_jsx 
-      (fun s -> 
-         Buffer.add_string buffer (merlin_flg_ppx ^ s));
-    Buffer.add_string buffer (merlin_flg_ppx  ^ built_in_ppx);
+    Buffer.add_string buffer 
+      (merlin_flg_ppx  ^ 
+       (match reason_react_jsx with 
+        | None -> built_in_ppx
+        | Some opt ->
+          Printf.sprintf "'%s -bs-jsx %d'" built_in_ppx
+            (match opt with Jsx_v2 -> 2 | Jsx_v3 -> 3)
+       )
+      );
     (*
     (match external_includes with 
     | [] -> ()
@@ -13917,8 +13922,8 @@ let output_ninja_and_namespace_map
       let reason_react_jsx_flag = 
         match reason_react_jsx with 
         | None -> Ext_string.empty          
-        | Some  s -> 
-          Ext_string.inter2 "-ppx" s 
+        | Some v ->           
+          Ext_string.inter2 "-bs-jsx" (match v with Jsx_v2 -> "2" | Jsx_v3 -> "3")
       in 
       Bsb_ninja_util.output_kvs
         [|

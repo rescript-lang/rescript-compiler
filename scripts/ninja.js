@@ -1197,6 +1197,10 @@ ${cppoList('outcome_printer',[
     ['reason_syntax_util.ml', 'reason_syntax_util.cppo.ml',''],
     ['reason_syntax_util.mli', 'reason_syntax_util.cppo.mli',''],
 ])}
+${cppoList('syntax',[
+    ['reactjs_jsx_ppx_v3.ml','reactjs_jsx_ppx.cppo.ml',''],
+    ['reactjs_jsx_ppx_v2.ml', 'reactjs_jsx_ppx.cppo.ml', 'REACT_JS_JSX_V2']
+])}
 `
     var cppoNinjaFile = useEnv ? 'cppoEnv.ninja' : 'cppoVendor.ninja'
     var templateNative = `

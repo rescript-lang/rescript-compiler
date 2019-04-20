@@ -94,15 +94,17 @@ let implementation ~use_super_errors prefix impl str  : Js.Unsafe.obj =
   Warnings.parse_options false Bsb_warning.default_warning;
 
   try
-  impl (Lexing.from_string
-    (if prefix then "[@@@bs.config{no_export}]\n#1 \"repl.ml\"\n"  ^ str else str ))
-  |> Ppx_entry.rewrite_implementation
-  |> (fun x ->
-      let (a,b,c,signature) = Typemod.type_implementation_more modulename modulename modulename env x in
+    let ast = impl 
+      (Lexing.from_string
+        (if prefix then "[@@@bs.config{no_export}]\n#1 \"repl.ml\"\n"  ^ str else str )) in 
+    let ast = Reactjs_jsx_ppx_v3.rewrite_implementation ast in 
+    let ast = Bs_builtin_ppx.rewrite_implementation ast in 
+    let typed_tree = 
+      let (a,b,c,signature) = Typemod.type_implementation_more modulename modulename modulename env ast in
       finalenv := c ;
       types_signature := signature;
-      (a,b)
-     )
+      (a,b) in      
+  typed_tree
   |>  Translmod.transl_implementation modulename
   |> (* Printlambda.lambda ppf *) (fun 
 #if OCAML_VERSION =~ ">4.03.0" then

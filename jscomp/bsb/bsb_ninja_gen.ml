@@ -125,8 +125,8 @@ let output_ninja_and_namespace_map
       let reason_react_jsx_flag = 
         match reason_react_jsx with 
         | None -> Ext_string.empty          
-        | Some  s -> 
-          Ext_string.inter2 "-ppx" s 
+        | Some v ->           
+          Ext_string.inter2 "-bs-jsx" (match v with Jsx_v2 -> "2" | Jsx_v3 -> "3")
       in 
       Bsb_ninja_util.output_kvs
         [|

@@ -11535,6 +11535,8 @@ val debug : bool ref
 val cmi_only  : bool ref
 val force_cmi : bool ref 
 val force_cmj : bool ref
+
+val jsx_version : int ref
 end = struct
 #1 "js_config.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -11650,6 +11652,8 @@ let debug = ref false
 let cmi_only = ref false  
 let force_cmi = ref false
 let force_cmj = ref false
+
+let jsx_version = ref (-1)
 end
 module Bs_warnings : sig 
 #1 "bs_warnings.mli"
@@ -19584,19 +19588,26 @@ let apply_lazy ~source ~target
   output_value oc !Location.input_name;
   output_value oc ast;
   close_out oc
-
+  
+let usage = "Usage: [prog] [extra_args] <infile> <outfile>\n%!"
 let main impl intf =
   try
     let a = Sys.argv in
     let n = Array.length a in
-    if n > 2 then
+    if n > 2 then begin
+      Arg.parse_argv (Array.sub Sys.argv 0 (n-2))
+        [
+          ("-bs-jsx",
+           Arg.Int (fun i -> Js_config.jsx_version := i),
+           " Set jsx version"
+          )
+        ] ignore usage;
       apply_lazy ~source:a.(n - 2) ~target:a.(n - 1)
         impl
         intf
-    else
+    end else
       begin
-        Printf.eprintf "Usage: %s [extra_args] <infile> <outfile>\n%!"
-          Sys.executable_name;
+        Printf.eprintf "%s" usage;
         exit 2
       end
   with exn ->
