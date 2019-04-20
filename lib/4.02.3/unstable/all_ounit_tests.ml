@@ -8836,6 +8836,8 @@ val debug : bool ref
 val cmi_only  : bool ref
 val force_cmi : bool ref 
 val force_cmj : bool ref
+
+val jsx_version : int ref
 end = struct
 #1 "js_config.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -8951,6 +8953,8 @@ let debug = ref false
 let cmi_only = ref false  
 let force_cmi = ref false
 let force_cmj = ref false
+
+let jsx_version = ref (-1)
 end
 module Ml_binary : sig 
 #1 "ml_binary.mli"

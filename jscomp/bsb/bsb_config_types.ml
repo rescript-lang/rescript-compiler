@@ -33,7 +33,11 @@ type dependencies = dependency list
 (* `string` is a path to the entrypoint *)
 type entries_t = JsTarget of string | NativeTarget of string | BytecodeTarget of string
 
-type reason_react_jsx = string option 
+
+type reason_react_jsx = 
+  | Jsx_v2
+  | Jsx_v3
+  (* string option  *)
 
 type refmt = 
   | Refmt_none
@@ -70,7 +74,7 @@ type t =
     bs_file_groups : Bsb_file_groups.file_groups;
     files_to_install : String_hash_set.t ;
     generate_merlin : bool ; 
-    reason_react_jsx : reason_react_jsx ; (* whether apply PPX transform or not*)
+    reason_react_jsx : reason_react_jsx option; (* whether apply PPX transform or not*)
     entries : entries_t list ;
     generators : string String_map.t ; 
     cut_generators : bool; (* note when used as a dev mode, we will always ignore it *)

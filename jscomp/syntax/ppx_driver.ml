@@ -49,19 +49,26 @@ let apply_lazy ~source ~target
   output_value oc !Location.input_name;
   output_value oc ast;
   close_out oc
-
+  
+let usage = "Usage: [prog] [extra_args] <infile> <outfile>\n%!"
 let main impl intf =
   try
     let a = Sys.argv in
     let n = Array.length a in
-    if n > 2 then
+    if n > 2 then begin
+      Arg.parse_argv (Array.sub Sys.argv 0 (n-2))
+        [
+          ("-bs-jsx",
+           Arg.Int (fun i -> Js_config.jsx_version := i),
+           " Set jsx version"
+          )
+        ] ignore usage;
       apply_lazy ~source:a.(n - 2) ~target:a.(n - 1)
         impl
         intf
-    else
+    end else
       begin
-        Printf.eprintf "Usage: %s [extra_args] <infile> <outfile>\n%!"
-          Sys.executable_name;
+        Printf.eprintf "%s" usage;
         exit 2
       end
   with exn ->
