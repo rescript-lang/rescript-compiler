@@ -24308,9 +24308,9 @@ let makeExternalDecl fnName loc namedArgListWithKeyAndRef namedTypeList =
     (makePropsType ~loc namedTypeList)
 
 (* TODO: some line number might still be wrong *)
-let jsxMapper () =
+let jsxMapper ?version () =
 
-  let jsxVersion = ref None in
+  let jsxVersion = ref version in
 
   let transformUppercaseCall3 modulePath mapper loc attrs _ callArguments =
     let (children, argsWithLabels) = extractChildren ~loc ~removeLastPositionUnit:true callArguments in
@@ -25003,11 +25003,12 @@ let jsxMapper () =
 
   { default_mapper with structure; expr; signature; module_binding; }
 
-let mapper = jsxMapper () 
 
-let rewrite_implementation (code: Parsetree.structure) : Parsetree.structure =
+let rewrite_implementation ?version (code: Parsetree.structure) : Parsetree.structure =
+  let mapper = jsxMapper ?version () in
   mapper.structure mapper code
-let rewrite_signature (code : Parsetree.signature) : Parsetree.signature = 
+let rewrite_signature ?version (code : Parsetree.signature) : Parsetree.signature = 
+  let mapper = jsxMapper ?version () in
   mapper.signature mapper code 
 
 
@@ -25367,9 +25368,9 @@ let makeExternalDecl fnName loc namedArgListWithKeyAndRef namedTypeList =
     (makePropsType ~loc namedTypeList)
 
 (* TODO: some line number might still be wrong *)
-let jsxMapper () =
+let jsxMapper ?version () =
 
-  let jsxVersion = ref None in
+  let jsxVersion = ref version in
 
   let transformUppercaseCall3 modulePath mapper loc attrs _ callArguments =
     let (children, argsWithLabels) = extractChildren ~loc ~removeLastPositionUnit:true callArguments in
@@ -26062,11 +26063,12 @@ let jsxMapper () =
 
   { default_mapper with structure; expr; signature; module_binding; }
 
-let mapper = jsxMapper () 
 
-let rewrite_implementation (code: Parsetree.structure) : Parsetree.structure =
+let rewrite_implementation ?version (code: Parsetree.structure) : Parsetree.structure =
+  let mapper = jsxMapper ?version () in
   mapper.structure mapper code
-let rewrite_signature (code : Parsetree.signature) : Parsetree.signature = 
+let rewrite_signature ?version (code : Parsetree.signature) : Parsetree.signature = 
+  let mapper = jsxMapper ?version () in
   mapper.signature mapper code 
 
 
