@@ -18056,8 +18056,9 @@ let handle_attributes
                 loc = obj.ptyp_loc} : Ast_compatible.param_type)]
                ,0)           
           | {val_send_pipe = None ; _ } -> [],[], 0)
-        (fun {label;ty;attr;loc} (arg_type_specs, arg_types, i) ->
-           let arg_label = Ast_compatible.convert label in
+        (fun  param_type (arg_type_specs, arg_types, i) ->
+           let arg_label = Ast_compatible.convert param_type.label in
+           let ty = param_type.ty in 
            let arg_label, arg_type, new_arg_types =
              match arg_label with
              | Optional s  ->
@@ -18070,21 +18071,21 @@ let handle_attributes
                      "[@@bs.string] does not work with optional when it has arities in label %s" s
                  | _ ->
                    External_arg_spec.optional s, arg_type,
-                   (({label; ty; attr;loc} : Ast_compatible.param_type) :: arg_types) end
+                   param_type :: arg_types end
              | Labelled s  ->
                begin match refine_arg_type ~nolabel:false ty with
-                 | new_ty, (Arg_cst ( i) as arg_type)  ->
+                 | new_ty, (Arg_cst i as arg_type)  ->
                    External_arg_spec.label s (Some i), arg_type, arg_types
                  | new_ty, arg_type ->
                    External_arg_spec.label s None, arg_type, 
-                   {label; ty = new_ty; attr; loc} :: arg_types
+                   {param_type with ty = new_ty} :: arg_types
                end
              | Nolabel ->
                begin match refine_arg_type ~nolabel:true ty with
-                 | new_ty , (Arg_cst ( i) as arg_type) ->
+                 | new_ty , (Arg_cst i as arg_type) ->
                    External_arg_spec.empty_lit i , arg_type,  arg_types
                  | new_ty , arg_type ->
-                   External_arg_spec.empty_label, arg_type, {label; ty = new_ty;attr;loc} :: arg_types
+                   External_arg_spec.empty_label, arg_type, {param_type with ty = new_ty} :: arg_types
                end
            in
            (if i = 0 && splice  then
