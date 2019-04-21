@@ -314,11 +314,11 @@ type param_type =
  let mk_fn_type 
   (new_arg_types_ty : param_type list)
   (result : core_type) : core_type = 
-  Ext_list.fold_right new_arg_types_ty result (fun {label; ty; attr = attrs; loc} acc -> 
+  Ext_list.fold_right new_arg_types_ty result (fun {label; ty; attr ; loc} acc -> 
     {
       ptyp_desc = Ptyp_arrow(label,ty,acc);
       ptyp_loc = loc; 
-      ptyp_attributes = attrs
+      ptyp_attributes = attr
     }
   )
 

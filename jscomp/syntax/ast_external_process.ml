@@ -411,15 +411,16 @@ let process_obj
       Location.raise_errorf ~loc "[@@bs.obj] expect external names to be empty string";
     let arg_kinds, (new_arg_types_ty : Ast_compatible.param_type list), result_types =
       Ext_list.fold_right arg_types_ty ( [], [], [])
-        (fun {label;ty;attr;loc} ( arg_labels, (arg_types : Ast_compatible.param_type list), result_types) ->
-           let arg_label = Ast_compatible.convert label in
+        (fun param_type ( arg_labels, (arg_types : Ast_compatible.param_type list), result_types) ->
+           let arg_label = Ast_compatible.convert param_type.label in
+           let ty  = param_type.ty in 
            let new_arg_label, new_arg_types,  output_tys =
              match arg_label with
              | Nolabel ->
                let new_ty, arg_type = refine_arg_type ~nolabel:true  ty in
                if arg_type = Extern_unit then
                  External_arg_spec.empty_kind arg_type, 
-                  ({label; ty = new_ty; attr; loc} : Ast_compatible.param_type)::arg_types, result_types
+                 {param_type with ty = new_ty}::arg_types, result_types
                else
                  Location.raise_errorf ~loc "expect label, optional, or unit here"
              | Labelled name ->
@@ -427,7 +428,7 @@ let process_obj
                begin match arg_type with
                  | Ignore ->
                    External_arg_spec.empty_kind arg_type,
-                   ({label; ty = new_ty; attr; loc} : Ast_compatible.param_type)::arg_types, result_types
+                   {param_type with ty = new_ty}::arg_types, result_types
                  | Arg_cst  i  ->
                    let s = Lam_methname.translate ~loc name in
                    {arg_label = External_arg_spec.label s (Some i);
@@ -437,17 +438,17 @@ let process_obj
                  | Nothing | Array ->
                    let s = (Lam_methname.translate ~loc name) in
                    {arg_label = External_arg_spec.label s None ; arg_type },
-                   {label; ty = new_ty; attr; loc}::arg_types,
+                   {param_type with ty = new_ty}::arg_types,
                    ((name , [], new_ty) :: result_types)
                  | Int _  ->
                    let s = Lam_methname.translate ~loc name in
                    {arg_label = External_arg_spec.label s None; arg_type},
-                   {label; ty = new_ty; attr; loc}::arg_types,
+                   {param_type with ty = new_ty}::arg_types,
                    ((name, [], Ast_literal.type_int ~loc ()) :: result_types)
                  | NullString _ ->
                    let s = Lam_methname.translate ~loc name in
                    {arg_label = External_arg_spec.label s None; arg_type},
-                   {label; ty = new_ty; attr;  loc}::arg_types,
+                   {param_type with ty = new_ty }::arg_types,
                    ((name, [], Ast_literal.type_string ~loc ()) :: result_types)
                  | Fn_uncurry_arity _ ->
                    Location.raise_errorf ~loc
@@ -466,21 +467,21 @@ let process_obj
                begin match arg_type with
                  | Ignore ->
                    External_arg_spec.empty_kind arg_type,
-                   {label; ty; attr; loc}::arg_types, result_types
+                   param_type::arg_types, result_types
                  | Nothing | Array ->
                    let s = (Lam_methname.translate ~loc name) in
                    {arg_label = External_arg_spec.optional s; arg_type},
-                   {label; ty; attr; loc} :: arg_types,
+                   param_type :: arg_types,
                    ( (name, [], Ast_comb.to_undefined_type loc (get_basic_type_from_option_label ty)) ::  result_types)
                  | Int _  ->
                    let s = Lam_methname.translate ~loc name in
                    {arg_label = External_arg_spec.optional s ; arg_type },
-                   {label; ty; attr; loc}::arg_types,
+                   param_type :: arg_types,
                    ((name, [], Ast_comb.to_undefined_type loc @@ Ast_literal.type_int ~loc ()) :: result_types)
                  | NullString _  ->
                    let s = Lam_methname.translate ~loc name in
                    {arg_label = External_arg_spec.optional s ; arg_type },
-                   {label; ty; attr; loc}::arg_types,
+                   param_type::arg_types,
                    ((name, [], Ast_comb.to_undefined_type loc @@ Ast_literal.type_string ~loc ()) :: result_types)
                  | Arg_cst _
                    ->
