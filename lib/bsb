@@ -164,7 +164,6 @@ if (watch_mode) {
         setUpWebSocket()
     }
     // for column one based error message
-    process.env.BS_VSCODE = '1'
     var cwd = process.cwd()
     var lockFileName = path.join(cwd, ".bsb.lock")
     /**
