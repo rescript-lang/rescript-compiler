@@ -880,7 +880,7 @@ let handle_attributes
                 ty = new_ty;
                 attr =  [];
                 loc = obj.ptyp_loc} : Ast_compatible.param_type)],
-                0)           
+                1)           
           | {val_send_pipe = None ; _ } -> [],[], 0)
         (fun  param_type (arg_type_specs, arg_types, i) ->
            let arg_label = Ast_compatible.convert param_type.label in
