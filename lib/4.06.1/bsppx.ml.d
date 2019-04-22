@@ -3,6 +3,8 @@
 ../ocaml/parsing/ast_helper.mli
 ../ocaml/parsing/ast_iterator.ml
 ../ocaml/parsing/ast_iterator.mli
+../ocaml/parsing/ast_mapper.ml
+../ocaml/parsing/ast_mapper.mli
 ../ocaml/parsing/asttypes.mli
 ../ocaml/parsing/docstrings.ml
 ../ocaml/parsing/docstrings.mli
@@ -152,6 +154,8 @@
 ./syntax/bs_ast_invariant.mli
 ./syntax/bs_ast_mapper.ml
 ./syntax/bs_ast_mapper.mli
+./syntax/bs_builtin_ppx.ml
+./syntax/bs_builtin_ppx.mli
 ./syntax/bs_syntaxerr.ml
 ./syntax/bs_syntaxerr.mli
 ./syntax/external_arg_spec.ml
@@ -161,4 +165,5 @@
 ./syntax/ppx_driver.ml
 ./syntax/ppx_driver.mli
 ./syntax/ppx_entry.ml
-./syntax/ppx_entry.mli
+./syntax/reactjs_jsx_ppx_v2.ml
+./syntax/reactjs_jsx_ppx_v3.ml

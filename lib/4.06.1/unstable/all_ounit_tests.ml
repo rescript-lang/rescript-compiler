@@ -8805,6 +8805,8 @@ val debug : bool ref
 val cmi_only  : bool ref
 val force_cmi : bool ref 
 val force_cmj : bool ref
+
+val jsx_version : int ref
 end = struct
 #1 "js_config.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -8920,6 +8922,8 @@ let debug = ref false
 let cmi_only = ref false  
 let force_cmi = ref false
 let force_cmj = ref false
+
+let jsx_version = ref (-1)
 end
 module Ml_binary : sig 
 #1 "ml_binary.mli"
@@ -17988,8 +17992,15 @@ val rec_type_sig:
   type_declaration list -> 
   signature_item
 
+type param_type = 
+  {label : arg_label ;
+   ty :  Parsetree.core_type ; 
+   attr :Parsetree.attributes;
+   loc : loc
+  }
+
 val mk_fn_type:  
-  (arg_label * core_type * attributes * loc) list -> 
+  param_type list -> 
   core_type -> 
   core_type
 
@@ -18246,15 +18257,21 @@ let const_exp_string_list_as_array xs =
   Ast_helper.Exp.array 
   (Ext_list.map xs (fun x -> const_exp_string x ) )  
 
+type param_type = 
+  {label : arg_label ;
+   ty :  Parsetree.core_type ; 
+   attr :Parsetree.attributes;
+   loc : loc
+  }
 
  let mk_fn_type 
-  (new_arg_types_ty : (arg_label * core_type * attributes * loc) list)
+  (new_arg_types_ty : param_type list)
   (result : core_type) : core_type = 
-  Ext_list.fold_right new_arg_types_ty result (fun (label, ty, attrs, loc) acc -> 
+  Ext_list.fold_right new_arg_types_ty result (fun {label; ty; attr ; loc} acc -> 
     {
       ptyp_desc = Ptyp_arrow(label,ty,acc);
       ptyp_loc = loc; 
-      ptyp_attributes = attrs
+      ptyp_attributes = attr
     }
   )
 
