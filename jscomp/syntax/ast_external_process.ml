@@ -516,6 +516,320 @@ let process_obj
   | _ -> Location.raise_errorf ~loc "Attribute found that conflicts with [@@bs.obj]"
 
 
+let external_desc_of_non_obj 
+    (loc : Location.t) 
+    (st : external_desc) 
+    (prim_name : string) 
+    (prim_name_or_pval_prim : bundle_source)
+    (arg_type_specs_length : int) 
+    arg_types_ty 
+    (arg_type_specs : External_arg_spec.t list) : External_ffi_types.external_spec =
+  match st with
+  | {set_index = true;
+     val_name = `Nm_na;
+     external_module_name = None ;
+     module_as_val = None;
+     val_send = `Nm_na;
+     val_send_pipe = None;
+     splice = false;
+     scopes ;
+     get_index = false;
+     new_name = `Nm_na;
+     call_name = `Nm_na;
+     set_name = `Nm_na ;
+     get_name = `Nm_na ;
+
+     return_wrapper = _;
+     mk_obj = _ ;
+
+    }
+    ->
+    if String.length prim_name <> 0 then
+      Location.raise_errorf ~loc "[@@bs.set_index] expect external names to be empty string";
+    if arg_type_specs_length = 3 then
+      Js_set_index {js_set_index_scopes = scopes}
+    else
+      Location.raise_errorf ~loc "Ill defined attribute [@@bs.set_index](arity of 3)"
+  | {set_index = true; _} ->
+    Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.set_index]")
+  | {get_index = true;
+     val_name = `Nm_na;
+     external_module_name = None ;
+     module_as_val = None;
+     val_send = `Nm_na;
+     val_send_pipe = None;
+
+     splice = false;
+     scopes ;
+     new_name = `Nm_na;
+     call_name = `Nm_na;
+     set_name = `Nm_na ;
+     get_name = `Nm_na ;
+     set_index = false;
+     mk_obj;
+     return_wrapper ;
+    } ->
+    if String.length prim_name <> 0 then
+      Location.raise_errorf ~loc "[@@bs.get_index] expect external names to be empty string";
+    if arg_type_specs_length = 2 then
+      Js_get_index {js_get_index_scopes = scopes}
+    else Location.raise_errorf ~loc
+        "Ill defined attribute [@@bs.get_index] (arity expected 2 : while %d)" arg_type_specs_length
+
+  | {get_index = true; _} ->
+    Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.get_index]")
+  | {module_as_val = Some external_module_name ;
+
+     get_index = false;
+     val_name ;
+     new_name ;
+
+     external_module_name = None ;
+     val_send = `Nm_na;
+     val_send_pipe = None;
+     scopes = []; (* module as var does not need scopes *)
+     splice;
+     call_name = `Nm_na;
+     set_name = `Nm_na ;
+     get_name = `Nm_na ;
+     set_index = false;
+     return_wrapper = _;
+     mk_obj = _ ;
+    } ->
+    begin match arg_types_ty, new_name, val_name  with
+      | [], `Nm_na,  _ -> Js_module_as_var external_module_name
+      | _, `Nm_na, _ -> Js_module_as_fn {splice; external_module_name }
+      | _, #bundle_source, #bundle_source ->
+        Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.module].")
+
+      | _, (`Nm_val _ | `Nm_external _) , `Nm_na
+        -> Js_module_as_class external_module_name
+      | _, `Nm_payload _ , `Nm_na
+        ->
+        Location.raise_errorf ~loc
+          "Incorrect FFI attribute found: (bs.new should not carry a payload here)"
+    end
+  | {module_as_val = Some x; _} ->
+    Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.module].")
+  | {call_name = (`Nm_val name | `Nm_external name | `Nm_payload name) ;
+     splice;
+     scopes ;
+     external_module_name;
+
+     val_name = `Nm_na ;
+     module_as_val = None;
+     val_send = `Nm_na ;
+     val_send_pipe = None;
+
+     set_index = false;
+     get_index = false;
+     new_name = `Nm_na;
+     set_name = `Nm_na ;
+     get_name = `Nm_na ;
+     mk_obj = _ ;
+     return_wrapper = _ ;
+    } ->
+    Js_call {splice; name; external_module_name; scopes }
+  | {call_name = #bundle_source ; _ }
+    ->
+    Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.val]")
+  | {val_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
+     external_module_name;
+
+     call_name = `Nm_na ;
+     module_as_val = None;
+     val_send = `Nm_na ;
+     val_send_pipe = None;
+     set_index = false;
+     get_index = false;
+     new_name = `Nm_na;
+     set_name = `Nm_na ;
+     get_name = `Nm_na;
+     mk_obj = _;
+     return_wrapper = _;
+     splice = false ;
+     scopes ;
+    }
+    -> (* 
+    if no_arguments -->
+          {[
+            external ff : int = "" [@@bs.val]
+          ]}
+       *)
+    Js_var { name; external_module_name; scopes}
+  | {val_name = #bundle_source ; _ }
+    ->
+    Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.val]")
+
+  | {splice ;
+     scopes ;
+     external_module_name = (Some _ as external_module_name);
+     val_name = `Nm_na ;
+     call_name = `Nm_na ;
+     module_as_val = None;
+     val_send = `Nm_na ;
+     val_send_pipe = None;
+     set_index = false;
+     get_index = false;
+     new_name = `Nm_na;
+     set_name = `Nm_na ;
+     get_name = `Nm_na ;
+     mk_obj = _ ;
+     return_wrapper= _ ;
+    }
+    ->
+    let name = string_of_bundle_source prim_name_or_pval_prim in
+    if arg_type_specs_length  = 0 then
+      (*
+         {[
+           external ff : int = "" [@@bs.module "xx"]
+         ]}
+      *)
+      Js_var { name; external_module_name; scopes}
+    else  Js_call {splice; name; external_module_name; scopes}
+  | {val_send = (`Nm_val name | `Nm_external name | `Nm_payload name);
+     splice;
+     scopes;
+     val_send_pipe = None;
+     val_name = `Nm_na  ;
+     call_name = `Nm_na ;
+     module_as_val = None;
+     set_index = false;
+     get_index = false;
+     new_name = `Nm_na;
+     set_name = `Nm_na ;
+     get_name = `Nm_na ;
+     external_module_name = None ;
+     mk_obj = _ ;
+     return_wrapper = _ ;
+    } ->
+    (* PR #2162 - since when we assemble arguments the first argument in
+       [@@bs.send] is ignored
+    *)
+    begin match arg_type_specs with
+      | [] ->
+        Location.raise_errorf
+          ~loc "Ill defined attribute [@@bs.send] (the external needs to be a regular function call with at least one argument)"
+      |  {arg_type = Arg_cst _ ; arg_label = _} :: _
+        ->
+        Location.raise_errorf
+          ~loc "Ill defined attribute [@@bs.send] (first argument can't be const)"
+      | _ :: _  ->
+        Js_send {splice ; name; js_send_scopes = scopes ;  pipe = false}
+    end
+  | {val_send = #bundle_source; _ }
+    -> Location.raise_errorf ~loc "You used a FFI attribute that can't be used with [@@bs.send]"
+  | {val_send_pipe = Some typ;
+     (* splice = (false as splice); *)
+     val_send = `Nm_na;
+     val_name = `Nm_na  ;
+     call_name = `Nm_na ;
+     module_as_val = None;
+     set_index = false;
+     get_index = false;
+     new_name = `Nm_na;
+     set_name = `Nm_na ;
+     get_name = `Nm_na ;
+     external_module_name = None ;
+     mk_obj = _;
+     return_wrapper = _;
+     scopes;
+     splice ;
+    } ->
+    (** can be one argument *)
+    Js_send {splice  ;
+             name = string_of_bundle_source prim_name_or_pval_prim;
+             js_send_scopes = scopes;
+             pipe = true}
+
+  | {val_send_pipe = Some _ ; _}
+    -> Location.raise_errorf ~loc "conflict attributes found with [@@bs.send.pipe]"
+
+  | {new_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
+     external_module_name;
+
+     val_name = `Nm_na  ;
+     call_name = `Nm_na ;
+     module_as_val = None;
+     set_index = false;
+     get_index = false;
+     val_send = `Nm_na ;
+     val_send_pipe = None;
+     set_name = `Nm_na ;
+     get_name = `Nm_na ;
+     splice = false;
+     scopes;
+     mk_obj = _ ;
+     return_wrapper = _ ;
+    }
+    -> Js_new {name; external_module_name;  scopes}
+  | {new_name = #bundle_source ; _ } ->
+    Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.new]")
+  | {set_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
+     val_name = `Nm_na  ;
+     call_name = `Nm_na ;
+     module_as_val = None;
+     set_index = false;
+     get_index = false;
+     val_send = `Nm_na ;
+     val_send_pipe = None;
+     new_name = `Nm_na ;
+     get_name = `Nm_na ;
+     external_module_name = None;
+     splice = false;
+     mk_obj = _ ;
+     return_wrapper = _;
+     scopes ;
+    }
+    ->
+    if arg_type_specs_length = 2 then
+      Js_set { js_set_scopes = scopes ; js_set_name = name}
+    else  Location.raise_errorf ~loc "Ill defined attribute [@@bs.set] (two args required)"
+  | {set_name = #bundle_source; _}
+    -> Location.raise_errorf ~loc "conflict attributes found with [@@bs.set]"
+  | {get_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
+
+     val_name = `Nm_na  ;
+     call_name = `Nm_na ;
+     module_as_val = None;
+     set_index = false;
+     get_index = false;
+     val_send = `Nm_na ;
+     val_send_pipe = None;
+     new_name = `Nm_na ;
+     set_name = `Nm_na ;
+     external_module_name = None;
+     splice = false ;
+     mk_obj = _;
+     return_wrapper = _;
+     scopes
+    }
+    ->
+    if arg_type_specs_length = 1 then
+      Js_get { js_get_name = name; js_get_scopes = scopes }
+    else
+      Location.raise_errorf ~loc "Ill defined attribute [@@bs.get] (only one argument)"
+  | {get_name = #bundle_source; _}
+    -> Location.raise_errorf ~loc "Attribute found that conflicts with [@@bs.get]"
+
+  | {get_name = `Nm_na;
+     val_name = `Nm_na  ;
+     call_name = `Nm_na ;
+     module_as_val = None;
+     set_index = false;
+     get_index = false;
+     val_send = `Nm_na ;
+     val_send_pipe = None;
+     new_name = `Nm_na ;
+     set_name = `Nm_na ;
+     external_module_name = None;
+     splice = _ ;
+     scopes = _;
+     mk_obj = _;
+     return_wrapper = _;
+
+    }
+    ->  Location.raise_errorf ~loc "Could not infer which FFI category it belongs to, maybe you forgot [%@%@bs.val]? "  
 
 (** Note that the passed [type_annotation] is already processed by visitor pattern before*)
 let handle_attributes
@@ -618,352 +932,22 @@ let handle_attributes
            )
         )  in
 
-    let ffi : External_ffi_types.external_spec  = match st with
-      | {set_index = true;
+    let ffi : External_ffi_types.external_spec  = 
+      external_desc_of_non_obj 
+        loc st prim_name prim_name_or_pval_prim arg_type_specs_length 
+        arg_types_ty arg_type_specs in 
+    let relative = External_ffi_types.check_ffi ~loc ffi in 
+    (* result type can not be labeled *)
+    (* currently we don't process attributes of
+       return type, in the future we may  *)
+    let return_wrapper : External_ffi_types.return_wrapper =
+      check_return_wrapper loc st.return_wrapper result_type
+    in
+    Ast_compatible.mk_fn_type new_arg_types_ty result_type,  
+    Ffi_bs (arg_type_specs, return_wrapper, ffi),
+    left_attrs,
+    relative 
 
-         val_name = `Nm_na;
-         external_module_name = None ;
-         module_as_val = None;
-         val_send = `Nm_na;
-         val_send_pipe = None;
-         splice = false;
-         scopes ;
-         get_index = false;
-         new_name = `Nm_na;
-         call_name = `Nm_na;
-         set_name = `Nm_na ;
-         get_name = `Nm_na ;
-
-         return_wrapper = _;
-         mk_obj = _ ;
-
-        }
-        ->
-        if String.length prim_name <> 0 then
-          Location.raise_errorf ~loc "[@@bs.set_index] expect external names to be empty string";
-        if arg_type_specs_length = 3 then
-          Js_set_index {js_set_index_scopes = scopes}
-        else
-          Location.raise_errorf ~loc "Ill defined attribute [@@bs.set_index](arity of 3)"
-
-      | {set_index = true; _}
-        ->
-        Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.set_index]")
-
-
-      | {get_index = true;
-
-         val_name = `Nm_na;
-         external_module_name = None ;
-         module_as_val = None;
-         val_send = `Nm_na;
-         val_send_pipe = None;
-
-         splice = false;
-         scopes ;
-         new_name = `Nm_na;
-         call_name = `Nm_na;
-         set_name = `Nm_na ;
-         get_name = `Nm_na ;
-         set_index = false;
-         mk_obj;
-         return_wrapper ;
-        } ->
-        if String.length prim_name <> 0 then
-          Location.raise_errorf ~loc "[@@bs.get_index] expect external names to be empty string";
-        if arg_type_specs_length = 2 then
-          Js_get_index {js_get_index_scopes = scopes}
-        else Location.raise_errorf ~loc
-            "Ill defined attribute [@@bs.get_index] (arity expected 2 : while %d)" arg_type_specs_length
-
-      | {get_index = true; _}
-
-        ->
-        Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.get_index]")
-
-
-
-
-      | {module_as_val = Some external_module_name ;
-
-         get_index = false;
-         val_name ;
-         new_name ;
-
-         external_module_name = None ;
-         val_send = `Nm_na;
-         val_send_pipe = None;
-         scopes = []; (* module as var does not need scopes *)
-         splice;
-         call_name = `Nm_na;
-         set_name = `Nm_na ;
-         get_name = `Nm_na ;
-         set_index = false;
-         return_wrapper = _;
-         mk_obj = _ ;
-        } ->
-        begin match arg_types_ty, new_name, val_name  with
-          | [], `Nm_na,  _ -> Js_module_as_var external_module_name
-          | _, `Nm_na, _ -> Js_module_as_fn {splice; external_module_name }
-          | _, #bundle_source, #bundle_source ->
-            Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.module].")
-
-          | _, (`Nm_val _ | `Nm_external _) , `Nm_na
-            -> Js_module_as_class external_module_name
-          | _, `Nm_payload _ , `Nm_na
-            ->
-            Location.raise_errorf ~loc
-              "Incorrect FFI attribute found: (bs.new should not carry a payload here)"
-        end
-      | {module_as_val = Some x; _}
-        ->
-        Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.module].")
-
-      | {call_name = (`Nm_val name | `Nm_external name | `Nm_payload name) ;
-         splice;
-         scopes ;
-         external_module_name;
-
-         val_name = `Nm_na ;
-         module_as_val = None;
-         val_send = `Nm_na ;
-         val_send_pipe = None;
-
-         set_index = false;
-         get_index = false;
-         new_name = `Nm_na;
-         set_name = `Nm_na ;
-         get_name = `Nm_na ;
-         mk_obj = _ ;
-         return_wrapper = _ ;
-        } ->
-        Js_call {splice; name; external_module_name; scopes }
-      | {call_name = #bundle_source ; _ }
-        ->
-        Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.val]")
-
-
-      | {val_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
-         external_module_name;
-
-         call_name = `Nm_na ;
-         module_as_val = None;
-         val_send = `Nm_na ;
-         val_send_pipe = None;
-         set_index = false;
-         get_index = false;
-         new_name = `Nm_na;
-         set_name = `Nm_na ;
-         get_name = `Nm_na;
-         mk_obj = _;
-         return_wrapper = _;
-         splice = false ;
-         scopes ;
-        }
-        -> (* 
-        if no_arguments -->
-        {[
-        external ff : int = "" [@@bs.val]
-        ]}
-        *)
-        Js_var { name; external_module_name; scopes}
-      | {val_name = #bundle_source ; _ }
-        ->
-        Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.val]")
-
-      | {splice ;
-         scopes ;
-         external_module_name = (Some _ as external_module_name);
-
-         val_name = `Nm_na ;
-         call_name = `Nm_na ;
-         module_as_val = None;
-         val_send = `Nm_na ;
-         val_send_pipe = None;
-         set_index = false;
-         get_index = false;
-         new_name = `Nm_na;
-         set_name = `Nm_na ;
-         get_name = `Nm_na ;
-         mk_obj = _ ;
-         return_wrapper= _ ;
-        }
-        ->
-        let name = string_of_bundle_source prim_name_or_pval_prim in
-        if arg_type_specs_length  = 0 then
-          (*
-          {[
-            external ff : int = "" [@@bs.module "xx"]
-          ]}
-          *)
-          Js_var { name; external_module_name; scopes}
-        else  Js_call {splice; name; external_module_name; scopes}
-      | {val_send = (`Nm_val name | `Nm_external name | `Nm_payload name);
-         splice;
-         scopes;
-         val_send_pipe = None;
-         val_name = `Nm_na  ;
-         call_name = `Nm_na ;
-         module_as_val = None;
-         set_index = false;
-         get_index = false;
-         new_name = `Nm_na;
-         set_name = `Nm_na ;
-         get_name = `Nm_na ;
-         external_module_name = None ;
-         mk_obj = _ ;
-         return_wrapper = _ ;
-        } ->
-
-        (* PR #2162 - since when we assemble arguments the first argument in
-           [@@bs.send] is ignored
-        *)
-        begin match arg_type_specs with
-          | [] ->
-            Location.raise_errorf
-              ~loc "Ill defined attribute [@@bs.send] (the external needs to be a regular function call with at least one argument)"
-          |  {arg_type = Arg_cst _ ; arg_label = _} :: _
-            ->
-            Location.raise_errorf
-              ~loc "Ill defined attribute [@@bs.send] (first argument can't be const)"
-          | _ :: _  ->
-            Js_send {splice ; name; js_send_scopes = scopes ;  pipe = false}
-        end
-
-      | {val_send = #bundle_source; _ }
-        -> Location.raise_errorf ~loc "You used a FFI attribute that can't be used with [@@bs.send]"
-
-      | {val_send_pipe = Some typ;
-         (* splice = (false as splice); *)
-         val_send = `Nm_na;
-         val_name = `Nm_na  ;
-         call_name = `Nm_na ;
-         module_as_val = None;
-         set_index = false;
-         get_index = false;
-         new_name = `Nm_na;
-         set_name = `Nm_na ;
-         get_name = `Nm_na ;
-         external_module_name = None ;
-         mk_obj = _;
-         return_wrapper = _;
-         scopes;
-         splice ;
-        } ->
-        (** can be one argument *)
-        Js_send {splice  ;
-                 name = string_of_bundle_source prim_name_or_pval_prim;
-                 js_send_scopes = scopes;
-                 pipe = true}
-
-      | {val_send_pipe = Some _ ; _}
-        -> Location.raise_errorf ~loc "conflict attributes found with [@@bs.send.pipe]"
-
-      | {new_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
-         external_module_name;
-
-         val_name = `Nm_na  ;
-         call_name = `Nm_na ;
-         module_as_val = None;
-         set_index = false;
-         get_index = false;
-         val_send = `Nm_na ;
-         val_send_pipe = None;
-         set_name = `Nm_na ;
-         get_name = `Nm_na ;
-         splice = false;
-         scopes;
-         mk_obj = _ ;
-         return_wrapper = _ ;
-
-        }
-        -> Js_new {name; external_module_name;  scopes}
-      | {new_name = #bundle_source ; _ }
-        ->
-        Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.new]")
-
-
-      | {set_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
-
-         val_name = `Nm_na  ;
-         call_name = `Nm_na ;
-         module_as_val = None;
-         set_index = false;
-         get_index = false;
-         val_send = `Nm_na ;
-         val_send_pipe = None;
-         new_name = `Nm_na ;
-         get_name = `Nm_na ;
-         external_module_name = None;
-         splice = false;
-         mk_obj = _ ;
-         return_wrapper = _;
-         scopes ;
-        }
-        ->
-        if arg_type_specs_length = 2 then
-          Js_set { js_set_scopes = scopes ; js_set_name = name}
-        else  Location.raise_errorf ~loc "Ill defined attribute [@@bs.set] (two args required)"
-
-      | {set_name = #bundle_source; _}
-        -> Location.raise_errorf ~loc "conflict attributes found with [@@bs.set]"
-
-      | {get_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
-
-         val_name = `Nm_na  ;
-         call_name = `Nm_na ;
-         module_as_val = None;
-         set_index = false;
-         get_index = false;
-         val_send = `Nm_na ;
-         val_send_pipe = None;
-         new_name = `Nm_na ;
-         set_name = `Nm_na ;
-         external_module_name = None;
-         splice = false ;
-         mk_obj = _;
-         return_wrapper = _;
-         scopes
-        }
-        ->
-        if arg_type_specs_length = 1 then
-          Js_get { js_get_name = name; js_get_scopes = scopes }
-        else
-          Location.raise_errorf ~loc "Ill defined attribute [@@bs.get] (only one argument)"
-      | {get_name = #bundle_source; _}
-        -> Location.raise_errorf ~loc "Attribute found that conflicts with [@@bs.get]"
-
-      | {get_name = `Nm_na;
-         val_name = `Nm_na  ;
-         call_name = `Nm_na ;
-         module_as_val = None;
-         set_index = false;
-         get_index = false;
-         val_send = `Nm_na ;
-         val_send_pipe = None;
-         new_name = `Nm_na ;
-         set_name = `Nm_na ;
-         external_module_name = None;
-         splice = _ ;
-         scopes = _;
-         mk_obj = _;
-         return_wrapper = _;
-
-        }
-        ->  Location.raise_errorf ~loc "Could not infer which FFI category it belongs to, maybe you forgot [%@%@bs.val]? "  in
-    begin
-      let relative = External_ffi_types.check_ffi ~loc ffi in 
-      (* result type can not be labeled *)
-      (* currently we don't process attributes of
-         return type, in the future we may  *)
-      let return_wrapper : External_ffi_types.return_wrapper =
-        check_return_wrapper loc st.return_wrapper result_type
-      in
-      Ast_compatible.mk_fn_type new_arg_types_ty result_type,  
-      Ffi_bs (arg_type_specs,return_wrapper ,  ffi),
-      left_attrs,
-      relative 
-    end
 
 
 let handle_attributes_as_string
