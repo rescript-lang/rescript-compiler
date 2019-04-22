@@ -17589,25 +17589,25 @@ let spec_of_ptyp nolabel (ptyp : Parsetree.core_type) =
     end
 (* is_optional = false 
 *)
-let refine_arg_type ~(nolabel:bool)  
-      (ptyp : Ast_core_type.t) : Ast_core_type.t * External_arg_spec.attr = 
+let refine_arg_type ~(nolabel:bool) (ptyp : Ast_core_type.t) 
+  : Ast_core_type.t * External_arg_spec.attr = 
   if Ast_core_type.is_any ptyp then (* (_[@bs.as ])*)
-      let ptyp_attrs = ptyp.ptyp_attributes in
-      let result = Ast_attributes.iter_process_bs_string_or_int_as ptyp_attrs in
-      (* when ppx start dropping attributes
-        we should warn, there is a trade off whether
-        we should warn dropped non bs attribute or not
-      *)
-      Bs_ast_invariant.warn_discarded_unused_attributes ptyp_attrs;
-      match result with
-      |  None ->
-        Bs_syntaxerr.err ptyp.ptyp_loc Invalid_underscore_type_in_external
-      | Some (`Int i) ->
-        Ast_literal.type_int ~loc:ptyp.ptyp_loc (), Arg_cst(External_arg_spec.cst_int i)
-      | Some (`Str i)->
-        Ast_literal.type_string ~loc:ptyp.ptyp_loc (), Arg_cst (External_arg_spec.cst_string i)
-      | Some (`Json_str s) ->
-        Ast_literal.type_string ~loc:ptyp.ptyp_loc (), Arg_cst (External_arg_spec.cst_json ptyp.ptyp_loc s)
+    let ptyp_attrs = ptyp.ptyp_attributes in
+    let result = Ast_attributes.iter_process_bs_string_or_int_as ptyp_attrs in
+    (* when ppx start dropping attributes
+       we should warn, there is a trade off whether
+       we should warn dropped non bs attribute or not
+    *)
+    Bs_ast_invariant.warn_discarded_unused_attributes ptyp_attrs;
+    match result with
+    |  None ->
+      Bs_syntaxerr.err ptyp.ptyp_loc Invalid_underscore_type_in_external
+    | Some (`Int i) ->
+      Ast_literal.type_int ~loc:ptyp.ptyp_loc (), Arg_cst(External_arg_spec.cst_int i)
+    | Some (`Str i)->
+      Ast_literal.type_string ~loc:ptyp.ptyp_loc (), Arg_cst (External_arg_spec.cst_string i)
+    | Some (`Json_str s) ->
+      Ast_literal.type_string ~loc:ptyp.ptyp_loc (), Arg_cst (External_arg_spec.cst_json ptyp.ptyp_loc s)
   else (* ([`a|`b] [@bs.string]) *)
     ptyp, spec_of_ptyp nolabel ptyp   
 
@@ -17764,7 +17764,7 @@ let parse_external_attributes
               if no_arguments then
                 {st with val_name = name_from_payload_or_prim ~loc payload}
               else
-                {st with call_name = name_from_payload_or_prim ~loc  payload}
+                {st with call_name = name_from_payload_or_prim ~loc payload}
 
             | "bs.module" ->
               begin match Ast_payload.assert_strings loc payload with
@@ -18318,7 +18318,7 @@ let handle_attributes
     (pval_prim : string )
     (type_annotation : Parsetree.core_type)
     (prim_attributes : Ast_attributes.t) (prim_name : string)
-    : Parsetree.core_type *  External_ffi_types.t * Parsetree.attributes * bool
+  : Parsetree.core_type *  External_ffi_types.t * Parsetree.attributes * bool
   =
   (** sanity check here
       {[ int -> int -> (int -> int -> int [@bs.uncurry])]}
@@ -18326,33 +18326,29 @@ let handle_attributes
   *)
   if has_bs_uncurry type_annotation.ptyp_attributes then
     Location.raise_errorf
-      ~loc "[@@bs.uncurry] can not be applied to the whole definition"
-  ;
-
+      ~loc "[@@bs.uncurry] can not be applied to the whole definition";
   let prim_name_or_pval_prim =
     if String.length prim_name = 0 then  `Nm_val pval_prim
-    else  `Nm_external prim_name  (* need check name *)
-  in
+    else  `Nm_external prim_name  (* need check name *) in
   let result_type, arg_types_ty =
     (* Note this assumes external type is syntatic (no abstraction)*)
     Ast_core_type.list_of_arrow type_annotation in
   if has_bs_uncurry result_type.ptyp_attributes then
-    begin
-      Location.raise_errorf
-        ~loc:result_type.ptyp_loc
-        "[@@bs.uncurry] can not be applied to tailed position"
-    end ;
-  let left_attrs, st =
-    parse_external_attributes
-      (arg_types_ty = [])
+    Location.raise_errorf
+      ~loc:result_type.ptyp_loc
+      "[@@bs.uncurry] can not be applied to tailed position";
+  let no_arguments = arg_types_ty = [] in  
+  let unused_attrs, external_desc =
+    parse_external_attributes no_arguments  
       prim_name_or_pval_prim pval_prim prim_attributes in
-  if st.mk_obj then
-    let new_type, spec = process_obj loc st prim_name arg_types_ty result_type in 
-    new_type, spec, left_attrs, false
+  if external_desc.mk_obj then
+    (* warn unused attributes here ? *)
+    let new_type, spec = process_obj loc external_desc prim_name arg_types_ty result_type in 
+    new_type, spec, unused_attrs, false
   else
-    let splice = st.splice in
+    let splice = external_desc.splice in
     let arg_type_specs, new_arg_types_ty, arg_type_specs_length   =
-      Ext_list.fold_right arg_types_ty (match st with
+      Ext_list.fold_right arg_types_ty (match external_desc with
           | {val_send_pipe = Some obj; _ } ->
             let new_ty, arg_type = refine_arg_type ~nolabel:true obj in
             (match arg_type with
@@ -18360,13 +18356,12 @@ let handle_attributes
                Location.raise_errorf ~loc:obj.ptyp_loc "[@bs.as] is not supported in bs.send type "
              | _ ->
                (* more error checking *)
-               [External_arg_spec.empty_kind arg_type]
-               ,
+               [External_arg_spec.empty_kind arg_type],
                [({label = Ast_compatible.no_label;
                 ty = new_ty;
                 attr =  [];
-                loc = obj.ptyp_loc} : Ast_compatible.param_type)]
-               ,0)           
+                loc = obj.ptyp_loc} : Ast_compatible.param_type)],
+                0)           
           | {val_send_pipe = None ; _ } -> [],[], 0)
         (fun  param_type (arg_type_specs, arg_types, i) ->
            let arg_label = Ast_compatible.convert param_type.label in
@@ -18412,21 +18407,18 @@ let handle_attributes
             else i + 1
            )
         )  in
-
     let ffi : External_ffi_types.external_spec  = 
       external_desc_of_non_obj 
-        loc st prim_name prim_name_or_pval_prim arg_type_specs_length 
+        loc external_desc prim_name prim_name_or_pval_prim arg_type_specs_length 
         arg_types_ty arg_type_specs in 
     let relative = External_ffi_types.check_ffi ~loc ffi in 
     (* result type can not be labeled *)
     (* currently we don't process attributes of
        return type, in the future we may  *)
-    let return_wrapper : External_ffi_types.return_wrapper =
-      check_return_wrapper loc st.return_wrapper result_type
-    in
+    let return_wrapper = check_return_wrapper loc external_desc.return_wrapper result_type in
     Ast_compatible.mk_fn_type new_arg_types_ty result_type,  
     Ffi_bs (arg_type_specs, return_wrapper, ffi),
-    left_attrs,
+    unused_attrs,
     relative 
 
 
