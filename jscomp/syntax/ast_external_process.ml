@@ -511,7 +511,6 @@ let process_obj
         fst (refine_arg_type ~nolabel:true result_type) (* result type can not be labeled *)
     in
     Ast_compatible.mk_fn_type new_arg_types_ty result,
-    prim_name,
     External_ffi_types.Ffi_obj_create arg_kinds,
     left_attrs, 
     false 
@@ -527,6 +526,7 @@ let handle_attributes
     (pval_prim : string )
     (type_annotation : Parsetree.core_type)
     (prim_attributes : Ast_attributes.t) (prim_name : string)
+    : Parsetree.core_type *  External_ffi_types.t * Parsetree.attributes * bool
   =
   (** sanity check here
       {[ int -> int -> (int -> int -> int [@bs.uncurry])]}
@@ -964,18 +964,18 @@ let handle_attributes
         check_return_wrapper loc st.return_wrapper new_result_type
       in
       Ast_compatible.mk_fn_type new_arg_types_ty new_result_type,  
-      prim_name,
       Ffi_bs (arg_type_specs,return_wrapper ,  ffi),
       left_attrs,
       relative 
     end
 
+
 let handle_attributes_as_string
     pval_loc
     pval_prim
-    (typ : Ast_core_type.t) attrs v : response =
-  let pval_type, prim_name, ffi, processed_attrs, relative  =
-    handle_attributes pval_loc pval_prim typ attrs v  in
+    (typ : Ast_core_type.t) attrs prim_name : response =
+  let pval_type, ffi, processed_attrs, relative  =
+    handle_attributes pval_loc pval_prim typ attrs prim_name  in
   { pval_type;
     pval_prim = [prim_name; External_ffi_types.to_string ffi];
     pval_attributes = processed_attrs;
