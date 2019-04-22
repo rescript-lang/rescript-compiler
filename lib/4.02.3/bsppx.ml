@@ -17862,12 +17862,13 @@ type response = {
 
 
 let process_obj 
-  (st : external_desc) 
-  (prim_name : string) 
-  loc 
-  (arg_types_ty : Ast_compatible.param_type list)
-  (result_type : Ast_core_type.t)
-  (left_attrs : Ast_attributes.t) = 
+    (loc : Location.t)
+    (st : external_desc) 
+    (prim_name : string)   
+    (arg_types_ty : Ast_compatible.param_type list)
+    (result_type : Ast_core_type.t)
+  : Parsetree.core_type *  External_ffi_types.t 
+  = 
   match st with
   | {
     val_name = `Nm_na;
@@ -17890,7 +17891,7 @@ let process_obj
   } ->
     if String.length prim_name <> 0 then
       Location.raise_errorf ~loc "[@@bs.obj] expect external names to be empty string";
-    let arg_kinds, (new_arg_types_ty : Ast_compatible.param_type list), result_types =
+    let arg_kinds, new_arg_types_ty, result_types =
       Ext_list.fold_right arg_types_ty ( [], [], [])
         (fun param_type ( arg_labels, (arg_types : Ast_compatible.param_type list), result_types) ->
            let arg_label = Ast_compatible.convert param_type.label in
@@ -17980,23 +17981,19 @@ let process_obj
                      "bs.obj label %s does not support [@bs.unwrap] arguments" name
                end
            in
-           (
-             new_arg_label::arg_labels,
-             new_arg_types,
-             output_tys)) in
+           new_arg_label::arg_labels,
+           new_arg_types,
+           output_tys) in
 
     let result =
       if Ast_core_type.is_any  result_type then
         Ast_core_type.make_obj ~loc result_types
       else
-        fst (refine_arg_type ~nolabel:true result_type) (* result type can not be labeled *)
+        fst (refine_arg_type ~nolabel:true result_type) 
+        (* result type can not be labeled *)
     in
     Ast_compatible.mk_fn_type new_arg_types_ty result,
-    External_ffi_types.Ffi_obj_create arg_kinds,
-    left_attrs, 
-    false 
-
-
+    External_ffi_types.Ffi_obj_create arg_kinds
   | _ -> Location.raise_errorf ~loc "Attribute found that conflicts with [@@bs.obj]"
 
 
@@ -18036,10 +18033,11 @@ let handle_attributes
       (arg_types_ty = [])
       prim_name_or_pval_prim pval_prim prim_attributes in
   if st.mk_obj then
-    process_obj st prim_name loc arg_types_ty result_type left_attrs
+    let new_type, spec = process_obj loc st prim_name arg_types_ty result_type in 
+    new_type, spec, left_attrs, false
   else
     let splice = st.splice in
-    let arg_type_specs, (new_arg_types_ty : Ast_compatible.param_type list), arg_type_specs_length   =
+    let arg_type_specs, new_arg_types_ty, arg_type_specs_length   =
       Ext_list.fold_right arg_types_ty (match st with
           | {val_send_pipe = Some obj; _ } ->
             let new_ty, arg_type = refine_arg_type ~nolabel:true obj in
@@ -18439,12 +18437,10 @@ let handle_attributes
       (* result type can not be labeled *)
       (* currently we don't process attributes of
          return type, in the future we may  *)
-      let  new_result_type  =  result_type in
-      (* get_arg_type ~nolabel:true false result_type in *)
       let return_wrapper : External_ffi_types.return_wrapper =
-        check_return_wrapper loc st.return_wrapper new_result_type
+        check_return_wrapper loc st.return_wrapper result_type
       in
-      Ast_compatible.mk_fn_type new_arg_types_ty new_result_type,  
+      Ast_compatible.mk_fn_type new_arg_types_ty result_type,  
       Ffi_bs (arg_type_specs,return_wrapper ,  ffi),
       left_attrs,
       relative 
