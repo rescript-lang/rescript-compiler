@@ -36311,36 +36311,34 @@ let handle_attributes_as_string
     pval_loc
     pval_prim
     (typ : Ast_core_type.t) attrs prim_name : response =
-  let pval_type, ffi, processed_attrs, relative  =
+  let pval_type, ffi, pval_attributes, no_inline_cross_module  =
     handle_attributes pval_loc pval_prim typ attrs prim_name  in
   { pval_type;
     pval_prim = [prim_name; External_ffi_types.to_string ffi];
-    pval_attributes = processed_attrs;
-    no_inline_cross_module = relative
+    pval_attributes;
+    no_inline_cross_module 
   }
 
 
 
-let pval_prim_of_labels (labels : string Asttypes.loc list)
-   =
+let pval_prim_of_labels (labels : string Asttypes.loc list) =
   let arg_kinds =
-    Ext_list.fold_right labels [] 
+    Ext_list.fold_right labels ([] : External_arg_spec.t list ) 
       (fun {loc ; txt } arg_kinds
         ->
           let arg_label =
             External_arg_spec.label
               (Lam_methname.translate ~loc txt) None in
-          {External_arg_spec.arg_type = Nothing ;
+          {arg_type = Nothing ;
            arg_label  } :: arg_kinds
-      )
-      in
+      ) in
   let encoding =
     External_ffi_types.to_string (Ffi_obj_create arg_kinds) in
   [""; encoding]
 
 let pval_prim_of_option_labels
-(labels : (bool * string Asttypes.loc) list)
-(ends_with_unit : bool)
+    (labels : (bool * string Asttypes.loc) list)
+    (ends_with_unit : bool)
   =
   let arg_kinds =
     Ext_list.fold_right labels
@@ -36349,16 +36347,14 @@ let pval_prim_of_option_labels
        else [])
       (fun (is_option,{loc ; txt }) arg_kinds
         ->
-          let label_name = (Lam_methname.translate ~loc txt) in
+          let label_name = Lam_methname.translate ~loc txt in
           let arg_label =
             if is_option then
               External_arg_spec.optional label_name
             else External_arg_spec.label label_name None
           in
-          {External_arg_spec.arg_type = Nothing ;
-           arg_label  } :: arg_kinds
-      )      
-  in
+          {arg_type = Nothing ;
+           arg_label  } :: arg_kinds) in
   let encoding =
     External_ffi_types.to_string (Ffi_obj_create arg_kinds) in
   [""; encoding]
