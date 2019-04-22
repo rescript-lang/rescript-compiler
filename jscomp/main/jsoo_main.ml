@@ -75,7 +75,7 @@ let error_of_exn e =
   Location.error_of_exn e
 #end  
 
-let implementation ~use_super_errors ~use_v2_ppx prefix impl str  : Js.Unsafe.obj =
+let implementation ~use_super_errors ?react_ppx_version prefix impl str  : Js.Unsafe.obj =
   let modulename = "Test" in
   (* let env = !Toploop.toplevel_env in *)
   (* Compmisc.init_path false; *)
@@ -97,9 +97,7 @@ let implementation ~use_super_errors ~use_v2_ppx prefix impl str  : Js.Unsafe.ob
     let ast = impl 
       (Lexing.from_string
         (if prefix then "[@@@bs.config{no_export}]\n#1 \"repl.ml\"\n"  ^ str else str )) in 
-    let ast = if use_v2_ppx then
-      Reactjs_jsx_ppx_v3.rewrite_implementation ~version:2 ast
-      else Reactjs_jsx_ppx_v3.rewrite_implementation ast in 
+    let ast = Reactjs_jsx_ppx_v3.rewrite_implementation ?version:react_ppx_version ast in 
     let ast = Bs_builtin_ppx.rewrite_implementation ast in 
     let typed_tree = 
       let (a,b,c,signature) = Typemod.type_implementation_more modulename modulename modulename env ast in
@@ -153,12 +151,12 @@ let implementation ~use_super_errors ~use_v2_ppx prefix impl str  : Js.Unsafe.ob
       end
 
 
-let compile impl ~use_super_errors ~use_v2_ppx =
-    implementation ~use_super_errors ~use_v2_ppx false impl
+let compile impl ~use_super_errors ?react_ppx_version =
+    implementation ~use_super_errors ?react_ppx_version false impl
 
 (** TODO: add `[@@bs.config{no_export}]\n# 1 "repl.ml"`*)
-let shake_compile impl ~use_super_errors ~use_v2_ppx =
-   implementation ~use_super_errors ~use_v2_ppx true impl
+let shake_compile impl ~use_super_errors ?react_ppx_version =
+   implementation ~use_super_errors ?react_ppx_version true impl
 
 
 
@@ -190,26 +188,31 @@ let make_compiler name impl =
                     inject @@
                     Js.wrap_meth_callback
                       (fun _ code ->
-                         (compile impl ~use_super_errors:false ~use_v2_ppx:false (Js.to_string code)));
+                         (compile impl ~use_super_errors:false (Js.to_string code)));
                     "shake_compile",
                     inject @@
                     Js.wrap_meth_callback
                       (fun _ code ->
-                         (shake_compile impl ~use_super_errors:false ~use_v2_ppx:false (Js.to_string code)));
+                         (shake_compile impl ~use_super_errors:false (Js.to_string code)));
                     "compile_super_errors",
                     inject @@
                     Js.wrap_meth_callback
                       (fun _ code ->
-                         (compile impl ~use_super_errors:true ~use_v2_ppx:false (Js.to_string code)));
+                         (compile impl ~use_super_errors:true (Js.to_string code)));
                     "compile_super_errors_ppx_v2",
                     inject @@
                     Js.wrap_meth_callback
                       (fun _ code ->
-                         (compile impl ~use_super_errors:true ~use_v2_ppx:true (Js.to_string code)));
+                         (compile impl ~use_super_errors:true ~react_ppx_version:V2 (Js.to_string code)));
+                    "compile_super_errors_ppx_v3",
+                    inject @@
+                    Js.wrap_meth_callback
+                      (fun _ code ->
+                         (compile impl ~use_super_errors:true ~react_ppx_version:V3 (Js.to_string code)));
                     "shake_compile_super_errors",
                     inject @@
                     Js.wrap_meth_callback
-                      (fun _ code -> (shake_compile impl ~use_super_errors:true ~use_v2_ppx:false (Js.to_string code)));
+                      (fun _ code -> (shake_compile impl ~use_super_errors:true (Js.to_string code)));
                     "version", Js.Unsafe.inject (Js.string (Bs_version.version));
                     "load_module",
                     inject @@

@@ -385,8 +385,13 @@ let makeExternalDecl fnName loc namedArgListWithKeyAndRef namedTypeList =
     (List.map pluckLabelDefaultLocType namedArgListWithKeyAndRef)
     (makePropsType ~loc namedTypeList)
 
+type versions =
+  | Unset
+  | V2
+  | V3
+
 (* TODO: some line number might still be wrong *)
-let jsxMapper ?version () =
+let jsxMapper ?(version=Unset) () =
 
   let jsxVersion = ref version in
 
@@ -928,14 +933,13 @@ let jsxMapper ?version () =
         | {loc; txt = Ldot (modulePath, ("createElement" | "make"))} ->
           (match !jsxVersion with
 #ifdef REACT_JS_JSX_V2
-          | None
-          | Some 2 -> transformUppercaseCall modulePath mapper loc attrs callExpression callArguments
+          | Unset
+          | V2 -> transformUppercaseCall modulePath mapper loc attrs callExpression callArguments
 #else
-          | Some 2 -> transformUppercaseCall modulePath mapper loc attrs callExpression callArguments
-          | None
+          | V2 -> transformUppercaseCall modulePath mapper loc attrs callExpression callArguments
+          | Unset
 #endif
-          | Some 3 -> transformUppercaseCall3 modulePath mapper loc attrs callExpression callArguments
-          | Some _ -> raise (Invalid_argument "JSX: the JSX version must be 2 or 3"))
+          | V3 -> transformUppercaseCall3 modulePath mapper loc attrs callExpression callArguments)
 
         (* div(~prop1=foo, ~prop2=bar, ~children=[bla], ()) *)
         (* turn that into
@@ -943,15 +947,13 @@ let jsxMapper ?version () =
         | {loc; txt = Lident id} ->
           (match !jsxVersion with
 #ifdef REACT_JS_JSX_V2
-          | None
-          | Some 2 -> transformLowercaseCall mapper loc attrs callArguments id
+          | Unset
+          | V2 -> transformLowercaseCall mapper loc attrs callArguments id
 #else
-          | Some 2 -> transformLowercaseCall mapper loc attrs callArguments id
-          | None
+          | V2 -> transformLowercaseCall mapper loc attrs callArguments id
+          | Unset
 #endif
-          | Some 3 -> transformLowercaseCall3 mapper loc attrs callArguments id
-          | Some _ -> raise (Invalid_argument "JSX: the JSX version must be 2 or 3"))
-
+          | V3 -> transformLowercaseCall3 mapper loc attrs callArguments id)
         | {txt = Ldot (_, anythingNotCreateElementOrMake)} ->
           raise (
             Invalid_argument
@@ -1011,11 +1013,11 @@ let jsxMapper ?version () =
 #endif
               (match version with
 #if OCAML_VERSION >= (4,3,0)
-              | "2" -> jsxVersion := Some 2
-              | "3" -> jsxVersion := Some 3
+              | "2" -> jsxVersion := V2
+              | "3" -> jsxVersion := V3
 #else
-              | 2 -> jsxVersion := Some 2
-              | 3 -> jsxVersion := Some 3
+              | 2 -> jsxVersion := V2
+              | 3 -> jsxVersion := V3
 #endif
               | _ -> raise (Invalid_argument "JSX: the file-level bs.config's jsx version must be 2 or 3"));
               match recordFieldsWithoutJsx with
