@@ -64,9 +64,11 @@ val is_user_int : t -> bool
 val get_uncurry_arity : t -> [`Arity of int | `Not_function ]
 
 
+
 (** fails when Ptyp_poly *)
 val list_of_arrow :
   t ->
-  t *  (Ast_compatible.arg_label * t * Parsetree.attributes * Location.t) list
+  t *  
+  Ast_compatible.param_type list
 
 val is_arity_one : t -> bool

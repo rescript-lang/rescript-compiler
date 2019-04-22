@@ -25654,160 +25654,6 @@ let process_deferred_actions env =
   output_name := final_output_name;
 
 end
-(** Interface as module  *)
-module Compdynlink
-= struct
-#1 "compdynlink.mli"
-(**************************************************************************)
-(*                                                                        *)
-(*                                 OCaml                                  *)
-(*                                                                        *)
-(*             Xavier Leroy, projet Cristal, INRIA Rocquencourt           *)
-(*                                                                        *)
-(*   Copyright 1996 Institut National de Recherche en Informatique et     *)
-(*     en Automatique.                                                    *)
-(*                                                                        *)
-(*   All rights reserved.  This file is distributed under the terms of    *)
-(*   the GNU Lesser General Public License version 2.1, with the          *)
-(*   special exception on linking described in the file LICENSE.          *)
-(*                                                                        *)
-(**************************************************************************)
-
-(** Dynamic loading of object files. *)
-
-val is_native: bool
-(** [true] if the program is native,
-    [false] if the program is bytecode. *)
-
-(** {1 Dynamic loading of compiled files} *)
-
-val loadfile : string -> unit
-(** In bytecode: load the given bytecode object file ([.cmo] file) or
-    bytecode library file ([.cma] file), and link it with the running
-    program. In native code: load the given OCaml plugin file (usually
-    [.cmxs]), and link it with the running
-    program.
-    All toplevel expressions in the loaded compilation units
-    are evaluated. No facilities are provided to
-    access value names defined by the unit. Therefore, the unit
-    must register itself its entry points with the main program,
-    e.g. by modifying tables of functions. *)
-
-val loadfile_private : string -> unit
-(** Same as [loadfile], except that the compilation units just loaded
-    are hidden (cannot be referenced) from other modules dynamically
-    loaded afterwards. *)
-
-val adapt_filename : string -> string
-(** In bytecode, the identity function. In native code, replace the last
-    extension with [.cmxs]. *)
-
-(** {1 Access control} *)
-
-val allow_only: string list -> unit
-(** [allow_only units] restricts the compilation units that
-    dynamically-linked units can reference: it forbids all references
-    to units other than those named in the list [units]. References
-    to any other compilation unit will cause a [Unavailable_unit]
-    error during [loadfile] or [loadfile_private].
-
-    Initially (or after calling [default_available_units]) all
-    compilation units composing the program currently running are
-    available for reference from dynamically-linked units.
-    [allow_only] can be used to restrict access to a subset of these
-    units, e.g. to the units that compose the API for
-    dynamically-linked code, and prevent access to all other units,
-    e.g. private, internal modules of the running program. If
-    [allow_only] is called several times, access will be restricted to
-    the intersection of the given lists (i.e. a call to [allow_only]
-    can never increase the set of available units). *)
-
-val prohibit: string list -> unit
-(** [prohibit units] prohibits dynamically-linked units from referencing
-    the units named in list [units].  This can be used to prevent
-    access to selected units, e.g. private, internal modules of
-    the running program. *)
-
-val default_available_units: unit -> unit
-(** Reset the set of units that can be referenced from dynamically-linked
-    code to its default value, that is, all units composing the currently
-    running program. *)
-
-val allow_unsafe_modules : bool -> unit
-(** Govern whether unsafe object files are allowed to be
-    dynamically linked. A compilation unit is 'unsafe' if it contains
-    declarations of external functions, which can break type safety.
-    By default, dynamic linking of unsafe object files is
-    not allowed. In native code, this function does nothing; object files
-    with external functions are always allowed to be dynamically linked. *)
-
-(** {1 Deprecated, low-level API for access control} *)
-
-(** @deprecated  The functions [add_interfaces], [add_available_units]
-    and [clear_available_units] should not be used in new programs,
-    since the default initialization of allowed units, along with the
-    [allow_only] and [prohibit] function, provides a better, safer
-    mechanism to control access to program units.  The three functions
-    below are provided for backward compatibility only and are not
-    available in native code. *)
-
-val add_interfaces : string list -> string list -> unit
-(** [add_interfaces units path] grants dynamically-linked object
-    files access to the compilation  units named in list [units].
-    The interfaces ([.cmi] files) for these units are searched in
-    [path] (a list of directory names). *)
-
-val add_available_units : (string * Digest.t) list -> unit
-(** Same as {!Dynlink.add_interfaces}, but instead of searching [.cmi] files
-    to find the unit interfaces, uses the interface digests given
-    for each unit. This way, the [.cmi] interface files need not be
-    available at run-time. The digests can be extracted from [.cmi]
-    files using the [extract_crc] program installed in the
-    OCaml standard library directory. *)
-
-val clear_available_units : unit -> unit
-(** Empty the list of compilation units accessible to dynamically-linked
-    programs. *)
-
-(** {1 Deprecated, initialization} *)
-
-val init : unit -> unit
-(** @deprecated Initialize the [Dynlink] library. This function is called
-    automatically when needed. *)
-
-(** {1 Error reporting} *)
-
-type linking_error =
-    Undefined_global of string
-  | Unavailable_primitive of string
-  | Uninitialized_global of string
-
-type error =
-    Not_a_bytecode_file of string
-  | Inconsistent_import of string
-  | Unavailable_unit of string
-  | Unsafe_file
-  | Linking_error of string * linking_error
-  | Corrupted_interface of string
-  | File_not_found of string
-  | Cannot_open_dll of string
-  | Inconsistent_implementation of string
-
-exception Error of error
-(** Errors in dynamic linking are reported by raising the [Error]
-    exception with a description of the error. *)
-
-val error_message : error -> string
-(** Convert an error description to a printable message. *)
-
-
-(**/**)
-
-(** {1 Internal functions} *)
-
-val digest_interface : string -> string list -> Digest.t
-
-end
 module Compmisc : sig 
 #1 "compmisc.mli"
 (**************************************************************************)
@@ -31500,8 +31346,15 @@ val rec_type_sig:
   type_declaration list -> 
   signature_item
 
+type param_type = 
+  {label : arg_label ;
+   ty :  Parsetree.core_type ; 
+   attr :Parsetree.attributes;
+   loc : loc
+  }
+
 val mk_fn_type:  
-  (arg_label * core_type * attributes * loc) list -> 
+  param_type list -> 
   core_type -> 
   core_type
 
@@ -31758,15 +31611,21 @@ let const_exp_string_list_as_array xs =
   Ast_helper.Exp.array 
   (Ext_list.map xs (fun x -> const_exp_string x ) )  
 
+type param_type = 
+  {label : arg_label ;
+   ty :  Parsetree.core_type ; 
+   attr :Parsetree.attributes;
+   loc : loc
+  }
 
  let mk_fn_type 
-  (new_arg_types_ty : (arg_label * core_type * attributes * loc) list)
+  (new_arg_types_ty : param_type list)
   (result : core_type) : core_type = 
-  Ext_list.fold_right new_arg_types_ty result (fun (label, ty, attrs, loc) acc -> 
+  Ext_list.fold_right new_arg_types_ty result (fun {label; ty; attr ; loc} acc -> 
     {
       ptyp_desc = Ptyp_arrow(label,ty,acc);
       ptyp_loc = loc; 
-      ptyp_attributes = attrs
+      ptyp_attributes = attr
     }
   )
 
@@ -33955,10 +33814,12 @@ val is_user_int : t -> bool
 val get_uncurry_arity : t -> [`Arity of int | `Not_function ]
 
 
+
 (** fails when Ptyp_poly *)
 val list_of_arrow :
   t ->
-  t *  (Ast_compatible.arg_label * t * Parsetree.attributes * Location.t) list
+  t *  
+  Ast_compatible.param_type list
 
 val is_arity_one : t -> bool
 
@@ -34123,11 +33984,20 @@ let get_curry_arity  ty =
 
 let is_arity_one ty = get_curry_arity ty =  1
 
-let list_of_arrow (ty : t) =
+
+let list_of_arrow 
+    (ty : t) : 
+  t * Ast_compatible.param_type list
+  =
   let rec aux (ty : t) acc =
     match ty.ptyp_desc with
     | Ptyp_arrow(label,t1,t2) ->
-      aux t2 ((label,t1,ty.ptyp_attributes,ty.ptyp_loc) ::acc)
+      aux t2 
+        (({label; 
+          ty = t1; 
+          attr = ty.ptyp_attributes;
+          loc = ty.ptyp_loc} : Ast_compatible.param_type) :: acc
+        )
     | Ptyp_poly(_, ty) -> (* should not happen? *)
       Bs_syntaxerr.err ty.ptyp_loc Unhandled_poly_type
     | return_type -> ty, List.rev acc
@@ -35247,6 +35117,8 @@ val debug : bool ref
 val cmi_only  : bool ref
 val force_cmi : bool ref 
 val force_cmj : bool ref
+
+val jsx_version : int ref
 end = struct
 #1 "js_config.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -35362,6 +35234,8 @@ let debug = ref false
 let cmi_only = ref false  
 let force_cmi = ref false
 let force_cmj = ref false
+
+let jsx_version = ref (-1)
 end
 module Bs_warnings : sig 
 #1 "bs_warnings.mli"
@@ -35487,13 +35361,14 @@ let () =
 
 
 let warn_missing_primitive loc txt =      
-  if not @@ !Js_config.no_warn_unimplemented_external then
+  if not !Js_config.no_warn_unimplemented_external && not !Clflags.bs_quiet then
     begin 
       print_string_warning loc ( unimplemented_primitive ^ txt ^ " \n" );
       Format.pp_print_flush warning_formatter ()
     end
 
 let warn_literal_overflow loc = 
+  if not !Clflags.bs_quiet then
   begin 
     print_string_warning loc 
       "Integer literal exceeds the range of representable integers of type int";
@@ -40238,7 +40113,7 @@ type js_send = {
   js_send_scopes : string list;
 } (* we know it is a js send, but what will happen if you pass an ocaml objct *)
 
-type js_global_val = {
+type js_var = {
   name : string ;
   external_module_name : external_module_name option;
   scopes : string list
@@ -40284,7 +40159,7 @@ type js_set_index = {
 
 
 type external_spec  =
-  | Js_global of js_global_val
+  | Js_var of js_var
   | Js_module_as_var of  external_module_name
   | Js_module_as_fn of js_module_as_fn
   | Js_module_as_class of external_module_name
@@ -40389,7 +40264,7 @@ type js_send = {
   js_send_scopes : string list;
 } (* we know it is a js send, but what will happen if you pass an ocaml objct *)
 
-type js_global_val = {
+type js_var = {
   name : string ;
   external_module_name : external_module_name option;
   scopes : string list ;
@@ -40434,7 +40309,7 @@ type arg_label = External_arg_spec.label
 type obj_create = External_arg_spec.t list
 
 type external_spec =
-  | Js_global of js_global_val
+  | Js_var of js_var
   | Js_module_as_var of  external_module_name
   | Js_module_as_fn of js_module_as_fn
   | Js_module_as_class of external_module_name
@@ -40464,7 +40339,7 @@ let name_of_ffi ffi =
   | Js_module_as_var v
     ->
     Printf.sprintf "[@@bs.module] %S " v.bundle
-  | Js_global v
+  | Js_var v (* FIXME: could be [@@bs.module "xx"] as well *)
     ->
     Printf.sprintf "[@@bs.val] %S " v.name
 
@@ -40555,7 +40430,7 @@ let check_ffi ?loc ffi : bool =
   let upgrade bool =    
     if not (!xrelative) then xrelative := bool in 
   begin match ffi with
-  | Js_global {name; external_module_name} ->     
+  | Js_var {name; external_module_name} ->     
     upgrade (is_package_relative_path name);
     Ext_option.iter external_module_name (fun name -> 
     upgrade (is_package_relative_path name.bundle));
@@ -41168,25 +41043,25 @@ let spec_of_ptyp nolabel (ptyp : Parsetree.core_type) =
     end
 (* is_optional = false 
 *)
-let refine_arg_type ~(nolabel:bool)  
-      (ptyp : Ast_core_type.t) : Ast_core_type.t * External_arg_spec.attr = 
+let refine_arg_type ~(nolabel:bool) (ptyp : Ast_core_type.t) 
+  : Ast_core_type.t * External_arg_spec.attr = 
   if Ast_core_type.is_any ptyp then (* (_[@bs.as ])*)
-      let ptyp_attrs = ptyp.ptyp_attributes in
-      let result = Ast_attributes.iter_process_bs_string_or_int_as ptyp_attrs in
-      (* when ppx start dropping attributes
-        we should warn, there is a trade off whether
-        we should warn dropped non bs attribute or not
-      *)
-      Bs_ast_invariant.warn_discarded_unused_attributes ptyp_attrs;
-      match result with
-      |  None ->
-        Bs_syntaxerr.err ptyp.ptyp_loc Invalid_underscore_type_in_external
-      | Some (`Int i) ->
-        Ast_literal.type_int ~loc:ptyp.ptyp_loc (), Arg_cst(External_arg_spec.cst_int i)
-      | Some (`Str i)->
-        Ast_literal.type_string ~loc:ptyp.ptyp_loc (), Arg_cst (External_arg_spec.cst_string i)
-      | Some (`Json_str s) ->
-        Ast_literal.type_string ~loc:ptyp.ptyp_loc (), Arg_cst (External_arg_spec.cst_json ptyp.ptyp_loc s)
+    let ptyp_attrs = ptyp.ptyp_attributes in
+    let result = Ast_attributes.iter_process_bs_string_or_int_as ptyp_attrs in
+    (* when ppx start dropping attributes
+       we should warn, there is a trade off whether
+       we should warn dropped non bs attribute or not
+    *)
+    Bs_ast_invariant.warn_discarded_unused_attributes ptyp_attrs;
+    match result with
+    |  None ->
+      Bs_syntaxerr.err ptyp.ptyp_loc Invalid_underscore_type_in_external
+    | Some (`Int i) ->
+      Ast_literal.type_int ~loc:ptyp.ptyp_loc (), Arg_cst(External_arg_spec.cst_int i)
+    | Some (`Str i)->
+      Ast_literal.type_string ~loc:ptyp.ptyp_loc (), Arg_cst (External_arg_spec.cst_string i)
+    | Some (`Json_str s) ->
+      Ast_literal.type_string ~loc:ptyp.ptyp_loc (), Arg_cst (External_arg_spec.cst_json ptyp.ptyp_loc s)
   else (* ([`a|`b] [@bs.string]) *)
     ptyp, spec_of_ptyp nolabel ptyp   
 
@@ -41249,7 +41124,7 @@ type name_source =
 
 
 
-type st =
+type external_desc =
   { val_name : name_source;
     external_module_name : External_ffi_types.external_module_name option;
     module_as_val : External_ffi_types.external_module_name option;
@@ -41302,11 +41177,11 @@ let return_wrapper loc (txt : string) : External_ffi_types.return_wrapper =
 
 
 (* The processed attributes will be dropped *)
-let process_external_attributes
+let parse_external_attributes
     (no_arguments : bool)   
     (prim_name_or_pval_prim: bundle_source )
     (pval_prim : string)
-    (prim_attributes : Ast_attributes.t) : Ast_attributes.t * st =
+    (prim_attributes : Ast_attributes.t) : Ast_attributes.t * external_desc =
 
   (* shared by `[@@bs.val]`, `[@@bs.send]`,
      `[@@bs.set]`, `[@@bs.get]` , `[@@bs.new]`
@@ -41341,7 +41216,7 @@ let process_external_attributes
               if no_arguments then
                 {st with val_name = name_from_payload_or_prim ~loc payload}
               else
-                {st with call_name = name_from_payload_or_prim ~loc  payload}
+                {st with call_name = name_from_payload_or_prim ~loc payload}
 
             | "bs.module" ->
               begin match Ast_payload.assert_strings loc payload with
@@ -41402,12 +41277,8 @@ let process_external_attributes
     
 
 
-let rec has_bs_uncurry (attrs : Ast_attributes.t) =
-  match attrs with
-  | ({txt = "bs.uncurry"; _ }, _) :: attrs ->
-    true
-  | _ :: attrs -> has_bs_uncurry attrs
-  | [] -> false
+let rec has_bs_uncurry (attrs : Ast_attributes.t) = 
+  Ext_list.exists_fst attrs (fun x -> x.txt = "bs.uncurry")
 
 
 let check_return_wrapper
@@ -41440,198 +41311,513 @@ type response = {
   no_inline_cross_module : bool 
 }
 
+
+
+let process_obj 
+    (loc : Location.t)
+    (st : external_desc) 
+    (prim_name : string)   
+    (arg_types_ty : Ast_compatible.param_type list)
+    (result_type : Ast_core_type.t)
+  : Parsetree.core_type *  External_ffi_types.t 
+  = 
+  match st with
+  | {
+    val_name = `Nm_na;
+    external_module_name = None ;
+    module_as_val = None;
+    val_send = `Nm_na;
+    val_send_pipe = None;
+    splice = false;
+    new_name = `Nm_na;
+    call_name = `Nm_na;
+    set_name = `Nm_na ;
+    get_name = `Nm_na ;
+    get_index = false ;
+    return_wrapper = Return_unset ;
+    set_index = false ;
+    mk_obj = _;
+    scopes = [];
+    (* wrapper does not work with [bs.obj]
+       TODO: better error message *)
+  } ->
+    if String.length prim_name <> 0 then
+      Location.raise_errorf ~loc "[@@bs.obj] expect external names to be empty string";
+    let arg_kinds, new_arg_types_ty, result_types =
+      Ext_list.fold_right arg_types_ty ( [], [], [])
+        (fun param_type ( arg_labels, (arg_types : Ast_compatible.param_type list), result_types) ->
+           let arg_label = Ast_compatible.convert param_type.label in
+           let ty  = param_type.ty in 
+           let new_arg_label, new_arg_types,  output_tys =
+             match arg_label with
+             | Nolabel ->
+               let new_ty, arg_type = refine_arg_type ~nolabel:true  ty in
+               if arg_type = Extern_unit then
+                 External_arg_spec.empty_kind arg_type, 
+                 {param_type with ty = new_ty}::arg_types, result_types
+               else
+                 Location.raise_errorf ~loc "expect label, optional, or unit here"
+             | Labelled name ->
+               let new_ty, arg_type = refine_arg_type ~nolabel:false  ty in
+               begin match arg_type with
+                 | Ignore ->
+                   External_arg_spec.empty_kind arg_type,
+                   {param_type with ty = new_ty}::arg_types, result_types
+                 | Arg_cst  i  ->
+                   let s = Lam_methname.translate ~loc name in
+                   {arg_label = External_arg_spec.label s (Some i);
+                    arg_type },
+                   arg_types, (* ignored in [arg_types], reserved in [result_types] *)
+                   ((name , [], new_ty) :: result_types)
+                 | Nothing | Array ->
+                   let s = (Lam_methname.translate ~loc name) in
+                   {arg_label = External_arg_spec.label s None ; arg_type },
+                   {param_type with ty = new_ty}::arg_types,
+                   ((name , [], new_ty) :: result_types)
+                 | Int _  ->
+                   let s = Lam_methname.translate ~loc name in
+                   {arg_label = External_arg_spec.label s None; arg_type},
+                   {param_type with ty = new_ty}::arg_types,
+                   ((name, [], Ast_literal.type_int ~loc ()) :: result_types)
+                 | NullString _ ->
+                   let s = Lam_methname.translate ~loc name in
+                   {arg_label = External_arg_spec.label s None; arg_type},
+                   {param_type with ty = new_ty }::arg_types,
+                   ((name, [], Ast_literal.type_string ~loc ()) :: result_types)
+                 | Fn_uncurry_arity _ ->
+                   Location.raise_errorf ~loc
+                     "The combination of [@@bs.obj], [@@bs.uncurry] is not supported yet"
+                 | Extern_unit -> assert false
+                 | NonNullString _
+                   ->
+                   Location.raise_errorf ~loc
+                     "bs.obj label %s does not support such arg type" name
+                 | Unwrap ->
+                   Location.raise_errorf ~loc
+                     "bs.obj label %s does not support [@bs.unwrap] arguments" name
+               end
+             | Optional name ->
+               let arg_type = get_opt_arg_type ~nolabel:false  ty in
+               begin match arg_type with
+                 | Ignore ->
+                   External_arg_spec.empty_kind arg_type,
+                   param_type::arg_types, result_types
+                 | Nothing | Array ->
+                   let s = (Lam_methname.translate ~loc name) in
+                   {arg_label = External_arg_spec.optional s; arg_type},
+                   param_type :: arg_types,
+                   ( (name, [], Ast_comb.to_undefined_type loc (get_basic_type_from_option_label ty)) ::  result_types)
+                 | Int _  ->
+                   let s = Lam_methname.translate ~loc name in
+                   {arg_label = External_arg_spec.optional s ; arg_type },
+                   param_type :: arg_types,
+                   ((name, [], Ast_comb.to_undefined_type loc @@ Ast_literal.type_int ~loc ()) :: result_types)
+                 | NullString _  ->
+                   let s = Lam_methname.translate ~loc name in
+                   {arg_label = External_arg_spec.optional s ; arg_type },
+                   param_type::arg_types,
+                   ((name, [], Ast_comb.to_undefined_type loc @@ Ast_literal.type_string ~loc ()) :: result_types)
+                 | Arg_cst _
+                   ->
+                   Location.raise_errorf ~loc "bs.as is not supported with optional yet"
+                 | Fn_uncurry_arity _ ->
+                   Location.raise_errorf ~loc
+                     "The combination of [@@bs.obj], [@@bs.uncurry] is not supported yet"
+                 | Extern_unit   -> assert false
+                 | NonNullString _
+                   ->
+                   Location.raise_errorf ~loc
+                     "bs.obj label %s does not support such arg type" name
+                 | Unwrap ->
+                   Location.raise_errorf ~loc
+                     "bs.obj label %s does not support [@bs.unwrap] arguments" name
+               end
+           in
+           new_arg_label::arg_labels,
+           new_arg_types,
+           output_tys) in
+
+    let result =
+      if Ast_core_type.is_any  result_type then
+        Ast_core_type.make_obj ~loc result_types
+      else
+        fst (refine_arg_type ~nolabel:true result_type) 
+        (* result type can not be labeled *)
+    in
+    Ast_compatible.mk_fn_type new_arg_types_ty result,
+    External_ffi_types.Ffi_obj_create arg_kinds
+  | _ -> Location.raise_errorf ~loc "Attribute found that conflicts with [@@bs.obj]"
+
+
+let external_desc_of_non_obj 
+    (loc : Location.t) 
+    (st : external_desc) 
+    (prim_name : string) 
+    (prim_name_or_pval_prim : bundle_source)
+    (arg_type_specs_length : int) 
+    arg_types_ty 
+    (arg_type_specs : External_arg_spec.t list) : External_ffi_types.external_spec =
+  match st with
+  | {set_index = true;
+     val_name = `Nm_na;
+     external_module_name = None ;
+     module_as_val = None;
+     val_send = `Nm_na;
+     val_send_pipe = None;
+     splice = false;
+     scopes ;
+     get_index = false;
+     new_name = `Nm_na;
+     call_name = `Nm_na;
+     set_name = `Nm_na ;
+     get_name = `Nm_na ;
+
+     return_wrapper = _;
+     mk_obj = _ ;
+
+    }
+    ->
+    if String.length prim_name <> 0 then
+      Location.raise_errorf ~loc "[@@bs.set_index] expect external names to be empty string";
+    if arg_type_specs_length = 3 then
+      Js_set_index {js_set_index_scopes = scopes}
+    else
+      Location.raise_errorf ~loc "Ill defined attribute [@@bs.set_index](arity of 3)"
+  | {set_index = true; _} ->
+    Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.set_index]")
+  | {get_index = true;
+     val_name = `Nm_na;
+     external_module_name = None ;
+     module_as_val = None;
+     val_send = `Nm_na;
+     val_send_pipe = None;
+
+     splice = false;
+     scopes ;
+     new_name = `Nm_na;
+     call_name = `Nm_na;
+     set_name = `Nm_na ;
+     get_name = `Nm_na ;
+     set_index = false;
+     mk_obj;
+     return_wrapper ;
+    } ->
+    if String.length prim_name <> 0 then
+      Location.raise_errorf ~loc "[@@bs.get_index] expect external names to be empty string";
+    if arg_type_specs_length = 2 then
+      Js_get_index {js_get_index_scopes = scopes}
+    else Location.raise_errorf ~loc
+        "Ill defined attribute [@@bs.get_index] (arity expected 2 : while %d)" arg_type_specs_length
+
+  | {get_index = true; _} ->
+    Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.get_index]")
+  | {module_as_val = Some external_module_name ;
+
+     get_index = false;
+     val_name ;
+     new_name ;
+
+     external_module_name = None ;
+     val_send = `Nm_na;
+     val_send_pipe = None;
+     scopes = []; (* module as var does not need scopes *)
+     splice;
+     call_name = `Nm_na;
+     set_name = `Nm_na ;
+     get_name = `Nm_na ;
+     set_index = false;
+     return_wrapper = _;
+     mk_obj = _ ;
+    } ->
+    begin match arg_types_ty, new_name, val_name  with
+      | [], `Nm_na,  _ -> Js_module_as_var external_module_name
+      | _, `Nm_na, _ -> Js_module_as_fn {splice; external_module_name }
+      | _, #bundle_source, #bundle_source ->
+        Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.module].")
+
+      | _, (`Nm_val _ | `Nm_external _) , `Nm_na
+        -> Js_module_as_class external_module_name
+      | _, `Nm_payload _ , `Nm_na
+        ->
+        Location.raise_errorf ~loc
+          "Incorrect FFI attribute found: (bs.new should not carry a payload here)"
+    end
+  | {module_as_val = Some x; _} ->
+    Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.module].")
+  | {call_name = (`Nm_val name | `Nm_external name | `Nm_payload name) ;
+     splice;
+     scopes ;
+     external_module_name;
+
+     val_name = `Nm_na ;
+     module_as_val = None;
+     val_send = `Nm_na ;
+     val_send_pipe = None;
+
+     set_index = false;
+     get_index = false;
+     new_name = `Nm_na;
+     set_name = `Nm_na ;
+     get_name = `Nm_na ;
+     mk_obj = _ ;
+     return_wrapper = _ ;
+    } ->
+    Js_call {splice; name; external_module_name; scopes }
+  | {call_name = #bundle_source ; _ }
+    ->
+    Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.val]")
+  | {val_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
+     external_module_name;
+
+     call_name = `Nm_na ;
+     module_as_val = None;
+     val_send = `Nm_na ;
+     val_send_pipe = None;
+     set_index = false;
+     get_index = false;
+     new_name = `Nm_na;
+     set_name = `Nm_na ;
+     get_name = `Nm_na;
+     mk_obj = _;
+     return_wrapper = _;
+     splice = false ;
+     scopes ;
+    }
+    -> (* 
+    if no_arguments -->
+          {[
+            external ff : int = "" [@@bs.val]
+          ]}
+       *)
+    Js_var { name; external_module_name; scopes}
+  | {val_name = #bundle_source ; _ }
+    ->
+    Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.val]")
+
+  | {splice ;
+     scopes ;
+     external_module_name = (Some _ as external_module_name);
+     val_name = `Nm_na ;
+     call_name = `Nm_na ;
+     module_as_val = None;
+     val_send = `Nm_na ;
+     val_send_pipe = None;
+     set_index = false;
+     get_index = false;
+     new_name = `Nm_na;
+     set_name = `Nm_na ;
+     get_name = `Nm_na ;
+     mk_obj = _ ;
+     return_wrapper= _ ;
+    }
+    ->
+    let name = string_of_bundle_source prim_name_or_pval_prim in
+    if arg_type_specs_length  = 0 then
+      (*
+         {[
+           external ff : int = "" [@@bs.module "xx"]
+         ]}
+      *)
+      Js_var { name; external_module_name; scopes}
+    else  Js_call {splice; name; external_module_name; scopes}
+  | {val_send = (`Nm_val name | `Nm_external name | `Nm_payload name);
+     splice;
+     scopes;
+     val_send_pipe = None;
+     val_name = `Nm_na  ;
+     call_name = `Nm_na ;
+     module_as_val = None;
+     set_index = false;
+     get_index = false;
+     new_name = `Nm_na;
+     set_name = `Nm_na ;
+     get_name = `Nm_na ;
+     external_module_name = None ;
+     mk_obj = _ ;
+     return_wrapper = _ ;
+    } ->
+    (* PR #2162 - since when we assemble arguments the first argument in
+       [@@bs.send] is ignored
+    *)
+    begin match arg_type_specs with
+      | [] ->
+        Location.raise_errorf
+          ~loc "Ill defined attribute [@@bs.send] (the external needs to be a regular function call with at least one argument)"
+      |  {arg_type = Arg_cst _ ; arg_label = _} :: _
+        ->
+        Location.raise_errorf
+          ~loc "Ill defined attribute [@@bs.send] (first argument can't be const)"
+      | _ :: _  ->
+        Js_send {splice ; name; js_send_scopes = scopes ;  pipe = false}
+    end
+  | {val_send = #bundle_source; _ }
+    -> Location.raise_errorf ~loc "You used a FFI attribute that can't be used with [@@bs.send]"
+  | {val_send_pipe = Some typ;
+     (* splice = (false as splice); *)
+     val_send = `Nm_na;
+     val_name = `Nm_na  ;
+     call_name = `Nm_na ;
+     module_as_val = None;
+     set_index = false;
+     get_index = false;
+     new_name = `Nm_na;
+     set_name = `Nm_na ;
+     get_name = `Nm_na ;
+     external_module_name = None ;
+     mk_obj = _;
+     return_wrapper = _;
+     scopes;
+     splice ;
+    } ->
+    (** can be one argument *)
+    Js_send {splice  ;
+             name = string_of_bundle_source prim_name_or_pval_prim;
+             js_send_scopes = scopes;
+             pipe = true}
+
+  | {val_send_pipe = Some _ ; _}
+    -> Location.raise_errorf ~loc "conflict attributes found with [@@bs.send.pipe]"
+
+  | {new_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
+     external_module_name;
+
+     val_name = `Nm_na  ;
+     call_name = `Nm_na ;
+     module_as_val = None;
+     set_index = false;
+     get_index = false;
+     val_send = `Nm_na ;
+     val_send_pipe = None;
+     set_name = `Nm_na ;
+     get_name = `Nm_na ;
+     splice = false;
+     scopes;
+     mk_obj = _ ;
+     return_wrapper = _ ;
+    }
+    -> Js_new {name; external_module_name;  scopes}
+  | {new_name = #bundle_source ; _ } ->
+    Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.new]")
+  | {set_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
+     val_name = `Nm_na  ;
+     call_name = `Nm_na ;
+     module_as_val = None;
+     set_index = false;
+     get_index = false;
+     val_send = `Nm_na ;
+     val_send_pipe = None;
+     new_name = `Nm_na ;
+     get_name = `Nm_na ;
+     external_module_name = None;
+     splice = false;
+     mk_obj = _ ;
+     return_wrapper = _;
+     scopes ;
+    }
+    ->
+    if arg_type_specs_length = 2 then
+      Js_set { js_set_scopes = scopes ; js_set_name = name}
+    else  Location.raise_errorf ~loc "Ill defined attribute [@@bs.set] (two args required)"
+  | {set_name = #bundle_source; _}
+    -> Location.raise_errorf ~loc "conflict attributes found with [@@bs.set]"
+  | {get_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
+
+     val_name = `Nm_na  ;
+     call_name = `Nm_na ;
+     module_as_val = None;
+     set_index = false;
+     get_index = false;
+     val_send = `Nm_na ;
+     val_send_pipe = None;
+     new_name = `Nm_na ;
+     set_name = `Nm_na ;
+     external_module_name = None;
+     splice = false ;
+     mk_obj = _;
+     return_wrapper = _;
+     scopes
+    }
+    ->
+    if arg_type_specs_length = 1 then
+      Js_get { js_get_name = name; js_get_scopes = scopes }
+    else
+      Location.raise_errorf ~loc "Ill defined attribute [@@bs.get] (only one argument)"
+  | {get_name = #bundle_source; _}
+    -> Location.raise_errorf ~loc "Attribute found that conflicts with [@@bs.get]"
+
+  | {get_name = `Nm_na;
+     val_name = `Nm_na  ;
+     call_name = `Nm_na ;
+     module_as_val = None;
+     set_index = false;
+     get_index = false;
+     val_send = `Nm_na ;
+     val_send_pipe = None;
+     new_name = `Nm_na ;
+     set_name = `Nm_na ;
+     external_module_name = None;
+     splice = _ ;
+     scopes = _;
+     mk_obj = _;
+     return_wrapper = _;
+
+    }
+    ->  Location.raise_errorf ~loc "Could not infer which FFI category it belongs to, maybe you forgot [%@%@bs.val]? "  
+
 (** Note that the passed [type_annotation] is already processed by visitor pattern before*)
 let handle_attributes
     (loc : Bs_loc.t)
     (pval_prim : string )
     (type_annotation : Parsetree.core_type)
     (prim_attributes : Ast_attributes.t) (prim_name : string)
-   =
+  : Parsetree.core_type *  External_ffi_types.t * Parsetree.attributes * bool
+  =
   (** sanity check here
       {[ int -> int -> (int -> int -> int [@bs.uncurry])]}
       It does not make sense
   *)
   if has_bs_uncurry type_annotation.ptyp_attributes then
     Location.raise_errorf
-      ~loc "[@@bs.uncurry] can not be applied to the whole definition"
-  ;
-
+      ~loc "[@@bs.uncurry] can not be applied to the whole definition";
   let prim_name_or_pval_prim =
     if String.length prim_name = 0 then  `Nm_val pval_prim
-    else  `Nm_external prim_name  (* need check name *)
-  in
+    else  `Nm_external prim_name  (* need check name *) in
   let result_type, arg_types_ty =
     (* Note this assumes external type is syntatic (no abstraction)*)
     Ast_core_type.list_of_arrow type_annotation in
   if has_bs_uncurry result_type.ptyp_attributes then
-    begin
-      Location.raise_errorf
-        ~loc:result_type.ptyp_loc
-        "[@@bs.uncurry] can not be applied to tailed position"
-    end ;
-  let left_attrs, st =
-    process_external_attributes
-      (arg_types_ty = [])
+    Location.raise_errorf
+      ~loc:result_type.ptyp_loc
+      "[@@bs.uncurry] can not be applied to tailed position";
+  let no_arguments = arg_types_ty = [] in  
+  let unused_attrs, external_desc =
+    parse_external_attributes no_arguments  
       prim_name_or_pval_prim pval_prim prim_attributes in
-
-
-  if st.mk_obj then
-    begin match st with
-      | {
-        val_name = `Nm_na;
-        external_module_name = None ;
-        module_as_val = None;
-        val_send = `Nm_na;
-        val_send_pipe = None;
-        splice = false;
-        new_name = `Nm_na;
-        call_name = `Nm_na;
-        set_name = `Nm_na ;
-        get_name = `Nm_na ;
-        get_index = false ;
-        return_wrapper = Return_unset ;
-        set_index = false ;
-        mk_obj = _;
-        scopes = [];
-        (* wrapper does not work with [bs.obj]
-           TODO: better error message *)
-      } ->
-        if String.length prim_name <> 0 then
-          Location.raise_errorf ~loc "[@@bs.obj] expect external names to be empty string";
-        let arg_kinds, new_arg_types_ty, result_types =
-          Ext_list.fold_right arg_types_ty ( [], [], [])
-            (fun (label,ty,attr,loc) ( arg_labels, arg_types, result_types) ->
-               let arg_label = Ast_compatible.convert label in
-               let new_arg_label, new_arg_types,  output_tys =
-                 match arg_label with
-                 | Nolabel ->
-                   let new_ty, arg_type = refine_arg_type ~nolabel:true  ty in
-                   if arg_type = Extern_unit then
-                     External_arg_spec.empty_kind arg_type, (label,new_ty,attr,loc)::arg_types, result_types
-                   else
-                     Location.raise_errorf ~loc "expect label, optional, or unit here"
-                 | Labelled name ->
-                   let new_ty, arg_type = refine_arg_type ~nolabel:false  ty in
-                   begin match arg_type with
-                     | Ignore ->
-                       External_arg_spec.empty_kind arg_type,
-                       (label,new_ty,attr,loc)::arg_types, result_types
-                     | Arg_cst  i  ->
-                       let s = Lam_methname.translate ~loc name in
-                       {arg_label = External_arg_spec.label s (Some i);
-                        arg_type },
-                       arg_types, (* ignored in [arg_types], reserved in [result_types] *)
-                       ((name , [], new_ty) :: result_types)
-                     | Nothing | Array ->
-                       let s = (Lam_methname.translate ~loc name) in
-                       {arg_label = External_arg_spec.label s None ; arg_type },
-                       (label,new_ty,attr,loc)::arg_types,
-                       ((name , [], new_ty) :: result_types)
-                     | Int _  ->
-                       let s = Lam_methname.translate ~loc name in
-                       {arg_label = External_arg_spec.label s None; arg_type},
-                       (label,new_ty,attr,loc)::arg_types,
-                       ((name, [], Ast_literal.type_int ~loc ()) :: result_types)
-                     | NullString _ ->
-                       let s = Lam_methname.translate ~loc name in
-                       {arg_label = External_arg_spec.label s None; arg_type},
-                       (label,new_ty,attr,loc)::arg_types,
-                       ((name, [], Ast_literal.type_string ~loc ()) :: result_types)
-                     | Fn_uncurry_arity _ ->
-                       Location.raise_errorf ~loc
-                         "The combination of [@@bs.obj], [@@bs.uncurry] is not supported yet"
-                     | Extern_unit -> assert false
-                     | NonNullString _
-                       ->
-                       Location.raise_errorf ~loc
-                         "bs.obj label %s does not support such arg type" name
-                     | Unwrap ->
-                       Location.raise_errorf ~loc
-                         "bs.obj label %s does not support [@bs.unwrap] arguments" name
-                   end
-                 | Optional name ->
-                   let arg_type = get_opt_arg_type ~nolabel:false  ty in
-                   begin match arg_type with
-                     | Ignore ->
-                       External_arg_spec.empty_kind arg_type,
-                       (label,ty,attr,loc)::arg_types, result_types
-                     | Nothing | Array ->
-                       let s = (Lam_methname.translate ~loc name) in
-                       {arg_label = External_arg_spec.optional s; arg_type},
-                       (label,ty,attr,loc)::arg_types,
-                       ( (name, [], Ast_comb.to_undefined_type loc (get_basic_type_from_option_label ty)) ::  result_types)
-                     | Int _  ->
-                       let s = Lam_methname.translate ~loc name in
-                       {arg_label = External_arg_spec.optional s ; arg_type },
-                       (label,ty,attr,loc)::arg_types,
-                       ((name, [], Ast_comb.to_undefined_type loc @@ Ast_literal.type_int ~loc ()) :: result_types)
-                     | NullString _  ->
-                       let s = Lam_methname.translate ~loc name in
-                       {arg_label = External_arg_spec.optional s ; arg_type },
-                       (label,ty,attr,loc)::arg_types,
-                       ((name, [], Ast_comb.to_undefined_type loc @@ Ast_literal.type_string ~loc ()) :: result_types)
-                     | Arg_cst _
-                       ->
-                       Location.raise_errorf ~loc "bs.as is not supported with optional yet"
-                     | Fn_uncurry_arity _ ->
-                       Location.raise_errorf ~loc
-                         "The combination of [@@bs.obj], [@@bs.uncurry] is not supported yet"
-                     | Extern_unit   -> assert false
-                     | NonNullString _
-                       ->
-                       Location.raise_errorf ~loc
-                         "bs.obj label %s does not support such arg type" name
-                     | Unwrap ->
-                       Location.raise_errorf ~loc
-                         "bs.obj label %s does not support [@bs.unwrap] arguments" name
-                   end
-               in
-               (
-                 new_arg_label::arg_labels,
-                 new_arg_types,
-                 output_tys)) in
-
-        let result =
-          if Ast_core_type.is_any  result_type then
-            Ast_core_type.make_obj ~loc result_types
-          else
-            fst (refine_arg_type ~nolabel:true result_type) (* result type can not be labeled *)
-
-        in
-        begin          
-          Ast_compatible.mk_fn_type new_arg_types_ty result
-          ,
-          prim_name,
-          External_ffi_types.Ffi_obj_create arg_kinds,
-          left_attrs, 
-          false 
-        end
-
-      | _ -> Location.raise_errorf ~loc "Attribute found that conflicts with [@@bs.obj]"
-
-    end
-
+  if external_desc.mk_obj then
+    (* warn unused attributes here ? *)
+    let new_type, spec = process_obj loc external_desc prim_name arg_types_ty result_type in 
+    new_type, spec, unused_attrs, false
   else
-    let splice = st.splice in
+    let splice = external_desc.splice in
     let arg_type_specs, new_arg_types_ty, arg_type_specs_length   =
-      Ext_list.fold_right arg_types_ty
-        (match st with
-         | {val_send_pipe = Some obj; _ } ->
-           let new_ty, arg_type = refine_arg_type ~nolabel:true obj in
-           begin match arg_type with
+      Ext_list.fold_right arg_types_ty (match external_desc with
+          | {val_send_pipe = Some obj; _ } ->
+            let new_ty, arg_type = refine_arg_type ~nolabel:true obj in
+            (match arg_type with
              | Arg_cst _ ->
                Location.raise_errorf ~loc:obj.ptyp_loc "[@bs.as] is not supported in bs.send type "
              | _ ->
                (* more error checking *)
-               [External_arg_spec.empty_kind arg_type]
-               ,
-               [Ast_compatible.no_label, new_ty, [], obj.ptyp_loc]
-               ,0
-           end
-
-         | {val_send_pipe = None ; _ } -> [],[], 0)
-        (fun (label,ty,attr,loc) (arg_type_specs, arg_types, i) ->
-           let arg_label = Ast_compatible.convert label in
+               [External_arg_spec.empty_kind arg_type],
+               [({label = Ast_compatible.no_label;
+                ty = new_ty;
+                attr =  [];
+                loc = obj.ptyp_loc} : Ast_compatible.param_type)],
+                1)           
+          | {val_send_pipe = None ; _ } -> [],[], 0)
+        (fun  param_type (arg_type_specs, arg_types, i) ->
+           let arg_label = Ast_compatible.convert param_type.label in
+           let ty = param_type.ty in 
            let arg_label, arg_type, new_arg_types =
              match arg_label with
              | Optional s  ->
@@ -41644,20 +41830,21 @@ let handle_attributes
                      "[@@bs.string] does not work with optional when it has arities in label %s" s
                  | _ ->
                    External_arg_spec.optional s, arg_type,
-                   ((label, ty, attr,loc) :: arg_types) end
+                   param_type :: arg_types end
              | Labelled s  ->
                begin match refine_arg_type ~nolabel:false ty with
-                 | new_ty, (Arg_cst ( i) as arg_type)  ->
+                 | new_ty, (Arg_cst i as arg_type)  ->
                    External_arg_spec.label s (Some i), arg_type, arg_types
                  | new_ty, arg_type ->
-                   External_arg_spec.label s None, arg_type, (label, new_ty,attr,loc) :: arg_types
+                   External_arg_spec.label s None, arg_type, 
+                   {param_type with ty = new_ty} :: arg_types
                end
              | Nolabel ->
                begin match refine_arg_type ~nolabel:true ty with
-                 | new_ty , (Arg_cst ( i) as arg_type) ->
+                 | new_ty , (Arg_cst i as arg_type) ->
                    External_arg_spec.empty_lit i , arg_type,  arg_types
                  | new_ty , arg_type ->
-                   External_arg_spec.empty_label, arg_type, (label, new_ty,attr,loc) :: arg_types
+                   External_arg_spec.empty_label, arg_type, {param_type with ty = new_ty} :: arg_types
                end
            in
            (if i = 0 && splice  then
@@ -41672,381 +41859,54 @@ let handle_attributes
             else i + 1
            )
         )  in
-
-    let ffi : External_ffi_types.external_spec  = match st with
-      | {set_index = true;
-
-         val_name = `Nm_na;
-         external_module_name = None ;
-         module_as_val = None;
-         val_send = `Nm_na;
-         val_send_pipe = None;
-         splice = false;
-         scopes ;
-         get_index = false;
-         new_name = `Nm_na;
-         call_name = `Nm_na;
-         set_name = `Nm_na ;
-         get_name = `Nm_na ;
-
-         return_wrapper = _;
-         mk_obj = _ ;
-
-        }
-        ->
-        if String.length prim_name <> 0 then
-          Location.raise_errorf ~loc "[@@bs.set_index] expect external names to be empty string";
-        if arg_type_specs_length = 3 then
-          Js_set_index {js_set_index_scopes = scopes}
-        else
-          Location.raise_errorf ~loc "Ill defined attribute [@@bs.set_index](arity of 3)"
-
-      | {set_index = true; _}
-        ->
-        Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.set_index]")
+    let ffi : External_ffi_types.external_spec  = 
+      external_desc_of_non_obj 
+        loc external_desc prim_name prim_name_or_pval_prim arg_type_specs_length 
+        arg_types_ty arg_type_specs in 
+    let relative = External_ffi_types.check_ffi ~loc ffi in 
+    (* result type can not be labeled *)
+    (* currently we don't process attributes of
+       return type, in the future we may  *)
+    let return_wrapper = check_return_wrapper loc external_desc.return_wrapper result_type in
+    Ast_compatible.mk_fn_type new_arg_types_ty result_type,  
+    Ffi_bs (arg_type_specs, return_wrapper, ffi),
+    unused_attrs,
+    relative 
 
 
-      | {get_index = true;
-
-         val_name = `Nm_na;
-         external_module_name = None ;
-         module_as_val = None;
-         val_send = `Nm_na;
-         val_send_pipe = None;
-
-         splice = false;
-         scopes ;
-         new_name = `Nm_na;
-         call_name = `Nm_na;
-         set_name = `Nm_na ;
-         get_name = `Nm_na ;
-         set_index = false;
-         mk_obj;
-         return_wrapper ;
-        } ->
-        if String.length prim_name <> 0 then
-          Location.raise_errorf ~loc "[@@bs.get_index] expect external names to be empty string";
-        if arg_type_specs_length = 2 then
-          Js_get_index {js_get_index_scopes = scopes}
-        else Location.raise_errorf ~loc
-            "Ill defined attribute [@@bs.get_index] (arity expected 2 : while %d)" arg_type_specs_length
-
-      | {get_index = true; _}
-
-        ->
-        Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.get_index]")
-
-
-
-
-      | {module_as_val = Some external_module_name ;
-
-         get_index = false;
-         val_name ;
-         new_name ;
-
-         external_module_name = None ;
-         val_send = `Nm_na;
-         val_send_pipe = None;
-         scopes = []; (* module as var does not need scopes *)
-         splice;
-         call_name = `Nm_na;
-         set_name = `Nm_na ;
-         get_name = `Nm_na ;
-         set_index = false;
-         return_wrapper = _;
-         mk_obj = _ ;
-        } ->
-        begin match arg_types_ty, new_name, val_name  with
-          | [], `Nm_na,  _ -> Js_module_as_var external_module_name
-          | _, `Nm_na, _ -> Js_module_as_fn {splice; external_module_name }
-          | _, #bundle_source, #bundle_source ->
-            Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.module].")
-
-          | _, (`Nm_val _ | `Nm_external _) , `Nm_na
-            -> Js_module_as_class external_module_name
-          | _, `Nm_payload _ , `Nm_na
-            ->
-            Location.raise_errorf ~loc
-              "Incorrect FFI attribute found: (bs.new should not carry a payload here)"
-        end
-      | {module_as_val = Some x; _}
-        ->
-        Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.module].")
-
-      | {call_name = (`Nm_val name | `Nm_external name | `Nm_payload name) ;
-         splice;
-         scopes ;
-         external_module_name;
-
-         val_name = `Nm_na ;
-         module_as_val = None;
-         val_send = `Nm_na ;
-         val_send_pipe = None;
-
-         set_index = false;
-         get_index = false;
-         new_name = `Nm_na;
-         set_name = `Nm_na ;
-         get_name = `Nm_na ;
-         mk_obj = _ ;
-         return_wrapper = _ ;
-        } ->
-        Js_call {splice; name; external_module_name; scopes }
-      | {call_name = #bundle_source ; _ }
-        ->
-        Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.val]")
-
-
-      | {val_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
-         external_module_name;
-
-         call_name = `Nm_na ;
-         module_as_val = None;
-         val_send = `Nm_na ;
-         val_send_pipe = None;
-         set_index = false;
-         get_index = false;
-         new_name = `Nm_na;
-         set_name = `Nm_na ;
-         get_name = `Nm_na;
-         mk_obj = _;
-         return_wrapper = _;
-         splice = false ;
-         scopes ;
-        }
-        ->
-        Js_global { name; external_module_name; scopes}
-      | {val_name = #bundle_source ; _ }
-        ->
-        Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.val]")
-
-      | {splice ;
-         scopes ;
-         external_module_name = (Some _ as external_module_name);
-
-         val_name = `Nm_na ;
-         call_name = `Nm_na ;
-         module_as_val = None;
-         val_send = `Nm_na ;
-         val_send_pipe = None;
-         set_index = false;
-         get_index = false;
-         new_name = `Nm_na;
-         set_name = `Nm_na ;
-         get_name = `Nm_na ;
-         mk_obj = _ ;
-         return_wrapper= _ ;
-        }
-        ->
-        let name = string_of_bundle_source prim_name_or_pval_prim in
-        if arg_type_specs_length  = 0 then
-          Js_global { name; external_module_name; scopes}
-        else  Js_call {splice; name; external_module_name; scopes}
-      | {val_send = (`Nm_val name | `Nm_external name | `Nm_payload name);
-         splice;
-         scopes;
-         val_send_pipe = None;
-         val_name = `Nm_na  ;
-         call_name = `Nm_na ;
-         module_as_val = None;
-         set_index = false;
-         get_index = false;
-         new_name = `Nm_na;
-         set_name = `Nm_na ;
-         get_name = `Nm_na ;
-         external_module_name = None ;
-         mk_obj = _ ;
-         return_wrapper = _ ;
-        } ->
-
-        (* PR #2162 - since when we assemble arguments the first argument in
-           [@@bs.send] is ignored
-        *)
-        begin match arg_type_specs with
-          | [] ->
-            Location.raise_errorf
-              ~loc "Ill defined attribute [@@bs.send] (the external needs to be a regular function call with at least one argument)"
-          |  {arg_type = Arg_cst _ ; arg_label = _} :: _
-            ->
-            Location.raise_errorf
-              ~loc "Ill defined attribute [@@bs.send] (first argument can't be const)"
-          | _ :: _  ->
-            Js_send {splice ; name; js_send_scopes = scopes ;  pipe = false}
-        end
-
-      | {val_send = #bundle_source; _ }
-        -> Location.raise_errorf ~loc "You used a FFI attribute that can't be used with [@@bs.send]"
-
-      | {val_send_pipe = Some typ;
-         (* splice = (false as splice); *)
-         val_send = `Nm_na;
-         val_name = `Nm_na  ;
-         call_name = `Nm_na ;
-         module_as_val = None;
-         set_index = false;
-         get_index = false;
-         new_name = `Nm_na;
-         set_name = `Nm_na ;
-         get_name = `Nm_na ;
-         external_module_name = None ;
-         mk_obj = _;
-         return_wrapper = _;
-         scopes;
-         splice ;
-        } ->
-        (** can be one argument *)
-        Js_send {splice  ;
-                 name = string_of_bundle_source prim_name_or_pval_prim;
-                 js_send_scopes = scopes;
-                 pipe = true}
-
-      | {val_send_pipe = Some _ ; _}
-        -> Location.raise_errorf ~loc "conflict attributes found with [@@bs.send.pipe]"
-
-      | {new_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
-         external_module_name;
-
-         val_name = `Nm_na  ;
-         call_name = `Nm_na ;
-         module_as_val = None;
-         set_index = false;
-         get_index = false;
-         val_send = `Nm_na ;
-         val_send_pipe = None;
-         set_name = `Nm_na ;
-         get_name = `Nm_na ;
-         splice = false;
-         scopes;
-         mk_obj = _ ;
-         return_wrapper = _ ;
-
-        }
-        -> Js_new {name; external_module_name;  scopes}
-      | {new_name = #bundle_source ; _ }
-        ->
-        Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.new]")
-
-
-      | {set_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
-
-         val_name = `Nm_na  ;
-         call_name = `Nm_na ;
-         module_as_val = None;
-         set_index = false;
-         get_index = false;
-         val_send = `Nm_na ;
-         val_send_pipe = None;
-         new_name = `Nm_na ;
-         get_name = `Nm_na ;
-         external_module_name = None;
-         splice = false;
-         mk_obj = _ ;
-         return_wrapper = _;
-         scopes ;
-        }
-        ->
-        if arg_type_specs_length = 2 then
-          Js_set { js_set_scopes = scopes ; js_set_name = name}
-        else  Location.raise_errorf ~loc "Ill defined attribute [@@bs.set] (two args required)"
-
-      | {set_name = #bundle_source; _}
-        -> Location.raise_errorf ~loc "conflict attributes found with [@@bs.set]"
-
-      | {get_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
-
-         val_name = `Nm_na  ;
-         call_name = `Nm_na ;
-         module_as_val = None;
-         set_index = false;
-         get_index = false;
-         val_send = `Nm_na ;
-         val_send_pipe = None;
-         new_name = `Nm_na ;
-         set_name = `Nm_na ;
-         external_module_name = None;
-         splice = false ;
-         mk_obj = _;
-         return_wrapper = _;
-         scopes
-        }
-        ->
-        if arg_type_specs_length = 1 then
-          Js_get { js_get_name = name; js_get_scopes = scopes }
-        else
-          Location.raise_errorf ~loc "Ill defined attribute [@@bs.get] (only one argument)"
-      | {get_name = #bundle_source; _}
-        -> Location.raise_errorf ~loc "Attribute found that conflicts with [@@bs.get]"
-
-      | {get_name = `Nm_na;
-         val_name = `Nm_na  ;
-         call_name = `Nm_na ;
-         module_as_val = None;
-         set_index = false;
-         get_index = false;
-         val_send = `Nm_na ;
-         val_send_pipe = None;
-         new_name = `Nm_na ;
-         set_name = `Nm_na ;
-         external_module_name = None;
-         splice = _ ;
-         scopes = _;
-         mk_obj = _;
-         return_wrapper = _;
-
-        }
-        ->  Location.raise_errorf ~loc "Could not infer which FFI category it belongs to, maybe you forgot [%@%@bs.val]? "  in
-    begin
-      let relative = External_ffi_types.check_ffi ~loc ffi in 
-      (* result type can not be labeled *)
-      (* currently we don't process attributes of
-         return type, in the future we may  *)
-      let  new_result_type  =  result_type in
-      (* get_arg_type ~nolabel:true false result_type in *)
-      let return_wrapper : External_ffi_types.return_wrapper =
-        check_return_wrapper loc st.return_wrapper new_result_type
-      in
-      Ast_compatible.mk_fn_type new_arg_types_ty new_result_type,  
-      prim_name,
-      Ffi_bs (arg_type_specs,return_wrapper ,  ffi),
-      left_attrs,
-      relative 
-    end
 
 let handle_attributes_as_string
     pval_loc
     pval_prim
-    (typ : Ast_core_type.t) attrs v : response =
-  let pval_type, prim_name, ffi, processed_attrs, relative  =
-    handle_attributes pval_loc pval_prim typ attrs v  in
+    (typ : Ast_core_type.t) attrs prim_name : response =
+  let pval_type, ffi, pval_attributes, no_inline_cross_module  =
+    handle_attributes pval_loc pval_prim typ attrs prim_name  in
   { pval_type;
     pval_prim = [prim_name; External_ffi_types.to_string ffi];
-    pval_attributes = processed_attrs;
-    no_inline_cross_module = relative
+    pval_attributes;
+    no_inline_cross_module 
   }
 
 
 
-let pval_prim_of_labels (labels : string Asttypes.loc list)
-   =
+let pval_prim_of_labels (labels : string Asttypes.loc list) =
   let arg_kinds =
-    Ext_list.fold_right labels [] 
+    Ext_list.fold_right labels ([] : External_arg_spec.t list ) 
       (fun {loc ; txt } arg_kinds
         ->
           let arg_label =
             External_arg_spec.label
               (Lam_methname.translate ~loc txt) None in
-          {External_arg_spec.arg_type = Nothing ;
+          {arg_type = Nothing ;
            arg_label  } :: arg_kinds
-      )
-      in
+      ) in
   let encoding =
     External_ffi_types.to_string (Ffi_obj_create arg_kinds) in
   [""; encoding]
 
 let pval_prim_of_option_labels
-(labels : (bool * string Asttypes.loc) list)
-(ends_with_unit : bool)
+    (labels : (bool * string Asttypes.loc) list)
+    (ends_with_unit : bool)
   =
   let arg_kinds =
     Ext_list.fold_right labels
@@ -42055,16 +41915,14 @@ let pval_prim_of_option_labels
        else [])
       (fun (is_option,{loc ; txt }) arg_kinds
         ->
-          let label_name = (Lam_methname.translate ~loc txt) in
+          let label_name = Lam_methname.translate ~loc txt in
           let arg_label =
             if is_option then
               External_arg_spec.optional label_name
             else External_arg_spec.label label_name None
           in
-          {External_arg_spec.arg_type = Nothing ;
-           arg_label  } :: arg_kinds
-      )      
-  in
+          {arg_type = Nothing ;
+           arg_label  } :: arg_kinds) in
   let encoding =
     External_ffi_types.to_string (Ffi_obj_create arg_kinds) in
   [""; encoding]
@@ -45971,8 +45829,8 @@ let value_bindings_mapper
     ) 
 
 end
-module Ppx_entry : sig 
-#1 "ppx_entry.mli"
+module Bs_builtin_ppx : sig 
+#1 "bs_builtin_ppx.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -46046,7 +45904,7 @@ val rewrite_implementation :
       *)
 
 end = struct
-#1 "ppx_entry.ml"
+#1 "bs_builtin_ppx.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -46469,6 +46327,2173 @@ let rewrite_implementation (x : Parsetree.structure) =
 
 
 
+end
+module Reactjs_jsx_ppx_v2
+= struct
+#1 "reactjs_jsx_ppx_v2.ml"
+# 1 "syntax/reactjs_jsx_ppx.cppo.ml"
+(*
+  This is the file that handles turning Reason JSX' agnostic function call into
+  a ReasonReact-specific function call. Aka, this is a macro, using OCaml's ppx
+  facilities; https://whitequark.org/blog/2014/04/16/a-guide-to-extension-
+  points-in-ocaml/
+  You wouldn't use this file directly; it's used by BuckleScript's
+  bsconfig.json. Specifically, there's a field called `react-jsx` inside the
+  field `reason`, which enables this ppx through some internal call in bsb
+*)
+
+(*
+  There are two different transforms that can be selected in this file (v2 and v3):
+  v2:
+  transform `[@JSX] div(~props1=a, ~props2=b, ~children=[foo, bar], ())` into
+  `ReactDOMRe.createElement("div", ~props={"props1": 1, "props2": b}, [|foo,
+  bar|])`.
+  transform `[@JSX] div(~props1=a, ~props2=b, ~children=foo, ())` into
+  `ReactDOMRe.createElementVariadic("div", ~props={"props1": 1, "props2": b}, foo)`.
+  transform the upper-cased case
+  `[@JSX] Foo.createElement(~key=a, ~ref=b, ~foo=bar, ~children=[], ())` into
+  `ReasonReact.element(~key=a, ~ref=b, Foo.make(~foo=bar, [||]))`
+  transform `[@JSX] [foo]` into
+  `ReactDOMRe.createElement(ReasonReact.fragment, [|foo|])`
+  v3:
+  transform `[@JSX] div(~props1=a, ~props2=b, ~children=[foo, bar], ())` into
+  `ReactDOMRe.createDOMElementVariadic("div", ReactDOMRe.domProps(~props1=1, ~props2=b), [|foo, bar|])`.
+  transform the upper-cased case
+  `[@JSX] Foo.createElement(~key=a, ~ref=b, ~foo=bar, ~children=[], ())` into
+  `React.createElement(Foo.make, Foo.makeProps(~key=a, ~ref=b, ~foo=bar, ()))`
+  transform the upper-cased case
+  `[@JSX] Foo.createElement(~foo=bar, ~children=[foo, bar], ())` into
+  `React.createElementVariadic(Foo.make, Foo.makeProps(~foo=bar, ~children=React.null, ()), [|foo, bar|])`
+  transform `[@JSX] [foo]` into
+  `ReactDOMRe.createElement(ReasonReact.fragment, [|foo|])`
+*)
+
+open Ast_helper
+open Ast_mapper
+open Asttypes
+open Parsetree
+open Longident
+
+let rec find_opt p = function
+  | [] -> None
+  | x :: l -> if p x then Some x else find_opt p l
+
+
+# 49 "syntax/reactjs_jsx_ppx.cppo.ml"
+let nolabel = Nolabel
+let labelled str = Labelled str
+let optional str = Optional str
+let isOptional str = match str with
+| Optional _ -> true
+| _ -> false
+let isLabelled str = match str with
+| Labelled _ -> true
+| _ -> false
+let getLabel str = match str with
+| Optional str | Labelled str -> str
+| Nolabel -> ""
+let optionIdent = Lident "option"
+
+let argIsKeyRef = function
+  | (Labelled ("key" | "ref"), _) | (Optional ("key" | "ref"), _) -> true
+  | _ -> false
+let constantString ~loc str = Ast_helper.Exp.constant ~loc (Pconst_string (str, None))
+
+# 84 "syntax/reactjs_jsx_ppx.cppo.ml"
+let safeTypeFromValue valueStr =
+let valueStr = getLabel valueStr in
+match String.sub valueStr 0 1 with
+| "_" -> "T" ^ valueStr
+| _ -> valueStr
+let keyType loc = Typ.constr ~loc {loc; txt=optionIdent} [Typ.constr ~loc {loc; txt=Lident "string"} []]
+
+type 'a children = | ListLiteral of 'a | Exact of 'a
+type componentConfig = {
+  propsName: string;
+}
+
+(* if children is a list, convert it to an array while mapping each element. If not, just map over it, as usual *)
+let transformChildrenIfListUpper ~loc ~mapper theList =
+  let rec transformChildren_ theList accum =
+    (* not in the sense of converting a list to an array; convert the AST
+       reprensentation of a list to the AST reprensentation of an array *)
+    match theList with
+    | {pexp_desc = Pexp_construct ({txt = Lident "[]"}, None)} -> begin
+      match accum with
+      | [singleElement] -> Exact singleElement
+      | accum -> ListLiteral (List.rev accum |> Exp.array ~loc)
+      end
+    | {pexp_desc = Pexp_construct (
+        {txt = Lident "::"},
+        Some {pexp_desc = Pexp_tuple (v::acc::[])}
+      )} ->
+      transformChildren_ acc ((mapper.expr mapper v)::accum)
+    | notAList -> Exact (mapper.expr mapper notAList)
+  in
+  transformChildren_ theList []
+
+let transformChildrenIfList ~loc ~mapper theList =
+  let rec transformChildren_ theList accum =
+    (* not in the sense of converting a list to an array; convert the AST
+       reprensentation of a list to the AST reprensentation of an array *)
+    match theList with
+    | {pexp_desc = Pexp_construct ({txt = Lident "[]"}, None)} ->
+      List.rev accum |> Exp.array ~loc
+    | {pexp_desc = Pexp_construct (
+        {txt = Lident "::"},
+        Some {pexp_desc = Pexp_tuple (v::acc::[])}
+      )} ->
+      transformChildren_ acc ((mapper.expr mapper v)::accum)
+    | notAList -> mapper.expr mapper notAList
+  in
+  transformChildren_ theList []
+
+let extractChildren ?(removeLastPositionUnit=false) ~loc propsAndChildren =
+  let rec allButLast_ lst acc = match lst with
+    | [] -> []
+    
+# 136 "syntax/reactjs_jsx_ppx.cppo.ml"
+    | (Nolabel, {pexp_desc = Pexp_construct ({txt = Lident "()"}, None)})::[] -> acc
+    | (Nolabel, _)::rest -> raise (Invalid_argument "JSX: found non-labelled argument before the last position")
+    
+# 142 "syntax/reactjs_jsx_ppx.cppo.ml"
+    | arg::rest -> allButLast_ rest (arg::acc)
+  in
+  let allButLast lst = allButLast_ lst [] |> List.rev in
+  match (List.partition (fun (label, _) -> label = labelled "children") propsAndChildren) with
+  | ([], props) ->
+    (* no children provided? Place a placeholder list *)
+    (Exp.construct ~loc {loc; txt = Lident "[]"} None, if removeLastPositionUnit then allButLast props else props)
+  | ([(_, childrenExpr)], props) ->
+    (childrenExpr, if removeLastPositionUnit then allButLast props else props)
+  | _ -> raise (Invalid_argument "JSX: somehow there's more than one `children` label")
+
+(* Helper method to look up the [@react.component] attribute *)
+let hasAttr (loc, _) =
+  loc.txt = "react.component"
+
+(* Helper method to filter out any attribute that isn't [@react.component] *)
+let otherAttrsPure (loc, _) =
+  loc.txt <> "react.component"
+
+(* Iterate over the attributes and try to find the [@react.component] attribute *)
+let hasAttrOnBinding {pvb_attributes} = find_opt hasAttr pvb_attributes <> None
+
+(* Filter the [@react.component] attribute and immutably replace them on the binding *)
+let filterAttrOnBinding binding = {binding with pvb_attributes = List.filter otherAttrsPure binding.pvb_attributes}
+
+(* Finds the name of the variable the binding is assigned to, otherwise raises Invalid_argument *)
+let getFnName binding =
+  match binding with
+  | {pvb_pat = {
+      ppat_desc = Ppat_var {txt}
+    }} -> txt
+  | _ -> raise (Invalid_argument "react.component calls cannot be destructured.")
+
+(* Lookup the value of `props` otherwise raise Invalid_argument error *)
+let getPropsNameValue _acc (loc, exp) =
+    match (loc, exp) with
+    | ({ txt = Lident "props" }, { pexp_desc = Pexp_ident {txt = Lident str} }) -> { propsName = str }
+    | ({ txt }, _) -> raise (Invalid_argument ("react.component only accepts props as an option, given: " ^ Longident.last txt))
+
+(* Lookup the `props` record or string as part of [@react.component] and store the name for use when rewriting *)
+let getPropsAttr payload =
+  let defaultProps = {propsName = "Props"} in
+  match payload with
+  | Some(PStr(
+    {pstr_desc = Pstr_eval ({
+      pexp_desc = Pexp_record (recordFields, None)
+      }, _)}::_rest
+      )) ->
+      List.fold_left getPropsNameValue defaultProps recordFields
+  | Some(PStr({pstr_desc = Pstr_eval ({pexp_desc = Pexp_ident {txt = Lident "props"}}, _)}::_rest)) -> {propsName = "props"}
+  | Some(PStr({pstr_desc = Pstr_eval (_, _)}::_rest)) -> raise (Invalid_argument ("react.component accepts a record config with props as an options."))
+  | _ -> defaultProps
+
+(* Plucks the label, loc, and type_ from an AST node *)
+let pluckLabelDefaultLocType (label, default, _, _, loc, type_) = (label, default, loc, type_)
+
+(* Lookup the filename from the location information on the AST node and turn it into a valid module identifier *)
+let filenameFromLoc (pstr_loc: Location.t) =
+  let fileName = match pstr_loc.loc_start.pos_fname with
+  | "" -> !Location.input_name
+  | fileName -> fileName
+  in
+  let fileName = try
+      Filename.chop_extension (Filename.basename fileName)
+    with | Invalid_argument _-> fileName in
+  
+# 208 "syntax/reactjs_jsx_ppx.cppo.ml"
+  let fileName = String.capitalize_ascii fileName in
+  
+# 212 "syntax/reactjs_jsx_ppx.cppo.ml"
+  fileName
+
+(* Build a string representation of a module name with segments separated by $ *)
+let makeModuleName fileName nestedModules fnName =
+  let fullModuleName = match (fileName, nestedModules, fnName) with
+  (* TODO: is this even reachable? It seems like the fileName always exists *)
+  | ("", nestedModules, "make") -> nestedModules
+  | ("", nestedModules, fnName) -> List.rev (fnName :: nestedModules)
+  | (fileName, nestedModules, "make") -> fileName :: (List.rev nestedModules)
+  | (fileName, nestedModules, fnName) -> fileName :: (List.rev (fnName :: nestedModules))
+  in
+  let fullModuleName = String.concat "$" fullModuleName in
+  fullModuleName
+
+(*
+  AST node builders
+  These functions help us build AST nodes that are needed when transforming a [@react.component] into a
+  constructor and a props external
+*)
+
+(* Build an AST node representing all named args for the `external` definition for a component's props *)
+let rec recursivelyMakeNamedArgsForExternal list args =
+  match list with
+  | (label, default, loc, interiorType)::tl ->
+    recursivelyMakeNamedArgsForExternal tl (Typ.arrow
+    ~loc
+    label
+    (match (label, interiorType, default) with
+    (* ~foo=1 *)
+    | (label, None, Some _) ->
+    
+# 243 "syntax/reactjs_jsx_ppx.cppo.ml"
+    {
+      ptyp_desc = Ptyp_var (safeTypeFromValue label);
+      ptyp_loc = loc;
+      ptyp_attributes = [];
+    }
+    
+# 259 "syntax/reactjs_jsx_ppx.cppo.ml"
+    (* ~foo: int=1 *)
+    | (label, Some type_, Some _) ->
+    
+# 262 "syntax/reactjs_jsx_ppx.cppo.ml"
+    type_
+    
+# 269 "syntax/reactjs_jsx_ppx.cppo.ml"
+    (* ~foo: option(int)=? *)
+    | (label, Some ({ptyp_desc = Ptyp_constr ({txt=(Lident "option")}, [type_])}), _)
+    | (label, Some ({ptyp_desc = Ptyp_constr ({txt=(Ldot (Lident "*predef*", "option"))}, [type_])}), _) 
+    (* ~foo: int=? - note this isnt valid. but we want to get a type error *)
+    | (label, Some type_, _) when isOptional label ->
+    
+# 275 "syntax/reactjs_jsx_ppx.cppo.ml"
+    type_
+    
+# 282 "syntax/reactjs_jsx_ppx.cppo.ml"
+    (* ~foo=? *)
+    | (label, None, _) when isOptional label -> 
+    
+# 285 "syntax/reactjs_jsx_ppx.cppo.ml"
+    {
+      ptyp_desc = Ptyp_var (safeTypeFromValue label);
+      ptyp_loc = loc;
+      ptyp_attributes = [];
+    }
+    
+# 301 "syntax/reactjs_jsx_ppx.cppo.ml"
+    (* ~foo *)
+    | (label, None, _) -> 
+    {
+      ptyp_desc = Ptyp_var (safeTypeFromValue label);
+      ptyp_loc = loc;
+      ptyp_attributes = [];
+    }
+    | (label, Some type_, _) -> 
+    type_
+    )
+    args)
+  | [] -> args
+
+(* Build an AST node for the [@bs.obj] representing props for a component *)
+let makePropsValue fnName loc namedArgListWithKeyAndRef propsType =
+  let propsName = fnName ^ "Props" in {
+  pval_name = {txt = propsName; loc};
+  pval_type =
+      recursivelyMakeNamedArgsForExternal
+        namedArgListWithKeyAndRef
+        (Typ.arrow
+          nolabel
+          {
+            ptyp_desc = Ptyp_constr ({txt= Lident("unit"); loc}, []);
+            ptyp_loc = loc;
+            ptyp_attributes = [];
+          }
+          propsType
+        );
+  pval_prim = [""];
+  pval_attributes = [({txt = "bs.obj"; loc = loc}, PStr [])];
+  pval_loc = loc;
+}
+
+(* Build an AST node representing an `external` with the definition of the [@bs.obj] *)
+let makePropsExternal fnName loc namedArgListWithKeyAndRef propsType =
+  {
+    pstr_loc = loc;
+    pstr_desc = Pstr_primitive (makePropsValue fnName loc namedArgListWithKeyAndRef propsType)
+  }
+
+(* Build an AST node for the signature of the `external` definition *)
+let makePropsExternalSig fnName loc namedArgListWithKeyAndRef propsType =
+  {
+    psig_loc = loc;
+    psig_desc = Psig_value (makePropsValue fnName loc namedArgListWithKeyAndRef propsType)
+  }
+
+(* Build an AST node for the props name when converted to a Js.t inside the function signature  *)
+let makePropsName ~loc name =
+  {
+    ppat_desc = Ppat_var {txt = name; loc};
+    ppat_loc = loc;
+    ppat_attributes = [];
+  }
+
+# 358 "syntax/reactjs_jsx_ppx.cppo.ml"
+let makeObjectField loc (str, _attrs, type_) =
+  (* intentionally not using attrs - they probably don't work on object fields. use on *Props instead *)
+  Otag ({ loc; txt = str }, [], {type_ with ptyp_attributes = []})
+
+# 363 "syntax/reactjs_jsx_ppx.cppo.ml"
+(* Build an AST node representing a "closed" Js.t object representing a component's props *)
+let makePropsType ~loc namedTypeList =
+  Typ.mk ~loc (
+    Ptyp_constr({txt= Ldot (Lident("Js"), "t"); loc}, [{
+        
+# 368 "syntax/reactjs_jsx_ppx.cppo.ml"
+        ptyp_desc = Ptyp_object(
+          List.map (makeObjectField loc) namedTypeList,
+          Closed
+        );
+        
+# 375 "syntax/reactjs_jsx_ppx.cppo.ml"
+        ptyp_loc = loc;
+        ptyp_attributes = [];
+      }])
+    )
+
+(* Builds an AST node for the entire `external` definition of props *)
+let makeExternalDecl fnName loc namedArgListWithKeyAndRef namedTypeList =
+  makePropsExternal
+    fnName
+    loc
+    (List.map pluckLabelDefaultLocType namedArgListWithKeyAndRef)
+    (makePropsType ~loc namedTypeList)
+
+(* TODO: some line number might still be wrong *)
+let jsxMapper () =
+
+  let jsxVersion = ref None in
+
+  let transformUppercaseCall3 modulePath mapper loc attrs _ callArguments =
+    let (children, argsWithLabels) = extractChildren ~loc ~removeLastPositionUnit:true callArguments in
+    let argsForMake = argsWithLabels in
+    let childrenExpr = transformChildrenIfListUpper ~loc ~mapper children in
+    let recursivelyTransformedArgsForMake = argsForMake |> List.map (fun (label, expression) -> (label, mapper.expr mapper expression)) in
+    let childrenArg = ref None in
+    let args = recursivelyTransformedArgsForMake
+      @ (match childrenExpr with
+        | Exact children -> [(labelled "children", children)]
+        | ListLiteral ({ pexp_desc = Pexp_array list }) when list = [] -> []
+        | ListLiteral expression ->
+        (* this is a hack to support react components that introspect into their children *)
+        (childrenArg := Some expression;
+        [(labelled "children", Exp.ident ~loc {loc; txt = Ldot (Lident "React", "null")})]))
+      @ [(nolabel, Exp.construct ~loc {loc; txt = Lident "()"} None)] in
+    let isCap str = let first = String.sub str 0 1 in
+    
+# 410 "syntax/reactjs_jsx_ppx.cppo.ml"
+    let capped = String.uppercase_ascii first in first = capped in
+    
+# 414 "syntax/reactjs_jsx_ppx.cppo.ml"
+    let ident = match modulePath with
+    | Lident _ -> Ldot (modulePath, "make")
+    | (Ldot (_modulePath, value) as fullPath) when isCap value -> Ldot (fullPath, "make")
+    | modulePath -> modulePath in
+    let propsIdent = match ident with
+    | Lident path -> Lident (path ^ "Props")
+    | Ldot(ident, path) -> Ldot (ident, path ^ "Props")
+    | _ -> raise (Invalid_argument "JSX name can't be the result of function applications") in
+    let props =
+    Exp.apply ~attrs ~loc (Exp.ident ~loc {loc; txt = propsIdent}) args in
+    (* handle key, ref, children *)
+      (* React.createElement(Component.make, props, ...children) *)
+    match (!childrenArg) with
+    | None ->
+      (Exp.apply
+        ~loc
+        ~attrs
+        (Exp.ident ~loc {loc; txt = Ldot (Lident "React", "createElement")})
+        ([
+          (nolabel, Exp.ident ~loc {txt = ident; loc});
+          (nolabel, props)
+        ]))
+     | Some children ->
+       (Exp.apply
+         ~loc
+         ~attrs
+         (Exp.ident ~loc {loc; txt = Ldot (Lident "React", "createElementVariadic")})
+         ([
+           (nolabel, Exp.ident ~loc {txt = ident; loc});
+           (nolabel, props);
+           (nolabel, children)
+         ]))
+     in
+
+    let transformLowercaseCall3 mapper loc attrs callArguments id =
+      let (children, nonChildrenProps) = extractChildren ~loc callArguments in
+      let componentNameExpr = constantString ~loc id in
+      let childrenExpr = transformChildrenIfList ~loc ~mapper children in
+      let createElementCall = match children with
+        (* [@JSX] div(~children=[a]), coming from <div> a </div> *)
+        | {
+            pexp_desc =
+             Pexp_construct ({txt = Lident "::"}, Some {pexp_desc = Pexp_tuple _ })
+             | Pexp_construct ({txt = Lident "[]"}, None)
+          } -> "createDOMElementVariadic"
+        (* [@JSX] div(~children= value), coming from <div> ...(value) </div> *)
+        | _ -> raise (Invalid_argument "A spread as a DOM element's \
+          children don't make sense written together. You can simply remove the spread.")
+      in
+      let args = match nonChildrenProps with
+        | [_justTheUnitArgumentAtEnd] ->
+          [
+            (* "div" *)
+            (nolabel, componentNameExpr);
+            (* [|moreCreateElementCallsHere|] *)
+            (nolabel, childrenExpr)
+          ]
+        | nonEmptyProps ->
+          let propsCall =
+            Exp.apply
+              ~loc
+              (Exp.ident ~loc {loc; txt = Ldot (Lident "ReactDOMRe", "domProps")})
+              (nonEmptyProps |> List.map (fun (label, expression) -> (label, mapper.expr mapper expression)))
+          in
+          [
+            (* "div" *)
+            (nolabel, componentNameExpr);
+            (* ReactDOMRe.props(~className=blabla, ~foo=bar, ()) *)
+            (labelled "props", propsCall);
+            (* [|moreCreateElementCallsHere|] *)
+            (nolabel, childrenExpr)
+          ] in
+      Exp.apply
+        ~loc
+        (* throw away the [@JSX] attribute and keep the others, if any *)
+        ~attrs
+        (* ReactDOMRe.createElement *)
+        (Exp.ident ~loc {loc; txt = Ldot (Lident "ReactDOMRe", createElementCall)})
+        args
+    in
+
+  let transformUppercaseCall modulePath mapper loc attrs _ callArguments =
+    let (children, argsWithLabels) = extractChildren ~loc ~removeLastPositionUnit:true callArguments in
+    let (argsKeyRef, argsForMake) = List.partition argIsKeyRef argsWithLabels in
+    let childrenExpr = transformChildrenIfList ~loc ~mapper children in
+    let recursivelyTransformedArgsForMake = argsForMake |> List.map (fun (label, expression) -> (label, mapper.expr mapper expression)) in
+    let args = recursivelyTransformedArgsForMake @ [ (nolabel, childrenExpr) ] in
+    let wrapWithReasonReactElement e = (* ReasonReact.element(~key, ~ref, ...) *)
+      Exp.apply
+        ~loc
+        (Exp.ident ~loc {loc; txt = Ldot (Lident "ReasonReact", "element")})
+        (argsKeyRef @ [(nolabel, e)]) in
+    Exp.apply
+      ~loc
+      ~attrs
+      (* Foo.make *)
+      (Exp.ident ~loc {loc; txt = Ldot (modulePath, "make")})
+      args
+    |> wrapWithReasonReactElement in
+
+  let transformLowercaseCall mapper loc attrs callArguments id =
+    let (children, nonChildrenProps) = extractChildren ~loc callArguments in
+    let componentNameExpr = constantString ~loc id in
+    let childrenExpr = transformChildrenIfList ~loc ~mapper children in
+    let createElementCall = match children with
+      (* [@JSX] div(~children=[a]), coming from <div> a </div> *)
+      | {
+          pexp_desc =
+           Pexp_construct ({txt = Lident "::"}, Some {pexp_desc = Pexp_tuple _ })
+           | Pexp_construct ({txt = Lident "[]"}, None)
+        } -> "createElement"
+      (* [@JSX] div(~children=[|a|]), coming from <div> ...[|a|] </div> *)
+      | { pexp_desc = (Pexp_array _) } ->
+        raise (Invalid_argument "A spread + an array literal as a DOM element's \
+          children would cancel each other out, and thus don't make sense written \
+          together. You can simply remove the spread and the array literal.")
+      (* [@JSX] div(~children= <div />), coming from <div> ...<div/> </div> *)
+      | {
+          pexp_attributes
+        } when pexp_attributes |> List.exists (fun (attribute, _) -> attribute.txt = "JSX") ->
+        raise (Invalid_argument "A spread + a JSX literal as a DOM element's \
+          children don't make sense written together. You can simply remove the spread.")
+      | _ -> "createElementVariadic"
+    in
+    let args = match nonChildrenProps with
+      | [_justTheUnitArgumentAtEnd] ->
+        [
+          (* "div" *)
+          (nolabel, componentNameExpr);
+          (* [|moreCreateElementCallsHere|] *)
+          (nolabel, childrenExpr)
+        ]
+      | nonEmptyProps ->
+        let propsCall =
+          Exp.apply
+            ~loc
+            (Exp.ident ~loc {loc; txt = Ldot (Lident "ReactDOMRe", "props")})
+            (nonEmptyProps |> List.map (fun (label, expression) -> (label, mapper.expr mapper expression)))
+        in
+        [
+          (* "div" *)
+          (nolabel, componentNameExpr);
+          (* ReactDOMRe.props(~className=blabla, ~foo=bar, ()) *)
+          (labelled "props", propsCall);
+          (* [|moreCreateElementCallsHere|] *)
+          (nolabel, childrenExpr)
+        ] in
+    Exp.apply
+      ~loc
+      (* throw away the [@JSX] attribute and keep the others, if any *)
+      ~attrs
+      (* ReactDOMRe.createElement *)
+      (Exp.ident ~loc {loc; txt = Ldot (Lident "ReactDOMRe", createElementCall)})
+      args
+  in
+
+  let rec recursivelyTransformNamedArgsForMake mapper expr list =
+    let expr = mapper.expr mapper expr in
+    match expr.pexp_desc with
+    (* TODO: make this show up with a loc. *)
+    
+# 575 "syntax/reactjs_jsx_ppx.cppo.ml"
+    | Pexp_fun (Labelled "key", _, _, _)
+    | Pexp_fun (Optional "key", _, _, _) -> raise (Invalid_argument "Key cannot be accessed inside of a component. Don't worry - you can always key a component from its parent!")
+    | Pexp_fun (Labelled "ref", _, _, _)
+    | Pexp_fun (Optional "ref", _, _, _) -> raise (Invalid_argument "Ref cannot be passed as a normal prop. Please use `forwardRef` API instead.")
+    
+# 585 "syntax/reactjs_jsx_ppx.cppo.ml"
+    | Pexp_fun (arg, default, pattern, expression) when isOptional arg || isLabelled arg ->
+      let alias = (match pattern with
+      | {ppat_desc = Ppat_alias (_, {txt}) | Ppat_var {txt}} -> txt
+      | {ppat_desc = Ppat_any} -> "_"
+      | _ -> getLabel arg) in
+      let type_ = (match pattern with
+      | {ppat_desc = Ppat_constraint (_, type_)} -> Some type_
+      | _ -> None) in
+
+      recursivelyTransformNamedArgsForMake mapper expression ((arg, default, pattern, alias, pattern.ppat_loc, type_) :: list)
+    
+# 596 "syntax/reactjs_jsx_ppx.cppo.ml"
+    | Pexp_fun (Nolabel, _, { ppat_desc = (Ppat_construct ({txt = Lident "()"}, _) | Ppat_any)}, expression) ->
+        (expression.pexp_desc, list, None)
+    | Pexp_fun (Nolabel, _, { ppat_desc = Ppat_var ({txt})}, expression) ->
+        (expression.pexp_desc, list, Some txt)
+    
+# 606 "syntax/reactjs_jsx_ppx.cppo.ml"
+    | innerExpression -> (innerExpression, list, None)
+  in
+
+
+  let argToType types (name, default, _noLabelName, _alias, loc, type_) = match (type_, name, default) with
+    | (Some ({ptyp_desc = Ptyp_constr ({txt=(Lident "option")}, [type_])}), name, _) when isOptional name ->
+      (getLabel name, [], {
+        type_ with
+        ptyp_desc = Ptyp_constr ({loc=type_.ptyp_loc; txt=optionIdent}, [type_]);
+      }) :: types
+    | (Some type_, name, Some _default) ->
+      (getLabel name, [], {
+      ptyp_desc = Ptyp_constr ({loc; txt=optionIdent}, [type_]);
+      ptyp_loc = loc;
+      ptyp_attributes = [];
+      }) :: types
+    | (Some type_, name, _) ->
+      (getLabel name, [], type_) :: types
+    | (None, name, _) when isOptional name ->
+      (getLabel name, [], {
+        ptyp_desc = Ptyp_constr ({loc; txt=optionIdent}, [{
+          ptyp_desc = Ptyp_var (safeTypeFromValue name);
+          ptyp_loc = loc;
+          ptyp_attributes = [];
+        }]);
+        ptyp_loc = loc;
+        ptyp_attributes = [];
+        }) :: types
+    | (None, name, _) when isLabelled name ->
+      (getLabel name, [], {
+        ptyp_desc = Ptyp_var (safeTypeFromValue name);
+        ptyp_loc = loc;
+        ptyp_attributes = [];
+        }) :: types
+    | _ -> types
+  in
+
+  let argToConcreteType types (name, _loc, type_) = match name with
+    | name when isLabelled name || isOptional name ->
+    (getLabel name, [], type_) :: types
+    (* return value *)
+    | _ -> types
+  in
+
+  let nestedModules = ref([]) in
+  let transformComponentDefinition mapper structure returnStructures = match structure with
+  (* external *)
+  | ({
+      pstr_loc;
+      pstr_desc = Pstr_primitive ({
+        pval_name = { txt = fnName };
+        pval_attributes;
+        pval_type;
+      } as value_description)
+    } as pstr) ->
+    (match List.filter hasAttr pval_attributes with
+    | [] -> structure :: returnStructures
+    | [_] ->
+    let rec getPropTypes types ({ptyp_loc; ptyp_desc} as fullType) =
+      (match ptyp_desc with
+      | Ptyp_arrow (name, type_, ({ptyp_desc = Ptyp_arrow _} as rest)) when isLabelled name || isOptional name ->
+        getPropTypes ((name, ptyp_loc, type_)::types) rest
+      
+# 669 "syntax/reactjs_jsx_ppx.cppo.ml"
+      | Ptyp_arrow (Nolabel, _type, rest) ->
+        
+# 673 "syntax/reactjs_jsx_ppx.cppo.ml"
+        getPropTypes types rest
+      | Ptyp_arrow (name, type_, returnValue) when isLabelled name || isOptional name ->
+        (returnValue, (name, returnValue.ptyp_loc, type_)::types)
+      | _ -> (fullType, types))
+    in
+    let (innerType, propTypes) = getPropTypes [] pval_type in
+    let namedTypeList = List.fold_left argToConcreteType [] propTypes in
+    let pluckLabelAndLoc (label, loc, type_) = (label, None (* default *), loc, Some type_) in
+    let retPropsType = makePropsType ~loc:pstr_loc namedTypeList in
+    let externalPropsDecl = makePropsExternal fnName pstr_loc ((
+      optional "key",
+      None,
+      pstr_loc,
+      Some(keyType pstr_loc)
+    ) :: List.map pluckLabelAndLoc propTypes) retPropsType in
+    (* can't be an arrow because it will defensively uncurry *)
+    let newExternalType = Ptyp_constr (
+      {loc = pstr_loc; txt = Ldot ((Lident "React"), "componentLike")},
+      [retPropsType; innerType]
+    ) in
+    let newStructure = {
+      pstr with pstr_desc = Pstr_primitive {
+        value_description with pval_type = {
+          pval_type with ptyp_desc = newExternalType;
+        };
+        pval_attributes = List.filter otherAttrsPure pval_attributes;
+      }
+    } in
+    externalPropsDecl :: newStructure :: returnStructures
+    | _ -> raise (Invalid_argument "Only one react.component call can exist on a component at one time"))
+  (* let component = ... *)
+  | {
+      pstr_loc;
+      pstr_desc = Pstr_value (
+        recFlag,
+        valueBindings
+      )
+    } ->
+      let mapBinding binding = if (hasAttrOnBinding binding) then
+        let fnName = getFnName binding in
+        let fileName = filenameFromLoc pstr_loc in
+        let fullModuleName = makeModuleName fileName !nestedModules fnName in
+        let emptyLoc = Location.in_file fileName in
+        let modifiedBinding binding =
+          let expression = binding.pvb_expr in
+          let wrapExpressionWithBinding expressionFn expression = {(filterAttrOnBinding binding) with pvb_expr = expressionFn expression} in
+          (* TODO: there is a long-tail of unsupported features inside of blocks - Pexp_letmodule , Pexp_letexception , Pexp_ifthenelse *)
+          let rec spelunkForFunExpression expression = (match expression with
+          (* let make = (~prop) => ... *)
+          | {
+            pexp_desc = Pexp_fun _
+          } -> ((fun expressionDesc -> {expression with pexp_desc = expressionDesc}), expression)
+          (* let make = {let foo = bar in (~prop) => ...} *)
+          | {
+              pexp_desc = Pexp_let (recursive, vbs, returnExpression)
+            } ->
+            (* here's where we spelunk! *)
+            let (wrapExpression, realReturnExpression) = spelunkForFunExpression returnExpression in
+            ((fun expressionDesc -> {expression with pexp_desc = Pexp_let (recursive, vbs, wrapExpression expressionDesc)}), realReturnExpression)
+          (* let make = React.forwardRef((~prop) => ...) *)
+          
+# 734 "syntax/reactjs_jsx_ppx.cppo.ml"
+          | { pexp_desc = Pexp_apply (wrapperExpression, [(Nolabel, innerFunctionExpression)]) } ->
+            
+# 738 "syntax/reactjs_jsx_ppx.cppo.ml"
+            let (wrapExpression, realReturnExpression) = spelunkForFunExpression innerFunctionExpression in
+            ((fun expressionDesc -> {
+              expression with pexp_desc =
+                Pexp_apply (wrapperExpression, [(nolabel, wrapExpression expressionDesc)])
+              }),
+              realReturnExpression
+            )
+          | {
+              pexp_desc = Pexp_sequence (wrapperExpression, innerFunctionExpression)
+            } ->
+            let (wrapExpression, realReturnExpression) = spelunkForFunExpression innerFunctionExpression in
+            ((fun expressionDesc -> {
+              expression with pexp_desc =
+                Pexp_sequence (wrapperExpression, wrapExpression expressionDesc)
+              }),
+              realReturnExpression
+            )
+          | _ -> raise (Invalid_argument "react.component calls can only be on function definitions or component wrappers (forwardRef, memo).")
+          ) in
+          let (wrapExpression, expression) = spelunkForFunExpression expression in
+          (wrapExpressionWithBinding wrapExpression, expression)
+        in
+        let (bindingWrapper, expression) = modifiedBinding binding in
+        let reactComponentAttribute = try
+          Some(List.find hasAttr binding.pvb_attributes)
+        with | Not_found -> None in
+        let (attr_loc, payload) = match reactComponentAttribute with
+        | Some (loc, payload) -> (loc.loc, Some payload)
+        | None -> (emptyLoc, None) in
+        let props = getPropsAttr payload in
+        (* do stuff here! *)
+        let (innerFunctionExpression, namedArgList, forwardRef) = recursivelyTransformNamedArgsForMake mapper expression [] in
+        let namedArgListWithKeyAndRef = (optional("key"), None, Pat.var {txt = "key"; loc = emptyLoc}, "key", emptyLoc, Some(keyType emptyLoc)) :: namedArgList in
+        let namedArgListWithKeyAndRef = match forwardRef with
+        | Some(_) ->  (optional("ref"), None, Pat.var {txt = "key"; loc = emptyLoc}, "ref", emptyLoc, None) :: namedArgListWithKeyAndRef
+        | None -> namedArgListWithKeyAndRef
+        in
+        let namedTypeList = List.fold_left argToType [] namedArgList in
+        let externalDecl = makeExternalDecl fnName attr_loc namedArgListWithKeyAndRef namedTypeList in
+        let makeLet innerExpression (label, default, pattern, _alias, loc, _type) =
+          let labelString = (match label with | label when isOptional label || isLabelled label -> getLabel label | _ -> raise (Invalid_argument "This should never happen")) in
+          let expression = (Exp.apply ~loc
+            (Exp.ident ~loc {txt = (Lident "##"); loc })
+            [
+              (nolabel, Exp.ident ~loc {txt = (Lident props.propsName); loc });
+              (nolabel, Exp.ident ~loc {
+                txt = (Lident labelString);
+                loc
+              })
+            ]
+          ) in
+          let expression = match (default) with
+          | (Some default) -> Exp.match_ expression [
+            Exp.case
+              (Pat.construct {loc; txt=Lident "Some"} (Some (Pat.var ~loc {txt = labelString; loc})))
+              (Exp.ident ~loc {txt = (Lident labelString); loc});
+            Exp.case
+              (Pat.construct {loc; txt=Lident "None"} None)
+              default
+          ]
+          | None -> expression in
+          let letExpression = Vb.mk
+            pattern
+            expression in
+          Exp.let_ ~loc Nonrecursive [letExpression] innerExpression in
+        let innerExpression = List.fold_left makeLet (Exp.mk innerFunctionExpression) namedArgList in
+        let innerExpressionWithRef = match (forwardRef) with
+        | Some txt ->
+          {innerExpression with pexp_desc = Pexp_fun (nolabel, None, {
+            ppat_desc = Ppat_var { txt; loc = emptyLoc };
+            ppat_loc = emptyLoc;
+            ppat_attributes = [];
+          }, innerExpression)}
+        | None -> innerExpression
+        in
+        let fullExpression = (Pexp_fun (
+          nolabel,
+          None,
+          {
+            ppat_desc = Ppat_constraint (
+              makePropsName ~loc:emptyLoc props.propsName,
+              makePropsType ~loc:emptyLoc namedTypeList
+            );
+            ppat_loc = emptyLoc;
+            ppat_attributes = [];
+          },
+          innerExpressionWithRef
+        )) in
+        let fullExpression = match (fullModuleName) with
+        | ("") -> fullExpression
+        | (txt) -> Pexp_let (
+            Nonrecursive,
+            [Vb.mk
+              ~loc:emptyLoc
+              (Pat.var ~loc:emptyLoc {loc = emptyLoc; txt})
+              (Exp.mk ~loc:emptyLoc fullExpression)
+            ],
+            (Exp.ident ~loc:emptyLoc {loc = emptyLoc; txt = Lident txt})
+          )
+        in
+        let newBinding = bindingWrapper fullExpression in
+        (Some externalDecl, newBinding)
+      else
+        (None, binding)
+      in
+      let structuresAndBinding = List.map mapBinding valueBindings in
+      let otherStructures (extern, binding) (externs, bindings) =
+        let externs = match extern with
+        | Some extern -> extern :: externs
+        | None -> externs in
+        (externs, binding :: bindings)
+      in
+      let (externs, bindings) = List.fold_right otherStructures structuresAndBinding ([], []) in
+      externs @ {
+        pstr_loc;
+        pstr_desc = Pstr_value (
+          recFlag,
+          bindings
+        )
+      } :: returnStructures
+    | structure -> structure :: returnStructures in
+
+  let reactComponentTransform mapper structures =
+  List.fold_right (transformComponentDefinition mapper) structures [] in
+
+  let transformComponentSignature _mapper signature returnSignatures = match signature with
+  | ({
+      psig_loc;
+      psig_desc = Psig_value ({
+        pval_name = { txt = fnName };
+        pval_attributes;
+        pval_type;
+      } as psig_desc)
+    } as psig) ->
+    (match List.filter hasAttr pval_attributes with
+    | [] -> signature :: returnSignatures
+    | [_] ->
+    let rec getPropTypes types ({ptyp_loc; ptyp_desc} as fullType) =
+      (match ptyp_desc with
+      | Ptyp_arrow (name, type_, ({ptyp_desc = Ptyp_arrow _} as rest)) when isOptional name || isLabelled name ->
+        getPropTypes ((name, ptyp_loc, type_)::types) rest
+      
+# 880 "syntax/reactjs_jsx_ppx.cppo.ml"
+      | Ptyp_arrow (Nolabel, _type, rest) ->
+        
+# 884 "syntax/reactjs_jsx_ppx.cppo.ml"
+        getPropTypes types rest
+      | Ptyp_arrow (name, type_, returnValue) when isOptional name || isLabelled name ->
+        (returnValue, (name, returnValue.ptyp_loc, type_)::types)
+      | _ -> (fullType, types))
+    in
+    let (innerType, propTypes) = getPropTypes [] pval_type in
+    let namedTypeList = List.fold_left argToConcreteType [] propTypes in
+    let pluckLabelAndLoc (label, loc, type_) = (label, None, loc, Some type_) in
+    let retPropsType = makePropsType ~loc:psig_loc namedTypeList in
+    let externalPropsDecl = makePropsExternalSig fnName psig_loc ((
+      optional "key",
+      None,
+      psig_loc,
+      Some(keyType psig_loc)
+    ) :: List.map pluckLabelAndLoc propTypes) retPropsType in
+        (* can't be an arrow because it will defensively uncurry *)
+    let newExternalType = Ptyp_constr (
+      {loc = psig_loc; txt = Ldot ((Lident "React"), "componentLike")},
+      [retPropsType; innerType]
+    ) in
+    let newStructure = {
+      psig with psig_desc = Psig_value {
+        psig_desc with pval_type = {
+          pval_type with ptyp_desc = newExternalType;
+        };
+        pval_attributes = List.filter otherAttrsPure pval_attributes;
+      }
+    } in
+    externalPropsDecl :: newStructure :: returnSignatures
+    | _ -> raise (Invalid_argument "Only one react.component call can exist on a component at one time"))
+  | signature -> signature :: returnSignatures in
+
+  let reactComponentSignatureTransform mapper signatures =
+  List.fold_right (transformComponentSignature mapper) signatures [] in
+
+
+  let transformJsxCall mapper callExpression callArguments attrs =
+    (match callExpression.pexp_desc with
+     | Pexp_ident caller ->
+       (match caller with
+        | {txt = Lident "createElement"} ->
+          raise (Invalid_argument "JSX: `createElement` should be preceeded by a module name.")
+
+        (* Foo.createElement(~prop1=foo, ~prop2=bar, ~children=[], ()) *)
+        | {loc; txt = Ldot (modulePath, ("createElement" | "make"))} ->
+          (match !jsxVersion with
+          
+# 931 "syntax/reactjs_jsx_ppx.cppo.ml"
+          | None
+          | Some 2 -> transformUppercaseCall modulePath mapper loc attrs callExpression callArguments
+          
+# 937 "syntax/reactjs_jsx_ppx.cppo.ml"
+          | Some 3 -> transformUppercaseCall3 modulePath mapper loc attrs callExpression callArguments
+          | Some _ -> raise (Invalid_argument "JSX: the JSX version must be 2 or 3"))
+
+        (* div(~prop1=foo, ~prop2=bar, ~children=[bla], ()) *)
+        (* turn that into
+          ReactDOMRe.createElement(~props=ReactDOMRe.props(~props1=foo, ~props2=bar, ()), [|bla|]) *)
+        | {loc; txt = Lident id} ->
+          (match !jsxVersion with
+          
+# 946 "syntax/reactjs_jsx_ppx.cppo.ml"
+          | None
+          | Some 2 -> transformLowercaseCall mapper loc attrs callArguments id
+          
+# 952 "syntax/reactjs_jsx_ppx.cppo.ml"
+          | Some 3 -> transformLowercaseCall3 mapper loc attrs callArguments id
+          | Some _ -> raise (Invalid_argument "JSX: the JSX version must be 2 or 3"))
+
+        | {txt = Ldot (_, anythingNotCreateElementOrMake)} ->
+          raise (
+            Invalid_argument
+              ("JSX: the JSX attribute should be attached to a `YourModuleName.createElement` or `YourModuleName.make` call. We saw `"
+               ^ anythingNotCreateElementOrMake
+               ^ "` instead"
+              )
+          )
+
+        | {txt = Lapply _} ->
+          (* don't think there's ever a case where this is reached *)
+          raise (
+            Invalid_argument "JSX: encountered a weird case while processing the code. Please report this!"
+          )
+       )
+     | _ ->
+       raise (
+         Invalid_argument "JSX: `createElement` should be preceeded by a simple, direct module name."
+       )
+    ) in
+
+  let signature =
+    (fun mapper signature -> default_mapper.signature mapper @@ reactComponentSignatureTransform mapper signature) in
+
+  let structure =
+    (fun mapper structure -> match structure with
+      (*
+        match against [@bs.config {foo, jsx: ...}] at the file-level. This
+        indicates which version of JSX we're using. This code stays here because
+        we used to have 2 versions of JSX PPX (and likely will again in the
+        future when JSX PPX changes). So the architecture for switching between
+        JSX behavior stayed here. To create a new JSX ppx, copy paste this
+        entire file and change the relevant parts.
+        Description of architecture: in bucklescript's bsconfig.json, you can
+        specify a project-wide JSX version. You can also specify a file-level
+        JSX version. This degree of freedom allows a person to convert a project
+        one file at time onto the new JSX, when it was released. It also enabled
+        a project to depend on a third-party which is still using an old version
+        of JSX
+      *)
+      | {
+          pstr_loc;
+          pstr_desc = Pstr_attribute (
+            ({txt = "bs.config"} as bsConfigLabel),
+            PStr [{pstr_desc = Pstr_eval ({pexp_desc = Pexp_record (recordFields, b)} as innerConfigRecord, a)} as configRecord]
+          )
+        }::restOfStructure -> begin
+          let (jsxField, recordFieldsWithoutJsx) = recordFields |> List.partition (fun ({txt}, _) -> txt = Lident "jsx") in
+          match (jsxField, recordFieldsWithoutJsx) with
+          (* no file-level jsx config found *)
+          | ([], _) -> default_mapper.structure mapper structure
+          (* {jsx: 2} *)
+          
+# 1008 "syntax/reactjs_jsx_ppx.cppo.ml"
+          | ((_, {pexp_desc = Pexp_constant (Pconst_integer (version, None))})::rest, recordFieldsWithoutJsx) -> begin
+              
+# 1012 "syntax/reactjs_jsx_ppx.cppo.ml"
+              (match version with
+              
+# 1014 "syntax/reactjs_jsx_ppx.cppo.ml"
+              | "2" -> jsxVersion := Some 2
+              | "3" -> jsxVersion := Some 3
+              
+# 1020 "syntax/reactjs_jsx_ppx.cppo.ml"
+              | _ -> raise (Invalid_argument "JSX: the file-level bs.config's jsx version must be 2 or 3"));
+              match recordFieldsWithoutJsx with
+              (* record empty now, remove the whole bs.config attribute *)
+              | [] -> default_mapper.structure mapper @@ reactComponentTransform mapper restOfStructure
+              | fields -> default_mapper.structure mapper ({
+                pstr_loc;
+                pstr_desc = Pstr_attribute (
+                  bsConfigLabel,
+                  PStr [{configRecord with pstr_desc = Pstr_eval ({innerConfigRecord with pexp_desc = Pexp_record (fields, b)}, a)}]
+                )
+              }::(reactComponentTransform mapper restOfStructure))
+            end
+        | _ -> raise (Invalid_argument "JSX: the file-level bs.config's {jsx: ...} config accepts only a version number")
+      end
+      | structures -> begin
+        default_mapper.structure mapper @@ reactComponentTransform mapper structures
+      end
+    ) in
+
+  let expr =
+    (fun mapper expression -> match expression with
+       (* Does the function application have the @JSX attribute? *)
+       | {
+           pexp_desc = Pexp_apply (callExpression, callArguments);
+           pexp_attributes
+         } ->
+         let (jsxAttribute, nonJSXAttributes) = List.partition (fun (attribute, _) -> attribute.txt = "JSX") pexp_attributes in
+         (match (jsxAttribute, nonJSXAttributes) with
+         (* no JSX attribute *)
+         | ([], _) -> default_mapper.expr mapper expression
+         | (_, nonJSXAttributes) -> transformJsxCall mapper callExpression callArguments nonJSXAttributes)
+
+       (* is it a list with jsx attribute? Reason <>foo</> desugars to [@JSX][foo]*)
+       | {
+           pexp_desc =
+            Pexp_construct ({txt = Lident "::"; loc}, Some {pexp_desc = Pexp_tuple _})
+            | Pexp_construct ({txt = Lident "[]"; loc}, None);
+           pexp_attributes
+         } as listItems ->
+          let (jsxAttribute, nonJSXAttributes) = List.partition (fun (attribute, _) -> attribute.txt = "JSX") pexp_attributes in
+          (match (jsxAttribute, nonJSXAttributes) with
+          (* no JSX attribute *)
+          | ([], _) -> default_mapper.expr mapper expression
+          | (_, nonJSXAttributes) ->
+            let fragment = Exp.ident ~loc {loc; txt = Ldot (Lident "ReasonReact", "fragment")} in
+            let childrenExpr = transformChildrenIfList ~loc ~mapper listItems in
+            let args = [
+              (* "div" *)
+              (nolabel, fragment);
+              (* [|moreCreateElementCallsHere|] *)
+              (nolabel, childrenExpr)
+            ] in
+            Exp.apply
+              ~loc
+              (* throw away the [@JSX] attribute and keep the others, if any *)
+              ~attrs:nonJSXAttributes
+              (* ReactDOMRe.createElement *)
+              (Exp.ident ~loc {loc; txt = Ldot (Lident "ReactDOMRe", "createElement")})
+              args
+         )
+       (* Delegate to the default mapper, a deep identity traversal *)
+       | e -> default_mapper.expr mapper e) in
+
+  let module_binding =
+    (fun mapper module_binding ->
+      let _ = nestedModules := module_binding.pmb_name.txt :: !nestedModules in
+      let mapped = default_mapper.module_binding mapper module_binding in
+      let _ = nestedModules := List.tl !nestedModules in
+      mapped
+    ) in
+
+  { default_mapper with structure; expr; signature; module_binding; }
+
+let mapper = jsxMapper () 
+
+let rewrite_implementation (code: Parsetree.structure) : Parsetree.structure =
+  mapper.structure mapper code
+let rewrite_signature (code : Parsetree.signature) : Parsetree.signature = 
+  mapper.signature mapper code 
+
+
+end
+module Reactjs_jsx_ppx_v3
+= struct
+#1 "reactjs_jsx_ppx_v3.ml"
+# 1 "syntax/reactjs_jsx_ppx.cppo.ml"
+(*
+  This is the file that handles turning Reason JSX' agnostic function call into
+  a ReasonReact-specific function call. Aka, this is a macro, using OCaml's ppx
+  facilities; https://whitequark.org/blog/2014/04/16/a-guide-to-extension-
+  points-in-ocaml/
+  You wouldn't use this file directly; it's used by BuckleScript's
+  bsconfig.json. Specifically, there's a field called `react-jsx` inside the
+  field `reason`, which enables this ppx through some internal call in bsb
+*)
+
+(*
+  There are two different transforms that can be selected in this file (v2 and v3):
+  v2:
+  transform `[@JSX] div(~props1=a, ~props2=b, ~children=[foo, bar], ())` into
+  `ReactDOMRe.createElement("div", ~props={"props1": 1, "props2": b}, [|foo,
+  bar|])`.
+  transform `[@JSX] div(~props1=a, ~props2=b, ~children=foo, ())` into
+  `ReactDOMRe.createElementVariadic("div", ~props={"props1": 1, "props2": b}, foo)`.
+  transform the upper-cased case
+  `[@JSX] Foo.createElement(~key=a, ~ref=b, ~foo=bar, ~children=[], ())` into
+  `ReasonReact.element(~key=a, ~ref=b, Foo.make(~foo=bar, [||]))`
+  transform `[@JSX] [foo]` into
+  `ReactDOMRe.createElement(ReasonReact.fragment, [|foo|])`
+  v3:
+  transform `[@JSX] div(~props1=a, ~props2=b, ~children=[foo, bar], ())` into
+  `ReactDOMRe.createDOMElementVariadic("div", ReactDOMRe.domProps(~props1=1, ~props2=b), [|foo, bar|])`.
+  transform the upper-cased case
+  `[@JSX] Foo.createElement(~key=a, ~ref=b, ~foo=bar, ~children=[], ())` into
+  `React.createElement(Foo.make, Foo.makeProps(~key=a, ~ref=b, ~foo=bar, ()))`
+  transform the upper-cased case
+  `[@JSX] Foo.createElement(~foo=bar, ~children=[foo, bar], ())` into
+  `React.createElementVariadic(Foo.make, Foo.makeProps(~foo=bar, ~children=React.null, ()), [|foo, bar|])`
+  transform `[@JSX] [foo]` into
+  `ReactDOMRe.createElement(ReasonReact.fragment, [|foo|])`
+*)
+
+open Ast_helper
+open Ast_mapper
+open Asttypes
+open Parsetree
+open Longident
+
+let rec find_opt p = function
+  | [] -> None
+  | x :: l -> if p x then Some x else find_opt p l
+
+
+# 49 "syntax/reactjs_jsx_ppx.cppo.ml"
+let nolabel = Nolabel
+let labelled str = Labelled str
+let optional str = Optional str
+let isOptional str = match str with
+| Optional _ -> true
+| _ -> false
+let isLabelled str = match str with
+| Labelled _ -> true
+| _ -> false
+let getLabel str = match str with
+| Optional str | Labelled str -> str
+| Nolabel -> ""
+let optionIdent = Lident "option"
+
+let argIsKeyRef = function
+  | (Labelled ("key" | "ref"), _) | (Optional ("key" | "ref"), _) -> true
+  | _ -> false
+let constantString ~loc str = Ast_helper.Exp.constant ~loc (Pconst_string (str, None))
+
+# 84 "syntax/reactjs_jsx_ppx.cppo.ml"
+let safeTypeFromValue valueStr =
+let valueStr = getLabel valueStr in
+match String.sub valueStr 0 1 with
+| "_" -> "T" ^ valueStr
+| _ -> valueStr
+let keyType loc = Typ.constr ~loc {loc; txt=optionIdent} [Typ.constr ~loc {loc; txt=Lident "string"} []]
+
+type 'a children = | ListLiteral of 'a | Exact of 'a
+type componentConfig = {
+  propsName: string;
+}
+
+(* if children is a list, convert it to an array while mapping each element. If not, just map over it, as usual *)
+let transformChildrenIfListUpper ~loc ~mapper theList =
+  let rec transformChildren_ theList accum =
+    (* not in the sense of converting a list to an array; convert the AST
+       reprensentation of a list to the AST reprensentation of an array *)
+    match theList with
+    | {pexp_desc = Pexp_construct ({txt = Lident "[]"}, None)} -> begin
+      match accum with
+      | [singleElement] -> Exact singleElement
+      | accum -> ListLiteral (List.rev accum |> Exp.array ~loc)
+      end
+    | {pexp_desc = Pexp_construct (
+        {txt = Lident "::"},
+        Some {pexp_desc = Pexp_tuple (v::acc::[])}
+      )} ->
+      transformChildren_ acc ((mapper.expr mapper v)::accum)
+    | notAList -> Exact (mapper.expr mapper notAList)
+  in
+  transformChildren_ theList []
+
+let transformChildrenIfList ~loc ~mapper theList =
+  let rec transformChildren_ theList accum =
+    (* not in the sense of converting a list to an array; convert the AST
+       reprensentation of a list to the AST reprensentation of an array *)
+    match theList with
+    | {pexp_desc = Pexp_construct ({txt = Lident "[]"}, None)} ->
+      List.rev accum |> Exp.array ~loc
+    | {pexp_desc = Pexp_construct (
+        {txt = Lident "::"},
+        Some {pexp_desc = Pexp_tuple (v::acc::[])}
+      )} ->
+      transformChildren_ acc ((mapper.expr mapper v)::accum)
+    | notAList -> mapper.expr mapper notAList
+  in
+  transformChildren_ theList []
+
+let extractChildren ?(removeLastPositionUnit=false) ~loc propsAndChildren =
+  let rec allButLast_ lst acc = match lst with
+    | [] -> []
+    
+# 136 "syntax/reactjs_jsx_ppx.cppo.ml"
+    | (Nolabel, {pexp_desc = Pexp_construct ({txt = Lident "()"}, None)})::[] -> acc
+    | (Nolabel, _)::rest -> raise (Invalid_argument "JSX: found non-labelled argument before the last position")
+    
+# 142 "syntax/reactjs_jsx_ppx.cppo.ml"
+    | arg::rest -> allButLast_ rest (arg::acc)
+  in
+  let allButLast lst = allButLast_ lst [] |> List.rev in
+  match (List.partition (fun (label, _) -> label = labelled "children") propsAndChildren) with
+  | ([], props) ->
+    (* no children provided? Place a placeholder list *)
+    (Exp.construct ~loc {loc; txt = Lident "[]"} None, if removeLastPositionUnit then allButLast props else props)
+  | ([(_, childrenExpr)], props) ->
+    (childrenExpr, if removeLastPositionUnit then allButLast props else props)
+  | _ -> raise (Invalid_argument "JSX: somehow there's more than one `children` label")
+
+(* Helper method to look up the [@react.component] attribute *)
+let hasAttr (loc, _) =
+  loc.txt = "react.component"
+
+(* Helper method to filter out any attribute that isn't [@react.component] *)
+let otherAttrsPure (loc, _) =
+  loc.txt <> "react.component"
+
+(* Iterate over the attributes and try to find the [@react.component] attribute *)
+let hasAttrOnBinding {pvb_attributes} = find_opt hasAttr pvb_attributes <> None
+
+(* Filter the [@react.component] attribute and immutably replace them on the binding *)
+let filterAttrOnBinding binding = {binding with pvb_attributes = List.filter otherAttrsPure binding.pvb_attributes}
+
+(* Finds the name of the variable the binding is assigned to, otherwise raises Invalid_argument *)
+let getFnName binding =
+  match binding with
+  | {pvb_pat = {
+      ppat_desc = Ppat_var {txt}
+    }} -> txt
+  | _ -> raise (Invalid_argument "react.component calls cannot be destructured.")
+
+(* Lookup the value of `props` otherwise raise Invalid_argument error *)
+let getPropsNameValue _acc (loc, exp) =
+    match (loc, exp) with
+    | ({ txt = Lident "props" }, { pexp_desc = Pexp_ident {txt = Lident str} }) -> { propsName = str }
+    | ({ txt }, _) -> raise (Invalid_argument ("react.component only accepts props as an option, given: " ^ Longident.last txt))
+
+(* Lookup the `props` record or string as part of [@react.component] and store the name for use when rewriting *)
+let getPropsAttr payload =
+  let defaultProps = {propsName = "Props"} in
+  match payload with
+  | Some(PStr(
+    {pstr_desc = Pstr_eval ({
+      pexp_desc = Pexp_record (recordFields, None)
+      }, _)}::_rest
+      )) ->
+      List.fold_left getPropsNameValue defaultProps recordFields
+  | Some(PStr({pstr_desc = Pstr_eval ({pexp_desc = Pexp_ident {txt = Lident "props"}}, _)}::_rest)) -> {propsName = "props"}
+  | Some(PStr({pstr_desc = Pstr_eval (_, _)}::_rest)) -> raise (Invalid_argument ("react.component accepts a record config with props as an options."))
+  | _ -> defaultProps
+
+(* Plucks the label, loc, and type_ from an AST node *)
+let pluckLabelDefaultLocType (label, default, _, _, loc, type_) = (label, default, loc, type_)
+
+(* Lookup the filename from the location information on the AST node and turn it into a valid module identifier *)
+let filenameFromLoc (pstr_loc: Location.t) =
+  let fileName = match pstr_loc.loc_start.pos_fname with
+  | "" -> !Location.input_name
+  | fileName -> fileName
+  in
+  let fileName = try
+      Filename.chop_extension (Filename.basename fileName)
+    with | Invalid_argument _-> fileName in
+  
+# 208 "syntax/reactjs_jsx_ppx.cppo.ml"
+  let fileName = String.capitalize_ascii fileName in
+  
+# 212 "syntax/reactjs_jsx_ppx.cppo.ml"
+  fileName
+
+(* Build a string representation of a module name with segments separated by $ *)
+let makeModuleName fileName nestedModules fnName =
+  let fullModuleName = match (fileName, nestedModules, fnName) with
+  (* TODO: is this even reachable? It seems like the fileName always exists *)
+  | ("", nestedModules, "make") -> nestedModules
+  | ("", nestedModules, fnName) -> List.rev (fnName :: nestedModules)
+  | (fileName, nestedModules, "make") -> fileName :: (List.rev nestedModules)
+  | (fileName, nestedModules, fnName) -> fileName :: (List.rev (fnName :: nestedModules))
+  in
+  let fullModuleName = String.concat "$" fullModuleName in
+  fullModuleName
+
+(*
+  AST node builders
+  These functions help us build AST nodes that are needed when transforming a [@react.component] into a
+  constructor and a props external
+*)
+
+(* Build an AST node representing all named args for the `external` definition for a component's props *)
+let rec recursivelyMakeNamedArgsForExternal list args =
+  match list with
+  | (label, default, loc, interiorType)::tl ->
+    recursivelyMakeNamedArgsForExternal tl (Typ.arrow
+    ~loc
+    label
+    (match (label, interiorType, default) with
+    (* ~foo=1 *)
+    | (label, None, Some _) ->
+    
+# 243 "syntax/reactjs_jsx_ppx.cppo.ml"
+    {
+      ptyp_desc = Ptyp_var (safeTypeFromValue label);
+      ptyp_loc = loc;
+      ptyp_attributes = [];
+    }
+    
+# 259 "syntax/reactjs_jsx_ppx.cppo.ml"
+    (* ~foo: int=1 *)
+    | (label, Some type_, Some _) ->
+    
+# 262 "syntax/reactjs_jsx_ppx.cppo.ml"
+    type_
+    
+# 269 "syntax/reactjs_jsx_ppx.cppo.ml"
+    (* ~foo: option(int)=? *)
+    | (label, Some ({ptyp_desc = Ptyp_constr ({txt=(Lident "option")}, [type_])}), _)
+    | (label, Some ({ptyp_desc = Ptyp_constr ({txt=(Ldot (Lident "*predef*", "option"))}, [type_])}), _) 
+    (* ~foo: int=? - note this isnt valid. but we want to get a type error *)
+    | (label, Some type_, _) when isOptional label ->
+    
+# 275 "syntax/reactjs_jsx_ppx.cppo.ml"
+    type_
+    
+# 282 "syntax/reactjs_jsx_ppx.cppo.ml"
+    (* ~foo=? *)
+    | (label, None, _) when isOptional label -> 
+    
+# 285 "syntax/reactjs_jsx_ppx.cppo.ml"
+    {
+      ptyp_desc = Ptyp_var (safeTypeFromValue label);
+      ptyp_loc = loc;
+      ptyp_attributes = [];
+    }
+    
+# 301 "syntax/reactjs_jsx_ppx.cppo.ml"
+    (* ~foo *)
+    | (label, None, _) -> 
+    {
+      ptyp_desc = Ptyp_var (safeTypeFromValue label);
+      ptyp_loc = loc;
+      ptyp_attributes = [];
+    }
+    | (label, Some type_, _) -> 
+    type_
+    )
+    args)
+  | [] -> args
+
+(* Build an AST node for the [@bs.obj] representing props for a component *)
+let makePropsValue fnName loc namedArgListWithKeyAndRef propsType =
+  let propsName = fnName ^ "Props" in {
+  pval_name = {txt = propsName; loc};
+  pval_type =
+      recursivelyMakeNamedArgsForExternal
+        namedArgListWithKeyAndRef
+        (Typ.arrow
+          nolabel
+          {
+            ptyp_desc = Ptyp_constr ({txt= Lident("unit"); loc}, []);
+            ptyp_loc = loc;
+            ptyp_attributes = [];
+          }
+          propsType
+        );
+  pval_prim = [""];
+  pval_attributes = [({txt = "bs.obj"; loc = loc}, PStr [])];
+  pval_loc = loc;
+}
+
+(* Build an AST node representing an `external` with the definition of the [@bs.obj] *)
+let makePropsExternal fnName loc namedArgListWithKeyAndRef propsType =
+  {
+    pstr_loc = loc;
+    pstr_desc = Pstr_primitive (makePropsValue fnName loc namedArgListWithKeyAndRef propsType)
+  }
+
+(* Build an AST node for the signature of the `external` definition *)
+let makePropsExternalSig fnName loc namedArgListWithKeyAndRef propsType =
+  {
+    psig_loc = loc;
+    psig_desc = Psig_value (makePropsValue fnName loc namedArgListWithKeyAndRef propsType)
+  }
+
+(* Build an AST node for the props name when converted to a Js.t inside the function signature  *)
+let makePropsName ~loc name =
+  {
+    ppat_desc = Ppat_var {txt = name; loc};
+    ppat_loc = loc;
+    ppat_attributes = [];
+  }
+
+# 358 "syntax/reactjs_jsx_ppx.cppo.ml"
+let makeObjectField loc (str, _attrs, type_) =
+  (* intentionally not using attrs - they probably don't work on object fields. use on *Props instead *)
+  Otag ({ loc; txt = str }, [], {type_ with ptyp_attributes = []})
+
+# 363 "syntax/reactjs_jsx_ppx.cppo.ml"
+(* Build an AST node representing a "closed" Js.t object representing a component's props *)
+let makePropsType ~loc namedTypeList =
+  Typ.mk ~loc (
+    Ptyp_constr({txt= Ldot (Lident("Js"), "t"); loc}, [{
+        
+# 368 "syntax/reactjs_jsx_ppx.cppo.ml"
+        ptyp_desc = Ptyp_object(
+          List.map (makeObjectField loc) namedTypeList,
+          Closed
+        );
+        
+# 375 "syntax/reactjs_jsx_ppx.cppo.ml"
+        ptyp_loc = loc;
+        ptyp_attributes = [];
+      }])
+    )
+
+(* Builds an AST node for the entire `external` definition of props *)
+let makeExternalDecl fnName loc namedArgListWithKeyAndRef namedTypeList =
+  makePropsExternal
+    fnName
+    loc
+    (List.map pluckLabelDefaultLocType namedArgListWithKeyAndRef)
+    (makePropsType ~loc namedTypeList)
+
+(* TODO: some line number might still be wrong *)
+let jsxMapper () =
+
+  let jsxVersion = ref None in
+
+  let transformUppercaseCall3 modulePath mapper loc attrs _ callArguments =
+    let (children, argsWithLabels) = extractChildren ~loc ~removeLastPositionUnit:true callArguments in
+    let argsForMake = argsWithLabels in
+    let childrenExpr = transformChildrenIfListUpper ~loc ~mapper children in
+    let recursivelyTransformedArgsForMake = argsForMake |> List.map (fun (label, expression) -> (label, mapper.expr mapper expression)) in
+    let childrenArg = ref None in
+    let args = recursivelyTransformedArgsForMake
+      @ (match childrenExpr with
+        | Exact children -> [(labelled "children", children)]
+        | ListLiteral ({ pexp_desc = Pexp_array list }) when list = [] -> []
+        | ListLiteral expression ->
+        (* this is a hack to support react components that introspect into their children *)
+        (childrenArg := Some expression;
+        [(labelled "children", Exp.ident ~loc {loc; txt = Ldot (Lident "React", "null")})]))
+      @ [(nolabel, Exp.construct ~loc {loc; txt = Lident "()"} None)] in
+    let isCap str = let first = String.sub str 0 1 in
+    
+# 410 "syntax/reactjs_jsx_ppx.cppo.ml"
+    let capped = String.uppercase_ascii first in first = capped in
+    
+# 414 "syntax/reactjs_jsx_ppx.cppo.ml"
+    let ident = match modulePath with
+    | Lident _ -> Ldot (modulePath, "make")
+    | (Ldot (_modulePath, value) as fullPath) when isCap value -> Ldot (fullPath, "make")
+    | modulePath -> modulePath in
+    let propsIdent = match ident with
+    | Lident path -> Lident (path ^ "Props")
+    | Ldot(ident, path) -> Ldot (ident, path ^ "Props")
+    | _ -> raise (Invalid_argument "JSX name can't be the result of function applications") in
+    let props =
+    Exp.apply ~attrs ~loc (Exp.ident ~loc {loc; txt = propsIdent}) args in
+    (* handle key, ref, children *)
+      (* React.createElement(Component.make, props, ...children) *)
+    match (!childrenArg) with
+    | None ->
+      (Exp.apply
+        ~loc
+        ~attrs
+        (Exp.ident ~loc {loc; txt = Ldot (Lident "React", "createElement")})
+        ([
+          (nolabel, Exp.ident ~loc {txt = ident; loc});
+          (nolabel, props)
+        ]))
+     | Some children ->
+       (Exp.apply
+         ~loc
+         ~attrs
+         (Exp.ident ~loc {loc; txt = Ldot (Lident "React", "createElementVariadic")})
+         ([
+           (nolabel, Exp.ident ~loc {txt = ident; loc});
+           (nolabel, props);
+           (nolabel, children)
+         ]))
+     in
+
+    let transformLowercaseCall3 mapper loc attrs callArguments id =
+      let (children, nonChildrenProps) = extractChildren ~loc callArguments in
+      let componentNameExpr = constantString ~loc id in
+      let childrenExpr = transformChildrenIfList ~loc ~mapper children in
+      let createElementCall = match children with
+        (* [@JSX] div(~children=[a]), coming from <div> a </div> *)
+        | {
+            pexp_desc =
+             Pexp_construct ({txt = Lident "::"}, Some {pexp_desc = Pexp_tuple _ })
+             | Pexp_construct ({txt = Lident "[]"}, None)
+          } -> "createDOMElementVariadic"
+        (* [@JSX] div(~children= value), coming from <div> ...(value) </div> *)
+        | _ -> raise (Invalid_argument "A spread as a DOM element's \
+          children don't make sense written together. You can simply remove the spread.")
+      in
+      let args = match nonChildrenProps with
+        | [_justTheUnitArgumentAtEnd] ->
+          [
+            (* "div" *)
+            (nolabel, componentNameExpr);
+            (* [|moreCreateElementCallsHere|] *)
+            (nolabel, childrenExpr)
+          ]
+        | nonEmptyProps ->
+          let propsCall =
+            Exp.apply
+              ~loc
+              (Exp.ident ~loc {loc; txt = Ldot (Lident "ReactDOMRe", "domProps")})
+              (nonEmptyProps |> List.map (fun (label, expression) -> (label, mapper.expr mapper expression)))
+          in
+          [
+            (* "div" *)
+            (nolabel, componentNameExpr);
+            (* ReactDOMRe.props(~className=blabla, ~foo=bar, ()) *)
+            (labelled "props", propsCall);
+            (* [|moreCreateElementCallsHere|] *)
+            (nolabel, childrenExpr)
+          ] in
+      Exp.apply
+        ~loc
+        (* throw away the [@JSX] attribute and keep the others, if any *)
+        ~attrs
+        (* ReactDOMRe.createElement *)
+        (Exp.ident ~loc {loc; txt = Ldot (Lident "ReactDOMRe", createElementCall)})
+        args
+    in
+
+  let transformUppercaseCall modulePath mapper loc attrs _ callArguments =
+    let (children, argsWithLabels) = extractChildren ~loc ~removeLastPositionUnit:true callArguments in
+    let (argsKeyRef, argsForMake) = List.partition argIsKeyRef argsWithLabels in
+    let childrenExpr = transformChildrenIfList ~loc ~mapper children in
+    let recursivelyTransformedArgsForMake = argsForMake |> List.map (fun (label, expression) -> (label, mapper.expr mapper expression)) in
+    let args = recursivelyTransformedArgsForMake @ [ (nolabel, childrenExpr) ] in
+    let wrapWithReasonReactElement e = (* ReasonReact.element(~key, ~ref, ...) *)
+      Exp.apply
+        ~loc
+        (Exp.ident ~loc {loc; txt = Ldot (Lident "ReasonReact", "element")})
+        (argsKeyRef @ [(nolabel, e)]) in
+    Exp.apply
+      ~loc
+      ~attrs
+      (* Foo.make *)
+      (Exp.ident ~loc {loc; txt = Ldot (modulePath, "make")})
+      args
+    |> wrapWithReasonReactElement in
+
+  let transformLowercaseCall mapper loc attrs callArguments id =
+    let (children, nonChildrenProps) = extractChildren ~loc callArguments in
+    let componentNameExpr = constantString ~loc id in
+    let childrenExpr = transformChildrenIfList ~loc ~mapper children in
+    let createElementCall = match children with
+      (* [@JSX] div(~children=[a]), coming from <div> a </div> *)
+      | {
+          pexp_desc =
+           Pexp_construct ({txt = Lident "::"}, Some {pexp_desc = Pexp_tuple _ })
+           | Pexp_construct ({txt = Lident "[]"}, None)
+        } -> "createElement"
+      (* [@JSX] div(~children=[|a|]), coming from <div> ...[|a|] </div> *)
+      | { pexp_desc = (Pexp_array _) } ->
+        raise (Invalid_argument "A spread + an array literal as a DOM element's \
+          children would cancel each other out, and thus don't make sense written \
+          together. You can simply remove the spread and the array literal.")
+      (* [@JSX] div(~children= <div />), coming from <div> ...<div/> </div> *)
+      | {
+          pexp_attributes
+        } when pexp_attributes |> List.exists (fun (attribute, _) -> attribute.txt = "JSX") ->
+        raise (Invalid_argument "A spread + a JSX literal as a DOM element's \
+          children don't make sense written together. You can simply remove the spread.")
+      | _ -> "createElementVariadic"
+    in
+    let args = match nonChildrenProps with
+      | [_justTheUnitArgumentAtEnd] ->
+        [
+          (* "div" *)
+          (nolabel, componentNameExpr);
+          (* [|moreCreateElementCallsHere|] *)
+          (nolabel, childrenExpr)
+        ]
+      | nonEmptyProps ->
+        let propsCall =
+          Exp.apply
+            ~loc
+            (Exp.ident ~loc {loc; txt = Ldot (Lident "ReactDOMRe", "props")})
+            (nonEmptyProps |> List.map (fun (label, expression) -> (label, mapper.expr mapper expression)))
+        in
+        [
+          (* "div" *)
+          (nolabel, componentNameExpr);
+          (* ReactDOMRe.props(~className=blabla, ~foo=bar, ()) *)
+          (labelled "props", propsCall);
+          (* [|moreCreateElementCallsHere|] *)
+          (nolabel, childrenExpr)
+        ] in
+    Exp.apply
+      ~loc
+      (* throw away the [@JSX] attribute and keep the others, if any *)
+      ~attrs
+      (* ReactDOMRe.createElement *)
+      (Exp.ident ~loc {loc; txt = Ldot (Lident "ReactDOMRe", createElementCall)})
+      args
+  in
+
+  let rec recursivelyTransformNamedArgsForMake mapper expr list =
+    let expr = mapper.expr mapper expr in
+    match expr.pexp_desc with
+    (* TODO: make this show up with a loc. *)
+    
+# 575 "syntax/reactjs_jsx_ppx.cppo.ml"
+    | Pexp_fun (Labelled "key", _, _, _)
+    | Pexp_fun (Optional "key", _, _, _) -> raise (Invalid_argument "Key cannot be accessed inside of a component. Don't worry - you can always key a component from its parent!")
+    | Pexp_fun (Labelled "ref", _, _, _)
+    | Pexp_fun (Optional "ref", _, _, _) -> raise (Invalid_argument "Ref cannot be passed as a normal prop. Please use `forwardRef` API instead.")
+    
+# 585 "syntax/reactjs_jsx_ppx.cppo.ml"
+    | Pexp_fun (arg, default, pattern, expression) when isOptional arg || isLabelled arg ->
+      let alias = (match pattern with
+      | {ppat_desc = Ppat_alias (_, {txt}) | Ppat_var {txt}} -> txt
+      | {ppat_desc = Ppat_any} -> "_"
+      | _ -> getLabel arg) in
+      let type_ = (match pattern with
+      | {ppat_desc = Ppat_constraint (_, type_)} -> Some type_
+      | _ -> None) in
+
+      recursivelyTransformNamedArgsForMake mapper expression ((arg, default, pattern, alias, pattern.ppat_loc, type_) :: list)
+    
+# 596 "syntax/reactjs_jsx_ppx.cppo.ml"
+    | Pexp_fun (Nolabel, _, { ppat_desc = (Ppat_construct ({txt = Lident "()"}, _) | Ppat_any)}, expression) ->
+        (expression.pexp_desc, list, None)
+    | Pexp_fun (Nolabel, _, { ppat_desc = Ppat_var ({txt})}, expression) ->
+        (expression.pexp_desc, list, Some txt)
+    
+# 606 "syntax/reactjs_jsx_ppx.cppo.ml"
+    | innerExpression -> (innerExpression, list, None)
+  in
+
+
+  let argToType types (name, default, _noLabelName, _alias, loc, type_) = match (type_, name, default) with
+    | (Some ({ptyp_desc = Ptyp_constr ({txt=(Lident "option")}, [type_])}), name, _) when isOptional name ->
+      (getLabel name, [], {
+        type_ with
+        ptyp_desc = Ptyp_constr ({loc=type_.ptyp_loc; txt=optionIdent}, [type_]);
+      }) :: types
+    | (Some type_, name, Some _default) ->
+      (getLabel name, [], {
+      ptyp_desc = Ptyp_constr ({loc; txt=optionIdent}, [type_]);
+      ptyp_loc = loc;
+      ptyp_attributes = [];
+      }) :: types
+    | (Some type_, name, _) ->
+      (getLabel name, [], type_) :: types
+    | (None, name, _) when isOptional name ->
+      (getLabel name, [], {
+        ptyp_desc = Ptyp_constr ({loc; txt=optionIdent}, [{
+          ptyp_desc = Ptyp_var (safeTypeFromValue name);
+          ptyp_loc = loc;
+          ptyp_attributes = [];
+        }]);
+        ptyp_loc = loc;
+        ptyp_attributes = [];
+        }) :: types
+    | (None, name, _) when isLabelled name ->
+      (getLabel name, [], {
+        ptyp_desc = Ptyp_var (safeTypeFromValue name);
+        ptyp_loc = loc;
+        ptyp_attributes = [];
+        }) :: types
+    | _ -> types
+  in
+
+  let argToConcreteType types (name, _loc, type_) = match name with
+    | name when isLabelled name || isOptional name ->
+    (getLabel name, [], type_) :: types
+    (* return value *)
+    | _ -> types
+  in
+
+  let nestedModules = ref([]) in
+  let transformComponentDefinition mapper structure returnStructures = match structure with
+  (* external *)
+  | ({
+      pstr_loc;
+      pstr_desc = Pstr_primitive ({
+        pval_name = { txt = fnName };
+        pval_attributes;
+        pval_type;
+      } as value_description)
+    } as pstr) ->
+    (match List.filter hasAttr pval_attributes with
+    | [] -> structure :: returnStructures
+    | [_] ->
+    let rec getPropTypes types ({ptyp_loc; ptyp_desc} as fullType) =
+      (match ptyp_desc with
+      | Ptyp_arrow (name, type_, ({ptyp_desc = Ptyp_arrow _} as rest)) when isLabelled name || isOptional name ->
+        getPropTypes ((name, ptyp_loc, type_)::types) rest
+      
+# 669 "syntax/reactjs_jsx_ppx.cppo.ml"
+      | Ptyp_arrow (Nolabel, _type, rest) ->
+        
+# 673 "syntax/reactjs_jsx_ppx.cppo.ml"
+        getPropTypes types rest
+      | Ptyp_arrow (name, type_, returnValue) when isLabelled name || isOptional name ->
+        (returnValue, (name, returnValue.ptyp_loc, type_)::types)
+      | _ -> (fullType, types))
+    in
+    let (innerType, propTypes) = getPropTypes [] pval_type in
+    let namedTypeList = List.fold_left argToConcreteType [] propTypes in
+    let pluckLabelAndLoc (label, loc, type_) = (label, None (* default *), loc, Some type_) in
+    let retPropsType = makePropsType ~loc:pstr_loc namedTypeList in
+    let externalPropsDecl = makePropsExternal fnName pstr_loc ((
+      optional "key",
+      None,
+      pstr_loc,
+      Some(keyType pstr_loc)
+    ) :: List.map pluckLabelAndLoc propTypes) retPropsType in
+    (* can't be an arrow because it will defensively uncurry *)
+    let newExternalType = Ptyp_constr (
+      {loc = pstr_loc; txt = Ldot ((Lident "React"), "componentLike")},
+      [retPropsType; innerType]
+    ) in
+    let newStructure = {
+      pstr with pstr_desc = Pstr_primitive {
+        value_description with pval_type = {
+          pval_type with ptyp_desc = newExternalType;
+        };
+        pval_attributes = List.filter otherAttrsPure pval_attributes;
+      }
+    } in
+    externalPropsDecl :: newStructure :: returnStructures
+    | _ -> raise (Invalid_argument "Only one react.component call can exist on a component at one time"))
+  (* let component = ... *)
+  | {
+      pstr_loc;
+      pstr_desc = Pstr_value (
+        recFlag,
+        valueBindings
+      )
+    } ->
+      let mapBinding binding = if (hasAttrOnBinding binding) then
+        let fnName = getFnName binding in
+        let fileName = filenameFromLoc pstr_loc in
+        let fullModuleName = makeModuleName fileName !nestedModules fnName in
+        let emptyLoc = Location.in_file fileName in
+        let modifiedBinding binding =
+          let expression = binding.pvb_expr in
+          let wrapExpressionWithBinding expressionFn expression = {(filterAttrOnBinding binding) with pvb_expr = expressionFn expression} in
+          (* TODO: there is a long-tail of unsupported features inside of blocks - Pexp_letmodule , Pexp_letexception , Pexp_ifthenelse *)
+          let rec spelunkForFunExpression expression = (match expression with
+          (* let make = (~prop) => ... *)
+          | {
+            pexp_desc = Pexp_fun _
+          } -> ((fun expressionDesc -> {expression with pexp_desc = expressionDesc}), expression)
+          (* let make = {let foo = bar in (~prop) => ...} *)
+          | {
+              pexp_desc = Pexp_let (recursive, vbs, returnExpression)
+            } ->
+            (* here's where we spelunk! *)
+            let (wrapExpression, realReturnExpression) = spelunkForFunExpression returnExpression in
+            ((fun expressionDesc -> {expression with pexp_desc = Pexp_let (recursive, vbs, wrapExpression expressionDesc)}), realReturnExpression)
+          (* let make = React.forwardRef((~prop) => ...) *)
+          
+# 734 "syntax/reactjs_jsx_ppx.cppo.ml"
+          | { pexp_desc = Pexp_apply (wrapperExpression, [(Nolabel, innerFunctionExpression)]) } ->
+            
+# 738 "syntax/reactjs_jsx_ppx.cppo.ml"
+            let (wrapExpression, realReturnExpression) = spelunkForFunExpression innerFunctionExpression in
+            ((fun expressionDesc -> {
+              expression with pexp_desc =
+                Pexp_apply (wrapperExpression, [(nolabel, wrapExpression expressionDesc)])
+              }),
+              realReturnExpression
+            )
+          | {
+              pexp_desc = Pexp_sequence (wrapperExpression, innerFunctionExpression)
+            } ->
+            let (wrapExpression, realReturnExpression) = spelunkForFunExpression innerFunctionExpression in
+            ((fun expressionDesc -> {
+              expression with pexp_desc =
+                Pexp_sequence (wrapperExpression, wrapExpression expressionDesc)
+              }),
+              realReturnExpression
+            )
+          | _ -> raise (Invalid_argument "react.component calls can only be on function definitions or component wrappers (forwardRef, memo).")
+          ) in
+          let (wrapExpression, expression) = spelunkForFunExpression expression in
+          (wrapExpressionWithBinding wrapExpression, expression)
+        in
+        let (bindingWrapper, expression) = modifiedBinding binding in
+        let reactComponentAttribute = try
+          Some(List.find hasAttr binding.pvb_attributes)
+        with | Not_found -> None in
+        let (attr_loc, payload) = match reactComponentAttribute with
+        | Some (loc, payload) -> (loc.loc, Some payload)
+        | None -> (emptyLoc, None) in
+        let props = getPropsAttr payload in
+        (* do stuff here! *)
+        let (innerFunctionExpression, namedArgList, forwardRef) = recursivelyTransformNamedArgsForMake mapper expression [] in
+        let namedArgListWithKeyAndRef = (optional("key"), None, Pat.var {txt = "key"; loc = emptyLoc}, "key", emptyLoc, Some(keyType emptyLoc)) :: namedArgList in
+        let namedArgListWithKeyAndRef = match forwardRef with
+        | Some(_) ->  (optional("ref"), None, Pat.var {txt = "key"; loc = emptyLoc}, "ref", emptyLoc, None) :: namedArgListWithKeyAndRef
+        | None -> namedArgListWithKeyAndRef
+        in
+        let namedTypeList = List.fold_left argToType [] namedArgList in
+        let externalDecl = makeExternalDecl fnName attr_loc namedArgListWithKeyAndRef namedTypeList in
+        let makeLet innerExpression (label, default, pattern, _alias, loc, _type) =
+          let labelString = (match label with | label when isOptional label || isLabelled label -> getLabel label | _ -> raise (Invalid_argument "This should never happen")) in
+          let expression = (Exp.apply ~loc
+            (Exp.ident ~loc {txt = (Lident "##"); loc })
+            [
+              (nolabel, Exp.ident ~loc {txt = (Lident props.propsName); loc });
+              (nolabel, Exp.ident ~loc {
+                txt = (Lident labelString);
+                loc
+              })
+            ]
+          ) in
+          let expression = match (default) with
+          | (Some default) -> Exp.match_ expression [
+            Exp.case
+              (Pat.construct {loc; txt=Lident "Some"} (Some (Pat.var ~loc {txt = labelString; loc})))
+              (Exp.ident ~loc {txt = (Lident labelString); loc});
+            Exp.case
+              (Pat.construct {loc; txt=Lident "None"} None)
+              default
+          ]
+          | None -> expression in
+          let letExpression = Vb.mk
+            pattern
+            expression in
+          Exp.let_ ~loc Nonrecursive [letExpression] innerExpression in
+        let innerExpression = List.fold_left makeLet (Exp.mk innerFunctionExpression) namedArgList in
+        let innerExpressionWithRef = match (forwardRef) with
+        | Some txt ->
+          {innerExpression with pexp_desc = Pexp_fun (nolabel, None, {
+            ppat_desc = Ppat_var { txt; loc = emptyLoc };
+            ppat_loc = emptyLoc;
+            ppat_attributes = [];
+          }, innerExpression)}
+        | None -> innerExpression
+        in
+        let fullExpression = (Pexp_fun (
+          nolabel,
+          None,
+          {
+            ppat_desc = Ppat_constraint (
+              makePropsName ~loc:emptyLoc props.propsName,
+              makePropsType ~loc:emptyLoc namedTypeList
+            );
+            ppat_loc = emptyLoc;
+            ppat_attributes = [];
+          },
+          innerExpressionWithRef
+        )) in
+        let fullExpression = match (fullModuleName) with
+        | ("") -> fullExpression
+        | (txt) -> Pexp_let (
+            Nonrecursive,
+            [Vb.mk
+              ~loc:emptyLoc
+              (Pat.var ~loc:emptyLoc {loc = emptyLoc; txt})
+              (Exp.mk ~loc:emptyLoc fullExpression)
+            ],
+            (Exp.ident ~loc:emptyLoc {loc = emptyLoc; txt = Lident txt})
+          )
+        in
+        let newBinding = bindingWrapper fullExpression in
+        (Some externalDecl, newBinding)
+      else
+        (None, binding)
+      in
+      let structuresAndBinding = List.map mapBinding valueBindings in
+      let otherStructures (extern, binding) (externs, bindings) =
+        let externs = match extern with
+        | Some extern -> extern :: externs
+        | None -> externs in
+        (externs, binding :: bindings)
+      in
+      let (externs, bindings) = List.fold_right otherStructures structuresAndBinding ([], []) in
+      externs @ {
+        pstr_loc;
+        pstr_desc = Pstr_value (
+          recFlag,
+          bindings
+        )
+      } :: returnStructures
+    | structure -> structure :: returnStructures in
+
+  let reactComponentTransform mapper structures =
+  List.fold_right (transformComponentDefinition mapper) structures [] in
+
+  let transformComponentSignature _mapper signature returnSignatures = match signature with
+  | ({
+      psig_loc;
+      psig_desc = Psig_value ({
+        pval_name = { txt = fnName };
+        pval_attributes;
+        pval_type;
+      } as psig_desc)
+    } as psig) ->
+    (match List.filter hasAttr pval_attributes with
+    | [] -> signature :: returnSignatures
+    | [_] ->
+    let rec getPropTypes types ({ptyp_loc; ptyp_desc} as fullType) =
+      (match ptyp_desc with
+      | Ptyp_arrow (name, type_, ({ptyp_desc = Ptyp_arrow _} as rest)) when isOptional name || isLabelled name ->
+        getPropTypes ((name, ptyp_loc, type_)::types) rest
+      
+# 880 "syntax/reactjs_jsx_ppx.cppo.ml"
+      | Ptyp_arrow (Nolabel, _type, rest) ->
+        
+# 884 "syntax/reactjs_jsx_ppx.cppo.ml"
+        getPropTypes types rest
+      | Ptyp_arrow (name, type_, returnValue) when isOptional name || isLabelled name ->
+        (returnValue, (name, returnValue.ptyp_loc, type_)::types)
+      | _ -> (fullType, types))
+    in
+    let (innerType, propTypes) = getPropTypes [] pval_type in
+    let namedTypeList = List.fold_left argToConcreteType [] propTypes in
+    let pluckLabelAndLoc (label, loc, type_) = (label, None, loc, Some type_) in
+    let retPropsType = makePropsType ~loc:psig_loc namedTypeList in
+    let externalPropsDecl = makePropsExternalSig fnName psig_loc ((
+      optional "key",
+      None,
+      psig_loc,
+      Some(keyType psig_loc)
+    ) :: List.map pluckLabelAndLoc propTypes) retPropsType in
+        (* can't be an arrow because it will defensively uncurry *)
+    let newExternalType = Ptyp_constr (
+      {loc = psig_loc; txt = Ldot ((Lident "React"), "componentLike")},
+      [retPropsType; innerType]
+    ) in
+    let newStructure = {
+      psig with psig_desc = Psig_value {
+        psig_desc with pval_type = {
+          pval_type with ptyp_desc = newExternalType;
+        };
+        pval_attributes = List.filter otherAttrsPure pval_attributes;
+      }
+    } in
+    externalPropsDecl :: newStructure :: returnSignatures
+    | _ -> raise (Invalid_argument "Only one react.component call can exist on a component at one time"))
+  | signature -> signature :: returnSignatures in
+
+  let reactComponentSignatureTransform mapper signatures =
+  List.fold_right (transformComponentSignature mapper) signatures [] in
+
+
+  let transformJsxCall mapper callExpression callArguments attrs =
+    (match callExpression.pexp_desc with
+     | Pexp_ident caller ->
+       (match caller with
+        | {txt = Lident "createElement"} ->
+          raise (Invalid_argument "JSX: `createElement` should be preceeded by a module name.")
+
+        (* Foo.createElement(~prop1=foo, ~prop2=bar, ~children=[], ()) *)
+        | {loc; txt = Ldot (modulePath, ("createElement" | "make"))} ->
+          (match !jsxVersion with
+          
+# 934 "syntax/reactjs_jsx_ppx.cppo.ml"
+          | Some 2 -> transformUppercaseCall modulePath mapper loc attrs callExpression callArguments
+          | None
+          
+# 937 "syntax/reactjs_jsx_ppx.cppo.ml"
+          | Some 3 -> transformUppercaseCall3 modulePath mapper loc attrs callExpression callArguments
+          | Some _ -> raise (Invalid_argument "JSX: the JSX version must be 2 or 3"))
+
+        (* div(~prop1=foo, ~prop2=bar, ~children=[bla], ()) *)
+        (* turn that into
+          ReactDOMRe.createElement(~props=ReactDOMRe.props(~props1=foo, ~props2=bar, ()), [|bla|]) *)
+        | {loc; txt = Lident id} ->
+          (match !jsxVersion with
+          
+# 949 "syntax/reactjs_jsx_ppx.cppo.ml"
+          | Some 2 -> transformLowercaseCall mapper loc attrs callArguments id
+          | None
+          
+# 952 "syntax/reactjs_jsx_ppx.cppo.ml"
+          | Some 3 -> transformLowercaseCall3 mapper loc attrs callArguments id
+          | Some _ -> raise (Invalid_argument "JSX: the JSX version must be 2 or 3"))
+
+        | {txt = Ldot (_, anythingNotCreateElementOrMake)} ->
+          raise (
+            Invalid_argument
+              ("JSX: the JSX attribute should be attached to a `YourModuleName.createElement` or `YourModuleName.make` call. We saw `"
+               ^ anythingNotCreateElementOrMake
+               ^ "` instead"
+              )
+          )
+
+        | {txt = Lapply _} ->
+          (* don't think there's ever a case where this is reached *)
+          raise (
+            Invalid_argument "JSX: encountered a weird case while processing the code. Please report this!"
+          )
+       )
+     | _ ->
+       raise (
+         Invalid_argument "JSX: `createElement` should be preceeded by a simple, direct module name."
+       )
+    ) in
+
+  let signature =
+    (fun mapper signature -> default_mapper.signature mapper @@ reactComponentSignatureTransform mapper signature) in
+
+  let structure =
+    (fun mapper structure -> match structure with
+      (*
+        match against [@bs.config {foo, jsx: ...}] at the file-level. This
+        indicates which version of JSX we're using. This code stays here because
+        we used to have 2 versions of JSX PPX (and likely will again in the
+        future when JSX PPX changes). So the architecture for switching between
+        JSX behavior stayed here. To create a new JSX ppx, copy paste this
+        entire file and change the relevant parts.
+        Description of architecture: in bucklescript's bsconfig.json, you can
+        specify a project-wide JSX version. You can also specify a file-level
+        JSX version. This degree of freedom allows a person to convert a project
+        one file at time onto the new JSX, when it was released. It also enabled
+        a project to depend on a third-party which is still using an old version
+        of JSX
+      *)
+      | {
+          pstr_loc;
+          pstr_desc = Pstr_attribute (
+            ({txt = "bs.config"} as bsConfigLabel),
+            PStr [{pstr_desc = Pstr_eval ({pexp_desc = Pexp_record (recordFields, b)} as innerConfigRecord, a)} as configRecord]
+          )
+        }::restOfStructure -> begin
+          let (jsxField, recordFieldsWithoutJsx) = recordFields |> List.partition (fun ({txt}, _) -> txt = Lident "jsx") in
+          match (jsxField, recordFieldsWithoutJsx) with
+          (* no file-level jsx config found *)
+          | ([], _) -> default_mapper.structure mapper structure
+          (* {jsx: 2} *)
+          
+# 1008 "syntax/reactjs_jsx_ppx.cppo.ml"
+          | ((_, {pexp_desc = Pexp_constant (Pconst_integer (version, None))})::rest, recordFieldsWithoutJsx) -> begin
+              
+# 1012 "syntax/reactjs_jsx_ppx.cppo.ml"
+              (match version with
+              
+# 1014 "syntax/reactjs_jsx_ppx.cppo.ml"
+              | "2" -> jsxVersion := Some 2
+              | "3" -> jsxVersion := Some 3
+              
+# 1020 "syntax/reactjs_jsx_ppx.cppo.ml"
+              | _ -> raise (Invalid_argument "JSX: the file-level bs.config's jsx version must be 2 or 3"));
+              match recordFieldsWithoutJsx with
+              (* record empty now, remove the whole bs.config attribute *)
+              | [] -> default_mapper.structure mapper @@ reactComponentTransform mapper restOfStructure
+              | fields -> default_mapper.structure mapper ({
+                pstr_loc;
+                pstr_desc = Pstr_attribute (
+                  bsConfigLabel,
+                  PStr [{configRecord with pstr_desc = Pstr_eval ({innerConfigRecord with pexp_desc = Pexp_record (fields, b)}, a)}]
+                )
+              }::(reactComponentTransform mapper restOfStructure))
+            end
+        | _ -> raise (Invalid_argument "JSX: the file-level bs.config's {jsx: ...} config accepts only a version number")
+      end
+      | structures -> begin
+        default_mapper.structure mapper @@ reactComponentTransform mapper structures
+      end
+    ) in
+
+  let expr =
+    (fun mapper expression -> match expression with
+       (* Does the function application have the @JSX attribute? *)
+       | {
+           pexp_desc = Pexp_apply (callExpression, callArguments);
+           pexp_attributes
+         } ->
+         let (jsxAttribute, nonJSXAttributes) = List.partition (fun (attribute, _) -> attribute.txt = "JSX") pexp_attributes in
+         (match (jsxAttribute, nonJSXAttributes) with
+         (* no JSX attribute *)
+         | ([], _) -> default_mapper.expr mapper expression
+         | (_, nonJSXAttributes) -> transformJsxCall mapper callExpression callArguments nonJSXAttributes)
+
+       (* is it a list with jsx attribute? Reason <>foo</> desugars to [@JSX][foo]*)
+       | {
+           pexp_desc =
+            Pexp_construct ({txt = Lident "::"; loc}, Some {pexp_desc = Pexp_tuple _})
+            | Pexp_construct ({txt = Lident "[]"; loc}, None);
+           pexp_attributes
+         } as listItems ->
+          let (jsxAttribute, nonJSXAttributes) = List.partition (fun (attribute, _) -> attribute.txt = "JSX") pexp_attributes in
+          (match (jsxAttribute, nonJSXAttributes) with
+          (* no JSX attribute *)
+          | ([], _) -> default_mapper.expr mapper expression
+          | (_, nonJSXAttributes) ->
+            let fragment = Exp.ident ~loc {loc; txt = Ldot (Lident "ReasonReact", "fragment")} in
+            let childrenExpr = transformChildrenIfList ~loc ~mapper listItems in
+            let args = [
+              (* "div" *)
+              (nolabel, fragment);
+              (* [|moreCreateElementCallsHere|] *)
+              (nolabel, childrenExpr)
+            ] in
+            Exp.apply
+              ~loc
+              (* throw away the [@JSX] attribute and keep the others, if any *)
+              ~attrs:nonJSXAttributes
+              (* ReactDOMRe.createElement *)
+              (Exp.ident ~loc {loc; txt = Ldot (Lident "ReactDOMRe", "createElement")})
+              args
+         )
+       (* Delegate to the default mapper, a deep identity traversal *)
+       | e -> default_mapper.expr mapper e) in
+
+  let module_binding =
+    (fun mapper module_binding ->
+      let _ = nestedModules := module_binding.pmb_name.txt :: !nestedModules in
+      let mapped = default_mapper.module_binding mapper module_binding in
+      let _ = nestedModules := List.tl !nestedModules in
+      mapped
+    ) in
+
+  { default_mapper with structure; expr; signature; module_binding; }
+
+let mapper = jsxMapper () 
+
+let rewrite_implementation (code: Parsetree.structure) : Parsetree.structure =
+  mapper.structure mapper code
+let rewrite_signature (code : Parsetree.signature) : Parsetree.signature = 
+  mapper.signature mapper code 
+
+
+end
+module Ppx_entry
+= struct
+#1 "ppx_entry.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+let rewrite_signature (ast : Parsetree.signature) : Parsetree.signature =  
+  let ast = 
+    match !Js_config.jsx_version with
+    | 2 -> Reactjs_jsx_ppx_v2.rewrite_signature ast 
+    | 3 -> Reactjs_jsx_ppx_v3.rewrite_signature ast 
+    | _ -> ast 
+    (* react-jsx ppx relies on built-in ones like `##` *)
+  in 
+
+  if !Js_config.no_builtin_ppx_mli then ast else 
+    Bs_builtin_ppx.rewrite_signature ast 
+
+let rewrite_implementation (ast : Parsetree.structure) : Parsetree.structure =   
+  let ast = 
+    match !Js_config.jsx_version with 
+    | 2 -> Reactjs_jsx_ppx_v2.rewrite_implementation ast 
+    | 3 -> Reactjs_jsx_ppx_v3.rewrite_implementation ast 
+    | _ -> ast 
+  in 
+  if !Js_config.no_builtin_ppx_ml then ast else
+    Bs_builtin_ppx.rewrite_implementation ast 
+  
 end
 module Makedepend : sig 
 #1 "makedepend.mli"

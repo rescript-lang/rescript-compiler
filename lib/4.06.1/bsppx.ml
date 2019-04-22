@@ -379,6 +379,1200 @@ let print_config oc =
 
 end
 module Config = Config_whole_compiler 
+module Ext_bytes : sig 
+#1 "ext_bytes.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+(** Port the {!Bytes.escaped} from trunk to make it not locale sensitive *)
+
+val escaped : bytes -> bytes
+
+end = struct
+#1 "ext_bytes.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+external char_code: char -> int = "%identity"
+external char_chr: int -> char = "%identity"
+
+let escaped s =
+  let n = Pervasives.ref 0 in
+  for i = 0 to Bytes.length s - 1 do
+    n := !n +
+      (match Bytes.unsafe_get s i with
+       | '"' | '\\' | '\n' | '\t' | '\r' | '\b' -> 2
+       | ' ' .. '~' -> 1
+       | _ -> 4)
+  done;
+  if !n = Bytes.length s then Bytes.copy s else begin
+    let s' = Bytes.create !n in
+    n := 0;
+    for i = 0 to Bytes.length s - 1 do
+      begin match Bytes.unsafe_get s i with
+      | ('"' | '\\') as c ->
+          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n c
+      | '\n' ->
+          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n 'n'
+      | '\t' ->
+          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n 't'
+      | '\r' ->
+          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n 'r'
+      | '\b' ->
+          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n 'b'
+      | (' ' .. '~') as c -> Bytes.unsafe_set s' !n c
+      | c ->
+          let a = char_code c in
+          Bytes.unsafe_set s' !n '\\';
+          incr n;
+          Bytes.unsafe_set s' !n (char_chr (48 + a / 100));
+          incr n;
+          Bytes.unsafe_set s' !n (char_chr (48 + (a / 10) mod 10));
+          incr n;
+          Bytes.unsafe_set s' !n (char_chr (48 + a mod 10));
+      end;
+      incr n
+    done;
+    s'
+  end
+
+end
+module Ext_pervasives : sig 
+#1 "ext_pervasives.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** Extension to standard library [Pervavives] module, safe to open 
+  *)
+
+external reraise: exn -> 'a = "%reraise"
+
+val finally : 'a -> ('a -> 'c) -> ('a -> 'b) -> 'b
+
+val try_it : (unit -> 'a) ->  unit 
+
+val with_file_as_chan : string -> (out_channel -> 'a) -> 'a
+
+val with_file_as_pp : string -> (Format.formatter -> 'a) -> 'a
+
+val is_pos_pow : Int32.t -> int
+
+val failwithf : loc:string -> ('a, unit, string, 'b) format4 -> 'a
+
+val invalid_argf : ('a, unit, string, 'b) format4 -> 'a
+
+val bad_argf : ('a, unit, string, 'b) format4 -> 'a
+
+
+
+
+external id : 'a -> 'a = "%identity"
+
+(** Copied from {!Btype.hash_variant}:
+    need sync up and add test case
+ *)
+val hash_variant : string -> int
+
+val todo : string -> 'a
+end = struct
+#1 "ext_pervasives.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+external reraise: exn -> 'a = "%reraise"
+
+let finally v action f   = 
+  match f v with
+  | exception e -> 
+      action v ;
+      reraise e 
+  | e ->  action v ; e 
+
+let try_it f  =   
+  try ignore (f ()) with _ -> ()
+
+let with_file_as_chan filename f = 
+  finally (open_out_bin filename) close_out f 
+
+let with_file_as_pp filename f = 
+  finally (open_out_bin filename) close_out
+    (fun chan -> 
+      let fmt = Format.formatter_of_out_channel chan in
+      let v = f  fmt in
+      Format.pp_print_flush fmt ();
+      v
+    ) 
+
+
+let  is_pos_pow n = 
+  let module M = struct exception E end in 
+  let rec aux c (n : Int32.t) = 
+    if n <= 0l then -2 
+    else if n = 1l then c 
+    else if Int32.logand n 1l =  0l then   
+      aux (c + 1) (Int32.shift_right n 1 )
+    else raise M.E in 
+  try aux 0 n  with M.E -> -1
+
+let failwithf ~loc fmt = Format.ksprintf (fun s -> failwith (loc ^ s))
+    fmt
+    
+let invalid_argf fmt = Format.ksprintf invalid_arg fmt
+
+let bad_argf fmt = Format.ksprintf (fun x -> raise (Arg.Bad x ) ) fmt
+
+external id : 'a -> 'a = "%identity"
+
+
+let hash_variant s =
+  let accu = ref 0 in
+  for i = 0 to String.length s - 1 do
+    accu := 223 * !accu + Char.code s.[i]
+  done;
+  (* reduce to 31 bits *)
+  accu := !accu land (1 lsl 31 - 1);
+  (* make it signed for 64 bits architectures *)
+  if !accu > 0x3FFFFFFF then !accu - (1 lsl 31) else !accu
+
+let todo loc = 
+  failwith (loc ^ " Not supported yet")
+end
+module Ext_string : sig 
+#1 "ext_string.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** Extension to the standard library [String] module, fixed some bugs like
+    avoiding locale sensitivity *) 
+
+(** default is false *)    
+val split_by : ?keep_empty:bool -> (char -> bool) -> string -> string list
+
+
+(** remove whitespace letters ('\t', '\n', ' ') on both side*)
+val trim : string -> string 
+
+
+(** default is false *)
+val split : ?keep_empty:bool -> string -> char -> string list
+
+(** split by space chars for quick scripting *)
+val quick_split_by_ws : string -> string list 
+
+
+
+val starts_with : string -> string -> bool
+
+(**
+   return [-1] when not found, the returned index is useful 
+   see [ends_with_then_chop]
+*)
+val ends_with_index : string -> string -> int
+
+val ends_with : string -> string -> bool
+
+(**
+  [ends_with_then_chop name ext]
+  @example:
+   {[
+     ends_with_then_chop "a.cmj" ".cmj"
+     "a"
+   ]}
+   This is useful in controlled or file case sensitve system
+*)
+val ends_with_then_chop : string -> string -> string option
+
+
+val escaped : string -> string
+
+(**
+  [for_all_from  s start p]
+  if [start] is negative, it raises,
+  if [start] is too large, it returns true
+*)
+val for_all_from:
+  string -> 
+  int -> 
+  (char -> bool) -> 
+  bool 
+
+val for_all : 
+  string -> 
+  (char -> bool) -> 
+  bool
+
+val is_empty : string -> bool
+
+val repeat : int -> string -> string 
+
+val equal : string -> string -> bool
+
+(**
+  [extract_until s cursor sep]
+   When [sep] not found, the cursor is updated to -1,
+   otherwise cursor is increased to 1 + [sep_position]
+   User can not determine whether it is found or not by
+   telling the return string is empty since 
+   "\n\n" would result in an empty string too.
+*)
+val extract_until:
+  string -> 
+  int ref -> (* cursor to be updated *)
+  char -> 
+  string
+
+val index_count:  
+  string -> 
+  int ->
+  char -> 
+  int -> 
+  int 
+
+(**
+  [find ~start ~sub s]
+  returns [-1] if not found
+*)
+val find : ?start:int -> sub:string -> string -> int
+
+val contain_substring : string -> string -> bool 
+
+val non_overlap_count : sub:string -> string -> int 
+
+val rfind : sub:string -> string -> int
+
+(** [tail_from s 1]
+  return a substring from offset 1 (inclusive)
+*)
+val tail_from : string -> int -> string
+
+
+(** returns negative number if not found *)
+val rindex_neg : string -> char -> int 
+
+val rindex_opt : string -> char -> int option
+
+type check_result = 
+    | Good | Invalid_module_name | Suffix_mismatch
+
+val is_valid_source_name :
+   string -> check_result
+
+
+
+
+
+val no_char : string -> char -> int -> int -> bool 
+
+
+val no_slash : string -> bool 
+
+(** return negative means no slash, otherwise [i] means the place for first slash *)
+val no_slash_idx : string -> int 
+
+val no_slash_idx_from : string -> int -> int 
+
+(** if no conversion happens, reference equality holds *)
+val replace_slash_backward : string -> string 
+
+(** if no conversion happens, reference equality holds *)
+val replace_backward_slash : string -> string 
+
+val empty : string 
+
+
+external compare : string -> string -> int = "caml_string_length_based_compare" [@@noalloc];;  
+  
+val single_space : string
+
+val concat3 : string -> string -> string -> string 
+val concat4 : string -> string -> string -> string -> string 
+val concat5 : string -> string -> string -> string -> string -> string  
+val inter2 : string -> string -> string
+val inter3 : string -> string -> string -> string 
+val inter4 : string -> string -> string -> string -> string
+val concat_array : string -> string array -> string 
+
+val single_colon : string 
+
+val parent_dir_lit : string
+val current_dir_lit : string
+
+val capitalize_ascii : string -> string
+
+val uncapitalize_ascii : string -> string
+
+val lowercase_ascii : string -> string 
+end = struct
+#1 "ext_string.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+(*
+   {[ split " test_unsafe_obj_ffi_ppx.cmi" ~keep_empty:false ' ']}
+*)
+let split_by ?(keep_empty=false) is_delim str =
+  let len = String.length str in
+  let rec loop acc last_pos pos =
+    if pos = -1 then
+      if last_pos = 0 && not keep_empty then
+
+        acc
+      else 
+        String.sub str 0 last_pos :: acc
+    else
+    if is_delim str.[pos] then
+      let new_len = (last_pos - pos - 1) in
+      if new_len <> 0 || keep_empty then 
+        let v = String.sub str (pos + 1) new_len in
+        loop ( v :: acc)
+          pos (pos - 1)
+      else loop acc pos (pos - 1)
+    else loop acc last_pos (pos - 1)
+  in
+  loop [] len (len - 1)
+
+let trim s = 
+  let i = ref 0  in
+  let j = String.length s in 
+  while !i < j &&  
+        let u = String.unsafe_get s !i in 
+        u = '\t' || u = '\n' || u = ' ' 
+  do 
+    incr i;
+  done;
+  let k = ref (j - 1)  in 
+  while !k >= !i && 
+        let u = String.unsafe_get s !k in 
+        u = '\t' || u = '\n' || u = ' ' do 
+    decr k ;
+  done;
+  String.sub s !i (!k - !i + 1)
+
+let split ?keep_empty  str on = 
+  if str = "" then [] else 
+    split_by ?keep_empty (fun x -> (x : char) = on) str  ;;
+
+let quick_split_by_ws str : string list = 
+  split_by ~keep_empty:false (fun x -> x = '\t' || x = '\n' || x = ' ') str
+
+let starts_with s beg = 
+  let beg_len = String.length beg in
+  let s_len = String.length s in
+  beg_len <=  s_len &&
+  (let i = ref 0 in
+   while !i <  beg_len 
+         && String.unsafe_get s !i =
+            String.unsafe_get beg !i do 
+     incr i 
+   done;
+   !i = beg_len
+  )
+
+let rec ends_aux s end_ j k = 
+  if k < 0 then (j + 1)
+  else if String.unsafe_get s j = String.unsafe_get end_ k then 
+    ends_aux s end_ (j - 1) (k - 1)
+  else  -1   
+
+(** return an index which is minus when [s] does not 
+    end with [beg]
+*)
+let ends_with_index s end_ = 
+  let s_finish = String.length s - 1 in
+  let s_beg = String.length end_ - 1 in
+  if s_beg > s_finish then -1
+  else
+    ends_aux s end_ s_finish s_beg
+
+let ends_with s end_ = ends_with_index s end_ >= 0 
+
+let ends_with_then_chop s beg = 
+  let i =  ends_with_index s beg in 
+  if i >= 0 then Some (String.sub s 0 i) 
+  else None
+
+let check_suffix_case = ends_with 
+let check_suffix_case_then_chop = ends_with_then_chop
+
+let check_any_suffix_case s suffixes = 
+  List.exists (fun x -> check_suffix_case s x) suffixes
+
+let check_any_suffix_case_then_chop s suffixes = 
+  let rec aux suffixes = 
+    match suffixes with 
+    | [] -> None 
+    | x::xs -> 
+      let id = ends_with_index s x in 
+      if id >= 0 then Some (String.sub s 0 id)
+      else aux xs in 
+  aux suffixes    
+
+
+
+(**  In OCaml 4.02.3, {!String.escaped} is locale senstive, 
+     this version try to make it not locale senstive, this bug is fixed
+     in the compiler trunk     
+*)
+let escaped s =
+  let rec needs_escape i =
+    if i >= String.length s then false else
+      match String.unsafe_get s i with
+      | '"' | '\\' | '\n' | '\t' | '\r' | '\b' -> true
+      | ' ' .. '~' -> needs_escape (i+1)
+      | _ -> true
+  in
+  if needs_escape 0 then
+    Bytes.unsafe_to_string (Ext_bytes.escaped (Bytes.unsafe_of_string s))
+  else
+    s
+
+(* it is unsafe to expose such API as unsafe since 
+   user can provide bad input range 
+
+*)
+let rec unsafe_for_all_range s ~start ~finish p =     
+  start > finish ||
+  p (String.unsafe_get s start) && 
+  unsafe_for_all_range s ~start:(start + 1) ~finish p
+
+let for_all_from s start  p = 
+  let len = String.length s in 
+  if start < 0  then invalid_arg "Ext_string.for_all_from"
+  else unsafe_for_all_range s ~start ~finish:(len - 1) p 
+
+
+let for_all s (p : char -> bool)  =   
+  unsafe_for_all_range s ~start:0  ~finish:(String.length s - 1) p 
+
+let is_empty s = String.length s = 0
+
+
+let repeat n s  =
+  let len = String.length s in
+  let res = Bytes.create(n * len) in
+  for i = 0 to pred n do
+    String.blit s 0 res (i * len) len
+  done;
+  Bytes.to_string res
+
+let equal (x : string) y  = x = y
+
+
+
+let unsafe_is_sub ~sub i s j ~len =
+  let rec check k =
+    if k = len
+    then true
+    else 
+      String.unsafe_get sub (i+k) = 
+      String.unsafe_get s (j+k) && check (k+1)
+  in
+  j+len <= String.length s && check 0
+
+
+exception Local_exit 
+let find ?(start=0) ~sub s =
+  let n = String.length sub in
+  let s_len = String.length s in 
+  let i = ref start in  
+  try
+    while !i + n <= s_len do
+      if unsafe_is_sub ~sub 0 s !i ~len:n then
+        raise_notrace Local_exit;
+      incr i
+    done;
+    -1
+  with Local_exit ->
+    !i
+
+let contain_substring s sub = 
+  find s ~sub >= 0 
+
+(** TODO: optimize 
+    avoid nonterminating when string is empty 
+*)
+let non_overlap_count ~sub s = 
+  let sub_len = String.length sub in 
+  let rec aux  acc off = 
+    let i = find ~start:off ~sub s  in 
+    if i < 0 then acc 
+    else aux (acc + 1) (i + sub_len) in
+  if String.length sub = 0 then invalid_arg "Ext_string.non_overlap_count"
+  else aux 0 0  
+
+
+let rfind ~sub s =
+  let n = String.length sub in
+  let i = ref (String.length s - n) in
+  let module M = struct exception Exit end in 
+  try
+    while !i >= 0 do
+      if unsafe_is_sub ~sub 0 s !i ~len:n then 
+        raise_notrace Local_exit;
+      decr i
+    done;
+    -1
+  with Local_exit ->
+    !i
+
+let tail_from s x = 
+  let len = String.length s  in 
+  if  x > len then invalid_arg ("Ext_string.tail_from " ^s ^ " : "^ string_of_int x )
+  else String.sub s x (len - x)
+
+let equal (x : string) y  = x = y
+
+let rec index_rec s lim i c =
+  if i >= lim then -1 else
+  if String.unsafe_get s i = c then i 
+  else index_rec s lim (i + 1) c
+
+let rec index_rec_count s lim i c count =
+  if i >= lim then -1 else
+  if String.unsafe_get s i = c then 
+    if count = 1 then i 
+    else index_rec_count s lim (i + 1) c (count - 1)
+  else index_rec_count s lim (i + 1) c count
+
+let index_count s i c count =     
+  let lim = String.length s in 
+  if i < 0 || i >= lim || count < 1 then 
+    Ext_pervasives.invalid_argf "index_count: (%d,%d)"  i count;
+
+  index_rec_count s lim i c count 
+let extract_until s cursor c =       
+  let len = String.length s in   
+  let start = !cursor in 
+  if start < 0 || start >= len then (
+    cursor := -1;
+    ""
+    )
+  else 
+    let i = index_rec s len start c in   
+    let finish = 
+      if i < 0 then (      
+        cursor := -1 ;
+        len 
+      )
+      else (
+        cursor := i + 1;
+        i 
+      ) in 
+    String.sub s start (finish - start)
+  
+let rec rindex_rec s i c =
+  if i < 0 then i else
+  if String.unsafe_get s i = c then i else rindex_rec s (i - 1) c;;
+
+let rec rindex_rec_opt s i c =
+  if i < 0 then None else
+  if String.unsafe_get s i = c then Some i else rindex_rec_opt s (i - 1) c;;
+
+let rindex_neg s c = 
+  rindex_rec s (String.length s - 1) c;;
+
+let rindex_opt s c = 
+  rindex_rec_opt s (String.length s - 1) c;;
+
+let is_valid_module_file (s : string) = 
+  let len = String.length s in 
+  len > 0 &&
+  match String.unsafe_get s 0 with 
+  | 'A' .. 'Z'
+  | 'a' .. 'z' -> 
+    unsafe_for_all_range s ~start:1 ~finish:(len - 1)
+      (fun x -> 
+         match x with 
+         | 'A'..'Z' | 'a'..'z' | '0'..'9' | '_' | '\'' -> true
+         | _ -> false )
+  | _ -> false 
+
+
+
+
+type check_result = 
+  | Good 
+  | Invalid_module_name 
+  | Suffix_mismatch
+  (** 
+     TODO: move to another module 
+     Make {!Ext_filename} not stateful
+  *)
+let is_valid_source_name name : check_result =
+  match check_any_suffix_case_then_chop name [
+      ".ml"; 
+      ".re";
+      ".mli"; 
+      ".rei"
+    ] with 
+  | None -> Suffix_mismatch
+  | Some x -> 
+    if is_valid_module_file  x then
+      Good
+    else Invalid_module_name  
+
+(** TODO: can be improved to return a positive integer instead *)
+let rec unsafe_no_char x ch i  last_idx = 
+  i > last_idx  || 
+  (String.unsafe_get x i <> ch && unsafe_no_char x ch (i + 1)  last_idx)
+
+let rec unsafe_no_char_idx x ch i last_idx = 
+  if i > last_idx  then -1 
+  else 
+  if String.unsafe_get x i <> ch then 
+    unsafe_no_char_idx x ch (i + 1)  last_idx
+  else i
+
+let no_char x ch i len  : bool =
+  let str_len = String.length x in 
+  if i < 0 || i >= str_len || len >= str_len then invalid_arg "Ext_string.no_char"   
+  else unsafe_no_char x ch i len 
+
+
+let no_slash x = 
+  unsafe_no_char x '/' 0 (String.length x - 1)
+
+let no_slash_idx x = 
+  unsafe_no_char_idx x '/' 0 (String.length x - 1)
+
+let no_slash_idx_from x from = 
+  let last_idx = String.length x - 1  in 
+  assert (from >= 0); 
+  unsafe_no_char_idx x '/' from last_idx
+
+let replace_slash_backward (x : string ) = 
+  let len = String.length x in 
+  if unsafe_no_char x '/' 0  (len - 1) then x 
+  else 
+    String.map (function 
+        | '/' -> '\\'
+        | x -> x ) x 
+
+let replace_backward_slash (x : string)=
+  let len = String.length x in
+  if unsafe_no_char x '\\' 0  (len -1) then x 
+  else  
+    String.map (function 
+        |'\\'-> '/'
+        | x -> x) x
+
+let empty = ""
+
+
+external compare : string -> string -> int = "caml_string_length_based_compare" [@@noalloc];;    
+
+let single_space = " "
+let single_colon = ":"
+
+let concat_array sep (s : string array) =   
+  let s_len = Array.length s in 
+  match s_len with 
+  | 0 -> empty 
+  | 1 -> Array.unsafe_get s 0
+  | _ ->     
+    let sep_len = String.length sep in 
+    let len = ref 0 in 
+    for i = 0 to  s_len - 1 do 
+      len := !len + String.length (Array.unsafe_get s i)
+    done;
+    let target = 
+      Bytes.create 
+        (!len + (s_len - 1) * sep_len ) in    
+    let hd = (Array.unsafe_get s 0) in     
+    let hd_len = String.length hd in 
+    String.unsafe_blit hd  0  target 0 hd_len;   
+    let current_offset = ref hd_len in     
+    for i = 1 to s_len - 1 do 
+      String.unsafe_blit sep 0 target  !current_offset sep_len;
+      let cur = Array.unsafe_get s i in 
+      let cur_len = String.length cur in     
+      let new_off_set = (!current_offset + sep_len ) in
+      String.unsafe_blit cur 0 target new_off_set cur_len; 
+      current_offset := 
+        new_off_set + cur_len ; 
+    done;
+    Bytes.unsafe_to_string target   
+
+let concat3 a b c = 
+  let a_len = String.length a in 
+  let b_len = String.length b in 
+  let c_len = String.length c in 
+  let len = a_len + b_len + c_len in 
+  let target = Bytes.create len in 
+  String.unsafe_blit a 0 target 0 a_len ; 
+  String.unsafe_blit b 0 target a_len b_len;
+  String.unsafe_blit c 0 target (a_len + b_len) c_len;
+  Bytes.unsafe_to_string target
+
+let concat4 a b c d =
+  let a_len = String.length a in 
+  let b_len = String.length b in 
+  let c_len = String.length c in 
+  let d_len = String.length d in 
+  let len = a_len + b_len + c_len + d_len in 
+
+  let target = Bytes.create len in 
+  String.unsafe_blit a 0 target 0 a_len ; 
+  String.unsafe_blit b 0 target a_len b_len;
+  String.unsafe_blit c 0 target (a_len + b_len) c_len;
+  String.unsafe_blit d 0 target (a_len + b_len + c_len) d_len;
+  Bytes.unsafe_to_string target
+
+
+let concat5 a b c d e =
+  let a_len = String.length a in 
+  let b_len = String.length b in 
+  let c_len = String.length c in 
+  let d_len = String.length d in 
+  let e_len = String.length e in 
+  let len = a_len + b_len + c_len + d_len + e_len in 
+
+  let target = Bytes.create len in 
+  String.unsafe_blit a 0 target 0 a_len ; 
+  String.unsafe_blit b 0 target a_len b_len;
+  String.unsafe_blit c 0 target (a_len + b_len) c_len;
+  String.unsafe_blit d 0 target (a_len + b_len + c_len) d_len;
+  String.unsafe_blit e 0 target (a_len + b_len + c_len + d_len) e_len;
+  Bytes.unsafe_to_string target
+
+
+
+let inter2 a b = 
+  concat3 a single_space b 
+
+
+let inter3 a b c = 
+  concat5 a  single_space  b  single_space  c 
+
+
+
+
+
+let inter4 a b c d =
+  concat_array single_space [| a; b ; c; d|]
+
+
+let parent_dir_lit = ".."    
+let current_dir_lit = "."
+
+
+(* reference {!Bytes.unppercase} *)
+let capitalize_ascii (s : string) : string = 
+  if String.length s = 0 then s 
+  else 
+    begin
+      let c = String.unsafe_get s 0 in 
+      if (c >= 'a' && c <= 'z')
+      || (c >= '\224' && c <= '\246')
+      || (c >= '\248' && c <= '\254') then 
+        let uc = Char.unsafe_chr (Char.code c - 32) in 
+        let bytes = Bytes.of_string s in
+        Bytes.unsafe_set bytes 0 uc;
+        Bytes.unsafe_to_string bytes 
+      else s 
+    end
+
+let uncapitalize_ascii =
+
+    String.uncapitalize_ascii
+      
+
+
+ 
+let lowercase_ascii = String.lowercase_ascii
+
+
+
+
+
+end
+module Js_config : sig 
+#1 "js_config.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+(* val get_packages_info :
+   unit -> Js_packages_info.t *)
+
+
+(** set/get header *)
+val no_version_header : bool ref 
+
+
+(** return [package_name] and [path] 
+    when in script mode: 
+*)
+
+(* val get_current_package_name_and_path : 
+  Js_packages_info.module_system -> 
+  Js_packages_info.info_query *)
+
+
+(* val set_package_name : string -> unit  
+val get_package_name : unit -> string option *)
+
+(** cross module inline option *)
+val cross_module_inline : bool ref
+val set_cross_module_inline : bool -> unit
+val get_cross_module_inline : unit -> bool
+  
+(** diagnose option *)
+val diagnose : bool ref 
+val get_diagnose : unit -> bool 
+val set_diagnose : bool -> unit 
+
+
+(** options for builtin ppx *)
+val no_builtin_ppx_ml : bool ref 
+val no_builtin_ppx_mli : bool ref 
+
+
+
+val no_warn_unimplemented_external : bool ref 
+
+(** check-div-by-zero option *)
+val check_div_by_zero : bool ref 
+val get_check_div_by_zero : unit -> bool 
+
+
+
+
+
+(** Debugging utilies *)
+val set_current_file : string -> unit 
+val get_current_file : unit -> string
+val get_module_name : unit -> string
+
+val iset_debug_file : string -> unit
+val set_debug_file : string -> unit
+val get_debug_file : unit -> string
+
+val is_same_file : unit -> bool 
+
+val tool_name : string
+
+
+val sort_imports : bool ref 
+val dump_js : bool ref
+val syntax_only  : bool ref
+val binary_ast : bool ref
+
+
+val bs_suffix : bool ref
+val debug : bool ref
+
+val cmi_only  : bool ref
+val force_cmi : bool ref 
+val force_cmj : bool ref
+
+val jsx_version : int ref
+end = struct
+#1 "js_config.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+(* let add_npm_package_path s =
+  match !packages_info  with
+  | Empty ->
+    Ext_pervasives.bad_argf "please set package name first using -bs-package-name ";
+  | NonBrowser(name,  envs) ->
+    let env, path =
+      match Ext_string.split ~keep_empty:false s ':' with
+      | [ package_name; path]  ->
+        (match Js_packages_info.module_system_of_string package_name with
+         | Some x -> x
+         | None ->
+           Ext_pervasives.bad_argf "invalid module system %s" package_name), path
+      | [path] ->
+        NodeJS, path
+      | _ ->
+        Ext_pervasives.bad_argf "invalid npm package path: %s" s
+    in
+    packages_info := NonBrowser (name,  ((env,path) :: envs)) *)
+(** Browser is not set via command line only for internal use *)
+
+
+let no_version_header = ref false
+
+let cross_module_inline = ref false
+
+let get_cross_module_inline () = !cross_module_inline
+let set_cross_module_inline b =
+  cross_module_inline := b
+
+
+let diagnose = ref false
+let get_diagnose () = !diagnose
+let set_diagnose b = diagnose := b
+
+let (//) = Filename.concat
+
+(* let get_packages_info () = !packages_info *)
+
+let no_builtin_ppx_ml = ref false
+let no_builtin_ppx_mli = ref false
+
+
+(** TODO: will flip the option when it is ready *)
+let no_warn_unimplemented_external = ref false 
+let current_file = ref ""
+let debug_file = ref ""
+
+let set_current_file f  = current_file := f
+let get_current_file () = !current_file
+let get_module_name () =
+  Filename.chop_extension
+    (Filename.basename (Ext_string.uncapitalize_ascii !current_file))
+
+let iset_debug_file _ = ()
+let set_debug_file  f = debug_file := f
+let get_debug_file  () = !debug_file
+
+
+let is_same_file () =
+  !debug_file <> "" &&  !debug_file = !current_file
+
+let tool_name = "BuckleScript"
+
+let check_div_by_zero = ref true
+let get_check_div_by_zero () = !check_div_by_zero
+
+
+
+
+let sort_imports = ref true
+let dump_js = ref false
+
+
+
+let syntax_only = ref false
+let binary_ast = ref false
+
+let bs_suffix = ref false 
+
+let debug = ref false
+
+let cmi_only = ref false  
+let force_cmi = ref false
+let force_cmj = ref false
+
+let jsx_version = ref (-1)
+end
 module Arg_helper : sig 
 #1 "arg_helper.mli"
 (**************************************************************************)
@@ -5900,19 +7094,26 @@ let apply_lazy ~source ~target
   output_value oc !Location.input_name;
   output_value oc ast;
   close_out oc
-
+  
+let usage = "Usage: [prog] [extra_args] <infile> <outfile>\n%!"
 let main impl intf =
   try
     let a = Sys.argv in
     let n = Array.length a in
-    if n > 2 then
+    if n > 2 then begin
+      Arg.parse_argv (Array.sub Sys.argv 0 (n-2))
+        [
+          ("-bs-jsx",
+           Arg.Int (fun i -> Js_config.jsx_version := i),
+           " Set jsx version"
+          )
+        ] ignore usage;
       apply_lazy ~source:a.(n - 2) ~target:a.(n - 1)
         impl
         intf
-    else
+    end else
       begin
-        Printf.eprintf "Usage: %s [extra_args] <infile> <outfile>\n%!"
-          Sys.executable_name;
+        Printf.eprintf "%s" usage;
         exit 2
       end
   with exn ->
@@ -7570,977 +8771,6 @@ module Cstr = struct
 end
 
 end
-module Ext_bytes : sig 
-#1 "ext_bytes.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-(** Port the {!Bytes.escaped} from trunk to make it not locale sensitive *)
-
-val escaped : bytes -> bytes
-
-end = struct
-#1 "ext_bytes.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-external char_code: char -> int = "%identity"
-external char_chr: int -> char = "%identity"
-
-let escaped s =
-  let n = Pervasives.ref 0 in
-  for i = 0 to Bytes.length s - 1 do
-    n := !n +
-      (match Bytes.unsafe_get s i with
-       | '"' | '\\' | '\n' | '\t' | '\r' | '\b' -> 2
-       | ' ' .. '~' -> 1
-       | _ -> 4)
-  done;
-  if !n = Bytes.length s then Bytes.copy s else begin
-    let s' = Bytes.create !n in
-    n := 0;
-    for i = 0 to Bytes.length s - 1 do
-      begin match Bytes.unsafe_get s i with
-      | ('"' | '\\') as c ->
-          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n c
-      | '\n' ->
-          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n 'n'
-      | '\t' ->
-          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n 't'
-      | '\r' ->
-          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n 'r'
-      | '\b' ->
-          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n 'b'
-      | (' ' .. '~') as c -> Bytes.unsafe_set s' !n c
-      | c ->
-          let a = char_code c in
-          Bytes.unsafe_set s' !n '\\';
-          incr n;
-          Bytes.unsafe_set s' !n (char_chr (48 + a / 100));
-          incr n;
-          Bytes.unsafe_set s' !n (char_chr (48 + (a / 10) mod 10));
-          incr n;
-          Bytes.unsafe_set s' !n (char_chr (48 + a mod 10));
-      end;
-      incr n
-    done;
-    s'
-  end
-
-end
-module Ext_pervasives : sig 
-#1 "ext_pervasives.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(** Extension to standard library [Pervavives] module, safe to open 
-  *)
-
-external reraise: exn -> 'a = "%reraise"
-
-val finally : 'a -> ('a -> 'c) -> ('a -> 'b) -> 'b
-
-val try_it : (unit -> 'a) ->  unit 
-
-val with_file_as_chan : string -> (out_channel -> 'a) -> 'a
-
-val with_file_as_pp : string -> (Format.formatter -> 'a) -> 'a
-
-val is_pos_pow : Int32.t -> int
-
-val failwithf : loc:string -> ('a, unit, string, 'b) format4 -> 'a
-
-val invalid_argf : ('a, unit, string, 'b) format4 -> 'a
-
-val bad_argf : ('a, unit, string, 'b) format4 -> 'a
-
-
-
-
-external id : 'a -> 'a = "%identity"
-
-(** Copied from {!Btype.hash_variant}:
-    need sync up and add test case
- *)
-val hash_variant : string -> int
-
-val todo : string -> 'a
-end = struct
-#1 "ext_pervasives.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-external reraise: exn -> 'a = "%reraise"
-
-let finally v action f   = 
-  match f v with
-  | exception e -> 
-      action v ;
-      reraise e 
-  | e ->  action v ; e 
-
-let try_it f  =   
-  try ignore (f ()) with _ -> ()
-
-let with_file_as_chan filename f = 
-  finally (open_out_bin filename) close_out f 
-
-let with_file_as_pp filename f = 
-  finally (open_out_bin filename) close_out
-    (fun chan -> 
-      let fmt = Format.formatter_of_out_channel chan in
-      let v = f  fmt in
-      Format.pp_print_flush fmt ();
-      v
-    ) 
-
-
-let  is_pos_pow n = 
-  let module M = struct exception E end in 
-  let rec aux c (n : Int32.t) = 
-    if n <= 0l then -2 
-    else if n = 1l then c 
-    else if Int32.logand n 1l =  0l then   
-      aux (c + 1) (Int32.shift_right n 1 )
-    else raise M.E in 
-  try aux 0 n  with M.E -> -1
-
-let failwithf ~loc fmt = Format.ksprintf (fun s -> failwith (loc ^ s))
-    fmt
-    
-let invalid_argf fmt = Format.ksprintf invalid_arg fmt
-
-let bad_argf fmt = Format.ksprintf (fun x -> raise (Arg.Bad x ) ) fmt
-
-external id : 'a -> 'a = "%identity"
-
-
-let hash_variant s =
-  let accu = ref 0 in
-  for i = 0 to String.length s - 1 do
-    accu := 223 * !accu + Char.code s.[i]
-  done;
-  (* reduce to 31 bits *)
-  accu := !accu land (1 lsl 31 - 1);
-  (* make it signed for 64 bits architectures *)
-  if !accu > 0x3FFFFFFF then !accu - (1 lsl 31) else !accu
-
-let todo loc = 
-  failwith (loc ^ " Not supported yet")
-end
-module Ext_string : sig 
-#1 "ext_string.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(** Extension to the standard library [String] module, fixed some bugs like
-    avoiding locale sensitivity *) 
-
-(** default is false *)    
-val split_by : ?keep_empty:bool -> (char -> bool) -> string -> string list
-
-
-(** remove whitespace letters ('\t', '\n', ' ') on both side*)
-val trim : string -> string 
-
-
-(** default is false *)
-val split : ?keep_empty:bool -> string -> char -> string list
-
-(** split by space chars for quick scripting *)
-val quick_split_by_ws : string -> string list 
-
-
-
-val starts_with : string -> string -> bool
-
-(**
-   return [-1] when not found, the returned index is useful 
-   see [ends_with_then_chop]
-*)
-val ends_with_index : string -> string -> int
-
-val ends_with : string -> string -> bool
-
-(**
-  [ends_with_then_chop name ext]
-  @example:
-   {[
-     ends_with_then_chop "a.cmj" ".cmj"
-     "a"
-   ]}
-   This is useful in controlled or file case sensitve system
-*)
-val ends_with_then_chop : string -> string -> string option
-
-
-val escaped : string -> string
-
-(**
-  [for_all_from  s start p]
-  if [start] is negative, it raises,
-  if [start] is too large, it returns true
-*)
-val for_all_from:
-  string -> 
-  int -> 
-  (char -> bool) -> 
-  bool 
-
-val for_all : 
-  string -> 
-  (char -> bool) -> 
-  bool
-
-val is_empty : string -> bool
-
-val repeat : int -> string -> string 
-
-val equal : string -> string -> bool
-
-(**
-  [extract_until s cursor sep]
-   When [sep] not found, the cursor is updated to -1,
-   otherwise cursor is increased to 1 + [sep_position]
-   User can not determine whether it is found or not by
-   telling the return string is empty since 
-   "\n\n" would result in an empty string too.
-*)
-val extract_until:
-  string -> 
-  int ref -> (* cursor to be updated *)
-  char -> 
-  string
-
-val index_count:  
-  string -> 
-  int ->
-  char -> 
-  int -> 
-  int 
-
-(**
-  [find ~start ~sub s]
-  returns [-1] if not found
-*)
-val find : ?start:int -> sub:string -> string -> int
-
-val contain_substring : string -> string -> bool 
-
-val non_overlap_count : sub:string -> string -> int 
-
-val rfind : sub:string -> string -> int
-
-(** [tail_from s 1]
-  return a substring from offset 1 (inclusive)
-*)
-val tail_from : string -> int -> string
-
-
-(** returns negative number if not found *)
-val rindex_neg : string -> char -> int 
-
-val rindex_opt : string -> char -> int option
-
-type check_result = 
-    | Good | Invalid_module_name | Suffix_mismatch
-
-val is_valid_source_name :
-   string -> check_result
-
-
-
-
-
-val no_char : string -> char -> int -> int -> bool 
-
-
-val no_slash : string -> bool 
-
-(** return negative means no slash, otherwise [i] means the place for first slash *)
-val no_slash_idx : string -> int 
-
-val no_slash_idx_from : string -> int -> int 
-
-(** if no conversion happens, reference equality holds *)
-val replace_slash_backward : string -> string 
-
-(** if no conversion happens, reference equality holds *)
-val replace_backward_slash : string -> string 
-
-val empty : string 
-
-
-external compare : string -> string -> int = "caml_string_length_based_compare" [@@noalloc];;  
-  
-val single_space : string
-
-val concat3 : string -> string -> string -> string 
-val concat4 : string -> string -> string -> string -> string 
-val concat5 : string -> string -> string -> string -> string -> string  
-val inter2 : string -> string -> string
-val inter3 : string -> string -> string -> string 
-val inter4 : string -> string -> string -> string -> string
-val concat_array : string -> string array -> string 
-
-val single_colon : string 
-
-val parent_dir_lit : string
-val current_dir_lit : string
-
-val capitalize_ascii : string -> string
-
-val uncapitalize_ascii : string -> string
-
-val lowercase_ascii : string -> string 
-end = struct
-#1 "ext_string.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-(*
-   {[ split " test_unsafe_obj_ffi_ppx.cmi" ~keep_empty:false ' ']}
-*)
-let split_by ?(keep_empty=false) is_delim str =
-  let len = String.length str in
-  let rec loop acc last_pos pos =
-    if pos = -1 then
-      if last_pos = 0 && not keep_empty then
-
-        acc
-      else 
-        String.sub str 0 last_pos :: acc
-    else
-    if is_delim str.[pos] then
-      let new_len = (last_pos - pos - 1) in
-      if new_len <> 0 || keep_empty then 
-        let v = String.sub str (pos + 1) new_len in
-        loop ( v :: acc)
-          pos (pos - 1)
-      else loop acc pos (pos - 1)
-    else loop acc last_pos (pos - 1)
-  in
-  loop [] len (len - 1)
-
-let trim s = 
-  let i = ref 0  in
-  let j = String.length s in 
-  while !i < j &&  
-        let u = String.unsafe_get s !i in 
-        u = '\t' || u = '\n' || u = ' ' 
-  do 
-    incr i;
-  done;
-  let k = ref (j - 1)  in 
-  while !k >= !i && 
-        let u = String.unsafe_get s !k in 
-        u = '\t' || u = '\n' || u = ' ' do 
-    decr k ;
-  done;
-  String.sub s !i (!k - !i + 1)
-
-let split ?keep_empty  str on = 
-  if str = "" then [] else 
-    split_by ?keep_empty (fun x -> (x : char) = on) str  ;;
-
-let quick_split_by_ws str : string list = 
-  split_by ~keep_empty:false (fun x -> x = '\t' || x = '\n' || x = ' ') str
-
-let starts_with s beg = 
-  let beg_len = String.length beg in
-  let s_len = String.length s in
-  beg_len <=  s_len &&
-  (let i = ref 0 in
-   while !i <  beg_len 
-         && String.unsafe_get s !i =
-            String.unsafe_get beg !i do 
-     incr i 
-   done;
-   !i = beg_len
-  )
-
-let rec ends_aux s end_ j k = 
-  if k < 0 then (j + 1)
-  else if String.unsafe_get s j = String.unsafe_get end_ k then 
-    ends_aux s end_ (j - 1) (k - 1)
-  else  -1   
-
-(** return an index which is minus when [s] does not 
-    end with [beg]
-*)
-let ends_with_index s end_ = 
-  let s_finish = String.length s - 1 in
-  let s_beg = String.length end_ - 1 in
-  if s_beg > s_finish then -1
-  else
-    ends_aux s end_ s_finish s_beg
-
-let ends_with s end_ = ends_with_index s end_ >= 0 
-
-let ends_with_then_chop s beg = 
-  let i =  ends_with_index s beg in 
-  if i >= 0 then Some (String.sub s 0 i) 
-  else None
-
-let check_suffix_case = ends_with 
-let check_suffix_case_then_chop = ends_with_then_chop
-
-let check_any_suffix_case s suffixes = 
-  List.exists (fun x -> check_suffix_case s x) suffixes
-
-let check_any_suffix_case_then_chop s suffixes = 
-  let rec aux suffixes = 
-    match suffixes with 
-    | [] -> None 
-    | x::xs -> 
-      let id = ends_with_index s x in 
-      if id >= 0 then Some (String.sub s 0 id)
-      else aux xs in 
-  aux suffixes    
-
-
-
-(**  In OCaml 4.02.3, {!String.escaped} is locale senstive, 
-     this version try to make it not locale senstive, this bug is fixed
-     in the compiler trunk     
-*)
-let escaped s =
-  let rec needs_escape i =
-    if i >= String.length s then false else
-      match String.unsafe_get s i with
-      | '"' | '\\' | '\n' | '\t' | '\r' | '\b' -> true
-      | ' ' .. '~' -> needs_escape (i+1)
-      | _ -> true
-  in
-  if needs_escape 0 then
-    Bytes.unsafe_to_string (Ext_bytes.escaped (Bytes.unsafe_of_string s))
-  else
-    s
-
-(* it is unsafe to expose such API as unsafe since 
-   user can provide bad input range 
-
-*)
-let rec unsafe_for_all_range s ~start ~finish p =     
-  start > finish ||
-  p (String.unsafe_get s start) && 
-  unsafe_for_all_range s ~start:(start + 1) ~finish p
-
-let for_all_from s start  p = 
-  let len = String.length s in 
-  if start < 0  then invalid_arg "Ext_string.for_all_from"
-  else unsafe_for_all_range s ~start ~finish:(len - 1) p 
-
-
-let for_all s (p : char -> bool)  =   
-  unsafe_for_all_range s ~start:0  ~finish:(String.length s - 1) p 
-
-let is_empty s = String.length s = 0
-
-
-let repeat n s  =
-  let len = String.length s in
-  let res = Bytes.create(n * len) in
-  for i = 0 to pred n do
-    String.blit s 0 res (i * len) len
-  done;
-  Bytes.to_string res
-
-let equal (x : string) y  = x = y
-
-
-
-let unsafe_is_sub ~sub i s j ~len =
-  let rec check k =
-    if k = len
-    then true
-    else 
-      String.unsafe_get sub (i+k) = 
-      String.unsafe_get s (j+k) && check (k+1)
-  in
-  j+len <= String.length s && check 0
-
-
-exception Local_exit 
-let find ?(start=0) ~sub s =
-  let n = String.length sub in
-  let s_len = String.length s in 
-  let i = ref start in  
-  try
-    while !i + n <= s_len do
-      if unsafe_is_sub ~sub 0 s !i ~len:n then
-        raise_notrace Local_exit;
-      incr i
-    done;
-    -1
-  with Local_exit ->
-    !i
-
-let contain_substring s sub = 
-  find s ~sub >= 0 
-
-(** TODO: optimize 
-    avoid nonterminating when string is empty 
-*)
-let non_overlap_count ~sub s = 
-  let sub_len = String.length sub in 
-  let rec aux  acc off = 
-    let i = find ~start:off ~sub s  in 
-    if i < 0 then acc 
-    else aux (acc + 1) (i + sub_len) in
-  if String.length sub = 0 then invalid_arg "Ext_string.non_overlap_count"
-  else aux 0 0  
-
-
-let rfind ~sub s =
-  let n = String.length sub in
-  let i = ref (String.length s - n) in
-  let module M = struct exception Exit end in 
-  try
-    while !i >= 0 do
-      if unsafe_is_sub ~sub 0 s !i ~len:n then 
-        raise_notrace Local_exit;
-      decr i
-    done;
-    -1
-  with Local_exit ->
-    !i
-
-let tail_from s x = 
-  let len = String.length s  in 
-  if  x > len then invalid_arg ("Ext_string.tail_from " ^s ^ " : "^ string_of_int x )
-  else String.sub s x (len - x)
-
-let equal (x : string) y  = x = y
-
-let rec index_rec s lim i c =
-  if i >= lim then -1 else
-  if String.unsafe_get s i = c then i 
-  else index_rec s lim (i + 1) c
-
-let rec index_rec_count s lim i c count =
-  if i >= lim then -1 else
-  if String.unsafe_get s i = c then 
-    if count = 1 then i 
-    else index_rec_count s lim (i + 1) c (count - 1)
-  else index_rec_count s lim (i + 1) c count
-
-let index_count s i c count =     
-  let lim = String.length s in 
-  if i < 0 || i >= lim || count < 1 then 
-    Ext_pervasives.invalid_argf "index_count: (%d,%d)"  i count;
-
-  index_rec_count s lim i c count 
-let extract_until s cursor c =       
-  let len = String.length s in   
-  let start = !cursor in 
-  if start < 0 || start >= len then (
-    cursor := -1;
-    ""
-    )
-  else 
-    let i = index_rec s len start c in   
-    let finish = 
-      if i < 0 then (      
-        cursor := -1 ;
-        len 
-      )
-      else (
-        cursor := i + 1;
-        i 
-      ) in 
-    String.sub s start (finish - start)
-  
-let rec rindex_rec s i c =
-  if i < 0 then i else
-  if String.unsafe_get s i = c then i else rindex_rec s (i - 1) c;;
-
-let rec rindex_rec_opt s i c =
-  if i < 0 then None else
-  if String.unsafe_get s i = c then Some i else rindex_rec_opt s (i - 1) c;;
-
-let rindex_neg s c = 
-  rindex_rec s (String.length s - 1) c;;
-
-let rindex_opt s c = 
-  rindex_rec_opt s (String.length s - 1) c;;
-
-let is_valid_module_file (s : string) = 
-  let len = String.length s in 
-  len > 0 &&
-  match String.unsafe_get s 0 with 
-  | 'A' .. 'Z'
-  | 'a' .. 'z' -> 
-    unsafe_for_all_range s ~start:1 ~finish:(len - 1)
-      (fun x -> 
-         match x with 
-         | 'A'..'Z' | 'a'..'z' | '0'..'9' | '_' | '\'' -> true
-         | _ -> false )
-  | _ -> false 
-
-
-
-
-type check_result = 
-  | Good 
-  | Invalid_module_name 
-  | Suffix_mismatch
-  (** 
-     TODO: move to another module 
-     Make {!Ext_filename} not stateful
-  *)
-let is_valid_source_name name : check_result =
-  match check_any_suffix_case_then_chop name [
-      ".ml"; 
-      ".re";
-      ".mli"; 
-      ".rei"
-    ] with 
-  | None -> Suffix_mismatch
-  | Some x -> 
-    if is_valid_module_file  x then
-      Good
-    else Invalid_module_name  
-
-(** TODO: can be improved to return a positive integer instead *)
-let rec unsafe_no_char x ch i  last_idx = 
-  i > last_idx  || 
-  (String.unsafe_get x i <> ch && unsafe_no_char x ch (i + 1)  last_idx)
-
-let rec unsafe_no_char_idx x ch i last_idx = 
-  if i > last_idx  then -1 
-  else 
-  if String.unsafe_get x i <> ch then 
-    unsafe_no_char_idx x ch (i + 1)  last_idx
-  else i
-
-let no_char x ch i len  : bool =
-  let str_len = String.length x in 
-  if i < 0 || i >= str_len || len >= str_len then invalid_arg "Ext_string.no_char"   
-  else unsafe_no_char x ch i len 
-
-
-let no_slash x = 
-  unsafe_no_char x '/' 0 (String.length x - 1)
-
-let no_slash_idx x = 
-  unsafe_no_char_idx x '/' 0 (String.length x - 1)
-
-let no_slash_idx_from x from = 
-  let last_idx = String.length x - 1  in 
-  assert (from >= 0); 
-  unsafe_no_char_idx x '/' from last_idx
-
-let replace_slash_backward (x : string ) = 
-  let len = String.length x in 
-  if unsafe_no_char x '/' 0  (len - 1) then x 
-  else 
-    String.map (function 
-        | '/' -> '\\'
-        | x -> x ) x 
-
-let replace_backward_slash (x : string)=
-  let len = String.length x in
-  if unsafe_no_char x '\\' 0  (len -1) then x 
-  else  
-    String.map (function 
-        |'\\'-> '/'
-        | x -> x) x
-
-let empty = ""
-
-
-external compare : string -> string -> int = "caml_string_length_based_compare" [@@noalloc];;    
-
-let single_space = " "
-let single_colon = ":"
-
-let concat_array sep (s : string array) =   
-  let s_len = Array.length s in 
-  match s_len with 
-  | 0 -> empty 
-  | 1 -> Array.unsafe_get s 0
-  | _ ->     
-    let sep_len = String.length sep in 
-    let len = ref 0 in 
-    for i = 0 to  s_len - 1 do 
-      len := !len + String.length (Array.unsafe_get s i)
-    done;
-    let target = 
-      Bytes.create 
-        (!len + (s_len - 1) * sep_len ) in    
-    let hd = (Array.unsafe_get s 0) in     
-    let hd_len = String.length hd in 
-    String.unsafe_blit hd  0  target 0 hd_len;   
-    let current_offset = ref hd_len in     
-    for i = 1 to s_len - 1 do 
-      String.unsafe_blit sep 0 target  !current_offset sep_len;
-      let cur = Array.unsafe_get s i in 
-      let cur_len = String.length cur in     
-      let new_off_set = (!current_offset + sep_len ) in
-      String.unsafe_blit cur 0 target new_off_set cur_len; 
-      current_offset := 
-        new_off_set + cur_len ; 
-    done;
-    Bytes.unsafe_to_string target   
-
-let concat3 a b c = 
-  let a_len = String.length a in 
-  let b_len = String.length b in 
-  let c_len = String.length c in 
-  let len = a_len + b_len + c_len in 
-  let target = Bytes.create len in 
-  String.unsafe_blit a 0 target 0 a_len ; 
-  String.unsafe_blit b 0 target a_len b_len;
-  String.unsafe_blit c 0 target (a_len + b_len) c_len;
-  Bytes.unsafe_to_string target
-
-let concat4 a b c d =
-  let a_len = String.length a in 
-  let b_len = String.length b in 
-  let c_len = String.length c in 
-  let d_len = String.length d in 
-  let len = a_len + b_len + c_len + d_len in 
-
-  let target = Bytes.create len in 
-  String.unsafe_blit a 0 target 0 a_len ; 
-  String.unsafe_blit b 0 target a_len b_len;
-  String.unsafe_blit c 0 target (a_len + b_len) c_len;
-  String.unsafe_blit d 0 target (a_len + b_len + c_len) d_len;
-  Bytes.unsafe_to_string target
-
-
-let concat5 a b c d e =
-  let a_len = String.length a in 
-  let b_len = String.length b in 
-  let c_len = String.length c in 
-  let d_len = String.length d in 
-  let e_len = String.length e in 
-  let len = a_len + b_len + c_len + d_len + e_len in 
-
-  let target = Bytes.create len in 
-  String.unsafe_blit a 0 target 0 a_len ; 
-  String.unsafe_blit b 0 target a_len b_len;
-  String.unsafe_blit c 0 target (a_len + b_len) c_len;
-  String.unsafe_blit d 0 target (a_len + b_len + c_len) d_len;
-  String.unsafe_blit e 0 target (a_len + b_len + c_len + d_len) e_len;
-  Bytes.unsafe_to_string target
-
-
-
-let inter2 a b = 
-  concat3 a single_space b 
-
-
-let inter3 a b c = 
-  concat5 a  single_space  b  single_space  c 
-
-
-
-
-
-let inter4 a b c d =
-  concat_array single_space [| a; b ; c; d|]
-
-
-let parent_dir_lit = ".."    
-let current_dir_lit = "."
-
-
-(* reference {!Bytes.unppercase} *)
-let capitalize_ascii (s : string) : string = 
-  if String.length s = 0 then s 
-  else 
-    begin
-      let c = String.unsafe_get s 0 in 
-      if (c >= 'a' && c <= 'z')
-      || (c >= '\224' && c <= '\246')
-      || (c >= '\248' && c <= '\254') then 
-        let uc = Char.unsafe_chr (Char.code c - 32) in 
-        let bytes = Bytes.of_string s in
-        Bytes.unsafe_set bytes 0 uc;
-        Bytes.unsafe_to_string bytes 
-      else s 
-    end
-
-let uncapitalize_ascii =
-
-    String.uncapitalize_ascii
-      
-
-
- 
-let lowercase_ascii = String.lowercase_ascii
-
-
-
-
-
-end
 module Ext_list : sig 
 #1 "ext_list.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -9787,8 +10017,15 @@ val rec_type_sig:
   type_declaration list -> 
   signature_item
 
+type param_type = 
+  {label : arg_label ;
+   ty :  Parsetree.core_type ; 
+   attr :Parsetree.attributes;
+   loc : loc
+  }
+
 val mk_fn_type:  
-  (arg_label * core_type * attributes * loc) list -> 
+  param_type list -> 
   core_type -> 
   core_type
 
@@ -10045,15 +10282,21 @@ let const_exp_string_list_as_array xs =
   Ast_helper.Exp.array 
   (Ext_list.map xs (fun x -> const_exp_string x ) )  
 
+type param_type = 
+  {label : arg_label ;
+   ty :  Parsetree.core_type ; 
+   attr :Parsetree.attributes;
+   loc : loc
+  }
 
  let mk_fn_type 
-  (new_arg_types_ty : (arg_label * core_type * attributes * loc) list)
+  (new_arg_types_ty : param_type list)
   (result : core_type) : core_type = 
-  Ext_list.fold_right new_arg_types_ty result (fun (label, ty, attrs, loc) acc -> 
+  Ext_list.fold_right new_arg_types_ty result (fun {label; ty; attr ; loc} acc -> 
     {
       ptyp_desc = Ptyp_arrow(label,ty,acc);
       ptyp_loc = loc; 
-      ptyp_attributes = attrs
+      ptyp_attributes = attr
     }
   )
 
@@ -12242,10 +12485,12 @@ val is_user_int : t -> bool
 val get_uncurry_arity : t -> [`Arity of int | `Not_function ]
 
 
+
 (** fails when Ptyp_poly *)
 val list_of_arrow :
   t ->
-  t *  (Ast_compatible.arg_label * t * Parsetree.attributes * Location.t) list
+  t *  
+  Ast_compatible.param_type list
 
 val is_arity_one : t -> bool
 
@@ -12410,11 +12655,20 @@ let get_curry_arity  ty =
 
 let is_arity_one ty = get_curry_arity ty =  1
 
-let list_of_arrow (ty : t) =
+
+let list_of_arrow 
+    (ty : t) : 
+  t * Ast_compatible.param_type list
+  =
   let rec aux (ty : t) acc =
     match ty.ptyp_desc with
     | Ptyp_arrow(label,t1,t2) ->
-      aux t2 ((label,t1,ty.ptyp_attributes,ty.ptyp_loc) ::acc)
+      aux t2 
+        (({label; 
+          ty = t1; 
+          attr = ty.ptyp_attributes;
+          loc = ty.ptyp_loc} : Ast_compatible.param_type) :: acc
+        )
     | Ptyp_poly(_, ty) -> (* should not happen? *)
       Bs_syntaxerr.err ty.ptyp_loc Unhandled_poly_type
     | return_type -> ty, List.rev acc
@@ -14116,225 +14370,6 @@ let is_unescaped s =
   Ext_string.equal s unescaped_j_delimiter
   || Ext_string.equal s unescaped_js_delimiter
 end
-module Js_config : sig 
-#1 "js_config.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-(* val get_packages_info :
-   unit -> Js_packages_info.t *)
-
-
-(** set/get header *)
-val no_version_header : bool ref 
-
-
-(** return [package_name] and [path] 
-    when in script mode: 
-*)
-
-(* val get_current_package_name_and_path : 
-  Js_packages_info.module_system -> 
-  Js_packages_info.info_query *)
-
-
-(* val set_package_name : string -> unit  
-val get_package_name : unit -> string option *)
-
-(** cross module inline option *)
-val cross_module_inline : bool ref
-val set_cross_module_inline : bool -> unit
-val get_cross_module_inline : unit -> bool
-  
-(** diagnose option *)
-val diagnose : bool ref 
-val get_diagnose : unit -> bool 
-val set_diagnose : bool -> unit 
-
-
-(** options for builtin ppx *)
-val no_builtin_ppx_ml : bool ref 
-val no_builtin_ppx_mli : bool ref 
-
-
-
-val no_warn_unimplemented_external : bool ref 
-
-(** check-div-by-zero option *)
-val check_div_by_zero : bool ref 
-val get_check_div_by_zero : unit -> bool 
-
-
-
-
-
-(** Debugging utilies *)
-val set_current_file : string -> unit 
-val get_current_file : unit -> string
-val get_module_name : unit -> string
-
-val iset_debug_file : string -> unit
-val set_debug_file : string -> unit
-val get_debug_file : unit -> string
-
-val is_same_file : unit -> bool 
-
-val tool_name : string
-
-
-val sort_imports : bool ref 
-val dump_js : bool ref
-val syntax_only  : bool ref
-val binary_ast : bool ref
-
-
-val bs_suffix : bool ref
-val debug : bool ref
-
-val cmi_only  : bool ref
-val force_cmi : bool ref 
-val force_cmj : bool ref
-end = struct
-#1 "js_config.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-(* let add_npm_package_path s =
-  match !packages_info  with
-  | Empty ->
-    Ext_pervasives.bad_argf "please set package name first using -bs-package-name ";
-  | NonBrowser(name,  envs) ->
-    let env, path =
-      match Ext_string.split ~keep_empty:false s ':' with
-      | [ package_name; path]  ->
-        (match Js_packages_info.module_system_of_string package_name with
-         | Some x -> x
-         | None ->
-           Ext_pervasives.bad_argf "invalid module system %s" package_name), path
-      | [path] ->
-        NodeJS, path
-      | _ ->
-        Ext_pervasives.bad_argf "invalid npm package path: %s" s
-    in
-    packages_info := NonBrowser (name,  ((env,path) :: envs)) *)
-(** Browser is not set via command line only for internal use *)
-
-
-let no_version_header = ref false
-
-let cross_module_inline = ref false
-
-let get_cross_module_inline () = !cross_module_inline
-let set_cross_module_inline b =
-  cross_module_inline := b
-
-
-let diagnose = ref false
-let get_diagnose () = !diagnose
-let set_diagnose b = diagnose := b
-
-let (//) = Filename.concat
-
-(* let get_packages_info () = !packages_info *)
-
-let no_builtin_ppx_ml = ref false
-let no_builtin_ppx_mli = ref false
-
-
-(** TODO: will flip the option when it is ready *)
-let no_warn_unimplemented_external = ref false 
-let current_file = ref ""
-let debug_file = ref ""
-
-let set_current_file f  = current_file := f
-let get_current_file () = !current_file
-let get_module_name () =
-  Filename.chop_extension
-    (Filename.basename (Ext_string.uncapitalize_ascii !current_file))
-
-let iset_debug_file _ = ()
-let set_debug_file  f = debug_file := f
-let get_debug_file  () = !debug_file
-
-
-let is_same_file () =
-  !debug_file <> "" &&  !debug_file = !current_file
-
-let tool_name = "BuckleScript"
-
-let check_div_by_zero = ref true
-let get_check_div_by_zero () = !check_div_by_zero
-
-
-
-
-let sort_imports = ref true
-let dump_js = ref false
-
-
-
-let syntax_only = ref false
-let binary_ast = ref false
-
-let bs_suffix = ref false 
-
-let debug = ref false
-
-let cmi_only = ref false  
-let force_cmi = ref false
-let force_cmj = ref false
-end
 module Bs_warnings : sig 
 #1 "bs_warnings.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -14459,13 +14494,14 @@ let () =
 
 
 let warn_missing_primitive loc txt =      
-  if not @@ !Js_config.no_warn_unimplemented_external then
+  if not !Js_config.no_warn_unimplemented_external && not !Clflags.bs_quiet then
     begin 
       print_string_warning loc ( unimplemented_primitive ^ txt ^ " \n" );
       Format.pp_print_flush warning_formatter ()
     end
 
 let warn_literal_overflow loc = 
+  if not !Clflags.bs_quiet then
   begin 
     print_string_warning loc 
       "Integer literal exceeds the range of representable integers of type int";
@@ -19273,7 +19309,7 @@ type js_send = {
   js_send_scopes : string list;
 } (* we know it is a js send, but what will happen if you pass an ocaml objct *)
 
-type js_global_val = {
+type js_var = {
   name : string ;
   external_module_name : external_module_name option;
   scopes : string list
@@ -19319,7 +19355,7 @@ type js_set_index = {
 
 
 type external_spec  =
-  | Js_global of js_global_val
+  | Js_var of js_var
   | Js_module_as_var of  external_module_name
   | Js_module_as_fn of js_module_as_fn
   | Js_module_as_class of external_module_name
@@ -19424,7 +19460,7 @@ type js_send = {
   js_send_scopes : string list;
 } (* we know it is a js send, but what will happen if you pass an ocaml objct *)
 
-type js_global_val = {
+type js_var = {
   name : string ;
   external_module_name : external_module_name option;
   scopes : string list ;
@@ -19469,7 +19505,7 @@ type arg_label = External_arg_spec.label
 type obj_create = External_arg_spec.t list
 
 type external_spec =
-  | Js_global of js_global_val
+  | Js_var of js_var
   | Js_module_as_var of  external_module_name
   | Js_module_as_fn of js_module_as_fn
   | Js_module_as_class of external_module_name
@@ -19499,7 +19535,7 @@ let name_of_ffi ffi =
   | Js_module_as_var v
     ->
     Printf.sprintf "[@@bs.module] %S " v.bundle
-  | Js_global v
+  | Js_var v (* FIXME: could be [@@bs.module "xx"] as well *)
     ->
     Printf.sprintf "[@@bs.val] %S " v.name
 
@@ -19590,7 +19626,7 @@ let check_ffi ?loc ffi : bool =
   let upgrade bool =    
     if not (!xrelative) then xrelative := bool in 
   begin match ffi with
-  | Js_global {name; external_module_name} ->     
+  | Js_var {name; external_module_name} ->     
     upgrade (is_package_relative_path name);
     Ext_option.iter external_module_name (fun name -> 
     upgrade (is_package_relative_path name.bundle));
@@ -20203,25 +20239,25 @@ let spec_of_ptyp nolabel (ptyp : Parsetree.core_type) =
     end
 (* is_optional = false 
 *)
-let refine_arg_type ~(nolabel:bool)  
-      (ptyp : Ast_core_type.t) : Ast_core_type.t * External_arg_spec.attr = 
+let refine_arg_type ~(nolabel:bool) (ptyp : Ast_core_type.t) 
+  : Ast_core_type.t * External_arg_spec.attr = 
   if Ast_core_type.is_any ptyp then (* (_[@bs.as ])*)
-      let ptyp_attrs = ptyp.ptyp_attributes in
-      let result = Ast_attributes.iter_process_bs_string_or_int_as ptyp_attrs in
-      (* when ppx start dropping attributes
-        we should warn, there is a trade off whether
-        we should warn dropped non bs attribute or not
-      *)
-      Bs_ast_invariant.warn_discarded_unused_attributes ptyp_attrs;
-      match result with
-      |  None ->
-        Bs_syntaxerr.err ptyp.ptyp_loc Invalid_underscore_type_in_external
-      | Some (`Int i) ->
-        Ast_literal.type_int ~loc:ptyp.ptyp_loc (), Arg_cst(External_arg_spec.cst_int i)
-      | Some (`Str i)->
-        Ast_literal.type_string ~loc:ptyp.ptyp_loc (), Arg_cst (External_arg_spec.cst_string i)
-      | Some (`Json_str s) ->
-        Ast_literal.type_string ~loc:ptyp.ptyp_loc (), Arg_cst (External_arg_spec.cst_json ptyp.ptyp_loc s)
+    let ptyp_attrs = ptyp.ptyp_attributes in
+    let result = Ast_attributes.iter_process_bs_string_or_int_as ptyp_attrs in
+    (* when ppx start dropping attributes
+       we should warn, there is a trade off whether
+       we should warn dropped non bs attribute or not
+    *)
+    Bs_ast_invariant.warn_discarded_unused_attributes ptyp_attrs;
+    match result with
+    |  None ->
+      Bs_syntaxerr.err ptyp.ptyp_loc Invalid_underscore_type_in_external
+    | Some (`Int i) ->
+      Ast_literal.type_int ~loc:ptyp.ptyp_loc (), Arg_cst(External_arg_spec.cst_int i)
+    | Some (`Str i)->
+      Ast_literal.type_string ~loc:ptyp.ptyp_loc (), Arg_cst (External_arg_spec.cst_string i)
+    | Some (`Json_str s) ->
+      Ast_literal.type_string ~loc:ptyp.ptyp_loc (), Arg_cst (External_arg_spec.cst_json ptyp.ptyp_loc s)
   else (* ([`a|`b] [@bs.string]) *)
     ptyp, spec_of_ptyp nolabel ptyp   
 
@@ -20284,7 +20320,7 @@ type name_source =
 
 
 
-type st =
+type external_desc =
   { val_name : name_source;
     external_module_name : External_ffi_types.external_module_name option;
     module_as_val : External_ffi_types.external_module_name option;
@@ -20337,11 +20373,11 @@ let return_wrapper loc (txt : string) : External_ffi_types.return_wrapper =
 
 
 (* The processed attributes will be dropped *)
-let process_external_attributes
+let parse_external_attributes
     (no_arguments : bool)   
     (prim_name_or_pval_prim: bundle_source )
     (pval_prim : string)
-    (prim_attributes : Ast_attributes.t) : Ast_attributes.t * st =
+    (prim_attributes : Ast_attributes.t) : Ast_attributes.t * external_desc =
 
   (* shared by `[@@bs.val]`, `[@@bs.send]`,
      `[@@bs.set]`, `[@@bs.get]` , `[@@bs.new]`
@@ -20376,7 +20412,7 @@ let process_external_attributes
               if no_arguments then
                 {st with val_name = name_from_payload_or_prim ~loc payload}
               else
-                {st with call_name = name_from_payload_or_prim ~loc  payload}
+                {st with call_name = name_from_payload_or_prim ~loc payload}
 
             | "bs.module" ->
               begin match Ast_payload.assert_strings loc payload with
@@ -20437,12 +20473,8 @@ let process_external_attributes
     
 
 
-let rec has_bs_uncurry (attrs : Ast_attributes.t) =
-  match attrs with
-  | ({txt = "bs.uncurry"; _ }, _) :: attrs ->
-    true
-  | _ :: attrs -> has_bs_uncurry attrs
-  | [] -> false
+let rec has_bs_uncurry (attrs : Ast_attributes.t) = 
+  Ext_list.exists_fst attrs (fun x -> x.txt = "bs.uncurry")
 
 
 let check_return_wrapper
@@ -20475,198 +20507,513 @@ type response = {
   no_inline_cross_module : bool 
 }
 
+
+
+let process_obj 
+    (loc : Location.t)
+    (st : external_desc) 
+    (prim_name : string)   
+    (arg_types_ty : Ast_compatible.param_type list)
+    (result_type : Ast_core_type.t)
+  : Parsetree.core_type *  External_ffi_types.t 
+  = 
+  match st with
+  | {
+    val_name = `Nm_na;
+    external_module_name = None ;
+    module_as_val = None;
+    val_send = `Nm_na;
+    val_send_pipe = None;
+    splice = false;
+    new_name = `Nm_na;
+    call_name = `Nm_na;
+    set_name = `Nm_na ;
+    get_name = `Nm_na ;
+    get_index = false ;
+    return_wrapper = Return_unset ;
+    set_index = false ;
+    mk_obj = _;
+    scopes = [];
+    (* wrapper does not work with [bs.obj]
+       TODO: better error message *)
+  } ->
+    if String.length prim_name <> 0 then
+      Location.raise_errorf ~loc "[@@bs.obj] expect external names to be empty string";
+    let arg_kinds, new_arg_types_ty, result_types =
+      Ext_list.fold_right arg_types_ty ( [], [], [])
+        (fun param_type ( arg_labels, (arg_types : Ast_compatible.param_type list), result_types) ->
+           let arg_label = Ast_compatible.convert param_type.label in
+           let ty  = param_type.ty in 
+           let new_arg_label, new_arg_types,  output_tys =
+             match arg_label with
+             | Nolabel ->
+               let new_ty, arg_type = refine_arg_type ~nolabel:true  ty in
+               if arg_type = Extern_unit then
+                 External_arg_spec.empty_kind arg_type, 
+                 {param_type with ty = new_ty}::arg_types, result_types
+               else
+                 Location.raise_errorf ~loc "expect label, optional, or unit here"
+             | Labelled name ->
+               let new_ty, arg_type = refine_arg_type ~nolabel:false  ty in
+               begin match arg_type with
+                 | Ignore ->
+                   External_arg_spec.empty_kind arg_type,
+                   {param_type with ty = new_ty}::arg_types, result_types
+                 | Arg_cst  i  ->
+                   let s = Lam_methname.translate ~loc name in
+                   {arg_label = External_arg_spec.label s (Some i);
+                    arg_type },
+                   arg_types, (* ignored in [arg_types], reserved in [result_types] *)
+                   ((name , [], new_ty) :: result_types)
+                 | Nothing | Array ->
+                   let s = (Lam_methname.translate ~loc name) in
+                   {arg_label = External_arg_spec.label s None ; arg_type },
+                   {param_type with ty = new_ty}::arg_types,
+                   ((name , [], new_ty) :: result_types)
+                 | Int _  ->
+                   let s = Lam_methname.translate ~loc name in
+                   {arg_label = External_arg_spec.label s None; arg_type},
+                   {param_type with ty = new_ty}::arg_types,
+                   ((name, [], Ast_literal.type_int ~loc ()) :: result_types)
+                 | NullString _ ->
+                   let s = Lam_methname.translate ~loc name in
+                   {arg_label = External_arg_spec.label s None; arg_type},
+                   {param_type with ty = new_ty }::arg_types,
+                   ((name, [], Ast_literal.type_string ~loc ()) :: result_types)
+                 | Fn_uncurry_arity _ ->
+                   Location.raise_errorf ~loc
+                     "The combination of [@@bs.obj], [@@bs.uncurry] is not supported yet"
+                 | Extern_unit -> assert false
+                 | NonNullString _
+                   ->
+                   Location.raise_errorf ~loc
+                     "bs.obj label %s does not support such arg type" name
+                 | Unwrap ->
+                   Location.raise_errorf ~loc
+                     "bs.obj label %s does not support [@bs.unwrap] arguments" name
+               end
+             | Optional name ->
+               let arg_type = get_opt_arg_type ~nolabel:false  ty in
+               begin match arg_type with
+                 | Ignore ->
+                   External_arg_spec.empty_kind arg_type,
+                   param_type::arg_types, result_types
+                 | Nothing | Array ->
+                   let s = (Lam_methname.translate ~loc name) in
+                   {arg_label = External_arg_spec.optional s; arg_type},
+                   param_type :: arg_types,
+                   ( (name, [], Ast_comb.to_undefined_type loc (get_basic_type_from_option_label ty)) ::  result_types)
+                 | Int _  ->
+                   let s = Lam_methname.translate ~loc name in
+                   {arg_label = External_arg_spec.optional s ; arg_type },
+                   param_type :: arg_types,
+                   ((name, [], Ast_comb.to_undefined_type loc @@ Ast_literal.type_int ~loc ()) :: result_types)
+                 | NullString _  ->
+                   let s = Lam_methname.translate ~loc name in
+                   {arg_label = External_arg_spec.optional s ; arg_type },
+                   param_type::arg_types,
+                   ((name, [], Ast_comb.to_undefined_type loc @@ Ast_literal.type_string ~loc ()) :: result_types)
+                 | Arg_cst _
+                   ->
+                   Location.raise_errorf ~loc "bs.as is not supported with optional yet"
+                 | Fn_uncurry_arity _ ->
+                   Location.raise_errorf ~loc
+                     "The combination of [@@bs.obj], [@@bs.uncurry] is not supported yet"
+                 | Extern_unit   -> assert false
+                 | NonNullString _
+                   ->
+                   Location.raise_errorf ~loc
+                     "bs.obj label %s does not support such arg type" name
+                 | Unwrap ->
+                   Location.raise_errorf ~loc
+                     "bs.obj label %s does not support [@bs.unwrap] arguments" name
+               end
+           in
+           new_arg_label::arg_labels,
+           new_arg_types,
+           output_tys) in
+
+    let result =
+      if Ast_core_type.is_any  result_type then
+        Ast_core_type.make_obj ~loc result_types
+      else
+        fst (refine_arg_type ~nolabel:true result_type) 
+        (* result type can not be labeled *)
+    in
+    Ast_compatible.mk_fn_type new_arg_types_ty result,
+    External_ffi_types.Ffi_obj_create arg_kinds
+  | _ -> Location.raise_errorf ~loc "Attribute found that conflicts with [@@bs.obj]"
+
+
+let external_desc_of_non_obj 
+    (loc : Location.t) 
+    (st : external_desc) 
+    (prim_name : string) 
+    (prim_name_or_pval_prim : bundle_source)
+    (arg_type_specs_length : int) 
+    arg_types_ty 
+    (arg_type_specs : External_arg_spec.t list) : External_ffi_types.external_spec =
+  match st with
+  | {set_index = true;
+     val_name = `Nm_na;
+     external_module_name = None ;
+     module_as_val = None;
+     val_send = `Nm_na;
+     val_send_pipe = None;
+     splice = false;
+     scopes ;
+     get_index = false;
+     new_name = `Nm_na;
+     call_name = `Nm_na;
+     set_name = `Nm_na ;
+     get_name = `Nm_na ;
+
+     return_wrapper = _;
+     mk_obj = _ ;
+
+    }
+    ->
+    if String.length prim_name <> 0 then
+      Location.raise_errorf ~loc "[@@bs.set_index] expect external names to be empty string";
+    if arg_type_specs_length = 3 then
+      Js_set_index {js_set_index_scopes = scopes}
+    else
+      Location.raise_errorf ~loc "Ill defined attribute [@@bs.set_index](arity of 3)"
+  | {set_index = true; _} ->
+    Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.set_index]")
+  | {get_index = true;
+     val_name = `Nm_na;
+     external_module_name = None ;
+     module_as_val = None;
+     val_send = `Nm_na;
+     val_send_pipe = None;
+
+     splice = false;
+     scopes ;
+     new_name = `Nm_na;
+     call_name = `Nm_na;
+     set_name = `Nm_na ;
+     get_name = `Nm_na ;
+     set_index = false;
+     mk_obj;
+     return_wrapper ;
+    } ->
+    if String.length prim_name <> 0 then
+      Location.raise_errorf ~loc "[@@bs.get_index] expect external names to be empty string";
+    if arg_type_specs_length = 2 then
+      Js_get_index {js_get_index_scopes = scopes}
+    else Location.raise_errorf ~loc
+        "Ill defined attribute [@@bs.get_index] (arity expected 2 : while %d)" arg_type_specs_length
+
+  | {get_index = true; _} ->
+    Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.get_index]")
+  | {module_as_val = Some external_module_name ;
+
+     get_index = false;
+     val_name ;
+     new_name ;
+
+     external_module_name = None ;
+     val_send = `Nm_na;
+     val_send_pipe = None;
+     scopes = []; (* module as var does not need scopes *)
+     splice;
+     call_name = `Nm_na;
+     set_name = `Nm_na ;
+     get_name = `Nm_na ;
+     set_index = false;
+     return_wrapper = _;
+     mk_obj = _ ;
+    } ->
+    begin match arg_types_ty, new_name, val_name  with
+      | [], `Nm_na,  _ -> Js_module_as_var external_module_name
+      | _, `Nm_na, _ -> Js_module_as_fn {splice; external_module_name }
+      | _, #bundle_source, #bundle_source ->
+        Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.module].")
+
+      | _, (`Nm_val _ | `Nm_external _) , `Nm_na
+        -> Js_module_as_class external_module_name
+      | _, `Nm_payload _ , `Nm_na
+        ->
+        Location.raise_errorf ~loc
+          "Incorrect FFI attribute found: (bs.new should not carry a payload here)"
+    end
+  | {module_as_val = Some x; _} ->
+    Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.module].")
+  | {call_name = (`Nm_val name | `Nm_external name | `Nm_payload name) ;
+     splice;
+     scopes ;
+     external_module_name;
+
+     val_name = `Nm_na ;
+     module_as_val = None;
+     val_send = `Nm_na ;
+     val_send_pipe = None;
+
+     set_index = false;
+     get_index = false;
+     new_name = `Nm_na;
+     set_name = `Nm_na ;
+     get_name = `Nm_na ;
+     mk_obj = _ ;
+     return_wrapper = _ ;
+    } ->
+    Js_call {splice; name; external_module_name; scopes }
+  | {call_name = #bundle_source ; _ }
+    ->
+    Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.val]")
+  | {val_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
+     external_module_name;
+
+     call_name = `Nm_na ;
+     module_as_val = None;
+     val_send = `Nm_na ;
+     val_send_pipe = None;
+     set_index = false;
+     get_index = false;
+     new_name = `Nm_na;
+     set_name = `Nm_na ;
+     get_name = `Nm_na;
+     mk_obj = _;
+     return_wrapper = _;
+     splice = false ;
+     scopes ;
+    }
+    -> (* 
+    if no_arguments -->
+          {[
+            external ff : int = "" [@@bs.val]
+          ]}
+       *)
+    Js_var { name; external_module_name; scopes}
+  | {val_name = #bundle_source ; _ }
+    ->
+    Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.val]")
+
+  | {splice ;
+     scopes ;
+     external_module_name = (Some _ as external_module_name);
+     val_name = `Nm_na ;
+     call_name = `Nm_na ;
+     module_as_val = None;
+     val_send = `Nm_na ;
+     val_send_pipe = None;
+     set_index = false;
+     get_index = false;
+     new_name = `Nm_na;
+     set_name = `Nm_na ;
+     get_name = `Nm_na ;
+     mk_obj = _ ;
+     return_wrapper= _ ;
+    }
+    ->
+    let name = string_of_bundle_source prim_name_or_pval_prim in
+    if arg_type_specs_length  = 0 then
+      (*
+         {[
+           external ff : int = "" [@@bs.module "xx"]
+         ]}
+      *)
+      Js_var { name; external_module_name; scopes}
+    else  Js_call {splice; name; external_module_name; scopes}
+  | {val_send = (`Nm_val name | `Nm_external name | `Nm_payload name);
+     splice;
+     scopes;
+     val_send_pipe = None;
+     val_name = `Nm_na  ;
+     call_name = `Nm_na ;
+     module_as_val = None;
+     set_index = false;
+     get_index = false;
+     new_name = `Nm_na;
+     set_name = `Nm_na ;
+     get_name = `Nm_na ;
+     external_module_name = None ;
+     mk_obj = _ ;
+     return_wrapper = _ ;
+    } ->
+    (* PR #2162 - since when we assemble arguments the first argument in
+       [@@bs.send] is ignored
+    *)
+    begin match arg_type_specs with
+      | [] ->
+        Location.raise_errorf
+          ~loc "Ill defined attribute [@@bs.send] (the external needs to be a regular function call with at least one argument)"
+      |  {arg_type = Arg_cst _ ; arg_label = _} :: _
+        ->
+        Location.raise_errorf
+          ~loc "Ill defined attribute [@@bs.send] (first argument can't be const)"
+      | _ :: _  ->
+        Js_send {splice ; name; js_send_scopes = scopes ;  pipe = false}
+    end
+  | {val_send = #bundle_source; _ }
+    -> Location.raise_errorf ~loc "You used a FFI attribute that can't be used with [@@bs.send]"
+  | {val_send_pipe = Some typ;
+     (* splice = (false as splice); *)
+     val_send = `Nm_na;
+     val_name = `Nm_na  ;
+     call_name = `Nm_na ;
+     module_as_val = None;
+     set_index = false;
+     get_index = false;
+     new_name = `Nm_na;
+     set_name = `Nm_na ;
+     get_name = `Nm_na ;
+     external_module_name = None ;
+     mk_obj = _;
+     return_wrapper = _;
+     scopes;
+     splice ;
+    } ->
+    (** can be one argument *)
+    Js_send {splice  ;
+             name = string_of_bundle_source prim_name_or_pval_prim;
+             js_send_scopes = scopes;
+             pipe = true}
+
+  | {val_send_pipe = Some _ ; _}
+    -> Location.raise_errorf ~loc "conflict attributes found with [@@bs.send.pipe]"
+
+  | {new_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
+     external_module_name;
+
+     val_name = `Nm_na  ;
+     call_name = `Nm_na ;
+     module_as_val = None;
+     set_index = false;
+     get_index = false;
+     val_send = `Nm_na ;
+     val_send_pipe = None;
+     set_name = `Nm_na ;
+     get_name = `Nm_na ;
+     splice = false;
+     scopes;
+     mk_obj = _ ;
+     return_wrapper = _ ;
+    }
+    -> Js_new {name; external_module_name;  scopes}
+  | {new_name = #bundle_source ; _ } ->
+    Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.new]")
+  | {set_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
+     val_name = `Nm_na  ;
+     call_name = `Nm_na ;
+     module_as_val = None;
+     set_index = false;
+     get_index = false;
+     val_send = `Nm_na ;
+     val_send_pipe = None;
+     new_name = `Nm_na ;
+     get_name = `Nm_na ;
+     external_module_name = None;
+     splice = false;
+     mk_obj = _ ;
+     return_wrapper = _;
+     scopes ;
+    }
+    ->
+    if arg_type_specs_length = 2 then
+      Js_set { js_set_scopes = scopes ; js_set_name = name}
+    else  Location.raise_errorf ~loc "Ill defined attribute [@@bs.set] (two args required)"
+  | {set_name = #bundle_source; _}
+    -> Location.raise_errorf ~loc "conflict attributes found with [@@bs.set]"
+  | {get_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
+
+     val_name = `Nm_na  ;
+     call_name = `Nm_na ;
+     module_as_val = None;
+     set_index = false;
+     get_index = false;
+     val_send = `Nm_na ;
+     val_send_pipe = None;
+     new_name = `Nm_na ;
+     set_name = `Nm_na ;
+     external_module_name = None;
+     splice = false ;
+     mk_obj = _;
+     return_wrapper = _;
+     scopes
+    }
+    ->
+    if arg_type_specs_length = 1 then
+      Js_get { js_get_name = name; js_get_scopes = scopes }
+    else
+      Location.raise_errorf ~loc "Ill defined attribute [@@bs.get] (only one argument)"
+  | {get_name = #bundle_source; _}
+    -> Location.raise_errorf ~loc "Attribute found that conflicts with [@@bs.get]"
+
+  | {get_name = `Nm_na;
+     val_name = `Nm_na  ;
+     call_name = `Nm_na ;
+     module_as_val = None;
+     set_index = false;
+     get_index = false;
+     val_send = `Nm_na ;
+     val_send_pipe = None;
+     new_name = `Nm_na ;
+     set_name = `Nm_na ;
+     external_module_name = None;
+     splice = _ ;
+     scopes = _;
+     mk_obj = _;
+     return_wrapper = _;
+
+    }
+    ->  Location.raise_errorf ~loc "Could not infer which FFI category it belongs to, maybe you forgot [%@%@bs.val]? "  
+
 (** Note that the passed [type_annotation] is already processed by visitor pattern before*)
 let handle_attributes
     (loc : Bs_loc.t)
     (pval_prim : string )
     (type_annotation : Parsetree.core_type)
     (prim_attributes : Ast_attributes.t) (prim_name : string)
-   =
+  : Parsetree.core_type *  External_ffi_types.t * Parsetree.attributes * bool
+  =
   (** sanity check here
       {[ int -> int -> (int -> int -> int [@bs.uncurry])]}
       It does not make sense
   *)
   if has_bs_uncurry type_annotation.ptyp_attributes then
     Location.raise_errorf
-      ~loc "[@@bs.uncurry] can not be applied to the whole definition"
-  ;
-
+      ~loc "[@@bs.uncurry] can not be applied to the whole definition";
   let prim_name_or_pval_prim =
     if String.length prim_name = 0 then  `Nm_val pval_prim
-    else  `Nm_external prim_name  (* need check name *)
-  in
+    else  `Nm_external prim_name  (* need check name *) in
   let result_type, arg_types_ty =
     (* Note this assumes external type is syntatic (no abstraction)*)
     Ast_core_type.list_of_arrow type_annotation in
   if has_bs_uncurry result_type.ptyp_attributes then
-    begin
-      Location.raise_errorf
-        ~loc:result_type.ptyp_loc
-        "[@@bs.uncurry] can not be applied to tailed position"
-    end ;
-  let left_attrs, st =
-    process_external_attributes
-      (arg_types_ty = [])
+    Location.raise_errorf
+      ~loc:result_type.ptyp_loc
+      "[@@bs.uncurry] can not be applied to tailed position";
+  let no_arguments = arg_types_ty = [] in  
+  let unused_attrs, external_desc =
+    parse_external_attributes no_arguments  
       prim_name_or_pval_prim pval_prim prim_attributes in
-
-
-  if st.mk_obj then
-    begin match st with
-      | {
-        val_name = `Nm_na;
-        external_module_name = None ;
-        module_as_val = None;
-        val_send = `Nm_na;
-        val_send_pipe = None;
-        splice = false;
-        new_name = `Nm_na;
-        call_name = `Nm_na;
-        set_name = `Nm_na ;
-        get_name = `Nm_na ;
-        get_index = false ;
-        return_wrapper = Return_unset ;
-        set_index = false ;
-        mk_obj = _;
-        scopes = [];
-        (* wrapper does not work with [bs.obj]
-           TODO: better error message *)
-      } ->
-        if String.length prim_name <> 0 then
-          Location.raise_errorf ~loc "[@@bs.obj] expect external names to be empty string";
-        let arg_kinds, new_arg_types_ty, result_types =
-          Ext_list.fold_right arg_types_ty ( [], [], [])
-            (fun (label,ty,attr,loc) ( arg_labels, arg_types, result_types) ->
-               let arg_label = Ast_compatible.convert label in
-               let new_arg_label, new_arg_types,  output_tys =
-                 match arg_label with
-                 | Nolabel ->
-                   let new_ty, arg_type = refine_arg_type ~nolabel:true  ty in
-                   if arg_type = Extern_unit then
-                     External_arg_spec.empty_kind arg_type, (label,new_ty,attr,loc)::arg_types, result_types
-                   else
-                     Location.raise_errorf ~loc "expect label, optional, or unit here"
-                 | Labelled name ->
-                   let new_ty, arg_type = refine_arg_type ~nolabel:false  ty in
-                   begin match arg_type with
-                     | Ignore ->
-                       External_arg_spec.empty_kind arg_type,
-                       (label,new_ty,attr,loc)::arg_types, result_types
-                     | Arg_cst  i  ->
-                       let s = Lam_methname.translate ~loc name in
-                       {arg_label = External_arg_spec.label s (Some i);
-                        arg_type },
-                       arg_types, (* ignored in [arg_types], reserved in [result_types] *)
-                       ((name , [], new_ty) :: result_types)
-                     | Nothing | Array ->
-                       let s = (Lam_methname.translate ~loc name) in
-                       {arg_label = External_arg_spec.label s None ; arg_type },
-                       (label,new_ty,attr,loc)::arg_types,
-                       ((name , [], new_ty) :: result_types)
-                     | Int _  ->
-                       let s = Lam_methname.translate ~loc name in
-                       {arg_label = External_arg_spec.label s None; arg_type},
-                       (label,new_ty,attr,loc)::arg_types,
-                       ((name, [], Ast_literal.type_int ~loc ()) :: result_types)
-                     | NullString _ ->
-                       let s = Lam_methname.translate ~loc name in
-                       {arg_label = External_arg_spec.label s None; arg_type},
-                       (label,new_ty,attr,loc)::arg_types,
-                       ((name, [], Ast_literal.type_string ~loc ()) :: result_types)
-                     | Fn_uncurry_arity _ ->
-                       Location.raise_errorf ~loc
-                         "The combination of [@@bs.obj], [@@bs.uncurry] is not supported yet"
-                     | Extern_unit -> assert false
-                     | NonNullString _
-                       ->
-                       Location.raise_errorf ~loc
-                         "bs.obj label %s does not support such arg type" name
-                     | Unwrap ->
-                       Location.raise_errorf ~loc
-                         "bs.obj label %s does not support [@bs.unwrap] arguments" name
-                   end
-                 | Optional name ->
-                   let arg_type = get_opt_arg_type ~nolabel:false  ty in
-                   begin match arg_type with
-                     | Ignore ->
-                       External_arg_spec.empty_kind arg_type,
-                       (label,ty,attr,loc)::arg_types, result_types
-                     | Nothing | Array ->
-                       let s = (Lam_methname.translate ~loc name) in
-                       {arg_label = External_arg_spec.optional s; arg_type},
-                       (label,ty,attr,loc)::arg_types,
-                       ( (name, [], Ast_comb.to_undefined_type loc (get_basic_type_from_option_label ty)) ::  result_types)
-                     | Int _  ->
-                       let s = Lam_methname.translate ~loc name in
-                       {arg_label = External_arg_spec.optional s ; arg_type },
-                       (label,ty,attr,loc)::arg_types,
-                       ((name, [], Ast_comb.to_undefined_type loc @@ Ast_literal.type_int ~loc ()) :: result_types)
-                     | NullString _  ->
-                       let s = Lam_methname.translate ~loc name in
-                       {arg_label = External_arg_spec.optional s ; arg_type },
-                       (label,ty,attr,loc)::arg_types,
-                       ((name, [], Ast_comb.to_undefined_type loc @@ Ast_literal.type_string ~loc ()) :: result_types)
-                     | Arg_cst _
-                       ->
-                       Location.raise_errorf ~loc "bs.as is not supported with optional yet"
-                     | Fn_uncurry_arity _ ->
-                       Location.raise_errorf ~loc
-                         "The combination of [@@bs.obj], [@@bs.uncurry] is not supported yet"
-                     | Extern_unit   -> assert false
-                     | NonNullString _
-                       ->
-                       Location.raise_errorf ~loc
-                         "bs.obj label %s does not support such arg type" name
-                     | Unwrap ->
-                       Location.raise_errorf ~loc
-                         "bs.obj label %s does not support [@bs.unwrap] arguments" name
-                   end
-               in
-               (
-                 new_arg_label::arg_labels,
-                 new_arg_types,
-                 output_tys)) in
-
-        let result =
-          if Ast_core_type.is_any  result_type then
-            Ast_core_type.make_obj ~loc result_types
-          else
-            fst (refine_arg_type ~nolabel:true result_type) (* result type can not be labeled *)
-
-        in
-        begin          
-          Ast_compatible.mk_fn_type new_arg_types_ty result
-          ,
-          prim_name,
-          External_ffi_types.Ffi_obj_create arg_kinds,
-          left_attrs, 
-          false 
-        end
-
-      | _ -> Location.raise_errorf ~loc "Attribute found that conflicts with [@@bs.obj]"
-
-    end
-
+  if external_desc.mk_obj then
+    (* warn unused attributes here ? *)
+    let new_type, spec = process_obj loc external_desc prim_name arg_types_ty result_type in 
+    new_type, spec, unused_attrs, false
   else
-    let splice = st.splice in
+    let splice = external_desc.splice in
     let arg_type_specs, new_arg_types_ty, arg_type_specs_length   =
-      Ext_list.fold_right arg_types_ty
-        (match st with
-         | {val_send_pipe = Some obj; _ } ->
-           let new_ty, arg_type = refine_arg_type ~nolabel:true obj in
-           begin match arg_type with
+      Ext_list.fold_right arg_types_ty (match external_desc with
+          | {val_send_pipe = Some obj; _ } ->
+            let new_ty, arg_type = refine_arg_type ~nolabel:true obj in
+            (match arg_type with
              | Arg_cst _ ->
                Location.raise_errorf ~loc:obj.ptyp_loc "[@bs.as] is not supported in bs.send type "
              | _ ->
                (* more error checking *)
-               [External_arg_spec.empty_kind arg_type]
-               ,
-               [Ast_compatible.no_label, new_ty, [], obj.ptyp_loc]
-               ,0
-           end
-
-         | {val_send_pipe = None ; _ } -> [],[], 0)
-        (fun (label,ty,attr,loc) (arg_type_specs, arg_types, i) ->
-           let arg_label = Ast_compatible.convert label in
+               [External_arg_spec.empty_kind arg_type],
+               [({label = Ast_compatible.no_label;
+                ty = new_ty;
+                attr =  [];
+                loc = obj.ptyp_loc} : Ast_compatible.param_type)],
+                1)           
+          | {val_send_pipe = None ; _ } -> [],[], 0)
+        (fun  param_type (arg_type_specs, arg_types, i) ->
+           let arg_label = Ast_compatible.convert param_type.label in
+           let ty = param_type.ty in 
            let arg_label, arg_type, new_arg_types =
              match arg_label with
              | Optional s  ->
@@ -20679,20 +21026,21 @@ let handle_attributes
                      "[@@bs.string] does not work with optional when it has arities in label %s" s
                  | _ ->
                    External_arg_spec.optional s, arg_type,
-                   ((label, ty, attr,loc) :: arg_types) end
+                   param_type :: arg_types end
              | Labelled s  ->
                begin match refine_arg_type ~nolabel:false ty with
-                 | new_ty, (Arg_cst ( i) as arg_type)  ->
+                 | new_ty, (Arg_cst i as arg_type)  ->
                    External_arg_spec.label s (Some i), arg_type, arg_types
                  | new_ty, arg_type ->
-                   External_arg_spec.label s None, arg_type, (label, new_ty,attr,loc) :: arg_types
+                   External_arg_spec.label s None, arg_type, 
+                   {param_type with ty = new_ty} :: arg_types
                end
              | Nolabel ->
                begin match refine_arg_type ~nolabel:true ty with
-                 | new_ty , (Arg_cst ( i) as arg_type) ->
+                 | new_ty , (Arg_cst i as arg_type) ->
                    External_arg_spec.empty_lit i , arg_type,  arg_types
                  | new_ty , arg_type ->
-                   External_arg_spec.empty_label, arg_type, (label, new_ty,attr,loc) :: arg_types
+                   External_arg_spec.empty_label, arg_type, {param_type with ty = new_ty} :: arg_types
                end
            in
            (if i = 0 && splice  then
@@ -20707,381 +21055,54 @@ let handle_attributes
             else i + 1
            )
         )  in
-
-    let ffi : External_ffi_types.external_spec  = match st with
-      | {set_index = true;
-
-         val_name = `Nm_na;
-         external_module_name = None ;
-         module_as_val = None;
-         val_send = `Nm_na;
-         val_send_pipe = None;
-         splice = false;
-         scopes ;
-         get_index = false;
-         new_name = `Nm_na;
-         call_name = `Nm_na;
-         set_name = `Nm_na ;
-         get_name = `Nm_na ;
-
-         return_wrapper = _;
-         mk_obj = _ ;
-
-        }
-        ->
-        if String.length prim_name <> 0 then
-          Location.raise_errorf ~loc "[@@bs.set_index] expect external names to be empty string";
-        if arg_type_specs_length = 3 then
-          Js_set_index {js_set_index_scopes = scopes}
-        else
-          Location.raise_errorf ~loc "Ill defined attribute [@@bs.set_index](arity of 3)"
-
-      | {set_index = true; _}
-        ->
-        Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.set_index]")
+    let ffi : External_ffi_types.external_spec  = 
+      external_desc_of_non_obj 
+        loc external_desc prim_name prim_name_or_pval_prim arg_type_specs_length 
+        arg_types_ty arg_type_specs in 
+    let relative = External_ffi_types.check_ffi ~loc ffi in 
+    (* result type can not be labeled *)
+    (* currently we don't process attributes of
+       return type, in the future we may  *)
+    let return_wrapper = check_return_wrapper loc external_desc.return_wrapper result_type in
+    Ast_compatible.mk_fn_type new_arg_types_ty result_type,  
+    Ffi_bs (arg_type_specs, return_wrapper, ffi),
+    unused_attrs,
+    relative 
 
 
-      | {get_index = true;
-
-         val_name = `Nm_na;
-         external_module_name = None ;
-         module_as_val = None;
-         val_send = `Nm_na;
-         val_send_pipe = None;
-
-         splice = false;
-         scopes ;
-         new_name = `Nm_na;
-         call_name = `Nm_na;
-         set_name = `Nm_na ;
-         get_name = `Nm_na ;
-         set_index = false;
-         mk_obj;
-         return_wrapper ;
-        } ->
-        if String.length prim_name <> 0 then
-          Location.raise_errorf ~loc "[@@bs.get_index] expect external names to be empty string";
-        if arg_type_specs_length = 2 then
-          Js_get_index {js_get_index_scopes = scopes}
-        else Location.raise_errorf ~loc
-            "Ill defined attribute [@@bs.get_index] (arity expected 2 : while %d)" arg_type_specs_length
-
-      | {get_index = true; _}
-
-        ->
-        Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.get_index]")
-
-
-
-
-      | {module_as_val = Some external_module_name ;
-
-         get_index = false;
-         val_name ;
-         new_name ;
-
-         external_module_name = None ;
-         val_send = `Nm_na;
-         val_send_pipe = None;
-         scopes = []; (* module as var does not need scopes *)
-         splice;
-         call_name = `Nm_na;
-         set_name = `Nm_na ;
-         get_name = `Nm_na ;
-         set_index = false;
-         return_wrapper = _;
-         mk_obj = _ ;
-        } ->
-        begin match arg_types_ty, new_name, val_name  with
-          | [], `Nm_na,  _ -> Js_module_as_var external_module_name
-          | _, `Nm_na, _ -> Js_module_as_fn {splice; external_module_name }
-          | _, #bundle_source, #bundle_source ->
-            Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.module].")
-
-          | _, (`Nm_val _ | `Nm_external _) , `Nm_na
-            -> Js_module_as_class external_module_name
-          | _, `Nm_payload _ , `Nm_na
-            ->
-            Location.raise_errorf ~loc
-              "Incorrect FFI attribute found: (bs.new should not carry a payload here)"
-        end
-      | {module_as_val = Some x; _}
-        ->
-        Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.module].")
-
-      | {call_name = (`Nm_val name | `Nm_external name | `Nm_payload name) ;
-         splice;
-         scopes ;
-         external_module_name;
-
-         val_name = `Nm_na ;
-         module_as_val = None;
-         val_send = `Nm_na ;
-         val_send_pipe = None;
-
-         set_index = false;
-         get_index = false;
-         new_name = `Nm_na;
-         set_name = `Nm_na ;
-         get_name = `Nm_na ;
-         mk_obj = _ ;
-         return_wrapper = _ ;
-        } ->
-        Js_call {splice; name; external_module_name; scopes }
-      | {call_name = #bundle_source ; _ }
-        ->
-        Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.val]")
-
-
-      | {val_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
-         external_module_name;
-
-         call_name = `Nm_na ;
-         module_as_val = None;
-         val_send = `Nm_na ;
-         val_send_pipe = None;
-         set_index = false;
-         get_index = false;
-         new_name = `Nm_na;
-         set_name = `Nm_na ;
-         get_name = `Nm_na;
-         mk_obj = _;
-         return_wrapper = _;
-         splice = false ;
-         scopes ;
-        }
-        ->
-        Js_global { name; external_module_name; scopes}
-      | {val_name = #bundle_source ; _ }
-        ->
-        Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.val]")
-
-      | {splice ;
-         scopes ;
-         external_module_name = (Some _ as external_module_name);
-
-         val_name = `Nm_na ;
-         call_name = `Nm_na ;
-         module_as_val = None;
-         val_send = `Nm_na ;
-         val_send_pipe = None;
-         set_index = false;
-         get_index = false;
-         new_name = `Nm_na;
-         set_name = `Nm_na ;
-         get_name = `Nm_na ;
-         mk_obj = _ ;
-         return_wrapper= _ ;
-        }
-        ->
-        let name = string_of_bundle_source prim_name_or_pval_prim in
-        if arg_type_specs_length  = 0 then
-          Js_global { name; external_module_name; scopes}
-        else  Js_call {splice; name; external_module_name; scopes}
-      | {val_send = (`Nm_val name | `Nm_external name | `Nm_payload name);
-         splice;
-         scopes;
-         val_send_pipe = None;
-         val_name = `Nm_na  ;
-         call_name = `Nm_na ;
-         module_as_val = None;
-         set_index = false;
-         get_index = false;
-         new_name = `Nm_na;
-         set_name = `Nm_na ;
-         get_name = `Nm_na ;
-         external_module_name = None ;
-         mk_obj = _ ;
-         return_wrapper = _ ;
-        } ->
-
-        (* PR #2162 - since when we assemble arguments the first argument in
-           [@@bs.send] is ignored
-        *)
-        begin match arg_type_specs with
-          | [] ->
-            Location.raise_errorf
-              ~loc "Ill defined attribute [@@bs.send] (the external needs to be a regular function call with at least one argument)"
-          |  {arg_type = Arg_cst _ ; arg_label = _} :: _
-            ->
-            Location.raise_errorf
-              ~loc "Ill defined attribute [@@bs.send] (first argument can't be const)"
-          | _ :: _  ->
-            Js_send {splice ; name; js_send_scopes = scopes ;  pipe = false}
-        end
-
-      | {val_send = #bundle_source; _ }
-        -> Location.raise_errorf ~loc "You used a FFI attribute that can't be used with [@@bs.send]"
-
-      | {val_send_pipe = Some typ;
-         (* splice = (false as splice); *)
-         val_send = `Nm_na;
-         val_name = `Nm_na  ;
-         call_name = `Nm_na ;
-         module_as_val = None;
-         set_index = false;
-         get_index = false;
-         new_name = `Nm_na;
-         set_name = `Nm_na ;
-         get_name = `Nm_na ;
-         external_module_name = None ;
-         mk_obj = _;
-         return_wrapper = _;
-         scopes;
-         splice ;
-        } ->
-        (** can be one argument *)
-        Js_send {splice  ;
-                 name = string_of_bundle_source prim_name_or_pval_prim;
-                 js_send_scopes = scopes;
-                 pipe = true}
-
-      | {val_send_pipe = Some _ ; _}
-        -> Location.raise_errorf ~loc "conflict attributes found with [@@bs.send.pipe]"
-
-      | {new_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
-         external_module_name;
-
-         val_name = `Nm_na  ;
-         call_name = `Nm_na ;
-         module_as_val = None;
-         set_index = false;
-         get_index = false;
-         val_send = `Nm_na ;
-         val_send_pipe = None;
-         set_name = `Nm_na ;
-         get_name = `Nm_na ;
-         splice = false;
-         scopes;
-         mk_obj = _ ;
-         return_wrapper = _ ;
-
-        }
-        -> Js_new {name; external_module_name;  scopes}
-      | {new_name = #bundle_source ; _ }
-        ->
-        Bs_syntaxerr.err loc (Conflict_ffi_attribute "Attribute found that conflicts with [@@bs.new]")
-
-
-      | {set_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
-
-         val_name = `Nm_na  ;
-         call_name = `Nm_na ;
-         module_as_val = None;
-         set_index = false;
-         get_index = false;
-         val_send = `Nm_na ;
-         val_send_pipe = None;
-         new_name = `Nm_na ;
-         get_name = `Nm_na ;
-         external_module_name = None;
-         splice = false;
-         mk_obj = _ ;
-         return_wrapper = _;
-         scopes ;
-        }
-        ->
-        if arg_type_specs_length = 2 then
-          Js_set { js_set_scopes = scopes ; js_set_name = name}
-        else  Location.raise_errorf ~loc "Ill defined attribute [@@bs.set] (two args required)"
-
-      | {set_name = #bundle_source; _}
-        -> Location.raise_errorf ~loc "conflict attributes found with [@@bs.set]"
-
-      | {get_name = (`Nm_val name | `Nm_external name | `Nm_payload name);
-
-         val_name = `Nm_na  ;
-         call_name = `Nm_na ;
-         module_as_val = None;
-         set_index = false;
-         get_index = false;
-         val_send = `Nm_na ;
-         val_send_pipe = None;
-         new_name = `Nm_na ;
-         set_name = `Nm_na ;
-         external_module_name = None;
-         splice = false ;
-         mk_obj = _;
-         return_wrapper = _;
-         scopes
-        }
-        ->
-        if arg_type_specs_length = 1 then
-          Js_get { js_get_name = name; js_get_scopes = scopes }
-        else
-          Location.raise_errorf ~loc "Ill defined attribute [@@bs.get] (only one argument)"
-      | {get_name = #bundle_source; _}
-        -> Location.raise_errorf ~loc "Attribute found that conflicts with [@@bs.get]"
-
-      | {get_name = `Nm_na;
-         val_name = `Nm_na  ;
-         call_name = `Nm_na ;
-         module_as_val = None;
-         set_index = false;
-         get_index = false;
-         val_send = `Nm_na ;
-         val_send_pipe = None;
-         new_name = `Nm_na ;
-         set_name = `Nm_na ;
-         external_module_name = None;
-         splice = _ ;
-         scopes = _;
-         mk_obj = _;
-         return_wrapper = _;
-
-        }
-        ->  Location.raise_errorf ~loc "Could not infer which FFI category it belongs to, maybe you forgot [%@%@bs.val]? "  in
-    begin
-      let relative = External_ffi_types.check_ffi ~loc ffi in 
-      (* result type can not be labeled *)
-      (* currently we don't process attributes of
-         return type, in the future we may  *)
-      let  new_result_type  =  result_type in
-      (* get_arg_type ~nolabel:true false result_type in *)
-      let return_wrapper : External_ffi_types.return_wrapper =
-        check_return_wrapper loc st.return_wrapper new_result_type
-      in
-      Ast_compatible.mk_fn_type new_arg_types_ty new_result_type,  
-      prim_name,
-      Ffi_bs (arg_type_specs,return_wrapper ,  ffi),
-      left_attrs,
-      relative 
-    end
 
 let handle_attributes_as_string
     pval_loc
     pval_prim
-    (typ : Ast_core_type.t) attrs v : response =
-  let pval_type, prim_name, ffi, processed_attrs, relative  =
-    handle_attributes pval_loc pval_prim typ attrs v  in
+    (typ : Ast_core_type.t) attrs prim_name : response =
+  let pval_type, ffi, pval_attributes, no_inline_cross_module  =
+    handle_attributes pval_loc pval_prim typ attrs prim_name  in
   { pval_type;
     pval_prim = [prim_name; External_ffi_types.to_string ffi];
-    pval_attributes = processed_attrs;
-    no_inline_cross_module = relative
+    pval_attributes;
+    no_inline_cross_module 
   }
 
 
 
-let pval_prim_of_labels (labels : string Asttypes.loc list)
-   =
+let pval_prim_of_labels (labels : string Asttypes.loc list) =
   let arg_kinds =
-    Ext_list.fold_right labels [] 
+    Ext_list.fold_right labels ([] : External_arg_spec.t list ) 
       (fun {loc ; txt } arg_kinds
         ->
           let arg_label =
             External_arg_spec.label
               (Lam_methname.translate ~loc txt) None in
-          {External_arg_spec.arg_type = Nothing ;
+          {arg_type = Nothing ;
            arg_label  } :: arg_kinds
-      )
-      in
+      ) in
   let encoding =
     External_ffi_types.to_string (Ffi_obj_create arg_kinds) in
   [""; encoding]
 
 let pval_prim_of_option_labels
-(labels : (bool * string Asttypes.loc) list)
-(ends_with_unit : bool)
+    (labels : (bool * string Asttypes.loc) list)
+    (ends_with_unit : bool)
   =
   let arg_kinds =
     Ext_list.fold_right labels
@@ -21090,16 +21111,14 @@ let pval_prim_of_option_labels
        else [])
       (fun (is_option,{loc ; txt }) arg_kinds
         ->
-          let label_name = (Lam_methname.translate ~loc txt) in
+          let label_name = Lam_methname.translate ~loc txt in
           let arg_label =
             if is_option then
               External_arg_spec.optional label_name
             else External_arg_spec.label label_name None
           in
-          {External_arg_spec.arg_type = Nothing ;
-           arg_label  } :: arg_kinds
-      )      
-  in
+          {arg_type = Nothing ;
+           arg_label  } :: arg_kinds) in
   let encoding =
     External_ffi_types.to_string (Ffi_obj_create arg_kinds) in
   [""; encoding]
@@ -25006,8 +25025,8 @@ let value_bindings_mapper
     ) 
 
 end
-module Ppx_entry : sig 
-#1 "ppx_entry.mli"
+module Bs_builtin_ppx : sig 
+#1 "bs_builtin_ppx.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -25081,7 +25100,7 @@ val rewrite_implementation :
       *)
 
 end = struct
-#1 "ppx_entry.ml"
+#1 "bs_builtin_ppx.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -25504,6 +25523,3324 @@ let rewrite_implementation (x : Parsetree.structure) =
 
 
 
+end
+module Ast_mapper : sig 
+#1 "ast_mapper.mli"
+(**************************************************************************)
+(*                                                                        *)
+(*                                 OCaml                                  *)
+(*                                                                        *)
+(*                         Alain Frisch, LexiFi                           *)
+(*                                                                        *)
+(*   Copyright 2012 Institut National de Recherche en Informatique et     *)
+(*     en Automatique.                                                    *)
+(*                                                                        *)
+(*   All rights reserved.  This file is distributed under the terms of    *)
+(*   the GNU Lesser General Public License version 2.1, with the          *)
+(*   special exception on linking described in the file LICENSE.          *)
+(*                                                                        *)
+(**************************************************************************)
+
+(** The interface of a -ppx rewriter
+
+  A -ppx rewriter is a program that accepts a serialized abstract syntax
+  tree and outputs another, possibly modified, abstract syntax tree.
+  This module encapsulates the interface between the compiler and
+  the -ppx rewriters, handling such details as the serialization format,
+  forwarding of command-line flags, and storing state.
+
+  {!mapper} allows to implement AST rewriting using open recursion.
+  A typical mapper would be based on {!default_mapper}, a deep
+  identity mapper, and will fall back on it for handling the syntax it
+  does not modify. For example:
+
+  {[
+open Asttypes
+open Parsetree
+open Ast_mapper
+
+let test_mapper argv =
+  { default_mapper with
+    expr = fun mapper expr ->
+      match expr with
+      | { pexp_desc = Pexp_extension ({ txt = "test" }, PStr [])} ->
+        Ast_helper.Exp.constant (Const_int 42)
+      | other -> default_mapper.expr mapper other; }
+
+let () =
+  register "ppx_test" test_mapper]}
+
+  This -ppx rewriter, which replaces [[%test]] in expressions with
+  the constant [42], can be compiled using
+  [ocamlc -o ppx_test -I +compiler-libs ocamlcommon.cma ppx_test.ml].
+
+  *)
+
+open Parsetree
+
+(** {1 A generic Parsetree mapper} *)
+
+type mapper = {
+  attribute: mapper -> attribute -> attribute;
+  attributes: mapper -> attribute list -> attribute list;
+  case: mapper -> case -> case;
+  cases: mapper -> case list -> case list;
+  class_declaration: mapper -> class_declaration -> class_declaration;
+  class_description: mapper -> class_description -> class_description;
+  class_expr: mapper -> class_expr -> class_expr;
+  class_field: mapper -> class_field -> class_field;
+  class_signature: mapper -> class_signature -> class_signature;
+  class_structure: mapper -> class_structure -> class_structure;
+  class_type: mapper -> class_type -> class_type;
+  class_type_declaration: mapper -> class_type_declaration
+                          -> class_type_declaration;
+  class_type_field: mapper -> class_type_field -> class_type_field;
+  constructor_declaration: mapper -> constructor_declaration
+                           -> constructor_declaration;
+  expr: mapper -> expression -> expression;
+  extension: mapper -> extension -> extension;
+  extension_constructor: mapper -> extension_constructor
+                         -> extension_constructor;
+  include_declaration: mapper -> include_declaration -> include_declaration;
+  include_description: mapper -> include_description -> include_description;
+  label_declaration: mapper -> label_declaration -> label_declaration;
+  location: mapper -> Location.t -> Location.t;
+  module_binding: mapper -> module_binding -> module_binding;
+  module_declaration: mapper -> module_declaration -> module_declaration;
+  module_expr: mapper -> module_expr -> module_expr;
+  module_type: mapper -> module_type -> module_type;
+  module_type_declaration: mapper -> module_type_declaration
+                           -> module_type_declaration;
+  open_description: mapper -> open_description -> open_description;
+  pat: mapper -> pattern -> pattern;
+  payload: mapper -> payload -> payload;
+  signature: mapper -> signature -> signature;
+  signature_item: mapper -> signature_item -> signature_item;
+  structure: mapper -> structure -> structure;
+  structure_item: mapper -> structure_item -> structure_item;
+  typ: mapper -> core_type -> core_type;
+  type_declaration: mapper -> type_declaration -> type_declaration;
+  type_extension: mapper -> type_extension -> type_extension;
+  type_kind: mapper -> type_kind -> type_kind;
+  value_binding: mapper -> value_binding -> value_binding;
+  value_description: mapper -> value_description -> value_description;
+  with_constraint: mapper -> with_constraint -> with_constraint;
+}
+(** A mapper record implements one "method" per syntactic category,
+    using an open recursion style: each method takes as its first
+    argument the mapper to be applied to children in the syntax
+    tree. *)
+
+val default_mapper: mapper
+(** A default mapper, which implements a "deep identity" mapping. *)
+
+(** {1 Apply mappers to compilation units} *)
+
+val tool_name: unit -> string
+(** Can be used within a ppx preprocessor to know which tool is
+    calling it ["ocamlc"], ["ocamlopt"], ["ocamldoc"], ["ocamldep"],
+    ["ocaml"], ...  Some global variables that reflect command-line
+    options are automatically synchronized between the calling tool
+    and the ppx preprocessor: {!Clflags.include_dirs},
+    {!Config.load_path}, {!Clflags.open_modules}, {!Clflags.for_package},
+    {!Clflags.debug}. *)
+
+
+val apply: source:string -> target:string -> mapper -> unit
+(** Apply a mapper (parametrized by the unit name) to a dumped
+    parsetree found in the [source] file and put the result in the
+    [target] file. The [structure] or [signature] field of the mapper
+    is applied to the implementation or interface.  *)
+
+val run_main: (string list -> mapper) -> unit
+(** Entry point to call to implement a standalone -ppx rewriter from a
+    mapper, parametrized by the command line arguments.  The current
+    unit name can be obtained from {!Location.input_name}.  This
+    function implements proper error reporting for uncaught
+    exceptions. *)
+
+(** {1 Registration API} *)
+
+val register_function: (string -> (string list -> mapper) -> unit) ref
+
+val register: string -> (string list -> mapper) -> unit
+(** Apply the [register_function].  The default behavior is to run the
+    mapper immediately, taking arguments from the process command
+    line.  This is to support a scenario where a mapper is linked as a
+    stand-alone executable.
+
+    It is possible to overwrite the [register_function] to define
+    "-ppx drivers", which combine several mappers in a single process.
+    Typically, a driver starts by defining [register_function] to a
+    custom implementation, then lets ppx rewriters (linked statically
+    or dynamically) register themselves, and then run all or some of
+    them.  It is also possible to have -ppx drivers apply rewriters to
+    only specific parts of an AST.
+
+    The first argument to [register] is a symbolic name to be used by
+    the ppx driver.  *)
+
+
+(** {1 Convenience functions to write mappers} *)
+
+val map_opt: ('a -> 'b) -> 'a option -> 'b option
+
+val extension_of_error: Location.error -> extension
+(** Encode an error into an 'ocaml.error' extension node which can be
+    inserted in a generated Parsetree.  The compiler will be
+    responsible for reporting the error. *)
+
+val attribute_of_warning: Location.t -> string -> attribute
+(** Encode a warning message into an 'ocaml.ppwarning' attribute which can be
+    inserted in a generated Parsetree.  The compiler will be
+    responsible for reporting the warning. *)
+
+(** {1 Helper functions to call external mappers} *)
+
+val add_ppx_context_str:
+    tool_name:string -> Parsetree.structure -> Parsetree.structure
+(** Extract information from the current environment and encode it
+    into an attribute which is prepended to the list of structure
+    items in order to pass the information to an external
+    processor. *)
+
+val add_ppx_context_sig:
+    tool_name:string -> Parsetree.signature -> Parsetree.signature
+(** Same as [add_ppx_context_str], but for signatures. *)
+
+val drop_ppx_context_str:
+    restore:bool -> Parsetree.structure -> Parsetree.structure
+(** Drop the ocaml.ppx.context attribute from a structure.  If
+    [restore] is true, also restore the associated data in the current
+    process. *)
+
+val drop_ppx_context_sig:
+    restore:bool -> Parsetree.signature -> Parsetree.signature
+(** Same as [drop_ppx_context_str], but for signatures. *)
+
+(** {1 Cookies} *)
+
+(** Cookies are used to pass information from a ppx processor to
+    a further invocation of itself, when called from the OCaml
+    toplevel (or other tools that support cookies). *)
+
+val set_cookie: string -> Parsetree.expression -> unit
+val get_cookie: string -> Parsetree.expression option
+
+end = struct
+#1 "ast_mapper.ml"
+(**************************************************************************)
+(*                                                                        *)
+(*                                 OCaml                                  *)
+(*                                                                        *)
+(*                         Alain Frisch, LexiFi                           *)
+(*                                                                        *)
+(*   Copyright 2012 Institut National de Recherche en Informatique et     *)
+(*     en Automatique.                                                    *)
+(*                                                                        *)
+(*   All rights reserved.  This file is distributed under the terms of    *)
+(*   the GNU Lesser General Public License version 2.1, with the          *)
+(*   special exception on linking described in the file LICENSE.          *)
+(*                                                                        *)
+(**************************************************************************)
+
+(* A generic Parsetree mapping class *)
+
+(*
+[@@@ocaml.warning "+9"]
+  (* Ensure that record patterns don't miss any field. *)
+*)
+
+
+open Parsetree
+open Ast_helper
+open Location
+
+type mapper = {
+  attribute: mapper -> attribute -> attribute;
+  attributes: mapper -> attribute list -> attribute list;
+  case: mapper -> case -> case;
+  cases: mapper -> case list -> case list;
+  class_declaration: mapper -> class_declaration -> class_declaration;
+  class_description: mapper -> class_description -> class_description;
+  class_expr: mapper -> class_expr -> class_expr;
+  class_field: mapper -> class_field -> class_field;
+  class_signature: mapper -> class_signature -> class_signature;
+  class_structure: mapper -> class_structure -> class_structure;
+  class_type: mapper -> class_type -> class_type;
+  class_type_declaration: mapper -> class_type_declaration
+                          -> class_type_declaration;
+  class_type_field: mapper -> class_type_field -> class_type_field;
+  constructor_declaration: mapper -> constructor_declaration
+                           -> constructor_declaration;
+  expr: mapper -> expression -> expression;
+  extension: mapper -> extension -> extension;
+  extension_constructor: mapper -> extension_constructor
+                         -> extension_constructor;
+  include_declaration: mapper -> include_declaration -> include_declaration;
+  include_description: mapper -> include_description -> include_description;
+  label_declaration: mapper -> label_declaration -> label_declaration;
+  location: mapper -> Location.t -> Location.t;
+  module_binding: mapper -> module_binding -> module_binding;
+  module_declaration: mapper -> module_declaration -> module_declaration;
+  module_expr: mapper -> module_expr -> module_expr;
+  module_type: mapper -> module_type -> module_type;
+  module_type_declaration: mapper -> module_type_declaration
+                           -> module_type_declaration;
+  open_description: mapper -> open_description -> open_description;
+  pat: mapper -> pattern -> pattern;
+  payload: mapper -> payload -> payload;
+  signature: mapper -> signature -> signature;
+  signature_item: mapper -> signature_item -> signature_item;
+  structure: mapper -> structure -> structure;
+  structure_item: mapper -> structure_item -> structure_item;
+  typ: mapper -> core_type -> core_type;
+  type_declaration: mapper -> type_declaration -> type_declaration;
+  type_extension: mapper -> type_extension -> type_extension;
+  type_kind: mapper -> type_kind -> type_kind;
+  value_binding: mapper -> value_binding -> value_binding;
+  value_description: mapper -> value_description -> value_description;
+  with_constraint: mapper -> with_constraint -> with_constraint;
+}
+
+let map_fst f (x, y) = (f x, y)
+let map_snd f (x, y) = (x, f y)
+let map_tuple f1 f2 (x, y) = (f1 x, f2 y)
+let map_tuple3 f1 f2 f3 (x, y, z) = (f1 x, f2 y, f3 z)
+let map_opt f = function None -> None | Some x -> Some (f x)
+
+let map_loc sub {loc; txt} = {loc = sub.location sub loc; txt}
+
+module T = struct
+  (* Type expressions for the core language *)
+
+  let row_field sub = function
+    | Rtag (l, attrs, b, tl) ->
+        Rtag (map_loc sub l, sub.attributes sub attrs,
+              b, List.map (sub.typ sub) tl)
+    | Rinherit t -> Rinherit (sub.typ sub t)
+
+  let object_field sub = function
+    | Otag (l, attrs, t) ->
+        Otag (map_loc sub l, sub.attributes sub attrs, sub.typ sub t)
+    | Oinherit t -> Oinherit (sub.typ sub t)
+
+  let map sub {ptyp_desc = desc; ptyp_loc = loc; ptyp_attributes = attrs} =
+    let open Typ in
+    let loc = sub.location sub loc in
+    let attrs = sub.attributes sub attrs in
+    match desc with
+    | Ptyp_any -> any ~loc ~attrs ()
+    | Ptyp_var s -> var ~loc ~attrs s
+    | Ptyp_arrow (lab, t1, t2) ->
+        arrow ~loc ~attrs lab (sub.typ sub t1) (sub.typ sub t2)
+    | Ptyp_tuple tyl -> tuple ~loc ~attrs (List.map (sub.typ sub) tyl)
+    | Ptyp_constr (lid, tl) ->
+        constr ~loc ~attrs (map_loc sub lid) (List.map (sub.typ sub) tl)
+    | Ptyp_object (l, o) ->
+        object_ ~loc ~attrs (List.map (object_field sub) l) o
+    | Ptyp_class (lid, tl) ->
+        class_ ~loc ~attrs (map_loc sub lid) (List.map (sub.typ sub) tl)
+    | Ptyp_alias (t, s) -> alias ~loc ~attrs (sub.typ sub t) s
+    | Ptyp_variant (rl, b, ll) ->
+        variant ~loc ~attrs (List.map (row_field sub) rl) b ll
+    | Ptyp_poly (sl, t) -> poly ~loc ~attrs
+                             (List.map (map_loc sub) sl) (sub.typ sub t)
+    | Ptyp_package (lid, l) ->
+        package ~loc ~attrs (map_loc sub lid)
+          (List.map (map_tuple (map_loc sub) (sub.typ sub)) l)
+    | Ptyp_extension x -> extension ~loc ~attrs (sub.extension sub x)
+
+  let map_type_declaration sub
+      {ptype_name; ptype_params; ptype_cstrs;
+       ptype_kind;
+       ptype_private;
+       ptype_manifest;
+       ptype_attributes;
+       ptype_loc} =
+    Type.mk (map_loc sub ptype_name)
+      ~params:(List.map (map_fst (sub.typ sub)) ptype_params)
+      ~priv:ptype_private
+      ~cstrs:(List.map
+                (map_tuple3 (sub.typ sub) (sub.typ sub) (sub.location sub))
+                ptype_cstrs)
+      ~kind:(sub.type_kind sub ptype_kind)
+      ?manifest:(map_opt (sub.typ sub) ptype_manifest)
+      ~loc:(sub.location sub ptype_loc)
+      ~attrs:(sub.attributes sub ptype_attributes)
+
+  let map_type_kind sub = function
+    | Ptype_abstract -> Ptype_abstract
+    | Ptype_variant l ->
+        Ptype_variant (List.map (sub.constructor_declaration sub) l)
+    | Ptype_record l -> Ptype_record (List.map (sub.label_declaration sub) l)
+    | Ptype_open -> Ptype_open
+
+  let map_constructor_arguments sub = function
+    | Pcstr_tuple l -> Pcstr_tuple (List.map (sub.typ sub) l)
+    | Pcstr_record l ->
+        Pcstr_record (List.map (sub.label_declaration sub) l)
+
+  let map_type_extension sub
+      {ptyext_path; ptyext_params;
+       ptyext_constructors;
+       ptyext_private;
+       ptyext_attributes} =
+    Te.mk
+      (map_loc sub ptyext_path)
+      (List.map (sub.extension_constructor sub) ptyext_constructors)
+      ~params:(List.map (map_fst (sub.typ sub)) ptyext_params)
+      ~priv:ptyext_private
+      ~attrs:(sub.attributes sub ptyext_attributes)
+
+  let map_extension_constructor_kind sub = function
+      Pext_decl(ctl, cto) ->
+        Pext_decl(map_constructor_arguments sub ctl, map_opt (sub.typ sub) cto)
+    | Pext_rebind li ->
+        Pext_rebind (map_loc sub li)
+
+  let map_extension_constructor sub
+      {pext_name;
+       pext_kind;
+       pext_loc;
+       pext_attributes} =
+    Te.constructor
+      (map_loc sub pext_name)
+      (map_extension_constructor_kind sub pext_kind)
+      ~loc:(sub.location sub pext_loc)
+      ~attrs:(sub.attributes sub pext_attributes)
+
+end
+
+module CT = struct
+  (* Type expressions for the class language *)
+
+  let map sub {pcty_loc = loc; pcty_desc = desc; pcty_attributes = attrs} =
+    let open Cty in
+    let loc = sub.location sub loc in
+    let attrs = sub.attributes sub attrs in
+    match desc with
+    | Pcty_constr (lid, tys) ->
+        constr ~loc ~attrs (map_loc sub lid) (List.map (sub.typ sub) tys)
+    | Pcty_signature x -> signature ~loc ~attrs (sub.class_signature sub x)
+    | Pcty_arrow (lab, t, ct) ->
+        arrow ~loc ~attrs lab (sub.typ sub t) (sub.class_type sub ct)
+    | Pcty_extension x -> extension ~loc ~attrs (sub.extension sub x)
+    | Pcty_open (ovf, lid, ct) ->
+        open_ ~loc ~attrs ovf (map_loc sub lid) (sub.class_type sub ct)
+
+  let map_field sub {pctf_desc = desc; pctf_loc = loc; pctf_attributes = attrs}
+    =
+    let open Ctf in
+    let loc = sub.location sub loc in
+    let attrs = sub.attributes sub attrs in
+    match desc with
+    | Pctf_inherit ct -> inherit_ ~loc ~attrs (sub.class_type sub ct)
+    | Pctf_val (s, m, v, t) ->
+        val_ ~loc ~attrs (map_loc sub s) m v (sub.typ sub t)
+    | Pctf_method (s, p, v, t) ->
+        method_ ~loc ~attrs (map_loc sub s) p v (sub.typ sub t)
+    | Pctf_constraint (t1, t2) ->
+        constraint_ ~loc ~attrs (sub.typ sub t1) (sub.typ sub t2)
+    | Pctf_attribute x -> attribute ~loc (sub.attribute sub x)
+    | Pctf_extension x -> extension ~loc ~attrs (sub.extension sub x)
+
+  let map_signature sub {pcsig_self; pcsig_fields} =
+    Csig.mk
+      (sub.typ sub pcsig_self)
+      (List.map (sub.class_type_field sub) pcsig_fields)
+end
+
+module MT = struct
+  (* Type expressions for the module language *)
+
+  let map sub {pmty_desc = desc; pmty_loc = loc; pmty_attributes = attrs} =
+    let open Mty in
+    let loc = sub.location sub loc in
+    let attrs = sub.attributes sub attrs in
+    match desc with
+    | Pmty_ident s -> ident ~loc ~attrs (map_loc sub s)
+    | Pmty_alias s -> alias ~loc ~attrs (map_loc sub s)
+    | Pmty_signature sg -> signature ~loc ~attrs (sub.signature sub sg)
+    | Pmty_functor (s, mt1, mt2) ->
+        functor_ ~loc ~attrs (map_loc sub s)
+          (Misc.may_map (sub.module_type sub) mt1)
+          (sub.module_type sub mt2)
+    | Pmty_with (mt, l) ->
+        with_ ~loc ~attrs (sub.module_type sub mt)
+          (List.map (sub.with_constraint sub) l)
+    | Pmty_typeof me -> typeof_ ~loc ~attrs (sub.module_expr sub me)
+    | Pmty_extension x -> extension ~loc ~attrs (sub.extension sub x)
+
+  let map_with_constraint sub = function
+    | Pwith_type (lid, d) ->
+        Pwith_type (map_loc sub lid, sub.type_declaration sub d)
+    | Pwith_module (lid, lid2) ->
+        Pwith_module (map_loc sub lid, map_loc sub lid2)
+    | Pwith_typesubst (lid, d) ->
+        Pwith_typesubst (map_loc sub lid, sub.type_declaration sub d)
+    | Pwith_modsubst (s, lid) ->
+        Pwith_modsubst (map_loc sub s, map_loc sub lid)
+
+  let map_signature_item sub {psig_desc = desc; psig_loc = loc} =
+    let open Sig in
+    let loc = sub.location sub loc in
+    match desc with
+    | Psig_value vd -> value ~loc (sub.value_description sub vd)
+    | Psig_type (rf, l) -> type_ ~loc rf (List.map (sub.type_declaration sub) l)
+    | Psig_typext te -> type_extension ~loc (sub.type_extension sub te)
+    | Psig_exception ed -> exception_ ~loc (sub.extension_constructor sub ed)
+    | Psig_module x -> module_ ~loc (sub.module_declaration sub x)
+    | Psig_recmodule l ->
+        rec_module ~loc (List.map (sub.module_declaration sub) l)
+    | Psig_modtype x -> modtype ~loc (sub.module_type_declaration sub x)
+    | Psig_open x -> open_ ~loc (sub.open_description sub x)
+    | Psig_include x -> include_ ~loc (sub.include_description sub x)
+    | Psig_class l -> class_ ~loc (List.map (sub.class_description sub) l)
+    | Psig_class_type l ->
+        class_type ~loc (List.map (sub.class_type_declaration sub) l)
+    | Psig_extension (x, attrs) ->
+        extension ~loc (sub.extension sub x) ~attrs:(sub.attributes sub attrs)
+    | Psig_attribute x -> attribute ~loc (sub.attribute sub x)
+end
+
+
+module M = struct
+  (* Value expressions for the module language *)
+
+  let map sub {pmod_loc = loc; pmod_desc = desc; pmod_attributes = attrs} =
+    let open Mod in
+    let loc = sub.location sub loc in
+    let attrs = sub.attributes sub attrs in
+    match desc with
+    | Pmod_ident x -> ident ~loc ~attrs (map_loc sub x)
+    | Pmod_structure str -> structure ~loc ~attrs (sub.structure sub str)
+    | Pmod_functor (arg, arg_ty, body) ->
+        functor_ ~loc ~attrs (map_loc sub arg)
+          (Misc.may_map (sub.module_type sub) arg_ty)
+          (sub.module_expr sub body)
+    | Pmod_apply (m1, m2) ->
+        apply ~loc ~attrs (sub.module_expr sub m1) (sub.module_expr sub m2)
+    | Pmod_constraint (m, mty) ->
+        constraint_ ~loc ~attrs (sub.module_expr sub m)
+                    (sub.module_type sub mty)
+    | Pmod_unpack e -> unpack ~loc ~attrs (sub.expr sub e)
+    | Pmod_extension x -> extension ~loc ~attrs (sub.extension sub x)
+
+  let map_structure_item sub {pstr_loc = loc; pstr_desc = desc} =
+    let open Str in
+    let loc = sub.location sub loc in
+    match desc with
+    | Pstr_eval (x, attrs) ->
+        eval ~loc ~attrs:(sub.attributes sub attrs) (sub.expr sub x)
+    | Pstr_value (r, vbs) -> value ~loc r (List.map (sub.value_binding sub) vbs)
+    | Pstr_primitive vd -> primitive ~loc (sub.value_description sub vd)
+    | Pstr_type (rf, l) -> type_ ~loc rf (List.map (sub.type_declaration sub) l)
+    | Pstr_typext te -> type_extension ~loc (sub.type_extension sub te)
+    | Pstr_exception ed -> exception_ ~loc (sub.extension_constructor sub ed)
+    | Pstr_module x -> module_ ~loc (sub.module_binding sub x)
+    | Pstr_recmodule l -> rec_module ~loc (List.map (sub.module_binding sub) l)
+    | Pstr_modtype x -> modtype ~loc (sub.module_type_declaration sub x)
+    | Pstr_open x -> open_ ~loc (sub.open_description sub x)
+    | Pstr_class l -> class_ ~loc (List.map (sub.class_declaration sub) l)
+    | Pstr_class_type l ->
+        class_type ~loc (List.map (sub.class_type_declaration sub) l)
+    | Pstr_include x -> include_ ~loc (sub.include_declaration sub x)
+    | Pstr_extension (x, attrs) ->
+        extension ~loc (sub.extension sub x) ~attrs:(sub.attributes sub attrs)
+    | Pstr_attribute x -> attribute ~loc (sub.attribute sub x)
+end
+
+module E = struct
+  (* Value expressions for the core language *)
+
+  let map sub {pexp_loc = loc; pexp_desc = desc; pexp_attributes = attrs} =
+    let open Exp in
+    let loc = sub.location sub loc in
+    let attrs = sub.attributes sub attrs in
+    match desc with
+    | Pexp_ident x -> ident ~loc ~attrs (map_loc sub x)
+    | Pexp_constant x -> constant ~loc ~attrs x
+    | Pexp_let (r, vbs, e) ->
+        let_ ~loc ~attrs r (List.map (sub.value_binding sub) vbs)
+          (sub.expr sub e)
+    | Pexp_fun (lab, def, p, e) ->
+        fun_ ~loc ~attrs lab (map_opt (sub.expr sub) def) (sub.pat sub p)
+          (sub.expr sub e)
+    | Pexp_function pel -> function_ ~loc ~attrs (sub.cases sub pel)
+    | Pexp_apply (e, l) ->
+        apply ~loc ~attrs (sub.expr sub e) (List.map (map_snd (sub.expr sub)) l)
+    | Pexp_match (e, pel) ->
+        match_ ~loc ~attrs (sub.expr sub e) (sub.cases sub pel)
+    | Pexp_try (e, pel) -> try_ ~loc ~attrs (sub.expr sub e) (sub.cases sub pel)
+    | Pexp_tuple el -> tuple ~loc ~attrs (List.map (sub.expr sub) el)
+    | Pexp_construct (lid, arg) ->
+        construct ~loc ~attrs (map_loc sub lid) (map_opt (sub.expr sub) arg)
+    | Pexp_variant (lab, eo) ->
+        variant ~loc ~attrs lab (map_opt (sub.expr sub) eo)
+    | Pexp_record (l, eo) ->
+        record ~loc ~attrs (List.map (map_tuple (map_loc sub) (sub.expr sub)) l)
+          (map_opt (sub.expr sub) eo)
+    | Pexp_field (e, lid) ->
+        field ~loc ~attrs (sub.expr sub e) (map_loc sub lid)
+    | Pexp_setfield (e1, lid, e2) ->
+        setfield ~loc ~attrs (sub.expr sub e1) (map_loc sub lid)
+          (sub.expr sub e2)
+    | Pexp_array el -> array ~loc ~attrs (List.map (sub.expr sub) el)
+    | Pexp_ifthenelse (e1, e2, e3) ->
+        ifthenelse ~loc ~attrs (sub.expr sub e1) (sub.expr sub e2)
+          (map_opt (sub.expr sub) e3)
+    | Pexp_sequence (e1, e2) ->
+        sequence ~loc ~attrs (sub.expr sub e1) (sub.expr sub e2)
+    | Pexp_while (e1, e2) ->
+        while_ ~loc ~attrs (sub.expr sub e1) (sub.expr sub e2)
+    | Pexp_for (p, e1, e2, d, e3) ->
+        for_ ~loc ~attrs (sub.pat sub p) (sub.expr sub e1) (sub.expr sub e2) d
+          (sub.expr sub e3)
+    | Pexp_coerce (e, t1, t2) ->
+        coerce ~loc ~attrs (sub.expr sub e) (map_opt (sub.typ sub) t1)
+          (sub.typ sub t2)
+    | Pexp_constraint (e, t) ->
+        constraint_ ~loc ~attrs (sub.expr sub e) (sub.typ sub t)
+    | Pexp_send (e, s) ->
+        send ~loc ~attrs (sub.expr sub e) (map_loc sub s)
+    | Pexp_new lid -> new_ ~loc ~attrs (map_loc sub lid)
+    | Pexp_setinstvar (s, e) ->
+        setinstvar ~loc ~attrs (map_loc sub s) (sub.expr sub e)
+    | Pexp_override sel ->
+        override ~loc ~attrs
+          (List.map (map_tuple (map_loc sub) (sub.expr sub)) sel)
+    | Pexp_letmodule (s, me, e) ->
+        letmodule ~loc ~attrs (map_loc sub s) (sub.module_expr sub me)
+          (sub.expr sub e)
+    | Pexp_letexception (cd, e) ->
+        letexception ~loc ~attrs
+          (sub.extension_constructor sub cd)
+          (sub.expr sub e)
+    | Pexp_assert e -> assert_ ~loc ~attrs (sub.expr sub e)
+    | Pexp_lazy e -> lazy_ ~loc ~attrs (sub.expr sub e)
+    | Pexp_poly (e, t) ->
+        poly ~loc ~attrs (sub.expr sub e) (map_opt (sub.typ sub) t)
+    | Pexp_object cls -> object_ ~loc ~attrs (sub.class_structure sub cls)
+    | Pexp_newtype (s, e) ->
+        newtype ~loc ~attrs (map_loc sub s) (sub.expr sub e)
+    | Pexp_pack me -> pack ~loc ~attrs (sub.module_expr sub me)
+    | Pexp_open (ovf, lid, e) ->
+        open_ ~loc ~attrs ovf (map_loc sub lid) (sub.expr sub e)
+    | Pexp_extension x -> extension ~loc ~attrs (sub.extension sub x)
+    | Pexp_unreachable -> unreachable ~loc ~attrs ()
+end
+
+module P = struct
+  (* Patterns *)
+
+  let map sub {ppat_desc = desc; ppat_loc = loc; ppat_attributes = attrs} =
+    let open Pat in
+    let loc = sub.location sub loc in
+    let attrs = sub.attributes sub attrs in
+    match desc with
+    | Ppat_any -> any ~loc ~attrs ()
+    | Ppat_var s -> var ~loc ~attrs (map_loc sub s)
+    | Ppat_alias (p, s) -> alias ~loc ~attrs (sub.pat sub p) (map_loc sub s)
+    | Ppat_constant c -> constant ~loc ~attrs c
+    | Ppat_interval (c1, c2) -> interval ~loc ~attrs c1 c2
+    | Ppat_tuple pl -> tuple ~loc ~attrs (List.map (sub.pat sub) pl)
+    | Ppat_construct (l, p) ->
+        construct ~loc ~attrs (map_loc sub l) (map_opt (sub.pat sub) p)
+    | Ppat_variant (l, p) -> variant ~loc ~attrs l (map_opt (sub.pat sub) p)
+    | Ppat_record (lpl, cf) ->
+        record ~loc ~attrs
+               (List.map (map_tuple (map_loc sub) (sub.pat sub)) lpl) cf
+    | Ppat_array pl -> array ~loc ~attrs (List.map (sub.pat sub) pl)
+    | Ppat_or (p1, p2) -> or_ ~loc ~attrs (sub.pat sub p1) (sub.pat sub p2)
+    | Ppat_constraint (p, t) ->
+        constraint_ ~loc ~attrs (sub.pat sub p) (sub.typ sub t)
+    | Ppat_type s -> type_ ~loc ~attrs (map_loc sub s)
+    | Ppat_lazy p -> lazy_ ~loc ~attrs (sub.pat sub p)
+    | Ppat_unpack s -> unpack ~loc ~attrs (map_loc sub s)
+    | Ppat_open (lid,p) -> open_ ~loc ~attrs (map_loc sub lid) (sub.pat sub p)
+    | Ppat_exception p -> exception_ ~loc ~attrs (sub.pat sub p)
+    | Ppat_extension x -> extension ~loc ~attrs (sub.extension sub x)
+end
+
+module CE = struct
+  (* Value expressions for the class language *)
+
+  let map sub {pcl_loc = loc; pcl_desc = desc; pcl_attributes = attrs} =
+    let open Cl in
+    let loc = sub.location sub loc in
+    let attrs = sub.attributes sub attrs in
+    match desc with
+    | Pcl_constr (lid, tys) ->
+        constr ~loc ~attrs (map_loc sub lid) (List.map (sub.typ sub) tys)
+    | Pcl_structure s ->
+        structure ~loc ~attrs (sub.class_structure sub s)
+    | Pcl_fun (lab, e, p, ce) ->
+        fun_ ~loc ~attrs lab
+          (map_opt (sub.expr sub) e)
+          (sub.pat sub p)
+          (sub.class_expr sub ce)
+    | Pcl_apply (ce, l) ->
+        apply ~loc ~attrs (sub.class_expr sub ce)
+          (List.map (map_snd (sub.expr sub)) l)
+    | Pcl_let (r, vbs, ce) ->
+        let_ ~loc ~attrs r (List.map (sub.value_binding sub) vbs)
+          (sub.class_expr sub ce)
+    | Pcl_constraint (ce, ct) ->
+        constraint_ ~loc ~attrs (sub.class_expr sub ce) (sub.class_type sub ct)
+    | Pcl_extension x -> extension ~loc ~attrs (sub.extension sub x)
+    | Pcl_open (ovf, lid, ce) ->
+        open_ ~loc ~attrs ovf (map_loc sub lid) (sub.class_expr sub ce)
+
+  let map_kind sub = function
+    | Cfk_concrete (o, e) -> Cfk_concrete (o, sub.expr sub e)
+    | Cfk_virtual t -> Cfk_virtual (sub.typ sub t)
+
+  let map_field sub {pcf_desc = desc; pcf_loc = loc; pcf_attributes = attrs} =
+    let open Cf in
+    let loc = sub.location sub loc in
+    let attrs = sub.attributes sub attrs in
+    match desc with
+    | Pcf_inherit (o, ce, s) ->
+        inherit_ ~loc ~attrs o (sub.class_expr sub ce)
+          (map_opt (map_loc sub) s)
+    | Pcf_val (s, m, k) -> val_ ~loc ~attrs (map_loc sub s) m (map_kind sub k)
+    | Pcf_method (s, p, k) ->
+        method_ ~loc ~attrs (map_loc sub s) p (map_kind sub k)
+    | Pcf_constraint (t1, t2) ->
+        constraint_ ~loc ~attrs (sub.typ sub t1) (sub.typ sub t2)
+    | Pcf_initializer e -> initializer_ ~loc ~attrs (sub.expr sub e)
+    | Pcf_attribute x -> attribute ~loc (sub.attribute sub x)
+    | Pcf_extension x -> extension ~loc ~attrs (sub.extension sub x)
+
+  let map_structure sub {pcstr_self; pcstr_fields} =
+    {
+      pcstr_self = sub.pat sub pcstr_self;
+      pcstr_fields = List.map (sub.class_field sub) pcstr_fields;
+    }
+
+  let class_infos sub f {pci_virt; pci_params = pl; pci_name; pci_expr;
+                         pci_loc; pci_attributes} =
+    Ci.mk
+     ~virt:pci_virt
+     ~params:(List.map (map_fst (sub.typ sub)) pl)
+      (map_loc sub pci_name)
+      (f pci_expr)
+      ~loc:(sub.location sub pci_loc)
+      ~attrs:(sub.attributes sub pci_attributes)
+end
+
+(* Now, a generic AST mapper, to be extended to cover all kinds and
+   cases of the OCaml grammar.  The default behavior of the mapper is
+   the identity. *)
+
+let default_mapper =
+  {
+    structure = (fun this l -> List.map (this.structure_item this) l);
+    structure_item = M.map_structure_item;
+    module_expr = M.map;
+    signature = (fun this l -> List.map (this.signature_item this) l);
+    signature_item = MT.map_signature_item;
+    module_type = MT.map;
+    with_constraint = MT.map_with_constraint;
+    class_declaration =
+      (fun this -> CE.class_infos this (this.class_expr this));
+    class_expr = CE.map;
+    class_field = CE.map_field;
+    class_structure = CE.map_structure;
+    class_type = CT.map;
+    class_type_field = CT.map_field;
+    class_signature = CT.map_signature;
+    class_type_declaration =
+      (fun this -> CE.class_infos this (this.class_type this));
+    class_description =
+      (fun this -> CE.class_infos this (this.class_type this));
+    type_declaration = T.map_type_declaration;
+    type_kind = T.map_type_kind;
+    typ = T.map;
+    type_extension = T.map_type_extension;
+    extension_constructor = T.map_extension_constructor;
+    value_description =
+      (fun this {pval_name; pval_type; pval_prim; pval_loc;
+                 pval_attributes} ->
+        Val.mk
+          (map_loc this pval_name)
+          (this.typ this pval_type)
+          ~attrs:(this.attributes this pval_attributes)
+          ~loc:(this.location this pval_loc)
+          ~prim:pval_prim
+      );
+
+    pat = P.map;
+    expr = E.map;
+
+    module_declaration =
+      (fun this {pmd_name; pmd_type; pmd_attributes; pmd_loc} ->
+         Md.mk
+           (map_loc this pmd_name)
+           (this.module_type this pmd_type)
+           ~attrs:(this.attributes this pmd_attributes)
+           ~loc:(this.location this pmd_loc)
+      );
+
+    module_type_declaration =
+      (fun this {pmtd_name; pmtd_type; pmtd_attributes; pmtd_loc} ->
+         Mtd.mk
+           (map_loc this pmtd_name)
+           ?typ:(map_opt (this.module_type this) pmtd_type)
+           ~attrs:(this.attributes this pmtd_attributes)
+           ~loc:(this.location this pmtd_loc)
+      );
+
+    module_binding =
+      (fun this {pmb_name; pmb_expr; pmb_attributes; pmb_loc} ->
+         Mb.mk (map_loc this pmb_name) (this.module_expr this pmb_expr)
+           ~attrs:(this.attributes this pmb_attributes)
+           ~loc:(this.location this pmb_loc)
+      );
+
+
+    open_description =
+      (fun this {popen_lid; popen_override; popen_attributes; popen_loc} ->
+         Opn.mk (map_loc this popen_lid)
+           ~override:popen_override
+           ~loc:(this.location this popen_loc)
+           ~attrs:(this.attributes this popen_attributes)
+      );
+
+
+    include_description =
+      (fun this {pincl_mod; pincl_attributes; pincl_loc} ->
+         Incl.mk (this.module_type this pincl_mod)
+           ~loc:(this.location this pincl_loc)
+           ~attrs:(this.attributes this pincl_attributes)
+      );
+
+    include_declaration =
+      (fun this {pincl_mod; pincl_attributes; pincl_loc} ->
+         Incl.mk (this.module_expr this pincl_mod)
+           ~loc:(this.location this pincl_loc)
+           ~attrs:(this.attributes this pincl_attributes)
+      );
+
+
+    value_binding =
+      (fun this {pvb_pat; pvb_expr; pvb_attributes; pvb_loc} ->
+         Vb.mk
+           (this.pat this pvb_pat)
+           (this.expr this pvb_expr)
+           ~loc:(this.location this pvb_loc)
+           ~attrs:(this.attributes this pvb_attributes)
+      );
+
+
+    constructor_declaration =
+      (fun this {pcd_name; pcd_args; pcd_res; pcd_loc; pcd_attributes} ->
+        Type.constructor
+          (map_loc this pcd_name)
+          ~args:(T.map_constructor_arguments this pcd_args)
+          ?res:(map_opt (this.typ this) pcd_res)
+          ~loc:(this.location this pcd_loc)
+          ~attrs:(this.attributes this pcd_attributes)
+      );
+
+    label_declaration =
+      (fun this {pld_name; pld_type; pld_loc; pld_mutable; pld_attributes} ->
+         Type.field
+           (map_loc this pld_name)
+           (this.typ this pld_type)
+           ~mut:pld_mutable
+           ~loc:(this.location this pld_loc)
+           ~attrs:(this.attributes this pld_attributes)
+      );
+
+    cases = (fun this l -> List.map (this.case this) l);
+    case =
+      (fun this {pc_lhs; pc_guard; pc_rhs} ->
+         {
+           pc_lhs = this.pat this pc_lhs;
+           pc_guard = map_opt (this.expr this) pc_guard;
+           pc_rhs = this.expr this pc_rhs;
+         }
+      );
+
+
+
+    location = (fun _this l -> l);
+
+    extension = (fun this (s, e) -> (map_loc this s, this.payload this e));
+    attribute = (fun this (s, e) -> (map_loc this s, this.payload this e));
+    attributes = (fun this l -> List.map (this.attribute this) l);
+    payload =
+      (fun this -> function
+         | PStr x -> PStr (this.structure this x)
+         | PSig x -> PSig (this.signature this x)
+         | PTyp x -> PTyp (this.typ this x)
+         | PPat (x, g) -> PPat (this.pat this x, map_opt (this.expr this) g)
+      );
+  }
+
+let rec extension_of_error {loc; msg; if_highlight; sub} =
+  { loc; txt = "ocaml.error" },
+  PStr ([Str.eval (Exp.constant (Pconst_string (msg, None)));
+         Str.eval (Exp.constant (Pconst_string (if_highlight, None)))] @
+        (List.map (fun ext -> Str.extension (extension_of_error ext)) sub))
+
+let attribute_of_warning loc s =
+  { loc; txt = "ocaml.ppwarning" },
+  PStr ([Str.eval ~loc (Exp.constant (Pconst_string (s, None)))])
+
+module StringMap = Map.Make(struct
+    type t = string
+    let compare = compare
+end)
+
+let cookies = ref StringMap.empty
+
+let get_cookie k =
+  try Some (StringMap.find k !cookies)
+  with Not_found -> None
+
+let set_cookie k v =
+  cookies := StringMap.add k v !cookies
+
+let tool_name_ref = ref "_none_"
+
+let tool_name () = !tool_name_ref
+
+
+module PpxContext = struct
+  open Longident
+  open Asttypes
+  open Ast_helper
+
+  let lid name = { txt = Lident name; loc = Location.none }
+
+  let make_string x = Exp.constant (Pconst_string (x, None))
+
+  let make_bool x =
+    if x
+    then Exp.construct (lid "true") None
+    else Exp.construct (lid "false") None
+
+  let rec make_list f lst =
+    match lst with
+    | x :: rest ->
+      Exp.construct (lid "::") (Some (Exp.tuple [f x; make_list f rest]))
+    | [] ->
+      Exp.construct (lid "[]") None
+
+  let make_pair f1 f2 (x1, x2) =
+    Exp.tuple [f1 x1; f2 x2]
+
+  let make_option f opt =
+    match opt with
+    | Some x -> Exp.construct (lid "Some") (Some (f x))
+    | None   -> Exp.construct (lid "None") None
+
+  let get_cookies () =
+    lid "cookies",
+    make_list (make_pair make_string (fun x -> x))
+      (StringMap.bindings !cookies)
+
+  let mk fields =
+    { txt = "ocaml.ppx.context"; loc = Location.none },
+    Parsetree.PStr [Str.eval (Exp.record fields None)]
+
+  let make ~tool_name () =
+    let fields =
+      [
+        lid "tool_name",    make_string tool_name;
+        lid "include_dirs", make_list make_string !Clflags.include_dirs;
+        lid "load_path",    make_list make_string !Config.load_path;
+        lid "open_modules", make_list make_string !Clflags.open_modules;
+        lid "for_package",  make_option make_string !Clflags.for_package;
+        lid "debug",        make_bool !Clflags.debug;
+        lid "use_threads",  make_bool !Clflags.use_threads;
+        lid "use_vmthreads", make_bool !Clflags.use_vmthreads;
+        get_cookies ()
+      ]
+    in
+    mk fields
+
+  let get_fields = function
+    | PStr [{pstr_desc = Pstr_eval
+                 ({ pexp_desc = Pexp_record (fields, None) }, [])}] ->
+        fields
+    | _ ->
+        raise_errorf "Internal error: invalid [@@@ocaml.ppx.context] syntax"
+
+  let restore fields =
+    let field name payload =
+      let rec get_string = function
+        | { pexp_desc = Pexp_constant (Pconst_string (str, None)) } -> str
+        | _ -> raise_errorf "Internal error: invalid [@@@ocaml.ppx.context \
+                             { %s }] string syntax" name
+      and get_bool pexp =
+        match pexp with
+        | {pexp_desc = Pexp_construct ({txt = Longident.Lident "true"},
+                                       None)} ->
+            true
+        | {pexp_desc = Pexp_construct ({txt = Longident.Lident "false"},
+                                       None)} ->
+            false
+        | _ -> raise_errorf "Internal error: invalid [@@@ocaml.ppx.context \
+                             { %s }] bool syntax" name
+      and get_list elem = function
+        | {pexp_desc =
+             Pexp_construct ({txt = Longident.Lident "::"},
+                             Some {pexp_desc = Pexp_tuple [exp; rest]}) } ->
+            elem exp :: get_list elem rest
+        | {pexp_desc =
+             Pexp_construct ({txt = Longident.Lident "[]"}, None)} ->
+            []
+        | _ -> raise_errorf "Internal error: invalid [@@@ocaml.ppx.context \
+                             { %s }] list syntax" name
+      and get_pair f1 f2 = function
+        | {pexp_desc = Pexp_tuple [e1; e2]} ->
+            (f1 e1, f2 e2)
+        | _ -> raise_errorf "Internal error: invalid [@@@ocaml.ppx.context \
+                             { %s }] pair syntax" name
+      and get_option elem = function
+        | { pexp_desc =
+              Pexp_construct ({ txt = Longident.Lident "Some" }, Some exp) } ->
+            Some (elem exp)
+        | { pexp_desc =
+              Pexp_construct ({ txt = Longident.Lident "None" }, None) } ->
+            None
+        | _ -> raise_errorf "Internal error: invalid [@@@ocaml.ppx.context \
+                             { %s }] option syntax" name
+      in
+      match name with
+      | "tool_name" ->
+          tool_name_ref := get_string payload
+      | "include_dirs" ->
+          Clflags.include_dirs := get_list get_string payload
+      | "load_path" ->
+          Config.load_path := get_list get_string payload
+      | "open_modules" ->
+          Clflags.open_modules := get_list get_string payload
+      | "for_package" ->
+          Clflags.for_package := get_option get_string payload
+      | "debug" ->
+          Clflags.debug := get_bool payload
+      | "use_threads" ->
+          Clflags.use_threads := get_bool payload
+      | "use_vmthreads" ->
+          Clflags.use_vmthreads := get_bool payload
+      | "cookies" ->
+          let l = get_list (get_pair get_string (fun x -> x)) payload in
+          cookies :=
+            List.fold_left
+              (fun s (k, v) -> StringMap.add k v s) StringMap.empty
+              l
+      | _ ->
+          ()
+    in
+    List.iter (function ({txt=Lident name}, x) -> field name x | _ -> ()) fields
+
+  let update_cookies fields =
+    let fields =
+      List.filter
+        (function ({txt=Lident "cookies"}, _) -> false | _ -> true)
+        fields
+    in
+    fields @ [get_cookies ()]
+end
+
+let ppx_context = PpxContext.make
+
+let extension_of_exn exn =
+  match error_of_exn exn with
+  | Some (`Ok error) -> extension_of_error error
+  | Some `Already_displayed -> { loc = Location.none; txt = "ocaml.error" }, PStr []
+  | None -> raise exn
+
+
+let apply_lazy ~source ~target mapper =
+  let implem ast =
+    let fields, ast =
+      match ast with
+      | {pstr_desc = Pstr_attribute ({txt = "ocaml.ppx.context"}, x)} :: l ->
+          PpxContext.get_fields x, l
+      | _ -> [], ast
+    in
+    PpxContext.restore fields;
+    let ast =
+      try
+        let mapper = mapper () in
+        mapper.structure mapper ast
+      with exn ->
+        [{pstr_desc = Pstr_extension (extension_of_exn exn, []);
+          pstr_loc  = Location.none}]
+    in
+    let fields = PpxContext.update_cookies fields in
+    Str.attribute (PpxContext.mk fields) :: ast
+  in
+  let iface ast =
+    let fields, ast =
+      match ast with
+      | {psig_desc = Psig_attribute ({txt = "ocaml.ppx.context"}, x)} :: l ->
+          PpxContext.get_fields x, l
+      | _ -> [], ast
+    in
+    PpxContext.restore fields;
+    let ast =
+      try
+        let mapper = mapper () in
+        mapper.signature mapper ast
+      with exn ->
+        [{psig_desc = Psig_extension (extension_of_exn exn, []);
+          psig_loc  = Location.none}]
+    in
+    let fields = PpxContext.update_cookies fields in
+    Sig.attribute (PpxContext.mk fields) :: ast
+  in
+
+  let ic = open_in_bin source in
+  let magic =
+    really_input_string ic (String.length Config.ast_impl_magic_number)
+  in
+
+  let rewrite transform =
+    Location.input_name := input_value ic;
+    let ast = input_value ic in
+    close_in ic;
+    let ast = transform ast in
+    let oc = open_out_bin target in
+    output_string oc magic;
+    output_value oc !Location.input_name;
+    output_value oc ast;
+    close_out oc
+  and fail () =
+    close_in ic;
+    failwith "Ast_mapper: OCaml version mismatch or malformed input";
+  in
+
+  if magic = Config.ast_impl_magic_number then
+    rewrite (implem : structure -> structure)
+  else if magic = Config.ast_intf_magic_number then
+    rewrite (iface : signature -> signature)
+  else fail ()
+
+let drop_ppx_context_str ~restore = function
+  | {pstr_desc = Pstr_attribute({Location.txt = "ocaml.ppx.context"}, a)}
+    :: items ->
+      if restore then
+        PpxContext.restore (PpxContext.get_fields a);
+      items
+  | items -> items
+
+let drop_ppx_context_sig ~restore = function
+  | {psig_desc = Psig_attribute({Location.txt = "ocaml.ppx.context"}, a)}
+    :: items ->
+      if restore then
+        PpxContext.restore (PpxContext.get_fields a);
+      items
+  | items -> items
+
+let add_ppx_context_str ~tool_name ast =
+  Ast_helper.Str.attribute (ppx_context ~tool_name ()) :: ast
+
+let add_ppx_context_sig ~tool_name ast =
+  Ast_helper.Sig.attribute (ppx_context ~tool_name ()) :: ast
+
+
+let apply ~source ~target mapper =
+  apply_lazy ~source ~target (fun () -> mapper)
+
+let run_main mapper =
+  try
+    let a = Sys.argv in
+    let n = Array.length a in
+    if n > 2 then
+      let mapper () =
+        try mapper (Array.to_list (Array.sub a 1 (n - 3)))
+        with exn ->
+          (* PR#6463 *)
+          let f _ _ = raise exn in
+          {default_mapper with structure = f; signature = f}
+      in
+      apply_lazy ~source:a.(n - 2) ~target:a.(n - 1) mapper
+    else begin
+      Printf.eprintf "Usage: %s [extra_args] <infile> <outfile>\n%!"
+                     Sys.executable_name;
+      exit 2
+    end
+  with exn ->
+    prerr_endline (Printexc.to_string exn);
+    exit 2
+
+let register_function = ref (fun _name f -> run_main f)
+let register name f = !register_function name f
+
+end
+module Reactjs_jsx_ppx_v2
+= struct
+#1 "reactjs_jsx_ppx_v2.ml"
+# 1 "syntax/reactjs_jsx_ppx.cppo.ml"
+(*
+  This is the file that handles turning Reason JSX' agnostic function call into
+  a ReasonReact-specific function call. Aka, this is a macro, using OCaml's ppx
+  facilities; https://whitequark.org/blog/2014/04/16/a-guide-to-extension-
+  points-in-ocaml/
+  You wouldn't use this file directly; it's used by BuckleScript's
+  bsconfig.json. Specifically, there's a field called `react-jsx` inside the
+  field `reason`, which enables this ppx through some internal call in bsb
+*)
+
+(*
+  There are two different transforms that can be selected in this file (v2 and v3):
+  v2:
+  transform `[@JSX] div(~props1=a, ~props2=b, ~children=[foo, bar], ())` into
+  `ReactDOMRe.createElement("div", ~props={"props1": 1, "props2": b}, [|foo,
+  bar|])`.
+  transform `[@JSX] div(~props1=a, ~props2=b, ~children=foo, ())` into
+  `ReactDOMRe.createElementVariadic("div", ~props={"props1": 1, "props2": b}, foo)`.
+  transform the upper-cased case
+  `[@JSX] Foo.createElement(~key=a, ~ref=b, ~foo=bar, ~children=[], ())` into
+  `ReasonReact.element(~key=a, ~ref=b, Foo.make(~foo=bar, [||]))`
+  transform `[@JSX] [foo]` into
+  `ReactDOMRe.createElement(ReasonReact.fragment, [|foo|])`
+  v3:
+  transform `[@JSX] div(~props1=a, ~props2=b, ~children=[foo, bar], ())` into
+  `ReactDOMRe.createDOMElementVariadic("div", ReactDOMRe.domProps(~props1=1, ~props2=b), [|foo, bar|])`.
+  transform the upper-cased case
+  `[@JSX] Foo.createElement(~key=a, ~ref=b, ~foo=bar, ~children=[], ())` into
+  `React.createElement(Foo.make, Foo.makeProps(~key=a, ~ref=b, ~foo=bar, ()))`
+  transform the upper-cased case
+  `[@JSX] Foo.createElement(~foo=bar, ~children=[foo, bar], ())` into
+  `React.createElementVariadic(Foo.make, Foo.makeProps(~foo=bar, ~children=React.null, ()), [|foo, bar|])`
+  transform `[@JSX] [foo]` into
+  `ReactDOMRe.createElement(ReasonReact.fragment, [|foo|])`
+*)
+
+open Ast_helper
+open Ast_mapper
+open Asttypes
+open Parsetree
+open Longident
+
+let rec find_opt p = function
+  | [] -> None
+  | x :: l -> if p x then Some x else find_opt p l
+
+
+# 49 "syntax/reactjs_jsx_ppx.cppo.ml"
+let nolabel = Nolabel
+let labelled str = Labelled str
+let optional str = Optional str
+let isOptional str = match str with
+| Optional _ -> true
+| _ -> false
+let isLabelled str = match str with
+| Labelled _ -> true
+| _ -> false
+let getLabel str = match str with
+| Optional str | Labelled str -> str
+| Nolabel -> ""
+let optionIdent = Lident "option"
+
+let argIsKeyRef = function
+  | (Labelled ("key" | "ref"), _) | (Optional ("key" | "ref"), _) -> true
+  | _ -> false
+let constantString ~loc str = Ast_helper.Exp.constant ~loc (Pconst_string (str, None))
+
+# 84 "syntax/reactjs_jsx_ppx.cppo.ml"
+let safeTypeFromValue valueStr =
+let valueStr = getLabel valueStr in
+match String.sub valueStr 0 1 with
+| "_" -> "T" ^ valueStr
+| _ -> valueStr
+let keyType loc = Typ.constr ~loc {loc; txt=optionIdent} [Typ.constr ~loc {loc; txt=Lident "string"} []]
+
+type 'a children = | ListLiteral of 'a | Exact of 'a
+type componentConfig = {
+  propsName: string;
+}
+
+(* if children is a list, convert it to an array while mapping each element. If not, just map over it, as usual *)
+let transformChildrenIfListUpper ~loc ~mapper theList =
+  let rec transformChildren_ theList accum =
+    (* not in the sense of converting a list to an array; convert the AST
+       reprensentation of a list to the AST reprensentation of an array *)
+    match theList with
+    | {pexp_desc = Pexp_construct ({txt = Lident "[]"}, None)} -> begin
+      match accum with
+      | [singleElement] -> Exact singleElement
+      | accum -> ListLiteral (List.rev accum |> Exp.array ~loc)
+      end
+    | {pexp_desc = Pexp_construct (
+        {txt = Lident "::"},
+        Some {pexp_desc = Pexp_tuple (v::acc::[])}
+      )} ->
+      transformChildren_ acc ((mapper.expr mapper v)::accum)
+    | notAList -> Exact (mapper.expr mapper notAList)
+  in
+  transformChildren_ theList []
+
+let transformChildrenIfList ~loc ~mapper theList =
+  let rec transformChildren_ theList accum =
+    (* not in the sense of converting a list to an array; convert the AST
+       reprensentation of a list to the AST reprensentation of an array *)
+    match theList with
+    | {pexp_desc = Pexp_construct ({txt = Lident "[]"}, None)} ->
+      List.rev accum |> Exp.array ~loc
+    | {pexp_desc = Pexp_construct (
+        {txt = Lident "::"},
+        Some {pexp_desc = Pexp_tuple (v::acc::[])}
+      )} ->
+      transformChildren_ acc ((mapper.expr mapper v)::accum)
+    | notAList -> mapper.expr mapper notAList
+  in
+  transformChildren_ theList []
+
+let extractChildren ?(removeLastPositionUnit=false) ~loc propsAndChildren =
+  let rec allButLast_ lst acc = match lst with
+    | [] -> []
+    
+# 136 "syntax/reactjs_jsx_ppx.cppo.ml"
+    | (Nolabel, {pexp_desc = Pexp_construct ({txt = Lident "()"}, None)})::[] -> acc
+    | (Nolabel, _)::rest -> raise (Invalid_argument "JSX: found non-labelled argument before the last position")
+    
+# 142 "syntax/reactjs_jsx_ppx.cppo.ml"
+    | arg::rest -> allButLast_ rest (arg::acc)
+  in
+  let allButLast lst = allButLast_ lst [] |> List.rev in
+  match (List.partition (fun (label, _) -> label = labelled "children") propsAndChildren) with
+  | ([], props) ->
+    (* no children provided? Place a placeholder list *)
+    (Exp.construct ~loc {loc; txt = Lident "[]"} None, if removeLastPositionUnit then allButLast props else props)
+  | ([(_, childrenExpr)], props) ->
+    (childrenExpr, if removeLastPositionUnit then allButLast props else props)
+  | _ -> raise (Invalid_argument "JSX: somehow there's more than one `children` label")
+
+(* Helper method to look up the [@react.component] attribute *)
+let hasAttr (loc, _) =
+  loc.txt = "react.component"
+
+(* Helper method to filter out any attribute that isn't [@react.component] *)
+let otherAttrsPure (loc, _) =
+  loc.txt <> "react.component"
+
+(* Iterate over the attributes and try to find the [@react.component] attribute *)
+let hasAttrOnBinding {pvb_attributes} = find_opt hasAttr pvb_attributes <> None
+
+(* Filter the [@react.component] attribute and immutably replace them on the binding *)
+let filterAttrOnBinding binding = {binding with pvb_attributes = List.filter otherAttrsPure binding.pvb_attributes}
+
+(* Finds the name of the variable the binding is assigned to, otherwise raises Invalid_argument *)
+let getFnName binding =
+  match binding with
+  | {pvb_pat = {
+      ppat_desc = Ppat_var {txt}
+    }} -> txt
+  | _ -> raise (Invalid_argument "react.component calls cannot be destructured.")
+
+(* Lookup the value of `props` otherwise raise Invalid_argument error *)
+let getPropsNameValue _acc (loc, exp) =
+    match (loc, exp) with
+    | ({ txt = Lident "props" }, { pexp_desc = Pexp_ident {txt = Lident str} }) -> { propsName = str }
+    | ({ txt }, _) -> raise (Invalid_argument ("react.component only accepts props as an option, given: " ^ Longident.last txt))
+
+(* Lookup the `props` record or string as part of [@react.component] and store the name for use when rewriting *)
+let getPropsAttr payload =
+  let defaultProps = {propsName = "Props"} in
+  match payload with
+  | Some(PStr(
+    {pstr_desc = Pstr_eval ({
+      pexp_desc = Pexp_record (recordFields, None)
+      }, _)}::_rest
+      )) ->
+      List.fold_left getPropsNameValue defaultProps recordFields
+  | Some(PStr({pstr_desc = Pstr_eval ({pexp_desc = Pexp_ident {txt = Lident "props"}}, _)}::_rest)) -> {propsName = "props"}
+  | Some(PStr({pstr_desc = Pstr_eval (_, _)}::_rest)) -> raise (Invalid_argument ("react.component accepts a record config with props as an options."))
+  | _ -> defaultProps
+
+(* Plucks the label, loc, and type_ from an AST node *)
+let pluckLabelDefaultLocType (label, default, _, _, loc, type_) = (label, default, loc, type_)
+
+(* Lookup the filename from the location information on the AST node and turn it into a valid module identifier *)
+let filenameFromLoc (pstr_loc: Location.t) =
+  let fileName = match pstr_loc.loc_start.pos_fname with
+  | "" -> !Location.input_name
+  | fileName -> fileName
+  in
+  let fileName = try
+      Filename.chop_extension (Filename.basename fileName)
+    with | Invalid_argument _-> fileName in
+  
+# 208 "syntax/reactjs_jsx_ppx.cppo.ml"
+  let fileName = String.capitalize_ascii fileName in
+  
+# 212 "syntax/reactjs_jsx_ppx.cppo.ml"
+  fileName
+
+(* Build a string representation of a module name with segments separated by $ *)
+let makeModuleName fileName nestedModules fnName =
+  let fullModuleName = match (fileName, nestedModules, fnName) with
+  (* TODO: is this even reachable? It seems like the fileName always exists *)
+  | ("", nestedModules, "make") -> nestedModules
+  | ("", nestedModules, fnName) -> List.rev (fnName :: nestedModules)
+  | (fileName, nestedModules, "make") -> fileName :: (List.rev nestedModules)
+  | (fileName, nestedModules, fnName) -> fileName :: (List.rev (fnName :: nestedModules))
+  in
+  let fullModuleName = String.concat "$" fullModuleName in
+  fullModuleName
+
+(*
+  AST node builders
+  These functions help us build AST nodes that are needed when transforming a [@react.component] into a
+  constructor and a props external
+*)
+
+(* Build an AST node representing all named args for the `external` definition for a component's props *)
+let rec recursivelyMakeNamedArgsForExternal list args =
+  match list with
+  | (label, default, loc, interiorType)::tl ->
+    recursivelyMakeNamedArgsForExternal tl (Typ.arrow
+    ~loc
+    label
+    (match (label, interiorType, default) with
+    (* ~foo=1 *)
+    | (label, None, Some _) ->
+    
+# 243 "syntax/reactjs_jsx_ppx.cppo.ml"
+    {
+      ptyp_desc = Ptyp_var (safeTypeFromValue label);
+      ptyp_loc = loc;
+      ptyp_attributes = [];
+    }
+    
+# 259 "syntax/reactjs_jsx_ppx.cppo.ml"
+    (* ~foo: int=1 *)
+    | (label, Some type_, Some _) ->
+    
+# 262 "syntax/reactjs_jsx_ppx.cppo.ml"
+    type_
+    
+# 269 "syntax/reactjs_jsx_ppx.cppo.ml"
+    (* ~foo: option(int)=? *)
+    | (label, Some ({ptyp_desc = Ptyp_constr ({txt=(Lident "option")}, [type_])}), _)
+    | (label, Some ({ptyp_desc = Ptyp_constr ({txt=(Ldot (Lident "*predef*", "option"))}, [type_])}), _) 
+    (* ~foo: int=? - note this isnt valid. but we want to get a type error *)
+    | (label, Some type_, _) when isOptional label ->
+    
+# 275 "syntax/reactjs_jsx_ppx.cppo.ml"
+    type_
+    
+# 282 "syntax/reactjs_jsx_ppx.cppo.ml"
+    (* ~foo=? *)
+    | (label, None, _) when isOptional label -> 
+    
+# 285 "syntax/reactjs_jsx_ppx.cppo.ml"
+    {
+      ptyp_desc = Ptyp_var (safeTypeFromValue label);
+      ptyp_loc = loc;
+      ptyp_attributes = [];
+    }
+    
+# 301 "syntax/reactjs_jsx_ppx.cppo.ml"
+    (* ~foo *)
+    | (label, None, _) -> 
+    {
+      ptyp_desc = Ptyp_var (safeTypeFromValue label);
+      ptyp_loc = loc;
+      ptyp_attributes = [];
+    }
+    | (label, Some type_, _) -> 
+    type_
+    )
+    args)
+  | [] -> args
+
+(* Build an AST node for the [@bs.obj] representing props for a component *)
+let makePropsValue fnName loc namedArgListWithKeyAndRef propsType =
+  let propsName = fnName ^ "Props" in {
+  pval_name = {txt = propsName; loc};
+  pval_type =
+      recursivelyMakeNamedArgsForExternal
+        namedArgListWithKeyAndRef
+        (Typ.arrow
+          nolabel
+          {
+            ptyp_desc = Ptyp_constr ({txt= Lident("unit"); loc}, []);
+            ptyp_loc = loc;
+            ptyp_attributes = [];
+          }
+          propsType
+        );
+  pval_prim = [""];
+  pval_attributes = [({txt = "bs.obj"; loc = loc}, PStr [])];
+  pval_loc = loc;
+}
+
+(* Build an AST node representing an `external` with the definition of the [@bs.obj] *)
+let makePropsExternal fnName loc namedArgListWithKeyAndRef propsType =
+  {
+    pstr_loc = loc;
+    pstr_desc = Pstr_primitive (makePropsValue fnName loc namedArgListWithKeyAndRef propsType)
+  }
+
+(* Build an AST node for the signature of the `external` definition *)
+let makePropsExternalSig fnName loc namedArgListWithKeyAndRef propsType =
+  {
+    psig_loc = loc;
+    psig_desc = Psig_value (makePropsValue fnName loc namedArgListWithKeyAndRef propsType)
+  }
+
+(* Build an AST node for the props name when converted to a Js.t inside the function signature  *)
+let makePropsName ~loc name =
+  {
+    ppat_desc = Ppat_var {txt = name; loc};
+    ppat_loc = loc;
+    ppat_attributes = [];
+  }
+
+# 358 "syntax/reactjs_jsx_ppx.cppo.ml"
+let makeObjectField loc (str, _attrs, type_) =
+  (* intentionally not using attrs - they probably don't work on object fields. use on *Props instead *)
+  Otag ({ loc; txt = str }, [], {type_ with ptyp_attributes = []})
+
+# 363 "syntax/reactjs_jsx_ppx.cppo.ml"
+(* Build an AST node representing a "closed" Js.t object representing a component's props *)
+let makePropsType ~loc namedTypeList =
+  Typ.mk ~loc (
+    Ptyp_constr({txt= Ldot (Lident("Js"), "t"); loc}, [{
+        
+# 368 "syntax/reactjs_jsx_ppx.cppo.ml"
+        ptyp_desc = Ptyp_object(
+          List.map (makeObjectField loc) namedTypeList,
+          Closed
+        );
+        
+# 375 "syntax/reactjs_jsx_ppx.cppo.ml"
+        ptyp_loc = loc;
+        ptyp_attributes = [];
+      }])
+    )
+
+(* Builds an AST node for the entire `external` definition of props *)
+let makeExternalDecl fnName loc namedArgListWithKeyAndRef namedTypeList =
+  makePropsExternal
+    fnName
+    loc
+    (List.map pluckLabelDefaultLocType namedArgListWithKeyAndRef)
+    (makePropsType ~loc namedTypeList)
+
+(* TODO: some line number might still be wrong *)
+let jsxMapper () =
+
+  let jsxVersion = ref None in
+
+  let transformUppercaseCall3 modulePath mapper loc attrs _ callArguments =
+    let (children, argsWithLabels) = extractChildren ~loc ~removeLastPositionUnit:true callArguments in
+    let argsForMake = argsWithLabels in
+    let childrenExpr = transformChildrenIfListUpper ~loc ~mapper children in
+    let recursivelyTransformedArgsForMake = argsForMake |> List.map (fun (label, expression) -> (label, mapper.expr mapper expression)) in
+    let childrenArg = ref None in
+    let args = recursivelyTransformedArgsForMake
+      @ (match childrenExpr with
+        | Exact children -> [(labelled "children", children)]
+        | ListLiteral ({ pexp_desc = Pexp_array list }) when list = [] -> []
+        | ListLiteral expression ->
+        (* this is a hack to support react components that introspect into their children *)
+        (childrenArg := Some expression;
+        [(labelled "children", Exp.ident ~loc {loc; txt = Ldot (Lident "React", "null")})]))
+      @ [(nolabel, Exp.construct ~loc {loc; txt = Lident "()"} None)] in
+    let isCap str = let first = String.sub str 0 1 in
+    
+# 410 "syntax/reactjs_jsx_ppx.cppo.ml"
+    let capped = String.uppercase_ascii first in first = capped in
+    
+# 414 "syntax/reactjs_jsx_ppx.cppo.ml"
+    let ident = match modulePath with
+    | Lident _ -> Ldot (modulePath, "make")
+    | (Ldot (_modulePath, value) as fullPath) when isCap value -> Ldot (fullPath, "make")
+    | modulePath -> modulePath in
+    let propsIdent = match ident with
+    | Lident path -> Lident (path ^ "Props")
+    | Ldot(ident, path) -> Ldot (ident, path ^ "Props")
+    | _ -> raise (Invalid_argument "JSX name can't be the result of function applications") in
+    let props =
+    Exp.apply ~attrs ~loc (Exp.ident ~loc {loc; txt = propsIdent}) args in
+    (* handle key, ref, children *)
+      (* React.createElement(Component.make, props, ...children) *)
+    match (!childrenArg) with
+    | None ->
+      (Exp.apply
+        ~loc
+        ~attrs
+        (Exp.ident ~loc {loc; txt = Ldot (Lident "React", "createElement")})
+        ([
+          (nolabel, Exp.ident ~loc {txt = ident; loc});
+          (nolabel, props)
+        ]))
+     | Some children ->
+       (Exp.apply
+         ~loc
+         ~attrs
+         (Exp.ident ~loc {loc; txt = Ldot (Lident "React", "createElementVariadic")})
+         ([
+           (nolabel, Exp.ident ~loc {txt = ident; loc});
+           (nolabel, props);
+           (nolabel, children)
+         ]))
+     in
+
+    let transformLowercaseCall3 mapper loc attrs callArguments id =
+      let (children, nonChildrenProps) = extractChildren ~loc callArguments in
+      let componentNameExpr = constantString ~loc id in
+      let childrenExpr = transformChildrenIfList ~loc ~mapper children in
+      let createElementCall = match children with
+        (* [@JSX] div(~children=[a]), coming from <div> a </div> *)
+        | {
+            pexp_desc =
+             Pexp_construct ({txt = Lident "::"}, Some {pexp_desc = Pexp_tuple _ })
+             | Pexp_construct ({txt = Lident "[]"}, None)
+          } -> "createDOMElementVariadic"
+        (* [@JSX] div(~children= value), coming from <div> ...(value) </div> *)
+        | _ -> raise (Invalid_argument "A spread as a DOM element's \
+          children don't make sense written together. You can simply remove the spread.")
+      in
+      let args = match nonChildrenProps with
+        | [_justTheUnitArgumentAtEnd] ->
+          [
+            (* "div" *)
+            (nolabel, componentNameExpr);
+            (* [|moreCreateElementCallsHere|] *)
+            (nolabel, childrenExpr)
+          ]
+        | nonEmptyProps ->
+          let propsCall =
+            Exp.apply
+              ~loc
+              (Exp.ident ~loc {loc; txt = Ldot (Lident "ReactDOMRe", "domProps")})
+              (nonEmptyProps |> List.map (fun (label, expression) -> (label, mapper.expr mapper expression)))
+          in
+          [
+            (* "div" *)
+            (nolabel, componentNameExpr);
+            (* ReactDOMRe.props(~className=blabla, ~foo=bar, ()) *)
+            (labelled "props", propsCall);
+            (* [|moreCreateElementCallsHere|] *)
+            (nolabel, childrenExpr)
+          ] in
+      Exp.apply
+        ~loc
+        (* throw away the [@JSX] attribute and keep the others, if any *)
+        ~attrs
+        (* ReactDOMRe.createElement *)
+        (Exp.ident ~loc {loc; txt = Ldot (Lident "ReactDOMRe", createElementCall)})
+        args
+    in
+
+  let transformUppercaseCall modulePath mapper loc attrs _ callArguments =
+    let (children, argsWithLabels) = extractChildren ~loc ~removeLastPositionUnit:true callArguments in
+    let (argsKeyRef, argsForMake) = List.partition argIsKeyRef argsWithLabels in
+    let childrenExpr = transformChildrenIfList ~loc ~mapper children in
+    let recursivelyTransformedArgsForMake = argsForMake |> List.map (fun (label, expression) -> (label, mapper.expr mapper expression)) in
+    let args = recursivelyTransformedArgsForMake @ [ (nolabel, childrenExpr) ] in
+    let wrapWithReasonReactElement e = (* ReasonReact.element(~key, ~ref, ...) *)
+      Exp.apply
+        ~loc
+        (Exp.ident ~loc {loc; txt = Ldot (Lident "ReasonReact", "element")})
+        (argsKeyRef @ [(nolabel, e)]) in
+    Exp.apply
+      ~loc
+      ~attrs
+      (* Foo.make *)
+      (Exp.ident ~loc {loc; txt = Ldot (modulePath, "make")})
+      args
+    |> wrapWithReasonReactElement in
+
+  let transformLowercaseCall mapper loc attrs callArguments id =
+    let (children, nonChildrenProps) = extractChildren ~loc callArguments in
+    let componentNameExpr = constantString ~loc id in
+    let childrenExpr = transformChildrenIfList ~loc ~mapper children in
+    let createElementCall = match children with
+      (* [@JSX] div(~children=[a]), coming from <div> a </div> *)
+      | {
+          pexp_desc =
+           Pexp_construct ({txt = Lident "::"}, Some {pexp_desc = Pexp_tuple _ })
+           | Pexp_construct ({txt = Lident "[]"}, None)
+        } -> "createElement"
+      (* [@JSX] div(~children=[|a|]), coming from <div> ...[|a|] </div> *)
+      | { pexp_desc = (Pexp_array _) } ->
+        raise (Invalid_argument "A spread + an array literal as a DOM element's \
+          children would cancel each other out, and thus don't make sense written \
+          together. You can simply remove the spread and the array literal.")
+      (* [@JSX] div(~children= <div />), coming from <div> ...<div/> </div> *)
+      | {
+          pexp_attributes
+        } when pexp_attributes |> List.exists (fun (attribute, _) -> attribute.txt = "JSX") ->
+        raise (Invalid_argument "A spread + a JSX literal as a DOM element's \
+          children don't make sense written together. You can simply remove the spread.")
+      | _ -> "createElementVariadic"
+    in
+    let args = match nonChildrenProps with
+      | [_justTheUnitArgumentAtEnd] ->
+        [
+          (* "div" *)
+          (nolabel, componentNameExpr);
+          (* [|moreCreateElementCallsHere|] *)
+          (nolabel, childrenExpr)
+        ]
+      | nonEmptyProps ->
+        let propsCall =
+          Exp.apply
+            ~loc
+            (Exp.ident ~loc {loc; txt = Ldot (Lident "ReactDOMRe", "props")})
+            (nonEmptyProps |> List.map (fun (label, expression) -> (label, mapper.expr mapper expression)))
+        in
+        [
+          (* "div" *)
+          (nolabel, componentNameExpr);
+          (* ReactDOMRe.props(~className=blabla, ~foo=bar, ()) *)
+          (labelled "props", propsCall);
+          (* [|moreCreateElementCallsHere|] *)
+          (nolabel, childrenExpr)
+        ] in
+    Exp.apply
+      ~loc
+      (* throw away the [@JSX] attribute and keep the others, if any *)
+      ~attrs
+      (* ReactDOMRe.createElement *)
+      (Exp.ident ~loc {loc; txt = Ldot (Lident "ReactDOMRe", createElementCall)})
+      args
+  in
+
+  let rec recursivelyTransformNamedArgsForMake mapper expr list =
+    let expr = mapper.expr mapper expr in
+    match expr.pexp_desc with
+    (* TODO: make this show up with a loc. *)
+    
+# 575 "syntax/reactjs_jsx_ppx.cppo.ml"
+    | Pexp_fun (Labelled "key", _, _, _)
+    | Pexp_fun (Optional "key", _, _, _) -> raise (Invalid_argument "Key cannot be accessed inside of a component. Don't worry - you can always key a component from its parent!")
+    | Pexp_fun (Labelled "ref", _, _, _)
+    | Pexp_fun (Optional "ref", _, _, _) -> raise (Invalid_argument "Ref cannot be passed as a normal prop. Please use `forwardRef` API instead.")
+    
+# 585 "syntax/reactjs_jsx_ppx.cppo.ml"
+    | Pexp_fun (arg, default, pattern, expression) when isOptional arg || isLabelled arg ->
+      let alias = (match pattern with
+      | {ppat_desc = Ppat_alias (_, {txt}) | Ppat_var {txt}} -> txt
+      | {ppat_desc = Ppat_any} -> "_"
+      | _ -> getLabel arg) in
+      let type_ = (match pattern with
+      | {ppat_desc = Ppat_constraint (_, type_)} -> Some type_
+      | _ -> None) in
+
+      recursivelyTransformNamedArgsForMake mapper expression ((arg, default, pattern, alias, pattern.ppat_loc, type_) :: list)
+    
+# 596 "syntax/reactjs_jsx_ppx.cppo.ml"
+    | Pexp_fun (Nolabel, _, { ppat_desc = (Ppat_construct ({txt = Lident "()"}, _) | Ppat_any)}, expression) ->
+        (expression.pexp_desc, list, None)
+    | Pexp_fun (Nolabel, _, { ppat_desc = Ppat_var ({txt})}, expression) ->
+        (expression.pexp_desc, list, Some txt)
+    
+# 606 "syntax/reactjs_jsx_ppx.cppo.ml"
+    | innerExpression -> (innerExpression, list, None)
+  in
+
+
+  let argToType types (name, default, _noLabelName, _alias, loc, type_) = match (type_, name, default) with
+    | (Some ({ptyp_desc = Ptyp_constr ({txt=(Lident "option")}, [type_])}), name, _) when isOptional name ->
+      (getLabel name, [], {
+        type_ with
+        ptyp_desc = Ptyp_constr ({loc=type_.ptyp_loc; txt=optionIdent}, [type_]);
+      }) :: types
+    | (Some type_, name, Some _default) ->
+      (getLabel name, [], {
+      ptyp_desc = Ptyp_constr ({loc; txt=optionIdent}, [type_]);
+      ptyp_loc = loc;
+      ptyp_attributes = [];
+      }) :: types
+    | (Some type_, name, _) ->
+      (getLabel name, [], type_) :: types
+    | (None, name, _) when isOptional name ->
+      (getLabel name, [], {
+        ptyp_desc = Ptyp_constr ({loc; txt=optionIdent}, [{
+          ptyp_desc = Ptyp_var (safeTypeFromValue name);
+          ptyp_loc = loc;
+          ptyp_attributes = [];
+        }]);
+        ptyp_loc = loc;
+        ptyp_attributes = [];
+        }) :: types
+    | (None, name, _) when isLabelled name ->
+      (getLabel name, [], {
+        ptyp_desc = Ptyp_var (safeTypeFromValue name);
+        ptyp_loc = loc;
+        ptyp_attributes = [];
+        }) :: types
+    | _ -> types
+  in
+
+  let argToConcreteType types (name, _loc, type_) = match name with
+    | name when isLabelled name || isOptional name ->
+    (getLabel name, [], type_) :: types
+    (* return value *)
+    | _ -> types
+  in
+
+  let nestedModules = ref([]) in
+  let transformComponentDefinition mapper structure returnStructures = match structure with
+  (* external *)
+  | ({
+      pstr_loc;
+      pstr_desc = Pstr_primitive ({
+        pval_name = { txt = fnName };
+        pval_attributes;
+        pval_type;
+      } as value_description)
+    } as pstr) ->
+    (match List.filter hasAttr pval_attributes with
+    | [] -> structure :: returnStructures
+    | [_] ->
+    let rec getPropTypes types ({ptyp_loc; ptyp_desc} as fullType) =
+      (match ptyp_desc with
+      | Ptyp_arrow (name, type_, ({ptyp_desc = Ptyp_arrow _} as rest)) when isLabelled name || isOptional name ->
+        getPropTypes ((name, ptyp_loc, type_)::types) rest
+      
+# 669 "syntax/reactjs_jsx_ppx.cppo.ml"
+      | Ptyp_arrow (Nolabel, _type, rest) ->
+        
+# 673 "syntax/reactjs_jsx_ppx.cppo.ml"
+        getPropTypes types rest
+      | Ptyp_arrow (name, type_, returnValue) when isLabelled name || isOptional name ->
+        (returnValue, (name, returnValue.ptyp_loc, type_)::types)
+      | _ -> (fullType, types))
+    in
+    let (innerType, propTypes) = getPropTypes [] pval_type in
+    let namedTypeList = List.fold_left argToConcreteType [] propTypes in
+    let pluckLabelAndLoc (label, loc, type_) = (label, None (* default *), loc, Some type_) in
+    let retPropsType = makePropsType ~loc:pstr_loc namedTypeList in
+    let externalPropsDecl = makePropsExternal fnName pstr_loc ((
+      optional "key",
+      None,
+      pstr_loc,
+      Some(keyType pstr_loc)
+    ) :: List.map pluckLabelAndLoc propTypes) retPropsType in
+    (* can't be an arrow because it will defensively uncurry *)
+    let newExternalType = Ptyp_constr (
+      {loc = pstr_loc; txt = Ldot ((Lident "React"), "componentLike")},
+      [retPropsType; innerType]
+    ) in
+    let newStructure = {
+      pstr with pstr_desc = Pstr_primitive {
+        value_description with pval_type = {
+          pval_type with ptyp_desc = newExternalType;
+        };
+        pval_attributes = List.filter otherAttrsPure pval_attributes;
+      }
+    } in
+    externalPropsDecl :: newStructure :: returnStructures
+    | _ -> raise (Invalid_argument "Only one react.component call can exist on a component at one time"))
+  (* let component = ... *)
+  | {
+      pstr_loc;
+      pstr_desc = Pstr_value (
+        recFlag,
+        valueBindings
+      )
+    } ->
+      let mapBinding binding = if (hasAttrOnBinding binding) then
+        let fnName = getFnName binding in
+        let fileName = filenameFromLoc pstr_loc in
+        let fullModuleName = makeModuleName fileName !nestedModules fnName in
+        let emptyLoc = Location.in_file fileName in
+        let modifiedBinding binding =
+          let expression = binding.pvb_expr in
+          let wrapExpressionWithBinding expressionFn expression = {(filterAttrOnBinding binding) with pvb_expr = expressionFn expression} in
+          (* TODO: there is a long-tail of unsupported features inside of blocks - Pexp_letmodule , Pexp_letexception , Pexp_ifthenelse *)
+          let rec spelunkForFunExpression expression = (match expression with
+          (* let make = (~prop) => ... *)
+          | {
+            pexp_desc = Pexp_fun _
+          } -> ((fun expressionDesc -> {expression with pexp_desc = expressionDesc}), expression)
+          (* let make = {let foo = bar in (~prop) => ...} *)
+          | {
+              pexp_desc = Pexp_let (recursive, vbs, returnExpression)
+            } ->
+            (* here's where we spelunk! *)
+            let (wrapExpression, realReturnExpression) = spelunkForFunExpression returnExpression in
+            ((fun expressionDesc -> {expression with pexp_desc = Pexp_let (recursive, vbs, wrapExpression expressionDesc)}), realReturnExpression)
+          (* let make = React.forwardRef((~prop) => ...) *)
+          
+# 734 "syntax/reactjs_jsx_ppx.cppo.ml"
+          | { pexp_desc = Pexp_apply (wrapperExpression, [(Nolabel, innerFunctionExpression)]) } ->
+            
+# 738 "syntax/reactjs_jsx_ppx.cppo.ml"
+            let (wrapExpression, realReturnExpression) = spelunkForFunExpression innerFunctionExpression in
+            ((fun expressionDesc -> {
+              expression with pexp_desc =
+                Pexp_apply (wrapperExpression, [(nolabel, wrapExpression expressionDesc)])
+              }),
+              realReturnExpression
+            )
+          | {
+              pexp_desc = Pexp_sequence (wrapperExpression, innerFunctionExpression)
+            } ->
+            let (wrapExpression, realReturnExpression) = spelunkForFunExpression innerFunctionExpression in
+            ((fun expressionDesc -> {
+              expression with pexp_desc =
+                Pexp_sequence (wrapperExpression, wrapExpression expressionDesc)
+              }),
+              realReturnExpression
+            )
+          | _ -> raise (Invalid_argument "react.component calls can only be on function definitions or component wrappers (forwardRef, memo).")
+          ) in
+          let (wrapExpression, expression) = spelunkForFunExpression expression in
+          (wrapExpressionWithBinding wrapExpression, expression)
+        in
+        let (bindingWrapper, expression) = modifiedBinding binding in
+        let reactComponentAttribute = try
+          Some(List.find hasAttr binding.pvb_attributes)
+        with | Not_found -> None in
+        let (attr_loc, payload) = match reactComponentAttribute with
+        | Some (loc, payload) -> (loc.loc, Some payload)
+        | None -> (emptyLoc, None) in
+        let props = getPropsAttr payload in
+        (* do stuff here! *)
+        let (innerFunctionExpression, namedArgList, forwardRef) = recursivelyTransformNamedArgsForMake mapper expression [] in
+        let namedArgListWithKeyAndRef = (optional("key"), None, Pat.var {txt = "key"; loc = emptyLoc}, "key", emptyLoc, Some(keyType emptyLoc)) :: namedArgList in
+        let namedArgListWithKeyAndRef = match forwardRef with
+        | Some(_) ->  (optional("ref"), None, Pat.var {txt = "key"; loc = emptyLoc}, "ref", emptyLoc, None) :: namedArgListWithKeyAndRef
+        | None -> namedArgListWithKeyAndRef
+        in
+        let namedTypeList = List.fold_left argToType [] namedArgList in
+        let externalDecl = makeExternalDecl fnName attr_loc namedArgListWithKeyAndRef namedTypeList in
+        let makeLet innerExpression (label, default, pattern, _alias, loc, _type) =
+          let labelString = (match label with | label when isOptional label || isLabelled label -> getLabel label | _ -> raise (Invalid_argument "This should never happen")) in
+          let expression = (Exp.apply ~loc
+            (Exp.ident ~loc {txt = (Lident "##"); loc })
+            [
+              (nolabel, Exp.ident ~loc {txt = (Lident props.propsName); loc });
+              (nolabel, Exp.ident ~loc {
+                txt = (Lident labelString);
+                loc
+              })
+            ]
+          ) in
+          let expression = match (default) with
+          | (Some default) -> Exp.match_ expression [
+            Exp.case
+              (Pat.construct {loc; txt=Lident "Some"} (Some (Pat.var ~loc {txt = labelString; loc})))
+              (Exp.ident ~loc {txt = (Lident labelString); loc});
+            Exp.case
+              (Pat.construct {loc; txt=Lident "None"} None)
+              default
+          ]
+          | None -> expression in
+          let letExpression = Vb.mk
+            pattern
+            expression in
+          Exp.let_ ~loc Nonrecursive [letExpression] innerExpression in
+        let innerExpression = List.fold_left makeLet (Exp.mk innerFunctionExpression) namedArgList in
+        let innerExpressionWithRef = match (forwardRef) with
+        | Some txt ->
+          {innerExpression with pexp_desc = Pexp_fun (nolabel, None, {
+            ppat_desc = Ppat_var { txt; loc = emptyLoc };
+            ppat_loc = emptyLoc;
+            ppat_attributes = [];
+          }, innerExpression)}
+        | None -> innerExpression
+        in
+        let fullExpression = (Pexp_fun (
+          nolabel,
+          None,
+          {
+            ppat_desc = Ppat_constraint (
+              makePropsName ~loc:emptyLoc props.propsName,
+              makePropsType ~loc:emptyLoc namedTypeList
+            );
+            ppat_loc = emptyLoc;
+            ppat_attributes = [];
+          },
+          innerExpressionWithRef
+        )) in
+        let fullExpression = match (fullModuleName) with
+        | ("") -> fullExpression
+        | (txt) -> Pexp_let (
+            Nonrecursive,
+            [Vb.mk
+              ~loc:emptyLoc
+              (Pat.var ~loc:emptyLoc {loc = emptyLoc; txt})
+              (Exp.mk ~loc:emptyLoc fullExpression)
+            ],
+            (Exp.ident ~loc:emptyLoc {loc = emptyLoc; txt = Lident txt})
+          )
+        in
+        let newBinding = bindingWrapper fullExpression in
+        (Some externalDecl, newBinding)
+      else
+        (None, binding)
+      in
+      let structuresAndBinding = List.map mapBinding valueBindings in
+      let otherStructures (extern, binding) (externs, bindings) =
+        let externs = match extern with
+        | Some extern -> extern :: externs
+        | None -> externs in
+        (externs, binding :: bindings)
+      in
+      let (externs, bindings) = List.fold_right otherStructures structuresAndBinding ([], []) in
+      externs @ {
+        pstr_loc;
+        pstr_desc = Pstr_value (
+          recFlag,
+          bindings
+        )
+      } :: returnStructures
+    | structure -> structure :: returnStructures in
+
+  let reactComponentTransform mapper structures =
+  List.fold_right (transformComponentDefinition mapper) structures [] in
+
+  let transformComponentSignature _mapper signature returnSignatures = match signature with
+  | ({
+      psig_loc;
+      psig_desc = Psig_value ({
+        pval_name = { txt = fnName };
+        pval_attributes;
+        pval_type;
+      } as psig_desc)
+    } as psig) ->
+    (match List.filter hasAttr pval_attributes with
+    | [] -> signature :: returnSignatures
+    | [_] ->
+    let rec getPropTypes types ({ptyp_loc; ptyp_desc} as fullType) =
+      (match ptyp_desc with
+      | Ptyp_arrow (name, type_, ({ptyp_desc = Ptyp_arrow _} as rest)) when isOptional name || isLabelled name ->
+        getPropTypes ((name, ptyp_loc, type_)::types) rest
+      
+# 880 "syntax/reactjs_jsx_ppx.cppo.ml"
+      | Ptyp_arrow (Nolabel, _type, rest) ->
+        
+# 884 "syntax/reactjs_jsx_ppx.cppo.ml"
+        getPropTypes types rest
+      | Ptyp_arrow (name, type_, returnValue) when isOptional name || isLabelled name ->
+        (returnValue, (name, returnValue.ptyp_loc, type_)::types)
+      | _ -> (fullType, types))
+    in
+    let (innerType, propTypes) = getPropTypes [] pval_type in
+    let namedTypeList = List.fold_left argToConcreteType [] propTypes in
+    let pluckLabelAndLoc (label, loc, type_) = (label, None, loc, Some type_) in
+    let retPropsType = makePropsType ~loc:psig_loc namedTypeList in
+    let externalPropsDecl = makePropsExternalSig fnName psig_loc ((
+      optional "key",
+      None,
+      psig_loc,
+      Some(keyType psig_loc)
+    ) :: List.map pluckLabelAndLoc propTypes) retPropsType in
+        (* can't be an arrow because it will defensively uncurry *)
+    let newExternalType = Ptyp_constr (
+      {loc = psig_loc; txt = Ldot ((Lident "React"), "componentLike")},
+      [retPropsType; innerType]
+    ) in
+    let newStructure = {
+      psig with psig_desc = Psig_value {
+        psig_desc with pval_type = {
+          pval_type with ptyp_desc = newExternalType;
+        };
+        pval_attributes = List.filter otherAttrsPure pval_attributes;
+      }
+    } in
+    externalPropsDecl :: newStructure :: returnSignatures
+    | _ -> raise (Invalid_argument "Only one react.component call can exist on a component at one time"))
+  | signature -> signature :: returnSignatures in
+
+  let reactComponentSignatureTransform mapper signatures =
+  List.fold_right (transformComponentSignature mapper) signatures [] in
+
+
+  let transformJsxCall mapper callExpression callArguments attrs =
+    (match callExpression.pexp_desc with
+     | Pexp_ident caller ->
+       (match caller with
+        | {txt = Lident "createElement"} ->
+          raise (Invalid_argument "JSX: `createElement` should be preceeded by a module name.")
+
+        (* Foo.createElement(~prop1=foo, ~prop2=bar, ~children=[], ()) *)
+        | {loc; txt = Ldot (modulePath, ("createElement" | "make"))} ->
+          (match !jsxVersion with
+          
+# 931 "syntax/reactjs_jsx_ppx.cppo.ml"
+          | None
+          | Some 2 -> transformUppercaseCall modulePath mapper loc attrs callExpression callArguments
+          
+# 937 "syntax/reactjs_jsx_ppx.cppo.ml"
+          | Some 3 -> transformUppercaseCall3 modulePath mapper loc attrs callExpression callArguments
+          | Some _ -> raise (Invalid_argument "JSX: the JSX version must be 2 or 3"))
+
+        (* div(~prop1=foo, ~prop2=bar, ~children=[bla], ()) *)
+        (* turn that into
+          ReactDOMRe.createElement(~props=ReactDOMRe.props(~props1=foo, ~props2=bar, ()), [|bla|]) *)
+        | {loc; txt = Lident id} ->
+          (match !jsxVersion with
+          
+# 946 "syntax/reactjs_jsx_ppx.cppo.ml"
+          | None
+          | Some 2 -> transformLowercaseCall mapper loc attrs callArguments id
+          
+# 952 "syntax/reactjs_jsx_ppx.cppo.ml"
+          | Some 3 -> transformLowercaseCall3 mapper loc attrs callArguments id
+          | Some _ -> raise (Invalid_argument "JSX: the JSX version must be 2 or 3"))
+
+        | {txt = Ldot (_, anythingNotCreateElementOrMake)} ->
+          raise (
+            Invalid_argument
+              ("JSX: the JSX attribute should be attached to a `YourModuleName.createElement` or `YourModuleName.make` call. We saw `"
+               ^ anythingNotCreateElementOrMake
+               ^ "` instead"
+              )
+          )
+
+        | {txt = Lapply _} ->
+          (* don't think there's ever a case where this is reached *)
+          raise (
+            Invalid_argument "JSX: encountered a weird case while processing the code. Please report this!"
+          )
+       )
+     | _ ->
+       raise (
+         Invalid_argument "JSX: `createElement` should be preceeded by a simple, direct module name."
+       )
+    ) in
+
+  let signature =
+    (fun mapper signature -> default_mapper.signature mapper @@ reactComponentSignatureTransform mapper signature) in
+
+  let structure =
+    (fun mapper structure -> match structure with
+      (*
+        match against [@bs.config {foo, jsx: ...}] at the file-level. This
+        indicates which version of JSX we're using. This code stays here because
+        we used to have 2 versions of JSX PPX (and likely will again in the
+        future when JSX PPX changes). So the architecture for switching between
+        JSX behavior stayed here. To create a new JSX ppx, copy paste this
+        entire file and change the relevant parts.
+        Description of architecture: in bucklescript's bsconfig.json, you can
+        specify a project-wide JSX version. You can also specify a file-level
+        JSX version. This degree of freedom allows a person to convert a project
+        one file at time onto the new JSX, when it was released. It also enabled
+        a project to depend on a third-party which is still using an old version
+        of JSX
+      *)
+      | {
+          pstr_loc;
+          pstr_desc = Pstr_attribute (
+            ({txt = "bs.config"} as bsConfigLabel),
+            PStr [{pstr_desc = Pstr_eval ({pexp_desc = Pexp_record (recordFields, b)} as innerConfigRecord, a)} as configRecord]
+          )
+        }::restOfStructure -> begin
+          let (jsxField, recordFieldsWithoutJsx) = recordFields |> List.partition (fun ({txt}, _) -> txt = Lident "jsx") in
+          match (jsxField, recordFieldsWithoutJsx) with
+          (* no file-level jsx config found *)
+          | ([], _) -> default_mapper.structure mapper structure
+          (* {jsx: 2} *)
+          
+# 1008 "syntax/reactjs_jsx_ppx.cppo.ml"
+          | ((_, {pexp_desc = Pexp_constant (Pconst_integer (version, None))})::rest, recordFieldsWithoutJsx) -> begin
+              
+# 1012 "syntax/reactjs_jsx_ppx.cppo.ml"
+              (match version with
+              
+# 1014 "syntax/reactjs_jsx_ppx.cppo.ml"
+              | "2" -> jsxVersion := Some 2
+              | "3" -> jsxVersion := Some 3
+              
+# 1020 "syntax/reactjs_jsx_ppx.cppo.ml"
+              | _ -> raise (Invalid_argument "JSX: the file-level bs.config's jsx version must be 2 or 3"));
+              match recordFieldsWithoutJsx with
+              (* record empty now, remove the whole bs.config attribute *)
+              | [] -> default_mapper.structure mapper @@ reactComponentTransform mapper restOfStructure
+              | fields -> default_mapper.structure mapper ({
+                pstr_loc;
+                pstr_desc = Pstr_attribute (
+                  bsConfigLabel,
+                  PStr [{configRecord with pstr_desc = Pstr_eval ({innerConfigRecord with pexp_desc = Pexp_record (fields, b)}, a)}]
+                )
+              }::(reactComponentTransform mapper restOfStructure))
+            end
+        | _ -> raise (Invalid_argument "JSX: the file-level bs.config's {jsx: ...} config accepts only a version number")
+      end
+      | structures -> begin
+        default_mapper.structure mapper @@ reactComponentTransform mapper structures
+      end
+    ) in
+
+  let expr =
+    (fun mapper expression -> match expression with
+       (* Does the function application have the @JSX attribute? *)
+       | {
+           pexp_desc = Pexp_apply (callExpression, callArguments);
+           pexp_attributes
+         } ->
+         let (jsxAttribute, nonJSXAttributes) = List.partition (fun (attribute, _) -> attribute.txt = "JSX") pexp_attributes in
+         (match (jsxAttribute, nonJSXAttributes) with
+         (* no JSX attribute *)
+         | ([], _) -> default_mapper.expr mapper expression
+         | (_, nonJSXAttributes) -> transformJsxCall mapper callExpression callArguments nonJSXAttributes)
+
+       (* is it a list with jsx attribute? Reason <>foo</> desugars to [@JSX][foo]*)
+       | {
+           pexp_desc =
+            Pexp_construct ({txt = Lident "::"; loc}, Some {pexp_desc = Pexp_tuple _})
+            | Pexp_construct ({txt = Lident "[]"; loc}, None);
+           pexp_attributes
+         } as listItems ->
+          let (jsxAttribute, nonJSXAttributes) = List.partition (fun (attribute, _) -> attribute.txt = "JSX") pexp_attributes in
+          (match (jsxAttribute, nonJSXAttributes) with
+          (* no JSX attribute *)
+          | ([], _) -> default_mapper.expr mapper expression
+          | (_, nonJSXAttributes) ->
+            let fragment = Exp.ident ~loc {loc; txt = Ldot (Lident "ReasonReact", "fragment")} in
+            let childrenExpr = transformChildrenIfList ~loc ~mapper listItems in
+            let args = [
+              (* "div" *)
+              (nolabel, fragment);
+              (* [|moreCreateElementCallsHere|] *)
+              (nolabel, childrenExpr)
+            ] in
+            Exp.apply
+              ~loc
+              (* throw away the [@JSX] attribute and keep the others, if any *)
+              ~attrs:nonJSXAttributes
+              (* ReactDOMRe.createElement *)
+              (Exp.ident ~loc {loc; txt = Ldot (Lident "ReactDOMRe", "createElement")})
+              args
+         )
+       (* Delegate to the default mapper, a deep identity traversal *)
+       | e -> default_mapper.expr mapper e) in
+
+  let module_binding =
+    (fun mapper module_binding ->
+      let _ = nestedModules := module_binding.pmb_name.txt :: !nestedModules in
+      let mapped = default_mapper.module_binding mapper module_binding in
+      let _ = nestedModules := List.tl !nestedModules in
+      mapped
+    ) in
+
+  { default_mapper with structure; expr; signature; module_binding; }
+
+let mapper = jsxMapper () 
+
+let rewrite_implementation (code: Parsetree.structure) : Parsetree.structure =
+  mapper.structure mapper code
+let rewrite_signature (code : Parsetree.signature) : Parsetree.signature = 
+  mapper.signature mapper code 
+
+
+end
+module Reactjs_jsx_ppx_v3
+= struct
+#1 "reactjs_jsx_ppx_v3.ml"
+# 1 "syntax/reactjs_jsx_ppx.cppo.ml"
+(*
+  This is the file that handles turning Reason JSX' agnostic function call into
+  a ReasonReact-specific function call. Aka, this is a macro, using OCaml's ppx
+  facilities; https://whitequark.org/blog/2014/04/16/a-guide-to-extension-
+  points-in-ocaml/
+  You wouldn't use this file directly; it's used by BuckleScript's
+  bsconfig.json. Specifically, there's a field called `react-jsx` inside the
+  field `reason`, which enables this ppx through some internal call in bsb
+*)
+
+(*
+  There are two different transforms that can be selected in this file (v2 and v3):
+  v2:
+  transform `[@JSX] div(~props1=a, ~props2=b, ~children=[foo, bar], ())` into
+  `ReactDOMRe.createElement("div", ~props={"props1": 1, "props2": b}, [|foo,
+  bar|])`.
+  transform `[@JSX] div(~props1=a, ~props2=b, ~children=foo, ())` into
+  `ReactDOMRe.createElementVariadic("div", ~props={"props1": 1, "props2": b}, foo)`.
+  transform the upper-cased case
+  `[@JSX] Foo.createElement(~key=a, ~ref=b, ~foo=bar, ~children=[], ())` into
+  `ReasonReact.element(~key=a, ~ref=b, Foo.make(~foo=bar, [||]))`
+  transform `[@JSX] [foo]` into
+  `ReactDOMRe.createElement(ReasonReact.fragment, [|foo|])`
+  v3:
+  transform `[@JSX] div(~props1=a, ~props2=b, ~children=[foo, bar], ())` into
+  `ReactDOMRe.createDOMElementVariadic("div", ReactDOMRe.domProps(~props1=1, ~props2=b), [|foo, bar|])`.
+  transform the upper-cased case
+  `[@JSX] Foo.createElement(~key=a, ~ref=b, ~foo=bar, ~children=[], ())` into
+  `React.createElement(Foo.make, Foo.makeProps(~key=a, ~ref=b, ~foo=bar, ()))`
+  transform the upper-cased case
+  `[@JSX] Foo.createElement(~foo=bar, ~children=[foo, bar], ())` into
+  `React.createElementVariadic(Foo.make, Foo.makeProps(~foo=bar, ~children=React.null, ()), [|foo, bar|])`
+  transform `[@JSX] [foo]` into
+  `ReactDOMRe.createElement(ReasonReact.fragment, [|foo|])`
+*)
+
+open Ast_helper
+open Ast_mapper
+open Asttypes
+open Parsetree
+open Longident
+
+let rec find_opt p = function
+  | [] -> None
+  | x :: l -> if p x then Some x else find_opt p l
+
+
+# 49 "syntax/reactjs_jsx_ppx.cppo.ml"
+let nolabel = Nolabel
+let labelled str = Labelled str
+let optional str = Optional str
+let isOptional str = match str with
+| Optional _ -> true
+| _ -> false
+let isLabelled str = match str with
+| Labelled _ -> true
+| _ -> false
+let getLabel str = match str with
+| Optional str | Labelled str -> str
+| Nolabel -> ""
+let optionIdent = Lident "option"
+
+let argIsKeyRef = function
+  | (Labelled ("key" | "ref"), _) | (Optional ("key" | "ref"), _) -> true
+  | _ -> false
+let constantString ~loc str = Ast_helper.Exp.constant ~loc (Pconst_string (str, None))
+
+# 84 "syntax/reactjs_jsx_ppx.cppo.ml"
+let safeTypeFromValue valueStr =
+let valueStr = getLabel valueStr in
+match String.sub valueStr 0 1 with
+| "_" -> "T" ^ valueStr
+| _ -> valueStr
+let keyType loc = Typ.constr ~loc {loc; txt=optionIdent} [Typ.constr ~loc {loc; txt=Lident "string"} []]
+
+type 'a children = | ListLiteral of 'a | Exact of 'a
+type componentConfig = {
+  propsName: string;
+}
+
+(* if children is a list, convert it to an array while mapping each element. If not, just map over it, as usual *)
+let transformChildrenIfListUpper ~loc ~mapper theList =
+  let rec transformChildren_ theList accum =
+    (* not in the sense of converting a list to an array; convert the AST
+       reprensentation of a list to the AST reprensentation of an array *)
+    match theList with
+    | {pexp_desc = Pexp_construct ({txt = Lident "[]"}, None)} -> begin
+      match accum with
+      | [singleElement] -> Exact singleElement
+      | accum -> ListLiteral (List.rev accum |> Exp.array ~loc)
+      end
+    | {pexp_desc = Pexp_construct (
+        {txt = Lident "::"},
+        Some {pexp_desc = Pexp_tuple (v::acc::[])}
+      )} ->
+      transformChildren_ acc ((mapper.expr mapper v)::accum)
+    | notAList -> Exact (mapper.expr mapper notAList)
+  in
+  transformChildren_ theList []
+
+let transformChildrenIfList ~loc ~mapper theList =
+  let rec transformChildren_ theList accum =
+    (* not in the sense of converting a list to an array; convert the AST
+       reprensentation of a list to the AST reprensentation of an array *)
+    match theList with
+    | {pexp_desc = Pexp_construct ({txt = Lident "[]"}, None)} ->
+      List.rev accum |> Exp.array ~loc
+    | {pexp_desc = Pexp_construct (
+        {txt = Lident "::"},
+        Some {pexp_desc = Pexp_tuple (v::acc::[])}
+      )} ->
+      transformChildren_ acc ((mapper.expr mapper v)::accum)
+    | notAList -> mapper.expr mapper notAList
+  in
+  transformChildren_ theList []
+
+let extractChildren ?(removeLastPositionUnit=false) ~loc propsAndChildren =
+  let rec allButLast_ lst acc = match lst with
+    | [] -> []
+    
+# 136 "syntax/reactjs_jsx_ppx.cppo.ml"
+    | (Nolabel, {pexp_desc = Pexp_construct ({txt = Lident "()"}, None)})::[] -> acc
+    | (Nolabel, _)::rest -> raise (Invalid_argument "JSX: found non-labelled argument before the last position")
+    
+# 142 "syntax/reactjs_jsx_ppx.cppo.ml"
+    | arg::rest -> allButLast_ rest (arg::acc)
+  in
+  let allButLast lst = allButLast_ lst [] |> List.rev in
+  match (List.partition (fun (label, _) -> label = labelled "children") propsAndChildren) with
+  | ([], props) ->
+    (* no children provided? Place a placeholder list *)
+    (Exp.construct ~loc {loc; txt = Lident "[]"} None, if removeLastPositionUnit then allButLast props else props)
+  | ([(_, childrenExpr)], props) ->
+    (childrenExpr, if removeLastPositionUnit then allButLast props else props)
+  | _ -> raise (Invalid_argument "JSX: somehow there's more than one `children` label")
+
+(* Helper method to look up the [@react.component] attribute *)
+let hasAttr (loc, _) =
+  loc.txt = "react.component"
+
+(* Helper method to filter out any attribute that isn't [@react.component] *)
+let otherAttrsPure (loc, _) =
+  loc.txt <> "react.component"
+
+(* Iterate over the attributes and try to find the [@react.component] attribute *)
+let hasAttrOnBinding {pvb_attributes} = find_opt hasAttr pvb_attributes <> None
+
+(* Filter the [@react.component] attribute and immutably replace them on the binding *)
+let filterAttrOnBinding binding = {binding with pvb_attributes = List.filter otherAttrsPure binding.pvb_attributes}
+
+(* Finds the name of the variable the binding is assigned to, otherwise raises Invalid_argument *)
+let getFnName binding =
+  match binding with
+  | {pvb_pat = {
+      ppat_desc = Ppat_var {txt}
+    }} -> txt
+  | _ -> raise (Invalid_argument "react.component calls cannot be destructured.")
+
+(* Lookup the value of `props` otherwise raise Invalid_argument error *)
+let getPropsNameValue _acc (loc, exp) =
+    match (loc, exp) with
+    | ({ txt = Lident "props" }, { pexp_desc = Pexp_ident {txt = Lident str} }) -> { propsName = str }
+    | ({ txt }, _) -> raise (Invalid_argument ("react.component only accepts props as an option, given: " ^ Longident.last txt))
+
+(* Lookup the `props` record or string as part of [@react.component] and store the name for use when rewriting *)
+let getPropsAttr payload =
+  let defaultProps = {propsName = "Props"} in
+  match payload with
+  | Some(PStr(
+    {pstr_desc = Pstr_eval ({
+      pexp_desc = Pexp_record (recordFields, None)
+      }, _)}::_rest
+      )) ->
+      List.fold_left getPropsNameValue defaultProps recordFields
+  | Some(PStr({pstr_desc = Pstr_eval ({pexp_desc = Pexp_ident {txt = Lident "props"}}, _)}::_rest)) -> {propsName = "props"}
+  | Some(PStr({pstr_desc = Pstr_eval (_, _)}::_rest)) -> raise (Invalid_argument ("react.component accepts a record config with props as an options."))
+  | _ -> defaultProps
+
+(* Plucks the label, loc, and type_ from an AST node *)
+let pluckLabelDefaultLocType (label, default, _, _, loc, type_) = (label, default, loc, type_)
+
+(* Lookup the filename from the location information on the AST node and turn it into a valid module identifier *)
+let filenameFromLoc (pstr_loc: Location.t) =
+  let fileName = match pstr_loc.loc_start.pos_fname with
+  | "" -> !Location.input_name
+  | fileName -> fileName
+  in
+  let fileName = try
+      Filename.chop_extension (Filename.basename fileName)
+    with | Invalid_argument _-> fileName in
+  
+# 208 "syntax/reactjs_jsx_ppx.cppo.ml"
+  let fileName = String.capitalize_ascii fileName in
+  
+# 212 "syntax/reactjs_jsx_ppx.cppo.ml"
+  fileName
+
+(* Build a string representation of a module name with segments separated by $ *)
+let makeModuleName fileName nestedModules fnName =
+  let fullModuleName = match (fileName, nestedModules, fnName) with
+  (* TODO: is this even reachable? It seems like the fileName always exists *)
+  | ("", nestedModules, "make") -> nestedModules
+  | ("", nestedModules, fnName) -> List.rev (fnName :: nestedModules)
+  | (fileName, nestedModules, "make") -> fileName :: (List.rev nestedModules)
+  | (fileName, nestedModules, fnName) -> fileName :: (List.rev (fnName :: nestedModules))
+  in
+  let fullModuleName = String.concat "$" fullModuleName in
+  fullModuleName
+
+(*
+  AST node builders
+  These functions help us build AST nodes that are needed when transforming a [@react.component] into a
+  constructor and a props external
+*)
+
+(* Build an AST node representing all named args for the `external` definition for a component's props *)
+let rec recursivelyMakeNamedArgsForExternal list args =
+  match list with
+  | (label, default, loc, interiorType)::tl ->
+    recursivelyMakeNamedArgsForExternal tl (Typ.arrow
+    ~loc
+    label
+    (match (label, interiorType, default) with
+    (* ~foo=1 *)
+    | (label, None, Some _) ->
+    
+# 243 "syntax/reactjs_jsx_ppx.cppo.ml"
+    {
+      ptyp_desc = Ptyp_var (safeTypeFromValue label);
+      ptyp_loc = loc;
+      ptyp_attributes = [];
+    }
+    
+# 259 "syntax/reactjs_jsx_ppx.cppo.ml"
+    (* ~foo: int=1 *)
+    | (label, Some type_, Some _) ->
+    
+# 262 "syntax/reactjs_jsx_ppx.cppo.ml"
+    type_
+    
+# 269 "syntax/reactjs_jsx_ppx.cppo.ml"
+    (* ~foo: option(int)=? *)
+    | (label, Some ({ptyp_desc = Ptyp_constr ({txt=(Lident "option")}, [type_])}), _)
+    | (label, Some ({ptyp_desc = Ptyp_constr ({txt=(Ldot (Lident "*predef*", "option"))}, [type_])}), _) 
+    (* ~foo: int=? - note this isnt valid. but we want to get a type error *)
+    | (label, Some type_, _) when isOptional label ->
+    
+# 275 "syntax/reactjs_jsx_ppx.cppo.ml"
+    type_
+    
+# 282 "syntax/reactjs_jsx_ppx.cppo.ml"
+    (* ~foo=? *)
+    | (label, None, _) when isOptional label -> 
+    
+# 285 "syntax/reactjs_jsx_ppx.cppo.ml"
+    {
+      ptyp_desc = Ptyp_var (safeTypeFromValue label);
+      ptyp_loc = loc;
+      ptyp_attributes = [];
+    }
+    
+# 301 "syntax/reactjs_jsx_ppx.cppo.ml"
+    (* ~foo *)
+    | (label, None, _) -> 
+    {
+      ptyp_desc = Ptyp_var (safeTypeFromValue label);
+      ptyp_loc = loc;
+      ptyp_attributes = [];
+    }
+    | (label, Some type_, _) -> 
+    type_
+    )
+    args)
+  | [] -> args
+
+(* Build an AST node for the [@bs.obj] representing props for a component *)
+let makePropsValue fnName loc namedArgListWithKeyAndRef propsType =
+  let propsName = fnName ^ "Props" in {
+  pval_name = {txt = propsName; loc};
+  pval_type =
+      recursivelyMakeNamedArgsForExternal
+        namedArgListWithKeyAndRef
+        (Typ.arrow
+          nolabel
+          {
+            ptyp_desc = Ptyp_constr ({txt= Lident("unit"); loc}, []);
+            ptyp_loc = loc;
+            ptyp_attributes = [];
+          }
+          propsType
+        );
+  pval_prim = [""];
+  pval_attributes = [({txt = "bs.obj"; loc = loc}, PStr [])];
+  pval_loc = loc;
+}
+
+(* Build an AST node representing an `external` with the definition of the [@bs.obj] *)
+let makePropsExternal fnName loc namedArgListWithKeyAndRef propsType =
+  {
+    pstr_loc = loc;
+    pstr_desc = Pstr_primitive (makePropsValue fnName loc namedArgListWithKeyAndRef propsType)
+  }
+
+(* Build an AST node for the signature of the `external` definition *)
+let makePropsExternalSig fnName loc namedArgListWithKeyAndRef propsType =
+  {
+    psig_loc = loc;
+    psig_desc = Psig_value (makePropsValue fnName loc namedArgListWithKeyAndRef propsType)
+  }
+
+(* Build an AST node for the props name when converted to a Js.t inside the function signature  *)
+let makePropsName ~loc name =
+  {
+    ppat_desc = Ppat_var {txt = name; loc};
+    ppat_loc = loc;
+    ppat_attributes = [];
+  }
+
+# 358 "syntax/reactjs_jsx_ppx.cppo.ml"
+let makeObjectField loc (str, _attrs, type_) =
+  (* intentionally not using attrs - they probably don't work on object fields. use on *Props instead *)
+  Otag ({ loc; txt = str }, [], {type_ with ptyp_attributes = []})
+
+# 363 "syntax/reactjs_jsx_ppx.cppo.ml"
+(* Build an AST node representing a "closed" Js.t object representing a component's props *)
+let makePropsType ~loc namedTypeList =
+  Typ.mk ~loc (
+    Ptyp_constr({txt= Ldot (Lident("Js"), "t"); loc}, [{
+        
+# 368 "syntax/reactjs_jsx_ppx.cppo.ml"
+        ptyp_desc = Ptyp_object(
+          List.map (makeObjectField loc) namedTypeList,
+          Closed
+        );
+        
+# 375 "syntax/reactjs_jsx_ppx.cppo.ml"
+        ptyp_loc = loc;
+        ptyp_attributes = [];
+      }])
+    )
+
+(* Builds an AST node for the entire `external` definition of props *)
+let makeExternalDecl fnName loc namedArgListWithKeyAndRef namedTypeList =
+  makePropsExternal
+    fnName
+    loc
+    (List.map pluckLabelDefaultLocType namedArgListWithKeyAndRef)
+    (makePropsType ~loc namedTypeList)
+
+(* TODO: some line number might still be wrong *)
+let jsxMapper () =
+
+  let jsxVersion = ref None in
+
+  let transformUppercaseCall3 modulePath mapper loc attrs _ callArguments =
+    let (children, argsWithLabels) = extractChildren ~loc ~removeLastPositionUnit:true callArguments in
+    let argsForMake = argsWithLabels in
+    let childrenExpr = transformChildrenIfListUpper ~loc ~mapper children in
+    let recursivelyTransformedArgsForMake = argsForMake |> List.map (fun (label, expression) -> (label, mapper.expr mapper expression)) in
+    let childrenArg = ref None in
+    let args = recursivelyTransformedArgsForMake
+      @ (match childrenExpr with
+        | Exact children -> [(labelled "children", children)]
+        | ListLiteral ({ pexp_desc = Pexp_array list }) when list = [] -> []
+        | ListLiteral expression ->
+        (* this is a hack to support react components that introspect into their children *)
+        (childrenArg := Some expression;
+        [(labelled "children", Exp.ident ~loc {loc; txt = Ldot (Lident "React", "null")})]))
+      @ [(nolabel, Exp.construct ~loc {loc; txt = Lident "()"} None)] in
+    let isCap str = let first = String.sub str 0 1 in
+    
+# 410 "syntax/reactjs_jsx_ppx.cppo.ml"
+    let capped = String.uppercase_ascii first in first = capped in
+    
+# 414 "syntax/reactjs_jsx_ppx.cppo.ml"
+    let ident = match modulePath with
+    | Lident _ -> Ldot (modulePath, "make")
+    | (Ldot (_modulePath, value) as fullPath) when isCap value -> Ldot (fullPath, "make")
+    | modulePath -> modulePath in
+    let propsIdent = match ident with
+    | Lident path -> Lident (path ^ "Props")
+    | Ldot(ident, path) -> Ldot (ident, path ^ "Props")
+    | _ -> raise (Invalid_argument "JSX name can't be the result of function applications") in
+    let props =
+    Exp.apply ~attrs ~loc (Exp.ident ~loc {loc; txt = propsIdent}) args in
+    (* handle key, ref, children *)
+      (* React.createElement(Component.make, props, ...children) *)
+    match (!childrenArg) with
+    | None ->
+      (Exp.apply
+        ~loc
+        ~attrs
+        (Exp.ident ~loc {loc; txt = Ldot (Lident "React", "createElement")})
+        ([
+          (nolabel, Exp.ident ~loc {txt = ident; loc});
+          (nolabel, props)
+        ]))
+     | Some children ->
+       (Exp.apply
+         ~loc
+         ~attrs
+         (Exp.ident ~loc {loc; txt = Ldot (Lident "React", "createElementVariadic")})
+         ([
+           (nolabel, Exp.ident ~loc {txt = ident; loc});
+           (nolabel, props);
+           (nolabel, children)
+         ]))
+     in
+
+    let transformLowercaseCall3 mapper loc attrs callArguments id =
+      let (children, nonChildrenProps) = extractChildren ~loc callArguments in
+      let componentNameExpr = constantString ~loc id in
+      let childrenExpr = transformChildrenIfList ~loc ~mapper children in
+      let createElementCall = match children with
+        (* [@JSX] div(~children=[a]), coming from <div> a </div> *)
+        | {
+            pexp_desc =
+             Pexp_construct ({txt = Lident "::"}, Some {pexp_desc = Pexp_tuple _ })
+             | Pexp_construct ({txt = Lident "[]"}, None)
+          } -> "createDOMElementVariadic"
+        (* [@JSX] div(~children= value), coming from <div> ...(value) </div> *)
+        | _ -> raise (Invalid_argument "A spread as a DOM element's \
+          children don't make sense written together. You can simply remove the spread.")
+      in
+      let args = match nonChildrenProps with
+        | [_justTheUnitArgumentAtEnd] ->
+          [
+            (* "div" *)
+            (nolabel, componentNameExpr);
+            (* [|moreCreateElementCallsHere|] *)
+            (nolabel, childrenExpr)
+          ]
+        | nonEmptyProps ->
+          let propsCall =
+            Exp.apply
+              ~loc
+              (Exp.ident ~loc {loc; txt = Ldot (Lident "ReactDOMRe", "domProps")})
+              (nonEmptyProps |> List.map (fun (label, expression) -> (label, mapper.expr mapper expression)))
+          in
+          [
+            (* "div" *)
+            (nolabel, componentNameExpr);
+            (* ReactDOMRe.props(~className=blabla, ~foo=bar, ()) *)
+            (labelled "props", propsCall);
+            (* [|moreCreateElementCallsHere|] *)
+            (nolabel, childrenExpr)
+          ] in
+      Exp.apply
+        ~loc
+        (* throw away the [@JSX] attribute and keep the others, if any *)
+        ~attrs
+        (* ReactDOMRe.createElement *)
+        (Exp.ident ~loc {loc; txt = Ldot (Lident "ReactDOMRe", createElementCall)})
+        args
+    in
+
+  let transformUppercaseCall modulePath mapper loc attrs _ callArguments =
+    let (children, argsWithLabels) = extractChildren ~loc ~removeLastPositionUnit:true callArguments in
+    let (argsKeyRef, argsForMake) = List.partition argIsKeyRef argsWithLabels in
+    let childrenExpr = transformChildrenIfList ~loc ~mapper children in
+    let recursivelyTransformedArgsForMake = argsForMake |> List.map (fun (label, expression) -> (label, mapper.expr mapper expression)) in
+    let args = recursivelyTransformedArgsForMake @ [ (nolabel, childrenExpr) ] in
+    let wrapWithReasonReactElement e = (* ReasonReact.element(~key, ~ref, ...) *)
+      Exp.apply
+        ~loc
+        (Exp.ident ~loc {loc; txt = Ldot (Lident "ReasonReact", "element")})
+        (argsKeyRef @ [(nolabel, e)]) in
+    Exp.apply
+      ~loc
+      ~attrs
+      (* Foo.make *)
+      (Exp.ident ~loc {loc; txt = Ldot (modulePath, "make")})
+      args
+    |> wrapWithReasonReactElement in
+
+  let transformLowercaseCall mapper loc attrs callArguments id =
+    let (children, nonChildrenProps) = extractChildren ~loc callArguments in
+    let componentNameExpr = constantString ~loc id in
+    let childrenExpr = transformChildrenIfList ~loc ~mapper children in
+    let createElementCall = match children with
+      (* [@JSX] div(~children=[a]), coming from <div> a </div> *)
+      | {
+          pexp_desc =
+           Pexp_construct ({txt = Lident "::"}, Some {pexp_desc = Pexp_tuple _ })
+           | Pexp_construct ({txt = Lident "[]"}, None)
+        } -> "createElement"
+      (* [@JSX] div(~children=[|a|]), coming from <div> ...[|a|] </div> *)
+      | { pexp_desc = (Pexp_array _) } ->
+        raise (Invalid_argument "A spread + an array literal as a DOM element's \
+          children would cancel each other out, and thus don't make sense written \
+          together. You can simply remove the spread and the array literal.")
+      (* [@JSX] div(~children= <div />), coming from <div> ...<div/> </div> *)
+      | {
+          pexp_attributes
+        } when pexp_attributes |> List.exists (fun (attribute, _) -> attribute.txt = "JSX") ->
+        raise (Invalid_argument "A spread + a JSX literal as a DOM element's \
+          children don't make sense written together. You can simply remove the spread.")
+      | _ -> "createElementVariadic"
+    in
+    let args = match nonChildrenProps with
+      | [_justTheUnitArgumentAtEnd] ->
+        [
+          (* "div" *)
+          (nolabel, componentNameExpr);
+          (* [|moreCreateElementCallsHere|] *)
+          (nolabel, childrenExpr)
+        ]
+      | nonEmptyProps ->
+        let propsCall =
+          Exp.apply
+            ~loc
+            (Exp.ident ~loc {loc; txt = Ldot (Lident "ReactDOMRe", "props")})
+            (nonEmptyProps |> List.map (fun (label, expression) -> (label, mapper.expr mapper expression)))
+        in
+        [
+          (* "div" *)
+          (nolabel, componentNameExpr);
+          (* ReactDOMRe.props(~className=blabla, ~foo=bar, ()) *)
+          (labelled "props", propsCall);
+          (* [|moreCreateElementCallsHere|] *)
+          (nolabel, childrenExpr)
+        ] in
+    Exp.apply
+      ~loc
+      (* throw away the [@JSX] attribute and keep the others, if any *)
+      ~attrs
+      (* ReactDOMRe.createElement *)
+      (Exp.ident ~loc {loc; txt = Ldot (Lident "ReactDOMRe", createElementCall)})
+      args
+  in
+
+  let rec recursivelyTransformNamedArgsForMake mapper expr list =
+    let expr = mapper.expr mapper expr in
+    match expr.pexp_desc with
+    (* TODO: make this show up with a loc. *)
+    
+# 575 "syntax/reactjs_jsx_ppx.cppo.ml"
+    | Pexp_fun (Labelled "key", _, _, _)
+    | Pexp_fun (Optional "key", _, _, _) -> raise (Invalid_argument "Key cannot be accessed inside of a component. Don't worry - you can always key a component from its parent!")
+    | Pexp_fun (Labelled "ref", _, _, _)
+    | Pexp_fun (Optional "ref", _, _, _) -> raise (Invalid_argument "Ref cannot be passed as a normal prop. Please use `forwardRef` API instead.")
+    
+# 585 "syntax/reactjs_jsx_ppx.cppo.ml"
+    | Pexp_fun (arg, default, pattern, expression) when isOptional arg || isLabelled arg ->
+      let alias = (match pattern with
+      | {ppat_desc = Ppat_alias (_, {txt}) | Ppat_var {txt}} -> txt
+      | {ppat_desc = Ppat_any} -> "_"
+      | _ -> getLabel arg) in
+      let type_ = (match pattern with
+      | {ppat_desc = Ppat_constraint (_, type_)} -> Some type_
+      | _ -> None) in
+
+      recursivelyTransformNamedArgsForMake mapper expression ((arg, default, pattern, alias, pattern.ppat_loc, type_) :: list)
+    
+# 596 "syntax/reactjs_jsx_ppx.cppo.ml"
+    | Pexp_fun (Nolabel, _, { ppat_desc = (Ppat_construct ({txt = Lident "()"}, _) | Ppat_any)}, expression) ->
+        (expression.pexp_desc, list, None)
+    | Pexp_fun (Nolabel, _, { ppat_desc = Ppat_var ({txt})}, expression) ->
+        (expression.pexp_desc, list, Some txt)
+    
+# 606 "syntax/reactjs_jsx_ppx.cppo.ml"
+    | innerExpression -> (innerExpression, list, None)
+  in
+
+
+  let argToType types (name, default, _noLabelName, _alias, loc, type_) = match (type_, name, default) with
+    | (Some ({ptyp_desc = Ptyp_constr ({txt=(Lident "option")}, [type_])}), name, _) when isOptional name ->
+      (getLabel name, [], {
+        type_ with
+        ptyp_desc = Ptyp_constr ({loc=type_.ptyp_loc; txt=optionIdent}, [type_]);
+      }) :: types
+    | (Some type_, name, Some _default) ->
+      (getLabel name, [], {
+      ptyp_desc = Ptyp_constr ({loc; txt=optionIdent}, [type_]);
+      ptyp_loc = loc;
+      ptyp_attributes = [];
+      }) :: types
+    | (Some type_, name, _) ->
+      (getLabel name, [], type_) :: types
+    | (None, name, _) when isOptional name ->
+      (getLabel name, [], {
+        ptyp_desc = Ptyp_constr ({loc; txt=optionIdent}, [{
+          ptyp_desc = Ptyp_var (safeTypeFromValue name);
+          ptyp_loc = loc;
+          ptyp_attributes = [];
+        }]);
+        ptyp_loc = loc;
+        ptyp_attributes = [];
+        }) :: types
+    | (None, name, _) when isLabelled name ->
+      (getLabel name, [], {
+        ptyp_desc = Ptyp_var (safeTypeFromValue name);
+        ptyp_loc = loc;
+        ptyp_attributes = [];
+        }) :: types
+    | _ -> types
+  in
+
+  let argToConcreteType types (name, _loc, type_) = match name with
+    | name when isLabelled name || isOptional name ->
+    (getLabel name, [], type_) :: types
+    (* return value *)
+    | _ -> types
+  in
+
+  let nestedModules = ref([]) in
+  let transformComponentDefinition mapper structure returnStructures = match structure with
+  (* external *)
+  | ({
+      pstr_loc;
+      pstr_desc = Pstr_primitive ({
+        pval_name = { txt = fnName };
+        pval_attributes;
+        pval_type;
+      } as value_description)
+    } as pstr) ->
+    (match List.filter hasAttr pval_attributes with
+    | [] -> structure :: returnStructures
+    | [_] ->
+    let rec getPropTypes types ({ptyp_loc; ptyp_desc} as fullType) =
+      (match ptyp_desc with
+      | Ptyp_arrow (name, type_, ({ptyp_desc = Ptyp_arrow _} as rest)) when isLabelled name || isOptional name ->
+        getPropTypes ((name, ptyp_loc, type_)::types) rest
+      
+# 669 "syntax/reactjs_jsx_ppx.cppo.ml"
+      | Ptyp_arrow (Nolabel, _type, rest) ->
+        
+# 673 "syntax/reactjs_jsx_ppx.cppo.ml"
+        getPropTypes types rest
+      | Ptyp_arrow (name, type_, returnValue) when isLabelled name || isOptional name ->
+        (returnValue, (name, returnValue.ptyp_loc, type_)::types)
+      | _ -> (fullType, types))
+    in
+    let (innerType, propTypes) = getPropTypes [] pval_type in
+    let namedTypeList = List.fold_left argToConcreteType [] propTypes in
+    let pluckLabelAndLoc (label, loc, type_) = (label, None (* default *), loc, Some type_) in
+    let retPropsType = makePropsType ~loc:pstr_loc namedTypeList in
+    let externalPropsDecl = makePropsExternal fnName pstr_loc ((
+      optional "key",
+      None,
+      pstr_loc,
+      Some(keyType pstr_loc)
+    ) :: List.map pluckLabelAndLoc propTypes) retPropsType in
+    (* can't be an arrow because it will defensively uncurry *)
+    let newExternalType = Ptyp_constr (
+      {loc = pstr_loc; txt = Ldot ((Lident "React"), "componentLike")},
+      [retPropsType; innerType]
+    ) in
+    let newStructure = {
+      pstr with pstr_desc = Pstr_primitive {
+        value_description with pval_type = {
+          pval_type with ptyp_desc = newExternalType;
+        };
+        pval_attributes = List.filter otherAttrsPure pval_attributes;
+      }
+    } in
+    externalPropsDecl :: newStructure :: returnStructures
+    | _ -> raise (Invalid_argument "Only one react.component call can exist on a component at one time"))
+  (* let component = ... *)
+  | {
+      pstr_loc;
+      pstr_desc = Pstr_value (
+        recFlag,
+        valueBindings
+      )
+    } ->
+      let mapBinding binding = if (hasAttrOnBinding binding) then
+        let fnName = getFnName binding in
+        let fileName = filenameFromLoc pstr_loc in
+        let fullModuleName = makeModuleName fileName !nestedModules fnName in
+        let emptyLoc = Location.in_file fileName in
+        let modifiedBinding binding =
+          let expression = binding.pvb_expr in
+          let wrapExpressionWithBinding expressionFn expression = {(filterAttrOnBinding binding) with pvb_expr = expressionFn expression} in
+          (* TODO: there is a long-tail of unsupported features inside of blocks - Pexp_letmodule , Pexp_letexception , Pexp_ifthenelse *)
+          let rec spelunkForFunExpression expression = (match expression with
+          (* let make = (~prop) => ... *)
+          | {
+            pexp_desc = Pexp_fun _
+          } -> ((fun expressionDesc -> {expression with pexp_desc = expressionDesc}), expression)
+          (* let make = {let foo = bar in (~prop) => ...} *)
+          | {
+              pexp_desc = Pexp_let (recursive, vbs, returnExpression)
+            } ->
+            (* here's where we spelunk! *)
+            let (wrapExpression, realReturnExpression) = spelunkForFunExpression returnExpression in
+            ((fun expressionDesc -> {expression with pexp_desc = Pexp_let (recursive, vbs, wrapExpression expressionDesc)}), realReturnExpression)
+          (* let make = React.forwardRef((~prop) => ...) *)
+          
+# 734 "syntax/reactjs_jsx_ppx.cppo.ml"
+          | { pexp_desc = Pexp_apply (wrapperExpression, [(Nolabel, innerFunctionExpression)]) } ->
+            
+# 738 "syntax/reactjs_jsx_ppx.cppo.ml"
+            let (wrapExpression, realReturnExpression) = spelunkForFunExpression innerFunctionExpression in
+            ((fun expressionDesc -> {
+              expression with pexp_desc =
+                Pexp_apply (wrapperExpression, [(nolabel, wrapExpression expressionDesc)])
+              }),
+              realReturnExpression
+            )
+          | {
+              pexp_desc = Pexp_sequence (wrapperExpression, innerFunctionExpression)
+            } ->
+            let (wrapExpression, realReturnExpression) = spelunkForFunExpression innerFunctionExpression in
+            ((fun expressionDesc -> {
+              expression with pexp_desc =
+                Pexp_sequence (wrapperExpression, wrapExpression expressionDesc)
+              }),
+              realReturnExpression
+            )
+          | _ -> raise (Invalid_argument "react.component calls can only be on function definitions or component wrappers (forwardRef, memo).")
+          ) in
+          let (wrapExpression, expression) = spelunkForFunExpression expression in
+          (wrapExpressionWithBinding wrapExpression, expression)
+        in
+        let (bindingWrapper, expression) = modifiedBinding binding in
+        let reactComponentAttribute = try
+          Some(List.find hasAttr binding.pvb_attributes)
+        with | Not_found -> None in
+        let (attr_loc, payload) = match reactComponentAttribute with
+        | Some (loc, payload) -> (loc.loc, Some payload)
+        | None -> (emptyLoc, None) in
+        let props = getPropsAttr payload in
+        (* do stuff here! *)
+        let (innerFunctionExpression, namedArgList, forwardRef) = recursivelyTransformNamedArgsForMake mapper expression [] in
+        let namedArgListWithKeyAndRef = (optional("key"), None, Pat.var {txt = "key"; loc = emptyLoc}, "key", emptyLoc, Some(keyType emptyLoc)) :: namedArgList in
+        let namedArgListWithKeyAndRef = match forwardRef with
+        | Some(_) ->  (optional("ref"), None, Pat.var {txt = "key"; loc = emptyLoc}, "ref", emptyLoc, None) :: namedArgListWithKeyAndRef
+        | None -> namedArgListWithKeyAndRef
+        in
+        let namedTypeList = List.fold_left argToType [] namedArgList in
+        let externalDecl = makeExternalDecl fnName attr_loc namedArgListWithKeyAndRef namedTypeList in
+        let makeLet innerExpression (label, default, pattern, _alias, loc, _type) =
+          let labelString = (match label with | label when isOptional label || isLabelled label -> getLabel label | _ -> raise (Invalid_argument "This should never happen")) in
+          let expression = (Exp.apply ~loc
+            (Exp.ident ~loc {txt = (Lident "##"); loc })
+            [
+              (nolabel, Exp.ident ~loc {txt = (Lident props.propsName); loc });
+              (nolabel, Exp.ident ~loc {
+                txt = (Lident labelString);
+                loc
+              })
+            ]
+          ) in
+          let expression = match (default) with
+          | (Some default) -> Exp.match_ expression [
+            Exp.case
+              (Pat.construct {loc; txt=Lident "Some"} (Some (Pat.var ~loc {txt = labelString; loc})))
+              (Exp.ident ~loc {txt = (Lident labelString); loc});
+            Exp.case
+              (Pat.construct {loc; txt=Lident "None"} None)
+              default
+          ]
+          | None -> expression in
+          let letExpression = Vb.mk
+            pattern
+            expression in
+          Exp.let_ ~loc Nonrecursive [letExpression] innerExpression in
+        let innerExpression = List.fold_left makeLet (Exp.mk innerFunctionExpression) namedArgList in
+        let innerExpressionWithRef = match (forwardRef) with
+        | Some txt ->
+          {innerExpression with pexp_desc = Pexp_fun (nolabel, None, {
+            ppat_desc = Ppat_var { txt; loc = emptyLoc };
+            ppat_loc = emptyLoc;
+            ppat_attributes = [];
+          }, innerExpression)}
+        | None -> innerExpression
+        in
+        let fullExpression = (Pexp_fun (
+          nolabel,
+          None,
+          {
+            ppat_desc = Ppat_constraint (
+              makePropsName ~loc:emptyLoc props.propsName,
+              makePropsType ~loc:emptyLoc namedTypeList
+            );
+            ppat_loc = emptyLoc;
+            ppat_attributes = [];
+          },
+          innerExpressionWithRef
+        )) in
+        let fullExpression = match (fullModuleName) with
+        | ("") -> fullExpression
+        | (txt) -> Pexp_let (
+            Nonrecursive,
+            [Vb.mk
+              ~loc:emptyLoc
+              (Pat.var ~loc:emptyLoc {loc = emptyLoc; txt})
+              (Exp.mk ~loc:emptyLoc fullExpression)
+            ],
+            (Exp.ident ~loc:emptyLoc {loc = emptyLoc; txt = Lident txt})
+          )
+        in
+        let newBinding = bindingWrapper fullExpression in
+        (Some externalDecl, newBinding)
+      else
+        (None, binding)
+      in
+      let structuresAndBinding = List.map mapBinding valueBindings in
+      let otherStructures (extern, binding) (externs, bindings) =
+        let externs = match extern with
+        | Some extern -> extern :: externs
+        | None -> externs in
+        (externs, binding :: bindings)
+      in
+      let (externs, bindings) = List.fold_right otherStructures structuresAndBinding ([], []) in
+      externs @ {
+        pstr_loc;
+        pstr_desc = Pstr_value (
+          recFlag,
+          bindings
+        )
+      } :: returnStructures
+    | structure -> structure :: returnStructures in
+
+  let reactComponentTransform mapper structures =
+  List.fold_right (transformComponentDefinition mapper) structures [] in
+
+  let transformComponentSignature _mapper signature returnSignatures = match signature with
+  | ({
+      psig_loc;
+      psig_desc = Psig_value ({
+        pval_name = { txt = fnName };
+        pval_attributes;
+        pval_type;
+      } as psig_desc)
+    } as psig) ->
+    (match List.filter hasAttr pval_attributes with
+    | [] -> signature :: returnSignatures
+    | [_] ->
+    let rec getPropTypes types ({ptyp_loc; ptyp_desc} as fullType) =
+      (match ptyp_desc with
+      | Ptyp_arrow (name, type_, ({ptyp_desc = Ptyp_arrow _} as rest)) when isOptional name || isLabelled name ->
+        getPropTypes ((name, ptyp_loc, type_)::types) rest
+      
+# 880 "syntax/reactjs_jsx_ppx.cppo.ml"
+      | Ptyp_arrow (Nolabel, _type, rest) ->
+        
+# 884 "syntax/reactjs_jsx_ppx.cppo.ml"
+        getPropTypes types rest
+      | Ptyp_arrow (name, type_, returnValue) when isOptional name || isLabelled name ->
+        (returnValue, (name, returnValue.ptyp_loc, type_)::types)
+      | _ -> (fullType, types))
+    in
+    let (innerType, propTypes) = getPropTypes [] pval_type in
+    let namedTypeList = List.fold_left argToConcreteType [] propTypes in
+    let pluckLabelAndLoc (label, loc, type_) = (label, None, loc, Some type_) in
+    let retPropsType = makePropsType ~loc:psig_loc namedTypeList in
+    let externalPropsDecl = makePropsExternalSig fnName psig_loc ((
+      optional "key",
+      None,
+      psig_loc,
+      Some(keyType psig_loc)
+    ) :: List.map pluckLabelAndLoc propTypes) retPropsType in
+        (* can't be an arrow because it will defensively uncurry *)
+    let newExternalType = Ptyp_constr (
+      {loc = psig_loc; txt = Ldot ((Lident "React"), "componentLike")},
+      [retPropsType; innerType]
+    ) in
+    let newStructure = {
+      psig with psig_desc = Psig_value {
+        psig_desc with pval_type = {
+          pval_type with ptyp_desc = newExternalType;
+        };
+        pval_attributes = List.filter otherAttrsPure pval_attributes;
+      }
+    } in
+    externalPropsDecl :: newStructure :: returnSignatures
+    | _ -> raise (Invalid_argument "Only one react.component call can exist on a component at one time"))
+  | signature -> signature :: returnSignatures in
+
+  let reactComponentSignatureTransform mapper signatures =
+  List.fold_right (transformComponentSignature mapper) signatures [] in
+
+
+  let transformJsxCall mapper callExpression callArguments attrs =
+    (match callExpression.pexp_desc with
+     | Pexp_ident caller ->
+       (match caller with
+        | {txt = Lident "createElement"} ->
+          raise (Invalid_argument "JSX: `createElement` should be preceeded by a module name.")
+
+        (* Foo.createElement(~prop1=foo, ~prop2=bar, ~children=[], ()) *)
+        | {loc; txt = Ldot (modulePath, ("createElement" | "make"))} ->
+          (match !jsxVersion with
+          
+# 934 "syntax/reactjs_jsx_ppx.cppo.ml"
+          | Some 2 -> transformUppercaseCall modulePath mapper loc attrs callExpression callArguments
+          | None
+          
+# 937 "syntax/reactjs_jsx_ppx.cppo.ml"
+          | Some 3 -> transformUppercaseCall3 modulePath mapper loc attrs callExpression callArguments
+          | Some _ -> raise (Invalid_argument "JSX: the JSX version must be 2 or 3"))
+
+        (* div(~prop1=foo, ~prop2=bar, ~children=[bla], ()) *)
+        (* turn that into
+          ReactDOMRe.createElement(~props=ReactDOMRe.props(~props1=foo, ~props2=bar, ()), [|bla|]) *)
+        | {loc; txt = Lident id} ->
+          (match !jsxVersion with
+          
+# 949 "syntax/reactjs_jsx_ppx.cppo.ml"
+          | Some 2 -> transformLowercaseCall mapper loc attrs callArguments id
+          | None
+          
+# 952 "syntax/reactjs_jsx_ppx.cppo.ml"
+          | Some 3 -> transformLowercaseCall3 mapper loc attrs callArguments id
+          | Some _ -> raise (Invalid_argument "JSX: the JSX version must be 2 or 3"))
+
+        | {txt = Ldot (_, anythingNotCreateElementOrMake)} ->
+          raise (
+            Invalid_argument
+              ("JSX: the JSX attribute should be attached to a `YourModuleName.createElement` or `YourModuleName.make` call. We saw `"
+               ^ anythingNotCreateElementOrMake
+               ^ "` instead"
+              )
+          )
+
+        | {txt = Lapply _} ->
+          (* don't think there's ever a case where this is reached *)
+          raise (
+            Invalid_argument "JSX: encountered a weird case while processing the code. Please report this!"
+          )
+       )
+     | _ ->
+       raise (
+         Invalid_argument "JSX: `createElement` should be preceeded by a simple, direct module name."
+       )
+    ) in
+
+  let signature =
+    (fun mapper signature -> default_mapper.signature mapper @@ reactComponentSignatureTransform mapper signature) in
+
+  let structure =
+    (fun mapper structure -> match structure with
+      (*
+        match against [@bs.config {foo, jsx: ...}] at the file-level. This
+        indicates which version of JSX we're using. This code stays here because
+        we used to have 2 versions of JSX PPX (and likely will again in the
+        future when JSX PPX changes). So the architecture for switching between
+        JSX behavior stayed here. To create a new JSX ppx, copy paste this
+        entire file and change the relevant parts.
+        Description of architecture: in bucklescript's bsconfig.json, you can
+        specify a project-wide JSX version. You can also specify a file-level
+        JSX version. This degree of freedom allows a person to convert a project
+        one file at time onto the new JSX, when it was released. It also enabled
+        a project to depend on a third-party which is still using an old version
+        of JSX
+      *)
+      | {
+          pstr_loc;
+          pstr_desc = Pstr_attribute (
+            ({txt = "bs.config"} as bsConfigLabel),
+            PStr [{pstr_desc = Pstr_eval ({pexp_desc = Pexp_record (recordFields, b)} as innerConfigRecord, a)} as configRecord]
+          )
+        }::restOfStructure -> begin
+          let (jsxField, recordFieldsWithoutJsx) = recordFields |> List.partition (fun ({txt}, _) -> txt = Lident "jsx") in
+          match (jsxField, recordFieldsWithoutJsx) with
+          (* no file-level jsx config found *)
+          | ([], _) -> default_mapper.structure mapper structure
+          (* {jsx: 2} *)
+          
+# 1008 "syntax/reactjs_jsx_ppx.cppo.ml"
+          | ((_, {pexp_desc = Pexp_constant (Pconst_integer (version, None))})::rest, recordFieldsWithoutJsx) -> begin
+              
+# 1012 "syntax/reactjs_jsx_ppx.cppo.ml"
+              (match version with
+              
+# 1014 "syntax/reactjs_jsx_ppx.cppo.ml"
+              | "2" -> jsxVersion := Some 2
+              | "3" -> jsxVersion := Some 3
+              
+# 1020 "syntax/reactjs_jsx_ppx.cppo.ml"
+              | _ -> raise (Invalid_argument "JSX: the file-level bs.config's jsx version must be 2 or 3"));
+              match recordFieldsWithoutJsx with
+              (* record empty now, remove the whole bs.config attribute *)
+              | [] -> default_mapper.structure mapper @@ reactComponentTransform mapper restOfStructure
+              | fields -> default_mapper.structure mapper ({
+                pstr_loc;
+                pstr_desc = Pstr_attribute (
+                  bsConfigLabel,
+                  PStr [{configRecord with pstr_desc = Pstr_eval ({innerConfigRecord with pexp_desc = Pexp_record (fields, b)}, a)}]
+                )
+              }::(reactComponentTransform mapper restOfStructure))
+            end
+        | _ -> raise (Invalid_argument "JSX: the file-level bs.config's {jsx: ...} config accepts only a version number")
+      end
+      | structures -> begin
+        default_mapper.structure mapper @@ reactComponentTransform mapper structures
+      end
+    ) in
+
+  let expr =
+    (fun mapper expression -> match expression with
+       (* Does the function application have the @JSX attribute? *)
+       | {
+           pexp_desc = Pexp_apply (callExpression, callArguments);
+           pexp_attributes
+         } ->
+         let (jsxAttribute, nonJSXAttributes) = List.partition (fun (attribute, _) -> attribute.txt = "JSX") pexp_attributes in
+         (match (jsxAttribute, nonJSXAttributes) with
+         (* no JSX attribute *)
+         | ([], _) -> default_mapper.expr mapper expression
+         | (_, nonJSXAttributes) -> transformJsxCall mapper callExpression callArguments nonJSXAttributes)
+
+       (* is it a list with jsx attribute? Reason <>foo</> desugars to [@JSX][foo]*)
+       | {
+           pexp_desc =
+            Pexp_construct ({txt = Lident "::"; loc}, Some {pexp_desc = Pexp_tuple _})
+            | Pexp_construct ({txt = Lident "[]"; loc}, None);
+           pexp_attributes
+         } as listItems ->
+          let (jsxAttribute, nonJSXAttributes) = List.partition (fun (attribute, _) -> attribute.txt = "JSX") pexp_attributes in
+          (match (jsxAttribute, nonJSXAttributes) with
+          (* no JSX attribute *)
+          | ([], _) -> default_mapper.expr mapper expression
+          | (_, nonJSXAttributes) ->
+            let fragment = Exp.ident ~loc {loc; txt = Ldot (Lident "ReasonReact", "fragment")} in
+            let childrenExpr = transformChildrenIfList ~loc ~mapper listItems in
+            let args = [
+              (* "div" *)
+              (nolabel, fragment);
+              (* [|moreCreateElementCallsHere|] *)
+              (nolabel, childrenExpr)
+            ] in
+            Exp.apply
+              ~loc
+              (* throw away the [@JSX] attribute and keep the others, if any *)
+              ~attrs:nonJSXAttributes
+              (* ReactDOMRe.createElement *)
+              (Exp.ident ~loc {loc; txt = Ldot (Lident "ReactDOMRe", "createElement")})
+              args
+         )
+       (* Delegate to the default mapper, a deep identity traversal *)
+       | e -> default_mapper.expr mapper e) in
+
+  let module_binding =
+    (fun mapper module_binding ->
+      let _ = nestedModules := module_binding.pmb_name.txt :: !nestedModules in
+      let mapped = default_mapper.module_binding mapper module_binding in
+      let _ = nestedModules := List.tl !nestedModules in
+      mapped
+    ) in
+
+  { default_mapper with structure; expr; signature; module_binding; }
+
+let mapper = jsxMapper () 
+
+let rewrite_implementation (code: Parsetree.structure) : Parsetree.structure =
+  mapper.structure mapper code
+let rewrite_signature (code : Parsetree.signature) : Parsetree.signature = 
+  mapper.signature mapper code 
+
+
+end
+module Ppx_entry
+= struct
+#1 "ppx_entry.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+let rewrite_signature (ast : Parsetree.signature) : Parsetree.signature =  
+  let ast = 
+    match !Js_config.jsx_version with
+    | 2 -> Reactjs_jsx_ppx_v2.rewrite_signature ast 
+    | 3 -> Reactjs_jsx_ppx_v3.rewrite_signature ast 
+    | _ -> ast 
+    (* react-jsx ppx relies on built-in ones like `##` *)
+  in 
+
+  if !Js_config.no_builtin_ppx_mli then ast else 
+    Bs_builtin_ppx.rewrite_signature ast 
+
+let rewrite_implementation (ast : Parsetree.structure) : Parsetree.structure =   
+  let ast = 
+    match !Js_config.jsx_version with 
+    | 2 -> Reactjs_jsx_ppx_v2.rewrite_implementation ast 
+    | 3 -> Reactjs_jsx_ppx_v3.rewrite_implementation ast 
+    | _ -> ast 
+  in 
+  if !Js_config.no_builtin_ppx_ml then ast else
+    Bs_builtin_ppx.rewrite_implementation ast 
+  
 end
 module Bsppx_main : sig 
 #1 "bsppx_main.mli"

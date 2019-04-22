@@ -157,11 +157,20 @@ let get_curry_arity  ty =
 
 let is_arity_one ty = get_curry_arity ty =  1
 
-let list_of_arrow (ty : t) =
+
+let list_of_arrow 
+    (ty : t) : 
+  t * Ast_compatible.param_type list
+  =
   let rec aux (ty : t) acc =
     match ty.ptyp_desc with
     | Ptyp_arrow(label,t1,t2) ->
-      aux t2 ((label,t1,ty.ptyp_attributes,ty.ptyp_loc) ::acc)
+      aux t2 
+        (({label; 
+          ty = t1; 
+          attr = ty.ptyp_attributes;
+          loc = ty.ptyp_loc} : Ast_compatible.param_type) :: acc
+        )
     | Ptyp_poly(_, ty) -> (* should not happen? *)
       Bs_syntaxerr.err ty.ptyp_loc Unhandled_poly_type
     | return_type -> ty, List.rev acc

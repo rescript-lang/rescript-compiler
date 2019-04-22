@@ -47,7 +47,7 @@ type js_send = {
   js_send_scopes : string list;
 } (* we know it is a js send, but what will happen if you pass an ocaml objct *)
 
-type js_global_val = {
+type js_var = {
   name : string ;
   external_module_name : external_module_name option;
   scopes : string list
@@ -93,7 +93,7 @@ type js_set_index = {
 
 
 type external_spec  =
-  | Js_global of js_global_val
+  | Js_var of js_var
   | Js_module_as_var of  external_module_name
   | Js_module_as_fn of js_module_as_fn
   | Js_module_as_class of external_module_name
