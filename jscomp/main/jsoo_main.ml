@@ -75,7 +75,9 @@ let error_of_exn e =
   Location.error_of_exn e
 #end  
 
-let implementation ~use_super_errors ?react_ppx_version prefix impl str  : Js.Unsafe.obj =
+type react_ppx_version = V2 | V3
+
+let implementation ~use_super_errors ?(react_ppx_version=V3) prefix impl str  : Js.Unsafe.obj =
   let modulename = "Test" in
   (* let env = !Toploop.toplevel_env in *)
   (* Compmisc.init_path false; *)
@@ -97,7 +99,9 @@ let implementation ~use_super_errors ?react_ppx_version prefix impl str  : Js.Un
     let ast = impl 
       (Lexing.from_string
         (if prefix then "[@@@bs.config{no_export}]\n#1 \"repl.ml\"\n"  ^ str else str )) in 
-    let ast = Reactjs_jsx_ppx_v3.rewrite_implementation ?version:react_ppx_version ast in 
+    let ast = match react_ppx_version with
+    | V2 -> Reactjs_jsx_ppx_v2.rewrite_implementation ast
+    | V3 -> Reactjs_jsx_ppx_v3.rewrite_implementation ast in 
     let ast = Bs_builtin_ppx.rewrite_implementation ast in 
     let typed_tree = 
       let (a,b,c,signature) = Typemod.type_implementation_more modulename modulename modulename env ast in
