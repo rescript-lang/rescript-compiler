@@ -75,7 +75,9 @@ let error_of_exn e =
   Location.error_of_exn e
 #end  
 
-let implementation ~use_super_errors prefix impl str  : Js.Unsafe.obj =
+type react_ppx_version = V2 | V3
+
+let implementation ~use_super_errors ?(react_ppx_version=V3) prefix impl str  : Js.Unsafe.obj =
   let modulename = "Test" in
   (* let env = !Toploop.toplevel_env in *)
   (* Compmisc.init_path false; *)
@@ -97,7 +99,9 @@ let implementation ~use_super_errors prefix impl str  : Js.Unsafe.obj =
     let ast = impl 
       (Lexing.from_string
         (if prefix then "[@@@bs.config{no_export}]\n#1 \"repl.ml\"\n"  ^ str else str )) in 
-    let ast = Reactjs_jsx_ppx_v3.rewrite_implementation ast in 
+    let ast = match react_ppx_version with
+    | V2 -> Reactjs_jsx_ppx_v2.rewrite_implementation ast
+    | V3 -> Reactjs_jsx_ppx_v3.rewrite_implementation ast in 
     let ast = Bs_builtin_ppx.rewrite_implementation ast in 
     let typed_tree = 
       let (a,b,c,signature) = Typemod.type_implementation_more modulename modulename modulename env ast in
@@ -151,12 +155,12 @@ let implementation ~use_super_errors prefix impl str  : Js.Unsafe.obj =
       end
 
 
-let compile impl ~use_super_errors =
-    implementation ~use_super_errors false impl
+let compile impl ~use_super_errors ?react_ppx_version =
+    implementation ~use_super_errors ?react_ppx_version false impl
 
 (** TODO: add `[@@bs.config{no_export}]\n# 1 "repl.ml"`*)
-let shake_compile impl ~use_super_errors =
-   implementation ~use_super_errors true impl
+let shake_compile impl ~use_super_errors ?react_ppx_version =
+   implementation ~use_super_errors ?react_ppx_version true impl
 
 
 
@@ -199,6 +203,16 @@ let make_compiler name impl =
                     Js.wrap_meth_callback
                       (fun _ code ->
                          (compile impl ~use_super_errors:true (Js.to_string code)));
+                    "compile_super_errors_ppx_v2",
+                    inject @@
+                    Js.wrap_meth_callback
+                      (fun _ code ->
+                         (compile impl ~use_super_errors:true ~react_ppx_version:V2 (Js.to_string code)));
+                    "compile_super_errors_ppx_v3",
+                    inject @@
+                    Js.wrap_meth_callback
+                      (fun _ code ->
+                         (compile impl ~use_super_errors:true ~react_ppx_version:V3 (Js.to_string code)));
                     "shake_compile_super_errors",
                     inject @@
                     Js.wrap_meth_callback
