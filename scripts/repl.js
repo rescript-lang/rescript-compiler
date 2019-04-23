@@ -19,7 +19,7 @@ function e(cmd) {
     console.log(`<<<<<<`)
 }
 
-if (process.env.BS_PLAYGROUND == null) {
+if (!process.env.BS_PLAYGROUND) {
     var defaultPlayground = `../../bucklescript-playground`
     console.warn(`BS_PLAYGROUND env var unset, defaulting to ${defaultPlayground}`)
     process.env.BS_PLAYGROUND = defaultPlayground
