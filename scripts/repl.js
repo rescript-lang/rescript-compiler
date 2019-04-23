@@ -19,10 +19,10 @@ function e(cmd) {
     console.log(`<<<<<<`)
 }
 
-// process.env.BS_PLAYGROUND = `../../bucklescript-playground`
-if (process.env.BS_PLAYGROUND == null) {
-    console.error('please set env var BS_PLAYGROUND')
-    process.exit(2)
+if (!process.env.BS_PLAYGROUND) {
+    var defaultPlayground = `../../bucklescript-playground`
+    console.warn(`BS_PLAYGROUND env var unset, defaulting to ${defaultPlayground}`)
+    process.env.BS_PLAYGROUND = defaultPlayground
 }
 
 var playground = process.env.BS_PLAYGROUND
@@ -35,37 +35,11 @@ function prepare() {
 
     e(`hash camlp4 2>/dev/null || { echo >&2 "camlp4 not installed. Please install: opam install camlp4"; exit 1; }`)
 
-    // require('../scripts/release').run()
-
-    // try {
-    //   fs.unlinkSync(path.join(__dirname, 'bin', 'js_compiler.ml'))
-    // } catch (err) {
-    //   console.log(err)
-    // }
-
-    // e(`make -j2 bin/jscmj.exe bin/js_compiler.ml`)
-    // bin/jsgen.exe 
-    // e(`./bin/jsgen.exe --`)
     e(`./bin/cmjbrowser.exe`)
     var js_compiler_path = `../lib/4.02.3/unstable`
     e(`ocamlc.opt -w -30-40 -no-check-prims -I ${js_compiler_path} ${js_compiler_path}/js_compiler.mli ${js_compiler_path}/js_compiler.ml -o jsc.byte`)
 
     e(`cp ../lib/js/*.js ${playground}/stdlib`)
-
-    // Build JSX v2 PPX with jsoo
-    // try {
-    //   fs.unlinkSync(path.join(__dirname, 'bin', 'jsoo_reactjs_jsx_ppx_v2.ml'))
-    // } catch (err) {
-    //   console.log(err)
-    // }
-
-    // e(`make bin/jsoo_reactjs_jsx_ppx_v2.ml`)
-
-    // e(`ocamlc.opt -w -30-40 -no-check-prims -o jsoo_reactjs_jsx_ppx_v2.byte -I +compiler-libs ocamlcommon.cma bin/jsoo_reactjs_jsx_ppx_v2.ml`)
-
-    // var compilerlib = '../native/lib/ocaml/compiler-libs'
-    // e(`js_of_ocaml --disable share --toplevel +weak.js +toplevel.js jsoo_reactjs_jsx_ppx_v2.byte -I bin -I ${compilerlib} -o ${playground}/jsoo_reactjs_jsx_ppx_v2.js`)
-
 }
 
 // needs js_cmj_datasets, preload.js and amdjs to be update
@@ -82,12 +56,12 @@ var includes = [`stdlib-402`, `runtime`, `others`].map(x => path.join(jscompDir,
 var cmi_files =
     [
         // `lazy`,
-        `js`,  `js_re`, `js_array`, `js_null`, `js_undefined`,
-        `js_types`, `js_null_undefined`, `js_dict`, `js_exn`, `js_string`, `js_vector`,
+        `js`,  `js_re`, `js_array`, `js_array2`, `js_null`, `js_undefined`,
+        `js_types`, `js_null_undefined`, `js_dict`, `js_exn`, `js_string`, `js_string2`, `js_vector`,
         `js_date`,
         `js_console`,
         `js_global`, `js_math`, `js_obj`, `js_int`,
-        `js_result`, `js_list`, `js_typed_array`,
+        `js_result`, `js_list`, `js_typed_array`, `js_typed_array2`,
         `js_promise`, `js_option`, `js_float`, `js_json`,
         `arrayLabels`, `bytesLabels`, `complex`, `gc`, `genlex`, `listLabels`,
         `moreLabels`, `queue`, `scanf`, `sort`,`stack`, `stdLabels`, `stream`,
