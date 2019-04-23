@@ -35,37 +35,11 @@ function prepare() {
 
     e(`hash camlp4 2>/dev/null || { echo >&2 "camlp4 not installed. Please install: opam install camlp4"; exit 1; }`)
 
-    // require('../scripts/release').run()
-
-    // try {
-    //   fs.unlinkSync(path.join(__dirname, 'bin', 'js_compiler.ml'))
-    // } catch (err) {
-    //   console.log(err)
-    // }
-
-    // e(`make -j2 bin/jscmj.exe bin/js_compiler.ml`)
-    // bin/jsgen.exe 
-    // e(`./bin/jsgen.exe --`)
     e(`./bin/cmjbrowser.exe`)
     var js_compiler_path = `../lib/4.02.3/unstable`
     e(`ocamlc.opt -w -30-40 -no-check-prims -I ${js_compiler_path} ${js_compiler_path}/js_compiler.mli ${js_compiler_path}/js_compiler.ml -o jsc.byte`)
 
     e(`cp ../lib/js/*.js ${playground}/stdlib`)
-
-    // Build JSX v2 PPX with jsoo
-    // try {
-    //   fs.unlinkSync(path.join(__dirname, 'bin', 'jsoo_reactjs_jsx_ppx_v2.ml'))
-    // } catch (err) {
-    //   console.log(err)
-    // }
-
-    // e(`make bin/jsoo_reactjs_jsx_ppx_v2.ml`)
-
-    // e(`ocamlc.opt -w -30-40 -no-check-prims -o jsoo_reactjs_jsx_ppx_v2.byte -I +compiler-libs ocamlcommon.cma bin/jsoo_reactjs_jsx_ppx_v2.ml`)
-
-    // var compilerlib = '../native/lib/ocaml/compiler-libs'
-    // e(`js_of_ocaml --disable share --toplevel +weak.js +toplevel.js jsoo_reactjs_jsx_ppx_v2.byte -I bin -I ${compilerlib} -o ${playground}/jsoo_reactjs_jsx_ppx_v2.js`)
-
 }
 
 // needs js_cmj_datasets, preload.js and amdjs to be update
