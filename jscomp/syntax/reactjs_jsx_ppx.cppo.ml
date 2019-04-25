@@ -268,7 +268,7 @@ let rec recursivelyMakeNamedArgsForExternal list args =
 #endif
     (* ~foo: option(int)=? *)
     | (label, Some ({ptyp_desc = Ptyp_constr ({txt=(Lident "option")}, [type_])}), _)
-    | (label, Some ({ptyp_desc = Ptyp_constr ({txt=(Ldot (Lident "*predef*", "option"))}, [type_])}), _) 
+    | (label, Some ({ptyp_desc = Ptyp_constr ({txt=(Ldot (Lident "*predef*", "option"))}, [type_])}), _)
     (* ~foo: int=? - note this isnt valid. but we want to get a type error *)
     | (label, Some type_, _) when isOptional label ->
 #if OCAML_VERSION >= (4,3,0)
@@ -280,7 +280,7 @@ let rec recursivelyMakeNamedArgsForExternal list args =
     }
 #endif
     (* ~foo=? *)
-    | (label, None, _) when isOptional label -> 
+    | (label, None, _) when isOptional label ->
 #if OCAML_VERSION >= (4,3,0)
     {
       ptyp_desc = Ptyp_var (safeTypeFromValue label);
@@ -299,13 +299,13 @@ let rec recursivelyMakeNamedArgsForExternal list args =
     }
 #endif
     (* ~foo *)
-    | (label, None, _) -> 
+    | (label, None, _) ->
     {
       ptyp_desc = Ptyp_var (safeTypeFromValue label);
       ptyp_loc = loc;
       ptyp_attributes = [];
     }
-    | (label, Some type_, _) -> 
+    | (label, Some type_, _) ->
     type_
     )
     args)
@@ -1090,12 +1090,12 @@ let jsxMapper () =
 
   { default_mapper with structure; expr; signature; module_binding; }
 
-let mapper = jsxMapper () 
-
 let rewrite_implementation (code: Parsetree.structure) : Parsetree.structure =
+  let mapper = jsxMapper () in
   mapper.structure mapper code
-let rewrite_signature (code : Parsetree.signature) : Parsetree.signature = 
-  mapper.signature mapper code 
+let rewrite_signature (code : Parsetree.signature) : Parsetree.signature =
+  let mapper = jsxMapper () in
+  mapper.signature mapper code
 
 #ifdef BINARY
 let () = Ast_mapper.register "JSX" (fun _argv -> jsxMapper ())
