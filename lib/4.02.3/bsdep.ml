@@ -40986,7 +40986,7 @@ let rec recursivelyMakeNamedArgsForExternal list args =
 # 269 "syntax/reactjs_jsx_ppx.cppo.ml"
     (* ~foo: option(int)=? *)
     | (label, Some ({ptyp_desc = Ptyp_constr ({txt=(Lident "option")}, [type_])}), _)
-    | (label, Some ({ptyp_desc = Ptyp_constr ({txt=(Ldot (Lident "*predef*", "option"))}, [type_])}), _) 
+    | (label, Some ({ptyp_desc = Ptyp_constr ({txt=(Ldot (Lident "*predef*", "option"))}, [type_])}), _)
     (* ~foo: int=? - note this isnt valid. but we want to get a type error *)
     | (label, Some type_, _) when isOptional label ->
     
@@ -40998,7 +40998,7 @@ let rec recursivelyMakeNamedArgsForExternal list args =
     
 # 282 "syntax/reactjs_jsx_ppx.cppo.ml"
     (* ~foo=? *)
-    | (label, None, _) when isOptional label -> 
+    | (label, None, _) when isOptional label ->
     
 # 291 "syntax/reactjs_jsx_ppx.cppo.ml"
     {
@@ -41013,13 +41013,13 @@ let rec recursivelyMakeNamedArgsForExternal list args =
     
 # 301 "syntax/reactjs_jsx_ppx.cppo.ml"
     (* ~foo *)
-    | (label, None, _) -> 
+    | (label, None, _) ->
     {
       ptyp_desc = Ptyp_var (safeTypeFromValue label);
       ptyp_loc = loc;
       ptyp_attributes = [];
     }
-    | (label, Some type_, _) -> 
+    | (label, Some type_, _) ->
     type_
     )
     args)
@@ -41788,12 +41788,12 @@ let jsxMapper () =
 
   { default_mapper with structure; expr; signature; module_binding; }
 
-let mapper = jsxMapper () 
-
 let rewrite_implementation (code: Parsetree.structure) : Parsetree.structure =
+  let mapper = jsxMapper () in
   mapper.structure mapper code
-let rewrite_signature (code : Parsetree.signature) : Parsetree.signature = 
-  mapper.signature mapper code 
+let rewrite_signature (code : Parsetree.signature) : Parsetree.signature =
+  let mapper = jsxMapper () in
+  mapper.signature mapper code
 
 
 end
@@ -42045,7 +42045,7 @@ let rec recursivelyMakeNamedArgsForExternal list args =
 # 269 "syntax/reactjs_jsx_ppx.cppo.ml"
     (* ~foo: option(int)=? *)
     | (label, Some ({ptyp_desc = Ptyp_constr ({txt=(Lident "option")}, [type_])}), _)
-    | (label, Some ({ptyp_desc = Ptyp_constr ({txt=(Ldot (Lident "*predef*", "option"))}, [type_])}), _) 
+    | (label, Some ({ptyp_desc = Ptyp_constr ({txt=(Ldot (Lident "*predef*", "option"))}, [type_])}), _)
     (* ~foo: int=? - note this isnt valid. but we want to get a type error *)
     | (label, Some type_, _) when isOptional label ->
     
@@ -42057,7 +42057,7 @@ let rec recursivelyMakeNamedArgsForExternal list args =
     
 # 282 "syntax/reactjs_jsx_ppx.cppo.ml"
     (* ~foo=? *)
-    | (label, None, _) when isOptional label -> 
+    | (label, None, _) when isOptional label ->
     
 # 291 "syntax/reactjs_jsx_ppx.cppo.ml"
     {
@@ -42072,13 +42072,13 @@ let rec recursivelyMakeNamedArgsForExternal list args =
     
 # 301 "syntax/reactjs_jsx_ppx.cppo.ml"
     (* ~foo *)
-    | (label, None, _) -> 
+    | (label, None, _) ->
     {
       ptyp_desc = Ptyp_var (safeTypeFromValue label);
       ptyp_loc = loc;
       ptyp_attributes = [];
     }
-    | (label, Some type_, _) -> 
+    | (label, Some type_, _) ->
     type_
     )
     args)
@@ -42847,12 +42847,12 @@ let jsxMapper () =
 
   { default_mapper with structure; expr; signature; module_binding; }
 
-let mapper = jsxMapper () 
-
 let rewrite_implementation (code: Parsetree.structure) : Parsetree.structure =
+  let mapper = jsxMapper () in
   mapper.structure mapper code
-let rewrite_signature (code : Parsetree.signature) : Parsetree.signature = 
-  mapper.signature mapper code 
+let rewrite_signature (code : Parsetree.signature) : Parsetree.signature =
+  let mapper = jsxMapper () in
+  mapper.signature mapper code
 
 
 end
