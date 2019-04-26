@@ -670,14 +670,7 @@ let jsxMapper () =
 #else
       | Ptyp_arrow ("", _type, rest) ->
 #endif
-      getPropTypes types rest
-#if OCAML_VERSION >= (4,3,0)
-      | Ptyp_arrow (name, ({ptyp_desc = Ptyp_constr ({txt=(Lident "option"); loc}, [type_])}), returnValue) when isLabelled name || isOptional name ->
-      (returnValue, (name, returnValue.ptyp_loc, {
-        type_ with
-        ptyp_desc = Ptyp_constr ({loc; txt=optionIdent}, [type_]);
-      })::types)
-#endif
+        getPropTypes types rest
       | Ptyp_arrow (name, type_, returnValue) when isLabelled name || isOptional name ->
         (returnValue, (name, returnValue.ptyp_loc, type_)::types)
       | _ -> (fullType, types))
