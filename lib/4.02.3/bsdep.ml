@@ -41369,9 +41369,11 @@ let jsxMapper () =
       
 # 671 "syntax/reactjs_jsx_ppx.cppo.ml"
       | Ptyp_arrow ("", _type, rest) ->
-        
+      
 # 673 "syntax/reactjs_jsx_ppx.cppo.ml"
-        getPropTypes types rest
+      getPropTypes types rest
+      
+# 681 "syntax/reactjs_jsx_ppx.cppo.ml"
       | Ptyp_arrow (name, type_, returnValue) when isLabelled name || isOptional name ->
         (returnValue, (name, returnValue.ptyp_loc, type_)::types)
       | _ -> (fullType, types))
@@ -41432,10 +41434,10 @@ let jsxMapper () =
             ((fun expressionDesc -> {expression with pexp_desc = Pexp_let (recursive, vbs, wrapExpression expressionDesc)}), realReturnExpression)
           (* let make = React.forwardRef((~prop) => ...) *)
           
-# 736 "syntax/reactjs_jsx_ppx.cppo.ml"
+# 743 "syntax/reactjs_jsx_ppx.cppo.ml"
           | { pexp_desc = Pexp_apply (wrapperExpression, [("", innerFunctionExpression)]) } ->
             
-# 738 "syntax/reactjs_jsx_ppx.cppo.ml"
+# 745 "syntax/reactjs_jsx_ppx.cppo.ml"
             let (wrapExpression, realReturnExpression) = spelunkForFunExpression innerFunctionExpression in
             ((fun expressionDesc -> {
               expression with pexp_desc =
@@ -41578,10 +41580,10 @@ let jsxMapper () =
       | Ptyp_arrow (name, type_, ({ptyp_desc = Ptyp_arrow _} as rest)) when isOptional name || isLabelled name ->
         getPropTypes ((name, ptyp_loc, type_)::types) rest
       
-# 882 "syntax/reactjs_jsx_ppx.cppo.ml"
+# 889 "syntax/reactjs_jsx_ppx.cppo.ml"
       | Ptyp_arrow ("", _type, rest) ->
         
-# 884 "syntax/reactjs_jsx_ppx.cppo.ml"
+# 891 "syntax/reactjs_jsx_ppx.cppo.ml"
         getPropTypes types rest
       | Ptyp_arrow (name, type_, returnValue) when isOptional name || isLabelled name ->
         (returnValue, (name, returnValue.ptyp_loc, type_)::types)
@@ -41629,11 +41631,11 @@ let jsxMapper () =
         | {loc; txt = Ldot (modulePath, ("createElement" | "make"))} ->
           (match !jsxVersion with
           
-# 931 "syntax/reactjs_jsx_ppx.cppo.ml"
+# 938 "syntax/reactjs_jsx_ppx.cppo.ml"
           | None
           | Some 2 -> transformUppercaseCall modulePath mapper loc attrs callExpression callArguments
           
-# 937 "syntax/reactjs_jsx_ppx.cppo.ml"
+# 944 "syntax/reactjs_jsx_ppx.cppo.ml"
           | Some 3 -> transformUppercaseCall3 modulePath mapper loc attrs callExpression callArguments
           | Some _ -> raise (Invalid_argument "JSX: the JSX version must be 2 or 3"))
 
@@ -41643,11 +41645,11 @@ let jsxMapper () =
         | {loc; txt = Lident id} ->
           (match !jsxVersion with
           
-# 946 "syntax/reactjs_jsx_ppx.cppo.ml"
+# 953 "syntax/reactjs_jsx_ppx.cppo.ml"
           | None
           | Some 2 -> transformLowercaseCall mapper loc attrs callArguments id
           
-# 952 "syntax/reactjs_jsx_ppx.cppo.ml"
+# 959 "syntax/reactjs_jsx_ppx.cppo.ml"
           | Some 3 -> transformLowercaseCall3 mapper loc attrs callArguments id
           | Some _ -> raise (Invalid_argument "JSX: the JSX version must be 2 or 3"))
 
@@ -41704,17 +41706,17 @@ let jsxMapper () =
           | ([], _) -> default_mapper.structure mapper structure
           (* {jsx: 2} *)
           
-# 1010 "syntax/reactjs_jsx_ppx.cppo.ml"
+# 1017 "syntax/reactjs_jsx_ppx.cppo.ml"
           | ((_, {pexp_desc = Pexp_constant (Const_int version)})::_rest, recordFieldsWithoutJsx) -> begin
               
-# 1012 "syntax/reactjs_jsx_ppx.cppo.ml"
+# 1019 "syntax/reactjs_jsx_ppx.cppo.ml"
               (match version with
               
-# 1017 "syntax/reactjs_jsx_ppx.cppo.ml"
+# 1024 "syntax/reactjs_jsx_ppx.cppo.ml"
               | 2 -> jsxVersion := Some 2
               | 3 -> jsxVersion := Some 3
               
-# 1020 "syntax/reactjs_jsx_ppx.cppo.ml"
+# 1027 "syntax/reactjs_jsx_ppx.cppo.ml"
               | _ -> raise (Invalid_argument "JSX: the file-level bs.config's jsx version must be 2 or 3"));
               match recordFieldsWithoutJsx with
               (* record empty now, remove the whole bs.config attribute *)
@@ -42428,9 +42430,11 @@ let jsxMapper () =
       
 # 671 "syntax/reactjs_jsx_ppx.cppo.ml"
       | Ptyp_arrow ("", _type, rest) ->
-        
+      
 # 673 "syntax/reactjs_jsx_ppx.cppo.ml"
-        getPropTypes types rest
+      getPropTypes types rest
+      
+# 681 "syntax/reactjs_jsx_ppx.cppo.ml"
       | Ptyp_arrow (name, type_, returnValue) when isLabelled name || isOptional name ->
         (returnValue, (name, returnValue.ptyp_loc, type_)::types)
       | _ -> (fullType, types))
@@ -42491,10 +42495,10 @@ let jsxMapper () =
             ((fun expressionDesc -> {expression with pexp_desc = Pexp_let (recursive, vbs, wrapExpression expressionDesc)}), realReturnExpression)
           (* let make = React.forwardRef((~prop) => ...) *)
           
-# 736 "syntax/reactjs_jsx_ppx.cppo.ml"
+# 743 "syntax/reactjs_jsx_ppx.cppo.ml"
           | { pexp_desc = Pexp_apply (wrapperExpression, [("", innerFunctionExpression)]) } ->
             
-# 738 "syntax/reactjs_jsx_ppx.cppo.ml"
+# 745 "syntax/reactjs_jsx_ppx.cppo.ml"
             let (wrapExpression, realReturnExpression) = spelunkForFunExpression innerFunctionExpression in
             ((fun expressionDesc -> {
               expression with pexp_desc =
@@ -42637,10 +42641,10 @@ let jsxMapper () =
       | Ptyp_arrow (name, type_, ({ptyp_desc = Ptyp_arrow _} as rest)) when isOptional name || isLabelled name ->
         getPropTypes ((name, ptyp_loc, type_)::types) rest
       
-# 882 "syntax/reactjs_jsx_ppx.cppo.ml"
+# 889 "syntax/reactjs_jsx_ppx.cppo.ml"
       | Ptyp_arrow ("", _type, rest) ->
         
-# 884 "syntax/reactjs_jsx_ppx.cppo.ml"
+# 891 "syntax/reactjs_jsx_ppx.cppo.ml"
         getPropTypes types rest
       | Ptyp_arrow (name, type_, returnValue) when isOptional name || isLabelled name ->
         (returnValue, (name, returnValue.ptyp_loc, type_)::types)
@@ -42688,11 +42692,11 @@ let jsxMapper () =
         | {loc; txt = Ldot (modulePath, ("createElement" | "make"))} ->
           (match !jsxVersion with
           
-# 934 "syntax/reactjs_jsx_ppx.cppo.ml"
+# 941 "syntax/reactjs_jsx_ppx.cppo.ml"
           | Some 2 -> transformUppercaseCall modulePath mapper loc attrs callExpression callArguments
           | None
           
-# 937 "syntax/reactjs_jsx_ppx.cppo.ml"
+# 944 "syntax/reactjs_jsx_ppx.cppo.ml"
           | Some 3 -> transformUppercaseCall3 modulePath mapper loc attrs callExpression callArguments
           | Some _ -> raise (Invalid_argument "JSX: the JSX version must be 2 or 3"))
 
@@ -42702,11 +42706,11 @@ let jsxMapper () =
         | {loc; txt = Lident id} ->
           (match !jsxVersion with
           
-# 949 "syntax/reactjs_jsx_ppx.cppo.ml"
+# 956 "syntax/reactjs_jsx_ppx.cppo.ml"
           | Some 2 -> transformLowercaseCall mapper loc attrs callArguments id
           | None
           
-# 952 "syntax/reactjs_jsx_ppx.cppo.ml"
+# 959 "syntax/reactjs_jsx_ppx.cppo.ml"
           | Some 3 -> transformLowercaseCall3 mapper loc attrs callArguments id
           | Some _ -> raise (Invalid_argument "JSX: the JSX version must be 2 or 3"))
 
@@ -42763,17 +42767,17 @@ let jsxMapper () =
           | ([], _) -> default_mapper.structure mapper structure
           (* {jsx: 2} *)
           
-# 1010 "syntax/reactjs_jsx_ppx.cppo.ml"
+# 1017 "syntax/reactjs_jsx_ppx.cppo.ml"
           | ((_, {pexp_desc = Pexp_constant (Const_int version)})::_rest, recordFieldsWithoutJsx) -> begin
               
-# 1012 "syntax/reactjs_jsx_ppx.cppo.ml"
+# 1019 "syntax/reactjs_jsx_ppx.cppo.ml"
               (match version with
               
-# 1017 "syntax/reactjs_jsx_ppx.cppo.ml"
+# 1024 "syntax/reactjs_jsx_ppx.cppo.ml"
               | 2 -> jsxVersion := Some 2
               | 3 -> jsxVersion := Some 3
               
-# 1020 "syntax/reactjs_jsx_ppx.cppo.ml"
+# 1027 "syntax/reactjs_jsx_ppx.cppo.ml"
               | _ -> raise (Invalid_argument "JSX: the file-level bs.config's jsx version must be 2 or 3"));
               match recordFieldsWithoutJsx with
               (* record empty now, remove the whole bs.config attribute *)
