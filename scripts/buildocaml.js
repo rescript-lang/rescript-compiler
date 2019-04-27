@@ -43,7 +43,7 @@ function build(config) {
     fs.mkdirSync(ocamlSrcDir);
   }
   if (!fs.existsSync(path.join(ocamlSrcDir, "VERSION"))) {
-    cp.execSync(`tar xzvf ocaml.tar.gz`, {
+    cp.execSync(`tar xzvf ../ocaml.tar.gz`, {
       cwd: ocamlSrcDir,
       stdio: [0, 1, 2]
     });
