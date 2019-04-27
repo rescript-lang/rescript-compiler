@@ -97,7 +97,7 @@ let spec_of_ptyp nolabel (ptyp : Parsetree.core_type) =
       | Ptyp_constr ({txt = Lident "unit"; _}, [])
         -> if nolabel then Extern_unit else  Nothing
       | Ptyp_constr ({txt = Lident "array"; _}, [_])
-        -> Array
+        -> Extern_arg_array
       | Ptyp_variant _ ->
         Bs_warnings.prerr_bs_ffi_warning ptyp.ptyp_loc Unsafe_poly_variant_type;
         Nothing
@@ -436,7 +436,7 @@ let process_obj
                     arg_type },
                    arg_types, (* ignored in [arg_types], reserved in [result_types] *)
                    ((name , [], new_ty) :: result_types)
-                 | Nothing | Array ->
+                 | Nothing | Extern_arg_array ->
                    let s = (Lam_methname.translate ~loc name) in
                    {arg_label = External_arg_spec.label s None ; arg_type },
                    {param_type with ty = new_ty}::arg_types,
@@ -469,7 +469,7 @@ let process_obj
                  | Ignore ->
                    External_arg_spec.empty_kind arg_type,
                    param_type::arg_types, result_types
-                 | Nothing | Array ->
+                 | Nothing | Extern_arg_array ->
                    let s = (Lam_methname.translate ~loc name) in
                    {arg_label = External_arg_spec.optional s; arg_type},
                    param_type :: arg_types,
@@ -916,7 +916,7 @@ let handle_attributes
            in
            (if i = 0 && splice  then
               match arg_type with
-              | Array  -> ()
+              | Extern_arg_array  -> ()
               | _ ->  Location.raise_errorf ~loc "[@@@@bs.splice] expect the last type to be an array");
            ({ External_arg_spec.arg_label  ;
               arg_type

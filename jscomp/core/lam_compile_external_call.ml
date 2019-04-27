@@ -146,7 +146,7 @@ let ocaml_to_js_eff
         Js_of_lam_variant.eval_as_unwrap raw_arg
     in
     Splice1 single_arg,[]
-  | Nothing  | Array ->  Splice1 arg, []
+  | Nothing  | Extern_arg_array ->  Splice1 arg, []
 
 
 
@@ -211,7 +211,7 @@ let assemble_args_has_splice call_loc ffi (arg_types : specs) (args : exprs)
       let accs, eff = aux labels args in 
       begin match args, (arg : E.t) with 
         | [], {expression_desc = Array (ls,_mutable_flag) ;_ } -> 
-          assert (arg_kind.arg_type = Array);
+          assert (arg_kind.arg_type = Extern_arg_array);
           Ext_list.append ls accs, eff 
         | _ -> 
           if args = [] then dynamic := true ; 
