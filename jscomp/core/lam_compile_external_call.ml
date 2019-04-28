@@ -211,7 +211,6 @@ let assemble_args_has_splice call_loc ffi (arg_types : specs) (args : exprs)
       let accs, eff = aux labels args in 
       begin match args, (arg : E.t) with 
         | [], {expression_desc = Array (ls,_mutable_flag) ;_ } -> 
-          assert (arg_kind.arg_type = Extern_arg_array);
           Ext_list.append ls accs, eff 
         | _ -> 
           if args = [] then dynamic := true ; 
