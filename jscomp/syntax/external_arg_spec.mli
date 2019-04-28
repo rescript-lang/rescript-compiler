@@ -44,7 +44,6 @@ type attr =
   | Arg_cst of cst
   | Fn_uncurry_arity of int (* annotated with [@bs.uncurry ] or [@bs.uncurry 2]*)
   (* maybe we can improve it as a combination of {!Asttypes.constant} and tuple *)
-  | Extern_arg_array 
   | Extern_unit
   | Nothing
   | Ignore

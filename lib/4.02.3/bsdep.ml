@@ -33344,7 +33344,6 @@ type attr =
   | Arg_cst of cst
   | Fn_uncurry_arity of int (* annotated with [@bs.uncurry ] or [@bs.uncurry 2]*)
   (* maybe we can improve it as a combination of {!Asttypes.constant} and tuple *)
-  | Extern_arg_array 
   | Extern_unit
   | Nothing
   | Ignore
@@ -33415,7 +33414,6 @@ type attr =
   | Arg_cst of cst
   | Fn_uncurry_arity of int (* annotated with [@bs.uncurry ] or [@bs.uncurry 2]*)
     (* maybe we can improve it as a combination of {!Asttypes.constant} and tuple *)
-  | Extern_arg_array 
   | Extern_unit
   | Nothing
   | Ignore
@@ -35803,7 +35801,7 @@ let process_obj
                     arg_type },
                    arg_types, (* ignored in [arg_types], reserved in [result_types] *)
                    ((name , [], new_ty) :: result_types)
-                 | Nothing | Extern_arg_array ->
+                 | Nothing  ->
                    let s = (Lam_methname.translate ~loc name) in
                    {arg_label = External_arg_spec.label s None ; arg_type },
                    {param_type with ty = new_ty}::arg_types,
@@ -35836,7 +35834,7 @@ let process_obj
                  | Ignore ->
                    External_arg_spec.empty_kind arg_type,
                    param_type::arg_types, result_types
-                 | Nothing | Extern_arg_array ->
+                 | Nothing ->
                    let s = (Lam_methname.translate ~loc name) in
                    {arg_label = External_arg_spec.optional s; arg_type},
                    param_type :: arg_types,

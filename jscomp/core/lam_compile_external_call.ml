@@ -146,7 +146,7 @@ let ocaml_to_js_eff
         Js_of_lam_variant.eval_as_unwrap raw_arg
     in
     Splice1 single_arg,[]
-  | Nothing  | Extern_arg_array ->  Splice1 arg, []
+  | Nothing  ->  Splice1 arg, []
 
 
 
