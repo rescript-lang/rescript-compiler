@@ -8,14 +8,16 @@ var fs = require('fs')
 var path = require('path')
 var child_process = require('child_process')
 
+var versionPrefix = require('./buildocaml.js').getVersionPrefix()
+var stdlibVersion = versionPrefix.includes('4.02') ? 'stdlib-402' : 'stdlib-406'
 var runtime_dir = path.join(__dirname,'..','jscomp','runtime')
 var others_dir = path.join(__dirname,'..','jscomp','others')
-var stdlib_dir = path.join(__dirname,'..','jscomp','stdlib-402')
+var stdlib_dir = path.join(__dirname,'..','jscomp',stdlibVersion)
 var jscomp = path.join(__dirname,'..','jscomp')
 var runtime_prefix = path.relative(jscomp,runtime_dir)
 var others_prefix = path.relative(jscomp, others_dir)
 var ocamldoc = 
-        path.join(__dirname,'..','native','bin','ocamldoc.opt')
+        path.join(__dirname,'..','native',versionPrefix,'bin','ocamldoc.opt')
 
 /**
  * 
