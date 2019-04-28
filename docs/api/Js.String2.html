@@ -13,6 +13,7 @@
 <nav class="module-index"><ul><li><a href="Belt.html">Belt</a></li>
 <li><a href="Belt_Array.html">Belt_Array</a></li>
 <li><a href="Belt_Debug.html">Belt_Debug</a></li>
+<li><a href="Belt_Float.html">Belt_Float</a></li>
 <li><a href="Belt_HashMap.html">Belt_HashMap</a></li>
 <li><a href="Belt_HashMapInt.html">Belt_HashMapInt</a></li>
 <li><a href="Belt_HashMapString.html">Belt_HashMapString</a></li>
@@ -20,6 +21,7 @@
 <li><a href="Belt_HashSetInt.html">Belt_HashSetInt</a></li>
 <li><a href="Belt_HashSetString.html">Belt_HashSetString</a></li>
 <li><a href="Belt_Id.html">Belt_Id</a></li>
+<li><a href="Belt_Int.html">Belt_Int</a></li>
 <li><a href="Belt_List.html">Belt_List</a></li>
 <li><a href="Belt_Map.html">Belt_Map</a></li>
 <li><a href="Belt_MapDict.html">Belt_MapDict</a></li>
@@ -683,7 +685,7 @@ If <code class="code">n</code> is greater than the length of <code class="code">
                     </div>
 
                   
-<pre><span id="VALsplitByRe"><span class="keyword">val</span> splitByRe</span> : <code class="type"><a href="Js_string2.html#TYPEt">t</a> -> <a href="Js_re.html#TYPEt">Js_re.t</a> -> <a href="Js_string2.html#TYPEt">t</a> array</code></pre><div class="info ">
+<pre><span id="VALsplitByRe"><span class="keyword">val</span> splitByRe</span> : <code class="type"><a href="Js_string2.html#TYPEt">t</a> -> <a href="Js_re.html#TYPEt">Js_re.t</a> -> <a href="Js_string2.html#TYPEt">t</a> option array</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">splitByRe regex str</code> splits the given <code class="code">str</code> at every occurrence of <code class="code">regex</code> and returns an
   array of the resulting substrings.<br>
@@ -697,7 +699,7 @@ If <code class="code">n</code> is greater than the length of <code class="code">
                     </div>
 
                   
-<pre><span id="VALsplitByReAtMost"><span class="keyword">val</span> splitByReAtMost</span> : <code class="type"><a href="Js_string2.html#TYPEt">t</a> -> <a href="Js_re.html#TYPEt">Js_re.t</a> -> limit:int -> <a href="Js_string2.html#TYPEt">t</a> array</code></pre><div class="info ">
+<pre><span id="VALsplitByReAtMost"><span class="keyword">val</span> splitByReAtMost</span> : <code class="type"><a href="Js_string2.html#TYPEt">t</a> -> <a href="Js_re.html#TYPEt">Js_re.t</a> -> limit:int -> <a href="Js_string2.html#TYPEt">t</a> option array</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">splitByReAtMost regex ~limit: n str</code> splits the given <code class="code">str</code> at every occurrence of <code class="code">regex</code> and returns an
   array of the first <code class="code">n</code> resulting substrings. If <code class="code">n</code> is negative or greater than the number of substrings, the array will contain all the substrings.<br>
