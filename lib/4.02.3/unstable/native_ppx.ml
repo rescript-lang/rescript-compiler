@@ -16652,6 +16652,9 @@ let variant_can_bs_unwrap_fields (row_fields : Parsetree.row_field list) : bool 
   | `No_fields
   | `Invalid_field -> false
 
+(*
+  TODO: [nolabel] is only used once turn Nothing into Unit, refactor later
+*)
 let spec_of_ptyp 
     (nolabel : bool) (ptyp : Parsetree.core_type) : External_arg_spec.attr = 
   let ptyp_desc = ptyp.ptyp_desc in
@@ -16700,8 +16703,6 @@ let spec_of_ptyp
     begin match ptyp_desc with
       | Ptyp_constr ({txt = Lident "unit"; _}, [])
         -> if nolabel then Extern_unit else  Nothing
-      | Ptyp_constr ({txt = Lident "array"; _}, [_])
-        -> Extern_arg_array
       | Ptyp_variant _ ->
         Bs_warnings.prerr_bs_ffi_warning ptyp.ptyp_loc Unsafe_poly_variant_type;
         Nothing
@@ -17490,6 +17491,21 @@ let handle_attributes
         (fun  param_type (arg_type_specs, arg_types, i) ->
            let arg_label = Ast_compatible.convert param_type.label in
            let ty = param_type.ty in 
+           if i = 0 && splice  then
+             begin match arg_label with 
+               | Optional _ -> 
+                 Location.raise_errorf ~loc "[@@@@bs.splice] expect the last type to be a non optional"
+               | Labelled _ | Nolabel 
+                -> 
+                if Ast_core_type.is_any ty then 
+                  Location.raise_errorf ~loc "[@@@@bs.splice] expect the last type to be an array";                  
+                if spec_of_ptyp true ty <> Nothing then 
+                  Location.raise_errorf ~loc "[@@@@bs.splice] expect the last type to be an array";
+                match ty.ptyp_desc with 
+                | Ptyp_constr({txt = Lident "array"; _}, [_])
+                  -> ()
+                | _ -> Location.raise_errorf ~loc "[@@@@bs.splice] expect the last type to be an array";
+             end ; 
            let arg_label, arg_type, new_arg_types =
              match arg_label with
              | Optional s  ->
@@ -17519,8 +17535,6 @@ let handle_attributes
                    External_arg_spec.empty_label, arg_type, {param_type with ty = new_ty} :: arg_types
                end
            in
-           (if i = 0 && splice && arg_type <> Extern_arg_array  then
-              Location.raise_errorf ~loc "[@@@@bs.splice] expect the last type to be an array");
            ({ arg_label  ;
               arg_type
             } :: arg_type_specs,
