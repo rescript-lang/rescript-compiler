@@ -16652,7 +16652,8 @@ let variant_can_bs_unwrap_fields (row_fields : Parsetree.row_field list) : bool 
   | `No_fields
   | `Invalid_field -> false
 
-let spec_of_ptyp nolabel (ptyp : Parsetree.core_type) = 
+let spec_of_ptyp 
+    (nolabel : bool) (ptyp : Parsetree.core_type) : External_arg_spec.attr = 
   let ptyp_desc = ptyp.ptyp_desc in
   match Ast_attributes.iter_process_bs_string_int_unwrap_uncurry ptyp.ptyp_attributes with
   | `String ->
@@ -17468,21 +17469,23 @@ let handle_attributes
   else
     let splice = external_desc.splice in
     let arg_type_specs, new_arg_types_ty, arg_type_specs_length   =
-      Ext_list.fold_right arg_types_ty (match external_desc with
-          | {val_send_pipe = Some obj; _ } ->
-            let new_ty, arg_type = refine_arg_type ~nolabel:true obj in
-            (match arg_type with
-             | Arg_cst _ ->
-               Location.raise_errorf ~loc:obj.ptyp_loc "[@bs.as] is not supported in bs.send type "
-             | _ ->
-               (* more error checking *)
-               [External_arg_spec.empty_kind arg_type],
-               [({label = Ast_compatible.no_label;
+      let init = 
+        match external_desc with
+        | {val_send_pipe = Some obj; _ } ->
+          let new_ty, arg_type = refine_arg_type ~nolabel:true obj in
+          (match arg_type with
+           | Arg_cst _ ->
+             Location.raise_errorf ~loc:obj.ptyp_loc "[@bs.as] is not supported in bs.send type "
+           | _ ->
+             (* more error checking *)
+             [External_arg_spec.empty_kind arg_type],
+             [({label = Ast_compatible.no_label;
                 ty = new_ty;
                 attr =  [];
                 loc = obj.ptyp_loc} : Ast_compatible.param_type)],
-                1)           
-          | {val_send_pipe = None ; _ } -> [],[], 0)
+             0)           
+        | {val_send_pipe = None ; _ } -> [],[], 0 in 
+      Ext_list.fold_right arg_types_ty init
         (fun  param_type (arg_type_specs, arg_types, i) ->
            let arg_label = Ast_compatible.convert param_type.label in
            let ty = param_type.ty in 
@@ -17515,11 +17518,9 @@ let handle_attributes
                    External_arg_spec.empty_label, arg_type, {param_type with ty = new_ty} :: arg_types
                end
            in
-           (if i = 0 && splice  then
-              match arg_type with
-              | Extern_arg_array  -> ()
-              | _ ->  Location.raise_errorf ~loc "[@@@@bs.splice] expect the last type to be an array");
-           ({ External_arg_spec.arg_label  ;
+           (if i = 0 && splice && arg_type <> Extern_arg_array  then
+              Location.raise_errorf ~loc "[@@@@bs.splice] expect the last type to be an array");
+           ({ arg_label  ;
               arg_type
             } :: arg_type_specs,
             new_arg_types,
