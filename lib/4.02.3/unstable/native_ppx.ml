@@ -17469,22 +17469,23 @@ let handle_attributes
   else
     let splice = external_desc.splice in
     let arg_type_specs, new_arg_types_ty, arg_type_specs_length   =
-      let init = 
-        match external_desc with
-        | {val_send_pipe = Some obj; _ } ->
+      let init : External_arg_spec.t list * Ast_compatible.param_type list * int  = 
+        match external_desc.val_send_pipe with
+        | Some obj ->
           let new_ty, arg_type = refine_arg_type ~nolabel:true obj in
-          (match arg_type with
-           | Arg_cst _ ->
-             Location.raise_errorf ~loc:obj.ptyp_loc "[@bs.as] is not supported in bs.send type "
-           | _ ->
-             (* more error checking *)
-             [External_arg_spec.empty_kind arg_type],
-             [({label = Ast_compatible.no_label;
+          begin match arg_type with
+            | Arg_cst _ ->
+              Location.raise_errorf ~loc:obj.ptyp_loc "[@bs.as] is not supported in bs.send type "
+            | _ ->
+              (* more error checking *)
+              [External_arg_spec.empty_kind arg_type],
+              [{label = Ast_compatible.no_label;
                 ty = new_ty;
                 attr =  [];
-                loc = obj.ptyp_loc} : Ast_compatible.param_type)],
-             0)           
-        | {val_send_pipe = None ; _ } -> [],[], 0 in 
+                loc = obj.ptyp_loc} ],
+              0           
+          end
+        | None -> [],[], 0 in 
       Ext_list.fold_right arg_types_ty init
         (fun  param_type (arg_type_specs, arg_types, i) ->
            let arg_label = Ast_compatible.convert param_type.label in
