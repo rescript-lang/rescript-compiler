@@ -8061,6 +8061,26 @@ let suites =
         perform_bsc  [| "-bs-eval"; {|let str = "'a'" |}|] in
       OUnit.assert_bool __LOC__ (v_output.exit_code = 0)
     end;
+    __LOC__ >:: begin fun _ -> 
+    let v_output = perform_bsc [|"-bs-eval"; {|type 'a arra = 'a array
+    external
+      f : 
+      int -> int -> int arra -> unit
+      = ""
+      [@@bs.send.pipe:int]
+      [@@bs.splice]|}|] in  
+      OUnit.assert_bool __LOC__ (Ext_string.contain_substring v_output.stderr "bs.splice")
+    end;
+        __LOC__ >:: begin fun _ -> 
+    let v_output = perform_bsc [|"-bs-eval"; {|external
+  f2 : 
+  int -> int -> ?y:int array -> unit  
+  = ""
+  [@@bs.send.pipe:int]
+  [@@bs.splice]  |}|] in  
+      OUnit.assert_bool __LOC__ (Ext_string.contain_substring v_output.stderr "bs.splice")
+    end;
+
     __LOC__ >:: begin fun _ ->
       let should_be_warning =
         bsc_check_eval  {|let bla4 foo x y= foo##(method1 x y [@bs]) |} in
