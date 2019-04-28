@@ -92,7 +92,7 @@ let append_list  x xs =
 *)
 let ocaml_to_js_eff 
     ({arg_label;  arg_type }:  External_arg_spec.t)
-    (raw_arg : J.expression)
+    (raw_arg : E.t)
   : arg_expression * E.t list  =
   let arg =
     match arg_label with

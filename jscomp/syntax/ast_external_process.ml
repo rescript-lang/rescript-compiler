@@ -49,7 +49,8 @@ let variant_can_bs_unwrap_fields (row_fields : Parsetree.row_field list) : bool 
   | `No_fields
   | `Invalid_field -> false
 
-let spec_of_ptyp nolabel (ptyp : Parsetree.core_type) = 
+let spec_of_ptyp 
+    (nolabel : bool) (ptyp : Parsetree.core_type) : External_arg_spec.attr = 
   let ptyp_desc = ptyp.ptyp_desc in
   match Ast_attributes.iter_process_bs_string_int_unwrap_uncurry ptyp.ptyp_attributes with
   | `String ->
@@ -914,11 +915,9 @@ let handle_attributes
                    External_arg_spec.empty_label, arg_type, {param_type with ty = new_ty} :: arg_types
                end
            in
-           (if i = 0 && splice  then
-              match arg_type with
-              | Extern_arg_array  -> ()
-              | _ ->  Location.raise_errorf ~loc "[@@@@bs.splice] expect the last type to be an array");
-           ({ External_arg_spec.arg_label  ;
+           (if i = 0 && splice && arg_type <> Extern_arg_array  then
+              Location.raise_errorf ~loc "[@@@@bs.splice] expect the last type to be an array");
+           ({ arg_label  ;
               arg_type
             } :: arg_type_specs,
             new_arg_types,
