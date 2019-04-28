@@ -16753,11 +16753,11 @@ let get_opt_arg_type
     (ptyp_arg : Ast_core_type.t) :
   External_arg_spec.attr  =
   let ptyp = get_basic_type_from_option_label ptyp_arg in 
-  (if Ast_core_type.is_any ptyp then (* (_[@bs.as ])*)
-     (* extenral f : ?x:_ -> y:int -> _ = "" [@@bs.obj] is not allowed *)
-     Bs_syntaxerr.err ptyp.ptyp_loc Invalid_underscore_type_in_external
-   else (* ([`a|`b] [@bs.string]) *)    
-     spec_of_ptyp nolabel ptyp)
+  if Ast_core_type.is_any ptyp then (* (_[@bs.as ])*)
+    (* extenral f : ?x:_ -> y:int -> _ = "" [@@bs.obj] is not allowed *)
+    Bs_syntaxerr.err ptyp.ptyp_loc Invalid_underscore_type_in_external;
+  (* ([`a|`b] [@bs.string]) *)    
+  spec_of_ptyp nolabel ptyp
 
 
 
