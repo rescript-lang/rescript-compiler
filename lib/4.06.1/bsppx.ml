@@ -18044,7 +18044,6 @@ type attr =
   | Arg_cst of cst
   | Fn_uncurry_arity of int (* annotated with [@bs.uncurry ] or [@bs.uncurry 2]*)
   (* maybe we can improve it as a combination of {!Asttypes.constant} and tuple *)
-  | Array 
   | Extern_unit
   | Nothing
   | Ignore
@@ -18115,7 +18114,6 @@ type attr =
   | Arg_cst of cst
   | Fn_uncurry_arity of int (* annotated with [@bs.uncurry ] or [@bs.uncurry 2]*)
     (* maybe we can improve it as a combination of {!Asttypes.constant} and tuple *)
-  | Array 
   | Extern_unit
   | Nothing
   | Ignore
@@ -20182,7 +20180,11 @@ let variant_can_bs_unwrap_fields (row_fields : Parsetree.row_field list) : bool 
   | `No_fields
   | `Invalid_field -> false
 
-let spec_of_ptyp nolabel (ptyp : Parsetree.core_type) = 
+(*
+  TODO: [nolabel] is only used once turn Nothing into Unit, refactor later
+*)
+let spec_of_ptyp 
+    (nolabel : bool) (ptyp : Parsetree.core_type) : External_arg_spec.attr = 
   let ptyp_desc = ptyp.ptyp_desc in
   match Ast_attributes.iter_process_bs_string_int_unwrap_uncurry ptyp.ptyp_attributes with
   | `String ->
@@ -20229,8 +20231,6 @@ let spec_of_ptyp nolabel (ptyp : Parsetree.core_type) =
     begin match ptyp_desc with
       | Ptyp_constr ({txt = Lident "unit"; _}, [])
         -> if nolabel then Extern_unit else  Nothing
-      | Ptyp_constr ({txt = Lident "array"; _}, [_])
-        -> Array
       | Ptyp_variant _ ->
         Bs_warnings.prerr_bs_ffi_warning ptyp.ptyp_loc Unsafe_poly_variant_type;
         Nothing
@@ -20280,11 +20280,11 @@ let get_opt_arg_type
     (ptyp_arg : Ast_core_type.t) :
   External_arg_spec.attr  =
   let ptyp = get_basic_type_from_option_label ptyp_arg in 
-  (if Ast_core_type.is_any ptyp then (* (_[@bs.as ])*)
-     (* extenral f : ?x:_ -> y:int -> _ = "" [@@bs.obj] is not allowed *)
-     Bs_syntaxerr.err ptyp.ptyp_loc Invalid_underscore_type_in_external
-   else (* ([`a|`b] [@bs.string]) *)    
-     spec_of_ptyp nolabel ptyp)
+  if Ast_core_type.is_any ptyp then (* (_[@bs.as ])*)
+    (* extenral f : ?x:_ -> y:int -> _ = "" [@@bs.obj] is not allowed *)
+    Bs_syntaxerr.err ptyp.ptyp_loc Invalid_underscore_type_in_external;
+  (* ([`a|`b] [@bs.string]) *)    
+  spec_of_ptyp nolabel ptyp
 
 
 
@@ -20565,7 +20565,7 @@ let process_obj
                     arg_type },
                    arg_types, (* ignored in [arg_types], reserved in [result_types] *)
                    ((name , [], new_ty) :: result_types)
-                 | Nothing | Array ->
+                 | Nothing  ->
                    let s = (Lam_methname.translate ~loc name) in
                    {arg_label = External_arg_spec.label s None ; arg_type },
                    {param_type with ty = new_ty}::arg_types,
@@ -20598,7 +20598,7 @@ let process_obj
                  | Ignore ->
                    External_arg_spec.empty_kind arg_type,
                    param_type::arg_types, result_types
-                 | Nothing | Array ->
+                 | Nothing ->
                    let s = (Lam_methname.translate ~loc name) in
                    {arg_label = External_arg_spec.optional s; arg_type},
                    param_type :: arg_types,
@@ -20996,24 +20996,42 @@ let handle_attributes
   else
     let splice = external_desc.splice in
     let arg_type_specs, new_arg_types_ty, arg_type_specs_length   =
-      Ext_list.fold_right arg_types_ty (match external_desc with
-          | {val_send_pipe = Some obj; _ } ->
-            let new_ty, arg_type = refine_arg_type ~nolabel:true obj in
-            (match arg_type with
-             | Arg_cst _ ->
-               Location.raise_errorf ~loc:obj.ptyp_loc "[@bs.as] is not supported in bs.send type "
-             | _ ->
-               (* more error checking *)
-               [External_arg_spec.empty_kind arg_type],
-               [({label = Ast_compatible.no_label;
+      let init : External_arg_spec.t list * Ast_compatible.param_type list * int  = 
+        match external_desc.val_send_pipe with
+        | Some obj ->
+          let new_ty, arg_type = refine_arg_type ~nolabel:true obj in
+          begin match arg_type with
+            | Arg_cst _ ->
+              Location.raise_errorf ~loc:obj.ptyp_loc "[@bs.as] is not supported in bs.send type "
+            | _ ->
+              (* more error checking *)
+              [External_arg_spec.empty_kind arg_type],
+              [{label = Ast_compatible.no_label;
                 ty = new_ty;
                 attr =  [];
-                loc = obj.ptyp_loc} : Ast_compatible.param_type)],
-                1)           
-          | {val_send_pipe = None ; _ } -> [],[], 0)
+                loc = obj.ptyp_loc} ],
+              0           
+          end
+        | None -> [],[], 0 in 
+      Ext_list.fold_right arg_types_ty init
         (fun  param_type (arg_type_specs, arg_types, i) ->
            let arg_label = Ast_compatible.convert param_type.label in
            let ty = param_type.ty in 
+           if i = 0 && splice  then
+             begin match arg_label with 
+               | Optional _ -> 
+                 Location.raise_errorf ~loc "[@@@@bs.splice] expect the last type to be a non optional"
+               | Labelled _ | Nolabel 
+                -> 
+                if Ast_core_type.is_any ty then 
+                  Location.raise_errorf ~loc "[@@@@bs.splice] expect the last type to be an array";                  
+                if spec_of_ptyp true ty <> Nothing then 
+                  Location.raise_errorf ~loc "[@@@@bs.splice] expect the last type to be an array";
+                match ty.ptyp_desc with 
+                | Ptyp_constr({txt = Lident "array"; _}, [_])
+                  -> ()
+                | _ -> Location.raise_errorf ~loc "[@@@@bs.splice] expect the last type to be an array";
+             end ; 
            let arg_label, arg_type, new_arg_types =
              match arg_label with
              | Optional s  ->
@@ -21043,11 +21061,7 @@ let handle_attributes
                    External_arg_spec.empty_label, arg_type, {param_type with ty = new_ty} :: arg_types
                end
            in
-           (if i = 0 && splice  then
-              match arg_type with
-              | Array  -> ()
-              | _ ->  Location.raise_errorf ~loc "[@@@@bs.splice] expect the last type to be an array");
-           ({ External_arg_spec.arg_label  ;
+           ({ arg_label  ;
               arg_type
             } :: arg_type_specs,
             new_arg_types,
@@ -23841,13 +23855,13 @@ let app_exp_mapper
         a |. f
         a |. f b c [@bs]  --> f a b c [@bs]
         a |. M.(f b c) --> M.f a M.b M.c
+        a |. (g |. b)
         a |. M.Some
       *)
       let new_obj_arg = self.expr self obj_arg in
+      let fn = self.expr self fn in 
       begin match fn with
         | {pexp_desc = Pexp_apply (fn, args); pexp_loc; pexp_attributes} ->
-          let fn = self.expr self fn in
-          let args = Ext_list.map  args (fun (lab,exp) -> lab, self.expr self exp ) in
           Bs_ast_invariant.warn_discarded_unused_attributes pexp_attributes;
           { pexp_desc = Pexp_apply(fn, (Ast_compatible.no_label, new_obj_arg) :: args);
             pexp_attributes = [];
@@ -23865,8 +23879,6 @@ let app_exp_mapper
                             match fn with
                             | {pexp_desc = Pexp_apply (fn,args); pexp_loc; pexp_attributes }
                               ->
-                              let fn = self.expr self fn in
-                              let args = Ext_list.map  args (fun (lab,exp) -> lab, self.expr self exp ) in
                               Bs_ast_invariant.warn_discarded_unused_attributes pexp_attributes;
                               { Parsetree.pexp_desc = Pexp_apply(fn, (Ast_compatible.no_label, bounded_obj_arg) :: args);
                                 pexp_attributes = [];
@@ -23875,21 +23887,19 @@ let app_exp_mapper
                               -> 
                               {fn with pexp_desc = Pexp_construct(ctor, Some bounded_obj_arg)}
                             | _ ->
-                              Ast_compatible.app1 ~loc:fn.pexp_loc
-                                (self.expr self fn )
-                                bounded_obj_arg
+                              Ast_compatible.app1 ~loc:fn.pexp_loc fn bounded_obj_arg
                           ));
                     pexp_attributes = tuple_attrs;
                     pexp_loc = fn.pexp_loc;
                   })) wholes
             |  {pexp_desc = Pexp_apply (e, args); pexp_attributes},  (_ :: _ as wholes) ->   
-              let fn = self.expr self (Ast_open_cxt.restore_exp e wholes) in 
-              let args = Ext_list.map args (fun (lab,exp) -> lab, self.expr self (Ast_open_cxt.restore_exp exp wholes)) in 
+              let fn = Ast_open_cxt.restore_exp e wholes in 
+              let args = Ext_list.map args (fun (lab,exp) -> lab, Ast_open_cxt.restore_exp exp wholes) in 
               Bs_ast_invariant.warn_discarded_unused_attributes pexp_attributes; 
               { pexp_desc = Pexp_apply(fn, (Ast_compatible.no_label, new_obj_arg) :: args);
                 pexp_attributes = [];
                 pexp_loc = loc}
-            | _ -> Ast_compatible.app1 ~loc (self.expr self fn) new_obj_arg
+            | _ -> Ast_compatible.app1 ~loc fn new_obj_arg
            end
       end
     | Some { op = "##" ; loc; args =  [obj; rest]} ->
@@ -26922,7 +26932,7 @@ let rec recursivelyMakeNamedArgsForExternal list args =
 # 269 "syntax/reactjs_jsx_ppx.cppo.ml"
     (* ~foo: option(int)=? *)
     | (label, Some ({ptyp_desc = Ptyp_constr ({txt=(Lident "option")}, [type_])}), _)
-    | (label, Some ({ptyp_desc = Ptyp_constr ({txt=(Ldot (Lident "*predef*", "option"))}, [type_])}), _) 
+    | (label, Some ({ptyp_desc = Ptyp_constr ({txt=(Ldot (Lident "*predef*", "option"))}, [type_])}), _)
     (* ~foo: int=? - note this isnt valid. but we want to get a type error *)
     | (label, Some type_, _) when isOptional label ->
     
@@ -26931,7 +26941,7 @@ let rec recursivelyMakeNamedArgsForExternal list args =
     
 # 282 "syntax/reactjs_jsx_ppx.cppo.ml"
     (* ~foo=? *)
-    | (label, None, _) when isOptional label -> 
+    | (label, None, _) when isOptional label ->
     
 # 285 "syntax/reactjs_jsx_ppx.cppo.ml"
     {
@@ -26942,13 +26952,13 @@ let rec recursivelyMakeNamedArgsForExternal list args =
     
 # 301 "syntax/reactjs_jsx_ppx.cppo.ml"
     (* ~foo *)
-    | (label, None, _) -> 
+    | (label, None, _) ->
     {
       ptyp_desc = Ptyp_var (safeTypeFromValue label);
       ptyp_loc = loc;
       ptyp_attributes = [];
     }
-    | (label, Some type_, _) -> 
+    | (label, Some type_, _) ->
     type_
     )
     args)
@@ -27724,12 +27734,12 @@ let jsxMapper () =
 
   { default_mapper with structure; expr; signature; module_binding; }
 
-let mapper = jsxMapper () 
-
 let rewrite_implementation (code: Parsetree.structure) : Parsetree.structure =
+  let mapper = jsxMapper () in
   mapper.structure mapper code
-let rewrite_signature (code : Parsetree.signature) : Parsetree.signature = 
-  mapper.signature mapper code 
+let rewrite_signature (code : Parsetree.signature) : Parsetree.signature =
+  let mapper = jsxMapper () in
+  mapper.signature mapper code
 
 
 end
@@ -27980,7 +27990,7 @@ let rec recursivelyMakeNamedArgsForExternal list args =
 # 269 "syntax/reactjs_jsx_ppx.cppo.ml"
     (* ~foo: option(int)=? *)
     | (label, Some ({ptyp_desc = Ptyp_constr ({txt=(Lident "option")}, [type_])}), _)
-    | (label, Some ({ptyp_desc = Ptyp_constr ({txt=(Ldot (Lident "*predef*", "option"))}, [type_])}), _) 
+    | (label, Some ({ptyp_desc = Ptyp_constr ({txt=(Ldot (Lident "*predef*", "option"))}, [type_])}), _)
     (* ~foo: int=? - note this isnt valid. but we want to get a type error *)
     | (label, Some type_, _) when isOptional label ->
     
@@ -27989,7 +27999,7 @@ let rec recursivelyMakeNamedArgsForExternal list args =
     
 # 282 "syntax/reactjs_jsx_ppx.cppo.ml"
     (* ~foo=? *)
-    | (label, None, _) when isOptional label -> 
+    | (label, None, _) when isOptional label ->
     
 # 285 "syntax/reactjs_jsx_ppx.cppo.ml"
     {
@@ -28000,13 +28010,13 @@ let rec recursivelyMakeNamedArgsForExternal list args =
     
 # 301 "syntax/reactjs_jsx_ppx.cppo.ml"
     (* ~foo *)
-    | (label, None, _) -> 
+    | (label, None, _) ->
     {
       ptyp_desc = Ptyp_var (safeTypeFromValue label);
       ptyp_loc = loc;
       ptyp_attributes = [];
     }
-    | (label, Some type_, _) -> 
+    | (label, Some type_, _) ->
     type_
     )
     args)
@@ -28782,12 +28792,12 @@ let jsxMapper () =
 
   { default_mapper with structure; expr; signature; module_binding; }
 
-let mapper = jsxMapper () 
-
 let rewrite_implementation (code: Parsetree.structure) : Parsetree.structure =
+  let mapper = jsxMapper () in
   mapper.structure mapper code
-let rewrite_signature (code : Parsetree.signature) : Parsetree.signature = 
-  mapper.signature mapper code 
+let rewrite_signature (code : Parsetree.signature) : Parsetree.signature =
+  let mapper = jsxMapper () in
+  mapper.signature mapper code
 
 
 end
