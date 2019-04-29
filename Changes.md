@@ -1,5 +1,26 @@
 
 * potential break changes
+# 5.0.4
+Features
+- #3523, #3516 Fusing react-jsx ppx as a flag (details https://bucklescript.github.io/blog/2019/04/22/release-5-0-4)
+Docs
+- #3522 add BS_VSCODE variable docs
+Fixes
+- #3540, #3482 remove unsupported items in the bsconfig.json schema
+- #3539, #3474 fix bad error message when a repo has same name for two modules
+- #3538, #3532 update docs
+- #3536, #3537 fix nesting (|.) ppx issues
+- #3519, #3535 fix external declarations that can not be generalized (uncovered by react jsx ppx v3)
+- #3534 fix commands building from ocaml.tar.gz 
+- #3527, #3525, #3504, #3500 playground upgrade 
+- #3518, #3507, #3517 not emit warnings for dependencies
+- #3515 fix on binding renameSync
+- #3508 tweak error message for syntax error
+- #3506 sync location and optional fixes for new jsx ppx
+- #3501, #3505 fix inconsistency between Js.String and Js.String2
+- #3502, #3503 fix pipe syntax on qualified opens
+- #3492, #3499 fix code gen in external when apply  bs.uncurry to (unit -> ..)
+- #3496, #3495 fix 'bs.module isn't being resolved relatively correctly'
 # 5.0.1
 Features
 - #3479 add a theme named react-hooks for the new ppx
