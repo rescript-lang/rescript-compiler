@@ -13794,6 +13794,11 @@ let (//) = Ext_path.combine
 (* we need copy package.json into [_build] since it does affect build output
    it is a bad idea to copy package.json which requires to copy js files
 *)
+let conflict_module_info modname a b = 
+  Bsb_exception.conflict_module
+    modname
+    (Bsb_db.dir_of_module_info a)
+    (Bsb_db.dir_of_module_info b)
 
 let merge_module_info_map acc sources : Bsb_db.t =
   String_map.merge acc sources (fun modname k1 k2 ->
@@ -13801,9 +13806,9 @@ let merge_module_info_map acc sources : Bsb_db.t =
       | None , None ->
         assert false
       | Some a, Some b  ->
-        Bsb_exception.conflict_module modname 
-          (Bsb_db.dir_of_module_info a)
-          (Bsb_db.dir_of_module_info b)     
+        conflict_module_info modname 
+          a
+          b
       | Some v, None  -> Some v
       | None, Some v ->  Some v
     )
@@ -13998,7 +14003,11 @@ let output_ninja_and_namespace_map
       for i = 1 to number_of_dev_groups  do
         let c = bs_groups.(i) in
         has_reason_files :=  Bsb_db.sanity_check c || !has_reason_files ;
-        String_map.iter c (fun k _ -> if String_map.mem lib k  then failwith ("conflict files found:" ^ k)) ;
+        String_map.iter c 
+          (fun k a -> 
+            if String_map.mem lib k  then 
+              conflict_module_info k a (String_map.find_exn lib k)            
+            ) ;
         Bsb_ninja_util.output_kv 
           (Bsb_dir_index.(string_of_bsb_dev_include (of_int i)))
           (Bsb_build_util.include_dirs @@ source_dirs.(i)) oc

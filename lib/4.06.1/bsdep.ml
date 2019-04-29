@@ -25654,6 +25654,160 @@ let process_deferred_actions env =
   output_name := final_output_name;
 
 end
+(** Interface as module  *)
+module Compdynlink
+= struct
+#1 "compdynlink.mli"
+(**************************************************************************)
+(*                                                                        *)
+(*                                 OCaml                                  *)
+(*                                                                        *)
+(*             Xavier Leroy, projet Cristal, INRIA Rocquencourt           *)
+(*                                                                        *)
+(*   Copyright 1996 Institut National de Recherche en Informatique et     *)
+(*     en Automatique.                                                    *)
+(*                                                                        *)
+(*   All rights reserved.  This file is distributed under the terms of    *)
+(*   the GNU Lesser General Public License version 2.1, with the          *)
+(*   special exception on linking described in the file LICENSE.          *)
+(*                                                                        *)
+(**************************************************************************)
+
+(** Dynamic loading of object files. *)
+
+val is_native: bool
+(** [true] if the program is native,
+    [false] if the program is bytecode. *)
+
+(** {1 Dynamic loading of compiled files} *)
+
+val loadfile : string -> unit
+(** In bytecode: load the given bytecode object file ([.cmo] file) or
+    bytecode library file ([.cma] file), and link it with the running
+    program. In native code: load the given OCaml plugin file (usually
+    [.cmxs]), and link it with the running
+    program.
+    All toplevel expressions in the loaded compilation units
+    are evaluated. No facilities are provided to
+    access value names defined by the unit. Therefore, the unit
+    must register itself its entry points with the main program,
+    e.g. by modifying tables of functions. *)
+
+val loadfile_private : string -> unit
+(** Same as [loadfile], except that the compilation units just loaded
+    are hidden (cannot be referenced) from other modules dynamically
+    loaded afterwards. *)
+
+val adapt_filename : string -> string
+(** In bytecode, the identity function. In native code, replace the last
+    extension with [.cmxs]. *)
+
+(** {1 Access control} *)
+
+val allow_only: string list -> unit
+(** [allow_only units] restricts the compilation units that
+    dynamically-linked units can reference: it forbids all references
+    to units other than those named in the list [units]. References
+    to any other compilation unit will cause a [Unavailable_unit]
+    error during [loadfile] or [loadfile_private].
+
+    Initially (or after calling [default_available_units]) all
+    compilation units composing the program currently running are
+    available for reference from dynamically-linked units.
+    [allow_only] can be used to restrict access to a subset of these
+    units, e.g. to the units that compose the API for
+    dynamically-linked code, and prevent access to all other units,
+    e.g. private, internal modules of the running program. If
+    [allow_only] is called several times, access will be restricted to
+    the intersection of the given lists (i.e. a call to [allow_only]
+    can never increase the set of available units). *)
+
+val prohibit: string list -> unit
+(** [prohibit units] prohibits dynamically-linked units from referencing
+    the units named in list [units].  This can be used to prevent
+    access to selected units, e.g. private, internal modules of
+    the running program. *)
+
+val default_available_units: unit -> unit
+(** Reset the set of units that can be referenced from dynamically-linked
+    code to its default value, that is, all units composing the currently
+    running program. *)
+
+val allow_unsafe_modules : bool -> unit
+(** Govern whether unsafe object files are allowed to be
+    dynamically linked. A compilation unit is 'unsafe' if it contains
+    declarations of external functions, which can break type safety.
+    By default, dynamic linking of unsafe object files is
+    not allowed. In native code, this function does nothing; object files
+    with external functions are always allowed to be dynamically linked. *)
+
+(** {1 Deprecated, low-level API for access control} *)
+
+(** @deprecated  The functions [add_interfaces], [add_available_units]
+    and [clear_available_units] should not be used in new programs,
+    since the default initialization of allowed units, along with the
+    [allow_only] and [prohibit] function, provides a better, safer
+    mechanism to control access to program units.  The three functions
+    below are provided for backward compatibility only and are not
+    available in native code. *)
+
+val add_interfaces : string list -> string list -> unit
+(** [add_interfaces units path] grants dynamically-linked object
+    files access to the compilation  units named in list [units].
+    The interfaces ([.cmi] files) for these units are searched in
+    [path] (a list of directory names). *)
+
+val add_available_units : (string * Digest.t) list -> unit
+(** Same as {!Dynlink.add_interfaces}, but instead of searching [.cmi] files
+    to find the unit interfaces, uses the interface digests given
+    for each unit. This way, the [.cmi] interface files need not be
+    available at run-time. The digests can be extracted from [.cmi]
+    files using the [extract_crc] program installed in the
+    OCaml standard library directory. *)
+
+val clear_available_units : unit -> unit
+(** Empty the list of compilation units accessible to dynamically-linked
+    programs. *)
+
+(** {1 Deprecated, initialization} *)
+
+val init : unit -> unit
+(** @deprecated Initialize the [Dynlink] library. This function is called
+    automatically when needed. *)
+
+(** {1 Error reporting} *)
+
+type linking_error =
+    Undefined_global of string
+  | Unavailable_primitive of string
+  | Uninitialized_global of string
+
+type error =
+    Not_a_bytecode_file of string
+  | Inconsistent_import of string
+  | Unavailable_unit of string
+  | Unsafe_file
+  | Linking_error of string * linking_error
+  | Corrupted_interface of string
+  | File_not_found of string
+  | Cannot_open_dll of string
+  | Inconsistent_implementation of string
+
+exception Error of error
+(** Errors in dynamic linking are reported by raising the [Error]
+    exception with a description of the error. *)
+
+val error_message : error -> string
+(** Convert an error description to a printable message. *)
+
+
+(**/**)
+
+(** {1 Internal functions} *)
+
+val digest_interface : string -> string list -> Digest.t
+
+end
 module Compmisc : sig 
 #1 "compmisc.mli"
 (**************************************************************************)
@@ -38911,7 +39065,6 @@ type attr =
   | Arg_cst of cst
   | Fn_uncurry_arity of int (* annotated with [@bs.uncurry ] or [@bs.uncurry 2]*)
   (* maybe we can improve it as a combination of {!Asttypes.constant} and tuple *)
-  | Array 
   | Extern_unit
   | Nothing
   | Ignore
@@ -38982,7 +39135,6 @@ type attr =
   | Arg_cst of cst
   | Fn_uncurry_arity of int (* annotated with [@bs.uncurry ] or [@bs.uncurry 2]*)
     (* maybe we can improve it as a combination of {!Asttypes.constant} and tuple *)
-  | Array 
   | Extern_unit
   | Nothing
   | Ignore
@@ -40986,7 +41138,11 @@ let variant_can_bs_unwrap_fields (row_fields : Parsetree.row_field list) : bool 
   | `No_fields
   | `Invalid_field -> false
 
-let spec_of_ptyp nolabel (ptyp : Parsetree.core_type) = 
+(*
+  TODO: [nolabel] is only used once turn Nothing into Unit, refactor later
+*)
+let spec_of_ptyp 
+    (nolabel : bool) (ptyp : Parsetree.core_type) : External_arg_spec.attr = 
   let ptyp_desc = ptyp.ptyp_desc in
   match Ast_attributes.iter_process_bs_string_int_unwrap_uncurry ptyp.ptyp_attributes with
   | `String ->
@@ -41033,8 +41189,6 @@ let spec_of_ptyp nolabel (ptyp : Parsetree.core_type) =
     begin match ptyp_desc with
       | Ptyp_constr ({txt = Lident "unit"; _}, [])
         -> if nolabel then Extern_unit else  Nothing
-      | Ptyp_constr ({txt = Lident "array"; _}, [_])
-        -> Array
       | Ptyp_variant _ ->
         Bs_warnings.prerr_bs_ffi_warning ptyp.ptyp_loc Unsafe_poly_variant_type;
         Nothing
@@ -41084,11 +41238,11 @@ let get_opt_arg_type
     (ptyp_arg : Ast_core_type.t) :
   External_arg_spec.attr  =
   let ptyp = get_basic_type_from_option_label ptyp_arg in 
-  (if Ast_core_type.is_any ptyp then (* (_[@bs.as ])*)
-     (* extenral f : ?x:_ -> y:int -> _ = "" [@@bs.obj] is not allowed *)
-     Bs_syntaxerr.err ptyp.ptyp_loc Invalid_underscore_type_in_external
-   else (* ([`a|`b] [@bs.string]) *)    
-     spec_of_ptyp nolabel ptyp)
+  if Ast_core_type.is_any ptyp then (* (_[@bs.as ])*)
+    (* extenral f : ?x:_ -> y:int -> _ = "" [@@bs.obj] is not allowed *)
+    Bs_syntaxerr.err ptyp.ptyp_loc Invalid_underscore_type_in_external;
+  (* ([`a|`b] [@bs.string]) *)    
+  spec_of_ptyp nolabel ptyp
 
 
 
@@ -41369,7 +41523,7 @@ let process_obj
                     arg_type },
                    arg_types, (* ignored in [arg_types], reserved in [result_types] *)
                    ((name , [], new_ty) :: result_types)
-                 | Nothing | Array ->
+                 | Nothing  ->
                    let s = (Lam_methname.translate ~loc name) in
                    {arg_label = External_arg_spec.label s None ; arg_type },
                    {param_type with ty = new_ty}::arg_types,
@@ -41402,7 +41556,7 @@ let process_obj
                  | Ignore ->
                    External_arg_spec.empty_kind arg_type,
                    param_type::arg_types, result_types
-                 | Nothing | Array ->
+                 | Nothing ->
                    let s = (Lam_methname.translate ~loc name) in
                    {arg_label = External_arg_spec.optional s; arg_type},
                    param_type :: arg_types,
@@ -41800,24 +41954,42 @@ let handle_attributes
   else
     let splice = external_desc.splice in
     let arg_type_specs, new_arg_types_ty, arg_type_specs_length   =
-      Ext_list.fold_right arg_types_ty (match external_desc with
-          | {val_send_pipe = Some obj; _ } ->
-            let new_ty, arg_type = refine_arg_type ~nolabel:true obj in
-            (match arg_type with
-             | Arg_cst _ ->
-               Location.raise_errorf ~loc:obj.ptyp_loc "[@bs.as] is not supported in bs.send type "
-             | _ ->
-               (* more error checking *)
-               [External_arg_spec.empty_kind arg_type],
-               [({label = Ast_compatible.no_label;
+      let init : External_arg_spec.t list * Ast_compatible.param_type list * int  = 
+        match external_desc.val_send_pipe with
+        | Some obj ->
+          let new_ty, arg_type = refine_arg_type ~nolabel:true obj in
+          begin match arg_type with
+            | Arg_cst _ ->
+              Location.raise_errorf ~loc:obj.ptyp_loc "[@bs.as] is not supported in bs.send type "
+            | _ ->
+              (* more error checking *)
+              [External_arg_spec.empty_kind arg_type],
+              [{label = Ast_compatible.no_label;
                 ty = new_ty;
                 attr =  [];
-                loc = obj.ptyp_loc} : Ast_compatible.param_type)],
-                1)           
-          | {val_send_pipe = None ; _ } -> [],[], 0)
+                loc = obj.ptyp_loc} ],
+              0           
+          end
+        | None -> [],[], 0 in 
+      Ext_list.fold_right arg_types_ty init
         (fun  param_type (arg_type_specs, arg_types, i) ->
            let arg_label = Ast_compatible.convert param_type.label in
            let ty = param_type.ty in 
+           if i = 0 && splice  then
+             begin match arg_label with 
+               | Optional _ -> 
+                 Location.raise_errorf ~loc "[@@@@bs.splice] expect the last type to be a non optional"
+               | Labelled _ | Nolabel 
+                -> 
+                if Ast_core_type.is_any ty then 
+                  Location.raise_errorf ~loc "[@@@@bs.splice] expect the last type to be an array";                  
+                if spec_of_ptyp true ty <> Nothing then 
+                  Location.raise_errorf ~loc "[@@@@bs.splice] expect the last type to be an array";
+                match ty.ptyp_desc with 
+                | Ptyp_constr({txt = Lident "array"; _}, [_])
+                  -> ()
+                | _ -> Location.raise_errorf ~loc "[@@@@bs.splice] expect the last type to be an array";
+             end ; 
            let arg_label, arg_type, new_arg_types =
              match arg_label with
              | Optional s  ->
@@ -41847,11 +42019,7 @@ let handle_attributes
                    External_arg_spec.empty_label, arg_type, {param_type with ty = new_ty} :: arg_types
                end
            in
-           (if i = 0 && splice  then
-              match arg_type with
-              | Array  -> ()
-              | _ ->  Location.raise_errorf ~loc "[@@@@bs.splice] expect the last type to be an array");
-           ({ External_arg_spec.arg_label  ;
+           ({ arg_label  ;
               arg_type
             } :: arg_type_specs,
             new_arg_types,
@@ -44645,13 +44813,13 @@ let app_exp_mapper
         a |. f
         a |. f b c [@bs]  --> f a b c [@bs]
         a |. M.(f b c) --> M.f a M.b M.c
+        a |. (g |. b)
         a |. M.Some
       *)
       let new_obj_arg = self.expr self obj_arg in
+      let fn = self.expr self fn in 
       begin match fn with
         | {pexp_desc = Pexp_apply (fn, args); pexp_loc; pexp_attributes} ->
-          let fn = self.expr self fn in
-          let args = Ext_list.map  args (fun (lab,exp) -> lab, self.expr self exp ) in
           Bs_ast_invariant.warn_discarded_unused_attributes pexp_attributes;
           { pexp_desc = Pexp_apply(fn, (Ast_compatible.no_label, new_obj_arg) :: args);
             pexp_attributes = [];
@@ -44669,8 +44837,6 @@ let app_exp_mapper
                             match fn with
                             | {pexp_desc = Pexp_apply (fn,args); pexp_loc; pexp_attributes }
                               ->
-                              let fn = self.expr self fn in
-                              let args = Ext_list.map  args (fun (lab,exp) -> lab, self.expr self exp ) in
                               Bs_ast_invariant.warn_discarded_unused_attributes pexp_attributes;
                               { Parsetree.pexp_desc = Pexp_apply(fn, (Ast_compatible.no_label, bounded_obj_arg) :: args);
                                 pexp_attributes = [];
@@ -44679,21 +44845,19 @@ let app_exp_mapper
                               -> 
                               {fn with pexp_desc = Pexp_construct(ctor, Some bounded_obj_arg)}
                             | _ ->
-                              Ast_compatible.app1 ~loc:fn.pexp_loc
-                                (self.expr self fn )
-                                bounded_obj_arg
+                              Ast_compatible.app1 ~loc:fn.pexp_loc fn bounded_obj_arg
                           ));
                     pexp_attributes = tuple_attrs;
                     pexp_loc = fn.pexp_loc;
                   })) wholes
             |  {pexp_desc = Pexp_apply (e, args); pexp_attributes},  (_ :: _ as wholes) ->   
-              let fn = self.expr self (Ast_open_cxt.restore_exp e wholes) in 
-              let args = Ext_list.map args (fun (lab,exp) -> lab, self.expr self (Ast_open_cxt.restore_exp exp wholes)) in 
+              let fn = Ast_open_cxt.restore_exp e wholes in 
+              let args = Ext_list.map args (fun (lab,exp) -> lab, Ast_open_cxt.restore_exp exp wholes) in 
               Bs_ast_invariant.warn_discarded_unused_attributes pexp_attributes; 
               { pexp_desc = Pexp_apply(fn, (Ast_compatible.no_label, new_obj_arg) :: args);
                 pexp_attributes = [];
                 pexp_loc = loc}
-            | _ -> Ast_compatible.app1 ~loc (self.expr self fn) new_obj_arg
+            | _ -> Ast_compatible.app1 ~loc fn new_obj_arg
            end
       end
     | Some { op = "##" ; loc; args =  [obj; rest]} ->
@@ -46575,7 +46739,7 @@ let rec recursivelyMakeNamedArgsForExternal list args =
 # 269 "syntax/reactjs_jsx_ppx.cppo.ml"
     (* ~foo: option(int)=? *)
     | (label, Some ({ptyp_desc = Ptyp_constr ({txt=(Lident "option")}, [type_])}), _)
-    | (label, Some ({ptyp_desc = Ptyp_constr ({txt=(Ldot (Lident "*predef*", "option"))}, [type_])}), _) 
+    | (label, Some ({ptyp_desc = Ptyp_constr ({txt=(Ldot (Lident "*predef*", "option"))}, [type_])}), _)
     (* ~foo: int=? - note this isnt valid. but we want to get a type error *)
     | (label, Some type_, _) when isOptional label ->
     
@@ -46584,7 +46748,7 @@ let rec recursivelyMakeNamedArgsForExternal list args =
     
 # 282 "syntax/reactjs_jsx_ppx.cppo.ml"
     (* ~foo=? *)
-    | (label, None, _) when isOptional label -> 
+    | (label, None, _) when isOptional label ->
     
 # 285 "syntax/reactjs_jsx_ppx.cppo.ml"
     {
@@ -46595,13 +46759,13 @@ let rec recursivelyMakeNamedArgsForExternal list args =
     
 # 301 "syntax/reactjs_jsx_ppx.cppo.ml"
     (* ~foo *)
-    | (label, None, _) -> 
+    | (label, None, _) ->
     {
       ptyp_desc = Ptyp_var (safeTypeFromValue label);
       ptyp_loc = loc;
       ptyp_attributes = [];
     }
-    | (label, Some type_, _) -> 
+    | (label, Some type_, _) ->
     type_
     )
     args)
@@ -47377,12 +47541,12 @@ let jsxMapper () =
 
   { default_mapper with structure; expr; signature; module_binding; }
 
-let mapper = jsxMapper () 
-
 let rewrite_implementation (code: Parsetree.structure) : Parsetree.structure =
+  let mapper = jsxMapper () in
   mapper.structure mapper code
-let rewrite_signature (code : Parsetree.signature) : Parsetree.signature = 
-  mapper.signature mapper code 
+let rewrite_signature (code : Parsetree.signature) : Parsetree.signature =
+  let mapper = jsxMapper () in
+  mapper.signature mapper code
 
 
 end
@@ -47633,7 +47797,7 @@ let rec recursivelyMakeNamedArgsForExternal list args =
 # 269 "syntax/reactjs_jsx_ppx.cppo.ml"
     (* ~foo: option(int)=? *)
     | (label, Some ({ptyp_desc = Ptyp_constr ({txt=(Lident "option")}, [type_])}), _)
-    | (label, Some ({ptyp_desc = Ptyp_constr ({txt=(Ldot (Lident "*predef*", "option"))}, [type_])}), _) 
+    | (label, Some ({ptyp_desc = Ptyp_constr ({txt=(Ldot (Lident "*predef*", "option"))}, [type_])}), _)
     (* ~foo: int=? - note this isnt valid. but we want to get a type error *)
     | (label, Some type_, _) when isOptional label ->
     
@@ -47642,7 +47806,7 @@ let rec recursivelyMakeNamedArgsForExternal list args =
     
 # 282 "syntax/reactjs_jsx_ppx.cppo.ml"
     (* ~foo=? *)
-    | (label, None, _) when isOptional label -> 
+    | (label, None, _) when isOptional label ->
     
 # 285 "syntax/reactjs_jsx_ppx.cppo.ml"
     {
@@ -47653,13 +47817,13 @@ let rec recursivelyMakeNamedArgsForExternal list args =
     
 # 301 "syntax/reactjs_jsx_ppx.cppo.ml"
     (* ~foo *)
-    | (label, None, _) -> 
+    | (label, None, _) ->
     {
       ptyp_desc = Ptyp_var (safeTypeFromValue label);
       ptyp_loc = loc;
       ptyp_attributes = [];
     }
-    | (label, Some type_, _) -> 
+    | (label, Some type_, _) ->
     type_
     )
     args)
@@ -48435,12 +48599,12 @@ let jsxMapper () =
 
   { default_mapper with structure; expr; signature; module_binding; }
 
-let mapper = jsxMapper () 
-
 let rewrite_implementation (code: Parsetree.structure) : Parsetree.structure =
+  let mapper = jsxMapper () in
   mapper.structure mapper code
-let rewrite_signature (code : Parsetree.signature) : Parsetree.signature = 
-  mapper.signature mapper code 
+let rewrite_signature (code : Parsetree.signature) : Parsetree.signature =
+  let mapper = jsxMapper () in
+  mapper.signature mapper code
 
 
 end

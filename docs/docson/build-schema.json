@@ -128,9 +128,7 @@
                             "type": "string",
                             "description": "name of the directory"
                         },
-                        "ppx-specs": {
-                            "$ref": "#/definitions/ppx-specs"
-                        },
+                   
                         "type": {
                             "enum": [
                                 "dev",

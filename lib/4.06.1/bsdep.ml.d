@@ -1,4 +1,5 @@
 ../lib/4.06.1/bsdep.ml:
+../ocaml/driver/compdynlink.mli
 ../ocaml/driver/compenv.ml
 ../ocaml/driver/compenv.mli
 ../ocaml/driver/compmisc.ml

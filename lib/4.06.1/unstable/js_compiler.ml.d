@@ -541,4 +541,5 @@
 ./syntax/external_arg_spec.mli
 ./syntax/external_ffi_types.ml
 ./syntax/external_ffi_types.mli
+./syntax/reactjs_jsx_ppx_v2.ml
 ./syntax/reactjs_jsx_ppx_v3.ml
