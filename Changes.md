@@ -3,8 +3,10 @@
 # 5.0.4
 Features
 - #3523, #3516 Fusing react-jsx ppx as a flag (details https://bucklescript.github.io/blog/2019/04/22/release-5-0-4)
+
 Docs
 - #3522 add BS_VSCODE variable docs
+
 Fixes
 - #3540, #3482 remove unsupported items in the bsconfig.json schema
 - #3539, #3474 fix bad error message when a repo has same name for two modules
