@@ -47,7 +47,7 @@ type t = float
 
 
 
-let to_string v =
+let to_string (v : float) =
   if v = infinity
   then "Infinity"
   else if v = neg_infinity
@@ -83,26 +83,42 @@ and is_hex_format_ox v cur =
 let is_hex_format (v : string) =   
   try is_hex_format_aux v 0 with _ -> false
 
+(*
+  call [to_string (float_of_string v)] 
+  directly would loose some precision and lost some information
+  like '3.0' -> '3'
 
-let caml_float_literal_to_js_string (v : string) : string = 
-  let len = String.length v in
+*)
+let rec aux (v : string) (buf : Buffer.t) i len = 
+  if i >= len then ()
+  else 
+    let x = v.[i] in
+    if x = '_' then
+      aux v buf (i + 1) len
+    else if   x  = '.' && i = len - 1  then
+      ()
+    else 
+      begin
+        Buffer.add_char buf x ;
+        aux v buf ( i + 1) len
+      end 
+
+let transform v  len = 
+  let buf = Buffer.create len  in
+  let i = ref 0 in 
+  while !i + 1 < len && v.[!i] = '0' && v.[!i + 1] <> '.' do 
+    incr i
+  done;
+  aux v buf !i len;
+  Buffer.contents buf
+
+
+
+let caml_float_literal_to_js_string (float_str : string) : string = 
+  let len = String.length float_str in
 #if OCAML_VERSION =~ ">4.03.0"  then
   if len >= 2 && is_hex_format v then  
     to_string (float_of_string v)
   else    
 #end
-    let rec aux buf i = 
-      if i >= len then buf
-      else 
-        let x = v.[i] in
-        if x = '_' then
-          aux buf (i + 1)
-        else if   x  = '.' && i = len - 1  then
-          buf
-        else 
-          begin
-            Buffer.add_char buf x ;
-            aux buf ( i + 1) 
-          end in
-    Buffer.contents (aux  (Buffer.create len) 0)
-
+  transform float_str len
