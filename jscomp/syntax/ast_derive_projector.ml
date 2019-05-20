@@ -21,9 +21,7 @@ let init () =
   Ast_derive.register
     derivingName
     (fun (x : Parsetree.expression option) ->
-       (match x with 
-        | Some config -> invalid_config config
-        | None -> ());
+       Ext_option.iter x invalid_config;
        {structure_gen = 
           begin fun (tdcls : tdcls) _explict_nonrec ->
             let handle_tdcl tdcl = 
@@ -43,9 +41,7 @@ let init () =
               | Ptype_variant constructor_declarations 
                 ->                 
                 Ext_list.map constructor_declarations
-                  (fun
-                    ( {pcd_name = {loc ; txt = con_name} ; pcd_args ; pcd_loc }:
-                        Parsetree.constructor_declaration)
+                  (fun {pcd_name = {loc ; txt = con_name} ; pcd_args ; pcd_loc; pcd_res }
                     -> (* TODO: add type annotations *)
 #if OCAML_VERSION =~ ">4.03.0" then
                       let pcd_args = 
@@ -55,12 +51,16 @@ let init () =
 #end                        
                       let little_con_name = Ext_string.uncapitalize_ascii con_name  in
                       let arity = List.length pcd_args in 
+                      let annotate_type = 
+                        match pcd_res with 
+                        | None -> core_type
+                        | Some x -> x in  
                       Ast_comb.single_non_rec_value {loc ; txt = little_con_name}
                         (
                           if arity = 0 then (*TODO: add a prefix, better inter-op with FFI *)
                             (Exp.constraint_
                                (Exp.construct {loc ; txt = Longident.Lident con_name } None)
-                               core_type
+                               annotate_type
                             )
                           else 
                             begin 
@@ -71,13 +71,11 @@ let init () =
                                   ( 
                                     Exp.construct {loc ; txt = Longident.Lident con_name} @@ 
                                     Some
-                                      ( 
-                                        if  arity = 1 then 
-                                          Exp.ident { loc ; txt = Longident.Lident (List.hd vars )}
+                                      (if  arity = 1 then 
+                                          Exp.ident { loc ; txt = Lident (List.hd vars )}
                                         else 
                                           Exp.tuple (Ext_list.map vars 
-                                                       (fun x -> Exp.ident {loc ; txt = Longident.Lident x})                                                       
-                                                    ) )) core_type
+                                                       (fun x -> Exp.ident {loc ; txt = Lident x})))) annotate_type
                               in 
                               Ext_list.fold_right vars exp (fun var b -> 
                                   Ast_compatible.fun_  (Pat.var {loc ; txt = var}) b 
@@ -100,19 +98,13 @@ let init () =
               match tdcl.ptype_kind with 
               | Ptype_record label_declarations 
                 ->                 
-                Ext_list.map label_declarations 
-                  (fun 
-                    ({pld_name ;
-                      pld_type
-                     } : 
-                       Parsetree.label_declaration) -> 
+                Ext_list.map label_declarations (fun {pld_name; pld_type}  -> 
                     Ast_comb.single_non_rec_val pld_name (Ast_compatible.arrow core_type pld_type )
                   )
               | Ptype_variant constructor_declarations 
                 ->                 
                 Ext_list.map constructor_declarations
-                  (fun  ({pcd_name = {loc ; txt = con_name} ; pcd_args ; pcd_loc }:
-                           Parsetree.constructor_declaration)
+                  (fun  {pcd_name = {loc ; txt = con_name} ; pcd_args ; pcd_loc; pcd_res}
                     -> 
 #if OCAML_VERSION =~ ">4.03.0" then                                          
                       let pcd_args = 
@@ -120,10 +112,12 @@ let init () =
                         | Pcstr_tuple pcd_args -> pcd_args 
                         | Pcstr_record _ -> assert false in 
 #end                        
+                      let annotate_type = 
+                        match pcd_res with
+                        | Some x -> x 
+                        | None -> core_type in 
                       Ast_comb.single_non_rec_val {loc ; txt = (Ext_string.uncapitalize_ascii con_name)}
-                        (Ext_list.fold_right pcd_args core_type
-                           (fun x acc -> Ast_compatible.arrow x acc)
-                           ))
+                        (Ext_list.fold_right pcd_args annotate_type (fun x acc -> Ast_compatible.arrow x acc)))
               | Ptype_open | Ptype_abstract -> 
               Ast_derive_util.notApplicable tdcl.ptype_loc derivingName ; 
               [] 
