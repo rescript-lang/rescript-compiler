@@ -57,8 +57,7 @@ let handleTdcl light (tdcl : Parsetree.type_declaration) =
               Parsetree.label_declaration) (acc, maker, labels) ->
            let prim = [label_name] in
            let is_optional = Ast_attributes.has_bs_optional pld_attributes in
-           (* Add the question mark back because that's how ocaml 4.02.3 determines if the argument
-             label is for a optional argument vs a named argument. *)
+
            let newLabel = if is_optional then {pld_name with txt = Ast_compatible.opt_label pld_name.Asttypes.txt} else pld_name in
 
             let maker, getter_type =
