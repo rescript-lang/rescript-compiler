@@ -99,6 +99,8 @@ val iter_process_derive_type :
 
 val bs : attr
 val is_bs : attr -> bool
+val is_optional : attr -> bool
+val is_bs_as : attr -> bool
 
 
 

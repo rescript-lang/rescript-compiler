@@ -119,8 +119,27 @@ val fun_ :
   expression -> 
   expression
 
-val is_arg_label_simple : 
-  arg_label -> bool   
+val opt_label : string ->
+#if OCAML_VERSION =~ ">4.03.0" then
+  Asttypes.arg_label
+#else
+  string
+#end
+
+val label_fun :
+  ?loc:Location.t ->
+  ?attrs:attrs ->
+#if OCAML_VERSION =~ ">4.03.0" then
+  label:Asttypes.arg_label ->
+#else
+  label:string ->
+#end
+  pattern ->
+  expression ->
+  expression
+
+val is_arg_label_simple :
+  arg_label -> bool
 
 val arrow :
   ?loc:Location.t -> 
