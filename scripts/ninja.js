@@ -1164,6 +1164,7 @@ function nativeNinja() {
     var ninjaOutput = useEnv ? 'compilerEnv.ninja' : 'compiler.ninja'
     var sourceDirs = ['stubs', 'ext', 'common', 'syntax', 'depends', 'core', 'super_errors', 'outcome_printer', 'bsb', 'ounit', 'ounit_tests', 'main']
     var includes = sourceDirs.map(x => `-I ${x}`).join(' ')
+    var refmtMainPath = version6() ? '../lib/4.06.1' : '../lib/4.02.3'
     var cppoNative = `
 ${useEnv ? getEnnvConfigNinja() : getVendorConfigNinja()}
 rule link
@@ -1246,6 +1247,9 @@ build common/bs_version.ml : mk_bsversion build_version.js ../package.json
 
 build ../lib/bsc.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa syntax/syntax.cmxa depends/depends.cmxa super_errors/super_errors.cmxa outcome_printer/outcome_printer.cmxa core/core.cmxa main/js_main.cmx
     libs = ocamlcommon.cmxa
+build ../lib/refmt.exe: link  ${refmtMainPath}/refmt_main3.mli ${refmtMainPath}/refmt_main3.ml
+    libs = ocamlcommon.cmxa
+    flags = -I ${refmtMainPath} -I +compiler-libs -w -40-30 -no-alias-deps
 build ../lib/bsb.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa bsb/bsb.cmxa main/bsb_main.cmx
     libs = ocamlcommon.cmxa unix.cmxa str.cmxa
 build ../lib/bsb_helper.exe: link stubs/stubs.cmxa ext/ext.cmxa common/common.cmxa  bsb/bsb.cmxa main/bsb_helper_main.cmx
