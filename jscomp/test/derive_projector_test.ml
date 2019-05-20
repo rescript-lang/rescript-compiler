@@ -51,3 +51,4 @@ type t =
 
 
 let f = a (fun [@bs] x -> x)  
+
