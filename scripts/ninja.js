@@ -461,7 +461,7 @@ function replaceCmj(x) {
  * @param {string[]} files
  * @param {string} dir
  * @param {DepsMap} depsMap
- * @return {Promise<DepsMap>}
+ * @return {Promise<void>}
  * Note `bsdep.exe` does not need post processing and -one-line flag
  * By default `ocamldep.opt` only list dependencies in its args
  */
@@ -480,17 +480,17 @@ function ocamlDepForBscAsync(files, dir, depsMap) {
           var pairs = stdout.split("\n").map(x => x.split(":"));
           pairs.forEach(x => {
             var deps;
-            let source = x[0];
+            let source = replaceCmj(x[0]);
             if (x[1] !== undefined && (deps = x[1].trim())) {
               deps = deps.split(" ");
               updateDepsKVsByFile(
-                replaceCmj(source),
+                source,
                 deps.map(x => replaceCmj(x)),
                 depsMap
               );
             }
           });
-          return resolve(depsMap);
+          return resolve();
         }
       }
     );
@@ -841,9 +841,11 @@ ${ninjaQuickBuidList([
   );
   var jsTargets = collectTarget(jsPrefixSourceFiles);
   var allJsTargets = scanFileTargets(jsTargets, []);
-  var [jsDepsMap, depsMap] = await Promise.all([
-    ocamlDepForBscAsync(jsPrefixSourceFiles, othersDir, new Map()),
-    ocamlDepForBscAsync(othersFiles, othersDir, new Map())
+  let jsDepsMap = new Map();
+  let depsMap = new Map();
+  await Promise.all([
+    ocamlDepForBscAsync(jsPrefixSourceFiles, othersDir, jsDepsMap),
+    ocamlDepForBscAsync(othersFiles, othersDir, depsMap)
   ]);
   var jsOutput = generateNinja(jsDepsMap, jsTargets, ninjaCwd, externalDeps);
   jsOutput.push(phony(js_package, fileTargets(allJsTargets), ninjaCwd));
@@ -954,8 +956,8 @@ ${ninjaQuickBuidList([
       (x.endsWith(".ml") || x.endsWith(".mli"))
     );
   });
-
-  var depsMap = await ocamlDepForBscAsync(sources, stdlibDir, new Map());
+  let depsMap = new Map();
+  await ocamlDepForBscAsync(sources, stdlibDir, depsMap);
   var targets = collectTarget(sources);
   var allTargets = scanFileTargets(targets, [
     "camlinternalFormatBasics.cmi",
@@ -1037,8 +1039,8 @@ ${mllList(ninjaCwd, [
       (x.endsWith(".ml") || x.endsWith(".mli")) && !x.endsWith("bspack.ml")
     );
   });
-
-  var depsMap = await ocamlDepForBscAsync(sources, testDir, new Map());
+  let depsMap = new Map();
+  await ocamlDepForBscAsync(sources, testDir, depsMap);
   var targets = collectTarget(sources);
   var output = generateNinja(depsMap, targets, ninjaCwd, [stdlibTarget]);
   writeFile(
