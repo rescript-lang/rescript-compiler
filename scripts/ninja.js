@@ -215,6 +215,17 @@ function updateDepsKVByFile(target, dependency, depsMap) {
     depsMap.set(target, new TargetSet([singleTon]));
   }
 }
+
+/**
+ *
+ * @param {string} s
+ */
+function uncapitalize(s) {
+  if (s.length === 0) {
+    return s;
+  }
+  return s[0].toLowerCase() + s.slice(1);
+}
 /**
  *
  * @param {string} target
@@ -231,6 +242,59 @@ function updateDepsKVsByFile(target, dependencies, depsMap) {
   } else {
     depsMap.set(target, new TargetSet(targets));
   }
+}
+
+/**
+ *
+ * @param {string} target
+ * @param {string[]} modules
+ * @param {DepsMap} depsMap
+ */
+function updateDepsKVsByModule(target, modules, depsMap) {
+  if (depsMap.has(target)) {
+    let s = depsMap.get(target);
+    for (let module of modules) {
+      let filename = uncapitalize(module);
+      let filenameAsCmi = filename + ".cmi";
+      let filenameAsCmj = filename + ".cmj";
+      if (target.endsWith(".cmi")) {
+        if (depsMap.has(filenameAsCmi)) {
+          s.add(fileTarget(filenameAsCmi));
+        }
+      } else if (target.endsWith(".cmj")) {
+        if (depsMap.has(filenameAsCmj)) {
+          s.add(fileTarget(filenameAsCmj));
+        } else if (depsMap.has(filenameAsCmi)) {
+          s.add(fileTarget(filenameAsCmi));
+        }
+      }
+    }
+  }
+}
+/**
+ *
+ * @param {string[]}sources
+ * @return {DepsMap}
+ */
+function createDepsMapWithTargets(sources) {
+  /**
+   * @type {DepsMap}
+   */
+  let depsMap = new Map();
+  for (let source of sources) {
+    let target = sourceToTarget(source);
+    depsMap.set(target, new TargetSet([]));
+  }
+  depsMap.forEach((set, name) => {
+    let cmiFile;
+    if (
+      name.endsWith(".cmj") &&
+      depsMap.has((cmiFile = replaceExt(name, ".cmi")))
+    ) {
+      set.add(fileTarget(cmiFile));
+    }
+  });
+  return depsMap;
 }
 
 /**
@@ -458,6 +522,18 @@ function replaceCmj(x) {
 
 /**
  *
+ * @param {string} y
+ */
+function sourceToTarget(y) {
+  if (y.endsWith(".ml")) {
+    return replaceExt(y, ".cmj");
+  } else if (y.endsWith(".mli")) {
+    return replaceExt(y, ".cmi");
+  }
+  return y;
+}
+/**
+ *
  * @param {string[]} files
  * @param {string} dir
  * @param {DepsMap} depsMap
@@ -520,15 +596,11 @@ function ocamlDepModulesForBscAsync(files, dir, depsMap) {
         } else {
           var pairs = stdout.split("\n").map(x => x.split(":"));
           pairs.forEach(x => {
-            var deps;
-            let source = x[0];
-            if (x[1] !== undefined && (deps = x[1].trim())) {
-              deps = deps.split(" ");
-              updateDepsKVsByFile(
-                replaceCmj(source),
-                deps.map(x => replaceCmj(x)),
-                depsMap
-              );
+            var modules;
+            let source = sourceToTarget(x[0].trim());
+            if (x[1] !== undefined && (modules = x[1].trim())) {
+              modules = modules.split(" ");
+              updateDepsKVsByModule(source, modules, depsMap);
             }
           });
           return resolve(depsMap);
@@ -1007,6 +1079,24 @@ function getDeps(text) {
 /**
  *
  * @param {string} x
+ * @param {string} newExt
+ * @example
+ *
+ * ```js
+ * replaceExt('xx.cmj', '.a') // return 'xx.a'
+ * ```
+ *
+ */
+function replaceExt(x, newExt) {
+  let index = x.lastIndexOf(".");
+  if (index < 0) {
+    return x;
+  }
+  return x.slice(0, index) + newExt;
+}
+/**
+ *
+ * @param {string} x
  */
 function baseName(x) {
   return x.substr(0, x.indexOf("."));
@@ -1039,8 +1129,9 @@ ${mllList(ninjaCwd, [
       (x.endsWith(".ml") || x.endsWith(".mli")) && !x.endsWith("bspack.ml")
     );
   });
-  let depsMap = new Map();
-  await ocamlDepForBscAsync(sources, testDir, depsMap);
+
+  let depsMap = createDepsMapWithTargets(sources);
+  await ocamlDepModulesForBscAsync(sources, testDir, depsMap);
   var targets = collectTarget(sources);
   var output = generateNinja(depsMap, targets, ninjaCwd, [stdlibTarget]);
   writeFile(
