@@ -52,10 +52,6 @@ let turn_bs_optional_into_optional (tdcls : Parsetree.type_declaration list) =
      {tdcl with ptype_kind = Ptype_record (List.map (fun ({Parsetree.pld_type; pld_loc; pld_attributes} as dcl : Parsetree.label_declaration) ->
            let has_optional_field = Ast_attributes.has_bs_optional pld_attributes in
            if has_optional_field then
-           (* @Incomplete remove ALL attributes when we might want to only remove the bs.optional.
-
-                      Ben - June 8th 2018
-            *)
              { dcl with
                Parsetree.pld_type = {dcl.pld_type with ptyp_desc =
                 Ptyp_constr(
