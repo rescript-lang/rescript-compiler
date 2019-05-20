@@ -449,9 +449,10 @@ function ocamlDepForBscAsync(files,dir, depsMap) {
                 var pairs = stdout.split('\n').map(x => x.split(':'))
                 pairs.forEach(x => {
                     var deps;
+                    let source = x[0]
                     if (x[1] !== undefined && (deps = x[1].trim())) {
-                        deps = deps.split(' ');
-                        updateDepsKVsByFile(replaceCmj(x[0]), deps.map(x => replaceCmj(x)), depsMap)
+                        deps = deps.split(' ');                        
+                        updateDepsKVsByFile(replaceCmj(source), deps.map(x => replaceCmj(x)), depsMap)
                     }
                 }
                 )
@@ -461,6 +462,39 @@ function ocamlDepForBscAsync(files,dir, depsMap) {
     })
 }
 
+/**
+ *
+ * @param {string[]} files
+ * @param {string} dir
+ * @param {DepsMap} depsMap
+ * @return {Promise<DepsMap>}
+ * Note `bsdep.exe` does not need post processing and -one-line flag
+ * By default `ocamldep.opt` only list dependencies in its args
+ */
+function ocamlDepModulesForBscAsync(files,dir, depsMap) {
+    return new Promise((resolve,reject) =>{
+        cp.exec(`${getOcamldepFile()} -modules -one-line -native ${files.join(' ')}`, {
+            cwd: dir,
+            encoding: 'ascii'
+        },function(error,stdout,stderr){
+            if(error !== null){
+                return reject(error)
+            } else {
+                var pairs = stdout.split('\n').map(x => x.split(':'))
+                pairs.forEach(x => {
+                    var deps;
+                    let source = x[0]
+                    if (x[1] !== undefined && (deps = x[1].trim())) {
+                        deps = deps.split(' ')
+                        updateDepsKVsByFile(replaceCmj(source), deps.map(x => replaceCmj(x)), depsMap)
+                    }
+                }
+                )
+                return resolve(depsMap)
+            }
+        })
+    })
+}
 
 
 /**
@@ -1358,10 +1392,5 @@ build ../odoc_gen/generator.cmxs : mk_shared ../odoc_gen/generator.mli ../odoc_g
             '\n'
         )
     })
-
-
-
-
-
 }
 
