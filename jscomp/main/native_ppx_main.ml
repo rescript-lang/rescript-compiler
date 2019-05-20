@@ -73,11 +73,8 @@ let structure_item_mapper (self : mapper) (str : Parsetree.structure_item) =
 #if OCAML_VERSION =~ ">4.03.0" then
       _rf,
 #end
-    (_ :: _ as tdcls )) (* [ {ptype_attributes} as tdcl ] *)->
+    (_ :: _ as tdcls )) ->
       Ast_tdcls.handleTdclsInStru self str tdcls
-  (* | Pstr_primitive prim when Ast_attributes.external_needs_to_be_encoded prim.pval_attributes
-      ->
-      Ast_external.handleExternalInStru self prim str *)
   | _ -> default_str_mapper self str
 
 let signature_item_mapper (self : mapper) (sigi : Parsetree.signature_item) =
