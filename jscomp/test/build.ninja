@@ -4,6 +4,12 @@ bsc_flags = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-cross
 rule cc
     command = $bsc -bs-cmi -bs-cmj $bsc_flags -bs-no-implicit-include -I test -c $in
     description = $in -> $out
+rule re
+    command = $bsc -pp '../lib/refmt.exe --print=binary' -bs-cmi -bs-cmj $bsc_flags -bs-no-implicit-include -I test -c -impl $in
+    description = $in -> $out
+rule rei
+    command = $bsc -pp '../lib/refmt.exe --print=binary' -bs-cmi  $bsc_flags -bs-no-implicit-include -I test -c -intf $in
+    description = $in -> $out
 
 
 rule mll
@@ -453,6 +459,7 @@ build test/random_test.cmi test/random_test.cmj : cc test/random_test.ml | test/
 build test/raw_hash_tbl_bench.cmi test/raw_hash_tbl_bench.cmj : cc test/raw_hash_tbl_bench.ml | $stdlib
 build test/raw_output_test.cmi test/raw_output_test.cmj : cc test/raw_output_test.ml | $stdlib
 build test/rbset.cmi test/rbset.cmj : cc test/rbset.ml | $stdlib
+build test/re_first_test.cmi test/re_first_test.cmj : re test/re_first_test.re | test/mt.cmj $stdlib
 build test/rebind_module.cmi test/rebind_module.cmj : cc test/rebind_module.ml | $stdlib
 build test/rebind_module_test.cmi test/rebind_module_test.cmj : cc test/rebind_module_test.ml | test/rebind_module.cmj $stdlib
 build test/rec_fun_test.cmi test/rec_fun_test.cmj : cc test/rec_fun_test.ml | test/mt.cmj $stdlib
