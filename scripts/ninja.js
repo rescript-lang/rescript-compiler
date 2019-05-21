@@ -525,9 +525,9 @@ function replaceCmj(x) {
  * @param {string} y
  */
 function sourceToTarget(y) {
-  if (y.endsWith(".ml")) {
+  if (y.endsWith(".ml") || y.endsWith(".re")) {
     return replaceExt(y, ".cmj");
-  } else if (y.endsWith(".mli")) {
+  } else if (y.endsWith(".mli") || y.endsWith(".rei")) {
     return replaceExt(y, ".cmi");
   }
   return y;
@@ -578,40 +578,71 @@ function ocamlDepForBscAsync(files, dir, depsMap) {
  * @param {string[]} files
  * @param {string} dir
  * @param {DepsMap} depsMap
- * @return {Promise<DepsMap>}
+ * @return { Promise<void> []}
  * Note `bsdep.exe` does not need post processing and -one-line flag
  * By default `ocamldep.opt` only list dependencies in its args
  */
-function ocamlDepModulesForBscAsync(files, dir, depsMap) {
-  return new Promise((resolve, reject) => {
-    cp.exec(
-      `${getOcamldepFile()} -modules -one-line -native ${files.join(" ")}`,
-      {
-        cwd: dir,
-        encoding: "ascii"
-      },
-      function(error, stdout, stderr) {
-        if (error !== null) {
-          return reject(error);
-        } else {
-          var pairs = stdout.split("\n").map(x => x.split(":"));
-          pairs.forEach(x => {
-            var modules;
-            let source = sourceToTarget(x[0].trim());
-            if (x[1] !== undefined && (modules = x[1].trim())) {
-              modules = modules.split(" ");
-              updateDepsKVsByModule(source, modules, depsMap);
-            }
-          });
-          return resolve(depsMap);
-        }
+function depModulesForBscAsync(files, dir, depsMap) {
+  let ocamlFiles = files.filter(x => x.endsWith(".ml") || x.endsWith(".mli"));
+  let reFiles = files.filter(x => x.endsWith(".re") || x.endsWith(".rei"));
+  /**
+   *
+   * @param {(value:void) =>void} resolve
+   * @param {(value:any)=>void} reject
+   */
+  let cb = (resolve, reject) => {
+    /**
+     * @param {any} error
+     * @param {string} stdout
+     * @param {string} stderr
+     */
+    let fn = function(error, stdout, stderr) {
+      if (error !== null) {
+        return reject(error);
+      } else {
+        var pairs = stdout.split("\n").map(x => x.split(":"));
+        pairs.forEach(x => {
+          var modules;
+          let source = sourceToTarget(x[0].trim());
+          if (x[1] !== undefined && (modules = x[1].trim())) {
+            modules = modules.split(" ");
+            updateDepsKVsByModule(source, modules, depsMap);
+          }
+        });
+        return resolve();
       }
-    );
-  });
+    };
+    return fn;
+  };
+  let config = {
+    cwd: dir,
+    encoding: "ascii"
+  };
+  return [
+    new Promise((resolve, reject) => {
+      cp.exec(
+        `${getOcamldepFile()} -modules -one-line -native ${ocamlFiles.join(
+          " "
+        )}`,
+        config,
+        cb(resolve, reject)
+      );
+    }),
+
+    new Promise((resolve, reject) => {
+      cp.exec(
+        `${getOcamldepFile()} -pp '../../lib/refmt.exe --print=binary' -modules -one-line -native -ml-synonym .re -mli-synonym .rei ${reFiles.join(
+          " "
+        )}`,
+        config,
+        cb(resolve, reject)
+      );
+    })
+  ];
 }
 
 /**
- * @typedef {('HAS_ML' | 'HAS_MLI' | 'HAS_BOTH')} FileInfo
+ * @typedef {('HAS_ML' | 'HAS_MLI' | 'HAS_BOTH' | 'HAS_RE' | 'HAS_REI' | 'HAS_BOTH_RE')} FileInfo
  * @param {string[]} sourceFiles
  * @returns {Map<string, FileInfo>}
  * We make a set to ensure that `sourceFiles` are not duplicated
@@ -627,8 +658,12 @@ function collectTarget(sourceFiles) {
     if (existExt === undefined) {
       if (ext === ".ml") {
         allTargets.set(name, "HAS_ML");
-      } else {
+      } else if (ext === ".mli") {
         allTargets.set(name, "HAS_MLI");
+      } else if (ext === ".re") {
+        allTargets.set(name, "HAS_RE");
+      } else if (ext === ".rei") {
+        allTargets.set(name, "HAS_REI");
       }
     } else {
       switch (existExt) {
@@ -637,10 +672,22 @@ function collectTarget(sourceFiles) {
             allTargets.set(name, "HAS_BOTH");
           }
           break;
+        case "HAS_RE":
+          if (ext === ".rei") {
+            allTargets.set(name, "HAS_BOTH_RE");
+          }
+          break;
         case "HAS_MLI":
           if (ext === ".ml") {
             allTargets.set(name, "HAS_BOTH");
           }
+          break;
+        case "HAS_REI":
+          if (ext === ".re") {
+            allTargets.set(name, "HAS_BOTH_RE");
+          }
+          break;
+        case "HAS_BOTH_RE":
         case "HAS_BOTH":
           break;
       }
@@ -661,11 +708,14 @@ function scanFileTargets(allTargets, collIn) {
   allTargets.forEach((ext, mod) => {
     switch (ext) {
       case "HAS_MLI":
+      case "HAS_REI":
         coll.push(`${mod}.cmi`);
         break;
+      case "HAS_BOTH_RE":
       case "HAS_BOTH":
         coll.push(`${mod}.cmi`, `${mod}.cmj`);
         break;
+      case "HAS_RE":
       case "HAS_ML":
         coll.push(`${mod}.cmi`, `${mod}.cmj`);
         break;
@@ -688,10 +738,12 @@ function generateNinja(depsMap, allTargets, cwd, extraDeps = []) {
    */
   var build_stmts = [];
   allTargets.forEach((x, mod) => {
-    var ouptput_cmj = mod + ".cmj";
-    var output_cmi = mod + ".cmi";
-    var input_ml = mod + ".ml";
-    var input_mli = mod + ".mli";
+    let ouptput_cmj = mod + ".cmj";
+    let output_cmi = mod + ".cmi";
+    let input_ml = mod + ".ml";
+    let input_mli = mod + ".mli";
+    let input_re = mod + ".re";
+    let input_rei = mod + ".rei";
     /**
      * @type {Override[]}
      */
@@ -704,10 +756,11 @@ function generateNinja(depsMap, allTargets, cwd, extraDeps = []) {
      *
      * @param {string[]} outputs
      * @param {string[]} inputs
+     *
      */
-    var mk = (outputs, inputs) => {
+    let mk = (outputs, inputs, rule = "cc") => {
       return build_stmts.push(
-        buildStmt(outputs, inputs, "cc", depsMap, cwd, overrides, extraDeps)
+        buildStmt(outputs, inputs, rule, depsMap, cwd, overrides, extraDeps)
       );
     };
     switch (x) {
@@ -715,9 +768,18 @@ function generateNinja(depsMap, allTargets, cwd, extraDeps = []) {
         mk([ouptput_cmj], [input_ml]);
         mk([output_cmi], [input_mli]);
         break;
+      case "HAS_BOTH_RE":
+        mk([ouptput_cmj], [input_re], "re");
+        mk([output_cmi], [input_rei], "rei");
+        break;
+      case "HAS_RE":
+        mk([output_cmi, ouptput_cmj], [input_re], "re");
+        break;
       case "HAS_ML":
         mk([output_cmi, ouptput_cmj], [input_ml]);
         break;
+      case "HAS_REI":
+        mk([output_cmi], [input_rei], "rei");
       case "HAS_MLI":
         mk([output_cmi], [input_mli]);
         break;
@@ -1115,6 +1177,12 @@ bsc_flags = -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-cross
 rule cc
     command = $bsc -bs-cmi -bs-cmj $bsc_flags -bs-no-implicit-include -I ${ninjaCwd} -c $in
     description = $in -> $out
+rule re
+    command = $bsc -pp '../lib/refmt.exe --print=binary' -bs-cmi -bs-cmj $bsc_flags -bs-no-implicit-include -I ${ninjaCwd} -c -impl $in
+    description = $in -> $out
+rule rei
+    command = $bsc -pp '../lib/refmt.exe --print=binary' -bs-cmi  $bsc_flags -bs-no-implicit-include -I ${ninjaCwd} -c -intf $in
+    description = $in -> $out
 
 ${mllRule}
 ${mllList(ninjaCwd, [
@@ -1126,12 +1194,14 @@ ${mllList(ninjaCwd, [
   var testDirFiles = fs.readdirSync(testDir, "ascii");
   var sources = testDirFiles.filter(x => {
     return (
-      (x.endsWith(".ml") || x.endsWith(".mli")) && !x.endsWith("bspack.ml")
+      x.endsWith(".re") ||
+      x.endsWith(".rei") ||
+      ((x.endsWith(".ml") || x.endsWith(".mli")) && !x.endsWith("bspack.ml"))
     );
   });
 
   let depsMap = createDepsMapWithTargets(sources);
-  await ocamlDepModulesForBscAsync(sources, testDir, depsMap);
+  await Promise.all(depModulesForBscAsync(sources, testDir, depsMap));
   var targets = collectTarget(sources);
   var output = generateNinja(depsMap, targets, ninjaCwd, [stdlibTarget]);
   writeFile(
