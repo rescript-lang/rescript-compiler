@@ -60,7 +60,7 @@ external empty : unit -> 'a t = "" [@@bs.obj]
 (** [empty ()] returns an empty dictionary *)
 
 (** Experimental internal funciton *)
-val unsafeDeleteKey : string t -> string -> unit [@bs]
+val unsafeDeleteKey : 'a t -> string -> unit [@bs]
 
 (* external entries : 'a t -> (key * 'a) array = "Object.entries" [@@bs.val] *)
 val entries : 'a t -> (key * 'a) array
