@@ -57,6 +57,22 @@ module S = Js_stmt_make
 
 module L = Js_dump_lit
 
+(* There modules are dynamically inserted in the last stage
+  {Caml_curry}
+  {Caml_block}
+  {Caml_option}
+
+  They can appear anywhere so even if you have a module 
+  {
+    let module Caml_block = ...
+
+    (* Later would insert the use of Caml_block here which should 
+      point tto the runtime module
+    *)
+  }
+  There are no sane way to easy detect it ahead of time, we should be
+  conservative here.
+*)
 module Curry_gen = struct 
   
   let pp_optimize_curry (f : P.t) (len : int) = 

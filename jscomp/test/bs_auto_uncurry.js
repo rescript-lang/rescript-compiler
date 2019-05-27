@@ -1,8 +1,11 @@
 'use strict';
 
 var Curry = require("../../lib/js/curry.js");
+var Caml_splice_call = require("../../lib/js/caml_splice_call.js");
 
 var Curry$1 = /* module */[];
+
+var Block = /* module */[];
 
 var xbs = Array.prototype.map.call(/* array */[
       1,
@@ -120,7 +123,18 @@ function unit_magic(param) {
 
 var f_unit_magic = unit_magic(/* () */0);
 
+function hh(xs) {
+  return (function (param) {
+      Caml_splice_call.spliceApply(f_0002, [
+            xs,
+            param
+          ]);
+      return /* () */0;
+    });
+}
+
 exports.Curry = Curry$1;
+exports.Block = Block;
 exports.xbs = xbs;
 exports.f = f;
 exports.xs = xs;
@@ -140,4 +154,5 @@ exports.add = add;
 exports.h6 = h6;
 exports.unit_magic = unit_magic;
 exports.f_unit_magic = f_unit_magic;
+exports.hh = hh;
 /* xbs Not a pure module */

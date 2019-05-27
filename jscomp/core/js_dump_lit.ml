@@ -85,7 +85,7 @@ let ge = ">="
 let plus_plus = "++" 
 (*  FIXME: use (i = i + 1 | 0) instead  *)
 let minus_minus = "--"
-let caml_block = "Block"
+
 let caml_block_create = "__"
 let block_record = "record"
 let block_local_module = "localModule"
