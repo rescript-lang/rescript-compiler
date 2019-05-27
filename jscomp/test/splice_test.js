@@ -1,8 +1,8 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 var Caml_array = require("../../lib/js/caml_array.js");
+var Caml_splice_call = require("../../lib/js/caml_splice_call.js");
 
 var suites = /* record */[/* contents : [] */0];
 
@@ -31,7 +31,7 @@ eq("File \"splice_test.ml\", line 28, characters 5-12", a, /* array */[
 
 function dynamic(arr) {
   var a = /* array */[];
-  Block.spliceObjApply(a, "push", [
+  Caml_splice_call.spliceObjApply(a, "push", [
         1,
         arr
       ]);
@@ -71,7 +71,7 @@ eq("File \"splice_test.ml\", line 50, characters 7-14", a$1, /* array */[
 
 function dynamic$1(arr) {
   var a = /* array */[];
-  Block.spliceObjApply(a, "push", [
+  Caml_splice_call.spliceObjApply(a, "push", [
         1,
         arr
       ]);
@@ -101,7 +101,7 @@ dynamic$1(/* array */[
 var Pipe = /* module */[/* dynamic */dynamic$1];
 
 function f1(c) {
-  return Block.spliceApply(Math.max, [
+  return Caml_splice_call.spliceApply(Math.max, [
               1,
               c
             ]);
