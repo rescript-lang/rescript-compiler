@@ -30,12 +30,12 @@ module E = Js_exp_make
 
 let splice_fn_apply fn args = 
   E.runtime_call
-    Js_runtime_modules.block
+    Js_runtime_modules.caml_splice_call
     "spliceApply"
     [fn; E.array Immutable args]
 let splice_obj_fn_apply obj name args =
   E.runtime_call
-    Js_runtime_modules.block
+    Js_runtime_modules.caml_splice_call
     "spliceObjApply"
     [obj; E.str name; E.array Immutable args]
     

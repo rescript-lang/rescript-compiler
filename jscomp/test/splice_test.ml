@@ -3,7 +3,8 @@ let test_id = ref 0
 let eq loc x y = Mt.eq_suites ~test_id ~suites loc x y 
 
 
-
+module Caml_splice_call = struct 
+end 
 external f : int -> int array -> int = "Math.max" 
   [@@bs.splice] [@@bs.val]
 

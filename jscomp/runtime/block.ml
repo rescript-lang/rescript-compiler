@@ -62,30 +62,3 @@ let polyVar meta xs =
   xs |. addProp (cacheSymbol "BsPolyVar") [%obj {value = meta}]
 
 
-let spliceApply : obj -> obj -> obj = fun%raw fn args -> {|
-  var i, argLen; 
-  argLen = args.length
-  var applied = []
-  for(i = 0; i < argLen - 1; ++i){
-    applied.push(args[i])
-  }
-  var lastOne = args[argLen - 1]
-  for(i = 0; i < lastOne.length; ++i ){
-    applied.push(lastOne[i])
-  }
-  return fn.apply(null,applied)
-|} 
-
-let spliceObjApply : obj -> obj -> obj -> obj = fun%raw obj name args -> {|
-  var i, argLen; 
-  argLen = args.length
-  var applied = []
-  for(i = 0; i < argLen - 1; ++i){
-    applied.push(args[i])
-  }
-  var lastOne = args[argLen - 1]
-  for(i = 0; i < lastOne.length; ++i ){
-    applied.push(lastOne[i])
-  }
-  return (obj[name]).apply(obj,applied)
-|}
