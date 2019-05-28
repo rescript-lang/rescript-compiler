@@ -860,7 +860,7 @@ and expression_desc cxt (level:int) f x : cxt  =
        as an array, note exception or open variant it is outer-most is 
        simply an array
     *)
-    let needBlockRuntime = Js_fold_basic.needBlockRuntime tag tag_info in 
+    let needBlockRuntime = Js_block_runtime.needBlockRuntime tag tag_info in 
     let is_debug = !Js_config.debug in 
     if not needBlockRuntime then 
       expression_desc cxt level f  (Array (el, mutable_flag))
@@ -886,7 +886,7 @@ and expression_desc cxt (level:int) f x : cxt  =
         P.paren_group f 1 (fun _ -> arguments cxt f [ 
             E.str name;
             E.array mutable_flag el])        
-      | Blk_constructor(name,number) when number = 1 && Js_fold_basic.tag_is_zero tag 
+      | Blk_constructor(name,number) when number = 1 && Js_block_runtime.tag_is_zero tag 
         -> (* has to be debug mode *)          
         pp_block_simple_variant f ;
         P.paren_group f 1 (fun _ -> arguments cxt f 

@@ -1,4 +1,4 @@
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+(* Copyright (C) 2019- Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -22,12 +22,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-(** A module to calculate hard dependency based on JS IR in module [J] *)
-
-val depends_j : J.expression -> Ident_set.t -> Ident_set.t
-
-(** TODO: {!Ordered_hash_set} for better ordering *)
-val calculate_hard_dependencies : J.block -> Lam_module_ident.Hash_set.t
+val tag_is_zero : 
+  J.expression -> bool
+  
+val needBlockRuntime:
+  J.expression -> 
+  J.tag_info -> 
+  bool
