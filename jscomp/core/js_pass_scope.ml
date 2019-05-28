@@ -200,7 +200,6 @@ let scope_pass  =
         >}
       | _ -> 
         let obj = super#expression x in 
-#if 0 then                        
         match x.expression_desc with
         | Optional_block(_,false) -> obj#add_used_ident (Ident.create_persistent Js_runtime_modules.option)
         | Call(_, _, {arity = NA}) ->  
@@ -208,7 +207,6 @@ let scope_pass  =
         |  Caml_block(_,_,tag,tag_info) when Js_block_runtime.needBlockRuntime tag tag_info -> 
           obj#add_used_ident (Ident.create_persistent Js_runtime_modules.block)
         | _ -> 
-#end        
           obj
         
             (* TODO: most variables are immutable *)

@@ -72,3 +72,8 @@ module Test9 () = struct
   module Curry = struct   
   end 
 end 
+
+module Test10 () = struct 
+  module Curry = struct 
+  end
+end 

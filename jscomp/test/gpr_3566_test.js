@@ -16,11 +16,11 @@ function eq_A(x, y) {
 function Test($star) {
   console.log("no inline");
   var u = /* A */Block.__(0, [3]);
-  var Block = /* module */[];
+  var Block$1 = /* module */[];
   var b = eq_A(/* A */Block.__(0, [3]), u);
   return /* module */[
           /* u */u,
-          /* Block */Block,
+          /* Block */Block$1,
           /* y */32,
           /* b */b
         ];
@@ -28,10 +28,10 @@ function Test($star) {
 
 function Test2($star) {
   console.log("no inline");
-  var Block = /* module */[];
+  var Block$1 = /* module */[];
   var b = eq_A(/* A */Block.__(0, [3]), /* A */Block.__(0, [3]));
   return /* module */[
-          /* Block */Block,
+          /* Block */Block$1,
           /* y */32,
           /* b */b
         ];
@@ -64,20 +64,20 @@ function Test5($star) {
   var f = function (x) {
     return Caml_option.some(x);
   };
-  var Caml_option = /* module */[];
+  var Caml_option$1 = /* module */[];
   return /* module */[
           /* f */f,
-          /* Caml_option */Caml_option
+          /* Caml_option */Caml_option$1
         ];
 }
 
 function Test6($star) {
-  var Caml_option = /* module */[];
+  var Caml_option$1 = /* module */[];
   var f = function (x) {
     return Caml_option.some(x);
   };
   return /* module */[
-          /* Caml_option */Caml_option,
+          /* Caml_option */Caml_option$1,
           /* f */f
         ];
 }
@@ -88,12 +88,12 @@ function Test7($star) {
 }
 
 function Test8($star) {
-  var Curry = /* module */[];
+  var Curry$1 = /* module */[];
   var f = function (x) {
     return Curry._1(x, 1);
   };
   return /* module */[
-          /* Curry */Curry,
+          /* Curry */Curry$1,
           /* f */f
         ];
 }
@@ -102,11 +102,16 @@ function Test9($star) {
   var f = function (x) {
     return Curry._1(x, 1);
   };
-  var Curry = /* module */[];
+  var Curry$1 = /* module */[];
   return /* module */[
           /* f */f,
-          /* Curry */Curry
+          /* Curry */Curry$1
         ];
+}
+
+function Test10($star) {
+  var Curry = /* module */[];
+  return /* module */[/* Curry */Curry];
 }
 
 var x = 3;
@@ -123,4 +128,5 @@ exports.Test6 = Test6;
 exports.Test7 = Test7;
 exports.Test8 = Test8;
 exports.Test9 = Test9;
+exports.Test10 = Test10;
 /* No side effect */
