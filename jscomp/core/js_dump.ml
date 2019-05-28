@@ -72,26 +72,58 @@ module L = Js_dump_lit
   }
   There are no sane way to easy detect it ahead of time, we should be
   conservative here.
+  (our call Js_fun_env.get_unbounded env) is not precise
 *)
+
+
 module Curry_gen = struct 
-  
-  let pp_optimize_curry (f : P.t) (len : int) = 
+  let pp_curry_dot f =   
     P.string f Js_runtime_modules.curry;
-    P.string f L.dot ; 
+    P.string f L.dot 
+  let pp_optimize_curry (f : P.t) (len : int) = 
+    pp_curry_dot f;
     P.string f "__";
     P.string f (Printf.sprintf "%d" len)
 
   let pp_app_any (f : P.t) =    
-    P.string f Js_runtime_modules.curry;
-    P.string f L.dot ; 
+    pp_curry_dot f;
     P.string f "app"
 
   let pp_app (f : P.t) (len : int) =    
-    P.string f Js_runtime_modules.curry; 
-    P.string f L.dot; 
+    pp_curry_dot f;
     P.string f "_"; 
     P.string f (Printf.sprintf "%d" len)
 end 
+
+let pp_block_dot f = 
+  P.string f Js_runtime_modules.block;
+  P.string f L.dot 
+
+let pp_block_create f =   
+  pp_block_dot f ;
+  P.string f L.caml_block_create
+
+let pp_block_record f =   
+  pp_block_dot f ;
+  P.string f L.block_record
+
+let pp_block_local_module f =   
+  pp_block_dot f;
+  P.string f L.block_local_module
+
+let pp_block_poly_var f =   
+  pp_block_dot f;
+  P.string f L.block_poly_var
+
+let pp_block_simple_variant f =   
+  pp_block_dot f ;
+  P.string f L.block_simple_variant
+
+let pp_block_variant f =   
+  pp_block_dot f ; 
+  P.string f L.block_variant
+
+
 
 let return_indent = String.length L.return / Ext_pp.indent_length
 
@@ -232,34 +264,6 @@ let pp_direction f (direction : J.for_direction) =
   | Upto -> P.string f L.plus_plus
   | Downto -> P.string f L.minus_minus 
 
-let pp_block_dot f = 
-  P.string f L.caml_block;
-  P.string f L.dot 
-
-let pp_block_create f =   
-  pp_block_dot f ;
-  P.string f L.caml_block_create
-
-let pp_block_record f =   
-  pp_block_dot f ;
-  P.string f L.block_record
-
-let pp_block_local_module f =   
-  pp_block_dot f;
-  P.string f L.block_local_module
-
-let pp_block_poly_var f =   
-  pp_block_dot f;
-  P.string f L.block_poly_var
-
-let pp_block_simple_variant f =   
-  pp_block_dot f ;
-  P.string f L.block_simple_variant
-
-let pp_block_variant f =   
-  pp_block_dot f ; 
-  P.string f L.block_variant
-
 let return_sp f = 
     P.string f L.return ; P.space f   
 
@@ -383,7 +387,7 @@ and  pp_function is_method
       | Name_top id | Name_non_top id -> 
         Ident_set.add (Js_fun_env.get_unbounded env ) id in
     (* the context will be continued after this function *)
-    let outer_cxt = Ext_pp_scope.merge set_env cxt in
+    let outer_cxt = Ext_pp_scope.merge cxt set_env in
 
     (* the context used to be printed inside this function
 
@@ -1203,7 +1207,7 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
          [print for loop] has side effect,
          we should take it out
       *)
-      let inner_cxt = Ext_pp_scope.merge lexical cxt in
+      let inner_cxt = Ext_pp_scope.merge cxt lexical in
       let lexical = Ident_set.elements lexical in
       P.vgroup f 0
         (fun _ ->
