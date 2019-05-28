@@ -145,6 +145,8 @@
 ./core/js_arr.mli
 ./core/js_ast_util.ml
 ./core/js_ast_util.mli
+./core/js_block_runtime.ml
+./core/js_block_runtime.mli
 ./core/js_call_info.ml
 ./core/js_call_info.mli
 ./core/js_closure.ml
@@ -221,7 +223,6 @@
 ./core/js_pass_scope.mli
 ./core/js_pass_tailcall_inline.ml
 ./core/js_pass_tailcall_inline.mli
-./core/js_runtime_modules.ml
 ./core/js_shake.ml
 ./core/js_shake.mli
 ./core/js_stmt_make.ml
@@ -416,6 +417,7 @@
 ./ext/int_vec_vec.mli
 ./ext/js_reserved_map.ml
 ./ext/js_reserved_map.mli
+./ext/js_runtime_modules.ml
 ./ext/literals.ml
 ./ext/literals.mli
 ./ext/map_gen.ml

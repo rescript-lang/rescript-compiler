@@ -60,3 +60,15 @@ module Test7 () = struct
   module Caml_option = struct
   end 
 end
+
+module Test8 () = struct 
+  module Curry = struct   
+  end 
+  let f x = x 1 
+end 
+
+module Test9 () = struct 
+  let f x = x 1 
+  module Curry = struct   
+  end 
+end 
