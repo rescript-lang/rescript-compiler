@@ -25,14 +25,6 @@
 
 
 
-
-val tag_is_zero : J.expression -> bool
-
- val needBlockRuntime : 
-    J.expression ->
-    J.tag_info ->   
-    bool
-
 (** A module to calculate hard dependency based on JS IR in module [J] *)
 
 val depends_j : J.expression -> Ident_set.t -> Ident_set.t

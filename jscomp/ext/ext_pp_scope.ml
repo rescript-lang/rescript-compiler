@@ -34,7 +34,7 @@ type t =
 (**
    -- "name" --> int map -- stamp --> index suffix
 *)
-let empty = 
+let empty : t = 
   String_map.empty 
 
 let rec print fmt v = 
@@ -48,7 +48,7 @@ and print_int_map fmt m =
       Format.fprintf fmt "%d - %d" k v       
     )    
 
-let add_ident ~mangled:name stamp (cxt : t) : int * t = 
+let add_ident ~mangled:name (stamp : int) (cxt : t) : int * t = 
   match String_map.find_opt cxt name with 
   | None -> 
     (0, String_map.add cxt name (Int_map.add Int_map.empty stamp 0  )  )
@@ -116,7 +116,7 @@ let ident (cxt : t) f (id : Ident.t) : t  =
   cxt   
 
 
-let merge set cxt  = 
+let merge (cxt : t) (set : Ident_set.t) = 
   Ident_set.fold set cxt (fun ident acc -> 
       snd (add_ident ~mangled:(Ext_ident.convert ident.name) ident.stamp acc)) 
 

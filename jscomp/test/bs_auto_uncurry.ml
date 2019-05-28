@@ -2,6 +2,9 @@
 
 module Curry = struct 
 end 
+module Block = struct
+end
+
 
 external map : 'a array -> ('a -> 'b [@bs.uncurry  ]) -> 'b array = 
     "Array.prototype.map.call"
@@ -198,3 +201,7 @@ let unit_magic () =
      3 
 
 let f_unit_magic  = unit_magic ()
+
+external f_0002 :  string  -> int array ->  unit = "" [@@bs.splice] [@@bs.val]
+
+let hh xs = f_0002 xs 

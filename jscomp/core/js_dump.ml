@@ -57,25 +57,73 @@ module S = Js_stmt_make
 
 module L = Js_dump_lit
 
+(* There modules are dynamically inserted in the last stage
+  {Caml_curry}
+  {Caml_block}
+  {Caml_option}
+
+  They can appear anywhere so even if you have a module 
+  {
+    let module Caml_block = ...
+
+    (* Later would insert the use of Caml_block here which should 
+      point tto the runtime module
+    *)
+  }
+  There are no sane way to easy detect it ahead of time, we should be
+  conservative here.
+  (our call Js_fun_env.get_unbounded env) is not precise
+*)
+
+
 module Curry_gen = struct 
-  
-  let pp_optimize_curry (f : P.t) (len : int) = 
+  let pp_curry_dot f =   
     P.string f Js_runtime_modules.curry;
-    P.string f L.dot ; 
+    P.string f L.dot 
+  let pp_optimize_curry (f : P.t) (len : int) = 
+    pp_curry_dot f;
     P.string f "__";
     P.string f (Printf.sprintf "%d" len)
 
   let pp_app_any (f : P.t) =    
-    P.string f Js_runtime_modules.curry;
-    P.string f L.dot ; 
+    pp_curry_dot f;
     P.string f "app"
 
   let pp_app (f : P.t) (len : int) =    
-    P.string f Js_runtime_modules.curry; 
-    P.string f L.dot; 
+    pp_curry_dot f;
     P.string f "_"; 
     P.string f (Printf.sprintf "%d" len)
 end 
+
+let pp_block_dot f = 
+  P.string f Js_runtime_modules.block;
+  P.string f L.dot 
+
+let pp_block_create f =   
+  pp_block_dot f ;
+  P.string f L.caml_block_create
+
+let pp_block_record f =   
+  pp_block_dot f ;
+  P.string f L.block_record
+
+let pp_block_local_module f =   
+  pp_block_dot f;
+  P.string f L.block_local_module
+
+let pp_block_poly_var f =   
+  pp_block_dot f;
+  P.string f L.block_poly_var
+
+let pp_block_simple_variant f =   
+  pp_block_dot f ;
+  P.string f L.block_simple_variant
+
+let pp_block_variant f =   
+  pp_block_dot f ; 
+  P.string f L.block_variant
+
+
 
 let return_indent = String.length L.return / Ext_pp.indent_length
 
@@ -216,34 +264,6 @@ let pp_direction f (direction : J.for_direction) =
   | Upto -> P.string f L.plus_plus
   | Downto -> P.string f L.minus_minus 
 
-let pp_block_dot f = 
-  P.string f L.caml_block;
-  P.string f L.dot 
-
-let pp_block_create f =   
-  pp_block_dot f ;
-  P.string f L.caml_block_create
-
-let pp_block_record f =   
-  pp_block_dot f ;
-  P.string f L.block_record
-
-let pp_block_local_module f =   
-  pp_block_dot f;
-  P.string f L.block_local_module
-
-let pp_block_poly_var f =   
-  pp_block_dot f;
-  P.string f L.block_poly_var
-
-let pp_block_simple_variant f =   
-  pp_block_dot f ;
-  P.string f L.block_simple_variant
-
-let pp_block_variant f =   
-  pp_block_dot f ; 
-  P.string f L.block_variant
-
 let return_sp f = 
     P.string f L.return ; P.space f   
 
@@ -367,7 +387,7 @@ and  pp_function is_method
       | Name_top id | Name_non_top id -> 
         Ident_set.add (Js_fun_env.get_unbounded env ) id in
     (* the context will be continued after this function *)
-    let outer_cxt = Ext_pp_scope.merge set_env cxt in
+    let outer_cxt = Ext_pp_scope.merge cxt set_env in
 
     (* the context used to be printed inside this function
 
@@ -840,7 +860,7 @@ and expression_desc cxt (level:int) f x : cxt  =
        as an array, note exception or open variant it is outer-most is 
        simply an array
     *)
-    let needBlockRuntime = Js_fold_basic.needBlockRuntime tag tag_info in 
+    let needBlockRuntime = Js_block_runtime.needBlockRuntime tag tag_info in 
     let is_debug = !Js_config.debug in 
     if not needBlockRuntime then 
       expression_desc cxt level f  (Array (el, mutable_flag))
@@ -866,7 +886,7 @@ and expression_desc cxt (level:int) f x : cxt  =
         P.paren_group f 1 (fun _ -> arguments cxt f [ 
             E.str name;
             E.array mutable_flag el])        
-      | Blk_constructor(name,number) when number = 1 && Js_fold_basic.tag_is_zero tag 
+      | Blk_constructor(name,number) when number = 1 && Js_block_runtime.tag_is_zero tag 
         -> (* has to be debug mode *)          
         pp_block_simple_variant f ;
         P.paren_group f 1 (fun _ -> arguments cxt f 
@@ -1187,7 +1207,7 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
          [print for loop] has side effect,
          we should take it out
       *)
-      let inner_cxt = Ext_pp_scope.merge lexical cxt in
+      let inner_cxt = Ext_pp_scope.merge cxt lexical in
       let lexical = Ident_set.elements lexical in
       P.vgroup f 0
         (fun _ ->

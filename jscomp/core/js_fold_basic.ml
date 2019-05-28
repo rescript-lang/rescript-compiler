@@ -23,59 +23,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-let tag_is_zero (tag : J.expression) = 
-  match tag.expression_desc with 
-  | Number (Int {i = 0l; _}) -> true 
-  | _ -> false;;
-
- let needBlockRuntimeInDebugMode 
-  (tag : J.expression)
-  (tag_info : J.tag_info) = 
-  match tag_info with 
-  | Blk_variant _ 
-  | Blk_module _    
-  | Blk_record _   
-  | Blk_constructor _   -> true
-#if OCAML_VERSION =~ ">4.03.0" then
-  | Blk_record_inlined _ -> true  
-#end  
-
-  | Blk_tuple 
-  | Blk_array   
-#if OCAML_VERSION =~ ">4.03.0" then
-  | Blk_record_ext _ -> false
-#end  
-  | Blk_extension_slot -> false 
-  | Blk_na  ->  not (tag_is_zero tag )
-
-let needBlockRuntimeInReleaseMode (tag : J.expression) (tag_info : J.tag_info) = 
-  match  tag_info with 
-  | Blk_variant _ 
-  | Blk_module _
-  | Blk_record _  
-  | Blk_tuple 
-  | Blk_array -> false   
-#if OCAML_VERSION =~ ">4.03.0" then
-  | Blk_record_inlined (_,_,1)  
-#end  
-  | Blk_constructor (_, 1)      
-  | Blk_na -> not (tag_is_zero tag)
-#if OCAML_VERSION =~ ">4.03.0" then
-  | Blk_record_inlined _ 
-#end  
-  | Blk_constructor _   -> true  
-#if OCAML_VERSION =~ ">4.03.0" then
-  | Blk_record_ext _ 
-#end  
-  | Blk_extension_slot -> false 
-    (* converted to [Pcreate_extension] in the beginning*)
- 
-
-(* Used to decide whether we should add [require('block')]*)
-let needBlockRuntime tag info = 
-  if !Js_config.debug then 
-    needBlockRuntimeInDebugMode tag info
-  else needBlockRuntimeInReleaseMode tag info  
 
 class count_deps (add : Ident.t -> unit )  = 
   object(self)
@@ -104,7 +51,7 @@ class count_deps (add : Ident.t -> unit )  =
 let add_lam_module_ident = Lam_module_ident.Hash_set.add
 let create = Lam_module_ident.Hash_set.create
 class count_hard_dependencies = 
-  object(self)
+  object(self : 'self_type)
     inherit  Js_fold.fold as super
     val hard_dependencies =  create 17
     method! vident vid = 
@@ -112,30 +59,15 @@ class count_hard_dependencies =
       | Qualified (id,kind,_) ->
           add_lam_module_ident  hard_dependencies (Lam_module_ident.mk kind id); self
       | Id id -> self
-    method! expression x = 
-      match  x with
-      | {expression_desc = Call (_,_, {arity = NA}); _}
-        (* see [Js_exp_make.runtime_var_dot] *)
-        -> 
-        add_lam_module_ident hard_dependencies 
-          (Lam_module_ident.of_runtime 
-            (Ident.create_persistent Js_runtime_modules.curry));
-        super#expression x             
-      | {expression_desc = Caml_block(_,_, tag, tag_info); _}
-        -> 
-        if needBlockRuntime tag tag_info then
-          add_lam_module_ident hard_dependencies 
-              (Lam_module_ident.of_runtime               
-                (Ident.create_persistent Js_runtime_modules.block))
-        ;
-        super#expression x 
-      | {expression_desc = Optional_block (_,false)} ->   
-        add_lam_module_ident hard_dependencies
-        (Lam_module_ident.of_runtime 
-          (Ident.create_persistent Js_runtime_modules.option))
-        ;
-        super#expression x
-      | _ -> super#expression x
+    method! expression x : 'self_type  = 
+      (* check {!Js_pass_scope} when making changes *)
+      (match  Js_block_runtime.check_additional_id x with
+       | Some id -> 
+         add_lam_module_ident hard_dependencies
+           (Lam_module_ident.of_runtime 
+              id)
+       | _ -> ());
+      super#expression x
     method get_hard_dependencies = hard_dependencies
   end
 

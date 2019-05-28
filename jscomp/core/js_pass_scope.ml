@@ -153,7 +153,8 @@ let scope_pass  =
 
     method add_defined_ident ident = 
       {< defined_idents = Ident_set.add defined_idents ident >} 
-
+    method add_used_ident ident = 
+      {< used_idents = Ident_set.add used_idents ident >}
     method! expression x = 
       match x.expression_desc with 
       | Fun (_method_, params, block , env) -> 
@@ -197,8 +198,13 @@ let scope_pass  =
            (* There is a bug in ocaml -dsource*)           
            closured_idents = Ident_set.union closured_idents closured_idents'
         >}
-      | _ -> super#expression x 
-            (* TODO: most variables are immutable *)
+      | _ -> 
+        let obj = super#expression x in 
+        match Js_block_runtime.check_additional_id x with
+        | None -> obj
+        | Some id -> 
+          obj#add_used_ident id                
+        (* TODO: most variables are immutable *)
 
     method! variable_declaration x = 
       match x with
