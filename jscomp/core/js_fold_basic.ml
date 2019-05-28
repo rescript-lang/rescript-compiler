@@ -51,7 +51,7 @@ class count_deps (add : Ident.t -> unit )  =
 let add_lam_module_ident = Lam_module_ident.Hash_set.add
 let create = Lam_module_ident.Hash_set.create
 class count_hard_dependencies = 
-  object(self)
+  object(self : 'self_type)
     inherit  Js_fold.fold as super
     val hard_dependencies =  create 17
     method! vident vid = 
@@ -59,30 +59,15 @@ class count_hard_dependencies =
       | Qualified (id,kind,_) ->
           add_lam_module_ident  hard_dependencies (Lam_module_ident.mk kind id); self
       | Id id -> self
-    method! expression x = 
-      match  x with
-      | {expression_desc = Call (_,_, {arity = NA}); _}
-        (* see [Js_exp_make.runtime_var_dot] *)
-        -> 
-        add_lam_module_ident hard_dependencies 
-          (Lam_module_ident.of_runtime 
-            (Ident.create_persistent Js_runtime_modules.curry));
-        super#expression x             
-      | {expression_desc = Caml_block(_,_, tag, tag_info); _}
-        -> 
-        if Js_block_runtime.needBlockRuntime tag tag_info then
-          add_lam_module_ident hard_dependencies 
-              (Lam_module_ident.of_runtime               
-                (Ident.create_persistent Js_runtime_modules.block))
-        ;
-        super#expression x 
-      | {expression_desc = Optional_block (_,false)} ->   
-        add_lam_module_ident hard_dependencies
-        (Lam_module_ident.of_runtime 
-          (Ident.create_persistent Js_runtime_modules.option))
-        ;
-        super#expression x
-      | _ -> super#expression x
+    method! expression x : 'self_type  = 
+      (* check {!Js_pass_scope} when making changes *)
+      (match  Js_block_runtime.check_additional_id x with
+       | Some id -> 
+         add_lam_module_ident hard_dependencies
+           (Lam_module_ident.of_runtime 
+              id)
+       | _ -> ());
+      super#expression x
     method get_hard_dependencies = hard_dependencies
   end
 

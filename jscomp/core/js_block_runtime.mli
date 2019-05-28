@@ -24,8 +24,11 @@
 
 val tag_is_zero : 
   J.expression -> bool
-  
+
 val needBlockRuntime:
   J.expression -> 
   J.tag_info -> 
   bool
+
+val check_additional_id :
+  J.expression -> Ident.t option  

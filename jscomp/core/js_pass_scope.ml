@@ -200,16 +200,11 @@ let scope_pass  =
         >}
       | _ -> 
         let obj = super#expression x in 
-        match x.expression_desc with
-        | Optional_block(_,false) -> obj#add_used_ident (Ident.create_persistent Js_runtime_modules.option)
-        | Call(_, _, {arity = NA}) ->  
-          obj#add_used_ident (Ident.create_persistent Js_runtime_modules.curry)
-        |  Caml_block(_,_,tag,tag_info) when Js_block_runtime.needBlockRuntime tag tag_info -> 
-          obj#add_used_ident (Ident.create_persistent Js_runtime_modules.block)
-        | _ -> 
-          obj
-        
-            (* TODO: most variables are immutable *)
+        match Js_block_runtime.check_additional_id x with
+        | None -> obj
+        | Some id -> 
+          obj#add_used_ident id                
+        (* TODO: most variables are immutable *)
 
     method! variable_declaration x = 
       match x with

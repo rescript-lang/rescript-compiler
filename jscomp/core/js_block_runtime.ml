@@ -76,3 +76,24 @@ let needBlockRuntime tag info =
   if !Js_config.debug then 
     needBlockRuntimeInDebugMode tag info
   else needBlockRuntimeInReleaseMode tag info  
+
+
+
+let option_id =   
+  Ident.create_persistent Js_runtime_modules.option
+let curry_id =   
+  Ident.create_persistent Js_runtime_modules.curry
+let block_id = 
+  Ident.create_persistent Js_runtime_modules.block
+
+let check_additional_id (x : J.expression) =
+  match x.expression_desc with
+  | Optional_block(_,false) -> 
+    Some option_id  
+  | Call(_, _, {arity = NA}) ->  
+    Some curry_id
+  | Caml_block(_,_,tag,tag_info) when 
+    needBlockRuntime tag tag_info -> 
+    Some block_id
+  | _ -> 
+    None
