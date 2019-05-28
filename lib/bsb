@@ -286,6 +286,7 @@ if (watch_mode) {
 
         return !(fileName === '.merlin' ||
             fileName.endsWith('.js') ||
+            fileName.endsWith('.gen.tsx') ||
             watch_generated.indexOf(fileName) >= 0 ||
             fileName.endsWith('.swp')
         )
