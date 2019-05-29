@@ -10507,12 +10507,12 @@ let supported_format x =
   x = Literals.es6_global 
 
 let bad_module_format_message_exn ~loc format =
-  Bsb_exception.errorf ~loc "package-specs: `%s` isn't a valid output module format. It has to be one of: %s, %s, %s, %s or %s"
+  Bsb_exception.errorf ~loc "package-specs: `%s` isn't a valid output module format. It has to be one of:  %s, %s or %s"
     format
     Literals.commonjs
     Literals.es6
     Literals.es6_global
-    Literals.amdjs_global
+
 
 let rec from_array (arr : Ext_json_types.t array) : Spec_set.t =
   let spec = ref Spec_set.empty in
@@ -10584,18 +10584,13 @@ let package_flag ({format; in_source } : spec) dir =
        format
        Ext_string.single_colon
        (if in_source then dir else
-          (if format = Literals.amdjs then 
-             amd_js_prefix dir 
-           else if format = Literals.commonjs then 
+          if format = Literals.commonjs then 
              common_js_prefix dir 
            else if format = Literals.es6 then 
              es6_prefix dir 
            else if format = Literals.es6_global then 
-             es6_global_prefix dir   
-           else if format = Literals.amdjs_global then 
-             amdjs_global_prefix dir 
+             es6_global_prefix dir              
            else assert false))
-    )
 
 let package_flag_of_package_specs (package_specs : t) 
     (dirname : string ) = 
@@ -10615,14 +10610,10 @@ let package_output ({format; in_source } : spec) output=
     else
       (if format = Literals.commonjs then
          common_js_prefix
-       else if format = Literals.amdjs then
-         amd_js_prefix
        else if format = Literals.es6 then 
          es6_prefix   
        else if format = Literals.es6_global then 
          es6_global_prefix  
-       else  if format = Literals.amdjs_global then 
-         amdjs_global_prefix
        else assert false)
   in
   (Bsb_config.proj_rel @@ prefix output )
