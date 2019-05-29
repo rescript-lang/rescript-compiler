@@ -110,10 +110,10 @@ let suffix_gen_tsx = ".gen.tsx"
 let suffix_tsx = ".tsx"
 
 let commonjs = "commonjs" 
-let amdjs = "amdjs"
+
 let es6 = "es6"
 let es6_global = "es6-global"
-let amdjs_global = "amdjs-global"
+
 let unused_attribute = "Unused attribute " 
 let dash_nostdlib = "-nostdlib"
 

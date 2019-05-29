@@ -4824,10 +4824,10 @@ val suffix_cmt : string
 val suffix_cmti : string 
 
 val commonjs : string 
-val amdjs : string 
+
 val es6 : string 
 val es6_global : string
-val amdjs_global : string 
+
 val unused_attribute : string 
 val dash_nostdlib : string
 
@@ -4956,10 +4956,10 @@ let suffix_gen_tsx = ".gen.tsx"
 let suffix_tsx = ".tsx"
 
 let commonjs = "commonjs" 
-let amdjs = "amdjs"
+
 let es6 = "es6"
 let es6_global = "es6-global"
-let amdjs_global = "amdjs-global"
+
 let unused_attribute = "Unused attribute " 
 let dash_nostdlib = "-nostdlib"
 
@@ -6956,11 +6956,9 @@ val ocaml_bin_install_prefix : string -> string
 val proj_rel : string -> string
 
 val lib_js : string 
-val lib_amd : string 
 val lib_bs : string
 val lib_es6 : string 
 val lib_es6_global : string 
-val lib_amd_global : string 
 val lib_ocaml : string
 val all_lib_artifacts : string list 
 (* we need generate path relative to [lib/bs] directory in the opposite direction *)
@@ -6999,20 +6997,18 @@ let (//) = Ext_path.combine
 
 let lib_lit = "lib"
 let lib_js = lib_lit //"js"
-let lib_amd = lib_lit //"amdjs"
+
 let lib_ocaml = lib_lit // "ocaml"
 let lib_bs = lib_lit // "bs"
 let lib_es6 = lib_lit // "es6"
 let lib_es6_global = lib_lit // "es6_global"
-let lib_amd_global = lib_lit // "amdjs_global"
+
 let all_lib_artifacts = 
   [ lib_js ; 
-    lib_amd ;
     lib_ocaml;
     lib_bs ; 
     lib_es6 ; 
     lib_es6_global;
-    lib_amd_global
   ]
 let rev_lib_bs = ".."// ".."
 
@@ -10488,10 +10484,9 @@ end = struct
 let (//) = Ext_path.combine 
 
 let common_js_prefix p  =  Bsb_config.lib_js  // p
-let amd_js_prefix p = Bsb_config.lib_amd // p 
 let es6_prefix p = Bsb_config.lib_es6 // p 
 let es6_global_prefix p =  Bsb_config.lib_es6_global // p
-let amdjs_global_prefix p = Bsb_config.lib_amd_global // p 
+
 
 type spec = {
   format : string;
@@ -10507,16 +10502,13 @@ type t = Spec_set.t
 
 
 let supported_format x = 
-  x = Literals.amdjs ||
   x = Literals.commonjs ||
   x = Literals.es6 ||
-  x = Literals.es6_global ||
-  x = Literals.amdjs_global
+  x = Literals.es6_global 
 
 let bad_module_format_message_exn ~loc format =
   Bsb_exception.errorf ~loc "package-specs: `%s` isn't a valid output module format. It has to be one of: %s, %s, %s, %s or %s"
     format
-    Literals.amdjs
     Literals.commonjs
     Literals.es6
     Literals.es6_global
@@ -12441,25 +12433,24 @@ let record ~cwd ~file  file_or_dirs =
     bit in case we found a different version of compiler
 *)
 let check ~cwd ~forced ~file : check_result =
-  read file  begin  function  {
-    file_stamps = xs; source_directory; bsb_version = old_version;
-    bsc_version
-  } ->
-    if old_version <> bsb_version then Bsb_bsc_version_mismatch else
-    if cwd <> source_directory then Bsb_source_directory_changed else
-    if bsc_version <> Bs_version.version then Bsb_bsc_version_mismatch else
-    if forced then Bsb_forced (* No need walk through *)
-    else
-      try
-        check_aux cwd xs  0 (Array.length xs)
-      with e ->
-        begin
-          Bsb_log.info
-            "@{<info>Stat miss %s@}@."
-            (Printexc.to_string e);
-          Bsb_file_not_exist
-        end
-  end
+  read file  (fun  {
+      file_stamps ; source_directory; bsb_version = old_version;
+      bsc_version
+    } ->
+      if old_version <> bsb_version then Bsb_bsc_version_mismatch else
+      if cwd <> source_directory then Bsb_source_directory_changed else
+      if bsc_version <> Bs_version.version then Bsb_bsc_version_mismatch else
+      if forced then Bsb_forced (* No need walk through *)
+      else
+        try
+          check_aux cwd file_stamps  0 (Array.length file_stamps)
+        with e ->
+          begin
+            Bsb_log.info
+              "@{<info>Stat miss %s@}@."
+              (Printexc.to_string e);
+            Bsb_file_not_exist        
+          end)
 
 
 end
@@ -12995,12 +12986,12 @@ type t = {
 }
 
 let get_name (x : t) oc = x.name oc
-let print_rule oc ~description ?(restat : unit option)  ?depfile ~command   name  =
+let print_rule oc ~description ?(restat : unit option)  ?dyndep ~command   name  =
   output_string oc "rule "; output_string oc name ; output_string oc "\n";
   output_string oc "  command = "; output_string oc command; output_string oc "\n";
-  Ext_option.iter depfile begin fun f ->
-      output_string oc "  depfile = "; output_string oc f; output_string oc  "\n"
-  end;
+  Ext_option.iter dyndep (fun f ->
+      output_string oc "  dyndep = "; output_string oc f; output_string oc  "\n"
+  );
   (if restat <>  None then   
       output_string oc "  restat = 1\n");
 
@@ -13012,7 +13003,7 @@ let print_rule oc ~description ?(restat : unit option)  ?depfile ~command   name
 (** allocate an unique name for such rule*)
 let define
     ~command
-    (* ?depfile *)
+    ?dyndep
     ?restat
     ?(description = "\027[34mBuilding\027[39m \027[2m${out}\027[22m") (* blue, dim *)
     name
@@ -13024,7 +13015,7 @@ let define
     name = fun oc ->
       if not self.used then
         begin
-          print_rule oc ~description (* ?depfile *) ?restat ~command rule_name;
+          print_rule oc ~description  ?dyndep ?restat ~command rule_name;
           self.used <- true
         end ;
       rule_name
@@ -13083,7 +13074,7 @@ let build_cmj_js =
   define
     ~command:"${bsc} ${bs_package_flags} -bs-assume-has-mli -bs-no-builtin-ppx-ml -bs-no-implicit-include  \
               ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${warnings} ${bsc_flags} ${gentypeconfig} -o ${out} -c  ${in} $postbuild"
-    (* ~depfile:"${in}.d" *)
+    ~dyndep:"${in}.d"
     ~restat:() (* Always restat when having mli *)
     "build_cmj_only"
     
@@ -13092,14 +13083,14 @@ let build_cmj_cmi_js =
   define
     ~command:"${bsc} ${bs_package_flags} -bs-assume-no-mli -bs-no-builtin-ppx-ml -bs-no-implicit-include \
               ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${warnings} ${bsc_flags} ${gentypeconfig} -o ${out} -c  ${in} $postbuild"
-    (* ~depfile:"${in}.d" *)
+    ~dyndep:"${in}.d" 
     ~restat:() (* may not need it in the future *)
     "build_cmj_cmi" (* the compiler should never consult [.cmi] when [.mli] does not exist *)
 let build_cmi =
   define
     ~command:"${bsc} ${bs_package_flags} -bs-no-builtin-ppx-mli -bs-no-implicit-include \
               ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${warnings} ${bsc_flags} ${gentypeconfig} -o ${out} -c  ${in}"
-    (* ~depfile:"${in}.d" *)
+    ~dyndep:"${in}.d"
     ~restat:()
     "build_cmi" (* the compiler should always consult [.cmi], current the vanilla ocaml compiler only consult [.cmi] when [.mli] found*)
 
@@ -13541,6 +13532,10 @@ let emit_impl_build
   let output_cmj =  output_filename_sans_extension ^ Literals.suffix_cmj in
   let output_js =
     Bsb_package_specs.get_list_of_output_js package_specs bs_suffix output_filename_sans_extension in 
+  let common_shadows = 
+    make_common_shadows is_re package_specs
+      (Filename.dirname file_cmi)
+      group_dir_index in
   begin
     Bsb_ninja_util.output_build oc
       ~output:output_mlast
@@ -13561,14 +13556,6 @@ let emit_impl_build
                             op = 
                               Overwrite (string_of_int (group_dir_index :> int)) }])
     ;
-    let common_shadows : Bsb_ninja_util.shadow list = 
-      {
-        key = "dyndep";
-        op = Overwrite output_mlastd
-      } ::
-      make_common_shadows is_re package_specs
-        (Filename.dirname file_cmi)
-        group_dir_index in
     let shadows =
       match js_post_build_cmd with
       | None -> common_shadows
@@ -13587,7 +13574,7 @@ let emit_impl_build
       ~shadows
       ~implicit_outputs:  (output_js @ cm_outputs)
       ~input:output_mlast
-      ~implicit_deps:implicit_deps
+      ~implicit_deps
       ~rule;
     [output_mlastd] 
   end 
@@ -13612,8 +13599,7 @@ let emit_intf_build
       Ext_namespace.make ~ns filename_sans_extension
   in 
   let output_cmi = output_filename_sans_extension ^ Literals.suffix_cmi in  
-  let common_shadows : Bsb_ninja_util.shadow list = 
-    {key = "dyndep"; op = Overwrite output_mliastd} ::  
+  let common_shadows = 
     make_common_shadows is_re package_specs
       (Filename.dirname output_cmi)
       group_dir_index in
@@ -14061,22 +14047,20 @@ let output_ninja_and_namespace_map
         ~input:(Bsb_config.proj_rel output)
         ~rule:Bsb_ninja_rule.copy_resources);
   (** Generate build statement for each file *)        
-  (* let all_info =       *)
-    Bsb_ninja_file_groups.handle_file_groups oc  
-      ~has_checked_ppx:(ppx_checked_files <> [])
-      ~bs_suffix     
-      ~custom_rules
-      ~js_post_build_cmd 
-      ~package_specs 
-      ~files_to_install
-      bs_file_groups 
-      namespace
-      Bsb_ninja_file_groups.zero |> ignore;
-  (* in *)
+  Bsb_ninja_file_groups.handle_file_groups oc  
+    ~has_checked_ppx:(ppx_checked_files <> [])
+    ~bs_suffix     
+    ~custom_rules
+    ~js_post_build_cmd 
+    ~package_specs 
+    ~files_to_install
+    bs_file_groups 
+    namespace
+    Bsb_ninja_file_groups.zero |> ignore;
   if static_resources <> [] then
     Bsb_ninja_util.phony
       oc
-      ~order_only_deps:static_resources (* @ all_info*)
+      ~order_only_deps:static_resources 
       ~inputs:[]
       ~output:Literals.build_ninja ;
   Ext_option.iter  namespace (fun ns -> 
@@ -14091,15 +14075,6 @@ let output_ninja_and_namespace_map
         ~rule:Bsb_ninja_rule.build_package
     );
   close_out oc
-
-       (* let all_info =  *)
-         (* (ns ^ Literals.suffix_cmi) :: all_info *)
-        (* in  *)
-     (* Bsb_ninja_util.phony 
-       oc 
-       ~order_only_deps:static_resources (* @ all_info *)
-       ~inputs:[]
-       ~output:Literals.build_ninja); *)
 
 end
 module Bsb_ninja_regen : sig 

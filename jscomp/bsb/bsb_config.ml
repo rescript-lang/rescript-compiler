@@ -25,20 +25,18 @@ let (//) = Ext_path.combine
 
 let lib_lit = "lib"
 let lib_js = lib_lit //"js"
-let lib_amd = lib_lit //"amdjs"
+
 let lib_ocaml = lib_lit // "ocaml"
 let lib_bs = lib_lit // "bs"
 let lib_es6 = lib_lit // "es6"
 let lib_es6_global = lib_lit // "es6_global"
-let lib_amd_global = lib_lit // "amdjs_global"
+
 let all_lib_artifacts = 
   [ lib_js ; 
-    lib_amd ;
     lib_ocaml;
     lib_bs ; 
     lib_es6 ; 
     lib_es6_global;
-    lib_amd_global
   ]
 let rev_lib_bs = ".."// ".."
 
