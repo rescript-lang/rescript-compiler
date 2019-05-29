@@ -4184,10 +4184,10 @@ val suffix_cmt : string
 val suffix_cmti : string 
 
 val commonjs : string 
-val amdjs : string 
+
 val es6 : string 
 val es6_global : string
-val amdjs_global : string 
+
 val unused_attribute : string 
 val dash_nostdlib : string
 
@@ -4316,10 +4316,10 @@ let suffix_gen_tsx = ".gen.tsx"
 let suffix_tsx = ".tsx"
 
 let commonjs = "commonjs" 
-let amdjs = "amdjs"
+
 let es6 = "es6"
 let es6_global = "es6-global"
-let amdjs_global = "amdjs-global"
+
 let unused_attribute = "Unused attribute " 
 let dash_nostdlib = "-nostdlib"
 
@@ -5884,27 +5884,27 @@ let oc_impl
     (rhs_suffix : string)
   = 
   Buffer.add_string buf ninja_dyndep_version;
-  if true || not (Ext_array.is_empty dependent_module_set) then begin 
-    Buffer.add_string buf build_lit;  
-    output_file buf input_file namespace ; 
-    Buffer.add_string buf lhs_suffix; 
-    Buffer.add_string buf dep_lit ; 
-    Ext_option.iter namespace (fun ns -> 
-        Buffer.add_string buf ns;
-        Buffer.add_string buf Literals.suffix_cmi;
-      );
-    Ext_array.iter dependent_module_set begin fun dependent_module ->
-      match Bsb_db_io.find_opt  db 0 dependent_module with
-      | Some module_info -> 
-        handle_module_info module_info input_file namespace rhs_suffix buf
-      | None  -> 
-        if not (Bsb_dir_index.is_lib_dir index) then      
-          Ext_option.iter (Bsb_db_io.find_opt db (index  :> int) dependent_module)
-            (fun module_info -> 
-               handle_module_info module_info input_file namespace rhs_suffix buf)
-    end;
-    Buffer.add_char buf '\n'
-  end 
+  Buffer.add_string buf build_lit;  
+  output_file buf input_file namespace ; 
+  Buffer.add_string buf lhs_suffix; 
+  Buffer.add_string buf dep_lit ; 
+  Ext_option.iter namespace (fun ns -> 
+      Buffer.add_string buf ns;
+      Buffer.add_string buf Literals.suffix_cmi;
+    ); (* TODO: moved into static files*)
+  Ext_array.iter dependent_module_set begin fun dependent_module ->
+    match Bsb_db_io.find_opt  db 0 dependent_module with
+    | Some module_info -> 
+      handle_module_info module_info input_file namespace rhs_suffix buf
+    | None  -> 
+      if not (Bsb_dir_index.is_lib_dir index) then      
+        Ext_option.iter (Bsb_db_io.find_opt db (index  :> int) dependent_module)
+          (fun module_info -> 
+             handle_module_info module_info input_file namespace rhs_suffix buf)
+  end
+  ;
+  Buffer.add_char buf '\n'
+  
 
 
 (** Note since dependent file is [mli], it only depends on 
@@ -5918,29 +5918,28 @@ let oc_intf
     (namespace : string option)
     (buf : Buffer.t) : unit =   
   Buffer.add_string buf ninja_dyndep_version;  
-  if true || not (Ext_array.is_empty dependent_module_set) then begin 
-    Buffer.add_string buf build_lit;
-    output_file buf input_file namespace ; 
-    Buffer.add_string buf Literals.suffix_cmi ; 
-    Buffer.add_string buf dep_lit;
-    Ext_option.iter namespace (fun ns -> 
+  Buffer.add_string buf build_lit;
+  output_file buf input_file namespace ; 
+  Buffer.add_string buf Literals.suffix_cmi ; 
+  Buffer.add_string buf dep_lit;
+  Ext_option.iter namespace (fun ns -> 
       Buffer.add_string buf ns;
       Buffer.add_string buf Literals.suffix_cmi;
-    );
-    Ext_array.iter dependent_module_set begin fun dependent_module ->
-      match Bsb_db_io.find_opt db 0 dependent_module with 
-      | Some module_info -> 
-        let source = module_info.name_sans_extension in 
-        if source <> input_file then oc_cmi buf namespace source             
-      | None -> 
-        if not (Bsb_dir_index.is_lib_dir index)  then 
-          Ext_option.iter (Bsb_db_io.find_opt db ((index :> int)) dependent_module)
-            ( fun module_info -> 
-                let source = module_info.name_sans_extension in 
-                if source <> input_file then  oc_cmi buf namespace source)
-    end;
-    Buffer.add_char buf '\n'
-  end
+    ); (* moved upwards *)
+  Ext_array.iter dependent_module_set begin fun dependent_module ->
+    match Bsb_db_io.find_opt db 0 dependent_module with 
+    | Some module_info -> 
+      let source = module_info.name_sans_extension in 
+      if source <> input_file then oc_cmi buf namespace source             
+    | None -> 
+      if not (Bsb_dir_index.is_lib_dir index)  then 
+        Ext_option.iter (Bsb_db_io.find_opt db ((index :> int)) dependent_module)
+          ( fun module_info -> 
+              let source = module_info.name_sans_extension in 
+              if source <> input_file then  oc_cmi buf namespace source)
+  end;
+  Buffer.add_char buf '\n'
+
 
 
 (* OPT: Don't touch the .d file if nothing changed *)

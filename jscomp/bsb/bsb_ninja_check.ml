@@ -112,23 +112,22 @@ let record ~cwd ~file  file_or_dirs =
     bit in case we found a different version of compiler
 *)
 let check ~cwd ~forced ~file : check_result =
-  read file  begin  function  {
-    file_stamps = xs; source_directory; bsb_version = old_version;
-    bsc_version
-  } ->
-    if old_version <> bsb_version then Bsb_bsc_version_mismatch else
-    if cwd <> source_directory then Bsb_source_directory_changed else
-    if bsc_version <> Bs_version.version then Bsb_bsc_version_mismatch else
-    if forced then Bsb_forced (* No need walk through *)
-    else
-      try
-        check_aux cwd xs  0 (Array.length xs)
-      with e ->
-        begin
-          Bsb_log.info
-            "@{<info>Stat miss %s@}@."
-            (Printexc.to_string e);
-          Bsb_file_not_exist
-        end
-  end
+  read file  (fun  {
+      file_stamps ; source_directory; bsb_version = old_version;
+      bsc_version
+    } ->
+      if old_version <> bsb_version then Bsb_bsc_version_mismatch else
+      if cwd <> source_directory then Bsb_source_directory_changed else
+      if bsc_version <> Bs_version.version then Bsb_bsc_version_mismatch else
+      if forced then Bsb_forced (* No need walk through *)
+      else
+        try
+          check_aux cwd file_stamps  0 (Array.length file_stamps)
+        with e ->
+          begin
+            Bsb_log.info
+              "@{<info>Stat miss %s@}@."
+              (Printexc.to_string e);
+            Bsb_file_not_exist        
+          end)
 

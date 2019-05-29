@@ -112,10 +112,10 @@ val suffix_cmt : string
 val suffix_cmti : string 
 
 val commonjs : string 
-val amdjs : string 
+
 val es6 : string 
 val es6_global : string
-val amdjs_global : string 
+
 val unused_attribute : string 
 val dash_nostdlib : string
 
