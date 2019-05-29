@@ -93,7 +93,7 @@ let output_file (oc : Buffer.t) source namespace =
     is [.cmi] if it has [mli]
 *)
 let oc_cmi buf namespace source = 
-  Buffer.add_char buf '\n';  
+  Buffer.add_char buf ' ';  
   output_file buf source namespace;
   Buffer.add_string buf Literals.suffix_cmi 
 
@@ -107,7 +107,7 @@ let handle_module_info
     begin 
       if module_info.ml_info <> Ml_empty then 
         begin
-          Buffer.add_char buf '\n';  
+          Buffer.add_char buf ' ';  
           output_file buf source namespace;
           Buffer.add_string buf rhs_suffix
         end;

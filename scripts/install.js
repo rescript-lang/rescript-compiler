@@ -47,9 +47,11 @@ var ninja_bin_output = path.join(root_dir, 'lib', 'ninja.exe')
  * This is less problematic since `ninja.exe` is very stable
  */
 function provideNinja() {
-    var vendor_ninja_version = '1.8.2'    
+    var vendor_ninja_version = '1.9.0.git'    
     var ninja_source_dir = path.join(root_dir, 'vendor', 'ninja')
     function build_ninja() {
+        console.log(`building ninja`)
+        cp.execSync(`tar xzvf ../ninja.tar.gz`,{cwd : ninja_source_dir, stdio:[0,1,2]})
         console.log('No prebuilt Ninja, building Ninja now')
         var build_ninja_command = "./configure.py --bootstrap"
         cp.execSync(build_ninja_command, { cwd: ninja_source_dir, stdio: [0, 1, 2] })
