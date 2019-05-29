@@ -24,8 +24,9 @@
 
 
 
-let dep_lit = " :"
-
+let dep_lit = " : dyndep | "
+let ninja_dyndep_version = "ninja_dyndep_version = 1\n"
+let build_lit = "build "
 let write_buf name buf  =     
   let oc = open_out_bin name in 
   Buffer.output_buffer oc buf ;
@@ -124,9 +125,15 @@ let oc_impl
     (lhs_suffix : string)
     (rhs_suffix : string)
   = 
+  Buffer.add_string buf ninja_dyndep_version;
+  Buffer.add_string buf build_lit;  
   output_file buf input_file namespace ; 
   Buffer.add_string buf lhs_suffix; 
   Buffer.add_string buf dep_lit ; 
+  Ext_option.iter namespace (fun ns -> 
+      Buffer.add_string buf ns;
+      Buffer.add_string buf Literals.suffix_cmi;
+    ); (* TODO: moved into static files*)
   Ext_array.iter dependent_module_set begin fun dependent_module ->
     match Bsb_db_io.find_opt  db 0 dependent_module with
     | Some module_info -> 
@@ -137,6 +144,9 @@ let oc_impl
           (fun module_info -> 
              handle_module_info module_info input_file namespace rhs_suffix buf)
   end
+  ;
+  Buffer.add_char buf '\n'
+  
 
 
 (** Note since dependent file is [mli], it only depends on 
@@ -149,9 +159,15 @@ let oc_intf
     (db : Bsb_db_io.t)
     (namespace : string option)
     (buf : Buffer.t) : unit =   
+  Buffer.add_string buf ninja_dyndep_version;  
+  Buffer.add_string buf build_lit;
   output_file buf input_file namespace ; 
   Buffer.add_string buf Literals.suffix_cmi ; 
   Buffer.add_string buf dep_lit;
+  Ext_option.iter namespace (fun ns -> 
+      Buffer.add_string buf ns;
+      Buffer.add_string buf Literals.suffix_cmi;
+    ); (* moved upwards *)
   Ext_array.iter dependent_module_set begin fun dependent_module ->
     match Bsb_db_io.find_opt db 0 dependent_module with 
     | Some module_info -> 
@@ -163,7 +179,9 @@ let oc_intf
           ( fun module_info -> 
               let source = module_info.name_sans_extension in 
               if source <> input_file then  oc_cmi buf namespace source)
-  end
+  end;
+  Buffer.add_char buf '\n'
+
 
 
 (* OPT: Don't touch the .d file if nothing changed *)
