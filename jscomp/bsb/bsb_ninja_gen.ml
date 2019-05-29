@@ -258,42 +258,31 @@ let output_ninja_and_namespace_map
         ~input:(Bsb_config.proj_rel output)
         ~rule:Bsb_ninja_rule.copy_resources);
   (** Generate build statement for each file *)        
-  let all_info =      
-    Bsb_ninja_file_groups.handle_file_groups oc  
-      ~has_checked_ppx:(ppx_checked_files <> [])
-      ~bs_suffix     
-      ~custom_rules
-      ~js_post_build_cmd 
-      ~package_specs 
-      ~files_to_install
-      bs_file_groups 
-      namespace
-      Bsb_ninja_file_groups.zero 
-  in
-  (match namespace with 
-   | None -> 
-     Bsb_ninja_util.phony
-       oc
-       ~order_only_deps:(static_resources @ all_info)
-       ~inputs:[]
-       ~output:Literals.build_ninja 
-   | Some ns -> 
-     let namespace_dir =     
-       cwd // Bsb_config.lib_bs  in
-     Bsb_namespace_map_gen.output 
-       ~dir:namespace_dir ns
-       bs_file_groups
-     ; 
-     let all_info = 
-       Bsb_ninja_util.output_build oc 
-         ~output:(ns ^ Literals.suffix_cmi)
-         ~input:(ns ^ Literals.suffix_mlmap)
-         ~rule:Bsb_ninja_rule.build_package
-         ;
-       (ns ^ Literals.suffix_cmi) :: all_info in 
-     Bsb_ninja_util.phony 
-       oc 
-       ~order_only_deps:(static_resources @ all_info)
-       ~inputs:[]
-       ~output:Literals.build_ninja );
-  close_out oc;
+  Bsb_ninja_file_groups.handle_file_groups oc  
+    ~has_checked_ppx:(ppx_checked_files <> [])
+    ~bs_suffix     
+    ~custom_rules
+    ~js_post_build_cmd 
+    ~package_specs 
+    ~files_to_install
+    bs_file_groups 
+    namespace
+    Bsb_ninja_file_groups.zero |> ignore;
+  if static_resources <> [] then
+    Bsb_ninja_util.phony
+      oc
+      ~order_only_deps:static_resources 
+      ~inputs:[]
+      ~output:Literals.build_ninja ;
+  Ext_option.iter  namespace (fun ns -> 
+      let namespace_dir =     
+        cwd // Bsb_config.lib_bs  in
+      Bsb_namespace_map_gen.output 
+        ~dir:namespace_dir ns
+        bs_file_groups; 
+      Bsb_ninja_util.output_build oc 
+        ~output:(ns ^ Literals.suffix_cmi)
+        ~input:(ns ^ Literals.suffix_mlmap)
+        ~rule:Bsb_ninja_rule.build_package
+    );
+  close_out oc

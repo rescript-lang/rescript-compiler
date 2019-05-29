@@ -13012,7 +13012,7 @@ let print_rule oc ~description ?(restat : unit option)  ?depfile ~command   name
 (** allocate an unique name for such rule*)
 let define
     ~command
-    ?depfile
+    (* ?depfile *)
     ?restat
     ?(description = "\027[34mBuilding\027[39m \027[2m${out}\027[22m") (* blue, dim *)
     name
@@ -13024,7 +13024,7 @@ let define
     name = fun oc ->
       if not self.used then
         begin
-          print_rule oc ~description ?depfile ?restat ~command rule_name;
+          print_rule oc ~description (* ?depfile *) ?restat ~command rule_name;
           self.used <- true
         end ;
       rule_name
@@ -13083,7 +13083,7 @@ let build_cmj_js =
   define
     ~command:"${bsc} ${bs_package_flags} -bs-assume-has-mli -bs-no-builtin-ppx-ml -bs-no-implicit-include  \
               ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${warnings} ${bsc_flags} ${gentypeconfig} -o ${out} -c  ${in} $postbuild"
-    ~depfile:"${in}.d"
+    (* ~depfile:"${in}.d" *)
     ~restat:() (* Always restat when having mli *)
     "build_cmj_only"
     
@@ -13092,14 +13092,14 @@ let build_cmj_cmi_js =
   define
     ~command:"${bsc} ${bs_package_flags} -bs-assume-no-mli -bs-no-builtin-ppx-ml -bs-no-implicit-include \
               ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${warnings} ${bsc_flags} ${gentypeconfig} -o ${out} -c  ${in} $postbuild"
-    ~depfile:"${in}.d"
+    (* ~depfile:"${in}.d" *)
     ~restat:() (* may not need it in the future *)
     "build_cmj_cmi" (* the compiler should never consult [.cmi] when [.mli] does not exist *)
 let build_cmi =
   define
     ~command:"${bsc} ${bs_package_flags} -bs-no-builtin-ppx-mli -bs-no-implicit-include \
               ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${warnings} ${bsc_flags} ${gentypeconfig} -o ${out} -c  ${in}"
-    ~depfile:"${in}.d"
+    (* ~depfile:"${in}.d" *)
     ~restat:()
     "build_cmi" (* the compiler should always consult [.cmi], current the vanilla ocaml compiler only consult [.cmi] when [.mli] found*)
 
@@ -13541,10 +13541,6 @@ let emit_impl_build
   let output_cmj =  output_filename_sans_extension ^ Literals.suffix_cmj in
   let output_js =
     Bsb_package_specs.get_list_of_output_js package_specs bs_suffix output_filename_sans_extension in 
-  let common_shadows = 
-    make_common_shadows is_re package_specs
-      (Filename.dirname file_cmi)
-      group_dir_index in
   begin
     Bsb_ninja_util.output_build oc
       ~output:output_mlast
@@ -13565,6 +13561,14 @@ let emit_impl_build
                             op = 
                               Overwrite (string_of_int (group_dir_index :> int)) }])
     ;
+    let common_shadows : Bsb_ninja_util.shadow list = 
+      {
+        key = "dyndep";
+        op = Overwrite output_mlastd
+      } ::
+      make_common_shadows is_re package_specs
+        (Filename.dirname file_cmi)
+        group_dir_index in
     let shadows =
       match js_post_build_cmd with
       | None -> common_shadows
@@ -13573,17 +13577,17 @@ let emit_impl_build
          op = Overwrite ("&& " ^ cmd ^ Ext_string.single_space ^ String.concat Ext_string.single_space output_js)} 
         :: common_shadows
     in
-    let rule , cm_outputs, deps =
+    let rule , cm_outputs, implicit_deps =
       if no_intf_file then 
-        Bsb_ninja_rule.build_cmj_cmi_js, [file_cmi], []
-      else  Bsb_ninja_rule.build_cmj_js, []  , [file_cmi]
+        Bsb_ninja_rule.build_cmj_cmi_js, [file_cmi], [output_mlastd]
+      else  Bsb_ninja_rule.build_cmj_js, []  , [file_cmi; output_mlastd]
     in
     Bsb_ninja_util.output_build oc
       ~output:output_cmj
       ~shadows
       ~implicit_outputs:  (output_js @ cm_outputs)
       ~input:output_mlast
-      ~implicit_deps:deps
+      ~implicit_deps:implicit_deps
       ~rule;
     [output_mlastd] 
   end 
@@ -13608,7 +13612,8 @@ let emit_intf_build
       Ext_namespace.make ~ns filename_sans_extension
   in 
   let output_cmi = output_filename_sans_extension ^ Literals.suffix_cmi in  
-  let common_shadows = 
+  let common_shadows : Bsb_ninja_util.shadow list = 
+    {key = "dyndep"; op = Overwrite output_mliastd} ::  
     make_common_shadows is_re package_specs
       (Filename.dirname output_cmi)
       group_dir_index in
@@ -13638,6 +13643,7 @@ let emit_intf_build
   Bsb_ninja_util.output_build oc
     ~output:output_cmi
     ~shadows:common_shadows
+    ~implicit_deps:[output_mliastd]
     ~input:output_mliast
     ~rule:Bsb_ninja_rule.build_cmi
     ;
@@ -14055,7 +14061,7 @@ let output_ninja_and_namespace_map
         ~input:(Bsb_config.proj_rel output)
         ~rule:Bsb_ninja_rule.copy_resources);
   (** Generate build statement for each file *)        
-  let all_info =      
+  (* let all_info =       *)
     Bsb_ninja_file_groups.handle_file_groups oc  
       ~has_checked_ppx:(ppx_checked_files <> [])
       ~bs_suffix     
@@ -14065,35 +14071,35 @@ let output_ninja_and_namespace_map
       ~files_to_install
       bs_file_groups 
       namespace
-      Bsb_ninja_file_groups.zero 
-  in
-  (match namespace with 
-   | None -> 
-     Bsb_ninja_util.phony
-       oc
-       ~order_only_deps:(static_resources @ all_info)
-       ~inputs:[]
-       ~output:Literals.build_ninja 
-   | Some ns -> 
-     let namespace_dir =     
-       cwd // Bsb_config.lib_bs  in
-     Bsb_namespace_map_gen.output 
-       ~dir:namespace_dir ns
-       bs_file_groups
-     ; 
-     let all_info = 
-       Bsb_ninja_util.output_build oc 
-         ~output:(ns ^ Literals.suffix_cmi)
-         ~input:(ns ^ Literals.suffix_mlmap)
-         ~rule:Bsb_ninja_rule.build_package
-         ;
-       (ns ^ Literals.suffix_cmi) :: all_info in 
-     Bsb_ninja_util.phony 
+      Bsb_ninja_file_groups.zero |> ignore;
+  (* in *)
+  if static_resources <> [] then
+    Bsb_ninja_util.phony
+      oc
+      ~order_only_deps:static_resources (* @ all_info*)
+      ~inputs:[]
+      ~output:Literals.build_ninja ;
+  Ext_option.iter  namespace (fun ns -> 
+      let namespace_dir =     
+        cwd // Bsb_config.lib_bs  in
+      Bsb_namespace_map_gen.output 
+        ~dir:namespace_dir ns
+        bs_file_groups; 
+      Bsb_ninja_util.output_build oc 
+        ~output:(ns ^ Literals.suffix_cmi)
+        ~input:(ns ^ Literals.suffix_mlmap)
+        ~rule:Bsb_ninja_rule.build_package
+    );
+  close_out oc
+
+       (* let all_info =  *)
+         (* (ns ^ Literals.suffix_cmi) :: all_info *)
+        (* in  *)
+     (* Bsb_ninja_util.phony 
        oc 
-       ~order_only_deps:(static_resources @ all_info)
+       ~order_only_deps:static_resources (* @ all_info *)
        ~inputs:[]
-       ~output:Literals.build_ninja );
-  close_out oc;
+       ~output:Literals.build_ninja); *)
 
 end
 module Bsb_ninja_regen : sig 

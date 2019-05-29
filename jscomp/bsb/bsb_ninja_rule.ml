@@ -50,12 +50,12 @@ type t = {
 }
 
 let get_name (x : t) oc = x.name oc
-let print_rule oc ~description ?(restat : unit option)  ?depfile ~command   name  =
+let print_rule oc ~description ?(restat : unit option)  ?dyndep ~command   name  =
   output_string oc "rule "; output_string oc name ; output_string oc "\n";
   output_string oc "  command = "; output_string oc command; output_string oc "\n";
-  Ext_option.iter depfile begin fun f ->
-      output_string oc "  depfile = "; output_string oc f; output_string oc  "\n"
-  end;
+  Ext_option.iter dyndep (fun f ->
+      output_string oc "  dyndep = "; output_string oc f; output_string oc  "\n"
+  );
   (if restat <>  None then   
       output_string oc "  restat = 1\n");
 
@@ -67,7 +67,7 @@ let print_rule oc ~description ?(restat : unit option)  ?depfile ~command   name
 (** allocate an unique name for such rule*)
 let define
     ~command
-    ?depfile
+    ?dyndep
     ?restat
     ?(description = "\027[34mBuilding\027[39m \027[2m${out}\027[22m") (* blue, dim *)
     name
@@ -79,7 +79,7 @@ let define
     name = fun oc ->
       if not self.used then
         begin
-          print_rule oc ~description ?depfile ?restat ~command rule_name;
+          print_rule oc ~description  ?dyndep ?restat ~command rule_name;
           self.used <- true
         end ;
       rule_name
@@ -138,7 +138,7 @@ let build_cmj_js =
   define
     ~command:"${bsc} ${bs_package_flags} -bs-assume-has-mli -bs-no-builtin-ppx-ml -bs-no-implicit-include  \
               ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${warnings} ${bsc_flags} ${gentypeconfig} -o ${out} -c  ${in} $postbuild"
-    ~depfile:"${in}.d"
+    ~dyndep:"${in}.d"
     ~restat:() (* Always restat when having mli *)
     "build_cmj_only"
     
@@ -147,14 +147,14 @@ let build_cmj_cmi_js =
   define
     ~command:"${bsc} ${bs_package_flags} -bs-assume-no-mli -bs-no-builtin-ppx-ml -bs-no-implicit-include \
               ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${warnings} ${bsc_flags} ${gentypeconfig} -o ${out} -c  ${in} $postbuild"
-    ~depfile:"${in}.d"
+    ~dyndep:"${in}.d" 
     ~restat:() (* may not need it in the future *)
     "build_cmj_cmi" (* the compiler should never consult [.cmi] when [.mli] does not exist *)
 let build_cmi =
   define
     ~command:"${bsc} ${bs_package_flags} -bs-no-builtin-ppx-mli -bs-no-implicit-include \
               ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${warnings} ${bsc_flags} ${gentypeconfig} -o ${out} -c  ${in}"
-    ~depfile:"${in}.d"
+    ~dyndep:"${in}.d"
     ~restat:()
     "build_cmi" (* the compiler should always consult [.cmi], current the vanilla ocaml compiler only consult [.cmi] when [.mli] found*)
 

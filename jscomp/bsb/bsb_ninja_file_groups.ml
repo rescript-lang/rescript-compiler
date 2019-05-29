@@ -156,17 +156,17 @@ let emit_impl_build
          op = Overwrite ("&& " ^ cmd ^ Ext_string.single_space ^ String.concat Ext_string.single_space output_js)} 
         :: common_shadows
     in
-    let rule , cm_outputs, deps =
+    let rule , cm_outputs, implicit_deps =
       if no_intf_file then 
-        Bsb_ninja_rule.build_cmj_cmi_js, [file_cmi], []
-      else  Bsb_ninja_rule.build_cmj_js, []  , [file_cmi]
+        Bsb_ninja_rule.build_cmj_cmi_js, [file_cmi], [output_mlastd]
+      else  Bsb_ninja_rule.build_cmj_js, []  , [file_cmi; output_mlastd]
     in
     Bsb_ninja_util.output_build oc
       ~output:output_cmj
       ~shadows
       ~implicit_outputs:  (output_js @ cm_outputs)
       ~input:output_mlast
-      ~implicit_deps:deps
+      ~implicit_deps
       ~rule;
     [output_mlastd] 
   end 
@@ -221,6 +221,7 @@ let emit_intf_build
   Bsb_ninja_util.output_build oc
     ~output:output_cmi
     ~shadows:common_shadows
+    ~implicit_deps:[output_mliastd]
     ~input:output_mliast
     ~rule:Bsb_ninja_rule.build_cmi
     ;
