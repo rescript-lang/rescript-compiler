@@ -5,7 +5,7 @@
         "module" : "commonjs",
         "in-source": true
     },{
-        "module" : "amdjs",
+        "module": "es6",
         "in-source": true
     }
     ]
