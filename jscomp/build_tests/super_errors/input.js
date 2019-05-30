@@ -8,8 +8,11 @@ var refmt = 'bsrefmt'
 // process.env.BS_TRAVIS_CI = 1
 if(process.env.BS_TRAVIS_CI){
   bsc = path.join(__dirname,'..','..','..','lib','bsc')
-  refmt = path.join(__dirname,'..','..','..','lib','bsrefmt') 
+  refmt = path.join(__dirname,'..','..','..','lib','bsrefmt')   
 } 
+
+// work around CI issue
+child_process.execSync(`chmod u+x ${refmt}`)
 
 const expectedDir = path.join(__dirname, 'expected')
 
