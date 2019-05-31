@@ -2,9 +2,6 @@ File "/.../fixtures/syntaxErrors5.re", line 2, characters 0-0:
 Error: Syntax error: ')' expected
 File "/.../fixtures/syntaxErrors5.re", line 1, characters 8-9:
 Error: This '(' might be unmatched
-Error happened when running command /.../refmt.exe with args [ '--print',
-  'binary',
-  '/.../fixtures/syntaxErrors5.re' ]
 
   [1;31mWe've found a bug for you![0m
   [36m/.../fixtures/syntaxErrors5.re[0m

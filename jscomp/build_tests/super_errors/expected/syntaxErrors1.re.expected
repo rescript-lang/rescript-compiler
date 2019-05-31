@@ -1,8 +1,5 @@
 File "/.../fixtures/syntaxErrors1.re", line 1, characters 24-26:
 Error: Syntax error
-Error happened when running command /.../refmt.exe with args [ '--print',
-  'binary',
-  '/.../fixtures/syntaxErrors1.re' ]
 
   [1;31mWe've found a bug for you![0m
   [36m/.../fixtures/syntaxErrors1.re[0m

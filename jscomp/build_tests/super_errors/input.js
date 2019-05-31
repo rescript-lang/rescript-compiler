@@ -4,12 +4,15 @@ const child_process = require('child_process')
 
 
 var bsc = 'bsc'
-var refmt = 'bsrefmt'
+var refmt = 'refmt.exe'
 // process.env.BS_TRAVIS_CI = 1
 if(process.env.BS_TRAVIS_CI){
   bsc = path.join(__dirname,'..','..','..','lib','bsc')
-  refmt = path.join(__dirname,'..','..','..','lib','bsrefmt') 
+  refmt = path.join(__dirname,'..','..','..','lib','refmt.exe')   
 } 
+
+// work around CI issue
+// child_process.execSync(`chmod u+x ${refmt}`)
 
 const expectedDir = path.join(__dirname, 'expected')
 
