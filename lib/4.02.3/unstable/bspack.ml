@@ -27335,9 +27335,9 @@ let () =
                    (fun dep acc  -> 
                       acc ^ 
                       dep ^
-                      "\n"
+                      " "
                    ) sorted_dep_queue
-                   (file ^ ":\n" )
+                   (file ^ ": " )
                    (* collection_modules *)
                )
        end
