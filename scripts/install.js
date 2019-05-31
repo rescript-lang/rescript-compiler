@@ -278,6 +278,7 @@ function checkPrebuiltBscCompiler() {
 }
 
 function buildLibs(){
+    process.env.NINJA_IGNORE_GENERATOR = 'true'
     var releaseNinja = `
 stdlib = ${ocamlVersion.includes('4.06')? 'stdlib-406' : 'stdlib-402'}
 subninja runtime/release.ninja
