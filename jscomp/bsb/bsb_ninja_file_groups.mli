@@ -23,10 +23,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-type info =  string list  
-
-
-val zero : info
 
 
 val handle_file_groups :
@@ -39,4 +35,4 @@ val handle_file_groups :
   custom_rules:Bsb_ninja_rule.t String_map.t ->
   Bsb_file_groups.file_groups ->
   string option -> 
-  info -> info
+  unit

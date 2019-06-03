@@ -65,7 +65,7 @@ type ts = t array
   ]}
 *)
 
-val dir_of_module_info : module_info -> string
+(* val dir_of_module_info : module_info -> string *)
 
 
 val filename_sans_suffix_of_module_info : module_info -> string 
@@ -82,4 +82,13 @@ val collect_module_by_filename :
   return [boolean] to indicate whether reason file exists or not
   will raise if it fails sanity check
 *)
-val sanity_check : t -> bool
+val has_reason_files : t -> bool
+
+val conflict_module_info:
+  string ->
+  module_info -> 
+  module_info -> 
+  'a 
+val merge : t -> t -> t 
+
+val sanity_check : t -> unit

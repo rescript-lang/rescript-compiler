@@ -3,11 +3,11 @@ const path = require('path')
 const child_process = require('child_process')
 
 
-var bsc = 'bsc'
+var bsc = 'bsc.exe'
 var refmt = 'refmt.exe'
 // process.env.BS_TRAVIS_CI = 1
 if(process.env.BS_TRAVIS_CI){
-  bsc = path.join(__dirname,'..','..','..','lib','bsc')
+  bsc = path.join(__dirname,'..','..','..','lib','bsc.exe')
   refmt = path.join(__dirname,'..','..','..','lib','refmt.exe')   
 } 
 

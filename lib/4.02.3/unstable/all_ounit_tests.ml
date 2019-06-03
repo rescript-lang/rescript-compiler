@@ -5960,6 +5960,10 @@ val config_error : Ext_json_types.t -> string -> 'a
 val invalid_spec : string -> 'a
 
 val invalid_json : string -> 'a
+
+val no_implementation : string -> 'a
+
+val not_consistent : string -> 'a
 end = struct
 #1 "bsb_exception.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -5994,7 +5998,8 @@ type error =
   | Invalid_json of string
   | Invalid_spec of string
   | Conflict_module of string * string * string
-
+  | No_implementation of string
+  | Not_consistent of string 
 
 exception Error of error
 
@@ -6009,6 +6014,12 @@ let print (fmt : Format.formatter) (x : error) =
     "@{<error>Error:@} %s found in two directories: (%s, %s)\n\
     File names must be unique per project"
       modname dir1 dir2
+  | Not_consistent modname ->     
+    Format.fprintf fmt 
+    "@{<error>Error:@} %s has implementation/interface in non-consistent syntax(reason/ocaml)" modname
+  | No_implementation (modname) ->     
+    Format.fprintf fmt 
+    "@{<error>Error:@} %s does not have implementation file" modname
   | Package_not_found (name,json_opt) ->
     let in_json = match json_opt with
     | None -> Ext_string.empty
@@ -6044,6 +6055,10 @@ let print (fmt : Format.formatter) (x : error) =
 
 let conflict_module modname dir1 dir2 =
   error (Conflict_module (modname,dir1,dir2))
+let no_implementation modname =   
+  error (No_implementation modname)
+let not_consistent modname =   
+  error (Not_consistent modname)
 let errorf ~loc fmt =
   Format.ksprintf (fun s -> error (Json_config (loc,s))) fmt
 
@@ -7059,7 +7074,7 @@ type ts = t array
   ]}
 *)
 
-val dir_of_module_info : module_info -> string
+(* val dir_of_module_info : module_info -> string *)
 
 
 val filename_sans_suffix_of_module_info : module_info -> string 
@@ -7076,7 +7091,16 @@ val collect_module_by_filename :
   return [boolean] to indicate whether reason file exists or not
   will raise if it fails sanity check
 *)
-val sanity_check : t -> bool
+val has_reason_files : t -> bool
+
+val conflict_module_info:
+  string ->
+  module_info -> 
+  module_info -> 
+  'a 
+val merge : t -> t -> t 
+
+val sanity_check : t -> unit
 end = struct
 #1 "bsb_db.ml"
 
@@ -7137,6 +7161,9 @@ let dir_of_module_info (x : module_info)
 let filename_sans_suffix_of_module_info (x : module_info) =
   x.name_sans_extension
 
+(* invariant check:
+  ml and mli should have the same case, same path
+*)  
 let check (x : module_info) name_sans_extension =  
   if x.name_sans_extension <> name_sans_extension then 
     Bsb_exception.invalid_spec 
@@ -7144,7 +7171,7 @@ let check (x : module_info) name_sans_extension =
          "implementation and interface have different path names or different cases %s vs %s"
          x.name_sans_extension name_sans_extension)
 
-let adjust_module_info (x : _ option) suffix name_sans_extension upper =
+let adjust_module_info (x : module_info option) suffix name_sans_extension upper : module_info =
   match suffix with 
   | ".ml" -> 
     let ml_info = Ml_source  ( false, upper) in 
@@ -7180,7 +7207,8 @@ let adjust_module_info (x : _ option) suffix name_sans_extension upper =
       "don't know what to do with %s%s" 
       name_sans_extension suffix
 
-let collect_module_by_filename ~dir (map : t) file_name : t  = 
+let collect_module_by_filename 
+  ~(dir : string) (map : t) (file_name : string) : t  = 
   let module_name, upper = 
     Ext_modulename.module_name_of_file_if_any_with_upper file_name in 
   let suffix = Ext_path.get_extension file_name in 
@@ -7189,15 +7217,25 @@ let collect_module_by_filename ~dir (map : t) file_name : t  =
   String_map.adjust 
     map
     module_name 
-    (fun opt_module_info -> 
+    (fun (opt_module_info : module_info option)-> 
        adjust_module_info 
          opt_module_info
          suffix 
          name_sans_extension upper )
 
 
-
-let sanity_check (map  : t ) = 
+let sanity_check (map : t) = 
+  String_map.iter map (fun m module_info -> 
+      match module_info.ml_info, module_info.mli_info with 
+      | Ml_empty, _ ->      
+        Bsb_exception.no_implementation m 
+      | Ml_source(impl_is_re,_), Mli_source(intf_is_re,_)   
+        ->
+        if impl_is_re <> intf_is_re then
+          Bsb_exception.not_consistent m
+      | Ml_source _ , Mli_empty -> ()    
+    )
+let has_reason_files (map  : t ) = 
   String_map.exists map (fun _ module_info ->
       match module_info with 
       |  { ml_info = Ml_source(is_re,_); 
@@ -7208,6 +7246,26 @@ let sanity_check (map  : t ) =
         ->  is_re
       | {ml_info = Ml_empty ; mli_info = Mli_empty } -> false
     )  
+
+let conflict_module_info modname a b = 
+  Bsb_exception.conflict_module
+    modname
+    (dir_of_module_info a)
+    (dir_of_module_info b)
+
+(* merge data info from two directories*)    
+let merge (acc : t) (sources : t) : t =
+  String_map.merge acc sources (fun modname k1 k2 ->
+      match k1 , k2 with
+      | None , None ->
+        assert false
+      | Some a, Some b  ->
+        conflict_module_info modname 
+          a
+          b
+      | Some v, None  -> Some v
+      | None, Some v ->  Some v
+    )
 
 end
 module Bsb_db_io : sig 
