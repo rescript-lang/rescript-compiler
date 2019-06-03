@@ -13545,7 +13545,7 @@ let emit_impl_build
     oc 
     ~has_checked_ppx
     ~bs_suffix
-    ~no_intf_file:(no_intf_file : bool) 
+    ~(no_intf_file : bool) 
     js_post_build_cmd
     ~is_re
     namespace
@@ -13613,7 +13613,7 @@ let emit_impl_build
       Bsb_ninja_util.output_build oc
         ~output:output_cmi
         ~shadows:common_shadows
-        ~implicit_deps:[output_mliastd]
+        ~order_only_deps:[output_mliastd]
         ~input:output_mliast
         ~rule:Bsb_ninja_rule.build_cmi
       ;
@@ -13639,8 +13639,8 @@ let emit_impl_build
     in
     let rule , cm_outputs, implicit_deps =
       if no_intf_file then 
-        Bsb_ninja_rule.build_cmj_cmi_js, [output_cmi], [output_mlastd]
-      else  Bsb_ninja_rule.build_cmj_js, []  , [output_cmi; output_mlastd]
+        Bsb_ninja_rule.build_cmj_cmi_js, [output_cmi], []
+      else  Bsb_ninja_rule.build_cmj_js, []  , [output_cmi]
     in
     Bsb_ninja_util.output_build oc
       ~output:output_cmj
@@ -13648,6 +13648,7 @@ let emit_impl_build
       ~implicit_outputs:  (output_js @ cm_outputs)
       ~input:output_mlast
       ~implicit_deps
+      ~order_only_deps:[output_mlastd]
       ~rule
   end 
 
