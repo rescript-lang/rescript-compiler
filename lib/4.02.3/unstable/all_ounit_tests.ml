@@ -7076,7 +7076,7 @@ val collect_module_by_filename :
   return [boolean] to indicate whether reason file exists or not
   will raise if it fails sanity check
 *)
-val sanity_check : t -> bool
+val has_reason_files : t -> bool
 end = struct
 #1 "bsb_db.ml"
 
@@ -7197,7 +7197,7 @@ let collect_module_by_filename ~dir (map : t) file_name : t  =
 
 
 
-let sanity_check (map  : t ) = 
+let has_reason_files (map  : t ) = 
   String_map.exists map (fun _ module_info ->
       match module_info with 
       |  { ml_info = Ml_source(is_re,_); 

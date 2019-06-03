@@ -82,4 +82,4 @@ val collect_module_by_filename :
   return [boolean] to indicate whether reason file exists or not
   will raise if it fails sanity check
 *)
-val sanity_check : t -> bool
+val has_reason_files : t -> bool

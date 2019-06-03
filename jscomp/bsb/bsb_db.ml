@@ -116,7 +116,7 @@ let collect_module_by_filename ~dir (map : t) file_name : t  =
 
 
 
-let sanity_check (map  : t ) = 
+let has_reason_files (map  : t ) = 
   String_map.exists map (fun _ module_info ->
       match module_info with 
       |  { ml_info = Ml_source(is_re,_); 

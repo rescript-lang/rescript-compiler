@@ -7286,7 +7286,7 @@ val collect_module_by_filename :
   return [boolean] to indicate whether reason file exists or not
   will raise if it fails sanity check
 *)
-val sanity_check : t -> bool
+val has_reason_files : t -> bool
 end = struct
 #1 "bsb_db.ml"
 
@@ -7407,7 +7407,7 @@ let collect_module_by_filename ~dir (map : t) file_name : t  =
 
 
 
-let sanity_check (map  : t ) = 
+let has_reason_files (map  : t ) = 
   String_map.exists map (fun _ module_info ->
       match module_info with 
       |  { ml_info = Ml_source(is_re,_); 
@@ -13998,7 +13998,7 @@ let output_ninja_and_namespace_map
             ( if resources = [] then acc_resources
               else Ext_list.map_append resources acc_resources (fun x -> dir // x ) )
           )  in
-      has_reason_files := Bsb_db.sanity_check bs_group || !has_reason_files;     
+      has_reason_files := !has_reason_files || Bsb_db.has_reason_files bs_group ;     
       [|bs_group|], source_dirs, static_resources
     else
       let bs_groups = Array.init  (number_of_dev_groups + 1 ) (fun i -> String_map.empty) in
@@ -14012,10 +14012,10 @@ let output_ninja_and_namespace_map
             Ext_list.map_append resources  acc_resources (fun x -> dir//x) 
           ) in
       let lib = bs_groups.((Bsb_dir_index.lib_dir_index :> int)) in               
-      has_reason_files := Bsb_db.sanity_check lib || !has_reason_files;
+      has_reason_files :=  !has_reason_files || Bsb_db.has_reason_files lib ;
       for i = 1 to number_of_dev_groups  do
         let c = bs_groups.(i) in
-        has_reason_files :=  Bsb_db.sanity_check c || !has_reason_files ;
+        has_reason_files :=  !has_reason_files || Bsb_db.has_reason_files c ;
         String_map.iter c 
           (fun k a -> 
             if String_map.mem lib k  then 

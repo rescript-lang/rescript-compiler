@@ -218,7 +218,7 @@ let output_ninja_and_namespace_map
             ( if resources = [] then acc_resources
               else Ext_list.map_append resources acc_resources (fun x -> dir // x ) )
           )  in
-      has_reason_files := Bsb_db.sanity_check bs_group || !has_reason_files;     
+      has_reason_files := !has_reason_files || Bsb_db.has_reason_files bs_group ;     
       [|bs_group|], source_dirs, static_resources
     else
       let bs_groups = Array.init  (number_of_dev_groups + 1 ) (fun i -> String_map.empty) in
@@ -232,10 +232,10 @@ let output_ninja_and_namespace_map
             Ext_list.map_append resources  acc_resources (fun x -> dir//x) 
           ) in
       let lib = bs_groups.((Bsb_dir_index.lib_dir_index :> int)) in               
-      has_reason_files := Bsb_db.sanity_check lib || !has_reason_files;
+      has_reason_files :=  !has_reason_files || Bsb_db.has_reason_files lib ;
       for i = 1 to number_of_dev_groups  do
         let c = bs_groups.(i) in
-        has_reason_files :=  Bsb_db.sanity_check c || !has_reason_files ;
+        has_reason_files :=  !has_reason_files || Bsb_db.has_reason_files c ;
         String_map.iter c 
           (fun k a -> 
             if String_map.mem lib k  then 
