@@ -198,63 +198,6 @@ let emit_impl_build
       ~rule
   end 
 
-(*
-let emit_intf_build 
-    (package_specs : Bsb_package_specs.t)
-    (group_dir_index : Bsb_dir_index.t)
-    oc
-    ~is_re
-    ~has_checked_ppx
-    namespace
-    filename_sans_extension
-  : info =
-  let output_mliast = filename_sans_extension ^ Literals.suffix_mliast in
-  let output_mliastd = filename_sans_extension ^ Literals.suffix_mliastd in
-  let output_filename_sans_extension = 
-    match namespace with 
-    | None -> 
-      filename_sans_extension 
-    | Some ns -> 
-      Ext_namespace.make ~ns filename_sans_extension
-  in 
-  let output_cmi = output_filename_sans_extension ^ Literals.suffix_cmi in  
-  let common_shadows = 
-    make_common_shadows is_re package_specs
-      (Filename.dirname output_cmi)
-      group_dir_index in
-  Bsb_ninja_util.output_build oc
-    ~output:output_mliast
-      (* TODO: we can get rid of absloute path if we fixed the location to be 
-          [lib/bs], better for testing?
-      *)
-    ~input:(Bsb_config.proj_rel 
-              (if is_re then filename_sans_extension ^ Literals.suffix_rei 
-               else filename_sans_extension ^ Literals.suffix_mli))
-    ~rule:(if is_re then Bsb_ninja_rule.build_ast_and_module_sets_from_rei
-           else Bsb_ninja_rule.build_ast_and_module_sets)
-    ~implicit_deps:(if has_checked_ppx then [ "${ppx_checked_files}" ] else [])       
-    ;
-  Bsb_ninja_util.output_build oc
-    ~output:output_mliastd
-    ~input:output_mliast
-    ~rule:Bsb_ninja_rule.build_bin_deps
-    ~implicit_deps:(if has_checked_ppx then [ "${ppx_checked_files}" ] else [])       
-    ?shadows:(if Bsb_dir_index.is_lib_dir group_dir_index  then None
-              else Some [{
-                  key = Bsb_build_schemas.bsb_dir_group; 
-                  op = 
-                    Overwrite (string_of_int (group_dir_index :> int )) }])
-  ;
-  Bsb_ninja_util.output_build oc
-    ~output:output_cmi
-    ~shadows:common_shadows
-    ~implicit_deps:[output_mliastd]
-    ~input:output_mliast
-    ~rule:Bsb_ninja_rule.build_cmi
-    ;
-  [output_mliastd]
-
-*)
 
 let handle_module_info 
     (group_dir_index : Bsb_dir_index.t)
@@ -266,34 +209,21 @@ let handle_module_info
     ( {name_sans_extension = input} as module_info : Bsb_db.module_info)
     namespace
   : unit =
-  match module_info.ml_info, module_info.mli_info with
-  | Ml_source (is_re,_), 
-    Mli_source(_,_) ->
+  match module_info.ml_info with
+  | Ml_source (is_re,_) ->
     emit_impl_build       
       package_specs
       group_dir_index
       oc 
       ~has_checked_ppx
       ~bs_suffix
-      ~no_intf_file:false
+      ~no_intf_file:(module_info.mli_info = Mli_empty)
       ~is_re
       js_post_build_cmd      
       namespace
       input 
-  | Ml_source(is_re,_), Mli_empty ->
-    emit_impl_build 
-      package_specs
-      group_dir_index
-      oc 
-      ~has_checked_ppx
-      ~bs_suffix
-      ~no_intf_file:true
-      js_post_build_cmd      
-      ~is_re
-      namespace
-      input 
-  | Ml_empty, Mli_source(_,_) 
-  | Ml_empty, Mli_empty -> assert false
+  | Ml_empty
+    -> assert false
 
 
 let handle_file_group 
