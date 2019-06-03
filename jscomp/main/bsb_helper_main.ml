@@ -64,14 +64,6 @@ let () =
     "-g", Arg.Int (fun i -> dev_group := i ),
     " Set the dev group (default to be 0)"
     ;
-    "-MD", Arg.String (
-      fun x -> 
-        Bsb_helper_depfile_gen.emit_dep_file
-          Js 
-          x (Bsb_dir_index.of_int !dev_group )
-          !namespace
-          ),
-    " (internal)Generate dep file for ninja format(from .ml[i]deps)";
     "-ns", Arg.String (fun s -> namespace := Some s),
     " Set namespace";
 #if BS_NATIVE then    
@@ -144,4 +136,18 @@ let () =
       )),
     " pack bytecode files (cmo) into a library file (cma)";
 #end    
-  ] anonymous usage
+  ] anonymous usage;
+  (* arrange with mlast comes first *)
+  match !batch_files with
+  | [x]
+    ->  Bsb_helper_depfile_gen.emit_d
+          x (Bsb_dir_index.of_int !dev_group )          
+          !namespace ""
+  | [y; x] (* reverse order *)
+    -> 
+    Bsb_helper_depfile_gen.emit_d
+      x
+      (Bsb_dir_index.of_int !dev_group)
+      !namespace y
+  | _ -> 
+    assert false  

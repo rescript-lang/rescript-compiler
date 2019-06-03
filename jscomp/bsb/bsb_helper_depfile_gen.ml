@@ -115,6 +115,7 @@ let handle_module_info
       (* #3260 cmj changes does not imply cmi change anymore *)
       oc_cmi buf namespace source
     end
+
 let oc_impl 
     (dependent_module_set : string array)
     (input_file : string)
@@ -125,7 +126,7 @@ let oc_impl
     (lhs_suffix : string)
     (rhs_suffix : string)
   = 
-  Buffer.add_string buf ninja_dyndep_version;
+
   Buffer.add_string buf build_lit;  
   output_file buf input_file namespace ; 
   Buffer.add_string buf lhs_suffix; 
@@ -159,7 +160,7 @@ let oc_intf
     (db : Bsb_db_io.t)
     (namespace : string option)
     (buf : Buffer.t) : unit =   
-  Buffer.add_string buf ninja_dyndep_version;  
+
   Buffer.add_string buf build_lit;
   output_file buf input_file namespace ; 
   Buffer.add_string buf Literals.suffix_cmi ; 
@@ -183,6 +184,42 @@ let oc_intf
   Buffer.add_char buf '\n'
 
 
+let emit_d mlast 
+  (index : Bsb_dir_index.t) 
+  (namespace : string option) has_intf = 
+  let data  =
+    Bsb_db_io.read_build_cache 
+      ~dir:Filename.current_dir_name
+  in 
+  let set_a = read_deps mlast in 
+  let buf = Buffer.create 128 in 
+  let ()  = Buffer.add_string buf ninja_dyndep_version in 
+  let input_file = Filename.chop_extension mlast in 
+  let filename = input_file ^ Literals.suffix_d in   
+  let lhs_suffix = Literals.suffix_cmj in   
+  let rhs_suffix = Literals.suffix_cmj in 
+  oc_impl 
+    set_a 
+    input_file 
+    index 
+    data
+    namespace
+    buf 
+    lhs_suffix 
+    rhs_suffix ;      
+  if has_intf <> "" then begin
+    let set_b = read_deps has_intf in 
+    (* if not (Ext_array.is_empty set_b) then *)
+    (* resulting an error : xx not mentioned in its dyndep file*)
+    oc_intf 
+      set_b
+      input_file 
+      index 
+      data 
+      namespace 
+      buf        
+  end;          
+  write_file filename buf 
 
 (* OPT: Don't touch the .d file if nothing changed *)
 let emit_dep_file
