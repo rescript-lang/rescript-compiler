@@ -3888,6 +3888,10 @@ val config_error : Ext_json_types.t -> string -> 'a
 val invalid_spec : string -> 'a
 
 val invalid_json : string -> 'a
+
+val no_implementation : string -> 'a
+
+val not_consistent : string -> 'a
 end = struct
 #1 "bsb_exception.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -3922,7 +3926,8 @@ type error =
   | Invalid_json of string
   | Invalid_spec of string
   | Conflict_module of string * string * string
-
+  | No_implementation of string
+  | Not_consistent of string 
 
 exception Error of error
 
@@ -3937,6 +3942,12 @@ let print (fmt : Format.formatter) (x : error) =
     "@{<error>Error:@} %s found in two directories: (%s, %s)\n\
     File names must be unique per project"
       modname dir1 dir2
+  | Not_consistent modname ->     
+    Format.fprintf fmt 
+    "@{<error>Error:@} %s has implementation/interface in non-consistent syntax(reason/ocaml)" modname
+  | No_implementation (modname) ->     
+    Format.fprintf fmt 
+    "@{<error>Error:@} %s does not have implementation file" modname
   | Package_not_found (name,json_opt) ->
     let in_json = match json_opt with
     | None -> Ext_string.empty
@@ -3972,6 +3983,10 @@ let print (fmt : Format.formatter) (x : error) =
 
 let conflict_module modname dir1 dir2 =
   error (Conflict_module (modname,dir1,dir2))
+let no_implementation modname =   
+  error (No_implementation modname)
+let not_consistent modname =   
+  error (Not_consistent modname)
 let errorf ~loc fmt =
   Format.ksprintf (fun s -> error (Json_config (loc,s))) fmt
 
@@ -4987,7 +5002,7 @@ type ts = t array
   ]}
 *)
 
-val dir_of_module_info : module_info -> string
+(* val dir_of_module_info : module_info -> string *)
 
 
 val filename_sans_suffix_of_module_info : module_info -> string 
@@ -5004,7 +5019,16 @@ val collect_module_by_filename :
   return [boolean] to indicate whether reason file exists or not
   will raise if it fails sanity check
 *)
-val sanity_check : t -> bool
+val has_reason_files : t -> bool
+
+val conflict_module_info:
+  string ->
+  module_info -> 
+  module_info -> 
+  'a 
+val merge : t -> t -> t 
+
+val sanity_check : t -> unit
 end = struct
 #1 "bsb_db.ml"
 
@@ -5065,6 +5089,9 @@ let dir_of_module_info (x : module_info)
 let filename_sans_suffix_of_module_info (x : module_info) =
   x.name_sans_extension
 
+(* invariant check:
+  ml and mli should have the same case, same path
+*)  
 let check (x : module_info) name_sans_extension =  
   if x.name_sans_extension <> name_sans_extension then 
     Bsb_exception.invalid_spec 
@@ -5072,7 +5099,7 @@ let check (x : module_info) name_sans_extension =
          "implementation and interface have different path names or different cases %s vs %s"
          x.name_sans_extension name_sans_extension)
 
-let adjust_module_info (x : _ option) suffix name_sans_extension upper =
+let adjust_module_info (x : module_info option) suffix name_sans_extension upper : module_info =
   match suffix with 
   | ".ml" -> 
     let ml_info = Ml_source  ( false, upper) in 
@@ -5108,7 +5135,8 @@ let adjust_module_info (x : _ option) suffix name_sans_extension upper =
       "don't know what to do with %s%s" 
       name_sans_extension suffix
 
-let collect_module_by_filename ~dir (map : t) file_name : t  = 
+let collect_module_by_filename 
+  ~(dir : string) (map : t) (file_name : string) : t  = 
   let module_name, upper = 
     Ext_modulename.module_name_of_file_if_any_with_upper file_name in 
   let suffix = Ext_path.get_extension file_name in 
@@ -5117,15 +5145,25 @@ let collect_module_by_filename ~dir (map : t) file_name : t  =
   String_map.adjust 
     map
     module_name 
-    (fun opt_module_info -> 
+    (fun (opt_module_info : module_info option)-> 
        adjust_module_info 
          opt_module_info
          suffix 
          name_sans_extension upper )
 
 
-
-let sanity_check (map  : t ) = 
+let sanity_check (map : t) = 
+  String_map.iter map (fun m module_info -> 
+      match module_info.ml_info, module_info.mli_info with 
+      | Ml_empty, _ ->      
+        Bsb_exception.no_implementation m 
+      | Ml_source(impl_is_re,_), Mli_source(intf_is_re,_)   
+        ->
+        if impl_is_re <> intf_is_re then
+          Bsb_exception.not_consistent m
+      | Ml_source _ , Mli_empty -> ()    
+    )
+let has_reason_files (map  : t ) = 
   String_map.exists map (fun _ module_info ->
       match module_info with 
       |  { ml_info = Ml_source(is_re,_); 
@@ -5136,6 +5174,26 @@ let sanity_check (map  : t ) =
         ->  is_re
       | {ml_info = Ml_empty ; mli_info = Mli_empty } -> false
     )  
+
+let conflict_module_info modname a b = 
+  Bsb_exception.conflict_module
+    modname
+    (dir_of_module_info a)
+    (dir_of_module_info b)
+
+(* merge data info from two directories*)    
+let merge (acc : t) (sources : t) : t =
+  String_map.merge acc sources (fun modname k1 k2 ->
+      match k1 , k2 with
+      | None , None ->
+        assert false
+      | Some a, Some b  ->
+        conflict_module_info modname 
+          a
+          b
+      | Some v, None  -> Some v
+      | None, Some v ->  Some v
+    )
 
 end
 module Bsb_db_io : sig 
@@ -5753,7 +5811,12 @@ val emit_dep_file:
   unit
 
 
-
+val emit_d:
+  string ->
+  Bsb_dir_index.t ->  
+  string  option ->
+  string -> (* empty string means no mliast *)
+  unit
 end = struct
 #1 "bsb_helper_depfile_gen.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -5873,6 +5936,7 @@ let handle_module_info
       (* #3260 cmj changes does not imply cmi change anymore *)
       oc_cmi buf namespace source
     end
+
 let oc_impl 
     (dependent_module_set : string array)
     (input_file : string)
@@ -5883,7 +5947,7 @@ let oc_impl
     (lhs_suffix : string)
     (rhs_suffix : string)
   = 
-  Buffer.add_string buf ninja_dyndep_version;
+
   Buffer.add_string buf build_lit;  
   output_file buf input_file namespace ; 
   Buffer.add_string buf lhs_suffix; 
@@ -5917,7 +5981,7 @@ let oc_intf
     (db : Bsb_db_io.t)
     (namespace : string option)
     (buf : Buffer.t) : unit =   
-  Buffer.add_string buf ninja_dyndep_version;  
+
   Buffer.add_string buf build_lit;
   output_file buf input_file namespace ; 
   Buffer.add_string buf Literals.suffix_cmi ; 
@@ -5941,6 +6005,42 @@ let oc_intf
   Buffer.add_char buf '\n'
 
 
+let emit_d mlast 
+  (index : Bsb_dir_index.t) 
+  (namespace : string option) has_intf = 
+  let data  =
+    Bsb_db_io.read_build_cache 
+      ~dir:Filename.current_dir_name
+  in 
+  let set_a = read_deps mlast in 
+  let buf = Buffer.create 128 in 
+  let ()  = Buffer.add_string buf ninja_dyndep_version in 
+  let input_file = Filename.chop_extension mlast in 
+  let filename = input_file ^ Literals.suffix_d in   
+  let lhs_suffix = Literals.suffix_cmj in   
+  let rhs_suffix = Literals.suffix_cmj in 
+  oc_impl 
+    set_a 
+    input_file 
+    index 
+    data
+    namespace
+    buf 
+    lhs_suffix 
+    rhs_suffix ;      
+  if has_intf <> "" then begin
+    let set_b = read_deps has_intf in 
+    (* if not (Ext_array.is_empty set_b) then *)
+    (* resulting an error : xx not mentioned in its dyndep file*)
+    oc_intf 
+      set_b
+      input_file 
+      index 
+      data 
+      namespace 
+      buf        
+  end;          
+  write_file filename buf 
 
 (* OPT: Don't touch the .d file if nothing changed *)
 let emit_dep_file
@@ -6085,17 +6185,23 @@ let () =
     "-g", Arg.Int (fun i -> dev_group := i ),
     " Set the dev group (default to be 0)"
     ;
-    "-MD", Arg.String (
-      fun x -> 
-        Bsb_helper_depfile_gen.emit_dep_file
-          Js 
-          x (Bsb_dir_index.of_int !dev_group )
-          !namespace
-          ),
-    " (internal)Generate dep file for ninja format(from .ml[i]deps)";
     "-ns", Arg.String (fun s -> namespace := Some s),
     " Set namespace";
     
-  ] anonymous usage
+  ] anonymous usage;
+  (* arrange with mlast comes first *)
+  match !batch_files with
+  | [x]
+    ->  Bsb_helper_depfile_gen.emit_d
+          x (Bsb_dir_index.of_int !dev_group )          
+          !namespace ""
+  | [y; x] (* reverse order *)
+    -> 
+    Bsb_helper_depfile_gen.emit_d
+      x
+      (Bsb_dir_index.of_int !dev_group)
+      !namespace y
+  | _ -> 
+    assert false  
 
 end

@@ -103,12 +103,8 @@ let emit_impl_build
       (if is_re then filename_sans_extension ^ Literals.suffix_re 
        else filename_sans_extension ^ Literals.suffix_ml  ) in
   let output_mlast = filename_sans_extension  ^ Literals.suffix_mlast in
-  let output_mlastd = filename_sans_extension ^ Literals.suffix_mlastd in
-
-  let output_mliast = filename_sans_extension ^ Literals.suffix_mliast in
-  let output_mliastd = filename_sans_extension ^ Literals.suffix_mliastd in
-  
-
+  let output_mliast = filename_sans_extension  ^ Literals.suffix_mliast in
+  let output_d = filename_sans_extension ^ Literals.suffix_d in
   let output_filename_sans_extension = 
     match namespace with 
     | None -> 
@@ -124,80 +120,71 @@ let emit_impl_build
     make_common_shadows is_re package_specs
       (Filename.dirname output_cmi)
       group_dir_index in
-  begin
+  let implicit_deps = (if has_checked_ppx then [ "${ppx_checked_files}" ] else []) in     
+
+  Bsb_ninja_util.output_build oc
+    ~output:output_mlast
+    ~input
+    ~implicit_deps
+    ~rule:( if is_re then 
+              Bsb_ninja_rule.build_ast_and_module_sets_from_re
+            else
+              Bsb_ninja_rule.build_ast_and_module_sets);
+  if not no_intf_file then begin           
     Bsb_ninja_util.output_build oc
-      ~output:output_mlast
-      ~input
-      ~implicit_deps:(if has_checked_ppx then [ "${ppx_checked_files}" ] else [])       
-      ~rule:( if is_re then 
-                Bsb_ninja_rule.build_ast_and_module_sets_from_re
-              else
-                Bsb_ninja_rule.build_ast_and_module_sets);
-    if not no_intf_file then begin           
-      Bsb_ninja_util.output_build oc
-        ~output:output_mliast
-        (* TODO: we can get rid of absloute path if we fixed the location to be 
-            [lib/bs], better for testing?
-        *)
-        ~input:(Bsb_config.proj_rel 
-                  (if is_re then filename_sans_extension ^ Literals.suffix_rei 
-                   else filename_sans_extension ^ Literals.suffix_mli))
-        ~rule:(if is_re then Bsb_ninja_rule.build_ast_and_module_sets_from_rei
-               else Bsb_ninja_rule.build_ast_and_module_sets)
-        ~implicit_deps:(if has_checked_ppx then [ "${ppx_checked_files}" ] else [])       
-      ;
-      Bsb_ninja_util.output_build oc
-        ~output:output_mliastd
-        ~input:output_mliast
-        ~rule:Bsb_ninja_rule.build_bin_deps
-        ~implicit_deps:(if has_checked_ppx then [ "${ppx_checked_files}" ] else [])       
-        ?shadows:(if Bsb_dir_index.is_lib_dir group_dir_index  then None
-                  else Some [{
-                      key = Bsb_build_schemas.bsb_dir_group; 
-                      op = 
-                        Overwrite (string_of_int (group_dir_index :> int )) }])
-      ;
-      Bsb_ninja_util.output_build oc
-        ~output:output_cmi
-        ~shadows:common_shadows
-        ~order_only_deps:[output_mliastd]
-        ~input:output_mliast
-        ~rule:Bsb_ninja_rule.build_cmi
-      ;
-    end;
-    Bsb_ninja_util.output_build
-      oc
-      ~output:output_mlastd
-      ~input:output_mlast
-      ~rule:Bsb_ninja_rule.build_bin_deps
-      ~implicit_deps:(if has_checked_ppx then [ "${ppx_checked_files}" ] else [])       
-      ?shadows:(if Bsb_dir_index.is_lib_dir group_dir_index then None
-                else Some [{Bsb_ninja_util.key = Bsb_build_schemas.bsb_dir_group ; 
-                            op = 
-                              Overwrite (string_of_int (group_dir_index :> int)) }])
-    ;
-    let shadows =
-      match js_post_build_cmd with
-      | None -> common_shadows
-      | Some cmd ->
-        {key = Bsb_ninja_global_vars.postbuild;
-         op = Overwrite ("&& " ^ cmd ^ Ext_string.single_space ^ String.concat Ext_string.single_space output_js)} 
-        :: common_shadows
-    in
-    let rule , cm_outputs, implicit_deps =
-      if no_intf_file then 
-        Bsb_ninja_rule.build_cmj_cmi_js, [output_cmi], []
-      else  Bsb_ninja_rule.build_cmj_js, []  , [output_cmi]
-    in
-    Bsb_ninja_util.output_build oc
-      ~output:output_cmj
-      ~shadows
-      ~implicit_outputs:  (output_js @ cm_outputs)
-      ~input:output_mlast
+      ~output:output_mliast
+      (* TODO: we can get rid of absloute path if we fixed the location to be 
+          [lib/bs], better for testing?
+      *)
+      ~input:(Bsb_config.proj_rel 
+                (if is_re then filename_sans_extension ^ Literals.suffix_rei 
+                 else filename_sans_extension ^ Literals.suffix_mli))
+      ~rule:(if is_re then Bsb_ninja_rule.build_ast_and_module_sets_from_rei
+             else Bsb_ninja_rule.build_ast_and_module_sets)
       ~implicit_deps
-      ~order_only_deps:[output_mlastd]
-      ~rule
-  end 
+    ;
+    Bsb_ninja_util.output_build oc
+      ~output:output_cmi
+      ~shadows:common_shadows
+      ~order_only_deps:[output_d]
+      ~input:output_mliast
+      ~rule:Bsb_ninja_rule.build_cmi
+    ;
+  end;
+  Bsb_ninja_util.output_build
+    oc
+    ~output:output_d
+    ~inputs:(if not no_intf_file then [output_mliast] else [])
+    ~input:output_mlast
+    ~rule:Bsb_ninja_rule.build_bin_deps
+    ~implicit_deps
+    ?shadows:(if Bsb_dir_index.is_lib_dir group_dir_index then None
+              else Some [{Bsb_ninja_util.key = Bsb_build_schemas.bsb_dir_group ; 
+                          op = 
+                            Overwrite (string_of_int (group_dir_index :> int)) }])
+  ;
+  let shadows =
+    match js_post_build_cmd with
+    | None -> common_shadows
+    | Some cmd ->
+      {key = Bsb_ninja_global_vars.postbuild;
+       op = Overwrite ("&& " ^ cmd ^ Ext_string.single_space ^ String.concat Ext_string.single_space output_js)} 
+      :: common_shadows
+  in
+  let rule , cm_outputs, implicit_deps =
+    if no_intf_file then 
+      Bsb_ninja_rule.build_cmj_cmi_js, [output_cmi], []
+    else  Bsb_ninja_rule.build_cmj_js, []  , [output_cmi]
+  in
+  Bsb_ninja_util.output_build oc
+    ~output:output_cmj
+    ~shadows
+    ~implicit_outputs:  (output_js @ cm_outputs)
+    ~input:output_mlast
+    ~implicit_deps
+    ~order_only_deps:[output_d]
+    ~rule
+
 
 
 let handle_module_info 
