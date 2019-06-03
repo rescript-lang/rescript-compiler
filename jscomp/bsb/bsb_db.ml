@@ -56,6 +56,9 @@ let dir_of_module_info (x : module_info)
 let filename_sans_suffix_of_module_info (x : module_info) =
   x.name_sans_extension
 
+(* invariant check:
+  ml and mli should have the same case, same path
+*)  
 let check (x : module_info) name_sans_extension =  
   if x.name_sans_extension <> name_sans_extension then 
     Bsb_exception.invalid_spec 
@@ -63,7 +66,7 @@ let check (x : module_info) name_sans_extension =
          "implementation and interface have different path names or different cases %s vs %s"
          x.name_sans_extension name_sans_extension)
 
-let adjust_module_info (x : _ option) suffix name_sans_extension upper =
+let adjust_module_info (x : module_info option) suffix name_sans_extension upper : module_info =
   match suffix with 
   | ".ml" -> 
     let ml_info = Ml_source  ( false, upper) in 
@@ -116,7 +119,11 @@ let collect_module_by_filename
          name_sans_extension upper )
 
 
-
+let sanity_check (map : t) = 
+  String_map.iter map (fun m module_info -> 
+    if module_info.ml_info = Ml_empty then 
+      Bsb_exception.no_implementation m    
+    )
 let has_reason_files (map  : t ) = 
   String_map.exists map (fun _ module_info ->
       match module_info with 

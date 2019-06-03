@@ -90,3 +90,5 @@ val conflict_module_info:
   module_info -> 
   'a 
 val merge : t -> t -> t 
+
+val sanity_check : t -> unit

@@ -30,7 +30,7 @@ type error =
   | Invalid_json of string
   | Invalid_spec of string
   | Conflict_module of string * string * string
-
+  | No_implementation of string
 
 exception Error of error
 
@@ -45,6 +45,9 @@ let print (fmt : Format.formatter) (x : error) =
     "@{<error>Error:@} %s found in two directories: (%s, %s)\n\
     File names must be unique per project"
       modname dir1 dir2
+  | No_implementation (modname) ->     
+    Format.fprintf fmt 
+    "@{<error>Error:@} %s does not have implementation file" modname
   | Package_not_found (name,json_opt) ->
     let in_json = match json_opt with
     | None -> Ext_string.empty
@@ -80,6 +83,8 @@ let print (fmt : Format.formatter) (x : error) =
 
 let conflict_module modname dir1 dir2 =
   error (Conflict_module (modname,dir1,dir2))
+let no_implementation modname =   
+  error (No_implementation modname)
 let errorf ~loc fmt =
   Format.ksprintf (fun s -> error (Json_config (loc,s))) fmt
 

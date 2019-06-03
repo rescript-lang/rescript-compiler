@@ -5960,6 +5960,8 @@ val config_error : Ext_json_types.t -> string -> 'a
 val invalid_spec : string -> 'a
 
 val invalid_json : string -> 'a
+
+val no_implementation : string -> 'a
 end = struct
 #1 "bsb_exception.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -5994,7 +5996,7 @@ type error =
   | Invalid_json of string
   | Invalid_spec of string
   | Conflict_module of string * string * string
-
+  | No_implementation of string
 
 exception Error of error
 
@@ -6009,6 +6011,9 @@ let print (fmt : Format.formatter) (x : error) =
     "@{<error>Error:@} %s found in two directories: (%s, %s)\n\
     File names must be unique per project"
       modname dir1 dir2
+  | No_implementation (modname) ->     
+    Format.fprintf fmt 
+    "@{<error>Error:@} %s does not have implementation file" modname
   | Package_not_found (name,json_opt) ->
     let in_json = match json_opt with
     | None -> Ext_string.empty
@@ -6044,6 +6049,8 @@ let print (fmt : Format.formatter) (x : error) =
 
 let conflict_module modname dir1 dir2 =
   error (Conflict_module (modname,dir1,dir2))
+let no_implementation modname =   
+  error (No_implementation modname)
 let errorf ~loc fmt =
   Format.ksprintf (fun s -> error (Json_config (loc,s))) fmt
 
@@ -7084,6 +7091,8 @@ val conflict_module_info:
   module_info -> 
   'a 
 val merge : t -> t -> t 
+
+val sanity_check : t -> unit
 end = struct
 #1 "bsb_db.ml"
 
@@ -7144,6 +7153,9 @@ let dir_of_module_info (x : module_info)
 let filename_sans_suffix_of_module_info (x : module_info) =
   x.name_sans_extension
 
+(* invariant check:
+  ml and mli should have the same case, same path
+*)  
 let check (x : module_info) name_sans_extension =  
   if x.name_sans_extension <> name_sans_extension then 
     Bsb_exception.invalid_spec 
@@ -7151,7 +7163,7 @@ let check (x : module_info) name_sans_extension =
          "implementation and interface have different path names or different cases %s vs %s"
          x.name_sans_extension name_sans_extension)
 
-let adjust_module_info (x : _ option) suffix name_sans_extension upper =
+let adjust_module_info (x : module_info option) suffix name_sans_extension upper : module_info =
   match suffix with 
   | ".ml" -> 
     let ml_info = Ml_source  ( false, upper) in 
@@ -7204,7 +7216,11 @@ let collect_module_by_filename
          name_sans_extension upper )
 
 
-
+let sanity_check (map : t) = 
+  String_map.iter map (fun m module_info -> 
+    if module_info.ml_info = Ml_empty then 
+      Bsb_exception.no_implementation m    
+    )
 let has_reason_files (map  : t ) = 
   String_map.exists map (fun _ module_info ->
       match module_info with 

@@ -42,3 +42,5 @@ val config_error : Ext_json_types.t -> string -> 'a
 val invalid_spec : string -> 'a
 
 val invalid_json : string -> 'a
+
+val no_implementation : string -> 'a
