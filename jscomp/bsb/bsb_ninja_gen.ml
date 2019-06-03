@@ -254,7 +254,7 @@ let output_ninja_and_namespace_map
     ~files_to_install
     bs_file_groups 
     namespace
-    Bsb_ninja_file_groups.zero |> ignore;
+    ;
   if static_resources <> [] then
     Bsb_ninja_util.phony
       oc

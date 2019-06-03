@@ -13436,10 +13436,6 @@ module Bsb_ninja_file_groups : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-type info =  string list  
-
-
-val zero : info
 
 
 val handle_file_groups :
@@ -13452,7 +13448,7 @@ val handle_file_groups :
   custom_rules:Bsb_ninja_rule.t String_map.t ->
   Bsb_file_groups.file_groups ->
   string option -> 
-  info -> info
+  unit
 end = struct
 #1 "bsb_ninja_file_groups.ml"
 (* Copyright (C) 2017 Authors of BuckleScript
@@ -13481,15 +13477,6 @@ end = struct
 
 let (//) = Ext_path.combine
 
-type info =
-  string list   
-(* Figure out a list of files 
-   to be built before building cm*
-*)
-
-
-let zero : info =
-  [] 
 
 
 
@@ -13563,13 +13550,18 @@ let emit_impl_build
     ~is_re
     namespace
     filename_sans_extension
-  : info =    
+  : unit =    
   let input = 
     Bsb_config.proj_rel 
       (if is_re then filename_sans_extension ^ Literals.suffix_re 
        else filename_sans_extension ^ Literals.suffix_ml  ) in
   let output_mlast = filename_sans_extension  ^ Literals.suffix_mlast in
   let output_mlastd = filename_sans_extension ^ Literals.suffix_mlastd in
+
+  let output_mliast = filename_sans_extension ^ Literals.suffix_mliast in
+  let output_mliastd = filename_sans_extension ^ Literals.suffix_mliastd in
+  
+
   let output_filename_sans_extension = 
     match namespace with 
     | None -> 
@@ -13577,13 +13569,13 @@ let emit_impl_build
     | Some ns -> 
       Ext_namespace.make ~ns filename_sans_extension
   in 
-  let file_cmi =  output_filename_sans_extension ^ Literals.suffix_cmi in
+  let output_cmi =  output_filename_sans_extension ^ Literals.suffix_cmi in
   let output_cmj =  output_filename_sans_extension ^ Literals.suffix_cmj in
   let output_js =
     Bsb_package_specs.get_list_of_output_js package_specs bs_suffix output_filename_sans_extension in 
   let common_shadows = 
     make_common_shadows is_re package_specs
-      (Filename.dirname file_cmi)
+      (Filename.dirname output_cmi)
       group_dir_index in
   begin
     Bsb_ninja_util.output_build oc
@@ -13594,6 +13586,38 @@ let emit_impl_build
                 Bsb_ninja_rule.build_ast_and_module_sets_from_re
               else
                 Bsb_ninja_rule.build_ast_and_module_sets);
+    if not no_intf_file then begin           
+      Bsb_ninja_util.output_build oc
+        ~output:output_mliast
+        (* TODO: we can get rid of absloute path if we fixed the location to be 
+            [lib/bs], better for testing?
+        *)
+        ~input:(Bsb_config.proj_rel 
+                  (if is_re then filename_sans_extension ^ Literals.suffix_rei 
+                   else filename_sans_extension ^ Literals.suffix_mli))
+        ~rule:(if is_re then Bsb_ninja_rule.build_ast_and_module_sets_from_rei
+               else Bsb_ninja_rule.build_ast_and_module_sets)
+        ~implicit_deps:(if has_checked_ppx then [ "${ppx_checked_files}" ] else [])       
+      ;
+      Bsb_ninja_util.output_build oc
+        ~output:output_mliastd
+        ~input:output_mliast
+        ~rule:Bsb_ninja_rule.build_bin_deps
+        ~implicit_deps:(if has_checked_ppx then [ "${ppx_checked_files}" ] else [])       
+        ?shadows:(if Bsb_dir_index.is_lib_dir group_dir_index  then None
+                  else Some [{
+                      key = Bsb_build_schemas.bsb_dir_group; 
+                      op = 
+                        Overwrite (string_of_int (group_dir_index :> int )) }])
+      ;
+      Bsb_ninja_util.output_build oc
+        ~output:output_cmi
+        ~shadows:common_shadows
+        ~implicit_deps:[output_mliastd]
+        ~input:output_mliast
+        ~rule:Bsb_ninja_rule.build_cmi
+      ;
+    end;
     Bsb_ninja_util.output_build
       oc
       ~output:output_mlastd
@@ -13615,8 +13639,8 @@ let emit_impl_build
     in
     let rule , cm_outputs, implicit_deps =
       if no_intf_file then 
-        Bsb_ninja_rule.build_cmj_cmi_js, [file_cmi], [output_mlastd]
-      else  Bsb_ninja_rule.build_cmj_js, []  , [file_cmi; output_mlastd]
+        Bsb_ninja_rule.build_cmj_cmi_js, [output_cmi], [output_mlastd]
+      else  Bsb_ninja_rule.build_cmj_js, []  , [output_cmi; output_mlastd]
     in
     Bsb_ninja_util.output_build oc
       ~output:output_cmj
@@ -13624,11 +13648,10 @@ let emit_impl_build
       ~implicit_outputs:  (output_js @ cm_outputs)
       ~input:output_mlast
       ~implicit_deps
-      ~rule;
-    [output_mlastd] 
+      ~rule
   end 
 
-
+(*
 let emit_intf_build 
     (package_specs : Bsb_package_specs.t)
     (group_dir_index : Bsb_dir_index.t)
@@ -13684,7 +13707,7 @@ let emit_intf_build
     ;
   [output_mliastd]
 
-
+*)
 
 let handle_module_info 
     (group_dir_index : Bsb_dir_index.t)
@@ -13695,10 +13718,10 @@ let handle_module_info
     oc  module_name 
     ( {name_sans_extension = input} as module_info : Bsb_db.module_info)
     namespace
-  : info =
+  : unit =
   match module_info.ml_info, module_info.mli_info with
-  | Ml_source (impl_is_re,_), 
-    Mli_source(intf_is_re,_) ->
+  | Ml_source (is_re,_), 
+    Mli_source(_,_) ->
     emit_impl_build       
       package_specs
       group_dir_index
@@ -13706,16 +13729,8 @@ let handle_module_info
       ~has_checked_ppx
       ~bs_suffix
       ~no_intf_file:false
-      ~is_re:impl_is_re
+      ~is_re
       js_post_build_cmd      
-      namespace
-      input  @ 
-    emit_intf_build 
-      package_specs
-      group_dir_index
-      oc         
-      ~has_checked_ppx
-      ~is_re:intf_is_re
       namespace
       input 
   | Ml_source(is_re,_), Mli_empty ->
@@ -13743,12 +13758,11 @@ let handle_file_group
     ~js_post_build_cmd  
     (files_to_install : String_hash_set.t) 
     (namespace  : string option)
-    acc     
     (group: Bsb_file_groups.file_group ) 
-  : info =
+  : unit =
 
   handle_generators oc group custom_rules ;
-  String_map.fold group.sources  acc (fun  module_name module_info  acc ->
+  String_map.iter group.sources   (fun  module_name module_info   ->
       let installable =
         match group.public with
         | Export_all -> true
@@ -13766,7 +13780,7 @@ let handle_file_group
          module_name 
          module_info
          namespace
-      ) @  acc
+      )
     ) 
 
 
@@ -13778,8 +13792,8 @@ let handle_file_groups
     ~js_post_build_cmd
     ~files_to_install ~custom_rules
     (file_groups  :  Bsb_file_groups.file_groups)
-    namespace (st : info) : info  =
-  Ext_list.fold_left file_groups st  
+    namespace   =
+  Ext_list.iter file_groups
     (handle_file_group 
        oc  
        ~has_checked_ppx
@@ -14084,7 +14098,7 @@ let output_ninja_and_namespace_map
     ~files_to_install
     bs_file_groups 
     namespace
-    Bsb_ninja_file_groups.zero |> ignore;
+    ;
   if static_resources <> [] then
     Bsb_ninja_util.phony
       oc
