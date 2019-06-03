@@ -7269,7 +7269,7 @@ type ts = t array
   ]}
 *)
 
-val dir_of_module_info : module_info -> string
+(* val dir_of_module_info : module_info -> string *)
 
 
 val filename_sans_suffix_of_module_info : module_info -> string 
@@ -7287,6 +7287,13 @@ val collect_module_by_filename :
   will raise if it fails sanity check
 *)
 val has_reason_files : t -> bool
+
+val conflict_module_info:
+  string ->
+  module_info -> 
+  module_info -> 
+  'a 
+val merge : t -> t -> t 
 end = struct
 #1 "bsb_db.ml"
 
@@ -7418,6 +7425,26 @@ let has_reason_files (map  : t ) =
         ->  is_re
       | {ml_info = Ml_empty ; mli_info = Mli_empty } -> false
     )  
+
+let conflict_module_info modname a b = 
+  Bsb_exception.conflict_module
+    modname
+    (dir_of_module_info a)
+    (dir_of_module_info b)
+
+(* merge data info from two directories*)    
+let merge (acc : t) (sources : t) : t =
+  String_map.merge acc sources (fun modname k1 k2 ->
+      match k1 , k2 with
+      | None , None ->
+        assert false
+      | Some a, Some b  ->
+        conflict_module_info modname 
+          a
+          b
+      | Some v, None  -> Some v
+      | None, Some v ->  Some v
+    )
 
 end
 module Bsb_dir_index : sig 
@@ -13807,24 +13834,8 @@ let (//) = Ext_path.combine
 (* we need copy package.json into [_build] since it does affect build output
    it is a bad idea to copy package.json which requires to copy js files
 *)
-let conflict_module_info modname a b = 
-  Bsb_exception.conflict_module
-    modname
-    (Bsb_db.dir_of_module_info a)
-    (Bsb_db.dir_of_module_info b)
 
-let merge_module_info_map acc sources : Bsb_db.t =
-  String_map.merge acc sources (fun modname k1 k2 ->
-      match k1 , k2 with
-      | None , None ->
-        assert false
-      | Some a, Some b  ->
-        conflict_module_info modname 
-          a
-          b
-      | Some v, None  -> Some v
-      | None, Some v ->  Some v
-    )
+
 
 
 let bsc_exe = "bsc.exe"
@@ -13993,7 +14004,7 @@ let output_ninja_and_namespace_map
         Ext_list.fold_left bs_file_groups (String_map.empty,[],[]) 
           (fun (acc, dirs,acc_resources) ({sources ; dir; resources } as x)   
             ->
-            merge_module_info_map  acc  sources ,  
+            Bsb_db.merge  acc  sources ,  
             (if Bsb_file_groups.is_empty x then dirs else  dir::dirs) , 
             ( if resources = [] then acc_resources
               else Ext_list.map_append resources acc_resources (fun x -> dir // x ) )
@@ -14007,7 +14018,7 @@ let output_ninja_and_namespace_map
         Ext_list.fold_left bs_file_groups [] (fun (acc_resources : string list) {sources; dir; resources; dir_index} 
            ->
             let dir_index = (dir_index :> int) in 
-            bs_groups.(dir_index) <- merge_module_info_map bs_groups.(dir_index) sources ;
+            bs_groups.(dir_index) <- Bsb_db.merge bs_groups.(dir_index) sources ;
             source_dirs.(dir_index) <- dir :: source_dirs.(dir_index);
             Ext_list.map_append resources  acc_resources (fun x -> dir//x) 
           ) in
@@ -14019,7 +14030,7 @@ let output_ninja_and_namespace_map
         String_map.iter c 
           (fun k a -> 
             if String_map.mem lib k  then 
-              conflict_module_info k a (String_map.find_exn lib k)            
+              Bsb_db.conflict_module_info k a (String_map.find_exn lib k)            
             ) ;
         Bsb_ninja_util.output_kv 
           (Bsb_dir_index.(string_of_bsb_dev_include (of_int i)))

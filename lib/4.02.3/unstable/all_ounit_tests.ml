@@ -7059,7 +7059,7 @@ type ts = t array
   ]}
 *)
 
-val dir_of_module_info : module_info -> string
+(* val dir_of_module_info : module_info -> string *)
 
 
 val filename_sans_suffix_of_module_info : module_info -> string 
@@ -7077,6 +7077,13 @@ val collect_module_by_filename :
   will raise if it fails sanity check
 *)
 val has_reason_files : t -> bool
+
+val conflict_module_info:
+  string ->
+  module_info -> 
+  module_info -> 
+  'a 
+val merge : t -> t -> t 
 end = struct
 #1 "bsb_db.ml"
 
@@ -7208,6 +7215,26 @@ let has_reason_files (map  : t ) =
         ->  is_re
       | {ml_info = Ml_empty ; mli_info = Mli_empty } -> false
     )  
+
+let conflict_module_info modname a b = 
+  Bsb_exception.conflict_module
+    modname
+    (dir_of_module_info a)
+    (dir_of_module_info b)
+
+(* merge data info from two directories*)    
+let merge (acc : t) (sources : t) : t =
+  String_map.merge acc sources (fun modname k1 k2 ->
+      match k1 , k2 with
+      | None , None ->
+        assert false
+      | Some a, Some b  ->
+        conflict_module_info modname 
+          a
+          b
+      | Some v, None  -> Some v
+      | None, Some v ->  Some v
+    )
 
 end
 module Bsb_db_io : sig 

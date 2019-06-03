@@ -127,3 +127,23 @@ let has_reason_files (map  : t ) =
         ->  is_re
       | {ml_info = Ml_empty ; mli_info = Mli_empty } -> false
     )  
+
+let conflict_module_info modname a b = 
+  Bsb_exception.conflict_module
+    modname
+    (dir_of_module_info a)
+    (dir_of_module_info b)
+
+(* merge data info from two directories*)    
+let merge (acc : t) (sources : t) : t =
+  String_map.merge acc sources (fun modname k1 k2 ->
+      match k1 , k2 with
+      | None , None ->
+        assert false
+      | Some a, Some b  ->
+        conflict_module_info modname 
+          a
+          b
+      | Some v, None  -> Some v
+      | None, Some v ->  Some v
+    )
