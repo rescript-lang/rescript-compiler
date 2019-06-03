@@ -189,14 +189,14 @@ let extract_generators
               (* ATTENTION: Now adding output as source files, 
                  it may be re-added again later when scanning files (not explicit files input)
               *)
-              output |> List.iter begin fun  output -> 
+              Ext_list.iter output (fun  output -> 
                   match Ext_string.is_valid_source_name output with
                   | Good ->
                     cur_sources := Bsb_db.collect_module_by_filename ~dir !cur_sources output
                   | Invalid_module_name ->                  
                     Bsb_log.warn warning_unused_file output dir 
                   | Suffix_mismatch -> ()                
-              end
+              )
             | _ ->
               Bsb_exception.errorf ~loc "Invalid generator format"
           end
@@ -444,7 +444,7 @@ let scan
   ~namespace 
   ~clean_staled_bs_js 
   ~ignored_dirs
-  x = 
+  x : t = 
   parse_sources {
     ignored_dirs;
     not_dev;

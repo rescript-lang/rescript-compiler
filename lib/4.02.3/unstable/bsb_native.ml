@@ -7397,7 +7397,8 @@ let adjust_module_info (x : _ option) suffix name_sans_extension upper =
       "don't know what to do with %s%s" 
       name_sans_extension suffix
 
-let collect_module_by_filename ~dir (map : t) file_name : t  = 
+let collect_module_by_filename 
+  ~(dir : string) (map : t) (file_name : string) : t  = 
   let module_name, upper = 
     Ext_modulename.module_name_of_file_if_any_with_upper file_name in 
   let suffix = Ext_path.get_extension file_name in 
@@ -7406,7 +7407,7 @@ let collect_module_by_filename ~dir (map : t) file_name : t  =
   String_map.adjust 
     map
     module_name 
-    (fun opt_module_info -> 
+    (fun (opt_module_info : module_info option)-> 
        adjust_module_info 
          opt_module_info
          suffix 
@@ -9842,14 +9843,14 @@ let extract_generators
               (* ATTENTION: Now adding output as source files, 
                  it may be re-added again later when scanning files (not explicit files input)
               *)
-              output |> List.iter begin fun  output -> 
+              Ext_list.iter output (fun  output -> 
                   match Ext_string.is_valid_source_name output with
                   | Good ->
                     cur_sources := Bsb_db.collect_module_by_filename ~dir !cur_sources output
                   | Invalid_module_name ->                  
                     Bsb_log.warn warning_unused_file output dir 
                   | Suffix_mismatch -> ()                
-              end
+              )
             | _ ->
               Bsb_exception.errorf ~loc "Invalid generator format"
           end
@@ -10097,7 +10098,7 @@ let scan
   ~namespace 
   ~clean_staled_bs_js 
   ~ignored_dirs
-  x = 
+  x : t = 
   parse_sources {
     ignored_dirs;
     not_dev;

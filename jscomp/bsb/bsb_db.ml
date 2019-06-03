@@ -99,7 +99,8 @@ let adjust_module_info (x : _ option) suffix name_sans_extension upper =
       "don't know what to do with %s%s" 
       name_sans_extension suffix
 
-let collect_module_by_filename ~dir (map : t) file_name : t  = 
+let collect_module_by_filename 
+  ~(dir : string) (map : t) (file_name : string) : t  = 
   let module_name, upper = 
     Ext_modulename.module_name_of_file_if_any_with_upper file_name in 
   let suffix = Ext_path.get_extension file_name in 
@@ -108,7 +109,7 @@ let collect_module_by_filename ~dir (map : t) file_name : t  =
   String_map.adjust 
     map
     module_name 
-    (fun opt_module_info -> 
+    (fun (opt_module_info : module_info option)-> 
        adjust_module_info 
          opt_module_info
          suffix 
