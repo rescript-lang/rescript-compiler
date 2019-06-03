@@ -5962,6 +5962,8 @@ val invalid_spec : string -> 'a
 val invalid_json : string -> 'a
 
 val no_implementation : string -> 'a
+
+val not_consistent : string -> 'a
 end = struct
 #1 "bsb_exception.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -5997,6 +5999,7 @@ type error =
   | Invalid_spec of string
   | Conflict_module of string * string * string
   | No_implementation of string
+  | Not_consistent of string 
 
 exception Error of error
 
@@ -6011,6 +6014,9 @@ let print (fmt : Format.formatter) (x : error) =
     "@{<error>Error:@} %s found in two directories: (%s, %s)\n\
     File names must be unique per project"
       modname dir1 dir2
+  | Not_consistent modname ->     
+    Format.fprintf fmt 
+    "@{<error>Error:@} %s has implementation/interface in non-consistent syntax(reason/ocaml)" modname
   | No_implementation (modname) ->     
     Format.fprintf fmt 
     "@{<error>Error:@} %s does not have implementation file" modname
@@ -6051,6 +6057,8 @@ let conflict_module modname dir1 dir2 =
   error (Conflict_module (modname,dir1,dir2))
 let no_implementation modname =   
   error (No_implementation modname)
+let not_consistent modname =   
+  error (Not_consistent modname)
 let errorf ~loc fmt =
   Format.ksprintf (fun s -> error (Json_config (loc,s))) fmt
 
@@ -7218,8 +7226,14 @@ let collect_module_by_filename
 
 let sanity_check (map : t) = 
   String_map.iter map (fun m module_info -> 
-    if module_info.ml_info = Ml_empty then 
-      Bsb_exception.no_implementation m    
+      match module_info.ml_info, module_info.mli_info with 
+      | Ml_empty, _ ->      
+        Bsb_exception.no_implementation m 
+      | Ml_source(impl_is_re,_), Mli_source(intf_is_re,_)   
+        ->
+        if impl_is_re <> intf_is_re then
+          Bsb_exception.not_consistent m
+      | Ml_source _ , Mli_empty -> ()    
     )
 let has_reason_files (map  : t ) = 
   String_map.exists map (fun _ module_info ->

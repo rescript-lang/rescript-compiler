@@ -121,8 +121,14 @@ let collect_module_by_filename
 
 let sanity_check (map : t) = 
   String_map.iter map (fun m module_info -> 
-    if module_info.ml_info = Ml_empty then 
-      Bsb_exception.no_implementation m    
+      match module_info.ml_info, module_info.mli_info with 
+      | Ml_empty, _ ->      
+        Bsb_exception.no_implementation m 
+      | Ml_source(impl_is_re,_), Mli_source(intf_is_re,_)   
+        ->
+        if impl_is_re <> intf_is_re then
+          Bsb_exception.not_consistent m
+      | Ml_source _ , Mli_empty -> ()    
     )
 let has_reason_files (map  : t ) = 
   String_map.exists map (fun _ module_info ->

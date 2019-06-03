@@ -273,16 +273,8 @@ let handle_module_info
       ~is_re
       namespace
       input 
-  | Ml_empty, Mli_source(is_re,_) ->    
-    emit_intf_build 
-      ~has_checked_ppx 
-      package_specs
-      group_dir_index
-      oc         
-      ~is_re
-      namespace
-      input 
-  | Ml_empty, Mli_empty -> zero
+  | Ml_empty, Mli_source(_,_) 
+  | Ml_empty, Mli_empty -> assert false
 
 
 let handle_file_group 
